@@ -1,0 +1,28 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="DatosPeticion.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="SixLabors.ImageSharp" Version="1.0.4" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Es.Riam.Gnoss.AD\Es.Riam.Gnoss.AD.csproj" />
+    <ProjectReference Include="..\Es.Riam.Gnoss.CL\Es.Riam.Gnoss.CL.csproj" />
+    <ProjectReference Include="..\Es.Riam.Gnoss.Elementos\Es.Riam.Gnoss.Elementos.csproj" />
+    <ProjectReference Include="..\Es.Riam.Gnoss.ExportarImportar\Es.Riam.Gnoss.ExportarImportar.csproj" />
+    <ProjectReference Include="..\Es.Riam.Gnoss.Logica\Es.Riam.Gnoss.Logica.csproj" />
+    <ProjectReference Include="..\Es.Riam.Gnoss.Servicios\Es.Riam.Gnoss.Servicios.csproj" />
+    <ProjectReference Include="..\Es.Riam.Gnoss.UtilServiciosWeb\Es.Riam.Gnoss.UtilServiciosWeb.csproj" />
+    <ProjectReference Include="..\Es.Riam.Gnoss.Web.MVC.Models\Es.Riam.Gnoss.Web.MVC.Models.csproj" />
+    <ProjectReference Include="..\Es.Riam.Web.Util\Es.Riam.Web.Util.csproj" />
+    <ProjectReference Include="..\SemWeb\SemWeb\SemWeb.csproj" />
+  </ItemGroup>
+
+</Project>

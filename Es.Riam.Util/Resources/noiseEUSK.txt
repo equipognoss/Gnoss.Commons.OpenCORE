@@ -1,0 +1,663 @@
+a
+b
+c
+d
+e
+f
+g
+h
+i
+j
+k
+l
+m
+n
+o
+p
+q
+r
+s
+t
+u
+v
+w
+x
+y
+z
+zenbat
+batzuk
+zenbait
+asko
+gutxi
+anitz
+hagitz
+franko
+honenbeste
+hainbat
+ugari
+dezente
+nahiko(a)
+aski
+pilo bat
+mordo bat
+makina bat
+apur bat
+pixka bat
+pittin bat
+alajaina
+alajainkoa
+alazankoa
+alafede
+arranopola
+arraio
+arraioak ez baditu
+nola arraio
+nola demontre
+nola demonio
+kontxo
+demontre
+zer demontre
+joã±o
+jo
+ã‘o
+motel
+agian bai
+agian ez
+ah
+ai ene
+ai ama
+ai
+aitaren eta semearen…
+ala
+alde, alde
+atx
+auskalo
+bah
+bai horixe
+bai alajaina
+bai zera
+bai, bai
+baita zera ere
+baita
+balinba
+batek daki
+beno
+ea ba
+ea
+eh
+ene bada
+ene
+et, et, et
+ez horixe
+gaixoa
+gizagaixoa
+gizajoa
+hanka hemendik
+hanka
+hara bestea
+hor konpon
+jainko maitea
+jakizu
+jes
+jum
+oh
+oi
+ospa
+oxala
+tira ba
+tira
+uf
+uh
+utikan
+adi
+aizak
+aizan
+aizu
+begira
+entzun
+errazu
+hara
+heup
+horratx
+hots
+ixo
+kasu
+kontuz
+ã‘o
+to
+tori
+torizu
+txo
+aitzina
+aupa mutilak/ neskak
+aurrera
+biba
+ekin
+eman horri
+eutsi motel/neska
+gora
+hori duk eta / hori dun eta
+hori, hori
+aupa
+ederto
+ederto baten
+iufa
+iufi
+ja, ja, ja
+jai, jai
+jeup
+jeupa
+alajaina!
+alajainkoa!
+alazankoa!
+alafede!
+arranopola!
+arraio!
+arraioak ez baditu!
+nola arraio!
+nola demontre!
+nola demonio!
+kontxo!
+demontre!
+zer demontre!
+joã±o!
+jo!
+ã‘o!
+motel!
+agian bai
+agian ez!
+ah!
+ai ene!
+ai ama!
+ai!
+aitaren eta semearen…!
+ala!
+alde, alde!
+atx!
+auskalo!
+bah!
+bai horixe!
+bai alajaina!
+bai zera!
+bai, bai!
+baita zera ere!
+baita!
+balinba!
+batek daki!
+beno!
+ea ba!
+ea!
+eh!
+ene bada!
+ene!
+et, et, et!
+ez horixe!
+gaixoa!
+gizagaixoa!
+gizajoa!
+hanka hemendik!
+hanka!
+hara bestea!
+hor konpon!
+jainko maitea!
+jakizu!
+jes!
+jum!
+oh!
+oi!
+ospa!
+oxala!
+tira ba!
+tira!
+uf!
+uh!
+utikan!
+adi!
+aizak!
+aizan!
+aizu!
+begira!
+entzun!
+errazu!
+hara!
+heup!
+horratx!
+hots!
+ixo!
+kasu!
+kontuz!
+ã‘o!
+to!
+tori!
+torizu!
+txo!
+aitzina!
+aupa mutilak/ neskak!
+aurrera!
+biba!
+ekin!
+eman horri!
+eutsi motel/neska!
+gora!
+hori duk eta! / hori dun eta!
+hori, hori!
+aupa!
+ederto!
+ederto baten!
+iufa!
+iufi!
+ja, ja, ja!
+jai, jai!
+jeup!
+jeupa!
+zero
+huts
+bat
+bi
+hiru
+lau
+bostsei
+zazpi
+zortzi
+bederatzi
+hamar
+hamaika
+hamabi
+hamahiru
+hamalau
+hamabost
+hamasei
+hamazazpi
+hemezortzi
+hemeretzi
+hogei
+hogeita bat
+hogeita bi
+hogeita hiru
+hogeita lau
+hogeita bost
+hogeita sei
+hogeita zazpi
+hogeita zortzi
+hogeita bederatzi
+hogeita hamar
+hogeita hamaika
+hogeita hamabi
+hogeita hamahiru
+hogeita hamalau
+hogeita hamabost
+hogeita hamasei
+hogeita hamazazpi
+hogeita hemezortzi
+hogeita hemeretzi
+berrogei
+berrogeita bat
+berrogeita bi
+berrogeita hiru
+berrogeita lau
+berrogeita bost
+berrogeita sei
+berrogeita zazpi
+berrogeita zortzi
+berrogeita bederatzi
+berrogeita hamar
+berrogeita hamaika
+berrogeita hamabi
+berrogeita hamahiru
+berrogeita hamalau
+berrogeita hamabost
+berrogeita hamasei
+berrogeita hamazazpi
+berrogeita hemezortzi
+berrogeita hemeretzi
+hirurogei
+hirurogeita bat
+hirurogeita bi
+hirurogeita hiru
+hirurogeita lau
+hirurogeita bost
+hirurogeita sei
+hirurogeita zazpi
+hirurogeita zortzi
+hirurogeita bederatzi
+hirurogeita hamar
+hirurogeita hamaika
+hirurogeita hamabi
+hirurogeita hamahiru
+hirurogeita hamalau
+hirurogeita hamabost
+hirurogeita hamasei
+hirurogeita hamazazpi
+hirurogeita hemezortzi
+hirurogeita hemeretzi
+laurogei
+laurogeita bat
+laurogeita bi
+laurogeita hiru
+laurogeita lau
+laurogeita bost
+laurogeita sei
+laurogeita zazpi
+laurogeita zortzi
+laurogeita bederatzi
+laurogeita hamar
+laurogeita hamaika
+laurogeita hamabi
+laurogeita hamahiru
+laurogeita hamalau
+laurogeita hamabost
+laurogeita hamasei
+laurogeita hamazazpi
+laurogeita hemezortzi
+laurogeita hemeretzi
+ehun
+ehun eta bat
+ehun eta bi
+berrehun
+hirurehun
+laurehun
+bostehun
+seiehun
+zazpiehun
+zortziehun
+bederatziehun
+mila
+mila eta berrehun
+mila berrehun eta bat
+mila bederatziehun eta laurogeita lau
+milioi bat
+hamar milioi
+mila milioi
+ni
+nik
+niri
+nire
+nirekin
+niretzat
+nitaz hi
+hik
+hiri
+hire
+hirekin
+hiretzat
+hitaz hura
+hark
+hari
+haren
+harekin
+harentzat
+hartaz
+ni(re)gan
+ni(re)gandik
+ni(re)gana
+ni(re)ganantz
+ni(re)ganaino
+ni(re)gatik	hi(re)gan
+hi(re)gandik
+hi(re)gana
+hi(re)ganantz
+hi(re)ganaino
+hi(re)gatik	harengan
+harengandik
+harengana
+harenganantz
+harenganaino
+harengatik
+gu
+guk
+guri
+gure
+gurekin
+guretzat
+gutaz zu
+zuk
+zuri
+zure
+zurekin
+zuretzat
+zutaz zuek
+zuek
+zuei
+zuen
+zuekin
+zuentzat
+zuetaz haiek
+haiek
+haiei
+haien
+haiekin
+haientzat
+haietaz
+gu(re)gan
+gu(re)gandik
+gu(re)gana
+gu(re)ganantz
+gu(re)ganaino
+gu(re)gatik	zu(re)gan
+zu(re)gandik
+zu(re)gana
+zu(re)ganantz
+zu(re)ganaino
+zu(re)gatik	zuengan
+zuengandik
+zuengana
+zuenganantz
+zuenganaino
+zuengatik haiengan
+haiengandik
+haiengana
+haienganantz
+haienganaino
+haiengatik
+hasteko
+lehenlehenik
+sarrera gisa errango dugu
+honen bidez
+honen helburu
+bazen behin
+alde batetik  
+bestetik
+ildo beretik
+lehenik 
+bigarrenik
+baita ere
+honako hau
+honekin batera
+besteak beste
+era berean
+halaber
+erran bezala
+ez hori bakarrik
+gorago erran bezala
+are gehiago
+beste batzuetan
+honen ondoren
+berriz ere 
+beriziki 
+batez ere
+guzien gainetik
+baino gehiago
+ez bezala
+ezer baino lehen 
+ri
+dagokionez
+ dela eta 
+egoki da erraitea
+oro har 
+gainera
+gehiago dena
+egia erran
+modu berean
+are gehiago
+bestetik 
+eta
+ez hori bakarrik
+bestalde
+baita ere 
+ere bai 
+ondorioz
+honen ondotik,,
+hari beretik
+gisa berean 
+bigarrenik
+gero
+baita  ere
+hau ikusi eta gero
+gainera 
+honez gain 
+dena dela 
+dena den
+horren aurka
+esanak esan
+nolanahi ere
+edozein modutan ere
+edonola ere
+hori horrela izanik ere
+baina 
+bestetik
+kontuan izan
+nolanahi ere
+hala ere
+ordea 
+berriz 
+aldiz ..
+derrigorrez
+nahitaez
+beharrezkoa da 
+bait
+elako
+(e)la eta
+t(z)eagatik
+zeren eta
+horregatik
+izan ere
+hori dela eta
+horrela
+beraz
+hortaz
+behin eta berriro 
+lehen
+gaur egun
+orduan
+gero
+egun batez
+(xxi). mendean
+mendean
+orain
+hastapenean 
+hatsarrean
+hasieran
+azkenik
+halako batean
+berantago
+laster
+lehenago
+orain arte
+behin batean 
+adibidez
+hori argitzeko
+eman dezagun
+besteak beste
+hau da
+pentsa dezagun 
+ez da dudarik
+onartu behar da
+segurki 
+seguraski
+seguruenik
+nolaz ez 
+noski
+egia da egiazki
+dudarik gabe
+batere dudarik gabe
+ezin uka
+nahitez
+ez da zalantzarik
+argi da 
+argi eta garbi
+garbiki 
+egiazki
+alainan 
+alabainan
+denek dakigu
+jakina (denez)
+bistan da 
+bururatzeko
+bukatzeko amaitzeko
+laburbilduz
+ondorio gisa
+burura dezagun erranez
+azkenez 
+azkenik
+zera
+eta besterik gabe
+hitz gutitan
+bukaeran 
+laburki
+bada
+hau guzia dela eta
+funtsean
+argi da
+honen ondorioz
+erranak erran
+kontuan izanik
+hain zuzen ere
+hori dela eta 
+aipatu bezala
+aipatu dugunez
+batez ere
+hain xuxen 
+hain zuzen ere
+lehengo hariari jarraituz
+hau azpimarratzeko
+izan ere
+kontuan hartu
+are gehiago
+gainera 
+hemen
+hor
+en
+ondoan
+gainean
+urrunago
+ezkerrean 
+eskuinean
+aitzinean
+gibelean
+tik
+hurbil 
+era berean
+alde batetik
+bestetik
+bezala
+moduan 
+zorionez
+zoritxarrez 
+zorigaitzez
+eskerrak
+espero izan 
+iduriz
+dirudienez 
+badirudi
+itxura guzien arabera
+irakurri dugunez
+omen
+hain segur 
+naski
+ren
+arabera
+itxura denez
+ote
+erran daiteke
+beharbada
+agian
+diotenez
+batzuen iritziz
+ren
+ustez
+ren
+erranetan
+uste izan
+seguru asko
+izango zen
+hala beharrez

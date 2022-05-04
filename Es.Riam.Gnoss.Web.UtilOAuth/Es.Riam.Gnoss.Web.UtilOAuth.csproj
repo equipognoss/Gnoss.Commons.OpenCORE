@@ -1,0 +1,21 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="DotNetOpenAuth.OAuth.Core" Version="4.3.4.13329" />
+    <PackageReference Include="DotNetOpenAuth.OAuth.ServiceProvider" Version="4.3.4.13329" />
+    <PackageReference Include="System.ServiceModel.Http" Version="4.8.1" />
+    <PackageReference Include="System.ServiceModel.Security" Version="4.8.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Es.Riam.Gnoss.AD\Es.Riam.Gnoss.AD.csproj" />
+    <ProjectReference Include="..\Es.Riam.Gnoss.CL\Es.Riam.Gnoss.CL.csproj" />
+    <ProjectReference Include="..\Es.Riam.Gnoss.Web.LogicaOAuth\Es.Riam.Gnoss.Web.LogicaOAuth.csproj" />
+    <ProjectReference Include="..\Es.Riam.Gnoss.Web.OAuthAD\Es.Riam.Gnoss.Web.OAuthAD.csproj" />
+  </ItemGroup>
+
+</Project>

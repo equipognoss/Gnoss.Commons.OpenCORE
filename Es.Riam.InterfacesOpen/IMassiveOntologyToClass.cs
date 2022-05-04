@@ -1,0 +1,478 @@
+﻿using Es.Riam.Gnoss.AD.EntityModel.Models.Faceta;
+using Es.Riam.Gnoss.Util.GeneradorClases;
+using Es.Riam.Gnoss.Util.General;
+using Es.Riam.Gnoss.Web.MVC.Models.GeneradorClases;
+using Es.Riam.Gnoss.Web.MVC.Models.GeneradorClases.Enumeraciones;
+using Es.Riam.Semantica.OWL;
+using Es.Riam.Util;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace Es.Riam.InterfacesOpen
+{
+    public abstract class IMassiveOntologyToClass
+    {
+
+        protected LoggingService mLoggingService;
+
+        public IMassiveOntologyToClass(LoggingService loggingService)
+        {
+            mLoggingService = loggingService;
+        }
+
+
+        public abstract void CrearToOntologyGraphTriples(bool esPrimaria, ElementoOntologia pEntidad, StringBuilder Clase, List<Propiedad> listentidadesAux, Ontologia ontologia, Dictionary<string, string> dicPref, Dictionary<string, bool> propListiedadesMultidioma, List<ObjetoPropiedad> listaObjetosPropiedad);
+        public abstract void CrearToSearchGraphTriples(bool esPrimaria, ElementoOntologia pEntidad, string pRdfType, List<string> pListaPropiedadesSearch, List<string> pListaPadrePropiedadesAnidadas, List<FacetaObjetoConocimientoProyecto> pListaFacetaObjetoConocimientoProyecto, StringBuilder Clase, Ontologia ontologia, string nombrePropDescripcion, string nombrePropTitulo, string nombrePropTituloEntero, Dictionary<string, bool> propListiedadesMultidioma, List<ObjetoPropiedad> listaObjetosPropiedad, List<Propiedad> listentidadesAux, Dictionary<string, string> dicPref);
+        public abstract void CrearToAcidData(bool esPrimaria, ElementoOntologia pEntidad, Ontologia ontologia, StringBuilder Clase, string nombrePropDescripcion, string nombrePropTitulo, string nombrePropTituloEntero, Dictionary<string, bool> propListiedadesMultidioma, List<ObjetoPropiedad> listaObjetosPropiedad);
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="pPropiedad"></param>
+        /// <returns></returns>
+        public bool EsPropiedadMultiIdioma(string pPropiedad, Dictionary<string, bool> propListiedadesMultidioma)
+        {
+            return propListiedadesMultidioma.ContainsKey(pPropiedad) && propListiedadesMultidioma[pPropiedad];
+        }
+
+        public bool EsPropiedadExternaMultiIdioma(ElementoOntologia pEntidad, Propiedad prop, List<ObjetoPropiedad> listaObjetosPropiedad)
+        {
+            return EsPropiedadExternaMultiIdioma(pEntidad, prop.Nombre, listaObjetosPropiedad);
+        }
+
+        public bool EsPropiedadExternaMultiIdioma(ElementoOntologia pEntidad, string pNombre, List<ObjetoPropiedad> listaObjetosPropiedad)
+        {
+            ObjetoPropiedad propiedad = listaObjetosPropiedad.FirstOrDefault(item => item.NombrePropiedad.Equals(pNombre) && item.NombreEntidad.Equals(pEntidad.TipoEntidad));
+            if (propiedad == null)
+            {
+                throw new Exception($"La entidad {pEntidad.TipoEntidad} no contiene la propiedad {pNombre}");
+            }
+            return propiedad.Multiidioma;
+        }
+
+        /// <summary>
+        /// Nos genera el sujeto para una entidad indicada. En función de lo que se indique generará para el grafo de búsqueda o de ontología
+        /// </summary>
+        /// <param name="pEntidad">Entidad del sujeto del cual se va a generar el triple</param>
+        /// <param name="pEsBusqueda">Indica si el triple a generar es para el grafo de búsqueda o de ontología. Si no es para uno, es para el otro</param>
+        /// <param name="pItem">Indica el nivel de anidamiento de las entidades auxiliares, si no se indica será una entidad principal</param>
+        /// <returns>Devuelve el sujeto del triple de la entidad indicada, para el grafo de búsqueda o de ontología según se indique</returns>
+        public string GenerarSujeto(ElementoOntologia pEntidad, TiposSujeto pTipoSujeto, string pItem = "")
+        {
+            switch (pTipoSujeto)
+            {
+                case TiposSujeto.Busqueda:
+                    return GenerarSujetoBusqueda(pEntidad, pItem);
+                case TiposSujeto.Ontologia:
+                    return GenerarSujetoOntologia(pEntidad, pItem);
+                case TiposSujeto.HasEntidad:
+                    return GenerarSujetoHasEntidad();
+                default:
+                    return string.Empty;
+            }
+        }
+
+
+        /// <summary>
+        /// Genera el sujeto de los triples para el grafo de búsqueda
+        /// </summary>
+        /// <param name="pEntidad">La entidad de la cual vamos a generar el sujeto</param>
+        /// <param name="pItem">Indica el nivel de anidamiento de las entidades auxiliares, si no se indica será una entidad principal</param>
+        /// <returns>Devuelve el sujeto para el triple de la entidad indicada para el grafo de búsqueda</returns>
+        private string GenerarSujetoBusqueda(ElementoOntologia pEntidad, string pItem = "")
+        {
+            string url = string.Empty;
+
+            url = "http://gnoss/{ResourceID.ToString().ToUpper()}";
+
+            return url;
+        }
+
+        /// <summary>
+        /// Genera el sujeto de los triples para el grafo de ontología
+        /// </summary>
+        /// <param name="pEntidad">La entidad de la cual vamos a generar el sujeto</param>
+        /// <param name="pItem">Indica el nivel de anidamiento de las entidades auxiliares, si no se indica será una entidad principal</param>
+        /// <returns>Devuelve el sujeto para el triple de la entidad indicada para el grafo de ontología</returns>
+        private string GenerarSujetoOntologia(ElementoOntologia pEntidad, string pItem = "")
+        {
+            string articleID = "ArticleID";
+
+            if (!string.IsNullOrEmpty(pItem))
+            {
+                articleID = $"{pItem}.{articleID}";
+            }
+
+            return $"{{resourceAPI.GraphsUrl}}items/{pEntidad.TipoEntidadRelativo}_{{ResourceID}}_{{{articleID}}}";
+        }
+
+        /// <summary>
+        /// Genera el sujeto de los triples para la propiedad HasEntidad
+        /// </summary>
+        /// <returns>Devuelve el sujeto para el triple de la propiedad HasEntidad</returns>
+        private string GenerarSujetoHasEntidad()
+        {
+            return "{resourceAPI.GraphsUrl}{ResourceID}";
+        }
+
+        /// <summary>
+        /// Se encarga de pintar en la clase de la ontología indicada sus entidades auxiliares.
+        /// </summary>
+        /// <param name="pElem">Ontología de la cual se van a pintar las entidades auxiliares</param>
+        /// <param name="pPropiedadPadre">Propiedad propiedad padre</param>
+        /// <param name="pElemPadre">En caso de ser entidades auxiliares anidadas, ontología de donde proviene las entidades que se van a pintar</param>
+        /// <param name="pEsOntologia">Nos indica si las entidades auxiliares se van a pintar para el grafo de búsqueda o de ontología. Si no es uno, es otro</param>
+        /// <param name="pNombrePadres">Nombre de la jerarquía de entidades y propiedades hasta llegar al nivel actual</param>
+        /// <param name="numIteraciones">Numero de veces que se ha utilizado el método recursivamente</param>
+        protected void PintarEntidadesAuxiliares(ElementoOntologia pElem, Propiedad pPropiedadPadre, ElementoOntologia pElemPadre, bool pEsOntologia, string pSujetoEntidadSuperior, StringBuilder Clase, Dictionary<string, string> dicPref, Dictionary<string, bool> propListiedadesMultidioma, List<ObjetoPropiedad> listaObjetosPropiedad, List<string> pListaPropiedadesSearch = null, List<string> pListaPadrePropiedadesAnidadas = null, string pNombrePadres = "this", int numIteraciones = 0, List<FacetaObjetoConocimientoProyecto> pListaFacetaObjetoConocimientoProyecto = null)
+        {
+            string prefijoPadre = UtilCadenas.PrimerCaracterAMayuscula(UtilCadenasOntology.ObtenerPrefijo(dicPref, pPropiedadPadre.Nombre, mLoggingService));
+            string nombrePropPadre = UtilCadenasOntology.ObtenerNombreProp(pPropiedadPadre.Nombre);
+            string nombreCompletoPadre = $"{pNombrePadres}.{prefijoPadre}_{nombrePropPadre}";
+            TiposSujeto tipoSujeto = TiposSujeto.Busqueda;
+            if (pEsOntologia)
+            {
+                tipoSujeto = TiposSujeto.Ontologia;
+            }
+
+            int ultimaParte = pElem.TipoEntidad.LastIndexOf('/');
+
+            string item = nombreCompletoPadre;
+
+            Clase.AppendLine($"{UtilCadenasOntology.Tabs(3)}if({nombreCompletoPadre} != null)");
+            Clase.AppendLine($"{UtilCadenasOntology.Tabs(3)}{{");
+
+            if (!pPropiedadPadre.ValorUnico)
+            {
+                item = $"item{numIteraciones}";
+                Clase.AppendLine($"{UtilCadenasOntology.Tabs(3)}foreach(var {item} in {nombreCompletoPadre})");
+                Clase.AppendLine($"{UtilCadenasOntology.Tabs(3)}{{");
+            }
+
+            string sujetoEntidadAuxiliar;
+
+            if (pEsOntologia)
+            {
+                sujetoEntidadAuxiliar = $"{{resourceAPI.GraphsUrl}}items/{pElem.TipoEntidadRelativo}_{{ResourceID}}_{{{item}.ArticleID}}";
+
+                Clase.AppendLine($"{UtilCadenasOntology.Tabs(4)}AgregarTripleALista($\"{GenerarSujeto(pElem, tipoSujeto, item)}\", \"http://www.w3.org/1999/02/22-rdf-syntax-ns#type\", $\"<{pElem.TipoEntidad}>\", list, \" . \");");
+                Clase.AppendLine($"{UtilCadenasOntology.Tabs(4)}AgregarTripleALista($\"{GenerarSujeto(pElem, tipoSujeto, item)}\", \"http://www.w3.org/2000/01/rdf-schema#label\", $\"\\\"{pElem.TipoEntidad}\\\"\", list, \" . \");");
+                Clase.AppendLine($"{UtilCadenasOntology.Tabs(4)}AgregarTripleALista($\"{GenerarSujeto(pElem, TiposSujeto.HasEntidad)}\", \"http://gnoss/hasEntidad\", $\"<{{resourceAPI.GraphsUrl}}items/{pElem.TipoEntidadRelativo}_{{ResourceID}}_{{{item}.ArticleID}}>\", list, \" . \");");
+            }
+            else
+            {
+                sujetoEntidadAuxiliar = $"{{resourceAPI.GraphsUrl}}items/{pElem.TipoEntidadRelativo.ToLower()}_{{ResourceID}}_{{{item}.ArticleID}}";
+            }
+
+            Clase.AppendLine($"{UtilCadenasOntology.Tabs(4)}AgregarTripleALista($\"{pSujetoEntidadSuperior}\", \"{pPropiedadPadre.NombreFormatoUri}\", $\"<{sujetoEntidadAuxiliar}>\", list, \" . \");");
+
+            foreach (ElementoOntologia elem in pElem.Ontologia.EntidadesAuxiliares)
+            {
+                foreach (Propiedad propiedadPadre in pElem.Propiedades)
+                {
+                    if (elem.TipoEntidad.Equals(propiedadPadre.Rango) && !pElem.TipoEntidad.Equals(propiedadPadre.Rango))
+                    {
+                        PintarEntidadesAuxiliares(elem, propiedadPadre, pElem, pEsOntologia, sujetoEntidadAuxiliar, Clase, dicPref, propListiedadesMultidioma, listaObjetosPropiedad, pListaPropiedadesSearch, pListaPadrePropiedadesAnidadas, item, ++numIteraciones, pListaFacetaObjetoConocimientoProyecto);
+                    }
+                }
+            }
+
+            PintarPropiedades(pElem, pEsOntologia, sujetoEntidadAuxiliar, Clase, dicPref, propListiedadesMultidioma, listaObjetosPropiedad, pPropiedadPadre.NombreConNamespace, item, pListaPropiedadesSearch, pListaPadrePropiedadesAnidadas, pListaFacetaObjetoConocimientoProyecto);
+
+            Clase.AppendLine($"{UtilCadenasOntology.Tabs(3)}}}");
+
+            if (!pPropiedadPadre.ValorUnico)
+            {
+                Clase.AppendLine($"{UtilCadenasOntology.Tabs(3)}}}");
+            }
+        }
+
+        /// <summary>
+        /// Se encarga de pintar en la clase las propiedades principales de la entidad.
+        /// </summary>
+        /// <param name="pElem">Ontología de la cual se van a pintar las propiedades</param>
+        /// <param name="pEsOntologia">Nos indica si las propiedades a pintar son para el grafo de ontología o para el grafo de búsqueda</param>
+        /// <param name="pNombrePadres">Nombre de la jerarquía de entidades y propiedades hasta llegar al nivel actual</param>
+        protected void PintarPropiedades(ElementoOntologia pElem, bool pEsOntologia, string pSujetoEntidadSuperior, StringBuilder Clase, Dictionary<string, string> dicPref, Dictionary<string, bool> propListiedadesMultidioma, List<ObjetoPropiedad> listaObjetosPropiedad, string pRutaPadreSearch = null, string pNombrePadres = "this", List<string> pListaPropiedadesSearch = null, List<string> pListaPadrePropiedadesAnidadas = null, List<FacetaObjetoConocimientoProyecto> pListaFacetaObjetoConocimientoProyecto = null)
+        {
+            TiposSujeto tipoSujeto = TiposSujeto.Busqueda;
+
+            if (pEsOntologia)
+            {
+                tipoSujeto = TiposSujeto.Ontologia;
+            }
+
+            foreach (Propiedad prop in pElem.Propiedades)
+            {
+                bool pintarSearch = false;
+                bool esPropiedadSearchAnidada = false;
+                string propiedadSearchAnidada = string.Empty;
+                if (!pElem.Ontologia.EntidadesAuxiliares.Any(x => x.TipoEntidad.Equals(prop.Rango)))
+                {
+                    bool esPropiedadTextoInvariable = false;
+                    if (pListaFacetaObjetoConocimientoProyecto != null)
+                    {
+                        esPropiedadTextoInvariable = pListaFacetaObjetoConocimientoProyecto.Any(item => (item.Faceta.Equals(prop.NombreConNamespace) || item.Faceta.Equals($"{pRutaPadreSearch}@@@{prop.NombreConNamespace}")) && item.TipoPropiedad.Value.Equals(5));
+                    }
+
+                    ConfiguracionObjeto configuracionObjeto = new ConfiguracionObjeto(dicPref, prop, pElem, pEsOntologia, mLoggingService, esPropiedadTextoInvariable);
+
+
+                    string identificadorValor = $"{configuracionObjeto.Id}{configuracionObjeto.PrefijoPropiedad}_{configuracionObjeto.NombrePropiedad}";
+                    //string propiedadParaSearch = $"{pNombrePadres}.{configuracionObjeto.Id}{configuracionObjeto.PrefijoPropiedad}:{configuracionObjeto.NombrePropiedad}".ToLower().Replace("this.", "");
+                    string propiedadParaSearch = $"{configuracionObjeto.PrefijoPropiedad}:{configuracionObjeto.NombrePropiedad}".ToLower();
+
+                    if (!string.IsNullOrEmpty(pRutaPadreSearch))
+                    {
+                        propiedadParaSearch = $"{pRutaPadreSearch}@@@{propiedadParaSearch}";
+                    }
+
+                    if (pListaPropiedadesSearch != null && pListaPropiedadesSearch.Contains(propiedadParaSearch) && !pEsOntologia)
+                    {
+                        pintarSearch = true;
+                    }
+
+                    if (pListaPadrePropiedadesAnidadas != null && pListaPadrePropiedadesAnidadas.Where(item => item.StartsWith(propiedadParaSearch)).FirstOrDefault() != null && !pEsOntologia)
+                    {
+                        esPropiedadSearchAnidada = true;
+                        propiedadSearchAnidada = pListaPropiedadesSearch.Where(item => item.Contains(propiedadParaSearch)).FirstOrDefault();
+                    }
+
+                    if (configuracionObjeto.Rango.ToLower().Equals("datetime"))
+                    {
+                        if (prop.CardinalidadMaxima > 1)
+                        {
+                            Clase.AppendLine($"{UtilCadenasOntology.Tabs(4)}if({pNombrePadres}.{identificadorValor} != null");
+                        }
+                        else
+                        {
+                            Clase.AppendLine($"{UtilCadenasOntology.Tabs(4)}if({pNombrePadres}.{identificadorValor} != null && {pNombrePadres}.{identificadorValor} != DateTime.MinValue)");
+                        }
+                    }
+                    else
+                    {
+                        if (pintarSearch && configuracionObjeto.Rango.ToLower().Equals("string") && !EsPropiedadMultiIdioma(prop.Nombre, propListiedadesMultidioma) && !EsPropiedadExternaMultiIdioma(pElem, prop, listaObjetosPropiedad))
+                        {
+                            Clase.AppendLine($"{UtilCadenasOntology.Tabs(4)}if(!string.IsNullOrEmpty({pNombrePadres}.{identificadorValor}))");
+                        }
+                        else
+                        {
+                            Clase.AppendLine($"{UtilCadenasOntology.Tabs(4)}if({pNombrePadres}.{identificadorValor} != null)");
+                        }
+                    }
+
+                    Clase.AppendLine($"{UtilCadenasOntology.Tabs(4)}{{");
+
+                    if (prop.CardinalidadMinima < 1)
+                    {
+                        if (!prop.ValorUnico)
+                        {
+                            if (EsPropiedadMultiIdioma(prop.Nombre, propListiedadesMultidioma) || EsPropiedadExternaMultiIdioma(pElem, prop, listaObjetosPropiedad))
+                            {
+                                GenerarPropiedadMultiIdioma(prop, pSujetoEntidadSuperior, configuracionObjeto, pNombrePadres, identificadorValor, pintarSearch, Clase);
+                            }
+                            else
+                            {
+                                string valorTriple = "item2";
+                                Clase.AppendLine($"{UtilCadenasOntology.Tabs(5)}foreach(var item2 in {pNombrePadres}.{identificadorValor})");
+                                Clase.AppendLine($"{UtilCadenasOntology.Tabs(5)}{{");
+                                if (!pEsOntologia)
+                                {
+                                    valorTriple = ModificarAIDCorto(valorTriple, configuracionObjeto.EsObject, pEsOntologia, Clase);
+                                }
+                                Clase.AppendLine($"{UtilCadenasOntology.Tabs(6)}AgregarTripleALista($\"{pSujetoEntidadSuperior}\", \"{prop.NombreFormatoUri}\", $\"{configuracionObjeto.SimboloInicio}{valorTriple}{configuracionObjeto.Aux}{configuracionObjeto.SimboloFin}\", list, \" . \");");
+                                Clase.AppendLine($"{UtilCadenasOntology.Tabs(5)}}}");
+
+                                if (pintarSearch)
+                                {
+                                    Clase.AppendLine($"{UtilCadenasOntology.Tabs(6)}search += $\"{{{valorTriple}}} \";");
+                                }
+                                else if (esPropiedadSearchAnidada)
+                                {
+                                    GenerarSearch(propiedadSearchAnidada, Clase);
+                                }
+                            }
+                        }
+                        else
+                        {
+                            if (EsPropiedadMultiIdioma(prop.Nombre, propListiedadesMultidioma) || EsPropiedadExternaMultiIdioma(pElem, prop, listaObjetosPropiedad))
+                            {
+                                GenerarPropiedadMultiIdioma(prop, pSujetoEntidadSuperior, configuracionObjeto, pNombrePadres, identificadorValor, pintarSearch, Clase);
+                            }
+                            else
+                            {
+                                string valorTriple = $"{pNombrePadres}.{identificadorValor}";
+                                if (!pEsOntologia)
+                                {
+                                    valorTriple = ModificarAIDCorto(valorTriple, configuracionObjeto.EsObject, pEsOntologia, Clase);
+                                }
+                                Clase.AppendLine($"{UtilCadenasOntology.Tabs(5)}AgregarTripleALista($\"{pSujetoEntidadSuperior}\",  \"{prop.NombreFormatoUri}\", $\"{configuracionObjeto.SimboloInicio}{valorTriple}{configuracionObjeto.Aux}{configuracionObjeto.SimboloFin}\", list, \" . \");");
+
+
+                                if (pintarSearch)
+                                {
+                                    Clase.AppendLine($"{UtilCadenasOntology.Tabs(5)}search += $\"{{{valorTriple}}} \";");
+                                }
+                                else if (esPropiedadSearchAnidada)
+                                {
+                                    GenerarSearch(propiedadSearchAnidada, Clase);
+                                }
+                            }
+                        }
+                    }
+                    else if (!prop.ValorUnico)
+                    {
+                        Clase.AppendLine($"{UtilCadenasOntology.Tabs(5)}foreach(var item2 in {pNombrePadres}.{identificadorValor})");
+
+                        Clase.AppendLine($"{UtilCadenasOntology.Tabs(5)}{{");
+
+                        if (EsPropiedadMultiIdioma(prop.Nombre, propListiedadesMultidioma) || EsPropiedadExternaMultiIdioma(pElem, prop, listaObjetosPropiedad))
+                        {
+                            GenerarPropiedadMultiIdioma(prop, pSujetoEntidadSuperior, configuracionObjeto, pNombrePadres, identificadorValor, pintarSearch, Clase);
+                        }
+                        else
+                        {
+                            string valorTriple = $"item2";
+                            if (!pEsOntologia)
+                            {
+                                valorTriple = ModificarAIDCorto(valorTriple, configuracionObjeto.EsObject, pEsOntologia, Clase);
+                            }
+                            Clase.AppendLine($"{UtilCadenasOntology.Tabs(6)}AgregarTripleALista($\"{pSujetoEntidadSuperior}\", \"{prop.NombreFormatoUri}\",  $\"{configuracionObjeto.SimboloInicio}{valorTriple}{configuracionObjeto.Aux}{configuracionObjeto.SimboloFin}\", list, \" . \");");
+
+
+                            if (pintarSearch)
+                            {
+                                Clase.AppendLine($"{UtilCadenasOntology.Tabs(6)}search += $\"{{{valorTriple}}} \";");
+                            }
+                            else if (esPropiedadSearchAnidada)
+                            {
+                                GenerarSearch(propiedadSearchAnidada, Clase);
+                            }
+                        }
+                        Clase.AppendLine($"{UtilCadenasOntology.Tabs(5)}}}");
+                    }
+                    else
+                    {
+                        if (EsPropiedadMultiIdioma(prop.Nombre, propListiedadesMultidioma) || EsPropiedadExternaMultiIdioma(pElem, prop, listaObjetosPropiedad))
+                        {
+                            GenerarPropiedadMultiIdioma(prop, pSujetoEntidadSuperior, configuracionObjeto, pNombrePadres, identificadorValor, pintarSearch, Clase);
+                        }
+                        else
+                        {
+                            string valorTriple = $"{pNombrePadres}.{identificadorValor}";
+                            if (!pEsOntologia)
+                            {
+                                valorTriple = ModificarAIDCorto(valorTriple, configuracionObjeto.EsObject, pEsOntologia, Clase);
+                            }
+                            Clase.AppendLine($"{UtilCadenasOntology.Tabs(5)}AgregarTripleALista($\"{pSujetoEntidadSuperior}\", \"{prop.NombreFormatoUri}\",  $\"{configuracionObjeto.SimboloInicio}{valorTriple}{configuracionObjeto.Aux}{configuracionObjeto.SimboloFin}\", list, \" . \");");
+
+
+                            if (pintarSearch)
+                            {
+                                Clase.AppendLine($"{UtilCadenasOntology.Tabs(5)}search += $\"{{{valorTriple}}} \";");
+                            }
+                            else if (esPropiedadSearchAnidada)
+                            {
+                                GenerarSearch(propiedadSearchAnidada, Clase);
+                            }
+                        }
+                    }
+                    Clase.AppendLine($"{UtilCadenasOntology.Tabs(4)}}}");
+                }
+            }
+        }
+
+        private string ModificarAIDCorto(string pNombreVariable, bool pEsObject, bool pEsOntologia, StringBuilder Clase)
+        {
+            if (pEsObject)
+            {
+                Clase.AppendLine($"{UtilCadenasOntology.Tabs(5)}Regex regex = new Regex(@\"\\/items\\/.+_[0-9A-Fa-f]{{8}}[-]?(?:[0-9A-Fa-f]{{4}}[-]?){{3}}[0-9A-Fa-f]{{12}}_[0-9A-Fa-f]{{8}}[-]?(?:[0-9A-Fa-f]{{4}}[-]?){{3}}[0-9A-Fa-f]{{12}}\");");
+                Clase.AppendLine($"{UtilCadenasOntology.Tabs(5)}string itemRegex = {pNombreVariable};");
+
+                Clase.AppendLine($"{UtilCadenasOntology.Tabs(5)}if (regex.IsMatch(itemRegex))");
+
+                Clase.AppendLine($"{UtilCadenasOntology.Tabs(5)}{{");
+
+                Clase.AppendLine($"{UtilCadenasOntology.Tabs(6)}itemRegex = $\"http://gnoss/{{resourceAPI.GetShortGuid(itemRegex).ToString().ToUpper()}}\";");
+
+                Clase.AppendLine($"{UtilCadenasOntology.Tabs(5)}}}");
+
+                if (!pEsOntologia)
+                {
+                    Clase.AppendLine($"{UtilCadenasOntology.Tabs(5)}else");
+
+                    Clase.AppendLine($"{UtilCadenasOntology.Tabs(5)}{{");
+
+                    Clase.AppendLine($"{UtilCadenasOntology.Tabs(6)}itemRegex = itemRegex.ToLower();");
+
+                    Clase.AppendLine($"{UtilCadenasOntology.Tabs(5)}}}");
+                }
+
+
+                return "itemRegex";
+            }
+            return pNombreVariable;
+        }
+
+        private void GenerarSearch(string pPropiedad, StringBuilder Clase, string pNombreVariableEntidadActual = "this")
+        {
+            string[] listaPropiedadesAnidadas = pPropiedad.Split(new string[] { "@@@" }, StringSplitOptions.RemoveEmptyEntries);
+            int longitudLista = listaPropiedadesAnidadas.Length;
+
+            string nombreVariableActual = $"{pNombreVariableEntidadActual}.{UtilCadenas.PrimerCaracterAMayuscula(listaPropiedadesAnidadas[0]).Replace(":", "_")}";
+            Clase.AppendLine($"{UtilCadenasOntology.Tabs(4)}foreach(dynamic itemProp{0} in {nombreVariableActual})");
+            Clase.AppendLine($"{UtilCadenasOntology.Tabs(4)}{{");
+            Clase.AppendLine($"{UtilCadenasOntology.Tabs(5)}List<dynamic> lista{UtilCadenas.PrimerCaracterAMayuscula(listaPropiedadesAnidadas[1]).Replace(":", "_")} = ObtenerObjetosDePropiedad(itemProp{0});");
+            for (int i = 1; i + 1 < listaPropiedadesAnidadas.Length; i++)
+            {
+                Clase.AppendLine($"{UtilCadenasOntology.Tabs(5 + i)}foreach(dynamic itemProp{i} in lista{UtilCadenas.PrimerCaracterAMayuscula(listaPropiedadesAnidadas[i]).Replace(":", "_")})");
+                Clase.AppendLine($"{UtilCadenasOntology.Tabs(5 + i)}{{");
+                Clase.AppendLine($"{UtilCadenasOntology.Tabs(5 + i)}List<dynamic> lista{UtilCadenas.PrimerCaracterAMayuscula(listaPropiedadesAnidadas[i + 1]).Replace(":", "_")} = ObtenerObjetosDePropiedad(itemProp{i}.{UtilCadenas.PrimerCaracterAMayuscula(listaPropiedadesAnidadas[i + 1]).Replace(":", "_")});");
+            }
+            Clase.AppendLine($"{UtilCadenasOntology.Tabs(3 + longitudLista)}foreach(dynamic itemProp{longitudLista - 1} in lista{UtilCadenas.PrimerCaracterAMayuscula(listaPropiedadesAnidadas[longitudLista - 1]).Replace(":", "_")})");
+            Clase.AppendLine($"{UtilCadenasOntology.Tabs(3 + longitudLista)}{{");
+            Clase.AppendLine($"{UtilCadenasOntology.Tabs(4 + longitudLista)}listaSearch.AddRange(ObtenerStringDePropiedad(itemProp{longitudLista - 1}));");
+            Clase.AppendLine($"{UtilCadenasOntology.Tabs(3 + longitudLista)}}}");
+
+            for (int i = longitudLista - 1; i > 0; i--)
+            {
+                Clase.AppendLine($"{UtilCadenasOntology.Tabs(4 + i)}}}");
+            }
+        }
+
+        private void GenerarPropiedadMultiIdioma(Propiedad pProp, string pSujetoEntidadSuperior, ConfiguracionObjeto pConfiguracionObjeto, string pNombrePadre, string pIdentificadorValor, bool pPintarSearch, StringBuilder Clase)
+        {
+            if (!pProp.ValorUnico)
+            {
+                Clase.AppendLine($"{UtilCadenasOntology.Tabs(7)}foreach (LanguageEnum idioma in {pNombrePadre}.{pIdentificadorValor}.Keys)");
+                Clase.AppendLine($"{UtilCadenasOntology.Tabs(7)}{{");
+                Clase.AppendLine($"{UtilCadenasOntology.Tabs(8)}List<string> listaValores = {pNombrePadre}.{pIdentificadorValor}[idioma];");
+                Clase.AppendLine($"{UtilCadenasOntology.Tabs(8)}foreach (string valor in listaValores)");
+                Clase.AppendLine($"{UtilCadenasOntology.Tabs(8)}{{");
+                if (pPintarSearch)
+                {
+                    Clase.AppendLine($"{UtilCadenasOntology.Tabs(9)}search += $\"{{valor}} \";");
+                }
+
+                Clase.AppendLine($"{UtilCadenasOntology.Tabs(9)}AgregarTripleALista($\"{pSujetoEntidadSuperior}\", \"{pProp.NombreFormatoUri}\", $\"{pConfiguracionObjeto.SimboloInicio}valor{pConfiguracionObjeto.Aux}{pConfiguracionObjeto.SimboloFin}\", list, $\"{{idioma}} . \");");
+                Clase.AppendLine($"{UtilCadenasOntology.Tabs(8)}}}");
+                Clase.AppendLine($"{UtilCadenasOntology.Tabs(7)}}}");
+            }
+            else
+            {
+                Clase.AppendLine($"{UtilCadenasOntology.Tabs(7)}foreach (LanguageEnum idioma in {pNombrePadre}.{pIdentificadorValor}.Keys)");
+                Clase.AppendLine($"{UtilCadenasOntology.Tabs(7)}{{");
+                if (pPintarSearch)
+                {
+                    Clase.AppendLine($"{UtilCadenasOntology.Tabs(8)}search += $\"{{{pNombrePadre}.{pIdentificadorValor}[idioma]}} \";");
+                }
+
+                Clase.AppendLine($"{UtilCadenasOntology.Tabs(8)}AgregarTripleALista($\"{pSujetoEntidadSuperior}\", \"{pProp.NombreFormatoUri}\",  $\"{pConfiguracionObjeto.SimboloInicio}{pNombrePadre}.{pIdentificadorValor}[idioma]{pConfiguracionObjeto.Aux}{pConfiguracionObjeto.SimboloFin}\", list,  $\"{{idioma}} . \");");
+                Clase.AppendLine($"{UtilCadenasOntology.Tabs(7)}}}");
+            }
+        }
+    }
+}

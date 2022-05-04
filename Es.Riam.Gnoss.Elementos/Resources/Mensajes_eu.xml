@@ -1,0 +1,299 @@
+﻿<correos>
+  <mensajes>
+    <mensaje id="0">
+      <asunto>Aldaketak dafoan ‘{#NombreDafo#}’</asunto>
+      <texto>{p}Kaixo {#NombrePersona#},{/p}{p}parte hartzen ari zaren ‘{#NombreDafo#}’ dafoak zure interesekoa izan daitekeen berritasun bat du.{/p}{p}Faktorea:{/br} {#Texto#} {/br} aldatu egin da eta bere eduki berria honako hau da: {/br} {#Texto2#} {/br}.{/p}{p}Nahi baduzu, {a href="{#UrlEnlace#}"}dafora{/a} sar zaitezke eta bozkatu, aipamenak egin edo faktoreak gehi ditzakezu.{/p}{p}Gozatu {#NombreEcosistema#}(e)z; zurekin batera berrikuntzan gabiltza.{/p}{p}{#NombreEcosistema#} taldea {/p}</texto>
+    </mensaje>
+    <mensaje id="1">
+      <asunto>‘{#NombreDafo#}’ dafoan aldaketak</asunto>
+      <texto>{p}Kaixo {#NombrePersona#},{/p}{p}parte hartzen ari zaren ‘{#NombreDafo#}’ dafoak zure interesekoa izan daitekeen berrikuntza bat du.{/p}{p}Editoreak/ek erabaki dute faktore hau: {/br} {#Texto#} {/br} kentzea.{/p}{p}Nahi baduzu, {a href="{#UrlEnlace#}"}dafora{/a} sar zaitezke eta bozkatu, aipatu edo faktoreak gehitu ditzakezu.{/p}{p}Gozatu {#NombreEcosistema#}(e)z; zurekin batera berrikuntzan gabiltza.{/p}{p} {#NombreEcosistema#}taldea{/p}</texto>
+    </mensaje>
+    <mensaje id="2">
+      <asunto>Gonbidapena{#NombreEcosistema#}ren ‘{#NombreDafo#}’ dafora</asunto>
+      <texto>{p}Kaixo {#NombrePersona#},{/p}{p}{#NombreEcosistema#}ren {#NombreRemitente#} erabiltzaileak ‘{#NombreProyecto#}’komunitatearen ‘{#NombreDafo#}’dafoan parte hartzera gonbidatu zaitu. Horretarako,  {#NombreEcosistema#}n erregistratu behar duzu gonbidapen honekin {a href="{#UrlEnlace#}"}{/a}.{/p}{p}{#Texto#}{/p}{p}Eskerrik asko.{/p}{p}Gozatu {#NombreEcosistema#}(e)z;zurekin batera berrikuntzan gabiltza.{/p}{p} {#NombreEcosistema#} taldea{/p}</texto>
+    </mensaje>
+    <mensaje id="3">
+      <asunto>{#NombreEcosistema#}ren ‘{#NombreDafo#}’dafora gonbidapena</asunto>
+      <texto>{p}{p}Kaixo {#NombrePersona#},{/p}{p}{#NombreEcosistema#}(r)en {#NombreRemitente#} erabiltzaileak gonbidatu egin zaitu  ‘{#NombreProyecto#}’komunitatearen ‘{#NombreDafo#}’ dafoan parte hartzera. Bozkatu, aipamenak egin eta dafo horri faktoreak gehitu nahi badizkiozu, {a href="{#UrlEnlace#}"}onartu gonbidapen hau{/a}.{/p}{p}{#Texto#}{/p}{p}Eskerrik asko.{/p}{p}Gozatu {#NombreEcosistema#}(e)z;zurekin batera berrikuntzan gabiltza.{/p}{p} {#NombreEcosistema#} taldea{/p}</texto>
+    </mensaje>
+    <mensaje id="4">
+      <asunto>Gonbidapena {#NombreEcosistema#}(r)en ‘{#NombreDafo#}’ dafora</asunto>
+      <texto>{p}{p}Kaixo {#NombrePersona#},{/p}{p}{#NombreEcosistema#}(r)en {#NombreRemitente#} erabiltzaileak gonbidatu egin zaitu ‘{#NombreProyecto#}’ komunitatearen ‘{a href="{#UrlEnlace#}"}{#NombreDafo#} dafoan parte hartzera{/a}’. Bozkatu, aipamenak egin eta dafo horri faktoreak gehitu nahi badizkiozu, onartu gonbidapen hau.{/p}{p}{#Texto#}{/p}{p}Eskerrik asko.{/p}{p}Gozatu {#NombreEcosistema#}(e)z;zurekin batera berrikuntzan gabiltza.{/p}{p}{#NombreEcosistema#} taldea{/p}</texto>
+    </mensaje>
+    <mensaje id="5">
+      <asunto>{#NombreEcosistema#}(r)en ‘{#NombreDafo#}’dafoak faktore berri bat du</asunto>
+      <texto>{p}{p}Kaixo {#NombrePersona#},{/p}{p}parte hartzen ari zaren ‘{a href="{#UrlEnlace#}"}{#NombreDafo#}{/a}’ dafoak faktore berri bat du eta zure interesekoa izan daiteke.{/p}{p}Haren edukia honako hau da:‘{#Texto#}’.{/p}{p}Nahi baduzu, dafora sar zaitezke eta bozkatu, aipamenak egin edo faktoreak gehitu ditzakezu.{/p}{p}Gozatu  {#NombreEcosistema#}(e)z;zurekin batera berrikuntzan gabiltza.{/p}{p}{#NombreEcosistema#} taldea{/p}</texto>
+    </mensaje>
+    <mensaje id="6">
+      <asunto>{#NombreEcosistema#}(r)en ‘{#NombreDafo#}’ dafoaren bozkatze fasea amaitu da</asunto>
+      <texto>{p}Kaixo {#NombrePersona#},{/p}{p}parte hartzen ari zaren ‘{a href="{#UrlEnlace#}"}{#NombreDafo#}{/a}’ dafoaren bozkatze fasea amaitu da. Faktoreak bateratzeari ekiten dion fasea hasi berria da. Dafoaren editoreek beren analisia amaituta dutenean, jakinarazpena jasoko duzu ‘{#NombreDafo#}’(r)en emaitzekin.{/p}{p}Eskerrik asko parte hartzeagatik.{/p}{p}Gozatu {#NombreEcosistema#}(e)z; zurekin batera berrikuntzan gabiltza.{/p}{p}{#NombreEcosistema#} taldea{/p}</texto>
+    </mensaje>
+    <mensaje id="7">
+      <asunto>Parte hartzen ari zaren {#NombreEcosistema#}(r)en ‘{#NombreDafo#}’ dafoa amaitu da</asunto>
+      <texto>{p}Kaixo {#NombrePersona#},{/p}{p}‘{#NombreProyecto#}’ komunitatearen ‘{#NombreDafo#}’ dafoa amaitu egin da. {/p}{p}Nahi baduzu, bere ondorioetara sar zaitezke {a href="{#UrlEnlace#}"}{/a}.{/p}{p}Gracias.{/p}{p}Gozatu{#NombreEcosistema#}(e)z; zurekin batera berrikuntzan gabiltza.{/p}{p} {#NombreEcosistema#} taldea{/p}</texto>
+    </mensaje>
+    <mensaje id="8">
+      <asunto>{#NombreEcosistema#}(r)en ‘{#NombreDafo#}’ dafoan parte hartzeko epea amaitzen da</asunto>
+      <texto>{p}Kaixo {#NombrePersona#},{/p}{p}‘{#NombreProyecto#}’ komunitatearen ‘{a href="{#UrlEnlace#}"}{#NombreDafo#}{/a}’ dafoak hamar egun barru itxiko ditu bozketak. Parte hartu nahi baduzu, oraindik aukera duzu bozkatzeko eta ondo iruditzen zaizkizun aipamenak egiteko.{/p}{p}Eskerrik asko zure laguntzarengatik{/p}{p}{#NombreEcosistema#} taldea{/p}</texto>
+    </mensaje>
+    <mensaje id="9">
+      <asunto>{#NombreEcosistema#}(r)en ‘{#NombreDafo#}’ dafoan parte hartzeko epea amaitzen da</asunto>
+      <texto>{p}Kaixo {#NombrePersona#},{/p}{p}‘{#NombreProyecto#}’ komunitatearen ‘{a href="{#UrlEnlace#}"}{#NombreDafo#}{/a}’ dafoak bihar itxiko ditu bozketak. Parte hartu nahi baduzu, oraindik aukera duzu bozkatzeko eta ondo iruditzen zaizkizun aipamenak egiteko.{/p}{p}Eskerrik asko zure laguntzarengatik{/p}{p} {#NombreEcosistema#} taldea{/p}</texto>
+    </mensaje>
+
+    <mensaje id="20">
+      <asunto>"{#NombreProyecto#}" komunitatean sartzeko eskaria</asunto>
+      <texto>{p}"{#NombreProyecto#}" komunitatean sartzeko zure eskaria bidali egin da.{/p}{p}Laster jasoko duzu beste posta elektroniko bat emaitzaren berri adieraziz.{/p}</texto>
+    </mensaje>
+    <mensaje id="21">
+      <asunto>{#NombreProyecto#} komunitatean sartzeko eskaria onartua</asunto>
+      <texto>{p}{b}{#Login#}{/b} agurgarria,{/p}{p}Ongi etorria {#NombreProyecto#} komunitatera! Komunitatean sartzeko zure eskaria ONARTU egin da.{/p}{p}Gure zerbitzuengan jarritako interesa eta on-line komunitate honeta parte hartzeko borondatea eskertzen dizkizugu.{/p}</texto>
+    </mensaje>
+    <mensaje id="22">
+      <asunto> "{#NombreProyecto#}" proiektuan sartzeko eskaria ez da onartu</asunto>
+      <texto>{p}"{#NombreProyecto#}" proiektuan sartzeko zure eskaria EZ DA ONARTU.{/p}{#Notas#}</texto>
+    </mensaje>
+    <mensaje id="23">
+      <asunto>"{#NombreProyecto#}" proiektura sartzeko eskari berria bidali da</asunto>
+      <texto>{p}"{#Login#}" erabiltzaileak baimena eskatu du "{#NombreProyecto#}" proiektura sarbidea izateko.{/p}</texto>
+    </mensaje>
+    <mensaje id="24">
+      <asunto>Ongi etorria {#NombreEcosistema#}(e)ra. Zure posta elektronikoa egiaztatu behar dugu</asunto>
+      <texto>{p}Kaixo, {#NombrePersona#}, mezu hau bidali dizugu zure posta elektronikoa egiaztatzeko. Mesedez, segi lotura hau izena ematea amaitzeko. {a href="{#UrlEnlace#}" target="_blank"}Posta elektronikoa egiaztatu{/a}.{p}</texto>
+    </mensaje>
+    <mensaje id="26">
+      <asunto>Ongi etorria {#NombreEcosistema#}(e)ra. Zure posta elektronikoa egiaztatu behar dugu</asunto>
+      <texto>{p}Kaixo, {#NombrePersona#}, mezu hau bidali dizugu zure posta elektronikoa egiaztatzeko. Mesedez, segi lotura hau izena ematea amaitzeko. {a href="{#UrlEnlace#}" target="_blank"}Posta elektronikoa egiaztatu{/a}.{p}</texto>
+    </mensaje>
+    <mensaje id="27">
+      <asunto>Activación de la cuenta de {#NombrePersona#} en {#NombreEcosistema#}</asunto>
+      <texto>{p}Hola,{/p}{p}{#NombrePersona#} ha sido invitado a una clase de {#NombreProyecto#} creada por {#IdentidadRemitente#}. Los alumnos menores de 14 años necesitan que su padre, madre o tutor legal active su cuenta de Didactalia. Por favor, sigue el siguiente enlace que te llevará a un página con instrucciones para {a href="{#UrlEnlace#}" target="_blank"}activarla{/a}.{/p}{p}Si tienes alguna duda contacta con nosotros a través de didactalia@didactalia.net{/p}{p}El equipo de Didactalia{/p}</texto>
+    </mensaje>
+    <mensaje id="30">
+      <asunto>{#NombreRemitente#}(e)k komunitate bat eskatu nahi du {#NombreEcosistema#}(e)an</asunto>
+      <texto>{p}{a href="{@UrlIntragnoss@}{#IdentidadRemitente#}"}{#NombreRemitente#}{/a}(e)k komunitate bat eskatu nahi du {#NombreEcosistema#}{#Texto#}(e)n</texto>
+    </mensaje>
+    <mensaje id="31">
+      <asunto>{#NombreEcosistema#}(e)n zure komunitate eskaria onartu egin da</asunto>
+      <texto>
+        {p}Kaixo {#NombrePersona#},{/p}{p}berri onak dauzkagu.{/p}{p}Eskatu zenigun {#NombreProyecto#} komunitatea alta eman dugu {#NombreEcosistema#}(e)an. Dagoeneko sar zaitezke bertan honako url honen bitartez: {#UrlEnlace#}.{/p}{p}Une hauetan komunitatea  'Definitzen' ari da, izan ere, {#NombreEcosistema#}(e)an argitaratu aurretik, beharrezkoa da zenbait datu betetzea: komunitatearen aurkibidearen kategoriak, komunitatearen etiketak eta kategoriak aurkibide orokorrean.{/p}{p}Informazio hori betetzen duzunean, komunitatea'ireki' egin ahal izango duzu; hori {#NombreEcosistema#}(r)en komunitateen menuan agertuko da (salbu erretserbatutako komunitatea bada). Une horretan, {#NombreEcosistema#}(r)en erabiltzaileak komunitateko kide egin ahal izango dira eta eduki berriak sortzeko dituen trenak erabili.{/p}{p}Prest al zaude zure komunitatea administratzeko? Horretaz seguru gaude, baina utz iezaguzu iradokizun bat egiten: zure espazio birtualaren arduradun zaren aldetik, bere edukien osotasuna eta mamia zain dezazun gustatuko litzaiguke.  Zentzu horretan, baliabideek egileak, argitalpen data eta lekua etab. dituzte. Iruditzen zaigu beharrezkoa dela datu horiek baliabidearen deskripzioan eta etiketetan joatea. Zuk erabakitzen duzu.{/p}{p}Beharbada, laster sustatzen dituzun komunitateen erreferentzia nagusia izango zara. Horrek beren ideia eta iradokizunekin jarraitzen zaituzten erabiltzaile komunitatea esan nahi du. Edozein zalantza, aipamen edo galdera baduzu, galde diezagukezu. (mail: {a href="mailto:{#CorreoSugerencias#}"}{#CorreoSugerencias#}{/a}).   {/p}{p}Gozatu {#NombreEcosistema#}(e)z; zurekin batera berrikuntzan gabiltza.{/p}{p} {#NombreEcosistema#} taldea.{/p}
+      </texto>
+    </mensaje>
+    <mensaje id="32">
+      <asunto>{#NombreEcosistema#}-(e)n zure komunitate eskaria ez da onartu</asunto>
+      <texto>{p}Kaixo, {#NombrePersona#}!{/p}{p}{#NombreProyecto#} komunitate berriaren zure eskaria {#NombreEcosistema#}(e)n ez da onartu.{/p}{p}{#NombreEcosistema#}taldea.{/p}</texto>
+    </mensaje>
+    <mensaje id="33">
+      <asunto>Ongi etorria"{#NombreEcosistema#}"(e)ra. Zure posta elektronikoa egiaztatu behar dugu</asunto>
+      <texto>{p}Kaixo, {#NombrePersona#} irakaslea, mezu hau zure posta elektronikoa egiaztatzeko bidali dizugu. Mesedez, segi lotura hau zure erregistroa osatzeko. {a href="{#UrlEnlace#}" target="_blank"}Posta elektronikoa egiaztatu{/a}.{p}</texto>
+    </mensaje>
+    <mensaje id="40">
+      <asunto>{#NombrePersona#}(e)k {#NombreEcosistema#}(e)ra gonbidatu nahi zaitu</asunto>
+      <texto>{p}{#Notas#}{/p}{p}Gonbidapen hau onartu, erregistratu eta zure kontua lortzeko egin klik lotura honetan: {a href="{@UrlIntragnoss@}"}gonbidapena onartu{/a}{/p}</texto>
+    </mensaje>
+    <mensaje id="41">
+      <asunto>{#NombreRemitente#}(e)k kontaktu gisa gehitu nahi zaitu</asunto>
+      <texto>{p}Kaixo, {#NombrePersona#}!{/p}{p}{#NombreProyecto#}(e)n aurkitu zaitut eta pentsatu dut, beharbada, informazioa trukatzea onuragarria dela.</texto>
+    </mensaje>
+	<mensaje id="42">
+      <asunto>Bienvenido a la comunidad {#NombreProyecto#}</asunto>
+      <texto>{p}Hola {#NombrePersona#},{/p}{p}Te invitamos a participar en {#NombreProyecto#}. Esta comunidad te permitirá acceder a través de tu usuario y contraseña a numerosos contenidos que podrás comentar y compartir.{/p}{p}Para completar tu registro es necesario que verifiques tu correo siguiendo este {a href="{#UrlEnlace#}" target="_blank"}enlace{/a}.{p}</texto>
+    </mensaje>
+    <mensaje id="43">
+      <asunto>{#NombreRemitente#}(e)k {#NombreProyecto#} komunitatera gonbidatu nahi zaitu</asunto>
+      <texto>{p}{#Notas#}{/p}</texto>
+    </mensaje>
+    <mensaje id="44">
+      <asunto>{#NombreRemitente#}(e)k {#NombreProyecto#} komunitatera gonbidatu nahi zaitu</asunto>
+      <texto>{p}{#Notas#}{/p}{p}Gonbidapen hau onartzeko sakatu lotura honetan: {a href="{#UrlEnlace#}"}onartu gonbidapena.{/a}{/p}</texto>
+    </mensaje>
+    <mensaje id="45">
+      <asunto>{#NombreOrganizacion#}(e)k bere erakundearen parte izatera gonbidatu zaitu {#NombreEcosistema#}(e)n</asunto>
+      <texto>{p}{#Notas#}{/p}{p}Gonbidapen hau onartzeko sakatu lotura honetan: {a href="{@UrlIntragnoss@}/invitaciones"}onartu gonbidapen hau{/a}.{/p}</texto>
+    </mensaje>
+    <mensaje id="46">
+      <asunto>{#NombreOrganizacion#}(e)k bere erakundearen parte izatera gonbidatu zaitu {#NombreEcosistema#}(e)n</asunto>
+      <texto>{p}{#Notas#}{/p}{p}Gonbidapen hau onartzeko sakatu lotura honetan: {a href="{@UrlIntragnoss@}/invitaciones"}onartu gonbidapen hau{/a}.{/p}</texto>
+    </mensaje>
+    <mensaje id="47">
+      <asunto>{#NombreOrganizacion#}(e)k bere erakundearen parte izatera gonbidatu zaitu {#NombreEcosistema#}(e)n</asunto>
+      <texto>{p}{#Notas#}{/p}{p}Gonbidapen hau onartzeko sakatu lotura honetan: {a href="{#UrlEnlace#}"}onartu gonbidapen hau{/a}.{/p}</texto>
+    </mensaje>
+    <mensaje id="48">
+      <asunto>{#NombreOrganizacion#}(e)k bere erakundearen parte izatera gonbidatu zaitu {#NombreEcosistema#}(e)n</asunto>
+      <texto>{p}{#Notas#}{/p}{p}Gonbidapen hau onartzeko sakatu lotura honetan: {a href="{#UrlEnlace#}"}onartu gonbidapen hau{/a}.{/p}</texto>
+    </mensaje>
+    <mensaje id="49">
+      <asunto>{#NombreRemitente#}(e)k {#NombreProyecto#} komunitatera gonbidatu nahi zaitu</asunto>
+      <texto>{p}{#Notas#}{/p}{p}Gonbidapen hau onartzeko sakatu lotura honetan: {a href="{@UrlIntragnoss@}/invitaciones"}onartu gonbidapena{/a}.{/p}</texto>
+    </mensaje>
+    <mensaje id="50">
+      <asunto>{#NombreOrganizacion#}(e)k bere erakundearen parte izatera gonbidatu zaitu {#NombreEcosistema#}(e)n</asunto>
+      <texto>{p}{#Notas#}{/p}{p}Gonbidapen hau onartzeko sakatu lotura honetan: {a href="{@UrlIntragnoss@}/invitaciones"}onartu gonbidapen hau{/a}.{/p}</texto>
+    </mensaje>
+    <mensaje id="51">
+      <asunto>{#NombreOrganizacion#}(e)k bere erakundearen parte izatera gonbidatu zaitu {#NombreEcosistema#}(e)n</asunto>
+      <texto>{p}{#Notas#}{/p}{p}Gonbidapen hau onartzeko sakatu lotura honetan: {a href="{@UrlIntragnoss@}/invitaciones"}onartu gonbidapen hau{/a}.{/p}</texto>
+    </mensaje>
+    <mensaje id="52">
+      <asunto>{#NombreRemitente#}(e)k kontaktu gisa gehitu nahi zaitu</asunto>
+      <texto>{p}Kaixo, {#NombrePersona#}!{/p}{p}{#NombreProyecto#}(e)n aurkitu zaitut eta pentsatu dut, beharbada, informazioa trukatzea onuragarria dela.{/p}{p}Nire kontaktua izatea onartzen baduzu, sakatu hemen: {a href="{@UrlIntragnoss@}/{#IdentidadPersona#}invitaciones"}Gehitu kontaktua{/a}.</texto>
+    </mensaje>
+    <mensaje id="54">
+      <asunto>{#NombreRemitente#}(e)k kontaktu gisa berretsi zaitu</asunto>
+      <texto>{p}Kaixo, {#NombrePersona#}!{/p}{p}{#NombreRemitente#}(e)k kontaktu gisa berretsi zaitu. {/p}{p}{#NombreRemitente#}(e)n profila ikusteko edo hari mezu bat bidaltzeko, sakatu hemen: {a href="{@UrlIntragnoss@}/{#IdentidadPersona#}{#IdentidadRemitente#}"}ikus profila{/a}.{/p}{p}Eskerrik asko.{/p}{p}{#NombreEcosistema#} taldea.</texto>
+    </mensaje>
+    <mensaje id="56">
+      <asunto>{#NombreRemitente#}(e)k kontaktu gisa kendu zaitu</asunto>
+      <texto>{p}Kaixo, {#NombrePersona#}!{/p}{p}{#NombreRemitente#}(e)k kontaktu gisa kendu zaitu. {/p}</texto>
+    </mensaje>
+    <mensaje id="58">
+      <asunto>{#NombreRemitente#} erakundeak kontaktu gisa gehitu nahi zaitu</asunto>
+      <texto>{p}Kaixo, {#NombrePersona#}!{/p}{p}{#NombreProyecto#}(e)n aurkitu zaitut eta pentsatu dut, beharbada, informazioa trukatzea onuragarria dela.</texto>
+    </mensaje>
+    <mensaje id="59">
+      <asunto>{#NombreOrganizacion#}(e)ko  {#NombreRemitente#}(e)k kontaktu gisa kendu zaitu</asunto>
+      <texto>{p}Kaixo {#NombrePersona#}!{/p}{p}{#NombreOrganizacion#}(e)ko {#NombreRemitente#}, zure kontaktua izandakoa {#NombreEcosistema#}(e)n, ez da dagoeneko erakundeko kide eta bere kontaktuak	{#NombreOrganizacion#}(e)ko kontaktu izatera pasatu dira{/p}{p}Eskerrik asko.{/p}{p} {#NombreEcosistema#} taldea.{/p}</texto>
+    </mensaje>
+    <mensaje id="60">
+      <asunto>{#NombreProyecto#}(e)ko harpidetzen buletina</asunto>
+      <texto>{p}{span}Buletin honek zure intereseko eremuetan argitaratutako azken baliabideak dauzka{/span}{/p}{p}{#UltimasPublicaciones#}{/p}</texto>
+    </mensaje>
+	<mensaje id="61">
+      <asunto>{#NombreRemitente#} te sigue</asunto>
+      <texto>{p}¡Hola, {#NombrePersona#}!{/p}{p}{a href="{@UrlIntragnoss@}/{#IdentidadRemitente#}"}{#NombreRemitente#}{/a}  te sigue en {#NombreEcosistema#}.{/p}</texto>
+    </mensaje>
+    <mensaje id="62">
+      <asunto>{#NombreRemitente#} te sigue</asunto>
+      <texto>{p}¡Hola, {#NombrePersona#}!{/p}{p}{a href="{@UrlIntragnoss@}/{#IdentidadRemitente#}"}{#NombreRemitente#}{/a}  te sigue ahora en {#NombreProyecto#}.{/p}</texto>
+    </mensaje>
+    <mensaje id="80">
+      <asunto>Pasahitza aldatzeko eskaera {#NombreProyecto#}(e)n</asunto>
+      <texto>{p}Zure pasahitza aldatzeko, jarraitu ondorengo lotura: {/p}{p}{a style="display: block; font-weight: 400; color: #006eff; padding-bottom: 40px;" href="{#UrlEnlace#}"}Aldatu pasahitza{/a}{/p}</texto>
+    </mensaje>
+    <mensaje id="121">
+      <asunto>{#Asunto#}</asunto>
+      <texto>{p}{#NombreRemitente#}(e)k mezu bat bidali dizu {#NombreProyecto#}(a)ren bitartez{/p}{div style="margin:30px"}{#Texto#}{/div}{p}{#NombreRemitente#}(e)ri erantzuteko sakatu lotura honetan: {a href="{@UrlIntragnoss@}{$identidad$}/mensajes#mensaje={#CorreoID#}"}erantzun mezuari{/a}{/p}</texto>
+    </mensaje>
+    <mensaje id="122">
+      <asunto>{#NombreProyecto#} komunitatea behin behinean itxi da</asunto>
+      <texto>{p}Kaixo {#NombrePersona#}!{/p}{p}{#NombreProyecto#} komunitatea behin behinekoz itxita egongo da {#Fecha_dia#}/{#Fecha_mes#}/{#Fecha_año#} egunera arte, ondorengo arrazoiengatik:{/p}{p}{#Texto#}{/p}{p}Eskerrik asko.{/p}</texto>
+    </mensaje>
+    <mensaje id="123">
+      <asunto>Komunitatearen itxiera {#NombreProyecto#}</asunto>
+      <texto>{p}Kaixo {#NombrePersona#}!{/p}{p}{#NombreProyecto#} komunitatea {#Fecha_dia#}/{#Fecha_mes#}/{#Fecha_año#} egunean itxiko da. {/p}{p}Egun horretara arte, normaltasun osoz sartu ahal izango zara bertara, baliabideak deskargatu, komunitatearen edukiak irakurri eta {#NombreEcosistema#} beste gune batzuekin partekatu ahal izango dituzu. {/p}Hala ere, ezin izango dituzu baliabide berriak igo eta ezta beste komunitate batekoak honekin partekatu ere. Behin komunitatea itxi eta gero, ezin izango zara bertan sartu. {/p}{p}Eskerrik asko.{/p}</texto>
+    </mensaje>
+    <mensaje id="124">
+      <asunto>Komunitatearen irekiera {#NombreProyecto#}</asunto>
+      <texto>{p}Kaixo {#NombrePersona#}!{/p}{p}{#NombreProyecto#} komunitatea irekita dago, dagoeneko parte hartu dezakezu bertan. {/p}{p}Eskerrik asko.{/p}{p}{#NombreEcosistema#} taldea.{/p}</texto>
+    </mensaje>
+    <mensaje id="125">
+      <asunto>{#NombreProyecto#} komunitatearen behin behineko itxiera epea agortuta.</asunto>
+      <texto>{p}Kaixo,{/p}{p}gure erregistroan {#NombreProyecto#} komunitatea behin behinekoz ixteko zure erabakia agertzen da. Gaur amaitzen da adierazi zenigun epea.{/p}{p}Denbora tarte honetan zure komunitatean lan egin ahal izan duzu eta nahi izan duzun forma eta edukia eman diozu.{/p}{p}Orain bi aukera dituzu: komunitatea ireki dezakezu edo, horrela erabakitzen baduzu, behin behineko itxiera epea beste data batera arte luzatu dezakezu.{/p}{p}Gogoratu, {#NombreProyecto#}(e)n harpidetuta dauden erabiltzaileak zure erabakiaren zain egongo direla.{/p}{p}Zalantzaren bat baduzu, {#NombreEcosistema#} Taldearekin {a href="mailto:{#CorreoSugerencias#}"} jar zaitezke harremanetan{/a}.{/p}{p}Gero arte.{/p}{p}{#NombreEcosistema#} taldea.{/p}</texto>
+    </mensaje>
+    <mensaje id="126">
+      <asunto>{#NombreProyecto#} komunitatetik kanporatua</asunto>
+      <texto>{p}Kaixo {#NombrePersona#}!{/p}{p}{#NombreProyecto#} komunitateko administrariak bertatik kanporatu zaitu.{/p}{p}Arrazoia:{/p}{p}{#Notas#}{/p}{p}Eskerrik asko.{/p}</texto>
+    </mensaje>
+    <mensaje id="127">
+      <asunto>Zure {#NombreEcosistema#} kontuan datu okerrak daude</asunto>
+      <texto>
+        {p}{#NombrePersona#} agurgarria,{/p}{p}{#NombreEcosistema#} Sareko elkarte bat da, eta bere bazkideek beren benetako nortasuna darabilte, beraz, zure {strong}benetako izen-abizenak{/strong} sartu behar dituzu sareen gune honetaz gozatzen jarraitzeko. Gaur egun, zure nortasunak ez du baldintza hori betetzen. Gogorarazten dizugu profil publiko edo pribatua izatea aukeratu dezakezula.{/p}{p} Gonbidatzen zaitugu zure datuak aldatzera, eta nahi baduzu, baita horien pribatutasuna ere hemendik {a href="{#UrlIntragnossBBDD#}editar-perfil"}Mi Perfil/Editar Perfil/Datos Personales{/a} zure nortasunean.{/p}{p}Ez baduzu aldaketa hori egiten, zure kontua deuseztatuko dugu, mezu hau jasotzen duzunetik hiru eguneko epean.{/p}{p}Eskerriko asko zure arretagatik{/p}{p}Gero arte{/p}{p}{#NombreEcosistema#} taldea{/p}
+      </texto>
+    </mensaje>
+    <mensaje id="128">
+      <asunto>Datu okerrak zure {#NombreEcosistema#} kontuan</asunto>
+      <texto>
+        {p}{#NombrePersona#} agurgarria,{/p}{p}aurreko jakinarazpenetan zure benetako datuak sartzera gonbidatu zaitugu (izen-abizenak) zure {#NombreEcosistema#} erabiltzailean.{/p}{p}Gogorarazten dizugu {a href="{#UrlIntragnossBBDD#}editar-perfil"}Nire profila/Editata profila/Datu Pertsonalak{/a}(e)tik egin dezakezula zure nortasun pertsonalean. Ez ahaztu aukeratu dezakezula {strong}profil publikoa edo pribatua{/strong} izatea.{/p}{p}Mila esker zure arretagatik{/p}{p}Gero arte{/p}{p}{#NombreEcosistema#} taldea{/p}
+      </texto>
+    </mensaje>
+    <mensaje id="129">
+      <asunto>{#NombreEcosistema#}(e)n zure kontua kendu da</asunto>
+      <texto>
+        {p}{#NombrePersona#} agurgarria,{/p}{p}{#NombreEcosistema#}(e)n zure kontua kendu dugu, izan ere, aldez aurretik jakinarazi genizun moduan, ez baita benetako identitatea. {/p}{p}Gero arte{/p}{p}{#NombreEcosistema#} taldea{/p}
+      </texto>
+    </mensaje>
+    <mensaje id="130">    
+      <asunto>Hemen erregistratu berri zara: {#NombreEvento#}</asunto>
+		<texto>
+			{p}{#CuerpoMensajeEvento#}{/p}
+		</texto>
+    </mensaje>
+    <mensaje id="131">
+      <asunto>{#Asunto#}</asunto>
+      <texto>{p}{#NombreRemitente#}(e)k mezu bat bidali dizu {#NombreProyecto#}(a)ren bitartez{/p}{div style="margin:30px"}{#Texto#}{/div}{p}{#NombreRemitente#}(e)ri erantzuteko sakatu lotura honetan: {a href="{@UrlIntragnoss@}{$identidad$}/mensajes#mensaje={#CorreoID#}"}erantzun mezuari{/a}{/p}</texto>
+    </mensaje>
+    <mensaje id="140">
+      <asunto>Lotura bat duzu: {#NombreDoc#}</asunto>
+      <texto>{p}{#NombreRemitente#} {#NombreProyecto#}(r)en lotura bat bidali dizu.{/p}{p}{#Notas#}{/p}{p} {#UrlEnlace#}{/p}</texto>
+    </mensaje>
+	<mensaje id="141">
+      <asunto>Eduki-txostena: {#NombreDoc#}</asunto>
+      <texto>{p}{a href="{#IdentidadRemitente#}"}{#NombreRemitente#}{/a} edukian arazoa ezagutuarazi {#NombreProyecto#}.{/p}{p}{#Notas#}{/p}{p}{a href="{#UrlEnlace#}"}{#NombreDoc#}{/a}{/p}</texto>
+    </mensaje>
+    <mensaje id="150">
+      <asunto> {#NombreOrganizacion#}(e)ko {#NombreRemitente#}(e)k kontaktuetatik kendu zaitu</asunto>
+      <texto>{p}Kaixo {#NombrePersona#}!{/p}{p}{#NombreOrganizacion#}(e)ko {#NombreRemitente#}, zure kontaktua izandakoa {#NombreEcosistema#}(e)n, ez da dagoeneko erakundeko kide eta bere kontaktuak ezabatu egin dira.{/p}{p}Gracias.{/p}{p}{#NombreEcosistema#} taldea.{/p}</texto>
+    </mensaje>
+    <mensaje id="151">
+      <asunto>{#NombreRemitente#}(e)k {#NombreOrganizacion#} eskolan parte hartzera gonbidatu zaitu</asunto>
+      <texto>{p}{#Notas#}{/p}{p}Gonbidapen hori onartzeko sakatu lotura honetan: {a href="{#UrlEnlace#}"}onartu gonbidapen hau{/a}.{/p}</texto>
+    </mensaje>
+    <mensaje id="152">
+      <asunto>{#NombreRemitente#}(e)k talde batera gonbidatu nahi zaitu {#NombreProyecto#} komunitatean</asunto>
+      <texto>
+        {p}{#Notas#}{/p}{p}Taldera/-etara gonbidatu zaitu: {#NombresGrupos#}{/p}
+      </texto>
+    </mensaje>
+    <mensaje id="153">
+      <asunto>{#NombreRemitente#}(e)k talde batera gonbidatu nahi zaitu {#NombreProyecto#} komunitatean</asunto>
+      <texto>
+        {p}{#Notas#}{/p}{p}Komunitate honek taldeak ditu. Gonbidapen hau onartzean, ondoko taldeetako kide egingo zaitugu: {#NombresGrupos#}{/p}{p}Gonbidapen hau onartzeko, sakatu lotura honetan: {a href="{#UrlEnlace#}"}onartu gonbidapena.{/a}{/p}
+      </texto>
+    </mensaje>
+    <mensaje id="154">
+      <asunto>{#NombreRemitente#} quiere invitarte a un grupo de la clase {#NombreProyecto#}</asunto>
+      <texto>
+        {p}{#Notas#}{/p}{p}Al aceptar esta invitación pasarás a formar parte del grupo {#NombresGrupos#}{/p}{p}Para aceptar esta invitación pincha en este enlace: {a href="{#UrlEnlace#}"}aceptar invitación.{/a}{/p}{p}El equipo de Didactalia{/p}
+      </texto>
+    </mensaje>
+    <mensaje id="161">
+      <asunto>Aipamen bat duzu hemen: {#NombreDoc#}</asunto>
+      <texto>{p}Kaixo, {#NombrePersona#}!{/p}{p}{#NombreRemitente#}(e)k "{#NombreDoc#}" baliabide aipatu du. Aipamena ikusteko segi lotura hau: {a href="{@UrlIntragnoss@}{#IdentidadPersona#}Comentarios"}Ikus aipamenak{/a}.{/p}</texto>
+    </mensaje>
+    <mensaje id="180">
+      <asunto>{#Asunto#}</asunto>
+      <texto>{#Texto#}</texto>
+    </mensaje>
+    <mensaje id="181">
+      <asunto>{#NombreProyecto#} komunitateko kide batek kategoria berri bat iradokitzen dizu.</asunto>
+      <texto>{p}Zure komunitateko kide baten proposamen hau ikusteko sakatu hemen: {a href="{#UrlEnlace#}"}{#NombreProyecto#}(e)ko kategoriak administratu {/a}.</texto>
+    </mensaje>
+	<mensaje id="182">
+      <asunto>{#Asunto#}</asunto>
+      <texto>{p}Hola,{/p}{p}{#NombreRemitente#} profesor@ de la clase {#NombreProyecto#} a la que pertenece {#NombrePersona#} te ha enviado un mensaje: {/p}{p}{#Texto#}{/p}{p}El equipo de Didactalia{/p}</texto>
+    </mensaje>
+    <mensaje id="200">
+      <asunto>Akatsa {#NombreEcosistema#}(e)tik partekatutako Twitter-eko mezuan</asunto>
+      <texto>{p}{#NombreProyecto#}(e)ko administrari agurgarria,{/p}{p}zure komunitateak Twittereko kontu bat darama loturan. kontu horrek mezu bat (‘tweet’) bidaltzeko aukera ematen du, baliabide bat partekatzen den bakoitzean.Ekintza hori zure komunitateko administrari gisa {#NombreEcosistema#}(e)n adierazi diguzun Twitterreko erabiltzailearekin bateratuta egoteari esker egiten da.  Oraingo honetan, zure Twitterreko kontuak akatsa eragin du eta ez da dagokion mezua (‘tweet’) bidali partekatutako baliabidera.{/p}{p}Sentitzen dugu ekintza ezin egin ahal izatea.{/p}{p}Gozatu {#NombreEcosistema#}(e)z; zurekin batera berrikuntzan gabiltza.{/p}{p}{a href="mailto:{#CorreoSugerencias#}"}{#NombreEcosistema#} taldea{/a}{/p}</texto>
+    </mensaje>
+    <mensaje id="500">
+      <asunto>Ongi etorria Corporate Excellence-eko kideentzako Ezagutza Plataformara</asunto>
+      <texto>{p}Kaixo {#NombrePersona#},{/p}{p}Corporate Excellence-eko kideentzako Ezagutza Plataforman parte hartzera gonbidatzen zaitugu. Plataforma honek zure erabiltzaile eta pasahitzaren bitartez eduki askotara sartzeko aukera emango dizu (artikuluak, kasuak, berriak, tesiak, insights-ak, etab.) ukiezinen inguruko kudeaketaren inguruan, eta Corporate Excellenceko kideen komunitate osoarekin horiek aipatzeko eta partekatzeko.{/p}{p}Zure erregistroa osatzeko beharrezkoa da zure korreoa egiaztatzea ondorengo loturan: {a href="{#UrlEnlace#}" target="_blank"}Egiaztatu posta elektronikoa{/a}.{p}</texto>
+    </mensaje>
+  </mensajes>
+  <formatoCorreo>
+    <cabecera>
+		{table style="font-family: 'Roboto', sans-serif;" role="presentation" style="text-align: left; border: 0; border-spacing: 0; max-width: 970px"} {tbody} {tr} {td style="font-size: 15px; font-weight: 300; padding: 25px 60px"} {div style="margin-bottom: 50px;"}IMAGENPROYECTO{/div}
+	</cabecera>
+    <pie>
+		{/td}{/tr}{tr}{td style="padding: 10px; font-size: 10px; color: #555"}{p}Posta elektroniko honek mezu automatikoak besterik ez ditu bidaltzen. Ez du erantzunik jasotzen. Mesedez, ez erantzun mezu honi.{/p}{p}Informazio Gizartearen eta Merkataritza Elektronikoaren Zerbitzuei eta Datuen Babesari dagokionez, indarrean den araudia betez, jakinarazten dizugu edozein momentutan baja eman dezakezula {#URCONNOMBRECOMUNIDAD#}(e)an {#URCONNOMBRECOMUNIDAD#}(e)ko jakinarazpenak jasotzetik.Eskerrik asko zure laguntzagatik.{/p}{/td}{/tr}{/tbody}{/table}		
+	</pie>
+    <pieNotificaciones>
+		{/td}{/tr}{tr}{td style="padding: 10px; font-size: 10px; color: #555"}{p}Posta elektroniko honek mezu automatikoak besterik ez ditu bidaltzen. Ez du erantzunik jasotzen. Mesedez, ez erantzun mezu honi.{/p}{p}Informazio Gizartearen eta Merkataritza Elektronikoaren Zerbitzuei eta Datuen Babesari dagokionez, indarrean den araudia betez, jakinarazten dizugu edozein momentutan baja eman dezakezula {#URCONNOMBRECOMUNIDAD#}(e)an {#URCONNOMBRECOMUNIDAD#}(e)ko jakinarazpenak jasotzetik.Eskerrik asko zure laguntzagatik.{/p}{/td}{/tr}{/tbody}{/table}
+	</pieNotificaciones>
+    <pieNewsletter>
+		{/td}{/tr}{tr}{td style="padding: 10px; font-size: 10px; color: #555"}{p}Posta elektroniko honek mezu automatikoak besterik ez ditu bidaltzen. Ez du erantzunik jasotzen. Mesedez, ez erantzun mezu honi.{/p}{p}Informazio Gizartearen eta Merkataritza Elektronikoaren Zerbitzuei eta Datuen Babesari dagokionez, indarrean den araudia betez, jakinarazten dizugu edozein momentutan baja eman dezakezula {#URCONNOMBRECOMUNIDAD#}(e)an {#URCONNOMBRECOMUNIDAD#}(e)ko jakinarazpenak jasotzetik.Eskerrik asko zure laguntzagatik.{/p}{/td}{/tr}{/tbody}{/table}
+	</pieNewsletter>
+  </formatoCorreo>
+</correos>

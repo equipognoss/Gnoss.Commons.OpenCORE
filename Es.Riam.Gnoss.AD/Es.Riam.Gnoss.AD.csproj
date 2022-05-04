@@ -1,0 +1,210 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="AccionesConjunto\**" />
+    <Compile Remove="Curriculum\**" />
+    <Compile Remove="Importaciones\**" />
+    <Compile Remove="Marcadores\**" />
+    <Compile Remove="Ning\**" />
+    <Compile Remove="Organizador\Calendario\**" />
+    <Compile Remove="Organizador\Notas\**" />
+    <Compile Remove="Organizador\Tareas\**" />
+    <Compile Remove="SuscripcionExterna\**" />
+    <EmbeddedResource Remove="AccionesConjunto\**" />
+    <EmbeddedResource Remove="Curriculum\**" />
+    <EmbeddedResource Remove="Importaciones\**" />
+    <EmbeddedResource Remove="Marcadores\**" />
+    <EmbeddedResource Remove="Ning\**" />
+    <EmbeddedResource Remove="Organizador\Calendario\**" />
+    <EmbeddedResource Remove="Organizador\Notas\**" />
+    <EmbeddedResource Remove="Organizador\Tareas\**" />
+    <EmbeddedResource Remove="SuscripcionExterna\**" />
+    <None Remove="AccionesConjunto\**" />
+    <None Remove="Curriculum\**" />
+    <None Remove="Importaciones\**" />
+    <None Remove="Marcadores\**" />
+    <None Remove="Ning\**" />
+    <None Remove="Organizador\Calendario\**" />
+    <None Remove="Organizador\Notas\**" />
+    <None Remove="Organizador\Tareas\**" />
+    <None Remove="SuscripcionExterna\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="BASE_BD\BaseComentariosAD.cs" />
+    <Compile Remove="BASE_BD\BaseContactosAD.cs" />
+    <Compile Remove="BASE_BD\BaseInvitacionesAD.cs" />
+    <Compile Remove="BASE_BD\BaseMensajesAD.cs" />
+    <Compile Remove="BASE_BD\BasePaginaCMSAD.cs" />
+    <Compile Remove="BASE_BD\BasePerOrgComunidadAD.cs" />
+    <Compile Remove="BASE_BD\BaseProyectosAD.cs" />
+    <Compile Remove="BASE_BD\BaseRecursosComunidadAD.cs" />
+    <Compile Remove="BASE_BD\BaseSuscripcionesAD.cs" />
+    <Compile Remove="BASE_BD\MetaBuscadorBaseAD.cs" />
+    <Compile Remove="Facetado\TablasDeConfiguracionAD.cs" />
+    <Compile Remove="Live\LiveUsuariosAD.cs" />
+    <Compile Remove="ParametroAplicacion\VersionAD.cs" />
+    <Compile Remove="ParametrosProyecto\CategoriaDocumentacionAD.cs" />
+    <Compile Remove="ParametrosProyecto\NivelPrioridadAD.cs" />
+    <Compile Remove="ServiciosGenerales\CategoriaProfesionalAD.cs" />
+    <Compile Remove="ServiciosGenerales\CnaeAD.cs" />
+    <Compile Remove="ServiciosGenerales\EstadoCivilAD.cs" />
+    <Compile Remove="ServiciosGenerales\EstadoLaboralAD.cs" />
+    <Compile Remove="ServiciosGenerales\TipoContratoAD.cs" />
+    <Compile Remove="ServiciosGenerales\TitulacionAD.cs" />
+    <Compile Remove="Suscripcion\ResultadosSuscripcionAD.cs" />
+    <Compile Remove="Suscripcion\ResultadoSuscripcionAD.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="EnterpriseLibrary.Data.NetCore" Version="6.3.2" />
+    <PackageReference Include="LumenWorksCsvReader" Version="4.0.0" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="5.0.10" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="5.0.10" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="5.0.2" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="5.0.10">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Npgsql" Version="5.0.7" />
+    <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="5.0.7" />
+    <PackageReference Include="Semiodesk.Trinity.Virtuoso" Version="1.0.3.38" />
+    <PackageReference Include="System.Data.SqlClient" Version="4.8.2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Update="AutoCompetarEtiquetas\Model\TagsAutoDS.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>TagsAutoDS.xsd</DependentUpon>
+    </Compile>
+    <Compile Update="BASE_BD\Model\BaseComentariosDS.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>BaseComentariosDS.xsd</DependentUpon>
+    </Compile>
+    <Compile Update="BASE_BD\Model\BaseComunidadDS.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>BaseComunidadDS.xsd</DependentUpon>
+    </Compile>
+    <Compile Update="BASE_BD\Model\BaseContactosDS.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>BaseContactosDS.xsd</DependentUpon>
+    </Compile>
+    <Compile Update="BASE_BD\Model\BaseInvitacionesDS.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>BaseInvitacionesDS.xsd</DependentUpon>
+    </Compile>
+    <Compile Update="BASE_BD\Model\BaseMensajesDS.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>BaseMensajesDS.xsd</DependentUpon>
+    </Compile>
+    <Compile Update="BASE_BD\Model\BasePaginaCMSDS.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>BasePaginaCMSDS.xsd</DependentUpon>
+    </Compile>
+    <Compile Update="BASE_BD\Model\BasePerOrgComunidadDS.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>BasePerOrgComunidadDS.xsd</DependentUpon>
+    </Compile>
+    <Compile Update="BASE_BD\Model\BaseProyectosDS.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>BaseProyectosDS.xsd</DependentUpon>
+    </Compile>
+    <Compile Update="BASE_BD\Model\BaseRecursosComunidadDS.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>BaseRecursosComunidadDS.xsd</DependentUpon>
+    </Compile>
+    <Compile Update="BASE_BD\Model\BaseSuscripcionesDS.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>BaseSuscripcionesDS.xsd</DependentUpon>
+    </Compile>
+    <Compile Update="BASE_BD\Model\BaseVisitasDS.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>BaseVisitasDS.xsd</DependentUpon>
+    </Compile>
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="AutoCompetarEtiquetas\Model\TagsAutoDS.xsd">
+      <Generator>MSDataSetGenerator</Generator>
+      <LastGenOutput>TagsAutoDS.Designer.cs</LastGenOutput>
+    </None>
+    <None Update="BASE_BD\Model\BaseComentariosDS.xsd">
+      <Generator>MSDataSetGenerator</Generator>
+      <LastGenOutput>BaseComentariosDS.Designer.cs</LastGenOutput>
+    </None>
+    <None Update="BASE_BD\Model\BaseComunidadDS.xsd">
+      <Generator>MSDataSetGenerator</Generator>
+      <LastGenOutput>BaseComunidadDS.Designer.cs</LastGenOutput>
+    </None>
+    <None Update="BASE_BD\Model\BaseContactosDS.xsd">
+      <Generator>MSDataSetGenerator</Generator>
+      <LastGenOutput>BaseContactosDS.Designer.cs</LastGenOutput>
+    </None>
+    <None Update="BASE_BD\Model\BaseInvitacionesDS.xsd">
+      <Generator>MSDataSetGenerator</Generator>
+      <LastGenOutput>BaseInvitacionesDS.Designer.cs</LastGenOutput>
+    </None>
+    <None Update="BASE_BD\Model\BaseMensajesDS.xsd">
+      <Generator>MSDataSetGenerator</Generator>
+      <LastGenOutput>BaseMensajesDS.Designer.cs</LastGenOutput>
+    </None>
+    <None Update="BASE_BD\Model\BasePaginaCMSDS.xsd">
+      <Generator>MSDataSetGenerator</Generator>
+      <LastGenOutput>BasePaginaCMSDS.Designer.cs</LastGenOutput>
+    </None>
+    <None Update="BASE_BD\Model\BasePerOrgComunidadDS.xsd">
+      <Generator>MSDataSetGenerator</Generator>
+      <LastGenOutput>BasePerOrgComunidadDS.Designer.cs</LastGenOutput>
+    </None>
+    <None Update="BASE_BD\Model\BaseProyectosDS.xsd">
+      <Generator>MSDataSetGenerator</Generator>
+      <LastGenOutput>BaseProyectosDS.Designer.cs</LastGenOutput>
+    </None>
+    <None Update="BASE_BD\Model\BaseRecursosComunidadDS.xsd">
+      <Generator>MSDataSetGenerator</Generator>
+      <LastGenOutput>BaseRecursosComunidadDS.Designer.cs</LastGenOutput>
+    </None>
+    <None Update="BASE_BD\Model\BaseSuscripcionesDS.xsd">
+      <Generator>MSDataSetGenerator</Generator>
+      <LastGenOutput>BaseSuscripcionesDS.Designer.cs</LastGenOutput>
+    </None>
+    <None Update="BASE_BD\Model\BaseVisitasDS.xsd">
+      <Generator>MSDataSetGenerator</Generator>
+      <LastGenOutput>BaseVisitasDS.Designer.cs</LastGenOutput>
+    </None>
+    <None Update="Facetado\Model\FacetaDS.xsd">
+      <Generator>MSDataSetGenerator</Generator>
+      <LastGenOutput>FacetaDS.Designer.cs</LastGenOutput>
+    </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Virtuoso\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Es.Riam.AbstractsOpen\Es.Riam.AbstractsOpen.csproj" />
+    <ProjectReference Include="..\Es.Riam.Gnoss.FileManager\Es.Riam.Gnoss.FileManager.csproj" />
+    <ProjectReference Include="..\Es.Riam.Gnoss.RabbitMQ\Es.Riam.Gnoss.RabbitMQ.csproj" />
+    <ProjectReference Include="..\Es.Riam.Gnoss.Util\Es.Riam.Gnoss.Util.csproj" />
+    <ProjectReference Include="..\Es.Riam.Gnoss.Web.MVC.Models\Es.Riam.Gnoss.Web.MVC.Models.csproj" />
+    <ProjectReference Include="..\Es.Riam.Util\Es.Riam.Util.csproj" />
+  </ItemGroup>
+
+</Project>

@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xs:schema id="RdfDS" targetNamespace="http://tempuri.org/RdfDS.xsd" xmlns:mstns="http://tempuri.org/RdfDS.xsd" xmlns="http://tempuri.org/RdfDS.xsd" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata" xmlns:msprop="urn:schemas-microsoft-com:xml-msprop" attributeFormDefault="qualified" elementFormDefault="qualified">
+  <xs:annotation>
+    <xs:appinfo source="urn:schemas-microsoft-com:xml-msdatasource">
+      <DataSource DefaultConnectionIndex="0" FunctionsComponentName="QueriesTableAdapter" Modifier="AutoLayout, AnsiClass, Class, Public" SchemaSerializationMode="IncludeSchema" xmlns="urn:schemas-microsoft-com:xml-msdatasource">
+        <Connections>
+          <Connection AppSettingsObjectName="Settings" AppSettingsPropertyName="GNOSS_PRUEBASConnectionString" ConnectionStringObject="" IsAppSettingsProperty="True" Modifier="Assembly" Name="GNOSS_PRUEBASConnectionString (Settings)" ParameterPrefix="@" PropertyReference="ApplicationSettings.Es.Riam.Gnoss.AD.Properties.Settings.GlobalReference.Default.GNOSS_PRUEBASConnectionString" Provider="System.Data.SqlClient">
+          </Connection>
+        </Connections>
+        <Tables>
+        </Tables>
+        <Sources>
+        </Sources>
+      </DataSource>
+    </xs:appinfo>
+  </xs:annotation>
+  <xs:element name="RdfDS" msdata:IsDataSet="true" msdata:UseCurrentLocale="true" msprop:Generator_UserDSName="RdfDS" msprop:Generator_DataSetName="RdfDS">
+    <xs:complexType>
+      <xs:choice minOccurs="0" maxOccurs="unbounded">
+        <xs:element name="RdfDocumento" msprop:Generator_UserTableName="RdfDocumento" msprop:Generator_RowDeletedName="RdfDocumentoRowDeleted" msprop:Generator_TableClassName="RdfDocumentoDataTable" msprop:Generator_RowChangedName="RdfDocumentoRowChanged" msprop:Generator_RowClassName="RdfDocumentoRow" msprop:Generator_RowChangingName="RdfDocumentoRowChanging" msprop:Generator_RowEvArgName="RdfDocumentoRowChangeEvent" msprop:Generator_RowEvHandlerName="RdfDocumentoRowChangeEventHandler" msprop:Generator_TablePropName="RdfDocumento" msprop:Generator_TableVarName="tableRdfDocumento" msprop:Generator_RowDeletingName="RdfDocumentoRowDeleting">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="DocumentoID" msdata:DataType="System.Guid, mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" msprop:Generator_UserColumnName="DocumentoID" msprop:Generator_ColumnPropNameInRow="DocumentoID" msprop:Generator_ColumnVarNameInTable="columnDocumentoID" msprop:Generator_ColumnPropNameInTable="DocumentoIDColumn" type="xs:string" />
+              <xs:element name="ProyectoID" msdata:DataType="System.Guid, mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" msprop:Generator_UserColumnName="ProyectoID" msprop:Generator_ColumnPropNameInRow="ProyectoID" msprop:Generator_ColumnVarNameInTable="columnProyectoID" msprop:Generator_ColumnPropNameInTable="ProyectoIDColumn" type="xs:string" />
+              <xs:element name="RdfSem" msprop:Generator_UserColumnName="RdfSem" msprop:nullValue="_empty" msprop:Generator_ColumnVarNameInTable="columnRdfSem" msprop:Generator_ColumnPropNameInTable="RdfSemColumn" msprop:Generator_ColumnPropNameInRow="RdfSem" type="xs:string" minOccurs="0" />
+              <xs:element name="RdfDoc" msprop:Generator_UserColumnName="RdfDoc" msprop:nullValue="_empty" msprop:Generator_ColumnVarNameInTable="columnRdfDoc" msprop:Generator_ColumnPropNameInTable="RdfDocColumn" msprop:Generator_ColumnPropNameInRow="RdfDoc" type="xs:string" minOccurs="0" />
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+      </xs:choice>
+    </xs:complexType>
+    <xs:unique name="PK_RdfDocumento" msdata:PrimaryKey="true">
+      <xs:selector xpath=".//mstns:RdfDocumento" />
+      <xs:field xpath="mstns:DocumentoID" />
+      <xs:field xpath="mstns:ProyectoID" />
+    </xs:unique>
+  </xs:element>
+</xs:schema>

@@ -1,0 +1,55 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30907.101
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Es.Riam.Gnoss.CL", "Es.Riam.Gnoss.CL.csproj", "{16DCC6BC-9D37-4204-B40B-045A402C8EDA}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Es.Riam.Semantica", "..\Es.Riam.Semantica\Es.Riam.Semantica.csproj", "{0822EFFE-5C1B-4F44-A7F6-EAE5533C704F}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Es.Riam.Gnoss.AD", "..\Es.Riam.Gnoss.AD\Es.Riam.Gnoss.AD.csproj", "{DCE72103-FAE2-4F24-95DC-C50746DBB5A8}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Es.Riam.Gnoss.Logica", "..\Es.Riam.Gnoss.Logica\Es.Riam.Gnoss.Logica.csproj", "{A3B90703-A231-47C0-A127-0B82156E221B}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Es.Riam.Gnoss.Elementos", "..\Es.Riam.Gnoss.Elementos\Es.Riam.Gnoss.Elementos.csproj", "{3D518D13-B772-4CF8-B5F4-34B477BFE014}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Es.Riam.Util", "..\Es.Riam.Util\Es.Riam.Util.csproj", "{DC954D20-B5BE-428D-8D88-FBA94E89FE27}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{16DCC6BC-9D37-4204-B40B-045A402C8EDA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{16DCC6BC-9D37-4204-B40B-045A402C8EDA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{16DCC6BC-9D37-4204-B40B-045A402C8EDA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{16DCC6BC-9D37-4204-B40B-045A402C8EDA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0822EFFE-5C1B-4F44-A7F6-EAE5533C704F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0822EFFE-5C1B-4F44-A7F6-EAE5533C704F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0822EFFE-5C1B-4F44-A7F6-EAE5533C704F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0822EFFE-5C1B-4F44-A7F6-EAE5533C704F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DCE72103-FAE2-4F24-95DC-C50746DBB5A8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DCE72103-FAE2-4F24-95DC-C50746DBB5A8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DCE72103-FAE2-4F24-95DC-C50746DBB5A8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DCE72103-FAE2-4F24-95DC-C50746DBB5A8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A3B90703-A231-47C0-A127-0B82156E221B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A3B90703-A231-47C0-A127-0B82156E221B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A3B90703-A231-47C0-A127-0B82156E221B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A3B90703-A231-47C0-A127-0B82156E221B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3D518D13-B772-4CF8-B5F4-34B477BFE014}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3D518D13-B772-4CF8-B5F4-34B477BFE014}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3D518D13-B772-4CF8-B5F4-34B477BFE014}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3D518D13-B772-4CF8-B5F4-34B477BFE014}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DC954D20-B5BE-428D-8D88-FBA94E89FE27}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DC954D20-B5BE-428D-8D88-FBA94E89FE27}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DC954D20-B5BE-428D-8D88-FBA94E89FE27}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DC954D20-B5BE-428D-8D88-FBA94E89FE27}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {290BAE21-56B5-4CFA-8AC2-1E57911A1AA0}
+	EndGlobalSection
+EndGlobal

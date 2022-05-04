@@ -1,0 +1,30 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="BASE_BD\BaseComentariosCN.cs" />
+    <Compile Remove="BASE_BD\BaseContactosCN.cs" />
+    <Compile Remove="BASE_BD\BaseInvitacionesCN.cs" />
+    <Compile Remove="BASE_BD\BaseMensajesCN.cs" />
+    <Compile Remove="BASE_BD\BasePaginaCMSCN.cs" />
+    <Compile Remove="BASE_BD\BasePerOrgComunidadCN.cs" />
+    <Compile Remove="BASE_BD\BaseProyectosCN.cs" />
+    <Compile Remove="BASE_BD\BaseRecursosComunidadCN.cs" />
+    <Compile Remove="BASE_BD\BaseSuscripcionesCN.cs" />
+    <Compile Remove="BASE_BD\MetaBuscadorBaseCN.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Es.Riam.Gnoss.AD\Es.Riam.Gnoss.AD.csproj" />
+    <ProjectReference Include="..\Es.Riam.Gnoss.Util\Es.Riam.Gnoss.Util.csproj" />
+    <ProjectReference Include="..\Es.Riam.Util\Es.Riam.Util.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Cookie\" />
+  </ItemGroup>
+
+</Project>

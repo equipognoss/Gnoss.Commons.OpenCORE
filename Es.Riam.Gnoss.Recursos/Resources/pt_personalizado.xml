@@ -1,0 +1,1613 @@
+﻿<?xml version="1.0"?>
+<Resources language="Portuguese" code="pt">
+  <page name="COMMON">
+    <Resource tag="NUEVAFUNCIONALIDAD">
+      {p}{/p}¡Hola {span style="color:orange;"}gnossonauta{/span}!{p}{/p}{p}{/p}
+      Bienvenido de Novos a gnoss.com. Tenemos buenas noticias. La experiencia de navegación en gnoss.com cambia con nuestro Novos diseño.{p}{/p}{p}{/p}
+      ¿Quieres conocer las Novidades?{p}{/p}
+    </Resource>
+    <Resource tag="INICIOENLACE">http://gnoss.com/Inicial</Resource>
+    <Resource tag="LINKAYUDAYFAQS">http://gnoss.com/comunidad/ayudayfaqs</Resource>
+    <Resource tag="LINKGUIA">http://gnoss.com/comunidad/ayudayfaqs/recursos/categoria/Guia-GNOSS-para-/3914cd0a-8127-44eb-9037-adc930b34961</Resource>
+    <Resource tag="LINKNEWSLETTER">http://gnoss.com/comunidad/gnossnoticias/recursos/categoria/Newsletter/7af440a1-6bc0-4958-9a3c-22eafb6299fe</Resource>
+    <Resource tag="LINKNING">http://www.gnoss.com/blog/gnosslife/articulo/Como-migro-mi-comunidad-de-Ning-a-una-comunidad-d/fa5ea29e-5034-4fac-a63b-d96279ba22fa</Resource>
+    <Resource tag="LOCALIZAENGNOSS">Localizar em GNOSS</Resource>
+    <Resource tag="DESAFIO">DESAFÍO GNOSS EDUCA</Resource>
+    <Resource tag="PARTICIPADESAFIOLINK">http://didactalia.net/comunidad/materialeducativo/recurso/Lanzamos-el-DESAFIO-GNOSS-EDUCA-el-concurso-que-p/ba3df9a6-311b-4c3a-add5-bd6cfdd3f0e7</Resource>
+    <Resource tag="ACERCADEGNOSS">Sobre GNOSS</Resource>
+    <Resource tag="GNOSSORGANIZA">GNOSS Organiza</Resource>
+    <Resource tag="DESCARGARHERRADDTOGNOSS3"> Adicionar a GNOSS</Resource>
+    <Resource tag="HERRAMIENTASGNOSS">Ferramentas GNOSS</Resource>
+    <Resource tag="IRAGNOSS">Ir a GNOSS</Resource>    
+    <Resource tag="CONOCEGNOSS">conheceGNOSS</Resource>
+    <Resource tag="GNOSS101">Gnoss 101</Resource>
+  </page>
+  <page name="FOOTER">
+    <Resource tag="QUEESGNOSSCOM"></Resource>
+    <Resource tag="ACERCADEGNOSSCOM"></Resource>
+    <Resource tag="AGNADIRGNOSS"></Resource>
+    <Resource tag="ACERCADEGNOSSCOMENLACE"></Resource>
+    <Resource tag="EQUIPOGNOSS"></Resource>
+    <Resource tag="EQUIPOGNOSSENLACE"></Resource>
+    <Resource tag="SOCIALANDSEARCHENLACE"></Resource>
+    <Resource tag="CONDICIONESDEUSO"></Resource>
+    <Resource tag="CONTACTOENLACE"></Resource>
+    <Resource tag="ATENCIONCLIENTE"></Resource>
+    <Resource tag="PARAQUESIRVEGNOSSCOM"></Resource>
+    <Resource tag="GNOSS101"></Resource>
+    <Resource tag="GNOSS101ENLACE"></Resource>
+    <Resource tag="AYUDAYFAQSENLACE"></Resource>
+    <Resource tag="GUIASPROFESIONALESENLACE"></Resource>
+    <Resource tag="CREATUREDENGNOSSCOM"></Resource>
+    <Resource tag="CREATUREDENGNOSSCOMENLACE"></Resource>
+    <Resource tag="UNIVERSIDAD20"></Resource>
+    <Resource tag="UNIVERSIDAD20ENLACE"></Resource>
+    <Resource tag="EDUCACIONEXPANDIDA"></Resource>
+    <Resource tag="EDUCACIONEXPANDIDAENLACE"></Resource>
+    <Resource tag="DESAFIOGNOSSEDUCA"></Resource>
+    <Resource tag="NOTICIASENLACE"></Resource>
+    <Resource tag="BLOGGNOSSLIFE"></Resource>
+    <Resource tag="BLOGGNOSSLIFEENLACE"></Resource>
+    <Resource tag="BLOGWATERMELON"></Resource>
+    <Resource tag="BLOGWATERMELONENLACE"></Resource>
+    <Resource tag="HERRAMIENTASENLACE"></Resource>
+    <Resource tag="WIDGETSENLACE"></Resource>
+    <Resource tag="NINGENLACE"></Resource>
+  </page>
+  <page name="FOOTERNUEVO">
+    <Resource tag="ACERCADE">Sobre GNOSS</Resource>
+    <Resource tag="QUEESGNOSS">O que e Gnoss?</Resource>
+    <Resource tag="VENTAJASGNOSS">Vantangens da tecnologia GNOSS</Resource>
+    <Resource tag="DIDACTALIA">Didactalia: projecto educacional</Resource>
+    <Resource tag="COMOUSARGNOSS">Como utilizar gnoss.com?</Resource>
+    <Resource tag="GNOSS101">GNOSS 101</Resource>
+    <Resource tag="BLOGGNOSSLIFE">GNOSS Official Blog</Resource>
+    <Resource tag="BLOGWATERMELON">Melancia Blog</Resource>
+    <Resource tag="AGNADIRGNOSS">Adicionar a GNOSS</Resource>
+    <Resource tag="ENLACEQUEESGNOSS">http://products.gnoss.com/pt/comunidade/gnossproducts/recurso/GNOSS-Semantics--Social-Business-Platform/d27efdca-7e2f-4cde-b869-3813d0a006bb</Resource>
+    <Resource tag="ENLACEGNOSSEMPRESA">http://products.gnoss.com/pt/comunidade/gnossproducts/recurso/gnoss-empresa/76afa723-e433-45b5-9940-dea37cfba6fd</Resource>
+  </page>
+  <page name="FREEBASE">
+    <Resource tag="AVISOLEGAL">Esta informação diz respeito a terceiros. RIAM não é responsável pela exactidão dos dados ou a informação contida</Resource>
+  </page>
+  <page name="BIENVENIDA">
+    <Resource tag="BIENVENIDOAGNOSS">Ola @1@, BemVindo a gnoss.com</Resource>
+  </page>
+  <page name="INICIO">
+    <Resource tag="SLIDEITEM1">{h2}{span}Coloque seus dados para trabalhar e ganhe{/span} visibilidade em Google{br /}{label class="boton floatLeft" style="margin-top:20px;background:#FFFFFF"}{a href="@1@"}Regístrate{/a}{/label}{/h2}</Resource>
+    <Resource tag="SLIDEITEM2">{h2}{span}Construa o seu{/span} entorno pessoal {span}de trabalho e aprenda{/span}{br /}{label class="boton floatLeft" style="margin-top:20px;background:#FFFFFF"}{a href="@1@"}Regístrate{/a}{/label}{/h2}</Resource>
+    <Resource tag="SLIDEITEM3">{h2}Buscas inteligentes e contextos {span}para sua informacao: encontre o que busca{/span}{br /}{label class="boton floatLeft" style="margin-top:20px;background:#FFFFFF"}{a href="@1@"}Regístrate{/a}{/label}{/h2}</Resource>
+    <Resource tag="SLIDEITEM4">{h2}Crea {span}tus propias{/span} redes sociais, {span} grupos de trabalho, comunidades online e …, conecte{/span}{br /}{label class="boton floatLeft" style="margin-top:20px;background:#FFFFFF"}{a href="@1@"}Regístrate{/a}{/label}{/h2}</Resource>
+    <Resource tag="SLIDEITEM5">{h2}{span}gnoss.com es Web 3.0:{/span}{br /} Respostas reales,{span}{br /} tecnología que funciona{/span}{br /}{label class="boton floatLeft" style="margin-top:20px;background:#FFFFFF"}{a href="@1@"}Regístrate{/a}{/label}{/h2}</Resource>
+    <Resource tag="KEYWORDS">comunidades, gerenciar conhecimento, aprendizagem aelerado, inteligencia colectiva, web 3.0, identidade digital, web semántica, gnoss, riam i+l lab, organizacao</Resource>
+    <Resource tag="GNOSSDESCRIPCION">GNOSS conecta as {strong}inteligencias{/strong} e aos {strong}intereses{/strong} para aqueles que querem trocar algo dentro e fora da rede. Compartilhe, organize, explore e crie {strong}conhecimento{/strong}.</Resource>
+    <Resource tag="GNOSSMETADESCRIPCION">GNOSS conecta inteligencias e intereses para aqueles que querem trocar algo dentro e fora da rede. Compartilhe, organize, explore e crie.</Resource>
+    <Resource tag="EMPEZARGNOSS">{span}{img src="@1@" alt="GNOSS" /}{/span} te ofece ferramentas e servicos para trabalhar o gerenciamento de conhecimento, em pensamento coletivo e aprendizagem informal. (informal learning).</Resource>
+    <Resource tag="CUENTAMYGNOSS">Sua conta {span}{img src="@1@" alt="GNOSS" /}{/span} permite acessar a comunidade de GNOSS, criar sua biografia profissional e gerenciar sua identidade digital.</Resource>
+    <Resource tag="CUENTAMYGNOSSORG">Sua conta {span}{img src="@1@" alt="GNOSS" /}{/span} permite acessar a comunidade de GNOSS, criar sua biografia profissional e gerenciar sua identidade digital.</Resource>
+    <Resource tag="GNOSSPROMOUNIVERSIDAD">
+      {strong}E professor? {/strong} Se seus alunos se divertem em Tuenti ou Facebook, por que nao aplicas a lógica de redes sociais em sua formacao? GNOSS te ofece ferramentas que necesitas em {a href="http://universidad20.gnoss.com/"}GNOSS Universidade 2.0{/a} y {a href="http://educa.gnoss.com/"}GNOSS Educa{/a}
+    </Resource>
+    <Resource tag="IMPORTARNING">Você deseja importar Ning para a sua comunidade gnoss.com?</Resource>
+    <Resource tag="IMPORTARNINGBOTON">Migrar a GNOSS</Resource>
+    <Resource tag="GNOSS101TITULO">GNOSS 101</Resource>
+    <Resource tag="GNOSS101TEXTOENLACE">Como utilizar gnoss.com?</Resource>
+    <Resource tag="GNOSS101CONTACTANOS">Em caso de dúvida contacte-nos:{br /}{div style="font-weight:bold;font-size:18px"}902 50 25 45{/div}</Resource>
+    <Resource tag="IDENTIDADTEXTOENLACE">quero meu perfil em gnoss.com</Resource>
+  </page>
+  <page name="REGISTRO">
+    <Resource tag="DESCRIPCIONQUEESESTO">esta pronto para criar {strong}nova conta de usuarioGNOSS{/strong}, que permite criar e evoluir seu identidade digital, acesso e GNOSS Comunidades GNOSS usar as ferramentas que você tem que fazer para conviver e para criar, compartilhar e gerenciar o conhecimento em um ambiente distribuído e colaborativo.</Resource>
+    <Resource tag="DESCRIPCIONQUEESESTO2">{p}GNOSS e uma sociedade da rede cujos membros usam sua identidade real, por isso tem que introduzir seu {strong}nome e sobrenome{/strong} real para validar o seu acesso. Lembramos que você pode optar por ter um {strong}perfil público ou privado{/strong}.{/p}</Resource>
+    <Resource tag="DESCRIPCIONQUEESESTO3">{strong}Se forma parte de uma organizacao{/strong} (empresa, universidade, ONG, associacao...) e sera que ser o administrador, pode {a href="@1@"}registrar uma conta de organizacao{/a} para voce e seus companheiros, que os permitirá trabalhar juntos, conectar com outras pessoas e organizacoes e a conhecer nossa empresa.</Resource>
+    <Resource tag="DESCRIPCIONQUEESESTOALUMNO">Você está prestes a criar uma conta de usuário no gnoss.com como um estudante. Uma vez cadastrado, você será capaz de trabalhar em comunidades com a identidade de sua classe, e usar ferramentas para se relacionar gnoss.com e criar, compartilhar e gerenciar o conhecimento em um. Distribuído e colaborativo Se você quiser conhecer todas as ferramentas, recomendamos visitar {a href="http://gnoss.com/gnoss101" target="_blank"}GNOSS101{/a}.</Resource>
+    <Resource tag="DESCRIPCIONQUEESESTOSIGUIENTE">É importante saber que {strong} GNOSS visa incentivar as pessoas a assinar seus nomes {/strong} e assumir a responsabilidade por suas contribuições e intervenções. Portanto, os dados que você entra aqui será {strong} aparecem em seu editor de biografia profissional {/strong}, que fornece uma ferramenta poderosa para gestão e desenvolvimento de sua biografia profissional e para a gestão de diferentes perfis que deseja adotar nas diferentes comunidades onde eles querem participar. Por favor, tenha isso em mente ao preencher seus dados.</Resource>
+    <Resource tag="DESCRIPCIONQUEESESTOSIGUIENTE2">Se você quer que as pessoas olhar e você sabe em GNOSS incorpora indivíduos de seu perfil e das organizações.</Resource>
+    <Resource tag="LISTARPERFIL">Eu quero que o meu perfil seja visível por GNOSS (aparece na lista de "Pessoas e organizações")</Resource>
+    <Resource tag="RECIBIRASEMAIL">
+      {p}Em breve receberá um e-mail com a sua resolução.{/p}
+      {p}Se você não ver o nosso e-mail com a resolução de seu pedido na sua caixa de entrada, verifique a sua caixa de entrada de spam ou lixo eletrônico e se esqueça de adicionar {a href="mailto: gnoss@gnoss.com"}gnoss@gnoss.com{/a} à lista de remetentes confiáveis.{/p}
+    </Resource>
+    <Resource tag="QUEESESTOPARTE1PROFESOR">{fieldset}{legend}O que pode fazer em gnoss.com?{/legend}{p}Esta pronto para criar uma conta em gnoss.com, neste caso como professor. Uma vez registrado podera criar e fazer  y hacer evoluir sua identidade digitall; trablhar em comunidades; e utilizar ferramentas de gnoss.com para relacionar e criar, compartilhar e gerenciar conhecimento de maneira distribuida e colaborativar. Se deseja conhecer todas as ferramentas, recomendamos que visite {a href="http://101.gnoss.com/" target="_blank"}GNOSS101{/a}.{/p}{legend}Deseja conhecer outros profissionais de Educacao que ja estao trabalhando com gnoss.com?{/legend}{p}O projeto educativo de gnoss.com cobre os estudos de Secundaria; Bachillerato; Formacao Profissional; e Universidade, além da formação regulamentada. Se deseja, pode conhecer todos os professores e classes que participam em {a href="http://gnoss.com/universidad20/en-gnoss-universidad20" target="_blank"}GNOSS Universidad 2.0{/a} y {a href="http://educa.gnoss.com/" target="_blank"}GNOSS Educa{/a}.{/p}{/fieldset}</Resource>
+    <Resource tag="QUEESESTOPARTE2PROFESOR">{fieldset}{legend}Conhece nosso projeto na Universidade Complutense?{/legend}{p}Durante o curso 2009/2010, mais de 400 alunos da Universidade Complutense de Madrid (UCM) participaram em um projeto com comunidades de gnoss.com. Temos documentado a experiencia com {a href="http://www.youtube.com/watch?v=bcOqZUWpOcg" target="_blank"}a opiniao e as reflexoes de profesores e universitarios{/a}.{/p}{legend}Onde pode encontrar ajuda para comecarminha classe?{/legend}{p}Tanto para a universidade como para outro tipo de ensinamentos, tem a sua disposicao as paginas de tutoriais, perguntas frequentes, artigos… Se trata de {a href="http://universidad20.gnoss.com/" target="_blank"}GNOSS Universidad 2.0{/a} e {a href="http://educa.gnoss.com/" target="_blank"}GNOSS Educa{/a}. E, se tiver alguma duvida, comentario… {a href="mailto:gnoss@gnoss.com?subject=Dudas%20sobre%20GNOSS%20Universidad%202.0%20y%20GNOSS%20Educaci%C3%B3n%20Expandida" target="_blank"}estamos a disposicao em ouvi-los /a}.{/p}{/fieldset}</Resource>
+    <Resource tag="REGISTROCLASECOMPETADO">{p}Parabens! Sua solicitacao de @1@ e da comunidade @2@ tem sido aceita. Para comecar a trabalhar, te recomendamos acessar diretamente a sua {a href="@3@" target="_blank"}classe{/a} ou {a href="@4@" target="_blank"}comunidades{/a} e iniciar sua administracao convidando a seus alunos a sua classe.{/p}{p}Lembre-se que podera encontrar tutoriais, perguntas frequentes e todo tipo de informacao para trabalhar em sua classe tanto em trabalhar em suas classes tanto em {a href="http://universidad20.gnoss.com/" target="_blank"}GNOSS Universidad 2.0{/a} como em {a href="http://educa.gnoss.com/" target="_blank"}GNOSS Educa{/a}.{/p}{p}Se tiver alguma pergunta urgente, nao exite em nos contactar pelo telefone 902 502545 (España) ou pelos canais de Twitter {a href="http://twitter.com/universidad_20" target="_blank"}@universidad_20{/a} y {a href="http://twitter.com/educaciongnoss" target="_blank"}@educaciongnoss{/a}.{/p}</Resource>
+  </page>
+  <page name="BLOGS">
+    <Resource tag="APARECEGNOSS">Desejo que este blog esteja no índice global de GNOSS</Resource>
+    <Resource tag="DIRECCIONBLOG">http://www.gnoss.com/blog/ </Resource>
+  </page>
+  <page name="PERFIL">
+    <Resource tag="PERFILPUBLICOGNOSSORG">Você está vendo o seu perfil público, como será visto por outros usuários do GNOSS @1@</Resource>
+    <Resource tag="TODOGNOSS">Todos GNOSS</Resource>
+    <Resource tag="DESCIDEAS4ALL">Ideas4all é um lugar para compartilhar idéias, problemas e soluções</Resource>
+    <Resource tag="CONECTARIDEAS4ALL">Conecte-se com ideas4all</Resource>
+    <Resource tag="DESCONECTARIDEAS4ALL">Desconectar-se do ideas4all</Resource>
+  </page>
+  <page name="PERFILIMPORTARDELICIOUS">
+    <Resource tag="DESCRIPCION">{a href="http://www.gnoss.com/"}gnoss.com{/a} fornece uma nova ferramenta que permite a você importar o conteúdo (marcadores) que você carrega na sua conta {a href="http://www.delicious.com/"}Delicious{/a}. Para fazer isso, precisamos obter o arquivo com os seus favoritos Delicious. {br /}{br /} Como? Depois de ter feito 'log in' no seu usuário Delicious, clique em "Configurações" e acesso {a href="https://secure.delicious.com/settings/bookmarks/export"}Export / Backup Bookmarks{/a}. Então baixe seus favoritos. O aplicativo oferece o arquivo que você solicitar nesta página. Depois de importar seus favoritos, você pode acessá-los de {a href="http://gnoss.com/mis-recursos"}‘Meu espaço pessoal’{/a}.</Resource>
+    <Resource tag="POSTDESCRIPCION">gnoss.com mantém a privacidade que você escolheu Delicious: favoritos privados serão exportados para os seus 'recursos privados' a partir de 'Meu espaço pessoal'. No caso de indicadores públicos, eles vão ficar na pasta "recursos públicos" .</Resource>
+    <Resource tag="VENTAJAS">{a href="http://gnoss.com/blog/RIAM/articulo/gnosscom-alternativa-para-los-usuarios-de-Delici/83312b86-8eac-4083-b5ed-491a54a5dc81"}Quer saber as vantagens de rosto gnoss.com Delicious?{/a}</Resource>
+  </page>
+  <page name="BIOPRO">
+    <Resource tag="DESCBIO">
+      {p}{span style="color: rgb(255, 102, 0);"}Qual é a sua história? Conte-nos a sua biografia{/span}{/p}
+      {p}
+      No gnossonautas nós gostamos de contar histórias humanas. Seu trabalho, sua vida e suas experiências são histórias curtas que servem para conhecer e integrar em uma coletiva. Falamos sobre o que você tem através {a href="http://en.wikipedia.org/wiki/Storytelling"}‘storytelling’{/a}. Agora, gnoss.com lhe dá duas maneiras de mostrar sua identidade. Por um lado, você pode escrever sua biografia com uma história convincente sobre quem você é, onde você trabalha ou que suas aspirações na vida. Por sua vez, você gnoss.com proporciona novas possibilidades de, além de biografias com o seu estilo pessoal, você pode gerar todos os currículos que você quiser. Quando você escrever o seu currículo, gnoss.com lhe dá a opção para gerar um arquivo PDF para imprimir ou enviar via internet. Lembre-se, em gnoss.com pode escrever muitas biografias e currículos profissional se desejar.
+      {/p}
+      {p}Quer escrever sua primeira biografia? Deixe que ela ...{/p}
+    </Resource>
+    <Resource tag="DESCBIOORG">
+      {p}
+      Nesta seção, você pode criar o seu {strong}trayectoria{/strong} para compartilhar com os membros das comunidades que preferir, exportar ou imprimir em diferentes formatos padrão e torná-la acessível a outros sites.
+      {/p}
+
+      {p}
+      Como a vida da nossa organização é informado por interesses diferentes e não são as mesmas para todos, a ferramenta de criação GNOSS sua identidade digital dá-lhe a oportunidade de {strong}como criar tantas trajetórias que você deseja{/strong}assim você pode compartilhar apenas as informações relevantes e apropriadas para as diferentes comunidades em que você participa, ou para outros sites externos.
+      {/p}
+
+      {p}
+      Lembre-se de que sua carreira pode ser tão curto ou tão longo como você quer, e que {strong}Você pode salvar e voltar para editá-lo quantas vezes quiser{/strong}. Publicá-la somente quando estiver realmente pronto para a finalidade que você quiser!
+      {/p}
+
+      {p}Para começar, você precisa dar um nome descritivo o seu primeiro caminho.{/p}
+
+    </Resource>
+  </page>
+  <page name="LOGIN">
+    <Resource tag="BIENVENIDO">Bem Vindo a Gnoss Organiza de @1@!</Resource>
+  </page>
+  <page name="CONTROLESCVSEM">
+    <Resource tag="INFOUSARDATOSPERS">{p}{strong}Usar os dados da minha conta no GNOSS{/strong}{/p}{p}(El check-box se aplicará a todos os campos no bloco{/p}{p}Se selecionado, os campos serão bloqueados e tomará as Gnoss perfil de usuário){/p}</Resource>
+    <Resource tag="INFOHACERCVPRINC">{p}Dados pessoais, sua formação acadêmica, sua experiência de trabalho. Em gnoss.com têm a oportunidade de desenvolver o seu currículo. Foi? Lembre-se que não há limites: você pode escrever como muitos como você precisa e promover biografias amigos e contatos com um endereço de internet (URL) própria.{/p}{p}Quizá já escrevi seu currículo em outra rede profissional. Se você já fez no LinkedIn, você pode importar e gnoss.com em um currículo para o formato Europass no seu usuário gnoss.com{/p}</Resource>
+    <Resource tag="INFOHACERCV">Suas informações pessoais, sua educação, sua experiência de trabalho. Em gnoss.com têm a chance de desenvolver o seu CV Europass formato, para apresentar as suas competências e qualificações em um formato padronizado. Quando você escrever o seu currículo, gnoss.com lhe dá a opção para gerar um arquivo PDF para imprimir ou enviar via internet. Mas gnoss.com lhe dá mais.</Resource>
+    <Resource tag="INFOHACERCV2">Talvez que o seu currículo é em outro idioma ou se concentrar exclusivamente em uma de suas especialidades. Não se preocupe. Como no caso das biografias, sugerimos que a elaboração do CV que você precisa. Talvez você já tenha escrito o seu currículo em outra rede profissional. Se você já fez no LinkedIn, você pode importar gnoss.com e torná-lo um formato Europass CV seu usuário gnoss.com.</Resource>
+    <Resource tag="EXPLICACIONNIVELES">Você pode ver uma explicação sobre os níveis {a href="http://gnoss.com/comunidad/ayudayfaqs/recurso/Instrucciones-para-la-tabla-de-autoevaluacion/fe031d27-1c2c-44c2-ad49-742596f2d278" target="blank"}este link{/a}.</Resource>
+  </page>
+  <page name="USUARIOS">
+    <Resource tag="INTROUSUARIOS">Determinar as funções ({a href="http://gnoss.com/comunidad/ayudayfaqs/recurso/Guia-GNOSS-para-crear-una-organizacion-la-figura/4af62022-6469-43a7-8c97-958f241b82d6"}administrador{/a}; {a href="http://gnoss.com/comunidad/ayudayfaqs/recurso/Guia-GNOSS-para-crear-una-organizacion-diferenci/7b617339-3c11-4638-8b9d-b6c48df137ce"}editor{/a}; o {a href="http://gnoss.com/comunidad/ayudayfaqs/recurso/Guia-GNOSS-para-crear-una-organizacion-diferenci/7b617339-3c11-4638-8b9d-b6c48df137ce"}usuario{/a}) você quer dar a membros de sua organização.</Resource>
+  </page>
+  <page name="ANYADIRGNOSS">
+    <Resource tag="TITULOPAGINA">Adicionar a GNOSS</Resource>
+    <Resource tag="TIT_ANYADIRGNOSS">Adicionar a GNOSS</Resource>
+    <Resource tag="HERRA_ADDGNOSS">Adicionar a ferramenta GNOSS</Resource>
+    <Resource tag="AGREGA_BR_Y_SELE">Adicione o link que você deseja fazer o upload para uma ou mais das comunidades em que você participa: selecione a comunidade, selecionados a partir das categorias e clique em "Adicionar à Comunidade" (como você pode pertencer a várias comunidades, "Adicionar ao GNOSS" permite que você compartilhe um link para todos eles de uma vez). Comunidades irá aparecer em uma lista como você pegá-los introduzido no conteúdo Novos:</Resource>
+  </page>
+  <page name="ANYADIRGNOSSLINKEDIN">
+    <Resource tag="DESCRIPCION_ANYADIRGNOSSLINKEDIN">gnoss.com dá-lhe todos os tipos de opções para divulgar e promover a sua experiência online e capacidades. Você tem a capacidade de escrever muitas biografias ou necessidade currículo profissional{a href="@1@"}Editor de Bios e CVs{/a}. Mas nós torná-lo fácil. É provável que o seu CV já está escrito em outra rede profissional. Se você fez no LinkedIn, vamos falar sobre como você pode trazer gnoss.com, e também se espalhou em um arquivo pdf.</Resource>
+    <Resource tag="TEXTOPASO3">Quando você está no seu currículo que você deseja importar para o LinkedIn gnoss.com, clique no botão que você incluiu no seu browser. Em poucos segundos o seu currículo estará em gnoss.com, onde você pode editar.</Resource>
+  </page>
+  <page name="ANYADIRHERRAMIENTA">
+    <Resource tag="TITULOPAGINA">Adicionar a ferramenta GNOSS</Resource>
+    <Resource tag="AGREGARAGNOSS">Adicionar a GNOSS</Resource>
+    <Resource tag="CONT_PONEMOSATU">, que permite que você adicione algumas páginas GNOSS mais interessantes que você encontrar na Internet, sem interromper a sua navegação.</Resource>
+    <Resource tag="INF21"> Quando você está visitando uma página que você deseja adicionar ao GNOSS, basta clicar no botão</Resource>
+    <Resource tag="ACTUALIZACIONADDTONAVEGADOR">{div style="padding-top:20px;"}Há uma atualização disponível para o suplemento para adicionar a GNOSS no seu navegador .{/div}{div class="clear"}{/div}{div}Para atualizar é necessário adicionar a ferramenta os Novos ,{b}recomendamos excluir a atual{/b}.{/div}</Resource>
+  </page>
+  <page name="INVITACIONES">
+    <Resource tag="TEXTODEFECTOINVITACIONORGANIZACION">
+      {p}@1@ você foi convidado para participar da organização @2@. O que é @2@? É uma sociedade em rede em que as pessoas, empresas e qualquer grupo ou organização humana pode se conectar, interagir e trabalhar de acordo com os seus interesses.{/p}
+    </Resource>
+    <Resource tag="TEXTODEFECTOINVITACIONGNOSS">
+      {p}O que é GNOSS?,GNOSS é uma rede social e semântica proporciona um espaço para o desenvolvimento da vida digital, a criação colaborativa de conhecimento e desenvolvimento de interesse baseados em comunidades. GNOSS permite comunicar, pesquisar e encontrar as pessoas, compartilhar conhecimento e gerar pensamento coletivo com outros membros da comunidade.{/p}
+      {p}Para saber mais sobre GNOSS antes de se inscrever, visite {a href="http://www.gnoss.com"}www.gnoss.com{/a}.{/p}
+    </Resource>
+    <Resource tag="BUSCAGNOSS">Procurar em GNOSS</Resource>
+    <Resource tag="AMIGOSGNOSS">Amigos que estão no GNOSS:</Resource>
+    <Resource tag="AMIGOSNOGNOSS">Amigos que não estão no GNOSS:</Resource>
+  </page>
+  <page name="CONFIGURACIONGNOSS">
+    <Resource tag="MENSAJES">Cada vez que receber uma mensagem no GNOSS</Resource>
+    <Resource tag="TEXTOINFO">Quero receber notificações no meu e-mail pessoal dos seguintes eventos que ocorrem em GNOSS:</Resource>
+  </page>
+  <page name="COMINICIOLOGIN">
+    <Resource tag="ADVERTENCIAEXPULSADO2">{p}Se desejar mais informações, poderá contactar com o  {a href="@1@"}administrador desta comunidade{/a} ou com{a href="mailto:gnoss@gnoss.com"}gnoss@gnoss.com{/a}</Resource>
+  </page>
+  <page name="CAMBIONOMBRECORTOUSUARIO">
+    <Resource tag="URLEJEMPLO">http://www.gnoss.com/identidade/</Resource>
+  </page>
+  <page name="RIAM">
+    <Resource tag="INFO"></Resource>
+  </page>
+  <page name="CONTACTO">
+    <Resource tag="INFO"></Resource>
+  </page>
+  <page name="CONDICIONESUSO">
+    <Resource tag="TITULO">Condições de uso do GNOSS</Resource>
+    <Resource tag="INFO">
+      {p}Ao acessar ou utilizar o serviço, tendo lido o manifesto {a href="#CondicionesAcceso"}condições de acessos{/a} e regras de conveniência do seu {a href="#CodigoEtico"} código ético{/a}.{/p}
+
+      {fieldset}
+      {legend}{a name="CondicionesAcceso"}Condições de acesso:{/a}{/legend}
+
+      {p}Estas condições regulam o uso do serviço web GNOSS. {/p}
+      {/fieldset}
+
+      {fieldset}
+      {legend}Requisitos de acesso:{/legend}
+      {p}Para criar um conta de usuário no GNOSS, você deve ter pelo menos 14 ano. Ao se registrar no GNOSS, declarar que atende a esse requisito e são capazes de compreender, aceitar e cumprir as {a href="#CondicionesAcceso"}condiciones de acceso{/a} y {a href="#CodigoEtico"}código ético{/a} que regem o funcionamento desta rede social. Se tem entre 14 e 18 anos, precisa de um convite para a plataforma e da autorização de seus pais ou responsáveis ??legais para aceder aos nossos serviços será limitado ao uso educacional. R &amp; L Laboratório RIAM pode solicitar informações a qualquer momento para mostrar a sua idade real, levando contribuições que fotocópia do Bilhete de Identidade ou documento equivalente. De RIAM laboratório R &amp; L reservamo-nos o direito de bloquear ou excluir o seu perfil, se você não nos dão essa informação dentro de você dizer.{/p}
+      {p}Nota: Se acharmos que uma criança com menos de 14 está registrada como um usuário em GNOSS, será eliminado e bloqueado o perfil do usuário.{/p}
+      {p}Ao lidar com o usuário registrado, você deve escolher algumas senhas. Sempre que você quiser entrar na rede, o sistema irá pedir estas chaves para autenticar a si mesmo, sendo responsável por todas as atividades que ocorram sob seu nome de usuário e senha.{/p}
+      {p}RIAM I+L Lab não é responsável pela custódia de fazer dessas características de identificação, ou usar um terceiro para fazer isso sem o seu consentimento.{/p}
+      {p}RIAM I+L Lab pode restringir o uso de nomes de usuários que violem certos direitos de terceiros.{/p}
+      {/fieldset}
+
+      {fieldset}
+      {legend}Procedimento de entrada no GNOSS:{/legend}
+      {p}Para entrar no GNOSS é necessário que se registre. Na página {a href="http://www.gnoss.com"}www.gnoss.com{/a}  você pode fazer isso clicando em "criar conta". Neste processo de registro Precisamos dos seus dados para acessar sua conta e informações pessoais. Vamos informá-lo da resolução de seu registro em seu e-mail.{/p}
+      {p}Nota: ao se registrar no GNOSS, te damos acesso também as comunidades GNOSS siguientes: 'Ajuda e FAQs "onde a equipe de respostas GNOSS perguntas mais frequentes sobre o que pode ser feito e como GNOSS e fornece um guia para ajudar a desfrutar de todos os serviços e conteúdos do serviço;' Notícias GNOSS", a nossa Imprensa e , Sala de Mídia social, onde cada semana nós informar através do Boletim de Novidades em nosso serviço e conteúdo;? 'Didactalia, os grandes taxa on-line de materiais educativos para professores, pais e alunos da educação infantil até o ensino médio e que receber uma seleção semanal com os melhores recursos educacionais. Se desejar, você pode cancelar o recebimento desses serviços pelos meios disponibilizados para o efeito pela GNOSS.{/p}
+      {/fieldset}
+
+      {fieldset}
+      {legend}Direitos de propriedade intelectual e industrial:{/legend}
+      {p}Todos os elementos de desenvolvimento, a programação do desenho, e qualquer outro material capaz de formar propriedade intelectual gnoss.com e que são ncessários para o seu funcionamento estão protegidos por RIAM I+L Lab.{/p}
+      {p}As operações e conteúdos, independemente da natureza desses, que o membro em gnoss.com através de ferramentas de publicação diferentes disponíveis (por exemplo, comunidades, blogs, espaço pessoal de recursos públicos ...) de que são autores, será realizada sob uma licença Creative Commons nos termos da licença de "licença Attribution-Share Alike 3.0 Espanha" que permite copiar, distribuir e transmitir a obra e fazer trabalhos derivados, exceto quando especificado pelo usuário por meio gnoss.com habilitado para esta finalidade. As condições para essa licença estão disponíveis em {a href="https://creativecommons.org/license" target="_blank"}https://creativecommons.org/license{/a}.{/p}
+      {p}Sempre que as matérias e contribuições de conteúdo não estão sujeitos às licenças Creative Commons, e de acordo com as leis de proteção de direitos autorais, você não pode publicar, modificar, distribuir ou reproduzir material protegido por estas leis, marca ou qualquer outro material pertencentes a outras pessoas, incluindo co-autoria de obras, sem o consentimento prévio dos detentores de tais direitos. Como um usuário que enviar estes materiais são responsáveis ??por obter esta aprovação, mas pode ser derivado RIAM R &amp; L Lab está permitindo responsabilidades ou podem surgir por esta causa.{/p}
+      {p}GNOSSé uma plataforma social de que todos os dados de sua estrutura e expressos de acordo com as normas e princípios da Web Semântica e Projeto dados ligados, permitindo a realização de busca facetada e geração de contextos semânticos de ligação de dados. É por esta razão que RIAM Laboratório R &amp; L reserva-se o direito de reutilizar o conteúdo publicado por seus usuários em comunidades GNOSS informação contextual grátis em outras comunidades e espaços ligados GNOSS através de seus dados com terceiros e vice-versa, , a fim de adaptá-los às necessidades técnicas e operacionais do serviço, sem que isso prejudica ou restringe os direitos do autor. O usuário detém os direitos autorais sobre o conteúdo que contribuiu.{/p}
+      {/fieldset}
+
+      {fieldset}
+      {legend}Política de Privacidade:{/legend}
+      {p}A protecção dos dados pessoais é uma prioridade em GNOSS. Portanto, R &amp; L Laboratório RIAM como chefe dessa rede, em todos os momentos garantir a privacidade dos dados pessoais considerados você fornecer através de formulários e / ou formulários de inscrição, o perfil, etc. Esses dados farão parte de um banco de dados que, nos termos da Lei 15/1999 de 13 de dezembro e seus regulamentos de execução, se encontra com o técnico, organizacional e humana para garantir a segurança e confidencialidade dos mesmos.{/p}
+      {p}A recolha e tratamento desses dados pessoais tem como finalidade principal a gestão adequada e desenvolvimento de comunidades de conhecimento, identificando os envolvidos na rede, bem como a obtenção de informações básicas para responder a perguntas que nós podemos atividades de sensibilização e outras de RIAM R &amp; L Lab.{/p}
+
+      {p}RIAM I+L Lab reconhece o exercício de seus direitos de acesso, retificação, cancelamento e oposição de acordo com a legislação vigente. Isso requer que você para dirigir o seu pedido através de {a href="mailto:privacidad@gnoss.com"}privacidad@gnoss.com{/a}.{/p}
+      {/fieldset}
+
+      {fieldset}
+      {legend}Finalização do Serviço: {/legend}
+      {p}Assim como a entrada, você pode cancelar a sua conta, indo para {a href="mailto:solicitudes@gnoss.com"}solicitudes@gnoss.com{/a}. No processo do cancelamento, o seu perfil e as informações visíveis para outros usuários serão removidos.{/p}
+
+      {p}A remoção desses dados assegura a conformidade com a política de protecção de dados.{/p}
+
+      {p}RIAM I+L Lab pode, à sua disposição, a qualquer momento, temporariamente ou permanentemente deixar de acessar e / ou serviço. Esta interrupção pode fazê-lo sem aviso prévio eo fato de aceitar essas condições, você concorda com ao assinar a desativação de suas contas e GNOSS perfis. RIAM R &amp; L Lab não será responsável perante terceiros ou o usuário de cessação ou suspensão do acesso ou modificação.{/p}
+      {/fieldset}
+
+      {fieldset}
+      {legend}Responsabilidades:{/legend}
+      {p}RIAM I+L Lab não se responsabiliza das opiniões, declarações, manifestações e comentários que realiza desde as diferentes ferramentas que esta em rede social colocamos a sua disposição, sendo diretamente responsavel pelas chaves de acesso a rede.{/p}
+      {p}Para conseguir os fins para os quais GNOSS tenha sido criado, esta pribido o uso de perfis de usuários para atos que sejam considerados como ilegais ou não autorizados, que sejam um ataque para outros usuarios, fraudulentos, difamatorios ou que violam o nosso {a href="#CodigoEtico"}código de ética{/a}.{/p}
+      {p}RIAM I+L Lab se reserva o direito de desativar os nomes de usuários e contas que esteja inativo por mais de 6 meses.{/p}
+      {p}Em gnoss.com, o usuário poderá encontrar links que levam a páginas web, blogs, materiais ou sites de web não gerenciados por RIAM I+L Lab e que RIAM I+L Lab não exerce controle algum, não sendo responsável pelos conteúdos, dos serviços ou produtos ofertados , da veracidade da informação que terceiros ofereçam ou qualquer outro tipo de conteúdo que se ofereça.{/p}
+      {/fieldset}
+
+      {fieldset}
+      {legend}{a name="CodigoEtico"}Código ético:{/a}{/legend}
+
+      {p}O código a seguir fornece o quadro para o uso adequado de GNOSS. Este código de ética reconhece as regras de convivencia dentro da rede que favorecen um ambiente positivo para a troca de trabalho, opiniões e valores.{/p}
+      {p}Seu objetivo principal é estabelecer diretrices que permitan proteger o máximo a privacidade, os direitos que por lei são reconhecidos e a experiencia global da rede, sendo um complemento as {a href="#CondicionesAcceso"}condições de acesso{/a}.{/p}
+      {p}Se detecta qualquer violação por parte de um terceiro das normas da rede, poderá comunicar-nos enviando um email para {a href="mailto:reclamaciones@gnoss.com"}reclamaciones@gnoss.com{/a}.{/p}
+      {p}Em GNOSS favorecemos o intercâmbio do conhecimento de forma livre e sem nenhum tipo de restrição inicial. No entanto, existem limitações legais e contratuais no conteúdo e comportamental entre usuarios.{/p}
+      {/fieldset}
+
+      {fieldset}
+      {legend}Identidade do usuario:{/legend}
+      {p}Deve forcener dados corretos ao criar seu perfil e não mentir em sua idade. Ja sabe, conforme estabelecido as condições de acceso, que menores de 14 anos não devem acessar a GNOSS.{/p}
+      {/fieldset}
+
+      {fieldset}
+      {legend}Conteúdos:{/legend}
+      {p}Com a mesma conformidade establecido nas condições de acceso e uso, não deverá intercambiar, compartilhar, guardar ou favorecer, através de nossa rede, materiais, opiniões ou comentários que infrinja a normativa legal e os costumes.{/p}
+      {/fieldset}
+
+      {fieldset}
+      {legend}Convidar a Comunidade:{/legend}
+      {p}Quando convidar a outras pessoas a participar a uma comunidade, deve assegurar-se de que conhecem e aceitamestas condições de uso. GNOSS estima que se for infringido as normas da comunidade por alguma das pessoas convidadas, pode suspender ou cancelar ambos perfis para resguardar os intereses gerais da comunidade em que estão participando e pela integridade de GNOSS.{/p}
+      {/fieldset}
+
+      {fieldset}
+      {legend}Usos da comunidade:{/legend}
+      {p}O convite e o uso de diferentes comunidades gerenciado pela nossa rede social não podem usar para fins comerciais, salvo que RIAM I+L Lab não permite de forma expresa.{/p}
+      {/fieldset}
+
+      {fieldset}
+      {legend}Atos não permitidos: {/legend}
+      {p}Esta proibido, que será de sua exclusiva responsabilidade, o acceso ou a utilização do Serviço com fins ilegais ou não autorizados. Mais específicamente, e sim que o seguinte listado tenha carácter absoluto, é proibida:{/p}
+      {ul}
+      {li class="imitaLista"}Difamar, acusar, intimidar ou ameaçar outros usuários da rede de GNOSS ou a terceiros.{/li}
+      {li class="imitaLista"}Utilizar dados pessoais e íntimos de outras pessoas com finalidades diferentes ambientes da comunidade a que pertence.{/li}
+      {li class="imitaLista"}Usar a rede como ferramenta de intercambio de materiais ou informações que são obscenos, ilícitos, calumniosos, imorales e/o inapropriados.{/li}
+      {li class="imitaLista"}Intercambiar materiais que conforme a lei de propriedade intelectual pertence a um terceiro sem seu concentimento. Do mesmo modo, não poderá retirar os avisos legais sobre direitos autorais, marcas registradas ou de outros direitos afins.{/li}
+      {li class="imitaLista"}Usar GNOSS como difusor de virus, envio de spam, programas maliciosos, assim como arquivos e/ou programas que interrompam, danificar ou limitar o funcionamento da própria rede ou de qualquer software, hardware ou equipamento de telecomunicação. Do mesmo modo, não realizará nenhuma ação que possa danificar, sobrecarregar ou deteriorar a rede GNOSS.{/li}
+      {li class="imitaLista"}Criar uma conta com identidade falsa ou mediante roubo de identidade de outra pessoa ou entidade.{/li}
+      {li class="imitaLista"}Utilizar qualquer ferramenta ou serviço de GNOSS como instrumento para publicar, repetir ou duplicar sistema e/ou automaticamente conteúdos.{/li}
+      {/ul}
+      {/fieldset}
+      {fieldset}
+      {p}A realização de qualquer dos anteriores comportamentos por sua parte parte permitirá a RIAM, dependendo da gravidade e seu critério, suspender ou cancelar seu perfil de forma imediata e, m seu caso, retirar conteudos dos perfis de infringir a lista de atos não pertimidos.{/p}
+      {p}Llegado el caso, en aplicación de lo dispuesto en el párrafo anterior, RIAM I+L Lab suspenderá o cancelará tu perfil automáticamente. Dicho acto no te daría derecho a indemnización alguna. A todos estos efectos, te informamos que RIAM I+L Lab podrá poner en conocimiento y colaborar oportunamente con las autoridades policiales y judiciales competentes si detectase cualquier infracción de la legislación vigente o si tuviera sospecha de delito.{/p}
+      {p}Por último, queremos recorda  que RIAM I+L Lab não se responsabiliza das opiniões, declarações, manifestações e comentarios que realiza desde as diferentes ferramentas que estão nesta rede social colocamos a sua disposição, sendo diretamente responsável em titular as chaves de acceso da rede.{/p}
+      {/fieldset}
+    </Resource>
+    <Resource tag="INFOSINDIDACTALIA">
+      {p}Ao acessar o serviço, manifiestas haber leído las {a href="#CondicionesAcceso"}condiciones de acceso{/a} y reglas de convivencia de su {a href="#CodigoEtico"} código ético{/a}.{/p}
+
+      {fieldset}
+      {legend}{a name="CondiçõesAcesso"}Condições de acesso:{/a}{/legend}
+
+      {p}As presentes condições regulam o uso do serviço web GNOSS. {/p}
+      {/fieldset}
+
+      {fieldset}
+      {legend}Requisitos de acesso:{/legend}
+      {p}Para criar uma conta de usuario mn GNOSS, deve contar com no mínimo 14 anos. Ao registrar-se em GNOSS, declarar que cumprirá com este requisito e esta capacitado para entender, aceitar e cumprir com as {a href="#CondiçõesAcesso"}condições de acesso{/a} e {a href="#CodigoEtico"}código ético{/a} que rege ao funcionamento desta rede social. Se tem entre 14 e 18 anos, necessita um convite a plataforma e autorização de seus pais ou responsáveis legais para acessar aos nossos serviços que estarão limitados ao um uso educativo. RIAM I+L Lab pode solicitar informação  em qualquer momento para que demonstre sua idade real, solicitando que nos envie  fotocopia de sua identidade ou um documento equivalente. Desde RIAM I+L Lab reserva o direito de bloquear ou cancelar seu perfil se não nos enviar tal informação dentro do prazo estipulado.{/p}
+      {p}Nota: Se constatarmos que um menor de 14 anos está registrado como Usuario em GNOSS, eliminaremos ou bloquearemos o perfil de Usuario.{/p}
+      {p}Ao tramitar como usuario, deverá eleger chaves de acceso. Cada vez que desejar entrar na rede, o sistema solicitará esta chave de autenticação, sendo responsável de todas as ações que se realizar com seu nome de usuário e senha.{/p}
+      {p}RIAM I+L Lab não se responsabilizará da custodia que realizar destes sujeitos identificativos, tampouco ao uso que um terceiro faça sem seu consentimento.{/p}
+      {p}RIAM I+L Lab pode restringir o uso de determinados nomes de usuario que vulnerem os direitos de terceiros.{/p}
+      {/fieldset}
+
+      {fieldset}
+      {legend}Procedimento importante em GNOSS:{/legend}
+      {p}Para dar de alta en GNOSS é necessário registrar-se. Na página {a href="http://www.gnoss.com"}www.gnoss.com{/a}  poderá fazer clicando em “criar conta”. Neste processo de registro pediremos seus dados de acesso a sua conta e seus dados pessoais. Informaremos a resposta de sua solicitação de registro enviando um e-mail para seu endereço de correio eletrônico.{/p}
+      {p}Nota: ao registrar-se em GNOSS, daremos acesso também as seguintes comunidades GNOSS: ‘Ajuda e FAQs’ onde a Equipe de GNOSS responde a suas perguntas mais frequentes sobre o que se pode fazer e como em GNOSS e oferecer um guia de Ajuda para desfrutar de todos os serviços e conteúdos do Serviço; ‘GNOSS Noticias’, nossa Press &amp; Social Media Room onde semanalmente informaremos através de nosso Boletim Informativo as Novidades em nossos serviços e conteúdos. Se desejar, poderá remover para não receber estes serviços de GNOSS.{/p}
+      {/fieldset}
+
+      {fieldset}
+      {legend}Direitos de propriedade inteletual e industrial:{/legend}
+      {p}Todos os elementos de desenvolvimento, programação, e qualquer outro material de propriedade intelectual que forma gnoss.com e que são necessários para seu funcionamento se encontram protegidos a favor de RIAM I+L Lab.{/p}
+      {p}Os conteúdos, independentemente da natureza destas, aos usuários que fazem parte de gnoss.com através das diferentes ferramentas de publicação disponíveis (ej. Comunidades, blogs, espaço pessoal público de recursos…) dos que são autores, se realizam baixa da licença Creativa Commons nos términos da licença  de “Reconhecimento-Não comercial-Compartilhar baixa da mesma  licença 3.0 España” que  permite copiar, distribuir e comunicar publicamente a obra e fazer obras derivados, salvo aos usuários indique ao contrario mediante habilitado por gnoss.com para tal fim. as condições para esta licença podem consultar em {a href="https://creativecommons.org/license" target="_blank"}https://creativecommons.org/license{/a}.{/p}
+      {p}Em caso de contribuições as matérias e conteúdo não estão sujeitos às licenças Creative Commons, e de acordo com as leis de proteção de direitos autorais, você não pode publicar, modificar, distribuir ou reproduzir material protegido por estas leis, marca ou qualquer outro material pertencentes a outras pessoas, incluindo co-autoria de obras, sem o consentimento prévio dos detentores de tais direitos. Como um usuário que enviar estes materiais são responsáveis ??por obter esta aprovação, mas pode ser derivado RIAM R &amp; L Lab está permitindo responsabilidades ou podem surgir por esta causa.{/p}
+      {p}GNOSS é uma plataforma social de que todos os dados de sua estrutura e expressos de acordo com as normas e princípios da Web Semântica e Projeto dados ligados, permitindo a realização de busca facetada e geração de contextos semânticos de ligação de dados. É por esta razão que RIAM Laboratório R &amp; L reserva-se o direito de reutilizar o conteúdo publicado por seus usuários em comunidades GNOSS informação contextual grátis em outras comunidades e espaços ligados GNOSS através de seus dados com terceiros e vice-versa, , a fim de adaptá-los às necessidades técnicas e operacionais do serviço, sem que isso prejudica ou restringe os direitos do autor. O usuário detém os direitos autorais sobre o conteúdo que contribuiu.{/p}
+      {/fieldset}
+
+      {fieldset}
+      {legend}Proteção de dados:{/legend}
+      {p}A proteção dos dados pessoais é uma das propriedades da GNOSS. Por ela, RIAM I+L Lab como titular desta rede social, garantirá em todo momento a privacidade dos dados considerados como pessoais que nos facilite através de formulários e/ou haja inscrição, perfil, etc. Estes dados passarão a formar parte de banco de dados automatizado que, conforme a Lei 15/1999 de 13 de Dezembro e a sua normativa de desenvolvimento, cumprirá com as medidas técnicas, organizativas e humanas necessária para garantir a seguridade e confidencialidade dos mesmos.{/p}
+      {p}A coleta e tratamento desses dados pessoais tem como finalidade principal a gestão adequada e desenvolvimento de comunidades de conhecimento, identificando os envolvidos na rede, bem como a obtenção de informações básicas para responder a perguntas RIAM I+L Lab.{/p}
+
+      {p}RIAM I+L Lab reconhece o exercício de seus direitos de acesso, retificação, cancelamento e oposição de acordo com a legislação vigente. Isso requer que você para dirigir o seu pedido através de {a href="mailto:privacidade@gnoss.com"}privacidade@gnoss.com{/a}.{/p}
+      {/fieldset}
+
+      {fieldset}
+      {legend}Finalização do Serviço: {/legend}
+      {p}Da mesma forma que procede para criar, você pode cancelar a sua conta, indo para {a href="mailto:solicitacoes@gnoss.com"}solicitacoes@gnoss.com{/a}. No procedimento do cancelamento, o seu perfil e as informações visíveis para outros usuários serão removidos.{/p}
+
+      {p}A remoção desses dados assegura a conformidade com a política de protecção de dados.{/p}
+
+      {p}RIAM I+L Lab pode, à sua disposição, a qualquer momento, temporariamente ou permanentemente deixar de acessar e / ou serviço. Esta interrupção pode fazê-lo sem aviso prévio eo fato de aceitar essas condições você concorda com ao assinar a desativação de suas contas e perfis em GNOSS. RIAM I+L Lab não pode ser responsabilizada a terceiros ou o usuário de cessação ou suspensão do acesso ou modificação.{/p}
+      {/fieldset}
+
+      {fieldset}
+      {legend}Responsabilidades:{/legend}
+      {p}RIAM I+L Lab não se responsabiliza pelas opiniões, representações, declarações e comentários que você faz a partir das ferramentas diferentes nesta rede que lhe oferecemos, sendo diretamente responsável pela titular das chaves de acesso à rede.{/p}
+      {p}Para alcançar o objetivo para o qual foi criado GNOSS Qualquer uso ilegal de perfis de usuário para atos que são considerados ilegais ou não autorizados, para ser um ajuste para os outros, fraudulento, difamatório ou em violação da nossa {a href="#CodigoEtico"}código ético{/a}.{/p}
+      {p}RIAM I+L Lab reserva-se o direito de desativar os nomes de usuário e contas que foram inativo por mais de 6 meses.{/p}
+      {p}Em gnoss.com, o usuário vai encontrar links que levam a sites, blogs, materiais ou sites não gerenciados pelo RIAM R &amp; L Laboratório e em que P &amp; L Laboratório RIAM nenhum controle, não se responsabiliza pelo conteúdo, serviços ou produtos oferecidos a partir do mesmo, a veracidade das informações a oferta festa ou qualquer outro conteúdo que é oferecido.{/p}
+      {/fieldset}
+
+      {fieldset}
+      {legend}{a name="CodigoEtico"}Código de ética:{/a}{/legend}
+
+      {p}O código a seguir fornece o quadro para o uso adequado de GNOSS. Este código de ética contém as regras de conduta dentro da rede que suportam um ambiente positivo para a troca de trabalho, opiniões e valores.{/p}
+      {p}Seu principal objetivo é estabelecer diretrizes para proteger o máximo de privacidade, os direitos que são reconhecidos por lei e da experiência global da rede, como um complemento para {a href="#Condiçõesdeacesso"}condições de acesso{/a}.{/p}
+      {p}Se você notar qualquer violação por um terço das normas para as redes, você pode notificar-nos enviando um e-mail para {a href="mailto:reclamacoes@gnoss.com"}reclamacoes@gnoss.com{/a}.{/p}
+      {p}Em GNOSS favorecemos a troca de conhecimentos de forma livre e sem quaisquer restrições inicialmente. No entanto, há restrições legais e contratuais relativas ao conteúdo e comportamento entre os usuários.{/p}
+      {/fieldset}
+
+      {fieldset}
+      {legend}Identificação do usuário:{/legend}
+      {p}Você deve nos fornecer algumas informações para criar um perfil e não mentir com a idade. Você sabe, como previsto nas condições de acesso, que as crianças menores de 14 anos não devem acessar o GNOSS.{/p}
+      {/fieldset}
+
+      {fieldset}
+      {legend}Conteúdos:{/legend}
+      {p}Com força igual ao das disposições das condições de acesso e uso, você não deve trocar, armazenar, compartilhar ou promover, através da nossa rede, materiais, opiniões ou comentários que violem as normas legais e costumes.{/p}
+      {/fieldset}
+
+      {fieldset}
+      {legend}Convites para a Comunidade:{/legend}
+      {p}Quando você convidar outras pessoas para participar de uma comunidade em que você colabore, você deve se certificar de que eles sabem e aceita estes termos de uso. Se GNOSS estima ter violado as regras da comunidade para alguns dos convidados, pode suspender ou cancelar ambos os perfis para salvaguardar os interesses gerais da comunidade em que estão participando e integridade do GNOSS.{/p}
+      {/fieldset}
+
+      {fieldset}
+      {legend}Uso das comunidades:{/legend}
+      {p}O convite e o uso de diferentes comunidades gerenciadas pela nossa rede social não pode ser utilizada para fins comerciais,  menos a RIAM R &amp; L Laboratório expressamente permitido.{/p}
+      {/fieldset}
+
+      {fieldset}
+      {legend}Atos proibidos: {/legend}
+      {p}É proibido, por isso será de sua exclusiva responsabilidade, acessar ou usar o serviço para fins ilegais ou não autorizados. Mais especificamente, e sem que a lista que se segue absoluto, é proibida:{/p}
+      {ul}
+      {li class="imitaLista"}Difamar, perseguir, intimidar ou ameaçar outros usuários da rede ou de terceiros que GNOSS.{/li}
+      {li class="imitaLista"}Use detalhes pessoais e íntimos de outras pessoas com diferentes propósitos para o qual o ambiente comunitário determina onde você pertence.{/li}
+      {li class="imitaLista"}Usando a rede como uma ferramenta para o compartilhamento de informações ou materiais que são obscenos, ilegal, difamatório, imoral e / ou inadequado.{/li}
+      {li class="imitaLista"}Troca de materiais sob a lei de propriedade intelectual pertencentes a terceiros sem o seu consentimento. Da mesma forma, você não pode remover os avisos legais de copyright, marca registrada ou outros direitos relacionados.{/li}
+      {li class="imitaLista"}Use GNOSS difusor como vírus, spam, programas maliciosos e arquivos e / ou programas que o danifiquem interrupção, ou limitar o funcionamento da própria rede ou qualquer equipamento de hardware, software ou de telecomunicações. Da mesma forma, não tome qualquer ação que possa danificar, sobrecarregar ou prejudicar a rede GNOSS.{/li}
+      {li class="imitaLista"}Criar uma conta sob uma falsa identidade ou roubo de identidade por outra pessoa ou entidade.{/li}
+      {li class="imitaLista"}Usar qualquer ferramenta ou serviço como uma ferramenta para publicar GNOSS, repetir ou duplicar sistema e / ou o conteúdo automaticamente.{/li}
+      {/ul}
+      {/fieldset}
+      {fieldset}
+      {p}A realização de qualquer um dos comportamentos acima de sua parte permitir RIAM, dependendo da gravidade e, a seu critério, suspender ou encerrar o seu perfil imediatamente e, se necessário, retire os perfis contidos na lista de atos não permitidos.{/p}
+      {p}Quando aplicável, nos termos do disposto no parágrafo anterior, RIAM I+L Lab Perfil suspenso ou excluído automaticamente. Por todos estes propósitos, informamos que RIAM R &amp; L Lab pode notificar e oportuna cooperar com as autoridades policiais e judiciais, se eu detectar qualquer violação da lei ou se ele suspeitaar de crime.{/p}
+      {p}Finalmente, lembramos que RIAM I+L Lab não se responsabiliza pelas opiniões, representações, declarações e comentários que você faz a partir das ferramentas diferentes nesta rede que lhe oferecemos, sendo diretamente responsável pela titular das chaves de acesso à rede.{/p}
+      {/fieldset}
+    </Resource>
+  </page>
+  <page name="POLITICAPRIVACIDAD">
+    <Resource tag="INFO">
+      {p}Para RIAM I+L Lab é essencial para garantir e proteger a privacidade e confidencialidade de suas informações pessoais de acordo com as normas legais em território espanhol. Não é bom ter uma política de privacidade, se não ficar bom entender de participar de nossa rede. Portanto, temos tentado escrever em linguagem clara, tentando ser o mais breve possível e evitando tecnologias excessivas.{/p}
+      {fieldset}
+      {p}Nossa política de privacidade visa garantir que:{/p}
+      {ul}
+      {li class="imitaLista"}a qualquer momento você pode alterar as informações pessoalmente identificáveis ??que você compartilha. Nós compreendemos que você pode não querer compartilhar suas informações com todos, que é por isso que nós damos-lhe o controle de suas informações. Nossa política de privacidade padrão limita as informações exibidas em seu perfil para as suas redes. Você escolhe a informação que você deseja publicar e que os outros sabem sobre você.{/li}
+      {li class="imitaLista"}a qualquer momento, se você quiser, você pode cancelar a sua conta sem burocracia pesada e em conformidade com os requisitos legais de protecção de dados e conservação. Reter apenas os dados que são legalmente exigidos pelo tempo que requerem.{/li}
+      {li class="imitaLista"}dados fornecidos não serão transferidos para outras empresas ou, se o fizermos, você será informado com antecedência de que assim que você tem a capacidade de consentir ou recusar tal atribuição a ele.{/li}
+      {/ul}
+      {/fieldset}
+
+      {fieldset}
+      {legend}Dados necessários para utilização do GNOSS:{/legend}
+
+      {p}Há informações necessárias que você deve fornecer, como seu nome e endereço de e-mail, quando acessar a página da GNOSS. Usamos essa informação para criar um perfil dentro da rede. Além disso, nenhuma outra informação, tais como a sua idade, o currículo, vídeos, fotos você pode fornecê-la adicionalmente.{br /}
+      Outra parte da informação é recolhida automaticamente através do seu computador automaticamente por problemas ao acessar o serviço. Esta informação inclui cookies (que facilita e agiliza o acesso futuro), o seu endereço de protocolo de Internet IP e o tipo de browser com o qual você acessa.{br /}
+      A informação pode ser complementada adiconalmente por um terceiro fornecida por de dados de domínio público.{/p}
+      {/fieldset}
+
+      {fieldset}
+      {legend}Proteção dos dados:{/legend}
+      {p}A protecção dos dados pessoais é uma prioridade em GNOSS. Assim, RIAM I+L Lab como proprietário da rede, em todos os momentos garantir a privacidade dos dados pessoais considerados você fornecer através de formulários e / ou formulários de inscrição, o perfil, etc. Esses dados farão parte de um banco de dados que, nos termos da Lei, 15/1999 de 13 de Dezembro e seus regulamentos de execução, se encontra com o técnico, organizacional e humana para garantir a segurança e confidencialidade dos mesmos.{/p}
+      {p}A coleta e tratamento desses dados pessoais tem como finalidade principal a gestão adequada e desenvolvimento de comunidades de conhecimento, identificando os envolvidos na rede, bem como a obtenção de informações básicas para responder a perguntas RIAM I+L Lab.{/p}
+
+      {p}RIAM I+L Lab reconhece o exercício de seus direitos de acesso, retificação, cancelamento e oposição de acordo com a legislação vigente. Para Isso deve encaminhar a sua solicitação para {a href="mailto:privacidade@gnoss.com"}privacidade@gnoss.com{/a}.{/p}
+      {/fieldset}
+
+      {fieldset}
+      {legend}Uso das informações:{/legend}
+      {p}As informações que você fornecer vai usá-lo para melhorar a usabilidade e experiência da rede.{br /}
+      Vamos respeitar o grau de sigilo das informações pessoais contidas no seu perfil de acordo com as suas preferências. Nós vamos usar o seu endereço de e-mail para contatá-lo por razões de segurança, para confirmar a sua identidade ou navios de serviços associados com as suas preferências.{br /}
+      As informações recolhidas automaticamente pode ser usado para fazer as estatísticas e informações sobre o número de pessoas que visitam a rede. Vamos melhorar GNOSS, adaptá-lo às suas necessidades e otimizar o serviço de conteúdo.{/p}
+      {/fieldset}
+
+      {fieldset}
+      {legend}Uso de convites para as Comunidades:{/legend}
+      {p}Se você quer que um amigo participe da rede deve fazer o convite através da ferramenta GNOSS,  necessário que forneça um endereço de e-mail para enviar o convite.{br /}
+      RIAM I+L Lab só usar essas informações para enviar o convite e se manter a par desta ferramenta.{/br}
+      Se o seu amigo não quer aderir à rede e quiser nos para remover os seus dados do nosso banco de dados, você pode fazer {a href="mailto:privacidade@gnoss.com"}privacidade@gnoss.com{/a}.{/p}
+      {/fieldset}
+
+      {fieldset}
+      {legend}Mudanças na Política:{/legend}
+      {p}GNOSS está em constante mudança, assim como os textos e políticas; Por que anunciar essas mudanças durante o desenvolvimento do projeto pode ter lugar. Vou postar em um pesquisável facilmente, de modo que em todos os momentos sei que coletar e usar informações.{/p}
+      {p}Recomendamos que você analise estes documentos com freqüência. Se fizermos quaisquer alterações materiais a esta política vamos público aqui, ou enviando um e-mail para o contato da conta ou, ainda, através de publicação na página principal.{/p}
+      {/fieldset}
+    </Resource>
+    <Resource tag="INFOHTML">
+      {p}Para RIAM I+L Lab é essencial para garantir e proteger a privacidade e confidencialidade de suas informações pessoais de acordo com as normas legais em território espanhol. Não é bom ter uma política de privacidade, se não ficar bom entender de participar de nossa rede. Portanto, temos tentado escrever em linguagem clara, tentando ser o mais breve possível e evitando tecnicalidades excessivas.{/p}
+      {p}Nossa política de privacidade tem o objetivo de garantir que:{br /}
+      {div class="imitaLista"}a qualquer momento você pode alterar as informações pessoalmente identificáveis ??que você compartilha. Nós compreendemos que você pode não querer compartilhar suas informações com todos, que é por isso que nós damos-lhe o controle de suas informações. Nossa política de privacidade padrão limita as informações exibidas em seu perfil para as suas redes. Você escolhe a informação que você deseja publicar e que os outros sabem sobre você.{/div}
+      {div class="imitaLista"}a qualquer momento, se você quiser, você pode cancelar a sua conta sem burocracia pesada e em conformidade com os requisitos legais de protecção de dados e conservação. Reter apenas os dados que são legalmente exigidos pelo tempo que requerem.{/div}
+      {div class="imitaLista"}os dados fornecidos não serão transferidos para outras empresas ou, se o fizermos, você será informado com antecedência de que assim que você tem a capacidade de consentir ou recusar tal atribuição a ele.{/div}
+
+      {h4 class="textBox"}Dados necessários ao se utilizar o GNOSS:{/h4}
+
+      {p}Há informações necessárias que você fornecer, como seu nome e endereço de e-mail, quando descarregada na página da GNOSS. Usamos essa informação para criar um perfil dentro da rede. Além disso, nenhuma outra informação, tais como a sua idade, o currículo, vídeos, fotos você pode fornecê-la adicionalmente.{br /}
+      Outra parte da informação é recolhida automaticamente através do seu computador automaticamente problemas ao acessar o serviço. Esta informação inclui cookies (que facilitar e agilizar o acesso futuro), o seu endereço de protocolo de Internet IP eo tipo de browser com o qual você concorda.{br /}
+      A informação pode ser complementada com o terceiro ou fornecida por meio de dados de domínio público.{/p}
+
+      {h4 class="textBox"}Proteção dos dados:{/h4}
+      {p}A protecção dos dados pessoais é uma prioridade em GNOSS. Assim, RIAM I+L Lab como proprietário da rede, em todos os momentos garantir a privacidade dos dados pessoais considerados você fornecer através de formulários e / ou formulários de inscrição, o perfil, etc. Esses dados farão parte de um banco de dados que, nos termos da Lei 15/1999 de 13 de Dezembro e seus regulamentos, se encontra com o técnico, organizacional e humana para garantir a segurança e confidencialidade dos mesmos.{/p}
+      {p}A coleta e tratamento desses dados pessoais tem como finalidade principal a gestão adequada e desenvolvimento de comunidades de conhecimento, identificando os envolvidos na rede, bem como a obtenção de informações básicas para responder a perguntas que nós podemos atividades de sensibilização e outras de RIAM R &amp; L Lab{/p}
+
+      {p}RIAM I+L Lab reconhece o exercício de seus direitos de acesso, retificação, cancelamento e oposição de acordo com a legislação vigente. Isso requer que você para dirigir o seu pedido através de {a href="mailto:privacidade@gnoss.com"}privacidade@gnoss.com{/a}.{/p}
+
+      {h4 class="textBox"}Uso das Informações:{/h4}
+      {p}As informações que você vai fornecer serão utilizadas para melhorar a usabilidade e a experiência da rede.{br /}
+      Vamos respeitar o grau de sigilo das informações pessoais contidas em seu perfil de acordo com suas preferências. Nós vamos usar o seu endereço de e-mail para contatá-lo por razões de segurança, para confirmar a sua identidade ou navios de serviços associados com as suas preferências.{br /}
+      As informações coletadas automaticamente pode ser usado para fazer as estatísticas e informações sobre o número de pessoas que visitam a rede. Vamos melhorar GNOSS, adaptá-lo às suas necessidades e otimizar o seu serviço de conteúdo.{/p}
+
+
+      {h4 class="textBox"}Uso de convites para as Comunidades:{/h4}
+      {p}Se você quer que um amigo participe da rede e deve convidar através da ferramenta GNOSS, peço apenas que você forneça um endereço de e-mail para enviar o convite.{br /}
+      RIAM I+L Lab só usar essas informações para enviar o convite, e para acompanhar esta ferramenta.{/br}
+      Se o seu amigo não quer aderir à rede e quiser nos para remover os seus dados do nosso banco de dados, você pode fazer {a href="mailto:privacidade@gnoss.com"}privacidade@gnoss.com{/a}.{/p}
+
+
+      {h4 class="textBox"}Alterações das políticas:{/h4}
+      {p}GNOSS está em constante mudança, assim como os textos e as políticas de anunciar essas mudanças para que, durante o desenvolvimento do projeto pode ser realizado. Vou postar em um pesquisável facilmente, de modo que em todos os momentos sei que coletar e usar informações.{br /}
+      Recomendamos que você analise estes documentos com freqüência. Se fizermos quaisquer alterações materiais a esta política vamos público aqui, ou enviando um e-mail para o contato da conta ou, ainda, através de publicação na página principal.{/p}
+    </Resource>
+  </page>
+  <page name="INFOVISIBILIDADPERFIL">
+    <Resource tag="INFO">
+      {p}Para RIAM I+L Lab é essencial para garantir e proteger a privacidade e confidencialidade de suas informações pessoais de acordo com as normas legais em território espanhol. Não é bom ter uma política de privacidade, se não ficar bom entender de participar de nossa rede. Portanto, temos tentado escrever em linguagem clara, tentando ser o mais breve possível e evitando tecnicalidades excessivas.{/p}
+      {fieldset}
+      {p}Nossa política de privacidade visa garantir que:{/p}
+      {ul}
+      {li class="imitaLista"}a qualquer momento você pode alterar as informações pessoalmente identificáveis que você compartilha. Nós compreendemos que você pode não querer compartilhar suas informações com todos, que é por isso que nós damos-lhe o controle de suas informações. Nossa política de privacidade padrão limita as informações exibidas em seu perfil para as suas redes. Você escolhe a informação que você deseja publicar e que os outros vejam sobre você.{/li}
+      {li class="imitaLista"}a qualquer momento, se você quiser, você pode cancelar a sua conta sem burocracia pesada e em conformidade com os requisitos legais de protecção de dados e conservação. Reter apenas os dados que são legalmente exigidos pelo tempo que exige.{/li}
+      {li class="imitaLista"}dados fornecidos não serão transferidos para outras empresas ou, se o fizermos, você será informado com antecedência de que assim que você tem a capacidade de consentir ou recusar tal atribuição a ele.{/li}
+      {/ul}
+      {/fieldset}
+
+      {fieldset}
+      {legend}Dados necessários quando se utiliza o GNOSS:{/legend}
+
+      {p}Há informações necessárias que você deve fornecer, como seu nome e endereço de e-mail, quando for acessar a página da GNOSS. Usamos essa informação para criar um perfil dentro da rede. Além disso, nenhuma outra informação, tais como a sua idade, o currículo, vídeos, fotos que também poderá facilitar.{br /}
+      Outra parte da informação é recolhida automaticamente através do seu computador automaticamente problemas ao acessar o serviço. Esta informação inclui cookies (que facilitar e agilizar o acesso futuro), o seu endereço de protocolo de Internet IP e o tipo de browser com o qual você utiliza para navegar.{br /}
+      A informação pode ser complementada por um terceiro ou fornecida por meio de dados de domínio público.{/p}
+      {/fieldset}
+
+      {fieldset}
+      {legend}Proteção dos dados:{/legend}
+      {p}A proteção dos dados pessoais é uma prioridade em GNOSS. Assim, RIAM I+L Lab como proprietário da rede, em todos os momentos garantir a privacidade dos dados pessoais considerados você fornecer através de formulários e / ou formulários de inscrição, o perfil, etc. Esses dados farão parte de um banco de dados que, nos termos da Lei 15/1999 de 13 de Dezembro e seus regulamentos, se encontra com o técnico, organizacional e humana para garantir a segurança e confidencialidade dos mesmos.{/p}
+      {p}A coleta e tratamento desses dados pessoais tem como finalidade principal a gestão adequada e desenvolvimento de comunidades de conhecimento, identificando os envolvidos na rede, bem como a obtenção de informações básicas para responder a perguntas que nós podemos actividades de sensibilização e outras RIAM I+L Lab.{/p}
+
+      {p}RIAM I+L Lab reconhece o exercício de seus direitos de acesso, retificação, cancelamento e oposição de acordo com a legislação vigente. Isso requer que você faça o seu pedido através de {a href="mailto:privacidade@gnoss.com"}privacidade@gnoss.com{/a}.{/p}
+      {/fieldset}
+
+      {fieldset}
+      {legend}Uso das Informações:{/legend}
+      {p}As informações que você irá fornecer serão utilizadas para melhorar a usabilidade e a experiência da rede.{br /}
+      Vamos respeitar o grau de sigilo das informações pessoais contidas em seu perfil de acordo com suas preferências. Nós vamos usar o seu endereço de e-mail para contatá-lo por razões de segurança, para confirmar a sua identidade ou navegação de serviços associados com as suas preferências.{br /}
+      As informações coletadas automaticamente pode ser usado para fazer as estatísticas e informações sobre o número de pessoas que visitam a rede. Vamos melhorar GNOSS, adaptá-lo às suas necessidades e otimizar o seu serviço de conteúdo.{/p}
+      {/fieldset}
+
+      {fieldset}
+      {legend}Uso de convites para as Comunidades:{/legend}
+      {p}Se você quer que um amigo participe da rede deve fazer o convite através da ferramenta GNOSS, peço apenas que você forneça um endereço de e-mail para enviar o convite.{br /}
+      RIAM I+L Lab só usar essas informações para enviar o convite, e para acompanhar esta ferramenta.{/br}
+      Se o seu amigo não quer aderir à rede e quiser nos para remover os seus dados do nosso banco de dados, você pode fazer {a href="mailto:privacidade@gnoss.com"}privacidade@gnoss.com{/a}.{/p}
+      {/fieldset}
+
+      {fieldset}
+      {legend}Alterações nas políticas:{/legend}
+      {p}GNOSS está em constante mudança, assim como os textos e as políticas de anunciar essas mudanças para que, durante o desenvolvimento do projeto pode ser realizado. Vou postar em um pesquisável facilmente, de modo que em todos os momentos sei que coletar e usar informações.{/p}
+      {p}Recomendamos que você analise estes documentos com freqüência. Se fizermos quaisquer alterações materiais a esta política vamos público aqui, ou enviando um e-mail para o contato da conta ou, ainda, através de publicação na página principal.{/p}
+      {/fieldset}
+    </Resource>
+  </page>
+  <page name="ACERCADEGNOSS">
+    <Resource tag="TITULOPAGINA">Sobre o GNOSS</Resource>
+    <Resource tag="TITULO">O que é GNOSS</Resource>
+    <Resource tag="PERSONASYORGANIZACIONES">Pessoas e Organizações</Resource>
+    <Resource tag="INFO">
+      {p}GNOSS é um site que converge as tecnologias das webs sociais e da web semântica, desenvolvido por {a href="riam.aspx"}RIAM I+L LAB{/a}, que permite a criação de comunidades, ligando a sua inteligência e os processos de ativação robustas de inteligência, criatividade e pensamento coletivo.{/p}
+      {p}GNOSS é um espaço semântico: uma web semântica. A {b}semântica{/b} tem a ver com dar significado aos conteúdos mas o significado é um fato social. GNOSS permite significado para fornecer conteúdo de forma colaborativa e {b}gerar informação sobre a informação{/b}, que é o único caminho viável para desenvolver conteúdo significativo para a comunidade.{/p}
+      {p}GNOSS é uma forma de Internet 3.0.  {b}fácil{/b} e {b}eficiente{/b}.Um espaço necessário para proporcionar uma {b}presença virtual{/b} completa e complexa (com todos os perfis) Internet no futuro profissional. As pessoas no GNOSS podem se apresentar e ter uma complexa {b}Identidade digital{/b}, uma espécie de "eu-virtual" capaz de conter presente, e partes, da maneira que querem, a sua herança intelectual, sua história e sua experiência profissional.{/p}
+      {p}GNOSS é um espaço social online comentado com vinculos, metas, projetos e interesses. As pessoas em GNOSS podem compartilhar, distribuir e caracterizar seus recuros de conhecimento e também crialos de forma colaborativa; podem gerar vocabulários e enciclopédias, e usar as ferramentas do pensamento e da criação de alcançar acordos coletivos, identificando cenários e visões partes. Em suma, pode-se desenvolver entre todos uma {b}mente global{/b}ou uma espécie de {b}inteligencia única{/b} que, com base na cooperação, permite mais tratar com sucesso os processos de mudança e inovação típica de ambientes caracterizados por uma {b}complexidade{/b},incerteza e {b}mudança rápida{/b}.{/p}
+      {p}GNOSS é em definitivo, um espaço de {b}vida digital{/b} ou de{b}vida social aumentada{/b} que permite a seuss usuários transcender as limitações de acesso ao conhecimento, informação e personalidades inerentes rosto vida social. GNOSS é uma rede social que permite representar e conectar todos os aspectos da formação e da vida profissional das pessoas.{/p}
+      {p}O universo de relações GNOSS é dividido em três áreas principais:
+      {ul}
+      {li}{h4 class="textBox"}COMUNIDADES GNOSS:{/h4} Espaço social de pessoas ligadas por interesses. Representa a vida social de uma comunidade ou sociedade em rede.{/li}
+      {li}{h4 class="textBox"}GNOSS:{/h4} Espaço pessoal para o gerenciamento de identidade e do património intelectual.{/li}
+      {li}{h4 class="textBox"}GNOSS ORGANIZA:{/h4} Espaço social das organizações e indivíduos dentro delas. Solução para empresas sob Enterprise 2.0, representação e sistema de gerenciamento de evolução das organizações.{/li}
+      {/ul}
+    </Resource>
+    <Resource tag="ACERCADEGNOSS">Sobre GNOSS</Resource>
+    <Resource tag="QUEESGNOSS">O que é GNOSS</Resource>
+    <Resource tag="WEBSEMANTICA">Web semântica</Resource>
+    <Resource tag="SEMANTICASOCIAL">Semântica social</Resource>
+    <Resource tag="GRAFOSEMANTICOSOCIAL">Gráfico semântico social</Resource>
+    <Resource tag="INDICECATEGORIAS">Índice por categorias</Resource>
+    <Resource tag="TECNOLOGIASSEMANTICAS">Tecnologias semânticas</Resource>
+    <Resource tag="WEB20">Web 2.0</Resource>
+    <Resource tag="WEB30">Web 3.0</Resource>
+    <Resource tag="COMUNIDADESGNOSS">Comunidades GNOSS</Resource>
+    <Resource tag="MYGNOSS">GNOSS</Resource>
+    <Resource tag="QUEOFRECEGNOSS">O que a GNOSS oferece</Resource>
+    <Resource tag="ACERCADERIAM">Sobre RIAM</Resource>
+    <Resource tag="CONOCEGNOSS">conheça a GNOSS</Resource>
+    <Resource tag="QUEESGNOSS_1"></Resource>
+    <Resource tag="WEB30_1A"></Resource>
+    <Resource tag="SEMANTICASOCIAL_1B"></Resource>
+    <Resource tag="LINKEDOPENDATA_1C"></Resource>
+    <Resource tag="VENTAJASGNOSS_2"></Resource>
+    <Resource tag="PRODUCTOSYSERVICIO_3"></Resource>
+    <Resource tag="SOCIALBUSINESS_3A"></Resource>
+    <Resource tag="LLAVEENMANO_3B"></Resource>
+    <Resource tag="CONSULTORIAYSOPORTE_3C"></Resource>
+    <Resource tag="CASOSDEUSO_4"></Resource>
+    <Resource tag="CONTENIDO1"></Resource>
+    <Resource tag="CONTENIDO1A"></Resource>
+    <Resource tag="CONTENIDO1B"></Resource>
+    <Resource tag="CONTENIDO1C"></Resource>
+    <Resource tag="CONTENIDO2"></Resource>
+    <Resource tag="CONTENIDO3A"></Resource>
+    <Resource tag="CONTENIDO3B"></Resource>
+    <Resource tag="CONTENIDO3C"></Resource>
+    <Resource tag="CONTENIDO4"></Resource>
+    <Resource tag="URL1A"></Resource>
+    <Resource tag="URL1B"></Resource>
+    <Resource tag="URL1C"></Resource>
+    <Resource tag="URL2"></Resource>
+    <Resource tag="URL3A"></Resource>
+    <Resource tag="URL3B"></Resource>
+    <Resource tag="URL3C"></Resource>
+    <Resource tag="URL4"></Resource>
+  </page>
+  <page name="APRENDEGNOSS">
+    <Resource tag="TITULOPAGINA">
+    </Resource>
+    <Resource tag="GUIAGNOSS">
+    </Resource>
+    <Resource tag="TITULO">
+    </Resource>
+    <Resource tag="APRENDEGNOSS">
+    </Resource>
+    <Resource tag="NOTICIAS">
+    </Resource>
+    <Resource tag="COMAYUDAYFAQS">
+    </Resource>
+    <Resource tag="COMNOTICIAS">
+    </Resource>
+    <Resource tag="QUEPUEDOHACER">
+    </Resource>
+    <Resource tag="QUEPUEDOHACER_CONTENIDO">
+    </Resource>
+    <Resource tag="CREAIDENTIDAD">
+    </Resource>
+    <Resource tag="CREAIDENTIDAD_SUBTITULO">
+    </Resource>
+    <Resource tag="CREAIDENTIDAD_INTRO">
+    </Resource>
+    <Resource tag="CREAIDENTIDAD_CONTENIDO">
+    </Resource>
+    <Resource tag="PARTICIPACOMUNIDADES">
+    </Resource>
+    <Resource tag="PARTICIPACOMUNIDADES_SUBTITULO">
+    </Resource>
+    <Resource tag="PARTICIPACOMUNIDADES_INTRO">
+    </Resource>
+    <Resource tag="PARTICIPACOMUNIDADES_CONTENIDO">
+    </Resource>
+    <Resource tag="ENCUENTRACONTENIDO">
+    </Resource>
+    <Resource tag="ENCUENTRACONTENIDO_SUBTITULO">
+    </Resource>
+    <Resource tag="ENCUENTRACONTENIDO_INTRO">
+    </Resource>
+    <Resource tag="ENCUENTRACONTENIDO_CONTENIDO">
+    </Resource>
+    <Resource tag="CONTACTOS">
+    </Resource>
+    <Resource tag="CONTACTOS_SUBTITULO">
+    </Resource>
+    <Resource tag="CONTACTOS_INTRO">
+    </Resource>
+    <Resource tag="CONTACTOS_CONTENIDO">
+    </Resource>
+    <Resource tag="SUBSCRIBE">
+    </Resource>
+    <Resource tag="SUBSCRIBE_SUBTITULO">
+    </Resource>
+    <Resource tag="SUBSCRIBE_INTRO">
+    </Resource>
+    <Resource tag="SUBSCRIBE_CONTENIDO">
+    </Resource>
+    <Resource tag="COMUNIDAD">
+    </Resource>
+    <Resource tag="COMUNIDAD_SUBTITULO">
+    </Resource>
+    <Resource tag="COMUNIDAD_INTRO">
+    </Resource>
+    <Resource tag="COMUNIDAD_CONTENIDO">
+    </Resource>
+    <Resource tag="ORGANIZACION">
+    </Resource>
+    <Resource tag="ORGANIZACION_SUBTITULO">
+    </Resource>
+    <Resource tag="ORGANIZACION_INTRO">
+    </Resource>
+    <Resource tag="ORGANIZACION_CONTENIDO">
+    </Resource>
+    <Resource tag="EQUIPO">
+    </Resource>
+    <Resource tag="EQUIPO_SUBTITULO">
+    </Resource>
+    <Resource tag="EQUIPO_INTRO">
+    </Resource>
+    <Resource tag="EQUIPO_CONTENIDO">
+    </Resource>
+    <Resource tag="PENSAMIENTOCOLECTIVO">
+    </Resource>
+    <Resource tag="PENSAMIENTOCOLECTIVO_SUBTITULO">
+    </Resource>
+    <Resource tag="PENSAMIENTOCOLECTIVO_INTRO">
+    </Resource>
+    <Resource tag="PENSAMIENTOCOLECTIVO_CONTENIDO">
+    </Resource>
+    <Resource tag="BLOG">
+    </Resource>
+    <Resource tag="BLOG_SUBTITULO">
+    </Resource>
+    <Resource tag="BLOG_INTRO">
+    </Resource>
+    <Resource tag="BLOG_CONTENIDO">
+    </Resource>
+    <Resource tag="HERRAMIENTAS">
+    </Resource>
+    <Resource tag="HERRAMIENTAS_SUBTITULO">
+    </Resource>
+    <Resource tag="HERRAMIENTAS_INTRO">
+    </Resource>
+    <Resource tag="HERRAMIENTAS_CONTENIDO">
+    </Resource>
+    <Resource tag="OTRASREDES">
+    </Resource>
+    <Resource tag="OTRASREDES_SUBTITULO">
+    </Resource>
+    <Resource tag="OTRASREDES_INTRO">
+    </Resource>
+    <Resource tag="OTRASREDES_CONTENIDO">
+    </Resource>
+    <Resource tag="CONOCEGNOSS">
+    </Resource>
+    <Resource tag="CONOCEGNOSS_SUBTITULO">
+    </Resource>
+    <Resource tag="CONOCEGNOSS_INTRO">
+    </Resource>
+    <Resource tag="CONOCEGNOSS_CONTENIDO">
+    </Resource>
+    <Resource tag="QUEESGNOSS">
+    </Resource>
+    <Resource tag="GESTIONARIDENTIDAD">
+    </Resource>
+    <Resource tag="GESTIONARPATRIMONIO">
+    </Resource>
+    <Resource tag="COMPARTIRINTERESES">
+    </Resource>
+    <Resource tag="CREARDISTRIBUIRCONOCIMIENTO">
+    </Resource>
+    <Resource tag="DESCUBRIRCONOCIMIENTO">
+    </Resource>
+    <Resource tag="ORGANIZARCONOCIMIENTO">
+    </Resource>
+    <Resource tag="ORGANIZARCONOCIMIENTOYGESTIONAR">
+    </Resource>
+    <Resource tag="CONECTARPERSONAS">
+    </Resource>
+    <Resource tag="CONECTARINTELIGENCIAS">
+    </Resource>
+    <Resource tag="AYUDAYFAQ">
+    </Resource>
+    <Resource tag="IRAAYUDAYFAQ">
+    </Resource>
+    <Resource tag="CREARCUENTA">
+    </Resource>
+    <Resource tag="CONTENIDO1">
+    </Resource>
+    <Resource tag="CONTENIDO2">
+    </Resource>
+    <Resource tag="CONTENIDO3">
+    </Resource>
+    <Resource tag="CONTENIDO4">
+    </Resource>
+    <Resource tag="CONTENIDO5">
+    </Resource>
+    <Resource tag="CONTENIDO6">
+    </Resource>
+    <Resource tag="CONTENIDO7">
+    </Resource>
+    <Resource tag="CONTENIDO8">
+    </Resource>
+    <Resource tag="CONTENIDO9">
+    </Resource>
+    <Resource tag="CONTENIDO10">
+    </Resource>
+  </page>
+  <page name="ACEPTARINVITACION">
+    <Resource tag="ASUNTOMENSAJEBIENVENIDA">Bem vindo ao gnoss.com Por onde começar?</Resource>
+    <Resource tag="CUERPOMENSAJEBIENVENIDA">{p}Bem vindo ao gnoss.com!{/p}{p}Nossa rede oferece muitas oportunidade. Mas temos certeza de que você vai querer saber onde você pode começar. Não se preocupe, aqui estão algumas idéias para iniciar a sua navegação como um usuário registrado {a href="http://www.gnoss.com/"}gnoss.com{/a}.{/p}{p}Criar sua identidade pessoal {br /}{a href="http://www.gnoss.com/editar-bios"}Gerenciar sua presença e reputação na Internet a partir gnoss.com{/a}{/p}{p}Participar da comunidades {br /}{a href="http://www.gnoss.com/comunidades"}Fale, compartilhe e comente sobre seus tópicos favoritos{/a}{/p}{p}Encontre e compartilhe conteúdos {br /}{a href="http://www.gnoss.com/comunidad/ayudayfaqs/recurso/Como-puedo-compartir-conocimiento-en-GNOSS-recurs/5645dd8f-d066-4ba1-bca5-0d61ab026b5d"} melhor recurso para aprender com a sua comunidade de amigos {/a}{/p}{p}Fazer contatos e amigos{br /}{a href="http://www.gnoss.com/personas-y-organizaciones"}Compartilhar conhecimento e se conectar com outras pessoas e organizações {/a}{/p}{p}Assinar o seu conteúdo favorito{br /}{a href="http://www.gnoss.com/comunidad/ayudayfaqs/recursos/Como-me-ayuda-gnosscom-a-estar-al-dia/341c23a1-3323-4289-a079-8c8dc2f1b1e2"}O que está acontecendo agora no gnoss.com?{/a}{/p}{p}Se você quiser saber mais utilitários, serviços e ferramentas gnoss.com, visita {a href="http://www.gnoss.com/acerca-de-gnoss/9"}conoceGNOSS{/a},onde você vai encontrar todas as informações necessárias para iniciar a sua experiência gnoss.com{/p}{p}Disfruta de gnoss.com; inovamos contigo.{/p}{p}A Equipe do {a href="http://www.gnoss.com/organizacion/equipoGNOSS/"}gnoss.com{/a}{/p}</Resource>
+    <Resource tag="ASUNTOMENSAJEBIENVENIDAPROF">Bem vindo ao gnoss.com! Nós aceitamos o seu cadastro.</Resource>
+    <Resource tag="CUERPOMENSAJEBIENVENIDAPROF">
+      {p}Parabéns, @1@!{/p}
+      {p}Tua solicitação de registro como professor em {a href="http://www.gnoss.com/" target="_blank"}gnoss.com{/a} acaba de ser aceita. Já pode participar em gnoss.com. {a href="http://www.youtube.com/watch?v=ciAmJ8OpG40" target="_blank"}Você pode acessar o seu professor identidade das abas de navegação{/a}.{/p}
+      {p}Sugerimos três ideias antes de começar sua experiência de ensino em gnoss.com:{/p}
+      {p}{img src="http://www.gnoss.com/img/dotListadoGris.gif" style="border-width: 0px; padding-bottom: 1px; padding-right: 2px;"}{span style="color:#E37F4F;"}Modelo de intervensão educativa em gnoss.com{/span}{/p}
+      {p}Para que ser um professor em gnoss.com? Como utilizo a rede social em minhas classes {a href="http://www.gnoss.com/comunidad/gnosseduca/recurso/Modelo-de-intervencion-educativa-con-redes-sociale/68f7cda8-ce1d-4134-a38a-1875ed16517a" target="_blank"}Conheça nossa proposta de modelo de intervesão educativa em gnoss.com{/a}{/p}
+      {p}{img src="http://www.gnoss.com/img/dotListadoGris.gif" style="border-width: 0px; padding-bottom: 1px; padding-right: 2px;"}{span style="color:#E37F4F;"}Diferenças com o Módulo{/span}{/p}
+      {p}Descubra as ferramentas de gnoss.com e o que trazem em relação a outros serviços educacionais. {a href="http://gnoss.com/comunidad/gnossnoticias/recurso/Comparativa-gnosscom-frente-a-otras-herramientas/27d22adb-f8ea-4ffd-846f-fb5e2496197a" target="_blank"}Comparativa gnoss.com{/a}.{/p}
+      {p}{img src="http://www.gnoss.com/img/dotListadoGris.gif" style="border-width: 0px; padding-bottom: 1px; padding-right: 2px;"}{span style="color:#E37F4F;"}GNOSS Educa e GNOSS Universidade 2.0{/span}{/p}
+      {p}Nós recomendamos que você dê uma olhada nos tutoriais, FAQs e informações para trabalhar em suas aulas tanto {a href="http://universidad20.gnoss.com/" target="_blank"}GNOSS Universidade 2.0{/a} como em {a href="http://educa.gnoss.com/" target="_blank"}GNOSS Educa{/a}.{/p}
+      {p}Então…, {a href="{#UrlEnlace#}" target="_blank"}DESEJA CRIAR A TUA CLASSE EM GNOSS?{/a}.{/p}
+      {p}Saudações{/p}
+      {p}Disfruta de gnoss.com; inovamos contigo.{/p}
+      {p}{a href="http://www.gnoss.com/organizacion/equipoGNOSS/" target="_blank"}A Equipe de gnoss.com{/a}{/p}
+    </Resource>
+    <Resource tag="YATIENESCUENTA">Você já possui uma conta em @1@?</Resource>
+    <Resource tag="TIENESCUENTA">Para aceitar o convite é necessário se identificar. Se possui uma conta no GNOSS {strong}pode se identificar agora{/strong}</Resource>
+    <Resource tag="CUERPOMENSAJEBIENVENIDACLASE">{p}Estimado@ aluno@, bem nindo@!{/p}{p}Se você chegou a esta mensagem é que você está prestes a iniciar suas aulas em {a href="http://gnoss.com" target="_blank"}gnoss.com{/a},uma rede de conhecimento, onde você poderá desfrutar de uma experiência que se aplica a lógica das redes sociais para a formação.{/p}{p}Para iniciar sua navegação, vamos recomendar você{a href="http://gnoss.com/gnoss101" target="_blank"}GNOSS 101{/a}, uma página onde explicamos todos os serviços e ferramentas gnoss.com. Se você tiver dúvidas, perguntas ou comentários, nós podemos ajudá-lo por e-mail ou em tempo real em nossa conta Twitter {a href="http://twitter.com/equipognoss" target="_blank"}@equipognoss{/a}.{/p}{p}A propósito, se você quiser acessar a comunidade que trabalha em sua classe, lembre-se que você tem que implantar seu menu pessoal (superior esquerdo) e clique sobre o nome da comunidade. Nós dizemos{a href="http://gnoss.com/comunidad/gnosseduca/recurso/Primeras-tareas-de-un-alumno-en-una-clase-de-gnoss/d2b7138b-431b-45ff-a180-5ead228aab72" target="_blank"}o que você pode fazer como um estudante em sala de aula gnoss.com.{/a}{/p}{p}Desfruta do gnoss.com; inovamos contigo.{/p}{p}{a href="http://www.gnoss.com/organizacion/equipoGNOSS/" target="_blank"}A equipe da gnoss.com{/a}{/p}</Resource>
+  </page>
+  <page name="COMADMINFUENTES">
+    <Resource tag="DESCRIPCION">Gostaria de ter seu próprio jornal personalizado em sua comunidade? gnoss.com tem desenvolvimento de um sistema de atualização (RSS/ATOM) que te permite {literal style="color: rgb(227, 127, 79);"}seguir todas as entradas dos blogs, medios e páginas{/literal}. {a href="http://gnoss.com/comunidad/ayudayfaqs/recurso/Guia-GNOSS-para-seguir-tus-webs-favoritas/0f2bf0b6-a7fc-4cc2-adf4-c8a07126d084"}Te contamos cómo hacerlo{/a}.</Resource>
+  </page>
+  <page name="COMADMINNING">
+    <Resource tag="IMPORTACIONINFO">Nos últimos meses temos recebido um volume considerável de solicitações para uma solução para migrar as comunidades de Ning a {a target="_blank" href="http://gnoss.com/"}gnoss.com{/a}. Já temos ;-) De forma gratuita, colocamos a disposição de gnossonautas esta aplicação que permite migrar os conteúdos em {a target="_blank" href="http://www.ning.com/"}Ning{/a} da comunidade que administra em poucos minutos.</Resource>
+    <Resource tag="IMPORTACIONERRONEA">No ha sido posible importar el contenido. Vuelve a intentarlo subiendo otro archivo o {a href="mailto:gnoss@gnoss.com"}contacte con nostros{/a}</Resource>
+    <Resource tag="MAXIMOARCHIVO">Tamaño máximo del archivo 20MB. Si quieres importar un archivo de tamaño superior contacta con {a href="mailto:gnoss@gnoss.com"}gnoss@gnoss.com{/a}</Resource>
+  </page>
+  <page name="COMADMININFOGENERAL">
+    <Resource tag="TIPOGADRECURSOSINEVERY">Recursos relacionados de IneveryCREA</Resource>
+    <Resource tag="TIPOGADRECURSOSMUSEOS">Obras de arte em MisMuseos.net</Resource>
+    <Resource tag="TIPOGADRECURSOSCASASGUIAS">Guias de viajem recomendadas</Resource>
+    <Resource tag="TIPOGADRECURSOSCASASMUSEOS">Museos próximos</Resource>
+    <Resource tag="TIPOGADRECURSOSOBRASDEARTEDIDACTALIA">Recursos educativos de Didactalia</Resource>
+    <Resource tag="INFOCONSULTA">Copia a url de busca em GNOSS (Ej.: http://gnoss.com/comunidad/ayudayfaqs/recursos#sioc_t:Tag=comunidad)</Resource>
+    <Resource tag="INFORECINEVERY">Recursos relacionados da comunidade IneveryCREA</Resource>
+    <Resource tag="INFORECMUSEOS">Obras de arte relacionadas da comunidade Meus Museos</Resource>
+    <Resource tag="INFORECCASASGUIAS">Guias de viajem próximos</Resource>
+    <Resource tag="INFORECCASASMUSEOS">Museos próximos</Resource>
+  </page>
+  <page name="COMADMIN">
+    <Resource tag="MENSAJETWITTERNUEVACATEGORIATESAURO">La comunidad @1@ cuenta con una nueva categoría: @2@ @3@ #gnoss @4@</Resource>
+    <Resource tag="MENSAJETWITTERNUEVOADMIN">@1@ se suma a la administración de la comunidad @2@ @3@ #gnoss @4@</Resource>
+    <Resource tag="MENSAJETWITTERNUEVAPOLITICACERTIF">La comunidad @1@ cuenta con una nueva política de certificación @2@ #gnoss @3@</Resource>
+    <Resource tag="MENSAJETWITTERNUEVOTIPORECURSO">La comunidad @1@ acepta nuevos tipos de recursos #gnoss @2@</Resource>
+    <Resource tag="VALORLINKSOLICITAR">mailto:solicitudes@gnoss.com</Resource>        
+  </page>
+  <page name="AYUDASCONTEXTUALES">
+    <Resource tag="IDENTIDADPROFESOR">Como crio minha identidade de professor em gnoss.com?</Resource>
+    <Resource tag="ENLACEIDENTIDADPROFESOR">http://gnoss.com/comunidad/gnosseduca/recurso/Tutorial-para-crear-una-clase-y-empezar-a-trabajar/f291e477-bdd4-44a5-b49c-4dfdb079fe8c</Resource>
+    <Resource tag="SOLICITARCLASE">Como solicitar uma classe em gnoss.com?</Resource>
+    <Resource tag="ENLACESOLICITARCLASE">http://gnoss.com/comunidad/gnosseduca/recurso/Como-solicitar-una-clase-y-una-asignatura-GNOSS/b68b8dde-eabf-4615-9ee7-8f058c2728ff</Resource>
+    <Resource tag="REGISTROALUMNO">"Como mo registrar como aluno em um classe no gnoss.com ?"</Resource>
+    <Resource tag="ENLACEREGISTROALUMNO"> http://gnoss.com/comunidad/gnosseduca/recurso/Registro-de-un-alumno-en-una-clase-de-gnosscom-G/90b42a09-6ce9-43ff-81d2-755adea82725</Resource>
+    <Resource tag="COMOPUEDOPRIMERAVEZGNOSS">É a tua primeira vez em gnoss.com?</Resource>
+    <Resource tag="COMOGESTIONOCONTACTOS">Como eu posso fazer contatos em gnoss.com?</Resource>
+    <Resource tag="COMOGESTIONORELEVANCIA">Como eu posso encontrar conteúdo relevante em gnoss.com?</Resource>
+    <Resource tag="COMOGESTIONOCOMPARTIR">Onde eu posso compartilhar o conteúdo em gnoss.com?</Resource>
+    <Resource tag="COMOGESTIONOCREARIDENT">Como criar minha identidade em gnoss.com?</Resource>
+    <Resource tag="COMOGESTIONOALERTASGNOSS">Como eu posso estar ciente do que está acontecendo em gnoss.com?</Resource>
+    <Resource tag="COMOGESTIONOPERFILESYTRAYECTORIAS">Como criar a minha identidade em gnoss.com?</Resource>
+    <Resource tag="LINKGNOSS101">http://gnoss.com/gnoss101</Resource>
+    <Resource tag="LINKGNOSS101_1">http://gnoss.com/gnoss101/1</Resource>
+    <Resource tag="LINKGNOSS101_2">http://gnoss.com/gnoss101/2</Resource>
+    <Resource tag="LINKGNOSS101_3">http://gnoss.com/gnoss101/3</Resource>
+    <Resource tag="LINKGNOSS101_4">http://gnoss.com/gnoss101/4</Resource>
+    <Resource tag="LINKGNOSS101_5">http://gnoss.com/gnoss101/5</Resource>
+    <Resource tag="LINKGNOSS101_6">http://gnoss.com/gnoss101/6</Resource>
+    <Resource tag="LINKGNOSS101_7">http://gnoss.com/gnoss101/7</Resource>
+    <Resource tag="LINKGNOSS101_10">http://gnoss.com/gnoss101/10</Resource>
+    <Resource tag="LINKGNOSS101_12">http://gnoss.com/gnoss101/12</Resource>
+    <Resource tag="GESTIONBLOGS">http://gnoss.com/comunidad/ayudayfaqs/recurso/Como-gestiono-mis-blogs-en-gnosscom/68582749-3328-4e61-9ead-5fa8137a39a5</Resource>
+    <Resource tag="PARTICIPARCOMUNIDADES">http://gnoss.com/comunidad/ayudayfaqs/recursos/categoria/COMUNIDADES/ae103eb4-cac3-4d01-a8f0-1e7d2f944bfd</Resource>
+    <Resource tag="BUSQUEDAAVANZADA">http://gnoss.com/comunidad/ayudayfaqs/recurso/Como-busco-recursos-en-una-comunidad-de-gnosscom/13577050-2e71-407a-ba89-2d0789d43dad</Resource>
+    <Resource tag="LINKGNOSSCATEGORIACOMPATIRRECURSO">http://gnoss.com/comunidad/ayudayfaqs/recursos/categoria/CONTENIDOS/7c269579-fd09-4f1c-a298-b7c1db814272</Resource>
+    <Resource tag="ENLACECOMOGESTIONOCREARCOMUNIDAD">http://gnoss.com/comunidad/ayudayfaqs/recursos/categoria/COMUNIDADES/ae103eb4-cac3-4d01-a8f0-1e7d2f944bfd</Resource>
+    <Resource tag="ENLACEIDENTIDADORG">http://gnoss.com/comunidad/ayudayfaqs/recursos/categoria/IDENTIDADDEORGANIZACION/0d876689-5494-43cc-ae42-aa1a390bdf95</Resource>
+    <Resource tag="ENLACEREGISTRO">http://gnoss.com/comunidad/ayudayfaqs/recursos/categoria/REGISTRO/3cabff21-d06e-4286-80e5-16648ea8350b</Resource>
+    <Resource tag="ENLACEIDENTIDADPERSONAL">http://gnoss.com/comunidad/ayudayfaqs/recursos/categoria/IDENTIDADPERSONAL/5fa95377-34e1-4d6f-9d3a-1af139510ef0</Resource>
+    <Resource tag="ENLACEIDENTIDADORGANIZACION">http://gnoss.com/comunidad/ayudayfaqs/recursos/categoria/Comoelaborolatrayectoriademiorganizacion/3429f1e9-99a5-4817-b790-6bf13aa3cf20</Resource>
+    <Resource tag="ENLACEDEBATES">http://gnoss.com/comunidad/ayudayfaqs/recurso/Como-inicio-un-debate/8917e680-65fd-4a8f-bb1b-9c754658b7a5</Resource>
+    <Resource tag="ENLACEDAFOS">http://gnoss.com/comunidad/ayudayfaqs/recurso/Como-puedo-participar-votar-comentar-a%C3%B1adir-fa/7b4f91ec-de18-46cc-bfef-45ffad64f00c</Resource>
+    <Resource tag="ENLACEPREGUNTAS">http://gnoss.com/comunidad/ayudayfaqs/recurso/Como-lanzo-una-pregunta/aac15fb2-797b-44ce-b795-2af52d354192</Resource>
+    <Resource tag="ENLACECOMBUSQUEDA">http://gnoss.com/comunidad/ayudayfaqs/recurso/Como-busco-recursos-en-una-comunidad-de-gnosscom/13577050-2e71-407a-ba89-2d0789d43dad</Resource>
+    <Resource tag="ENLACECURRICULUMLINKEDIN">http://gnoss.com/comunidad/ayudayfaqs/recurso/gnosscom-como-importo-mi-curriculum-desde-Linke/14d8459b-d15e-4ae3-9cbb-d93ec0cb9f65</Resource>
+    <Resource tag="ENLACEBIO">http://gnoss.com/comunidad/ayudayfaqs/recursos/categoria/Como-edito-mi-bio-corta-en-gnosscom/6808a7a6-9d9b-4e40-a62f-ec8feccc02b0</Resource>
+    <Resource tag="TEXTOCV">Como eu faço o meu CV gnoss.com?</Resource>
+    <Resource tag="ENLACECV">http://gnoss.com/comunidad/ayudayfaqs/recursos/categoria/Como-hago-mi-CV-en-gnosscom/6f4c2292-15f0-408b-ab2c-dd684de66087</Resource>
+    <Resource tag="LINKGNOSSWIDGET">http://gnoss.com/comunidad/ayudayfaqs/recurso/Como-llevo-gnosscom-a-mi-blog-u-otra-pagina-web/e776a462-859b-41fc-92fe-b5978ca88080</Resource>
+    <Resource tag="LINKGNOSSWIDGETPERSONAL">http://gnoss.com/comunidad/ayudayfaqs/recurso/Como-hago-el-widget-de-mi-perfil-de-usuario/d9796df7-4eb7-4c27-ba2e-da6f36795d23</Resource>
+    <Resource tag="INTROBLOGS">{p}gnoss.com te proporciona {a target="_blank" href="http://gnoss.com/comunidad/ayudayfaqs/recursos/categoria/BLOGs/6a0e1db3-7950-4bc1-be4b-8dd390ff7398"}espaço para criar seu próprio conteúdo com um blog pessoal ou corporativo.{/a}{/p}{p}Você pode contar suas experiências ou jogar idéias para outros usuários em gnoss.com{/p}</Resource>
+    <Resource tag="INTROCOMUNIDADES">{p}Escolha seu tema favorito e determina a privacidade {a target="_blank" href="http://gnoss.com/gnoss101/6"}tua comunidade{/a}.{/p}</Resource>
+    <Resource tag="INTROPREGUNTAS">Tenho uma pergunta sobre um determinado tema, você quer que sua comunidade saber o que você acha das mudanças que você fez recentemente?, Quer jogar uma pergunta para os alunos de sua classe em uma gnoss.com comunidade? ... Claro que você pode pensar em um {} forte milhares de perguntas que os membros de sua comunidade pode responder{/strong}. A ferramenta "Perguntas" permite que você veja o que você quer toda a comunidade. Basta clicar sobre a declaração, você pode responder.</Resource>
+    <Resource tag="INTRODEBATES">Sua comunidade tem uma massa crítica capaz de extrair {strong}conclusões de valor{/strong}sobre qualquer assunto que possa ter. É tempo {strong}lançar idéias e discuti-las de uma forma flexível e simples{/strong}. Para fazer isso, você tem à sua disposição {strong}Ferramenta 'Debates' de gnoss.com{/strong}. O debate está lançado a todos os membros da comunidade e que possam participar com todos os comentários que considerarem adequadas, tanto a declaração inicial como para as Respostas de outros participantes.</Resource>
+    <Resource tag="INTRODAFOS">O dafo é {strong}uma ferramenta de pensamento coletivo{/strong} expressando a percepção de um grupo em relação a seus recursos e seu futuro, pontos fracos, ameaças, pontos fortes e oportunidades. gnoss.com criou um serviço dafo que facilita a colaboração {strong}análise coletiva entre os membros da comunidade{/strong}. A {a target="_blank" href="http://gnoss.com/comunidad/ayudayfaqs/recurso/Guia-GNOSS-para-hacer-un-dafo/40b00d75-5ba1-4419-96d7-fca13846c22a"}'Guía GNOSS para… fazer um dafo'{/a} explica como esta ferramenta pode trabalhar em pensamento coletivo de forma eficaz e sem problemas.</Resource>
+    <Resource tag="INTROCONTRIBUCIONESOTROS">Esta pessoa não pode ter uma atividade GNOSS ou que é privado nas comunidades em que você participa.</Resource>
+    <Resource tag="INTROMISRECURSOS">Seus itens favoritos, o projeto de sua empresa, o seu melhor trabalho ... gnoss.com oferece um espaço pessoal para todo o seu conteúdo relevante para ir com você e mostrar-lhe, apenas, se quiser, porque o disco rígido da sua identidade é uma parte pública e outro uso pessoal exclusivo.</Resource>
+    <Resource tag="INTROMISRECURSOSORG">A notícia sobre a sua empresa, o projeto de sua empresa, o seu melhor trabalho ... gnoss.com oferece um espaço corporativo a todo o conteúdo relevante na sua organização para ir com você e mostrar-lhe, apenas, se quiser, porque o disco rígido do seu organização tem um lado público e um uso privado, exclusivo da organização.</Resource>
+  </page>
+  <page name="PIEHOME">
+    <Resource tag="TITULOMODULO1">O que é GNOSS?</Resource>
+    <Resource tag="TITULOMODULO2">GNOSS para empresas</Resource>
+    <Resource tag="TITULOMODULO3">Projeto educativo</Resource>
+    <Resource tag="TITULOMODULO4">GNOSS Noticias</Resource>
+    <Resource tag="HTMLMODULO1">{p}GNOSS é uma plataforma de software para construir redes sociais especializadas através de publicação de conteúdo dinâmico semântica.{/p}</Resource>
+    <Resource tag="HTMLMODULO2">{p}GNOSS integra a gestão do conhecimento, a aprendizagem informal, colaboração e redes sociais.{/p}</Resource>
+    <Resource tag="HTMLMODULO3">{p}{a href="http://didactalia.net"}Didactalia.net{/a} é uma comunidade global de educação para professores, pais e alunos do jardim de infância ao ensino médio.{/p}</Resource>
+    <Resource tag="HTMLMODULO4">{p}Conheça os nossos mais recente lançamentos, notícias e eventos.{/p}{p}Se você tiver alguma dúvida, ligue para:{/p}{p}{div style="font-weight:bold;font-size:18px"}902 502545{/div}{/p}</Resource>
+  </page>
+  <page name="DAFO">
+    <Resource tag="USUARIOSGNOSS"></Resource>
+    <Resource tag="INFOCREARDAFO1"></Resource>
+    <Resource tag="INFOCREARDAFO2"></Resource>
+    <Resource tag="URL_DOCAYUDA_OPCIONESGENERALES"></Resource>
+    <Resource tag="URL_DOCAYUDA_PREGUNTASESTADISTICAS"></Resource>
+    <Resource tag="URL_DOCAYUDA_INCLUIRFACTORESDAFO"></Resource>
+    <Resource tag="URL_DOCAYUDA_EDIYPARTIVALOYVOTAN"></Resource>
+    <Resource tag="URL_DOCAYUDA_FASEUNIFICACION"></Resource>
+    <Resource tag="MENSAJECORREODAFOINICIADO"></Resource>
+  </page>
+  <page name="ACTUALIZACIONES">
+    <Resource tag="TITULOPAGINA">Ferramentas do GNOSS</Resource>
+    <Resource tag="TITULO">Atualizações das ferramentas disponíveis GNOSS</Resource>
+    <Resource tag="ADDTOGNOSS">Baixar o plugin de GNOSS Windows</Resource>
+    <Resource tag="OFFICE">Faça o download do suplemento GNOSS para Microsoft Office</Resource>
+    <Resource tag="ACTUALIZACIONESDISPONIBLES">{div}Existem atualizações disponíveis para ferramentas GNOSS.{/div}{div}Para ver as atualizações disponíveis clique {a href=@1@ target="_blank"}aquí{/a}.{/div}</Resource>
+    <Resource tag="INSTALACIONES">Não tem um desses aplicativos instalados? clique {a href="@1@"}aquí{/a}baixar as instalações completas. </Resource>
+    <Resource tag="ACTUALIZACIONADDTOGNOSSNAVGDISP">{div}Há uma atualização disponível para o suplemento GNOSS para seu navegador.{/div}{div class="clear"}{/div}{div}Para mais informações sobre como atualizar clique {a href=@1@ target="_blank"}aqui{/a}.{/div}</Resource>
+  </page>
+  <page name="DESCARGAS">
+    <Resource tag="TITULOPAGINA">Ferramentas do GNOSS</Resource>
+    <Resource tag="TITULO">Ferramentas do GNOSS</Resource>
+    <Resource tag="INST1IE">Clique no botão direito do mouse sobre o link {strong}Adicionar ao GNOSS{/strong} e adicioná-lo a sua Barra de Favoritos.</Resource>
+    <Resource tag="INST1FF">Arraste o link {strong}Adicionar ao GNOSS{/strong} a tua barra de Favoritos. Você também pode clicar com o botão direito do mouse e salvá-lo para o local de sua escolha entre seus Favoritos.</Resource>
+    <Resource tag="INF21">Quando você está visitando uma página que você deseja adicionar ao GNOSS, basta clicar no botão{strong}Adicionar a GNOSS{/strong}</Resource>
+    <Resource tag="INF22FF"> da tua barra de Favoritos.</Resource>
+    <Resource tag="INF22IE"> da tua barra de Favoritos.</Resource>
+    <Resource tag="WINDOWS">Windows</Resource>
+    <Resource tag="OFFICE">Office</Resource>
+    <Resource tag="ANADIRGNOSS">Adicionar ao GNOSS</Resource>
+    <Resource tag="TEXTO1">
+      {p}Desculpe, você vai se tornar um usuário GNOSS compulsivos, gnossonauta todo. Por quê? Porque você vai ser capaz de fazer upload de recursos para a sua comunidade de uma maneira muito simples, você quer usar as ferramentas que oferece GNOSS.
+      {/p}
+
+      {ol }
+      {div style="_display: none;"}
+      {li}
+      {a href="#anadirGnoss" style="_display: none;"}'Adicionar a GNOSS' a partir de seu navegador{/a}
+      {/li}
+      {/div}
+      {li}
+      {a href="#officeGnoss"}Compartilhe facilmente os documentos do Office em GNOSS{/a}
+      {/li}
+      {li}
+      {a href="#pluginGnoss"}Plug in para carregar recursos a partir do Windows{/a}
+      {/li}
+      {/ol}
+      {br /}
+      {div style="_display: none;"}
+      {a name="anadirGnoss"}{h3}‘Adicionar ao GNOSS’ a partir do seu navegador{/h3}{/a}
+      {p}Veja abaixo a ferramenta 'Adicionar ao GNOSS', que permite que você adicione páginas GNOSS mais interessantes que você encontrar na Internet, sem interromper a sua navegação.
+      {/p}
+
+      {p}Como funciona?
+      {ol}
+      {li}@1@
+      {/li}
+      {/div}
+    </Resource>
+    <Resource tag="TEXTO2">
+      {div style="_display: none;"}
+      {li}@1@
+      {/li}
+      {li}Classifica a página facilmente, enquanto os guardas para recuperar a qualquer hora.
+      {/li}
+      {/ol}
+      {br /}
+      {p}E para continuar a navegar! A informação é guardada, armazenados e organizados na comunidade que você selecionou.
+      {/p}
+      {p}{b}Un par de trucos{/b}{br /}
+
+      Se você começou a salvar uma página, mas mudar de idéia, volte à página anterior com o seu navegador: a operação é cancelada e volta ao ponto de partida com um único clique.
+      {/p}
+      Se você selecionar um parágrafo com o cursor de texto, 'Adicionar aos GNOSS' vai usá-lo como uma descrição para esta página.
+      {/div}
+
+      {iframe width="300" height="200" style="margin-left:150px" src="http://www.youtube.com/embed/IdLFl2lempg?rel=0" frameborder="0" allowfullscreen=""}
+      {/iframe}
+
+      {p}{a name="officeGnoss"}{h3}Compartilhe facilmente teus documentos do Office em GNOSS{/h3}{/a}
+      Documentos do Word, planilhas de cáuculos do Excel, apresentações do PowerPoint, bases de dados Access... Você pode ser o desenvolvimento de qualquer tipo de arquivo no pacote Office e quer compartilhá-lo em um. Rápido e fácil em uma comunidade ou comunidades.
+      {/p}
+      {p}GNOSS você pode fazer o upload do arquivo com o conforto do aplicativo no qual você está trabalhando. Para fazer isso você tem que baixar e instalar {a onclick="javascript:DesplegarPanel('divDescargaOffice')" style="cursor:pointer;" }a nova ferramenta do GNOSS para {img src="@2@" }{/img} Office{/a}.
+      {/p}
+      {div id="divDescargaOffice" style="padding-left:30px; padding-bottom:10px; display:none;"}
+      {img src="@9@" style="vertical-align: middle;"}{/img} {a href="@3@"}Faça o download do suplemento GNOSS para Microsoft Office 2003 32 bits {/a}{br /}{br /}
+      {img src="@9@" style="vertical-align: middle;"}{/img} {a href="@4@"}Faça o download do suplemento GNOSS para Microsoft Office 2007 32 bits {/a}{br /}{br /}
+      {img src="@9@" style="vertical-align: middle;"}{/img} {a href="@5@"}Faça o download do suplemento GNOSS para Microsoft Office 2003 64 bits {/a}{br /}{br /}
+      {img src="@9@" style="vertical-align: middle;"}{/img} {a href="@6@"}Faça o download do suplemento GNOSS para Microsoft Office 2007 64 bits {/a}
+      {/div}
+      {p}Ao baixar as aplicações GNOSS, se você acessar a barra superior do programa do Office, 'GNOSS'. Ao clicar sobre ele, você pode fazer o upload, atualizar ou criar uma versão do documento. A partir do Office passará diretamente para uma tela onde você pode titular, descrever, classificar e marcar o seu recurso.
+      {/p}
+      {p}{b}Um conselho{/b}{br /}
+      Antes de compartilhar o arquivo você tem que salvá-lo em seu disco rígido. GNOSS encontrar automaticamente a sua localização.
+      {/p}
+
+      {iframe width="300" height="200" style="margin-left:150px" src="http://www.youtube.com/embed/4OyEz6IGX04?rel=0" frameborder="0" allowfullscreen=""}
+      {/iframe}
+
+      {a name="pluginGnoss"}{h3}Plug in para carregar recursos a partir do Windows{/h3}{/a}
+      GNOSS te prevê que todos os arquivos disponíveis em ambiente Windows para a sua comunidade é em apenas duas etapas. Nós desenvolvemos {a onclick="javascript:DesplegarPanel('divDescargaPlugin')" style="cursor:pointer;"}uma aplicação{/a} que posibilita que, por exemplo, possa compartilhar diretamente em GNOSS um documento que está em teu Escritório.
+      {div id="divDescargaPlugin" style="padding-left:30px; padding-bottom:10px; padding-top:10px; display:none;"}
+      {img src="@9@" style="vertical-align: middle;"}{/img} {a href="@7@"}Baixar o plugin do GNOSS Windows 32 bits {/a}{br /}{br /}
+      {img src="@9@" style="vertical-align: middle;"}{/img} {a href="@8@"}Baixar o plugin do GNOSS Windows 64 bits {/a}
+      {/div}
+      {p}{b}Como eu posso fazer?{/b}
+      {ul style="padding-left: 30px; list-style: disc; "}
+      {li}Baixe o aplicativo e instale-o em seu disco rígido.{/li}
+      {li}Selecione o arquivo que deseja enviar e clique no botão direito do mouse. Exibe um menu com a opção "Adicionar ao GNOSS '. Clicando sobre ele você vai direto para a página onde você pode completar os dados do aplicativo.{/li}
+      {/ul}
+      {/p}
+
+      {iframe width="300" height="200" style="margin-left:150px" src="http://www.youtube.com/embed/ULRMJG4IDj8?rel=0" frameborder="0" allowfullscreen=""}
+      {/iframe}
+    </Resource>
+  </page>
+  <page name="OBJETOGNOSS">
+    <Resource tag="CONFIGURAROBJETOGNOSS">Configurar objeto da comunidade de GNOSS</Resource>
+  </page>
+  <page name="OBJETOGNOSSPERFIL">
+    <Resource tag="CONFIGURAROBJETOGNOSS">Configurar objeto GNOSS da comunidade</Resource>
+    <Resource tag="INFOCREAROBJETOGNOSS">O widget do usuário do gnoss.com permite tirar conteúdo público a partir de sites de perfil gnoss.com aos usuários e pessoas interessadas na informação que é partilhada na rede.</Resource>
+    <Resource tag="INFOCREAROBJETOGNOSSCOM"> O widget do gnoss.com você pode levar o conteúdo das comunidades dos usuários de sites de gnoss.com e pessoas interessadas na informação que é partilhada na rede.</Resource>
+  </page>
+  <page name="ANYADIRWIDGET">
+    <Resource tag="TITULOPAGINA"></Resource>
+    <Resource tag="PARRAFO1"></Resource>
+    <Resource tag="TITULOPARRAFO2"></Resource>
+    <Resource tag="PARRAFO2"></Resource>
+    <Resource tag="TITULOPARRAFO3"></Resource>
+    <Resource tag="PARRAFO3"></Resource>
+    <Resource tag="TITULOPARRAFO4"></Resource>
+    <Resource tag="PARRAFO4"></Resource>
+    <Resource tag="TITULOPARRAFO5"></Resource>
+    <Resource tag="PARRAFO5"></Resource>
+  </page>
+  <page name="IMPORTARCONTACTOS">
+    <Resource tag="CONTACTARAMIGOSMYGNOSS">Colegas de trabalho, amigos da faculdade, familiares. São seus contatos, as pessoas que vivem com. Agora você pode dar uma nova dimensão ao seu relacionamento por causa do conteúdo e as ferramentas que lhe dá gnoss.com. Deseja se conectar com eles?{a href="http://gnoss.com/gnoss101/4"}Nesta página, te dizer como.{/a} Diretamente você se tornar seu contato. Você pode compartilhar com eles seus links favoritos e enviar as mensagens que você quer de sua "Caixa de Entrada".</Resource>
+    <Resource tag="DISCLAIMER">
+      {p}{h1}Privacidade gnoss.com{/h1}
+      {/p}{br /}
+      {p} Olá gnossonauta,
+      {/p}
+      {p} depois de importar o aplicativo de contatos selecionado, não gnoss.com armazenar seus dados (nome de usuário e senha), ou os contatos (nome e e-mail) valores. Se você tiver qualquer dúvida sobre a privacidade na gnoss.com, nós convidamos você para acessar nossa Política de Privacidade ou reencaminhe o e-mail .
+      {p} Obrigado pela confiança ;-){/p}
+      {p} Disfrutar de gnoss.com; inovamos com você.{/p}
+      {p} A equipe do gnoss.com{/p}
+    </Resource>
+  </page>
+  <page name="LANDINGUNI20URLSEM">
+    <Resource tag="HOME">
+    </Resource>
+    <Resource tag="EN5MIN">
+    </Resource>
+    <Resource tag="COMOUTILIZAR">
+    </Resource>
+    <Resource tag="COMSOPORTE">
+    </Resource>
+    <Resource tag="COMUNIDAD">
+    </Resource>
+    <Resource tag="COMSEDUCATIVAS">
+    </Resource>
+    <Resource tag="COMOCLASEBACHFP">
+    </Resource>
+    <Resource tag="PROYPILOTO">
+    </Resource>
+    <Resource tag="CANALVIDEOS">
+    </Resource>
+    <Resource tag="GNOSS">
+    </Resource>
+    <Resource tag="DAFOONLINE">
+    </Resource>
+    <Resource tag="MEDIAROOM">
+    </Resource>
+    <Resource tag="TUCLASE">
+    </Resource>
+    <Resource tag="SEMINARIOSWEB">
+    </Resource>
+  </page>
+  <page name="LANDINGUNI20">
+    <Resource tag="HOME_TITULO">
+    </Resource>
+    <Resource tag="HOME_SUBTITULO">
+    </Resource>
+    <Resource tag="HOME_INTRO">
+    </Resource>
+    <Resource tag="HOME_CONTENIDO">
+    </Resource>
+    <Resource tag="EN5MIN_TITULO">
+    </Resource>
+    <Resource tag="EN5MIN_SUBTITULO">
+    </Resource>
+    <Resource tag="EN5MIN_INTRO">
+    </Resource>
+    <Resource tag="EN5MIN_CONTENIDO">
+    </Resource>
+    <Resource tag="COMOUTILIZAR_TITULO">
+    </Resource>
+    <Resource tag="COMOUTILIZAR_SUBTITULO">
+    </Resource>
+    <Resource tag="COMOUTILIZAR_INTRO">
+    </Resource>
+    <Resource tag="COMOUTILIZAR_CONTENIDO">
+    </Resource>
+    <Resource tag="COMSOPORTE_TITULO">
+    </Resource>
+    <Resource tag="COMSOPORTE_SUBTITULO">
+    </Resource>
+    <Resource tag="COMSOPORTE_INTRO">
+    </Resource>
+    <Resource tag="COMSOPORTE_CONTENIDO">
+    </Resource>
+    <Resource tag="COMUNIDAD_TITULO">
+    </Resource>
+    <Resource tag="COMUNIDAD_SUBTITULO">
+    </Resource>
+    <Resource tag="COMUNIDAD_INTRO">
+    </Resource>
+    <Resource tag="COMUNIDAD_CONTENIDO">
+    </Resource>
+    <Resource tag="COMSEDUCATIVAS_TITULO">
+    </Resource>
+    <Resource tag="COMSEDUCATIVAS_SUBTITULO">
+    </Resource>
+    <Resource tag="COMSEDUCATIVAS_INTRO">
+    </Resource>
+    <Resource tag="COMSEDUCATIVAS_CONTENIDO">
+    </Resource>
+    <Resource tag="COMOCLASEBACHFP_TITULO">
+    </Resource>
+    <Resource tag="COMOCLASEBACHFP_SUBTITULO">
+    </Resource>
+    <Resource tag="COMOCLASEBACHFP_INTRO">
+    </Resource>
+    <Resource tag="COMOCLASEBACHFP_CONTENIDO">
+    </Resource>
+    <Resource tag="PROYPILOTO_TITULO">
+    </Resource>
+    <Resource tag="PROYPILOTO_SUBTITULO">
+    </Resource>
+    <Resource tag="PROYPILOTO_INTRO">
+    </Resource>
+    <Resource tag="PROYPILOTO_CONTENIDO">
+    </Resource>
+    <Resource tag="CANALVIDEOS_TITULO">
+    </Resource>
+    <Resource tag="CANALVIDEOS_SUBTITULO">
+    </Resource>
+    <Resource tag="CANALVIDEOS_INTRO">
+    </Resource>
+    <Resource tag="CANALVIDEOS_CONTENIDO">
+    </Resource>
+    <Resource tag="GNOSS_TITULO">
+    </Resource>
+    <Resource tag="GNOSS_SUBTITULO">
+    </Resource>
+    <Resource tag="GNOSS_INTRO">
+    </Resource>
+    <Resource tag="GNOSS_CONTENIDO">
+    </Resource>
+    <Resource tag="DAFOONLINE_TITULO">
+    </Resource>
+    <Resource tag="DAFOONLINE_SUBTITULO">
+    </Resource>
+    <Resource tag="DAFOONLINE_INTRO">
+    </Resource>
+    <Resource tag="DAFOONLINE_CONTENIDO">
+    </Resource>
+    <Resource tag="MEDIAROOM_TITULO">
+    </Resource>
+    <Resource tag="MEDIAROOM_SUBTITULO">
+    </Resource>
+    <Resource tag="MEDIAROOM_INTRO">
+    </Resource>
+    <Resource tag="MEDIAROOM_CONTENIDO">
+    </Resource>
+    <Resource tag="TUCLASE_TITULO">
+    </Resource>
+    <Resource tag="TUCLASE_SUBTITULO">
+    </Resource>
+    <Resource tag="TUCLASE_INTRO">
+    </Resource>
+    <Resource tag="TUCLASE_CONTENIDO">
+    </Resource>
+    <Resource tag="SEMINARIOSWEB_TITULO">
+    </Resource>
+    <Resource tag="SEMINARIOSWEB_SUBTITULO">
+    </Resource>
+    <Resource tag="SEMINARIOSWEB_INTRO">
+    </Resource>
+    <Resource tag="SEMINARIOSWEB_CONTENIDO">
+    </Resource>
+  </page>
+  <!-- @Didactalia -->
+  <page name="LANDINGDIDACTALIAEXPURLSEM">
+    <Resource tag="HOME_1">sobre-didactalia</Resource>
+    <Resource tag="AULASDIDACTALIA_2">aulas-didactalia</Resource>
+    <Resource tag="COMOUSARDIDACTALIA_3">como-usar-didactalia</Resource>
+    <Resource tag="DIDACTALIAPARAPROFESORES_3.1">didactalia-profesores</Resource>
+    <Resource tag="DIDACTALIAPARAPADRES_3.2">didactalia-padres</Resource>
+    <Resource tag="DIDACTALIAPARAALUMNOS_3.3">didactalia-alumnos</Resource>
+    <Resource tag="DIDACTALIAPARACENTROS_3.4">didactalia-centros</Resource>
+    <Resource tag="DIDACTALIACASOAPADRINA_4.1">caso-uso-apadrina</Resource>
+    <Resource tag="DIDACTALIACASOMAPAS_4.2">caso-uso-mapas-interactivos</Resource>
+    <Resource tag="DIDACTALIACASOPAPERTOYS_4.3">caso-uso-papertoys</Resource>
+
+  </page>
+  <page name="LANDINGDIDACTALIAEXP">
+    <Resource tag="HOME">Didactalia.net</Resource>
+    <Resource tag="HOME_1_TITULO">Acerca de Didactalia.net</Resource>
+    <Resource tag="HOME_1_SUBTITULO"></Resource>
+    <Resource tag="HOME_1_INTRO"></Resource>
+    <Resource tag="HOME_1_CONTENIDO">
+      {p}
+      {p}
+      {p}
+      {img src="http://content.gnoss.com/boletines/didactalia/imagengrafo.jpg"  width="595" /}
+      {/p}
+      {a href="http://didactalia.net"}Didactalia.net{/a} es una comunidad educativa global para profesores, padres y estudiantes desde la Educación Infantil hasta el Bachillerato que incluye una colección con más de 50.000 recursos educativos abiertos. En ella, los usuarios pueden crear, compartir y descubrir contenidos educativos y {a href="@1@"}promover clases y comunidades de aprendizaje{/a} en las que trabajar lecciones en un espacio social con búsquedas facetadas y contextos enriquecidos. En cuanto a identidad digital, Didactalia.net propone un Entorno Personal de Aprendizaje (PLE), que incluye herramientas semánticas y sociales para gestionar la reputación y un espacio en el que el usuario recoge, expone y comparte sus contenidos de aprendizaje.
+      La tecnología semántica, el aprovechamiento de los datos abiertos enlazados ({a href="http://linkeddata.org/"}Linked Data{/a}) y la creación de un ecosistema de comunidades de aprendizaje en un contexto de Social Learning configuran el núcleo de Didactalia.net. En este sentido, la comunidad aspira a la construcción de un grafo educativo que dé sentido al trabajo distribuido y atomizado de muchos profesores y que esté organizado sobre patrones y secuencias de aprendizaje que tengan sentido para la comunidad educativa.
+      {/p}
+      {h4}Didactalia es Linked Data{/h4}
+      {p}
+      En Didactalia.net creemos que la reutilización de los recursos educativos abiertos a partir de la publicación semántica dinámica y la creación de comunidades para el aprendizaje están redefiniendo los hábitos de aprendizaje de estudiantes, padres y profesores. Estas prácticas están cambiando la forma en la que se ofrece la Educación. En el caso de Didactalia, sus recursos educativos están estructurados, contienen datos abiertos que permiten conectar con otros recursos de la comunidad y con contenidos de otros repositorios de conocimiento. Estos repositorios pueden estar en GNOSS o proceder de la {a href="http://linkeddata.org/"}Linked Data{/a} web. En este contexto, el aprendizaje social y la gestión del conocimiento con herramientas semánticas y sociales facilita el descubrimiento del conocimiento implícito, la recuperación y reutilización de la información y la generación de contextos de datos a partir de tecnología semántica.
+      {/p}
+      {h4}Padres y centros educativos{/h4}
+      {p}
+      Didactalia.net facilita que, por un lado, los padres puedan contratar cursos completos –una colección de lecciones sobre el nivel y la materia que deseen- y, por otro, los colegios pueden comprar comunidades con contenido especializado para sus profesores a partir de la publicación semántica
+      {/p}
+    </Resource>
+
+    <Resource tag="AULASDIDACTALIA_2_TITULO">AULAS DIDACTALIA</Resource>
+    <Resource tag="AULASDIDACTALIA_2_SUBTITULO"></Resource>
+    <Resource tag="AULASDIDACTALIA_2_INTRO"></Resource>
+    <Resource tag="AULASDIDACTALIA_2_CONTENIDO">
+      {p}
+      {img src="http://content.gnoss.com/boletines/didactalia/clasesaulasdidactalia.jpg" width="595"}
+      {/p}
+      {p}
+      {a href="http://www.gnoss.com/login/redirect/registrar-profesor"}AULAS DIDACTALIA{/a} es el servicio para la creación de espacios de aprendizaje (clases online y comunidades de aprendizaje) de {a href="http://didactalia.net"}Didactalia.net{/a}. El servicio está orientado a mejorar, enriquecer y acelerar el aprendizaje de los alumnos utilizando las posibilidades de las herramientas de la semántica y la web 2.0. AULAS DIDACTALIA permite trabajar clases y asignaturas con herramientas de redes sociales que son perfectamente válidas para la docencia en Bachillerato, Formación Profesional o cualquier otro tipo de enseñanza.
+      {/p}
+      {p}
+      Las posibilidades de sociabilidad simultánea, de conexión y enlace entre comunidades y personas, de suscripción y de comunicación asíncrona hacen de la arquitectura de participación de AULAS DIDACTALIA un generador de efectos red que ayudan a acelerar el aprendizaje de las personas y de los grupos. A su vez, la arquitectura de identidad digital de GNOSS hace posible que las personas puedan crear y actuar en diferentescontextos con diferentes avatares, avatares que responden al interés concreto que une a ese grupo humano.
+      {/p}
+      {p}
+
+      {h4}Beneficios{/h4}
+      {p}
+      AULAS DIDACTALIA favorece la transparencia en los actos de aprendizaje. Al trabajar en AULAS DIDACTALIA, los alumnos pueden suscribirse no sólo a su profesor, sino a cualquier compañero de clase. Esto tiene dos consecuencias importantes: en primer lugar, añadimos la capacidad del aprendizaje informal (‘informal learning’) para acelerar los procesos colectivos de formación a un espacio formal de enseñanza-aprendizaje; en segundo, el sistema es capaz de identificar a las personas más relevantes de esa comunidad, los líderes, por así decirlo. En este sentido, AULAS DIDACTALIA cuenta con herramientas que permiten ver y monitorizar todo lo que hacen otras personas y aprender de lo que ellas comparten en internet, de lo que piensan, de lo que escriben.
+      {/p}
+      {p}
+      AULAS DIDACTALIA hace real el concepto de evaluación continua al ver, valorar y evaluar de forma transparente y en tiempo real las búsquedas, investigaciones, descripciones, comentarios, participación del alumno en una clase. El alumno se convierte en agente activo y constructor del aprendizaje cuando investiga en la red, discrimina, sube información, la resume, etiqueta, valora y comenta. Todo esto es transparente para el profesor y para el resto del alumnado acelerando el proceso de aprendizaje.
+      {/p}
+      {p}
+      Por otro lado, el aprendizaje es más eficaz puesto que los alumnos no solo memorizan, actúan como agentes activos, investigan, internalizan conceptos, se muestran más motivados y más comprometidos con el aprendizaje, se utiliza su lenguaje y se comparan con el resto de alumnos en todo momento.
+      {/p}
+      {h4}Servicios premium para centros y familias{/h4}
+      {p}
+      AULAS DIDACTALIA ofrece servicios premium para familias y profesores (centros educativos). En el caso de los profesores, AULAS DIDACTALIA facilita que cualquier clase creada por un profesor pueda llevar precargadas las lecciones del curso y la materia que escoja a partir de los contenidos educativos de Didactalia.net. Así, los profesores pueden disponer de un espacio de recursos educativos abiertos asociados a un curso determinado, y compartirlos y trabajarlos con los alumnos en una clase online.
+      {/p}
+      {p}
+      Por su parte, las familias pueden solicitar un espacio privado que incluye un paquete de lecciones sobre la materia y el nivel que estime oportuno. El servicio incluye un tutor online para cualquier duda o consulta.
+      {/p}
+      {h4}Funciones de AULAS DIDACTALIA{/h4}
+      {ul  class="listadoAcerca"}
+      {li}{strong}CLASE / COMUNIDAD:{/strong} Gestión del conocimiento, redes enlazadas (sociabilidad simultánea), herramientas sociales (wikis, blogs, debates, preguntas, encuestas), pensamiento colectivo, etiquetado social, categorización (representación normativa), suscripciones, trazabilidad, opciones de privacidad y cuaderno de profesor (evaluaciones).{/li}
+      {li}{strong}IDENTIDAD:{/strong} Identidad de organización, identidad de profesor, gestión de identidad multinivel (varios CVs).{/li}
+      {li}{strong}VALOR AÑADIDO DE LA SEMÁNTICA:{/strong} Posicionamiento, contextos y búsquedas facetadas.{/li}
+      {/ul}
+
+      {br /}
+      {br /}
+
+      {a href="@1@"}
+      QUIERO CREAR UNA CLASE EN AULAS DIDACTALIA{/a}
+
+      {/p}
+    </Resource>
+
+    <Resource tag="COMOUSARDIDACTALIA_3_TITULO">CÓMO USAR DIDACTALIA SI ERES…</Resource>
+    <Resource tag="COMOUSARDIDACTALIA_3_SUBTITULO"></Resource>
+    <Resource tag="COMOUSARDIDACTALIA_3_INTRO"></Resource>
+    <Resource tag="COMOUSARDIDACTALIA_3_CONTENIDO">
+      {p}
+      {a href="http://didactalia.net"}Didactalia.net{/a} integra gestión del conocimiento, aprendizaje informal, trabajo colaborativo, comunidades de aprendizaje e identidad digital avanzada en un grafo educativo. La comunidad ofrece distintos contenidos y servicios en función del contexto en el que se utilice la plataforma. Te ofrecemos una guía de usos en función del colectivo al que perteneces:
+      {/p}
+      {h4}{a href="@1@"}PROFESORES{/a}{/h4}
+      {ul class="listadoAcerca"}
+      {li}Consigue que tus alumnos trabajen en equipo{/li}
+      {li}Fomenta la opinión y el espíritu crítico en tu clase{/li}
+      {li}Ayuda a tus alumnos a dar visibilidad y exponer sus trabajos{/li}
+      {li}Implanta un sistema de evaluación abierta y transparente{/li}
+      {li}Trabaja tu reputación en la Red{/li}
+      {li}Adquiere conocimiento al compartir experiencias en una red de profesores{/li}
+      {/ul}
+
+      {h4}{a href="@2@"}PADRES{/a}{/h4}
+      {ul class="listadoAcerca"}
+      {li}Participa activamente en el aprendizaje de tu hijo{/li}
+      {li}Ayuda a tu hijo a vivir un mundo digital con sentido{/li}
+      {li}Colabora con tu hijo en el desarrollo de su identidad digital{/li}
+      {li}¿Formas parte de una Asociación de Padres de Alumnos? Gestiona tu colectivo de forma ágil en un espacio social{/li}
+      {/ul}
+
+      {h4}{a href="@3@"}ALUMNOS{/a}{/h4}
+      {ul class="listadoAcerca"}
+      {li}Descubre nuevos contenidos relacionados con los temas de clase{/li}
+      {li}Disfruta de tu clase en una red social{/li}
+      {li}Crea tu primera identidad digital{/li}
+      {/ul}
+
+      {h4}{a href="@4@"}CENTROS EDUCATIVOS {/a}{/h4}
+      {ul class="listadoAcerca"}
+      {li}Facilita que los profesores exploten al máximo las posibilidades de aprendizaje de la Red{/li}
+      {li}Proporciona nuevos contenidos para las clases de los profesores{/li}
+      {li}Agiliza la gestión del centro con una red social interna{/li}
+      {/ul}
+
+      {/p}
+
+    </Resource>
+
+    <Resource tag="DIDACTALIAPARAPROFESORES_3.1_TITULO">Didactalia para profesores</Resource>
+    <Resource tag="DIDACTALIAPARAPROFESORES_3.1_SUBTITULO"></Resource>
+    <Resource tag="DIDACTALIAPARAPROFESORES_3.1_INTRO"></Resource>
+    <Resource tag="DIDACTALIAPARAPROFESORES_3.1_CONTENIDO">
+      {p}
+      Como profesor que trabaja en {a href="http://didactalia.net"}Didactalia.net{/a}, puedes obtener los siguientes beneficios:
+      {/p}
+      {ul class="listadoAcerca"}
+      {li}{strong}Consigue que tus alumnos trabajen en equipo{/strong}
+      {p}
+      El aprendizaje es más eficaz puesto que los alumnos no sólo memorizan, sino que actúan, investigan, internalizan conceptos. El resultado es que se muestran más motivados y más comprometidos con su propio aprendizaje y ello porque por un lado se utiliza su lenguaje, pero también porque pueden compararse con el resto de alumnos. Crear y compartir el conocimiento supone trabajar en equipo, un alumno trabaja para el resto y el resto lo hace para el alumno.
+      {/p}
+      {/li}
+      {li}{strong}Fomenta la opinión y el espíritu crítico en tu clase{/strong}
+      {p}
+      Las herramientas sociales facilitan un aprendizaje más profundo al tener que investigar y reflexionar en mayor medida sobre lo que se solicita y hacerlo en un contexto de mayor transparencia, lo que implica mayor carga de responsabilidad sobre lo buscado, escrito y analizado y confrontar con la opinión de los compañeros.
+      {/p}
+      {/li}
+      {li}{strong}Ayuda a tus alumnos a dar visibilidad y exponer sus trabajos{/strong}
+      {p}
+      El alumno convierte las clases en un espacio online en el que mezcla y combina con sentido diversos recursos existentes en la Web. Con ello crea un elemento de interés por su carácter divulgativo o como una agregación de fuentes diversas y dispersas. {a href="@1@"}AULAS DIDACTALIA{/a} favorece la transparencia y trazabilidad de los actos de aprendizaje, lo que permite su publicación (si se desea) y, por ende, contribuye a su reutilización por parte de terceros. Esto tiene dos consecuencias importantes: en primer lugar, añadimos la capacidad del aprendizaje informal (Informal Learning) para acelerar los procesos colectivos de formación a un espacio formal de enseñanza-aprendizaje; en segundo, el sistema es capaz de identificar y reputar a las personas más relevantes de cada comunidad, lo que favorece la iniciativa y la competencia.
+      {/p}
+      {/li}
+      {li}{strong}Implanta un sistema de evaluación abierta y transparente{/strong}
+      {p}
+      AULAS DIDACTALIA posibilita hacer real el concepto de evaluación continua; por un lado permite ver y valorar de forma transparente y en tiempo real las búsquedas, investigaciones, descripciones, comentarios y participación de un alumno, pero además el profesor dispone de una herramienta específica, el cuaderno del profesor, que objetiva las métricas sociales de sus alumnos.
+      {div class = "aprendeDest"}
+      {a href="@2@" style="@3@" }
+      {h3}QUIERO CREAR UNA CLASE EN AULAS DIDACTALIA{/h3}{/a}
+      {/div}
+      {/p}
+      {/li}
+      {li}{strong}Trabaja tu reputación en la Red{/strong}
+      {p}
+      Comparte y da visibilidad a tu conocimiento a través de un perfil profesional que se posiciona y que incluye un espacio personal (Personal Learning Environment) con tu propia selección de recursos educativos y trabajos profesionales.
+      {/p}
+      {/li}
+      {li}{strong}Adquiere conocimiento al compartir experiencias en una red de profesores{/strong}
+      {p}
+      El profesor comparte su libertad docente y la creación de conocimiento colectivo con otros profesores de su centro o a nivel global con los que comparte asignaturas. De esta forma, fomenta un intercambio y enriquecimiento entre iguales.
+      {div class = "aprendeDest"}
+      {a href="@4@" style="@5@"}
+      {h3}QUIERO CREAR MI IDENTIDAD DIGITAL EN DIDACTALIA{/h3}{/a}
+      {/div}
+      {/p}
+      {/li}
+      {/ul}
+    </Resource>
+
+    <Resource tag="DIDACTALIAPARAPADRES_3.2_TITULO">Didactalia para padres</Resource>
+    <Resource tag="DIDACTALIAPARAPADRES_3.2_SUBTITULO"></Resource>
+    <Resource tag="DIDACTALIAPARAPADRES_3.2_INTRO"></Resource>
+    <Resource tag="DIDACTALIAPARAPADRES_3.2_CONTENIDO">
+      {p}
+      {a href="http://didactalia.net"}Didactalia.net{/a} es una plataforma concebida para hacer real el concepto de comunidad educativa en la que los padres participan en el proceso de aprendizaje. ¿Para qué me sirve DIDACTALIA como padre?
+      {/p}
+      {ul class="listadoAcerca"}
+      {li}{strong}Participa activamente en el aprendizaje de tu hijo{/strong}
+      {p}
+      Didactalia.net va más allá del tradicional libro de texto y propone la reutilización tanto de los recursos digitales abiertos en la Red como de los contenidos digitales desarrollados por las editoriales educativas. {a href="@1@"}AULAS DIDACTALIA{/a} ofrece recursos educativos, unidades didácticas (lecciones) y temarios completos para que los padres aprendan con sus hijos y participen activamente en su proceso de aprendizaje.
+      {/p}
+      {/li}
+      {li}{strong}Ayuda a tu hijo a vivir un mundo digital con sentido{/strong}
+      {p}
+      Didactalia.net no se ha concebido como un espacio virtual de aprendizaje, sino como un espacio digital que aumenta y enriquece el espacio social en el que se relacionan, trabajan y aprenden las personas. Para ello, cuenta con herramientas que permiten ver y monitorizar todo lo que hacen los alumnos y aprender de lo que ellas exploran, descubren o miran en internet, de lo que piensan, de lo que escriben.
+      {/p}
+      {/li}
+      {li}{strong}Colabora con tu hijo en el desarrollo de su identidad digital{/strong}
+      {p}
+      Didactalia.net te permite ir más allá de los perfiles habituales en las redes de ocio y entretenimiento. El servicio de Identidad Digital para alumnos posibilita la creación, evolución y promoción de un perfil en el que el estudiante va incorporando sus conocimientos y competencias a lo largo del tiempo. Los alumnos pueden generar y publicar tantos currículum como estimen oportuno y, gracias a la tecnología semántica,  obtener un posicionamiento óptimo en buscadores, si desean utilizarlos de este modo o como estrategia de empleabilidad.
+      {div class = "aprendeDest"}{a href="@2@" style="@3@"}
+      {h3}QUIERO CREAR MI IDENTIDAD DIGITAL EN DIDACTALIA{/h3}{/a}{/p}
+      {/div}
+      {/li}
+      {li}{strong}¿Formas parte de una Asociación de Padres de Alumnos? Gestiona tu colectivo de forma ágil en un espacio social{/strong}
+      {p}
+      Didactalia.net te proporciona las herramientas necesarias para facilitar la gestión documental y la comunicación entre los miembros de una asociación en una red social interna.
+      {div class = "aprendeDest"}{a href="mailto:gnoss@gnoss.com" style="@4@"}{h3}SOLICÍTANOS MÁS INFORMACIÓN.{/h3}{/a}{/div}
+      {/p}
+      {/li}
+      {/ul}
+    </Resource>
+
+    <Resource tag="DIDACTALIAPARAALUMNOS_3.3_TITULO">Didactalia para alumnos</Resource>
+    <Resource tag="DIDACTALIAPARAALUMNOS_3.3_SUBTITULO"></Resource>
+    <Resource tag="DIDACTALIAPARAALUMNOS_3.3_INTRO"></Resource>
+    <Resource tag="DIDACTALIAPARAALUMNOS_3.3_CONTENIDO">
+      {p}
+      Estás habituado a compartir tus vivencias y experiencias en redes sociales como Tuenti, Facebook o Twitter. ¿Has pensado en que puedes aprender a través de una red social? En {a href="http://didactalia.net"}Didactalia.net{/a}, puedes conseguir lo siguiente:
+      {/p}
+      {ul class="listadoAcerca"}
+      {li}{strong}Descubre nuevos contenidos relacionados con los temas de clase{/strong}
+      {p}
+      ¿Estás buscando más información sobre el tema que te han contado hoy? ¿Quieres ampliar conocimientos sobre una lección concreta? ¿Buscas ejercicios para entender mejor el tema? La colección educativa de {a href="http://didactalia.net/"}Didactalia.net{/a} te permite navegar entre más de 50.000 recursos educativos en todo tipo de materias y niveles.
+
+      {div class = "aprendeDest"}{a href="@1@" style="@2@"}
+      {h3}QUIERO ENCONTRAR LOS RECURSOS EDUCATIVOS QUE ME INTERESAN{/h3}{/a}{/div}
+      {/p}
+
+      {/li}
+      {li}{strong}Disfruta de tu clase en una red social{/strong}
+      {p}
+      Estás acostumbrado a navegar en redes sociales en las que compartes tu opinión en tus asuntos de ocio o entretenimiento. ¿Por qué no utilizar las redes sociales para aprender? En {a href="http://didactalia.net/"}AULAS DIDACTALIA{/a} puedes trabajar en equipo con tus compañeros de clase, consultarles, ayudarles y realizar trabajos de manera colaborativa. Además, puedes conectar con alumnos de otras clases y centros y compartir tus experiencias.
+      {/p}
+      {/li}
+      {li}{strong}Crea tu primera identidad digital{/strong}
+      {p}
+      Probablemente ya tienes más de un perfil registrado en las redes sociales. Es momento de pensar en cómo te presentas más allá de tu ocio. DIDACTALIA te facilita una herramienta de identidad digital para que muestres lo que sabes hacer a lo largo de tu formación.
+
+      {div class = "aprendeDest"}{a href="@3@" style="@4@"}
+      {h3}QUIERO MI IDENTIDAD DIGITAL EN DIDACTALIA{/h3}{/a}{/div}
+
+      {/p}
+      {/ul}
+    </Resource>
+
+    <Resource tag="DIDACTALIAPARACENTROS_3.4_TITULO">Didactalia para centros educativos</Resource>
+    <Resource tag="DIDACTALIAPARACENTROS_3.4_SUBTITULO"></Resource>
+    <Resource tag="DIDACTALIAPARACENTROS_3.4_INTRO"></Resource>
+    <Resource tag="DIDACTALIAPARACENTROS_3.4_CONTENIDO">
+      {p}
+      Las herramientas sociales y la tecnología de {a href="http://didactalia.net"}Didactalia.net{/a} permiten a los centros educativos afrontar un proyecto sólido y evolutivo de contenidos y servicios para alumnos, padres y profesores. ¿Por qué mi centro mejora con DIDACTALIA? Porque…
+      {/p}
+
+      {ul class="listadoAcerca"}
+      {li}{strong}Facilita que los profesores exploten al máximo las posibilidades de aprendizaje de la Red{/strong}
+      {p}
+      La llegada de la web social ha facilitado la proliferación de nuevos servicios para la generación de contenidos educativos y la creación de clases online. En muchos casos, la virtualización de las aulas ha quedado en una mera réplica de las clases en formato digital. {a href="@1@"}AULAS DIDACTALIA{/a} va más allá y se presenta como una opción que complementa las clases en el aula con las herramientas de la web social y las posibilidades que ofrece la tecnología semántica. El profesor dispone de nuevas opciones para que los alumnos trabajen en equipo, fomentar la reflexión y evaluar de una forma transparente y abierta.
+      {/li}
+      {li}{strong}Proporciona nuevos contenidos para las clases de los profesores{/strong}
+      {p}
+      DIDACTALIA va más allá del tradicional libro de texto y propone la reutilización tanto de los recursos digitales abiertos en la Red como de los contenidos digitales desarrollados por las editoriales educativas. AULAS DIDACTALIA ofrece programaciones de aula y  unidades didácticas que los profesores pueden trabajar con los alumnos desde una clase online.
+
+      {div class = "aprendeDest"}{a href="@2@" style="@3@"}
+      {h3}QUIERO CREAR UNA CLASE{/h3}{/a}{/div}
+      {/p}
+
+      {/p}
+      {/li}
+      {li}{strong}Agiliza la gestión del centro con una red social interna{/strong}
+      {p}
+      DIDACTALIA proporciona herramientas sociales y semánticas para facilitar tanto la gestión del conocimiento como la gestión documental de un centro en el marco de una red social privada. Reduce y optimiza los tiempos de descubrimiento y búsqueda de información.
+      {div class = "aprendeDest"}{a href="mailto:gnoss@gnoss.com" style="@4@"}{h3}SOLICÍTANOS MÁS INFORMACIÓN.{/h3}{/a}{/div}
+      {/p}
+      {/ul}
+
+    </Resource>
+
+    <Resource tag="CASODEUSO">CASOS DE USO</Resource>
+
+    <Resource tag="DIDACTALIACASOAPADRINA_4.1_TITULO">Proyecto Apadrina. Marketing punto de venta</Resource>
+    <Resource tag="DIDACTALIACASOAPADRINA_4.1_SUBTITULO"></Resource>
+    <Resource tag="DIDACTALIACASOAPADRINA_4.1_INTRO"></Resource>
+    <Resource tag="DIDACTALIACASOAPADRINA_4.1_CONTENIDO">
+
+      {p}
+      {img src="http://content.gnoss.com/boletines/didactalia/proyectoapadrina.png" width="595"}
+      {/p}
+
+      {p}
+      {a href="http://red.gnoss.com/comunidad/MPV-APADRINA"}Proyecto Apadrina{/a} es una comunidad de aprendizaje en la que han trabajado de manera colaborativa los alumnos de Grado Superior de Gestión Comercial y Marketing de los {a href="http://www.iesprofesormaximotrueba.es/"}IES Profesor Máximo Trueba{/a} (Boadilla del Monte, Madrid; España) e {a href="http://www.educa.madrid.org/portal/c/portal/layout?p_l_id=953.1"}IES Icaro{/a} (Getafe, Madrid; España) durante el curso 2011/2012.
+      {/p}
+
+      {p}
+      Proyecto Apadrina ha sido dirigido por las profesoras Carolina Cristanchi y Laura Colorado. Para la gestión del conocimiento, el trabajo colaborativo y la dinamización del proyecto en la Red, las dos profesoras solicitaron una comunidad en AULAS DIDACTALIA. En ella, alumnos y profesoras han trabajado contenidos relacionados con el asesoramiento sobre marketing en el punto de venta a comercios y empresas de la Comunidad de Madrid. Como actividad, los alumnos constituyeron dos empresas virtuales -ICI merchandising y TrueMark-, que se gestionaron a partir de la comunidad.
+      {/p}
+
+      {p}
+      Proyecto Apadrina es una comunidad pública que ofrece una selección de 1.235 recursos (Septiembre 2012).
+      {/p}
+    </Resource>
+
+    <Resource tag="DIDACTALIACASOMAPAS_4.2_TITULO">Mapas interactivos</Resource>
+    <Resource tag="DIDACTALIACASOMAPAS_4.2_SUBTITULO"></Resource>
+    <Resource tag="DIDACTALIACASOMAPAS_4.2_INTRO"></Resource>
+    <Resource tag="DIDACTALIACASOMAPAS_4.2_CONTENIDO">
+      {p}
+      {img src="http://contentmapas.didactalia.net/imagenes/Usuarios/ImagenesCKEditor/5d1dada8-e23b-499e-aa70-66ad03aedbc4/a5913da8-a034-4f8a-b476-94e037d7b37a.jpg" width="595"}
+      {/p}
+      {p}
+      Más de 2100 {a target="_blank" href="http://mapasinteractivos.didactalia.net/comunidad/mapasflashinteractivos"}mapas{/a}, {a target="_blank" href="http://mapasinteractivos.didactalia.net/comunidad/mapasflashinteractivos/Mapas"}mapas interactivos{/a}, {a target="_blank" href="http://mapasinteractivos.didactalia.net/comunidad/mapasflashinteractivos/MapasImprimir"}mapas para imprimir,{/a} {a target="_blank" href="http://mapasinteractivos.didactalia.net/comunidad/mapasflashinteractivos/mapasBNEscolar"}material cartográfico manuscrito de la BNEscolar{/a} para {strong}aprender Geografía{/strong}. Con un buscador facetado que te permite filtrar por tantos campos como desees hasta localizar el mapa de tu interés.
+      {/p}
+      {p}	Algunos de los campos por los que puedes buscar son los siguientes: {/p}
+      {ul}
+      {li}
+      {strong}Tipo de mapa: {/strong}Hay {a target="_blank" href="http://mapasinteractivos.didactalia.net/comunidad/mapasflashinteractivos/Mapas?skos:ConceptID=gnoss:97BFBC7F-CCF3-4B69-AE79-9A938DF03938"}mapas políticos{/a} (regiones, provincias, CCAA, condados, departamentos, capitales y banderas); {a target="_blank" href="http://mapasinteractivos.didactalia.net/comunidad/mapasflashinteractivos/Mapas?skos:ConceptID=gnoss:D26DEE8C-FFA9-4C2E-8078-B4B8F876A571"}mapas físicos{/a} (relieve, ríos, lagos, etc.); {a target="_blank" href="http://mapasinteractivos.didactalia.net/comunidad/mapasflashinteractivos/Mapas?skos:ConceptID=gnoss:DEC6FDB9-82DC-413D-8EC4-76041A1B9F78"}mapas económicos{/a} (puertos, monedas, etc.); {a target="_blank" href="http://mapasinteractivos.didactalia.net/comunidad/mapasflashinteractivos/Mapas?skos:ConceptID=gnoss:56DA7AC0-9A6B-43AC-8C7F-E93D0435A3E4"}mapas gastronómicos{/a} (vinos, quesos, etc.); y {a target="_blank" href="http://mapasinteractivos.didactalia.net/comunidad/mapasflashinteractivos/Mapas?skos:ConceptID=gnoss:8E5F4C50-615F-470B-A181-1F96BB423F25"}mapas históricos{/a} (batallas y mapas antiguos)
+      {/li}
+
+      {li}{strong}Colección:{/strong}  {a target="_blank" href="http://mapasinteractivos.didactalia.net/comunidad/mapasflashinteractivos/Mapas?skos:ConceptID=gnoss:1256BE34-6D3B-49E5-BB07-00A3D5D83DC8"}mapas de Ennrique Alonso{/a}, {a target="_blank" href="http://mapasinteractivos.didactalia.net/comunidad/mapasflashinteractivos/mapasBNEscolar"}BNEscolar,{/a} {a target="_blank" href="http://mapasinteractivos.didactalia.net/comunidad/mapasflashinteractivos/Mapas?skos:ConceptID=gnoss:D4D58B36-C67A-4369-8C5C-D47937D56745"}Juegos Geográficos{/a}, {a target="_blank" href="http://mapasinteractivos.didactalia.net/comunidad/mapasflashinteractivos/Mapas?skos:ConceptID=gnoss:96572E79-534A-44D4-876B-DECF03504E6E"}Toporopa,{/a} {a target="_blank" href="http://mapasinteractivos.didactalia.net/comunidad/mapasflashinteractivos/busqueda-avanzada?skos:ConceptID=gnoss:6CAD5E28-738B-4530-9530-7D86C9A52CF4"}Freemap{/a}, {a target="_blank" href="http://mapasinteractivos.didactalia.net/comunidad/mapasflashinteractivos/MapasImprimir?skos:ConceptID=gnoss:A15554DB-F56F-40A5-BF5A-3925B2D3E43E"}National Geographic{/a}, {a target="_blank" href="http://mapasinteractivos.didactalia.net/comunidad/mapasflashinteractivos/MapasImprimir?skos:ConceptID=gnoss:20B02109-4737-4F2C-8B90-600FBF32FA51"}Instituto Geográfico Nacional{/a}, etc.{/li}
+
+      {li}{strong}Ubicación{/strong}: Continente, País y Región o CCAA{/li}
+
+      {li}
+      {strong}Idioma{/strong}: están disponibles en 16 idiomas: {a target="_blank" href="http://mapasinteractivos.didactalia.net/comunidad/mapasflashinteractivos/Mapas?dc:language=español"}español{/a}, {a target="_blank" href="http://mapasinteractivos.didactalia.net/comunidad/mapasflashinteractivos/Mapas?dc:language=català"}catalán{/a}, {a target="_blank" href="http://mapasinteractivos.didactalia.net/comunidad/mapasflashinteractivos/Mapas?dc:language=euskera"}euskera{/a}, {a target="_blank" href="http://mapasinteractivos.didactalia.net/comunidad/mapasflashinteractivos/Mapas?dc:language=galego"}gallego{/a}, {a target="_blank" href="http://mapasinteractivos.didactalia.net/comunidad/mapasflashinteractivos/Mapas?dc:language=asturianu"}asturianu{/a}, {br}		{a target="_blank" href="http://mapasinteractivos.didactalia.net/comunidad/mapasflashinteractivos/Mapas?dc:language=english"}inglés{/a}, {a target="_blank" href="http://mapasinteractivos.didactalia.net/comunidad/mapasflashinteractivos/Mapas?dc:language=français"}francés{/a}, {a target="_blank" href="http://mapasinteractivos.didactalia.net/comunidad/mapasflashinteractivos/Mapas?dc:language=deutsch"}alemán{/a}, portugués, {a target="_blank" href="http://mapasinteractivos.didactalia.net/comunidad/mapasflashinteractivos/Mapas?dc:language=italiano"}italiano{/a}, noruego, holandés, danés, irlandés y sami.
+      {/li}
+
+      {li}{strong}Tipo de juego{/strong} (para los interactivos). Se trata de actividades interactivas de varios tipos. Además de la tipología característica de los mapas de Enrique Alonso que, por orden de dificultad creciente, son estos tres juegos:
+      {ul}
+      {li}{a target="_blank" href="http://mapasinteractivos.didactalia.net/comunidad/mapasflashinteractivos/Mapas?dc:type=puzzle"}{strong}Puzzle{/strong}:{/a} {u}encaja las piezas{/u} (provincias, regiones y países) hasta conseguir completar lo que corresponda (regiones, países y continentes){/li}
+      {li}{a target="_blank" href="http://mapasinteractivos.didactalia.net/comunidad/mapasflashinteractivos/Mapas?dc:type=¿cómo se llama?"}{strong}¿Cómo se llama?{/strong}{/a} {u}selecciona de la lista{/u} que te proporcionan el nombre de lo que te cuestiona en el mapa (río, cordillera, provincia, región, comunidad, país, etc.){/li}
+      {li}{a target="_blank" href="http://mapasinteractivos.didactalia.net/comunidad/mapasflashinteractivos/Mapas?dc:type=¿dónde está?"}{strong}¿Dónde está? {/strong}{/a}{u}señala en el mapa{/u} la ubicación del objeto geográfico físico o político por el que preguntan (río, sistema montañoso, provincia, región, comunidad, país y otros) se han incorporado juegos geográficos de las modalidades:{/li}
+      {li}{strong}{a target="_blank" href="http://mapasinteractivos.didactalia.net/comunidad/mapasflashinteractivos/Mapas?dc:type=test"}Test{/a}:{/strong} {u}elige la respuesta acecuada{/u} entre varias opciones para cada pregunta sobre geografía{/li}
+      {li}{a target="_blank" href="http://mapasinteractivos.didactalia.net/comunidad/mapasflashinteractivos/Mapas?dc:type=localización"}{strong}Localización{/strong}{/a}: {u}ubica en el mapa {/u}el elemento geográfico por el que te preguntan y averigua cómo de cerca lo has situado (se detalla en cuántos km lo has desplazado){/li}
+      {/ul}
+      {/li}
+
+      {/ul}
+      {p}	Utilízalos y pon a prueba tus conocimientos de Geografía acerca de: España y sus Comunidades Autónomas, Europa y la Unión Europea, Asia, África y América.{/p}
+    </Resource>
+
+    <Resource tag="DIDACTALIACASOPAPERTOYS_4.3_TITULO">PaperToys</Resource>
+    <Resource tag="DIDACTALIACASOPAPERTOYS_4.3_SUBTITULO"></Resource>
+    <Resource tag="DIDACTALIACASOPAPERTOYS_4.3_INTRO"></Resource>
+    <Resource tag="DIDACTALIACASOPAPERTOYS_4.3_CONTENIDO">
+      {p}
+      {img src="http://content.gnoss.com/imagenes/Usuarios/ImagenesCKEditor/5d1dada8-e23b-499e-aa70-66ad03aedbc4/177c4397-3468-4092-93b6-ad16b28b32ac.jpg" width="595"}
+      {/p}
+      {p}Los {a target="_blank" href="http://papertoys.didactalia.net/"}PaperToys de Didactalia {/a}son una colección de {strong}recortables{/strong}, muñecos de papel listos para ser impresos, recortados y pegados. Son pequeñas obras de arte que nos recuerdan a personas que dejaron huella en la Historia como pintores, escritores, descubridores,... así como personajes de la vida cotidiana, animales, etc. {/p}
+      {p}Su montaje es muy sencillo, tan solo hay que seguir las instrucciones que se detallan en cada Paper Toy.{/p}
+      {p}{span style="line-height:1.6em"}Recuerda que son coleccionables, así que tendrás que estar atento a las {/span}{a target="_blank" style="line-height: 1.6em;" href="http://papertoys.didactalia.net/comunidad/papertoys/PaperToys"}últimas publicaciones{/a}{span style="line-height:1.6em"} o, mejor aún,  {/span}{a target="_blank" style="line-height: 1.6em;" href="http://papertoys.didactalia.net/comunidad/papertoys/gestionar-suscripcion-comunidad"}suscríbete{/a}{span style="line-height:1.6em"} a aquellas colecciones que sean de tu interés.{/span}{/p}
+      {p}¡A qué esperas para empezar a recortar, doblar, pegar, y sobre todo, a divertirte!{/p}
+    </Resource>
+
+    <Resource tag="BOTONREGISTRO">Crea tu clase {br /}en GNOSS</Resource>
+    <Resource tag="BOTONDIDACTALIA">Únete a Didactalia</Resource>
+  </page>
+  <page name="LECCIONESDIDACTALIA">
+    <Resource tag="SLIDER4TITULO">
+    </Resource>
+    <Resource tag="SLIDER4REGISTRATE">
+    </Resource>
+    <Resource tag="SLIDER4TEXTOALT">
+    </Resource>
+    <Resource tag="SLIDER2TITULO">
+    </Resource>
+    <Resource tag="SLIDER2TEXTOALT">
+    </Resource>
+    <Resource tag="SLIDER3TITULO">
+    </Resource>
+    <Resource tag="SLIDER3TEXTOALT">
+    </Resource>
+    <Resource tag="TITULO">
+    </Resource>
+    <Resource tag="ACCEDER">
+    </Resource>
+    <Resource tag="QUESON">
+    </Resource>
+    <Resource tag="TITULOWIDE">
+    </Resource>
+    <Resource tag="PARRAFO1WIDE">
+    </Resource>
+    <Resource tag="PARRAFO2WIDE">
+    </Resource>
+    <Resource tag="PARRAFO3WIDE">
+    </Resource>
+  </page>
+  <page name="LANDINGDESAFIOGNOSSEDUCA">
+    <Resource tag="TITULO">
+    </Resource>
+  </page>
+  <page name="LANDINGDEMA">
+    <Resource tag="TITULO">
+    </Resource>
+  </page>
+  <page name="CONSULTORTIC">
+    <Resource tag="TITPREGUNTA">O que deseja saber?</Resource>
+    <Resource tag="INFOCATPREGUNTA">Associe uma categoria à sua pergunta para tentar dar uma resposta logo que possível.</Resource>
+    <Resource tag="TEMACONSULTA">Assunto da consulta</Resource>
+    <Resource tag="HAZMEPREGUNTA">... Faça-me uma pergunta</Resource>
+    <Resource tag="PREGUNTAR">Perguntar</Resource>
+    <Resource tag="ERRORPREGNOPREG">Deve formular uma pergunta.</Resource>
+    <Resource tag="ERRORPREGNOTEMA">Deve selecionar um assunto para consulta.</Resource>
+    <Resource tag="ERRORPREGNOUSUARIO">Deve ser membro da comunidade para poder fazer uma pergunta. {a href='@1@' target='_blank'}Registe-se e participe{/a}</Resource>
+    <Resource tag="ERRORPREGNOUSUARIOSINLOGIN">Deve ser membro da comunidade para poder fazer uma pergunta. {a href='@1@' target='_blank'}Registe-se e participe{/a} ou {a onclick='@2@'}Inicie sessão{/a}</Resource>
+    <Resource tag="ERRORPREGNOUSUARIOSINLOGIN2">Deve ser membro da comunidade para poder fazer uma pergunta. {a href='@1@' target='_blank'}Registe-se e participe{/a} ou Inicie sessão</Resource>
+    <Resource tag="ERRORPREGNOUSUARIOSINLOGIN3">Deve ser membro da comunidade para poder fazer uma pergunta. {a href='@1@' target='_blank'}Registe-se e participe{/a} ou {a href='@2@'}Inicie sessão{/a}</Resource>
+    <Resource tag="PREGHECHA">A sua pergunta foi corretamente enviada à consultora TIC. Será respondida num máximo de 24 horas. Para visualizar a sua pergunta, atualize a página: no Windows pressione F5 e em Mac pressione CMD+R</Resource>
+    <Resource tag="GUARDADOFALLO">Ocorreu um erro ao guardar; tente mais tarde.</Resource>
+    <Resource tag="ULTIMOSCONT">Últimos Recursos</Resource>
+    <Resource tag="ULTIMASPREG">Últimas Perguntas</Resource>
+    <Resource tag="BUSCADORCONTEN">Procurar conteúdos</Resource>
+    <Resource tag="BUSCARPUNTOS">... Procurar</Resource>
+    <Resource tag="BUSCAR">Procurar</Resource>
+    <Resource tag="CONSULTORTIC">Consultora TIC</Resource>
+    <Resource tag="CONSULTORTICINFO">
+      {div class='wrapheader'}{div class='wrap'}{h3}Olá, o meu nome é {strong}Inés Andrés,{/strong} sou a sua {span class='resaltado'} Consultora TIC {a href='#explicacionItem00'}*{/a}{/span}{/h3}{p id='explicacionItem00' class='explicacion item00'}* Tecnologias da informação e da comunicação{/p}{p class='fotoTIC'}{a href='@2@/organizacion/inevery/perfil/In%C3%A9s-Andr%C3%A9s-L%C3%B3pez'}{img src='@1@'}{/a}{/p}{/div}{div class='wrap description'}{p}{a href='@2@/organizacion/inevery/perfil/In%C3%A9s-Andr%C3%A9s-L%C3%B3pez'}Ir ao perfil{/a}{/p}{p}Olá, sou Inés Andrés, consultora TIC da IneveryCREA{/p}{p}Dou-lhe as boas-vindas a este espaço que, se quiser, também pode ser seu. O mais provável é que seja um docente com vontade de melhorar no seu trabalho, tal como eu, ou talvez ainda esteja se preparando para sê-lo, ou talvez não trabalhe no mundo educacional mas tenha interesse na educação e nas novas formas de aprender que as TIC colocam à nossa disposição.{/p}{p}Seja quem for, estou à sua disposição. Para ajudá-lo em tudo o que esteja ao meu alcance, para me consultar sobre qualquer dúvida que lhe surja quando se tratar de levar as TIC à sala de aulas e para que, juntos, criemos conteúdos relacionados com o que deseja trabalhar.{/p}{p}Partilhar nossas dúvidas e procurar de soluções em conjunto é a melhor forma de aprendermos, e aqui temos um espaço onde podemos fazê-lo. Espero que se sinta como em casa porque está convidado a ficar.{/p}{p}{a href='http://www.youtube.com/watch?v=FIKoi0RoBk8' target='_blank'}Como formular a minha pergunta TIC{/a}{/p}{/div}{/div}
+    </Resource>
+    <Resource tag="REGISTRATEPARTICIPA">Registe-se e participe</Resource>
+    <Resource tag="ADJUNIMG">Anexar uma imagem</Resource>
+  </page>
+</Resources>

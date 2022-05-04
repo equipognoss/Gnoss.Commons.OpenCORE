@@ -1,0 +1,178 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xs:schema id="BasePerOrgComunidadDS" targetNamespace="http://tempuri.org/BasePerOrgComunidadDS.xsd" xmlns:mstns="http://tempuri.org/BasePerOrgComunidadDS.xsd" xmlns="http://tempuri.org/BasePerOrgComunidadDS.xsd" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata" xmlns:msprop="urn:schemas-microsoft-com:xml-msprop" attributeFormDefault="qualified" elementFormDefault="qualified">
+  <xs:annotation>
+    <xs:appinfo source="urn:schemas-microsoft-com:xml-msdatasource">
+      <DataSource DefaultConnectionIndex="0" FunctionsComponentName="QueriesTableAdapter" Modifier="AutoLayout, AnsiClass, Class, Public" SchemaSerializationMode="IncludeSchema" xmlns="urn:schemas-microsoft-com:xml-msdatasource">
+        <Connections>
+        </Connections>
+        <Tables>
+        </Tables>
+        <Sources>
+        </Sources>
+      </DataSource>
+    </xs:appinfo>
+  </xs:annotation>
+  <xs:element name="BasePerOrgComunidadDS" msdata:IsDataSet="true" msdata:UseCurrentLocale="true" msprop:Generator_UserDSName="BasePerOrgComunidadDS" msprop:Generator_DataSetName="BasePerOrgComunidadDS">
+    <xs:complexType>
+      <xs:choice minOccurs="0" maxOccurs="unbounded">
+        <xs:element name="ColaTagsCom_Per_Org" msprop:Generator_UserTableName="ColaTagsCom_Per_Org" msprop:Generator_RowDeletedName="ColaTagsCom_Per_OrgRowDeleted" msprop:Generator_RowChangedName="ColaTagsCom_Per_OrgRowChanged" msprop:Generator_RowClassName="ColaTagsCom_Per_OrgRow" msprop:Generator_RowChangingName="ColaTagsCom_Per_OrgRowChanging" msprop:Generator_RowEvArgName="ColaTagsCom_Per_OrgRowChangeEvent" msprop:Generator_RowEvHandlerName="ColaTagsCom_Per_OrgRowChangeEventHandler" msprop:Generator_TableClassName="ColaTagsCom_Per_OrgDataTable" msprop:Generator_TableVarName="tableColaTagsCom_Per_Org" msprop:Generator_RowDeletingName="ColaTagsCom_Per_OrgRowDeleting" msprop:Generator_TablePropName="ColaTagsCom_Per_Org">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="OrdenEjecucion" msdata:ReadOnly="true" msdata:AutoIncrement="true" msprop:Generator_UserColumnName="OrdenEjecucion" msprop:Generator_ColumnPropNameInRow="OrdenEjecucion" msprop:Generator_ColumnVarNameInTable="columnOrdenEjecucion" msprop:Generator_ColumnPropNameInTable="OrdenEjecucionColumn" type="xs:int" />
+              <xs:element name="TablaBaseProyectoID" msprop:Generator_UserColumnName="TablaBaseProyectoID" msprop:Generator_ColumnPropNameInRow="TablaBaseProyectoID" msprop:Generator_ColumnVarNameInTable="columnTablaBaseProyectoID" msprop:Generator_ColumnPropNameInTable="TablaBaseProyectoIDColumn" type="xs:int" />
+              <xs:element name="Tags" msprop:Generator_UserColumnName="Tags" msprop:Generator_ColumnPropNameInRow="Tags" msprop:Generator_ColumnVarNameInTable="columnTags" msprop:Generator_ColumnPropNameInTable="TagsColumn">
+                <xs:simpleType>
+                  <xs:restriction base="xs:string">
+                    <xs:maxLength value="2147483647" />
+                  </xs:restriction>
+                </xs:simpleType>
+              </xs:element>
+              <xs:element name="Tipo" msprop:Generator_UserColumnName="Tipo" msprop:Generator_ColumnPropNameInRow="Tipo" msprop:Generator_ColumnVarNameInTable="columnTipo" msprop:Generator_ColumnPropNameInTable="TipoColumn" type="xs:short" />
+              <xs:element name="Estado" msprop:Generator_UserColumnName="Estado" msprop:Generator_ColumnPropNameInRow="Estado" msprop:Generator_ColumnVarNameInTable="columnEstado" msprop:Generator_ColumnPropNameInTable="EstadoColumn" type="xs:short" />
+              <xs:element name="FechaPuestaEnCola" msprop:Generator_UserColumnName="FechaPuestaEnCola" msprop:Generator_ColumnPropNameInRow="FechaPuestaEnCola" msprop:Generator_ColumnVarNameInTable="columnFechaPuestaEnCola" msprop:Generator_ColumnPropNameInTable="FechaPuestaEnColaColumn" type="xs:dateTime" />
+              <xs:element name="FechaProcesado" msprop:Generator_UserColumnName="FechaProcesado" msprop:Generator_ColumnPropNameInRow="FechaProcesado" msprop:Generator_ColumnVarNameInTable="columnFechaProcesado" msprop:Generator_ColumnPropNameInTable="FechaProcesadoColumn" type="xs:dateTime" minOccurs="0" />
+              <xs:element name="Prioridad" msprop:Generator_UserColumnName="Prioridad" msprop:Generator_ColumnPropNameInRow="Prioridad" msprop:Generator_ColumnVarNameInTable="columnPrioridad" msprop:Generator_ColumnPropNameInTable="PrioridadColumn" type="xs:short" default="0" />
+              <xs:element name="EstadoTags" msprop:Generator_UserColumnName="EstadoTags" msprop:Generator_ColumnPropNameInRow="EstadoTags" msprop:Generator_ColumnVarNameInTable="columnEstadoTags" msprop:Generator_ColumnPropNameInTable="EstadoTagsColumn" type="xs:short" default="0" />
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="ColaTagsCom_Per_Org_Vi" msprop:Generator_UserTableName="ColaTagsCom_Per_Org_Vi" msprop:Generator_RowDeletedName="ColaTagsCom_Per_Org_ViRowDeleted" msprop:Generator_RowChangedName="ColaTagsCom_Per_Org_ViRowChanged" msprop:Generator_RowClassName="ColaTagsCom_Per_Org_ViRow" msprop:Generator_RowChangingName="ColaTagsCom_Per_Org_ViRowChanging" msprop:Generator_RowEvArgName="ColaTagsCom_Per_Org_ViRowChangeEvent" msprop:Generator_RowEvHandlerName="ColaTagsCom_Per_Org_ViRowChangeEventHandler" msprop:Generator_TableClassName="ColaTagsCom_Per_Org_ViDataTable" msprop:Generator_TableVarName="tableColaTagsCom_Per_Org_Vi" msprop:Generator_RowDeletingName="ColaTagsCom_Per_Org_ViRowDeleting" msprop:Generator_TablePropName="ColaTagsCom_Per_Org_Vi">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="OrdenEjecucion" msdata:ReadOnly="true" msdata:AutoIncrement="true" msprop:Generator_UserColumnName="OrdenEjecucion" msprop:Generator_ColumnPropNameInRow="OrdenEjecucion" msprop:Generator_ColumnVarNameInTable="columnOrdenEjecucion" msprop:Generator_ColumnPropNameInTable="OrdenEjecucionColumn" type="xs:int" />
+              <xs:element name="TablaBaseProyectoID" msprop:Generator_UserColumnName="TablaBaseProyectoID" msprop:Generator_ColumnPropNameInRow="TablaBaseProyectoID" msprop:Generator_ColumnVarNameInTable="columnTablaBaseProyectoID" msprop:Generator_ColumnPropNameInTable="TablaBaseProyectoIDColumn" type="xs:int" />
+              <xs:element name="Tags" msprop:Generator_UserColumnName="Tags" msprop:Generator_ColumnPropNameInRow="Tags" msprop:Generator_ColumnVarNameInTable="columnTags" msprop:Generator_ColumnPropNameInTable="TagsColumn">
+                <xs:simpleType>
+                  <xs:restriction base="xs:string">
+                    <xs:maxLength value="2147483647" />
+                  </xs:restriction>
+                </xs:simpleType>
+              </xs:element>
+              <xs:element name="Tipo" msprop:Generator_UserColumnName="Tipo" msprop:Generator_ColumnPropNameInRow="Tipo" msprop:Generator_ColumnVarNameInTable="columnTipo" msprop:Generator_ColumnPropNameInTable="TipoColumn" type="xs:short" />
+              <xs:element name="Estado" msprop:Generator_UserColumnName="Estado" msprop:Generator_ColumnPropNameInRow="Estado" msprop:Generator_ColumnVarNameInTable="columnEstado" msprop:Generator_ColumnPropNameInTable="EstadoColumn" type="xs:short" />
+              <xs:element name="FechaPuestaEnCola" msprop:Generator_UserColumnName="FechaPuestaEnCola" msprop:Generator_ColumnPropNameInRow="FechaPuestaEnCola" msprop:Generator_ColumnVarNameInTable="columnFechaPuestaEnCola" msprop:Generator_ColumnPropNameInTable="FechaPuestaEnColaColumn" type="xs:dateTime" />
+              <xs:element name="FechaProcesado" msprop:Generator_UserColumnName="FechaProcesado" msprop:Generator_ColumnPropNameInRow="FechaProcesado" msprop:Generator_ColumnVarNameInTable="columnFechaProcesado" msprop:Generator_ColumnPropNameInTable="FechaProcesadoColumn" type="xs:dateTime" minOccurs="0" />
+              <xs:element name="Prioridad" msprop:Generator_UserColumnName="Prioridad" msprop:Generator_ColumnPropNameInRow="Prioridad" msprop:Generator_ColumnVarNameInTable="columnPrioridad" msprop:Generator_ColumnPropNameInTable="PrioridadColumn" type="xs:short" default="0" />
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="COM_PER_ORG" msprop:Generator_UserTableName="COM_PER_ORG" msprop:Generator_RowDeletedName="COM_PER_ORGRowDeleted" msprop:Generator_RowChangedName="COM_PER_ORGRowChanged" msprop:Generator_RowClassName="COM_PER_ORGRow" msprop:Generator_RowChangingName="COM_PER_ORGRowChanging" msprop:Generator_RowEvArgName="COM_PER_ORGRowChangeEvent" msprop:Generator_RowEvHandlerName="COM_PER_ORGRowChangeEventHandler" msprop:Generator_TableClassName="COM_PER_ORGDataTable" msprop:Generator_TableVarName="tableCOM_PER_ORG" msprop:Generator_RowDeletingName="COM_PER_ORGRowDeleting" msprop:Generator_TablePropName="COM_PER_ORG">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="Tag1" msprop:Generator_UserColumnName="Tag1" msprop:Generator_ColumnPropNameInRow="Tag1" msprop:Generator_ColumnVarNameInTable="columnTag1" msprop:Generator_ColumnPropNameInTable="Tag1Column">
+                <xs:simpleType>
+                  <xs:restriction base="xs:string">
+                    <xs:maxLength value="1000" />
+                  </xs:restriction>
+                </xs:simpleType>
+              </xs:element>
+              <xs:element name="Tag2" msprop:Generator_UserColumnName="Tag2" msprop:Generator_ColumnPropNameInRow="Tag2" msprop:Generator_ColumnVarNameInTable="columnTag2" msprop:Generator_ColumnPropNameInTable="Tag2Column">
+                <xs:simpleType>
+                  <xs:restriction base="xs:string">
+                    <xs:maxLength value="1000" />
+                  </xs:restriction>
+                </xs:simpleType>
+              </xs:element>
+              <xs:element name="Tipo" msprop:Generator_UserColumnName="Tipo" msprop:Generator_ColumnPropNameInRow="Tipo" msprop:Generator_ColumnVarNameInTable="columnTipo" msprop:Generator_ColumnPropNameInTable="TipoColumn" type="xs:short" />
+              <xs:element name="CercaniaDirecta" msprop:Generator_UserColumnName="CercaniaDirecta" msprop:Generator_ColumnPropNameInRow="CercaniaDirecta" msprop:Generator_ColumnVarNameInTable="columnCercaniaDirecta" msprop:Generator_ColumnPropNameInTable="CercaniaDirectaColumn" type="xs:int" />
+              <xs:element name="CercaniaIndirecta" msprop:Generator_UserColumnName="CercaniaIndirecta" msprop:Generator_ColumnPropNameInRow="CercaniaIndirecta" msprop:Generator_ColumnVarNameInTable="columnCercaniaIndirecta" msprop:Generator_ColumnPropNameInTable="CercaniaIndirectaColumn" type="xs:int" />
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="COM_PER_ORG_VI" msprop:Generator_UserTableName="COM_PER_ORG_VI" msprop:Generator_RowDeletedName="COM_PER_ORG_VIRowDeleted" msprop:Generator_RowChangedName="COM_PER_ORG_VIRowChanged" msprop:Generator_RowClassName="COM_PER_ORG_VIRow" msprop:Generator_RowChangingName="COM_PER_ORG_VIRowChanging" msprop:Generator_RowEvArgName="COM_PER_ORG_VIRowChangeEvent" msprop:Generator_RowEvHandlerName="COM_PER_ORG_VIRowChangeEventHandler" msprop:Generator_TableClassName="COM_PER_ORG_VIDataTable" msprop:Generator_TableVarName="tableCOM_PER_ORG_VI" msprop:Generator_RowDeletingName="COM_PER_ORG_VIRowDeleting" msprop:Generator_TablePropName="COM_PER_ORG_VI">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="Tag1" msprop:Generator_UserColumnName="Tag1" msprop:Generator_ColumnPropNameInRow="Tag1" msprop:Generator_ColumnVarNameInTable="columnTag1" msprop:Generator_ColumnPropNameInTable="Tag1Column">
+                <xs:simpleType>
+                  <xs:restriction base="xs:string">
+                    <xs:maxLength value="1000" />
+                  </xs:restriction>
+                </xs:simpleType>
+              </xs:element>
+              <xs:element name="Tag2" msprop:Generator_UserColumnName="Tag2" msprop:Generator_ColumnPropNameInRow="Tag2" msprop:Generator_ColumnVarNameInTable="columnTag2" msprop:Generator_ColumnPropNameInTable="Tag2Column">
+                <xs:simpleType>
+                  <xs:restriction base="xs:string">
+                    <xs:maxLength value="1000" />
+                  </xs:restriction>
+                </xs:simpleType>
+              </xs:element>
+              <xs:element name="Tipo" msprop:Generator_UserColumnName="Tipo" msprop:Generator_ColumnPropNameInRow="Tipo" msprop:Generator_ColumnVarNameInTable="columnTipo" msprop:Generator_ColumnPropNameInTable="TipoColumn" type="xs:short" />
+              <xs:element name="CercaniaDirecta" msprop:Generator_UserColumnName="CercaniaDirecta" msprop:Generator_ColumnPropNameInRow="CercaniaDirecta" msprop:Generator_ColumnVarNameInTable="columnCercaniaDirecta" msprop:Generator_ColumnPropNameInTable="CercaniaDirectaColumn" type="xs:int" />
+              <xs:element name="CercaniaIndirecta" msprop:Generator_UserColumnName="CercaniaIndirecta" msprop:Generator_ColumnPropNameInRow="CercaniaIndirecta" msprop:Generator_ColumnVarNameInTable="columnCercaniaIndirecta" msprop:Generator_ColumnPropNameInTable="CercaniaIndirectaColumn" type="xs:int" />
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="ColaTagsCOM_X_ORG_X" msprop:Generator_UserTableName="ColaTagsCOM_X_ORG_X" msprop:Generator_RowDeletedName="ColaTagsCOM_X_ORG_XRowDeleted" msprop:Generator_RowChangedName="ColaTagsCOM_X_ORG_XRowChanged" msprop:Generator_RowClassName="ColaTagsCOM_X_ORG_XRow" msprop:Generator_RowChangingName="ColaTagsCOM_X_ORG_XRowChanging" msprop:Generator_RowEvArgName="ColaTagsCOM_X_ORG_XRowChangeEvent" msprop:Generator_RowEvHandlerName="ColaTagsCOM_X_ORG_XRowChangeEventHandler" msprop:Generator_TableClassName="ColaTagsCOM_X_ORG_XDataTable" msprop:Generator_TableVarName="tableColaTagsCOM_X_ORG_X" msprop:Generator_RowDeletingName="ColaTagsCOM_X_ORG_XRowDeleting" msprop:Generator_TablePropName="ColaTagsCOM_X_ORG_X">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="OrdenEjecucion" msdata:ReadOnly="true" msdata:AutoIncrement="true" msprop:Generator_UserColumnName="OrdenEjecucion" msprop:Generator_ColumnPropNameInRow="OrdenEjecucion" msprop:Generator_ColumnVarNameInTable="columnOrdenEjecucion" msprop:Generator_ColumnPropNameInTable="OrdenEjecucionColumn" type="xs:int" />
+              <xs:element name="TablaBaseProyectoID" msprop:Generator_UserColumnName="TablaBaseProyectoID" msprop:Generator_ColumnPropNameInRow="TablaBaseProyectoID" msprop:Generator_ColumnVarNameInTable="columnTablaBaseProyectoID" msprop:Generator_ColumnPropNameInTable="TablaBaseProyectoIDColumn" type="xs:int" />
+              <xs:element name="TablaBaseOrganizacionID" msprop:Generator_UserColumnName="TablaBaseOrganizacionID" msprop:Generator_ColumnPropNameInRow="TablaBaseOrganizacionID" msprop:Generator_ColumnVarNameInTable="columnTablaBaseOrganizacionID" msprop:Generator_ColumnPropNameInTable="TablaBaseOrganizacionIDColumn" type="xs:int" />
+              <xs:element name="Tags" msprop:Generator_UserColumnName="Tags" msprop:Generator_ColumnPropNameInRow="Tags" msprop:Generator_ColumnVarNameInTable="columnTags" msprop:Generator_ColumnPropNameInTable="TagsColumn">
+                <xs:simpleType>
+                  <xs:restriction base="xs:string">
+                    <xs:maxLength value="2147483647" />
+                  </xs:restriction>
+                </xs:simpleType>
+              </xs:element>
+              <xs:element name="Tipo" msprop:Generator_UserColumnName="Tipo" msprop:Generator_ColumnPropNameInRow="Tipo" msprop:Generator_ColumnVarNameInTable="columnTipo" msprop:Generator_ColumnPropNameInTable="TipoColumn" type="xs:short" />
+              <xs:element name="Estado" msprop:Generator_UserColumnName="Estado" msprop:Generator_ColumnPropNameInRow="Estado" msprop:Generator_ColumnVarNameInTable="columnEstado" msprop:Generator_ColumnPropNameInTable="EstadoColumn" type="xs:short" />
+              <xs:element name="FechaPuestaEnCola" msprop:Generator_UserColumnName="FechaPuestaEnCola" msprop:Generator_ColumnPropNameInRow="FechaPuestaEnCola" msprop:Generator_ColumnVarNameInTable="columnFechaPuestaEnCola" msprop:Generator_ColumnPropNameInTable="FechaPuestaEnColaColumn" type="xs:dateTime" />
+              <xs:element name="FechaProcesado" msprop:Generator_UserColumnName="FechaProcesado" msprop:Generator_ColumnPropNameInRow="FechaProcesado" msprop:Generator_ColumnVarNameInTable="columnFechaProcesado" msprop:Generator_ColumnPropNameInTable="FechaProcesadoColumn" type="xs:dateTime" minOccurs="0" />
+              <xs:element name="Prioridad" msprop:Generator_UserColumnName="Prioridad" msprop:Generator_ColumnPropNameInRow="Prioridad" msprop:Generator_ColumnVarNameInTable="columnPrioridad" msprop:Generator_ColumnPropNameInTable="PrioridadColumn" type="xs:short" default="0" />
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="COM_X_ORG_X" msprop:Generator_UserTableName="COM_X_ORG_X" msprop:Generator_RowDeletedName="COM_X_ORG_XRowDeleted" msprop:Generator_RowChangedName="COM_X_ORG_XRowChanged" msprop:Generator_RowClassName="COM_X_ORG_XRow" msprop:Generator_RowChangingName="COM_X_ORG_XRowChanging" msprop:Generator_RowEvArgName="COM_X_ORG_XRowChangeEvent" msprop:Generator_RowEvHandlerName="COM_X_ORG_XRowChangeEventHandler" msprop:Generator_TableClassName="COM_X_ORG_XDataTable" msprop:Generator_TableVarName="tableCOM_X_ORG_X" msprop:Generator_RowDeletingName="COM_X_ORG_XRowDeleting" msprop:Generator_TablePropName="COM_X_ORG_X">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="Tag1" msprop:Generator_UserColumnName="Tag1" msprop:Generator_ColumnPropNameInRow="Tag1" msprop:Generator_ColumnVarNameInTable="columnTag1" msprop:Generator_ColumnPropNameInTable="Tag1Column">
+                <xs:simpleType>
+                  <xs:restriction base="xs:string">
+                    <xs:maxLength value="1000" />
+                  </xs:restriction>
+                </xs:simpleType>
+              </xs:element>
+              <xs:element name="Tag2" msprop:Generator_UserColumnName="Tag2" msprop:Generator_ColumnPropNameInRow="Tag2" msprop:Generator_ColumnVarNameInTable="columnTag2" msprop:Generator_ColumnPropNameInTable="Tag2Column">
+                <xs:simpleType>
+                  <xs:restriction base="xs:string">
+                    <xs:maxLength value="1000" />
+                  </xs:restriction>
+                </xs:simpleType>
+              </xs:element>
+              <xs:element name="Tipo" msprop:Generator_UserColumnName="Tipo" msprop:Generator_ColumnPropNameInRow="Tipo" msprop:Generator_ColumnVarNameInTable="columnTipo" msprop:Generator_ColumnPropNameInTable="TipoColumn" type="xs:short" />
+              <xs:element name="CercaniaDirecta" msprop:Generator_UserColumnName="CercaniaDirecta" msprop:Generator_ColumnPropNameInRow="CercaniaDirecta" msprop:Generator_ColumnVarNameInTable="columnCercaniaDirecta" msprop:Generator_ColumnPropNameInTable="CercaniaDirectaColumn" type="xs:int" />
+              <xs:element name="CercaniaIndirecta" msprop:Generator_UserColumnName="CercaniaIndirecta" msprop:Generator_ColumnPropNameInRow="CercaniaIndirecta" msprop:Generator_ColumnVarNameInTable="columnCercaniaIndirecta" msprop:Generator_ColumnPropNameInTable="CercaniaIndirectaColumn" type="xs:int" />
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="GnossToFreebase" msprop:Generator_UserTableName="GnossToFreebase" msprop:Generator_RowDeletedName="GnossToFreebaseRowDeleted" msprop:Generator_RowChangedName="GnossToFreebaseRowChanged" msprop:Generator_RowClassName="GnossToFreebaseRow" msprop:Generator_RowChangingName="GnossToFreebaseRowChanging" msprop:Generator_RowEvArgName="GnossToFreebaseRowChangeEvent" msprop:Generator_RowEvHandlerName="GnossToFreebaseRowChangeEventHandler" msprop:Generator_TableClassName="GnossToFreebaseDataTable" msprop:Generator_TableVarName="tableGnossToFreebase" msprop:Generator_RowDeletingName="GnossToFreebaseRowDeleting" msprop:Generator_TablePropName="GnossToFreebase">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="Tag" msprop:Generator_UserColumnName="Tag" msprop:Generator_ColumnVarNameInTable="columnTag" msprop:Generator_ColumnPropNameInRow="Tag" msprop:Generator_ColumnPropNameInTable="TagColumn" type="xs:string" minOccurs="0" />
+              <xs:element name="GUIDFreebase" msprop:Generator_UserColumnName="GUIDFreebase" msprop:Generator_ColumnVarNameInTable="columnGUIDFreebase" msprop:Generator_ColumnPropNameInRow="GUIDFreebase" msprop:Generator_ColumnPropNameInTable="GUIDFreebaseColumn" type="xs:string" minOccurs="0" />
+              <xs:element name="Coincidencia" msprop:Generator_UserColumnName="Coincidencia" msprop:Generator_ColumnVarNameInTable="columnCoincidencia" msprop:Generator_ColumnPropNameInRow="Coincidencia" msprop:Generator_ColumnPropNameInTable="CoincidenciaColumn" type="xs:long" minOccurs="0" />
+              <xs:element name="Entidad" msprop:Generator_UserColumnName="Entidad" msprop:Generator_ColumnVarNameInTable="columnEntidad" msprop:Generator_ColumnPropNameInRow="Entidad" msprop:Generator_ColumnPropNameInTable="EntidadColumn" type="xs:string" minOccurs="0" />
+              <xs:element name="Ruta" msprop:Generator_UserColumnName="Ruta" msprop:Generator_ColumnVarNameInTable="columnRuta" msprop:Generator_ColumnPropNameInRow="Ruta" msprop:Generator_ColumnPropNameInTable="RutaColumn" type="xs:string" minOccurs="0" />
+              <xs:element name="WikipediaID" msprop:Generator_UserColumnName="WikipediaID" msprop:Generator_ColumnVarNameInTable="columnWikipediaID" msprop:Generator_ColumnPropNameInRow="WikipediaID" msprop:Generator_ColumnPropNameInTable="WikipediaIDColumn" type="xs:string" minOccurs="0" />
+              <xs:element name="Tipos" msprop:Generator_UserColumnName="Tipos" msprop:Generator_ColumnVarNameInTable="columnTipos" msprop:Generator_ColumnPropNameInRow="Tipos" msprop:Generator_ColumnPropNameInTable="TiposColumn" type="xs:string" minOccurs="0" />
+              <xs:element name="Descripcion" msprop:Generator_UserColumnName="Descripcion" msprop:Generator_ColumnVarNameInTable="columnDescripcion" msprop:Generator_ColumnPropNameInRow="Descripcion" msprop:Generator_ColumnPropNameInTable="DescripcionColumn" type="xs:string" minOccurs="0" />
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+      </xs:choice>
+    </xs:complexType>
+    <xs:unique name="Constraint1" msdata:PrimaryKey="true">
+      <xs:selector xpath=".//mstns:ColaTagsCom_Per_Org" />
+      <xs:field xpath="mstns:OrdenEjecucion" />
+    </xs:unique>
+    <xs:unique name="ColaTagsCom_Per_Org_Vi_Constraint1" msdata:ConstraintName="Constraint1" msdata:PrimaryKey="true">
+      <xs:selector xpath=".//mstns:ColaTagsCom_Per_Org_Vi" />
+      <xs:field xpath="mstns:OrdenEjecucion" />
+    </xs:unique>
+    <xs:unique name="ColaTagsCOM_X_ORG_X_Constraint1" msdata:ConstraintName="Constraint1" msdata:PrimaryKey="true">
+      <xs:selector xpath=".//mstns:ColaTagsCOM_X_ORG_X" />
+      <xs:field xpath="mstns:OrdenEjecucion" />
+    </xs:unique>
+  </xs:element>
+</xs:schema>

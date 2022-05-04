@@ -1,1 +1,0 @@
-# Gnoss.Commons.Open

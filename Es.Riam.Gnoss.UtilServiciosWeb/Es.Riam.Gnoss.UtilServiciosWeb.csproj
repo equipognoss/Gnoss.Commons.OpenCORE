@@ -1,0 +1,13 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Es.Riam.Gnoss.CL\Es.Riam.Gnoss.CL.csproj" />
+    <ProjectReference Include="..\Es.Riam.Gnoss.Elementos\Es.Riam.Gnoss.Elementos.csproj" />
+    <ProjectReference Include="..\Es.Riam.Gnoss.Logica\Es.Riam.Gnoss.Logica.csproj" />
+  </ItemGroup>
+
+</Project>

@@ -1,0 +1,299 @@
+﻿<correos>
+  <mensajes>
+    <mensaje id="0">
+      <asunto>Modifiche nella swoft ‘{#NombreDafo#}’</asunto>
+      <texto>{p}Ciao {#NombrePersona#},{/p}{p}la swot ‘{#NombreDafo#}’ a cui partecipi ha una novità che ti potrebbe interessare.{/p}{p}Il fattore:{/br} {#Texto#} {/br} è stato  modificato e il suo nuovo contenuto è: {/br} {#Texto2#} {/br}.{/p}{p}Se preferisci, puoi accedere alla {a href="{#UrlEnlace#}"}swot{/a} e votare, commentare o aggiungere fattori.{/p}{p}Godi di {#NombreEcosistema#}; innoviamo insieme a te.{/p}{p}Lo Staff di {#NombreEcosistema#}{/p}</texto>
+    </mensaje>
+    <mensaje id="1">
+      <asunto>Modifiche nella swot ‘{#NombreDafo#}’</asunto>
+      <texto>{p}Ciao {#NombrePersona#},{/p}{p}la swot ‘{#NombreDafo#}’ a cui partecipi ha una novità che ti potrebbe interessare.{/p}{p}Il/Gli editori hanno stabilito che il fattore: {/br} {#Texto#} {/br} deve essere eliminato.{/p}{p}Se preferisci, puoi accedere alla {a href="{#UrlEnlace#}"}swot{/a} e votare, commentare o aggiungere fattori.{/p}{p}Divertiti con {#NombreEcosistema#}; innoviamo insieme a te.{/p}{p}Lo Staff di {#NombreEcosistema#}{/p}</texto>
+    </mensaje>
+    <mensaje id="2">
+      <asunto>Invito alla swot ‘{#NombreDafo#}’ di {#NombreEcosistema#}</asunto>
+      <texto>{p}Ciao {#NombrePersona#},{/p}{p}l'utente {#NombreRemitente#} di {#NombreEcosistema#} ti ha invitato a partecipare alla swot ‘{#NombreDafo#}’ della comunità ‘{#NombreProyecto#}’. Per fare ciò, devi iscriverti su {#NombreEcosistema#} con {a href="{#UrlEnlace#}"}quest'invito{/a}.{/p}{p}{#Texto#}{/p}{p}Grazie.{/p}{p}Divertiti con {#NombreEcosistema#};innoviamo insieme a te.{/p}{p}Lo Staff di {#NombreEcosistema#}{/p}</texto>
+    </mensaje>
+    <mensaje id="3">
+      <asunto>Invito alla swot ‘{#NombreDafo#}’ di {#NombreEcosistema#}</asunto>
+      <texto>{p}{p}Ciao {#NombrePersona#},{/p}{p}l'utente {#NombreRemitente#} di {#NombreEcosistema#} ti ha invitato a partecipare alla swot ‘{#NombreDafo#}’ della comunità ‘{#NombreProyecto#}’. Se vuoi votare, commentare e aggiungere fattori a questa swot, {a href="{#UrlEnlace#}"}accetta il presente invito{/a}.{/p}{p}{#Texto#}{/p}{p}Grazie.{/p}{p}Divertiti con {#NombreEcosistema#};innoviamo insieme a te.{/p}{p}Lo Staff di {#NombreEcosistema#}{/p}</texto>
+    </mensaje>
+    <mensaje id="4">
+      <asunto>Invito alla swot ‘{#NombreDafo#}’ di {#NombreEcosistema#}</asunto>
+      <texto>{p}{p}Ciao {#NombrePersona#},{/p}{p}l'utente {#NombreRemitente#} di {#NombreEcosistema#} ti ha invitato a partecipare alla swot ‘{a href="{#UrlEnlace#}"}{#NombreDafo#}{/a}’ della comunità ‘{#NombreProyecto#}’. Se vuoi votare, commentare o aggiungere fattori a questa swot, accetta il presente invito.{/p}{p}{#Texto#}{/p}{p}Grazie.{/p}{p}Divertiti con {#NombreEcosistema#};innoviamo insieme a te.{/p}{p}Lo Staff di {#NombreEcosistema#}{/p}</texto>
+    </mensaje>
+    <mensaje id="5">
+      <asunto>La swot‘{#NombreDafo#}’ di {#NombreEcosistema#} ha un nuovo fattore</asunto>
+      <texto>{p}{p}Ciao {#NombrePersona#},{/p}{p}la swot ‘{a href="{#UrlEnlace#}"}{#NombreDafo#}{/a}’ a cui partecipi ha un nuovo fattore che ti potrebbe interessare.{/p}{p}Il suo contenuto è il seguente:‘{#Texto#}’.{/p}{p}Se preferisci, puoi accedere alla swot e votare, commentare o aggiungere fattori.{/p}{p}Divertiti con {#NombreEcosistema#};innoviamo insieme a te.{/p}{p}Lo Staff di {#NombreEcosistema#}{/p}</texto>
+    </mensaje>
+    <mensaje id="6">
+      <asunto>La fase di votazione della swot ‘{#NombreDafo#}’ di {#NombreEcosistema#} è terminata</asunto>
+      <texto>{p}Ciao {#NombrePersona#},{/p}{p}il periodo di votazione della swot ‘{a href="{#UrlEnlace#}"}{#NombreDafo#}{/a}’ a cui partecipi è terminata. La fase in cui si procede all'unificazione dei fattori è appena iniziata. Quando gli editori della swot hanno concluso con l'analisi, riceverai un avviso con i risultati di ‘{#NombreDafo#}’.{/p}{p}Grazie per partecipare.{/p}{p}Godi di {#NombreEcosistema#}; innoviamo insieme a te.{/p}{p}Lo Staff di {#NombreEcosistema#}{/p}</texto>
+    </mensaje>
+    <mensaje id="7">
+      <asunto>Lo swot ‘{#NombreDafo#}’ di {#NombreEcosistema#} a cui partecipi è terminato</asunto>
+      <texto>{p}Ciao {#NombrePersona#},{/p}{p}la swot ‘{#NombreDafo#}’ della comunità ‘{#NombreProyecto#}’ è terminata. {/p}{p}Se preferisci, puoi {a href="{#UrlEnlace#}"}accedere alle loro conclusioni{/a}.{/p}{p}Grazie.{/p}{p}Divertiti con {#NombreEcosistema#}; innoviamo insieme a te.{/p}{p}Lo Staff di {#NombreEcosistema#}{/p}</texto>
+    </mensaje>
+    <mensaje id="8">
+      <asunto>Scade il termine per partecipare alla swot ‘{#NombreDafo#}’ di {#NombreEcosistema#}</asunto>
+      <texto>{p}Ciao {#NombrePersona#},{/p}{p}la swot ‘{a href="{#UrlEnlace#}"}{#NombreDafo#}{/a}’ della comunità ‘{#NombreProyecto#}’ chiude le votazioni tra dieci giorni. Se vuoi partecipare, hai ancora la possibilità di votare e fare i commenti che ritieni opportuni.{/p}{p}Grazie per la tua collaborazione{/p}{p}Lo Staff di {#NombreEcosistema#}{/p}</texto>
+    </mensaje>
+    <mensaje id="9">
+      <asunto>Scade il termine per partecipare alla swot ‘{#NombreDafo#}’ di {#NombreEcosistema#}</asunto>
+      <texto>{p}Ciao {#NombrePersona#},{/p}{p}la swot ‘{a href="{#UrlEnlace#}"}{#NombreDafo#}{/a}’ della comunità ‘{#NombreProyecto#}’ chiude le votazioni domani. Se vuoi partecipare, hai ancora la possibilità di votare e fare i commenti che ritieni opportuni.{/p}{p}Grazie per la tua collaborazione{/p}{p}Lo Staff di {#NombreEcosistema#}{/p}</texto>
+    </mensaje>
+
+    <mensaje id="20">
+      <asunto>Richiesta di accesso alla comunità "{#NombreProyecto#}"</asunto>
+      <texto>{p}La tua richiesta di accesso alla comunità "{#NombreProyecto#}" è stata inviata.{/p}{p}In breve, riceverai un'altra e-mail che ti indicherà la sua risoluzione.{/p}</texto>
+    </mensaje>
+    <mensaje id="21">
+      <asunto>Richiesta di accesso alla comunità {#NombreProyecto#} accettata</asunto>
+      <texto>{p}Gentile {b}{#Login#}{/b},{/p}{p}Benvenuto alla comunità! {#NombreProyecto#}La tua richiesta di accesso alla comunità è stata ACCETTATA.{/p}{p}Ti ringraziamo per l'interesse mostrato verso i nostri servizi e la disponibilità a partecipare a questa comunità online.{/p}</texto>
+    </mensaje>
+    <mensaje id="22">
+      <asunto>Richiesta di accesso al progetto "{#NombreProyecto#}" rifiutata</asunto>
+      <texto>{p}La tua richiesta di accesso al progetto "{#NombreProyecto#}" è stata RIFIUTATA.{/p}{p}{#Notas#}{/p}</texto>
+    </mensaje>
+    <mensaje id="23">
+      <asunto>Nuova richiesta di accesso al progetto "{#NombreProyecto#}" inviata</asunto>
+      <texto>{p}L'utente "{#Login#}" ha chiesto il permesso per accedere al progetto "{#NombreProyecto#}".{/p}</texto>
+    </mensaje>
+    <mensaje id="24">
+      <asunto>Benvenuto a {#NombreEcosistema#}. Abbiamo bisogno di verificare il tuo indirizzo e-mail</asunto>
+      <texto>{p}Ciao, {#NombrePersona#}, ti abbiamo inviato questo messaggio di posta elettronica per verificare il tuo indirizzo e-mail. Si prega di seguire questo link per completare la tua iscrizione. {a href="{#UrlEnlace#}" target="_blank"}Verifica indirizzo e-mail{/a}.{p}</texto>
+    </mensaje>
+    <mensaje id="26">
+      <asunto>Benvenuto a {#NombreEcosistema#}. Abbiamo bisogno di verificare il tuo indirizzo e-mail</asunto>
+      <texto>{p}Ciao, {#NombrePersona#}, ti abbiamo inviato questo messaggio di posta elettronica per verificare il tuo indirizzo e-mail. Ti preghiamo di seguire questo link per completare l'iscrizione. {a href="{#UrlEnlace#}" target="_blank"}Verifica indirizzo e-mail{/a}.{p}</texto>
+    </mensaje>
+    <mensaje id="27">
+      <asunto>Activación de la cuenta de {#NombrePersona#} en {#NombreEcosistema#}</asunto>
+      <texto>{p}Hola,{/p}{p}{#NombrePersona#} ha sido invitado a una clase de {#NombreProyecto#} creada por {#IdentidadRemitente#}. Los alumnos menores de 14 años necesitan que su padre, madre o tutor legal active su cuenta de Didactalia. Por favor, sigue el siguiente enlace que te llevará a un página con instrucciones para {a href="{#UrlEnlace#}" target="_blank"}activarla{/a}.{/p}{p}Si tienes alguna duda contacta con nosotros a través de didactalia@didactalia.net{/p}{p}El equipo de Didactalia{/p}</texto>
+    </mensaje>
+    <mensaje id="30">
+      <asunto>{#NombreRemitente#} vuole iscriversi a una comunità su {#NombreEcosistema#}</asunto>
+      <texto>{p}{a href="{@UrlIntragnoss@}/{#IdentidadRemitente#}"}{#NombreRemitente#}{/a} vuole iscriversi a una comunità su {#NombreEcosistema#}{#Texto#}</texto>
+    </mensaje>
+    <mensaje id="31">
+      <asunto>La tua iscrizione alla comunità su {#NombreEcosistema#} è stata accettata</asunto>
+      <texto>
+        {p}Ciao {#NombrePersona#},{/p}{p}abbiamo buone notizie.{/p}{p}Abbiamo iscritto la {#NombreEcosistema#} comunità {#NombreProyecto#} che ci hai richiesto. Puoi già accedere a questa dal seguente url: {#UrlEnlace#}.{/p}{p}In questo momento la comunità è 'In corso di definizione', poiché prima di pubblicarla su {#NombreEcosistema#} è necessario che completi una serie di dati: categorire dell'indice della coumintà, tags e categorie della comunità nell'indice generale.{/p}{p}Una volta completate queste informazioni, puoi 'aprire' la comunità; questa comparirà sul menu delle comunità di {#NombreEcosistema#} (salvo quando si tratta di una comunità riservata). A questo punto, gli utenti di {#NombreEcosistema#} possono diventare membri della comunità e utilizzare gli strumenti di creazione dei nuovi contenuti.{/p}{p}Sei pronto per amministrare la tua comunità? Ne siamo certi, ma permettici un suggerimento: in qualità di responsabile del tuo spazio virtuale ci piacerebbe avere il tuo impegno per l'integrità e consistenza dei suoi contenuti. In questo senso, le risorse devono avere autore/i, data e luogo di pubblicazione, ecc. Crediamo necessario che questi dati devono essere presenti sia nella descrizione che nelle tags della risorsa. La decisione è tua.{/p}{p}In poco tempo, potresti diventare il principale riferimento delle comunità che promuovi. Ciò significa una comunità di utenti che ti segue con le loro idee e suggerimenti. In caso di dubbi, osservazioni o domande, non esitare a contattarci. (mail: {a href="mailto:{#CorreoSugerencias#}"}{#CorreoSugerencias#}{/a}).   {/p}{p}Divertiti con {#NombreEcosistema#}; innoviamo insieme a te.{/p}{p}Lo Staff di {#NombreEcosistema#}.{/p}
+      </texto>
+    </mensaje>
+    <mensaje id="32">
+      <asunto>La tua richiesta di comunità su {#NombreEcosistema#} è stata rifiutata</asunto>
+      <texto>{p}Ciao, {#NombrePersona#}!{/p}{p}La tua richiesta della nuova comunità {#NombreProyecto#} su {#NombreEcosistema#} è stata rifiutata.{/p}{p}Lo staff di {#NombreEcosistema#}.{/p}</texto>
+    </mensaje>
+    <mensaje id="33">
+      <asunto>Benvenuto a "{#NombreEcosistema#}". Abbiamo bisogno di verificare il tuo indirizzo e-mail</asunto>
+      <texto>{p}Salve professore {#NombrePersona#}, ti abbiamo inviato questo messaggio di posta elettronica per verificare il tuo indirizzo e-mail. Ti preghiamo di seguire questo link per completare la tua iscrizione. {a href="{#UrlEnlace#}" target="_blank"}Verificare indirizzo e-mail{/a}.{p}</texto>
+    </mensaje>
+    <mensaje id="40">
+      <asunto>{#NombrePersona#} desidera invitarti a {#NombreEcosistema#}</asunto>
+      <texto>{p}{#Notas#}{/p}{p}Per accettare quest'invito, iscriverti e ottenere il tuo account clicca su questo link: {a href="{@UrlIntragnoss@}"}accetta l'invito{/a}{/p}</texto>
+    </mensaje>
+    <mensaje id="41">
+      <asunto>{#NombreRemitente#} vuole aggiungerti come contatto</asunto>
+      <texto>{p}Ciao, {#NombrePersona#}!{/p}{p}Ti ho trovato su {#NombreProyecto#} e ho pensato che forse potremmo entrambi trarre beneficio dalla condivisione di informazioni.</texto>
+    </mensaje>
+	<mensaje id="42">
+      <asunto>Bienvenido a la comunidad {#NombreProyecto#}</asunto>
+      <texto>{p}Hola {#NombrePersona#},{/p}{p}Te invitamos a participar en {#NombreProyecto#}. Esta comunidad te permitirá acceder a través de tu usuario y contraseña a numerosos contenidos que podrás comentar y compartir.{/p}{p}Para completar tu registro es necesario que verifiques tu correo siguiendo este {a href="{#UrlEnlace#}" target="_blank"}enlace{/a}.{p}</texto>
+    </mensaje>
+    <mensaje id="43">
+      <asunto>{#NombreRemitente#} vuole invitarti alla comunità {#NombreProyecto#}</asunto>
+      <texto>{p}{#Notas#}{/p}</texto>
+    </mensaje>
+    <mensaje id="44">
+      <asunto>{#NombreRemitente#} vuole invitarti alla comunità {#NombreProyecto#}</asunto>
+      <texto>{p}{#Notas#}{/p}{p}Per accettare l'invito clicca su questo link: {a href="{#UrlEnlace#}"}accetta l'invito.{/a}{/p}</texto>
+    </mensaje>
+    <mensaje id="45">
+      <asunto>{#NombreOrganizacion#} ti ha invitato ad unirti alla sua organizzazione su {#NombreEcosistema#}</asunto>
+      <texto>{p}{#Notas#}{/p}{p}Per accettare l'invito devi cliccare su questo link: {a href="{@UrlIntragnoss@}/invitaciones"}accetta l'invito{/a}.{/p}</texto>
+    </mensaje>
+    <mensaje id="46">
+      <asunto>{#NombreOrganizacion#} ti ha invitato ad unirti alla sua organizzazione su {#NombreEcosistema#}</asunto>
+      <texto>{p}{#Notas#}{/p}{p}Per accettare l'invito clicca su questo link: {a href="{@UrlIntragnoss@}/invitaciones"}accetta l'invito{/a}.{/p}</texto>
+    </mensaje>
+    <mensaje id="47">
+      <asunto>{#NombreOrganizacion#} ti ha invitato ad unirti alla sua organizzazione su {#NombreEcosistema#}</asunto>
+      <texto>{p}{#Notas#}{/p}{p}Per accettare l'invito clicca su questo link: {a href="{#UrlEnlace#}"}accetta l'invito{/a}.{/p}</texto>
+    </mensaje>
+    <mensaje id="48">
+      <asunto>{#NombreOrganizacion#} ti ha invitato ad unirti alla sua organizzazione su {#NombreEcosistema#}</asunto>
+      <texto>{p}{#Notas#}{/p}{p}Per accettare l'invito clicca su questo link: {a href="{#UrlEnlace#}"}accetta l'invito{/a}.{/p}</texto>
+    </mensaje>
+    <mensaje id="49">
+      <asunto>{#NombreRemitente#} vuole invitarti alla comunità {#NombreProyecto#}</asunto>
+      <texto>{p}{#Notas#}{/p}{p}Per accettare l'invito clicca su questo link: {a href="{@UrlIntragnoss@}/invitaciones"}accetta l'invito{/a}.{/p}</texto>
+    </mensaje>
+    <mensaje id="50">
+      <asunto>{#NombreOrganizacion#} ti ha invitato ad unirti alla sua organizzazione su {#NombreEcosistema#}</asunto>
+      <texto>{p}{#Notas#}{/p}{p}Per accettare l'invito clicca su questo link: {a href="{@UrlIntragnoss@}/invitaciones"}accetta l'invito{/a}.{/p}</texto>
+    </mensaje>
+    <mensaje id="51">
+      <asunto>{#NombreOrganizacion#} ti ha invitato ad unirti alla sua organizzazione su {#NombreEcosistema#}</asunto>
+      <texto>{p}{#Notas#}{/p}{p}Per accettare l'invito clicca su questo link: {a href="{@UrlIntragnoss@}/invitaciones"}accetta l'invito{/a}.{/p}</texto>
+    </mensaje>
+    <mensaje id="52">
+      <asunto>{#NombreRemitente#} vuole aggiungerti come contatto</asunto>
+      <texto>{p}Ciao, {#NombrePersona#}!{/p}{p}Ti ho trovato su {#NombreProyecto#} e ho pensato che forse potremmo entrambi trarre beneficio dalla condivisione di informazioni.{/p}{p}Se accetti di essere tra i miei contatti clicca qui: {a href="{@UrlIntragnoss@}/{#IdentidadPersona#}invitaciones"}Aggiungi contatto{/a}.</texto>
+    </mensaje>
+    <mensaje id="54">
+      <asunto>{#NombreRemitente#} ti ha confermato come contatto</asunto>
+      <texto>{p}Ciao, {#NombrePersona#}!{/p}{p}{#NombreRemitente#} ti ha confermato come contatto. {/p}{p}Per vedere il profilo di {#NombreRemitente#} o inviare un messaggio, clicca su: {a href="{@UrlIntragnoss@}/{#IdentidadPersona#}{#IdentidadRemitente#}"}vedi profilo{/a}.{/p}{p}Gracias.{/p}{p}Lo staff di {#NombreEcosistema#}.</texto>
+    </mensaje>
+    <mensaje id="56">
+      <asunto>{#NombreRemitente#} ti ha eliminato come contatto</asunto>
+      <texto>{p}Ciao, {#NombrePersona#}!{/p}{p}{#NombreRemitente#} ti ha eliminato come contatto. {/p}</texto>
+    </mensaje>
+    <mensaje id="58">
+      <asunto>L'organizzazione {#NombreRemitente#} vuole aggiungerti come contatto</asunto>
+      <texto>{p}Ciao, {#NombrePersona#}!{/p}{p}Ti ho trovato su {#NombreProyecto#} e ho pensato che forse potremmo entrambi trarre beneficio dalla condivisione di informazioni.</texto>
+    </mensaje>
+    <mensaje id="59">
+      <asunto>{#NombreRemitente#} di {#NombreOrganizacion#} ti ha eliminato come contatto</asunto>
+      <texto>{p}Ciao {#NombrePersona#}!{/p}{p}{#NombreRemitente#} di {#NombreOrganizacion#}, che era un tuo contatto su {#NombreEcosistema#}, non è più membro dell'organizzazione e i suoi contatti sono diventati i contatti di	{#NombreOrganizacion#}{/p}{p}Gracias.{/p}{p}Lo staff di {#NombreEcosistema#}.{/p}</texto>
+    </mensaje>
+    <mensaje id="60">
+      <asunto>Iscrizione alla Newsletter di {#NombreProyecto#}</asunto>
+      <texto>{p}{span}La presente Newsletter contiene le ultime risorse pubblicate nelle tue aree di interesse.{/span}{/p}{p}{#UltimasPublicaciones#}{/p}</texto>
+    </mensaje>
+    <mensaje id="61">
+      <asunto>{#NombreRemitente#} te sigue</asunto>
+      <texto>{p}¡Hola, {#NombrePersona#}!{/p}{p}{a href="{@UrlIntragnoss@}/{#IdentidadRemitente#}"}{#NombreRemitente#}{/a}  te sigue en {#NombreEcosistema#}.{/p}</texto>
+    </mensaje>
+    <mensaje id="62">
+      <asunto>{#NombreRemitente#} te sigue</asunto>
+      <texto>{p}¡Hola, {#NombrePersona#}!{/p}{p}{a href="{@UrlIntragnoss@}/{#IdentidadRemitente#}"}{#NombreRemitente#}{/a}  te sigue ahora en {#NombreProyecto#}.{/p}</texto>
+    </mensaje>	
+    <mensaje id="80">
+      <asunto>Richiesta di modifica della password su {#NombreProyecto#}</asunto>
+      <texto>{p}Per modificare la password, segui il link indicato di seguito: {/p}{p}{a style="display: block; font-weight: 400; color: #006eff; padding-bottom: 40px;" href="{#UrlEnlace#}"}Modifica della password{/a}{/p}</texto>
+    </mensaje>
+    <mensaje id="121">
+      <asunto>{#Asunto#}</asunto>
+      <texto>{p}{#NombreRemitente#} ti ha inviato un messaggio tramite {#NombreProyecto#}{/p}{div style="margin:30px"}{#Texto#}{/div}{p}Per rispondere a {#NombreRemitente#} clicca su questo link: {a href="{@UrlIntragnoss@}{$identidad$}/mensajes?mensaje={#CorreoID#}"}rispondi al messaggio{/a}{/p}</texto>
+    </mensaje>
+    <mensaje id="122">
+      <asunto>Chiusura temporanea della comunità {#NombreProyecto#}</asunto>
+      <texto>{p}Ciao {#NombrePersona#}!{/p}{p}La comunità {#NombreProyecto#} sarà temporaneamente chiusa fino al giorno {#Fecha_dia#}/{#Fecha_mes#}/{#Fecha_año#} per i seguenti motivi:{/p}{p}{#Texto#}{/p}{p}Grazie.{/p}</texto>
+    </mensaje>
+    <mensaje id="123">
+      <asunto>Chiusura della comunità {#NombreProyecto#}</asunto>
+      <texto>{p}Ciao {#NombrePersona#}!{/p}{p}La comunità {#NombreProyecto#} verrà chiusa il giorno {#Fecha_dia#}/{#Fecha_mes#}/{#Fecha_año#}. {/p}{p}Fino a tale data è possibile accedere normalmente, scaricare le risorse, leggere i contenuti della comunità e condividerli con altri spazi {#NombreEcosistema#}. {/p}Tuttavia, non potrai caricare risorse o condividere quelle di altre comunità con questa comunità. Quando la comunità verrà chiusa, non sarà più possibile accedervi. {/p}{p}Grazie.{/p}</texto>
+    </mensaje>
+    <mensaje id="124">
+      <asunto>Apertura della comunità {#NombreProyecto#}</asunto>
+      <texto>{p}Ciao {#NombrePersona#}!{/p}{p}La comunità {#NombreProyecto#} è aperta, puoi già partecipare. {/p}{p}Gracias.{/p}{p}Lo staff di {#NombreEcosistema#}.{/p}</texto>
+    </mensaje>
+    <mensaje id="125">
+      <asunto>Periodo di chiusura temporaneo della comunità {#NombreProyecto#} terminato.</asunto>
+      <texto>{p}Hola,{/p}{p}nel nostro registro compare la tua decisione di chiudere la comunità {#NombreProyecto#} temporaneamente. Oggi scade il termine che ci hai proposto.{/p}{p}Durante questo periodo hai potuto lavorare nella tua comunità, dandogli la forma e il contenuto desiderati.{/p}{p}Adesso hai due possibilità: puoi aprire la comunità oppure, se lo decidi, prolungare il periodo di chiusra temporanea con una nuova data.{/p}{p}Ricorda che gli utenti sottoscritti a {#NombreProyecto#} resteranno in attesa della tua decisione.{/p}{p}Se hai dei dubbi, puoi {a href="mailto:{#CorreoSugerencias#}"}contattare con lo Staff di {#NombreEcosistema#}{/a}.{/p}{p}Saluti cordiali.{/p}{p}Lo staff {#NombreEcosistema#}.{/p}</texto>
+    </mensaje>
+    <mensaje id="126">
+      <asunto>Espulsione dalla comunità {#NombreProyecto#}</asunto>
+      <texto>{p}Salve {#NombrePersona#}!{/p}{p}L'amministratore della comunità {#NombreProyecto#} ti ha espulso.{/p}{p}Motivo:{/p}{p}{#Notas#}{/p}{p}Grazie.{/p}</texto>
+    </mensaje>
+    <mensaje id="127">
+      <asunto>Dati errati sul tuo account di {#NombreEcosistema#}</asunto>
+      <texto>
+        {p}Gentile {#NombrePersona#},{/p}{p}{#NombreEcosistema#} è una società nella Rete in cui i membri utilizzano la loro vera identità, pertanto devi inserire il tuo {strong}nome e cognome veri{/strong} per continuare a usufruire di questo spazio di reti. Attualmente la tua identità non soddisfa questa condizione. Ti ricordiamo che puoi decidere di avere un profilo pubblico o privato.{/p}{p} Ti invitiamo a modificare i tuoi dati e, se lo proferisci, la tua privacy su {a href="{#UrlIntragnossBBDD#}editar-perfil"}Il mio Profilo/Modifica Profilo/Dati Personali{/a} nella tua identità personale.{/p}{p}Se non effettui queste modifiche procederemo ad eliminare il tuo account entre tre giorni dal ricevimento di questa e-mail.{/p}{p}Grazie per la tua attenzione{/p}{p}Un saludo{/p}{p}Lo Staff di {#NombreEcosistema#}{/p}
+      </texto>
+    </mensaje>
+    <mensaje id="128">
+      <asunto>Dati errati sul tuo account di {#NombreEcosistema#}</asunto>
+      <texto>
+        {p}Gentile {#NombrePersona#},{/p}{p}nelle comunicazioni precedenti ti abbiamo invitato a includere i tuoi dati reali (Nome e Cognome) nel tuo utente di {#NombreEcosistema#}.{/p}{p}Ti ricordiamo che puoi fare ciò su {a href="{#UrlIntragnossBBDD#}editar-perfil"}Il Mio Profilo/Modifica Profilo/Dati Personali{/a} nella tua identità personale. Non dimenticare che puoi decidere di avere un {strong}profilo pubblico o privato{/strong}.{/p}{p}Grazie per la tua attenzione{/p}{p}{/p}{p}Lo Staff di {#NombreEcosistema#}{/p}
+      </texto>
+    </mensaje>
+    <mensaje id="129">
+      <asunto>Eliminazione del tuo account su {#NombreEcosistema#}</asunto>
+      <texto>
+        {p}Gentile {#NombrePersona#},{/p}{p}Abbiamo eliminato il tuo account su {#NombreEcosistema#} poiché come ti abbiamo già informato, non risponde a un'identità reale. {/p}{p}Saluti{/p}{p}Lo Staff di {#NombreEcosistema#}{/p}
+      </texto>
+    </mensaje>
+    <mensaje id="130">    
+      <asunto>Ti sei appena iscritto a: {#NombreEvento#}</asunto>
+      <texto>
+        {p}{#CuerpoMensajeEvento#}{/p}
+      </texto>
+    </mensaje>
+    <mensaje id="131">
+      <asunto>{#Asunto#}</asunto>
+      <texto>{p}{#NombreRemitente#} ti ha inviato un messaggio tramite {#NombreProyecto#}{/p}{div style="margin:30px"}{#Texto#}{/div}{p}Per rispondere a {#NombreRemitente#} clicca su questo link: {a href="{@UrlIntragnoss@}{$identidad$}/mensajes?mensaje={#CorreoID#}"}rispondi al messaggio{/a}{/p}</texto>
+    </mensaje>
+    <mensaje id="140">
+      <asunto>Hai un link: {#NombreDoc#}</asunto>
+      <texto>{p}{#NombreRemitente#} ti ha inviato un link di {#NombreProyecto#}.{/p}{p}{#Notas#}{/p}{p} {#UrlEnlace#}{/p}</texto>
+    </mensaje>
+	<mensaje id="141">
+      <asunto>Content report: {#NombreDoc#}</asunto>
+      <texto>{p}{a href="{#IdentidadRemitente#}"}{#NombreRemitente#}{/a} reports a problem in the content {#NombreProyecto#}.{/p}{p}{#Notas#}{/p}{p}{a href="{#UrlEnlace#}"}{#NombreDoc#}{/a}{/p}</texto>
+    </mensaje>
+    <mensaje id="150">
+      <asunto>{#NombreRemitente#} di {#NombreOrganizacion#} ti ha eliminato come contatto</asunto>
+      <texto>{p}Ciao {#NombrePersona#}!{/p}{p}{#NombreRemitente#} di {#NombreOrganizacion#}, che era un tuo contatto su {#NombreEcosistema#}, non è più membro	dell'organizzazione e i suoi iscritti sono stati eliminati.{/p}{p}Grazie.{/p}{p}Lo Staff di {#NombreEcosistema#}.{/p}</texto>
+    </mensaje>
+    <mensaje id="151">
+      <asunto>{#NombreRemitente#} ti ha inviato a partecipare nell'aula {#NombreOrganizacion#}</asunto>
+      <texto>{p}{#Notas#}{/p}{p}Per accettare l'invito clicca su questo link: {a href="{#UrlEnlace#}"}accetta l'invito{/a}.{/p}</texto>
+    </mensaje>
+    <mensaje id="152">
+      <asunto>{#NombreRemitente#} vuole invitarti a un gruppo nella comunità {#NombreProyecto#}</asunto>
+      <texto>
+        {p}{#Notas#}{/p}{p}Ti ha invitato al/ai gruppi: {#NombresGrupos#}{/p}
+      </texto>
+    </mensaje>
+    <mensaje id="153">
+      <asunto>{#NombreRemitente#} vuole invitarti a un gruppo nella comunità {#NombreProyecto#}</asunto>
+      <texto>
+        {p}{#Notas#}{/p}{p}Questa comunità è formata da gruppi. Con l'accettazione di quest'invito puoi diventare membro dei seguienti gruppi: {#NombresGrupos#}{/p}{p}Per accettare quest'invito clicca su questo link: {a href="{#UrlEnlace#}"}accetta l'invito.{/a}{/p}
+      </texto>
+    </mensaje>
+    <mensaje id="154">
+      <asunto>{#NombreRemitente#} quiere invitarte a un grupo de la clase {#NombreProyecto#}</asunto>
+      <texto>
+        {p}{#Notas#}{/p}{p}Al aceptar esta invitación pasarás a formar parte del grupo {#NombresGrupos#}{/p}{p}Para aceptar esta invitación pincha en este enlace: {a href="{#UrlEnlace#}"}aceptar invitación.{/a}{/p}{p}El equipo de Didactalia{/p}
+      </texto>
+    </mensaje>
+    <mensaje id="161">
+      <asunto>Hai ricevuto un commento su: {#NombreDoc#}</asunto>
+      <texto>{p}Ciao, {#NombrePersona#}!{/p}{p}{#NombreRemitente#} ha commentato la risorsa "{#NombreDoc#}". Per visualizzare il commento segui questo link: {a href="{@UrlIntragnoss@}{#IdentidadPersona#}Comentarios"}Vedi commenti{/a}.{/p}</texto>
+    </mensaje>
+    <mensaje id="180">
+      <asunto>{#Asunto#}</asunto>
+      <texto>{#Texto#}</texto>
+    </mensaje>
+    <mensaje id="181">
+      <asunto>Un membro della comunità {#NombreProyecto#} ti suggerisce una nuova categoria.</asunto>
+      <texto>{p}Per visualizzare questa proposta di un membro della tua comunità clicca su : {a href="{#UrlEnlace#}"}Amministra categorie di {#NombreProyecto#} {/a}.</texto>
+    </mensaje>
+	<mensaje id="182">
+      <asunto>{#Asunto#}</asunto>
+      <texto>{p}Hola,{/p}{p}{#NombreRemitente#} profesor@ de la clase {#NombreProyecto#} a la que pertenece {#NombrePersona#} te ha enviado un mensaje: {/p}{p}{#Texto#}{/p}{p}El equipo de Didactalia{/p}</texto>
+    </mensaje>
+    <mensaje id="200">
+      <asunto>Errore nel messaggio di Twitter condiviso da {#NombreEcosistema#}</asunto>
+      <texto>{p}Gentile amministratore di {#NombreProyecto#},{/p}{p}la tua comunità ha un account Twitter associato che permette l'invio di un messaggio (‘tweet’) ogni volta che una risorsa è condivisa. Quest'azione si verifica grazie a un'integrazione con l'utente di Twitter che ci hai indicato come amministratore della tua comunità su {#NombreEcosistema#}. Questa volta, il tuo account Twitter ha generato un errore e non è stato inviato un messaggio (‘tweet’) corrispondente alla risorsa condivisa.{/p}{p}Siamo spiacenti ma l'azione non è stata completata.{/p}{p}Divertiti con {#NombreEcosistema#}; innoviamo insieme a te.{/p}{p}{a href="mailto:{#CorreoSugerencias#}"}Lo Staff di {#NombreEcosistema#}{/a}{/p}</texto>
+    </mensaje>
+    <mensaje id="500">
+      <asunto>Benvenuto alla Piattaforma sulla Conoscenza per i membri di Corporate Excellence</asunto>
+      <texto>{p}Ciao {#NombrePersona#},{/p}{p}Ti invitiamo a partecipare alla Piattaforma sulla Conoscenza per i membri di Corporate Excellence. Questa piattaforma ti permette, con il tuo nome utente e la password, di accedere a numerosi contenuti (articoli, casi, notizie, tesi, approfondimenti, ecc.)circa la gestione di intangibili e di commentarli e condividerli con tutta la comunità di Corporate Excellence.{/p}{p}Per completare la tua registrazione devi verificare il tuo indirizzo e-mail al seguente link: {a href="{#UrlEnlace#}" target="_blank"}Verifica e-mail{/a}.{p}</texto>
+    </mensaje>
+  </mensajes>
+  <formatoCorreo>
+    <cabecera>
+		{table style="font-family: 'Roboto', sans-serif;" role="presentation" style="text-align: left; border: 0; border-spacing: 0; max-width: 970px"} {tbody} {tr} {td style="font-size: 15px; font-weight: 300; padding: 25px 60px"} {div style="margin-bottom: 50px;"}IMAGENPROYECTO{/div}		
+	</cabecera>
+    <pie>
+		{/td}{/tr}{tr}{td style="padding: 10px; font-size: 10px; color: #555"}{p}Questo indirizzo e-mail è abilitato solo per l'invio di messaggi automatici. Non riceve risposte. Si prega di non rispondere a questa e-mail.{/p}{p}Ai sensi della normativa vigente in materia dei Servizi della Società dell'Informazione, del Commercio Elettronico e di Protezione dei Dati, La informiamo che può cancellarsi in qualsiasi momento dal ricevimento delle comunicazioni di {#URCONNOMBRECOMUNIDAD#} nella {#SECCIONNOTIFICACIONES#}. Grazie per la collaborazione.{/p}{/td}{/tr}{/tbody}{/table}
+	</pie>
+    <pieNotificaciones>
+		{/td}{/tr}{tr}{td style="padding: 10px; font-size: 10px; color: #555"}{p}Questo indirizzo e-mail è abilitato solo per l'invio di messaggi automatici. Non riceve risposte. Si prega di non rispondere a questa e-mail.{/p}{p}Ai sensi della normativa vigente in materia dei Servizi della Società dell'Informazione, del Commercio Elettronico e di Protezione dei Dati, La informiamo che può cancellarsi in qualsiasi momento dal ricevimento delle comunicazioni di {#URCONNOMBRECOMUNIDAD#} nella {#SECCIONNOTIFICACIONES#}. Grazie per la collaborazione.{/p}{/td}{/tr}{/tbody}{/table}
+	</pieNotificaciones>
+    <pieNewsletter>
+		{/td}{/tr}{tr}{td style="padding: 10px; font-size: 10px; color: #555"}{p}Questo indirizzo e-mail è abilitato solo per l'invio di messaggi automatici. Non riceve risposte. Si prega di non rispondere a questa e-mail.{/p}{p}Ai sensi della normativa vigente in materia dei Servizi della Società dell'Informazione, del Commercio Elettronico e di Protezione dei Dati, La informiamo che può cancellarsi in qualsiasi momento dal ricevimento delle comunicazioni di {#URCONNOMBRECOMUNIDAD#} nella {#SECCIONNOTIFICACIONES#}. Grazie per la collaborazione.{/p}{/td}{/tr}{/tbody}{/table}
+	</pieNewsletter>
+  </formatoCorreo>
+</correos>

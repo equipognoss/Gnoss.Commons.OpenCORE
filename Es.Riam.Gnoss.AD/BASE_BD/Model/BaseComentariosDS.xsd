@@ -1,0 +1,42 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<xs:schema id="BaseComentariosDS" targetNamespace="http://tempuri.org/BaseComentariosDS.xsd" xmlns:mstns="http://tempuri.org/BaseComentariosDS.xsd" xmlns="http://tempuri.org/BaseComentariosDS.xsd" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata" xmlns:msprop="urn:schemas-microsoft-com:xml-msprop" attributeFormDefault="qualified" elementFormDefault="qualified">
+  <xs:annotation>
+    <xs:appinfo source="urn:schemas-microsoft-com:xml-msdatasource">
+      <DataSource DefaultConnectionIndex="0" FunctionsComponentName="QueriesTableAdapter" Modifier="AutoLayout, AnsiClass, Class, Public" SchemaSerializationMode="IncludeSchema" xmlns="urn:schemas-microsoft-com:xml-msdatasource">
+        <Connections />
+        <Tables />
+        <Sources />
+      </DataSource>
+    </xs:appinfo>
+  </xs:annotation>
+  <xs:element name="BaseComentariosDS" msdata:IsDataSet="true" msdata:UseCurrentLocale="true" msprop:EnableTableAdapterManager="true" msprop:Generator_DataSetName="BaseComentariosDS" msprop:Generator_UserDSName="BaseComentariosDS">
+    <xs:complexType>
+      <xs:choice minOccurs="0" maxOccurs="unbounded">
+        <xs:element name="ColaTagsComentarios" msprop:Generator_TableClassName="ColaTagsComentariosDataTable" msprop:Generator_TableVarName="tableColaTagsComentarios" msprop:Generator_TablePropName="ColaTagsComentarios" msprop:Generator_RowDeletingName="ColaTagsComentariosRowDeleting" msprop:Generator_UserTableName="ColaTagsComentarios" msprop:Generator_RowChangingName="ColaTagsComentariosRowChanging" msprop:Generator_RowEvHandlerName="ColaTagsComentariosRowChangeEventHandler" msprop:Generator_RowDeletedName="ColaTagsComentariosRowDeleted" msprop:Generator_RowEvArgName="ColaTagsComentariosRowChangeEvent" msprop:Generator_RowChangedName="ColaTagsComentariosRowChanged" msprop:Generator_RowClassName="ColaTagsComentariosRow">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="OrdenEjecucion" msdata:ReadOnly="true" msdata:AutoIncrement="true" msprop:Generator_ColumnVarNameInTable="columnOrdenEjecucion" msprop:Generator_ColumnPropNameInRow="OrdenEjecucion" msprop:Generator_ColumnPropNameInTable="OrdenEjecucionColumn" msprop:Generator_UserColumnName="OrdenEjecucion" type="xs:int" />
+              <xs:element name="TablaBaseProyectoID" msprop:Generator_ColumnVarNameInTable="columnTablaBaseProyectoID" msprop:Generator_ColumnPropNameInRow="TablaBaseProyectoID" msprop:Generator_ColumnPropNameInTable="TablaBaseProyectoIDColumn" msprop:Generator_UserColumnName="TablaBaseProyectoID" type="xs:int" />
+              <xs:element name="Tags" msprop:Generator_ColumnVarNameInTable="columnTags" msprop:Generator_ColumnPropNameInRow="Tags" msprop:Generator_ColumnPropNameInTable="TagsColumn" msprop:Generator_UserColumnName="Tags">
+                <xs:simpleType>
+                  <xs:restriction base="xs:string">
+                    <xs:maxLength value="2147483647" />
+                  </xs:restriction>
+                </xs:simpleType>
+              </xs:element>
+              <xs:element name="Tipo" msprop:Generator_ColumnVarNameInTable="columnTipo" msprop:Generator_ColumnPropNameInRow="Tipo" msprop:Generator_ColumnPropNameInTable="TipoColumn" msprop:Generator_UserColumnName="Tipo" type="xs:short" />
+              <xs:element name="Estado" msprop:Generator_ColumnVarNameInTable="columnEstado" msprop:Generator_ColumnPropNameInRow="Estado" msprop:Generator_ColumnPropNameInTable="EstadoColumn" msprop:Generator_UserColumnName="Estado" type="xs:short" />
+              <xs:element name="FechaPuestaEnCola" msprop:Generator_ColumnVarNameInTable="columnFechaPuestaEnCola" msprop:Generator_ColumnPropNameInRow="FechaPuestaEnCola" msprop:Generator_ColumnPropNameInTable="FechaPuestaEnColaColumn" msprop:Generator_UserColumnName="FechaPuestaEnCola" type="xs:dateTime" />
+              <xs:element name="FechaProcesado" msprop:Generator_ColumnVarNameInTable="columnFechaProcesado" msprop:Generator_ColumnPropNameInRow="FechaProcesado" msprop:Generator_ColumnPropNameInTable="FechaProcesadoColumn" msprop:Generator_UserColumnName="FechaProcesado" type="xs:dateTime" minOccurs="0" />
+              <xs:element name="Prioridad" msprop:Generator_ColumnVarNameInTable="columnPrioridad" msprop:Generator_ColumnPropNameInRow="Prioridad" msprop:Generator_ColumnPropNameInTable="PrioridadColumn" msprop:Generator_UserColumnName="Prioridad" type="xs:short" default="0" />
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+      </xs:choice>
+    </xs:complexType>
+    <xs:unique name="Constraint1" msdata:PrimaryKey="true">
+      <xs:selector xpath=".//mstns:ColaTagsComentarios" />
+      <xs:field xpath="mstns:OrdenEjecucion" />
+    </xs:unique>
+  </xs:element>
+</xs:schema>

@@ -1,0 +1,3140 @@
+<?xml version="1.0"?>
+<rdf:RDF
+    xmlns:swrl="http://www.w3.org/2003/11/swrl#"
+    xmlns:skos08="http://www.w3.org/2008/05/skos#"
+    xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+    xmlns:owl="http://www.w3.org/2002/07/owl#"
+    xmlns:gnoss="http://www.gnoss.com/"
+    xmlns:xsp="http://www.owl-ontologies.com/2005/08/07/xsp.owl#"
+    xmlns:swrlb="http://www.w3.org/2003/11/swrlb#"
+    xmlns:sioc_t="http://rdfs.org/sioc/types#"
+    xmlns:rdfg="http://www.w3.org/2004/03/trix/rdfg-1/"
+    xmlns="http://www.gnoss.com/ontologia.owl#"
+    xmlns:protege="http://protege.stanford.edu/plugins/owl/protege#"
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+  xml:base="http://www.gnoss.com/ontologia.owl">
+  <owl:Ontology rdf:about="">
+    <owl:imports rdf:resource="http://rdfs.org/sioc/ns"/>
+    <owl:imports rdf:resource="http://rdfs.org/sioc/types"/>
+    <owl:imports rdf:resource="http://www.w3.org/2004/02/skos/core"/>
+  </owl:Ontology>
+  <rdfs:Class rdf:ID="Candidate"/>
+  <rdfs:Class rdf:about="http://xmlns.com/foaf/0.1/Person"/>
+  <rdfs:Class rdf:about="http://xmlns.com/foaf/0.1/Group"/>
+  <owl:Class rdf:ID="Libro">
+    <rdfs:subClassOf>
+      <owl:Class rdf:ID="EntidadExportable"/>
+    </rdfs:subClassOf>
+    <generalizacion rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >FK_Libro_EntidadGnoss</generalizacion>
+  </owl:Class>
+  <owl:Class rdf:ID="EventoComunicacionCongreso">
+    <rdfs:subClassOf>
+      <owl:Class rdf:ID="Evento"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:ID="Entrada">
+    <rdfs:subClassOf>
+      <owl:Class rdf:ID="ElementoIDEF0"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:ID="EventoPatente">
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="#Evento"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:ID="Proceso">
+    <rdfs:subClassOf>
+      <owl:Class rdf:ID="Grupo"/>
+    </rdfs:subClassOf>
+    <generalizacion rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >FK_Proceso_Grupo</generalizacion>
+  </owl:Class>
+  <owl:Class rdf:ID="CategoriaDocumentacion">
+    <rdfs:subClassOf>
+      <owl:Class rdf:ID="ElementosAuxiliares"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:ID="SemanticCv">
+    <rdfs:subClassOf>
+      <owl:Class rdf:ID="Cv"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:ID="EventoAccionFormativa">
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="#Evento"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:ID="EventoPuestoExpLab">
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="#Evento"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:ID="PersonaVinculoOrganizacion">
+    <rdfs:subClassOf rdf:resource="#EntidadExportable"/>
+  </owl:Class>
+  <owl:Class rdf:ID="FilaMeta">
+    <rdfs:subClassOf rdf:resource="#ElementosAuxiliares"/>
+  </owl:Class>
+  <owl:Class rdf:ID="GestionProcesos">
+    <rdfs:subClassOf rdf:resource="#Proceso"/>
+  </owl:Class>
+  <owl:Class rdf:ID="Wiki">
+    <rdfs:subClassOf rdf:resource="#EntidadExportable"/>
+  </owl:Class>
+  <owl:Class rdf:ID="SubEstructura">
+    <generalizacion rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >FK_TipoForma_ElemEstr</generalizacion>
+    <rdfs:subClassOf>
+      <owl:Class rdf:ID="ElementoEstructura"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:ID="Factor">
+    <rdfs:subClassOf rdf:resource="#EntidadExportable"/>
+  </owl:Class>
+  <owl:Class rdf:ID="CategoriaTesauro">
+    <rdfs:subClassOf rdf:resource="#EntidadExportable"/>
+  </owl:Class>
+  <owl:Class rdf:ID="ElementoNivelModo">
+    <rdfs:subClassOf rdf:resource="#EntidadExportable"/>
+  </owl:Class>
+  <owl:Class rdf:ID="NivelModo">
+    <rdfs:subClassOf rdf:resource="#EntidadExportable"/>
+  </owl:Class>
+  <owl:Class rdf:ID="Tesauro">
+    <rdfs:subClassOf rdf:resource="#EntidadExportable"/>
+  </owl:Class>
+  <owl:Class rdf:about="#Evento">
+    <rdfs:subClassOf rdf:resource="#EntidadExportable"/>
+  </owl:Class>
+  <owl:Class rdf:ID="Estructura">
+    <rdfs:subClassOf rdf:resource="#EntidadExportable"/>
+    <generalizacion rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >EntidadEstructura</generalizacion>
+  </owl:Class>
+  <owl:Class rdf:ID="GrupoFuncional">
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="#Grupo"/>
+    </rdfs:subClassOf>
+    <generalizacion rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >FK_GrupoFuncional_Grupo</generalizacion>
+  </owl:Class>
+  <owl:Class rdf:ID="Mecanismo">
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="#ElementoIDEF0"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:ID="DocumentoEntidad">
+    <rdfs:subClassOf rdf:resource="#EntidadExportable"/>
+  </owl:Class>
+  <owl:Class rdf:ID="PerfilPersona">
+    <rdfs:subClassOf rdf:resource="#EntidadExportable"/>
+  </owl:Class>
+  <owl:Class rdf:ID="EventoIdiomaEstExt">
+    <rdfs:subClassOf rdf:resource="#Evento"/>
+  </owl:Class>
+  <owl:Class rdf:ID="EntidadGnoss">
+    <especializacion rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >FK_EscalaMeta_EntidadGnoss</especializacion>
+    <especializacion rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >FK_Grupo_EntidadGnoss</especializacion>
+    <especializacion rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >FK_Modo_EntidadGnoss</especializacion>
+    <especializacion rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >FK_Libro_EntidadGnoss</especializacion>
+    <especializacion rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >FK_ElemEstr_EntGnoss</especializacion>
+    <rdfs:subClassOf rdf:resource="#EntidadExportable"/>
+  </owl:Class>
+  <owl:Class rdf:ID="OrganizationCv">
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="#Cv"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:ID="EntradaBlog">
+    <rdfs:subClassOf rdf:resource="#EntidadExportable"/>
+  </owl:Class>
+  <owl:Class rdf:ID="Competencia">
+    <rdfs:subClassOf rdf:resource="#EntidadGnoss"/>
+  </owl:Class>
+  <owl:Class rdf:ID="EventoLibro">
+    <rdfs:subClassOf rdf:resource="#Evento"/>
+  </owl:Class>
+  <owl:Class rdf:ID="Comentario">
+    <rdfs:subClassOf rdf:resource="#EntidadExportable"/>
+  </owl:Class>
+  <owl:Class rdf:ID="CeldaMeta">
+    <rdfs:subClassOf rdf:resource="#ElementosAuxiliares"/>
+  </owl:Class>
+  <owl:Class rdf:about="#Cv">
+    <rdfs:subClassOf rdf:resource="#EntidadExportable"/>
+  </owl:Class>
+  <owl:Class rdf:about="#ElementoIDEF0">
+    <rdfs:subClassOf rdf:resource="#EntidadExportable"/>
+  </owl:Class>
+  <owl:Class rdf:ID="Salida">
+    <rdfs:subClassOf rdf:resource="#ElementoIDEF0"/>
+  </owl:Class>
+  <owl:Class rdf:ID="Persona">
+    <rdfs:subClassOf rdf:resource="#EntidadExportable"/>
+  </owl:Class>
+  <owl:Class rdf:ID="EventoIdioma">
+    <rdfs:subClassOf rdf:resource="#Evento"/>
+  </owl:Class>
+  <owl:Class rdf:ID="PersonaReferencia">
+    <rdfs:subClassOf rdf:resource="#Evento"/>
+  </owl:Class>
+  <owl:Class rdf:ID="NivelPrioridad">
+    <rdfs:subClassOf rdf:resource="#EntidadExportable"/>
+  </owl:Class>
+  <owl:Class rdf:ID="EnlaceBlog">
+    <rdfs:subClassOf rdf:resource="#EntidadExportable"/>
+  </owl:Class>
+  <owl:Class rdf:ID="EventoContratoIDi">
+    <rdfs:subClassOf rdf:resource="#Evento"/>
+  </owl:Class>
+  <owl:Class rdf:ID="MiniLibro">
+    <rdfs:subClassOf rdf:resource="#EntidadExportable"/>
+  </owl:Class>
+  <owl:Class rdf:ID="PerfilPersonaOrg">
+    <rdfs:subClassOf rdf:resource="#PerfilPersona"/>
+  </owl:Class>
+  <owl:Class rdf:ID="EventoTesis">
+    <rdfs:subClassOf rdf:resource="#Evento"/>
+  </owl:Class>
+  <owl:Class rdf:ID="Forma">
+    <generalizacion rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >FK_Forma_ElementoEstructura</generalizacion>
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="#ElementoEstructura"/>
+    </rdfs:subClassOf>
+    <especializacion rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >FK_Figura_Forma</especializacion>
+  </owl:Class>
+  <owl:Class rdf:ID="EventoCompetencia">
+    <rdfs:subClassOf rdf:resource="#Evento"/>
+  </owl:Class>
+  <owl:Class rdf:ID="Figura">
+    <generalizacion rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >FK_Forma_Figura</generalizacion>
+    <rdfs:subClassOf rdf:resource="#Forma"/>
+  </owl:Class>
+  <owl:Class rdf:ID="Comunidad">
+    <rdfs:subClassOf rdf:resource="#EntidadExportable"/>
+  </owl:Class>
+  <owl:Class rdf:ID="PuestoTrabajo">
+    <rdfs:subClassOf rdf:resource="#EntidadExportable"/>
+  </owl:Class>
+  <owl:Class rdf:ID="EventoPuestoDocente">
+    <rdfs:subClassOf rdf:resource="#Evento"/>
+  </owl:Class>
+  <owl:Class rdf:ID="EjeMeta">
+    <rdfs:subClassOf rdf:resource="#ElementosAuxiliares"/>
+  </owl:Class>
+  <owl:Class rdf:ID="ResultSet">
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:onProperty>
+          <owl:DatatypeProperty rdf:ID="Page"/>
+        </owl:onProperty>
+        <owl:maxCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >1</owl:maxCardinality>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:onProperty>
+          <owl:DatatypeProperty rdf:ID="ItemsPerPage"/>
+        </owl:onProperty>
+        <owl:maxCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >1</owl:maxCardinality>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf rdf:resource="#EntidadExportable"/>
+  </owl:Class>
+  <owl:Class rdf:ID="Organizacion">
+    <rdfs:subClassOf rdf:resource="#EntidadExportable"/>
+  </owl:Class>
+  <owl:Class rdf:ID="NivelLibro">
+    <rdfs:subClassOf rdf:resource="#EntidadExportable"/>
+  </owl:Class>
+  <owl:Class rdf:ID="DatosTrabajoPersonaLibre">
+    <rdfs:subClassOf rdf:resource="#EntidadExportable"/>
+  </owl:Class>
+  <owl:Class rdf:ID="PerfilOrganizacion">
+    <rdfs:subClassOf rdf:resource="#EntidadExportable"/>
+  </owl:Class>
+  <owl:Class rdf:ID="Objetivo">
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="#Grupo"/>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:cardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >1</owl:cardinality>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:ID="Salidas"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <generalizacion rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >FK_Objetivo_Grupo</generalizacion>
+  </owl:Class>
+  <owl:Class rdf:ID="Control">
+    <rdfs:subClassOf rdf:resource="#ElementoIDEF0"/>
+  </owl:Class>
+  <owl:Class rdf:ID="EventoPromocionEmpresa">
+    <rdfs:subClassOf rdf:resource="#Evento"/>
+  </owl:Class>
+  <owl:Class rdf:ID="EventoProyecto">
+    <rdfs:subClassOf rdf:resource="#Evento"/>
+  </owl:Class>
+  <owl:Class rdf:ID="EventoArticuloRevista">
+    <rdfs:subClassOf rdf:resource="#Evento"/>
+  </owl:Class>
+  <owl:Class rdf:about="#Grupo">
+    <rdfs:subClassOf rdf:resource="#EntidadGnoss"/>
+    <generalizacion rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >FK_Grupo_EntidadGnoss</generalizacion>
+    <especializacion rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >FK_Objetivo_Grupo</especializacion>
+    <especializacion rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >FK_GrupoFuncional_Grupo</especializacion>
+    <especializacion rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >FK_Proceso_Grupo</especializacion>
+  </owl:Class>
+  <owl:Class rdf:ID="EventoProyectoFC">
+    <rdfs:subClassOf rdf:resource="#Evento"/>
+  </owl:Class>
+  <owl:Class rdf:ID="EventoGestionID">
+    <rdfs:subClassOf rdf:resource="#Evento"/>
+  </owl:Class>
+  <owl:Class rdf:about="#ElementoEstructura">
+    <generalizacion rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >FK_ElemEstr_EntGnoss</generalizacion>
+    <rdfs:subClassOf rdf:resource="#EntidadGnoss"/>
+    <especializacion rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >FK_Forma_ElementoEstructura</especializacion>
+    <especializacion rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >ElementoEstructuraMetaEstructura</especializacion>
+    <especializacion rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >FK_TipoForma_ElemEstr</especializacion>
+  </owl:Class>
+  <owl:Class rdf:ID="Definicion">
+    <rdfs:subClassOf rdf:resource="#EntidadExportable"/>
+  </owl:Class>
+  <owl:Class rdf:ID="GestionObjetivos">
+    <rdfs:subClassOf rdf:resource="#Objetivo"/>
+  </owl:Class>
+  <owl:Class rdf:ID="Dafo">
+    <rdfs:subClassOf rdf:resource="#EntidadExportable"/>
+  </owl:Class>
+  <owl:Class rdf:ID="Filter">
+    <rdfs:subClassOf rdf:resource="#EntidadExportable"/>
+  </owl:Class>
+  <owl:Class rdf:ID="EventoActiividadID">
+    <rdfs:subClassOf rdf:resource="#Evento"/>
+  </owl:Class>
+  <owl:Class rdf:ID="ModoLibro">
+    <generalizacion rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >FK_Modo_EntidadGnoss</generalizacion>
+    <rdfs:subClassOf rdf:resource="#EntidadGnoss"/>
+  </owl:Class>
+  <owl:Class rdf:ID="EscalaMetas">
+    <rdfs:subClassOf rdf:resource="#EntidadGnoss"/>
+    <generalizacion rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >FK_EscalaMeta_EntidadGnoss</generalizacion>
+  </owl:Class>
+  <owl:Class rdf:ID="MetaAsignadaElementoEstructura">
+    <rdfs:subClassOf rdf:resource="#EntidadExportable"/>
+  </owl:Class>
+  <owl:Class rdf:ID="EventoEstanciaExtranjero">
+    <rdfs:subClassOf rdf:resource="#Evento"/>
+  </owl:Class>
+  <owl:Class rdf:ID="PersonCv">
+    <rdfs:subClassOf rdf:resource="#Cv"/>
+  </owl:Class>
+  <owl:Class rdf:ID="Ocupacion">
+    <rdfs:subClassOf rdf:resource="#EntidadExportable"/>
+  </owl:Class>
+  <owl:Class rdf:ID="EventoExpLaboral">
+    <rdfs:subClassOf rdf:resource="#Evento"/>
+  </owl:Class>
+  <owl:Class rdf:ID="Proyecto">
+    <rdfs:subClassOf rdf:resource="#EntidadExportable"/>
+  </owl:Class>
+  <owl:Class rdf:ID="EventoDocencia">
+    <rdfs:subClassOf rdf:resource="#Evento"/>
+  </owl:Class>
+  <owl:Class rdf:ID="PersonalizacionCurriculum">
+    <rdfs:subClassOf rdf:resource="#EntidadExportable"/>
+  </owl:Class>
+  <owl:Class rdf:ID="EventoFormacion">
+    <rdfs:subClassOf rdf:resource="#Evento"/>
+  </owl:Class>
+  <owl:Class rdf:ID="Blog">
+    <rdfs:subClassOf rdf:resource="#EntidadExportable"/>
+  </owl:Class>
+  <owl:Class rdf:ID="DimensionCompetencia">
+    <rdfs:subClassOf rdf:resource="#EntidadGnoss"/>
+  </owl:Class>
+  <owl:Class rdf:ID="TipoGrupo">
+    <rdfs:subClassOf rdf:resource="#EntidadExportable"/>
+  </owl:Class>
+  <owl:Class rdf:ID="GestionGruposFuncionales">
+    <rdfs:subClassOf rdf:resource="#GrupoFuncional"/>
+  </owl:Class>
+  <owl:Class rdf:ID="Tag">
+    <rdfs:subClassOf rdf:resource="#EntidadExportable"/>
+  </owl:Class>
+  <owl:Class rdf:ID="EventoCapituloLibro">
+    <rdfs:subClassOf rdf:resource="#Evento"/>
+  </owl:Class>
+  <owl:Class rdf:ID="MetaEstructura">
+    <rdfs:subClassOf rdf:resource="#ElementoEstructura"/>
+    <generalizacion rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >ElementoEstructuraMetaEstructura</generalizacion>
+  </owl:Class>
+  <owl:Class rdf:ID="TipoDimensionCompetencia">
+    <rdfs:subClassOf rdf:resource="#EntidadExportable"/>
+  </owl:Class>
+  <owl:Class rdf:ID="EventoVidaAsociativa">
+    <rdfs:subClassOf rdf:resource="#Evento"/>
+  </owl:Class>
+  <owl:ObjectProperty rdf:ID="CompetenciasAsociadas">
+    <NombreReal xml:lang="es">Competencias asociadas y metas</NombreReal>
+    <rdfs:range rdf:resource="#Competencia"/>
+    <rdfs:domain>
+      <owl:Class>
+        <owl:unionOf rdf:parseType="Collection">
+          <owl:Class rdf:about="#Forma"/>
+          <owl:Class rdf:about="#SubEstructura"/>
+        </owl:unionOf>
+      </owl:Class>
+    </rdfs:domain>
+    <Visible rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+    >true</Visible>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:ID="Results">
+    <rdfs:range rdf:resource="#EntidadExportable"/>
+    <rdfs:domain rdf:resource="#ResultSet"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:ID="Controles">
+    <rdfs:range rdf:resource="#Control"/>
+    <NombreReal xml:lang="es">Controles</NombreReal>
+    <Visible rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+    >true</Visible>
+    <rdfs:domain rdf:resource="#Proceso"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:ID="ModoLibroAsignado">
+    <rdfs:range rdf:resource="#ModoLibro"/>
+    <rdfs:domain rdf:resource="#Libro"/>
+    <Visible rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+    >true</Visible>
+    <NombreReal xml:lang="es">Modo de libro</NombreReal>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:ID="EnlacesBlog">
+    <rdfs:range rdf:resource="#EnlaceBlog"/>
+    <rdfs:domain rdf:resource="#Blog"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:ID="Comentarios">
+    <NombreReal xml:lang="es">Comentario</NombreReal>
+    <rdfs:range rdf:resource="#Comentario"/>
+    <rdfs:domain>
+      <owl:Class>
+        <owl:unionOf rdf:parseType="Collection">
+          <owl:Class rdf:about="#Dafo"/>
+          <owl:Class rdf:about="#Factor"/>
+          <owl:Class rdf:about="#EntradaBlog"/>
+        </owl:unionOf>
+      </owl:Class>
+    </rdfs:domain>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:about="#Salidas">
+    <rdfs:domain>
+      <owl:Class>
+        <owl:unionOf rdf:parseType="Collection">
+          <owl:Class rdf:about="#Proceso"/>
+          <owl:Class rdf:about="#Objetivo"/>
+        </owl:unionOf>
+      </owl:Class>
+    </rdfs:domain>
+    <rdfs:range rdf:resource="#Salida"/>
+    <NombreReal xml:lang="es">Salidas</NombreReal>
+    <Visible rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+    >true</Visible>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:ID="Filter">
+    <rdfs:domain rdf:resource="#ResultSet"/>
+    <rdfs:range rdf:resource="#Filter"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:ID="PuestoExpLab">
+    <rdfs:range rdf:resource="#EventoPuestoExpLab"/>
+    <NombreReal rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    ></NombreReal>
+    <rdfs:domain rdf:resource="#EventoExpLaboral"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:ID="Grupos">
+    <NombreReal xml:lang="es">Grupo</NombreReal>
+    <Visible rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+    >true</Visible>
+    <rdfs:domain rdf:resource="#TipoGrupo"/>
+    <rdfs:range rdf:resource="#Grupo"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:ID="Personalizaciones">
+    <rdfs:range rdf:resource="#PersonalizacionCurriculum"/>
+    <NombreReal xml:lang="es">Curriculum</NombreReal>
+    <rdfs:domain rdf:resource="#Cv"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:ID="DafoProyecto">
+    <Visible rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+    >true</Visible>
+    <rdfs:domain rdf:resource="#Proyecto"/>
+    <rdfs:range rdf:resource="#Dafo"/>
+    <NombreReal xml:lang="es">Dafo</NombreReal>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:ID="Definiciones">
+    <rdfs:domain rdf:resource="#CategoriaTesauro"/>
+    <Visible rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+    >true</Visible>
+    <NombreReal xml:lang="es">Definiciones</NombreReal>
+    <rdfs:range rdf:resource="#Definicion"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:ID="ElementoIDEF0Referenciado">
+    <Visible rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+    >false</Visible>
+    <NombreReal xml:lang="es">Procesos referenciados</NombreReal>
+    <rdfs:range rdf:resource="#ElementoIDEF0"/>
+    <rdfs:domain rdf:resource="#ElementoIDEF0"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:ID="Mecanismos">
+    <Visible rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+    >true</Visible>
+    <NombreReal xml:lang="es">Mecanismos</NombreReal>
+    <rdfs:range rdf:resource="#Mecanismo"/>
+    <rdfs:domain rdf:resource="#Proceso"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:ID="GestorGrupoFuncionalProyecto">
+    <rdfs:domain rdf:resource="#Proyecto"/>
+    <rdfs:range rdf:resource="#GestionGruposFuncionales"/>
+    <NombreReal xml:lang="es">Gestor de Grupos Funcionales</NombreReal>
+    <Visible rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+    >true</Visible>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:ID="Eventos">
+    <rdfs:range rdf:resource="#Evento"/>
+    <NombreReal rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    ></NombreReal>
+    <rdfs:domain>
+      <owl:Class>
+        <owl:unionOf rdf:parseType="Collection">
+          <owl:Class rdf:about="#Cv"/>
+          <owl:Class rdf:about="#PersonalizacionCurriculum"/>
+        </owl:unionOf>
+      </owl:Class>
+    </rdfs:domain>
+    <Visible rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+    >true</Visible>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:ID="NivelPrioridadProyecto">
+    <rdfs:range rdf:resource="#NivelPrioridad"/>
+    <rdfs:domain rdf:resource="#GestionObjetivos"/>
+    <Visible rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+    >false</Visible>
+    <NombreReal xml:lang="es">Nivel de Prioridad</NombreReal>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:ID="ProcesosParticipante">
+    <Visible rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+    >true</Visible>
+    <NombreReal xml:lang="es">Procesos en los participa</NombreReal>
+    <rdfs:range rdf:resource="#Proceso"/>
+    <rdfs:domain rdf:resource="#Figura"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:ID="PersonasOrganizacion">
+    <rdfs:domain rdf:resource="#PerfilOrganizacion"/>
+    <NombreReal xml:lang="es">Personas de la organizacion</NombreReal>
+    <rdfs:range rdf:resource="#PerfilPersonaOrg"/>
+    <Visible rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+    >true</Visible>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:ID="Celdas">
+    <rdfs:domain rdf:resource="#EjeMeta"/>
+    <NombreReal xml:lang="es">Celdas</NombreReal>
+    <Visible rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+    >true</Visible>
+    <rdfs:range rdf:resource="#CeldaMeta"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:ID="DatosPersonaLibre">
+    <rdfs:domain rdf:resource="#Persona"/>
+    <rdfs:range rdf:resource="#DatosTrabajoPersonaLibre"/>
+    <NombreReal xml:lang="es">Datos de trabajo como persona libre (sin vincular a organización)</NombreReal>
+    <Visible rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+    >true</Visible>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:ID="DocumentacionEntidad">
+    <rdfs:domain rdf:resource="#EntidadGnoss"/>
+    <NombreReal xml:lang="es">Documentación vinculada</NombreReal>
+    <rdfs:range rdf:resource="#DocumentoEntidad"/>
+    <Visible rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+    >true</Visible>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:ID="Ocupaciones">
+    <rdfs:domain rdf:resource="#Figura"/>
+    <Visible rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+    >true</Visible>
+    <rdfs:range rdf:resource="#Ocupacion"/>
+    <NombreReal xml:lang="es">Ocupaciones</NombreReal>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:ID="MetaAsignadaFigura">
+    <Visible rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+    >false</Visible>
+    <NombreReal xml:lang="es">Meta</NombreReal>
+    <rdfs:range rdf:resource="#MetaAsignadaElementoEstructura"/>
+    <rdfs:domain>
+      <owl:Class>
+        <owl:unionOf rdf:parseType="Collection">
+          <owl:Class rdf:about="#Competencia"/>
+          <owl:Class rdf:about="#DimensionCompetencia"/>
+        </owl:unionOf>
+      </owl:Class>
+    </rdfs:domain>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:ID="OrganizacionVinculada">
+    <Visible rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+    >true</Visible>
+    <rdfs:domain rdf:resource="#Persona"/>
+    <NombreReal xml:lang="es">Organización vinculada</NombreReal>
+    <rdfs:range rdf:resource="#PersonaVinculoOrganizacion"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:ID="ElementoIDEF0Vinculado">
+    <rdfs:domain rdf:resource="#ElementoIDEF0"/>
+    <rdfs:range rdf:resource="#ElementoIDEF0"/>
+    <Visible rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+    >false</Visible>
+    <NombreReal xml:lang="es">Elemento IDEF0 vinculado o referenciado</NombreReal>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:ID="GrupoProveedor">
+    <owl:inverseOf>
+      <owl:ObjectProperty rdf:ID="GrupoCliente"/>
+    </owl:inverseOf>
+    <rdfs:range rdf:resource="#Grupo"/>
+    <Visible rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+    >true</Visible>
+    <rdfs:domain rdf:resource="#Grupo"/>
+    <NombreReal xml:lang="es">Grupo proveedor</NombreReal>
+    <owl:equivalentProperty>
+      <owl:ObjectProperty rdf:ID="Entradas"/>
+    </owl:equivalentProperty>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:ID="ElementoEstructuraSecundario">
+    <rdfs:range rdf:resource="#ElementoEstructura"/>
+    <Visible rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+    >true</Visible>
+    <NombreReal rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Elementos de estructura inferiores</NombreReal>
+    <rdfs:domain rdf:resource="#ElementoEstructura"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:about="#GrupoCliente">
+    <Visible rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+    >true</Visible>
+    <rdfs:domain rdf:resource="#Grupo"/>
+    <NombreReal xml:lang="es">Grupo cliente</NombreReal>
+    <owl:inverseOf rdf:resource="#GrupoProveedor"/>
+    <rdfs:range rdf:resource="#Grupo"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:ID="Eje">
+    <rdfs:range rdf:resource="#EjeMeta"/>
+    <rdfs:domain>
+      <owl:Class>
+        <owl:unionOf rdf:parseType="Collection">
+          <owl:Class rdf:about="#CeldaMeta"/>
+          <owl:Class rdf:about="#EscalaMetas"/>
+        </owl:unionOf>
+      </owl:Class>
+    </rdfs:domain>
+    <Visible rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+    >true</Visible>
+    <NombreReal xml:lang="es">Ejes de metas</NombreReal>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:ID="DimensionesInferiores">
+    <NombreReal xml:lang="es">Dimensiones inferiores</NombreReal>
+    <rdfs:domain>
+      <owl:Class>
+        <owl:unionOf rdf:parseType="Collection">
+          <owl:Class rdf:about="#DimensionCompetencia"/>
+          <owl:Class rdf:about="#Competencia"/>
+          <owl:Class rdf:about="#TipoDimensionCompetencia"/>
+        </owl:unionOf>
+      </owl:Class>
+    </rdfs:domain>
+    <Visible rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+    >true</Visible>
+    <rdfs:range rdf:resource="#DimensionCompetencia"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:ID="Participantes">
+    <Visible rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+    >false</Visible>
+    <rdfs:range rdf:resource="#Persona"/>
+    <NombreReal xml:lang="es">Participantes</NombreReal>
+    <rdfs:domain rdf:resource="#Dafo"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:ID="ElementosNivelModo">
+    <NombreReal xml:lang="es">Elementos de nivel de modo</NombreReal>
+    <rdfs:range rdf:resource="#ElementoNivelModo"/>
+    <Visible rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+    >true</Visible>
+    <rdfs:domain>
+      <owl:Class>
+        <owl:unionOf rdf:parseType="Collection">
+          <owl:Class rdf:about="#ModoLibro"/>
+          <owl:Class rdf:about="#ElementoNivelModo"/>
+        </owl:unionOf>
+      </owl:Class>
+    </rdfs:domain>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:ID="Fila">
+    <Visible rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+    >true</Visible>
+    <rdfs:domain>
+      <owl:Class>
+        <owl:unionOf rdf:parseType="Collection">
+          <owl:Class rdf:about="#CeldaMeta"/>
+          <owl:Class rdf:about="#EscalaMetas"/>
+        </owl:unionOf>
+      </owl:Class>
+    </rdfs:domain>
+    <NombreReal rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Filas de metas</NombreReal>
+    <rdfs:range rdf:resource="#FilaMeta"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:ID="CategoriasTesauro">
+    <rdfs:range rdf:resource="#CategoriaTesauro"/>
+    <NombreReal xml:lang="es">Categorías de Tesauro</NombreReal>
+    <rdfs:domain>
+      <owl:Class>
+        <owl:unionOf rdf:parseType="Collection">
+          <owl:Class rdf:about="#CategoriaTesauro"/>
+          <owl:Class rdf:about="#Tesauro"/>
+          <owl:Class rdf:about="#DocumentoEntidad"/>
+          <owl:Class rdf:about="#Comunidad"/>
+          <owl:Class rdf:about="#Blog"/>
+          <owl:Class rdf:about="#Dafo"/>
+        </owl:unionOf>
+      </owl:Class>
+    </rdfs:domain>
+    <Visible rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+    >false</Visible>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:ID="FigurasParticipanGrupo">
+    <NombreReal rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Figuras asignadas</NombreReal>
+    <rdfs:domain rdf:resource="#Grupo"/>
+    <rdfs:range rdf:resource="#Figura"/>
+    <Visible rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+    >true</Visible>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:ID="Editores">
+    <rdfs:range rdf:resource="#PerfilPersona"/>
+    <rdfs:domain rdf:resource="#Blog"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:ID="Docencia">
+    <rdfs:domain rdf:resource="#EventoPuestoDocente"/>
+    <NombreReal xml:lang="es">Docencia</NombreReal>
+    <rdfs:range rdf:resource="#EventoDocencia"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:ID="ElementoMetaEstructura">
+    <Visible rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+    >true</Visible>
+    <NombreReal xml:lang="es">MetaEstructura</NombreReal>
+    <rdfs:range rdf:resource="#MetaEstructura"/>
+    <rdfs:domain rdf:resource="#Estructura"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:ID="GestorProcesosProyecto">
+    <rdfs:domain rdf:resource="#Proyecto"/>
+    <rdfs:range rdf:resource="#GestionProcesos"/>
+    <NombreReal xml:lang="es">Gestor de Procesos</NombreReal>
+    <Visible rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+    >true</Visible>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:ID="PersonalOrganizacion">
+    <Visible rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+    >true</Visible>
+    <NombreReal xml:lang="es">Personal de la organizacion</NombreReal>
+    <rdfs:domain rdf:resource="#Organizacion"/>
+    <rdfs:range rdf:resource="#Persona"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:ID="Factores">
+    <Visible rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+    >true</Visible>
+    <rdfs:range rdf:resource="#Factor"/>
+    <NombreReal xml:lang="es">Factores</NombreReal>
+    <rdfs:domain>
+      <owl:Class>
+        <owl:unionOf rdf:parseType="Collection">
+          <owl:Class rdf:about="#Dafo"/>
+          <owl:Class rdf:about="#Factor"/>
+        </owl:unionOf>
+      </owl:Class>
+    </rdfs:domain>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:ID="CompetenciasInferiores">
+    <rdfs:range rdf:resource="#Competencia"/>
+    <Visible rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+    >true</Visible>
+    <NombreReal xml:lang="es">Competencias inferiores</NombreReal>
+    <rdfs:domain>
+      <owl:Class>
+        <owl:unionOf rdf:parseType="Collection">
+          <owl:Class rdf:about="#Libro"/>
+          <owl:Class rdf:about="#MiniLibro"/>
+          <owl:Class rdf:about="#Competencia"/>
+          <owl:Class rdf:about="#ElementoNivelModo"/>
+        </owl:unionOf>
+      </owl:Class>
+    </rdfs:domain>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:ID="TipoDimension">
+    <Visible rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+    >true</Visible>
+    <NombreReal xml:lang="es">Tipo de dimensión</NombreReal>
+    <rdfs:domain rdf:resource="#Libro"/>
+    <rdfs:range rdf:resource="#TipoDimensionCompetencia"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:ID="EntradasBlog">
+    <rdfs:domain rdf:resource="#Blog"/>
+    <rdfs:range rdf:resource="#EntradaBlog"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:ID="Documentacion">
+    <NombreReal xml:lang="es">Documentación</NombreReal>
+    <rdfs:domain>
+      <owl:Class>
+        <owl:unionOf rdf:parseType="Collection">
+          <owl:Class rdf:about="#CategoriaTesauro"/>
+          <rdf:Description rdf:about="http://www.w3.org/2004/02/skos/core#Concept"/>
+        </owl:unionOf>
+      </owl:Class>
+    </rdfs:domain>
+    <rdfs:range rdf:resource="http://rdfs.org/sioc/ns#Item"/>
+    <Visible rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+    >true</Visible>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:ID="EscalaMetasAsignada">
+    <Visible rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+    >true</Visible>
+    <rdfs:domain>
+      <owl:Class>
+        <owl:unionOf rdf:parseType="Collection">
+          <owl:Class rdf:about="#TipoDimensionCompetencia"/>
+          <owl:Class rdf:about="#Proyecto"/>
+        </owl:unionOf>
+      </owl:Class>
+    </rdfs:domain>
+    <rdfs:range rdf:resource="#EscalaMetas"/>
+    <NombreReal xml:lang="es">Escala de metas</NombreReal>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:ID="MiniLibroGrupo">
+    <rdfs:range rdf:resource="#MiniLibro"/>
+    <rdfs:domain rdf:resource="#Grupo"/>
+    <NombreReal xml:lang="es">Minilibro</NombreReal>
+    <Visible rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+    >true</Visible>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:ID="GrupoInferior">
+    <rdfs:domain rdf:resource="#Grupo"/>
+    <NombreReal xml:lang="es">Grupo Inferior</NombreReal>
+    <rdfs:range rdf:resource="#Grupo"/>
+    <Visible rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+    >true</Visible>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:ID="GestorObjetivoProyecto">
+    <NombreReal xml:lang="es">Gestor de Objetivos</NombreReal>
+    <Visible rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+    >true</Visible>
+    <rdfs:range rdf:resource="#GestionObjetivos"/>
+    <rdfs:domain rdf:resource="#Proyecto"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:about="#Entradas">
+    <owl:equivalentProperty rdf:resource="#GrupoProveedor"/>
+    <Visible rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+    >true</Visible>
+    <rdfs:domain rdf:resource="#Proceso"/>
+    <rdfs:range rdf:resource="#Entrada"/>
+    <NombreReal xml:lang="es">Entradas</NombreReal>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:ID="DefinicionesGrupo">
+    <Visible rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+    >true</Visible>
+    <NombreReal xml:lang="es">Definiciones</NombreReal>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:ID="Comunidades">
+    <Visible rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+    >true</Visible>
+    <rdfs:domain>
+      <owl:Class>
+        <owl:unionOf rdf:parseType="Collection">
+          <owl:Class rdf:about="#PerfilPersona"/>
+          <owl:Class rdf:about="#PerfilOrganizacion"/>
+        </owl:unionOf>
+      </owl:Class>
+    </rdfs:domain>
+    <rdfs:range rdf:resource="#Comunidad"/>
+    <NombreReal xml:lang="es">Comunidades</NombreReal>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:ID="TipoGrupos">
+    <Visible rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+    >true</Visible>
+    <NombreReal xml:lang="es">Tipo de Grupo</NombreReal>
+    <rdfs:range rdf:resource="#TipoGrupo"/>
+    <rdfs:domain>
+      <owl:Class>
+        <owl:unionOf rdf:parseType="Collection">
+          <owl:Class rdf:about="#GestionGruposFuncionales"/>
+          <owl:Class rdf:about="#GestionProcesos"/>
+          <owl:Class rdf:about="#GestionObjetivos"/>
+        </owl:unionOf>
+      </owl:Class>
+    </rdfs:domain>
+  </owl:ObjectProperty>
+  <owl:DatatypeProperty rdf:ID="Tags">
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    <Visible rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+    >true</Visible>
+    <rdfs:domain>
+      <owl:Class>
+        <owl:unionOf rdf:parseType="Collection">
+          <owl:Class rdf:about="#Cv"/>
+          <owl:Class rdf:about="#Blog"/>
+          <owl:Class rdf:about="#EntradaBlog"/>
+          <owl:Class rdf:about="#ResultSet"/>
+          <owl:Class rdf:about="#Comunidad"/>
+          <owl:Class rdf:about="#Dafo"/>
+        </owl:unionOf>
+      </owl:Class>
+    </rdfs:domain>
+    <NombreReal xml:lang="es">Tags</NombreReal>
+  </owl:DatatypeProperty>
+  <owl:DatatypeProperty rdf:ID="NumeroMujeres">
+    <Visible rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+    >false</Visible>
+    <NombreReal xml:lang="es">Número de mujeres</NombreReal>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#int"/>
+  </owl:DatatypeProperty>
+  <owl:DatatypeProperty rdf:ID="Publicado">
+    <NombreReal xml:lang="es">Publicado</NombreReal>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#boolean"/>
+  </owl:DatatypeProperty>
+  <owl:DatatypeProperty rdf:ID="DatatypeProperty_6"/>
+  <owl:DatatypeProperty rdf:ID="Evaluacion">
+    <rdfs:domain rdf:resource="#EventoDocencia"/>
+  </owl:DatatypeProperty>
+  <owl:DatatypeProperty rdf:ID="NombreReal">
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    <rdfs:domain rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property"/>
+  </owl:DatatypeProperty>
+  <owl:DatatypeProperty rdf:ID="DatatypeProperty_3"/>
+  <owl:DatatypeProperty rdf:ID="Cursos">
+    <rdfs:domain rdf:resource="#EventoFormacion"/>
+  </owl:DatatypeProperty>
+  <owl:DatatypeProperty rdf:ID="DatatypeProperty_10"/>
+  <owl:DatatypeProperty rdf:about="#Page">
+    <rdfs:domain rdf:resource="#ResultSet"/>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#int"/>
+  </owl:DatatypeProperty>
+  <owl:DatatypeProperty rdf:ID="Visible">
+    <rdfs:domain rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property"/>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#boolean"/>
+  </owl:DatatypeProperty>
+  <owl:DatatypeProperty rdf:ID="NumeroHombres">
+    <NombreReal xml:lang="es">Número de hombres</NombreReal>
+    <Visible rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+    >false</Visible>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#int"/>
+  </owl:DatatypeProperty>
+  <owl:DatatypeProperty rdf:about="#ItemsPerPage">
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#int"/>
+    <rdfs:domain rdf:resource="#ResultSet"/>
+  </owl:DatatypeProperty>
+  <owl:DatatypeProperty rdf:ID="Domicilio">
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    <NombreReal xml:lang="es">Domicilio</NombreReal>
+    <Visible rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+    >false</Visible>
+  </owl:DatatypeProperty>
+  <owl:FunctionalProperty rdf:ID="LugarPublicacion">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
+    <NombreReal xml:lang="es">LugarPublicacion</NombreReal>
+    <rdfs:domain rdf:resource="#EventoLibro"/>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+  </owl:FunctionalProperty>
+  <owl:FunctionalProperty rdf:ID="NivelResponsabilidad">
+    <rdfs:domain rdf:resource="#EventoVidaAsociativa"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
+    <NombreReal xml:lang="es">Nivel Responsabilidad</NombreReal>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#int"/>
+  </owl:FunctionalProperty>
+  <owl:FunctionalProperty rdf:ID="Sexo">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
+    <rdfs:domain rdf:resource="#Persona"/>
+    <NombreReal xml:lang="es">Sexo</NombreReal>
+    <Visible rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+    >false</Visible>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+  </owl:FunctionalProperty>
+  <owl:FunctionalProperty rdf:ID="Volumen">
+    <rdfs:domain rdf:resource="#EventoArticuloRevista"/>
+    <NombreReal rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Volumen</NombreReal>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#int"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
+  </owl:FunctionalProperty>
+  <owl:FunctionalProperty rdf:ID="Texto">
+    <rdfs:domain rdf:resource="#EntradaBlog"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+  </owl:FunctionalProperty>
+  <owl:FunctionalProperty rdf:ID="DireccionPersonal">
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    <NombreReal xml:lang="es">Direccion</NombreReal>
+    <Visible rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+    >false</Visible>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
+    <rdfs:domain rdf:resource="#Persona"/>
+  </owl:FunctionalProperty>
+  <owl:FunctionalProperty rdf:ID="TitulacionID">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
+    <Visible rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+    >true</Visible>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    <NombreReal xml:lang="es">Titulación</NombreReal>
+    <rdfs:domain rdf:resource="#Persona"/>
+  </owl:FunctionalProperty>
+  <owl:FunctionalProperty rdf:ID="PaisPersonalID">
+    <rdfs:domain rdf:resource="#Persona"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    <NombreReal xml:lang="es">PaisPersonalID</NombreReal>
+    <Visible rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+    >false</Visible>
+  </owl:FunctionalProperty>
+  <owl:FunctionalProperty rdf:ID="Descripcion">
+    <NombreReal xml:lang="es">Descripción</NombreReal>
+    <rdfs:domain>
+      <owl:Class>
+        <owl:unionOf rdf:parseType="Collection">
+          <owl:Class rdf:about="#Competencia"/>
+          <owl:Class rdf:about="#DimensionCompetencia"/>
+          <owl:Class rdf:about="#TipoDimensionCompetencia"/>
+          <owl:Class rdf:about="#NivelLibro"/>
+          <owl:Class rdf:about="#ModoLibro"/>
+          <owl:Class rdf:about="#Grupo"/>
+          <owl:Class rdf:about="#TipoGrupo"/>
+          <owl:Class rdf:about="#CeldaMeta"/>
+          <owl:Class rdf:about="#EjeMeta"/>
+          <owl:Class rdf:about="#ElementoNivelModo"/>
+          <owl:Class rdf:about="#Definicion"/>
+          <owl:Class rdf:about="#NivelModo"/>
+          <owl:Class rdf:about="#ElementoIDEF0"/>
+          <owl:Class rdf:about="#Proyecto"/>
+          <owl:Class rdf:about="#Comentario"/>
+          <owl:Class rdf:about="#NivelPrioridad"/>
+          <owl:Class rdf:about="#Factor"/>
+          <owl:Class rdf:about="#EventoProyecto"/>
+          <owl:Class rdf:about="#EventoContratoIDi"/>
+          <owl:Class rdf:about="#Blog"/>
+          <owl:Class rdf:about="#Comunidad"/>
+        </owl:unionOf>
+      </owl:Class>
+    </rdfs:domain>
+    <Visible rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+    >false</Visible>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
+  </owl:FunctionalProperty>
+  <owl:FunctionalProperty rdf:ID="TituloPonencia">
+    <rdfs:domain rdf:resource="#EventoComunicacionCongreso"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
+    <NombreReal xml:lang="es">Titulo Ponencia</NombreReal>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+  </owl:FunctionalProperty>
+  <owl:FunctionalProperty rdf:ID="Nombre">
+    <Visible rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+    >false</Visible>
+    <NombreReal xml:lang="es">Nombre</NombreReal>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
+    <rdfs:domain>
+      <owl:Class>
+        <owl:unionOf rdf:parseType="Collection">
+          <owl:Class rdf:about="#DimensionCompetencia"/>
+          <owl:Class rdf:about="#TipoDimensionCompetencia"/>
+          <owl:Class rdf:about="#NivelLibro"/>
+          <owl:Class rdf:about="#EntidadGnoss"/>
+          <owl:Class rdf:about="#TipoGrupo"/>
+          <owl:Class rdf:about="#CeldaMeta"/>
+          <owl:Class rdf:about="#EjeMeta"/>
+          <owl:Class rdf:about="#Organizacion"/>
+          <owl:Class rdf:about="#MiniLibro"/>
+          <owl:Class rdf:about="#CategoriaDocumentacion"/>
+          <owl:Class rdf:about="#Persona"/>
+          <owl:Class rdf:about="#NivelModo"/>
+          <owl:Class rdf:about="#Competencia"/>
+          <owl:Class rdf:about="#PuestoTrabajo"/>
+          <owl:Class rdf:about="#Definicion"/>
+          <owl:Class rdf:about="#Proyecto"/>
+          <owl:Class rdf:about="#Dafo"/>
+          <owl:Class rdf:about="#CategoriaTesauro"/>
+          <owl:Class rdf:about="#NivelPrioridad"/>
+          <owl:Class rdf:about="#Tag"/>
+          <owl:Class rdf:about="#Evento"/>
+          <owl:Class rdf:about="#EventoPuestoDocente"/>
+          <owl:Class rdf:about="#Comunidad"/>
+          <owl:Class rdf:about="#Filter"/>
+          <owl:Class rdf:about="#EnlaceBlog"/>
+        </owl:unionOf>
+      </owl:Class>
+    </rdfs:domain>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+  </owl:FunctionalProperty>
+  <owl:FunctionalProperty rdf:ID="Actividad">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    <NombreReal xml:lang="es">Actividad</NombreReal>
+    <rdfs:domain rdf:resource="#EventoVidaAsociativa"/>
+  </owl:FunctionalProperty>
+  <owl:FunctionalProperty rdf:ID="TipoOrganizacion">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
+    <rdfs:domain rdf:resource="#Organizacion"/>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#int"/>
+    <Visible rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+    >true</Visible>
+    <NombreReal xml:lang="es">Tipo de la organización</NombreReal>
+  </owl:FunctionalProperty>
+  <owl:FunctionalProperty rdf:ID="CodigoCalidad">
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
+    <rdfs:domain rdf:resource="#Grupo"/>
+    <Visible rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+    >false</Visible>
+    <NombreReal xml:lang="es">Código de calidad</NombreReal>
+  </owl:FunctionalProperty>
+  <owl:FunctionalProperty rdf:ID="NombreAsociacion">
+    <rdfs:domain rdf:resource="#EventoVidaAsociativa"/>
+    <NombreReal xml:lang="es">Nombre Asociacion</NombreReal>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
+  </owl:FunctionalProperty>
+  <owl:FunctionalProperty rdf:ID="Caracter">
+    <NombreReal xml:lang="es">Caracter</NombreReal>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
+    <Visible rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+    >false</Visible>
+    <rdfs:domain rdf:resource="#EventoProyecto"/>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#int"/>
+  </owl:FunctionalProperty>
+  <owl:FunctionalProperty rdf:ID="MensajeBienvenida">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
+    <NombreReal xml:lang="es">Mensaje de Bienvenida</NombreReal>
+    <Visible rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+    >false</Visible>
+    <rdfs:domain rdf:resource="#Proyecto"/>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+  </owl:FunctionalProperty>
+  <owl:FunctionalProperty rdf:ID="LogoProyecto">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    <rdfs:domain rdf:resource="#Proyecto"/>
+    <Visible rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+    >false</Visible>
+    <NombreReal xml:lang="es">Logotipo del Proyecto</NombreReal>
+  </owl:FunctionalProperty>
+  <owl:FunctionalProperty rdf:ID="ApellidosAlumno">
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    <NombreReal rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    ></NombreReal>
+    <rdfs:domain rdf:resource="#EventoProyectoFC"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
+  </owl:FunctionalProperty>
+  <owl:FunctionalProperty rdf:ID="Foto">
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    <Visible rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+    >false</Visible>
+    <NombreReal rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    ></NombreReal>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
+  </owl:FunctionalProperty>
+  <owl:FunctionalProperty rdf:ID="Numeracion">
+    <rdfs:domain>
+      <owl:Class>
+        <owl:unionOf rdf:parseType="Collection">
+          <owl:Class rdf:about="#TipoDimensionCompetencia"/>
+          <owl:Class rdf:about="#NivelLibro"/>
+          <owl:Class rdf:about="#NivelModo"/>
+        </owl:unionOf>
+      </owl:Class>
+    </rdfs:domain>
+    <NombreReal xml:lang="es">Numeración</NombreReal>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    <Visible rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+    >false</Visible>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
+  </owl:FunctionalProperty>
+  <owl:FunctionalProperty rdf:ID="TamañoOrganizacion">
+    <NombreReal xml:lang="es">Tamaño de la organización</NombreReal>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#int"/>
+    <Visible rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+    >false</Visible>
+  </owl:FunctionalProperty>
+  <owl:FunctionalProperty rdf:ID="FechaFinVotacion">
+    <rdfs:domain rdf:resource="#Dafo"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#dateTime"/>
+  </owl:FunctionalProperty>
+  <owl:FunctionalProperty rdf:ID="Calificacion">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    <NombreReal xml:lang="es">Calificacion</NombreReal>
+    <rdfs:domain>
+      <owl:Class>
+        <owl:unionOf rdf:parseType="Collection">
+          <owl:Class rdf:about="#EventoProyectoFC"/>
+          <owl:Class rdf:about="#EventoFormacion"/>
+        </owl:unionOf>
+      </owl:Class>
+    </rdfs:domain>
+  </owl:FunctionalProperty>
+  <owl:FunctionalProperty rdf:ID="Subtitulo">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
+    <rdfs:domain rdf:resource="#Blog"/>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+  </owl:FunctionalProperty>
+  <owl:FunctionalProperty rdf:ID="DireccionTrabajo">
+    <NombreReal xml:lang="es">Dirección del trabajo</NombreReal>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    <rdfs:domain>
+      <owl:Class>
+        <owl:unionOf rdf:parseType="Collection">
+          <owl:Class rdf:about="#PersonaVinculoOrganizacion"/>
+          <owl:Class rdf:about="#DatosTrabajoPersonaLibre"/>
+        </owl:unionOf>
+      </owl:Class>
+    </rdfs:domain>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
+    <Visible rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+    >true</Visible>
+  </owl:FunctionalProperty>
+  <owl:FunctionalProperty rdf:ID="Valor">
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    <rdfs:domain rdf:resource="#Filter"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
+  </owl:FunctionalProperty>
+  <owl:FunctionalProperty rdf:ID="IntroduccionDebilidades">
+    <rdfs:domain rdf:resource="#Dafo"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+  </owl:FunctionalProperty>
+  <owl:FunctionalProperty rdf:ID="CV_HR_XML">
+    <rdfs:domain rdf:resource="#SemanticCv"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#ObjectProperty"/>
+    <rdfs:range rdf:resource="#Candidate"/>
+  </owl:FunctionalProperty>
+  <owl:FunctionalProperty rdf:ID="TelefonoContacto">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
+    <NombreReal xml:lang="es">Teléfono de contacto</NombreReal>
+    <Visible rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+    >false</Visible>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+  </owl:FunctionalProperty>
+  <owl:ObjectProperty rdf:about="has_docSem">
+    <rdfs:domain rdf:resource="http://rdfs.org/sioc/ns#Item"/>
+    <rdfs:range rdf:resource="#Thing"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:about="http://creativecommons.org/ns#license">
+    <rdfs:domain rdf:resource="http://rdfs.org/sioc/ns#Item"/>
+    <rdfs:range rdf:resource="#Thing"/>
+  </owl:ObjectProperty>
+  <owl:FunctionalProperty rdf:ID="NumeroMiembros">
+    <rdfs:domain rdf:resource="#Comunidad"/>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#int"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
+  </owl:FunctionalProperty>
+  <owl:FunctionalProperty rdf:ID="is_dedicated">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    <rdfs:domain rdf:resource="#OrganizationCv"/>
+    <NombreReal xml:lang="es">Nos dedicamos</NombreReal>
+    <Visible rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+    >false</Visible>
+  </owl:FunctionalProperty>
+  <owl:FunctionalProperty rdf:ID="DafoDisponible">
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#boolean"/>
+    <Visible rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+    >false</Visible>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
+    <NombreReal xml:lang="es">Dafo Disponible</NombreReal>
+    <rdfs:domain rdf:resource="#Proyecto"/>
+  </owl:FunctionalProperty>
+  <owl:FunctionalProperty rdf:ID="VisibilidadParticipantes">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#boolean"/>
+    <rdfs:domain rdf:resource="#Dafo"/>
+  </owl:FunctionalProperty>
+  <owl:FunctionalProperty rdf:ID="Estado">
+    <rdfs:domain>
+      <owl:Class>
+        <owl:unionOf rdf:parseType="Collection">
+          <owl:Class rdf:about="#Figura"/>
+          <owl:Class rdf:about="#Dafo"/>
+        </owl:unionOf>
+      </owl:Class>
+    </rdfs:domain>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    <Visible rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+    >false</Visible>
+    <NombreReal xml:lang="es">Estado</NombreReal>
+  </owl:FunctionalProperty>
+  <owl:FunctionalProperty rdf:ID="Objeto">
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    <rdfs:domain rdf:resource="#Grupo"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
+    <Visible rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+    >false</Visible>
+    <NombreReal xml:lang="es">Objeto</NombreReal>
+  </owl:FunctionalProperty>
+  <owl:FunctionalProperty rdf:ID="ElementoEstructuraAsociado">
+    <Visible rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+    >false</Visible>
+    <rdfs:domain rdf:resource="#MetaAsignadaElementoEstructura"/>
+    <NombreReal xml:lang="es">Elemento de estructura asociado</NombreReal>
+    <rdfs:range rdf:resource="#ElementoEstructura"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#ObjectProperty"/>
+  </owl:FunctionalProperty>
+  <owl:FunctionalProperty rdf:ID="Empleados">
+    <Visible rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+    >true</Visible>
+    <rdfs:domain rdf:resource="#Organizacion"/>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#int"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
+    <NombreReal xml:lang="es">Número de empleados de la organización</NombreReal>
+  </owl:FunctionalProperty>
+  <owl:FunctionalProperty rdf:ID="CnaeID">
+    <NombreReal xml:lang="es">CnaeID</NombreReal>
+    <rdfs:domain rdf:resource="#EventoExpLaboral"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+  </owl:FunctionalProperty>
+  <owl:FunctionalProperty rdf:ID="person_sem_cv">
+    <Visible rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+    >true</Visible>
+    <rdfs:range rdf:resource="#SemanticCv"/>
+    <NombreReal xml:lang="es">Currículum</NombreReal>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#ObjectProperty"/>
+    <rdfs:domain rdf:resource="http://xmlns.com/foaf/0.1/Person"/>
+  </owl:FunctionalProperty>
+  <owl:FunctionalProperty rdf:ID="CPTrabajo">
+    <rdfs:domain>
+      <owl:Class>
+        <owl:unionOf rdf:parseType="Collection">
+          <owl:Class rdf:about="#PersonaVinculoOrganizacion"/>
+          <owl:Class rdf:about="#DatosTrabajoPersonaLibre"/>
+        </owl:unionOf>
+      </owl:Class>
+    </rdfs:domain>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
+    <NombreReal xml:lang="es">CP del trabajo</NombreReal>
+    <Visible rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+    >true</Visible>
+  </owl:FunctionalProperty>
+  <owl:FunctionalProperty rdf:ID="has_career_goals">
+    <rdfs:domain rdf:resource="#PersonCv"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
+    <NombreReal xml:lang="es">Objetivos Profesionales</NombreReal>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+  </owl:FunctionalProperty>
+  <owl:FunctionalProperty rdf:ID="EstadoLaboral">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    <NombreReal xml:lang="es">Estado Laboral</NombreReal>
+  </owl:FunctionalProperty>
+  <owl:FunctionalProperty rdf:ID="TituloArticulo">
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    <rdfs:domain rdf:resource="#EventoArticuloRevista"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
+    <NombreReal xml:lang="es">TituloArticulo</NombreReal>
+  </owl:FunctionalProperty>
+  <owl:FunctionalProperty rdf:ID="FechaCreacion">
+    <rdfs:domain>
+      <owl:Class>
+        <owl:unionOf rdf:parseType="Collection">
+          <owl:Class rdf:about="#PersonalizacionCurriculum"/>
+          <owl:Class rdf:about="#Organizacion"/>
+          <owl:Class rdf:about="#EntradaBlog"/>
+          <owl:Class rdf:about="#Dafo"/>
+        </owl:unionOf>
+      </owl:Class>
+    </rdfs:domain>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#date"/>
+    <NombreReal rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >FechaCreacion</NombreReal>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
+  </owl:FunctionalProperty>
+  <owl:FunctionalProperty rdf:ID="TipoFactor">
+    <Visible rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+    >false</Visible>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#int"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
+    <rdfs:domain rdf:resource="#Factor"/>
+    <NombreReal rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Tipo</NombreReal>
+  </owl:FunctionalProperty>
+  <owl:FunctionalProperty rdf:ID="Apellidos">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
+    <rdfs:domain rdf:resource="#Persona"/>
+    <Visible rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+    >false</Visible>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    <NombreReal xml:lang="es">TelefonoContacto</NombreReal>
+  </owl:FunctionalProperty>
+  <owl:FunctionalProperty rdf:ID="Numero">
+    <rdfs:domain rdf:resource="#EventoArticuloRevista"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#int"/>
+    <NombreReal xml:lang="es">numero</NombreReal>
+  </owl:FunctionalProperty>
+  <owl:FunctionalProperty rdf:ID="ValorMedioVotacion">
+    <rdfs:domain rdf:resource="#Factor"/>
+    <NombreReal xml:lang="es">Valor Medio de las Votaciones</NombreReal>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#float"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
+    <Visible rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+    >false</Visible>
+  </owl:FunctionalProperty>
+  <owl:FunctionalProperty rdf:ID="TipoSubEstructura">
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    <NombreReal xml:lang="es">Tipo de subestructura</NombreReal>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
+    <Visible rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+    >true</Visible>
+    <rdfs:domain rdf:resource="#SubEstructura"/>
+  </owl:FunctionalProperty>
+  <owl:FunctionalProperty rdf:ID="CurriculumID">
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    <NombreReal xml:lang="es">CurriculumID</NombreReal>
+    <rdfs:domain rdf:resource="#Evento"/>
+    <Visible rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+    >false</Visible>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
+  </owl:FunctionalProperty>
+  <owl:FunctionalProperty rdf:ID="ApellidosDoctorando">
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
+    <rdfs:domain rdf:resource="#EventoTesis"/>
+    <NombreReal xml:lang="es">Apellidos Doctorando</NombreReal>
+  </owl:FunctionalProperty>
+  <owl:FunctionalProperty rdf:ID="Padre">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#ObjectProperty"/>
+    <rdfs:domain rdf:resource="#EntidadExportable"/>
+    <Visible rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+    >false</Visible>
+    <rdfs:range rdf:resource="#EntidadExportable"/>
+    <NombreReal xml:lang="es">Padre</NombreReal>
+  </owl:FunctionalProperty>
+  <owl:FunctionalProperty rdf:ID="Fecha">
+    <Visible rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+    >false</Visible>
+    <rdfs:domain>
+      <owl:Class>
+        <owl:unionOf rdf:parseType="Collection">
+          <owl:Class rdf:about="#Factor"/>
+          <owl:Class rdf:about="#Comentario"/>
+          <owl:Class rdf:about="#EventoArticuloRevista"/>
+          <owl:Class rdf:about="#EventoPatente"/>
+          <owl:Class rdf:about="#Blog"/>
+        </owl:unionOf>
+      </owl:Class>
+    </rdfs:domain>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#dateTime"/>
+    <NombreReal xml:lang="es">Fecha</NombreReal>
+  </owl:FunctionalProperty>
+  <owl:FunctionalProperty rdf:ID="PaisEstanciaID">
+    <rdfs:domain rdf:resource="#EventoEstanciaExtranjero"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
+    <NombreReal rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    ></NombreReal>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+  </owl:FunctionalProperty>
+  <owl:FunctionalProperty rdf:ID="Ciudad">
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
+    <NombreReal xml:lang="es">Ciudad</NombreReal>
+    <rdfs:domain rdf:resource="#EventoEstanciaExtranjero"/>
+  </owl:FunctionalProperty>
+  <owl:FunctionalProperty rdf:ID="LocalidadTrabajo">
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    <rdfs:domain>
+      <owl:Class>
+        <owl:unionOf rdf:parseType="Collection">
+          <owl:Class rdf:about="#PersonaVinculoOrganizacion"/>
+          <owl:Class rdf:about="#DatosTrabajoPersonaLibre"/>
+        </owl:unionOf>
+      </owl:Class>
+    </rdfs:domain>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
+    <NombreReal xml:lang="es">Localidad del trabajo</NombreReal>
+    <Visible rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+    >true</Visible>
+  </owl:FunctionalProperty>
+  <owl:FunctionalProperty rdf:ID="Título">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+  </owl:FunctionalProperty>
+  <owl:FunctionalProperty rdf:ID="Predeterminado">
+    <rdfs:domain rdf:resource="#NivelPrioridad"/>
+    <NombreReal xml:lang="es">Predeterminado</NombreReal>
+    <Visible rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+    >false</Visible>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#boolean"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
+  </owl:FunctionalProperty>
+  <owl:FunctionalProperty rdf:ID="CPPersonal">
+    <NombreReal xml:lang="es">CP</NombreReal>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
+    <Visible rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+    >false</Visible>
+    <rdfs:domain rdf:resource="#Persona"/>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+  </owl:FunctionalProperty>
+  <owl:FunctionalProperty rdf:ID="Logotipo">
+    <Visible rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+    >true</Visible>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    <NombreReal xml:lang="es">Logotipo de la organización</NombreReal>
+    <rdfs:domain rdf:resource="#Organizacion"/>
+  </owl:FunctionalProperty>
+  <owl:FunctionalProperty rdf:ID="PermiteColaboradores">
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#boolean"/>
+    <NombreReal xml:lang="es">Permite colaboradores externas</NombreReal>
+    <rdfs:domain rdf:resource="#SubEstructura"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
+    <Visible rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+    >true</Visible>
+  </owl:FunctionalProperty>
+  <owl:FunctionalProperty rdf:ID="PemiteSubContratas">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
+    <Visible rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+    >true</Visible>
+    <NombreReal xml:lang="es">Permite subcontratas</NombreReal>
+    <rdfs:domain rdf:resource="#SubEstructura"/>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#boolean"/>
+  </owl:FunctionalProperty>
+  <owl:FunctionalProperty rdf:ID="TipoForma">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
+    <Visible rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+    >false</Visible>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#int"/>
+    <rdfs:domain rdf:resource="#Forma"/>
+    <NombreReal rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    ></NombreReal>
+  </owl:FunctionalProperty>
+  <owl:FunctionalProperty rdf:ID="TelefonoMovil">
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
+    <Visible rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+    >false</Visible>
+    <NombreReal xml:lang="es">Teléfono móvil</NombreReal>
+  </owl:FunctionalProperty>
+  <owl:FunctionalProperty rdf:ID="Meta">
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#int"/>
+    <NombreReal xml:lang="es">Meta</NombreReal>
+    <Visible rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+    >false</Visible>
+    <rdfs:domain>
+      <owl:Class>
+        <owl:unionOf rdf:parseType="Collection">
+          <owl:Class rdf:about="#MetaAsignadaElementoEstructura"/>
+          <owl:Class rdf:about="#EventoCompetencia"/>
+        </owl:unionOf>
+      </owl:Class>
+    </rdfs:domain>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
+  </owl:FunctionalProperty>
+  <owl:FunctionalProperty rdf:ID="Nivel">
+    <rdfs:domain>
+      <owl:Class>
+        <owl:unionOf rdf:parseType="Collection">
+          <owl:Class rdf:about="#Competencia"/>
+          <owl:Class rdf:about="#ElementoNivelModo"/>
+          <owl:Class rdf:about="#ModoLibro"/>
+          <owl:Class rdf:about="#NivelLibro"/>
+          <owl:Class rdf:about="#Libro"/>
+          <owl:Class rdf:about="#NivelModo"/>
+        </owl:unionOf>
+      </owl:Class>
+    </rdfs:domain>
+    <NombreReal xml:lang="es">Niveles</NombreReal>
+    <rdfs:range rdf:resource="#EntidadExportable"/>
+    <Visible rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+    >false</Visible>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#ObjectProperty"/>
+  </owl:FunctionalProperty>
+  <owl:FunctionalProperty rdf:ID="UmbralDetEstrategicas">
+    <rdfs:domain rdf:resource="#Proyecto"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
+    <NombreReal xml:lang="es">Umbral de Determinacion de Estrategicas</NombreReal>
+    <Visible rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+    >false</Visible>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#int"/>
+  </owl:FunctionalProperty>
+  <owl:FunctionalProperty rdf:ID="ProyectoID">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
+    <Visible rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+    >true</Visible>
+    <NombreReal xml:lang="es">Identificador del proyecto</NombreReal>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+  </owl:FunctionalProperty>
+  <owl:FunctionalProperty rdf:ID="Bocetada">
+    <NombreReal xml:lang="es">Bocetada</NombreReal>
+    <rdfs:domain rdf:resource="#MetaAsignadaElementoEstructura"/>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#boolean"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
+    <Visible rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+    >false</Visible>
+  </owl:FunctionalProperty>
+  <owl:FunctionalProperty rdf:ID="FechaNacimiento">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#dateTime"/>
+    <Visible rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+    >false</Visible>
+    <NombreReal xml:lang="es">Fecha de Nacimiento</NombreReal>
+    <rdfs:domain rdf:resource="#Persona"/>
+  </owl:FunctionalProperty>
+  <owl:FunctionalProperty rdf:ID="NivelEscrito">
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#int"/>
+    <rdfs:domain rdf:resource="#EventoIdioma"/>
+    <Visible rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+    >false</Visible>
+    <NombreReal rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >NivelEscrito</NombreReal>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
+  </owl:FunctionalProperty>
+  <owl:FunctionalProperty rdf:ID="has_cv">
+    <rdfs:range rdf:resource="#PersonCv"/>
+    <rdfs:domain rdf:resource="http://xmlns.com/foaf/0.1/Person"/>
+    <rdfs:domain rdf:resource="#PerfilPersona"/>
+    <NombreReal xml:lang="es">Currículum</NombreReal>
+    <Visible rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+    >true</Visible>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#ObjectProperty"/>
+  </owl:FunctionalProperty>
+  <owl:FunctionalProperty rdf:ID="NSS">
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    <Visible rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+    >false</Visible>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
+    <NombreReal xml:lang="es">Número de la seguridad social</NombreReal>
+  </owl:FunctionalProperty>
+  <owl:FunctionalProperty rdf:ID="Personas">
+    <rdfs:domain rdf:resource="#Ocupacion"/>
+    <rdfs:range rdf:resource="#Persona"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#ObjectProperty"/>
+    <Visible rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+    >false</Visible>
+    <NombreReal xml:lang="es">Participantes de la figura</NombreReal>
+  </owl:FunctionalProperty>
+  <owl:FunctionalProperty rdf:ID="CategoriaDocumentacionVinculada">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#ObjectProperty"/>
+    <NombreReal xml:lang="es">Categoría de documentación</NombreReal>
+    <rdfs:range rdf:resource="#CategoriaDocumentacion"/>
+    <rdfs:domain rdf:resource="#DocumentoEntidad"/>
+    <Visible rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+    >false</Visible>
+  </owl:FunctionalProperty>
+  <owl:FunctionalProperty rdf:ID="ModoPersonal">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
+    <rdfs:domain rdf:resource="#Organizacion"/>
+    <Visible rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+    >true</Visible>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#boolean"/>
+    <NombreReal xml:lang="es">Indica si la organización trabaja en modo personal</NombreReal>
+  </owl:FunctionalProperty>
+  <owl:FunctionalProperty rdf:ID="TipoVisibilidad">
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#int"/>
+    <NombreReal xml:lang="es">TipoVisibilidad</NombreReal>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
+  </owl:FunctionalProperty>
+  <owl:FunctionalProperty rdf:ID="Universidad">
+    <NombreReal xml:lang="es">Universidad</NombreReal>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
+    <rdfs:domain>
+      <owl:Class>
+        <owl:unionOf rdf:parseType="Collection">
+          <owl:Class rdf:about="#EventoProyectoFC"/>
+          <owl:Class rdf:about="#EventoTesis"/>
+        </owl:unionOf>
+      </owl:Class>
+    </rdfs:domain>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+  </owl:FunctionalProperty>
+  <owl:FunctionalProperty rdf:ID="Cuantia">
+    <Visible rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+    >false</Visible>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#float"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
+    <rdfs:domain>
+      <owl:Class>
+        <owl:unionOf rdf:parseType="Collection">
+          <owl:Class rdf:about="#EventoProyecto"/>
+          <owl:Class rdf:about="#EventoContratoIDi"/>
+        </owl:unionOf>
+      </owl:Class>
+    </rdfs:domain>
+    <NombreReal xml:lang="es">Cuantia</NombreReal>
+  </owl:FunctionalProperty>
+  <owl:FunctionalProperty rdf:ID="TipoContratoID">
+    <Visible rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+    >true</Visible>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
+    <NombreReal xml:lang="es">Tipo de contrato</NombreReal>
+    <rdfs:domain rdf:resource="#PersonaVinculoOrganizacion"/>
+  </owl:FunctionalProperty>
+  <owl:FunctionalProperty rdf:ID="TesauroWiki">
+    <Visible rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+    >true</Visible>
+    <rdfs:range rdf:resource="#Tesauro"/>
+    <rdfs:domain rdf:resource="#Wiki"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#ObjectProperty"/>
+    <NombreReal xml:lang="es">Tesauro</NombreReal>
+  </owl:FunctionalProperty>
+  <owl:FunctionalProperty rdf:ID="NombreCorto">
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    <NombreReal xml:lang="es">Nombre corto</NombreReal>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
+    <Visible rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+    >false</Visible>
+  </owl:FunctionalProperty>
+  <owl:FunctionalProperty rdf:ID="Curso">
+    <rdfs:domain rdf:resource="#EventoDocencia"/>
+    <NombreReal xml:lang="es">Curso</NombreReal>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+  </owl:FunctionalProperty>
+  <owl:FunctionalProperty rdf:ID="NombrePersona">
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
+    <rdfs:domain rdf:resource="#PersonaReferencia"/>
+    <NombreReal xml:lang="es">Nombre Persona</NombreReal>
+  </owl:FunctionalProperty>
+  <owl:FunctionalProperty rdf:ID="TelefonoMovilTrabajo">
+    <NombreReal xml:lang="es">Teléfono móvil del trabajo</NombreReal>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    <rdfs:domain>
+      <owl:Class>
+        <owl:unionOf rdf:parseType="Collection">
+          <owl:Class rdf:about="#PersonaVinculoOrganizacion"/>
+          <owl:Class rdf:about="#DatosTrabajoPersonaLibre"/>
+        </owl:unionOf>
+      </owl:Class>
+    </rdfs:domain>
+    <Visible rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+    >true</Visible>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
+  </owl:FunctionalProperty>
+  <owl:FunctionalProperty rdf:ID="Provincia">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
+    <rdfs:domain rdf:resource="#Organizacion"/>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    <Visible rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+    >false</Visible>
+    <NombreReal xml:lang="es">Provincia</NombreReal>
+  </owl:FunctionalProperty>
+  <owl:FunctionalProperty rdf:ID="TuneladaFin">
+    <rdfs:domain rdf:resource="#ElementoIDEF0"/>
+    <Visible rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+    >false</Visible>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#boolean"/>
+    <NombreReal xml:lang="es">Esta tunelada fin</NombreReal>
+  </owl:FunctionalProperty>
+  <owl:FunctionalProperty rdf:ID="NivelDedicacion">
+    <NombreReal xml:lang="es">Nivel Dedicacion</NombreReal>
+    <Visible rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+    >false</Visible>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#int"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
+    <rdfs:domain>
+      <owl:Class>
+        <owl:unionOf rdf:parseType="Collection">
+          <owl:Class rdf:about="#EventoProyecto"/>
+          <owl:Class rdf:about="#EventoContratoIDi"/>
+        </owl:unionOf>
+      </owl:Class>
+    </rdfs:domain>
+  </owl:FunctionalProperty>
+  <owl:FunctionalProperty rdf:ID="CuestionesGenerales">
+    <rdfs:domain rdf:resource="#Proyecto"/>
+    <Visible rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+    >false</Visible>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
+    <NombreReal xml:lang="es">Cuestiones Generales</NombreReal>
+  </owl:FunctionalProperty>
+  <owl:FunctionalProperty rdf:ID="NivelHablado">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#int"/>
+    <Visible rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+    >false</Visible>
+    <NombreReal xml:lang="es">Nivel Hablado</NombreReal>
+    <rdfs:domain rdf:resource="#EventoIdioma"/>
+  </owl:FunctionalProperty>
+  <owl:FunctionalProperty rdf:ID="Departamento">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
+    <NombreReal xml:lang="es">Departamento</NombreReal>
+    <rdfs:domain rdf:resource="#EventoPuestoDocente"/>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+  </owl:FunctionalProperty>
+  <owl:FunctionalProperty rdf:ID="NumPersonasParticipantes">
+    <rdfs:domain>
+      <owl:Class>
+        <owl:unionOf rdf:parseType="Collection">
+          <owl:Class rdf:about="#EventoProyecto"/>
+          <owl:Class rdf:about="#EventoContratoIDi"/>
+        </owl:unionOf>
+      </owl:Class>
+    </rdfs:domain>
+    <NombreReal xml:lang="es">Numero de  Personas Participantes</NombreReal>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
+    <Visible rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+    >false</Visible>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#int"/>
+  </owl:FunctionalProperty>
+  <owl:FunctionalProperty rdf:ID="Institucion">
+    <rdfs:domain rdf:resource="#EventoEstanciaExtranjero"/>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    <NombreReal xml:lang="es">Institucion</NombreReal>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
+  </owl:FunctionalProperty>
+  <owl:FunctionalProperty rdf:ID="TituloCongreso">
+    <NombreReal xml:lang="es">TituloPonencia</NombreReal>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    <rdfs:domain rdf:resource="#EventoComunicacionCongreso"/>
+  </owl:FunctionalProperty>
+  <owl:FunctionalProperty rdf:ID="DireccionOrganizacion">
+    <rdfs:domain rdf:resource="#PersonaReferencia"/>
+    <NombreReal xml:lang="es">DireccionOrganizacion</NombreReal>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
+  </owl:FunctionalProperty>
+  <owl:FunctionalProperty rdf:ID="EntidadFinanciadora">
+    <Visible rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+    >false</Visible>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
+    <NombreReal xml:lang="es">EntidadFinanciadora</NombreReal>
+    <rdfs:domain rdf:resource="#EventoProyecto"/>
+  </owl:FunctionalProperty>
+  <owl:FunctionalProperty rdf:ID="NombrePerfil">
+    <Visible rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+    >false</Visible>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
+    <NombreReal xml:lang="es">Nombre</NombreReal>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    <rdfs:domain rdf:resource="#PerfilPersona"/>
+  </owl:FunctionalProperty>
+  <owl:FunctionalProperty rdf:ID="CuestionesOportunidades">
+    <rdfs:domain rdf:resource="#Proyecto"/>
+    <Visible rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+    >false</Visible>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    <NombreReal xml:lang="es">Cuestiones Oportunidades</NombreReal>
+  </owl:FunctionalProperty>
+  <owl:FunctionalProperty rdf:ID="AutorPublicacon">
+    <Visible rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+    >true</Visible>
+    <NombreReal xml:lang="es">Autor</NombreReal>
+    <rdfs:domain rdf:resource="#EventoArticuloRevista"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#ObjectProperty"/>
+  </owl:FunctionalProperty>
+  <owl:FunctionalProperty rdf:ID="TipoMetaEstructura">
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    <Visible rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+    >false</Visible>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
+    <NombreReal xml:lang="es">Tipo de meta estructura</NombreReal>
+    <rdfs:domain rdf:resource="#MetaEstructura"/>
+  </owl:FunctionalProperty>
+  <owl:FunctionalProperty rdf:ID="TipoPromocion">
+    <rdfs:domain rdf:resource="#EventoPromocionEmpresa"/>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#int"/>
+    <NombreReal xml:lang="es">TipoPromocion</NombreReal>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
+  </owl:FunctionalProperty>
+  <owl:FunctionalProperty rdf:ID="LocalidadPersonal">
+    <NombreReal xml:lang="es">Localidad</NombreReal>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    <Visible rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+    >false</Visible>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
+    <rdfs:domain rdf:resource="#Persona"/>
+  </owl:FunctionalProperty>
+  <owl:FunctionalProperty rdf:ID="NumeroRecursos">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
+    <rdfs:domain rdf:resource="#Comunidad"/>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#int"/>
+  </owl:FunctionalProperty>
+  <owl:FunctionalProperty rdf:ID="ParametrosProyecto">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#ObjectProperty"/>
+    <NombreReal xml:lang="es">Parametros</NombreReal>
+    <Visible rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+    >true</Visible>
+  </owl:FunctionalProperty>
+  <owl:FunctionalProperty rdf:ID="ServicioSuscripcionDisponible">
+    <NombreReal xml:lang="es">Servicio Suscripcion Disponible</NombreReal>
+    <Visible rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+    >false</Visible>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#boolean"/>
+    <rdfs:domain rdf:resource="#Proyecto"/>
+  </owl:FunctionalProperty>
+  <owl:FunctionalProperty rdf:ID="CuestionesFortalezas">
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    <Visible rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+    >false</Visible>
+    <rdfs:domain rdf:resource="#Proyecto"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
+    <NombreReal xml:lang="es">Cuestiones Fortalezas</NombreReal>
+  </owl:FunctionalProperty>
+  <owl:FunctionalProperty rdf:ID="Telefono">
+    <NombreReal xml:lang="es">Teléfono</NombreReal>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    <Visible rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+    >false</Visible>
+    <rdfs:domain rdf:resource="#Organizacion"/>
+  </owl:FunctionalProperty>
+  <owl:FunctionalProperty rdf:ID="EsBuscable">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
+    <Visible rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+    >true</Visible>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#boolean"/>
+    <rdfs:domain>
+      <owl:Class>
+        <owl:unionOf rdf:parseType="Collection">
+          <owl:Class rdf:about="#Persona"/>
+          <owl:Class rdf:about="#Organizacion"/>
+        </owl:unionOf>
+      </owl:Class>
+    </rdfs:domain>
+    <NombreReal xml:lang="es">Es buscable</NombreReal>
+  </owl:FunctionalProperty>
+  <owl:FunctionalProperty rdf:ID="organization_history">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    <Visible rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+    >false</Visible>
+    <rdfs:domain rdf:resource="#OrganizationCv"/>
+    <NombreReal xml:lang="es">Trayectoria</NombreReal>
+  </owl:FunctionalProperty>
+  <owl:FunctionalProperty rdf:ID="NumPersonasCargo">
+    <rdfs:domain>
+      <owl:Class>
+        <owl:unionOf rdf:parseType="Collection">
+          <owl:Class rdf:about="#EventoContratoIDi"/>
+          <owl:Class rdf:about="#EventoPuestoExpLab"/>
+        </owl:unionOf>
+      </owl:Class>
+    </rdfs:domain>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
+    <NombreReal xml:lang="es">Numero Personas Cargo</NombreReal>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#int"/>
+  </owl:FunctionalProperty>
+  <owl:FunctionalProperty rdf:ID="Escala">
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#short"/>
+    <Visible rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+    >false</Visible>
+    <NombreReal xml:lang="es">Escala</NombreReal>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
+    <rdfs:domain rdf:resource="#EscalaMetas"/>
+  </owl:FunctionalProperty>
+  <owl:FunctionalProperty rdf:ID="Centro">
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    <rdfs:domain>
+      <owl:Class>
+        <owl:unionOf rdf:parseType="Collection">
+          <owl:Class rdf:about="#EventoIdiomaEstExt"/>
+          <owl:Class rdf:about="#EventoPuestoDocente"/>
+        </owl:unionOf>
+      </owl:Class>
+    </rdfs:domain>
+    <NombreReal xml:lang="es">Centro</NombreReal>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
+  </owl:FunctionalProperty>
+  <owl:FunctionalProperty rdf:ID="ProvinciaPersonalID">
+    <NombreReal xml:lang="es">ProvinciaPersonalID</NombreReal>
+    <rdfs:domain rdf:resource="#Persona"/>
+    <Visible rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+    >false</Visible>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
+  </owl:FunctionalProperty>
+  <owl:FunctionalProperty rdf:ID="IntroduccionFortalezas">
+    <rdfs:domain rdf:resource="#Dafo"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+  </owl:FunctionalProperty>
+  <owl:FunctionalProperty rdf:ID="LogrosAlcanzados">
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
+    <rdfs:domain rdf:resource="#EventoPuestoExpLab"/>
+    <NombreReal xml:lang="es">Logros Alcanzados</NombreReal>
+  </owl:FunctionalProperty>
+  <owl:FunctionalProperty rdf:ID="EsContacto">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#boolean"/>
+    <NombreReal xml:lang="es">Es contacto</NombreReal>
+    <Visible rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+    >false</Visible>
+  </owl:FunctionalProperty>
+  <owl:FunctionalProperty rdf:ID="EmailPersonal">
+    <Visible rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+    >false</Visible>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    <NombreReal xml:lang="es">Email</NombreReal>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
+  </owl:FunctionalProperty>
+  <owl:FunctionalProperty rdf:ID="email">
+    <NombreReal xml:lang="es">Email</NombreReal>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
+  </owl:FunctionalProperty>
+  <owl:FunctionalProperty rdf:ID="FechaDefensa">
+    <NombreReal xml:lang="es">FechaDefensa</NombreReal>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
+    <rdfs:domain>
+      <owl:Class>
+        <owl:unionOf rdf:parseType="Collection">
+          <owl:Class rdf:about="#EventoProyectoFC"/>
+          <owl:Class rdf:about="#EventoTesis"/>
+        </owl:unionOf>
+      </owl:Class>
+    </rdfs:domain>
+  </owl:FunctionalProperty>
+  <owl:FunctionalProperty rdf:ID="UsaDatosPersonalesPerfil">
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#boolean"/>
+    <NombreReal xml:lang="es">Usa Datos Personales Perfil</NombreReal>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
+  </owl:FunctionalProperty>
+  <owl:FunctionalProperty rdf:ID="Horas">
+    <rdfs:domain>
+      <owl:Class>
+        <owl:unionOf rdf:parseType="Collection">
+          <owl:Class rdf:about="#EventoAccionFormativa"/>
+          <owl:Class rdf:about="#EventoPuestoDocente"/>
+          <owl:Class rdf:about="#EventoFormacion"/>
+        </owl:unionOf>
+      </owl:Class>
+    </rdfs:domain>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
+    <NombreReal xml:lang="es">Horas</NombreReal>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#int"/>
+  </owl:FunctionalProperty>
+  <owl:FunctionalProperty rdf:ID="VisibilidadDafo">
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#boolean"/>
+    <Visible rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+    >false</Visible>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
+    <NombreReal xml:lang="es">Visible Dafo</NombreReal>
+    <rdfs:domain rdf:resource="#Dafo"/>
+  </owl:FunctionalProperty>
+  <owl:FunctionalProperty rdf:ID="UmbralDetEstrategicasPersonas">
+    <rdfs:domain rdf:resource="#Proyecto"/>
+    <Visible rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+    >false</Visible>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#int"/>
+    <NombreReal xml:lang="es">Umbral de Determinacion de Estrategicas por Persona</NombreReal>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
+  </owl:FunctionalProperty>
+  <owl:FunctionalProperty rdf:ID="EstadoCivilID">
+    <rdfs:domain rdf:resource="#Persona"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
+    <NombreReal xml:lang="es">Estado civil</NombreReal>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    <Visible rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+    >true</Visible>
+  </owl:FunctionalProperty>
+  <owl:FunctionalProperty rdf:ID="TipoActividad">
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    <rdfs:domain>
+      <owl:Class>
+        <owl:unionOf rdf:parseType="Collection">
+          <owl:Class rdf:about="#EventoGestionID"/>
+          <owl:Class rdf:about="#EventoActiividadID"/>
+        </owl:unionOf>
+      </owl:Class>
+    </rdfs:domain>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
+    <NombreReal xml:lang="es">TipoActividad</NombreReal>
+  </owl:FunctionalProperty>
+  <owl:FunctionalProperty rdf:ID="ComprensionEscrita">
+    <NombreReal xml:lang="es">Comprension Escrita</NombreReal>
+    <Visible rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+    >false</Visible>
+    <rdfs:domain rdf:resource="#EventoIdioma"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#int"/>
+  </owl:FunctionalProperty>
+  <owl:FunctionalProperty rdf:ID="FechaInicioVotacion">
+    <rdfs:domain rdf:resource="#Dafo"/>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#dateTime"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
+  </owl:FunctionalProperty>
+  <owl:FunctionalProperty rdf:ID="Empresa">
+    <rdfs:domain>
+      <owl:Class>
+        <owl:unionOf rdf:parseType="Collection">
+          <owl:Class rdf:about="#EventoContratoIDi"/>
+          <owl:Class rdf:about="#EventoAccionFormativa"/>
+          <owl:Class rdf:about="#EventoPuestoDocente"/>
+        </owl:unionOf>
+      </owl:Class>
+    </rdfs:domain>
+    <NombreReal xml:lang="es">Empresa</NombreReal>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
+  </owl:FunctionalProperty>
+  <owl:FunctionalProperty rdf:ID="has_interest">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
+    <rdfs:domain rdf:resource="#PersonCv"/>
+    <NombreReal xml:lang="es">Me interesa</NombreReal>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    <Visible rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+    >false</Visible>
+  </owl:FunctionalProperty>
+  <owl:FunctionalProperty rdf:ID="CuestionesDebilidades">
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
+    <NombreReal xml:lang="es">Cuestiones Debilidades</NombreReal>
+    <rdfs:domain rdf:resource="#Proyecto"/>
+    <Visible rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+    >false</Visible>
+  </owl:FunctionalProperty>
+  <owl:FunctionalProperty rdf:ID="FechaVinculacion">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
+    <Visible rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+    >true</Visible>
+    <rdfs:domain rdf:resource="#PersonaVinculoOrganizacion"/>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#dateTime"/>
+    <NombreReal xml:lang="es">Fecha de vinculación a la organización</NombreReal>
+  </owl:FunctionalProperty>
+  <owl:FunctionalProperty rdf:ID="Direccion">
+    <rdfs:domain rdf:resource="#Organizacion"/>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    <Visible rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+    >false</Visible>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
+    <NombreReal xml:lang="es">Direccion</NombreReal>
+  </owl:FunctionalProperty>
+  <owl:FunctionalProperty rdf:ID="CP">
+    <rdfs:domain rdf:resource="#Organizacion"/>
+    <NombreReal xml:lang="es">Código postal</NombreReal>
+    <Visible rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+    >false</Visible>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
+  </owl:FunctionalProperty>
+  <owl:FunctionalProperty rdf:ID="TesauroProyecto">
+    <NombreReal xml:lang="es">Tesauro</NombreReal>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#ObjectProperty"/>
+    <Visible rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+    >true</Visible>
+  </owl:FunctionalProperty>
+  <owl:FunctionalProperty rdf:ID="Alianzas">
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
+    <NombreReal xml:lang="es">Alianzas</NombreReal>
+    <rdfs:domain rdf:resource="#EventoProyecto"/>
+    <Visible rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+    >false</Visible>
+  </owl:FunctionalProperty>
+  <owl:FunctionalProperty rdf:ID="NombreEmpresa">
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
+    <rdfs:domain>
+      <owl:Class>
+        <owl:unionOf rdf:parseType="Collection">
+          <owl:Class rdf:about="#EventoPromocionEmpresa"/>
+          <owl:Class rdf:about="#EventoExpLaboral"/>
+        </owl:unionOf>
+      </owl:Class>
+    </rdfs:domain>
+    <NombreReal xml:lang="es">NombreEmpresa</NombreReal>
+  </owl:FunctionalProperty>
+  <owl:FunctionalProperty rdf:ID="NormaISO">
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    <rdfs:domain rdf:resource="#Proceso"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
+    <NombreReal xml:lang="es">NormaISO</NombreReal>
+    <Visible rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+    >false</Visible>
+  </owl:FunctionalProperty>
+  <owl:FunctionalProperty rdf:ID="PermiteProveedores">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
+    <Visible rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+    >true</Visible>
+    <rdfs:domain rdf:resource="#SubEstructura"/>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#boolean"/>
+    <NombreReal xml:lang="es">Permite proveedores</NombreReal>
+  </owl:FunctionalProperty>
+  <owl:FunctionalProperty rdf:ID="Hijos">
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#int"/>
+    <NombreReal xml:lang="es">Número de hijos</NombreReal>
+    <Visible rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+    >true</Visible>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
+    <rdfs:domain rdf:resource="#Persona"/>
+  </owl:FunctionalProperty>
+  <owl:FunctionalProperty rdf:ID="TuneladaInicio">
+    <rdfs:domain rdf:resource="#ElementoIDEF0"/>
+    <Visible rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+    >false</Visible>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#boolean"/>
+    <NombreReal xml:lang="es">Está tunelada inicio</NombreReal>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
+  </owl:FunctionalProperty>
+  <owl:FunctionalProperty rdf:ID="Editorial">
+    <NombreReal xml:lang="es">Editorial</NombreReal>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
+    <rdfs:domain rdf:resource="#EventoLibro"/>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+  </owl:FunctionalProperty>
+  <owl:FunctionalProperty rdf:ID="Revista">
+    <NombreReal xml:lang="es">Revista</NombreReal>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    <rdfs:domain rdf:resource="#EventoArticuloRevista"/>
+  </owl:FunctionalProperty>
+  <owl:FunctionalProperty rdf:ID="tieneAsignadoRecursos">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+  </owl:FunctionalProperty>
+  <owl:FunctionalProperty rdf:ID="current_job">
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
+    <rdfs:domain rdf:resource="#PersonCv"/>
+    <NombreReal xml:lang="es">Ahora soy</NombreReal>
+    <Visible rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+    >false</Visible>
+  </owl:FunctionalProperty>
+  <owl:FunctionalProperty rdf:ID="Voto">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
+    <Visible rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+    >false</Visible>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#int"/>
+    <NombreReal xml:lang="es">voto</NombreReal>
+  </owl:FunctionalProperty>
+  <owl:FunctionalProperty rdf:ID="VisibilidadVotaciones">
+    <rdfs:domain rdf:resource="#Dafo"/>
+    <NombreReal xml:lang="es">Visible Valoraciones</NombreReal>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#boolean"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
+  </owl:FunctionalProperty>
+  <owl:FunctionalProperty rdf:ID="NombreOrganizacion">
+    <rdfs:domain>
+      <owl:Class>
+        <owl:unionOf rdf:parseType="Collection">
+          <owl:Class rdf:about="#PersonaReferencia"/>
+          <owl:Class rdf:about="#PerfilOrganizacion"/>
+          <owl:Class rdf:about="#PerfilPersonaOrg"/>
+        </owl:unionOf>
+      </owl:Class>
+    </rdfs:domain>
+    <NombreReal xml:lang="es">Nombre Organizacion</NombreReal>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
+  </owl:FunctionalProperty>
+  <owl:FunctionalProperty rdf:ID="Salario">
+    <Visible rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+    >false</Visible>
+    <rdfs:domain rdf:resource="#Figura"/>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#float"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
+    <NombreReal xml:lang="es">Salario</NombreReal>
+  </owl:FunctionalProperty>
+  <owl:FunctionalProperty rdf:ID="LibroProyecto">
+    <rdfs:domain rdf:resource="#Proyecto"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#ObjectProperty"/>
+    <rdfs:range rdf:resource="#Libro"/>
+    <Visible rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+    >true</Visible>
+    <NombreReal xml:lang="es">Libro de Competencias</NombreReal>
+  </owl:FunctionalProperty>
+  <owl:FunctionalProperty rdf:ID="CategoriaProfesionalID">
+    <rdfs:domain rdf:resource="#PersonaVinculoOrganizacion"/>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    <Visible rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+    >true</Visible>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
+    <NombreReal xml:lang="es">Categoría profesional</NombreReal>
+  </owl:FunctionalProperty>
+  <owl:FunctionalProperty rdf:ID="Extension">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
+    <rdfs:domain rdf:resource="#PersonaVinculoOrganizacion"/>
+    <NombreReal xml:lang="es">Extenson</NombreReal>
+    <Visible rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+    >false</Visible>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+  </owl:FunctionalProperty>
+  <owl:FunctionalProperty rdf:ID="FechaPublicacion">
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#date"/>
+    <NombreReal xml:lang="es">Fecha Publicacion</NombreReal>
+    <rdfs:domain rdf:resource="#Dafo"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
+  </owl:FunctionalProperty>
+  <owl:FunctionalProperty rdf:ID="UmbralDeterminacionCriticas">
+    <rdfs:domain rdf:resource="#Proyecto"/>
+    <NombreReal xml:lang="es">Umbral de Determinacion de Criticas</NombreReal>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#int"/>
+    <Visible rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+    >false</Visible>
+  </owl:FunctionalProperty>
+  <owl:FunctionalProperty rdf:ID="CentroEstudios">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
+    <NombreReal xml:lang="es">Centro Estudios</NombreReal>
+    <rdfs:domain rdf:resource="#EventoFormacion"/>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+  </owl:FunctionalProperty>
+  <owl:FunctionalProperty rdf:ID="WikiProyecto">
+    <rdfs:domain rdf:resource="#Proyecto"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#ObjectProperty"/>
+    <rdfs:range rdf:resource="#Wiki"/>
+    <Visible rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+    >true</Visible>
+    <NombreReal xml:lang="es">Wiki</NombreReal>
+  </owl:FunctionalProperty>
+  <owl:FunctionalProperty rdf:ID="ProvinciaID">
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    <NombreReal xml:lang="es">ProvinciaID</NombreReal>
+    <rdfs:domain rdf:resource="#Organizacion"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
+    <Visible rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+    >false</Visible>
+  </owl:FunctionalProperty>
+  <owl:FunctionalProperty rdf:ID="SectorOrganizacion">
+    <rdfs:domain rdf:resource="#Organizacion"/>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#int"/>
+    <NombreReal xml:lang="es">Sector al que pertenece la organización</NombreReal>
+    <Visible rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+    >true</Visible>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
+  </owl:FunctionalProperty>
+  <owl:FunctionalProperty rdf:ID="EntidadTitular">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
+    <rdfs:domain rdf:resource="#EventoPatente"/>
+    <NombreReal xml:lang="es">EntidadTitular</NombreReal>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+  </owl:FunctionalProperty>
+  <owl:FunctionalProperty rdf:ID="Observaciones">
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    <rdfs:domain>
+      <owl:Class>
+        <owl:unionOf rdf:parseType="Collection">
+          <owl:Class rdf:about="#Grupo"/>
+          <owl:Class rdf:about="#ElementoIDEF0"/>
+        </owl:unionOf>
+      </owl:Class>
+    </rdfs:domain>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
+    <Visible rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+    >false</Visible>
+    <NombreReal xml:lang="es">Observaciones</NombreReal>
+  </owl:FunctionalProperty>
+  <owl:FunctionalProperty rdf:ID="Certificado">
+    <rdfs:domain rdf:resource="#Proceso"/>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#boolean"/>
+    <NombreReal xml:lang="es">Certificado</NombreReal>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
+    <Visible rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+    >false</Visible>
+  </owl:FunctionalProperty>
+  <owl:FunctionalProperty rdf:ID="Creador">
+    <Visible rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+    >false</Visible>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#ObjectProperty"/>
+    <rdfs:domain>
+      <owl:Class>
+        <owl:unionOf rdf:parseType="Collection">
+          <owl:Class rdf:about="#Comentario"/>
+          <owl:Class rdf:about="#Blog"/>
+          <owl:Class rdf:about="#EntradaBlog"/>
+          <owl:Class rdf:about="#Dafo"/>
+          <owl:Class rdf:about="#Factor"/>
+        </owl:unionOf>
+      </owl:Class>
+    </rdfs:domain>
+    <NombreReal xml:lang="es">Creador</NombreReal>
+    <rdfs:range rdf:resource="#PerfilPersona"/>
+  </owl:FunctionalProperty>
+  <owl:FunctionalProperty rdf:ID="DocumentoVinculado">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#ObjectProperty"/>
+    <rdfs:domain rdf:resource="#DocumentoEntidad"/>
+    <Visible rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+    >false</Visible>
+    <NombreReal xml:lang="es">Documento vinculado</NombreReal>
+    <rdfs:range rdf:resource="http://rdfs.org/sioc/ns#Item"/>
+  </owl:FunctionalProperty>
+  <owl:FunctionalProperty rdf:ID="Fecha_Mala">
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#date"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
+  </owl:FunctionalProperty>
+  <owl:FunctionalProperty rdf:ID="ProvinciaPersonal">
+    <Visible rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+    >false</Visible>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    <rdfs:domain rdf:resource="#Persona"/>
+    <NombreReal rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >ProvinciaPersonal</NombreReal>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
+  </owl:FunctionalProperty>
+  <owl:FunctionalProperty rdf:ID="Puesto">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
+    <NombreReal xml:lang="es">Puesto</NombreReal>
+    <rdfs:domain rdf:resource="#EventoPuestoExpLab"/>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+  </owl:FunctionalProperty>
+  <owl:FunctionalProperty rdf:ID="ProvinciaTrabajo">
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
+    <rdfs:domain>
+      <owl:Class>
+        <owl:unionOf rdf:parseType="Collection">
+          <owl:Class rdf:about="#PersonaVinculoOrganizacion"/>
+          <owl:Class rdf:about="#DatosTrabajoPersonaLibre"/>
+        </owl:unionOf>
+      </owl:Class>
+    </rdfs:domain>
+    <NombreReal xml:lang="es">Nombre de la provincia de trabajo</NombreReal>
+    <Visible rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+    >true</Visible>
+  </owl:FunctionalProperty>
+  <owl:FunctionalProperty rdf:ID="Año">
+    <rdfs:domain rdf:resource="#EventoLibro"/>
+    <NombreReal xml:lang="es">Año</NombreReal>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#int"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
+  </owl:FunctionalProperty>
+  <owl:FunctionalProperty rdf:ID="TipoAcceso">
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#int"/>
+    <rdfs:domain rdf:resource="#Comunidad"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
+  </owl:FunctionalProperty>
+  <owl:FunctionalProperty rdf:ID="Programa">
+    <NombreReal xml:lang="es">Programa</NombreReal>
+    <rdfs:domain rdf:resource="#EventoDocencia"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+  </owl:FunctionalProperty>
+  <owl:FunctionalProperty rdf:ID="TelefonoPersonal">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    <Visible rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+    >false</Visible>
+    <rdfs:domain rdf:resource="#Persona"/>
+    <NombreReal xml:lang="es">Telefono</NombreReal>
+  </owl:FunctionalProperty>
+  <owl:FunctionalProperty rdf:ID="Figuras">
+    <rdfs:range rdf:resource="#Figura"/>
+    <Visible rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+    >true</Visible>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#ObjectProperty"/>
+    <rdfs:domain rdf:resource="#Ocupacion"/>
+    <NombreReal xml:lang="es">Figura</NombreReal>
+  </owl:FunctionalProperty>
+  <owl:FunctionalProperty rdf:ID="CambiosDesdeNorma">
+    <rdfs:domain rdf:resource="#Proceso"/>
+    <Visible rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+    >false</Visible>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    <NombreReal xml:lang="es">Cambios Desde Norma</NombreReal>
+  </owl:FunctionalProperty>
+  <owl:FunctionalProperty rdf:ID="ProvinciaTrabajoID">
+    <Visible rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+    >true</Visible>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    <NombreReal rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    ></NombreReal>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
+    <rdfs:domain>
+      <owl:Class>
+        <owl:unionOf rdf:parseType="Collection">
+          <owl:Class rdf:about="#PersonaVinculoOrganizacion"/>
+          <owl:Class rdf:about="#DatosTrabajoPersonaLibre"/>
+        </owl:unionOf>
+      </owl:Class>
+    </rdfs:domain>
+  </owl:FunctionalProperty>
+  <owl:FunctionalProperty rdf:ID="NIF">
+    <NombreReal xml:lang="es">NIF</NombreReal>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    <Visible rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+    >false</Visible>
+  </owl:FunctionalProperty>
+  <owl:FunctionalProperty rdf:ID="HorasLectivas">
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#int"/>
+    <NombreReal xml:lang="es">Horas Lectivas</NombreReal>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
+    <rdfs:domain rdf:resource="#EventoDocencia"/>
+  </owl:FunctionalProperty>
+  <owl:FunctionalProperty rdf:ID="ProcesoElementoIDEF0">
+    <rdfs:domain rdf:resource="#ElementoIDEF0"/>
+    <NombreReal xml:lang="es">Proceso propietario del elemento idf0</NombreReal>
+    <rdfs:range rdf:resource="#Proceso"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#ObjectProperty"/>
+    <Visible rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+    >false</Visible>
+  </owl:FunctionalProperty>
+  <owl:FunctionalProperty rdf:ID="Localidad">
+    <rdfs:domain rdf:resource="#Organizacion"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
+    <Visible rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+    >false</Visible>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    <NombreReal xml:lang="es">Localidad</NombreReal>
+  </owl:FunctionalProperty>
+  <owl:FunctionalProperty rdf:ID="IntroduccionOportunidades">
+    <rdfs:domain rdf:resource="#Dafo"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+  </owl:FunctionalProperty>
+  <owl:FunctionalProperty rdf:ID="Titulo">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
+    <NombreReal xml:lang="es">Título</NombreReal>
+    <rdfs:domain>
+      <owl:Class>
+        <owl:unionOf rdf:parseType="Collection">
+          <owl:Class rdf:about="#EventoProyectoFC"/>
+          <owl:Class rdf:about="#EventoTesis"/>
+          <owl:Class rdf:about="#EventoAccionFormativa"/>
+          <owl:Class rdf:about="#EventoGestionID"/>
+          <owl:Class rdf:about="#EventoActiividadID"/>
+          <owl:Class rdf:about="#EventoLibro"/>
+          <owl:Class rdf:about="#EventoPatente"/>
+          <owl:Class rdf:about="#PersonalizacionCurriculum"/>
+          <owl:Class rdf:about="#DocumentoEntidad"/>
+          <owl:Class rdf:about="#Blog"/>
+          <owl:Class rdf:about="#EntradaBlog"/>
+        </owl:unionOf>
+      </owl:Class>
+    </rdfs:domain>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    <Visible rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+    >false</Visible>
+  </owl:FunctionalProperty>
+  <owl:FunctionalProperty rdf:ID="Tipo">
+    <rdfs:domain>
+      <owl:Class>
+        <owl:unionOf rdf:parseType="Collection">
+          <owl:Class rdf:about="#TipoGrupo"/>
+          <owl:Class rdf:about="#ElementoIDEF0"/>
+          <owl:Class rdf:about="#EventoComunicacionCongreso"/>
+          <owl:Class rdf:about="#EventoDocencia"/>
+        </owl:unionOf>
+      </owl:Class>
+    </rdfs:domain>
+    <Visible rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+    >false</Visible>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    <NombreReal xml:lang="es">Tipo</NombreReal>
+  </owl:FunctionalProperty>
+  <owl:FunctionalProperty rdf:ID="Area">
+    <NombreReal xml:lang="es">Area</NombreReal>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
+    <rdfs:domain rdf:resource="#EventoPuestoExpLab"/>
+  </owl:FunctionalProperty>
+  <owl:FunctionalProperty rdf:ID="CuestionesAmenazas">
+    <NombreReal xml:lang="es">Cuestiones Amenazas</NombreReal>
+    <rdfs:domain rdf:resource="#Proyecto"/>
+    <Visible rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+    >false</Visible>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+  </owl:FunctionalProperty>
+  <owl:FunctionalProperty rdf:ID="CIF">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
+    <rdfs:domain rdf:resource="#Organizacion"/>
+    <NombreReal xml:lang="es">CIF</NombreReal>
+    <Visible rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+    >true</Visible>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+  </owl:FunctionalProperty>
+  <owl:FunctionalProperty rdf:ID="TelefonoTrabajo">
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
+    <rdfs:domain>
+      <owl:Class>
+        <owl:unionOf rdf:parseType="Collection">
+          <owl:Class rdf:about="#PersonaVinculoOrganizacion"/>
+          <owl:Class rdf:about="#DatosTrabajoPersonaLibre"/>
+        </owl:unionOf>
+      </owl:Class>
+    </rdfs:domain>
+    <Visible rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+    >true</Visible>
+    <NombreReal xml:lang="es">Teléfono del trabajo</NombreReal>
+  </owl:FunctionalProperty>
+  <owl:FunctionalProperty rdf:ID="Profesion">
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    <rdfs:domain rdf:resource="#DatosTrabajoPersonaLibre"/>
+    <Visible rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+    >true</Visible>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
+    <NombreReal xml:lang="es">Profesión</NombreReal>
+  </owl:FunctionalProperty>
+  <owl:FunctionalProperty rdf:ID="Url">
+    <rdfs:domain rdf:resource="#EnlaceBlog"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+  </owl:FunctionalProperty>
+  <owl:FunctionalProperty rdf:ID="OrganizacionDePersona">
+    <Visible rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+    >false</Visible>
+    <rdfs:range rdf:resource="#Organizacion"/>
+    <NombreReal xml:lang="es">Organización de la persona</NombreReal>
+    <rdfs:domain rdf:resource="#PersonaVinculoOrganizacion"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#ObjectProperty"/>
+  </owl:FunctionalProperty>
+  <owl:FunctionalProperty rdf:ID="offers">
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    <NombreReal xml:lang="es">Puedo ofrecer</NombreReal>
+    <Visible rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+    >false</Visible>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
+    <rdfs:domain rdf:resource="#PersonCv"/>
+  </owl:FunctionalProperty>
+  <owl:FunctionalProperty rdf:ID="ColorRGB">
+    <Visible rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+    >false</Visible>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
+    <rdfs:domain>
+      <owl:Class>
+        <owl:unionOf rdf:parseType="Collection">
+          <owl:Class rdf:about="#TipoDimensionCompetencia"/>
+          <owl:Class rdf:about="#NivelLibro"/>
+          <owl:Class rdf:about="#Grupo"/>
+          <owl:Class rdf:about="#TipoGrupo"/>
+          <owl:Class rdf:about="#EscalaMetas"/>
+          <owl:Class rdf:about="#EjeMeta"/>
+          <owl:Class rdf:about="#Forma"/>
+          <owl:Class rdf:about="#NivelModo"/>
+          <owl:Class rdf:about="#MetaAsignadaElementoEstructura"/>
+        </owl:unionOf>
+      </owl:Class>
+    </rdfs:domain>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    <NombreReal xml:lang="es">Color</NombreReal>
+  </owl:FunctionalProperty>
+  <owl:FunctionalProperty rdf:ID="OrganizacionID">
+    <NombreReal xml:lang="es">OrganizacionID</NombreReal>
+    <Visible rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+    >false</Visible>
+    <rdfs:domain rdf:resource="#Ocupacion"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+  </owl:FunctionalProperty>
+  <owl:FunctionalProperty rdf:ID="AvisoLegal">
+    <Visible rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+    >false</Visible>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    <NombreReal xml:lang="es">Aviso Legal</NombreReal>
+    <rdfs:domain rdf:resource="#Proyecto"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
+  </owl:FunctionalProperty>
+  <owl:FunctionalProperty rdf:ID="ValorDocumentoAcreditativo">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    <NombreReal xml:lang="es">Valor del documento acreditativo</NombreReal>
+    <rdfs:domain rdf:resource="#Persona"/>
+    <Visible rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+    >true</Visible>
+  </owl:FunctionalProperty>
+  <owl:FunctionalProperty rdf:ID="PersonaResponsable">
+    <rdfs:domain>
+      <owl:Class>
+        <owl:unionOf rdf:parseType="Collection">
+          <owl:Class rdf:about="#EventoProyecto"/>
+          <owl:Class rdf:about="#EventoContratoIDi"/>
+        </owl:unionOf>
+      </owl:Class>
+    </rdfs:domain>
+    <NombreReal xml:lang="es">Persona Responsable</NombreReal>
+    <Visible rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+    >false</Visible>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
+  </owl:FunctionalProperty>
+  <owl:FunctionalProperty rdf:ID="InvitacionesDisponibles">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
+    <NombreReal xml:lang="es">Invitaciones Disponibles</NombreReal>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#boolean"/>
+    <Visible rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+    >false</Visible>
+    <rdfs:domain rdf:resource="#Proyecto"/>
+  </owl:FunctionalProperty>
+  <owl:FunctionalProperty rdf:ID="FechaFin">
+    <rdfs:domain>
+      <owl:Class>
+        <owl:unionOf rdf:parseType="Collection">
+          <owl:Class rdf:about="#EventoProyecto"/>
+          <owl:Class rdf:about="#EventoIdiomaEstExt"/>
+          <owl:Class rdf:about="#EventoContratoIDi"/>
+          <owl:Class rdf:about="#EventoComunicacionCongreso"/>
+          <owl:Class rdf:about="#EventoAccionFormativa"/>
+          <owl:Class rdf:about="#EventoVidaAsociativa"/>
+          <owl:Class rdf:about="#EventoEstanciaExtranjero"/>
+          <owl:Class rdf:about="#EventoGestionID"/>
+          <owl:Class rdf:about="#EventoActiividadID"/>
+          <owl:Class rdf:about="#EventoPromocionEmpresa"/>
+          <owl:Class rdf:about="#EventoPuestoDocente"/>
+          <owl:Class rdf:about="#EventoFormacion"/>
+          <owl:Class rdf:about="#EventoDocencia"/>
+          <owl:Class rdf:about="#EventoExpLaboral"/>
+          <owl:Class rdf:about="#EventoPuestoExpLab"/>
+        </owl:unionOf>
+      </owl:Class>
+    </rdfs:domain>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#dateTime"/>
+    <NombreReal xml:lang="es">Fecha de Fin</NombreReal>
+    <Visible rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+    >false</Visible>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
+  </owl:FunctionalProperty>
+  <owl:FunctionalProperty rdf:ID="IntroduccionGeneral">
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
+    <rdfs:domain rdf:resource="#Dafo"/>
+  </owl:FunctionalProperty>
+  <owl:FunctionalProperty rdf:ID="Orden">
+    <rdfs:domain>
+      <owl:Class>
+        <owl:unionOf rdf:parseType="Collection">
+          <owl:Class rdf:about="#ElementoEstructura"/>
+          <owl:Class rdf:about="#DimensionCompetencia"/>
+          <owl:Class rdf:about="#TipoDimensionCompetencia"/>
+          <owl:Class rdf:about="#Competencia"/>
+          <owl:Class rdf:about="#Grupo"/>
+          <owl:Class rdf:about="#TipoGrupo"/>
+          <owl:Class rdf:about="#EjeMeta"/>
+          <owl:Class rdf:about="#FilaMeta"/>
+          <owl:Class rdf:about="#ElementoNivelModo"/>
+          <owl:Class rdf:about="#CategoriaTesauro"/>
+          <owl:Class rdf:about="#Evento"/>
+          <owl:Class rdf:about="#PersonalizacionCurriculum"/>
+          <rdf:Description rdf:about="http://www.w3.org/2004/02/skos/core#Concept"/>
+        </owl:unionOf>
+      </owl:Class>
+    </rdfs:domain>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#int"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
+    <NombreReal xml:lang="es">Orden</NombreReal>
+    <Visible rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+    >false</Visible>
+  </owl:FunctionalProperty>
+  <owl:FunctionalProperty rdf:ID="NivelesRaiz">
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#int"/>
+    <Visible rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+    >true</Visible>
+    <NombreReal xml:lang="es">Nivel</NombreReal>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
+  </owl:FunctionalProperty>
+  <owl:FunctionalProperty rdf:ID="Autor">
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    <NombreReal xml:lang="es">Autor</NombreReal>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
+    <Visible rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+    >false</Visible>
+  </owl:FunctionalProperty>
+  <owl:FunctionalProperty rdf:ID="CVLibro">
+    <rdfs:range rdf:resource="#EventoLibro"/>
+    <NombreReal xml:lang="es">LibroCurriculum</NombreReal>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#ObjectProperty"/>
+    <rdfs:domain rdf:resource="#EventoCapituloLibro"/>
+  </owl:FunctionalProperty>
+  <owl:FunctionalProperty rdf:ID="NivelPrioridadObjetivo">
+    <rdfs:range rdf:resource="#NivelPrioridad"/>
+    <NombreReal xml:lang="es">NivelPrioridad</NombreReal>
+    <Visible rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+    >false</Visible>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#ObjectProperty"/>
+  </owl:FunctionalProperty>
+  <owl:FunctionalProperty rdf:ID="Poblacion">
+    <NombreReal xml:lang="es">Poblacion</NombreReal>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
+  </owl:FunctionalProperty>
+  <owl:FunctionalProperty rdf:ID="PaisID">
+    <NombreReal xml:lang="es">PaisID</NombreReal>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    <rdfs:domain>
+      <owl:Class>
+        <owl:unionOf rdf:parseType="Collection">
+          <owl:Class rdf:about="#EventoIdiomaEstExt"/>
+          <owl:Class rdf:about="#EventoEstanciaExtranjero"/>
+          <owl:Class rdf:about="#EventoPatente"/>
+          <owl:Class rdf:about="#Organizacion"/>
+        </owl:unionOf>
+      </owl:Class>
+    </rdfs:domain>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
+    <Visible rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+    >false</Visible>
+  </owl:FunctionalProperty>
+  <owl:FunctionalProperty rdf:ID="PaisesExtension">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    <NombreReal xml:lang="es">Paises Extension</NombreReal>
+    <rdfs:domain rdf:resource="#EventoPatente"/>
+  </owl:FunctionalProperty>
+  <owl:FunctionalProperty rdf:ID="has_hobbies">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
+    <rdfs:domain rdf:resource="#PersonCv"/>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    <Visible rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+    >false</Visible>
+    <NombreReal xml:lang="es">Aficiones</NombreReal>
+  </owl:FunctionalProperty>
+  <owl:FunctionalProperty rdf:ID="Paginacion">
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#int"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
+    <rdfs:domain>
+      <owl:Class>
+        <owl:unionOf rdf:parseType="Collection">
+          <owl:Class rdf:about="#EventoArticuloRevista"/>
+          <owl:Class rdf:about="#EventoLibro"/>
+        </owl:unionOf>
+      </owl:Class>
+    </rdfs:domain>
+    <NombreReal rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    ></NombreReal>
+  </owl:FunctionalProperty>
+  <owl:FunctionalProperty rdf:ID="EmailTrabajo">
+    <NombreReal xml:lang="es">Email del trabajo</NombreReal>
+    <rdfs:domain>
+      <owl:Class>
+        <owl:unionOf rdf:parseType="Collection">
+          <owl:Class rdf:about="#PersonaVinculoOrganizacion"/>
+          <owl:Class rdf:about="#DatosTrabajoPersonaLibre"/>
+        </owl:unionOf>
+      </owl:Class>
+    </rdfs:domain>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
+    <Visible rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+    >true</Visible>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+  </owl:FunctionalProperty>
+  <owl:FunctionalProperty rdf:ID="EstructuraPuestosTrabajo">
+    <Visible rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+    >true</Visible>
+    <rdfs:range rdf:resource="#PuestoTrabajo"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#ObjectProperty"/>
+    <NombreReal xml:lang="es">Estructura de Puestos de Trabajo</NombreReal>
+    <rdfs:domain rdf:resource="#Proyecto"/>
+  </owl:FunctionalProperty>
+  <owl:FunctionalProperty rdf:ID="NombreAlumno">
+    <NombreReal xml:lang="es">Nombre Alumno</NombreReal>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    <rdfs:domain rdf:resource="#EventoProyectoFC"/>
+  </owl:FunctionalProperty>
+  <owl:FunctionalProperty rdf:ID="CompartirRecursosPermitido">
+    <Visible rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+    >true</Visible>
+    <NombreReal xml:lang="es">PermitirCompartirRecursos</NombreReal>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#boolean"/>
+    <rdfs:domain rdf:resource="#Proyecto"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
+  </owl:FunctionalProperty>
+  <owl:FunctionalProperty rdf:ID="WikiDisponible">
+    <rdfs:domain rdf:resource="#Proyecto"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
+    <Visible rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+    >false</Visible>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#boolean"/>
+    <NombreReal xml:lang="es">Wiki Disponible</NombreReal>
+  </owl:FunctionalProperty>
+  <owl:FunctionalProperty rdf:ID="Enlace">
+    <NombreReal xml:lang="es">Enlace</NombreReal>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
+    <Visible rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+    >false</Visible>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+  </owl:FunctionalProperty>
+  <owl:FunctionalProperty rdf:ID="FechaInicio">
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#dateTime"/>
+    <rdfs:domain>
+      <owl:Class>
+        <owl:unionOf rdf:parseType="Collection">
+          <owl:Class rdf:about="#EventoProyecto"/>
+          <owl:Class rdf:about="#EventoIdiomaEstExt"/>
+          <owl:Class rdf:about="#EventoContratoIDi"/>
+          <owl:Class rdf:about="#EventoComunicacionCongreso"/>
+          <owl:Class rdf:about="#EventoAccionFormativa"/>
+          <owl:Class rdf:about="#EventoVidaAsociativa"/>
+          <owl:Class rdf:about="#EventoEstanciaExtranjero"/>
+          <owl:Class rdf:about="#EventoGestionID"/>
+          <owl:Class rdf:about="#EventoActiividadID"/>
+          <owl:Class rdf:about="#EventoPromocionEmpresa"/>
+          <owl:Class rdf:about="#EventoPuestoDocente"/>
+          <owl:Class rdf:about="#EventoFormacion"/>
+          <owl:Class rdf:about="#EventoDocencia"/>
+          <owl:Class rdf:about="#EventoExpLaboral"/>
+          <owl:Class rdf:about="#EventoPuestoExpLab"/>
+        </owl:unionOf>
+      </owl:Class>
+    </rdfs:domain>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
+    <Visible rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+    >false</Visible>
+    <NombreReal xml:lang="es">Fecha de Inicio</NombreReal>
+  </owl:FunctionalProperty>
+  <owl:FunctionalProperty rdf:ID="Dedicacion">
+    <Visible rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+    >false</Visible>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#int"/>
+    <rdfs:domain rdf:resource="#Ocupacion"/>
+    <NombreReal xml:lang="es">Dedicación</NombreReal>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
+  </owl:FunctionalProperty>
+  <owl:FunctionalProperty rdf:ID="Mision">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    <rdfs:domain rdf:resource="#Forma"/>
+    <Visible rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+    >false</Visible>
+    <NombreReal xml:lang="es">Misión</NombreReal>
+  </owl:FunctionalProperty>
+  <owl:FunctionalProperty rdf:ID="Email">
+    <Visible rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+    >false</Visible>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
+    <NombreReal xml:lang="es">e-mail</NombreReal>
+    <rdfs:domain>
+      <owl:Class>
+        <owl:unionOf rdf:parseType="Collection">
+          <owl:Class rdf:about="#Organizacion"/>
+          <owl:Class rdf:about="#Persona"/>
+        </owl:unionOf>
+      </owl:Class>
+    </rdfs:domain>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+  </owl:FunctionalProperty>
+  <owl:FunctionalProperty rdf:ID="PorCapitulos">
+    <NombreReal xml:lang="es">Por Capitulos</NombreReal>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
+    <rdfs:domain rdf:resource="#EventoLibro"/>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#boolean"/>
+  </owl:FunctionalProperty>
+  <owl:FunctionalProperty rdf:ID="has_history">
+    <NombreReal xml:lang="es">Currículum</NombreReal>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#ObjectProperty"/>
+    <rdfs:range rdf:resource="#OrganizationCv"/>
+    <rdfs:domain rdf:resource="http://xmlns.com/foaf/0.1/Group"/>
+    <rdfs:domain rdf:resource="#PerfilOrganizacion"/>
+    <Visible rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+    >false</Visible>
+  </owl:FunctionalProperty>
+  <owl:FunctionalProperty rdf:ID="PaisTrabajoID">
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    <Visible rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+    >true</Visible>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
+    <NombreReal xml:lang="es">País de trabajo</NombreReal>
+    <rdfs:domain>
+      <owl:Class>
+        <owl:unionOf rdf:parseType="Collection">
+          <owl:Class rdf:about="#PersonaVinculoOrganizacion"/>
+          <owl:Class rdf:about="#DatosTrabajoPersonaLibre"/>
+        </owl:unionOf>
+      </owl:Class>
+    </rdfs:domain>
+  </owl:FunctionalProperty>
+  <owl:FunctionalProperty rdf:ID="EsResponsableFormaSuperior">
+    <NombreReal xml:lang="es">Responsable de forma superior</NombreReal>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#boolean"/>
+    <Visible rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+    >false</Visible>
+    <rdfs:domain rdf:resource="#Forma"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
+  </owl:FunctionalProperty>
+  <owl:FunctionalProperty rdf:ID="IntroduccionAmenazas">
+    <rdfs:domain rdf:resource="#Dafo"/>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
+  </owl:FunctionalProperty>
+  <owl:FunctionalProperty rdf:ID="PuestoTrabajoElementoEstructura">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#ObjectProperty"/>
+    <rdfs:range rdf:resource="#PuestoTrabajo"/>
+    <NombreReal xml:lang="es">Puesto de trabajo</NombreReal>
+    <rdfs:domain rdf:resource="#Proyecto"/>
+    <Visible rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+    >true</Visible>
+  </owl:FunctionalProperty>
+  <owl:FunctionalProperty rdf:ID="EsClase">
+    <rdfs:domain rdf:resource="#Forma"/>
+    <Visible rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+    >false</Visible>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
+    <NombreReal xml:lang="es">Clase</NombreReal>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#int"/>
+  </owl:FunctionalProperty>
+  <owl:FunctionalProperty rdf:ID="Idioma">
+    <rdfs:domain>
+      <owl:Class>
+        <owl:unionOf rdf:parseType="Collection">
+          <owl:Class rdf:about="#EventoIdioma"/>
+          <owl:Class rdf:about="#EventoIdiomaEstExt"/>
+        </owl:unionOf>
+      </owl:Class>
+    </rdfs:domain>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    <Visible rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+    >false</Visible>
+    <NombreReal xml:lang="es">Idioma</NombreReal>
+  </owl:FunctionalProperty>
+  <owl:FunctionalProperty rdf:about="http://www.gnoss.com/FechaCreacion">
+    <Visible rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+    >true</Visible>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
+    <NombreReal xml:lang="es">Fecha de creación de la organización</NombreReal>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+  </owl:FunctionalProperty>
+  <owl:FunctionalProperty rdf:ID="Fax">
+    <NombreReal xml:lang="es">Fax de la organización</NombreReal>
+    <rdfs:domain rdf:resource="#Organizacion"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    <Visible rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+    >true</Visible>
+  </owl:FunctionalProperty>
+  <owl:FunctionalProperty rdf:ID="Conclusion">
+    <rdfs:domain rdf:resource="#Dafo"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+  </owl:FunctionalProperty>
+  <owl:FunctionalProperty rdf:ID="Cargo">
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    <Visible rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+    >false</Visible>
+    <NombreReal xml:lang="es">Cargo</NombreReal>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
+    <rdfs:domain>
+      <owl:Class>
+        <owl:unionOf rdf:parseType="Collection">
+          <owl:Class rdf:about="#PersonaReferencia"/>
+          <owl:Class rdf:about="#PersonaVinculoOrganizacion"/>
+        </owl:unionOf>
+      </owl:Class>
+    </rdfs:domain>
+  </owl:FunctionalProperty>
+  <owl:FunctionalProperty rdf:ID="CoordenadasFoto">
+    <rdfs:domain rdf:resource="#Persona"/>
+    <Visible rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+    >true</Visible>
+    <NombreReal xml:lang="es">Coordenadas de la foto</NombreReal>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
+  </owl:FunctionalProperty>
+  <owl:FunctionalProperty rdf:ID="TipoDocumentoAcreditativo">
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    <Visible rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+    >true</Visible>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
+    <NombreReal xml:lang="es">Tipo del documento acreditativo</NombreReal>
+    <rdfs:domain rdf:resource="#Persona"/>
+  </owl:FunctionalProperty>
+  <owl:FunctionalProperty rdf:ID="EmpresasExplotadoras">
+    <rdfs:domain rdf:resource="#EventoPatente"/>
+    <NombreReal xml:lang="es">Empresas Explotadoras</NombreReal>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
+  </owl:FunctionalProperty>
+  <owl:FunctionalProperty rdf:ID="NombreDoctorando">
+    <rdfs:domain rdf:resource="#EventoTesis"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
+    <NombreReal xml:lang="es">Nombre Doctorando</NombreReal>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+  </owl:FunctionalProperty>
+  <owl:FunctionalProperty rdf:ID="Web">
+    <Visible rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+    >true</Visible>
+    <rdfs:domain rdf:resource="#Organizacion"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
+    <NombreReal xml:lang="es">Página web de la organización</NombreReal>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+  </owl:FunctionalProperty>
+  <owl:FunctionalProperty rdf:ID="BaseRecursosDisponible">
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#boolean"/>
+    <NombreReal xml:lang="es">Base de Recursos Disponible</NombreReal>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
+    <Visible rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+    >false</Visible>
+    <rdfs:domain rdf:resource="#Proyecto"/>
+  </owl:FunctionalProperty>
+  <owl:FunctionalProperty rdf:ID="biography">
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    <NombreReal xml:lang="es">Biografia</NombreReal>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
+    <rdfs:domain rdf:resource="#PersonCv"/>
+  </owl:FunctionalProperty>
+  <owl:FunctionalProperty rdf:ID="Alcance">
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
+    <NombreReal xml:lang="es">Alcance</NombreReal>
+    <Visible rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+    >false</Visible>
+    <rdfs:domain rdf:resource="#Grupo"/>
+  </owl:FunctionalProperty>
+  <owl:FunctionalProperty rdf:ID="ComprensionOral">
+    <NombreReal xml:lang="es">Comprension Oral</NombreReal>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#int"/>
+    <rdfs:domain rdf:resource="#EventoIdioma"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
+    <Visible rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+    >false</Visible>
+  </owl:FunctionalProperty>
+  <owl:FunctionalProperty rdf:ID="NumberOfResults">
+    <rdfs:domain rdf:resource="#ResultSet"/>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#int"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
+  </owl:FunctionalProperty>
+  <owl:InverseFunctionalProperty rdf:ID="UmbralDetPropietarios">
+    <NombreReal xml:lang="es">Umbral de Determinacion de Propietarios</NombreReal>
+    <rdfs:domain rdf:resource="#Proyecto"/>
+    <Visible rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+    >false</Visible>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#int"/>
+  </owl:InverseFunctionalProperty>
+  <owl:AnnotationProperty rdf:ID="especializacion">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+  </owl:AnnotationProperty>
+  <owl:AnnotationProperty rdf:ID="generalizacion">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+  </owl:AnnotationProperty>
+</rdf:RDF>
+
+<!-- Created with Protege (with OWL Plugin 3.3.1, Build 430)  http://protege.stanford.edu -->

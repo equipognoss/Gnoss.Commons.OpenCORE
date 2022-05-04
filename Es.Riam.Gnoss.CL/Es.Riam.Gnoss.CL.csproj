@@ -1,0 +1,20 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="BeetleX.Redis" Version="1.3.6" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Es.Riam.Gnoss.AD\Es.Riam.Gnoss.AD.csproj" />
+    <ProjectReference Include="..\Es.Riam.Gnoss.Elementos\Es.Riam.Gnoss.Elementos.csproj" />
+    <ProjectReference Include="..\Es.Riam.Gnoss.Logica\Es.Riam.Gnoss.Logica.csproj" />
+    <ProjectReference Include="..\Es.Riam.Gnoss.Util\Es.Riam.Gnoss.Util.csproj" />
+    <ProjectReference Include="..\Es.Riam.Semantica\Es.Riam.Semantica.csproj" />
+    <ProjectReference Include="..\Es.Riam.Util\Es.Riam.Util.csproj" />
+  </ItemGroup>
+
+</Project>

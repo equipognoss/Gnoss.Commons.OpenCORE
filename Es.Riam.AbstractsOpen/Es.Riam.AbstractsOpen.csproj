@@ -1,0 +1,16 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Semiodesk.Trinity.Virtuoso" Version="1.0.3.38" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Es.Riam.Gnoss.RabbitMQ\Es.Riam.Gnoss.RabbitMQ.csproj" />
+    <ProjectReference Include="..\Es.Riam.Gnoss.Util\Es.Riam.Gnoss.Util.csproj" />
+  </ItemGroup>
+
+</Project>

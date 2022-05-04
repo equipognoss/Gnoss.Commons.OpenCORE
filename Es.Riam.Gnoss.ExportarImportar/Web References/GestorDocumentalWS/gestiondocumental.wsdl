@@ -1,0 +1,728 @@
+<?xml version="1.0" encoding="utf-8"?>
+<wsdl:definitions xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:tm="http://microsoft.com/wsdl/mime/textMatching/" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" xmlns:tns="http://2003server/desarrollo/GestionDocumental/" xmlns:s1="http://microsoft.com/wsdl/types/" xmlns:s="http://www.w3.org/2001/XMLSchema" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" targetNamespace="http://2003server/desarrollo/GestionDocumental/" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
+  <wsdl:types>
+    <s:schema elementFormDefault="qualified" targetNamespace="http://2003server/desarrollo/GestionDocumental/">
+      <s:import namespace="http://microsoft.com/wsdl/types/" />
+      <s:element name="AdjuntarDocumento">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="pFichero" type="s:base64Binary" />
+            <s:element minOccurs="0" maxOccurs="1" name="pTipoEntidad" type="s:string" />
+            <s:element minOccurs="1" maxOccurs="1" name="pOrganizacionID" type="s1:guid" />
+            <s:element minOccurs="1" maxOccurs="1" name="pProyectoID" type="s1:guid" />
+            <s:element minOccurs="1" maxOccurs="1" name="pDocumentoID" type="s1:guid" />
+            <s:element minOccurs="0" maxOccurs="1" name="pExtension" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="AdjuntarDocumentoResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="AdjuntarDocumentoResult" type="s:int" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="AdjuntarDocumentoABaseRecursosUsuario">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="pFichero" type="s:base64Binary" />
+            <s:element minOccurs="0" maxOccurs="1" name="pTipoEntidad" type="s:string" />
+            <s:element minOccurs="1" maxOccurs="1" name="pPersonaID" type="s1:guid" />
+            <s:element minOccurs="1" maxOccurs="1" name="pDocumentoID" type="s1:guid" />
+            <s:element minOccurs="0" maxOccurs="1" name="pExtension" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="AdjuntarDocumentoABaseRecursosUsuarioResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="AdjuntarDocumentoABaseRecursosUsuarioResult" type="s:int" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="AdjuntarDocumentoABaseRecursosOrganizacion">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="pFichero" type="s:base64Binary" />
+            <s:element minOccurs="0" maxOccurs="1" name="pTipoEntidad" type="s:string" />
+            <s:element minOccurs="1" maxOccurs="1" name="pOrganizacionID" type="s1:guid" />
+            <s:element minOccurs="1" maxOccurs="1" name="pDocumentoID" type="s1:guid" />
+            <s:element minOccurs="0" maxOccurs="1" name="pExtension" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="AdjuntarDocumentoABaseRecursosOrganizacionResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="AdjuntarDocumentoABaseRecursosOrganizacionResult" type="s:int" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="ObtenerDocumento">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="pTipoEntidad" type="s:string" />
+            <s:element minOccurs="1" maxOccurs="1" name="pOrganizacionID" type="s1:guid" />
+            <s:element minOccurs="1" maxOccurs="1" name="pProyectoID" type="s1:guid" />
+            <s:element minOccurs="1" maxOccurs="1" name="pDocumentoID" type="s1:guid" />
+            <s:element minOccurs="0" maxOccurs="1" name="pExtension" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="ObtenerDocumentoResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="ObtenerDocumentoResult" type="s:base64Binary" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="ObtenerDocumentoDeBaseRecursosUsuario">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="pTipoEntidad" type="s:string" />
+            <s:element minOccurs="1" maxOccurs="1" name="pPersonaID" type="s1:guid" />
+            <s:element minOccurs="1" maxOccurs="1" name="pDocumentoID" type="s1:guid" />
+            <s:element minOccurs="0" maxOccurs="1" name="pExtension" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="ObtenerDocumentoDeBaseRecursosUsuarioResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="ObtenerDocumentoDeBaseRecursosUsuarioResult" type="s:base64Binary" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="ObtenerEspacioDocumentoDeBaseRecursosUsuario">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="pTipoEntidad" type="s:string" />
+            <s:element minOccurs="1" maxOccurs="1" name="pPersonaID" type="s1:guid" />
+            <s:element minOccurs="1" maxOccurs="1" name="pDocumentoID" type="s1:guid" />
+            <s:element minOccurs="0" maxOccurs="1" name="pExtension" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="ObtenerEspacioDocumentoDeBaseRecursosUsuarioResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="ObtenerEspacioDocumentoDeBaseRecursosUsuarioResult" type="s:double" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="ObtenerDocumentoDeBaseRecursosOrganizacion">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="pTipoEntidad" type="s:string" />
+            <s:element minOccurs="1" maxOccurs="1" name="pOrganizacionID" type="s1:guid" />
+            <s:element minOccurs="1" maxOccurs="1" name="pDocumentoID" type="s1:guid" />
+            <s:element minOccurs="0" maxOccurs="1" name="pExtension" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="ObtenerDocumentoDeBaseRecursosOrganizacionResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="ObtenerDocumentoDeBaseRecursosOrganizacionResult" type="s:base64Binary" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="ObtenerEspacioDocumentoDeBaseRecursosOrganizacion">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="pTipoEntidad" type="s:string" />
+            <s:element minOccurs="1" maxOccurs="1" name="pOrganizacionID" type="s1:guid" />
+            <s:element minOccurs="1" maxOccurs="1" name="pDocumentoID" type="s1:guid" />
+            <s:element minOccurs="0" maxOccurs="1" name="pExtension" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="ObtenerEspacioDocumentoDeBaseRecursosOrganizacionResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="ObtenerEspacioDocumentoDeBaseRecursosOrganizacionResult" type="s:double" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="BorrarDocumento">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="pTipoEntidad" type="s:string" />
+            <s:element minOccurs="1" maxOccurs="1" name="pOrganizacionID" type="s1:guid" />
+            <s:element minOccurs="1" maxOccurs="1" name="pProyectoID" type="s1:guid" />
+            <s:element minOccurs="1" maxOccurs="1" name="pDocumentoID" type="s1:guid" />
+            <s:element minOccurs="0" maxOccurs="1" name="pExtension" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="BorrarDocumentoResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="BorrarDocumentoResult" type="s:boolean" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="BorrarDocumentoDeBaseRecursosUsuario">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="pTipoEntidad" type="s:string" />
+            <s:element minOccurs="1" maxOccurs="1" name="pPersonaID" type="s1:guid" />
+            <s:element minOccurs="1" maxOccurs="1" name="pDocumentoID" type="s1:guid" />
+            <s:element minOccurs="0" maxOccurs="1" name="pExtension" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="BorrarDocumentoDeBaseRecursosUsuarioResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="BorrarDocumentoDeBaseRecursosUsuarioResult" type="s:boolean" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="BorrarDocumentoDeBaseRecursosOrganizacion">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="pTipoEntidad" type="s:string" />
+            <s:element minOccurs="1" maxOccurs="1" name="pOrganizacionID" type="s1:guid" />
+            <s:element minOccurs="1" maxOccurs="1" name="pDocumentoID" type="s1:guid" />
+            <s:element minOccurs="0" maxOccurs="1" name="pExtension" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="BorrarDocumentoDeBaseRecursosOrganizacionResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="BorrarDocumentoDeBaseRecursosOrganizacionResult" type="s:boolean" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="ObtenerEspacioEnCarpeta">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="pPersonaID" type="s1:guid" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="ObtenerEspacioEnCarpetaResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="ObtenerEspacioEnCarpetaResult" type="s:float" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="MoverDocumentoABaseRecursosComunidad">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="pOrganizacionID" type="s1:guid" />
+            <s:element minOccurs="1" maxOccurs="1" name="pProyectoID" type="s1:guid" />
+            <s:element minOccurs="1" maxOccurs="1" name="pPersonaID" type="s1:guid" />
+            <s:element minOccurs="1" maxOccurs="1" name="pDocumentoID" type="s1:guid" />
+            <s:element minOccurs="0" maxOccurs="1" name="pExtension" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="MoverDocumentoABaseRecursosComunidadResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="MoverDocumentoABaseRecursosComunidadResult" type="s:boolean" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="CopiarCortarDocumento">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="pCopiar" type="s:boolean" />
+            <s:element minOccurs="0" maxOccurs="1" name="pTipoEntidadOrigen" type="s:string" />
+            <s:element minOccurs="1" maxOccurs="1" name="pOrganizacionIDOrigen" type="s1:guid" />
+            <s:element minOccurs="1" maxOccurs="1" name="pProyectoIDOrigen" type="s1:guid" />
+            <s:element minOccurs="1" maxOccurs="1" name="pPersonaIDOrigen" type="s1:guid" />
+            <s:element minOccurs="1" maxOccurs="1" name="pDocumentoIDOrigen" type="s1:guid" />
+            <s:element minOccurs="0" maxOccurs="1" name="pTipoEntidadDestino" type="s:string" />
+            <s:element minOccurs="1" maxOccurs="1" name="pOrganizacionIDDestino" type="s1:guid" />
+            <s:element minOccurs="1" maxOccurs="1" name="pProyectoIDDestino" type="s1:guid" />
+            <s:element minOccurs="1" maxOccurs="1" name="pPersonaIDDestino" type="s1:guid" />
+            <s:element minOccurs="1" maxOccurs="1" name="pDocumentoIDDestino" type="s1:guid" />
+            <s:element minOccurs="0" maxOccurs="1" name="pExtension" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="CopiarCortarDocumentoResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="CopiarCortarDocumentoResult" type="s:boolean" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="CopiarCortarDocumentoDirectorioAntiguo">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="pCopiar" type="s:boolean" />
+            <s:element minOccurs="0" maxOccurs="1" name="pTipoEntidadOrigen" type="s:string" />
+            <s:element minOccurs="1" maxOccurs="1" name="pOrganizacionIDOrigen" type="s1:guid" />
+            <s:element minOccurs="1" maxOccurs="1" name="pProyectoIDOrigen" type="s1:guid" />
+            <s:element minOccurs="1" maxOccurs="1" name="pPersonaIDOrigen" type="s1:guid" />
+            <s:element minOccurs="1" maxOccurs="1" name="pDocumentoIDOrigen" type="s1:guid" />
+            <s:element minOccurs="0" maxOccurs="1" name="pTipoEntidadDestino" type="s:string" />
+            <s:element minOccurs="1" maxOccurs="1" name="pOrganizacionIDDestino" type="s1:guid" />
+            <s:element minOccurs="1" maxOccurs="1" name="pProyectoIDDestino" type="s1:guid" />
+            <s:element minOccurs="1" maxOccurs="1" name="pPersonaIDDestino" type="s1:guid" />
+            <s:element minOccurs="1" maxOccurs="1" name="pDocumentoIDDestino" type="s1:guid" />
+            <s:element minOccurs="0" maxOccurs="1" name="pExtension" type="s:string" />
+            <s:element minOccurs="1" maxOccurs="1" name="pRutaOrigenAntigua" type="s:boolean" />
+            <s:element minOccurs="1" maxOccurs="1" name="pRutaDestinoAntigua" type="s:boolean" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="CopiarCortarDocumentoDirectorioAntiguoResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="CopiarCortarDocumentoDirectorioAntiguoResult" type="s:boolean" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+    </s:schema>
+    <s:schema elementFormDefault="qualified" targetNamespace="http://microsoft.com/wsdl/types/">
+      <s:simpleType name="guid">
+        <s:restriction base="s:string">
+          <s:pattern value="[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}" />
+        </s:restriction>
+      </s:simpleType>
+    </s:schema>
+  </wsdl:types>
+  <wsdl:message name="AdjuntarDocumentoSoapIn">
+    <wsdl:part name="parameters" element="tns:AdjuntarDocumento" />
+  </wsdl:message>
+  <wsdl:message name="AdjuntarDocumentoSoapOut">
+    <wsdl:part name="parameters" element="tns:AdjuntarDocumentoResponse" />
+  </wsdl:message>
+  <wsdl:message name="AdjuntarDocumentoABaseRecursosUsuarioSoapIn">
+    <wsdl:part name="parameters" element="tns:AdjuntarDocumentoABaseRecursosUsuario" />
+  </wsdl:message>
+  <wsdl:message name="AdjuntarDocumentoABaseRecursosUsuarioSoapOut">
+    <wsdl:part name="parameters" element="tns:AdjuntarDocumentoABaseRecursosUsuarioResponse" />
+  </wsdl:message>
+  <wsdl:message name="AdjuntarDocumentoABaseRecursosOrganizacionSoapIn">
+    <wsdl:part name="parameters" element="tns:AdjuntarDocumentoABaseRecursosOrganizacion" />
+  </wsdl:message>
+  <wsdl:message name="AdjuntarDocumentoABaseRecursosOrganizacionSoapOut">
+    <wsdl:part name="parameters" element="tns:AdjuntarDocumentoABaseRecursosOrganizacionResponse" />
+  </wsdl:message>
+  <wsdl:message name="ObtenerDocumentoSoapIn">
+    <wsdl:part name="parameters" element="tns:ObtenerDocumento" />
+  </wsdl:message>
+  <wsdl:message name="ObtenerDocumentoSoapOut">
+    <wsdl:part name="parameters" element="tns:ObtenerDocumentoResponse" />
+  </wsdl:message>
+  <wsdl:message name="ObtenerDocumentoDeBaseRecursosUsuarioSoapIn">
+    <wsdl:part name="parameters" element="tns:ObtenerDocumentoDeBaseRecursosUsuario" />
+  </wsdl:message>
+  <wsdl:message name="ObtenerDocumentoDeBaseRecursosUsuarioSoapOut">
+    <wsdl:part name="parameters" element="tns:ObtenerDocumentoDeBaseRecursosUsuarioResponse" />
+  </wsdl:message>
+  <wsdl:message name="ObtenerEspacioDocumentoDeBaseRecursosUsuarioSoapIn">
+    <wsdl:part name="parameters" element="tns:ObtenerEspacioDocumentoDeBaseRecursosUsuario" />
+  </wsdl:message>
+  <wsdl:message name="ObtenerEspacioDocumentoDeBaseRecursosUsuarioSoapOut">
+    <wsdl:part name="parameters" element="tns:ObtenerEspacioDocumentoDeBaseRecursosUsuarioResponse" />
+  </wsdl:message>
+  <wsdl:message name="ObtenerDocumentoDeBaseRecursosOrganizacionSoapIn">
+    <wsdl:part name="parameters" element="tns:ObtenerDocumentoDeBaseRecursosOrganizacion" />
+  </wsdl:message>
+  <wsdl:message name="ObtenerDocumentoDeBaseRecursosOrganizacionSoapOut">
+    <wsdl:part name="parameters" element="tns:ObtenerDocumentoDeBaseRecursosOrganizacionResponse" />
+  </wsdl:message>
+  <wsdl:message name="ObtenerEspacioDocumentoDeBaseRecursosOrganizacionSoapIn">
+    <wsdl:part name="parameters" element="tns:ObtenerEspacioDocumentoDeBaseRecursosOrganizacion" />
+  </wsdl:message>
+  <wsdl:message name="ObtenerEspacioDocumentoDeBaseRecursosOrganizacionSoapOut">
+    <wsdl:part name="parameters" element="tns:ObtenerEspacioDocumentoDeBaseRecursosOrganizacionResponse" />
+  </wsdl:message>
+  <wsdl:message name="BorrarDocumentoSoapIn">
+    <wsdl:part name="parameters" element="tns:BorrarDocumento" />
+  </wsdl:message>
+  <wsdl:message name="BorrarDocumentoSoapOut">
+    <wsdl:part name="parameters" element="tns:BorrarDocumentoResponse" />
+  </wsdl:message>
+  <wsdl:message name="BorrarDocumentoDeBaseRecursosUsuarioSoapIn">
+    <wsdl:part name="parameters" element="tns:BorrarDocumentoDeBaseRecursosUsuario" />
+  </wsdl:message>
+  <wsdl:message name="BorrarDocumentoDeBaseRecursosUsuarioSoapOut">
+    <wsdl:part name="parameters" element="tns:BorrarDocumentoDeBaseRecursosUsuarioResponse" />
+  </wsdl:message>
+  <wsdl:message name="BorrarDocumentoDeBaseRecursosOrganizacionSoapIn">
+    <wsdl:part name="parameters" element="tns:BorrarDocumentoDeBaseRecursosOrganizacion" />
+  </wsdl:message>
+  <wsdl:message name="BorrarDocumentoDeBaseRecursosOrganizacionSoapOut">
+    <wsdl:part name="parameters" element="tns:BorrarDocumentoDeBaseRecursosOrganizacionResponse" />
+  </wsdl:message>
+  <wsdl:message name="ObtenerEspacioEnCarpetaSoapIn">
+    <wsdl:part name="parameters" element="tns:ObtenerEspacioEnCarpeta" />
+  </wsdl:message>
+  <wsdl:message name="ObtenerEspacioEnCarpetaSoapOut">
+    <wsdl:part name="parameters" element="tns:ObtenerEspacioEnCarpetaResponse" />
+  </wsdl:message>
+  <wsdl:message name="MoverDocumentoABaseRecursosComunidadSoapIn">
+    <wsdl:part name="parameters" element="tns:MoverDocumentoABaseRecursosComunidad" />
+  </wsdl:message>
+  <wsdl:message name="MoverDocumentoABaseRecursosComunidadSoapOut">
+    <wsdl:part name="parameters" element="tns:MoverDocumentoABaseRecursosComunidadResponse" />
+  </wsdl:message>
+  <wsdl:message name="CopiarCortarDocumentoSoapIn">
+    <wsdl:part name="parameters" element="tns:CopiarCortarDocumento" />
+  </wsdl:message>
+  <wsdl:message name="CopiarCortarDocumentoSoapOut">
+    <wsdl:part name="parameters" element="tns:CopiarCortarDocumentoResponse" />
+  </wsdl:message>
+  <wsdl:message name="CopiarCortarDocumentoDirectorioAntiguoSoapIn">
+    <wsdl:part name="parameters" element="tns:CopiarCortarDocumentoDirectorioAntiguo" />
+  </wsdl:message>
+  <wsdl:message name="CopiarCortarDocumentoDirectorioAntiguoSoapOut">
+    <wsdl:part name="parameters" element="tns:CopiarCortarDocumentoDirectorioAntiguoResponse" />
+  </wsdl:message>
+  <wsdl:portType name="GestionDocumentalSoap">
+    <wsdl:operation name="AdjuntarDocumento">
+      <wsdl:input message="tns:AdjuntarDocumentoSoapIn" />
+      <wsdl:output message="tns:AdjuntarDocumentoSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="AdjuntarDocumentoABaseRecursosUsuario">
+      <wsdl:input message="tns:AdjuntarDocumentoABaseRecursosUsuarioSoapIn" />
+      <wsdl:output message="tns:AdjuntarDocumentoABaseRecursosUsuarioSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="AdjuntarDocumentoABaseRecursosOrganizacion">
+      <wsdl:input message="tns:AdjuntarDocumentoABaseRecursosOrganizacionSoapIn" />
+      <wsdl:output message="tns:AdjuntarDocumentoABaseRecursosOrganizacionSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="ObtenerDocumento">
+      <wsdl:input message="tns:ObtenerDocumentoSoapIn" />
+      <wsdl:output message="tns:ObtenerDocumentoSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="ObtenerDocumentoDeBaseRecursosUsuario">
+      <wsdl:input message="tns:ObtenerDocumentoDeBaseRecursosUsuarioSoapIn" />
+      <wsdl:output message="tns:ObtenerDocumentoDeBaseRecursosUsuarioSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="ObtenerEspacioDocumentoDeBaseRecursosUsuario">
+      <wsdl:input message="tns:ObtenerEspacioDocumentoDeBaseRecursosUsuarioSoapIn" />
+      <wsdl:output message="tns:ObtenerEspacioDocumentoDeBaseRecursosUsuarioSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="ObtenerDocumentoDeBaseRecursosOrganizacion">
+      <wsdl:input message="tns:ObtenerDocumentoDeBaseRecursosOrganizacionSoapIn" />
+      <wsdl:output message="tns:ObtenerDocumentoDeBaseRecursosOrganizacionSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="ObtenerEspacioDocumentoDeBaseRecursosOrganizacion">
+      <wsdl:input message="tns:ObtenerEspacioDocumentoDeBaseRecursosOrganizacionSoapIn" />
+      <wsdl:output message="tns:ObtenerEspacioDocumentoDeBaseRecursosOrganizacionSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="BorrarDocumento">
+      <wsdl:input message="tns:BorrarDocumentoSoapIn" />
+      <wsdl:output message="tns:BorrarDocumentoSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="BorrarDocumentoDeBaseRecursosUsuario">
+      <wsdl:input message="tns:BorrarDocumentoDeBaseRecursosUsuarioSoapIn" />
+      <wsdl:output message="tns:BorrarDocumentoDeBaseRecursosUsuarioSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="BorrarDocumentoDeBaseRecursosOrganizacion">
+      <wsdl:input message="tns:BorrarDocumentoDeBaseRecursosOrganizacionSoapIn" />
+      <wsdl:output message="tns:BorrarDocumentoDeBaseRecursosOrganizacionSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="ObtenerEspacioEnCarpeta">
+      <wsdl:input message="tns:ObtenerEspacioEnCarpetaSoapIn" />
+      <wsdl:output message="tns:ObtenerEspacioEnCarpetaSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="MoverDocumentoABaseRecursosComunidad">
+      <wsdl:input message="tns:MoverDocumentoABaseRecursosComunidadSoapIn" />
+      <wsdl:output message="tns:MoverDocumentoABaseRecursosComunidadSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="CopiarCortarDocumento">
+      <wsdl:input message="tns:CopiarCortarDocumentoSoapIn" />
+      <wsdl:output message="tns:CopiarCortarDocumentoSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="CopiarCortarDocumentoDirectorioAntiguo">
+      <wsdl:input message="tns:CopiarCortarDocumentoDirectorioAntiguoSoapIn" />
+      <wsdl:output message="tns:CopiarCortarDocumentoDirectorioAntiguoSoapOut" />
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:binding name="GestionDocumentalSoap" type="tns:GestionDocumentalSoap">
+    <soap:binding transport="http://schemas.xmlsoap.org/soap/http" />
+    <wsdl:operation name="AdjuntarDocumento">
+      <soap:operation soapAction="http://2003server/desarrollo/GestionDocumental/AdjuntarDocumento" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="AdjuntarDocumentoABaseRecursosUsuario">
+      <soap:operation soapAction="http://2003server/desarrollo/GestionDocumental/AdjuntarDocumentoABaseRecursosUsuario" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="AdjuntarDocumentoABaseRecursosOrganizacion">
+      <soap:operation soapAction="http://2003server/desarrollo/GestionDocumental/AdjuntarDocumentoABaseRecursosOrganizacion" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="ObtenerDocumento">
+      <soap:operation soapAction="http://2003server/desarrollo/GestionDocumental/ObtenerDocumento" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="ObtenerDocumentoDeBaseRecursosUsuario">
+      <soap:operation soapAction="http://2003server/desarrollo/GestionDocumental/ObtenerDocumentoDeBaseRecursosUsuario" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="ObtenerEspacioDocumentoDeBaseRecursosUsuario">
+      <soap:operation soapAction="http://2003server/desarrollo/GestionDocumental/ObtenerEspacioDocumentoDeBaseRecursosUsuario" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="ObtenerDocumentoDeBaseRecursosOrganizacion">
+      <soap:operation soapAction="http://2003server/desarrollo/GestionDocumental/ObtenerDocumentoDeBaseRecursosOrganizacion" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="ObtenerEspacioDocumentoDeBaseRecursosOrganizacion">
+      <soap:operation soapAction="http://2003server/desarrollo/GestionDocumental/ObtenerEspacioDocumentoDeBaseRecursosOrganizacion" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="BorrarDocumento">
+      <soap:operation soapAction="http://2003server/desarrollo/GestionDocumental/BorrarDocumento" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="BorrarDocumentoDeBaseRecursosUsuario">
+      <soap:operation soapAction="http://2003server/desarrollo/GestionDocumental/BorrarDocumentoDeBaseRecursosUsuario" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="BorrarDocumentoDeBaseRecursosOrganizacion">
+      <soap:operation soapAction="http://2003server/desarrollo/GestionDocumental/BorrarDocumentoDeBaseRecursosOrganizacion" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="ObtenerEspacioEnCarpeta">
+      <soap:operation soapAction="http://2003server/desarrollo/GestionDocumental/ObtenerEspacioEnCarpeta" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="MoverDocumentoABaseRecursosComunidad">
+      <soap:operation soapAction="http://2003server/desarrollo/GestionDocumental/MoverDocumentoABaseRecursosComunidad" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="CopiarCortarDocumento">
+      <soap:operation soapAction="http://2003server/desarrollo/GestionDocumental/CopiarCortarDocumento" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="CopiarCortarDocumentoDirectorioAntiguo">
+      <soap:operation soapAction="http://2003server/desarrollo/GestionDocumental/CopiarCortarDocumentoDirectorioAntiguo" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:binding name="GestionDocumentalSoap12" type="tns:GestionDocumentalSoap">
+    <soap12:binding transport="http://schemas.xmlsoap.org/soap/http" />
+    <wsdl:operation name="AdjuntarDocumento">
+      <soap12:operation soapAction="http://2003server/desarrollo/GestionDocumental/AdjuntarDocumento" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="AdjuntarDocumentoABaseRecursosUsuario">
+      <soap12:operation soapAction="http://2003server/desarrollo/GestionDocumental/AdjuntarDocumentoABaseRecursosUsuario" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="AdjuntarDocumentoABaseRecursosOrganizacion">
+      <soap12:operation soapAction="http://2003server/desarrollo/GestionDocumental/AdjuntarDocumentoABaseRecursosOrganizacion" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="ObtenerDocumento">
+      <soap12:operation soapAction="http://2003server/desarrollo/GestionDocumental/ObtenerDocumento" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="ObtenerDocumentoDeBaseRecursosUsuario">
+      <soap12:operation soapAction="http://2003server/desarrollo/GestionDocumental/ObtenerDocumentoDeBaseRecursosUsuario" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="ObtenerEspacioDocumentoDeBaseRecursosUsuario">
+      <soap12:operation soapAction="http://2003server/desarrollo/GestionDocumental/ObtenerEspacioDocumentoDeBaseRecursosUsuario" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="ObtenerDocumentoDeBaseRecursosOrganizacion">
+      <soap12:operation soapAction="http://2003server/desarrollo/GestionDocumental/ObtenerDocumentoDeBaseRecursosOrganizacion" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="ObtenerEspacioDocumentoDeBaseRecursosOrganizacion">
+      <soap12:operation soapAction="http://2003server/desarrollo/GestionDocumental/ObtenerEspacioDocumentoDeBaseRecursosOrganizacion" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="BorrarDocumento">
+      <soap12:operation soapAction="http://2003server/desarrollo/GestionDocumental/BorrarDocumento" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="BorrarDocumentoDeBaseRecursosUsuario">
+      <soap12:operation soapAction="http://2003server/desarrollo/GestionDocumental/BorrarDocumentoDeBaseRecursosUsuario" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="BorrarDocumentoDeBaseRecursosOrganizacion">
+      <soap12:operation soapAction="http://2003server/desarrollo/GestionDocumental/BorrarDocumentoDeBaseRecursosOrganizacion" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="ObtenerEspacioEnCarpeta">
+      <soap12:operation soapAction="http://2003server/desarrollo/GestionDocumental/ObtenerEspacioEnCarpeta" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="MoverDocumentoABaseRecursosComunidad">
+      <soap12:operation soapAction="http://2003server/desarrollo/GestionDocumental/MoverDocumentoABaseRecursosComunidad" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="CopiarCortarDocumento">
+      <soap12:operation soapAction="http://2003server/desarrollo/GestionDocumental/CopiarCortarDocumento" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="CopiarCortarDocumentoDirectorioAntiguo">
+      <soap12:operation soapAction="http://2003server/desarrollo/GestionDocumental/CopiarCortarDocumentoDirectorioAntiguo" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:service name="GestionDocumental">
+    <wsdl:port name="GestionDocumentalSoap" binding="tns:GestionDocumentalSoap">
+      <soap:address location="http://2003server/integracion-gestiondocumental/gestiondocumental.asmx" />
+    </wsdl:port>
+    <wsdl:port name="GestionDocumentalSoap12" binding="tns:GestionDocumentalSoap12">
+      <soap12:address location="http://2003server/integracion-gestiondocumental/gestiondocumental.asmx" />
+    </wsdl:port>
+  </wsdl:service>
+</wsdl:definitions>

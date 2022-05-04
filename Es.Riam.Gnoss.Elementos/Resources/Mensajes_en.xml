@@ -1,0 +1,299 @@
+﻿<correos>
+  <mensajes>
+  <mensaje id="0">
+  <asunto>Modifications in the SWOT ‘{#NombreDafo#}’</asunto>
+    <texto>{p}Hello {#NombrePersona#},{/p}{p}the SWOT analysis ‘{#NombreDafo#}’ you're taking part in has some news that may interest you.{/p}{p}The factor:{/br} {#Texto#} {/br} was modified and its new content is: {/br} {#Texto2#} {/br}.{/p}{p}If you want, you can access the {a href="{#UrlEnlace#}"}SWOT analysis{/a} and vote, comment or add factors.{/p}{p}Enjoy {#NombreEcosistema#}; we innovate with you.{/p}{p}The {#NombreEcosistema#} Team{/p}</texto>
+  </mensaje>
+  <mensaje id="1">
+    <asunto>Changes in the SWOT ‘{#NombreDafo#}’</asunto>
+    <texto>{p}Hello {#NombrePersona#},{/p}{p}the SWOT analysis ‘{#NombreDafo#}’ you're taking part in has some news that may interest you.{/p}{p}The editor/s decided to remove the factor: {/br} {#Texto#} {/br}.{/p}{p}If you want, you can access the {a href="{#UrlEnlace#}"}SWOT analysis{/a} and vote, comment or add factors.{/p}{p}Enjoy {#NombreEcosistema#}; we innovate with you.{/p}{p}The {#NombreEcosistema#} Team{/p}</texto>
+  </mensaje>
+  <mensaje id="2">
+	<asunto>Invitation to the {#NombreEcosistema#} SWOT analysis ‘{#NombreDafo#}’</asunto>
+	<texto>{p}Hello {#NombrePersona#},{/p}{p}the {#NombreEcosistema#} user {#NombreRemitente#} has invited you to take part in the SWOT analysis ‘{#NombreDafo#}’ in the community ‘{#NombreProyecto#}’. To do this, you have to sign up for {#NombreEcosistema#} with {a href="{#UrlEnlace#}"}this invitation{/a}.{/p}{p}{#Texto#}{/p}{p}Thank you.{/p}{p}Enjoy {#NombreEcosistema#};we innovate with you.{/p}{p}The {#NombreEcosistema#} Team{/p}</texto>
+  </mensaje>
+  <mensaje id="3">
+	<asunto>Invitation to the {#NombreEcosistema#} SWOT analysis ‘{#NombreDafo#}’</asunto>
+	<texto>{p}Hello {#NombrePersona#},{/p}{p}the {#NombreEcosistema#} user{#NombreRemitente#} has invited you to take part in the SWOT analysis  ‘{#NombreDafo#}’ in the community ‘{#NombreProyecto#}’. If you want to vote, comment and add factors to this SWOT analysis, accept this invitation{/p}{p}{#Texto#}{/p}{p}Thank you.{/p}{p}Enjoy {#NombreEcosistema#};we innovate with you.{/p}{p}The {#NombreEcosistema#} Team{/p}</texto>
+  </mensaje>
+  <mensaje id="4">
+	  <asunto>Invitation to the {#NombreEcosistema#} SWOT analysis ‘{#NombreDafo#}’</asunto>
+	  <texto>{p}Hello {#NombrePersona#},{/p}{p}the {#NombreEcosistema#} user {#NombreRemitente#} has invited you to take part in the SWOT analysis ‘{#NombreDafo#}’ in the community ‘{#NombreProyecto#}’. If you want to vote, comment and add factors to this SWOT analysis, accept this invitation{/p}{p}{#Texto#}{/p}{p}Thank you.{/p}{p}Enjoy {#NombreEcosistema#};we innovate with you.{/p}{p}The {#NombreEcosistema#} Team{/p}</texto>
+  </mensaje>
+  <mensaje id="5">
+	  <asunto>The {#NombreEcosistema#} SWOT analysis ‘{#NombreDafo#}’ has a new factor</asunto>
+	  <texto>{p}{p}Hello{#NombrePersona#},{/p}{p}the SWOT analysis‘{#NombreDafo#}’ you're taking part in has a new factor that may interest you.{/p}{p}This is its content:‘{#Texto#}’.{/p}{p}If you want, you can enter the SWOT and vote, comment or add factors.{/p}{p}Enjoy {#NombreEcosistema#};we innovate with you.{/p}{p}The {#NombreEcosistema#} Team{/p}</texto>
+  </mensaje>
+  <mensaje id="6">
+	  <asunto>The {#NombreEcosistema#} SWOT analysis voting phase  ‘{#NombreDafo#}’ has finished</asunto>
+	  <texto>{p}Hello {#NombrePersona#},{/p}{p}the SWOT analysis ‘{#NombreDafo#}’ voting phase you're taking part in has finished. The phase at which we proceed to the unification of the factors has just begun. When the editors have completed their SWOT analysis, you will receive notification with the results of ‘{#NombreDafo#}’.{/p}{p}Thank you for you participation.{/p}{p}Enjoy {#NombreEcosistema#};we innovate with you.{/p}{p}The {#NombreEcosistema#} Team{/p}</texto>
+  </mensaje>
+  <mensaje id="7">
+	  <asunto>The {#NombreEcosistema#} SWOT analysis ‘{#NombreDafo#}’ you're taking part in has finished</asunto>
+	  <texto>{p}Hello {#NombrePersona#},{/p}{p}the SWOT analysis ‘{#NombreDafo#}’ in the community ‘{#NombreProyecto#}’ has finished. {/p}{p}If you want, you can {a href='{#UrlEnlace#}'}enter the SWOT conclusions{/a}.{/p}{p}Thank you.{/p}{p}Enjoy {#NombreEcosistema#};we innovate with you.{/p}{p}The {#NombreEcosistema#} Team{/p}</texto>
+  </mensaje>
+<mensaje id="8">
+    <asunto>Deadline to participate in the {#NombreEcosistema#} SWOT analysis ‘{#NombreDafo#}’</asunto>
+    <texto>{p}Hello {#NombrePersona#}!{/p}{p}The SWOT analysis ‘{a href="{#UrlEnlace#}"}{#NombreDafo#}{/a}’ of the community ‘{#NombreProyecto#}’ will finish the voting period in ten days. If you want to take part in it, you still have the opportuniy to vote and comment what you consider appropriate.{/p}{p}Thanks for your collaboration{/p}{p}The {#NombreEcosistema#} Team{/p}</texto>	
+  </mensaje>
+  <mensaje id="9">
+    <asunto>Deadline to participate in the {#NombreEcosistema#} SWOT analysis ‘{#NombreDafo#}’</asunto>
+    <texto>{p}Hello {#NombrePersona#}!{/p}{p}Tomorrow is the deadline to vote the SWOT analysis ‘{a href="{#UrlEnlace#}"}{#NombreDafo#}{/a}’ of the community ‘{#NombreProyecto#}’. If you want to take part in it, you still have the opportuniy to vote and comment what you consider appropriate.{/p}{p}Thanks for your collaboration{/p}{p}The {#NombreEcosistema#} Team{/p}</texto>
+  </mensaje>  
+  
+	<mensaje id="20">
+	<asunto>Request for access to the community "{#NombreProyecto#}" sent</asunto>
+	<texto>{p}Your request for access to the community "{#NombreProyecto#}" has been sent.{/p}{p}Shortly you will receive another email showing you the resolution for your request.{/p}</texto>
+  </mensaje>
+  <mensaje id="21">
+	<asunto>Request for access to the community {#NombreProyecto#} accepted</asunto>
+	<texto>{p}Dear {b}{#Login#}{/b},{/p}{p}Welcome to the community {#NombreProyecto#}! Your request for access to the community has been ACCEPTED.{/p}{p}We thank you for your interests in our services and for your wish to participate in this on-line community.{/p}</texto>
+  </mensaje>
+  <mensaje id="22">
+	<asunto>Request for access to the project "{#NombreProyecto#}" rejected</asunto>
+	<texto>{p}Your request for access to the project "{#NombreProyecto#}" has been REJECTED.{/p}{#Notas#}</texto>
+  </mensaje>
+  <mensaje id="23">
+	<asunto>New request for access to the project "{#NombreProyecto#}" sent</asunto>
+	<texto>{p}The user "{#Login#}" has asked for permission to access the project "{#NombreProyecto#}".{/p}</texto>
+  </mensaje>
+  <mensaje id="24">
+	<asunto>Welcome to {#NombreEcosistema#}. We need to verify your email address</asunto>
+	<texto>{p}Hello, {#NombrePersona#}! We've sent you this email to verify your email address. Please, follow this link to complete your registration. {a href="{#UrlEnlace#}" target="_blank"}Verify email address{/a}.{p}</texto>
+  </mensaje> 
+    <mensaje id="26">
+    <asunto>Welcome to {#NombreEcosistema#}. We need to verify your email address</asunto>
+    <texto>{p}Hello, {#NombrePersona#}! We've sent you this email to verify your email address. Please, follow this link to complete your registration. {a href="{#UrlEnlace#}" target="_blank"}Verify email address{/a}.{p}</texto>
+  </mensaje>
+    <mensaje id="27">
+      <asunto>Activación de la cuenta de {#NombrePersona#} en {#NombreEcosistema#}</asunto>
+      <texto>{p}Hola,{/p}{p}{#NombrePersona#} ha sido invitado a una clase de {#NombreProyecto#} creada por {#IdentidadRemitente#}. Los alumnos menores de 14 años necesitan que su padre, madre o tutor legal active su cuenta de Didactalia. Por favor, sigue el siguiente enlace que te llevará a un página con instrucciones para {a href="{#UrlEnlace#}" target="_blank"}activarla{/a}.{/p}{p}Si tienes alguna duda contacta con nosotros a través de didactalia@didactalia.net{/p}{p}El equipo de Didactalia{/p}</texto>
+    </mensaje>
+  <mensaje id="30">
+    <asunto>{#NombreRemitente#} wants to ask for a community in {#NombreEcosistema#}</asunto>
+    <texto>{p}{a href="{@UrlIntragnoss@}/en/{#IdentidadRemitente#}"}{#NombreRemitente#}{/a} wants to ask for a community in {#NombreEcosistema#}{#Texto#}</texto>
+  </mensaje>
+  <mensaje id="31">
+    <asunto>Your request for a {#NombreEcosistema#} community has been accepted</asunto>
+    <texto>
+      {p}Hello {#NombrePersona#},{/p}{p}we have good news.{/p}{p}We have registered the {#NombreEcosistema#} community {#NombreProyecto#} that you requested. You can access it via the following: {#UrlEnlace#}.{/p}{p}The community is currently 'under construction', because you need to complete some data before publishing it in {#NombreEcosistema#}: categories of the community index, tags and categories of the community in the general index.{/p}{p}Once this information is completed, you can 'activate' the community; it will be shown in the communities menu in {#NombreEcosistema#} (except if it is a 'private room'). At that time, {#NombreEcosistema#} users will be allowed to join the community and use its tools to create new content.{/p}{p}Are you ready to manage your community? We're sure you are, just let us a tip: as the responsible one for your virtual space we would like you to watch over the integrity and consistency of its contents. In this regard, resources have author/s, date and place of publication, etc. We think it is necessary that these data are both in the description and the tags of the resource. It's your decision.{/p}{p}Perhaps you'll be soon the main reference of the communities you're promoting. That means a community of users who follow you with their ideas and suggestions. Whenever you have any questions, comments or questions you can consult usconsultárnoslo.mail: {a href="mailto:{#CorreoSugerencias#}"}{#CorreoSugerencias#}{/a}).   {/p}{p}Enjoy {#NombreEcosistema#}. We innovate with you.{/p}{p}The {#NombreEcosistema#} Team.{/p}
+    </texto>
+  </mensaje>
+  <mensaje id="32">
+    <asunto>Your request for a {#NombreEcosistema#} community has been rejected</asunto>
+    <texto>{p}Hello, {#NombrePersona#}!{/p}{p}Your request for new community {#NombreProyecto#} in {#NombreEcosistema#} has been rejected.{/p}{p}The {#NombreEcosistema#} Team.{/p}</texto>
+  </mensaje>
+   <mensaje id="33">
+    <asunto>Welcome to {#NombreEcosistema#}. We need to verify your email address</asunto>
+    <texto>Hello, {#NombrePersona#}! We've sent you this email to verify your email address. Please, follow this link to complete your registration. {a href="{#UrlEnlace#}" target="_blank"}Verify email address{/a}.{p}</texto>
+  </mensaje>
+  <mensaje id="40">
+	<asunto>{#NombrePersona#} wants to invite you to {#NombreEcosistema#}</asunto>
+	<texto>{p}{#Notas#}{/p}{p}To accept this invitation, sign up and get your own account click on this link: {a href="{@UrlIntragnoss@}"}accept invitation{/a}{/p}</texto>
+  </mensaje>
+  <mensaje id="41">
+	<asunto>{#NombreRemitente#} wants to add you as a contact</asunto>
+	<texto>{p}Hello {#NombrePersona#}!{/p}{p}I have found you in {#NombreProyecto#} and I have thought that maybe we could profit from each other and share information.</texto>
+  </mensaje>
+  <mensaje id="42">
+    <asunto>Bienvenido a la comunidad {#NombreProyecto#}</asunto>
+    <texto>{p}Hola {#NombrePersona#},{/p}{p}Te invitamos a participar en {#NombreProyecto#}. Esta comunidad te permitirá acceder a través de tu usuario y contraseña a numerosos contenidos que podrás comentar y compartir.{/p}{p}Para completar tu registro es necesario que verifiques tu correo siguiendo este {a href="{#UrlEnlace#}" target="_blank"}enlace{/a}.{p}</texto>
+  </mensaje>  
+  <mensaje id="43">
+	<asunto>{#NombreRemitente#} wants to invite you to the {#NombreProyecto#}</asunto>
+	<texto>{p}{#Notas#}{/p}</texto>
+  </mensaje>
+  <mensaje id="44">
+	<asunto>{#NombreRemitente#} wants to invite you to the {#NombreProyecto#}</asunto>
+	<texto>{p}{#Notas#}{/p}{p}To accept this invitation click on this link: {a href="{#UrlEnlace#}"}accept invitation.{/a}{/p}</texto>  
+  </mensaje>
+  <mensaje id="45">
+    <asunto>{#NombreOrganizacion#} has invited you to join its organization in {#NombreEcosistema#}</asunto>
+    <texto>{p}{#Notas#}{/p}{p}To accept this invitation click on this link: {a href="{@UrlIntragnoss@}/en/invitations"}accept invitation.{/a}{/p}</texto>
+  </mensaje>
+  <mensaje id="46">
+    <asunto>{#NombreOrganizacion#} has invited you to join its organization on {#NombreEcosistema#}</asunto>
+    <texto>{p}{#Notas#}{/p}{p}To accept this invitation click on this link: {a href="{@UrlIntragnoss@}/en/invitations"}accept invitation.{/a}{/p}</texto> 
+  </mensaje>
+  <mensaje id="47">
+	<asunto>{#NombreOrganizacion#} has invited you to join its organization in {#NombreEcosistema#}</asunto>
+    <texto>{p}{#Notas#}{/p}{p}To accept this invitation click on this link: {a href="{#UrlEnlace#}"}accept invitation.{/a}{/p}</texto>	
+  </mensaje>
+  <mensaje id="48">
+	<asunto>{#NombreOrganizacion#} has invited you to join its organization in {#NombreEcosistema#}</asunto>
+    <texto>{p}{#Notas#}{/p}{p}To accept this invitation click on this link: {a href="{#UrlEnlace#}"}accept invitation.{/a}{/p}</texto>
+  </mensaje> 
+  <mensaje id="49">
+	<asunto>{#NombreRemitente#} wants to invite you to the {#NombreProyecto#}</asunto>
+	<texto>{p}{#Notas#}{/p}{p}To accept this invitation click on this link: {a href="{@UrlIntragnoss@}/en/invitations"}accept invitation{/a}.{/p}</texto>  
+  </mensaje>
+  <mensaje id="50">
+	<asunto>{#NombreOrganizacion#} has invited you to join its organization in {#NombreEcosistema#}</asunto>
+    <texto>{p}{#Notas#}{/p}{p}To accept this invitation click on this link: {a href="{@UrlIntragnoss@}/en/invitations"}accept invitation{/a}.{/p}</texto>
+  </mensaje>
+  <mensaje id="51">
+	<asunto>{#NombreOrganizacion#} has invited you to join its organization in {#NombreEcosistema#}</asunto>
+    <texto>{p}{#Notas#}{/p}{p}To accept this invitation click on this link: {a href="{@UrlIntragnoss@}/en/invitations"}accept invitation{/a}.{/p}</texto>	
+  </mensaje>
+  <mensaje id="52">
+	<asunto>{#NombreRemitente#} wants to add you as a contact</asunto>
+	<texto>{p}Hello, {#NombrePersona#}!{/p}{p}I have found you in {#NombreEcosistema#} and I have thought that maybe we could profit from each other and share information.{/p}{p}If you accept being my contact click here: {a href="{@UrlIntragnoss@}/en/invitations"}Add contact{/a}.</texto>
+  </mensaje>
+  <mensaje id="54">
+	<asunto>{#NombreRemitente#} has confirmed you as contact</asunto>
+	<texto>{p}¡Hola, {#NombrePersona#}!{/p}{p}{#NombreRemitente#} has confirmed you as contact. {/p}{p}To see the profile of {#NombreRemitente#} or send him/her a message, click on: {a href="{@UrlIntragnoss@}/en/{#IdentidadPersona#}{#IdentidadRemitente#}"}see profile{/a}.{/p}{p}Enjoy {#NombreEcosistema#}. We innovate with you.{/p}{p}The {#NombreEcosistema#} Team.{/p}</texto>
+  </mensaje>
+  <mensaje id="56">
+	<asunto>{#NombreRemitente#} has removed you from his/her contact list</asunto>
+	<texto>{p}Hello {#NombrePersona#}!{/p}{p}{#NombreRemitente#} has removed you from his/her contact list. {/p}</texto>
+  </mensaje>
+  <mensaje id="58">
+    <asunto>The organization {#NombreRemitente#} wants to add you as contact</asunto>
+    <texto>{p}Hello, {#NombrePersona#}!{/p}{p}I have found you in {#NombreProyecto#} and I have thought that maybe we could profit from each other and share information.</texto>
+  </mensaje>
+  <mensaje id="59">
+		<asunto>{#NombreRemitente#} from {#NombreOrganizacion#} has removed you from his/her contact list</asunto>
+		<texto>{p} Hello {#NombrePersona#}!{/p}{p}{#NombreRemitente#} from {#NombreOrganizacion#}, who was your contact in {#NombreEcosistema#}, is not a member of the organization any more. His/her contacts have become contacts of {#NombreOrganizacion#}{/p}{p}Enjoy {#NombreEcosistema#}. We innovate with you.{/p}{p}The {#NombreEcosistema#} Team.{/p}</texto>
+	</mensaje>
+  <mensaje id="60">
+	<asunto>{#NombreProyecto#} subscriptions bulletin</asunto>
+    <texto>{p}{span}These are the latest publications in your areas of interest{/span}{/p}{#UltimasPublicaciones#}</texto>
+  </mensaje>
+	<mensaje id="61">
+      <asunto>{#NombreRemitente#} te sigue</asunto>
+      <texto>{p}¡Hola, {#NombrePersona#}!{/p}{p}{a href="{@UrlIntragnoss@}/{#IdentidadRemitente#}"}{#NombreRemitente#}{/a}  te sigue en {#NombreEcosistema#}.{/p}</texto>
+    </mensaje>
+    <mensaje id="62">
+      <asunto>{#NombreRemitente#} te sigue</asunto>
+      <texto>{p}¡Hola, {#NombrePersona#}!{/p}{p}{a href="{@UrlIntragnoss@}/{#IdentidadRemitente#}"}{#NombreRemitente#}{/a}  te sigue ahora en {#NombreProyecto#}.{/p}</texto>
+    </mensaje>
+  <mensaje id="80">
+	<asunto>Request for changing password in {#NombreProyecto#}</asunto>
+	<texto>{p}To change your password follow the next link: {/p}{p} {a style="display: block; font-weight: 400; color: #006eff; padding-bottom: 40px;" href="{#UrlEnlace#}"}Change password{/a}{/p}</texto>
+  </mensaje>
+  <mensaje id="121">
+	<asunto>{#Asunto#}</asunto>
+	<texto>{p}{#NombreRemitente#} has sent you a message through {#NombreProyecto#}{/p}{div style="margin:30px"}{#Texto#}{/div}{p}To reply to {#NombreRemitente#} click on this link: {a href="{@UrlIntragnoss@}/en{$identidad$}/messages?mensaje={#CorreoID#}"}answer to the message{/a}{/p}</texto>
+  </mensaje>
+  <mensaje id="122">
+	<asunto>Temporary close of the community {#NombreProyecto#}</asunto>
+	<texto>{p}Hello {#NombrePersona#}!{/p}{p}The community {#NombreProyecto#} will be temporarily closed until {#Fecha_mes#}/{#Fecha_dia#}/{#Fecha_año#} because of the following reasons:{/p}{p}{#Texto#}{/p}</texto>
+  </mensaje>
+  <mensaje id="123">
+		<asunto>Close of the community {#NombreProyecto#}</asunto>
+		<texto>{p}Hello {#NombrePersona#}!{/p}{p}The community {#NombreProyecto#} will be closed on {#Fecha_mes#}/{#Fecha_dia#}/{#Fecha_año#}. {/p}{p}Until this date, you will have the possibility of accessing it normally, downloading resources, reading the community contents and sharing them with other {#NombreEcosistema#} spaces. But you can not upload any new resources or share the ones of other communities with this one. Once the community is closed, it won't be accessible any more.{/p}</texto>
+	</mensaje>
+	<mensaje id="124">
+		<asunto>Opening of the community {#NombreProyecto#}</asunto>
+		<texto>{p}Hello {#NombrePersona#}!{/p}{p}The community {#NombreProyecto#} is activated: you can already take part in it.{/p}{p}Enjoy {#NombreEcosistema#}. We innovate with you.{/p}{p}The {#NombreEcosistema#} Team.{/p}</texto>
+	</mensaje>
+	<mensaje id="125">
+		<asunto>Temporary close time of the community {#NombreProyecto#} run out.</asunto>
+		<texto>{p}Hi,{/p}{p}we’re sending this mail to remember you your decision to close temporarily the {#NombreProyecto#} community. Today is the closing date you chose previously.{/p}{p}During some days, you’ve had time to give your community the feel and content you wanted.{/p}{p}Now, you have two options: you can restart the community or, if you want, you can extend the period of temporarily closure with a new closing date. Please, note that {#NombreProyecto#} subscribed users will stay tuned to your decision.{/p}{p}If you have any question, please {a href="mailto:{#CorreoSugerencias#}"}contact The {#NombreEcosistema#} Team{/a}.{/p}{p}Enjoy {#NombreEcosistema#}. We innovate with you.{/p}{p}The {#NombreEcosistema#} Team{/p}</texto>
+	</mensaje>
+	<mensaje id="126">
+		<asunto>Expulsion of the community {#NombreProyecto#}</asunto>
+		<texto>{p}Hello {#NombrePersona#}!{/p}{p}The community manager of {#NombreProyecto#} has expelled you from it.{/p}{p}Reason:{/p}{p}{#Notas#}{/p}</texto>
+	</mensaje>
+    <mensaje id="127">
+      <asunto>Incorrect data on your {#NombreEcosistema#} account</asunto>
+      <texto>
+        {p}Dear {#NombrePersona#},{/p}{p}{#NombreEcosistema#} is a society on the Net which members use their real identity. Therefore, you have to sign up with your actual {strong}name and surname{/strong} to continue to enjoy this network space. Currently, your identity does not meet this condition.{/p}{p} We invite you to modify your data from {a href="{#UrlIntragnossBBDD#}en/edit-profile"}My Profile/Edit Profile/Personal data{/a} in your personal identity.{/p}{p}If you don't modify this information, we will cancel your {#NombreEcosistema#} account within three days from the date of this email.{/p}{p}Thank you very much for your attention{/p}{p}The {#NombreEcosistema#} Team{/p}
+      </texto>
+    </mensaje>
+    <mensaje id="128">
+      <asunto>Incorrect data on your {#NombreEcosistema#} account</asunto>
+      <texto>
+        {p}Dear {#NombrePersona#},{/p}{p}in previous communications we invited you to include your actual data (Name and Surname) in your {#NombreEcosistema#} user.{/p}{p}We remember you that you can do it from {a href="{#UrlIntragnossBBDD#}en/edit-profile"}My Profile/Edit Profile/Personal data{/a} in your personal identity. Don't forget that you can choose between a {strong}public and a private profile{/strong}.{/p}{p}Thank you very much for your attention{/p}{p}The {#NombreEcosistema#} Team{/p}
+      </texto>
+    </mensaje>
+    <mensaje id="129">
+      <asunto>Your {#NombreEcosistema#} account was deleted</asunto>
+      <texto>
+        {p}Dear {#NombrePersona#},{/p}{p}We have deleted your {#NombreEcosistema#} account because it doesn't match an actual identity, as we informed you previously. {/p}{p}Best wishes{/p}{p}The {#NombreEcosistema#} Team{/p}
+      </texto>
+    </mensaje>
+    <mensaje id="130">
+      <asunto>Acabas de registrarte en: {#NombreEvento#}</asunto>
+      <texto>
+        {p}{#CuerpoMensajeEvento#}{/p}
+      </texto>
+    </mensaje>
+    <mensaje id="131">
+      <asunto>{#Asunto#}</asunto>
+      <texto>{p}{#NombreRemitente#} has sent you a message through {#NombreProyecto#}{/p}{div style="margin:30px"}{#Texto#}{/div}{p}To reply to {#NombreRemitente#} click on this link: {a href="{@UrlIntragnoss@}/en{$identidad$}/messages?mensaje={#CorreoID#}"}answer to the message{/a}{/p}</texto>
+    </mensaje>
+    <mensaje id="140">
+    <asunto>You have a link: {#NombreDoc#}</asunto>
+    <texto>{p}{#NombreRemitente#} has sent you a link from {#NombreProyecto#}.{/p}{p}{#Notas#}{/p}{p} {#UrlEnlace#}{/p}</texto>
+  </mensaje>
+  <mensaje id="141">
+      <asunto>Content report: {#NombreDoc#}</asunto>
+      <texto>{p}{a href="{#IdentidadRemitente#}"}{#NombreRemitente#}{/a} reports a problem in the content {#NombreProyecto#}.{/p}{p}{#Notas#}{/p}{p}{a href="{#UrlEnlace#}"}{#NombreDoc#}{/a}{/p}</texto>
+    </mensaje>
+  <mensaje id="150">
+		<asunto>{#NombreRemitente#} from {#NombreOrganizacion#} has removed you from his/her contact list</asunto>
+		<texto>{p}Hello {#NombrePersona#}!{/p}{p}{#NombreRemitente#} from {#NombreOrganizacion#}, who was your contact in {#NombreEcosistema#}, is not a member of the organization any more. His/her contact list has been deleted..{/p}{p}Enjoy {#NombreEcosistema#}. We innovate with you.{/p}{p}The {#NombreEcosistema#} Team.{/p}</texto>
+	</mensaje>
+	<mensaje id="151">
+    <asunto>{#NombreRemitente#} invited you to join the class {#NombreOrganizacion#}</asunto>
+    <texto>{p}{#Notas#}{/p}{p}To accept this invitation click on this link: {a href="{#UrlEnlace#}"}accept invitation.{/a}{/p}</texto>
+  </mensaje>
+    <mensaje id="152">
+      <asunto>{#NombreRemitente#} quiere invitarte a un grupo en la comunidad {#NombreProyecto#}</asunto>
+      <texto>
+        {p}{#Notas#}{/p}{p}Te han invitado al/los grupos: {#NombresGrupos#}{/p}
+      </texto>
+    </mensaje>
+    <mensaje id="153">
+      <asunto>{#NombreRemitente#} quiere invitarte a un grupo en la comunidad {#NombreProyecto#}</asunto>
+      <texto>
+        {p}{#Notas#}{/p}{p}Esta comunidad tiene grupos. Al aceptar esta invitación te haremos miembro de los grupos siguientes: {#NombresGrupos#}{/p}{p}To accept this invitation click on this link: {a href="{#UrlEnlace#}"}accept invitation.{/a}{/p}
+      </texto>
+    </mensaje>
+    <mensaje id="154">
+      <asunto>{#NombreRemitente#} quiere invitarte a un grupo de la clase {#NombreProyecto#}</asunto>
+      <texto>
+        {p}{#Notas#}{/p}{p}Al aceptar esta invitación pasarás a formar parte del grupo {#NombresGrupos#}{/p}{p}Para aceptar esta invitación pincha en este enlace: {a href="{#UrlEnlace#}"}aceptar invitación.{/a}{/p}{p}El equipo de Didactalia{/p}
+      </texto>
+    </mensaje>
+	<mensaje id="161">
+    <asunto>Someone commented: {#NombreDoc#}</asunto>
+    <texto>{p}Hello, {#NombrePersona#}!{/p}{p}{#NombreRemitente#} commented the resource "{#NombreDoc#}". To see the comment follow this link: {a href="{@UrlIntragnoss@}{#IdentidadPersona#}comments"}See comments{/a}.{/p}</texto>
+    </mensaje>
+  <mensaje id="180">
+	  <asunto>{#Asunto#}</asunto>
+	  <texto>{#Texto#}</texto>
+  </mensaje>
+  <mensaje id="181">	
+    <asunto>A member of the {#NombreProyecto#} community suggested a new category.</asunto>	
+	  <texto>{p}To see this proposal made by a member of your community click on: {a href="{#UrlEnlace#}"}Manage categories of {#NombreProyecto#} {/a}.</texto>
+	</mensaje>
+	<mensaje id="182">
+      <asunto>{#Asunto#}</asunto>
+      <texto>{p}Hola,{/p}{p}{#NombreRemitente#} profesor@ de la clase {#NombreProyecto#} a la que pertenece {#NombrePersona#} te ha enviado un mensaje: {/p}{p}{#Texto#}{/p}{p}El equipo de Didactalia{/p}</texto>
+    </mensaje>
+  <mensaje id="200">
+    <asunto>Error in Twitter message shared from {#NombreEcosistema#}</asunto>
+    <texto>{p}Dear manager of {#NombreProyecto#},{/p}{p}your community has an associated Twitter account that allows the sending of a message ('tweet') whenever a resource is shared. This is done through integration with the Twitter user that you have provided as manager of your community in {#NombreEcosistema#}. On this occasion, your Twitter account has generated an error and the message ('tweet') corresponding to the shared resource has not been sent.{/p}{p}We are sorry that the action could not be completed.{/p}{p}Enjoy {#NombreEcosistema#}! We innovate with you.{/p}{p}{a href="mailto:{#CorreoSugerencias#}"}The {#NombreEcosistema#} Team{/a}{/p}</texto>
+  </mensaje>
+    <mensaje id="500">
+      <asunto>Bienvenido a la Plataforma de Conocimiento para miembros de Corporate Excellence</asunto>
+      <texto>{p}Hola {#NombrePersona#},{/p}{p}Te invitamos a participar en la Plataforma de Conocimiento para miembros de Corporate Excellence. Esta plataforma te permitirá acceder a través de tu usuario y contraseña a numerosos contenidos (artículos, casos, noticias, tesis, insights, etc.) en torno a la gestión de intangibles, así como comentarlos y compartirlos con toda la comunidades de miembros de Corporate Excellence.{/p}{p}Para completar tu registro es necesario que verifiques tu correo en el siguiente enlace: {a href="{#UrlEnlace#}" target="_blank"}Verificar correo electrónico{/a}.{p}</texto>
+    </mensaje>
+</mensajes>
+  <formatoCorreo>
+    <cabecera>
+		{table style="font-family: 'Roboto', sans-serif;" role="presentation" style="text-align: left; border: 0; border-spacing: 0; max-width: 970px"} {tbody} {tr} {td style="font-size: 15px; font-weight: 300; padding: 25px 60px"} {div style="margin-bottom: 50px;"}IMAGENPROYECTO{/div}
+	</cabecera>
+    <pie>
+		{/td}{/tr}{tr}{td style="padding: 10px; font-size: 10px; color: #555"}{p}This email account is enabled only for sending automatic messages. It cannot accept incoming e-mail. Please do not reply to this email.{/p}{p}In compliance with current legislation on services of the Information Society and Electronic Commerce and Data Protection, we inform you that you can unsubscribe at any time from receiving communications of {#URCONNOMBRECOMUNIDAD#} in {#SECCIONNOTIFICACIONES#}. Thanks for your collaboration.{/p}{/td}{/tr}{/tbody}{/table}
+	</pie>
+    <pieNotificaciones>
+		{/td}{/tr}{tr}{td style="padding: 10px; font-size: 10px; color: #555"}{p}This email account is enabled only for sending automatic messages. It cannot accept incoming e-mail. Please do not reply to this email.{/p}{p}In compliance with current legislation on services of the Information Society and Electronic Commerce and Data Protection, we inform you that you can unsubscribe at any time from receiving communications of {#URCONNOMBRECOMUNIDAD#} in {#SECCIONNOTIFICACIONES#}. Thanks for your collaboration.{/p}{/td}{/tr}{/tbody}{/table}
+	</pieNotificaciones>
+    <pieNewsletter>
+		{/td}{/tr}{tr}{td style="padding: 10px; font-size: 10px; color: #555"}{p}This email account is enabled only for sending automatic messages. It cannot accept incoming e-mail. Please do not reply to this email.{/p}{p}In compliance with current legislation on services of the Information Society and Electronic Commerce and Data Protection, we inform you that you can unsubscribe at any time from receiving communications of {#URCONNOMBRECOMUNIDAD#} in {#SECCIONNOTIFICACIONES#}. Thanks for your collaboration.{/p}{/td}{/tr}{/tbody}{/table}
+	</pieNewsletter>
+  </formatoCorreo>
+  </correos>

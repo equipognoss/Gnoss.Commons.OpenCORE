@@ -1,0 +1,20 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="EPPlus" Version="5.6.3" />
+    <PackageReference Include="ExcelDataReader" Version="3.6.0" />
+    <PackageReference Include="ExcelDataReader.DataSet" Version="3.6.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Es.Riam.Gnoss.AD\Es.Riam.Gnoss.AD.csproj" />
+    <ProjectReference Include="..\Es.Riam.Gnoss.Logica\Es.Riam.Gnoss.Logica.csproj" />
+    <ProjectReference Include="..\Es.Riam.Gnoss.Web.Controles\Es.Riam.Gnoss.Web.Controles.csproj" />
+    <ProjectReference Include="..\Es.Riam.Util\Es.Riam.Util.csproj" />
+  </ItemGroup>
+
+</Project>

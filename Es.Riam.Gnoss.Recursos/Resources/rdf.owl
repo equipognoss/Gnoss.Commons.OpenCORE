@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<rdf:RDF xmlns:dc="http://purl.org/dc/terms/"
+  xmlns:owl="http://www.w3.org/2002/07/owl#" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+  xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+  xml:base="http://www.w3.org/1999/02/22-rdf-syntax-ns">
+	<owl:Ontology rdf:about="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+		<dc:title>The RDF Vocabulary (RDF)</dc:title>
+		<dc:description>This is the RDF Schema for the RDF vocabulary defined in the RDF namespace.</dc:description>
+	</owl:Ontology>
+	<owl:Class rdf:about="http://www.w3.org/1999/02/22-rdf-syntax-ns#List">
+		<rdfs:isDefinedBy rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#"/>
+		<rdfs:label>List</rdfs:label>
+		<rdfs:comment>The class of RDF Lists.</rdfs:comment>
+		<rdfs:subClassOf rdf:resource="http://www.w3.org/2000/01/rdf-schema#Resource"/>
+	</owl:Class>
+	<owl:ObjectProperty rdf:about="http://www.w3.org/1999/02/22-rdf-syntax-ns#first">
+		<rdfs:isDefinedBy rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#"/>
+		<rdfs:label>first</rdfs:label>
+		<rdfs:comment>The first item in the subject RDF list.</rdfs:comment>
+		<rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
+		<rdfs:domain rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#List"/>
+		<rdfs:range rdf:resource="http://www.w3.org/2000/01/rdf-schema#Resource"/>
+	</owl:ObjectProperty>
+	<owl:ObjectProperty rdf:about="http://www.w3.org/1999/02/22-rdf-syntax-ns#rest">
+		<rdfs:isDefinedBy rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#"/>
+		<rdfs:label>rest</rdfs:label>
+		<rdfs:comment>The rest of the subject RDF list after the first item.</rdfs:comment>
+		<rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
+		<rdfs:domain rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#List"/>
+		<rdfs:range rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#List"/>
+	</owl:ObjectProperty>
+</rdf:RDF>
