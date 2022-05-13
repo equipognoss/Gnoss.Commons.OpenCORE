@@ -13,6 +13,7 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
+using Es.Riam.Gnoss.AD.EntityModel.Models.ProyectoDS;
 
 namespace Es.Riam.Gnoss.Logica.Facetado
 {
@@ -760,9 +761,9 @@ namespace Es.Riam.Gnoss.Logica.Facetado
         /// <param name="pFiltroContextoOrderBy"></param>
         /// <param name="pEsCatalogoNoSocial">Verdad si es un catálogo no social</param>        
         /// <param name="pNamespaceExtra">NamespacesExtra</param>
-        public void ObtenerResultadosBusquedaFormatoMapa(FacetadoDS pFacetadoDS, Dictionary<string, List<string>> pListaFiltros, List<string> pListaFiltrosExtra, bool pEstaEnMyGnoss, bool pEsMiembroComunidad, bool pEsInvitado, string pIdentidadID, List<string> pSemanticos, string pFiltroContextoSelect, string pFiltroContextoWhere, string pFiltroContextoOrderBy, TipoProyecto pTipoProyecto, string pNamespaceExtra, string pResultadosEliminar, DataWrapperFacetas pFiltroMapaDataWrapper, bool pPermitirRecursosPrivados, TipoBusqueda pTipoBusqueda, bool pEsMovil, Dictionary<string, Tuple<string, string, string, bool>> pFiltrosSearchPersonalizados)
+        public void ObtenerResultadosBusquedaFormatoMapa(FacetadoDS pFacetadoDS, Dictionary<string, List<string>> pListaFiltros, List<string> pListaFiltrosExtra, bool pEstaEnMyGnoss, bool pEsMiembroComunidad, bool pEsInvitado, string pIdentidadID, List<string> pSemanticos, string pFiltroContextoSelect, string pFiltroContextoWhere, string pFiltroContextoOrderBy, TipoProyecto pTipoProyecto, string pNamespaceExtra, string pResultadosEliminar, DataWrapperFacetas pFiltroMapaDataWrapper, bool pPermitirRecursosPrivados, TipoBusqueda pTipoBusqueda, bool pEsMovil, Dictionary<string, Tuple<string, string, string, bool>> pFiltrosSearchPersonalizados, List<PresentacionMapaSemantico> pListaPresentacionMapaSemantico = null)
         {
-            FacetadoAD.ObtenerResultadosBusquedaFormatoMapa(mIdGrafo, pFacetadoDS, pListaFiltros, pListaFiltrosExtra, pEstaEnMyGnoss, pEsMiembroComunidad, pEsInvitado, pIdentidadID.ToUpper(), pSemanticos, pFiltroContextoSelect, pFiltroContextoWhere, pFiltroContextoOrderBy, pTipoProyecto, pNamespaceExtra, pResultadosEliminar, pFiltroMapaDataWrapper, pPermitirRecursosPrivados, pTipoBusqueda, pEsMovil, pFiltrosSearchPersonalizados);
+            FacetadoAD.ObtenerResultadosBusquedaFormatoMapa(mIdGrafo, pFacetadoDS, pListaFiltros, pListaFiltrosExtra, pEstaEnMyGnoss, pEsMiembroComunidad, pEsInvitado, pIdentidadID.ToUpper(), pSemanticos, pFiltroContextoSelect, pFiltroContextoWhere, pFiltroContextoOrderBy, pTipoProyecto, pNamespaceExtra, pResultadosEliminar, pFiltroMapaDataWrapper, pPermitirRecursosPrivados, pTipoBusqueda, pEsMovil, pFiltrosSearchPersonalizados, pListaPresentacionMapaSemantico);
         }
 
         /// <summary>
@@ -1181,7 +1182,6 @@ namespace Es.Riam.Gnoss.Logica.Facetado
                             facetadoAuxDS.Merge(ObtenerValoresPropiedadesEntidadesConJerarquiaYExternas(pGrafo, sujetos.GetRange(0, numeroFin), propsConJerarquia, false));
                             sujetos.RemoveRange(0, numeroFin);
                         }
-                        //facetadoAuxDS.Merge(ObtenerValoresPropiedadesEntidadesConJerarquiaYExternas(pGrafo, sujetos, propsConJerarquia, false));
                     }
                 }
             }

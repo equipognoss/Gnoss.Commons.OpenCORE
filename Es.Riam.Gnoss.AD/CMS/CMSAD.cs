@@ -705,7 +705,7 @@ namespace Es.Riam.Gnoss.AD.CMS
             }
             dataWrapperCMS.ListaCMSComponente = queryCMSComponente.OrderBy(item => item.Nombre).ToList();
 
-            ////CMSPropiedadComponente
+            //CMSPropiedadComponente
             var queryCMSPropiedadComponente = mEntityContext.CMSComponente.JoinCMSPropiedadComponente().Where(item => item.CMSComponente.ProyectoID.Equals(pProyectoID));
             if (!string.IsNullOrEmpty(pTexto))
             {

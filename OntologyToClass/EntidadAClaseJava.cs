@@ -2863,7 +2863,7 @@ namespace OntologiaAClase
 
                 Clase.AppendLine($"{UtilCadenasOntology.Tabs(3)}if (listaSearch != null && listaSearch.size() > 0){{");
                 Clase.AppendLine($"{UtilCadenasOntology.Tabs(4)}for(String valorSearch : listaSearch){{");
-                Clase.AppendLine($"{UtilCadenasOntology.Tabs(5)}search += valorSearch.concat(\" \");");
+                Clase.AppendLine($"{UtilCadenasOntology.Tabs(5)}search += valorSearch.replace(\"\\r\\n\", \" \").replace(\"\\n\", \" \").replace(\"\\r\", \" \").replace(\"\\\\\", \"\\\\\\\\\").replace(\"\\\"\", \"\\\\\\\"\").concat(\" \");");
                 Clase.AppendLine($"{UtilCadenasOntology.Tabs(4)}}}");
                 Clase.AppendLine($"{UtilCadenasOntology.Tabs(3)}}}");
                 Clase.AppendLine($"{UtilCadenasOntology.Tabs(3)}if(search != null && !search.isEmpty())");

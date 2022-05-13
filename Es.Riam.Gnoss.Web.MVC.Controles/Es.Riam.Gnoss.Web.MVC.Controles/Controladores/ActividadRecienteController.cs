@@ -75,7 +75,6 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
 
         public RecentActivity ObtenerActividadReciente(int pNumPagina, int pNumElementos, TipoActividadReciente pTipo, Guid? pPerfilIDPagina, bool pEsOrganizacion, Guid pComponenteID)
         {
-            //List<RecentActivityItem> ActividadRecienteItems = new List<RecentActivityItem>();
             List<string> ActividadRecienteItems = new List<string>();
 
             LiveUsuariosCL liveUsuariosCL = new LiveUsuariosCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mServicesUtilVirtuosoAndReplication);
@@ -89,7 +88,6 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
                 bool tienePrivados = false;
                 if (!pPerfilIDPagina.HasValue)
                 {
-                    //FacetadoCL facetadoCL = new FacetadoCL(ParametrosAplicacionDS.ParametroAplicacion.Select("Parametro = 'UrlIntragnoss'")[0]["Valor"].ToString());
                     FacetadoCL facetadoCL = new FacetadoCL(ParametrosAplicacionDS.Find(parametro => parametro.Parametro.Equals("UrlIntragnoss")).Valor, mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mVirtuosoAD, mServicesUtilVirtuosoAndReplication);
                     tienePrivados = facetadoCL.TienePrivados(proyectoID, IdentidadActual.PerfilID);
                     facetadoCL.Dispose();
@@ -147,7 +145,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
                         {
                             DocumentacionCN docCN = new DocumentacionCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
                             List<Guid> listaDocumentos = docCN.ObtenerDocumentosIDActividadRecienteEnProyecto(proyectoID);
-                            if(listaDocumentos.Count > 100)
+                            if (listaDocumentos.Count > 100)
                             {
                                 listaDocumentos = listaDocumentos.GetRange(0, 100);
                             }
@@ -319,9 +317,6 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
 
             if (pListaResultados != null)
             {
-                //string[] listaClaves = new string[pListaResultados.Count];
-                //bool[] listaClavesSuscrLeida = new bool[pListaResultados.Count];
-
                 Dictionary<Guid, List<Guid>> listaClavesRecursosProyecto = new Dictionary<Guid, List<Guid>>();
                 Dictionary<Guid, List<Guid>> listaClavesPerfilesProyecto = new Dictionary<Guid, List<Guid>>();
                 Dictionary<Guid, Proyecto> listaProyectos = new Dictionary<Guid, Proyecto>();
@@ -330,94 +325,94 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
                 int cont = 0;
                 foreach (string id in pListaResultados)
                 {
-                    string[] parametros = id.Split('_');
-
-                    RecentActivityItem item = new RecentActivityItem();
-                    Guid proyID = Guid.Empty;
-
-                    if (parametros[0] == "0" || parametros[0] == "1" || parametros[0] == "2")
+                    if (!string.IsNullOrEmpty(id))
                     {
-                        Guid docID = new Guid(parametros[1]);
-                        proyID = new Guid(parametros[2]);
+                        string[] parametros = id.Split('_');
 
-                        if (!listaClavesRecursosProyecto.ContainsKey(proyID))
-                        {
-                            listaClavesRecursosProyecto.Add(proyID, new List<Guid>());
-                        }
-                        if (!listaClavesRecursosProyecto[proyID].Contains(docID))
-                        {
-                            listaClavesRecursosProyecto[proyID].Add(docID);
-                        }
-                        item = new RecentActivityResourceItem();
-                    }
-                    else if (parametros[0] == "4")
-                    {
-                        Guid perfilID = new Guid(parametros[1]);
-                        proyID = new Guid(parametros[2]);
+                        RecentActivityItem item = new RecentActivityItem();
+                        Guid proyID = Guid.Empty;
 
-                        if (!listaClavesPerfilesProyecto.ContainsKey(proyID))
+                        if (parametros[0] == "0" || parametros[0] == "1" || parametros[0] == "2")
                         {
-                            listaClavesPerfilesProyecto.Add(proyID, new List<Guid>());
-                        }
+                            Guid docID = new Guid(parametros[1]);
+                            proyID = new Guid(parametros[2]);
 
-                        listaClavesPerfilesProyecto[proyID].Add(perfilID);
-
-                        item = new RecentActivityMemberItem();
-                    }
-                    else if (parametros[0] == "12")
-                    {
-                        proyID = new Guid(parametros[1]);
-                        int numNuevosMiembros = 0;
-
-                        if (parametros.Length > 2)
-                        {
-                            numNuevosMiembros = int.Parse(parametros[2]);
-                        }
-                    }
-
-                    Proyecto proy = ProyectoVirtual;
-                    ParametroGeneral parametrosGenerales = ParametrosGeneralesVirtualRow;
-                    if (!ProyectoVirtual.Clave.Equals(proyID))
-                    {
-                        if (listaProyectos.ContainsKey(proyID))
-                        {
-                            proy = listaProyectos[proyID];
-                        }
-                        else
-                        {
-                            ProyectoCL proyCL = new ProyectoCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mVirtuosoAD, mServicesUtilVirtuosoAndReplication);
-                            GestionProyecto gestProy = new GestionProyecto(proyCL.ObtenerProyectoPorID(proyID), mLoggingService, mEntityContext);
-                            if (gestProy.ListaProyectos.ContainsKey(proyID))
+                            if (!listaClavesRecursosProyecto.ContainsKey(proyID))
                             {
-                                proy = gestProy.ListaProyectos[proyID];
-                                listaProyectos.Add(proyID, proy);
+                                listaClavesRecursosProyecto.Add(proyID, new List<Guid>());
+                            }
+                            if (!listaClavesRecursosProyecto[proyID].Contains(docID))
+                            {
+                                listaClavesRecursosProyecto[proyID].Add(docID);
+                            }
+                            item = new RecentActivityResourceItem();
+                        }
+                        else if (parametros[0] == "4")
+                        {
+                            Guid perfilID = new Guid(parametros[1]);
+                            proyID = new Guid(parametros[2]);
+
+                            if (!listaClavesPerfilesProyecto.ContainsKey(proyID))
+                            {
+                                listaClavesPerfilesProyecto.Add(proyID, new List<Guid>());
                             }
 
+                            listaClavesPerfilesProyecto[proyID].Add(perfilID);
 
-                            ParametroGeneralCL paramCL = new ParametroGeneralCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mServicesUtilVirtuosoAndReplication);
-                            parametrosGenerales = paramCL.ObtenerParametrosGeneralesDeProyecto(proyID).ListaParametroGeneral.FirstOrDefault();
-                            if (parametrosGenerales != null)
-                            {
-                                listaParametrosGenerales.Add(proyID, parametrosGenerales);
-                            }
-
+                            item = new RecentActivityMemberItem();
                         }
+                        else if (parametros[0] == "12")
+                        {
+                            proyID = new Guid(parametros[1]);
+                            int numNuevosMiembros = 0;
+
+                            if (parametros.Length > 2)
+                            {
+                                numNuevosMiembros = int.Parse(parametros[2]);
+                            }
+                        }
+
+                        Proyecto proy = ProyectoVirtual;
+                        ParametroGeneral parametrosGenerales = ParametrosGeneralesVirtualRow;
+                        if (!ProyectoVirtual.Clave.Equals(proyID))
+                        {
+                            if (listaProyectos.ContainsKey(proyID))
+                            {
+                                proy = listaProyectos[proyID];
+                            }
+                            else
+                            {
+                                ProyectoCL proyCL = new ProyectoCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mVirtuosoAD, mServicesUtilVirtuosoAndReplication);
+                                GestionProyecto gestProy = new GestionProyecto(proyCL.ObtenerProyectoPorID(proyID), mLoggingService, mEntityContext);
+                                if (gestProy.ListaProyectos.ContainsKey(proyID))
+                                {
+                                    proy = gestProy.ListaProyectos[proyID];
+                                    listaProyectos.Add(proyID, proy);
+                                }
+
+                                ParametroGeneralCL paramCL = new ParametroGeneralCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mServicesUtilVirtuosoAndReplication);
+                                parametrosGenerales = paramCL.ObtenerParametrosGeneralesDeProyecto(proyID).ListaParametroGeneral.FirstOrDefault();
+                                if (parametrosGenerales != null)
+                                {
+                                    listaParametrosGenerales.Add(proyID, parametrosGenerales);
+                                }
+                            }
+                        }
+
+                        if (!proy.Clave.Equals(ProyectoAD.MetaProyecto))
+                        {
+                            item.UrlCommunity = UrlsSemanticas.ObtenerURLComunidad(UtilIdiomas, BaseURLIdioma, proy.NombreCorto);
+                            item.NameCommunity = UtilCadenas.ObtenerTextoDeIdioma(proy.Nombre, UtilIdiomas.LanguageCode, parametrosGenerales.IdiomaDefecto);
+                        }
+
+                        item.Key = id.Replace("_leido", "");
+                        item.Readed = id.Contains("_leido");
+
+                        items.Add(item);
+
+                        cont++;
                     }
-
-                    if (!proy.Clave.Equals(ProyectoAD.MetaProyecto))
-                    {
-                        item.UrlCommunity = UrlsSemanticas.ObtenerURLComunidad(UtilIdiomas, BaseURLIdioma, proy.NombreCorto);
-                        item.NameCommunity = UtilCadenas.ObtenerTextoDeIdioma(proy.Nombre, UtilIdiomas.LanguageCode, parametrosGenerales.IdiomaDefecto);
-                    }
-
-                    item.Key = id.Replace("_leido", "");
-                    item.Readed = id.Contains("_leido");
-
-                    items.Add(item);
-
-                    cont++;
                 }
-
                 if (listaClavesRecursosProyecto.Count > 0)
                 {
                     foreach (Guid proyectoID in listaClavesRecursosProyecto.Keys)

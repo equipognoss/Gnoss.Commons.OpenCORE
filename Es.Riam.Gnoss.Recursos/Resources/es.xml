@@ -3979,6 +3979,7 @@
     <Resource tag="CONFIGURARINTEGRACIONCONTINUAREPOSITORIOECOSISTEMA">administrar-integracion-continua-repository-ecosistema</Resource>
     <Resource tag="URLAPIDESPLIEGUES">url-api-despliegues</Resource>
     <Resource tag="CONFIGURAFTP">configurar-ftp</Resource>
+    <Resource tag="ACTUALIZARDLLS">actualizar-dlls</Resource>
     <Resource tag="ADMINSERVICIOSWEB">administrar-servicios-web</Resource>
     <Resource tag="REENVIAREMAILVERIFICACION">validar-email</Resource>
     <Resource tag="ADMINISTRARDESCARGARTRADUCCIONES">descargar-traducciones</Resource>
@@ -3998,10 +3999,11 @@
     <Resource tag="ADMINADVANCEDOPTIONS">Opciones avanzadas</Resource>
     <Resource tag="ADMINISTRARSEOGOOGLE">Administrar SEO y Google Analytics</Resource>
     <Resource tag="ADMINISTRARSEOGOOGLEPLATAFORMA">Administrar SEO y Google Analytics de la plataforma</Resource>
-	<Resource tag="ADMINISTRARSHAREPOINT">Administrar SharePoint</Resource>
+	  <Resource tag="ADMINISTRARSHAREPOINT">Administrar SharePoint</Resource>
     <Resource tag="ADMINISTRARPEPERMISOSPAGINAS">Permisos administración</Resource>
     <Resource tag="COMADMINCOMEVENTOS">Permisos administración</Resource>
     <Resource tag="CONFIGURAFTP">Configurar FTP</Resource>
+    <Resource tag="ACTUALIZARDLLS">Actualizar DLLs</Resource>
     <Resource tag="ADMINESTILOS">Estilos</Resource>
     <Resource tag="PASARAPRODUCCION">Pasar a producción</Resource>
     <Resource tag="PASARAPRODUCCIONVISTAS">Pasar a producción vistas</Resource>
@@ -4173,6 +4175,7 @@
     <Resource tag="DATOEXTRAPROPIEDAD">Dato extra propiedad</Resource>
     <Resource tag="IGNORARPRIVACIDADENBUSQUEDA">Ignorar la privacidad en búsqueda</Resource>
     <Resource tag="OMITIRCARGAINICIALFACETASRESULTADOS">Omitir la carga inicial de facetas y resultados</Resource>
+    <Resource tag="RELACIONMANDATORY">Filtro de RelacionMandatory</Resource>
   </page>
   <page name="COMADMINCOOKIES">
     <Resource tag="NOMBRECATEGORIAS">Administrar categorías de las cookies</Resource>
@@ -4222,6 +4225,7 @@
     <Resource tag="TEXTOBUSQUEDASINRESULTADOS">Texto que se va a mostrar si la busqueda no trae ningun resultado</Resource>
     <Resource tag="IGNORARPRIVACIDADENBUSQUEDA">Ignorar la privacidad en búsqueda</Resource>
     <Resource tag="OMITIRCARGAINICIALFACETASRESULTADOS">Omitir la carga inicial de facetas y resultados</Resource>
+    <Resource tag="RELACIONMANDATORY">Filtro de RelacionMandatory</Resource>
   </page>
   <page name="COMADMINFACETAS">
     <Resource tag="TITULO">Configurar facetas</Resource>

@@ -30,7 +30,7 @@ namespace Es.Riam.Gnoss.Logica.ParametroAplicacion
             : base(entityContext, loggingService, configService, servicesUtilVirtuosoAndReplication)
         {
             mLoggingService = loggingService;
-            this.ParametroAplicacionAD = new ParametroAplicacionAD(loggingService, entityContext, configService, servicesUtilVirtuosoAndReplication);
+            ParametroAplicacionAD = new ParametroAplicacionAD(loggingService, entityContext, configService, servicesUtilVirtuosoAndReplication);
         }
 
         /// <summary>
@@ -42,7 +42,7 @@ namespace Es.Riam.Gnoss.Logica.ParametroAplicacion
             : base(entityContext, loggingService, configService, servicesUtilVirtuosoAndReplication)
         {
             mLoggingService = loggingService;
-            this.ParametroAplicacionAD = new ParametroAplicacionAD(pFicheroConfiguracionBD, loggingService, entityContext, configService, servicesUtilVirtuosoAndReplication);
+            ParametroAplicacionAD = new ParametroAplicacionAD(pFicheroConfiguracionBD, loggingService, entityContext, configService, servicesUtilVirtuosoAndReplication);
         }
 
         #endregion
@@ -85,9 +85,6 @@ namespace Es.Riam.Gnoss.Logica.ParametroAplicacion
                 {
                     TerminarTransaccion(true);
                 }
-
-
-
             }
             catch (DBConcurrencyException ex)
             {
@@ -168,6 +165,7 @@ namespace Es.Riam.Gnoss.Logica.ParametroAplicacion
         {
             return ParametroAplicacionAD.ObtenerProyectosSinRegistroObligatorio(id);
         }
+
         /// <summary>
         /// Modifica el valor de un parametro en la base de datos
         /// </summary>
@@ -179,7 +177,7 @@ namespace Es.Riam.Gnoss.Logica.ParametroAplicacion
         }
 
         /// <summary>
-        /// Modifica el valor de un parametro en la base de datos
+        /// Obtiene el valor de la base de datos del paráemtro indicado
         /// </summary>
         /// <param name="parametro">Nombre del parametro</param>
         /// <param name="valor">Valor que tiene el parametro</param>

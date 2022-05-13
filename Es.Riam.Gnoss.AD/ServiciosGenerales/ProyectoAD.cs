@@ -3299,6 +3299,16 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
         }
 
         /// <summary>
+        /// Obtiene el id del proyecto padre del proyecto pasado por parámetro
+        /// </summary>
+        /// <param name="pProyectoID">Identificador del proyecto del cual se quiere obtener el padre</param>
+        /// <returns>Id del proyecto padre</returns>
+        public Guid ObtenerProyectoPadreIDDeProyecto(Guid pProyectoID)
+        {
+            return mEntityContext.Proyecto.Where(item => item.ProyectoSuperiorID.HasValue && item.ProyectoID.Equals(pProyectoID)).Select(item => item.ProyectoSuperiorID.Value).FirstOrDefault();
+        }
+
+        /// <summary>
         /// Obtiene los proyectos en los que participa una identidad (no muestra los que estén cerrados) pasada por parámetro
         /// </summary>
         /// <param name="pIdentidad">Identificador de la identidad</param>
@@ -5037,6 +5047,23 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
             return mEntityContext.ProyectoPestanyaMenu.Where(item => item.ProyectoID.Equals(pProyectoID)).OrderBy(item => item.Orden).ToList();
         }
 
+        public List<ProyectoPestanyaMenu> ObtenerPestanyasDeProyectoSegunPrivacidadDeIdentidad(Guid pProyectoID, Guid pIdentidadID)
+        {
+            Guid perfilID = mEntityContext.Identidad.Where(item => item.IdentidadID.Equals(pIdentidadID)).Select(item => item.PerfilID).FirstOrDefault();
+
+            List<Guid> listaIdentidadesPerfil = mEntityContext.Identidad.Where(item => item.PerfilID.Equals(perfilID)).Select(item => item.IdentidadID).ToList();
+
+            List<Guid> listaGruposPerteneceIdentidad = mEntityContext.GrupoIdentidadesParticipacion.Where(item => listaIdentidadesPerfil.Contains(item.IdentidadID)).Select(item => item.GrupoID).ToList();
+
+
+            var subconsultaPestanyasGrupos = mEntityContext.ProyectoPestanyaMenuRolGrupoIdentidades.Where(item => listaGruposPerteneceIdentidad.Contains(item.GrupoID)).Select(item => item.PestanyaID);
+            var subconsultaPestanyasPerfil = mEntityContext.ProyectoPestanyaMenuRolIdentidad.Where(item => item.PerfilID.Equals(perfilID)).Select(item => item.PestanyaID);
+
+            var conjuntoPestanyasIDs = subconsultaPestanyasGrupos.Union(subconsultaPestanyasPerfil).Distinct();
+
+            return mEntityContext.ProyectoPestanyaMenu.Where(item => item.ProyectoID.Equals(pProyectoID) && (conjuntoPestanyasIDs.Contains(item.PestanyaID) && item.Privacidad == 2 || item.Privacidad == 0)).ToList();
+        }
+
         /// <summary>
         /// Obtiene las pestañas de un proyecto que se le pasa por parametros
         /// </summary>
@@ -5194,6 +5221,19 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
             #endregion
             return dataWrapperProyecto;
         }
+
+        public List<PresentacionMapaSemantico> ObtenerListaPresentacionMapaSemantico(Guid pProyectoID, string pNombreOnto = "")
+        {
+            if (string.IsNullOrEmpty(pNombreOnto))
+            {
+                return mEntityContext.PresentacionMapaSemantico.Where(item => item.ProyectoID.Equals(pProyectoID)).OrderBy(item => item.Orden).ToList();
+            }
+            else
+            {
+                return mEntityContext.PresentacionMapaSemantico.Where(item => item.ProyectoID.Equals(pProyectoID) && item.Ontologia.ToLower().Contains($"{pNombreOnto.ToLower()}.owl")).OrderBy(item => item.Orden).ToList();
+            }
+        }
+
         /// <summary>
         /// Obtiene los tipo de documentos permitidos para un rol de usuario en un determinado proyecto.
         /// </summary>

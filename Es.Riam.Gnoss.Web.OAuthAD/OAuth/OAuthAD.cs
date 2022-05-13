@@ -220,18 +220,6 @@ namespace Es.Riam.Gnoss.OAuthAD.OAuth
             return resultado;
         }
 
-        /// <summary>
-        /// Comprueba si existe un Nonce en la BD
-        /// </summary>
-        /// <param name="pContext">Contexto</param>
-        /// <param name="pNonce">Nonce</param>
-        /// <param name="pTimestampUtc">Timestamp</param>
-        /// <returns>Verdad si existe, falso en caso contrario</returns>
-        public bool ComprobarExisteNonce(string pContext, string pNonce, DateTime pTimestampUtc)
-        {
-            return mEntityContextOauth.Nonce.Any(nonce => nonce.Context.Equals(pContext) && nonce.Code.Equals(pNonce) && nonce.Timestamp.Equals(pTimestampUtc));
-
-        }
 
         /// <summary>
         /// Obtiene el ID de un usuario a partir de su login

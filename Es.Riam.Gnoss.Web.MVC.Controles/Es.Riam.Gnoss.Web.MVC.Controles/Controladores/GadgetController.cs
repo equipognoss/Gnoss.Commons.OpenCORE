@@ -2151,7 +2151,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
 
         public List<ResourceModel> CargarResultadosContexto(Guid pProyectoID, string pParametros, bool pPrimeraCarga, string pLanguageCode, short pTipoBusqueda, int pNumRecursosPagina, string pGrafo, string pUrlPaginaBusqueda, string pFiltroContexto, bool pEsBot, string pNamespacesExtra, string pListaItemsBusqueda, string pResultadosEliminar, string pParametrosAdicionales, Guid pIdentidadID, bool pEsUsuarioInvitado)
         {
-            CargadorResultadosModel cargadorResultadosModel = new CargadorResultadosModel(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mVirtuosoAD);
+            CargadorResultadosModel cargadorResultadosModel = new CargadorResultadosModel(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mVirtuosoAD, mServicesUtilVirtuosoAndReplication);
             List<ResourceModel> listaRecursosDevolver = new List<ResourceModel>();
             Stopwatch sw = null;
             try

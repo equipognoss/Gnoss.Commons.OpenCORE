@@ -12733,7 +12733,7 @@ namespace Es.Riam.Gnoss.AD.Identidad
 
         public DataWrapperDatoExtra ObtenerIdentidadDatoExtraRegistroDeProyecto(Guid pProyectoID, Guid pIdentidadID)
         {
-            ////DatoExtraProyectoOpcion
+            //DatoExtraProyectoOpcion
             DataWrapperDatoExtra dataWrapperDatoExtra = new DataWrapperDatoExtra();
 
             dataWrapperDatoExtra.ListaTriples = mEntityContext.DatoExtraProyecto.JoinDatoExtraProyectoOpcion().JoinDatoExtraProyectoOpcionIdentidad().Where(item => item.DatoExtraProyecto.ProyectoID.Equals(pProyectoID) && item.DatoExtraProyectoOpcionIdentidad.IdentidadID.Equals(pIdentidadID)).Select(item => new Triples

@@ -184,6 +184,16 @@ namespace Es.Riam.Gnoss.Logica.ServiciosGenerales
         }
 
         /// <summary>
+        /// Obtiene la lista de presentaciones mapa semántico para el proyecto indicado
+        /// </summary>
+        /// <param name="pProyectoID">Identificador del proyecto del cual queremos obtener el listado</param>
+        /// <returns></returns>
+        public List<PresentacionMapaSemantico> ObtenerListaPresentacionMapaSemantico(Guid pProyectoID, string pNombreOnto = "")
+        {
+            return ProyectoAD.ObtenerListaPresentacionMapaSemantico(pProyectoID);
+        }
+
+        /// <summary>
         /// Obtiene una RedireccionRegistroRuta por su id y sus RedireccionValorParametro asociadas 
         /// </summary>
         /// <param name="pDominio"></param>
@@ -201,6 +211,17 @@ namespace Es.Riam.Gnoss.Logica.ServiciosGenerales
         public List<ProyectoPestanyaMenu> ObtenerProyectoPestanyaMenuPorProyectoID(Guid pProyectoID)
         {
             return ProyectoAD.ObtenerProyectoPestanyaMenuPorProyectoID(pProyectoID);
+        }
+
+        /// <summary>
+        /// Obtiene las pestanyas del prodecto que tenemos permitido ver si son privadas para ciertas identidades o grupos solo vere
+        /// </summary>
+        /// <param name="pProyectoID">Identificador del proyecto del cual queremos obtener las pestanyas</param>
+        /// <param name="pIdentidadID">Identificador de la identidad del usuario que esta navegando</param>
+        /// <returns></returns>
+        public List<ProyectoPestanyaMenu> ObtenerPestanyasDeProyectoSegunPrivacidadDeIdentidad(Guid pProyectoID, Guid pIdentidadID)
+        {
+            return ProyectoAD.ObtenerPestanyasDeProyectoSegunPrivacidadDeIdentidad(pProyectoID, pIdentidadID);
         }
 
         /// <summary>
@@ -1508,6 +1529,17 @@ namespace Es.Riam.Gnoss.Logica.ServiciosGenerales
         {
             return ProyectoAD.ObtenerProyectosPadresDeProyectos(pListaProyectosID);
         }
+
+        /// <summary>
+        /// Obtiene el id del proyecto padre del proyecto pasado por parámetro
+        /// </summary>
+        /// <param name="pProyectoID">Identificador del proyecto del cual se quiere obtener el padre</param>
+        /// <returns>Id del proyecto padre</returns>
+        public Guid ObtenerProyectoPadreIDDeProyecto(Guid pProyectoID)
+        {
+            return ProyectoAD.ObtenerProyectoPadreIDDeProyecto(pProyectoID);
+        }
+
 
         /// <summary>
         /// Obtiene el proyecto en el que participa una identidad (no muestra los que estén cerrados)

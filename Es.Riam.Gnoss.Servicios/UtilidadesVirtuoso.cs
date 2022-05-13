@@ -559,7 +559,7 @@ namespace Es.Riam.Gnoss.Servicios
                             }
                         }
 
-                        triples += GenerarTripletaRecogidadeVirtuoso_ControlCheckPoint(pFicheroConfiguracionBD, pFicheroConfiguracionBDBase, pUrlIntragnoss, PasarObjetoALower(sujeto), predicado, PasarObjetoALower(objeto), objeto, Fecha, Numero, TextoInvariable, EntExt, idioma);
+                        triples += GenerarTripletaRecogidadeVirtuoso_ControlCheckPoint(pFicheroConfiguracionBD, pFicheroConfiguracionBDBase, pUrlIntragnoss, sujeto, predicado, PasarObjetoALower(objeto), objeto, Fecha, Numero, TextoInvariable, EntExt, idioma);
 
                         //insertamos tripleta de la entidad auxiliar
                         triples += GenerarTripletaRecogidadeVirtuoso_ControlCheckPoint(pFicheroConfiguracionBD, pFicheroConfiguracionBDBase, pUrlIntragnoss, sujetoAuxiliar, predicadoAuxiliar, PasarObjetoALower(sujeto), sujeto, Fecha, Numero, TextoInvariable, EntExt, null);
@@ -3037,7 +3037,6 @@ namespace Es.Riam.Gnoss.Servicios
                         }
 
                         ComprobarPropiedadEsRangoFecha(filasRangoFechas, predicado, objeto, pListaTriplesRecurso, propiedadFechaInicioValorFechaInicio, propiedadFechaFinValorFechaFin);
-
 
                         if (esTripletaEntidadPadre)
                         {

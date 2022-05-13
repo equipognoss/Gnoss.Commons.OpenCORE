@@ -19,7 +19,7 @@ namespace Es.Riam.Gnoss.FirstDataLoad.Properties {
     // a través de una herramienta como ResGen o Visual Studio.
     // Para agregar o quitar un miembro, edite el archivo .ResX y, a continuación, vuelva a ejecutar ResGen
     // con la opción /str o recompile su proyecto de VS.
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "16.0.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "17.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     internal class Resources {
@@ -61,13 +61,13 @@ namespace Es.Riam.Gnoss.FirstDataLoad.Properties {
         }
         
         /// <summary>
-        ///   Busca una cadena traducida similar a INSERT [dbo].[FacetaObjetoConocimiento] ([ObjetoConocimiento], [Faceta], [Nombre], [Orden], [Autocompletar], [TipoPropiedad], [TipoDisenio], [ElementosVisibles], [AlgoritmoTransformacion], [EsSemantica], [Mayusculas], [EsPorDefecto], [NombreFaceta], [ComportamientoOr]) VALUES (N&apos;ArticuloBlog&apos;, N&apos;gnoss:hasfechapublicacion&apos;, N&apos;Fecha de publicación@es|||Publishing date@en&apos;, 10003, 0, 1, 0, 5, 6, 0, 0, 1, N&apos;Fecha de publicación@es|||Publishing date@en&apos;, 0)
+        ///   Busca una cadena traducida similar a INSERT [dbo].[FacetaObjetoConocimiento] ([ObjetoConocimiento], [Faceta], [Nombre], [Orden], [Autocompletar], [TipoPropiedad], [TipoDisenio], [ElementosVisibles], [AlgoritmoTransformacion], [EsSemantica], [Mayusculas], [EsPorDefecto], [NombreFaceta], [ComportamientoOr]) VALUES (N&apos;Comentario&apos;, N&apos;dce:type&apos;, N&apos;Espacio@es|||Space@en&apos;, 2, 1, 0, 1, 5, 8, 0, 2, 1, N&apos;Espacio@es|||Space@en&apos;, 0)
         ///
-        ///INSERT [dbo].[FacetaObjetoConocimiento] ([ObjetoCono [resto de la cadena truncado]&quot;;.
+        ///INSERT [dbo].[FacetaObjetoConocimiento] ([ObjetoConocimiento], [Faceta], [Nombre], [Orden], [Autocompletar], [TipoPropied [resto de la cadena truncado]&quot;;.
         /// </summary>
-        internal static string Carga_BD_ACID_facetaObjetoConocimiento {
+        internal static string carga_bd_acid_facetaobjetoconocimiento {
             get {
-                return ResourceManager.GetString("Carga_BD_ACID_facetaObjetoConocimiento", resourceCulture);
+                return ResourceManager.GetString("carga_bd_acid_facetaobjetoconocimiento", resourceCulture);
             }
         }
         
@@ -78,9 +78,9 @@ namespace Es.Riam.Gnoss.FirstDataLoad.Properties {
         ///INSERT [dbo].[Pais] ([PaisID], [Nombre]) VALUES (N&apos;e5a21c0b-98d2-4ea1-a074-05544c803f77&apos;, N&apos;Fiyi&apos;)
         ///INSERT [dbo].[Pais] ([PaisID], [Nombre]) VALUES (N&apos;7fe46ca5-6440-4f3c-8330-0584ee70ba12&apos;, N&apos;Islas Vírgenes [resto de la cadena truncado]&quot;;.
         /// </summary>
-        internal static string Carga_BD_ACID_PAIS {
+        internal static string carga_bd_acid_pais {
             get {
-                return ResourceManager.GetString("Carga_BD_ACID_PAIS", resourceCulture);
+                return ResourceManager.GetString("carga_bd_acid_pais", resourceCulture);
             }
         }
         
@@ -89,9 +89,9 @@ namespace Es.Riam.Gnoss.FirstDataLoad.Properties {
         ///INSERT [dbo].[Provincia] ([ProvinciaID], [PaisID], [Nombre], [CP]) VALUES (N&apos;bd4dbd91-b048-41e3-bebe-00484966cde8&apos;, N&apos;98d604b4-3141-4499-bde1-c320f09ef45c&apos;, N&apos;Burgos&apos;, N&apos;09&apos;)
         ///INSERT [dbo].[Provincia] ([ProvinciaID], [PaisID], [Nombre], [CP]) VALUES (N&apos;c5460d7d-7aa0-409b-a3c0-0587aa40c0a6&apos;, N&apos;98d604b4-3141-4499-bde1-c320f09ef45c&apos;, N&apos;A [resto de la cadena truncado]&quot;;.
         /// </summary>
-        internal static string Carga_BD_ACID_Provincia {
+        internal static string carga_bd_acid_provincia {
             get {
-                return ResourceManager.GetString("Carga_BD_ACID_Provincia", resourceCulture);
+                return ResourceManager.GetString("carga_bd_acid_provincia", resourceCulture);
             }
         }
     }

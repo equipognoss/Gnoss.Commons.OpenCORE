@@ -8,7 +8,7 @@ namespace Es.Riam.Gnoss.OAuthAD.OAuth
     public partial class UsuarioConsumer
     {
         public Guid UsuarioID { get; set; }
-
+        [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
         public int ConsumerId { get; set; }
 

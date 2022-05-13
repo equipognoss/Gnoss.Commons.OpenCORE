@@ -333,7 +333,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
 
                 opcionesBusqueda.IgnorarPrivacidadEnBusqueda = filaPestanyaBusqueda.IgnorarPrivacidadEnBusqueda;
                 opcionesBusqueda.OmitirCargaInicialFacetasResultados = filaPestanyaBusqueda.OmitirCargaInicialFacetasResultados;
-
+                opcionesBusqueda.RelacionMandatory = filaPestanyaBusqueda.RelacionMandatory;
                 opcionesBusqueda.OpcionesVistas = CargarVistasDisponibles(filaPestanyaBusqueda);
                 opcionesBusqueda.OpcionesVistas.PosicionCentralMapa = filaPestanyaBusqueda.PosicionCentralMapa;
 
@@ -497,7 +497,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
 
             opcionesBusqueda.IgnorarPrivacidadEnBusqueda = false;
             opcionesBusqueda.OmitirCargaInicialFacetasResultados = false;
-
+            opcionesBusqueda.RelacionMandatory = "";
             opcionesBusqueda.OpcionesVistas = new TabModel.SearchTabModel.ViewsSearchTabModel();
             opcionesBusqueda.OpcionesVistas.VistaPorDefecto = 0;
             opcionesBusqueda.OpcionesVistas.VistaListado = true;
@@ -1003,6 +1003,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
             pFilaBusqueda.MostrarCajaBusqueda = pPestanya.OpcionesBusqueda.MostrarCajaBusqueda;
             pFilaBusqueda.MostrarEnComboBusqueda = pPestanya.OpcionesBusqueda.MostrarEnBusquedaCabecera;
             pFilaBusqueda.IgnorarPrivacidadEnBusqueda = pPestanya.OpcionesBusqueda.IgnorarPrivacidadEnBusqueda;
+            pFilaBusqueda.RelacionMandatory = pPestanya.OpcionesBusqueda.RelacionMandatory;
             pFilaBusqueda.OmitirCargaInicialFacetasResultados = pPestanya.OpcionesBusqueda.OmitirCargaInicialFacetasResultados;
             pFilaBusqueda.PosicionCentralMapa = pPestanya.OpcionesBusqueda.OpcionesVistas.PosicionCentralMapa;
             if (pPestanya.OpcionesBusqueda.ProyectoOrigenBusqueda.Equals(Guid.Empty))

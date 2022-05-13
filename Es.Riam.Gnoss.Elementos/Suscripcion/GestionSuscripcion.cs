@@ -380,7 +380,7 @@ namespace Es.Riam.Gnoss.Elementos.Suscripcion
         {
             AD.EntityModel.Models.Suscripcion.Suscripcion filaSuscripcion = new AD.EntityModel.Models.Suscripcion.Suscripcion();
             filaSuscripcion.SuscripcionID = Guid.NewGuid();
-            filaSuscripcion.IdentidadID = pIdentidadOrigen.IdentidadMyGNOSS.Clave;
+            filaSuscripcion.IdentidadID = pIdentidadOrigen.Clave;
             filaSuscripcion.Periodicidad = pPeriodicidad;
             filaSuscripcion.UltimoEnvio = DateTime.Now;
             filaSuscripcion.FechaSuscripcion = DateTime.Now;

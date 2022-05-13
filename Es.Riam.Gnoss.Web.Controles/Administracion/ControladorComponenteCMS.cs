@@ -554,12 +554,18 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
                         }
                         propiedad.Options.Add(((short)tipoPresentacion).ToString(), nombre);
                     }
+
+                    foreach (Guid idPersonalizacion in diccionarioNombresPersonalizacionesVistaGrupos.Keys)
+                    {
+                        string nombre = diccionarioNombresPersonalizacionesVistaGrupos[idPersonalizacion];
+                        propiedad.Options.Add(idPersonalizacion.ToString(), nombre);
+                    }
+
                     break;
                 case TipoPropiedadCMS.TipoActividadRecienteCMS:
                     bool homeUsuarioPermitida = false;
                     ParametroAplicacionCL paramCL = new ParametroAplicacionCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mServicesUtilVirtuosoAndReplication);
                     ParametroAplicacion busqueda = mEntityContext.ParametroAplicacion.FirstOrDefault(parametro => parametro.Parametro.Equals("EcosistemaSinHomeUsuario"));
-                    //if (ParametrosAplicacionDS.ParametroAplicacion.FindByParametro("EcosistemaSinHomeUsuario") == null || ParametrosAplicacionDS.ParametroAplicacion.FindByParametro("EcosistemaSinHomeUsuario").Valor == "false")
                     if (busqueda == null || busqueda.Valor == "false")
                     {
                         homeUsuarioPermitida = true;

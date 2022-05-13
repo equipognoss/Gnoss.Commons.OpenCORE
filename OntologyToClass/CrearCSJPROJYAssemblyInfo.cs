@@ -35,83 +35,18 @@ namespace OntologiaAClase
             this.ArchivoAppConfig = new StringBuilder();
         }
 
-        public string EntidadesGeneradas()
-        {
-            //StringBuilder entidades = new StringBuilder();
-            //DirectoryInfo carpetaClasesGeneradas = new DirectoryInfo(Path.Combine(directorio,carpetaPadre, nombreCarpeta));
-            //DirectoryInfo[] carpetas = carpetaClasesGeneradas.GetDirectories();
-            //foreach (DirectoryInfo directorio in carpetas)
-            //{
-            //    FileInfo[] clases = directorio.GetFiles();
-            //    foreach(FileInfo entidad in clases)
-            //    {
-            //        if (!$"{directorio.Name}\\{ entidad.Name}".Equals("Properties\\AssemblyInfo.cs") && !$"{directorio.Name}".Equals("Libraries"))
-            //        {
-            //            entidades.AppendLine($"<Compile Include=\"{directorio.Name}\\{entidad.Name}\" />");
-            //        }
-            //    }
-            //}
-            //entidades.AppendLine($@"<Compile Include=""Properties\AssemblyInfo.cs""/>");
-            //return entidades.ToString();
-            return "";
-        }
-
-        //public void generarAssemblyInfo()
-        //{
-        //    ArchivoAssemblyInfo.AppendFormat(Resources.AssemblyInfo,  nombreProyecto , guid);
-        //    string ruta = Path.Combine(directorio,carpetaPadre, nombreCarpeta,"Properties");
-        //    if (!Directory.Exists(ruta))
-        //    {
-        //        Directory.CreateDirectory(ruta);
-        //    }
-        //    if(!File.Exists((Path.Combine(directorio,carpetaPadre,nombreCarpeta+"Properties","AssemblyInfo.cs")))){
-        //        File.WriteAllText(Path.Combine(directorio,carpetaPadre, nombreCarpeta, "Properties", "AssemblyInfo.cs"), ArchivoAssemblyInfo.ToString());
-        //    }
-           
-        //}
-
-        //public void generarPackages()
-        //{
-        //    ArchivoPackagesConfig.AppendFormat(Resources.packages, nombreProyecto);
-        //    if(!File.Exists(Path.Combine(directorio, carpetaPadre, nombreCarpeta, "packages.config")))
-        //    {
-        //        File.WriteAllText(Path.Combine(directorio, carpetaPadre, nombreCarpeta, "packages.config"), ArchivoPackagesConfig.ToString());
-        //    }
-        //}
-
-        //public void generarAppConfig()
-        //{
-        //    ArchivoAppConfig.AppendFormat(Resources.app, nombreProyecto);
-        //    if (!File.Exists(Path.Combine(directorio, carpetaPadre, nombreCarpeta, "app.config")))
-        //    {
-        //        File.WriteAllText(Path.Combine(directorio, carpetaPadre, nombreCarpeta, "app.config"), ArchivoAppConfig.ToString());
-        //    }
-        //}
-
-        
-
-        //public void generarApplicationInsights()
-        //{
-        //    ArchivoApplicationInsights.AppendFormat(Resources.ApplicationInsights, nombreProyecto);
-        //    if (!File.Exists(Path.Combine(directorio, carpetaPadre, nombreCarpeta, "ApplicationInsights.config")))
-        //    {
-        //        File.WriteAllText(Path.Combine(directorio, carpetaPadre, nombreCarpeta, "ApplicationInsights.config"), ArchivoApplicationInsights.ToString());
-        //    }
-        //}
-
         /// <summary>
         /// Cambiar el recurso textInfo si quieres cambios en el csproj
         /// </summary>
         public void GenerarCSPROJ()
         {
-            ArchivoCSPROJ.AppendFormat(Resources.testlibrary, "{"+ guid+"}", nombreProyecto, EntidadesGeneradas());
+            ArchivoCSPROJ.AppendFormat(Resources.testlibrary, $"{{{guid}}}", nombreProyecto, "");
             File.WriteAllText(Path.Combine(directorio,carpetaPadre, nombreCarpeta,$"{nombreProyecto}.csproj"), ArchivoCSPROJ.ToString());
         }
 
         public void GenerarApiWrapper()
         {
             string baseDirectory = AppDomain.CurrentDomain.BaseDirectory;
-            //string bibliotecasDirectory = Path.Combine(baseDirectory, "bin");
             string bibliotecasDirectory = baseDirectory;
             string ruta = Path.Combine(directorio, carpetaPadre, nombreCarpeta, "Libraries");
             if (!Directory.Exists(ruta))

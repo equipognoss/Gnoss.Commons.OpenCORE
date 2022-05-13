@@ -135,11 +135,6 @@ namespace Es.Riam.Gnoss.Servicios
         /// </summary>
         private CancellationToken mTokenCancelacion;
 
-        /// <summary>
-        /// Parametros de la aplicación. Se usa para los correos a los que enviar los errores de la aplicación.
-        /// </summary>
-        private GestorParametroAplicacion mParametroAplicacionDS;
-
         private GestorParametroAplicacion mGestorAplicacion;
 
         protected string mVersion = "1.0";
@@ -251,7 +246,7 @@ namespace Es.Riam.Gnoss.Servicios
                 {
                     RegistrarInicio(loggingService);
 
-                    
+
                     loggingService.PLATAFORMA = mPlataforma;
 
                     ThreadID = Thread.CurrentThread.ManagedThreadId;
@@ -304,7 +299,7 @@ namespace Es.Riam.Gnoss.Servicios
             }
         }
 
-        
+
 
 
 
@@ -340,7 +335,7 @@ namespace Es.Riam.Gnoss.Servicios
         /// </summary>
         public virtual void RegistrarInicio(LoggingService loggingService)
         {
-            this.GuardarLog($"{LogStatus.Inicio.ToString().ToUpper()} => {this.ToString().Replace("Es.Riam.Gnoss.Win.", "")}", loggingService);
+            GuardarLog($"{LogStatus.Inicio.ToString().ToUpper()} => {this.ToString().Replace("Es.Riam.Gnoss.Win.", "")}", loggingService);
         }
 
         /// <summary>
@@ -348,7 +343,7 @@ namespace Es.Riam.Gnoss.Servicios
         /// </summary>
         public void RegistrarParada(LoggingService loggingService)
         {
-            this.GuardarLog(LogStatus.Parada.ToString().ToUpper(), loggingService);
+            GuardarLog(LogStatus.Parada.ToString().ToUpper(), loggingService);
         }
 
         /// <summary>
@@ -394,8 +389,7 @@ namespace Es.Riam.Gnoss.Servicios
         protected void EnviarCorreo(string pMensajeError, string pVersion, string pClaveCorreoDestinatario, EntityContext entityContext)
         {
             List<ParametroAplicacion> filasConfiguracion = entityContext.ParametroAplicacion.ToList();
-            // ParametroAplicacionDS.ParametroAplicacionRow[] filasConfiguracion = (ParametroAplicacionDS.ParametroAplicacionRow[])ParametroAplicacionDS.ParametroAplicacion.Select();
-
+           
             Dictionary<string, string> parametros = new Dictionary<string, string>();
 
             foreach (ParametroAplicacion fila in filasConfiguracion)
@@ -449,7 +443,7 @@ namespace Es.Riam.Gnoss.Servicios
         /// Escribe fisicamente las entradas en el log
         /// </summary>
         /// <param name="infoEntry"></param>
-        public void GuardarLog(String pInfoEntry, LoggingService loggingService)
+        public void GuardarLog(string pInfoEntry, LoggingService loggingService)
         {
             GuardarLog(pInfoEntry, "", loggingService);
         }
@@ -459,20 +453,24 @@ namespace Es.Riam.Gnoss.Servicios
         /// </summary>
         /// <param name="pInfoEntry"></param>
         /// <param name="pParametroExtra"></param>
-        public void GuardarLog(String pInfoEntry, string pParametroExtra,LoggingService loggingService, Exception pExcepcion = null)
+        public void GuardarLog(string pInfoEntry, string pParametroExtra, LoggingService loggingService, Exception pExcepcion = null)
         {
-            if (pInfoEntry != String.Empty)
+            if (!string.IsNullOrEmpty(pInfoEntry))
             {
                 try
                 {
                     string nombreFichero = Path.Combine(LoggingService.RUTA_DIRECTORIO_ERROR, $"log{ (pParametroExtra.Length > 0 ? "_" + pParametroExtra : "") }_{ DateTime.Now.ToString("yyyy-MM-dd") }.log");
 
-                    // File access and writing
+                    FileInfo fichero = new FileInfo(nombreFichero);
 
                     FileStream logFile = null;
 
                     if (File.Exists(nombreFichero))
                     {
+                        if (fichero.Length > 1000000000)
+                        {
+                            fichero.Delete();
+                        }
                         logFile = new FileStream(nombreFichero, FileMode.Append, FileAccess.Write);
                     }
                     else
@@ -649,12 +647,11 @@ namespace Es.Riam.Gnoss.Servicios
             }
 
             if (!mDicUrlStatics.ContainsKey(pProyectoID))
-            {                
+            {
                 mDicUrlStatics.Add(pProyectoID, configService.ObtenerUrlServicio("urlStatic"));
             }
 
             return mDicUrlStatics[pProyectoID];
-
         }
 
         /// <summary>
@@ -711,7 +708,7 @@ namespace Es.Riam.Gnoss.Servicios
             }
             set
             {
-                this.mTokenCancelacion = value;
+                mTokenCancelacion = value;
             }
         }
 
@@ -731,12 +728,6 @@ namespace Es.Riam.Gnoss.Servicios
 
         public virtual string VersionEnsamblado()
         {
-            //if (mVersion == "1.0")
-            //{
-            //    AssemblyName nombreDelEnsamblado = System.Reflection.Assembly.GetExecutingAssembly().GetName();
-            //    mVersion = nombreDelEnsamblado.Version.ToString();
-            //}
-
             return mVersion;
         }
 

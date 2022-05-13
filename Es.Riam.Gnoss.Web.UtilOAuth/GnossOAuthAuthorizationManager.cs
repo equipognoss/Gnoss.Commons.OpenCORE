@@ -193,9 +193,9 @@ namespace Es.Riam.Gnoss.Web.UtilOAuth
         /// <param name="pParametrosQuery">Parámetros de la petición OAuth</param>
         /// <param name="pHttpMethod">Método de la petición</param>
         /// <returns>fila de usuario la que pertenece el token de los parámetros de una petición OAuth</returns>
-        private OAuthAD.OAuth.Usuario ObtenerUsuarioDeParametrosPeticionOAuth(QueryOauth pParametrosQuery, string pHttpMethod)
+        private Es.Riam.Gnoss.OAuthAD.OAuth.Usuario ObtenerUsuarioDeParametrosPeticionOAuth(QueryOauth pParametrosQuery, string pHttpMethod)
         {
-            OAuthAD.OAuth.Usuario user = null;
+            Es.Riam.Gnoss.OAuthAD.OAuth.Usuario user = null;
             OAuthBase oauthbase = new OAuthBase();
 
             string urlNormal = "";

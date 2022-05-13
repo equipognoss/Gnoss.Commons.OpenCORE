@@ -16,7 +16,7 @@ namespace Es.Riam.Gnoss.OAuthAD.OAuth
             PinToken = new HashSet<PinToken>();
             UsuarioConsumer = new HashSet<UsuarioConsumer>();
         }
-
+        [Key]
         public Guid UsuarioID { get; set; }
 
         [Required]

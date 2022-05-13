@@ -277,40 +277,53 @@ namespace Es.Riam.Gnoss.Web.MVC.Models.Administracion
             /// 
             /// </summary>
             public bool MostrarFacetas { get; set; }
+            
             /// <summary>
             /// 
             /// </summary>
             public bool AgruparFacetasPorTipo { get; set; }
+            
             /// <summary>
             /// 
             /// </summary>
             public bool MostrarEnBusquedaCabecera { get; set; }
+            
             /// <summary>
             /// 
             /// </summary>
             public bool MostrarCajaBusqueda { get; set; }
+            
             /// <summary>
             /// 
             /// </summary>
             public Guid ProyectoOrigenBusqueda { get; set; }
+            
             /// <summary>
             /// 
             /// </summary>
             public bool OcultarResultadosSinFiltros { get; set; }
+            
             /// <summary>
             /// 
             /// </summary>
             public string TextoBusquedaSinResultados { get; set; }
+            
             /// <summary>
             /// 
             /// </summary>
             public bool IgnorarPrivacidadEnBusqueda { get; set; }
+            
             /// <summary>
             /// 
             /// </summary>
             public bool OmitirCargaInicialFacetasResultados { get; set; }
-
+            
+            /// <summary>
+            /// 
+            /// </summary>
+            public string RelacionMandatory { get; set; }
         }
+
         /// <summary>
         /// 
         /// </summary>

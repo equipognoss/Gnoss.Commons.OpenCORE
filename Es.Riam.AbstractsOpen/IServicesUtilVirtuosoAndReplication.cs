@@ -259,9 +259,8 @@ namespace Es.Riam.AbstractsOpen
                         }
 
                         //Para la Replicación Normal.
-                        if (mConfigService.ObtenerReplicacionActivada())
+                        if (mConfigService.ObtenerReplicacionActivada() && TablaReplicacion != null && TablaReplicacion.Equals(COLA_REPLICACION_MASTER))
                         {
-                            TablaReplicacion = COLA_REPLICACION_MASTER;
                             if (!UsarClienteTradicional)
                             {
                                 InsertarEnReplicacion(pQuery, TablaReplicacion);
@@ -281,9 +280,8 @@ namespace Es.Riam.AbstractsOpen
                         }
 
                         //Para la Replicacion de la home
-                        if (mConfigService.ObtenerReplicacionActivadaHOME())
+                        if (mConfigService.ObtenerReplicacionActivadaHOME() && TablaReplicacion != null && TablaReplicacion.Equals(COLA_REPLICACION_MASTER_HOME))
                         {
-                            TablaReplicacion = COLA_REPLICACION_MASTER_HOME;
                             if (!UsarClienteTradicional)
                             {
                                 InsertarEnReplicacion(pQuery, TablaReplicacion);

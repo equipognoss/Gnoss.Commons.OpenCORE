@@ -21,6 +21,9 @@ namespace ConsoleApplication1.OAuth
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            modelBuilder.Entity<Nonce>()
+               .HasKey(c => new { c.Context, c.Code, c.Timestamp });
+
             modelBuilder.Entity<OAuthConsumer>()
                 .HasOne(e => e.ConsumerData)
                 .WithOne(e => e.OAuthConsumer).IsRequired();

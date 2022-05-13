@@ -936,9 +936,9 @@ namespace Es.Riam.Gnoss.AD.Usuarios
         /// <returns>Login apartir de un token del API de Login</returns>
         public string ObtenerLoginAPILoginDeToken(Guid pToken, bool pBorrarToken)
         {
-            string login = mEntityContext.TokenApiLogin.Where(item => item.Token.Equals(pToken) && item.Fecha > DateTime.UtcNow.AddDays(-1)).Select(item => item.Login).FirstOrDefault();
+            string login = mEntityContext.TokenApiLogin.Where(item => item.Token.Equals(pToken) && (item.Fecha > DateTime.UtcNow.AddDays(-1) || item.Login.Equals("Permanente"))).Select(item => item.Login).FirstOrDefault();
 
-            if (pBorrarToken)
+            if (pBorrarToken && login != null && !login.Equals("Permanente"))
             {
                 BorrarTokenAPILogin(pToken);
             }

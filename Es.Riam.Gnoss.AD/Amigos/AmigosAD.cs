@@ -595,7 +595,7 @@ namespace Es.Riam.Gnoss.AD.Amigos
             DbCommand commandsqlSelectAmigosDeIdentidad = ObtenerComando(sqlSelectAmigosDeIdentidad);
             dataWrapperAmigos.ListaAmigo = mEntityContext.Amigo.Where(item => item.IdentidadID.Equals(pIdentidadID)).ToList();
 
-            ////GrupoAmigos
+            //GrupoAmigos
             //DbCommand commandsqlSelectGruposAmigosDeIdentidad = ObtenerComando(sqlSelectGrupoAmigosDeIdentidad);
             //AgregarParametro(commandsqlSelectGruposAmigosDeIdentidad, IBD.ToParam("identidadID"), IBD.TipoGuidToString(DbType.Guid), IBD.ValorDeGuid(pIdentidadID));
             //CargarDataSet(commandsqlSelectGruposAmigosDeIdentidad, AmigosDS, "GrupoAmigos");
@@ -677,23 +677,23 @@ namespace Es.Riam.Gnoss.AD.Amigos
             //AgregarParametro(commandsqlSelectGruposAmigos, IBD.ToParam("IdentidadUsuarioID"), IBD.TipoGuidToString(DbType.Guid), IBD.ValorDeGuid(pIdentidadUsuario));
             //CargarDataSet(commandsqlSelectGruposAmigos, amigosDS, "GrupoAmigos");
 
-            ////AmigoAgGrupo de la organización con acceso para el usuario
+            //AmigoAgGrupo de la organización con acceso para el usuario
             //DbCommand commandsqlSelectAmigosAgGrupos = ObtenerComando(sqlSelectAmigoAgGrupoOrganizacionConPermisoParaUsuario);
             //AgregarParametro(commandsqlSelectAmigosAgGrupos, IBD.ToParam("IdentidadOrganizacionID"), IBD.TipoGuidToString(DbType.Guid), IBD.ValorDeGuid(pIdentidadOrganizacion));
             //AgregarParametro(commandsqlSelectAmigosAgGrupos, IBD.ToParam("IdentidadUsuarioID"), IBD.TipoGuidToString(DbType.Guid), IBD.ValorDeGuid(pIdentidadUsuario));
             //CargarDataSet(commandsqlSelectAmigosAgGrupos, amigosDS, "AmigoAgGrupo");
 
-            ////GrupoAmigos del usuario
+            //GrupoAmigos del usuario
             //DbCommand commandsqlSelectGruposAmigosDeIdentidad = ObtenerComando(sqlSelectGrupoAmigosDeIdentidad);
             //AgregarParametro(commandsqlSelectGruposAmigosDeIdentidad, IBD.ToParam("identidadID"), IBD.TipoGuidToString(DbType.Guid), IBD.ValorDeGuid(pIdentidadUsuario));
             //CargarDataSet(commandsqlSelectGruposAmigosDeIdentidad, amigosDS, "GrupoAmigos");
 
-            ////AmigoAgGrupo
+            //AmigoAgGrupo
             //DbCommand commandsqlSelectAmigosAgGruposDeIdentidad = ObtenerComando(sqlSelectAmigoAgGrupoDeIdentidad);
             //AgregarParametro(commandsqlSelectAmigosAgGruposDeIdentidad, IBD.ToParam("identidadID"), IBD.TipoGuidToString(DbType.Guid), IBD.ValorDeGuid(pIdentidadUsuario));
             //CargarDataSet(commandsqlSelectAmigosAgGruposDeIdentidad, amigosDS, "AmigoAgGrupo");
 
-            ////PermisoAmigoOrg
+            //PermisoAmigoOrg
             //DbCommand commandsqlSelectPermisoAmigoOrg = ObtenerComando(sqlSelectPermisoAmigoOrgDeUsuarioYOrganizacion);
             //AgregarParametro(commandsqlSelectPermisoAmigoOrg, IBD.ToParam("IdentidadOrganizacionID"), IBD.TipoGuidToString(DbType.Guid), IBD.ValorDeGuid(pIdentidadOrganizacion));
             //AgregarParametro(commandsqlSelectPermisoAmigoOrg, IBD.ToParam("IdentidadUsuarioID"), IBD.TipoGuidToString(DbType.Guid), IBD.ValorDeGuid(pIdentidadUsuario));

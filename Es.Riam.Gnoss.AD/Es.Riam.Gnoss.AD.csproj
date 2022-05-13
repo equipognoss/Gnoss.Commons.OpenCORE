@@ -72,6 +72,7 @@
     </PackageReference>
     <PackageReference Include="Npgsql" Version="5.0.7" />
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="5.0.7" />
+    <PackageReference Include="Oracle.EntityFrameworkCore" Version="5.21.4" />
     <PackageReference Include="Semiodesk.Trinity.Virtuoso" Version="1.0.3.38" />
     <PackageReference Include="System.Data.SqlClient" Version="4.8.2" />
   </ItemGroup>

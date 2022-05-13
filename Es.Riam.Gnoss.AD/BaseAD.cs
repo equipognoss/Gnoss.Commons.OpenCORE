@@ -2078,11 +2078,11 @@ namespace Es.Riam.Gnoss.AD
             }
         }
 
-        ///// <summary>
-        ///// Obtiene la cadena de conexion de Virtuoso
-        ///// </summary>
-        ///// <param name="pCadenasInvalidas">Lista de cadenas de conexión que no han funcionado bien</param>
-        ///// <returns>Cadena de conexión de Virtuoso</returns>
+        // <summary>
+        // Obtiene la cadena de conexion de Virtuoso
+        // </summary>
+        // <param name="pCadenasInvalidas">Lista de cadenas de conexión que no han funcionado bien</param>
+        // <returns>Cadena de conexión de Virtuoso</returns>
         //public string ObtenerCadenaConexionVirtuoso(List<string> pCadenasInvalidas)
         //{
         //    return ObtenerCadenaConexionVirtuoso("virtuoso", pCadenasInvalidas);

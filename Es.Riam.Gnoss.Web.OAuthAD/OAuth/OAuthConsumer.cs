@@ -12,7 +12,7 @@ namespace Es.Riam.Gnoss.OAuthAD.OAuth
         {
             OAuthToken = new HashSet<OAuthToken>();
         }
-
+        [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int ConsumerId { get; set; }
 

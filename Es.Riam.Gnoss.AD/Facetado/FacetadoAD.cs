@@ -31,6 +31,7 @@ using System.Threading;
 using System.Xml;
 using Es.Riam.Gnoss.AD.EntityModel.Models.ProyectoDS;
 using Es.Riam.AbstractsOpen;
+using System.Collections.Concurrent;
 
 namespace Es.Riam.Gnoss.AD.Facetado
 {
@@ -209,7 +210,7 @@ namespace Es.Riam.Gnoss.AD.Facetado
 
         private const string TIPOS_METABUSCADOR_MYGNOSS = " ?s rdf:type ?rdftype. FILTER (?rdftype in ('Recurso', 'RecursoPerfilPersonal', 'Persona', 'Organizacion', 'Dafo', 'Pregunta', 'Debate', 'Encuesta','Blog','Comunidad', 'comunidad no educativa', 'comunidad educativa'    ))";
 
-        public static readonly List<string> TIPOS_GEOMETRIA = new List<string>() { "linestring", "multilinestring", "multipoint", "multipolygon", "polygon", "point" };
+        public static readonly List<string> TIPOS_GEOMETRIA = new List<string>() { "linestring", "multilinestring", "multipoint", "multipolygon", "polygon", "point", "geometrycollection", "multicurve" };
 
         #endregion
 
@@ -607,12 +608,12 @@ namespace Es.Riam.Gnoss.AD.Facetado
         /// </summary>
         private string mCondicionExtraFacetas;
 
-        private Dictionary<Guid, List<Guid>> mListaGruposPorIdentidad = new Dictionary<Guid, List<Guid>>();
+        private ConcurrentDictionary<Guid, List<Guid>> mListaGruposPorIdentidad = new ConcurrentDictionary<Guid, List<Guid>>();
 
         /// <summary>
         /// Lista que indica que identidades tienes grupos de comunidad y cuales no.
         /// </summary>
-        private Dictionary<Guid, bool> mIdentidadTieneGruposComunidad;
+        private ConcurrentDictionary<Guid, bool> mIdentidadTieneGruposComunidad;
 
         bool mConsultaNumeroResultados = false;
 
@@ -4510,7 +4511,7 @@ namespace Es.Riam.Gnoss.AD.Facetado
         /// <param name="pFiltroContextoOrderBy"></param>
         /// <param name="pEsCatalogoNoSocial">Verdad si es un catálogo no social</param>        
         /// <param name="pNamespaceExtra">NamespacesExtra</param>
-        public void ObtenerResultadosBusquedaFormatoMapa(string pProyectoID, FacetadoDS pFacetadoDS, Dictionary<string, List<string>> pListaFiltros, List<string> pListaFiltrosExtra, bool pEstaEnMyGnoss, bool pEsMiembroComunidad, bool pEsInvitado, string pIdentidadID, List<string> pSemanticos, string pFiltroContextoSelect, string pFiltroContextoWhere, string pFiltroContextoOrderBy, TipoProyecto pTipoProyecto, string pNamespaceExtra, string pResultadosEliminar, DataWrapperFacetas pFiltroMapaDataWrapper, bool pPermitirRecursosPrivados, TipoBusqueda pTipoBusqueda, bool pEsMovil, Dictionary<string, Tuple<string, string, string, bool>> pFiltrosSearchPersonalizados)
+        public void ObtenerResultadosBusquedaFormatoMapa(string pProyectoID, FacetadoDS pFacetadoDS, Dictionary<string, List<string>> pListaFiltros, List<string> pListaFiltrosExtra, bool pEstaEnMyGnoss, bool pEsMiembroComunidad, bool pEsInvitado, string pIdentidadID, List<string> pSemanticos, string pFiltroContextoSelect, string pFiltroContextoWhere, string pFiltroContextoOrderBy, TipoProyecto pTipoProyecto, string pNamespaceExtra, string pResultadosEliminar, DataWrapperFacetas pFiltroMapaDataWrapper, bool pPermitirRecursosPrivados, TipoBusqueda pTipoBusqueda, bool pEsMovil, Dictionary<string, Tuple<string, string, string, bool>> pFiltrosSearchPersonalizados, List<PresentacionMapaSemantico> pListaPresentacionMapaSemantico = null)
         {
             var configMapa = pFiltroMapaDataWrapper.ListaFacetaConfigProyMapa.FirstOrDefault();
             bool puntos = false;
@@ -4524,7 +4525,7 @@ namespace Es.Riam.Gnoss.AD.Facetado
             if (rutas)
             {
                 FacetadoDS facDSRutas = new FacetadoDS();
-                ObtenerResultadosBusquedaFormatoMapaVirtuoso(pFiltroMapaDataWrapper, pTipoBusqueda, pProyectoID, facDSRutas, pListaFiltros, pListaFiltrosExtra, pEstaEnMyGnoss, pEsMiembroComunidad, pEsInvitado, pIdentidadID, pSemanticos, pFiltroContextoSelect, pFiltroContextoWhere, pFiltroContextoOrderBy, pTipoProyecto, pNamespaceExtra, pResultadosEliminar, pPermitirRecursosPrivados, false, true, pEsMovil, pFiltrosSearchPersonalizados);
+                ObtenerResultadosBusquedaFormatoMapaVirtuoso(pFiltroMapaDataWrapper, pTipoBusqueda, pProyectoID, facDSRutas, pListaFiltros, pListaFiltrosExtra, pEstaEnMyGnoss, pEsMiembroComunidad, pEsInvitado, pIdentidadID, pSemanticos, pFiltroContextoSelect, pFiltroContextoWhere, pFiltroContextoOrderBy, pTipoProyecto, pNamespaceExtra, pResultadosEliminar, pPermitirRecursosPrivados, false, true, pEsMovil, pFiltrosSearchPersonalizados, pListaPresentacionMapaSemantico);
                 pFacetadoDS.Merge(facDSRutas);
             }
 
@@ -4533,7 +4534,7 @@ namespace Es.Riam.Gnoss.AD.Facetado
 
                 FacetadoDS facDSPuntos = new FacetadoDS();
 
-                ObtenerResultadosBusquedaFormatoMapaVirtuoso(pFiltroMapaDataWrapper, pTipoBusqueda, pProyectoID, facDSPuntos, pListaFiltros, pListaFiltrosExtra, pEstaEnMyGnoss, pEsMiembroComunidad, pEsInvitado, pIdentidadID, pSemanticos, pFiltroContextoSelect, pFiltroContextoWhere, pFiltroContextoOrderBy, pTipoProyecto, pNamespaceExtra, pResultadosEliminar, pPermitirRecursosPrivados, true, false, pEsMovil, pFiltrosSearchPersonalizados);
+                ObtenerResultadosBusquedaFormatoMapaVirtuoso(pFiltroMapaDataWrapper, pTipoBusqueda, pProyectoID, facDSPuntos, pListaFiltros, pListaFiltrosExtra, pEstaEnMyGnoss, pEsMiembroComunidad, pEsInvitado, pIdentidadID, pSemanticos, pFiltroContextoSelect, pFiltroContextoWhere, pFiltroContextoOrderBy, pTipoProyecto, pNamespaceExtra, pResultadosEliminar, pPermitirRecursosPrivados, true, false, pEsMovil, pFiltrosSearchPersonalizados, pListaPresentacionMapaSemantico);
 
                 pFacetadoDS.Merge(facDSPuntos);
             }
@@ -4562,7 +4563,7 @@ namespace Es.Riam.Gnoss.AD.Facetado
         /// <param name="pEsCatalogoNoSocial">Verdad si es un catálogo no social</param>        
         /// <param name="pNamespaceExtra">NamespacesExtra</param>
         /// <paraparam name="pPuntos">TRUE para que traiga los puntos, FALSE para que traiga las rutas</paraparam>
-        public void ObtenerResultadosBusquedaFormatoMapaVirtuoso(DataWrapperFacetas pFiltroMapaDataWrapper, TipoBusqueda pTipoBusqueda, string pProyectoID, FacetadoDS pFacetadoDS, Dictionary<string, List<string>> pListaFiltros, List<string> pListaFiltrosExtra, bool pEstaEnMyGnoss, bool pEsMiembroComunidad, bool pEsInvitado, string pIdentidadID, List<string> pSemanticos, string pFiltroContextoSelect, string pFiltroContextoWhere, string pFiltroContextoOrderBy, TipoProyecto pTipoProyecto, string pNamespaceExtra, string pResultadosEliminar, bool pPermitirRecursosPrivados, bool pPuntos, bool pRutas, bool pEsMovil, Dictionary<string, Tuple<string, string, string, bool>> pFiltrosSearchPersonalizados)
+        public void ObtenerResultadosBusquedaFormatoMapaVirtuoso(DataWrapperFacetas pFiltroMapaDataWrapper, TipoBusqueda pTipoBusqueda, string pProyectoID, FacetadoDS pFacetadoDS, Dictionary<string, List<string>> pListaFiltros, List<string> pListaFiltrosExtra, bool pEstaEnMyGnoss, bool pEsMiembroComunidad, bool pEsInvitado, string pIdentidadID, List<string> pSemanticos, string pFiltroContextoSelect, string pFiltroContextoWhere, string pFiltroContextoOrderBy, TipoProyecto pTipoProyecto, string pNamespaceExtra, string pResultadosEliminar, bool pPermitirRecursosPrivados, bool pPuntos, bool pRutas, bool pEsMovil, Dictionary<string, Tuple<string, string, string, bool>> pFiltrosSearchPersonalizados, List<PresentacionMapaSemantico> pListaPresentacionMapaSemantico = null)
         {
             string[] filtrosContextos = null;
             if (!string.IsNullOrEmpty(pFiltroContextoOrderBy))
@@ -4576,7 +4577,6 @@ namespace Es.Riam.Gnoss.AD.Facetado
             }
 
             string select = " select distinct ";
-            bool hayFiltroSearch = pListaFiltros.ContainsKey("search");
 
             if (!string.IsNullOrEmpty(pFiltroContextoSelect) && !string.IsNullOrEmpty(pFiltroContextoWhere))
             {
@@ -4641,6 +4641,7 @@ namespace Es.Riam.Gnoss.AD.Facetado
                     select = select.Replace("select", "select distinct ");
                 }
             }
+
             string filtros = ObtenerParteFiltros("", pListaFiltros, pListaFiltrosExtra, pEsMiembroComunidad, pProyectoID, pSemanticos, pFiltroContextoWhere, pTipoProyecto, false, true, TiposAlgoritmoTransformacion.Ninguno, pFiltrosSearchPersonalizados, pEsMovil);
 
             if (!string.IsNullOrEmpty(pResultadosEliminar))
@@ -4685,6 +4686,50 @@ namespace Es.Riam.Gnoss.AD.Facetado
                 if (filtroMapas.Contains("?color"))
                 {
                     select += " ?color ";
+                }
+            }
+
+            //SANTI -- MAPAS
+            if (pListaPresentacionMapaSemantico != null)
+            {
+                //Dictionary<string, string> diccionarioPropiedad = ObtenerDiccionarioPropiedadVariableSelect(pListaPresentacionMapaSemantico);
+                int contadorPropiedades = 0;
+                int contadorPartes = 0;
+                foreach (PresentacionMapaSemantico presentacionMapaSemantico in pListaPresentacionMapaSemantico)
+                {
+                    string[] partesPropiedad = presentacionMapaSemantico.Propiedad.Split(new string[] { "@@@" }, StringSplitOptions.RemoveEmptyEntries);
+                    select += $" ?prop{contadorPropiedades}";
+                    int i = 0;
+                    foreach (string propiedad in partesPropiedad)
+                    {
+                        if (i == 0)
+                        {
+                            if (i < partesPropiedad.Count() - 1)
+                            {
+                                //query += $"?{diccionarioPropiedad[propiedad]} {propiedad} ?parte{contadorPartes + 1}. ";
+                                query += $"?s {propiedad} ?parte{contadorPartes + 1}. ";
+                            }
+                            else
+                            {
+                                //query += $"?{diccionarioPropiedad[propiedad]} {propiedad} ?prop{contadorPropiedades}. ";
+                                query += $"?s {propiedad} ?prop{contadorPropiedades}. ";
+                            }
+                        }
+                        else
+                        {
+                            if (i < partesPropiedad.Count() - 1)
+                            {
+                                query += $" ?parte{contadorPartes} {propiedad} ?parte{contadorPartes + 1} .";
+                            }
+                            else
+                            {
+                                query += $" ?parte{contadorPartes} {propiedad} ?prop{contadorPropiedades} .";
+                            }
+                        }
+                        i++;
+                        contadorPartes++;
+                    }
+                    contadorPropiedades++;
                 }
             }
 
@@ -10049,7 +10094,7 @@ from <http://pruebas.gnoss.net/4f08285b-19f9-4ff0-8c36-ccee29868a75>  WHERE {   
 
                             if (mIdentidadTieneGruposComunidad == null)
                             {
-                                mIdentidadTieneGruposComunidad = new Dictionary<Guid, bool>();
+                                mIdentidadTieneGruposComunidad = new ConcurrentDictionary<Guid, bool>();
                             }
 
                             if (!mIdentidadTieneGruposComunidad.ContainsKey(identidadID))
@@ -10064,7 +10109,7 @@ from <http://pruebas.gnoss.net/4f08285b-19f9-4ff0-8c36-ccee29868a75>  WHERE {   
                                     idenAD.Dispose();
                                 }
 
-                                mIdentidadTieneGruposComunidad.Add(identidadID, tieneGruposProy);
+                                mIdentidadTieneGruposComunidad.TryAdd(identidadID, tieneGruposProy);
                             }
 
                             if (mIdentidadTieneGruposComunidad[identidadID])
@@ -10083,12 +10128,12 @@ from <http://pruebas.gnoss.net/4f08285b-19f9-4ff0-8c36-ccee29868a75>  WHERE {   
                 {
                     if (identidadID.Equals(UsuarioAD.Invitado))
                     {
-                        mListaGruposPorIdentidad.Add(identidadID, new List<Guid>());
+                        mListaGruposPorIdentidad.TryAdd(identidadID, new List<Guid>());
                     }
                     else
                     {
                         IdentidadAD idenAD = new IdentidadAD(mLoggingService, mEntityContext, mConfigService, mServicesUtilVirtuosoAndReplication);
-                        mListaGruposPorIdentidad.Add(identidadID, idenAD.ObtenerGruposDeOrganizacionDeIdentidad(identidadID));
+                        mListaGruposPorIdentidad.TryAdd(identidadID, idenAD.ObtenerGruposDeOrganizacionDeIdentidad(identidadID));
                         idenAD.Dispose();
                     }
                 }
@@ -11951,6 +11996,30 @@ from <http://pruebas.gnoss.net/4f08285b-19f9-4ff0-8c36-ccee29868a75>  WHERE {   
             }
 
             return sbQuery.ToString();
+        }
+
+        private Dictionary<string, string> ObtenerDiccionarioPropiedadVariableSelect(List<PresentacionMapaSemantico> pListaPresentacionMapaSemantico)
+        {
+            Dictionary<string, string> diccionarioPropiedadVariable = new Dictionary<string, string>();
+            int i = 0;
+            foreach (string propiedad in pListaPresentacionMapaSemantico.Select(item => item.Propiedad))
+            {
+                string[] partes = propiedad.Split(new string[] { "@@@" }, StringSplitOptions.RemoveEmptyEntries);
+                if (partes.Length == 1)
+                {
+                    diccionarioPropiedadVariable.Add(partes[0], "s");
+                }
+                else
+                {
+                    if (!diccionarioPropiedadVariable.ContainsKey(partes[0]))
+                    {
+                        diccionarioPropiedadVariable.Add(partes[0], $"primeraParte{i}");
+                        i++;
+                    }
+                }
+            }
+
+            return diccionarioPropiedadVariable;
         }
 
         private string ObtenerParteFiltros_PorClave_FiltroPersonaOrganizacion(Dictionary<string, List<string>> pListaFiltros, string pValor, short pTipoPropiedadFaceta, string pProyectoID, string pNombreFaceta, string pKey)
@@ -15259,7 +15328,7 @@ from <http://pruebas.gnoss.net/4f08285b-19f9-4ff0-8c36-ccee29868a75>  WHERE {   
             DataSet facDS = ObtenerGrafo(pRecursoID);
             if(facDS != null && facDS.Tables["Grafo"].Rows.Count > 0)
             {
-                return facDS.Tables["Grafo"].Rows[0].ToString();
+                return facDS.Tables["Grafo"].Rows[0].ItemArray[0].ToString();
             }
 
             return "";
@@ -15268,7 +15337,7 @@ from <http://pruebas.gnoss.net/4f08285b-19f9-4ff0-8c36-ccee29868a75>  WHERE {   
 
         private DataSet ObtenerGrafo(string pRecursoID)
         {
-            string query = NamespacesVirtuosoLectura + "select distinct ?g   WHERE {graph ?g {?documento ?hasEntidad ?s.  FILTER (?documento = <http://gnoss.com/" + pRecursoID.ToLower() + ">) ?s ?p ?o }}";
+            string query = NamespacesVirtuosoLectura + "select distinct ?g   WHERE {graph ?g {?documento ?hasEntidad ?s.  FILTER (?documento = <" + mUrlIntranet + pRecursoID.ToLower() + ">) ?s ?p ?o }}";
 
             return LeerDeVirtuoso(query, "Grafo", null);
         }

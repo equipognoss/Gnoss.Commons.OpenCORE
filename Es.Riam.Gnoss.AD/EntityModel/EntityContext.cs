@@ -108,6 +108,10 @@ namespace Es.Riam.Gnoss.AD.EntityModel
             {
                 optionsBuilder.UseNpgsql(_configService.ObtenerSqlConnectionString());
             }
+            else if (_configService.ObtenerTipoBD().Equals("1"))
+            {
+                optionsBuilder.UseOracle(_configService.ObtenerSqlConnectionString());
+            }
             optionsBuilder.UseLoggerFactory(mLoggerFactory);
         }
 
@@ -964,11 +968,11 @@ namespace Es.Riam.Gnoss.AD.EntityModel
             modelBuilder.Entity<ProyectoCerradoTmp>()
        .HasOne(a => a.Proyecto)
        .WithOne(b => b.ProyectoCerradoTmp)
-       .HasForeignKey<Proyecto>(b => new { b.OrganizacionID, b.ProyectoID });
+       .HasForeignKey<ProyectoCerradoTmp>(b => new { b.OrganizacionID, b.ProyectoID });
             modelBuilder.Entity<ProyectoCerrandose>()
        .HasOne(a => a.Proyecto)
        .WithOne(b => b.ProyectoCerrandose)
-       .HasForeignKey<Proyecto>(b => new { b.OrganizacionID, b.ProyectoID });
+       .HasForeignKey<ProyectoCerrandose>(b => new { b.OrganizacionID, b.ProyectoID });
             modelBuilder.Entity<ProyectoGadget>()
        .HasOne(a => a.ProyectoGadgetContextoHTMLplano)
        .WithOne(b => b.ProyectoGadget)
@@ -976,7 +980,7 @@ namespace Es.Riam.Gnoss.AD.EntityModel
             modelBuilder.Entity<ProyectoLoginConfiguracion>()
       .HasOne(a => a.Proyecto)
       .WithOne(b => b.ProyectoLoginConfiguracion)
-      .HasForeignKey<Proyecto>(b => new { b.OrganizacionID, b.ProyectoID });
+      .HasForeignKey<ProyectoLoginConfiguracion>(b => new { b.OrganizacionID, b.ProyectoID });
 
             modelBuilder.Entity<ProyectoPestanyaMenu>()
       .HasOne(a => a.ProyectoPestanyaBusqueda)
@@ -990,7 +994,7 @@ namespace Es.Riam.Gnoss.AD.EntityModel
             modelBuilder.Entity<ProyectosMasActivos>()
       .HasOne(a => a.Proyecto)
       .WithOne(b => b.ProyectosMasActivos)
-      .HasForeignKey<Proyecto>(b => new { b.OrganizacionID, b.ProyectoID });
+      .HasForeignKey<ProyectosMasActivos>(b => new { b.OrganizacionID, b.ProyectoID });
             modelBuilder.Entity<SolicitudNuevaOrganizacion>()
       .HasOne(a => a.SolicitudNuevaOrgEmp)
       .WithOne(b => b.SolicitudNuevaOrganizacion)

@@ -1455,7 +1455,7 @@ namespace Es.Riam.Gnoss.UtilServiciosWeb
             }
             else if (pCargadorResultadosModel.BusquedaTipoMapa)
             {
-                pCargadorResultadosModel.FacetadoCL.ObtenerResultadosBusquedaFormatoMapa(pCargadorResultadosModel.FacetadoDS, pCargadorResultadosModel.ListaFiltros, pCargadorResultadosModel.ListaItemsBusquedaExtra, pCargadorResultadosModel.EsMyGnoss, pCargadorResultadosModel.EstaEnProyecto, pCargadorResultadosModel.EsUsuarioInvitado, pCargadorResultadosModel.IdentidadID.ToString(), pCargadorResultadosModel.FormulariosSemanticos, pCargadorResultadosModel.FiltroContextoSelect, pCargadorResultadosModel.FiltroContextoWhere, pCargadorResultadosModel.FiltroContextoOrderBy, pCargadorResultadosModel.TipoProyecto, pCargadorResultadosModel.NamespacesExtra, pCargadorResultadosModel.ResultadosEliminar, mUtilServiciosFacetas.ObtenerDataSetConsultaMapaProyecto(pCargadorResultadosModel.Proyecto.FilaProyecto.OrganizacionID, pCargadorResultadosModel.ProyectoSeleccionado, pCargadorResultadosModel.TipoBusqueda), permitirRecursosPrivados, pCargadorResultadosModel.TipoBusqueda, pEsMovil, pCargadorResultadosModel.FiltrosSearchPersonalizados);
+                pCargadorResultadosModel.FacetadoCL.ObtenerResultadosBusquedaFormatoMapa(pCargadorResultadosModel.FacetadoDS, pCargadorResultadosModel.ListaFiltros, pCargadorResultadosModel.ListaItemsBusquedaExtra, pCargadorResultadosModel.EsMyGnoss, pCargadorResultadosModel.EstaEnProyecto, pCargadorResultadosModel.EsUsuarioInvitado, pCargadorResultadosModel.IdentidadID.ToString(), pCargadorResultadosModel.FormulariosSemanticos, pCargadorResultadosModel.FiltroContextoSelect, pCargadorResultadosModel.FiltroContextoWhere, pCargadorResultadosModel.FiltroContextoOrderBy, pCargadorResultadosModel.TipoProyecto, pCargadorResultadosModel.NamespacesExtra, pCargadorResultadosModel.ResultadosEliminar, mUtilServiciosFacetas.ObtenerDataSetConsultaMapaProyecto(pCargadorResultadosModel.Proyecto.FilaProyecto.OrganizacionID, pCargadorResultadosModel.ProyectoSeleccionado, pCargadorResultadosModel.TipoBusqueda), permitirRecursosPrivados, pCargadorResultadosModel.TipoBusqueda, pEsMovil, pCargadorResultadosModel.FiltrosSearchPersonalizados, pCargadorResultadosModel.Proyecto.Clave);
                 pCargadorResultadosModel.NumeroResultados = pCargadorResultadosModel.FacetadoDS.Tables["RecursosBusqueda"].Rows.Count;
             }
             else if (pCargadorResultadosModel.TipoBusqueda.Equals(TipoBusqueda.PersonasYOrganizaciones))
@@ -1473,8 +1473,9 @@ namespace Es.Riam.Gnoss.UtilServiciosWeb
             {
                 bool recursosCargados = false;
                 bool searchPaginadoSinResultados = false;
+                bool existe = pCargadorResultadosModel.FacetadoCL.ExisteResultadosBusquedaCache(pCargadorResultadosModel.FiltroOrdenDescendente, pCargadorResultadosModel.FacetadoDS, pCargadorResultadosModel.FiltroOrdenadoPor, pCargadorResultadosModel.ListaFiltros, pCargadorResultadosModel.ListaItemsBusquedaExtra, pCargadorResultadosModel.EsMyGnoss, pCargadorResultadosModel.EstaEnProyecto, pCargadorResultadosModel.EsUsuarioInvitado, pCargadorResultadosModel.IdentidadID.ToString(), pInicio, pLimite, pCargadorResultadosModel.FormulariosSemanticos, pCargadorResultadosModel.FiltroContextoSelect, pCargadorResultadosModel.FiltroContextoWhere, pCargadorResultadosModel.FiltroContextoOrderBy, pCargadorResultadosModel.FiltroContextoPesoMinimo, pCargadorResultadosModel.TipoProyecto, pCargadorResultadosModel.NamespacesExtra, pCargadorResultadosModel.ResultadosEliminar, permitirRecursosPrivados, false, tiposAlgoritmoTransformacion, pCargadorResultadosModel.FiltrosSearchPersonalizados, pEsMovil);
 
-                if (usarHilos)
+                if (usarHilos && !existe)
                 {
                     listaTareasResultados.Add(Task.Factory.StartNew(() =>
                     {
@@ -1532,7 +1533,9 @@ namespace Es.Riam.Gnoss.UtilServiciosWeb
 
             if (!pCargadorResultadosModel.IgnorarNumResultados && (pCargadorResultadosModel.NumeroParteResultados == 1 || pCargadorResultadosModel.NumeroParteResultados == -1) && !pCargadorResultadosModel.BusquedaTipoMapa && !pCargadorResultadosModel.BusquedaTipoChart)
             {
-                if (usarHilos)
+                bool existe = pCargadorResultadosModel.FacetadoCL.ExisteNumeroResultadosEnCache(pCargadorResultadosModel.FacetadoDS, "RecursosBusqueda", pCargadorResultadosModel.ListaFiltros, pCargadorResultadosModel.ListaItemsBusquedaExtra, pCargadorResultadosModel.EsMyGnoss, pCargadorResultadosModel.EstaEnProyecto, pCargadorResultadosModel.EsUsuarioInvitado, pCargadorResultadosModel.IdentidadID.ToString(), pCargadorResultadosModel.FormulariosSemanticos, pCargadorResultadosModel.FiltroContextoWhere, pCargadorResultadosModel.TipoProyecto, permitirRecursosPrivados, omitirPalabrasNoRelevantesSearch, tiposAlgoritmoTransformacion, pCargadorResultadosModel.FiltrosSearchPersonalizados, pEsMovil);
+
+                if (usarHilos && !existe)
                 {
                     listaTareasResultados.Add(Task.Factory.StartNew(() =>
                     {
@@ -1595,7 +1598,24 @@ namespace Es.Riam.Gnoss.UtilServiciosWeb
 
             if (usarHilos && listaTareasResultados.Count > 0)
             {
-                Task.WaitAll(listaTareasResultados.ToArray());
+                try
+                {
+                    Task.WaitAll(listaTareasResultados.ToArray());
+                }
+                catch (AggregateException e)
+                {
+                    mLoggingService.GuardarLogError("\nThe following exceptions have been thrown by WaitAll()");
+                    for (int j = 0; j < e.InnerExceptions.Count; j++)
+                    {
+                        mLoggingService.GuardarLogError(e.InnerExceptions[j].ToString());
+                    }
+                    throw new Exception(e.Message, e);
+                }
+                catch (Exception ex)
+                {
+                    mLoggingService.GuardarLogError(ex);
+                    throw new Exception(ex.Message, ex);
+                }
             }
         }
 
@@ -1766,14 +1786,14 @@ namespace Es.Riam.Gnoss.UtilServiciosWeb
 
         #endregion
 
-        public CargadorResultadosModel(EntityContext entityContext, LoggingService loggingService, RedisCacheWrapper redisCacheWrapper, ConfigService configService, VirtuosoAD virtuosoAD)
+        public CargadorResultadosModel(EntityContext entityContext, LoggingService loggingService, RedisCacheWrapper redisCacheWrapper, ConfigService configService, VirtuosoAD virtuosoAD, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication)
         {
             mVirtuosoAD = virtuosoAD;
             mEntityContext = entityContext;
             mLoggingService = loggingService;
             mRedisCacheWrapper = redisCacheWrapper;
             mConfigService = configService;
-            mServicesUtilVirtuosoAndReplication = mServicesUtilVirtuosoAndReplication;
+            mServicesUtilVirtuosoAndReplication = servicesUtilVirtuosoAndReplication;
             mUtilServiciosFacetas = new UtilServiciosFacetas(loggingService, entityContext, configService, redisCacheWrapper, virtuosoAD, mServicesUtilVirtuosoAndReplication);
         }
 

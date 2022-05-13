@@ -25,7 +25,7 @@ namespace Es.Riam.Gnoss.AD.EntityModel.Models.OrganizacionDS
         public short TipoOrganizacion { get; set; }
 
         public short SectorOrganizacion { get; set; }
-
+        [ForeignKey("OrganizacionID")]
         public virtual Organizacion Organizacion { get; set; }
     }
 }

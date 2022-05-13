@@ -1,4 +1,5 @@
-﻿using Es.Riam.Gnoss.AD.EncapsuladoDatos;
+﻿using Es.Riam.AbstractsOpen;
+using Es.Riam.Gnoss.AD.EncapsuladoDatos;
 using Es.Riam.Gnoss.AD.EntityModel;
 using Es.Riam.Gnoss.AD.EntityModel.Models.Faceta;
 using Es.Riam.Gnoss.AD.Virtuoso;
@@ -33,6 +34,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
         private VirtuosoAD mVirtuosoAD;
         private EntityContext mEntityContext;
         private ConfigService mConfigService;
+        private IServicesUtilVirtuosoAndReplication mServicesUtilVirtuosoAndReplication;
         private RedisCacheWrapper mRedisCacheWrapper;
         private GnossCache mGnossCache;
 
@@ -41,7 +43,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
         /// <summary>
         /// 
         /// </summary>
-        public ControladorObjetosConocimiento(Proyecto pProyecto, Dictionary<string, string> pParametroProyecto, LoggingService loggingService, EntityContext entityContext, ConfigService configService, RedisCacheWrapper redisCacheWrapper, GnossCache gnossCache, VirtuosoAD virtuosoAD)
+        public ControladorObjetosConocimiento(Proyecto pProyecto, Dictionary<string, string> pParametroProyecto, LoggingService loggingService, EntityContext entityContext, ConfigService configService, RedisCacheWrapper redisCacheWrapper, GnossCache gnossCache, VirtuosoAD virtuosoAD, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication)
         {
             mVirtuosoAD = virtuosoAD;
             mLoggingService = loggingService;
@@ -49,7 +51,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
             mConfigService = configService;
             mRedisCacheWrapper = redisCacheWrapper;
             mGnossCache = gnossCache;
-
+            mServicesUtilVirtuosoAndReplication = servicesUtilVirtuosoAndReplication;
             ProyectoSeleccionado = pProyecto;
             ParametroProyecto = pParametroProyecto;
         }
@@ -61,7 +63,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
         {
             ObjetoConocimientoModel resultado = null;
             DataWrapperDocumentacion dataWrapperDocumentacion = new DataWrapperDocumentacion();
-            using (DocumentacionCN documentacionCN = new DocumentacionCN(mEntityContext, mLoggingService, mConfigService, null))
+            using (DocumentacionCN documentacionCN = new DocumentacionCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication))
             {
                 documentacionCN.ObtenerDatasetConOntologiaAPartirNombre(ProyectoSeleccionado.Clave, pNombreOntologia, dataWrapperDocumentacion);
                 if (dataWrapperDocumentacion.ListaDocumento.Count!=0)
@@ -88,7 +90,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
                 objetoConocimiento.Namespace = filaOntologia.Namespace;
                 objetoConocimiento.NamespaceExtra = filaOntologia.NamespacesExtra;
 
-                TesauroCN tesauroCN = new TesauroCN(mEntityContext, mLoggingService, mConfigService, null);
+                TesauroCN tesauroCN = new TesauroCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
                 objetoConocimiento.NombreTesauroExclusivo = tesauroCN.ObtenerNombreTesauroProyOnt(ProyectoSeleccionado.Clave, ontologiaID.ToString());
                 objetoConocimiento.CachearDatosSemanticos = filaOntologia.CachearDatosSemanticos;
                 objetoConocimiento.EsBuscable = filaOntologia.EsBuscable;
@@ -307,7 +309,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
         public void GuardarObjetosConocimiento(List<ObjetoConocimientoModel> pListaObjetosConocimiento)
         {
             DataWrapperDocumentacion dataWrapperDocumentacion = new DataWrapperDocumentacion();
-            DocumentacionCN documentacionCN = new DocumentacionCN(mEntityContext, mLoggingService, mConfigService, null);
+            DocumentacionCN documentacionCN = new DocumentacionCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
             Guid proyectoIDPatronOntologias = Guid.Empty;
             if (ParametroProyecto.ContainsKey("ProyectoIDPatronOntologias"))
             {
@@ -406,7 +408,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
                 }
             }
 
-            using (ProyectoCN proyCN = new ProyectoCN(mEntityContext, mLoggingService, mConfigService, null))
+            using (ProyectoCN proyCN = new ProyectoCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication))
             {
                 proyCN.ActualizarProyectos();
             }
@@ -443,7 +445,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
         public void GuardarObjetoConocimiento(ObjetoConocimientoModel pObjetoConocimiento)
         {
             DataWrapperDocumentacion dataWrapperDocumentacion = new DataWrapperDocumentacion();
-            DocumentacionCN documentacionCN = new DocumentacionCN(mEntityContext, mLoggingService, mConfigService, null);
+            DocumentacionCN documentacionCN = new DocumentacionCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
 
             Guid proyectoIDPatronOntologias = Guid.Empty;
             if (ParametroProyecto.ContainsKey("ProyectoIDPatronOntologias"))
@@ -525,7 +527,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
                 }
             }
 
-            using (ProyectoCN proyCN = new ProyectoCN(mEntityContext,mLoggingService, mConfigService, null))
+            using (ProyectoCN proyCN = new ProyectoCN(mEntityContext,mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication))
             {
                 proyCN.ActualizarProyectos();
             }
@@ -1020,18 +1022,18 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
 
         public void InvalidarCaches(string UrlIntragnoss)
         {
-            ProyectoCL proyCL = new ProyectoCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mVirtuosoAD, null);
+            ProyectoCL proyCL = new ProyectoCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mVirtuosoAD, mServicesUtilVirtuosoAndReplication);
             proyCL.InvalidarFilaProyecto(ProyectoSeleccionado.Clave);
             proyCL.InvalidarComunidadMVC(ProyectoSeleccionado.Clave);
             proyCL.InvalidarCabeceraMVC(ProyectoSeleccionado.Clave);
             proyCL.InvalidarPresentacionSemantico(ProyectoSeleccionado.Clave);
 
-            FacetaCL facetaCL = new FacetaCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, null);
+            FacetaCL facetaCL = new FacetaCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mServicesUtilVirtuosoAndReplication);
             bool cachearFacetas = !(this.ParametroProyecto.ContainsKey("CacheFacetas") && this.ParametroProyecto["CacheFacetas"].Equals("0"));
             facetaCL.InvalidarCacheFacetasProyecto(ProyectoSeleccionado.Clave, cachearFacetas);
             facetaCL.InvalidarOntologiasProyecto(ProyectoSeleccionado.Clave);
 
-            FacetadoCL facetadoCL = new FacetadoCL(UrlIntragnoss, mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mVirtuosoAD, null);
+            FacetadoCL facetadoCL = new FacetadoCL(UrlIntragnoss, mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mVirtuosoAD, mServicesUtilVirtuosoAndReplication);
             facetadoCL.InvalidarResultadosYFacetasDeBusquedaEnProyecto(ProyectoSeleccionado.Clave, "*");
 
             mGnossCache.VersionarCacheLocal(ProyectoSeleccionado.Clave);
@@ -1058,7 +1060,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
             {
                 if (mDataWrapperProyecto == null)
                 {
-                    ProyectoCN proyCN = new ProyectoCN(mEntityContext, mLoggingService, mConfigService, null);
+                    ProyectoCN proyCN = new ProyectoCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
                     mDataWrapperProyecto = proyCN.ObtenerProyectoPorID(ProyectoSeleccionado.Clave);
                     mDataWrapperProyecto.Merge(proyCN.ObtenerPresentacionSemantico(ProyectoSeleccionado.Clave));
                 }

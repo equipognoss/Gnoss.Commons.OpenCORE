@@ -481,6 +481,11 @@ namespace Es.Riam.Gnoss.Elementos.Facetado
 
                 FacetaObjetoConocimientoProyecto filaFacetaObjetoConocimientoProyecto = FilaElementoEntity as FacetaObjetoConocimientoProyecto;
 
+                if (FilaElementoEntity is FacetaObjetoConocimiento)
+                {
+                    return ((FacetaObjetoConocimiento)FilaElementoEntity).ObjetoConocimiento;
+                }
+
                 if (filaFacetaObjetoConocimientoProyecto == null && FilaElementoEntity is FacetaFiltroProyecto)
                 {
                     filaFacetaObjetoConocimientoProyecto = ((FacetaFiltroProyecto)FilaElementoEntity).FacetaObjetoConocimientoProyecto;

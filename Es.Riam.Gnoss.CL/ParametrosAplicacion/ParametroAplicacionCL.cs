@@ -162,7 +162,7 @@ namespace Es.Riam.Gnoss.CL.ParametrosAplicacion
                     // Compruebo que la URL intragnoss es la misma con la que voy a buscar la clave
                     string urlIntragnoss = parametroAplicacionCN.ObtenerUrl();
 
-                    AD.EntityModel.ParametroAplicacion filaParametroAplicacion = gestorListaParametros.ParametroAplicacion.FirstOrDefault(parametro => parametro.Parametro.Equals(TiposParametrosAplicacion.UrlIntragnoss));
+                    ParametroAplicacion filaParametroAplicacion = gestorListaParametros.ParametroAplicacion.FirstOrDefault(parametro => parametro.Parametro.Equals(TiposParametrosAplicacion.UrlIntragnoss));
 
                     if (filaParametroAplicacion == null || urlIntragnoss != filaParametroAplicacion.Valor)
                     {

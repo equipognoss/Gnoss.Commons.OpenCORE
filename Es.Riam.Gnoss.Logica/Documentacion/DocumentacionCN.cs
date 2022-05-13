@@ -2091,7 +2091,7 @@ namespace Es.Riam.Gnoss.Logica.Documentacion
         /// <param name="pDocumentoID">Identificador del documento a comprobar</param>
         /// <param name="pIdentidadID">Identificador de la identidad del editor</param>
         /// <returns>La fila del documento en edición, null si nadie lo está editando</returns>
-        public DocumentoEnEdicion ComprobarDocumentoEnEdicion(Guid pDocumentoID, Guid pIdentidadID, int pSegundosDuracionBloqueo = 60, int pNumeroIntentos = 60)
+        public DocumentoEnEdicion ComprobarDocumentoEnEdicion(Guid pDocumentoID, Guid pIdentidadID, int pSegundosDuracionBloqueo = 60, int pNumeroIntentos = 3)
         {
             return DocumentacionAD.ComprobarDocumentoEnEdicion(pDocumentoID, pIdentidadID, pNumeroIntentos, pSegundosDuracionBloqueo);
         }

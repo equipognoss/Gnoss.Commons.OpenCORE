@@ -13,8 +13,9 @@ namespace Es.Riam.Gnoss.AD.EntityModel.Models.OrganizacionDS
     public partial class OrganizacionGnoss
     {
         [Key]
+        
         public Guid OrganizacionID { get; set; }
-
+        [ForeignKey("OrganizacionID")]
         public virtual Organizacion Organizacion { get; set; }
     }
 }

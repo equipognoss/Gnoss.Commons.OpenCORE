@@ -270,7 +270,7 @@ namespace Es.Riam.Util
         /// <param name="pFormatoHTML">TRUE si el formato del mensaje es HTML</param>
         /// <param name="pImagenEmbebida">Imagen embebida en el correo</param>
         /// <param name="pNotificacionID">Identificador de la notificación que se está enviando</param>
-        public void EnviarCorreo(string pDestinatario, string pRemitente, string pMascaraRemitente, string pAsunto, string pMensaje, bool pFormatoHTML, ImagenEmbebida pImagenEmbebida, Guid pNotificacionID)//no
+        public void EnviarCorreo(string pDestinatario, string pRemitente, string pMascaraRemitente, string pAsunto, string pMensaje, bool pFormatoHTML, ImagenEmbebida pImagenEmbebida, Guid pNotificacionID)
         {
             EnviarCorreo(pDestinatario, pRemitente, pMascaraRemitente, "", "", pAsunto, pMensaje, pFormatoHTML, pImagenEmbebida, pNotificacionID);
         }
@@ -327,7 +327,7 @@ namespace Es.Riam.Util
                 //El envío se realiza a una sola persona, lo envío desde el otro método para que se añada el campo To
                 EnviarCorreoSoloUnaPersona(this.mServidorSmtp, this.mPuerto, this.mUsuario, this.mPassword, pDestinatario, pRemitente, pMascaraRemitente, "", "", pAsunto, pMensaje, pFormatoHTML, pNotificacionID, this.mServidor.EnableSsl);
             }
-            else if (UtilCorreo.ComprobarServidorSmtp(this.mServidorSmtp, this.mPuerto))
+            else
             {
                 // Creamos el mensaje
                 MailMessage mensaje = new MailMessage();
@@ -384,10 +384,6 @@ namespace Es.Riam.Util
                 // Limpieza
                 mensaje.Dispose();
             }
-            else
-            {
-                throw new Exception("El servidor de correo no está correctamente configurado.");
-            }
         }
 
         /// <summary>
@@ -397,123 +393,94 @@ namespace Es.Riam.Util
         /// </summary>
         public void EnviarCorreo(IEmail pCorreo, IDestinatarioEmail pDestinatario)
         {
-            bool servicioCorrecto = false;
             try
             {
-                servicioCorrecto = UtilCorreo.ComprobarServidorSmtp(this.mServidorSmtp, this.mPuerto);
-            }
-            catch (Exception ex)
-            {
-                pDestinatario.Estado = 2;
-                pDestinatario.FechaProcesado = DateTime.Now;
-                throw ex;
-            }
-            if (servicioCorrecto)
-            {
+                // Creamos el mensaje
+                MailMessage mensaje = new MailMessage();
+
+                // Remitente
+                if (!string.IsNullOrEmpty(pCorreo.MascaraRemitente))
+                {
+                    mensaje.From = new MailAddress(pCorreo.Remitente, pCorreo.MascaraRemitente);
+                }
+                else
+                {
+                    mensaje.From = new MailAddress(pCorreo.Remitente);
+                }
+
+                if (pCorreo.EsHtml)
+                {
+                    pCorreo.HtmlTexto = "<html><body>" + pCorreo.HtmlTexto + "</body></html>";
+                    CrearMensajeHTML(mensaje, pCorreo.HtmlTexto);
+                }
+                else
+                {
+                    mensaje.IsBodyHtml = false;
+                    mensaje.Body = pCorreo.HtmlTexto;
+                }
+
+                if (!string.IsNullOrEmpty(pCorreo.DireccionRespuesta) && !string.IsNullOrEmpty(pCorreo.MascaraDireccionRespuesta))
+                {
+                    mensaje.ReplyToList.Add(new MailAddress(pCorreo.DireccionRespuesta, pCorreo.MascaraDireccionRespuesta));
+                }
+                else if (!string.IsNullOrEmpty(pCorreo.DireccionRespuesta))
+                {
+                    mensaje.ReplyToList.Add(new MailAddress(pCorreo.DireccionRespuesta));
+                }
+                //Asunto
+                mensaje.Subject = pCorreo.Asunto;
+                //mensaje.SubjectEncoding = System.Text.Encoding.UTF8;
+                mensaje.SubjectEncoding = CodificacionANSI;
+                //mensaje.SubjectEncoding = null;
+                mensaje.BodyEncoding = null;
+
+                // Destinatario
+                if (!string.IsNullOrEmpty(pCorreo.MascaraRemitente))
+                {
+                    mensaje.To.Add(new MailAddress(pDestinatario.Email, pDestinatario.MascaraDestinatario));
+                }
+                else
+                {
+                    mensaje.To.Add(new MailAddress(pDestinatario.Email));
+                }
+
+                mensaje.Headers.Add("Message-ID", "<" + DateTime.Now.ToString("yyyyMMddHHmmss") + "." + pCorreo.CorreoID + "." + pCorreo.Remitente + ">");
+
+                //Habilitamos el envio de mensajes seguros.
+                if (pCorreo.ServidorCorreo.EsSeguro)
+                {
+                    mServidor.EnableSsl = true;
+                }
+                else
+                {
+                    mServidor.EnableSsl = false;
+                }
+
+                if (!DOMINIO_SERVIDOR_CLIENTE.Equals("gnoss"))
+                {
+                    mServidor.LocalHostName = DOMINIO_SERVIDOR_CLIENTE;
+                }
+
                 try
                 {
-                    // Creamos el mensaje
-                    MailMessage mensaje = new MailMessage();
-
-                    // Remitente
-                    if (!string.IsNullOrEmpty(pCorreo.MascaraRemitente))
-                    {
-                        mensaje.From = new MailAddress(pCorreo.Remitente, pCorreo.MascaraRemitente);
-                    }
-                    else
-                    {
-                        mensaje.From = new MailAddress(pCorreo.Remitente);
-                    }
-
-
-                    //// Destinatarios en copia oculta
-                    //if (pCorreo.Destinatario.Contains(",") || pCorreo.Destinatario.Contains(";"))
-                    //{
-                    //    mensaje.Bcc.Add(pCorreo.Destinatario);
-                    //}
-
-                    if (pCorreo.EsHtml)
-                    {
-                        pCorreo.HtmlTexto = "<html><body>" + pCorreo.HtmlTexto + "</body></html>";
-                        CrearMensajeHTML(mensaje, pCorreo.HtmlTexto);
-                    }
-                    else
-                    {
-                        mensaje.IsBodyHtml = false;
-                        mensaje.Body = pCorreo.HtmlTexto;
-                        //mensaje.BodyEncoding = System.Text.Encoding.UTF8;
-                    }
-
-                    if (!string.IsNullOrEmpty(pCorreo.DireccionRespuesta) && !string.IsNullOrEmpty(pCorreo.MascaraDireccionRespuesta))
-                    {
-                        mensaje.ReplyToList.Add(new MailAddress(pCorreo.DireccionRespuesta, pCorreo.MascaraDireccionRespuesta));
-                    }
-                    else if (!string.IsNullOrEmpty(pCorreo.DireccionRespuesta))
-                    {
-                        mensaje.ReplyToList.Add(new MailAddress(pCorreo.DireccionRespuesta));
-                    }
-                    //Asunto
-                    mensaje.Subject = pCorreo.Asunto;
-                    //mensaje.SubjectEncoding = System.Text.Encoding.UTF8;
-                    mensaje.SubjectEncoding = CodificacionANSI;
-                    //mensaje.SubjectEncoding = null;
-                    mensaje.BodyEncoding = null;
-
-                    // Destinatario
-                    if (!string.IsNullOrEmpty(pCorreo.MascaraRemitente))
-                    {
-                        mensaje.To.Add(new MailAddress(pDestinatario.Email, pDestinatario.MascaraDestinatario));
-                    }
-                    else
-                    {
-                        mensaje.To.Add(new MailAddress(pDestinatario.Email));
-                    }
-
-                    mensaje.Headers.Add("Message-ID", "<" + DateTime.Now.ToString("yyyyMMddHHmmss") + "." + pCorreo.CorreoID + "." + pCorreo.Remitente + ">");
-
-                    //Habilitamos el envio de mensajes seguros.
-                    if (pCorreo.ServidorCorreo.EsSeguro)
-                    {
-                        mServidor.EnableSsl = true;
-                    }
-                    else
-                    {
-                        mServidor.EnableSsl = false;
-                    }
-
-                    if (!DOMINIO_SERVIDOR_CLIENTE.Equals("gnoss"))
-                    {
-                        mServidor.LocalHostName = DOMINIO_SERVIDOR_CLIENTE;
-                    }
-
-                    try
-                    {
-                        //Enviar el mensaje
-                        mServidor.Send(mensaje);
-                    }
-                    catch (Exception ex)
-                    {
-                        throw new GnossSmtpException($"Error al enviar al email {pDestinatario.Email} el mensaje {pCorreo.CorreoID}: {pCorreo.Asunto} con cuerpo {pCorreo.HtmlTexto}", ex);
-                    }
-
-                    pDestinatario.Estado = 1; // (short)EstadoEnvio.Enviado;
-                    pDestinatario.FechaProcesado = DateTime.Now;
-
-                    // Limpieza
-                    mensaje.Dispose();
+                    //Enviar el mensaje
+                    mServidor.Send(mensaje);
                 }
                 catch (Exception ex)
                 {
-                    pDestinatario.Estado = 2; // (short)EstadoEnvio.Error;
-                    pDestinatario.FechaProcesado = DateTime.Now;
-                    throw ex;
+                    throw new GnossSmtpException($"Error al enviar al email {pDestinatario.Email} el mensaje {pCorreo.CorreoID}: {pCorreo.Asunto} con cuerpo {pCorreo.HtmlTexto}", ex);
                 }
-            }
-            else
-            {
-                pDestinatario.Estado = 2;
+
+                pDestinatario.Estado = 1; //(short)EstadoEnvio.Enviado;
                 pDestinatario.FechaProcesado = DateTime.Now;
-                throw new Exception("El servidor de correo no está configurado correctamente.");
+
+                mensaje.Dispose();
+            }
+            catch (Exception ex)
+            {
+                pDestinatario.Estado = 2; //(short)EstadoEnvio.Error;
+                pDestinatario.FechaProcesado = DateTime.Now;
+                throw new Exception(ex.Message, ex);
             }
         }
 
@@ -546,71 +513,55 @@ namespace Es.Riam.Util
         /// <param name="pNotificacionID">Identificador de la notificación que se está enviando</param>
         public static void EnviarCorreoSoloUnaPersona(string pSmtp, int pPuerto, string pUsuario, string pPassword, string pDestinatario, string pRemitente, string pMascaraRemitente, string pDireccionRespuesta, string pMascaraDireccionRespuesta, string pAsunto, string pMensaje, bool pFormatoHTML, Guid pNotificacionID, bool pSSL)
         {
-            if (ComprobarServidorSmtp(pSmtp, pPuerto))
+            SmtpClientExtendido servidor = new SmtpClientExtendido(pSmtp, pPuerto);
+            servidor.UseDefaultCredentials = false;
+            servidor.Credentials = new NetworkCredential(pUsuario, pPassword);
+            servidor.EnableSsl = pSSL;
+
+            // Remitente
+            MailAddress remitente = new MailAddress(pRemitente, pMascaraRemitente);
+
+            // Destinatarios
+            MailAddress destino = new MailAddress(pDestinatario);
+
+            // Contenido del mensaje
+            MailMessage mensaje = new MailMessage(remitente, destino);
+
+            if (pFormatoHTML)
             {
-                SmtpClientExtendido servidor = new SmtpClientExtendido(pSmtp, pPuerto);
-                servidor.UseDefaultCredentials = false;
-                servidor.Credentials = new NetworkCredential(pUsuario, pPassword);
-                servidor.EnableSsl = pSSL;
-
-                // Remitente
-                MailAddress remitente = new MailAddress(pRemitente, pMascaraRemitente);
-
-                // Destinatarios
-                MailAddress destino = new MailAddress(pDestinatario);
-
-                // Contenido del mensaje
-                MailMessage mensaje = new MailMessage(remitente, destino);
-
-                if (pFormatoHTML)
-                {
-                    CrearMensajeHTML(mensaje, pMensaje);
-                }
-                else
-                {
-                    mensaje.IsBodyHtml = false;
-                    mensaje.Body = pMensaje;
-                    //mensaje.BodyEncoding = System.Text.Encoding.UTF8;
-                }
-
-                if (!pDireccionRespuesta.Trim().Equals(string.Empty))
-                {
-                    mensaje.ReplyToList.Add(new MailAddress(pDireccionRespuesta, pMascaraDireccionRespuesta));
-                }
-                //Asunto
-                mensaje.Subject = pAsunto;
-                //mensaje.SubjectEncoding = System.Text.Encoding.UTF8;
-                mensaje.SubjectEncoding = CodificacionANSI;
-                //mensaje.SubjectEncoding = null;
-                //mensaje.BodyEncoding = null;
-
-                //La cabecera To no hace falta porque va implícita, ya que el destinatario no va en copia oculta
-                //mensaje.To.Add(pDestinatario);
-
-                mensaje.Headers.Add("Message-ID", "<" + DateTime.Now.ToString("yyyyMMddHHmmss") + "." + pNotificacionID + "." + pRemitente + ">");
-
-                if (!DOMINIO_SERVIDOR_CLIENTE.Equals("gnoss"))
-                {
-                    servidor.LocalHostName = DOMINIO_SERVIDOR_CLIENTE;
-                }
-
-                try
-                {
-                    //Enviar el mensaje
-                    servidor.Send(mensaje);
-                }
-                catch (Exception ex)
-                {
-                    throw new GnossSmtpException($"Error al enviar al email {pDestinatario} el mensaje {pNotificacionID}: {pAsunto} con cuerpo {pMensaje}", ex);
-                }
-
-                // Limpieza
-                mensaje.Dispose();
+                CrearMensajeHTML(mensaje, pMensaje);
             }
             else
             {
-                throw new Exception("El servidor de correo no está correctamente configurado.");
+                mensaje.IsBodyHtml = false;
+                mensaje.Body = pMensaje;
             }
+
+            if (!pDireccionRespuesta.Trim().Equals(string.Empty))
+            {
+                mensaje.ReplyToList.Add(new MailAddress(pDireccionRespuesta, pMascaraDireccionRespuesta));
+            }
+
+            //Asunto
+            mensaje.Subject = pAsunto;
+            mensaje.SubjectEncoding = CodificacionANSI;
+            mensaje.Headers.Add("Message-ID", "<" + DateTime.Now.ToString("yyyyMMddHHmmss") + "." + pNotificacionID + "." + pRemitente + ">");
+
+            if (!DOMINIO_SERVIDOR_CLIENTE.Equals("gnoss"))
+            {
+                servidor.LocalHostName = DOMINIO_SERVIDOR_CLIENTE;
+            }
+
+            try
+            {
+                servidor.Send(mensaje);
+            }
+            catch (Exception ex)
+            {
+                throw new GnossSmtpException($"Error al enviar al email {pDestinatario} el mensaje {pNotificacionID}: {pAsunto} con cuerpo {pMensaje}", ex);
+            }
+
+            mensaje.Dispose();
         }
 
         /// <summary>

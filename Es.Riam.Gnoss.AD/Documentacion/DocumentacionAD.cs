@@ -2305,13 +2305,13 @@ namespace Es.Riam.Gnoss.AD.Documentacion
 
                     //DbCommand ModifyHistorialDocumentoCommand = ObtenerComando(sqlHistorialDocumentoModify);
                     //AgregarParametro(ModifyHistorialDocumentoCommand, IBD.ToParam("O_HistorialDocumentoID"), IBD.TipoGuidToObject(DbType.Guid), "HistorialDocumentoID", DataRowVersion.Original);
-                    ////AgregarParametro(ModifyHistorialDocumentoCommand, IBD.ToParam("O_DocumentoID"), IBD.TipoGuidToObject(DbType.Guid), "DocumentoID", DataRowVersion.Original);
-                    ////AgregarParametro(ModifyHistorialDocumentoCommand, IBD.ToParam("O_IdentidadID"), IBD.TipoGuidToObject(DbType.Guid), "IdentidadID", DataRowVersion.Original);
-                    ////AgregarParametro(ModifyHistorialDocumentoCommand, IBD.ToParam("O_Fecha"), DbType.DateTime, "Fecha", DataRowVersion.Original);
-                    ////AgregarParametro(ModifyHistorialDocumentoCommand, IBD.ToParam("O_TagNombre"), DbType.String, "TagNombre", DataRowVersion.Original);
-                    ////AgregarParametro(ModifyHistorialDocumentoCommand, IBD.ToParam("O_CategoriaTesauroID"), IBD.TipoGuidToObject(DbType.Guid), "CategoriaTesauroID", DataRowVersion.Original);
-                    ////AgregarParametro(ModifyHistorialDocumentoCommand, IBD.ToParam("O_Accion"), DbType.Int32, "Accion", DataRowVersion.Original);
-                    ////AgregarParametro(ModifyHistorialDocumentoCommand, IBD.ToParam("O_ProyectoID"), IBD.TipoGuidToObject(DbType.Guid), "ProyectoID", DataRowVersion.Original);
+                    //AgregarParametro(ModifyHistorialDocumentoCommand, IBD.ToParam("O_DocumentoID"), IBD.TipoGuidToObject(DbType.Guid), "DocumentoID", DataRowVersion.Original);
+                    //AgregarParametro(ModifyHistorialDocumentoCommand, IBD.ToParam("O_IdentidadID"), IBD.TipoGuidToObject(DbType.Guid), "IdentidadID", DataRowVersion.Original);
+                    //AgregarParametro(ModifyHistorialDocumentoCommand, IBD.ToParam("O_Fecha"), DbType.DateTime, "Fecha", DataRowVersion.Original);
+                    //AgregarParametro(ModifyHistorialDocumentoCommand, IBD.ToParam("O_TagNombre"), DbType.String, "TagNombre", DataRowVersion.Original);
+                    //AgregarParametro(ModifyHistorialDocumentoCommand, IBD.ToParam("O_CategoriaTesauroID"), IBD.TipoGuidToObject(DbType.Guid), "CategoriaTesauroID", DataRowVersion.Original);
+                    //AgregarParametro(ModifyHistorialDocumentoCommand, IBD.ToParam("O_Accion"), DbType.Int32, "Accion", DataRowVersion.Original);
+                    //AgregarParametro(ModifyHistorialDocumentoCommand, IBD.ToParam("O_ProyectoID"), IBD.TipoGuidToObject(DbType.Guid), "ProyectoID", DataRowVersion.Original);
 
                     //AgregarParametro(ModifyHistorialDocumentoCommand, IBD.ToParam("HistorialDocumentoID"), IBD.TipoGuidToObject(DbType.Guid), "HistorialDocumentoID", DataRowVersion.Current);
                     //AgregarParametro(ModifyHistorialDocumentoCommand, IBD.ToParam("DocumentoID"), IBD.TipoGuidToObject(DbType.Guid), "DocumentoID", DataRowVersion.Current);
@@ -2693,11 +2693,11 @@ namespace Es.Riam.Gnoss.AD.Documentacion
 
                     //DbCommand ModifyColaDocumentoCommand = ObtenerComando(sqlColaDocumentoModify);
                     //AgregarParametro(ModifyColaDocumentoCommand, IBD.ToParam("Original_ID"), DbType.Int32, "ID", DataRowVersion.Original);
-                    ////AgregarParametro(ModifyColaDocumentoCommand, IBD.ToParam("Original_DocumentoID"), IBD.TipoGuidToObject(DbType.Guid), "DocumentoID", DataRowVersion.Original);
-                    ////AgregarParametro(ModifyColaDocumentoCommand, IBD.ToParam("Original_AccionRealizada"), DbType.Int16, "AccionRealizada", DataRowVersion.Original);
-                    ////AgregarParametro(ModifyColaDocumentoCommand, IBD.ToParam("Original_Estado"), DbType.Int16, "Estado", DataRowVersion.Original);
-                    ////AgregarParametro(ModifyColaDocumentoCommand, IBD.ToParam("Original_FechaEncolado"), DbType.DateTime, "FechaEncolado", DataRowVersion.Original);
-                    ////AgregarParametro(ModifyColaDocumentoCommand, IBD.ToParam("Original_FechaProcesado"), DbType.DateTime, "FechaProcesado", DataRowVersion.Original);
+                    //AgregarParametro(ModifyColaDocumentoCommand, IBD.ToParam("Original_DocumentoID"), IBD.TipoGuidToObject(DbType.Guid), "DocumentoID", DataRowVersion.Original);
+                    //AgregarParametro(ModifyColaDocumentoCommand, IBD.ToParam("Original_AccionRealizada"), DbType.Int16, "AccionRealizada", DataRowVersion.Original);
+                    //AgregarParametro(ModifyColaDocumentoCommand, IBD.ToParam("Original_Estado"), DbType.Int16, "Estado", DataRowVersion.Original);
+                    //AgregarParametro(ModifyColaDocumentoCommand, IBD.ToParam("Original_FechaEncolado"), DbType.DateTime, "FechaEncolado", DataRowVersion.Original);
+                    //AgregarParametro(ModifyColaDocumentoCommand, IBD.ToParam("Original_FechaProcesado"), DbType.DateTime, "FechaProcesado", DataRowVersion.Original);
 
                     //AgregarParametro(ModifyColaDocumentoCommand, IBD.ToParam("ID"), DbType.Int32, "ID", DataRowVersion.Current);
                     //AgregarParametro(ModifyColaDocumentoCommand, IBD.ToParam("DocumentoID"), IBD.TipoGuidToObject(DbType.Guid), "DocumentoID", DataRowVersion.Current);
@@ -4165,7 +4165,7 @@ namespace Es.Riam.Gnoss.AD.Documentacion
                 //VersionDocumento
                 dataWrapperDocumentacion.ListaVersionDocumento = mEntityContext.VersionDocumento.Where(version => version.DocumentoID.Equals(pDocumentoID) || version.DocumentoOriginalID.Equals(pDocumentoID)).ToList();
             }
-            ////DocumentoAtributoBiblio
+            //DocumentoAtributoBiblio
             dataWrapperDocumentacion.ListaDocumentoAtributoBiblio = mEntityContext.DocumentoAtributoBiblio.Where(item => item.DocumentoID.Equals(pDocumentoID)).ToList();
 
             //HistorialDocumento
@@ -4186,7 +4186,7 @@ namespace Es.Riam.Gnoss.AD.Documentacion
             //VotoDocumento
             dataWrapperDocumentacion.ListaVotoDocumento = mEntityContext.VotoDocumento.Where(voto => voto.DocumentoID.Equals(pDocumentoID)).ToList();
 
-            ////DocumentoTipologia
+            //DocumentoTipologia
             dataWrapperDocumentacion.ListaDocumentoTipologia = mEntityContext.DocumentoTipologia.Where(item => item.DocumentoID.Equals(pDocumentoID)).ToList();
 
             if (dataWrapperDocumentacion.ListaDocumento.Where(doc => doc.DocumentoID.Equals(pDocumentoID) && doc.Tipo.Equals((short)TiposDocumentacion.Encuesta)).ToList().Count > 0)
@@ -4257,7 +4257,7 @@ namespace Es.Riam.Gnoss.AD.Documentacion
                 //VersionDocumento
                 dataWrapperDocumentacion.ListaVersionDocumento = mEntityContext.VersionDocumento.Where(version => pDocumentosID.Contains(version.DocumentoID) || pDocumentosID.Contains(version.DocumentoOriginalID)).ToList();
             }
-            ////DocumentoAtributoBiblio
+            //DocumentoAtributoBiblio
             dataWrapperDocumentacion.ListaDocumentoAtributoBiblio = mEntityContext.DocumentoAtributoBiblio.Where(item => pDocumentosID.Contains(item.DocumentoID)).ToList();
 
             //HistorialDocumento
@@ -4266,7 +4266,7 @@ namespace Es.Riam.Gnoss.AD.Documentacion
             //DocumentoComentario
             dataWrapperDocumentacion.ListaDocumentoComentario = mEntityContext.DocumentoComentario.Where(item => pDocumentosID.Contains(item.DocumentoID)).ToList();
 
-            ////DocumentoGrupoUsuario
+            //DocumentoGrupoUsuario
             dataWrapperDocumentacion.ListaDocumentoGrupoUsuario = mEntityContext.DocumentoGrupoUsuario.Where(item => pDocumentosID.Contains(item.DocumentoID)).ToList();
 
             //DocumentoRolIdentidad
@@ -4278,7 +4278,7 @@ namespace Es.Riam.Gnoss.AD.Documentacion
             //VotoDocumento
             dataWrapperDocumentacion.ListaVotoDocumento = mEntityContext.VotoDocumento.Where(voto => pDocumentosID.Contains(voto.DocumentoID)).ToList();
 
-            ////DocumentoTipologia
+            //DocumentoTipologia
             dataWrapperDocumentacion.ListaDocumentoTipologia = mEntityContext.DocumentoTipologia.Where(item => pDocumentosID.Contains(item.DocumentoID)).ToList();
 
             if (dataWrapperDocumentacion.ListaDocumento.Where(doc => pDocumentosID.Contains(doc.DocumentoID) && doc.Tipo.Equals((short)TiposDocumentacion.Encuesta)).ToList().Count > 0)
@@ -5491,7 +5491,8 @@ namespace Es.Riam.Gnoss.AD.Documentacion
             List<Documento> listaDocs = new List<Documento>();
             if (pTraerSecundarias)
             {
-                listaDocs = mEntityContext.Documento.JoinDocumentoWebVinBaseRecursosDocumento().JoinBaseRecursosProyecto().Where(objeto => (objeto.Documento.Tipo.Equals((short)TiposDocumentacion.Ontologia) || objeto.Documento.Tipo.Equals((short)TiposDocumentacion.OntologiaSecundaria)) && objeto.BaseRecursosProyecto.ProyectoID.Equals(pProyectoID) && !objeto.Documento.Eliminado && !objeto.DocumentoWebVinBaseRecursos.Eliminado).Select(objeto => objeto.Documento).ToList();
+                var query = mEntityContext.Documento.JoinDocumentoWebVinBaseRecursosDocumento().JoinBaseRecursosProyecto().Where(objeto => (objeto.Documento.Tipo.Equals((short)TiposDocumentacion.Ontologia) || objeto.Documento.Tipo.Equals((short)TiposDocumentacion.OntologiaSecundaria)) && objeto.BaseRecursosProyecto.ProyectoID.Equals(pProyectoID) && !objeto.Documento.Eliminado && !objeto.DocumentoWebVinBaseRecursos.Eliminado);
+                listaDocs = query.Select(objeto => objeto.Documento).ToList();
             }
             else
             {
@@ -7527,7 +7528,7 @@ namespace Es.Riam.Gnoss.AD.Documentacion
         /// <return s>La fila del documento en edición, null si nadie lo está editando</return s>
         public DocumentoEnEdicion ComprobarDocumentoEnEdicion(Guid pDocumentoID, Guid pIdentidadID, int pSegundosDuracionBloqueo = 60)
         {
-            return ComprobarDocumentoEnEdicion(pDocumentoID, pIdentidadID, 60, pSegundosDuracionBloqueo);
+            return ComprobarDocumentoEnEdicion(pDocumentoID, pIdentidadID, 3, pSegundosDuracionBloqueo);
         }
 
         /// <summary>
@@ -7590,7 +7591,7 @@ namespace Es.Riam.Gnoss.AD.Documentacion
                     }
                     if (pNumeroIntentos > 0)
                     {
-                        return ComprobarDocumentoEnEdicion(pDocumentoID, pIdentidadID, pNumeroIntentos--, pSegundosDuracionBloqueo);
+                        return ComprobarDocumentoEnEdicion(pDocumentoID, pIdentidadID, pNumeroIntentos - 1, pSegundosDuracionBloqueo);
                     }
                     else
                     {
@@ -7604,7 +7605,7 @@ namespace Es.Riam.Gnoss.AD.Documentacion
                         // El recurso está bloqueado por otro usuario
                         // duermo un segundo e intento bloquearlo de nuevo
                         Thread.Sleep(1000);
-                        return ComprobarDocumentoEnEdicion(pDocumentoID, pIdentidadID, pNumeroIntentos--, pSegundosDuracionBloqueo);
+                        return ComprobarDocumentoEnEdicion(pDocumentoID, pIdentidadID, pNumeroIntentos - 1, pSegundosDuracionBloqueo);
                     }
                     else
                     {
@@ -7638,7 +7639,7 @@ namespace Es.Riam.Gnoss.AD.Documentacion
                             // Si ha habido una excepción, seguramente es porque alguien ha guardado el recurso a la vez que yo
                             // duermo un segundo antes de volver a intentarlo
                             Thread.Sleep(1000);
-                            return ComprobarDocumentoEnEdicion(pDocumentoID, pIdentidadID, pNumeroIntentos--, pSegundosDuracionBloqueo);
+                            return ComprobarDocumentoEnEdicion(pDocumentoID, pIdentidadID, pNumeroIntentos - 1, pSegundosDuracionBloqueo);
                         }
                         else
                         {

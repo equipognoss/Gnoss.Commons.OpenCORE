@@ -151,6 +151,11 @@ namespace Es.Riam.Gnoss.Web.MVC.Models.Administracion
         /// </summary>
         public List<FiltrosFacetas> ListaFiltrosFacetas { get; set; }
 
+        /// <summary>
+        /// Indica si la faceta esta eliminada o no
+        /// </summary>
+        public bool Modified { get; set; }
+
         [Serializable]
         public partial class FiltrosFacetas
         {

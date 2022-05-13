@@ -720,6 +720,10 @@ namespace Es.Riam.Gnoss.CL
         //private static ConcurrentDictionary<string, PooledRedisClientManager> mListaPoolPorIP = new ConcurrentDictionary<string, PooledRedisClientManager>();
 
         private int? mTamanioPool = null;
+
+        //Bloque de cache cuando está configurado la cache y redis, para que no se pueda leer a la vez en redis con la misma conexion
+        private object mBloqueoCache = new object();
+
         protected IServicesUtilVirtuosoAndReplication mServicesUtilVirtuosoAndReplication;
 
         #endregion
@@ -1669,7 +1673,10 @@ namespace Es.Riam.Gnoss.CL
                     Thread t = null;
                     if (!UsarHilos)
                     {
-                        resultado = ConsultasRedisPorTipo(pTipoAccesoRedis, pRawKey, out terminado, pParametrosExtra);
+                        lock (mBloqueoCache)
+                        {
+                            resultado = ConsultasRedisPorTipo(pTipoAccesoRedis, pRawKey, out terminado, pParametrosExtra);
+                        }
                     }
                     else
                     {
@@ -1696,10 +1703,6 @@ namespace Es.Riam.Gnoss.CL
                         AgregarEntradaTraza("Redis. Acción redis '" + pTipoAccesoRedis + "' en " + (inicioHilo - finHilo) + " segundos. " + pRawKey);
                     }
                 }
-                /*else
-                {
-                    AgregarEntradaTraza("Redis '" + clienteRedis.Host + "' no ha respondido a nuestras peticiones 3 veces consecutivas, abortamos las querys 1 min.");
-                }*/
             }
             else if (mLanzarExcepciones)
             {
@@ -1761,13 +1764,11 @@ namespace Es.Riam.Gnoss.CL
                 int pFin = 0;
                 object pObjeto = null;
                 object[] pObjetoArray = null;
-                byte[] pObjetoBytes = null;
                 (string, object)[] pArrayObjeto = null;
                 Type[] ptype = null;
                 string pObjetoString = null;
                 string[] pRawkeyArray = null;
                 bool pReintentar = false;
-                string crear = null;
 
                 switch (pTipoAccesoRedis)
                 {
@@ -1826,12 +1827,6 @@ namespace Es.Riam.Gnoss.CL
                         resultado = InteractuarRedis_RangoPorScore(pRawKey, pRawKeyOriginal, pInicio, pFin);
                         break;
                     case TipoAccesoRedis.LecturaNumElementos:
-                        //var t = ClienteRedisLectura.CreateSequence(pRawKey).ZCard().Result;
-                        //t.AsTask().Wait(500);
-                        //if (!t.IsCompleted)
-                        //{
-                        //    return null;
-                        //}
                         resultado = ClienteRedisLectura.CreateSequence(pRawKey).ZCard().Result;
                         break;
                     case TipoAccesoRedis.EliminarElementosSortedSet:
@@ -1843,16 +1838,9 @@ namespace Es.Riam.Gnoss.CL
                         int score = 0;
                         string rawKeyOrigen = pRawKey;
                         string rawKeyDestino = pParametrosExtra[0].ToString();
-                        //var task1 = ClienteRedisLectura.CreateSequence(rawKeyOrigen).ZRange(0, -1);
-                        //task1.AsTask().Wait(500);
-                        //if (!task1.IsCompleted)
-                        //{
-                        //    return null;
-                        //}
                         List<(double, string)> bytesCache = ClienteRedisLectura.CreateSequence(rawKeyOrigen).ZRange(0, -1).Result;
                         foreach ((double, string) elemento in bytesCache)
                         {
-                            //resultado = ClienteRedisEscritura.CreateSequence(pRawKey).ZAdd((pScore, pObjetoString)).Result;
                             resultado = ClienteRedisEscritura.CreateSequence(rawKeyDestino).ZAdd((score,elemento.Item2)).Result;
                             score++;
                         }
@@ -1860,12 +1848,6 @@ namespace Es.Riam.Gnoss.CL
                         resultado = score;
                         break;
                     case TipoAccesoRedis.LecturaListaObjetos:
-                        /*var task3 = ClienteRedisLectura.Get<string>(pRawKey);
-                        task3.AsTask().Wait(500);
-                        if (!task3.IsCompleted)
-                        {
-                            return null;
-                        }*/
                         resultado = ClienteRedisLectura.Keys(pRawKey).Result.ToList();
                         break;
                     case TipoAccesoRedis.CaducidadAObjeto:
@@ -1880,12 +1862,10 @@ namespace Es.Riam.Gnoss.CL
                         double pScore = double.Parse(pParametrosExtra[0].ToString());
                         pObjetoString = pParametrosExtra[1].ToString();
                         resultado = ClienteRedisEscritura.CreateSequence(pRawKey).ZAdd((pScore, pObjetoString)).Result;
-                        //resultado = 1;
                         break;
                     case TipoAccesoRedis.ObtenerScoreObjeto:
                         pObjetoString = pParametrosExtra[0].ToString();
                         resultado = ClienteRedisEscritura.CreateSequence(pRawKey).ZScore((((double, string))pParametrosExtra[0]).Item2).Result;
-                        //resultado = 1;
                         break;
                     case TipoAccesoRedis.Borrado:
                         pRawKeyOriginal = pParametrosExtra[0].ToString();
@@ -1959,25 +1939,12 @@ namespace Es.Riam.Gnoss.CL
 
         private object InteractuarRedis_RangoPorScore(string pRawKey, string pRawKeyOriginal, int pMinScore, int pNumElementos)
         {
-            //var t = ClienteRedisLectura.CreateSequence(pRawKey).ZRangeByScore(pMinScore.ToString(), pNumElementos.ToString());
-            //t.AsTask().Wait(500);
-            //if (!t.IsCompleted)
-            //{
-            //    return null;
-            //}
             List<(double, string)> bytesCache = ClienteRedisLectura.CreateSequence(pRawKey).ZRangeByScore(pMinScore.ToString(), pNumElementos.ToString()).Result;
-
             return bytesCache;
         }
 
         private object InteractuarRedis_Rango(string pRawKey, string pRawKeyOriginal, int pInicio, int pFin)
         {
-            //var t = ClienteRedisLectura.CreateSequence(pRawKey).ZRange(-pFin, -pInicio);
-            //t.AsTask().Wait(500);
-            //if (!t.IsCompleted)
-            //{
-            //    return null;
-            //}
             List<(double, string)> bytesCache = ClienteRedisLectura.CreateSequence(pRawKey).ZRange(-pFin, -pInicio).Result;
             return bytesCache;
         }
@@ -1987,12 +1954,7 @@ namespace Es.Riam.Gnoss.CL
             Dictionary<string, object> resultado = new Dictionary<string, object>();
 
             AgregarEntradaTraza("Redis. Obtengo lista de claves de caché " + pRawkeyArray[0] + " ...");
-            //var t = ClienteRedisLectura.MGet(pRawkeyArray, ptypes);
-            //t.AsTask().Wait(1000);
-            //if (!t.IsCompleted)
-            //{
-            //    return null;
-            //}
+
             object[] objetosCache = ClienteRedisLectura.MGet(pRawkeyArray, ptypes).Result;
 
             for (int cont = 0; cont < pRawkeyArray.Length; cont++)
@@ -2018,7 +1980,6 @@ namespace Es.Riam.Gnoss.CL
         private void InteractuarRedis_EscrituraDiccionarioObjetos(string[] pRawkeyArray, object[] pObjetosCache, double pDuracion, (string, object)[] pObjeto)
         {
             AgregarEntradaTraza("Redis. Agrego lista de claves de caché " + pRawkeyArray[0] + " ...");
-            //byte[][] listaObjetos = new byte[pObjetosCache.Length][];
             int i = 0;
             (string, object)[] listaObjetos = new (string, object)[pObjeto.Length];
             foreach ((string, object) objeto in pObjeto)
@@ -2027,10 +1988,8 @@ namespace Es.Riam.Gnoss.CL
                 listaObjetos[i].Item2 = ObjectToByteArray(objeto.Item2);
                 i++;
             }
-            //ClienteRedisEscritura.MSet(pRawkeyArray, listaObjetos);
+
             ClienteRedisEscritura.MSet(pObjeto);
-
-
 
             foreach (string rawKey in pRawkeyArray)
             {
@@ -2046,12 +2005,6 @@ namespace Es.Riam.Gnoss.CL
         private object InteractuarRedis_LecturaVariosObjetos(string[] pRawkeyArray, Type[] ptypes)
         {
             List<object> listaResultados = new List<object>();
-            //var t = ClienteRedisLectura.MGet(pRawkeyArray, ptypes);
-            //t.AsTask().Wait(1000);
-            //if (!t.IsCompleted)
-            //{
-            //    return null;
-            //}
             object[] objetosCache = ClienteRedisLectura.MGet(pRawkeyArray, ptypes).Result;
             AgregarEntradaTraza("Redis. Obtengo clave de caché");
             if (objetosCache != null && objetosCache.Length > 0)
@@ -2079,7 +2032,6 @@ namespace Es.Riam.Gnoss.CL
         private void InteractuarRedis_Escritura(string pRawKey, string pRawKeyOriginal, object pObjetoCache, double pDuracion)
         {
             AgregarEntradaTraza("Redis. Agrego a caché " + pRawKey);
-            string insertar = "";
             if (pDuracion > 0)
             {
                 ClienteRedisEscritura.Set(pRawKey, ObjectToByteArray(pObjetoCache), (int)pDuracion);
@@ -2096,15 +2048,7 @@ namespace Es.Riam.Gnoss.CL
             object resultado = null;
 
             AgregarEntradaTraza("Redis. Obtengo clave de caché " + pRawKey);
-            //var t = ClienteRedisLectura.Get<byte[]>(pRawKey);
-            ////var task = Task.Run<byte[]>(async () => { return await ClienteRedisLectura.Get<byte[]>(pRawKey); });
-            ////task.Wait(500);
-            //t.AsTask().Wait(1000);
-            ////t.AsTask().
-            //if (!t.IsCompleted)
-            //{
-            //    return null;
-            //}
+
             byte[] bytesCache = null;
             try
             {
@@ -2156,8 +2100,6 @@ namespace Es.Riam.Gnoss.CL
 
             return resultado;
         }
-
-        private static object BLOQUEO_INICIAR_CONEXION = new object();
 
         private object InteractuarRedis_Comprobacion(string pRawKey, string pRawKeyOriginal)
         {
@@ -2323,8 +2265,6 @@ namespace Es.Riam.Gnoss.CL
             return clienteRedis;
         }
 
-        
-
         private void ObtenerTamanioPoolRedis()
         {
             mTamanioPool = 50;
@@ -2332,8 +2272,6 @@ namespace Es.Riam.Gnoss.CL
 
             try
             {
-
-
                 //Si no había configuración para este dominio, o no estamos en una aplicación Web, cojo la configuración por defecto
                 ParametroAplicacion filaParametroTamanioRedis = _entityContext.ParametroAplicacion.FirstOrDefault(parametro => parametro.Parametro == ParametroAD.TamanioPoolRedis);
                 //ParametroAplicacionDS.ParametroAplicacionRow filaParametroTamanioRedis = paramAplicDS.ParametroAplicacion.FindByParametro(ParametroAD.TamanioPoolRedis);
@@ -2374,7 +2312,6 @@ namespace Es.Riam.Gnoss.CL
                     mPoolName = mPoolName.Replace("acid", "redis");
                     mPoolName = mPoolName.Replace("_Master", "");
 
-
                     string nodoIPMaster = _configService.ObtenerConexionRedisIPMaster(mPoolName);
                     string nodoIPRead = _configService.ObtenerConexionRedisIPRead(mPoolName);
                     int nodoDB = _configService.ObtenerConexionRedisBD(mPoolName);
@@ -2385,9 +2322,7 @@ namespace Es.Riam.Gnoss.CL
                         var cliente = ClienteRedisEscritura;
                         return cliente;
                     }
-                    //TODO DELETE
-                    //nodoDB = 0;
-                    //Fin delete
+                    
                     if (mClienteRedisLectura == null)
                     {
                         //BeetleX.Buffers.BufferPool.BUFFER_SIZE = 2400000;
@@ -2424,7 +2359,6 @@ namespace Es.Riam.Gnoss.CL
                         }
                     }
 
-                    //Este código es inutil porque la conexión ya esta creada, por lo que si no es igual habria que desecharla ->  HECHO
                     if (!mClienteRedisLectura.DB.Equals(nodoDB))
                     {
                         mClienteRedisLectura = ObtenerClienteRedisParaIP(nodoIPMaster, nodoDB);
@@ -2474,7 +2408,6 @@ namespace Es.Riam.Gnoss.CL
             }
         }
 
-
         public string NombreCortoProyectoPadreEcositema
         {
             get
@@ -2516,7 +2449,6 @@ namespace Es.Riam.Gnoss.CL
             {
                 if (mPadreEcosistemaProyectoID == null)
                 {
-
                     if (!string.IsNullOrEmpty(NombreCortoProyectoPadreEcositema))
                     {
                         try
@@ -2576,9 +2508,7 @@ namespace Es.Riam.Gnoss.CL
                     string nodoIPMaster = _configService.ObtenerConexionRedisIPMaster(mPoolName);
                     int nodoDB = _configService.ObtenerConexionRedisBD(mPoolName);
                     int redisTimeOut = _configService.ObtenerConexionRedisTimeout(mPoolName);
-                    //TODO DELETE
-                    //nodoDB = 0;
-                    //Fin delete
+                  
                     if (mClienteRedisEscritura == null)
                     {
                         //BeetleX.Buffers.BufferPool.BUFFER_SIZE = 2400000;
@@ -2613,7 +2543,6 @@ namespace Es.Riam.Gnoss.CL
                         }
                     }
 
-                    //Este código es inutil porque la conexión ya esta creada, por lo que si no es igual habria que desecharla -> HECHO
                     if (!mClienteRedisEscritura.DB.Equals(nodoDB))
                     {
                         mClienteRedisEscritura = ObtenerClienteRedisParaIP(nodoIPMaster, nodoDB);

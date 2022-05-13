@@ -21,6 +21,8 @@ using System.Data;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
+using Es.Riam.Gnoss.Logica.ServiciosGenerales;
+using Es.Riam.Gnoss.AD.EntityModel.Models.ProyectoDS;
 
 namespace Es.Riam.Gnoss.CL.Facetado
 {
@@ -286,7 +288,8 @@ namespace Es.Riam.Gnoss.CL.Facetado
         /// </summary>
         /// <param name="pProyectoID">Identificador del proyecto</param>
         /// <param name="pTipoBusqueda">Tipo de la búsqueda</param>
-        /// <param name="pPerfilID">Identificador del perfil del usuario que está buscando</param>
+        /// <param name="pPerfilID">Identificador del perfil del usuario que está bu
+        /// scando</param>
         /// <param name="pHomeProyecto">Verdad si se están cargando las facetas para la home de la comunidad</param>
         /// <param name="mIdioma">Idioma para el que se cargan las facetas</param>
         /// <param name="pEsUsuarioInvitado">Verdad si es el usuario invitado</param>
@@ -707,6 +710,97 @@ namespace Es.Riam.Gnoss.CL.Facetado
             ObtenerFaceta(pProyectoID, pFacetadoDS, pClaveFaceta, pListaFiltros, pListaFiltrosExtra, pEstaEnMyGnoss, pEsMiembroComunidad, pEsInvitado, pIdentidadID, pTipoDisenio, pInicio, pLimite, pSemanticos, pFiltroContextoWhere, pTipoProyecto, pEsRango, pListaRangos, pExcluida, pUsarHilos, pExcluirPersonas, pPermitirRecursosPrivados, true, 0, TipoPropiedadFaceta.Numero, pFiltrosSearchPersonalizados, pInmutable, pEsMovil);
         }
 
+        private Dictionary<string, string> ObtenerClavesFacetas(string pProyectoID, FacetadoDS pFacetadoDS, string pClaveFaceta, Dictionary<string, List<string>> pListaFiltros, List<string> pListaFiltrosExtra, bool pEstaEnMyGnoss, bool pEsMiembroComunidad, bool pEsInvitado, string pIdentidadID, TipoDisenio pTipoDisenio, int pInicio, int pLimite, List<string> pSemanticos, string pFiltroContextoWhere, TipoProyecto pTipoProyecto, bool pEsRango, List<int> pListaRangos, bool pExcluida, bool pUsarHilos, bool pExcluirPersonas, bool pPermitirRecursosPrivados, bool pOmitirPalabrasNoRelevantesSearch, int pReciproca, TipoPropiedadFaceta pTipoPropiedadesFaceta, Dictionary<string, Tuple<string, string, string, bool>> pFiltrosSearchPersonalizados, bool pInmutable, bool pEsMovil)
+        {
+            Dictionary<string, string> dictionary = new Dictionary<string, string>();
+            // TODO: Crear una configuración
+            pEstaEnMyGnoss = false;
+            pEsMiembroComunidad = false;
+            pEsInvitado = true;
+            pIdentidadID = UsuarioAD.Invitado.ToString();
+
+            string clave = "_obtenerFaceta_" + pProyectoID + "_" + pProyectoID + pClaveFaceta + pEstaEnMyGnoss + pEsMiembroComunidad + pEsInvitado + pIdentidadID + pTipoDisenio + pInicio + pLimite + pFiltroContextoWhere + "false"; // Le pongo false al final para no perder las cachés de DBLP por el parámetro pEsCatalogoNoSocialConUnTipo
+
+            string claveParametros = "pmobtenerFaceta_" + pProyectoID + "__" + pProyectoID + pClaveFaceta + pEstaEnMyGnoss + pEsMiembroComunidad + pEsInvitado + pIdentidadID + pTipoDisenio + pInicio + pLimite + pFiltroContextoWhere + "false"; // Le pongo false al final para no perder las cachés de DBLP por el parámetro pEsCatalogoNoSocialConUnTipo
+
+            foreach (string filtro in pListaFiltros.Keys.OrderBy(item => item))
+            {
+                bool aniadir = true;
+                if (pFiltrosSearchPersonalizados.ContainsKey(filtro))
+                {
+                    string valores = $"{pFiltrosSearchPersonalizados[filtro].Item1}{pFiltrosSearchPersonalizados[filtro].Item2}{pFiltrosSearchPersonalizados[filtro].Item3}{pFiltrosSearchPersonalizados[filtro].Item4}";
+
+                    foreach (string parametro in PARAMETROS_EXTRA_CONSULTAS_VIRTUOSO)
+                    {
+                        if (valores.Contains(parametro))
+                        {
+                            aniadir = false;
+                        }
+                    }
+                    if (aniadir)
+                    {
+                        string hash = StringToHash(valores);
+                        clave += "_" + filtro + hash;
+                        claveParametros += "_" + filtro + hash;
+                    }
+                }
+                else
+                {
+                    foreach (string filtroInt in pListaFiltros[filtro])
+                    {
+                        clave += "_" + filtro + "_" + filtroInt;
+                        claveParametros += "_" + filtro + "_" + filtroInt;
+                    }
+                }
+            }
+
+            foreach (string filtroExtra in pListaFiltrosExtra)
+            {
+                clave += "_" + filtroExtra;
+            }
+
+            if (pEsRango && pListaRangos != null && pListaRangos.Count > 0)
+            {
+                clave += "_" + pListaRangos[0];
+            }
+            dictionary.Add("clave", clave);
+            dictionary.Add("claveParametros", claveParametros);
+            return dictionary;
+        }
+
+        /// <summary>
+        /// Obtiene una faceta concreta
+        /// </summary>
+        /// <param name="pProyectoID">Identificador del proyecto</param>
+        /// <param name="pFacetadoDS">DataSet de facetado</param>
+        /// <param name="pNombreFaceta">Nombre de la faceta que se debe cargar</param>
+        /// <param name="pListaFiltros">Lista de filtros</param>
+        /// <param name="pEstaEnMyGnoss">Verdad si la búsqueda se hace en MyGnoss, no en una comunidad</param>
+        /// <param name="pEsMiembroComunidad">Verdad si el usuario es miembro de la comunidad</param>
+        /// <param name="pEsInvitado">Verdad si el usuario no está registrado</param>
+        /// <param name="pIdentidadID">Identificador de la identidad</param>
+        /// <param name="pOrden">Orden de los resultados</param>
+        /// <param name="pInicio">Inicio</param>
+        /// <param name="pLimite">límite de resultados</param>
+        /// <param name="pEsCatalogoNosocial">Verdad si es un catálogo no social</param>
+        /// <param name="pFiltroContextoWhere">Filtros de contexto</param>
+        /// <param name="pListaFiltrosExtra">Lista de filtros extra</param>
+        /// <param name="pSemanticos">Lista de formularios semánticos</param>
+        public bool ExisteFacetaEnCache(string pProyectoID, FacetadoDS pFacetadoDS, string pClaveFaceta, Dictionary<string, List<string>> pListaFiltros, List<string> pListaFiltrosExtra, bool pEstaEnMyGnoss, bool pEsMiembroComunidad, bool pEsInvitado, string pIdentidadID, TipoDisenio pTipoDisenio, int pInicio, int pLimite, List<string> pSemanticos, string pFiltroContextoWhere, TipoProyecto pTipoProyecto, bool pEsRango, List<int> pListaRangos, bool pExcluida, bool pUsarHilos, bool pExcluirPersonas, bool pPermitirRecursosPrivados, bool pOmitirPalabrasNoRelevantesSearch, int pReciproca, TipoPropiedadFaceta pTipoPropiedadesFaceta, Dictionary<string, Tuple<string, string, string, bool>> pFiltrosSearchPersonalizados, bool pInmutable, bool pEsMovil)
+        {
+            bool exist = false;
+            if (HayCacheSparql)
+            {
+                Dictionary<string, string> claves = ObtenerClavesFacetas(pProyectoID, pFacetadoDS, pClaveFaceta, pListaFiltros, pListaFiltrosExtra, pEstaEnMyGnoss, pEsMiembroComunidad, pEsInvitado, pIdentidadID, pTipoDisenio, pInicio, pLimite, pSemanticos, pFiltroContextoWhere, pTipoProyecto, pEsRango, pListaRangos, pExcluida, pUsarHilos, pExcluirPersonas, pPermitirRecursosPrivados, pOmitirPalabrasNoRelevantesSearch, pReciproca, pTipoPropiedadesFaceta, pFiltrosSearchPersonalizados, pInmutable, pEsMovil);
+                string clave = claves["clave"];
+                if (ObtenerDeCache)
+                {
+                    exist = ExisteClaveEnCache(clave);
+                }
+            }
+            return exist;
+        }
+
         /// <summary>
         /// Obtiene una faceta concreta
         /// </summary>
@@ -729,26 +823,10 @@ namespace Es.Riam.Gnoss.CL.Facetado
         {
             if (HayCacheSparql)
             {
-                string clave = "ObtenerFaceta_" + pProyectoID + pClaveFaceta + pEstaEnMyGnoss + pEsMiembroComunidad + pEsInvitado + pIdentidadID + pTipoDisenio + pInicio + pLimite + pFiltroContextoWhere + "false"; // Le pongo false al final para no perder las cachés de DBLP por el parámetro pEsCatalogoNoSocialConUnTipo
-
-                foreach (string filtro in pListaFiltros.Keys)
-                {
-                    foreach (string filtroInt in pListaFiltros[filtro])
-                    {
-                        clave += "_" + filtro + "_" + filtroInt;
-                    }
-                }
-
-                foreach (string filtroExtra in pListaFiltrosExtra)
-                {
-                    clave += "_" + filtroExtra;
-                }
-
-                if (pEsRango && pListaRangos != null && pListaRangos.Count > 0)
-                {
-                    clave += "_" + pListaRangos[0];
-                }
+                Dictionary<string, string> claves = ObtenerClavesFacetas(pProyectoID, pFacetadoDS, pClaveFaceta, pListaFiltros, pListaFiltrosExtra, pEstaEnMyGnoss, pEsMiembroComunidad, pEsInvitado, pIdentidadID, pTipoDisenio, pInicio, pLimite, pSemanticos, pFiltroContextoWhere, pTipoProyecto, pEsRango, pListaRangos, pExcluida, pUsarHilos, pExcluirPersonas, pPermitirRecursosPrivados, pOmitirPalabrasNoRelevantesSearch, pReciproca, pTipoPropiedadesFaceta, pFiltrosSearchPersonalizados, pInmutable, pEsMovil);
                 FacetadoDS facetadoDS = null;
+                string clave = claves["clave"];
+                string claveParametros = claves["claveParametros"];
                 if (ObtenerDeCache)
                 {
                     facetadoDS = (FacetadoDS)ObtenerObjetoDeCache(clave);
@@ -768,10 +846,39 @@ namespace Es.Riam.Gnoss.CL.Facetado
                     DateTime horaInicio = DateTime.Now;
 
                     FacetadoCN.ObtenerFaceta(pProyectoID, facetadoDS, pClaveFaceta, pListaFiltros, pListaFiltrosExtra, pEstaEnMyGnoss, pEsMiembroComunidad, pEsInvitado, pIdentidadID, pTipoDisenio, pInicio, pLimite, pSemanticos, pFiltroContextoWhere, pTipoProyecto, pEsRango, pListaRangos, pExcluida, pUsarHilos, pExcluirPersonas, pPermitirRecursosPrivados, pOmitirPalabrasNoRelevantesSearch, pReciproca, pTipoPropiedadesFaceta, pFiltrosSearchPersonalizados, pInmutable, pEsMovil);
-
-                    if (DateTime.Now.Subtract(horaInicio).TotalSeconds > 1)
+                    int valorSegundos = FacetadoCN.ObtenerValorSegundosParametroAplicacion();
+                    if (DateTime.Now.Subtract(horaInicio).TotalSeconds > valorSegundos)
                     {
+                        CacheConsultasCostosas objetoParametros = new CacheConsultasCostosas();
+                        objetoParametros.ClaveFaceta = pClaveFaceta;
+                        objetoParametros.EsInvitado = pEsInvitado;
+                        objetoParametros.EsMiembroComunidad = pEsMiembroComunidad;
+                        objetoParametros.EstaEnMyGnoss = pEstaEnMyGnoss;
+                        objetoParametros.IdentidadID = pIdentidadID;
+                        objetoParametros.Inicio = pInicio;
+                        objetoParametros.Limite = pLimite;
+                        objetoParametros.EsMovil = pEsMovil;
+                        objetoParametros.Excluida = pExcluida;
+                        objetoParametros.UsarHilos = pUsarHilos;
+                        objetoParametros.FiltroContextoWhere = pFiltroContextoWhere;
+                        objetoParametros.FiltrosSearchPersonalizados = pFiltrosSearchPersonalizados;
+                        objetoParametros.ListaFiltros = pListaFiltros;
+                        objetoParametros.ListaFiltrosExtra = pListaFiltrosExtra;
+                        objetoParametros.EsRango = pEsRango;
+                        objetoParametros.OmitirPalabrasNoRelevantesSearch = pOmitirPalabrasNoRelevantesSearch;
+                        objetoParametros.PermitirRecursosPrivados = pPermitirRecursosPrivados;
+                        objetoParametros.ProyectoID = new Guid(pProyectoID);
+                        objetoParametros.Semanticos = pSemanticos;
+                        objetoParametros.ListaRangos = pListaRangos;
+                        objetoParametros.ExcluirPersonas = pExcluirPersonas;
+                        objetoParametros.TipoDisenio = pTipoDisenio;
+                        objetoParametros.TipoProyecto = pTipoProyecto;
+                        objetoParametros.Reciproca = pReciproca;
+                        objetoParametros.TipoPropiedadesFaceta = pTipoPropiedadesFaceta;
+                        objetoParametros.Inmutable = pInmutable;
+
                         AgregarObjetoCache(clave, facetadoDS);
+                        AgregarObjetoCache(claveParametros, objetoParametros);
                     }
                 }
                 pFacetadoDS.Merge(facetadoDS);
@@ -804,6 +911,12 @@ namespace Es.Riam.Gnoss.CL.Facetado
         {
             if (HayCacheSparql)
             {
+                // TODO: Crear una configuración
+                pEstaEnMyGnoss = false;
+                pEsMiembroComunidad = false;
+                pEsInvitado = true;
+                pIdentidadID = UsuarioAD.Invitado.ToString();
+
                 string clave = "ObtenerFaceta_" + pProyectoID + pClaveFaceta + pEstaEnMyGnoss + pEsMiembroComunidad + pEsInvitado + pIdentidadID + pTipoDisenio + pInicio + pLimite + pFiltroContextoWhere + "false"; // Le pongo false al final para no perder las cachés de DBLP por el parámetro pEsCatalogoNoSocialConUnTipo
 
                 foreach (string filtro in pListaFiltros.Keys)
@@ -984,48 +1097,9 @@ namespace Es.Riam.Gnoss.CL.Facetado
 
             if (HayCacheSparql)
             {
-                string clave = FacetadoCN.GrafoID + "//" + pDescendente + pTipoFiltro + pEstaEnMyGnoss + pEsMiembroComunidad + pEsInvitado + pIdentidadID + pInicio + pLimite + pFiltroContextoSelect + pFiltroContextoWhere + pFiltroContextoOrderBy;
-
-                string claveParametros = FacetadoCN.GrafoID + "//" + pDescendente + pTipoFiltro + pEstaEnMyGnoss + pEsMiembroComunidad + pEsInvitado + pIdentidadID + pInicio + pLimite + pFiltroContextoSelect + pFiltroContextoWhere + pFiltroContextoOrderBy;
-
-                foreach (string filtro in pListaFiltros.Keys.OrderBy(item => item))
-                {
-                    bool aniadir = true;
-                    if (pFiltrosSearchPersonalizados.ContainsKey(filtro))
-                    {
-                        string valores = $"{pFiltrosSearchPersonalizados[filtro].Item1}{pFiltrosSearchPersonalizados[filtro].Item2}{pFiltrosSearchPersonalizados[filtro].Item3}{pFiltrosSearchPersonalizados[filtro].Item4}";
-
-                        foreach (string parametro in PARAMETROS_EXTRA_CONSULTAS_VIRTUOSO)
-                        {
-                            if (valores.Contains(parametro))
-                            {
-                                aniadir = false;
-                            }
-                        }
-                        if (aniadir)
-                        {
-                            string hash = StringToHash(valores);
-                            clave += "_" + filtro + hash;
-                            claveParametros += "_" + filtro + hash;
-                        }
-                    }
-                    else
-                    {
-                        foreach (string filtroInt in pListaFiltros[filtro].OrderBy(item => item))
-                        {
-                            clave += "_" + filtro + "_" + filtroInt;
-                            claveParametros += "_" + filtro + "_" + filtroInt;
-                        }
-                    }
-                }
-
-                foreach (string filtroExtra in pListaFiltrosExtra.OrderBy(item => item))
-                {
-                    clave += "_" + filtroExtra;
-                    claveParametros += "_" + filtroExtra;
-                }
-                clave = $"_resultsearch_{FacetadoCN.GrafoID}_{clave}";
-                claveParametros = $"pmresultsearch_{FacetadoCN.GrafoID}__{claveParametros}";
+                Dictionary<string, string> claves = ObtenerClavesResultados(pDescendente, pFacetadoDS, pTipoFiltro, pListaFiltros, pListaFiltrosExtra, pEstaEnMyGnoss, pEsMiembroComunidad, pEsInvitado, pIdentidadID, pInicio, pLimite, pSemanticos, pFiltroContextoSelect, pFiltroContextoWhere, pFiltroContextoOrderBy, pFiltroContextoPesoMinimo, pTipoProyecto, pNamespacesExtra, pResultadosEliminar, pPermitirRecursosPrivados, pOmitirPalabrasNoRelevantesSearch, pTipoAlgoritmoTransformacion, pFiltrosSearchPersonalizados, pEsMovil);
+                string clave = claves["clave"];
+                string claveParametros = claves["claveParametros"];
 
                 FacetadoDS facetadoDS = null;
                 if (ObtenerDeCache)
@@ -1089,6 +1163,80 @@ namespace Es.Riam.Gnoss.CL.Facetado
             }
 
             return finalRawKey;
+        }
+
+        private Dictionary<string, string> ObtenerClavesResultados(bool pDescendente, FacetadoDS pFacetadoDS, string pTipoFiltro, Dictionary<string, List<string>> pListaFiltros, List<string> pListaFiltrosExtra, bool pEstaEnMyGnoss, bool pEsMiembroComunidad, bool pEsInvitado, string pIdentidadID, int pInicio, int pLimite, List<string> pSemanticos, string pFiltroContextoSelect, string pFiltroContextoWhere, string pFiltroContextoOrderBy, int pFiltroContextoPesoMinimo, TipoProyecto pTipoProyecto, string pNamespacesExtra, string pResultadosEliminar, bool pPermitirRecursosPrivados, bool pOmitirPalabrasNoRelevantesSearch, TiposAlgoritmoTransformacion pTipoAlgoritmoTransformacion, Dictionary<string, Tuple<string, string, string, bool>> pFiltrosSearchPersonalizados, bool pEsMovil)
+        {
+            Dictionary<string, string> dictionary = new Dictionary<string, string>();
+
+            // TODO: Crear una configuración
+            pEstaEnMyGnoss = false;
+            pEsMiembroComunidad = false;
+            pEsInvitado = true;
+            pIdentidadID = UsuarioAD.Invitado.ToString();
+
+            string clave = FacetadoCN.GrafoID + "//" + pDescendente + pTipoFiltro + pEstaEnMyGnoss + pEsMiembroComunidad + pEsInvitado + pIdentidadID + pInicio + pLimite + pFiltroContextoSelect + pFiltroContextoWhere + pFiltroContextoOrderBy;
+
+            string claveParametros = FacetadoCN.GrafoID + "//" + pDescendente + pTipoFiltro + pEstaEnMyGnoss + pEsMiembroComunidad + pEsInvitado + pIdentidadID + pInicio + pLimite + pFiltroContextoSelect + pFiltroContextoWhere + pFiltroContextoOrderBy;
+
+            foreach (string filtro in pListaFiltros.Keys.OrderBy(item => item))
+            {
+                bool aniadir = true;
+                if (pFiltrosSearchPersonalizados.ContainsKey(filtro))
+                {
+                    string valores = $"{pFiltrosSearchPersonalizados[filtro].Item1}{pFiltrosSearchPersonalizados[filtro].Item2}{pFiltrosSearchPersonalizados[filtro].Item3}{pFiltrosSearchPersonalizados[filtro].Item4}";
+
+                    foreach (string parametro in PARAMETROS_EXTRA_CONSULTAS_VIRTUOSO)
+                    {
+                        if (valores.Contains(parametro))
+                        {
+                            aniadir = false;
+                        }
+                    }
+                    if (aniadir)
+                    {
+                        string hash = StringToHash(valores);
+                        clave += "_" + filtro + hash;
+                        claveParametros += "_" + filtro + hash;
+                    }
+                }
+                else
+                {
+                    foreach (string filtroInt in pListaFiltros[filtro].OrderBy(item => item))
+                    {
+                        clave += "_" + filtro + "_" + filtroInt;
+                        claveParametros += "_" + filtro + "_" + filtroInt;
+                    }
+                }
+            }
+
+            foreach (string filtroExtra in pListaFiltrosExtra.OrderBy(item => item))
+            {
+                clave += "_" + filtroExtra;
+                claveParametros += "_" + filtroExtra;
+            }
+            clave = $"_resultsearch_{FacetadoCN.GrafoID}_{clave}";
+            claveParametros = $"pmresultsearch_{FacetadoCN.GrafoID}__{claveParametros}";
+            dictionary.Add("clave", clave);
+            dictionary.Add("claveParametros", claveParametros);
+            return dictionary;
+        }
+
+        public bool ExisteResultadosBusquedaCache(bool pDescendente, FacetadoDS pFacetadoDS, string pTipoFiltro, Dictionary<string, List<string>> pListaFiltros, List<string> pListaFiltrosExtra, bool pEstaEnMyGnoss, bool pEsMiembroComunidad, bool pEsInvitado, string pIdentidadID, int pInicio, int pLimite, List<string> pSemanticos, string pFiltroContextoSelect, string pFiltroContextoWhere, string pFiltroContextoOrderBy, int pFiltroContextoPesoMinimo, TipoProyecto pTipoProyecto, string pNamespacesExtra, string pResultadosEliminar, bool pPermitirRecursosPrivados, bool pOmitirPalabrasNoRelevantesSearch, TiposAlgoritmoTransformacion pTipoAlgoritmoTransformacion, Dictionary<string, Tuple<string, string, string, bool>> pFiltrosSearchPersonalizados, bool pEsMovil)
+        {
+            bool exist = false;
+            if (HayCacheSparql)
+            {
+                Dictionary<string, string> claves = ObtenerClavesResultados(pDescendente, pFacetadoDS, pTipoFiltro, pListaFiltros, pListaFiltrosExtra, pEstaEnMyGnoss, pEsMiembroComunidad, pEsInvitado, pIdentidadID, pInicio, pLimite, pSemanticos, pFiltroContextoSelect, pFiltroContextoWhere, pFiltroContextoOrderBy, pFiltroContextoPesoMinimo, pTipoProyecto, pNamespacesExtra, pResultadosEliminar, pPermitirRecursosPrivados, pOmitirPalabrasNoRelevantesSearch, pTipoAlgoritmoTransformacion, pFiltrosSearchPersonalizados, pEsMovil);
+                FacetadoDS facetadoDS = null;
+                string clave = claves["clave"];
+                string claveParametros = claves["claveParametros"];
+                if (ObtenerDeCache)
+                {
+                    exist = ExisteClaveEnCache(clave);
+                }
+            }
+            return exist;
         }
 
         static string ByteArrayToString(byte[] arrInput)
@@ -1198,8 +1346,15 @@ namespace Es.Riam.Gnoss.CL.Facetado
         /// <param name="pFiltroContextoOrderBy"></param>
         /// <param name="pEsCatalogoNoSocial">Verdad si es un catálogo no social</param>        
         /// <param name="pNamespaceExtra">NamespacesExtra</param>
-        public void ObtenerResultadosBusquedaFormatoMapa(FacetadoDS pFacetadoDS, Dictionary<string, List<string>> pListaFiltros, List<string> pListaFiltrosExtra, bool pEstaEnMyGnoss, bool pEsMiembroComunidad, bool pEsInvitado, string pIdentidadID, List<string> pSemanticos, string pFiltroContextoSelect, string pFiltroContextoWhere, string pFiltroContextoOrderBy, TipoProyecto pTipoProyecto, string pNamespaceExtra, string pResultadosEliminar, DataWrapperFacetas pFiltroMapaDataWrapper, bool pPermitirRecursosPrivados, TipoBusqueda pTipoBusqueda, bool pEsMovil, Dictionary<string, Tuple<string, string, string, bool>> pFiltrosSearchPersonalizados)
+        public void ObtenerResultadosBusquedaFormatoMapa(FacetadoDS pFacetadoDS, Dictionary<string, List<string>> pListaFiltros, List<string> pListaFiltrosExtra, bool pEstaEnMyGnoss, bool pEsMiembroComunidad, bool pEsInvitado, string pIdentidadID, List<string> pSemanticos, string pFiltroContextoSelect, string pFiltroContextoWhere, string pFiltroContextoOrderBy, TipoProyecto pTipoProyecto, string pNamespaceExtra, string pResultadosEliminar, DataWrapperFacetas pFiltroMapaDataWrapper, bool pPermitirRecursosPrivados, TipoBusqueda pTipoBusqueda, bool pEsMovil, Dictionary<string, Tuple<string, string, string, bool>> pFiltrosSearchPersonalizados, Guid pProyectoID)
         {
+            ProyectoCN proyectoCN = new ProyectoCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+            List<PresentacionMapaSemantico> listaPresentacionMapaSemantico = null;
+            if (pListaFiltros.ContainsKey("rdf:type"))
+            {
+                listaPresentacionMapaSemantico = proyectoCN.ObtenerListaPresentacionMapaSemantico(pProyectoID, pListaFiltros["rdf:type"].FirstOrDefault());
+            }
+
             if (HayCacheSparql)
             {
                 string clave = "ResultadosBusquedaFormMapa_" + FacetadoCN.GrafoID + pEstaEnMyGnoss + pEsMiembroComunidad + pEsInvitado + pIdentidadID + pFiltroContextoSelect + pFiltroContextoWhere + pFiltroContextoOrderBy + "false"; // Le pongo false al final para no perder las cachés de DBLP por el parámetro pEsCatalogoNoSocialConUnTipo
@@ -1236,7 +1391,7 @@ namespace Es.Riam.Gnoss.CL.Facetado
                     facetadoDS = new FacetadoDS();
                     DateTime horaInicio = DateTime.Now;
 
-                    FacetadoCN.ObtenerResultadosBusquedaFormatoMapa(facetadoDS, pListaFiltros, pListaFiltrosExtra, pEstaEnMyGnoss, pEsMiembroComunidad, pEsInvitado, pIdentidadID, pSemanticos, pFiltroContextoSelect, pFiltroContextoWhere, pFiltroContextoOrderBy, pTipoProyecto, pNamespaceExtra, pResultadosEliminar, pFiltroMapaDataWrapper, pPermitirRecursosPrivados, pTipoBusqueda, pEsMovil, pFiltrosSearchPersonalizados);
+                    FacetadoCN.ObtenerResultadosBusquedaFormatoMapa(facetadoDS, pListaFiltros, pListaFiltrosExtra, pEstaEnMyGnoss, pEsMiembroComunidad, pEsInvitado, pIdentidadID, pSemanticos, pFiltroContextoSelect, pFiltroContextoWhere, pFiltroContextoOrderBy, pTipoProyecto, pNamespaceExtra, pResultadosEliminar, pFiltroMapaDataWrapper, pPermitirRecursosPrivados, pTipoBusqueda, pEsMovil, pFiltrosSearchPersonalizados, listaPresentacionMapaSemantico);
 
                     if (DateTime.Now.Subtract(horaInicio).TotalSeconds > 1)
                     {
@@ -1247,7 +1402,7 @@ namespace Es.Riam.Gnoss.CL.Facetado
             }
             else
             {
-                FacetadoCN.ObtenerResultadosBusquedaFormatoMapa(pFacetadoDS, pListaFiltros, pListaFiltrosExtra, pEstaEnMyGnoss, pEsMiembroComunidad, pEsInvitado, pIdentidadID, pSemanticos, pFiltroContextoSelect, pFiltroContextoWhere, pFiltroContextoOrderBy, pTipoProyecto, pNamespaceExtra, pResultadosEliminar, pFiltroMapaDataWrapper, pPermitirRecursosPrivados, pTipoBusqueda, pEsMovil, pFiltrosSearchPersonalizados);
+                FacetadoCN.ObtenerResultadosBusquedaFormatoMapa(pFacetadoDS, pListaFiltros, pListaFiltrosExtra, pEstaEnMyGnoss, pEsMiembroComunidad, pEsInvitado, pIdentidadID, pSemanticos, pFiltroContextoSelect, pFiltroContextoWhere, pFiltroContextoOrderBy, pTipoProyecto, pNamespaceExtra, pResultadosEliminar, pFiltroMapaDataWrapper, pPermitirRecursosPrivados, pTipoBusqueda, pEsMovil, pFiltrosSearchPersonalizados, listaPresentacionMapaSemantico);
             }
         }
 
@@ -1328,49 +1483,81 @@ namespace Es.Riam.Gnoss.CL.Facetado
             }
         }
 
+        public Dictionary<string, string> ObtieneClavesNumeroResultadosCache(FacetadoDS pFacetadoDS, string pNombreFaceta, Dictionary<string, List<string>> pListaFiltros, List<string> pListaFiltrosExtra, bool pEstaEnMyGnoss, bool pEsMiembroComunidad, bool pEsInvitado, string pIdentidadID, List<string> pSemanticos, string pFiltroContextoWhere, TipoProyecto pTipoProyecto, bool pPermitirRecursosPrivados, bool pOmitirPalabrasNoRelevantesSearch, TiposAlgoritmoTransformacion pTiposAlgoritmoTransformacion, Dictionary<string, Tuple<string, string, string, bool>> pFiltrosSearchPersonalizados, bool pEsMovil)
+        {
+            Dictionary<string, string> dictionary = new Dictionary<string, string>();
+            // TODO: Crear una configuración
+            pEstaEnMyGnoss = false;
+            pEsMiembroComunidad = false;
+            pEsInvitado = true;
+            pIdentidadID = UsuarioAD.Invitado.ToString();
+
+            string clave = $"_numeroresultados_{FacetadoCN.GrafoID}_" + FacetadoCN.GrafoID + pNombreFaceta + pEstaEnMyGnoss + pEsMiembroComunidad + pEsInvitado + pIdentidadID + pFiltroContextoWhere + "false"; // Le pongo false al final para no perder las cachés de DBLP por el parámetro pEsCatalogoNoSocialConUnTipo
+            string claveParametros = $"pmnumeroresultados_{FacetadoCN.GrafoID}_" + FacetadoCN.GrafoID + pNombreFaceta + pEstaEnMyGnoss + pEsMiembroComunidad + pEsInvitado + pIdentidadID + pFiltroContextoWhere + "false"; // Le pongo false al final para no perder las cachés de DBLP por el parámetro pEsCatalogoNoSocialConUnTipo
+
+            foreach (string filtro in pListaFiltros.Keys.OrderBy(item => item))
+            {
+                bool aniadir = true;
+                if (pFiltrosSearchPersonalizados.ContainsKey(filtro))
+                {
+                    string valores = $"{pFiltrosSearchPersonalizados[filtro].Item1}{pFiltrosSearchPersonalizados[filtro].Item2}{pFiltrosSearchPersonalizados[filtro].Item3}{pFiltrosSearchPersonalizados[filtro].Item4}";
+
+                    foreach (string parametro in PARAMETROS_EXTRA_CONSULTAS_VIRTUOSO)
+                    {
+                        if (valores.Contains(parametro))
+                        {
+                            aniadir = false;
+                        }
+                    }
+                    if (aniadir)
+                    {
+                        string hash = StringToHash(valores);
+                        clave += "_" + filtro + hash;
+                        claveParametros += "_" + filtro + hash;
+                    }
+                }
+                else
+                {
+                    foreach (string filtroInt in pListaFiltros[filtro].OrderBy(item => item))
+                    {
+                        clave += "_" + filtro + "_" + filtroInt;
+                        claveParametros += "_" + filtro + "_" + filtroInt;
+                    }
+                }
+            }
+
+            foreach (string filtroExtra in pListaFiltrosExtra)
+            {
+                clave += "_" + filtroExtra;
+            }
+            dictionary.Add("clave", clave);
+            dictionary.Add("claveParametros", claveParametros);
+            return dictionary;
+        }
+
+        public bool ExisteNumeroResultadosEnCache(FacetadoDS pFacetadoDS, string pNombreFaceta, Dictionary<string, List<string>> pListaFiltros, List<string> pListaFiltrosExtra, bool pEstaEnMyGnoss, bool pEsMiembroComunidad, bool pEsInvitado, string pIdentidadID, List<string> pSemanticos, string pFiltroContextoWhere, TipoProyecto pTipoProyecto, bool pPermitirRecursosPrivados, bool pOmitirPalabrasNoRelevantesSearch, TiposAlgoritmoTransformacion pTiposAlgoritmoTransformacion, Dictionary<string, Tuple<string, string, string, bool>> pFiltrosSearchPersonalizados, bool pEsMovil)
+        {
+            bool exist = false;
+            if (HayCacheSparql)
+            {
+                Dictionary<string, string> claves = ObtieneClavesNumeroResultadosCache(pFacetadoDS, pNombreFaceta, pListaFiltros, pListaFiltrosExtra, pEstaEnMyGnoss, pEsMiembroComunidad, pEsInvitado, pIdentidadID, pSemanticos, pFiltroContextoWhere, pTipoProyecto, pPermitirRecursosPrivados, pOmitirPalabrasNoRelevantesSearch, pTiposAlgoritmoTransformacion, pFiltrosSearchPersonalizados, pEsMovil);
+                string clave = claves["clave"];
+                string claveParametros = claves["claveParametros"];
+                if (ObtenerDeCache)
+                {
+                    exist = ExisteClaveEnCache(clave);
+                }
+            }
+            return exist;
+        }
+
         public void ObtieneNumeroResultados(FacetadoDS pFacetadoDS, string pNombreFaceta, Dictionary<string, List<string>> pListaFiltros, List<string> pListaFiltrosExtra, bool pEstaEnMyGnoss, bool pEsMiembroComunidad, bool pEsInvitado, string pIdentidadID, List<string> pSemanticos, string pFiltroContextoWhere, TipoProyecto pTipoProyecto, bool pPermitirRecursosPrivados, bool pOmitirPalabrasNoRelevantesSearch, TiposAlgoritmoTransformacion pTiposAlgoritmoTransformacion, Dictionary<string, Tuple<string, string, string, bool>> pFiltrosSearchPersonalizados, bool pEsMovil)
         {
             if (HayCacheSparql)
             {
-                string clave = $"_numeroresultados_{FacetadoCN.GrafoID}_" + FacetadoCN.GrafoID + pNombreFaceta + pEstaEnMyGnoss + pEsMiembroComunidad + pEsInvitado + pIdentidadID + pFiltroContextoWhere + "false"; // Le pongo false al final para no perder las cachés de DBLP por el parámetro pEsCatalogoNoSocialConUnTipo
-                string claveParametros = $"pmnumeroresultados_{FacetadoCN.GrafoID}_" + FacetadoCN.GrafoID + pNombreFaceta + pEstaEnMyGnoss + pEsMiembroComunidad + pEsInvitado + pIdentidadID + pFiltroContextoWhere + "false"; // Le pongo false al final para no perder las cachés de DBLP por el parámetro pEsCatalogoNoSocialConUnTipo
-
-                foreach (string filtro in pListaFiltros.Keys.OrderBy(item => item))
-                {
-                    bool aniadir = true;
-                    if (pFiltrosSearchPersonalizados.ContainsKey(filtro))
-                    {
-                        string valores = $"{pFiltrosSearchPersonalizados[filtro].Item1}{pFiltrosSearchPersonalizados[filtro].Item2}{pFiltrosSearchPersonalizados[filtro].Item3}{pFiltrosSearchPersonalizados[filtro].Item4}";
-
-                        foreach (string parametro in PARAMETROS_EXTRA_CONSULTAS_VIRTUOSO)
-                        {
-                            if (valores.Contains(parametro))
-                            {
-                                aniadir = false;
-                            }
-                        }
-                        if (aniadir)
-                        {
-                            string hash = StringToHash(valores);
-                            clave += "_" + filtro + hash;
-                            claveParametros += "_" + filtro + hash;
-                        }
-                    }
-                    else
-                    {
-                        foreach (string filtroInt in pListaFiltros[filtro].OrderBy(item => item))
-                        {
-                            clave += "_" + filtro + "_" + filtroInt;
-                            claveParametros += "_" + filtro + "_" + filtroInt;
-                        }
-                    }
-                }
-
-                foreach (string filtroExtra in pListaFiltrosExtra)
-                {
-                    clave += "_" + filtroExtra;
-                }
-
+                Dictionary<string, string> claves = ObtieneClavesNumeroResultadosCache(pFacetadoDS, pNombreFaceta, pListaFiltros, pListaFiltrosExtra, pEstaEnMyGnoss, pEsMiembroComunidad, pEsInvitado, pIdentidadID, pSemanticos, pFiltroContextoWhere, pTipoProyecto, pPermitirRecursosPrivados, pOmitirPalabrasNoRelevantesSearch, pTiposAlgoritmoTransformacion, pFiltrosSearchPersonalizados, pEsMovil);
+                string clave = claves["clave"];
+                string claveParametros = claves["claveParametros"];
                 FacetadoDS facetadoDS = null;
 
                 if (ObtenerDeCache)
@@ -1392,7 +1579,6 @@ namespace Es.Riam.Gnoss.CL.Facetado
                     DateTime horaInicio = DateTime.Now;
 
                     FacetadoCN.ObtieneNumeroResultados(facetadoDS, pNombreFaceta, pListaFiltros, pListaFiltrosExtra, pEstaEnMyGnoss, pEsMiembroComunidad, pEsInvitado, pIdentidadID, pSemanticos, pFiltroContextoWhere, pTipoProyecto, pPermitirRecursosPrivados, pOmitirPalabrasNoRelevantesSearch, pTiposAlgoritmoTransformacion, pFiltrosSearchPersonalizados, pEsMovil);
-
                     int valorSegundos = FacetadoCN.ObtenerValorSegundosParametroAplicacion();
                     if (DateTime.Now.Subtract(horaInicio).TotalSeconds > valorSegundos)
                     {

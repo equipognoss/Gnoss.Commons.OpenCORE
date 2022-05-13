@@ -88,14 +88,14 @@ namespace Es.Riam.Gnoss.AD.EntityModel.Models.OrganizacionDS
         public virtual ICollection<OrganizacionParticipaProy> OrganizacionParticipaProy { get; set; }
 
         public virtual ConfiguracionGnossOrg ConfiguracionGnossOrg { get; set; }
-        [ForeignKey("OrganizacionID")]
+        
         public virtual OrganizacionGnoss OrganizacionGnoss { get; set; }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<Organizacion> Organizacion1 { get; set; }
 
         public virtual Organizacion Organizacion2 { get; set; }
-        [ForeignKey("OrganizacionID")]
+        
         public virtual OrganizacionEmpresa OrganizacionEmpresa { get; set; }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]

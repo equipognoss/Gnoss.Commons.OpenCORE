@@ -73,9 +73,7 @@ namespace OntologiaAClase
         /// <summary>
         /// Crea la clases a partir de las entidades de la ontología y las guarda en una carpeta llamada ClasesGeneradas
         /// </summary>
-        /// 
-
-
+        ///
         public void CrearClasesDeLaOntologia()
         {
             string[] nombont = this.nombreOnto.Split(' ');
@@ -84,13 +82,13 @@ namespace OntologiaAClase
 
             foreach (string ont in nombont)
             {
-                if (i > 0) 
-                { 
-                    pNombreOnto += UtilCadenas.PrimerCaracterAMayuscula(ont); 
+                if (i > 0)
+                {
+                    pNombreOnto += UtilCadenas.PrimerCaracterAMayuscula(ont);
                 }
-                else 
-                { 
-                    pNombreOnto += ont; 
+                else
+                {
+                    pNombreOnto += ont;
                 }
                 i++;
             }
@@ -104,9 +102,6 @@ namespace OntologiaAClase
             }
 
             CrearEntidadesPadre(pNombreOnto, rdfType);
-
-            //CrearEntidadesHijosConHerencia(pNombreOnto);
-            //CrearEntidadesHijosSinHerencia(pNombreOnto);
         }
 
 
@@ -127,7 +122,7 @@ namespace OntologiaAClase
         private List<string> ObtenerPropiedadesPadreAnidadasSearch()
         {
             List<string> listaPropiedadesPadreAnidadasSearch = new List<string>();
-            foreach(string propiedad in listaPropiedadesSearch)
+            foreach (string propiedad in listaPropiedadesSearch)
             {
                 if (propiedad.Contains("@@@"))
                 {
@@ -173,7 +168,7 @@ namespace OntologiaAClase
             string nombreFichero = Path.Combine(ruta, "GnossOCBase.cs");
             if (!File.Exists(nombreFichero))
             {
-                File.WriteAllText(Path.Combine(ruta, "GnossOCBase.cs"), CrearClaseOCBase(this.listaIdiomas));
+                File.WriteAllText(Path.Combine(ruta, "GnossOCBase.cs"), CrearClaseOCBase(listaIdiomas));
             }
         }
 
@@ -290,6 +285,17 @@ namespace OntologiaAClase
             Clase.AppendLine();
             MetodosDeLaClaseOCBase();
             GetPropertyURI();
+            Clase.AppendLine();
+            CrearTextoSinSaltoDeLinea();
+            Clase.AppendLine();
+            CrearAgregarTripleALista();
+            Clase.AppendLine();
+            PintarObtenerStringDePropiedad();
+            Clase.AppendLine();
+            PintarObtenerObjetosDePropiedad();
+            Clase.AppendLine();
+            CrearAgregarTags();
+            Clase.AppendLine();
             GetLabel();
             Clase.AppendLine();
             MetodosAbstractos();
@@ -549,6 +555,7 @@ $@"
             Clase.AppendLine($"{UtilCadenasOntology.Tabs(2)}return null;");
             Clase.AppendLine($"{UtilCadenasOntology.Tabs(2)}}}");
         }
+
         /// <summary>
         /// Obtenemos los prefijos a usar en la clase base
         /// </summary>
@@ -565,8 +572,104 @@ $@"
             Clase.AppendLine("using Gnoss.ApiWrapper.Interfaces;");
             Clase.AppendLine("using System.Diagnostics.CodeAnalysis;");
             Clase.AppendLine("using System.Reflection;");
-
+            Clase.AppendLine("using System.Collections;");
             Clase.AppendLine();
+        }
+
+        /// <summary>
+        /// Genera un método utilizado para eliminar saltos de linea y retorno de carro del texto indicado
+        /// </summary>
+        private void CrearTextoSinSaltoDeLinea()
+        {
+            Clase.AppendLine($"{UtilCadenasOntology.Tabs(2)}protected string GenerarTextoSinSaltoDeLinea(string pTexto)");
+            Clase.AppendLine($"{UtilCadenasOntology.Tabs(2)}{{");
+            Clase.AppendLine($"{UtilCadenasOntology.Tabs(3)}return pTexto.Replace(\"\\r\\n\", \" \").Replace(\"\\n\", \" \").Replace(\"\\r\", \" \").Replace(\"\\\"\", \"\\\\\\\"\");");
+            Clase.AppendLine($"{UtilCadenasOntology.Tabs(2)}}}");
+        }
+
+        /// <summary>
+        /// Creamos el metodo ObtenerEntidades dentro de la clase . Si es hijo sobreescribirá el metodo, obteniendo los elementos del pPadre
+        /// </summary>
+        /// <param name="ontologia"></param>
+        /// <param name="pEntidad"></param>
+        public void CrearAgregarTripleALista()
+        {
+            Clase.AppendLine($"{UtilCadenasOntology.Tabs(2)}protected void AgregarTripleALista(string pSujeto, string pPredicado, string pObjeto, List<string> pLista, string pDatosExtra)");
+            Clase.AppendLine($"{UtilCadenasOntology.Tabs(2)}{{");
+            Clase.AppendLine($"{UtilCadenasOntology.Tabs(3)}if(!string.IsNullOrEmpty(pObjeto) && !pObjeto.Equals(\"\\\"\\\"\") && !pObjeto.Equals(\"<>\"))");
+            Clase.AppendLine($"{UtilCadenasOntology.Tabs(3)}{{");
+            Clase.AppendLine($"{UtilCadenasOntology.Tabs(4)}pLista.Add($\"<{{pSujeto}}> <{{pPredicado}}> {{pObjeto}}{{pDatosExtra}}\");");
+            Clase.AppendLine($"{UtilCadenasOntology.Tabs(3)}}} ");
+            Clase.AppendLine($"{UtilCadenasOntology.Tabs(2)}}} ");
+        }
+
+        protected void PintarObtenerObjetosDePropiedad()
+        {
+            Clase.AppendLine($"{UtilCadenasOntology.Tabs(2)}protected List<object> ObtenerObjetosDePropiedad(object propiedad)");
+            Clase.AppendLine($"{UtilCadenasOntology.Tabs(2)}{{");
+            Clase.AppendLine($"{UtilCadenasOntology.Tabs(3)}List<object> lista = new List<object>();");
+            Clase.AppendLine($"{UtilCadenasOntology.Tabs(3)}if(propiedad is IList)");
+            Clase.AppendLine($"{UtilCadenasOntology.Tabs(3)}{{");
+            Clase.AppendLine($"{UtilCadenasOntology.Tabs(4)}foreach (object item in (IList)propiedad)");
+            Clase.AppendLine($"{UtilCadenasOntology.Tabs(4)}{{");
+            Clase.AppendLine($"{UtilCadenasOntology.Tabs(5)}lista.Add(item);");
+            Clase.AppendLine($"{UtilCadenasOntology.Tabs(4)}}}");
+            Clase.AppendLine($"{UtilCadenasOntology.Tabs(3)}}}");
+            Clase.AppendLine($"{UtilCadenasOntology.Tabs(3)}else");
+            Clase.AppendLine($"{UtilCadenasOntology.Tabs(3)}{{");
+            Clase.AppendLine($"{UtilCadenasOntology.Tabs(4)}lista.Add(propiedad);");
+            Clase.AppendLine($"{UtilCadenasOntology.Tabs(3)}}}");
+            Clase.AppendLine($"{UtilCadenasOntology.Tabs(3)}return lista;");
+            Clase.AppendLine($"{UtilCadenasOntology.Tabs(2)}}}");
+        }
+
+        protected void PintarObtenerStringDePropiedad()
+        {
+            Clase.AppendLine($"{UtilCadenasOntology.Tabs(2)}protected List<string> ObtenerStringDePropiedad(object propiedad)");
+            Clase.AppendLine($"{UtilCadenasOntology.Tabs(2)}{{");
+            Clase.AppendLine($"{UtilCadenasOntology.Tabs(3)}List<string> lista = new List<string>();");
+            Clase.AppendLine($"{UtilCadenasOntology.Tabs(3)}if (propiedad is IList)");
+            Clase.AppendLine($"{UtilCadenasOntology.Tabs(3)}{{");
+            Clase.AppendLine($"{UtilCadenasOntology.Tabs(4)}foreach (string item in (IList)propiedad)");
+            Clase.AppendLine($"{UtilCadenasOntology.Tabs(4)}{{");
+            Clase.AppendLine($"{UtilCadenasOntology.Tabs(5)}lista.Add(item);");
+            Clase.AppendLine($"{UtilCadenasOntology.Tabs(4)}}}");
+            Clase.AppendLine($"{UtilCadenasOntology.Tabs(3)}}}");
+            Clase.AppendLine($"{UtilCadenasOntology.Tabs(3)}else if (propiedad is IDictionary)");
+            Clase.AppendLine($"{UtilCadenasOntology.Tabs(3)}{{");
+            Clase.AppendLine($"{UtilCadenasOntology.Tabs(4)}foreach (object key in ((IDictionary)propiedad).Keys)");
+            Clase.AppendLine($"{UtilCadenasOntology.Tabs(4)}{{");
+            Clase.AppendLine($"{UtilCadenasOntology.Tabs(5)}if (((IDictionary)propiedad)[key] is IList)");
+            Clase.AppendLine($"{UtilCadenasOntology.Tabs(5)}{{");
+            Clase.AppendLine($"{UtilCadenasOntology.Tabs(6)}List<string> listaValores = (List<string>)((IDictionary)propiedad)[key];");
+            Clase.AppendLine($"{UtilCadenasOntology.Tabs(6)}foreach(string valor in listaValores)");
+            Clase.AppendLine($"{UtilCadenasOntology.Tabs(6)}{{");
+            Clase.AppendLine($"{UtilCadenasOntology.Tabs(7)}lista.Add(valor);");
+            Clase.AppendLine($"{UtilCadenasOntology.Tabs(6)}}}");
+            Clase.AppendLine($"{UtilCadenasOntology.Tabs(5)}}}");
+            Clase.AppendLine($"{UtilCadenasOntology.Tabs(5)}else");
+            Clase.AppendLine($"{UtilCadenasOntology.Tabs(5)}{{");
+            Clase.AppendLine($"{UtilCadenasOntology.Tabs(5)}lista.Add((string)((IDictionary)propiedad)[key]);");
+            Clase.AppendLine($"{UtilCadenasOntology.Tabs(5)}}}");
+            Clase.AppendLine($"{UtilCadenasOntology.Tabs(4)}}}");
+            Clase.AppendLine($"{UtilCadenasOntology.Tabs(3)}}}");
+            Clase.AppendLine($"{UtilCadenasOntology.Tabs(3)}else if (propiedad is string)");
+            Clase.AppendLine($"{UtilCadenasOntology.Tabs(3)}{{");
+            Clase.AppendLine($"{UtilCadenasOntology.Tabs(4)}lista.Add((string)propiedad);");
+            Clase.AppendLine($"{UtilCadenasOntology.Tabs(3)}}}");
+            Clase.AppendLine($"{UtilCadenasOntology.Tabs(3)}return lista;");
+            Clase.AppendLine($"{UtilCadenasOntology.Tabs(2)}}}");
+        }
+
+        private void CrearAgregarTags()
+        {
+            Clase.AppendLine($"{UtilCadenasOntology.Tabs(2)}protected void AgregarTags(List<string> pListaTriples)");
+            Clase.AppendLine($"{UtilCadenasOntology.Tabs(2)}{{");
+            Clase.AppendLine($"{UtilCadenasOntology.Tabs(3)}foreach(string tag in tagList)");
+            Clase.AppendLine($"{UtilCadenasOntology.Tabs(3)}{{");
+            Clase.AppendLine($"{UtilCadenasOntology.Tabs(4)}AgregarTripleALista($\"http://gnoss/{{ResourceID.ToString().ToUpper()}}\", \"http://rdfs.org/sioc/types#Tag\", tag.ToLower(), pListaTriples, \" . \");");
+            Clase.AppendLine($"{UtilCadenasOntology.Tabs(3)}}}");
+            Clase.AppendLine($"{UtilCadenasOntology.Tabs(2)}}}");
         }
     }
 }

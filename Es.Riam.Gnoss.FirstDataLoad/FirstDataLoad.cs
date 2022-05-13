@@ -589,11 +589,11 @@ namespace Es.Riam.Gnoss.FirstDataLoad
             mEntityContext.AdministradorProyecto.Add(administradorProyecto);
 
             UtilProcessInsertData utilProcessInsertData = new UtilProcessInsertData();
-            List<FacetaObjetoConocimiento> listaFaceta = utilProcessInsertData.ProcesarInsert<FacetaObjetoConocimiento>(Resources.Carga_BD_ACID_facetaObjetoConocimiento);
+            List<FacetaObjetoConocimiento> listaFaceta = utilProcessInsertData.ProcesarInsert<FacetaObjetoConocimiento>(Resources.carga_bd_acid_facetaobjetoconocimiento);
             mEntityContext.FacetaObjetoConocimiento.AddRange(listaFaceta);
-            List<Pais> listaPais = utilProcessInsertData.ProcesarInsert<Pais>(Resources.Carga_BD_ACID_PAIS);
+            List<Pais> listaPais = utilProcessInsertData.ProcesarInsert<Pais>(Resources.carga_bd_acid_pais);
             mEntityContext.Pais.AddRange(listaPais);
-            List<Provincia> listaProvincia = utilProcessInsertData.ProcesarInsert<Provincia>(Resources.Carga_BD_ACID_Provincia);
+            List<Provincia> listaProvincia = utilProcessInsertData.ProcesarInsert<Provincia>(Resources.carga_bd_acid_provincia);
             mEntityContext.Provincia.AddRange(listaProvincia);
             mEntityContext.SaveChanges();
         }

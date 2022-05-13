@@ -61,6 +61,7 @@ namespace Es.Riam.Util
 
         public const string ContentOntologias = "Ontologias";
         public const string ContentVideos = "videos";
+        public const string ContentDLLs = "dll";
 
         /// <summary>
         /// Content para los documentos que son links.

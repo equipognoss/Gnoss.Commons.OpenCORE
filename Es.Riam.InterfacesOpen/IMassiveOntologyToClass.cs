@@ -57,7 +57,7 @@ namespace Es.Riam.InterfacesOpen
         /// Nos genera el sujeto para una entidad indicada. En función de lo que se indique generará para el grafo de búsqueda o de ontología
         /// </summary>
         /// <param name="pEntidad">Entidad del sujeto del cual se va a generar el triple</param>
-        /// <param name="pEsBusqueda">Indica si el triple a generar es para el grafo de búsqueda o de ontología. Si no es para uno, es para el otro</param>
+        /// <param name="pTipoSujeto">Tipo de sujeto a generar, para el grafo de ontología, búsqueda o para el has entidad</param>
         /// <param name="pItem">Indica el nivel de anidamiento de las entidades auxiliares, si no se indica será una entidad principal</param>
         /// <returns>Devuelve el sujeto del triple de la entidad indicada, para el grafo de búsqueda o de ontología según se indique</returns>
         public string GenerarSujeto(ElementoOntologia pEntidad, TiposSujeto pTipoSujeto, string pItem = "")
@@ -65,7 +65,7 @@ namespace Es.Riam.InterfacesOpen
             switch (pTipoSujeto)
             {
                 case TiposSujeto.Busqueda:
-                    return GenerarSujetoBusqueda(pEntidad, pItem);
+                    return GenerarSujetoBusqueda();
                 case TiposSujeto.Ontologia:
                     return GenerarSujetoOntologia(pEntidad, pItem);
                 case TiposSujeto.HasEntidad:
@@ -79,16 +79,10 @@ namespace Es.Riam.InterfacesOpen
         /// <summary>
         /// Genera el sujeto de los triples para el grafo de búsqueda
         /// </summary>
-        /// <param name="pEntidad">La entidad de la cual vamos a generar el sujeto</param>
-        /// <param name="pItem">Indica el nivel de anidamiento de las entidades auxiliares, si no se indica será una entidad principal</param>
         /// <returns>Devuelve el sujeto para el triple de la entidad indicada para el grafo de búsqueda</returns>
-        private string GenerarSujetoBusqueda(ElementoOntologia pEntidad, string pItem = "")
+        private string GenerarSujetoBusqueda()
         {
-            string url = string.Empty;
-
-            url = "http://gnoss/{ResourceID.ToString().ToUpper()}";
-
-            return url;
+            return "http://gnoss/{ResourceID.ToString().ToUpper()}";
         }
 
         /// <summary>

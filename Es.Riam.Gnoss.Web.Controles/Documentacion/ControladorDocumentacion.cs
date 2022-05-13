@@ -51,7 +51,6 @@ using Es.Riam.Gnoss.Web.Controles.GeneradorPlantillasOWL;
 using Es.Riam.Gnoss.Web.Controles.Organizador.Correo;
 using Es.Riam.Gnoss.Web.Controles.ServicioImagenesWrapper;
 using Es.Riam.Gnoss.Web.MVC.Models;
-using Es.Riam.Gnoss.Web.MVC.Models;
 using Es.Riam.Semantica.OWL;
 using Es.Riam.Semantica.Plantillas;
 using Es.Riam.Util;
@@ -59,7 +58,6 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using SemWeb;
-using SixLabors.ImageSharp;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -330,7 +328,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Documentacion
             }
             if (PersonaPublicadorID != Guid.Empty)
             {
-                
+
                 enlace = baseUrl + "/download-file?tipo=" + tipo + "&doc=" + pDocumento.Clave + "&nombre=" + HttpUtility.UrlEncode(UtilCadenas.RemoveAccentsWithRegEx(pDocumento.NombreDocumento)) + "&ext=" + extension + "&personaID=" + PersonaPublicadorID.ToString();
             }
             else if (OrganizacionPublicadorID != Guid.Empty)
@@ -1233,7 +1231,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Documentacion
 
             baseRecursosComDS.ColaTagsComunidades.AddColaTagsComunidadesRow(filaColaTagsDocs);
             BaseComunidadCN baseRecursosComunidadCN = new BaseComunidadCN("base", id, mEntityContext, mLoggingService, mEntityContextBASE, mConfigService, mServicesUtilVirtuosoAndReplication);
-            
+
             baseRecursosComunidadCN.InsertarFilasEnRabbit("ColaTagsComunidadesLinkedData", baseRecursosComDS);
         }
 
@@ -1401,13 +1399,13 @@ namespace Es.Riam.Gnoss.Web.Controles.Documentacion
             byte[] arryaOnto = docCL.ObtenerOntologia(pDocumentoID);
 
             if (arryaOnto == null)
-            {               
+            {
                 CallFileService servicioArch = new CallFileService(mConfigService);
 
                 arryaOnto = servicioArch.ObtenerOntologiaBytes(pDocumentoID);
-  
+
                 docCL.GuardarOntologia(pDocumentoID, arryaOnto);
-                
+
             }
 
             docCL.Dispose();
@@ -1498,7 +1496,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Documentacion
         public byte[] ObtenerOntologiaFraccionada(Guid pDocumentoID, string pNombreOntologia, string pTipoEntidad, out Dictionary<string, List<EstiloPlantilla>> pListaEstilos, Guid pProyectoID, string pFicheroConfiguracionBD)
         {
             string nombreFraccion = pNombreOntologia.Substring(0, pNombreOntologia.LastIndexOf(".")).ToLower() + "_" + pTipoEntidad;
-   
+
             CallFileService servicioArch = new CallFileService(mConfigService);
 
             byte[] arryaOnto = servicioArch.ObtenerOntologiaFraccionada(pDocumentoID, nombreFraccion);
@@ -1832,7 +1830,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Documentacion
             Uri uri = null;
             Uri.TryCreate(pObjeto, UriKind.Absolute, out uri);
 
-            if (uri != null && pObjeto.Contains("http://") && !pObjeto.Contains("|") && !pObjeto.Contains(" ") && !pObjeto.Contains(",") && (pTipo == null || !pTipo.Equals(FacetadoAD.XSD_STRING)))
+            if (uri != null && pObjeto.Contains("http://") && !pObjeto.Contains("|") && !pObjeto.Contains(" ") && !pObjeto.Contains(",") && (pTipo == null || !pTipo.Equals(FacetadoAD.XSD_STRING) || pTipo.StartsWith("http://gnoss")))
             {
                 pObjeto = $"<{pObjeto}>";
             }
@@ -3713,11 +3711,11 @@ namespace Es.Riam.Gnoss.Web.Controles.Documentacion
 
             baseRecursosComDS.ColaTagsComunidades.AddColaTagsComunidadesRow(filaColaTagsDocs);
 
-            
+
             BaseComunidadCN brComCN = new BaseComunidadCN("base", -1, mEntityContext, mLoggingService, mEntityContextBASE, mConfigService, mServicesUtilVirtuosoAndReplication);
             brComCN.InsertarFilasEnRabbit("ColaTagsComunidades", baseRecursosComDS);
             baseRecursosComDS.Dispose();
-            
+
         }
 
         /// <summary>
@@ -3857,12 +3855,12 @@ namespace Es.Riam.Gnoss.Web.Controles.Documentacion
 
             #endregion
 
-            
+
             BaseComunidadCN brComCN = new BaseComunidadCN("base", -1, mEntityContext, mLoggingService, mEntityContextBASE, mConfigService, mServicesUtilVirtuosoAndReplication);
             brComCN.InsertarFilasEnRabbit("ColaTagsComunidades", baseRecursosComDS);
 
             baseRecursosComDS.Dispose();
-            
+
 
         }
 
@@ -7011,7 +7009,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Documentacion
                     ControladorConexiones.CerrarConexiones();
 
                     //Realizamos una consulta ask a virtuoso para comprobar si está funcionando
-                    while (! new UtilidadesVirtuoso(mLoggingService, mEntityContext, mConfigService, mRedisCacheWrapper, mEntityContextBASE, mVirtuosoAD, mServicesUtilVirtuosoAndReplication).ServidorOperativo("acid", pUrlIntragnoss))
+                    while (!new UtilidadesVirtuoso(mLoggingService, mEntityContext, mConfigService, mRedisCacheWrapper, mEntityContextBASE, mVirtuosoAD, mServicesUtilVirtuosoAndReplication).ServidorOperativo("acid", pUrlIntragnoss))
                     {
                         //Dormimos 5 segundos
                         Thread.Sleep(5 * 1000);
@@ -7052,7 +7050,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Documentacion
                     ControladorConexiones.CerrarConexiones();
 
                     //Realizamos una consulta ask a virtuoso para comprobar si está funcionando
-                    while (! new UtilidadesVirtuoso(mLoggingService, mEntityContext, mConfigService, mRedisCacheWrapper, mEntityContextBASE, mVirtuosoAD, mServicesUtilVirtuosoAndReplication).ServidorOperativo("acid", pUrlIntragnoss))
+                    while (!new UtilidadesVirtuoso(mLoggingService, mEntityContext, mConfigService, mRedisCacheWrapper, mEntityContextBASE, mVirtuosoAD, mServicesUtilVirtuosoAndReplication).ServidorOperativo("acid", pUrlIntragnoss))
                     {
                         //Dormimos 5 segundos
                         Thread.Sleep(5 * 1000);
@@ -7066,7 +7064,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Documentacion
                     throw;
                 }
             }
-            
+
         }
 
         /// <summary>
@@ -7095,7 +7093,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Documentacion
                     ControladorConexiones.CerrarConexiones();
 
                     //Realizamos una consulta ask a virtuoso para comprobar si está funcionando
-                    while (! new UtilidadesVirtuoso(mLoggingService, mEntityContext, mConfigService, mRedisCacheWrapper, mEntityContextBASE, mVirtuosoAD, mServicesUtilVirtuosoAndReplication).ServidorOperativo("acid", pUrlIntragnoss))
+                    while (!new UtilidadesVirtuoso(mLoggingService, mEntityContext, mConfigService, mRedisCacheWrapper, mEntityContextBASE, mVirtuosoAD, mServicesUtilVirtuosoAndReplication).ServidorOperativo("acid", pUrlIntragnoss))
                     {
                         //Dormimos 5 segundos
                         Thread.Sleep(5 * 1000);
@@ -7713,7 +7711,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Documentacion
             }
 
             BaseComunidadCN brComCN = new BaseComunidadCN("base", -1, mEntityContext, mLoggingService, mEntityContextBASE, mConfigService, mServicesUtilVirtuosoAndReplication);
-            brComCN.InsertarFilasEnRabbit("ColaTagsComunidades",baseRecursosComDS);
+            brComCN.InsertarFilasEnRabbit("ColaTagsComunidades", baseRecursosComDS);
             baseRecursosComDS.Dispose();
         }
 

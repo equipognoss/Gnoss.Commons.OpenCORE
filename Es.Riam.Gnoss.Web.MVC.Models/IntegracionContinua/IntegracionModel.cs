@@ -37,6 +37,8 @@ namespace Es.Riam.Gnoss.Web.MVC.Models.IntegracionContinua
         OpcionesAvanzadas,
         ObjetosMultimedia,
         EstilosCss,
-        EstilosImagenes
+        EstilosImagenes,
+        Dlls,
+        Cookies
     }
 }

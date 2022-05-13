@@ -1532,57 +1532,18 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
         /// <returns>Dataset de organizaciones</returns>
         public DataWrapperOrganizacion ObtenerOrganizacionesDePersonasDeEstructuraDeProyectoCargaLigera(Guid pProyectoID)
         {
-            //TODO: hecho
             DataWrapperOrganizacion dataWrapperOrganizacion = new DataWrapperOrganizacion();
 
             dataWrapperOrganizacion.ListaOrganizacion = mEntityContext.Organizacion.JoinPersonaOcupacionFigura().Where(item => item.PersonaOcupacionFigura.ProyectoID.Equals(pProyectoID)).Select(item => item.Organizacion)
                 .Concat(mEntityContext.Organizacion.JoinPersonaOcupacionFormaSec().Where(item => item.PersonaOcupacionFormaSec.ProyectoID.Equals(pProyectoID)).Select(item => item.Organizacion))
                 .ToList().Distinct().ToList();
 
-            ////Organizacion
-            //OrganizacionDS organizacionDS = new OrganizacionDS();
-
-            //DbCommand commandObtenerOrganizacionesDePersonasDeEstructuraDeProyectoCargaLigera =
-            //ObtenerComando(this.sqlSelectObtenerOrganizacionesDePersonasDeEstructuraDeProyectoCargaLigera =
-            //SelectLigeroOrganizacion.Replace("SELECT", "SELECT DISTINCT ") + " 
-            //INNER JOIN PersonaOcupacionFigura  ON Organizacion.OrganizacionID = PersonaOcupacionFigura.OrganizacionPersonalID
-            //WHERE(PersonaOcupacionFigura.ProyectoID = " + IBD.GuidParamValor("ProyectoID") + ")
-            //UNION " + SelectLigeroOrganizacion.Replace("SELECT", "SELECT DISTINCT ") + "
-            //INNER JOIN PersonaOcupacionFormaSec  ON Organizacion.OrganizacionID = PersonaOcupacionFormaSec.OrganizacionPersonalID
-            //WHERE(PersonaOcupacionFormaSec.ProyectoID = " + IBD.GuidParamValor("ProyectoID") + ")");
-            //AgregarParametro(commandObtenerOrganizacionesDePersonasDeEstructuraDeProyectoCargaLigera, IBD.ToParam("ProyectoID"), IBD.TipoGuidToString(DbType.Guid), IBD.ValorDeGuid(pProyectoID));
-            //CargarDataSet(commandObtenerOrganizacionesDePersonasDeEstructuraDeProyectoCargaLigera, organizacionDS, "Organizacion");
-
             dataWrapperOrganizacion.ListaPersonaVinculoOrganizacion = mEntityContext.PersonaVinculoOrganizacion.JoinPersonaOcupacionFigura().Where(item => item.PersonaOcupacionFigura.ProyectoID.Equals(pProyectoID)).Select(item => item.PersonaVinculoOrganizacion)
                 .Concat(mEntityContext.PersonaVinculoOrganizacion.JoinPersonaOcupacionFormaSec().Where(item => item.PersonaOcupacionFormaSec.ProyectoID.Equals(pProyectoID)).Select(item => item.PersonaVinculoOrganizacion)).ToList().Distinct().ToList();
-
-            ////PersonaVinculoOrganizacion
-            //DbCommand commandObtenerPersonaVinculoOrganizacionDeEstructuraDeProyectoCargaLigera = 
-            //ObtenerComando(this.sqlSelectObtenerPersonaVinculoOrganizacionDeEstructuraDeProyectoCargaLigera = 
-            //"SELECT DISTINCT " + IBD.CargarGuid("PersonaVinculoOrganizacion.OrganizacionID") + ", " + IBD.CargarGuid("PersonaVinculoOrganizacion.PersonaID") + " , PersonaVinculoOrganizacion.FechaVinculacion, PersonaVinculoOrganizacion.Cargo, PersonaVinculoOrganizacion.TelefonoTrabajo, PersonaVinculoOrganizacion.EmailTrabajo, PersonaVinculoOrganizacion.UsarFotoPersonal FROM PersonaVinculoOrganizacion 
-            //INNER JOIN PersonaOcupacionFigura ON PersonaVinculoOrganizacion.OrganizacionID = PersonaOcupacionFigura.OrganizacionPersonalID 
-            //WHERE (PersonaOcupacionFigura.ProyectoID = " + IBD.GuidParamValor("ProyectoID") + ") 
-            //UNION SELECT DISTINCT " + IBD.CargarGuid("PersonaVinculoOrganizacion.OrganizacionID") + ", " + IBD.CargarGuid("PersonaVinculoOrganizacion.PersonaID") + " , PersonaVinculoOrganizacion.FechaVinculacion, PersonaVinculoOrganizacion.Cargo, PersonaVinculoOrganizacion.TelefonoTrabajo, PersonaVinculoOrganizacion.EmailTrabajo, PersonaVinculoOrganizacion.UsarFotoPersonal FROM PersonaVinculoOrganizacion 
-            //INNER JOIN PersonaOcupacionFormaSec ON PersonaVinculoOrganizacion.OrganizacionID = PersonaOcupacionFormaSec.OrganizacionPersonalID 
-            //WHERE (PersonaOcupacionFormaSec.ProyectoID = " + IBD.GuidParamValor("ProyectoID") + ")");
-            //AgregarParametro(commandObtenerPersonaVinculoOrganizacionDeEstructuraDeProyectoCargaLigera, IBD.ToParam("ProyectoID"), IBD.TipoGuidToString(DbType.Guid), IBD.ValorDeGuid(pProyectoID));
-            //CargarDataSet(commandObtenerPersonaVinculoOrganizacionDeEstructuraDeProyectoCargaLigera, organizacionDS, "PersonaVinculoOrganizacion");
 
             dataWrapperOrganizacion.ListaOrganizacionGnoss = mEntityContext.OrganizacionGnoss.JoinPersonaOcupacionFigura().Where(item => item.PersonaOcupacionFigura.ProyectoID.Equals(pProyectoID)).Select(item => item.OrganizacionGnoss).
                 Union(mEntityContext.OrganizacionGnoss.JoinPersonaOcupacionFormaSec().Where(item => item.PersonaOcupacionFormaSec.ProyectoID.Equals(pProyectoID)).Select(item => item.OrganizacionGnoss)).ToList();
 
-            ////OrganizacionGnoss
-            //DbCommand commandObtenerOrganizacionesGnossDePersonasDeEstructuraDeProyectoCargaLigera = ObtenerComando(this.sqlSelectObtenerOrganizacionesGnossDePersonasDeEstructuraDeProyectoCargaLigera = 
-            //SelectOrganizacionGnoss.Replace("SELECT", "SELECT DISTINCT ") + " FROM OrganizacionGnoss 
-            //INNER JOIN PersonaOcupacionFigura ON OrganizacionGnoss.OrganizacionID = PersonaOcupacionFigura.OrganizacionPersonalID
-            //WHERE(PersonaOcupacionFigura.ProyectoID = " + IBD.GuidParamValor("ProyectoID") + ")
-            //UNION " + SelectOrganizacionGnoss.Replace("SELECT", "SELECT DISTINCT ") + " FROM OrganizacionGnoss
-            //INNER JOIN PersonaOcupacionFormaSec ON OrganizacionGnoss.OrganizacionID = PersonaOcupacionFormaSec.OrganizacionPersonalID
-            //WHERE(PersonaOcupacionFormaSec.ProyectoID = " + IBD.GuidParamValor("ProyectoID") + ")");
-            //AgregarParametro(commandObtenerOrganizacionesGnossDePersonasDeEstructuraDeProyectoCargaLigera, IBD.ToParam("ProyectoID"), IBD.TipoGuidToString(DbType.Guid), IBD.ValorDeGuid(pProyectoID));
-            //CargarDataSet(commandObtenerOrganizacionesGnossDePersonasDeEstructuraDeProyectoCargaLigera, organizacionDS, "OrganizacionGnoss");
-
-            //return (organizacionDS);
             return dataWrapperOrganizacion;
         }
 
@@ -1594,7 +1555,6 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
         /// <returns>Dataset de organizaciones</returns>
         public DataWrapperOrganizacion ObtenerOrganizacionesDeIdentidades(List<Guid> pIdentidades)
         {
-            //TODO: hecho
             DataWrapperOrganizacion dataWrapperOrganizacion = new DataWrapperOrganizacion();
 
             if (pIdentidades.Count > 0)
@@ -1605,41 +1565,6 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
             }
 
             return dataWrapperOrganizacion;
-
-            //OrganizacionDS organizacionDS = new OrganizacionDS();
-
-            //if (pIdentidades.Count > 0)
-            //{
-            //    string whereIdentidad = "WHERE Identidad.IdentidadID IN (";
-            //    string coma = "";
-
-            //    foreach (Guid IdentidadID in pIdentidades)
-            //    {
-            //        whereIdentidad += coma + IBD.GuidValor(IdentidadID);
-            //        coma = ", ";
-            //    }
-            //    whereIdentidad += ")";
-
-            //    //Organizacion
-            //    DbCommand commandObtenerOrganizaciones = ObtenerComando(SelectLigeroOrganizacion.Replace("SELECT","SELECT DISTINCT") + " INNER JOIN Perfil ON Perfil.OrganizacionID = Organizacion.OrganizacionID INNER JOIN Identidad ON Perfil.PerfilID = Identidad.PerfilID " + whereIdentidad);
-            //    CargarDataSet(commandObtenerOrganizaciones, organizacionDS, "Organizacion");
-
-            //    //PersonaVinculoOrganizacion
-            //    DbCommand commandObtenerPersonaVinculoOrganizacion = ObtenerComando(SelectLigeroPersonaVinculoOrganizacion.Replace("SELECT","SELECT DISTINCT") + "  INNER JOIN Perfil ON Perfil.OrganizacionID = PersonaVinculoOrganizacion.OrganizacionID AND Perfil.PersonaID = PersonaVinculoOrganizacion.PersonaID INNER JOIN Identidad ON Identidad.PerfilID = Identidad.PerfilID " + whereIdentidad);
-            //    CargarDataSet(commandObtenerPersonaVinculoOrganizacion, organizacionDS, "PersonaVinculoOrganizacion");
-
-            //OrganizacionEmpresa
-            //DbCommand cmdObtenerOrganizacionesEmpresa = ObtenerComando(
-            //SelectOrganizacionEmpresa.Replace("SELECT", "SELECT DISTINCT") + " 
-            //INNER JOIN Perfil ON Perfil.OrganizacionID = OrganizacionEmpresa.OrganizacionID 
-            //INNER JOIN Identidad ON Perfil.PerfilID = Identidad.PerfilID " + whereIdentidad);
-            //CargarDataSet(cmdObtenerOrganizacionesEmpresa, organizacionDS, "OrganizacionEmpresa");
-
-            //    //OrganizacionClase
-            //    DbCommand cmdObtenerOrganizacionesClase = ObtenerComando(SelectOrganizacionClase.Replace("SELECT", "SELECT DISTINCT") + " INNER JOIN Perfil ON Perfil.OrganizacionID = OrganizacionClase.OrganizacionID INNER JOIN Identidad ON Perfil.PerfilID = Identidad.PerfilID " + whereIdentidad);
-            //    CargarDataSet(cmdObtenerOrganizacionesClase, organizacionDS, "OrganizacionClase");
-            //}
-            //return organizacionDS;
         }
 
         /// <summary>

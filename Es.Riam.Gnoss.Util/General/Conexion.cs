@@ -48,6 +48,9 @@ namespace Es.Riam.Gnoss.Util.General
         private static volatile ConcurrentDictionary<string, Dictionary<string, string>> mListaIdiomas = new ConcurrentDictionary<string, Dictionary<string, string>>();
 
         private static volatile ConcurrentDictionary<string, Dictionary<string, List<string>>> mListaServicios = new ConcurrentDictionary<string, Dictionary<string, List<string>>>();
+
+        private static volatile ConcurrentDictionary<string, string> mMimeType = new ConcurrentDictionary<string, string>();
+
         private static char[] mSeparador = new char[] { ',' };
         /// <summary>
         /// Indica si estamos usando un servicio Windows o no.
@@ -69,6 +72,35 @@ namespace Es.Riam.Gnoss.Util.General
         #endregion
 
         #region Métodos públicos
+
+        /// <summary>
+        /// Carga los mimeType cargador por el fichero mimeType.txt
+        /// </summary>
+        public static void CargarMimeType()
+        {
+            string ficheroVersion = "Config/mimeType.txt";
+
+            System.IO.StreamReader sr = new System.IO.StreamReader(System.AppDomain.CurrentDomain.SetupInformation.ApplicationBase + ficheroVersion);
+            while (!sr.EndOfStream)
+            {
+                string linea = sr.ReadLine();
+                if (linea.Contains("|"))
+                {
+                    string[] delimiter = { "|" };
+                    string[] separacion = linea.Split(delimiter, StringSplitOptions.None);
+                    if (separacion[0].Contains(".") && !mMimeType.ContainsKey(separacion[0]) && !string.IsNullOrEmpty(separacion[1]))
+                    {
+                        mMimeType.TryAdd(separacion[0], separacion[1]);
+                    }
+                }
+            }
+            sr.Close();
+        }
+
+        public static ConcurrentDictionary<string, string> ObtenerMimeType()
+        {
+            return mMimeType;
+        }
 
         /// <summary>
         /// Obtiene la lista de idiomas de la forma (es, Español)
@@ -123,11 +155,13 @@ namespace Es.Riam.Gnoss.Util.General
                     listaUrls = mListaServicios[ficheroConexion][clave];
                 }
             }
+
             if (!ServicioWindows && !ServicioWeb)
             {
 
                 pDominio = _httpContextAccessor.HttpContext.Request.Host.Host;
             }
+
             if (!string.IsNullOrEmpty(pDominio))
             {
                 clave = pNombreServicio + "_" + pDominio.Replace("http://", "").Replace("https://", "").Trim('/');
@@ -137,6 +171,7 @@ namespace Es.Riam.Gnoss.Util.General
                 }
             }
             clave = pNombreServicio;
+
             if (listaUrls.Count == 0 && mListaServicios[ficheroConexion].ContainsKey(clave))
             {
                 listaUrls = mListaServicios[ficheroConexion][clave];
@@ -337,7 +372,15 @@ namespace Es.Riam.Gnoss.Util.General
                 //Si empiezan C:\\ es que en pFicheroConfiguracionBD viene la ruta entera
                 if (!pFicheroConfiguracionBD.Substring(1, 2).Equals(":\\"))
                 {
-                    fichero = System.AppDomain.CurrentDomain.SetupInformation.ApplicationBase + pFicheroConfiguracionBD;
+                    //Si empiezan C:\\ es que en pFicheroConfiguracionBD viene la ruta entera
+                    if (!pFicheroConfiguracionBD.Substring(1, 2).Equals(":\\"))
+                    {
+                        fichero = AppDomain.CurrentDomain.SetupInformation.ApplicationBase + pFicheroConfiguracionBD;
+                    }
+                    else
+                    {
+                        fichero = pFicheroConfiguracionBD;
+                    }
                 }
                 else
                 {
@@ -514,7 +557,15 @@ namespace Es.Riam.Gnoss.Util.General
                         //Si empiezan C:\\ es que en pFicheroConfiguracionBD viene la ruta entera
                         if (!pFicheroConfiguracionBD.Substring(1, 2).Equals(":\\"))
                         {
-                            fichero = System.AppDomain.CurrentDomain.SetupInformation.ApplicationBase + pFicheroConfiguracionBD;
+                            //Si empiezan C:\\ es que en pFicheroConfiguracionBD viene la ruta entera
+                            if (!pFicheroConfiguracionBD.Substring(1, 2).Equals(":\\"))
+                            {
+                                fichero = AppDomain.CurrentDomain.SetupInformation.ApplicationBase + pFicheroConfiguracionBD;
+                            }
+                            else
+                            {
+                                fichero = pFicheroConfiguracionBD;
+                            }
                         }
                         else
                         {
@@ -523,7 +574,7 @@ namespace Es.Riam.Gnoss.Util.General
 
 
                         //Si empiezan igual es que en pFicheroConfiguracionBD viene la ruta entera
-                        if (pFicheroConfiguracionBD.StartsWith(System.AppDomain.CurrentDomain.SetupInformation.ApplicationBase.Substring(0, 10)))
+                        if (pFicheroConfiguracionBD.StartsWith(AppDomain.CurrentDomain.SetupInformation.ApplicationBase.Substring(0, 10)))
                         {
                             fichero = pFicheroConfiguracionBD;
                         }
@@ -589,7 +640,7 @@ namespace Es.Riam.Gnoss.Util.General
         /// <returns>url</returns>
         public static void AgregarParametro(string pFicheroConfiguracionBD, string pRutaParametro, string pNombreParametro, string pValor)
         {
-            string fichero = System.AppDomain.CurrentDomain.SetupInformation.ApplicationBase + pFicheroConfiguracionBD;
+            string fichero = AppDomain.CurrentDomain.SetupInformation.ApplicationBase + pFicheroConfiguracionBD;
 
             if (!File.Exists(fichero))
             {
@@ -740,7 +791,6 @@ namespace Es.Riam.Gnoss.Util.General
         public string ObtenerUrlServicioLogin()
         {
             return ObtenerServicio("urlServicioLogin", Guid.Empty, string.Empty);
-            //return "http://localhost:3613/";
         }
 
         /// <summary>
@@ -802,7 +852,6 @@ namespace Es.Riam.Gnoss.Util.General
         /// <returns>url</returns>
         public string ObtenerUrlServicioAutocompletar(Guid pProyectoID, string pDominio)
         {
-            //return "http://localhost:56666/AutoCompletar.asmx";
             return ObtenerServicio("urlServicioAutocompletar", pProyectoID, pDominio) + "/AutoCompletar.asmx";
         }
 
@@ -821,7 +870,6 @@ namespace Es.Riam.Gnoss.Util.General
         /// <returns>url</returns>
         public string ObtenerUrlServicioFacetas(Guid pProyectoID, string pDominio)
         {
-            //EAD Versión pruebas en Local  return "http://localhost:60702/CargadorFacetas"; 
             return ObtenerServicio("urlServicioFacetas", pProyectoID, pDominio) + "/CargadorFacetas";
         }
 
@@ -831,7 +879,6 @@ namespace Es.Riam.Gnoss.Util.General
         /// <returns>url</returns>
         public string ObtenerUrlServicioFacetasHome(Guid pProyectoID, string pDominio)
         {
-            //return "http://localhost:60701/CargadorFacetas";
             return ObtenerServicio("urlServicioFacetasHome", pProyectoID, pDominio) + "/CargadorFacetas";
         }
 
@@ -861,8 +908,6 @@ namespace Es.Riam.Gnoss.Util.General
         /// <returns>url</returns>
         public string ObtenerUrlsServiciosResultados(Guid pProyectoID, string pDominio)
         {
-            //return "http://localhost:63268/CargadorResultados";
-            // EAD para Pruebas en local  return "http://localhost:63269/CargadorResultados";
             string urlsAux = ObtenerServicio("urlServicioResultados", pProyectoID, pDominio);
             string urlFin = "";
             string coma = "";
@@ -880,7 +925,6 @@ namespace Es.Riam.Gnoss.Util.General
         /// <returns>url</returns>
         public string ObtenerUrlServicioResultadosHome(Guid pProyectoID, string pDominio)
         {
-            //return "http://localhost:63268/CargadorResultados";
             return ObtenerServicio("urlServicioResultadosHome", pProyectoID, pDominio) + "/CargadorResultados";
         }
 
@@ -890,7 +934,6 @@ namespace Es.Riam.Gnoss.Util.General
         /// <returns>url</returns>
         public string ObtenerUrlServicioContextosHome(Guid pProyectoID, string pDominio)
         {
-            //return "http://localhost:63268/CargadorContextoMensajes";
             return ObtenerServicio("urlServicioResultadosHome", pProyectoID, pDominio) + "/CargadorContextoMensajes";
         }
 
@@ -922,32 +965,6 @@ namespace Es.Riam.Gnoss.Util.General
 
             return urlApiIntegracionContinua;
         }
-
-
-        //public static string ObtenerUrlApiDespliegues()
-        //{
-        //    string urlApiDespliegues = ObtenerServicio("urlApiDespliegues", Guid.Empty, null);
-
-        //    if (urlApiDespliegues.StartsWith("https://"))
-        //    {
-        //        urlApiDespliegues = urlApiDespliegues.Replace("https://", "http://");
-        //    }
-
-        //    return urlApiDespliegues;
-        //}
-
-        //public static string ObtenerUrlApiDesplieguesPRE()
-        //{
-        //    string urlApiDesplieguesPRE = ObtenerServicio("urlApiDesplieguesPRE", Guid.Empty, null);
-
-        //    if (urlApiDesplieguesPRE.StartsWith("https://"))
-        //    {
-        //        urlApiDesplieguesPRE = urlApiDesplieguesPRE.Replace("https://", "http://");
-        //    }
-
-        //    return urlApiDesplieguesPRE;
-        //}
-
 
         public string ObtenerUrlApiDesplieguesEntornoParametro(string pEntornoIntegracionContinua, Guid pProyectoSeleccionado, string entorno)
         {
@@ -1005,7 +1022,6 @@ namespace Es.Riam.Gnoss.Util.General
                     byte[] byteData = Encoding.UTF8.GetBytes(requestParameters);
                     string urlEnvironment = UtilGeneral.WebRequest("POST", peticion, byteData);
 
-
                     if (!string.IsNullOrEmpty(urlEnvironment))
                     {
                         return urlEnvironment;
@@ -1035,6 +1051,7 @@ namespace Es.Riam.Gnoss.Util.General
                     }
                 }
             }
+
             return null;
         }
 
@@ -1095,22 +1112,6 @@ namespace Es.Riam.Gnoss.Util.General
             }
             return proyectoID;
         }
-
-        ///// <summary>
-        ///// Obtiene el proyecto al que se va a conectar la aplicación
-        ///// </summary>
-        ///// <returns>Identificador de proyecto (NULL si no hay ninguna configuración para algún proyecto en concreto)</returns>
-        //public static Guid? ObtenerProyectoPrincipalUnico()
-        //{
-        //    string proyecto = ObtenerParametro("config/project.config", "config/ProyectoConexion/ProyectoPrincipalUnicoID", false);
-
-        //    Guid? proyectoID = null;
-        //    if ((proyecto != null) && (!proyecto.Trim().Equals(string.Empty)))
-        //    {
-        //        proyectoID = new Guid(proyecto);
-        //    }
-        //    return proyectoID;
-        //}
 
         /// <summary>
         /// Obtiene la organización del proyecto al que se va a conectar la aplicación

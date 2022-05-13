@@ -38,7 +38,21 @@ namespace Es.Riam.Gnoss.OAuthAD
             mLoggingService = loggingService;
             mConfigService = configService;
         }
-
+        public void Migrate()
+        {
+            Database.Migrate();
+        }
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        {
+            if (mConfigService.ObtenerTipoBD().Equals("2"))
+            {
+                optionsBuilder.UseNpgsql(mConfigService.ObtenerBaseConnectionString());
+            }
+            else if (mConfigService.ObtenerTipoBD().Equals("1"))
+            {
+                optionsBuilder.UseOracle(mConfigService.ObtenerSqlConnectionString());
+            }
+        }
         private string GetDafaultSchema(DbConnection pConexionMaster)
         {
             string schemaDefecto = null;
@@ -125,7 +139,6 @@ namespace Es.Riam.Gnoss.OAuthAD
         }
 
         public virtual DbSet<ConsumerData> ConsumerData { get; set; }
-        public virtual DbSet<Nonce> Nonce { get; set; }
         public virtual DbSet<OAuthConsumer> OAuthConsumer { get; set; }
         public virtual DbSet<OAuthToken> OAuthToken { get; set; }
         public virtual DbSet<OAuthTokenExterno> OAuthTokenExterno { get; set; }
@@ -144,11 +157,6 @@ namespace Es.Riam.Gnoss.OAuthAD
                     .HasForeignKey<ConsumerData>(d => d.ConsumerId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_ConsumerData_OAuthConsumer");
-            });
-
-            modelBuilder.Entity<Nonce>(entity =>
-            {
-                entity.HasKey(e => new { e.Context, e.Code, e.Timestamp });
             });
 
             modelBuilder.Entity<OAuthConsumer>(entity =>

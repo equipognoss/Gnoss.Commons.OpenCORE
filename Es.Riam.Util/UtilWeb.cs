@@ -355,7 +355,7 @@ namespace Es.Riam.Util
         /// <returns></returns>
         public static string HacerPeticionPost(string pUrl, Dictionary<string, string> pParametros, Dictionary<string, string> pCabeceras = null)
         {
-            System.Net.WebRequest wr = (System.Net.HttpWebRequest)System.Net.WebRequest.Create(pUrl);
+            WebRequest wr = (HttpWebRequest)System.Net.WebRequest.Create(pUrl);
             wr.Method = "POST";
             wr.ContentType = "application/x-www-form-urlencoded";
             wr.Timeout = 300000;
@@ -383,15 +383,18 @@ namespace Es.Riam.Util
 
             byte[] byteData = Encoding.UTF8.GetBytes(requestParameters);
             wr.ContentLength = byteData.Length;
-            System.IO.Stream newStream = wr.GetRequestStream();
+            Stream newStream = wr.GetRequestStream();
+           
             //Envio de parametros                    
             newStream.Write(byteData, 0, byteData.Length);
 
             // Obtiene la respuesta
-            System.Net.WebResponse response = wr.GetResponse();
+            WebResponse response = wr.GetResponse();
+
             // Stream con el contenido recibido del servidor
             newStream = response.GetResponseStream();
-            System.IO.StreamReader reader = new System.IO.StreamReader(newStream);
+            StreamReader reader = new StreamReader(newStream);
+
             // Leemos el contenido
             string responseFromServer = reader.ReadToEnd();
 
@@ -432,7 +435,7 @@ namespace Es.Riam.Util
         /// <returns></returns>
         private static WebResponse HacerPeticionDevolviendoWebResponse(string pMethod, string pUrl, Dictionary<string, string> pParametros)
         {
-            System.Net.WebRequest wr = (System.Net.HttpWebRequest)System.Net.WebRequest.Create(pUrl);
+            WebRequest wr = (HttpWebRequest)System.Net.WebRequest.Create(pUrl);
             wr.Timeout = 1200000;//20 minutos
             wr.Method = pMethod;
             wr.ContentType = "application/x-www-form-urlencoded";
@@ -447,11 +450,12 @@ namespace Es.Riam.Util
                     requestParameters = string.Concat(requestParameters, key, "=", HttpUtility.UrlEncode(pParametros[key]), "&");
                 }
 
-                requestParameters = requestParameters.Substring(0, requestParameters.Length - 1);
+                requestParameters = requestParameters.Substring(requestParameters.Length - 1);
 
                 byte[] byteData = Encoding.UTF8.GetBytes(requestParameters);
                 wr.ContentLength = byteData.Length;
-                System.IO.Stream newStream = wr.GetRequestStream();
+                Stream newStream = wr.GetRequestStream();
+                
                 //Envio de parametros                    
                 newStream.Write(byteData, 0, byteData.Length);
             }
@@ -474,7 +478,7 @@ namespace Es.Riam.Util
                 Regex reg = new Regex(regexpresion);
                 if (reg.IsMatch(pUrl.Trim()))
                 {
-                    new System.Net.WebClient().DownloadData(pUrl);
+                    new WebClient().DownloadData(pUrl);
                     return true;
                 }
                 else

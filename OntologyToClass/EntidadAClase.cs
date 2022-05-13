@@ -1,5 +1,4 @@
 ﻿using Es.Riam.Gnoss.AD.EntityModel;
-using Es.Riam.Gnoss.Logica.Parametro;
 using Es.Riam.Gnoss.AD.EntityModel.Models.Faceta;
 using Es.Riam.Gnoss.Logica.Facetado;
 using Es.Riam.Gnoss.Util.Configuracion;
@@ -7,7 +6,6 @@ using Es.Riam.Gnoss.Util.General;
 using Es.Riam.Semantica.OWL;
 using Es.Riam.Util;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -16,14 +14,10 @@ using System.Xml;
 using Es.Riam.AbstractsOpen;
 using Es.Riam.Gnoss.Util.GeneradorClases;
 using Es.Riam.Gnoss.Web.MVC.Models.GeneradorClases;
-using Es.Riam.Gnoss.Web.MVC.Models.GeneradorClases.Enumeraciones;
 using Es.Riam.InterfacesOpen;
 
 namespace OntologiaAClase
 {
-
-    //RUTA XML : C:\Users\Andrea\Downloads\person.xml
-    //RUTA OWL: C:\Users\Andrea\Downloads\person.owl    
     public class EntidadAClase
     {
         public enum PropiedadTipo
@@ -38,7 +32,7 @@ namespace OntologiaAClase
             IntMultiple,
             Image
         }
-        // public List<string> nombresReservados = new List<string> { "Path", "Return","File" };
+
         private Constantes c = new Constantes();
         public StringBuilder Clase { get; }
         private XmlDocument doc;
@@ -76,53 +70,50 @@ namespace OntologiaAClase
         /// <summary>
         /// Constructor de la clase , que la inicializa con un stringBuilder
         /// </summary>
-        public EntidadAClase(EntityContext entityContext, LoggingService loggingService, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication, IMassiveOntologyToClass massiveOntologyToClass)
+        public EntidadAClase(EntityContext pEntityContext, LoggingService pLoggingService, ConfigService pConfigService, IServicesUtilVirtuosoAndReplication pServicesUtilVirtuosoAndReplication, IMassiveOntologyToClass pMassiveOntologyToClass)
         {
             Clase = new StringBuilder();
-            mEntityContext = entityContext;
-            mLoggingService = loggingService;
-            mConfigService = configService;
-            mServicesUtilVirtuosoAndReplication = servicesUtilVirtuosoAndReplication;
-            mMassiveOntologyClass = massiveOntologyToClass;
+            mEntityContext = pEntityContext;
+            mLoggingService = pLoggingService;
+            mConfigService = pConfigService;
+            mServicesUtilVirtuosoAndReplication = pServicesUtilVirtuosoAndReplication;
+            mMassiveOntologyClass = pMassiveOntologyToClass;
         }
 
         /// <summary>
         /// Constructor de la clase que necesita uan ontologia, su nombre, y el xml , además del string builder
         /// </summary>
-        /// <param name="ontologia"></param>
-        /// <param name="nombreOnto"></param>
-        /// <param name="contentXML"></param>
-        public EntidadAClase(Ontologia ontologia, string nombreOnto, byte[] contentXML, bool esPrimaria, List<string> listaIdiomas, string pNombreCortoProy, Guid pProyID, List<string> pNombresOntologia, List<ObjetoPropiedad> listaObjetosPropiedad, EntityContext entityContext, LoggingService loggingService, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication, IMassiveOntologyToClass massiveOntologyToClass)
-        {  
+        /// <param name="pOntologia"></param>
+        /// <param name="pNombreOnto"></param>
+        /// <param name="pContentXML"></param>
+        public EntidadAClase(Ontologia pOntologia, string pNombreOnto, byte[] pContentXML, bool pEsPrimaria, List<string> pListaIdiomas, string pNombreCortoProy, Guid pProyID, List<string> pNombresOntologia, List<ObjetoPropiedad> pListaObjetosPropiedad, EntityContext pEntityContext, LoggingService pLoggingService, ConfigService pConfigService, IServicesUtilVirtuosoAndReplication pServicesUtilVirtuosoAndReplication, IMassiveOntologyToClass pMassiveOntologyToClass)
+        {
             nombreCortoProy = pNombreCortoProy;
             proyID = pProyID;
             Clase = new StringBuilder();
-            this.ontologia = ontologia;
-            this.nombreOnto = nombreOnto;
-            this.contentXML = contentXML;
-            this.listaObjetosPropiedad = listaObjetosPropiedad;
-            this.esPrimaria = esPrimaria;
-            this.dicPref = this.ontologia.NamespacesDefinidos;
-            this.listaIdiomas = listaIdiomas;
-            this.nombresOntologia = pNombresOntologia;
-            mEntityContext = entityContext;
-            mLoggingService = loggingService;
-            mConfigService = configService;
+            ontologia = pOntologia;
+            nombreOnto = pNombreOnto;
+            contentXML = pContentXML;
+            listaObjetosPropiedad = pListaObjetosPropiedad;
+            esPrimaria = pEsPrimaria;
+            dicPref = pOntologia.NamespacesDefinidos;
+            listaIdiomas = pListaIdiomas;
+            nombresOntologia = pNombresOntologia;
+            mEntityContext = pEntityContext;
+            mLoggingService = pLoggingService;
+            mConfigService = pConfigService;
             FacetaCN facetaCN = new FacetaCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
-            this.doc = new XmlDocument();
-            if (contentXML != null)
+            doc = new XmlDocument();
+            if (pContentXML != null)
             {
-                MemoryStream ms = new MemoryStream(contentXML);
+                MemoryStream ms = new MemoryStream(pContentXML);
                 doc.Load(ms);
             }
             mNumItem = 0;
-            //XmlDocument doc = new XmlDocument();
-            //string xml = Encoding.UTF8.GetString(contentXML);
-            //doc.LoadXml(xml);
             listaObjetosExternos = new List<string>();
-            listaFacetaObjetoConocimientoProyecto = facetaCN.ObtenerFacetasObjetoConocimientoProyectoDeOntologia(nombreOnto.Replace("Ontology", ""), proyID);
-            mServicesUtilVirtuosoAndReplication = servicesUtilVirtuosoAndReplication;
-            mMassiveOntologyClass = massiveOntologyToClass;
+            listaFacetaObjetoConocimientoProyecto = facetaCN.ObtenerFacetasObjetoConocimientoProyectoDeOntologia(pNombreOnto.Replace("Ontology", ""), proyID);
+            mServicesUtilVirtuosoAndReplication = pServicesUtilVirtuosoAndReplication;
+            mMassiveOntologyClass = pMassiveOntologyToClass;
         }
 
         /// <summary>
@@ -159,12 +150,9 @@ namespace OntologiaAClase
             Clase.AppendLine();
             mMassiveOntologyClass.CrearToAcidData(esPrimaria, pEntidad, ontologia, Clase, nombrePropDescripcion, nombrePropTitulo, nombrePropTituloEntero, propListiedadesMultidioma, listaObjetosPropiedad);
             Clase.AppendLine();
-            //--------------
-            PintarObtenerObjetosDePropiedad();
-            PintarObtenerStringDePropiedad();            
-            CrearGetURI(esPrimaria, pEntidad);
+            //-------------- 
+            CrearGetURI(pEntidad);
             Clase.AppendLine();
-            CrearTextoSinSaltoDeLinea();
             Clase.AppendLine();
             AgregarTituloRecurso(pEntidad);
             Clase.AppendLine();
@@ -173,9 +161,7 @@ namespace OntologiaAClase
                 AgregarDescripcionRecurso(pEntidad);
             }
             Clase.AppendLine();
-            CrearAgregarTripleALista();
-            Clase.AppendLine();            
-            CrearAgregarTags(pEntidad);
+            Clase.AppendLine();
             Clase.AppendLine();
             AnadirImagenes(pEntidad);
             Clase.AppendLine();
@@ -219,11 +205,6 @@ namespace OntologiaAClase
                                     return espef;
                                 }
                             }
-                            //Devolver el que coincida con el proyecto
-
-                            //Devolver el que coincida con el nombrecorto
-
-                            //Devolver el que no tenga attributos
                         }
                     }
                 }
@@ -384,7 +365,6 @@ namespace OntologiaAClase
             Clase.AppendLine($"{UtilCadenasOntology.Tabs(2)}public {modificadorSobrescritura} string RdfType {{ get {{ return \"{pEntidad.TipoEntidad}\"; }} }}");
             Clase.AppendLine($"{UtilCadenasOntology.Tabs(2)}public {modificadorSobrescritura} string RdfsLabel {{ get {{ return \"{pEntidad.TipoEntidad}\"; }} }}");
 
-            // Clase.AppendLine($"{UtilCadenasOntology.Tabs(2)}public string URL {{ get; set; }}");
             if (ontologia.EntidadesAuxiliares.Exists(entidad => entidad.TipoEntidad.Equals(pEntidad.TipoEntidad)))
             {
                 Clase.AppendLine($"{UtilCadenasOntology.Tabs(2)}public OntologyEntity Entity {{ get; set; }}");
@@ -415,10 +395,6 @@ namespace OntologiaAClase
                     Clase.AppendLine($"{UtilCadenasOntology.Tabs(2)}[RDFProperty(\"{propiedad.Nombre}\")]");
                     if (propiedad.Tipo.ToString().Equals("ObjectProperty"))
                     {
-                        /*if (!ontologia.Entidades.Exists(x=>x.TipoEntidad.Equals(propiedad.Rango))  )
-                        {
-                            nombreProp = "Object";
-                        }*/
                         if (ObtenerUsingExternos(propiedad).Count == 0 && !ontologia.Entidades.Exists(x => x.TipoEntidad.Equals(propiedad.Rango)))
                         {
                             nombreProp = "object";
@@ -526,7 +502,7 @@ namespace OntologiaAClase
         /// </summary>
         /// <param name="pPropiedad"></param>
         /// <param name="pNombreClase"></param>
-        public void PropiedadObjetoExternoValorUnico(Propiedad pPropiedad, string pNombreClase, ElementoOntologia padre)
+        public void PropiedadObjetoExternoValorUnico(Propiedad pPropiedad, string pNombreClase, ElementoOntologia pPadre)
         {
             if (!string.IsNullOrEmpty(pPropiedad.Rango))
             {
@@ -536,7 +512,7 @@ namespace OntologiaAClase
                 {
                     Clase.AppendLine($"{UtilCadenasOntology.Tabs(2)}{c.required}");
                 }
-                if (padre != null && padre.Propiedades.Exists(propiedad => propiedad.Nombre.Equals(pPropiedad.Nombre)))
+                if (pPadre != null && pPadre.Propiedades.Exists(propiedad => propiedad.Nombre.Equals(pPropiedad.Nombre)))
                 {
                     useNew = true;
                 }
@@ -550,7 +526,7 @@ namespace OntologiaAClase
         /// </summary>
         /// <param name="pPropiedad"></param>
         /// <param name="pNombreClase"></param>
-        public void PropiedadObjetoExternoValorMultiple(Propiedad pPropiedad, string pNombreClase, ElementoOntologia padre)
+        public void PropiedadObjetoExternoValorMultiple(Propiedad pPropiedad, string pNombreClase, ElementoOntologia pPadre)
         {
 
             if (!string.IsNullOrEmpty(pPropiedad.Rango))
@@ -565,7 +541,7 @@ namespace OntologiaAClase
                 {
                     Clase.AppendLine($"{UtilCadenasOntology.Tabs(2)}{c.minLeng}({pPropiedad.CardinalidadMinima})]");
                 }
-                if (padre != null && padre.Propiedades.Exists(propiedad => propiedad.Nombre.Equals(pPropiedad.Nombre)))
+                if (pPadre != null && pPadre.Propiedades.Exists(propiedad => propiedad.Nombre.Equals(pPropiedad.Nombre)))
                 {
                     usarNew = true;
                 }
@@ -579,12 +555,12 @@ namespace OntologiaAClase
         /// </summary>
         /// <param name="pPropiedad"></param>
         /// <param name="pNombreClase"></param>
-        public void CreacionPropiedadObjetosExternos(Propiedad pPropiedad, string pNombreClase, ElementoOntologia padre)
+        public void CreacionPropiedadObjetosExternos(Propiedad pPropiedad, string pNombreClase, ElementoOntologia pPadre)
         {
             if (pPropiedad.ValorUnico)
             {
                 propListiedadesTipo.Add(pPropiedad.Nombre, PropiedadTipo.StringSimple);
-                PropiedadObjetoExternoValorUnico(pPropiedad, pNombreClase, padre);
+                PropiedadObjetoExternoValorUnico(pPropiedad, pNombreClase, pPadre);
             }
             else
             {
@@ -592,7 +568,7 @@ namespace OntologiaAClase
                 {
                     propListiedadesTipo.Add(pPropiedad.Nombre, PropiedadTipo.StringMultiple);
                 }
-                PropiedadObjetoExternoValorMultiple(pPropiedad, pNombreClase, padre);
+                PropiedadObjetoExternoValorMultiple(pPropiedad, pNombreClase, pPadre);
             }
         }
 
@@ -602,11 +578,11 @@ namespace OntologiaAClase
         /// <param name="pPropiedad"></param>
         /// <param name="pRango"></param>
         /// <param name="pNombreClase"></param>
-        public void PropiedadObjetoEntidadValorUnico(Propiedad pPropiedad, string pRango, string pNombreClase, ElementoOntologia padre)
+        public void PropiedadObjetoEntidadValorUnico(Propiedad pPropiedad, string pRango, string pNombreClase, ElementoOntologia pPadre)
         {
             string nombrePropiedad = $"{ObtenerPrefijoPropiedad(pPropiedad)}_{pNombreClase}";
             bool usarNew = false;
-            if (padre != null && padre.Propiedades.Exists(propiedad => propiedad.Nombre.Equals(pPropiedad.Nombre)))
+            if (pPadre != null && pPadre.Propiedades.Exists(propiedad => propiedad.Nombre.Equals(pPropiedad.Nombre)))
             {
                 usarNew = true;
             }
@@ -619,11 +595,11 @@ namespace OntologiaAClase
         /// <param name="pPropiedad"></param>
         /// <param name="pRango"></param>
         /// <param name="pNombreClase"></param>
-        public void PropiedadObjetoEntidadValorMultiple(Propiedad pPropiedad, string pRango, string pNombreClase, ElementoOntologia padre)
+        public void PropiedadObjetoEntidadValorMultiple(Propiedad pPropiedad, string pRango, string pNombreClase, ElementoOntologia pPadre)
         {
             string nombrePropiedad = $"{ObtenerPrefijoPropiedad(pPropiedad)}_{pNombreClase}";
             bool usarNew = false;
-            if (padre != null && padre.Propiedades.Exists(propiedad => propiedad.Nombre.Equals(pPropiedad.Nombre)))
+            if (pPadre != null && pPadre.Propiedades.Exists(propiedad => propiedad.Nombre.Equals(pPropiedad.Nombre)))
             {
                 usarNew = true;
             }
@@ -651,7 +627,7 @@ namespace OntologiaAClase
         /// <param name="pPropiedad"></param>
         /// <param name="pRango"></param>
         /// <param name="pNombreClase"></param>
-        public void CreacionPropiedadObjetosEntidad(Propiedad pPropiedad, string pRango, string pNombreClase, ElementoOntologia padre)
+        public void CreacionPropiedadObjetosEntidad(Propiedad pPropiedad, string pRango, string pNombreClase, ElementoOntologia pPadre)
         {
             if (!pRango.Equals("Object"))
             {
@@ -663,11 +639,11 @@ namespace OntologiaAClase
             }
             if (pPropiedad.ValorUnico)
             {
-                PropiedadObjetoEntidadValorUnico(pPropiedad, pRango, pNombreClase, padre);
+                PropiedadObjetoEntidadValorUnico(pPropiedad, pRango, pNombreClase, pPadre);
             }
             else
             {
-                PropiedadObjetoEntidadValorMultiple(pPropiedad, pRango, pNombreClase, padre);
+                PropiedadObjetoEntidadValorMultiple(pPropiedad, pRango, pNombreClase, pPadre);
             }
         }
 
@@ -676,17 +652,17 @@ namespace OntologiaAClase
         /// </summary>
         /// <param name="pPropiedad"></param>
         /// <param name="pNombrePropiedad"></param>
-        public void PropiedadesObjetoEntidad(Propiedad pPropiedad, ElementoOntologia padre)
+        public void PropiedadesObjetoEntidad(Propiedad pPropiedad, ElementoOntologia pPadre)
         {
             string rango = UtilCadenasOntology.ObtenerNombreProp(pPropiedad.Rango);
 
             if (ontologia.Entidades.Exists(x => x.TipoEntidad.Equals(pPropiedad.Rango)))
             {
-                CreacionPropiedadObjetosEntidad(pPropiedad, rango, UtilCadenasOntology.ObtenerNombreProp(pPropiedad.Nombre), padre);
+                CreacionPropiedadObjetosEntidad(pPropiedad, rango, UtilCadenasOntology.ObtenerNombreProp(pPropiedad.Nombre), pPadre);
             }
             else
             {
-                CreacionPropiedadObjetosExternos(pPropiedad, UtilCadenasOntology.ObtenerNombreProp(pPropiedad.Nombre), padre);
+                CreacionPropiedadObjetosExternos(pPropiedad, UtilCadenasOntology.ObtenerNombreProp(pPropiedad.Nombre), pPadre);
             }
         }
 
@@ -708,7 +684,6 @@ namespace OntologiaAClase
                     case "date":
                     case "datetime":
                     case "time":
-
                         if (pPropiedad.ValorUnico)
                         {
                             if (pPropiedad.FunctionalProperty)
@@ -727,7 +702,6 @@ namespace OntologiaAClase
                             rango = "DateTime";
                             propListiedadesTipo.Add(pPropiedad.Nombre, PropiedadTipo.DateMultiple);
                         }
-
                         cadena = false;
                         break;
                     case "boolean":
@@ -959,9 +933,9 @@ namespace OntologiaAClase
         /// <summary>
         /// Creacion del toRecurso
         /// </summary>
-        /// <param name="esPrimaria"></param>
+        /// <param name="pEsPrimaria"></param>
         /// <param name="pEntidad"></param>
-        public void CrearToRecurso(bool esPrimaria, ElementoOntologia pEntidad)
+        public void CrearToRecurso(bool pEsPrimaria, ElementoOntologia pEntidad)
         {
             if (!ontologia.EntidadesAuxiliares.Any(entidadNombre => entidadNombre.TipoEntidad.Equals(pEntidad.TipoEntidad)) || ontologia.Entidades.Count == ontologia.EntidadesAuxiliares.Count)
             {
@@ -971,7 +945,7 @@ namespace OntologiaAClase
                 {
                     modificador = "override";
                 }
-                if (!esPrimaria)
+                if (!pEsPrimaria)
                 {
                     tipoOntologyResource = "SecondaryResource";
                     Clase.AppendLine($"{UtilCadenasOntology.Tabs(2)}public {modificador} {tipoOntologyResource} ToGnossApiResource(ResourceApi resourceAPI,string identificador)");
@@ -987,7 +961,7 @@ namespace OntologiaAClase
                 }
                 Clase.AppendLine($"{UtilCadenasOntology.Tabs(2)}{{");
                 Clase.AppendLine($"{UtilCadenasOntology.Tabs(3)}{tipoOntologyResource} resource = new {tipoOntologyResource}();");
-                CrearToRecursoPadre(esPrimaria, pEntidad, tipoOntologyResource);
+                CrearToRecursoPadre(pEsPrimaria, pEntidad, tipoOntologyResource);
                 Clase.AppendLine($"{UtilCadenasOntology.Tabs(2)}}}");
             }
         }
@@ -995,12 +969,12 @@ namespace OntologiaAClase
         /// <summary>
         /// Crear el interior del toRecurso
         /// </summary>
-        /// <param name="esPrimaria"></param>
+        /// <param name="pEsPrimaria"></param>
         /// <param name="pEntidad"></param>
-        public void CrearToRecursoPadre(bool esPrimaria, ElementoOntologia pEntidad, string tipoOntologyResource)
+        public void CrearToRecursoPadre(bool pEsPrimaria, ElementoOntologia pEntidad, string pTipoOntologyResource)
         {
 
-            if (tipoOntologyResource.Equals("ComplexOntologyResource"))
+            if (pTipoOntologyResource.Equals("ComplexOntologyResource"))
             {
                 Clase.AppendLine($"{UtilCadenasOntology.Tabs(3)}Ontology ontology=null;");
                 if (listentidades.Any() || pEntidad.Superclases.Any(s => !s.Contains("http://www.w3.org/2002/07/owl#Thing")))
@@ -1014,14 +988,13 @@ namespace OntologiaAClase
                 Clase.AppendLine($"{UtilCadenasOntology.Tabs(3)}}}");
                 Clase.AppendLine($"{UtilCadenasOntology.Tabs(3)}else{{");
                 Clase.AppendLine($"{UtilCadenasOntology.Tabs(4)}ontology = new Ontology(resourceAPI.GraphsUrl, resourceAPI.OntologyUrl, RdfType, RdfsLabel, prefList, propList, entList,idrecurso,idarticulo);");
-
                 Clase.AppendLine($"{UtilCadenasOntology.Tabs(3)}}}");
                 Clase.AppendLine($"{UtilCadenasOntology.Tabs(3)}resource.Id = GNOSSID;");
                 Clase.AppendLine($"{UtilCadenasOntology.Tabs(3)}resource.Ontology = ontology;");
                 Clase.AppendLine($"{UtilCadenasOntology.Tabs(3)}resource.TextCategories=listaDeCategorias;");
 
                 Clase.AppendLine($"{UtilCadenasOntology.Tabs(3)}AddResourceTitle(resource);");
-                if (!string.IsNullOrEmpty(this.nombrePropDescripcionEntera))
+                if (!string.IsNullOrEmpty(nombrePropDescripcionEntera))
                 {
                     Clase.AppendLine($"{UtilCadenasOntology.Tabs(3)}AddResourceDescription(resource);");
                 }
@@ -1042,7 +1015,7 @@ namespace OntologiaAClase
             Clase.AppendLine($"{UtilCadenasOntology.Tabs(3)}return resource;");
         }
 
-        public void CrearGetURI(bool esPrimaria, ElementoOntologia pEntidad)
+        public void CrearGetURI(ElementoOntologia pEntidad)
         {
             if (!ontologia.EntidadesAuxiliares.Any(entidadNombre => entidadNombre.TipoEntidad.Equals(pEntidad.TipoEntidad)) || ontologia.Entidades.Count == ontologia.EntidadesAuxiliares.Count)
             {
@@ -1058,72 +1031,6 @@ namespace OntologiaAClase
                 Clase.AppendLine($"{UtilCadenasOntology.Tabs(3)}return $\"{{resourceAPI.GraphsUrl}}items/{nombreOnto}_{{ResourceID}}_{{ArticleID}}\";");
                 Clase.AppendLine($"{UtilCadenasOntology.Tabs(2)}}}");
             }
-        }
-
-        private void CrearTextoSinSaltoDeLinea()
-        {
-            Clase.AppendLine($"{UtilCadenasOntology.Tabs(2)}private string GenerarTextoSinSaltoDeLinea(string pTexto)");
-            Clase.AppendLine($"{UtilCadenasOntology.Tabs(2)}{{");
-            Clase.AppendLine($"{UtilCadenasOntology.Tabs(3)}return pTexto.Replace(\"\\r\\n\", \" \").Replace(\"\\n\", \" \").Replace(\"\\r\", \" \").Replace(\"\\\"\", \"\\\\\\\"\");");
-            Clase.AppendLine($"{UtilCadenasOntology.Tabs(2)}}}");
-        }
-
-        protected void PintarObtenerObjetosDePropiedad()
-        {
-            Clase.AppendLine($"{UtilCadenasOntology.Tabs(2)}protected List<object> ObtenerObjetosDePropiedad(object propiedad)");
-            Clase.AppendLine($"{UtilCadenasOntology.Tabs(2)}{{");
-            Clase.AppendLine($"{UtilCadenasOntology.Tabs(3)}List<object> lista = new List<object>();");
-            Clase.AppendLine($"{UtilCadenasOntology.Tabs(3)}if(propiedad is IList)");
-            Clase.AppendLine($"{UtilCadenasOntology.Tabs(3)}{{");
-            Clase.AppendLine($"{UtilCadenasOntology.Tabs(4)}foreach (object item in (IList)propiedad)");
-            Clase.AppendLine($"{UtilCadenasOntology.Tabs(4)}{{");
-            Clase.AppendLine($"{UtilCadenasOntology.Tabs(5)}lista.Add(item);");
-            Clase.AppendLine($"{UtilCadenasOntology.Tabs(4)}}}");
-            Clase.AppendLine($"{UtilCadenasOntology.Tabs(3)}}}");
-            Clase.AppendLine($"{UtilCadenasOntology.Tabs(3)}else");
-            Clase.AppendLine($"{UtilCadenasOntology.Tabs(3)}{{");
-            Clase.AppendLine($"{UtilCadenasOntology.Tabs(4)}lista.Add(propiedad);");
-            Clase.AppendLine($"{UtilCadenasOntology.Tabs(3)}}}");
-            Clase.AppendLine($"{UtilCadenasOntology.Tabs(3)}return lista;");
-            Clase.AppendLine($"{UtilCadenasOntology.Tabs(2)}}}");
-        }
-
-        protected void PintarObtenerStringDePropiedad()
-        {
-            Clase.AppendLine($"{UtilCadenasOntology.Tabs(2)}protected List<string> ObtenerStringDePropiedad(object propiedad)");
-            Clase.AppendLine($"{UtilCadenasOntology.Tabs(2)}{{");
-            Clase.AppendLine($"{UtilCadenasOntology.Tabs(3)}List<string> lista = new List<string>();");
-            Clase.AppendLine($"{UtilCadenasOntology.Tabs(3)}if (propiedad is IList)");
-            Clase.AppendLine($"{UtilCadenasOntology.Tabs(3)}{{");
-            Clase.AppendLine($"{UtilCadenasOntology.Tabs(4)}foreach (string item in (IList)propiedad)");
-            Clase.AppendLine($"{UtilCadenasOntology.Tabs(4)}{{");
-            Clase.AppendLine($"{UtilCadenasOntology.Tabs(5)}lista.Add(item);");
-            Clase.AppendLine($"{UtilCadenasOntology.Tabs(4)}}}");
-            Clase.AppendLine($"{UtilCadenasOntology.Tabs(3)}}}");
-            Clase.AppendLine($"{UtilCadenasOntology.Tabs(3)}else if (propiedad is IDictionary)");
-            Clase.AppendLine($"{UtilCadenasOntology.Tabs(3)}{{");
-            Clase.AppendLine($"{UtilCadenasOntology.Tabs(4)}foreach (object key in ((IDictionary)propiedad).Keys)");
-            Clase.AppendLine($"{UtilCadenasOntology.Tabs(4)}{{");
-            Clase.AppendLine($"{UtilCadenasOntology.Tabs(5)}if (((IDictionary)propiedad)[key] is IList)");
-            Clase.AppendLine($"{UtilCadenasOntology.Tabs(5)}{{");
-            Clase.AppendLine($"{UtilCadenasOntology.Tabs(6)}List<string> listaValores = (List<string>)((IDictionary)propiedad)[key];");
-            Clase.AppendLine($"{UtilCadenasOntology.Tabs(6)}foreach(string valor in listaValores)");
-            Clase.AppendLine($"{UtilCadenasOntology.Tabs(6)}{{");
-            Clase.AppendLine($"{UtilCadenasOntology.Tabs(7)}lista.Add(valor);");
-            Clase.AppendLine($"{UtilCadenasOntology.Tabs(6)}}}");
-            Clase.AppendLine($"{UtilCadenasOntology.Tabs(5)}}}");
-            Clase.AppendLine($"{UtilCadenasOntology.Tabs(5)}else");
-            Clase.AppendLine($"{UtilCadenasOntology.Tabs(5)}{{");
-            Clase.AppendLine($"{UtilCadenasOntology.Tabs(5)}lista.Add((string)((IDictionary)propiedad)[key]);");
-            Clase.AppendLine($"{UtilCadenasOntology.Tabs(5)}}}");
-            Clase.AppendLine($"{UtilCadenasOntology.Tabs(4)}}}");
-            Clase.AppendLine($"{UtilCadenasOntology.Tabs(3)}}}");
-            Clase.AppendLine($"{UtilCadenasOntology.Tabs(3)}else if (propiedad is string)");
-            Clase.AppendLine($"{UtilCadenasOntology.Tabs(3)}{{");
-            Clase.AppendLine($"{UtilCadenasOntology.Tabs(4)}lista.Add((string)propiedad);");
-            Clase.AppendLine($"{UtilCadenasOntology.Tabs(3)}}}");
-            Clase.AppendLine($"{UtilCadenasOntology.Tabs(3)}return lista;");
-            Clase.AppendLine($"{UtilCadenasOntology.Tabs(2)}}}");
         }
 
         private void GenerarSearchPropiedadAnidada(string pPropiedadSearchAnidada, Propiedad pPropiedad, string pNombreVariableEntidadActual, int pContadorLlamadas, ElementoOntologia pEntidad)
@@ -1192,66 +1099,6 @@ namespace OntologiaAClase
                 }
             }
         }
-
-        private void GenerarSearch(ElementoOntologia pEntidad)
-        {
-            ParametroCN parametroCN = new ParametroCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
-            List<string> listaPropConfigSearch = parametroCN.ObtenerConfigSearch(proyID);
-            listaPropConfigSearch.AddRange(parametroCN.ObtenerConfigAutocompletar(proyID));
-
-            Clase.AppendLine($"{UtilCadenasOntology.Tabs(3)}string search = string.Empty;");
-
-            if (listaPropConfigSearch == null || listaPropConfigSearch.Count == 0)
-            {
-                Clase.AppendLine($"{UtilCadenasOntology.Tabs(3)}search = $\"{{GenerarTextoSinSaltoDeLinea({nombrePropTitulo})}}\";");
-                if (!string.IsNullOrEmpty(nombrePropDescripcion))
-                {
-                    Clase.AppendLine($"{UtilCadenasOntology.Tabs(3)}if(!string.IsNullOrEmpty({nombrePropDescripcion}))");
-                    Clase.AppendLine($"{UtilCadenasOntology.Tabs(3)}{{");
-                    Clase.AppendLine($"{UtilCadenasOntology.Tabs(4)}search += $\"{{GenerarTextoSinSaltoDeLinea({nombrePropDescripcion})}}\";");
-                    Clase.AppendLine($"{UtilCadenasOntology.Tabs(3)}}}");
-                }
-            }
-            else
-            {
-                foreach (string propiedad in listaPropConfigSearch.Distinct())
-                {
-                    string[] rutaPropiedades = propiedad.Split(new string[] { "@@@" }, StringSplitOptions.RemoveEmptyEntries);
-                    if (pEntidad.Propiedades.Any(item => item.NombreConNamespace.Equals(rutaPropiedades[0])))
-                    {
-                        Propiedad propiedadSearch = pEntidad.Propiedades.First(item => item.NombreConNamespace.Equals(rutaPropiedades[0]));
-
-                        string rango = UtilCadenasOntology.ObtenerNombreProp(propiedadSearch.Rango).ToLower();
-                        if (rango.Equals("string") || rango.Equals("int") || rango.Equals("float"))
-                        {
-                            string nombrePropiedad = $"this.{UtilCadenas.PrimerCaracterAMayuscula(UtilCadenasOntology.ObtenerPrefijo(dicPref, propiedadSearch.Nombre, mLoggingService))}_{propiedadSearch.NombreGeneracionClases}";
-                            if (propiedadSearch.CardinalidadMaxima > 1)
-                            {
-                                Clase.AppendLine($"{UtilCadenasOntology.Tabs(3)}foreach(var item in {nombrePropiedad})");
-                                Clase.AppendLine($"{UtilCadenasOntology.Tabs(3)}{{");
-                                Clase.AppendLine($"{UtilCadenasOntology.Tabs(4)}if(!string.IsNullOrEmpty(item.ToString()))");
-                                Clase.AppendLine($"{UtilCadenasOntology.Tabs(4)}{{");
-                                Clase.AppendLine($"{UtilCadenasOntology.Tabs(5)}search += $\" {{GenerarTextoSinSaltoDeLinea(item.ToString())}}\";");
-                                Clase.AppendLine($"{UtilCadenasOntology.Tabs(4)}}}");
-                                Clase.AppendLine($"{UtilCadenasOntology.Tabs(3)}}}");
-                            }
-                            else
-                            {
-                                Clase.AppendLine($"{UtilCadenasOntology.Tabs(3)}if(!string.IsNullOrEmpty({nombrePropiedad}.ToString()))");
-                                Clase.AppendLine($"{UtilCadenasOntology.Tabs(3)}{{");
-                                Clase.AppendLine($"{UtilCadenasOntology.Tabs(4)}search += $\" {{GenerarTextoSinSaltoDeLinea({nombrePropiedad}.ToString())}}\";");
-                                Clase.AppendLine($"{UtilCadenasOntology.Tabs(3)}}}");
-                            }
-                        }
-                    }
-                }
-            }
-            Clase.AppendLine($"{UtilCadenasOntology.Tabs(3)}if(!string.IsNullOrEmpty(search))");
-            Clase.AppendLine($"{UtilCadenasOntology.Tabs(3)}{{");
-            Clase.AppendLine($"{UtilCadenasOntology.Tabs(4)}AgregarTripleALista($\"http://gnoss/{{ResourceID.ToString().ToUpper()}}\", \"http://gnoss/search\", $\"\\\"{{GenerarTextoSinSaltoDeLinea(search.ToLower()}}\\\"\", list, \" . \");");
-            Clase.AppendLine($"{UtilCadenasOntology.Tabs(3)}}}");
-        }
-  
 
         public void AgregarTituloRecurso(ElementoOntologia pEntidad)
         {
@@ -1396,16 +1243,16 @@ namespace OntologiaAClase
                         Clase.AppendLine($"{UtilCadenasOntology.Tabs(3)}if({thi}{id}{prefijoPropiedad}_{nombrePropiedad}{aux} != null)");
                         Clase.AppendLine($"{UtilCadenasOntology.Tabs(3)}{{");
                         Clase.AppendLine($"{UtilCadenasOntology.Tabs(4)}foreach (LanguageEnum idioma in {thi}{id}{prefijoPropiedad}_{nombrePropiedad}{aux}.Keys)");
-                        Clase.AppendLine($"{UtilCadenasOntology.Tabs(4)}{{");                        
+                        Clase.AppendLine($"{UtilCadenasOntology.Tabs(4)}{{");
                         Clase.AppendLine($"{UtilCadenasOntology.Tabs(5)}propList.Add(new { tipoPropiedad }(\"{ObtenerPrefijoYPropiedad(dicPref, propiedad.Key)}\", {thi}{id}{prefijoPropiedad}_{nombrePropiedad}{aux}[idioma], idioma.ToString()));");
                         Clase.AppendLine($"{UtilCadenasOntology.Tabs(4)}}}");
                         Clase.AppendLine($"{UtilCadenasOntology.Tabs(3)}}}");
                         Propiedad propiedadCompleta = pEntidad.Propiedades.Where(item => item.Nombre.Equals(propiedad.Key)).FirstOrDefault();
-                        if(propiedadCompleta != null)
+                        if (propiedadCompleta != null)
                         {
-                            if(propiedadCompleta.CardinalidadMinima > 0 || propiedadCompleta.FunctionalProperty)
+                            if (propiedadCompleta.CardinalidadMinima > 0 || propiedadCompleta.FunctionalProperty)
                             {
-                                Clase.AppendLine($"{UtilCadenasOntology.Tabs(3)}else"); 
+                                Clase.AppendLine($"{UtilCadenasOntology.Tabs(3)}else");
                                 Clase.AppendLine($"{UtilCadenasOntology.Tabs(3)}{{");
                                 Clase.AppendLine($"{UtilCadenasOntology.Tabs(4)}throw new GnossAPIException($\"La propiedad {ObtenerPrefijoYPropiedad(dicPref, propiedad.Key)} debe tener al menos un valor en el recurso: {{resourceID}}\");");
                                 Clase.AppendLine($"{UtilCadenasOntology.Tabs(3)}}}");
@@ -1454,24 +1301,8 @@ namespace OntologiaAClase
         {
             Clase.AppendLine($"{UtilCadenasOntology.Tabs(2)}internal override void GetEntities()");
             Clase.AppendLine($"{UtilCadenasOntology.Tabs(2)}{{");
-            Clase.AppendLine($"{UtilCadenasOntology.Tabs(3)}base.GetEntities();");            
+            Clase.AppendLine($"{UtilCadenasOntology.Tabs(3)}base.GetEntities();");
             ObtenerEntidadesPadre(pEntidad);
-            Clase.AppendLine($"{UtilCadenasOntology.Tabs(2)}}} ");
-        }
-
-        /// <summary>
-        /// Creamos el metodo ObtenerEntidades dentro de la clase . Si es hijo sobreescribirá el metodo, obteniendo los elementos del pPadre
-        /// </summary>
-        /// <param name="ontologia"></param>
-        /// <param name="pEntidad"></param>
-        public void CrearAgregarTripleALista()
-        {
-            Clase.AppendLine($"{UtilCadenasOntology.Tabs(2)}private void AgregarTripleALista(string pSujeto, string pPredicado, string pObjeto, List<string> pLista, string pDatosExtra)");
-            Clase.AppendLine($"{UtilCadenasOntology.Tabs(2)}{{");
-            Clase.AppendLine($"{UtilCadenasOntology.Tabs(3)}if(!string.IsNullOrEmpty(pObjeto) && !pObjeto.Equals(\"\\\"\\\"\") && !pObjeto.Equals(\"<>\"))");
-            Clase.AppendLine($"{UtilCadenasOntology.Tabs(3)}{{");
-            Clase.AppendLine($"{UtilCadenasOntology.Tabs(4)}pLista.Add($\"<{{pSujeto}}> <{{pPredicado}}> {{pObjeto}}{{pDatosExtra}}\");");
-            Clase.AppendLine($"{UtilCadenasOntology.Tabs(3)}}} ");
             Clase.AppendLine($"{UtilCadenasOntology.Tabs(2)}}} ");
         }
 
@@ -1577,12 +1408,12 @@ namespace OntologiaAClase
         /// <summary>
         /// Obtenemos un string de la forma prefijo:propiedad
         /// </summary>
-        /// <param name="dicPref"></param>
-        /// <param name="rang"></param>
+        /// <param name="pDicPref"></param>
+        /// <param name="pRang"></param>
         /// <returns></returns>
-        public string ObtenerPrefijoYPropiedad(Dictionary<string, string> dicPref, string rang)
+        public string ObtenerPrefijoYPropiedad(Dictionary<string, string> pDicPref, string pRang)
         {
-            return UtilCadenasOntology.ObtenerPrefijo(dicPref, rang, mLoggingService) + ":" + UtilCadenasOntology.ObtenerNombrePropSinNamespace(rang);
+            return UtilCadenasOntology.ObtenerPrefijo(pDicPref, pRang, mLoggingService) + ":" + UtilCadenasOntology.ObtenerNombrePropSinNamespace(pRang);
         }
 
         public List<Propiedad> ObtenerPropiedadesImagen(ElementoOntologia pEntidad)
@@ -1647,11 +1478,6 @@ namespace OntologiaAClase
                 if (esPrimaria)
                 {
                     tipo = "ComplexOntologyResource";
-                    //}
-                    //else
-                    //{
-                    //    tipo = "SecondaryResource";
-                    //}
 
                     Clase.AppendLine($"{UtilCadenasOntology.Tabs(2)}internal override void AddImages({tipo} pResource)");
                     Clase.AppendLine($"{UtilCadenasOntology.Tabs(2)}{{");
@@ -1683,12 +1509,12 @@ namespace OntologiaAClase
             }
         }
 
-        public void AnadirImagenesSimples(Propiedad propiedad, ElementoOntologia pEntidad, string nombre)
+        public void AnadirImagenesSimples(Propiedad pPropiedad, ElementoOntologia pEntidad, string pNombre)
         {
-            string nombreProp = UtilCadenasOntology.ObtenerNombreProp(propiedad.Nombre);
-            string prefijoYPropiedad = ObtenerPrefijoYPropiedad(dicPref, propiedad.Nombre);
+            string nombreProp = UtilCadenasOntology.ObtenerNombreProp(pPropiedad.Nombre);
+            string prefijoYPropiedad = ObtenerPrefijoYPropiedad(dicPref, pPropiedad.Nombre);
             Clase.AppendLine($"{UtilCadenasOntology.Tabs(3)}List<ImageAction> actionList{nombreProp} = new List<ImageAction>();");
-            foreach (List<string> listaAcc in ImageAction(propiedad, pEntidad).Values)
+            foreach (List<string> listaAcc in ImageAction(pPropiedad, pEntidad).Values)
             {
                 for (int i = 0; i < listaAcc.Count; i = i + 3)
                 {
@@ -1696,11 +1522,11 @@ namespace OntologiaAClase
                 }
                 if (ontologia.EntidadesAuxiliares.Exists(entidad => entidad.TipoEntidad.Equals(pEntidad.TipoEntidad)))
                 {
-                    Clase.AppendLine($"{UtilCadenasOntology.Tabs(3)}pResource.AttachImage({nombre}, actionList{nombreProp},\"{prefijoYPropiedad}\", true, this.GetExtension({nombre}), this.Entity);");
+                    Clase.AppendLine($"{UtilCadenasOntology.Tabs(3)}pResource.AttachImage({pNombre}, actionList{nombreProp},\"{prefijoYPropiedad}\", true, this.GetExtension({pNombre}), this.Entity);");
                 }
                 else
                 {
-                    Clase.AppendLine($"{UtilCadenasOntology.Tabs(3)}pResource.AttachImage({nombre}, actionList{nombreProp},\"{prefijoYPropiedad}\", true, this.GetExtension({nombre}));");
+                    Clase.AppendLine($"{UtilCadenasOntology.Tabs(3)}pResource.AttachImage({pNombre}, actionList{nombreProp},\"{prefijoYPropiedad}\", true, this.GetExtension({pNombre}));");
                 }
             }
         }
@@ -1776,17 +1602,6 @@ namespace OntologiaAClase
             }
         }
 
-        private void CrearAgregarTags(ElementoOntologia pEntidad)
-        {
-            Clase.AppendLine($"{UtilCadenasOntology.Tabs(2)}private void AgregarTags(List<string> pListaTriples)");
-            Clase.AppendLine($"{UtilCadenasOntology.Tabs(2)}{{");
-            Clase.AppendLine($"{UtilCadenasOntology.Tabs(3)}foreach(string tag in tagList)");
-            Clase.AppendLine($"{UtilCadenasOntology.Tabs(3)}{{");
-            Clase.AppendLine($"{UtilCadenasOntology.Tabs(4)}AgregarTripleALista($\"{mMassiveOntologyClass.GenerarSujeto(pEntidad, TiposSujeto.Busqueda)}\", \"http://rdfs.org/sioc/types#Tag\", tag.ToLower(), pListaTriples, \" . \");");
-            Clase.AppendLine($"{UtilCadenasOntology.Tabs(3)}}}");
-            Clase.AppendLine($"{UtilCadenasOntology.Tabs(2)}}}");
-        }
-
         /// <summary>
         /// 
         /// </summary>
@@ -1818,25 +1633,6 @@ namespace OntologiaAClase
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="propiedad"></param>
-        /// <param name="pEntidad"></param>
-        /// <param name="nombre"></param>
-        //public void AddFilesMultiple(Propiedad propiedad, ElementoOntologia pEntidad, string nombre)
-        //{
-        //    Clase.AppendLine($"{UtilCadenasOntology.Tabs(3)}File file = new File({nombre});");
-        //    if (ontologia.EntidadesAuxiliares.Exists(entidad => entidad.TipoEntidad.Equals(pEntidad.TipoEntidad)))
-        //    {
-        //        Clase.AppendLine($"{UtilCadenasOntology.Tabs(4)}pResource.AttachFile(file, \"{ObtenerPrefijoYPropiedad(dicPref, propiedad.Nombre)}\",\"{nombre}\", this.Entidad);");
-        //    }
-        //    else
-        //    {
-        //        Clase.AppendLine($"{UtilCadenasOntology.Tabs(4)}pResource.AttachFile(file, \"{ObtenerPrefijoYPropiedad(dicPref, propiedad.Nombre)}\",\"{nombre}\");");
-        //    }
-        //}
-
-        /// <summary>
-        /// 
-        /// </summary>
         /// <param name="pEntidad"></param>
         public void AnadirImagenesEntidades(ElementoOntologia pEntidad)
         {
@@ -1850,7 +1646,7 @@ namespace OntologiaAClase
                     }
                     else
                     {
-                        Clase.AppendLine($"{UtilCadenasOntology.Tabs(3)}if({ UtilCadenas.PrimerCaracterAMayuscula(UtilCadenasOntology.ObtenerPrefijo(dicPref, prop.Nombre, mLoggingService))}_{UtilCadenasOntology.ObtenerNombreProp(prop.Nombre)}!=null){{");
+                        Clase.AppendLine($"{UtilCadenasOntology.Tabs(3)}if({ UtilCadenas.PrimerCaracterAMayuscula(UtilCadenasOntology.ObtenerPrefijo(dicPref, prop.Nombre, mLoggingService))}_{UtilCadenasOntology.ObtenerNombreProp(prop.Nombre)} != null){{");
                         Clase.AppendLine($"{ UtilCadenasOntology.Tabs(4)}foreach ({UtilCadenasOntology.ObtenerNombreProp(prop.Rango)} prop in { UtilCadenas.PrimerCaracterAMayuscula(UtilCadenasOntology.ObtenerPrefijo(dicPref, prop.Nombre, mLoggingService))}_{UtilCadenasOntology.ObtenerNombreProp(prop.Nombre)})");
                         Clase.AppendLine($"{UtilCadenasOntology.Tabs(3)}{{");
                         Clase.AppendLine($"{UtilCadenasOntology.Tabs(4)}prop.AddImages(pResource);");
@@ -1877,7 +1673,7 @@ namespace OntologiaAClase
                     }
                     else
                     {
-                        Clase.AppendLine($"{UtilCadenasOntology.Tabs(3)}if({UtilCadenas.PrimerCaracterAMayuscula(UtilCadenasOntology.ObtenerPrefijo(dicPref, prop.Nombre, mLoggingService))}_{UtilCadenasOntology.ObtenerNombreProp(prop.Nombre)}!=null){{");
+                        Clase.AppendLine($"{UtilCadenasOntology.Tabs(3)}if({UtilCadenas.PrimerCaracterAMayuscula(UtilCadenasOntology.ObtenerPrefijo(dicPref, prop.Nombre, mLoggingService))}_{UtilCadenasOntology.ObtenerNombreProp(prop.Nombre)} != null){{");
                         Clase.AppendLine($"{UtilCadenasOntology.Tabs(3)}foreach({UtilCadenasOntology.ObtenerNombreProp(prop.Rango)} prop in {UtilCadenas.PrimerCaracterAMayuscula(UtilCadenasOntology.ObtenerPrefijo(dicPref, prop.Nombre, mLoggingService))}_{UtilCadenasOntology.ObtenerNombreProp(prop.Nombre)})");
                         Clase.AppendLine($"{UtilCadenasOntology.Tabs(3)}{{");
                         Clase.AppendLine($"{UtilCadenasOntology.Tabs(4)}prop.AddFiles(pResource);");
@@ -1976,7 +1772,7 @@ namespace OntologiaAClase
 
         public void ConstructorVista(ElementoOntologia pEntidad)
         {
-            if (this.esPrimaria && (!ontologia.EntidadesAuxiliares.Exists(entidad => entidad.TipoEntidad.Equals(pEntidad.TipoEntidad)) || ontologia.EntidadesAuxiliares.Count == ontologia.Entidades.Count))
+            if (esPrimaria && (!ontologia.EntidadesAuxiliares.Exists(entidad => entidad.TipoEntidad.Equals(pEntidad.TipoEntidad)) || ontologia.EntidadesAuxiliares.Count == ontologia.Entidades.Count))
             {
                 if (pEntidad.Superclases.Any(s => !s.Contains("http://www.w3.org/2002/07/owl#Thing")))
                 {
@@ -1988,7 +1784,6 @@ namespace OntologiaAClase
                 }
                 Clase.AppendLine($"{UtilCadenasOntology.Tabs(2)}{{");
                 Clase.AppendLine($"{UtilCadenasOntology.Tabs(3)}this.mGNOSSID = pSemCmsModel.RootEntities[0].Entity.Uri;");
-                //Clase.AppendLine($"{UtilCadenasOntology.Tabs(3)}this.URL = pSemCmsModel.RootEntities[0].Properties.FirstOrDefault(p => p.PropertyValues.Any(prop => prop.DownloadUrl != null))?.FirstPropertyValue.DownloadUrl;");
                 RellenarConstructorInverso(pEntidad);
                 Clase.AppendLine();
             }
@@ -2046,7 +1841,6 @@ namespace OntologiaAClase
         {
             if (pPropiedad.ValorUnico)
             {
-                //  Clase.AppendLine($"{UtilCadenasOntology.Tabs(4)}this.ID = pSemCmsModel.RootEntities[0].Entity.Uri;
                 ConstructorInversoPropiedadObjetoValorUnico(pPropiedad);
             }
             else
@@ -2070,19 +1864,10 @@ namespace OntologiaAClase
             Clase.AppendLine($"{UtilCadenasOntology.Tabs(3)}{{");
             Clase.AppendLine($"{UtilCadenasOntology.Tabs(4)}foreach (SemanticPropertyModel.PropertyValue propValue in prop{prefijoPropiedad}_{nombreProp}.PropertyValues)");
             Clase.AppendLine($"{UtilCadenasOntology.Tabs(4)}{{");
-            if (nombreRango.Equals("object"))
-            {
-                /*  Clase.AppendLine($"{UtilCadenasOntology.Tabs(5)}{nombreRango} {UtilCadenasOntology.ObtenerPrefijo(dicPref, pPropiedad.Nombre)}_{nombreProp} = new {nombreRango}();");
-                  Clase.AppendLine($"{UtilCadenasOntology.Tabs(5)}{UtilCadenasOntology.ObtenerPrefijo(dicPref, pPropiedad.Nombre)}_{ nombreProp}= propValue.RelatedEntity;");*/
-            }
-            else
-            {
-                Clase.AppendLine($"{UtilCadenasOntology.Tabs(5)}if(propValue.RelatedEntity!=null){{");
-                Clase.AppendLine($"{UtilCadenasOntology.Tabs(6)}{ nombreRango} {UtilCadenasOntology.ObtenerPrefijo(dicPref, pPropiedad.Nombre, mLoggingService)}_{nombreProp} = new {nombreRango}(propValue.RelatedEntity,idiomaUsuario);");
-                Clase.AppendLine($"{UtilCadenasOntology.Tabs(6)}this.{prefijoPropiedad}_{nombreProp}.Add({UtilCadenasOntology.ObtenerPrefijo(dicPref, pPropiedad.Nombre, mLoggingService)}_{nombreProp});");
-                Clase.AppendLine($"{UtilCadenasOntology.Tabs(5)}}}");
-            }
-
+            Clase.AppendLine($"{UtilCadenasOntology.Tabs(5)}if(propValue.RelatedEntity!=null){{");
+            Clase.AppendLine($"{UtilCadenasOntology.Tabs(6)}{ nombreRango} {UtilCadenasOntology.ObtenerPrefijo(dicPref, pPropiedad.Nombre, mLoggingService)}_{nombreProp} = new {nombreRango}(propValue.RelatedEntity,idiomaUsuario);");
+            Clase.AppendLine($"{UtilCadenasOntology.Tabs(6)}this.{prefijoPropiedad}_{nombreProp}.Add({UtilCadenasOntology.ObtenerPrefijo(dicPref, pPropiedad.Nombre, mLoggingService)}_{nombreProp});");
+            Clase.AppendLine($"{UtilCadenasOntology.Tabs(5)}}}");
             Clase.AppendLine($"{UtilCadenasOntology.Tabs(4)}}}");
             Clase.AppendLine($"{UtilCadenasOntology.Tabs(3)}}}");
         }
@@ -2146,12 +1931,11 @@ namespace OntologiaAClase
                     Clase.AppendLine($"if(item{mNumItem}.HasValue){{");
                     Clase.AppendLine($"{UtilCadenasOntology.Tabs(3)}this.{ObtenerPrefijoPropiedad(pPropiedad)}_{ UtilCadenasOntology.ObtenerNombreProp(pPropiedad.Nombre)} = item{mNumItem}.Value;");
                     Clase.AppendLine("}");
-                    //Clase.AppendLine($"{UtilCadenasOntology.Tabs(3)}this.{ObtenerPrefijoPropiedad(pPropiedad)}_{ UtilCadenasOntology.ObtenerNombreProp(pPropiedad.Nombre)}= GetDateValuePropertySemCms(pSemCmsModel.GetPropertyByPath(\"{pPropiedad.Nombre}\")).Value;");
                     mNumItem++;
                 }
                 else
                 {
-                    Clase.AppendLine($"{UtilCadenasOntology.Tabs(3)}this.{ObtenerPrefijoPropiedad(pPropiedad)}_{ UtilCadenasOntology.ObtenerNombreProp(pPropiedad.Nombre)}= GetDateValuePropertySemCms(pSemCmsModel.GetPropertyByPath(\"{pPropiedad.Nombre}\"));");
+                    Clase.AppendLine($"{UtilCadenasOntology.Tabs(3)}this.{ObtenerPrefijoPropiedad(pPropiedad)}_{ UtilCadenasOntology.ObtenerNombreProp(pPropiedad.Nombre)} = GetDateValuePropertySemCms(pSemCmsModel.GetPropertyByPath(\"{pPropiedad.Nombre}\"));");
                 }
             }
             else
@@ -2194,7 +1978,6 @@ namespace OntologiaAClase
             {
                 if (pPropiedad.FunctionalProperty)
                 {
-                    //  Clase.AppendLine($"{UtilCadenasOntology.Tabs(4)}this.ID = pSemCmsModel.RootEntities[0].Entity.Uri;
                     Clase.AppendLine($"{UtilCadenasOntology.Tabs(3)}this.{prefijoPropiedad}_{nombrePropiedad} = GetNumberIntPropertyValueSemCms(pSemCmsModel.GetPropertyByPath(\"{pPropiedad.Nombre}\")).Value;");
                 }
                 else
@@ -2225,7 +2008,6 @@ namespace OntologiaAClase
             {
                 if (pPropiedad.FunctionalProperty)
                 {
-                    //  Clase.AppendLine($"{UtilCadenasOntology.Tabs(4)}this.ID = pSemCmsModel.RootEntities[0].Entity.Uri;
                     Clase.AppendLine($"{UtilCadenasOntology.Tabs(3)}this.{prefijoPropiedad}_{nombrePropiedad} = GetNumberFloatPropertyValueSemCms(pSemCmsModel.GetPropertyByPath(\"{pPropiedad.Nombre}\")).Value;");
                 }
                 else
@@ -2267,7 +2049,6 @@ namespace OntologiaAClase
 
                 if (pPropiedad.ValorUnico)
                 {
-                    //  Clase.AppendLine($"{UtilCadenasOntology.Tabs(4)}this.ID = pSemCmsModel.RootEntities[0].Entity.Uri;
                     Clase.AppendLine($"{UtilCadenasOntology.Tabs(3)}this.{prefijoPropiedad}_{nombrePropiedad} = new Dictionary<LanguageEnum,string>();");
                     Clase.AppendLine($"{UtilCadenasOntology.Tabs(3)}this.{prefijoPropiedad}_{nombrePropiedad}.Add(idiomaUsuario , GetPropertyValueSemCms(pSemCmsModel.GetPropertyByPath(\"{pPropiedad.Nombre}\")));");
                     Clase.AppendLine($"{UtilCadenasOntology.Tabs(3)}");
@@ -2296,7 +2077,6 @@ namespace OntologiaAClase
             {
                 if (pPropiedad.ValorUnico)
                 {
-                    //  Clase.AppendLine($"{UtilCadenasOntology.Tabs(4)}this.ID = pSemCmsModel.RootEntities[0].Entity.Uri;
                     Clase.AppendLine($"{UtilCadenasOntology.Tabs(3)}this.{prefijoPropiedad}_{nombrePropiedad} = GetPropertyValueSemCms(pSemCmsModel.GetPropertyByPath(\"{pPropiedad.Nombre}\"));");
                 }
                 else

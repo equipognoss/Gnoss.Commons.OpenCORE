@@ -2242,6 +2242,83 @@ namespace Es.Riam.Gnoss.CL.ServiciosGenerales
             return numRecursosComunidad;
         }
 
+        public bool? TieneICactivada(Guid pProyectoID)
+        {
+            string rawKey = "IntegracionContinua_IntegracionContinuaActivada_" + pProyectoID;
+
+            bool? tieneICActivada = (bool?)ObtenerObjetoDeCache(rawKey);
+
+            if (tieneICActivada == null)
+            {
+                return tieneICActivada;
+            }
+
+            return tieneICActivada;
+        }
+
+        public void AgregarIC(Guid pProyectoID, bool pActivada, bool pIncluirCaducidad = true)
+        {
+            string rawKey = "IntegracionContinua_IntegracionContinuaActivada_" + pProyectoID;
+
+            if (pIncluirCaducidad)
+            {
+                AgregarObjetoCache(rawKey, pActivada, 86400); //Cache de un dia
+            }
+            else
+            {
+                AgregarObjetoCache(rawKey, pActivada);
+            }
+        }
+
+        public bool? EsEntornoPruebas(Guid pProyectoID, string pEntorno)
+        {
+            string rawKey = "IntegracionContinua_EntornoPruebas_" + pProyectoID + "_" + pEntorno;
+
+            bool? esEntornoPruebas = (bool?)ObtenerObjetoDeCache(rawKey);
+
+            if (esEntornoPruebas == null)
+            {
+                return esEntornoPruebas;
+            }
+
+            return esEntornoPruebas;
+        }
+
+        public void AgregarEsEntornoPruebas(Guid pProyectoID, string pEntorno, bool pEsPruebas = true)
+        {
+            string rawKey = "IntegracionContinua_EntornoPruebas_" + pProyectoID + "_" + pEntorno;
+
+            AgregarObjetoCache(rawKey, pEsPruebas);
+        }
+
+        public bool? EsEntornoPreproduccion(Guid pProyectoID, string pEntorno)
+        {
+            string rawKey = "IntegracionContinua_EntornoPre_" + pProyectoID + "_" + pEntorno;
+
+            bool? esEntornoPreproduccion = (bool?)ObtenerObjetoDeCache(rawKey);
+
+            if (esEntornoPreproduccion == null)
+            {
+                return esEntornoPreproduccion;
+            }
+
+            return esEntornoPreproduccion;
+        }
+
+        public void AgregarEsEntornoPreproduccion(Guid pProyectoID, string pEntorno, bool pEsPre = true)
+        {
+            string rawKey = "IntegracionContinua_EntornoPre_" + pProyectoID + "_" + pEntorno;
+
+            AgregarObjetoCache(rawKey, pEsPre);
+        }
+
+        public void InvalidarICActivada(Guid pProyectoID)
+        {
+            string rawKey = "IntegracionContinua_";
+
+            InvalidarCacheQueContengaCadena(rawKey);
+        }
+
         /// <summary>
         /// Obtiene el n� de proyectos con el mismo dominio que el pasado por par�metro
         /// </summary>

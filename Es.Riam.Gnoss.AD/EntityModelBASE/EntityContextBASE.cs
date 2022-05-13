@@ -53,6 +53,10 @@ namespace Es.Riam.Gnoss.AD.EntityModelBASE
             {
                 optionsBuilder.UseNpgsql(mConfigService.ObtenerBaseConnectionString());
             }
+            else if (mConfigService.ObtenerTipoBD().Equals("1"))
+            {
+                optionsBuilder.UseOracle(mConfigService.ObtenerSqlConnectionString());
+            }
         }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
