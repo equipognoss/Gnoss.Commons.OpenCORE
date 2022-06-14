@@ -1017,7 +1017,11 @@ namespace Es.Riam.Gnoss.AD
                         pComando.Connection = ConexionMaster;
                     }
                     pComando.CommandTimeout = 600;
-                    pComando.Transaction = Transaccion;
+                    if (Transaccion != null && pComando.Connection.Database.Equals(Transaccion.Connection.Database))
+                    {
+                        pComando.Transaction = Transaccion;
+                    }
+                    
                     resultado = pComando.ExecuteNonQuery();
                 }
                 if (transaccionIniciada)
@@ -1293,7 +1297,7 @@ namespace Es.Riam.Gnoss.AD
             if (ConexionMaster is OracleConnection)
             {
                 string nombreTransaccion = $"Transaccion_{((OracleConnection)ConexionMaster).ToString().ToLower()}";
-                if (TransaccionesPendientes.ContainsKey(nombreTransaccion))
+                if (TransaccionesPendientes.ContainsKey(nombreTransaccion) || Transaccion != null)
                 {
                     
                     //transaccion = (DbTransaction)UtilPeticion.ObtenerObjetoDePeticion(nombreTransaccion);
@@ -1301,12 +1305,12 @@ namespace Es.Riam.Gnoss.AD
                 }
                 else
                 {
-                    
+                    DbTransaction transaccion = ConexionMaster.BeginTransaction();
+                    mEntityContext.Database.UseTransaction(transaccion);
+
                     if (NoConfirmarTransacciones)
                     {
-                        DbTransaction transaccion = ConexionMaster.BeginTransaction();
                         TransaccionesPendientes.Add(nombreTransaccion, transaccion);
-                        mEntityContext.Database.UseTransaction(transaccion);
                     }
                     if (pIniciarTransaccionEntity)
                     {
@@ -1319,19 +1323,19 @@ namespace Es.Riam.Gnoss.AD
             else if (ConexionMaster is NpgsqlConnection)
             {
                 string nombreTransaccion = $"Transaccion_{((NpgsqlConnection)ConexionMaster).ToString().ToLower()}";
-                if (TransaccionesPendientes.ContainsKey(nombreTransaccion))
+                if (TransaccionesPendientes.ContainsKey(nombreTransaccion) || Transaccion != null)
                 {
                     //transaccion = (DbTransaction)UtilPeticion.ObtenerObjetoDePeticion(nombreTransaccion);
                     return false;
                 }
                 else
                 {
+                    DbTransaction transaccion = ConexionMaster.BeginTransaction();
+                    mEntityContext.Database.UseTransaction(transaccion);
 
                     if (NoConfirmarTransacciones)
-                    {
-                        DbTransaction transaccion = ConexionMaster.BeginTransaction();
-                        TransaccionesPendientes.Add(nombreTransaccion, transaccion);
-                        mEntityContext.Database.UseTransaction(transaccion);
+                    {   
+                        TransaccionesPendientes.Add(nombreTransaccion, transaccion);                        
                     }
                     if (pIniciarTransaccionEntity)
                     {
@@ -1344,18 +1348,18 @@ namespace Es.Riam.Gnoss.AD
             else
             {
                 string nombreTransaccion = $"Transaccion_{((SqlConnection)ConexionMaster).ClientConnectionId.ToString().ToLower()}";
-                if (TransaccionesPendientes.ContainsKey(nombreTransaccion))
+                if (TransaccionesPendientes.ContainsKey(nombreTransaccion) || Transaccion != null)
                 {
                     return false;
                 }
                 else
                 {
-                    
+                    DbTransaction transaccion = ConexionMaster.BeginTransaction();
+                    mEntityContext.Database.UseTransaction(transaccion);
+
                     if (NoConfirmarTransacciones)
                     {
-                        DbTransaction transaccion = ConexionMaster.BeginTransaction();
                         TransaccionesPendientes.Add(nombreTransaccion, transaccion);
-                        mEntityContext.Database.UseTransaction(transaccion);
                     }
                     if (pIniciarTransaccionEntity)
                     {
@@ -1374,7 +1378,7 @@ namespace Es.Riam.Gnoss.AD
             {
                 transaccionIniciada = IniciarTransaccion(false);
             }
-            if (string.IsNullOrEmpty(mServicesUtilVirtuosoAndReplication.FicheroConfiguracion) || mServicesUtilVirtuosoAndReplication.FicheroConfiguracion.Contains("acid"))
+            if (mServicesUtilVirtuosoAndReplication == null || string.IsNullOrEmpty(mServicesUtilVirtuosoAndReplication.FicheroConfiguracion) || mServicesUtilVirtuosoAndReplication.FicheroConfiguracion.Contains("acid"))
             {
                 if (mEntityContext.Database.CurrentTransaction == null || !mEntityContext.Database.CurrentTransaction.GetDbTransaction().Equals(Transaccion))
                 {
@@ -1399,82 +1403,25 @@ namespace Es.Riam.Gnoss.AD
         /// <param name="pExito">Verdad si se deba hacer commit. Falso si se debe deshacer la transacción</param>
         public virtual void TerminarTransaccion(bool pExito)
         {
-            if (ConexionMaster is OracleConnection)
+            if (!NoConfirmarTransacciones)
             {
-                if (!NoConfirmarTransacciones)
+                if (Transaccion != null)
                 {
-                    if (Transaccion != null)
+                    if (pExito)
                     {
-                        if (pExito)
+                        mEntityContext.Database.CommitTransaction();
+                    }
+                    else if (Transaccion.Connection != null)
+                    {
+                        try
                         {
-                            Transaccion.Commit();
+                            mEntityContext.Database.RollbackTransaction();
                         }
-                        else if (Transaccion.Connection != null)
+                        catch (Exception ex)
                         {
-                            try
-                            {
-                                Transaccion.Rollback();
-                            }
-                            catch (Exception ex)
-                            {
-                                mLoggingService.GuardarLogError(ex);
-                            }
+                            mLoggingService.GuardarLogError(ex);
                         }
                     }
-                    string nombreTransaccion = $"Transaccion_{((OracleConnection)ConexionMaster).ToString().ToLower()}";
-                    TransaccionesPendientes.Remove(nombreTransaccion);
-                }
-            }
-            else if (ConexionMaster is NpgsqlConnection)
-            {
-                if (!NoConfirmarTransacciones)
-                {
-                    if (Transaccion != null)
-                    {
-                        if (pExito)
-                        {
-                            Transaccion.Commit();
-                        }
-                        else if (Transaccion.Connection != null)
-                        {
-                            try
-                            {
-                                Transaccion.Rollback();
-                            }
-                            catch (Exception ex)
-                            {
-                                mLoggingService.GuardarLogError(ex);
-                            }
-                        }
-                    }
-                    string nombreTransaccion = $"Transaccion_{((NpgsqlConnection)ConexionMaster).ToString().ToLower()}";
-                    TransaccionesPendientes.Remove(nombreTransaccion);
-                }
-            }
-            else
-            {
-                if (!NoConfirmarTransacciones)
-                {
-                    if (Transaccion != null)
-                    {
-                        if (pExito)
-                        {
-                            Transaccion.Commit();
-                        }
-                        else if (Transaccion.Connection != null)
-                        {
-                            try
-                            {
-                                Transaccion.Rollback();
-                            }
-                            catch (Exception ex)
-                            {
-                                mLoggingService.GuardarLogError(ex);
-                            }
-                        }
-                    }
-                    string nombreTransaccion = $"Transaccion_{((SqlConnection)ConexionMaster).ClientConnectionId.ToString().ToLower()}";
-                    TransaccionesPendientes.Remove(nombreTransaccion);
                 }
             }
         }
@@ -1650,58 +1597,14 @@ namespace Es.Riam.Gnoss.AD
         {
             get
             {
-
                 try
                 {
-                    if (ConexionMaster is OracleConnection)
+                    if(mEntityContext.Database.CurrentTransaction != null)
                     {
-                        string nombreTransaccion = $"Transaccion_{((OracleConnection)ConexionMaster).ToString().ToLower()}";
-                        
-                        if (TransaccionesPendientes.ContainsKey(nombreTransaccion))
-                        {
-                            AgregarEntradaTraza("Transaccion : Existe transacción en la petición");
-
-                            DbTransaction transaccion = TransaccionesPendientes[nombreTransaccion];
-
-                            if (transaccion != null && transaccion.Connection != null)
-                            {
-                                AgregarEntradaTraza("Transaccion : Utilizamos la transacción de la petición");
-                                return transaccion;
-                            }
-                        }
+                        return mEntityContext.Database.CurrentTransaction.GetDbTransaction();
                     }
-                    else if (ConexionMaster is NpgsqlConnection)
-                    {
-                        string nombreTransaccion = $"Transaccion_{((NpgsqlConnection)ConexionMaster).ToString().ToLower()}";
-                        if (TransaccionesPendientes.ContainsKey(nombreTransaccion))
-                        {
-                            AgregarEntradaTraza("Transaccion : Existe transacción en la petición");
-
-                            DbTransaction transaccion = TransaccionesPendientes[nombreTransaccion];
-
-                            if (transaccion != null && transaccion.Connection != null)
-                            {
-                                AgregarEntradaTraza("Transaccion : Utilizamos la transacción de la petición");
-                                return transaccion;
-                            }
-                        }
-                    }
-                    else
-                    {
-                        string nombreTransaccion = $"Transaccion_{((SqlConnection)ConexionMaster).ClientConnectionId.ToString().ToLower()}";
-                        if (TransaccionesPendientes.ContainsKey(nombreTransaccion))
-                        {
-                            AgregarEntradaTraza("Transaccion : Existe transacción en la petición");
-
-                            DbTransaction transaccion = TransaccionesPendientes[nombreTransaccion];
-
-                            if (transaccion != null && transaccion.Connection != null && ((SqlConnection)transaccion.Connection).ClientConnectionId.Equals(((SqlConnection)ConexionMaster).ClientConnectionId))
-                            {
-                                AgregarEntradaTraza("Transaccion : Utilizamos la transacción de la petición");
-                                return transaccion;
-                            }
-                        }
-                    }
+                    return null;
+                    
                 }
                 catch (Exception ex)
                 {

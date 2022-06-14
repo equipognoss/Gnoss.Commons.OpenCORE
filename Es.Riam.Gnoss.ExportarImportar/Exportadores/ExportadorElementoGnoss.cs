@@ -851,7 +851,7 @@ namespace Es.Riam.Gnoss.ExportarImportar.Exportadores
 
             if (!pPropiedad.FunctionalProperty)
             {
-                if (!pPropiedad.ListaValores.ContainsKey(pEntidadRelacionada.ID))
+                if (!string.IsNullOrEmpty(pEntidadRelacionada.ID) && !pPropiedad.ListaValores.ContainsKey(pEntidadRelacionada.ID))
                 {
                     pPropiedad.ListaValores.Add(pEntidadRelacionada.ID, pEntidadRelacionada);
                 }

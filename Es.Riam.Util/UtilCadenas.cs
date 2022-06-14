@@ -312,7 +312,7 @@ namespace Es.Riam.Util
             s = s.Replace("'", "\\'");
             s = s.Replace("\"\"", "");
             s = s.Replace("--", "");
-            s = s.Replace("\"", "\\'\\'");
+            s = s.Replace("\"", "\\\"");
 
             return s;
         }

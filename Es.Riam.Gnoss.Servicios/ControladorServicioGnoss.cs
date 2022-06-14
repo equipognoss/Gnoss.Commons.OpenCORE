@@ -171,7 +171,8 @@ namespace Es.Riam.Gnoss.Servicios
         {
             ScopedFactory = scopedFactory;
             mConfigService = configService;
-            string directorioLog = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) + Path.DirectorySeparatorChar + "logs" + Path.DirectorySeparatorChar + mPlataforma;
+            //string directorioLog = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) + Path.DirectorySeparatorChar + "logs" + Path.DirectorySeparatorChar + mPlataforma;
+            string directorioLog = ObtenerRutaLog();
 
             mFicheroConfiguracionBD = "acid_Master";
             mFicheroConfiguracionHomeBD = "acidHome_Master";
@@ -192,7 +193,21 @@ namespace Es.Riam.Gnoss.Servicios
             mDirectorioLog = directorioLog;
             mFicheroEscritura = directorioLog + Path.DirectorySeparatorChar;
         }
+        protected string ObtenerRutaLog()
+        {
+            //Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) + Path.DirectorySeparatorChar + "logs" + Path.DirectorySeparatorChar + mPlataforma
+            string ruta = "";
+            if (!string.IsNullOrEmpty(mPlataforma))
+            {
+                ruta = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "logs", mPlataforma);
+            }
+            else
+            {
+                ruta = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "logs");
+            }
 
+            return ruta;
+        }
         /// <summary>
         /// Constructor.
         /// </summary>
@@ -210,7 +225,8 @@ namespace Es.Riam.Gnoss.Servicios
             mFicheroConfiguracionBDRecursos = "recursos_Master";
 
             mPlataforma = Path.GetFileNameWithoutExtension(pFicheroConfiguracionBD);
-            string directorioLog = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) + Path.DirectorySeparatorChar + "logs" + Path.DirectorySeparatorChar + mPlataforma;
+            //string directorioLog = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) + Path.DirectorySeparatorChar + "logs" + Path.DirectorySeparatorChar + mPlataforma;
+            string directorioLog = ObtenerRutaLog();
 
             if (!Directory.Exists(directorioLog))
             {
@@ -242,6 +258,8 @@ namespace Es.Riam.Gnoss.Servicios
                 GnossCache gnossCache = scope.ServiceProvider.GetRequiredService<GnossCache>();
                 VirtuosoAD virtuosoAD = scope.ServiceProvider.GetRequiredService<VirtuosoAD>();
                 IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication = scope.ServiceProvider.GetRequiredService<IServicesUtilVirtuosoAndReplication>();
+                LoggingService.TrazaHabilitada = mConfigService.TrazaHabilitada();
+                loggingService.GuardarLog($"Trazas habilitadas: {LoggingService.TrazaHabilitada}");
                 try
                 {
                     RegistrarInicio(loggingService);

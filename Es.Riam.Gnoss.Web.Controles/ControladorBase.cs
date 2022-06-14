@@ -60,7 +60,7 @@ namespace Es.Riam.Gnoss.Web.Controles
     /// </summary>
     public class ControladorBase
     {
-        private static ConcurrentDictionary<Guid, ConcurrentBag<Guid>> mListaOntologiasPermitidasPorIdentidad = new ConcurrentDictionary<Guid, ConcurrentBag<Guid>>();
+        private static ConcurrentDictionary<Guid, ConcurrentDictionary<Guid, bool>> mListaOntologiasPermitidasPorIdentidad = new ConcurrentDictionary<Guid, ConcurrentDictionary<Guid, bool>>();
 
         /// <summary>
         /// Obtiene el proyecto externo en el que se está haciendo la búsqueda, o NULL si se hace en el proyecto actual.
@@ -1038,11 +1038,11 @@ namespace Es.Riam.Gnoss.Web.Controles
         public bool ComprobarPermisoEnOntologiaDeProyectoEIdentidad(Guid pProyectoID, Guid pDocumentoID, bool pIdentidadDeOtroProyecto = true)
         {
             bool tieneAcceso = true;
-            if (!mListaOntologiasPermitidasPorIdentidad.ContainsKey(IdentidadActual.Clave) || !mListaOntologiasPermitidasPorIdentidad[IdentidadActual.Clave].Contains(pDocumentoID))
+            if (!mListaOntologiasPermitidasPorIdentidad.ContainsKey(IdentidadActual.Clave) || !mListaOntologiasPermitidasPorIdentidad[IdentidadActual.Clave].ContainsKey(pDocumentoID))
             {
                 if (!mListaOntologiasPermitidasPorIdentidad.ContainsKey(IdentidadActual.Clave))
                 {
-                    mListaOntologiasPermitidasPorIdentidad.TryAdd(IdentidadActual.Clave, new ConcurrentBag<Guid>());
+                    mListaOntologiasPermitidasPorIdentidad.TryAdd(IdentidadActual.Clave, new ConcurrentDictionary<Guid, bool>());
                 }
 
                 ProyectoCN proyCN = new ProyectoCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
@@ -1050,8 +1050,16 @@ namespace Es.Riam.Gnoss.Web.Controles
 
                 if (tieneAcceso)
                 {
-                    mListaOntologiasPermitidasPorIdentidad[IdentidadActual.Clave].Add(pDocumentoID);
+                    mListaOntologiasPermitidasPorIdentidad[IdentidadActual.Clave].TryAdd(pDocumentoID, true);
                 }
+                else
+                {
+                    mListaOntologiasPermitidasPorIdentidad[IdentidadActual.Clave].TryAdd(pDocumentoID, false);
+                }
+            }
+            else
+            {
+                return mListaOntologiasPermitidasPorIdentidad[IdentidadActual.Clave][pDocumentoID];
             }
 
             return tieneAcceso;
@@ -2076,7 +2084,7 @@ namespace Es.Riam.Gnoss.Web.Controles
         {
             get
             {
-                return UtilCookies.FromLegacyCookieString(mHttpContextAccessor.HttpContext.Request.Cookies["rewrite" + DominoAplicacion]);
+                return UtilCookies.FromLegacyCookieString(mHttpContextAccessor.HttpContext.Request.Cookies["rewrite" + DominoAplicacion], mEntityContext);
             }
         }
 

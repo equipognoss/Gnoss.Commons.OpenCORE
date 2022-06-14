@@ -249,17 +249,14 @@ namespace Es.Riam.AbstractsOpen
 
                     try
                     {
-                        if (!FicheroConfiguracion.ToLower().Contains("home"))
+                        if ((string.IsNullOrEmpty(FicheroConfiguracion) || !FicheroConfiguracion.ToLower().Contains("home")) && !string.IsNullOrEmpty(nombreConexionAfinidad))
                         {
                             //Para la replicaciónBidireccional
-                            if (nombreConexionAfinidad != null)
-                            {
-                                InsertarEnReplicacionBidireccional(pQuery, pGrafo, pPrioridad, nombreConexionAfinidad, pCadenaConexion, pConexion);
-                            }
+                            InsertarEnReplicacionBidireccional(pQuery, pGrafo, pPrioridad, nombreConexionAfinidad, pCadenaConexion, pConexion);
                         }
 
                         //Para la Replicación Normal.
-                        if (mConfigService.ObtenerReplicacionActivada() && TablaReplicacion != null && TablaReplicacion.Equals(COLA_REPLICACION_MASTER))
+                        if (mConfigService.ObtenerReplicacionActivada() && (TablaReplicacion == null || TablaReplicacion.Equals(COLA_REPLICACION_MASTER)))
                         {
                             if (!UsarClienteTradicional)
                             {
@@ -743,7 +740,7 @@ namespace Es.Riam.AbstractsOpen
             KeyValuePair<string, string> ip_puerto = ObtenerIpVirtuosoDeCadenaConexion(connectionString);
             string ipVirtuoso = ip_puerto.Key;
             string puertoVirtuoso = ip_puerto.Value;
-            connectionString = connectionString.Replace(ipVirtuoso + ":" + puertoVirtuoso, ipVirtuoso + ":1111");
+            connectionString = connectionString.Replace(ipVirtuoso + ":" + puertoVirtuoso, ipVirtuoso + $":{mConfigService.ObtenerPuertoVirtuosoAux()}");
 
             Stopwatch sw = LoggingService.IniciarRelojTelemetria();
 
@@ -1145,10 +1142,10 @@ namespace Es.Riam.AbstractsOpen
             }
             return false;
         }
-        public static KeyValuePair<string, string> ObtenerIpVirtuosoDeCadenaConexion(string pCadenaConexion)
+        public KeyValuePair<string, string> ObtenerIpVirtuosoDeCadenaConexion(string pCadenaConexion)
         {
             string ip = null;
-            string puerto = "8890";
+            string puerto = mConfigService.ObtenerPuertoVirtuoso();//"8890";
 
             pCadenaConexion = pCadenaConexion.ToLower();
             char[] separadores = { ';' };
@@ -1162,7 +1159,7 @@ namespace Es.Riam.AbstractsOpen
                 if (ip.Contains(':'))
                 {
                     string puertoAux = ip.Substring(ip.IndexOf(':') + 1);
-                    if (!puertoAux.Equals("1111"))
+                    if (!puertoAux.Equals(mConfigService.ObtenerPuertoVirtuosoAux()))//"1111"
                     {
                         puerto = puertoAux;
                     }
@@ -1172,9 +1169,6 @@ namespace Es.Riam.AbstractsOpen
 
             return new KeyValuePair<string, string>(ip, puerto);
         }
-
-
-
         /// <summary>
         /// Actualiza virtuoso (mediante un insert / update / delete)
         /// </summary>

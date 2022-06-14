@@ -6665,7 +6665,7 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
                 ProyectoID = x.Key.ProyectoID,
                 Nombre = x.Key.Nombre,
                 Tipo = ((short?)x.Key.Tipo).HasValue ? (short?)x.Key.Tipo : null,
-                Administrador = x.Any(y => ((Guid?)y.AdministradorProyecto.UsuarioID).HasValue) ? 1 : 0
+                Administrador = (x.Count(y => ((Guid?)y.AdministradorProyecto.UsuarioID).HasValue)) > 0 ? 1 : 0
             }).Distinct();
 
 

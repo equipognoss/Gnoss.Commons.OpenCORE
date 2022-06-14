@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Security.Cryptography;
+using System.Linq;
+using System.Text;
 
 namespace Es.Riam.Util
 {
@@ -117,108 +119,6 @@ namespace Es.Riam.Util
                     break;
             }
             return tipoArchivo;
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="pFichero"></param>
-        /// <returns></returns>
-        public static byte[] EncriptarArchivo(byte[] pFichero)
-        {
-            // Define memory stream which will be used to hold encrypted data.
-            MemoryStream memoryStream = new MemoryStream();
-
-            RijndaelManaged encriptador = new RijndaelManaged();
-            encriptador.KeySize = 256;
-
-            byte[] key = { 55, 13, 86, 175, 186, 91, 43, 99, 211, 194, 143, 138, 228, 43, 80, 64, 249, 222, 192, 217, 14, 105, 194, 18, 252, 43, 43, 46, 24, 68, 231, 45 };
-            byte[] iv = { 210, 45, 163, 172, 80, 194, 209, 4, 113, 160, 118, 151, 234, 43, 52, 81 };
-
-            //Establecer la clave secreta para el algoritmo DES. 
-            encriptador.Key = key;
-            //Establecer el vector de inicialización. 
-            encriptador.IV = iv;
-
-            ICryptoTransform encrypt = encriptador.CreateEncryptor();
-
-            // Define cryptographic stream (always use Write mode for encryption).
-            CryptoStream cryptoStream = new CryptoStream(memoryStream, encrypt, CryptoStreamMode.Write);
-            // Start encrypting.
-            cryptoStream.Write(pFichero, 0, pFichero.Length);
-
-            // Finish encrypting.
-            cryptoStream.FlushFinalBlock();
-
-            // Convert our encrypted data from a memory stream into a byte array.
-            byte[] buff = memoryStream.ToArray();
-
-            // Close both streams.
-            memoryStream.Close();
-            cryptoStream.Close();
-
-            return buff;
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="pFichero"></param>
-        /// <returns></returns>
-        public static byte[] DesencriptarArchivo(byte[] pFichero)
-        {
-            // Generate decryptor from the existing key bytes and initialization 
-            // vector. Key size will be defined based on the number of the key 
-            // bytes.
-
-            RijndaelManaged encriptador = new RijndaelManaged();
-            encriptador.KeySize = 256;
-
-            byte[] key = { 55, 13, 86, 175, 186, 91, 43, 99, 211, 194, 143, 138, 228, 43, 80, 64, 249, 222, 192, 217, 14, 105, 194, 18, 252, 43, 43, 46, 24, 68, 231, 45 };
-            byte[] iv = { 210, 45, 163, 172, 80, 194, 209, 4, 113, 160, 118, 151, 234, 43, 52, 81 };
-
-            //Establecer la clave secreta para el algoritmo DES. 
-            encriptador.Key = key;
-            //Establecer el vector de inicialización. 
-            encriptador.IV = iv;
-
-            ICryptoTransform decryptor = encriptador.CreateDecryptor();
-
-            // Define memory stream which will be used to hold encrypted data.
-            MemoryStream memoryStream = new MemoryStream(pFichero);
-
-            // Define cryptographic stream (always use Read mode for encryption).
-            CryptoStream cryptoStream = new CryptoStream(memoryStream, decryptor, CryptoStreamMode.Read);
-
-            // Since at this point we don't know what the size of decrypted data
-            // will be, allocate the buffer long enough to hold ciphertext;
-            // plaintext is never longer than ciphertext.
-            byte[] buff = new byte[memoryStream.Length];
-
-            byte[] buff2 = null;
-
-            try
-            {
-                //Si el fichero no esta encriptado da error, devolvemos el original
-                // Start decrypting.
-                int decryptedByteCount = cryptoStream.Read(buff, 0, buff.Length);
-                buff2 = new byte[decryptedByteCount];
-                List<byte> lista = new List<byte>(buff);
-                lista.CopyTo(0, buff2, 0, decryptedByteCount);
-
-                // Close both streams.
-                cryptoStream.Close();
-            }
-            catch (Exception)
-            {
-                buff2 = pFichero;
-            }
-            finally
-            {
-                memoryStream.Close();
-            }
-
-            return buff2;
         }
 
         /// <summary>

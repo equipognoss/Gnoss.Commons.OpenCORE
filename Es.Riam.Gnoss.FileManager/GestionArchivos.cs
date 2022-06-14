@@ -1,9 +1,12 @@
 ﻿using Es.Riam.Gnoss.Util.General;
+using Es.Riam.InterfacesOpenArchivos;
 using Es.Riam.Util;
+using Microsoft.AspNetCore.Http;
 using System;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Threading.Tasks;
 
 namespace Es.Riam.Gnoss.FileManager
@@ -12,14 +15,18 @@ namespace Es.Riam.Gnoss.FileManager
     {
         #region Constructores
         private readonly LoggingService _loggingService;
-        public GestionArchivos(LoggingService loggingService)
+        private readonly IUtilArchivos _utilArchivos;
+
+        public GestionArchivos(LoggingService loggingService, IUtilArchivos utilArchivos)
         {
             _loggingService = loggingService;
+            _utilArchivos = utilArchivos;
         }
 
-        public GestionArchivos(LoggingService loggingService, string pRutaArchivos = null, string pAzureStorageConnectionString = null)
+        public GestionArchivos(LoggingService loggingService, IUtilArchivos utilArchivos, string pRutaArchivos = null, string pAzureStorageConnectionString = null)
         {
             _loggingService = loggingService;
+            _utilArchivos = utilArchivos;
             RutaFicheros = pRutaArchivos;
             AzureStorageConnectionString = pAzureStorageConnectionString;
         }
@@ -55,7 +62,8 @@ namespace Es.Riam.Gnoss.FileManager
 
                         if (pArchivoEncriptado)
                         {
-                            contenido = UtilArchivos.DesencriptarArchivo(contenido);
+                            contenido = _utilArchivos.DesencriptarArchivo(contenido);
+                            //contenido = UtilArchivos.DesencriptarArchivo(contenido);
                         }
                     }
                     catch (Exception ex)
@@ -82,7 +90,8 @@ namespace Es.Riam.Gnoss.FileManager
 
                 if (pArchivoEncriptado)
                 {
-                    contenido = UtilArchivos.DesencriptarArchivo(contenido);
+                    contenido = _utilArchivos.DesencriptarArchivo(contenido);
+                    //contenido = UtilArchivos.DesencriptarArchivo(contenido);
                 }
             }
 
@@ -93,6 +102,106 @@ namespace Es.Riam.Gnoss.FileManager
 
             //Envío el contenido.
             return contenido;
+        }
+
+        /// <summary>
+        /// Devuelve el contenido de un fichero situado en la ruta pasada como parámetro
+        /// </summary>
+        /// <param name="pRuta">Ruta</param>
+        /// <returns></returns>
+        public void EscribirFicheroResponse(HttpResponse httpResponse, string pRuta, string pNombreArchivo, string pExtension, bool pArchivoEncriptado = false)
+        {
+            string ruta = "";
+
+            ruta = Path.Combine(RutaFicheros, pRuta, pNombreArchivo + pExtension);
+
+            FileStream fileStream = null;
+            string rutaAux = "";
+            if (File.Exists(ruta))
+            {
+                try
+                {
+                    //Leo el fichero
+                    fileStream = new FileStream(ruta, FileMode.Open, FileAccess.Read);
+                    byte[] buffer = new byte[1048576];
+                    fileStream.Seek(0, SeekOrigin.Begin);
+                    FileStream fileStreamAux = null;
+                    CryptoStream cryptoStream = null;
+                    cryptoStream = _utilArchivos.ObtenerDesencriptador(fileStream);
+                    if(cryptoStream == null)
+                    {
+                        pArchivoEncriptado = false;
+                    }
+                    int num = 0;
+                    try
+                    {
+                        if (pArchivoEncriptado)
+                        {
+                            rutaAux = Path.Combine(RutaFicheros, pRuta, $"{pNombreArchivo}_aux{pExtension}");
+                            fileStreamAux = new FileStream(rutaAux, FileMode.OpenOrCreate, FileAccess.Write);
+                            cryptoStream.CopyTo(fileStreamAux, buffer.Length);
+                            fileStreamAux.Flush();
+                            fileStreamAux.Close();
+                            fileStream = new FileStream(rutaAux, FileMode.Open, FileAccess.Read);
+                            pArchivoEncriptado = false;
+                            cryptoStream.Close();
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        pArchivoEncriptado = false;
+                        cryptoStream.Close();
+                        if (fileStreamAux != null)
+                        {
+                            fileStreamAux.Flush();
+                            fileStreamAux.Close();
+                        }
+                        fileStream = new FileStream(ruta, FileMode.Open, FileAccess.Read);
+                    }
+
+                    if (!pArchivoEncriptado)
+                    {
+                        while ((num = fileStream.Read(buffer, 0, 1048576)) > 0)
+                        {
+                            httpResponse.Body.WriteAsync(buffer, 0, num);
+                            //httpResponse.Body.Flush();
+                        }
+                        fileStream.Close();
+                    }
+
+                    if (!string.IsNullOrEmpty(rutaAux))
+                    {
+                        try
+                        {
+                            File.Delete(rutaAux);
+                        }
+                        catch (Exception) { }
+                    }
+
+                }
+                catch (Exception ex)
+                {
+                    _loggingService.GuardarLogError(ex, $"Error al descargar el fichero {pNombreArchivo} en {pRuta}. Ruta ficheros: {RutaFicheros}. Ruta completa: {ruta}");
+                    throw;
+                }
+                finally
+                {
+                    if (fileStream != null)
+                    {
+                        fileStream.Close();
+                    }
+                }
+            }
+            else
+            {
+                _loggingService.GuardarLog($"No existe el recurso {pNombreArchivo} en {pRuta}. Ruta ficheros: {RutaFicheros}. Ruta completa: {ruta}");
+            }
+
+            //if (contenido == null || contenido.Length == 0)
+            //{
+            //    _loggingService.GuardarLogError($"DescargarFichero: No se ha encontrado el fichero {pNombreArchivo} en {pRuta}. Ruta ficheros: {RutaFicheros}. Ruta completa: {ruta}");
+            //}
+
         }
 
         /// <summary>
@@ -259,7 +368,8 @@ namespace Es.Riam.Gnoss.FileManager
 
                     if (pEncriptarFichero)
                     {
-                        pBytes = UtilArchivos.EncriptarArchivo(pBytes);
+                        pBytes = _utilArchivos.EncriptarArchivo(pBytes);
+                        //pBytes = UtilArchivos.EncriptarArchivo(pBytes);
                     }
                     _loggingService.GuardarLogError($"Nombre del fichero a crear: {infoFichero.FullName}");
                     FileStream fileStream = new FileStream(infoFichero.FullName, FileMode.Create, FileAccess.Write);
@@ -272,6 +382,70 @@ namespace Es.Riam.Gnoss.FileManager
                 {
                     AzureStorageClient.SubirDocumento(pRuta, pNombreArchivo, pBytes);
                 }
+            }
+            catch (Exception ex)
+            {
+                string mensajeExtra = $"Error al crear el fichero {pNombreArchivo} en la ruta {pRuta}";
+                _loggingService.GuardarLogError(ex, mensajeExtra);
+                throw new FileManagerException(mensajeExtra, ex);
+            }
+        }
+
+        public void CrearFicheroFisicoDesdeStream(string pRuta, string pNombreArchivo, Stream stream, bool pEncriptarFichero = false)
+        {
+            try
+            {
+                _loggingService.GuardarLogError("Se va a subir el fichero");
+                if (!string.IsNullOrEmpty(pRuta))
+                {
+                    pRuta = Path.Combine(RutaFicheros, TransformarRuta(pRuta));
+                }
+                else
+                {
+                    pRuta = RutaFicheros;
+                }
+
+                FileInfo infoFichero = new FileInfo(Path.Combine(pRuta, pNombreArchivo));
+
+                if (!infoFichero.Directory.Exists)
+                {
+                    infoFichero.Directory.Create();
+                }
+                FileStream fileStream = new FileStream(infoFichero.FullName, FileMode.Create, FileAccess.Write);
+                byte[] buffer = new byte[1048576];
+                stream.Seek(0, SeekOrigin.Begin);
+                _loggingService.GuardarLogError($"Nombre del fichero a crear: {infoFichero.FullName}");
+                int num = 0;
+                CryptoStream cryptoStream = null;
+                cryptoStream = _utilArchivos.ObtenerEncriptador(fileStream);
+                if (cryptoStream == null)
+                {
+                    pEncriptarFichero = false;
+                }
+
+                if (pEncriptarFichero)
+                {
+                    while ((num = stream.Read(buffer, 0, 1048576)) > 0)
+                    {
+                        cryptoStream.Write(buffer, 0, num);
+                    }
+                }
+                else
+                {
+                    while ((num = stream.Read(buffer, 0, 1048576)) > 0)
+                    {
+                        fileStream.Write(buffer, 0, num);
+                        fileStream.Flush();
+                    }
+                }
+                if (pEncriptarFichero)
+                {
+                    cryptoStream.Flush();
+                    cryptoStream.FlushFinalBlock();
+                }
+                fileStream.Close();
+                _loggingService.GuardarLogError($"Ha subido el fichero");
+
             }
             catch (Exception ex)
             {
@@ -331,6 +505,9 @@ namespace Es.Riam.Gnoss.FileManager
             if (string.IsNullOrEmpty(AzureStorageConnectionString))
             {
                 pRuta = Path.Combine(RutaFicheros, pRuta);
+                GuardarLogTest("La cadena de conexion a RutaFicheros es: " + RutaFicheros);
+                GuardarLogTest("La cadena de conexion a de la ruta es: " + pRuta);
+
 
                 DirectoryInfo directoryInfo = new DirectoryInfo(pRuta);
 
@@ -360,6 +537,20 @@ namespace Es.Riam.Gnoss.FileManager
                 return resultado;
             }
 
+        }
+        public static void GuardarLogTest(string message)
+        {
+            try
+            {
+                using (StreamWriter sw = new StreamWriter(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "logs", "error_servicioInterno.txt"), true, System.Text.Encoding.Default))
+                {
+                    sw.WriteLine(Environment.NewLine + "Fecha: " + DateTime.Now + Environment.NewLine + Environment.NewLine);
+                    // Escribo el error
+                    sw.WriteLine(message);
+                }
+            }
+            catch (Exception ex)
+            { }
         }
 
         public async Task<string[]> ObtenerFicherosDeDirectorio(string pRuta, string pFiltroPorNombre = null)
@@ -395,7 +586,7 @@ namespace Es.Riam.Gnoss.FileManager
                 return resultado;
             }
         }
-        
+
         public string ObtenerRutaDirectorioZip(string pRuta)
         {
             pRuta = Path.Combine(RutaFicheros, pRuta);
@@ -495,7 +686,7 @@ namespace Es.Riam.Gnoss.FileManager
 
         public async void CopiarArchivosDeDirectorio(string pRutaOrigen, string pRutaDestino, bool pCopiarSubdirectorios = false)
         {
-           bool existeRutaOrigen = await ComprobarExisteDirectorio(pRutaOrigen);
+            bool existeRutaOrigen = await ComprobarExisteDirectorio(pRutaOrigen);
             if (existeRutaOrigen)
             {
                 string[] ficheros = await ObtenerFicherosDeDirectorio(pRutaOrigen);

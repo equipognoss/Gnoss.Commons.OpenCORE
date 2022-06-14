@@ -49,10 +49,10 @@ namespace Es.Riam.Gnoss.UtilServiciosWeb
         {
             string peticion = Url + "/GetFile?Name=" + pNombreArchivo + "&Extension=" + pExtension + "&Path=" + pDirectorio;
 
-            string respuesta = WebRequest("GET", peticion, null);
+            byte[] respuesta = WebRequestGetBytes(peticion);
 
             //return Convert.FromBase64String(respuesta.Replace("\"", ""));
-            return JsonConvert.DeserializeObject<byte[]>(respuesta);
+            return respuesta;
         }
 
         public byte[] ObtenerDocumentoDeBaseRecursosUsuario(string pTipoEntidad, Guid pPersonaID, Guid pDocumentoID, string pExtension)
@@ -346,6 +346,46 @@ namespace Es.Riam.Gnoss.UtilServiciosWeb
                     result = response.Content.ReadAsStringAsync().Result;
                 }
             
+            }
+            catch (WebException ex)
+            {
+                string message;
+                try
+                {
+                    StreamReader sr = new StreamReader(ex.Response.GetResponseStream());
+                    message = sr.ReadToEnd();
+                }
+                catch { }
+
+                // Error reading the error response, throw the original exception
+                throw;
+            }
+
+            return result;
+        }
+
+        /// <summary>
+        /// Request an url with an oauth sign
+        /// </summary>
+        /// <param name="httpMethod">Http method (GET, POST, PUT...)</param>
+        /// <param name="url">Url to make the request</param>
+        /// <param name="postData">(Optional) Post data to send in the body request</param>
+        /// <param name="contentType">(Optional) Content type of the postData</param>
+        /// <param name="acceptHeader">(Optional) Accept header</param>
+        /// <returns>Response of the server</returns>
+        private byte[] WebRequestGetBytes(string url)
+        {
+            byte[] result = null;
+            try
+            {
+
+                HttpResponseMessage response = null;
+                HttpClient client = new HttpClient();
+
+                response = client.GetAsync(url).Result;
+                response.EnsureSuccessStatusCode();
+                result = response.Content.ReadAsByteArrayAsync().Result;
+
             }
             catch (WebException ex)
             {

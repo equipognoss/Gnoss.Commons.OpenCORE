@@ -1,4 +1,5 @@
-﻿using Es.Riam.Gnoss.AD.EncapsuladoDatos;
+﻿using Es.Riam.AbstractsOpen;
+using Es.Riam.Gnoss.AD.EncapsuladoDatos;
 using Es.Riam.Gnoss.AD.EntityModel;
 using Es.Riam.Gnoss.AD.EntityModel.Models;
 using Es.Riam.Gnoss.AD.EntityModel.Models.Faceta;
@@ -37,6 +38,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
         private VirtuosoAD mVirtuosoAD;
         private EntityContext mEntityContext;
         private ConfigService mConfigService;
+        private IServicesUtilVirtuosoAndReplication mServicesUtilVirtuosoAndReplication;
         private RedisCacheWrapper mRedisCacheWrapper;
         private GnossCache mGnossCache;
 
@@ -45,13 +47,13 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
         /// <summary>
         /// 
         /// </summary>
-        public ControladorFacetas(Proyecto pProyecto, Dictionary<string, string> pParametroProyecto, Dictionary<string, string> pListaOntologias, LoggingService loggingService, EntityContext entityContext, ConfigService configService, RedisCacheWrapper redisCacheWrapper, GnossCache gnossCache, VirtuosoAD virtuosoAD, bool pCrearFilasPropiedadesExportacion = false)
+        public ControladorFacetas(Proyecto pProyecto, Dictionary<string, string> pParametroProyecto, Dictionary<string, string> pListaOntologias, LoggingService loggingService, EntityContext entityContext, ConfigService configService, RedisCacheWrapper redisCacheWrapper, GnossCache gnossCache, VirtuosoAD virtuosoAD, IServicesUtilVirtuosoAndReplication pServicesVirtuosoAndReplication, bool pCrearFilasPropiedadesExportacion = false)
         {
             mVirtuosoAD = virtuosoAD;
             mLoggingService = loggingService;
             mEntityContext = entityContext;
             mConfigService = configService;
-            
+            mServicesUtilVirtuosoAndReplication = pServicesVirtuosoAndReplication;
             mRedisCacheWrapper = redisCacheWrapper;
             mGnossCache = gnossCache;   
 
@@ -105,7 +107,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
                 }
                 else
                 {
-                    faceta = ListaFacetas.Find(fac => (fac.ClaveFaceta == filaFacetaOCProyecto.Faceta || (filaFacetaOCProyecto.Reciproca > 0 && fac.ClaveFacetaYReprocidad == filaFacetaOCProyecto.Faceta)) && fac.Filtros == filtrosFaceta); ;
+                    faceta = ListaFacetas.Find(fac => (fac.ClaveFaceta == filaFacetaOCProyecto.Faceta || (filaFacetaOCProyecto.Reciproca > 0 && fac.ClaveFacetaYReprocidad == filaFacetaOCProyecto.Faceta)) && fac.Filtros == filtrosFaceta);
                 }
 
                 if (faceta == null)
@@ -163,7 +165,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
             {
                 try
                 {
-                    ProyectoCN proyCN = new ProyectoCN(mEntityContext, mLoggingService, mConfigService, null);
+                    ProyectoCN proyCN = new ProyectoCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
                     proyCN.CrearFilasIntegracionContinuaParametro(propiedadesIntegracionContinua, ProyectoSeleccionado.Clave, TipoObjeto.Faceta);
                     proyCN.Dispose();
                 }
@@ -1177,7 +1179,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
             {
                 if (mFacetaDW == null)
                 {
-                    FacetaCN facetaCN = new FacetaCN(mEntityContext, mLoggingService, mConfigService, null);
+                    FacetaCN facetaCN = new FacetaCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
                     mFacetaDW = facetaCN.ObtenerFacetasAdministrarProyecto(ProyectoSeleccionado.Clave);
                     facetaCN.Dispose();
                 }

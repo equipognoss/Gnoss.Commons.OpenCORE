@@ -1781,13 +1781,16 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
         /// <param name="pComponente"></param>
         /// <returns></returns>
         public CMSComponentSearchBox ObtenerFichaCajaBuscador(CMSComponenteCajaBuscador pComponente, string pIdioma)
-        {
+        {            
             CMSComponentSearchBox fichaComponenteCajaBuscador = new CMSComponentSearchBox();
             fichaComponenteCajaBuscador.Title = UtilCadenas.ObtenerTextoDeIdioma(pComponente.Titulo, pIdioma, mControlador.ParametrosGeneralesRow.IdiomaDefecto);
             fichaComponenteCajaBuscador.Key = pComponente.Clave;
             fichaComponenteCajaBuscador.Styles = pComponente.Estilos;
-            fichaComponenteCajaBuscador.DefaultText = UtilCadenas.ObtenerTextoDeIdioma(pComponente.TextoDefecto, pIdioma, mControlador.ParametrosGeneralesRow.IdiomaDefecto);
+            fichaComponenteCajaBuscador.DefaultText = UtilCadenas.ObtenerTextoDeIdioma(pComponente.TextoDefecto, pIdioma, mControlador.ParametrosGeneralesRow.IdiomaDefecto);            
             fichaComponenteCajaBuscador.AutocompleteID = Guid.Empty;
+            // Pasar la URL de búsqueda para construir la action del formulario
+            fichaComponenteCajaBuscador.UrlBusqueda = pComponente.URLBusqueda;           
+            
             try
             {
                 fichaComponenteCajaBuscador.AutocompleteID = ObtenerTipoBusqueda(ReemplazarDatosUsuarioActual(pComponente.URLBusqueda)).Value;

@@ -1,4 +1,5 @@
-﻿using Es.Riam.Gnoss.AD.EntityModel;
+﻿using Es.Riam.AbstractsOpen;
+using Es.Riam.Gnoss.AD.EntityModel;
 using Es.Riam.Gnoss.AD.EntityModel.Models;
 using Es.Riam.Gnoss.AD.EntityModel.Models.ParametroGeneralDS;
 using Es.Riam.Gnoss.AD.EntityModelBASE;
@@ -42,22 +43,24 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
         private RedisCacheWrapper mRedisCacheWrapper;
         private GnossCache mGnossCache;
         private EntityContextBASE mEntityContextBASE;
+        private IServicesUtilVirtuosoAndReplication mServicesUtilVirtuosoAndReplication;
 
         #region Constructor
 
         /// <summary>
         /// 
         /// </summary>
-        public ControladorOpcionesAvanzadas(Proyecto pProyecto, LoggingService loggingService, EntityContext entityContext, ConfigService configService, RedisCacheWrapper redisCacheWrapper, EntityContextBASE entityContextBASE, VirtuosoAD virtuosoAD, IHttpContextAccessor httpContextAccessor)
+        public ControladorOpcionesAvanzadas(Proyecto pProyecto, LoggingService loggingService, EntityContext entityContext, ConfigService configService, RedisCacheWrapper redisCacheWrapper, EntityContextBASE entityContextBASE, VirtuosoAD virtuosoAD, IHttpContextAccessor httpContextAccessor, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication)
         {
             mVirtuosoAD = virtuosoAD;
             mLoggingService = loggingService;
             mEntityContext = entityContext;
             mConfigService = configService;
+
             mHttpContextAccessor = httpContextAccessor;
             mRedisCacheWrapper = redisCacheWrapper;
             mEntityContextBASE = entityContextBASE;
-
+            mServicesUtilVirtuosoAndReplication = servicesUtilVirtuosoAndReplication;
             ProyectoSeleccionado = pProyecto;
         }
 

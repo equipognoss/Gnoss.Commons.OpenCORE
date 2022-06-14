@@ -632,6 +632,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Models
     {
         public string DefaultText { get; set; }
         public Guid AutocompleteID { get; set; }
+        public string UrlBusqueda { get; set; }
     }
 
 

@@ -6098,6 +6098,7 @@ namespace Es.Riam.Gnoss.AD.Documentacion
         public Dictionary<Guid, short> ObtenerDocumentosYTipodeProyecto(Guid pProyectoID)
         {
             Dictionary<Guid, short> docs = new Dictionary<Guid, short>();
+            mEntityContext.Database.SetCommandTimeout(3600);
             var resultado = mEntityContext.Documento.Join(mEntityContext.DocumentoWebVinBaseRecursos, doc => doc.DocumentoID, docWebVin => docWebVin.DocumentoID, (doc, docWebVin) => new
             {
                 Documento = doc,

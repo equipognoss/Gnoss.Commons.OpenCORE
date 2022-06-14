@@ -132,7 +132,195 @@ namespace Es.Riam.Gnoss.Util.Configuracion
         private string vapidPublicKey;
         private string vapidPrivateKey;
         private string vapidSubject;
+        private string puertoVirtuoso;
+        private string puertoVirtuosoAux;
+        private bool? trazasHabilitadas;
+        private string azureStorageConnectionString;
+        private string logstashEndpoint;
+        private string implementationKey;
+        private string logLocation;
+        private string rutaOntologias;
+        private string rutaMapping;
+        private string cadenaConexion;
+        private string cadenaConexionVirtuoso;
+        private string cadenaConexionAzureStorage;
+        private string errorRoute;
+        private string rutaOnto;
 
+
+        public string ErrorRoute
+        {
+            get
+            {
+                return errorRoute;
+            }
+            set
+            {
+                if (string.IsNullOrEmpty(errorRoute))
+                {
+                    errorRoute = value;
+                }
+            }
+        }
+
+        public string RutaOnto
+        {
+            get
+            {
+                return rutaOnto;
+            }
+            set
+            {
+                if (string.IsNullOrEmpty(rutaOnto))
+                {
+                    rutaOnto = value;
+                }
+            }
+        }
+
+        public string GetRutaOntologias()
+        {
+            if (string.IsNullOrEmpty(rutaOntologias))
+            {
+                IDictionary environmentVariables = Environment.GetEnvironmentVariables();
+                if (environmentVariables.Contains("rutaOntologias"))
+                {
+                    rutaOntologias = environmentVariables["rutaOntologias"] as string;
+                }
+                else
+                {
+                    rutaOntologias = Configuration["rutaOntologias"];
+                }
+
+            }
+            return rutaOntologias;
+        }
+
+        public string RutaMapping
+        {
+            get
+            {
+                if (string.IsNullOrEmpty(rutaMapping))
+                {
+                    IDictionary environmentVariables = Environment.GetEnvironmentVariables();
+                    if (environmentVariables.Contains("rutaMapping"))
+                    {
+                        rutaMapping = environmentVariables["rutaMapping"] as string;
+                    }
+                    else
+                    {
+                        rutaMapping = Configuration["rutaMapping"];
+                    }
+                }
+                return rutaMapping;
+            }
+            set
+            {
+                rutaMapping = value;
+            }
+        }
+
+        public string GetApplicationImplementationKey()
+        {
+            if (string.IsNullOrEmpty(implementationKey))
+            {
+                IDictionary environmentVariables = Environment.GetEnvironmentVariables();
+                if (environmentVariables.Contains("applicationInsights:implementationKey"))
+                {
+                    implementationKey = environmentVariables["applicationInsights:implementationKey"] as string;
+                }
+                else
+                {
+                    implementationKey = Configuration["applicationInsights:implementationKey"];
+                }
+            }
+            return implementationKey;
+        }
+
+        public string GetApplicationLogLocation()
+        {
+            if (string.IsNullOrEmpty(logLocation))
+            {
+                IDictionary environmentVariables = Environment.GetEnvironmentVariables();
+                if (environmentVariables.Contains("applicationInsights__logLocation"))
+                {
+                    logLocation = environmentVariables["applicationInsights__logLocation"] as string;
+                }
+                else
+                {
+                    logLocation = Configuration["applicationInsights:logLocation"];
+                }
+            }
+            return logLocation;
+        }
+
+        public string GetLogstashEndpoint()
+        {
+            if (string.IsNullOrEmpty(logstashEndpoint))
+            {
+                IDictionary environmentVariables = Environment.GetEnvironmentVariables();
+                if (environmentVariables.Contains("logstashEndpoint"))
+                {
+                    logstashEndpoint = environmentVariables["logstashEndpoint"] as string;
+                }
+                else
+                {
+                    logstashEndpoint = Configuration["logstash:logstashEndpoint"];
+                }
+            }
+            return logstashEndpoint;
+        }
+
+        public string GetCadenaConexion()
+        {
+            if (string.IsNullOrEmpty(cadenaConexion))
+            {
+                IDictionary environmentVariables = Environment.GetEnvironmentVariables();
+                if (environmentVariables.Contains("cadenaConexion"))
+                {
+                    cadenaConexion = environmentVariables["cadenaConexion"] as string;
+                }
+                else
+                {
+                    cadenaConexion = Configuration.GetConnectionString("cadenaConexion");
+                }
+            }
+            return cadenaConexion;
+        }
+
+        public string GetCadenaConexionVirtuoso()
+        {
+            if (string.IsNullOrEmpty(cadenaConexionVirtuoso))
+            {
+                IDictionary environmentVariables = Environment.GetEnvironmentVariables();
+                if (environmentVariables.Contains("cadenaConexionVirtuoso"))
+                {
+                    cadenaConexionVirtuoso = environmentVariables["cadenaConexionVirtuoso"] as string;
+                }
+                else
+                {
+                    cadenaConexionVirtuoso = Configuration.GetConnectionString("cadenaConexionVirtuoso");
+                }
+            }
+            return cadenaConexionVirtuoso;
+        }
+
+        public string GetCadenaConexionAzureStorage()
+        {
+            if (string.IsNullOrEmpty(cadenaConexionAzureStorage))
+            {
+                IDictionary environmentVariables = Environment.GetEnvironmentVariables();
+                if (environmentVariables.Contains("AzureStorageConnectionString"))
+                {
+                    cadenaConexionAzureStorage = environmentVariables["AzureStorageConnectionString"] as string;
+                }
+                else
+                {
+                    cadenaConexionAzureStorage = Configuration.GetConnectionString("AzureStorageConnectionString");
+                }
+            }
+            return cadenaConexionAzureStorage;
+        }
         public ConfigService()
         {
             var builder = new ConfigurationBuilder()
@@ -140,6 +328,58 @@ namespace Es.Riam.Gnoss.Util.Configuracion
                     .AddJsonFile("appsettings.json");
             EnvironmentVariables = Environment.GetEnvironmentVariables();
             Configuration = builder.Build();
+        }
+
+        public string GetAzureStorageConnectionString()
+        {
+            if (string.IsNullOrEmpty(azureStorageConnectionString))
+            {
+                IDictionary environmentVariables = Environment.GetEnvironmentVariables();
+                if (environmentVariables.Contains("AzureStorageConnectionString"))
+                {
+                    azureStorageConnectionString = environmentVariables["AzureStorageConnectionString"] as string;
+                }
+                else
+                {
+                    azureStorageConnectionString = Configuration["AzureStorageConnectionString"];
+                }
+            }
+            return azureStorageConnectionString;
+        }
+
+        
+        public string GetImplementationKey()
+        {
+            if (string.IsNullOrEmpty(implementationKey))
+            {
+                IDictionary environmentVariables = Environment.GetEnvironmentVariables();
+                if (environmentVariables.Contains("ImplementationKey"))
+                {
+                    implementationKey = environmentVariables["ImplementationKey"] as string;
+                }
+                else
+                {
+                    implementationKey = Configuration["ImplementationKey"];
+                }
+            }
+            return implementationKey;
+        }
+
+        public string GetLogLocation()
+        {
+            if (string.IsNullOrEmpty(logLocation))
+            {
+                IDictionary environmentVariables = Environment.GetEnvironmentVariables();
+                if (environmentVariables.Contains("LogLocation"))
+                {
+                    logLocation = environmentVariables["LogLocation"] as string;
+                }
+                else
+                {
+                    logLocation = Configuration["LogLocation"];
+                }
+            }
+            return logLocation;
         }
 
         public string ObtenerAzureServiceBusReintentos()
@@ -1485,7 +1725,6 @@ namespace Es.Riam.Gnoss.Util.Configuracion
             }
             return urlApiDesplieguesEntornoAnterior;
         }
-
         public string ObtenerUrlApiDesplieguesEntorno()
         {
             if (string.IsNullOrEmpty(urlApiDesplieguesEntorno))
@@ -2706,6 +2945,74 @@ namespace Es.Riam.Gnoss.Util.Configuracion
                 }
             }
             return vapidSubject;
+        }
+
+        public string ObtenerPuertoVirtuoso()
+        {
+            if (string.IsNullOrEmpty(puertoVirtuoso))
+            {
+                if (EnvironmentVariables.Contains("puertoVirtuoso"))
+                {
+                    puertoVirtuoso = EnvironmentVariables["puertoVirtuoso"] as string;
+                }
+                else
+                {
+                    puertoVirtuoso = Configuration.GetConnectionString("puertoVirtuoso");
+                }
+                if (string.IsNullOrEmpty(puertoVirtuoso))
+                {
+                    puertoVirtuoso = "8890";
+                }
+            }
+            return puertoVirtuoso;
+        }
+
+        public string ObtenerPuertoVirtuosoAux()
+        {
+            if (string.IsNullOrEmpty(puertoVirtuosoAux))
+            {
+                if (EnvironmentVariables.Contains("puertoVirtuosoAux"))
+                {
+                    puertoVirtuosoAux = EnvironmentVariables["puertoVirtuosoAux"] as string;
+                }
+                else
+                {
+                    puertoVirtuosoAux = Configuration.GetConnectionString("puertoVirtuosoAux");
+                }
+                if (string.IsNullOrEmpty(puertoVirtuosoAux))
+                {
+                    puertoVirtuosoAux = "1111";
+                }
+            }
+            return puertoVirtuosoAux;
+        }
+
+        public bool TrazaHabilitada()
+        {
+            if (!trazasHabilitadas.HasValue)
+            {
+                if (EnvironmentVariables.Contains("trazasHabilitadas"))
+                {
+                    string variable = EnvironmentVariables["trazasHabilitadas"] as string;
+                    if (variable.ToLower() == "false")
+                    {
+                        trazasHabilitadas = false;
+                    }
+                    else if (variable.ToLower() == "true")
+                    {
+                        trazasHabilitadas = true;
+                    }
+                }
+                else
+                {
+                    trazasHabilitadas = Configuration.GetValue<bool?>("trazasHabilitadas");
+                }
+                if (trazasHabilitadas == null)
+                {
+                    trazasHabilitadas = false;
+                }
+            }
+            return trazasHabilitadas.Value;
         }
 
     }

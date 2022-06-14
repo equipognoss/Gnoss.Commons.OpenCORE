@@ -43,7 +43,7 @@ namespace Es.Riam.Gnoss.AD.AutoCompetarEtiquetas
         public AutoCompetarEtiquetasAD(LoggingService loggingService, EntityContext entityContext, ConfigService configService, EntityContextBASE entityContextBASE, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication)
             : base(loggingService, entityContext, configService, entityContextBASE, servicesUtilVirtuosoAndReplication)
         {
-            this.CargarConsultasYDataAdapters();
+            CargarConsultasYDataAdapters();
         }
 
         /// <summary>
@@ -54,7 +54,7 @@ namespace Es.Riam.Gnoss.AD.AutoCompetarEtiquetas
         public AutoCompetarEtiquetasAD(string pFicheroConfiguracionBD, LoggingService loggingService, EntityContext entityContext, ConfigService configService, EntityContextBASE entityContextBASE, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication)
             : base(pFicheroConfiguracionBD, loggingService, entityContext, configService, entityContextBASE, servicesUtilVirtuosoAndReplication)
         {
-            this.CargarConsultasYDataAdapters(IBD);
+            CargarConsultasYDataAdapters(IBD);
         }
 
         /// <summary>
@@ -67,7 +67,7 @@ namespace Es.Riam.Gnoss.AD.AutoCompetarEtiquetas
             : base(pFicheroConfiguracionBD, loggingService, entityContext, configService, entityContextBASE, servicesUtilVirtuosoAndReplication)
         {
             mCaracteresExtra = pCaracteresExtra;
-            this.CargarConsultasYDataAdapters(IBD);
+            CargarConsultasYDataAdapters(IBD);
         }
 
         #endregion
@@ -399,26 +399,26 @@ namespace Es.Riam.Gnoss.AD.AutoCompetarEtiquetas
 
             if (pProyectoID != Guid.Empty)
             {
-                sql += " \"ProyectoID\" =" + IBD.FormatearGuid(pProyectoID) + " AND";
+                sql += $" \"ProyectoID\" ={IBD.FormatearGuid(pProyectoID)} AND";
             }
 
             if (pUsarContainsObtenerEtiquetas)
             {
-                AgregarParametro(dbCommand, IBD.ToParam("filtro"), DbType.String, "\"" + pFiltro + "*\"");
+                AgregarParametro(dbCommand, IBD.ToParam("filtro"), DbType.String, $"\"{pFiltro}*\"");
 
                 if (esOracle)
                 {
-                    sql += " CONTAINS(\"Etiqueta\"," + IBD.ToParam("filtro") + ") > 0";
+                    sql += $" CONTAINS(\"Etiqueta\",{IBD.ToParam("filtro")}) > 0";
                 }
                 else
                 {
-                    sql += " CONTAINS(\"Etiqueta\"," + IBD.ToParam("filtro") + ") ";
+                    sql += $" CONTAINS(\"Etiqueta\",{IBD.ToParam("filtro")}) ";
                 }
             }
             else
             {
                 AgregarParametro(dbCommand, IBD.ToParam("filtro"), DbType.String, pFiltro);
-                sql += " \"Etiqueta\" = " + IBD.ToParam("filtro");
+                sql += $" \"Etiqueta\" = {IBD.ToParam("filtro")}";
             }
 
             if (pFacetasFiltro != null && pFacetasFiltro.Count > 0)
@@ -426,7 +426,7 @@ namespace Es.Riam.Gnoss.AD.AutoCompetarEtiquetas
                 sql += " AND \"Faceta\" ";
                 if (pFacetasFiltro.Count == 1)
                 {
-                    sql += " = " + IBD.ToParam("faceta");
+                    sql += $" = {IBD.ToParam("faceta")}";
                     AgregarParametro(dbCommand, IBD.ToParam("faceta"), DbType.String, pFacetasFiltro[0]);
                 }
                 else
@@ -454,7 +454,7 @@ namespace Es.Riam.Gnoss.AD.AutoCompetarEtiquetas
                 if (pIdentidadID != UsuarioAD.Invitado)
                 {
                     sql = sql.Replace(", \"Cantidad\"", ", \"Cantidad\", \"IdentidadID\"");
-                    sql = sql + " UNION " + sql.Replace("@Identidad@", "@Identidad2@");
+                    sql = $"{sql} UNION {sql.Replace("@Identidad@", "@Identidad2@")}";
                 }
 
                 sql = sql.Replace("@Identidad@", " \"IdentidadID\" IS NULL AND");
@@ -483,7 +483,7 @@ namespace Es.Riam.Gnoss.AD.AutoCompetarEtiquetas
                 if (pGrupoID.Value != Guid.Empty)
                 {
                     sql = sql.Replace(", \"Cantidad\"", ", \"Cantidad\", \"GrupoID\"");
-                    sql = sql + " UNION " + sql.Replace("@Grupo@", "@Grupo2@");
+                    sql = $"{sql} UNION {sql.Replace("@Grupo@", "@Grupo2@")}";
                     sql = sql.Replace("@Grupo@", " \"GrupoID\" IS NULL AND");
                     sql = sql.Replace("@Grupo2@", $" \"GrupoID\" = {IBD.FormatearGuid(pGrupoID.Value)} AND");
 
@@ -500,7 +500,7 @@ namespace Es.Riam.Gnoss.AD.AutoCompetarEtiquetas
                 {
                     //obtener todos los tags de los grupos de la identidad
                     sql = sql.Replace(", \"Cantidad\"", ", \"Cantidad\", \"GrupoID\"");
-                    sql = sql + " UNION " + sqlTagsPublicos.Replace(", \"Cantidad\"", ", \"Cantidad\", \"GrupoIdentidades\".\"GrupoID\", \"GrupoIdentidades\".\"IdentidadID\"").Replace("@Grupo@", "@Grupo2@").Replace("@InnerJoin@", "@InnerJoin2@");
+                    sql = $"{sql} UNION {sqlTagsPublicos.Replace(", \"Cantidad\"", ", \"Cantidad\", \"GrupoIdentidades\".\"GrupoID\", \"GrupoIdentidades\".\"IdentidadID\"").Replace("@Grupo@", "@Grupo2@").Replace("@InnerJoin@", "@InnerJoin2@")}";
                     sql = sql.Replace("@Identidad@", $" \"GrupoIdentidades\".\"IdentidadID\" = {IBD.FormatearGuid(pIdentidadID)} AND");
                     sql = sql.Replace("@Grupo@", " \"GrupoID\" IS NULL AND").Replace("@InnerJoin@", "");
                     sql = sql.Replace("@InnerJoin2@", $" INNER JOIN \"GrupoIdentidades\" ON {pNombreTabla}.\"GrupoID\" = \"GrupoIdentidades\".\"GrupoID\" ");
@@ -517,7 +517,7 @@ namespace Es.Riam.Gnoss.AD.AutoCompetarEtiquetas
 
             if (sumarizar)
             {
-                sql = select.Replace("\"Cantidad\"", "sum(\"Cantidad\") Cantidad") + " FROM (" + sql + " ) temp GROUP BY \"Etiqueta\", \"Tipo\", \"Extra\"";
+                sql = $"{select.Replace("\"Cantidad\"", "sum(\"Cantidad\") Cantidad")} FROM ({sql}) temp GROUP BY \"Etiqueta\", \"Tipo\", \"Extra\"";
                 sql += " ORDER BY \"Cantidad\" DESC";
             }
 
@@ -595,7 +595,7 @@ namespace Es.Riam.Gnoss.AD.AutoCompetarEtiquetas
         public TagsAutoDS ObtenerGrupoIdentidadesGrupoID(Guid pGrupoID, List<Guid> pListaUsuariosComprobar = null)
         {
             TagsAutoDS tagAutoDS = new TagsAutoDS();
-            DbCommand comandoSel = ObtenerComando(sqlSelectGrupoIdentidades + " WHERE \"GrupoID\" = " + IBD.FormatearGuid(pGrupoID));
+            DbCommand comandoSel = ObtenerComando($"{sqlSelectGrupoIdentidades} WHERE \"GrupoID\" = {IBD.FormatearGuid(pGrupoID)}");
 
             if (pListaUsuariosComprobar != null && pListaUsuariosComprobar.Count > 0)
             {
@@ -622,7 +622,7 @@ namespace Es.Riam.Gnoss.AD.AutoCompetarEtiquetas
         {
             List<Guid> listaIdentidades = new List<Guid>();
             TagsAutoDS tagAutoDS = new TagsAutoDS();
-            DbCommand comandoSel = ObtenerComando(sqlSelectGrupoIdentidades + " WHERE GrupoID = " + IBD.GuidValor(pGrupoID));
+            DbCommand comandoSel = ObtenerComando($"{sqlSelectGrupoIdentidades} WHERE GrupoID = {IBD.GuidValor(pGrupoID)}");
             IDataReader reader = EjecutarReader(comandoSel);
             while (reader.Read())
             {
@@ -645,7 +645,7 @@ namespace Es.Riam.Gnoss.AD.AutoCompetarEtiquetas
         {
             List<Guid> listaGrupos = new List<Guid>();
             TagsAutoDS tagAutoDS = new TagsAutoDS();
-            DbCommand comandoSel = ObtenerComando(sqlSelectGrupoIdentidades + " WHERE IdentidadID = " + IBD.GuidValor(pIdentidadID));
+            DbCommand comandoSel = ObtenerComando($"{sqlSelectGrupoIdentidades} WHERE IdentidadID = {IBD.GuidValor(pIdentidadID)}");
             IDataReader reader = EjecutarReader(comandoSel);
             while (reader.Read())
             {
@@ -683,11 +683,11 @@ namespace Es.Riam.Gnoss.AD.AutoCompetarEtiquetas
                     filasAfectadas = 0;
 
                     //1º Intento actualizar por si ya existe el tag (seguro que si):
-                    DbCommand comandoUpdateTag = ObtenerComando("UPDATE " + nombreTabla + " SET Cantidad = Cantidad + " + filaVariar.Cantidad + ", Extra = " + IBD.ToParam("Extra") + " WHERE ProyectoID=" + IBD.GuidValor(filaVariar.ProyectoID) + " AND Etiqueta=" + IBD.ToParam("Tag") + " AND Tipo=" + IBD.ToParam("Tipo") + " AND Faceta=" + IBD.ToParam("Faceta") + " AND MetaBusqueda=" + IBD.ToParam("MetaBusqueda"));
+                    DbCommand comandoUpdateTag = ObtenerComando($"UPDATE {nombreTabla} SET Cantidad = Cantidad + {filaVariar.Cantidad}, Extra = {IBD.ToParam("Extra")} WHERE ProyectoID={IBD.GuidValor(filaVariar.ProyectoID)} AND Etiqueta={IBD.ToParam("Tag")} AND Tipo={IBD.ToParam("Tipo")} AND Faceta={IBD.ToParam("Faceta")} AND MetaBusqueda={IBD.ToParam("MetaBusqueda")}");
 
                     if (!filaVariar.IsIdentidadIDNull())
                     {
-                        comandoUpdateTag.CommandText += " AND IdentidadID=" + IBD.GuidValor(filaVariar.IdentidadID);
+                        comandoUpdateTag.CommandText += $" AND IdentidadID={IBD.GuidValor(filaVariar.IdentidadID)}";
                     }
                     else
                     {
@@ -696,7 +696,7 @@ namespace Es.Riam.Gnoss.AD.AutoCompetarEtiquetas
 
                     if (!filaVariar.IsIdiomaNull())
                     {
-                        comandoUpdateTag.CommandText += " AND Idioma=" + IBD.ToParam("Idioma");
+                        comandoUpdateTag.CommandText += $" AND Idioma={IBD.ToParam("Idioma")}";
                         AgregarParametro(comandoUpdateTag, IBD.ToParam("Idioma"), DbType.String, filaVariar.Idioma);
                     }
                     else
@@ -734,7 +734,7 @@ namespace Es.Riam.Gnoss.AD.AutoCompetarEtiquetas
                             idioma = IBD.ToParam("Idioma");
                         }
 
-                        comandoUpdateTag = ObtenerComando("INSERT INTO " + nombreTabla + " (ProyectoID, Etiqueta, Tipo, Faceta, Cantidad, IdentidadID, Extra, MetaBusqueda, Idioma) VALUES (" + IBD.GuidValor(filaVariar.ProyectoID) + ", " + IBD.ToParam("Tag") + ", " + IBD.ToParam("Tipo") + ", " + IBD.ToParam("Faceta") + ", " + filaVariar.Cantidad + ", " + identidadID + ", " + IBD.ToParam("Extra") + ", " + IBD.ToParam("MetaBusqueda") + ", " + idioma + ")");
+                        comandoUpdateTag = ObtenerComando($"INSERT INTO {nombreTabla} (ProyectoID, Etiqueta, Tipo, Faceta, Cantidad, IdentidadID, Extra, MetaBusqueda, Idioma) VALUES ({IBD.GuidValor(filaVariar.ProyectoID)}, {IBD.ToParam("Tag")}, {IBD.ToParam("Tipo")}, {IBD.ToParam("Faceta")}, {filaVariar.Cantidad}, {identidadID}, {IBD.ToParam("Extra")}, {IBD.ToParam("MetaBusqueda")}, {idioma})");
 
                         if (!string.IsNullOrEmpty(filaVariar.Extra))
                         {
@@ -770,7 +770,7 @@ namespace Es.Riam.Gnoss.AD.AutoCompetarEtiquetas
 
             foreach (string nombreTablaBorrar in listaTablasActualizadas)
             {
-                DbCommand comandoDeleteTag = ObtenerComando("DELETE FROM " + nombreTablaBorrar + " WHERE Cantidad<=0");
+                DbCommand comandoDeleteTag = ObtenerComando($"DELETE FROM {nombreTablaBorrar} WHERE Cantidad<=0");
                 filasAfectadas = ActualizarBaseDeDatos(comandoDeleteTag);
             }
 
@@ -780,24 +780,24 @@ namespace Es.Riam.Gnoss.AD.AutoCompetarEtiquetas
 
             if (pTagsGuardarElementoDS.TagsVariar.Count == 0) //Hay que borrar el elemento:
             {
-                DbCommand comandoDeleteXML = ObtenerComando("DELETE FROM EtiquetasElemento_" + pElementoID.ToString().Substring(0, 3) + " WHERE ElementoID=" + IBD.GuidValor(pElementoID) + " AND Tipo=" + IBD.ToParam("Tipo") + " AND ProyectoID=" + IBD.GuidValor(pProyectoID));
+                DbCommand comandoDeleteXML = ObtenerComando($"DELETE FROM EtiquetasElemento_{pElementoID.ToString().Substring(0, 3)} WHERE ElementoID={IBD.GuidValor(pElementoID)} AND Tipo={IBD.ToParam("Tipo")} AND ProyectoID={IBD.GuidValor(pProyectoID)}");
                 AgregarParametro(comandoDeleteXML, IBD.ToParam("Tipo"), DbType.String, pTipo);
-                filasAfectadas = ActualizarBaseDeDatos(comandoDeleteXML);
+                ActualizarBaseDeDatos(comandoDeleteXML);
             }
             else
             {
                 string xml = pTagsGuardarElementoDS.GetXml();
-                DbCommand comandoUpdateXML = ObtenerComando("UPDATE EtiquetasElemento_" + pElementoID.ToString().Substring(0, 3) + " SET Etiquetas=" + IBD.ToParam("Tags") + " WHERE ElementoID=" + IBD.GuidValor(pElementoID) + " AND Tipo=" + IBD.ToParam("Tipo") + " AND ProyectoID=" + IBD.GuidValor(pProyectoID));
+                DbCommand comandoUpdateXML = ObtenerComando($"UPDATE EtiquetasElemento_{pElementoID.ToString().Substring(0, 3)} SET Etiquetas={IBD.ToParam("Tags")} WHERE ElementoID={IBD.GuidValor(pElementoID)} AND Tipo={IBD.ToParam("Tipo")} AND ProyectoID={IBD.GuidValor(pProyectoID)}");
                 AgregarParametro(comandoUpdateXML, IBD.ToParam("Tags"), DbType.String, xml);
                 AgregarParametro(comandoUpdateXML, IBD.ToParam("Tipo"), DbType.String, pTipo);
                 filasAfectadas = ActualizarBaseDeDatos(comandoUpdateXML);
 
                 if (filasAfectadas == 0) //Hay que hacer un INSERT
                 {
-                    comandoUpdateXML = ObtenerComando("INSERT INTO EtiquetasElemento_" + pElementoID.ToString().Substring(0, 3) + " (ElementoID, Tipo, ProyectoID, Etiquetas) VALUES (" + IBD.GuidValor(pElementoID) + ", " + IBD.ToParam("Tipo") + ", " + IBD.GuidValor(pProyectoID) + ", " + IBD.ToParam("Tags") + ")");
+                    comandoUpdateXML = ObtenerComando($"INSERT INTO EtiquetasElemento_{pElementoID.ToString().Substring(0, 3)} (ElementoID, Tipo, ProyectoID, Etiquetas) VALUES ({IBD.GuidValor(pElementoID)}, {IBD.ToParam("Tipo")}, {IBD.GuidValor(pProyectoID)}, {IBD.ToParam("Tags")})");
                     AgregarParametro(comandoUpdateXML, IBD.ToParam("Tags"), DbType.String, xml);
                     AgregarParametro(comandoUpdateXML, IBD.ToParam("Tipo"), DbType.String, pTipo);
-                    filasAfectadas = ActualizarBaseDeDatos(comandoUpdateXML);
+                    ActualizarBaseDeDatos(comandoUpdateXML);
                 }
             }
 
@@ -807,7 +807,7 @@ namespace Es.Riam.Gnoss.AD.AutoCompetarEtiquetas
         public DataSet ObtenerIdentidadesFaceta(string pNombreTabla, Guid pProyectoID, string pEtiqueta, string pTipo, string pFaceta, string pExtra, bool pMetaBusqueda, string pIdioma)
         {
             DataSet ds = new DataSet();
-            string query = "SELECT IdentidadID FROM " + pNombreTabla + " WHERE ProyectoID = " + IBD.GuidValor(pProyectoID) + " AND Etiqueta = " + IBD.ToParam("Etiqueta") + " AND Tipo = " + IBD.ToParam("Tipo") + " AND Faceta = " + IBD.ToParam("Faceta") + " AND MetaBusqueda = " + IBD.ToParam("MetaBusqueda") + " AND Idioma = " + IBD.ToParam("Idioma");
+            string query = $"SELECT IdentidadID FROM {pNombreTabla} WHERE ProyectoID = {IBD.GuidValor(pProyectoID)} AND Etiqueta = {IBD.ToParam("Etiqueta")} AND Tipo = {IBD.ToParam("Tipo")} AND Faceta = {IBD.ToParam("Faceta")} AND MetaBusqueda = {IBD.ToParam("MetaBusqueda")} AND Idioma = {IBD.ToParam("Idioma")}";
 
             DbCommand dbCommand = ObtenerComando(query);
             AgregarParametro(dbCommand, IBD.ToParam("Etiqueta"), DbType.String, pEtiqueta);
@@ -816,7 +816,7 @@ namespace Es.Riam.Gnoss.AD.AutoCompetarEtiquetas
 
             if (!string.IsNullOrEmpty(pExtra))
             {
-                dbCommand.CommandText += " AND Extra = " + IBD.ToParam("Extra");
+                dbCommand.CommandText += $" AND Extra = {IBD.ToParam("Extra")}";
                 AgregarParametro(dbCommand, IBD.ToParam("Extra"), DbType.String, pExtra);
             }
             else
@@ -1136,38 +1136,30 @@ namespace Es.Riam.Gnoss.AD.AutoCompetarEtiquetas
 
         public void ModificarElementos(Guid pElementoID, string pTipo, Guid pProyectoID, string pJson, List<string> pListaTablasActualizadas)
         {
-            #region Borro Tags con cantidad 0
-
-            //foreach (string nombreTablaBorrar in pListaTablasActualizadas)
-            //{
-            //    DbCommand comandoDeleteTag = ObtenerComando("DELETE FROM " + nombreTablaBorrar + " WHERE Cantidad<=0");
-            //    ActualizarBaseDeDatos(comandoDeleteTag);
-            //}
-
-            #endregion
-
             #region Guardo los tags actuales del elemento
+            
+            string nombreTabla = $"EtiquetasElemento_{ pElementoID.ToString().Substring(0, 3)}";
+
             if (mEntityContextBASE.Database.GetDbConnection() is OracleConnection)
             {
                 if (string.IsNullOrEmpty(pJson)) //Hay que borrar el elemento:
                 {
-                    DbCommand comandoDeleteXML = ObtenerComando("DELETE FROM \"EtiquetasElemento_" + pElementoID.ToString().Substring(0, 3) + "\" WHERE \"ElementoID\"=" + IBD.GuidValor(pElementoID) + " AND \"Tipo\"=" + IBD.ToParam("Tipo") + " AND \"ProyectoID\"=" + IBD.GuidValor(pProyectoID), mEntityContextBASE);
+                    DbCommand comandoDeleteXML = ObtenerComando($"DELETE FROM \"{nombreTabla}\" WHERE \"ElementoID\"={IBD.GuidValor(pElementoID)} AND \"Tipo\"={IBD.ToParam("Tipo")} AND \"ProyectoID\"={IBD.GuidValor(pProyectoID)}", mEntityContextBASE);
                     AgregarParametro(comandoDeleteXML, IBD.ToParam("Tipo"), DbType.String, pTipo);
-                    ActualizarBaseDeDatos(comandoDeleteXML, true, true, true, mEntityContextBASE);
+                    ActualizarBaseDeDatos(comandoDeleteXML, false, true, true, mEntityContextBASE);
                 }
                 else
                 {
-                    DbCommand comandoUpdateXML = ObtenerComando("UPDATE \"EtiquetasElemento_" + pElementoID.ToString().Substring(0, 3) + "\" SET Etiquetas=" + IBD.ToParam("Tags") + " WHERE \"ElementoID\"=" + IBD.GuidValor(pElementoID) + " AND \"Tipo\"=" + IBD.ToParam("Tipo") + " AND \"ProyectoID\"=" + IBD.GuidValor(pProyectoID), mEntityContextBASE);
+                    DbCommand comandoUpdateXML = ObtenerComando($"UPDATE \"{nombreTabla}\" SET Etiquetas={IBD.ToParam("Tags")} WHERE \"ElementoID\"={IBD.GuidValor(pElementoID)} AND \"Tipo\"={IBD.ToParam("Tipo")} AND \"ProyectoID\"={IBD.GuidValor(pProyectoID)}", mEntityContextBASE);
                     AgregarParametro(comandoUpdateXML, IBD.ToParam("Tags"), DbType.String, pJson);
                     AgregarParametro(comandoUpdateXML, IBD.ToParam("Tipo"), DbType.String, pTipo);
-                    ActualizarBaseDeDatos(comandoUpdateXML, true, true, true, mEntityContextBASE);
 
-                    if (ActualizarBaseDeDatos(comandoUpdateXML) == 0) //Hay que hacer un INSERT
+                    if (ActualizarBaseDeDatos(comandoUpdateXML, false, true, true, mEntityContextBASE) == 0) //Hay que hacer un INSERT
                     {
-                        comandoUpdateXML = ObtenerComando("INSERT INTO \"EtiquetasElemento_" + pElementoID.ToString().Substring(0, 3) + "\" (\"ElementoID\", \"Tipo\", \"ProyectoID\", Etiquetas) VALUES (" + IBD.GuidValor(pElementoID) + ", " + IBD.ToParam("Tipo") + ", " + IBD.GuidValor(pProyectoID) + ", " + IBD.ToParam("Tags") + ")");
+                        comandoUpdateXML = ObtenerComando($"INSERT INTO \"{nombreTabla}\" (\"ElementoID\", \"Tipo\", \"ProyectoID\", Etiquetas) VALUES ({IBD.GuidValor(pElementoID)}, {IBD.ToParam("Tipo")}, {IBD.GuidValor(pProyectoID)}, {IBD.ToParam("Tags")})");
                         AgregarParametro(comandoUpdateXML, IBD.ToParam("Tags"), DbType.String, pJson);
                         AgregarParametro(comandoUpdateXML, IBD.ToParam("Tipo"), DbType.String, pTipo);
-                        ActualizarBaseDeDatos(comandoUpdateXML, true, true, true, mEntityContextBASE);
+                        ActualizarBaseDeDatos(comandoUpdateXML, false, true, true, mEntityContextBASE);
                     }
                 }
             }
@@ -1175,23 +1167,22 @@ namespace Es.Riam.Gnoss.AD.AutoCompetarEtiquetas
             {
                 if (string.IsNullOrEmpty(pJson)) //Hay que borrar el elemento:
                 {
-                    DbCommand comandoDeleteXML = ObtenerComando("DELETE FROM \"EtiquetasElemento_" + pElementoID.ToString().Substring(0, 3) + "\" WHERE \"ElementoID\"=" + IBD.GuidValor(pElementoID) + " AND \"Tipo\"=" + IBD.ToParam("Tipo") + " AND \"ProyectoID\"=" + IBD.GuidValor(pProyectoID), mEntityContextBASE);
+                    DbCommand comandoDeleteXML = ObtenerComando($"DELETE FROM \"{nombreTabla}\" WHERE \"ElementoID\"={IBD.GuidValor(pElementoID)} AND \"Tipo\"={IBD.ToParam("Tipo")} AND \"ProyectoID\"={IBD.GuidValor(pProyectoID)}", mEntityContextBASE);
                     AgregarParametro(comandoDeleteXML, IBD.ToParam("Tipo"), DbType.String, pTipo);
-                    ActualizarBaseDeDatos(comandoDeleteXML, true, true, true, mEntityContextBASE);
+                    ActualizarBaseDeDatos(comandoDeleteXML, false, true, true, mEntityContextBASE);
                 }
                 else
                 {
-                    DbCommand comandoUpdateXML = ObtenerComando("UPDATE \"EtiquetasElemento_" + pElementoID.ToString().Substring(0, 3) + "\" SET Etiquetas=" + IBD.ToParam("Tags") + " WHERE \"ElementoID\"=" + IBD.GuidValor(pElementoID) + " AND \"Tipo\"=" + IBD.ToParam("Tipo") + " AND \"ProyectoID\"=" + IBD.GuidValor(pProyectoID), mEntityContextBASE);
+                    DbCommand comandoUpdateXML = ObtenerComando($"UPDATE \"{nombreTabla}\" SET Etiquetas={IBD.ToParam("Tags")} WHERE \"ElementoID\"={IBD.GuidValor(pElementoID)} AND \"Tipo\"={IBD.ToParam("Tipo")} AND \"ProyectoID\"={IBD.GuidValor(pProyectoID)}", mEntityContextBASE);
                     AgregarParametro(comandoUpdateXML, IBD.ToParam("Tags"), DbType.String, pJson);
                     AgregarParametro(comandoUpdateXML, IBD.ToParam("Tipo"), DbType.String, pTipo);
-                    ActualizarBaseDeDatos(comandoUpdateXML, true, true, true, mEntityContextBASE);
 
-                    if (ActualizarBaseDeDatos(comandoUpdateXML) == 0) //Hay que hacer un INSERT
+                    if (ActualizarBaseDeDatos(comandoUpdateXML, false, true, true, mEntityContextBASE) == 0) //Hay que hacer un INSERT
                     {
-                        comandoUpdateXML = ObtenerComando("INSERT INTO \"EtiquetasElemento_" + pElementoID.ToString().Substring(0, 3) + "\" (\"ElementoID\", \"Tipo\", \"ProyectoID\", Etiquetas) VALUES (" + IBD.GuidValor(pElementoID) + ", " + IBD.ToParam("Tipo") + ", " + IBD.GuidValor(pProyectoID) + ", " + IBD.ToParam("Tags") + ")", mEntityContextBASE);
+                        comandoUpdateXML = ObtenerComando($"INSERT INTO \"{nombreTabla}\" (\"ElementoID\", \"Tipo\", \"ProyectoID\", Etiquetas) VALUES ({IBD.GuidValor(pElementoID)}, {IBD.ToParam("Tipo")}, {IBD.GuidValor(pProyectoID)}, {IBD.ToParam("Tags")})", mEntityContextBASE);
                         AgregarParametro(comandoUpdateXML, IBD.ToParam("Tags"), DbType.String, pJson);
                         AgregarParametro(comandoUpdateXML, IBD.ToParam("Tipo"), DbType.String, pTipo);
-                        ActualizarBaseDeDatos(comandoUpdateXML, true, true, true, mEntityContextBASE);
+                        ActualizarBaseDeDatos(comandoUpdateXML, false, true, true, mEntityContextBASE);
                     }
                 }
             }
@@ -1199,23 +1190,22 @@ namespace Es.Riam.Gnoss.AD.AutoCompetarEtiquetas
             {
                 if (string.IsNullOrEmpty(pJson)) //Hay que borrar el elemento:
                 {
-                    DbCommand comandoDeleteXML = ObtenerComando("DELETE FROM EtiquetasElemento_" + pElementoID.ToString().Substring(0, 3) + " WHERE ElementoID=" + IBD.GuidValor(pElementoID) + " AND Tipo=" + IBD.ToParam("Tipo") + " AND ProyectoID=" + IBD.GuidValor(pProyectoID));
+                    DbCommand comandoDeleteXML = ObtenerComando($"DELETE FROM {nombreTabla} WHERE ElementoID={IBD.GuidValor(pElementoID)} AND Tipo={IBD.ToParam("Tipo")} AND ProyectoID={IBD.GuidValor(pProyectoID)}");
                     AgregarParametro(comandoDeleteXML, IBD.ToParam("Tipo"), DbType.String, pTipo);
-                    ActualizarBaseDeDatos(comandoDeleteXML, true, true, true, mEntityContextBASE);
+                    ActualizarBaseDeDatos(comandoDeleteXML, false, true, true, mEntityContextBASE);
                 }
                 else
                 {
-                    DbCommand comandoUpdateXML = ObtenerComando("UPDATE EtiquetasElemento_" + pElementoID.ToString().Substring(0, 3) + " SET Etiquetas=" + IBD.ToParam("Tags") + " WHERE ElementoID=" + IBD.GuidValor(pElementoID) + " AND Tipo=" + IBD.ToParam("Tipo") + " AND ProyectoID=" + IBD.GuidValor(pProyectoID));
+                    DbCommand comandoUpdateXML = ObtenerComando($"UPDATE {nombreTabla} SET Etiquetas={IBD.ToParam("Tags")} WHERE ElementoID={IBD.GuidValor(pElementoID)} AND Tipo={IBD.ToParam("Tipo")} AND ProyectoID={IBD.GuidValor(pProyectoID)}");
                     AgregarParametro(comandoUpdateXML, IBD.ToParam("Tags"), DbType.String, pJson);
                     AgregarParametro(comandoUpdateXML, IBD.ToParam("Tipo"), DbType.String, pTipo);
-                    ActualizarBaseDeDatos(comandoUpdateXML, true, true, true, mEntityContextBASE);
 
-                    if (ActualizarBaseDeDatos(comandoUpdateXML, true, true, true, mEntityContextBASE) == 0) //Hay que hacer un INSERT
+                    if (ActualizarBaseDeDatos(comandoUpdateXML, false, true, true, mEntityContextBASE) == 0) //Hay que hacer un INSERT
                     {
-                        comandoUpdateXML = ObtenerComando("INSERT INTO EtiquetasElemento_" + pElementoID.ToString().Substring(0, 3) + " (ElementoID, Tipo, ProyectoID, Etiquetas) VALUES (" + IBD.GuidValor(pElementoID) + ", " + IBD.ToParam("Tipo") + ", " + IBD.GuidValor(pProyectoID) + ", " + IBD.ToParam("Tags") + ")");
+                        comandoUpdateXML = ObtenerComando($"INSERT INTO {nombreTabla} (ElementoID, Tipo, ProyectoID, Etiquetas) VALUES ({IBD.GuidValor(pElementoID)}, {IBD.ToParam("Tipo")}, {IBD.GuidValor(pProyectoID)}, {IBD.ToParam("Tags")})");
                         AgregarParametro(comandoUpdateXML, IBD.ToParam("Tags"), DbType.String, pJson);
                         AgregarParametro(comandoUpdateXML, IBD.ToParam("Tipo"), DbType.String, pTipo);
-                        ActualizarBaseDeDatos(comandoUpdateXML, true, true, true, mEntityContextBASE);
+                        ActualizarBaseDeDatos(comandoUpdateXML, false, true, true, mEntityContextBASE);
                     }
                 }
             }
@@ -1230,37 +1220,33 @@ namespace Es.Riam.Gnoss.AD.AutoCompetarEtiquetas
         /// <param name="pTipo">Tipo de elemento</param>
         /// <param name="pProyectoID">ID del proyecto del elemento</param>
         public string ObtenerEtiquetasElemento(Guid pElementoID, string pTipo, Guid pProyectoID)
-        {
-            
-            string tablaElemento = "EtiquetasElemento_" + pElementoID.ToString().Substring(0, 3);
+        {            
+            string tablaElemento = $"EtiquetasElemento_{pElementoID.ToString().Substring(0, 3)}";
             //TODO Javi Migrar tabla
-            bool existeTabla = VerificarExisteTabla(tablaElemento, true);
+            VerificarExisteTabla(tablaElemento, true);
 
             TagsAutoDS tagsDS = new TagsAutoDS();
 
-            //if (existeTabla)
-            //{
             if (ConexionMaster is OracleConnection)
             {
                 string consulta = "SELECT * FROM 'EtiquetasElemento'";
-                DbCommand dbCommand = ObtenerComando(consulta.Replace("EtiquetasElemento", tablaElemento) + " WHERE 'ElementoID'=" + IBD.GuidValor(pElementoID) + " AND 'Tipo'=" + IBD.ToParam("Tipo") + " AND 'ProyectoID'=" + IBD.GuidValor(pProyectoID), mEntityContextBASE);
+                DbCommand dbCommand = ObtenerComando($"{consulta.Replace("EtiquetasElemento", tablaElemento)} WHERE 'ElementoID'={IBD.GuidValor(pElementoID)} AND 'Tipo'={IBD.ToParam("Tipo")} AND 'ProyectoID'={IBD.GuidValor(pProyectoID)}", mEntityContextBASE);
                 AgregarParametro(dbCommand, IBD.ToParam("Tipo"), DbType.String, pTipo);
                 CargarDataSet(dbCommand, tagsDS, "EtiquetasElemento", null, true, true, mEntityContextBASE);
             }
             else if (ConexionMaster is NpgsqlConnection)
             {
                 string consulta = "SELECT * FROM \"EtiquetasElemento\"";
-                DbCommand dbCommand = ObtenerComando(consulta.Replace("EtiquetasElemento", tablaElemento) + " WHERE \"ElementoID\"=" + IBD.GuidValor(pElementoID) + " AND \"Tipo\"=" + IBD.ToParam("Tipo") + " AND \"ProyectoID\"=" + IBD.GuidValor(pProyectoID), mEntityContextBASE);
+                DbCommand dbCommand = ObtenerComando($"{consulta.Replace("EtiquetasElemento", tablaElemento)} WHERE \"ElementoID\"={IBD.GuidValor(pElementoID)} AND \"Tipo\"={IBD.ToParam("Tipo")} AND \"ProyectoID\"={IBD.GuidValor(pProyectoID)}", mEntityContextBASE);
                 AgregarParametro(dbCommand, IBD.ToParam("Tipo"), DbType.String, pTipo);
                 CargarDataSet(dbCommand, tagsDS, "EtiquetasElemento", null, true, true, mEntityContextBASE);
             }
             else 
             {
-                DbCommand dbCommand = ObtenerComando(sqlSelectEtiquetasElemento.Replace("EtiquetasElemento", tablaElemento) + " WHERE ElementoID=" + IBD.GuidValor(pElementoID) + " AND Tipo=" + IBD.ToParam("Tipo") + " AND ProyectoID=" + IBD.GuidValor(pProyectoID), mEntityContextBASE);
+                DbCommand dbCommand = ObtenerComando($"{sqlSelectEtiquetasElemento.Replace("EtiquetasElemento", tablaElemento)} WHERE ElementoID={IBD.GuidValor(pElementoID)} AND Tipo={IBD.ToParam("Tipo")} AND ProyectoID={IBD.GuidValor(pProyectoID)}", mEntityContextBASE);
                 AgregarParametro(dbCommand, IBD.ToParam("Tipo"), DbType.String, pTipo);
                 CargarDataSet(dbCommand, tagsDS, "EtiquetasElemento", null, false, false, mEntityContextBASE);
             }
-            //}
 
             if (tagsDS.EtiquetasElemento.Count > 0)
             {
@@ -1277,19 +1263,19 @@ namespace Es.Riam.Gnoss.AD.AutoCompetarEtiquetas
         /// <returns>Nombre de la tabla de tags para la faceta indicada</returns>
         public string ObtenerTablaTag(string pFaceta)
         {
-            string nombreTabla = "Tag_" + mCaracteresExtra + "_" + pFaceta.Replace(":", "_").Replace("@@@", "_");
+            string nombreTabla = $"Tag_{mCaracteresExtra}_{pFaceta.Replace(":", "_").Replace("@@@", "_")}";
 
             if (nombreTabla.Length > 120)
             {
                 nombreTabla = nombreTabla.Substring(0, 70) + nombreTabla.Substring(nombreTabla.Length - 50);
             }
 
-            return "[" + nombreTabla + "]";
+            return $"[{nombreTabla}]";
         }
 
         public string ObtenerNombreTablaLetra(string pEtiqueta)
         {
-            string nombreTabla = "Tag_" + mCaracteresExtra + "_search_";
+            string nombreTabla = $"Tag_{mCaracteresExtra}_search_";
 
             string letra = UtilCadenas.RemoveAccentsWithRegEx(pEtiqueta.Substring(0, 1));
 
@@ -1303,7 +1289,7 @@ namespace Es.Riam.Gnoss.AD.AutoCompetarEtiquetas
                 nombreTabla += "Z";
             }
 
-            return "[" + nombreTabla + "]";
+            return $"[{nombreTabla}]";
         }
 
         #endregion
@@ -1386,11 +1372,11 @@ namespace Es.Riam.Gnoss.AD.AutoCompetarEtiquetas
             }
             else if (pNombreTabla.StartsWith("Tag_"))
             {
-                DbCommand cmdCrearTabla = ObtenerComando("CREATE TABLE [" + pNombreTabla + "]([ID] [int] IDENTITY(1,1) NOT NULL,[ProyectoID] [uniqueidentifier] NOT NULL,[Etiqueta] [nvarchar](1000) NOT NULL,[Tipo] [nvarchar](1000) NOT NULL,[Faceta] [nvarchar](1000) NOT NULL,[Cantidad] [int] NOT NULL,[IdentidadID] [uniqueidentifier] NULL,[Extra] [nvarchar](max) NULL,[MetaBusqueda] [bit] NOT NULL,[Idioma] [nvarchar](4) NULL,[GrupoID] [uniqueidentifier] NULL,CONSTRAINT [PK_" + pNombreTabla + "] PRIMARY KEY CLUSTERED ([ID] ASC)WITH (PAD_INDEX  = OFF, IGNORE_DUP_KEY = OFF) ON [PRIMARY]) ON [PRIMARY]", mEntityContextBASE);
+                DbCommand cmdCrearTabla = ObtenerComando($"CREATE TABLE [{pNombreTabla}]([ID] [int] IDENTITY(1,1) NOT NULL,[ProyectoID] [uniqueidentifier] NOT NULL,[Etiqueta] [nvarchar](1000) NOT NULL,[Tipo] [nvarchar](1000) NOT NULL,[Faceta] [nvarchar](1000) NOT NULL,[Cantidad] [int] NOT NULL,[IdentidadID] [uniqueidentifier] NULL,[Extra] [nvarchar](max) NULL,[MetaBusqueda] [bit] NOT NULL,[Idioma] [nvarchar](4) NULL,[GrupoID] [uniqueidentifier] NULL,CONSTRAINT [PK_{pNombreTabla}] PRIMARY KEY CLUSTERED ([ID] ASC)WITH (PAD_INDEX  = OFF, IGNORE_DUP_KEY = OFF) ON [PRIMARY]) ON [PRIMARY]", mEntityContextBASE);
 
                 ActualizarBaseDeDatos(cmdCrearTabla, true, false, false, mEntityContextBASE);
 
-                cmdCrearTabla = ObtenerComando("CREATE FULLTEXT INDEX ON [" + pNombreTabla + "](Etiqueta LANGUAGE 0) KEY INDEX [PK_" + pNombreTabla + "] ON Etiqueta_catalog", mEntityContextBASE);
+                cmdCrearTabla = ObtenerComando($"CREATE FULLTEXT INDEX ON [{pNombreTabla}](Etiqueta LANGUAGE 0) KEY INDEX [PK_{pNombreTabla}] ON Etiqueta_catalog", mEntityContextBASE);
                 ActualizarBaseDeDatos(cmdCrearTabla, false, false, false, mEntityContextBASE);
             }
         }
@@ -1434,7 +1420,7 @@ namespace Es.Riam.Gnoss.AD.AutoCompetarEtiquetas
 
                 ActualizarBaseDeDatos(cmdCrearTabla,true, true, true, mEntityContextBASE);
 
-                cmdCrearTabla = ObtenerComando("CREATE FULLTEXT INDEX ON [\"" + pNombreTabla + "\"](Etiqueta LANGUAGE 0) KEY INDEX [PK_" + pNombreTabla + "] ON \"Etiqueta_catalog\"", mEntityContextBASE);
+                cmdCrearTabla = ObtenerComando($"CREATE FULLTEXT INDEX ON [\"{pNombreTabla}\"](Etiqueta LANGUAGE 0) KEY INDEX [PK_{pNombreTabla}] ON \"Etiqueta_catalog\"", mEntityContextBASE);
                 ActualizarBaseDeDatos(cmdCrearTabla, false, true, true, mEntityContextBASE);
             }
         }
@@ -1509,46 +1495,46 @@ namespace Es.Riam.Gnoss.AD.AutoCompetarEtiquetas
                 foreach (TagsAutoDS.TagsVariarRow fila in filas)
                 {
                     numFila++;
-                    sb.AppendLine($"{coma}('{fila.ProyectoID}', {IBD.ToParam("Etiqueta" + numFila)}, {IBD.ToParam("Tipo" + numFila)}, {IBD.ToParam("Faceta" + numFila)}, {fila.Cantidad}, {IBD.ToParam("IdentidadID" + numFila)}, {IBD.ToParam("Extra" + numFila)}, {Convert.ToInt16(fila.MetaBusqueda)}, {IBD.ToParam("Idioma" + numFila)}, {IBD.ToParam("GrupoID" + numFila)})");
+                    sb.AppendLine($"{coma}('{fila.ProyectoID}', {IBD.ToParam($"Etiqueta{numFila}")}, {IBD.ToParam($"Tipo{numFila}")}, {IBD.ToParam($"Faceta{numFila}")}, {fila.Cantidad}, {IBD.ToParam($"IdentidadID{numFila}")}, {IBD.ToParam($"Extra{numFila}")}, {Convert.ToInt16(fila.MetaBusqueda)}, {IBD.ToParam($"Idioma{numFila}")}, {IBD.ToParam($"GrupoID{numFila}")})");
 
-                    AgregarParametro(comando, IBD.ToParam("Etiqueta" + numFila), DbType.String, fila.Etiqueta);
-                    AgregarParametro(comando, IBD.ToParam("Tipo" + numFila), DbType.String, fila.Tipo);
-                    AgregarParametro(comando, IBD.ToParam("Faceta" + numFila), DbType.String, fila.Faceta);
+                    AgregarParametro(comando, IBD.ToParam($"Etiqueta{numFila}"), DbType.String, fila.Etiqueta);
+                    AgregarParametro(comando, IBD.ToParam($"Tipo{numFila}"), DbType.String, fila.Tipo);
+                    AgregarParametro(comando, IBD.ToParam($"Faceta{numFila}"), DbType.String, fila.Faceta);
 
                     if (!fila.IsIdentidadIDNull())
                     {
-                        AgregarParametro(comando, IBD.ToParam("IdentidadID" + numFila), DbType.Guid, fila.IdentidadID);
+                        AgregarParametro(comando, IBD.ToParam($"IdentidadID{numFila}"), DbType.Guid, fila.IdentidadID);
                     }
                     else
                     {
-                        AgregarParametro(comando, IBD.ToParam("IdentidadID" + numFila), DbType.Guid, DBNull.Value);
+                        AgregarParametro(comando, IBD.ToParam($"IdentidadID{numFila}"), DbType.Guid, DBNull.Value);
                     }
 
                     if (!fila.IsExtraNull())
                     {
-                        AgregarParametro(comando, IBD.ToParam("Extra" + numFila), DbType.String, fila.Extra);
+                        AgregarParametro(comando, IBD.ToParam($"Extra{numFila}"), DbType.String, fila.Extra);
                     }
                     else
                     {
-                        AgregarParametro(comando, IBD.ToParam("Extra" + numFila), DbType.String, DBNull.Value);
+                        AgregarParametro(comando, IBD.ToParam($"Extra{numFila}"), DbType.String, DBNull.Value);
                     }
 
                     if (!fila.IsIdiomaNull())
                     {
-                        AgregarParametro(comando, IBD.ToParam("Idioma" + numFila), DbType.String, fila.Idioma);
+                        AgregarParametro(comando, IBD.ToParam($"Idioma{numFila}"), DbType.String, fila.Idioma);
                     }
                     else
                     {
-                        AgregarParametro(comando, IBD.ToParam("Idioma" + numFila), DbType.String, DBNull.Value);
+                        AgregarParametro(comando, IBD.ToParam($"Idioma{numFila}"), DbType.String, DBNull.Value);
                     }
 
                     if (!fila.IsGrupoIDNull())
                     {
-                        AgregarParametro(comando, IBD.ToParam("GrupoID" + numFila), DbType.Guid, fila.GrupoID);
+                        AgregarParametro(comando, IBD.ToParam($"GrupoID{numFila}"), DbType.Guid, fila.GrupoID);
                     }
                     else
                     {
-                        AgregarParametro(comando, IBD.ToParam("GrupoID" + numFila), DbType.Guid, DBNull.Value);
+                        AgregarParametro(comando, IBD.ToParam($"GrupoID{numFila}"), DbType.Guid, DBNull.Value);
                     }
                     coma = ", ";
                 }
@@ -1560,10 +1546,6 @@ namespace Es.Riam.Gnoss.AD.AutoCompetarEtiquetas
         }
 
         #endregion
-
-        #endregion
-
-        #region Propiedades
 
         #endregion
     }

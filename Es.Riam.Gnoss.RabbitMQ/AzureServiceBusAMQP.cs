@@ -1,6 +1,7 @@
 ﻿using Es.Riam.Gnoss.FileManager;
 using Es.Riam.Gnoss.Util.Configuracion;
 using Es.Riam.Gnoss.Util.General;
+using Es.Riam.InterfacesOpenArchivos;
 using Microsoft.Azure.ServiceBus;
 using System;
 using System.IO;
@@ -51,7 +52,7 @@ namespace Es.Riam.Gnoss.RabbitMQ
             if (!string.IsNullOrEmpty(mAzureStorageConnectionString))
             {
                 mAzureStorageConnectionString += "/" + "serviceBUS";
-                mGestorArchivos = new GestionArchivos(mLoggingService, pRutaArchivos: mRutaFicheros, pAzureStorageConnectionString: mAzureStorageConnectionString);
+                mGestorArchivos = new GestionArchivos(mLoggingService, null, pRutaArchivos: mRutaFicheros, pAzureStorageConnectionString: mAzureStorageConnectionString);
             }
             var conexiones = mConfigService.ObtenerRabbitMQClient(mGestorRabbit.TipoCola);
 

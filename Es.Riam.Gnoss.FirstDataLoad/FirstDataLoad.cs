@@ -11,6 +11,7 @@ using Es.Riam.Gnoss.AD.EntityModel.Models.ProyectoDS;
 using Es.Riam.Gnoss.AD.EntityModel.Models.Tesauro;
 using Es.Riam.Gnoss.AD.EntityModel.Models.UsuarioDS;
 using Es.Riam.Gnoss.FirstDataLoad.Properties;
+using Es.Riam.Gnoss.Util.Configuracion;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -20,9 +21,11 @@ namespace Es.Riam.Gnoss.FirstDataLoad
     public class FirstDataLoad
     {
         private EntityContext mEntityContext;
-        public FirstDataLoad(EntityContext entityContext)
+        private ConfigService mConfigService;
+        public FirstDataLoad(EntityContext entityContext, ConfigService configService)
         {
             mEntityContext = entityContext;
+            mConfigService = configService;
         }
 
         public void InsertData()
@@ -56,6 +59,12 @@ namespace Es.Riam.Gnoss.FirstDataLoad
             {
                 Parametro = "UrlIntragnoss",
                 Valor = "http://gnoss.com/"
+            };
+
+            ParametroAplicacion parametroAplicacion7 = new ParametroAplicacion()
+            {
+                Parametro = "UrlsPropiasProyecto",
+                Valor = "beta"
             };
 
             CategoriaProyectoCookie categoriaProyectoCookie = new CategoriaProyectoCookie()
@@ -142,6 +151,7 @@ namespace Es.Riam.Gnoss.FirstDataLoad
             mEntityContext.ParametroAplicacion.Add(parametroAplicacion4);
             mEntityContext.ParametroAplicacion.Add(parametroAplicacion5);
             mEntityContext.ParametroAplicacion.Add(parametroAplicacion6);
+            mEntityContext.ParametroAplicacion.Add(parametroAplicacion7);
 
             ProyectoPestanyaMenu proyectoPestanyaMenu1 = new ProyectoPestanyaMenu()
             {
@@ -225,7 +235,12 @@ namespace Es.Riam.Gnoss.FirstDataLoad
                 Alias = "Meta organización GNOSS"
             };
             mEntityContext.Organizacion.Add(organizacion);
-           
+
+            string urlPropia = "http://localhost";
+            if(!string.IsNullOrEmpty(mConfigService.ObtenerDominio()))
+            {
+                urlPropia = mConfigService.ObtenerDominio();
+            } 
             Proyecto proyecto = new Proyecto()
             {
                 OrganizacionID = new Guid("11111111-1111-1111-1111-111111111111"),
@@ -245,6 +260,7 @@ namespace Es.Riam.Gnoss.FirstDataLoad
                 NumeroForos = 0,
                 EsProyectoDestacado = false,
                 NombreCorto = "mygnoss",
+                URLPropia = urlPropia, 
                 Estado = 3,
                 TieneTwitter = false,
                 EnviarTwitterComentario = false,
@@ -413,7 +429,9 @@ namespace Es.Riam.Gnoss.FirstDataLoad
                 Login = "admin",
                 Password = "LwVRBcblcJRrs/ySjQKa6dEvHHxe3u4jaIMCKSxIcvyc6Aob",
                 EstaBloqueado = false,
-                NombreCorto = "admin"
+                NombreCorto = "admin",
+                Version = 1,
+                Validado = 1
             };
             mEntityContext.Usuario.Add(usuario);
 

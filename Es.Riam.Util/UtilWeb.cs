@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Net;
+using System.Net.Http;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Web;
@@ -603,6 +604,33 @@ namespace Es.Riam.Util
         /// <returns>Response of the server</returns>
         public static string WebRequest(string httpMethod, string url, string postData = "", string contentType = "", string acceptHeader = "", Dictionary<HttpRequestHeader, string> cabecerasAdicionales = null)
         {
+            HttpContent contentData = new StringContent(postData, System.Text.Encoding.UTF8, "application/json");
+            string result = "";
+            HttpResponseMessage response = null;
+            try
+            {
+                HttpClient client = new HttpClient();
+                response = client.PostAsync($"{url}", contentData).Result;
+                response.EnsureSuccessStatusCode();
+                result = response.Content.ReadAsStringAsync().Result;
+                return result;
+            }
+            catch (HttpRequestException ex)
+            {
+                if (!string.IsNullOrEmpty(response.Content.ReadAsStringAsync().Result))
+                {
+                    throw new HttpRequestException(response.Content.ReadAsStringAsync().Result);
+                }
+                else
+                {
+                    throw new HttpRequestException(response.ReasonPhrase);
+                }
+            }
+        }
+
+        /*
+        public static string WebRequest(string httpMethod, string url, string postData = "", string contentType = "", string acceptHeader = "", Dictionary<HttpRequestHeader, string> cabecerasAdicionales = null)
+        {
             HttpWebRequest webRequest = null;
             StreamWriter requestWriter = null;
             string responseData = "";
@@ -665,7 +693,7 @@ namespace Es.Riam.Util
             webRequest = null;
 
             return responseData;
-        }
+        }*/
 
 
 

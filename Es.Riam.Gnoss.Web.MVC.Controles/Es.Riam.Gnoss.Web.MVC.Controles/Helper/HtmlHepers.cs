@@ -108,11 +108,15 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Helper
         // 
         public static string ExtractValueInStringFromStartAndEnd(this IHtmlHelper helper, string stringExtractFrom, string characterStart, string characterEnd)
         {
-            var initialPosition = stringExtractFrom.IndexOf(characterStart) + characterStart.Length;
-            var finalPosition = stringExtractFrom.IndexOf(characterEnd, initialPosition + 1);
+            string extractString = stringExtractFrom;
+            if (!string.IsNullOrEmpty(stringExtractFrom) && stringExtractFrom.IndexOf(characterStart) != -1 && stringExtractFrom.IndexOf(characterEnd) != -1)
+            {
+                var initialPosition = stringExtractFrom.IndexOf(characterStart) + characterStart.Length;
+                var finalPosition = stringExtractFrom.IndexOf(characterEnd, initialPosition + 1);
 
-            // Fragmento que deberá eliminarse
-            string extractString = stringExtractFrom.Substring(initialPosition, finalPosition - initialPosition);
+                // Fragmento que deberá eliminarse
+                extractString = stringExtractFrom.Substring(initialPosition, finalPosition - initialPosition);
+            }
             return extractString;
         }
 
@@ -1284,6 +1288,11 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Helper
             //}
 
             //return styleVersion;
+        }
+
+        public static string GetBaseUrlPersonalizacionEcosistema(this IHtmlHelper helper)
+        {
+            return (string)helper.ViewBag.BaseUrlPersonalizacionEcosistema;
         }
 
         public static string GetBaseUrlPersonalizacion(this IHtmlHelper helper)

@@ -1238,27 +1238,19 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
 
                             if (iniciado)
                             {
-                                if (iniciado)
-                                {
-                                    mProyectoConIntegracionContinua = "inciado";
-                                    proyectoCL.AgregarIC(ProyectoSeleccionado.Clave, true, false);
-                                }
-                                else
-                                {
-                                    mProyectoConIntegracionContinua = "";
-                                    proyectoCL.AgregarIC(ProyectoSeleccionado.Clave, false, true);
-                                }
+                                mProyectoConIntegracionContinua = "inciado";
+                                proyectoCL.AgregarIC(ProyectoSeleccionado.Clave, true, false);
+                            }
+                        }
+                        else
+                        {
+                            if (activada.HasValue && activada.Value)
+                            {
+                                mProyectoConIntegracionContinua = "inciado";
                             }
                             else
                             {
-                                if (activada.HasValue && activada.Value)
-                                {
-                                    mProyectoConIntegracionContinua = "inciado";
-                                }
-                                else
-                                {
-                                    mProyectoConIntegracionContinua = "";
-                                }
+                                mProyectoConIntegracionContinua = "";
                             }
                         }
                     }
@@ -1302,7 +1294,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
                 string auxVersion = "";
                 string auxNombre = RamaEnUsoGit;
 
-                if (auxNombre.Contains("release_"))
+                if (!string.IsNullOrEmpty(auxNombre) && auxNombre.Contains("release_"))
                 {
                     auxVersion = auxNombre.Replace("release_", "");
                 }

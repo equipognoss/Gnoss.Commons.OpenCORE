@@ -2248,11 +2248,6 @@ namespace Es.Riam.Gnoss.CL.ServiciosGenerales
 
             bool? tieneICActivada = (bool?)ObtenerObjetoDeCache(rawKey);
 
-            if (tieneICActivada == null)
-            {
-                return tieneICActivada;
-            }
-
             return tieneICActivada;
         }
 

@@ -120,7 +120,7 @@ namespace Es.Riam.Util
         {
             try
             {
-                if (_httpContextAccessor.HttpContext != null && _httpContextAccessor.HttpContext.Items != null)
+                if (_httpContextAccessor != null && _httpContextAccessor.HttpContext != null && _httpContextAccessor.HttpContext.Items != null)
                 {
                     if (_httpContextAccessor.HttpContext.Items.ContainsKey(pClave))
                     {

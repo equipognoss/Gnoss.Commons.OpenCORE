@@ -558,6 +558,7 @@ namespace Es.Riam.Gnoss.AD.EntityModel
                     }
                 }
                 TransaccionesPendientes.Clear();
+                Database.UseTransaction(null);
                 mServicesUtilVirtuosoAndReplication.NoConfirmarTransacciones = false;
                 //mFacetadoAD.InsertarInstruccionesEnReplica();
             }

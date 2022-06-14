@@ -304,13 +304,16 @@ namespace Es.Riam.Gnoss.ExportarImportar.Exportadores
                         break;
                 }
 
-                if (propTipo.FunctionalProperty)
+                if (propTipo != null)
                 {
-                    propTipo.UnicoValor = new KeyValuePair<string, ElementoOntologia>(valor, null);
-                }
-                else
-                {
-                    propTipo.ListaValores.Add(valor, null);
+                    if (propTipo.FunctionalProperty)
+                    {
+                        propTipo.UnicoValor = new KeyValuePair<string, ElementoOntologia>(valor, null);
+                    }
+                    else
+                    {
+                        propTipo.ListaValores.Add(valor, null);
+                    }
                 }
 
                 if (doc.TipoDocumentacion == TiposDocumentacion.Semantico)

@@ -363,9 +363,9 @@ namespace Es.Riam.Gnoss.AD.Virtuoso
             return ds;
         }
 
-        public static KeyValuePair<string, string> ObtenerIpVirtuosoDeCadenaConexion(string pCadenaConexion)
+        public KeyValuePair<string, string> ObtenerIpVirtuosoDeCadenaConexion(string pCadenaConexion)
         {
-            return IServicesUtilVirtuosoAndReplication.ObtenerIpVirtuosoDeCadenaConexion(pCadenaConexion);
+            return mServicesUtilVirtuosoAndReplication.ObtenerIpVirtuosoDeCadenaConexion(pCadenaConexion);
         }
 
         private VirtuosoConnection ObtenerConexion()
