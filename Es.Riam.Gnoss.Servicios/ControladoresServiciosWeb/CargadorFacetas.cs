@@ -158,9 +158,11 @@ namespace Es.Riam.Gnoss.Servicios.ControladoresServiciosWeb
             return PeticionServicio(metodo, parametros);
         }
 
-        public void InvalidarVistas()
+        public void InvalidarVistas(Guid pIdentidadID)
         {
-            PeticionServicio("LimpiarCache", null);
+            Dictionary<string, string> parametros = new Dictionary<string, string>();
+            parametros.Add("pIdentidadID", pIdentidadID.ToString());
+            PeticionServicio("LimpiarCache", parametros);
         }      
     }
 }

@@ -53,6 +53,14 @@ namespace Es.Riam.Gnoss.UtilServiciosWeb
             double num = JsonConvert.DeserializeObject<double>(result);
             return num;
         }
+
+        public double ObtenerEspacioVideoOrganizacion(Guid pDocumentoID, Guid pPersonaID)
+        {
+            string result = CallWebMethods.CallGetApi(mUrlInternService, $"Videos/ObtenerEspacioVideoOrganizacion?pDocumentoID={pDocumentoID}&pPersonaID={pPersonaID}");
+            double num = JsonConvert.DeserializeObject<double>(result);
+            return num;
+        }
+
         public bool CopiarVideo(Guid pDocumentoID, Guid pDocumentoIDCopia, Guid pPersonaID, Guid pOrganizacionID, Guid pPersonaIDDestino, Guid pOrganizacionIDDestino)
         {
             //(Guid pDocumentoID, Guid pDocumentoIDCopia, Guid pPersonaID, Guid pOrganizacionID, Guid pPersonaIDDestino, Guid pOrganizacionIDDestino)

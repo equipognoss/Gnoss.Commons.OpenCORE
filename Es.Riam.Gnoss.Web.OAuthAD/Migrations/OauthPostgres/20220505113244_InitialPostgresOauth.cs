@@ -25,17 +25,18 @@ namespace Es.Riam.Gnoss.Web.OAuthAD.Migrations.OauthPostgres
                     table.PrimaryKey("PK_dbo.OAuthConsumer", x => x.ConsumerId);
                 });
 
-            migrationBuilder.CreateTable(
-                name: "Usuario",
-                columns: table => new
-                {
-                    UsuarioID = table.Column<Guid>(type: "uuid", nullable: false),
-                    Login = table.Column<string>(type: "character varying(12)", maxLength: 12, nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Usuario", x => x.UsuarioID);
-                });
+            //DESCOMENTAR SI LA BASE DE DATOS OAuth ESTA SEPARADA DE LA ACIDA
+            //migrationBuilder.CreateTable(
+            //    name: "Usuario",
+            //    columns: table => new
+            //    {
+            //        UsuarioID = table.Column<Guid>(type: "uuid", nullable: false),
+            //        Login = table.Column<string>(type: "character varying(12)", maxLength: 12, nullable: false)
+            //    },
+            //    constraints: table =>
+            //    {
+            //        table.PrimaryKey("PK_Usuario", x => x.UsuarioID);
+            //    });
 
             migrationBuilder.CreateTable(
                 name: "ConsumerData",

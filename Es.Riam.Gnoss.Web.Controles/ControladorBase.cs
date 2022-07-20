@@ -377,7 +377,6 @@ namespace Es.Riam.Gnoss.Web.Controles
             {
                 if (mProyecto == null)
                 {
-                    //Fernando Expresion regular : Request\["([^"\]]*)"\]
                     string nombreCortoProyecto = null;
                     Guid proyectoID = Guid.Empty;
 

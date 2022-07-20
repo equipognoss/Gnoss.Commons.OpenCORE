@@ -107,11 +107,6 @@ namespace Es.Riam.Gnoss.Logica.Facetado
             return FacetaAD.ObtenerFacetasDeProyecto(ListaItems, pOrganizacionID, pProyectoID);
         }
 
-        public FacetaHome ObtenerFacetaHomeDeClave(string pClaveFaceta)
-        {
-            return FacetaAD.ObtenerFacetaHomeDeClave(pClaveFaceta);
-        }
-
         /// <summary>
         /// Obtiene los datos para una consulto usando charts.
         /// </summary>

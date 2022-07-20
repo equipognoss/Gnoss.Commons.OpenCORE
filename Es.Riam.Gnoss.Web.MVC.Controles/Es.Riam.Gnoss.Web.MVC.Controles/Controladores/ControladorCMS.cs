@@ -37,7 +37,6 @@ using Es.Riam.Gnoss.Servicios.ControladoresServiciosWeb;
 using Es.Riam.Gnoss.Util.Configuracion;
 using Es.Riam.Gnoss.Util.General;
 using Es.Riam.Gnoss.Util.Seguridad;
-using Es.Riam.Gnoss.Web.Controles;
 using Es.Riam.Gnoss.Web.Controles.Proyectos;
 using Es.Riam.Gnoss.Web.MVC.Models;
 using Es.Riam.Gnoss.Web.MVC.Models.Administracion;
@@ -1789,8 +1788,8 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
             fichaComponenteCajaBuscador.DefaultText = UtilCadenas.ObtenerTextoDeIdioma(pComponente.TextoDefecto, pIdioma, mControlador.ParametrosGeneralesRow.IdiomaDefecto);            
             fichaComponenteCajaBuscador.AutocompleteID = Guid.Empty;
             // Pasar la URL de búsqueda para construir la action del formulario
-            fichaComponenteCajaBuscador.UrlBusqueda = pComponente.URLBusqueda;           
-            
+            fichaComponenteCajaBuscador.UrlBusqueda = pComponente.URLBusqueda;
+
             try
             {
                 fichaComponenteCajaBuscador.AutocompleteID = ObtenerTipoBusqueda(ReemplazarDatosUsuarioActual(pComponente.URLBusqueda)).Value;

@@ -565,7 +565,6 @@ namespace Es.Riam.Gnoss.Elementos.ServiciosGenerales
             {
                 pIdiomaActual = "es";
             }
-
             return UtilCadenas.ObtenerUrlPropiaDeIdioma(FilaProyecto.URLPropia, pIdiomaActual);
         }
 

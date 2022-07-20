@@ -48,7 +48,7 @@ namespace Es.Riam.Gnoss.UtilServiciosWeb
         private byte[] BajarDocumento(string pDirectorio, string pNombreArchivo, string pExtension)
         {
             string peticion = Url + "/GetFile?Name=" + pNombreArchivo + "&Extension=" + pExtension + "&Path=" + pDirectorio;
-
+            mLoggingService.GuardarLog($"llamada de la peticion: {peticion}");
             byte[] respuesta = WebRequestGetBytes(peticion);
 
             //return Convert.FromBase64String(respuesta.Replace("\"", ""));
@@ -71,8 +71,9 @@ namespace Es.Riam.Gnoss.UtilServiciosWeb
 
         public byte[] ObtenerDocumento(string pTipoEntidad, Guid pOrganizacionID, Guid pProyectoID, Guid pDocumentoID, string pExtension)
         {
+            mLoggingService.GuardarLog($"Parametros para obtener el directorio pTipoEntidad: {pTipoEntidad} -- pOrganizacionID: {pOrganizacionID} -- pProyectoID: {pProyectoID} -- pExtension: {pExtension}");
             string directorio = ObtenerPathFile(pTipoEntidad, pOrganizacionID, pProyectoID, Guid.Empty, pExtension);
-
+            mLoggingService.GuardarLog($"Al hacer la llamada a gesdoc el directorio es: {directorio}");
             return BajarDocumento(directorio, pDocumentoID.ToString(), pExtension);
         }
 

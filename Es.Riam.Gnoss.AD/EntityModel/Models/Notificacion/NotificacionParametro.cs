@@ -19,7 +19,6 @@ namespace Es.Riam.Gnoss.AD.EntityModel.Models.Notificacion
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
         public short ParametroID { get; set; }
 
-        [Required(AllowEmptyStrings = true)]
         public string Valor { get; set; }
 
         [ForeignKey("NotificacionID")]

@@ -15,7 +15,6 @@ namespace Es.Riam.Gnoss.AD.EntityModel.Models.Documentacion
         [Key]
         public Guid DocumentoID { get; set; }
 
-        [Required(AllowEmptyStrings = true)]
         public string NewsletterTemporal { get; set; }
 
         public string Newsletter { get; set; }

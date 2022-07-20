@@ -26,7 +26,6 @@ namespace Es.Riam.Gnoss.AD.EntityModel.Models.ProyectoDS
         [Required]
         public string ComunidadOrigen { get; set; }
 
-        [Required(AllowEmptyStrings = true)]
         public string ComunidadOrigenFiltros { get; set; }
 
         [Required]
@@ -34,14 +33,12 @@ namespace Es.Riam.Gnoss.AD.EntityModel.Models.ProyectoDS
 
         public string ComunidadDestinoFiltros { get; set; }
 
-        [Required(AllowEmptyStrings = true)]
         public string OrdenContexto { get; set; }
 
         public short Imagen { get; set; }
 
         public short NumRecursos { get; set; }
 
-        [Required(AllowEmptyStrings = true)]
         public string ServicioResultados { get; set; }
 
         public Guid ProyectoOrigenID { get; set; }

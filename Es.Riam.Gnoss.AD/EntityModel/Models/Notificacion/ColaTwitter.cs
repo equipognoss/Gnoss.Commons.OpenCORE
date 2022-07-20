@@ -17,11 +17,9 @@ namespace Es.Riam.Gnoss.AD.EntityModel.Models.Notificacion
 
         public Guid PerfilID { get; set; }
 
-        [Required(AllowEmptyStrings = true)]
         [StringLength(1000)]
         public string TokenTwitter { get; set; }
 
-        [Required(AllowEmptyStrings = true)]
         [StringLength(1000)]
         public string TokenSecretoTwitter { get; set; }
 
@@ -32,12 +30,9 @@ namespace Es.Riam.Gnoss.AD.EntityModel.Models.Notificacion
         [Required]
         [StringLength(1000)]
         public string Enlace { get; set; }
-
-        [Required(AllowEmptyStrings = true)]
         [StringLength(1000)]
         public string ConsumerKey { get; set; }
 
-        [Required(AllowEmptyStrings = true)]
         [StringLength(1000)]
         public string ConsumerSecret { get; set; }
 

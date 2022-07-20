@@ -450,6 +450,14 @@ namespace Es.Riam.Gnoss.Util.General
                 {
                     resultado += Environment.NewLine + Environment.NewLine + "INNER EXCEPTION: " + DevolverCadenaErrorExcepcion(pExcepcion.InnerException);
                 }
+                if(pExcepcion is AggregateException)
+                {
+                    AggregateException aggregateException = (AggregateException)pExcepcion;
+                    foreach (Exception ex in aggregateException.InnerExceptions)
+                    {
+                        resultado += Environment.NewLine + Environment.NewLine + "AGGREGATE EXCEPTION: " + DevolverCadenaErrorExcepcion(ex);
+                    }
+                }
             }
 
             return resultado;
@@ -661,16 +669,16 @@ namespace Es.Riam.Gnoss.Util.General
         /// <param name="pRutaFicheroTraza">Ruta del archivo de la traza</param>
         public void GuardarTraza(string pRutaFicheroTraza)
         {
-            if (TrazaHabilitada)
+            //if (TrazaHabilitada)
             {
                 try
                 {
-                    if (!string.IsNullOrEmpty(IP) && Puerto != 0)
-                    {
-                        // Escribimos el cierre de la traza UDP
-                        TrazaActual.EscribirEntrada("**", false);
-                    }
-                    else
+                    //if (!string.IsNullOrEmpty(IP) && Puerto != 0)
+                    //{
+                    //    // Escribimos el cierre de la traza UDP
+                    //    TrazaActual.EscribirEntrada("**", false);
+                    //}
+                    //else
                     {
                         TrazaActual.GuardarTraza(pRutaFicheroTraza);
                     }
@@ -995,16 +1003,16 @@ namespace Es.Riam.Gnoss.Util.General
                 mMensajesTrazaFichero.Add(mensajeTraza);
 
                 // Mandar por UDP el mensaje de la traza.
-                if (!string.IsNullOrEmpty(IP) && Puerto != 0)
-                {
-                    // Enviamos por UDP la traza
-                    EnvioTrazaServicioExternoUDP(pEntrada, mensajeTraza);
-                }
+                //if (!string.IsNullOrEmpty(IP) && Puerto != 0)
+                //{
+                //    // Enviamos por UDP la traza
+                //    EnvioTrazaServicioExternoUDP(pEntrada, mensajeTraza);
+                //}
 
-                if (UtilTelemetry.EstaConfiguradaTelemetria && !LoggingService.UBICACIONTRAZA.Equals(UtilTelemetry.UbicacionLogsYTrazas.Archivo))
-                {
-                    _utilTelemetry.EnviarTelemetriaTraza(pEntrada, pNombreDependencia, pReloj, pExito);
-                }
+                //if (UtilTelemetry.EstaConfiguradaTelemetria && !LoggingService.UBICACIONTRAZA.Equals(UtilTelemetry.UbicacionLogsYTrazas.Archivo))
+                //{
+                //    _utilTelemetry.EnviarTelemetriaTraza(pEntrada, pNombreDependencia, pReloj, pExito);
+                //}
 
                 data = new DatosTraza();
                 data.Tiempo = horaActual.Subtract(mHoraUltimaTraza).TotalMilliseconds.ToString();
@@ -1013,7 +1021,7 @@ namespace Es.Riam.Gnoss.Util.General
                 data.Producto = LoggingService.Producto;
 
                 //Envia el error al servidor Logstash
-                EnviarLogLogstash("{@data}", data);
+                //EnviarLogLogstash("{@data}", data);
             }
 
             mHoraUltimaTraza = horaActual;
@@ -1167,10 +1175,10 @@ namespace Es.Riam.Gnoss.Util.General
         //private void GuardarTraza(string pRutaFicheroTraza, TraceContextEventArgs pArgumentos)
         public void GuardarTraza(string pRutaFicheroTraza)
         {
-            if (mEstaTrazaHabilitada)
+            //if (mEstaTrazaHabilitada)
             {
                 TimeSpan tiempoPeticion = mHoraUltimaTraza - mHoraInicio;
-                if (tiempoPeticion.TotalSeconds > LoggingService.TiempoMinPeticion)
+                //if (tiempoPeticion.TotalSeconds > LoggingService.TiempoMinPeticion)
                 {
                     try
                     {

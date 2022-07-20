@@ -1121,11 +1121,6 @@ namespace Es.Riam.Gnoss.AD.Facetado
             return facetaDW;
         }
 
-        public FacetaHome ObtenerFacetaHomeDeClave(string pClaveFaceta)
-        {
-            return mEntityContext.FacetaHome.Where(item => item.Faceta.Equals(pClaveFaceta)).FirstOrDefault();
-        }
-
         /// <summary>
         /// Obtiene la configuración de las facetas de un proyecto.
         /// </summary>        
@@ -1148,8 +1143,6 @@ namespace Es.Riam.Gnoss.AD.Facetado
             facetaDW.ListaOntologiaProyecto = CargarOntologiaProyecto(pProyectoID, pOrganizacionID);
 
             CargarFiltroHome(facetaDW, pProyectoID, pOrganizacionID);
-
-            CargarFacetaHome(facetaDW, pProyectoID, pOrganizacionID);
 
             CargarFacetaObjetoConocimientoProyectoPestanya(facetaDW, pProyectoID, pOrganizacionID);
 
@@ -1228,18 +1221,6 @@ namespace Es.Riam.Gnoss.AD.Facetado
             }
 
             pFacetaDW.ListaFacetaFiltroHome = pFacetaDW.ListaFacetaFiltroHome.Union(select.ToList()).Distinct().ToList();
-        }
-
-        public void CargarFacetaHome(DataWrapperFacetas pFacetaDW, Guid pProyectoID, Guid? pOrganizacionID)
-        {
-            var select = mEntityContext.FacetaHome.Where(item => item.ProyectoID.Equals(pProyectoID));
-
-            if (pOrganizacionID.HasValue)
-            {
-                select = select.Where(item => item.OrganizacionID.Equals(pOrganizacionID.Value));
-            }
-
-            pFacetaDW.ListaFacetaHome = pFacetaDW.ListaFacetaHome.Union(select).Distinct().ToList();
         }
 
         public void CargarFacetaObjetoConocimientoProyectoPestanya(DataWrapperFacetas pFacetaDW, Guid pProyectoID, Guid? pOrganizacionID)

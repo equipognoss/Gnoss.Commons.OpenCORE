@@ -24,7 +24,6 @@ namespace Es.Riam.Gnoss.AD.EntityModel.Models.Solicitud
 
         public Guid? ProvinciaID { get; set; }
 
-        [Required(AllowEmptyStrings = true)]
         [StringLength(255)]
         public string Provincia { get; set; }
 
@@ -46,7 +45,6 @@ namespace Es.Riam.Gnoss.AD.EntityModel.Models.Solicitud
 
         public bool? EsBuscableExternos { get; set; }
 
-        [Required(AllowEmptyStrings = true)]
         [StringLength(255)]
         public string CargoContactoPrincipal { get; set; }
 

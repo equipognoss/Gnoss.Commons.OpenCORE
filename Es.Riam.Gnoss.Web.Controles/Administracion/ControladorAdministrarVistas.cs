@@ -49,12 +49,12 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
             {
                 CargadorResultados cargadorResultados = new CargadorResultados();
                 cargadorResultados.Url = url;
-                cargadorResultados.InvalidarVistas();
+                cargadorResultados.InvalidarVistas(UsuarioActual.IdentidadID);
             }
 
             CargadorFacetas cargadorFacetas = new CargadorFacetas();
             cargadorFacetas.Url = mConfigService.ObtenerUrlServicioFacetas();
-            cargadorFacetas.InvalidarVistas();        
+            cargadorFacetas.InvalidarVistas(UsuarioActual.IdentidadID);        
         }
 
         public string CrearXMLVistasCMS()

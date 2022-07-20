@@ -1266,6 +1266,11 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
             bool pintar = false;
             string propiedadAPintar = UtilCadenas.ObtenerTextoDeIdioma(pPropPintar, mUtilIdiomas.LanguageCode, mParametrosGeneralesRow.IdiomaDefecto);
 
+            if (propiedadAPintar != null)
+            {
+                propiedadAPintar = "";
+            }
+
             Dictionary<string, List<string>> dicNombreAbreviatura = UtilServiciosFacetas.ObtenerInformacionOntologiasSinArroba(UrlIntragnoss, pInformacionOntologias);
 
             foreach (string key in FacetadoAD.ListaNamespacesBasicos.Keys)
@@ -1392,7 +1397,8 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
                                     //Hay que pintar enlace
                                     if (dicNombreAbreviatura.Count != 0)
                                     {
-                                        if (propiedadAPintar.Contains("#" + i.ToString()) || (propiedades.Length == 1 && propiedadAPintar.Contains("#")))
+
+                                        if (propiedadAPintar.Contains("#" + i) || (propiedades.Length == 1 && propiedadAPintar.Contains("#")))
                                         {
                                             pintarEnlace = true;
                                         }
@@ -1897,9 +1903,10 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
                             if (nombreEntidadVinculada == "Wiki2")
                             {
                                 // Enlace por alguna razón llega vacío y provoca un error
-                                if (!String.IsNullOrEmpty(Enlace)) {
+                                if (!String.IsNullOrEmpty(Enlace))
+                                {
                                     extension = Enlace.Substring(Enlace.LastIndexOf('.'));
-                                }                                
+                                }
                             }
                         }
 

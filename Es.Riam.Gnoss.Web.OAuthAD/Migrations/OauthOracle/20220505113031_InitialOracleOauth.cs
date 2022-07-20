@@ -24,17 +24,17 @@ namespace Es.Riam.Gnoss.Web.OAuthAD.Migrations.OauthOracle
                     table.PrimaryKey("PK_dbo.OAuthConsumer", x => x.ConsumerId);
                 });
 
-            migrationBuilder.CreateTable(
-                name: "Usuario",
-                columns: table => new
-                {
-                    UsuarioID = table.Column<Guid>(type: "RAW(16)", nullable: false),
-                    Login = table.Column<string>(type: "NVARCHAR2(12)", maxLength: 12, nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Usuario", x => x.UsuarioID);
-                });
+            //migrationBuilder.CreateTable(
+            //    name: "Usuario",
+            //    columns: table => new
+            //    {
+            //        UsuarioID = table.Column<Guid>(type: "RAW(16)", nullable: false),
+            //        Login = table.Column<string>(type: "NVARCHAR2(12)", maxLength: 12, nullable: false)
+            //    },
+            //    constraints: table =>
+            //    {
+            //        table.PrimaryKey("PK_Usuario", x => x.UsuarioID);
+            //    });
 
             migrationBuilder.CreateTable(
                 name: "ConsumerData",

@@ -268,6 +268,11 @@ namespace Es.Riam.Gnoss.AD.Parametro
         /// </summary>
         public const string SharepointClientSecret = "SharepointClientSecret";
 
+        /// <summary>
+        /// Las facetas del tipo Tesauro Semántico se mostrarán con el botón VerMas y se ocultarán todas las que excedan el límite establecido en la administración de facetas
+        /// </summary>
+        public const string VerMasFacetaTesauroSemantico = "VerMasFacetaTesauroSemantico";
+
         #endregion
 
         #region Consultas

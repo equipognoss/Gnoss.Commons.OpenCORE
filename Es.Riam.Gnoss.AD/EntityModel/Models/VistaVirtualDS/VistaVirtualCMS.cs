@@ -25,6 +25,7 @@ namespace Es.Riam.Gnoss.AD.EntityModel.Models.VistaVirtualDS
         public Guid PersonalizacionComponenteID { get; set; }
 
         [Required]
+        [Column(TypeName = "NCLOB")]
         public string HTML { get; set; }
 
         [Required]

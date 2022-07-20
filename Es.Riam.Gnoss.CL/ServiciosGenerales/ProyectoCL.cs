@@ -906,12 +906,12 @@ namespace Es.Riam.Gnoss.CL.ServiciosGenerales
 
             if (filaProyectoRolUsuario.RolPermitido != null)
             {
-                rolPermitidoUsuario = System.Convert.ToUInt64(filaProyectoRolUsuario.RolPermitido, 16);
+                rolPermitidoUsuario = Convert.ToUInt64(filaProyectoRolUsuario.RolPermitido, 16);
             }
 
             if (filaProyectoRolUsuario.RolDenegado != null)
             {
-                rolDenegadoUsuario = System.Convert.ToUInt64(filaProyectoRolUsuario.RolDenegado, 16);
+                rolDenegadoUsuario = Convert.ToUInt64(filaProyectoRolUsuario.RolDenegado, 16);
             }
 
             //3 Calculamos el rol final

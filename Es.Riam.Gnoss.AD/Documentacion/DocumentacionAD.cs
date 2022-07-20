@@ -5808,18 +5808,16 @@ namespace Es.Riam.Gnoss.AD.Documentacion
             //{
             //    version = query[0];
             //}
-            
 
-            Guid? resConsulta = mEntityContext.Documento.Where(documento => documento.DocumentoID.Equals(pDocumentoID) && documento.FechaModificacion.HasValue && EF.Functions.DateDiffMinute(pFechaModificacion, documento.FechaModificacion.Value) != 0 && documento.UltimaVersion).Select(doc => doc.DocumentoID).Union(
-               mEntityContext.VersionDocumento.Join(mEntityContext.VersionDocumento, v1 => v1.DocumentoOriginalID, v2 => v2.DocumentoOriginalID, (v1, v2) => new
-               {
-                   VersionDocumentoV1 = v1,
-                   VersionDocumentoV2 = v2
-               }).Where(objeto => objeto.VersionDocumentoV1.DocumentoID.Equals(pDocumentoID) && objeto.VersionDocumentoV2.Version == version && !objeto.VersionDocumentoV2.DocumentoID.Equals(pDocumentoID)).Select(objeto => objeto.VersionDocumentoV1.DocumentoID)
-                ).Union(
-               mEntityContext.VersionDocumento.Where(vDoc => vDoc.DocumentoOriginalID.Equals(pDocumentoID)).Select(vDoc => vDoc.DocumentoID)
-                ).FirstOrDefault();
+            var consulta1 = mEntityContext.Documento.Where(documento => documento.DocumentoID.Equals(pDocumentoID) && documento.FechaModificacion.HasValue && !documento.FechaModificacion.Equals(pFechaModificacion) && documento.UltimaVersion).Select(doc => doc.DocumentoID).ToList();
+            var consulta2 = mEntityContext.VersionDocumento.Join(mEntityContext.VersionDocumento, v1 => v1.DocumentoOriginalID, v2 => v2.DocumentoOriginalID, (v1, v2) => new
+            {
+                VersionDocumentoV1 = v1,
+                VersionDocumentoV2 = v2
+            }).Where(objeto => objeto.VersionDocumentoV1.DocumentoID.Equals(pDocumentoID) && objeto.VersionDocumentoV2.Version == version && !objeto.VersionDocumentoV2.DocumentoID.Equals(pDocumentoID)).Select(objeto => objeto.VersionDocumentoV1.DocumentoID).ToList();
+            var consulta3 = mEntityContext.VersionDocumento.Where(vDoc => vDoc.DocumentoOriginalID.Equals(pDocumentoID)).ToList().Where(x => !x.Documento.FechaModificacion.Equals(pFechaModificacion)).Select(vDoc => vDoc.DocumentoID);
 
+            Guid? resConsulta = consulta1.Union(consulta2).Union(consulta3).FirstOrDefault();
 
             if (resConsulta.HasValue && !resConsulta.Value.Equals(Guid.Empty))
             {

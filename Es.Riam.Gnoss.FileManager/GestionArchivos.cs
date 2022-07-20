@@ -112,9 +112,9 @@ namespace Es.Riam.Gnoss.FileManager
         public void EscribirFicheroResponse(HttpResponse httpResponse, string pRuta, string pNombreArchivo, string pExtension, bool pArchivoEncriptado = false)
         {
             string ruta = "";
-
+            _loggingService.GuardarLog($"parametros de la llamada RutaFicheros: {RutaFicheros} -- pRuta: {pRuta} -- pNombreArchivo: {pNombreArchivo} -- pExtension: {pExtension}");
             ruta = Path.Combine(RutaFicheros, pRuta, pNombreArchivo + pExtension);
-
+            _loggingService.GuardarLog($"Ruta al hacer el Path.Combine: {ruta}");
             FileStream fileStream = null;
             string rutaAux = "";
             if (File.Exists(ruta))

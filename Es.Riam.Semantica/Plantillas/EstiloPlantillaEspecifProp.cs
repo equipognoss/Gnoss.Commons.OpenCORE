@@ -467,7 +467,7 @@ namespace Es.Riam.Semantica.Plantillas
             mExpresionRegular = (string)info.GetValue("ExpresionRegular", typeof(string));
             mFechaConHora = (bool)info.GetValue("FechaConHora", typeof(bool));
             mFechaLibre = (bool)info.GetValue("FechaLibre", typeof(bool));
-            mFechaMesAnio = (bool)info.GetValue("FechaMesAño", typeof(bool));
+            mFechaMesAnio = (bool)info.GetValue("FechaMesAnio", typeof(bool));
             mGaleriaImagenes = (string)info.GetValue("GaleriaImagenes", typeof(string));
             mGrafoAutocompletar = (string)info.GetValue("GrafoAutocompletar", typeof(string));
             mGrafoDependiente = (string)info.GetValue("GrafoDependiente", typeof(string));
@@ -1820,7 +1820,7 @@ namespace Es.Riam.Semantica.Plantillas
             info.AddValue("ExpresionRegular", mExpresionRegular);
             info.AddValue("FechaConHora", mFechaConHora);
             info.AddValue("FechaLibre", mFechaLibre);
-            info.AddValue("FechaMesAño", mFechaMesAnio);
+            info.AddValue("FechaMesAnio", mFechaMesAnio);
             info.AddValue("GaleriaImagenes", mGaleriaImagenes);
             info.AddValue("GrafoAutocompletar", mGrafoAutocompletar);
             info.AddValue("GrafoDependiente", mGrafoDependiente);

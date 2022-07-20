@@ -12,6 +12,7 @@ using Es.Riam.Gnoss.AD.EntityModel.Models.Tesauro;
 using Es.Riam.Gnoss.AD.EntityModel.Models.UsuarioDS;
 using Es.Riam.Gnoss.FirstDataLoad.Properties;
 using Es.Riam.Gnoss.Util.Configuracion;
+using Es.Riam.Gnoss.Web.MVC.Models.Administracion;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -67,15 +68,22 @@ namespace Es.Riam.Gnoss.FirstDataLoad
                 Valor = "beta"
             };
 
+            ParametroAplicacion parametroAplicacion8 = new ParametroAplicacion()
+            {
+                Parametro = "CorreoSolicitudes",
+                Valor = "solicitudes@gnoss.com"
+            };
+
             CategoriaProyectoCookie categoriaProyectoCookie = new CategoriaProyectoCookie()
             {
                 CategoriaID = new Guid("F4DE719F-B93A-4015-84A9-F1F1A2C11533"),
-                Nombre = "Técnica",
+                Nombre = "Técnica@es|||Technical@en",//|||Técnica@pt|||Tècnica@ca|||Teknikoak@eu|||Técnicas@gl|||Technique@fr|||Technische@de|||Tecnici@it
                 NombreCorto = "Tecnica",
-                Descripcion = "Las cookies técnicas son aquellas imprescindibles y estrictamente necesarias para el correcto funcionamiento del Sitio Web y la utilización de las diferentes opciones y servicios que ofrece, incluyendo aquellas que el editor utiliza para permitir la gestión operativa de la página web y habilitar sus funciones y servicios. Por ejemplo, las que sirven para el mantenimiento de la sesión, la gestión del tiempo de respuesta, rendimiento o validación de opciones, utilizar elementos de seguridad, compartir contenido con redes sociales, etc. La página web no puede funcionar adecuadamente sin estas cookies.",
+                Descripcion = "Las cookies técnicas son aquellas imprescindibles y estrictamente necesarias para el correcto funcionamiento del Sitio Web y la utilización de las diferentes opciones y servicios que ofrece, incluyendo aquellas que el editor utiliza para permitir la gestión operativa de la página web y habilitar sus funciones y servicios. Por ejemplo, las que sirven para el mantenimiento de la sesión, la gestión del tiempo de respuesta, rendimiento o validación de opciones, utilizar elementos de seguridad, compartir contenido con redes sociales, etc. La página web no puede funcionar adecuadamente sin estas cookies.@es|||Technical cookies are those essential and strictly necessary for the proper functioning of the Website and the use of the different options and services it offers, including those that the editor uses to enable the operational management of the website and enable its functions and services. For example, those used for session maintenance, response time management, performance or validation of options, use of security elements, sharing content with social networks, etc. The website cannot function properly without these cookies.@en",
                 EsCategoriaTecnica = true,
                 ProyectoID = new Guid("11111111-1111-1111-1111-111111111111"),
                 OrganizacionID = new Guid("11111111-1111-1111-1111-111111111111")
+                //Las cookies técnicas son aquellas imprescindibles y estrictamente necesarias para el correcto funcionamiento del Sitio Web y la utilización de las diferentes opciones y servicios que ofrece, incluyendo aquellas que el editor utiliza para permitir la gestión operativa de la página web y habilitar sus funciones y servicios. Por ejemplo, las que sirven para el mantenimiento de la sesión, la gestión del tiempo de respuesta, rendimiento o validación de opciones, utilizar elementos de seguridad, compartir contenido con redes sociales, etc. La página web no puede funcionar adecuadamente sin estas cookies.@es|||Technical cookies are those essential and strictly necessary for the proper functioning of the Website and the use of the different options and services it offers, including those that the editor uses to enable the operational management of the website and enable its functions and services. For example, those used for session maintenance, response time management, performance or validation of options, use of security elements, sharing content with social networks, etc. The website cannot function properly without these cookies.@en|||Os cookies técnicos são aqueles essenciais e estritamente necessários para o bom funcionamento do Website e a utilização das diferentes opções e serviços que este oferece, incluindo os que o editor utiliza para permitir a gestão operacional do Website e permitir as suas funções e serviços. Por exemplo, os utilizados para manutenção de sessões, gestão do tempo de resposta, desempenho ou validação de opções, utilização de elementos de segurança, partilha de conteúdos com redes sociais, etc. O website não pode funcionar correctamente sem estes cookies.@pt|||Les cookies tècniques són aquelles imprescindibles i estrictament necessàries per al correcte funcionament del Lloc Web i la utilització de les diferents opcions i serveis que ofereix, incloent-hi aquelles que l'editor utilitza per permetre la gestió operativa de la pàgina web i habilitar-ne les funcions i serveis. Per exemple, les que serveixen per al manteniment de la sessió, la gestió del temps de resposta, el rendiment o la validació d'opcions, utilitzar elements de seguretat, compartir contingut amb xarxes socials, etc. La pàgina web no pot funcionar adequadament sense aquestes galetes.@ca|||Cookie teknikoak ezinbestekoak eta behar-beharrezkoak dira Web Gunearen funtzionamendu egokirako eta eskaintzen dituen aukera eta zerbitzuak erabiltzeko, editoreak web orriaren kudeaketa operatiboa ahalbidetzeko eta haren funtzio eta zerbitzuak gaitzeko erabiltzen dituenak barne. Adibidez, saioari eusteko balio dutenak, erantzun-denboraren kudeaketa, aukeren errendimendua edo baliozkotzea, segurtasun-elementuak erabiltzea, edukiak sare sozialekin partekatzea, etab. Web orriak ezin du behar bezala funtzionatu cookie hauek gabe.@eu|||As cookies técnicas son aquelas esenciais e estritamente necesarias para o bo funcionamento do Sitio Web e o uso das diferentes opcións e servizos que ofrece, incluídas as que utiliza o editor para permitir a xestión operativa do sitio web e habilitar as súas funcións. Servizos. Por exemplo, os utilizados para manter a sesión, xestionar o tempo de resposta, o rendemento ou validación de opcións, utilizar elementos de seguridade, compartir contidos coas redes sociais, etc. O sitio web non pode funcionar correctamente sen estas cookies.@gl|||Les cookies techniques sont ceux qui sont essentiels et strictement nécessaires au bon fonctionnement du site web et à l'utilisation des différentes options et services qu'il propose, y compris ceux que l'éditeur utilise pour permettre la gestion opérationnelle du site web et permettre ses fonctions et services. Par exemple, ceux utilisés pour la maintenance des sessions, la gestion du temps de réponse, l'exécution ou la validation des options, l'utilisation des éléments de sécurité, le partage de contenu avec les réseaux sociaux, etc. Le site web ne peut pas fonctionner correctement sans ces cookies.@fr|||Technische Cookies sind diejenigen, die für das ordnungsgemäße Funktionieren der Website und die Nutzung der verschiedenen Optionen und Dienstleistungen, die sie bietet, unbedingt erforderlich sind, einschließlich derjenigen, die der Herausgeber verwendet, um die operative Verwaltung der Website zu ermöglichen und ihre Funktionen und Dienstleistungen zu ermöglichen. Zum Beispiel solche, die für die Aufrechterhaltung von Sitzungen, die Verwaltung von Antwortzeiten, die Leistung oder Validierung von Optionen, die Verwendung von Sicherheitselementen, die gemeinsame Nutzung von Inhalten in sozialen Netzwerken usw. verwendet werden. Ohne diese Cookies kann die Website nicht richtig funktionieren.@de|||I cookie tecnici sono quelli essenziali e strettamente necessari per il corretto funzionamento del sito web e per l'utilizzo delle diverse opzioni e dei servizi offerti, compresi quelli che l'editore utilizza per consentire la gestione operativa del sito web e abilitarne le funzioni e i servizi. Ad esempio, quelli utilizzati per il mantenimento delle sessioni, la gestione dei tempi di risposta, le prestazioni o la convalida delle opzioni, l'uso di elementi di sicurezza, la condivisione di contenuti con i social network, ecc. Il sito web non può funzionare correttamente senza questi cookie.@it
             };
             mEntityContext.CategoriaProyectoCookie.Add(categoriaProyectoCookie);
             ProyectoCookie proyectoCookieAviso = new ProyectoCookie()
@@ -152,6 +160,7 @@ namespace Es.Riam.Gnoss.FirstDataLoad
             mEntityContext.ParametroAplicacion.Add(parametroAplicacion5);
             mEntityContext.ParametroAplicacion.Add(parametroAplicacion6);
             mEntityContext.ParametroAplicacion.Add(parametroAplicacion7);
+            mEntityContext.ParametroAplicacion.Add(parametroAplicacion8);
 
             ProyectoPestanyaMenu proyectoPestanyaMenu1 = new ProyectoPestanyaMenu()
             {
@@ -159,7 +168,7 @@ namespace Es.Riam.Gnoss.FirstDataLoad
                 OrganizacionID = new Guid("11111111-1111-1111-1111-111111111111"),
                 ProyectoID = new Guid("11111111-1111-1111-1111-111111111111"),
                 PestanyaPadreID = null,
-                TipoPestanya = 12,
+                TipoPestanya = (short)TipoPestanyaMenu.BusquedaAvanzada,
                 Nombre = "",
                 Ruta = "",
                 Orden = 2,
@@ -181,7 +190,7 @@ namespace Es.Riam.Gnoss.FirstDataLoad
                 OrganizacionID = new Guid("11111111-1111-1111-1111-111111111111"),
                 ProyectoID = new Guid("11111111-1111-1111-1111-111111111111"),
                 PestanyaPadreID = null,
-                TipoPestanya = 6,
+                TipoPestanya = (short)TipoPestanyaMenu.PersonasYOrganizaciones,
                 Nombre = "",
                 Ruta = "",
                 Orden = 1,
@@ -203,7 +212,7 @@ namespace Es.Riam.Gnoss.FirstDataLoad
                 OrganizacionID = new Guid("11111111-1111-1111-1111-111111111111"),
                 ProyectoID = new Guid("11111111-1111-1111-1111-111111111111"),
                 PestanyaPadreID = null,
-                TipoPestanya = 32,
+                TipoPestanya = (short)TipoPestanyaMenu.Comunidades,
                 Nombre = "",
                 Ruta = "",
                 Orden = 0,
@@ -239,7 +248,15 @@ namespace Es.Riam.Gnoss.FirstDataLoad
             string urlPropia = "http://localhost";
             if(!string.IsNullOrEmpty(mConfigService.ObtenerDominio()))
             {
-                urlPropia = mConfigService.ObtenerDominio();
+                if (mConfigService.PeticionHttps() && !mConfigService.ObtenerDominio().Contains("http"))
+                {
+                    urlPropia = $"https://{mConfigService.ObtenerDominio()}";
+                }
+                else if (!mConfigService.PeticionHttps() && !mConfigService.ObtenerDominio().Contains("http"))
+                {
+                    urlPropia = $"http://{mConfigService.ObtenerDominio()}";
+                }
+                
             } 
             Proyecto proyecto = new Proyecto()
             {

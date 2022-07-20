@@ -1268,7 +1268,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Proyectos
 
                     //Organizacion sin perfil, hay que crearselo
                     //"OrganizacionID ='" + OrganizacionIDSeleccionada + "'"
-                    if (identiDW.ListaPerfilOrganizacion.Any(perfilOrg => perfilOrg.OrganizacionID.Equals(OrganizacionIDSeleccionada)))
+                    if (!identiDW.ListaPerfilOrganizacion.Any(perfilOrg => perfilOrg.OrganizacionID.Equals(OrganizacionIDSeleccionada)))
                     {
                         //Creo filas "Perfil"
                         AD.EntityModel.Models.IdentidadDS.Perfil filaPerfil = new AD.EntityModel.Models.IdentidadDS.Perfil();
@@ -1297,7 +1297,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Proyectos
                     }
                     gestorUsuarios.GestorIdentidades.RecargarHijos();
                     Guid ClavePerfil = (Guid)gestorUsuarios.GestorIdentidades.DataWrapperIdentidad.ListaPerfilOrganizacion.Where(item => item.OrganizacionID.Equals(OrganizacionIDSeleccionada)).Select(item => item.PerfilID).FirstOrDefault();
-                    if (gestorUsuarios.GestorIdentidades.DataWrapperIdentidad.ListaIdentidad.Any(ident => ident.PerfilID.Equals(ClavePerfil) && ident.ProyectoID.Equals(FilaProyectoNuevo.ProyectoID)))
+                    if (!gestorUsuarios.GestorIdentidades.DataWrapperIdentidad.ListaIdentidad.Any(ident => ident.PerfilID.Equals(ClavePerfil) && ident.ProyectoID.Equals(FilaProyectoNuevo.ProyectoID)))
                     {
                         //Organizacion sin identidad en este proyecto, hay que crearla
                         //Creo fila "Identidad"
@@ -1478,14 +1478,14 @@ namespace Es.Riam.Gnoss.Web.Controles.Proyectos
             pIdentidadDW = gestorUsuarios.GestorIdentidades.DataWrapperIdentidad;
 
             #region Creo lo Gadgets por defecto
-            dataWrapperProyecto.AddProyectoGadgetRow(FilaProyectoNuevo.OrganizacionID, FilaProyectoNuevo.ProyectoID, Guid.NewGuid(), UtilIdiomas.GetText("COMADMININFOGENERAL", "TIPOGADLOMASINTERESANTE"), "", 0, (short)TipoGadget.LoMasInteresante, "", null, (short)TipoUbicacionGadget.LateralHomeComunidad, true, false, Guid.Empty, false, "", "");
-            proyectoGBD.AddProyectoGadget(FilaProyectoNuevo.OrganizacionID, FilaProyectoNuevo.ProyectoID, Guid.NewGuid(), UtilIdiomas.GetText("COMADMININFOGENERAL", "TIPOGADLOMASINTERESANTE"), " ", 0, (short)TipoGadget.LoMasInteresante, " ", null, (short)TipoUbicacionGadget.LateralHomeComunidad, true, false, Guid.Empty, false, "", "");
+            dataWrapperProyecto.AddProyectoGadgetRow(FilaProyectoNuevo.OrganizacionID, FilaProyectoNuevo.ProyectoID, Guid.NewGuid(), UtilIdiomas.GetText("COMADMININFOGENERAL", "TIPOGADLOMASINTERESANTE"), "", 0, (short)TipoGadget.LoMasInteresante, "", null, (short)TipoUbicacionGadget.LateralHomeComunidad, true, false, Guid.Empty, false, "", "lomasinteresante");
+            proyectoGBD.AddProyectoGadget(FilaProyectoNuevo.OrganizacionID, FilaProyectoNuevo.ProyectoID, Guid.NewGuid(), UtilIdiomas.GetText("COMADMININFOGENERAL", "TIPOGADLOMASINTERESANTE"), " ", 0, (short)TipoGadget.LoMasInteresante, " ", null, (short)TipoUbicacionGadget.LateralHomeComunidad, true, false, Guid.Empty, false, "", "lomasinteresante");
             //proyectoGBD.GuardarCambios();
-            dataWrapperProyecto.AddProyectoGadgetRow(FilaProyectoNuevo.OrganizacionID, FilaProyectoNuevo.ProyectoID, Guid.NewGuid(), UtilIdiomas.GetText("COMADMININFOGENERAL", "TIPOGADPROYRELACIONADOS"), "", 1, (short)TipoGadget.ProyRelacionados, "", null, (short)TipoUbicacionGadget.LateralHomeComunidad, true, false, Guid.Empty, false, "", "");
-            proyectoGBD.AddProyectoGadget(FilaProyectoNuevo.OrganizacionID, FilaProyectoNuevo.ProyectoID, Guid.NewGuid(), UtilIdiomas.GetText("COMADMININFOGENERAL", "TIPOGADPROYRELACIONADOS"), " ", 1, (short)TipoGadget.ProyRelacionados, " ", null, (short)TipoUbicacionGadget.LateralHomeComunidad, true, false, Guid.Empty, false, "", "");
+            dataWrapperProyecto.AddProyectoGadgetRow(FilaProyectoNuevo.OrganizacionID, FilaProyectoNuevo.ProyectoID, Guid.NewGuid(), UtilIdiomas.GetText("COMADMININFOGENERAL", "TIPOGADPROYRELACIONADOS"), "", 1, (short)TipoGadget.ProyRelacionados, "", null, (short)TipoUbicacionGadget.LateralHomeComunidad, true, false, Guid.Empty, false, "", "comunidadesrelacionadas");
+            proyectoGBD.AddProyectoGadget(FilaProyectoNuevo.OrganizacionID, FilaProyectoNuevo.ProyectoID, Guid.NewGuid(), UtilIdiomas.GetText("COMADMININFOGENERAL", "TIPOGADPROYRELACIONADOS"), " ", 1, (short)TipoGadget.ProyRelacionados, " ", null, (short)TipoUbicacionGadget.LateralHomeComunidad, true, false, Guid.Empty, false, "", "comunidadesrelacionadas");
             // proyectoGBD.GuardarCambios();
-            dataWrapperProyecto.AddProyectoGadgetRow(FilaProyectoNuevo.OrganizacionID, FilaProyectoNuevo.ProyectoID, Guid.NewGuid(), UtilIdiomas.GetText("PERFILRECURSOSCOMPARTIDOSFICHA", "TEPUEDEINTERESAR"), "", 0, (short)TipoGadget.RecursosRelacionados, "", null, (short)TipoUbicacionGadget.FichaRecursoComunidad, true, false, Guid.Empty, false, "", "");
-            proyectoGBD.AddProyectoGadget(FilaProyectoNuevo.OrganizacionID, FilaProyectoNuevo.ProyectoID, Guid.NewGuid(), UtilIdiomas.GetText("PERFILRECURSOSCOMPARTIDOSFICHA", "TEPUEDEINTERESAR"), " ", 0, (short)TipoGadget.RecursosRelacionados, " ", null, (short)TipoUbicacionGadget.FichaRecursoComunidad, true, false, Guid.Empty, false, "", "");
+            dataWrapperProyecto.AddProyectoGadgetRow(FilaProyectoNuevo.OrganizacionID, FilaProyectoNuevo.ProyectoID, Guid.NewGuid(), UtilIdiomas.GetText("PERFILRECURSOSCOMPARTIDOSFICHA", "TEPUEDEINTERESAR"), "", 0, (short)TipoGadget.RecursosRelacionados, "", null, (short)TipoUbicacionGadget.FichaRecursoComunidad, true, false, Guid.Empty, false, "", "tepuedeinteresar");
+            proyectoGBD.AddProyectoGadget(FilaProyectoNuevo.OrganizacionID, FilaProyectoNuevo.ProyectoID, Guid.NewGuid(), UtilIdiomas.GetText("PERFILRECURSOSCOMPARTIDOSFICHA", "TEPUEDEINTERESAR"), " ", 0, (short)TipoGadget.RecursosRelacionados, " ", null, (short)TipoUbicacionGadget.FichaRecursoComunidad, true, false, Guid.Empty, false, "", "tepuedeinteresar");
             proyectoGBD.GuardarCambios();
 
             #endregion

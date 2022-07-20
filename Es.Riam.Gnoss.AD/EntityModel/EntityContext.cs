@@ -104,6 +104,7 @@ namespace Es.Riam.Gnoss.AD.EntityModel
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
+            optionsBuilder.LogTo(mLoggingService.AgregarEntradaTrazaEntity);
             if (_configService.ObtenerTipoBD().Equals("2"))
             {
                 optionsBuilder.UseNpgsql(_configService.ObtenerSqlConnectionString());
@@ -955,17 +956,14 @@ namespace Es.Riam.Gnoss.AD.EntityModel
             modelBuilder.Entity<PerfilPersonaOrg>()
      .HasKey(c => new { c.PersonaID, c.OrganizacionID, c.PerfilID });
 
-            modelBuilder.Entity<Models.Sitemaps.Sitemaps>()
+            modelBuilder.Entity<Sitemaps>()
           .HasKey(c => new { c.Dominio, c.SitemapIndexName });
 
             modelBuilder.Entity<DocumentoWebVinBaseRecursos>()
        .HasOne(a => a.DocumentoWebVinBaseRecursosExtra)
        .WithOne(b => b.DocumentoWebVinBaseRecursos)
        .HasForeignKey<DocumentoWebVinBaseRecursosExtra>(b => new { b.DocumentoID, b.BaseRecursosID });
-            modelBuilder.Entity<FacetaHome>()
-       .HasOne(a => a.FacetaObjetoConocimientoProyecto)
-       .WithOne(b => b.FacetaHome)
-       .HasForeignKey<FacetaObjetoConocimientoProyecto>(b => new { b.OrganizacionID, b.ProyectoID, b.ObjetoConocimiento, b.Faceta });
+
             modelBuilder.Entity<ProyectoCerradoTmp>()
        .HasOne(a => a.Proyecto)
        .WithOne(b => b.ProyectoCerradoTmp)
@@ -1889,12 +1887,7 @@ namespace Es.Riam.Gnoss.AD.EntityModel
                 .IsRequired()
                 .HasForeignKey(e => new { e.OrganizacionID, e.ProyectoID, e.ObjetoConocimiento, e.Faceta })
                 .OnDelete(DeleteBehavior.Restrict);
-
-            modelBuilder.Entity<FacetaObjetoConocimientoProyecto>()
-                .HasOne(e => e.FacetaHome)
-                .WithOne(e => e.FacetaObjetoConocimientoProyecto)
-                .IsRequired();
-
+         
             modelBuilder.Entity<FacetaHome>()
                 .HasMany(e => e.FacetaFiltroHome)
                 .WithOne(e => e.FacetaHome)

@@ -80,8 +80,6 @@ namespace Es.Riam.Gnoss.AD.EntityModel.Models.Faceta
 
         public bool Inmutable { get; set; }
         
-        public virtual FacetaHome FacetaHome { get; set; }
-
         public Guid? AgrupacionID { get; set; }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]

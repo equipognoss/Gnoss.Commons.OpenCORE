@@ -15,6 +15,8 @@ using System.Linq;
 using System.Web;
 using Es.Riam.Gnoss.Logica.Cookie;
 using Es.Riam.Gnoss.AD.EntityModel.Models.Cookies;
+using System.IO;
+using System.Text.Encodings.Web;
 
 namespace Es.Riam.Gnoss.Web.MVC.Controles.Helper
 {
@@ -710,12 +712,12 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Helper
         {
             IHtmlContent resultado = null;
             CommunityModel Comunidad = htmlHelper.ViewBag.Comunidad;
-
+            DateTime date = DateTime.Now;
+            LoggingService loggingService = new LoggingService(null, null, null);
             try
             {
                 if (TienePersonalizacion(htmlHelper))
-                {
-                    
+                {         
                     string personalizacion = MultiViewResult.ComprobarPersonalizacion(htmlHelper.ViewBag, Comunidad, partialViewName);
                     try
                     {
@@ -723,7 +725,6 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Helper
                     }
                     catch(Exception ex)
                     {
-                        LoggingService loggingService = new LoggingService(null, null, null);
                         loggingService.GuardarLogError(ex);
                     }
                 }
@@ -735,10 +736,9 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Helper
             }
             catch (Exception ex)
             {
-                //TODO Poner LoggingService en viewBag
-                //mLoggingService.GuardarLogError(ex);
+                loggingService.GuardarLogError(ex);
             }
-
+            
             return resultado;
         }
         public static IHtmlContent PartialView(this IHtmlHelper htmlHelper, string partialViewName, object model, ViewDataDictionary diccionario)

@@ -34,7 +34,6 @@ namespace Es.Riam.Gnoss.AD.EntityModel.Models.IdentidadDS
 
         public DateTime? FechaBaja { get; set; }
 
-        [Required(AllowEmptyStrings = true)]
         public string Tags { get; set; }
 
         public bool Publico { get; set; }

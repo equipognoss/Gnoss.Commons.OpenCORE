@@ -877,12 +877,12 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
             if (filaPresentacionPersonalizado == null)
             {
                 filaPresentacionPersonalizado = new AD.EntityModel.Models.ProyectoDS.PresentacionPersonalizadoSemantico();
-                DataWrapperProyecto.ListaPresentacionPersonalizadoSemantico.Add(filaPresentacionPersonalizado);
-                mEntityContext.PresentacionPersonalizadoSemantico.Add(filaPresentacionPersonalizado);
                 filaPresentacionPersonalizado.OrganizacionID = ProyectoSeleccionado.FilaProyecto.OrganizacionID;
                 filaPresentacionPersonalizado.ProyectoID = ProyectoSeleccionado.Clave;
                 filaPresentacionPersonalizado.OntologiaID = pOntologiaID;
                 filaPresentacionPersonalizado.Orden = pOrden;
+                DataWrapperProyecto.ListaPresentacionPersonalizadoSemantico.Add(filaPresentacionPersonalizado);
+                mEntityContext.PresentacionPersonalizadoSemantico.Add(filaPresentacionPersonalizado);
             }
 
             if (!string.IsNullOrEmpty(pNombreOnto))

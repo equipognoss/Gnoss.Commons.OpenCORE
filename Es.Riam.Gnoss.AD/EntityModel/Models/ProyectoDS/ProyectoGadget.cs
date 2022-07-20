@@ -58,7 +58,6 @@ namespace Es.Riam.Gnoss.AD.EntityModel.Models.ProyectoDS
 
         public short Tipo { get; set; }
 
-        [Required(AllowEmptyStrings = true)]
         [StringLength(10)]
         public string Ubicacion { get; set; }
 
@@ -77,7 +76,6 @@ namespace Es.Riam.Gnoss.AD.EntityModel.Models.ProyectoDS
 
         public string ComunidadDestinoFiltros { get; set; }
 
-        [Required(AllowEmptyStrings = true)]
         [StringLength(50)]
         public string NombreCorto { get; set; }
 

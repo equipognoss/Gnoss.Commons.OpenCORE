@@ -2393,7 +2393,7 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextOracleMigrations
                     Ubicacion = table.Column<short>(type: "NUMBER(5)", nullable: false),
                     BloquePadreID = table.Column<Guid>(type: "RAW(16)", nullable: true),
                     Orden = table.Column<short>(type: "NUMBER(5)", nullable: false),
-                    Estilos = table.Column<string>(type: "NVARCHAR2(2000)", nullable: false),
+                    Estilos = table.Column<string>(type: "NCLOB", nullable: false),
                     Borrador = table.Column<bool>(type: "NUMBER(1)", nullable: false)
                 },
                 constraints: table =>
@@ -2780,12 +2780,6 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextOracleMigrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_FacetaObjetoConocimientoProyecto", x => new { x.OrganizacionID, x.ProyectoID, x.ObjetoConocimiento, x.Faceta });
-                    table.ForeignKey(
-                        name: "FK_FacetaObjetoConocimientoProyecto_FacetaHome_OrganizacionID_ProyectoID_ObjetoConocimiento_Faceta",
-                        columns: x => new { x.OrganizacionID, x.ProyectoID, x.ObjetoConocimiento, x.Faceta },
-                        principalTable: "FacetaHome",
-                        principalColumns: new[] { "OrganizacionID", "ProyectoID", "ObjetoConocimiento", "Faceta" },
-                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -2963,7 +2957,7 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextOracleMigrations
                 {
                     NotificacionID = table.Column<Guid>(type: "RAW(16)", nullable: false),
                     ParametroID = table.Column<short>(type: "NUMBER(5)", nullable: false),
-                    Valor = table.Column<string>(type: "NVARCHAR2(2000)", nullable: false)
+                    Valor = table.Column<string>(type: "NVARCHAR2(2000)", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -3350,7 +3344,7 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextOracleMigrations
                     Orden = table.Column<short>(type: "NUMBER(5)", nullable: false),
                     Ontologia = table.Column<string>(type: "NVARCHAR2(1000)", maxLength: 1000, nullable: false),
                     Propiedad = table.Column<string>(type: "NVARCHAR2(2000)", maxLength: 2000, nullable: false),
-                    Nombre = table.Column<string>(type: "NVARCHAR2(1000)", maxLength: 1000, nullable: false)
+                    Nombre = table.Column<string>(type: "NVARCHAR2(1000)", maxLength: 1000, nullable: true)
                 },
                 constraints: table =>
                 {
@@ -3513,7 +3507,7 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextOracleMigrations
                     PersonalizacionComponenteID = table.Column<Guid>(type: "RAW(16)", nullable: true),
                     CargarPorAjax = table.Column<bool>(type: "NUMBER(1)", nullable: false),
                     ComunidadDestinoFiltros = table.Column<string>(type: "NVARCHAR2(2000)", nullable: true),
-                    NombreCorto = table.Column<string>(type: "NVARCHAR2(50)", maxLength: 50, nullable: false)
+                    NombreCorto = table.Column<string>(type: "NVARCHAR2(50)", maxLength: 50, nullable: true)
                 },
                 constraints: table =>
                 {
@@ -4602,7 +4596,7 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextOracleMigrations
                 {
                     PersonalizacionID = table.Column<Guid>(type: "RAW(16)", nullable: false),
                     TipoPagina = table.Column<string>(type: "NVARCHAR2(100)", maxLength: 100, nullable: false),
-                    HTML = table.Column<string>(type: "NVARCHAR2(2000)", nullable: false)
+                    HTML = table.Column<string>(type: "NCLOB", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -4622,9 +4616,9 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextOracleMigrations
                     PersonalizacionID = table.Column<Guid>(type: "RAW(16)", nullable: false),
                     TipoComponente = table.Column<string>(type: "NVARCHAR2(100)", maxLength: 100, nullable: false),
                     PersonalizacionComponenteID = table.Column<Guid>(type: "RAW(16)", nullable: false),
-                    HTML = table.Column<string>(type: "NVARCHAR2(2000)", nullable: false),
+                    HTML = table.Column<string>(type: "NCLOB", nullable: false),
                     Nombre = table.Column<string>(type: "NVARCHAR2(50)", maxLength: 50, nullable: false),
-                    DatosExtra = table.Column<string>(type: "VARCHAR2(4000)", unicode: false, nullable: true)
+                    DatosExtra = table.Column<string>(type: "NCLOB", unicode: false, nullable: true)
                 },
                 constraints: table =>
                 {
@@ -4643,7 +4637,7 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextOracleMigrations
                 {
                     PersonalizacionID = table.Column<Guid>(type: "RAW(16)", nullable: false),
                     PersonalizacionComponenteID = table.Column<Guid>(type: "RAW(16)", nullable: false),
-                    HTML = table.Column<string>(type: "NVARCHAR2(2000)", nullable: false),
+                    HTML = table.Column<string>(type: "NCLOB", nullable: false),
                     Nombre = table.Column<string>(type: "NVARCHAR2(50)", maxLength: 50, nullable: false)
                 },
                 constraints: table =>
@@ -4682,7 +4676,7 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextOracleMigrations
                 {
                     PersonalizacionID = table.Column<Guid>(type: "RAW(16)", nullable: false),
                     RdfType = table.Column<string>(type: "NVARCHAR2(50)", maxLength: 50, nullable: false),
-                    HTML = table.Column<string>(type: "NVARCHAR2(2000)", nullable: false)
+                    HTML = table.Column<string>(type: "NCLOB", nullable: false)
                 },
                 constraints: table =>
                 {

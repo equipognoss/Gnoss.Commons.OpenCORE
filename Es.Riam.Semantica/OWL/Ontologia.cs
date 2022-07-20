@@ -12,7 +12,7 @@ namespace Es.Riam.Semantica.OWL
     /// Representa una ontología leída desde un archivo en formato OWL.
     /// </summary>
     [Serializable]
-    public class Ontologia: IDisposable, ISerializable, ICloneable
+    public class Ontologia : IDisposable, ISerializable, ICloneable
     {
         #region Miembros
 
@@ -29,7 +29,7 @@ namespace Es.Riam.Semantica.OWL
         /// <summary>
         /// Fichero que posee la ontología.
         /// </summary>
-        private StreamReader mFicheroOntologia=null;
+        private StreamReader mFicheroOntologia = null;
 
         /// <summary>
         /// Ficheros que poseen las ontologías.
@@ -117,6 +117,8 @@ namespace Es.Riam.Semantica.OWL
         private bool mOntoAuxiliarInventada;
 
         private List<ElementoOntologia> mEntidadesAuxiliares = null;
+
+        private bool mOntologiaLeida = false;
 
         #endregion
 
@@ -208,7 +210,7 @@ namespace Es.Riam.Semantica.OWL
             mUsoIDsRelativos = (bool)info.GetValue("UsoIDsRelativos", typeof(bool));
             mUrlOntologiasImportadas = (List<string>)info.GetValue("UrlOntologiasImportadas", typeof(List<string>));
             mValorVerdaderNamespacesReferencia = (Dictionary<string, string>)info.GetValue("ValorVerdaderNamespacesReferencia", typeof(Dictionary<string, string>));
-            
+
             mGestionOwl = (GestionOWL)info.GetValue("GestionOwl", typeof(GestionOWL));
             mEstilosPlantilla = (Dictionary<string, List<EstiloPlantilla>>)info.GetValue("EstilosPlantilla", typeof(Dictionary<string, List<EstiloPlantilla>>));
             mConfiguracionPlantilla = (EstiloPlantillaConfigGen)info.GetValue("ConfiguracionPlantilla", typeof(EstiloPlantillaConfigGen));
@@ -269,10 +271,10 @@ namespace Es.Riam.Semantica.OWL
         {
             get
             {
-                if(mEntidadesAuxiliares == null)
+                if (mEntidadesAuxiliares == null)
                 {
                     mEntidadesAuxiliares = new List<ElementoOntologia>();
-                    foreach (Propiedad propAux in Propiedades.Where(prop => prop.Tipo.Equals(TipoPropiedad.ObjectProperty) && !string.IsNullOrEmpty(prop.Rango)).Distinct()) 
+                    foreach (Propiedad propAux in Propiedades.Where(prop => prop.Tipo.Equals(TipoPropiedad.ObjectProperty) && !string.IsNullOrEmpty(prop.Rango)).Distinct())
                     {
                         string rango = propAux.Rango;
 
@@ -284,7 +286,7 @@ namespace Es.Riam.Semantica.OWL
 
                         if (entidadAuxiliar.Subclases.Any())
                         {
-                            foreach(string rangoHija in entidadAuxiliar.Subclases)
+                            foreach (string rangoHija in entidadAuxiliar.Subclases)
                             {
                                 ElementoOntologia entidadAuxiliarHija = GetEntidadTipo(rangoHija);
                                 if (!mEntidadesAuxiliares.Any(e => e.Descripcion.Equals(entidadAuxiliarHija.Descripcion)))
@@ -598,70 +600,125 @@ namespace Es.Riam.Semantica.OWL
         /// Lee el fichero de la ontología.
         /// </summary>
         public void LeerOntologia()
-        {            
-            string contenidoOntologia = "";
+        {
+            if (!mOntologiaLeida)
+            {
+                string contenidoOntologia = "";
 
-            if (mFicheroOntologia != null && mFicheroOntologia.BaseStream.CanRead)
-            {
-                contenidoOntologia = mFicheroOntologia.ReadToEnd();
-                mFicheroOntologia.Close();
-                mFicheroOntologia.Dispose();
-            }
-            else if (mRutasOntologias != null) //Hay varios ficheros.
-            {
-                foreach (string rutaOnto in mRutasOntologias)
+                if (mFicheroOntologia != null && mFicheroOntologia.BaseStream.CanRead)
                 {
-                    mFicheroOntologia = new StreamReader(rutaOnto);
-                    contenidoOntologia += mFicheroOntologia.ReadToEnd();
-
+                    contenidoOntologia = mFicheroOntologia.ReadToEnd();
                     mFicheroOntologia.Close();
                     mFicheroOntologia.Dispose();
-                    mFicheroOntologia = null;
                 }
-            }
-            else //Lista con los bytes de los ficheros de las ontologías.
-            {
-                foreach (byte[] arrayOnto in mBytesFicherosOntologia)
+                else if (mRutasOntologias != null) //Hay varios ficheros.
                 {
-                    if (arrayOnto != null)
+                    foreach (string rutaOnto in mRutasOntologias)
                     {
-                        this.mFicheroOntologia = new StreamReader(new MemoryStream(arrayOnto));
+                        mFicheroOntologia = new StreamReader(rutaOnto);
                         contenidoOntologia += mFicheroOntologia.ReadToEnd();
+
                         mFicheroOntologia.Close();
                         mFicheroOntologia.Dispose();
                         mFicheroOntologia = null;
-                    }   
+                    }
                 }
-            }
-
-            GestorOWL.Ontologia = this;
-
-
-            if (contenidoOntologia.LastIndexOf("<?xml") > 0)
-            {
-                #region Más de una ontología en el mismo fichero
-
-                //Hay más de un owl guardado en el mismo archivo.
-                List<string> listaOntologias = new List<string>();
-                while (contenidoOntologia.LastIndexOf("<?xml") > 0)
+                else //Lista con los bytes de los ficheros de las ontologías.
                 {
-                    listaOntologias.Add(contenidoOntologia.Substring(contenidoOntologia.LastIndexOf("<?xml")));
-                    contenidoOntologia = contenidoOntologia.Substring(0, contenidoOntologia.LastIndexOf("<?xml"));
+                    foreach (byte[] arrayOnto in mBytesFicherosOntologia)
+                    {
+                        if (arrayOnto != null)
+                        {
+                            this.mFicheroOntologia = new StreamReader(new MemoryStream(arrayOnto));
+                            contenidoOntologia += mFicheroOntologia.ReadToEnd();
+                            mFicheroOntologia.Close();
+                            mFicheroOntologia.Dispose();
+                            mFicheroOntologia = null;
+                        }
+                    }
                 }
 
-                //Agrego la última tras salir del while:
-                listaOntologias.Add(contenidoOntologia);
+                GestorOWL.Ontologia = this;
 
-                //Le doy la vuelta para que se lea en el orden que está escrita:
-                listaOntologias.Reverse();
 
-                this.mEntidades = new List<ElementoOntologia>();
-                Propiedades = new List<Propiedad>();
-
-                foreach (string ontologia in listaOntologias)
+                if (contenidoOntologia.LastIndexOf("<?xml") > 0)
                 {
+                    #region Más de una ontología en el mismo fichero
+
+                    //Hay más de un owl guardado en el mismo archivo.
+                    List<string> listaOntologias = new List<string>();
+                    while (contenidoOntologia.LastIndexOf("<?xml") > 0)
+                    {
+                        listaOntologias.Add(contenidoOntologia.Substring(contenidoOntologia.LastIndexOf("<?xml")));
+                        contenidoOntologia = contenidoOntologia.Substring(0, contenidoOntologia.LastIndexOf("<?xml"));
+                    }
+
+                    //Agrego la última tras salir del while:
+                    listaOntologias.Add(contenidoOntologia);
+
+                    //Le doy la vuelta para que se lea en el orden que está escrita:
+                    listaOntologias.Reverse();
+
+                    this.mEntidades = new List<ElementoOntologia>();
+                    Propiedades = new List<Propiedad>();
+
+                    foreach (string ontologia in listaOntologias)
+                    {
+                        //Leo y añado los namespaces a la ontología:
+                        Dictionary<string, string> namespaces = GestionOWL.LeerNamespaces(this, ontologia);
+                        foreach (string key in namespaces.Keys)
+                        {
+                            if (!NamespacesDefinidos.ContainsKey(key))
+                            {
+                                NamespacesDefinidos.Add(key, namespaces[key]);
+                            }
+
+                            if (!NamespacesDefinidosInv.ContainsKey(namespaces[key]))
+                            {
+                                NamespacesDefinidosInv.Add(namespaces[key], key);
+                            }
+                            //TODO: Revisar, pero tener encuenta que ha cambiado la lista lo que era key ahora es value y viceversa:
+
+                            //if (!NamespacesDefinidos.ContainsKey(key))
+                            //{
+                            //    NamespacesDefinidos.Add(key, namespaces[key]);
+                            //}
+                            //else if (namespaces[key][0] != '&')
+                            //{
+                            //    NamespacesDefinidos[key] = namespaces[key];
+                            //}
+                            //else if (namespaces[key][0] == '&' && !ValorVerdaderNamespacesReferencia.ContainsKey(namespaces[key]))
+                            //{
+                            //    //Namespace que hace referencia a otro:
+                            //     ValorVerdaderNamespacesReferencia.Add(namespaces[key], key);
+                            //}
+                        }
+                    }
+
+                    foreach (string ontologia in listaOntologias)
+                    {
+                        //Lee todas las entidades y las almacena en mEntidades.
+                        this.mEntidades.AddRange(this.GestorOWL.LeerEntidades(ontologia));
+
+                        foreach (ElementoOntologia entidad in mEntidades)
+                        {
+                            if (!TiposEntidades.Contains(entidad.TipoEntidad))
+                            {
+                                TiposEntidades.Add(entidad.TipoEntidad);
+                            }
+                        }
+
+                        //Lee las todas las propiedades y las almacena en la variable local propiedades
+                        Propiedades.AddRange(GestorOWL.LeerPropiedades(ontologia));
+                    }
+
+                    #endregion
+                }
+                else
+                {
+                    //Leo los namespaces:
                     //Leo y añado los namespaces a la ontología:
-                    Dictionary<string, string> namespaces = GestionOWL.LeerNamespaces(this, ontologia);
+                    Dictionary<string, string> namespaces = GestionOWL.LeerNamespaces(this, contenidoOntologia);
                     foreach (string key in namespaces.Keys)
                     {
                         if (!NamespacesDefinidos.ContainsKey(key))
@@ -673,28 +730,17 @@ namespace Es.Riam.Semantica.OWL
                         {
                             NamespacesDefinidosInv.Add(namespaces[key], key);
                         }
-                        //TODO: Revisar, pero tener encuenta que ha cambiado la lista lo que era key ahora es value y viceversa:
-
-                        //if (!NamespacesDefinidos.ContainsKey(key))
-                        //{
-                        //    NamespacesDefinidos.Add(key, namespaces[key]);
-                        //}
-                        //else if (namespaces[key][0] != '&')
-                        //{
-                        //    NamespacesDefinidos[key] = namespaces[key];
-                        //}
-                        //else if (namespaces[key][0] == '&' && !ValorVerdaderNamespacesReferencia.ContainsKey(namespaces[key]))
-                        //{
-                        //    //Namespace que hace referencia a otro:
-                        //     ValorVerdaderNamespacesReferencia.Add(namespaces[key], key);
-                        //}
                     }
-                }
 
-                foreach (string ontologia in listaOntologias)
-                {
+                    GestionOWL.LeerOntologiasImportadas(this, contenidoOntologia);
+
+                    //Desencripta el fichero
+                    //this.mFicheroOntologia=new StreamReader( Encriptacion.DesencriptarFichero(this.mRutaOntologia));
                     //Lee todas las entidades y las almacena en mEntidades.
-                    this.mEntidades.AddRange(this.GestorOWL.LeerEntidades(ontologia));
+                    this.mEntidades = this.GestorOWL.LeerEntidades(contenidoOntologia);
+
+                    //Ajustamos SuperClases y subClases:
+                    AjustarSuperClasesSubClases();
 
                     foreach (ElementoOntologia entidad in mEntidades)
                     {
@@ -705,83 +751,42 @@ namespace Es.Riam.Semantica.OWL
                     }
 
                     //Lee las todas las propiedades y las almacena en la variable local propiedades
-                    Propiedades.AddRange(GestorOWL.LeerPropiedades(ontologia));
+                    Propiedades = GestorOWL.LeerPropiedades(contenidoOntologia);
                 }
 
-                #endregion
-            }
-            else
-            {
-                //Leo los namespaces:
-                //Leo y añado los namespaces a la ontología:
-                Dictionary<string, string> namespaces = GestionOWL.LeerNamespaces(this, contenidoOntologia);
-                foreach (string key in namespaces.Keys)
+                //Recorre todas las propiedades y asigna cada una de ellas a todas las clases a las que pertenece.
+                foreach (Propiedad propiedad in Propiedades)
                 {
-                    if (!NamespacesDefinidos.ContainsKey(key))
+                    EstableceDominiosRangosPropiedadesHeredadas(propiedad, Propiedades);
+
+                    foreach (string tipoEntidad in propiedad.Dominio)
                     {
-                        NamespacesDefinidos.Add(key, namespaces[key]);
-                    }
-
-                    if (!NamespacesDefinidosInv.ContainsKey(namespaces[key]))
-                    {
-                        NamespacesDefinidosInv.Add(namespaces[key], key);
-                    }
-                }
-
-                GestionOWL.LeerOntologiasImportadas(this, contenidoOntologia);
-
-                //Desencripta el fichero
-                //this.mFicheroOntologia=new StreamReader( Encriptacion.DesencriptarFichero(this.mRutaOntologia));
-                //Lee todas las entidades y las almacena en mEntidades.
-                this.mEntidades = this.GestorOWL.LeerEntidades(contenidoOntologia);
-
-                //Ajustamos SuperClases y subClases:
-                AjustarSuperClasesSubClases();
-
-                foreach (ElementoOntologia entidad in mEntidades)
-                {
-                    if (!TiposEntidades.Contains(entidad.TipoEntidad))
-                    {
-                        TiposEntidades.Add(entidad.TipoEntidad);
-                    }
-                }
-
-                //Lee las todas las propiedades y las almacena en la variable local propiedades
-                Propiedades = GestorOWL.LeerPropiedades(contenidoOntologia);
-            }
-
-            //Recorre todas las propiedades y asigna cada una de ellas a todas las clases a las que pertenece.
-            foreach (Propiedad propiedad in Propiedades)
-            {
-                EstableceDominiosRangosPropiedadesHeredadas(propiedad, Propiedades);
-
-                foreach (string tipoEntidad in propiedad.Dominio)
-                {
-                    if (!tipoEntidad.Equals(string.Empty))
-                    {
-                        foreach (ElementoOntologia entidad in this.mEntidades)
+                        if (!tipoEntidad.Equals(string.Empty))
                         {
-                            if (entidad.TipoEntidad.Equals(tipoEntidad))
+                            foreach (ElementoOntologia entidad in this.mEntidades)
                             {
-                                entidad.AddPropiedad(propiedad);
-                            }
-                            else if (entidad.TipoEntidadRelativo.Equals(tipoEntidad)) //Compruebo la entiad con su URL relativa
-                            {
-                                entidad.AddPropiedad(propiedad);
+                                if (entidad.TipoEntidad.Equals(tipoEntidad))
+                                {
+                                    entidad.AddPropiedad(propiedad);
+                                }
+                                else if (entidad.TipoEntidadRelativo.Equals(tipoEntidad)) //Compruebo la entiad con su URL relativa
+                                {
+                                    entidad.AddPropiedad(propiedad);
+                                }
                             }
                         }
                     }
                 }
-            }
-            //Recorre las clases y asigna las propiedades heredadas a cada sub clase
-            foreach (ElementoOntologia ent in Entidades)
-            {
-                if (ent.Superclases.Count > 0)
+                //Recorre las clases y asigna las propiedades heredadas a cada sub clase
+                foreach (ElementoOntologia ent in Entidades)
                 {
-                    ObtenerPropiedadesHeredadas(ent, ent.Superclases);
+                    if (ent.Superclases.Count > 0)
+                    {
+                        ObtenerPropiedadesHeredadas(ent, ent.Superclases);
+                    }
                 }
+                mOntologiaLeida = true;
             }
-
         }
 
         /// <summary>
@@ -1150,7 +1155,7 @@ namespace Es.Riam.Semantica.OWL
             info.AddValue("UsoIDsRelativos", mUsoIDsRelativos);
             info.AddValue("UrlOntologiasImportadas", mUrlOntologiasImportadas);
             info.AddValue("ValorVerdaderNamespacesReferencia", mValorVerdaderNamespacesReferencia);
-            
+
             info.AddValue("GestionOwl", mGestionOwl);
             info.AddValue("ConfiguracionPlantilla", mConfiguracionPlantilla);
             info.AddValue("EstilosPlantilla", mEstilosPlantilla);

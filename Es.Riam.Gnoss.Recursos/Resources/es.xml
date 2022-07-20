@@ -3634,6 +3634,7 @@
     <Resource tag="INDICE">indice</Resource>
     <Resource tag="INVITARAORG">invitar-a-org</Resource>
     <Resource tag="INVITARACOMUNIDAD">invitar-a-comunidad</Resource>
+    <Resource tag="INVITARACOMUNIDADVIAMODAL">invitar-a-comunidad-modal</Resource>    
     <Resource tag="INVITACIONES">invitaciones</Resource>
     <Resource tag="NOTIFICACIONES">notificaciones</Resource>
     <Resource tag="INVITACIONESORG">invitaciones-org</Resource>

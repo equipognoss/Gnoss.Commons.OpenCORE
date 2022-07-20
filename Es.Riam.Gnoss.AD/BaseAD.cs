@@ -112,7 +112,10 @@ namespace Es.Riam.Gnoss.AD
             mLoggingService = loggingService;
             mEntityContext = entityContext;
             mConfigService = configService;
-            mServicesUtilVirtuosoAndReplication.FicheroConfiguracion = pFicheroConfiguracionBD;
+            if (mServicesUtilVirtuosoAndReplication != null)
+            {
+                mServicesUtilVirtuosoAndReplication.FicheroConfiguracion = pFicheroConfiguracionBD;
+            }
             Cargar(pFicheroConfiguracionBD);
         }
 

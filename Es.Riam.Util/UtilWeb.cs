@@ -285,6 +285,12 @@ namespace Es.Riam.Util
                 }
             }
 
+            if (pPostData.Contains("pIdentidadID"))
+            {
+                string identidadID = ObtenerIdentidadID(pPostData);
+                webRequest.Headers.Add("Authorization", $"bearer {identidadID}");
+            }
+
             if (!pSeguirRedireccion)
             {
                 webRequest.AllowAutoRedirect = false;
@@ -315,6 +321,13 @@ namespace Es.Riam.Util
             webRequest = null;
 
             return responseData;
+        }
+
+        private static string ObtenerIdentidadID(string pPostData)
+        {
+            string identidadID = pPostData.Split("pIdentidadID=")[1].Split("&")[0];
+
+            return identidadID;
         }
 
 

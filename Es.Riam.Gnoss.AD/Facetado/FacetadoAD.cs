@@ -2871,7 +2871,8 @@ namespace Es.Riam.Gnoss.AD.Facetado
                     }
                 }
 
-                query += ObtenerFiltroCondicionFaceta(pClaveFaceta);
+                //El método de la linea inferior estaba utilizando el campo condición para una función para la que no esta pensado
+                //query += ObtenerFiltroCondicionFaceta(pClaveFaceta);
 
                 if (pClaveFaceta == filtroExtraCons || !string.IsNullOrEmpty(idioma))
                 {
@@ -9928,7 +9929,7 @@ from <http://pruebas.gnoss.net/4f08285b-19f9-4ff0-8c36-ccee29868a75>  WHERE {   
         /// <summary>
         /// Devuelve el texto sin acentos
         /// </summary>
-        public static string removerSignosAcentos(String texto)
+        public static string removerSignosAcentos(string texto)
         {
             StringBuilder textoSinAcentos = new StringBuilder(texto.Length);
             int indexConAcento;
@@ -10637,6 +10638,7 @@ from <http://pruebas.gnoss.net/4f08285b-19f9-4ff0-8c36-ccee29868a75>  WHERE {   
                             omitirRdfType = pFiltrosSearchPersonalizados[keySearch].Item4;
                             if (!string.IsNullOrEmpty(filtroWhere))
                             {
+                                valorFiltro = valorFiltro.Trim('"');
                                 string[] valorFiltroSplit = valorFiltro.Split(new string[] { "$$$" }, StringSplitOptions.RemoveEmptyEntries);
 
                                 string queryPersonalizada = filtroWhere;

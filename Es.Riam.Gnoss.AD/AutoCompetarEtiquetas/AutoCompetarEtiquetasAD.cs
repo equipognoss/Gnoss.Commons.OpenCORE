@@ -1150,15 +1150,16 @@ namespace Es.Riam.Gnoss.AD.AutoCompetarEtiquetas
                 }
                 else
                 {
-                    DbCommand comandoUpdateXML = ObtenerComando($"UPDATE \"{nombreTabla}\" SET Etiquetas={IBD.ToParam("Tags")} WHERE \"ElementoID\"={IBD.GuidValor(pElementoID)} AND \"Tipo\"={IBD.ToParam("Tipo")} AND \"ProyectoID\"={IBD.GuidValor(pProyectoID)}", mEntityContextBASE);
+                    DbCommand comandoUpdateXML = ObtenerComando($"UPDATE \"{nombreTabla}\" SET \"Etiquetas\"={IBD.ToParam("Tags")} WHERE \"ElementoID\"={IBD.GuidValor(pElementoID)} AND \"Tipo\"={IBD.ToParam("Tipo")} AND \"ProyectoID\"={IBD.GuidValor(pProyectoID)}", mEntityContextBASE);
                     AgregarParametro(comandoUpdateXML, IBD.ToParam("Tags"), DbType.String, pJson);
                     AgregarParametro(comandoUpdateXML, IBD.ToParam("Tipo"), DbType.String, pTipo);
+                    
 
                     if (ActualizarBaseDeDatos(comandoUpdateXML, false, true, true, mEntityContextBASE) == 0) //Hay que hacer un INSERT
                     {
-                        comandoUpdateXML = ObtenerComando($"INSERT INTO \"{nombreTabla}\" (\"ElementoID\", \"Tipo\", \"ProyectoID\", Etiquetas) VALUES ({IBD.GuidValor(pElementoID)}, {IBD.ToParam("Tipo")}, {IBD.GuidValor(pProyectoID)}, {IBD.ToParam("Tags")})");
-                        AgregarParametro(comandoUpdateXML, IBD.ToParam("Tags"), DbType.String, pJson);
+                        comandoUpdateXML = ObtenerComando($"INSERT INTO \"{nombreTabla}\" (\"ElementoID\", \"Tipo\", \"ProyectoID\", \"Etiquetas\") VALUES ({IBD.GuidValor(pElementoID)}, {IBD.ToParam("Tipo")}, {IBD.GuidValor(pProyectoID)}, {IBD.ToParam("Tags")})");
                         AgregarParametro(comandoUpdateXML, IBD.ToParam("Tipo"), DbType.String, pTipo);
+                        AgregarParametro(comandoUpdateXML, IBD.ToParam("Tags"), DbType.String, pJson);
                         ActualizarBaseDeDatos(comandoUpdateXML, false, true, true, mEntityContextBASE);
                     }
                 }
@@ -1229,8 +1230,8 @@ namespace Es.Riam.Gnoss.AD.AutoCompetarEtiquetas
 
             if (ConexionMaster is OracleConnection)
             {
-                string consulta = "SELECT * FROM 'EtiquetasElemento'";
-                DbCommand dbCommand = ObtenerComando($"{consulta.Replace("EtiquetasElemento", tablaElemento)} WHERE 'ElementoID'={IBD.GuidValor(pElementoID)} AND 'Tipo'={IBD.ToParam("Tipo")} AND 'ProyectoID'={IBD.GuidValor(pProyectoID)}", mEntityContextBASE);
+                string consulta = "SELECT RAWTOHEX(\"ElementoID\") as \"ElementoID\", \"Tipo\", RAWTOHEX(\"ProyectoID\") as \"ProyectoID\", \"Etiquetas\"  FROM \"EtiquetasElemento\"";
+                DbCommand dbCommand = ObtenerComando($"{consulta.Replace("EtiquetasElemento", tablaElemento)} WHERE \"ElementoID\"={IBD.GuidValor(pElementoID)} AND 'Tipo'={IBD.ToParam("Tipo")} AND 'ProyectoID'={IBD.GuidValor(pProyectoID)}", mEntityContextBASE);
                 AgregarParametro(dbCommand, IBD.ToParam("Tipo"), DbType.String, pTipo);
                 CargarDataSet(dbCommand, tagsDS, "EtiquetasElemento", null, true, true, mEntityContextBASE);
             }
@@ -1354,8 +1355,15 @@ namespace Es.Riam.Gnoss.AD.AutoCompetarEtiquetas
             DbCommand cmdExisteTabla = ObtenerComando(existeTabla, mEntityContextBASE);
             AgregarParametro(cmdExisteTabla, IBD.ToParam("nombreTabla"), DbType.String, pNombreTabla);
 
-            object resultado = EjecutarEscalar(cmdExisteTabla, false, true, mEntityContextBASE);
-
+            object resultado = EjecutarEscalar(cmdExisteTabla, true, true, mEntityContextBASE);
+            if(resultado != null && ConexionMaster is OracleConnection)
+            {
+                try
+                {
+                    resultado = Convert.ToInt32(resultado);
+                }
+                catch(Exception ex) { }
+            }
             return (resultado != null) && (resultado is int) && (resultado.Equals(1));
         }
 

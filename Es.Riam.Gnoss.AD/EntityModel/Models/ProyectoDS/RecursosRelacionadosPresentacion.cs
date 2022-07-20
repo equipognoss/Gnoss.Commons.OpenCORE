@@ -32,7 +32,6 @@ namespace Es.Riam.Gnoss.AD.EntityModel.Models.ProyectoDS
         [StringLength(2000)]
         public string Propiedad { get; set; }
 
-        [Required(AllowEmptyStrings = true)]
         [StringLength(1000)]
         public string Nombre { get; set; }
 

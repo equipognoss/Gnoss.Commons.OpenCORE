@@ -29,9 +29,26 @@ namespace Es.Riam.Gnoss.AD.EntityModel.Models.ProyectoDS
         [StringLength(1000)]
         public string Ontologia { get; set; }
 
+        public string mPropiedad;
+
         [Required]
         [StringLength(2000)]
-        public string Propiedad { get; set; }
+        public string Propiedad
+        {
+            get
+            {
+                if (mPropiedad == null)
+                {
+                    return "";
+                }
+                return mPropiedad;
+            }
+            set
+            {
+                mPropiedad = value;
+            }
+
+        }
 
         [Required]
         [StringLength(1000)]

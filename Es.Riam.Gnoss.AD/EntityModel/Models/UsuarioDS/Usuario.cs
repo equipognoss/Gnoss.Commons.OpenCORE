@@ -37,7 +37,6 @@ namespace Es.Riam.Gnoss.AD.EntityModel.Models.UsuarioDS
         [StringLength(12)]
         public string Login { get; set; }
 
-        [Required(AllowEmptyStrings = true)]
         [StringLength(50)]
         public string Password { get; set; }
 

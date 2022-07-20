@@ -47,6 +47,7 @@ namespace Es.Riam.Gnoss.Web.UtilOAuth
             mEntityContext = entityContext;
             mEntityContextOauth = entityContextOauth;
             mConfigService = configService;
+            mServicesUtilVirtuosoAndReplication = servicesUtilVirtuosoAndReplication;
         }
 
         #endregion
@@ -182,7 +183,7 @@ namespace Es.Riam.Gnoss.Web.UtilOAuth
             }
             catch(Exception ex)
             {
-                GuardarLog("Error: " + ex.Message + "\r\nPila: " + ex.StackTrace, "error");
+                mLoggingService.GuardarLogError(ex);
             }
             return Guid.Empty;
         }
@@ -210,7 +211,6 @@ namespace Es.Riam.Gnoss.Web.UtilOAuth
             {
                 mensajeExtraSB.AppendLine("Chequeo firma");
                 firma = oauthbase.GenerateSignature(new Uri(pParametrosQuery.Url), pParametrosQuery.ConsumerKey, pParametrosQuery.ConsumerSecret, pParametrosQuery.Token, pParametrosQuery.TokenSecret, pHttpMethod, pParametrosQuery.Timespan, pParametrosQuery.Nonce, out urlNormal, out queryNormal);
-                mLoggingService.GuardarLogError($"Es ideas: {esIdeas} ||| firma: {firma} ||| pParametrosQuery.Signature{pParametrosQuery.Signature}||| firma.Equals(pParametrosQuery.Signature): {firma.Equals(pParametrosQuery.Signature)}");
                 if (esIdeas || firma.Equals(pParametrosQuery.Signature))
                 {
                     mensajeExtraSB.AppendLine("Firma correcta");
@@ -224,18 +224,13 @@ namespace Es.Riam.Gnoss.Web.UtilOAuth
                         string claveCacheNonceStore = "NonceStore_" + pParametrosQuery.Nonce;
                         Guid aleatorio = Guid.NewGuid();
                         DateTime tiempo = DateTime.Now;
-                        GuardarLog(aleatorio.ToString() + " -------------INICIO Peticion cache------------", "error");
-                        GuardarLog(aleatorio.ToString() + " claveCacheNonceStore: " + claveCacheNonceStore, "error");
                         if (!mGnossCache.ExisteClaveEnCache(claveCacheNonceStore))
                         {
-                            GuardarLog(aleatorio.ToString() + " El existe ha tardado es: " + DateTime.Now.Subtract(tiempo).TotalMilliseconds, "error");
                             mensajeExtraSB.AppendLine("Nonce correcto");
                             tiempo = DateTime.Now;
                             mGnossCache.AgregarObjetoCache(claveCacheNonceStore, fecha, 10 * 60);
-                            GuardarLog(aleatorio.ToString() + " El agregar ha tardado es: " + DateTime.Now.Subtract(tiempo).TotalMilliseconds, "error");
                             bienFirmado = true;
                         }
-                        GuardarLog(aleatorio.ToString() + " -------------FIN Peticion cache-------------", "error");
                     }
                 }
             }
@@ -263,30 +258,6 @@ namespace Es.Riam.Gnoss.Web.UtilOAuth
                 throw new Exception($"La firma es incorrecta. Parametros usados para generar la firma: \npParametrosQuery.Url: {pParametrosQuery.Url}\npParametrosQuery.ConsumerKey: {pParametrosQuery.ConsumerKey}\npParametrosQuery.ConsumerSecret: {pParametrosQuery.ConsumerSecret}\npParametrosQuery.Token: {pParametrosQuery.Token}\npParametrosQuery.TokenSecret: {pParametrosQuery.TokenSecret}\npHttpMethod: {pHttpMethod}\n, pParametrosQuery.Timespan: {pParametrosQuery.Timespan}\npParametrosQuery.Nonce: {pParametrosQuery.Nonce}\npParametrosQuery.Signature: {pParametrosQuery.Signature}\npParametrosQuery.Signature. \nFirma obtenida: {firma}\nMensaje extra: {mensajeExtraSB.ToString()}");
             }
             return user;
-        }
-
-        /// <summary>
-        /// Guarda el log de error
-        /// </summary>
-        public void GuardarLog(string pMensaje, string pNombreLog)
-        {
-            string rutaConfig = Path.Combine(mEnv.ContentRootPath, "logs", $"{pNombreLog}_{DateTime.Now.ToString("yyyy-MM-dd")}.log");
-            mLoggingService.GuardarLogError(pMensaje, rutaConfig);
-
-            //Si el fichero supera el tamaño máximo lo elimino
-            if (File.Exists(rutaConfig))
-            {
-                FileInfo fichero = new FileInfo(rutaConfig);
-            }
-
-            //Añado el error al fichero
-            using (StreamWriter sw = new StreamWriter(rutaConfig, true, System.Text.Encoding.Default))
-            {
-                sw.WriteLine(Environment.NewLine + "Fecha: " + DateTime.Now + Environment.NewLine + Environment.NewLine);
-                // Escribo el error
-                sw.Write(pMensaje);
-                sw.WriteLine(Environment.NewLine + Environment.NewLine + "___________________________________________________________________________________________" + Environment.NewLine + Environment.NewLine + Environment.NewLine);
-            }
         }
 
         #endregion

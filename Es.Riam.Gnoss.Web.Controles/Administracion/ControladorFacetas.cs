@@ -293,13 +293,21 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
             IdentidadCN identidadCN = new IdentidadCN(mEntityContext, mLoggingService, mConfigService, null);
 
             // TODO: Guardar en el campo FacetaPrivadaParaGrupoEditores el nombre de la organización y obtener el grupo por proyecto o organización, según proceda
-            List<Guid> grupos = identidadCN.ObtenerGruposIDPorNombreCortoYProyecto(new List<string>(pFilaFacetaOC.FacetaPrivadaParaGrupoEditores.Split('|')), pFilaFacetaOC.ProyectoID);
-            if (grupos == null || grupos.Count() == 0)
+            List<Guid> grupos = new List<Guid>();
+            if (!string.IsNullOrEmpty(pFilaFacetaOC.FacetaPrivadaParaGrupoEditores))
             {
-                grupos = identidadCN.ObtenerGruposIDPorNombreCorto(new List<string>(pFilaFacetaOC.FacetaPrivadaParaGrupoEditores.Split('|')));
+                grupos = identidadCN.ObtenerGruposIDPorNombreCortoYProyecto(new List<string>(pFilaFacetaOC.FacetaPrivadaParaGrupoEditores.Split('|')), pFilaFacetaOC.ProyectoID);
+                if (grupos == null || grupos.Count() == 0)
+                {
+                    grupos = identidadCN.ObtenerGruposIDPorNombreCorto(new List<string>(pFilaFacetaOC.FacetaPrivadaParaGrupoEditores.Split('|')));
+                }
+                faceta.PrivacidadGrupos = identidadCN.ObtenerNombresDeGrupos(grupos);
             }
-
-            faceta.PrivacidadGrupos = identidadCN.ObtenerNombresDeGrupos(grupos);
+            else
+            {
+                faceta.PrivacidadGrupos = new Dictionary<Guid, string>();
+            }
+            
             identidadCN.Dispose();
 
             faceta.Condicion = pFilaFacetaOC.Condicion;
@@ -654,15 +662,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
                 mEntityContext.EliminarElemento(filaFiltro);
                 FacetaDW.ListaFacetaFiltroProyecto.Remove(filaFiltro);
             }
-
-            FacetaHome facetaHome = facetaCN.ObtenerFacetaHomeDeClave(pFilaFaceta.Faceta);
-
-            if (facetaHome != null)
-            {
-                mEntityContext.EliminarElemento(facetaHome);
-                FacetaDW.ListaFacetaHome.Remove(facetaHome);
-            }
-
+                        
             FacetaDW.ListaFacetaObjetoConocimientoProyecto.Remove(pFilaFaceta);
             mEntityContext.EliminarElemento(pFilaFaceta);
         }

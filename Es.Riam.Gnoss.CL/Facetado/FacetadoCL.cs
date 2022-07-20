@@ -2028,7 +2028,17 @@ namespace Es.Riam.Gnoss.CL.Facetado
         {
             string rawKey = $"{ObtenerKeyTesauroSemanticoDeBusqueda(pProyectoID, claveFaceta)}_{pIdioma}";
 
-            FacetadoDS tesauroSemanticoProyecto = ObtenerObjetoDeCache(rawKey) as FacetadoDS;
+            FacetadoDS tesauroSemanticoProyecto = ObtenerObjetoDeCacheLocal(rawKey) as FacetadoDS;
+            
+            if(tesauroSemanticoProyecto == null)
+            {
+                tesauroSemanticoProyecto = ObtenerObjetoDeCache(rawKey) as FacetadoDS;
+
+                if (tesauroSemanticoProyecto != null)
+                {
+                    AgregarObjetoCacheLocal(new Guid(pProyectoID), rawKey, tesauroSemanticoProyecto, true);
+                }
+            }            
 
             return tesauroSemanticoProyecto;
         }

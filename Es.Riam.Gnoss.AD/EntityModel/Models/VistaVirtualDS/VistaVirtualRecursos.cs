@@ -21,6 +21,7 @@ namespace Es.Riam.Gnoss.AD.EntityModel.Models.VistaVirtualDS
         public string RdfType { get; set; }
 
         [Required]
+        [Column(TypeName = "NCLOB")]
         public string HTML { get; set; }
 
         public virtual VistaVirtualPersonalizacion VistaVirtualPersonalizacion { get; set; }

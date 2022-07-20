@@ -11,6 +11,7 @@ using Es.Riam.Gnoss.AD.Identidad;
 using Es.Riam.Gnoss.AD.Usuarios;
 using Es.Riam.Gnoss.Util.Configuracion;
 using Es.Riam.Gnoss.Util.General;
+using Es.Riam.Gnoss.Web.MVC.Models;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -1060,25 +1061,6 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
         /// Empresa
         /// </summary>
         Empresa = 22
-    }
-
-    /// <summary>
-    /// Enumeración para distinguir tipos de roles en la organización
-    /// </summary>
-    public enum TipoAdministradoresOrganizacion
-    {
-        /// <summary>
-        /// Administrador
-        /// </summary>
-        Administrador = 0,
-        /// <summary>
-        /// Editor
-        /// </summary>
-        Editor = 1,
-        /// <summary>
-        /// Puede realizar comentarios en blog y en recursos en nombre se la organización
-        /// </summary>
-        Comentarista = 2
     }
 
     /// <summary>

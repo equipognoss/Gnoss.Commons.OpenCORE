@@ -21,7 +21,7 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
                 columns: table => new
                 {
                     CategoriaID = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    Nombre = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
+                    Nombre = table.Column<string>(type: "nvarchar(max)", maxLength: 100, nullable: true),
                     NombreCorto = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true),
                     Descripcion = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     EsCategoriaTecnica = table.Column<bool>(type: "bit", nullable: false),
@@ -69,7 +69,7 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
                 columns: table => new
                 {
                     CookieID = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    Nombre = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
+                    Nombre = table.Column<string>(type: "nvarchar(max)", maxLength: 100, nullable: true),
                     NombreCorto = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true),
                     Tipo = table.Column<short>(type: "smallint", nullable: false),
                     Descripcion = table.Column<string>(type: "nvarchar(max)", nullable: true),

@@ -215,5 +215,10 @@ namespace Es.Riam.Gnoss.Web.MVC.Models
         /// Listadeo de ítem dentro del propio ítem(facetas anidadas)
         /// </summary>
         public List<FacetItemModel> FacetItemlist { get; set; }
+
+        /// <summary>
+        /// Propiedad que indica si la faceta es hija de otra faceta (Recursividad)
+        /// </summary>
+        public bool IsChildren { get; set; }
     }
 }

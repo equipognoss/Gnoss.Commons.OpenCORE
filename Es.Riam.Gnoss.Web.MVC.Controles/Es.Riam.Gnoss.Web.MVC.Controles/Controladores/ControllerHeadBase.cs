@@ -13,6 +13,7 @@ using Es.Riam.Gnoss.Logica.Identidad;
 using Es.Riam.Gnoss.Util.Configuracion;
 using Es.Riam.Gnoss.Util.General;
 using Es.Riam.Gnoss.Web.Controles;
+using Es.Riam.Gnoss.Web.MVC.Models;
 using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections.Generic;
@@ -269,6 +270,8 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
             //ViewBag.UrlActionLogin = UrlServicioLogin + "/login.aspx?token=" + HttpUtility.UrlEncode(MachineKeyCryptography.Encriptar(UtilUsuario.TokenLoginUsuario)) + UrlRedirectLogin + proyecto;
 
             ViewBag.ListaInputHidden.Add(new KeyValuePair<string, string>("inpt_UrlLogin", ViewBag.UrlActionLogin));
+
+            ViewBag.ListaInputHidden.Add(new KeyValuePair<string, string>("inpt_UrlLoginCookie", UrlServicioLogin));
 
             //EtiquetadoAutomático
 

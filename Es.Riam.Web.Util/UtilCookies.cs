@@ -192,6 +192,7 @@ namespace Es.Riam.Web.Util
 
             Aes encriptador = Aes.Create();
             encriptador.KeySize = 256;
+            
 
             //Establecer la clave secreta para el algoritmo DES. 
             encriptador.Key = key;

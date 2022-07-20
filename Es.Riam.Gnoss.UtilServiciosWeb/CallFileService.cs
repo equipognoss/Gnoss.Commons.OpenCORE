@@ -32,7 +32,7 @@ namespace Es.Riam.Gnoss.UtilServiciosWeb
             string ontology = "";
             string result = CallWebMethods.CallGetApi(mServicioArchivosUrl, $"DescargarCSSOntologia?pDocumentoID={pDocumentoID}&pExtensionArchivo={pExtension}");
             byte[] buffer = JsonConvert.DeserializeObject<byte[]>(result);
-            if (buffer.Any())
+            if (buffer != null && buffer.Any())
             {
                 //Hay que tener cuidado con los Encoding
                 if (convertBase64)

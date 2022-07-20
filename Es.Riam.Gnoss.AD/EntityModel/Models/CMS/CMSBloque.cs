@@ -31,8 +31,23 @@ namespace Es.Riam.Gnoss.AD.EntityModel.Models.CMS
 
         public short Orden { get; set; }
 
-        [Required(AllowEmptyStrings = true)]
-        public string Estilos { get; set; }
+        private string mEstilos;
+
+        public string Estilos
+        {
+            get 
+            { 
+                if(mEstilos == null)
+                {
+                    return "";
+                }
+                return mEstilos; 
+            }
+            set 
+            { 
+                mEstilos = value; 
+            }
+        }
 
         public bool Borrador { get; set; }
 

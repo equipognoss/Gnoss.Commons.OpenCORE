@@ -61,6 +61,7 @@ namespace Es.Riam.Gnoss.Util.Configuracion
         private string urlIntraGnoss;
         private bool viewsAdministracion;
         private string urlApiLucene;
+        private string urlEtiquetadoInteligente;
         private string ignorarVistasPersonalizadas;
         private string urlContent;
         private string logStahsConnection;
@@ -109,6 +110,7 @@ namespace Es.Riam.Gnoss.Util.Configuracion
         private bool? show500Error;
         private bool? escribirFicheroExternoTriples;
         private bool? cacheV4;
+        private bool? configuradoEtiquetadoInteligente;
         private string urlDespligues;
         private string robots;
         private string urlDocuments;
@@ -146,6 +148,26 @@ namespace Es.Riam.Gnoss.Util.Configuracion
         private string cadenaConexionAzureStorage;
         private string errorRoute;
         private string rutaOnto;
+        private string ipServidorFTP;
+        private int minPort = 0;
+        private int maxPort = 0;
+
+        public string GetCadenaConexion()
+        {
+            if (string.IsNullOrEmpty(cadenaConexion))
+            {
+                IDictionary environmentVariables = Environment.GetEnvironmentVariables();
+                if (environmentVariables.Contains("CadenaConexion"))
+                {
+                    cadenaConexion = environmentVariables["CadenaConexion"] as string;
+                }
+                else
+                {
+                    cadenaConexion = Configuration.GetConnectionString("CadenaConexion");
+                }
+            }
+            return cadenaConexion;
+        }
 
 
         public string ErrorRoute
@@ -271,22 +293,6 @@ namespace Es.Riam.Gnoss.Util.Configuracion
             return logstashEndpoint;
         }
 
-        public string GetCadenaConexion()
-        {
-            if (string.IsNullOrEmpty(cadenaConexion))
-            {
-                IDictionary environmentVariables = Environment.GetEnvironmentVariables();
-                if (environmentVariables.Contains("cadenaConexion"))
-                {
-                    cadenaConexion = environmentVariables["cadenaConexion"] as string;
-                }
-                else
-                {
-                    cadenaConexion = Configuration.GetConnectionString("cadenaConexion");
-                }
-            }
-            return cadenaConexion;
-        }
 
         public string GetCadenaConexionVirtuoso()
         {
@@ -1102,7 +1108,13 @@ namespace Es.Riam.Gnoss.Util.Configuracion
                 {
                     oauth = Configuration.GetConnectionString("oauth");
                 }
+
+                if (string.IsNullOrEmpty(oauth))
+                {
+                    oauth = ObtenerSqlConnectionString();
+                }
             }
+            
             return oauth;
         }
         public string ObtenerBaseConnectionString()
@@ -1429,6 +1441,10 @@ namespace Es.Riam.Gnoss.Util.Configuracion
                 {
                     organizacionGnoss = Configuration.GetValue<Guid?>("OrganizacionGnoss");
                 }
+            }
+            if(organizacionGnoss == null)
+            {
+                organizacionGnoss = new Guid("11111111-1111-1111-1111-111111111111");
             }
             return organizacionGnoss;
         }
@@ -3013,6 +3029,105 @@ namespace Es.Riam.Gnoss.Util.Configuracion
                 }
             }
             return trazasHabilitadas.Value;
+        }
+
+        public bool ConfiguradoEtiquetadoInteligente()
+        {
+            if (configuradoEtiquetadoInteligente == null)
+            {
+                if (EnvironmentVariables.Contains("configuradoEtiquetadoInteligente"))
+                {
+                    string variable = EnvironmentVariables["configuradoEtiquetadoInteligente"] as string;
+                    if (variable.ToLower() == "true")
+                    {
+                        configuradoEtiquetadoInteligente = true;
+                    }
+                }
+                else
+                {
+                    configuradoEtiquetadoInteligente = Configuration.GetValue<bool?>("configuradoEtiquetadoInteligente");
+                }
+            }
+            if (configuradoEtiquetadoInteligente == null)
+            {
+                return false;
+            }
+            return configuradoEtiquetadoInteligente.Value;
+        }
+
+        public string ObtenerUrlEtiquetadoInteligente()
+        {
+
+            if (string.IsNullOrEmpty(urlEtiquetadoInteligente))
+            {
+                if (EnvironmentVariables.Contains("Servicios__urlEtiquetadoInteligente"))
+                {
+                    urlEtiquetadoInteligente = EnvironmentVariables["Servicios__urlEtiquetadoInteligente"] as string;
+                }
+                else
+                {
+                    urlEtiquetadoInteligente = Configuration.GetSection("Servicios")["urlEtiquetadoInteligente"];
+                }
+                if (!string.IsNullOrEmpty(urlEtiquetadoInteligente) && !urlEtiquetadoInteligente.EndsWith("/"))
+                {
+                    urlEtiquetadoInteligente = $"{urlEtiquetadoInteligente}/";
+                }
+            }
+            return urlEtiquetadoInteligente;
+        }
+
+        public string ObtenerIpServidorFTP()
+        {
+            if (string.IsNullOrEmpty(ipServidorFTP))
+            {
+                if (EnvironmentVariables.Contains("serverIP"))
+                {
+                    ipServidorFTP = EnvironmentVariables["serverIP"] as string;
+                }
+                else
+                {
+                    ipServidorFTP = Configuration["serverIP"];
+                }
+            }
+            return ipServidorFTP;
+        }
+
+        public int ObtenerMinPortFTP()
+        {
+            if (minPort == 0)
+            {
+                string port;
+                if (EnvironmentVariables.Contains("minPort"))
+                {
+                    port = EnvironmentVariables["minPort"] as string;
+
+                }
+                else
+                {
+                    port = Configuration["minPort"];
+                }
+                minPort = int.Parse(port);
+            }
+            return minPort;
+        }
+
+        public int ObtenerMaxPortFTP()
+        {
+            if (maxPort == 0)
+            {
+                string port;
+                if (EnvironmentVariables.Contains("maxPort"))
+                {
+                    port = EnvironmentVariables["maxPort"] as string;
+
+                }
+                else
+                {
+                    port = Configuration["maxPort"];
+                }
+                maxPort = int.Parse(port);
+            }
+            return maxPort;
         }
 
     }
