@@ -134,25 +134,37 @@ namespace Es.Riam.Gnoss.Util.General
                 //Añado el error al fichero
                 using (StreamWriter sw = new StreamWriter(pRutaFicheroError, true, System.Text.Encoding.Default))
                 {
-                    sw.WriteLine(Environment.NewLine + "Fecha: " + DateTime.Now + Environment.NewLine + Environment.NewLine);
+                    StringBuilder sb = new StringBuilder();
+                    sb.Append($"[{DateTime.Now}] \"{pError}\"");
                     // Escribo el error
-                    sw.WriteLine(pError);
 
                     try
                     {
-
                         if (_httpContextAccessor != null && _httpContextAccessor.HttpContext != null && _httpContextAccessor.HttpContext.Request != null)
                         {
-                            sw.WriteLine(_httpContextAccessor.HttpContext.Request.Path.ToString());
+                            sb.AppendLine($" \"{_httpContextAccessor.HttpContext.Request.Path.ToString()}\"");
                             //sw.WriteLine(HttpContext.Current.Request.Url.ToString());
+                            sb.Append($" \"");
+                            if (_httpContextAccessor.HttpContext.Request.Headers.Keys.Count == 0)
+                            {
+                                sb.Append($"-");
+                            }
                             foreach (string key in _httpContextAccessor.HttpContext.Request.Headers.Keys)
                             {
-                                sw.WriteLine($"{key}: {_httpContextAccessor.HttpContext.Request.Headers[key]}");
+                                sb.Append($" {key}: {_httpContextAccessor.HttpContext.Request.Headers[key]}");
                             }
+                            sb.Append($"\"");
+                        }
+                        else
+                        {
+                            sb.Append($" \"-\"");
+                            sb.Append($" \"-\"");
                         }
                     }
                     catch { }
-                    sw.WriteLine(Environment.NewLine + Environment.NewLine + "___________________________________________________________________________________________" + Environment.NewLine + Environment.NewLine + Environment.NewLine);
+                    string error = sb.ToString().Replace('\n', ' ');
+                    sw.WriteLine(error);
+                    //sw.WriteLine(Environment.NewLine + Environment.NewLine + "___________________________________________________________________________________________" + Environment.NewLine + Environment.NewLine + Environment.NewLine);
                 }
 
                 if (!pYaEnviado && !UBICACIONLOGS.Equals(UtilTelemetry.UbicacionLogsYTrazas.Archivo) && UtilTelemetry.EstaConfiguradaTelemetria)
@@ -203,7 +215,7 @@ namespace Es.Riam.Gnoss.Util.General
         /// </summary>
         /// <param name="pExcepcion">Excepción producida</param>
         /// <param name="pMensajeExtra">Mensaje extra a guardar</param>
-        public void GuardarLogError(Exception pExcepcion, string pMensajeExtra, bool pErrorCritico = false)
+        public void GuardarLogError(Exception pExcepcion, string pMensajeExtra, bool pErrorCritico = false, string pTipoError = "-")
         {
             if (!UBICACIONLOGS.Equals(UtilTelemetry.UbicacionLogsYTrazas.ApplicationInsights))
             {
@@ -211,7 +223,16 @@ namespace Es.Riam.Gnoss.Util.General
                 {
                     if (!(pExcepcion is ThreadAbortException))
                     {
-                        GuardarLogError(DevolverCadenaError(pExcepcion, "") + pMensajeExtra, null, true);
+                        GuardarLogError(DevolverCadenaError(pExcepcion, "") + $" \"{pMensajeExtra}\"", null, true, pTipoError);
+                        if (pExcepcion.InnerException != null)
+                        {
+                            GuardarLogError(pExcepcion.InnerException, pMensajeExtra, pErrorCritico, "INNER EXCEPTION");
+                        }
+                        if (pExcepcion is AggregateException)
+                        {
+                            AggregateException aggregateException = (AggregateException)pExcepcion;                    
+                            GuardarLogError(aggregateException, pMensajeExtra, pErrorCritico, "Aggregate Exception");
+                        }
                     }
                 }
                 catch
@@ -288,7 +309,7 @@ namespace Es.Riam.Gnoss.Util.General
         /// <summary>
         /// Guarda el log de error
         /// </summary>
-        public void GuardarLogError(string pError, string pRutaFicheroError = null, bool pYaEnviado = false)
+        public void GuardarLogError(string pError, string pRutaFicheroError = null, bool pYaEnviado = false, string pTipoError = "-")
         {
             try
             {
@@ -321,25 +342,37 @@ namespace Es.Riam.Gnoss.Util.General
                 //Añado el error al fichero
                 using (StreamWriter sw = new StreamWriter(pRutaFicheroError, true, System.Text.Encoding.Default))
                 {
-                    sw.WriteLine(Environment.NewLine + "Fecha: " + DateTime.Now + Environment.NewLine + Environment.NewLine);
-                    // Escribo el error
-                    sw.WriteLine(pError);
+                    StringBuilder sb = new StringBuilder();
+                    sb.Append($"[{DateTime.Now}] {pError} \"{pTipoError}\"");
 
                     try
                     {
                         if (_httpContextAccessor != null && _httpContextAccessor.HttpContext != null && _httpContextAccessor.HttpContext.Request != null)
                         {
-                            //sw.WriteLine(HttpContext.Current.Request.Url.ToString());
-                            sw.WriteLine(_httpContextAccessor.HttpContext.Request.Path.ToString());
 
+                            //sw.WriteLine(HttpContext.Current.Request.Url.ToString());
+                            sb.Append($" \"{_httpContextAccessor.HttpContext.Request.Path.ToString()}\"");
+                            sb.Append($" \"");
+                            if (_httpContextAccessor.HttpContext.Request.Headers.Keys.Count == 0)
+                            {
+                                sb.Append($"-");
+                            }
                             foreach (string key in _httpContextAccessor.HttpContext.Request.Headers.Keys)
                             {
-                                sw.WriteLine($"{key}: {_httpContextAccessor.HttpContext.Request.Headers[key]}");
+                                sb.Append($" {key}: {_httpContextAccessor.HttpContext.Request.Headers[key]}");
                             }
+                            sb.Append($"\"");
+                        }
+                        else
+                        {
+                            sb.Append($" \"-\"");
+                            sb.Append($" \"-\"");
                         }
                     }
                     catch { }
-                    sw.WriteLine(Environment.NewLine + Environment.NewLine + "___________________________________________________________________________________________" + Environment.NewLine + Environment.NewLine + Environment.NewLine);
+                    string error = sb.ToString().Replace('\r', ' ').Replace('\n', ' ');
+                    sw.WriteLine(error);
+                    //sw.WriteLine(Environment.NewLine + Environment.NewLine + "___________________________________________________________________________________________" + Environment.NewLine + Environment.NewLine + Environment.NewLine);
                 }
 
                 if (!pYaEnviado && !UBICACIONLOGS.Equals(UtilTelemetry.UbicacionLogsYTrazas.Archivo) && UtilTelemetry.EstaConfiguradaTelemetria)
@@ -374,7 +407,11 @@ namespace Es.Riam.Gnoss.Util.General
             string identidadUsuario = "";
             if (_usuario != null && _usuario.UsuarioActual != null)
             {
-                identidadUsuario = "Versión Gnoss:   " + pVersion + Environment.NewLine + Environment.NewLine + "UsuarioID: " + _usuario.UsuarioActual.UsuarioID.ToString() + " IdentidadID: " + _usuario.UsuarioActual.IdentidadID.ToString() + " ProyectoID: " + _usuario.UsuarioActual.ProyectoID.ToString();
+                identidadUsuario = "\"Versión Gnoss:   " + pVersion + Environment.NewLine + Environment.NewLine + "UsuarioID: " + _usuario.UsuarioActual.UsuarioID.ToString() + " IdentidadID: " + _usuario.UsuarioActual.IdentidadID.ToString() + " ProyectoID: " + _usuario.UsuarioActual.ProyectoID.ToString()+"\" ";
+            }
+            else
+            {
+                identidadUsuario = "\"-\" ";
             }
 
             //return identidadUsuario + DevolverCadenaErrorExcepcion(pExcepcion);
@@ -432,7 +469,7 @@ namespace Es.Riam.Gnoss.Util.General
             return datosError;
         }
 
-        private static string DevolverCadenaErrorExcepcion(Exception pExcepcion)
+        private static string DevolverCadenaErrorExcepcion(Exception pExcepcion, string pTipoExcepcion = null)
         {
             string target = "";
             string resultado = "";
@@ -441,22 +478,31 @@ namespace Es.Riam.Gnoss.Util.General
             {
                 if (pExcepcion.TargetSite != null)
                 {
-                    target = "Espacio de nombres:   " + pExcepcion.TargetSite.DeclaringType.Namespace + Environment.NewLine + Environment.NewLine + "Metodo:   " + pExcepcion.TargetSite.Name;
+                    target = $"{pExcepcion.TargetSite.DeclaringType.Namespace} {pExcepcion.TargetSite.Name}";
+                }
+                else
+                {
+                    target = "- -";
                 }
 
-                resultado = Environment.NewLine + Environment.NewLine + "Programa:   " + pExcepcion.Source + Environment.NewLine + Environment.NewLine + target + Environment.NewLine + Environment.NewLine + "Tipo de excepción: " + pExcepcion.GetType().ToString() + Environment.NewLine + Environment.NewLine + "Mensaje:   " + pExcepcion.Message + Environment.NewLine + Environment.NewLine + "Pila de llamadas:" + Environment.NewLine + pExcepcion.StackTrace;
-
+                resultado = $"\"{pExcepcion.Source}\" {target} {pExcepcion.GetType()} \"{pExcepcion.Message}\" \"{pExcepcion.StackTrace}\"";
                 if (pExcepcion.InnerException != null)
                 {
-                    resultado += Environment.NewLine + Environment.NewLine + "INNER EXCEPTION: " + DevolverCadenaErrorExcepcion(pExcepcion.InnerException);
+                    //resultado += $" \"{DevolverCadenaErrorExcepcion(pExcepcion.InnerException)}\"";
                 }
                 if(pExcepcion is AggregateException)
                 {
-                    AggregateException aggregateException = (AggregateException)pExcepcion;
-                    foreach (Exception ex in aggregateException.InnerExceptions)
-                    {
-                        resultado += Environment.NewLine + Environment.NewLine + "AGGREGATE EXCEPTION: " + DevolverCadenaErrorExcepcion(ex);
-                    }
+                    //AggregateException aggregateException = (AggregateException)pExcepcion;
+                    //resultado += $" \"";
+                    //if (aggregateException.InnerExceptions.Count == 0)
+                    //{
+                    //    resultado += $"-";
+                    //}
+                    //foreach (Exception ex in aggregateException.InnerExceptions)
+                    //{
+                    //    resultado += $" {DevolverCadenaErrorExcepcion(ex)}";
+                    //}
+                    //resultado += $"\"";
                 }
             }
 
