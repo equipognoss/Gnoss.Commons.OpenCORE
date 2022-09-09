@@ -152,6 +152,9 @@ namespace Es.Riam.Gnoss.Util.Configuracion
         private string ipServidorFTP;
         private int minPort = 0;
         private int maxPort = 0;
+        private string scopeIdentity;
+        private string clientIDIdentity;
+        private string clientIDSecret;
 
         public string GetCadenaConexion()
         {
@@ -3112,6 +3115,54 @@ namespace Es.Riam.Gnoss.Util.Configuracion
                 }
             }
             return ipServidorFTP;
+        }
+
+        public string ObtenerScopeIdentity()
+        {
+            if (string.IsNullOrEmpty(scopeIdentity))
+            {
+                if (EnvironmentVariables.Contains("scopeIdentity"))
+                {
+                    scopeIdentity = EnvironmentVariables["scopeIdentity"] as string;
+                }
+                else
+                {
+                    scopeIdentity = Configuration["scopeIdentity"];
+                }
+            }
+            return scopeIdentity;
+        }
+
+        public string ObtenerClientIDIdentity()
+        {
+            if (string.IsNullOrEmpty(clientIDIdentity))
+            {
+                if (EnvironmentVariables.Contains("clientIDIdentity"))
+                {
+                    clientIDIdentity = EnvironmentVariables["clientIDIdentity"] as string;
+                }
+                else
+                {
+                    clientIDIdentity = Configuration["clientIDIdentity"];
+                }
+            }
+            return clientIDIdentity;
+        }
+
+        public string ObtenerClientSecretIDIdentity()
+        {
+            if (string.IsNullOrEmpty(clientIDSecret))
+            {
+                if (EnvironmentVariables.Contains("clientSecretIdentity"))
+                {
+                    clientIDSecret = EnvironmentVariables["clientSecretIdentity"] as string;
+                }
+                else
+                {
+                    clientIDSecret = Configuration["clientSecretIdentity"];
+                }
+            }
+            return clientIDSecret;
         }
 
         public int ObtenerMinPortFTP()

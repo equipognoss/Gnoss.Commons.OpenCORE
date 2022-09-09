@@ -28,7 +28,11 @@ namespace Es.Riam.Gnoss.UtilServiciosWeb
         /// <returns>Token bearer</returns>
         public TokenBearer CallTokenApi()
         {
-            string stringData = $"grant_type=client_credentials&scope=apiidentity&client_id=Web&client_secret=master";
+            if(string.IsNullOrEmpty(mConfigService.ObtenerClientIDIdentity()) || string.IsNullOrEmpty(mConfigService.ObtenerClientSecretIDIdentity()) || string.IsNullOrEmpty(mConfigService.ObtenerScopeIdentity()))
+            {
+                throw new Exception("Es necesario configurar los parametro para el Identity Provider");
+            }
+            string stringData = $"grant_type=client_credentials&scope={mConfigService.ObtenerScopeIdentity()}&client_id={mConfigService.ObtenerClientIDIdentity()}&client_secret={mConfigService.ObtenerClientSecretIDIdentity()}";
             return CallTokenIdentity(stringData);
         }
 

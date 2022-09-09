@@ -203,8 +203,6 @@ namespace Es.Riam.Gnoss.Web.UtilOAuth
             string urlNormal = "";
             string queryNormal = "";
 
-            bool esIdeas = pParametrosQuery.ConsumerKey.Equals("7166FBE772204318B5DBD994B7C63B50") || pParametrosQuery.ConsumerKey.Equals("87C9FAB32A8E489485264152118ECFEB");
-
             bool bienFirmado = false;
             string firma = "";
             StringBuilder mensajeExtraSB = new StringBuilder();
@@ -212,7 +210,7 @@ namespace Es.Riam.Gnoss.Web.UtilOAuth
             {
                 mensajeExtraSB.AppendLine("Chequeo firma");
                 firma = oauthbase.GenerateSignature(new Uri(pParametrosQuery.Url), pParametrosQuery.ConsumerKey, pParametrosQuery.ConsumerSecret, pParametrosQuery.Token, pParametrosQuery.TokenSecret, pHttpMethod, pParametrosQuery.Timespan, pParametrosQuery.Nonce, out urlNormal, out queryNormal);
-                if (esIdeas || firma.Equals(pParametrosQuery.Signature))
+                if (firma.Equals(pParametrosQuery.Signature))
                 {
                     mensajeExtraSB.AppendLine("Firma correcta");
                     DateTime fecha = new DateTime(1970, 1, 1, 0, 0, 0, 0).Subtract(new TimeSpan(0, 0, int.Parse(pParametrosQuery.Timespan)).Negate());
