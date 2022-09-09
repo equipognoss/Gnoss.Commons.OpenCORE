@@ -822,13 +822,12 @@ namespace Es.Riam.Gnoss.Web.Controles.Proyectos
         /// <summary>
         /// Guarda un parámetro string en el data set de parámetro general
         /// </summary>
-        /// <param name="pParametrosGeneralesDS">Data set de parámetro general</param>
+        /// <param name="pGestorParametroGeneral">Data set de parámetro general</param>
         /// <param name="pNombreParametro">Nombre del parámetro</param>
         /// <param name="pValor">Valor</param>
-        public void GuardarParametroString(GestorParametroGeneral pParametrosGeneralesDS, string pNombreParametro, string pValor)
+        public void GuardarParametroString(GestorParametroGeneral pGestorParametroGeneral, string pNombreParametro, string pValor)
         {
-            //ParametroProyecto filaParametro = pParametrosGeneralesDS.ParametroProyecto.FindByOrganizacionIDProyectoIDParametro(DatosPeticion.Current.ProyectoSeleccionado.FilaProyecto.OrganizacionID, DatosPeticion.Current.ProyectoSeleccionado.Clave, pNombreParametro);
-            ParametroProyecto filaParametro = pParametrosGeneralesDS.ListaParametroProyecto.Find(parametro => parametro.OrganizacionID.Equals(ProyectoSeleccionado.FilaProyecto.OrganizacionID) && parametro.ProyectoID.Equals(ProyectoSeleccionado.Clave) && parametro.Parametro.Equals(pNombreParametro));
+            ParametroProyecto filaParametro = pGestorParametroGeneral.ListaParametroProyecto.Find(parametro => parametro.OrganizacionID.Equals(ProyectoSeleccionado.FilaProyecto.OrganizacionID) && parametro.ProyectoID.Equals(ProyectoSeleccionado.Clave) && parametro.Parametro.Equals(pNombreParametro));
             ParametroGeneralGBD gestorController = new ParametroGeneralGBD(mEntityContext);
             if (!string.IsNullOrEmpty(pValor))
             {
@@ -841,15 +840,15 @@ namespace Es.Riam.Gnoss.Web.Controles.Proyectos
                 {
                     // La fila no existe, la creo
                     ParametroProyecto parametro = new ParametroProyecto(ProyectoSeleccionado.FilaProyecto.OrganizacionID, ProyectoSeleccionado.Clave, pNombreParametro, pValor);
-                    pParametrosGeneralesDS.ListaParametroProyecto.Add(parametro);
-                    gestorController.addParametroProyecto(parametro);
+                    pGestorParametroGeneral.ListaParametroProyecto.Add(parametro);
+                    gestorController.NuevoParametroProyecto(parametro);
                 }
             }
             else if (filaParametro != null)
             {
                 // El valor es null, elimino el parámetro
-                gestorController.deleteParametroProyecto(filaParametro);
-                pParametrosGeneralesDS.ListaParametroProyecto.Remove(filaParametro);
+                gestorController.EliminarParametroProyecto(filaParametro);
+                pGestorParametroGeneral.ListaParametroProyecto.Remove(filaParametro);
             }
         }
 

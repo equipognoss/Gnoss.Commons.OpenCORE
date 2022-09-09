@@ -259,7 +259,7 @@
     </mensaje>
     <mensaje id="161">
       <asunto>Tens un comentari a: {#NombreDoc#}</asunto>
-      <texto>{p}¡Hola, {#NombrePersona#}!{/p}{p}{#NombreRemitente#} ha comentat el recurs "{#NombreDoc#}". Per veure el comentari segueix aquest enllaç: {a href="{@UrlIntragnoss@}{#IdentidadPersona#}Comentarios"}Veure comentaris{/a}.{/p}</texto>
+		<texto>{p}¡Hola, {#NombrePersona#}!{/p}{p}{#NombreRemitente#} ha comentat el recurs "{#NombreDoc#}". Per veure el comentari segueix aquest enllaç: {a href="{@UrlIntragnoss@}{#IdentidadPersona#}/{#EnlaceComentarios#}"}Veure comentaris{/a}.{/p}</texto>
     </mensaje>
     <mensaje id="180">
       <asunto>{#Asunto#}</asunto>

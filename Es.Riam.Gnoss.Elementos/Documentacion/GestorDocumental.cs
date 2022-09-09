@@ -2636,6 +2636,62 @@ namespace Es.Riam.Gnoss.Elementos.Documentacion
 
         #endregion
 
+        #region Metas
+
+        /// <summary>
+        /// Agregar el metadato del titulo al recurso
+        /// </summary>
+        /// <param name="pDocumento">Documento</param>
+        /// <param name="pMetaTitulo">Titulo para el metatitulo</param>
+        public AD.EntityModel.Models.Documentacion.DocumentoMetaDatos AgregarMetaTitulo(Documento pDocumento, string pMetaTitulo)
+        {
+            //Agregar a BD estos datos.
+            AD.EntityModel.Models.Documentacion.DocumentoMetaDatos documentoMetaDatos = mEntityContext.DocumentoMetaDatos.FirstOrDefault(x => x.DocumentoID == pDocumento.Clave);
+            if (documentoMetaDatos == null)
+            {
+                documentoMetaDatos = new AD.EntityModel.Models.Documentacion.DocumentoMetaDatos();
+                documentoMetaDatos.MetaTitulo = pMetaTitulo;
+                documentoMetaDatos.DocumentoID = pDocumento.Clave;
+                documentoMetaDatos.Documento = pDocumento.FilaDocumento;
+                mEntityContext.DocumentoMetaDatos.Add(documentoMetaDatos);
+            }
+            else
+            {
+                documentoMetaDatos.MetaTitulo = pMetaTitulo;
+            }
+            
+            mEntityContext.SaveChanges();
+            return documentoMetaDatos;
+        }
+
+        /// <summary>
+        /// Agregar el metadato de la descripcion al recurso
+        /// </summary>
+        /// <param name="pDocumento">Documento</param>
+        /// <param name="pMetaDescripcion">Descripcion para la metadescripcion</param>
+        public AD.EntityModel.Models.Documentacion.DocumentoMetaDatos AgregarMetaDescripcion(Documento pDocumento, string pMetaDescripcion)
+        {
+            //Agregar a BD estos datos.
+            AD.EntityModel.Models.Documentacion.DocumentoMetaDatos documentoMetaDatos = mEntityContext.DocumentoMetaDatos.FirstOrDefault(x => x.DocumentoID == pDocumento.Clave);
+            if (documentoMetaDatos == null)
+            {
+                documentoMetaDatos = new AD.EntityModel.Models.Documentacion.DocumentoMetaDatos();
+                documentoMetaDatos.MetaDescripcion = pMetaDescripcion;
+                documentoMetaDatos.DocumentoID = pDocumento.Clave;
+                documentoMetaDatos.Documento = pDocumento.FilaDocumento;
+                mEntityContext.DocumentoMetaDatos.Add(documentoMetaDatos);
+            }
+            else
+            {
+                documentoMetaDatos.MetaDescripcion = pMetaDescripcion;
+            }
+            
+            mEntityContext.SaveChanges();
+            return documentoMetaDatos;
+        }
+
+        #endregion
+
         #region Metodos de editores
 
         /// <summary>

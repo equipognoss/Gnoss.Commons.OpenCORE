@@ -307,9 +307,9 @@ namespace Es.Riam.Gnoss.CL.Facetado
             string rawKey = ObtenerKeyBusquedaFacetado(pProyectoID, pTipoBusqueda, pPerfilID, true, pNumeroFacetas, pEsUsuarioInvitado, pParametrosClaveExtra, pFacetaPrivadaGrupo);
             if (pOrganizacionID.HasValue && !rawKey.Contains(NombresCL.PRIMEROSRECURSOS))
             {
-                rawKey += "_" + pOrganizacionID.Value;
+                rawKey += $"_{pOrganizacionID.Value}";
             }
-            rawKey += "_" + mIdioma + home;
+            rawKey += $"_{mIdioma}{home}";
 
             if (pBusquedaTipoMapa)
             {
@@ -318,7 +318,7 @@ namespace Es.Riam.Gnoss.CL.Facetado
 
             if (pTipoBusqueda.Equals(FacetadoAD.TipoBusquedaToString(TipoBusqueda.Mensajes)) && !string.IsNullOrEmpty(pParametros))
             {
-                rawKey += "_" + pParametros;
+                rawKey += $"_{pParametros}";
             }
 
             string html = ObtenerObjetoDeCache(rawKey) as string;
@@ -338,17 +338,17 @@ namespace Es.Riam.Gnoss.CL.Facetado
             string rawKey = ObtenerKeyBusquedaFacetado(pProyectoID, pTipoBusqueda, pPerfilID, false, pEsUsuarioInvitado);
             if (pOrganizacionID.HasValue && !rawKey.Contains(NombresCL.PRIMEROSRECURSOS))
             {
-                rawKey += "_" + pOrganizacionID.Value;
+                rawKey += $"_{pOrganizacionID.Value}";
             }
             if (pEsIdentidadInvitado)
             {
                 rawKey += "_invitado";
             }
-            rawKey += "_" + pIdioma + "_" + pNumeroPagina;
+            rawKey += $"_{pIdioma}_{pNumeroPagina}";
 
             if (pTipoBusqueda.Equals(FacetadoAD.TipoBusquedaToString(TipoBusqueda.Mensajes)) && !string.IsNullOrEmpty(pParametros))
             {
-                rawKey += "_" + pParametros;
+                rawKey += $"_{pParametros}";
             }
 
             string html = ObtenerObjetoDeCache(rawKey) as string;
@@ -364,7 +364,7 @@ namespace Es.Riam.Gnoss.CL.Facetado
         /// <returns></returns>
         public FacetadoDS ObtenerRecursosDeFiltroPorFaceta(Guid pProyectoID, string pNombreFaceta, string pValor, int pNumResultados, List<string> pListaSemanticos, Guid pIdentidadID, bool pEsIdentidadInvitada, bool pEsUsuarioInvitado, bool pEsMovil = false)
         {
-            string rawKey = string.Concat("RecursosDeFiltroPorFaceta_", pNombreFaceta + "_" + pValor + "_", pProyectoID);
+            string rawKey = string.Concat("RecursosDeFiltroPorFaceta_", $"{pNombreFaceta}_{pValor}_", pProyectoID);
 
             // Compruebo si está en la caché
             FacetadoDS facetadoDS = ObtenerObjetoDeCache(rawKey) as FacetadoDS;
@@ -409,12 +409,9 @@ namespace Es.Riam.Gnoss.CL.Facetado
                     listaFiltros.Add("rdf:type", listaAux);
                 }
 
-                //facetadoCN.ObtenerResultadosBusqueda(facetadoDS, true, "", listaFiltros, new List<string>(), 0, pNumResultados, pListaSemanticos);
                 facetadoCN.ObtenerResultadosBusqueda(true, facetadoDS, "", listaFiltros, new List<string>(), pProyectoID.Equals(ProyectoAD.MyGnoss), !pEsIdentidadInvitada, pEsUsuarioInvitado, pIdentidadID.ToString().ToUpper(), 0, pNumResultados, pListaSemanticos, "", "", "", 0, pEsMovil);
 
-
                 AgregarObjetoCache(rawKey, facetadoDS);
-
                 facetadoCN.Dispose();
             }
 
@@ -519,19 +516,19 @@ namespace Es.Riam.Gnoss.CL.Facetado
         {
             if (HayCacheSparql)
             {
-                string clave = "ObtenerFacetaEspecial_" + pProyectoID + pNombreFaceta + pEstaEnMyGnoss + pEsMiembroComunidad + pEsInvitado + pIdentidadID + pOrden + pInicio + pLimite + pFiltroContextoWhere;
+                string clave = $"ObtenerFacetaEspecial_{pProyectoID}{pNombreFaceta}{pEstaEnMyGnoss}{pEsMiembroComunidad}{pEsInvitado}{pIdentidadID}{pOrden}{pInicio}{pLimite}{pFiltroContextoWhere}";
 
                 foreach (string filtro in pListaFiltros.Keys)
                 {
                     foreach (string filtroInt in pListaFiltros[filtro])
                     {
-                        clave += "_" + filtro + "_" + filtroInt;
+                        clave += $"_{filtro}_{filtroInt}";
                     }
                 }
 
                 foreach (string filtroExtra in pListaFiltrosExtra)
                 {
-                    clave += "_" + filtroExtra;
+                    clave += $"_{filtroExtra}";
                 }
 
                 FacetadoDS facetadoDS = null;
@@ -592,19 +589,19 @@ namespace Es.Riam.Gnoss.CL.Facetado
         {
             if (HayCacheSparql)
             {
-                string clave = "ObtenerFacetaEspecial_" + pProyectoID + pNombreFaceta + pEstaEnMyGnoss + pEsMiembroComunidad + pEsInvitado + pIdentidadID + pInicio + pLimite + pFiltroContextoWhere;
+                string clave = $"ObtenerFacetaEspecial_{pProyectoID}{pNombreFaceta}{pEstaEnMyGnoss}{pEsMiembroComunidad}{pEsInvitado}{pIdentidadID}{pInicio}{pLimite}{pFiltroContextoWhere}";
 
                 foreach (string filtro in pListaFiltros.Keys)
                 {
                     foreach (string filtroInt in pListaFiltros[filtro])
                     {
-                        clave += "_" + filtro + "_" + filtroInt;
+                        clave += $"_{filtro}_{filtroInt}";
                     }
                 }
 
                 foreach (string filtroExtra in pListaFiltrosExtra)
                 {
-                    clave += "_" + filtroExtra;
+                    clave += $"_{filtroExtra}";
                 }
 
                 FacetadoDS facetadoDS = null;
@@ -719,9 +716,9 @@ namespace Es.Riam.Gnoss.CL.Facetado
             pEsInvitado = true;
             pIdentidadID = UsuarioAD.Invitado.ToString();
 
-            string clave = "_obtenerFaceta_" + pProyectoID + "_" + pProyectoID + pClaveFaceta + pEstaEnMyGnoss + pEsMiembroComunidad + pEsInvitado + pIdentidadID + pTipoDisenio + pInicio + pLimite + pFiltroContextoWhere + "false"; // Le pongo false al final para no perder las cachés de DBLP por el parámetro pEsCatalogoNoSocialConUnTipo
+            string clave = $"_obtenerFaceta_{pProyectoID}_{pProyectoID}{pClaveFaceta}{pEstaEnMyGnoss}{pEsMiembroComunidad}{pEsInvitado}{pIdentidadID}{pTipoDisenio}{pInicio}{pLimite}{pFiltroContextoWhere}false"; // Le pongo false al final para no perder las cachés de DBLP por el parámetro pEsCatalogoNoSocialConUnTipo
 
-            string claveParametros = "pmobtenerFaceta_" + pProyectoID + "__" + pProyectoID + pClaveFaceta + pEstaEnMyGnoss + pEsMiembroComunidad + pEsInvitado + pIdentidadID + pTipoDisenio + pInicio + pLimite + pFiltroContextoWhere + "false"; // Le pongo false al final para no perder las cachés de DBLP por el parámetro pEsCatalogoNoSocialConUnTipo
+            string claveParametros = $"pmobtenerFaceta_{pProyectoID}__{pProyectoID}{pClaveFaceta}{pEstaEnMyGnoss}{pEsMiembroComunidad}{pEsInvitado}{pIdentidadID}{pTipoDisenio}{pInicio}{pLimite}{pFiltroContextoWhere}false"; // Le pongo false al final para no perder las cachés de DBLP por el parámetro pEsCatalogoNoSocialConUnTipo
 
             foreach (string filtro in pListaFiltros.Keys.OrderBy(item => item))
             {
@@ -740,28 +737,28 @@ namespace Es.Riam.Gnoss.CL.Facetado
                     if (aniadir)
                     {
                         string hash = StringToHash(valores);
-                        clave += "_" + filtro + hash;
-                        claveParametros += "_" + filtro + hash;
+                        clave += $"_{filtro}{hash}";
+                        claveParametros += $"_{filtro}{hash}";
                     }
                 }
                 else
                 {
                     foreach (string filtroInt in pListaFiltros[filtro])
                     {
-                        clave += "_" + filtro + "_" + filtroInt;
-                        claveParametros += "_" + filtro + "_" + filtroInt;
+                        clave += $"_{filtro}_{filtroInt}";
+                        claveParametros += $"_{filtro}_{filtroInt}";
                     }
                 }
             }
 
             foreach (string filtroExtra in pListaFiltrosExtra)
             {
-                clave += "_" + filtroExtra;
+                clave += $"_{filtroExtra}";
             }
 
             if (pEsRango && pListaRangos != null && pListaRangos.Count > 0)
             {
-                clave += "_" + pListaRangos[0];
+                clave += $"_{pListaRangos[0]}";
             }
             dictionary.Add("clave", clave);
             dictionary.Add("claveParametros", claveParametros);
@@ -917,19 +914,19 @@ namespace Es.Riam.Gnoss.CL.Facetado
                 pEsInvitado = true;
                 pIdentidadID = UsuarioAD.Invitado.ToString();
 
-                string clave = "ObtenerFaceta_" + pProyectoID + pClaveFaceta + pEstaEnMyGnoss + pEsMiembroComunidad + pEsInvitado + pIdentidadID + pTipoDisenio + pInicio + pLimite + pFiltroContextoWhere + "false"; // Le pongo false al final para no perder las cachés de DBLP por el parámetro pEsCatalogoNoSocialConUnTipo
+                string clave = $"ObtenerFaceta_{pProyectoID}{pClaveFaceta}{pEstaEnMyGnoss}{pEsMiembroComunidad}{pEsInvitado}{pIdentidadID}{pTipoDisenio}{pInicio}{pLimite}{pFiltroContextoWhere}false"; // Le pongo false al final para no perder las cachés de DBLP por el parámetro pEsCatalogoNoSocialConUnTipo
 
                 foreach (string filtro in pListaFiltros.Keys)
                 {
                     foreach (string filtroInt in pListaFiltros[filtro])
                     {
-                        clave += "_" + filtro + "_" + filtroInt;
+                        clave += $"_{filtro}_{filtroInt}";
                     }
                 }
 
                 foreach (string filtroExtra in pListaFiltrosExtra)
                 {
-                    clave += "_" + filtroExtra;
+                    clave += $"_{filtroExtra}";
                 }
 
                 if (pEsRango && pListaRangos != null && pListaRangos.Count > 0)
@@ -970,39 +967,34 @@ namespace Es.Riam.Gnoss.CL.Facetado
             }
         }
 
-
         public void ObtenerFacetaRenombrarSiContieneSufijo(string pProyectoID, FacetadoDS pFacetadoDS, string pNombreFaceta, Dictionary<string, List<string>> pListaFiltros, List<string> pListaFiltrosExtra, bool pEstaEnMyGnoss, bool pEsMiembroComunidad, bool pEsInvitado, string pIdentidadID, TipoDisenio pTipoDisenio, int pInicio, int pLimite, List<string> pSemanticos, string pFiltroContextoWhere, TipoProyecto pTipoProyecto, bool pEsRango, List<int> pListaRangos, string pSufijo, bool pExcluida, bool pInmutable)
         {
             if (HayCacheSparql)
             {
-                string clave = "ObtenerFaceta_" + pProyectoID + pNombreFaceta + pEstaEnMyGnoss + pEsMiembroComunidad + pEsInvitado + pIdentidadID + pTipoDisenio + pInicio + pLimite + pFiltroContextoWhere + "false"; // Le pongo false al final para no perder las cachés de DBLP por el parámetro pEsCatalogoNoSocialConUnTipo
+                string clave = $"ObtenerFaceta_{pProyectoID}{pNombreFaceta}{pEstaEnMyGnoss}{pEsMiembroComunidad}{pEsInvitado}{pIdentidadID}{pTipoDisenio}{pInicio}{pLimite}{pFiltroContextoWhere}false"; // Le pongo false al final para no perder las cachés de DBLP por el parámetro pEsCatalogoNoSocialConUnTipo
 
                 foreach (string filtro in pListaFiltros.Keys)
                 {
                     foreach (string filtroInt in pListaFiltros[filtro])
                     {
-                        clave += "_" + filtro + "_" + filtroInt;
+                        clave += $"_{filtro}_{filtroInt}";
                     }
                 }
 
                 foreach (string filtroExtra in pListaFiltrosExtra)
                 {
-                    clave += "_" + filtroExtra;
+                    clave += $"_{filtroExtra}";
                 }
 
                 if (pEsRango && pListaRangos != null && pListaRangos.Count > 0)
                 {
-                    clave += "_" + pListaRangos[0];
+                    clave += $"_{pListaRangos[0]}";
                 }
-
 
                 FacetadoDS facetadoDS = null;
                 if (ComprobarSiClaveExiste(clave + pSufijo))
                 {
-                    //OldKey, NewKey
                     RenombrarClave(clave + pSufijo, clave);
-
-                    //ClienteRedisEscritura.Rename(clave + pSufijo, clave);
                     facetadoDS = (FacetadoDS)ObtenerObjetoDeCache(clave);
                 }
                 else
@@ -1050,19 +1042,19 @@ namespace Es.Riam.Gnoss.CL.Facetado
         {
             if (HayCacheSparql)
             {
-                string clave = "PersonasExacto_" + FacetadoCN.GrafoID + ascOdes + pTipoFiltro + pInicio + pLimite;
+                string clave = $"PersonasExacto_{FacetadoCN.GrafoID}{ascOdes}{pTipoFiltro}{pInicio}{pLimite}";
 
                 foreach (string filtro in pListaFiltros.Keys)
                 {
                     foreach (string filtroInt in pListaFiltros[filtro])
                     {
-                        clave += "_" + filtro + "_" + filtroInt;
+                        clave += $"_{filtro}_{filtroInt}";
                     }
                 }
 
                 foreach (string filtroExtra in pListaFiltrosExtra)
                 {
-                    clave += "_" + filtroExtra;
+                    clave += $"_{filtroExtra}";
                 }
 
                 FacetadoDS facetadoDS = (FacetadoDS)ObtenerObjetoDeCache(clave);
@@ -1175,9 +1167,9 @@ namespace Es.Riam.Gnoss.CL.Facetado
             pEsInvitado = true;
             pIdentidadID = UsuarioAD.Invitado.ToString();
 
-            string clave = FacetadoCN.GrafoID + "//" + pDescendente + pTipoFiltro + pEstaEnMyGnoss + pEsMiembroComunidad + pEsInvitado + pIdentidadID + pInicio + pLimite + pFiltroContextoSelect + pFiltroContextoWhere + pFiltroContextoOrderBy;
+            string clave = $"{FacetadoCN.GrafoID}//{pDescendente}{pTipoFiltro}{pEstaEnMyGnoss}{pEsMiembroComunidad}{pEsInvitado}{pIdentidadID}{pInicio}{pLimite}{pFiltroContextoSelect}{pFiltroContextoWhere}{pFiltroContextoOrderBy}";
 
-            string claveParametros = FacetadoCN.GrafoID + "//" + pDescendente + pTipoFiltro + pEstaEnMyGnoss + pEsMiembroComunidad + pEsInvitado + pIdentidadID + pInicio + pLimite + pFiltroContextoSelect + pFiltroContextoWhere + pFiltroContextoOrderBy;
+            string claveParametros = $"{FacetadoCN.GrafoID}//{pDescendente}{pTipoFiltro}{pEstaEnMyGnoss}{pEsMiembroComunidad}{pEsInvitado}{pIdentidadID}{pInicio}{pLimite}{pFiltroContextoSelect}{pFiltroContextoWhere}{pFiltroContextoOrderBy}";
 
             foreach (string filtro in pListaFiltros.Keys.OrderBy(item => item))
             {
@@ -1196,16 +1188,16 @@ namespace Es.Riam.Gnoss.CL.Facetado
                     if (aniadir)
                     {
                         string hash = StringToHash(valores);
-                        clave += "_" + filtro + hash;
-                        claveParametros += "_" + filtro + hash;
+                        clave += $"_{filtro}{hash}";
+                        claveParametros += $"_{filtro}{hash}";
                     }
                 }
                 else
                 {
                     foreach (string filtroInt in pListaFiltros[filtro].OrderBy(item => item))
                     {
-                        clave += "_" + filtro + "_" + filtroInt;
-                        claveParametros += "_" + filtro + "_" + filtroInt;
+                        clave += $"_{filtro}_{filtroInt}";
+                        claveParametros += $"_{filtro}_{filtroInt}";
                     }
                 }
             }
@@ -1228,9 +1220,7 @@ namespace Es.Riam.Gnoss.CL.Facetado
             if (HayCacheSparql)
             {
                 Dictionary<string, string> claves = ObtenerClavesResultados(pDescendente, pFacetadoDS, pTipoFiltro, pListaFiltros, pListaFiltrosExtra, pEstaEnMyGnoss, pEsMiembroComunidad, pEsInvitado, pIdentidadID, pInicio, pLimite, pSemanticos, pFiltroContextoSelect, pFiltroContextoWhere, pFiltroContextoOrderBy, pFiltroContextoPesoMinimo, pTipoProyecto, pNamespacesExtra, pResultadosEliminar, pPermitirRecursosPrivados, pOmitirPalabrasNoRelevantesSearch, pTipoAlgoritmoTransformacion, pFiltrosSearchPersonalizados, pEsMovil);
-                FacetadoDS facetadoDS = null;
                 string clave = claves["clave"];
-                string claveParametros = claves["claveParametros"];
                 if (ObtenerDeCache)
                 {
                     exist = ExisteClaveEnCache(clave);
@@ -1264,26 +1254,24 @@ namespace Es.Riam.Gnoss.CL.Facetado
 
             if (HayCacheSparql)
             {
-                string clave = "ResultadosBusqueda_" + FacetadoCN.GrafoID + pDescendente + pTipoFiltro + pEstaEnMyGnoss + pEsMiembroComunidad + pEsInvitado + pIdentidadID + pInicio + pLimite + pFiltroContextoSelect + pFiltroContextoWhere + pFiltroContextoOrderBy + "false"; // Le pongo false al final para no perder las cachés de DBLP por el parámetro pEsCatalogoNoSocialConUnTipo
+                string clave = $"ResultadosBusqueda_{FacetadoCN.GrafoID}{pDescendente}{pTipoFiltro}{pEstaEnMyGnoss }{pEsMiembroComunidad}{pEsInvitado}{pIdentidadID}{pInicio}{pLimite}{pFiltroContextoSelect}{pFiltroContextoWhere}{pFiltroContextoOrderBy}false"; // Le pongo false al final para no perder las cachés de DBLP por el parámetro pEsCatalogoNoSocialConUnTipo
 
                 foreach (string filtro in pListaFiltros.Keys)
                 {
                     foreach (string filtroInt in pListaFiltros[filtro])
                     {
-                        clave += "_" + filtro + "_" + filtroInt;
+                        clave += $"_{filtro}_{filtroInt}";
                     }
                 }
 
                 foreach (string filtroExtra in pListaFiltrosExtra)
                 {
-                    clave += "_" + filtroExtra;
+                    clave += $"_{filtroExtra}";
                 }
 
                 FacetadoDS facetadoDS = null;
-
                 if (ComprobarSiClaveExiste(clave + pSufijo))
                 {
-                    //OldKey, NewKey
                     RenombrarClave(clave + pSufijo, clave);
                     facetadoDS = (FacetadoDS)ObtenerObjetoDeCache(clave);
                 }
@@ -1357,19 +1345,19 @@ namespace Es.Riam.Gnoss.CL.Facetado
 
             if (HayCacheSparql)
             {
-                string clave = "ResultadosBusquedaFormMapa_" + FacetadoCN.GrafoID + pEstaEnMyGnoss + pEsMiembroComunidad + pEsInvitado + pIdentidadID + pFiltroContextoSelect + pFiltroContextoWhere + pFiltroContextoOrderBy + "false"; // Le pongo false al final para no perder las cachés de DBLP por el parámetro pEsCatalogoNoSocialConUnTipo
+                string clave = $"ResultadosBusquedaFormMapa_{FacetadoCN.GrafoID}{pEstaEnMyGnoss}{pEsMiembroComunidad}{pEsInvitado}{pIdentidadID}{pFiltroContextoSelect}{pFiltroContextoWhere}{pFiltroContextoOrderBy}false"; // Le pongo false al final para no perder las cachés de DBLP por el parámetro pEsCatalogoNoSocialConUnTipo
 
                 foreach (string filtro in pListaFiltros.Keys)
                 {
                     foreach (string filtroInt in pListaFiltros[filtro])
                     {
-                        clave += "_" + filtro + "_" + filtroInt;
+                        clave += $"_{filtro}_{filtroInt}";
                     }
                 }
 
                 foreach (string filtroExtra in pListaFiltrosExtra)
                 {
-                    clave += "_" + filtroExtra;
+                    clave += $"_{filtroExtra}";
                 }
 
                 FacetadoDS facetadoDS = null;
@@ -1434,19 +1422,19 @@ namespace Es.Riam.Gnoss.CL.Facetado
         {
             if (HayCacheSparql)
             {
-                string clave = "ResultadosBusquedaFormChart_" + FacetadoCN.GrafoID + pEstaEnMyGnoss + pEsMiembroComunidad + pEsInvitado + pIdentidadID + pFiltroContextoSelect + pFiltroContextoWhere + pFiltroContextoOrderBy + "false"; // Le pongo false al final para no perder las cachés de DBLP por el parámetro pEsCatalogoNoSocialConUnTipo
+                string clave = $"ResultadosBusquedaFormChart_{FacetadoCN.GrafoID}{pEstaEnMyGnoss}{pEsMiembroComunidad}{pEsInvitado}{pIdentidadID}{pFiltroContextoSelect}{pFiltroContextoWhere}{pFiltroContextoOrderBy}false"; // Le pongo false al final para no perder las cachés de DBLP por el parámetro pEsCatalogoNoSocialConUnTipo
 
                 foreach (string filtro in pListaFiltros.Keys)
                 {
                     foreach (string filtroInt in pListaFiltros[filtro])
                     {
-                        clave += "_" + filtro + "_" + filtroInt;
+                        clave += $"_{filtro}_{filtroInt}";
                     }
                 }
 
                 foreach (string filtroExtra in pListaFiltrosExtra)
                 {
-                    clave += "_" + filtroExtra;
+                    clave += $"_{filtroExtra}";
                 }
 
                 FacetadoDS facetadoDS = null;
@@ -1492,8 +1480,9 @@ namespace Es.Riam.Gnoss.CL.Facetado
             pEsInvitado = true;
             pIdentidadID = UsuarioAD.Invitado.ToString();
 
-            string clave = $"_numeroresultados_{FacetadoCN.GrafoID}_" + FacetadoCN.GrafoID + pNombreFaceta + pEstaEnMyGnoss + pEsMiembroComunidad + pEsInvitado + pIdentidadID + pFiltroContextoWhere + "false"; // Le pongo false al final para no perder las cachés de DBLP por el parámetro pEsCatalogoNoSocialConUnTipo
-            string claveParametros = $"pmnumeroresultados_{FacetadoCN.GrafoID}_" + FacetadoCN.GrafoID + pNombreFaceta + pEstaEnMyGnoss + pEsMiembroComunidad + pEsInvitado + pIdentidadID + pFiltroContextoWhere + "false"; // Le pongo false al final para no perder las cachés de DBLP por el parámetro pEsCatalogoNoSocialConUnTipo
+            string clave = $"_numeroresultados_{FacetadoCN.GrafoID}_{FacetadoCN.GrafoID}{pNombreFaceta}{pEstaEnMyGnoss}{pEsMiembroComunidad}{pEsInvitado}{pIdentidadID}{pFiltroContextoWhere}false";
+            // Le pongo false al final para no perder las cachés de DBLP por el parámetro pEsCatalogoNoSocialConUnTipo
+            string claveParametros = $"pmnumeroresultados_{FacetadoCN.GrafoID}_{FacetadoCN.GrafoID}{pNombreFaceta}{pEstaEnMyGnoss}{pEsMiembroComunidad}{pEsInvitado}{pIdentidadID}{pFiltroContextoWhere}false"; // Le pongo false al final para no perder las cachés de DBLP por el parámetro pEsCatalogoNoSocialConUnTipo
 
             foreach (string filtro in pListaFiltros.Keys.OrderBy(item => item))
             {
@@ -1512,23 +1501,23 @@ namespace Es.Riam.Gnoss.CL.Facetado
                     if (aniadir)
                     {
                         string hash = StringToHash(valores);
-                        clave += "_" + filtro + hash;
-                        claveParametros += "_" + filtro + hash;
+                        clave += $"_{filtro}{hash}";
+                        claveParametros += $"_{filtro}{hash}";
                     }
                 }
                 else
                 {
                     foreach (string filtroInt in pListaFiltros[filtro].OrderBy(item => item))
                     {
-                        clave += "_" + filtro + "_" + filtroInt;
-                        claveParametros += "_" + filtro + "_" + filtroInt;
+                        clave += $"_{filtro}_{filtroInt}";
+                        claveParametros += $"_{filtro}_{filtroInt}";
                     }
                 }
             }
 
             foreach (string filtroExtra in pListaFiltrosExtra)
             {
-                clave += "_" + filtroExtra;
+                clave += $"_{filtroExtra}";
             }
             dictionary.Add("clave", clave);
             dictionary.Add("claveParametros", claveParametros);
@@ -1542,7 +1531,6 @@ namespace Es.Riam.Gnoss.CL.Facetado
             {
                 Dictionary<string, string> claves = ObtieneClavesNumeroResultadosCache(pFacetadoDS, pNombreFaceta, pListaFiltros, pListaFiltrosExtra, pEstaEnMyGnoss, pEsMiembroComunidad, pEsInvitado, pIdentidadID, pSemanticos, pFiltroContextoWhere, pTipoProyecto, pPermitirRecursosPrivados, pOmitirPalabrasNoRelevantesSearch, pTiposAlgoritmoTransformacion, pFiltrosSearchPersonalizados, pEsMovil);
                 string clave = claves["clave"];
-                string claveParametros = claves["claveParametros"];
                 if (ObtenerDeCache)
                 {
                     exist = ExisteClaveEnCache(clave);
@@ -1633,19 +1621,19 @@ namespace Es.Riam.Gnoss.CL.Facetado
         {
             if (HayCacheSparql)
             {
-                string clave = "Autocompletar_" + proyectoID + pEstaMyGnoss + pEsMiembroComunidad + pEsInvitado + pIdentidadID + pInicio + pLimite + pFiltrosContexto;
+                string clave = $"Autocompletar_{proyectoID}{pEstaMyGnoss}{pEsMiembroComunidad}{pEsInvitado}{pIdentidadID}{pInicio}{pLimite}{pFiltrosContexto}";
 
                 foreach (string filtro in pListaFiltros.Keys)
                 {
                     foreach (string filtroInt in pListaFiltros[filtro])
                     {
-                        clave += "_" + filtro + "_" + filtroInt;
+                        clave += $"_{filtro}_{filtroInt}";
                     }
                 }
 
                 foreach (string filtroExtra in pListaFiltrosExtra)
                 {
-                    clave += "_" + filtroExtra;
+                    clave += $"_{filtroExtra}";
                 }
 
                 FacetadoDS facetadoDS = (FacetadoDS)ObtenerObjetoDeCache(clave);
@@ -1673,7 +1661,7 @@ namespace Es.Riam.Gnoss.CL.Facetado
         {
             if (HayCacheSparql)
             {
-                string clave = "DatosAutocompletar_" + nombregrafo + filtro;
+                string clave = $"DatosAutocompletar_{nombregrafo}{filtro}";
 
                 FacetadoDS facetadoDS = (FacetadoDS)ObtenerObjetoDeCache(clave);
                 if (facetadoDS == null)
@@ -1735,17 +1723,16 @@ namespace Es.Riam.Gnoss.CL.Facetado
         {
             try
             {
-                string rawKey = string.Concat(NombresCL.FACETADO + "_" + pProyectoID);
+                string rawKey = string.Concat($"{NombresCL.FACETADO}_{pProyectoID}");
                 List<string> claves = new List<string>();
                 if (ClienteRedisLectura != null)
                 {
-                    claves = ClienteRedisLectura.Keys(ObtenerClaveCache(rawKey + "*").ToLower()).Result.ToList();
+                    claves = ClienteRedisLectura.Keys(ObtenerClaveCache($"{rawKey}*").ToLower()).Result.ToList();
                 }
 
                 List<string> clavesElminar = new List<string>();
                 foreach (string claveCache in claves)
                 {
-                    //if (!pProyectoID.Equals(ProyectoAD.ProyectoDidactalia) || (!claveCache.Contains("_recurso_facetas_")))
                     if (!pSoloUsuariosConPrivados || PerteneceClaveAUsuarioConPrivados(claveCache, pProyectoID))
                     {
                         clavesElminar.Add(claveCache);
@@ -1760,7 +1747,6 @@ namespace Es.Riam.Gnoss.CL.Facetado
         }
 
         #region Cache Facetas y resultados
-
 
         /// <summary>
         /// Agrega los identificadores de resultados de una determinada búsqueda a la cache (sin caducidad)
@@ -1797,7 +1783,7 @@ namespace Es.Riam.Gnoss.CL.Facetado
             string rawKey = ObtenerKeyBusquedaFacetadoMVC(pProyectoID, pTipoBusqueda, pPerfilID, false, pEsUsuarioInvitado);
             if (pOrganizacionID.HasValue && !rawKey.Contains(NombresCL.PRIMEROSRECURSOS))
             {
-                rawKey += "_" + pOrganizacionID.Value;
+                rawKey += $"_{pOrganizacionID.Value}";
             }
             if (pEsMovil)
             {
@@ -1807,11 +1793,11 @@ namespace Es.Riam.Gnoss.CL.Facetado
             {
                 rawKey += "_invitado";
             }
-            rawKey += "_" + pNumeroPagina;
+            rawKey += $"_{pNumeroPagina}";
 
             if (pTipoBusqueda.Equals(FacetadoAD.TipoBusquedaToString(TipoBusqueda.Mensajes)) && !string.IsNullOrEmpty(pParametros))
             {
-                rawKey += "_" + pParametros;
+                rawKey += $"_{pParametros}";
             }
 
             string tiempos = "";
@@ -1868,7 +1854,7 @@ namespace Es.Riam.Gnoss.CL.Facetado
             string rawKey = ObtenerKeyBusquedaFacetadoMVC(pProyectoID, pTipoBusqueda, pPerfilID, false, pEsUsuarioInvitado);
             if (pOrganizacionID.HasValue && !rawKey.Contains(NombresCL.PRIMEROSRECURSOS))
             {
-                rawKey += "_" + pOrganizacionID.Value;
+                rawKey += $"_{pOrganizacionID.Value}";
             }
             if (esMovil && !pTipoBusqueda.Equals(FacetadoAD.TipoBusquedaToString(TipoBusqueda.Mensajes)) && !pTipoBusqueda.Equals(FacetadoAD.TipoBusquedaToString(TipoBusqueda.PersonasYOrganizaciones)))
             {
@@ -1878,11 +1864,11 @@ namespace Es.Riam.Gnoss.CL.Facetado
             {
                 rawKey += "_invitado";
             }
-            rawKey += "_" + pNumeroPagina;
+            rawKey += $"_{pNumeroPagina}";
 
             if (pTipoBusqueda.Equals(FacetadoAD.TipoBusquedaToString(TipoBusqueda.Mensajes)) && !string.IsNullOrEmpty(pParametros))
             {
-                rawKey += "_" + pParametros;
+                rawKey += $"_{pParametros}";
             }
 
             Tuple<int, Dictionary<string, TiposResultadosMetaBuscador>> listaRecursos = ObtenerObjetoDeCache(rawKey) as Tuple<int, Dictionary<string, TiposResultadosMetaBuscador>>;
@@ -1938,10 +1924,10 @@ namespace Es.Riam.Gnoss.CL.Facetado
 
                 if (pOrganizacionID.HasValue && !rawKey.Contains(NombresCL.PRIMEROSRECURSOS))
                 {
-                    rawKey += "_" + pOrganizacionID.Value;
+                    rawKey += $"_{pOrganizacionID.Value}";
                 }
 
-                rawKey += "_" + pIdioma + home;
+                rawKey += $"_{pIdioma}{home}";
 
                 if (pBusquedaTipoMapa)
                 {
@@ -1954,7 +1940,7 @@ namespace Es.Riam.Gnoss.CL.Facetado
 
                 if (pTipoBusqueda.Equals(FacetadoAD.TipoBusquedaToString(TipoBusqueda.Mensajes)) && !string.IsNullOrEmpty(pParametros))
                 {
-                    rawKey += "_" + pParametros;
+                    rawKey += $"_{pParametros}";
                 }
 
                 if (pDuracion != 0.0)
@@ -1994,9 +1980,9 @@ namespace Es.Riam.Gnoss.CL.Facetado
             string rawKey = ObtenerKeyBusquedaFacetado(pProyectoID, pTipoBusqueda, pPerfilID, true, pNumeroFacetas, pEsUsuarioInvitado, pParametrosClaveExtra, pFacetaPrivadaGrupo);
             if (pOrganizacionID.HasValue && !rawKey.Contains(NombresCL.PRIMEROSRECURSOS))
             {
-                rawKey += "_" + pOrganizacionID.Value;
+                rawKey += $"_{pOrganizacionID.Value}";
             }
-            rawKey += "_" + pIdioma + home;
+            rawKey += $"_{pIdioma}{home}";
 
             if (pBusquedaTipoMapa)
             {
@@ -2009,7 +1995,7 @@ namespace Es.Riam.Gnoss.CL.Facetado
 
             if (pTipoBusqueda.Equals(FacetadoAD.TipoBusquedaToString(TipoBusqueda.Mensajes)) && !string.IsNullOrEmpty(pParametros))
             {
-                rawKey += "_" + pParametros;
+                rawKey += $"_{pParametros}";
             }
 
             List<FacetModel> facetas = ObtenerObjetoDeCache(rawKey) as List<FacetModel>;
@@ -2018,19 +2004,20 @@ namespace Es.Riam.Gnoss.CL.Facetado
         }
 
         /// <summary>
-        /// Obtiene el modelo del tesauro semantico del proyecto
-        /// </summary>
-        /// <param name="pProyectoID">Identificador del proyecto</param>
-        /// <param name="pBusquedaTipoMapa">Indica si se trata de una busqueda de tipo mapa</param>
-        /// <param name="pParametros">Parametros</param>
+        /// Obtiene el modelo del tesauro semantico del proyecto por clave. 
+        /// Se guarda en cache local, si no existe lo busca en redis y lo agrega a cache local de obtenerlo.
+        /// Los tesauros son muy pesados y tardan en descargarse de redis.
+        /// <paramref name="pProyectoID">Identificador del proyecto</paramref>
+        /// <paramref name="claveFaceta">Clave de la faceta del tesauro que se va a almacenar en cache</paramref>>
+        /// <paramref name="pIdioma">Idioma en el que se solicitan</paramref>
         /// <returns></returns>
         public FacetadoDS ObtenerModeloTesauroSemanticoDeBusquedaEnProyecto(string pProyectoID, string claveFaceta, string pIdioma)
         {
             string rawKey = $"{ObtenerKeyTesauroSemanticoDeBusqueda(pProyectoID, claveFaceta)}_{pIdioma}";
 
             FacetadoDS tesauroSemanticoProyecto = ObtenerObjetoDeCacheLocal(rawKey) as FacetadoDS;
-            
-            if(tesauroSemanticoProyecto == null)
+
+            if (tesauroSemanticoProyecto == null)
             {
                 tesauroSemanticoProyecto = ObtenerObjetoDeCache(rawKey) as FacetadoDS;
 
@@ -2038,7 +2025,7 @@ namespace Es.Riam.Gnoss.CL.Facetado
                 {
                     AgregarObjetoCacheLocal(new Guid(pProyectoID), rawKey, tesauroSemanticoProyecto, true);
                 }
-            }            
+            }
 
             return tesauroSemanticoProyecto;
         }
@@ -2050,7 +2037,7 @@ namespace Es.Riam.Gnoss.CL.Facetado
         /// <returns>Key de la cache para la búsqueda del facetado</returns>
         public string ObtenerKeyTesauroSemanticoDeBusqueda(string pProyectoID, string claveFaceta)
         {
-            string rawKey = NombresCL.TESAURO + "_" + pProyectoID + "_" + claveFaceta;
+            string rawKey = $"{NombresCL.TESAURO}_{pProyectoID}_{claveFaceta}";
 
             return rawKey;
         }
@@ -2093,11 +2080,11 @@ namespace Es.Riam.Gnoss.CL.Facetado
         /// <returns>Key de la cache para la búsqueda del facetado</returns>
         public string ObtenerKeyBusquedaFacetado(Guid pProyectoID, string pTipoBusqueda, Guid pPerfilID, bool pSoloFacetas, int pNumeroFacetas, bool pEsUsuarioInvitado, string pParametrosClaveExtra, bool pFacetaPrivadaGrupo, bool pEsMovil = false)
         {
-            string rawKey = NombresCL.FACETADO + "_" + pProyectoID + "_" + pTipoBusqueda;
+            string rawKey = $"{NombresCL.FACETADO}_{pProyectoID}_{pTipoBusqueda}";
 
             if (pSoloFacetas)
             {
-                rawKey += "_facetas_" + pNumeroFacetas;
+                rawKey += $"_facetas_{pNumeroFacetas}";
             }
 
             if (pEsMovil)
@@ -2109,24 +2096,14 @@ namespace Es.Riam.Gnoss.CL.Facetado
                 rawKey += "_Invitado";
             }
 
-            if (!pPerfilID.Equals(Guid.Empty))
+            if (!pPerfilID.Equals(Guid.Empty) && (pTipoBusqueda.Equals(FacetadoAD.TipoBusquedaToString(TipoBusqueda.Mensajes)) || TienePrivados(pProyectoID, pPerfilID) || pFacetaPrivadaGrupo))
             {
-                if (pTipoBusqueda.Equals(FacetadoAD.TipoBusquedaToString(TipoBusqueda.Mensajes)))
-                {
-                    rawKey = string.Concat(rawKey, "_", pPerfilID.ToString());
-                }
-                else
-                {
-                    if (TienePrivados(pProyectoID, pPerfilID) || pFacetaPrivadaGrupo)
-                    {
-                        rawKey = string.Concat(rawKey, "_", pPerfilID.ToString());
-                    }
-                }
+                rawKey = $"{rawKey}_{pPerfilID}";
             }
 
             if (!string.IsNullOrEmpty(pParametrosClaveExtra))
             {
-                rawKey += "_" + pParametrosClaveExtra;
+                rawKey += $"_{pParametrosClaveExtra}";
             }
 
             return rawKey;
@@ -2168,11 +2145,11 @@ namespace Es.Riam.Gnoss.CL.Facetado
         /// <returns>Key de la cache para la búsqueda del facetado</returns>
         public string ObtenerKeyBusquedaFacetadoMVC(Guid pProyectoID, string pTipoBusqueda, Guid pPerfilID, bool pSoloFacetas, int pNumeroFacetas, bool pEsUsuarioInvitado, string pParametrosClaveExtra, bool pFacetaPrivadaGrupo, bool pEsMovil = false)
         {
-            string rawKey = NombresCL.FACETADO + "_" + pProyectoID + "_" + pTipoBusqueda + "_MVC";
+            string rawKey = $"{NombresCL.FACETADO}_{pProyectoID}_{pTipoBusqueda}_MVC";
 
             if (pSoloFacetas)
             {
-                rawKey += "_facetas_" + pNumeroFacetas;
+                rawKey += $"_facetas_{pNumeroFacetas}";
             }
 
             if (pEsMovil)
@@ -2184,24 +2161,14 @@ namespace Es.Riam.Gnoss.CL.Facetado
                 rawKey += "_Invitado";
             }
 
-            if (!pPerfilID.Equals(Guid.Empty))
+            if (!pPerfilID.Equals(Guid.Empty) && (pTipoBusqueda.Equals(FacetadoAD.TipoBusquedaToString(TipoBusqueda.Mensajes)) || TienePrivados(pProyectoID, pPerfilID) || pFacetaPrivadaGrupo))
             {
-                if (pTipoBusqueda.Equals(FacetadoAD.TipoBusquedaToString(TipoBusqueda.Mensajes)))
-                {
-                    rawKey = string.Concat(rawKey, "_", pPerfilID.ToString());
-                }
-                else
-                {
-                    if (TienePrivados(pProyectoID, pPerfilID) || pFacetaPrivadaGrupo)
-                    {
-                        rawKey = string.Concat(rawKey, "_", pPerfilID.ToString());
-                    }
-                }
+                rawKey = $"{rawKey}_{pPerfilID}";
             }
 
             if (!string.IsNullOrEmpty(pParametrosClaveExtra))
             {
-                rawKey += "_" + pParametrosClaveExtra;
+                rawKey += $"_{pParametrosClaveExtra}";
             }
 
             return rawKey;
@@ -2215,18 +2182,18 @@ namespace Es.Riam.Gnoss.CL.Facetado
         /// <param name="pListaFiltros">Lista de filtros</param>
         public void ObtieneNumeroResultados(FacetadoDS pFacetadoDS, string pNombreFaceta, Dictionary<string, List<string>> pListaFiltros, List<string> pListaFiltrosExtra, List<string> pSemanticos, bool pEsMovil, Guid pProyectoID, bool pEsUsuarioInvitado, bool pEsIdentidadInvitada, Guid pIdentidadID)
         {
-            string rawKey = NombresCL.FACETADO + "_NUMRESULTADOS_" + pProyectoID + "_" + pNombreFaceta;
+            string rawKey = $"{NombresCL.FACETADO}_NUMRESULTADOS_{pProyectoID}_{pNombreFaceta}";
 
             if (pListaFiltros.ContainsKey("rdf:type"))
             {
                 foreach (string filtro in pListaFiltros["rdf:type"])
                 {
-                    rawKey += "_" + filtro;
+                    rawKey += $"_{filtro}";
                 }
             }
+
             // Compruebo si está en la caché
             FacetadoDS facetadoDS = ObtenerObjetoDeCache(rawKey) as FacetadoDS;
-
             if (facetadoDS == null)
             {
                 // Si no está, lo cargo y lo almaceno en la caché
@@ -2242,7 +2209,6 @@ namespace Es.Riam.Gnoss.CL.Facetado
                 pFacetadoDS.Merge(facetadoDS);
             }
         }
-
 
         /// <summary>
         /// Invalida la cache del proyecto pasado como parámetro
@@ -2261,13 +2227,13 @@ namespace Es.Riam.Gnoss.CL.Facetado
         /// <param name="pTipoBusqueda">Tipo de búsqueda</param>
         public void InvalidarCacheTesauroFaceta(Guid pProyectoID)
         {
-            string rawKey = NombresCL.TESAURO + "_" + pProyectoID + "_";
+            string rawKey = $"{NombresCL.TESAURO}_{pProyectoID}_";
             InvalidarCacheQueContengaCadena(rawKey, false);
         }
 
         public void InvalidarCachePerfilTieneGrupos(Guid pProyectoID, Guid pPerfilID)
         {
-            string rawKey = NombresCL.FACETADO + "_tienegrupos" + pProyectoID + "_" + pPerfilID;
+            string rawKey = $"{NombresCL.FACETADO}_tienegrupos{pProyectoID}_{pPerfilID}";
 
             InvalidarCache(rawKey);
         }
@@ -2289,7 +2255,7 @@ namespace Es.Riam.Gnoss.CL.Facetado
 
             if (!pPerfilID.Equals(UsuarioAD.Invitado))
             {
-                string rawKey = NombresCL.FACETADO + "_tienegrupos" + pProyectoID + "_" + pPerfilID;
+                string rawKey = $"{NombresCL.FACETADO}_tienegrupos{pProyectoID}_{pPerfilID}";
 
                 bool? tieneGruposCache = ObtenerObjetoDeCache(rawKey) as bool?;
 
@@ -2448,11 +2414,11 @@ namespace Es.Riam.Gnoss.CL.Facetado
         {
             get
             {
-                return this.FacetadoCN.ListaComunidadesPrivadasUsuario;
+                return FacetadoCN.ListaComunidadesPrivadasUsuario;
             }
             set
             {
-                this.FacetadoCN.ListaComunidadesPrivadasUsuario = value;
+                FacetadoCN.ListaComunidadesPrivadasUsuario = value;
             }
         }
 
@@ -2461,11 +2427,11 @@ namespace Es.Riam.Gnoss.CL.Facetado
         {
             get
             {
-                return this.FacetadoCN.ListaItemsBusquedaExtra;
+                return FacetadoCN.ListaItemsBusquedaExtra;
             }
             set
             {
-                this.FacetadoCN.ListaItemsBusquedaExtra = value;
+                FacetadoCN.ListaItemsBusquedaExtra = value;
             }
         }
 
@@ -2473,11 +2439,11 @@ namespace Es.Riam.Gnoss.CL.Facetado
         {
             get
             {
-                return this.FacetadoCN.PropiedadesRango;
+                return FacetadoCN.PropiedadesRango;
             }
             set
             {
-                this.FacetadoCN.PropiedadesRango = value;
+                FacetadoCN.PropiedadesRango = value;
             }
         }
 
@@ -2485,11 +2451,11 @@ namespace Es.Riam.Gnoss.CL.Facetado
         {
             get
             {
-                return this.FacetadoCN.PropiedadesFecha;
+                return FacetadoCN.PropiedadesFecha;
             }
             set
             {
-                this.FacetadoCN.PropiedadesFecha = value;
+                FacetadoCN.PropiedadesFecha = value;
             }
         }
 
@@ -2497,11 +2463,11 @@ namespace Es.Riam.Gnoss.CL.Facetado
         {
             get
             {
-                return this.FacetadoCN.FacetaDW;
+                return FacetadoCN.FacetaDW;
             }
             set
             {
-                this.FacetadoCN.FacetaDW = value;
+                FacetadoCN.FacetaDW = value;
             }
         }
 

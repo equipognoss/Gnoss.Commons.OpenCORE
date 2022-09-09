@@ -2111,7 +2111,7 @@ namespace Es.Riam.Semantica.OWL
         /// <param name="pEntidadPadre">Entidad padre</param>
         /// <param name="pEntidadRelacionada">Entidad relacionada</param>
         /// <param name="pPropiedad">Propiedad</param>
-        protected virtual void BuscarEntidadRelacionada(Es.Riam.Semantica.OWL.ElementoOntologia pEntidadPadre, Es.Riam.Semantica.OWL.ElementoOntologia pEntidadRelacionada, Propiedad pPropiedad)
+        protected virtual void BuscarEntidadRelacionada(ElementoOntologia pEntidadPadre, ElementoOntologia pEntidadRelacionada, Propiedad pPropiedad)
         {
             if (pEntidadRelacionada != null)
             {

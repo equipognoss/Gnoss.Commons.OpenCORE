@@ -1,5 +1,6 @@
 using BeetleX.Redis;
 using Es.Riam.AbstractsOpen;
+using Es.Riam.Gnoss.AD.EncapsuladoDatos;
 using Es.Riam.Gnoss.AD.EntityModel;
 using Es.Riam.Gnoss.AD.Parametro;
 using Es.Riam.Gnoss.AD.ParametroAplicacion;
@@ -2228,7 +2229,8 @@ namespace Es.Riam.Gnoss.CL
             RedisDB clienteRedis = null;
 
             string password = null;
-
+            int port = 6379;
+            int p = 0;
             if (pIP.Contains("|"))
             {
                 // El servidor tiene contraseña
@@ -2240,6 +2242,15 @@ namespace Es.Riam.Gnoss.CL
                     password = ipPassword[1];
                 }
             }
+            if (pIP.Contains(':'))
+            {
+                string[] ipPort = pIP.Split(new string[] { ":" }, StringSplitOptions.RemoveEmptyEntries);
+                pIP = ipPort[0];
+                if (ipPort.Length > 1 && int.TryParse(ipPort[1], out p))
+                {
+                    port = p;
+                }
+            }
 
             if (!string.IsNullOrEmpty(password))
             {
@@ -2247,9 +2258,9 @@ namespace Es.Riam.Gnoss.CL
                 clienteRedis = new RedisDB(db, new JsonFormater());
                 clienteRedis.AutoPing = false;
                 //RedisCacheWrapper.GuardarLog($"Conexion creada: {pIP} {db}");
-                clienteRedis.Host.AddWriteHost(pIP).Password = password;
+                clienteRedis.Host.AddWriteHost(pIP, port).Password = password;
                 //clienteRedis.Host.AddWriteHost(pIP).MaxConnections = 5000;
-                clienteRedis.Host.AddReadHost(pIP).Password = password;
+                clienteRedis.Host.AddReadHost(pIP, port).Password = password;
                 //clienteRedis.Host.AddReadHost(pIP).MaxConnections = 5000;
             }
             else
@@ -2257,8 +2268,8 @@ namespace Es.Riam.Gnoss.CL
                 clienteRedis = new RedisDB(db, new JsonFormater());
                 clienteRedis.AutoPing = false;
                 //RedisCacheWrapper.GuardarLog($"Conexion creada: {pIP} {db}");
-                clienteRedis.Host.AddWriteHost(pIP);
-                clienteRedis.Host.AddReadHost(pIP);
+                clienteRedis.Host.AddWriteHost(pIP, port);
+                clienteRedis.Host.AddReadHost(pIP, port);
             }
 
             _loggingService.AgregarEntrada("BaseCL_ObtenerClienteRedisParaIP_FIN");

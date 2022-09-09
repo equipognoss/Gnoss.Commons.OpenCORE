@@ -460,7 +460,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Documentacion
                     string tipoEntidadSubirOrigen = ObtenerTipoEntidadAdjuntarDocumento(pOrigen.TipoEntidadVinculada);
                     string tipoEntidadSubirDestino = ObtenerTipoEntidadAdjuntarDocumento(pDestino.TipoEntidadVinculada);
 
-                    servicioArchivos = new GestionDocumental(mLoggingService);
+                    servicioArchivos = new GestionDocumental(mLoggingService, mConfigService);
                     servicioArchivos.Url = mConfigService.ObtenerUrlServicioDocumental();
 
                     sw = LoggingService.IniciarRelojTelemetria();
@@ -485,7 +485,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Documentacion
                 else if (pOrigen.TipoDocumentacion == TiposDocumentacion.Imagen)
                 {
                     sw = LoggingService.IniciarRelojTelemetria();
-                    servicioImagenes = new ServicioImagenes(mLoggingService);
+                    servicioImagenes = new ServicioImagenes(mLoggingService, mConfigService);
                     string url = UrlIntragnossServicios;
                     servicioImagenes.Url = url;
 
@@ -1401,9 +1401,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Documentacion
             if (arryaOnto == null)
             {
                 CallFileService servicioArch = new CallFileService(mConfigService);
-
                 arryaOnto = servicioArch.ObtenerOntologiaBytes(pDocumentoID);
-
                 docCL.GuardarOntologia(pDocumentoID, arryaOnto);
 
             }
@@ -1473,6 +1471,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Documentacion
             {
                 if (pCargaEstilosObligatoria)
                 {
+                    mLoggingService.GuardarLogError($"EXCEPCION AL CargarEstilosOntologia --> {ex.Message}");
                     throw;
                 }
 
@@ -7749,7 +7748,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Documentacion
         /// <returns>TRUE si se han copiado los documento o no había nada que copiar. FALSE si algo ha fallado</returns>
         private bool CopiarImagenDocumentoSemantico(Guid pDocumentoOriginalID, Guid pDocumentoNuevoID, string pUrlIntragnossServicios)
         {
-            ServicioImagenes sImagenes = new ServicioImagenes(mLoggingService);
+            ServicioImagenes sImagenes = new ServicioImagenes(mLoggingService, mConfigService);
             Stopwatch sw = LoggingService.IniciarRelojTelemetria();
 
             try
@@ -7812,7 +7811,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Documentacion
         /// <returns>TRUE si se han copiado los documento o no había nada que copiar. FALSE si algo ha fallado</returns>
         private bool CopiarArchivosDocumentoSemantico(Guid pDocumentoOriginalID, Guid pDocumentoNuevoID, string pUrlServicioDocs)
         {
-            GestionDocumental gestionDoc = new GestionDocumental(mLoggingService);
+            GestionDocumental gestionDoc = new GestionDocumental(mLoggingService, mConfigService);
             Stopwatch sw = LoggingService.IniciarRelojTelemetria();
 
             try

@@ -17,6 +17,9 @@ namespace Es.Riam.Gnoss.AD.EntityModel.Models.Voto
         public Voto()
         {
             VotoDocumento = new HashSet<VotoDocumento>();
+            VotoComentario = new HashSet<VotoComentario>();
+            VotoEntradaBlog = new HashSet<VotoEntradaBlog>();
+            VotoMensajeForo = new HashSet<VotoMensajeForo>();   
         }
 
         public Guid VotoID { get; set; }

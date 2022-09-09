@@ -1,4 +1,6 @@
-﻿using Es.Riam.Gnoss.AD.EntityModel;
+﻿using Es.Riam.AbstractsOpen;
+using Es.Riam.Gnoss.AD;
+using Es.Riam.Gnoss.AD.EntityModel;
 using Es.Riam.Gnoss.AD.EntityModel.Models.ParametroGeneralDS;
 using Es.Riam.Gnoss.AD.Parametro;
 using Es.Riam.Gnoss.AD.Virtuoso;
@@ -10,6 +12,7 @@ using Es.Riam.Gnoss.Elementos.ParametroAplicacion;
 using Es.Riam.Gnoss.Elementos.ParametroGeneralDSEspacio;
 using Es.Riam.Gnoss.Elementos.ServiciosGenerales;
 using Es.Riam.Gnoss.Logica.Parametro;
+using Es.Riam.Gnoss.Logica.ParametroAplicacion;
 using Es.Riam.Gnoss.Logica.ServiciosGenerales;
 using Es.Riam.Gnoss.Util.Configuracion;
 using Es.Riam.Gnoss.Util.General;
@@ -35,10 +38,12 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
         private ConfigService mConfigService;
         private VirtuosoAD mVirtuosoAD;
         private IHttpContextAccessor mHttpContextAccessor;
+        private IServicesUtilVirtuosoAndReplication mServicesUtilVirtuosoAndReplication;
+
         /// <summary>
         /// 
         /// </summary>
-        public ControladorSeoGoogle(Proyecto pProyecto, EntityContext entityContext, LoggingService loggingService, RedisCacheWrapper redisCacheWrapper, ConfigService configService, VirtuosoAD virtuosoAD, IHttpContextAccessor httpContextAccessor)
+        public ControladorSeoGoogle(Proyecto pProyecto, EntityContext entityContext, LoggingService loggingService, RedisCacheWrapper redisCacheWrapper, ConfigService configService, VirtuosoAD virtuosoAD, IHttpContextAccessor httpContextAccessor, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication)
         {
             ProyectoSeleccionado = pProyecto;
             mEntityContext = entityContext;
@@ -47,7 +52,9 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
             mConfigService = configService;
             mVirtuosoAD = virtuosoAD;
             mHttpContextAccessor = httpContextAccessor;
+            mServicesUtilVirtuosoAndReplication = servicesUtilVirtuosoAndReplication;
         }
+
         /// <summary>
         /// 
         /// </summary>
@@ -55,55 +62,15 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
         {
 
         }
+        
         public void GuardarConfiguracionSeoGoogle(AdministrarSeoGoogleViewModel pOptions)
         {
             ControladorProyecto controladorProyecto = new ControladorProyecto(mLoggingService, mEntityContext, mConfigService, mRedisCacheWrapper, null, null, mVirtuosoAD, mHttpContextAccessor, null);
+            
             controladorProyecto.GuardarParametroString(ParametrosGeneralesDS, ParametroAD.RobotsComunidad, pOptions.ValorRobotsBusqueda);
-            ParametroProyecto filaParametro = mEntityContext.ParametroProyecto.Where(param => param.ProyectoID.Equals(ProyectoSeleccionado.Clave) && param.Parametro.Equals(ParametroAD.RobotsComunidad)).FirstOrDefault();
-            if (filaParametro != null && !filaParametro.Valor.Equals(pOptions.ValorRobotsBusqueda))
-            {
-                // El parametro existe con otro valor, lo modifico
-                ParametroProyecto param = new ParametroProyecto();
-                param.Parametro = ParametroAD.RobotsComunidad;
-                param.ProyectoID = ProyectoSeleccionado.Clave;
-                param.OrganizacionID = ProyectoSeleccionado.FilaProyecto.OrganizacionID;
-                param.Valor = pOptions.ValorRobotsBusqueda;
-                mEntityContext.EliminarElemento(filaParametro);
-                mEntityContext.ParametroProyecto.Add(param);
-            }
-
-            //ControladorProyecto.GuardarParametroString(ParametrosGeneralesDS, "ScriptGoogleAnalytics", pOptions.ScriptGoogleAnalytics);
-            ParametroGeneral paramScriptCache = ParametrosGeneralesDS.ListaParametroGeneral.Where(p => p.ProyectoID.Equals(ProyectoSeleccionado.Clave)).FirstOrDefault();
-            paramScriptCache.ScriptGoogleAnalytics = pOptions.ScriptGoogleAnalytics;
-
-            //ParametroProyecto parametroScript = mEntityContext.ParametroProyecto.Where(p => p.ProyectoID.Equals(ProyectoSeleccionado.Clave) && p.Parametro.Equals("ScriptGoogleAnalytics")).FirstOrDefault();
-            ParametroGeneral parametroScript = mEntityContext.ParametroGeneral.Where(p => p.ProyectoID.Equals(ProyectoSeleccionado.Clave)).FirstOrDefault();
-
-            if (parametroScript != null && !parametroScript.ScriptGoogleAnalytics.Equals(pOptions.ScriptGoogleAnalytics))
-            {
-
-                // si existe con otro valor, lo modifico
-                mEntityContext.EliminarElemento(parametroScript);
-                parametroScript.ScriptGoogleAnalytics = pOptions.ScriptGoogleAnalytics;
-                mEntityContext.ParametroGeneral.Add(parametroScript);
-
-            }
-
-            //ControladorProyecto.GuardarParametroString(ParametrosGeneralesDS, "CodigoGoogleAnalytics", pOptions.CodigoGoogleAnalytics);
-            ParametroGeneral paramCodigoCache = ParametrosGeneralesDS.ListaParametroGeneral.Where(p => p.ProyectoID.Equals(ProyectoSeleccionado.Clave)).FirstOrDefault();
-            paramCodigoCache.CodigoGoogleAnalytics = pOptions.CodigoGoogleAnalytics;
-
-            ParametroGeneral parametroCodigo = mEntityContext.ParametroGeneral.Where(p => p.ProyectoID.Equals(ProyectoSeleccionado.Clave)).FirstOrDefault();
-
-            if (parametroCodigo != null && !parametroCodigo.CodigoGoogleAnalytics.Equals(pOptions.CodigoGoogleAnalytics))
-            {
-                // si existe con otro valor, lo modifico
-                mEntityContext.EliminarElemento(parametroCodigo);
-                parametroCodigo.CodigoGoogleAnalytics = pOptions.CodigoGoogleAnalytics;
-                mEntityContext.ParametroGeneral.Add(parametroCodigo);
-            }
-
-            mEntityContext.SaveChanges();
+            controladorProyecto.GuardarParametroString(ParametrosGeneralesDS, "ScriptGoogleAnalytics", pOptions.ScriptGoogleAnalytics);
+            controladorProyecto.GuardarParametroString(ParametrosGeneralesDS, "CodigoGoogleAnalytics", pOptions.CodigoGoogleAnalytics);
+            
             mEntityContext.NoConfirmarTransacciones = true;
             try
             {
@@ -118,111 +85,21 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
                 throw;
             }
         }
+
+        /// <summary>
+        /// Se actualizan los parámetros indicados en la página de administración si existen, si no existen se añaden a base de datos
+        /// </summary>
+        /// <param name="pOptions">Modelo que contiene los datos de la vista de la página de administración</param>
         public void GuardarConfiguracionSeoGooglePlataforma(AdministrarSeoGooglePlataformaViewModel pOptions)
         {
-            //comprobamos si está en cache
-            ParametroAplicacion parametroEnCache = GestorParametrosAplicacion.ParametroAplicacion.Where(param => param.Parametro.Equals(ParametroAD.RobotsComunidad)).FirstOrDefault();
+            ParametroAplicacionCN parametroAplicacionCN = new ParametroAplicacionCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
 
-            if (parametroEnCache != null && !parametroEnCache.Valor.Equals(pOptions.RobotsBusqueda))
-            {
-                //si existe y el valor es diferente lo modifico
-                parametroEnCache.Valor = pOptions.RobotsBusqueda;
-            }
-            else if (parametroEnCache == null)
-            {
-                //si no existe lo añadimos a cache
-                GestorParametrosAplicacion.ParametroAplicacion.Add(parametroEnCache);
-            }
-
-            ParametroAplicacion filaParametro = mEntityContext.ParametroAplicacion.Where(param => param.Parametro.Equals(ParametroAD.RobotsComunidad)).FirstOrDefault();
-            if (filaParametro != null && !filaParametro.Valor.Equals(pOptions.RobotsBusqueda))
-            {
-                // El parametro existe, lo modifico
-                ParametroAplicacion param = new ParametroAplicacion();
-
-                param.Parametro = filaParametro.Parametro;
-                param.Valor = pOptions.RobotsBusqueda;
-                mEntityContext.EliminarElemento(filaParametro);
-                mEntityContext.ParametroAplicacion.Add(param);
-            }
-            else if (filaParametro == null)
-            {
-                //si no existe lo guardo en BD
-                ParametroAplicacion param = new ParametroAplicacion();
-
-                param.Parametro = ParametroAD.RobotsComunidad;
-                param.Valor = pOptions.RobotsBusqueda;
-                mEntityContext.ParametroAplicacion.Add(param);
-            }
-
-            ParametroAplicacion codigoEnCache = GestorParametrosAplicacion.ParametroAplicacion.Where(param => param.Parametro.Equals("CodigoGoogleAnalytics")).FirstOrDefault();
-            ParametroAplicacion filaCodigo = mEntityContext.ParametroAplicacion.Where(param => param.Parametro.Equals("CodigoGoogleAnalytics")).FirstOrDefault();
-            if (codigoEnCache != null && !codigoEnCache.Valor.Equals(pOptions.CodigoGoogleAnalytics))
-            {
-                //si existe y el valor es diferente lo modifico
-                codigoEnCache.Valor = pOptions.CodigoGoogleAnalytics;
-            }
-            else if (codigoEnCache == null)
-            {
-                //si no existe lo añadimos a cache
-                GestorParametrosAplicacion.ParametroAplicacion.Add(codigoEnCache);
-            }
-
-            if (filaCodigo != null && !filaCodigo.Valor.Equals(pOptions.CodigoGoogleAnalytics))
-            {
-                // El parametro existe, lo modifico
-                ParametroAplicacion param = new ParametroAplicacion();
-
-                param.Parametro = filaCodigo.Parametro;
-                param.Valor = pOptions.CodigoGoogleAnalytics;
-                mEntityContext.EliminarElemento(filaCodigo);
-                mEntityContext.ParametroAplicacion.Add(param);
-            }
-            else if (filaCodigo == null)
-            {
-                // si no existe lo guardo en BD
-                ParametroAplicacion param = new ParametroAplicacion();
-
-                param.Parametro = "CodigoGoogleAnalytics";
-                param.Valor = pOptions.CodigoGoogleAnalytics;
-                mEntityContext.ParametroAplicacion.Add(param);
-            }
-
-            ParametroAplicacion scriptEnCache = GestorParametrosAplicacion.ParametroAplicacion.Where(param => param.Parametro.Equals("ScriptGoogleAnalytics")).FirstOrDefault();
-            ParametroAplicacion filaScript = mEntityContext.ParametroAplicacion.Where(param => param.Parametro.Equals("ScriptGoogleAnalytics")).FirstOrDefault();
-            if (scriptEnCache != null && !scriptEnCache.Valor.Equals(pOptions.ScriptGoogleAnalytics))
-            {
-                //si existe y el valor es diferente lo modifico
-                scriptEnCache.Valor = pOptions.ScriptGoogleAnalytics;
-            }
-            else if (scriptEnCache == null)
-            {
-                //si no existe lo añadimos a cache
-                GestorParametrosAplicacion.ParametroAplicacion.Add(scriptEnCache);
-            }
-            if (filaScript != null && !filaScript.Valor.Equals(pOptions.ScriptGoogleAnalytics))
-            {
-                // El parametro existe, lo modifico
-                ParametroAplicacion param = new ParametroAplicacion();
-
-                param.Parametro = filaScript.Parametro;
-                param.Valor = pOptions.ScriptGoogleAnalytics;
-                mEntityContext.EliminarElemento(filaScript);
-                mEntityContext.ParametroAplicacion.Add(param);
-            }
-            else if (filaScript == null)
-            {
-                // si no existe lo guardo en BD
-                ParametroAplicacion param = new ParametroAplicacion();
-
-                param.Parametro = "ScriptGoogleAnalytics";
-                param.Valor = pOptions.ScriptGoogleAnalytics;
-                mEntityContext.ParametroAplicacion.Add(param);
-            }
-
-            mEntityContext.SaveChanges();
-
+            parametroAplicacionCN.ActualizarParametroAplicacion(ParametroAD.RobotsComunidad, pOptions.RobotsBusqueda);
+            parametroAplicacionCN.ActualizarParametroAplicacion("CodigoGoogleAnalytics", pOptions.CodigoGoogleAnalytics);
+            parametroAplicacionCN.ActualizarParametroAplicacion("ScriptGoogleAnalytics", pOptions.ScriptGoogleAnalytics);
+            parametroAplicacionCN.Actualizar();
         }
+
         public GestorParametroAplicacion GestorParametrosAplicacion
         {
             get
@@ -290,16 +167,19 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
         }
         public void InvalidarCaches()
         {
-            ParametroGeneralCL paramCL = new ParametroGeneralCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, null);
-            paramCL.InvalidarCacheParametrosGeneralesDeProyecto(ProyectoSeleccionado.Clave);
-            ProyectoCL proyCL = new ProyectoCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mVirtuosoAD, null);
-            proyCL.InvalidarParametrosProyecto(ProyectoSeleccionado.Clave, ProyectoSeleccionado.FilaProyecto.OrganizacionID);
-            proyCL.InvalidarFilaProyecto(ProyectoSeleccionado.Clave);
+            ParametroGeneralCL parametroGeneralCL = new ParametroGeneralCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, null);
+            parametroGeneralCL.InvalidarCacheParametrosGeneralesDeProyecto(ProyectoSeleccionado.Clave);
+            parametroGeneralCL.Dispose();
 
-            proyCL.InvalidarComunidadMVC(ProyectoSeleccionado.Clave);
-            proyCL.InvalidarCabeceraMVC(ProyectoSeleccionado.Clave);
+            ProyectoCL proyectoCL = new ProyectoCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mVirtuosoAD, null);
+            proyectoCL.InvalidarParametrosProyecto(ProyectoSeleccionado.Clave, ProyectoSeleccionado.FilaProyecto.OrganizacionID);
+            proyectoCL.InvalidarFilaProyecto(ProyectoSeleccionado.Clave);
+            proyectoCL.InvalidarComunidadMVC(ProyectoSeleccionado.Clave);
+            proyectoCL.InvalidarCabeceraMVC(ProyectoSeleccionado.Clave);
+            proyectoCL.Dispose();
 
-            proyCL.Dispose();
+            ParametroAplicacionCL parametroAplicacionCL = new ParametroAplicacionCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mServicesUtilVirtuosoAndReplication);
+            parametroAplicacionCL.InvalidarCacheParametrosAplicacion();
         }
     }
 }

@@ -1582,12 +1582,27 @@ namespace Es.Riam.Gnoss.AD.Usuarios
         }
 
         /// <summary>
-        /// Obtiene los roles (Usuario y OrganizacionRolUsuario) en una organización de un usuario
+        /// Nos indica en que proyectos el usuario tiene o no foto
         /// </summary>
         /// <param name="pUsuarioID">Identificador del usuario</param>
-        /// <param name="pOrganizacionID">Identificador de la organización</param>
-        /// <returns>Dataset de usuarios</returns>
-        public DataWrapperUsuario ObtenerOrganizacionRolUsuario(Guid pUsuarioID, Guid pOrganizacionID)
+        /// <returns>Diccionario con proyectoID como clave y true o false en función de si tiene foto o no en ese proyecto</returns>
+        public string FotoPerfilPersonalUsuario(Guid pUsuarioID)
+        {
+            string foto = mEntityContext.Usuario.JoinPersona().JoinPerfil().JoinIdentidad().Where(item => item.Usuario.UsuarioID.Equals(pUsuarioID) && !item.Perfil.OrganizacionID.HasValue).Select(item => item.Identidad.Foto).FirstOrDefault();
+            if (foto.Equals("sinfoto"))
+            {
+                foto = "";
+            }
+            return foto;
+        }
+
+            /// <summary>
+            /// Obtiene los roles (Usuario y OrganizacionRolUsuario) en una organización de un usuario
+            /// </summary>
+            /// <param name="pUsuarioID">Identificador del usuario</param>
+            /// <param name="pOrganizacionID">Identificador de la organización</param>
+            /// <returns>Dataset de usuarios</returns>
+            public DataWrapperUsuario ObtenerOrganizacionRolUsuario(Guid pUsuarioID, Guid pOrganizacionID)
         {
             DataWrapperUsuario dataWrapper = new DataWrapperUsuario();
 

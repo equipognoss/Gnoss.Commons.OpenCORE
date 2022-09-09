@@ -397,6 +397,10 @@ namespace Es.Riam.Gnoss.Web.UtilOAuth
                 else if (parametro.Name == OAuthSignatureKey)
                 {
                     signature = parametro.Value;
+                    if (signature.IndexOf(' ') != -1)
+                    {
+                        signature = signature.Replace(' ', '+');
+                    }
                 }
             }
             QueryOauth queryOauth = new QueryOauth(pUrl, token, consumerKey, nonce, method, timespan, signature, entityContextOauth, loggingService, entityContext, configService, servicesUtilVirtuosoAndReplication);

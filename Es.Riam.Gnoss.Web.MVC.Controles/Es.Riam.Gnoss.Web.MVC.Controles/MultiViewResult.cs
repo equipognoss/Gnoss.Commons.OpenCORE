@@ -173,7 +173,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles
             {
                 string nombreVista = viewName;
                 nombreVista = nombreVista.Replace("../Shared", "").Trim('/');
-
+                nombreVista = nombreVista.Replace($"../{pControllerName}", "").Trim('/');
                 List<string> listaPersonalizaciones = pComunidad.ListaPersonalizaciones;
                 List<string> listaPersonalizacionesEcosistema = pComunidad.ListaPersonalizacionesEcosistema;
                 if (listaPersonalizaciones.Contains("/Views/" + pControllerName + "/" + nombreVista + ".cshtml") || listaPersonalizaciones.Contains("/Views/" + "Shared" + "/" + nombreVista + ".cshtml"))

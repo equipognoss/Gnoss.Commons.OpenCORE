@@ -693,6 +693,26 @@ namespace Es.Riam.Gnoss.Web.MVC.Models
         /// Url
         /// </summary>
         public string Link { get; set; }
+
+        /// <summary>
+        /// Width (Only has value if is an image)
+        /// </summary>
+        public int Width { get; set; }
+
+        /// <summary>
+        /// Height (Only has value if is an image)
+        /// </summary>
+        public int Height { get; set; }
+
+        /// <summary>
+        /// Size of the file
+        /// </summary>
+        public long Size { get; set; }
+
+        /// <summary>
+        /// Creation date
+        /// </summary>
+        public DateTime CreationDate { get; set; }
     }
 
     /// <summary>

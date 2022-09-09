@@ -19,6 +19,7 @@ namespace Es.Riam.Gnoss.AD.EntityModel.Models.Documentacion
             DocumentoVincDoc = new HashSet<DocumentoVincDoc>();
             DocumentoVincDoc1 = new HashSet<DocumentoVincDoc>();
             DocumentoRespuestaVoto = new HashSet<DocumentoRespuestaVoto>();
+            VotoDocumento = new HashSet<VotoDocumento>();
         }
 
         public Guid DocumentoID { get; set; }
@@ -126,6 +127,8 @@ namespace Es.Riam.Gnoss.AD.EntityModel.Models.Documentacion
         public virtual ICollection<DocumentoRespuestaVoto> DocumentoRespuestaVoto { get; set; }
 
         public virtual DocumentoLecturaAumentada DocumentoLecturaAumentada { get; set; }
+
+        public virtual DocumentoMetaDatos DocumentoMetaDatos { get; set; }
 
         public int CompareTo(object obj)
         {

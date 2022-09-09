@@ -11,19 +11,23 @@ using Es.Riam.Gnoss.AD.Usuarios;
 using Es.Riam.Gnoss.AD.Virtuoso;
 using Es.Riam.Gnoss.CL;
 using Es.Riam.Gnoss.CL.Cookie;
+using Es.Riam.Gnoss.CL.Documentacion;
 using Es.Riam.Gnoss.CL.ParametrosProyecto;
 using Es.Riam.Gnoss.CL.ServiciosGenerales;
 using Es.Riam.Gnoss.CL.Tesauro;
 using Es.Riam.Gnoss.Elementos.Identidad;
 using Es.Riam.Gnoss.Elementos.ParametroAplicacion;
 using Es.Riam.Gnoss.Elementos.Tesauro;
+using Es.Riam.Gnoss.Logica.Documentacion;
 using Es.Riam.Gnoss.Logica.Identidad;
 using Es.Riam.Gnoss.Logica.ParametroAplicacion;
 using Es.Riam.Gnoss.Logica.ServiciosGenerales;
 using Es.Riam.Gnoss.Recursos;
+using Es.Riam.Gnoss.Servicios;
 using Es.Riam.Gnoss.Util.Configuracion;
 using Es.Riam.Gnoss.Util.General;
 using Es.Riam.Gnoss.Util.Seguridad;
+using Es.Riam.Gnoss.UtilServiciosWeb;
 using Es.Riam.Gnoss.Web.Controles;
 using Es.Riam.Gnoss.Web.Controles.Administracion;
 using Es.Riam.Gnoss.Web.MVC.Models;
@@ -50,6 +54,8 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
     {
 
         #region Miembros
+
+        private static Dictionary<Guid, List<MetaKeywordsOntologia>> mDicOntologiaMetasProyecto;
 
         /// <summary>
         /// 
@@ -162,8 +168,6 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
 
                 comunidad.Name = ProyectoVirtual.Nombre;
                 comunidad.PresentationName = ProyectoVirtual.Nombre;
-                // Cargar el idioma de la descripción correspondiente
-                //comunidad.Description = ProyectoVirtual.FilaProyecto.Descripcion;
                 comunidad.Description = UtilCadenas.ObtenerTextoDeIdioma(ProyectoVirtual.FilaProyecto.Descripcion, UtilIdiomas.LanguageCode, ParametrosGeneralesRow.IdiomaDefecto);
 
                 if (!string.IsNullOrEmpty(ProyectoVirtual.FilaProyecto.NombrePresentacion))
@@ -440,6 +444,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
             return listaCategoriasTesauro;
         }
 
+
         [NonAction]
         protected CategoryModel CargarCategoria(CategoriaTesauro pCategoria)
         {
@@ -460,10 +465,70 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
 
             return categoriaTesauro;
         }
+        
+        [NonAction]
+        protected List<MetaKeywordsOntologia> ObtenerMetaEtiquetasXMLOntologiasProyectos()
+        {
+            if (mDicOntologiaMetasProyecto == null || !mDicOntologiaMetasProyecto.ContainsKey(ProyectoSeleccionado.Clave))
+            {
+                Dictionary<string, List<MetaKeyword>> dicOntologiaMetas = new Dictionary<string, List<MetaKeyword>>();
+                if (mDicOntologiaMetasProyecto == null)
+                {
+                    mDicOntologiaMetasProyecto = new Dictionary<Guid, List<MetaKeywordsOntologia>>();
+                }
+                CallFileService servicioArc = new CallFileService(mConfigService);
+
+                DocumentacionCL documentacionCL = new DocumentacionCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mServicesUtilVirtuosoAndReplication);
+                Guid proyectoIDPatronOntologias;
+                DataWrapperDocumentacion dataWrapperDocumentacion = documentacionCL.ObtenerOntologiasProyecto(ProyectoSeleccionado.FilaProyecto.ProyectoID, true);
+                if (ParametroProyecto.ContainsKey("ProyectoIDPatronOntologias"))
+                {
+                    Guid.TryParse(ParametroProyecto["ProyectoIDPatronOntologias"], out proyectoIDPatronOntologias);
+                    dataWrapperDocumentacion.Merge(documentacionCL.ObtenerOntologiasProyecto(proyectoIDPatronOntologias, true));
+                }
+                
+                foreach (var ontologia in dataWrapperDocumentacion.ListaDocumento)
+                {
+                    byte[] byteArray = servicioArc.ObtenerXmlOntologiaBytes(ontologia.DocumentoID);
+                    if (byteArray != null)
+                    {
+                        UtilidadesFormulariosSemanticos.ObtenerMetaEtiquetasXMLOntologia(byteArray, dicOntologiaMetas, ontologia.Enlace);
+                    }
+                }
+                List<MetaKeywordsOntologia> listaMetaKeywordsOntologia = new List<MetaKeywordsOntologia>();
+                foreach (var ontologias in dicOntologiaMetas)
+                {
+                    MetaKeywordsOntologia metaKeyWordOntologia = new MetaKeywordsOntologia();
+                    metaKeyWordOntologia.MetaKeyWords = ontologias.Value;
+                    metaKeyWordOntologia.OntologiaEnlace = ontologias.Key;
+                    listaMetaKeywordsOntologia.Add(metaKeyWordOntologia);
+                }
+                mDicOntologiaMetasProyecto.Add(ProyectoSeleccionado.Clave, listaMetaKeywordsOntologia);
+            }
+            return mDicOntologiaMetasProyecto[ProyectoSeleccionado.Clave];
+        }
+
+        [NonAction]
+        protected Dictionary<string, List<MetaKeyword>> ObtenerMetaEtiquetasXMLOntologias()
+        {
+            List<MetaKeywordsOntologia> metaEtiquetasXMLOntologias = ObtenerMetaEtiquetasXMLOntologiasProyectos();
+            Dictionary<string, List<MetaKeyword>> metaKeyWords = new Dictionary<string, List<MetaKeyword>>();
+            metaKeyWords = metaEtiquetasXMLOntologias.ToDictionary(x => x.OntologiaEnlace, x => x.MetaKeyWords);
+            return metaKeyWords;
+        }
+
+        [NonAction]
+        protected void InsertarMetaEtiquetasXMLOntologiasViewBag()
+        {
+            Dictionary<string, List<MetaKeyword>> metaKeywords = ObtenerMetaEtiquetasXMLOntologias();
+            string json = JsonConvert.SerializeObject(metaKeywords);
+            ViewBag.MetaEtiquetasXMLOntologias = json;
+        }
 
         [NonAction]
         private void CargarViewBagBasico()
         {
+            InsertarMetaEtiquetasXMLOntologiasViewBag();
             ViewBag.UtilIdiomas = UtilIdiomas;
 
             ViewBag.BaseUrl = BaseURL;
@@ -1090,6 +1155,8 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
                     foreach (CategoriaProyectoCookieViewModel categoriaCookie in listaCategoriasCookies)
                     {
                         PersonalizacionCategoriaCookieModel personalizacionCategoriaCookie = new PersonalizacionCategoriaCookieModel();
+                        categoriaCookie.Nombre = UtilCadenas.ObtenerTextoDeIdioma(categoriaCookie.Nombre, UtilIdiomas.LanguageCode, "es");
+                        categoriaCookie.Descripcion = UtilCadenas.ObtenerTextoDeIdioma(categoriaCookie.Descripcion, UtilIdiomas.LanguageCode, "es");
                         personalizacionCategoriaCookie.CategoriaCookie = categoriaCookie;
                         personalizacionCategoriaCookie.Estado = ObtenerEstadoCookie(categoriaCookie.NombreCorto.ToLower());
 

@@ -1711,28 +1711,8 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
             {
                 error = ComprobarProyectoOrigenID(pListaPestanyas);
             }
-            if (error.Equals(string.Empty))
-            {
-                error = ComprobarLongitudMetaDescription(pListaPestanyas);
-            }
 
             return error;
-        }
-
-        private string ComprobarLongitudMetaDescription(List<TabModel> pListaPestanyas)
-        {
-            foreach (TabModel pestanya in pListaPestanyas)
-            {
-                if (!pestanya.Deleted && pestanya.Modified && pestanya.MetaDescription != null)
-                {
-                    if (pestanya.MetaDescription.Length > 500)
-                    {
-                        return $"{pestanya.Key.ToString()}: Longitud máxima permitida sobrepasada";
-                    }
-                }
-            }
-
-            return "";
         }
 
         private string ComprobarProyectoOrigenID(List<TabModel> pListaPestanyas)

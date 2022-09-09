@@ -579,6 +579,16 @@ namespace Es.Riam.Gnoss.Logica.Usuarios
         }
 
         /// <summary>
+        /// Nos indica en que proyectos el usuario tiene o no foto
+        /// </summary>
+        /// <param name="pUsuarioID">Identificador del usuario</param>
+        /// <returns>Diccionario con proyectoID como clave y true o false en función de si tiene foto o no en ese proyecto</returns>
+        public string FotoPerfilPersonalUsuario(Guid pUsuarioID)
+        {
+            return UsuarioAD.FotoPerfilPersonalUsuario(pUsuarioID);
+        }
+
+        /// <summary>
         /// Comprueba si la contraseña de usuario es correcta para el usuario dado
         /// </summary>
         /// <param name="pUsuario">Fila de usuario</param>

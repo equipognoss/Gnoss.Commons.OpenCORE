@@ -1245,6 +1245,11 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Helper
             return (string)helper.ViewBag.BaseUrlStatic;
         }
 
+        public static string GetMetaEtiquetasXMLOntologias(this IHtmlHelper helper)
+        {
+            return (string)helper.ViewBag.MetaEtiquetasXMLOntologias;
+        }
+
         public static string GetBaseUrlContent(this IHtmlHelper helper)
         {
             return (string)helper.ViewBag.BaseUrlContent;

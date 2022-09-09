@@ -59,7 +59,6 @@ namespace Es.Riam.Util
             {
                 float Alto = pImagen.Height;
                 float Ancho = pImagen.Width;
-
                 float AltoFinal = Alto;
                 float AnchoFinal = Ancho;
 
@@ -88,7 +87,7 @@ namespace Es.Riam.Util
         /// <returns>Imagen ajustada</returns>
         public static Image AjustarImagen(Image pImagen, int pAncho, int pAlto)
         {
-            return AjustarImagen(pImagen, pAncho, pAlto);
+            return AjustarImagen(pImagen, (float)pAncho, (float)pAlto);
         }
 
         /// <summary>
@@ -239,7 +238,7 @@ namespace Es.Riam.Util
             bool esHorizontal = false;
             bool esCuadrada = false;
             float proporcionAnchoAlto = ancho / alto;
-            Image imageClone = null;
+            Image imageClone = pImagen;
             if (proporcionAnchoAlto == 1)
             {
                 esCuadrada = true;
@@ -261,7 +260,7 @@ namespace Es.Riam.Util
                     Point origen = new Point(0, 0);
                     Size size = Size.Truncate(new SizeF(tamaño, tamaño));
                     Rectangle rectangulo = new Rectangle(origen, size);
-                    imageClone = pImagen.Clone(x => x.Crop(rectangulo));
+                    imageClone = imagen.Clone(x => x.Crop(rectangulo));
                 }
                 else if (ancho < tamaño && alto > tamaño)
                 {
@@ -280,7 +279,7 @@ namespace Es.Riam.Util
                     Point origen = new Point(Convert.ToInt32(imagen.Width - tamaño) / 2, 0);
                     Size size = Size.Truncate(new SizeF(tamaño, tamaño));
                     Rectangle rectangulo = new Rectangle(origen, size);
-                    imageClone = pImagen.Clone(x => x.Crop(rectangulo));
+                    imageClone = imagen.Clone(x => x.Crop(rectangulo));
                 }
                 else if (alto <= tamaño && ancho > tamaño)
                 {
@@ -305,7 +304,7 @@ namespace Es.Riam.Util
         {
             float alto = pImagen.Height;
             float ancho = pImagen.Width;
-            Image imageClone = null;
+            Image imageClone = pImagen;
             float proporcionAnchoAlto = ancho / alto;
 
             // Sólo redimensionamos la imagen si el ancho es menor que el pedido
@@ -323,7 +322,7 @@ namespace Es.Riam.Util
             float alto = pImagen.Height;
             float ancho = pImagen.Width;
             float proporcionAnchoAlto = ancho / alto;
-            Image imageClone = null;
+            Image imageClone = pImagen;
             // Sólo redimensionamos la imagen si el alto es menor que el pedido
             if (pAltoPixeles < alto)
             {

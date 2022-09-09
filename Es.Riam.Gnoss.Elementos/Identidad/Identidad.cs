@@ -1,5 +1,4 @@
 using Es.Riam.AbstractsOpen;
-using Es.Riam.Gnoss.AD.Amigos.Model;
 using Es.Riam.Gnoss.AD.EncapsuladoDatos;
 using Es.Riam.Gnoss.AD.EntityModel;
 using Es.Riam.Gnoss.AD.EntityModel.Models.IdentidadDS;
@@ -7,7 +6,6 @@ using Es.Riam.Gnoss.AD.EntityModel.Models.OrganizacionDS;
 using Es.Riam.Gnoss.AD.Identidad;
 using Es.Riam.Gnoss.AD.ServiciosGenerales;
 using Es.Riam.Gnoss.AD.Usuarios;
-using Es.Riam.Gnoss.AD.Virtuoso;
 using Es.Riam.Gnoss.Elementos.Amigos;
 using Es.Riam.Gnoss.Elementos.ServiciosGenerales;
 using Es.Riam.Gnoss.Elementos.Suscripcion;
@@ -17,7 +15,6 @@ using Es.Riam.Gnoss.Logica.ServiciosGenerales;
 using Es.Riam.Gnoss.Util.Configuracion;
 using Es.Riam.Gnoss.Util.General;
 using Es.Riam.Util;
-using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -98,7 +95,7 @@ namespace Es.Riam.Gnoss.Elementos.Identidad
             mEntityContext = entityContext;
             mConfigService = configService;
 
-            this.mPerfil = pPerfil;
+            mPerfil = pPerfil;
             mServicesUtilVirtuosoAndReplication = servicesUtilVirtuosoAndReplication;
         }
 
@@ -154,14 +151,14 @@ namespace Es.Riam.Gnoss.Elementos.Identidad
                 {
                     if (GestorIdentidades.GestorPersonas != null)
                     {
-                        return GestorIdentidades.GestorPersonas.ListaPersonas[(Guid)this.FilaIdentidad.Perfil.PersonaID.Value].Mail;
+                        return GestorIdentidades.GestorPersonas.ListaPersonas[FilaIdentidad.Perfil.PersonaID.Value].Mail;
                     }
                 }
                 else if (ModoParticipacion.Equals(TiposIdentidad.Organizacion))
                 {
                     if (GestorIdentidades.GestorOrganizaciones != null)
                     {
-                        return GestorIdentidades.GestorOrganizaciones.ListaOrganizaciones[(Guid)OrganizacionID.Value].FilaOrganizacion.Email;
+                        return GestorIdentidades.GestorOrganizaciones.ListaOrganizaciones[OrganizacionID.Value].FilaOrganizacion.Email;
                     }
                 }
                 else
@@ -171,9 +168,9 @@ namespace Es.Riam.Gnoss.Elementos.Identidad
                         Persona.GestorPersonas.GestorOrganizaciones = GestorIdentidades.GestorOrganizaciones;
                         string mail = "";
 
-                        if (Persona.ListaDatosTrabajoPersonaOrganizacion.ContainsKey((Guid)OrganizacionID.Value))
+                        if (Persona.ListaDatosTrabajoPersonaOrganizacion.ContainsKey(OrganizacionID.Value))
                         {
-                            mail = Persona.ListaDatosTrabajoPersonaOrganizacion[(Guid)OrganizacionID.Value].Mail;
+                            mail = Persona.ListaDatosTrabajoPersonaOrganizacion[OrganizacionID.Value].Mail;
                         }
                         return mail;
                     }
@@ -201,14 +198,14 @@ namespace Es.Riam.Gnoss.Elementos.Identidad
         /// Obtiene la identidad de MyGNOSS del perfil actual
         /// </summary>
         public Identidad IdentidadMyGNOSS
-        {//"PerfilID = '" + this.PerfilUsuario.Clave + "' AND ProyectoID = '" + ProyectoAD.MetaProyecto + "'"
+        {
             get
             {
                 AD.EntityModel.Models.IdentidadDS.Identidad fila = GestorIdentidades.DataWrapperIdentidad.ListaIdentidad.FirstOrDefault(identidad => identidad.PerfilID.Equals(this.PerfilUsuario.Clave) && identidad.ProyectoID.Equals(ProyectoAD.MetaProyecto));
 
                 if (fila != null)
                 {
-                    return this.GestorIdentidades.ListaIdentidades[fila.IdentidadID];
+                    return GestorIdentidades.ListaIdentidades[fila.IdentidadID];
                 }
 
                 return this;
@@ -221,38 +218,16 @@ namespace Es.Riam.Gnoss.Elementos.Identidad
         public Identidad IdentidadPersonalMyGNOSS
         {
             get
-            {//"PersonaID = '" + Util.Seguridad.Usuario.UsuarioActual.PersonaID + "' AND OrganizacionID IS NULL"
+            {
                 List<AD.EntityModel.Models.IdentidadDS.Perfil> filasPerfilPersonal = GestorIdentidades.DataWrapperIdentidad.ListaPerfil.Where(perfil => perfil.PersonaID.Equals(PerfilUsuario.PersonaID) && !perfil.OrganizacionID.HasValue).ToList();
 
                 if (filasPerfilPersonal.Count > 0)
                 {
-                    //Guid perfilID = filasPerfilPersonal[0].PerfilID;
-
-                    //if (filasPerfilPersonal.Length > 1)
-                    //{
-                    //    foreach(IdentidadDS.PerfilRow filaPerf in filasPerfilPersonal)
-                    //    {
-                    //        if (GestorIdentidades.IdentidadesDS.Identidad.Select("PerfilID = '" + filaPerf.PerfilID + "' AND Tipo = " + (short)TiposIdentidad.Profesor).Length == 0)
-                    //        {
-                    //            perfilID = filaPerf.PerfilID;
-                    //            break;
-                    //        }
-                    //    }
-                    //}
-
-                    //                   IdentidadDS.IdentidadRow[] filas = (IdentidadDS.IdentidadRow[])GestorIdentidades.IdentidadesDS.Identidad.Select("PerfilID = '" + perfilID + "' AND ProyectoID = '" + ProyectoAD.MetaProyecto
-                    //+ "'");
-
-                    //                   if (filas.Length > 0)
-                    //                   {
-                    //                       return this.GestorIdentidades.ListaIdentidades[filas[0].IdentidadID];
-                    //                   }
-
                     List<AD.EntityModel.Models.IdentidadDS.Identidad> filas = GestorIdentidades.DataWrapperIdentidad.ListaIdentidad.Where(identidad => identidad.Tipo.Equals((short)TiposIdentidad.Personal) && identidad.ProyectoID.Equals(ProyectoAD.MetaProyecto)).ToList();
 
                     if (filas.Count > 0)
                     {
-                        return this.GestorIdentidades.ListaIdentidades[filas[0].IdentidadID];
+                        return GestorIdentidades.ListaIdentidades[filas[0].IdentidadID];
                     }
                 }
 
@@ -288,12 +263,12 @@ namespace Es.Riam.Gnoss.Elementos.Identidad
         /// <summary>
         /// Obtiene la lista de redes sociales del perfil
         /// </summary>
-        public Dictionary<string, AD.EntityModel.Models.IdentidadDS.PerfilRedesSociales> ListaRedesSociales
+        public Dictionary<string, PerfilRedesSociales> ListaRedesSociales
         {
             get
             {
-                Dictionary<string, AD.EntityModel.Models.IdentidadDS.PerfilRedesSociales> listaRedesSociales = new Dictionary<string, AD.EntityModel.Models.IdentidadDS.PerfilRedesSociales>();
-                foreach (AD.EntityModel.Models.IdentidadDS.PerfilRedesSociales filaPerfilRedesSoc in GestorIdentidades.DataWrapperIdentidad.ListaPerfilRedesSociales.Where(perfilRedesSociales => perfilRedesSociales.PerfilID.Equals(FilaIdentidad.PerfilID)).ToList())
+                Dictionary<string, PerfilRedesSociales> listaRedesSociales = new Dictionary<string, AD.EntityModel.Models.IdentidadDS.PerfilRedesSociales>();
+                foreach (PerfilRedesSociales filaPerfilRedesSoc in GestorIdentidades.DataWrapperIdentidad.ListaPerfilRedesSociales.Where(perfilRedesSociales => perfilRedesSociales.PerfilID.Equals(FilaIdentidad.PerfilID)).ToList())
                 {
                     if (!listaRedesSociales.ContainsKey(filaPerfilRedesSoc.NombreRedSocial))
                     {
@@ -615,7 +590,7 @@ namespace Es.Riam.Gnoss.Elementos.Identidad
         {
             if (ModoParticipacion.Equals(TiposIdentidad.ProfesionalPersonal))
             {
-                return PerfilUsuario.NombrePersonaEnOrganizacion + " " + ConstantesDeSeparacion.SEPARACION_CONCATENADOR + " " + PerfilUsuario.NombreOrganizacion;
+                return $"{PerfilUsuario.NombrePersonaEnOrganizacion} {ConstantesDeSeparacion.SEPARACION_CONCATENADOR} {PerfilUsuario.NombreOrganizacion}";
             }
             else if (ModoParticipacion.Equals(TiposIdentidad.ProfesionalCorporativo))
             {
@@ -627,7 +602,7 @@ namespace Es.Riam.Gnoss.Elementos.Identidad
 
                     if (idUsuario.OrganizacionID.HasValue && OrganizacionID.HasValue && OrganizacionID.Equals(idUsuario.OrganizacionID) && !ModoPersonal && !EsOrganizacion)
                     {
-                        return PerfilUsuario.NombreOrganizacion + " (" + PerfilUsuario.NombrePersonaEnOrganizacion + ")";
+                        return $"{PerfilUsuario.NombreOrganizacion} ({PerfilUsuario.NombrePersonaEnOrganizacion})";
                     }
                 }
                 return PerfilUsuario.NombreOrganizacion;
@@ -643,7 +618,7 @@ namespace Es.Riam.Gnoss.Elementos.Identidad
                     return PerfilUsuario.FilaPerfil.NombrePerfil.Substring(0, PerfilUsuario.FilaPerfil.NombrePerfil.IndexOf(ConstantesDeSeparacion.SEPARACION_CONCATENADOR) + 2) + Persona.NombreConApellidos;
                 }
                 else
-                {//"Tipo="+(short)TiposIdentidad.Personal+" AND ProyectoID='"+ProyectoAD.MetaProyecto+"'"
+                {
                     List<AD.EntityModel.Models.IdentidadDS.Identidad> filasIdent = GestorIdentidades.DataWrapperIdentidad.ListaIdentidad.Where(identidad => identidad.Tipo.Equals((short)TiposIdentidad.Personal) && identidad.ProyectoID.Equals(ProyectoAD.MetaProyecto)).ToList();
 
                     if (filasIdent.Count > 0)
@@ -715,39 +690,39 @@ namespace Es.Riam.Gnoss.Elementos.Identidad
                     //Si tenemos los datos ya cargados, nos evitamos la consulta a la BBDD
                     if ((Tipo == TiposIdentidad.Personal || Tipo == TiposIdentidad.Profesor) && Persona != null && Persona.FilaPersona.CoordenadasFoto != null)
                     {
-                        urlFoto = "/" + UtilArchivos.ContentImagenesPersonas + "/" + Persona.Clave.ToString().ToLower() + "_peque.png";
+                        urlFoto = $"/{UtilArchivos.ContentImagenesPersonas}/{Persona.Clave.ToString().ToLower()}_peque.png";
                         if (Persona.FilaPersona.VersionFoto.HasValue)
                         {
-                            urlFoto += "?" + Persona.FilaPersona.VersionFoto.Value;
+                            urlFoto += $"?{Persona.FilaPersona.VersionFoto.Value}";
                         }
                     }
                     else if ((Tipo == TiposIdentidad.ProfesionalCorporativo || Tipo == TiposIdentidad.Organizacion) && OrganizacionPerfil != null && OrganizacionPerfil.FilaOrganizacion.CoordenadasLogo != null)
                     {
-                        urlFoto = "/" + UtilArchivos.ContentImagenesOrganizaciones + "/" + OrganizacionPerfil.Clave.ToString().ToLower() + "_peque.png";
+                        urlFoto = $"/{UtilArchivos.ContentImagenesOrganizaciones}/{OrganizacionPerfil.Clave.ToString().ToLower()}_peque.png";
                         if (OrganizacionPerfil.FilaOrganizacion.VersionLogo.HasValue)
                         {
-                            urlFoto += "?" + OrganizacionPerfil.FilaOrganizacion.VersionLogo;
+                            urlFoto += $"?{OrganizacionPerfil.FilaOrganizacion.VersionLogo}";
                         }
                     }
                     else if (Tipo == TiposIdentidad.ProfesionalPersonal && OrganizacionPerfil != null && Persona != null)
                     {
-                        PersonaVinculoOrganizacion filaPersVincOrg = OrganizacionPerfil.GestorOrganizaciones.OrganizacionDW.ListaPersonaVinculoOrganizacion.FirstOrDefault(item => item.PersonaID.Equals(Persona.Clave) && item.OrganizacionID.Equals(OrganizacionPerfil.Clave));//.FindByPersonaIDOrganizacionID(Persona.Clave, OrganizacionPerfil.Clave);
+                        PersonaVinculoOrganizacion filaPersVincOrg = OrganizacionPerfil.GestorOrganizaciones.OrganizacionDW.ListaPersonaVinculoOrganizacion.FirstOrDefault(item => item.PersonaID.Equals(Persona.Clave) && item.OrganizacionID.Equals(OrganizacionPerfil.Clave));
                         if (filaPersVincOrg != null && Persona.FilaPersona.CoordenadasFoto != null)
                         {
                             if (filaPersVincOrg.UsarFotoPersonal)
                             {
-                                urlFoto = "/" + UtilArchivos.ContentImagenesPersonas + "/" + Persona.Clave.ToString().ToLower() + "_peque.png";
+                                urlFoto = $"/{UtilArchivos.ContentImagenesPersonas}/{Persona.Clave.ToString().ToLower()}_peque.png";
                                 if (Persona.FilaPersona.VersionFoto.HasValue)
                                 {
-                                    urlFoto += "?" + Persona.FilaPersona.VersionFoto.Value;
+                                    urlFoto += $"?{Persona.FilaPersona.VersionFoto.Value}";
                                 }
                             }
                             else if (filaPersVincOrg.CoordenadasFoto != null)
                             {
-                                urlFoto = "/" + UtilArchivos.ContentImagenesPersona_Organizacion + "/" + OrganizacionPerfil.Clave.ToString().ToLower() + "/" + Persona.Clave.ToString().ToLower() + "_peque.png";
+                                urlFoto = $"/{UtilArchivos.ContentImagenesPersona_Organizacion}/{OrganizacionPerfil.Clave.ToString().ToLower()}/{Persona.Clave.ToString().ToLower()}_peque.png";
                                 if (filaPersVincOrg.VersionFoto != null)
                                 {
-                                    urlFoto += "?" + filaPersVincOrg.VersionFoto;
+                                    urlFoto += $"?{filaPersVincOrg.VersionFoto}";
                                 }
                             }
                         }
@@ -773,15 +748,15 @@ namespace Es.Riam.Gnoss.Elementos.Identidad
                 {
                     if (ModoParticipacion == TiposIdentidad.Personal || ModoParticipacion == TiposIdentidad.Profesor)
                     {
-                        urlFoto = "/" + UtilArchivos.ContentImagenesPersonas + "/" + "anonimo_peque.png";
+                        urlFoto = $"/{UtilArchivos.ContentImagenesPersonas}/anonimo_peque.png";
                     }
                     else if (ModoParticipacion == TiposIdentidad.ProfesionalCorporativo || ModoParticipacion == TiposIdentidad.Organizacion)
                     {
-                        urlFoto = "/" + UtilArchivos.ContentImagenesOrganizaciones + "/" + "anonimo_peque.png";
+                        urlFoto = $"/{UtilArchivos.ContentImagenesOrganizaciones}/anonimo_peque.png";
                     }
                     else if (ModoParticipacion == TiposIdentidad.ProfesionalPersonal)
                     {
-                        urlFoto = "/" + UtilArchivos.ContentImagenesPersonas + "/" + "anonimo_peque.png";
+                        urlFoto = $"/{UtilArchivos.ContentImagenesPersonas}/anonimo_peque.png";
                     }
                 }
 
@@ -903,7 +878,7 @@ namespace Es.Riam.Gnoss.Elementos.Identidad
 
                                 if (!GestorIdentidades.ListaPerfiles.ContainsKey(perfilOrganizacion.PerfilID) || !GestorIdentidades.ListaIdentidades.ContainsKey(filaIdentidadOrganizacion.IdentidadID))
                                 {
-                                    this.GestorIdentidades.RecargarHijos();
+                                    GestorIdentidades.RecargarHijos();
                                 }
 
                                 mIdentidadOrganizacion = GestorIdentidades.ListaIdentidades[filaIdentidadOrganizacion.IdentidadID];
@@ -1035,10 +1010,10 @@ namespace Es.Riam.Gnoss.Elementos.Identidad
                     DataWrapperOrganizacion orgDW = orgCN.ObtenerOrganizacionDeIdentidad(Clave);
                     if (orgDW.ListaOrganizacion.Count > 0)
                     {
-                        orgDW = orgCN.ObtenerConfiguracionGnossOrg(((AD.EntityModel.Models.OrganizacionDS.Organizacion)orgDW.ListaOrganizacion.FirstOrDefault()).OrganizacionID);
+                        orgDW = orgCN.ObtenerConfiguracionGnossOrg((orgDW.ListaOrganizacion.FirstOrDefault()).OrganizacionID);
                         if (orgDW.ListaConfiguracionGnossOrg.Count > 0)
                         {
-                            visibilidad = (TipoVisibilidadContactosOrganizacion)((ConfiguracionGnossOrg)orgDW.ListaConfiguracionGnossOrg.FirstOrDefault()).VisibilidadContactos;
+                            visibilidad = (TipoVisibilidadContactosOrganizacion)(orgDW.ListaConfiguracionGnossOrg.FirstOrDefault()).VisibilidadContactos;
                         }
                     }
                 }
@@ -1162,7 +1137,6 @@ namespace Es.Riam.Gnoss.Elementos.Identidad
                     {
                         ListaIdentidades.Add(identidad.Clave, identidad);
                     }
-                    //dataWrapperProyecto.Dispose();
                 }
                 proyCN.Dispose();
                 return ListaIdentidades;
@@ -1176,7 +1150,7 @@ namespace Es.Riam.Gnoss.Elementos.Identidad
         /// <param name="pPerfilID">Identificador del perfil que debe tener la comunidad.</param>
         /// <returns>Identificador de la identidad de un usuario en una determinada comunidad</returns>
         public Guid ObtenerIdentidadUsuarioEnProyectoConPerfil(Guid pProyectoID, Guid pPerfilID)
-        {//"ProyectoID='" + pProyectoID + "' AND PerfilID='" + pPerfilID + "'"
+        {
             List<AD.EntityModel.Models.IdentidadDS.Identidad> filasIdentidad = this.GestorIdentidades.DataWrapperIdentidad.ListaIdentidad.Where(identidad => identidad.ProyectoID.Equals(pProyectoID) && identidad.PerfilID.Equals(pPerfilID)).ToList();
 
             if (filasIdentidad.Count == 0)
@@ -1184,7 +1158,7 @@ namespace Es.Riam.Gnoss.Elementos.Identidad
                 //Juan Valer: No debe entrar nunca por aquí, lo pongo porque a habido incongruencias en datos de producción 
                 //y puede ser porque entra por aqui en alguna ocasión. Lanzo este mensaje para que se quede constancia en el log 
                 //y poder reproducir el error.
-                throw new Exception("El perfil: '" + pPerfilID + "' de la identidad: '" + Clave + "' no tiene una identidad en el proyecto: '" + pProyectoID + "'");
+                throw new Exception($"El perfil: '{pPerfilID}' de la identidad: '{Clave}' no tiene una identidad en el proyecto: '{pProyectoID}'");
             }
             return filasIdentidad.First().IdentidadID;
         }

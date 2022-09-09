@@ -17,7 +17,7 @@ namespace Es.Riam.Gnoss.AD.EntityModel.Models.Cookies
         [Column(Order = 0)]
         public Guid CookieID { get; set; }
 
-        [StringLength(100)]
+        [StringLength(1000)]
         public string Nombre { get; set; }
 
         [StringLength(50)]

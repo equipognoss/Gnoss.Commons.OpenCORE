@@ -1432,7 +1432,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Solicitudes
             Stopwatch sw = null;
             try
             {
-                ServicioImagenes servicioImagenes = new ServicioImagenes(mLoggingService);
+                ServicioImagenes servicioImagenes = new ServicioImagenes(mLoggingService, mConfigService);
                 string url = UrlIntragnossServicios.Replace("https://", "http://");
                 servicioImagenes.Url = url;
                 byte[] resultado = servicioImagenes.ObtenerImagen(UtilArchivos.ContentImagenesSolicitudes + "/" + pSolicitudID.ToString(), ".png");
@@ -1483,7 +1483,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Solicitudes
             Stopwatch sw = null;
             try
             {
-                ServicioImagenes servicioImagenes = new ServicioImagenes(mLoggingService);
+                ServicioImagenes servicioImagenes = new ServicioImagenes(mLoggingService, mConfigService);
 
                 string url = UrlIntragnossServicios.Replace("https://", "http://");
                 servicioImagenes.Url = url;
@@ -1528,7 +1528,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Solicitudes
             Stopwatch sw = null;
             try
             {
-                ServicioImagenes servicioImagenes = new ServicioImagenes(mLoggingService);
+                ServicioImagenes servicioImagenes = new ServicioImagenes(mLoggingService, mConfigService);
                 sw = LoggingService.IniciarRelojTelemetria();
 
                 string url = UrlIntragnossServicios.Replace("https://", "http://");
@@ -1557,7 +1557,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Solicitudes
             Stopwatch sw = null;
             try
             {
-                ServicioImagenes servicioImagenes = new ServicioImagenes(mLoggingService);
+                ServicioImagenes servicioImagenes = new ServicioImagenes(mLoggingService, mConfigService);
                 string url = UrlIntragnossServicios.Replace("https://", "http://");
                 servicioImagenes.Url = url;
 
@@ -1600,7 +1600,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Solicitudes
             Stopwatch sw = null;
             try
             {
-                ServicioImagenes servicioImagenes = new ServicioImagenes(mLoggingService);
+                ServicioImagenes servicioImagenes = new ServicioImagenes(mLoggingService, mConfigService);
                 string url = UrlIntragnossServicios.Replace("https://", "http://");
                 servicioImagenes.Url = url;
                 sw = LoggingService.IniciarRelojTelemetria();

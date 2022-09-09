@@ -135,16 +135,16 @@ namespace Es.Riam.Gnoss.Util.General
                 using (StreamWriter sw = new StreamWriter(pRutaFicheroError, true, System.Text.Encoding.Default))
                 {
                     StringBuilder sb = new StringBuilder();
-                    sb.Append($"[{DateTime.Now}] \"{pError}\"");
+                    sb.Append($"[{DateTime.Now}] \"{pError.TrimEnd()}\"");
                     // Escribo el error
 
                     try
                     {
                         if (_httpContextAccessor != null && _httpContextAccessor.HttpContext != null && _httpContextAccessor.HttpContext.Request != null)
                         {
-                            sb.AppendLine($" \"{_httpContextAccessor.HttpContext.Request.Path.ToString()}\"");
+                            sb.Append($" \"{_httpContextAccessor.HttpContext.Request.Path.ToString()}\"");
                             //sw.WriteLine(HttpContext.Current.Request.Url.ToString());
-                            sb.Append($" \"");
+                            sb.Append($" '");
                             if (_httpContextAccessor.HttpContext.Request.Headers.Keys.Count == 0)
                             {
                                 sb.Append($"-");
@@ -153,16 +153,16 @@ namespace Es.Riam.Gnoss.Util.General
                             {
                                 sb.Append($" {key}: {_httpContextAccessor.HttpContext.Request.Headers[key]}");
                             }
-                            sb.Append($"\"");
+                            sb.Append($"'");
                         }
                         else
                         {
                             sb.Append($" \"-\"");
-                            sb.Append($" \"-\"");
+                            sb.Append($" '-'");
                         }
                     }
                     catch { }
-                    string error = sb.ToString().Replace('\n', ' ');
+                    string error = sb.ToString().Replace('\r', ' ').Replace('\n', ' ');
                     sw.WriteLine(error);
                     //sw.WriteLine(Environment.NewLine + Environment.NewLine + "___________________________________________________________________________________________" + Environment.NewLine + Environment.NewLine + Environment.NewLine);
                 }
@@ -228,11 +228,12 @@ namespace Es.Riam.Gnoss.Util.General
                         {
                             GuardarLogError(pExcepcion.InnerException, pMensajeExtra, pErrorCritico, "INNER EXCEPTION");
                         }
-                        if (pExcepcion is AggregateException)
-                        {
-                            AggregateException aggregateException = (AggregateException)pExcepcion;                    
-                            GuardarLogError(aggregateException, pMensajeExtra, pErrorCritico, "Aggregate Exception");
-                        }
+                        //JUAN
+                        //else if (pExcepcion is AggregateException)
+                        //{
+                        //    AggregateException aggregateException = (AggregateException)pExcepcion;
+                        //    GuardarLogError(aggregateException, pMensajeExtra, pErrorCritico, "Aggregate Exception");
+                        //}
                     }
                 }
                 catch
@@ -343,7 +344,7 @@ namespace Es.Riam.Gnoss.Util.General
                 using (StreamWriter sw = new StreamWriter(pRutaFicheroError, true, System.Text.Encoding.Default))
                 {
                     StringBuilder sb = new StringBuilder();
-                    sb.Append($"[{DateTime.Now}] {pError} \"{pTipoError}\"");
+                    sb.Append($"[{DateTime.Now}] {pError.TrimEnd()} \"{pTipoError.TrimEnd()}\"");
 
                     try
                     {
@@ -352,7 +353,7 @@ namespace Es.Riam.Gnoss.Util.General
 
                             //sw.WriteLine(HttpContext.Current.Request.Url.ToString());
                             sb.Append($" \"{_httpContextAccessor.HttpContext.Request.Path.ToString()}\"");
-                            sb.Append($" \"");
+                            sb.Append($" ''");
                             if (_httpContextAccessor.HttpContext.Request.Headers.Keys.Count == 0)
                             {
                                 sb.Append($"-");
@@ -361,12 +362,12 @@ namespace Es.Riam.Gnoss.Util.General
                             {
                                 sb.Append($" {key}: {_httpContextAccessor.HttpContext.Request.Headers[key]}");
                             }
-                            sb.Append($"\"");
+                            sb.Append($" ''");
                         }
                         else
                         {
                             sb.Append($" \"-\"");
-                            sb.Append($" \"-\"");
+                            sb.Append($" '-'");
                         }
                     }
                     catch { }

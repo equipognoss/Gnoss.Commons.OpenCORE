@@ -15,7 +15,7 @@ namespace Es.Riam.Gnoss.AD.EntityModel.Models.Faceta
         {
             Excluida = 1;
             FacetaFiltroProyecto = new HashSet<FacetaFiltroProyecto>();
-            //FacetaFiltroProyecto1 = new HashSet<FacetaFiltroProyecto>();
+            FacetaObjetoConocimientoProyectoPestanya = new HashSet<FacetaObjetoConocimientoProyectoPestanya>();
         }
         [Column(Order = 0)]
         public Guid OrganizacionID { get; set; }

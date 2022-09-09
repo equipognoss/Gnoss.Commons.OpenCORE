@@ -32,6 +32,13 @@ namespace Es.Riam.Gnoss.Web.Controles.ServicioImagenesWrapper.Model
         public Guid organization_id_destination { get; set; }
         public string extension { get; set; }
         public string relative_path { get; set; }
+    }
 
+    public class GnossFile
+    {
+        public string path { get; set; }
+        public string name { get; set; }
+        public string extension { get; set; }
+        public byte[] file { get; set; }
     }
 }

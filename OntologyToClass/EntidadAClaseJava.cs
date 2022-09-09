@@ -2270,11 +2270,11 @@ namespace OntologiaAClase
                     Clase.AppendLine($"{UtilCadenasOntology.Tabs(3)}{{");
                     if (propiedad.ValorUnico)
                     {
-                        Clase.AppendLine($"{UtilCadenasOntology.Tabs(4)}{nombreVariable} = {nombreProp}.replace(\"\\r\\n\", \"\").replace(\"\\n\", \"\").replace(\"\\r\", \"\").replace(\"'\", \"''\").replace(\"|\", \"#PIPE#\");");
+                        Clase.AppendLine($"{UtilCadenasOntology.Tabs(4)}{nombreVariable} = {nombreProp}.replace(\"\\r\\n\", \"\").replace(\"\\n\", \"\").replace(\"\\r\", \"\").replace(\"'\", \"#COMILLA#\").replace(\"|\", \"#PIPE#\");");
                     }
                     else
                     {
-                        Clase.AppendLine($"{UtilCadenasOntology.Tabs(3)}{nombreVariable} = string.join(\", \",{nombreProp}).replace(\"\\r\\n\", \"\").replace(\"\\n\", \"\").replace(\"\\r\", \"\").replace(\"'\", \"''\").replace(\"|\", \"#PIPE#\");");
+                        Clase.AppendLine($"{UtilCadenasOntology.Tabs(3)}{nombreVariable} = string.join(\", \",{nombreProp}).replace(\"\\r\\n\", \"\").replace(\"\\n\", \"\").replace(\"\\r\", \"\").replace(\"'\", \"#COMILLA#\").replace(\"|\", \"#PIPE#\");");
                     }
                     Clase.AppendLine($"{UtilCadenasOntology.Tabs(3)}}}");
                 }

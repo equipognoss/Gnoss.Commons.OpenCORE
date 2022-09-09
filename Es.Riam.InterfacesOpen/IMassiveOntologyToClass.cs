@@ -451,7 +451,7 @@ namespace Es.Riam.InterfacesOpen
                     Clase.AppendLine($"{UtilCadenasOntology.Tabs(9)}search += $\"{{valor}} \";");
                 }
 
-                Clase.AppendLine($"{UtilCadenasOntology.Tabs(9)}AgregarTripleALista($\"{pSujetoEntidadSuperior}\", \"{pProp.NombreFormatoUri}\", $\"{pConfiguracionObjeto.SimboloInicio}valor{pConfiguracionObjeto.Aux}{pConfiguracionObjeto.SimboloFin}\", list, $\"{{idioma}} . \");");
+                Clase.AppendLine($"{UtilCadenasOntology.Tabs(9)}AgregarTripleALista($\"{pSujetoEntidadSuperior}\", \"{pProp.NombreFormatoUri}\", $\"{pConfiguracionObjeto.SimboloInicio}valor{pConfiguracionObjeto.Aux}{pConfiguracionObjeto.SimboloFin}\", list, $\"@{{idioma}} . \");");
                 Clase.AppendLine($"{UtilCadenasOntology.Tabs(8)}}}");
                 Clase.AppendLine($"{UtilCadenasOntology.Tabs(7)}}}");
             }
@@ -464,7 +464,7 @@ namespace Es.Riam.InterfacesOpen
                     Clase.AppendLine($"{UtilCadenasOntology.Tabs(8)}search += $\"{{{pNombrePadre}.{pIdentificadorValor}[idioma]}} \";");
                 }
 
-                Clase.AppendLine($"{UtilCadenasOntology.Tabs(8)}AgregarTripleALista($\"{pSujetoEntidadSuperior}\", \"{pProp.NombreFormatoUri}\",  $\"{pConfiguracionObjeto.SimboloInicio}{pNombrePadre}.{pIdentificadorValor}[idioma]{pConfiguracionObjeto.Aux}{pConfiguracionObjeto.SimboloFin}\", list,  $\"{{idioma}} . \");");
+                Clase.AppendLine($"{UtilCadenasOntology.Tabs(8)}AgregarTripleALista($\"{pSujetoEntidadSuperior}\", \"{pProp.NombreFormatoUri}\",  $\"{pConfiguracionObjeto.SimboloInicio}{pNombrePadre}.{pIdentificadorValor}[idioma]{pConfiguracionObjeto.Aux}{pConfiguracionObjeto.SimboloFin}\", list,  $\"@{{idioma}} . \");");
                 Clase.AppendLine($"{UtilCadenasOntology.Tabs(7)}}}");
             }
         }

@@ -1712,6 +1712,10 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
                 {
                     listaRecursosPendientes.Add(idRecurso);
                 }
+                else if (string.IsNullOrEmpty(listaRecursos[idRecurso].UrlPreview))
+                {
+                    listaRecursosPendientes.Add(idRecurso);
+                }
             }
 
             Guid proyectoID = mProyecto.Clave;
@@ -2328,6 +2332,8 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
             pRecurso.ListActions.UrlCreateComment = pRecurso.CompletCardLink + "/create-comment";
             pRecurso.ListActions.UrlLoadLinkedResources = pRecurso.CompletCardLink + "/load-linked-resources";
             pRecurso.ListActions.UrlLinkResource = pRecurso.CompletCardLink + "/link-resource";
+            pRecurso.ListActions.UrlAddMetaTitle = pRecurso.CompletCardLink + "/add-metatitle";
+            pRecurso.ListActions.UrlAddMetaDescripcion = pRecurso.CompletCardLink + "/add-metadescription";
             pRecurso.ListActions.UrlUnLinkResource = pRecurso.CompletCardLink + "/unlink-resource";
             pRecurso.ListActions.UrlAddToPersonalSpace = pRecurso.CompletCardLink + "/add-personal-space";
             pRecurso.ListActions.UrlAddToPersonalSpacePrivate = pRecurso.CompletCardLink + "/add-personal-space-private";
@@ -2364,6 +2370,8 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
             pRecurso.ListActions.UrlLoadActionSendNewsletterGroups = pRecurso.CompletCardLink + "/load-action/send-newsletter-groups";
             pRecurso.ListActions.UrlLoadActionLockComments = pRecurso.CompletCardLink + "/load-action/lock-unlock-comments";
             pRecurso.ListActions.UrlLoadActionSendLink = pRecurso.CompletCardLink + "/load-action/send-link";
+            pRecurso.ListActions.UrlLoadActionAddMetaTitle = pRecurso.CompletCardLink + "/load-action/add-metatitle";
+            pRecurso.ListActions.UrlLoadActionAddMetaDescripcion = pRecurso.CompletCardLink + "/load-action/add-metadescription";
         }
 
         public Dictionary<Guid, List<ResourceEventModel>> ObtenerEventosDeRecursosPorID(List<Guid> pListaRecursosID)
@@ -3706,7 +3714,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
                 string fileName = HttpUtility.UrlEncode(pDocumentoID.ToString()) + "_peque" + pExtension;
                 if (pVersionFoto.HasValue)
                 {
-                    urlImagen = "BASEURLCONTENTREPLACE" + "/" + UtilArchivos.ContentImagenes + "/" + UtilArchivos.ContentImagenesDocumentos + "/miniatura/" + UtilArchivos.DirectorioDocumento(pDocumentoID) + "/" + fileName + "?" + pVersionFoto.Value;
+                    urlImagen = "BASEURLCONTENTREPLACE" + "/" + UtilArchivos.ContentImagenes + "/" + UtilArchivos.ContentImagenesDocumentos + "/Miniatura/" + UtilArchivos.DirectorioDocumento(pDocumentoID) + "/" + fileName + "?" + pVersionFoto.Value;
                 }
             }
             else if ((pTipoDocumentacion == TiposDocumentacion.Semantico) && !string.IsNullOrEmpty(pNombreCategoriaDoc))

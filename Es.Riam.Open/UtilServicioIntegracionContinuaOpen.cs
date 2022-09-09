@@ -212,6 +212,11 @@ namespace Es.Riam.Open
             throw new NotImplementedException();
         }
 
+        public HttpStatusCode CompilarDll(Guid pClaveProyectoSeleccionado, Guid pUsuarioID, string pEntornoIntegracionContinua, string pUrlApiIntegracionContinua, string pTagName, string pUrlApiDespliegue)
+        {
+            throw new NotImplementedException();
+        }
+
         public AdministrarCredencialesViewModel PeticionApiUsuarioExiste(AdministrarCredencialesViewModel pModel, Guid pClaveProyectoSeleccionado, Guid pUsuarioID, string pEntornoIntegracionContinua, string UrlApiIntegracionContinua)
         {
             throw new NotImplementedException();

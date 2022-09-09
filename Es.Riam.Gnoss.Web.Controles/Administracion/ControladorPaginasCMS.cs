@@ -367,7 +367,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
                         //Borrar los componentes que ya no esten
                         if (!listaComponentes.Contains(componente.Clave))
                         {
-                            GestorCMSPaginaActual.EliminarComponente(componente.Clave);
+                            GestorCMSPaginaActual.EliminarComponenteDePagina(componente.Clave);
                         }
                     }
                 }
@@ -382,9 +382,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
                 }
             }
             
-
             GestorCMSPaginaActual.CargarBloques();
-            //Descartar();
 
             CMSPagina pagina = GestorCMSPaginaActual.ListaPaginasProyectos[ProyectoSeleccionado.Clave][mTipoUbicacionCMSPaginaActual];
             pagina.MostrarSoloCuerpo = pPaginaCMSModel.MostrarSoloCuerpo;
@@ -426,6 +424,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
                 }
             }
 
+            cmsCN.Actualizar();
             cmsCN.ActualizarCMSEliminandoBloquesDePaginaDeProyecto(gestorCMSDescartar.CMSDW, ProyectoSeleccionado.Clave, mTipoUbicacionCMSPaginaActual, true);
             cmsCN.Dispose();
 

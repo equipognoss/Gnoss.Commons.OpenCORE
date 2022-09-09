@@ -807,12 +807,7 @@ namespace Es.Riam.Gnoss.AD.ParametroAplicacion
         /// <param name="valor">Valor que tiene el parametro</param>
         public string ObtenerParametroAplicacion(string parametro)
         {
-            EntityModel.ParametroAplicacion param = mEntityContext.ParametroAplicacion.Where(proy => proy.Parametro.Equals(parametro)).FirstOrDefault();
-            if (param != null)
-            {
-                return param.Valor;
-            }
-            return "";
+            return mEntityContext.ParametroAplicacion.Where(proy => proy.Parametro.Equals(parametro)).Select(item => item.Valor).FirstOrDefault();
         }
 
         public EntityModel.ParametroAplicacion ObtenerFilaParametroAplicacion(string parametro)
@@ -824,23 +819,32 @@ namespace Es.Riam.Gnoss.AD.ParametroAplicacion
         /// <summary>
         /// Modifica el valor de un parametro en la base de datos
         /// </summary>
-        /// <param name="parametro">Nombre del parametro</param>
-        /// <param name="valor">Valor que tiene el parametro</param>
-        public void ActualizarParametroAplicacion(string parametro, string valor)
+        /// <param name="pParametro">Nombre del parametro</param>
+        /// <param name="pValor">Valor que tiene el parametro</param>
+        public void ActualizarParametroAplicacion(string pParametro, string pValor)
         {
-            EntityModel.ParametroAplicacion param = mEntityContext.ParametroAplicacion.Where(proy => proy.Parametro.Equals(parametro)).FirstOrDefault();
-            if (param != null && !param.Valor.Equals(valor))
+            EntityModel.ParametroAplicacion parametroAplicacion = mEntityContext.ParametroAplicacion.Where(proy => proy.Parametro.Equals(pParametro)).FirstOrDefault();
+
+            if (!string.IsNullOrEmpty(pValor))
             {
-                param.Valor = valor;
-                ActualizarBaseDeDatosEntityContext();
+                if (parametroAplicacion != null && !parametroAplicacion.Valor.Equals(pValor))
+                {
+                    //Si el parámetro existe en base de datos y el valor es distinto lo actualizo
+                    parametroAplicacion.Valor = pValor;
+                }
+                else if (parametroAplicacion == null)
+                {
+                    //Si el parámetro no existe en base de datos lo añado
+                    EntityModel.ParametroAplicacion parametroAplicacionNuevo = new EntityModel.ParametroAplicacion();
+                    parametroAplicacionNuevo.Parametro = pParametro;
+                    parametroAplicacionNuevo.Valor = pValor;
+                    mEntityContext.ParametroAplicacion.Add(parametroAplicacionNuevo);
+                }
             }
-            else if (param == null)
+            else if (parametroAplicacion != null)
             {
-                EntityModel.ParametroAplicacion parametroAplicacion = new EntityModel.ParametroAplicacion();
-                parametroAplicacion.Parametro = parametro;
-                parametroAplicacion.Valor = valor;
-                mEntityContext.ParametroAplicacion.Add(parametroAplicacion);
-                ActualizarBaseDeDatosEntityContext();
+                //Si el valor nuevo para el parametro esta vacío, y existía este parametro en base de datos lo elimino
+                mEntityContext.ParametroAplicacion.Remove(parametroAplicacion);
             }
         }
 

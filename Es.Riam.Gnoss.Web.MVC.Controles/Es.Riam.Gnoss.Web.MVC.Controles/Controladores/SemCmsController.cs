@@ -77,7 +77,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
         /// <summary>
         /// Tipo de las entidades apañandas, apaño - verdadero valor.
         /// </summary>
-        private Dictionary<string, string> mTipoEntidadesApañadas;
+        private Dictionary<string, string> mTipoEntidadesApanyadas;
 
         /// <summary>
         /// Documento asociado al formulario semántico.
@@ -299,7 +299,6 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
         public void ObtenerModeloSemCMSEdicion(Guid pIdentidadID)
         {
             mSemRecModel.SemCmsContainsTitleAndDescription = (mOntologia.ConfiguracionPlantilla.PropiedadTitulo.Key != null);
-
             if (mEntidades == null)
             {
                 List<ElementoOntologia> entidades = mOntologia.ObtenerElementosContenedorSuperior();
@@ -318,14 +317,11 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
                     mEntidades.Add(instanciaEntidad);
                 }
             }
-
             ObtenerModeloSemCMS();
 
-            ApañarRepeticionEntidades();
+            ApanyarRepeticionEntidades();
             TraerNombresCategoriasSemyAutocompletar();
-
             AgregarEntidadesPrincipales(pIdentidadID);
-
             AgregarInfoExtraElementos();
         }
 
@@ -669,7 +665,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
         /// <summary>
         /// Apaña la repetición de propiedades para que se puedan editar.
         /// </summary>
-        public static void ApañarRepeticionPropiedades(EstiloPlantillaConfigGen pEstiloGen, List<ElementoOntologia> pEntidades)
+        public static void ApanyarRepeticionPropiedades(EstiloPlantillaConfigGen pEstiloGen, List<ElementoOntologia> pEntidades)
         {
             if (pEstiloGen.PropsRepetidas != null)
             {
@@ -1561,10 +1557,10 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
                 if (pPropiedad.EspecifPropiedad.ImagenMini != null)
                 {
                     caracteristica += "imagenMiniVP=";
-                    Dictionary<int, int> tamaños = pPropiedad.EspecifPropiedad.ImagenMini.Tamanios;
-                    foreach (int ancho in tamaños.Keys)
+                    Dictionary<int, int> tamanyos = pPropiedad.EspecifPropiedad.ImagenMini.Tamanios;
+                    foreach (int ancho in tamanyos.Keys)
                     {
-                        caracteristica += ancho + "." + tamaños[ancho] + ".";
+                        caracteristica += ancho + "." + tamanyos[ancho] + ".";
                     }
 
                     caracteristica += ",";
@@ -1586,7 +1582,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
                 {
                     if (pPropiedad.EspecifPropiedad.MinSizeJcrop.Key != 0 && pPropiedad.EspecifPropiedad.MaxSizeJcrop.Key != 0 && (pPropiedad.EspecifPropiedad.MaxSizeJcrop.Key < pPropiedad.EspecifPropiedad.MinSizeJcrop.Key || pPropiedad.EspecifPropiedad.MaxSizeJcrop.Value < pPropiedad.EspecifPropiedad.MinSizeJcrop.Value))
                     {
-                        string error = "JCrop de '" + pPropiedad.Nombre + "' mal configurado, el tamaño mínimo no puede ser mayor que el máximo.";
+                        string error = "JCrop de '" + pPropiedad.Nombre + "' mal configurado, el tamano mínimo no puede ser mayor que el máximo.";
                         GuardarMensajeErrorAdmin(error, null);
                         throw new Exception(error);
                     }
@@ -1681,7 +1677,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
         /// <summary>
         /// Apaña la repetición de entiades para que se puedan editar.
         /// </summary>
-        private void ApañarRepeticionEntidades()
+        private void ApanyarRepeticionEntidades()
         {
             List<string> tipoEntidadesAgregadas = new List<string>();
             List<ElementoOntologia> entidadesRecorrer = new List<ElementoOntologia>();
@@ -1777,9 +1773,9 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
 
                         nuevoTipo = nuevoTipo + count;
 
-                        TipoEntidadesApañadas.Add(nuevoTipo, propiedad.Rango);
+                        TipoEntidadesApanyadas.Add(nuevoTipo, propiedad.Rango);
 
-                        mLoggingService.AgregarEntrada("FormSem Entidad apañada, nuevo tipo '" + nuevoTipo + "', antiguo '" + propiedad.Rango + "'");
+                        mLoggingService.AgregarEntrada("FormSem Entidad apanada, nuevo tipo '" + nuevoTipo + "', antiguo '" + propiedad.Rango + "'");
 
                         ElementoOntologia nuevaEntidadOnto = mOntologia.GetEntidadTipo(propiedad.Rango);
                         nuevaEntidadOnto.TipoEntidad = nuevoTipo;
@@ -6807,35 +6803,35 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
                 textoIDSEntidadesAux = pIDsEntidadesAux;
             }
 
-            foreach (string apaño in TipoEntidadesApañadas.Keys.Reverse())
+            foreach (string apano in TipoEntidadesApanyadas.Keys.Reverse())
             {
-                pTexto = pTexto.Replace(apaño, TipoEntidadesApañadas[apaño]);
+                pTexto = pTexto.Replace(apano, TipoEntidadesApanyadas[apano]);
 
                 if (textoIDSEntidadesAux != null)
                 {
-                    textoIDSEntidadesAux = textoIDSEntidadesAux.Replace(apaño, TipoEntidadesApañadas[apaño]);
+                    textoIDSEntidadesAux = textoIDSEntidadesAux.Replace(apano, TipoEntidadesApanyadas[apano]);
 
-                    string apañoAux = apaño;
-                    string sustitutoApañoAux = TipoEntidadesApañadas[apaño];
-                    if ((apañoAux.Contains("#") || apañoAux.Contains("/")) && (sustitutoApañoAux.Contains("#") || sustitutoApañoAux.Contains("/")))
+                    string apanoAux = apano;
+                    string sustitutoApanoAux = TipoEntidadesApanyadas[apano];
+                    if ((apanoAux.Contains("#") || apanoAux.Contains("/")) && (sustitutoApanoAux.Contains("#") || sustitutoApanoAux.Contains("/")))
                     {
-                        if (apañoAux.LastIndexOf("#") > apañoAux.LastIndexOf("/"))
+                        if (apanoAux.LastIndexOf("#") > apanoAux.LastIndexOf("/"))
                         {
-                            apañoAux = apañoAux.Substring(apañoAux.LastIndexOf("#") + 1);
+                            apanoAux = apanoAux.Substring(apanoAux.LastIndexOf("#") + 1);
                         }
                         else
                         {
-                            apañoAux = apañoAux.Substring(apañoAux.LastIndexOf("/") + 1);
+                            apanoAux = apanoAux.Substring(apanoAux.LastIndexOf("/") + 1);
                         }
-                        if (sustitutoApañoAux.LastIndexOf("#") > sustitutoApañoAux.LastIndexOf("/"))
+                        if (sustitutoApanoAux.LastIndexOf("#") > sustitutoApanoAux.LastIndexOf("/"))
                         {
-                            sustitutoApañoAux = sustitutoApañoAux.Substring(sustitutoApañoAux.LastIndexOf("#") + 1);
+                            sustitutoApanoAux = sustitutoApanoAux.Substring(sustitutoApanoAux.LastIndexOf("#") + 1);
                         }
                         else
                         {
-                            sustitutoApañoAux = sustitutoApañoAux.Substring(sustitutoApañoAux.LastIndexOf("/") + 1);
+                            sustitutoApanoAux = sustitutoApanoAux.Substring(sustitutoApanoAux.LastIndexOf("/") + 1);
                         }
-                        textoIDSEntidadesAux = textoIDSEntidadesAux.Replace(apañoAux, sustitutoApañoAux);
+                        textoIDSEntidadesAux = textoIDSEntidadesAux.Replace(apanoAux, sustitutoApanoAux);
                     }
                 }
             }
@@ -7527,16 +7523,16 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
         /// <summary>
         /// Tipo de las entidades apañandas, apaño - verdadero valor.
         /// </summary>
-        private Dictionary<string, string> TipoEntidadesApañadas
+        private Dictionary<string, string> TipoEntidadesApanyadas
         {
             get
             {
-                if (mTipoEntidadesApañadas == null)
+                if (mTipoEntidadesApanyadas == null)
                 {
-                    mTipoEntidadesApañadas = new Dictionary<string, string>();
+                    mTipoEntidadesApanyadas = new Dictionary<string, string>();
                 }
 
-                return mTipoEntidadesApañadas;
+                return mTipoEntidadesApanyadas;
             }
         }
 

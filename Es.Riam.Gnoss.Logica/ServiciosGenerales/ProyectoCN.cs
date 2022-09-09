@@ -532,12 +532,11 @@ namespace Es.Riam.Gnoss.Logica.ServiciosGenerales
         }
 
         /// <summary>
-        /// Obtiene una DataSet sin tipar con una tabla "Emails" que contiene los campos (IdentidadID,PersonaID,Nombre,Email) 
-        /// de cada uno de los administradores de un  determinado proyecto
+        /// Devuelve una lista con los emails de los administradores del proyecto.
         /// </summary>
         /// <param name="pProyectoID">Identificador del proyecto</param>
         /// <returns>DataSet sin tipar</returns>
-        public List<EmailAdminProyecto> ObtenerEmailsAdministradoresDeProyecto(Guid pProyectoID)
+        public List<string> ObtenerEmailsAdministradoresDeProyecto(Guid pProyectoID)
         {
             return ProyectoAD.ObtenerEmailsAdministradoresDeProyecto(pProyectoID);
         }

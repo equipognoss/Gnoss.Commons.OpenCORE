@@ -1064,6 +1064,11 @@ namespace Es.Riam.Gnoss.Web.Controles
             return tieneAcceso;
         }
 
+        public void LimpiarListaOntologiasPermitidasPorIdentidad()
+        {
+            mListaOntologiasPermitidasPorIdentidad = new ConcurrentDictionary<Guid, ConcurrentDictionary<Guid, bool>>();
+        }
+
         public bool EsUsuarioAdministradorProyectoVirtual
         {
             get

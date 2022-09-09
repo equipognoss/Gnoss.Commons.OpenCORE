@@ -1098,7 +1098,7 @@ namespace Es.Riam.Gnoss.Elementos.CMS
         public void EliminarComponente(Guid pComponenteID)
         {   
             List<AD.EntityModel.Models.CMS.CMSBloqueComponentePropiedadComponente> listaCMSBloqueComponentePropiedadComponente = this.CMSDW.ListaCMSBloqueComponentePropiedadComponente.Where(item => item.ComponenteID.Equals(pComponenteID)).ToList();
-            foreach (AD.EntityModel.Models.CMS.CMSBloqueComponentePropiedadComponente filaCMSBloqueComponentePropiedadComponente in listaCMSBloqueComponentePropiedadComponente)//"ComponenteID='" + pComponenteID + "'"))
+            foreach (AD.EntityModel.Models.CMS.CMSBloqueComponentePropiedadComponente filaCMSBloqueComponentePropiedadComponente in listaCMSBloqueComponentePropiedadComponente)
             {
                 CMSDW.ListaCMSBloqueComponentePropiedadComponente.Remove(filaCMSBloqueComponentePropiedadComponente);
                 mEntityContext.EliminarElemento(filaCMSBloqueComponentePropiedadComponente);
@@ -1131,6 +1131,37 @@ namespace Es.Riam.Gnoss.Elementos.CMS
         }
 
         #endregion
+
+        public void EliminarComponenteDePagina(Guid pComponenteID)
+        {
+            List<AD.EntityModel.Models.CMS.CMSBloqueComponentePropiedadComponente> listaCMSBloqueComponentePropiedadComponente = this.CMSDW.ListaCMSBloqueComponentePropiedadComponente.Where(item => item.ComponenteID.Equals(pComponenteID)).ToList();
+            foreach (AD.EntityModel.Models.CMS.CMSBloqueComponentePropiedadComponente filaCMSBloqueComponentePropiedadComponente in listaCMSBloqueComponentePropiedadComponente)
+            {
+                CMSDW.ListaCMSBloqueComponentePropiedadComponente.Remove(filaCMSBloqueComponentePropiedadComponente);
+                mEntityContext.EliminarElemento(filaCMSBloqueComponentePropiedadComponente);
+            }
+
+            List<AD.EntityModel.Models.CMS.CMSPropiedadComponente> listaCMSPropiedadComponente = this.CMSDW.ListaCMSPropiedadComponente.Where(item => item.ComponenteID.Equals(pComponenteID)).ToList();
+            foreach (AD.EntityModel.Models.CMS.CMSPropiedadComponente filaPropiedadComponente in listaCMSPropiedadComponente)
+            {
+                CMSDW.ListaCMSPropiedadComponente.Remove(filaPropiedadComponente);
+                mEntityContext.EliminarElemento(filaPropiedadComponente);
+            }
+
+            List<AD.EntityModel.Models.CMS.CMSBloqueComponente> listaCMSBloqueComponente = this.CMSDW.ListaCMSBloqueComponente.Where(item => item.ComponenteID.Equals(pComponenteID)).ToList();
+            foreach (AD.EntityModel.Models.CMS.CMSBloqueComponente filaBloqueComponente in listaCMSBloqueComponente)
+            {
+                CMSDW.ListaCMSBloqueComponente.Remove(filaBloqueComponente);
+                mEntityContext.EliminarElemento(filaBloqueComponente);
+            }
+
+            List<AD.EntityModel.Models.CMS.CMSComponenteRolGrupoIdentidades> listaCMSComponenteRolGrupoIdentidades = this.CMSDW.ListaCMSComponenteRolGrupoIdentidades.Where(item => item.ComponenteID.Equals(pComponenteID)).ToList();
+            foreach (AD.EntityModel.Models.CMS.CMSComponenteRolGrupoIdentidades filaComponenteRolGrupoIdentidades in listaCMSComponenteRolGrupoIdentidades)
+            {
+                CMSDW.ListaCMSComponenteRolGrupoIdentidades.Remove(filaComponenteRolGrupoIdentidades);
+                mEntityContext.EliminarElemento(filaComponenteRolGrupoIdentidades);
+            }
+        }
 
         #region Agregar/Editar/Eliminar Bloques
 

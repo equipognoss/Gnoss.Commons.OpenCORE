@@ -20,7 +20,7 @@ namespace Es.Riam.Util
         /// </summary>
         /// <param name="pRequest">Request</param>
         /// <returns>URL GET para petición OAuth</returns>
-        public static string ObtenerUrlGetDePeticionOAuth(HttpRequest pRequest, string urlOriginal = null)
+        public static string ObtenerUrlGetDePeticionOAuth(HttpRequest pRequest, string urlOriginal = null, bool pLimpiarParametrosAdicionales = true)
         {
             string token = null;
             string consumerKey = null;
@@ -42,10 +42,7 @@ namespace Es.Riam.Util
             {
                 //Lo obtengo del query string
                 string http_authorization = "Authorization"; //Cambiarlo por la cabecera
-                string saltoLinea = "\r\n";
 
-                
-                
                 if (pRequest.Headers.ContainsKey(http_authorization))
                 {
                     string parametros = pRequest.Headers[http_authorization];
@@ -92,22 +89,29 @@ namespace Es.Riam.Util
             timespan = "&oauth_timestamp=" + timespan;
             signature = "&oauth_signature=" + signature;
 
-            string url = LimpiarParametrosExpurios(UtilWeb.RequestUrl(pRequest));
+            string url = UtilWeb.RequestUrl(pRequest);
+
             if (!string.IsNullOrEmpty(urlOriginal))
             {
                 url = urlOriginal + pRequest.Path;
             }
 
-            if (!url.Contains("?"))
+            if (pLimpiarParametrosAdicionales)
             {
-                url += "?";
-            }
-            else
-            {
-                url += "&";
+                url = LimpiarParametrosExpurios(UtilWeb.RequestUrl(pRequest));
+
+                if (!url.Contains("?"))
+                {
+                    url += "?";
+                }
+                else
+                {
+                    url += "&";
+                }
+
+                url += token + consumerKey + nonce + method + timespan + signature;
             }
 
-            url += token + consumerKey + nonce + method + timespan + signature;
             return url;
         }
 

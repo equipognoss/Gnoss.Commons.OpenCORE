@@ -545,7 +545,17 @@ namespace Es.Riam.Gnoss.UtilServiciosWeb
                                 }
                             }
 
-                            ProyectoPestanyaFiltroOrdenRecursos filaFiltroOrden = dataWrapperProyecto.ListaProyectoPestanyaFiltroOrdenRecursos.Where(fila => fila.PestanyaID.Equals(pestanyaID) && fila.FiltroOrden.StartsWith(pCargadorResultadosModel.FiltroOrdenadoPor)).FirstOrDefault();
+                            ProyectoPestanyaFiltroOrdenRecursos filaFiltroOrden = null;
+
+                            if (!string.IsNullOrEmpty(pCargadorResultadosModel.FiltroOrdenadoPor))
+                            {
+                                filaFiltroOrden = dataWrapperProyecto.ListaProyectoPestanyaFiltroOrdenRecursos.Where(fila => fila.PestanyaID.Equals(pestanyaID) && fila.FiltroOrden.StartsWith(pCargadorResultadosModel.FiltroOrdenadoPor)).FirstOrDefault();
+                            }
+                            else
+                            {
+                                filaFiltroOrden = dataWrapperProyecto.ListaProyectoPestanyaFiltroOrdenRecursos.Where(fila => fila.PestanyaID.Equals(pestanyaID)).FirstOrDefault();
+                            }
+
 
                             if (filaFiltroOrden != null)
                             {

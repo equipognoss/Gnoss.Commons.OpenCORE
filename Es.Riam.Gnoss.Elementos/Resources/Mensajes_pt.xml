@@ -230,7 +230,7 @@
     </mensaje>
     <mensaje id="161">
       <asunto>Tem um comentário em: {#NombreDoc#}</asunto>
-      <texto>{p}Ola {#NombrePersona#}!{/p}{p}{#NombreRemitente#} há um comentario "{#NombreDoc#}". Para ver o comentario siga este link: {a href="{@UrlIntragnoss@}{#IdentidadPersona#}Comentarios"}Ver comentarios{/a}.{/p}</texto>
+		<texto>{p}Ola {#NombrePersona#}!{/p}{p}{#NombreRemitente#} há um comentario "{#NombreDoc#}". Para ver o comentario siga este link: {a href="{@UrlIntragnoss@}{#IdentidadPersona#}/{#EnlaceComentarios#}"}Ver comentarios{/a}.{/p}</texto>
     </mensaje>
     <mensaje id="180">
       <asunto>{#Asunto#}</asunto>

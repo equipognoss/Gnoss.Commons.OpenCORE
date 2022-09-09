@@ -1,4 +1,5 @@
 using Es.Riam.AbstractsOpen;
+using Es.Riam.Gnoss.AD.Documentacion;
 using Es.Riam.Gnoss.AD.EncapsuladoDatos;
 using Es.Riam.Gnoss.AD.EntityModel;
 using Es.Riam.Gnoss.AD.Facetado;
@@ -905,6 +906,51 @@ namespace Es.Riam.Gnoss.CL.Documentacion
         }
         #endregion
 
+        #region MetaDatos
+        /// <summary>
+        /// Invalida las caches de los metadatos de un recurso
+        /// </summary>
+        /// <param name="pListaProyectos">Listado de identificadores de los proyectos</param>
+        public void BorrarMetasDocumento(Guid pDocumentoID)
+        {
+            string rawKey = string.Concat("DocumentoMetaDatos_DocumentoID_", pDocumentoID);
+            InvalidarCache(rawKey);
+        }
+
+        /// <summary>
+        /// Obtiene las caches de los metadatos de un recurso
+        /// </summary>
+        /// <param name="pListaProyectos">Listado de identificadores de los proyectos</param>
+        public AD.EntityModel.Models.Documentacion.DocumentoMetaDatos ObtenerMetaDatos(Guid pDocumentoID)
+        {
+            string rawKey = string.Concat("DocumentoMetaDatos_DocumentoID_", pDocumentoID);
+            AD.EntityModel.Models.Documentacion.DocumentoMetaDatos documentoMetaDatos = ObtenerObjetoDeCache(rawKey) as AD.EntityModel.Models.Documentacion.DocumentoMetaDatos;
+
+            if (documentoMetaDatos == null)
+            {
+                DocumentacionAD documentacionAD = new DocumentacionAD(mLoggingService, mEntityContext, mConfigService, mServicesUtilVirtuosoAndReplication);
+                documentoMetaDatos = documentacionAD.ObtenerEtiquetasMeta(pDocumentoID);
+                if (documentoMetaDatos != null)
+                {
+                    AgregarMetaDatos(pDocumentoID, documentoMetaDatos);
+                }
+                documentacionAD.Dispose();
+            }
+
+            return documentoMetaDatos;
+        }
+
+        /// <summary>
+        /// Obtiene las caches de los metadatos de un recurso
+        /// </summary>
+        /// <param name="pListaProyectos">Listado de identificadores de los proyectos</param>
+        public void AgregarMetaDatos(Guid pDocumentoID, AD.EntityModel.Models.Documentacion.DocumentoMetaDatos pDocumentoMetaDatos)
+        {
+            string rawKey = string.Concat("DocumentoMetaDatos_DocumentoID_", pDocumentoID);
+            AgregarObjetoCache(rawKey, pDocumentoMetaDatos);
+        }
+
+        #endregion
 
         #region Recursos relacionados
 

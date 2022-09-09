@@ -259,7 +259,7 @@
     </mensaje>
     <mensaje id="161">
       <asunto>Hai ricevuto un commento su: {#NombreDoc#}</asunto>
-      <texto>{p}Ciao, {#NombrePersona#}!{/p}{p}{#NombreRemitente#} ha commentato la risorsa "{#NombreDoc#}". Per visualizzare il commento segui questo link: {a href="{@UrlIntragnoss@}{#IdentidadPersona#}Comentarios"}Vedi commenti{/a}.{/p}</texto>
+		<texto>{p}Ciao, {#NombrePersona#}!{/p}{p}{#NombreRemitente#} ha commentato la risorsa "{#NombreDoc#}". Per visualizzare il commento segui questo link: {a href="{@UrlIntragnoss@}{#IdentidadPersona#}/{#EnlaceComentarios#}"}Vedi commenti{/a}.{/p}</texto>
     </mensaje>
     <mensaje id="180">
       <asunto>{#Asunto#}</asunto>

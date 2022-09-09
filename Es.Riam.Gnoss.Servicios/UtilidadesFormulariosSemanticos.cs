@@ -7,8 +7,35 @@ namespace Es.Riam.Gnoss.Servicios
 {
     public class UtilidadesFormulariosSemanticos
     {
+        public static void ObtenerMetaEtiquetasXMLOntologia(byte[] pByteArray, Dictionary<string, List<MetaKeyword>> pDicOntologiaMetas, string pOntologiaEnlace)
+        {
+            List<MetaKeyword> listaMetaKeywords = ObtenerMetaEtiquetasXML(pByteArray, pOntologiaEnlace);
+
+            if (!pDicOntologiaMetas.ContainsKey(pOntologiaEnlace))
+            {
+                pDicOntologiaMetas.Add(pOntologiaEnlace, listaMetaKeywords);
+            }
+            else
+            {
+                pDicOntologiaMetas[pOntologiaEnlace].AddRange(listaMetaKeywords);
+            }
+        }
 
         public static void ObtenerMetaEtiquetasXMLOntologia(byte[] pByteArray, Dictionary<Guid, List<MetaKeyword>> pDicOntologiaMetas, Guid pOntologiaID)
+        {
+            List<MetaKeyword> listaMetaKeywords = ObtenerMetaEtiquetasXML(pByteArray, pOntologiaID.ToString());
+
+            if (!pDicOntologiaMetas.ContainsKey(pOntologiaID))
+            {
+                pDicOntologiaMetas.Add(pOntologiaID, listaMetaKeywords);
+            }
+            else
+            {
+                pDicOntologiaMetas[pOntologiaID].AddRange(listaMetaKeywords);
+            }
+        }
+
+        private static List<MetaKeyword> ObtenerMetaEtiquetasXML(byte[] pByteArray, string pOntologiaID)
         {
             XmlDocument docXml = new XmlDocument();
             MemoryStream stream = new MemoryStream(pByteArray);
@@ -36,14 +63,7 @@ namespace Es.Riam.Gnoss.Servicios
                 }
             }
 
-            if (!pDicOntologiaMetas.ContainsKey(pOntologiaID))
-            {
-                pDicOntologiaMetas.Add(pOntologiaID, listaMetas);
-            }
-            else
-            {
-                pDicOntologiaMetas[pOntologiaID].AddRange(listaMetas);
-            }
+            return listaMetas;
         }
     }
 
@@ -51,5 +71,11 @@ namespace Es.Riam.Gnoss.Servicios
     {
         public string Content { get; set; }
         public string EntidadID { get; set; }
+    }
+
+    public class MetaKeywordsOntologia
+    {
+        public string OntologiaEnlace { get; set; }
+        public List<MetaKeyword> MetaKeyWords { get; set; }
     }
 }

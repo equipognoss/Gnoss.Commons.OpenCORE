@@ -378,6 +378,7 @@ namespace Es.Riam.Gnoss.AD.EntityModel
         public virtual DbSet<VersionDocumento> VersionDocumento { get; set; }
         public virtual DbSet<ResultadoSuscripcion> ResultadoSuscripcion { get; set; }
         public virtual DbSet<DocumentoLecturaAumentada> DocumentoLecturaAumentada { get; set; }
+        public virtual DbSet<DocumentoMetaDatos> DocumentoMetaDatos { get; set; }
 
         //Tesauro
         public virtual DbSet<CategoriaTesauro> CategoriaTesauro { get; set; }
@@ -1887,7 +1888,7 @@ namespace Es.Riam.Gnoss.AD.EntityModel
                 .IsRequired()
                 .HasForeignKey(e => new { e.OrganizacionID, e.ProyectoID, e.ObjetoConocimiento, e.Faceta })
                 .OnDelete(DeleteBehavior.Restrict);
-         
+
             modelBuilder.Entity<FacetaHome>()
                 .HasMany(e => e.FacetaFiltroHome)
                 .WithOne(e => e.FacetaHome)
@@ -2322,6 +2323,10 @@ namespace Es.Riam.Gnoss.AD.EntityModel
                 .Property(e => e.TituloAumentado)
                 .IsUnicode(false);
 
+            modelBuilder.Entity<Documento>()
+                .HasOne(e => e.DocumentoMetaDatos)
+                .WithOne(e => e.Documento);
+
             //Cookie
             modelBuilder.Entity<CategoriaProyectoCookie>()
                 .HasMany(e => e.ProyectoCookie)
@@ -2343,22 +2348,6 @@ namespace Es.Riam.Gnoss.AD.EntityModel
                 .IsRequired()
                 .HasForeignKey(e => new { e.ProyectoID, e.OrganizacionID })
                 .OnDelete(DeleteBehavior.Restrict);
-
-            //string ficheroConexion = (string)UtilPeticion.ObtenerObjetoDePeticion("FicheroConexion");
-            //string tipoBD = Conexion.ObtenerParametro(ficheroConexion, "config/acid/tipoBD", false);
-            //if (!string.IsNullOrEmpty(tipoBD) && tipoBD.Equals("1"))
-            //{
-
-            //    modelBuilder.Entity<ConfiguracionBBDD>().ToTable("CONFIGURACIONBBDD");
-            //    modelBuilder.Entity<ConfiguracionBBDD>().Property(config => config.NumConexion).HasColumnName("NUMCONEXION");
-            //    modelBuilder.Entity<ConfiguracionBBDD>().Property(config => config.ConectionTimeout).HasColumnName("CONECTIONTIMEOUT");
-            //    modelBuilder.Entity<ConfiguracionBBDD>().Property(config => config.NombreConexion).HasColumnName("NOMBRECONEXION");
-            //    modelBuilder.Entity<ConfiguracionBBDD>().Property(config => config.TipoConexion).HasColumnName("TIPOCONEXION");
-            //    modelBuilder.Entity<ConfiguracionBBDD>().Property(config => config.DatosExtra).HasColumnName("DATOSEXTRA");
-            //    modelBuilder.Entity<ConfiguracionBBDD>().Property(config => config.EsMaster).HasColumnName("ESMASTER");
-            //    modelBuilder.Entity<ConfiguracionBBDD>().Property(config => config.LecturaPermitida).HasColumnName("LECTURAPERMITIDA");
-            //    modelBuilder.Entity<ConfiguracionBBDD>().Property(config => config.Conexion).HasColumnName("CONEXION");
-            //}
 
             if (mDefaultSchema != null && mDefaultSchema.Equals("dbo"))
             {
@@ -2394,30 +2383,19 @@ namespace Es.Riam.Gnoss.AD.EntityModel
         private void InicializarEntityContext()
         {
             var conexion = ObtenerConexion();
-            //EntityContext [System.Runtime.CompilerServices.CallerFilePath] string memberName = ""
             string schemaDefecto = GetDafaultSchema(conexion);
-
-            //UtilPeticion.AgregarObjetoAPeticionActual("EntityContextSinProxy", new EntityContext(conexion, schemaDefecto));
-            //UsarEntityCache = true;
 
             EntityContext context = new EntityContext(mUtilPeticion, mLoggingService, mLoggerFactory, mDbContextOptions, _configService, mServicesUtilVirtuosoAndReplication, schemaDefecto);
 
             mUtilPeticion.AgregarObjetoAPeticionActual("EntityContext", context);
-            //UsarEntityCache = false;
             ContextoInicializado = true;
         }
 
         private void InicializarEntityContextCache()
         {
             var conexion = ObtenerConexion();
-            //EntityContext [System.Runtime.CompilerServices.CallerFilePath] string memberName = ""
             string schemaDefecto = GetDafaultSchema(conexion);
-
-            //UtilPeticion.AgregarObjetoAPeticionActual("EntityContextSinProxy", new EntityContext(conexion, schemaDefecto));
-            //UsarEntityCache = true;
             EntityContext context = new EntityContext(mUtilPeticion, mLoggingService, mLoggerFactory, mDbContextOptions, _configService, mServicesUtilVirtuosoAndReplication, schemaDefecto);
-
-            //context.Configuration.LazyLoadingEnabled = false;
 
             mUtilPeticion.AgregarObjetoAPeticionActual("EntityContextSinProxy", context);
 
@@ -2488,7 +2466,6 @@ namespace Es.Riam.Gnoss.AD.EntityModel
                     if (!string.IsNullOrEmpty(tipoBD) && tipoBD.Equals("1"))
                     {
                         string connectionString = _configService.ObtenerSqlConnectionString();
-                        //string connectionString = BaseAD.ObtenerCadenaConexion("", new List<string>());
                         string[] partesConexion = connectionString.Split(new string[] { "$$$" }, StringSplitOptions.RemoveEmptyEntries);
                         if (partesConexion.Length > 1 && partesConexion[1].StartsWith("TimeOut="))
                         {
@@ -2659,8 +2636,8 @@ namespace Es.Riam.Gnoss.AD.EntityModel
         {
 
         }
-
     }
+
     [Serializable]
     [Table("ConfiguracionServicios")]
     public class ConfiguracionServicios

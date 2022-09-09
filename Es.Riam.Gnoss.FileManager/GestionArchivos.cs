@@ -2,7 +2,9 @@
 using Es.Riam.InterfacesOpenArchivos;
 using Es.Riam.Util;
 using Microsoft.AspNetCore.Http;
+using SixLabors.ImageSharp;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
@@ -128,7 +130,7 @@ namespace Es.Riam.Gnoss.FileManager
                     FileStream fileStreamAux = null;
                     CryptoStream cryptoStream = null;
                     cryptoStream = _utilArchivos.ObtenerDesencriptador(fileStream);
-                    if(cryptoStream == null)
+                    if (cryptoStream == null)
                     {
                         pArchivoEncriptado = false;
                     }
@@ -257,6 +259,45 @@ namespace Es.Riam.Gnoss.FileManager
             return contenido;
         }
 
+        /// <summary>
+        /// Obtiene la información relevante sobre todos los ficheros de un directorio
+        /// </summary>
+        /// <param name="pRuta">Ruta del directorio</param>
+        /// <param name="pFiltroPorNombre">Nombre o filtro de búsqueda de uno  o más ficheros</param>
+        /// <returns></returns>
+        public async Task<List<FileInfoModel>> ObtenerInformacionFicherosDeDirectorio(string pRuta)
+        {
+            string rutaDocumentos = Path.Combine(ObtenerRutaDocumentos(), pRuta);
+            pRuta = Path.Combine(RutaFicheros, pRuta);
+
+            DirectoryInfo directoryInfoImage = new DirectoryInfo(pRuta);
+            DirectoryInfo directoryInfoDockLink = new DirectoryInfo(rutaDocumentos);
+
+            FileInfo[] ficherosDirectorio = directoryInfoImage.GetFiles();
+            ficherosDirectorio = ficherosDirectorio.Union(directoryInfoDockLink.GetFiles()).ToArray();
+
+            List<FileInfoModel> resultado = new List<FileInfoModel>();
+            foreach (FileInfo fichero in ficherosDirectorio)
+            {
+                _loggingService.GuardarLog($"SANTI==========> {fichero.FullName}     {fichero.Extension}");
+                FileInfoModel fileInfoModel = new FileInfoModel();
+                fileInfoModel.create_date = fichero.CreationTime;
+                fileInfoModel.file_name = fichero.Name;
+                fileInfoModel.size = fichero.Length;
+                if (fichero.Extension == ".png" || fichero.Extension == ".jpg" || fichero.Extension == ".gif" || fichero.Extension == ".jpeg")
+                {
+                    byte[] imageBytes = File.ReadAllBytes(fichero.FullName);
+                    Image image = UtilImages.ConvertirArrayBytesEnImagen(imageBytes);
+                    fileInfoModel.width = image.Width;
+                    fileInfoModel.height = image.Height;
+                }
+
+                resultado.Add(fileInfoModel);
+            }
+
+            return resultado;
+        }
+
         public void Descomprimir(Byte[] pBytesZip, string pRuta)
         {
             if (!string.IsNullOrEmpty(AzureStorageConnectionString))
@@ -349,7 +390,6 @@ namespace Es.Riam.Gnoss.FileManager
             {
                 if (string.IsNullOrEmpty(AzureStorageConnectionString))
                 {
-                    _loggingService.GuardarLogError("Se va a subir el fichero");
                     if (!string.IsNullOrEmpty(pRuta))
                     {
                         pRuta = Path.Combine(RutaFicheros, TransformarRuta(pRuta));
@@ -371,12 +411,10 @@ namespace Es.Riam.Gnoss.FileManager
                         pBytes = _utilArchivos.EncriptarArchivo(pBytes);
                         //pBytes = UtilArchivos.EncriptarArchivo(pBytes);
                     }
-                    _loggingService.GuardarLogError($"Nombre del fichero a crear: {infoFichero.FullName}");
                     FileStream fileStream = new FileStream(infoFichero.FullName, FileMode.Create, FileAccess.Write);
                     fileStream.Write(pBytes, 0, pBytes.Length);
                     fileStream.Flush();
                     fileStream.Close();
-                    _loggingService.GuardarLogError($"Ha subido el fichero");
                 }
                 else
                 {
@@ -414,7 +452,6 @@ namespace Es.Riam.Gnoss.FileManager
                 FileStream fileStream = new FileStream(infoFichero.FullName, FileMode.Create, FileAccess.Write);
                 byte[] buffer = new byte[1048576];
                 stream.Seek(0, SeekOrigin.Begin);
-                _loggingService.GuardarLogError($"Nombre del fichero a crear: {infoFichero.FullName}");
                 int num = 0;
                 CryptoStream cryptoStream = null;
                 cryptoStream = _utilArchivos.ObtenerEncriptador(fileStream);
@@ -444,7 +481,6 @@ namespace Es.Riam.Gnoss.FileManager
                     cryptoStream.FlushFinalBlock();
                 }
                 fileStream.Close();
-                _loggingService.GuardarLogError($"Ha subido el fichero");
 
             }
             catch (Exception ex)
@@ -849,6 +885,13 @@ namespace Es.Riam.Gnoss.FileManager
             return Path.Combine(partesRuta);
         }
 
+
+        private string ObtenerRutaDocumentos()
+        {
+            int indiceImagen = RutaFicheros.LastIndexOf(Path.DirectorySeparatorChar);
+            return $"{RutaFicheros.Substring(0, indiceImagen)}{Path.DirectorySeparatorChar}doclinks";
+        }
+
         #endregion
 
         #region Propiedades
@@ -878,4 +921,24 @@ namespace Es.Riam.Gnoss.FileManager
 
         #endregion
     }
+
+
+    #region Clases
+    public class FileInfoModel
+    {
+        public string file_name { get; set; }
+        public int width { get; set; }
+        public int height { get; set; }
+        public DateTime create_date { get; set; }
+        public long size { get; set; }
+    }
+
+    public class MultimediaFileInfoModel
+    {
+        public FileInfoModel FileInfo { get; set; }
+        public string Path { get; set; }
+    }
+
+    #endregion
+
 }

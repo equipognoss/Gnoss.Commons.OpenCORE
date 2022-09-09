@@ -31,6 +31,7 @@ namespace Es.Riam.Gnoss.Web.UtilOAuth
         private EntityContext mEntityContext;
         private ConfigService mConfigService;
         private IServicesUtilVirtuosoAndReplication mServicesUtilVirtuosoAndReplication;
+        private static object bloqueo = new object();
 
         #endregion
 

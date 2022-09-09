@@ -259,7 +259,7 @@
     </mensaje>
     <mensaje id="161">
       <asunto>Aipamen bat duzu hemen: {#NombreDoc#}</asunto>
-      <texto>{p}Kaixo, {#NombrePersona#}!{/p}{p}{#NombreRemitente#}(e)k "{#NombreDoc#}" baliabide aipatu du. Aipamena ikusteko segi lotura hau: {a href="{@UrlIntragnoss@}{#IdentidadPersona#}Comentarios"}Ikus aipamenak{/a}.{/p}</texto>
+		<texto>{p}Kaixo, {#NombrePersona#}!{/p}{p}{#NombreRemitente#}(e)k "{#NombreDoc#}" baliabide aipatu du. Aipamena ikusteko segi lotura hau: {a href="{@UrlIntragnoss@}{#IdentidadPersona#}/{#EnlaceComentarios#}"}Ikus aipamenak{/a}.{/p}</texto>
     </mensaje>
     <mensaje id="180">
       <asunto>{#Asunto#}</asunto>

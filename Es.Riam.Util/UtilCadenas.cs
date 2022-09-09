@@ -36,6 +36,8 @@ namespace Es.Riam.Util
         private static Regex mRegexQuitarCaracteresInvalidosNombreArchivo = new Regex(@"[\\:\?<>\|]+", RegexOptions.Compiled);
         private static Regex mRegexQuitarBarraBajaNombreArchivo = new Regex(@"[_]+", RegexOptions.Compiled);
         private static Regex mRegexQuitarDosPuntosNombreArchivo = new Regex(@"[:]+", RegexOptions.Compiled);
+
+        private static string[] mListaIdiomasPosibles = new string[] { "es", "en", "eu", "pt", "ca", "de", "fr", "gl", "it" };
         public static bool LowerStringGraph { get; set; } = false;
 
         #endregion
@@ -1408,7 +1410,7 @@ namespace Es.Riam.Util
                 {
                     string idioma = texto.Substring(texto.LastIndexOf("@") + 1);
 
-                    if (!listaIdioma.ContainsKey(idioma))
+                    if (mListaIdiomasPosibles.Contains(idioma) && !listaIdioma.ContainsKey(idioma))
                     {
                         listaIdioma.Add(idioma, texto.Substring(0, texto.LastIndexOf("@")));
                     }

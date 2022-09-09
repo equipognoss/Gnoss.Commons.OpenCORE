@@ -34,5 +34,6 @@
         public string WhereFacetaParametro { get; set; }
         public bool Nueva { get; set; }
         public bool Deleted { get; set; }
+        public bool OmitirRdftype { get; set; }
     }
 }

@@ -34,7 +34,7 @@ namespace OntologiaAClase
             Clase.AppendLine($"{UtilCadenasOntology.Tabs(2)}<dependency>");
             Clase.AppendLine($"{UtilCadenasOntology.Tabs(3)}<groupId>io.github.equipognoss</groupId>");
             Clase.AppendLine($"{UtilCadenasOntology.Tabs(3)}<artifactId>Gnoss-ApiWrapper-Java</artifactId>");
-            Clase.AppendLine($"{UtilCadenasOntology.Tabs(3)}<version>0.0.1</version>");
+            Clase.AppendLine($"{UtilCadenasOntology.Tabs(3)}<version>1.0.2</version>");
             Clase.AppendLine($"{UtilCadenasOntology.Tabs(2)}</dependency>");
             Clase.AppendLine($"{UtilCadenasOntology.Tabs(1)}</dependencies>");
             Clase.AppendLine();

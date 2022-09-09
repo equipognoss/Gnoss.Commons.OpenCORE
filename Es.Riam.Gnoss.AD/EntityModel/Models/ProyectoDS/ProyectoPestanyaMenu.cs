@@ -22,6 +22,7 @@ namespace Es.Riam.Gnoss.AD.EntityModel.Models.ProyectoDS
             ProyectoPestanyaMenuRolGrupoIdentidades = new HashSet<ProyectoPestanyaMenuRolGrupoIdentidades>();
             ProyectoPestanyaMenuRolIdentidad = new HashSet<ProyectoPestanyaMenuRolIdentidad>();
             ConfigAutocompletarProy = new HashSet<ConfigAutocompletarProy>();
+            FacetaObjetoConocimientoProyectoPestanya = new HashSet<FacetaObjetoConocimientoProyectoPestanya>(); 
             NombreCortoPestanya = "";
         }
 
@@ -35,6 +36,7 @@ namespace Es.Riam.Gnoss.AD.EntityModel.Models.ProyectoDS
             ProyectoPestanyaMenu1 = new HashSet<ProyectoPestanyaMenu>();
             ProyectoPestanyaMenuRolGrupoIdentidades = new HashSet<ProyectoPestanyaMenuRolGrupoIdentidades>();
             ProyectoPestanyaMenuRolIdentidad = new HashSet<ProyectoPestanyaMenuRolIdentidad>();
+            FacetaObjetoConocimientoProyectoPestanya = new HashSet<FacetaObjetoConocimientoProyectoPestanya>();
             PestanyaID = pestanyaId;
             OrganizacionID = organizacionID;
             ProyectoID = proyectoID;
@@ -94,7 +96,7 @@ namespace Es.Riam.Gnoss.AD.EntityModel.Models.ProyectoDS
 
         public bool Activa { get; set; }
 
-        [StringLength(500)]
+        [StringLength(10000)]
         public string MetaDescription { get; set; }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]

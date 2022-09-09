@@ -1,7 +1,12 @@
-﻿using Es.Riam.Gnoss.Util.General;
+﻿using Es.Riam.Gnoss.Util.Configuracion;
+using Es.Riam.Gnoss.FileManager;
+using Es.Riam.Gnoss.Util.General;
+using Es.Riam.Gnoss.Util.Seguridad;
+using Es.Riam.Gnoss.UtilServiciosWeb;
 using Es.Riam.Gnoss.Web.Controles.ServicioImagenesWrapper.Model;
 using Newtonsoft.Json;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using System.Web;
@@ -12,10 +17,14 @@ namespace Es.Riam.Gnoss.Web.Controles.ServicioImagenesWrapper
     public class ServicioImagenes
     {
         private LoggingService mLoggingService;
+        private CallTokenService mCallTokenService;
+        private TokenBearer mToken;
 
-        public ServicioImagenes(LoggingService loggingService)
+        public ServicioImagenes(LoggingService loggingService, ConfigService configService)
         {
             mLoggingService=loggingService;
+            mCallTokenService = new CallTokenService(configService);
+            mToken = mCallTokenService.CallTokenApi();
         }
 
         public string Url { get; set; }
@@ -30,6 +39,26 @@ namespace Es.Riam.Gnoss.Web.Controles.ServicioImagenesWrapper
             try
             {
                 PeticionWebRequest("POST", "add-image", imagenGnoss);
+                return true;
+            }
+            catch (Exception ex)
+            {
+                mLoggingService.GuardarLogError(ex);
+                return false;
+            }
+        }
+
+        public bool AgregarFichero(byte[] pFichero, string pNombre, string pExtension, string pRuta)
+        {
+            GnossFile ficheroEnviar = new GnossFile();
+            ficheroEnviar.path = pRuta;
+            ficheroEnviar.name = pNombre;
+            ficheroEnviar.extension = pExtension;
+            ficheroEnviar.file = pFichero;
+
+            try
+            {
+                PeticionWebRequest("POST", "add-document-to-directory", ficheroEnviar, "DocumentosLink");
                 return true;
             }
             catch (Exception ex)
@@ -140,6 +169,12 @@ namespace Es.Riam.Gnoss.Web.Controles.ServicioImagenesWrapper
                 mLoggingService.GuardarLogError(ex);
                 return false;
             }
+        }
+
+        public List<FileInfoModel> ObtenerDatosFicherosDeCarpeta(string pDirectorio)
+        {
+            string respuesta = PeticionWebRequest("GET", $"get-files-data-from-directory?relative_path={HttpUtility.UrlEncode(pDirectorio)}");
+            return JsonConvert.DeserializeObject<List<FileInfoModel>>(respuesta);
         }
 
         public bool BorrarImagen(string pNombre)
@@ -278,18 +313,22 @@ namespace Es.Riam.Gnoss.Web.Controles.ServicioImagenesWrapper
         }
 
 
-        private string PeticionWebRequest(string pMethod, string pAccion, object pObjeto = null)
+        private string PeticionWebRequest(string pMethod, string pAccion, object pObjeto = null, string controlador = "image-service")
         {
             if (!Url.EndsWith("/"))
             {
                 Url += "/";
             }
-            string urlPeticion = $"{Url}image-service/{pAccion}";
-            HttpWebRequest webRequest = System.Net.WebRequest.Create(urlPeticion) as HttpWebRequest;
+            string urlPeticion = $"{Url}{controlador}/{pAccion}";
+            HttpWebRequest webRequest = WebRequest.Create(urlPeticion) as HttpWebRequest;
             webRequest.Method = pMethod;
             webRequest.ServicePoint.Expect100Continue = false;
             webRequest.Timeout = 3600000;
 
+            if (mToken != null)
+            {
+                webRequest.Headers.Add("Authorization", $"{mToken.token_type} {mToken.access_token}");
+            }
             if (pObjeto != null)
             {
                 webRequest.ContentType = "application/json";
@@ -335,7 +374,7 @@ namespace Es.Riam.Gnoss.Web.Controles.ServicioImagenesWrapper
                     {
                         foreach (string key in ex.Response.Headers.Keys)
                         {
-                            cabeceras += $"{System.Environment.NewLine}{key}: {ex.Response.Headers[key]}";
+                            cabeceras += $"{Environment.NewLine}{key}: {ex.Response.Headers[key]}";
                         }
                     }
                     catch { }

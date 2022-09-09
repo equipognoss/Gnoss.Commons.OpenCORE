@@ -346,7 +346,6 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
                         .HasColumnType("bit");
 
                     b.Property<string>("Estilos")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<short>("Orden")
@@ -888,8 +887,7 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
                         .HasColumnType("bit");
 
                     b.Property<string>("Nombre")
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("NombreCorto")
                         .HasMaxLength(50)
@@ -924,8 +922,8 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
                         .HasColumnType("bit");
 
                     b.Property<string>("Nombre")
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)");
 
                     b.Property<string>("NombreCorto")
                         .HasMaxLength(50)
@@ -1391,6 +1389,24 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
                     b.ToTable("DocumentoLecturaAumentada");
                 });
 
+            modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Documentacion.DocumentoMetaDatos", b =>
+                {
+                    b.Property<Guid>("DocumentoID")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("MetaDescripcion")
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)");
+
+                    b.Property<string>("MetaTitulo")
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)");
+
+                    b.HasKey("DocumentoID");
+
+                    b.ToTable("DocumentoMetaDatos");
+                });
+
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Documentacion.DocumentoNewsletter", b =>
                 {
                     b.Property<Guid>("DocumentoID")
@@ -1401,7 +1417,6 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("NewsletterTemporal")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("DocumentoID");
@@ -2156,6 +2171,18 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
                         .HasMaxLength(300)
                         .HasColumnType("nvarchar(300)");
 
+                    b.Property<string>("FacetaObjetoConocimientoProyectoFaceta")
+                        .HasColumnType("nvarchar(300)");
+
+                    b.Property<string>("FacetaObjetoConocimientoProyectoObjetoConocimiento")
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<Guid?>("FacetaObjetoConocimientoProyectoOrganizacionID")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid?>("FacetaObjetoConocimientoProyectoProyectoID")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<bool>("MostrarVerMas")
                         .HasColumnType("bit");
 
@@ -2168,6 +2195,8 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
                         .HasColumnType("nvarchar(100)");
 
                     b.HasKey("OrganizacionID", "ProyectoID", "ObjetoConocimiento", "Faceta");
+
+                    b.HasIndex("FacetaObjetoConocimientoProyectoOrganizacionID", "FacetaObjetoConocimientoProyectoProyectoID", "FacetaObjetoConocimientoProyectoObjetoConocimiento", "FacetaObjetoConocimientoProyectoFaceta");
 
                     b.ToTable("FacetaHome");
                 });
@@ -2683,7 +2712,6 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
                         .HasColumnType("bit");
 
                     b.Property<string>("Tags")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("GrupoID");
@@ -3213,12 +3241,10 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
                     b.Property<string>("ConsumerKey")
-                        .IsRequired()
                         .HasMaxLength(1000)
                         .HasColumnType("nvarchar(1000)");
 
                     b.Property<string>("ConsumerSecret")
-                        .IsRequired()
                         .HasMaxLength(1000)
                         .HasColumnType("nvarchar(1000)");
 
@@ -3239,12 +3265,10 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("TokenSecretoTwitter")
-                        .IsRequired()
                         .HasMaxLength(1000)
                         .HasColumnType("nvarchar(1000)");
 
                     b.Property<string>("TokenTwitter")
-                        .IsRequired()
                         .HasMaxLength(1000)
                         .HasColumnType("nvarchar(1000)");
 
@@ -3408,7 +3432,6 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
                         .HasColumnType("smallint");
 
                     b.Property<string>("Valor")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("NotificacionID", "ParametroID");
@@ -3492,6 +3515,7 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.OrganizacionDS.Organizacion", b =>
                 {
                     b.Property<Guid>("OrganizacionID")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Alias")
@@ -3585,7 +3609,6 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.OrganizacionDS.OrganizacionEmpresa", b =>
                 {
                     b.Property<Guid>("OrganizacionID")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("CIF")
@@ -3612,7 +3635,6 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.OrganizacionDS.OrganizacionGnoss", b =>
                 {
                     b.Property<Guid>("OrganizacionID")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
                     b.HasKey("OrganizacionID");
@@ -3882,7 +3904,8 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
                         .HasColumnType("bit");
 
                     b.Property<string>("AvisoLegal")
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(4000)
+                        .HasColumnType("nvarchar(4000)");
 
                     b.Property<bool>("BaseRecursosDisponible")
                         .HasColumnType("bit");
@@ -5319,12 +5342,10 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
                         .HasColumnType("smallint");
 
                     b.Property<string>("Nombre")
-                        .IsRequired()
                         .HasMaxLength(1000)
                         .HasColumnType("nvarchar(1000)");
 
                     b.Property<string>("Ontologia")
-                        .IsRequired()
                         .HasMaxLength(1000)
                         .HasColumnType("nvarchar(1000)");
 
@@ -5353,12 +5374,10 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
                         .HasColumnType("smallint");
 
                     b.Property<string>("Nombre")
-                        .IsRequired()
                         .HasMaxLength(1000)
                         .HasColumnType("nvarchar(1000)");
 
                     b.Property<string>("Ontologia")
-                        .IsRequired()
                         .HasMaxLength(1000)
                         .HasColumnType("nvarchar(1000)");
 
@@ -5387,12 +5406,10 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
                         .HasColumnType("smallint");
 
                     b.Property<string>("Nombre")
-                        .IsRequired()
                         .HasMaxLength(1000)
                         .HasColumnType("nvarchar(1000)");
 
                     b.Property<string>("Ontologia")
-                        .IsRequired()
                         .HasMaxLength(1000)
                         .HasColumnType("nvarchar(1000)");
 
@@ -5912,7 +5929,6 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
                         .HasColumnType("bit");
 
                     b.Property<string>("NombreCorto")
-                        .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
@@ -5933,7 +5949,6 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Ubicacion")
-                        .IsRequired()
                         .HasMaxLength(10)
                         .HasColumnType("nvarchar(10)");
 
@@ -5964,7 +5979,6 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("ComunidadOrigenFiltros")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("FiltrosOrigenDestino")
@@ -6000,7 +6014,6 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
                         .HasColumnType("bit");
 
                     b.Property<string>("OrdenContexto")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<Guid>("ProyectoOrigenID")
@@ -6010,7 +6023,6 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("ServicioResultados")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("GadgetID", "OrganizacionID", "ProyectoID");
@@ -6496,8 +6508,8 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("MetaDescription")
-                        .HasMaxLength(500)
-                        .HasColumnType("nvarchar(500)");
+                        .HasMaxLength(10000)
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Nombre")
                         .HasColumnType("nvarchar(max)");
@@ -6728,7 +6740,6 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
                         .HasColumnType("smallint");
 
                     b.Property<string>("Nombre")
-                        .IsRequired()
                         .HasMaxLength(1000)
                         .HasColumnType("nvarchar(1000)");
 
@@ -7106,7 +7117,6 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
                         .HasColumnType("nvarchar(15)");
 
                     b.Property<string>("CargoContactoPrincipal")
-                        .IsRequired()
                         .HasMaxLength(255)
                         .HasColumnType("nvarchar(255)");
 
@@ -7151,7 +7161,6 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
                         .HasColumnType("nvarchar(255)");
 
                     b.Property<string>("Provincia")
-                        .IsRequired()
                         .HasMaxLength(255)
                         .HasColumnType("nvarchar(255)");
 
@@ -7226,7 +7235,6 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
                         .HasColumnType("nvarchar(1000)");
 
                     b.Property<string>("Email")
-                        .IsRequired()
                         .HasMaxLength(255)
                         .HasColumnType("nvarchar(255)");
 
@@ -7269,7 +7277,6 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
                         .HasColumnType("nvarchar(255)");
 
                     b.Property<string>("Provincia")
-                        .IsRequired()
                         .HasMaxLength(255)
                         .HasColumnType("nvarchar(255)");
 
@@ -8072,7 +8079,6 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
                         .HasColumnType("nvarchar(50)");
 
                     b.Property<string>("Password")
-                        .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
@@ -8146,7 +8152,7 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
 
                     b.Property<string>("HTML")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("NCLOB");
 
                     b.HasKey("PersonalizacionID", "TipoPagina");
 
@@ -8171,7 +8177,7 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
 
                     b.Property<string>("HTML")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("NCLOB");
 
                     b.Property<string>("Nombre")
                         .IsRequired()
@@ -8193,7 +8199,7 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
 
                     b.Property<string>("HTML")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("NCLOB");
 
                     b.Property<string>("Nombre")
                         .IsRequired()
@@ -8245,7 +8251,7 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
 
                     b.Property<string>("HTML")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("NCLOB");
 
                     b.HasKey("PersonalizacionID", "RdfType");
 
@@ -8760,6 +8766,17 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
                     b.Navigation("Documento");
                 });
 
+            modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Documentacion.DocumentoMetaDatos", b =>
+                {
+                    b.HasOne("Es.Riam.Gnoss.AD.EntityModel.Models.Documentacion.Documento", "Documento")
+                        .WithOne("DocumentoMetaDatos")
+                        .HasForeignKey("Es.Riam.Gnoss.AD.EntityModel.Models.Documentacion.DocumentoMetaDatos", "DocumentoID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Documento");
+                });
+
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Documentacion.DocumentoRespuestaVoto", b =>
                 {
                     b.HasOne("Es.Riam.Gnoss.AD.EntityModel.Models.Documentacion.Documento", "Documento")
@@ -8941,15 +8958,13 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
                     b.Navigation("FacetaObjetoConocimientoProyecto");
                 });
 
-            modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Faceta.FacetaObjetoConocimientoProyecto", b =>
+            modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Faceta.FacetaHome", b =>
                 {
-                    b.HasOne("Es.Riam.Gnoss.AD.EntityModel.Models.Faceta.FacetaHome", "FacetaHome")
-                        .WithOne("FacetaObjetoConocimientoProyecto")
-                        .HasForeignKey("Es.Riam.Gnoss.AD.EntityModel.Models.Faceta.FacetaObjetoConocimientoProyecto", "OrganizacionID", "ProyectoID", "ObjetoConocimiento", "Faceta")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                    b.HasOne("Es.Riam.Gnoss.AD.EntityModel.Models.Faceta.FacetaObjetoConocimientoProyecto", "FacetaObjetoConocimientoProyecto")
+                        .WithMany()
+                        .HasForeignKey("FacetaObjetoConocimientoProyectoOrganizacionID", "FacetaObjetoConocimientoProyectoProyectoID", "FacetaObjetoConocimientoProyectoObjetoConocimiento", "FacetaObjetoConocimientoProyectoFaceta");
 
-                    b.Navigation("FacetaHome");
+                    b.Navigation("FacetaObjetoConocimientoProyecto");
                 });
 
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Faceta.FacetaObjetoConocimientoProyectoPestanya", b =>
@@ -9232,27 +9247,33 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
 
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.OrganizacionDS.Organizacion", b =>
                 {
-                    b.HasOne("Es.Riam.Gnoss.AD.EntityModel.Models.OrganizacionDS.OrganizacionEmpresa", "OrganizacionEmpresa")
-                        .WithOne("Organizacion")
-                        .HasForeignKey("Es.Riam.Gnoss.AD.EntityModel.Models.OrganizacionDS.Organizacion", "OrganizacionID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Es.Riam.Gnoss.AD.EntityModel.Models.OrganizacionDS.OrganizacionGnoss", "OrganizacionGnoss")
-                        .WithOne("Organizacion")
-                        .HasForeignKey("Es.Riam.Gnoss.AD.EntityModel.Models.OrganizacionDS.Organizacion", "OrganizacionID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("Es.Riam.Gnoss.AD.EntityModel.Models.OrganizacionDS.Organizacion", "Organizacion2")
                         .WithMany("Organizacion1")
                         .HasForeignKey("OrganizacionPadreID");
 
                     b.Navigation("Organizacion2");
+                });
 
-                    b.Navigation("OrganizacionEmpresa");
+            modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.OrganizacionDS.OrganizacionEmpresa", b =>
+                {
+                    b.HasOne("Es.Riam.Gnoss.AD.EntityModel.Models.OrganizacionDS.Organizacion", "Organizacion")
+                        .WithOne("OrganizacionEmpresa")
+                        .HasForeignKey("Es.Riam.Gnoss.AD.EntityModel.Models.OrganizacionDS.OrganizacionEmpresa", "OrganizacionID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
-                    b.Navigation("OrganizacionGnoss");
+                    b.Navigation("Organizacion");
+                });
+
+            modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.OrganizacionDS.OrganizacionGnoss", b =>
+                {
+                    b.HasOne("Es.Riam.Gnoss.AD.EntityModel.Models.OrganizacionDS.Organizacion", "Organizacion")
+                        .WithOne("OrganizacionGnoss")
+                        .HasForeignKey("Es.Riam.Gnoss.AD.EntityModel.Models.OrganizacionDS.OrganizacionGnoss", "OrganizacionID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Organizacion");
                 });
 
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.OrganizacionDS.OrganizacionParticipaProy", b =>
@@ -9571,43 +9592,11 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
 
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.ProyectoDS.Proyecto", b =>
                 {
-                    b.HasOne("Es.Riam.Gnoss.AD.EntityModel.Models.ProyectoDS.ProyectoCerradoTmp", "ProyectoCerradoTmp")
-                        .WithOne("Proyecto")
-                        .HasForeignKey("Es.Riam.Gnoss.AD.EntityModel.Models.ProyectoDS.Proyecto", "OrganizacionID", "ProyectoID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Es.Riam.Gnoss.AD.EntityModel.Models.ProyectoDS.ProyectoCerrandose", "ProyectoCerrandose")
-                        .WithOne("Proyecto")
-                        .HasForeignKey("Es.Riam.Gnoss.AD.EntityModel.Models.ProyectoDS.Proyecto", "OrganizacionID", "ProyectoID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Es.Riam.Gnoss.AD.EntityModel.Models.ProyectoDS.ProyectoLoginConfiguracion", "ProyectoLoginConfiguracion")
-                        .WithOne("Proyecto")
-                        .HasForeignKey("Es.Riam.Gnoss.AD.EntityModel.Models.ProyectoDS.Proyecto", "OrganizacionID", "ProyectoID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Es.Riam.Gnoss.AD.EntityModel.Models.ProyectoDS.ProyectosMasActivos", "ProyectosMasActivos")
-                        .WithOne("Proyecto")
-                        .HasForeignKey("Es.Riam.Gnoss.AD.EntityModel.Models.ProyectoDS.Proyecto", "OrganizacionID", "ProyectoID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("Es.Riam.Gnoss.AD.EntityModel.Models.ProyectoDS.Proyecto", "Proyecto2")
                         .WithMany("Proyecto1")
                         .HasForeignKey("OrganizacionID", "ProyectoSuperiorID");
 
                     b.Navigation("Proyecto2");
-
-                    b.Navigation("ProyectoCerradoTmp");
-
-                    b.Navigation("ProyectoCerrandose");
-
-                    b.Navigation("ProyectoLoginConfiguracion");
-
-                    b.Navigation("ProyectosMasActivos");
                 });
 
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.ProyectoDS.ProyectoAgCatTesauro", b =>
@@ -9616,6 +9605,28 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
                         .WithMany("ProyectoAgCatTesauro")
                         .HasForeignKey("OrganizacionID", "ProyectoID")
                         .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Proyecto");
+                });
+
+            modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.ProyectoDS.ProyectoCerradoTmp", b =>
+                {
+                    b.HasOne("Es.Riam.Gnoss.AD.EntityModel.Models.ProyectoDS.Proyecto", "Proyecto")
+                        .WithOne("ProyectoCerradoTmp")
+                        .HasForeignKey("Es.Riam.Gnoss.AD.EntityModel.Models.ProyectoDS.ProyectoCerradoTmp", "OrganizacionID", "ProyectoID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Proyecto");
+                });
+
+            modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.ProyectoDS.ProyectoCerrandose", b =>
+                {
+                    b.HasOne("Es.Riam.Gnoss.AD.EntityModel.Models.ProyectoDS.Proyecto", "Proyecto")
+                        .WithOne("ProyectoCerrandose")
+                        .HasForeignKey("Es.Riam.Gnoss.AD.EntityModel.Models.ProyectoDS.ProyectoCerrandose", "OrganizacionID", "ProyectoID")
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Proyecto");
@@ -9671,6 +9682,17 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
                         .WithMany("ProyectoGrafoFichaRec")
                         .HasForeignKey("OrganizacionID", "ProyectoID")
                         .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Proyecto");
+                });
+
+            modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.ProyectoDS.ProyectoLoginConfiguracion", b =>
+                {
+                    b.HasOne("Es.Riam.Gnoss.AD.EntityModel.Models.ProyectoDS.Proyecto", "Proyecto")
+                        .WithOne("ProyectoLoginConfiguracion")
+                        .HasForeignKey("Es.Riam.Gnoss.AD.EntityModel.Models.ProyectoDS.ProyectoLoginConfiguracion", "OrganizacionID", "ProyectoID")
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Proyecto");
@@ -9850,6 +9872,17 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
                         .WithMany("ProyectoServicioExterno")
                         .HasForeignKey("OrganizacionID", "ProyectoID")
                         .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Proyecto");
+                });
+
+            modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.ProyectoDS.ProyectosMasActivos", b =>
+                {
+                    b.HasOne("Es.Riam.Gnoss.AD.EntityModel.Models.ProyectoDS.Proyecto", "Proyecto")
+                        .WithOne("ProyectosMasActivos")
+                        .HasForeignKey("Es.Riam.Gnoss.AD.EntityModel.Models.ProyectoDS.ProyectosMasActivos", "OrganizacionID", "ProyectoID")
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Proyecto");
@@ -10502,6 +10535,8 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
                 {
                     b.Navigation("DocumentoLecturaAumentada");
 
+                    b.Navigation("DocumentoMetaDatos");
+
                     b.Navigation("DocumentoRespuestaVoto");
 
                     b.Navigation("DocumentoRolGrupoIdentidades");
@@ -10544,8 +10579,6 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Faceta.FacetaHome", b =>
                 {
                     b.Navigation("FacetaFiltroHome");
-
-                    b.Navigation("FacetaObjetoConocimientoProyecto");
                 });
 
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Faceta.FacetaObjetoConocimientoProyecto", b =>
@@ -10626,19 +10659,13 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
 
                     b.Navigation("Organizacion1");
 
+                    b.Navigation("OrganizacionEmpresa");
+
+                    b.Navigation("OrganizacionGnoss");
+
                     b.Navigation("OrganizacionParticipaProy");
 
                     b.Navigation("PersonaVinculoOrganizacion");
-                });
-
-            modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.OrganizacionDS.OrganizacionEmpresa", b =>
-                {
-                    b.Navigation("Organizacion");
-                });
-
-            modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.OrganizacionDS.OrganizacionGnoss", b =>
-                {
-                    b.Navigation("Organizacion");
                 });
 
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Pais.Pais", b =>
@@ -10725,11 +10752,17 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
 
                     b.Navigation("ProyectoAgCatTesauro");
 
+                    b.Navigation("ProyectoCerradoTmp");
+
+                    b.Navigation("ProyectoCerrandose");
+
                     b.Navigation("ProyectoCookie");
 
                     b.Navigation("ProyectoGadget");
 
                     b.Navigation("ProyectoGrafoFichaRec");
+
+                    b.Navigation("ProyectoLoginConfiguracion");
 
                     b.Navigation("ProyectoPasoRegistro");
 
@@ -10743,17 +10776,9 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
 
                     b.Navigation("ProyectoServicioExterno");
 
+                    b.Navigation("ProyectosMasActivos");
+
                     b.Navigation("ProyectoUsuarioIdentidad");
-                });
-
-            modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.ProyectoDS.ProyectoCerradoTmp", b =>
-                {
-                    b.Navigation("Proyecto");
-                });
-
-            modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.ProyectoDS.ProyectoCerrandose", b =>
-                {
-                    b.Navigation("Proyecto");
                 });
 
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.ProyectoDS.ProyectoEvento", b =>
@@ -10766,11 +10791,6 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
                     b.Navigation("ProyectoGadgetContextoHTMLplano");
 
                     b.Navigation("ProyectoGadgetIdioma");
-                });
-
-            modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.ProyectoDS.ProyectoLoginConfiguracion", b =>
-                {
-                    b.Navigation("Proyecto");
                 });
 
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.ProyectoDS.ProyectoPestanya", b =>
@@ -10815,11 +10835,6 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
                     b.Navigation("ProyectoPestanyaMenuRolGrupoIdentidades");
 
                     b.Navigation("ProyectoPestanyaMenuRolIdentidad");
-                });
-
-            modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.ProyectoDS.ProyectosMasActivos", b =>
-                {
-                    b.Navigation("Proyecto");
                 });
 
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.RedireccionRegistroRuta", b =>

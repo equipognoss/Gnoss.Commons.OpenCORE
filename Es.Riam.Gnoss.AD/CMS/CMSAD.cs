@@ -767,7 +767,7 @@ namespace Es.Riam.Gnoss.AD.CMS
         public void EliminarBloquesDePaginaDeProyecto(Guid pProyectoID, short pTipoUbicacionCMS, bool pSoloLosBorradores)
         {
             //Revisar
-            var querySubconsulta = mEntityContext.CMSBloque.Where(item => item.ProyectoID.Equals(pProyectoID) && item.Ubicacion.Equals((short)pTipoUbicacionCMS));
+            var querySubconsulta = mEntityContext.CMSBloque.Where(item => item.ProyectoID.Equals(pProyectoID) && item.Ubicacion.Equals(pTipoUbicacionCMS));
 
             if (pSoloLosBorradores)
             {

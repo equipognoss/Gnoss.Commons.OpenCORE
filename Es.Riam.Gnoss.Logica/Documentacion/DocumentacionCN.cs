@@ -1251,6 +1251,11 @@ namespace Es.Riam.Gnoss.Logica.Documentacion
         {
             DocumentacionAD.ObtenerOntologiasProyecto(pProyectoID, pDataWrapperDocumentacion, pTraerProtegidos, pTraerSecundarias, pTraerOntosEntorno, pTraerDocWebVinBaseRecursos);
         }
+
+        public List<Documento> ObtenerOntologiasSecundarias(Guid pProyectoID)
+        {
+            return DocumentacionAD.ObtenerOntologiasSecundarias(pProyectoID);
+        }
         /// <summary>
         /// Obtiene los documentos que son Ontologias para el borrado masivo.
         /// </summary>

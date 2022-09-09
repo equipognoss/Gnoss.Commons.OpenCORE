@@ -2403,7 +2403,7 @@ namespace Es.Riam.Gnoss.Web.Controles.ServiciosGenerales
         {
             try
             {
-                ServicioImagenes servicioImagenes = new ServicioImagenes(mLoggingService);
+                ServicioImagenes servicioImagenes = new ServicioImagenes(mLoggingService, mConfigService);
                 string url = pUrlIntragnossServicios.Replace("https://", "http://");
                 servicioImagenes.Url = url;
                 byte[] resultado = servicioImagenes.ObtenerImagen(UtilArchivos.ContentImagenesSolicitudes + "/" + pSolicitudID.ToString(), ".png");

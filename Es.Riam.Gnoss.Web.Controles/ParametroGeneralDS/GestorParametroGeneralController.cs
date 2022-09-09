@@ -92,20 +92,23 @@ namespace Es.Riam.Gnoss.Web.Controles.ParametroGeneralDSName
             //TODO FALTA TABLA VistaVirtualProyecto
             return pGestor;
         }
+
         public ConfiguracionAmbitoBusquedaProyecto ObtenerConfiguracionAmbitoBusqueda(Guid pProyectoID)
         {
             return mEntityContext.ConfiguracionAmbitoBusquedaProyecto.Where(confBusqueda => confBusqueda.ProyectoID.Equals(pProyectoID)).FirstOrDefault();
         }
+
         public List<CMSComponentePrivadoProyecto> ObtenerCMSComponentePrivadoProyecto(GestorParametroGeneral pGestor, Guid pProyectoID)
         {
             return mEntityContext.CMSComponentePrivadoProyecto.Where(cmsComponente => cmsComponente.ProyectoID.Equals(pProyectoID)).ToList();
         }
-        public void addParametroProyecto(ParametroProyecto parametro)
+
+        public void NuevoParametroProyecto(ParametroProyecto parametro)
         {
             mEntityContext.ParametroProyecto.Add(parametro);
         }
 
-        public void deleteParametroProyecto(ParametroProyecto parametro)
+        public void EliminarParametroProyecto(ParametroProyecto parametro)
         {
             if (mEntityContext.Entry(parametro).State==EntityState.Detached)
             {

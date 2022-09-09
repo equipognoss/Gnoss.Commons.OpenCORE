@@ -1,6 +1,7 @@
 using Es.Riam.AbstractsOpen;
 using Es.Riam.Gnoss.AD;
 using Es.Riam.Gnoss.AD.EntityModel;
+using Es.Riam.Gnoss.AD.EntityModel.Models.Cookies;
 using Es.Riam.Gnoss.AD.EntityModelBASE;
 using Es.Riam.Gnoss.Logica.ParametroAplicacion;
 using Es.Riam.Gnoss.Logica.ServiciosGenerales;
@@ -242,7 +243,25 @@ namespace Es.Riam.Gnoss.Logica
             }
         }
 
+        public void AnyadirCategoriaProyectoCookie(CategoriaProyectoCookie pCategoriaProyectoCookie)
+        {
+            mEntityContext.CategoriaProyectoCookie.Add(pCategoriaProyectoCookie);
+        }
 
+        public void EliminarCategoriaProyectoCookie(CategoriaProyectoCookie pCategoriaProyectoCookie)
+        {
+            mEntityContext.CategoriaProyectoCookie.Remove(pCategoriaProyectoCookie);
+        }
+
+        public void AnyadirProyectoCookie(ProyectoCookie pProyectoCookie)
+        {
+            mEntityContext.ProyectoCookie.Add(pProyectoCookie);
+        }
+
+        public void EliminarProyectoCookie(ProyectoCookie pProyectoCookie)
+        {
+            mEntityContext.ProyectoCookie.Remove(pProyectoCookie);
+        }
 
         /// <summary>
         /// Actualiza 

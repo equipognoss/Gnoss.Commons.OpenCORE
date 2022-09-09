@@ -20,6 +20,7 @@ using Es.Riam.Gnoss.Elementos.Facetado;
 using Es.Riam.Gnoss.Elementos.Identidad;
 using Es.Riam.Gnoss.Elementos.Tesauro;
 using Es.Riam.Gnoss.Logica.BASE_BD;
+using Es.Riam.Gnoss.Logica.Documentacion;
 using Es.Riam.Gnoss.Logica.Facetado;
 using Es.Riam.Gnoss.Logica.Identidad;
 using Es.Riam.Gnoss.Logica.ServiciosGenerales;
@@ -30,10 +31,8 @@ using Es.Riam.Gnoss.Util.General;
 using Es.Riam.Gnoss.UtilServiciosWeb;
 using Es.Riam.Gnoss.Web.MVC.Models;
 using Es.Riam.Semantica.OWL;
-using Es.Riam.Semantica.Plantillas;
 using Es.Riam.Util;
 using Es.Riam.Util.AnalisisSintactico;
-using Microsoft.AspNetCore.Http;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Concurrent;
@@ -782,7 +781,6 @@ namespace Es.Riam.Gnoss.Servicios
 
         public string ObtenerValoresSemanticosSearch(string pFicheroConfiguracionBD, string pUrlIntragnoss, Guid pProyectoID, Guid pDocumentoID)
         {
-
             string valorSearch = "";
 
             FacetaCN facCN = new FacetaCN(pFicheroConfiguracionBD, mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
@@ -1104,7 +1102,7 @@ namespace Es.Riam.Gnoss.Servicios
         /// <summary>
         /// Devuelve el texto sin caracteres como . , ; ? ¿ !¡ ...
         /// </summary>
-        public static string RemoverSignosSearch(String texto)
+        public static string RemoverSignosSearch(string texto)
         {
             StringBuilder textoSinSignos = new StringBuilder(texto.Length);
             int indexConSigno;
@@ -2093,7 +2091,7 @@ namespace Es.Riam.Gnoss.Servicios
             filaColaTagsDocs.Estado = (short)EstadosColaTags.EnEspera;
             filaColaTagsDocs.FechaPuestaEnCola = DateTime.Now;
             filaColaTagsDocs.TablaBaseProyectoID = id;
-            filaColaTagsDocs.Tags = Constantes.ID_TAG_DOCUMENTO + pDocumentoID.ToString() + Constantes.ID_TAG_DOCUMENTO + "," + Constantes.TIPO_DOC + pTipo.ToString() + Constantes.TIPO_DOC + pOtrosArgumentos + "," + TagBaseAfinidadVirtuoso;
+            filaColaTagsDocs.Tags = $"{Constantes.ID_TAG_DOCUMENTO}{pDocumentoID}{Constantes.ID_TAG_DOCUMENTO},{Constantes.TIPO_DOC}{pTipo}{Constantes.TIPO_DOC}{pOtrosArgumentos},{TagBaseAfinidadVirtuoso}";
 
             if (!pTipoElementoBase.HasValue || !Enum.IsDefined(typeof(TiposElementosEnCola), (int)pTipoElementoBase.Value))
             {
@@ -2931,6 +2929,8 @@ namespace Es.Riam.Gnoss.Servicios
 
             Dictionary<string, List<string>> selectores = ObtenerSelectores(pOntologia, pProyectoId.ToString(), "");
             List<FacetaEntidadesExternas> EntExt = new List<FacetaEntidadesExternas>();
+            DocumentacionCN documentacionCN = new DocumentacionCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+            List<Es.Riam.Gnoss.AD.EntityModel.Models.Documentacion.Documento> listaEntidadesSecundarias = documentacionCN.ObtenerOntologiasSecundarias(pProyectoId);
             foreach (string grafo in selectores.Keys)
             {
                 foreach (string selector in selectores[grafo])
@@ -2939,6 +2939,7 @@ namespace Es.Riam.Gnoss.Servicios
                     facetaEntidad.Grafo = grafo;
                     facetaEntidad.EntidadID = pUrlIntragnoss + "items/" + selector;
                     facetaEntidad.ProyectoID = pProyectoId;
+                    facetaEntidad.EsEntidadSecundaria = listaEntidadesSecundarias.Any(item => item.Enlace.Equals(grafo));
                     EntExt.Add(facetaEntidad);
                 }
             }
@@ -3036,6 +3037,11 @@ namespace Es.Riam.Gnoss.Servicios
                             }
                         }
 
+                        bool esEntidadAuxiliar = pListaTriplesRecurso.Any(item => item.Object.Equals(sujeto));
+                        if (esEntidadAuxiliar)
+                        {
+                            sujeto = PasarObjetoALower(sujeto);
+                        }
                         ComprobarPropiedadEsRangoFecha(filasRangoFechas, predicado, objeto, pListaTriplesRecurso, propiedadFechaInicioValorFechaInicio, propiedadFechaFinValorFechaFin);
 
                         if (esTripletaEntidadPadre)

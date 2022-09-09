@@ -39,6 +39,9 @@ namespace Es.Riam.Gnoss.Web.MVC.Models.IntegracionContinua
         EstilosCss,
         EstilosImagenes,
         Dlls,
-        Cookies
+        Cookies,
+        SearchPersonalizado,
+        ConfigSearch,
+        ConfigAutocompletar
     }
 }

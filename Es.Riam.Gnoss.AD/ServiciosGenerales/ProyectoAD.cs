@@ -4362,13 +4362,13 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
         }
 
         /// <summary>
-        /// Obtiene una DataSet sin tipar con una tabla "Emails" que contiene los campos (IdentidadID,PersonaID,Nombre,Email) de cada uno de los administradores de un  determinado proyecto
+        /// Devuelve una lista con los emails de los administradores del proyecto.
         /// </summary>
         /// <param name="pProyectoID">Identificador de proyecto</param>
         /// <returns>DataSet</returns>
-        public List<EmailAdminProyecto> ObtenerEmailsAdministradoresDeProyecto(Guid pProyectoID)
+        public List<string> ObtenerEmailsAdministradoresDeProyecto(Guid pProyectoID)
         {
-            List<EmailAdminProyecto> lista = mEntityContext.ProyectoUsuarioIdentidad.Join(mEntityContext.Identidad, proyectoUsuarioIdentidad => proyectoUsuarioIdentidad.IdentidadID, identidad => identidad.IdentidadID, (proyectoUsuarioIdentidad, identidad) => new
+            return mEntityContext.ProyectoUsuarioIdentidad.Join(mEntityContext.Identidad, proyectoUsuarioIdentidad => proyectoUsuarioIdentidad.IdentidadID, identidad => identidad.IdentidadID, (proyectoUsuarioIdentidad, identidad) => new
             {
                 ProyectoUsuarioIdentidad = proyectoUsuarioIdentidad,
                 Identidad = identidad
@@ -4383,14 +4383,14 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
                 Identidad = objeto.Identidad,
                 Perfil = objeto.Perfil,
                 Persona = persona
-            }).Join(mEntityContext.AdministradorProyecto, objeto => objeto.ProyectoUsuarioIdentidad.UsuarioID, adminProy => adminProy.UsuarioID, (objeto, adminProy) => new
+            }).Join(mEntityContext.AdministradorProyecto, objeto => new { objeto.ProyectoUsuarioIdentidad.UsuarioID, objeto.ProyectoUsuarioIdentidad.ProyectoID }, adminProy => new { adminProy.UsuarioID, adminProy.ProyectoID }, (objeto, adminProy) => new
             {
                 ProyectoUsuarioIdentidad = objeto.ProyectoUsuarioIdentidad,
                 Identidad = objeto.Identidad,
                 Perfil = objeto.Perfil,
                 Persona = objeto.Persona,
                 AdministradorProyecto = adminProy
-            }).Where(objeto => objeto.Perfil.PersonaID.HasValue && objeto.ProyectoUsuarioIdentidad.ProyectoID.Equals(pProyectoID) && !objeto.Identidad.FechaBaja.HasValue && objeto.Perfil.Eliminado == false && !objeto.Perfil.OrganizacionID.HasValue && objeto.Persona.Email != null).ToList().Select(objeto => new EmailAdminProyecto { IdentidadID = objeto.ProyectoUsuarioIdentidad.IdentidadID, PersonaID = objeto.Perfil.PersonaID, Nombre = objeto.Persona.Nombre, Email = objeto.Persona.Email }).Distinct().Union(
+            }).Where(objeto => objeto.Perfil.PersonaID.HasValue && objeto.ProyectoUsuarioIdentidad.ProyectoID.Equals(pProyectoID) && !objeto.Identidad.FechaBaja.HasValue && objeto.Perfil.Eliminado == false && !objeto.Perfil.OrganizacionID.HasValue && objeto.Persona.Email != null && objeto.AdministradorProyecto.Tipo == 0).Select(item => item.Persona.Email).Distinct().Union(
                 mEntityContext.ProyectoUsuarioIdentidad.Join(mEntityContext.Identidad, proyectoUsuarioIdentidad => proyectoUsuarioIdentidad.IdentidadID, identidad => identidad.IdentidadID, (proyectoUsuarioIdentidad, identidad) => new
                 {
                     ProyectoUsuarioIdentidad = proyectoUsuarioIdentidad,
@@ -4413,7 +4413,7 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
                     Perfil = objeto.Perfil,
                     Persona = objeto.Persona,
                     PersonaVinculoOrganizacion = personaVinculoOrganizacion
-                }).Join(mEntityContext.AdministradorProyecto, objeto => objeto.ProyectoUsuarioIdentidad.UsuarioID, adminProyect => adminProyect.UsuarioID, (objeto, adminProyect) => new
+                }).Join(mEntityContext.AdministradorProyecto, objeto => new { objeto.ProyectoUsuarioIdentidad.UsuarioID, objeto.ProyectoUsuarioIdentidad.ProyectoID }, adminProyect => new { adminProyect.UsuarioID, adminProyect.ProyectoID }, (objeto, adminProyect) => new
                 {
                     ProyectoUsuarioIdentidad = objeto.ProyectoUsuarioIdentidad,
                     Identidad = objeto.Identidad,
@@ -4421,10 +4421,8 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
                     Persona = objeto.Persona,
                     PersonaVinculoOrganizacion = objeto.PersonaVinculoOrganizacion,
                     AdministradorProyecto = adminProyect
-                }).Where(objeto => objeto.ProyectoUsuarioIdentidad.ProyectoID.Equals(pProyectoID) && !objeto.Identidad.FechaBaja.HasValue && objeto.Perfil.Eliminado == false && objeto.Perfil.PersonaID.HasValue && objeto.Perfil.OrganizacionID.HasValue && objeto.PersonaVinculoOrganizacion.EmailTrabajo != null).ToList().Select(objeto => new EmailAdminProyecto { IdentidadID = objeto.ProyectoUsuarioIdentidad.IdentidadID, PersonaID = objeto.Perfil.PersonaID, Nombre = objeto.Persona.Nombre, Email = objeto.PersonaVinculoOrganizacion.EmailTrabajo }).Distinct()
+                }).Where(objeto => objeto.ProyectoUsuarioIdentidad.ProyectoID.Equals(pProyectoID) && !objeto.Identidad.FechaBaja.HasValue && objeto.Perfil.Eliminado == false && objeto.Perfil.PersonaID.HasValue && objeto.Perfil.OrganizacionID.HasValue && objeto.PersonaVinculoOrganizacion.EmailTrabajo != null && objeto.AdministradorProyecto.Tipo == 0).Select(item => item.Persona.Email).Distinct()
                 ).ToList();
-
-            return (lista);
         }
 
         /// <summary>

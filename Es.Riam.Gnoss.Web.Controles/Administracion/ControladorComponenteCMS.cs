@@ -1136,7 +1136,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
                         {
                             byte[] byteImage = Convert.FromBase64String(base64Image);
 
-                            ServicioImagenes servicioImagenes = new ServicioImagenes(mLoggingService);
+                            ServicioImagenes servicioImagenes = new ServicioImagenes(mLoggingService, mConfigService);
                             servicioImagenes.Url = UrlIntragnossServicios.Replace("https://", "http://");
 
                             String ruta = UtilArchivos.ContentImagenesProyectos + "/personalizacion/" + ProyectoSeleccionado.Clave.ToString().ToLower() + "/cms/";

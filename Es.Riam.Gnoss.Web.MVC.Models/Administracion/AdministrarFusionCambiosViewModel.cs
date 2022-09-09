@@ -19,9 +19,12 @@
         public ContextoModel ContextoModelPro { get; set; }
         public CMSAdminComponenteEditarViewModel ComponenteCMSModelPruebas { get; set; }
         public CMSAdminComponenteEditarViewModel ComponenteCMSModelPro { get; set; }
+        public CookiesModel CookieModelPruebas { get; set; }
+        public CookiesModel CookieModelPro { get; set; }
         public bool EsFaceta { get; set; }
         public bool EsPagina { get; set; }
         public bool EsGadget { get; set; }
         public bool EsComponente { get; set; }
+        public bool EsCookie { get; set; }
     }
 }

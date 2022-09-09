@@ -32,7 +32,5 @@ namespace Es.Riam.Gnoss.AD.EntityModel.Models.ProyectoDS
         {
             get; set;
         }
-
-
     }
 }

@@ -5491,14 +5491,13 @@ namespace Es.Riam.Gnoss.AD.Documentacion
             List<Documento> listaDocs = new List<Documento>();
             if (pTraerSecundarias)
             {
-                var query = mEntityContext.Documento.JoinDocumentoWebVinBaseRecursosDocumento().JoinBaseRecursosProyecto().Where(objeto => (objeto.Documento.Tipo.Equals((short)TiposDocumentacion.Ontologia) || objeto.Documento.Tipo.Equals((short)TiposDocumentacion.OntologiaSecundaria)) && objeto.BaseRecursosProyecto.ProyectoID.Equals(pProyectoID) && !objeto.Documento.Eliminado && !objeto.DocumentoWebVinBaseRecursos.Eliminado);
-                listaDocs = query.Select(objeto => objeto.Documento).ToList();
+                listaDocs = mEntityContext.Documento.JoinDocumentoWebVinBaseRecursosDocumento().JoinBaseRecursosProyecto().Where(objeto => (objeto.Documento.Tipo.Equals((short)TiposDocumentacion.Ontologia) || objeto.Documento.Tipo.Equals((short)TiposDocumentacion.OntologiaSecundaria)) && objeto.BaseRecursosProyecto.ProyectoID.Equals(pProyectoID) && !objeto.Documento.Eliminado && !objeto.DocumentoWebVinBaseRecursos.Eliminado).Select(objeto => objeto.Documento).ToList();
             }
             else
             {
-                var query = mEntityContext.Documento.JoinDocumentoWebVinBaseRecursosDocumento().JoinBaseRecursosProyecto().Where(objeto => objeto.Documento.Tipo.Equals((short)TiposDocumentacion.Ontologia) && objeto.BaseRecursosProyecto.ProyectoID.Equals(pProyectoID) && !objeto.Documento.Eliminado && !objeto.DocumentoWebVinBaseRecursos.Eliminado).Select(objeto => objeto.Documento);
+                Guid baseRecursoProyecto = mEntityContext.BaseRecursosProyecto.Where(item => item.ProyectoID.Equals(pProyectoID)).Select(item => item.BaseRecursosID).FirstOrDefault();
 
-                listaDocs = mEntityContext.Documento.JoinDocumentoWebVinBaseRecursosDocumento().JoinBaseRecursosProyecto().Where(objeto => objeto.Documento.Tipo.Equals((short)TiposDocumentacion.Ontologia) && objeto.BaseRecursosProyecto.ProyectoID.Equals(pProyectoID) && !objeto.Documento.Eliminado && !objeto.DocumentoWebVinBaseRecursos.Eliminado).Select(objeto => objeto.Documento).ToList();
+                listaDocs = mEntityContext.Documento.JoinDocumentoWebVinBaseRecursosDocumento().Where(objeto => objeto.Documento.Tipo.Equals((short)TiposDocumentacion.Ontologia) && objeto.DocumentoWebVinBaseRecursos.BaseRecursosID.Equals(baseRecursoProyecto) && !objeto.Documento.Eliminado && !objeto.DocumentoWebVinBaseRecursos.Eliminado).Select(objeto => objeto.Documento).ToList();
             }
 
             if (!pTraerProtegidos)
@@ -5506,7 +5505,7 @@ namespace Es.Riam.Gnoss.AD.Documentacion
                 listaDocs = listaDocs.Where(doc => !doc.Protegido).ToList();
             }
 
-            pDataWrapperDocumentacion.ListaDocumento = pDataWrapperDocumentacion.ListaDocumento.Concat(listaDocs).ToList().Distinct().ToList();
+            pDataWrapperDocumentacion.ListaDocumento = pDataWrapperDocumentacion.ListaDocumento.Concat(listaDocs).Distinct().ToList();
 
             if (pTraerOntosEntorno)
             {
@@ -5519,6 +5518,11 @@ namespace Es.Riam.Gnoss.AD.Documentacion
                 List<Guid> listaDocumentosID = listaDocs.Select(docum => docum.DocumentoID).ToList();
                 pDataWrapperDocumentacion.ListaDocumentoWebVinBaseRecursos = pDataWrapperDocumentacion.ListaDocumentoWebVinBaseRecursos.Union(mEntityContext.DocumentoWebVinBaseRecursos.Where(doc => listaDocumentosID.Contains(doc.DocumentoID))).ToList();
             }
+        }
+
+        public List<Documento> ObtenerOntologiasSecundarias(Guid pProyectoID)
+        {
+            return mEntityContext.Documento.Where(doc => doc.ProyectoID.Equals(pProyectoID) && !doc.Borrador && !doc.Eliminado && doc.Tipo.Equals((short)TiposDocumentacion.OntologiaSecundaria)).ToList();
         }
 
         /// <summary>
@@ -5796,18 +5800,9 @@ namespace Es.Riam.Gnoss.AD.Documentacion
                 VersionDocumentoV2 = v2
             })
             .Where(objeto => objeto.VersionDocumentoV1.DocumentoID.Equals(pDocumentoID))
-            .OrderByDescending(item => item.VersionDocumentoV1.Version)
-            /*.GroupBy(objeto => objeto.VersionDocumentoV1.DocumentoOriginalID, objeto => objeto.VersionDocumentoV2.Version, (key, g) => new
-            {
-                DocumentoOriginalID = key,
-                versiones = g
-            })*/
+            .OrderByDescending(item => item.VersionDocumentoV1.Version)          
             .Select(objeto => objeto.VersionDocumentoV1.Version).FirstOrDefault();
-            // Si no hay versión del documento, tomará la versión 0
-            //if (query.Count > 0)
-            //{
-            //    version = query[0];
-            //}
+           
 
             var consulta1 = mEntityContext.Documento.Where(documento => documento.DocumentoID.Equals(pDocumentoID) && documento.FechaModificacion.HasValue && !documento.FechaModificacion.Equals(pFechaModificacion) && documento.UltimaVersion).Select(doc => doc.DocumentoID).ToList();
             var consulta2 = mEntityContext.VersionDocumento.Join(mEntityContext.VersionDocumento, v1 => v1.DocumentoOriginalID, v2 => v2.DocumentoOriginalID, (v1, v2) => new
@@ -7111,10 +7106,21 @@ namespace Es.Riam.Gnoss.AD.Documentacion
         /// Obtiene la clave de la base de recursos de una Organizacion.
         /// </summary>
         /// <param name="pOrganizacionID">Identificador de la Organizacion</param>
-        /// <return s>Clave de la base de recursos de la Organizacion</return s>
+        /// <returns>Clave de la base de recursos de la Organizacion</return s>
         public Guid ObtenerBaseRecursosIDOrganizacion(Guid pOrganizacionID)
         {
             return mEntityContext.BaseRecursos.JoinBaseRecursosOrganizacion().Where(item => item.BaseRecursosOrganizacion.OrganizacionID.Equals(pOrganizacionID)).Select(item => item.BaseRecursos.BaseRecursosID).FirstOrDefault();
+        }
+
+        /// <summary>
+        /// Obtiene las meta etiquetas del documento indicado
+        /// </summary>
+        /// <param name="pDocumentoClave">Identificador del documento a obtener las meta etiquetas</param>
+        /// <returns></returns>
+        public DocumentoMetaDatos ObtenerEtiquetasMeta(Guid pDocumentoClave)
+        {
+            DocumentoMetaDatos documentoMetaDatos = mEntityContext.DocumentoMetaDatos.FirstOrDefault(x => x.DocumentoID == pDocumentoClave);
+            return documentoMetaDatos;
         }
 
         public List<Guid> ObtenerDocumentosIDSuscripcionPerfilEnProyecto(Guid pPerfilID, Guid pProyectoID, int pNumElementos)
@@ -7630,7 +7636,7 @@ namespace Es.Riam.Gnoss.AD.Documentacion
                 }
                 catch (Exception ex)
                 {
-                    mLoggingService.GuardarLogError(ex, $"Error intentando bloquear el recurso {pDocumentoID} para la identidad {pIdentidadID}");
+                    mLoggingService.GuardarLogError(ex, $"Error intentando bloquear el recurso {pDocumentoID} para la identidad {pIdentidadID} quedan {pNumeroIntentos} intentos");
                     if (mEntityContext.Documento.Any(item => item.DocumentoID.Equals(pDocumentoID)))
                     {
                         if (pNumeroIntentos > 0)
@@ -7642,7 +7648,7 @@ namespace Es.Riam.Gnoss.AD.Documentacion
                         }
                         else
                         {
-                            throw new Exception($"No ha sido posible bloquear la edición del recurso {pDocumentoID} para la identidad {pIdentidadID} tras 60 intentos");
+                            throw new Exception($"No ha sido posible bloquear la edición del recurso {pDocumentoID} para la identidad {pIdentidadID} tras 3 intentos");
                         }
                     }
                     else

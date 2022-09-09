@@ -158,7 +158,7 @@ namespace Es.Riam.AbstractsOpen
             return (mConfigService.CheckBidirectionalReplicationIsActive() && mConfigService.ObtenerVirtuosoConnectionString().Equals(pCadenaConexion));
         }
 
-        public int ActualizarVirtuoso(string pQuery, string pGrafo, bool pReplicar, short pPrioridad, VirtuosoConnection pConexion, bool pLanzarExcepcionSiFallaReplicacion = true, string pCadenaConexion = null)
+        public int ActualizarVirtuoso(string pQuery, string pGrafo, bool pReplicar, short pPrioridad, VirtuosoConnection pConexion, bool pLanzarExcepcionSiFallaReplicacion = true, string pCadenaConexion = null, int pNumReintentos = 0)
         {
             int resultado = 0;
             string cadenaConexion = pCadenaConexion;
@@ -418,7 +418,7 @@ namespace Es.Riam.AbstractsOpen
             {
                 byte[] responseArray = webClient.UploadValues(pUrl, "POST", pParametros);
                 milisegundos = (int)DateTime.Now.Subtract(horaInicio).TotalMilliseconds;
-                string respuesta = System.Text.Encoding.UTF8.GetString(responseArray);
+                string respuesta = Encoding.UTF8.GetString(responseArray);
 
                 resultado = ObtenerResultadoRespuesta(respuesta);
 
@@ -711,6 +711,7 @@ namespace Es.Riam.AbstractsOpen
             Type tipo = pConexion.GetType();
             string connectionString = pConexion.ConnectionString;
             Stopwatch sw = LoggingService.IniciarRelojTelemetria();
+            mLoggingService.GuardarLogError("La conexion de virtuoso es:" + connectionString);
 
             try
             {
@@ -735,7 +736,7 @@ namespace Es.Riam.AbstractsOpen
             short connectSuccess = 0;
             Type tipo = pConexion.GetType();
             string connectionString = pConexion.ConnectionString;
-
+            mLoggingService.GuardarLogError("La conexion de virtuoso es:" + connectionString);
             //Cambiamos el puerto por el 1111
             KeyValuePair<string, string> ip_puerto = ObtenerIpVirtuosoDeCadenaConexion(connectionString);
             string ipVirtuoso = ip_puerto.Key;
@@ -890,7 +891,6 @@ namespace Es.Riam.AbstractsOpen
             {
                 int numIntentos = 0;
                 int numMaxIntentos = 9;
-
                 while ((ConexionMaster == null || !ConexionMaster.State.Equals(ConnectionState.Open)) && (numIntentos < numMaxIntentos))
                 {
                     if (numIntentos == 3 || numIntentos == 6) //Espero 1 segundo antes de intentarlo otras 3 veces.
@@ -898,13 +898,11 @@ namespace Es.Riam.AbstractsOpen
                         Thread.Sleep(1000);
                     }
                     numIntentos++;
-
                     if (!ComprobarConexionValida(ConexionMaster))
                     {
                         if (ExisteFicheroMaster)
-                        {
+                        {                       
                             ConexionMaster = Connection;
-
                             List<string> listaGrafos = ListaGrafos;
                             if (listaGrafos == null)
                             {
@@ -918,7 +916,6 @@ namespace Es.Riam.AbstractsOpen
                             if (!ComprobarConexionValida(ConexionMaster))
                             {
                                 string cadenaConexion = null;
-
                                 try
                                 {
                                     if (FicheroConfiguracionMaster.ToLower().Contains("home"))
@@ -946,7 +943,6 @@ namespace Es.Riam.AbstractsOpen
                                 {
                                     //mExisteFicheroMaster = false;
                                     ConexionMaster = ParentConnection;
-                                    mLoggingService.GuardarLogError(e);
                                 }
                             }
                         }
@@ -967,7 +963,6 @@ namespace Es.Riam.AbstractsOpen
                         catch
                         {
                             ConexionMaster = null;
-
                             if (numIntentos == numMaxIntentos)
                             {
                                 throw;

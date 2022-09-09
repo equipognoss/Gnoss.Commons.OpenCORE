@@ -36,6 +36,8 @@ namespace Es.Riam.Gnoss.AD.EntityModel.Models.ProyectoDS
             ProyectoServicioExterno = new HashSet<ProyectoServicioExterno>();
             ProyectoRelacionado1 = new HashSet<ProyectoRelacionado>();
             ProyectoUsuarioIdentidad = new HashSet<ProyectoUsuarioIdentidad>();
+            CategoriaProyectoCookie = new HashSet<CategoriaProyectoCookie>();
+            FacetaObjetoConocimientoProyectoPestanya = new HashSet<FacetaObjetoConocimientoProyectoPestanya>();
         }
 
         [Column(Order = 0)]

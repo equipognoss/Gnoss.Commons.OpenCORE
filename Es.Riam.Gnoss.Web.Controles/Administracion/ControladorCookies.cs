@@ -12,18 +12,16 @@ using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Es.Riam.Gnoss.Web.Controles.Administracion
 {
     public class ControladorCookies : ControladorBase
     {
-        private Elementos.ServiciosGenerales.Proyecto ProyectoSeleccionado = null;
+        private Elementos.ServiciosGenerales.Proyecto proyecto = null;
         public ControladorCookies(Elementos.ServiciosGenerales.Proyecto pProyecto, LoggingService loggingService, EntityContext entityContext, ConfigService configService, RedisCacheWrapper redisCacheWrapper, GnossCache gnossCache, VirtuosoAD virtuosoAD, IHttpContextAccessor httpContextAccessor, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication)
             :base(loggingService, configService, entityContext, redisCacheWrapper, gnossCache, virtuosoAD, httpContextAccessor, servicesUtilVirtuosoAndReplication)
         {
-            ProyectoSeleccionado = pProyecto;
+            proyecto = pProyecto;
             mVirtuosoAD = virtuosoAD;
             mLoggingService = loggingService;
             mEntityContext = entityContext;
@@ -73,11 +71,11 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
             if (cookie.Deleted && !listaCookiesNuevas.Contains(cookie.CookieID))
             {
                 CookieCN cookieCN = new CookieCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
-                List<ProyectoCookie> filasCookies = cookieCN.ObtenerCookiesDeProyecto(ProyectoSeleccionado.Clave).Where(cookieProy => cookieProy.CookieID.Equals(cookie.CookieID)).ToList();
-                if (filasCookies.Count > 0)
+                ProyectoCookie proyectoCookie = cookieCN.ObtenerCookiesDeProyecto(proyecto.Clave).Where(cookieProy => cookieProy.CookieID.Equals(cookie.CookieID)).FirstOrDefault();
+                if (proyectoCookie != null)
                 {
-                    mEntityContext.EliminarElemento(filasCookies.First());
-                    mEntityContext.SaveChanges();
+                    cookieCN.EliminarProyectoCookie(proyectoCookie);
+                    cookieCN.Actualizar();
                 }
             }
         }
@@ -87,7 +85,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
             if (!pCookie.Deleted && !listaCookiesNuevas.Contains(pCookie.CookieID))
             {
                 CookieCN cookieCN = new CookieCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
-                List<ProyectoCookie> filasCookies = cookieCN.ObtenerCookiesDeProyecto(ProyectoSeleccionado.Clave).Where(cookieProy => cookieProy.CookieID.Equals(pCookie.CookieID)).ToList();
+                List<ProyectoCookie> filasCookies = cookieCN.ObtenerCookiesDeProyecto(proyecto.Clave).Where(cookieProy => cookieProy.CookieID.Equals(pCookie.CookieID)).ToList();
                 if (filasCookies.Count > 0)
                 {
                     GuardarDatosProyectoCookie(filasCookies.First(), pCookie);
@@ -105,12 +103,13 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
             pProyectoCookie.Tipo = (short)pCookie.Tipo;
             pProyectoCookie.EsEditable = !EsCookieTecnica(pCookie.Nombre);
         }
+
         public void AnadirNuevaCookie(List<Guid> listaCookiesNuevas, CookiesModel cookie)
         {
             if (!cookie.Deleted)
             {
                 CookieCN cookieCN = new CookieCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
-                List<ProyectoCookie> filasCookies = cookieCN.ObtenerCookiesDeProyecto(ProyectoSeleccionado.Clave).Where(cookieProy => cookieProy.CookieID.Equals(cookie.CookieID)).ToList();
+                List<ProyectoCookie> filasCookies = cookieCN.ObtenerCookiesDeProyecto(proyecto.Clave).Where(cookieProy => cookieProy.CookieID.Equals(cookie.CookieID)).ToList();
                 if (filasCookies.Count == 0)
                 {
                     listaCookiesNuevas.Add(cookie.CookieID);
@@ -125,14 +124,16 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
             ProyectoCookie cookie = new ProyectoCookie();
             cookie.CookieID = pCookie.CookieID;
             cookie.Nombre = pCookie.Nombre;
-            cookie.OrganizacionID = ProyectoSeleccionado.FilaProyecto.OrganizacionID;
+            cookie.OrganizacionID = proyecto.FilaProyecto.OrganizacionID;
             cookie.CategoriaID = categoriaID;
             cookie.EsEditable = !EsCookieTecnica(pCookie.Nombre);
             cookie.Tipo = (short)pCookie.Tipo;
             cookie.Descripcion = pCookie.Descripcion;
-            cookie.ProyectoID = ProyectoSeleccionado.Clave;
+            cookie.ProyectoID = proyecto.Clave;
 
-            mEntityContext.ProyectoCookie.Add(cookie);
+            CookieCN cookieCN = new CookieCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+            cookieCN.AnyadirProyectoCookie(cookie);
+            cookieCN.Actualizar();
         }
 
         public bool EsCookieTecnica(string pNombreCookie)
@@ -146,7 +147,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
         {
             CookieCN cookieCN = new CookieCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
 
-            CategoriaProyectoCookie categoria = cookieCN.ObtenerCategoriaPorNombreCorto(pCookie.Categoria.NombreCorto, ProyectoSeleccionado.Clave);
+            CategoriaProyectoCookie categoria = cookieCN.ObtenerCategoriaPorNombreCorto(pCookie.Categoria.NombreCorto, proyecto.Clave);
             Guid categoriaID = new Guid();
             if (categoria != null)
             {
@@ -161,11 +162,12 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
                 nuevaCategoria.EsCategoriaTecnica = false;
                 nuevaCategoria.Descripcion = pCookie.Categoria.Descripcion;
                 nuevaCategoria.CategoriaID = pCookie.Categoria.CategoriaID;
-                nuevaCategoria.ProyectoID = ProyectoSeleccionado.Clave;
-                nuevaCategoria.OrganizacionID = ProyectoSeleccionado.FilaProyecto.OrganizacionID;
+                nuevaCategoria.ProyectoID = proyecto.Clave;
+                nuevaCategoria.OrganizacionID = proyecto.FilaProyecto.OrganizacionID;
                 categoriaID = nuevaCategoria.CategoriaID;
-                mEntityContext.CategoriaProyectoCookie.Add(nuevaCategoria);
-                mEntityContext.SaveChanges();
+
+                cookieCN.AnyadirCategoriaProyectoCookie(nuevaCategoria);
+                cookieCN.Actualizar();
             }
             return categoriaID;
         }
@@ -184,6 +186,5 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
                     return 0;
             }
         }
-
     }
 }

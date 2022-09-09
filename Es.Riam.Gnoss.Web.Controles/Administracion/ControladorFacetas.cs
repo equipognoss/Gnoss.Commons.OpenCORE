@@ -407,7 +407,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
                         {
                             filaFacetaModel = pListaFacetas.FirstOrDefault(item => !string.IsNullOrEmpty(item.ClaveFaceta) && item.ClaveFaceta.Equals(faceta.Faceta) || (faceta.Reciproca > 0 && faceta.Faceta.Equals(item.Reciprocidad + "@@@" + item.ClaveFaceta)));
                         }
-                        if (filaFacetaModel != null && !filaFacetaModel.ObjetosConocimiento.Contains(faceta.ObjetoConocimiento))
+                        if (filaFacetaModel != null && !filaFacetaModel.ObjetosConocimiento.Contains(faceta.ObjetoConocimiento.ToLower()))
                         {
                             filaFacetaModel = null;
                         }
@@ -511,11 +511,11 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
                                 FacetaObjetoConocimientoProyecto filaFaceta = null;
                                 if (faceta.AgrupacionID.HasValue)
                                 {
-                                    filaFaceta = FacetaDW.ListaFacetaObjetoConocimientoProyecto.FirstOrDefault(item => item.OrganizacionID.Equals(ProyectoSeleccionado.FilaProyecto.OrganizacionID) && item.ProyectoID.Equals(ProyectoSeleccionado.Clave) && item.ObjetoConocimiento.ToLower().Equals(objetoConocimiento) && item.Faceta.Equals(columnaFaceta) && item.AgrupacionID.Value.Equals(faceta.AgrupacionID));
+                                    filaFaceta = FacetaDW.ListaFacetaObjetoConocimientoProyecto.FirstOrDefault(item => item.OrganizacionID.Equals(ProyectoSeleccionado.FilaProyecto.OrganizacionID) && item.ProyectoID.Equals(ProyectoSeleccionado.Clave) && item.ObjetoConocimiento.ToLower().Equals(objetoConocimiento.ToLower()) && item.Faceta.Equals(columnaFaceta) && item.AgrupacionID.Value.Equals(faceta.AgrupacionID));
                                 }
                                 else
                                 {
-                                    filaFaceta = FacetaDW.ListaFacetaObjetoConocimientoProyecto.FirstOrDefault(item => item.OrganizacionID.Equals(ProyectoSeleccionado.FilaProyecto.OrganizacionID) && item.ProyectoID.Equals(ProyectoSeleccionado.Clave) && item.ObjetoConocimiento.ToLower().Equals(objetoConocimiento) && item.Faceta.Equals(columnaFaceta));
+                                    filaFaceta = FacetaDW.ListaFacetaObjetoConocimientoProyecto.FirstOrDefault(item => item.OrganizacionID.Equals(ProyectoSeleccionado.FilaProyecto.OrganizacionID) && item.ProyectoID.Equals(ProyectoSeleccionado.Clave) && item.ObjetoConocimiento.ToLower().Equals(objetoConocimiento.ToLower()) && item.Faceta.Equals(columnaFaceta));
                                 }
                                 if (filaFaceta == null)
                                 {

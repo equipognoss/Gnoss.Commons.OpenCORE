@@ -368,6 +368,16 @@ namespace Es.Riam.Gnoss.Web.MVC.Models
         /// </summary>
         public bool AllowComments { get; set; }
 
+        /// <summary>
+        /// Almacena el metatitulo del recurso
+        /// </summary>
+        public string MetaTitle { get; set; }
+
+        /// <summary>
+        /// Almacena la metadescripcion del recurso
+        /// </summary>
+        public string MetaDescription { get; set; }
+
         public UrlActions ListActions { get; set; }
         /// <summary>
         /// 
@@ -413,6 +423,16 @@ namespace Es.Riam.Gnoss.Web.MVC.Models
             /// Indica la Url de desvincular un recurso
             /// </summary>
             public string UrlUnLinkResource { get; set; }
+
+            /// <summary>
+            /// Indica la Url de añadir meta titulo
+            /// </summary>
+            public string UrlAddMetaTitle { get; set; }
+
+            /// <summary>
+            /// Indica la Url de añadir meta descripcion
+            /// </summary>
+            public string UrlAddMetaDescripcion { get; set; }
 
             /// <summary>
             /// Indica la Url para guardar en el espacio personal
@@ -499,9 +519,6 @@ namespace Es.Riam.Gnoss.Web.MVC.Models
             /// </summary>
             public string UrlSendNewsletterGroups { get; set; }
 
-
-
-
             /// <summary>
             /// Indica la Url para cargar la accion de vincular un recurso
             /// </summary>
@@ -586,6 +603,8 @@ namespace Es.Riam.Gnoss.Web.MVC.Models
             /// 
             /// </summary>
             public string UrlLoadActionSendLink { get; set; }
+            public string UrlLoadActionAddMetaTitle { get; set; }
+            public string UrlLoadActionAddMetaDescripcion { get; set; }
         }
 
         /// <summary>

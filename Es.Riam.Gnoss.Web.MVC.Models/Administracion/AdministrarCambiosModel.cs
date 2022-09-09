@@ -21,6 +21,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Models.Administracion
         public string FacetaModel { get; set; }
         public string ContextoModel { get; set; }
         public string ComponenteCMSModel { get; set; }
+        public string CookieModel { get; set; }
         public IFormFile FileInput { get; set; }
     }
 

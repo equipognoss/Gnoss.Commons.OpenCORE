@@ -119,6 +119,7 @@ namespace Es.Riam.Gnoss.Util.Configuracion
         private string paginaPresentacion;
         private string keySession;
         private string urlServicioBrightcove;
+        private string Authority;
         private string urlServicioTOP;
         private int mNumVisitasHilo = 100;
         private int mNumHilosAbiertos = 5;
@@ -2510,6 +2511,27 @@ namespace Es.Riam.Gnoss.Util.Configuracion
             return urlServicioBrightcove;
         }
 
+        /// <summary>
+        /// obtiene el endpoint para la llamada de obtención del token
+        /// </summary> 
+        public string GetAuthority()
+        {
+            if (string.IsNullOrEmpty(Authority))
+            {
+                string authority = "";
+                if (EnvironmentVariables.Contains("Authority"))
+                {
+                    authority = EnvironmentVariables["Authority"] as string;
+                }
+                else
+                {
+                    authority = Configuration["Authority"];
+                }
+
+                Authority = authority;
+            }
+            return Authority;
+        }
         public string ObtenerUrlServicioTOP()
         {
             if (string.IsNullOrEmpty(urlServicioTOP))
