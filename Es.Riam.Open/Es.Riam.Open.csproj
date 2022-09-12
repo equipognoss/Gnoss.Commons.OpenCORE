@@ -8,6 +8,7 @@
     <ProjectReference Include="..\Es.Riam.Gnoss.AD\Es.Riam.Gnoss.AD.csproj" />
     <ProjectReference Include="..\Es.Riam.Gnoss.Web.MVC.Models\Es.Riam.Gnoss.Web.MVC.Models.csproj" />
     <ProjectReference Include="..\Es.Riam.InterfacesOpen\Es.Riam.InterfacesOpen.csproj" />
+    <ProjectReference Include="..\Gnoss.Web.LabelerService\Gnoss.Web.LabelerService.csproj" />
   </ItemGroup>
 
 </Project>
