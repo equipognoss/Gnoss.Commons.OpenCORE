@@ -98,11 +98,11 @@ namespace Es.Riam.Gnoss.Elementos.Amigos
         /// <summary>
         /// Obtiene la fila del grupo de amigos
         /// </summary>
-        public AmigosDS.GrupoAmigosRow FilaGrupoAmigos
+        public AD.EntityModel.Models.IdentidadDS.GrupoAmigos FilaGrupoAmigos
         {
             get
             {
-                return (AmigosDS.GrupoAmigosRow)FilaElemento;
+                return (AD.EntityModel.Models.IdentidadDS.GrupoAmigos)FilaElementoEntity;
             }
         }
 
@@ -117,7 +117,7 @@ namespace Es.Riam.Gnoss.Elementos.Amigos
                 {
                     mListaAmigos = new Dictionary<Guid, Identidad.Identidad>();
                     
-                    foreach (AmigosDS.AmigoAgGrupoRow filaAmigoAgGrupo in FilaGrupoAmigos.GetAmigoAgGrupoRows())
+                    foreach (AmigoAgGrupo filaAmigoAgGrupo in FilaGrupoAmigos.AmigoAgGrupo)
                     {
                         if (GestionAmigos.GestionIdentidades != null && GestionAmigos.GestionIdentidades.ListaIdentidades.ContainsKey(filaAmigoAgGrupo.IdentidadAmigoID))
                         {
@@ -140,7 +140,7 @@ namespace Es.Riam.Gnoss.Elementos.Amigos
                 {
                     mListaAmigosID = new List<Guid>();
 
-                    foreach (AmigosDS.AmigoAgGrupoRow filaAmigoAgGrupo in FilaGrupoAmigos.GetAmigoAgGrupoRows())
+                    foreach (AmigoAgGrupo filaAmigoAgGrupo in FilaGrupoAmigos.AmigoAgGrupo)
                     {
                         
                             mListaAmigosID.Add(filaAmigoAgGrupo.IdentidadAmigoID);

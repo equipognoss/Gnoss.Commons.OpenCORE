@@ -11,8 +11,11 @@ using Es.Riam.Gnoss.AD.EntityModel.Models.ProyectoDS;
 using Es.Riam.Gnoss.AD.EntityModel.Models.Tesauro;
 using Es.Riam.Gnoss.AD.EntityModel.Models.UsuarioDS;
 using Es.Riam.Gnoss.FirstDataLoad.Properties;
+using Es.Riam.Gnoss.OAuthAD;
+using Es.Riam.Gnoss.OAuthAD.OAuth;
 using Es.Riam.Gnoss.Util.Configuracion;
 using Es.Riam.Gnoss.Web.MVC.Models.Administracion;
+using Es.Riam.Gnoss.Web.MVC.Models.OAuth;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -23,10 +26,12 @@ namespace Es.Riam.Gnoss.FirstDataLoad
     {
         private EntityContext mEntityContext;
         private ConfigService mConfigService;
-        public FirstDataLoad(EntityContext entityContext, ConfigService configService)
+        private EntityContextOauth mEntityContextOauth;
+        public FirstDataLoad(EntityContext entityContext, ConfigService configService, EntityContextOauth entityContextOauth)
         {
             mEntityContext = entityContext;
             mConfigService = configService;
+            mEntityContextOauth = entityContextOauth;
         }
 
         public void InsertData()
@@ -440,7 +445,7 @@ namespace Es.Riam.Gnoss.FirstDataLoad
             };
             mEntityContext.CategoriaTesauro.Add(categoriaTesauro);
 
-            Usuario usuario = new Usuario()
+            AD.EntityModel.Models.UsuarioDS.Usuario usuario = new AD.EntityModel.Models.UsuarioDS.Usuario()
             {
                 UsuarioID = new Guid("3A9436B5-3C62-4D5D-8FF2-74341758A6F2"),
                 Login = "admin",
@@ -642,9 +647,84 @@ namespace Es.Riam.Gnoss.FirstDataLoad
             if (!IsDataLoaded())
             {
                 InsertData();
+                InsertOauth();
                 return true;
             }
             return false;
+        }
+
+        private void InsertOauth()
+        {
+            Guid usuarioID = mEntityContext.Usuario.First().UsuarioID;
+            string login = mEntityContext.Usuario.First().Login;
+            Guid proyectoID = mEntityContext.Proyecto.First().ProyectoID;
+
+            OAuthConsumer filaOAuthConsumer = new OAuthConsumer();
+            filaOAuthConsumer.ConsumerKey = GenerarTokens();
+            filaOAuthConsumer.ConsumerSecret = GenerarTokens();
+            filaOAuthConsumer.VerificationCodeFormat = 1;
+            filaOAuthConsumer.VerificationCodeLength = 1;
+
+            mEntityContextOauth.OAuthConsumer.Add(filaOAuthConsumer);
+
+            mEntityContextOauth.SaveChanges();
+
+            ConsumerData filaConsumer = new ConsumerData();
+            filaConsumer.ConsumerId = filaOAuthConsumer.ConsumerId;
+            filaConsumer.Nombre = "Automatico";
+            filaConsumer.UrlOrigen = $"http://api.net";
+            filaConsumer.FechaAlta = DateTime.Now;
+
+            mEntityContextOauth.ConsumerData.Add(filaConsumer);
+
+            mEntityContextOauth.SaveChanges();
+
+            if (!mEntityContextOauth.Usuario.Any(item => item.UsuarioID.Equals(usuarioID)))
+            {
+                OAuthAD.OAuth.Usuario filaUsuario = new OAuthAD.OAuth.Usuario();
+                filaUsuario.UsuarioID = usuarioID;
+                filaUsuario.Login = login;
+
+                mEntityContextOauth.Usuario.Add(filaUsuario);
+                mEntityContextOauth.SaveChanges();
+            }
+
+            UsuarioConsumer filaUsuarioConsumer = new UsuarioConsumer();
+            filaUsuarioConsumer.UsuarioID = usuarioID;
+            filaUsuarioConsumer.ConsumerId = filaOAuthConsumer.ConsumerId;
+            filaUsuarioConsumer.ProyectoID = proyectoID;
+
+            mEntityContextOauth.UsuarioConsumer.Add(filaUsuarioConsumer);
+
+            mEntityContextOauth.SaveChanges();
+
+            OAuthToken filaToken = new OAuthToken();
+            filaToken.Token = GenerarTokens();
+            filaToken.TokenSecret = GenerarTokens();
+            filaToken.State = 2;
+            filaToken.IssueDate = DateTime.Now;
+            filaToken.ConsumerId = filaOAuthConsumer.ConsumerId;
+            filaToken.UsuarioID = usuarioID;
+            filaToken.Scope = null;
+            filaToken.RequestTokenVerifier = null;
+            filaToken.ConsumerVersion = "1.0.1";
+
+            mEntityContextOauth.OAuthToken.Add(filaToken);
+
+            mEntityContextOauth.SaveChanges();
+        }
+
+        /// <summary>
+        /// Genera un nuevo token
+        /// </summary>
+        /// <returns>String con el token</returns>
+        private string GenerarTokens()
+        {
+            byte[] time = BitConverter.GetBytes(DateTime.UtcNow.ToBinary());
+            byte[] key = Guid.NewGuid().ToByteArray();
+            string token = Convert.ToBase64String(time.Concat(key).ToArray());
+
+            return token;
         }
     }
 }

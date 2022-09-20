@@ -1039,6 +1039,18 @@ namespace Es.Riam.Gnoss.Elementos.Documentacion
                 newFilaDocVinc.Fecha = filaDocVinc.Fecha;
                 newFilaDocVinc.IdentidadID = filaDocVinc.IdentidadID;
 
+                if (UtilCadenas.EsEnlaceSharepoint(pDocumento.Enlace))
+                {
+                    AD.EntityModel.Models.Documentacion.DocumentoVincDoc newFilaDocVincSP = new AD.EntityModel.Models.Documentacion.DocumentoVincDoc();
+
+                    newFilaDocVincSP.DocumentoVincID = filaDocVinc.DocumentoID;
+                    newFilaDocVincSP.DocumentoID = nuevoDocumento.Clave;
+                    newFilaDocVincSP.Fecha = filaDocVinc.Fecha;
+                    newFilaDocVincSP.IdentidadID = filaDocVinc.IdentidadID;
+
+                    DataWrapperDocumentacion.ListaDocumentoVincDoc.Add(newFilaDocVincSP);
+                    mEntityContext.DocumentoVincDoc.Add(newFilaDocVincSP);
+                }
                 DataWrapperDocumentacion.ListaDocumentoVincDoc.Add(newFilaDocVinc);
                 mEntityContext.DocumentoVincDoc.Add(newFilaDocVinc);
             }

@@ -14505,7 +14505,15 @@ from <http://pruebas.gnoss.net/4f08285b-19f9-4ff0-8c36-ccee29868a75>  WHERE {   
             }
             else
             {
-                tripleta = GenerarTripleta(pSujeto, $"<{pPredicado}> ", pObjeto);
+                if (string.IsNullOrEmpty(pIdioma))
+                {
+                    tripleta = GenerarTripleta(pSujeto, $"<{pPredicado}> ", pObjeto);
+                }
+                else
+                {
+                    tripleta = GenerarTripleta(pSujeto, $"<{pPredicado}> ", pObjeto, pIdioma);
+                }
+                
             }
 
             //Quitamos los posibles saltos de linea

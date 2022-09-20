@@ -442,13 +442,6 @@ namespace Es.Riam.Gnoss.Elementos.Amigos
                 ListaGrupoAmigos.Remove(pGrupoAmigos.Clave);
             }
             EliminarAmigosDeGrupo(pGrupoAmigos);
-
-            // Eliminar los permisos sobre ese grupo si los tuviera
-            foreach (AmigosDS.PermisoGrupoAmigoOrgRow fila in pGrupoAmigos.FilaGrupoAmigos.GetPermisoGrupoAmigoOrgRows())
-            {
-                fila.Delete();
-            }
-            pGrupoAmigos.FilaGrupoAmigos.Delete();
         }
 
         /// <summary>
@@ -858,13 +851,12 @@ namespace Es.Riam.Gnoss.Elementos.Amigos
             {
                 pGrupoAmigos.ListaAmigos.Remove(pAmigoID);
             }
-            AmigosDS.AmigoAgGrupoRow[] filasAmigosAgregados = pGrupoAmigos.FilaGrupoAmigos.GetAmigoAgGrupoRows();
 
-            foreach (AmigosDS.AmigoAgGrupoRow filaAmigoAgregado in filasAmigosAgregados)
+            foreach (AmigoAgGrupo filaAmigoAgregado in pGrupoAmigos.FilaGrupoAmigos.AmigoAgGrupo)
             {
                 if (filaAmigoAgregado.IdentidadAmigoID == pAmigoID)
                 {
-                    filaAmigoAgregado.Delete();
+                    mEntityContext.Remove(filaAmigoAgregado);
                 }
             }
         }
