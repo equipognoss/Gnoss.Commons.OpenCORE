@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using System.Web;
+using System.Net.Http;
 
 namespace Es.Riam.Gnoss.Web.Controles.ServicioImagenesWrapper
 {
@@ -47,6 +48,8 @@ namespace Es.Riam.Gnoss.Web.Controles.ServicioImagenesWrapper
                 return false;
             }
         }
+
+        
 
         public bool AgregarFichero(byte[] pFichero, string pNombre, string pExtension, string pRuta)
         {
@@ -311,6 +314,195 @@ namespace Es.Riam.Gnoss.Web.Controles.ServicioImagenesWrapper
             string respuesta = PeticionWebRequest("GET", $"get-space-for-organization-document-image?name={HttpUtility.UrlEncode(pNombre)}&extension={pExtension}&organization_id={pOrganizacionID}");
             return JsonConvert.DeserializeObject<double>(respuesta);
         }
+
+        /// <summary>
+        /// Request an url with an oauth sign
+        /// </summary>
+        /// <param name="httpMethod">Http method (GET, POST, PUT...)</param>
+        /// <param name="url">Url to make the request</param>
+        /// <param name="postData">(Optional) Post data to send in the body request</param>
+        /// <param name="contentType">(Optional) Content type of the postData</param>
+        /// <param name="acceptHeader">(Optional) Accept header</param>
+        /// <returns>Response of the server</returns>
+        public byte[] WebRequestToken(string httpMethod, string url, byte[] byteData = null)
+        {
+            MultipartFormDataContent contentData = contentData = new MultipartFormDataContent();
+            byte[] result = null;
+            HttpResponseMessage response = null;
+            try
+            {
+                HttpClient client = new HttpClient();
+                if (mToken != null)
+                {
+                    client.DefaultRequestHeaders.Add("Authorization", $"{mToken.token_type} {mToken.access_token}");
+                }
+
+                if (httpMethod == "POST")
+                {
+                    if (byteData == null) { byteData = new byte[0]; }
+
+                    ByteArrayContent bytes = new ByteArrayContent(byteData);
+                    contentData.Add(bytes, "file", "file");
+                }
+                response = client.PostAsync($"{url}", contentData).Result;
+                response.EnsureSuccessStatusCode();
+                result = response.Content.ReadAsByteArrayAsync().Result;
+                return result;
+            }
+            catch (HttpRequestException)
+            {
+                if (response != null && !string.IsNullOrEmpty(response.Content.ReadAsStringAsync().Result))
+                {
+                    throw new HttpRequestException(response.Content.ReadAsStringAsync().Result);
+                }
+                else if (response != null)
+                {
+                    throw new HttpRequestException(response.ReasonPhrase);
+                }
+                else
+                {
+                    throw new HttpRequestException();
+                }
+            }
+        }
+
+        /// <summary>
+        /// Request an url with an oauth sign
+        /// </summary>
+        /// <param name="httpMethod">Http method (GET, POST, PUT...)</param>
+        /// <param name="url">Url to make the request</param>
+        /// <param name="postData">(Optional) Post data to send in the body request</param>
+        /// <param name="contentType">(Optional) Content type of the postData</param>
+        /// <param name="acceptHeader">(Optional) Accept header</param>
+        /// <returns>Response of the server</returns>
+        //public byte[] WebRequestToken(string httpMethod, string url, byte[] byteData = null)
+        //{
+        //    HttpWebRequest webRequest = null;
+        //    byte[] responseData = null;
+        //    MultipartFormDataContent contentData = contentData = new MultipartFormDataContent();
+
+        //    webRequest = System.Net.WebRequest.Create(url) as HttpWebRequest;
+        //    webRequest.Method = httpMethod;
+        //    webRequest.ServicePoint.Expect100Continue = false;
+        //    webRequest.Timeout = 60000000;
+        //    //webRequest.ContentType = "multipart/form-data";
+        //    webRequest.ContentType = "multipart/form-data; boundary=----WebKitFormBoundaryzXudJMTgAv0kZde2";
+        //    //webRequest.ContentType = "application/x-www-form-urlencoded";
+        //    webRequest.AutomaticDecompression = DecompressionMethods.GZip;
+        //    if (mToken != null)
+        //    {
+        //        webRequest.Headers.Add("Authorization", $"{mToken.token_type} {mToken.access_token}");
+        //    }
+
+        //    if (httpMethod == "POST")
+        //    {
+        //        if (byteData == null) { byteData = new byte[0]; }
+
+        //        webRequest.ContentLength = byteData.Length;
+
+        //        Stream dataStream = webRequest.GetRequestStream();
+        //        dataStream.Write(byteData, 0, byteData.Length);
+        //        dataStream.Flush();
+        //    }
+        //    try
+        //    {
+        //        WebResponse webResponse = webRequest.GetResponse();
+        //        Stream response = webResponse.GetResponseStream();
+        //        BinaryReader sr = new BinaryReader(response);
+        //        responseData = sr.ReadBytes((int)webResponse.ContentLength);
+        //    }
+        //    catch (WebException ex)
+        //    {
+        //        string message = null;
+        //        try
+        //        {
+        //            StreamReader sr = new StreamReader(ex.Response.GetResponseStream());
+        //            message = sr.ReadToEnd();
+        //            mLoggingService.GuardarLogError(message);
+        //        }
+        //        catch
+        //        {
+        //            mLoggingService.GuardarLogError(ex);
+        //        }
+
+        //        // Error reading the error response, throw the original exception
+        //        throw;
+        //    }
+
+        //    webRequest = null;
+
+        //    return responseData;
+        //}
+
+
+        //public byte[] PeticionWebRequestTokenEstilos(string pMethod, string pAccion, byte[] pObjeto = null, string controlador = "Estilos")
+        //{
+        //    HttpWebRequest webRequest = null;
+        //    byte[] responseData = null;
+        //    if (!Url.EndsWith("/"))
+        //    {
+        //        Url += "/";
+        //    }
+        //    string urlPeticion = $"{Url}{controlador}/{pAccion}";
+        //    webRequest = WebRequest.Create(urlPeticion) as HttpWebRequest;
+        //    webRequest.Method = pMethod;
+        //    webRequest.ServicePoint.Expect100Continue = false;
+        //    webRequest.Timeout = 3600000;
+
+        //    if (mToken != null)
+        //    {
+        //        webRequest.Headers.Add("Authorization", $"{mToken.token_type} {mToken.access_token}");
+        //    }
+        //    if (pObjeto != null)
+        //    {
+        //        webRequest.ContentType = "application/x-www-form-urlencoded";
+        //        if (pObjeto == null) { pObjeto = new byte[0]; }
+
+        //        webRequest.ContentLength = pObjeto.Length;
+
+        //        Stream dataStream = webRequest.GetRequestStream();
+        //        dataStream.Write(pObjeto, 0, pObjeto.Length);
+        //        dataStream.Flush();
+        //    }
+        //    else if (!pMethod.Equals("GET"))
+        //    {
+        //        webRequest.ContentLength = 0;
+        //    }
+
+        //    try
+        //    {
+
+        //        WebResponse webResponse = webRequest.GetResponse();
+        //        Stream response = webResponse.GetResponseStream();
+        //        BinaryReader sr = new BinaryReader(response);
+        //        responseData = sr.ReadBytes((int)webResponse.ContentLength);
+
+        //        return responseData;
+        //    }
+        //    catch (WebException ex)
+        //    {
+        //        if (ex.Response != null)
+        //        {
+        //            //Leer respuesta
+        //            StreamReader sr = new StreamReader(ex.Response.GetResponseStream());
+        //            string respuesta = sr.ReadToEnd();
+        //            sr.Close();
+
+        //            string cabeceras = "";
+        //            try
+        //            {
+        //                foreach (string key in ex.Response.Headers.Keys)
+        //                {
+        //                    cabeceras += $"{Environment.NewLine}{key}: {ex.Response.Headers[key]}";
+        //                }
+        //            }
+        //            catch { }
+
+        //            throw new Exception($"Error al enviar la peticion a {urlPeticion}:{System.Environment.NewLine}{cabeceras} {System.Environment.NewLine}{respuesta}", ex);
+        //        }
+        //        throw;
+        //    }
+        //}
 
 
         private string PeticionWebRequest(string pMethod, string pAccion, object pObjeto = null, string controlador = "image-service")

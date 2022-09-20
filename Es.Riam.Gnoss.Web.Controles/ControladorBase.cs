@@ -1156,22 +1156,25 @@ namespace Es.Riam.Gnoss.Web.Controles
                 {
                     //Clase del profesor:
                     filasPerfil = IdentidadActual.GestorIdentidades.DataWrapperIdentidad.ListaPerfil.Where(perf => perf.NombreCortoOrg != null && perf.NombreCortoOrg.Equals(RequestParams("nombreOrgRewrite")) && !perf.PersonaID.HasValue).ToList();
-                    Guid organizacionID = filasPerfil.First().OrganizacionID.Value;
-
-                    OrganizacionCN orgCN = new OrganizacionCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
-                    bool usuAdminClase = orgCN.EsUsuarioAdministradorClase(organizacionID, pUsuario.UsuarioID);
-                    orgCN.Dispose();
-
-                    if (usuAdminClase) //Es profesor
+                    if(filasPerfil != null && filasPerfil.Count > 0)
                     {
-                        //Solo se debe cargar la fila de profesor   
-                        List<AD.EntityModel.Models.IdentidadDS.Identidad> filasIdent = IdentidadActual.GestorIdentidades.DataWrapperIdentidad.ListaIdentidad.Where(ident => ident.Tipo.Equals((short)TiposIdentidad.Profesor) && ident.ProyectoID.Equals(ProyectoAD.MetaProyecto) && !ident.FechaBaja.HasValue && !ident.FechaExpulsion.HasValue).ToList();
+                        Guid organizacionID = filasPerfil.First().OrganizacionID.Value;
 
-                        if (filasIdent.Count > 0)
+                        OrganizacionCN orgCN = new OrganizacionCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+                        bool usuAdminClase = orgCN.EsUsuarioAdministradorClase(organizacionID, pUsuario.UsuarioID);
+                        orgCN.Dispose();
+
+                        if (usuAdminClase) //Es profesor
                         {
-                            Guid perfilProfesorID = (Guid)filasIdent[0].PerfilID;
+                            //Solo se debe cargar la fila de profesor   
+                            List<AD.EntityModel.Models.IdentidadDS.Identidad> filasIdent = IdentidadActual.GestorIdentidades.DataWrapperIdentidad.ListaIdentidad.Where(ident => ident.Tipo.Equals((short)TiposIdentidad.Profesor) && ident.ProyectoID.Equals(ProyectoAD.MetaProyecto) && !ident.FechaBaja.HasValue && !ident.FechaExpulsion.HasValue).ToList();
 
-                            filasPerfil = IdentidadActual.GestorIdentidades.DataWrapperIdentidad.ListaPerfil.Where(perf => perf.PerfilID.Equals(perfilProfesorID)).ToList();
+                            if (filasIdent.Count > 0)
+                            {
+                                Guid perfilProfesorID = (Guid)filasIdent[0].PerfilID;
+
+                                filasPerfil = IdentidadActual.GestorIdentidades.DataWrapperIdentidad.ListaPerfil.Where(perf => perf.PerfilID.Equals(perfilProfesorID)).ToList();
+                            }
                         }
                     }
                 }
@@ -4140,20 +4143,26 @@ namespace Es.Riam.Gnoss.Web.Controles
         {
             string valorParametro = null;
 
-            if (mHttpContextAccessor.HttpContext.Request.Query.ContainsKey(pParametro))
+            try
             {
-                valorParametro = mHttpContextAccessor.HttpContext.Request.Query[pParametro];
-            }
-            else if (mHttpContextAccessor.HttpContext.Request.RouteValues.ContainsKey(pParametro))
-            {
-                valorParametro = mHttpContextAccessor.HttpContext.Request.RouteValues[pParametro] as string;
+                if (mHttpContextAccessor.HttpContext.Request.Query.ContainsKey(pParametro))
+                {
+                    valorParametro = mHttpContextAccessor.HttpContext.Request.Query[pParametro];
+                }
+                else if (mHttpContextAccessor.HttpContext.Request.RouteValues.ContainsKey(pParametro))
+                {
+                    valorParametro = mHttpContextAccessor.HttpContext.Request.RouteValues[pParametro] as string;
 
+                }
+                else if (mHttpContextAccessor.HttpContext.Request.HasFormContentType && mHttpContextAccessor.HttpContext.Request.Form != null && mHttpContextAccessor.HttpContext.Request.Form.ContainsKey(pParametro))
+                {
+                    valorParametro = mHttpContextAccessor.HttpContext.Request.Form[pParametro];
+                }
             }
-            else if (mHttpContextAccessor.HttpContext.Request.HasFormContentType && mHttpContextAccessor.HttpContext.Request.Form != null && mHttpContextAccessor.HttpContext.Request.Form.ContainsKey(pParametro))
+            catch (Exception ex)
             {
-                valorParametro = mHttpContextAccessor.HttpContext.Request.Form[pParametro];
+                mLoggingService.GuardarLogError(ex.Message);
             }
-
 
             return valorParametro;
         }

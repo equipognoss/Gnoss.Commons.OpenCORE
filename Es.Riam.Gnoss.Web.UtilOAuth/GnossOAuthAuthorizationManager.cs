@@ -245,7 +245,7 @@ namespace Es.Riam.Gnoss.Web.UtilOAuth
             }
             else
             {
-                throw new Exception("Método de cifrado no valido. Use HMAC-SHA1 o PLAINTEXT. ");
+                throw new Exception($"Método de cifrado no valido. Use HMAC-SHA1 o PLAINTEXT. Method param: <{pParametrosQuery.Method}>");
             }
 
             if (bienFirmado)

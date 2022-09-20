@@ -482,18 +482,8 @@ namespace Es.Riam.Gnoss.Elementos.Identidad
 
                 if (filasGrupoAmigos.Count > 0 && mEntityContext.GrupoAmigos.Local.Any(item => item.GrupoID.Equals(filasGrupoAmigos[0].GrupoID) && item.IdentidadID.Equals(filasGrupoAmigos[0].IdentidadID)))
                 {
-                    AD.EntityModel.Models.IdentidadDS.GrupoAmigos grupoAmigos = new AD.EntityModel.Models.IdentidadDS.GrupoAmigos();
-                    grupoAmigos.AmigoAgGrupo = filasGrupoAmigos[0].AmigoAgGrupo;
-                    grupoAmigos.Automatico = filasGrupoAmigos[0].Automatico;
-                    grupoAmigos.Fecha = filasGrupoAmigos[0].Fecha;
-                    grupoAmigos.GrupoID = filasGrupoAmigos[0].GrupoID;
-                    grupoAmigos.IdentidadID = filasGrupoAmigos[0].IdentidadID;
-                    grupoAmigos.Nombre = filasGrupoAmigos[0].Nombre;
-                    grupoAmigos.NombreBusqueda = filasGrupoAmigos[0].NombreBusqueda;
-                    grupoAmigos.Tipo = filasGrupoAmigos[0].Tipo;
-
-                    mEntityContext.GrupoAmigos.Add(grupoAmigos);
-                    GestorAmigos.AmigosDW.ListaGrupoAmigos.Add(grupoAmigos);
+                    GrupoAmigos elementoGrupoAmigos = new GrupoAmigos(filasGrupoAmigos[0], GestorAmigos, mLoggingService);
+                    GestorAmigos.AgregarAmigoAGrupo(elementoGrupoAmigos, filasGrupoAmigos[0].IdentidadID, perfil.IdentidadMyGNOSS.Clave);
                 }
             }
 

@@ -528,7 +528,7 @@ namespace Es.Riam.Util
                 url = url.Substring(0, url.IndexOf("?"));
             }
 
-            url += "?" + pRequest.QueryString.ToString();
+            url += pRequest.QueryString.ToString();
 
             return url;
         }
