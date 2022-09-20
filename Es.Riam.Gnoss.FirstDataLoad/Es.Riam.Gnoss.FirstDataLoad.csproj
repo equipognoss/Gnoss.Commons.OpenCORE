@@ -8,6 +8,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Es.Riam.Gnoss.AD\Es.Riam.Gnoss.AD.csproj" />
+    <ProjectReference Include="..\Es.Riam.Gnoss.Web.OAuthAD\Es.Riam.Gnoss.Web.OAuthAD.csproj" />
   </ItemGroup>
 
   <ItemGroup>
