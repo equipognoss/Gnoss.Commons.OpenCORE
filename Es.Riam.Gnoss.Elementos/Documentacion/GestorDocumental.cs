@@ -1,12 +1,14 @@
 using Es.Riam.Gnoss.AD.Documentacion;
 using Es.Riam.Gnoss.AD.EncapsuladoDatos;
 using Es.Riam.Gnoss.AD.EntityModel;
+using Es.Riam.Gnoss.AD.Parametro;
 using Es.Riam.Gnoss.AD.RDF.Model;
 using Es.Riam.Gnoss.AD.ServiciosGenerales;
 using Es.Riam.Gnoss.Elementos.Documentacion.AddToGnoss;
 using Es.Riam.Gnoss.Elementos.Documentacion.FichaDocumento;
 using Es.Riam.Gnoss.Elementos.Identidad;
 using Es.Riam.Gnoss.Elementos.Tesauro;
+using Es.Riam.Gnoss.Logica.ParametroAplicacion;
 using Es.Riam.Gnoss.Util.General;
 using Es.Riam.Gnoss.Util.Seguridad;
 using Es.Riam.Gnoss.Web.MVC.Models;
@@ -758,8 +760,8 @@ namespace Es.Riam.Gnoss.Elementos.Documentacion
             }
             filaDocumento.Titulo = pDocumento.Titulo;
             filaDocumento.Descripcion = pDocumento.Descripcion;
-            filaDocumento.Tipo = (short)pDocumento.TipoDocumentacion;           
-            if (UtilCadenas.EsEnlaceSharepoint(pDocumento.Enlace))
+            filaDocumento.Tipo = (short)pDocumento.TipoDocumentacion;
+            if (UtilCadenas.EsEnlaceSharepoint(pDocumento.Enlace, "True"))
             {
                 filaDocumento.Enlace = pDocumento.FilaDocumento.Enlace;
                 pDocumento.FilaDocumento.UltimaVersion = false;
@@ -823,7 +825,7 @@ namespace Es.Riam.Gnoss.Elementos.Documentacion
                 filaDocWebVinBR.NumeroVotos = 0;
                 filaDocWebVinBR.PermiteComentarios = filaAuxBaseRecursos.PermiteComentarios;
                 filaDocWebVinBR.IndexarRecurso = true;
-                if (!UtilCadenas.EsEnlaceSharepoint(pDocumento.Enlace))
+                if (!UtilCadenas.EsEnlaceSharepoint(pDocumento.Enlace, "True"))
                 {
                     filaDocWebVinBR.PrivadoEditores = pDocumento.FilaDocumentoWebVinBR.PrivadoEditores;
                 }
@@ -1038,8 +1040,7 @@ namespace Es.Riam.Gnoss.Elementos.Documentacion
                 newFilaDocVinc.DocumentoID = filaDocVinc.DocumentoID;
                 newFilaDocVinc.Fecha = filaDocVinc.Fecha;
                 newFilaDocVinc.IdentidadID = filaDocVinc.IdentidadID;
-
-                if (UtilCadenas.EsEnlaceSharepoint(pDocumento.Enlace))
+                if (UtilCadenas.EsEnlaceSharepoint(pDocumento.Enlace, "True"))
                 {
                     AD.EntityModel.Models.Documentacion.DocumentoVincDoc newFilaDocVincSP = new AD.EntityModel.Models.Documentacion.DocumentoVincDoc();
 

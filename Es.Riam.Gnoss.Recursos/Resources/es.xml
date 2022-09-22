@@ -1663,6 +1663,8 @@
 		<Resource tag="UNRECVINCOMUNIDADMIN">recurso vinculado</Resource>
 		<Resource tag="INFOVINCULAREXTENSO">¿Quieres vincular este recurso con otro recurso de @1@? Puedes hacerlo tanto con recursos públicos como privados, controlamos quién puede verlos.</Resource>
 		<Resource tag="DESVINCULARX">Desvincular | x</Resource>
+		<Resource tag="INFOVINCULARSP">Vincular documento con SharePoint</Resource>
+		<Resource tag="INFOVINCULARURLSP">Copia la url del fichero de SharePoint:</Resource>
 	</page>
 	<page name="METAETIQUETAS">
 		<Resource tag="METADESCRIPTION">Meta descripción</Resource>
@@ -3850,6 +3852,7 @@
 		<Resource tag="VERSIONANDORECURSO">nueva-version-recurso</Resource>
 		<Resource tag="VERSIONRAPIDARECURSO">version-rapida-recurso</Resource>
 		<Resource tag="DESVINCULARSHAREPOINT">desvincular-sharepoint</Resource>
+		<Resource tag="VINCULARSHAREPOINT">link-resourceSP</Resource>
 		<Resource tag="FALLOVERSIONANDORECURSO">fallo-version-recurso</Resource>
 		<Resource tag="CREARDOCUMENTO">crear-documento</Resource>
 		<Resource tag="SUBIRRECURSOCREADO">completar-recurso-creado</Resource>

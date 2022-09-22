@@ -1705,9 +1705,25 @@ namespace Es.Riam.Util
             return cadena;
         }
 
-        public static bool EsEnlaceSharepoint(string url)
-        {           
-            return (url.Contains("riamlab.sharepoint.com") || url.Contains("riamlab-my.sharepoint.com")) ? true : false;
+        public static bool EsEnlaceSharepoint(string pUrl, string pOneDrivePermitido)
+        {
+            string tipoSharepoint = "riamlab.sharepoint.com";
+            string tipoOneDrive = "riamlab-my.sharepoint.com";
+            bool oneDrivePermitido = bool.Parse(pOneDrivePermitido);
+
+            if (pUrl.Contains(tipoSharepoint))
+            {
+                return true;
+            }
+            else if (pUrl.Contains(tipoOneDrive))
+            {
+                if (oneDrivePermitido)
+                {
+                    return true;
+                }
+            }
+
+            return false;
         }
 
         #endregion

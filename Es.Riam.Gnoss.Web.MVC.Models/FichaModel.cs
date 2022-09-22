@@ -420,6 +420,15 @@ namespace Es.Riam.Gnoss.Web.MVC.Models
             public string UrlLinkResource { get; set; }
 
             /// <summary>
+            /// Indica la Url de vincular un recurso a SharePoint
+            /// </summary>
+            public string UrlLinkResourceSP { get; set; }
+            /// <summary>
+            /// Indica la Url para accionar modal de vincular
+            /// </summary>
+            public string UrlLoadActionLinkResourceSP { get; set; }
+
+            /// <summary>
             /// Indica la Url de desvincular un recurso
             /// </summary>
             public string UrlUnLinkResource { get; set; }
