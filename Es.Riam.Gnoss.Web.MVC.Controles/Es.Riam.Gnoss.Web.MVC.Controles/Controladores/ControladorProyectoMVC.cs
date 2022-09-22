@@ -2332,6 +2332,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
             pRecurso.ListActions.UrlCreateComment = pRecurso.CompletCardLink + "/create-comment";
             pRecurso.ListActions.UrlLoadLinkedResources = pRecurso.CompletCardLink + "/load-linked-resources";
             pRecurso.ListActions.UrlLinkResource = pRecurso.CompletCardLink + "/link-resource";
+            pRecurso.ListActions.UrlLinkResourceSP = pRecurso.CompletCardLink + "/link-resourceSP";
             pRecurso.ListActions.UrlAddMetaTitle = pRecurso.CompletCardLink + "/add-metatitle";
             pRecurso.ListActions.UrlAddMetaDescripcion = pRecurso.CompletCardLink + "/add-metadescription";
             pRecurso.ListActions.UrlUnLinkResource = pRecurso.CompletCardLink + "/unlink-resource";
@@ -2354,6 +2355,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
             pRecurso.ListActions.UrlSendNewsletterGroups = pRecurso.CompletCardLink + "/send-newsletter-groups";
 
             pRecurso.ListActions.UrlLoadActionLinkResource = pRecurso.CompletCardLink + "/load-action/link-resource";
+            pRecurso.ListActions.UrlLoadActionLinkResourceSP = pRecurso.CompletCardLink + "/load-action/link-resourceSP";
             pRecurso.ListActions.UrlLoadActionAddToPersonalSpace = pRecurso.CompletCardLink + "/load-action/add-personal-space";
             pRecurso.ListActions.UrlLoadActionAddTags = pRecurso.CompletCardLink + "/load-action/add-tags";
             pRecurso.ListActions.UrlLoadActionHistory = pRecurso.CompletCardLink + "/load-action/history";

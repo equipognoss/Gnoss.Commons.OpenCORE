@@ -711,7 +711,6 @@ namespace Es.Riam.AbstractsOpen
             Type tipo = pConexion.GetType();
             string connectionString = pConexion.ConnectionString;
             Stopwatch sw = LoggingService.IniciarRelojTelemetria();
-            mLoggingService.GuardarLogError("La conexion de virtuoso es:" + connectionString);
 
             try
             {
@@ -736,7 +735,6 @@ namespace Es.Riam.AbstractsOpen
             short connectSuccess = 0;
             Type tipo = pConexion.GetType();
             string connectionString = pConexion.ConnectionString;
-            mLoggingService.GuardarLogError("La conexion de virtuoso es:" + connectionString);
             //Cambiamos el puerto por el 1111
             KeyValuePair<string, string> ip_puerto = ObtenerIpVirtuosoDeCadenaConexion(connectionString);
             string ipVirtuoso = ip_puerto.Key;

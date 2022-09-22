@@ -268,6 +268,8 @@ namespace Es.Riam.Gnoss.AD.Parametro
         /// </summary>
         public const string SharepointClientSecret = "SharepointClientSecret";
 
+        public const string PermitirEnlazarDocumentosOneDrive = "PermitirEnlazarDocumentosOneDrive";
+
         /// <summary>
         /// Las facetas del tipo Tesauro Semántico se mostrarán con el botón VerMas y se ocultarán todas las que excedan el límite establecido en la administración de facetas
         /// </summary>

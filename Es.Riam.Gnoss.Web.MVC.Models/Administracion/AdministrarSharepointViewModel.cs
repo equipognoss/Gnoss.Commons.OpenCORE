@@ -26,5 +26,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Models.Administracion
 
         public bool PermisosConcedidos { get; set; }
 
+        public bool PermitirOneDrive { get; set; }
+
     }
 }
