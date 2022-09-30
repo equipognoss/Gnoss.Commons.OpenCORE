@@ -10,6 +10,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Models.GeneradorClases.Enumeraciones
     {
         Busqueda,
         Ontologia,
-        HasEntidad
+        HasEntidad, 
+        Secundaria
     }
 }

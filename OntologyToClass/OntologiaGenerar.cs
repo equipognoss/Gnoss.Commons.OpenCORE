@@ -15,24 +15,24 @@ namespace OntologiaAClase
             this.ontologia = new Ontologia(bytesOWL);
             this.contentXML = bytesXML;
             this.directorio = directorio;
-            this.esprimaria = esprimaria;
+            this.esPrincipal = esprimaria;
             this.listaIdiomas = listaIdiomas;
         }
 
-        public OntologiaGenerar(string nombreOnto, Ontologia ontologia, byte[] bytesXML, bool esprimaria, List<string> listaIdiomas, string directorio)
+        public OntologiaGenerar(string nombreOnto, Ontologia ontologia, byte[] bytesXML, bool pEsPrincipal, List<string> listaIdiomas, string directorio)
         {
             this.nombreOnto = nombreOnto;
             this.ontologia = ontologia;
             this.contentXML = bytesXML;
             this.directorio = directorio;
-            this.esprimaria = esprimaria;
+            this.esPrincipal = pEsPrincipal;
             this.listaIdiomas = listaIdiomas;
         }
 
         public Ontologia ontologia { get; set; }
         public string nombreOnto { get; set; }
         public byte[] contentXML { get; set; }
-        public bool esprimaria { get; set; }
+        public bool esPrincipal { get; set; }
         public string directorio { get; set; }
         public List<string> listaIdiomas { get; set; }
     }

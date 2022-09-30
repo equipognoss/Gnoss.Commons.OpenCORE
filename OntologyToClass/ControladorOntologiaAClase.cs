@@ -20,7 +20,7 @@ namespace OntologiaAClase
     {
         byte[] contentXML;
         string nombreOnto;
-        bool esPrimaria;
+        bool esPrincipal;
         string nombreOntoOriginal;
         private Ontologia ontologia;
         private Constantes Constante = new Constantes();
@@ -52,7 +52,7 @@ namespace OntologiaAClase
             this.nombreOnto = UtilCadenas.PrimerCaracterAMayuscula(onto.nombreOnto);
             this.nombreOntoOriginal = onto.nombreOnto;
             this.contentXML = onto.contentXML;
-            this.esPrimaria = onto.esprimaria;
+            this.esPrincipal = onto.esPrincipal;
             this.ontologia = onto.ontologia;
             this.listaIdiomas = onto.listaIdiomas;
             this.nombreCarpeta = nombreCarpeta;
@@ -135,7 +135,7 @@ namespace OntologiaAClase
 
         public void CrearEntidades(ElementoOntologia pEntidad, string pNombreOnto, string pRdfType)
         {
-            EntidadAClase entidadAClase = new EntidadAClase(ontologia, pNombreOnto, contentXML, esPrimaria, listaIdiomas, nombreCortoProy, proyID, nombresOntologia, listaObjetosPropiedad, mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mMassiveOntologyToClass);
+            EntidadAClase entidadAClase = new EntidadAClase(ontologia, pNombreOnto, contentXML, esPrincipal, listaIdiomas, nombreCortoProy, proyID, nombresOntologia, listaObjetosPropiedad, mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mMassiveOntologyToClass);
             File.WriteAllText(Path.Combine(directorio, carpetaPadre, nombreCarpeta, $"{pNombreOnto}", UtilCadenasOntology.ObtenerNombreProp(pEntidad.TipoEntidad) + ".cs"), entidadAClase.GenerarClase(pEntidad, pRdfType, listaPropiedadesSearch, listaPropiedadesPadreAnidadasSearch));
         }
 
@@ -583,7 +583,7 @@ $@"
         {
             Clase.AppendLine($"{UtilCadenasOntology.Tabs(2)}protected string GenerarTextoSinSaltoDeLinea(string pTexto)");
             Clase.AppendLine($"{UtilCadenasOntology.Tabs(2)}{{");
-            Clase.AppendLine($"{UtilCadenasOntology.Tabs(3)}return pTexto.Replace(\"\\r\\n\", \" \").Replace(\"\\n\", \" \").Replace(\"\\r\", \" \").Replace(\"\\\"\", \"\\\\\\\"\");");
+            Clase.AppendLine($"{UtilCadenasOntology.Tabs(3)}return pTexto.Replace(\"\\r\\n\", \" \").Replace(\"\\n\", \" \").Replace(\"\\r\", \" \").Replace(\"\\\\\", \"\\\\\\\\\").Replace(\"\\\"\", \"\\\\\\\"\");");
             Clase.AppendLine($"{UtilCadenasOntology.Tabs(2)}}}");
         }
 

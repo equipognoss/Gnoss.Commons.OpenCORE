@@ -2,6 +2,7 @@
 using Es.Riam.Gnoss.AD.EncapsuladoDatos;
 using Es.Riam.Gnoss.AD.EntityModel;
 using Es.Riam.Gnoss.AD.EntityModelBASE;
+using Es.Riam.Gnoss.AD.Parametro;
 using Es.Riam.Gnoss.AD.ParametroAplicacion;
 using Es.Riam.Gnoss.AD.ServiciosGenerales;
 using Es.Riam.Gnoss.AD.Virtuoso;
@@ -312,8 +313,15 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
                 inputtipo = "tipoBusquedaAutoCompl";
             }
             ViewBag.ListaInputHidden.Add(new KeyValuePair<string, string>("inpt_tipo", inputtipo));
-
-
+            ParametroAplicacion parametroAplicacion = GestorParametrosAplicacion.ParametroAplicacion.Where(parametro => parametro.Parametro.Equals(ParametroAD.PermitirEnlazarDocumentosOneDrive)).FirstOrDefault();
+            if (parametroAplicacion != null)
+            {
+                ViewBag.ListaInputHidden.Add(new KeyValuePair<string, string>("inpt_oneDrivePermitido", parametroAplicacion.Valor));
+            }
+            else
+            {
+                ViewBag.ListaInputHidden.Add(new KeyValuePair<string, string>("inpt_oneDrivePermitido", "False"));
+            }
             // TODO: Fernando, Buscador de google
             //HtmlInputHidden inputSearch = listaControlInputsHidden.Find(input => input.Name.EndsWith("inpt_ub_" + ddlCategorias.Items[0].Value));
             //if (inputSearch != null)

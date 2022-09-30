@@ -1709,8 +1709,8 @@ namespace Es.Riam.Util
         {
             string tipoSharepoint = "riamlab.sharepoint.com";
             string tipoOneDrive = "riamlab-my.sharepoint.com";
-            bool oneDrivePermitido = bool.Parse(pOneDrivePermitido);
-
+            bool oneDrivePermitido = false;
+            bool.TryParse(pOneDrivePermitido, out oneDrivePermitido);
             if (pUrl.Contains(tipoSharepoint))
             {
                 return true;

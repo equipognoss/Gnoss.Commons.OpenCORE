@@ -3,6 +3,7 @@ using Es.Riam.Gnoss.AD.EntityModel;
 using Es.Riam.Gnoss.AD.RDF.Model;
 using Es.Riam.Gnoss.Util.Configuracion;
 using Es.Riam.Gnoss.Util.General;
+using Npgsql;
 using Oracle.ManagedDataAccess.Client;
 using System;
 using System.Collections.Generic;
@@ -172,7 +173,7 @@ namespace Es.Riam.Gnoss.AD.RDF
                 addedAndModifiedDataSet = pDataSet.GetChanges(DataRowState.Added);
 
                 bool esOracle = (ConexionMaster is OracleConnection);
-
+                bool esPostgre = EsPostgres();
                 if (addedAndModifiedDataSet != null)
                 {
                     #region AddedAndModified
@@ -185,7 +186,7 @@ namespace Es.Riam.Gnoss.AD.RDF
                         AgregarParametro(InsertRdfDocumentoCommand, IBD.ToParam("ProyectoID"), IBD.TipoGuidToObject(DbType.Guid), "ProyectoID", DataRowVersion.Current);
                         AgregarParametro(InsertRdfDocumentoCommand, IBD.ToParam("RdfSem"), DbType.String, "RdfSem", DataRowVersion.Current);
                         AgregarParametro(InsertRdfDocumentoCommand, IBD.ToParam("RdfDoc"), DbType.String, "RdfDoc", DataRowVersion.Current);
-                        ActualizarBaseDeDatos(addedAndModifiedDataSet, "RdfDocumento", InsertRdfDocumentoCommand, null, null, Microsoft.Practices.EnterpriseLibrary.Data.UpdateBehavior.Transactional, esOracle);
+                        ActualizarBaseDeDatos(addedAndModifiedDataSet, "RdfDocumento", InsertRdfDocumentoCommand, null, null, Microsoft.Practices.EnterpriseLibrary.Data.UpdateBehavior.Transactional, esOracle, esPostgre, true, mEntityContextBASE);
                     }
 
                     #endregion
@@ -266,7 +267,7 @@ namespace Es.Riam.Gnoss.AD.RDF
 
                 DbCommand dbCommand = ObtenerComando(comando);
 
-                CargarDataSet(dbCommand, rdfDS, "RdfDocumento", null, esOracle);
+                CargarDataSet(dbCommand, rdfDS, "RdfDocumento", null, esOracle, EsPostgres(), mEntityContextBASE, true);
             }
             catch
             {
@@ -526,6 +527,10 @@ namespace Es.Riam.Gnoss.AD.RDF
                 {
                     CrearTablaOracle(pNombreTabla);
                 }
+                else if(ConexionMaster is NpgsqlConnection)
+                {
+                    CrearTablaPostgre(pNombreTabla);
+                }
                 else
                 {
                     CrearTablaSQL(pNombreTabla);
@@ -588,6 +593,21 @@ namespace Es.Riam.Gnoss.AD.RDF
                 DbCommand cmdCrearTabla = ObtenerComando($"CREATE TABLE \"{pNombreTabla}\" (\"DocumentoID\" RAW(16) NOT NULL, \"ProyectoID\" RAW(16) NOT NULL, \"RdfSem\" NCLOB NULL, \"RdfDoc\" NCLOB NULL, PRIMARY KEY(\"DocumentoID\", \"ProyectoID\"))");
 
                 ActualizarBaseDeDatos(cmdCrearTabla, true, true);
+            }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="pNombreTabla"></param>
+        public void CrearTablaPostgre(string pNombreTabla)
+        {
+            if (pNombreTabla.Contains("RdfDocumento_"))
+            {
+                DbCommand cmdCrearTabla = ObtenerComando($"CREATE TABLE \"{pNombreTabla}\" (\"DocumentoID\" UUID NOT NULL, \"ProyectoID\" UUID NOT NULL, \"RdfSem\" VARCHAR, \"RdfDoc\" VARCHAR, PRIMARY KEY (\"DocumentoID\", \"ProyectoID\"))");
+
+                ActualizarBaseDeDatos(cmdCrearTabla, true, true, true);
+                TerminarTransaccion(true);
             }
         }
 
