@@ -11,6 +11,7 @@ using Es.Riam.Gnoss.Elementos.ServiciosGenerales;
 using Es.Riam.Gnoss.Logica.Facetado;
 using Es.Riam.Gnoss.Logica.Identidad;
 using Es.Riam.Gnoss.Logica.ServiciosGenerales;
+using Es.Riam.Gnoss.Servicios.ControladoresServiciosWeb;
 using Es.Riam.Gnoss.Util.Configuracion;
 using Es.Riam.Gnoss.Util.General;
 using Es.Riam.Gnoss.Web.MVC.Models.Administracion;
@@ -511,7 +512,11 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
                                 FacetaObjetoConocimientoProyecto filaFaceta = null;
                                 if (faceta.AgrupacionID.HasValue)
                                 {
-                                    filaFaceta = FacetaDW.ListaFacetaObjetoConocimientoProyecto.FirstOrDefault(item => item.OrganizacionID.Equals(ProyectoSeleccionado.FilaProyecto.OrganizacionID) && item.ProyectoID.Equals(ProyectoSeleccionado.Clave) && item.ObjetoConocimiento.ToLower().Equals(objetoConocimiento.ToLower()) && item.Faceta.Equals(columnaFaceta) && item.AgrupacionID.Value.Equals(faceta.AgrupacionID));
+                                    filaFaceta = FacetaDW.ListaFacetaObjetoConocimientoProyecto.FirstOrDefault(item => item.OrganizacionID.Equals(ProyectoSeleccionado.FilaProyecto.OrganizacionID) && item.ProyectoID.Equals(ProyectoSeleccionado.Clave) && item.ObjetoConocimiento.ToLower().Equals(objetoConocimiento.ToLower()) && item.Faceta.Equals(columnaFaceta) && item.AgrupacionID.HasValue && item.AgrupacionID.Value.Equals(faceta.AgrupacionID));
+                                    if(filaFaceta == null)
+                                    {
+                                        filaFaceta = FacetaDW.ListaFacetaObjetoConocimientoProyecto.FirstOrDefault(item => item.OrganizacionID.Equals(ProyectoSeleccionado.FilaProyecto.OrganizacionID) && item.ProyectoID.Equals(ProyectoSeleccionado.Clave) && item.ObjetoConocimiento.ToLower().Equals(objetoConocimiento.ToLower()) && item.Faceta.Equals(columnaFaceta));
+                                    }
                                 }
                                 else
                                 {
@@ -558,7 +563,11 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
                                     FacetaObjetoConocimientoProyecto filaFaceta = null;
                                     if (faceta.AgrupacionID.HasValue)
                                     {
-                                        filaFaceta = FacetaDW.ListaFacetaObjetoConocimientoProyecto.FirstOrDefault(item => item.OrganizacionID.Equals(ProyectoSeleccionado.FilaProyecto.OrganizacionID) && item.ProyectoID.Equals(ProyectoSeleccionado.Clave) && item.ObjetoConocimiento.ToLower().Equals(objetoConocimiento) && item.Faceta.Equals(columnaFaceta) && item.AgrupacionID.Value.Equals(faceta.AgrupacionID));
+                                        filaFaceta = FacetaDW.ListaFacetaObjetoConocimientoProyecto.FirstOrDefault(item => item.OrganizacionID.Equals(ProyectoSeleccionado.FilaProyecto.OrganizacionID) && item.ProyectoID.Equals(ProyectoSeleccionado.Clave) && item.ObjetoConocimiento.ToLower().Equals(objetoConocimiento.ToLower()) && item.Faceta.Equals(columnaFaceta) && item.AgrupacionID.HasValue && item.AgrupacionID.Value.Equals(faceta.AgrupacionID));
+                                        if (filaFaceta == null)
+                                        {
+                                            filaFaceta = FacetaDW.ListaFacetaObjetoConocimientoProyecto.FirstOrDefault(item => item.OrganizacionID.Equals(ProyectoSeleccionado.FilaProyecto.OrganizacionID) && item.ProyectoID.Equals(ProyectoSeleccionado.Clave) && item.ObjetoConocimiento.ToLower().Equals(objetoConocimiento.ToLower()) && item.Faceta.Equals(columnaFaceta));
+                                        }
                                     }
                                     else
                                     {
@@ -1167,6 +1176,10 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
             facetadoCL.InvalidarResultadosYFacetasDeBusquedaEnProyecto(ProyectoSeleccionado.Clave, "*");
 
             mGnossCache.VersionarCacheLocal(ProyectoSeleccionado.Clave);
+
+            CargadorFacetas cargadorFacetas = new CargadorFacetas();
+            cargadorFacetas.Url = mConfigService.ObtenerUrlServicioFacetas();
+            cargadorFacetas.InvalidarCacheLocalServicioFacetas(ProyectoSeleccionado.Clave);
         }
 
         #endregion

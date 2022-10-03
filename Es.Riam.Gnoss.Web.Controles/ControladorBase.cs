@@ -437,10 +437,10 @@ namespace Es.Riam.Gnoss.Web.Controles
                         }
 
                         //TODO Javier cambiar esto de sitio cuando se migre la Web
-                        //if (mHttpContextAccessor.HttpContext != null && mHttpContextAccessor.HttpContext.Session != null && mHttpContextAccessor.HttpContext.Session..Get("Usuario") != null && !((GnossIdentity)HttpContext.Current.Session["Usuario"]).EsIdentidadInvitada && mProyecto.ListaAdministradoresIDs.Contains(((GnossIdentity)HttpContext.Current.Session["Usuario"]).UsuarioID))
-                        //{
-                        //    CrearPestanyaPersonasYOrganizaciones(mProyecto.GestorProyectos.DataWrapperProyectos, mProyecto.Clave);
-                        //}
+                        if (mHttpContextAccessor.HttpContext != null && mHttpContextAccessor.HttpContext.Session != null && mHttpContextAccessor.HttpContext.Session.Get<GnossIdentity>("Usuario")!= null && !(mHttpContextAccessor.HttpContext.Session.Get<GnossIdentity>("Usuario")).EsIdentidadInvitada && mProyecto.ListaAdministradoresIDs.Contains((mHttpContextAccessor.HttpContext.Session.Get<GnossIdentity>("Usuario")).UsuarioID))
+                        {
+                            CrearPestanyaPersonasYOrganizaciones(mProyecto.GestorProyectos.DataWrapperProyectos, mProyecto.Clave);
+                        }
                     }
                     return mProyecto;
                 }
@@ -540,7 +540,7 @@ namespace Es.Riam.Gnoss.Web.Controles
         /// </summary>
         public static void CrearPestanyaPersonasYOrganizaciones(DataWrapperProyecto pDataWrapperProyecto, Guid pProyectoID)
         {
-            if (pDataWrapperProyecto != null && pDataWrapperProyecto.ListaProyectoPestanyaMenu.Any(pestanya => pestanya.TipoPestanya.Equals((short)TipoPestanyaMenu.PersonasYOrganizaciones)))
+            if (pDataWrapperProyecto != null && !pDataWrapperProyecto.ListaProyectoPestanyaMenu.Any(pestanya => pestanya.TipoPestanya.Equals((short)TipoPestanyaMenu.PersonasYOrganizaciones)))
             {
                 // No hay pestaña personas y organizaciones en este proyecto, le creo una para que el administrador pueda entrar 
                 AD.EntityModel.Models.ProyectoDS.ProyectoPestanyaMenu filaPestanya = new AD.EntityModel.Models.ProyectoDS.ProyectoPestanyaMenu();

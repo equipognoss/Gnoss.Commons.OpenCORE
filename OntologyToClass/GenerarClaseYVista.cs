@@ -431,7 +431,7 @@ namespace OntologiaAClase
 
         public void CrearVistas(OntologiaGenerar ontologia, string nombreProyecto)
         {
-            VistaRecurso vista = new VistaRecurso(ontologia.nombreOnto, ontologia.ontologia, ontologia.contentXML, ontologia.esprimaria, nombreProyecto, carpetaPadre, directorio, nombreCortoProy, proyID, dicPref, listaObjetosPropiedad, diccionarioPropiedades, mLoggingService);
+            VistaRecurso vista = new VistaRecurso(ontologia.nombreOnto, ontologia.ontologia, ontologia.contentXML, ontologia.esPrincipal, nombreProyecto, carpetaPadre, directorio, nombreCortoProy, proyID, dicPref, listaObjetosPropiedad, diccionarioPropiedades, mLoggingService);
             vista.EscribirVista();
         }
 

@@ -721,7 +721,7 @@ namespace Es.Riam.Gnoss.AD
         /// <param name="pTabla">Tabla del dataSet</param>
         /// <param name="pComando">Comando que carga la tabla</param>
         /// <returns></returns>
-        protected void CargarDataSet(DbCommand pComando, DataSet pDataSet, string pTabla, string pCadenaConexion = null, bool pEjecutarSiEsOracle = false, bool pEjecutarSiEsPostgres = false, EntityContextBASE pEntityContextBASE = null)
+        protected void CargarDataSet(DbCommand pComando, DataSet pDataSet, string pTabla, string pCadenaConexion = null, bool pEjecutarSiEsOracle = false, bool pEjecutarSiEsPostgres = false, EntityContextBASE pEntityContextBASE = null, bool pUsarBase = false)
         {
             if (ConexionMaster is OracleConnection && !pEjecutarSiEsOracle)
             {
@@ -776,7 +776,37 @@ namespace Es.Riam.Gnoss.AD
                     }
                     else
                     {
-                        pComando.Connection = Conexion;
+                        string baseConnection = mConfigService.ObtenerBaseConnectionString();
+
+                        if (pUsarBase)
+                        {
+                            var type = ConexionMaster;
+                            if (pEntityContextBASE != null)
+                            {
+                                type = pEntityContextBASE.Database.GetDbConnection();
+                            }
+
+                            DbConnection db = null;
+                            if (type is SqlConnection)
+                            {
+                                db = new SqlConnection(baseConnection);
+                            }
+                            else if (type is OracleConnection)
+                            {
+                                db = new OracleConnection(baseConnection);
+                            }
+                            else if (type is NpgsqlConnection)
+                            {
+                                db = new NpgsqlConnection(baseConnection);
+                            }
+
+                            pComando.Connection = db;
+                        }
+                        else
+                        {
+                            pComando.Connection = Conexion;
+                        }
+                        
                     }
                     
 
@@ -1004,8 +1034,6 @@ namespace Es.Riam.Gnoss.AD
                 
                 //if (Transaccion != null)
                 {
-
-
                     AgregarEntradaTraza("NonQuery");
                     if(pEntityContextBASE != null)
                     {
@@ -1074,7 +1102,7 @@ namespace Es.Riam.Gnoss.AD
         /// <param name="pComandoDelete">Comando DELETE que actualiza la tabla en la base de datos</param>
         /// <param name="pComportamiento">Comportamiento de la transacción</param>
         /// <returns></returns>
-        protected int ActualizarBaseDeDatos(DataSet pDataSet, string pTabla, DbCommand pComandoInsert, DbCommand pComandoUpdate, DbCommand pComandoDelete, UpdateBehavior pComportamiento, bool pEsOracle = false, bool pEsPostgres = false)
+        protected int ActualizarBaseDeDatos(DataSet pDataSet, string pTabla, DbCommand pComandoInsert, DbCommand pComandoUpdate, DbCommand pComandoDelete, UpdateBehavior pComportamiento, bool pEsOracle = false, bool pEsPostgres = false, bool pUsarBase = false, EntityContextBASE pEntityContextBASE = null)
         {
             if (ConexionMaster is OracleConnection && !pEsOracle)
             {
@@ -1096,6 +1124,10 @@ namespace Es.Riam.Gnoss.AD
             {
                 dataAdapter = new OracleDataAdapter();
             }
+            else if(pEsPostgres)
+            {
+                dataAdapter = new NpgsqlDataAdapter();
+            }
             else
             {
                 
@@ -1107,22 +1139,66 @@ namespace Es.Riam.Gnoss.AD
 
             try
             {
-                bool transaccionIniciada = IniciarTransaccion();
+                string baseConnection = mConfigService.ObtenerBaseConnectionString();
+                
+                var type = ConexionMaster;
+                if (pEntityContextBASE != null)
+                {
+                    type = pEntityContextBASE.Database.GetDbConnection();
+                }
 
-                if (pComandoInsert != null)
+                DbConnection db = null;
+                if (type is SqlConnection)
                 {
-                    pComandoInsert.Connection = ConexionMaster;
-                    dataAdapter.InsertCommand.Transaction = Transaccion;
+                    db = new SqlConnection(baseConnection);
                 }
-                if (pComandoUpdate != null)
+                else if (type is OracleConnection)
                 {
-                    pComandoUpdate.Connection = ConexionMaster;
-                    dataAdapter.UpdateCommand.Transaction = Transaccion;
+                    db = new OracleConnection(baseConnection);
                 }
-                if (pComandoDelete != null)
+                else if (type is NpgsqlConnection)
                 {
-                    pComandoDelete.Connection = ConexionMaster;
-                    dataAdapter.DeleteCommand.Transaction = Transaccion;
+                    db = new NpgsqlConnection(baseConnection);
+                }
+
+                bool transaccionIniciada = IniciarTransaccion();
+             
+                if (pUsarBase)
+                {
+                    
+                    if (pComandoInsert != null)
+                    {
+                        pComandoInsert.Connection = db;
+                        dataAdapter.InsertCommand.Transaction = TransaccionBASE;
+                    }
+                    if (pComandoUpdate != null)
+                    {
+                        pComandoUpdate.Connection = db;
+                        dataAdapter.UpdateCommand.Transaction = TransaccionBASE;
+                    }
+                    if (pComandoDelete != null)
+                    {
+                        pComandoDelete.Connection = db;
+                        dataAdapter.DeleteCommand.Transaction = TransaccionBASE;
+                    }
+                }
+                else
+                {
+                    if (pComandoInsert != null)
+                    {
+                        pComandoInsert.Connection = ConexionMaster;
+                        dataAdapter.InsertCommand.Transaction = Transaccion;
+                    }
+                    if (pComandoUpdate != null)
+                    {
+                        pComandoUpdate.Connection = ConexionMaster;
+                        dataAdapter.UpdateCommand.Transaction = Transaccion;
+                    }
+                    if (pComandoDelete != null)
+                    {
+                        pComandoDelete.Connection = ConexionMaster;
+                        dataAdapter.DeleteCommand.Transaction = Transaccion;
+                    }
                 }
 
                 dataAdapter.Update(pDataSet, pTabla);
@@ -1608,6 +1684,27 @@ namespace Es.Riam.Gnoss.AD
                     }
                     return null;
                     
+                }
+                catch (Exception ex)
+                {
+                    mLoggingService.GuardarLogError(ex);
+                }
+                return null;
+            }
+        }
+
+        public virtual DbTransaction TransaccionBASE
+        {
+            get
+            {
+                try
+                {
+                    if (mEntityContextBASE != null && mEntityContextBASE.Database.CurrentTransaction != null)
+                    {
+                        return mEntityContextBASE.Database.CurrentTransaction.GetDbTransaction();
+                    }
+                    return null;
+
                 }
                 catch (Exception ex)
                 {

@@ -48,7 +48,7 @@ namespace OntologiaAClase
             this.directorio = pDirectorio;
             this.nombreOnto = pOnto.nombreOnto;
             this.contentXML = pOnto.contentXML;
-            this.esPrimaria = pOnto.esprimaria;
+            this.esPrimaria = pOnto.esPrincipal;
             this.ontologia = pOnto.ontologia;
             this.listaIdiomas = pOnto.listaIdiomas;
             this.nombreCarpeta = pNombreCarpeta;

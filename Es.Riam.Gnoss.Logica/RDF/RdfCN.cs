@@ -71,13 +71,15 @@ namespace Es.Riam.Gnoss.Logica.RDF
         {
             try
             {
+                /*
+                this.RdfAD.ActualizarBD(pRdfDS);
                 if (Transaccion != null)
                 {
                     this.RdfAD.ActualizarBD(pRdfDS);
                 }
                 else
                 {
-                    IniciarTransaccion(false);
+                    //IniciarTransaccion(false);
                     {
                         this.RdfAD.ActualizarBD(pRdfDS);
 
@@ -89,6 +91,7 @@ namespace Es.Riam.Gnoss.Logica.RDF
                         TerminarTransaccion(true);
                     }
                 }
+                */
             }
             catch (DBConcurrencyException ex)
             {

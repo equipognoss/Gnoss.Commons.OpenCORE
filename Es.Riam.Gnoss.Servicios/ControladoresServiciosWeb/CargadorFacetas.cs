@@ -163,7 +163,15 @@ namespace Es.Riam.Gnoss.Servicios.ControladoresServiciosWeb
             Dictionary<string, string> parametros = new Dictionary<string, string>();
             parametros.Add("pIdentidadID", pIdentidadID.ToString());
             PeticionServicio("LimpiarCache", parametros);
-        }      
+        }
+        
+        public void InvalidarCacheLocalServicioFacetas(Guid pProyectoID)
+        {
+            string metodo = "InvalidarCacheLocal";
+            Dictionary<string, string> parametros = new Dictionary<string, string>();
+            parametros.Add("pProyectoID", pProyectoID.ToString());
+            PeticionServicio(metodo, parametros);
+        }
     }
 }
 
