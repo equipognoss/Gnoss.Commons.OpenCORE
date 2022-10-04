@@ -7204,15 +7204,15 @@ namespace Es.Riam.Gnoss.AD.Identidad
         {
             if (perfil.NombreOrganizacion == null)
             {
-                return perfil.NombrePerfil.ToLower();
+                return UtilCadenas.RemoveAccentsWithRegEx(perfil.NombrePerfil.ToLower());
             }
             else if (!perfil.PersonaID.HasValue)
             {
-                return perfil.NombreOrganizacion.ToLower();
+                return UtilCadenas.RemoveAccentsWithRegEx(perfil.NombreOrganizacion.ToLower());
             }
             else
             {
-                return perfil.NombrePerfil.ToLower() + " " + ConstantesDeSeparacion.SEPARACION_CONCATENADOR + " " + perfil.NombreOrganizacion.ToLower();
+                return UtilCadenas.RemoveAccentsWithRegEx(perfil.NombrePerfil.ToLower()) + " " + ConstantesDeSeparacion.SEPARACION_CONCATENADOR + " " + UtilCadenas.RemoveAccentsWithRegEx(perfil.NombreOrganizacion.ToLower());
             }
         }
 
@@ -7228,10 +7228,10 @@ namespace Es.Riam.Gnoss.AD.Identidad
 
             var subconsulta = mEntityContext.Identidad.JoinProyecto().JoinProyecto().Where(item => item.Identidad2.IdentidadID.Equals(pIdentidadID) && item.Proyecto.Estado.Equals((short)EstadoProyecto.Abierto) && (item.Proyecto.TipoAcceso.Equals((short)TipoAcceso.Privado) || item.Proyecto.TipoAcceso.Equals((short)TipoAcceso.Reservado)) && !item.Proyecto.ProyectoID.Equals(ProyectoAD.MetaProyecto)).Select(item => item.Proyecto.ProyectoID);
 
-            var selectNombresIdentidadesPorPrefijo = mEntityContext.Perfil.JoinIdentidad().Where(item => subconsulta.Contains(item.Identidad.ProyectoID) && !item.Identidad.FechaExpulsion.HasValue && !item.Identidad.FechaBaja.HasValue && !(mEntityContext.Identidad.Where(ident => ident.IdentidadID.Equals(pIdentidadID)).Select(ident => ident.PerfilID).Distinct()).Contains(item.Perfil.PerfilID)).ToList().Where(item => getNombreBusqueda(item.Perfil).Contains(pPrefijo));
+            var selectNombresIdentidadesPorPrefijo = mEntityContext.Perfil.JoinIdentidad().Where(item => subconsulta.Contains(item.Identidad.ProyectoID) && !item.Identidad.FechaExpulsion.HasValue && !item.Identidad.FechaBaja.HasValue && !(mEntityContext.Identidad.Where(ident => ident.IdentidadID.Equals(pIdentidadID)).Select(ident => ident.PerfilID).Distinct()).Contains(item.Perfil.PerfilID)).ToList().Where(item => getNombreBusqueda(item.Perfil).Contains(UtilCadenas.RemoveAccentsWithRegEx(pPrefijo)));
             if (pListaAnteriores.Count > 0)
             {
-                selectNombresIdentidadesPorPrefijo = mEntityContext.Perfil.JoinIdentidad().Where(item => subconsulta.Contains(item.Identidad.ProyectoID) && !item.Identidad.FechaExpulsion.HasValue && !item.Identidad.FechaBaja.HasValue && !(mEntityContext.Identidad.Where(ident => ident.IdentidadID.Equals(pIdentidadID)).Select(ident => ident.PerfilID).Distinct()).Contains(item.Perfil.PerfilID)).ToList().Where(item => getNombreBusqueda(item.Perfil).Contains(pPrefijo) && !pListaAnteriores.Contains(getNombreBusqueda(item.Perfil)));
+                selectNombresIdentidadesPorPrefijo = mEntityContext.Perfil.JoinIdentidad().Where(item => subconsulta.Contains(item.Identidad.ProyectoID) && !item.Identidad.FechaExpulsion.HasValue && !item.Identidad.FechaBaja.HasValue && !(mEntityContext.Identidad.Where(ident => ident.IdentidadID.Equals(pIdentidadID)).Select(ident => ident.PerfilID).Distinct()).Contains(item.Perfil.PerfilID)).ToList().Where(item => getNombreBusqueda(item.Perfil).Contains(UtilCadenas.RemoveAccentsWithRegEx(pPrefijo)) && !pListaAnteriores.Contains(getNombreBusqueda(item.Perfil)));
 
             }
 

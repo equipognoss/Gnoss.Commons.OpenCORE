@@ -5734,8 +5734,11 @@ namespace Es.Riam.Gnoss.AD.Facetado
 
             }
 
-            query += " ?s sioc_t:Tag ?Tag. FILTER(?Tag in (" + pTags + ")) ";
-
+            if (!string.IsNullOrEmpty(pTags))
+            {
+                query += " ?s sioc_t:Tag ?Tag. FILTER(?Tag in (" + pTags + ")) ";
+            }
+            
             if (!pEsCatalogoNoSocial)
             {
                 query += " } UNION {";
@@ -5797,7 +5800,15 @@ namespace Es.Riam.Gnoss.AD.Facetado
 
                 }
 
-                query += " ?s skos:ConceptID ?ConceptID. FILTER(?ConceptID in (" + pConceptID + ")) } ";
+                if (!string.IsNullOrEmpty(pConceptID))
+                {
+                    query += " ?s skos:ConceptID ?ConceptID. FILTER(?ConceptID in (" + pConceptID + ")) } ";
+                }
+                else
+                {
+                    query += " } ";
+                }
+                
             }
 
             query += " OPTIONAL{ ?s gnoss:hasPopularidad ?gnosshasPopularidad.} ";
