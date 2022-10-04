@@ -128,7 +128,6 @@ namespace OntologiaAClase
             Clase.AppendLine("{");
             EscribirHerencias(pEntidad);
             Clase.AppendLine($"{UtilCadenasOntology.Tabs(1)}{{");
-            Clase.AppendLine();            
             ConstructorSencillo(pEntidad);
             Clase.AppendLine();
             ConstructorComplejo(pEntidad);
@@ -367,7 +366,7 @@ namespace OntologiaAClase
 
             if (!esPrincipal)
             {
-                Clase.AppendLine($"{UtilCadenasOntology.Tabs(2)}public string URI {{ get; set; }}");
+                Clase.AppendLine($"{UtilCadenasOntology.Tabs(2)}public string Identificador {{ get; set; }}");
             }
 
             if (ontologia.EntidadesAuxiliares.Exists(entidad => entidad.TipoEntidad.Equals(pEntidad.TipoEntidad)))
@@ -978,7 +977,6 @@ namespace OntologiaAClase
         /// <param name="pEntidad"></param>
         public void CrearToRecursoPadre(bool pEsPrimaria, ElementoOntologia pEntidad, string pTipoOntologyResource)
         {
-
             if (pTipoOntologyResource.Equals("ComplexOntologyResource"))
             {
                 Clase.AppendLine($"{UtilCadenasOntology.Tabs(3)}Ontology ontology=null;");
@@ -1787,9 +1785,9 @@ namespace OntologiaAClase
             }
             else
             {
-                Clase.AppendLine($"{UtilCadenasOntology.Tabs(2)}public {UtilCadenasOntology.ObtenerNombreProp(pEntidad.TipoEntidad)}(string pURI) : base()");
+                Clase.AppendLine($"{UtilCadenasOntology.Tabs(2)}public {UtilCadenasOntology.ObtenerNombreProp(pEntidad.TipoEntidad)}(string pIdentificador) : base()");
                 Clase.AppendLine($"{UtilCadenasOntology.Tabs(2)}{{");
-                Clase.AppendLine($"{UtilCadenasOntology.Tabs(3)}URI = pURI;");
+                Clase.AppendLine($"{UtilCadenasOntology.Tabs(3)}Identificador = pIdentificador;");
                 Clase.AppendLine($"{UtilCadenasOntology.Tabs(2)}}}");
             }
         }

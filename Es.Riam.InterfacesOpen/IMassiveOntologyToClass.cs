@@ -60,7 +60,7 @@ namespace Es.Riam.InterfacesOpen
         /// <param name="pTipoSujeto">Tipo de sujeto a generar, para el grafo de ontología, búsqueda o para el has entidad</param>
         /// <param name="pItem">Indica el nivel de anidamiento de las entidades auxiliares, si no se indica será una entidad principal</param>
         /// <returns>Devuelve el sujeto del triple de la entidad indicada, para el grafo de búsqueda o de ontología según se indique</returns>
-        public string GenerarSujeto(ElementoOntologia pEntidad, TiposSujeto pTipoSujeto, bool pEsPrincipal, string pItem = "")
+        public string GenerarSujeto(ElementoOntologia pEntidad, TiposSujeto pTipoSujeto, bool pEsPrincipal = true, string pItem = "")
         {
             switch (pTipoSujeto)
             {
@@ -69,7 +69,7 @@ namespace Es.Riam.InterfacesOpen
                 case TiposSujeto.Ontologia:
                     return GenerarSujetoOntologia(pEntidad, pEsPrincipal, pItem);
                 case TiposSujeto.HasEntidad:
-                    return GenerarSujetoHasEntidad();
+                    return GenerarSujetoHasEntidad(pEsPrincipal);
                 default:
                     return string.Empty;
             }
@@ -88,7 +88,7 @@ namespace Es.Riam.InterfacesOpen
             }
             else
             {
-                return "{URI.ToLower()}";
+                return "{resourceAPI.GraphsUrl.ToLower()}items/{Identificador.ToLower()}";
             }
         }
 
@@ -113,7 +113,7 @@ namespace Es.Riam.InterfacesOpen
             }
             else
             {
-                return "{URI}";
+                return "{resourceAPI.GraphsUrl}items/{Identificador}";
             }
         }
 
@@ -121,9 +121,16 @@ namespace Es.Riam.InterfacesOpen
         /// Genera el sujeto de los triples para la propiedad HasEntidad
         /// </summary>
         /// <returns>Devuelve el sujeto para el triple de la propiedad HasEntidad</returns>
-        private string GenerarSujetoHasEntidad()
+        private string GenerarSujetoHasEntidad(bool pEsPrincipal)
         {
-            return "{resourceAPI.GraphsUrl}{ResourceID}";
+            if (pEsPrincipal)
+            {
+                return "{resourceAPI.GraphsUrl}{ResourceID}";
+            }
+            else
+            {
+                return "{resourceAPI.GraphsUrl}entidadsecun_{Identificador.ToLower()}";
+            }            
         }
 
         /// <summary>
@@ -424,9 +431,16 @@ namespace Es.Riam.InterfacesOpen
             int longitudLista = listaPropiedadesAnidadas.Length;
 
             string nombreVariableActual = $"{pNombreVariableEntidadActual}.{UtilCadenas.PrimerCaracterAMayuscula(listaPropiedadesAnidadas[0]).Replace(":", "_")}";
-            Clase.AppendLine($"{UtilCadenasOntology.Tabs(4)}foreach(dynamic itemProp{0} in {nombreVariableActual})");
+            Clase.AppendLine($"{UtilCadenasOntology.Tabs(4)}foreach(dynamic itemProp0 in {nombreVariableActual})");
             Clase.AppendLine($"{UtilCadenasOntology.Tabs(4)}{{");
-            Clase.AppendLine($"{UtilCadenasOntology.Tabs(5)}List<dynamic> lista{UtilCadenas.PrimerCaracterAMayuscula(listaPropiedadesAnidadas[1]).Replace(":", "_")} = ObtenerObjetosDePropiedad(itemProp{0});");
+            if(listaPropiedadesAnidadas.Length > 1)
+            {
+                Clase.AppendLine($"{UtilCadenasOntology.Tabs(5)}List<dynamic> lista{UtilCadenas.PrimerCaracterAMayuscula(listaPropiedadesAnidadas[1]).Replace(":", "_")} = ObtenerObjetosDePropiedad(itemProp0.{UtilCadenas.PrimerCaracterAMayuscula(listaPropiedadesAnidadas[1]).Replace(":", "_")});");
+            }
+            else
+            {
+                Clase.AppendLine($"{UtilCadenasOntology.Tabs(5)}List<dynamic> lista{UtilCadenas.PrimerCaracterAMayuscula(listaPropiedadesAnidadas[1]).Replace(":", "_")} = ObtenerObjetosDePropiedad(itemProp0);");
+            }
             for (int i = 1; i + 1 < listaPropiedadesAnidadas.Length; i++)
             {
                 Clase.AppendLine($"{UtilCadenasOntology.Tabs(5 + i)}foreach(dynamic itemProp{i} in lista{UtilCadenas.PrimerCaracterAMayuscula(listaPropiedadesAnidadas[i]).Replace(":", "_")})");
