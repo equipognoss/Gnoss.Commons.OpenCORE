@@ -1642,11 +1642,6 @@ namespace Es.Riam.Gnoss.AD.Facetado
 
                 AgregarEntradaTraza("LecturaWebClient: Respuesta obtenida de virtuoso, convertimos el CSV");
 
-                if (!EscaparComillasDobles)
-                {
-                    respuesta = respuesta.Replace("''", "\"\"");
-                }
-
                 lock (pFacetadoDS)
                 {
                     LeerResultadosCSV(respuesta, pNombreTabla, pFacetadoDS);
