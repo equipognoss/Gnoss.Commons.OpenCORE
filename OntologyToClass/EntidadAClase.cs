@@ -1,6 +1,4 @@
 ﻿using Es.Riam.Gnoss.AD.EntityModel;
-using Es.Riam.Gnoss.AD.EntityModel.Models.Faceta;
-using Es.Riam.Gnoss.Logica.Facetado;
 using Es.Riam.Gnoss.Util.Configuracion;
 using Es.Riam.Gnoss.Util.General;
 using Es.Riam.Semantica.OWL;
@@ -63,7 +61,6 @@ namespace OntologiaAClase
         private EntityContext mEntityContext;
         private LoggingService mLoggingService;
         private ConfigService mConfigService;
-        private List<FacetaObjetoConocimientoProyecto> listaFacetaObjetoConocimientoProyecto;
         private IServicesUtilVirtuosoAndReplication mServicesUtilVirtuosoAndReplication;
         private IMassiveOntologyToClass mMassiveOntologyClass;
 
@@ -102,7 +99,6 @@ namespace OntologiaAClase
             mEntityContext = pEntityContext;
             mLoggingService = pLoggingService;
             mConfigService = pConfigService;
-            FacetaCN facetaCN = new FacetaCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
             doc = new XmlDocument();
             if (pContentXML != null)
             {
@@ -111,7 +107,6 @@ namespace OntologiaAClase
             }
             mNumItem = 0;
             listaObjetosExternos = new List<string>();
-            listaFacetaObjetoConocimientoProyecto = facetaCN.ObtenerFacetasObjetoConocimientoProyectoDeOntologia(pNombreOnto.Replace("Ontology", ""), proyID);
             mServicesUtilVirtuosoAndReplication = pServicesUtilVirtuosoAndReplication;
             mMassiveOntologyClass = pMassiveOntologyToClass;
         }
@@ -145,7 +140,7 @@ namespace OntologiaAClase
             //---------------
             mMassiveOntologyClass.CrearToOntologyGraphTriples(esPrincipal, pEntidad, Clase, listentidadesAux, ontologia, dicPref, propListiedadesMultidioma, listaObjetosPropiedad);
             Clase.AppendLine();
-            mMassiveOntologyClass.CrearToSearchGraphTriples(esPrincipal, pEntidad, pRdfType, pListaPropiedesSearch, pListaPadrePropiedadesAnidadas, listaFacetaObjetoConocimientoProyecto, Clase, ontologia, nombrePropDescripcion, nombrePropTitulo, nombrePropTituloEntero, propListiedadesMultidioma, listaObjetosPropiedad, listentidadesAux, dicPref);
+            mMassiveOntologyClass.CrearToSearchGraphTriples(esPrincipal, pEntidad, pRdfType, pListaPropiedesSearch, pListaPadrePropiedadesAnidadas, Clase, ontologia, nombrePropDescripcion, nombrePropTitulo, nombrePropTituloEntero, propListiedadesMultidioma, listaObjetosPropiedad, listentidadesAux, dicPref);
             Clase.AppendLine();
             mMassiveOntologyClass.CrearToAcidData(esPrincipal, pEntidad, ontologia, Clase, nombrePropDescripcion, nombrePropTitulo, nombrePropTituloEntero, propListiedadesMultidioma, listaObjetosPropiedad);
             Clase.AppendLine();

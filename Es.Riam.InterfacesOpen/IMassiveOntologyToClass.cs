@@ -25,7 +25,7 @@ namespace Es.Riam.InterfacesOpen
 
 
         public abstract void CrearToOntologyGraphTriples(bool pEsPrincipal, ElementoOntologia pEntidad, StringBuilder Clase, List<Propiedad> listentidadesAux, Ontologia ontologia, Dictionary<string, string> dicPref, Dictionary<string, bool> propListiedadesMultidioma, List<ObjetoPropiedad> listaObjetosPropiedad);
-        public abstract void CrearToSearchGraphTriples(bool pEsPrincipal, ElementoOntologia pEntidad, string pRdfType, List<string> pListaPropiedadesSearch, List<string> pListaPadrePropiedadesAnidadas, List<FacetaObjetoConocimientoProyecto> pListaFacetaObjetoConocimientoProyecto, StringBuilder Clase, Ontologia ontologia, string nombrePropDescripcion, string nombrePropTitulo, string nombrePropTituloEntero, Dictionary<string, bool> propListiedadesMultidioma, List<ObjetoPropiedad> listaObjetosPropiedad, List<Propiedad> listentidadesAux, Dictionary<string, string> dicPref);
+        public abstract void CrearToSearchGraphTriples(bool pEsPrincipal, ElementoOntologia pEntidad, string pRdfType, List<string> pListaPropiedadesSearch, List<string> pListaPadrePropiedadesAnidadas, StringBuilder Clase, Ontologia ontologia, string nombrePropDescripcion, string nombrePropTitulo, string nombrePropTituloEntero, Dictionary<string, bool> propListiedadesMultidioma, List<ObjetoPropiedad> listaObjetosPropiedad, List<Propiedad> listentidadesAux, Dictionary<string, string> dicPref);
         public abstract void CrearToAcidData(bool pEsPrincipal, ElementoOntologia pEntidad, Ontologia ontologia, StringBuilder Clase, string nombrePropDescripcion, string nombrePropTitulo, string nombrePropTituloEntero, Dictionary<string, bool> propListiedadesMultidioma, List<ObjetoPropiedad> listaObjetosPropiedad);
 
         /// <summary>
@@ -142,7 +142,7 @@ namespace Es.Riam.InterfacesOpen
         /// <param name="pEsOntologia">Nos indica si las entidades auxiliares se van a pintar para el grafo de búsqueda o de ontología. Si no es uno, es otro</param>
         /// <param name="pNombrePadres">Nombre de la jerarquía de entidades y propiedades hasta llegar al nivel actual</param>
         /// <param name="numIteraciones">Numero de veces que se ha utilizado el método recursivamente</param>
-        protected void PintarEntidadesAuxiliares(ElementoOntologia pElem, Propiedad pPropiedadPadre, ElementoOntologia pElemPadre, bool pEsOntologia, string pSujetoEntidadSuperior, StringBuilder Clase, Dictionary<string, string> dicPref, Dictionary<string, bool> propListiedadesMultidioma, List<ObjetoPropiedad> listaObjetosPropiedad, bool pEsPrincipal, List<string> pListaPropiedadesSearch = null, List<string> pListaPadrePropiedadesAnidadas = null, string pNombrePadres = "this", int numIteraciones = 0, List<FacetaObjetoConocimientoProyecto> pListaFacetaObjetoConocimientoProyecto = null)
+        protected void PintarEntidadesAuxiliares(ElementoOntologia pElem, Propiedad pPropiedadPadre, ElementoOntologia pElemPadre, bool pEsOntologia, string pSujetoEntidadSuperior, StringBuilder Clase, Dictionary<string, string> dicPref, Dictionary<string, bool> propListiedadesMultidioma, List<ObjetoPropiedad> listaObjetosPropiedad, bool pEsPrincipal, List<string> pListaPropiedadesSearch = null, List<string> pListaPadrePropiedadesAnidadas = null, string pNombrePadres = "this", int numIteraciones = 0)
         {
             string prefijoPadre = UtilCadenas.PrimerCaracterAMayuscula(UtilCadenasOntology.ObtenerPrefijo(dicPref, pPropiedadPadre.Nombre, mLoggingService));
             string nombrePropPadre = UtilCadenasOntology.ObtenerNombreProp(pPropiedadPadre.Nombre);
@@ -190,12 +190,12 @@ namespace Es.Riam.InterfacesOpen
                 {
                     if (elem.TipoEntidad.Equals(propiedadPadre.Rango) && !pElem.TipoEntidad.Equals(propiedadPadre.Rango))
                     {
-                        PintarEntidadesAuxiliares(elem, propiedadPadre, pElem, pEsOntologia, sujetoEntidadAuxiliar, Clase, dicPref, propListiedadesMultidioma, listaObjetosPropiedad, pEsPrincipal, pListaPropiedadesSearch, pListaPadrePropiedadesAnidadas, item, ++numIteraciones, pListaFacetaObjetoConocimientoProyecto);
+                        PintarEntidadesAuxiliares(elem, propiedadPadre, pElem, pEsOntologia, sujetoEntidadAuxiliar, Clase, dicPref, propListiedadesMultidioma, listaObjetosPropiedad, pEsPrincipal, pListaPropiedadesSearch, pListaPadrePropiedadesAnidadas, item, ++numIteraciones);
                     }
                 }
             }
 
-            PintarPropiedades(pElem, pEsOntologia, sujetoEntidadAuxiliar, Clase, dicPref, propListiedadesMultidioma, listaObjetosPropiedad, pEsPrincipal, pPropiedadPadre.NombreConNamespace, item, pListaPropiedadesSearch, pListaPadrePropiedadesAnidadas, pListaFacetaObjetoConocimientoProyecto);
+            PintarPropiedades(pElem, pEsOntologia, sujetoEntidadAuxiliar, Clase, dicPref, propListiedadesMultidioma, listaObjetosPropiedad, pEsPrincipal, pPropiedadPadre.NombreConNamespace, item, pListaPropiedadesSearch, pListaPadrePropiedadesAnidadas);
 
             Clase.AppendLine($"{UtilCadenasOntology.Tabs(3)}}}");
 
@@ -211,7 +211,7 @@ namespace Es.Riam.InterfacesOpen
         /// <param name="pElem">Ontología de la cual se van a pintar las propiedades</param>
         /// <param name="pEsOntologia">Nos indica si las propiedades a pintar son para el grafo de ontología o para el grafo de búsqueda</param>
         /// <param name="pNombrePadres">Nombre de la jerarquía de entidades y propiedades hasta llegar al nivel actual</param>
-        protected void PintarPropiedades(ElementoOntologia pElem, bool pEsOntologia, string pSujetoEntidadSuperior, StringBuilder Clase, Dictionary<string, string> dicPref, Dictionary<string, bool> propListiedadesMultidioma, List<ObjetoPropiedad> listaObjetosPropiedad, bool pEsPrincipal, string pRutaPadreSearch = null, string pNombrePadres = "this", List<string> pListaPropiedadesSearch = null, List<string> pListaPadrePropiedadesAnidadas = null, List<FacetaObjetoConocimientoProyecto> pListaFacetaObjetoConocimientoProyecto = null)
+        protected void PintarPropiedades(ElementoOntologia pElem, bool pEsOntologia, string pSujetoEntidadSuperior, StringBuilder Clase, Dictionary<string, string> dicPref, Dictionary<string, bool> propListiedadesMultidioma, List<ObjetoPropiedad> listaObjetosPropiedad, bool pEsPrincipal, string pRutaPadreSearch = null, string pNombrePadres = "this", List<string> pListaPropiedadesSearch = null, List<string> pListaPadrePropiedadesAnidadas = null)
         {
             foreach (Propiedad prop in pElem.Propiedades)
             {
@@ -220,14 +220,7 @@ namespace Es.Riam.InterfacesOpen
                 string propiedadSearchAnidada = string.Empty;
                 if (!pElem.Ontologia.EntidadesAuxiliares.Any(x => x.TipoEntidad.Equals(prop.Rango)))
                 {
-                    bool esPropiedadTextoInvariable = false;
-                    if (pListaFacetaObjetoConocimientoProyecto != null)
-                    {
-                        esPropiedadTextoInvariable = pListaFacetaObjetoConocimientoProyecto.Any(item => (item.Faceta.Equals(prop.NombreConNamespace) || item.Faceta.Equals($"{pRutaPadreSearch}@@@{prop.NombreConNamespace}")) && item.TipoPropiedad.Value.Equals(5));
-                    }
-
-                    ConfiguracionObjeto configuracionObjeto = new ConfiguracionObjeto(dicPref, prop, pElem, pEsOntologia, mLoggingService, esPropiedadTextoInvariable);
-
+                    ConfiguracionObjeto configuracionObjeto = new ConfiguracionObjeto(dicPref, prop, pElem, pEsOntologia, mLoggingService);
 
                     string identificadorValor = $"{configuracionObjeto.Id}{configuracionObjeto.PrefijoPropiedad}_{configuracionObjeto.NombrePropiedad}";
                     //string propiedadParaSearch = $"{pNombrePadres}.{configuracionObjeto.Id}{configuracionObjeto.PrefijoPropiedad}:{configuracionObjeto.NombrePropiedad}".ToLower().Replace("this.", "");
