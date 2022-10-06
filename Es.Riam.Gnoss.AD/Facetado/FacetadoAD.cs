@@ -2014,7 +2014,7 @@ namespace Es.Riam.Gnoss.AD.Facetado
         public int ActualizarVirtuoso(string pQuery, string pGrafo, short pPrioridad)
         {
             VirtuosoConnection conexion = ObtenerConexionParaGrafo(pGrafo, true);
-            return mServicesUtilVirtuosoAndReplication.ActualizarVirtuoso(pQuery, pGrafo, true, pPrioridad, conexion);
+            return mServicesUtilVirtuosoAndReplication.ActualizarVirtuoso(pQuery, pGrafo, true, pPrioridad, conexion, true, null, 0);
         }
 
         /// <summary>

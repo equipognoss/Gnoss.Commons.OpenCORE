@@ -21,7 +21,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Models.GeneradorClases
         public string Rango { get; set; }
         public bool EsObject { get; set; }
 
-        public ConfiguracionObjeto(Dictionary<string, string> pDicPref, Propiedad pProp, ElementoOntologia pElem, bool esOntologia, LoggingService loggingService, bool pEsPropiedadTextoInvariable)
+        public ConfiguracionObjeto(Dictionary<string, string> pDicPref, Propiedad pProp, ElementoOntologia pElem, bool esOntologia, LoggingService loggingService)
         {
             PrefijoPropiedad = UtilCadenas.PrimerCaracterAMayuscula(UtilCadenasOntology.ObtenerPrefijo(pDicPref, pProp.Nombre, loggingService));
             NombrePropiedad = UtilCadenasOntology.ObtenerNombreProp(pProp.Nombre);            
@@ -107,11 +107,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Models.GeneradorClases
                 case "string":
                     //id = "Id";                   
                     //Aux = ".Replace(\"\\r\\n\", \" \").Replace(\"\\n\", \" \").Replace(\"\\r\", \" \").Replace(\"\\\"\", \"\\\\\\\"\")";
-                    Aux = ")";
-                    if (!esOntologia && !pEsPropiedadTextoInvariable)
-                    {
-                        Aux += ".ToLower()";
-                    }
+                    Aux = ")";                   
                     SimboloInicio = "\\\"{GenerarTextoSinSaltoDeLinea(";
                     SimboloFin = "}\\\"";
                     break;

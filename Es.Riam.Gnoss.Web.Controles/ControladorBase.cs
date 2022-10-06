@@ -437,7 +437,7 @@ namespace Es.Riam.Gnoss.Web.Controles
                         }
 
                         //TODO Javier cambiar esto de sitio cuando se migre la Web
-                        if (mHttpContextAccessor.HttpContext != null && mHttpContextAccessor.HttpContext.Session != null && mHttpContextAccessor.HttpContext.Session.Get<GnossIdentity>("Usuario")!= null && !(mHttpContextAccessor.HttpContext.Session.Get<GnossIdentity>("Usuario")).EsIdentidadInvitada && mProyecto.ListaAdministradoresIDs.Contains((mHttpContextAccessor.HttpContext.Session.Get<GnossIdentity>("Usuario")).UsuarioID))
+                        if (mHttpContextAccessor.HttpContext != null && IsSessionAvailable && mHttpContextAccessor.HttpContext.Session != null && mHttpContextAccessor.HttpContext.Session.Get<GnossIdentity>("Usuario")!= null && !(mHttpContextAccessor.HttpContext.Session.Get<GnossIdentity>("Usuario")).EsIdentidadInvitada && mProyecto.ListaAdministradoresIDs.Contains((mHttpContextAccessor.HttpContext.Session.Get<GnossIdentity>("Usuario")).UsuarioID))
                         {
                             CrearPestanyaPersonasYOrganizaciones(mProyecto.GestorProyectos.DataWrapperProyectos, mProyecto.Clave);
                         }
@@ -449,6 +449,28 @@ namespace Es.Riam.Gnoss.Web.Controles
             set
             {
                 mProyecto = value;
+            }
+        }
+
+        private static bool? mIsSessionAvailable;
+
+        private bool IsSessionAvailable
+        {
+            get
+            {
+                if (!mIsSessionAvailable.HasValue)
+                {
+                    try
+                    {
+                        var session = mHttpContextAccessor.HttpContext.Session;
+                        mIsSessionAvailable = true;
+                    }
+                    catch 
+                    {
+                        mIsSessionAvailable = false;
+                    }
+                }
+                return mIsSessionAvailable.Value;
             }
         }
 

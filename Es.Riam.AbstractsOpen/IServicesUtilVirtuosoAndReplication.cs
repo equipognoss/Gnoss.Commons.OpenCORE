@@ -1236,7 +1236,7 @@ namespace Es.Riam.AbstractsOpen
         }
         public int ActualizarVirtuoso_WebClient(string pUrl, string pQuery, NameValueCollection pParametros)
         {
-            WebClient webClient = new WebClient();
+            RiamWebClient webClient = new RiamWebClient(TimeOutVirtuoso);
             webClient.Encoding = Encoding.UTF8;
             //no se necesita la cabecera
             //webClient.Headers.Add(HttpRequestHeader.ContentType, "application/sparql-query"); //"application/x-www-form-urlencoded"

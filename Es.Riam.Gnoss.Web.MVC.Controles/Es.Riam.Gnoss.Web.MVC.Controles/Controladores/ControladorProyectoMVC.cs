@@ -1712,7 +1712,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
                 {
                     listaRecursosPendientes.Add(idRecurso);
                 }
-                else if (string.IsNullOrEmpty(listaRecursos[idRecurso].UrlPreview))
+                else if (listaRecursos[idRecurso].UrlPreview == null)
                 {
                     listaRecursosPendientes.Add(idRecurso);
                 }
