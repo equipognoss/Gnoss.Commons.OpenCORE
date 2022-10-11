@@ -23,7 +23,7 @@ namespace Es.Riam.OpenArchivos
 
         public CryptoStream ObtenerDesencriptador(Stream pStream)
         {
-            return new CryptoStream(pStream, null, CryptoStreamMode.Read);
+            return null;
         }
 
         public CryptoStream ObtenerEncriptador(Stream pStream)
