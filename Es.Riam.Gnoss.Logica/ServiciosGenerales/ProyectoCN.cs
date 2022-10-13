@@ -2026,6 +2026,16 @@ namespace Es.Riam.Gnoss.Logica.ServiciosGenerales
         }
 
         /// <summary>
+        /// Obtiene el Identificador de un proyecto a partir de su nombre CORTO
+        /// </summary>
+        /// <param name="pNombreCorto">Nombre CORTO del proyecto buscado</param>
+        /// <returns>Identificador del proyecto</returns>
+        public List<Guid> ObtenerProyectoYProyectoSuperiorIDs(string pNombreCorto)
+        {
+            return ProyectoAD.ObtenerProyectoYProyectoSuperiorIDs(pNombreCorto);
+        }
+
+        /// <summary>
         /// Obtiene el identificador de un proyecto a partir de su nombre CORTO pasado por parámetro
         /// </summary>
         /// <param name="pNombreCorto">Nombre corto del proyecto</param>

@@ -67,6 +67,8 @@ namespace Es.Riam.Gnoss.Elementos.Tesauro
         public CategoriaTesauro(AD.EntityModel.Models.Tesauro.CategoriaTesauro pFilaCategoria, GestionTesauro pGestionTesauro, LoggingService loggingService)
             : base(pFilaCategoria, pGestionTesauro, loggingService)
         {
+            mHijos = new List<IElementoGnoss>();
+            mSubCategorias = new List<CategoriaTesauro>();
         }
 
         #endregion
@@ -279,8 +281,6 @@ namespace Es.Riam.Gnoss.Elementos.Tesauro
         {
             get
             {
-                if (mHijos == null)
-                    CargarSubcategorias();
                 return mHijos;
             }
         }
@@ -358,8 +358,6 @@ namespace Es.Riam.Gnoss.Elementos.Tesauro
         {
             get
             {
-                if (mSubCategorias == null)
-                    CargarSubcategorias();
                 return mSubCategorias;
             }
         }
@@ -557,67 +555,46 @@ namespace Es.Riam.Gnoss.Elementos.Tesauro
         /// </summary>
         public void CargarSubcategorias()
         {
-            //!this.TesauroDW.ListaCatTesauroAgCatTesauro.Any(cat => cat.CategoriaInferiorID.Equals(filaCategoria.CategoriaTesauroID)) && (filaCategoria.GetCatTesauroCompartidaRowsByFK_CatTesComp_CatOrig().Length == 0
-
-            List<AD.EntityModel.Models.Tesauro.CatTesauroAgCatTesauro> filas = GestorTesauro.TesauroDW.ListaCatTesauroAgCatTesauro.Where(item => item.CategoriaSuperiorID.Equals(FilaCategoria.CategoriaTesauroID)).ToList();   //FilaCategoria.GetCatTesauroAgCatTesauroRowsByFK_CatTesAgCatTes_CatTeso_Sup();
-
-            List<AD.EntityModel.Models.Tesauro.CatTesauroCompartida> filasCompartidas = GestorTesauro.TesauroDW.ListaCatTesauroCompartida.Where(item => item.CategoriaSupDestinoID.HasValue && item.CategoriaSupDestinoID.Value.Equals(FilaCategoria.CategoriaTesauroID) && item.TesauroDestinoID.Equals(FilaCategoria.TesauroID)).ToList();//FilaCategoria.GetCatTesauroCompartidaRowsByFK_CatTesComp_CatDest();
-
             mHijos = new List<IElementoGnoss>();
             mSubCategorias = new List<CategoriaTesauro>();
-
-            SortedList<short, AD.EntityModel.Models.Tesauro.CategoriaTesauro> listaCategoriasOrdenadas = new SortedList<short, AD.EntityModel.Models.Tesauro.CategoriaTesauro>();
-
-            //DataRow[] filasOrdenadas = UtilDatos.ListaOrdenadaPorCampoEntero(filas, "Orden");
-
-            foreach (AD.EntityModel.Models.Tesauro.CatTesauroAgCatTesauro catAgregada in filas)
+            AD.EntityModel.Models.Tesauro.CatTesauroAgCatTesauro catAgregada = null;
+            if (GestorTesauro.ListaCategoriasInferioresPorCategoriaID.ContainsKey(FilaCategoria.CategoriaTesauroID))
             {
-                AD.EntityModel.Models.Tesauro.CategoriaTesauro categoria = catAgregada.CategoriaTesauro;//CategoriaTesauroRowParentByFK_CatTesAgCatTe_CatTes_Inf;
-                if (categoria == null)
+                List<object> listaHijos = GestorTesauro.ListaCategoriasInferioresPorCategoriaID[FilaCategoria.CategoriaTesauroID];
+
+                foreach (object hijo in listaHijos)
                 {
-                    //Problema al mover una categoria, ya que esta se marca como deleted y se pierden los objetos relacionados
-                    categoria = GestorTesauro.TesauroDW.ListaCategoriaTesauro.FirstOrDefault(cat => cat.CategoriaTesauroID.Equals(catAgregada.CategoriaInferiorID) && cat.TesauroID.Equals(catAgregada.TesauroID));
-                }
-                if (!listaCategoriasOrdenadas.ContainsValue(categoria))
-                {
-                    short orden = catAgregada.Orden;
-                    while (listaCategoriasOrdenadas.ContainsKey(orden))
+                    AD.EntityModel.Models.Tesauro.CategoriaTesauro categoria = null;
+                    if (hijo is AD.EntityModel.Models.Tesauro.CatTesauroAgCatTesauro)
                     {
-                        orden++;
-                    }
-                    listaCategoriasOrdenadas.Add(orden, categoria);
-                }
-            }
+                        catAgregada = (AD.EntityModel.Models.Tesauro.CatTesauroAgCatTesauro)hijo;
+                        categoria = catAgregada.CategoriaTesauro;
 
-            foreach (AD.EntityModel.Models.Tesauro.CatTesauroCompartida catCompartida in filasCompartidas)
-            {
-                AD.EntityModel.Models.Tesauro.CategoriaTesauro categoria = catCompartida.CategoriaTesauro;
-                if (categoria != null && !listaCategoriasOrdenadas.ContainsValue(categoria))
-                {
-                    short orden = catCompartida.Orden;
-                    while (listaCategoriasOrdenadas.ContainsKey(orden))
+                        if (categoria == null)
+                        {
+                            //Problema al mover una categoria, ya que esta se marca como deleted y se pierden los objetos relacionados
+                            categoria = GestorTesauro.TesauroDW.ListaCategoriaTesauro.FirstOrDefault(cat => cat.CategoriaTesauroID.Equals(catAgregada.CategoriaInferiorID) && cat.TesauroID.Equals(catAgregada.TesauroID));
+                        }
+                    }
+                    else
                     {
-                        orden++;
+                        // Categoría compartida desde otro tesauro
+                        AD.EntityModel.Models.Tesauro.CatTesauroCompartida catCompartida = (AD.EntityModel.Models.Tesauro.CatTesauroCompartida)hijo;
+                        categoria = catCompartida.CategoriaTesauro;
                     }
-                    listaCategoriasOrdenadas.Add(orden, categoria);
-                }
-            }
 
-            foreach (AD.EntityModel.Models.Tesauro.CategoriaTesauro categoria in listaCategoriasOrdenadas.Values)
-            {
-                if (this.GestorTesauro.ListaCategoriasTesauro.ContainsKey(categoria.CategoriaTesauroID))
-                {
-                    CategoriaTesauro cat = this.GestorTesauro.ListaCategoriasTesauro[categoria.CategoriaTesauroID];
-                    cat.Padre = this;
 
-                    cat.FilaAgregacion = GestorTesauro.TesauroDW.ListaCatTesauroAgCatTesauro.FirstOrDefault(item => item.CategoriaInferiorID.Equals(cat.FilaCategoria.CategoriaTesauroID) && item.TesauroID.Equals(cat.FilaCategoria.TesauroID));
+                    if (categoria != null && this.GestorTesauro.ListaCategoriasTesauro.ContainsKey(categoria.CategoriaTesauroID))
+                    {
+                        CategoriaTesauro cat = this.GestorTesauro.ListaCategoriasTesauro[categoria.CategoriaTesauroID];
+                        cat.Padre = this;
 
-                    if (!mHijos.Contains(cat))
-                        mHijos.Add(cat);
-                    mSubCategorias.Add(cat);
+                        cat.FilaAgregacion = catAgregada;
 
-                    cat.CargarSubcategorias();
-                    //mSubCategorias.AddRange(cat.mSubCategorias);
+                        if (!mHijos.Contains(cat))
+                            mHijos.Add(cat);
+                        mSubCategorias.Add(cat);
+                    }
                 }
             }
         }

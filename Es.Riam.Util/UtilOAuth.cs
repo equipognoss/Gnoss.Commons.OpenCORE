@@ -98,8 +98,8 @@ namespace Es.Riam.Util
 
             if (pLimpiarParametrosAdicionales)
             {
-                url = LimpiarParametrosExpurios(UtilWeb.RequestUrl(pRequest));
-
+                //url = LimpiarParametrosExpurios(UtilWeb.RequestUrl(pRequest));
+                url = LimpiarParametrosExpurios(url);
                 if (!url.Contains("?"))
                 {
                     url += "?";

@@ -702,6 +702,8 @@ namespace Es.Riam.Gnoss.Elementos.Tesauro
                 return false;
         }
 
+        internal Dictionary<Guid, List<object>> ListaCategoriasInferioresPorCategoriaID = new Dictionary<Guid, List<object>>();
+
         /// <summary>
         /// Carga las categorías de tesauro
         /// </summary>
@@ -711,35 +713,59 @@ namespace Es.Riam.Gnoss.Elementos.Tesauro
             mListaCategoriasTesauroPrimerNivel.Clear();
             mHijos = new List<IElementoGnoss>();
 
-            List<AD.EntityModel.Models.Tesauro.CategoriaTesauro> array = new List<AD.EntityModel.Models.Tesauro.CategoriaTesauro>();
+            var categoriasInferiores = this.TesauroDW.ListaCatTesauroAgCatTesauro.ToDictionary(item => item.CategoriaInferiorID);
 
             foreach (AD.EntityModel.Models.Tesauro.CategoriaTesauro filaCategoria in this.TesauroDW.ListaCategoriaTesauro.OrderBy(cat => cat.Orden))
             {
-                if (!this.TesauroDW.ListaCatTesauroAgCatTesauro.Any(cat => cat.CategoriaInferiorID.Equals(filaCategoria.CategoriaTesauroID)) && !this.TesauroDW.ListaCatTesauroCompartida.Any(cat2 => cat2.CategoriaOrigenID.Equals(filaCategoria.CategoriaTesauroID) && cat2.CategoriaSupDestinoID.HasValue))
+                CatTesauroAgCatTesauro catTesauroAgCatTesauro = null;
+                if (categoriasInferiores.ContainsKey(filaCategoria.CategoriaTesauroID))
+                {
+                    catTesauroAgCatTesauro = categoriasInferiores[filaCategoria.CategoriaTesauroID];
+                }
+                CatTesauroCompartida catTesauroCompartida = null;
+                if (catTesauroAgCatTesauro != null)
+                {
+                    catTesauroCompartida = this.TesauroDW.ListaCatTesauroCompartida.FirstOrDefault(cat2 => cat2.CategoriaOrigenID.Equals(filaCategoria.CategoriaTesauroID) && cat2.CategoriaSupDestinoID.HasValue);
+                }
+
+                if (catTesauroAgCatTesauro == null && catTesauroCompartida == null)
                 {
                     //Es categoría de primer nivel
-                    array.Add(filaCategoria);
+                    CategoriaTesauro categoria = new CategoriaTesauro(filaCategoria, this, mLoggingService);
+                    this.mListaCategoriasTesauroPrimerNivel.Add(filaCategoria.CategoriaTesauroID, categoria);
+                    this.mListaCategoriasTesauro.Add(filaCategoria.CategoriaTesauroID, categoria);
 
+                    categoria.Padre = this;
+
+                    this.Hijos.Add(categoria);
                 }
                 else
                 {
                     CategoriaTesauro categoria = new CategoriaTesauro(filaCategoria, this, mLoggingService);
                     this.mListaCategoriasTesauro.Add(filaCategoria.CategoriaTesauroID, categoria);
+
+                    if (catTesauroAgCatTesauro != null)
+                    {
+                        if (!ListaCategoriasInferioresPorCategoriaID.ContainsKey(catTesauroAgCatTesauro.CategoriaSuperiorID))
+                        {
+                            ListaCategoriasInferioresPorCategoriaID.Add(catTesauroAgCatTesauro.CategoriaSuperiorID, new List<object>());
+                        }
+                        ListaCategoriasInferioresPorCategoriaID[catTesauroAgCatTesauro.CategoriaSuperiorID].Add(catTesauroAgCatTesauro);
+                    }
+                    else if (catTesauroCompartida != null)
+                    {
+                        if (!ListaCategoriasInferioresPorCategoriaID.ContainsKey(catTesauroCompartida.CategoriaSupDestinoID.Value))
+                        {
+                            ListaCategoriasInferioresPorCategoriaID.Add(catTesauroCompartida.CategoriaSupDestinoID.Value, new List<object>());
+                        }
+                        ListaCategoriasInferioresPorCategoriaID[catTesauroCompartida.CategoriaSupDestinoID.Value].Add(catTesauroCompartida);
+                    }
                 }
             }
-            array = array.OrderBy(cat => cat.Orden).ToList();
 
-            foreach (AD.EntityModel.Models.Tesauro.CategoriaTesauro cat in array)
+            foreach (Guid categoriaID in ListaCategoriasInferioresPorCategoriaID.Keys)
             {
-                CategoriaTesauro categoria = new CategoriaTesauro(cat, this, mLoggingService);
-                this.mListaCategoriasTesauroPrimerNivel.Add(cat.CategoriaTesauroID, categoria);
-                this.mListaCategoriasTesauro.Add(cat.CategoriaTesauroID, categoria);
-
-                categoria.Padre = this;
-
-                this.Hijos.Add(categoria);
-
-                categoria.CargarSubcategorias();
+                this.mListaCategoriasTesauro[categoriaID].CargarSubcategorias();
             }
         }
 
