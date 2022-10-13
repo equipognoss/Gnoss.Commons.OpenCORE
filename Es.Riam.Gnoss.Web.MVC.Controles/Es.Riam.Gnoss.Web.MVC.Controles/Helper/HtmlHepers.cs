@@ -17,6 +17,7 @@ using Es.Riam.Gnoss.Logica.Cookie;
 using Es.Riam.Gnoss.AD.EntityModel.Models.Cookies;
 using System.IO;
 using System.Text.Encodings.Web;
+using Microsoft.Extensions.Primitives;
 
 namespace Es.Riam.Gnoss.Web.MVC.Controles.Helper
 {
@@ -793,16 +794,15 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Helper
             return UtilCadenas.AcortarTexto(pTexto, pNumCaracteres);
         }
 
-        /*public static string RequestParams(this HtmlHelper helper, string nameParam, IHttpContextAccessor httpContextAccessor)
+        public static string RequestParams(this IHtmlHelper helper, string nameParam, HttpContext httpContext)
         {
-            var httpRequest = httpContextAccessor.HttpContext.Request;
-            if (httpRequest.Params[nameParam] != null)
+            var httpRequest = httpContext.Request;
+            if (httpRequest.Query.TryGetValue(nameParam, out StringValues parametros))
             {
-                return httpRequest.Params[nameParam];
+                return parametros;
             }
-
             return null;
-        }*/
+        }
 
         private static string EliminarTablas(string pDescripcion)
         {

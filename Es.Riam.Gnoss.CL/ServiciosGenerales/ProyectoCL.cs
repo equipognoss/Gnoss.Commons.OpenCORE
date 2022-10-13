@@ -566,6 +566,41 @@ namespace Es.Riam.Gnoss.CL.ServiciosGenerales
             return proyectoID.Value;
         }
 
+
+        /// <summary>
+        /// Obtiene el identificador de un proyecto a partir de su nombre CORTO pasado por par�metro
+        /// </summary>
+        /// <param name="pNombreCorto">Nombre corto del proyecto</param>
+        /// <returns>Identificador del proyecto</returns>
+        public List<Guid> ObtenerProyectoYProyectoSuperiorIDs(string pNombreCorto)
+        {
+            string rawKey = string.Concat("ProyectoYProyectoSuperiorID_", pNombreCorto);
+
+            List<Guid> pListaIds = ObtenerObjetoDeCacheLocal(rawKey) as List<Guid>;
+
+            if (pListaIds != null && pListaIds.Count > 0)
+            {
+                pListaIds = ObtenerObjetoDeCache(rawKey) as List<Guid>;
+                if (pListaIds != null && pListaIds.Count > 0)
+                {
+                    AgregarObjetoCacheLocal(pListaIds.FirstOrDefault(), rawKey, pListaIds);
+                }
+            }
+
+            if (pListaIds == null || pListaIds.Count == 0)
+            {
+                // Si no está, lo cargo y lo almaceno en la caché
+                pListaIds = ProyectoCN.ObtenerProyectoYProyectoSuperiorIDs(pNombreCorto);
+                if (pListaIds != null && pListaIds.Count > 0)
+                {
+                    AgregarObjetoCache(rawKey, pListaIds);
+                    AgregarObjetoCacheLocal(pListaIds.FirstOrDefault(), rawKey, pListaIds);
+                }
+            }
+
+            return pListaIds;
+        }
+
         /// <summary>
         /// Obtiene el identificador de un proyecto a partir de su nombre CORTO pasado por par�metro
         /// </summary>

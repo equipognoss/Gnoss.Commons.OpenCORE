@@ -3051,7 +3051,10 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
                         List<Guid> listaComponentes = new List<Guid>();
                         foreach (Guid idComponente in GestorCMSActual.ListaComponentes.Keys)
                         {
-                            listaComponentes.Add(idComponente);
+                            if (GestorCMSActual.ListaComponentes[idComponente].TipoCaducidadComponenteCMS != TipoCaducidadComponenteCMS.NoCache)
+                            {
+                                listaComponentes.Add(idComponente);
+                            }
                         }
 
                         CMSCL cms2CL = new CMSCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mServicesUtilVirtuosoAndReplication);

@@ -148,7 +148,11 @@ namespace Es.Riam.Gnoss.Servicios.ControladoresServiciosWeb
             parametros.Add("pObtenerDatosExtraIdentidades", pObtenerDatosExtraIdentidades.ToString());
             string respuesta = PeticionServicio(metodo, parametros);
 
-            ResultadoModel resultadoModel = JsonConvert.DeserializeObject<ResultadoModel>(respuesta);
+            ResultadoModel resultadoModel = JsonConvert.DeserializeObject<ResultadoModel>(respuesta, new Newtonsoft.Json.JsonSerializerSettings
+            {
+                TypeNameHandling = Newtonsoft.Json.TypeNameHandling.Auto,
+                NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore,
+            });
             return resultadoModel;
         }
 

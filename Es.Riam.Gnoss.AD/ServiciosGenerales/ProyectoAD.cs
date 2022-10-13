@@ -3704,6 +3704,23 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
         }
 
         /// <summary>
+        /// Obtiene el identificador de un proyecto y del proyecto del que hereda en caso de hacerlo
+        /// </summary>
+        /// <param name="pNombre">Nombre corto del proyecto</param>
+        /// <returns>Identificador del proyecto</returns>
+        public List<Guid> ObtenerProyectoYProyectoSuperiorIDs(string pNombreCorto)
+        {
+            List<Guid> listaIDs = new List<Guid>();
+            Proyecto proyecto = mEntityContext.Proyecto.Where(item => item.NombreCorto.Equals(pNombreCorto)).FirstOrDefault();
+            listaIDs.Add(proyecto.ProyectoID);
+            if(proyecto.ProyectoSuperiorID.HasValue && !proyecto.ProyectoSuperiorID.Value.Equals(Guid.Empty))
+            {
+                listaIDs.Add(proyecto.ProyectoSuperiorID.Value);
+            }
+            return listaIDs;
+        }
+
+        /// <summary>
         /// Obtiene el identificador de un proyecto a partir de su nombre CORTO pasado por parámetro
         /// </summary>
         /// <param name="pNombreCorto">Nombre corto del proyecto</param>

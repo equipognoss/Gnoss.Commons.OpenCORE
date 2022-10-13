@@ -1113,7 +1113,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
                 if (pPagina == 1 && !pPrimeraPeticion && !mSoloGenerarRelacionados && !pFilaProyGadget.ObtenerPrivados)
                 {
                     //Intentamos obtener desde la cache
-                    DocumentacionCL docCl = new DocumentacionCL("acid", "contextos", mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mServicesUtilVirtuosoAndReplication);
+                    DocumentacionCL docCl = new DocumentacionCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mServicesUtilVirtuosoAndReplication);
                     List<Guid> listaRecursos = docCl.ObtenerContextoRecursoMVC(Documento.Clave, ControllerBase.ProyectoSeleccionado.Clave, pFilaProyGadget.GadgetID);
                     docCl.Dispose();
 
@@ -1463,7 +1463,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
                             }
                             if (!pFilaProyGadget.ObtenerPrivados)
                             {
-                                DocumentacionCL docCl = new DocumentacionCL("acid", "contextos", mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mServicesUtilVirtuosoAndReplication);
+                                DocumentacionCL docCl = new DocumentacionCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mServicesUtilVirtuosoAndReplication);
                                 docCl.AgregarContextoRecursoMVC(Documento.Clave, ControllerBase.ProyectoSeleccionado.Clave, pFilaProyGadget.GadgetID, listaRecursos);
                                 docCl.Dispose();
                             }

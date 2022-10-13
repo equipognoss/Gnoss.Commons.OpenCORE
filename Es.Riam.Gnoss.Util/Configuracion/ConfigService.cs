@@ -143,6 +143,7 @@ namespace Es.Riam.Gnoss.Util.Configuracion
         private string implementationKey;
         private string logLocation;
         private string rutaOntologias;
+        private string nombreServicio;
         private string rutaMapping;
         private string cadenaConexion;
         private string cadenaConexionVirtuoso;
@@ -203,6 +204,26 @@ namespace Es.Riam.Gnoss.Util.Configuracion
                 }
             }
         }
+
+        public string ObtenerNombreServicio()
+        {
+            if (string.IsNullOrEmpty(nombreServicio))
+            {
+                IDictionary environmentVariables = Environment.GetEnvironmentVariables();
+                if (environmentVariables.Contains("nombreServicio"))
+                {
+                    nombreServicio = environmentVariables["nombreServicio"] as string;
+                }
+                else
+                {
+                    nombreServicio = Configuration["nombreServicio"];
+                }
+
+            }
+            return nombreServicio;
+        }
+
+
 
         public string GetRutaOntologias()
         {
