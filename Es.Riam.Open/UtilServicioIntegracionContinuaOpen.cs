@@ -251,5 +251,20 @@ namespace Es.Riam.Open
         {
             throw new NotImplementedException();
         }
+
+        public string ObtenerUrlApiDesplieguesEntornoSiguiente(Guid pProyectoSeleccionado, string pEntornoIntegracionContinua, string pUrlApiIntegracionContinua, Guid pUsuarioID)
+        {
+            throw new NotImplementedException();
+        }
+
+        public string ObtenerUrlApiDesplieguesEntornoAnterior(Guid pProyectoSeleccionado, string pEntornoIntegracionContinua, string pUrlApiIntegracionContinua, Guid pUsuarioID)
+        {
+            throw new NotImplementedException();
+        }
+
+        public string ObtenerUrlApiDesplieguesEntornoParametro(Guid pProyectoSeleccionado, string pEntornoIntegracionContinua, string pUrlApiIntegracionContinua, Guid pUsuarioID, string pEntorno)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

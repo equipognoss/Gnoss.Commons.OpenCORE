@@ -1545,12 +1545,11 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
                 {
                     if (!string.IsNullOrEmpty(Request.Query["EntornoOrigen"]))
                     {
-                        mUrlApiDesplieguesEntornoAnterior = mConfigService.ObtenerUrlApiDesplieguesEntornoParametro();
+                        mUrlApiDesplieguesEntornoAnterior = mUtilServicioIntegracionContinua.ObtenerUrlApiDesplieguesEntornoParametro(ProyectoSeleccionado.Clave, EntornoIntegracionContinua, UrlApiIntegracionContinua, UsuarioActual.UsuarioID, Request.Query["EntornoOrigen"]);
                     }
                     else
                     {
-
-                        mUrlApiDesplieguesEntornoAnterior = mConfigService.ObtenerUrlApiDesplieguesEntornoAnterior();
+                        mUrlApiDesplieguesEntornoAnterior = mUtilServicioIntegracionContinua.ObtenerUrlApiDesplieguesEntornoAnterior(ProyectoSeleccionado.Clave, EntornoIntegracionContinua, UrlApiIntegracionContinua, UsuarioActual.UsuarioID);
                     }
                 }
                 return mUrlApiDesplieguesEntornoAnterior;
@@ -1564,7 +1563,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
             {
                 if (mUrlApiDesplieguesEntornoSiguiente == null)
                 {
-                    mUrlApiDesplieguesEntornoSiguiente = mConfigService.ObtenerUrlApiDesplieguesEntornoSiguiente();
+                    mUrlApiDesplieguesEntornoSiguiente = mUtilServicioIntegracionContinua.ObtenerUrlApiDesplieguesEntornoSiguiente(ProyectoSeleccionado.Clave, EntornoIntegracionContinua, UrlApiIntegracionContinua, UsuarioActual.UsuarioID);
                 }
                 return mUrlApiDesplieguesEntornoSiguiente;
             }

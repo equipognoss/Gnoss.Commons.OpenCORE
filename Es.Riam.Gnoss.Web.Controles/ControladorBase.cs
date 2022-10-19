@@ -1884,8 +1884,6 @@ namespace Es.Riam.Gnoss.Web.Controles
                 mLoggingService.GuardarLogError($"2. solicitarCookieSiempre true");
             }
 
-            mLoggingService.GuardarLogError($"3. Antes if grande. Par�metros 1-> {((usuarioLogueado != null && usuarioLogueado.Equals("1")) || solicitarCookieSiempre)} 2 -> {mHttpContextAccessor.HttpContext.Request.Method.Equals("GET")} 3-> {!mHttpContextAccessor.HttpContext.Request.GetDisplayUrl().EndsWith("?rss")} 4-> {!mHttpContextAccessor.HttpContext.Request.Host.ToString().Contains("anyadir-gnoss-curriculum")} 5-> {mHttpContextAccessor.HttpContext.Request.Query.ContainsKey("buscar")} 6->{(ProyectoSeleccionado.Clave.Equals(ProyectoAD.MetaProyecto) || (ProyectoSeleccionado.TipoAcceso != TipoAcceso.Reservado && ProyectoSeleccionado.TipoAcceso != TipoAcceso.Privado) || ParametrosGeneralesRow.SolicitarCoockieLogin)}");
-
             //Si la p�gina es RSS no solicita cookie
             if (((usuarioLogueado != null && usuarioLogueado.Equals("1")) || solicitarCookieSiempre) && mHttpContextAccessor.HttpContext.Request.Method.Equals("GET") && (!mHttpContextAccessor.HttpContext.Request.GetDisplayUrl().EndsWith("?rss")) && !mHttpContextAccessor.HttpContext.Request.Host.ToString().Contains("anyadir-gnoss-curriculum") && !mHttpContextAccessor.HttpContext.Request.Query.ContainsKey("buscar") && (ProyectoSeleccionado.Clave.Equals(ProyectoAD.MetaProyecto) || (ProyectoSeleccionado.TipoAcceso != TipoAcceso.Reservado && ProyectoSeleccionado.TipoAcceso != TipoAcceso.Privado) || ParametrosGeneralesRow.SolicitarCoockieLogin))
             {

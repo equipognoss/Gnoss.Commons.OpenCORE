@@ -133,13 +133,14 @@ namespace Es.Riam.Gnoss.Servicios.ControladoresServiciosWeb
             return PeticionServicio(metodo, parametros);
         }
 
-        public ResultadoModel CargarResultadosGadgetSPARQL(string pSparql, Guid pProyectoID, int pNumItemsPag, int pNumPag,string pIdioma, bool pObtenerDatosExtraRecursos = true, bool pObtenerIdentidades = true, bool pObtenerDatosExtraIdentidades = false)
+        public ResultadoModel CargarResultadosGadgetSPARQL(string pSparql, Guid pIdentidadID, Guid pProyectoID, int pNumItemsPag, int pNumPag,string pIdioma, bool pObtenerDatosExtraRecursos = true, bool pObtenerIdentidades = true, bool pObtenerDatosExtraIdentidades = false)
         {
             string metodo = "CargarResultadosGadgetSPARQL";
 
             Dictionary<string, string> parametros = new Dictionary<string, string>();
             parametros.Add("pSPARQL", pSparql);
             parametros.Add("pProyectoID", pProyectoID.ToString());
+            parametros.Add("pIdentidadID", pIdentidadID.ToString());
             parametros.Add("pNumItemsPag", pNumItemsPag.ToString());
             parametros.Add("pNumPag", pNumPag.ToString());
             parametros.Add("pLanguageCode", pIdioma);

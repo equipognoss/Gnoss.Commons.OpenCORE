@@ -5609,10 +5609,10 @@ namespace Es.Riam.Gnoss.AD.Documentacion
             }
 
 
-            var resOnto = mEntityContext.Documento.JoinDocumentoWebVinBaseRecursosDocumento().JoinBaseRecursosProyecto().Where(objeto => (objeto.Documento.Tipo.Equals((short)TiposDocumentacion.Ontologia) || objeto.Documento.Tipo.Equals((short)TiposDocumentacion.OntologiaSecundaria)) && objeto.Documento.Enlace.Equals(pNombre) && !objeto.Documento.Eliminado && !objeto.DocumentoWebVinBaseRecursos.Eliminado);
+            var resOnto = mEntityContext.Documento.JoinDocumentoWebVinBaseRecursosDocumento().JoinBaseRecursosProyecto().Where(objeto => (objeto.Documento.Tipo.Equals((short)TiposDocumentacion.Ontologia) || objeto.Documento.Tipo.Equals((short)TiposDocumentacion.OntologiaSecundaria)) && objeto.Documento.Enlace.ToLower().Equals(pNombre.ToLower()) && !objeto.Documento.Eliminado && !objeto.DocumentoWebVinBaseRecursos.Eliminado);
             if (!ptraerSecundarias)
             {
-                resOnto = mEntityContext.Documento.JoinDocumentoWebVinBaseRecursosDocumento().JoinBaseRecursosProyecto().Where(objeto => objeto.Documento.Tipo.Equals((short)TiposDocumentacion.Ontologia) && objeto.Documento.Enlace.Equals(pNombre) && !objeto.Documento.Eliminado && !objeto.DocumentoWebVinBaseRecursos.Eliminado);
+                resOnto = mEntityContext.Documento.JoinDocumentoWebVinBaseRecursosDocumento().JoinBaseRecursosProyecto().Where(objeto => objeto.Documento.Tipo.Equals((short)TiposDocumentacion.Ontologia) && objeto.Documento.Enlace.ToLower().Equals(pNombre.ToLower()) && !objeto.Documento.Eliminado && !objeto.DocumentoWebVinBaseRecursos.Eliminado);
             }
 
             string patronIDOntologias = mEntityContext.ParametroProyecto.Where(param => param.Parametro.Equals(ParametroAD.ProyectoIDPatronOntologias) && param.ProyectoID.Equals(pProyectoID)).Select(param => param.Valor).FirstOrDefault();
@@ -5644,7 +5644,7 @@ namespace Es.Riam.Gnoss.AD.Documentacion
                     resOnto = resOnto.Where(objeto => objeto.BaseRecursosProyecto.ProyectoID.Equals(pProyectoID));
                 }
             }
-            List<Guid> listaIDs = resOnto.Select(objeto => objeto.Documento.DocumentoID).Union(mEntityContext.Documento.Where(doc => doc.Tipo.Equals((short)TiposDocumentacion.Ontologia) && !doc.Eliminado && doc.Visibilidad == 1 && doc.Enlace.Equals(pNombre)).Select(doc => doc.DocumentoID)).ToList();
+            List<Guid> listaIDs = resOnto.Select(objeto => objeto.Documento.DocumentoID).Union(mEntityContext.Documento.Where(doc => doc.Tipo.Equals((short)TiposDocumentacion.Ontologia) && !doc.Eliminado && doc.Visibilidad == 1 && doc.Enlace.ToLower().Equals(pNombre.ToLower())).Select(doc => doc.DocumentoID)).ToList();
 
 
             Guid documentoID = Guid.Empty;

@@ -1836,7 +1836,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
                 bool obtenerDatosExtraIdentidades = false;
                 ObtenerDatoExtraRecursosComponente(pComponente, ref obtenerDatosExtraRecursos, ref obtenerIdentidades, ref obtenerDatosExtraIdentidades);
                 sw = LoggingService.IniciarRelojTelemetria();
-                fichaComponenteListadoRecursos.Resultado = cargadorResultados.CargarResultadosGadgetSPARQL(System.Uri.EscapeDataString(querySPARQL), mControlador.ProyectoSeleccionado.Clave, pComponente.NumeroItems, pPagina, pIdioma, obtenerDatosExtraRecursos, obtenerIdentidades, obtenerDatosExtraIdentidades);
+                fichaComponenteListadoRecursos.Resultado = cargadorResultados.CargarResultadosGadgetSPARQL(System.Uri.EscapeDataString(querySPARQL), IdentidadActual.Clave , mControlador.ProyectoSeleccionado.Clave, pComponente.NumeroItems, pPagina, pIdioma, obtenerDatosExtraRecursos, obtenerIdentidades, obtenerDatosExtraIdentidades);
                 mLoggingService.AgregarEntradaDependencia("Llamar al servicio de resultado", false, "ObtenerFichaBuscadorSPARQL", sw, true);
             }
             catch (Exception ex)

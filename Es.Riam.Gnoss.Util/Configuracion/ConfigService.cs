@@ -58,6 +58,7 @@ namespace Es.Riam.Gnoss.Util.Configuracion
         private string urlApiDesplieguesEntornoAnterior;
         private string urlApiDesplieguesEntorno;
         private string urlApiIntegracionContinua;
+        private string urlApi;
         private string urlIntraGnoss;
         private bool viewsAdministracion;
         private string urlApiLucene;
@@ -1766,6 +1767,23 @@ namespace Es.Riam.Gnoss.Util.Configuracion
             }
             return urlApiDesplieguesEntornoAnterior;
         }
+
+        public string ObtenerUrlApi()
+        {
+            if (string.IsNullOrEmpty(urlApi))
+            {
+                if (EnvironmentVariables.Contains("Servicios__urlApi"))
+                {
+                    urlApi = EnvironmentVariables["Servicios__urlApi"] as string;
+                }
+                else
+                {
+                    urlApi = Configuration.GetSection("Servicios")["urlApi"];
+                }
+            }
+            return urlApi;
+        }
+
         public string ObtenerUrlApiDesplieguesEntorno()
         {
             if (string.IsNullOrEmpty(urlApiDesplieguesEntorno))
