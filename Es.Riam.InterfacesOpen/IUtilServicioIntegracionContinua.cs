@@ -59,6 +59,9 @@ namespace Es.Riam.Interfaces.InterfacesOpen
         public string ComprobarAutorizacionGitBit(Guid pUsuario, Guid pProyectoSeleccionado, string pEntornoIntegracionContinua, string pUrlReturn, string pUrlApiIntegracionContinua);
         public string RamaEnUso(string pNombreCorto, string pUrlApiIntegracionContinua);
         public string ObtenerUrlApiDesplieguesEntorno(string pNombreEntorno, string pUrlApiIntegracionContinua);
+        public string ObtenerUrlApiDesplieguesEntornoSiguiente(Guid pProyectoSeleccionado, string pEntornoIntegracionContinua, string pUrlApiIntegracionContinua, Guid pUsuarioID);
+        public string ObtenerUrlApiDesplieguesEntornoAnterior(Guid pProyectoSeleccionado, string pEntornoIntegracionContinua, string pUrlApiIntegracionContinua, Guid pUsuarioID);
+        public string ObtenerUrlApiDesplieguesEntornoParametro(Guid pProyectoSeleccionado, string pEntornoIntegracionContinua, string pUrlApiIntegracionContinua, Guid pUsuarioID, string pEntorno);
         public HttpStatusCode CompilarDll(Guid pClaveProyectoSeleccionado, Guid pUsuarioID, string pEntornoIntegracionContinua, string pUrlApiIntegracionContinua, string pTagName, string pUrlApiDespliegue);
     }
 }

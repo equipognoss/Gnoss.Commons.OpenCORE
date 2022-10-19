@@ -135,7 +135,6 @@ namespace Es.Riam.Gnoss.Util.General
                 mListaIdiomas[ficheroConexion] = pListaIdiomas;
             }
         }
-
         /// <summary>
         /// Obtiene la lista de idiomas de la forma (es, Español)
         /// </summary>
@@ -204,6 +203,7 @@ namespace Es.Riam.Gnoss.Util.General
 
             return resultado;
         }
+        
 
         /// <summary>
         /// Obtiene la lista de idiomas de la forma (es, Español)
@@ -957,102 +957,6 @@ namespace Es.Riam.Gnoss.Util.General
             }
 
             return urlServicioWebDocumentacion;
-        }
-
-        public string ObtenerUrlApiIntegracionContinua()
-        {
-            string urlApiIntegracionContinua = ObtenerServicio("urlApiIntegracionContinua", Guid.Empty, null);
-
-            return urlApiIntegracionContinua;
-        }
-
-        public string ObtenerUrlApiDesplieguesEntornoParametro(string pEntornoIntegracionContinua, Guid pProyectoSeleccionado, string entorno)
-        {
-            string urlApiIntegracionContinua = ObtenerUrlApiIntegracionContinua();
-            if (!string.IsNullOrEmpty(urlApiIntegracionContinua))
-            {
-                string peticion = urlApiIntegracionContinua + "/integracion/get-apiurl-parameter";
-                string requestParameters = $"User={_usuario.UsuarioActual.UsuarioID}&Project={pProyectoSeleccionado}&Environment={pEntornoIntegracionContinua}&Entorno={entorno}";
-
-                byte[] byteData = Encoding.UTF8.GetBytes(requestParameters);
-                string urlEnvironment = UtilGeneral.WebRequest("POST", peticion, byteData);
-
-                if (!string.IsNullOrEmpty(urlEnvironment))
-                {
-                    return urlEnvironment;
-                }
-            }
-
-            return "";
-        }
-
-        public string ObtenerUrlApiDesplieguesEntorno(string pEntornoIntegracionContinua, Guid pProyectoSeleccionado)
-        {
-            if (!string.IsNullOrEmpty(pEntornoIntegracionContinua))
-            {
-                string urlApiIntegracionContinua = ObtenerUrlApiIntegracionContinua();
-                if (!string.IsNullOrEmpty(urlApiIntegracionContinua))
-                {
-                    string peticion = urlApiIntegracionContinua + "/integracion/get-apiurl-environment";
-                    string requestParameters = $"User={_usuario.UsuarioActual.UsuarioID}&Project={pProyectoSeleccionado}&Environment={pEntornoIntegracionContinua}";
-
-                    byte[] byteData = Encoding.UTF8.GetBytes(requestParameters);
-                    string urlEnvironment = UtilGeneral.WebRequest("POST", peticion, byteData);
-
-                    if (!string.IsNullOrEmpty(urlEnvironment))
-                    {
-                        return urlEnvironment;
-                    }
-                }
-            }
-
-            return "";
-        }
-
-        public string ObtenerUrlApiDesplieguesEntornoAnterior(string pEntornoIntegracionContinua, Guid pProyectoSeleccionado)
-        {
-            if (!string.IsNullOrEmpty(pEntornoIntegracionContinua))
-            {
-                string urlApiIntegracionContinua = ObtenerUrlApiIntegracionContinua();
-                if (!string.IsNullOrEmpty(urlApiIntegracionContinua))
-                {
-                    string peticion = urlApiIntegracionContinua + "/integracion/get-apiurl-previous-environment";
-                    string requestParameters = $"User={_usuario.UsuarioActual.UsuarioID}&Project={pProyectoSeleccionado}&Environment={pEntornoIntegracionContinua}";
-
-                    byte[] byteData = Encoding.UTF8.GetBytes(requestParameters);
-                    string urlEnvironment = UtilGeneral.WebRequest("POST", peticion, byteData);
-
-                    if (!string.IsNullOrEmpty(urlEnvironment))
-                    {
-                        return urlEnvironment;
-                    }
-                }
-            }
-
-            return null;
-        }
-
-        public string ObtenerUrlApiDesplieguesEntornoSiguiente(string pEntornoIntegracionContinua, Guid pProyectoSeleccionado)
-        {
-            if (!string.IsNullOrEmpty(pEntornoIntegracionContinua))
-            {
-                string urlApiIntegracionContinua = ObtenerUrlApiIntegracionContinua();
-                if (!string.IsNullOrEmpty(urlApiIntegracionContinua))
-                {
-                    string peticion = urlApiIntegracionContinua + "/integracion/get-apiurl-next-environment";
-                    string requestParameters = $"User={_usuario.UsuarioActual.UsuarioID}&Project={pProyectoSeleccionado}&Environment={pEntornoIntegracionContinua}";
-
-                    byte[] byteData = Encoding.UTF8.GetBytes(requestParameters);
-                    string urlEnvironment = UtilGeneral.WebRequest("POST", peticion, byteData);
-
-                    if (!string.IsNullOrEmpty(urlEnvironment))
-                    {
-                        return urlEnvironment;
-                    }
-                }
-            }
-
-            return null;
         }
 
 
