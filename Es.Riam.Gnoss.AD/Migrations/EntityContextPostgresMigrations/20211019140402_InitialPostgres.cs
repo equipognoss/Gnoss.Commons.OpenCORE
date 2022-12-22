@@ -960,6 +960,46 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "FacetaObjetoConocimientoProyecto",
+                columns: table => new
+                {
+                    OrganizacionID = table.Column<Guid>(type: "uuid", nullable: false),
+                    ProyectoID = table.Column<Guid>(type: "uuid", nullable: false),
+                    ObjetoConocimiento = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false),
+                    Faceta = table.Column<string>(type: "character varying(300)", maxLength: 300, nullable: false),
+                    Orden = table.Column<short>(type: "smallint", nullable: false),
+                    Autocompletar = table.Column<bool>(type: "boolean", nullable: false),
+                    TipoPropiedad = table.Column<short>(type: "smallint", nullable: true),
+                    Comportamiento = table.Column<short>(type: "smallint", nullable: false),
+                    MostrarSoloCaja = table.Column<bool>(type: "boolean", nullable: true),
+                    Excluida = table.Column<short>(type: "smallint", nullable: true),
+                    Oculta = table.Column<bool>(type: "boolean", nullable: true),
+                    TipoDisenio = table.Column<short>(type: "smallint", nullable: false),
+                    ElementosVisibles = table.Column<short>(type: "smallint", nullable: false),
+                    AlgoritmoTransformacion = table.Column<short>(type: "smallint", nullable: false),
+                    NivelSemantico = table.Column<string>(type: "character varying(5)", maxLength: 5, nullable: true),
+                    EsSemantica = table.Column<bool>(type: "boolean", nullable: false),
+                    Mayusculas = table.Column<short>(type: "smallint", nullable: false),
+                    NombreFaceta = table.Column<string>(type: "text", nullable: false),
+                    Excluyente = table.Column<bool>(type: "boolean", nullable: false),
+                    SubTipo = table.Column<string>(type: "text", nullable: true),
+                    Reciproca = table.Column<short>(type: "smallint", nullable: false),
+                    FacetaPrivadaParaGrupoEditores = table.Column<string>(type: "text", nullable: true),
+                    ComportamientoOr = table.Column<bool>(type: "boolean", nullable: false),
+                    OcultaEnFacetas = table.Column<bool>(type: "boolean", nullable: false),
+                    OcultaEnFiltros = table.Column<bool>(type: "boolean", nullable: false),
+                    Condicion = table.Column<string>(type: "text", nullable: true),
+                    PriorizarOrdenResultados = table.Column<bool>(type: "boolean", nullable: false),
+                    Inmutable = table.Column<bool>(type: "boolean", nullable: false),
+                    AgrupacionID = table.Column<Guid>(type: "uuid", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_FacetaObjetoConocimientoProyecto", x => new { x.OrganizacionID, x.ProyectoID, x.ObjetoConocimiento, x.Faceta });
+                });
+
+
+            migrationBuilder.CreateTable(
                 name: "FacetaHome",
                 columns: table => new
                 {
@@ -974,6 +1014,12 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_FacetaHome", x => new { x.OrganizacionID, x.ProyectoID, x.ObjetoConocimiento, x.Faceta });
+                    table.ForeignKey(
+                        name: "FK_FacetaHome_FacetaObjetoConocimientoProyecto",
+                        columns: x => new { x.OrganizacionID, x.ProyectoID, x.ObjetoConocimiento, x.Faceta },
+                        principalTable: "FacetaObjetoConocimientoProyecto",
+                        principalColumns: new[] { "OrganizacionID", "ProyectoID", "ObjetoConocimiento", "Faceta" },
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -2655,51 +2701,6 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
                         principalTable: "FacetaHome",
                         principalColumns: new[] { "OrganizacionID", "ProyectoID", "ObjetoConocimiento", "Faceta" },
                         onDelete: ReferentialAction.Restrict);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "FacetaObjetoConocimientoProyecto",
-                columns: table => new
-                {
-                    OrganizacionID = table.Column<Guid>(type: "uuid", nullable: false),
-                    ProyectoID = table.Column<Guid>(type: "uuid", nullable: false),
-                    ObjetoConocimiento = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false),
-                    Faceta = table.Column<string>(type: "character varying(300)", maxLength: 300, nullable: false),
-                    Orden = table.Column<short>(type: "smallint", nullable: false),
-                    Autocompletar = table.Column<bool>(type: "boolean", nullable: false),
-                    TipoPropiedad = table.Column<short>(type: "smallint", nullable: true),
-                    Comportamiento = table.Column<short>(type: "smallint", nullable: false),
-                    MostrarSoloCaja = table.Column<bool>(type: "boolean", nullable: true),
-                    Excluida = table.Column<short>(type: "smallint", nullable: true),
-                    Oculta = table.Column<bool>(type: "boolean", nullable: true),
-                    TipoDisenio = table.Column<short>(type: "smallint", nullable: false),
-                    ElementosVisibles = table.Column<short>(type: "smallint", nullable: false),
-                    AlgoritmoTransformacion = table.Column<short>(type: "smallint", nullable: false),
-                    NivelSemantico = table.Column<string>(type: "character varying(5)", maxLength: 5, nullable: true),
-                    EsSemantica = table.Column<bool>(type: "boolean", nullable: false),
-                    Mayusculas = table.Column<short>(type: "smallint", nullable: false),
-                    NombreFaceta = table.Column<string>(type: "text", nullable: false),
-                    Excluyente = table.Column<bool>(type: "boolean", nullable: false),
-                    SubTipo = table.Column<string>(type: "text", nullable: true),
-                    Reciproca = table.Column<short>(type: "smallint", nullable: false),
-                    FacetaPrivadaParaGrupoEditores = table.Column<string>(type: "text", nullable: true),
-                    ComportamientoOr = table.Column<bool>(type: "boolean", nullable: false),
-                    OcultaEnFacetas = table.Column<bool>(type: "boolean", nullable: false),
-                    OcultaEnFiltros = table.Column<bool>(type: "boolean", nullable: false),
-                    Condicion = table.Column<string>(type: "text", nullable: true),
-                    PriorizarOrdenResultados = table.Column<bool>(type: "boolean", nullable: false),
-                    Inmutable = table.Column<bool>(type: "boolean", nullable: false),
-                    AgrupacionID = table.Column<Guid>(type: "uuid", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_FacetaObjetoConocimientoProyecto", x => new { x.OrganizacionID, x.ProyectoID, x.ObjetoConocimiento, x.Faceta });
-                    table.ForeignKey(
-                        name: "FK_FacetaObjetoConocimientoProyecto_FacetaHome_OrganizacionID_~",
-                        columns: x => new { x.OrganizacionID, x.ProyectoID, x.ObjetoConocimiento, x.Faceta },
-                        principalTable: "FacetaHome",
-                        principalColumns: new[] { "OrganizacionID", "ProyectoID", "ObjetoConocimiento", "Faceta" },
-                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
