@@ -373,6 +373,7 @@ namespace Es.Riam.Gnoss.Util.General
                     catch { }
                     string error = sb.ToString().Replace('\r', ' ').Replace('\n', ' ');
                     sw.WriteLine(error);
+                    Console.WriteLine(error);
                     //sw.WriteLine(Environment.NewLine + Environment.NewLine + "___________________________________________________________________________________________" + Environment.NewLine + Environment.NewLine + Environment.NewLine);
                 }
 
@@ -759,7 +760,7 @@ namespace Es.Riam.Gnoss.Util.General
         public static void InicializarLogstash(string pEndpoint)
         {
             Log = new LoggerConfiguration()
-                    .WriteTo.Http(pEndpoint)
+                    .WriteTo.Http(pEndpoint, 104857600) // 100Mb
                     .CreateLogger();
         }
 

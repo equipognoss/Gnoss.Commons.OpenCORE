@@ -6,8 +6,7 @@
 
   <ItemGroup>
     <PackageReference Include="DotNetOpenAuth.OAuth2.Client" Version="4.3.4.13329" />
-    <PackageReference Include="Google.Apis.Drive.v2" Version="1.50.0.2265" />
-    <PackageReference Include="Microsoft.AspNetCore.Http.Abstractions" Version="2.2.0" />
+    <PackageReference Include="Google.Apis.Drive.v2" Version="1.60.0.3075" />
     <PackageReference Include="Universal.Google.Authentication.OAuth2" Version="0.1.2" />
   </ItemGroup>
 
