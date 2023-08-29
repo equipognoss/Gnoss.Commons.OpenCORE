@@ -17,6 +17,7 @@ namespace Es.Riam.InterfacesOpen
     {
 
         protected LoggingService mLoggingService;
+        public string RdfType { get; set; }
 
         public IMassiveOntologyToClass(LoggingService loggingService)
         {
@@ -25,9 +26,8 @@ namespace Es.Riam.InterfacesOpen
 
 
         public abstract void CrearToOntologyGraphTriples(bool pEsPrincipal, ElementoOntologia pEntidad, StringBuilder Clase, List<Propiedad> listentidadesAux, Ontologia ontologia, Dictionary<string, string> dicPref, Dictionary<string, bool> propListiedadesMultidioma, List<ObjetoPropiedad> listaObjetosPropiedad);
-        public abstract void CrearToSearchGraphTriples(bool pEsPrincipal, ElementoOntologia pEntidad, string pRdfType, List<string> pListaPropiedadesSearch, List<string> pListaPadrePropiedadesAnidadas, StringBuilder Clase, Ontologia ontologia, string nombrePropDescripcion, string nombrePropTitulo, string nombrePropTituloEntero, Dictionary<string, bool> propListiedadesMultidioma, List<ObjetoPropiedad> listaObjetosPropiedad, List<Propiedad> listentidadesAux, Dictionary<string, string> dicPref);
-        public abstract void CrearToAcidData(bool pEsPrincipal, ElementoOntologia pEntidad, Ontologia ontologia, StringBuilder Clase, string nombrePropDescripcion, string nombrePropTitulo, string nombrePropTituloEntero, Dictionary<string, bool> propListiedadesMultidioma, List<ObjetoPropiedad> listaObjetosPropiedad);
-
+        public abstract void CrearToSearchGraphTriples(bool pEsPrincipal, ElementoOntologia pEntidad, List<string> pListaPropiedadesSearch, List<string> pListaPadrePropiedadesAnidadas, StringBuilder Clase, Ontologia ontologia, string nombrePropDescripcion, string nombrePropTitulo, string nombrePropTituloEntero, Dictionary<string, bool> propListiedadesMultidioma, List<ObjetoPropiedad> listaObjetosPropiedad, List<Propiedad> listentidadesAux, Dictionary<string, string> dicPref, Dictionary<Propiedad, bool> dicPropMultiidiomaFalse);
+        public abstract void CrearToAcidData(bool pEsPrincipal, ElementoOntologia pEntidad, Ontologia ontologia, StringBuilder Clase, string nombrePropDescripcion, string nombrePropTitulo, string nombrePropTituloEntero, Dictionary<string, bool> propListiedadesMultidioma, List<ObjetoPropiedad> listaObjetosPropiedad, Dictionary<Propiedad, bool> dicPropiedadMultiidiomaFalse);
         /// <summary>
         /// 
         /// </summary>
@@ -43,12 +43,23 @@ namespace Es.Riam.InterfacesOpen
             return EsPropiedadExternaMultiIdioma(pEntidad, prop.Nombre, listaObjetosPropiedad);
         }
 
-        public bool EsPropiedadExternaMultiIdioma(ElementoOntologia pEntidad, string pNombre, List<ObjetoPropiedad> listaObjetosPropiedad)
+        public bool EsPropiedadTituloDocMultiIdioma(string pNombre, List<ObjetoPropiedad> listaObjetosPropiedad)
         {
-            ObjetoPropiedad propiedad = listaObjetosPropiedad.FirstOrDefault(item => item.NombrePropiedad.Equals(pNombre) && item.NombreEntidad.Equals(pEntidad.TipoEntidad));
+            ObjetoPropiedad propiedad = listaObjetosPropiedad.FirstOrDefault(item => item.NombrePropiedad.Equals(pNombre));
             if (propiedad == null)
             {
-                throw new Exception($"La entidad {pEntidad.TipoEntidad} no contiene la propiedad {pNombre}");
+                throw new Exception($"no está definida la propiedad {pNombre} configurada como título del documento.");
+            }
+            return propiedad.Multiidioma;
+        }
+
+        public bool EsPropiedadExternaMultiIdioma(ElementoOntologia pEntidad, string pNombre, List<ObjetoPropiedad> listaObjetosPropiedad)
+        {
+            //Cambiar RDFType
+            ObjetoPropiedad propiedad = listaObjetosPropiedad.FirstOrDefault(item => item.NombrePropiedad.Equals(pNombre) && item.NombreEntidad.Equals(pEntidad.TipoEntidad) && item.NombreOntologia.ToLower().Equals(RdfType.ToLower()));
+            if (propiedad == null)
+            {
+                throw new Exception($"la entidad {pEntidad.TipoEntidad} no contiene la propiedad {pNombre}");
             }
             return propiedad.Multiidioma;
         }
@@ -88,7 +99,9 @@ namespace Es.Riam.InterfacesOpen
             }
             else
             {
-                return "{resourceAPI.GraphsUrl.ToLower()}items/{Identificador.ToLower()}";
+                //CAMBIOS MINUSCULA 
+                //return "{resourceAPI.GraphsUrl.ToLower()}items/{Identificador.ToLower()}";
+                return "{resourceAPI.GraphsUrl.ToLower()}items/{Identificador}";
             }
         }
 
@@ -153,8 +166,6 @@ namespace Es.Riam.InterfacesOpen
                 tipoSujeto = TiposSujeto.Ontologia;
             }
 
-            int ultimaParte = pElem.TipoEntidad.LastIndexOf('/');
-
             string item = nombreCompletoPadre;
 
             Clase.AppendLine($"{UtilCadenasOntology.Tabs(3)}if({nombreCompletoPadre} != null)");
@@ -179,7 +190,10 @@ namespace Es.Riam.InterfacesOpen
             }
             else
             {
-                sujetoEntidadAuxiliar = $"{{resourceAPI.GraphsUrl}}items/{pElem.TipoEntidadRelativo.ToLower()}_{{ResourceID}}_{{{item}.ArticleID}}";
+                //CAMBIOS A OBJETOS EN GRAFO DE BÚSQUEDA SIN MINÚSCULAS
+                //sujetoEntidadAuxiliar = $"{{resourceAPI.GraphsUrl}}items/{pElem.TipoEntidadRelativo.ToLower()}_{{ResourceID}}_{{{item}.ArticleID}}";
+                sujetoEntidadAuxiliar = $"{{resourceAPI.GraphsUrl}}items/{pElem.TipoEntidadRelativo}_{{ResourceID}}_{{{item}.ArticleID}}";
+                Clase.AppendLine($"{UtilCadenasOntology.Tabs(4)}AgregarTripleALista($\"http://gnossAuxiliar/{{ResourceID.ToString().ToUpper()}}\", \"http://gnoss/hasEntidadAuxiliar\", $\"<{sujetoEntidadAuxiliar}>\", list, \" . \");");
             }
 
             Clase.AppendLine($"{UtilCadenasOntology.Tabs(4)}AgregarTripleALista($\"{pSujetoEntidadSuperior}\", \"{pPropiedadPadre.NombreFormatoUri}\", $\"<{sujetoEntidadAuxiliar}>\", list, \" . \");");
@@ -223,7 +237,6 @@ namespace Es.Riam.InterfacesOpen
                     ConfiguracionObjeto configuracionObjeto = new ConfiguracionObjeto(dicPref, prop, pElem, pEsOntologia, mLoggingService);
 
                     string identificadorValor = $"{configuracionObjeto.Id}{configuracionObjeto.PrefijoPropiedad}_{configuracionObjeto.NombrePropiedad}";
-                    //string propiedadParaSearch = $"{pNombrePadres}.{configuracionObjeto.Id}{configuracionObjeto.PrefijoPropiedad}:{configuracionObjeto.NombrePropiedad}".ToLower().Replace("this.", "");
                     string propiedadParaSearch = $"{configuracionObjeto.PrefijoPropiedad}:{configuracionObjeto.NombrePropiedad}".ToLower();
 
                     if (!string.IsNullOrEmpty(pRutaPadreSearch))
@@ -250,14 +263,29 @@ namespace Es.Riam.InterfacesOpen
                         }
                         else
                         {
-                            Clase.AppendLine($"{UtilCadenasOntology.Tabs(4)}if({pNombrePadres}.{identificadorValor} != null && {pNombrePadres}.{identificadorValor} != DateTime.MinValue)");
+                            if (prop.ValorUnico)
+                            {
+                                Clase.AppendLine($"{UtilCadenasOntology.Tabs(4)}if({pNombrePadres}.{identificadorValor} != null && {pNombrePadres}.{identificadorValor} != DateTime.MinValue)");
+                            }
+                            else
+                            {
+                                Clase.AppendLine($"{UtilCadenasOntology.Tabs(4)}if ({pNombrePadres}.{identificadorValor} != null)");
+                            }
+                            
                         }
                     }
                     else
                     {
                         if (pintarSearch && configuracionObjeto.Rango.ToLower().Equals("string") && !EsPropiedadMultiIdioma(prop.Nombre, propListiedadesMultidioma) && !EsPropiedadExternaMultiIdioma(pElem, prop, listaObjetosPropiedad))
                         {
-                            Clase.AppendLine($"{UtilCadenasOntology.Tabs(4)}if(!string.IsNullOrEmpty({pNombrePadres}.{identificadorValor}))");
+                            if (prop.ValorUnico)
+                            {
+								Clase.AppendLine($"{UtilCadenasOntology.Tabs(4)}if(!string.IsNullOrEmpty({pNombrePadres}.{identificadorValor}))");
+                            }
+                            else
+                            {
+								Clase.AppendLine($"{UtilCadenasOntology.Tabs(4)}if({pNombrePadres}.{identificadorValor} != null)");
+							}                        
                         }
                         else
                         {
@@ -284,17 +312,27 @@ namespace Es.Riam.InterfacesOpen
                                 {
                                     valorTriple = ModificarAIDCorto(valorTriple, configuracionObjeto.EsObject, pEsOntologia, Clase);
                                 }
-                                Clase.AppendLine($"{UtilCadenasOntology.Tabs(6)}AgregarTripleALista($\"{pSujetoEntidadSuperior}\", \"{prop.NombreFormatoUri}\", $\"{configuracionObjeto.SimboloInicio}{valorTriple}{configuracionObjeto.Aux}{configuracionObjeto.SimboloFin}\", list, \" . \");");
-                                Clase.AppendLine($"{UtilCadenasOntology.Tabs(5)}}}");
+                                if (configuracionObjeto.Rango.ToLower().Equals("datetime"))
+                                {
+                                    Clase.AppendLine($"{UtilCadenasOntology.Tabs(6)}if ({valorTriple} != DateTime.MinValue) {{");
+                                    Clase.AppendLine($"{UtilCadenasOntology.Tabs(7)}AgregarTripleALista($\"{pSujetoEntidadSuperior}\", \"{prop.NombreFormatoUri}\", $\"{configuracionObjeto.SimboloInicio}{valorTriple}{configuracionObjeto.Aux}{configuracionObjeto.SimboloFin}\", list, \" . \");");
+                                    Clase.AppendLine($"{UtilCadenasOntology.Tabs(6)}}}");
+                                }
+                                else
+                                {
+                                    Clase.AppendLine($"{UtilCadenasOntology.Tabs(6)}AgregarTripleALista($\"{pSujetoEntidadSuperior}\", \"{prop.NombreFormatoUri}\", $\"{configuracionObjeto.SimboloInicio}{valorTriple}{configuracionObjeto.Aux}{configuracionObjeto.SimboloFin}\", list, \" . \");");
+                                }
+								if (pintarSearch)
+								{
+									Clase.AppendLine($"{UtilCadenasOntology.Tabs(6)}search += $\"{{{valorTriple}}} \";");
+								}
+								else if (esPropiedadSearchAnidada)
+								{
+									GenerarSearch(propiedadSearchAnidada, Clase);
+								}
+								Clase.AppendLine($"{UtilCadenasOntology.Tabs(5)}}}");
 
-                                if (pintarSearch)
-                                {
-                                    Clase.AppendLine($"{UtilCadenasOntology.Tabs(6)}search += $\"{{{valorTriple}}} \";");
-                                }
-                                else if (esPropiedadSearchAnidada)
-                                {
-                                    GenerarSearch(propiedadSearchAnidada, Clase);
-                                }
+                                
                             }
                         }
                         else
@@ -407,6 +445,8 @@ namespace Es.Riam.InterfacesOpen
 
                     Clase.AppendLine($"{UtilCadenasOntology.Tabs(5)}{{");
 
+                    //CAMBIOS MINUSCULA
+                    //Clase.AppendLine($"{UtilCadenasOntology.Tabs(6)}itemRegex = itemRegex.ToLower();");
                     Clase.AppendLine($"{UtilCadenasOntology.Tabs(6)}itemRegex = itemRegex.ToLower();");
 
                     Clase.AppendLine($"{UtilCadenasOntology.Tabs(5)}}}");

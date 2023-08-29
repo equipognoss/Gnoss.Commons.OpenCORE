@@ -396,6 +396,10 @@ namespace Es.Riam.Gnoss.Web.MVC.Models.Administracion
         /// <summary>
         /// 
         /// </summary>
+        public DateTime FechaModificacion { get; set; }
+        /// <summary>
+        /// 
+        /// </summary>
         public bool Active { get; set; }
         /// <summary>
         /// 

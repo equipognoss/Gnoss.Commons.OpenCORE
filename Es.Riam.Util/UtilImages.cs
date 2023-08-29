@@ -166,9 +166,9 @@ namespace Es.Riam.Util
             Rectangle rectanguloRecorte = new Rectangle(targetX, targetY, targetW - targetX, targetH - targetY);
             Rectangle rectanguloDestino = new Rectangle(0, 0, targetW, targetH);
 
-            imagenOriginal.Clone(x => x.Resize(targetW, targetH).Crop(rectanguloRecorte).Resize(targetW, targetH));
+            var imagenCrop = imagenOriginal.Clone(x => x.Crop(rectanguloRecorte).Resize(targetW, targetH));
 
-            return imagenOriginal;
+            return imagenCrop;
         }
 
         /// <summary>
@@ -192,26 +192,25 @@ namespace Es.Riam.Util
             {
                 Image imagenOriginal = Image.Load(new MemoryStream(imageFile));
                 Rectangle rectanguloRecorte = new Rectangle(targetX, targetY, targetW, targetH);
-                Rectangle rectanguloDestino = new Rectangle(0, 0, targetW, targetH);
 
-                imagenOriginal.Clone(x => x.Resize(targetW, targetH).Crop(rectanguloRecorte).Resize(targetW, targetH));
+                var imagenRecortada = imagenOriginal.Clone(x => x.Crop(rectanguloRecorte).Resize(targetW, targetH));
 
                 MemoryStream mm = new MemoryStream();
                 if (extensionArchivo.ToLower().Equals("jpeg") || string.Compare(extensionArchivo, "jpg", true) == 0)
                 {
-                    imagenOriginal.SaveAsJpeg(mm);
+                    imagenRecortada.SaveAsJpeg(mm);
                 }
                 if (extensionArchivo.ToLower().Equals("png"))
                 {
-                    imagenOriginal.SaveAsPng(mm);
+                    imagenRecortada.SaveAsPng(mm);
                 }
                 if (extensionArchivo.ToLower().Equals("bmp"))
                 {
-                    imagenOriginal.SaveAsBmp(mm);
+                    imagenRecortada.SaveAsBmp(mm);
                 }
                 if (extensionArchivo.ToLower().Equals("gif"))
                 {
-                    imagenOriginal.SaveAsGif(mm);
+                    imagenRecortada.SaveAsGif(mm);
                 }
                 return mm.GetBuffer();
             }

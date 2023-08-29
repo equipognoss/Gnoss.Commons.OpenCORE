@@ -280,6 +280,28 @@ namespace Es.Riam.Gnoss.Elementos.Identidad
         }
 
         /// <summary>
+        /// Obtiene la lista de redes sociales del perfil de la Organizacion
+        /// </summary>
+        public Dictionary<string, PerfilRedesSociales> ListaRedesSocialesOrganizacion
+        {
+            get
+            {
+                Dictionary<string, PerfilRedesSociales> listaRedesSociales = new Dictionary<string, AD.EntityModel.Models.IdentidadDS.PerfilRedesSociales>();
+                if (GestorIdentidades.DataWrapperIdentidad.ListaPerfilRedesSocialesOrganizacion != null)
+                {
+                    foreach (PerfilRedesSociales filaPerfilRedesSoc in GestorIdentidades.DataWrapperIdentidad.ListaPerfilRedesSocialesOrganizacion)
+                    {
+                        if (!listaRedesSociales.ContainsKey(filaPerfilRedesSoc.NombreRedSocial))
+                        {
+                            listaRedesSociales.Add(filaPerfilRedesSoc.NombreRedSocial, filaPerfilRedesSoc);
+                        }
+                    }
+                }
+                return listaRedesSociales;
+            }
+        }
+
+        /// <summary>
         /// Obtiene la clave de la identidad
         /// </summary>
         public override Guid Clave

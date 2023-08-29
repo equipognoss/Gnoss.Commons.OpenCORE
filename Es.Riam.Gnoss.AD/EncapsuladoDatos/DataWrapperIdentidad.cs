@@ -23,7 +23,7 @@ namespace Es.Riam.Gnoss.AD.EncapsuladoDatos
         public List<EntityModel.Models.IdentidadDS.Identidad> ListaIdentidad;
 
         public List<PerfilRedesSociales> ListaPerfilRedesSociales;
-
+        public List<PerfilRedesSociales> ListaPerfilRedesSocialesOrganizacion;
         public List<PerfilPersona> ListaPerfilPersona;
 
         public List<PerfilOrganizacion> ListaPerfilOrganizacion;
@@ -82,6 +82,7 @@ namespace Es.Riam.Gnoss.AD.EncapsuladoDatos
             ListaIdentidad = new List<EntityModel.Models.IdentidadDS.Identidad>();
             ListaUsuarioPerfilIdentidad = new List<UsuarioPerfilIdentidad>();
             ListaPerfilRedesSociales = new List<PerfilRedesSociales>();
+            ListaPerfilRedesSocialesOrganizacion = new List<PerfilRedesSociales>();
             ListaPerfilPersona = new List<PerfilPersona>();
             ListaPerfilOrganizacion = new List<PerfilOrganizacion>();
             ListaProfesor = new List<Profesor>();
@@ -202,6 +203,9 @@ namespace Es.Riam.Gnoss.AD.EncapsuladoDatos
                         if (ListaPerfilRedesSociales != null)
                             ListaPerfilRedesSociales.Clear();
 
+                        if (ListaPerfilRedesSocialesOrganizacion != null)
+                            ListaPerfilRedesSocialesOrganizacion.Clear();
+
                         if (ListaProfesor != null)
                             ListaProfesor.Clear();
 
@@ -228,6 +232,7 @@ namespace Es.Riam.Gnoss.AD.EncapsuladoDatos
                     ListaPerfilPersona = null;
                     ListaPerfilPersonaOrg = null;
                     ListaPerfilRedesSociales = null;
+                    ListaPerfilRedesSocialesOrganizacion = null;
                     ListaProfesor = null;
                     ListaUsuarioPerfilIdentidad = null;
 

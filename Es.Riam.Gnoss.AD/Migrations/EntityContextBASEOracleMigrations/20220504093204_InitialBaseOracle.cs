@@ -15,7 +15,7 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextBASEOracleMigrations
                         .Annotation("Oracle:Identity", "START WITH 1 INCREMENT BY 1"),
                     Remitente = table.Column<string>(type: "NVARCHAR2(250)", maxLength: 250, nullable: false),
                     Asunto = table.Column<string>(type: "NVARCHAR2(2000)", nullable: false),
-                    HtmlTexto = table.Column<string>(type: "NVARCHAR2(2000)", nullable: false),
+                    HtmlTexto = table.Column<string>(type: "NCLOB", nullable: false),
                     EsHtml = table.Column<bool>(type: "NUMBER(1)", nullable: false),
                     Prioridad = table.Column<short>(type: "NUMBER(5)", nullable: false),
                     FechaPuestaEnCola = table.Column<DateTime>(type: "TIMESTAMP(7)", nullable: false),

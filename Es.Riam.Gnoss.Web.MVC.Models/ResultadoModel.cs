@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.Extensions.Diagnostics.HealthChecks;
+using System;
 using System.Collections.Generic;
 using System.Text.Json.Serialization;
 
@@ -147,8 +148,50 @@ namespace Es.Riam.Gnoss.Web.MVC.Models
         public TiposBusquedaMVC TipoBusqueda { get; set; }
 
         /// <summary>
+        /// Indica si la petición se ha realizado desde "backOffice / DevTools"
+        /// </summary>
+        public bool AdministradorVeTodasPersonas { get; set; }
+
+
+        /// <summary>
         /// Indica que la búsqueda es de tipo mapa.
         /// </summary>
         public bool MapView { get; set; }
+    }
+
+    /// <summary>
+    /// Lista de permiosos para las páginas de un usuario
+    /// </summary>
+    public class PermisosPaginaUsuarioModel
+    {
+        /// <summary>
+        /// Identificador del usaurios
+        /// </summary>
+        public Guid IdentidadID { get; set; }
+
+        /// <summary>
+        /// Si tiene o no permisos para las páginas de diseño
+        /// </summary>
+        public bool Disenyo { get; set; }
+
+        /// <summary>
+        /// Si tiene o no permisos para la página de administrar páginas
+        /// </summary>
+        public bool Pagina { get; set; }
+
+        /// <summary>
+        /// Si tiene o no permisos para las páginas de administración semántica
+        /// </summary>
+        public bool Semantica { get; set; }
+
+        /// <summary>
+        /// Si tiene o no permisos para la página de administrar tesauros
+        /// </summary>
+        public bool Tesauro { get; set; }
+
+        /// <summary>
+        /// Si tiene o no permiso para adminsitrar los textos
+        /// </summary>
+        public bool Texto { get; set; }
     }
 }

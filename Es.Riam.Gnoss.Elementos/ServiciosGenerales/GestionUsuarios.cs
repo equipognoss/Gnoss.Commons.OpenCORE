@@ -9,6 +9,7 @@ using Es.Riam.Gnoss.Elementos.Peticiones;
 using Es.Riam.Gnoss.Elementos.Suscripcion;
 using Es.Riam.Gnoss.Elementos.Tesauro;
 using Es.Riam.Gnoss.Logica.ServiciosGenerales;
+using Es.Riam.Gnoss.Logica.Usuarios;
 using Es.Riam.Gnoss.Util.Configuracion;
 using Es.Riam.Gnoss.Util.General;
 using System;
@@ -285,7 +286,11 @@ namespace Es.Riam.Gnoss.Elementos.ServiciosGenerales
             }
             //FindByOrganizacionGnossIDProyectoIDUsuarioID(pOrganizacionID, pProyectoID, pFilaUsuario.UsuarioID);
             AD.EntityModel.Models.UsuarioDS.ProyectoRolUsuario filaProyectoRolUsuario = this.DataWrapperUsuario.ListaProyectoRolUsuario.FirstOrDefault(proyRolUs=>proyRolUs.OrganizacionGnossID.Equals(pOrganizacionID) && proyRolUs.ProyectoID.Equals(pProyectoID) && proyRolUs.UsuarioID.Equals(pFilaUsuario.UsuarioID));
-
+            if (filaProyectoRolUsuario == null)
+            {
+                UsuarioCN usuarioCN = new UsuarioCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+                filaProyectoRolUsuario = usuarioCN.ObtenerRolUsuarioEnProyecto(pProyectoID, pFilaUsuario.UsuarioID);
+            }
             if (pAgregarPermisos && filaProyectoRolUsuario == null)
             {
                 AgregarProyectoRolUsuario(pFilaUsuario.UsuarioID, pOrganizacionID, pProyectoID);
@@ -688,14 +693,26 @@ namespace Es.Riam.Gnoss.Elementos.ServiciosGenerales
         /// <param name="pOrganizacionID">Identificador de organización</param>
         public void AgregarOrganizacionRolUsuario(Guid pUsuarioID, Guid pOrganizacionID)
         {
-            AD.EntityModel.Models.UsuarioDS.OrganizacionRolUsuario filaOrganizacionRolUsuario = new AD.EntityModel.Models.UsuarioDS.OrganizacionRolUsuario();
-            filaOrganizacionRolUsuario.UsuarioID = pUsuarioID;
-            filaOrganizacionRolUsuario.OrganizacionID = pOrganizacionID;
-            filaOrganizacionRolUsuario.RolPermitido = UsuarioAD.FilaPermisosSinDefinir;
-            filaOrganizacionRolUsuario.RolDenegado = UsuarioAD.FilaPermisosSinDefinir;
+            if (!mEntityContext.OrganizacionRolUsuario.Any(item => item.UsuarioID.Equals(pUsuarioID) && item.OrganizacionID.Equals(pOrganizacionID)))
+            {
+                AD.EntityModel.Models.UsuarioDS.OrganizacionRolUsuario filaOrganizacionRolUsuario = new AD.EntityModel.Models.UsuarioDS.OrganizacionRolUsuario();
+                filaOrganizacionRolUsuario.UsuarioID = pUsuarioID;
+                filaOrganizacionRolUsuario.OrganizacionID = pOrganizacionID;
+                filaOrganizacionRolUsuario.RolPermitido = UsuarioAD.FilaPermisosSinDefinir;
+                filaOrganizacionRolUsuario.RolDenegado = UsuarioAD.FilaPermisosSinDefinir;
+                DataWrapperUsuario.ListaOrganizacionRolUsuario.Add(filaOrganizacionRolUsuario);
+                mEntityContext.OrganizacionRolUsuario.Add(filaOrganizacionRolUsuario);
+            }
+            else if (!DataWrapperUsuario.ListaOrganizacionRolUsuario.Any(item => item.UsuarioID.Equals(pUsuarioID) && item.OrganizacionID.Equals(pOrganizacionID)))
+            {
+                AD.EntityModel.Models.UsuarioDS.OrganizacionRolUsuario filaOrganizacionRolUsuario = new AD.EntityModel.Models.UsuarioDS.OrganizacionRolUsuario();
+                filaOrganizacionRolUsuario.UsuarioID = pUsuarioID;
+                filaOrganizacionRolUsuario.OrganizacionID = pOrganizacionID;
+                filaOrganizacionRolUsuario.RolPermitido = UsuarioAD.FilaPermisosSinDefinir;
+                filaOrganizacionRolUsuario.RolDenegado = UsuarioAD.FilaPermisosSinDefinir;
 
-            mEntityContext.OrganizacionRolUsuario.Add(filaOrganizacionRolUsuario);
-            DataWrapperUsuario.ListaOrganizacionRolUsuario.Add(filaOrganizacionRolUsuario);
+                DataWrapperUsuario.ListaOrganizacionRolUsuario.Add(filaOrganizacionRolUsuario);
+            }
         }
 
         /// <summary>

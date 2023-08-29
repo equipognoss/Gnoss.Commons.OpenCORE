@@ -95,6 +95,16 @@ namespace Es.Riam.Gnoss.Logica.ServiciosGenerales
         }
 
         /// <summary>
+        /// Obtiene los gadget por idioma asociados al identificador del gadget pasado por parámetro
+        /// </summary>
+        /// <param name="pGadgetID">Identificador del gadget</param>
+        /// <returns></returns>
+        public List<ProyectoGadgetIdioma> ObtenerProyectoGadgetIdiomaDeGadget(Guid pGadgetID)
+        {
+            return ProyectoAD.ObtenerProyectoGadgetIdiomaDeGadget(pGadgetID);
+        }
+
+        /// <summary>
         /// Obtiene los proyectos en los que participa un determinado grupo de organización
         /// </summary>
         /// <param name="pOrganizacionID">Identificador de la organización del proyecto</param>
@@ -211,6 +221,26 @@ namespace Es.Riam.Gnoss.Logica.ServiciosGenerales
         public List<ProyectoPestanyaMenu> ObtenerProyectoPestanyaMenuPorProyectoID(Guid pProyectoID)
         {
             return ProyectoAD.ObtenerProyectoPestanyaMenuPorProyectoID(pProyectoID);
+        }
+
+        /// <summary>
+        /// Nos indica si actualmente existen permisos para administrar los documentos semánticos
+        /// </summary>
+        /// <param name="pProyectoID">Identificador del proyecto</param>
+        /// <returns>Si existe o no permisos para que se puedan administrar los documentos semánticos</returns>
+        public bool ExisteTipoDocDispRolUsuarioProySemantico(Guid pProyectoID)
+        {
+            return ProyectoAD.ExisteTipoDocDispRolUsuarioProySemantico(pProyectoID);
+        } 
+        
+        /// <summary>
+        /// Nos indica si actualmente existen permisos para administrar los documentos semánticos
+        /// </summary>
+        /// <param name="pProyectoID">Identificador del proyecto</param>
+        /// <returns>Si existe o no permisos para que se puedan administrar los documentos semánticos</returns>
+        public bool ExisteTipoOntoDispRolUsuarioProy(Guid pProyectoID, Guid pDocumentoID)
+        {
+            return ProyectoAD.ExisteTipoOntoDispRolUsuarioProy(pProyectoID, pDocumentoID);
         }
 
         /// <summary>
@@ -357,6 +387,35 @@ namespace Es.Riam.Gnoss.Logica.ServiciosGenerales
         {
             return ProyectoAD.ObtenerListaObligatoriedadRegistros(pProyectoID);
         }
+
+        /// <summary>
+        /// Añade a la base de datos la redirección indicada y su valor con parámetro de tener
+        /// </summary>
+        /// <param name="pRedireccionRegistroRuta"></param>
+        public void AniadirRedireccionRegistroRuta(RedireccionRegistroRuta pRedireccionRegistroRuta)
+        {
+            ProyectoAD.AniadirRedireccionRegistroRuta(pRedireccionRegistroRuta);
+        }
+
+        /// <summary>
+        /// Añade la el valor parámetro de la redirección indicado a la base de datos
+        /// </summary>
+        /// <param name="pRedireccionValorParametro"></param>
+        public void AniadirRedireccionValorParametro(RedireccionValorParametro pRedireccionValorParametro)
+        {
+            ProyectoAD.AniadirRedireccionValorParametro(pRedireccionValorParametro);
+        }
+
+        /// <summary>
+        /// Obtiene todas los valores parametro de la redireccion idicada
+        /// </summary>
+        /// <param name="pRedireccionID"></param>
+        /// <returns></returns>
+        public List<RedireccionValorParametro> ObtenerRedireccionValorParametroPorRedireccionID(Guid pRedireccionID)
+        {
+            return ProyectoAD.ObtenerRedireccionValorParametroPorRedireccionID(pRedireccionID);
+        }
+
         /// <summary>
         /// Crea/Edita las filas de RedireccionRegistroRuta y sus filas de RedireccionValorParametro asociadas.
         /// </summary>
@@ -452,6 +511,15 @@ namespace Es.Riam.Gnoss.Logica.ServiciosGenerales
         public void BorrarFilaRedireccionRegistroRuta(List<Guid> pListaRedireccionesID, bool pRetrasarGuardado)
         {
             ProyectoAD.BorrarFilaRedireccionRegistroRuta(pListaRedireccionesID, pRetrasarGuardado);
+        }
+
+        /// <summary>
+        /// Elimina la fila de RedireccionRegistroRuta y sus filas de RedireccionValorParametro asociadas.
+        /// </summary>
+        /// <param name="pRedireccionID">Lista de identificadores de redirección</param>
+        public void BorrarRedireccionRegistroRuta(Guid pRedireccionID)
+        {
+            ProyectoAD.BorrarRedireccionRegistroRuta(pRedireccionID);
         }
 
         /// <summary>
@@ -807,6 +875,15 @@ namespace Es.Riam.Gnoss.Logica.ServiciosGenerales
         public Dictionary<string, Dictionary<Guid, string>> ObtenerNombresCortosProyectosConNombresCortosOntologias(string pNombreCortoProyecto)
         {
             return ProyectoAD.ObtenerNombresCortosProyectosConNombresCortosOntologias(null, pNombreCortoProyecto);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+
+        public string ObtenerNombreOntologiaProyectoUsuario(Guid pPerfil, string pTipo)
+        {
+            return ProyectoAD.ObtenerNombreOntologiaProyectoUsuario(pPerfil, pTipo);
         }
 
         /// <summary>
@@ -1682,8 +1759,6 @@ namespace Es.Riam.Gnoss.Logica.ServiciosGenerales
                 {
                     TerminarTransaccion(true);
                 }
-
-
             }
             catch (DBConcurrencyException ex)
             {
@@ -2025,6 +2100,27 @@ namespace Es.Riam.Gnoss.Logica.ServiciosGenerales
             return ProyectoAD.ObtenerProyectoIDPorNombre(pNombre);
         }
 
+
+        /// <summary>
+        /// Obtiene el proyecto a través de su nombre corto
+        /// </summary>
+        /// <param name="pNombreCorto">Nombre corto del proyecto a obtener</param>
+        /// <returns></returns>
+        public Proyecto ObtenerProyectoPorNombreCorto(string pNombreCorto)
+        {
+            return ProyectoAD.ObtenerProyectoPorNombreCorto(pNombreCorto);
+        }
+
+        /// <summary>
+        /// Nos indica si existe algún proyecto con el nombre corto indicado
+        /// </summary>
+        /// <param name="pNombreCorto">Nombre corto a comprobar</param>
+        /// <returns></returns>
+        public bool ExisteNombreCortoProyecto(string pNombreCorto)
+        {
+            return ProyectoAD.ExisteNombreCortoProyecto(pNombreCorto);
+        }
+
         /// <summary>
         /// Obtiene el Identificador de un proyecto a partir de su nombre CORTO
         /// </summary>
@@ -2095,6 +2191,17 @@ namespace Es.Riam.Gnoss.Logica.ServiciosGenerales
         public DataWrapperProyecto ObtenerProyectoPorIDConNiveles(Guid pProyectoID)
         {
             return ProyectoAD.ObtenerProyectoPorIDConNiveles(pProyectoID);
+        }
+
+        /// <summary>
+        /// Obtiene el proyecto cuyo identificador se pasa por parámetro
+        /// TFG Fran
+        /// </summary>
+        /// <param name="pProyectoID">Identificador de proyecto</param>
+        /// <returns>Dataset de proyectos</returns>
+        public DataWrapperProyecto ObtenerProyectoDashboardPorID(Guid pProyectoID)
+        {
+            return ProyectoAD.ObtenerProyectoDashboardPorID(pProyectoID);
         }
 
 
@@ -2709,6 +2816,18 @@ namespace Es.Riam.Gnoss.Logica.ServiciosGenerales
         {
             return ProyectoAD.ObtenerProyectoIdParticipaUsuario(pUsuarioID);
         }
+
+        /// <summary>
+        /// Obtiene un número específico de proyectos en los que participa el usuario
+        /// </summary>
+        /// <param name="pUsuarioID">Id del usuario</param>
+        /// <param name="numeroResultados">Numero de proyectos que se van a devolver</param>
+        /// <returns>Devuelve lista con los Id de los proyectos que participa el usuario</returns>
+        public List<Guid> ObtenerProyectosIDParticipaUsuario(Guid pUsuarioID, int numeroResultados)
+        {
+            return ProyectoAD.ObtenerProyectosIDParticipaUsuario(pUsuarioID, numeroResultados);
+        }
+
         /// <summary>
         /// Devuvle los usuarios que no pertenecen al proyecto
         /// </summary>
@@ -2751,6 +2870,11 @@ namespace Es.Riam.Gnoss.Logica.ServiciosGenerales
         public string ObtenerIdiomaPrincipalDominio(string pDominio)
         {
             return ProyectoAD.ObtenerIdiomaPrincipalDominio(pDominio);//select proyectoid, URLPropia from Proyecto where URLPropia like '%pruebasiphoneen.gnoss.net@%'
+        }
+
+        public int ObtenerNumeroDeProyectos()
+        {
+            return ProyectoAD.ObtenerNumeroDeProyectos();
         }
 
         #endregion

@@ -1,6 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Resources language="Galician" code="gl">
 	<page name="COMMON">
+		<Resource tag="BUSQUEDAOC">busca de OC</Resource>
 		<Resource tag="RELATEDTO">Relacionado con</Resource>
 		<Resource tag="BASERECURSOS">Recursos</Resource>
 		<Resource tag="SUBIRNEWSLETTER">Añadir nueva newsletter</Resource>
@@ -3566,7 +3567,6 @@
 		<Resource tag="ADMINISTRARCATEGORIASCOM">administrar-categorías</Resource>
 		<Resource tag="ADMINISTRARCOMUNIDADGENERAL">administrar-comunidade-xeral</Resource>
 		<Resource tag="POLITICACOMUNIDAD">política-certificados</Resource>
-		<Resource tag="ADMINISTRARPLANTILLASCOM">administrar-modelos</Resource>
 		<Resource tag="QUIEROTWITTEAR">twittear</Resource>
 		<Resource tag="VERBIO">ver-bio</Resource>
 		<Resource tag="ENVIOTWITTERCORRECTO">twitterok</Resource>

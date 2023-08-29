@@ -1,5 +1,6 @@
 using Es.Riam.AbstractsOpen;
 using Es.Riam.Gnoss.AD.EntityModel;
+using Es.Riam.Gnoss.AD.EntityModelBASE;
 using Es.Riam.Gnoss.AD.RDF;
 using Es.Riam.Gnoss.AD.RDF.Model;
 using Es.Riam.Gnoss.Util.Configuracion;
@@ -59,6 +60,16 @@ namespace Es.Riam.Gnoss.Logica.RDF
             mFicheroConfiguracionBD = pFicheroConfiguracionBD;
         }
 
+        public RdfCN(string pFicheroConfiguracionBD, string pCaracteresDoc, EntityContext entityContext, EntityContextBASE entityContextBASE, LoggingService loggingService, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication)
+            : base(entityContext, loggingService, configService, entityContextBASE, servicesUtilVirtuosoAndReplication)
+        {
+            mLoggingService = loggingService;
+
+            RdfAD = new RdfAD(pFicheroConfiguracionBD, pCaracteresDoc, loggingService, entityContext, entityContextBASE, configService, servicesUtilVirtuosoAndReplication);
+            mEntityContextBASE = entityContextBASE;
+            mFicheroConfiguracionBD = pFicheroConfiguracionBD;
+        }
+
         #endregion
 
         #region Métodos
@@ -71,15 +82,16 @@ namespace Es.Riam.Gnoss.Logica.RDF
         {
             try
             {
-                /*
-                this.RdfAD.ActualizarBD(pRdfDS);
+                
+                //this.RdfAD.ActualizarBD(pRdfDS);
                 if (Transaccion != null)
                 {
                     this.RdfAD.ActualizarBD(pRdfDS);
                 }
                 else
                 {
-                    //IniciarTransaccion(false);
+					//IniciarTransaccionBASE(false);
+     //               IniciarTransaccion(false);
                     {
                         this.RdfAD.ActualizarBD(pRdfDS);
 
@@ -88,10 +100,11 @@ namespace Es.Riam.Gnoss.Logica.RDF
                             pRdfDS.AcceptChanges();
                         }
 
-                        TerminarTransaccion(true);
-                    }
+      //                  TerminarTransaccionBASE(true);
+						//TerminarTransaccion(true);
+					}
                 }
-                */
+                
             }
             catch (DBConcurrencyException ex)
             {

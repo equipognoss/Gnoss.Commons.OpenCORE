@@ -48,7 +48,7 @@ namespace Es.Riam.Gnoss.Logica.Identidad
         /// <returns>DateTime con la fecha de alta de una identidad. Null en caso de que no exista la identidad</returns>
         public DateTime? ObtenerFechaAltaPorIdentidadID(Guid pIdentidadID)
         {
-            return ObtenerFechaAltaPorIdentidadID(pIdentidadID);
+            return IdentidadAD.ObtenerFechaAltaPorIdentidadID(pIdentidadID);
         }
 
         public Guid? ObtenerPerfilIDPorIDTesauro(Guid pTesauroID)
@@ -420,6 +420,15 @@ namespace Es.Riam.Gnoss.Logica.Identidad
         public List<Perfil> ObtenerPerfilesDeOrganizaciones(List<Guid> pOrganizacionesIDs)
         {
             return IdentidadAD.ObtenerPerfilesDeOrganizaciones(pOrganizacionesIDs);
+        }
+        /// <summary>
+        /// Obtiene los perfiles de la organización pasada por parámetro 
+        /// </summary>
+        /// <param name="pOrganizacionID">Identificador de la organización</param>
+        /// <returns>Dataset de identidades</returns>
+        public List<Perfil> ObtenerPerfilesDeUnaOrganizacion(Guid organizacionID)
+        {
+            return IdentidadAD.ObtenerPerfilesDeUnaOrganizacion(organizacionID);
         }
 
         /// <summary>
@@ -928,9 +937,11 @@ namespace Es.Riam.Gnoss.Logica.Identidad
             filaIdent.Rank = 0;
             filaIdent.ActualizaHome = true;
             filaIdent.Foto = PersonaAD.SIN_IMAGENES_PERSONA;
-            pDataWrapperIdentidad.ListaPerfil.FirstOrDefault(perfil => perfil.PerfilID.Equals(pPerfilID)).Identidad.Add(filaIdent);
-            //La añado al dataset
-            pDataWrapperIdentidad.ListaIdentidad.Add(filaIdent);
+			Perfil perfil = pDataWrapperIdentidad.ListaPerfil.FirstOrDefault(perfil => perfil.PerfilID.Equals(pPerfilID));				
+            //perfil.Identidad.Add(filaIdent);
+            
+			//La añado al dataset
+			pDataWrapperIdentidad.ListaIdentidad.Add(filaIdent);
             //pDataWrapperIdentidad.AcceptChanges();
 
             return filaIdent;
@@ -2866,6 +2877,8 @@ namespace Es.Riam.Gnoss.Logica.Identidad
                 IdentidadAD = null;
             }
         }
+
+       
 
         #endregion
 

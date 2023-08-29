@@ -94,6 +94,13 @@ namespace Es.Riam.Util
             if (!string.IsNullOrEmpty(urlOriginal))
             {
                 url = urlOriginal + pRequest.Path;
+                if (url.Contains("?"))
+                {
+                    url = url.Substring(0, url.IndexOf("?"));
+                }
+
+                url += pRequest.QueryString.ToString();
+                
             }
 
             if (pLimpiarParametrosAdicionales)

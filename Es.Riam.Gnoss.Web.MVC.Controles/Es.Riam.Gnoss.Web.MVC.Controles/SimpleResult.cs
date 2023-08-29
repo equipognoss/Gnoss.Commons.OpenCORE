@@ -30,8 +30,9 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles
 
             using (StreamReader sr = new StreamReader(mBody))
             {
-                sr.BaseStream.Position = 0;
-                response.WriteAsync(sr.ReadToEnd());
+                //sr.BaseStream.Position = 0;
+                string body = sr.ReadToEnd();
+                response.WriteAsync(body);
             }
         }
     }

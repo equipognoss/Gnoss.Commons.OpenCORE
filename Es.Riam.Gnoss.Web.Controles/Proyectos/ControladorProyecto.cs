@@ -28,6 +28,7 @@ using Es.Riam.Gnoss.CL.Amigos;
 using Es.Riam.Gnoss.CL.Documentacion;
 using Es.Riam.Gnoss.CL.Facetado;
 using Es.Riam.Gnoss.CL.Identidad;
+using Es.Riam.Gnoss.CL.ParametrosAplicacion;
 using Es.Riam.Gnoss.CL.ParametrosProyecto;
 using Es.Riam.Gnoss.CL.ServiciosGenerales;
 using Es.Riam.Gnoss.CL.Tesauro;
@@ -108,7 +109,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Proyectos
         #region Constantes
 
         /// <summary>
-        /// Nombre de la pestaÒa de b˙squeda avanzada para configuraciÛn.
+        /// Nombre de la pesta√±a de b√∫squeda avanzada para configuraci√≥n.
         /// </summary>
         public const string NombrePestaniaBusquedaAvanzada = "busqueda";
         public List<IntegracionContinuaPropiedad> FilasPropiedadesIntegracion = null;
@@ -150,7 +151,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Proyectos
         }
 
         /// <summary>
-        /// Par·metros de un proyecto.
+        /// Par√°metros de un proyecto.
         /// </summary>
         public Dictionary<string, string> ParametroProyecto
         {
@@ -172,9 +173,9 @@ namespace Es.Riam.Gnoss.Web.Controles.Proyectos
         #region Constructores
 
         /// <summary>
-        /// Constructor a partir de la p·gina que contiene al controlador
+        /// Constructor a partir de la p√°gina que contiene al controlador
         /// </summary>
-        /// <param name="pPage">P·gina</param>
+        /// <param name="pPage">P√°gina</param>
         public ControladorProyecto(LoggingService loggingService, EntityContext entityContext, ConfigService configService, RedisCacheWrapper redisCacheWrapper, GnossCache gnossCache, EntityContextBASE entityContextBASE, VirtuosoAD virtuosoAD, IHttpContextAccessor httpContextAccessor, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication)
             : base(loggingService, configService, entityContext, redisCacheWrapper, gnossCache, virtuosoAD, httpContextAccessor, servicesUtilVirtuosoAndReplication)
         {
@@ -186,24 +187,24 @@ namespace Es.Riam.Gnoss.Web.Controles.Proyectos
         #region Metodos generales
 
         /// <summary>
-        /// AÒade los usuarios de la lista como administradores de la comunidad
+        /// A√±ade los usuarios de la lista como administradores de la comunidad
         /// </summary>
-        /// <param name="pOrganizacionID">Identificador de la organizaciÛn del proyecto</param>
+        /// <param name="pOrganizacionID">Identificador de la organizaci√≥n del proyecto</param>
         /// <param name="pProyectoID">Identificador del proyecto</param>
         /// <param name="pListaUsuariosID">Lista de identificadores de usuarios</param>
-        /// <returns>Cadena vacÌa si todo va bien. DescripciÛn del error en caso contrario</returns>
+        /// <returns>Cadena vac√≠a si todo va bien. Descripci√≥n del error en caso contrario</returns>
         public string AgregarAdministradoresAComunidad(Guid pOrganizacionID, Guid pProyectoID, List<Guid> pListaUsuariosID)
         {
             return AgregarAdministradoresAComunidad(pOrganizacionID, pProyectoID, pListaUsuariosID, true);
         }
 
         /// <summary>
-        /// AÒade los usuarios de la lista como administradores de la comunidad
+        /// A√±ade los usuarios de la lista como administradores de la comunidad
         /// </summary>
-        /// <param name="pOrganizacionID">Identificador de la organizaciÛn del proyecto</param>
+        /// <param name="pOrganizacionID">Identificador de la organizaci√≥n del proyecto</param>
         /// <param name="pProyectoID">Identificador del proyecto</param>
         /// <param name="pListaUsuariosID">Lista de identificadores de usuarios</param>
-        /// <returns>Cadena vacÌa si todo va bien. DescripciÛn del error en caso contrario</returns>
+        /// <returns>Cadena vac√≠a si todo va bien. Descripci√≥n del error en caso contrario</returns>
         public string AgregarAdministradoresAComunidad(Guid pOrganizacionID, Guid pProyectoID, List<Guid> pListaUsuariosID, bool pActualizarLive)
         {
             string error = string.Empty;
@@ -257,7 +258,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Proyectos
                         AdministradorProyecto adminProyecto = dataWrapperProyecto.ListaAdministradorProyecto.FirstOrDefault(adminProy => adminProy.OrganizacionID.Equals(pOrganizacionID) && adminProy.ProyectoID.Equals(pProyectoID) && adminProy.UsuarioID.Equals(guidUsuarioID) && adminProy.Tipo.Equals(TipoRolUsuario.Administrador));
                         if (adminProyecto == null)
                         {
-                            //Lo aÒado a la tabla del gestor de proyectos AdministradorProyecto como Administrador
+                            //Lo a√±ado a la tabla del gestor de proyectos AdministradorProyecto como Administrador
                             adminProyecto = new AdministradorProyecto();
                             adminProyecto.OrganizacionID = pOrganizacionID;
                             adminProyecto.ProyectoID = pProyectoID;
@@ -270,13 +271,12 @@ namespace Es.Riam.Gnoss.Web.Controles.Proyectos
                             AdministradorProyecto adminProyectoSupervisor = dataWrapperProyecto.ListaAdministradorProyecto.FirstOrDefault(adminProy => adminProy.OrganizacionID.Equals(pOrganizacionID) && adminProy.ProyectoID.Equals(pProyectoID) && adminProy.UsuarioID.Equals(guidUsuarioID) && adminProy.Tipo.Equals((short)TipoRolUsuario.Supervisor));
                             if (adminProyectoSupervisor != null)
                             {
-                                ////Contextø?
                                 dataWrapperProyecto.ListaAdministradorProyecto.Remove(adminProyectoSupervisor);
                                 proyectoGBD.DeleteAdministradorProyecto(adminProyectoSupervisor);
                                 proyectoGBD.GuardarCambios();
                             }
 
-                            //Si estaba de diseÒador lo quito de diseÒador
+                            //Si estaba de dise√±ador lo quito de dise√±ador
                             AdministradorProyecto adminProyectoDiseniador = dataWrapperProyecto.ListaAdministradorProyecto.FirstOrDefault(adminProy => adminProy.OrganizacionID.Equals(pOrganizacionID) && adminProy.ProyectoID.Equals(pProyectoID) && adminProy.UsuarioID.Equals(guidUsuarioID) && adminProy.Tipo.Equals((short)TipoRolUsuario.Diseniador));
                             if (adminProyectoDiseniador != null)
                             {
@@ -335,16 +335,15 @@ namespace Es.Riam.Gnoss.Web.Controles.Proyectos
                     }
                     else
                     {
-                        error += "\r\n ERROR: El usuario " + guidUsuarioID + " ya administra el proyecto";
+                        error += $"ERROR: El usuario {guidUsuarioID} ya administra el proyecto ||";
                     }
                 }
                 catch (Exception)
                 {
-                    error += "\r\n ERROR: El usuario " + guidUsuarioID + " ha fallado al aÒadirlo como administrador del proyecto";
+                    error += $"\r\n ERROR: El usuario {guidUsuarioID} ha fallado al a√±adirlo como administrador del proyecto";
                 }
             }
-
-
+            
             return error;
         }
 
@@ -352,10 +351,10 @@ namespace Es.Riam.Gnoss.Web.Controles.Proyectos
         /// <summary>
         /// Elimina los usuarios de la lista de administrador de una comunidad
         /// </summary>
-        /// <param name="pOrganizacionID">Identificador de la organizaciÛn del proyecto</param>
+        /// <param name="pOrganizacionID">Identificador de la organizaci√≥n del proyecto</param>
         /// <param name="pProyectoID">Identificador del proyecto</param>
         /// <param name="pUsuariosID">Identificador de usuarios</param>
-        /// <returns>Cadena vacÌa si todo va bien. DescripciÛn del error en caso contrario</returns>
+        /// <returns>Cadena vac√≠a si todo va bien. Descripci√≥n del error en caso contrario</returns>
         public string EliminarAdministradorComunidad(Guid pOrganizacionID, Guid pProyectoID, Guid pUsuariosID, bool pActualizarLive)
         {
             string error = string.Empty;
@@ -366,26 +365,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Proyectos
 
             List<Guid> identidadesAdministradores = proyectoCN.ObtenerListaIdentidadesAdministradoresPorProyecto(pProyectoID);
 
-            //Cargo los permisos de la tabla Administradorproyecto
-            //ProyectoDS proyectoDS = proyectoCN.ObtenerAdministradorProyectoDeProyecto(pProyectoID);
             ProyectoGBD.ProyectoGBD proyectoGBD = new ProyectoGBD.ProyectoGBD(mEntityContext);
-            var administradorPoyecto = proyectoGBD.CargaAdministradorProyecto.Where(adminProy => adminProy.ProyectoID.Equals(pProyectoID)).Select(adminProy => new
-            {
-                OrganizacionID = adminProy.OrganizacionID,
-                ProyectoID = adminProy.ProyectoID,
-                UsuarioID = adminProy.UsuarioID,
-                Tipo = adminProy.Tipo
-            });
-            DataWrapperProyecto dataWrapperProyecto = new DataWrapperProyecto();
-            foreach (var adminProyect in administradorPoyecto.ToList())
-            {
-                AdministradorProyecto adminProyec = new AdministradorProyecto();
-                adminProyec.OrganizacionID = adminProyect.OrganizacionID;
-                adminProyec.ProyectoID = adminProyect.ProyectoID;
-                adminProyec.UsuarioID = adminProyect.UsuarioID;
-                adminProyec.Tipo = adminProyect.Tipo;
-                dataWrapperProyecto.ListaAdministradorProyecto.Add(adminProyec);
-            }
             DataWrapperUsuario dataWrapperUsuario = new DataWrapperUsuario();
             dataWrapperUsuario.ListaProyectoRolUsuario.Add(usuarioCN.ObtenerRolUsuarioEnProyecto(pProyectoID, pUsuariosID));
             GestionUsuarios gestorUsuarios = new GestionUsuarios(dataWrapperUsuario, mLoggingService, mEntityContext, mConfigService);
@@ -399,12 +379,10 @@ namespace Es.Riam.Gnoss.Web.Controles.Proyectos
                 //Comprueba si la identidad ya administra el proyecto
                 if (identidadesAdministradores.Contains(identidadID))
                 {
-                    AdministradorProyecto adminProyecto = dataWrapperProyecto.ListaAdministradorProyecto.FirstOrDefault(adminProy => adminProy.OrganizacionID.Equals(pOrganizacionID) && adminProy.ProyectoID.Equals(pProyectoID) && adminProy.UsuarioID.Equals(pUsuariosID) && adminProy.Tipo.Equals((short)TipoRolUsuario.Administrador));
+                    AdministradorProyecto adminProyecto = proyectoGBD.CargaAdministradorProyecto.FirstOrDefault(adminProy => adminProy.OrganizacionID.Equals(pOrganizacionID) && adminProy.ProyectoID.Equals(pProyectoID) && adminProy.UsuarioID.Equals(pUsuariosID) && adminProy.Tipo.Equals((short)TipoRolUsuario.Administrador));
                     if (adminProyecto != null)
                     {
                         //Si estaba de administrador lo quito de administrador
-
-                        //dataWrapperProyecto.ListaAdministradorProyecto.FindByOrganizacionIDProyectoIDUsuarioIDTipo(pOrganizacionID, pProyectoID, pUsuariosID, (short)TipoRolUsuario.Administrador).Delete();
                         proyectoGBD.DeleteAdministradorProyecto(adminProyecto);
                         //Le actualizo los permisos del proyecto
                         AD.EntityModel.Models.UsuarioDS.ProyectoRolUsuario filaProyectoRolUsuario = gestorUsuarios.DataWrapperUsuario.ListaProyectoRolUsuario.FirstOrDefault(proyRolUs => proyRolUs.OrganizacionGnossID.Equals(pOrganizacionID) && proyRolUs.ProyectoID.Equals(pProyectoID) && proyRolUs.UsuarioID.Equals(pUsuariosID));
@@ -473,7 +451,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Proyectos
         /// </summary>
         /// <param name="pIidentidad">Identidad del usuario en la comunidad</param>
         /// <param name="pProyecto">Proyecto en el que participa el usuario</param>
-        /// <param name="pMotivoExpulsion">Texto con el motivo de la expulsiÛn</param>
+        /// <param name="pMotivoExpulsion">Texto con el motivo de la expulsi√≥n</param>
         public void ExpulsarUsuarioComunidad(Identidad pIdentidad, Elementos.ServiciosGenerales.Proyecto pProyecto, string pMotivoExpulsion, string pLanguageCode)
         {
             LiveCN liveCN = new LiveCN("base", mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
@@ -481,7 +459,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Proyectos
 
             if (pIdentidad.EsOrganizacion)
             {
-                #region Expulso a la organizaciÛn y a sus miembros
+                #region Expulso a la organizaci√≥n y a sus miembros
 
                 Guid proyectoID = pProyecto.Clave;
                 Guid organizacionIDdelProyecto = pProyecto.FilaProyecto.OrganizacionID;
@@ -533,7 +511,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Proyectos
                         //Lo marcamos como expulsado
                         gestorIdentidades.DataWrapperIdentidad.ListaIdentidad.Find(identidad => identidad.IdentidadID.Equals(identidadID)).FechaExpulsion = DateTime.Now;
 
-                        #region EliminaciÛn de las Suscripciones de la identidad que abandona el proyecto
+                        #region Eliminaci√≥n de las Suscripciones de la identidad que abandona el proyecto
 
                         SuscripcionCN suscripCN = new SuscripcionCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
                         DataWrapperSuscripcion suscripcionDW = suscripCN.ObtenerSuscripcionesDeIdentidad(identidadID, true);
@@ -636,7 +614,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Proyectos
                     List<EmailsMiembrosDeProyecto> listaFiltrada = miembrosProyectoDS.Where(objeto => objeto.IdentidadID.Equals(identidadID)).ToList();
                     if (listaFiltrada.Count > 0)
                     {
-                        //Mandamos un email al usuario que ser· expulsado
+                        //Mandamos un email al usuario que ser√° expulsado
                         string email = listaFiltrada[0].Email;
                         string nombre = listaFiltrada[0].Nombre;
                         gestorNotificaciones.AgregarNotificacionExpulsionUsuarioDeComunidad(organizacionID, proyectoID, email, personaID, DateTime.Now, nombre, pProyecto.FilaProyecto.Nombre, pMotivoExpulsion, pLanguageCode);
@@ -657,7 +635,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Proyectos
                     //Lo marcamos como expulsado
                     gestorIdentidades.DataWrapperIdentidad.ListaIdentidad.Find(identidad => identidad.IdentidadID.Equals(identidadID)).FechaExpulsion = DateTime.Now;
 
-                    #region EliminaciÛn de las Suscripciones de la identidad que abandona el proyecto
+                    #region Eliminaci√≥n de las Suscripciones de la identidad que abandona el proyecto
 
                     SuscripcionCN suscripCN = new SuscripcionCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
                     DataWrapperSuscripcion suscripcionDW = suscripCN.ObtenerSuscripcionesDeIdentidad(identidadID, true);
@@ -690,7 +668,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Proyectos
                 PersonaCN personaCN = new PersonaCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
                 gestorIdentidades.GestorPersonas = new GestionPersonas(personaCN.ObtenerPersonaPorID(gestorIdentidades.ListaIdentidades[identidadID].PersonaID.Value), mLoggingService, mEntityContext);
                 gestorIdentidades.GestorPersonas.CargarGestor();
-                // Lo paso a true para marcarla como privada, asÌ sÛlo se le muestra al administrador para que pueda readmitirlo
+                // Lo paso a true para marcarla como privada, as√≠ s√≠lo se le muestra al administrador para que pueda readmitirlo
                 controladorPers.ActualizarModeloBASE(gestorIdentidades.ListaIdentidades[identidadID], proyectoID, true, false, PrioridadBase.Alta);
 
                 #endregion
@@ -746,11 +724,11 @@ namespace Es.Riam.Gnoss.Web.Controles.Proyectos
         }
 
         /// <summary>
-        /// Obtiene un par·metro de tipo bool de la lista de par·metros
+        /// Obtiene un par√°metro de tipo bool de la lista de par√°metros
         /// </summary>
-        /// <param name="pListaParametrosProyecto">Lista de par·metros</param>
-        /// <param name="pNombreParametro">Nombre del par·metro</param>
-        /// <param name="pValorPorDefecto">Valor por defecto del par·metro</param>
+        /// <param name="pListaParametrosProyecto">Lista de par√°metros</param>
+        /// <param name="pNombreParametro">Nombre del par√°metro</param>
+        /// <param name="pValorPorDefecto">Valor por defecto del par√°metro</param>
         /// <returns></returns>
         public static bool ObtenerParametroBooleano(Dictionary<string, string> pListaParametrosProyecto, string pNombreParametro, bool pValorPorDefecto = false)
         {
@@ -769,10 +747,10 @@ namespace Es.Riam.Gnoss.Web.Controles.Proyectos
         }
 
         /// <summary>
-        /// Obtiene un par·metro de tipo String de la lista de par·metros
+        /// Obtiene un par√°metro de tipo String de la lista de par√°metros
         /// </summary>
-        /// <param name="pListaParametrosProyecto">Lista de par·metros</param>
-        /// <param name="pNombreParametro">Nombre del par·metro</param>
+        /// <param name="pListaParametrosProyecto">Lista de par√°metros</param>
+        /// <param name="pNombreParametro">Nombre del par√°metro</param>
         /// <returns></returns>
         public static string ObtenerParametroString(Dictionary<string, string> pListaParametrosProyecto, string pNombreParametro)
         {
@@ -784,10 +762,10 @@ namespace Es.Riam.Gnoss.Web.Controles.Proyectos
         }
 
         /// <summary>
-        /// Obtiene un par·metro de tipo Int de la lista de par·metros (0 si no lo ha encontrado)
+        /// Obtiene un par√°metro de tipo Int de la lista de par√°metros (0 si no lo ha encontrado)
         /// </summary>
-        /// <param name="pListaParametrosProyecto">Lista de par·metros</param>
-        /// <param name="pNombreParametro">Nombre del par·metro</param>
+        /// <param name="pListaParametrosProyecto">Lista de par√°metros</param>
+        /// <param name="pNombreParametro">Nombre del par√°metro</param>
         /// <returns></returns>
         public static int ObtenerParametroInt(Dictionary<string, string> pListaParametrosProyecto, string pNombreParametro)
         {
@@ -801,10 +779,10 @@ namespace Es.Riam.Gnoss.Web.Controles.Proyectos
         }
 
         /// <summary>
-        /// Guarda un par·metro booleano en el data set de parametro general
+        /// Guarda un par√°metro booleano en el data set de parametro general
         /// </summary>
-        /// <param name="pParametrosGeneralesDS">Data set de par·metro general</param>
-        /// <param name="pNombreParametro">Nombre del par·metro</param>
+        /// <param name="pParametrosGeneralesDS">Data set de par√°metro general</param>
+        /// <param name="pNombreParametro">Nombre del par√°metro</param>
         /// <param name="pValor">Valor</param>
         /// <param name="pValorPorDefecto">Valor por defecto</param>
         public void GuardarParametroBooleano(GestorParametroGeneral pParametrosGeneralesDS, string pNombreParametro, bool pValor, bool pValorPorDefecto = false)
@@ -820,15 +798,16 @@ namespace Es.Riam.Gnoss.Web.Controles.Proyectos
         }
 
         /// <summary>
-        /// Guarda un par·metro string en el data set de par·metro general
+        /// Guarda un par√°metro string en el data set de par√°metro general
         /// </summary>
-        /// <param name="pGestorParametroGeneral">Data set de par·metro general</param>
-        /// <param name="pNombreParametro">Nombre del par·metro</param>
+        /// <param name="pGestorParametroGeneral">Data set de par√°metro general</param>
+        /// <param name="pNombreParametro">Nombre del par√°metro</param>
         /// <param name="pValor">Valor</param>
         public void GuardarParametroString(GestorParametroGeneral pGestorParametroGeneral, string pNombreParametro, string pValor)
         {
-            ParametroProyecto filaParametro = pGestorParametroGeneral.ListaParametroProyecto.Find(parametro => parametro.OrganizacionID.Equals(ProyectoSeleccionado.FilaProyecto.OrganizacionID) && parametro.ProyectoID.Equals(ProyectoSeleccionado.Clave) && parametro.Parametro.Equals(pNombreParametro));
+            ParametroProyecto filaParametro = pGestorParametroGeneral.ListaParametroProyecto.Where(parametro => parametro.OrganizacionID.Equals(ProyectoSeleccionado.FilaProyecto.OrganizacionID) && parametro.ProyectoID.Equals(ProyectoSeleccionado.Clave) && parametro.Parametro.Equals(pNombreParametro)).FirstOrDefault();
             ParametroGeneralGBD gestorController = new ParametroGeneralGBD(mEntityContext);
+            
             if (!string.IsNullOrEmpty(pValor))
             {
                 if (filaParametro != null && !filaParametro.Valor.Equals(pValor))
@@ -846,7 +825,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Proyectos
             }
             else if (filaParametro != null)
             {
-                // El valor es null, elimino el par·metro
+                // El valor es null, elimino el par√°metro
                 gestorController.EliminarParametroProyecto(filaParametro);
                 pGestorParametroGeneral.ListaParametroProyecto.Remove(filaParametro);
             }
@@ -1024,8 +1003,8 @@ namespace Es.Riam.Gnoss.Web.Controles.Proyectos
         /// Carga las comunidades relacionadas de un proyecto
         /// </summary>
         /// <param name="pProyecto">Proyecto del que se quieren cargar las comunidades relacionadas</param>
-        /// <param name="pNumeroMiembros">N˙mero de personas que se deben obtener</param>
-        /// <param name="pOrdenarPorFechaAlta">Indica si se debe ordenar por fecha de alta (TRUE) o por n˙mero de recursos(FALSE)</param>
+        /// <param name="pNumeroMiembros">N√∫mero de personas que se deben obtener</param>
+        /// <param name="pOrdenarPorFechaAlta">Indica si se debe ordenar por fecha de alta (TRUE) o por n√∫mero de recursos(FALSE)</param>
         /// <returns>Lista con las comunidades relacionadas</returns>
         public Dictionary<Identidad, int> CargarPersonasProyecto(Elementos.ServiciosGenerales.Proyecto pProyecto, int pNumeroMiembros, bool pOrdenarPorFechaAlta)
         {
@@ -1059,9 +1038,9 @@ namespace Es.Riam.Gnoss.Web.Controles.Proyectos
         /// <param name="pDebatesDisponibles">Debates disponibles</param>
         /// <param name="pBrightcoveDisponible">Brightcove disponibles</param>
         /// <returns></returns>
-        public Elementos.ServiciosGenerales.Proyecto CrearNuevoProyecto(string pNombre, string pNombreCorto, string pDescripcion, string[] pEtiquetas, short pTipoAcceso, short pTipoProyecto, Guid pUsuarioCreadorID, Guid pPerfilCreadorID, Guid pOrganizacionID, Guid pComPrivadaPadreID, bool pInvitacionesDisponibles, bool pPreguntasDisponibles, bool pEncuestasDisponibles, bool pDebatesDisponibles, bool pBrightcoveDisponible, byte[] pImagenLogo, out DataWrapperOrganizacion pOrganizacionDW, out DataWrapperProyecto pProyectoDS, out GestorParametroGeneral pParametroGeneralDS, out DataWrapperTesauro pTesauroDW, out DataWrapperDocumentacion pDataWrapperDocumentacion, out DataWrapperUsuario pUsuarioDW, out DataWrapperIdentidad pIdentidadDS)
+        public Elementos.ServiciosGenerales.Proyecto CrearNuevoProyecto(string pNombre, string pNombreCorto, string pDescripcion, string[] pEtiquetas, short pTipoAcceso, short pTipoProyecto, Guid pUsuarioCreadorID, Guid pPerfilCreadorID, Guid pOrganizacionID, Guid pComPrivadaPadreID, bool pInvitacionesDisponibles, bool pPreguntasDisponibles, bool pEncuestasDisponibles, bool pDebatesDisponibles, bool pBrightcoveDisponible, byte[] pImagenLogo, out DataWrapperOrganizacion pOrganizacionDW, out DataWrapperProyecto pProyectoDS, out GestorParametroGeneral pParametroGeneralDS, out DataWrapperTesauro pTesauroDW, out DataWrapperDocumentacion pDataWrapperDocumentacion, out DataWrapperUsuario pUsuarioDW, out DataWrapperIdentidad pIdentidadDS, string pUrlsPropias = null)
         {
-            return CrearNuevoProyecto(pNombre, pNombreCorto, pDescripcion, pEtiquetas, pTipoAcceso, pTipoProyecto, pUsuarioCreadorID, pPerfilCreadorID, pOrganizacionID, pComPrivadaPadreID, pInvitacionesDisponibles, pPreguntasDisponibles, pEncuestasDisponibles, pDebatesDisponibles, pBrightcoveDisponible, pImagenLogo, out pOrganizacionDW, out pProyectoDS, out pParametroGeneralDS, out pTesauroDW, out pDataWrapperDocumentacion, out pUsuarioDW, out pIdentidadDS, true);
+            return CrearNuevoProyecto(pNombre, pNombreCorto, pDescripcion, pEtiquetas, pTipoAcceso, pTipoProyecto, pUsuarioCreadorID, pPerfilCreadorID, pOrganizacionID, pComPrivadaPadreID, pInvitacionesDisponibles, pPreguntasDisponibles, pEncuestasDisponibles, pDebatesDisponibles, pBrightcoveDisponible, pImagenLogo, out pOrganizacionDW, out pProyectoDS, out pParametroGeneralDS, out pTesauroDW, out pDataWrapperDocumentacion, out pUsuarioDW, out pIdentidadDS, true, pUrlsPropias, null);
         }
 
         /// <summary>
@@ -1081,7 +1060,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Proyectos
         /// <param name="pDebatesDisponibles">Debates disponibles</param>
         /// <param name="pBrightcoveDisponible">Brightcove disponibles</param>
         /// <returns></returns>
-        public Elementos.ServiciosGenerales.Proyecto CrearNuevoProyecto(string pNombre, string pNombreCorto, string pDescripcion, string[] pEtiquetas, short pTipoAcceso, short pTipoProyecto, Guid pUsuarioCreadorID, Guid pPerfilCreadorID, Guid pOrganizacionID, Guid pComPrivadaPadreID, bool pInvitacionesDisponibles, bool pPreguntasDisponibles, bool pEncuestasDisponibles, bool pDebatesDisponibles, bool pBrightcoveDisponible, byte[] pImagenLogo, out DataWrapperOrganizacion pOrganizacionDW, out DataWrapperProyecto pDataWrapperProyecto, out GestorParametroGeneral pParametroGeneralDS, out DataWrapperTesauro pTesauroDW, out DataWrapperDocumentacion pDataWrapperDocumentacion, out DataWrapperUsuario pDataWrapperUsuario, out DataWrapperIdentidad pIdentidadDW, bool pActualizarLive)
+        public Elementos.ServiciosGenerales.Proyecto CrearNuevoProyecto(string pNombre, string pNombreCorto, string pDescripcion, string[] pEtiquetas, short pTipoAcceso, short pTipoProyecto, Guid pUsuarioCreadorID, Guid pPerfilCreadorID, Guid pOrganizacionID, Guid pComPrivadaPadreID, bool pInvitacionesDisponibles, bool pPreguntasDisponibles, bool pEncuestasDisponibles, bool pDebatesDisponibles, bool pBrightcoveDisponible, byte[] pImagenLogo, out DataWrapperOrganizacion pOrganizacionDW, out DataWrapperProyecto pDataWrapperProyecto, out GestorParametroGeneral pParametroGeneralDS, out DataWrapperTesauro pTesauroDW, out DataWrapperDocumentacion pDataWrapperDocumentacion, out DataWrapperUsuario pDataWrapperUsuario, out DataWrapperIdentidad pIdentidadDW, bool pActualizarLive, string pUrlsPropias, string pDominio)
         {
             DataWrapperOrganizacion orgaDW = new DataWrapperOrganizacion();
             //Cremos el proy en DEFINICION
@@ -1116,52 +1095,68 @@ namespace Es.Riam.Gnoss.Web.Controles.Proyectos
                 }
             }
 
-            FilaProyectoNuevo.URLPropia = ObtenerUrlPropiaProyecto(pTipoAcceso);
+            if (!string.IsNullOrEmpty(pDominio))
+            {
+                FilaProyectoNuevo.URLPropia = pDominio;
+            }
+            else
+            {
+                if (string.IsNullOrEmpty(pUrlsPropias))
+                {
+                    FilaProyectoNuevo.URLPropia = ObtenerUrlPropiaProyecto(pTipoAcceso);
+                }
+                else
+                {
+                    FilaProyectoNuevo.URLPropia = pUrlsPropias;
+                }
+            }
+            
+            
             ProyectoGBD.ProyectoGBD proyectoGBD = new ProyectoGBD.ProyectoGBD(mEntityContext);
 
             proyectoGBD.AddProyecto(FilaProyectoNuevo);
             dataWrapperProyecto.ListaProyecto.Add(FilaProyectoNuevo);
 
-            #region PestaÒas
+            #region Pesta√±as
             //Comunidades Padre
             if (idPadre == Guid.Empty)
             {
                 //Home
                 Guid idHome = Guid.NewGuid();
-                dataWrapperProyecto.AddProyectoPestanyaMenuRow(idHome, organizacionID, FilaProyectoNuevo.ProyectoID, null, (short)TipoPestanyaMenu.Home, null, null, 0, false, true, (short)TipoPrivacidadPagina.Normal, null, null, null, idHome.ToString(), true, "", null, true);
-                proyectoGBD.AddProyectoPestanyaMenuRow(idHome, organizacionID, FilaProyectoNuevo.ProyectoID, null, (short)TipoPestanyaMenu.Home, null, null, 0, false, true, (short)TipoPrivacidadPagina.Normal, null, null, null, idHome.ToString(), true, "", null, true);
+                dataWrapperProyecto.AddProyectoPestanyaMenuRow(idHome, organizacionID, FilaProyectoNuevo.ProyectoID, null, (short)TipoPestanyaMenu.Home, null, null, 0, false, true, (short)TipoPrivacidadPagina.Normal, null, null, null, idHome.ToString(), true, "", null, true, "");
+                proyectoGBD.AddProyectoPestanyaMenuRow(idHome, organizacionID, FilaProyectoNuevo.ProyectoID, null, (short)TipoPestanyaMenu.Home, null, null, 0, false, true, (short)TipoPrivacidadPagina.Normal, null, null, null, idHome.ToString(), true, "", null, true, "");
                 //Indice
                 Guid idIndice = Guid.NewGuid();
-                dataWrapperProyecto.AddProyectoPestanyaMenuRow(idIndice, organizacionID, FilaProyectoNuevo.ProyectoID, null, (short)TipoPestanyaMenu.Indice, null, null, 1, false, true, (short)TipoPrivacidadPagina.Normal, null, null, null, idIndice.ToString(), true, "", null, true);
-                proyectoGBD.AddProyectoPestanyaMenuRow(idIndice, organizacionID, FilaProyectoNuevo.ProyectoID, null, (short)TipoPestanyaMenu.Indice, null, null, 1, false, true, (short)TipoPrivacidadPagina.Normal, null, null, null, idIndice.ToString(), true, "", null, true);
+                dataWrapperProyecto.AddProyectoPestanyaMenuRow(idIndice, organizacionID, FilaProyectoNuevo.ProyectoID, null, (short)TipoPestanyaMenu.Indice, null, null, 1, false, true, (short)TipoPrivacidadPagina.Normal, null, null, null, idIndice.ToString(), true, "", null, true, "");
+                proyectoGBD.AddProyectoPestanyaMenuRow(idIndice, organizacionID, FilaProyectoNuevo.ProyectoID, null, (short)TipoPestanyaMenu.Indice, null, null, 1, false, true, (short)TipoPrivacidadPagina.Normal, null, null, null, idIndice.ToString(), true, "", null, true, "");
                 //Recursos
                 Guid idRecursos = Guid.NewGuid();
-                dataWrapperProyecto.AddProyectoPestanyaMenuRow(idRecursos, organizacionID, FilaProyectoNuevo.ProyectoID, null, (short)TipoPestanyaMenu.Recursos, null, null, 3, false, true, (short)TipoPrivacidadPagina.Normal, null, null, null, idRecursos.ToString(), true, "", null, true);
-                proyectoGBD.AddProyectoPestanyaMenuRow(idRecursos, organizacionID, FilaProyectoNuevo.ProyectoID, null, (short)TipoPestanyaMenu.Recursos, null, null, 3, false, true, (short)TipoPrivacidadPagina.Normal, null, null, null, idRecursos.ToString(), true, "", null, true);
+                dataWrapperProyecto.AddProyectoPestanyaMenuRow(idRecursos, organizacionID, FilaProyectoNuevo.ProyectoID, null, (short)TipoPestanyaMenu.Recursos, null, null, 3, false, true, (short)TipoPrivacidadPagina.Normal, null, null, null, idRecursos.ToString(), true, "", null, true, "");
+                proyectoGBD.AddProyectoPestanyaMenuRow(idRecursos, organizacionID, FilaProyectoNuevo.ProyectoID, null, (short)TipoPestanyaMenu.Recursos, null, null, 3, false, true, (short)TipoPrivacidadPagina.Normal, null, null, null, idRecursos.ToString(), true, "", null, true, "");
                 //Debates
                 Guid idDebates = Guid.NewGuid();
-                dataWrapperProyecto.AddProyectoPestanyaMenuRow(idDebates, organizacionID, FilaProyectoNuevo.ProyectoID, null, (short)TipoPestanyaMenu.Debates, null, null, 4, false, true, (short)TipoPrivacidadPagina.Normal, null, null, null, idDebates.ToString(), true, "", null, true);
-                proyectoGBD.AddProyectoPestanyaMenuRow(idDebates, organizacionID, FilaProyectoNuevo.ProyectoID, null, (short)TipoPestanyaMenu.Debates, null, null, 4, false, true, (short)TipoPrivacidadPagina.Normal, null, null, null, idDebates.ToString(), true, "", null, true);
+                dataWrapperProyecto.AddProyectoPestanyaMenuRow(idDebates, organizacionID, FilaProyectoNuevo.ProyectoID, null, (short)TipoPestanyaMenu.Debates, null, null, 4, false, true, (short)TipoPrivacidadPagina.Normal, null, null, null, idDebates.ToString(), true, "", null, true, "");
+                proyectoGBD.AddProyectoPestanyaMenuRow(idDebates, organizacionID, FilaProyectoNuevo.ProyectoID, null, (short)TipoPestanyaMenu.Debates, null, null, 4, false, true, (short)TipoPrivacidadPagina.Normal, null, null, null, idDebates.ToString(), true, "", null, true, "");
                 //Preguntas
                 Guid idPreguntas = Guid.NewGuid();
-                dataWrapperProyecto.AddProyectoPestanyaMenuRow(idPreguntas, organizacionID, FilaProyectoNuevo.ProyectoID, null, (short)TipoPestanyaMenu.Preguntas, null, null, 5, false, true, (short)TipoPrivacidadPagina.Normal, null, null, null, idPreguntas.ToString(), true, "", null, true);
-                proyectoGBD.AddProyectoPestanyaMenuRow(idPreguntas, organizacionID, FilaProyectoNuevo.ProyectoID, null, (short)TipoPestanyaMenu.Preguntas, null, null, 5, false, true, (short)TipoPrivacidadPagina.Normal, null, null, null, idPreguntas.ToString(), true, "", null, true);
+                dataWrapperProyecto.AddProyectoPestanyaMenuRow(idPreguntas, organizacionID, FilaProyectoNuevo.ProyectoID, null, (short)TipoPestanyaMenu.Preguntas, null, null, 5, false, true, (short)TipoPrivacidadPagina.Normal, null, null, null, idPreguntas.ToString(), true, "", null, true, "");
+                proyectoGBD.AddProyectoPestanyaMenuRow(idPreguntas, organizacionID, FilaProyectoNuevo.ProyectoID, null, (short)TipoPestanyaMenu.Preguntas, null, null, 5, false, true, (short)TipoPrivacidadPagina.Normal, null, null, null, idPreguntas.ToString(), true, "", null, true, "");
                 //Encuestas
                 Guid idEncuestas = Guid.NewGuid();
-                dataWrapperProyecto.AddProyectoPestanyaMenuRow(idEncuestas, organizacionID, FilaProyectoNuevo.ProyectoID, null, (short)TipoPestanyaMenu.Encuestas, null, null, 6, false, true, (short)TipoPrivacidadPagina.Normal, null, null, null, idEncuestas.ToString(), true, "", null, true);
-                proyectoGBD.AddProyectoPestanyaMenuRow(idEncuestas, organizacionID, FilaProyectoNuevo.ProyectoID, null, (short)TipoPestanyaMenu.Encuestas, null, null, 6, false, true, (short)TipoPrivacidadPagina.Normal, null, null, null, idEncuestas.ToString(), true, "", null, true);
+                dataWrapperProyecto.AddProyectoPestanyaMenuRow(idEncuestas, organizacionID, FilaProyectoNuevo.ProyectoID, null, (short)TipoPestanyaMenu.Encuestas, null, null, 6, false, true, (short)TipoPrivacidadPagina.Normal, null, null, null, idEncuestas.ToString(), true, "", null, true, "");
+                proyectoGBD.AddProyectoPestanyaMenuRow(idEncuestas, organizacionID, FilaProyectoNuevo.ProyectoID, null, (short)TipoPestanyaMenu.Encuestas, null, null, 6, false, true, (short)TipoPrivacidadPagina.Normal, null, null, null, idEncuestas.ToString(), true, "", null, true, "");
                 //Personas y organizaciones
                 Guid idPersonas = Guid.NewGuid();
-                dataWrapperProyecto.AddProyectoPestanyaMenuRow(idPersonas, organizacionID, FilaProyectoNuevo.ProyectoID, null, (short)TipoPestanyaMenu.PersonasYOrganizaciones, "", "", 7, false, true, (short)TipoPrivacidadPagina.Normal, null, null, null, idPersonas.ToString(), true, "", null, true);
-                proyectoGBD.AddProyectoPestanyaMenuRow(idPersonas, organizacionID, FilaProyectoNuevo.ProyectoID, null, (short)TipoPestanyaMenu.PersonasYOrganizaciones, "", "", 7, false, true, (short)TipoPrivacidadPagina.Normal, null, null, null, idPersonas.ToString(), true, "", null, true);
+                dataWrapperProyecto.AddProyectoPestanyaMenuRow(idPersonas, organizacionID, FilaProyectoNuevo.ProyectoID, null, (short)TipoPestanyaMenu.PersonasYOrganizaciones, "", "", 7, false, true, (short)TipoPrivacidadPagina.Normal, null, null, null, idPersonas.ToString(), true, "", null, true, "");
+                proyectoGBD.AddProyectoPestanyaMenuRow(idPersonas, organizacionID, FilaProyectoNuevo.ProyectoID, null, (short)TipoPestanyaMenu.PersonasYOrganizaciones, "", "", 7, false, true, (short)TipoPrivacidadPagina.Normal, null, null, null, idPersonas.ToString(), true, "", null, true, "");
                 //Acerca-de
                 Guid idAcerca = Guid.NewGuid();
-                dataWrapperProyecto.AddProyectoPestanyaMenuRow(idAcerca, organizacionID, FilaProyectoNuevo.ProyectoID, null, (short)TipoPestanyaMenu.AcercaDe, null, null, 8, false, true, (short)TipoPrivacidadPagina.Normal, null, null, null, idAcerca.ToString(), true, "", null, true);
-                proyectoGBD.AddProyectoPestanyaMenuRow(idAcerca, organizacionID, FilaProyectoNuevo.ProyectoID, null, (short)TipoPestanyaMenu.AcercaDe, null, null, 8, false, true, (short)TipoPrivacidadPagina.Normal, null, null, null, idAcerca.ToString(), true, "", null, true);
+                dataWrapperProyecto.AddProyectoPestanyaMenuRow(idAcerca, organizacionID, FilaProyectoNuevo.ProyectoID, null, (short)TipoPestanyaMenu.AcercaDe, null, null, 8, false, true, (short)TipoPrivacidadPagina.Normal, null, null, null, idAcerca.ToString(), true, "", null, true, "");
+                proyectoGBD.AddProyectoPestanyaMenuRow(idAcerca, organizacionID, FilaProyectoNuevo.ProyectoID, null, (short)TipoPestanyaMenu.AcercaDe, null, null, 8, false, true, (short)TipoPrivacidadPagina.Normal, null, null, null, idAcerca.ToString(), true, "", null, true, "");
                 //Busqueda-avanzada
                 Guid idBusqueda = Guid.NewGuid();
-                dataWrapperProyecto.AddProyectoPestanyaMenuRow(idBusqueda, organizacionID, FilaProyectoNuevo.ProyectoID, null, (short)TipoPestanyaMenu.BusquedaAvanzada, null, null, 9, false, false, (short)TipoPrivacidadPagina.Normal, null, null, null, idBusqueda.ToString(), true, "", null, true);
-                proyectoGBD.AddProyectoPestanyaMenuRow(idBusqueda, organizacionID, FilaProyectoNuevo.ProyectoID, null, (short)TipoPestanyaMenu.BusquedaAvanzada, null, null, 9, false, false, (short)TipoPrivacidadPagina.Normal, null, null, null, idBusqueda.ToString(), true, "", null, true);
+                dataWrapperProyecto.AddProyectoPestanyaMenuRow(idBusqueda, organizacionID, FilaProyectoNuevo.ProyectoID, null, (short)TipoPestanyaMenu.BusquedaAvanzada, null, null, 9, false, false, (short)TipoPrivacidadPagina.Normal, null, null, null, idBusqueda.ToString(), true, "", null, true, "");
+                proyectoGBD.AddProyectoPestanyaMenuRow(idBusqueda, organizacionID, FilaProyectoNuevo.ProyectoID, null, (short)TipoPestanyaMenu.BusquedaAvanzada, null, null, 9, false, false, (short)TipoPrivacidadPagina.Normal, null, null, null, idBusqueda.ToString(), true, "", null, true, "");
             }
             proyectoGBD.GuardarCambios();
             #endregion
@@ -1169,7 +1164,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Proyectos
             //Creamos las filas para el administrador del proyecto
             #region Administrador del proyecto
 
-            //AÒado el usuario al gestor
+            //A√±ado el usuario al gestor
             UsuarioCN usuarioCN = new UsuarioCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
             AD.EntityModel.Models.UsuarioDS.Usuario filaUsuario = usuarioCN.ObtenerUsuarioPorID(pUsuarioCreadorID);
             DataWrapperUsuario dataWrapperUsuario = new DataWrapperUsuario();
@@ -1196,7 +1191,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Proyectos
             ProyectoCN proyCN = new ProyectoCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
             Dictionary<Guid, bool> recibirNewsletterDefectoProyectos = proyCN.ObtenerProyectosConConfiguracionNewsletterPorDefecto();
 
-            //AÒado la fila de ProyectoRolusuario para ese usuario
+            //A√±ado la fila de ProyectoRolusuario para ese usuario
             AD.EntityModel.Models.UsuarioDS.ProyectoRolUsuario proyectoRolUsuario = new AD.EntityModel.Models.UsuarioDS.ProyectoRolUsuario();
             proyectoRolUsuario.OrganizacionGnossID = FilaProyectoNuevo.OrganizacionID;
             proyectoRolUsuario.ProyectoID = FilaProyectoNuevo.ProyectoID;
@@ -1247,7 +1242,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Proyectos
             gestorProyectos.DataWrapperProyectos.ListaAdministradorProyecto.Add(adminProy);
             proyectoGBD.AddAdministradorProyecto(adminProy);
             proyectoGBD.GuardarCambios();
-            //Ha seleccionado un perfil de organizaciÛn, habr· que meter a la organizaciÛn del perfil para que participe en el proyecto
+            //Ha seleccionado un perfil de organizaci√≥n, habr√° que meter a la organizaci√≥n del perfil para que participe en el proyecto
 
             if (perfil.OrganizacionID.HasValue && perfil.PersonaID.HasValue)
             {
@@ -1352,7 +1347,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Proyectos
             #endregion
 
             #region Parametro General
-            //Creamos los datos de par·metros generales        
+            //Creamos los datos de par√°metros generales        
             GestorParametroGeneral paramGenDS = new GestorParametroGeneral();
 
             gestorProyectos.ParametroGeneralDS = paramGenDS;
@@ -1448,7 +1443,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Proyectos
             mEntityContext.BaseRecursosProyecto.Add(filaBaseRecursosProyecto);
             #endregion
 
-            //Actualizamos el n˙mero de organizaciones que pueden estar registradas en el nuevo proyecto (por el tema de los perfiles de los administradores)
+            //Actualizamos el n√∫mero de organizaciones que pueden estar registradas en el nuevo proyecto (por el tema de los perfiles de los administradores)
             AD.EntityModel.Models.ProyectoDS.Proyecto filaProyecto = gestorProyectos.DataWrapperProyectos.ListaProyecto.FirstOrDefault(proyect => proyect.OrganizacionID.Equals(FilaProyectoNuevo.OrganizacionID) && proyect.ProyectoID.Equals(FilaProyectoNuevo.ProyectoID));//FindByOrganizacionIDProyectoID(FilaProyectoNuevo.OrganizacionID, FilaProyectoNuevo.ProyectoID);
 
             //Creamos los permisos de las utilidades
@@ -1513,12 +1508,12 @@ namespace Es.Riam.Gnoss.Web.Controles.Proyectos
 
         //TODO: Esto no tiene sentido, ya que nunca se le da valor
         /// <summary>
-        /// Fila con los par·metros generales del proyecto actual
+        /// Fila con los par√°metros generales del proyecto actual
         /// </summary>
         private ParametroGeneral mFilaParametros;
 
         /// <summary>
-        /// Par·metros generales de la BD.
+        /// Par√°metros generales de la BD.
         /// </summary>
         public ParametroGeneral ParametrosGenerales
         {
@@ -1533,7 +1528,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Proyectos
         }
 
         /// <summary>
-        /// Obtiene la url propia de un proyecto en funciÛn de su tipo de acceso.
+        /// Obtiene la url propia de un proyecto en funci√≥n de su tipo de acceso.
         /// </summary>
         /// <param name="pTipoAcceso">Tipo de acceso del proyecto</param>
         /// <returns>Url propia</returns>
@@ -1553,7 +1548,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Proyectos
         }
 
         /// <summary>
-        /// Obtiene el codigo de ggolge analytics de un proyecto en funciÛn de su tipo de acceso.
+        /// Obtiene el codigo de ggolge analytics de un proyecto en funci√≥n de su tipo de acceso.
         /// </summary>
         /// <param name="pTipoAcceso">Tipo de acceso del proyecto</param>
         /// <returns>Codigo google analytics</returns>
@@ -1691,12 +1686,12 @@ namespace Es.Riam.Gnoss.Web.Controles.Proyectos
         }
 
         /// <summary>
-        /// Carga las ˙ltimas preguntas de una comunidad (pagina de inicio)
+        /// Carga las √∫ltimas preguntas de una comunidad (pagina de inicio)
         /// </summary>
         /// <param name="pProyecto">Proyecto del que se quieren cargar las preguntas</param>
         /// <param name="pIdentidadActual">Identidad Actual</param>
         /// <param name="pNumeroResultadosPagina">Numero de preguntas que se quieren cargar</param>
-        /// <returns>DocumentacionDS con las ˙ltimas preguntas del proyecto</returns>
+        /// <returns>DocumentacionDS con las √∫ltimas preguntas del proyecto</returns>
         public DataWrapperDocumentacion CargarRecursosPopularesProyecto(Elementos.ServiciosGenerales.Proyecto pProyecto, int pNumeroResultadosPagina, Guid pUsuarioID)
         {
             DocumentacionCL docCL = new DocumentacionCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mServicesUtilVirtuosoAndReplication);
@@ -1786,7 +1781,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Proyectos
         {
             if (string.IsNullOrEmpty(pXML))
             {
-                throw new Exception("El fichero no puede estar vacÌo");
+                throw new Exception("El fichero no puede estar vac√≠o");
             }
             //cargo el XML
             XmlDocument configXML = new XmlDocument();
@@ -1803,7 +1798,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Proyectos
                 string nombreComunidad = nodoNombreComunidad.InnerText.ToLower();
                 if (string.IsNullOrEmpty(nombreComunidad) || !nombreComunidad.Equals(nombreCortoProy))
                 {
-                    throw new Exception("Est· subiendo el Xml de configuraciÛn de otra comunidad");
+                    throw new Exception("Est√° subiendo el Xml de configuraci√≥n de otra comunidad");
                 }
             }
             else
@@ -1815,10 +1810,10 @@ namespace Es.Riam.Gnoss.Web.Controles.Proyectos
 
             if (nodoViejoContextos != null)
             {
-                throw new Exception("Est· subiendo el Xml con la antigua configuraciÛn de contextos. Debe sustituirla para poder subir el Xml");
+                throw new Exception("Est√° subiendo el Xml con la antigua configuraci√≥n de contextos. Debe sustituirla para poder subir el Xml");
             }
 
-            //ValidaciÛn nombres cortos GruposPermitidosSeleccionarPrivacidadRecursoAbierto
+            //Validaci√≥n nombres cortos GruposPermitidosSeleccionarPrivacidadRecursoAbierto
             List<Guid> listaGruposPermitidosSelPriv = new List<Guid>();
             IdentidadCN identidadCN = new IdentidadCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
             XmlNodeList gruposPermitidosPrivacidad = configXML.SelectNodes("/Comunidad/GruposPermitidosSeleccionarPrivacidadRecursoAbierto/Grupo");
@@ -1853,17 +1848,17 @@ namespace Es.Riam.Gnoss.Web.Controles.Proyectos
                                     }
                                     else
                                     {
-                                        throw new Exception("La organizaciÛn " + nombreCortoOrg + " configurada en el nodo GruposPermitidosSeleccionarPrivacidadRecursoAbierto no tiene un grupo llamado " + nombreCortoGr);
+                                        throw new Exception("La organizaci√≥n " + nombreCortoOrg + " configurada en el nodo GruposPermitidosSeleccionarPrivacidadRecursoAbierto no tiene un grupo llamado " + nombreCortoGr);
                                     }
                                 }
                                 else
                                 {
-                                    throw new Exception("La organizaciÛn " + nombreCortoOrg + " en el nodo GruposPermitidosSeleccionarPrivacidadRecursoAbierto no existe");
+                                    throw new Exception("La organizaci√≥n " + nombreCortoOrg + " en el nodo GruposPermitidosSeleccionarPrivacidadRecursoAbierto no existe");
                                 }
                             }
                             else
                             {
-                                throw new Exception("Existe alg˙n grupo de organizaciÛn en el nodo GruposPermitidosSeleccionarPrivacidadRecursoAbierto con formato incorrecto");
+                                throw new Exception("Existe alg√∫n grupo de organizaci√≥n en el nodo GruposPermitidosSeleccionarPrivacidadRecursoAbierto con formato incorrecto");
                             }
                         }
                         else
@@ -1885,12 +1880,12 @@ namespace Es.Riam.Gnoss.Web.Controles.Proyectos
                     }
                     else
                     {
-                        throw new Exception("El nodo GruposPermitidosSeleccionarPrivacidadRecursoAbierto no puede tener nombres de grupos vacÌos");
+                        throw new Exception("El nodo GruposPermitidosSeleccionarPrivacidadRecursoAbierto no puede tener nombres de grupos vac√≠os");
                     }
                 }
             }
 
-            //obtenemos la configuraciÛn de la comparticiÛn de formularios sem·nticos de ese proyecto, se traen las eliminadas tambien
+            //obtenemos la configuraci√≥n de la compartici√≥n de formularios sem√°nticos de ese proyecto, se traen las eliminadas tambien
             ComparticionAutomaticaCN comparticionAutomaticaCN = new ComparticionAutomaticaCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
             DataWrapperComparticionAutomatica compAutoDW = comparticionAutomaticaCN.ObtenerComparticionProyectoPorProyectoID(pOrganizacionID, pProyectoID, true);
 
@@ -1898,7 +1893,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Proyectos
             CMSCN cmsCN = new CMSCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
             DataWrapperCMS cmsDS = cmsCN.ObtenerCMSDeProyecto(pProyectoID);
 
-            //obtengo el proyecto a partir 1∫ de su nombre corto y despuÈs a partir de su identificador
+            //obtengo el proyecto a partir 1¬∫ de su nombre corto y despu√©s a partir de su identificador
             //ProyectoDS proyectoDS = proyectoCN.ObtenerProyectoPorID(pProyectoID);
             ProyectoGBD.ProyectoGBD proyectoGBD = new ProyectoGBD.ProyectoGBD(mEntityContext);
             DataWrapperProyecto dataWrapperProyecto = proyectoGBD.ObtenerProyectoPorID(pProyectoID);
@@ -1922,35 +1917,35 @@ namespace Es.Riam.Gnoss.Web.Controles.Proyectos
             ExportacionBusquedaCN exportacionBusquedaCN = new ExportacionBusquedaCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
             DataWrapperExportacionBusqueda exportacionBusquedaDW = exportacionBusquedaCN.ObtenerExportacionesProyecto(pProyectoID);
 
-            //obtengo la configuraciÛn de ese proyecto desde par·metro general
+            //obtengo la configuraci√≥n de ese proyecto desde par√°metro general
             //GestorParametroGeneral paramGralDS = parametroGralCN.ObtenerParametrosGeneralesDeProyecto(pProyectoID);
             ParametroGeneralGBD gestorController = new ParametroGeneralGBD(mEntityContext);
             GestorParametroGeneral paramGralDS = new GestorParametroGeneral();
             paramGralDS = gestorController.ObtenerParametrosGeneralesDeProyecto(paramGralDS, pProyectoID);
-            //sabemos que sÛlo va a venir una
+            //sabemos que s√≠lo va a venir una
             //ParametroGeneralDSName.ParametroGeneralRow filaParametroGral = paramGralDS.ParametroGeneral[0];
             ParametroGeneral filaParametroGral = paramGralDS.ListaParametroGeneral[0];
 
-            //obtengo las configuraciÛn de las facetas de ese proyecto
+            //obtengo las configuraci√≥n de las facetas de ese proyecto
             FacetaCN facetaCN = new FacetaCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
             //DataWrapperFacetas facetaDW = new DataWrapperFacetas();
             DataWrapperFacetas facetaDW = new DataWrapperFacetas();
             //cargo las tablas en el ds
             facetaDW = facetaCN.ObtenerTodasFacetasDeProyecto(pOrganizacionID, pProyectoID);
 
-            //Obtengo la configuraciÛn del tesauro de ese proyecto
+            //Obtengo la configuraci√≥n del tesauro de ese proyecto
             TesauroCN tesauroCN = new TesauroCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
             DataWrapperTesauro tesauroDW = new DataWrapperTesauro();
             Guid tesauroID = tesauroCN.ObtenerIDTesauroDeProyecto(pProyectoID);
             tesauroDW = tesauroCN.ObtenerCategoriasPermitidasPorTipoRecurso(tesauroID);
 
-            //Obtengo la configuraciÛn de las etiquetas
+            //Obtengo la configuraci√≥n de las etiquetas
             var listadoConfigSearchProy = mEntityContext.ConfigSearchProy.Where(item => item.ProyectoID.Equals(pProyectoID)).ToList();
 
             VistaVirtualCN vistaVirtualCN = new VistaVirtualCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
             DataWrapperVistaVirtual vistaVirtualDW = vistaVirtualCN.ObtenerVistasVirtualPorProyectoID(pProyectoID);
 
-            //nodo ˙nico en el documento           
+            //nodo √∫nico en el documento           
             XmlNode ambitoTodoGnossVisible = configXML.SelectSingleNode("/Comunidad/Pestanyas/AmbitoTodoGnossVisible");
             XmlNode ambitoTodaLaComunidadVisible = configXML.SelectSingleNode("/Comunidad/Pestanyas/AmbitoTodaLaComunidadVisible");
             XmlNode cmsDisponible = configXML.SelectSingleNode("/Comunidad/Pestanyas/CMSDisponible");
@@ -1960,7 +1955,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Proyectos
                 filaParametroGral.CMSDisponible = cmsDisponible.InnerText.Equals("1");
             }
 
-            #region GestiÛn cambios inserciÛn masiva al base
+            #region Gesti√≥n cambios inserci√≥n masiva al base
 
             DataWrapperProyecto proyAuxCambiosMasBaseDS = new DataWrapperProyecto();
             //proyAuxCambiosMasBaseDS.Merge(dataWrapperProyecto.ListaProyectoPestanyaBusqueda);
@@ -1987,7 +1982,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Proyectos
             XmlNodeList usarOntosOtroProyecto = configXML.SelectNodes("Comunidad/UsarOntologiasDeProyecto");
             XmlNodeList listaUtilidades = configXML.SelectNodes("Comunidad/Utilidades");
 
-            //obtenemos la configuraciÛn de las categorÌas compartidas
+            //obtenemos la configuraci√≥n de las categor√≠as compartidas
             XmlNode comunidadOrigenCatCompartidas = configXML.SelectSingleNode("/Comunidad/CategoriasCompartidas/ComunidadOrigen");
             XmlNodeList categoriasCompartidas = configXML.SelectNodes("/Comunidad/CategoriasCompartidas/CategoriaID");
 
@@ -2034,7 +2029,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Proyectos
                             {
                                 mLoggingService.AgregarEntrada("Antes de mirar si la categotria " + catID.ToString() + " pertenece al tesauro");
 
-                                //si la categoria del xml pertenece al origen y no est· ya compartida en destino
+                                //si la categoria del xml pertenece al origen y no est√° ya compartida en destino
                                 if (listaCatTesOrigen.Contains(catID) && !listaCatTesDestino.Contains(catID))
                                 {
                                     mLoggingService.AgregarEntrada("La categoria de origen pertenece al tesauro de origen");
@@ -2086,7 +2081,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Proyectos
                         //seleccionar el nodo de la que comunidad correspondiente no seleccionar el [0]
                         if (comparticionEnProyecto.SelectSingleNode("ComunidadDestino").InnerText.Equals(comDestino))
                         {
-                            //dataset para el control de cambios en la comparticiÛn
+                            //dataset para el control de cambios en la compartici√≥n
                             DataWrapperComparticionAutomatica compAutoCambiosDW = new DataWrapperComparticionAutomatica();
 
                             ConfigurarComparticionComunidadConXML(comparticionEnProyecto, compAutoDW, compAutoCambiosDW, pOrganizacionID, pProyectoID, publicador);
@@ -2095,7 +2090,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Proyectos
 
                     foreach (AD.EntityModel.Models.ComparticionAutomatica.ComparticionAutomatica filaComparticion in compAutoDW.ListaComparticionAutomatica.ToList())
                     {
-                        //si no es aÒadida, ni est· modificada(aunque no tengan cambios, las que permanecen se guardan en modificadas), ni ya est· eliminada, hay que eliminarla
+                        //si no es a√±adida, ni est√° modificada(aunque no tengan cambios, las que permanecen se guardan en modificadas), ni ya est√° eliminada, hay que eliminarla
                         if (!mListaModificadasEF[typeof(AD.EntityModel.Models.ComparticionAutomatica.ComparticionAutomatica).Name].Contains(filaComparticion) && !mEntityContext.Entry(filaComparticion).State.Equals(EntityState.Added) && !filaComparticion.Eliminada)
                         {
                             filaComparticion.Eliminada = true;
@@ -2186,7 +2181,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Proyectos
 
             #endregion
 
-            #region Usar ontologÌas otro proyecto
+            #region Usar ontolog√≠as otro proyecto
             Guid idProyOntologias = pProyectoID;
             if (usarOntosOtroProyecto != null && usarOntosOtroProyecto.Count > 0 && !string.IsNullOrEmpty(usarOntosOtroProyecto[0].InnerText))
             {
@@ -2216,15 +2211,15 @@ namespace Es.Riam.Gnoss.Web.Controles.Proyectos
 
             if (ontologias != null && ontologias.Count > 0)
             {
-                //ontologÌas ya est·n sus listas agregadas a mListaModificadas desde ConfigurarOntologias
+                //ontolog√≠as ya est√°n sus listas agregadas a mListaModificadas desde ConfigurarOntologias
                 ConfigurarOntologias(configXML, ontologias, pOrganizacionID, pProyectoID, dataWrapperProyecto, facetaDW, tesauroDW, documentacionCN, idProyOntologias);
             }
             else
             {
-                //si no viene presentaciÛn en el xml borro las filas de esa ontologÌa del DS
+                //si no viene presentaci√≥n en el xml borro las filas de esa ontolog√≠a del DS
                 List<OntologiaProyecto> filasOnt = facetaDW.ListaOntologiaProyecto.Where(item => item.OrganizacionID.Equals(pOrganizacionID) && item.ProyectoID.Equals(pProyectoID)).ToList();
 
-                //borro las ontologÌas del DS y las filas relacionadas de las tablas que dependen de esa ontologÌa
+                //borro las ontolog√≠as del DS y las filas relacionadas de las tablas que dependen de esa ontolog√≠a
                 foreach (OntologiaProyecto ont in filasOnt)
                 {
                     #region pasar esto a funcion
@@ -2335,10 +2330,10 @@ namespace Es.Riam.Gnoss.Web.Controles.Proyectos
             }
             else
             {
-                //si no viene presentaciÛn en el xml borro los gadgets de recursos (TipoUbicacion = 1, sÛlo est·n cargados los de este tipo)
+                //si no viene presentaci√≥n en el xml borro los gadgets de recursos (TipoUbicacion = 1, s√≠lo est√°n cargados los de este tipo)
                 List<ProyectoGadget> filasProyGadget = dataWrapperProyecto.ListaProyectoGadget.Where(proyectoGadget => proyectoGadget.OrganizacionID.Equals(pOrganizacionID) && proyectoGadget.ProyectoID.Equals(pProyectoID) && proyectoGadget.TipoUbicacion.Equals((short)TipoUbicacionGadget.FichaRecursoComunidad)).ToList();//("OrganizacionID='" + pOrganizacionID.ToString() + "' and ProyectoID='" + pProyectoID.ToString() + "' and TipoUbicacion=" + (short)TipoUbicacionGadget.FichaRecursoComunidad); 
 
-                //para cada gadget tengo que borrar tambiÈn sus filas dependientes
+                //para cada gadget tengo que borrar tambi√©n sus filas dependientes
                 foreach (ProyectoGadget filaPG in filasProyGadget)
                 {
                     string gadgetID = filaPG.GadgetID.ToString();
@@ -2385,7 +2380,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Proyectos
                     }
                     else
                     {
-                        //si no viene presentaciÛn en el xml borro las filas de esa ontologÌa del DS
+                        //si no viene presentaci√≥n en el xml borro las filas de esa ontolog√≠a del DS
                         List<FacetaExcluida> listaExcluidas = facetaDW.ListaFacetaExcluida.Where(item => item.OrganizacionID.Equals(pOrganizacionID.ToString()) && item.ProyectoID.Equals(pProyectoID.ToString())).ToList();
                         foreach (FacetaExcluida fe in listaExcluidas)
                         {
@@ -2404,7 +2399,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Proyectos
                     }
                     else
                     {
-                        //si no viene presentaciÛn en el xml borro las filas de esa ontologÌa del DS
+                        //si no viene presentaci√≥n en el xml borro las filas de esa ontolog√≠a del DS
                         List<FacetaEntidadesExternas> listaExternas = facetaDW.ListaFacetaEntidadesExternas.Where(item => item.OrganizacionID.Equals(pOrganizacionID) && item.ProyectoID.Equals(pProyectoID)).ToList();
                         foreach (FacetaEntidadesExternas fee in listaExternas)
                         {
@@ -2427,7 +2422,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Proyectos
             }
             else
             {
-                //si no viene presentaciÛn en el xml borro las filas de esa ontologÌa del DS
+                //si no viene presentaci√≥n en el xml borro las filas de esa ontolog√≠a del DS
                 List<FacetaExcluida> listaExcluidas = facetaDW.ListaFacetaExcluida.Where(item => item.OrganizacionID.Equals(pOrganizacionID) && item.ProyectoID.Equals(pProyectoID)).ToList();
 
                 foreach (FacetaExcluida fe in listaExcluidas)
@@ -2436,7 +2431,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Proyectos
                     mEntityContext.EliminarElemento(fe);
                 }
 
-                //si no viene presentaciÛn en el xml borro las filas de esa ontologÌa del DS
+                //si no viene presentaci√≥n en el xml borro las filas de esa ontolog√≠a del DS
                 List<FacetaEntidadesExternas> listaExternas = facetaDW.ListaFacetaEntidadesExternas.Where(item => item.OrganizacionID.Equals(pOrganizacionID.ToString()) && item.ProyectoID.Equals(pProyectoID.ToString())).ToList();
                 foreach (FacetaEntidadesExternas fee in listaExternas)
                 {
@@ -2456,7 +2451,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Proyectos
             }
             else
             {
-                //si no viene presentaciÛn en el xml borro las filas de esa ontologÌa del DS
+                //si no viene presentaci√≥n en el xml borro las filas de esa ontolog√≠a del DS
                 List<FacetaConfigProyRangoFecha> filaConfigProyRangoFecha = facetaDW.ListaFacetaConfigProyRangoFecha.Where(item => item.OrganizacionID.Equals(pOrganizacionID) && item.ProyectoID.Equals(pProyectoID)).ToList();
                 if (filaConfigProyRangoFecha != null && filaConfigProyRangoFecha.Count > 0)
                 {
@@ -2478,7 +2473,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Proyectos
             }
             else
             {
-                //si no viene presentaciÛn en el xml borro las filas de esa ontologÌa del DS
+                //si no viene presentaci√≥n en el xml borro las filas de esa ontolog√≠a del DS
                 FacetaConfigProyMapa filaConfigProyMapa = facetaDW.ListaFacetaConfigProyMapa.Where(item => item.OrganizacionID.Equals(pOrganizacionID) && item.ProyectoID.Equals(pProyectoID)).FirstOrDefault();
                 if (filaConfigProyMapa != null)
                 {
@@ -2497,7 +2492,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Proyectos
             }
             else
             {
-                //si no viene presentaciÛn en el xml borro las filas de esa ontologÌa del DS
+                //si no viene presentaci√≥n en el xml borro las filas de esa ontolog√≠a del DS
                 List<FacetaConfigProyChart> listaConfigAuto = facetaDW.ListaFacetaConfigProyChart.Where(item => item.OrganizacionID.Equals(pOrganizacionID) && item.ProyectoID.Equals(pProyectoID)).ToList();
                 foreach (FacetaConfigProyChart fcp in listaConfigAuto)
                 {
@@ -2575,7 +2570,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Proyectos
             }
             else
             {
-                //si no viene presentaciÛn en el xml borro las filas de esa ontologÌa del DS
+                //si no viene presentaci√≥n en el xml borro las filas de esa ontolog√≠a del DS
                 foreach (var item in listadoConfigSearchProy)
                 {
                     mEntityContext.EliminarElemento(item);
@@ -2591,7 +2586,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Proyectos
             }
             #endregion
 
-            #region Tesauros sem·nticos
+            #region Tesauros sem√°nticos
 
             if (listaTesaurosSemanticos != null && listaTesaurosSemanticos.Count > 0)
             {
@@ -2599,7 +2594,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Proyectos
             }
             else
             {
-                //si no viene presentaciÛn en el xml borro las filas de esa ontologÌa del DS
+                //si no viene presentaci√≥n en el xml borro las filas de esa ontolog√≠a del DS
                 //"ProyectoID='" + pProyectoID.ToString() + "' AND Tipo=" + (short)TipoConfigExtraSemantica.TesauroSemantico
                 foreach (ProyectoConfigExtraSem fila in dataWrapperProyecto.ListaProyectoConfigExtraSem.Where(proyectConfigExtraSem => proyectConfigExtraSem.ProyectoID.Equals(pProyectoID) && proyectConfigExtraSem.Tipo.Equals((short)TipoConfigExtraSemantica.TesauroSemantico)).ToList())
                 {
@@ -2684,7 +2679,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Proyectos
                 }
             }
 
-            //obtengo la lista de filas aÒadidas para registrarlas
+            //obtengo la lista de filas a√±adidas para registrarlas
             //List <AD.EntityModel.Models.ProyectoDS.ProyectoPestanyaMenu> listaAniadidas = dataWrapperProyecto.ListaProyectoPestanyaMenu.Where(pestanya => mEntityContext.Entry(pestanya).State.Equals(EntityState.Added)).ToList();
             if (listaAniadidas != null)
             {
@@ -2699,7 +2694,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Proyectos
 
             List<AD.EntityModel.Models.CMS.CMSPagina> listaAuxiliar = cmsDS.ListaCMSPagina.ToList();
 
-            //Eliminamos las p·ginas que no tengan fila en ProyectoPestanyaCMS (excepto las de home)
+            //Eliminamos las p√°ginas que no tengan fila en ProyectoPestanyaCMS (excepto las de home)
             foreach (AD.EntityModel.Models.CMS.CMSPagina cmsPaginaRow in listaAuxiliar)
             {
                 short ubicacion = cmsPaginaRow.Ubicacion;
@@ -2743,7 +2738,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Proyectos
             //guardo cambios
             mEntityContext.SaveChanges();
 
-            #region GestiÛn cambios inserciÛn masiva al base
+            #region Gesti√≥n cambios inserci√≥n masiva al base
 
             bool insercion = HayQueInsertarCambiosMasivosAlBase(proyAuxCambiosMasBaseDS, dataWrapperProyecto, facetaCambiosMasBaseDW, facetaDW);
 
@@ -2763,7 +2758,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Proyectos
             #region ParametrosProyecto
 
             //configuro los grupos que pueden abrir la visibilidad de un recurso en la comunidad
-            //como parametroproyecto se inserta directamente en BD lo hago lo ˙ltimo, sabiendo que el resto del xml ha ido bien
+            //como parametroproyecto se inserta directamente en BD lo hago lo √∫ltimo, sabiendo que el resto del xml ha ido bien
             ParametroCN parametroCN = new ParametroCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
             if (listaGruposPermitidosSelPriv.Count > 0)
             {
@@ -2779,6 +2774,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Proyectos
                 parametroCN.BorrarParametroDeProyecto(pProyectoID, pOrganizacionID, "GruposPermitidosSeleccionarPrivacidadRecursoAbierto");
             }
 
+
             //NumeroCaracteresDescripcionSuscripcion de ParametroProyecto
             XmlNode nodoNumeroCaracteresDescripcionSuscripcion = configXML.SelectSingleNode("/Comunidad/NumeroCaracteresDescripcionSuscripcion");
             if (nodoNumeroCaracteresDescripcionSuscripcion != null)
@@ -2787,7 +2783,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Proyectos
                 string strNumCaracteres = nodoNumeroCaracteresDescripcionSuscripcion.InnerText.ToLower();
                 if (!int.TryParse(strNumCaracteres, out numCaracteres))
                 {
-                    throw new Exception("El nodo 'NumeroCaracteresDescripcionSuscripcion' no est· configurado con un n˙mero entero");
+                    throw new Exception("El nodo 'NumeroCaracteresDescripcionSuscripcion' no est√° configurado con un n√∫mero entero");
                 }
                 parametroCN.ActualizarParametroEnProyecto(pProyectoID, pOrganizacionID, ParametroAD.NumeroCaracteresDescripcion, strNumCaracteres);
             }
@@ -2831,10 +2827,9 @@ namespace Es.Riam.Gnoss.Web.Controles.Proyectos
                 parametroCN.BorrarParametroDeProyecto(pProyectoID, pOrganizacionID, ParametroAD.NombrePoliticaCookies);
             }
 
-
             #endregion
 
-            //invalido las cachÈs
+            //invalido las caches
             ProyectoCL proyCL = new ProyectoCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mVirtuosoAD, mServicesUtilVirtuosoAndReplication);
             proyCL.InvalidarPestanyasProyecto(pProyectoID);
             proyCL.InvalidarSeccionesHomeCatalogoDeProyecto(pProyectoID);
@@ -2870,6 +2865,17 @@ namespace Es.Riam.Gnoss.Web.Controles.Proyectos
             mGnossCache.VersionarCacheLocal(pProyectoID);
         }
 
+        public void InsertarParametrosAdministracion(Guid pProyectoID, Guid pOrganizacionID)
+        {
+            ParametroCN parametroCN = new ParametroCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+            //Poner administraci√≥n a todas las comunidades
+            parametroCN.ActualizarParametroEnProyecto(pProyectoID, pOrganizacionID, "AdministracionDesarrolladoresPermitido", "1");
+            parametroCN.ActualizarParametroEnProyecto(pProyectoID, pOrganizacionID, "AdministracionPaginasPermitido", "1");
+            parametroCN.ActualizarParametroEnProyecto(pProyectoID, pOrganizacionID, "AdministracionSemanticaPermitido", "1");
+            parametroCN.ActualizarParametroEnProyecto(pProyectoID, pOrganizacionID, "AdministracionVistasPermitido", "1");
+            ProyectoCL proyecto = new ProyectoCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mVirtuosoAD, mServicesUtilVirtuosoAndReplication);
+            proyecto.InvalidarParametrosProyecto(pProyectoID, pOrganizacionID);
+        }
         public void BorrarPestanya(ProyectoGBD.ProyectoGBD proyectoGBD, AD.EntityModel.Models.ProyectoDS.ProyectoPestanyaMenu padre, List<AD.EntityModel.Models.ProyectoDS.ProyectoPestanyaMenu> filasPestanyas, List<ProyectoPestanyaFiltroOrdenRecursos> listaProyectoPestanyaFiltroOrdenRecursos)
         {
             if (padre.TipoPestanya != (short)TipoPestanyaMenu.CMS)
@@ -2975,12 +2981,12 @@ namespace Es.Riam.Gnoss.Web.Controles.Proyectos
             TesauroCN tesauroCN = new TesauroCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
             tesauroCN.ActualizarTesauro();
 
-            //invalidamos cachÈ del tesauro
+            //invalidamos cache del tesauro
             TesauroCL tesCL = new TesauroCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mServicesUtilVirtuosoAndReplication);
             tesCL.InvalidarCacheDeTesauroDeProyecto(pProyectoID);
             tesCL.Dispose();
 
-            //invalidamos cachÈ del proyecto
+            //invalidamos cache del proyecto
             ProyectoCL proyCL = new ProyectoCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mVirtuosoAD, mServicesUtilVirtuosoAndReplication);
             proyCL.InvalidarFilaProyecto(pProyectoID);
             proyCL.Dispose();
@@ -3018,7 +3024,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Proyectos
                     short.TryParse((string)UtilXML.LeerNodo(nodoCategoria, "Estructurante", typeof(string)), out estructurante);
                 }
 
-                //aÒadir fila a CategoriaTesauro
+                //a√±adir fila a CategoriaTesauro
                 AD.EntityModel.Models.Tesauro.CategoriaTesauro filaCategoria = new AD.EntityModel.Models.Tesauro.CategoriaTesauro();
                 filaCategoria.TesauroID = pTesauroID;
                 filaCategoria.CategoriaTesauroID = categoriaID;
@@ -3036,7 +3042,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Proyectos
 
                 if (!pCategoriaSuperiorID.Equals(Guid.Empty))
                 {
-                    //es hija, aÒadir fila a CatTesauroAgCatTesauro
+                    //es hija, a√±adir fila a CatTesauroAgCatTesauro
                     CatTesauroAgCatTesauro catTesauroAgCatTesauro = new CatTesauroAgCatTesauro();
                     catTesauroAgCatTesauro.TesauroID = pTesauroID;
                     catTesauroAgCatTesauro.CategoriaSuperiorID = pCategoriaSuperiorID;
@@ -3047,7 +3053,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Proyectos
                 }
 
 
-                //la categoria recien insertada ser· la categoriaSuperior de las hijas
+                //la categoria recien insertada ser√° la categoriaSuperior de las hijas
                 XmlNodeList categoriasHijas = nodoCategoria.SelectNodes("Category");
 
                 if (categoriasHijas == null || categoriasHijas.Count == 0)
@@ -3184,12 +3190,12 @@ namespace Es.Riam.Gnoss.Web.Controles.Proyectos
         }
 
         /// <summary>
-        /// Configura la comparticiÛn autom·tica para una comunidad de origen
+        /// Configura la compartici√≥n autom√°tica para una comunidad de origen
         /// </summary>
-        /// <param name="pReglasComparticion">Lista de nodos de la comparticiÛn</param>
-        /// <param name="pCompAutoDW">DataSet con la configuraciÛn actual de la comparticiÛn de la comunidad</param>
+        /// <param name="pReglasComparticion">Lista de nodos de la compartici√≥n</param>
+        /// <param name="pCompAutoDW">DataSet con la configuraci√≥n actual de la compartici√≥n de la comunidad</param>
         /// <param name="pCompAutoCambiosDW">DataSet para guardar las filas afectadas por cambios</param>        
-        /// <param name="pOrgOrigenID">Identificador de la organizaciÛn de origen</param>
+        /// <param name="pOrgOrigenID">Identificador de la organizaci√≥n de origen</param>
         /// <param name="pProyOrigenID">Identificador de la comunidad de origen</param>
         /// <param name="pIdentidadPublicadoraID">Identificador de la identidad publicadora</param>
         public void ConfigurarComparticionComunidadConXML(XmlNode pComparticionProyecto, DataWrapperComparticionAutomatica pCompAutoDW, DataWrapperComparticionAutomatica pCompAutoCambiosDW, Guid pOrgOrigenID, Guid pProyOrigenID, string pPublicador)
@@ -3267,7 +3273,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Proyectos
 
                             if (regla != string.Empty)
                             {
-                                //aÒado las Reglas a la lista que posteriormente generar· filas en la tabla ComparticionAutomaticaReglas
+                                //a√±ado las Reglas a la lista que posteriormente generar√° filas en la tabla ComparticionAutomaticaReglas
                                 listaReglasComp.Add(regla, navegacion);
                             }
                         }
@@ -3284,7 +3290,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Proyectos
                                 listaCatDestinoMapping = new List<string>();
                                 XmlNodeList nodosReglaMapping = mapping.SelectNodes("ReglaOrigen");
                                 XmlNodeList nodosCatDestinoMapping = mapping.SelectNodes("CatDestino");
-                                //aÒado las reglasOrigen a la lista
+                                //a√±ado las reglasOrigen a la lista
                                 foreach (XmlNode nodo in nodosReglaMapping)
                                 {
                                     string r = nodo.InnerText;
@@ -3293,7 +3299,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Proyectos
                                         listaReglasMapping.Add(r);
                                     }
                                 }
-                                //aÒado las catDestino a la lista
+                                //a√±ado las catDestino a la lista
                                 foreach (XmlNode nodo in nodosCatDestinoMapping)
                                 {
                                     string cat = nodo.InnerText;
@@ -3311,7 +3317,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Proyectos
                                             }
                                             else
                                             {
-                                                throw new Exception("Esa categorÌa no existe en este proyecto");
+                                                throw new Exception("Esa categor√≠a no existe en este proyecto");
                                             }
                                         }
                                     }
@@ -3328,15 +3334,15 @@ namespace Es.Riam.Gnoss.Web.Controles.Proyectos
                         }
                         else
                         {
-                            //no hay configuraciÛn de mapeo en el XML
-                            throw new Exception("No hay configuraciÛn de mapeo en el XML");
+                            //no hay configuraci√≥n de mapeo en el XML
+                            throw new Exception("No hay configuraci√≥n de mapeo en el XML");
                         }
                         #endregion mappingcategorias
                     }
                     else
                     {
-                        //no hay reglas de comparticion, lanzo una excepciÛn
-                        throw new Exception("No hay reglas de comparticiÛn en el XML");
+                        //no hay reglas de comparticion, lanzo una excepci√≥n
+                        throw new Exception("No hay reglas de compartici√≥n en el XML");
                     }
                     #endregion ReglaComparticion
                 }
@@ -3352,7 +3358,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Proyectos
                 throw new Exception("No existe comunidad de destino en el XML");
             }
 
-            //si llega hasta aquÌ las listas tienen que estar llenas, si no se han configurado saltarÌa alguna excepciÛn de las anteriores
+            //si llega hasta aqu√≠ las listas tienen que estar llenas, si no se han configurado saltar√° alguna excepci√≥n de las anteriores
             //ahora tengo las listas de reglas y categorias para ese mapping, agregarlo al dataset si no existen ya
             Guid idComparticion = AgregarReglasComparticionADataSet(pCompAutoDW, pCompAutoCambiosDW, comparticionID.Value, nomComparticion, pOrgOrigenID, pProyOrigenID, orgDestinoID, proyDestinoID, listaReglasComp, duplasReglasCategorias, dictCatTesauro, identidadPublicadoraID, false, actualizarHome);
 
@@ -3362,18 +3368,18 @@ namespace Es.Riam.Gnoss.Web.Controles.Proyectos
         }
 
         /// <summary>
-        /// Guarda la configuraciÛn de la comparticiÛn autom·tica para un proyecto
+        /// Guarda la configuraci√≥n de la compartici√≥n autom√°tica para un proyecto
         /// </summary>
-        /// <param name="pCompAutoDW">DataSet con la configuraciÛn de la comparticiÛn autom·tica de la comunidad</param>
+        /// <param name="pCompAutoDW">DataSet con la configuraci√≥n de la compartici√≥n autom√°tica de la comunidad</param>
         /// <param name="pCompAutoCambiosDW">DataSet para guardar las filas afectadas por cambios</param>
-        /// <param name="pComparticionID">Identificador de la comparticiÛn</param>
-        /// <param name="pOrgOrigenID">Identificador de la organizaciÛn de origen</param>
+        /// <param name="pComparticionID">Identificador de la compartici√≥n</param>
+        /// <param name="pOrgOrigenID">Identificador de la organizaci√≥n de origen</param>
         /// <param name="pProyOrigenID">Identificador del proyecto de origen</param>
-        /// <param name="pOrgDestinoID">Identificador de la organizaciÛn de destino</param>
+        /// <param name="pOrgDestinoID">Identificador de la organizaci√≥n de destino</param>
         /// <param name="pProyDestinoID">Identificador del proyecto de destino</param>
-        /// <param name="pListaReglasComp">Lista de reglas de comparticiÛn</param>
+        /// <param name="pListaReglasComp">Lista de reglas de compartici√≥n</param>
         /// <param name="pListaReglasMapping">Lista de reglas de mapeo</param>
-        /// <param name="pListaCatDestinoMapping">Lista de categorÌas de mapeo</param>
+        /// <param name="pListaCatDestinoMapping">Lista de categor√≠as de mapeo</param>
         /// <param name="pDictCatTesauro">Diccionario que relaciona un nombre de tesauro con su tesauroID y categoriatesauroID</param>
         private Guid AgregarReglasComparticionADataSet(DataWrapperComparticionAutomatica pCompAutoDW, DataWrapperComparticionAutomatica pCompAutoCambiosDW, Guid pComparticionID, string pNomComparticion, Guid pOrgOrigenID, Guid pProyOrigenID, Guid pOrgDestinoID, Guid pProyDestinoID, Dictionary<string, string> pListaReglasComp, Dictionary<List<string>, List<string>> pDuplasReglasCategorias, Dictionary<string, List<Guid>> pDictCatTesauro, Guid pIdentidadPublicadoraID, bool pEliminada, bool pActualizarHome)
         {
@@ -3557,7 +3563,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Proyectos
         /// <summary>
         /// Configura la SeccionProyectoCatalogo
         /// </summary>
-        /// <param name="pListaSeccionProyCatalogo">Nodo xml con la configuraciÛn de SeccionProyectoCatalogo</param>
+        /// <param name="pListaSeccionProyCatalogo">Nodo xml con la configuraci√≥n de SeccionProyectoCatalogo</param>
         /// <param name="pProyectoDW">Dataset del proyecto</param>
         /// <param name="pOrganizacionID">Identificador de la organizacion a la que pertenece el proyecto</param>
         /// <param name="pProyectoID">Identificador del proyecto</param>
@@ -3575,7 +3581,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Proyectos
                 short tipoSeccion = (short)LeerNodo(seccion, "Tipo", typeof(short));
                 Guid organizacionBuqueda = Guid.Empty;
                 Guid proyectoBusqueda = Guid.Empty;
-                //si la organizacion de busqueda viene vacÌo lo configuro con pOrganizacion
+                //si la organizacion de busqueda viene vac√≠o lo configuro con pOrganizacion
                 if (string.IsNullOrEmpty(nodoProyectoBusqueda))
                 {
                     proyectoBusqueda = pProyectoID;
@@ -3629,9 +3635,9 @@ namespace Es.Riam.Gnoss.Web.Controles.Proyectos
         }
 
         /// <summary>
-        /// Configura el AutocompletarProyecto con los par·metros que se han pasado desde un XML
+        /// Configura el AutocompletarProyecto con los par√°metros que se han pasado desde un XML
         /// </summary>
-        /// <param name="pConfigAutocompletarProy">Nodo xml con la configuraciÛn de Autocompletar proyecto</param>
+        /// <param name="pConfigAutocompletarProy">Nodo xml con la configuraci√≥n de Autocompletar proyecto</param>
         /// <param name="pListaConfigAutocompletarProy">DataSet de TagsAuto</param>
         /// <param name="pOrganizacionID">Identificador de la organizacion a la que pertenece el proyecto</param>
         /// <param name="pProyectoID">Identificador del proyecto</param>
@@ -3660,7 +3666,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Proyectos
                     listaCampos.Add(nameof(configAutocompletarProyAux.Valor), valor);
                     if (clave.ToLower().Contains("FacetasPag_".ToLower()))
                     {
-                        throw new Exception("Las facetas del autocompletar de una b˙squeda hay que configurarlas dentro de la propia b˙squeda");
+                        throw new Exception("Las facetas del autocompletar de una b√∫squeda hay que configurarlas dentro de la propia b√∫squeda");
                     }
 
                     ConfigAutocompletarProy filaAutocompletar = pDataWrapperProyecto.ListaConfigAutocompletarProy.Where(item => item.OrganizacionID.Equals(pOrganizacionID) && item.ProyectoID.Equals(pProyectoID) && item.Clave.Equals(clave)).FirstOrDefault();
@@ -3727,9 +3733,9 @@ namespace Es.Riam.Gnoss.Web.Controles.Proyectos
         }
 
         /// <summary>
-        /// Configura el campo search del proyecto con los par·metros que se han pasado desde un XML
+        /// Configura el campo search del proyecto con los par√°metros que se han pasado desde un XML
         /// </summary>
-        /// <param name="pConfigSearchProy">Nodo xml con la configuraciÛn del search del proyecto</param>
+        /// <param name="pConfigSearchProy">Nodo xml con la configuraci√≥n del search del proyecto</param>
         /// <param name="pTagsAutoDS">DataSet de TagsAuto</param>
         /// <param name="pOrganizacionID">Identificador de la organizacion a la que pertenece el proyecto</param>
         /// <param name="pProyectoID">Identificador del proyecto</param>
@@ -3852,12 +3858,20 @@ namespace Es.Riam.Gnoss.Web.Controles.Proyectos
 
                     if (filasPersonalizacionProyecto != null && filasPersonalizacionProyecto.Count > 0 && filasPersonalizacionProyecto[0].PersonalizacionID != personalizacionComunidad)
                     {
-                        // Modifico la personalizaciÛn de esta comunidad
-                        pVistaVirtualDW.ListaVistaVirtualProyecto.FirstOrDefault().PersonalizacionID = personalizacionComunidad;
+                        // Modifico la personalizaci√≥n de esta comunidad
+                        //pVistaVirtualDW.ListaVistaVirtualProyecto.FirstOrDefault().PersonalizacionID = personalizacionComunidad;
+                        mEntityContext.EliminarElemento(pVistaVirtualDW.ListaVistaVirtualProyecto.FirstOrDefault());
+                        /*
+                        if (filasPersonalizacionProyecto.Count == 1)
+                        {
+                            mEntityContext.EliminarElemento(mEntityContext.VistaVirtualPersonalizacion.First(item => item.PersonalizacionID.Equals(filaPersonalizacion.PersonalizacionID)));
+                        }
+                        */
+                        filasPersonalizacionProyecto = null;
                     }
-                    else if (filasPersonalizacionProyecto == null || filasPersonalizacionProyecto.Count == 0)
+                    if (filasPersonalizacionProyecto == null || filasPersonalizacionProyecto.Count == 0)
                     {
-                        // AÒado la personalizaciÛn para este proyecto
+                        // A√±ado la personalizaci√≥n para este proyecto
                         AD.EntityModel.Models.VistaVirtualDS.VistaVirtualProyecto vistaVirtualProyect = new AD.EntityModel.Models.VistaVirtualDS.VistaVirtualProyecto();
                         vistaVirtualProyect.OrganizacionID = pOrganizacionID;
                         vistaVirtualProyect.ProyectoID = pProyectoID;
@@ -3884,9 +3898,9 @@ namespace Es.Riam.Gnoss.Web.Controles.Proyectos
         }
 
         /// <summary>
-        /// Configura los tesauros sem·nticos que son editables en la comunidad.
+        /// Configura los tesauros sem√°nticos que son editables en la comunidad.
         /// </summary>
-        /// <param name="pListaEdicionTesSem">Nodo xml con la configuraciÛn de los tesauros sem·nticos editables</param>
+        /// <param name="pListaEdicionTesSem">Nodo xml con la configuraci√≥n de los tesauros sem√°nticos editables</param>
         /// <param name="pDataWrapperProyecto">DataSet de proyecto</param>
         /// <param name="pProyectoID">Identificador del proyecto</param>
         private void ConfigurarEdicionTesSem(XmlNodeList pListaEdicionTesSem, DataWrapperProyecto pDataWrapperProyecto, Guid pProyectoID)
@@ -3912,7 +3926,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Proyectos
 
                 if (!existeOnto)
                 {
-                    throw new Exception("Se est· intentando configurar la ontologÌa '" + ontologia + "' como Tesauro Sem·ntico, pero no existe.");
+                    throw new Exception("Se est√° intentando configurar la ontolog√≠a '" + ontologia + "' como Tesauro Sem√°ntico, pero no existe.");
                 }
 
                 //creo el diccionario para control de cambios para ProyectoGadget
@@ -3948,10 +3962,10 @@ namespace Es.Riam.Gnoss.Web.Controles.Proyectos
         }
 
         /// <summary>
-        /// Configura las ontologias de un proyecto determinado con los par·metros que se han pasado desde un XML
+        /// Configura las ontologias de un proyecto determinado con los par√°metros que se han pasado desde un XML
         /// </summary>
-        /// <param name="pConfigXML">Documento xml con la configuraciÛn de la comunidad</param>
-        /// <param name="pOntologias">Lista de nodos con la configuracion de las ontologÌas</param>
+        /// <param name="pConfigXML">Documento xml con la configuraci√≥n de la comunidad</param>
+        /// <param name="pOntologias">Lista de nodos con la configuracion de las ontolog√≠as</param>
         /// <param name="pContextos">Lista de nodos con la configuracion de los contextos</param>
         /// <param name="pOrganizacionID">Identificador de la organizacion a la que pertenece el proyecto</param>
         /// <param name="pProyectoID">Identificador del proyecto</param>
@@ -4003,12 +4017,12 @@ namespace Es.Riam.Gnoss.Web.Controles.Proyectos
                     }
                 }
 
-                //compruebo cambios en la ontologÌa
+                //compruebo cambios en la ontolog√≠a
                 OntologiaProyecto filaOntologia = pFacetaDW.ListaOntologiaProyecto.Where(item => item.OrganizacionID.Equals(pOrganizacionID) && item.ProyectoID.Equals(pProyectoID) && item.OntologiaProyecto1.Equals(ontologiaProyecto)).FirstOrDefault();
 
                 if (filaOntologia != null)
                 {
-                    //aÒado la fila a la lista de ontologÌas para poder borrar de la tabla las que no estÈn en el xml
+                    //a√±ado la fila a la lista de ontolog√≠as para poder borrar de la tabla las que no est√°n en el xml
                     listaFilasOnt.Add(filaOntologia);
                 }
                 //creo el diccionario para control de cambios para ProyectoGadget
@@ -4051,7 +4065,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Proyectos
                 }
                 else
                 {
-                    //si no viene presentaciÛn en el xml borro las filas de esa ontologÌa del DS
+                    //si no viene presentaci√≥n en el xml borro las filas de esa ontolog√≠a del DS
                     List<PresentacionListadoSemantico> listaPlsr = pDataWrapperProyecto.ListaPresentacionListadoSemantico.Where(presentacion => presentacion.OrganizacionID.Equals(pOrganizacionID.ToString()) && presentacion.ProyectoID.Equals(pProyectoID.ToString()) && presentacion.OntologiaID.Equals(ontologiaID.ToString())).ToList();
                     foreach (PresentacionListadoSemantico plsr in listaPlsr)
                     {
@@ -4076,7 +4090,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Proyectos
                 }
                 else
                 {
-                    //si no viene presentaciÛn en el xml borro las filas de esa ontologÌa del DS
+                    //si no viene presentaci√≥n en el xml borro las filas de esa ontolog√≠a del DS
                     List<PresentacionMosaicoSemantico> listaPlsr = pDataWrapperProyecto.ListaPresentacionMosaicoSemantico.Where(presentacionMosaicoSemantico => presentacionMosaicoSemantico.OrganizacionID.Equals(pOrganizacionID) && presentacionMosaicoSemantico.ProyectoID.Equals(pProyectoID) && presentacionMosaicoSemantico.OntologiaID.Equals(ontologiaID)).ToList();
                     //"OrganizacionID='" + pOrganizacionID.ToString() + "' and ProyectoID='" + pProyectoID.ToString() + "' and OntologiaID='" + ontologiaID.ToString() + "'");
                     foreach (PresentacionMosaicoSemantico plsr in listaPlsr)
@@ -4099,7 +4113,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Proyectos
                 }
                 else
                 {
-                    //si no viene presentaciÛn en el xml borro las filas de esa ontologÌa del DS
+                    //si no viene presentaci√≥n en el xml borro las filas de esa ontolog√≠a del DS
                     List<PresentacionMapaSemantico> listaPlsr = pDataWrapperProyecto.ListaPresentacionMapaSemantico.Where(presentacionMapaSemantico => presentacionMapaSemantico.OrganizacionID.Equals(pOrganizacionID) && presentacionMapaSemantico.ProyectoID.Equals(pProyectoID) && presentacionMapaSemantico.OntologiaID.Equals(ontologiaID)).ToList();
                     //("OrganizacionID='" + pOrganizacionID.ToString() + "' and ProyectoID='" + pProyectoID.ToString() + "' and OntologiaID='" + ontologiaID.ToString() + "'");
                     foreach (PresentacionMapaSemantico plsr in listaPlsr)
@@ -4122,7 +4136,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Proyectos
                 }
                 else
                 {
-                    //si no viene presentaciÛn en el xml borro las filas de esa ontologÌa del DS
+                    //si no viene presentaci√≥n en el xml borro las filas de esa ontolog√≠a del DS
                     List<RecursosRelacionadosPresentacion> listaPlsr = pDataWrapperProyecto.ListaRecursosRelacionadosPresentacion.Where(recurso => recurso.OrganizacionID.Equals(pOrganizacionID.ToString()) && recurso.ProyectoID.Equals(pProyectoID.ToString()) && recurso.OntologiaID.Equals(ontologiaID.ToString())).ToList();
                     foreach (RecursosRelacionadosPresentacion rrp in listaPlsr)
                     {
@@ -4147,11 +4161,11 @@ namespace Es.Riam.Gnoss.Web.Controles.Proyectos
                         Guid categoriaTesauroID = tesauroCat[1];
 
 
-                        AD.EntityModel.Models.Tesauro.CatTesauroPermiteTipoRec fila = pTesauroDW.ListaCatTesauroPermiteTipoRec.FirstOrDefault(item => item.TesauroID.Equals(tesauroID) && item.CategoriaTesauroID.Equals(categoriaTesauroID) && item.TipoRecurso.Equals(5));
-                        //si no existe la fila la aÒado al ds
+                        CatTesauroPermiteTipoRec fila = pTesauroDW.ListaCatTesauroPermiteTipoRec.FirstOrDefault(item => item.TesauroID.Equals(tesauroID) && item.CategoriaTesauroID.Equals(categoriaTesauroID) && item.TipoRecurso.Equals(5));
+                        //si no existe la fila la a√±ado al ds
                         if (fila == null)
                         {
-                            AD.EntityModel.Models.Tesauro.CatTesauroPermiteTipoRec catTesauroPermiteTipoRec = new AD.EntityModel.Models.Tesauro.CatTesauroPermiteTipoRec();
+                            CatTesauroPermiteTipoRec catTesauroPermiteTipoRec = new CatTesauroPermiteTipoRec();
                             catTesauroPermiteTipoRec.TesauroID = tesauroID;
                             catTesauroPermiteTipoRec.CategoriaTesauroID = categoriaTesauroID;
                             catTesauroPermiteTipoRec.TipoRecurso = 5;
@@ -4174,31 +4188,22 @@ namespace Es.Riam.Gnoss.Web.Controles.Proyectos
                         }
                     }
                 }
-                //else
-                //{                    
-                ////si no viene presentaciÛn en el xml borro las filas de esa ontologÌa del DS
-                //TesauroDS.CatTesauroPermiteTipoRecRow[] listaCatTes = (TesauroDS.CatTesauroPermiteTipoRecRow[])pTesauroDS.CatTesauroPermiteTipoRec.Select("OntologiasID='" + ontologiaID.ToString() + "'");
-                //foreach (TesauroDS.CatTesauroPermiteTipoRecRow rrp in listaCatTes)
-                //{
-                //    rrp.Delete();
-                //}
-                //}
-                #endregion CatTesauroPermiteTipoRec
 
+                #endregion CatTesauroPermiteTipoRec
             }
 
-            foreach (AD.EntityModel.Models.Tesauro.CatTesauroPermiteTipoRec filaTesOnt in filasTesauroOntologias.Keys)
+            foreach (CatTesauroPermiteTipoRec filaTesOnt in filasTesauroOntologias.Keys)
             {
                 //vuelco las ontologias de todos los objetos de conocimiento de esa categoriatesauro
                 filaTesOnt.OntologiasID = filasTesauroOntologias[filaTesOnt];
                 if (!listaFilasCatTesauro.Contains(filaTesOnt))
                 {
-                    //aÒado la fila a la lista de modificadas
+                    //a√±ado la fila a la lista de modificadas
                     listaFilasCatTesauro.Add(filaTesOnt);
                 }
             }
 
-            //aÒado las listas de filas que han sido modificadas para no duplicarlas
+            //a√±ado las listas de filas que han sido modificadas para no duplicarlas
             if (!mListaModificadasEF.ContainsKey(typeof(OntologiaProyecto).Name))
             {
                 mListaOriginalesEF.Add(typeof(OntologiaProyecto).Name, new List<object>(pDataWrapperProyecto.ListaOntologiaProyecto));
@@ -4212,23 +4217,16 @@ namespace Es.Riam.Gnoss.Web.Controles.Proyectos
                 mListaModificadasEF.Add(typeof(CatTesauroPermiteTipoRec).Name, new List<object>());
             }
             mListaModificadasEF[typeof(CatTesauroPermiteTipoRec).Name].AddRange(listaFilasCatTesauro);
-
-            //mListaModificadas.Add(pFacetaDS.OntologiaProyecto, listaFilasOnt);
-            //mListaModificadas.Add(pFacetaDS.CatTesauroPermiteTipoRec, listaFilasCatTesauro);
-            //BorrarFilasDS(pFacetaDS.OntologiaProyecto, listaFilasOnt);
-            //BorrarFilasDS(pFacetaDS.CatTesauroPermiteTipoRec, listaFilasCatTesauro);
-
-            //BorrarFilasSobrantes();            
         }
 
         /// <summary>
-        /// Configura el listado semantico de un proyecto determinado con los par·metros que se han pasado desde un XML
+        /// Configura el listado semantico de un proyecto determinado con los par√°metros que se han pasado desde un XML
         /// </summary>
         /// <param name="pListadoSemantico">Nodo xml de un listado semantico</param>
         /// <param name="pOrganizacionID">Identificador de la organizacion a la que pertenece el proyecto</param>
         /// <param name="pProyectoID">Identificador del proyecto</param>
         /// <param name="pDataWrapper">DataSet de Proyectos</param>
-        /// <param name="pOntologiaID">Identificador de la ontologÌa</param>
+        /// <param name="pOntologiaID">Identificador de la ontolog√≠a</param>
         private void ConfigurarPresentacionListadoSemantico(XmlNodeList pListadosSemantico, Guid pOrganizacionID, Guid pProyectoID, DataWrapperProyecto pDataWrapper, Guid pOntologiaID, string pOntologiaProyecto)
         {
             List<object> listaModificadas = new List<object>();
@@ -4240,7 +4238,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Proyectos
                 string propiedadListadoSem = (string)LeerNodo(listadoSemantico, "Propiedad", typeof(string));
                 string nombreListado = (string)LeerNodo(listadoSemantico, "Nombre", typeof(string));
 
-                //si no es sem·ntica la ontologia ser· una cadena vacÌa
+                //si no es sem√°ntica la ontologia ser√° una cadena vac√≠a
                 string nombreOntologiaListado = "";
                 if (propiedadListadoSem.Contains(":"))
                 {
@@ -4278,13 +4276,13 @@ namespace Es.Riam.Gnoss.Web.Controles.Proyectos
         }
 
         /// <summary>
-        /// Configura el mosaico semantico de un proyecto determinado con los par·metros que se han pasado desde un XML
+        /// Configura el mosaico semantico de un proyecto determinado con los par√°metros que se han pasado desde un XML
         /// </summary>
         /// <param name="pMosaicoSemantico">Lista de los nodos xml de un mosaico semantico</param>
         /// <param name="pOrganizacionID">Identificador de la organizacion a la que pertenece el proyecto</param>
         /// <param name="pProyectoID">Identificador del proyecto</param>
         /// <param name="pDataWrapperProyecto">DataSet de Proyectos</param>
-        /// <param name="pOntologiaID">Identificador de la ontologÌa</param>
+        /// <param name="pOntologiaID">Identificador de la ontolog√≠a</param>
         private void ConfigurarPresentacionMosaicoSemantico(XmlNodeList pMosaicosSemantico, Guid pOrganizacionID, Guid pProyectoID, DataWrapperProyecto pDataWrapperProyecto, Guid pOntologiaID, string pOntologiaProyecto)
         {
             List<object> listaModificadas = new List<object>();
@@ -4296,7 +4294,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Proyectos
                 string propiedadMosaicoSem = (string)LeerNodo(mosaicoSemantico, "Propiedad", typeof(string));
                 string nombreMosaico = (string)LeerNodo(mosaicoSemantico, "Nombre", typeof(string));
 
-                //si no es sem·ntica la ontologia ser· una cadena vacÌa
+                //si no es sem√°ntica la ontologia ser√° una cadena vac√≠a
                 string nombreOntologiaMosaico = "";
                 if (propiedadMosaicoSem.Contains(":"))
                 {
@@ -4335,13 +4333,13 @@ namespace Es.Riam.Gnoss.Web.Controles.Proyectos
         }
 
         /// <summary>
-        /// Configura el mapa semantico de un proyecto determinado con los par·metros que se han pasado desde un XML
+        /// Configura el mapa semantico de un proyecto determinado con los par√°metros que se han pasado desde un XML
         /// </summary>
         /// <param name="pMapaSemantico">Lista de los nodos xml de un mapa semantico</param>
         /// <param name="pOrganizacionID">Identificador de la organizacion a la que pertenece el proyecto</param>
         /// <param name="pProyectoID">Identificador del proyecto</param>
         /// <param name="pDataWrapperProyecto">DataSet de Proyectos</param>
-        /// <param name="pOntologiaID">Identificador de la ontologÌa</param>
+        /// <param name="pOntologiaID">Identificador de la ontolog√≠a</param>
         private void ConfigurarPresentacionMapaSemantico(XmlNodeList pMapasSemantico, Guid pOrganizacionID, Guid pProyectoID, DataWrapperProyecto pDataWrapperProyecto, Guid pOntologiaID, string pOntologiaProyecto)
         {
             List<object> listaModificadas = new List<object>();
@@ -4353,7 +4351,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Proyectos
                 string propiedadMapaSem = (string)LeerNodo(mapaSemantico, "Propiedad", typeof(string));
                 string nombreMapa = (string)LeerNodo(mapaSemantico, "Nombre", typeof(string));
 
-                //si no es sem·ntica la ontologia ser· una cadena vacÌa
+                //si no es sem√°ntica la ontologia ser√° una cadena vac√≠a
                 string nombreOntologiaMapa = "";
                 if (propiedadMapaSem.Contains(":"))
                 {
@@ -4391,13 +4389,13 @@ namespace Es.Riam.Gnoss.Web.Controles.Proyectos
         }
 
         /// <summary>
-        /// Configura el listado semantico de un proyecto determinado con los par·metros que se han pasado desde un XML
+        /// Configura el listado semantico de un proyecto determinado con los par√°metros que se han pasado desde un XML
         /// </summary>
         /// <param name="pListadoSemantico">Nodo xml de un listado semantico</param>
         /// <param name="pOrganizacionID">Identificador de la organizacion a la que pertenece el proyecto</param>
         /// <param name="pProyectoID">Identificador del proyecto</param>
         /// <param name="pDataWrapperProyecto">DataSet de Proyectos</param>
-        /// <param name="pOntologiaID">Identificador de la ontologÌa</param>
+        /// <param name="pOntologiaID">Identificador de la ontolog√≠a</param>
         private void ConfigurarPresentacionListadoSemanticoPestanya(XmlNodeList pListadosSemantico, Guid pOrganizacionID, Guid pProyectoID, DataWrapperProyecto pDataWrapperProyecto, Guid pPestanyaID)
         {
             List<object> listaModificadas = new List<object>();
@@ -4441,13 +4439,13 @@ namespace Es.Riam.Gnoss.Web.Controles.Proyectos
         }
 
         /// <summary>
-        /// Configura el mosaico semantico de un proyecto determinado con los par·metros que se han pasado desde un XML
+        /// Configura el mosaico semantico de un proyecto determinado con los par√°metros que se han pasado desde un XML
         /// </summary>
         /// <param name="pMosaicoSemantico">Lista de los nodos xml de un mosaico semantico</param>
         /// <param name="pOrganizacionID">Identificador de la organizacion a la que pertenece el proyecto</param>
         /// <param name="pProyectoID">Identificador del proyecto</param>
         /// <param name="pDataWrapperProyecto">DataSet de Proyectos</param>
-        /// <param name="pOntologiaID">Identificador de la ontologÌa</param>
+        /// <param name="pOntologiaID">Identificador de la ontolog√≠a</param>
         private void ConfigurarPresentacionMosaicoSemanticoPestanya(XmlNodeList pMosaicosSemantico, Guid pOrganizacionID, Guid pProyectoID, DataWrapperProyecto pDataWrapperProyecto, Guid pPestanyaID)
         {
             List<Object> listaModificadas = new List<Object>();
@@ -4492,13 +4490,13 @@ namespace Es.Riam.Gnoss.Web.Controles.Proyectos
         }
 
         /// <summary>
-        /// Configura el mapa semantico de un proyecto determinado con los par·metros que se han pasado desde un XML
+        /// Configura el mapa semantico de un proyecto determinado con los par√°metros que se han pasado desde un XML
         /// </summary>
         /// <param name="pMapaSemantico">Lista de los nodos xml de un mapa semantico</param>
         /// <param name="pOrganizacionID">Identificador de la organizacion a la que pertenece el proyecto</param>
         /// <param name="pProyectoID">Identificador del proyecto</param>
         /// <param name="pDataWrapperProyecto">DataSet de Proyectos</param>
-        /// <param name="pOntologiaID">Identificador de la ontologÌa</param>
+        /// <param name="pOntologiaID">Identificador de la ontolog√≠a</param>
         private void ConfigurarPresentacionMapaSemanticoPestanya(XmlNodeList pMapasSemantico, Guid pOrganizacionID, Guid pProyectoID, DataWrapperProyecto pDataWrapperProyecto, Guid pPestanyaID)
         {
             List<Object> listaModificadas = new List<Object>();
@@ -4543,13 +4541,13 @@ namespace Es.Riam.Gnoss.Web.Controles.Proyectos
 
 
         /// <summary>
-        /// Configura los RecursosRelacionados de un proyecto determinado con los par·metros que se han pasado desde un XML
+        /// Configura los RecursosRelacionados de un proyecto determinado con los par√°metros que se han pasado desde un XML
         /// </summary>
         /// <param name="pRecurso">Lista de los nodos xml de los recursos relacionados de un objeto de conocimiento</param>
         /// <param name="pOrganizacionID">Identificador de la organizacion a la que pertenece el proyecto</param>
         /// <param name="pProyectoID">Identificador del proyecto</param>
         /// <param name="pDataWrapperProyecto">DataSet de Proyectos</param>
-        /// <param name="pOntologiaID">Identificador de la ontologÌa</param>
+        /// <param name="pOntologiaID">Identificador de la ontolog√≠a</param>
         /// <param name="pOntologiaProyecto">Url de la ontolgia</param>
         private void ConfigurarRecursosRelacionados(XmlNodeList pRecursosRelacionadosPresentacion, Guid pOrganizacionID, Guid pProyectoID, DataWrapperProyecto pDataWrapperProyecto, Guid pOntologiaID, string pOntologiaProyecto)
         {
@@ -4610,7 +4608,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Proyectos
         }
 
         /// <summary>
-        /// Configura el Contexto de un proyecto determinado con los par·metros que se han pasado desde un XML
+        /// Configura el Contexto de un proyecto determinado con los par√°metros que se han pasado desde un XML
         /// </summary>
         /// <param name="pContexto">Lista de los nodos xml de Contexto</param>
         /// <param name="pOrganizacionID">Identificador de la organizacion a la que pertenece el proyecto</param>
@@ -4622,8 +4620,8 @@ namespace Es.Riam.Gnoss.Web.Controles.Proyectos
             List<object> listaGadgetsContextoModificados = new List<object>();
             List<object> listaGadgetsIdiomaModificados = new List<object>();
             List<string> listaIdiomasBBDD = mConfigService.ObtenerListaIdiomas();
-            //esta lista servir· para ignorar campos que se modifican siempre, por ejemplo los autonumÈricos, y que no queremos tener en cuenta
-            //para el borrado de la cachÈ en caso de cambios en el DS.
+            //esta lista servir√° para ignorar campos que se modifican siempre, por ejemplo los autonum√©ricos, y que no queremos tener en cuenta
+            //para el borrado de la cache en caso de cambios en el DS.
             List<string> listaCamposIgnorados = new List<string>();
             //listaCamposIgnorados.Add("Orden"); -> ahora el orden si se va a tener en cuenta para editar la fila            
             ProyectoCN proyCN = new ProyectoCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
@@ -4635,7 +4633,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Proyectos
                 string titulo = (string)LeerNodo(gadget, "Titulo", typeof(string));
                 if (string.IsNullOrEmpty(titulo))
                 {
-                    throw new Exception("El gadget configurado en la posiciÛn " + orden + " no tiene definido el nodo Titulo");
+                    throw new Exception("El gadget configurado en la posici√≥n " + orden + " no tiene definido el nodo Titulo");
                 }
                 string nombreCorto = (string)LeerNodo(gadget, "NombreCorto", typeof(string));
                 if (string.IsNullOrEmpty(nombreCorto))
@@ -4735,19 +4733,19 @@ namespace Es.Riam.Gnoss.Web.Controles.Proyectos
                 {
                     filaProyectoGadget = filasProyGad[0];
                     gadgetID = filaProyectoGadget.GadgetID;
-                    //la aÒado a las modificadas
+                    //la a√±ado a las modificadas
                     listaGadgetsModificados.Add(filaProyectoGadget);
                 }
                 else
                 {
                     if (proyCN.ExisteNombreCortoProyectoGadget(nombreCorto, pProyectoID))
                     {
-                        throw new Exception("La comunidad ya tiene un gadget con el NombreCorto " + nombreCorto + ". C·mbielo para poder subir el Xml");
+                        throw new Exception("La comunidad ya tiene un gadget con el NombreCorto " + nombreCorto + ". C√°mbielo para poder subir el Xml");
                     }
                 }
                 listaCamposProyectoGadget.Add(nameof(proyectoGadgetAux.GadgetID), gadgetID);
 
-                //si es de tipo HtmlIncrustado Û Consulta Û CMS, el contenido se tiene que guardar en ProyectoGadget despuÈs de tratarlo pero antes de guardar en ProyectoGadgetIdioma
+                //si es de tipo HtmlIncrustado - Consulta - CMS, el contenido se tiene que guardar en ProyectoGadget despu√©s de tratarlo pero antes de guardar en ProyectoGadgetIdioma
                 if (!tipo.Equals((short)TipoGadget.HtmlIncrustado) && !tipo.Equals((short)TipoGadget.Consulta) && !tipo.Equals((short)TipoGadget.CMS))
                 {
                     listaCamposProyectoGadget.Add(nameof(proyectoGadgetAux.Contenido), contenido);
@@ -4818,10 +4816,10 @@ namespace Es.Riam.Gnoss.Web.Controles.Proyectos
                     }
                     else
                     {
-                        //sÛlo los gadget de HtmlIncrustado pueden ser multiidioma
+                        //s√≠lo los gadget de HtmlIncrustado pueden ser multiidioma
                         if (!tipo.Equals((short)TipoGadget.HtmlIncrustado))
                         {
-                            throw new Exception("El gadget " + nombreCorto + " est· configurado como MultiIdioma pero sÛlo pueden ser multiidioma los gadgets de tipo HtmlIncrustado");
+                            throw new Exception("El gadget " + nombreCorto + " est√° configurado como MultiIdioma pero s√≠lo pueden ser multiidioma los gadgets de tipo HtmlIncrustado");
                         }
                         else
                         {
@@ -4837,10 +4835,10 @@ namespace Es.Riam.Gnoss.Web.Controles.Proyectos
                             XmlNode nodoContenidoMultiIdioma = gadget.SelectSingleNode("ContenidoMultiIdioma");
                             if (nodoContenidoMultiIdioma == null || string.IsNullOrEmpty(nodoContenidoMultiIdioma.InnerXml))
                             {
-                                throw new Exception("El gadget " + nombreCorto + " est· configurado como MultiIdioma pero no se ha configurado ning˙n idioma");
+                                throw new Exception("El gadget " + nombreCorto + " est√° configurado como MultiIdioma pero no se ha configurado ning√∫n idioma");
                             }
 
-                            //lista para controlar que se configura cada idioma una ˙nica vez
+                            //lista para controlar que se configura cada idioma una √∫nica vez
                             List<string> listaNodosContenidoIdioma = new List<string>();
 
                             foreach (XmlNode nodoContenidoIdioma in nodoContenidoMultiIdioma.ChildNodes)
@@ -4877,12 +4875,12 @@ namespace Es.Riam.Gnoss.Web.Controles.Proyectos
                                     }
                                     else
                                     {
-                                        throw new Exception("El gadget " + nombreCorto + " tiene configurados m·s de un contenido para el idioma " + idioma);
+                                        throw new Exception("El gadget " + nombreCorto + " tiene configurados m√°s de un contenido para el idioma " + idioma);
                                     }
                                 }
                                 else
                                 {
-                                    throw new Exception("El gadget " + nombreCorto + " tiene configurado un contenido para un idioma inv·lido " + nodoContenidoIdioma.Name);
+                                    throw new Exception("El gadget " + nombreCorto + " tiene configurado un contenido para un idioma inv√°lido " + nodoContenidoIdioma.Name);
                                 }
                             }
                         }
@@ -4952,7 +4950,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Proyectos
                             proyectoOrigenID = proyectoCN.ObtenerProyectoIDPorNombre(nodoProyectoOrigen);
                             if (proyectoOrigenID.Equals(Guid.Empty))
                             {
-                                throw new Exception("No se ha podido obtener el identificador del proyecto a travÈs del nombre: " + comunidadOrigen + " (puede que no estÈ en esta BBDD)");
+                                throw new Exception("No se ha podido obtener el identificador del proyecto a trav√©s del nombre: " + comunidadOrigen + " (puede que no est√° en esta BBDD)");
                             }
                         }
                     }
@@ -4979,7 +4977,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Proyectos
                         }
                         catch (Exception ex)
                         {
-                            throw new Exception("No se ha podido obtener el identificador del proyecto a travÈs de la URL: " + comunidadOrigen + ex.ToString());
+                            throw new Exception("No se ha podido obtener el identificador del proyecto a trav√©s de la URL: " + comunidadOrigen + ex.ToString());
                         }
                     }
 
@@ -5061,7 +5059,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Proyectos
                 }
             }
 
-            //borro las filas que est·n en el DS y no en el xml     
+            //borro las filas que est√°n en el DS y no en el xml     
             if (!mListaModificadasEF.ContainsKey(typeof(ProyectoGadgetContexto).Name))
             {
                 mListaOriginalesEF.Add(typeof(ProyectoGadgetContexto).Name, new List<object>(pDataWrapperProyecto.ListaProyectoGadgetContexto));
@@ -5085,7 +5083,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Proyectos
         }
 
         /// <summary>
-        /// Configura las FacetasExcluidas de un proyecto determinado con los par·metros que se han pasado desde un XML
+        /// Configura las FacetasExcluidas de un proyecto determinado con los par√°metros que se han pasado desde un XML
         /// </summary>
         /// <param name="pFacetaExcluida">Lista de los nodos xml de Facetas Excluidas</param>
         /// <param name="pFacetaCN">FacetaCN</param>
@@ -5111,7 +5109,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Proyectos
                 ObjectState resultado = InsertarCambiosEnEF(listaCampos, mEntityContext.FacetaExcluida, facetaExcluidaAux, filaFacetaExcluida);
                 if (resultado.Equals(ObjectState.Agregado))
                 {
-                    mEntityContext.FacetaExcluida.Add(filaFacetaExcluida);
+                    mEntityContext.FacetaExcluida.Add(facetaExcluidaAux);
                 }
                 if (filaFacetaExcluida != null)
                 {
@@ -5129,7 +5127,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Proyectos
         }
 
         /// <summary>
-        /// Configura las FacetasExternas de un proyecto determinado con los par·metros que se han pasado desde un XML
+        /// Configura las FacetasExternas de un proyecto determinado con los par√°metros que se han pasado desde un XML
         /// </summary>
         /// <param name="pFacetasEntidadesExterna">Lista de los nodos xml de EntidadesExternas</param>
         /// <param name="pFacetaCN">FacetaCN</param>
@@ -5194,11 +5192,11 @@ namespace Es.Riam.Gnoss.Web.Controles.Proyectos
         }
 
         /// <summary>
-        /// Carga la configuraciÛn del ·mbito de b˙squeda, si no se le pasa nada carga la configuraciÛn por defecto.
+        /// Carga la configuraci√≥n del √°mbito de b√∫squeda, si no se le pasa nada carga la configuraci√≥n por defecto.
         /// </summary>
-        /// <param name="configuracionAmbitoBusqueda">Lista de nodos de los ambitos de b˙squeda</param>
+        /// <param name="configuracionAmbitoBusqueda">Lista de nodos de los ambitos de b√∫squeda</param>
         /// <param name="pProyectoID">Identificador del proyecto</param>
-        /// <param name="pOrganizacionID">Identificador de la OrganizaciÛn</param>
+        /// <param name="pOrganizacionID">Identificador de la Organizaci√≥n</param>
         private ConfiguracionAmbitoBusquedaProyecto ConfigurarAmbitoBusqueda(GestorParametroGeneral pParamGralDS, Guid pProyectoID, Guid pOrganizacionID, XmlNode ambitoTodoGnossVisible, XmlNode ambitoTodaLaComunidadVisible)
         {
             //ParametroGeneralDSName.ConfiguracionAmbitoBusquedaProyectoRow filaConfBusqueda = pParamGralDS.ConfiguracionAmbitoBusquedaProyecto.FindByOrganizacionIDProyectoID(pOrganizacionID, pProyectoID);
@@ -5216,7 +5214,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Proyectos
                 pParamGralDS.ListaConfiguracionAmbitoBusquedaProyecto.Add(filaConfBusqueda);
                 ParametroGeneralGBD gestorController = new ParametroGeneralGBD(mEntityContext);
                 gestorController.addAmbitoBusqueda(filaConfBusqueda);
-                gestorController.saveChanges();
+                gestorController.SaveChanges();
 
 
             }
@@ -5243,10 +5241,10 @@ namespace Es.Riam.Gnoss.Web.Controles.Proyectos
         }
 
         /// <summary>
-        /// Configura las PestaÒas de un proyecto determinado con los par·metros que se han pasado desde un XML
+        /// Configura las Pesta√±as de un proyecto determinado con los par√°metros que se han pasado desde un XML
         /// </summary>
-        /// <param name="pPestanyas">Lista de nodos con las pestaÒas de una comunidad</param>
-        /// <param name="pProyFiltroOrdenRecurso">Lista de nodos con los filtros de una pestaÒa</param>
+        /// <param name="pPestanyas">Lista de nodos con las pesta√±as de una comunidad</param>
+        /// <param name="pProyFiltroOrdenRecurso">Lista de nodos con los filtros de una pesta√±a</param>
         /// <param name="pDataWrapperProyecto">Dataset de un proyecto determinado</param>
         /// <param name="pProyectoID">Identificador del proyecto</param>
         private void ConfigurarPestanyasComunidadConXML(XmlNodeList pPestanyas, DataWrapperProyecto pDataWrapperProyecto, DataWrapperCMS pCMSDW, Guid pOrganizacionID, Guid pProyectoID, Guid? pPestanyaPadreID, DataWrapperExportacionBusqueda pExportacionBusquedaDW, ref Dictionary<Guid, KeyValuePair<TipoPestanyaMenu, XmlNode>> pListaIDsPestanyas, ref List<string> pListaNombresCortosPestanyas, ref List<short> pListaUbicacionesCMS, ref ConfiguracionAmbitoBusquedaProyecto pFilaConfiguracionAmbitoBusqueda)
@@ -5264,7 +5262,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Proyectos
             short ordenPestanya = 0;
             foreach (XmlElement pestanya in pPestanyas)
             {
-                #region ConfiguraciÛn genÈrica
+                #region Configuraci√≥n gen√©rica
 
                 //TipoPestanya
                 string strTipoPestanya = (string)LeerNodo(pestanya, "TipoPestanya", typeof(string));
@@ -5275,7 +5273,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Proyectos
                 }
                 catch
                 {
-                    throw new Exception("El tipo de pestaÒa " + strTipoPestanya + " no es v·lido");
+                    throw new Exception("El tipo de pesta√±a " + strTipoPestanya + " no es v√°lido");
                 }
                 TipoPestanyaMenu tipoPestanyaEnum = (TipoPestanyaMenu)tipoPestanya;
 
@@ -5288,25 +5286,25 @@ namespace Es.Riam.Gnoss.Web.Controles.Proyectos
                     nombreCortoPestanya = (string)LeerNodo(pestanya, "NombreCorto", typeof(string));
                     if (string.IsNullOrEmpty(nombreCortoPestanya))
                     {
-                        throw new Exception("Todas las pestaÒas tienen que tener NombreCorto");
+                        throw new Exception("Todas las pesta√±as tienen que tener NombreCorto");
                     }
 
                     List<AD.EntityModel.Models.ProyectoDS.ProyectoPestanyaMenu> filasPestanyasMenu = pDataWrapperProyecto.ListaProyectoPestanyaMenu.Where(fila => fila.NombreCortoPestanya.Equals(nombreCortoPestanya)).ToList();
 
-                    //Obtenemos el ID de las antiguas en funciÛn del nombrecorto
+                    //Obtenemos el ID de las antiguas en funci√≥n del nombrecorto
                     if (filasPestanyasMenu.Count > 0)
                     {
                         pestanyaID = filasPestanyasMenu[0].PestanyaID;
                         pestanyaObtenida = true;
                         if ((short)tipoPestanyaEnum != filasPestanyasMenu[0].TipoPestanya)
                         {
-                            throw new Exception("No se le puede cambiar el tipo a una pestaÒa (hay que cambiarle el nombrecorto a la pestaÒa " + nombreCortoPestanya + ")");
+                            throw new Exception("No se le puede cambiar el tipo a una pesta√±a (hay que cambiarle el nombrecorto a la pesta√±a " + nombreCortoPestanya + ")");
                         }
                     }
                 }
                 else
                 {
-                    throw new Exception("Todas las pestaÒas tienen que tener NombreCorto");
+                    throw new Exception("Todas las pesta√±as tienen que tener NombreCorto");
                 }
 
                 //listado semantico
@@ -5317,7 +5315,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Proyectos
                 }
                 else
                 {
-                    //si no viene presentaciÛn en el xml borro las filas de esa ontologÌa del DS
+                    //si no viene presentaci√≥n en el xml borro las filas de esa ontolog√≠a del DS
                     List<PresentacionPestanyaListadoSemantico> listaPlsr = pDataWrapperProyecto.ListaPresentacionPestanyaListadoSemantico.Where(presentacion => presentacion.OrganizacionID.Equals(pOrganizacionID) && presentacion.ProyectoID.Equals(pProyectoID) && presentacion.PestanyaID.Equals(pestanyaID)).ToList();
                     //("OrganizacionID='" + pOrganizacionID.ToString() + "' and ProyectoID='" + pProyectoID.ToString() + "' and PestanyaID='" + pestanyaID.ToString() + "'");
                     foreach (PresentacionPestanyaListadoSemantico plsr in listaPlsr)
@@ -5338,7 +5336,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Proyectos
                 else
                 {
 
-                    //si no viene presentaciÛn en el xml borro las filas de esa ontologÌa del DS
+                    //si no viene presentaci√≥n en el xml borro las filas de esa ontolog√≠a del DS
                     List<PresentacionPestanyaMosaicoSemantico> listaPlsr = pDataWrapperProyecto.ListaPresentacionPestanyaMosaicoSemantico.Where(presentacionMosaico => presentacionMosaico.OrganizacionID.Equals(pOrganizacionID) && presentacionMosaico.ProyectoID.Equals(pProyectoID) && presentacionMosaico.PestanyaID.Equals(pestanyaID)).ToList();
                     //("OrganizacionID='" + pOrganizacionID.ToString() + "' and ProyectoID='" + pProyectoID.ToString() + "' and PestanyaID='" + pestanyaID.ToString() + "'");
                     foreach (PresentacionPestanyaMosaicoSemantico plsr in listaPlsr)
@@ -5357,7 +5355,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Proyectos
                 }
                 else
                 {
-                    //si no viene presentaciÛn en el xml borro las filas de esa ontologÌa del DS
+                    //si no viene presentaci√≥n en el xml borro las filas de esa ontolog√≠a del DS
                     List<PresentacionPestanyaMapaSemantico> listaPlsr = pDataWrapperProyecto.ListaPresentacionPestanyaMapaSemantico.Where(presentacionMapa => presentacionMapa.OrganizacionID.Equals(pOrganizacionID) && presentacionMapa.ProyectoID.Equals(pProyectoID) && presentacionMapa.PestanyaID.Equals(pestanyaID)).ToList();
                     //("OrganizacionID='" + pOrganizacionID.ToString() + "' and ProyectoID='" + pProyectoID.ToString() + "' and PestanyaID='" + pestanyaID.ToString() + "'");
                     foreach (PresentacionPestanyaMapaSemantico plsr in listaPlsr)
@@ -5383,12 +5381,12 @@ namespace Es.Riam.Gnoss.Web.Controles.Proyectos
                         }
                         catch (Exception)
                         {
-                            throw new Exception("La UbicacionCMS de una p·gina del CMS tiene que ser un short");
+                            throw new Exception("La UbicacionCMS de una p√°gina del CMS tiene que ser un short");
                         }
                     }
                     else
                     {
-                        throw new Exception("Las pestaÒas del CMS tienen que tener UbicacionCMS");
+                        throw new Exception("Las pesta√±as del CMS tienen que tener UbicacionCMS");
                     }
 
                     List<ProyectoPestanyaCMS> filasPestanyasCMS = pDataWrapperProyecto.ListaProyectoPestanyaCMS.Where(fila => fila.Ubicacion.Equals(ubicacionCMS.Value)).ToList();
@@ -5405,7 +5403,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Proyectos
                     {
                         if (ubicacionCMS.Value != filasPestanyasCMSPorID[0].Ubicacion)
                         {
-                            throw new Exception("No se le puede cambiar la ubicaciÛn a una pestanya del CMS");
+                            throw new Exception("No se le puede cambiar la ubicaci√≥n a una pestanya del CMS");
                         }
                     }
 
@@ -5431,7 +5429,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Proyectos
                 }
                 else
                 {
-                    throw new Exception("No puede haber m·s de una pestaÒa con el mismo nombrecorto '" + nombreCortoPestanya + "'");
+                    throw new Exception("No puede haber m√°s de una pesta√±a con el mismo nombrecorto '" + nombreCortoPestanya + "'");
                 }
 
                 if (ubicacionCMS.HasValue)
@@ -5442,7 +5440,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Proyectos
                     }
                     else
                     {
-                        throw new Exception("No puede haber m·s de una pestaÒa del CMS con la misma ubicaciÛn '" + ubicacionCMS.Value.ToString() + "'");
+                        throw new Exception("No puede haber m√°s de una pesta√±a del CMS con la misma ubicaci√≥n '" + ubicacionCMS.Value.ToString() + "'");
                     }
                 }
 
@@ -5457,7 +5455,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Proyectos
                         || tipo == TipoPestanyaMenu.Preguntas
                         || tipo == TipoPestanyaMenu.Recursos) && tipoPestanyaEnum == tipo)
                     {
-                        throw new Exception("No puede haber mas de una pestaÒa del tipo " + strTipoPestanya);
+                        throw new Exception("No puede haber mas de una pesta√±a del tipo " + strTipoPestanya);
                     }
                 }
 
@@ -5467,7 +5465,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Proyectos
                 }
                 else
                 {
-                    throw new Exception("No puede haber dos pestaÒas con el mismo ID");
+                    throw new Exception("No puede haber dos pesta√±as con el mismo ID");
                 }
                 //PestanyaDefecto
                 if (pestanya.SelectSingleNode("PestanyaDefecto") != null)
@@ -5479,7 +5477,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Proyectos
                         && tipoPestanyaEnum != TipoPestanyaMenu.Recursos
                         && tipoPestanyaEnum != TipoPestanyaMenu.BusquedaSemantica)
                     {
-                        throw new Exception("El atributo PestanyaDefecto solo puede aplicarse a las p·ginas de tipos: Debates, Encuestas, PersonasYOrganizaciones, Preguntas, Recursos y Busqueda");
+                        throw new Exception("El atributo PestanyaDefecto solo puede aplicarse a las p√°ginas de tipos: Debates, Encuestas, PersonasYOrganizaciones, Preguntas, Recursos y Busqueda");
                     }
 
                     string strPestanyaDefecto = ((string)LeerNodo(pestanya, "PestanyaDefecto", typeof(string))).ToLower();
@@ -5492,12 +5490,12 @@ namespace Es.Riam.Gnoss.Web.Controles.Proyectos
                         }
                         else
                         {
-                            throw new Exception("SÛlo puede haber una pestaÒa de busqueda con el atributo PestanyaDefecto=1");
+                            throw new Exception("S√≠lo puede haber una pesta√±a de busqueda con el atributo PestanyaDefecto=1");
                         }
                     }
                     else
                     {
-                        throw new Exception("El valor " + strPestanyaDefecto + " para el campo visible no es v·lido");
+                        throw new Exception("El valor " + strPestanyaDefecto + " para el campo visible no es v√°lido");
                     }
                 }
 
@@ -5516,12 +5514,12 @@ namespace Es.Riam.Gnoss.Web.Controles.Proyectos
                     }
                     else
                     {
-                        throw new Exception("El valor " + strVisible + " para el campo visible no es v·lido");
+                        throw new Exception("El valor " + strVisible + " para el campo visible no es v√°lido");
                     }
                 }
                 else
                 {
-                    throw new Exception("El campo Visible en las pestaÒas es obligatorio");
+                    throw new Exception("El campo Visible en las pesta√±as es obligatorio");
                 }
 
                 //VisibleSinAcceso
@@ -5539,7 +5537,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Proyectos
                     }
                     else
                     {
-                        throw new Exception("El valor " + strVisibleSinAcceso + " para el campo VisibleSinAcceso no es v·lido");
+                        throw new Exception("El valor " + strVisibleSinAcceso + " para el campo VisibleSinAcceso no es v√°lido");
                     }
                 }
 
@@ -5547,14 +5545,14 @@ namespace Es.Riam.Gnoss.Web.Controles.Proyectos
                 string nombrePestanya = (string)LeerNodo(pestanya, "Nombre", typeof(string));
                 if ((tipoPestanyaEnum.Equals(TipoPestanyaMenu.CMS) || tipoPestanyaEnum.Equals(TipoPestanyaMenu.BusquedaSemantica) || tipoPestanyaEnum.Equals(TipoPestanyaMenu.EnlaceInterno) || tipoPestanyaEnum.Equals(TipoPestanyaMenu.EnlaceExterno)) && string.IsNullOrEmpty(nombrePestanya))
                 {
-                    throw new Exception("El campo Nombre en las pestaÒas del tipo " + strTipoPestanya + " es obligatorio");
+                    throw new Exception("El campo Nombre en las pesta√±as del tipo " + strTipoPestanya + " es obligatorio");
                 }
 
                 //Ruta
                 string rutaPestanya = (string)LeerNodo(pestanya, "Ruta", typeof(string));
                 if ((tipoPestanyaEnum.Equals(TipoPestanyaMenu.CMS) || tipoPestanyaEnum.Equals(TipoPestanyaMenu.BusquedaSemantica) || tipoPestanyaEnum.Equals(TipoPestanyaMenu.EnlaceInterno) || tipoPestanyaEnum.Equals(TipoPestanyaMenu.EnlaceExterno)) && string.IsNullOrEmpty(rutaPestanya))
                 {
-                    throw new Exception("El campo Ruta en las pestaÒas del tipo " + strTipoPestanya + " es obligatorio");
+                    throw new Exception("El campo Ruta en las pesta√±as del tipo " + strTipoPestanya + " es obligatorio");
                 }
 
                 //Titulo
@@ -5591,7 +5589,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Proyectos
                     }
                     else
                     {
-                        throw new Exception("El valor " + strNuevaPestanya + " para el campo NuevaPestanya no es v·lido");
+                        throw new Exception("El valor " + strNuevaPestanya + " para el campo NuevaPestanya no es v√°lido");
                     }
                 }
 
@@ -5613,7 +5611,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Proyectos
                     }
                     else
                     {
-                        throw new Exception("El valor " + strActiva + " para el campo activa no es v·lido");
+                        throw new Exception("El valor " + strActiva + " para el campo activa no es v√°lido");
                     }
                 }
 
@@ -5640,7 +5638,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Proyectos
 
                     if (privacidadPestanya == (short)TipoPrivacidadPagina.Lectores)
                     {
-                        //ConfiguraciÛn Privacidad
+                        //Configuraci√≥n Privacidad
                         int numLectores = 0;
                         if (pestanya.SelectSingleNode("ConfiguracionPrivacidad") != null)
                         {
@@ -5819,7 +5817,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Proyectos
 
                     if (nodoConfiguracionBusqueda == null && tipoPestanya == (short)TipoPestanyaMenu.BusquedaSemantica)
                     {
-                        throw new Exception("Hay que especificar ConfiguracionBusqueda en las p·ginas de tipo Busqueda");
+                        throw new Exception("Hay que especificar ConfiguracionBusqueda en las p√°ginas de tipo Busqueda");
                     }
 
                     if (nodoConfiguracionBusqueda != null)
@@ -5834,11 +5832,11 @@ namespace Es.Riam.Gnoss.Web.Controles.Proyectos
                         }
                         if (tipoPestanya == (short)TipoPestanyaMenu.BusquedaSemantica && string.IsNullOrEmpty(campoFiltro))
                         {
-                            throw new Exception("El campo CampoFiltro no puede ser vacÌo en las p·ginas de tipo Busqueda");
+                            throw new Exception("El campo CampoFiltro no puede ser vac√≠o en las p√°ginas de tipo Busqueda");
                         }
                         if (tipoPestanya != (short)TipoPestanyaMenu.BusquedaSemantica && !string.IsNullOrEmpty(campoFiltro))
                         {
-                            throw new Exception("El campo CampoFiltro no se puede especificar en las p·ginas de tipo " + strTipoPestanya);
+                            throw new Exception("El campo CampoFiltro no se puede especificar en las p√°ginas de tipo " + strTipoPestanya);
                         }
                         if (!string.IsNullOrEmpty(campoFiltro))
                         {
@@ -5852,7 +5850,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Proyectos
                         {
                             if (tipoPestanya == (short)TipoPestanyaMenu.BusquedaSemantica)
                             {
-                                throw new Exception("El campo NumeroRecursos es obligatorio dentro de ConfiguracionBusqueda en las p·ginas de tipo " + strTipoPestanya);
+                                throw new Exception("El campo NumeroRecursos es obligatorio dentro de ConfiguracionBusqueda en las p√°ginas de tipo " + strTipoPestanya);
                             }
                         }
                         try
@@ -5864,7 +5862,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Proyectos
                         }
                         catch (Exception)
                         {
-                            throw new Exception("El campo NumeroRecursos tiene que ser un n˙mero");
+                            throw new Exception("El campo NumeroRecursos tiene que ser un n√∫mero");
                         }
                         if (!string.IsNullOrEmpty(strNumeroRecursos))
                         {
@@ -5893,7 +5891,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Proyectos
                             }
                             else
                             {
-                                throw new Exception("El valor " + strMostrarFacetas + " para el campo MostrarFacetas no es v·lido");
+                                throw new Exception("El valor " + strMostrarFacetas + " para el campo MostrarFacetas no es v√°lido");
                             }
                         }
                         if (!mostrarFacetas)
@@ -5916,7 +5914,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Proyectos
                             }
                             else
                             {
-                                throw new Exception("El valor " + strMostrarCajaBusqueda + " para el campo MostrarCajaBusqueda no es v·lido");
+                                throw new Exception("El valor " + strMostrarCajaBusqueda + " para el campo MostrarCajaBusqueda no es v√°lido");
                             }
                         }
                         if (!mostrarCajaBusqueda)
@@ -5930,7 +5928,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Proyectos
                         {
                             if (tipoPestanya != (short)TipoPestanyaMenu.BusquedaSemantica)
                             {
-                                throw new Exception("El campo ProyectoOrigen no se puede especificar en las p·ginas de tipo " + strTipoPestanya);
+                                throw new Exception("El campo ProyectoOrigen no se puede especificar en las p√°ginas de tipo " + strTipoPestanya);
                             }
 
                             ProyectoCN proyectoCN = new ProyectoCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
@@ -5957,7 +5955,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Proyectos
                             }
                             else
                             {
-                                throw new Exception("El valor " + strOcultarResultadosSinFiltros + " para el campo OcultarResultadosSinFiltros no es v·lido");
+                                throw new Exception("El valor " + strOcultarResultadosSinFiltros + " para el campo OcultarResultadosSinFiltros no es v√°lido");
                             }
                         }
                         if (ocultarResultadosSinFiltros)
@@ -5971,7 +5969,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Proyectos
                         {
                             if (tipoPestanya != (short)TipoPestanyaMenu.BusquedaSemantica)
                             {
-                                throw new Exception("El campo ProyectoOrigenID no se puede especificar en las p·ginas de tipo " + strTipoPestanya);
+                                throw new Exception("El campo ProyectoOrigenID no se puede especificar en las p√°ginas de tipo " + strTipoPestanya);
                             }
                             posicionCentralMapa = nodoConfiguracionBusqueda.SelectSingleNode("PosicionCentralMapa").InnerText;
                         }
@@ -5995,7 +5993,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Proyectos
                             }
                             else
                             {
-                                throw new Exception("El valor " + strGruposPorTipo + " para el campo GruposPorTipo no es v·lido");
+                                throw new Exception("El valor " + strGruposPorTipo + " para el campo GruposPorTipo no es v√°lido");
                             }
                         }
                         if (gruposPorTipo)
@@ -6051,7 +6049,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Proyectos
                             }
                             else
                             {
-                                throw new Exception("El valor " + strMostrarEnComboBusqueda + " para el campo MostrarEnComboBusqueda no es v·lido");
+                                throw new Exception("El valor " + strMostrarEnComboBusqueda + " para el campo MostrarEnComboBusqueda no es v√°lido");
                             }
                         }
                         if (!mostrarEnComboBusqueda)
@@ -6074,7 +6072,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Proyectos
                             }
                             else
                             {
-                                throw new Exception("El valor " + strIgnorarPrivacidadEnBusqueda + " para el campo IgnorarPrivacidadEnBusqueda no es v·lido");
+                                throw new Exception("El valor " + strIgnorarPrivacidadEnBusqueda + " para el campo IgnorarPrivacidadEnBusqueda no es v√°lido");
                             }
                         }
                         if (ignorarPrivacidadEnBusqueda)
@@ -6097,7 +6095,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Proyectos
                             }
                             else
                             {
-                                throw new Exception("El valor " + strOmitirCargaInicialFacetasResultados + " para el campo OmitirCargaInicialFacetasResultados no es v·lido");
+                                throw new Exception("El valor " + strOmitirCargaInicialFacetasResultados + " para el campo OmitirCargaInicialFacetasResultados no es v√°lido");
                             }
                         }
                         if (omitirCargaInicialFacetasResultados)
@@ -6123,12 +6121,12 @@ namespace Es.Riam.Gnoss.Web.Controles.Proyectos
                             listaCamposPestanyaBusqueda.Add(nameof(proyectoPestanyaBusquedaAux.VistaDisponible), vistaDisponible);
                             listaCamposPestanyaBusqueda.Add(nameof(proyectoPestanyaBusquedaAux.MostrarFacetas), mostrarFacetas);
                             listaCamposPestanyaBusqueda.Add(nameof(proyectoPestanyaBusquedaAux.MostrarCajaBusqueda), mostrarCajaBusqueda);
-                            //si no es empty lo almaceno, si no, ser· null
+                            //si no es empty lo almaceno, si no, ser√° null
                             if (proyectoOrigenID != null && !proyectoOrigenID.Equals(Guid.Empty))
                             {
                                 listaCamposPestanyaBusqueda.Add(nameof(proyectoPestanyaBusquedaAux.ProyectoOrigenID), proyectoOrigenID);
                                 EliminarPermisosSobreFicherosComunidadVista();
-                                //bug7608: Eliminar los permisos sobre la creacciÛn de recursos en la comunidad vista.
+                                //bug7608: Eliminar los permisos sobre la creaci√≥n de recursos en la comunidad vista.
                             }
                             listaCamposPestanyaBusqueda.Add(nameof(proyectoPestanyaBusquedaAux.OcultarResultadosSinFiltros), ocultarResultadosSinFiltros);
                             listaCamposPestanyaBusqueda.Add(nameof(proyectoPestanyaBusquedaAux.PosicionCentralMapa), posicionCentralMapa);
@@ -6150,9 +6148,9 @@ namespace Es.Riam.Gnoss.Web.Controles.Proyectos
                         }
                         else
                         {
-                            //si no viene presentaciÛn en el xml borro las filas de esa pestanya del DS
+                            //si no viene presentaci√≥n en el xml borro las filas de esa pestanya del DS
                             List<ProyectoPestanyaFiltroOrdenRecursos> filasFiltro = pDataWrapperProyecto.ListaProyectoPestanyaFiltroOrdenRecursos.Where(proyectPestFiltroOrden => proyectPestFiltroOrden.PestanyaID.Equals(pestanyaID)).ToList();//("PestanyaID='" + pestanyaID + "'");
-                            //borro las filas relacionadas de las tablas que dependen de esa pestaÒa
+                            //borro las filas relacionadas de las tablas que dependen de esa pesta√±a
                             foreach (ProyectoPestanyaFiltroOrdenRecursos filtro in filasFiltro)
                             {
                                 pDataWrapperProyecto.ListaProyectoPestanyaFiltroOrdenRecursos.Remove(filtro);
@@ -6175,9 +6173,9 @@ namespace Es.Riam.Gnoss.Web.Controles.Proyectos
                 }
                 else
                 {
-                    //si la pestanya ha dejado de tener exportaciones, no entrar· en el punto anterior que es donde se marcaban 
-                    //las filas de propiedades de exportaciÛn para borrarlas -> hay que marcarlas aquÌ si no hay exportaciÛn y 
-                    //dentro de ConfigurarExportacionBusquedaComunidadConXML por si no se ha quitado toda la exportaciÛn
+                    //si la pestanya ha dejado de tener exportaciones, no entrar√° en el punto anterior que es donde se marcaban 
+                    //las filas de propiedades de exportaci√≥n para borrarlas -> hay que marcarlas aqu√≠ si no hay exportaci√≥n y 
+                    //dentro de ConfigurarExportacionBusquedaComunidadConXML por si no se ha quitado toda la exportaci√≥n
                     if (!mListaModificadasEF.ContainsKey(typeof(ProyectoPestanyaBusquedaExportacionPropiedad).Name))
                     {
                         mListaOriginalesEF.Add(typeof(ProyectoPestanyaBusquedaExportacionPropiedad).Name, new List<object>(pDataWrapperProyecto.ListaProyectoPestanyaBusquedaExportacionPropiedad));
@@ -6350,7 +6348,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Proyectos
             ProyectoCN proyectoCN = new ProyectoCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
             DataWrapperProyecto dataWrapperProyecto = proyectoCN.ObtenerProyectoPorIDConNiveles(ProyectoSeleccionado.Clave);
 
-            //Quitamos los permisos de creacciÛn sobre los documentos de la comunidad.
+            //Quitamos los permisos de creaci√≥n sobre los documentos de la comunidad.
             foreach (TipoDocDispRolUsuarioProy filaDocRol in dataWrapperProyecto.ListaTipoDocDispRolUsuarioProy.ToList())
             {
                 dataWrapperProyecto.ListaTipoDocDispRolUsuarioProy.Remove(filaDocRol);
@@ -6393,7 +6391,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Proyectos
 
         /// <summary>
         /// Inserta la fila en la tabla comprobando si hay cambios en los campos que se pasan en el diccionario. Los campos ignorados se insertan pero no 
-        /// retornan ediciÛn de tabla (campos autonumÈricos)
+        /// retornan edici√≥n de tabla (campos autonum√©ricos)
         /// </summary>
         /// <param name="pListaCampos">Diccionario de los campos que llegan desde el XML</param>
         /// <param name="pTabla">Tabla del dataset con la configuracion por defecto</param>
@@ -6417,7 +6415,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Proyectos
 
         /// <summary>
         /// Inserta la fila en la tabla comprobando si hay cambios en los campos que se pasan en el diccionario. Los campos ignorados se insertan pero no 
-        /// retornan ediciÛn de tabla (campos autonumÈricos)
+        /// retornan edici√≥n de tabla (campos autonum√©ricos)
         /// </summary>
         /// <param name="pListaCampos">Diccionario de los campos que llegan desde el XML</param>
         /// <param name="pTabla">Tabla del dataset con la configuracion por defecto</param>
@@ -6432,7 +6430,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Proyectos
 
         /// <summary>
         /// Inserta la fila en la tabla comprobando si hay cambios en los campos que se pasan en el diccionario. Los campos ignorados se insertan pero no 
-        /// retornan ediciÛn de tabla (campos autonumÈricos)
+        /// retornan edici√≥n de tabla (campos autonum√©ricos)
         /// </summary>
         /// <param name="pListaCampos">Diccionario de los campos que llegan desde el XML</param>
         /// <param name="pTabla">Tabla del dataset con la configuracion por defecto</param>
@@ -6493,7 +6491,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Proyectos
 
         /// <summary>
         /// Inserta la fila en la tabla comprobando si hay cambios en los campos que se pasan en el diccionario. Los campos ignorados se insertan pero no 
-        /// retornan ediciÛn de tabla (campos autonumÈricos)
+        /// retornan edici√≥n de tabla (campos autonum√©ricos)
         /// </summary>
         /// <param name="pListaCampos">Diccionario de los campos que llegan desde el XML</param>
         /// <param name="pTabla">Tabla del dataset con la configuracion por defecto</param>
@@ -6599,7 +6597,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Proyectos
         /// <param name="pFila">Fila modificada. Puede no existir en la tabla</param>
         private void InsertarPersonalizacionEnDataSet(Dictionary<DataColumn, object> pListaCampos, Dictionary<DataColumn, object> pListaCamposPersonalizacion, DataTable pTablaDefecto, DataTable pTablaPersonalizada, DataRow pFila, DataRow pFilaPersonalizacion)
         {
-            //si existe personalizaciÛn no miro nada m·s, compruebo cambios en esa fila
+            //si existe personalizaci√≥n no miro nada m√°s, compruebo cambios en esa fila
             if (pFilaPersonalizacion != null)
             {
                 foreach (DataColumn columna in pListaCamposPersonalizacion.Keys)
@@ -6610,11 +6608,11 @@ namespace Es.Riam.Gnoss.Web.Controles.Proyectos
                     }
                 }
             }
-            //si no existe personalizaciÛn miro la configuraciÛn por defecto
+            //si no existe personalizaci√≥n miro la configuraci√≥n por defecto
             else
             {
                 bool personalizada = false;
-                //si existe configuraciÛn por defecto, compruebo si hay cambios
+                //si existe configuraci√≥n por defecto, compruebo si hay cambios
                 if (pFila != null)
                 {
                     foreach (DataColumn columna in pListaCampos.Keys)
@@ -6627,7 +6625,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Proyectos
                         }
                     }
                 }
-                //no existe configuraciÛn personalizada ni por defecto, creo la por defecto
+                //no existe configuraci√≥n personalizada ni por defecto, creo la por defecto
                 else
                 {
                     pFila = pTablaDefecto.NewRow();
@@ -6658,10 +6656,10 @@ namespace Es.Riam.Gnoss.Web.Controles.Proyectos
         }
 
         /// <summary>
-        /// Configura los FiltrosOrdenRecurso de un proyecto determinado con los par·metros que se han pasado desde un XML
+        /// Configura los FiltrosOrdenRecurso de un proyecto determinado con los par√°metros que se han pasado desde un XML
         /// </summary>
-        /// <param name="pFiltrosOrdenRecurso">Lista de nodos con los filtros de una pestaÒa</param>
-        /// <param name="pPestanya">Nodo de una pestaÒa</param>
+        /// <param name="pFiltrosOrdenRecurso">Lista de nodos con los filtros de una pesta√±a</param>
+        /// <param name="pPestanya">Nodo de una pesta√±a</param>
         /// <param name="pDataWrapperProyecto">Dataset de un proyecto determinado</param>
         /// <param name="pProyectoID">Identificador del proyecto</param>
         private List<object> ConfigurarProyectoPestanyaFiltroOrdenRecursosComunidadConXML(XmlNodeList pProyFiltrosOrdenRecurso, DataWrapperProyecto pDataWrapperProyecto, Guid pPestanyaID)
@@ -6683,7 +6681,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Proyectos
                 i++;
 
                 //busco la fila para el control de cambios
-                ProyectoPestanyaFiltroOrdenRecursos filaFiltroOrdenRecurso = pDataWrapperProyecto.ListaProyectoPestanyaFiltroOrdenRecursos.Where(proyecto => proyecto.PestanyaID.Equals(pPestanyaID) && proyecto.FiltroOrden.Equals(ordenFiltro)).FirstOrDefault();//.FindByPestanyaIDOrden(pPestanyaID, ordenFiltro);
+                ProyectoPestanyaFiltroOrdenRecursos filaFiltroOrdenRecurso = pDataWrapperProyecto.ListaProyectoPestanyaFiltroOrdenRecursos.Where(proyecto => proyecto.PestanyaID.Equals(pPestanyaID) && proyecto.FiltroOrden.Equals(filtroOrden)).FirstOrDefault();//.FindByPestanyaIDOrden(pPestanyaID, ordenFiltro);
                 ObjectState resultado = InsertarCambiosEnEF(listaCampos, mEntityContext.ProyectoPestanyaFiltroOrdenRecursos, proyectoPestanyaFiltroOrdenRecursosAux, filaFiltroOrdenRecurso);
                 if (resultado.Equals(ObjectState.Agregado))
                 {
@@ -6753,7 +6751,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Proyectos
                     {
                         if (!formatos[i].ToLower().Equals(FormatosExportancion.CSV) && !formatos[i].ToLower().Equals(FormatosExportancion.EXCEL))
                         {
-                            throw new Exception(string.Concat("El formato indicado para la exportaciÛn en ", nombreExportacion, " no es valido. Estan permitidos: ", FormatosExportancion.CSV, " y ", FormatosExportancion.EXCEL));
+                            throw new Exception(string.Concat("El formato indicado para la exportaci√≥n en ", nombreExportacion, " no es valido. Estan permitidos: ", FormatosExportancion.CSV, " y ", FormatosExportancion.EXCEL));
                         }
                     }
                 }
@@ -6865,14 +6863,14 @@ namespace Es.Riam.Gnoss.Web.Controles.Proyectos
                 string nombrePropiedad = (string)LeerNodo(propiedadExportacion, "NombrePropiedad", typeof(string));
                 string datosExtraPropiedad = (string)LeerNodo(propiedadExportacion, "DatosExtraPropiedad", typeof(string));
 
-                //si no es sem·ntica la ontologia ser· una cadena vacÌa
+                //si no es sem√°ntica la ontologia ser√° una cadena vac√≠a
                 string urlOntologia = "";
                 if (propiedad.Contains(":"))
                 {
                     urlOntologia = "http://gnoss.com/Ontologia/" + ontologiaProyecto + ".owl#";
                 }
 
-                //para evitar que cada vez que entre una propiedad no sem·ntica cambie su ontologiaID busco la fila y si existe le asigno ese ID
+                //para evitar que cada vez que entre una propiedad no sem√°ntica cambie su ontologiaID busco la fila y si existe le asigno ese ID
                 ProyectoPestanyaBusquedaExportacionPropiedad filaExportacionBusquedaPropiedad = pExportacionBusquedaDW.ListaProyectoPestanyaBusquedaExportacionPropiedad.Where(item => item.ExportacionID.Equals(pExportacionID) && item.Orden.Equals(ordenPropiedad)).FirstOrDefault();
 
                 Guid? ontologiaID = Guid.Empty;
@@ -6882,10 +6880,10 @@ namespace Es.Riam.Gnoss.Web.Controles.Proyectos
                     ontologiaID = documentacionCN.ObtenerOntologiaAPartirNombre(pProyectoID, ontologiaProyecto + ".owl");
                 }
 
-                //la propiedad no tiene ontologÌa
+                //la propiedad no tiene ontolog√≠a
                 if (ontologiaID.Equals(Guid.Empty))
                 {
-                    //si la fila existe le asigno el ontologiaID que ya tenÌa asignado anteriormente para evitar cambios innecesarios en el DS
+                    //si la fila existe le asigno el ontologiaID que ya ten√≠a asignado anteriormente para evitar cambios innecesarios en el DS
                     if (filaExportacionBusquedaPropiedad != null && filaExportacionBusquedaPropiedad.OntologiaID.HasValue && !filaExportacionBusquedaPropiedad.OntologiaID.Equals(Guid.Empty))
                     {
                         ontologiaID = filaExportacionBusquedaPropiedad.OntologiaID;
@@ -6924,7 +6922,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Proyectos
         }
 
         /// <summary>
-        /// Configura la FacetaConfigProyRangoFecha de un proyecto determinado con los par·metros que se han pasado desde un XML
+        /// Configura la FacetaConfigProyRangoFecha de un proyecto determinado con los par√°metros que se han pasado desde un XML
         /// </summary>
         /// <param name="pConfigFacProyRangoFecha">Nodo xml con la configuracion de la FacetaConfigProyRangoFecha</param>
         /// <param name="pFacetaDW">Dataset de Facetas</param>
@@ -6976,7 +6974,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Proyectos
         }
 
         /// <summary>
-        /// Configura la FacetaProyectoMapa de un proyecto determinado con los par·metros que se han pasado desde un XML
+        /// Configura la FacetaProyectoMapa de un proyecto determinado con los par√°metros que se han pasado desde un XML
         /// </summary>
         /// <param name="pConfigFacProyMapa">Nodo xml con la configuracion de la FacetaProyectoMapa</param>
         /// <param name="pFacetaDW">Dataset de Facetas</param>
@@ -7012,7 +7010,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Proyectos
         }
 
         /// <summary>
-        /// Configura la FacetaProyectoChart de un proyecto determinado con los par·metros que se han pasado desde un XML
+        /// Configura la FacetaProyectoChart de un proyecto determinado con los par√°metros que se han pasado desde un XML
         /// </summary>
         /// <param name="pConfigFacProyChart"></param>
         /// <param name="pFacetaDW">Dataset de Facetas</param>
@@ -7100,9 +7098,9 @@ namespace Es.Riam.Gnoss.Web.Controles.Proyectos
         }
 
         /// <summary>
-        /// Configura las Facetas de un proyecto determinado con los par·metros que s ehan pasado desde un XML
+        /// Configura las Facetas de un proyecto determinado con los par√°metros que s ehan pasado desde un XML
         /// </summary>
-        /// <param name="pFac">Lista de nodos xml con la configuraciÛn de las Facetas</param>
+        /// <param name="pFac">Lista de nodos xml con la configuraci√≥n de las Facetas</param>
         /// <param name="pFacetaDW">Dataset de Facetas</param>
         /// <param name="pOrganizacionID">Identificador de la organizacion a la que pertenece el proyecto</param>
         /// <param name="pProyectoID">Identificador del proyecto</param>
@@ -7118,7 +7116,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Proyectos
                 {
                     if (short.TryParse(reciprocaString, out reciproca))
                     {
-                        throw new Exception("En un nodo 'Reciproca' no puede ir un n˙mero");
+                        throw new Exception("En un nodo 'Reciproca' no puede ir un n√∫mero");
                     }
                     else
                     {
@@ -7169,7 +7167,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Proyectos
                     algoritmoTransformacion = ObtenerAlgoritmoTransformacion(nodoAlgoritmoTransformacion);
                 }
 
-                //Leemos el nivel sem·ntico, solo para los Algoritmos de transformaciÛn de tesaurosem·ntico.
+                //Leemos el nivel sem√°ntico, solo para los Algoritmos de transformaci√≥n de tesaurosem√°ntico.
                 string nivelSemantico = (string)LeerNodo(fac, "NivelSemantico", typeof(string));
 
                 bool esSemantica = false;
@@ -7320,7 +7318,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Proyectos
                 }
                 else
                 {
-                    ////si no viene presentaciÛn en el xml borro las filas de esa ontologÌa del DS
+                    ////si no viene presentaci√≥n en el xml borro las filas de esa ontolog√≠a del DS
                     //FacetaDS.FacetaFiltroProyectoRow[] listaFacFilPro = (FacetaDS.FacetaFiltroProyectoRow[])pFacetaDS.FacetaFiltroProyecto.Select("OrganizacionID='" + pOrganizacionID.ToString() + "' and ProyectoID='" + pProyectoID.ToString() + "' and ObjetoConocimiento='" + objetoConocimiento + "' and Faceta='" + faceta + "'");
                     //foreach (FacetaDS.FacetaFiltroProyectoRow ffpr in listaFacFilPro)
                     //{
@@ -7363,7 +7361,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Proyectos
                 }
                 else
                 {
-                    ////si no viene presentaciÛn en el xml borro las filas de esa ontologÌa del DS
+                    ////si no viene presentaci√≥n en el xml borro las filas de esa ontolog√≠a del DS
                     //FacetaDS.FacetaFiltroHomeRow[] listaFacFilHome = (FacetaDS.FacetaFiltroHomeRow[])pFacetaDS.FacetaFiltroHome.Select("OrganizacionID='" + pOrganizacionID.ToString() + "' and ProyectoID='" + pProyectoID.ToString() + "' and Faceta='" + faceta + "'");
                     //foreach (FacetaDS.FacetaFiltroHomeRow ffhr in listaFacFilHome)
                     //{
@@ -7455,9 +7453,9 @@ namespace Es.Riam.Gnoss.Web.Controles.Proyectos
         }
 
         /// <summary>
-        /// Configura los filtros de un proyecto determinado con los par·metros que se han pasado desde un XML
+        /// Configura los filtros de un proyecto determinado con los par√°metros que se han pasado desde un XML
         /// </summary>
-        /// <param name="pFiltrosHome">Lista de nodos xml con la configuraciÛn de los Filtros del proyecto</param>
+        /// <param name="pFiltrosHome">Lista de nodos xml con la configuraci√≥n de los Filtros del proyecto</param>
         /// <param name="pFacetaDW">Dataset de Facetas</param>
         /// <param name="pOrganizacionID">Identificador de la organizacion a la que pertenece el proyecto</param>
         /// <param name="pProyectoID">Identificador del proyecto</param>
@@ -7485,8 +7483,8 @@ namespace Es.Riam.Gnoss.Web.Controles.Proyectos
 
                 FacetaFiltroProyecto filaFacetaFiltroProyecto = pFacetaDW.ListaFacetaFiltroProyecto.FirstOrDefault(row => pOrganizacionID.Equals(row.OrganizacionID) && pProyectoID.Equals(row.ProyectoID) && pObjetoConocimiento.Equals(row.ObjetoConocimiento) && pFaceta.Equals(row.Faceta) && valorAcumulado.Equals(row.Filtro));
 
-                //pEliminar = true porque se ha dado el caso de que est·n modificando un campo de la clave para formar una clave que ya existe en la tabla
-                //asÌ que primero se borra y luego se aÒade
+                //pEliminar = true porque se ha dado el caso de que est√°n modificando un campo de la clave para formar una clave que ya existe en la tabla
+                //as√≠ que primero se borra y luego se a√±ade
                 ObjectState resultado = InsertarCambiosEnEF(listaCamposFacetaFiltroProyecto, mEntityContext.FacetaFiltroProyecto, facetaFiltroProyectoAux, filaFacetaFiltroProyecto, true);
                 if (resultado.Equals(ObjectState.Agregado))
                 {
@@ -7536,7 +7534,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Proyectos
                     }
                     else
                     {
-                        //No es un GUID puede ser una categorÌa de tipo TesauroSem·ntico con los nombres y el orden que le corresponde.
+                        //No es un GUID puede ser una categor√≠a de tipo TesauroSem√°ntico con los nombres y el orden que le corresponde.
                         valor = valorFiltro;
                     }
                 }
@@ -7589,8 +7587,8 @@ namespace Es.Riam.Gnoss.Web.Controles.Proyectos
 
                         FacetaObjetoConocimientoProyectoPestanya filaFacetaObjetoConocimientoProyectoPestanya = pFacetaDW.ListaFacetaObjetoConocimientoProyectoPenstanya.Where(item => item.OrganizacionID.Equals(pOrganizacionID) && item.ProyectoID.Equals(pProyectoID) && item.Faceta.Equals(pFaceta) && item.PestanyaID.Equals(pestanyaID)).FirstOrDefault();
 
-                        //pEliminar = true porque se ha dado el caso de que est·n modificando un campo de la clave para formar una clave que ya existe en la tabla
-                        //asÌ que primero se borra y luego se aÒade
+                        //pEliminar = true porque se ha dado el caso de que est√°n modificando un campo de la clave para formar una clave que ya existe en la tabla
+                        //as√≠ que primero se borra y luego se a√±ade
                         ObjectState resultado = InsertarCambiosEnEF(listaCamposFacetaObjetoConocimientoProyectoPestanya, mEntityContext.FacetaObjetoConocimientoProyectoPestanya, facetaObjetoConocimientoProyectoPestanyaAux, filaFacetaObjetoConocimientoProyectoPestanya, true);
                         if (resultado.Equals(ObjectState.Agregado))
                         {
@@ -7620,9 +7618,9 @@ namespace Es.Riam.Gnoss.Web.Controles.Proyectos
         }
 
         /// <summary>
-        /// Configura los filtros de la home de un proyecto determinado con los par·metros que se han pasado desde un XML
+        /// Configura los filtros de la home de un proyecto determinado con los par√°metros que se han pasado desde un XML
         /// </summary>
-        /// <param name="pFiltrosHome">Lista de nodos xml con la configuraciÛn de los Filtros de la Home</param>
+        /// <param name="pFiltrosHome">Lista de nodos xml con la configuraci√≥n de los Filtros de la Home</param>
         /// <param name="pFacetasDW">DataWrapper de Facetas</param>
         /// <param name="pOrganizacionID">Identificador de la organizacion a la que pertenece el proyecto</param>
         /// <param name="pProyectoID">Identificador del proyecto</param>
@@ -7689,7 +7687,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Proyectos
                         }
                         else
                         {
-                            //No es un GUID puede ser una categorÌa de tipo TesauroSem·ntico con los nombres y el orden que le corresponde.
+                            //No es un GUID puede ser una categor√≠a de tipo TesauroSem√°ntico con los nombres y el orden que le corresponde.
                             valor = valorFiltro;
                         }
                     }
@@ -7727,8 +7725,8 @@ namespace Es.Riam.Gnoss.Web.Controles.Proyectos
 
                 FacetaFiltroHome filaFacetaFiltroHome = pFacetasDW.ListaFacetaFiltroHome.Where(item => item.OrganizacionID.Equals(pOrganizacionID) && item.ProyectoID.Equals(pProyectoID) && item.ObjetoConocimiento.Equals(pObjetoConocimiento) && item.Faceta.Equals(pFaceta) && item.Filtro.Equals(valorAcumulado)).FirstOrDefault();
 
-                //pEliminar = true porque se ha dado el caso de que est·n modificando un campo de la clave para formar una clave que ya existe en la tabla
-                //asÌ que primero se borra y luego se aÒade
+                //pEliminar = true porque se ha dado el caso de que est√°n modificando un campo de la clave para formar una clave que ya existe en la tabla
+                //as√≠ que primero se borra y luego se a√±ade
                 ObjectState resultado = InsertarCambiosEnEF(listaCamposFacetaFiltroHome, mEntityContext.FacetaFiltroHome, facetaFiltroHomeAux, filaFacetaFiltroHome, true);
                 if (resultado.Equals(ObjectState.Agregado))
                 {
@@ -7749,14 +7747,14 @@ namespace Es.Riam.Gnoss.Web.Controles.Proyectos
         /// </summary>
         /// <param name="nodo">Nodo del XML</param>
         /// <param name="nom">Nombre del nodo</param>
-        /// <returns>Salida contendr· un short con el tipo de diseÒo de la faceta</returns>
+        /// <returns>Salida contendr√° un short con el tipo de dise√±o de la faceta</returns>
         private short LeerNodoTipoDisenio(XmlNode nodo, string nom)
         {
             short salida = 0;
             string tipoDisenio = nodo.SelectSingleNode(nom).InnerText;
             switch (tipoDisenio)
             {
-                case "DesdeHastaDiasMesAÒo":
+                case "DesdeHastaDiasMesA√±o":
                     salida = 0;
                     break;
                 case "ListaOrdCantidad":
@@ -7796,7 +7794,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Proyectos
         /// <param name="nodo">Nodo del XML</param>
         /// <param name="nom">Nombre del nodo</param>
         /// <param name="pTipo">Tipo que se espera recibir</param>
-        /// <returns>Object que contendr· una string o un short</returns>
+        /// <returns>Object que contendr√° una string o un short</returns>
         private object LeerNodo(XmlNode nodo, string nom, Type pTipo)
         {
             Object salida = null;
@@ -7838,7 +7836,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Proyectos
         }
 
         /// <summary>
-        /// Borra de la tabla todas las filas salvo las que est·n en la lista pasada como par·metro
+        /// Borra de la tabla todas las filas salvo las que est√°n en la lista pasada como par√°metro
         /// </summary>
         private void BorrarFilasSobrantes()
         {
@@ -7849,14 +7847,14 @@ namespace Es.Riam.Gnoss.Web.Controles.Proyectos
         }
 
         /// <summary>
-        /// Borra de la tabla todas las filas salvo las que est·n en la lista pasada como par·metro
+        /// Borra de la tabla todas las filas salvo las que est√°n en la lista pasada como par√°metro
         /// </summary>
         /// <param name="pTabla"></param>
         /// <param name="pListaFilas"></param>
         private void BorrarFilas(string pNombreLista, List<object> pListaFilas)
         {
             List<DataRow> listaFilasABorrar = new List<DataRow>();
-            //busco las que no est·n en la lista y no son las aÒadidas nuevas
+            //busco las que no est√°n en la lista y no son las a√±adidas nuevas
             foreach (object fila in mListaOriginalesEF[pNombreLista])
             {
                 if (PuedeBorrarFila(fila, pListaFilas))
@@ -7867,7 +7865,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Proyectos
         }
 
         /// <summary>
-        /// Comprueba si la fila se puede borrar (no est· en las modificadas y no es aÒadida y no es gadget o gadgetcontexto y no es ni comparticionautomatica ni comparticionautomaticareglas ni comparticionautomaticamapping)
+        /// Comprueba si la fila se puede borrar (no est√° en las modificadas y no es a√±adida y no es gadget o gadgetcontexto y no es ni comparticionautomatica ni comparticionautomaticareglas ni comparticionautomaticamapping)
         /// </summary>
         /// <param name="fila">Fila a comprobar</param>
         /// <param name="pListaFilas">Lista de filas a excluir del borrado</param>

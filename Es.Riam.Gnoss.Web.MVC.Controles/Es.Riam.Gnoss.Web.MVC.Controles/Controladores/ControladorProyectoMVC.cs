@@ -7,6 +7,7 @@ using Es.Riam.Gnoss.AD.EntityModel.Models.Documentacion;
 using Es.Riam.Gnoss.AD.EntityModel.Models.Faceta;
 using Es.Riam.Gnoss.AD.EntityModel.Models.MVC;
 using Es.Riam.Gnoss.AD.EntityModel.Models.ParametroGeneralDS;
+using Es.Riam.Gnoss.AD.EntityModel.Models.PersonaDS;
 using Es.Riam.Gnoss.AD.EntityModel.Models.ProyectoDS;
 using Es.Riam.Gnoss.AD.EntityModel.Models.Tesauro;
 using Es.Riam.Gnoss.AD.EntityModelBASE;
@@ -41,6 +42,7 @@ using Es.Riam.Gnoss.Util.Configuracion;
 using Es.Riam.Gnoss.Util.General;
 using Es.Riam.Gnoss.UtilServiciosWeb;
 using Es.Riam.Gnoss.Web.Controles;
+using Es.Riam.Gnoss.Web.Controles.Proyectos;
 using Es.Riam.Gnoss.Web.MVC.Models;
 using Es.Riam.Util;
 using Microsoft.AspNetCore.Http;
@@ -48,6 +50,7 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Web;
 
 namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
@@ -238,16 +241,27 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
 
                     comunidad.Tags = new List<string>(Tags.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries));
 
-                    string urlLogo = BaseURLContent + "/" + UtilArchivos.ContentImagenes + "/Proyectos/" + NombreImagen;
+					string urlFoto = $"{BaseURLContent}/{UtilArchivos.ContentImagenes}/{UtilArchivos.ContentImagenesProyectos}/{NombreImagen}";
+					comunidad.Logo = urlFoto;
+					if (string.IsNullOrEmpty(NombreImagen) || NombreImagen.Equals("peque"))
+					{
+						urlFoto = $"{BaseURLStatic}/img/{UtilArchivos.ContentImgIconos}/{UtilArchivos.ContentImagenesProyectos}/anonimo_peque.png";
+						comunidad.Logo = CargarImagenSup(clave);
+						if (string.IsNullOrEmpty(comunidad.Logo))
+						{
+							comunidad.Logo = urlFoto;
+						}
+					}
+					/*string urlLogo = BaseURLContent + "/" + UtilArchivos.ContentImagenes + "/Proyectos/" + NombreImagen;
 
                     if (string.IsNullOrEmpty(NombreImagen) || NombreImagen == "peque")
                     {
                         urlLogo = BaseURLStatic + "/img/Iconos/Proyectos/anonimo_peque.png";
                     }
 
-                    comunidad.Logo = urlLogo;
+                    comunidad.Logo = urlLogo;*/
 
-                    listaComunidades.Add(clave, comunidad);
+					listaComunidades.Add(clave, comunidad);
                 }
             }
 
@@ -1266,7 +1280,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
             bool pintar = false;
             string propiedadAPintar = UtilCadenas.ObtenerTextoDeIdioma(pPropPintar, mUtilIdiomas.LanguageCode, mParametrosGeneralesRow.IdiomaDefecto);
 
-            if (propiedadAPintar != null)
+            if (string.IsNullOrEmpty(propiedadAPintar))
             {
                 propiedadAPintar = "";
             }
@@ -1558,11 +1572,11 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
                         {
                             if (propiedadAPintar.Contains("#"))
                             {
-                                propiedadAPintar = propiedadAPintar.Replace("#", objeto);
+                                propiedadAPintar = Regex.Replace(propiedadAPintar, "#\\d?", objeto);
                             }
                             else
                             {
-                                propiedadAPintar = propiedadAPintar.Replace("@", objeto);
+                                propiedadAPintar = Regex.Replace(propiedadAPintar, "@\\d?", objeto);
                             }
                             pintar = true;
 
@@ -1571,14 +1585,14 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
                         {
                             if (propiedadAPintar.Contains("#"))
                             {
-                                propiedadAPintar = propiedadAPintar.Replace("#" + i.ToString(), objeto);
+                                propiedadAPintar = propiedadAPintar.Replace($"#{i.ToString()}", objeto);
                             }
                             else
                             {
                                 propiedadAPintar = propiedadAPintar.Replace("#", "@");
                             }
 
-                            propiedadAPintar = propiedadAPintar.Replace("@" + i.ToString(), objeto);
+                            propiedadAPintar = propiedadAPintar.Replace($"@{i.ToString()}", objeto);
                             pintar = true;
                         }
                     }
@@ -2661,6 +2675,25 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
                     if (fichaIdentidad.TypeProfile == ProfileType.Personal || fichaIdentidad.TypeProfile == ProfileType.Teacher || fichaIdentidad.TypeProfile == ProfileType.ProfessionalPersonal)
                     {
                         fichaIdentidad.NamePerson = nombrePerfil;
+
+                        if (personaID.HasValue)
+                        {
+                            PersonaCN personaCN = new PersonaCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+                            Persona persona = personaCN.ObtenerFilaPersonaPorID(personaID.Value);
+                            
+                            if (persona != null)
+                            {
+                                if (!string.IsNullOrEmpty(persona.Apellidos))
+                                {
+                                    fichaIdentidad.NamePerson = $"{persona.Nombre} {persona.Apellidos}";
+                                }
+                                else
+                                {
+                                    fichaIdentidad.NamePerson = $"{persona.Nombre}";
+                                }                                
+                            }                        
+                        }
+
                         string linkPers = "URLPERSONAREPLACE" + "/" + nombreCortoUsu;
 
                         if (fichaIdentidad.TypeProfile == ProfileType.ProfessionalPersonal)

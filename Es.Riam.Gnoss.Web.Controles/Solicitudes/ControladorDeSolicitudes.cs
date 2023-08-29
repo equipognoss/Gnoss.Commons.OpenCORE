@@ -55,7 +55,6 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Diagnostics;
-using System.Drawing;
 using System.IO;
 using System.Linq;
 
@@ -880,7 +879,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Solicitudes
 
                         foreach (string categoria in categorias)
                         {
-                            proyPrivClase.GestorProyectos.GestionTesauro.AgregarCategoria(categoria.Trim());
+                            proyPrivClase.GestorProyectos.GestionTesauro.AgregarCategoria(categoria.Trim(), 0);
                         }
 
                         foreach (CategoriaTesauro catTesauro in pCategoriasMyGnoss)

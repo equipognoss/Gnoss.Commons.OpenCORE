@@ -487,6 +487,18 @@ namespace Es.Riam.Gnoss.Logica.Usuarios
             UsuarioAD.EstablecerPasswordUsuario(pUsuario, hashPassword);
         }
 
+        public void EstablecerPasswordUsuario(Guid pUsuarioID, string pPassword)
+        {
+            //ChequeoSeguridad.ComprobarAutorizacion((ulong)Capacidad.General.CapacidadesAdministracion.EditarUsuarios);
+
+            string hashPassword;
+
+            ValidarFormatoPassword(pPassword);
+
+            hashPassword = HashHelper.CalcularHash(pPassword, true);
+            UsuarioAD.EstablecerPasswordUsuario(pUsuarioID, hashPassword);
+        }
+
         /// <summary>
         /// Establece la contraseña encriptada del usuario actual
         /// </summary>
@@ -509,6 +521,11 @@ namespace Es.Riam.Gnoss.Logica.Usuarios
         public void EstablecerCaducidadPasswordUsuario(Guid pUsuarioID)
         {
             UsuarioAD.EstablecerCaducidadPasswordUsuario(pUsuarioID);
+        }
+
+        public void EstablecerLoginUsuario(Guid pUsuarioID, string pLogin)
+        {
+            UsuarioAD.EstablecerLoginUsuario(pUsuarioID, pLogin);
         }
 
         /// <summary>

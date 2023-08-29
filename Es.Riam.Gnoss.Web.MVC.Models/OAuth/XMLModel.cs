@@ -6,14 +6,14 @@ using System.Threading.Tasks;
 
 namespace Es.Riam.Gnoss.Web.MVC.Models.OAuth
 {
-    public class XMLModel
+    public class OAuthModel
     {
-        public XMLModel()
+        public OAuthModel()
         {
 
         }
 
-        public XMLModel(string pShortName)
+        public OAuthModel(string pShortName)
         {
             this.ShortName = pShortName;
         }

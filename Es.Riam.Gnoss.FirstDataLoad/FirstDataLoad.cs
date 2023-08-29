@@ -78,6 +78,12 @@ namespace Es.Riam.Gnoss.FirstDataLoad
                 Parametro = "CorreoSolicitudes",
                 Valor = "solicitudes@gnoss.com"
             };
+			
+			ParametroAplicacion parametroAplicacion9 = new ParametroAplicacion()
+            {
+                Parametro = "Encriptacion",
+                Valor = "aes"
+            };
 
             CategoriaProyectoCookie categoriaProyectoCookie = new CategoriaProyectoCookie()
             {
@@ -166,6 +172,7 @@ namespace Es.Riam.Gnoss.FirstDataLoad
             mEntityContext.ParametroAplicacion.Add(parametroAplicacion6);
             mEntityContext.ParametroAplicacion.Add(parametroAplicacion7);
             mEntityContext.ParametroAplicacion.Add(parametroAplicacion8);
+            mEntityContext.ParametroAplicacion.Add(parametroAplicacion9);
 
             ProyectoPestanyaMenu proyectoPestanyaMenu1 = new ProyectoPestanyaMenu()
             {

@@ -26,8 +26,10 @@ namespace Es.Riam.Gnoss.Util.Configuracion
         private string usarHilosInteractuarRedis;
         private int numeroPersonasEnvioNewsletter;
         private string usarCache;
+        private bool? usarCacheLocal;
         private string numeroPersonasEnvioNewsletterString;
         private string azureServiceBusReintentos;
+        private bool? cookieSesion;
         private string azureServiceBusEspera;
         private string urlBase;
         private int mTiempocapturaurl;
@@ -44,6 +46,8 @@ namespace Es.Riam.Gnoss.Util.Configuracion
         private string urlFacetasExterno;
         private string urlResultados;
         private string urlResultadosExterno;
+        private string urlAfinidad;
+        private string urlKeycloak;
         private string ubicacionIndiceLucene;
         private List<string> listaIdiomas;
         private Dictionary<string, string> listaIdiomasDictionary;
@@ -59,7 +63,9 @@ namespace Es.Riam.Gnoss.Util.Configuracion
         private string urlApiDesplieguesEntorno;
         private string urlApiIntegracionContinua;
         private string urlApi;
-        private string urlIntraGnoss;
+        private string urlMatomo;
+        private string oAuthMatomo;
+        private string cadenaConexionMatomo;
         private bool viewsAdministracion;
         private string urlApiLucene;
         private string urlEtiquetadoInteligente;
@@ -124,7 +130,7 @@ namespace Es.Riam.Gnoss.Util.Configuracion
         private string urlServicioTOP;
         private int mNumVisitasHilo = 100;
         private int mNumHilosAbiertos = 5;
-        private int mMinutosAntesProcesar = 5;
+        private int mMinutosAntesProcesar = 1;
         private int mHorasProcesarVisitasVirtuoso = 6;
         private int mVisitasVotosComentarios = 5;
         private int mNumMaxPeticionesWebSimultaneas = 5;
@@ -144,6 +150,11 @@ namespace Es.Riam.Gnoss.Util.Configuracion
         private string implementationKey;
         private string logLocation;
         private string rutaOntologias;
+        private string rutaDocumentos;
+        private string rutaDoclinks;
+        private string rutaImagenes;
+        private string rutaVideos;
+        private string rutaReproductorVideo;
         private string nombreServicio;
         private string rutaMapping;
         private string cadenaConexion;
@@ -157,6 +168,8 @@ namespace Es.Riam.Gnoss.Util.Configuracion
         private string scopeIdentity;
         private string clientIDIdentity;
         private string clientIDSecret;
+        private string evaluarFiltrosFacetasEnOrden;
+        private bool? noEnviarCorreoSuscripcion;
 
         public string GetCadenaConexion()
         {
@@ -243,6 +256,97 @@ namespace Es.Riam.Gnoss.Util.Configuracion
             }
             return rutaOntologias;
         }
+
+        public string GetRutaDocumentacion()
+        {
+            if (string.IsNullOrEmpty(rutaDocumentos))
+            {
+                IDictionary environmentVariables = Environment.GetEnvironmentVariables();
+                if (environmentVariables.Contains("rutaDocumentacion"))
+                {
+                    rutaDocumentos = environmentVariables["rutaDocumentacion"] as string;
+                }
+                else
+                {
+                    rutaDocumentos = Configuration["rutaDocumentacion"];
+                }
+
+            }
+            return rutaDocumentos;
+        }
+
+        public string GetRutaDoclinks()
+        {
+            if (string.IsNullOrEmpty(rutaDoclinks))
+            {
+                IDictionary environmentVariables = Environment.GetEnvironmentVariables();
+                if (environmentVariables.Contains("rutaDoclinks"))
+                {
+                    rutaDoclinks = environmentVariables["rutaDoclinks"] as string;
+                }
+                else
+                {
+                    rutaDoclinks = Configuration["rutaDoclinks"];
+                }
+
+            }
+            return rutaDoclinks;
+        }
+
+        public string GetRutaImagenes()
+        {
+            if (string.IsNullOrEmpty(rutaImagenes))
+            {
+                IDictionary environmentVariables = Environment.GetEnvironmentVariables();
+                if (environmentVariables.Contains("rutaImagenes"))
+                {
+                    rutaImagenes = environmentVariables["rutaImagenes"] as string;
+                }
+                else
+                {
+                    rutaImagenes = Configuration["rutaImagenes"];
+                }
+
+            }
+            return rutaImagenes;
+        }
+
+        public string GetRutaVideos()
+        {
+            if (string.IsNullOrEmpty(rutaVideos))
+            {
+                IDictionary environmentVariables = Environment.GetEnvironmentVariables();
+                if (environmentVariables.Contains("rutaVideos"))
+                {
+                    rutaVideos = environmentVariables["rutaVideos"] as string;
+                }
+                else
+                {
+                    rutaVideos = Configuration["rutaVideos"];
+                }
+
+            }
+            return rutaVideos;
+        }
+
+        public string GetRutaReproductorVideo()
+        {
+            if (string.IsNullOrEmpty(rutaReproductorVideo))
+            {
+                IDictionary environmentVariables = Environment.GetEnvironmentVariables();
+                if (environmentVariables.Contains("rutaReproductorVideo"))
+                {
+                    rutaReproductorVideo = environmentVariables["rutaReproductorVideo"] as string;
+                }
+                else
+                {
+                    rutaReproductorVideo = Configuration["rutaReproductorVideo"];
+                }
+
+            }
+            return rutaReproductorVideo;
+        }
+
 
         public string RutaMapping
         {
@@ -379,7 +483,6 @@ namespace Es.Riam.Gnoss.Util.Configuracion
             return azureStorageConnectionString;
         }
 
-        
         public string GetImplementationKey()
         {
             if (string.IsNullOrEmpty(implementationKey))
@@ -456,6 +559,30 @@ namespace Es.Riam.Gnoss.Util.Configuracion
 
         }
 
+        public bool ObtenerCokieSesion()
+        {
+            if (cookieSesion == null)
+            {
+                if (EnvironmentVariables.Contains("cookieSesion"))
+                {
+                    string variable = EnvironmentVariables["cookieSesion"] as string;
+                    if (variable.ToLower() == "true")
+                    {
+                        cookieSesion = true;
+                    }
+                }
+                else
+                {
+                    cookieSesion = Configuration.GetValue<bool?>("cookieSesion");
+                }
+            }
+            if (!cookieSesion.HasValue)
+            {
+                return false;
+            }
+            return cookieSesion.Value;
+        }
+
         public Guid? ObtenerOrganizacionConexion()
         {
             if (organizacionConexion == null)
@@ -488,24 +615,13 @@ namespace Es.Riam.Gnoss.Util.Configuracion
                 {
                     idiomaDefecto = Configuration["IdiomaDefecto"];
                 }
+
+                if (string.IsNullOrEmpty(idiomaDefecto))
+                {
+                    idiomaDefecto = "es";
+                }
             }
             return idiomaDefecto;
-        }
-
-        public string ObtenerUrlIntraGnoss()
-        {
-            if (string.IsNullOrEmpty(urlIntraGnoss))
-            {
-                if (EnvironmentVariables.Contains("UrlIntraGnoss"))
-                {
-                    urlIntraGnoss = EnvironmentVariables["UrlIntraGnoss"] as string;
-                }
-                else
-                {
-                    urlIntraGnoss = Configuration["UrlIntraGnoss"];
-                }
-            }
-            return urlIntraGnoss;
         }
 
         public bool EstaDesplegadoEnDocker()
@@ -516,7 +632,7 @@ namespace Es.Riam.Gnoss.Util.Configuracion
                 {
                     viewsAdministracion = bool.Parse(EnvironmentVariables["DesplegadoDocker"] as string);
                 }
-                else if(!string.IsNullOrEmpty(Configuration["DesplegadoDocker"]))
+                else if (!string.IsNullOrEmpty(Configuration["DesplegadoDocker"]))
                 {
                     viewsAdministracion = bool.Parse(Configuration["DesplegadoDocker"]);
                 }
@@ -574,6 +690,27 @@ namespace Es.Riam.Gnoss.Util.Configuracion
                 }
             }
             return usarCache;
+        }
+
+        public bool ObtenerUsarCacheLocal()
+        {
+            if (EnvironmentVariables.Contains("usarCacheLocal"))
+            {
+                string variable = EnvironmentVariables["usarCacheLocal"] as string;
+                if (variable.ToLower() == "false")
+                {
+                    usarCacheLocal = false;
+                }
+            }
+            else
+            {
+                usarCacheLocal = Configuration.GetValue<bool?>("usarCacheLocal");
+            }
+            if (usarCacheLocal == null)
+            {
+                return true;
+            }
+            return usarCacheLocal.Value;
         }
 
         public int ObtenerCaptchaNumIntentos()
@@ -874,6 +1011,40 @@ namespace Es.Riam.Gnoss.Util.Configuracion
             return new KeyValuePair<string, string>(nombreConexionVirtuoso, cadena);
         }
 
+        public Dictionary<string, string> ObtenerDiccionarioVirtuososEscritura()
+        {
+            string cadena = "";
+            string nombreConexionVirtuoso = "";
+            Dictionary<string, string> listaVirtuosos = new Dictionary<string, string>();
+            var virtuososEnvironment = EnvironmentVariables.Keys.Cast<string>().Where(item => item.StartsWith("Virtuoso__Escritura"));
+            var virtuososSettings = Configuration.GetSection("ConnectionStrings").GetSection("Virtuoso").GetSection("Escritura").GetChildren();
+            if (virtuososEnvironment.Any())
+            {
+                foreach (string key in virtuososEnvironment)
+                {
+                    cadena = EnvironmentVariables[key] as string;
+                    nombreConexionVirtuoso = key.Replace("Virtuoso__Escritura__", "");
+                    listaVirtuosos.Add(nombreConexionVirtuoso, cadena);
+                }
+            }
+            else if (virtuososSettings.Any())
+            {
+                foreach (var element in virtuososSettings)
+                {
+                    cadena = element.Value;
+                    nombreConexionVirtuoso = element.Key;
+                    listaVirtuosos.Add(nombreConexionVirtuoso, cadena);
+                }
+            }
+            else
+            {
+                cadena = ObtenerVirtuosoConnectionString();
+                listaVirtuosos.Add(nombreConexionVirtuoso, cadena);
+            }
+
+            return listaVirtuosos;
+        }
+
         public bool CheckBidirectionalReplicationIsActive()
         {
             if (EnvironmentVariables.Keys.Cast<string>().Any(item => item.StartsWith("BidirectionalReplication")))
@@ -1140,7 +1311,7 @@ namespace Es.Riam.Gnoss.Util.Configuracion
                     oauth = ObtenerSqlConnectionString();
                 }
             }
-            
+
             return oauth;
         }
         public string ObtenerBaseConnectionString()
@@ -1468,7 +1639,7 @@ namespace Es.Riam.Gnoss.Util.Configuracion
                     organizacionGnoss = Configuration.GetValue<Guid?>("OrganizacionGnoss");
                 }
             }
-            if(organizacionGnoss == null)
+            if (organizacionGnoss == null)
             {
                 organizacionGnoss = new Guid("11111111-1111-1111-1111-111111111111");
             }
@@ -1524,7 +1695,7 @@ namespace Es.Riam.Gnoss.Util.Configuracion
                 {
                     urlResultados = Configuration.GetSection("Servicios")["urlResultados"];
                 }
-                if (!string.IsNullOrEmpty(urlResultados) &&  urlResultados.EndsWith("/"))
+                if (!string.IsNullOrEmpty(urlResultados) && urlResultados.EndsWith("/"))
                 {
                     urlResultados = urlResultados.TrimEnd('/');
                 }
@@ -1782,6 +1953,54 @@ namespace Es.Riam.Gnoss.Util.Configuracion
                 }
             }
             return urlApi;
+        }
+
+        public string ObtenerUrlMatomo()
+        {
+            if (string.IsNullOrEmpty(urlMatomo))
+            {
+                if (EnvironmentVariables.Contains("UrlMatomo"))
+                {
+                    urlMatomo = EnvironmentVariables["UrlMatomo"] as string;
+                }
+                else
+                {
+                    urlMatomo = Configuration["UrlMatomo"];
+                }
+            }
+            return urlMatomo;
+        }
+
+        public string ObtenerOAuthMatomo()
+        {
+            if (string.IsNullOrEmpty(oAuthMatomo))
+            {
+                if (EnvironmentVariables.Contains("OAuthMatomo"))
+                {
+                    oAuthMatomo = EnvironmentVariables["OAuthMatomo"] as string;
+                }
+                else
+                {
+                    oAuthMatomo = Configuration["OAuthMatomo"];
+                }
+            }
+            return oAuthMatomo;
+        }
+
+        public string ObtenerCadenaConexionMatomo()
+        {
+            if (string.IsNullOrEmpty(cadenaConexionMatomo))
+            {
+                if (EnvironmentVariables.Contains("matomoSql"))
+                {
+                    cadenaConexionMatomo = EnvironmentVariables["matomoSql"] as string;
+                }
+                else
+                {
+                    cadenaConexionMatomo = Configuration["matomoSql"];
+                }
+            }
+            return cadenaConexionMatomo;
         }
 
         public string ObtenerUrlApiDesplieguesEntorno()
@@ -2265,6 +2484,8 @@ namespace Es.Riam.Gnoss.Util.Configuracion
             return urlTriples;
         }
 
+
+
         public string ObtenerJenkinsToken()
         {
             if (string.IsNullOrEmpty(tokenJenkins))
@@ -2338,7 +2559,7 @@ namespace Es.Riam.Gnoss.Util.Configuracion
             {
                 hilosAplicacion = 0;
             }
-            
+
             return hilosAplicacion;
         }
 
@@ -2499,6 +2720,26 @@ namespace Es.Riam.Gnoss.Util.Configuracion
             }
             return urlDocuments;
 
+        }
+
+        public string ObtenerServicioAfinidad()
+        {
+            if (string.IsNullOrEmpty(urlAfinidad))
+            {
+                if (EnvironmentVariables.Contains("Servicios__urlAfinidad"))
+                {
+                    urlAfinidad = EnvironmentVariables["Servicios__urlAfinidad"] as string;
+                }
+                else
+                {
+                    urlAfinidad = Configuration.GetSection("Servicios")["urlAfinidad"];
+                }
+                if (!string.IsNullOrEmpty(urlAfinidad) && urlAfinidad.EndsWith("/"))
+                {
+                    urlAfinidad = urlAfinidad.TrimEnd('/');
+                }
+            }
+            return urlAfinidad;
         }
 
         public string ObtenerUrlServicioEtiquetas()
@@ -2785,6 +3026,10 @@ namespace Es.Riam.Gnoss.Util.Configuracion
                 if (puertoUDPOut != 0)
                 {
                     mPuertoUDP = puertoUDPOut;
+                }
+                else
+                {
+                    mPuertoUDP = 1745;
                 }
 
             }
@@ -3095,6 +3340,34 @@ namespace Es.Riam.Gnoss.Util.Configuracion
             return trazasHabilitadas.Value;
         }
 
+        public bool ObtenerNoEnviarCorreoSuscripcion()
+        {
+            if (!noEnviarCorreoSuscripcion.HasValue)
+            {
+                if (EnvironmentVariables.Contains("noEnviarCorreoSuscripcion"))
+                {
+                    string variable = EnvironmentVariables["noEnviarCorreoSuscripcion"] as string;
+                    if (variable.ToLower().Equals("false"))
+                    {
+                        noEnviarCorreoSuscripcion = false;
+                    }
+                    else if (variable.ToLower().Equals("true"))
+                    {
+                        noEnviarCorreoSuscripcion = true;
+                    }
+                }
+                else
+                {
+                    noEnviarCorreoSuscripcion = Configuration.GetValue<bool?>("noEnviarCorreoSuscripcion");
+                }
+                if (noEnviarCorreoSuscripcion == null)
+                {
+                    noEnviarCorreoSuscripcion = false;
+                }
+            }
+            return noEnviarCorreoSuscripcion.Value;
+        }
+
         public bool ConfiguradoEtiquetadoInteligente()
         {
             if (configuradoEtiquetadoInteligente == null)
@@ -3202,6 +3475,22 @@ namespace Es.Riam.Gnoss.Util.Configuracion
                 }
             }
             return clientIDSecret;
+        }
+
+        public string ObtenerEvaluarFiltrosFacetasEnOrden()
+        {
+            if (string.IsNullOrEmpty(evaluarFiltrosFacetasEnOrden))
+            {
+                if (EnvironmentVariables.Contains("EvaluarFiltrosFacetasEnOrden"))
+                {
+                    evaluarFiltrosFacetasEnOrden = EnvironmentVariables["EvaluarFiltrosFacetasEnOrden"] as string;
+                }
+                else
+                {
+                    evaluarFiltrosFacetasEnOrden = Configuration["EvaluarFiltrosFacetasEnOrden"];
+                }
+            }
+            return evaluarFiltrosFacetasEnOrden;
         }
 
         public int ObtenerMinPortFTP()

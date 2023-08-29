@@ -2879,18 +2879,6 @@ public class GnossUrlsSemanticas
     }
 
     /// <summary>
-    /// Devuelve la URL para ir a la pantalla de administración de ontolgoías la comunidad.
-    /// </summary>
-    /// <param name="pBaseURL">URL de la página donde se encuentre el usuario</param>
-    /// <param name="pUtilIdiomas">Funciones para obtener cadenas en diferentes idiomas</param>
-    /// <param name="pNombreProy">Nombre del proyecto de la BR</param>
-    /// <returns>URL para ir a la pantalla de administración de ontolgoías la comunidad</returns>
-    public string GetURLAdministrarPlantillasComunidad(string pBaseURL, UtilIdiomas pUtilIdiomas, string pNombreProy)
-    {
-        return ObtenerURLComunidad(pUtilIdiomas, pBaseURL, pNombreProy) + "/" + pUtilIdiomas.GetText(URLSEM, "ADMINISTRARPLANTILLASCOM");
-    }
-
-    /// <summary>
     /// Devuelve la URL para ir a la pantalla de administración de los tesauros semánticos de una comunidad.
     /// </summary>
     /// <param name="pBaseURL">URL de la página donde se encuentre el usuario</param>
@@ -3025,19 +3013,6 @@ public class GnossUrlsSemanticas
     public string GetURLCrearFuenteComunidad(string pBaseURL, UtilIdiomas pUtilIdiomas, string pNombreProy)
     {
         return ObtenerURLComunidad(pUtilIdiomas, pBaseURL, pNombreProy) + "/" + pUtilIdiomas.GetText(URLSEM, "ADMINISTRARCOMUNIDADFUENTE");
-    }
-
-    /// <summary>
-    /// Devuelve la URL para ir a la pantalla de administración de el tesauro de una comunidad.
-    /// </summary>
-    /// <param name="pBaseURL">URL de la página donde se encuentre el usuario</param>
-    /// <param name="pUtilIdiomas">Funciones para obtener cadenas en diferentes idiomas</param>
-    /// <param name="pNombreProy">Nombre del proyecto de la BR</param>
-    /// <param name="pLimpiarSesion">Indica si se deben limpiar de la sesión las variables con las que se gestiona el tesauro</param>
-    /// <returns>URL para ir a la pantalla de administración de el tesauro de una comunidad</returns>
-    public string GetURLAdministrarEdicionArchicoConfiguracionPlantilla(string pBaseURL, UtilIdiomas pUtilIdiomas, string pNombreProy, string pNombreOntologia, Guid pOngologiaID)
-    {
-        return ObtenerURLComunidad(pUtilIdiomas, pBaseURL, pNombreProy) + "/" + pUtilIdiomas.GetText(URLSEM, "ADMINISTRARPLANTILLASCOMEDICIONARCHIVOCONF") + "/" + pNombreOntologia + "/" + pOngologiaID.ToString();
     }
 
     #endregion

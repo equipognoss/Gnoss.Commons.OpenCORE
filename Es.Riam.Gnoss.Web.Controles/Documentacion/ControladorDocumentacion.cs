@@ -66,8 +66,10 @@ using System.IO;
 using System.Linq;
 using System.Net.Sockets;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading;
 using System.Web;
+using System.Xml;
 
 namespace Es.Riam.Gnoss.Web.Controles.Documentacion
 {
@@ -284,6 +286,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Documentacion
             string tipo = "";
 
             string baseUrl = UtilDominios.ObtenerDominioUrl(ProyectoSeleccionado.UrlPropia(UtilIdiomas.LanguageCode), true);
+            string urlComunidad = UrlsSemanticas.ObtenerURLComunidad(UtilIdiomas, BaseURLIdioma, ProyectoSeleccionado.NombreCorto);
 
             switch (pDocumento.FilaDocumento.TipoEntidad)
             {
@@ -294,7 +297,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Documentacion
                     tipo = TipoEntidadVinculadaDocumentoTexto.CV_Acreditacion;
                     break;
             }
-            string extension = System.IO.Path.GetExtension(pDocumento.NombreDocumento).ToLower();
+            string extension = Path.GetExtension(pDocumento.NombreDocumento).ToLower();
 
             Guid PersonaPublicadorID = Guid.Empty;
             Guid OrganizacionPublicadorID = Guid.Empty;
@@ -329,11 +332,11 @@ namespace Es.Riam.Gnoss.Web.Controles.Documentacion
             if (PersonaPublicadorID != Guid.Empty)
             {
 
-                enlace = baseUrl + "/download-file?tipo=" + tipo + "&doc=" + pDocumento.Clave + "&nombre=" + HttpUtility.UrlEncode(UtilCadenas.RemoveAccentsWithRegEx(pDocumento.NombreDocumento)) + "&ext=" + extension + "&personaID=" + PersonaPublicadorID.ToString();
+                enlace = $"{urlComunidad}/download-file?tipo={tipo}&doc={pDocumento.Clave}&nombre={HttpUtility.UrlEncode(UtilCadenas.RemoveAccentsWithRegEx(pDocumento.NombreDocumento))}&ext={extension}&personaID={PersonaPublicadorID}";
             }
             else if (OrganizacionPublicadorID != Guid.Empty)
             {
-                enlace = baseUrl + "/download-file?tipo=" + tipo + "&org=" + pDocumento.FilaDocumento.OrganizacionID + "&doc=" + pDocumento.Clave + "&nombre=" + HttpUtility.UrlEncode(UtilCadenas.RemoveAccentsWithRegEx(pDocumento.NombreDocumento)) + "&ext=" + extension;
+                enlace = $"{urlComunidad}/download-file?tipo={tipo}&org={pDocumento.FilaDocumento.OrganizacionID}&doc={pDocumento.Clave}&nombre={HttpUtility.UrlEncode(UtilCadenas.RemoveAccentsWithRegEx(pDocumento.NombreDocumento))}&ext={extension}";
             }
             else
             {
@@ -341,9 +344,9 @@ namespace Es.Riam.Gnoss.Web.Controles.Documentacion
 
                 if (pDocumento.FilaDocumento.ProyectoID.HasValue)
                 {
-                    proyectoID = "&proy=" + pDocumento.FilaDocumento.ProyectoID.Value.ToString();
+                    proyectoID = $"&proy={pDocumento.FilaDocumento.ProyectoID.Value}";
                 }
-                enlace = baseUrl + "/download-file?tipo=" + tipo + "&org=" + pDocumento.FilaDocumento.OrganizacionID + proyectoID + "&doc=" + pDocumento.Clave + "&nombre=" + HttpUtility.UrlEncode(UtilCadenas.RemoveAccentsWithRegEx(pDocumento.NombreDocumento)) + "&ext=" + extension + "&proyectoID=" + ProyectoSeleccionado.Clave;
+                enlace = $"{urlComunidad}/download-file?tipo={tipo}&org={pDocumento.FilaDocumento.OrganizacionID}{proyectoID}&doc={pDocumento.Clave}&nombre={HttpUtility.UrlEncode(UtilCadenas.RemoveAccentsWithRegEx(pDocumento.NombreDocumento))}&ext={extension}&proyectoID={ProyectoSeleccionado.Clave}";
             }
             return enlace;
         }
@@ -433,7 +436,6 @@ namespace Es.Riam.Gnoss.Web.Controles.Documentacion
             }
 
             GestorDocumental.DataWrapperDocumentacion.Merge(docCN.ObtenerVinculacionesRecurso(pDocumentoID));
-
         }
 
         /// <summary>
@@ -508,7 +510,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Documentacion
                 }
                 else if (pOrigen.TipoDocumentacion == TiposDocumentacion.Video)
                 {
-                    servicioVideos = new CallInterntService(mConfigService);
+                    servicioVideos = new CallInterntService(mConfigService, mLoggingService);
                     sw = LoggingService.IniciarRelojTelemetria();
 
                     if (!pMasterComunidad && pOrigen.TipoEntidadVinculada == TipoEntidadVinculadaDocumento.Web)
@@ -1265,9 +1267,10 @@ namespace Es.Riam.Gnoss.Web.Controles.Documentacion
 
                 plantillaCorrecta = ComprobarOntologiaOWLParaPlantilla(new Ontologia(ruta, true));
             }
-            catch (Exception)
+            catch (Exception ex)
             {
                 plantillaCorrecta = false;
+                throw new ExcepcionGeneral(ex.Message);
             }
             return plantillaCorrecta;
         }
@@ -1400,7 +1403,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Documentacion
 
             if (arryaOnto == null)
             {
-                CallFileService servicioArch = new CallFileService(mConfigService);
+                CallFileService servicioArch = new CallFileService(mConfigService, mLoggingService);
                 arryaOnto = servicioArch.ObtenerOntologiaBytes(pDocumentoID);
                 docCL.GuardarOntologia(pDocumentoID, arryaOnto);
 
@@ -1496,7 +1499,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Documentacion
         {
             string nombreFraccion = pNombreOntologia.Substring(0, pNombreOntologia.LastIndexOf(".")).ToLower() + "_" + pTipoEntidad;
 
-            CallFileService servicioArch = new CallFileService(mConfigService);
+            CallFileService servicioArch = new CallFileService(mConfigService, mLoggingService);
 
             byte[] arryaOnto = servicioArch.ObtenerOntologiaFraccionada(pDocumentoID, nombreFraccion);
 
@@ -1964,12 +1967,12 @@ namespace Es.Riam.Gnoss.Web.Controles.Documentacion
         {
             FacetadoAD facetadoAD = new FacetadoAD(pUrlIntragnoss, mLoggingService, mEntityContext, mConfigService, mVirtuosoAD, mServicesUtilVirtuosoAndReplication);
 
-            if (string.IsNullOrEmpty(mServicesUtilVirtuosoAndReplication.ConexionAfinidad))
-            {
-                // Necesito tener afinidad con un servidor de virtuoso concreto, si voy contra el HaProxy no sé contra qué servidor he escrito
-                mServicesUtilVirtuosoAndReplication.ConexionAfinidad = "acid_Master";
-                mVirtuosoAD.FechaFinAfinidad = DateTime.Now.AddMinutes(1);
-            }
+            //if (string.IsNullOrEmpty(mServicesUtilVirtuosoAndReplication.ConexionAfinidad))
+            //{
+            //    // Necesito tener afinidad con un servidor de virtuoso concreto, si voy contra el HaProxy no sé contra qué servidor he escrito
+            //    mServicesUtilVirtuosoAndReplication.ConexionAfinidad = "acid_Master";
+            //    mVirtuosoAD.FechaFinAfinidad = DateTime.Now.AddMinutes(1);
+            //}
 
             try
             {
@@ -2000,12 +2003,10 @@ namespace Es.Riam.Gnoss.Web.Controles.Documentacion
                 if (pNumIntentos < 120)
                 {
                     Thread.Sleep(2000);
-
-                    if (pNumIntentos == 60)
+                    if (pNumIntentos == 0)
                     {
-                        facetadoAD.CambiarAfinidadVirtuoso();
+                        CallWebMethods.CallGetApi(mConfigService.ObtenerServicioAfinidad(), "RelatedVirtuoso");
                     }
-
                     BorrarYEscribirEnVirtuosoConCilenteTradicional(pDocumentoID, pNombreGrafo, pUrlIntragnoss, pFicheroConfiguracion, pProyectoID, pInfoExtra, pUsarColareplicacion, pEscribirNT, pTripletas, pNumIntentos + 1);
                 }
                 else
@@ -2047,9 +2048,14 @@ namespace Es.Riam.Gnoss.Web.Controles.Documentacion
                 filaRdfDoc = (RdfDS.RdfDocumentoRow)pRdfDS.RdfDocumento.Select("DocumentoID='" + pDocumentoID + "' AND ProyectoID='" + pProyectoID + "'")[0];
             }
 
+            if (IsValidXmlString(pFicheroRDF))
+            {
+                pFicheroRDF = RemoveInvalidXmlChars(pFicheroRDF);
+            }
+
             filaRdfDoc.RdfSem = pFicheroRDF;
 
-            RdfCN rdfCN = new RdfCN("rdf", pDocumentoID.ToString().Substring(0, 3), mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+            RdfCN rdfCN = new RdfCN("rdf", pDocumentoID.ToString().Substring(0, 3), mEntityContext, mEntityContextBASE, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
             rdfCN.ActualizarBD(pRdfDS);
         }
 
@@ -2069,9 +2075,14 @@ namespace Es.Riam.Gnoss.Web.Controles.Documentacion
             filaRdfDoc.ProyectoID = pProyectoID;
             rdfDS.RdfDocumento.AddRdfDocumentoRow(filaRdfDoc);
 
+            if (IsValidXmlString(pRDF))
+            {
+                pRDF = RemoveInvalidXmlChars(pRDF);
+            }
+
             filaRdfDoc.RdfSem = pRDF;
 
-            RdfCN rdfCN = new RdfCN("rdf", pDocumentoID.ToString().Substring(0, 3), mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+            RdfCN rdfCN = new RdfCN("rdf", pDocumentoID.ToString().Substring(0, 3), mEntityContext, mEntityContextBASE, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
             rdfCN.ActualizarBD(rdfDS);
         }
 
@@ -2179,9 +2190,9 @@ namespace Es.Riam.Gnoss.Web.Controles.Documentacion
         /// <param name="pUrlOntologia">URL de la ontología</param>
         /// <param name="pNamespaceOntologia">Namespace de la ontología</param>
         /// <param name="pOntologia">Ontología del documento</param>
-        public byte[] ObtenerRDFDeVirtuoso(Guid pDocumentoID, string pNombreGrafo, string pUrlIntragnoss, string pUrlOntologia, string pNamespaceOntologia, Ontologia pOntologia)
+        public byte[] ObtenerRDFDeVirtuoso(Guid pDocumentoID, string pNombreGrafo, string pUrlIntragnoss, string pUrlOntologia, string pNamespaceOntologia, Ontologia pOntologia, bool pUsarAfinidad = false)
         {
-            return ObtenerRDFDeVirtuoso(pDocumentoID, pNombreGrafo, pUrlIntragnoss, pUrlOntologia, pNamespaceOntologia, pOntologia, null, false);
+            return ObtenerRDFDeVirtuoso(pDocumentoID, pNombreGrafo, pUrlIntragnoss, pUrlOntologia, pNamespaceOntologia, pOntologia, null, false, pUsarAfinidad);
         }
 
         /// <summary>
@@ -2193,9 +2204,9 @@ namespace Es.Riam.Gnoss.Web.Controles.Documentacion
         /// <param name="pUrlOntologia">URL de la ontología</param>
         /// <param name="pNamespaceOntologia">Namespace de la ontología</param>
         /// <param name="pOntologia">Ontología del documento</param>
-        public byte[] ObtenerRDFDeVirtuoso(Guid pDocumentoID, string pNombreGrafo, string pUrlIntragnoss, string pUrlOntologia, string pNamespaceOntologia, Ontologia pOntologia, string pFicheroConfiguracion, bool pTraerEntidadesExternas)
+        public byte[] ObtenerRDFDeVirtuoso(Guid pDocumentoID, string pNombreGrafo, string pUrlIntragnoss, string pUrlOntologia, string pNamespaceOntologia, Ontologia pOntologia, string pFicheroConfiguracion, bool pTraerEntidadesExternas, bool pUsarAfinidad = false)
         {
-            return ObtenerRDFDeVirtuoso(pDocumentoID.ToString(), pNombreGrafo, pUrlIntragnoss, pUrlOntologia, pNamespaceOntologia, pOntologia, pFicheroConfiguracion, pTraerEntidadesExternas);
+            return ObtenerRDFDeVirtuoso(pDocumentoID.ToString(), pNombreGrafo, pUrlIntragnoss, pUrlOntologia, pNamespaceOntologia, pOntologia, pFicheroConfiguracion, pTraerEntidadesExternas, pUsarAfinidad);
         }
 
         /// <summary>
@@ -2207,7 +2218,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Documentacion
         /// <param name="pUrlOntologia">URL de la ontología</param>
         /// <param name="pNamespaceOntologia">Namespace de la ontología</param>
         /// <param name="pOntologia">Ontología del documento</param>
-        public byte[] ObtenerRDFDeVirtuoso(string pDocumentoID, string pNombreGrafo, string pUrlIntragnoss, string pUrlOntologia, string pNamespaceOntologia, Ontologia pOntologia, string pFicheroConfiguracion, bool pTraerEntidadesExternas)
+        public byte[] ObtenerRDFDeVirtuoso(string pDocumentoID, string pNombreGrafo, string pUrlIntragnoss, string pUrlOntologia, string pNamespaceOntologia, Ontologia pOntologia, string pFicheroConfiguracion, bool pTraerEntidadesExternas, bool pUsarAfinidad = false)
         {
             FacetadoCN facetadoCN = null;
 
@@ -2220,7 +2231,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Documentacion
                 facetadoCN = new FacetadoCN(pFicheroConfiguracion, pUrlIntragnoss, "", mEntityContext, mLoggingService, mConfigService, mVirtuosoAD, mServicesUtilVirtuosoAndReplication);
             }
 
-            FacetadoDS facetadoDS = facetadoCN.ObtenerRDFXMLdeFormulario(pNombreGrafo.ToLower(), pDocumentoID);
+            FacetadoDS facetadoDS = facetadoCN.ObtenerRDFXMLdeFormulario(pNombreGrafo.ToLower(), pDocumentoID, pUsarAfinidad);
 
             if (facetadoDS.Tables[0].Rows.Count == 0)
             {
@@ -2267,7 +2278,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Documentacion
                 foreach (string entidadExterna in listaEntidadesExternas)
                 {
                     //Por cada entidad externa del diccionario, debemos obtener sus triples de virtuoso y añadirlos al store.
-                    if(EntExt != null)
+                    if (EntExt != null)
                     {
                         for (int i = 0; i < EntExt.Count; i++)
                         {
@@ -3373,9 +3384,9 @@ namespace Es.Riam.Gnoss.Web.Controles.Documentacion
                     }
 
                     //Esto si no es un borrador
-                    if (!docCN.EsDocumentoBorrador(docID))
+                    if (!docCN.EsDocumentoBorrador(docID) && !pComunidadID.Equals(ProyectoAD.MetaProyecto))
                     {
-                        facetadoCN2.BorrarRecurso(ProyectoSeleccionado.Clave.ToString(), docID, 0, "", false, borrarAuxiliar);
+                        facetadoCN2.BorrarRecurso(pComunidadID.ToString(), docID, 0, "", false, borrarAuxiliar);
                     }
 
 
@@ -5312,7 +5323,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Documentacion
             }
             else
             {
-                if(pIdentidadOrganizacion != null)
+                if (pIdentidadOrganizacion != null)
                 {
                     gestorDoc.GestorTesauro = new GestionTesauro(tesauroCN.ObtenerTesauroOrganizacion((Guid)pIdentidadOrganizacion.PerfilUsuario.OrganizacionID), mLoggingService, mEntityContext);
                 }
@@ -5686,7 +5697,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Documentacion
             //Obtengo categoría:
             List<string> ent = new List<string>();
             ent.Add(pCategoriaID);
-            FacetadoDS dataSetCategorias = facCN.ObtenerValoresPropiedadesEntidades(pUrlOntologiaTesauro, ent, propiedades, true);
+            FacetadoDS dataSetCategorias = facCN.ObtenerValoresPropiedadesEntidades(pUrlOntologiaTesauro, ent, propiedades, true, false);
 
             if (dataSetCategorias.Tables[0].Rows.Count == 0)
             {
@@ -5761,7 +5772,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Documentacion
             string nombreOntologia = pDocOntologia.FilaDocumento.Enlace;
 
             //Guardo triples grafo tesauro semántico:
-            BorrarGrupoTripletasEnListaVirtuoso(pUrlIntragnoss, nombreOntologia, triplesComBorrar, pUsarColaReplicacion);
+             BorrarGrupoTripletasEnListaVirtuoso(pUrlIntragnoss, nombreOntologia, triplesComBorrar, pUsarColaReplicacion);
             InsertaTripletasVirtuoso(pUrlIntragnoss, nombreOntologia, triplesInsertar, PrioridadBase.ApiRecursos, pUsarColaReplicacion);
 
             //Guardo triples en los proyectos en los que está subido y compartido el tesauro semántico:
@@ -6383,11 +6394,10 @@ namespace Es.Riam.Gnoss.Web.Controles.Documentacion
         /// <param name="pUrlIntragnoss">Url de intragnoss</param>
         /// <param name="pBaseURLFormulariosSem">Base Url para los formularios semánticos</param>
         /// <param name="pCategoriaAEliminarID">ID de la categoría a eliminar</param>
-        /// <param name="pPath">IDs de las nuevas categorías jerarquicamente ordenadas a las que se moverán los recursos afectados</param>
         /// <param name="pDocOntologia">Documento de la ontología</param>
         /// <param name="pDocOntologiaRecursos">Documento de la ontología de recursos</param>
         /// <param name="pUsarColaReplicacion">Indica si se debe usar cola de replicación al guardar</param>
-        public void EliminarCategoriaTesauroSemantico(string pUrlOntologiaTesauro, string pUrlOntologiaRecursos, string pUrlIntragnoss, string pBaseURLFormulariosSem, string pCategoriaAEliminarID, string[] pPath, Documento pDocOntologia, Documento pDocOntologiaRecursos, bool pUsarColaReplicacion, Guid pProyectoID)
+        public void EliminarCategoriaTesauroSemantico(string pUrlOntologiaTesauro, string pUrlOntologiaRecursos, string pUrlIntragnoss, string pBaseURLFormulariosSem, string pCategoriaAEliminarID, Documento pDocOntologia, Documento pDocOntologiaRecursos, bool pUsarColaReplicacion, Guid pProyectoID)
         {
             FacetadoCN facCN = new FacetadoCN(pUrlIntragnoss, mEntityContext, mLoggingService, mConfigService, mVirtuosoAD, mServicesUtilVirtuosoAndReplication);
             string[] arrayTesSem = ControladorDocumentacion.ObtenerDatosFacetaTesSem(pUrlOntologiaTesauro);
@@ -6413,13 +6423,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Documentacion
             }
 
             List<string> padres = FacetadoCN.ObtenerObjetosDataSetSegunPropiedad(dataSetCategorias, pCategoriaAEliminarID, arrayTesSem[7]);
-
-            //if (padres.Count == 0)
-            //{
-            //    facCN.Dispose();
-            //    throw new Exception("No se puede eliminar una categoría Raiz.");
-            //}
-
+                        
             //Borramos la relación entre el padre e hijo:
             foreach (string padreID in padres)
             {
@@ -6468,60 +6472,6 @@ namespace Es.Riam.Gnoss.Web.Controles.Documentacion
 
             dataSetFilaHasEntidad.Dispose();
 
-            //Obtengo nuevos padres para la categoría:
-            List<string> nuevosPadres = null;
-
-            if (pPath != null)
-            {
-                nuevosPadres = new List<string>(pPath);
-            }
-            else
-            {
-                nuevosPadres = new List<string>();
-            }
-
-            //if (nuevosPadres.Count == 0)
-            //{
-            //    facCN.Dispose();
-            //    throw new Exception("El Path debe tener al menos un elemento.");
-            //}
-
-            foreach (string nuevoPadre in nuevosPadres)
-            {
-                if (string.IsNullOrEmpty(nuevoPadre))
-                {
-                    throw new Exception("El Path no puede contener elementos vacíos o nulos.");
-                }
-            }
-
-            if (nuevosPadres.Count > 0)
-            {
-                List<string> propiedades = new List<string>();
-                propiedades.Add(arrayTesSem[4]);//hasHijo
-                propiedades.Add(arrayTesSem[7]);//hasPadre
-
-                dataSetCategorias.Merge(facCN.ObtenerValoresPropiedadesEntidades(pUrlOntologiaTesauro, nuevosPadres, propiedades));
-
-                //Compruebo que las categorías padres nuevas son correctas:
-                int count = 0;
-
-                foreach (string padreNuevo in nuevosPadres)
-                {
-                    List<string> padresDePadre = FacetadoCN.ObtenerObjetosDataSetSegunPropiedad(dataSetCategorias, padreNuevo, arrayTesSem[7]);
-
-                    if (count == 0 && padresDePadre.Count > 0)
-                    {
-                        throw new Exception("La 1º categoría del Path '" + padreNuevo + "' no es Raiz.");
-                    }
-                    else if (count > 0 && padresDePadre.Count == 0)
-                    {
-                        throw new Exception("La categoría del Path '" + padreNuevo + "' no existe.");
-                    }
-
-                    count++;
-                }
-            }
-
             //Genero las triples de la comunidad:
             string triplesComInsertarDef = "";
             //string triplesComBorrarDef = "";
@@ -6552,7 +6502,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Documentacion
             {
                 string extraObjeto = null;
 
-                if (triple.Predicate == "<" + arrayTesSem[6] + ">")//symbol
+                if (triple.Predicate == $"<{arrayTesSem[6]}>")//symbol
                 {
                     extraObjeto = "^^xsd:int";
                 }
@@ -6567,16 +6517,10 @@ namespace Es.Riam.Gnoss.Web.Controles.Documentacion
                     triplesComBorrarDef.Add(new TripleWrapper() { Subject = PasarObjetoALower(triple.Subject, listaAux), Predicate = triple.Predicate, Object = PasarObjetoALower(triple.Object, listaAux) + extraObjeto, ObjectLanguage = triple.ObjectLanguage });
                 }
 
-                //triplesComBorrarDef += FacetadoAD.GenerarTripletaSinConversionesAbsurdas(PasarObjetoALower(triple[0], listaAux), triple[1], PasarObjetoALower(triple[2], listaAux), idioma);
                 triplesComBorrarDef.Add(new TripleWrapper { Subject = PasarObjetoALower(triple.Subject, listaAux), Predicate = triple.Predicate, Object = objeto + extraObjeto, ObjectLanguage = triple.ObjectLanguage });
             }
 
             #region Modifico Recursos afectados
-
-            //List<string> catMoverEHijos = new List<string>();
-            //List<string> propiedadesHija = new List<string>();
-            //propiedadesHija.Add(arrayTesSem[4]);
-            //ObtenerCategoriasHijosRecursivosTesSem(catMoverEHijos, pCategoriaAEliminarID, propiedadesHija, facCN, pUrlOntologiaTesauro);
 
             Dictionary<Guid, Dictionary<string, string>> docPaths = new Dictionary<Guid, Dictionary<string, string>>();
             List<string> sujetosPath = new List<string>();
@@ -6681,7 +6625,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Documentacion
                 {
                     try
                     {
-                        if (nuevosPadres.Count > 0 && !predicadosCatValidos.Contains((string)fila[1]))
+                        if (!predicadosCatValidos.Contains((string)fila[1]))
                         {//Solo hay que conservar los triples que no son de categorías sin hay padres y luego añadimos las categorías nuevas.
                             continue;
                         }
@@ -6714,11 +6658,11 @@ namespace Es.Riam.Gnoss.Web.Controles.Documentacion
 
                         if (predicado == "http://www.w3.org/2000/01/rdf-schema#label" && objeto.StartsWith("http"))
                         {
-                            objeto = "literal@" + objeto + "";
+                            objeto = $"literal@{objeto}";
                         }
                         else if (predicado == "http://www.w3.org/1999/02/22-rdf-syntax-ns#type" && !objeto.StartsWith("http"))
                         {
-                            objeto = "http@" + objeto + "";
+                            objeto = $"http@{objeto}";
                         }
 
                         //Borramos las triples de la categoría eliminada y todos sus padres (todas):
@@ -6726,7 +6670,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Documentacion
                     }
                     catch (Exception ex)
                     {
-                        throw new Exception("Los datos del recurso con Path '" + (string)fila[0] + "' que depende de la categoría son incorrectos: " + Environment.NewLine + ex.ToString());
+                        throw new Exception($"Los datos del recurso con Path '{(string)fila[0]}' que depende de la categoría son incorrectos: {Environment.NewLine}{ex.ToString()}");
                     }
                 }
             }
@@ -6740,148 +6684,118 @@ namespace Es.Riam.Gnoss.Web.Controles.Documentacion
                 docsElemV = docCN.ObtenerListaRecursosConElementoVinculadoID(new List<Guid>(docPaths.Keys));
             }
 
-            if (nuevosPadres.Count > 0)
+
+            //Hay que borrar las tiples que tienen como objeto el sujeto de la vinculación con las categorías y comprobar si la ontología admite que se quede sin categorías y si eso ocurre con algún recurso:
+
+            dataSetPaths.Dispose();
+            dataSetPaths = null;
+            dataSetPaths = facCN.ObtenerTripletasMismoPredicadoDeSujetoConObjetoQueTieneUnObjeto(pUrlOntologiaTesauro, pCategoriaAEliminarID);
+
+            Dictionary<string, int> predicadosRelacion = new Dictionary<string, int>();
+            Dictionary<string, int> sujPredNumTrip = new Dictionary<string, int>();
+
+            foreach (DataRow fila in dataSetPaths.Tables[0].Rows)
             {
-                //Agrego a cada Path los nuevos padres:
-                foreach (Guid documentoID in docPaths.Keys)
+                string sujeto = (string)fila[0];
+                string predicado = (string)fila[1];
+                string objeto = (string)fila[2];
+                string claveSujPred = sujeto + "|" + predicado;
+
+                if (predicado != "http://gnoss/hasEntidad")
                 {
-                    Guid elemV = Guid.Empty;
-
-                    if (docsElemV != null)
+                    if (!predicadosRelacion.ContainsKey(predicado))
                     {
-                        elemV = docsElemV[documentoID];
-
-                        if (!triplesInsertarRec.ContainsKey(elemV))
-                        {
-                            triplesInsertarRec.Add(elemV, "");
-                        }
+                        predicadosRelacion.Add(predicado, -1);
                     }
 
-                    string triplesIn = triplesInsertarRec[elemV];
-
-                    foreach (string sujeto in docPaths[documentoID].Keys)
+                    if (!sujPredNumTrip.ContainsKey(claveSujPred))
                     {
-                        foreach (string padre in nuevosPadres)
-                        {
-                            EscribirTripletaEntidad(sujeto, docPaths[documentoID][sujeto], padre, ref triplesIn, litTripAux, false, null);
-                        }
+                        sujPredNumTrip.Add(claveSujPred, 0);
                     }
-
-                    triplesInsertarRec[elemV] = triplesIn;
                 }
-            }
-            else //Hay que borrar las tiples que tienen como objeto el sujeto de la vinculación con las categorías y comprobar si la ontología admite que se quede sin categorías y si eso ocurre con algún recurso:
-            {
-                dataSetPaths.Dispose();
-                dataSetPaths = null;
-                dataSetPaths = facCN.ObtenerTripletasMismoPredicadoDeSujetoConObjetoQueTieneUnObjeto(pUrlOntologiaRecursos, pCategoriaAEliminarID);
 
-                Dictionary<string, int> predicadosRelacion = new Dictionary<string, int>();
-                Dictionary<string, int> sujPredNumTrip = new Dictionary<string, int>();
-
-                foreach (DataRow fila in dataSetPaths.Tables[0].Rows)
+                if (sujetosPath.Contains(objeto))
                 {
-                    string sujeto = (string)fila[0];
-                    string predicado = (string)fila[1];
-                    string objeto = (string)fila[2];
-                    string claveSujPred = sujeto + "|" + predicado;
+                    //Borramos las triples de relación del recurso con el sujeto de la categoría eliminada:
+                    EscribirTripletaEntidad(sujeto, predicado, objeto, ref triplesBorrarRec, triplesBorrarRecAux, false, null);
 
                     if (predicado != "http://gnoss/hasEntidad")
                     {
-                        if (!predicadosRelacion.ContainsKey(predicado))
-                        {
-                            predicadosRelacion.Add(predicado, -1);
-                        }
+                        sujPredNumTrip[claveSujPred]--;
+                    }
+                }
+                else if (predicado != "http://gnoss/hasEntidad")
+                {
+                    sujPredNumTrip[claveSujPred]++;
+                }
+            }
 
-                        if (!sujPredNumTrip.ContainsKey(claveSujPred))
+            if (!string.IsNullOrEmpty(pUrlOntologiaRecursos) && pDocOntologiaRecursos != null)
+            {
+                GestionOWL gestorOWL = new GestionOWL();
+                gestorOWL.UrlOntologia = pBaseURLFormulariosSem + "/Ontologia/" + pDocOntologiaRecursos.FilaDocumento.Enlace + "#";
+                gestorOWL.NamespaceOntologia = GestionOWL.NAMESPACE_ONTO_GNOSS;
+                GestionOWL.FicheroConfiguracionBD = "acid";
+
+                byte[] arrayOnto = ObtenerOntologia(pDocOntologiaRecursos.Clave, pDocOntologiaRecursos.ProyectoID);
+                Ontologia ontologia = new Ontologia(arrayOnto, true);
+                ontologia.GestorOWL = gestorOWL;
+                ontologia.LeerOntologia();
+
+                //Elimino los predicados no obligatorios para no comprobarlos:
+                foreach (string predicado in new List<string>(predicadosRelacion.Keys))
+                {
+                    Propiedad propiedad = null;
+
+                    foreach (ElementoOntologia entidad in ontologia.Entidades)
+                    {
+                        propiedad = entidad.ObtenerPropiedadPorNombreOUri(predicado);
+
+                        if (propiedad != null)
                         {
-                            sujPredNumTrip.Add(claveSujPred, 0);
+                            if (propiedad.FunctionalProperty)
+                            {
+                                predicadosRelacion[predicado] = 0;
+                            }
+                            else
+                            {
+                                foreach (Restriccion restrinccion in entidad.Restricciones)
+                                {
+                                    if (restrinccion.Propiedad == propiedad.Nombre && (restrinccion.TipoRestriccion == TipoRestriccion.Cardinality || restrinccion.TipoRestriccion == TipoRestriccion.MinCardinality))
+                                    {
+                                        predicadosRelacion[predicado] = int.Parse(restrinccion.Valor) - 1;
+                                        break;
+                                    }
+                                }
+
+                                if (predicadosRelacion[predicado] == -1)
+                                {
+                                    predicadosRelacion.Remove(predicado);
+                                }
+                            }
+
+                            break;
                         }
                     }
 
-                    if (sujetosPath.Contains(objeto))
+                    if (propiedad == null)
                     {
-                        //Borramos las triples de relación del recurso con el sujeto de la categoría eliminada:
-                        EscribirTripletaEntidad(sujeto, predicado, objeto, ref triplesBorrarRec, triplesBorrarRecAux, false, null);
-
-                        if (predicado != "http://gnoss/hasEntidad")
-                        {
-                            sujPredNumTrip[claveSujPred]--;
-                        }
-                    }
-                    else if (predicado != "http://gnoss/hasEntidad")
-                    {
-                        sujPredNumTrip[claveSujPred]++;
+                        throw new Exception("Se están intentado eliminar triples de la propiedad '" + predicado + "' que no pertenece a la ontología.");
                     }
                 }
 
-                if (!string.IsNullOrEmpty(pUrlOntologiaRecursos) && pDocOntologiaRecursos != null)
+                if (predicadosRelacion.Count > 0)
                 {
-                    GestionOWL gestorOWL = new GestionOWL();
-                    gestorOWL.UrlOntologia = pBaseURLFormulariosSem + "/Ontologia/" + pDocOntologiaRecursos.FilaDocumento.Enlace + "#";
-                    gestorOWL.NamespaceOntologia = GestionOWL.NAMESPACE_ONTO_GNOSS;
-                    GestionOWL.FicheroConfiguracionBD = "acid";
-
-                    byte[] arrayOnto = ObtenerOntologia(pDocOntologiaRecursos.Clave, pDocOntologiaRecursos.ProyectoID);
-                    Ontologia ontologia = new Ontologia(arrayOnto, true);
-                    ontologia.GestorOWL = gestorOWL;
-                    ontologia.LeerOntologia();
-
-                    //Elimino los predicados no obligatorios para no comprobarlos:
-                    foreach (string predicado in new List<string>(predicadosRelacion.Keys))
+                    //Compruebo como han quedado las tripletas:
+                    foreach (string claveSujPred in sujPredNumTrip.Keys)
                     {
-                        Propiedad propiedad = null;
+                        string predicado = claveSujPred.Split('|')[1];
 
-                        foreach (ElementoOntologia entidad in ontologia.Entidades)
+                        if (predicadosRelacion.ContainsKey(predicado))
                         {
-                            propiedad = entidad.ObtenerPropiedadPorNombreOUri(predicado);
-
-                            if (propiedad != null)
+                            if (sujPredNumTrip[claveSujPred] < predicadosRelacion[predicado])
                             {
-                                if (propiedad.FunctionalProperty)
-                                {
-                                    predicadosRelacion[predicado] = 0;
-                                }
-                                else
-                                {
-                                    foreach (Restriccion restrinccion in entidad.Restricciones)
-                                    {
-                                        if (restrinccion.Propiedad == propiedad.Nombre && (restrinccion.TipoRestriccion == TipoRestriccion.Cardinality || restrinccion.TipoRestriccion == TipoRestriccion.MinCardinality))
-                                        {
-                                            predicadosRelacion[predicado] = int.Parse(restrinccion.Valor) - 1;
-                                            break;
-                                        }
-                                    }
-
-                                    if (predicadosRelacion[predicado] == -1)
-                                    {
-                                        predicadosRelacion.Remove(predicado);
-                                    }
-                                }
-
-                                break;
-                            }
-                        }
-
-                        if (propiedad == null)
-                        {
-                            throw new Exception("Se están intentado eliminar triples de la propiedad '" + predicado + "' que no pertenece a la ontología.");
-                        }
-                    }
-
-                    if (predicadosRelacion.Count > 0)
-                    {
-                        //Compruebo como han quedado las tripletas:
-                        foreach (string claveSujPred in sujPredNumTrip.Keys)
-                        {
-                            string predicado = claveSujPred.Split('|')[1];
-
-                            if (predicadosRelacion.ContainsKey(predicado))
-                            {
-                                if (sujPredNumTrip[claveSujPred] < predicadosRelacion[predicado])
-                                {
-                                    throw new Exception("Se está inclumpiendo la restricción de cardinalidad de la propiedad '" + predicado + "' que es '" + (predicadosRelacion[predicado] + 1) + "' y la propiedad quedará con '" + (sujPredNumTrip[claveSujPred] + 1) + "' elementos.");
-                                }
+                                throw new Exception($"Se está inclumpiendo la restricción de cardinalidad de la propiedad '{predicado}' que es '{(predicadosRelacion[predicado] + 1)}' y la propiedad quedará con '{(sujPredNumTrip[claveSujPred] + 1)}' elementos.");
                             }
                         }
                     }
@@ -6909,9 +6823,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Documentacion
                 InsertaTripletasVirtuoso(pUrlIntragnoss, proyectoID.ToString().ToLower(), triplesComInsertarDef, PrioridadBase.ApiRecursos, pUsarColaReplicacion);
             }
 
-
             //Guardo Recursos:
-
             elemVinGrafo = new Dictionary<Guid, string>();
 
             if (pDocOntologiaRecursos != null)
@@ -6936,7 +6848,6 @@ namespace Es.Riam.Gnoss.Web.Controles.Documentacion
                     InsertaTripletasVirtuoso(pUrlIntragnoss, elemVinGrafo[elementVinID], triplesInsertarRec[elementVinID], PrioridadBase.ApiRecursos, pUsarColaReplicacion);
                 }
             }
-
 
             foreach (Guid documentoID in docsTipoProys.Keys)
             {
@@ -7392,19 +7303,8 @@ namespace Es.Riam.Gnoss.Web.Controles.Documentacion
                 {
                     if (!triple.Predicate.Contains("http://www.w3.org/1999/02/22-rdf-syntax-ns#type") && !triple.Predicate.Contains("http://www.w3.org/2000/01/rdf-schema#label"))
                     {
-
                         string objeto = (string)triple.Object;
-                        if (textoTesauroInvariable)
-                        {
-                            if (!objeto.Contains("\""))
-                            {
-                                objeto = PasarObjetoALower(objeto, FacetadoAD.ListaTiposBase);
-                            }
-                        }
-                        else
-                        {
-                            objeto = PasarObjetoALower(objeto, FacetadoAD.ListaTiposBase);
-                        }
+
                         objeto = objeto.Replace("\r\n", "");
                         objeto = objeto.Replace("\n", "");
 
@@ -7428,16 +7328,21 @@ namespace Es.Riam.Gnoss.Web.Controles.Documentacion
                             objeto = objeto.Substring(0, objeto.Length - 1);
                         }
 
-                        string predicado = (string)triple.Predicate;
+                        string predicado = triple.Predicate;
                         predicado = predicado.Substring(1, predicado.Length - 2);
 
-                        string sujeto = (string)triple.Subject;
+                        string sujeto = triple.Subject;
                         if (objeto.Contains("/") && (predicado.Contains("fecha") || predicado.Contains("date")))
                         {
                             objeto = ConvertirFormatoFecha(objeto) + " . ";
                         }
 
                         string aux = string.Empty;
+
+                        if (objeto.StartsWith(UrlIntragnoss))
+                        {
+                            objeto = PasarObjetoALower(objeto, FacetadoAD.ListaTiposBase);
+                        }
 
                         tripletasComunidad += facetadoAD.GenerarTripletaRecogidadeVirtuosoSinConversionesAbsurdas(PasarObjetoALower(sujeto, FacetadoAD.ListaTiposBase), predicado, objeto, objeto, Fecha, Numero, entExt, ref aux, triple.ObjectLanguage, triple.ObjectType);
                     }
@@ -7738,6 +7643,43 @@ namespace Es.Riam.Gnoss.Web.Controles.Documentacion
             }
             return rdfConfiguradoRecursoNoSemantico;
         }
+
+        /// <summary>
+        /// Comprueba si el xml del campo RDF es inválido
+        /// </summary>
+        /// <param name="pRdfText"></param>
+        /// <returns></returns>
+        static bool IsValidXmlString(string pRdfText)
+        {
+            try
+            {
+                XmlConvert.VerifyXmlChars(pRdfText);
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// Elimina los caracteres inválidos en un xml
+        /// </summary>
+        /// <param name="pRdfText"></param>
+        /// <returns></returns>
+        static string RemoveInvalidXmlChars(string pRdfText)
+        {
+            string correctedXMlString = Regex.Replace(pRdfText, @"[^\u0000-\u007F]", string.Empty);
+
+            if (IsValidXmlString(pRdfText))
+            {
+                var validXmlChars = pRdfText.Where(ch => XmlConvert.IsXmlChar(ch)).ToArray();
+                return new string(validXmlChars);
+            }
+
+            return correctedXMlString;
+        }
+
 
         /// <summary>
         /// Copia las imagenes de un documento semántico.

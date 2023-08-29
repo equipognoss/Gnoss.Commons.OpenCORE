@@ -1,6 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Resources language="French" code="fr">
 	<page name="COMMON">
+		<Resource tag="BUSQUEDAOC">la recherche de OC</Resource>
 		<Resource tag="RELATEDTO">Relacionado con</Resource>
 		<Resource tag="BASERECURSOS">Ressources</Resource>
 		<Resource tag="SUBIRNEWSLETTER">Ajouter une nouvelle newsletter</Resource>
@@ -3587,7 +3588,6 @@
 		<Resource tag="ADMINISTRARCATEGORIASCOM">administrer-categories</Resource>
 		<Resource tag="ADMINISTRARCOMUNIDADGENERAL">administrer-communaute-generale</Resource>
 		<Resource tag="POLITICACOMUNIDAD">politique-certificats</Resource>
-		<Resource tag="ADMINISTRARPLANTILLASCOM">administrer-modeles</Resource>
 		<Resource tag="QUIEROTWITTEAR">twitter</Resource>
 		<Resource tag="VERBIO">voir-bio</Resource>
 		<Resource tag="ENVIOTWITTERCORRECTO">twitterok</Resource>

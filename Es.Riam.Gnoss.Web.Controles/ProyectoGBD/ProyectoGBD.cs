@@ -362,9 +362,9 @@ namespace Es.Riam.Gnoss.Web.Controles.ProyectoGBD
 
         }
 
-        public void AddProyectoPestanyaMenuRow(Guid pestanyaId, Guid organizacionID, Guid proyectoID, ProyectoPestanyaMenu p1, short tipoPestanya, string nombre, string ruta, short orden, bool nuevaPestanya, bool visible, short privacidad, string htmlAlternativo, string idiomasDisponibles, string titulo, string nombreCortoPestanya, bool visibleSinAcceso, string cssBodyClass, string metaDescription, bool activa)
+        public void AddProyectoPestanyaMenuRow(Guid pestanyaId, Guid organizacionID, Guid proyectoID, ProyectoPestanyaMenu p1, short tipoPestanya, string nombre, string ruta, short orden, bool nuevaPestanya, bool visible, short privacidad, string htmlAlternativo, string idiomasDisponibles, string titulo, string nombreCortoPestanya, bool visibleSinAcceso, string cssBodyClass, string metaDescription, bool activa, string nombreEditor)
         {
-            ProyectoPestanyaMenu proyectoPestanyaMenu = new ProyectoPestanyaMenu(pestanyaId, organizacionID, proyectoID, p1, tipoPestanya, nombre, ruta, orden, nuevaPestanya, visible, privacidad, htmlAlternativo, idiomasDisponibles, titulo, nombreCortoPestanya, visibleSinAcceso, cssBodyClass, metaDescription, activa);
+            ProyectoPestanyaMenu proyectoPestanyaMenu = new ProyectoPestanyaMenu(pestanyaId, organizacionID, proyectoID, p1, tipoPestanya, nombre, ruta, orden, nuevaPestanya, visible, privacidad, htmlAlternativo, idiomasDisponibles, titulo, nombreCortoPestanya, visibleSinAcceso, cssBodyClass, metaDescription, activa, nombreEditor);
             mEntityContext.ProyectoPestanyaMenu.Add(proyectoPestanyaMenu);
             
         }

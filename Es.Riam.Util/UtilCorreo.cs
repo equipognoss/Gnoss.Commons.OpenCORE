@@ -1,7 +1,6 @@
 ﻿using Es.Riam.Interfaces;
 using System;
 using System.Collections.Generic;
-using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -13,69 +12,6 @@ using System.Text;
 
 namespace Es.Riam.Util
 {
-    /// <summary>
-    /// ImagenEmbebida
-    /// </summary>
-    public class ImagenEmbebida
-    {
-        #region Miembros
-
-        private String mCid;
-        private Bitmap mImagen;
-
-        #endregion
-
-        #region Constructor
-
-        /// <summary>
-        /// Constructor
-        /// </summary>
-        /// <param name="pCid">Cid</param>
-        /// <param name="pImagen">Mapa de bits de imagen</param>
-        public ImagenEmbebida(String pCid, Bitmap pImagen)
-        {
-            this.mCid = pCid;
-            this.mImagen = pImagen;
-        }
-
-        #endregion
-
-        #region Propiedades
-
-        /// <summary>
-        /// Obtiene o establece el Cid
-        /// </summary>
-        public String Cid
-        {
-            get { return this.mCid; }
-            set { this.mCid = value; }
-        }
-
-        /// <summary>
-        /// Obtiene o establece la imagen
-        /// </summary>
-        public Bitmap Imagen
-        {
-            get { return this.mImagen; }
-            set { this.mImagen = value; }
-        }
-
-        /// <summary>
-        /// Obtiene un array de bytes que representa a la imagen
-        /// </summary>
-        public Byte[] ImagenByteArray
-        {
-            get
-            {
-                MemoryStream imgStream = new MemoryStream();
-                this.mImagen.Save(imgStream, this.mImagen.RawFormat);
-                return imgStream.ToArray();
-            }
-        }
-
-        #endregion
-    }
-
     /// <summary>
     /// Utiles de correo
     /// </summary>
@@ -259,38 +195,6 @@ namespace Es.Riam.Util
 
         #region Públicos
 
-        /// <summary>
-        /// Envía un correo electrónico
-        /// </summary>
-        /// <param name="pDestinatario">Email del destinatario</param>
-        /// <param name="pRemitente">Email del remitente</param>
-        /// <param name="pMascaraRemitente">Máscara del remitente</param>
-        /// <param name="pAsunto">Asunto del mensaje</param>
-        /// <param name="pMensaje">Cuerpo del mensaje</param>
-        /// <param name="pFormatoHTML">TRUE si el formato del mensaje es HTML</param>
-        /// <param name="pImagenEmbebida">Imagen embebida en el correo</param>
-        /// <param name="pNotificacionID">Identificador de la notificación que se está enviando</param>
-        public void EnviarCorreo(string pDestinatario, string pRemitente, string pMascaraRemitente, string pAsunto, string pMensaje, bool pFormatoHTML, ImagenEmbebida pImagenEmbebida, Guid pNotificacionID)
-        {
-            EnviarCorreo(pDestinatario, pRemitente, pMascaraRemitente, "", "", pAsunto, pMensaje, pFormatoHTML, pImagenEmbebida, pNotificacionID);
-        }
-
-        /// <summary>
-        /// Envía un correo electrónico
-        /// </summary>
-        /// <param name="pDestinatario">Email del destinatario</param>
-        /// <param name="pRemitente">Email del remitente</param>
-        /// <param name="pMascaraRemitente">Máscara del remitente</param>
-        /// <param name="pDireccionRespuesta">Dirección a la que se debe responder este mensaje</param>
-        /// <param name="pMascaraDireccionRespuesta">Máscara de la dirección de respuesta</param>
-        /// <param name="pAsunto">Asunto del mensaje</param>
-        /// <param name="pMensaje">Cuerpo del mensaje</param>
-        /// <param name="pFormatoHTML">TRUE si el formato del mensaje es HTML</param>
-        /// <param name="pNotificacionID">Identificador de la notificación que se está enviando</param>
-        public void EnviarCorreo(string pDestinatario, string pRemitente, string pMascaraRemitente, string pDireccionRespuesta, string pMascaraDireccionRespuesta, string pAsunto, string pMensaje, bool pFormatoHTML, Guid pNotificacionID)
-        {
-            EnviarCorreo(pDestinatario, pRemitente, pMascaraRemitente, pDireccionRespuesta, pMascaraDireccionRespuesta, pAsunto, pMensaje, pFormatoHTML, null, pNotificacionID);
-        }
 
         /// <summary>
         /// Envía un correo electrónico
@@ -304,7 +208,7 @@ namespace Es.Riam.Util
         /// <param name="pNotificacionID">Identificador de la notificación que se está enviando</param>
         public void EnviarCorreo(string pDestinatario, string pRemitente, string pMascaraRemitente, string pAsunto, string pMensaje, bool pFormatoHTML, Guid pNotificacionID)
         {
-            EnviarCorreo(pDestinatario, pRemitente, pMascaraRemitente, pAsunto, pMensaje, pFormatoHTML, null, pNotificacionID);
+            EnviarCorreo(pDestinatario, pRemitente, pMascaraRemitente, null, null, pAsunto, pMensaje, pFormatoHTML, pNotificacionID);
         }
 
         /// <summary>
@@ -320,9 +224,9 @@ namespace Es.Riam.Util
         /// <param name="pFormatoHTML">TRUE si el formato del mensaje es HTML</param>
         /// <param name="pImagenEmbebida">Imagen embebida para la cabecera</param>
         /// <param name="pNotificacionID">Identificador de la notificación que se está enviando</param>
-        public void EnviarCorreo(string pDestinatario, string pRemitente, string pMascaraRemitente, string pDireccionRespuesta, string pMascaraDireccionRespuesta, string pAsunto, string pMensaje, bool pFormatoHTML, ImagenEmbebida pImagenEmbebida, Guid pNotificacionID)
+        public void EnviarCorreo(string pDestinatario, string pRemitente, string pMascaraRemitente, string pDireccionRespuesta, string pMascaraDireccionRespuesta, string pAsunto, string pMensaje, bool pFormatoHTML, Guid pNotificacionID)
         {
-            if (!pDestinatario.Contains(",") && !pDestinatario.Contains(";") && pImagenEmbebida == null)
+            if (!pDestinatario.Contains(',') && !pDestinatario.Contains(';'))
             {
                 //El envío se realiza a una sola persona, lo envío desde el otro método para que se añada el campo To
                 EnviarCorreoSoloUnaPersona(this.mServidorSmtp, this.mPuerto, this.mUsuario, this.mPassword, pDestinatario, pRemitente, pMascaraRemitente, "", "", pAsunto, pMensaje, pFormatoHTML, pNotificacionID, this.mServidor.EnableSsl);
@@ -341,8 +245,7 @@ namespace Es.Riam.Util
                 if (pFormatoHTML)
                 {
                     pMensaje = "<html><body>" + pMensaje + "</body></html>";
-                    if (pImagenEmbebida != null) CrearMensajeHTML(mensaje, pMensaje, pImagenEmbebida);
-                    else CrearMensajeHTML(mensaje, pMensaje);
+                   CrearMensajeHTML(mensaje, pMensaje);
                 }
                 else
                 {
@@ -518,8 +421,8 @@ namespace Es.Riam.Util
             servidor.Credentials = new NetworkCredential(pUsuario, pPassword);
             servidor.EnableSsl = pSSL;
 
-            // Remitente
-            MailAddress remitente = new MailAddress(pRemitente, pMascaraRemitente);
+			// Remitente
+			MailAddress remitente = new MailAddress(pRemitente, pMascaraRemitente);
 
             // Destinatarios
             MailAddress destino = new MailAddress(pDestinatario);
@@ -701,6 +604,7 @@ namespace Es.Riam.Util
             // cerrar conexión
             NetStrm.Close();
             RdStrm.Close();
+            servidorSmtp.Dispose();
 
             return true;
             //}
@@ -730,43 +634,6 @@ namespace Es.Riam.Util
             AlternateView htmlView = AlternateView.CreateAlternateViewFromString(pMensaje, CodificacionANSI, "text/html");
 
             pMail.AlternateViews.Add(htmlView);
-        }
-
-        /// <summary>
-        /// Crea un mensaje en formato HTML
-        /// </summary>
-        /// <param name="pMail">Mail</param>
-        /// <param name="pMensaje">Mensaje</param>
-        /// <param name="pImagenEmbebida">Imagen embebida en el mensaje</param>
-        private void CrearMensajeHTML(MailMessage pMail, string pMensaje, ImagenEmbebida pImagenEmbebida)
-        {
-            //Creamos la vista en texto plano del mensaje
-            AlternateView plainView = AlternateView.CreateAlternateViewFromString(UtilCadenas.EliminarHtmlParaMensajes(pMensaje), CodificacionANSI, "text/plain");
-            pMail.AlternateViews.Add(plainView);
-
-            //Creamos la vista HTML del mensaje
-            AlternateView htmlView = AlternateView.CreateAlternateViewFromString(pMensaje, CodificacionANSI, "text/html");
-
-            //Incrusta el logo
-            if (pImagenEmbebida != null)
-            {
-                this.IncrustarImagen(htmlView, pImagenEmbebida);
-            }
-
-            pMail.AlternateViews.Add(htmlView);
-        }
-
-        /// <summary>
-        /// Incrusta una imagen en formato HTML
-        /// </summary>
-        /// <param name="pVistaHTML">Vista en HTML</param>
-        /// <param name="pImagenEmbebida">Imagen que se va a incrustar</param>
-        private void IncrustarImagen(AlternateView pVistaHTML, ImagenEmbebida pImagenEmbebida)
-        {
-            MemoryStream ms = new MemoryStream(pImagenEmbebida.ImagenByteArray);
-            LinkedResource image = new LinkedResource(ms);
-            image.ContentId = pImagenEmbebida.Cid;
-            pVistaHTML.LinkedResources.Add(image);
         }
 
         #endregion

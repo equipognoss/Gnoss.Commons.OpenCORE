@@ -1,4 +1,4 @@
-﻿using OfficeOpenXml;
+﻿using ClosedXML.Excel;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -12,7 +12,7 @@ namespace Es.Riam.Gnoss.Traducciones
     public class TraduccionJavaScript
     {
         //hecho
-        public void JavascriptToExcel(ExcelPackage mExcel, Dictionary<string, Stream> listaFicheros)
+        public void JavascriptToExcel(XLWorkbook mExcel, Dictionary<string, Stream> listaFicheros)
         {
             string nombreHoja = "JavaScript";
             Dictionary<string, Dictionary<string, string>> mDiccionario = new Dictionary<string, Dictionary<string, string>>();

@@ -3610,7 +3610,6 @@
     <Resource tag="ADMINISTRARCATEGORIASCOM">manage-categories</Resource>
     <Resource tag="ADMINISTRARCOMUNIDADGENERAL">manage-community-general</Resource>
     <Resource tag="POLITICACOMUNIDAD">certificates-policy</Resource>
-    <Resource tag="ADMINISTRARPLANTILLASCOM">manage-templates</Resource>
     <Resource tag="QUIEROTWITTEAR">tweet</Resource>
     <Resource tag="VERBIO">see-bio</Resource>
     <Resource tag="ENVIOTWITTERCORRECTO">twitterok</Resource>

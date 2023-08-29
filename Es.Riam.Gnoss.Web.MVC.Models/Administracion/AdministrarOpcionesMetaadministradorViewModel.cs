@@ -367,14 +367,17 @@ namespace Es.Riam.Gnoss.Web.MVC.Models.Administracion
         /// </summary>
         public int FilasPorPagina { get; set; }
         /// <summary>
-        /// Indica si se debe usar la misma variable para entidades en facetas
-        /// Si su valor es 1, siempre que se haga referencia a una entidad en una consulta de facetas, la variable usada será la misma.
+        /// Indica si en la comunidad siendo privada se puede registrar la gente libremente
         /// </summary>
         public bool RegistroAbiertoEnComunidad { get; set; }
         /// <summary>
         /// Indica si se puden permitir las mayúsculas en el grafo de búsqueda
         /// </summary>
         public bool PermitirMayusculas { get; set; }
-
+        /// <summary>
+        /// Indica si se debe usar la misma variable para entidades en facetas
+        /// Si su valor es 1, siempre que se haga referencia a una entidad en una consulta de facetas, la variable usada será la misma.
+        /// </summary>
+        public bool UsarMismsaVariablesParaEntidadesEnFacetas { get; set; }
     }
 }

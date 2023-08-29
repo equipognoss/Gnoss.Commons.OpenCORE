@@ -6,6 +6,8 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Oracle.EntityFrameworkCore.Metadata;
 
+#nullable disable
+
 namespace Es.Riam.Gnoss.AD.Migrations.EntityContextOracleMigrations
 {
     [DbContext(typeof(EntityContextOracle))]
@@ -15,20 +17,24 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextOracleMigrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("Relational:MaxIdentifierLength", 128)
-                .HasAnnotation("ProductVersion", "5.0.10")
-                .HasAnnotation("Oracle:ValueGenerationStrategy", OracleValueGenerationStrategy.IdentityColumn);
+                .HasAnnotation("ProductVersion", "6.0.20")
+                .HasAnnotation("Relational:MaxIdentifierLength", 128);
+
+            OracleModelBuilderExtensions.UseIdentityColumns(modelBuilder, 1L, 1);
 
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.AccionesExternas", b =>
                 {
                     b.Property<short>("TipoAccion")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("NUMBER(5)")
-                        .HasAnnotation("Oracle:ValueGenerationStrategy", OracleValueGenerationStrategy.IdentityColumn);
+                        .HasColumnOrder(0);
+
+                    OraclePropertyBuilderExtensions.UseIdentityColumn(b.Property<short>("TipoAccion"), 1L, 1);
 
                     b.Property<string>("URL")
                         .IsRequired()
-                        .HasColumnType("NVARCHAR2(2000)");
+                        .HasColumnType("NVARCHAR2(2000)")
+                        .HasColumnOrder(1);
 
                     b.HasKey("TipoAccion");
 
@@ -39,16 +45,20 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextOracleMigrations
                 {
                     b.Property<string>("Dominio")
                         .HasMaxLength(250)
-                        .HasColumnType("NVARCHAR2(250)");
+                        .HasColumnType("NVARCHAR2(250)")
+                        .HasColumnOrder(0);
 
                     b.Property<Guid>("ImplementationKey")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(1);
 
                     b.Property<int>("UbicacionLogs")
-                        .HasColumnType("NUMBER(10)");
+                        .HasColumnType("NUMBER(10)")
+                        .HasColumnOrder(2);
 
                     b.Property<int>("UbicacionTrazas")
-                        .HasColumnType("NUMBER(10)");
+                        .HasColumnType("NUMBER(10)")
+                        .HasColumnOrder(3);
 
                     b.HasKey("Dominio");
 
@@ -60,33 +70,42 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextOracleMigrations
                     b.Property<short>("NumConexion")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("NUMBER(5)")
-                        .HasAnnotation("Oracle:ValueGenerationStrategy", OracleValueGenerationStrategy.IdentityColumn);
+                        .HasColumnOrder(0);
+
+                    OraclePropertyBuilderExtensions.UseIdentityColumn(b.Property<short>("NumConexion"), 1L, 1);
 
                     b.Property<int?>("ConectionTimeout")
-                        .HasColumnType("NUMBER(10)");
+                        .HasColumnType("NUMBER(10)")
+                        .HasColumnOrder(7);
 
                     b.Property<string>("Conexion")
                         .IsRequired()
                         .HasMaxLength(1000)
-                        .HasColumnType("NVARCHAR2(1000)");
+                        .HasColumnType("NVARCHAR2(1000)")
+                        .HasColumnOrder(3);
 
                     b.Property<string>("DatosExtra")
                         .HasMaxLength(100)
-                        .HasColumnType("NVARCHAR2(100)");
+                        .HasColumnType("NVARCHAR2(100)")
+                        .HasColumnOrder(4);
 
                     b.Property<bool>("EsMaster")
-                        .HasColumnType("NUMBER(1)");
+                        .HasColumnType("NUMBER(1)")
+                        .HasColumnOrder(5);
 
                     b.Property<bool>("LecturaPermitida")
-                        .HasColumnType("NUMBER(1)");
+                        .HasColumnType("NUMBER(1)")
+                        .HasColumnOrder(6);
 
                     b.Property<string>("NombreConexion")
                         .IsRequired()
                         .HasMaxLength(100)
-                        .HasColumnType("NVARCHAR2(100)");
+                        .HasColumnType("NVARCHAR2(100)")
+                        .HasColumnOrder(1);
 
                     b.Property<short>("TipoConexion")
-                        .HasColumnType("NUMBER(5)");
+                        .HasColumnType("NUMBER(5)")
+                        .HasColumnOrder(2);
 
                     b.HasKey("NumConexion");
 
@@ -98,17 +117,21 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextOracleMigrations
                     b.Property<short>("NumServicio")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("NUMBER(5)")
-                        .HasAnnotation("Oracle:ValueGenerationStrategy", OracleValueGenerationStrategy.IdentityColumn);
+                        .HasColumnOrder(0);
+
+                    OraclePropertyBuilderExtensions.UseIdentityColumn(b.Property<short>("NumServicio"), 1L, 1);
 
                     b.Property<string>("Nombre")
                         .IsRequired()
                         .HasMaxLength(100)
-                        .HasColumnType("NVARCHAR2(100)");
+                        .HasColumnType("NVARCHAR2(100)")
+                        .HasColumnOrder(2);
 
                     b.Property<string>("Url")
                         .IsRequired()
                         .HasMaxLength(1000)
-                        .HasColumnType("NVARCHAR2(1000)");
+                        .HasColumnType("NVARCHAR2(1000)")
+                        .HasColumnOrder(3);
 
                     b.HasKey("NumServicio");
 
@@ -120,22 +143,27 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextOracleMigrations
                     b.Property<short>("NumServicio")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("NUMBER(5)")
-                        .HasAnnotation("Oracle:ValueGenerationStrategy", OracleValueGenerationStrategy.IdentityColumn);
+                        .HasColumnOrder(0);
+
+                    OraclePropertyBuilderExtensions.UseIdentityColumn(b.Property<short>("NumServicio"), 1L, 1);
 
                     b.Property<string>("Dominio")
                         .IsRequired()
                         .HasMaxLength(100)
-                        .HasColumnType("NVARCHAR2(100)");
+                        .HasColumnType("NVARCHAR2(100)")
+                        .HasColumnOrder(1);
 
                     b.Property<string>("Nombre")
                         .IsRequired()
                         .HasMaxLength(100)
-                        .HasColumnType("NVARCHAR2(100)");
+                        .HasColumnType("NVARCHAR2(100)")
+                        .HasColumnOrder(2);
 
                     b.Property<string>("Url")
                         .IsRequired()
                         .HasMaxLength(1000)
-                        .HasColumnType("NVARCHAR2(1000)");
+                        .HasColumnType("NVARCHAR2(1000)")
+                        .HasColumnOrder(3);
 
                     b.HasKey("NumServicio");
 
@@ -147,20 +175,25 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextOracleMigrations
                     b.Property<short>("NumServicio")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("NUMBER(5)")
-                        .HasAnnotation("Oracle:ValueGenerationStrategy", OracleValueGenerationStrategy.IdentityColumn);
+                        .HasColumnOrder(0);
+
+                    OraclePropertyBuilderExtensions.UseIdentityColumn(b.Property<short>("NumServicio"), 1L, 1);
 
                     b.Property<string>("Nombre")
                         .IsRequired()
                         .HasMaxLength(100)
-                        .HasColumnType("NVARCHAR2(100)");
+                        .HasColumnType("NVARCHAR2(100)")
+                        .HasColumnOrder(2);
 
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(1);
 
                     b.Property<string>("Url")
                         .IsRequired()
                         .HasMaxLength(1000)
-                        .HasColumnType("NVARCHAR2(1000)");
+                        .HasColumnType("NVARCHAR2(1000)")
+                        .HasColumnOrder(3);
 
                     b.HasKey("NumServicio");
 
@@ -248,13 +281,16 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextOracleMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Blog.BlogAgCatTesauro", b =>
                 {
                     b.Property<Guid>("TesauroID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(0);
 
                     b.Property<Guid>("CategoriaTesauroID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(1);
 
                     b.Property<Guid>("BlogID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(2);
 
                     b.Property<DateTime>("Fecha")
                         .HasColumnType("TIMESTAMP(7)");
@@ -269,13 +305,16 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextOracleMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Blog.BlogComunidad", b =>
                 {
                     b.Property<Guid>("BlogID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(0);
 
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(1);
 
                     b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(2);
 
                     b.Property<bool>("Compartido")
                         .HasColumnType("NUMBER(1)");
@@ -288,10 +327,12 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextOracleMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Blog.EntradaBlog", b =>
                 {
                     b.Property<Guid>("BlogID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(0);
 
                     b.Property<Guid>("EntradaBlogID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(1);
 
                     b.Property<Guid>("AutorID")
                         .HasColumnType("RAW(16)");
@@ -331,264 +372,6 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextOracleMigrations
                     b.HasKey("BlogID", "EntradaBlogID");
 
                     b.ToTable("EntradaBlog");
-                });
-
-            modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.CMS.CMSBloque", b =>
-                {
-                    b.Property<Guid>("BloqueID")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("RAW(16)");
-
-                    b.Property<Guid?>("BloquePadreID")
-                        .HasColumnType("RAW(16)");
-
-                    b.Property<bool>("Borrador")
-                        .HasColumnType("NUMBER(1)");
-
-                    b.Property<string>("Estilos")
-                        .HasColumnType("NVARCHAR2(2000)");
-
-                    b.Property<short>("Orden")
-                        .HasColumnType("NUMBER(5)");
-
-                    b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("RAW(16)");
-
-                    b.Property<Guid>("ProyectoID")
-                        .HasColumnType("RAW(16)");
-
-                    b.Property<short>("Ubicacion")
-                        .HasColumnType("NUMBER(5)");
-
-                    b.HasKey("BloqueID");
-
-                    b.HasIndex("OrganizacionID", "ProyectoID", "Ubicacion");
-
-                    b.ToTable("CMSBloque");
-                });
-
-            modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.CMS.CMSBloqueComponente", b =>
-                {
-                    b.Property<Guid>("BloqueID")
-                        .HasColumnType("RAW(16)");
-
-                    b.Property<Guid>("ComponenteID")
-                        .HasColumnType("RAW(16)");
-
-                    b.Property<short>("Orden")
-                        .HasColumnType("NUMBER(5)");
-
-                    b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("RAW(16)");
-
-                    b.Property<Guid>("ProyectoID")
-                        .HasColumnType("RAW(16)");
-
-                    b.HasKey("BloqueID", "ComponenteID");
-
-                    b.HasIndex("ComponenteID");
-
-                    b.ToTable("CMSBloqueComponente");
-                });
-
-            modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.CMS.CMSBloqueComponentePropiedadComponente", b =>
-                {
-                    b.Property<Guid>("BloqueID")
-                        .HasColumnType("RAW(16)");
-
-                    b.Property<Guid>("ComponenteID")
-                        .HasColumnType("RAW(16)");
-
-                    b.Property<short>("TipoPropiedadComponente")
-                        .HasColumnType("NUMBER(5)");
-
-                    b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("RAW(16)");
-
-                    b.Property<Guid>("ProyectoID")
-                        .HasColumnType("RAW(16)");
-
-                    b.Property<string>("ValorPropiedad")
-                        .IsRequired()
-                        .HasColumnType("NVARCHAR2(2000)");
-
-                    b.HasKey("BloqueID", "ComponenteID", "TipoPropiedadComponente");
-
-                    b.ToTable("CMSBloqueComponentePropiedadComponente");
-                });
-
-            modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.CMS.CMSComponente", b =>
-                {
-                    b.Property<Guid>("ComponenteID")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("RAW(16)");
-
-                    b.Property<bool>("AccesoPublico")
-                        .HasColumnType("NUMBER(1)");
-
-                    b.Property<bool>("Activo")
-                        .HasColumnType("NUMBER(1)");
-
-                    b.Property<string>("Estilos")
-                        .HasColumnType("NVARCHAR2(2000)");
-
-                    b.Property<DateTime?>("FechaUltimaActualizacion")
-                        .HasColumnType("TIMESTAMP(7)");
-
-                    b.Property<string>("IdiomasDisponibles")
-                        .IsUnicode(false)
-                        .HasColumnType("VARCHAR2(4000)");
-
-                    b.Property<string>("Nombre")
-                        .IsRequired()
-                        .HasColumnType("NVARCHAR2(2000)");
-
-                    b.Property<string>("NombreCortoComponente")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .IsUnicode(false)
-                        .HasColumnType("VARCHAR2(100)");
-
-                    b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("RAW(16)");
-
-                    b.Property<Guid>("ProyectoID")
-                        .HasColumnType("RAW(16)");
-
-                    b.Property<short>("TipoCaducidadComponente")
-                        .HasColumnType("NUMBER(5)");
-
-                    b.Property<short>("TipoComponente")
-                        .HasColumnType("NUMBER(5)");
-
-                    b.HasKey("ComponenteID");
-
-                    b.ToTable("CMSComponente");
-                });
-
-            modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.CMS.CMSComponentePrivadoProyecto", b =>
-                {
-                    b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("RAW(16)");
-
-                    b.Property<Guid>("ProyectoID")
-                        .HasColumnType("RAW(16)");
-
-                    b.Property<short>("TipoComponente")
-                        .HasColumnType("NUMBER(5)");
-
-                    b.HasKey("OrganizacionID", "ProyectoID", "TipoComponente");
-
-                    b.ToTable("CMSComponentePrivadoProyecto");
-                });
-
-            modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.CMS.CMSComponenteRolGrupoIdentidades", b =>
-                {
-                    b.Property<Guid>("ComponenteID")
-                        .HasColumnType("RAW(16)");
-
-                    b.Property<Guid>("GrupoID")
-                        .HasColumnType("RAW(16)");
-
-                    b.HasKey("ComponenteID", "GrupoID");
-
-                    b.ToTable("CMSComponenteRolGrupoIdentidades");
-                });
-
-            modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.CMS.CMSComponenteRolIdentidad", b =>
-                {
-                    b.Property<Guid>("ComponenteID")
-                        .HasColumnType("RAW(16)");
-
-                    b.Property<Guid>("PerfilID")
-                        .HasColumnType("RAW(16)");
-
-                    b.HasKey("ComponenteID", "PerfilID");
-
-                    b.ToTable("CMSComponenteRolIdentidad");
-                });
-
-            modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.CMS.CMSPagina", b =>
-                {
-                    b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("RAW(16)");
-
-                    b.Property<Guid>("ProyectoID")
-                        .HasColumnType("RAW(16)");
-
-                    b.Property<short>("Ubicacion")
-                        .HasColumnType("NUMBER(5)");
-
-                    b.Property<bool>("Activa")
-                        .HasColumnType("NUMBER(1)");
-
-                    b.Property<string>("HTMLAlternativo")
-                        .HasColumnType("NVARCHAR2(2000)");
-
-                    b.Property<bool>("MostrarSoloCuerpo")
-                        .HasColumnType("NUMBER(1)");
-
-                    b.Property<short>("Privacidad")
-                        .HasColumnType("NUMBER(5)");
-
-                    b.HasKey("OrganizacionID", "ProyectoID", "Ubicacion");
-
-                    b.ToTable("CMSPagina");
-                });
-
-            modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.CMS.CMSPropiedadComponente", b =>
-                {
-                    b.Property<Guid>("ComponenteID")
-                        .HasColumnType("RAW(16)");
-
-                    b.Property<short>("TipoPropiedadComponente")
-                        .HasColumnType("NUMBER(5)");
-
-                    b.Property<string>("ValorPropiedad")
-                        .IsRequired()
-                        .HasColumnType("NVARCHAR2(2000)");
-
-                    b.HasKey("ComponenteID", "TipoPropiedadComponente");
-
-                    b.ToTable("CMSPropiedadComponente");
-                });
-
-            modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.CMS.CMSRolGrupoIdentidades", b =>
-                {
-                    b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("RAW(16)");
-
-                    b.Property<Guid>("ProyectoID")
-                        .HasColumnType("RAW(16)");
-
-                    b.Property<short>("Ubicacion")
-                        .HasColumnType("NUMBER(5)");
-
-                    b.Property<Guid>("GrupoID")
-                        .HasColumnType("RAW(16)");
-
-                    b.HasKey("OrganizacionID", "ProyectoID", "Ubicacion", "GrupoID");
-
-                    b.ToTable("CMSRolGrupoIdentidades");
-                });
-
-            modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.CMS.CMSRolIdentidad", b =>
-                {
-                    b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("RAW(16)");
-
-                    b.Property<Guid>("ProyectoID")
-                        .HasColumnType("RAW(16)");
-
-                    b.Property<short>("Ubicacion")
-                        .HasColumnType("NUMBER(5)");
-
-                    b.Property<Guid>("PerfilID")
-                        .HasColumnType("RAW(16)");
-
-                    b.HasKey("OrganizacionID", "ProyectoID", "Ubicacion", "PerfilID");
-
-                    b.ToTable("CMSRolIdentidad");
                 });
 
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Carga.Carga", b =>
@@ -673,6 +456,289 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextOracleMigrations
                     b.ToTable("CargaPaquete");
                 });
 
+            modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.CMS.CMSBloque", b =>
+                {
+                    b.Property<Guid>("BloqueID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("RAW(16)");
+
+                    b.Property<Guid?>("BloquePadreID")
+                        .HasColumnType("RAW(16)");
+
+                    b.Property<bool>("Borrador")
+                        .HasColumnType("NUMBER(1)");
+
+                    b.Property<string>("Estilos")
+                        .HasColumnType("NVARCHAR2(2000)");
+
+                    b.Property<short>("Orden")
+                        .HasColumnType("NUMBER(5)");
+
+                    b.Property<Guid>("OrganizacionID")
+                        .HasColumnType("RAW(16)");
+
+                    b.Property<Guid>("ProyectoID")
+                        .HasColumnType("RAW(16)");
+
+                    b.Property<short>("Ubicacion")
+                        .HasColumnType("NUMBER(5)");
+
+                    b.HasKey("BloqueID");
+
+                    b.HasIndex("OrganizacionID", "ProyectoID", "Ubicacion");
+
+                    b.ToTable("CMSBloque");
+                });
+
+            modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.CMS.CMSBloqueComponente", b =>
+                {
+                    b.Property<Guid>("BloqueID")
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(0);
+
+                    b.Property<Guid>("ComponenteID")
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(1);
+
+                    b.Property<short>("Orden")
+                        .HasColumnType("NUMBER(5)");
+
+                    b.Property<Guid>("OrganizacionID")
+                        .HasColumnType("RAW(16)");
+
+                    b.Property<Guid>("ProyectoID")
+                        .HasColumnType("RAW(16)");
+
+                    b.HasKey("BloqueID", "ComponenteID");
+
+                    b.HasIndex("ComponenteID");
+
+                    b.ToTable("CMSBloqueComponente");
+                });
+
+            modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.CMS.CMSBloqueComponentePropiedadComponente", b =>
+                {
+                    b.Property<Guid>("BloqueID")
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(0);
+
+                    b.Property<Guid>("ComponenteID")
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(1);
+
+                    b.Property<short>("TipoPropiedadComponente")
+                        .HasColumnType("NUMBER(5)")
+                        .HasColumnOrder(2);
+
+                    b.Property<Guid>("OrganizacionID")
+                        .HasColumnType("RAW(16)");
+
+                    b.Property<Guid>("ProyectoID")
+                        .HasColumnType("RAW(16)");
+
+                    b.Property<string>("ValorPropiedad")
+                        .IsRequired()
+                        .HasColumnType("NVARCHAR2(2000)");
+
+                    b.HasKey("BloqueID", "ComponenteID", "TipoPropiedadComponente");
+
+                    b.ToTable("CMSBloqueComponentePropiedadComponente");
+                });
+
+            modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.CMS.CMSComponente", b =>
+                {
+                    b.Property<Guid>("ComponenteID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("RAW(16)");
+
+                    b.Property<bool>("AccesoPublico")
+                        .HasColumnType("NUMBER(1)");
+
+                    b.Property<bool>("Activo")
+                        .HasColumnType("NUMBER(1)");
+
+                    b.Property<string>("Estilos")
+                        .HasColumnType("NVARCHAR2(2000)");
+
+                    b.Property<DateTime?>("FechaUltimaActualizacion")
+                        .HasColumnType("TIMESTAMP(7)");
+
+                    b.Property<string>("IdiomasDisponibles")
+                        .IsUnicode(false)
+                        .HasColumnType("VARCHAR2(4000)");
+
+                    b.Property<string>("Nombre")
+                        .IsRequired()
+                        .HasColumnType("NVARCHAR2(2000)");
+
+                    b.Property<string>("NombreCortoComponente")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .IsUnicode(false)
+                        .HasColumnType("VARCHAR2(100)");
+
+                    b.Property<Guid>("OrganizacionID")
+                        .HasColumnType("RAW(16)");
+
+                    b.Property<Guid>("ProyectoID")
+                        .HasColumnType("RAW(16)");
+
+                    b.Property<short>("TipoCaducidadComponente")
+                        .HasColumnType("NUMBER(5)");
+
+                    b.Property<short>("TipoComponente")
+                        .HasColumnType("NUMBER(5)");
+
+                    b.HasKey("ComponenteID");
+
+                    b.ToTable("CMSComponente");
+                });
+
+            modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.CMS.CMSComponentePrivadoProyecto", b =>
+                {
+                    b.Property<Guid>("OrganizacionID")
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(0);
+
+                    b.Property<Guid>("ProyectoID")
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(1);
+
+                    b.Property<short>("TipoComponente")
+                        .HasColumnType("NUMBER(5)")
+                        .HasColumnOrder(2);
+
+                    b.HasKey("OrganizacionID", "ProyectoID", "TipoComponente");
+
+                    b.ToTable("CMSComponentePrivadoProyecto");
+                });
+
+            modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.CMS.CMSComponenteRolGrupoIdentidades", b =>
+                {
+                    b.Property<Guid>("ComponenteID")
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(0);
+
+                    b.Property<Guid>("GrupoID")
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(1);
+
+                    b.HasKey("ComponenteID", "GrupoID");
+
+                    b.ToTable("CMSComponenteRolGrupoIdentidades");
+                });
+
+            modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.CMS.CMSComponenteRolIdentidad", b =>
+                {
+                    b.Property<Guid>("ComponenteID")
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(0);
+
+                    b.Property<Guid>("PerfilID")
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(1);
+
+                    b.HasKey("ComponenteID", "PerfilID");
+
+                    b.ToTable("CMSComponenteRolIdentidad");
+                });
+
+            modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.CMS.CMSPagina", b =>
+                {
+                    b.Property<Guid>("OrganizacionID")
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(0);
+
+                    b.Property<Guid>("ProyectoID")
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(1);
+
+                    b.Property<short>("Ubicacion")
+                        .HasColumnType("NUMBER(5)")
+                        .HasColumnOrder(2);
+
+                    b.Property<bool>("Activa")
+                        .HasColumnType("NUMBER(1)");
+
+                    b.Property<string>("HTMLAlternativo")
+                        .HasColumnType("NVARCHAR2(2000)");
+
+                    b.Property<bool>("MostrarSoloCuerpo")
+                        .HasColumnType("NUMBER(1)");
+
+                    b.Property<short>("Privacidad")
+                        .HasColumnType("NUMBER(5)");
+
+                    b.HasKey("OrganizacionID", "ProyectoID", "Ubicacion");
+
+                    b.ToTable("CMSPagina");
+                });
+
+            modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.CMS.CMSPropiedadComponente", b =>
+                {
+                    b.Property<Guid>("ComponenteID")
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(0);
+
+                    b.Property<short>("TipoPropiedadComponente")
+                        .HasColumnType("NUMBER(5)")
+                        .HasColumnOrder(1);
+
+                    b.Property<string>("ValorPropiedad")
+                        .IsRequired()
+                        .HasColumnType("NVARCHAR2(2000)");
+
+                    b.HasKey("ComponenteID", "TipoPropiedadComponente");
+
+                    b.ToTable("CMSPropiedadComponente");
+                });
+
+            modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.CMS.CMSRolGrupoIdentidades", b =>
+                {
+                    b.Property<Guid>("OrganizacionID")
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(0);
+
+                    b.Property<Guid>("ProyectoID")
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(1);
+
+                    b.Property<short>("Ubicacion")
+                        .HasColumnType("NUMBER(5)")
+                        .HasColumnOrder(2);
+
+                    b.Property<Guid>("GrupoID")
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(3);
+
+                    b.HasKey("OrganizacionID", "ProyectoID", "Ubicacion", "GrupoID");
+
+                    b.ToTable("CMSRolGrupoIdentidades");
+                });
+
+            modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.CMS.CMSRolIdentidad", b =>
+                {
+                    b.Property<Guid>("OrganizacionID")
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(0);
+
+                    b.Property<Guid>("ProyectoID")
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(1);
+
+                    b.Property<short>("Ubicacion")
+                        .HasColumnType("NUMBER(5)")
+                        .HasColumnOrder(2);
+
+                    b.Property<Guid>("PerfilID")
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(3);
+
+                    b.HasKey("OrganizacionID", "ProyectoID", "Ubicacion", "PerfilID");
+
+                    b.ToTable("CMSRolIdentidad");
+                });
+
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Comentario.Comentario", b =>
                 {
                     b.Property<Guid>("ComentarioID")
@@ -705,13 +771,16 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextOracleMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Comentario.ComentarioBlog", b =>
                 {
                     b.Property<Guid>("ComentarioID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(0);
 
                     b.Property<Guid>("BlogID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(1);
 
                     b.Property<Guid>("EntradaBlogID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(2);
 
                     b.HasKey("ComentarioID", "BlogID", "EntradaBlogID");
 
@@ -721,10 +790,12 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextOracleMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Comentario.ComentarioCuestion", b =>
                 {
                     b.Property<Guid>("ComentarioID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(0);
 
                     b.Property<Guid>("CuestionID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(1);
 
                     b.HasKey("ComentarioID", "CuestionID");
 
@@ -734,10 +805,12 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextOracleMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Comentario.VotoComentario", b =>
                 {
                     b.Property<Guid>("VotoID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(0);
 
                     b.Property<Guid>("ComentarioID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(1);
 
                     b.HasKey("VotoID", "ComentarioID");
 
@@ -786,17 +859,21 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextOracleMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.ComparticionAutomatica.ComparticionAutomaticaMapping", b =>
                 {
                     b.Property<Guid>("ComparticionID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(0);
 
                     b.Property<string>("ReglaMapping")
                         .HasMaxLength(200)
-                        .HasColumnType("NVARCHAR2(200)");
+                        .HasColumnType("NVARCHAR2(200)")
+                        .HasColumnOrder(1);
 
                     b.Property<Guid>("TesauroID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(2);
 
                     b.Property<Guid>("CategoriaTesauroID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(3);
 
                     b.Property<int>("GrupoMapping")
                         .HasColumnType("NUMBER(10)");
@@ -809,11 +886,13 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextOracleMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.ComparticionAutomatica.ComparticionAutomaticaReglas", b =>
                 {
                     b.Property<Guid>("ComparticionID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(0);
 
                     b.Property<string>("Regla")
                         .HasMaxLength(200)
-                        .HasColumnType("NVARCHAR2(200)");
+                        .HasColumnType("NVARCHAR2(200)")
+                        .HasColumnOrder(1);
 
                     b.Property<string>("Navegacion")
                         .IsRequired()
@@ -878,7 +957,8 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextOracleMigrations
                 {
                     b.Property<Guid>("CategoriaID")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(0);
 
                     b.Property<string>("Descripcion")
                         .HasColumnType("NVARCHAR2(2000)");
@@ -910,7 +990,8 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextOracleMigrations
                 {
                     b.Property<Guid>("CookieID")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(0);
 
                     b.Property<Guid>("CategoriaID")
                         .HasColumnType("RAW(16)");
@@ -950,10 +1031,12 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextOracleMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Documentacion.AtributoFichaBibliografica", b =>
                 {
                     b.Property<Guid>("AtributoID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(0);
 
                     b.Property<Guid>("FichaBibliograficaID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(1);
 
                     b.Property<string>("Descripcion")
                         .HasMaxLength(1000)
@@ -994,10 +1077,12 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextOracleMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Documentacion.BaseRecursosOrganizacion", b =>
                 {
                     b.Property<Guid>("BaseRecursosID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(0);
 
                     b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(1);
 
                     b.Property<double?>("EspacioActualMyGnossMB")
                         .HasColumnType("BINARY_DOUBLE");
@@ -1015,13 +1100,16 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextOracleMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Documentacion.BaseRecursosProyecto", b =>
                 {
                     b.Property<Guid>("BaseRecursosID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(0);
 
                     b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(1);
 
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(2);
 
                     b.HasKey("BaseRecursosID", "OrganizacionID", "ProyectoID");
 
@@ -1031,10 +1119,12 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextOracleMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Documentacion.BaseRecursosUsuario", b =>
                 {
                     b.Property<Guid>("BaseRecursosID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(0);
 
                     b.Property<Guid>("UsuarioID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(1);
 
                     b.Property<double?>("EspacioActualMyGnossMB")
                         .HasColumnType("BINARY_DOUBLE");
@@ -1053,8 +1143,9 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextOracleMigrations
                 {
                     b.Property<int>("ColaID")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("NUMBER(10)")
-                        .HasAnnotation("Oracle:ValueGenerationStrategy", OracleValueGenerationStrategy.IdentityColumn);
+                        .HasColumnType("NUMBER(10)");
+
+                    OraclePropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ColaID"), 1L, 1);
 
                     b.Property<short>("Estado")
                         .HasColumnType("NUMBER(5)");
@@ -1085,8 +1176,9 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextOracleMigrations
                 {
                     b.Property<int>("ID")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("NUMBER(10)")
-                        .HasAnnotation("Oracle:ValueGenerationStrategy", OracleValueGenerationStrategy.IdentityColumn);
+                        .HasColumnType("NUMBER(10)");
+
+                    OraclePropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ID"), 1L, 1);
 
                     b.Property<short>("AccionRealizada")
                         .HasColumnType("NUMBER(5)");
@@ -1244,13 +1336,16 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextOracleMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Documentacion.DocumentoAtributoBiblio", b =>
                 {
                     b.Property<Guid>("DocumentoID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(0);
 
                     b.Property<Guid>("AtributoID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(1);
 
                     b.Property<Guid>("FichaBibliograficaID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(2);
 
                     b.Property<string>("Valor")
                         .HasColumnType("NVARCHAR2(2000)");
@@ -1265,10 +1360,12 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextOracleMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Documentacion.DocumentoComentario", b =>
                 {
                     b.Property<Guid>("ComentarioID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(0);
 
                     b.Property<Guid>("DocumentoID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(1);
 
                     b.Property<Guid?>("ProyectoID")
                         .HasColumnType("RAW(16)");
@@ -1298,19 +1395,24 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextOracleMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Documentacion.DocumentoEntidadGnoss", b =>
                 {
                     b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(0);
 
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(1);
 
                     b.Property<Guid>("EntidadGnossID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(2);
 
                     b.Property<Guid>("DocumentoID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(3);
 
                     b.Property<Guid>("CategoriaDocumentacionID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(4);
 
                     b.HasKey("OrganizacionID", "ProyectoID", "EntidadGnossID", "DocumentoID", "CategoriaDocumentacionID");
 
@@ -1320,13 +1422,16 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextOracleMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Documentacion.DocumentoEnvioNewsLetter", b =>
                 {
                     b.Property<Guid>("DocumentoID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(0);
 
                     b.Property<Guid>("IdentidadID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(1);
 
                     b.Property<DateTime>("Fecha")
-                        .HasColumnType("TIMESTAMP(7)");
+                        .HasColumnType("TIMESTAMP(7)")
+                        .HasColumnOrder(2);
 
                     b.Property<bool>("EnvioRealizado")
                         .HasColumnType("NUMBER(1)");
@@ -1350,10 +1455,12 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextOracleMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Documentacion.DocumentoGrupoUsuario", b =>
                 {
                     b.Property<Guid>("DocumentoID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(0);
 
                     b.Property<Guid>("GrupoUsuarioID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(1);
 
                     b.Property<bool>("Editor")
                         .HasColumnType("NUMBER(1)");
@@ -1451,10 +1558,12 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextOracleMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Documentacion.DocumentoRespuestaVoto", b =>
                 {
                     b.Property<Guid>("DocumentoID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(0);
 
                     b.Property<Guid>("IdentidadID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(1);
 
                     b.Property<Guid>("RespuestaID")
                         .HasColumnType("RAW(16)");
@@ -1469,10 +1578,12 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextOracleMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Documentacion.DocumentoRolGrupoIdentidades", b =>
                 {
                     b.Property<Guid>("DocumentoID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(0);
 
                     b.Property<Guid>("GrupoID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(1);
 
                     b.Property<bool>("Editor")
                         .HasColumnType("NUMBER(1)");
@@ -1485,10 +1596,12 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextOracleMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Documentacion.DocumentoRolIdentidad", b =>
                 {
                     b.Property<Guid>("DocumentoID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(0);
 
                     b.Property<Guid>("PerfilID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(1);
 
                     b.Property<bool>("Editor")
                         .HasColumnType("NUMBER(1)");
@@ -1501,13 +1614,16 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextOracleMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Documentacion.DocumentoTipologia", b =>
                 {
                     b.Property<Guid>("DocumentoID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(0);
 
                     b.Property<Guid>("TipologiaID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(1);
 
                     b.Property<Guid>("AtributoID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(2);
 
                     b.Property<string>("Valor")
                         .HasColumnType("NVARCHAR2(2000)");
@@ -1602,10 +1718,12 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextOracleMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Documentacion.DocumentoVincDoc", b =>
                 {
                     b.Property<Guid>("DocumentoID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(0);
 
                     b.Property<Guid>("DocumentoVincID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(1);
 
                     b.Property<DateTime>("Fecha")
                         .HasColumnType("TIMESTAMP(7)");
@@ -1623,16 +1741,20 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextOracleMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Documentacion.DocumentoWebAgCatTesauro", b =>
                 {
                     b.Property<Guid>("TesauroID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(0);
 
                     b.Property<Guid>("CategoriaTesauroID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(1);
 
                     b.Property<Guid>("BaseRecursosID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(2);
 
                     b.Property<Guid>("DocumentoID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(3);
 
                     b.Property<DateTime?>("Fecha")
                         .HasColumnType("TIMESTAMP(7)");
@@ -1645,10 +1767,12 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextOracleMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Documentacion.DocumentoWebVinBaseRecursos", b =>
                 {
                     b.Property<Guid>("DocumentoID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(0);
 
                     b.Property<Guid>("BaseRecursosID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(1);
 
                     b.Property<bool?>("Compartido")
                         .HasColumnType("NUMBER(1)");
@@ -1741,10 +1865,12 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextOracleMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Documentacion.DocumentoWebVinBaseRecursosExtra", b =>
                 {
                     b.Property<Guid>("DocumentoID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(0);
 
                     b.Property<Guid>("BaseRecursosID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(1);
 
                     b.Property<DateTime?>("FechaUltimaVisita")
                         .HasColumnType("TIMESTAMP(7)");
@@ -1817,10 +1943,12 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextOracleMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Documentacion.ResultadoSuscripcion", b =>
                 {
                     b.Property<Guid>("SuscripcionID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(0);
 
                     b.Property<Guid>("RecursoID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(1);
 
                     b.Property<Guid?>("AutorID")
                         .HasColumnType("RAW(16)");
@@ -1876,10 +2004,12 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextOracleMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Documentacion.Tipologia", b =>
                 {
                     b.Property<Guid>("TipologiaID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(0);
 
                     b.Property<Guid>("AtributoID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(1);
 
                     b.Property<string>("Descripcion")
                         .HasMaxLength(1000)
@@ -1929,10 +2059,12 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextOracleMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Documentacion.VotoDocumento", b =>
                 {
                     b.Property<Guid>("DocumentoID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(0);
 
                     b.Property<Guid>("VotoID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(1);
 
                     b.Property<Guid?>("ProyectoID")
                         .HasColumnType("RAW(16)");
@@ -1963,13 +2095,16 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextOracleMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Faceta.FacetaConfigProyChart", b =>
                 {
                     b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(0);
 
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(1);
 
                     b.Property<Guid>("ChartID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(2);
 
                     b.Property<string>("FiltrosConsultaVirtuoso")
                         .IsRequired()
@@ -2005,10 +2140,12 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextOracleMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Faceta.FacetaConfigProyMapa", b =>
                 {
                     b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(0);
 
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(1);
 
                     b.Property<string>("ColorRuta")
                         .HasColumnType("NVARCHAR2(2000)");
@@ -2031,19 +2168,24 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextOracleMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Faceta.FacetaConfigProyRangoFecha", b =>
                 {
                     b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(0);
 
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(1);
 
                     b.Property<string>("PropiedadNueva")
-                        .HasColumnType("NVARCHAR2(450)");
+                        .HasColumnType("NVARCHAR2(450)")
+                        .HasColumnOrder(2);
 
                     b.Property<string>("PropiedadInicio")
-                        .HasColumnType("NVARCHAR2(450)");
+                        .HasColumnType("NVARCHAR2(450)")
+                        .HasColumnOrder(3);
 
                     b.Property<string>("PropiedadFin")
-                        .HasColumnType("NVARCHAR2(450)");
+                        .HasColumnType("NVARCHAR2(450)")
+                        .HasColumnOrder(4);
 
                     b.HasKey("OrganizacionID", "ProyectoID", "PropiedadNueva", "PropiedadInicio", "PropiedadFin");
 
@@ -2053,14 +2195,17 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextOracleMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Faceta.FacetaEntidadesExternas", b =>
                 {
                     b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(0);
 
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(1);
 
                     b.Property<string>("EntidadID")
                         .HasMaxLength(300)
-                        .HasColumnType("NVARCHAR2(300)");
+                        .HasColumnType("NVARCHAR2(300)")
+                        .HasColumnOrder(2);
 
                     b.Property<bool>("BuscarConRecursividad")
                         .HasColumnType("NUMBER(1)");
@@ -2081,14 +2226,17 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextOracleMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Faceta.FacetaExcluida", b =>
                 {
                     b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(0);
 
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(1);
 
                     b.Property<string>("Faceta")
                         .HasMaxLength(300)
-                        .HasColumnType("NVARCHAR2(300)");
+                        .HasColumnType("NVARCHAR2(300)")
+                        .HasColumnOrder(2);
 
                     b.HasKey("OrganizacionID", "ProyectoID", "Faceta");
 
@@ -2098,21 +2246,26 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextOracleMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Faceta.FacetaFiltroHome", b =>
                 {
                     b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(0);
 
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(1);
 
                     b.Property<string>("ObjetoConocimiento")
                         .HasMaxLength(50)
-                        .HasColumnType("NVARCHAR2(50)");
+                        .HasColumnType("NVARCHAR2(50)")
+                        .HasColumnOrder(2);
 
                     b.Property<string>("Faceta")
                         .HasMaxLength(300)
-                        .HasColumnType("NVARCHAR2(300)");
+                        .HasColumnType("NVARCHAR2(300)")
+                        .HasColumnOrder(3);
 
                     b.Property<short>("Orden")
-                        .HasColumnType("NUMBER(5)");
+                        .HasColumnType("NUMBER(5)")
+                        .HasColumnOrder(4);
 
                     b.Property<string>("Filtro")
                         .IsRequired()
@@ -2127,21 +2280,26 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextOracleMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Faceta.FacetaFiltroProyecto", b =>
                 {
                     b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(0);
 
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(1);
 
                     b.Property<string>("ObjetoConocimiento")
                         .HasMaxLength(50)
-                        .HasColumnType("NVARCHAR2(50)");
+                        .HasColumnType("NVARCHAR2(50)")
+                        .HasColumnOrder(2);
 
                     b.Property<string>("Faceta")
                         .HasMaxLength(300)
-                        .HasColumnType("NVARCHAR2(300)");
+                        .HasColumnType("NVARCHAR2(300)")
+                        .HasColumnOrder(3);
 
                     b.Property<short>("Orden")
-                        .HasColumnType("NUMBER(5)");
+                        .HasColumnType("NUMBER(5)")
+                        .HasColumnOrder(4);
 
                     b.Property<string>("Condicion")
                         .HasColumnType("NVARCHAR2(2000)");
@@ -2158,18 +2316,22 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextOracleMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Faceta.FacetaHome", b =>
                 {
                     b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(0);
 
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(1);
 
                     b.Property<string>("ObjetoConocimiento")
                         .HasMaxLength(50)
-                        .HasColumnType("NVARCHAR2(50)");
+                        .HasColumnType("NVARCHAR2(50)")
+                        .HasColumnOrder(2);
 
                     b.Property<string>("Faceta")
                         .HasMaxLength(300)
-                        .HasColumnType("NVARCHAR2(300)");
+                        .HasColumnType("NVARCHAR2(300)")
+                        .HasColumnOrder(3);
 
                     b.Property<string>("FacetaObjetoConocimientoProyectoFaceta")
                         .HasColumnType("NVARCHAR2(300)");
@@ -2204,18 +2366,22 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextOracleMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Faceta.FacetaMultiple", b =>
                 {
                     b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(0);
 
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(1);
 
                     b.Property<string>("ObjetoConocimiento")
                         .HasMaxLength(50)
-                        .HasColumnType("NVARCHAR2(50)");
+                        .HasColumnType("NVARCHAR2(50)")
+                        .HasColumnOrder(2);
 
                     b.Property<string>("Faceta")
                         .HasMaxLength(300)
-                        .HasColumnType("NVARCHAR2(300)");
+                        .HasColumnType("NVARCHAR2(300)")
+                        .HasColumnOrder(3);
 
                     b.Property<string>("Consulta")
                         .IsRequired()
@@ -2240,11 +2406,13 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextOracleMigrations
                 {
                     b.Property<string>("ObjetoConocimiento")
                         .HasMaxLength(50)
-                        .HasColumnType("NVARCHAR2(50)");
+                        .HasColumnType("NVARCHAR2(50)")
+                        .HasColumnOrder(0);
 
                     b.Property<string>("Faceta")
                         .HasMaxLength(300)
-                        .HasColumnType("NVARCHAR2(300)");
+                        .HasColumnType("NVARCHAR2(300)")
+                        .HasColumnOrder(1);
 
                     b.Property<short>("AlgoritmoTransformacion")
                         .HasColumnType("NUMBER(5)");
@@ -2292,18 +2460,22 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextOracleMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Faceta.FacetaObjetoConocimientoProyecto", b =>
                 {
                     b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(0);
 
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(1);
 
                     b.Property<string>("ObjetoConocimiento")
                         .HasMaxLength(50)
-                        .HasColumnType("NVARCHAR2(50)");
+                        .HasColumnType("NVARCHAR2(50)")
+                        .HasColumnOrder(2);
 
                     b.Property<string>("Faceta")
                         .HasMaxLength(300)
-                        .HasColumnType("NVARCHAR2(300)");
+                        .HasColumnType("NVARCHAR2(300)")
+                        .HasColumnOrder(3);
 
                     b.Property<Guid?>("AgrupacionID")
                         .HasColumnType("RAW(16)");
@@ -2390,21 +2562,26 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextOracleMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Faceta.FacetaObjetoConocimientoProyectoPestanya", b =>
                 {
                     b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(0);
 
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(1);
 
                     b.Property<string>("ObjetoConocimiento")
                         .HasMaxLength(50)
-                        .HasColumnType("NVARCHAR2(50)");
+                        .HasColumnType("NVARCHAR2(50)")
+                        .HasColumnOrder(2);
 
                     b.Property<string>("Faceta")
                         .HasMaxLength(300)
-                        .HasColumnType("NVARCHAR2(300)");
+                        .HasColumnType("NVARCHAR2(300)")
+                        .HasColumnOrder(3);
 
                     b.Property<Guid>("PestanyaID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(4);
 
                     b.HasKey("OrganizacionID", "ProyectoID", "ObjetoConocimiento", "Faceta", "PestanyaID");
 
@@ -2432,15 +2609,18 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextOracleMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Faceta.OntologiaProyecto", b =>
                 {
                     b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(0);
 
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(1);
 
                     b.Property<string>("OntologiaProyecto1")
                         .HasMaxLength(100)
                         .HasColumnType("NVARCHAR2(100)")
-                        .HasColumnName("OntologiaProyecto");
+                        .HasColumnName("OntologiaProyecto")
+                        .HasColumnOrder(2);
 
                     b.Property<bool>("CachearDatosSemanticos")
                         .HasColumnType("NUMBER(1)");
@@ -2474,13 +2654,16 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextOracleMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.GrupoOrgParticipaProy", b =>
                 {
                     b.Property<Guid>("GrupoID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(0);
 
                     b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(1);
 
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(2);
 
                     b.Property<DateTime>("FechaAlta")
                         .HasColumnType("TIMESTAMP(7)");
@@ -2496,10 +2679,12 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextOracleMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.IdentidadDS.Amigo", b =>
                 {
                     b.Property<Guid>("IdentidadAmigoID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(0);
 
                     b.Property<Guid>("IdentidadID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(1);
 
                     b.Property<bool>("EsFanMutuo")
                         .HasColumnType("NUMBER(1)");
@@ -2515,13 +2700,16 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextOracleMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.IdentidadDS.AmigoAgGrupo", b =>
                 {
                     b.Property<Guid>("GrupoID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(0);
 
                     b.Property<Guid>("IdentidadID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(1);
 
                     b.Property<Guid>("IdentidadAmigoID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(2);
 
                     b.Property<DateTime>("Fecha")
                         .HasColumnType("TIMESTAMP(7)");
@@ -2592,13 +2780,16 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextOracleMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.IdentidadDS.DatoExtraEcosistemaOpcionPerfil", b =>
                 {
                     b.Property<Guid>("DatoExtraID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(0);
 
                     b.Property<Guid>("OpcionID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(1);
 
                     b.Property<Guid>("PerfilID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(2);
 
                     b.HasKey("DatoExtraID", "OpcionID", "PerfilID");
 
@@ -2610,10 +2801,12 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextOracleMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.IdentidadDS.DatoExtraEcosistemaVirtuosoPerfil", b =>
                 {
                     b.Property<Guid>("DatoExtraID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(0);
 
                     b.Property<Guid>("PerfilID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(1);
 
                     b.Property<string>("Opcion")
                         .IsRequired()
@@ -2628,16 +2821,20 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextOracleMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.IdentidadDS.DatoExtraProyectoVirtuosoIdentidad", b =>
                 {
                     b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(0);
 
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(1);
 
                     b.Property<Guid>("DatoExtraID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(2);
 
                     b.Property<Guid>("IdentidadID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(3);
 
                     b.Property<string>("Opcion")
                         .IsRequired()
@@ -2722,10 +2919,12 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextOracleMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.IdentidadDS.GrupoIdentidadesOrganizacion", b =>
                 {
                     b.Property<Guid>("GrupoID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(0);
 
                     b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(1);
 
                     b.HasKey("GrupoID", "OrganizacionID");
 
@@ -2735,10 +2934,12 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextOracleMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.IdentidadDS.GrupoIdentidadesParticipacion", b =>
                 {
                     b.Property<Guid>("GrupoID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(0);
 
                     b.Property<Guid>("IdentidadID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(1);
 
                     b.Property<DateTime>("FechaAlta")
                         .HasColumnType("TIMESTAMP(7)");
@@ -2756,13 +2957,16 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextOracleMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.IdentidadDS.GrupoIdentidadesProyecto", b =>
                 {
                     b.Property<Guid>("GrupoID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(0);
 
                     b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(1);
 
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(2);
 
                     b.HasKey("GrupoID", "OrganizacionID", "ProyectoID");
 
@@ -2858,14 +3062,17 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextOracleMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.IdentidadDS.IdentidadContadoresRecursos", b =>
                 {
                     b.Property<Guid>("IdentidadID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(0);
 
                     b.Property<short>("Tipo")
-                        .HasColumnType("NUMBER(5)");
+                        .HasColumnType("NUMBER(5)")
+                        .HasColumnOrder(1);
 
                     b.Property<string>("NombreSem")
                         .HasMaxLength(200)
-                        .HasColumnType("NVARCHAR2(200)");
+                        .HasColumnType("NVARCHAR2(200)")
+                        .HasColumnOrder(2);
 
                     b.Property<int>("Comentarios")
                         .HasColumnType("NUMBER(10)");
@@ -2995,10 +3202,12 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextOracleMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.IdentidadDS.PerfilGadget", b =>
                 {
                     b.Property<Guid>("PerfilID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(0);
 
                     b.Property<Guid>("GadgetID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(1);
 
                     b.Property<string>("Contenido")
                         .IsRequired()
@@ -3020,10 +3229,12 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextOracleMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.IdentidadDS.PerfilOrganizacion", b =>
                 {
                     b.Property<Guid>("PerfilID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(1);
 
                     b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(0);
 
                     b.HasKey("PerfilID", "OrganizacionID");
 
@@ -3046,13 +3257,16 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextOracleMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.IdentidadDS.PerfilPersonaOrg", b =>
                 {
                     b.Property<Guid>("PersonaID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(0);
 
                     b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(1);
 
                     b.Property<Guid>("PerfilID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(2);
 
                     b.HasKey("PersonaID", "OrganizacionID", "PerfilID");
 
@@ -3064,10 +3278,12 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextOracleMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.IdentidadDS.PerfilRedesSociales", b =>
                 {
                     b.Property<Guid>("PerfilID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(0);
 
                     b.Property<string>("NombreRedSocial")
-                        .HasColumnType("NVARCHAR2(450)");
+                        .HasColumnType("NVARCHAR2(450)")
+                        .HasColumnOrder(1);
 
                     b.Property<string>("Token")
                         .HasColumnType("NVARCHAR2(2000)");
@@ -3089,13 +3305,16 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextOracleMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.IdentidadDS.PermisoAmigoOrg", b =>
                 {
                     b.Property<Guid>("IdentidadOrganizacionID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(0);
 
                     b.Property<Guid>("IdentidadUsuarioID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(1);
 
                     b.Property<Guid>("IdentidadAmigoID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(2);
 
                     b.HasKey("IdentidadOrganizacionID", "IdentidadUsuarioID", "IdentidadAmigoID");
 
@@ -3105,13 +3324,16 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextOracleMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.IdentidadDS.PermisoGrupoAmigoOrg", b =>
                 {
                     b.Property<Guid>("IdentidadOrganizacionID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(0);
 
                     b.Property<Guid>("IdentidadUsuarioID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(1);
 
                     b.Property<Guid>("GrupoID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(2);
 
                     b.Property<bool>("PermisoEdicion")
                         .HasColumnType("NUMBER(1)");
@@ -3124,10 +3346,12 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextOracleMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.IdentidadDS.PersonaVisibleEnOrg", b =>
                 {
                     b.Property<Guid>("PersonaID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(0);
 
                     b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(1);
 
                     b.Property<int>("Orden")
                         .HasColumnType("NUMBER(10)");
@@ -3140,10 +3364,12 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextOracleMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.IdentidadDS.Profesor", b =>
                 {
                     b.Property<Guid>("ProfesorID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(0);
 
                     b.Property<Guid>("PerfilID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(1);
 
                     b.Property<string>("AreaEstudios")
                         .HasMaxLength(255)
@@ -3169,30 +3395,38 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextOracleMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.IntegracionContinuaPropiedad", b =>
                 {
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(0);
 
                     b.Property<short>("TipoObjeto")
-                        .HasColumnType("NUMBER(5)");
+                        .HasColumnType("NUMBER(5)")
+                        .HasColumnOrder(1);
 
                     b.Property<string>("ObjetoPropiedad")
                         .HasMaxLength(250)
-                        .HasColumnType("NVARCHAR2(250)");
+                        .HasColumnType("NVARCHAR2(250)")
+                        .HasColumnOrder(2);
 
                     b.Property<short>("TipoPropiedad")
-                        .HasColumnType("NUMBER(5)");
+                        .HasColumnType("NUMBER(5)")
+                        .HasColumnOrder(3);
 
                     b.Property<bool>("MismoValor")
-                        .HasColumnType("NUMBER(1)");
+                        .HasColumnType("NUMBER(1)")
+                        .HasColumnOrder(6);
 
                     b.Property<bool>("Revisada")
-                        .HasColumnType("NUMBER(1)");
+                        .HasColumnType("NUMBER(1)")
+                        .HasColumnOrder(7);
 
                     b.Property<string>("ValorPropiedad")
                         .IsRequired()
-                        .HasColumnType("NVARCHAR2(2000)");
+                        .HasColumnType("NVARCHAR2(2000)")
+                        .HasColumnOrder(4);
 
                     b.Property<string>("ValorPropiedadDestino")
-                        .HasColumnType("NVARCHAR2(2000)");
+                        .HasColumnType("NVARCHAR2(2000)")
+                        .HasColumnOrder(5);
 
                     b.HasKey("ProyectoID", "TipoObjeto", "ObjetoPropiedad", "TipoPropiedad");
 
@@ -3237,8 +3471,9 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextOracleMigrations
                 {
                     b.Property<int>("ColaID")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("NUMBER(10)")
-                        .HasAnnotation("Oracle:ValueGenerationStrategy", OracleValueGenerationStrategy.IdentityColumn);
+                        .HasColumnType("NUMBER(10)");
+
+                    OraclePropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ColaID"), 1L, 1);
 
                     b.Property<string>("ConsumerKey")
                         .HasMaxLength(1000)
@@ -3358,10 +3593,12 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextOracleMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Notificacion.NotificacionAlertaPersona", b =>
                 {
                     b.Property<Guid>("NotificacionID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(0);
 
                     b.Property<Guid>("PersonaID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(1);
 
                     b.Property<DateTime?>("FechaLectura")
                         .HasColumnType("TIMESTAMP(7)");
@@ -3374,11 +3611,13 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextOracleMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Notificacion.NotificacionCorreoPersona", b =>
                 {
                     b.Property<Guid>("NotificacionID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(0);
 
                     b.Property<string>("EmailEnvio")
                         .HasMaxLength(400)
-                        .HasColumnType("NVARCHAR2(400)");
+                        .HasColumnType("NVARCHAR2(400)")
+                        .HasColumnOrder(1);
 
                     b.Property<bool>("EnviadoRabbit")
                         .HasColumnType("NUMBER(1)");
@@ -3426,10 +3665,12 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextOracleMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Notificacion.NotificacionParametro", b =>
                 {
                     b.Property<Guid>("NotificacionID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(0);
 
                     b.Property<short>("ParametroID")
-                        .HasColumnType("NUMBER(5)");
+                        .HasColumnType("NUMBER(5)")
+                        .HasColumnOrder(1);
 
                     b.Property<string>("Valor")
                         .HasColumnType("NVARCHAR2(2000)");
@@ -3442,13 +3683,16 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextOracleMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Notificacion.NotificacionParametroPersona", b =>
                 {
                     b.Property<Guid>("NotificacionID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(0);
 
                     b.Property<short>("ParametroID")
-                        .HasColumnType("NUMBER(5)");
+                        .HasColumnType("NUMBER(5)")
+                        .HasColumnOrder(1);
 
                     b.Property<Guid>("PersonaID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(2);
 
                     b.Property<string>("Valor")
                         .IsRequired()
@@ -3462,16 +3706,20 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextOracleMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Notificacion.NotificacionSolicitud", b =>
                 {
                     b.Property<Guid>("NotificacionID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(0);
 
                     b.Property<Guid>("SolicitudID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(1);
 
                     b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(2);
 
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(3);
 
                     b.HasKey("NotificacionID", "SolicitudID", "OrganizacionID", "ProyectoID");
 
@@ -3483,10 +3731,12 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextOracleMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Notificacion.NotificacionSuscripcion", b =>
                 {
                     b.Property<Guid>("NotificacionID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(0);
 
                     b.Property<Guid>("SuscripcionID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(1);
 
                     b.HasKey("NotificacionID", "SuscripcionID");
 
@@ -3585,8 +3835,9 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextOracleMigrations
 
                     b.Property<int>("TablaBaseOrganizacionID")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("NUMBER(10)")
-                        .HasAnnotation("Oracle:ValueGenerationStrategy", OracleValueGenerationStrategy.IdentityColumn);
+                        .HasColumnType("NUMBER(10)");
+
+                    OraclePropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("TablaBaseOrganizacionID"), 1L, 1);
 
                     b.Property<string>("Telefono")
                         .HasMaxLength(13)
@@ -3645,13 +3896,16 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextOracleMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.OrganizacionDS.OrganizacionParticipaProy", b =>
                 {
                     b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(0);
 
                     b.Property<Guid>("OrganizacionProyectoID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(1);
 
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(2);
 
                     b.Property<bool>("EstaBloqueada")
                         .HasColumnType("NUMBER(1)");
@@ -3675,19 +3929,24 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextOracleMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.OrganizacionDS.PersonaOcupacionFigura", b =>
                 {
                     b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(0);
 
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(1);
 
                     b.Property<Guid>("EstructuraID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(2);
 
                     b.Property<Guid>("ElementoEstructuraID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(3);
 
                     b.Property<Guid>("PersonaID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(4);
 
                     b.Property<int>("Dedicacion")
                         .HasColumnType("NUMBER(10)");
@@ -3709,19 +3968,24 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextOracleMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.OrganizacionDS.PersonaOcupacionFormaSec", b =>
                 {
                     b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(0);
 
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(1);
 
                     b.Property<Guid>("EstructuraID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(2);
 
                     b.Property<Guid>("ElementoEstructuraID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(3);
 
                     b.Property<Guid>("PersonaID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(4);
 
                     b.Property<int>("Dedicacion")
                         .HasColumnType("NUMBER(10)");
@@ -3740,10 +4004,12 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextOracleMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.OrganizacionDS.PersonaVinculoOrganizacion", b =>
                 {
                     b.Property<Guid>("PersonaID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(0);
 
                     b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(1);
 
                     b.Property<string>("CPTrabajo")
                         .HasMaxLength(15)
@@ -3863,10 +4129,12 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextOracleMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.ParametroGeneralDS.ConfiguracionAmbitoBusqueda", b =>
                 {
                     b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(0);
 
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(1);
 
                     b.Property<string>("DefectoHome")
                         .IsRequired()
@@ -3892,10 +4160,12 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextOracleMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.ParametroGeneralDS.ParametroGeneral", b =>
                 {
                     b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(0);
 
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(1);
 
                     b.Property<string>("AlgoritmoPersonasRecomendadas")
                         .HasColumnType("NVARCHAR2(2000)");
@@ -3904,8 +4174,7 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextOracleMigrations
                         .HasColumnType("NUMBER(1)");
 
                     b.Property<string>("AvisoLegal")
-                        .HasMaxLength(4000)
-                        .HasColumnType("NCLOB");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<bool>("BaseRecursosDisponible")
                         .HasColumnType("NUMBER(1)");
@@ -3975,17 +4244,17 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextOracleMigrations
                     b.Property<string>("CoordenadasHome")
                         .HasMaxLength(30)
                         .HasColumnType("NCHAR(30)")
-                        .IsFixedLength(true);
+                        .IsFixedLength();
 
                     b.Property<string>("CoordenadasMosaico")
                         .HasMaxLength(30)
                         .HasColumnType("NCHAR(30)")
-                        .IsFixedLength(true);
+                        .IsFixedLength();
 
                     b.Property<string>("CoordenadasSup")
                         .HasMaxLength(30)
                         .HasColumnType("NCHAR(30)")
-                        .IsFixedLength(true);
+                        .IsFixedLength();
 
                     b.Property<string>("Copyright")
                         .HasMaxLength(100)
@@ -4325,14 +4594,17 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextOracleMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.ParametroGeneralDS.ParametroProyecto", b =>
                 {
                     b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(0);
 
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(1);
 
                     b.Property<string>("Parametro")
                         .HasMaxLength(100)
-                        .HasColumnType("NVARCHAR2(100)");
+                        .HasColumnType("NVARCHAR2(100)")
+                        .HasColumnOrder(2);
 
                     b.Property<string>("Valor")
                         .HasColumnType("NVARCHAR2(2000)");
@@ -4342,35 +4614,19 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextOracleMigrations
                     b.ToTable("ParametroProyecto");
                 });
 
-            modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.ParametroGeneralDS.ProyectoElementoHTMLRol", b =>
-                {
-                    b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("RAW(16)");
-
-                    b.Property<Guid>("ProyectoID")
-                        .HasColumnType("RAW(16)");
-
-                    b.Property<int>("ElementoHeadID")
-                        .HasColumnType("NUMBER(10)");
-
-                    b.Property<Guid>("GrupoID")
-                        .HasColumnType("RAW(16)");
-
-                    b.HasKey("OrganizacionID", "ProyectoID", "ElementoHeadID", "GrupoID");
-
-                    b.ToTable("ProyectoElementoHTMLRol");
-                });
-
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.ParametroGeneralDS.ProyectoElementoHtml", b =>
                 {
                     b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(0);
 
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(1);
 
                     b.Property<int>("ElementoHeadID")
-                        .HasColumnType("NUMBER(10)");
+                        .HasColumnType("NUMBER(10)")
+                        .HasColumnOrder(2);
 
                     b.Property<string>("Atributos")
                         .HasMaxLength(1000)
@@ -4398,16 +4654,42 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextOracleMigrations
                     b.ToTable("ProyectoElementoHtml");
                 });
 
+            modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.ParametroGeneralDS.ProyectoElementoHTMLRol", b =>
+                {
+                    b.Property<Guid>("OrganizacionID")
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(0);
+
+                    b.Property<Guid>("ProyectoID")
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(1);
+
+                    b.Property<int>("ElementoHeadID")
+                        .HasColumnType("NUMBER(10)")
+                        .HasColumnOrder(2);
+
+                    b.Property<Guid>("GrupoID")
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(3);
+
+                    b.HasKey("OrganizacionID", "ProyectoID", "ElementoHeadID", "GrupoID");
+
+                    b.ToTable("ProyectoElementoHTMLRol");
+                });
+
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.ParametroGeneralDS.ProyectoMetaRobots", b =>
                 {
                     b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(0);
 
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(1);
 
                     b.Property<short>("Tipo")
-                        .HasColumnType("NUMBER(5)");
+                        .HasColumnType("NUMBER(5)")
+                        .HasColumnOrder(2);
 
                     b.Property<string>("Content")
                         .HasMaxLength(50)
@@ -4421,13 +4703,16 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextOracleMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.ParametroGeneralDS.ProyectoRDFType", b =>
                 {
                     b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(0);
 
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(1);
 
                     b.Property<short>("TipoDocumento")
-                        .HasColumnType("NUMBER(5)");
+                        .HasColumnType("NUMBER(5)")
+                        .HasColumnOrder(2);
 
                     b.Property<string>("RdfType")
                         .HasMaxLength(50)
@@ -4441,15 +4726,18 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextOracleMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.ParametroGeneralDS.TextosPersonalizadosPersonalizacion", b =>
                 {
                     b.Property<Guid>("PersonalizacionID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(0);
 
                     b.Property<string>("TextoID")
                         .HasMaxLength(100)
-                        .HasColumnType("NVARCHAR2(100)");
+                        .HasColumnType("NVARCHAR2(100)")
+                        .HasColumnOrder(1);
 
                     b.Property<string>("Language")
                         .HasMaxLength(100)
-                        .HasColumnType("NVARCHAR2(100)");
+                        .HasColumnType("NVARCHAR2(100)")
+                        .HasColumnOrder(2);
 
                     b.Property<string>("Texto")
                         .HasColumnType("NVARCHAR2(2000)");
@@ -4462,18 +4750,22 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextOracleMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.ParametroGeneralDS.TextosPersonalizadosProyecto", b =>
                 {
                     b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(0);
 
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(1);
 
                     b.Property<string>("TextoID")
                         .HasMaxLength(100)
-                        .HasColumnType("NVARCHAR2(100)");
+                        .HasColumnType("NVARCHAR2(100)")
+                        .HasColumnOrder(2);
 
                     b.Property<string>("Language")
                         .HasMaxLength(100)
-                        .HasColumnType("NVARCHAR2(100)");
+                        .HasColumnType("NVARCHAR2(100)")
+                        .HasColumnOrder(3);
 
                     b.Property<string>("Texto")
                         .HasColumnType("NVARCHAR2(2000)");
@@ -4486,16 +4778,20 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextOracleMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.PermisosPaginasUsuarios", b =>
                 {
                     b.Property<Guid>("UsuarioID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(0);
 
                     b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(1);
 
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(2);
 
                     b.Property<short>("Pagina")
-                        .HasColumnType("NUMBER(5)");
+                        .HasColumnType("NUMBER(5)")
+                        .HasColumnOrder(3);
 
                     b.HasKey("UsuarioID", "OrganizacionID", "ProyectoID", "Pagina");
 
@@ -4714,7 +5010,7 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextOracleMigrations
                         .HasMaxLength(1)
                         .IsUnicode(false)
                         .HasColumnType("CHAR(1)")
-                        .IsFixedLength(true);
+                        .IsFixedLength();
 
                     b.Property<string>("TelefonoPersonal")
                         .HasMaxLength(13)
@@ -4769,19 +5065,6 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextOracleMigrations
                     b.ToTable("Peticion");
                 });
 
-            modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Peticion.PeticionInvitaContacto", b =>
-                {
-                    b.Property<Guid>("PeticionID")
-                        .HasColumnType("RAW(16)");
-
-                    b.Property<Guid>("IdentidadID")
-                        .HasColumnType("RAW(16)");
-
-                    b.HasKey("PeticionID");
-
-                    b.ToTable("PeticionInvitaContacto");
-                });
-
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Peticion.PeticionInvitacionComunidad", b =>
                 {
                     b.Property<Guid>("PeticionID")
@@ -4820,6 +5103,19 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextOracleMigrations
                     b.HasKey("PeticionID");
 
                     b.ToTable("PeticionInvitacionGrupo");
+                });
+
+            modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Peticion.PeticionInvitaContacto", b =>
+                {
+                    b.Property<Guid>("PeticionID")
+                        .HasColumnType("RAW(16)");
+
+                    b.Property<Guid>("IdentidadID")
+                        .HasColumnType("RAW(16)");
+
+                    b.HasKey("PeticionID");
+
+                    b.ToTable("PeticionInvitaContacto");
                 });
 
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Peticion.PeticionNuevoProyecto", b =>
@@ -4877,13 +5173,16 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextOracleMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.ProyectoDS.AccionesExternasProyecto", b =>
                 {
                     b.Property<short>("TipoAccion")
-                        .HasColumnType("NUMBER(5)");
+                        .HasColumnType("NUMBER(5)")
+                        .HasColumnOrder(0);
 
                     b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(1);
 
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(2);
 
                     b.Property<string>("URL")
                         .IsRequired()
@@ -4897,13 +5196,16 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextOracleMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.ProyectoDS.AdministradorGrupoProyecto", b =>
                 {
                     b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(0);
 
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(1);
 
                     b.Property<Guid>("GrupoID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(2);
 
                     b.HasKey("OrganizacionID", "ProyectoID", "GrupoID");
 
@@ -4913,16 +5215,20 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextOracleMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.ProyectoDS.AdministradorProyecto", b =>
                 {
                     b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(0);
 
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(1);
 
                     b.Property<Guid>("UsuarioID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(2);
 
                     b.Property<short>("Tipo")
-                        .HasColumnType("NUMBER(5)");
+                        .HasColumnType("NUMBER(5)")
+                        .HasColumnOrder(3);
 
                     b.HasKey("OrganizacionID", "ProyectoID", "UsuarioID", "Tipo");
 
@@ -4932,13 +5238,16 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextOracleMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.ProyectoDS.CamposRegistroProyectoGenericos", b =>
                 {
                     b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(0);
 
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(1);
 
                     b.Property<short>("Orden")
-                        .HasColumnType("NUMBER(5)");
+                        .HasColumnType("NUMBER(5)")
+                        .HasColumnOrder(2);
 
                     b.Property<short>("Tipo")
                         .HasColumnType("NUMBER(5)");
@@ -4951,14 +5260,17 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextOracleMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.ProyectoDS.ConfigAutocompletarProy", b =>
                 {
                     b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(0);
 
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(1);
 
                     b.Property<string>("Clave")
                         .HasMaxLength(100)
-                        .HasColumnType("NVARCHAR2(100)");
+                        .HasColumnType("NVARCHAR2(100)")
+                        .HasColumnOrder(2);
 
                     b.Property<Guid?>("PestanyaID")
                         .HasColumnType("RAW(16)");
@@ -4977,14 +5289,17 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextOracleMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.ProyectoDS.ConfigSearchProy", b =>
                 {
                     b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(0);
 
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(1);
 
                     b.Property<string>("Clave")
                         .HasMaxLength(100)
-                        .HasColumnType("NVARCHAR2(100)");
+                        .HasColumnType("NVARCHAR2(100)")
+                        .HasColumnOrder(2);
 
                     b.Property<string>("Valor")
                         .IsRequired()
@@ -5028,10 +5343,12 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextOracleMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.ProyectoDS.DatoExtraEcosistemaOpcion", b =>
                 {
                     b.Property<Guid>("DatoExtraID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(0);
 
                     b.Property<Guid>("OpcionID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(1);
 
                     b.Property<string>("Opcion")
                         .IsRequired()
@@ -5111,13 +5428,16 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextOracleMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.ProyectoDS.DatoExtraProyecto", b =>
                 {
                     b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(0);
 
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(1);
 
                     b.Property<Guid>("DatoExtraID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(2);
 
                     b.Property<bool>("Obligatorio")
                         .HasColumnType("NUMBER(1)");
@@ -5146,16 +5466,20 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextOracleMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.ProyectoDS.DatoExtraProyectoOpcion", b =>
                 {
                     b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(0);
 
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(1);
 
                     b.Property<Guid>("DatoExtraID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(2);
 
                     b.Property<Guid>("OpcionID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(3);
 
                     b.Property<string>("Opcion")
                         .IsRequired()
@@ -5173,19 +5497,24 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextOracleMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.ProyectoDS.DatoExtraProyectoOpcionIdentidad", b =>
                 {
                     b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(0);
 
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(1);
 
                     b.Property<Guid>("DatoExtraID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(2);
 
                     b.Property<Guid>("OpcionID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(3);
 
                     b.Property<Guid>("IdentidadID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(4);
 
                     b.HasKey("OrganizacionID", "ProyectoID", "DatoExtraID", "OpcionID", "IdentidadID");
 
@@ -5197,13 +5526,16 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextOracleMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.ProyectoDS.DatoExtraProyectoVirtuoso", b =>
                 {
                     b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(0);
 
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(1);
 
                     b.Property<Guid>("DatoExtraID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(2);
 
                     b.Property<string>("ConexionBD")
                         .IsRequired()
@@ -5308,16 +5640,20 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextOracleMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.ProyectoDS.PreferenciaProyecto", b =>
                 {
                     b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(0);
 
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(1);
 
                     b.Property<Guid>("TesauroID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(2);
 
                     b.Property<Guid>("CategoriaTesauroID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(3);
 
                     b.Property<int>("Orden")
                         .HasColumnType("NUMBER(10)");
@@ -5330,16 +5666,20 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextOracleMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.ProyectoDS.PresentacionListadoSemantico", b =>
                 {
                     b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(0);
 
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(1);
 
                     b.Property<Guid>("OntologiaID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(2);
 
                     b.Property<short>("Orden")
-                        .HasColumnType("NUMBER(5)");
+                        .HasColumnType("NUMBER(5)")
+                        .HasColumnOrder(3);
 
                     b.Property<string>("Nombre")
                         .HasMaxLength(1000)
@@ -5362,16 +5702,20 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextOracleMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.ProyectoDS.PresentacionMapaSemantico", b =>
                 {
                     b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(0);
 
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(1);
 
                     b.Property<Guid>("OntologiaID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(2);
 
                     b.Property<short>("Orden")
-                        .HasColumnType("NUMBER(5)");
+                        .HasColumnType("NUMBER(5)")
+                        .HasColumnOrder(3);
 
                     b.Property<string>("Nombre")
                         .HasMaxLength(1000)
@@ -5394,16 +5738,20 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextOracleMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.ProyectoDS.PresentacionMosaicoSemantico", b =>
                 {
                     b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(0);
 
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(1);
 
                     b.Property<Guid>("OntologiaID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(2);
 
                     b.Property<short>("Orden")
-                        .HasColumnType("NUMBER(5)");
+                        .HasColumnType("NUMBER(5)")
+                        .HasColumnOrder(3);
 
                     b.Property<string>("Nombre")
                         .HasMaxLength(1000)
@@ -5426,16 +5774,20 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextOracleMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.ProyectoDS.PresentacionPersonalizadoSemantico", b =>
                 {
                     b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(0);
 
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(1);
 
                     b.Property<Guid>("OntologiaID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(2);
 
                     b.Property<short>("Orden")
-                        .HasColumnType("NUMBER(5)");
+                        .HasColumnType("NUMBER(5)")
+                        .HasColumnOrder(3);
 
                     b.Property<string>("ID")
                         .HasColumnType("NVARCHAR2(2000)");
@@ -5461,19 +5813,24 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextOracleMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.ProyectoDS.PresentacionPestanyaListadoSemantico", b =>
                 {
                     b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(0);
 
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(1);
 
                     b.Property<Guid>("PestanyaID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(2);
 
                     b.Property<Guid>("OntologiaID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(3);
 
                     b.Property<short>("Orden")
-                        .HasColumnType("NUMBER(5)");
+                        .HasColumnType("NUMBER(5)")
+                        .HasColumnOrder(4);
 
                     b.Property<string>("Nombre")
                         .IsRequired()
@@ -5500,19 +5857,24 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextOracleMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.ProyectoDS.PresentacionPestanyaMapaSemantico", b =>
                 {
                     b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(0);
 
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(1);
 
                     b.Property<Guid>("PestanyaID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(2);
 
                     b.Property<Guid>("OntologiaID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(3);
 
                     b.Property<short>("Orden")
-                        .HasColumnType("NUMBER(5)");
+                        .HasColumnType("NUMBER(5)")
+                        .HasColumnOrder(4);
 
                     b.Property<string>("Nombre")
                         .IsRequired()
@@ -5539,19 +5901,24 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextOracleMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.ProyectoDS.PresentacionPestanyaMosaicoSemantico", b =>
                 {
                     b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(0);
 
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(1);
 
                     b.Property<Guid>("PestanyaID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(2);
 
                     b.Property<Guid>("OntologiaID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(3);
 
                     b.Property<short>("Orden")
-                        .HasColumnType("NUMBER(5)");
+                        .HasColumnType("NUMBER(5)")
+                        .HasColumnOrder(4);
 
                     b.Property<string>("Nombre")
                         .IsRequired()
@@ -5575,29 +5942,15 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextOracleMigrations
                     b.ToTable("PresentacionPestanyaMosaicoSemantico");
                 });
 
-            modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.ProyectoDS.ProyTipoRecNoActivReciente", b =>
-                {
-                    b.Property<Guid>("ProyectoID")
-                        .HasColumnType("RAW(16)");
-
-                    b.Property<short>("TipoRecurso")
-                        .HasColumnType("NUMBER(5)");
-
-                    b.Property<string>("OntologiasID")
-                        .HasColumnType("NVARCHAR2(2000)");
-
-                    b.HasKey("ProyectoID", "TipoRecurso");
-
-                    b.ToTable("ProyTipoRecNoActivReciente");
-                });
-
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.ProyectoDS.Proyecto", b =>
                 {
                     b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(0);
 
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(1);
 
                     b.Property<string>("Descripcion")
                         .HasColumnType("NVARCHAR2(2000)");
@@ -5675,8 +6028,9 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextOracleMigrations
 
                     b.Property<int>("TablaBaseProyectoID")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("NUMBER(10)")
-                        .HasAnnotation("Oracle:ValueGenerationStrategy", OracleValueGenerationStrategy.IdentityColumn);
+                        .HasColumnType("NUMBER(10)");
+
+                    OraclePropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("TablaBaseProyectoID"), 1L, 1);
 
                     b.Property<string>("TagTwitter")
                         .HasMaxLength(50)
@@ -5723,16 +6077,20 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextOracleMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.ProyectoDS.ProyectoAgCatTesauro", b =>
                 {
                     b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(0);
 
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(1);
 
                     b.Property<Guid>("TesauroID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(2);
 
                     b.Property<Guid>("CategoriaTesauroID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(3);
 
                     b.HasKey("OrganizacionID", "ProyectoID", "TesauroID", "CategoriaTesauroID");
 
@@ -5742,10 +6100,12 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextOracleMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.ProyectoDS.ProyectoCerradoTmp", b =>
                 {
                     b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(0);
 
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(1);
 
                     b.Property<DateTime>("FechaCierre")
                         .HasColumnType("TIMESTAMP(7)");
@@ -5766,10 +6126,12 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextOracleMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.ProyectoDS.ProyectoCerrandose", b =>
                 {
                     b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(0);
 
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(1);
 
                     b.Property<DateTime>("FechaCierre")
                         .HasColumnType("TIMESTAMP(7)");
@@ -5785,15 +6147,18 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextOracleMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.ProyectoDS.ProyectoConfigExtraSem", b =>
                 {
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(0);
 
                     b.Property<string>("UrlOntologia")
                         .HasMaxLength(200)
-                        .HasColumnType("NVARCHAR2(200)");
+                        .HasColumnType("NVARCHAR2(200)")
+                        .HasColumnOrder(1);
 
                     b.Property<string>("SourceTesSem")
                         .HasMaxLength(200)
-                        .HasColumnType("NVARCHAR2(200)");
+                        .HasColumnType("NVARCHAR2(200)")
+                        .HasColumnOrder(2);
 
                     b.Property<bool>("Editable")
                         .HasColumnType("NUMBER(1)");
@@ -5867,13 +6232,16 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextOracleMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.ProyectoDS.ProyectoEventoAccion", b =>
                 {
                     b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(0);
 
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(1);
 
                     b.Property<short>("Evento")
-                        .HasColumnType("NUMBER(5)");
+                        .HasColumnType("NUMBER(5)")
+                        .HasColumnOrder(2);
 
                     b.Property<string>("AccionJS")
                         .IsRequired()
@@ -5887,10 +6255,12 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextOracleMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.ProyectoDS.ProyectoEventoParticipante", b =>
                 {
                     b.Property<Guid>("EventoID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(0);
 
                     b.Property<Guid>("IdentidadID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(1);
 
                     b.Property<DateTime>("Fecha")
                         .HasColumnType("TIMESTAMP(7)");
@@ -5903,13 +6273,16 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextOracleMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.ProyectoDS.ProyectoGadget", b =>
                 {
                     b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(0);
 
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(1);
 
                     b.Property<Guid>("GadgetID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(2);
 
                     b.Property<bool>("CargarPorAjax")
                         .HasColumnType("NUMBER(1)");
@@ -5963,13 +6336,16 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextOracleMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.ProyectoDS.ProyectoGadgetContexto", b =>
                 {
                     b.Property<Guid>("GadgetID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(0);
 
                     b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(1);
 
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(2);
 
                     b.Property<string>("ComunidadDestinoFiltros")
                         .HasColumnType("NVARCHAR2(2000)");
@@ -6033,13 +6409,16 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextOracleMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.ProyectoDS.ProyectoGadgetContextoHTMLplano", b =>
                 {
                     b.Property<Guid>("GadgetID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(0);
 
                     b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(1);
 
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(2);
 
                     b.Property<string>("ComunidadDestinoFiltros")
                         .IsRequired()
@@ -6056,17 +6435,21 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextOracleMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.ProyectoDS.ProyectoGadgetIdioma", b =>
                 {
                     b.Property<Guid>("GadgetID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(0);
 
                     b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(1);
 
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(2);
 
                     b.Property<string>("Idioma")
                         .HasMaxLength(50)
-                        .HasColumnType("NVARCHAR2(50)");
+                        .HasColumnType("NVARCHAR2(50)")
+                        .HasColumnOrder(3);
 
                     b.Property<string>("Contenido")
                         .IsRequired()
@@ -6080,13 +6463,16 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextOracleMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.ProyectoDS.ProyectoGrafoFichaRec", b =>
                 {
                     b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(0);
 
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(1);
 
                     b.Property<Guid>("GrafoID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(2);
 
                     b.Property<string>("Extra")
                         .HasColumnType("NVARCHAR2(2000)");
@@ -6107,10 +6493,12 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextOracleMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.ProyectoDS.ProyectoLoginConfiguracion", b =>
                 {
                     b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(0);
 
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(1);
 
                     b.Property<string>("Mensaje")
                         .IsRequired()
@@ -6124,11 +6512,13 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextOracleMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.ProyectoDS.ProyectoPaginaHtml", b =>
                 {
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(0);
 
                     b.Property<string>("Nombre")
                         .HasMaxLength(150)
-                        .HasColumnType("NVARCHAR2(150)");
+                        .HasColumnType("NVARCHAR2(150)")
+                        .HasColumnOrder(1);
 
                     b.Property<string>("Html")
                         .IsRequired()
@@ -6146,14 +6536,17 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextOracleMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.ProyectoDS.ProyectoPalabrasInapropiadas", b =>
                 {
                     b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(0);
 
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(1);
 
                     b.Property<string>("Tag")
                         .HasMaxLength(200)
-                        .HasColumnType("NVARCHAR2(200)");
+                        .HasColumnType("NVARCHAR2(200)")
+                        .HasColumnOrder(2);
 
                     b.Property<short>("Rombos")
                         .HasColumnType("NUMBER(5)");
@@ -6166,13 +6559,16 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextOracleMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.ProyectoDS.ProyectoPasoRegistro", b =>
                 {
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(1);
 
                     b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(0);
 
                     b.Property<short>("Orden")
-                        .HasColumnType("NUMBER(5)");
+                        .HasColumnType("NUMBER(5)")
+                        .HasColumnOrder(2);
 
                     b.Property<bool>("Obligatorio")
                         .HasColumnType("NUMBER(1)");
@@ -6191,10 +6587,12 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextOracleMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.ProyectoDS.ProyectoPerfilNumElem", b =>
                 {
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(0);
 
                     b.Property<Guid>("PerfilID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(1);
 
                     b.Property<int>("NumRecursos")
                         .HasColumnType("NUMBER(10)");
@@ -6207,11 +6605,13 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextOracleMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.ProyectoDS.ProyectoPestanya", b =>
                 {
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(0);
 
                     b.Property<string>("Nombre")
                         .HasMaxLength(400)
-                        .HasColumnType("NVARCHAR2(400)");
+                        .HasColumnType("NVARCHAR2(400)")
+                        .HasColumnOrder(1);
 
                     b.Property<bool>("CMS")
                         .HasColumnType("NUMBER(1)");
@@ -6400,10 +6800,12 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextOracleMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.ProyectoDS.ProyectoPestanyaBusquedaExportacionPropiedad", b =>
                 {
                     b.Property<Guid>("ExportacionID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(0);
 
                     b.Property<short>("Orden")
-                        .HasColumnType("NUMBER(5)");
+                        .HasColumnType("NUMBER(5)")
+                        .HasColumnOrder(1);
 
                     b.Property<string>("DatosExtraPropiedad")
                         .IsUnicode(false)
@@ -6431,14 +6833,89 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextOracleMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.ProyectoDS.ProyectoPestanyaCMS", b =>
                 {
                     b.Property<Guid>("PestanyaID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(0);
 
                     b.Property<short>("Ubicacion")
-                        .HasColumnType("NUMBER(5)");
+                        .HasColumnType("NUMBER(5)")
+                        .HasColumnOrder(1);
 
                     b.HasKey("PestanyaID", "Ubicacion");
 
                     b.ToTable("ProyectoPestanyaCMS");
+                });
+
+            modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.ProyectoDS.ProyectoPestanyaDashboardAsistente", b =>
+                {
+                    b.Property<Guid>("AsisID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("RAW(16)");
+
+                    b.Property<string>("Labels")
+                        .HasColumnType("NVARCHAR2(2000)");
+
+                    b.Property<string>("Nombre")
+                        .IsRequired()
+                        .HasColumnType("NVARCHAR2(2000)");
+
+                    b.Property<int>("Orden")
+                        .HasColumnType("NUMBER(10)");
+
+                    b.Property<Guid>("PestanyaID")
+                        .HasColumnType("RAW(16)");
+
+                    b.Property<bool>("PropExtra")
+                        .HasColumnType("NUMBER(1)");
+
+                    b.Property<string>("Select")
+                        .HasColumnType("NVARCHAR2(2000)");
+
+                    b.Property<string>("Tamanyo")
+                        .HasColumnType("NVARCHAR2(2000)");
+
+                    b.Property<int>("Tipo")
+                        .HasColumnType("NUMBER(10)");
+
+                    b.Property<bool>("Titulo")
+                        .HasColumnType("NUMBER(1)");
+
+                    b.Property<string>("Where")
+                        .HasColumnType("NVARCHAR2(2000)");
+
+                    b.HasKey("AsisID");
+
+                    b.HasIndex("PestanyaID");
+
+                    b.ToTable("ProyectoPestanyaDashboardAsistente");
+                });
+
+            modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.ProyectoDS.ProyectoPestanyaDashboardAsistenteDataset", b =>
+                {
+                    b.Property<Guid>("DatasetID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("RAW(16)");
+
+                    b.Property<Guid>("AsisID")
+                        .HasColumnType("RAW(16)");
+
+                    b.Property<string>("Color")
+                        .HasColumnType("NVARCHAR2(2000)");
+
+                    b.Property<string>("Datos")
+                        .IsRequired()
+                        .HasColumnType("NVARCHAR2(2000)");
+
+                    b.Property<string>("Nombre")
+                        .HasColumnType("NVARCHAR2(2000)");
+
+                    b.Property<int>("Orden")
+                        .HasColumnType("NUMBER(10)");
+
+                    b.HasKey("DatasetID");
+
+                    b.HasIndex("AsisID");
+
+                    b.ToTable("ProyectoPestanyaDashboardAsistenteDataset");
                 });
 
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.ProyectoDS.ProyectoPestanyaExportacionBusqueda", b =>
@@ -6471,10 +6948,12 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextOracleMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.ProyectoDS.ProyectoPestanyaFiltroOrdenRecursos", b =>
                 {
                     b.Property<Guid>("PestanyaID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(0);
 
                     b.Property<short>("Orden")
-                        .HasColumnType("NUMBER(5)");
+                        .HasColumnType("NUMBER(5)")
+                        .HasColumnOrder(1);
 
                     b.Property<string>("FiltroOrden")
                         .IsRequired()
@@ -6501,6 +6980,12 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextOracleMigrations
                     b.Property<string>("CSSBodyClass")
                         .HasColumnType("NVARCHAR2(2000)");
 
+                    b.Property<DateTime>("FechaCreacion")
+                        .HasColumnType("TIMESTAMP(7)");
+
+                    b.Property<DateTime>("FechaModificacion")
+                        .HasColumnType("TIMESTAMP(7)");
+
                     b.Property<string>("HtmlAlternativo")
                         .HasColumnType("NVARCHAR2(2000)");
 
@@ -6508,8 +6993,8 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextOracleMigrations
                         .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<string>("MetaDescription")
-                        .HasMaxLength(10000)
-                        .HasColumnType("NCLOB");
+                        .HasMaxLength(1000)
+                        .HasColumnType("NVARCHAR2(1000)");
 
                     b.Property<string>("Nombre")
                         .HasColumnType("NVARCHAR2(2000)");
@@ -6547,6 +7032,9 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextOracleMigrations
                     b.Property<string>("Titulo")
                         .HasColumnType("NVARCHAR2(2000)");
 
+                    b.Property<string>("UltimoEditor")
+                        .HasColumnType("NVARCHAR2(2000)");
+
                     b.Property<bool>("Visible")
                         .HasColumnType("NUMBER(1)");
 
@@ -6565,10 +7053,12 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextOracleMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.ProyectoDS.ProyectoPestanyaMenuRolGrupoIdentidades", b =>
                 {
                     b.Property<Guid>("PestanyaID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(0);
 
                     b.Property<Guid>("GrupoID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(1);
 
                     b.HasKey("PestanyaID", "GrupoID");
 
@@ -6578,10 +7068,12 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextOracleMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.ProyectoDS.ProyectoPestanyaMenuRolIdentidad", b =>
                 {
                     b.Property<Guid>("PestanyaID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(0);
 
                     b.Property<Guid>("PerfilID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(1);
 
                     b.HasKey("PestanyaID", "PerfilID");
 
@@ -6591,14 +7083,17 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextOracleMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.ProyectoDS.ProyectoPestanyaRolGrupoIdentidades", b =>
                 {
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(0);
 
                     b.Property<string>("Nombre")
                         .HasMaxLength(400)
-                        .HasColumnType("NVARCHAR2(400)");
+                        .HasColumnType("NVARCHAR2(400)")
+                        .HasColumnOrder(1);
 
                     b.Property<Guid>("GrupoID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(2);
 
                     b.HasKey("ProyectoID", "Nombre", "GrupoID");
 
@@ -6608,14 +7103,17 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextOracleMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.ProyectoDS.ProyectoPestanyaRolIdentidad", b =>
                 {
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(0);
 
                     b.Property<string>("Nombre")
                         .HasMaxLength(400)
-                        .HasColumnType("NVARCHAR2(400)");
+                        .HasColumnType("NVARCHAR2(400)")
+                        .HasColumnOrder(1);
 
                     b.Property<Guid>("PerfilID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(2);
 
                     b.HasKey("ProyectoID", "Nombre", "PerfilID");
 
@@ -6625,16 +7123,20 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextOracleMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.ProyectoDS.ProyectoRelacionado", b =>
                 {
                     b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(0);
 
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(1);
 
                     b.Property<Guid>("OrganizacionRelacionadaID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(2);
 
                     b.Property<Guid>("ProyectoRelacionadoID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(3);
 
                     b.Property<short>("Orden")
                         .HasColumnType("NUMBER(5)");
@@ -6649,14 +7151,17 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextOracleMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.ProyectoDS.ProyectoSearchPersonalizado", b =>
                 {
                     b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(0);
 
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(1);
 
                     b.Property<string>("NombreFiltro")
                         .HasMaxLength(100)
-                        .HasColumnType("NVARCHAR2(100)");
+                        .HasColumnType("NVARCHAR2(100)")
+                        .HasColumnOrder(2);
 
                     b.Property<bool>("OmitirRdfType")
                         .HasColumnType("NUMBER(1)");
@@ -6678,15 +7183,18 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextOracleMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.ProyectoDS.ProyectoServicioExterno", b =>
                 {
                     b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(0);
 
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(1);
 
                     b.Property<string>("NombreServicio")
                         .HasMaxLength(150)
                         .IsUnicode(false)
-                        .HasColumnType("VARCHAR2(150)");
+                        .HasColumnType("VARCHAR2(150)")
+                        .HasColumnOrder(2);
 
                     b.Property<string>("UrlServicio")
                         .IsRequired()
@@ -6701,10 +7209,12 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextOracleMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.ProyectoDS.ProyectosMasActivos", b =>
                 {
                     b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(0);
 
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(1);
 
                     b.Property<string>("Nombre")
                         .IsRequired()
@@ -6722,19 +7232,41 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextOracleMigrations
                     b.ToTable("ProyectosMasActivos");
                 });
 
+            modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.ProyectoDS.ProyTipoRecNoActivReciente", b =>
+                {
+                    b.Property<Guid>("ProyectoID")
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(0);
+
+                    b.Property<short>("TipoRecurso")
+                        .HasColumnType("NUMBER(5)")
+                        .HasColumnOrder(1);
+
+                    b.Property<string>("OntologiasID")
+                        .HasColumnType("NVARCHAR2(2000)");
+
+                    b.HasKey("ProyectoID", "TipoRecurso");
+
+                    b.ToTable("ProyTipoRecNoActivReciente");
+                });
+
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.ProyectoDS.RecursosRelacionadosPresentacion", b =>
                 {
                     b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(0);
 
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(1);
 
                     b.Property<short>("Orden")
-                        .HasColumnType("NUMBER(5)");
+                        .HasColumnType("NUMBER(5)")
+                        .HasColumnOrder(2);
 
                     b.Property<Guid>("OntologiaID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(3);
 
                     b.Property<short>("Imagen")
                         .HasColumnType("NUMBER(5)");
@@ -6761,19 +7293,24 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextOracleMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.ProyectoDS.SeccionProyCatalogo", b =>
                 {
                     b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(0);
 
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(1);
 
                     b.Property<Guid>("OrganizacionBusquedaID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(2);
 
                     b.Property<Guid>("ProyectoBusquedaID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(3);
 
                     b.Property<short>("Orden")
-                        .HasColumnType("NUMBER(5)");
+                        .HasColumnType("NUMBER(5)")
+                        .HasColumnOrder(4);
 
                     b.Property<string>("Faceta")
                         .IsRequired()
@@ -6803,16 +7340,20 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextOracleMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.ProyectoDS.TipoDocDispRolUsuarioProy", b =>
                 {
                     b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(0);
 
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(1);
 
                     b.Property<short>("TipoDocumento")
-                        .HasColumnType("NUMBER(5)");
+                        .HasColumnType("NUMBER(5)")
+                        .HasColumnOrder(2);
 
                     b.Property<short>("RolUsuario")
-                        .HasColumnType("NUMBER(5)");
+                        .HasColumnType("NUMBER(5)")
+                        .HasColumnOrder(3);
 
                     b.HasKey("OrganizacionID", "ProyectoID", "TipoDocumento", "RolUsuario");
 
@@ -6822,13 +7363,16 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextOracleMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.ProyectoDS.TipoDocImagenPorDefecto", b =>
                 {
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(0);
 
                     b.Property<short>("TipoRecurso")
-                        .HasColumnType("NUMBER(5)");
+                        .HasColumnType("NUMBER(5)")
+                        .HasColumnOrder(1);
 
                     b.Property<Guid>("OntologiaID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(2);
 
                     b.Property<string>("UrlImagen")
                         .IsRequired()
@@ -6843,16 +7387,20 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextOracleMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.ProyectoDS.TipoOntoDispRolUsuarioProy", b =>
                 {
                     b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(0);
 
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(1);
 
                     b.Property<Guid>("OntologiaID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(2);
 
                     b.Property<short>("RolUsuario")
-                        .HasColumnType("NUMBER(5)");
+                        .HasColumnType("NUMBER(5)")
+                        .HasColumnOrder(3);
 
                     b.HasKey("OrganizacionID", "ProyectoID", "OntologiaID", "RolUsuario");
 
@@ -6889,11 +7437,13 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextOracleMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.RedireccionValorParametro", b =>
                 {
                     b.Property<Guid>("RedireccionID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(0);
 
                     b.Property<string>("ValorParametro")
                         .HasMaxLength(250)
-                        .HasColumnType("NVARCHAR2(250)");
+                        .HasColumnType("NVARCHAR2(250)")
+                        .HasColumnOrder(1);
 
                     b.Property<bool>("MantenerFiltros")
                         .HasColumnType("NUMBER(1)");
@@ -6914,13 +7464,16 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextOracleMigrations
                 {
                     b.Property<string>("Dominio")
                         .HasMaxLength(255)
-                        .HasColumnType("NVARCHAR2(255)");
+                        .HasColumnType("NVARCHAR2(255)")
+                        .HasColumnOrder(0);
 
                     b.Property<string>("SitemapIndexName")
-                        .HasColumnType("NVARCHAR2(450)");
+                        .HasColumnType("NVARCHAR2(450)")
+                        .HasColumnOrder(1);
 
                     b.Property<string>("SitemapContent")
-                        .HasColumnType("NVARCHAR2(2000)");
+                        .HasColumnType("NVARCHAR2(2000)")
+                        .HasColumnOrder(2);
 
                     b.HasKey("Dominio", "SitemapIndexName");
 
@@ -6931,13 +7484,16 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextOracleMigrations
                 {
                     b.Property<string>("Dominio")
                         .HasMaxLength(255)
-                        .HasColumnType("NVARCHAR2(255)");
+                        .HasColumnType("NVARCHAR2(255)")
+                        .HasColumnOrder(0);
 
                     b.Property<string>("Robots")
-                        .HasColumnType("NVARCHAR2(2000)");
+                        .HasColumnType("NVARCHAR2(2000)")
+                        .HasColumnOrder(2);
 
                     b.Property<string>("Sitemap")
-                        .HasColumnType("NVARCHAR2(2000)");
+                        .HasColumnType("NVARCHAR2(2000)")
+                        .HasColumnOrder(1);
 
                     b.HasKey("Dominio");
 
@@ -6947,13 +7503,16 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextOracleMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Solicitud.DatoExtraEcosistemaOpcionSolicitud", b =>
                 {
                     b.Property<Guid>("DatoExtraID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(0);
 
                     b.Property<Guid>("OpcionID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(1);
 
                     b.Property<Guid>("SolicitudID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(2);
 
                     b.HasKey("DatoExtraID", "OpcionID", "SolicitudID");
 
@@ -6965,14 +7524,16 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextOracleMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Solicitud.DatoExtraEcosistemaVirtuosoSolicitud", b =>
                 {
                     b.Property<Guid>("DatoExtraID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(0);
 
                     b.Property<string>("Opcion")
                         .HasMaxLength(500)
                         .HasColumnType("NVARCHAR2(500)");
 
                     b.Property<Guid>("SolicitudID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(1);
 
                     b.HasKey("DatoExtraID", "Opcion", "SolicitudID");
 
@@ -6984,19 +7545,24 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextOracleMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Solicitud.DatoExtraProyectoOpcionSolicitud", b =>
                 {
                     b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(0);
 
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(1);
 
                     b.Property<Guid>("DatoExtraID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(2);
 
                     b.Property<Guid>("OpcionID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(3);
 
                     b.Property<Guid>("SolicitudID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(4);
 
                     b.HasKey("OrganizacionID", "ProyectoID", "DatoExtraID", "OpcionID", "SolicitudID");
 
@@ -7008,16 +7574,20 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextOracleMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Solicitud.DatoExtraProyectoVirtuosoSolicitud", b =>
                 {
                     b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(0);
 
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(1);
 
                     b.Property<Guid>("DatoExtraID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(2);
 
                     b.Property<Guid>("SolicitudID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(3);
 
                     b.Property<string>("Opcion")
                         .IsRequired()
@@ -7058,55 +7628,31 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextOracleMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Solicitud.SolicitudGrupo", b =>
                 {
                     b.Property<Guid>("SolicitudID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(0);
 
                     b.Property<Guid>("GrupoID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(1);
 
                     b.Property<Guid>("IdentidadID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(2);
 
                     b.HasKey("SolicitudID", "GrupoID", "IdentidadID");
 
                     b.ToTable("SolicitudGrupo");
                 });
 
-            modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Solicitud.SolicitudNuevaOrgEmp", b =>
-                {
-                    b.Property<Guid>("SolicitudID")
-                        .HasColumnType("RAW(16)");
-
-                    b.Property<Guid>("UsuarioAdminID")
-                        .HasColumnType("RAW(16)");
-
-                    b.Property<string>("CIF")
-                        .HasMaxLength(9)
-                        .HasColumnType("NVARCHAR2(9)");
-
-                    b.Property<int>("Empleados")
-                        .HasColumnType("NUMBER(10)");
-
-                    b.Property<DateTime?>("FechaFundacion")
-                        .HasColumnType("TIMESTAMP(7)");
-
-                    b.Property<short>("Sector")
-                        .HasColumnType("NUMBER(5)");
-
-                    b.Property<short>("Tipo")
-                        .HasColumnType("NUMBER(5)");
-
-                    b.HasKey("SolicitudID", "UsuarioAdminID");
-
-                    b.ToTable("SolicitudNuevaOrgEmp");
-                });
-
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Solicitud.SolicitudNuevaOrganizacion", b =>
                 {
                     b.Property<Guid>("SolicitudID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(0);
 
                     b.Property<Guid>("UsuarioAdminID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(1);
 
                     b.Property<string>("Alias")
                         .HasMaxLength(80)
@@ -7176,13 +7722,46 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextOracleMigrations
                     b.ToTable("SolicitudNuevaOrganizacion");
                 });
 
+            modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Solicitud.SolicitudNuevaOrgEmp", b =>
+                {
+                    b.Property<Guid>("SolicitudID")
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(0);
+
+                    b.Property<Guid>("UsuarioAdminID")
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(1);
+
+                    b.Property<string>("CIF")
+                        .HasMaxLength(9)
+                        .HasColumnType("NVARCHAR2(9)");
+
+                    b.Property<int>("Empleados")
+                        .HasColumnType("NUMBER(10)");
+
+                    b.Property<DateTime?>("FechaFundacion")
+                        .HasColumnType("TIMESTAMP(7)");
+
+                    b.Property<short>("Sector")
+                        .HasColumnType("NUMBER(5)");
+
+                    b.Property<short>("Tipo")
+                        .HasColumnType("NUMBER(5)");
+
+                    b.HasKey("SolicitudID", "UsuarioAdminID");
+
+                    b.ToTable("SolicitudNuevaOrgEmp");
+                });
+
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Solicitud.SolicitudNuevoProfesor", b =>
                 {
                     b.Property<Guid>("SolicitudID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(0);
 
                     b.Property<Guid>("UsuarioID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(1);
 
                     b.Property<string>("AreaEstudios")
                         .HasMaxLength(255)
@@ -7206,10 +7785,12 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextOracleMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Solicitud.SolicitudNuevoUsuario", b =>
                 {
                     b.Property<Guid>("UsuarioID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(1);
 
                     b.Property<Guid>("SolicitudID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(0);
 
                     b.Property<string>("Apellidos")
                         .IsRequired()
@@ -7290,7 +7871,7 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextOracleMigrations
                         .HasMaxLength(1)
                         .IsUnicode(false)
                         .HasColumnType("CHAR(1)")
-                        .IsFixedLength(true);
+                        .IsFixedLength();
 
                     b.Property<short>("TipoRegistro")
                         .HasColumnType("NUMBER(5)");
@@ -7309,10 +7890,12 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextOracleMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Solicitud.SolicitudOrganizacion", b =>
                 {
                     b.Property<Guid>("SolicitudID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(0);
 
                     b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(1);
 
                     b.HasKey("SolicitudID", "OrganizacionID");
 
@@ -7322,13 +7905,16 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextOracleMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Solicitud.SolicitudUsuario", b =>
                 {
                     b.Property<Guid>("SolicitudID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(0);
 
                     b.Property<Guid>("UsuarioID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(1);
 
                     b.Property<Guid>("PersonaID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(2);
 
                     b.Property<string>("ClausulasAdicionales")
                         .HasMaxLength(1000)
@@ -7345,13 +7931,16 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextOracleMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Suscripcion.CategoriaTesVinSuscrip", b =>
                 {
                     b.Property<Guid>("SuscripcionID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(0);
 
                     b.Property<Guid>("TesauroID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(1);
 
                     b.Property<Guid>("CategoriaTesauroID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(2);
 
                     b.HasKey("SuscripcionID", "TesauroID", "CategoriaTesauroID");
 
@@ -7390,10 +7979,12 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextOracleMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Suscripcion.SuscripcionBlog", b =>
                 {
                     b.Property<Guid>("BlogID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(1);
 
                     b.Property<Guid>("SuscripcionID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(0);
 
                     b.HasKey("BlogID", "SuscripcionID");
 
@@ -7405,10 +7996,12 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextOracleMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Suscripcion.SuscripcionIdentidadProyecto", b =>
                 {
                     b.Property<Guid>("IdentidadID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(1);
 
                     b.Property<Guid>("SuscripcionID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(0);
 
                     b.Property<Guid>("OrganizacionID")
                         .HasColumnType("RAW(16)");
@@ -7474,77 +8067,15 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextOracleMigrations
                     b.ToTable("SuscripcionTesauroUsuario");
                 });
 
-            modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Tesauro.CatTesauroAgCatTesauro", b =>
-                {
-                    b.Property<Guid>("TesauroID")
-                        .HasColumnType("RAW(16)");
-
-                    b.Property<Guid>("CategoriaSuperiorID")
-                        .HasColumnType("RAW(16)");
-
-                    b.Property<Guid>("CategoriaInferiorID")
-                        .HasColumnType("RAW(16)");
-
-                    b.Property<short>("Orden")
-                        .HasColumnType("NUMBER(5)");
-
-                    b.HasKey("TesauroID", "CategoriaSuperiorID", "CategoriaInferiorID");
-
-                    b.HasIndex("TesauroID", "CategoriaInferiorID");
-
-                    b.ToTable("CatTesauroAgCatTesauro");
-                });
-
-            modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Tesauro.CatTesauroCompartida", b =>
-                {
-                    b.Property<Guid>("TesauroOrigenID")
-                        .HasColumnType("RAW(16)");
-
-                    b.Property<Guid>("CategoriaOrigenID")
-                        .HasColumnType("RAW(16)");
-
-                    b.Property<Guid>("TesauroDestinoID")
-                        .HasColumnType("RAW(16)");
-
-                    b.Property<Guid?>("CategoriaSupDestinoID")
-                        .HasColumnType("RAW(16)");
-
-                    b.Property<short>("Orden")
-                        .HasColumnType("NUMBER(5)");
-
-                    b.HasKey("TesauroOrigenID", "CategoriaOrigenID", "TesauroDestinoID");
-
-                    b.HasIndex("TesauroDestinoID", "CategoriaSupDestinoID");
-
-                    b.ToTable("CatTesauroCompartida");
-                });
-
-            modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Tesauro.CatTesauroPermiteTipoRec", b =>
-                {
-                    b.Property<Guid>("TesauroID")
-                        .HasColumnType("RAW(16)");
-
-                    b.Property<Guid>("CategoriaTesauroID")
-                        .HasColumnType("RAW(16)");
-
-                    b.Property<short>("TipoRecurso")
-                        .HasColumnType("NUMBER(5)");
-
-                    b.Property<string>("OntologiasID")
-                        .HasColumnType("NVARCHAR2(2000)");
-
-                    b.HasKey("TesauroID", "CategoriaTesauroID", "TipoRecurso");
-
-                    b.ToTable("CatTesauroPermiteTipoRec");
-                });
-
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Tesauro.CategoriaTesauro", b =>
                 {
                     b.Property<Guid>("TesauroID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(0);
 
                     b.Property<Guid>("CategoriaTesauroID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(1);
 
                     b.Property<short>("Estructurante")
                         .HasColumnType("NUMBER(5)");
@@ -7583,10 +8114,12 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextOracleMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Tesauro.CategoriaTesauroPropiedades", b =>
                 {
                     b.Property<Guid>("TesauroID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(0);
 
                     b.Property<Guid>("CategoriaTesauroID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(1);
 
                     b.Property<short>("Obligatoria")
                         .HasColumnType("NUMBER(5)");
@@ -7634,6 +8167,79 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextOracleMigrations
                     b.ToTable("CategoriaTesauroSugerencia");
                 });
 
+            modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Tesauro.CatTesauroAgCatTesauro", b =>
+                {
+                    b.Property<Guid>("TesauroID")
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(0);
+
+                    b.Property<Guid>("CategoriaSuperiorID")
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(1);
+
+                    b.Property<Guid>("CategoriaInferiorID")
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(2);
+
+                    b.Property<short>("Orden")
+                        .HasColumnType("NUMBER(5)");
+
+                    b.HasKey("TesauroID", "CategoriaSuperiorID", "CategoriaInferiorID");
+
+                    b.HasIndex("TesauroID", "CategoriaInferiorID");
+
+                    b.ToTable("CatTesauroAgCatTesauro");
+                });
+
+            modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Tesauro.CatTesauroCompartida", b =>
+                {
+                    b.Property<Guid>("TesauroOrigenID")
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(0);
+
+                    b.Property<Guid>("CategoriaOrigenID")
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(1);
+
+                    b.Property<Guid>("TesauroDestinoID")
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(2);
+
+                    b.Property<Guid?>("CategoriaSupDestinoID")
+                        .HasColumnType("RAW(16)");
+
+                    b.Property<short>("Orden")
+                        .HasColumnType("NUMBER(5)");
+
+                    b.HasKey("TesauroOrigenID", "CategoriaOrigenID", "TesauroDestinoID");
+
+                    b.HasIndex("TesauroDestinoID", "CategoriaSupDestinoID");
+
+                    b.ToTable("CatTesauroCompartida");
+                });
+
+            modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Tesauro.CatTesauroPermiteTipoRec", b =>
+                {
+                    b.Property<Guid>("TesauroID")
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(0);
+
+                    b.Property<Guid>("CategoriaTesauroID")
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(1);
+
+                    b.Property<short>("TipoRecurso")
+                        .HasColumnType("NUMBER(5)")
+                        .HasColumnOrder(2);
+
+                    b.Property<string>("OntologiasID")
+                        .HasColumnType("NVARCHAR2(2000)");
+
+                    b.HasKey("TesauroID", "CategoriaTesauroID", "TipoRecurso");
+
+                    b.ToTable("CatTesauroPermiteTipoRec");
+                });
+
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Tesauro.Tesauro", b =>
                 {
                     b.Property<Guid>("TesauroID")
@@ -7648,10 +8254,12 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextOracleMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Tesauro.TesauroOrganizacion", b =>
                 {
                     b.Property<Guid>("TesauroID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(0);
 
                     b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(1);
 
                     b.Property<Guid?>("CategoriaTesauroFavoritosID")
                         .HasColumnType("RAW(16)");
@@ -7670,13 +8278,16 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextOracleMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Tesauro.TesauroProyecto", b =>
                 {
                     b.Property<Guid>("TesauroID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(0);
 
                     b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(1);
 
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(2);
 
                     b.Property<string>("IdiomaDefecto")
                         .HasMaxLength(50)
@@ -7690,10 +8301,12 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextOracleMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Tesauro.TesauroUsuario", b =>
                 {
                     b.Property<Guid>("TesauroID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(0);
 
                     b.Property<Guid>("UsuarioID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(1);
 
                     b.Property<Guid?>("CategoriaTesauroMisImagenesID")
                         .HasColumnType("RAW(16)");
@@ -7744,13 +8357,16 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextOracleMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.UsuarioDS.AdministradorOrganizacion", b =>
                 {
                     b.Property<Guid>("UsuarioID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(0);
 
                     b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(1);
 
                     b.Property<short>("Tipo")
-                        .HasColumnType("NUMBER(5)");
+                        .HasColumnType("NUMBER(5)")
+                        .HasColumnOrder(2);
 
                     b.HasKey("UsuarioID", "OrganizacionID", "Tipo");
 
@@ -7762,13 +8378,16 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextOracleMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.UsuarioDS.ClausulaRegistro", b =>
                 {
                     b.Property<Guid>("ClausulaID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(0);
 
                     b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(1);
 
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(2);
 
                     b.Property<int>("Orden")
                         .HasColumnType("NUMBER(10)");
@@ -7795,14 +8414,14 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextOracleMigrations
                         .HasMaxLength(16)
                         .IsUnicode(false)
                         .HasColumnType("CHAR(16)")
-                        .IsFixedLength(true);
+                        .IsFixedLength();
 
                     b.Property<string>("RolPermitido")
                         .IsRequired()
                         .HasMaxLength(16)
                         .IsUnicode(false)
                         .HasColumnType("CHAR(16)")
-                        .IsFixedLength(true);
+                        .IsFixedLength();
 
                     b.HasKey("GrupoUsuarioID");
 
@@ -7818,14 +8437,14 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextOracleMigrations
                         .HasMaxLength(16)
                         .IsUnicode(false)
                         .HasColumnType("CHAR(16)")
-                        .IsFixedLength(true);
+                        .IsFixedLength();
 
                     b.Property<string>("RolPermitido")
                         .IsRequired()
                         .HasMaxLength(16)
                         .IsUnicode(false)
                         .HasColumnType("CHAR(16)")
-                        .IsFixedLength(true);
+                        .IsFixedLength();
 
                     b.HasKey("UsuarioID");
 
@@ -7855,10 +8474,12 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextOracleMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.UsuarioDS.GrupoUsuarioUsuario", b =>
                 {
                     b.Property<Guid>("UsuarioID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(0);
 
                     b.Property<Guid>("GrupoUsuarioID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(1);
 
                     b.HasKey("UsuarioID", "GrupoUsuarioID");
 
@@ -7868,19 +8489,24 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextOracleMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.UsuarioDS.HistoricoProyectoUsuario", b =>
                 {
                     b.Property<Guid>("UsuarioID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(0);
 
                     b.Property<Guid>("OrganizacionGnossID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(1);
 
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(2);
 
                     b.Property<Guid>("IdentidadID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(3);
 
                     b.Property<DateTime>("FechaEntrada")
-                        .HasColumnType("TIMESTAMP(7)");
+                        .HasColumnType("TIMESTAMP(7)")
+                        .HasColumnOrder(4);
 
                     b.Property<DateTime?>("FechaSalida")
                         .HasColumnType("TIMESTAMP(7)");
@@ -7912,81 +8538,57 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextOracleMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.UsuarioDS.OrganizacionRolUsuario", b =>
                 {
                     b.Property<Guid>("UsuarioID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(0);
 
                     b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(1);
 
                     b.Property<string>("RolDenegado")
                         .HasMaxLength(16)
                         .IsUnicode(false)
                         .HasColumnType("CHAR(16)")
-                        .IsFixedLength(true);
+                        .IsFixedLength();
 
                     b.Property<string>("RolPermitido")
                         .IsRequired()
                         .HasMaxLength(16)
                         .IsUnicode(false)
                         .HasColumnType("CHAR(16)")
-                        .IsFixedLength(true);
+                        .IsFixedLength();
 
                     b.HasKey("UsuarioID", "OrganizacionID");
 
                     b.ToTable("OrganizacionRolUsuario");
                 });
 
-            modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.UsuarioDS.ProyRolUsuClausulaReg", b =>
-                {
-                    b.Property<Guid>("ClausulaID")
-                        .HasColumnType("RAW(16)");
-
-                    b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("RAW(16)");
-
-                    b.Property<Guid>("OrganizacionGnossID")
-                        .HasColumnType("RAW(16)");
-
-                    b.Property<Guid>("ProyectoID")
-                        .HasColumnType("RAW(16)");
-
-                    b.Property<Guid>("UsuarioID")
-                        .HasColumnType("RAW(16)");
-
-                    b.Property<bool>("Valor")
-                        .HasColumnType("NUMBER(1)");
-
-                    b.HasKey("ClausulaID", "OrganizacionID", "OrganizacionGnossID", "ProyectoID", "UsuarioID");
-
-                    b.HasIndex("ClausulaID", "OrganizacionID", "ProyectoID");
-
-                    b.HasIndex("OrganizacionGnossID", "ProyectoID", "UsuarioID");
-
-                    b.ToTable("ProyRolUsuClausulaReg");
-                });
-
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.UsuarioDS.ProyectoRolGrupoUsuario", b =>
                 {
                     b.Property<Guid>("OrganizacionGnossID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(0);
 
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(1);
 
                     b.Property<Guid>("GrupoUsuarioID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(2);
 
                     b.Property<string>("RolDenegado")
                         .HasMaxLength(16)
                         .IsUnicode(false)
                         .HasColumnType("CHAR(16)")
-                        .IsFixedLength(true);
+                        .IsFixedLength();
 
                     b.Property<string>("RolPermitido")
                         .IsRequired()
                         .HasMaxLength(16)
                         .IsUnicode(false)
                         .HasColumnType("CHAR(16)")
-                        .IsFixedLength(true);
+                        .IsFixedLength();
 
                     b.HasKey("OrganizacionGnossID", "ProyectoID", "GrupoUsuarioID");
 
@@ -7996,13 +8598,16 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextOracleMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.UsuarioDS.ProyectoRolUsuario", b =>
                 {
                     b.Property<Guid>("OrganizacionGnossID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(0);
 
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(1);
 
                     b.Property<Guid>("UsuarioID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(2);
 
                     b.Property<bool>("EstaBloqueado")
                         .HasColumnType("NUMBER(1)");
@@ -8011,14 +8616,14 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextOracleMigrations
                         .HasMaxLength(16)
                         .IsUnicode(false)
                         .HasColumnType("CHAR(16)")
-                        .IsFixedLength(true);
+                        .IsFixedLength();
 
                     b.Property<string>("RolPermitido")
                         .IsRequired()
                         .HasMaxLength(16)
                         .IsUnicode(false)
                         .HasColumnType("CHAR(16)")
-                        .IsFixedLength(true);
+                        .IsFixedLength();
 
                     b.HasKey("OrganizacionGnossID", "ProyectoID", "UsuarioID");
 
@@ -8030,16 +8635,20 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextOracleMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.UsuarioDS.ProyectoUsuarioIdentidad", b =>
                 {
                     b.Property<Guid>("IdentidadID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(0);
 
                     b.Property<Guid>("UsuarioID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(1);
 
                     b.Property<Guid>("OrganizacionGnossID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(2);
 
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(3);
 
                     b.Property<DateTime?>("FechaEntrada")
                         .HasColumnType("TIMESTAMP(7)");
@@ -8054,6 +8663,40 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextOracleMigrations
                     b.HasIndex("OrganizacionGnossID", "ProyectoID");
 
                     b.ToTable("ProyectoUsuarioIdentidad");
+                });
+
+            modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.UsuarioDS.ProyRolUsuClausulaReg", b =>
+                {
+                    b.Property<Guid>("ClausulaID")
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(0);
+
+                    b.Property<Guid>("OrganizacionID")
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(1);
+
+                    b.Property<Guid>("OrganizacionGnossID")
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(2);
+
+                    b.Property<Guid>("ProyectoID")
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(3);
+
+                    b.Property<Guid>("UsuarioID")
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(4);
+
+                    b.Property<bool>("Valor")
+                        .HasColumnType("NUMBER(1)");
+
+                    b.HasKey("ClausulaID", "OrganizacionID", "OrganizacionGnossID", "ProyectoID", "UsuarioID");
+
+                    b.HasIndex("ClausulaID", "OrganizacionID", "ProyectoID");
+
+                    b.HasIndex("OrganizacionGnossID", "ProyectoID", "UsuarioID");
+
+                    b.ToTable("ProyRolUsuClausulaReg");
                 });
 
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.UsuarioDS.Usuario", b =>
@@ -8127,10 +8770,12 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextOracleMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.UsuarioDS.UsuarioVinculadoLoginRedesSociales", b =>
                 {
                     b.Property<Guid>("UsuarioID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(0);
 
                     b.Property<short>("TipoRedSocial")
-                        .HasColumnType("NUMBER(5)");
+                        .HasColumnType("NUMBER(5)")
+                        .HasColumnOrder(1);
 
                     b.Property<string>("IDenRedSocial")
                         .IsRequired()
@@ -8144,11 +8789,13 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextOracleMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.VistaVirtualDS.VistaVirtual", b =>
                 {
                     b.Property<Guid>("PersonalizacionID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(0);
 
                     b.Property<string>("TipoPagina")
                         .HasMaxLength(100)
-                        .HasColumnType("NVARCHAR2(100)");
+                        .HasColumnType("NVARCHAR2(100)")
+                        .HasColumnOrder(1);
 
                     b.Property<string>("HTML")
                         .IsRequired()
@@ -8162,14 +8809,17 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextOracleMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.VistaVirtualDS.VistaVirtualCMS", b =>
                 {
                     b.Property<Guid>("PersonalizacionID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(0);
 
                     b.Property<string>("TipoComponente")
                         .HasMaxLength(100)
-                        .HasColumnType("NVARCHAR2(100)");
+                        .HasColumnType("NVARCHAR2(100)")
+                        .HasColumnOrder(1);
 
                     b.Property<Guid>("PersonalizacionComponenteID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(2);
 
                     b.Property<string>("DatosExtra")
                         .IsUnicode(false)
@@ -8189,13 +8839,28 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextOracleMigrations
                     b.ToTable("VistaVirtualCMS");
                 });
 
-            modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.VistaVirtualDS.VistaVirtualGadgetRecursos", b =>
+            modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.VistaVirtualDS.VistaVirtualDominio", b =>
                 {
                     b.Property<Guid>("PersonalizacionID")
                         .HasColumnType("RAW(16)");
 
+                    b.Property<string>("Dominio")
+                        .HasColumnType("NVARCHAR2(450)");
+
+                    b.HasKey("PersonalizacionID", "Dominio");
+
+                    b.ToTable("VistaVirtualDominio");
+                });
+
+            modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.VistaVirtualDS.VistaVirtualGadgetRecursos", b =>
+                {
+                    b.Property<Guid>("PersonalizacionID")
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(0);
+
                     b.Property<Guid>("PersonalizacionComponenteID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(1);
 
                     b.Property<string>("HTML")
                         .IsRequired()
@@ -8225,13 +8890,16 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextOracleMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.VistaVirtualDS.VistaVirtualProyecto", b =>
                 {
                     b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(0);
 
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(1);
 
                     b.Property<Guid>("PersonalizacionID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(2);
 
                     b.HasKey("OrganizacionID", "ProyectoID", "PersonalizacionID");
 
@@ -8243,11 +8911,13 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextOracleMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.VistaVirtualDS.VistaVirtualRecursos", b =>
                 {
                     b.Property<Guid>("PersonalizacionID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(0);
 
                     b.Property<string>("RdfType")
                         .HasMaxLength(50)
-                        .HasColumnType("NVARCHAR2(50)");
+                        .HasColumnType("NVARCHAR2(50)")
+                        .HasColumnOrder(1);
 
                     b.Property<string>("HTML")
                         .IsRequired()
@@ -8291,13 +8961,16 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextOracleMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Voto.VotoEntradaBlog", b =>
                 {
                     b.Property<Guid>("BlogID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(0);
 
                     b.Property<Guid>("EntradaBlogID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(1);
 
                     b.Property<Guid>("VotoID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(2);
 
                     b.HasKey("BlogID", "EntradaBlogID", "VotoID");
 
@@ -8309,19 +8982,24 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextOracleMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Voto.VotoMensajeForo", b =>
                 {
                     b.Property<Guid>("VotoID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(0);
 
                     b.Property<Guid>("ForoID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(1);
 
                     b.Property<Guid>("CategoriaForoID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(2);
 
                     b.Property<Guid>("TemaID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(3);
 
                     b.Property<Guid>("MensajeForoID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(4);
 
                     b.HasKey("VotoID", "ForoID", "CategoriaForoID", "TemaID", "MensajeForoID");
 
@@ -8332,11 +9010,13 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextOracleMigrations
                 {
                     b.Property<string>("Parametro")
                         .HasMaxLength(100)
-                        .HasColumnType("NVARCHAR2(100)");
+                        .HasColumnType("NVARCHAR2(100)")
+                        .HasColumnOrder(0);
 
                     b.Property<string>("Valor")
                         .HasMaxLength(1000)
-                        .HasColumnType("NVARCHAR2(1000)");
+                        .HasColumnType("NVARCHAR2(1000)")
+                        .HasColumnOrder(1);
 
                     b.HasKey("Parametro");
 
@@ -8346,13 +9026,16 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextOracleMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.ProyectoRegistroObligatorio", b =>
                 {
                     b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(0);
 
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(1);
 
                     b.Property<short>("VisibilidadUsuariosActivos")
-                        .HasColumnType("NUMBER(5)");
+                        .HasColumnType("NUMBER(5)")
+                        .HasColumnOrder(2);
 
                     b.HasKey("OrganizacionID", "ProyectoID");
 
@@ -8362,16 +9045,20 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextOracleMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.ProyectoSinRegistroObligatorio", b =>
                 {
                     b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(0);
 
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(1);
 
                     b.Property<Guid>("OrganizacionSinRegistroID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(2);
 
                     b.Property<Guid>("ProyectoSinRegistroID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(3);
 
                     b.HasKey("OrganizacionID", "ProyectoID", "OrganizacionSinRegistroID", "ProyectoSinRegistroID");
 
@@ -8383,21 +9070,26 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextOracleMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.TextosPersonalizadosPlataforma", b =>
                 {
                     b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(0);
 
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(1);
 
                     b.Property<string>("TextoID")
                         .HasMaxLength(100)
-                        .HasColumnType("NVARCHAR2(100)");
+                        .HasColumnType("NVARCHAR2(100)")
+                        .HasColumnOrder(2);
 
                     b.Property<string>("Language")
                         .HasMaxLength(10)
-                        .HasColumnType("NVARCHAR2(10)");
+                        .HasColumnType("NVARCHAR2(10)")
+                        .HasColumnOrder(3);
 
                     b.Property<string>("Texto")
-                        .HasColumnType("NVARCHAR2(2000)");
+                        .HasColumnType("NVARCHAR2(2000)")
+                        .HasColumnOrder(4);
 
                     b.HasKey("OrganizacionID", "ProyectoID", "TextoID", "Language");
 
@@ -8426,10 +9118,12 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextOracleMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.Elementos.ParametroGeneralDSName.ConfiguracionAmbitoBusquedaProyecto", b =>
                 {
                     b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(0);
 
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(1);
 
                     b.Property<bool>("Metabusqueda")
                         .HasColumnType("NUMBER(1)");
@@ -8448,16 +9142,20 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextOracleMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.Web.MVC.Models.ProyectoServicioWeb", b =>
                 {
                     b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(0);
 
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(1);
 
                     b.Property<string>("AplicacionWeb")
-                        .HasColumnType("NVARCHAR2(450)");
+                        .HasColumnType("NVARCHAR2(450)")
+                        .HasColumnOrder(2);
 
                     b.Property<string>("Nombre")
-                        .HasColumnType("NVARCHAR2(2000)");
+                        .HasColumnType("NVARCHAR2(2000)")
+                        .HasColumnOrder(3);
 
                     b.HasKey("OrganizacionID", "ProyectoID", "AplicacionWeb");
 
@@ -8484,6 +9182,17 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextOracleMigrations
                         .IsRequired();
 
                     b.Navigation("Blog");
+                });
+
+            modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Carga.CargaPaquete", b =>
+                {
+                    b.HasOne("Es.Riam.Gnoss.AD.EntityModel.Models.Carga.Carga", "Carga")
+                        .WithMany("CargaPaquete")
+                        .HasForeignKey("CargaID")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Carga");
                 });
 
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.CMS.CMSBloque", b =>
@@ -8558,17 +9267,6 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextOracleMigrations
                         .IsRequired();
 
                     b.Navigation("CMSComponente");
-                });
-
-            modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Carga.CargaPaquete", b =>
-                {
-                    b.HasOne("Es.Riam.Gnoss.AD.EntityModel.Models.Carga.Carga", "Carga")
-                        .WithMany("CargaPaquete")
-                        .HasForeignKey("CargaID")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.Navigation("Carga");
                 });
 
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Comentario.Comentario", b =>
@@ -9359,17 +10057,6 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextOracleMigrations
                     b.Navigation("Usuario");
                 });
 
-            modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Peticion.PeticionInvitaContacto", b =>
-                {
-                    b.HasOne("Es.Riam.Gnoss.AD.EntityModel.Models.Peticion.Peticion", "Peticion")
-                        .WithOne("PeticionInvitaContacto")
-                        .HasForeignKey("Es.Riam.Gnoss.AD.EntityModel.Models.Peticion.PeticionInvitaContacto", "PeticionID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Peticion");
-                });
-
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Peticion.PeticionInvitacionComunidad", b =>
                 {
                     b.HasOne("Es.Riam.Gnoss.AD.EntityModel.Models.Peticion.Peticion", "Peticion")
@@ -9386,6 +10073,17 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextOracleMigrations
                     b.HasOne("Es.Riam.Gnoss.AD.EntityModel.Models.Peticion.Peticion", "Peticion")
                         .WithOne("PeticionInvitacionGrupo")
                         .HasForeignKey("Es.Riam.Gnoss.AD.EntityModel.Models.Peticion.PeticionInvitacionGrupo", "PeticionID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Peticion");
+                });
+
+            modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Peticion.PeticionInvitaContacto", b =>
+                {
+                    b.HasOne("Es.Riam.Gnoss.AD.EntityModel.Models.Peticion.Peticion", "Peticion")
+                        .WithOne("PeticionInvitaContacto")
+                        .HasForeignKey("Es.Riam.Gnoss.AD.EntityModel.Models.Peticion.PeticionInvitaContacto", "PeticionID")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -9764,6 +10462,28 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextOracleMigrations
                     b.Navigation("ProyectoPestanyaMenu");
                 });
 
+            modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.ProyectoDS.ProyectoPestanyaDashboardAsistente", b =>
+                {
+                    b.HasOne("Es.Riam.Gnoss.AD.EntityModel.Models.ProyectoDS.ProyectoPestanyaMenu", "ProyectoPestanyaMenu")
+                        .WithMany("ProyectoPestanyaDashboardAsistente")
+                        .HasForeignKey("PestanyaID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("ProyectoPestanyaMenu");
+                });
+
+            modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.ProyectoDS.ProyectoPestanyaDashboardAsistenteDataset", b =>
+                {
+                    b.HasOne("Es.Riam.Gnoss.AD.EntityModel.Models.ProyectoDS.ProyectoPestanyaDashboardAsistente", "ProyectoPestanyaDashboardAsistente")
+                        .WithMany("ProyectoPestanyaDashboardAsistenteDataset")
+                        .HasForeignKey("AsisID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("ProyectoPestanyaDashboardAsistente");
+                });
+
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.ProyectoDS.ProyectoPestanyaFiltroOrdenRecursos", b =>
                 {
                     b.HasOne("Es.Riam.Gnoss.AD.EntityModel.Models.ProyectoDS.ProyectoPestanyaMenu", "ProyectoPestanyaMenu")
@@ -9965,17 +10685,6 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextOracleMigrations
                     b.Navigation("Solicitud");
                 });
 
-            modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Solicitud.SolicitudNuevaOrgEmp", b =>
-                {
-                    b.HasOne("Es.Riam.Gnoss.AD.EntityModel.Models.Solicitud.SolicitudNuevaOrganizacion", "SolicitudNuevaOrganizacion")
-                        .WithOne("SolicitudNuevaOrgEmp")
-                        .HasForeignKey("Es.Riam.Gnoss.AD.EntityModel.Models.Solicitud.SolicitudNuevaOrgEmp", "SolicitudID", "UsuarioAdminID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("SolicitudNuevaOrganizacion");
-                });
-
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Solicitud.SolicitudNuevaOrganizacion", b =>
                 {
                     b.HasOne("Es.Riam.Gnoss.AD.EntityModel.Models.Solicitud.Solicitud", "Solicitud")
@@ -9985,6 +10694,17 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextOracleMigrations
                         .IsRequired();
 
                     b.Navigation("Solicitud");
+                });
+
+            modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Solicitud.SolicitudNuevaOrgEmp", b =>
+                {
+                    b.HasOne("Es.Riam.Gnoss.AD.EntityModel.Models.Solicitud.SolicitudNuevaOrganizacion", "SolicitudNuevaOrganizacion")
+                        .WithOne("SolicitudNuevaOrgEmp")
+                        .HasForeignKey("Es.Riam.Gnoss.AD.EntityModel.Models.Solicitud.SolicitudNuevaOrgEmp", "SolicitudID", "UsuarioAdminID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("SolicitudNuevaOrganizacion");
                 });
 
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Solicitud.SolicitudNuevoProfesor", b =>
@@ -10097,6 +10817,34 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextOracleMigrations
                     b.Navigation("Suscripcion");
                 });
 
+            modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Tesauro.CategoriaTesauro", b =>
+                {
+                    b.HasOne("Es.Riam.Gnoss.AD.EntityModel.Models.Tesauro.Tesauro", "Tesauro")
+                        .WithMany("CategoriaTesauro")
+                        .HasForeignKey("TesauroID")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Tesauro");
+                });
+
+            modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Tesauro.CategoriaTesauroSugerencia", b =>
+                {
+                    b.HasOne("Es.Riam.Gnoss.AD.EntityModel.Models.Tesauro.Tesauro", "Tesauro")
+                        .WithMany("CategoriaTesauroSugerencia")
+                        .HasForeignKey("TesauroSugerenciaID")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Es.Riam.Gnoss.AD.EntityModel.Models.Tesauro.CategoriaTesauro", "CategoriaTesauro")
+                        .WithMany("CategoriaTesauroSugerencia")
+                        .HasForeignKey("TesauroCatPadreID", "CategoriaTesauroPadreID");
+
+                    b.Navigation("CategoriaTesauro");
+
+                    b.Navigation("Tesauro");
+                });
+
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Tesauro.CatTesauroAgCatTesauro", b =>
                 {
                     b.HasOne("Es.Riam.Gnoss.AD.EntityModel.Models.Tesauro.CategoriaTesauro", "CategoriaTesauro")
@@ -10131,34 +10879,6 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextOracleMigrations
                     b.Navigation("CategoriaTesauro");
 
                     b.Navigation("CategoriaTesauro1");
-                });
-
-            modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Tesauro.CategoriaTesauro", b =>
-                {
-                    b.HasOne("Es.Riam.Gnoss.AD.EntityModel.Models.Tesauro.Tesauro", "Tesauro")
-                        .WithMany("CategoriaTesauro")
-                        .HasForeignKey("TesauroID")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.Navigation("Tesauro");
-                });
-
-            modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Tesauro.CategoriaTesauroSugerencia", b =>
-                {
-                    b.HasOne("Es.Riam.Gnoss.AD.EntityModel.Models.Tesauro.Tesauro", "Tesauro")
-                        .WithMany("CategoriaTesauroSugerencia")
-                        .HasForeignKey("TesauroSugerenciaID")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("Es.Riam.Gnoss.AD.EntityModel.Models.Tesauro.CategoriaTesauro", "CategoriaTesauro")
-                        .WithMany("CategoriaTesauroSugerencia")
-                        .HasForeignKey("TesauroCatPadreID", "CategoriaTesauroPadreID");
-
-                    b.Navigation("CategoriaTesauro");
-
-                    b.Navigation("Tesauro");
                 });
 
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Tesauro.TesauroOrganizacion", b =>
@@ -10276,25 +10996,6 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextOracleMigrations
                     b.Navigation("Usuario");
                 });
 
-            modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.UsuarioDS.ProyRolUsuClausulaReg", b =>
-                {
-                    b.HasOne("Es.Riam.Gnoss.AD.EntityModel.Models.UsuarioDS.ClausulaRegistro", "ClausulaRegistro")
-                        .WithMany("ProyRolUsuClausulaReg")
-                        .HasForeignKey("ClausulaID", "OrganizacionID", "ProyectoID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Es.Riam.Gnoss.AD.EntityModel.Models.UsuarioDS.ProyectoRolUsuario", "ProyectoRolUsuario")
-                        .WithMany("ProyRolUsuClausulaReg")
-                        .HasForeignKey("OrganizacionGnossID", "ProyectoID", "UsuarioID")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.Navigation("ClausulaRegistro");
-
-                    b.Navigation("ProyectoRolUsuario");
-                });
-
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.UsuarioDS.ProyectoRolUsuario", b =>
                 {
                     b.HasOne("Es.Riam.Gnoss.AD.EntityModel.Models.UsuarioDS.Usuario", null)
@@ -10329,6 +11030,25 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextOracleMigrations
                     b.Navigation("Proyecto");
 
                     b.Navigation("Usuario");
+                });
+
+            modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.UsuarioDS.ProyRolUsuClausulaReg", b =>
+                {
+                    b.HasOne("Es.Riam.Gnoss.AD.EntityModel.Models.UsuarioDS.ClausulaRegistro", "ClausulaRegistro")
+                        .WithMany("ProyRolUsuClausulaReg")
+                        .HasForeignKey("ClausulaID", "OrganizacionID", "ProyectoID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Es.Riam.Gnoss.AD.EntityModel.Models.UsuarioDS.ProyectoRolUsuario", "ProyectoRolUsuario")
+                        .WithMany("ProyRolUsuClausulaReg")
+                        .HasForeignKey("OrganizacionGnossID", "ProyectoID", "UsuarioID")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("ClausulaRegistro");
+
+                    b.Navigation("ProyectoRolUsuario");
                 });
 
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.UsuarioDS.UsuarioContadores", b =>
@@ -10379,6 +11099,17 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextOracleMigrations
                 {
                     b.HasOne("Es.Riam.Gnoss.AD.EntityModel.Models.VistaVirtualDS.VistaVirtualPersonalizacion", "VistaVirtualPersonalizacion")
                         .WithMany("VistaVirtualCMS")
+                        .HasForeignKey("PersonalizacionID")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("VistaVirtualPersonalizacion");
+                });
+
+            modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.VistaVirtualDS.VistaVirtualDominio", b =>
+                {
+                    b.HasOne("Es.Riam.Gnoss.AD.EntityModel.Models.VistaVirtualDS.VistaVirtualPersonalizacion", "VistaVirtualPersonalizacion")
+                        .WithMany("VistaVirtualDominio")
                         .HasForeignKey("PersonalizacionID")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
@@ -10459,6 +11190,11 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextOracleMigrations
                     b.Navigation("BlogComunidad");
                 });
 
+            modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Carga.Carga", b =>
+                {
+                    b.Navigation("CargaPaquete");
+                });
+
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.CMS.CMSBloque", b =>
                 {
                     b.Navigation("CMSBloqueComponente");
@@ -10483,11 +11219,6 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextOracleMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.CMS.CMSPagina", b =>
                 {
                     b.Navigation("CMSBloque");
-                });
-
-            modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Carga.Carga", b =>
-                {
-                    b.Navigation("CargaPaquete");
                 });
 
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Comentario.Comentario", b =>
@@ -10689,11 +11420,11 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextOracleMigrations
 
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Peticion.Peticion", b =>
                 {
+                    b.Navigation("PeticionInvitaContacto");
+
                     b.Navigation("PeticionInvitacionComunidad");
 
                     b.Navigation("PeticionInvitacionGrupo");
-
-                    b.Navigation("PeticionInvitaContacto");
 
                     b.Navigation("PeticionNuevoProyecto");
 
@@ -10776,9 +11507,9 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextOracleMigrations
 
                     b.Navigation("ProyectoServicioExterno");
 
-                    b.Navigation("ProyectosMasActivos");
-
                     b.Navigation("ProyectoUsuarioIdentidad");
+
+                    b.Navigation("ProyectosMasActivos");
                 });
 
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.ProyectoDS.ProyectoEvento", b =>
@@ -10812,6 +11543,11 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextOracleMigrations
                     b.Navigation("ProyectoPestanyaBusquedaExportacionPropiedad");
                 });
 
+            modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.ProyectoDS.ProyectoPestanyaDashboardAsistente", b =>
+                {
+                    b.Navigation("ProyectoPestanyaDashboardAsistenteDataset");
+                });
+
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.ProyectoDS.ProyectoPestanyaMenu", b =>
                 {
                     b.Navigation("ConfigAutocompletarProy");
@@ -10827,6 +11563,8 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextOracleMigrations
                     b.Navigation("ProyectoPestanyaBusqueda");
 
                     b.Navigation("ProyectoPestanyaCMS");
+
+                    b.Navigation("ProyectoPestanyaDashboardAsistente");
 
                     b.Navigation("ProyectoPestanyaFiltroOrdenRecursos");
 
@@ -10890,8 +11628,6 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextOracleMigrations
 
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Tesauro.CategoriaTesauro", b =>
                 {
-                    b.Navigation("CategoriaTesauroSugerencia");
-
                     b.Navigation("CatTesauroAgCatTesauroInferior");
 
                     b.Navigation("CatTesauroAgCatTesauroSuperior");
@@ -10899,6 +11635,8 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextOracleMigrations
                     b.Navigation("CatTesauroCompartida");
 
                     b.Navigation("CatTesauroCompartida1");
+
+                    b.Navigation("CategoriaTesauroSugerencia");
 
                     b.Navigation("DocumentoWebAgCatTesauro");
                 });
@@ -10962,6 +11700,8 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextOracleMigrations
                     b.Navigation("VistaVirtual");
 
                     b.Navigation("VistaVirtualCMS");
+
+                    b.Navigation("VistaVirtualDominio");
 
                     b.Navigation("VistaVirtualGadgetRecursos");
 

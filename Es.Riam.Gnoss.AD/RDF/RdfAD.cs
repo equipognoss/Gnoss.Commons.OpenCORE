@@ -1,5 +1,6 @@
 using Es.Riam.AbstractsOpen;
 using Es.Riam.Gnoss.AD.EntityModel;
+using Es.Riam.Gnoss.AD.EntityModelBASE;
 using Es.Riam.Gnoss.AD.RDF.Model;
 using Es.Riam.Gnoss.Util.Configuracion;
 using Es.Riam.Gnoss.Util.General;
@@ -85,6 +86,15 @@ namespace Es.Riam.Gnoss.AD.RDF
             mLoggingService = loggingService;
             mCaracteresDoc = pCaracteresDoc;
             this.CargarConsultasYDataAdapters(IBD);
+        }
+
+        public RdfAD(string pFicheroConfiguracionBD, string pCaracteresDoc, LoggingService loggingService, EntityContext entityContext, EntityContextBASE entityContextBASE, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication)
+            : base(pFicheroConfiguracionBD, loggingService, entityContext, configService, entityContextBASE, servicesUtilVirtuosoAndReplication)
+        {
+            mLoggingService = loggingService;
+            mCaracteresDoc = pCaracteresDoc;
+            this.CargarConsultasYDataAdapters(IBD);
+
         }
 
         #endregion
@@ -221,7 +231,7 @@ namespace Es.Riam.Gnoss.AD.RDF
                         DbCommand dbCommand = ObtenerComando(update);
                         AgregarParametro(dbCommand, IBD.ToParam("RdfSem"), DbType.String, filaDoc.RdfSem);
                         AgregarParametro(dbCommand, IBD.ToParam("RdfDoc"), DbType.String, filaDoc.RdfDoc);
-                        ActualizarBaseDeDatos(dbCommand, true, esOracle);
+                        ActualizarBaseDeDatos(dbCommand, true, esOracle, esPostgre, mEntityContextBASE);
                     }
 
                     modificadosDS.Dispose();
@@ -549,13 +559,20 @@ namespace Es.Riam.Gnoss.AD.RDF
             string existeTabla = "SELECT 1 FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE = 'BASE TABLE' AND TABLE_NAME = " + IBD.ToParam("nombreTabla");
             if (ConexionMaster is OracleConnection)
             {
-                existeTabla = "SELECT 1 FROM all_tables WHERE TABLE_NAME = " + IBD.ToParam("nombreTabla");
+                existeTabla = "SELECT 1 FROM all_tables WHERE TABLE_NAME = " + IBD.ToParam("nombreTabla") + " AND OWNER = " + IBD.ToParam("owner");
             }
 
             DbCommand cmdExisteTabla = ObtenerComando(existeTabla);
             AgregarParametro(cmdExisteTabla, IBD.ToParam("nombreTabla"), DbType.String, pNombreTabla);
 
-            object resultado = EjecutarEscalar(cmdExisteTabla, true);
+            if(ConexionMaster is OracleConnection)
+            {
+                OracleConnectionStringBuilder stringBuilder = new OracleConnectionStringBuilder(ConexionMaster.ConnectionString);
+                string userID = stringBuilder.UserID;
+                AgregarParametro(cmdExisteTabla, IBD.ToParam("owner"), DbType.String, userID);
+            }
+
+            object resultado = EjecutarEscalar(cmdExisteTabla, true, true, mEntityContextBASE);
             int resultadoOracle = 0;
             try
             {
@@ -578,7 +595,7 @@ namespace Es.Riam.Gnoss.AD.RDF
             {
                 DbCommand cmdCrearTabla = ObtenerComando($"CREATE TABLE {pNombreTabla} ([DocumentoID] [uniqueidentifier] NOT NULL, [ProyectoID] [uniqueidentifier] NOT NULL, [RdfSem] [nvarchar](max) NULL, [RdfDoc] [nvarchar](max) NULL, CONSTRAINT [PK_{pNombreTabla}] PRIMARY KEY CLUSTERED ([DocumentoID] ASC, [ProyectoID] ASC)WITH (PAD_INDEX  = OFF, IGNORE_DUP_KEY = OFF) ON [PRIMARY]) ON [PRIMARY]");
 
-                ActualizarBaseDeDatos(cmdCrearTabla);
+                ActualizarBaseDeDatos(cmdCrearTabla, true, false, false, mEntityContextBASE);
             }
         }
 
@@ -592,7 +609,7 @@ namespace Es.Riam.Gnoss.AD.RDF
             {
                 DbCommand cmdCrearTabla = ObtenerComando($"CREATE TABLE \"{pNombreTabla}\" (\"DocumentoID\" RAW(16) NOT NULL, \"ProyectoID\" RAW(16) NOT NULL, \"RdfSem\" NCLOB NULL, \"RdfDoc\" NCLOB NULL, PRIMARY KEY(\"DocumentoID\", \"ProyectoID\"))");
 
-                ActualizarBaseDeDatos(cmdCrearTabla, true, true);
+                ActualizarBaseDeDatos(cmdCrearTabla, true, true, false, mEntityContextBASE);
             }
         }
 
@@ -606,7 +623,7 @@ namespace Es.Riam.Gnoss.AD.RDF
             {
                 DbCommand cmdCrearTabla = ObtenerComando($"CREATE TABLE \"{pNombreTabla}\" (\"DocumentoID\" UUID NOT NULL, \"ProyectoID\" UUID NOT NULL, \"RdfSem\" VARCHAR, \"RdfDoc\" VARCHAR, PRIMARY KEY (\"DocumentoID\", \"ProyectoID\"))");
 
-                ActualizarBaseDeDatos(cmdCrearTabla, true, true, true);
+                ActualizarBaseDeDatos(cmdCrearTabla, true, false, true, mEntityContextBASE);
                 TerminarTransaccion(true);
             }
         }

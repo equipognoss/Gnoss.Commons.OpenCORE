@@ -960,7 +960,7 @@ namespace Es.Riam.Gnoss.AD
                     pComando.Connection = pEntityContextBASE.Database.GetDbConnection();
                     if (pComando.Connection.State != ConnectionState.Open)
                     {
-                        mLoggingService.GuardarLog($"cadena de conexion: {pComando.Connection.ConnectionString}");
+                        //mLoggingService.GuardarLog($"cadena de conexion: {pComando.Connection.ConnectionString}");
                        
                         pComando.Connection.Open();
                     }
@@ -1027,7 +1027,7 @@ namespace Es.Riam.Gnoss.AD
             {
                 bool transaccionIniciada = pIniciarTransaccion;
 
-                if (pIniciarTransaccion)
+                if (pIniciarTransaccion && pEntityContextBASE == null)
                 {
                     transaccionIniciada = IniciarTransaccion(false);
                 }
@@ -1048,7 +1048,7 @@ namespace Es.Riam.Gnoss.AD
                         pComando.Connection = ConexionMaster;
                     }
                     pComando.CommandTimeout = 600;
-                    if (Transaccion != null && pComando.Connection.Database.Equals(Transaccion.Connection.Database))
+                    if (Transaccion != null && pComando.Connection.Equals(Transaccion.Connection))
                     {
                         pComando.Transaction = Transaccion;
                     }
@@ -1366,14 +1366,14 @@ namespace Es.Riam.Gnoss.AD
         }
 
 
-        /// <summary>
-        /// Inicia una transacción, si no estaba ya iniciada
-        /// </summary>
-        /// <param name="pIniciarTransaccionEntity">Comando con la consulta para paginar</param>
-        /// <returns>True si ha inicado la transacción, false si ya estaba iniciada</returns>
-        public virtual bool IniciarTransaccion(bool pIniciarTransaccionEntity = true)
+		/// <summary>
+		/// Inicia una transacción, si no estaba ya iniciada
+		/// </summary>
+		/// <param name="pIniciarTransaccionEntity">Comando con la consulta para paginar</param>
+		/// <returns>True si ha inicado la transacción, false si ya estaba iniciada</returns>
+		public virtual bool IniciarTransaccion(bool pIniciarTransaccionEntity = true)
         {
-            if (ConexionMaster is OracleConnection)
+			if (ConexionMaster is OracleConnection)
             {
                 string nombreTransaccion = $"Transaccion_{((OracleConnection)ConexionMaster).ToString().ToLower()}";
                 if (TransaccionesPendientes.ContainsKey(nombreTransaccion) || Transaccion != null)
@@ -1385,16 +1385,114 @@ namespace Es.Riam.Gnoss.AD
                 else
                 {
                     DbTransaction transaccion = ConexionMaster.BeginTransaction();
-                    mEntityContext.Database.UseTransaction(transaccion);
+                    
+                    if (mEntityContext.Database.GetDbConnection().Equals(ConexionMaster))
+                    {
+                        mEntityContext.Database.UseTransaction(transaccion);
+                    }
 
                     if (NoConfirmarTransacciones)
                     {
                         TransaccionesPendientes.Add(nombreTransaccion, transaccion);
                     }
-                    if (pIniciarTransaccionEntity)
-                    {
-                        IniciarTransaccionEntityContext();
+                    //if (pIniciarTransaccionEntity)
+                    //{
+                    //    IniciarTransaccionEntityContext();
+                    //}
+
+                    return true;
+                }
+            }
+            else if (ConexionMaster is NpgsqlConnection)
+            {
+                string nombreTransaccion = $"Transaccion_{((NpgsqlConnection)ConexionMaster).ToString().ToLower()}";
+                if (TransaccionesPendientes.ContainsKey(nombreTransaccion) || Transaccion != null)
+                {
+                    //transaccion = (DbTransaction)UtilPeticion.ObtenerObjetoDePeticion(nombreTransaccion);
+                    return false;
+                }
+                else
+                {
+					DbTransaction transaccion = ConexionMaster.BeginTransaction();
+
+					if (mEntityContext.Database.GetDbConnection().Equals(ConexionMaster))
+					{
+						mEntityContext.Database.UseTransaction(transaccion);
+					}
+					if (NoConfirmarTransacciones)
+                    {   
+                        TransaccionesPendientes.Add(nombreTransaccion, transaccion);                        
                     }
+                    //if (pIniciarTransaccionEntity)
+                    //{
+                    //    IniciarTransaccionEntityContext();
+                    //}
+
+                    return true;
+                }
+            }
+            else
+            {
+                string nombreTransaccion = $"Transaccion_{((SqlConnection)ConexionMaster).ClientConnectionId.ToString().ToLower()}";
+                if (TransaccionesPendientes.ContainsKey(nombreTransaccion) || Transaccion != null)
+                {
+                    return false;
+                }
+                else
+                {
+					DbTransaction transaccion = ConexionMaster.BeginTransaction();
+
+					if (mEntityContext.Database.GetDbConnection().Equals(ConexionMaster))
+					{
+						mEntityContext.Database.UseTransaction(transaccion);
+					}
+
+					if (NoConfirmarTransacciones)
+                    {
+                        TransaccionesPendientes.Add(nombreTransaccion, transaccion);
+                    }
+                    //if (pIniciarTransaccionEntity)
+                    //{
+                    //    IniciarTransaccionEntityContext();
+                    //}
+
+                    return true;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Inicia una transacción, si no estaba ya iniciada
+        /// </summary>
+        /// <param name="pIniciarTransaccionEntity">Comando con la consulta para paginar</param>
+        /// <returns>True si ha inicado la transacción, false si ya estaba iniciada</returns>
+        public virtual bool IniciarTransaccionBASE(bool pIniciarTransaccionEntity = true)
+        {
+            if (ConexionMaster is OracleConnection)
+            {
+                string nombreTransaccion = $"Transaccion_{((OracleConnection)ConexionMaster).ToString().ToLower()}";
+                if (TransaccionesPendientes.ContainsKey(nombreTransaccion) || Transaccion != null)
+                {
+
+                    //transaccion = (DbTransaction)UtilPeticion.ObtenerObjetoDePeticion(nombreTransaccion);
+                    return false;
+                }
+                else
+                {
+                    DbTransaction transaccion = ConexionMaster.BeginTransaction();
+                    if (mEntityContextBASE.Database.GetDbConnection().Equals(ConexionMaster))
+                    {
+                        mEntityContextBASE.Database.UseTransaction(transaccion);
+                    }
+
+                    if (NoConfirmarTransacciones)
+                    {
+                        TransaccionesPendientes.Add(nombreTransaccion, transaccion);
+                    }
+                    //if (pIniciarTransaccionEntity)
+                    //{
+                    //    IniciarTransaccionEntityContext();
+                    //}
 
                     return true;
                 }
@@ -1410,16 +1508,18 @@ namespace Es.Riam.Gnoss.AD
                 else
                 {
                     DbTransaction transaccion = ConexionMaster.BeginTransaction();
-                    mEntityContext.Database.UseTransaction(transaccion);
-
-                    if (NoConfirmarTransacciones)
-                    {   
-                        TransaccionesPendientes.Add(nombreTransaccion, transaccion);                        
-                    }
-                    if (pIniciarTransaccionEntity)
+                    if (mEntityContextBASE.Database.GetDbConnection().Equals(ConexionMaster))
                     {
-                        IniciarTransaccionEntityContext();
+                        mEntityContextBASE.Database.UseTransaction(transaccion);
                     }
+                    if (NoConfirmarTransacciones)
+                    {
+                        TransaccionesPendientes.Add(nombreTransaccion, transaccion);
+                    }
+                    //if (pIniciarTransaccionEntity)
+                    //{
+                    //    IniciarTransaccionEntityContext();
+                    //}
 
                     return true;
                 }
@@ -1434,21 +1534,26 @@ namespace Es.Riam.Gnoss.AD
                 else
                 {
                     DbTransaction transaccion = ConexionMaster.BeginTransaction();
-                    mEntityContext.Database.UseTransaction(transaccion);
+
+                    if (mEntityContextBASE.Database.GetDbConnection().Equals(ConexionMaster))
+                    {
+                        mEntityContextBASE.Database.UseTransaction(transaccion);
+                    }
 
                     if (NoConfirmarTransacciones)
                     {
                         TransaccionesPendientes.Add(nombreTransaccion, transaccion);
                     }
-                    if (pIniciarTransaccionEntity)
-                    {
-                        IniciarTransaccionEntityContext();
-                    }
+                    //if (pIniciarTransaccionEntity)
+                    //{
+                    //    IniciarTransaccionEntityContext();
+                    //}
 
                     return true;
                 }
             }
         }
+
 
         public bool IniciarTransaccionEntityContext()
         {
@@ -1505,7 +1610,36 @@ namespace Es.Riam.Gnoss.AD
             }
         }
 
-        
+        /// <summary>
+        /// Terminamos la transaccción
+        /// </summary>
+        /// <param name="pExito">Verdad si se deba hacer commit. Falso si se debe deshacer la transacción</param>
+        public virtual void TerminarTransaccionBASE(bool pExito)
+        {
+            if (!NoConfirmarTransacciones)
+            {
+                if (TransaccionBASE != null)
+                {
+                    if (pExito)
+                    {
+                        mEntityContextBASE.Database.CommitTransaction();
+                    }
+                    else if (TransaccionBASE.Connection != null)
+                    {
+                        try
+                        {
+                            mEntityContextBASE.Database.RollbackTransaction();
+                        }
+                        catch (Exception ex)
+                        {
+                            mLoggingService.GuardarLogError(ex);
+                        }
+                    }
+                }
+            }
+        }
+
+
         #endregion
 
         #endregion

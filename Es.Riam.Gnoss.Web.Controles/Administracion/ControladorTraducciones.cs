@@ -73,7 +73,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
                     filaTextosPersonalizadosPersonalizacionRow.Texto = ptexto;
                     pTextosPersonalizadosDSGuardado.ListaTextosPersonalizadosPersonalizacion.Add(filaTextosPersonalizadosPersonalizacionRow);
                     gestorController.AddTextosPersonalizadosPersonalizacion(filaTextosPersonalizadosPersonalizacionRow);
-                    gestorController.saveChanges();
+                    gestorController.SaveChanges();
                 }
                 else
                 {
@@ -85,7 +85,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
                             filaTextoPersonalizado = gestorController.ObtenerTextoPersonalizadoPersonalizacion(pPersonalizacionID, pTextoID, pIdioma);
                         }
                         filaTextoPersonalizado.Texto = ptexto;
-                        gestorController.saveChanges();
+                        gestorController.SaveChanges();
                     }
                     else
                     {
@@ -101,7 +101,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
                     //   filaTextoPersonalizado.Delete();
                     pTextosPersonalizadosDSGuardado.ListaTextosPersonalizadosPersonalizacion.Remove(filaTextoPersonalizado);
                     gestorController.DeleteTextoPersonalizadoPersonalizacion(filaTextoPersonalizado);
-                    gestorController.saveChanges();
+                    gestorController.SaveChanges();
                 }
             }
         }

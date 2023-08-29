@@ -1,6 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Resources language="English" code="en">
 	<page name="COMMON">
+		<Resource tag="BUSQUEDA">Search of</Resource>
 		<Resource tag="RELATEDTO">Related to</Resource>
 		<Resource tag="BASERECURSOS">Resources</Resource>
 		<Resource tag="SUBIRNEWSLETTER">Add a new newsletter</Resource>
@@ -215,7 +216,7 @@
 		<Resource tag="HAZTEMIEMBROVOTAR">Become a member to vote</Resource>
 		<Resource tag="ADMINISTRARNUEVASCOMUNIDADES">Manage requests from new communities</Resource>
 		<Resource tag="ADMINIISTRARUSUARIOSCOMUNIDAD">User access requests in the community</Resource>
-		<Resource tag="NAVEGACION">Navegación</Resource>
+		<Resource tag="NAVEGACION">Navigation</Resource>
 		<Resource tag="MIS_IDENTIDADES">MY IDENTITIES</Resource>
 		<Resource tag="ARRASTRA_Y_SUELTA">Drag and drop a photo for your profile in the dotted area</Resource>
 		<Resource tag="IMAGENES_FORMATO_JPG_PNG">Images in .PNG or .JPG format</Resource>
@@ -2609,25 +2610,25 @@
 		<Resource tag="COMPONENTEGUARDADOOK"></Resource>
 		<Resource tag="COMPONENTENUEVO"></Resource>
 		<Resource tag="COMPONENTEEDICION"></Resource>
-		<Resource tag="COMPONENTE_HTML"></Resource>
-		<Resource tag="COMPONENTE_DESTACADO"></Resource>
-		<Resource tag="COMPONENTE_LISTADOESTATICO"></Resource>
-		<Resource tag="COMPONENTE_LISTADODINAMICO"></Resource>
-		<Resource tag="COMPONENTE_ACTIVIDADRECIENTE"></Resource>
-		<Resource tag="COMPONENTE_GRUPOCOMPONENTES"></Resource>
-		<Resource tag="COMPONENTE_TESAURO"></Resource>
-		<Resource tag="COMPONENTE_RECURSOSDESTACADOS"></Resource>
-		<Resource tag="COMPONENTE_RECURSOSDESTACADOSESTATICO"></Resource>
-		<Resource tag="COMPONENTE_DATOSCOMUNIDAD"></Resource>
-		<Resource tag="COMPONENTE_USUARIOSRECOMENDADOS"></Resource>
-		<Resource tag="COMPONENTE_CAJABUSCADOR"></Resource>
-		<Resource tag="COMPONENTE_RECURSODESTACADO"></Resource>
-		<Resource tag="COMPONENTE_FACETA"></Resource>
-		<Resource tag="COMPONENTE_LISTADOUSUARIOS"></Resource>
-		<Resource tag="COMPONENTE_LISTADOPROYECTOS"></Resource>
-		<Resource tag="COMPONENTE_RESUMENPERFIL"></Resource>
-		<Resource tag="COMPONENTE_MASVISTOS"></Resource>
-		<Resource tag="COMPONENTE_ENVIOCORREO"></Resource>
+		<Resource tag="COMPONENTE_HTML">Free HTML</Resource>
+		<Resource tag="COMPONENTE_DESTACADO">Outstanding</Resource>
+		<Resource tag="COMPONENTE_LISTADOESTATICO">Dynamic list</Resource>
+		<Resource tag="COMPONENTE_LISTADODINAMICO">Static list</Resource>
+		<Resource tag="COMPONENTE_ACTIVIDADRECIENTE">Recent activity</Resource>
+		<Resource tag="COMPONENTE_GRUPOCOMPONENTES">Component group</Resource>
+		<Resource tag="COMPONENTE_TESAURO">Thesaurus</Resource>
+		<Resource tag="COMPONENTE_RECURSOSDESTACADOS">Featured resources</Resource>
+		<Resource tag="COMPONENTE_RECURSOSDESTACADOSESTATICO">Static featured resource</Resource>
+		<Resource tag="COMPONENTE_DATOSCOMUNIDAD">Community data</Resource>
+		<Resource tag="COMPONENTE_USUARIOSRECOMENDADOS">Recommended people</Resource>
+		<Resource tag="COMPONENTE_CAJABUSCADOR">Search box</Resource>
+		<Resource tag="COMPONENTE_RECURSODESTACADO">Featured resource</Resource>
+		<Resource tag="COMPONENTE_FACETA">Facet</Resource>
+		<Resource tag="COMPONENTE_LISTADOUSUARIOS">User list</Resource>
+		<Resource tag="COMPONENTE_LISTADOPROYECTOS">Project list</Resource>
+		<Resource tag="COMPONENTE_RESUMENPERFIL">Profile summary</Resource>
+		<Resource tag="COMPONENTE_MASVISTOS">Most visited</Resource>
+		<Resource tag="COMPONENTE_ENVIOCORREO">Send mail</Resource>
 		<Resource tag="PROPIEDADNOVACIA"></Resource>
 		<Resource tag="PROPIEDADNUMEROINCORRECTO"></Resource>
 		<Resource tag="PROPIEDADLISTADOGUIDSINCORRECTO"></Resource>
@@ -2703,6 +2704,7 @@
 		<Resource tag="TIPOLISTADOPROYECTOS_RECOMENDADOSUSUARIO"></Resource>
 		<Resource tag="TIPOLISTADOPROYECTOS_RECOMENDADOSPROYECTO"></Resource>
 		<Resource tag="TIPOLISTADOPROYECTOS_ESTATICOS"></Resource>
+		<Resource tag="TIPOLISTADOPROYECTOS_COMUNIDADESUSUARIO"></Resource>
 		<Resource tag="TIPOCAMPOENVIOCORREO_CORTA"></Resource>
 		<Resource tag="TIPOCAMPOENVIOCORREO_LARGA"></Resource>
 		<Resource tag="TIPOPROPIEDADENVIOCORREO_NOMBRE"></Resource>
@@ -3612,7 +3614,6 @@
 		<Resource tag="ADMINISTRARCATEGORIASCOM">manage-categories</Resource>
 		<Resource tag="ADMINISTRARCOMUNIDADGENERAL">manage-community-general</Resource>
 		<Resource tag="POLITICACOMUNIDAD">certificates-policy</Resource>
-		<Resource tag="ADMINISTRARPLANTILLASCOM">manage-templates</Resource>
 		<Resource tag="QUIEROTWITTEAR">tweet</Resource>
 		<Resource tag="VERBIO">see-bio</Resource>
 		<Resource tag="ENVIOTWITTERCORRECTO">twitterok</Resource>

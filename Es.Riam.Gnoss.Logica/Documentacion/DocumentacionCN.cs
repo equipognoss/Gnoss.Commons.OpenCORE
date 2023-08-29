@@ -3,6 +3,7 @@ using Es.Riam.Gnoss.AD.Documentacion;
 using Es.Riam.Gnoss.AD.EncapsuladoDatos;
 using Es.Riam.Gnoss.AD.EntityModel;
 using Es.Riam.Gnoss.AD.EntityModel.Models.Documentacion;
+using Es.Riam.Gnoss.AD.EntityModel.Models.Faceta;
 using Es.Riam.Gnoss.AD.Facetado.Model;
 using Es.Riam.Gnoss.AD.ServiciosGenerales;
 using Es.Riam.Gnoss.Util.Configuracion;
@@ -15,7 +16,7 @@ using System.Data;
 namespace Es.Riam.Gnoss.Logica.Documentacion
 {
     /// <summary>
-    /// LÛgica de negocio para la documentaciÛn de GNOSS
+    /// L√≥gica de negocio para la documentaci√≥n de GNOSS
     /// </summary>
     public class DocumentacionCN : BaseCN, IDisposable
     {
@@ -50,8 +51,8 @@ namespace Es.Riam.Gnoss.Logica.Documentacion
         /// <summary>
         /// Constructor para DocumentacionCN
         /// </summary>
-        /// <param name="pFicheroConfiguracionBD">Fichero de configuraciÛn</param>
-        /// <param name="pUsarVariableEstatica">Si se est·n usando hilos con diferentes conexiones: FALSE. En caso contrario TRUE</param>
+        /// <param name="pFicheroConfiguracionBD">Fichero de configuraci√≥n</param>
+        /// <param name="pUsarVariableEstatica">Si se est√°n usando hilos con diferentes conexiones: FALSE. En caso contrario TRUE</param>
         public DocumentacionCN(string pFicheroConfiguracionBD, EntityContext entityContext, LoggingService loggingService, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication)
             : base(entityContext, loggingService, configService, servicesUtilVirtuosoAndReplication)
         {
@@ -64,8 +65,8 @@ namespace Es.Riam.Gnoss.Logica.Documentacion
         /// <summary>
         /// Constructor para DocumentacionCN
         /// </summary>
-        /// <param name="pFicheroConfiguracionBD">Fichero de configuraciÛn</param>
-        /// <param name="pUsarVariableEstatica">Si se est·n usando hilos con diferentes conexiones: FALSE. En caso contrario TRUE</param>
+        /// <param name="pFicheroConfiguracionBD">Fichero de configuraci√≥n</param>
+        /// <param name="pUsarVariableEstatica">Si se est√°n usando hilos con diferentes conexiones: FALSE. En caso contrario TRUE</param>
         public DocumentacionCN(string pFicheroConfiguracionBD, bool pDesdeCL, EntityContext entityContext, LoggingService loggingService, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication)
             : base(entityContext, loggingService, configService, servicesUtilVirtuosoAndReplication)
         {
@@ -76,18 +77,18 @@ namespace Es.Riam.Gnoss.Logica.Documentacion
         }
         #endregion
 
-        #region MÈtodos generales
+        #region M√©todos generales
 
-        #region P˙blicos
+        #region P√∫blicos
 
         #region Metodos muy generales
 
         /// <summary>
-        /// Obtiene los IDs de las ontologÌas de un proyecto a partir del enlace de las ontologÌas encontradas en otro proyecto
+        /// Obtiene los IDs de las ontolog√≠as de un proyecto a partir del enlace de las ontolog√≠as encontradas en otro proyecto
         /// </summary>
-        /// <param name="pListaDocumentosID">Identificadores de las ontologÌas encontradas en un proyecto</param>
-        /// <param name="pProyectoID">Identificador del proyecto en el que se quieren buscar ontologÌas con el mismo enlace</param>
-        /// <returns>Diccionario del tipo IDOntologiaOriginal -> IDOntologÌaEnProyecto</returns>
+        /// <param name="pListaDocumentosID">Identificadores de las ontolog√≠as encontradas en un proyecto</param>
+        /// <param name="pProyectoID">Identificador del proyecto en el que se quieren buscar ontolog√≠as con el mismo enlace</param>
+        /// <returns>Diccionario del tipo IDOntologiaOriginal -> IDOntolog√≠aEnProyecto</returns>
         public Dictionary<Guid, Guid> ObtenerElementoVinculadoIDDeOtroProyectoConMismoEnlace(List<Guid> pListaDocumentosID, Guid pProyectoID)
         {
             return this.DocumentacionAD.ObtenerElementoVinculadoIDDeOtroProyectoConMismoEnlace(pListaDocumentosID, pProyectoID);
@@ -105,7 +106,7 @@ namespace Es.Riam.Gnoss.Logica.Documentacion
         /// Obtiene el Identificador del elemento vinculado al documento
         /// </summary>
         /// <param name="pDocumentosID">Lista de identificadores de documentos de los que se quiere obtner su elemento vinculado</param>
-        /// <returns>Diccionario con el documentoID como clave y el elementovinculadoID como valor. Si no tiene, elementovinculadoID ser· Guid empty</returns>
+        /// <returns>Diccionario con el documentoID como clave y el elementovinculadoID como valor. Si no tiene, elementovinculadoID ser√° Guid empty</returns>
         public Dictionary<Guid, Guid> ObtenerElementoVinculadoIDPorDocumentoID(List<Guid> pDocumentosID)
         {
             return this.DocumentacionAD.ObtenerElementoVinculadoIDPorDocumentoID(pDocumentosID);
@@ -114,11 +115,11 @@ namespace Es.Riam.Gnoss.Logica.Documentacion
         /// <summary>
         /// Obtiene si un usuario tiene acceso a un recurso concreto para leerlo o editarlo
         /// </summary>
-        /// <param name="pProyectoID">Identificador del proyecto en el que se est· viendo el recurso</param>
-        /// <param name="pDocumentoID">Identificador del recurso que se est· viendo</param>
-        /// <param name="pPerfilID">Identificador del perfil con el que est· conectado el usuario (NULL si el usuario no est· conectado)</param>
+        /// <param name="pProyectoID">Identificador del proyecto en el que se est√° viendo el recurso</param>
+        /// <param name="pDocumentoID">Identificador del recurso que se est√° viendo</param>
+        /// <param name="pPerfilID">Identificador del perfil con el que est√° conectado el usuario (NULL si el usuario no est√° conectado)</param>
         /// <param name="pIdentidadComunidadID">Identificador de la identidad del usuario en la comunidad (NULL si el usuario no participa en la comunidad)</param>
-        /// <param name="pIdentidadMyGnossID">Identificador de la identidad del usuario en MyGnoss (NULL si el usuario no est· conectado)</param>
+        /// <param name="pIdentidadMyGnossID">Identificador de la identidad del usuario en MyGnoss (NULL si el usuario no est√° conectado)</param>
         /// <param name="pEditando">Verdad si el usuario quiere editar el recurso</param>
         /// <param name="pUsuarioPerteneceACom">Verdad si el usuario pertenece a la comunidad</param>
         /// <returns>True si el usuario tiene acceso al recurso, False en caso contrario</returns>
@@ -133,10 +134,10 @@ namespace Es.Riam.Gnoss.Logica.Documentacion
         /// Obtiene si un usuario tiene acceso a un recurso concreto para leerlo o editarlo
         /// </summary>
         /// <param name="pProyectosID">Identificador de los proyecto en el que se desea comprobar el permiso</param>
-        /// <param name="pDocumentoID">Identificador del recurso que se est· viendo</param>
-        /// <param name="pPerfilID">Identificador del perfil con el que est· conectado el usuario (NULL si el usuario no est· conectado)</param>
+        /// <param name="pDocumentoID">Identificador del recurso que se est√° viendo</param>
+        /// <param name="pPerfilID">Identificador del perfil con el que est√° conectado el usuario (NULL si el usuario no est√° conectado)</param>
         /// <param name="pIdentidadComunidadID">Identificador de la identidad del usuario en la comunidad (NULL si el usuario no participa en la comunidad)</param>
-        /// <param name="pIdentidadMyGnossID">Identificador de la identidad del usuario en MyGnoss (NULL si el usuario no est· conectado)</param>
+        /// <param name="pIdentidadMyGnossID">Identificador de la identidad del usuario en MyGnoss (NULL si el usuario no est√° conectado)</param>
         /// <param name="pEditando">Verdad si el usuario quiere editar el recurso</param>
         /// <param name="pUsuarioPerteneceACom">Verdad si el usuario pertenece a la comunidad</param>
         /// <returns>True si el usuario tiene acceso al recurso, False en caso contrario</returns>
@@ -198,7 +199,7 @@ namespace Es.Riam.Gnoss.Logica.Documentacion
         /// <param name="pNombreEnlaceTemporal">Nombre del enlace del documento temporal</param>
         /// <param name="pUsuarioID">Identificador del usuario</param>
         /// <param name="pObtenerSimilares">Obtner los documentos que se llaman parecidos</param>
-        /// <param name="pBuscarEnTitulo">Verdad si se debe buscar tambiÈn en el titulo del documento</param>
+        /// <param name="pBuscarEnTitulo">Verdad si se debe buscar tambi√©n en el titulo del documento</param>
         /// <returns></returns>
         public DataWrapperDocumentacion ObtenerDocumentoDeEnlace(string pNombreEnlaceTemporal, Guid pUsuarioID, bool pObtenerSimilares, bool pBuscarEnTitulo)
         {
@@ -216,10 +217,10 @@ namespace Es.Riam.Gnoss.Logica.Documentacion
         }
 
         /// <summary>
-        /// Obtiene la BR de una OrganizaciÛn
+        /// Obtiene la BR de una Organizaci√≥n
         /// </summary>
-        /// <param name="pOrganizacionID">Identificador de la OrganizaciÛn</param>
-        /// <returns>BR de OrganizaciÛn</returns>
+        /// <param name="pOrganizacionID">Identificador de la Organizaci√≥n</param>
+        /// <returns>BR de Organizaci√≥n</returns>
         public List<Documento> ObtenerDocumentacion(Guid pOrganizacionID)
         {
             return this.DocumentacionAD.ObtenerDocumentacion(pOrganizacionID);
@@ -227,7 +228,7 @@ namespace Es.Riam.Gnoss.Logica.Documentacion
 
 
         /// <summary>
-        /// Obtiene los par·metros web del ID del documento pasado como par·metro.
+        /// Obtiene los par√°metros web del ID del documento pasado como par√°metro.
         /// </summary>
         /// <param name="pDocumentoID">Identificador del documento</param>
         /// <param name="pDataWrapperDocumentacion">DataSet de documentacion</param>
@@ -240,7 +241,7 @@ namespace Es.Riam.Gnoss.Logica.Documentacion
         }
 
         /// <summary>
-        /// Obtiene los documentos web seg˙n la lista de IDs pasada como par·metro.
+        /// Obtiene los documentos web seg√∫n la lista de IDs pasada como par√°metro.
         /// </summary>
         /// <param name="pDocumentos">Lista con los id de documentos</param>
         /// <param name="pDataWrapperDocumentacion">DataSet de documentacion</param>
@@ -252,7 +253,7 @@ namespace Es.Riam.Gnoss.Logica.Documentacion
         /// <summary>
         /// Obtiene todos los documentos Web que ha subido una persona.
         /// </summary>
-        /// <param name="pDataWrapperDocumentacion">DataSet de documentaciÛn</param>
+        /// <param name="pDataWrapperDocumentacion">DataSet de documentaci√≥n</param>
         /// <param name="pListaIdentidadesID">Identificador de las identidades</param>
         /// <param name="pProyectoID">Identificador del proyecto</param>
         /// <param name="pInicio">Fila de inicio para la paginacion</param>
@@ -267,11 +268,11 @@ namespace Es.Riam.Gnoss.Logica.Documentacion
         }
 
         /// <summary>
-        /// Obtiene todos los documentos que est·n vinculados a un serie de categorias (y las relaciones con otras categorÌas).
+        /// Obtiene todos los documentos que est√°n vinculados a un serie de categorias (y las relaciones con otras categor√°as).
         /// </summary>
-        /// <param name="pListaCategorias">Lista con las categorias a las que est·n agregados los documentos</param>
-        /// <param name="pTesauroID">Identificador del tesauro al que pertenecen las categorÌas</param>
-        /// <returns>DataSet de documentaciÛn con los documentos</returns>
+        /// <param name="pListaCategorias">Lista con las categorias a las que est√°n agregados los documentos</param>
+        /// <param name="pTesauroID">Identificador del tesauro al que pertenecen las categor√≠as</param>
+        /// <returns>DataSet de documentaci√≥n con los documentos</returns>
         public DataWrapperDocumentacion ObtenerVinculacionDocumentosDeCategoriasTesauro(List<Guid> pListaCategorias, Guid pTesauroID)
         {
             return DocumentacionAD.ObtenerVinculacionDocumentosDeCategoriasTesauro(pListaCategorias, pTesauroID);
@@ -281,19 +282,27 @@ namespace Es.Riam.Gnoss.Logica.Documentacion
         /// Obtiene un documento a partir de su identificador.
         /// </summary>
         /// <param name="pDocumentoID">Identificador de documento</param>
-        /// <returns>DataSet de documentaciÛn con el documento cargado.</returns>
+        /// <returns>DataSet de documentaci√≥n con el documento cargado.</returns>
         public DataWrapperDocumentacion ObtenerDocumentoPorID(Guid pDocumentoID)
         {
             return DocumentacionAD.ObtenerDocumentoPorID(pDocumentoID);
         }
 
- 
+        /// <summary>
+        /// Obtiene un documento a partir de su identificador.
+        /// </summary>
+        /// <param name="pDocumentoID">Identificador de documento</param>
+        /// <returns>DataSet de documentaci√≥n con el documento cargado.</returns>
+        public Documento ObtenerDocumentoPorIdentificador(Guid pDocumentoID)
+        {
+            return DocumentacionAD.ObtenerDocumentoPorIdentificador(pDocumentoID);
+        }
 
         /// <summary>
         /// Obtiene un documento a partir de su identificador.
         /// </summary>
         /// <param name="pDocumentoID">Identificador de documento</param>
-        /// <returns>Dataset de documentaciÛn con el documento cargado</returns>
+        /// <returns>Dataset de documentaci√≥n con el documento cargado</returns>
         public DataWrapperDocumentacion ObtenerDocumentoPorIDConSubEventos(Guid pDocumentoID, Guid pProyectoID)
         {
             return DocumentacionAD.ObtenerDocumentoPorIDConSubEventos(pDocumentoID, pProyectoID);
@@ -407,10 +416,10 @@ namespace Es.Riam.Gnoss.Logica.Documentacion
         /// <summary>
         /// Actualiza el campo EnvioRealizado de la tabla DocumentoEnvioNewsletter
         /// </summary>
-        /// <param name="pEnvioRealizado">True/False que indica si se ha realizado el envÌo</param>
+        /// <param name="pEnvioRealizado">True/False que indica si se ha realizado el env√≠o</param>
         /// <param name="pDocumentoID">Identificador de la newsletter</param>
         /// <param name="pIdentidadID">Identidad publicadora de la newsletter</param>
-        /// <param name="pFecha">Fecha de publicaciÛn de la newsletter</param>
+        /// <param name="pFecha">Fecha de publicaci√≥n de la newsletter</param>
         public void ActuarlizarEnvioRealizadoDocumentoEnvioNewsletter(bool pEnvioSolicitado, bool pEnvioRealizado, Guid pDocumentoID, Guid pIdentidadID, DateTime pFecha)
         {
             DocumentacionAD.ActuarlizarEnvioRealizadoDocumentoEnvioNewsletter(pEnvioSolicitado, pEnvioRealizado, pDocumentoID, pIdentidadID, pFecha);
@@ -430,7 +439,7 @@ namespace Es.Riam.Gnoss.Logica.Documentacion
         /// Obtiene la descripcion de un documento a partir de su identificador.
         /// </summary>
         /// <param name="pDocumentoID">Identificador de documento</param>
-        /// <returns>DataSet de documentaciÛn con el documento cargado.</returns>
+        /// <returns>DataSet de documentaci√≥n con el documento cargado.</returns>
         public string ObtenerDescripcionDocumentoPorID(Guid pDocumentoID)
         {
             return DocumentacionAD.ObtenerDescripcionDocumentoPorID(pDocumentoID);
@@ -439,7 +448,7 @@ namespace Es.Riam.Gnoss.Logica.Documentacion
         /// Obtiene la descripcion de una suscripcion de un documento a partir de su identificador.
         /// </summary>
         /// <param name="pDocumentoID">Identificador de documento</param>
-        /// <returns>DataSet de documentaciÛn con el documento cargado.</returns>
+        /// <returns>DataSet de documentaci√≥n con el documento cargado.</returns>
         public string ObtenerDescripcionSuscripcionDocumentoPorID(Guid pDocumentoID, Guid pSuscripcionID)
         {
             return DocumentacionAD.ObtenerDescripcionSuscripcionDocumentoPorID(pDocumentoID, pSuscripcionID);
@@ -450,7 +459,7 @@ namespace Es.Riam.Gnoss.Logica.Documentacion
         /// </summary>
         /// <param name="pDocumentoID">Identificador de documento</param>
         /// <param name="pProyectoID">Identificador del proyecto</param>
-        /// <returns>DocumentacionDS de documentaciÛn con el documento cargado</returns>
+        /// <returns>DocumentacionDS de documentaci√≥n con el documento cargado</returns>
         public DataWrapperDocumentacion ObtenerDocumentoDocumentoWebVinBRPorID(Guid pDocumentoID, Guid pProyectoID)
         {
             return DocumentacionAD.ObtenerDocumentoDocumentoWebVinBRPorID(pDocumentoID, pProyectoID);
@@ -463,7 +472,7 @@ namespace Es.Riam.Gnoss.Logica.Documentacion
         /// </summary>
         /// <param name="pDocumentoID">Identificador de documento</param>
         /// <param name="pUsuarioID">Identificador del usuario</param>
-        /// <returns>DocumentacionDS de documentaciÛn con el documento cargado</returns>
+        /// <returns>DocumentacionDS de documentaci√≥n con el documento cargado</returns>
         public DataWrapperDocumentacion ObtenerDocumentoDocumentoWebVinBRPorIDDeOrganizacion(Guid pDocumentoID, Guid pOrganizacionID)
         {
             return DocumentacionAD.ObtenerDocumentoDocumentoWebVinBRPorIDDeOrganizacion(pDocumentoID, pOrganizacionID);
@@ -474,14 +483,14 @@ namespace Es.Riam.Gnoss.Logica.Documentacion
         /// </summary>
         /// <param name="pDocumentoID">Identificador de documento</param>
         /// <param name="pUsuarioID">Identificador del usuario</param>
-        /// <returns>DocumentacionDS de documentaciÛn con el documento cargado</returns>
+        /// <returns>DocumentacionDS de documentaci√≥n con el documento cargado</returns>
         public DataWrapperDocumentacion ObtenerDocumentoDocumentoWebVinBRPorIDDeUsuario(Guid pDocumentoID, Guid pUsuarioID)
         {
             return DocumentacionAD.ObtenerDocumentoDocumentoWebVinBRPorIDDeUsuario(pDocumentoID, pUsuarioID);
         }
 
         /// <summary>
-        /// Carga toda la informaciÛn de la encuesta de la home de una comunidad
+        /// Carga toda la informaci√≥n de la encuesta de la home de una comunidad
         /// </summary>       
         /// <param name="pProyectoID">Identificador del proyecto</param>
         /// <param name="pBaseDeRecursosID">Identificador de la base de recursos</param>
@@ -501,10 +510,10 @@ namespace Es.Riam.Gnoss.Logica.Documentacion
         }
 
         /// <summary>
-        /// Carga toda la informaciÛn de un documento menos las versiones del mismo.
+        /// Carga toda la informaci√≥n de un documento menos las versiones del mismo.
         /// </summary>
         /// <param name="pDocumentoID">Identificador de documento</param>
-        /// <param name="pDataWrapperDocumentacion">DataSet de documentaciÛn</param>
+        /// <param name="pDataWrapperDocumentacion">DataSet de documentaci√≥n</param>
         /// <param name="pDatosCompletos">Especifica si debe cargarse todo 
         /// del documento o solo los complementos(historial, version, ect.)</param>
         /// <param name="pTraerBaseRecursos">Indica si se traen las BR o no</param>
@@ -515,10 +524,10 @@ namespace Es.Riam.Gnoss.Logica.Documentacion
         }
 
         /// <summary>
-        /// Carga toda la informaciÛn de un documento menos las versiones del mismo.
+        /// Carga toda la informaci√≥n de un documento menos las versiones del mismo.
         /// </summary>
         /// <param name="pDocumentoID">Identificador de documento</param>
-        /// <param name="pDataWrapperDocumentacion">DataSet de documentaciÛn</param>
+        /// <param name="pDataWrapperDocumentacion">DataSet de documentaci√≥n</param>
         /// <param name="pDatosCompletos">Especifica si debe cargarse todo 
         /// del documento o solo los complementos(historial, version, ect.)</param>
         /// <param name="pTraerBaseRecursos">Indica si se traen las BR o no</param>
@@ -580,10 +589,10 @@ namespace Es.Riam.Gnoss.Logica.Documentacion
         #region Recursos Vinculados
 
         /// <summary>
-        /// Comprueba se un recurso tiene alg˙n recurso vinculado
+        /// Comprueba se un recurso tiene alg√∫n recurso vinculado
         /// </summary>
         /// <param name="pDocumentoID">Identificador del documento a comprobar</param>
-        /// <returns>True si el documento tiene alg˙n recurso vinculado, false en caso contrario</returns>
+        /// <returns>True si el documento tiene alg√∫n recurso vinculado, false en caso contrario</returns>
         public bool TieneDocumentoDocumentosVinculados(Guid pDocumentoID)
         {
             return DocumentacionAD.TieneDocumentoDocumentosVinculados(pDocumentoID);
@@ -592,12 +601,12 @@ namespace Es.Riam.Gnoss.Logica.Documentacion
         /// <summary>
         /// Obtiene los documento vinculados que puede ver el perfil actual.
         /// </summary>
-        /// <param name="pDataWrapperDocumentacion">DataSet de documentaciÛn</param>
+        /// <param name="pDataWrapperDocumentacion">DataSet de documentaci√≥n</param>
         /// <param name="pProyectoID">proyecto id del documento</param>
-        /// <param name="pDocumentoID">DocumentoID del que se traer·n los vinculos</param>
+        /// <param name="pDocumentoID">DocumentoID del que se traer√°n los vinculos</param>
         /// <param name="pPerfilActualID">PerfilID actual</param>
-        /// <param name="pInicio">Inicio paginaciÛn</param>
-        /// <param name="pLimite">Fin paginaciÛn</param>
+        /// <param name="pInicio">Inicio paginaci√≥n</param>
+        /// <param name="pLimite">Fin paginaci√≥n</param>
         /// <returns>Documento vinculados que puede ver el perfil actual</returns>
         public int ObtenerDocumentosVinculadosDocumento(DataWrapperDocumentacion pDataWrapperDocumentacion, Guid pProyectoID, Guid pDocumentoID, Guid pPerfilActualID, int pInicio, int pLimite)
         {
@@ -607,12 +616,12 @@ namespace Es.Riam.Gnoss.Logica.Documentacion
         /// <summary>
         /// Obtiene los documento vinculados que puede ver el perfil actual.
         /// </summary>
-        /// <param name="pDataWrapperDocumentacion">DataSet de documentaciÛn</param>
+        /// <param name="pDataWrapperDocumentacion">DataSet de documentaci√≥n</param>
         /// <param name="pProyectoID">proyecto id del documento</param>
-        /// <param name="pDocumentoID">DocumentoID del que se traer·n los vinculos</param>
+        /// <param name="pDocumentoID">DocumentoID del que se traer√°n los vinculos</param>
         /// <param name="pPerfilActualID">PerfilID actual</param>
-        /// <param name="pInicio">Inicio paginaciÛn</param>
-        /// <param name="pLimite">Fin paginaciÛn</param>
+        /// <param name="pInicio">Inicio paginaci√≥n</param>
+        /// <param name="pLimite">Fin paginaci√≥n</param>
         /// <returns>Documento vinculados que puede ver el perfil actual</returns>
         public Dictionary<Guid, List<Guid>> ObtenerListaDocumentosVinculadosDocumento(DataWrapperDocumentacion pDataWrapperDocumentacion, Guid pProyectoID, Guid pDocumentoID, Guid pPerfilActualID, int pInicio, int pLimite, out int pNumVinculados)
         {
@@ -624,20 +633,20 @@ namespace Es.Riam.Gnoss.Logica.Documentacion
         /// Obtiene el numero de documentos vinculados a un documento por ID.
         /// </summary>
 
-        /// <param name="pDocumentoID">DocumentoID del que se traer·n los vinculos</param>
+        /// <param name="pDocumentoID">DocumentoID del que se traer√°n los vinculos</param>
         /// <param name="pPerfilActualID">PerfilID actual</param>
-        /// <param name="pInicio">Inicio paginaciÛn</param>
-        /// <param name="pLimite">Fin paginaciÛn</param>
+        /// <param name="pInicio">Inicio paginaci√≥n</param>
+        /// <param name="pLimite">Fin paginaci√≥n</param>
         /// <returns>Documento vinculados que puede ver el perfil actual</returns>
         public int ObtenerNumeroDocumentosVinculadosDocuemntoPorID(Guid pDocumentoID)
         {
             return DocumentacionAD.ObtenerNumeroDocumentosVinculadosDocuemntoPorID(pDocumentoID);
         }
 
-        /// <param name="pDocumentoID">DocumentoID del que se traer·n los vinculos</param>
+        /// <param name="pDocumentoID">DocumentoID del que se traer√°n los vinculos</param>
         /// <param name="pPerfilActualID">PerfilID actual</param>
-        /// <param name="pInicio">Inicio paginaciÛn</param>
-        /// <param name="pLimite">Fin paginaciÛn</param>
+        /// <param name="pInicio">Inicio paginaci√≥n</param>
+        /// <param name="pLimite">Fin paginaci√≥n</param>
         /// <returns>Documento vinculados que puede ver el perfil actual</returns>
         public int ObtenerNumeroRecursosPublicados(Guid pIdentidadID)
         {
@@ -662,7 +671,7 @@ namespace Es.Riam.Gnoss.Logica.Documentacion
         /// </summary>
         /// <param name="pListaDocumentoID">Identificadores de documento</param>
         /// <param name="pTraerBasesRecurso">Indica si se debe traer las tablas baseRecursos o no</param>
-        /// <returns>DataSet de documentaciÛn con los documentos cargados</returns>
+        /// <returns>DataSet de documentaci√≥n con los documentos cargados</returns>
         public DataWrapperDocumentacion ObtenerDocumentosPorID(List<Guid> pListaDocumentoID, bool pTraerBasesRecurso)
         {
             return DocumentacionAD.ObtenerDocumentosPorID(pListaDocumentoID, pTraerBasesRecurso);
@@ -680,7 +689,7 @@ namespace Es.Riam.Gnoss.Logica.Documentacion
         }
 
         /// <summary>
-        /// Carga toda la informaciÛn de un documento menos las versiones del mismo.
+        /// Carga toda la informaci√≥n de un documento menos las versiones del mismo.
         /// </summary>
         /// <param name="pListaDocumentos">Lista de documentos para traer</param>
         public DataWrapperDocumentacion ObtenerDocumentosPorID(List<Guid> pListaDocumentos)
@@ -692,7 +701,7 @@ namespace Es.Riam.Gnoss.Logica.Documentacion
         /// Obtiene unos documentos a partir de sus identificadores, solo tabla Documento.
         /// </summary>
         /// <param name="pListaDocumentoID">Identificadores de documento</param>
-        /// <returns>Dataset de documentaciÛn con los documentos cargados, solo tabla Documento</returns>
+        /// <returns>Dataset de documentaci√≥n con los documentos cargados, solo tabla Documento</returns>
         public List<Documento> ObtenerDocumentosPorIDSoloDocumento(List<Guid> pListaDocumentoID)
         {
             return DocumentacionAD.ObtenerDocumentosPorIDSoloDocumento(pListaDocumentoID);
@@ -709,7 +718,7 @@ namespace Es.Riam.Gnoss.Logica.Documentacion
         }
 
         ///// <summary>
-        ///// Actualiza la puntuaciÛnj de los recursos m·s populares en el ˙ltimo mes
+        ///// Actualiza la puntuaci√≥n de los recursos m√°s populares en el √∫ltimo mes
         ///// </summary>
         //public List<string> ActualizarRankingRecursos()
         //{
@@ -717,7 +726,7 @@ namespace Es.Riam.Gnoss.Logica.Documentacion
         //}
 
         /// <summary>
-        /// Actualiza el ranking del documento web vin base recursos pasado como par·metro
+        /// Actualiza el ranking del documento web vin base recursos pasado como par√°metro
         /// </summary>
         /// <param name="pDocID">Documento que se va a actualizar</param>
         /// <param name="pBaseRecursos">Base de recursos a la que pertenece el recurso</param>
@@ -739,7 +748,7 @@ namespace Es.Riam.Gnoss.Logica.Documentacion
         }
 
         /// <summary>
-        /// Obtiene los documentos m·s populares de las comunidades GNOSS sin tener en cuenta ayuda y FAQS y Noticias
+        /// Obtiene los documentos m√°s populares de las comunidades GNOSS sin tener en cuenta ayuda y FAQS y Noticias
         /// </summary>
         /// <param name="numDocumentos">Numero de documentos para traer</param>
         public List<Documento> ObtenerDocumentosMasVistos(int numDocumentos)
@@ -761,7 +770,7 @@ namespace Es.Riam.Gnoss.Logica.Documentacion
         }
 
         /// <summary>
-        /// Obtiene los documentos publicos m·s populares de la comunidad indicada
+        /// Obtiene los documentos publicos m√°s populares de la comunidad indicada
         /// </summary>
         /// <param name="pProyecto">ID del proyecto</param>
         /// <param name="pNumDocumentos">Numero de documentos que queremos traer</param>
@@ -772,7 +781,7 @@ namespace Es.Riam.Gnoss.Logica.Documentacion
         }
 
         /// <summary>
-        /// Obtiene los IDs de los documentos publicos m·s populares de la comunidad indicada
+        /// Obtiene los IDs de los documentos publicos m√°s populares de la comunidad indicada
         /// </summary>
         /// <param name="pProyectoID">ID del proyecto</param>
         /// <param name="pNumDocumentos">Numero de documentos que queremos traer</param>
@@ -783,7 +792,7 @@ namespace Es.Riam.Gnoss.Logica.Documentacion
         }
 
         /// <summary>
-        /// Actualiza la documentaciÛn
+        /// Actualiza la documentaci√≥n
         /// </summary>
         /// <param name="pDocumentacionDS">Documentos a actualizar</param>
         public void ActualizarDocumentacion()
@@ -793,7 +802,7 @@ namespace Es.Riam.Gnoss.Logica.Documentacion
 
 
         /// <summary>
-        /// Borra del ·cido los documentos
+        /// Borra del √°cido los documentos
         /// </summary>
         /// <param name="pDocumentosID">Lista de identificadores de los documentos a borrar</param>
         public void EliminarDocumentos(List<Guid> pDocumentosID)
@@ -815,7 +824,7 @@ namespace Es.Riam.Gnoss.Logica.Documentacion
         /// Devuelve los documentos de una entidad
         /// </summary>
         /// <param name="pEntidadID">ID de entidad</param>
-        /// <param name="pSoloUltimaVersionNoEliminados">TRUE si solo se deben traer los que sean ˙ltima version y NO eliminados, FALSE para traer todos</param>
+        /// <param name="pSoloUltimaVersionNoEliminados">TRUE si solo se deben traer los que sean √∫ltima version y NO eliminados, FALSE para traer todos</param>
         /// <returns></returns> 
         public DataWrapperDocumentacion ObtenerDocumentosDeEntidad(Guid pEntidadID, bool pSoloUltimaVersionNoEliminados)
         {
@@ -826,7 +835,7 @@ namespace Es.Riam.Gnoss.Logica.Documentacion
         }
 
         /// <summary>
-        /// Obtiene la documentaciÛn de una lista de entidades
+        /// Obtiene la documentaci√≥n de una lista de entidades
         /// </summary>
         /// <param name="pListaEntidades">Lista de claves</param>
         /// <returns>DocumentacionDS</returns>
@@ -836,10 +845,10 @@ namespace Es.Riam.Gnoss.Logica.Documentacion
         }
 
         /// <summary>
-        /// Obtiene la documentaciÛn de una lista de entidades
+        /// Obtiene la documentaci√≥n de una lista de entidades
         /// </summary>
         /// <param name="pListaEntidades">Lista de claves</param>
-        /// <param name="pSoloUltimaVersionNoEliminados">TRUE si solo se deben traer los que sean ˙ltima version y NO eliminados, FALSE para traer todos</param>
+        /// <param name="pSoloUltimaVersionNoEliminados">TRUE si solo se deben traer los que sean √∫ltima version y NO eliminados, FALSE para traer todos</param>
         /// <returns>DocumentacionDS</returns>
         public DataWrapperDocumentacion ObtenerDocumentosDeEntidades(List<Guid> pListaEntidades, bool pSoloUltimaVersionNoEliminados)
         {
@@ -905,7 +914,7 @@ namespace Es.Riam.Gnoss.Logica.Documentacion
         /// Obtiene los atributos de las ficha bibliograficas de una lista de documentos.
         /// </summary>
         /// <param name="pListaDocumentosIDs">Lista de documentos</param>
-        /// <param name="pDocumentacionDW">DataSet de documentaciÛn</param>
+        /// <param name="pDocumentacionDW">DataSet de documentaci√≥n</param>
         public void ObtenerFichaBibliograficaDocumentos(List<Guid> pListaDocumentosIDs, DataWrapperDocumentacion pDocumentacionDW)
         {
             DocumentacionAD.ObtenerFichaBibliograficaDocumentos(pListaDocumentosIDs, pDocumentacionDW);
@@ -923,12 +932,12 @@ namespace Es.Riam.Gnoss.Logica.Documentacion
         }
 
         /// <summary>
-        /// Comprueba si el tÌtulo o el enlace de un doc est·n repetidos.
+        /// Comprueba si el t√≠tulo o el enlace de un doc est√°n repetidos.
         /// </summary>
         /// <param name="pEnlace">Enlace del doc</param>
         /// <param name="pTitulo">Titulo del doc</param>
-        /// <param name="pDocumentoID">Identificador del documento que se est· revisando</param>
-        /// <returns>0 si no hay repetidos, 1 si se repite el tÌtulo, 2 si se repite el enlace, 3 si se repiten ambos</returns>
+        /// <param name="pDocumentoID">Identificador del documento que se est√° revisando</param>
+        /// <returns>0 si no hay repetidos, 1 si se repite el t√≠tulo, 2 si se repite el enlace, 3 si se repiten ambos</returns>
         public int DocumentoRepetidoTituloEnlace(string pTitulo, string pEnlace, Guid pDocumentoID)
         {
             Guid documentoRepID;
@@ -936,27 +945,27 @@ namespace Es.Riam.Gnoss.Logica.Documentacion
         }
 
         /// <summary>
-        /// Comprueba si el tÌtulo o el enlace de un doc est·n repetidos.
+        /// Comprueba si el t√≠tulo o el enlace de un doc est√°n repetidos.
         /// </summary>
         /// <param name="pEnlace">Enlace del doc</param>
         /// <param name="pTitulo">Titulo del doc</param>
-        /// <param name="pDocumentoID">Identificador del documento que se est· revisando</param>
+        /// <param name="pDocumentoID">Identificador del documento que se est√° revisando</param>
         /// <param name="pBaseRecursosID">Identificador de base de recursos</param>
         /// <param name="pDocumentoRepetidoID">Identificador del documento repetido</param>
-        /// <returns>0 si no hay repetidos, 1 si se repite el tÌtulo, 2 si se repite el enlace, 3 si se repiten ambos</returns>
+        /// <returns>0 si no hay repetidos, 1 si se repite el t√≠tulo, 2 si se repite el enlace, 3 si se repiten ambos</returns>
         public int DocumentoRepetidoTituloEnlace(string pTitulo, string pEnlace, Guid pDocumentoID, Guid pBaseRecursosID, out Guid pDocumentoRepetidoID)
         {
             return DocumentacionAD.DocumentoRepetidoTituloEnlace(pTitulo, pEnlace, pDocumentoID, pBaseRecursosID, out pDocumentoRepetidoID);
         }
 
         /// <summary>
-        /// Comprueba si el tÌtulo o el enlace de un doc est·n repetidos en las BRs especificadas.
+        /// Comprueba si el t√≠tulo o el enlace de un doc est√°n repetidos en las BRs especificadas.
         /// </summary>
         /// <param name="pEnlace">Enlace del doc</param>
         /// <param name="pTitulo">Titulo del doc</param>
-        /// <param name="pDocumentoID">Identificador del documento que se est· revisando o Guid.Empty si no se desea omitir ninguno</param>
+        /// <param name="pDocumentoID">Identificador del documento que se est√° revisando o Guid.Empty si no se desea omitir ninguno</param>
         /// <param name="pBasesRecursosID">Lista con los identificadores de las bases de recursos</param>
-        /// <returns>0 si no hay repetidos, 1 si se repite el tÌtulo, 2 si se repite el enlace, 3 si se repiten ambos</returns>
+        /// <returns>0 si no hay repetidos, 1 si se repite el t√≠tulo, 2 si se repite el enlace, 3 si se repiten ambos</returns>
         public int DocumentoRepetidoTituloEnlaceEnVariasBRs(string pTitulo, string pEnlace, Guid pDocumentoID, List<Guid> pBasesRecursosID)
         {
             Guid docID;
@@ -964,14 +973,14 @@ namespace Es.Riam.Gnoss.Logica.Documentacion
         }
 
         /// <summary>
-        /// Comprueba si el tÌtulo o el enlace de un doc est·n repetidos en las BRs especificadas.
+        /// Comprueba si el t√≠tulo o el enlace de un doc est√°n repetidos en las BRs especificadas.
         /// </summary>
         /// <param name="pEnlace">Enlace del doc</param>
         /// <param name="pTitulo">Titulo del doc</param>
-        /// <param name="pDocumentoID">Identificador del documento que se est· revisando o Guid.Empty si no se desea omitir ninguno</param>
+        /// <param name="pDocumentoID">Identificador del documento que se est√° revisando o Guid.Empty si no se desea omitir ninguno</param>
         /// <param name="pBasesRecursosID">Lista con los identificadores de las bases de recursos</param>
         /// <param name="pDocumentoRepetidoID">Identificador del documento repetido</param>
-        /// <returns>0 si no hay repetidos, 1 si se repite el tÌtulo, 2 si se repite el enlace, 3 si se repiten ambos</returns>
+        /// <returns>0 si no hay repetidos, 1 si se repite el t√≠tulo, 2 si se repite el enlace, 3 si se repiten ambos</returns>
         public int DocumentoRepetidoTituloEnlaceEnVariasBRs(string pTitulo, string pEnlace, Guid pDocumentoID, List<Guid> pBasesRecursosID, out Guid pDocumentoRepetidoID)
         {
             return DocumentacionAD.DocumentoRepetidoTituloEnlaceEnVariasBRs(pTitulo, pEnlace, pDocumentoID, pBasesRecursosID, out pDocumentoRepetidoID);
@@ -981,7 +990,7 @@ namespace Es.Riam.Gnoss.Logica.Documentacion
         /// Obtiene el historial de un documento.
         /// </summary>
         /// <param name="pDocumentoID">Identificador de documento</param>
-        /// <param name="pDataWrapperDocumentacion">DataSet de documentaciÛn</param>
+        /// <param name="pDataWrapperDocumentacion">DataSet de documentaci√≥n</param>
         public void ObtenerHistorialDocumentoPorID(Guid pDocumentoID, DataWrapperDocumentacion pDataWrapperDocumentacion)
         {
             DocumentacionAD.ObtenerHistorialDocumentoPorID(pDocumentoID, pDataWrapperDocumentacion);
@@ -1027,7 +1036,7 @@ namespace Es.Riam.Gnoss.Logica.Documentacion
         }
 
         /// <summary>
-        /// Comprueba si un documento tiene alg˙n comentario
+        /// Comprueba si un documento tiene alg√∫n comentario
         /// </summary>
         /// <param name="pDocumentoID">Clave del documento</param>
         /// <param name="pProyectoID">Identificador del proyecto en el que se buscan comentarios</param>
@@ -1093,7 +1102,7 @@ namespace Es.Riam.Gnoss.Logica.Documentacion
         /// <summary>
         /// Obtiene el documento que se encuentra vinculado a un elemento y no este marcado como eliminado("pClaveElementoVinculadoID")
         /// </summary>
-        /// <param name="pClaveElementoVinculadoID">Identificador del elemento al que est·n vinculados los documentos</param>
+        /// <param name="pClaveElementoVinculadoID">Identificador del elemento al que est√°n vinculados los documentos</param>
         /// <param name="pHacerCargaTotalDocumentos">Indica si debe hacerse una carga completa de los documentos resultado, o solo debe traerse sus datos de la tabla documento</param>
         /// <returns>DocumentacionDS</returns>
         public DataWrapperDocumentacion ObtenerDocumentoDeElementoVinculado(Guid pClaveElementoVinculadoID, bool pHacerCargaTotalDocumentos)
@@ -1102,10 +1111,10 @@ namespace Es.Riam.Gnoss.Logica.Documentacion
         }
 
         /// <summary>
-        /// Obtiene un dataset con una 3 tablas, una 'Tags' con los campos "Nombre" , "DocumentoID" con todos los documentos y sus tags de la comunidad pasada por parametro, teniendo en cuenta  "Documento.Eliminado=0 "+"Documento.UltimaVersion = 1"+"Documento.Borrador=0 "+ "DocumentoWebVinBaseRecursos.Eliminado=0 " +"AND TagDocumento.Tipo = 0 ", otra tabla 'Documentos' con solo las claves de los documentos del proyecto,  otra tabla 'TagsAutomaticos' con los campos "DocumentoID", "Nombre" que contienen  los tags autom·ticos (nombre de las categorÌas + nombre del autor del documento + fechaDePublicacion yyyymmdd + NivelCertificacion )
+        /// Obtiene un dataset con una 3 tablas, una 'Tags' con los campos "Nombre" , "DocumentoID" con todos los documentos y sus tags de la comunidad pasada por parametro, teniendo en cuenta  "Documento.Eliminado=0 "+"Documento.UltimaVersion = 1"+"Documento.Borrador=0 "+ "DocumentoWebVinBaseRecursos.Eliminado=0 " +"AND TagDocumento.Tipo = 0 ", otra tabla 'Documentos' con solo las claves de los documentos del proyecto,  otra tabla 'TagsAutomaticos' con los campos "DocumentoID", "Nombre" que contienen  los tags autom√°ticos (nombre de las categor√≠as + nombre del autor del documento + fechaDePublicacion yyyymmdd + NivelCertificacion )
         /// </summary>
         /// <param name="pProyectoID">Clave del proyecto a buscar los tags de sus documentos</param>
-        /// <param name="pFecha">Fecha inicial para la b˙squeda</param>
+        /// <param name="pFecha">Fecha inicial para la b√∫squeda</param>
         /// <returns>DataSet no tipado</returns>
 
         /// <summary>
@@ -1141,17 +1150,17 @@ namespace Es.Riam.Gnoss.Logica.Documentacion
         }
 
         /// <summary>
-        /// Obtiene el tÌtulo, la descripciÛn y los tags de un documento
+        /// Obtiene el t√≠tulo, la descripci√≥n y los tags de un documento
         /// </summary>
         /// <param name="pDocumentoID">Identificador del documento</param>
-        /// <returns>Fila del documento con el tÌtulo la descripciÛn y los tags cargados</returns>
+        /// <returns>Fila del documento con el t√≠tulo la descripci√≥n y los tags cargados</returns>
         public Documento ObtenerTituloDescripcionTagsDeDocumento(Guid pDocumentoID)
         {
             return DocumentacionAD.ObtenerTituloDescripcionTagsDeDocumento(pDocumentoID);
         }
 
         /// <summary>
-        /// Obtiene la lista de categorÌas de tesauro vinculadas con un documento
+        /// Obtiene la lista de categor√≠as de tesauro vinculadas con un documento
         /// </summary>
         /// <param name="pDocumentoID">Identificador de un documento</param>
         /// <returns></returns>
@@ -1181,7 +1190,7 @@ namespace Es.Riam.Gnoss.Logica.Documentacion
         }
 
         /// <summary>
-        /// Obtiene el creador del documentoID pasado como par·metro.
+        /// Obtiene el creador del documentoID pasado como par√°metro.
         /// </summary>
         /// <param name="pDocID">DocumentoID del que queremos obtener el creador.</param>
         /// <returns>CreadorID del documento.</returns>
@@ -1191,7 +1200,7 @@ namespace Es.Riam.Gnoss.Logica.Documentacion
         }
 
         /// <summary>
-        /// Obtiene el creador del documentoID pasado como par·metro.
+        /// Obtiene el creador del documentoID pasado como par√°metro.
         /// </summary>
         /// <param name="pDocID">DocumentoID del que queremos obtener el creador.</param>
         /// <returns>CreadorID del documento.</returns>
@@ -1201,7 +1210,7 @@ namespace Es.Riam.Gnoss.Logica.Documentacion
         }
 
         /// <summary>
-        /// Obtiene la imagen principal de los documentos. Lo devuelve en formato "DocumentoID|tamaÒo,rutaImagenPrincipal"
+        /// Obtiene la imagen principal de los documentos. Lo devuelve en formato "DocumentoID|tama√±o,rutaImagenPrincipal"
         /// </summary>
         /// <param name="pListaIDsDocumentos">Lista de identificadores de los documentos</param>
         /// <returns>Array de cadenas con el documentoID y la ruta de la imagen principal</returns>
@@ -1216,20 +1225,20 @@ namespace Es.Riam.Gnoss.Logica.Documentacion
         }
 
         /// <summary>
-        /// Obtiene un diccionario de ciertos documentos los nombres cortos de los proyectos donde est·n subidos y compartidos.
+        /// Obtiene un diccionario de ciertos documentos los nombres cortos de los proyectos donde est√°n subidos y compartidos.
         /// </summary>
         /// <param name="pDocumentoIDs">IDs de documentos</param>
-        /// <returns>Diccionario de ciertos documentos con los nombres cortos de los proyectos donde est·n subidos y compartidos</returns>
+        /// <returns>Diccionario de ciertos documentos con los nombres cortos de los proyectos donde est√°n subidos y compartidos</returns>
         public Dictionary<Guid, List<string>> ObtenerProyectosDocumentos(List<Guid> pDocumentoIDs)
         {
             return DocumentacionAD.ObtenerProyectosDocumentos(pDocumentoIDs);
         }
 
         /// <summary>
-        /// Obtiene un diccionario de ciertos documentos con sus tipos y los IDs de los proyectos donde est·n subidos y compartidos.
+        /// Obtiene un diccionario de ciertos documentos con sus tipos y los IDs de los proyectos donde est√°n subidos y compartidos.
         /// </summary>
         /// <param name="pDocumentoIDs">IDs de documentos</param>
-        /// <returns>Diccionario de ciertos documentos con sus tipos y los IDs de los proyectos donde est·n subidos y compartidos</returns>
+        /// <returns>Diccionario de ciertos documentos con sus tipos y los IDs de los proyectos donde est√°n subidos y compartidos</returns>
         public Dictionary<Guid, KeyValuePair<short, List<Guid>>> ObtenerTipoYProyectosDocumentos(List<Guid> pDocumentoIDs)
         {
             return DocumentacionAD.ObtenerTipoYProyectosDocumentos(pDocumentoIDs);
@@ -1237,19 +1246,30 @@ namespace Es.Riam.Gnoss.Logica.Documentacion
 
         #endregion
 
-        #region OntologÌas
+        #region Ontolog√≠as
 
         /// <summary>
-        /// Carga el dataSet con las ontologÌas del proyecto.
+        /// Carga el dataSet con las ontolog√≠as del proyecto.
         /// </summary>
         /// <param name="pProyectoID">Identificador de proyecto</param>
-        /// <param name="pDataWrapperDocumentacion">DataSet de documentaciÛn</param>
-        /// <param name="pTraerProtegidos">Indica si se deben obtener las ontologÌas protegidas o no</param>
-        /// <param name="pTraerSecundarias">Indica si hay que cargar ontologÌas secundarias</param>
-        /// <param name="pTraerOntosEntorno">Indica si deben traerse las ontologÌas del entorno</param>
+        /// <param name="pDataWrapperDocumentacion">DataSet de documentaci√≥n</param>
+        /// <param name="pTraerProtegidos">Indica si se deben obtener las ontolog√≠as protegidas o no</param>
+        /// <param name="pTraerSecundarias">Indica si hay que cargar ontolog√≠as secundarias</param>
+        /// <param name="pTraerOntosEntorno">Indica si deben traerse las ontolog√≠as del entorno</param>
         public void ObtenerOntologiasProyecto(Guid pProyectoID, DataWrapperDocumentacion pDataWrapperDocumentacion, bool pTraerProtegidos, bool pTraerSecundarias, bool pTraerOntosEntorno, bool pTraerDocWebVinBaseRecursos = false)
         {
             DocumentacionAD.ObtenerOntologiasProyecto(pProyectoID, pDataWrapperDocumentacion, pTraerProtegidos, pTraerSecundarias, pTraerOntosEntorno, pTraerDocWebVinBaseRecursos);
+        }
+
+        /// <summary>
+        /// Obtiene la ontolog√≠a proyecto a partir de la ontolog√≠a y el proyecto id
+        /// </summary>
+        /// <param name="pOntologia">Nombre de la ontolog√≠a</param>
+        /// <param name="pProyectoID">Identificador del proyecto al que pertenece la ontolog√≠a</param>
+        /// <returns></returns>
+        public OntologiaProyecto ObtenerOntologiaProyectoPorOntologia(string pOntologia, Guid pProyectoID)
+        {
+            return DocumentacionAD.ObtenerOntologiaProyectoPorOntologia(pOntologia, pProyectoID);
         }
 
         public List<Documento> ObtenerOntologiasSecundarias(Guid pProyectoID)
@@ -1293,37 +1313,37 @@ namespace Es.Riam.Gnoss.Logica.Documentacion
             DocumentacionAD.BorrarDocumentosScript(pOntologiaID, pProyectoID);
         }
         /// <summary>
-        /// Obtiene las ontologÌas de un entorno
+        /// Obtiene las ontolog√≠as de un entorno
         /// </summary>
-        /// <param name="pDocumentacionDS">Dataset de documentaciÛn ya inicializado</param>
+        /// <param name="pDocumentacionDS">Dataset de documentaci√≥n ya inicializado</param>
         public DataWrapperDocumentacion ObtenerOntologiasEntorno()
         {
             return DocumentacionAD.ObtenerOntologiasEntorno();
         }
 
         /// <summary>
-        /// Obtiene un dataset con una ontologÌa a partir de su nombre en una comunidad.
+        /// Obtiene un dataset con una ontolog√≠a a partir de su nombre en una comunidad.
         /// </summary>
         /// <param name="pProyectoID">ID del proyecto</param>
-        /// <param name="pNombre">Nombre de la ontologÌa</param>
-        /// <returns>ID de la ontologÌa</returns>
+        /// <param name="pNombre">Nombre de la ontolog√≠a</param>
+        /// <returns>ID de la ontolog√≠a</returns>
         public void ObtenerDatasetConOntologiaAPartirNombre(Guid pProyectoID, string pNombre, DataWrapperDocumentacion pDataWrapperDocumentacion)
         {
             DocumentacionAD.ObtenerDatasetConOntologiaAPartirNombre(pProyectoID, pNombre, pDataWrapperDocumentacion);
         }
         /// <summary>
-        /// Obtiene una ontologÌa a partir de su nombre en una comunidad.
+        /// Obtiene una ontolog√≠a a partir de su nombre en una comunidad.
         /// </summary>
         /// <param name="pProyectoID">ID del proyecto</param>
-        /// <param name="pNombre">Nombre de la ontologÌa</param>
-        /// <returns>ID de la ontologÌa</returns>
+        /// <param name="pNombre">Nombre de la ontolog√≠a</param>
+        /// <returns>ID de la ontolog√≠a</returns>
         public Guid ObtenerOntologiaAPartirNombre(Guid pProyectoID, string pNombre, bool pTraerSecundarias = true)
         {
             return DocumentacionAD.ObtenerOntologiaAPartirNombre(pProyectoID, pNombre, pTraerSecundarias);
         }
 
         /// <summary>
-        /// Actualiza la foto de los recursos de una ontologÌa.
+        /// Actualiza la foto de los recursos de una ontolog√≠a.
         /// </summary>
         /// <param name="pOntologiaID">ID de la ontologia</param>
         /// <param name="pRutaFoto">Ruta de la foto</param>
@@ -1334,34 +1354,45 @@ namespace Es.Riam.Gnoss.Logica.Documentacion
         }
 
         /// <summary>
-        /// Obtiene los ˙ltimos recursos de una determinada ontologÌa.
+        /// Obtiene los √∫ltimos recursos de una determinada ontolog√≠a.
         /// </summary>
-        /// <param name="pOntologiaID">ID de ontologÌa</param>
-        /// <param name="pNumRec">N˙mero de recursos</param>
-        /// <returns>Lista con los IDs de los ˙ltimos recursos de la ontologÌa</returns>
+        /// <param name="pOntologiaID">ID de ontolog√≠a</param>
+        /// <param name="pNumRec">N√∫mero de recursos</param>
+        /// <returns>Lista con los IDs de los √∫ltimos recursos de la ontolog√≠a</returns>
         public List<Guid> ObtenerUltimosRecursosDeOnto(Guid pOntologiaID, int pNumRec)
         {
             return DocumentacionAD.ObtenerUltimosRecursosDeOnto(pOntologiaID, pNumRec);
         }
 
         /// <summary>
-        /// Indica si existe una ontologÌa con determinado nombre en un proyecto.
+        /// Indica si existe una ontolog√≠a con determinado nombre en un proyecto.
         /// </summary>
         /// <param name="pProyectoID">ID de proyecto</param>
-        /// <param name="pEnlaceOntologia">Enlace de la ontologÌa</param>
-        /// <returns>TRUE si existe una ontologÌa con determinado nombre en un proyecto, FALSE si no</returns>
+        /// <param name="pEnlaceOntologia">Enlace de la ontolog√≠a</param>
+        /// <returns>TRUE si existe una ontolog√≠a con determinado nombre en un proyecto, FALSE si no</returns>
         public bool ExisteOntologiaEnProyecto(Guid pProyectoID, string pEnlaceOntologia)
         {
             return DocumentacionAD.ExisteOntologiaEnProyecto(pProyectoID, pEnlaceOntologia, null);
         }
 
         /// <summary>
-        /// Indica si existe una ontologÌa con determinado nombre en un proyecto a parte de la indicada.
+        /// Existe documento en proyecto.
         /// </summary>
         /// <param name="pProyectoID">ID de proyecto</param>
-        /// <param name="pEnlaceOntologia">Enlace de la ontologÌa</param>
+        /// <param name="pDocumentoID">Identificador del documento</param>
+        /// <returns>TRUE si existe un documento con identificador en el proyecto indicado</returns>
+        public bool ExisteDocumentoEnProyecto(Guid pProyectoID, Guid pDocumentoID)
+        {
+            return DocumentacionAD.ExisteDocumentoEnProyecto(pProyectoID, pDocumentoID);
+        }
+
+        /// <summary>
+        /// Indica si existe una ontolog√≠a con determinado nombre en un proyecto a parte de la indicada.
+        /// </summary>
+        /// <param name="pProyectoID">ID de proyecto</param>
+        /// <param name="pEnlaceOntologia">Enlace de la ontolog√≠a</param>
         /// <param name="pDocumentoID">ID del documento con dicho enlace</param>
-        /// <returns>TRUE si existe una ontologÌa con determinado nombre en un proyecto, FALSE si no</returns>
+        /// <returns>TRUE si existe una ontolog√≠a con determinado nombre en un proyecto, FALSE si no</returns>
         public bool ExisteOtraOntologiaEnProyecto(Guid pProyectoID, string pEnlaceOntologia, Guid pDocumentoID)
         {
             return DocumentacionAD.ExisteOntologiaEnProyecto(pProyectoID, pEnlaceOntologia, pDocumentoID);
@@ -1381,8 +1412,8 @@ namespace Es.Riam.Gnoss.Logica.Documentacion
         /// Comprueba si un usuario es administrador de alguna comunidad que tenga una ontologia concreta
         /// </summary>
         /// <param name="pUsuarioID">Identificador del usuario</param>
-        /// <param name="pOntologia">OntologÌa de la que el usuario debe ser administrador</param>
-        /// <returns>Verdad si el usuario administra alguna comunidad que contenga esta ontologÌa</returns>
+        /// <param name="pOntologia">Ontolog√≠a de la que el usuario debe ser administrador</param>
+        /// <returns>Verdad si el usuario administra alguna comunidad que contenga esta ontolog√≠a</returns>
         public bool ComprobarUsuarioAdministraOntologia(Guid pUsuarioID, string pOntologia)
         {
             return DocumentacionAD.ComprobarUsuarioAdministraOntologia(pUsuarioID, pOntologia);
@@ -1396,8 +1427,8 @@ namespace Es.Riam.Gnoss.Logica.Documentacion
         /// Comprueba si un documento ha sido editado por otra persona al mismo tiempo
         /// </summary>
         /// <param name="pDocumentoID">Identificador del documento</param>
-        /// <param name="pFechaModificacion">⁄ltima fecha de modificaciÛn del documento</param>
-        /// <param name="pNuevaVersionDocumentoID">Si esta versiÛn del documento est· obsoleta, esta variable devolver· el ID de la versiÛn actual del documento</param>
+        /// <param name="pFechaModificacion">√öltima fecha de modificaci√≥n del documento</param>
+        /// <param name="pNuevaVersionDocumentoID">Si esta versi√≥n del documento est√° obsoleta, esta variable devolver√° el ID de la versi√≥n actual del documento</param>
         /// <returns>Verdad si hay error de concurrencia</returns>
         public ErroresConcurrencia ComprobarConcurrenciaDocumento(Guid pDocumentoID, DateTime pFechaModificacion, out Guid? pNuevaVersionDocumentoID)
         {
@@ -1405,7 +1436,7 @@ namespace Es.Riam.Gnoss.Logica.Documentacion
         }
 
         /// <summary>
-        /// Obtiene los documentos web de una base de recursos pasada como par·metro
+        /// Obtiene los documentos web de una base de recursos pasada como par√°metro
         /// </summary>
         public DataWrapperDocumentacion ObtenerDocumentosWebDeBaseRecursos(Guid pBaseRecursosID)
         {
@@ -1447,11 +1478,11 @@ namespace Es.Riam.Gnoss.Logica.Documentacion
         }
 
         /// <summary>
-        /// Obtiene una lista de identificadores cuyo elemento vinculado es el ID de la ontologÌa
+        /// Obtiene una lista de identificadores cuyo elemento vinculado es el ID de la ontolog√≠a
         /// </summary>
-        /// <param name="pOntologiaID">Identificador de la ontologÌa</param>
+        /// <param name="pOntologiaID">Identificador de la ontolog√≠a</param>
         /// <param name="pProyectoID">Identificador del proyecto</param>
-        /// <returns>Lista de identificadores de los documentos cuyo elemento vinculado es la ontologÌa</returns>
+        /// <returns>Lista de identificadores de los documentos cuyo elemento vinculado es la ontolog√≠a</returns>
         public List<Guid> ObtenerDocumentosIDVinculadosAOntologiaProyecto(Guid pOntologiaID, Guid pProyectoID)
         {
             return DocumentacionAD.ObtenerDocumentosIDVinculadosAOntologiaProyecto(pOntologiaID, pProyectoID);
@@ -1467,7 +1498,7 @@ namespace Es.Riam.Gnoss.Logica.Documentacion
         }
 
         /// <summary>
-        /// Devuelve true si el proyecto que se le pasa en el parametro contiene alg˙n documento de tipo plantilla, false en caso contrario
+        /// Devuelve true si el proyecto que se le pasa en el parametro contiene alg√∫n documento de tipo plantilla, false en caso contrario
         /// </summary>
         /// <param name="pProyectoID">Id del proyecto que queremos comprobar</param>
         /// <returns></returns>
@@ -1505,6 +1536,16 @@ namespace Es.Riam.Gnoss.Logica.Documentacion
         }
 
         /// <summary>
+        /// Obtiene los recursos vinculados con el nivel de certificacion indicado
+        /// </summary>
+        /// <param name="pNivelCertifiacionID">Nivel de certificacion</param>
+        /// <returns></returns>
+        public List<DocumentoWebVinBaseRecursos> ObtenerBaseRecursosPorNivelCertifiacion(Guid pNivelCertifiacionID)
+        {
+            return DocumentacionAD.ObtenerBaseRecursosPorNivelCertifiacion(pNivelCertifiacionID);
+        }
+
+        /// <summary>
         /// Obtiene nivel certificacion de la lista de documentos
         /// </summary>
         /// <param name="pUsuarioID">ID del usuario</param>
@@ -1523,9 +1564,9 @@ namespace Es.Riam.Gnoss.Logica.Documentacion
         }
 
         /// <summary>
-        /// Obtiene registros de la tabla Documento de la base de recursos de una organizaciÛn
+        /// Obtiene registros de la tabla Documento de la base de recursos de una organizaci√≥n
         /// </summary>
-        /// <param name="pOrganizacionID">ID de la organizaciÛn</param>
+        /// <param name="pOrganizacionID">ID de la organizaci√≥n</param>
         public DataWrapperDocumentacion ObtenerDocumentosDeBaseRecursosOrganizacion(Guid pOrganizacionID)
         {
             return DocumentacionAD.ObtenerDocumentosDeBaseRecursosOrganizacion(pOrganizacionID);
@@ -1541,19 +1582,19 @@ namespace Es.Riam.Gnoss.Logica.Documentacion
         }
 
         /// <summary>
-        /// Obtiene la fecha de creaciÛn del documento
+        /// Obtiene la fecha de creaci√≥n del documento
         /// </summary>
         /// <param name="pDocumentoID">Identificador de documento</param>
-        /// <returns>Devuelve DateTime con la fecha de creaciÛn del documento</returns>
+        /// <returns>Devuelve DateTime con la fecha de creaci√≥n del documento</returns>
         public long ObtenerFechaCreacionDocumento(Guid pDocumentoID)
         {
             return this.DocumentacionAD.ObtenerFechaCreacionDocumento(pDocumentoID);
         }
 
         /// <summary>
-        /// Obtiene las comunidades web de la persona seg˙n un documento que tenga en estas, el cual es pasado como parametro.
+        /// Obtiene las comunidades web de la persona seg√∫n un documento que tenga en estas, el cual es pasado como parametro.
         /// </summary>
-        /// <param name="pDataWrapperDocumentacion">DataSet de documentaciÛn</param>
+        /// <param name="pDataWrapperDocumentacion">DataSet de documentaci√≥n</param>
         /// <param name="pIdentidadID">Identificador de persona</param>
         /// <param name="pDocumentoID">Identificador de documento</param>
         public void ObtenerComunidadesDePersonaPorDocumentoWEB(DataWrapperDocumentacion pDataWrapperDocumentacion, Guid pIdentidadID, Guid pDocumentoID)
@@ -1592,9 +1633,9 @@ namespace Es.Riam.Gnoss.Logica.Documentacion
         }
 
         /// <summary>
-        /// Obtiene las comunidades web de la persona seg˙n un documento wiki que tenga en estas, el cual es pasado como parametro.
+        /// Obtiene las comunidades web de la persona seg√∫n un documento wiki que tenga en estas, el cual es pasado como parametro.
         /// </summary>
-        /// <param name="pDataWrapperDocumentacion">DataSet de documentaciÛn</param>
+        /// <param name="pDataWrapperDocumentacion">DataSet de documentaci√≥n</param>
         /// <param name="pIdentidadID">Identificador de persona</param>
         /// <param name="pNombreDoc">Nombre del documento Wiki</param>
         public void ObtenerComunidadesDePersonaPorNombreDocumentoWiki(DataWrapperDocumentacion pDataWrapperDocumentacion, Guid pIdentidadID, string pNombreDoc)
@@ -1603,9 +1644,9 @@ namespace Es.Riam.Gnoss.Logica.Documentacion
         }
 
         /// <summary>
-        /// Obtiene todas las categorÌas en la que est· compartido un documento.
+        /// Obtiene todas las categor√≠as en la que est√° compartido un documento.
         /// </summary>
-        /// <param name="pDataWrapperDocumentacion">DataSet de documentaciÛn</param>
+        /// <param name="pDataWrapperDocumentacion">DataSet de documentaci√≥n</param>
         /// <param name="pListaDocumentos">Identificadores de documento</param>
         public void ObtenerTodasCategoriasTesauroPorDocumentoID(DataWrapperDocumentacion pDataWrapperDocumentacion, List<Guid> pListaDocumentos)
         {
@@ -1622,10 +1663,10 @@ namespace Es.Riam.Gnoss.Logica.Documentacion
         }
 
         /// <summary>
-        /// Obtiene el tÌtulo del documento de un documento.
+        /// Obtiene el t√≠tulo del documento de un documento.
         /// </summary>
         /// <param name="pVotoID">Identificador del documento</param>
-        /// <returns>TÌtulo del documento</returns>
+        /// <returns>T√≠tulo del documento</returns>
         public string ObtenerTituloDocumentoPorID(Guid pDocumentoID)
         {
             return DocumentacionAD.ObtenerTituloDocumentoPorID(pDocumentoID);
@@ -1672,11 +1713,11 @@ namespace Es.Riam.Gnoss.Logica.Documentacion
         }
 
         /// <summary>
-        /// Comprueba si un recurso est· compartido en una comunidad y no est· eliminado
+        /// Comprueba si un recurso est√° compartido en una comunidad y no est√° eliminado
         /// </summary>
         /// <param name="pDocumentoID">Identificador del documento a comprobar</param>
-        /// <param name="pProyectoID">Identificador del proyecto en el que se quiere comprobar que estÈ compartido el recurso</param>
-        /// <returns>Verdad si el recurso est· compartido o publicado en esa comunidad</returns>
+        /// <param name="pProyectoID">Identificador del proyecto en el que se quiere comprobar que est√° compartido el recurso</param>
+        /// <returns>Verdad si el recurso est√° compartido o publicado en esa comunidad</returns>
         public bool EstaDocumentoCompartidoEnProyecto(Guid pDocumentoID, Guid pProyectoID)
         {
             return DocumentacionAD.EstaDocumentoCompartidoEnProyecto(pDocumentoID, pProyectoID);
@@ -1686,16 +1727,16 @@ namespace Es.Riam.Gnoss.Logica.Documentacion
         /// Obtiene los campos Titulo, ElementoVinculadoID y Tipo de un recurso
         /// </summary>
         /// <param name="pDocumentoID">Identificador del documento a obtener sus datos</param>
-        /// <param name="pTitulo">Variable en la que se devovler· el tÌtulo del recurso</param>
-        /// <param name="pElementoVinculadoID">Variable en la que se devolver· el campo ElementoVinculadoID (NULL si no tiene valor)</param>
-        /// <param name="pTipo">Variable en la que se devolver· el campo Tipo del recurso</param>
+        /// <param name="pTitulo">Variable en la que se devolver√° el t√≠tulo del recurso</param>
+        /// <param name="pElementoVinculadoID">Variable en la que se devolver√° el campo ElementoVinculadoID (NULL si no tiene valor)</param>
+        /// <param name="pTipo">Variable en la que se devolver√° el campo Tipo del recurso</param>
         public void ObtenerTituloElementoVinculadoIDTipoDeRecurso(Guid pDocumentoID, out string pTitulo, out Guid? pElementoVinculadoID, out short pTipo)
         {
             DocumentacionAD.ObtenerTituloElementoVinculadoIDTipoDeRecurso(pDocumentoID, out pTitulo, out pElementoVinculadoID, out pTipo);
         }
 
         /// <summary>
-        /// Actualiza el campo UltimaVersion de un documento que ha dejado de ser la ˙ltima versiÛn
+        /// Actualiza el campo UltimaVersion de un documento que ha dejado de ser la √∫ltima versi√≥n
         /// </summary>
         /// <param name="pDocumentoID">Identificador del documento</param>
         public void ActualizarUltimaVersionDocumento(Guid pDocumentoID)
@@ -1725,7 +1766,7 @@ namespace Es.Riam.Gnoss.Logica.Documentacion
             catch (DataException ex)
             {
                 TerminarTransaccion(false);
-                //Error interno de la aplicaciÛn				
+                //Error interno de la aplicaci√≥n				
                 mLoggingService.GuardarLogError(ex);
                 throw new ErrorInterno();
             }
@@ -1737,10 +1778,10 @@ namespace Es.Riam.Gnoss.Logica.Documentacion
         }
 
         /// <summary>
-        /// Actualiza el n˙mero de descargas y consultas de un documento.
+        /// Actualiza el n√∫mero de descargas y consultas de un documento.
         /// </summary>
         /// <param name="pDocID">Identificador del documento.</param>
-        /// <param name="pNumVisitas">N˙mero de visitas realizadas al documento</param>
+        /// <param name="pNumVisitas">N√∫mero de visitas realizadas al documento</param>
         /// <param name="baseRecursosID">Identificados de BR de proyecto</param>
         public void ActualizarNumeroDescargasDocumento(Guid pDocID, Guid pBaseRecursosID)
         {
@@ -1748,10 +1789,10 @@ namespace Es.Riam.Gnoss.Logica.Documentacion
         }
 
         /// <summary>
-        /// Actualiza el n˙mero de descargas y consultas de un documento.
+        /// Actualiza el n√∫mero de descargas y consultas de un documento.
         /// </summary>
         /// <param name="pDocID">Identificador del documento.</param>
-        /// <param name="pNumVisitas">N˙mero de visitas realizadas al documento</param>
+        /// <param name="pNumVisitas">N√∫mero de visitas realizadas al documento</param>
         /// <param name="baseRecursosID">Identificados de BR de proyecto</param>
         public int ActualizarNumeroConsultasDocumento(Guid pDocID, int pNumVisitas, Guid pBaseRecursosID)
         {
@@ -1759,10 +1800,10 @@ namespace Es.Riam.Gnoss.Logica.Documentacion
         }
 
         /// <summary>
-        /// Actualiza el n˙mero de comentarios de un documento
+        /// Actualiza el n√∫mero de comentarios de un documento
         /// </summary>
         /// <param name="pDocumentoID">Identificador del documento</param>
-        /// <param name="pBaseRecursosID">Identificador de la base de recursos en la que se ha aÒadido o eliminado el comentario</param>
+        /// <param name="pBaseRecursosID">Identificador de la base de recursos en la que se ha a√±adido o eliminado el comentario</param>
         /// <param name="pEliminado">Verdad si se ha eliminado un comentario, falso en caso de que sea agregado</param>
         /// <param name="pEnPrivado">Verdad si el comentario se ha hecho en una comunidad privada</param>
         public void ActualizarNumeroComentariosDocumento(Guid pDocumentoID, Guid pBaseRecursosID, bool pEliminado, bool pEnPrivado)
@@ -1779,7 +1820,7 @@ namespace Es.Riam.Gnoss.Logica.Documentacion
         /// <summary>
         /// Devuelve las filas de los documentos compartio
         /// </summary>
-        /// <param name="pDataWrapperDocumentacion">DataSet de documentaciÛn</param>
+        /// <param name="pDataWrapperDocumentacion">DataSet de documentaci√≥n</param>
         /// <param name="pBaseRecursosID">Identificador de la base de recursos</param>
         /// <param name="pListaDocumentosID">Lista con los documentos</param>
         public void ObtenerFilasDocumentoWebDeBRDeListaDocumentos(DataWrapperDocumentacion pDataWrapperDocumentacion, Guid pBaseRecursosID, List<Guid> pListaDocumentosID)
@@ -1797,7 +1838,17 @@ namespace Es.Riam.Gnoss.Logica.Documentacion
         }
 
         /// <summary>
-        /// Devuelve un DS con los 10 ˙ltimos recursos publicados y que no est·n borrados.
+        /// Obtiene el DocumentoWebVinBaseRecusros por el DocumentoID
+        /// </summary>
+        /// <param name="pDocumentoID">Identificador del Documento a obtener de la base de recursos</param>
+        /// <returns>Devuelve el DocumentoWebVinBaseRecursos</returns>
+        public DocumentoWebVinBaseRecursos ObtenerDocumentoWebVinBaseRecursoPorDocumentoID(Guid pDocumentoID)
+        {
+            return DocumentacionAD.ObtenerDocumentoWebVinBaseRecursoPorDocumentoID(pDocumentoID);
+        }
+
+        /// <summary>
+        /// Devuelve un DS con los 10 √∫ltimos recursos publicados y que no est√°n borrados.
         /// </summary>
         /// <param name="pProyectoID">ProyectoID del que se traen los recursos publicados.</param>
         /// <returns></returns>
@@ -1807,20 +1858,20 @@ namespace Es.Riam.Gnoss.Logica.Documentacion
         }
 
         /// <summary>
-        /// Devuelve una lista con los ˙ltimos ids de los recursos publicados en la comunidad pProyID
+        /// Devuelve una lista con los √∫ltimos ids de los recursos publicados en la comunidad pProyID
         /// </summary>
-        /// <param name="pProyectoID">Proyecto del que se quieren ver los ˙ltimos recursos publicados.</param>
-        /// <returns>lista Con los ˙ltimos ids de los recursos publicados.</returns>
+        /// <param name="pProyectoID">Proyecto del que se quieren ver los √∫ltimos recursos publicados.</param>
+        /// <returns>lista Con los √∫ltimos ids de los recursos publicados.</returns>
         public List<Guid> ObtenerUltimosRecursosIDPublicados(Guid pProyectoID, int pNumElementos, string pOntologia = null)
         {
             return DocumentacionAD.ObtenerUltimosRecursosIDPublicados(pProyectoID, pNumElementos, pOntologia);
         }
 
         /// <summary>
-        /// Devuelve un DS con los ˙ltimos recursos publicados por un perfil
+        /// Devuelve un DS con los √∫ltimos recursos publicados por un perfil
         /// </summary>
-        /// <param name="pProyectoID">Proyecto del que se quieren ver los ˙ltimos recursos publicados.</param>
-        /// <returns>DS Con los ˙ltimos recursos publicados.</returns>
+        /// <param name="pProyectoID">Proyecto del que se quieren ver los √∫ltimos recursos publicados.</param>
+        /// <returns>DS Con los √∫ltimos recursos publicados.</returns>
         [Obsolete]
         public DataWrapperDocumentacion ObtenerUltimosRecursosPublicadosPorPerfil(Guid pPerfilID, Guid pUsuarioID, int pNumElementos)
         {
@@ -1828,7 +1879,7 @@ namespace Es.Riam.Gnoss.Logica.Documentacion
         }
 
         /// <summary>
-        /// Devuelve un DS con los ˙ltimos debates  publicados y que no est·n borrados.
+        /// Devuelve un DS con los √∫ltimos debates  publicados y que no est√°n borrados.
         /// </summary>
         /// <param name="pProyectoID">ProyectoID del que se traen los recursos publicados.</param>
         /// <returns></returns>
@@ -1838,7 +1889,7 @@ namespace Es.Riam.Gnoss.Logica.Documentacion
         }
 
         /// <summary>
-        /// Devuelve un DS con los ˙ltimos preguntas publicados y que no est·n borrados.
+        /// Devuelve un DS con los √∫ltimos preguntas publicados y que no est√°n borrados.
         /// </summary>
         /// <param name="pProyectoID">ProyectoID del que se traen los recursos publicados.</param>
         /// <returns></returns>
@@ -1848,7 +1899,7 @@ namespace Es.Riam.Gnoss.Logica.Documentacion
         }
 
         /// <summary>
-        /// Devuelve un DS con los ˙ltimos debates y preguntas publicados y que no est·n borrados.
+        /// Devuelve un DS con los √∫ltimos debates y preguntas publicados y que no est√°n borrados.
         /// </summary>
         /// <param name="pProyectoID">ProyectoID del que se traen los recursos publicados.</param>
         /// <returns></returns>
@@ -1858,7 +1909,7 @@ namespace Es.Riam.Gnoss.Logica.Documentacion
         }
 
         /// <summary>
-        /// Devuelve una lista con los IDs de los ˙ltimos debates y preguntas publicados y que no est·n borrados.
+        /// Devuelve una lista con los IDs de los √∫ltimos debates y preguntas publicados y que no est√°n borrados.
         /// </summary>
         /// <param name="pProyectoID">ProyectoID del que se traen los recursos publicados.</param>
         /// <returns>Lista de documentoID</returns>
@@ -1868,7 +1919,7 @@ namespace Es.Riam.Gnoss.Logica.Documentacion
         }
 
         /// <summary>
-        /// Devuelve una lista con los IDs de los ˙ltimos debates  publicados y que no est·n borrados.
+        /// Devuelve una lista con los IDs de los √∫ltimos debates  publicados y que no est√°n borrados.
         /// </summary>
         /// <param name="pProyectoID">ProyectoID del que se traen los recursos publicados.</param>
         /// <returns>Lista de documentoID</returns>
@@ -1878,7 +1929,7 @@ namespace Es.Riam.Gnoss.Logica.Documentacion
         }
 
         /// <summary>
-        /// Devuelve una lista con los IDs de los ˙ltimos preguntas publicados y que no est·n borrados.
+        /// Devuelve una lista con los IDs de los √∫ltimos preguntas publicados y que no est√°n borrados.
         /// </summary>
         /// <param name="pProyectoID">ProyectoID del que se traen los recursos publicados.</param>
         /// <returns>Lista de documentoID</returns>
@@ -1905,9 +1956,9 @@ namespace Es.Riam.Gnoss.Logica.Documentacion
         /// <summary>
         /// Obtiene la base de recursos de un determinado proyecto.
         /// </summary>
-        /// <param name="pDataWrapperDocumentacion">DataSet de documentaciÛn</param>
+        /// <param name="pDataWrapperDocumentacion">DataSet de documentaci√≥n</param>
         /// <param name="pProyectoID">Identificador de proyecto</param>
-        /// <param name="pOrganizacionID">Identificador de organziaciÛn</param>
+        /// <param name="pOrganizacionID">Identificador de organizaci√≥n</param>
         public void ObtenerBaseRecursosProyecto(DataWrapperDocumentacion pDataWrapperDocumentacion, Guid pProyectoID, Guid pOrganizacionID, Guid pUsuarioID)
         {
             if (pProyectoID == ProyectoAD.MetaProyecto)
@@ -1924,7 +1975,7 @@ namespace Es.Riam.Gnoss.Logica.Documentacion
         /// <summary>
         /// Obtiene la base de recursos de un determinado proyecto.
         /// </summary>
-        /// <param name="pDataWrapperDocumentacion">DataSet de documentaciÛn</param>
+        /// <param name="pDataWrapperDocumentacion">DataSet de documentaci√≥n</param>
         /// <param name="pProyectoID">Identificador de proyecto</param>
         public void ObtenerBaseRecursosProyecto(DataWrapperDocumentacion pDataWrapperDocumentacion, Guid pProyectoID)
         {
@@ -1935,8 +1986,8 @@ namespace Es.Riam.Gnoss.Logica.Documentacion
         /// Comprueba si una comunidad contiene el recurso o no
         /// </summary>
         /// <param name="id">Identificador del recurso</param>
-        /// <param name="pOrganizacionDestinoID">Identificador de la organizacion de b˙squeda</param>
-        /// <param name="pProyectoDestinoID">Identificador de la comunidad de b˙squeda</param>
+        /// <param name="pOrganizacionDestinoID">Identificador de la organizacion de b√∫squeda</param>
+        /// <param name="pProyectoDestinoID">Identificador de la comunidad de b√∫squeda</param>
         /// <returns>Booleano true si esa comunidad contiene ese recurso, false en caso contrario</returns>
         public bool ContieneRecurso(Guid id, Guid pOrganizacionID, Guid pProyectoID)
         {
@@ -1991,7 +2042,7 @@ namespace Es.Riam.Gnoss.Logica.Documentacion
         /// <summary>
         /// Obtiene la base de recursos de un usuario.Obtiene tablas "BaseRecursos" , "BaseRecursosUsuario"
         /// </summary>
-        /// <param name="pDataWrapperDocumentacion">DataSet de documentaciÛn</param>
+        /// <param name="pDataWrapperDocumentacion">DataSet de documentaci√≥n</param>
         /// <param name="pUsuarioID">Identificador de usuario</param>
         public void ObtenerBaseRecursosUsuario(DataWrapperDocumentacion pDataWrapperDocumentacion, Guid pUsuarioID)
         {
@@ -2039,17 +2090,17 @@ namespace Es.Riam.Gnoss.Logica.Documentacion
         }
 
         /// <summary>
-        /// Obtiene la base de recursos de una organizaciÛn. Obtiene tablas "BaseRecursos" , "BaseRecursosOrganizacion"
+        /// Obtiene la base de recursos de una organizaci√≥n. Obtiene tablas "BaseRecursos" , "BaseRecursosOrganizacion"
         /// </summary>
-        /// <param name="pDocumentacionDS">DataSet de documentaciÛn</param>
-        /// <param name="pOrganizacionID">Identificador de organizaciÛn</param>
+        /// <param name="pDocumentacionDS">DataSet de documentaci√≥n</param>
+        /// <param name="pOrganizacionID">Identificador de organizaci√≥n</param>
         public void ObtenerBaseRecursosOrganizacion(DataWrapperDocumentacion pDocumentacionDS, Guid pOrganizacionID)
         {
             DocumentacionAD.ObtenerBaseRecursosOrganizacion(pDocumentacionDS, pOrganizacionID);
         }
 
         /// <summary>
-        /// Devuelve las vinculaciones de los documentos de una organziaciÛn. Carga "DocumentoWebVinBaseRecursos" , "DocumentoWebAgCatTesauro"
+        /// Devuelve las vinculaciones de los documentos de una organizaci√≥n. Carga "DocumentoWebVinBaseRecursos" , "DocumentoWebAgCatTesauro"
         /// </summary>
         /// <param name="pOrganizacionID">Clave de la organizacion</param>
         /// <returns>DocumentacionDS</returns>
@@ -2063,7 +2114,7 @@ namespace Es.Riam.Gnoss.Logica.Documentacion
         #region VersionDocumento
 
         /// <summary>
-        /// Finaliza la ediciÛn de un recurso, eliminando la fila de DocumentoEnEdicion
+        /// Finaliza la edici√≥n de un recurso, eliminando la fila de DocumentoEnEdicion
         /// </summary>
         /// <param name="pDocumentoID">Identificador del documento</param>
         public void FinalizarEdicionRecurso(Guid pDocumentoID)
@@ -2072,7 +2123,7 @@ namespace Es.Riam.Gnoss.Logica.Documentacion
         }
 
         /// <summary>
-        /// Obtiene la fecha de ediciÛn de un recurso, si est· bloqueado
+        /// Obtiene la fecha de edici√≥n de un recurso, si est√° bloqueado
         /// </summary>
         /// <param name="pDocumentoID">Identificador del recurso</param>
         /// <returns></returns>
@@ -2082,7 +2133,7 @@ namespace Es.Riam.Gnoss.Logica.Documentacion
         }
 
         /// <summary>
-        /// Le aÒade al tiempo de bloqueo de un recurso otros 60 segundos
+        /// Le a√±ade al tiempo de bloqueo de un recurso otros 60 segundos
         /// </summary>
         /// <param name="pDocumentoID">Identificador del documento a bloquear durante otros 60 segundos</param>
         public DateTime? ActualizarFechaRecursoEnEdicion(Guid pDocumentoID, DateTime pFechaEdicion)
@@ -2091,11 +2142,11 @@ namespace Es.Riam.Gnoss.Logica.Documentacion
         }
 
         /// <summary>
-        /// Comprueba si un documento est· siendo actualizado por alg˙n usuario en este instante. Si no es asÌ, lo marca en ediciÛn
+        /// Comprueba si un documento est√° siendo actualizado por alg√∫n usuario en este instante. Si no es as√≠, lo marca en edici√≥n
         /// </summary>
         /// <param name="pDocumentoID">Identificador del documento a comprobar</param>
         /// <param name="pIdentidadID">Identificador de la identidad del editor</param>
-        /// <returns>La fila del documento en ediciÛn, null si nadie lo est· editando</returns>
+        /// <returns>La fila del documento en edici√≥n, null si nadie lo est√° editando</returns>
         public DocumentoEnEdicion ComprobarDocumentoEnEdicion(Guid pDocumentoID, Guid pIdentidadID, int pSegundosDuracionBloqueo = 60, int pNumeroIntentos = 3)
         {
             return DocumentacionAD.ComprobarDocumentoEnEdicion(pDocumentoID, pIdentidadID, pNumeroIntentos, pSegundosDuracionBloqueo);
@@ -2104,8 +2155,8 @@ namespace Es.Riam.Gnoss.Logica.Documentacion
         /// <summary>
         /// Carga la tabla VersionDocumento para los documentos pasados en la lista.
         /// </summary>
-        /// <param name="pDataWrapperDocumentacion">DataSet de documentaciÛn</param>
-        /// <param name="pListaDocumentosID">Lista de identificadores de los documentos para traer la informaciÛn</param>
+        /// <param name="pDataWrapperDocumentacion">DataSet de documentaci√≥n</param>
+        /// <param name="pListaDocumentosID">Lista de identificadores de los documentos para traer la informaci√≥n</param>
         /// <param name="pRelaciones">Especifica si deben traerse todas la versiones de los documentos originales o no</param>
         public void ObtenerVersionDocumentosPorIDs(DataWrapperDocumentacion pDataWrapperDocumentacion, List<Guid> pListaDocumentosID, bool pRelaciones)
         {
@@ -2126,27 +2177,27 @@ namespace Es.Riam.Gnoss.Logica.Documentacion
         /// Carga todas las versiones de un documento.
         /// </summary>
         /// <param name="pDocumentoID">Identificador del documento del que se quieren obtener las versiones</param>
-        /// <returns>DataSet de documentaciÛn</returns>
+        /// <returns>DataSet de documentaci√≥n</returns>
         public DataWrapperDocumentacion ObtenerVersionesDocumentoPorID(Guid pDocumentoID)
         {
             return DocumentacionAD.ObtenerVersionesDocumentoPorID(pDocumentoID);
         }
 
         /// <summary>
-        /// Verdad si el documento est· marcado como privado para editores
+        /// Verdad si el documento est√° marcado como privado para editores
         /// </summary>
         /// <param name="pDocumentoID">Identificador del documento</param>
-        /// <returns>Verdad si el documento est· marcado como privado para editores</returns>
+        /// <returns>Verdad si el documento est√° marcado como privado para editores</returns>
         public bool EsDocumentoEnProyectoPrivadoEditores(Guid pDocumentoID, Guid pProyectoID)
         {
             return DocumentacionAD.EsDocumentoEnProyectoPrivadoEditores(pDocumentoID, pProyectoID);
         }
 
         /// <summary>
-        /// Verdad si el documento est· marcado como publico sÛlo para los miembros de la comunidad
+        /// Verdad si el documento est√° marcado como publico s√≠lo para los miembros de la comunidad
         /// </summary>
         /// <param name="pDocumentoID">Identificador del documento</param>
-        /// <returns>Verdad si el documento est· marcado como publico sÛlo para los miembros de la comunidad</returns>
+        /// <returns>Verdad si el documento est√° marcado como publico s√≠lo para los miembros de la comunidad</returns>
         public bool EsDocumentoEnProyectoPublicoSoloParaMiembros(Guid pDocumentoID)
         {
             return DocumentacionAD.EsDocumentoEnProyectoPublicoSoloParaMiembros(pDocumentoID);
@@ -2178,7 +2229,7 @@ namespace Es.Riam.Gnoss.Logica.Documentacion
         /// </summary>
         /// <param name="pEnlace">Url del enlace del recurso</param>
         /// <param name="pProyectoID">Identificador de la comunidad</param>
-        /// <returns>Devuelve si est· o no el documento con "pEnlace" en la comunidad "pProyectoID"</returns>
+        /// <returns>Devuelve si est√° o no el documento con "pEnlace" en la comunidad "pProyectoID"</returns>
         public bool EstaEnlaceEnComunidad(string pEnlace, Guid pProyectoID)
         {
             return DocumentacionAD.EstaEnlaceEnComunidad(pEnlace, pProyectoID);
@@ -2231,7 +2282,7 @@ namespace Es.Riam.Gnoss.Logica.Documentacion
         /// Obtiene los comentarios y votos de los documentos.
         /// </summary>
         /// <param name="pDocumentoID">Identificador de documento.</param>
-        /// <param name="pDocumentacionDW">DataSet de documentaciÛn</param>
+        /// <param name="pDocumentacionDW">DataSet de documentaci√≥n</param>
         public void ObtenerComenariosYVotosDocumento(Guid pDocumentoID, DataWrapperDocumentacion pDocumentacionDW)
         {
             DocumentacionAD.ObtenerComenariosYVotosDocumento(pDocumentoID, pDocumentacionDW);
@@ -2241,7 +2292,7 @@ namespace Es.Riam.Gnoss.Logica.Documentacion
         /// Obtiene los comentarios de un documento.
         /// </summary>
         /// <param name="pDocumentoID">Identificador de documento.</param>
-        /// <param name="pDocumentacionDW">DataSet de documentaciÛn</param>
+        /// <param name="pDocumentacionDW">DataSet de documentaci√≥n</param>
         public void ObtenerComenariosDocumento(Guid pDocumentoID, DataWrapperDocumentacion pDocumentacionDW)
         {
             DocumentacionAD.ObtenerComenariosDocumento(pDocumentoID, pDocumentacionDW);
@@ -2271,7 +2322,7 @@ namespace Es.Riam.Gnoss.Logica.Documentacion
         /// Obtiene los votos de un documento.
         /// </summary>
         /// <param name="pDocumentoID">Identificador de documento.</param>
-        /// <param name="pDocumentacionDS">DataSet de documentaciÛn</param>
+        /// <param name="pDocumentacionDS">DataSet de documentaci√≥n</param>
         public void ObtenerVotosDocumento(Guid pDocumentoID, DataWrapperDocumentacion pDocumentacionDS)
         {
             DocumentacionAD.ObtenerVotosDocumento(pDocumentoID, pDocumentacionDS);
@@ -2289,10 +2340,10 @@ namespace Es.Riam.Gnoss.Logica.Documentacion
         }
 
         /// <summary>
-        /// Actualiza la valoraciÛn del documento seg˙n su n˙mero de votos.
+        /// Actualiza la valoraci√≥n del documento seg√∫n su n√∫mero de votos.
         /// </summary>
         /// <param name="pDocumentoID">Identificador del documento</param>
-        /// <returns>DataSet de documentaciÛn con la informaciÛn actulizada</returns>
+        /// <returns>DataSet de documentaci√≥n con la informaci√≥n actulizada</returns>
         public DataWrapperDocumentacion ActualizarValoracionDocumento(Guid pDocumentoID)
         {
             return DocumentacionAD.ActualizarValoracionDocumento(pDocumentoID);
@@ -2313,10 +2364,10 @@ namespace Es.Riam.Gnoss.Logica.Documentacion
         }
 
         /// <summary>
-        /// Obtiene los comentarios de comunidades p˙blicas y la comunidad actual de los documentos cargados en la tabla Documento.
+        /// Obtiene los comentarios de comunidades p√∫blicas y la comunidad actual de los documentos cargados en la tabla Documento.
         /// </summary>
-        /// <param name="pDataWrapperDocumentacion">DataSet de documentaciÛn</param>
-        /// <param name="pProyectoActual">Proyecto actual en el que est· el usuario</param>
+        /// <param name="pDataWrapperDocumentacion">DataSet de documentaci√≥n</param>
+        /// <param name="pProyectoActual">Proyecto actual en el que est√° el usuario</param>
         public void ObtenerComentariosPublicosMasProyectoActualDeDocumentos(DataWrapperDocumentacion pDataWrapperDocumentacion, Guid pProyectoActual)
         {
             DocumentacionAD.ObtenerComentariosPublicosMasProyectoActualDeDocumentos(pDataWrapperDocumentacion, pProyectoActual);
@@ -2324,63 +2375,63 @@ namespace Es.Riam.Gnoss.Logica.Documentacion
 
         #endregion
 
-        #region CategorÌas del tesauro
+        #region Categor√≠as del tesauro
 
         /// <summary>
-        /// Devuelve el dataSet de documentaciÛn con las categorÌas del tesauro del los documentos requeridas.
+        /// Devuelve el dataSet de documentaci√≥n con las categor√≠as del tesauro del los documentos requeridas.
         /// </summary>
         /// <param name="pListaDocumentosID">Lista con los identificadores de los documentos</param>
-        /// <returns>DataSet de documentaciÛn con la tabla DocumentoWebAgCatTesauro</returns>
+        /// <returns>DataSet de documentaci√≥n con la tabla DocumentoWebAgCatTesauro</returns>
         public List<DocumentoWebAgCatTesauro> ObtenerCategoriasTesauroListaDocumentosProyectoID(List<Guid> pListaDocumentosID, Guid pProyectoID)
         {
             return DocumentacionAD.ObtenerCategoriasTesauroListaDocumentosProyectoID(pListaDocumentosID, pProyectoID);
         }
 
         /// <summary>
-        /// Devuelve el dataSet de documentaciÛn con las categorÌas del tesauro del los documentos requeridas.
+        /// Devuelve el dataSet de documentaci√≥n con las categor√≠as del tesauro del los documentos requeridas.
         /// </summary>
         /// <param name="pListaDocumentosID">Lista con los identificadores de los documentos</param>
-        /// <returns>DataSet de documentaciÛn con la tabla DocumentoWebAgCatTesauro</returns>
+        /// <returns>DataSet de documentaci√≥n con la tabla DocumentoWebAgCatTesauro</returns>
         public List<DocumentoWebAgCatTesauroConVinculoTesauroID> ObtenerCategoriasTesauroYTesauroDeDocumentos(List<Guid> pListaDocumentosID)
         {
             return DocumentacionAD.ObtenerCategoriasTesauroYTesauroDeDocumentos(pListaDocumentosID);
         }
 
         /// <summary>
-        /// Devuelve la tabla DocumentoWebAgCatTesauro cargada con los datos del las categorÌas de un determinado tesauro.
+        /// Devuelve la tabla DocumentoWebAgCatTesauro cargada con los datos del las categor√≠as de un determinado tesauro.
         /// </summary>
         /// <param name="pTesauroID">Identificador del tesauro</param>
-        /// <returns>Tabla DocumentoWebAgCatTesauro cargada con los datos del las categorÌas de un determinado tesauro</returns>
+        /// <returns>Tabla DocumentoWebAgCatTesauro cargada con los datos del las categor√≠as de un determinado tesauro</returns>
         public DataWrapperDocumentacion ObtenerDocAgCatTesauroDeTesauroID(Guid pTesauroID)
         {
             return DocumentacionAD.ObtenerDocAgCatTesauroDeTesauroID(pTesauroID);
         }
 
         /// <summary>
-        /// Devuelve la tabla DocumentoWebAgCatTesauro cargada con las vinculaciones entre recursos publicos y categorÌas
+        /// Devuelve la tabla DocumentoWebAgCatTesauro cargada con las vinculaciones entre recursos publicos y categor√≠as
         /// </summary>
         /// <param name="pTesauroID">Identificador del tesauro</param>
-        /// <returns>Tabla DocumentoWebAgCatTesauro cargada con los datos del las categorÌas de un determinado tesauro</returns>
+        /// <returns>Tabla DocumentoWebAgCatTesauro cargada con los datos del las categor√≠as de un determinado tesauro</returns>
         public List<DocumentoWebAgCatTesauro> ObtenerDocAgCatRecursosPublicosTesauroDeTesauroID(Guid pTesauroID)
         {
             return DocumentacionAD.ObtenerDocAgCatRecursosPublicosTesauroDeTesauroID(pTesauroID);
         }
 
         /// <summary>
-        /// Devuelve la tabla DocumentoWebAgCatTesauro cargada con las vinculaciones entre debates publicos y categorÌas
+        /// Devuelve la tabla DocumentoWebAgCatTesauro cargada con las vinculaciones entre debates publicos y categor√≠as
         /// </summary>
         /// <param name="pTesauroID">Identificador del tesauro</param>
-        /// <returns>Tabla DocumentoWebAgCatTesauro cargada con los datos del las categorÌas de un determinado tesauro</returns>
+        /// <returns>Tabla DocumentoWebAgCatTesauro cargada con los datos del las categor√≠as de un determinado tesauro</returns>
         public List<DocumentoWebAgCatTesauro> ObtenerDocAgCatDebatesPublicosTesauroDeTesauroID(Guid pTesauroID)
         {
             return DocumentacionAD.ObtenerDocAgCatDebatesPublicosTesauroDeTesauroID(pTesauroID);
         }
 
         /// <summary>
-        /// Devuelve la tabla DocumentoWebAgCatTesauro cargada con las vinculaciones entre preguntas publicos y categorÌas
+        /// Devuelve la tabla DocumentoWebAgCatTesauro cargada con las vinculaciones entre preguntas publicos y categor√≠as
         /// </summary>
         /// <param name="pTesauroID">Identificador del tesauro</param>
-        /// <returns>Tabla DocumentoWebAgCatTesauro cargada con los datos del las categorÌas de un determinado tesauro</returns>
+        /// <returns>Tabla DocumentoWebAgCatTesauro cargada con los datos del las categor√≠as de un determinado tesauro</returns>
         public List<DocumentoWebAgCatTesauro> ObtenerDocAgCatPreguntasPublicasTesauroDeTesauroID(Guid pTesauroID)
         {
             return DocumentacionAD.ObtenerDocAgCatPreguntasPublicasTesauroDeTesauroID(pTesauroID);
@@ -2389,7 +2440,7 @@ namespace Es.Riam.Gnoss.Logica.Documentacion
         /// <summary>
         /// Devuelve los recursos asociados a la lista de categorias que recibe.
         /// </summary>
-        /// <param name="pListaCategorias">Lista de categorÌas de los cuales se quiere obtener los recursos</param>
+        /// <param name="pListaCategorias">Lista de categor√≠as de los cuales se quiere obtener los recursos</param>
         /// <returns></returns>
         public DataWrapperDocumentacion ObtenerDocWebAgCatTesauroPorCategoriasId(List<Guid> pListaCategorias)
         {
@@ -2397,39 +2448,39 @@ namespace Es.Riam.Gnoss.Logica.Documentacion
         }
 
         /// <summary>
-        /// Devuelve la tabla DocumentoWebAgCatTesauro cargada con las vinculaciones entre recursos privados y categorÌas
+        /// Devuelve la tabla DocumentoWebAgCatTesauro cargada con las vinculaciones entre recursos privados y categor√≠as
         /// </summary>
         /// <param name="pTesauroID">Identificador del tesauro</param>
-        /// <returns>Tabla DocumentoWebAgCatTesauro cargada con los datos del las categorÌas de un determinado tesauro</returns>
+        /// <returns>Tabla DocumentoWebAgCatTesauro cargada con los datos del las categor√≠as de un determinado tesauro</returns>
         public List<DocumentoWebAgCatTesauro> ObtenerDocAgCatRecursosPrivadosTesauroDeTesauroID(Guid pTesauroID)
         {
             return DocumentacionAD.ObtenerDocAgCatRecursosPrivadosTesauroDeTesauroID(pTesauroID);
         }
 
         /// <summary>
-        /// Devuelve la tabla DocumentoWebAgCatTesauro cargada con las vinculaciones entre debates privados y categorÌas
+        /// Devuelve la tabla DocumentoWebAgCatTesauro cargada con las vinculaciones entre debates privados y categor√≠as
         /// </summary>
         /// <param name="pTesauroID">Identificador del tesauro</param>
-        /// <returns>Tabla DocumentoWebAgCatTesauro cargada con los datos del las categorÌas de un determinado tesauro</returns>
+        /// <returns>Tabla DocumentoWebAgCatTesauro cargada con los datos del las categor√≠as de un determinado tesauro</returns>
         public List<DocumentoWebAgCatTesauro> ObtenerDocAgCatDebatesPrivadosTesauroDeTesauroID(Guid pTesauroID)
         {
             return DocumentacionAD.ObtenerDocAgCatDebatesPrivadosTesauroDeTesauroID(pTesauroID);
         }
 
         /// <summary>
-        /// Devuelve la tabla DocumentoWebAgCatTesauro cargada con las vinculaciones entre preguntas privados y categorÌas
+        /// Devuelve la tabla DocumentoWebAgCatTesauro cargada con las vinculaciones entre preguntas privados y categor√≠as
         /// </summary>
         /// <param name="pTesauroID">Identificador del tesauro</param>
-        /// <returns>Tabla DocumentoWebAgCatTesauro cargada con los datos del las categorÌas de un determinado tesauro</returns>
+        /// <returns>Tabla DocumentoWebAgCatTesauro cargada con los datos del las categor√≠as de un determinado tesauro</returns>
         public List<DocumentoWebAgCatTesauro> ObtenerDocAgCatPreguntasPrivadasTesauroDeTesauroID(Guid pTesauroID)
         {
             return DocumentacionAD.ObtenerDocAgCatPreguntasPrivadasTesauroDeTesauroID(pTesauroID);
         }
 
         /// <summary>
-        /// Devuelve una lista de GUID con las vinculaciones entre documentos y una categorÌa concreta
+        /// Devuelve una lista de GUID con las vinculaciones entre documentos y una categor√≠a concreta
         /// </summary>
-        /// <param name="pCategoriaTesauroID">Identificador de la categorÌa</param>
+        /// <param name="pCategoriaTesauroID">Identificador de la categor√≠a</param>
         /// <returns>Lista con los documentos
         public List<Guid> ObtenerListaDocsAgCatDeCategoriaTesauroID(Guid pCategoriaTesauroID)
         {
@@ -2437,9 +2488,9 @@ namespace Es.Riam.Gnoss.Logica.Documentacion
         }
 
         /// <summary>
-        /// Devuelve una lista de GUID con las vinculaciones entre documentos y las categorÌas de un tesauro
+        /// Devuelve una lista de GUID con las vinculaciones entre documentos y las categor√≠as de un tesauro
         /// </summary>
-        /// <param name="pCategoriaTesauroID">Identificador de la categorÌa</param>
+        /// <param name="pCategoriaTesauroID">Identificador de la categor√≠a</param>
         /// <returns>Lista con los documentos
         public List<Guid> ObtenerListaDocsAgCatDeTesauroID(Guid pTesauroID)
         {
@@ -2513,10 +2564,10 @@ namespace Es.Riam.Gnoss.Logica.Documentacion
         }
 
         /// <summary>
-        /// Obtiene los documentos que est·n en la ColaDocumento sin procesar y sin desechar.
+        /// Obtiene los documentos que est√°n en la ColaDocumento sin procesar y sin desechar.
         /// </summary>
-        /// <param name="pNumDoc">N˙mero de documentos para procesar</param>
-        /// <returns>DataSet de documentaciÛn con los datos cargados</returns>
+        /// <param name="pNumDoc">N√∫mero de documentos para procesar</param>
+        /// <returns>DataSet de documentaci√≥n con los datos cargados</returns>
         public DataWrapperDocumentacion ObtenerDocumentosEnColaParaProcesar(int pNumDoc)
         {
             return DocumentacionAD.ObtenerDocumentosEnColaParaProcesar(pNumDoc);
@@ -2528,7 +2579,7 @@ namespace Es.Riam.Gnoss.Logica.Documentacion
         }
 
         /// <summary>
-        /// Devuelve la versiÛn de la imagen o Nulo si no tiene imagen
+        /// Devuelve la versi√≥n de la imagen o Nulo si no tiene imagen
         /// </summary>
         /// <param name="pDocumentoID">Documentoid</param>
         /// <returns></returns>
@@ -2550,7 +2601,7 @@ namespace Es.Riam.Gnoss.Logica.Documentacion
         }
 
         /// <summary>
-        /// Comprueba si el documento actual es la ˙ltima versiÛn
+        /// Comprueba si el documento actual es la √∫ltima versi√≥n
         /// </summary>
         /// <param name="pDocumentoID">Documentoid</param>
         /// <returns></returns>
@@ -2560,7 +2611,7 @@ namespace Es.Riam.Gnoss.Logica.Documentacion
         }
 
         /// <summary>
-        /// Devuelve las versiÛnes de la imagenes o Nulo si no tienen imagen
+        /// Devuelve las versi√≥nes de la imagenes o Nulo si no tienen imagen
         /// </summary>
         /// <param name="pListaDocumentos">Lista de documentos</param>
         /// <returns></returns>
@@ -2577,6 +2628,16 @@ namespace Es.Riam.Gnoss.Logica.Documentacion
         public Dictionary<Guid, bool> ComprobarSiOntologiaTieneRecursos(List<Guid> pListaDocumentos)
         {
             return DocumentacionAD.ComprobarSiOntologiaTieneRecursos(pListaDocumentos);
+        }
+
+        /// <summary>
+        /// Indica si la ontologia pasada por par√°metro tiene algun recurso vinculado
+        /// </summary>
+        /// <param name="pOntologiaID">Identificador de la ontolog√≠a</param>
+        /// <returns>True si tiene elementos vinculados, False si no</returns>
+        public bool OntologiaTieneRecursos(Guid pOntologiaID)
+        {
+            return DocumentacionAD.OntologiaTieneRecursos(pOntologiaID);
         }
 
         /// <summary>
@@ -2655,8 +2716,8 @@ namespace Es.Riam.Gnoss.Logica.Documentacion
         /// <summary>
         /// Descomparte de una comunidad todos los recursos almacenados salvo los excluidos
         /// </summary>
-        /// <param name="pListaDocumentosExcluidos">Documentos exluidos de la comprobaciÛn</param>
-        /// <param name="pProyectoDestinoID">Identificador del proyecto de comparticiÛn de destino</param>
+        /// <param name="pListaDocumentosExcluidos">Documentos exluidos de la comprobaci√≥n</param>
+        /// <param name="pProyectoDestinoID">Identificador del proyecto de compartici√≥n de destino</param>
         /// <param name="pProyectoOrigenID">Identificador del proyecto de origen de los documentos</param>        
         public void DescompartirDocumentosCompartidos(List<Guid> pListaDocumentosExcluidos, Guid pProyectoOrigenID, Guid pProyectoDestinoID)
         {
@@ -2676,16 +2737,16 @@ namespace Es.Riam.Gnoss.Logica.Documentacion
             {
                 for (int i = 0; i < pDocumentos.Count; i++)
                 {
-                    //Nombre cadena vacÌa
+                    //Nombre cadena vac√≠a
                     if (pDocumentos[i].Titulo.Trim().Length == 0)
                     {
-                        throw new ErrorDatoNoValido("El tÌtulo del documento no puede ser una cadena vacÌa");
+                        throw new ErrorDatoNoValido("El t√≠tulo del documento no puede ser una cadena vac√≠a");
                     }
 
                     //Nombre superior a 255 caracteres
                     if (pDocumentos[i].Titulo.Length > 1000)
                     {
-                        throw new ErrorDatoNoValido("El tÌtulo del documento '" + pDocumentos[i].Titulo + "' no puede contener m·s de 255 caracteres");
+                        throw new ErrorDatoNoValido("El t√≠tulo del documento '" + pDocumentos[i].Titulo + "' no puede contener m√°s de 255 caracteres");
                     }
                 }
             }
@@ -2698,7 +2759,7 @@ namespace Es.Riam.Gnoss.Logica.Documentacion
         #region Dispose
 
         /// <summary>
-        /// Determina si est· disposed
+        /// Determina si est√° disposed
         /// </summary>
         private bool disposed = false;
 
@@ -2725,13 +2786,13 @@ namespace Es.Riam.Gnoss.Logica.Documentacion
         /// <summary>
         /// Libera los recursos
         /// </summary>
-        /// <param name="disposing">Determina si se est· llamando desde el Dispose()</param>
+        /// <param name="disposing">Determina si se est√° llamando desde el Dispose()</param>
         protected void Dispose(bool disposing)
         {
             if (!disposed)
             {
                 disposed = true;
-                //Libero todos los recursos administrados que he aÒadido a esta clase
+                //Libero todos los recursos administrados que he a√±adido a esta clase
                 if (DocumentacionAD != null)
                 {
                     DocumentacionAD.Dispose();

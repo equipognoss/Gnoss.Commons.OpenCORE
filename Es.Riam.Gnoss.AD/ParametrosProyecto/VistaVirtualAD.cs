@@ -236,13 +236,83 @@ namespace Es.Riam.Gnoss.AD.ParametrosProyecto
             return (Guid)resultado;
         }
 
-        /// <summary>
-        /// Obtiene la personalización.
-        /// </summary>
-        /// <param name="pPersonalizacionID">Id de la personalizacion</param>
-        /// <param name="pNombreVista">Nombre de la vista</param>
-        /// <returns>Guid de la personalizacion de la vista</returns>
-        public Guid ObtenerPersonalizacionComponenteCMSdeProyecto(Guid? pPersonalizacionID, string pNombreVista, string pRutaTipoComponente)
+        public Guid ObtenerPersonalizacionDominio(string pDominio)
+        {
+			Guid personalizacionID = mEntityContext.VistaVirtualDominio.Where(item => item.Dominio.Equals(pDominio)).Select(item => item.PersonalizacionID).FirstOrDefault();
+			return personalizacionID;
+
+		}
+
+        public bool ComprobarPersonalizacionCompartidaEnDominio(string pDominio, Guid pProyectoID)
+        {
+            Guid personalizacionProyecto = ObtenerPersonalicacionIdDadoProyectoID(pProyectoID);
+            Guid personalizacionDominio = ObtenerPersonalizacionDominio(pDominio);
+
+            return personalizacionDominio.Equals(personalizacionProyecto);
+        }
+
+        public void CompartirPersonalizacionEnDominio(string pDominio, Guid pProyectoID)
+        {
+            Guid personalizacionProyecto = ObtenerPersonalicacionIdDadoProyectoID(pProyectoID);
+			Guid personalizacionDominio = ObtenerPersonalizacionDominio(pDominio);
+
+			if (!personalizacionDominio.Equals(Guid.Empty))
+			{
+				DejarDeCompartirPersonalizacion(pDominio);
+			}
+
+			VistaVirtualDominio vistaVirtualDominio = new VistaVirtualDominio();
+			vistaVirtualDominio.PersonalizacionID = personalizacionProyecto;
+			vistaVirtualDominio.Dominio = pDominio;
+
+			mEntityContext.VistaVirtualDominio.Add(vistaVirtualDominio);
+
+			mEntityContext.SaveChanges();
+		}
+
+        public void DejarDeCompartirPersonalizacion(string pDominio)
+        {
+            Guid personalizacionDominio = ObtenerPersonalizacionDominio(pDominio);
+
+			if (!personalizacionDominio.Equals(Guid.Empty))
+			{
+				VistaVirtualDominio vistaVirtualDominio = mEntityContext.VistaVirtualDominio.Where(item => item.Dominio.Equals(pDominio)).FirstOrDefault();
+
+				mEntityContext.VistaVirtualDominio.Remove(vistaVirtualDominio);
+
+				mEntityContext.SaveChanges();
+			}
+		}
+
+        public void DejarDeCompartirPersonalizacionEnDominio(string pDominio, Guid pProyecto)
+        {
+            Guid personalizacion = ObtenerPersonalicacionIdDadoProyectoID(pProyecto);
+            Guid personalizacionDominio = ObtenerPersonalizacionDominio(pDominio);
+
+            if (!personalizacionDominio.Equals(Guid.Empty))
+            {
+                VistaVirtualDominio vistaVirtualDominio = mEntityContext.VistaVirtualDominio.Where(item => item.PersonalizacionID.Equals(personalizacion) && item.Dominio.Equals(pDominio)).FirstOrDefault();
+
+                mEntityContext.VistaVirtualDominio.Remove(vistaVirtualDominio);
+                
+                mEntityContext.SaveChanges();
+            }
+        }
+
+        public List<string> ObtenerDominiosEstaCompartidaPersonalizacion(Guid pProyecto)
+        {
+            Guid personalizacion = ObtenerPersonalicacionIdDadoProyectoID(pProyecto);
+
+            return mEntityContext.VistaVirtualDominio.Where(item => item.PersonalizacionID.Equals(personalizacion)).Select(item => item.Dominio).ToList();
+        }
+
+		/// <summary>
+		/// Obtiene la personalización.
+		/// </summary>
+		/// <param name="pPersonalizacionID">Id de la personalizacion</param>
+		/// <param name="pNombreVista">Nombre de la vista</param>
+		/// <returns>Guid de la personalizacion de la vista</returns>
+		public Guid ObtenerPersonalizacionComponenteCMSdeProyecto(Guid? pPersonalizacionID, string pNombreVista, string pRutaTipoComponente)
         {
             object devuelta = mEntityContext.VistaVirtualCMS.Where(item => item.PersonalizacionID.Equals(pPersonalizacionID.Value) && item.Nombre.Equals(pNombreVista) && item.TipoComponente.Equals(pRutaTipoComponente)).Select(x => x.PersonalizacionComponenteID).FirstOrDefault();
 
@@ -325,6 +395,8 @@ namespace Es.Riam.Gnoss.AD.ParametrosProyecto
             dataWrapperVistaVirtual.ListaVistaVirtualProyecto = mEntityContext.VistaVirtualProyecto.Where(item => item.PersonalizacionID.Equals(pPersonalizacionID)).ToList();
 
             dataWrapperVistaVirtual.ListaVistaVirtual = mEntityContext.VistaVirtual.Where(item => item.PersonalizacionID.Equals(pPersonalizacionID)).ToList();
+
+            dataWrapperVistaVirtual.ListaVistaVirtualDominio = mEntityContext.VistaVirtualDominio.Where((item) => item.PersonalizacionID.Equals(pPersonalizacionID)).ToList();
 
             dataWrapperVistaVirtual.ListaVistaVirtualRecursos = mEntityContext.VistaVirtualRecursos.Where(item => item.PersonalizacionID.Equals(pPersonalizacionID)).ToList();
 
@@ -520,14 +592,22 @@ namespace Es.Riam.Gnoss.AD.ParametrosProyecto
 
             List<VistaVirtualCMS> listaVistaVirtualCMS = mEntityContext.VistaVirtualCMS.Where(item => item.PersonalizacionID.Equals(pPersonalizacionID) && item.TipoComponente.Equals(pTipoComponente) && item.PersonalizacionComponenteID.Equals(pPersonalizacionComponenteID)).ToList();
 
-            foreach (VistaVirtualCMS vistaVirtualCMS in listaVistaVirtualCMS)
+            if (listaVistaVirtualCMS.Count > 0)
             {
-                vistaVirtualCMS.HTML = pHTML;
-                vistaVirtualCMS.Nombre = pNombre;
-                vistaVirtualCMS.DatosExtra = pDatosExtra;
-            }
+                foreach (VistaVirtualCMS vistaVirtualCMS in listaVistaVirtualCMS)
+                {
+                    vistaVirtualCMS.HTML = pHTML;
+                    vistaVirtualCMS.Nombre = pNombre;
+                    vistaVirtualCMS.DatosExtra = pDatosExtra;
+                }
 
-            ActualizarBaseDeDatosEntityContext();
+                ActualizarBaseDeDatosEntityContext();
+            }
+            else
+            {
+                InsertarVistaPersonalizadaDeComponenteCMSEnProyecto(pPersonalizacionID, pTipoComponente, pNombre, pHTML, pPersonalizacionComponenteID, pDatosExtra);
+            }
+            
         }
 
 

@@ -12,10 +12,12 @@ using Es.Riam.Gnoss.CL.Documentacion;
 using Es.Riam.Gnoss.CL.ParametrosProyecto;
 using Es.Riam.Gnoss.CL.ServiciosGenerales;
 using Es.Riam.Gnoss.Elementos.Documentacion;
+using Es.Riam.Gnoss.Elementos.Identidad;
 using Es.Riam.Gnoss.Elementos.ParametroGeneralDSEspacio;
 using Es.Riam.Gnoss.Logica.Documentacion;
 using Es.Riam.Gnoss.Logica.Identidad;
 using Es.Riam.Gnoss.Logica.ServiciosGenerales;
+using Es.Riam.Gnoss.Recursos;
 using Es.Riam.Gnoss.Util.Configuracion;
 using Es.Riam.Gnoss.Util.General;
 using Es.Riam.Gnoss.Web.Controles.Documentacion;
@@ -204,14 +206,25 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
         public void EliminarCertificacionNoIncluida(AdministrarComunidadUtilidades utilidades)
         {
             List<AD.EntityModel.Models.ProyectoDS.NivelCertificacion> listaNivelCertBorrar = DataWrapperProyecto.ListaNivelCertificacion.ToList();
+            //Guardo los nuevos
+            GuardarNivelesCertificacion(utilidades);
+            Dictionary<Guid, Guid> nivelesAntiguosNuevos = DevolverEquivalenciaNivelesNuevos(utilidades, listaNivelCertBorrar);
             foreach (AD.EntityModel.Models.ProyectoDS.NivelCertificacion filaNivel in listaNivelCertBorrar)
             {
                 if (!utilidades.NivelesCertificacion.Exists(nivel => nivel.CertificacionID.Equals(filaNivel.NivelCertificacionID)))
                 {
-                    foreach (AD.EntityModel.Models.Documentacion.DocumentoWebVinBaseRecursos docWebVin in filaNivel.DocumentoWebVinBaseRecursos)
+                    foreach (AD.EntityModel.Models.Documentacion.DocumentoWebVinBaseRecursos docWebVin in DataWrapperDocumentacion.ListaDocumentoWebVinBaseRecursos)
                     {
-                        docWebVin.NivelCertificacionID = null;
-                        docWebVin.NivelCertificacion = null;
+                        //Modifico los valores viejos con los nuevos, o si se han eliminado la certificación se quita del documento.
+                        if (nivelesAntiguosNuevos.ContainsKey(docWebVin.NivelCertificacion.NivelCertificacionID))
+                        {
+                            docWebVin.NivelCertificacionID = nivelesAntiguosNuevos[docWebVin.NivelCertificacionID.Value];
+                        }
+                        else
+                        {
+                            docWebVin.NivelCertificacionID = null;
+                            docWebVin.NivelCertificacion = null;
+                        }
                     }
                     DataWrapperProyecto.ListaNivelCertificacion.Remove(filaNivel);
                     mEntityContext.EliminarElemento(filaNivel);
@@ -220,17 +233,92 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
             }
         }
 
+        private Dictionary<Guid, Guid> DevolverEquivalenciaNivelesNuevos(AdministrarComunidadUtilidades utilidades, List<NivelCertificacion> listaNivelCertBorrar)
+        {
+            Dictionary<Guid, Guid> devolver = new Dictionary<Guid, Guid>();
+            foreach(AdministrarComunidadUtilidades.NivelCertificacion nivel in utilidades.NivelesCertificacion)
+            {
+                if(listaNivelCertBorrar.Exists( x=> x.Descripcion.Equals(nivel.Nombre)))
+                {
+                    devolver.Add(listaNivelCertBorrar.Where(x => x.Descripcion.Equals(nivel.Nombre)).Select(x => x.NivelCertificacionID).FirstOrDefault(), nivel.CertificacionID);
+                }
+            }
+
+            return devolver;
+        }
+
         public void GuardarUtilidades(AdministrarComunidadUtilidades DatosGuardado)
         {
             GuardarPermisosRecursos(DatosGuardado.PermisosDocumentacion);
             GuardarPermisosRecursosSemanticos(DatosGuardado.PermisosDocumentacionSemantica);
-            GuardarNivelesCertificacion(DatosGuardado);
+            // No es necesario guardar Niveles de certificación. Esto se realiza en otra sección/página
+            //GuardarNivelesCertificacion(DatosGuardado);
 
             FilaParametrosGenerales.PermitirUsuNoLoginDescargDoc = DatosGuardado.PermitirDescargarDocUsuInvitado;
 
             mEntityContext.SaveChanges();
         }
 
+        // Método para guardar exclusivamente los niveles de certificación. Es necesario para el nuevo Front de Administración ya que la gestión se realiza en una página adicional.
+        public void GuardarUtilidadesNivelesCertificacion(AdministrarComunidadUtilidades DatosGuardado)
+        {                        
+            GuardarNivelesCertificacion(DatosGuardado);            
+            mEntityContext.SaveChanges();
+        }
+
+        public void CargarNivelesCertificacion(AdministrarComunidadUtilidades pDatosGuardado, string pPoliticaParametrosGenerales, Identidad pIdentidadActual, TipoProyecto pTipoProyecto, UtilIdiomas pUtilIdiomas)
+        {
+            pDatosGuardado.NivelesCertificacionDisponibles = FilaParametrosGenerales.PermitirCertificacionRec;
+            pDatosGuardado.NivelesCertificacion = new List<AdministrarComunidadUtilidades.NivelCertificacion>();
+            List<Guid> nivelesCertificacion = new List<Guid>();
+
+            foreach (AD.EntityModel.Models.ProyectoDS.NivelCertificacion nivelCertificacionRow in DataWrapperProyecto.ListaNivelCertificacion)
+            {
+                nivelesCertificacion.Add(nivelCertificacionRow.NivelCertificacionID);
+            }
+
+            ProyectoCN proyCN = new ProyectoCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+            Dictionary<Guid, bool> listaNivelesConDocAsociados = proyCN.ExisteDocAsociadoANivelCertif(nivelesCertificacion);
+
+            foreach (AD.EntityModel.Models.ProyectoDS.NivelCertificacion nivelCertificacionRow in DataWrapperProyecto.ListaNivelCertificacion)
+            {
+                AdministrarComunidadUtilidades.NivelCertificacion nivelCertificacion = new AdministrarComunidadUtilidades.NivelCertificacion();
+                nivelCertificacion.CertificacionID = nivelCertificacionRow.NivelCertificacionID;
+                nivelCertificacion.Nombre = nivelCertificacionRow.Descripcion;
+                nivelCertificacion.Orden = nivelCertificacionRow.Orden;
+                nivelCertificacion.TieneDocsAsociados = listaNivelesConDocAsociados.ContainsKey(nivelCertificacionRow.NivelCertificacionID) && listaNivelesConDocAsociados[nivelCertificacionRow.NivelCertificacionID];
+
+                pDatosGuardado.NivelesCertificacion.Add(nivelCertificacion);
+            }
+
+            if (FilaParametrosGenerales.PoliticaCertificacion != null && !FilaParametrosGenerales.PoliticaCertificacion.Trim().Equals(string.Empty))
+            {
+                pDatosGuardado.PoliticaCertificacion = FilaParametrosGenerales.PoliticaCertificacion.Trim();
+            }
+
+            if (string.IsNullOrEmpty(pPoliticaParametrosGenerales) || string.IsNullOrWhiteSpace(pPoliticaParametrosGenerales))
+            {
+                //TipoProyecto.EducacionExpandida
+                if (pTipoProyecto != AD.ServiciosGenerales.TipoProyecto.EducacionExpandida)
+                {
+                    pDatosGuardado.PoliticaCertificacion = pUtilIdiomas.GetText("COMADMIN", "ELABORANDOPOLITICA", pIdentidadActual.Nombre(), "administrador");
+                }
+                else
+                {
+                    pDatosGuardado.PoliticaCertificacion = pUtilIdiomas.GetText("COMADMIN", "POLITICACERTIFICACION", pIdentidadActual.Nombre());
+                }
+
+            }
+
+        }
+
+        public void CargarTiposYPermisos(AdministrarComunidadUtilidades pDatosGuardado)
+        {
+            pDatosGuardado.WikiDisponible = FilaParametrosGenerales.WikiDisponible;
+            pDatosGuardado.PermisosDocumentacion = CargarPermisosRecursos();
+            pDatosGuardado.PermisosDocumentacionSemantica = CargarPermisosRecursosSemanticos();
+            pDatosGuardado.PermitirDescargarDocUsuInvitado = FilaParametrosGenerales.PermitirUsuNoLoginDescargDoc;
+        }
 
         private void GuardarNivelesCertificacion(AdministrarComunidadUtilidades DatosGuardado)
         {
@@ -239,20 +327,19 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
             if (DatosGuardado.NivelesCertificacionDisponibles)
             {
                 FilaParametrosGenerales.PoliticaCertificacion = HttpUtility.UrlDecode(DatosGuardado.PoliticaCertificacion);
-                List<AD.EntityModel.Models.ProyectoDS.NivelCertificacion> listaNivelCertificacionBorrar = DataWrapperProyecto.ListaNivelCertificacion.ToList();
-                foreach (AD.EntityModel.Models.ProyectoDS.NivelCertificacion filaNivel in listaNivelCertificacionBorrar)
+                List<NivelCertificacion> listaNivelCertificacionBorrar = DataWrapperProyecto.ListaNivelCertificacion.ToList();
+                foreach (NivelCertificacion filaNivel in listaNivelCertificacionBorrar)
                 {
                     if (DatosGuardado.NivelesCertificacion.Count(nivel => nivel.CertificacionID == filaNivel.NivelCertificacionID) == 0)
                     {
-                        DataWrapperProyecto.ListaNivelCertificacion.Remove(filaNivel);
-                        mEntityContext.EliminarElemento(filaNivel);
+                        EliminarNivelCertificacion(filaNivel);
                     }
                 }
 
-                //si son nuevos los añade, sino los modifica
+                //Si son nuevos los añade, sino los modifica
                 foreach (AdministrarComunidadUtilidades.NivelCertificacion nivelCertificacion in DatosGuardado.NivelesCertificacion)
                 {
-                    AD.EntityModel.Models.ProyectoDS.NivelCertificacion filaNivel = DataWrapperProyecto.ListaNivelCertificacion.FirstOrDefault(nivelCert => nivelCert.NivelCertificacionID.Equals(nivelCertificacion.CertificacionID));
+                    NivelCertificacion filaNivel = DataWrapperProyecto.ListaNivelCertificacion.FirstOrDefault(nivelCert => nivelCert.NivelCertificacionID.Equals(nivelCertificacion.CertificacionID));
 
                     if (filaNivel == null)
                     {
@@ -275,19 +362,11 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
             }
             else
             {
-                //FilaParametrosGenerales.SetPoliticaCertificacionNull();
                 FilaParametrosGenerales.PoliticaCertificacion = null;
                 List<NivelCertificacion> listaNivelCertBorrar = DataWrapperProyecto.ListaNivelCertificacion.ToList();
                 foreach (NivelCertificacion filaNivel in listaNivelCertBorrar)
                 {
-                    foreach (AD.EntityModel.Models.Documentacion.DocumentoWebVinBaseRecursos docWebVin in filaNivel.DocumentoWebVinBaseRecursos)
-                    {
-                        docWebVin.NivelCertificacionID = null;
-                        docWebVin.NivelCertificacion = null;
-                    }
-                    DataWrapperProyecto.ListaNivelCertificacion.Remove(filaNivel);
-                    mEntityContext.EliminarElemento(filaNivel);
-                    // filaNivel.Delete();
+                    EliminarNivelCertificacion(filaNivel);
                 }
             }
         }
@@ -383,6 +462,25 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
                     }
                 }
             }
+        }
+
+        /// <summary>
+        /// Elimina el nivel de certificación y lo desvincula de los recursos
+        /// </summary>
+        /// <param name="pNivelCertificacion"></param>
+        private void EliminarNivelCertificacion(NivelCertificacion pNivelCertificacion)
+        {
+            DocumentacionCN documentacionCN = new DocumentacionCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+
+            List<Es.Riam.Gnoss.AD.EntityModel.Models.Documentacion.DocumentoWebVinBaseRecursos> listaDocumentosRelacionadosNivelCertificacion = documentacionCN.ObtenerBaseRecursosPorNivelCertifiacion(pNivelCertificacion.NivelCertificacionID);
+            foreach(Es.Riam.Gnoss.AD.EntityModel.Models.Documentacion.DocumentoWebVinBaseRecursos documentoWebVinBaseRecursos in listaDocumentosRelacionadosNivelCertificacion)
+            {
+                documentoWebVinBaseRecursos.NivelCertificacion = null;
+                documentoWebVinBaseRecursos.NivelCertificacionID = null;
+            }
+
+            DataWrapperProyecto.ListaNivelCertificacion.Remove(pNivelCertificacion);
+            mEntityContext.EliminarElemento(pNivelCertificacion);
         }
 
         private void GuardarPermisosRecursos(List<AdministrarComunidadUtilidades.PermisoDocumentacion> pPermisos)

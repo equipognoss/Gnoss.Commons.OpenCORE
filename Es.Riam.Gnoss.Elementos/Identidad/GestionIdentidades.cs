@@ -478,13 +478,6 @@ namespace Es.Riam.Gnoss.Elementos.Identidad
                 AD.EntityModel.Models.IdentidadDS.Perfil filaPerfil = filasPerfil[0];
                 Perfil perfOrg = this.ListaPerfiles[filaPerfil.PerfilID];
                 Identidad idenOrg = perfOrg.IdentidadMyGNOSS;
-                List<AD.EntityModel.Models.IdentidadDS.GrupoAmigos> filasGrupoAmigos = GestorAmigos.AmigosDW.ListaGrupoAmigos.Where(item => item.IdentidadID.Equals(idenOrg.Clave) && item.Tipo == (int)TipoGrupoAmigos.AutomaticoOrganizacion && item.Automatico).ToList();
-
-                if (filasGrupoAmigos.Count > 0 && mEntityContext.GrupoAmigos.Local.Any(item => item.GrupoID.Equals(filasGrupoAmigos[0].GrupoID) && item.IdentidadID.Equals(filasGrupoAmigos[0].IdentidadID)))
-                {
-                    GrupoAmigos elementoGrupoAmigos = new GrupoAmigos(filasGrupoAmigos[0], GestorAmigos, mLoggingService);
-                    GestorAmigos.AgregarAmigoAGrupo(elementoGrupoAmigos, filasGrupoAmigos[0].IdentidadID, perfil.IdentidadMyGNOSS.Clave);
-                }
             }
 
             return perfil;

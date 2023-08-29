@@ -36,6 +36,7 @@ namespace Es.Riam.Interfaces.InterfacesOpen
         public List<IntegracionContinuaPropiedad> ObtenerModeloConfiguracionParametros(Guid pProyectoID, string pUrlApiDespliegues, string pNombreCorto);
         public AdministrarDesplieguesViewModel ObtenerVersionesProyecto(Guid pClaveProyectoSeleccionado, Guid pUsuarioID, string pEntornoIntegracionContinua, string UrlApiIntegracionContinua);
         public AdministrarCredencialesViewModel PeticionApiUsuarioExiste(AdministrarCredencialesViewModel pModel, Guid pClaveProyectoSeleccionado, Guid pUsuarioID, string pEntornoIntegracionContinua, string UrlApiIntegracionContinua);
+        public bool UsuarioExiste(Guid pClaveProyectoSeleccionado, Guid pUsuarioID, string pEntornoIntegracionContinua, string UrlApiIntegracionContinua);
         public bool VerificarFechaCambioCorrecto(Guid pClaveProyectoSeleccionado, Guid pUsuarioID, string pEntornoIntegracionContinua, string UrlApiIntegracionContinua, string FileName, string pNombreEntorno, long pFecha);
         public bool VerificarFechaCambioCorrectoConflict(Guid pClaveProyectoSeleccionado, Guid pUsuarioID, string pEntornoIntegracionContinua, string UrlApiIntegracionContinua, string FileName, string pNombreEntorno, long pFecha);
         public bool VersionActiva(Guid pClaveProyectoSeleccionado, Guid pUsuarioID, string pEntornoIntegracionContinua, string UrlApiIntegracionContinua, string pVersion);
@@ -62,6 +63,7 @@ namespace Es.Riam.Interfaces.InterfacesOpen
         public string ObtenerUrlApiDesplieguesEntornoSiguiente(Guid pProyectoSeleccionado, string pEntornoIntegracionContinua, string pUrlApiIntegracionContinua, Guid pUsuarioID);
         public string ObtenerUrlApiDesplieguesEntornoAnterior(Guid pProyectoSeleccionado, string pEntornoIntegracionContinua, string pUrlApiIntegracionContinua, Guid pUsuarioID);
         public string ObtenerUrlApiDesplieguesEntornoParametro(Guid pProyectoSeleccionado, string pEntornoIntegracionContinua, string pUrlApiIntegracionContinua, Guid pUsuarioID, string pEntorno);
+        public string ObtenerUrlApiDesplieguesEntornoActual(Guid pProyectoSeleccionado, string pEntornoIntegracionContinua, string pUrlApiIntegracionContinua, Guid pUsuarioID);
         public HttpStatusCode CompilarDll(Guid pClaveProyectoSeleccionado, Guid pUsuarioID, string pEntornoIntegracionContinua, string pUrlApiIntegracionContinua, string pTagName, string pUrlApiDespliegue);
     }
 }

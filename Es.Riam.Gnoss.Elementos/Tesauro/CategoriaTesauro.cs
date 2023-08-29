@@ -592,8 +592,14 @@ namespace Es.Riam.Gnoss.Elementos.Tesauro
                         cat.FilaAgregacion = catAgregada;
 
                         if (!mHijos.Contains(cat))
-                            mHijos.Add(cat);
-                        mSubCategorias.Add(cat);
+                        {
+							mHijos.Add(cat);
+						}
+                            
+                        if (!mSubCategorias.Contains(cat))
+                        {
+							mSubCategorias.Add(cat);
+						}                        
                     }
                 }
             }

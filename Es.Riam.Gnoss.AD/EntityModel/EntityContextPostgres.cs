@@ -15,7 +15,7 @@ namespace Es.Riam.Gnoss.AD.EntityModel
     public class EntityContextPostgres : EntityContext
     {
         /// <summary>
-        /// Constructor internal, para obtener un objeto EntityContext, llamar al m�todo ObtenerEntityContext del BaseAD
+        /// Constructor internal, para obtener un objeto EntityContext, llamar al método ObtenerEntityContext del BaseAD
         /// </summary>
         public EntityContextPostgres(UtilPeticion utilPeticion, LoggingService loggingService, ILoggerFactory loggerFactory, DbContextOptions<EntityContext> dbContextOptions, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication, bool pCache = false)
             : base(utilPeticion, loggingService, loggerFactory, dbContextOptions, configService, servicesUtilVirtuosoAndReplication, pCache)

@@ -104,7 +104,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
                 FacetaModel faceta = null;
                 if (filaFacetaOCProyecto.AgrupacionID.HasValue)
                 {
-                    faceta = ListaFacetas.Find(fac => (fac.ClaveFaceta == filaFacetaOCProyecto.Faceta || (filaFacetaOCProyecto.Reciproca > 0 && fac.ClaveFacetaYReprocidad == filaFacetaOCProyecto.Faceta)) && fac.Filtros == filtrosFaceta && fac.AgrupacionID.Value.Equals(filaFacetaOCProyecto.AgrupacionID));
+                    faceta = ListaFacetas.Find(fac => (fac.ClaveFaceta == filaFacetaOCProyecto.Faceta || (filaFacetaOCProyecto.Reciproca > 0 && fac.ClaveFacetaYReprocidad == filaFacetaOCProyecto.Faceta)) && fac.Filtros == filtrosFaceta && fac.AgrupacionID.HasValue && fac.AgrupacionID.Value.Equals(filaFacetaOCProyecto.AgrupacionID));
                 }
                 else
                 {
@@ -311,7 +311,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
             
             identidadCN.Dispose();
 
-            faceta.Condicion = pFilaFacetaOC.Condicion;
+            faceta.Condicion = pFilaFacetaOC.Condicion == null ? "" : pFilaFacetaOC.Condicion;
             faceta.Inmutable = pFilaFacetaOC.Inmutable;
 
             if (pFilaFacetaOC.AgrupacionID.HasValue)
@@ -423,7 +423,8 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
                                 FacetaDW.ListaFacetaObjetoConocimientoProyectoPenstanya.Remove(facetaObjetoConocimientoPestanya);
                             }
                         }
-                        mEntityContext.EliminarElemento(faceta);
+                        EliminarFaceta(faceta);
+                        //mEntityContext.EliminarElemento(faceta);
                         FacetaDW.ListaFacetaObjetoConocimientoProyecto.Remove(faceta);
                     }
 
@@ -614,7 +615,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
                             {
                                 //Si estamos eliminando una faceta, pero hemos creado otra igual, no la borramos
                                 //Por ejemplo, 
-                                if (pListaFacetas.Find(fac => fac.ClaveFaceta == filaFaceta.Faceta && fac.Deleted == false && fac.ObjetosConocimiento.Contains(objetoConocimiento)) == null)
+                                if (pListaFacetas.Find(fac => (fac.ClaveFaceta.Equals(filaFaceta.Faceta) && string.IsNullOrEmpty(fac.ClaveFacetaYReprocidad) || !string.IsNullOrEmpty(fac.ClaveFacetaYReprocidad) && fac.ClaveFacetaYReprocidad.Equals(filaFaceta.Faceta)) && fac.Deleted == false && fac.ObjetosConocimiento.Contains(objetoConocimiento)) == null)
                                 {
                                     if (filaFaceta.FacetaObjetoConocimientoProyectoPestanya != null && filaFaceta.FacetaObjetoConocimientoProyectoPestanya.Count() > 0)
                                     {
@@ -940,7 +941,11 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
                             {
                                 propiedadRutaPagina.ValorPropiedad = $"{propiedadRutaPagina.ValorPropiedad}{filtroFaceta.Nombre}|||{filtroFaceta.Condicion}&&&";
                             }
-                            propiedadesIntegracionContinua.Add(propiedadRutaPagina);
+                            if (!propiedadesIntegracionContinua.Contains(propiedadRutaPagina))
+                            {
+                                propiedadesIntegracionContinua.Add(propiedadRutaPagina);
+                            }
+                            //propiedadesIntegracionContinua.Add(propiedadRutaPagina);
                             //faceta.Filtros = UtilIntegracionContinua.ObtenerMascaraPropiedad(propiedadRutaPagina);
                         }
                     }

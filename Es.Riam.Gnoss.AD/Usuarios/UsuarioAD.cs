@@ -21,6 +21,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
 using System.Linq;
+using VDS.RDF.Query.Expressions.Functions.Sparql.Boolean;
 
 namespace Es.Riam.Gnoss.AD.Usuarios
 {
@@ -2681,15 +2682,15 @@ namespace Es.Riam.Gnoss.AD.Usuarios
                      GrupoIdentidadesParticipacion = grupo
                  })
                 .Where(item => item.ProyectoUsuarioIdentidad.ProyectoID.Equals(pProyectoID) && !item.Identidad.FechaBaja.HasValue
-                && !item.Identidad.FechaExpulsion.HasValue).Select(item => new { item.ProyectoUsuarioIdentidad.UsuarioID, item.Identidad.PerfilID });
+                && !item.Identidad.FechaExpulsion.HasValue).Select(item => new { item.ProyectoUsuarioIdentidad.UsuarioID, item.Identidad.PerfilID }).ToList();
 
-                foreach (var fila in resultado.ToList())
+                foreach (var fila in resultado)
                 {
                     if (!lista.ContainsKey(fila.UsuarioID))
                     {
                         lista.Add(fila.UsuarioID, new List<Guid>());
                     }
-                    if (resultado.ToList().Count > 1)
+                    if (resultado.Count > 1)
                     {
                         if (!lista[fila.UsuarioID].Contains(fila.PerfilID))
                         {
@@ -3000,6 +3001,32 @@ namespace Es.Riam.Gnoss.AD.Usuarios
 
         }
 
+        public void EstablecerPasswordUsuario(Guid pUsuarioID, string pPassword)
+        {
+            var resultado = mEntityContext.Usuario.Where(usuario => usuario.UsuarioID.Equals(pUsuarioID)).FirstOrDefault();
+            if (resultado != null)
+            {
+                resultado.Password = pPassword;
+                resultado.Version = 1;
+                resultado.FechaCambioPassword = DateTime.Now;
+                mEntityContext.SaveChanges();
+            }
+            else
+            {
+                throw new ErrorLoginUsuario();
+            }
+        }
+
+        public void EstablecerLoginUsuario(Guid pUsuarioID, string pLogin)
+        {
+            var resultado = mEntityContext.Usuario.Where(usuario => usuario.UsuarioID.Equals(pUsuarioID)).FirstOrDefault();
+            if (resultado != null)
+            {
+                resultado.Login = pLogin;
+                mEntityContext.SaveChanges();
+            }
+        }
+
         /// <summary>
         /// Establece la caducidad de un usuario a la fecha actual
         /// </summary>
@@ -3265,7 +3292,9 @@ namespace Es.Riam.Gnoss.AD.Usuarios
                 {
                     listaNumeros = query.Where(item => mEntityContext.IsNumeric(item)).ToList();
                 }
-                
+
+                //Eliminamos el caracter - porque entity interpreta que es un número
+                listaNumeros.Remove("-");
 
                 if (listaNumeros != null && listaNumeros.Count > 0)
                 {

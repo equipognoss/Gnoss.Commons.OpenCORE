@@ -60,8 +60,15 @@ namespace Es.Riam.Gnoss.CL.Suscripcion
 
         public List<Guid> ObtenerListaIdentidadesSuscritasPerfil(Guid pPerfilID)
         {
-            List<Guid> listaIdentidadesSuscritasPefil = (List<Guid>)ObtenerObjetoDeCache("ListaIdentidadesSuscritasPerfil_" + pPerfilID, true);
-
+            List<Guid> listaIdentidadesSuscritasPefil = null;
+            try
+            {
+                listaIdentidadesSuscritasPefil = (List<Guid>)ObtenerObjetoDeCache("ListaIdentidadesSuscritasPerfil_" + pPerfilID, true);
+            }
+            catch (Exception ex)
+            {
+                mLoggingService.GuardarLogError(ex);
+            }
             if (listaIdentidadesSuscritasPefil == null)
             {
                 listaIdentidadesSuscritasPefil = SuscripcionCN.ObtenerListaIdentidadesSuscritasPerfil(pPerfilID);

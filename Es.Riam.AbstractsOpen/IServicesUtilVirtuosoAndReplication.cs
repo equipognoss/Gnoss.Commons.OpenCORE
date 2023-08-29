@@ -14,6 +14,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Net.Http;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -40,9 +41,9 @@ namespace Es.Riam.AbstractsOpen
         private bool noConfirmarTransacciones;
         private Dictionary<string, DbTransaction> transaccionesPendientes;
         public Dictionary<string, DbTransaction> TransaccionesPendientes { get { return transaccionesPendientes; } }
-        public string CadenaConexion { get; set; }
+        public virtual string CadenaConexion { get; set; }
         public DateTime? InicioPeticionVirtuoso { get; set; }
-        public string ConexionAfinidadVirtuoso { get; set; }
+        public virtual string ConexionAfinidadVirtuoso { get;  }
         public DateTime FechaFinAfinidad { get; set; }
         public bool NoConfirmarTransacciones
         {
@@ -133,7 +134,7 @@ namespace Es.Riam.AbstractsOpen
                 return mFicheroConfiguracionMaster;
             }
         }
-        public string ConexionAfinidad { get; set; }
+        public virtual string ConexionAfinidad { get;}
 
         public Dictionary<string, List<KeyValuePair<string, short>>> GetListaConsultasEjecutarEnReplicas()
         {
@@ -168,11 +169,16 @@ namespace Es.Riam.AbstractsOpen
                 {
                     cadenaConexion = mConfigService.ObtenerVirtuosoEscrituraHome();
                 }
-                else
+                if (string.IsNullOrEmpty(cadenaConexion))
                 {
-                    var virtuoso = mConfigService.ObtenerVirtuosoEscritura();
-                    cadenaConexion = virtuoso.Value;
-                    ConexionAfinidad = virtuoso.Key;
+                    if (mConfigService.CheckBidirectionalReplicationIsActive())
+                    {
+                        cadenaConexion = mConfigService.ObtenerVirutosoEscritura(ConexionAfinidad);
+                    }
+                    else
+                    {
+                        cadenaConexion = mConfigService.ObtenerVirtuosoEscritura().Value;
+                    }
                 }
             }
 
@@ -242,7 +248,7 @@ namespace Es.Riam.AbstractsOpen
 
                 mLoggingService.AgregarEntrada("Actualizado con éxito: " + pQuery);
 
-                if (pReplicar)
+                if (pReplicar || mConfigService.CheckBidirectionalReplicationIsActive())
                 {
 
                     string nombreConexionAfinidad = ConexionAfinidad;
@@ -322,9 +328,7 @@ namespace Es.Riam.AbstractsOpen
             string nombreConexionReplica = "";
             if (string.IsNullOrEmpty(conexionActual))
             {
-                var virtuoso = mConfigService.ObtenerVirtuosoEscritura();
-                nombreConexionReplica = virtuoso.Value;
-                ConexionAfinidad = virtuoso.Key;
+                nombreConexionReplica = ConexionAfinidad;
             }
             else
             {
@@ -360,46 +364,7 @@ namespace Es.Riam.AbstractsOpen
             return numReplicacionesPendientes;
         }
 
-        public bool ControlarErrorVirtuosoConection(string cadenaConexion, string conexionAfinidadVirtuoso)
-        {
-            DateTime inicioPeticionVirtuoso = DateTime.Now;
-            if (InicioPeticionVirtuoso.HasValue)
-            {
-                inicioPeticionVirtuoso = InicioPeticionVirtuoso.Value;
-            }
-            else
-            {
-                InicioPeticionVirtuoso = inicioPeticionVirtuoso;
-            }
-
-            string nombreConexionAfinidad = "";
-
-            if (!EsConexionHAPROXY(cadenaConexion))
-            {
-                nombreConexionAfinidad = ConexionAfinidadVirtuoso;
-            }
-
-            bool conexionLibreEncontrada = false;
-            while (!conexionLibreEncontrada && (inicioPeticionVirtuoso.AddSeconds(30) - DateTime.Now).TotalSeconds > 0)
-            {
-                string nombreConexionReplica = ObtenerConexionVirtuosoProximoIntento(nombreConexionAfinidad);
-
-                if (string.IsNullOrEmpty(nombreConexionReplica))
-                {
-                    //Solo hay un servidor, no hay replicacion bidireccional con HA-PROXY
-                    conexionLibreEncontrada = true;
-                }
-                else
-                {
-                    conexionLibreEncontrada = ComprobarConexionVirtuosoSinTareasPendientes(nombreConexionReplica);
-                    if (!conexionLibreEncontrada)
-                    {
-                        Thread.Sleep(1000);
-                    }
-                }
-            }
-            return conexionLibreEncontrada;
-        }
+        public abstract bool ControlarErrorVirtuosoConection(string cadenaConexion, string conexionAfinidadVirtuoso);
         protected int ActualizarVirtuoso_WebClient(string pUrl, string pQuery, NameValueCollection pParametros, string pConexionAfinidad)
         {
             mLoggingService.AgregarEntrada("EscrituraWebClient: Inicio");
@@ -427,11 +392,6 @@ namespace Es.Riam.AbstractsOpen
                 if (cabeceraServidor == null || cabeceraServidor.Length == 0)
                 {
                     cabeceraServidor = webClient.ResponseHeaders.GetValues("Server");
-                }
-
-                if (cabeceraServidor != null && cabeceraServidor.Length > 0)
-                {
-                    ConexionAfinidad = cabeceraServidor.FirstOrDefault();
                 }
 
                 mLoggingService.AgregarEntrada("EscrituraWebClient: Respuesta obtenida de virtuoso");
@@ -718,7 +678,7 @@ namespace Es.Riam.AbstractsOpen
             }
             catch (Exception ex)
             {
-                mLoggingService.GuardarLogError(ex, null, true);
+                mLoggingService.GuardarLogError(ex, $"Conexion del error: {pConexion.ConnectionString}", true);
                 throw;
             }
 
@@ -830,45 +790,43 @@ namespace Es.Riam.AbstractsOpen
 
         public string obtenerNombreConexionReplicaHAProxy(string pNombreConexion)
         {
-            string haProxi = mConfigService.ObtenerVirtuosoConnectionString();
-            if (FicheroConfiguracionMaster.ToLower().Contains("home"))
-            {
-                haProxi = mConfigService.ObtenerVirtuosoConnectionStringHome();
-            }
-            string conexionHAProxy = "";
-            if (!string.IsNullOrEmpty(haProxi))
-            {
-                KeyValuePair<string, string> ip_puerto = ObtenerIpVirtuosoDeCadenaConexion(haProxi);
-                string ipVirtuoso = ip_puerto.Key;
-                string puertoVirtuoso = ip_puerto.Value;
-                string url = "http://" + ipVirtuoso + ":" + puertoVirtuoso + "/sparql";
+            //string haProxi = mConfigService.ObtenerVirtuosoConnectionString();
+            //if (FicheroConfiguracionMaster.ToLower().Contains("home"))
+            //{
+            //    haProxi = mConfigService.ObtenerVirtuosoConnectionStringHome();
+            //}
+            //string conexionHAProxy = "";
+            //if (!string.IsNullOrEmpty(haProxi))
+            //{
+            //    KeyValuePair<string, string> ip_puerto = ObtenerIpVirtuosoDeCadenaConexion(haProxi);
+            //    string ipVirtuoso = ip_puerto.Key;
+            //    string puertoVirtuoso = ip_puerto.Value;
+            //    string url = "http://" + ipVirtuoso + ":" + puertoVirtuoso + "/sparql";
 
-                WebClient webClient = new WebClient();
-                webClient.Encoding = Encoding.UTF8;
-                webClient.DownloadString(url);
-                //Al actualizar datos en virtuoso, guardamos los datos del servidor en el que hemos guardado para acceder a él.
-                string[] cabeceraServidor = webClient.ResponseHeaders.GetValues("X-App-Server");
-                if (cabeceraServidor == null || cabeceraServidor.Length == 0)
-                {
-                    cabeceraServidor = webClient.ResponseHeaders.GetValues("Server");
-                }
-                webClient.Dispose();
-                if (cabeceraServidor != null && cabeceraServidor.Length > 0)
-                {
-                    conexionHAProxy = $"{cabeceraServidor.FirstOrDefault()}";
-                    return conexionHAProxy;
-                }
+            //    WebClient webClient = new WebClient();
+            //    webClient.Encoding = Encoding.UTF8;
+            //    webClient.DownloadString(url);
+            //    //Al actualizar datos en virtuoso, guardamos los datos del servidor en el que hemos guardado para acceder a él.
+            //    string[] cabeceraServidor = webClient.ResponseHeaders.GetValues("X-App-Server");
+            //    if (cabeceraServidor == null || cabeceraServidor.Length == 0)
+            //    {
+            //        cabeceraServidor = webClient.ResponseHeaders.GetValues("Server");
+            //    }
+            //    webClient.Dispose();
+            //    if (cabeceraServidor != null && cabeceraServidor.Length > 0)
+            //    {
+            //        conexionHAProxy = $"{cabeceraServidor.FirstOrDefault()}";
+            //        return conexionHAProxy;
+            //    }
 
-            }
+            //}
 
-            if (string.IsNullOrEmpty(conexionHAProxy))
-            {
-                var conexionReplica = mConfigService.ObtenerVirtuosoEscritura();
-                ConexionAfinidad = conexionReplica.Key;
-                return conexionReplica.Value;
-            }
+            //if (string.IsNullOrEmpty(conexionHAProxy))
+            //{
+            return ConexionAfinidad;
+            //}
 
-            return null;
+            //return null;
         }
         /// <summary>
         /// Verdad si existe el fichero bd.config con el elemento acidMaster, falso en caso contrario
@@ -887,86 +845,112 @@ namespace Es.Riam.AbstractsOpen
         {
             get
             {
+                StringBuilder sb = new StringBuilder(); 
+                
                 int numIntentos = 0;
                 int numMaxIntentos = 9;
                 while ((ConexionMaster == null || !ConexionMaster.State.Equals(ConnectionState.Open)) && (numIntentos < numMaxIntentos))
                 {
-                    if (numIntentos == 3 || numIntentos == 6) //Espero 1 segundo antes de intentarlo otras 3 veces.
+                    try
                     {
-                        Thread.Sleep(1000);
-                    }
-                    numIntentos++;
-                    if (!ComprobarConexionValida(ConexionMaster))
-                    {
-                        if (ExisteFicheroMaster)
-                        {                       
-                            ConexionMaster = Connection;
-                            List<string> listaGrafos = ListaGrafos;
-                            if (listaGrafos == null)
+                        sb.AppendLine("ConexionMaster es null o no está abierta");
+                        if (numIntentos == 3 || numIntentos == 6) //Espero 1 segundo antes de intentarlo otras 3 veces.
+                        {
+                            Thread.Sleep(1000);
+                        }
+                        numIntentos++;
+                        if (!ComprobarConexionValida(ConexionMaster))
+                        {
+                            sb.AppendLine($"ConexionMaster no es valida");
+                            if (ExisteFicheroMaster)
                             {
-                                listaGrafos = new List<string>();
-                            }
-                            if (!listaGrafos.Contains("mConexionMaster" + FicheroConfiguracionMaster))
-                            {
-                                listaGrafos.Add("mConexionMaster" + FicheroConfiguracionMaster);
-                            }
-
-                            if (!ComprobarConexionValida(ConexionMaster))
-                            {
-                                string cadenaConexion = null;
-                                try
+                                sb.AppendLine("Existe fichero master");
+                                ConexionMaster = Connection;
+                                if (ConexionMaster != null)
                                 {
-                                    if (FicheroConfiguracionMaster.ToLower().Contains("home"))
-                                    {
-                                        cadenaConexion = mConfigService.ObtenerVirtuosoEscrituraHome();
-                                    }
-                                    else
-                                    {
-                                        cadenaConexion = mConfigService.ObtenerVirtuosoEscritura().Value;
-                                    }
+                                    sb.AppendLine($"ConexionMaster: {ConexionMaster.ConnectionString}");
+                                }
+                                List<string> listaGrafos = ListaGrafos;
+                                if (listaGrafos == null)
+                                {
+                                    listaGrafos = new List<string>();
+                                }
+                                if (!listaGrafos.Contains("mConexionMaster" + FicheroConfiguracionMaster))
+                                {
+                                    listaGrafos.Add("mConexionMaster" + FicheroConfiguracionMaster);
+                                }
 
-                                    if (mConfigService.CheckBidirectionalReplicationIsActive())
+                                if (!ComprobarConexionValida(ConexionMaster))
+                                {
+                                    string cadenaConexion = null;
+                                    sb.AppendLine($"ConexionMaster no es valida");
+                                    try
                                     {
-                                        string conexionAfinidadVirtuoso = "conexionAfinidadVirtuoso";
-                                        if (FicheroConfiguracionMaster != null && FicheroConfiguracionMaster.ToLower().Contains("home"))
+                                        if (FicheroConfiguracionMaster.ToLower().Contains("home"))
                                         {
-                                            conexionAfinidadVirtuoso += "Home";
+                                            sb.AppendLine($"cadenaConexion = mConfigService.ObtenerVirtuosoEscrituraHome();");
+                                            cadenaConexion = mConfigService.ObtenerVirtuosoEscrituraHome();
                                         }
+                                        else
+                                        {
+                                            sb.AppendLine($"mConfigService.ObtenerVirtuosoEscritura().Value;");
+                                            cadenaConexion = mConfigService.ObtenerVirtuosoEscritura().Value;
+                                        }
+                                    //TODO SANTI
+                                        if (mConfigService.CheckBidirectionalReplicationIsActive())
+                                        {
+                                            sb.AppendLine($"Replicacion bidireccional activada");
+                                            string conexionAfinidadVirtuoso = "conexionAfinidadVirtuoso";
+                                            if (FicheroConfiguracionMaster != null && FicheroConfiguracionMaster.ToLower().Contains("home"))
+                                            {
+                                                conexionAfinidadVirtuoso += "Home";
+                                            }
 
-                                        string nombreConexionReplica = obtenerNombreConexionReplicaHAProxy(FicheroConfiguracionMaster);
+                                            string nombreConexionReplica = obtenerNombreConexionReplicaHAProxy(FicheroConfiguracionMaster);
+                                            cadenaConexion = mConfigService.ObtenerVirutosoEscritura(nombreConexionReplica);
+                                            sb.AppendLine($"conexion: {nombreConexionReplica}:{cadenaConexion}");
+                                        }
+                                        sb.AppendLine($"ConexionMaster: {cadenaConexion}");
+                                        ConexionMaster = new VirtuosoConnection(cadenaConexion);
                                     }
-                                    ConexionMaster = new VirtuosoConnection(cadenaConexion);
+                                    catch (Exception e)
+                                    {
+                                        sb.AppendLine($"Entra al catch y coge ParentConnection: {ParentConnection.ConnectionString}");
+                                        //mExisteFicheroMaster = false;
+                                        ConexionMaster = ParentConnection;
+                                        throw e;
+                                    }
                                 }
-                                catch (Exception e)
+                            }
+                            else
+                            {
+                                sb.AppendLine($"No existe fichero master y se le da el valor de ParentConnection");
+                                ConexionMaster = ParentConnection;
+                            }
+                        }
+
+                        if (!ConexionMaster.State.Equals(ConnectionState.Open))
+                        {
+                            try
+                            {
+                                mLoggingService.AgregarEntrada("Abro conexión master a virtuoso " + numIntentos);
+                                QuickOpen(ConexionMaster);
+                                mLoggingService.AgregarEntrada("conexión master abierta a virtuoso " + ConexionMaster.ConnectionString);
+                            }
+                            catch
+                            {
+                                ConexionMaster = null;
+                                if (numIntentos == numMaxIntentos)
                                 {
-                                    //mExisteFicheroMaster = false;
-                                    ConexionMaster = ParentConnection;
+                                    throw;
                                 }
                             }
                         }
-                        else
-                        {
-                            ConexionMaster = ParentConnection;
-                        }
+                    }catch (Exception e)
+                    {
+                        mLoggingService.GuardarLogError(e, sb.ToString()); ;
                     }
 
-                    if (!ConexionMaster.State.Equals(ConnectionState.Open))
-                    {
-                        try
-                        {
-                            mLoggingService.AgregarEntrada("Abro conexión master a virtuoso " + numIntentos);
-                            QuickOpen(ConexionMaster);
-                            mLoggingService.AgregarEntrada("conexión master abierta a virtuoso " + ConexionMaster.ConnectionString);
-                        }
-                        catch
-                        {
-                            ConexionMaster = null;
-                            if (numIntentos == numMaxIntentos)
-                            {
-                                throw;
-                            }
-                        }
-                    }
                 }
                 return ConexionMaster;
             }
@@ -980,64 +964,71 @@ namespace Es.Riam.AbstractsOpen
         {
             get
             {
+                StringBuilder sb = new StringBuilder();
                 int numIntentos = 0;
                 int numMaxIntentos = 9;
                 int conectado = 0;
-
-                while ((Connection == null || !Connection.State.Equals(ConnectionState.Open)) && (numIntentos < numMaxIntentos))
+                try
                 {
-                    if (numIntentos == 3 || numIntentos == 6 || conectado.Equals(2)) //Espero 1 segundo antes de intentarlo otras 3 veces.
+                    while ((Connection == null || !Connection.State.Equals(ConnectionState.Open)) && (numIntentos < numMaxIntentos))
                     {
-                        if (!conectado.Equals(2))
+                        if (numIntentos == 3 || numIntentos == 6 || conectado.Equals(2)) //Espero 1 segundo antes de intentarlo otras 3 veces.
                         {
-                            Thread.Sleep(1000);
+                            if (!conectado.Equals(2))
+                            {
+                                Thread.Sleep(1000);
+                            }
                         }
-                    }
-                    numIntentos++;
-
-                    if (!ComprobarConexionValida(Connection))
-                    {
+                        numIntentos++;
 
                         if (!ComprobarConexionValida(Connection))
                         {
-                            Connection = new VirtuosoConnection(CadenaConexion);
-                        }
-                    }
 
-                    if (!Connection.State.Equals(ConnectionState.Open))
-                    {
-                        try
-                        {
-                            mLoggingService.AgregarEntrada("Abro conexión a virtuoso " + numIntentos);
-                            //mConexion.Open();
-                            conectado = QuickOpen(Connection, 200);
-                            mLoggingService.AgregarEntrada("conexión abierta a virtuoso " + Connection.ConnectionString);
-                        }
-                        catch (Exception ex)
-                        {
-                            mLoggingService.GuardarLogError(ex);
-
-                            if (numIntentos == numMaxIntentos)
+                            if (!ComprobarConexionValida(Connection))
                             {
-                                throw;
+                                sb.AppendLine($"La cadena de conexion en ParentConnectoin es {CadenaConexion}");
+                                Connection = new VirtuosoConnection(CadenaConexion);
                             }
                         }
-                        finally
+
+                        if (!Connection.State.Equals(ConnectionState.Open))
                         {
-                            if (!conectado.Equals(1))
+                            try
                             {
-                                try
+                                mLoggingService.AgregarEntrada("Abro conexión a virtuoso " + numIntentos);
+                                //mConexion.Open();
+                                conectado = QuickOpen(Connection, 200);
+                                mLoggingService.AgregarEntrada("conexión abierta a virtuoso " + Connection.ConnectionString);
+                            }
+                            catch (Exception ex)
+                            {
+                                mLoggingService.GuardarLogError(ex);
+
+                                if (numIntentos == numMaxIntentos)
                                 {
-                                    Connection.Dispose();
-                                    Connection = null;
+                                    throw;
                                 }
-                                catch (Exception e)
+                            }
+                            finally
+                            {
+                                if (!conectado.Equals(1))
                                 {
-                                    mLoggingService.GuardarLogError(e);
+                                    try
+                                    {
+                                        Connection.Dispose();
+                                        Connection = null;
+                                    }
+                                    catch (Exception e)
+                                    {
+                                        mLoggingService.GuardarLogError(e);
+                                    }
                                 }
                             }
                         }
                     }
+                }catch (Exception ex)
+                {
+                    mLoggingService.GuardarLogError(ex, sb.ToString()); 
                 }
                 return Connection;
             }
@@ -1197,11 +1188,11 @@ namespace Es.Riam.AbstractsOpen
 
                 //EscribirLogActualizarVirtuoso(pQuery, conexion.ConnectionString, resultado);
 
-                mLoggingService.AgregarEntrada("Actualizado con éxito: " + pQuery);
+                //mLoggingService.AgregarEntrada("Actualizado con éxito: " + pQuery);
             }
             catch (Exception ex)
             {
-                mLoggingService.GuardarLogError(ex);
+                mLoggingService.GuardarLogError(ex, $"CONSULTA: {pQuery}");
 
                 if (TransaccionVirtuoso == null)
                 {

@@ -301,14 +301,19 @@ namespace Es.Riam.Gnoss.Logica.Facetado
             return mActualizacionFacetadoAD.ObtieneIDIdentidad(IDproyecto, IDpersona, pTraerEliminados);
         }
 
+        public List<Guid> ObtieneListaIDsIdentidad(Guid IDproyecto, Guid IDpersona, bool pTraerEliminados)
+        {
+            return mActualizacionFacetadoAD.ObtieneListaIDsIdentidad(IDproyecto, IDpersona, pTraerEliminados);
+        }
+
         public Guid? ObtieneIDIdentidadOrg(Guid IDproyecto, Guid IDpersona)
         {
             return ObtieneIDIdentidadOrg(IDproyecto, IDpersona, false);
         }
 
-        public Guid? ObtieneIDIdentidadOrg(Guid IDproyecto, Guid IDpersona, bool pTraerEliminados)
+        public Guid? ObtieneIDIdentidadOrg(Guid pProyectoID, Guid pOrganizacionID, bool pTraerEliminados)
         {
-            return mActualizacionFacetadoAD.ObtieneIDIdentidadOrg(IDproyecto, IDpersona, pTraerEliminados);
+            return mActualizacionFacetadoAD.ObtieneIDIdentidadOrg(pProyectoID, pOrganizacionID, pTraerEliminados);
         }
 
         public void ObtieneInformacionPrivacidadRecursoMyGnoss(List<Guid> pListaIdRecursos)

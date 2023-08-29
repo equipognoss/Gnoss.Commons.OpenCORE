@@ -32,15 +32,6 @@ namespace Es.Riam.Gnoss.AD.Parametro
         Virtuoso = 1
     }
 
-    //public static class DbSetExtensions
-    //{
-    //    public static T AddIfNotExists<T>(this DbSet<T> dbSet, T entity, Expression<Func<T, bool>> predicate = null) where T : class, new()
-    //    {
-    //        var exists = predicate != null ? dbSet.Any(predicate) : dbSet.Any();
-    //        return !exists ? dbSet.Add(entity) : null;
-    //    }
-    //}
-
     /// <summary>
     /// Acceso a datos para parametros de GNOSS.
     /// </summary>
@@ -277,34 +268,6 @@ namespace Es.Riam.Gnoss.AD.Parametro
 
         #endregion
 
-        #region Consultas
-
-        #region Campos de tablas
-
-        string selectParametroProyecto;
-
-        string selectConfiguracionEnvioCorreo;
-
-        #endregion
-
-        string sqlSelectParametroProyecto;
-
-        string sqlSelectConfiguracionEnvioCorreo;
-
-        #endregion
-
-        #region DataAdapter
-
-        #region ParametroProyecto
-
-        string sqlParametroProyectoInsert;
-        string sqlParametroProyectoDelete;
-        //string sqlParametroProyectoModify;
-
-        #endregion
-
-        #endregion
-
         #region Constructor
 
         private EntityContext mEntityContext;
@@ -316,7 +279,6 @@ namespace Es.Riam.Gnoss.AD.Parametro
             : base(loggingService, entityContext, configService, servicesUtilVirtuosoAndReplication)
         {
             mEntityContext = entityContext;
-            CargarConsultasYDataAdapters(IBD);
         }
 
         /// <summary>
@@ -328,7 +290,6 @@ namespace Es.Riam.Gnoss.AD.Parametro
             : base(pFicheroConfiguracionBD, loggingService, entityContext, configService, servicesUtilVirtuosoAndReplication)
         {
             mEntityContext = entityContext;
-            this.CargarConsultasYDataAdapters(IBD);
         }
 
         #endregion
@@ -374,50 +335,19 @@ namespace Es.Riam.Gnoss.AD.Parametro
         }
 
         /// <summary>
-        /// Obtiene un parámetro concreto de todos los proyectos.
+        /// Obtiene el parámetro proyecto indicado si existe
         /// </summary>
-        /// <param name="pParametro">ID de proyecto</param>
-        /// <returns>Lista con los parámetros de la tabla ProyectoServicioWeb de todos los proyectos del proyecto</returns>
-        //public List<ProyectoServicioWeb> ObtenerProyectoServicioWeb(Guid pProyectoID)
-        //{
-        //   List<ProyectoServicioWeb> parametros = new List<ProyectoServicioWeb>();
-        //    string selectParm = "select OrganizacionID, ProyectoID, AplicacionWeb, Nombre from ProyectoServicioWeb WHERE ProyectoID = " + IBD.ToParam("pProyectoID");
-
-        //    DbCommand comandoSel = ObtenerComando(selectParm);
-        //    AgregarParametro(comandoSel, IBD.ToParam("pProyectoID"), DbType.Guid, pProyectoID);
-
-        //    IDataReader dr = null;
-        //    try
-        //    {
-        //        dr = EjecutarReader(comandoSel);
-
-        //        while (dr.Read())
-        //        {
-        //            ProyectoServicioWeb pSW = new ProyectoServicioWeb();
-        //            pSW.OrganizacionID = dr.GetGuid(0);
-        //            pSW.ProyectoID = dr.GetGuid(1);
-        //            pSW.AplicacionWeb = dr.GetString(2);
-        //            pSW.Nombre = dr.GetString(3);
-        //            parametros.Add(pSW);
-        //        }
-        //    }
-        //    finally
-        //    {
-        //        if (dr != null)
-        //        {
-        //            dr.Close();
-        //            dr.Dispose();
-        //        }
-        //    }
-
-        //    return parametros;
-        //}
+        /// <param name="pNombreParametro">Nombre del parametro a obtener</param>
+        /// <param name="pProyectoID">Identificador del proyecto donde queremos obtener el parámetro</param>
+        /// <returns></returns>
+        public ParametroProyecto ObtenerParametroDeProyecto(string pNombreParametro, Guid pProyectoID)
+        {
+            return mEntityContext.ParametroProyecto.Where(item => item.ProyectoID.Equals(pProyectoID) && item.Parametro.Equals(pNombreParametro)).FirstOrDefault();
+        }
 
         public List<ProyectoServicioWeb> ObtenerProyectoServicioWeb(Guid pProyectoID)
         {
-            List<ProyectoServicioWeb> listaPropiedades = mEntityContext.ProyectoServicioWeb.Where(propiedad => propiedad.ProyectoID == pProyectoID).ToList();
-
-            return listaPropiedades;
+            return mEntityContext.ProyectoServicioWeb.Where(propiedad => propiedad.ProyectoID == pProyectoID).ToList();
         }
 
         public void GuardarFilasProyectoServicioWeb(List<ProyectoServicioWeb> pListaServicios, Guid pProyectoID)
@@ -458,15 +388,12 @@ namespace Es.Riam.Gnoss.AD.Parametro
         public Dictionary<Guid, string> ObtenerParametroDeProyectos(string pParametro)
         {
             Dictionary<Guid, string> parametros = new Dictionary<Guid, string>();
-            string selectParm = sqlSelectParametroProyecto + " WHERE Parametro = " + IBD.ToParam("parametro");
             var lista = mEntityContext.ParametroProyecto.Where(item => item.Parametro.Equals(pParametro)).ToList();
-
 
             foreach (ParametroProyecto param in lista)
             {
                 parametros.Add(param.ProyectoID, param.Valor);
             }
-
 
             return parametros;
         }
@@ -499,7 +426,8 @@ namespace Es.Riam.Gnoss.AD.Parametro
         /// <param name="configAuto">Lista de nuevos valores para el proyecto</param>
         public void ActualizarConfigAutocompletar(Guid pProyectoID, List<string> configAuto)
         {
-            string valor = configAuto[0];
+            //Controlar los vacios
+            string valor = configAuto.Count == 0 ? "" : configAuto[0];
             for (int i = 1; i < configAuto.Count; i++)
             {
                 valor = valor + "|" + configAuto[i];
@@ -567,7 +495,8 @@ namespace Es.Riam.Gnoss.AD.Parametro
         /// <param name="configSearch">Lista de nuevos valores para el proyecto</param>
         public void ActualizarConfigSearch(Guid pProyectoID, List<string> configSearch)
         {
-            string valor = configSearch[0];
+            //Controlar los vacios
+            string valor = configSearch.Count == 0 ? "" : configSearch[0];
             for (int i = 1; i < configSearch.Count; i++)
             {
                 valor = valor + "|" + configSearch[i];
@@ -620,11 +549,7 @@ namespace Es.Riam.Gnoss.AD.Parametro
         /// <returns>Lista con los parámetros de la tabla ConfiguracionEnvioCorreo de un proyecto</returns>
         public ConfiguracionEnvioCorreo ObtenerFilaConfiguracionEnvioCorreo(Guid pProyectoID)
         {
-            ConfiguracionEnvioCorreo filasConfiguracion = null;
-
-            filasConfiguracion = mEntityContext.ConfiguracionEnvioCorreo.FirstOrDefault(fila => fila.ProyectoID == pProyectoID);
-
-            return filasConfiguracion;
+            return mEntityContext.ConfiguracionEnvioCorreo.FirstOrDefault(fila => fila.ProyectoID == pProyectoID);
         }
 
         /// <summary>
@@ -664,20 +589,15 @@ namespace Es.Riam.Gnoss.AD.Parametro
         /// <returns></returns>
         public List<int> ObtenerListaTablaBaseProyectoIDConGrafoDbPedia()
         {
-            List<int> listaTablaBaseProyectoIDConGrafoDbPedia = new List<int>();
-
-            //Obtenemos los que tienen configuración propia y sobreescribimos la del ecosistema
-            listaTablaBaseProyectoIDConGrafoDbPedia = mEntityContext.ParametroProyecto.Join(mEntityContext.Proyecto, paramProy => paramProy.ProyectoID, proy => proy.ProyectoID, (paramProy, proy) => new
+           return mEntityContext.ParametroProyecto.Join(mEntityContext.Proyecto, paramProy => paramProy.ProyectoID, proy => proy.ProyectoID, (paramProy, proy) => new
             {
                 ParametroProyecto = paramProy,
                 Proyecto = proy
-            }).Where(item => item.ParametroProyecto.Parametro.Equals(ParametroAD.ProyectoTieneGrafoDbPedia) && item.ParametroProyecto.Valor.Equals("1")).Select(item => item.Proyecto.TablaBaseProyectoID).Union(mEntityContext.ParametroProyecto.Join(mEntityContext.Proyecto, paramProy => paramProy.ProyectoID, proy => proy.ProyectoSuperiorID.Value, (paramProy, proy) => new
+            }).Where(item => item.ParametroProyecto.Parametro.Equals(ProyectoTieneGrafoDbPedia) && item.ParametroProyecto.Valor.Equals("1")).Select(item => item.Proyecto.TablaBaseProyectoID).Union(mEntityContext.ParametroProyecto.Join(mEntityContext.Proyecto, paramProy => paramProy.ProyectoID, proy => proy.ProyectoSuperiorID.Value, (paramProy, proy) => new
             {
                 ParametroProyecto = paramProy,
                 Proyecto = proy
-            }).Where(item => item.ParametroProyecto.Parametro.Equals(ParametroAD.ProyectoTieneGrafoDbPedia) && item.ParametroProyecto.Valor.Equals("1") && item.Proyecto.ProyectoSuperiorID.HasValue).Select(item => item.Proyecto.TablaBaseProyectoID)).Distinct().ToList();
-
-            return listaTablaBaseProyectoIDConGrafoDbPedia;
+            }).Where(item => item.ParametroProyecto.Parametro.Equals(ProyectoTieneGrafoDbPedia) && item.ParametroProyecto.Valor.Equals("1") && item.Proyecto.ProyectoSuperiorID.HasValue).Select(item => item.Proyecto.TablaBaseProyectoID)).Distinct().ToList();
         }
 
         /// <summary>
@@ -686,16 +606,11 @@ namespace Es.Riam.Gnoss.AD.Parametro
         /// <returns></returns>
         public List<Guid> ObtenerListaProyectosConNotificacionesDeSuscripciones()
         {
-            List<Guid> listaProyectosConNotificaciones = new List<Guid>();
-
-            //Obtenemos los proyectos en función de la configuración del ecosistema
-            listaProyectosConNotificaciones = mEntityContext.ParametroProyecto.Join(mEntityContext.Proyecto, paramProy => paramProy.ProyectoID, proy => proy.ProyectoID, (paramProy, proy) => new
+            return mEntityContext.ParametroProyecto.Join(mEntityContext.Proyecto, paramProy => paramProy.ProyectoID, proy => proy.ProyectoID, (paramProy, proy) => new
             {
                 ParametroProyecto = paramProy,
                 Proyecto = proy
             }).Where(item => item.ParametroProyecto.Parametro.Equals(TiposParametrosAplicacion.EnviarNotificacionesDeSuscripciones) && item.ParametroProyecto.Valor.Equals("true")).Select(item => item.Proyecto.ProyectoID).ToList();
-
-            return listaProyectosConNotificaciones;
         }
 
         /// <summary>
@@ -711,7 +626,6 @@ namespace Es.Riam.Gnoss.AD.Parametro
             {
                 sqlConfiguracionPoolRedis = "select \"Valor\" from dbo.\"ParametroDominio\" where \"Dominio\" = " + IBD.ToParam("dominio") + " AND \"Parametro\"='" + ParametroAD.TamanioPoolRedis + "'";
             }
-
 
             DbCommand commandsqlConfiguracionPoolRedis = ObtenerComando(sqlConfiguracionPoolRedis);
             AgregarParametro(commandsqlConfiguracionPoolRedis, IBD.ToParam("dominio"), DbType.String, pDominio);
@@ -735,11 +649,11 @@ namespace Es.Riam.Gnoss.AD.Parametro
         {
             Dictionary<string, string> listaIdiomas = new Dictionary<string, string>();
 
-            string sqlIdiomas = "SELECT \"Valor\" from \"ParametroDominio\" where (\"Dominio\" = " + IBD.ToParam("dominioHTTP") + " OR \"Dominio\" = " + IBD.ToParam("dominioHTTPS") + ") AND \"Parametro\"='" + ParametroAD.ListaIdiomas + "'";
+            string sqlIdiomas = "SELECT \"Valor\" from \"ParametroDominio\" where (\"Dominio\" = " + IBD.ToParam("dominioHTTP") + " OR \"Dominio\" = " + IBD.ToParam("dominioHTTPS") + ") AND \"Parametro\"='" + ListaIdiomas + "'";
 
             if (EsPostgres())
             {
-                sqlIdiomas = "SELECT \"Valor\" from dbo.\"ParametroDominio\" where (\"Dominio\" = " + IBD.ToParam("dominioHTTP") + " OR \"Dominio\" = " + IBD.ToParam("dominioHTTPS") + ") AND \"Parametro\"='" + ParametroAD.ListaIdiomas + "'";
+                sqlIdiomas = "SELECT \"Valor\" from dbo.\"ParametroDominio\" where (\"Dominio\" = " + IBD.ToParam("dominioHTTP") + " OR \"Dominio\" = " + IBD.ToParam("dominioHTTPS") + ") AND \"Parametro\"='" + ListaIdiomas + "'";
             }
 
             DbCommand commandsqlIdiomas = ObtenerComando(sqlIdiomas);
@@ -770,11 +684,11 @@ namespace Es.Riam.Gnoss.AD.Parametro
         {
             Dictionary<string, string> listaIdiomas = new Dictionary<string, string>();
 
-            string sqlIdiomas = "SELECT \"Valor\" from \"ParametroDominio\" where \"Parametro\"='" + ParametroAD.ListaIdiomas + "'";
+            string sqlIdiomas = "SELECT \"Valor\" from \"ParametroDominio\" where \"Parametro\"='" + ListaIdiomas + "'";
 
             if (EsPostgres())
             {
-                sqlIdiomas = "SELECT \"Valor\" from dbo.\"ParametroDominio\" where \"Parametro\"='" + ParametroAD.ListaIdiomas + "'";
+                sqlIdiomas = "SELECT \"Valor\" from dbo.\"ParametroDominio\" where \"Parametro\"='" + ListaIdiomas + "'";
             }
 
 
@@ -821,17 +735,11 @@ namespace Es.Riam.Gnoss.AD.Parametro
         /// <returns></returns>
         public List<string> ObtenerNombresDeProyectosSinNombreCortoEnURL()
         {
-            List<string> listaNombresCortos = new List<string>();
-
-            listaNombresCortos = mEntityContext.ParametroProyecto.Join(mEntityContext.Proyecto, paramProy => paramProy.ProyectoID, proy => proy.ProyectoID, (paramProy, proy) => new
+            return mEntityContext.ParametroProyecto.Join(mEntityContext.Proyecto, paramProy => paramProy.ProyectoID, proy => proy.ProyectoID, (paramProy, proy) => new
             {
                 ParametroProyecto = paramProy,
                 Proyecto = proy
-            }).Where(item => item.ParametroProyecto.Parametro.Equals(ParametroAD.ProyectoSinNombreCortoEnURL)).Select(item => new { NombreCorto = item.Proyecto.NombreCorto, Valor = item.ParametroProyecto.Valor }).ToDictionary(item => item.NombreCorto, item => item.Valor).Where(item => item.Value.Equals("1")).Select(item => item.Key).ToList();// && item.ParametroProyecto.Valor.Equals("1")).Select(item => item.Proyecto.NombreCorto).ToList();
-
-
-
-            return listaNombresCortos;
+            }).Where(item => item.ParametroProyecto.Parametro.Equals(ParametroAD.ProyectoSinNombreCortoEnURL)).Select(item => new { NombreCorto = item.Proyecto.NombreCorto, Valor = item.ParametroProyecto.Valor }).ToDictionary(item => item.NombreCorto, item => item.Valor).Where(item => item.Value.Equals("1")).Select(item => item.Key).ToList();
         }
 
         /// <summary>
@@ -931,44 +839,17 @@ namespace Es.Riam.Gnoss.AD.Parametro
 
         public List<Guid> ObtenerProyectosQueAgrupanEventosRegistroHome()
         {
-            List<Guid> lista = new List<Guid>();
-            lista = mEntityContext.ParametroProyecto.Where(item => item.Parametro.Equals("AgruparRegistrosUsuariosEnProyecto") && item.Valor.Equals("1")).Select(item => item.ProyectoID).ToList();
-
-
-            return lista;
+            return mEntityContext.ParametroProyecto.Where(item => item.Parametro.Equals("AgruparRegistrosUsuariosEnProyecto") && item.Valor.Equals("1")).Select(item => item.ProyectoID).ToList();
         }
 
-        #endregion
-
-        #region Privados
-
-        /// <summary>
-        /// Procedimiento para construir las consultas
-        /// </summary>
-        /// <param name="pIBD">Interfaz de base de datos</param>
-        private void CargarConsultasYDataAdapters(IBaseDatos pIBD)
+        public bool ExisteNombrePoliticaCookiesMetaproyecto()
         {
-            #region Consultas
-
-            selectParametroProyecto = "SELECT " + pIBD.CargarGuid("ParametroProyecto.OrganizacionID") + ", " + pIBD.CargarGuid("ParametroProyecto.ProyectoID") + ", ParametroProyecto.Parametro, ParametroProyecto.Valor";
-
-            sqlSelectParametroProyecto = selectParametroProyecto + " FROM ParametroProyecto";
-
-            selectConfiguracionEnvioCorreo = "SELECT " + pIBD.CargarGuid("ConfiguracionEnvioCorreo.ProyectoID") + ", ConfiguracionEnvioCorreo.email, ConfiguracionEnvioCorreo.smtp, ConfiguracionEnvioCorreo.puerto, ConfiguracionEnvioCorreo.usuario, ConfiguracionEnvioCorreo.clave, ConfiguracionEnvioCorreo.emailsugerencias, ConfiguracionEnvioCorreo.tipo, ConfiguracionEnvioCorreo.SSL";
-
-            sqlSelectConfiguracionEnvioCorreo = selectConfiguracionEnvioCorreo + " FROM ConfiguracionEnvioCorreo";
-            #endregion
-
-            #region DataAdapter
-
-            #region ProyectoMetaRobots
-
-            sqlParametroProyectoInsert = pIBD.ReplaceParam("INSERT INTO ParametroProyecto (OrganizacionID, ProyectoID, Parametro, Valor) VALUES (" + pIBD.GuidParamColumnaTabla("OrganizacionID") + ", " + pIBD.GuidParamColumnaTabla("ProyectoID") + ", @Parametro, @Valor)");
-            sqlParametroProyectoDelete = pIBD.ReplaceParam("DELETE FROM ParametroProyecto WHERE (OrganizacionID = " + pIBD.GuidParamColumnaTabla("OrganizacionID") + ") AND (ProyectoID = " + pIBD.GuidParamColumnaTabla("ProyectoID") + " AND Parametro = @Parametro)"); ;
-
-            #endregion
-
-            #endregion
+            return mEntityContext.ParametroProyecto.Any(item => item.Parametro.Equals("NombrePoliticaCookies") && item.ProyectoID.Equals(ProyectoAD.MetaProyecto));
+        }
+        
+        public string ObtenerNombrePoliticaCookiesMetaproyecto()
+        {
+            return mEntityContext.ParametroProyecto.Where(item => item.Parametro.Equals("NombrePoliticaCookies") && item.ProyectoID.Equals(ProyectoAD.MetaProyecto)).Select(item => item.Valor).FirstOrDefault();
         }
 
         #endregion

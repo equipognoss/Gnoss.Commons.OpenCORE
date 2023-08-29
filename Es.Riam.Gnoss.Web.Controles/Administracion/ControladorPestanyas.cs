@@ -42,9 +42,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
 {
     public class ControladorPestanyas : ControladorBase
     {
-        /// <summary>
-        /// 
-        /// </summary>
+        private Dictionary<string, Guid> mDiccionarioNombreOntoId = null;
         private List<short> mListaPaginasCMS = null;
 
         private Elementos.ServiciosGenerales.Proyecto ProyectoSeleccionado = null;
@@ -77,6 +75,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
             mConfigService = configService;
             mRedisCacheWrapper = redisCacheWrapper;
             mGnossCache = gnossCache;
+            mDiccionarioNombreOntoId = new Dictionary<string, Guid>();
 
             ProyectoSeleccionado = pProyecto;
             GestionProyectos = ProyectoSeleccionado.GestorProyectos;
@@ -99,6 +98,9 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
             pestanya.Privacidad = filaPestanya.Privacidad;
             pestanya.HtmlAlternativoPrivacidad = filaPestanya.HtmlAlternativo;
             pestanya.MetaDescription = filaPestanya.MetaDescription;
+            pestanya.FechaCreacion = filaPestanya.FechaCreacion;
+            pestanya.FechaModificacion = filaPestanya.FechaModificacion;
+            pestanya.UltimoEditor = filaPestanya.UltimoEditor;
             propiedadesIntegracionContinua = new List<IntegracionContinuaPropiedad>();
 
             if (filaPestanya.Privacidad.Equals(2))
@@ -196,6 +198,15 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
             {
                 pestanya.OpcionesBusqueda = CargarOpcionesBusqueda(filaPestanya);
                 pestanya.ListaExportaciones = CargarExportacionesBusqueda(filaPestanya);
+                pestanya.OpcionesDashboard = CargarOpcionesDashboard(filaPestanya);
+            }
+
+            //TFG FRAN
+            bool esPestanyaDashboard = filaPestanya.TipoPestanya == (short)TipoPestanyaMenu.Dashboard;
+
+            if (esPestanyaDashboard)
+            {
+                pestanya.OpcionesDashboard = CargarOpcionesDashboard(filaPestanya);
             }
 
             if (filaPestanya.TipoPestanya.Equals((short)TipoPestanyaMenu.CMS) && ParametroProyecto.ContainsKey(ParametroAD.PropiedadContenidoMultiIdioma))
@@ -336,6 +347,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
                 opcionesBusqueda.RelacionMandatory = filaPestanyaBusqueda.RelacionMandatory;
                 opcionesBusqueda.OpcionesVistas = CargarVistasDisponibles(filaPestanyaBusqueda);
                 opcionesBusqueda.OpcionesVistas.PosicionCentralMapa = filaPestanyaBusqueda.PosicionCentralMapa;
+                opcionesBusqueda.TextoDefectoBuscador = filaPestanyaBusqueda.TextoDefectoBuscador;
 
                 if (!CompararObjetos(opcionesBusqueda, opcionesBusquedaDefecto))
                 {
@@ -350,6 +362,52 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
             return opcionesBusqueda;
         }
 
+        private List<TabModel.DashboardTabModel> CargarOpcionesDashboard(AD.EntityModel.Models.ProyectoDS.ProyectoPestanyaMenu filaPestanya)
+        {
+            List<TabModel.DashboardTabModel> listaAsistentes = new List<TabModel.DashboardTabModel>();
+            if (filaPestanya.ProyectoPestanyaDashboardAsistente == null)
+            {
+                filaPestanya.ProyectoPestanyaDashboardAsistente = new List<ProyectoPestanyaDashboardAsistente>();
+            }
+            foreach (ProyectoPestanyaDashboardAsistente asistente in filaPestanya.ProyectoPestanyaDashboardAsistente)
+            {
+                TabModel.DashboardTabModel asis = new TabModel.DashboardTabModel();
+
+                string[] partesWhere = asistente.Where.Split("|||");
+
+                asis.AsisID = asistente.AsisID;
+                asis.PropExtra = asistente.PropExtra;
+                asis.Labels = asistente.Labels;
+                asis.Nombre = asistente.Nombre;
+                asis.Select = asistente.Select;
+                asis.Where = partesWhere[0];
+                asis.GroupBy = partesWhere[1];
+                asis.OrderBy = partesWhere[2];
+                asis.Limit = partesWhere[3];
+                asis.Orden = asistente.Orden;
+                asis.Tamano = asistente.Tamanyo;
+                asis.Tipo = asistente.Tipo;
+                asis.Titulo = asistente.Titulo;
+                asis.OpcionesDatasets = new List<TabModel.DashboardTabModel.DatasetTabModel>();
+                List<ProyectoPestanyaDashboardAsistenteDataset> filasDataset = asistente.ProyectoPestanyaDashboardAsistenteDataset.OrderBy(x => x.Orden).ToList();
+                foreach (ProyectoPestanyaDashboardAsistenteDataset dataset in filasDataset)
+                {
+                    TabModel.DashboardTabModel.DatasetTabModel dat = new TabModel.DashboardTabModel.DatasetTabModel();
+
+                    dat.DatasetID = dataset.DatasetID;
+                    dat.Color = dataset.Color;
+                    dat.Datos = dataset.Datos;
+                    dat.Nombre = dataset.Nombre;
+                    dat.Orden = dataset.Orden;
+
+                    asis.OpcionesDatasets.Add(dat);
+                }
+
+                listaAsistentes.Add(asis);
+            }
+
+            return listaAsistentes;
+        }
 
         public void CrearFilasPropiedadesIntegracionContinua(List<TabModel> pListaPestanyas)
         {
@@ -451,7 +509,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
             }
         }
 
-        public TabModel.SearchTabModel CargarOpcionesBusquedaPorDefecto(TipoPestanyaMenu pTipoPestanya)
+        public TabModel.SearchTabModel CargarOpcionesBusquedaPorDefecto(TipoPestanyaMenu pTipoPestanya, string pNameOnto = "")
         {
             TabModel.SearchTabModel opcionesBusqueda = new TabModel.SearchTabModel();
 
@@ -477,9 +535,16 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
                 case TipoPestanyaMenu.BusquedaAvanzada:
                     campoFiltro = "rdf:type=Meta";
                     break;
-            }
+                case TipoPestanyaMenu.BusquedaSemantica:
+                    if (!string.IsNullOrEmpty(pNameOnto))
+                    {
+                        campoFiltro = $"rdf:type={pNameOnto}";
+                    }
+					break;
+			}
 
-            opcionesBusqueda.ProyectoOrigenBusqueda = Guid.Empty;
+
+			opcionesBusqueda.ProyectoOrigenBusqueda = Guid.Empty;
 
             opcionesBusqueda.ValoresPorDefecto = true;
             opcionesBusqueda.CampoFiltro = campoFiltro;
@@ -652,7 +717,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
             List<string> listaRutasPestanyasInvalidarEnCache = new List<string>();
 
             //Añadir las nuevas
-            foreach (TabModel pestanya in pListaPestanyas.OrderBy(x => x.ParentTabKey))
+            foreach (TabModel pestanya in pListaPestanyas.OrderBy(x => x.Order))
             {
                 if (!pestanya.Deleted)
                 {
@@ -731,7 +796,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
                             }
                         }
 
-                        GuardarDatosFilaPestanyaMenu(filaPestanya, pestanya);
+                        GuardarDatosFilaPestanyaMenu(filaPestanya, pestanya, pPeticionIntegracionContinua);
 
                         if (pestanya.OpcionesBusqueda != null)
                         {
@@ -760,6 +825,47 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
                             {
                                 //Si existe, la elimino
                                 mEntityContext.EliminarElemento(filasBusqueda);
+                            }
+                        }
+
+                        if (pestanya.OpcionesDashboard != null)
+                        {
+
+                            if (filaPestanya.ProyectoPestanyaDashboardAsistente != null)
+                            {
+                                List<Guid> idAntiguos = filaPestanya.ProyectoPestanyaDashboardAsistente.ToList().Select(x => x.AsisID).ToList();
+                                List<Guid> idNuevos = new List<Guid>();
+                                foreach (TabModel.DashboardTabModel asistente in pestanya.OpcionesDashboard)
+                                {
+                                    if (idAntiguos.Contains(asistente.AsisID))
+                                    {
+                                        ProyectoPestanyaDashboardAsistente asis = filaPestanya.ProyectoPestanyaDashboardAsistente.FirstOrDefault(x => x.AsisID == asistente.AsisID);
+
+                                        GuardarFilaAsistenteModificado(asis, asistente);
+                                    }
+                                    else
+                                    {
+                                        ProyectoPestanyaDashboardAsistente asis = new ProyectoPestanyaDashboardAsistente();
+
+                                        asis.PestanyaID = filaPestanya.PestanyaID;
+                                        asis.ProyectoPestanyaMenu = filaPestanya;
+                                        GuardarFilaAsistente(asis, asistente);
+
+                                        GestionProyectos.DataWrapperProyectos.ListaProyectoPestanyaDashboardAsistente.Add(asis);
+                                        mEntityContext.ProyectoPestanyaDashboardAsistente.Add(asis);
+                                    }
+                                    idNuevos.Add(asistente.AsisID);
+                                }
+                                List<ProyectoPestanyaDashboardAsistente> borrar = filaPestanya.ProyectoPestanyaDashboardAsistente.Where(x => !idNuevos.Contains(x.AsisID)).ToList();
+                                foreach (ProyectoPestanyaDashboardAsistente asisBorrado in borrar)
+                                {
+                                    mEntityContext.EliminarElemento(asisBorrado);
+                                }
+                            }
+                            else
+                            {
+                                //Si no existe, la agrego
+                                GuardarDatosFilaPestanyaDashboard(pestanya);
                             }
                         }
 
@@ -822,7 +928,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
             }
         }
 
-        private void GuardarDatosFilaPestanyaMenu(AD.EntityModel.Models.ProyectoDS.ProyectoPestanyaMenu pFilaPestanya, TabModel pPestanya)
+        private void GuardarDatosFilaPestanyaMenu(AD.EntityModel.Models.ProyectoDS.ProyectoPestanyaMenu pFilaPestanya, TabModel pPestanya, bool pPeticionIntegracionContinua = false)
         {
             if (pPestanya.EsNombrePorDefecto)
             {
@@ -864,6 +970,8 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
             pFilaPestanya.NuevaPestanya = pPestanya.OpenInNewWindow;
             pFilaPestanya.Privacidad = pPestanya.Privacidad;
             pFilaPestanya.MetaDescription = pPestanya.MetaDescription;
+            pFilaPestanya.UltimoEditor = pPeticionIntegracionContinua ? pPestanya.UltimoEditor : UsuarioActual.Login;
+            pFilaPestanya.FechaModificacion = DateTime.Now;
             if (pPestanya.ParentTabKey.Equals(Guid.Empty))
             {
                 pFilaPestanya.PestanyaPadreID = null;
@@ -952,7 +1060,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
                     {
                         foreach (string idioma in pPestanya.ListaIdiomasDisponibles)
                         {
-                            idiomasDisponibles += "true@" + idioma + "|||";
+                            idiomasDisponibles += $"true@{idioma}|||";
                         }
                     }
                 }
@@ -999,8 +1107,8 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
             pFilaBusqueda.NumeroRecursos = pPestanya.OpcionesBusqueda.NumeroResultados;
             pFilaBusqueda.VistaDisponible = ObtenerVistaDisponible(pPestanya);
             pFilaBusqueda.MostrarFacetas = pPestanya.OpcionesBusqueda.MostrarFacetas;
-            pFilaBusqueda.GruposPorTipo = pPestanya.OpcionesBusqueda.AgruparFacetasPorTipo;
-            pFilaBusqueda.MostrarCajaBusqueda = pPestanya.OpcionesBusqueda.MostrarCajaBusqueda;
+            pFilaBusqueda.GruposPorTipo = pPestanya.OpcionesBusqueda.AgruparFacetasPorTipo;            
+            pFilaBusqueda.MostrarCajaBusqueda = true;
             pFilaBusqueda.MostrarEnComboBusqueda = pPestanya.OpcionesBusqueda.MostrarEnBusquedaCabecera;
             pFilaBusqueda.IgnorarPrivacidadEnBusqueda = pPestanya.OpcionesBusqueda.IgnorarPrivacidadEnBusqueda;
             pFilaBusqueda.RelacionMandatory = pPestanya.OpcionesBusqueda.RelacionMandatory;
@@ -1016,6 +1124,30 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
             }
             pFilaBusqueda.OcultarResultadosSinFiltros = pPestanya.OpcionesBusqueda.OcultarResultadosSinFiltros;
             pFilaBusqueda.TextoBusquedaSinResultados = pPestanya.OpcionesBusqueda.TextoBusquedaSinResultados;
+            pFilaBusqueda.TextoDefectoBuscador = pPestanya.OpcionesBusqueda.TextoDefectoBuscador;
+        }
+
+        //TFG FRAN
+        private void GuardarDatosFilaPestanyaDashboard(TabModel pPestanya)
+        {
+            if (pPestanya.OpcionesDashboard != null)
+            {
+                foreach (TabModel.DashboardTabModel asistente in pPestanya.OpcionesDashboard)
+                {
+                    ProyectoPestanyaDashboardAsistente asis = new ProyectoPestanyaDashboardAsistente();
+
+                    asis.PestanyaID = pPestanya.Key;
+                    asis.ProyectoPestanyaMenu = GestionProyectos.DataWrapperProyectos.ListaProyectoPestanyaMenu.FirstOrDefault(pestanyaMenu => pestanyaMenu.PestanyaID.Equals(pPestanya.Key));
+
+                    GuardarFilaAsistente(asis, asistente);
+
+                    GestionProyectos.DataWrapperProyectos.ListaProyectoPestanyaDashboardAsistente.Add(asis);
+                    mEntityContext.ProyectoPestanyaDashboardAsistente.Add(asis);
+
+                }
+
+            }
+
         }
 
         private void GuardarFilasFiltroOrden(TabModel pPestanya, AD.EntityModel.Models.ProyectoDS.ProyectoPestanyaMenu pFilaPestanya)
@@ -1048,6 +1180,90 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
                     }
                 }
             }
+        }
+
+        private void GuardarFilaAsistente(ProyectoPestanyaDashboardAsistente asis, TabModel.DashboardTabModel asistente)
+        {
+
+            asis.AsisID = asistente.AsisID;
+            asis.Labels = asistente.Labels;
+            asis.Nombre = asistente.Nombre;
+            asis.Select = asistente.Select;
+            asis.Where = asistente.Where;
+            asis.Orden = asistente.Orden;
+            asis.Tamanyo = asistente.Tamano;
+            asis.Titulo = asistente.Titulo;
+            asis.Tipo = asistente.Tipo;
+            asis.PropExtra = asistente.PropExtra;
+
+            foreach (TabModel.DashboardTabModel.DatasetTabModel dataset in asistente.OpcionesDatasets)
+            {
+                ProyectoPestanyaDashboardAsistenteDataset dat = new ProyectoPestanyaDashboardAsistenteDataset();
+
+                if (dataset.DatasetID.Equals(Guid.Empty))
+                {
+                    dat.DatasetID = Guid.NewGuid();
+                }
+                else
+                {
+                    dat.DatasetID = dataset.DatasetID;
+                }
+                dat.AsisID = asis.AsisID;
+                dat.Datos = dataset.Datos;
+                dat.Nombre = dataset.Nombre;
+                dat.Color = dataset.Color;
+                dat.ProyectoPestanyaDashboardAsistente = asis;
+                dat.Orden = dataset.Orden;
+
+                GestionProyectos.DataWrapperProyectos.ListaProyectoPestanyaDashboardAsistenteDataset.Add(dat);
+                mEntityContext.ProyectoPestanyaDashboardAsistenteDataset.Add(dat);
+
+                asis.ProyectoPestanyaDashboardAsistenteDataset.Add(dat);
+            }
+
+
+        }
+
+        private void GuardarFilaAsistenteModificado(ProyectoPestanyaDashboardAsistente asis, TabModel.DashboardTabModel asistente)
+        {
+
+            asis.AsisID = asistente.AsisID;
+            asis.Labels = asistente.Labels;
+            asis.Nombre = asistente.Nombre;
+            asis.Select = asistente.Select;
+            asis.Where = asistente.Where;
+            asis.Orden = asistente.Orden;
+            asis.Tamanyo = asistente.Tamano;
+            asis.Titulo = asistente.Titulo;
+            asis.Tipo = asistente.Tipo;
+            asis.PropExtra = asistente.PropExtra;
+
+            foreach (TabModel.DashboardTabModel.DatasetTabModel dataset in asistente.OpcionesDatasets)
+            {
+                ProyectoPestanyaDashboardAsistenteDataset dat = asis.ProyectoPestanyaDashboardAsistenteDataset.FirstOrDefault(x => x.DatasetID == dataset.DatasetID);
+                bool save = false;
+                if (dat == null)
+                {
+                    dat = new ProyectoPestanyaDashboardAsistenteDataset();
+                    save = true;
+                }
+                dat.DatasetID = dataset.DatasetID;
+                dat.AsisID = asis.AsisID;
+                dat.Datos = dataset.Datos;
+                dat.Nombre = dataset.Nombre;
+                dat.Color = dataset.Color;
+                dat.ProyectoPestanyaDashboardAsistente = asis;
+                dat.Orden = dataset.Orden;
+                if (save)
+                {
+                    GestionProyectos.DataWrapperProyectos.ListaProyectoPestanyaDashboardAsistenteDataset.Add(dat);
+                    mEntityContext.ProyectoPestanyaDashboardAsistenteDataset.Add(dat);
+
+                    asis.ProyectoPestanyaDashboardAsistenteDataset.Add(dat);
+                }
+            }
+
+
         }
 
         private void AgregarFilaFiltroOrdenNueva(TabModel.SearchTabModel.FiltroOrden pFiltroOrden, Guid pPestanyaID)
@@ -1084,8 +1300,10 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
             filaPestanyaNueva.OrganizacionID = ProyectoSeleccionado.FilaProyecto.OrganizacionID;
             filaPestanyaNueva.PestanyaID = pPestanya.Key;
             filaPestanyaNueva.TipoPestanya = (short)pPestanya.Type;
-
-            GuardarDatosFilaPestanyaMenu(filaPestanyaNueva, pPestanya);
+            filaPestanyaNueva.FechaCreacion = DateTime.Now;
+            filaPestanyaNueva.FechaModificacion = DateTime.Now;
+            filaPestanyaNueva.UltimoEditor = pPeticionIntegracionContinua ? pPestanya.UltimoEditor : UsuarioActual.Login;
+            GuardarDatosFilaPestanyaMenu(filaPestanyaNueva, pPestanya, pPeticionIntegracionContinua);
             
             GestionProyectos.DataWrapperProyectos.ListaProyectoPestanyaMenu.Add(filaPestanyaNueva);
             mEntityContext.ProyectoPestanyaMenu.Add(filaPestanyaNueva);
@@ -1098,6 +1316,12 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
                 {
                     AgregarPestanyaBusquedaNueva(pPestanya);
                 }
+            }
+
+            //TFG FRAN
+            if (pPestanya.OpcionesDashboard != null)
+            {
+                GuardarDatosFilaPestanyaDashboard(pPestanya);
             }
 
             GuardarDatosFilaPestanyaCMS(filaPestanyaNueva, pPestanya);
@@ -1159,7 +1383,6 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
                             mLoggingService.GuardarLog($"Intento añadir a FacetaObjetoConocimientoProyectoPestanya {pPestanya.Key}\n");
                             FacetasDW.ListaFacetaObjetoConocimientoProyectoPenstanya.Add(facetaPestanya);
                             mEntityContext.FacetaObjetoConocimientoProyectoPestanya.Add(facetaPestanya);
-                            //EntityContext.Instance.Entry(facetaPestanya).State = EntityState.Added;
                         }
                     }
                 }
@@ -1172,8 +1395,6 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
 
         private void EliminarFilaFacetasPestanya(TabModel pPestanya)
         {
-            //if (pPestanya.ListaFacetas != null)
-            //{
             List<FacetaObjetoConocimientoProyectoPestanya> listaCompleta = FacetasDW.ListaFacetaObjetoConocimientoProyectoPenstanya.Where(item => item.PestanyaID.Equals(pPestanya.Key)).ToList();
             if (listaCompleta != null)
             {
@@ -1190,9 +1411,8 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
                 }
                 mEntityContext.SaveChanges();
             }
-
-            //}
         }
+
         public List<FacetaObjetoConocimientoProyectoPestanya> ObtenerFacetaObjetoConocimientoProyectoPestanya(Guid pPestanya)
         {
             List<FacetaObjetoConocimientoProyectoPestanya> listaCompleta = FacetasDW.ListaFacetaObjetoConocimientoProyectoPenstanya.Where(item => item.PestanyaID.Equals(pPestanya)).ToList();
@@ -1287,15 +1507,11 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
 
                         //Borramos la fila con el orden incorrecto
                         mEntityContext.Entry(fila).State = EntityState.Deleted;
-                        //filaExportacion.ProyectoPestanyaBusquedaExportacionPropiedad.Remove(fila);
                         ExpBusquedaDW.ListaProyectoPestanyaBusquedaExportacionPropiedad.Remove(fila);
 
                         //Añadimos la fila con el orden correcto
                         mEntityContext.ProyectoPestanyaBusquedaExportacionPropiedad.Add(filaNueva);
-                        //filaExportacion.ProyectoPestanyaBusquedaExportacionPropiedad.Add(filaNueva);
                         ExpBusquedaDW.ListaProyectoPestanyaBusquedaExportacionPropiedad.Add(filaNueva);
-
-                        //fila.Orden = (short)orden;
                     }
                     orden++;
                 }
@@ -1372,10 +1588,20 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
             Guid? ontologiaID = Guid.Empty;
             if (!string.IsNullOrEmpty(pPropiedad.Ontologia))
             {
-                urlOntologia = "http://gnoss.com/Ontologia/" + pPropiedad.Ontologia + ".owl#";
-
-                DocumentacionCN documentacionCN = new DocumentacionCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
-                ontologiaID = documentacionCN.ObtenerOntologiaAPartirNombre(ProyectoSeleccionado.Clave, pPropiedad.Ontologia + ".owl");
+                urlOntologia = $"http://gnoss.com/Ontologia/{pPropiedad.Ontologia}.owl#";
+                if (!mDiccionarioNombreOntoId.ContainsKey(pPropiedad.Ontologia))
+                {
+                    DocumentacionCN documentacionCN = new DocumentacionCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+                    ontologiaID = documentacionCN.ObtenerOntologiaAPartirNombre(ProyectoSeleccionado.Clave, $"{pPropiedad.Ontologia}.owl");
+                    if(ontologiaID.HasValue && !ontologiaID.Value.Equals(new Guid("11111111-1111-1111-1111-111111111111")))
+                    {
+                        mDiccionarioNombreOntoId.Add(pPropiedad.Ontologia, ontologiaID.Value);
+                    }
+                }
+                else
+                {
+                    ontologiaID = mDiccionarioNombreOntoId[pPropiedad.Ontologia];
+                }                
             }
 
             if (ontologiaID.HasValue && !ontologiaID.Equals(Guid.Empty))
@@ -1404,7 +1630,6 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
             {
                 mEntityContext.ProyectoPestanyaBusqueda.Add(filaPestanyaBusquedaNueva);
             }
-
         }
 
         private string ObtenerVistaDisponible(TabModel pPestanya)
@@ -1456,7 +1681,6 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
         private void AgregarFilaCMSPagina(short pTipoUbicacionCMS, bool pActive)
         {
             AD.EntityModel.Models.CMS.CMSPagina filaCMSPagina = GestorCMS.CMSDW.ListaCMSPagina.FirstOrDefault(item => item.ProyectoID.Equals(ProyectoSeleccionado.Clave) && item.OrganizacionID.Equals(ProyectoSeleccionado.FilaProyecto.OrganizacionID) && item.Ubicacion.Equals((short)pTipoUbicacionCMS));
-            //FindByOrganizacionIDProyectoIDUbicacion(ProyectoSeleccionado.FilaProyecto.OrganizacionID, ProyectoSeleccionado.Clave, pTipoUbicacionCMS);
 
             if (filaCMSPagina != null)
             {
@@ -1484,7 +1708,6 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
                 Guid perfilID = filaPerfil.PerfilID;
                 if (pPestanya.PrivacidadPerfiles == null || !pPestanya.PrivacidadPerfiles.ContainsKey(perfilID))
                 {
-                    //filaPerfil.Delete();
                     filasRolIdentidades.Remove(filaPerfil);
                     mEntityContext.EliminarElemento(filaPerfil);
                 }
@@ -1494,7 +1717,6 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
             {
                 foreach (Guid perfilID in pPestanya.PrivacidadPerfiles.Keys)
                 {
-                    //.FindByPestanyaIDPerfilID(pPestanya.Key, perfilID)
                     if (GestionProyectos.DataWrapperProyectos.ListaProyectoPestanyaMenuRolIdentidad.FirstOrDefault(pest => pest.PestanyaID.Equals(pPestanya.Key) && pest.PerfilID.Equals(perfilID)) == null)
                     {
                         AD.EntityModel.Models.ProyectoDS.ProyectoPestanyaMenuRolIdentidad filaPerfil = new AD.EntityModel.Models.ProyectoDS.ProyectoPestanyaMenuRolIdentidad();
@@ -1528,7 +1750,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
 
                 foreach (Guid grupoID in pPestanya.PrivacidadGrupos.Keys)
                 {
-                    if (GestionProyectos.DataWrapperProyectos.ListaProyectoPestanyaMenuRolGrupoIdentidades.FirstOrDefault(proy => proy.PestanyaID.Equals(pPestanya.Key) && proy.GrupoID.Equals(grupoID)) == null)//FindByPestanyaIDGrupoID(pPestanya.Key, grupoID) == null
+                    if (GestionProyectos.DataWrapperProyectos.ListaProyectoPestanyaMenuRolGrupoIdentidades.FirstOrDefault(proy => proy.PestanyaID.Equals(pPestanya.Key) && proy.GrupoID.Equals(grupoID)) == null)
                     {
                         AD.EntityModel.Models.ProyectoDS.ProyectoPestanyaMenuRolGrupoIdentidades filaGrupo = new AD.EntityModel.Models.ProyectoDS.ProyectoPestanyaMenuRolGrupoIdentidades();
                         filaGrupo.PestanyaID = pPestanya.Key;
@@ -1538,7 +1760,6 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
                         {
                             mEntityContext.ProyectoPestanyaMenuRolGrupoIdentidades.Add(filaGrupo);
                         }
-
                     }
                 }
             }
@@ -1546,7 +1767,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
 
         private void EliminarPestanya(AD.EntityModel.Models.ProyectoDS.ProyectoPestanyaMenu filaPestanya, bool pPeticionIntegracionContinua = false)
         {
-            List<ProyectoPestanyaBusquedaExportacion> listaProyectoPestanyaBusquedaExportacionBorrar = ExpBusquedaDW.ListaProyectoPestanyaBusquedaExportacion.Where(exportacion => mEntityContext.Entry(exportacion).State != EntityState.Deleted && exportacion.PestanyaID == filaPestanya.PestanyaID).ToList().ToList();
+            List<ProyectoPestanyaBusquedaExportacion> listaProyectoPestanyaBusquedaExportacionBorrar = ExpBusquedaDW.ListaProyectoPestanyaBusquedaExportacion.Where(exportacion => mEntityContext.Entry(exportacion).State != EntityState.Deleted && exportacion.PestanyaID == filaPestanya.PestanyaID).ToList();
             foreach (ProyectoPestanyaBusquedaExportacion filaExportacion in listaProyectoPestanyaBusquedaExportacionBorrar)
             {
                 foreach (ProyectoPestanyaBusquedaExportacionPropiedad filaPropiedadExportacion in filaExportacion.ProyectoPestanyaBusquedaExportacionPropiedad.ToList())
@@ -1622,7 +1843,6 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
                 }
             }
 
-            //filaPestanya.Delete();
             filaPestanya.ProyectoPestanyaMenu1.Remove(filaPestanya);
             if (mEntityContext.Entry(filaPestanya).State.Equals(EntityState.Detached))
             {
@@ -1699,6 +1919,11 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
 
             if (error.Equals(string.Empty))
             {
+                error = ComprobarErrorConcurrencia(pListaPestanyas);
+            }
+
+            if (error.Equals(string.Empty))
+            {
                 error = ComprobarErrorNombresVacios(pListaPestanyas);
             }
 
@@ -1713,6 +1938,22 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
             }
 
             return error;
+        }
+
+        private string ComprobarLongitudMetaDescription(List<TabModel> pListaPestanyas)
+        {
+            foreach (TabModel pestanya in pListaPestanyas)
+            {
+                if (!pestanya.Deleted && pestanya.Modified && pestanya.MetaDescription != null)
+                {
+                    if (pestanya.MetaDescription.Length > 500)
+                    {
+                        return $"{pestanya.Key}: Longitud máxima permitida sobrepasada";
+                    }
+                }
+            }
+
+            return "";
         }
 
         private string ComprobarProyectoOrigenID(List<TabModel> pListaPestanyas)
@@ -1735,6 +1976,28 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
             }
 
             return "";
+        }
+
+        private string ComprobarErrorConcurrencia(List<TabModel> pListaPestanyas)
+        {
+            string error = string.Empty;
+
+            foreach (TabModel pestanya in pListaPestanyas)
+            {
+                AD.EntityModel.Models.ProyectoDS.ProyectoPestanyaMenu filaPestanya = GestionProyectos.DataWrapperProyectos.ListaProyectoPestanyaMenu.FirstOrDefault(pest => pest.PestanyaID.Equals(pestanya.Key));
+                if (filaPestanya != null && !pestanya.Deleted && pestanya.Modified)
+                {
+                    DateTime fechaCuandoEntraAdministracion = DateTimeRemoveMilliseconds(pestanya.FechaModificacion);
+                    DateTime fechaCuandoGuarda = DateTimeRemoveMilliseconds(filaPestanya.FechaModificacion);
+
+					if (!fechaCuandoEntraAdministracion.Equals(DateTime.MinValue) && fechaCuandoEntraAdministracion < fechaCuandoGuarda)
+                    {
+						error = $"ERROR CONCURRENCIA|||La página {pestanya.Key} ha sido modificada antes por otro usuario. Debes recargar la página y volver a editarla.";
+                    }
+                }
+            }
+
+            return error;
         }
 
         private string ComprobarErrorNombresVacios(List<TabModel> pListaPestanyas)
@@ -1788,7 +2051,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
                         }
                         if (listaRutasPorIdiomas[idioma].Contains(rutaActual))
                         {
-                            return "RUTA REPETIDA|||" + pestanya.Key.ToString();
+                            return $"RUTA REPETIDA|||{pestanya.Key}";
                         }
                         else
                         {
@@ -1807,15 +2070,15 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
                     {
                         url = BaseURL;
                     }
-                    string urlReplace = url + "/";
+                    string urlReplace = $"{url}/";
 
                     if (pestanya.Url.StartsWith(urlReplace))
                     {
                         pestanya.Url = pestanya.Url.Substring(urlReplace.Length);
                     }
-                    if (pestanya.Url.Contains("|||" + urlReplace))
+                    if (pestanya.Url.Contains($"|||{urlReplace}"))
                     {
-                        pestanya.Url = pestanya.Url.Replace("|||" + urlReplace, "|||");
+                        pestanya.Url = pestanya.Url.Replace($"|||{urlReplace}", "|||");
                     }
                 }
             }
@@ -1843,7 +2106,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
                     }
                     else
                     {
-                        return "NOMBRECORTO REPETIDO|||" + pestanya.Key.ToString();
+                        return $"NOMBRECORTO REPETIDO|||{pestanya.Key}";
                     }
                 }
             }
@@ -1909,7 +2172,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
             foreach (string idioma in listaIdiomas)
             {
                 UtilIdiomas utilIdiomasAux = new UtilIdiomas(idioma, mLoggingService, mEntityContext, mConfigService);
-                textoMultiIdioma += utilIdiomasAux.GetText(pPage, pText) + "@" + idioma + "|||";
+                textoMultiIdioma += $"{utilIdiomasAux.GetText(pPage, pText)}@{idioma}|||";
             }
 
             return textoMultiIdioma.TrimEnd('|');

@@ -75,8 +75,8 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
             }
             else
             {
-                vistaVirtualCL = new VistaVirtualCL(pFicheroConfiguracion + "@@@acid", pFicheroConfiguracion + "@@@acid", mEntityContext, mLoggingService, mGnossCache, mRedisCacheWrapper, mConfigService, mServicesUtilVirtuosoAndReplication);
-                proyCL = new ProyectoCL(pFicheroConfiguracion + "@@@acid", pFicheroConfiguracion + "@@@acid", mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mVirtuosoAD, mServicesUtilVirtuosoAndReplication);
+                vistaVirtualCL = new VistaVirtualCL(pFicheroConfiguracion + "@@@acid", "", mEntityContext, mLoggingService, mGnossCache, mRedisCacheWrapper, mConfigService, mServicesUtilVirtuosoAndReplication);
+                proyCL = new ProyectoCL(pFicheroConfiguracion + "@@@acid", "", mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mVirtuosoAD, mServicesUtilVirtuosoAndReplication);
 
                 if (!string.IsNullOrEmpty(pUrlIntragnoss))
                 {
@@ -89,6 +89,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
             {
                 vistaVirtualCL.InvalidarVistasVirtualesEcosistema();
                 proyCL.InvalidarTodasComunidadesMVC();
+                //mGnossCache.VersionarCacheLocal(ProyectoAD.MetaProyecto);
 
                 ActualizarCache(PersonalizacionEcosistemaID, pVistaActualizada);
             }
@@ -99,6 +100,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
                 vistaVirtualCL.InvalidarVistasVirtuales(ProyectoSeleccionado.Clave);
                 proyCL.InvalidarComunidadMVC(ProyectoSeleccionado.Clave);
                 proyCL.InvalidarComunidadMVC(ProyectoAD.MetaProyecto);
+                //mGnossCache.VersionarCacheLocal(ProyectoSeleccionado.Clave);
 
                 ActualizarCache(ProyectoSeleccionado.PersonalizacionID, pVistaActualizada);
             }

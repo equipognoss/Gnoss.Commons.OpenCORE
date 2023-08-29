@@ -1,5 +1,5 @@
-﻿using Es.Riam.Gnoss.Util.Configuracion;
 using Es.Riam.Gnoss.FileManager;
+using Es.Riam.Gnoss.Util.Configuracion;
 using Es.Riam.Gnoss.Util.General;
 using Es.Riam.Gnoss.Util.Seguridad;
 using Es.Riam.Gnoss.UtilServiciosWeb;
@@ -48,8 +48,6 @@ namespace Es.Riam.Gnoss.Web.Controles.ServicioImagenesWrapper
                 return false;
             }
         }
-
-        
 
         public bool AgregarFichero(byte[] pFichero, string pNombre, string pExtension, string pRuta)
         {
@@ -544,12 +542,12 @@ namespace Es.Riam.Gnoss.Web.Controles.ServicioImagenesWrapper
 
             try
             {
-
+                mLoggingService.AgregarEntrada($"INICIO peticion servicio interno a la accion {pAccion}");
                 WebResponse response = webRequest.GetResponse();
                 StreamReader sr = new StreamReader(response.GetResponseStream());
                 string respuesta = sr.ReadToEnd();
                 sr.Close();
-
+                mLoggingService.AgregarEntrada($"FIN peticion servicio interno a la accion {pAccion}");
                 return respuesta;
             }
             catch (WebException ex)

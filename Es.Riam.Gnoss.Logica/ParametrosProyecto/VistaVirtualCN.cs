@@ -100,6 +100,12 @@ namespace Es.Riam.Gnoss.Logica.ParametrosProyecto
         {
             return this.VistaVirtualAD.ObtenerPersonalicacionIdDadoProyectoID(pProyectoID);
         }
+
+        public Guid ObtenerPersonalizacionDominio(string pDominio)
+        {
+            return this.VistaVirtualAD.ObtenerPersonalizacionDominio(pDominio);
+        }
+
         /// <summary>
         /// Obtiene las tablas de VistaVirtual de una personaalizacion
         /// </summary>
@@ -120,16 +126,36 @@ namespace Es.Riam.Gnoss.Logica.ParametrosProyecto
             return this.VistaVirtualAD.ObtenerVistasVirtualPorPersonalizacionID(pPersonalizacionID);
         }
 
-        /// <summary>
-        /// Inserta o actualiza el html para una vista de un proyecto
-        /// </summary>
-        /// <param name="pProyectoID">Identificador del proyecto a actualizar su vista</param>
-        /// <param name="pOrganizacionID">Identificador de la organización del proyecto</param>
-        /// <param name="pPersonalizacionID">Identificador de la personalización del proyecto (NULL si aún no tiene personalización)</param>
-        /// <param name="pVista">Vista que se va a personalizar</param>
-        /// <param name="pHtml">HTML de la vista personalizada</param>
-        /// <param name="pEsVistaRdfType">Verdad si la vista es de un formulario semántico, falso si es una vista común</param>
-        public void GuardarHtmlParaVistaDeEcosistema(Guid pPersonalizacionID, string pVista, string pHtml, bool pEsVistaRdfType)
+        public bool ComprobarPersonalizacionCompartidaEnDominio(string pDominio, Guid pProyectoID)
+        {
+            return this.VistaVirtualAD.ComprobarPersonalizacionCompartidaEnDominio(pDominio, pProyectoID);
+        }
+
+        public void CompartirPersonalizacionEnDominio(string pDominio, Guid pProyectoID)
+        {
+            this.VistaVirtualAD.CompartirPersonalizacionEnDominio(pDominio, pProyectoID);
+        }
+
+        public List<string> ObtenerDominiosEstaCompartidaPersonalizacion(Guid pProyecto)
+        {
+            return this.VistaVirtualAD.ObtenerDominiosEstaCompartidaPersonalizacion(pProyecto);
+		}
+
+        public void DejarDeCompartirPersonalizacionEnDominio(string pDominio, Guid pProyecto)
+        {
+            this.VistaVirtualAD.DejarDeCompartirPersonalizacionEnDominio(pDominio, pProyecto);
+        }
+
+		/// <summary>
+		/// Inserta o actualiza el html para una vista de un proyecto
+		/// </summary>
+		/// <param name="pProyectoID">Identificador del proyecto a actualizar su vista</param>
+		/// <param name="pOrganizacionID">Identificador de la organización del proyecto</param>
+		/// <param name="pPersonalizacionID">Identificador de la personalización del proyecto (NULL si aún no tiene personalización)</param>
+		/// <param name="pVista">Vista que se va a personalizar</param>
+		/// <param name="pHtml">HTML de la vista personalizada</param>
+		/// <param name="pEsVistaRdfType">Verdad si la vista es de un formulario semántico, falso si es una vista común</param>
+		public void GuardarHtmlParaVistaDeEcosistema(Guid pPersonalizacionID, string pVista, string pHtml, bool pEsVistaRdfType)
         {
             try
             {

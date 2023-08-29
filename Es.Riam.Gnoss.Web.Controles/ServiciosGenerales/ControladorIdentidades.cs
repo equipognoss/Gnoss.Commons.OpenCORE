@@ -540,6 +540,7 @@ namespace Es.Riam.Gnoss.Web.Controles.ServiciosGenerales
 
             //Cuando un usuario se registra en una comunidad se actualiza automaticamente el nº de miembros en la BD, pero el DS del gestor (el que tenemos en memoria) esta desactualizado. Por ello hacemos el siguiente Merge de abajo para refrescar las estadisticas en memoria
             ProyectoCN proyectoCN = new ProyectoCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+
             DataWrapperProyecto dataWrapperProyecto = proyectoCN.ObtenerProyectoPorID(pProyectoSeleccionado.Clave);
             pProyectoSeleccionado.GestorProyectos.DataWrapperProyectos.Merge(dataWrapperProyecto);
 
@@ -551,6 +552,7 @@ namespace Es.Riam.Gnoss.Web.Controles.ServiciosGenerales
 
             IdentidadCL identidadCL = new IdentidadCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mServicesUtilVirtuosoAndReplication);
             identidadCL.EliminarPerfilMVC(pIdentidad.PerfilID);
+            identidadCL.EliminarCacheGestorIdentidad(pIdentidad.PersonaID.Value, pIdentidad.PerfilID);
             identidadCL.Dispose();
 
 
@@ -1806,13 +1808,13 @@ namespace Es.Riam.Gnoss.Web.Controles.ServiciosGenerales
         /// <param name="pMes">Mes de Nacimiento</param>
         /// <param name="pDia">Dia de Nacimiento</param>
         /// <param name="pInvitacionAEventoComunidad">Invitacion a un evento de comunidad</param>
-        /// <param name="pEnviarMensajeBienvenida">Enviar mensaje de bienvenida</param>
+        /// <param name="pEnviarMensajeBienvenida">Enviar mensaje de bienvenida</param>filaPersona
         /// <param name="pBaseURL">BaseURL</param>
         /// <param name="pInvitacionAComunidad">Invitacion a una comunidad</param>
         /// <param name="pUrlIntraGnoss">URLIntraGnoss</param>
         /// <param name="pEsInvitacionAOrganizacion"></param>
         /// <param name="pInvitacionAOrganizacion"></param>        
-        public void AceptarUsuario(Identidad pIdentidadActual, Guid pIdSolicitud, DataWrapperSolicitud pSolicitudDW, DataWrapperUsuario pDataWrapperUsuario, ParametroGeneral pParametroGeneralRow, Elementos.ServiciosGenerales.Proyecto pProyectoSeleccionado, int? pAnio, int? pMes, int? pDia, ProyectoEvento pInvitacionAEventoComunidad, Dictionary<string, string> pParametroProyecto, string pBaseURL, PeticionInvComunidad pInvitacionAComunidad, string pUrlIntraGnoss, string pUrlIntragnossServicios, PeticionInvOrganizacion pInvitacionAOrganizacion, TipoRedSocialLogin? pTipoRedSocial, string pIDEnRedSocial, bool? pEsRegistroPreActivado)
+        public void AceptarUsuario(Identidad pIdentidadActual, Guid pIdSolicitud, DataWrapperSolicitud pSolicitudDW, DataWrapperUsuario pDataWrapperUsuario, ParametroGeneral pParametroGeneralRow, Elementos.ServiciosGenerales.Proyecto pProyectoSeleccionado, int? pAnio, int? pMes, int? pDia, ProyectoEvento pInvitacionAEventoComunidad, Dictionary<string, string> pParametroProyecto, string pBaseURL, PeticionInvComunidad pInvitacionAComunidad, string pUrlIntraGnoss, string pUrlIntragnossServicios, PeticionInvOrganizacion pInvitacionAOrganizacion, TipoRedSocialLogin? pTipoRedSocial, string pIDEnRedSocial, bool? pEsRegistroPreActivado, bool pRegistroDesdeAdmin = false)
         {
             SolicitudNuevoUsuario filaSU = pSolicitudDW.ListaSolicitudNuevoUsuario.Where(item => item.SolicitudID.Equals(pIdSolicitud)).FirstOrDefault();
             UtilIdiomas utilIdiomas = new UtilIdiomas(filaSU.Idioma, mLoggingService, mEntityContext, mConfigService);
@@ -2005,7 +2007,7 @@ namespace Es.Riam.Gnoss.Web.Controles.ServiciosGenerales
                 Elementos.ServiciosGenerales.Proyecto proyecto = new GestionProyecto(proyectoCN.ObtenerProyectoPorID(filaSU.Solicitud.ProyectoID), mLoggingService, mEntityContext).ListaProyectos[filaSU.Solicitud.ProyectoID];
                 bool registroAbierto = pParametroProyecto.ContainsKey(ParametroAD.RegistroAbierto) && pParametroProyecto[ParametroAD.RegistroAbierto].Equals("1");
 
-                if (proyecto.TipoAcceso == TipoAcceso.Publico || pInvitacionAComunidad != null || registroAbierto || (pEsRegistroPreActivado.HasValue && pEsRegistroPreActivado.Value))
+                if (proyecto.TipoAcceso == TipoAcceso.Publico || pInvitacionAComunidad != null || registroAbierto || (pEsRegistroPreActivado.HasValue && pEsRegistroPreActivado.Value) || pRegistroDesdeAdmin)
                 {
                     bool registroProyecto = true;
                     GestionOrganizaciones gestOrg = null;
@@ -2108,27 +2110,8 @@ namespace Es.Riam.Gnoss.Web.Controles.ServiciosGenerales
             gestorUsuarios.GestorDocumental = new GestorDocumental(new DataWrapperDocumentacion(), mLoggingService, mEntityContext);
             gestorUsuarios.CompletarUsuarioNuevo(filaUsuario, utilIdiomas.GetText("TESAURO", "RECURSOSPUBLICOS"), utilIdiomas.GetText("TESAURO", "RECURSOSPRIVADOS"));
 
-            string asunto = "", mensaje = "";
-
-            asunto = utilIdiomas.GetText("ACEPTARINVITACION", "ASUNTOMENSAJEBIENVENIDA");
-            mensaje = utilIdiomas.GetText("ACEPTARINVITACION", "CUERPOMENSAJEBIENVENIDA");
-
-            GestionCorreo gestorCorreoInterno = new GestionCorreo(new CorreoDS(), gestorPersonas, gestorIdentidades, null, mLoggingService, mEntityContext, mConfigService, mServicesUtilVirtuosoAndReplication);
-            Guid idCorreo = Guid.Empty;
-            List<Guid> listaDestinatarios = new List<Guid>();
-
-            TipoEnvioCorreoBienvenida tipoEnvioCorreo = TipoEnvioCorreoBienvenida.CorreoInternoYExterno;
             if (PerfilPersonalDisponible)
-            {
-                listaDestinatarios.Add(filaIdentidad.IdentidadID);
-                tipoEnvioCorreo = gestorCorreoInterno.ObtenerTipoEnvioCorreoBienvenida(EsEcosistemaSinMetaProyecto, pParametroProyecto);
-                gestorCorreoInterno.EsEcosistemaProyectoConMensajesPersonalizadoBienvenida = gestorCorreoInterno.EsEcosistemaMetaProyectoYTieneMensajePersonalizadoBienvenida(EsEcosistemaSinMetaProyecto, pParametroProyecto);
-
-                if (!tipoEnvioCorreo.Equals(TipoEnvioCorreoBienvenida.Ninguno))
-                {
-                    idCorreo = gestorCorreoInterno.AgregarCorreo(Guid.Empty, listaDestinatarios, asunto, mensaje, pBaseURL, tipoEnvioCorreo, pProyectoSeleccionado, TiposNotificacion.AvisoCorreoBienvenidaProyecto, UtilIdiomas.LanguageCode);
-                }
-
+            {              
                 GuardarDatosExtraSolicitud(dataWrapperIdentidad, filaIdentidad.PerfilID, pIdSolicitud, pSolicitudDW);
             }
 
@@ -2143,12 +2126,6 @@ namespace Es.Riam.Gnoss.Web.Controles.ServiciosGenerales
                 //pDataWrapperUsuario.UsuarioVinculadoLoginRedesSociales.AddUsuarioVinculadoLoginRedesSocialesRow(filaUsuarioVinculadoLoginRedesSociales);
             }
 
-            GestionNotificaciones gestionNotificaciones = null;
-            if (gestorCorreoInterno.GestorNotificaciones != null)
-            {
-                gestionNotificaciones = gestorCorreoInterno.GestorNotificaciones;
-            }
-
             DataWrapperSuscripcion suscripcionDW = null;
             if (gestorIdentidades.GestorSuscripciones != null && gestorIdentidades.GestorSuscripciones.SuscripcionDW.ListaSuscripcion.Count > 0)
             {
@@ -2158,13 +2135,7 @@ namespace Es.Riam.Gnoss.Web.Controles.ServiciosGenerales
 
             mEntityContext.SaveChanges();
 
-            NotificarEdicionPerfilEnProyectos(TipoAccionExterna.Registro, persona.Clave, "", "");
-
-            if (idCorreo != Guid.Empty && (tipoEnvioCorreo.Equals(TipoEnvioCorreoBienvenida.CorreoInterno) || tipoEnvioCorreo.Equals(TipoEnvioCorreoBienvenida.CorreoInternoYExterno)))
-            {
-                //NO agregar al base si no es un mensaje Interno.
-                AgregarMensajeABase(idCorreo, Guid.Empty, listaDestinatarios, PrioridadBase.Alta);
-            }
+            NotificarEdicionPerfilEnProyectos(TipoAccionExterna.Registro, persona.Clave, "", "", filaIdentidad.ProyectoID);
 
             if (PerfilPersonalDisponible)
             {
@@ -2281,21 +2252,22 @@ namespace Es.Riam.Gnoss.Web.Controles.ServiciosGenerales
             }
 
             //Iniciamos sesión automáticamente
-            if (!string.IsNullOrEmpty(filaPersona.Email) || ComprobarPersonaEsMayorAnios(filaPersona.FechaNacimiento.Value, 14))
-            {
-                GnossIdentity identity = new UtilUsuario(mLoggingService, mEntityContext, mConfigService, mRedisCacheWrapper).ValidarUsuario(filaUsuario.Login, filaSU.Solicitud.OrganizacionID, filaSU.Solicitud.ProyectoID);
-                if (identity != null)
+            if (!pRegistroDesdeAdmin) { 
+                if (!string.IsNullOrEmpty(filaPersona.Email) || ComprobarPersonaEsMayorAnios(filaPersona.FechaNacimiento.Value, 14))
                 {
-                    mHttpContextAccessor.HttpContext.Session.Clear();
-                    //TODO Javier Juan migrar cuando lleguemos a la web
-                    mHttpContextAccessor.HttpContext.Session.Set("Usuario", identity);
-                    mHttpContextAccessor.HttpContext.Session.Set("MantenerConectado", true);
-                    mHttpContextAccessor.HttpContext.Session.Set("CrearCookieEnServicioLogin", true);
-                    mHttpContextAccessor.HttpContext.Session.Remove("EnvioCookie");
-                    AgregarObjetoAPeticionActual("GnossIdentity", identity);
+                    GnossIdentity identity = new UtilUsuario(mLoggingService, mEntityContext, mConfigService, mRedisCacheWrapper).ValidarUsuario(filaUsuario.Login, filaSU.Solicitud.OrganizacionID, filaSU.Solicitud.ProyectoID);
+                    if (identity != null)
+                    {
+                        mHttpContextAccessor.HttpContext.Session.Clear();
+                        //TODO Javier Juan migrar cuando lleguemos a la web
+                        mHttpContextAccessor.HttpContext.Session.Set("Usuario", identity);
+                        mHttpContextAccessor.HttpContext.Session.Set("MantenerConectado", true);
+                        mHttpContextAccessor.HttpContext.Session.Set("CrearCookieEnServicioLogin", true);
+                        mHttpContextAccessor.HttpContext.Session.Remove("EnvioCookie");
+                        AgregarObjetoAPeticionActual("GnossIdentity", identity);
+                    }
                 }
             }
-
             AceptarExtrasInvitacionAComunidad(persona, pInvitacionAComunidad, pProyectoSeleccionado, pUrlIntraGnoss, pInvitacionAEventoComunidad, UtilIdiomas.LanguageCode);
         }
 
@@ -2377,22 +2349,7 @@ namespace Es.Riam.Gnoss.Web.Controles.ServiciosGenerales
                 datoExtraEcosistemaVirtuosoPerfil.Opcion = deevs.Opcion;
                 pDataWrapperIdentidad.ListaDatoExtraEcosistemaVirtuosoPerfil.Add(datoExtraEcosistemaVirtuosoPerfil);
             }
-
         }
-
-        private void AgregarMensajeABase(Guid pCorreoID, Guid pIdentidadRemitenteID, List<Guid> pListaDestinatarios, PrioridadBase pPrioridadBase)
-        {
-            ProyectoCL proyCL = new ProyectoCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mVirtuosoAD, mServicesUtilVirtuosoAndReplication);
-            int id = proyCL.ObtenerTablaBaseProyectoIDProyectoPorID(ProyectoAD.MetaProyecto);
-            proyCL.Dispose();
-
-            foreach (Guid destinatario in pListaDestinatarios)
-            {
-                //Agregamos peticiones a la cola
-                new ControladorCorreo(mLoggingService, mEntityContext, mConfigService, mRedisCacheWrapper, mGnossCache, mEntityContextBASE, mVirtuosoAD, mHttpContextAccessor, mServicesUtilVirtuosoAndReplication).AgregarElementoARabbitMQ(id, pCorreoID, destinatario.ToString(), pIdentidadRemitenteID, pPrioridadBase);
-            }
-        }
-
 
         /// <summary>
         /// Guarda la foto del perfil
@@ -2404,8 +2361,8 @@ namespace Es.Riam.Gnoss.Web.Controles.ServiciosGenerales
             try
             {
                 ServicioImagenes servicioImagenes = new ServicioImagenes(mLoggingService, mConfigService);
-                string url = pUrlIntragnossServicios.Replace("https://", "http://");
-                servicioImagenes.Url = url;
+                //string url = pUrlIntragnossServicios.Replace("https://", "http://");
+                servicioImagenes.Url = pUrlIntragnossServicios;
                 byte[] resultado = servicioImagenes.ObtenerImagen(UtilArchivos.ContentImagenesSolicitudes + "/" + pSolicitudID.ToString(), ".png");
 
                 if (resultado != null)
@@ -2905,7 +2862,7 @@ namespace Es.Riam.Gnoss.Web.Controles.ServiciosGenerales
         }
 
 
-        public void NotificarEdicionPerfilEnProyectos(TipoAccionExterna pTipoAccionExterna, Guid pPersonaID, string pPass, string pDatoAuxiliar, Guid pProyectoID = new Guid())
+        public void NotificarEdicionPerfilEnProyectos(TipoAccionExterna pTipoAccionExterna, Guid pPersonaID, string pPass, string pDatoAuxiliar, Guid pProyectoID)
         {
             PersonaCN personaCN = new PersonaCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
             DataWrapperPersona dataWrapperPersona = personaCN.ObtenerPersonaPorID(pPersonaID);

@@ -18,7 +18,7 @@ namespace Es.Riam.Open
         {
         }
 
-        public override void CrearToAcidData(bool esPrimaria, ElementoOntologia pEntidad, Ontologia ontologia, StringBuilder Clase, string nombrePropDescripcion, string nombrePropTitulo, string nombrePropTituloEntero, Dictionary<string, bool> propListiedadesMultidioma, List<ObjetoPropiedad> listaObjetosPropiedad)
+        public override void CrearToAcidData(bool esPrimaria, ElementoOntologia pEntidad, Ontologia ontologia, StringBuilder Clase, string nombrePropDescripcion, string nombrePropTitulo, string nombrePropTituloEntero, Dictionary<string, bool> propListiedadesMultidioma, List<ObjetoPropiedad> listaObjetosPropiedad, Dictionary<Propiedad, bool> dicPropiedadMultiidiomaFalse)
         {
             throw new NotImplementedException();
         }
@@ -28,7 +28,7 @@ namespace Es.Riam.Open
             throw new NotImplementedException();
         }
 
-        public override void CrearToSearchGraphTriples(bool esPrimaria, ElementoOntologia pEntidad, string pRdfType, List<string> pListaPropiedadesSearch, List<string> pListaPadrePropiedadesAnidadas, StringBuilder Clase, Ontologia ontologia, string nombrePropDescripcion, string nombrePropTitulo, string nombrePropTituloEntero, Dictionary<string, bool> propListiedadesMultidioma, List<ObjetoPropiedad> listaObjetosPropiedad, List<Propiedad> listentidadesAux, Dictionary<string, string> dicPref)
+        public override void CrearToSearchGraphTriples(bool esPrimaria, ElementoOntologia pEntidad, List<string> pListaPropiedadesSearch, List<string> pListaPadrePropiedadesAnidadas, StringBuilder Clase, Ontologia ontologia, string nombrePropDescripcion, string nombrePropTitulo, string nombrePropTituloEntero, Dictionary<string, bool> propListiedadesMultidioma, List<ObjetoPropiedad> listaObjetosPropiedad, List<Propiedad> listentidadesAux, Dictionary<string, string> dicPref, Dictionary<Propiedad, bool> dicPropMultiidiomaFalse)
         {
             throw new NotImplementedException();
         }

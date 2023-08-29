@@ -769,6 +769,30 @@ namespace Es.Riam.Gnoss.Util.General
         #endregion
     }
 
+    /// <summary>
+    /// Excepción de eliminar un componente cms que esta vinculado a una página
+    /// </summary>
+    [Serializable]
+    public class ErrorComponenteVinculadoPagina : SystemException
+    {
+        #region Constructores
+
+        /// <summary>
+        /// Constructor sin parámetros
+        /// </summary>
+        public ErrorComponenteVinculadoPagina() : base() { }
+
+        /// <summary>
+        /// Constructor a partir de un texto pasado por parámetro
+        /// </summary>
+        /// <param name="pTexto">Texto</param>
+        public ErrorComponenteVinculadoPagina(string pTexto) : base(pTexto)
+        {
+        }
+
+        #endregion
+    }
+
     [Serializable]
     public class ExcepcionGeneral : SystemException
     {

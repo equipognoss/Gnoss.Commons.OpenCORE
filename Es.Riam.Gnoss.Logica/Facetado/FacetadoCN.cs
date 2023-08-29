@@ -14,6 +14,8 @@ using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using Es.Riam.Gnoss.AD.EntityModel.Models.ProyectoDS;
+using System.Text;
+using static Es.Riam.Gnoss.Web.MVC.Models.Tesauro.TesauroModels;
 
 namespace Es.Riam.Gnoss.Logica.Facetado
 {
@@ -470,34 +472,34 @@ namespace Es.Riam.Gnoss.Logica.Facetado
             FacetadoAD.ObtenerAutocompletar(proyectoID, pFacetadoDS, pListaFiltros, pListaFiltrosExtra, estaMyGnoss, EsMienbroComunidad, EsInvitado, Identidad, pInicio, pLimite, pSemanticos, pFiltrosContexto);
         }
 
-        public void ObtenerFaceta(string proyectoID, FacetadoDS pFacetadoDS, string pNombreFaceta, Dictionary<string, List<string>> pListaFiltros, List<string> pListaFiltrosExtra, bool estaMyGnoss, bool EsMienbroComunidad, bool EsInvitado, string Identidad, TipoDisenio pTipoDisenio, int pInicio, int pLimite, List<string> pSemanticos, bool pExcluyente, bool pInmutable, bool pEsMovil = false, Guid pPestanyaID = new Guid())
+        public void ObtenerFaceta(string proyectoID, FacetadoDS pFacetadoDS, string pNombreFaceta, Dictionary<string, List<string>> pListaFiltros, List<string> pListaFiltrosExtra, bool estaMyGnoss, bool EsMienbroComunidad, bool EsInvitado, string Identidad, TipoDisenio pTipoDisenio, int pInicio, int pLimite, List<string> pSemanticos, bool pExcluyente, bool pInmutable, bool pEsMovil = false, Guid pPestanyaID = new Guid(), List<Guid> pListaExcluidos = null)
         {
-            FacetadoAD.ObtenerFaceta(proyectoID, pFacetadoDS, pNombreFaceta, pListaFiltros, pListaFiltrosExtra, estaMyGnoss, EsMienbroComunidad, EsInvitado, Identidad, pTipoDisenio, pInicio, pLimite, pSemanticos, "", pExcluyente, pInmutable, pEsMovil, pPestanyaID);
+            FacetadoAD.ObtenerFaceta(proyectoID, pFacetadoDS, pNombreFaceta, pListaFiltros, pListaFiltrosExtra, estaMyGnoss, EsMienbroComunidad, EsInvitado, Identidad, pTipoDisenio, pInicio, pLimite, pSemanticos, "", pExcluyente, pInmutable, pEsMovil, pListaExcluidos, pPestanyaID);
         }
 
-        public void ObtenerFaceta(string proyectoID, FacetadoDS pFacetadoDS, string pNombreFaceta, Dictionary<string, List<string>> pListaFiltros, List<string> pListaFiltrosExtra, bool estaMyGnoss, bool EsMienbroComunidad, bool EsInvitado, string Identidad, TipoDisenio pTipoDisenio, int pInicio, int pLimite, List<string> pSemanticos, string pFiltroContextoWhere, bool pExcluyente, bool pInmutable, bool pEsMovil = false)
+        public void ObtenerFaceta(string proyectoID, FacetadoDS pFacetadoDS, string pNombreFaceta, Dictionary<string, List<string>> pListaFiltros, List<string> pListaFiltrosExtra, bool estaMyGnoss, bool EsMienbroComunidad, bool EsInvitado, string Identidad, TipoDisenio pTipoDisenio, int pInicio, int pLimite, List<string> pSemanticos, string pFiltroContextoWhere, bool pExcluyente, bool pInmutable, bool pEsMovil = false, List<Guid> pListaExcluidos = null)
         {
-            FacetadoAD.ObtenerFaceta(proyectoID, pFacetadoDS, pNombreFaceta, pListaFiltros, pListaFiltrosExtra, estaMyGnoss, EsMienbroComunidad, EsInvitado, Identidad, pTipoDisenio, pInicio, pLimite, pSemanticos, pFiltroContextoWhere, pExcluyente, pInmutable, pEsMovil);
+            FacetadoAD.ObtenerFaceta(proyectoID, pFacetadoDS, pNombreFaceta, pListaFiltros, pListaFiltrosExtra, estaMyGnoss, EsMienbroComunidad, EsInvitado, Identidad, pTipoDisenio, pInicio, pLimite, pSemanticos, pFiltroContextoWhere, pExcluyente, pInmutable, pEsMovil, pListaExcluidos);
         }
 
-        public void ObtenerFaceta(string proyectoID, FacetadoDS pFacetadoDS, string pNombreFaceta, Dictionary<string, List<string>> pListaFiltros, List<string> pListaFiltrosExtra, bool estaMyGnoss, bool EsMienbroComunidad, bool EsInvitado, string Identidad, TipoDisenio pTipoDisenio, int pInicio, int pLimite, List<string> pSemanticos, string pFiltroContextoWhere, TipoProyecto pTipoProyecto, bool pExcluyente, bool pInmutable = false, bool pEsMovil = false)
+        public void ObtenerFaceta(string proyectoID, FacetadoDS pFacetadoDS, string pNombreFaceta, Dictionary<string, List<string>> pListaFiltros, List<string> pListaFiltrosExtra, bool estaMyGnoss, bool EsMienbroComunidad, bool EsInvitado, string Identidad, TipoDisenio pTipoDisenio, int pInicio, int pLimite, List<string> pSemanticos, string pFiltroContextoWhere, TipoProyecto pTipoProyecto, bool pExcluyente, bool pInmutable = false, bool pEsMovil = false, List<Guid> pListaExcluidos = null)
         {
-            FacetadoAD.ObtenerFaceta(proyectoID, pFacetadoDS, pNombreFaceta, pListaFiltros, pListaFiltrosExtra, estaMyGnoss, EsMienbroComunidad, EsInvitado, Identidad, pTipoDisenio, pInicio, pLimite, pSemanticos, pFiltroContextoWhere, pTipoProyecto, false, null, pExcluyente, pInmutable, pEsMovil);
+            FacetadoAD.ObtenerFaceta(proyectoID, pFacetadoDS, pNombreFaceta, pListaFiltros, pListaFiltrosExtra, estaMyGnoss, EsMienbroComunidad, EsInvitado, Identidad, pTipoDisenio, pInicio, pLimite, pSemanticos, pFiltroContextoWhere, pTipoProyecto, false, null, pExcluyente, pInmutable, pEsMovil, pListaExcluidos);
         }
 
-        public void ObtenerFaceta(string proyectoID, FacetadoDS pFacetadoDS, string pClaveFaceta, Dictionary<string, List<string>> pListaFiltros, List<string> pListaFiltrosExtra, bool estaMyGnoss, bool EsMienbroComunidad, bool EsInvitado, string Identidad, TipoDisenio pTipoDisenio, int pInicio, int pLimite, List<string> pSemanticos, string pFiltroContextoWhere, TipoProyecto pTipoProyecto, bool pEsRango, List<int> pListaRangos, bool pExcluyente, bool pInmutable, bool pEsMovil = false)
+        public void ObtenerFaceta(string proyectoID, FacetadoDS pFacetadoDS, string pClaveFaceta, Dictionary<string, List<string>> pListaFiltros, List<string> pListaFiltrosExtra, bool estaMyGnoss, bool EsMienbroComunidad, bool EsInvitado, string Identidad, TipoDisenio pTipoDisenio, int pInicio, int pLimite, List<string> pSemanticos, string pFiltroContextoWhere, TipoProyecto pTipoProyecto, bool pEsRango, List<int> pListaRangos, bool pExcluyente, bool pInmutable, bool pEsMovil = false, List<Guid> pListaExcluidos = null)
         {
-            FacetadoAD.ObtenerFaceta(proyectoID, pFacetadoDS, pClaveFaceta, pListaFiltros, pListaFiltrosExtra, estaMyGnoss, EsMienbroComunidad, EsInvitado, Identidad, pTipoDisenio, pInicio, pLimite, pSemanticos, pFiltroContextoWhere, pTipoProyecto, pEsRango, pListaRangos, pExcluyente, pInmutable, pEsMovil);
+            FacetadoAD.ObtenerFaceta(proyectoID, pFacetadoDS, pClaveFaceta, pListaFiltros, pListaFiltrosExtra, estaMyGnoss, EsMienbroComunidad, EsInvitado, Identidad, pTipoDisenio, pInicio, pLimite, pSemanticos, pFiltroContextoWhere, pTipoProyecto, pEsRango, pListaRangos, pExcluyente, pInmutable, pEsMovil, pListaExcluidos);
         }
 
-        public void ObtenerFaceta(string proyectoID, FacetadoDS pFacetadoDS, string pClaveFaceta, Dictionary<string, List<string>> pListaFiltros, List<string> pListaFiltrosExtra, bool estaMyGnoss, bool EsMienbroComunidad, bool EsInvitado, string Identidad, TipoDisenio pTipoDisenio, int pInicio, int pLimite, List<string> pSemanticos, string pFiltroContextoWhere, TipoProyecto pTipoProyecto, bool pEsRango, List<int> pListaRangos, bool pExcluida, bool pUsarHilos, bool pExcluirPersonas, bool pInmutable = false, bool pEsMovil = false)
+        public void ObtenerFaceta(string proyectoID, FacetadoDS pFacetadoDS, string pClaveFaceta, Dictionary<string, List<string>> pListaFiltros, List<string> pListaFiltrosExtra, bool estaMyGnoss, bool EsMienbroComunidad, bool EsInvitado, string Identidad, TipoDisenio pTipoDisenio, int pInicio, int pLimite, List<string> pSemanticos, string pFiltroContextoWhere, TipoProyecto pTipoProyecto, bool pEsRango, List<int> pListaRangos, bool pExcluida, bool pUsarHilos, bool pExcluirPersonas, bool pInmutable = false, bool pEsMovil = false, List<Guid> pListaExcluidos = null)
         {
             FacetadoAD.ObtenerFaceta(proyectoID, pFacetadoDS, pClaveFaceta, pListaFiltros, pListaFiltrosExtra, estaMyGnoss, EsMienbroComunidad, EsInvitado, Identidad, pTipoDisenio, pInicio, pLimite, pSemanticos, pFiltroContextoWhere, pTipoProyecto, pEsRango, pListaRangos, pExcluida, pUsarHilos, pExcluirPersonas, pInmutable);
         }
 
-        public void ObtenerFaceta(string proyectoID, FacetadoDS pFacetadoDS, string pClaveFaceta, Dictionary<string, List<string>> pListaFiltros, List<string> pListaFiltrosExtra, bool estaMyGnoss, bool EsMienbroComunidad, bool EsInvitado, string Identidad, TipoDisenio pTipoDisenio, int pInicio, int pLimite, List<string> pSemanticos, string pFiltroContextoWhere, TipoProyecto pTipoProyecto, bool pEsRango, List<int> pListaRangos, bool pExcluida, bool pUsarHilos, bool pExcluirPersonas, bool pPermitirRecursosPrivados, bool pOmitirPalabrasNoRelevantesSearch, int pReciproca, TipoPropiedadFaceta pTipoPropiedadesFaceta, Dictionary<string, Tuple<string, string, string, bool>> pFiltrosSearchPersonalizados, bool pInmutable, bool pEsMovil = false)
+        public void ObtenerFaceta(string proyectoID, FacetadoDS pFacetadoDS, string pClaveFaceta, Dictionary<string, List<string>> pListaFiltros, List<string> pListaFiltrosExtra, bool estaMyGnoss, bool EsMienbroComunidad, bool EsInvitado, string Identidad, TipoDisenio pTipoDisenio, int pInicio, int pLimite, List<string> pSemanticos, string pFiltroContextoWhere, TipoProyecto pTipoProyecto, bool pEsRango, List<int> pListaRangos, bool pExcluida, bool pUsarHilos, bool pExcluirPersonas, bool pPermitirRecursosPrivados, bool pOmitirPalabrasNoRelevantesSearch, int pReciproca, TipoPropiedadFaceta pTipoPropiedadesFaceta, Dictionary<string, Tuple<string, string, string, bool>> pFiltrosSearchPersonalizados, bool pInmutable, bool pEsMovil = false, List<Guid> pListaExcluidos = null)
         {
-            FacetadoAD.ObtenerFaceta(proyectoID, pFacetadoDS, pClaveFaceta, pListaFiltros, pListaFiltrosExtra, estaMyGnoss, EsMienbroComunidad, EsInvitado, Identidad, pTipoDisenio, pInicio, pLimite, pSemanticos, pFiltroContextoWhere, pTipoProyecto, pEsRango, pListaRangos, pExcluida, pUsarHilos, pExcluirPersonas, pPermitirRecursosPrivados, pOmitirPalabrasNoRelevantesSearch, pReciproca, pTipoPropiedadesFaceta, pFiltrosSearchPersonalizados, pInmutable, pEsMovil);
+            FacetadoAD.ObtenerFaceta(proyectoID, pFacetadoDS, pClaveFaceta, pListaFiltros, pListaFiltrosExtra, estaMyGnoss, EsMienbroComunidad, EsInvitado, Identidad, pTipoDisenio, pInicio, pLimite, pSemanticos, pFiltroContextoWhere, pTipoProyecto, pEsRango, pListaRangos, pExcluida, pUsarHilos, pExcluirPersonas, pPermitirRecursosPrivados, pOmitirPalabrasNoRelevantesSearch, pReciproca, pTipoPropiedadesFaceta, pFiltrosSearchPersonalizados, pInmutable, pEsMovil, pListaExcluidos);
         }
 
         /// <summary>
@@ -709,29 +711,29 @@ namespace Es.Riam.Gnoss.Logica.Facetado
             FacetadoAD.ObtenerRecursosRelacionadosNuevo(pProyectoID, pRecursoID, pFacetadoDS, pInicio, pLimite, pTags, pConceptID, pEsCatalogoNoSocial, pPestanyaRecurso);
         }
 
-        public void ObtenerResultadosBusqueda(FacetadoDS pFacetadoDS, bool ascOdes, string pTipoFiltro, Dictionary<string, List<string>> pListaFiltros, List<string> pListaFiltrosExtra, int pInicio, int pLimite, List<string> pSemanticos, Guid pProyectoID, bool pEsUsuarioInvitado, bool pEsIdentidadInvitada, Guid pIdentidadID, bool pEsMovil = false)
+        public void ObtenerResultadosBusqueda(FacetadoDS pFacetadoDS, bool ascOdes, string pTipoFiltro, Dictionary<string, List<string>> pListaFiltros, List<string> pListaFiltrosExtra, int pInicio, int pLimite, List<string> pSemanticos, Guid pProyectoID, bool pEsUsuarioInvitado, bool pEsIdentidadInvitada, Guid pIdentidadID, bool pEsMovil = false, List<Guid> pListaExcluidos = null, bool pUsarAfinidad = false)
         {
-            ObtenerResultadosBusqueda(ascOdes, pFacetadoDS, pTipoFiltro, pListaFiltros, pListaFiltrosExtra, pProyectoID.Equals(ProyectoAD.MyGnoss), !pEsIdentidadInvitada, pEsUsuarioInvitado, pIdentidadID.ToString().ToUpper(), pInicio, pLimite, pSemanticos, "", "", "", 0, pEsMovil);
+            ObtenerResultadosBusqueda(ascOdes, pFacetadoDS, pTipoFiltro, pListaFiltros, pListaFiltrosExtra, pProyectoID.Equals(ProyectoAD.MyGnoss), !pEsIdentidadInvitada, pEsUsuarioInvitado, pIdentidadID.ToString().ToUpper(), pInicio, pLimite, pSemanticos, "", "", "", 0, pEsMovil, pListaExcluidos, pUsarAfinidad);
         }
 
-        public void ObtenerResultadosBusqueda(FacetadoDS pFacetadoDS, bool ascOdes, string pTipoFiltro, Dictionary<string, List<string>> pListaFiltros, List<string> pListaFiltrosExtra, int pInicio, int pLimite, List<string> pSemanticos, TipoProyecto pTipoProyecto, Guid pProyectoID, bool pEsUsuarioInvitado, bool pEsIdentidadInvitada, Guid pIdentidadID, bool pEsMovil = false)
+        public void ObtenerResultadosBusqueda(FacetadoDS pFacetadoDS, bool ascOdes, string pTipoFiltro, Dictionary<string, List<string>> pListaFiltros, List<string> pListaFiltrosExtra, int pInicio, int pLimite, List<string> pSemanticos, TipoProyecto pTipoProyecto, Guid pProyectoID, bool pEsUsuarioInvitado, bool pEsIdentidadInvitada, Guid pIdentidadID, bool pEsMovil = false, List<Guid> pListaExcluidos = null, bool pUsarAfinidad = false)
         {
-            ObtenerResultadosBusqueda(ascOdes, pFacetadoDS, pTipoFiltro, pListaFiltros, pListaFiltrosExtra, pProyectoID.Equals(ProyectoAD.MyGnoss), !pEsIdentidadInvitada, pEsUsuarioInvitado, pIdentidadID.ToString().ToUpper(), pInicio, pLimite, pSemanticos, "", "", "", 0, pTipoProyecto, "", "", pEsMovil);
+            ObtenerResultadosBusqueda(ascOdes, pFacetadoDS, pTipoFiltro, pListaFiltros, pListaFiltrosExtra, pProyectoID.Equals(ProyectoAD.MyGnoss), !pEsIdentidadInvitada, pEsUsuarioInvitado, pIdentidadID.ToString().ToUpper(), pInicio, pLimite, pSemanticos, "", "", "", 0, pTipoProyecto, "", "", pEsMovil, pListaExcluidos, pUsarAfinidad);
         }
 
-        public void ObtenerResultadosBusqueda(bool pDescendente, FacetadoDS pFacetadoDS, string pTipoFiltro, Dictionary<string, List<string>> pListaFiltros, List<string> pListaFiltrosExtra, bool pEstaEnMyGnoss, bool pEsMiembroComunidad, bool pEsInvitado, string pIdentidadID, int pInicio, int pLimite, List<string> pSemanticos, string pFiltroContextoSelect, string pFiltroContextoWhere, string pFiltroContextoOrderBy, int pFiltroContextoPesoMinimo, bool pEsMovil = false)
+        public void ObtenerResultadosBusqueda(bool pDescendente, FacetadoDS pFacetadoDS, string pTipoFiltro, Dictionary<string, List<string>> pListaFiltros, List<string> pListaFiltrosExtra, bool pEstaEnMyGnoss, bool pEsMiembroComunidad, bool pEsInvitado, string pIdentidadID, int pInicio, int pLimite, List<string> pSemanticos, string pFiltroContextoSelect, string pFiltroContextoWhere, string pFiltroContextoOrderBy, int pFiltroContextoPesoMinimo, bool pEsMovil = false, List<Guid> pListaExcluidos = null, bool pUsarAfinidad = false)
         {
-            FacetadoAD.ObtenerResultadosBusqueda(mIdGrafo, pDescendente, pFacetadoDS, pTipoFiltro, pListaFiltros, pListaFiltrosExtra, pEstaEnMyGnoss, pEsMiembroComunidad, pEsInvitado, pIdentidadID.ToUpper(), pInicio, pLimite, pSemanticos, pFiltroContextoSelect, pFiltroContextoWhere, pFiltroContextoOrderBy, pFiltroContextoPesoMinimo, pEsMovil);
+            FacetadoAD.ObtenerResultadosBusqueda(mIdGrafo, pDescendente, pFacetadoDS, pTipoFiltro, pListaFiltros, pListaFiltrosExtra, pEstaEnMyGnoss, pEsMiembroComunidad, pEsInvitado, pIdentidadID.ToUpper(), pInicio, pLimite, pSemanticos, pFiltroContextoSelect, pFiltroContextoWhere, pFiltroContextoOrderBy, pFiltroContextoPesoMinimo, pEsMovil, pListaExcluidos, pUsarAfinidad);
         }
 
-        public void ObtenerResultadosBusqueda(bool pDescendente, FacetadoDS pFacetadoDS, string pTipoFiltro, Dictionary<string, List<string>> pListaFiltros, List<string> pListaFiltrosExtra, bool pEstaEnMyGnoss, bool pEsMiembroComunidad, bool pEsInvitado, string pIdentidadID, int pInicio, int pLimite, List<string> pSemanticos, string pFiltroContextoSelect, string pFiltroContextoWhere, string pFiltroContextoOrderBy, int pFiltroContextoPesoMinimo, TipoProyecto pTipoProyecto, string pNamespacesExtra, string pResultadosEliminar, bool pEsMovil = false)
+        public void ObtenerResultadosBusqueda(bool pDescendente, FacetadoDS pFacetadoDS, string pTipoFiltro, Dictionary<string, List<string>> pListaFiltros, List<string> pListaFiltrosExtra, bool pEstaEnMyGnoss, bool pEsMiembroComunidad, bool pEsInvitado, string pIdentidadID, int pInicio, int pLimite, List<string> pSemanticos, string pFiltroContextoSelect, string pFiltroContextoWhere, string pFiltroContextoOrderBy, int pFiltroContextoPesoMinimo, TipoProyecto pTipoProyecto, string pNamespacesExtra, string pResultadosEliminar, bool pEsMovil = false, List<Guid> pListaExcluidos = null, bool pUsarAfinidad = false)
         {
-            FacetadoAD.ObtenerResultadosBusqueda(mIdGrafo, pDescendente, pFacetadoDS, pTipoFiltro, pListaFiltros, pListaFiltrosExtra, pEstaEnMyGnoss, pEsMiembroComunidad, pEsInvitado, pIdentidadID.ToUpper(), pInicio, pLimite, pSemanticos, pFiltroContextoSelect, pFiltroContextoWhere, pFiltroContextoOrderBy, pFiltroContextoPesoMinimo, pTipoProyecto, pNamespacesExtra, pResultadosEliminar, pEsMovil);
+            FacetadoAD.ObtenerResultadosBusqueda(mIdGrafo, pDescendente, pFacetadoDS, pTipoFiltro, pListaFiltros, pListaFiltrosExtra, pEstaEnMyGnoss, pEsMiembroComunidad, pEsInvitado, pIdentidadID.ToUpper(), pInicio, pLimite, pSemanticos, pFiltroContextoSelect, pFiltroContextoWhere, pFiltroContextoOrderBy, pFiltroContextoPesoMinimo, pTipoProyecto, pNamespacesExtra, pResultadosEliminar, pEsMovil, pListaExcluidos, pUsarAfinidad);
         }
 
-        public void ObtenerResultadosBusqueda(bool pDescendente, FacetadoDS pFacetadoDS, string pTipoFiltro, Dictionary<string, List<string>> pListaFiltros, List<string> pListaFiltrosExtra, bool pEstaEnMyGnoss, bool pEsMiembroComunidad, bool pEsInvitado, string pIdentidadID, int pInicio, int pLimite, List<string> pSemanticos, string pFiltroContextoSelect, string pFiltroContextoWhere, string pFiltroContextoOrderBy, int pFiltroContextoPesoMinimo, TipoProyecto pTipoProyecto, string pNamespacesExtra, string pResultadosEliminar, bool pPermitirRecursosPrivados, bool pOmitirPalabrasNoRelevantesSearch, TiposAlgoritmoTransformacion pTipoAlgoritmoTransformacion, Dictionary<string, Tuple<string, string, string, bool>> pFiltrosSearchPersonalizados, bool pEsMovil = false)
+        public void ObtenerResultadosBusqueda(bool pDescendente, FacetadoDS pFacetadoDS, string pTipoFiltro, Dictionary<string, List<string>> pListaFiltros, List<string> pListaFiltrosExtra, bool pEstaEnMyGnoss, bool pEsMiembroComunidad, bool pEsInvitado, string pIdentidadID, int pInicio, int pLimite, List<string> pSemanticos, string pFiltroContextoSelect, string pFiltroContextoWhere, string pFiltroContextoOrderBy, int pFiltroContextoPesoMinimo, TipoProyecto pTipoProyecto, string pNamespacesExtra, string pResultadosEliminar, bool pPermitirRecursosPrivados, bool pOmitirPalabrasNoRelevantesSearch, TiposAlgoritmoTransformacion pTipoAlgoritmoTransformacion, Dictionary<string, Tuple<string, string, string, bool>> pFiltrosSearchPersonalizados, bool pEsMovil = false, List<Guid> pListaExcluidos = null, bool pUsarAfinidad = false)
         {
-            FacetadoAD.ObtenerResultadosBusqueda(mIdGrafo, pDescendente, pFacetadoDS, pTipoFiltro, pListaFiltros, pListaFiltrosExtra, pEstaEnMyGnoss, pEsMiembroComunidad, pEsInvitado, pIdentidadID.ToUpper(), pInicio, pLimite, pSemanticos, pFiltroContextoSelect, pFiltroContextoWhere, pFiltroContextoOrderBy, pFiltroContextoPesoMinimo, pTipoProyecto, pNamespacesExtra, pResultadosEliminar, pPermitirRecursosPrivados, pOmitirPalabrasNoRelevantesSearch, pTipoAlgoritmoTransformacion, pFiltrosSearchPersonalizados, pEsMovil);
+            FacetadoAD.ObtenerResultadosBusqueda(mIdGrafo, pDescendente, pFacetadoDS, pTipoFiltro, pListaFiltros, pListaFiltrosExtra, pEstaEnMyGnoss, pEsMiembroComunidad, pEsInvitado, pIdentidadID.ToUpper(), pInicio, pLimite, pSemanticos, pFiltroContextoSelect, pFiltroContextoWhere, pFiltroContextoOrderBy, pFiltroContextoPesoMinimo, pTipoProyecto, pNamespacesExtra, pResultadosEliminar, pPermitirRecursosPrivados, pOmitirPalabrasNoRelevantesSearch, pTipoAlgoritmoTransformacion, pFiltrosSearchPersonalizados, pEsMovil, pListaExcluidos, pUsarAfinidad);
         }
 
 
@@ -815,19 +817,19 @@ namespace Es.Riam.Gnoss.Logica.Facetado
             return FacetadoAD.ObtenerValorSegundosParametroAplicacion();
         }
 
-        public void ObtieneNumeroResultados(FacetadoDS pFacetadoDS, string pNombreFaceta, Dictionary<string, List<string>> pListaFiltros, List<string> pListaFiltrosExtra, List<string> pSemanticos, TiposAlgoritmoTransformacion pTiposAlgoritmoTransformacion, Guid pProyectoID, bool pEsIdentidadInvitada, bool pEsUsuarioInvitado, Guid pIdentidadID, bool pEsMovil = false)
+        public void ObtieneNumeroResultados(FacetadoDS pFacetadoDS, string pNombreFaceta, Dictionary<string, List<string>> pListaFiltros, List<string> pListaFiltrosExtra, List<string> pSemanticos, TiposAlgoritmoTransformacion pTiposAlgoritmoTransformacion, Guid pProyectoID, bool pEsIdentidadInvitada, bool pEsUsuarioInvitado, Guid pIdentidadID, bool pEsMovil = false, List<Guid> pListaExcluidos = null)
         {
-            ObtieneNumeroResultados(pFacetadoDS, pNombreFaceta, pListaFiltros, pListaFiltrosExtra, pProyectoID.Equals(ProyectoAD.MyGnoss), !pEsIdentidadInvitada, pEsUsuarioInvitado, pIdentidadID.ToString().ToUpper(), pSemanticos, "", pTiposAlgoritmoTransformacion, pEsMovil);
+            ObtieneNumeroResultados(pFacetadoDS, pNombreFaceta, pListaFiltros, pListaFiltrosExtra, pProyectoID.Equals(ProyectoAD.MyGnoss), !pEsIdentidadInvitada, pEsUsuarioInvitado, pIdentidadID.ToString().ToUpper(), pSemanticos, "", pTiposAlgoritmoTransformacion, pEsMovil, pListaExcluidos);
         }
 
-        public void ObtieneNumeroResultados(FacetadoDS pFacetadoDS, string pNombreFaceta, Dictionary<string, List<string>> pListaFiltros, List<string> pListaFiltrosExtra, bool pEstaEnMyGnoss, bool pEsMiembroComunidad, bool pEsInvitado, string pIdentidadID, List<string> pSemanticos, string pFiltroContextoWhere, TiposAlgoritmoTransformacion pTiposAlgoritmoTransformacion, bool pEsMovil = false)
+        public void ObtieneNumeroResultados(FacetadoDS pFacetadoDS, string pNombreFaceta, Dictionary<string, List<string>> pListaFiltros, List<string> pListaFiltrosExtra, bool pEstaEnMyGnoss, bool pEsMiembroComunidad, bool pEsInvitado, string pIdentidadID, List<string> pSemanticos, string pFiltroContextoWhere, TiposAlgoritmoTransformacion pTiposAlgoritmoTransformacion, bool pEsMovil = false, List<Guid> pListaExcluidos = null)
         {
-            ObtieneNumeroResultados(pFacetadoDS, pNombreFaceta, pListaFiltros, pListaFiltrosExtra, pEstaEnMyGnoss, pEsMiembroComunidad, pEsInvitado, pIdentidadID.ToUpper(), pSemanticos, pFiltroContextoWhere, TipoProyecto.Catalogo, true, true, pTiposAlgoritmoTransformacion, null, pEsMovil);
+            ObtieneNumeroResultados(pFacetadoDS, pNombreFaceta, pListaFiltros, pListaFiltrosExtra, pEstaEnMyGnoss, pEsMiembroComunidad, pEsInvitado, pIdentidadID.ToUpper(), pSemanticos, pFiltroContextoWhere, TipoProyecto.Catalogo, true, true, pTiposAlgoritmoTransformacion, null, pEsMovil, pListaExcluidos);
         }
 
-        public void ObtieneNumeroResultados(FacetadoDS pFacetadoDS, string pNombreFaceta, Dictionary<string, List<string>> pListaFiltros, List<string> pListaFiltrosExtra, bool pEstaEnMyGnoss, bool pEsMiembroComunidad, bool pEsInvitado, string pIdentidadID, List<string> pSemanticos, string pFiltroContextoWhere, TipoProyecto pTipoProyecto, bool pPermitirRecursosPrivados, bool pOmitirPalabrasNoRelevantesSearch, TiposAlgoritmoTransformacion pTiposAlgoritmoTransformacion, Dictionary<string, Tuple<string, string, string, bool>> pFiltrosSearchPersonalizados, bool pEsMovil = false)
+        public void ObtieneNumeroResultados(FacetadoDS pFacetadoDS, string pNombreFaceta, Dictionary<string, List<string>> pListaFiltros, List<string> pListaFiltrosExtra, bool pEstaEnMyGnoss, bool pEsMiembroComunidad, bool pEsInvitado, string pIdentidadID, List<string> pSemanticos, string pFiltroContextoWhere, TipoProyecto pTipoProyecto, bool pPermitirRecursosPrivados, bool pOmitirPalabrasNoRelevantesSearch, TiposAlgoritmoTransformacion pTiposAlgoritmoTransformacion, Dictionary<string, Tuple<string, string, string, bool>> pFiltrosSearchPersonalizados, bool pEsMovil = false, List<Guid> pListaExcluidos = null)
         {
-            FacetadoAD.ObtieneNumeroResultados(mIdGrafo, pFacetadoDS, pNombreFaceta, pListaFiltros, pListaFiltrosExtra, pEstaEnMyGnoss, pEsMiembroComunidad, pEsInvitado, pIdentidadID.ToUpper(), pSemanticos, pFiltroContextoWhere, pTipoProyecto, pPermitirRecursosPrivados, pOmitirPalabrasNoRelevantesSearch, pTiposAlgoritmoTransformacion, pFiltrosSearchPersonalizados, pEsMovil);
+            FacetadoAD.ObtieneNumeroResultados(mIdGrafo, pFacetadoDS, pNombreFaceta, pListaFiltros, pListaFiltrosExtra, pEstaEnMyGnoss, pEsMiembroComunidad, pEsInvitado, pIdentidadID.ToUpper(), pSemanticos, pFiltroContextoWhere, pTipoProyecto, pPermitirRecursosPrivados, pOmitirPalabrasNoRelevantesSearch, pTiposAlgoritmoTransformacion, pFiltrosSearchPersonalizados, pEsMovil, pListaExcluidos);
         }
 
         public void ObtieneInformacionPersonas(FacetadoDS pFacetadoDS, Guid pProyectoID)
@@ -1094,9 +1096,9 @@ namespace Es.Riam.Gnoss.Logica.Facetado
         /// <param name="pNombreontologia">Nombre de la ontología</param>
         /// <param name="pIDDocSem">ID del documento semántico</param>
         /// <returns>DataSet con el RDF del documento</returns>
-        public FacetadoDS ObtenerRDFXMLdeFormulario(string pNombreontologia, string pIDDocSem)
+        public FacetadoDS ObtenerRDFXMLdeFormulario(string pNombreontologia, string pIDDocSem, bool pUsarAfinidad = false)
         {
-            return FacetadoAD.ObtenerRDFXMLdeFormulario(pNombreontologia, pIDDocSem);
+            return FacetadoAD.ObtenerRDFXMLdeFormulario(pNombreontologia, pIDDocSem, pUsarAfinidad);
         }
 
         /// <summary>
@@ -1327,6 +1329,11 @@ namespace Es.Riam.Gnoss.Logica.Facetado
             return FacetadoAD.ObtenerValoresGrafoDependientesDeEntidades(pGrafo, pEntidades);
         }
 
+        public void EliminarConceptEHijos(string pGrafo, string pSujetoConcept, bool pEliminarHijos)
+        {
+            FacetadoAD.EliminarConceptEHijos(pGrafo, pSujetoConcept, pEliminarHijos);
+        }
+
         /// <summary>
         /// Devuelve el trozo del RDF de un formulario semántico perteneciente al filtro para seleccionar unas entidades.
         /// </summary>
@@ -1361,9 +1368,9 @@ namespace Es.Riam.Gnoss.Logica.Facetado
         /// <param name="pEntsContenedora">Entidades contenedoras</param>
         /// <param name="pPropiedades">Propiedades solicitadas</param>
         /// <returns>DataSet con las tripletas</returns>
-        public FacetadoDS ObtenerValoresPropiedadesEntidades(string pGrafo, List<string> pEntsContenedoras, List<string> pPropiedades)
+        public FacetadoDS ObtenerValoresPropiedadesEntidades(string pGrafo, List<string> pEntsContenedoras, List<string> pPropiedades, bool pUsarAfinidad = false)
         {
-            return ObtenerValoresPropiedadesEntidades(pGrafo, pEntsContenedoras, pPropiedades, false);
+            return ObtenerValoresPropiedadesEntidades(pGrafo, pEntsContenedoras, pPropiedades, false, pUsarAfinidad);
         }
 
         /// <summary>
@@ -1374,9 +1381,9 @@ namespace Es.Riam.Gnoss.Logica.Facetado
         /// <param name="pPropiedades">Propiedades solicitadas</param>
         /// <param name="pEntsContenedoras">Indica si hay que traer el idoma de los triples</param>
         /// <returns>DataSet con las tripletas</returns>
-        public FacetadoDS ObtenerValoresPropiedadesEntidades(string pGrafo, List<string> pEntsContenedoras, List<string> pPropiedades, bool pTraerIdioma)
+        public FacetadoDS ObtenerValoresPropiedadesEntidades(string pGrafo, List<string> pEntsContenedoras, List<string> pPropiedades, bool pTraerIdioma, bool pUsarAfinidad = false)
         {
-            return FacetadoAD.ObtenerValoresPropiedadesEntidades(pGrafo, pEntsContenedoras, pPropiedades, pTraerIdioma);
+            return FacetadoAD.ObtenerValoresPropiedadesEntidades(pGrafo, pEntsContenedoras, pPropiedades, pTraerIdioma, pUsarAfinidad);
         }
 
         /// <summary>
@@ -1412,7 +1419,8 @@ namespace Es.Riam.Gnoss.Logica.Facetado
         /// <param name="pEntsContenedora">Entidades contenedoras</param>
         /// <param name="pPropiedades">Propiedades solicitadas</param>
         /// <returns>DataSet con las tripletas</returns>
-        public FacetadoDS ObtenerValoresPropiedadesEntidadesAnidadas(string pGrafo, List<string> pEntsContenedoras, List<string> pPropiedades)
+        public FacetadoDS ObtenerValoresPropiedadesEntidadesAnidadas(string pGrafo, List<string> pEntsContenedoras, List<string> pPropiedades, bool pUsarAfinidad = false
+)
         {
             return FacetadoAD.ObtenerValoresPropiedadesEntidadesAnidadas(pGrafo, pEntsContenedoras, pPropiedades);
         }
@@ -1512,7 +1520,7 @@ namespace Es.Riam.Gnoss.Logica.Facetado
                         listPropsEntExt.RemoveAt(0); //Quito el grafo de las propiedades
 
                         facetadoAuxDS.Merge(ObtenerValoresPropiedadesEntidadesConJerarquiaYExternas(grafo, entidadesEntExt, listPropsEntExt, pAnidadas));
-                        
+
                     }
                 }
 
@@ -1614,9 +1622,9 @@ namespace Es.Riam.Gnoss.Logica.Facetado
             }
             else
             {
-                if(listaConIdioma.Count > 0)
+                if (listaConIdioma.Count > 0)
                 {
-                    KeyValuePair<string,List<string>> clave = listaConIdioma.First();
+                    KeyValuePair<string, List<string>> clave = listaConIdioma.First();
                     pIdiomaUsado = clave.Key;
                     return clave.Value;
                 }
@@ -1778,9 +1786,9 @@ namespace Es.Riam.Gnoss.Logica.Facetado
         /// <param name="pListaDocumentosID">Listado de documentos</param>
         /// <param name="pPropiedades">Propiedades solicitadas</param>
         /// <returns>DataSet con las tripletas</returns>
-        public FacetadoDS ObtenerValoresPropiedadesEntidadesPorDocumentoID(string pGrafo, List<Guid> pListaDocumentosID, List<string> pPropiedades, string pIdioma, bool pUsarClienteWeb)
+        public FacetadoDS ObtenerValoresPropiedadesEntidadesPorDocumentoID(string pGrafo, List<Guid> pListaDocumentosID, List<string> pPropiedades, string pIdioma, bool pUsarClienteWeb, bool pUsarAfinidad = false)
         {
-            return ObtenerValoresPropiedadesEntidadesPorDocumentoID(pGrafo, pListaDocumentosID, pPropiedades, pIdioma, pUsarClienteWeb, null, null, false, string.Empty, null, string.Empty, TipoProyecto.Catalogo, false, false, null, false, false, string.Empty);
+            return ObtenerValoresPropiedadesEntidadesPorDocumentoID(pGrafo, pListaDocumentosID, pPropiedades, pIdioma, pUsarClienteWeb, null, null, false, string.Empty, null, string.Empty, TipoProyecto.Catalogo, false, false, null, false, false, string.Empty, false, pUsarAfinidad);
         }
 
         /// <summary>
@@ -1790,9 +1798,9 @@ namespace Es.Riam.Gnoss.Logica.Facetado
         /// <param name="pListaDocumentosID">Listado de documentos</param>
         /// <param name="pPropiedades">Propiedades solicitadas</param>
         /// <returns>DataSet con las tripletas</returns>
-        public FacetadoDS ObtenerValoresPropiedadesEntidadesPorDocumentoID(string pGrafo, List<Guid> pListaDocumentosID, List<string> pPropiedades, string pIdioma, bool pUsarClienteWeb, Dictionary<string, List<string>> pListaFiltros, List<string> pListaFiltrosExtra, bool pEsMiembroComunidad, string pProyectoID, List<string> pSemanticos, string pFiltroContextoWhere, TipoProyecto pTipoProyecto, bool pExcluirPersonas, bool pOmitirPalabrasNoRelevantesSearch, Dictionary<string, Tuple<string, string, string, bool>> pFiltrosSearchPersonalizados, bool pEstaEnMyGnoss, bool pEsInvitado, string pIdentidadID, bool pEsExportacionExcel = false)
+        public FacetadoDS ObtenerValoresPropiedadesEntidadesPorDocumentoID(string pGrafo, List<Guid> pListaDocumentosID, List<string> pPropiedades, string pIdioma, bool pUsarClienteWeb, Dictionary<string, List<string>> pListaFiltros, List<string> pListaFiltrosExtra, bool pEsMiembroComunidad, string pProyectoID, List<string> pSemanticos, string pFiltroContextoWhere, TipoProyecto pTipoProyecto, bool pExcluirPersonas, bool pOmitirPalabrasNoRelevantesSearch, Dictionary<string, Tuple<string, string, string, bool>> pFiltrosSearchPersonalizados, bool pEstaEnMyGnoss, bool pEsInvitado, string pIdentidadID, bool pEsExportacionExcel = false, bool pUsarAfinidad = false)
         {
-            return FacetadoAD.ObtenerValoresPropiedadesEntidadesPorDocumentoID(pGrafo, pListaDocumentosID, pPropiedades, pIdioma, pUsarClienteWeb, pListaFiltros, pListaFiltrosExtra, pEsMiembroComunidad, pProyectoID, pSemanticos, pFiltroContextoWhere, pTipoProyecto, pExcluirPersonas, pOmitirPalabrasNoRelevantesSearch, pFiltrosSearchPersonalizados, pEstaEnMyGnoss, pEsInvitado, pIdentidadID, pEsExportacionExcel);
+            return FacetadoAD.ObtenerValoresPropiedadesEntidadesPorDocumentoID(pGrafo, pListaDocumentosID, pPropiedades, pIdioma, pUsarClienteWeb, pListaFiltros, pListaFiltrosExtra, pEsMiembroComunidad, pProyectoID, pSemanticos, pFiltroContextoWhere, pTipoProyecto, pExcluirPersonas, pOmitirPalabrasNoRelevantesSearch, pFiltrosSearchPersonalizados, pEstaEnMyGnoss, pEsInvitado, pIdentidadID, pEsExportacionExcel, pUsarAfinidad);
         }
 
         /// <summary>
@@ -1878,6 +1886,16 @@ namespace Es.Riam.Gnoss.Logica.Facetado
         public void BorrarListaPredicadosDeSujeto(string pProyectoID, string pSujeto, List<string> pListaPredicados)
         {
             FacetadoAD.BorrarListaPredicadosDeSujeto(pProyectoID, pSujeto, pListaPredicados);
+        }
+
+        /// <summary>
+        /// Borra todos los triples de los sujetos indicados
+        /// </summary>
+        /// <param name="pGrafo">Identificador del proyecto</param>
+        /// <param name="pSujeto">Lista de sujetos del que se van a eliminar los triples</param>
+        public void BorrarListaTriplesDeSujeto(string pGrafo, List<string> pSujeto)
+        {
+            FacetadoAD.BorrarListaTriplesDeSujeto(pGrafo, pSujeto);
         }
 
         /// <summary>
@@ -1990,7 +2008,7 @@ namespace Es.Riam.Gnoss.Logica.Facetado
             return FacetadoAD.ObtenerPopularidadProyecto(pProyectoID);
         }
 
-        public string ObtenerGrafoOntologiaRecurso (string pRecursoID)
+        public string ObtenerGrafoOntologiaRecurso(string pRecursoID)
         {
             return FacetadoAD.ObtenerGrafoEliminarSujeto(pRecursoID);
         }
@@ -2321,6 +2339,146 @@ namespace Es.Riam.Gnoss.Logica.Facetado
 
         #region Actualizaciones
 
+        /// <summary>
+        /// Generate the Subject of the Collection given by parameter
+        /// </summary>
+        /// <param name="pCollection">Collection to generate the Subject</param>
+        /// <param name="pUrlIntragnoss">UrlIntragnoss</param>
+        /// <param name="pSource">Source of the thesaurus</param>
+        /// <returns>The Subject of the Collection</returns>
+        private string GenerarSujetoCollection(Collection pCollection, string pUrlIntragnoss, string pSource)
+        {
+            string sujeto = pCollection.Subject;
+            if (string.IsNullOrEmpty(sujeto))
+            {
+                sujeto = $"{pUrlIntragnoss}items/{pSource}";
+            }
+
+            if (!sujeto.StartsWith(pUrlIntragnoss))
+            {
+                sujeto = $"{pUrlIntragnoss}items/{sujeto}";
+            }
+
+            return sujeto;
+        }
+
+        /// <summary>
+        /// Add triples to the string builder to generate the Collection in the ontology graph (Source)
+        /// </summary>
+        /// <param name="pCollection">Collection to be generated</param>
+        /// <param name="pStringBuilder">StringBuilder where the triples will be stored</param>
+        /// <param name="pSujeto">Subject of the Collection to generate</param>
+        private void GenerarTriplesCollectionGrafoBusqueda(Collection pCollection, StringBuilder pStringBuilder, string pSujeto, string pSource)
+        {
+            pStringBuilder.AppendLine($"<{pSujeto}> <http://purl.org/dc/elements/1.1/source> \"{pSource}\" . ");
+        }
+
+        /// <summary>
+        /// Add triples to the string builder to generate the Collection in the ontology graph (RdfType, Label, Source)
+        /// </summary>
+        /// <param name="pStringBuilder">StringBuilder where the triples will be stored</param>
+        /// <param name="pSujeto">Subject of the Collection to generate</param>
+        /// <param name="pSource">Source of the tesaurus</param>
+        private void GenerarTriplesCollectionGrafoOntologia(StringBuilder pStringBuilder, string pSujeto, string pSource)
+        {
+            pStringBuilder.AppendLine($"<{pSujeto}> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2008/05/skos#Collection> . ");
+            pStringBuilder.AppendLine($"<{pSujeto}> <http://www.w3.org/2000/01/rdf-schema#label> \"http://www.w3.org/2008/05/skos#Collection\" . ");
+            pStringBuilder.AppendLine($"<{pSujeto}> <http://purl.org/dc/elements/1.1/source> \"{pSource}\" . ");
+        }
+
+        /// <summary>
+        /// Generate the triples of the property ScopeNote with their language
+        /// </summary>
+        /// <param name="pCollection">Collection that has the property ScopeNote</param>
+        /// <param name="pStringBuilderOntologia">StringBuilder where the triples of the ontology graph will be storage</param>
+        /// <param name="pStringBuilderBusqueda">StringBuilder where the triples of the search graph will be storage</param>
+        /// <param name="pSujeto">Subject of the Collection</param>
+        private void GenerarScopeNoteMultiIdioma(Collection pCollection, StringBuilder pStringBuilderOntologia, StringBuilder pStringBuilderBusqueda, string pSujeto)
+        {
+            foreach (string clave in pCollection.ScopeNote.Keys)
+            {
+                pStringBuilderOntologia.AppendLine($"<{pSujeto}> <http://www.w3.org/2008/05/skos#scopeNote> \"{pCollection.ScopeNote[clave]}\"@{clave} . ");
+                pStringBuilderBusqueda.AppendLine($"<{pSujeto}> <http://www.w3.org/2008/05/skos#scopeNote> \"{pCollection.ScopeNote[clave]}\"@{clave}  . ");
+            }
+        }
+
+        /// <summary>
+        /// Generate the triples that define the relation between the Collection and their narrowers
+        /// </summary>
+        /// <param name="pCollection">Collection to generate the triples</param>
+        /// <param name="pStringBuilderOntologia">StringBuilder where the triples will be storage to the ontology graph</param>
+        /// <param name="pStringBuilderBusqueda">StringBuilder where the triples will be storage to the search graph</param>
+        /// <param name="pSujeto">Subject of the collection</param>
+        /// <param name="pUrlIntraGnoss">UrlIntragnoss</param>
+        /// <param name="pSource">Source of the Thesaurus</param>
+        /// <exception cref="Exception"></exception>
+        private void GenerarTriplesRelacionesCollection(Collection pCollection, StringBuilder pStringBuilderOntologia, StringBuilder pStringBuilderBusqueda, string pSujeto, string pUrlIntraGnoss, string pSource)
+        {
+            if (pCollection.Member != null)
+            {
+                foreach (Concept narrower in pCollection.Member)
+                {
+                    pStringBuilderOntologia.AppendLine($"<{pSujeto}> <http://www.w3.org/2008/05/skos#member> <{GenerarSujetoConcept(narrower, pUrlIntraGnoss, pSource)}> . ");
+                    pStringBuilderBusqueda.AppendLine($"<{pSujeto}> <http://www.w3.org/2008/05/skos#member> <{GenerarSujetoConcept(narrower, pUrlIntraGnoss, pSource)}> . ");
+                }
+            }           
+        }
+
+        /// <summary>
+        /// Generate the Subject of the Concept given by parameter
+        /// </summary>
+        /// <param name="pConcept">Concept to generate the Subject</param>
+        /// <param name="pUrlIntragnoss">UrlIntragnoss</param>
+        /// <param name="pSource">Source of the tesaurus</param>
+        /// <returns>The Subject of the Concept</returns>
+        private string GenerarSujetoConcept(Concept pConcept, string pUrlIntragnoss, string pSource)
+        {
+            string sujeto = pConcept.Subject;
+            if (string.IsNullOrEmpty(sujeto))
+            {
+                sujeto = $"{pUrlIntragnoss}items/{pSource}_{pConcept.Identifier}";
+            }
+
+            if (!sujeto.StartsWith(pUrlIntragnoss))
+            {
+                sujeto = $"{pUrlIntragnoss}items/{sujeto}";
+            }
+
+            return sujeto;
+        }
+
+        /// <summary>
+        /// Insert all the triples for the list of the Collections given in the Thesaurus parameter
+        /// </summary>
+        /// <param name="pTesauro">Thesaurus to load</param>
+        /// <param name="pUrlIntragnoss">Url intragnoss</param>
+        /// <param name="pProyectoID">Identifier of the project</param>
+        /// <param name="pFacetadoCN">FacetadoCN initializated</param>
+        /// <exception cref="Exception"></exception>
+        public void InsertarTriplesCollection(Thesaurus pTesauro, string pUrlIntragnoss, Guid pProyectoID)
+        {
+            StringBuilder triplesCollectionGrafoOntologia = new StringBuilder();
+            StringBuilder triplesCollectionGrafoBusqueda = new StringBuilder();
+
+            string sujeto = GenerarSujetoCollection(pTesauro.Collection, pUrlIntragnoss, pTesauro.Source);
+
+            GenerarTriplesCollectionGrafoOntologia(triplesCollectionGrafoOntologia, sujeto, pTesauro.Source);
+            GenerarTriplesCollectionGrafoBusqueda(pTesauro.Collection, triplesCollectionGrafoBusqueda, sujeto, pTesauro.Source);
+            GenerarScopeNoteMultiIdioma(pTesauro.Collection, triplesCollectionGrafoOntologia, triplesCollectionGrafoBusqueda, sujeto);
+            GenerarTriplesRelacionesCollection(pTesauro.Collection, triplesCollectionGrafoOntologia, triplesCollectionGrafoBusqueda, sujeto, pUrlIntragnoss, pTesauro.Source);
+
+            try
+            {
+                InsertaTripletas(pTesauro.Ontology, triplesCollectionGrafoOntologia.ToString(), 1);
+                InsertaTripletas(pProyectoID.ToString(), triplesCollectionGrafoBusqueda.ToString(), 1);
+            }
+            catch (Exception ex)
+            {
+                TerminarTransaccion(false);
+                throw new Exception($"Ha ocurrido un error al escribir los triples de los Collection en virtuoso.\n {ex.Message}", ex);
+            }
+        }
+
         public void ModificarPendienteLeerALeido(string pGrafoID, string pElementoID)
         {
             FacetadoAD.ModificarPendienteLeerALeido(pGrafoID, pElementoID);
@@ -2345,6 +2503,24 @@ namespace Es.Riam.Gnoss.Logica.Facetado
         public FacetadoDS ObtenerTripletasDeSujetoConObjeto(string pGrafo, string pObjeto)
         {
             return FacetadoAD.ObtenerTripletasDeSujetoConObjeto(pGrafo, pObjeto);
+        }
+
+        /// <summary>
+        /// Obtiene una lista de sujetos del del tesauro según el grafo seleccionado y source indicado por parámetro.
+        /// </summary>
+        /// <param name="pGrafo">Grafo del Tesauro Semántico</param>
+        /// <param name="pSource">Source</param>
+        /// <returns>Lista de sujetos del tesauro segun el grafo y el source indicado</returns>
+        public List<string> ObtenerListaSujetosTesauroDeGrafoPorSource(string pGrafo, string pSource)
+        {
+            return FacetadoAD.ObtenerListaSujetosTesauroDeGrafoPorSource(pGrafo, pSource);
+        }
+
+
+        public List<string> ObtenerListaTriplesDeSujeto(string pGrafo, string pSujeto)
+        {
+            return FacetadoAD.ObtenerListaTriplesDeSujeto(pGrafo, pSujeto);
+
         }
 
         /// <summary>

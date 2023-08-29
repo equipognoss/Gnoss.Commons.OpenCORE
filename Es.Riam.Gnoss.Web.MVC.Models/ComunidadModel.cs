@@ -154,6 +154,8 @@ namespace Es.Riam.Gnoss.Web.MVC.Models
         /// </summary>
         public string Url { get; set; }
 
+        public string UrlMyGnoss { get; set; }
+
         /// <summary>
         /// Logotipo de la comunidad
         /// </summary>
@@ -549,6 +551,11 @@ namespace Es.Riam.Gnoss.Web.MVC.Models
         public List<string> ListaPersonalizacionesEcosistema { get; set; }
 
         /// <summary>
+        /// Lista de vistas personalizadas para el dominio
+        /// </summary>
+        public List<string> ListaPersonalizacionesDominio { get; set; }
+
+        /// <summary>
         /// Lista de vistas personalizadas para la comunidad
         /// </summary>
         public Guid PersonalizacionProyectoID { get; set; }
@@ -679,6 +686,11 @@ namespace Es.Riam.Gnoss.Web.MVC.Models
         /// Identificador de la categoria en texto.
         /// </summary>
         public string StringKey { get; set; }
+
+        /// <summary>
+        /// Lista de categorías hijas
+        /// </summary>
+        public List<CategoryModel> Subcategories { get; set; }
     }
 
     [Serializable]
@@ -773,6 +785,11 @@ namespace Es.Riam.Gnoss.Web.MVC.Models
         public KeyValuePair<Guid, Dictionary<string, string>> Categoria { get; set; }
         public bool MultiLanguaje { get; set; }
         public List<CategoryModel> CategoriasCompartir { get; set; }
+        // Nuevas propiedades para poder pasar información a través de modales para pintado de ComboBox en Gestión de Categorías
+        public bool ExistenRecursosNoHuerfanos { get; set; }
+        public string IdiomaDefecto { get; set; }        
+        public string IdiomaTesauro { get; set; }
+
     }
 
     [Serializable]
@@ -781,6 +798,15 @@ namespace Es.Riam.Gnoss.Web.MVC.Models
         public TabModel pestanya { get; set; }
         public List<TabModel> ListaPestanyas { get; set; }
 
+    }
+
+    [Serializable]
+    public class PintarModalCrearSubCategoria
+    {
+        public string NombreCategoriaPadre { get; set; }
+        public bool MultiLanguaje { get; set; }
+        public string IdiomaTesauro { get; set; }
+        public Guid CategoriaId { get; set; }
     }
 
     [Serializable]

@@ -2,6 +2,7 @@
 
 using Microsoft.AspNetCore.Http;
 using Newtonsoft.Json;
+using System;
 
 namespace Es.Riam.Gnoss.Web.MVC.Models.Administracion
 {
@@ -24,6 +25,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Models.Administracion
         public bool Protected { get; set; }
         public string OntologyProperties { get; set; }
         public bool Deleted { get; set; }
+        public Guid OntologyID { get; set; }
         #endregion
 
 

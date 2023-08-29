@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Http;
 using SixLabors.ImageSharp;
 using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
@@ -88,13 +89,13 @@ namespace Es.Riam.Gnoss.FileManager
             }
             else
             {
-                contenido = await AzureStorageClient.DescargarDocumento(pRuta, pNombreArchivo);
+                //contenido = await AzureStorageClient.DescargarDocumento(pRuta, pNombreArchivo);
 
-                if (pArchivoEncriptado)
-                {
-                    contenido = _utilArchivos.DesencriptarArchivo(contenido);
-                    //contenido = UtilArchivos.DesencriptarArchivo(contenido);
-                }
+                //if (pArchivoEncriptado)
+                //{
+                //    contenido = _utilArchivos.DesencriptarArchivo(contenido);
+                //    //contenido = UtilArchivos.DesencriptarArchivo(contenido);
+                //}
             }
 
             if (contenido == null || contenido.Length == 0)
@@ -159,6 +160,7 @@ namespace Es.Riam.Gnoss.FileManager
                             fileStreamAux.Close();
                         }
                         fileStream = new FileStream(ruta, FileMode.Open, FileAccess.Read);
+                        
                     }
 
                     if (!pArchivoEncriptado)
@@ -247,7 +249,7 @@ namespace Es.Riam.Gnoss.FileManager
             }
             else
             {
-                contenido = await AzureStorageClient.DescargarDocumento(pRuta, pNombreArchivo);
+                //contenido = await AzureStorageClient.DescargarDocumento(pRuta, pNombreArchivo);
             }
 
             if (contenido == null || contenido.Length == 0)
@@ -271,26 +273,24 @@ namespace Es.Riam.Gnoss.FileManager
             pRuta = Path.Combine(RutaFicheros, pRuta);
 
             DirectoryInfo directoryInfoImage = new DirectoryInfo(pRuta);
-            DirectoryInfo directoryInfoDockLink = new DirectoryInfo(rutaDocumentos);
 
             FileInfo[] ficherosDirectorio = directoryInfoImage.GetFiles();
-            ficherosDirectorio = ficherosDirectorio.Union(directoryInfoDockLink.GetFiles()).ToArray();
 
             List<FileInfoModel> resultado = new List<FileInfoModel>();
             foreach (FileInfo fichero in ficherosDirectorio)
             {
-                _loggingService.GuardarLog($"SANTI==========> {fichero.FullName}     {fichero.Extension}");
                 FileInfoModel fileInfoModel = new FileInfoModel();
                 fileInfoModel.create_date = fichero.CreationTime;
                 fileInfoModel.file_name = fichero.Name;
                 fileInfoModel.size = fichero.Length;
-                if (fichero.Extension == ".png" || fichero.Extension == ".jpg" || fichero.Extension == ".gif" || fichero.Extension == ".jpeg")
+                /*if (fichero.Extension == ".png" || fichero.Extension == ".jpg" || fichero.Extension == ".gif" || fichero.Extension == ".jpeg")
                 {
+                    
                     byte[] imageBytes = File.ReadAllBytes(fichero.FullName);
                     Image image = UtilImages.ConvertirArrayBytesEnImagen(imageBytes);
                     fileInfoModel.width = image.Width;
                     fileInfoModel.height = image.Height;
-                }
+                }*/
 
                 resultado.Add(fileInfoModel);
             }
@@ -321,7 +321,7 @@ namespace Es.Riam.Gnoss.FileManager
                                 bytes = memstream.ToArray();
                             }
 
-                            AzureStorageClient.DescomprimirFichero(pRuta, entry.FullName, bytes);
+                            //AzureStorageClient.DescomprimirFichero(pRuta, entry.FullName, bytes);
                         }
                     }
                 }
@@ -337,7 +337,8 @@ namespace Es.Riam.Gnoss.FileManager
             }
             else
             {
-                return await AzureStorageClient.ExisteDirectorio(pRuta);
+                //return await AzureStorageClient.ExisteDirectorio(pRuta);
+                return false;
             }
         }
 
@@ -350,7 +351,8 @@ namespace Es.Riam.Gnoss.FileManager
             }
             else
             {
-                return await AzureStorageClient.ExisteFichero(pRuta, pArchivo);
+                //return await AzureStorageClient.ExisteFichero(pRuta, pArchivo);
+                return false;
             }
         }
 
@@ -373,7 +375,7 @@ namespace Es.Riam.Gnoss.FileManager
                 }
                 else
                 {
-                    AzureStorageClient.CrearDirectorio(pRuta);
+                    //AzureStorageClient.CrearDirectorio(pRuta);
                 }
             }
             catch (Exception ex)
@@ -409,7 +411,6 @@ namespace Es.Riam.Gnoss.FileManager
                     if (pEncriptarFichero)
                     {
                         pBytes = _utilArchivos.EncriptarArchivo(pBytes);
-                        //pBytes = UtilArchivos.EncriptarArchivo(pBytes);
                     }
                     FileStream fileStream = new FileStream(infoFichero.FullName, FileMode.Create, FileAccess.Write);
                     fileStream.Write(pBytes, 0, pBytes.Length);
@@ -418,7 +419,7 @@ namespace Es.Riam.Gnoss.FileManager
                 }
                 else
                 {
-                    AzureStorageClient.SubirDocumento(pRuta, pNombreArchivo, pBytes);
+                    //AzureStorageClient.SubirDocumento(pRuta, pNombreArchivo, pBytes);
                 }
             }
             catch (Exception ex)
@@ -501,7 +502,7 @@ namespace Es.Riam.Gnoss.FileManager
                 }
                 else
                 {
-                    AzureStorageClient.SubirDocumento(pRuta, pNombreArchivo, pStream);
+                    //AzureStorageClient.SubirDocumento(pRuta, pNombreArchivo, pStream);
                 }
             }
             catch (Exception ex)
@@ -531,7 +532,7 @@ namespace Es.Riam.Gnoss.FileManager
             }
             else
             {
-                AzureStorageClient.SubirDocumento(pRuta, pNombreArchivo, pBytes);
+                //AzureStorageClient.SubirDocumento(pRuta, pNombreArchivo, pBytes);
             }
 
         }
@@ -563,14 +564,15 @@ namespace Es.Riam.Gnoss.FileManager
             else
             {
                 //TODO: esto no se si funcionara en azure
-                var resultado = await AzureStorageClient.ObtenerFicherosDeDirectorioYSubDirectorios(pRuta, pRuta);
+                //var resultado = await AzureStorageClient.ObtenerFicherosDeDirectorioYSubDirectorios(pRuta, pRuta);
 
-                if (!string.IsNullOrEmpty(pFiltroPorNombre))
-                {
-                    resultado = resultado.Where(fichero => fichero.StartsWith(pFiltroPorNombre)).ToArray();
-                }
+                //if (!string.IsNullOrEmpty(pFiltroPorNombre))
+                //{
+                //    resultado = resultado.Where(fichero => fichero.StartsWith(pFiltroPorNombre)).ToArray();
+                //}
 
-                return resultado;
+                //return resultado;
+                return null;
             }
 
         }
@@ -612,15 +614,63 @@ namespace Es.Riam.Gnoss.FileManager
             }
             else
             {
-                var resultado = await AzureStorageClient.ObtenerFicherosDeDirectorio(pRuta);
+                //var resultado = await AzureStorageClient.ObtenerFicherosDeDirectorio(pRuta);
 
-                if (!string.IsNullOrEmpty(pFiltroPorNombre))
+                //if (!string.IsNullOrEmpty(pFiltroPorNombre))
+                //{
+                //    resultado = resultado.Where(fichero => fichero.StartsWith(pFiltroPorNombre)).ToArray();
+                //}
+
+                //return resultado;
+                return null;
+            }
+        }
+
+        /// <summary>
+        /// Obtiene la información relevante sobre todos los ficheros de un directorio
+        /// </summary>
+        /// <param name="pRuta">Ruta del directorio</param>
+        /// <param name="pFiltroPorNombre">Nombre o filtro de búsqueda de uno  o más ficheros</param>
+        /// <returns></returns>
+        public async Task<List<FileInfoModel>> ObtenerInformacionFicherosDeDirectorio(string pRuta, string pFiltroPorNombre = null)
+        {
+            string rutaDocumentos = Path.Combine(ObtenerRutaDocumentos(), pRuta);
+            pRuta = Path.Combine(RutaFicheros, pRuta);
+
+            DirectoryInfo directoryInfoImage = new DirectoryInfo(pRuta);
+            DirectoryInfo directoryInfoDockLink = new DirectoryInfo(rutaDocumentos);
+            FileInfo[] ficherosDirectorio = null;
+
+            if (!string.IsNullOrEmpty(pFiltroPorNombre))
+            {
+                ficherosDirectorio = directoryInfoImage.GetFiles($"{pFiltroPorNombre}*");
+                ficherosDirectorio = ficherosDirectorio.Union(directoryInfoDockLink.GetFiles($"{pFiltroPorNombre}*")).ToArray();
+            }
+            else
+            {
+                ficherosDirectorio = directoryInfoImage.GetFiles();
+                ficherosDirectorio = ficherosDirectorio.Union(directoryInfoDockLink.GetFiles()).ToArray();
+            }
+
+            List<FileInfoModel> resultado = new List<FileInfoModel>();
+            foreach (FileInfo fichero in ficherosDirectorio)
+            {
+                FileInfoModel fileInfoModel = new FileInfoModel();
+                fileInfoModel.create_date = fichero.CreationTime;
+                fileInfoModel.file_name = fichero.Name;
+                fileInfoModel.size = fichero.Length;
+                if(fichero.Extension == ".png" || fichero.Extension == ".jpg" || fichero.Extension == ".gif")
                 {
-                    resultado = resultado.Where(fichero => fichero.StartsWith(pFiltroPorNombre)).ToArray();
+                    byte[] imageBytes = File.ReadAllBytes(fichero.FullName);
+                    SixLabors.ImageSharp.Image image = UtilImages.ConvertirArrayBytesEnImagen(imageBytes);
+                    fileInfoModel.width = image.Width;
+                    fileInfoModel.height = image.Height;
                 }
 
-                return resultado;
+                resultado.Add(fileInfoModel);
             }
+
+            return resultado;
         }
 
         public string ObtenerRutaDirectorioZip(string pRuta)
@@ -641,7 +691,8 @@ namespace Es.Riam.Gnoss.FileManager
             }
             else
             {
-                return await AzureStorageClient.ObtenerSubdirectoriosDeDirectorio(pRuta);
+                //return await AzureStorageClient.ObtenerSubdirectoriosDeDirectorio(pRuta);
+                return new string[] { };
             }
         }
 
@@ -663,7 +714,7 @@ namespace Es.Riam.Gnoss.FileManager
             }
             else
             {
-                AzureStorageClient.EliminarDirectorioEnCascada(pRuta);
+                //AzureStorageClient.EliminarDirectorioEnCascada(pRuta);
             }
         }
 
@@ -682,7 +733,7 @@ namespace Es.Riam.Gnoss.FileManager
             }
             else
             {
-                AzureStorageClient.EliminarFicheroFisico(pRuta, pNombreArchivo);
+                //AzureStorageClient.EliminarFicheroFisico(pRuta, pNombreArchivo);
             }
         }
 
@@ -716,7 +767,7 @@ namespace Es.Riam.Gnoss.FileManager
             }
             else
             {
-                AzureStorageClient.CopiarArchivo(pRutaOrigen, pRutaDestino, pNombreArchivoOrigen, pCopiar, pNombreArchivoDestino);
+                //AzureStorageClient.CopiarArchivo(pRutaOrigen, pRutaDestino, pNombreArchivoOrigen, pCopiar, pNombreArchivoDestino);
             }
         }
 
@@ -772,7 +823,8 @@ namespace Es.Riam.Gnoss.FileManager
             }
             else
             {
-                return await AzureStorageClient.ObtenerTamanioArchivo(pRuta, pNombreArchivo);
+                //return await AzureStorageClient.ObtenerTamanioArchivo(pRuta, pNombreArchivo);
+                return 0;
             }
         }
 
@@ -787,7 +839,8 @@ namespace Es.Riam.Gnoss.FileManager
             else
             {
                 // No tenemos la propiedad Fecha de creación de un archivo, obtenemos la de última modificación
-                return await AzureStorageClient.ObtenerFechaUltimaModificacionArchivo(pRuta, pNombreArchivo);
+                //return await AzureStorageClient.ObtenerFechaUltimaModificacionArchivo(pRuta, pNombreArchivo);
+                return DateTime.Now;
             }
         }
 
@@ -885,10 +938,10 @@ namespace Es.Riam.Gnoss.FileManager
             return Path.Combine(partesRuta);
         }
 
-
         private string ObtenerRutaDocumentos()
         {
             int indiceImagen = RutaFicheros.LastIndexOf(Path.DirectorySeparatorChar);
+
             return $"{RutaFicheros.Substring(0, indiceImagen)}{Path.DirectorySeparatorChar}doclinks";
         }
 
@@ -903,6 +956,8 @@ namespace Es.Riam.Gnoss.FileManager
 
         public string AzureStorageConnectionString { get; set; }
 
+        //TODO AzureStorage
+        /*
         private AzureStorage mAzureStorageClient;
 
         private AzureStorage AzureStorageClient
@@ -918,10 +973,9 @@ namespace Es.Riam.Gnoss.FileManager
                 return mAzureStorageClient;
             }
         }
-
+        */
         #endregion
     }
-
 
     #region Clases
     public class FileInfoModel
@@ -940,5 +994,4 @@ namespace Es.Riam.Gnoss.FileManager
     }
 
     #endregion
-
 }

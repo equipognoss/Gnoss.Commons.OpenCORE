@@ -10,9 +10,9 @@ namespace Es.Riam.Gnoss.Servicios.ControladoresServiciosWeb
 {
     public class CargadorResultados : ControladorBase
     {
-        public ResultadoModel CargarResultadosJSON(Guid pProyectoID, Guid pIdentidadID, bool pEsUsuarioInvitado, string pUrlPaginaBusqueda, bool pUsarMasterParaLectura, bool pAdministradorVeTodasPersonas, TipoBusqueda pTipoBusqueda, string pGrafo, string pParametros_adiccionales, string pParametros, bool pPrimeraCarga, string pLanguageCode, int pNumeroParteResultados, string pFiltroContexto)
+        public ResultadoModel CargarResultadosJSON(Guid pProyectoID, Guid pIdentidadID, bool pEsUsuarioInvitado, string pUrlPaginaBusqueda, bool pUsarMasterParaLectura, bool pAdministradorVeTodasPersonas, TipoBusqueda pTipoBusqueda, string pGrafo, string pParametros_adiccionales, string pParametros, bool pPrimeraCarga, string pLanguageCode, int pNumeroParteResultados, string pFiltroContexto, HttpRequest pRequest = null)
         {
-            string respuesta = CargarResultadosInt(pProyectoID, pIdentidadID, pEsUsuarioInvitado, pUrlPaginaBusqueda, pUsarMasterParaLectura, pAdministradorVeTodasPersonas, pTipoBusqueda, pGrafo, pParametros_adiccionales, pParametros, pPrimeraCarga, pLanguageCode, pNumeroParteResultados, pFiltroContexto, true);
+            string respuesta = CargarResultadosInt(pProyectoID, pIdentidadID, pEsUsuarioInvitado, pUrlPaginaBusqueda, pUsarMasterParaLectura, pAdministradorVeTodasPersonas, pTipoBusqueda, pGrafo, pParametros_adiccionales, pParametros, pPrimeraCarga, pLanguageCode, pNumeroParteResultados, pFiltroContexto, true, null, pRequest);
             /*JavaScriptSerializer serializador = new JavaScriptSerializer(new SimpleTypeResolver());
             serializador.MaxJsonLength = 50000000;
             ResultadoModel resultadoModel = serializador.Deserialize<ResultadoModel>(respuesta);*/

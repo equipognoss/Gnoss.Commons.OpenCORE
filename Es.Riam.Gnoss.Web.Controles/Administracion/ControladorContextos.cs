@@ -70,13 +70,29 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
             {
                 //filaGadget.GetProyectoGadgetContextoRows();
                 ProyectoGadgetContexto filasContexto = filaGadget.ProyectoGadgetContexto;
-                if (filasContexto!=null)
+                if (filasContexto != null)
                 {
                     gadget.Contexto = CargarContexto(filasContexto);
 
                     if (CrearFilasPropiedadesExportacion)
                     {
                         propiedadesIntegracionContinua = ObtenerPropiedadesIntegracionContinua(propiedadesIntegracionContinua, gadget, true);
+                    }
+                }
+            }
+
+            if (filaGadget.Tipo == (short)TipoGadget.HtmlIncrustado) 
+            {
+                if(mConfigService.ObtenerListaIdiomasDictionary().Count > 1)
+                {
+                    ProyectoCN proyectoCN = new ProyectoCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);                    
+                    List<ProyectoGadgetIdioma> listaProyectoGadgetIdioma = proyectoCN.ObtenerProyectoGadgetIdiomaDeGadget(filaGadget.GadgetID);
+                    if(listaProyectoGadgetIdioma != null && listaProyectoGadgetIdioma.Count > 0)
+                    {
+                        foreach(ProyectoGadgetIdioma proyectoGadgetIdioma in listaProyectoGadgetIdioma)
+                        {
+                            gadget.Contenido += $"{proyectoGadgetIdioma.Contenido}@{proyectoGadgetIdioma.Idioma}|||";
+                        }
                     }
                 }
             }
@@ -93,7 +109,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
 
                 IntegracionContinuaPropiedad propiedadEsta = propiedadesIntegracionContinua.Where(propiedad => propiedad.ProyectoID == ProyectoSeleccionado.Clave && propiedad.TipoObjeto == propiedadFiltrosDestino.TipoObjeto && propiedad.ObjetoPropiedad == propiedadFiltrosDestino.ObjetoPropiedad && propiedad.TipoPropiedad == propiedadFiltrosDestino.TipoPropiedad).FirstOrDefault();
 
-                if(propiedadEsta == null)
+                if (propiedadEsta == null)
                 {
                     propiedadesIntegracionContinua.Add(propiedadFiltrosDestino);
                 }
@@ -118,9 +134,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
                     proyCN.Dispose();
                 }
                 catch
-                {
-
-                }
+                { }
             }
 
             return gadget;
@@ -149,7 +163,6 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
 
             if (gadget.TipoGadget == TipoGadget.HtmlIncrustado)
             {
-                //filaGadget.GetProyectoGadgetIdiomaRows();
                 List<ProyectoGadgetIdioma> filasIdioma = filaGadget.ProyectoGadgetIdioma.ToList();
 
                 if (filasIdioma.Count > 0)
@@ -245,7 +258,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
 
             ProyectoCN proyCN = new ProyectoCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
             DataWrapperProyecto proyDS = proyCN.ObtenerDataSetGadget(pGadget.Key, ProyectoSeleccionado.Clave);
-            
+
 
             //Añadir los nuevos
             AniadirGadgetNuevo(listaGadgetsNuevos, pGadget, proyDS);
@@ -258,9 +271,10 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
 
             //Actualizamos cambios
             proyCN.ActualizarProyectos();
-            
+
         }
-        public void GuardarGadgets(List<ContextoModel> pListaGadgets, Dictionary<string, Guid> pListaProyectosOrigen = null)
+
+        public void GuardarGadgets(List<ContextoModel> pListaGadgetVista, Dictionary<string, Guid> pListaProyectosOrigen = null)
         {
             if (pListaProyectosOrigen != null && pListaProyectosOrigen.Count > 0)
             {
@@ -270,31 +284,31 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
             List<Guid> listaGadgetsNuevos = new List<Guid>();
 
             //Añadir los nuevos
-            foreach (ContextoModel gadget in pListaGadgets)
+            foreach (ContextoModel gadgetVista in pListaGadgetVista)
             {
-                AniadirGadgetNuevo(listaGadgetsNuevos, gadget, DataWrapperProyecto);
+                AniadirGadgetNuevo(listaGadgetsNuevos, gadgetVista, DataWrapperProyecto);
             }
 
             //Modificar los que tienen cambios
-            foreach (ContextoModel gadget in pListaGadgets)
+            foreach (ContextoModel gadgetVista in pListaGadgetVista)
             {
-                ModificarCambiosGadgetExistente(listaGadgetsNuevos, gadget, DataWrapperProyecto);
+                ModificarCambiosGadgetExistente(listaGadgetsNuevos, gadgetVista, DataWrapperProyecto);
             }
 
             //Eliminar los eliminados
-            foreach (ContextoModel gadget in pListaGadgets)
+            foreach (ContextoModel gadgetVista in pListaGadgetVista)
             {
-                EliminarGadget(listaGadgetsNuevos, gadget, DataWrapperProyecto);
+                EliminarGadget(listaGadgetsNuevos, gadgetVista, DataWrapperProyecto);
             }
 
             //Eliminar las que no se encuentran 
             List<ProyectoGadget> listaProyectoGadget = DataWrapperProyecto.ListaProyectoGadget.ToList();
             foreach (ProyectoGadget filaGadget in listaProyectoGadget)
             {
-                if (mEntityContext.Entry(filaGadget).State != EntityState.Deleted && !pListaGadgets.Any(gadget => gadget.Key == filaGadget.GadgetID))
-                {                    
+                if (mEntityContext.Entry(filaGadget).State != EntityState.Deleted && !pListaGadgetVista.Any(gadget => gadget.Key == filaGadget.GadgetID))
+                {
                     EliminarGadget(filaGadget, DataWrapperProyecto);
-                    
+
 
                     mEntityContext.Entry(filaGadget).State = EntityState.Deleted;
                     DataWrapperProyecto.ListaProyectoGadget.Remove(filaGadget);
@@ -311,7 +325,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
         {
             if (gadget.Deleted && !listaGadgetsNuevos.Contains(gadget.Key))
             {
-                List<ProyectoGadget> filasGadgets = pDataWrapperProyecto.ListaProyectoGadget.Where(gadgetProy=> gadgetProy.GadgetID.Equals(gadget.Key)).ToList();
+                List<ProyectoGadget> filasGadgets = pDataWrapperProyecto.ListaProyectoGadget.Where(gadgetProy => gadgetProy.GadgetID.Equals(gadget.Key)).ToList();
                 if (filasGadgets.Count > 0)
                 {
                     EliminarGadget(filasGadgets.First(), pDataWrapperProyecto);
@@ -322,21 +336,21 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
             }
         }
 
-        private void ModificarCambiosGadgetExistente(List<Guid> listaGadgetsNuevos, ContextoModel gadget, DataWrapperProyecto pDataWrapperProyecto)
+        private void ModificarCambiosGadgetExistente(List<Guid> listaGadgetsNuevos, ContextoModel gadgetVista, DataWrapperProyecto pDataWrapperProyecto)
         {
-            if (!gadget.Deleted && !listaGadgetsNuevos.Contains(gadget.Key))
+            if (!gadgetVista.Deleted && !listaGadgetsNuevos.Contains(gadgetVista.Key))
             {
-                List<ProyectoGadget> filasGadgets = pDataWrapperProyecto.ListaProyectoGadget.Where(gadgetProy=> gadgetProy.GadgetID.Equals(gadget.Key)).ToList();
-                if (filasGadgets.Count > 0)
+                ProyectoGadget gadgetBD = pDataWrapperProyecto.ListaProyectoGadget.Where(gadgetProy => gadgetProy.GadgetID.Equals(gadgetVista.Key)).FirstOrDefault();
+                if (gadgetBD != null)
                 {
-                    GuardarDatosFilaGadget(filasGadgets.First(), gadget);
+                    GuardarDatosFilaGadget(gadgetBD, gadgetVista);
 
-                    if (gadget.Contexto != null && gadget.TipoGadget == TipoGadget.RecursosContextos)
+                    if (gadgetVista.Contexto != null && gadgetVista.TipoGadget == TipoGadget.RecursosContextos)
                     {
-                        ProyectoGadgetContexto filasContextos = pDataWrapperProyecto.ListaProyectoGadgetContexto.Where(gadgetProy => gadgetProy.GadgetID.Equals(gadget.Key)).FirstOrDefault();
-                        if (filasContextos!=null)
+                        ProyectoGadgetContexto filasContextos = pDataWrapperProyecto.ListaProyectoGadgetContexto.Where(gadgetProy => gadgetProy.GadgetID.Equals(gadgetVista.Key)).FirstOrDefault();
+                        if (filasContextos != null)
                         {
-                            GuardarDatosFilaContexto(filasContextos, gadget.Contexto);
+                            GuardarDatosFilaContexto(filasContextos, gadgetVista.Contexto);
                         }
                     }
                 }
@@ -347,8 +361,8 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
         {
             if (!gadget.Deleted)
             {
-                List<ProyectoGadget> filasGadgets = pDataWrapperProyecto.ListaProyectoGadget.Where(gadgetProy=>gadgetProy.GadgetID.Equals(gadget.Key)).ToList();
-                if (filasGadgets.Count == 0)
+                ProyectoGadget proyectoGadget = pDataWrapperProyecto.ListaProyectoGadget.Where(gadgetProy => gadgetProy.GadgetID.Equals(gadget.Key)).FirstOrDefault();
+                if (proyectoGadget == null)
                 {
                     listaGadgetsNuevos.Add(gadget.Key);
                     AgregarGadgetNuevo(gadget, pDataWrapperProyecto);
@@ -384,9 +398,9 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
                 {
                     proyCN.CrearFilasIntegracionContinuaParametro(todasLasPropiedadesIntegracionContinua, ProyectoSeleccionado.Clave, TipoObjeto.Gadget);
 
-                    }
                 }
-            
+            }
+
             catch
             {
                 //Deberia guardar errores en Log?
@@ -450,7 +464,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
                     propiedadesIntegracionContinua.Add(propiedadFiltrosDestino);
                     if (!pEsCarga)
                     {
-                       // pGadget.FiltrosDestino = UtilIntegracionContinua.ObtenerMascaraPropiedad(propiedadFiltrosDestino);
+                        // pGadget.FiltrosDestino = UtilIntegracionContinua.ObtenerMascaraPropiedad(propiedadFiltrosDestino);
                     }
                 }
             }
@@ -466,7 +480,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
                 ProyectoCN proyCN = new ProyectoCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
                 DataWrapperProyecto dataWrapperProyecto = proyCN.ObtenerDataSetGadget(pGadget.Key, ProyectoSeleccionado.Clave);
                 foreach (ProyectoGadgetContexto filaGadget in dataWrapperProyecto.ListaProyectoGadgetContexto)
-                { 
+                {
                     if (!ListaProyectosOrigen.ContainsKey(filaGadget.ComunidadOrigen))
                     {
                         ListaProyectosOrigen.Add(filaGadget.ComunidadOrigen, filaGadget.ProyectoOrigenID);
@@ -488,7 +502,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
                         }
                     }
                 }
-                
+
             }
 
             return errores;
@@ -535,33 +549,23 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
                 {
                     try
                     {
-                        string nombrecorto = contexto.ComunidadOrigen.Substring(0, contexto.ComunidadOrigen.LastIndexOf("/"));
-                        nombrecorto = nombrecorto.Substring(nombrecorto.LastIndexOf("/") + 1);
-
-                        Uri uriComunidadOrigen = new Uri(contexto.ComunidadOrigen);
-                        string dominioProyecto = uriComunidadOrigen.Scheme + "://" + uriComunidadOrigen.Host;
-
+                        string nombrecorto = contexto.ComunidadOrigen;
                         ProyectoCL proyCL = new ProyectoCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mVirtuosoAD, mServicesUtilVirtuosoAndReplication);
-                        Guid proyectoOrigenID = proyCL.ObtenerProyectoIDPorNombreCorto(nombrecorto);
-                        if (!proyectoOrigenID.Equals(Guid.Empty))
+                        if (Uri.IsWellFormedUriString(contexto.ComunidadOrigen, UriKind.RelativeOrAbsolute) && nombrecorto.IndexOf('/') != -1)
                         {
-                            string urlPropia = proyCL.ObtenerURLPropiaProyecto(proyectoOrigenID, UtilIdiomas.LanguageCode);
-                            if (!urlPropia.Equals(dominioProyecto))
-                            {
-                                // El dominio pertenece a otro entorno, hay que hacer una petición al dominio
-                                proyectoOrigenID = Guid.Empty;
-                            }
+                            nombrecorto = contexto.ComunidadOrigen.Substring(0, contexto.ComunidadOrigen.LastIndexOf("/"));
+                            nombrecorto = nombrecorto.Substring(nombrecorto.LastIndexOf("/") + 1);                            
                         }
 
-                        //TODO Recuperar contextos de otros entornos.
-                        //if (proyectoOrigenID.Equals(Guid.Empty))
-                        //{
-                        //    //Si no se especifica el ProyectoOrigen, se busca en comunidadOrigen
-                        //    Es.Riam.Gnoss.Web.Controles.ParametrosConfiguracionWS.ParametrosConfiguracion ParametrosConfiguracion = new Es.Riam.Gnoss.Web.Controles.ParametrosConfiguracionWS.ParametrosConfiguracion();
-                        //    ParametrosConfiguracion.Url = dominioProyecto + "/ParametrosConfiguracion.asmx";
-                        //    proyectoOrigenID = ParametrosConfiguracion.ProyectoIDPorNombreCorto(nombrecorto);
-                        //}
-                        ListaProyectosOrigen.Add(contexto.ComunidadOrigen, proyectoOrigenID);
+                        Guid proyectoOrigenID = proyCL.ObtenerProyectoIDPorNombreCorto(nombrecorto);                        
+                        if(proyectoOrigenID.Equals(Guid.Empty))
+                        {
+                            errores = $"La comunidad origen {nombrecorto} no existe";
+                        }
+                        else
+                        {
+                            ListaProyectosOrigen.Add(contexto.ComunidadOrigen, proyectoOrigenID);
+                        }                        
                     }
                     catch
                     {
@@ -577,19 +581,23 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
         {
             if (string.IsNullOrEmpty(gadget.FiltrosDestino))
             {
-                gadget.FiltrosDestino = "";
+                gadget.FiltrosDestino = string.Empty;
+            }
+            if (string.IsNullOrEmpty(gadget.Contenido))
+            {
+                gadget.Contenido = string.Empty;
             }
             if (string.IsNullOrEmpty(gadget.ShortName))
             {
-                gadget.ShortName = "";
+                gadget.ShortName = string.Empty;
             }
             if (gadget.ShortName.Contains("#"))
             {
-                errores = "NOMBRECORTOGADGET CARACTERESINC|||" + gadget.Key.ToString();
+                errores = $"NOMBRECORTOGADGET CARACTERESINC|||{gadget.Key}";
             }
             if (gadget.ShortName.Contains(" "))
             {
-                errores = "NOMBRECORTOGADGET ESPACIOS|||" + gadget.Key.ToString();
+                errores = $"NOMBRECORTOGADGET ESPACIOS|||{gadget.Key}";
             }
             if (gadget.TipoGadget == TipoGadget.RecursosContextos)
             {
@@ -597,27 +605,27 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
 
                 if (string.IsNullOrEmpty(contexto.ComunidadOrigen))
                 {
-                    errores = "COMUNIDADORIGEN VACIA|||" + gadget.Key.ToString();
+                    errores = $"COMUNIDADORIGEN VACIA|||{gadget.Key}";
                 }
                 if (string.IsNullOrEmpty(contexto.RelacionOrigenDestino))
                 {
-                    errores = "RELACIONFILTROS VACIA|||" + gadget.Key.ToString();
+                    errores = $"RELACIONFILTROS VACIA|||{gadget.Key}";
                 }
                 if (string.IsNullOrEmpty(contexto.FiltrosOrigen))
                 {
-                    contexto.FiltrosOrigen = "";
+                    contexto.FiltrosOrigen = string.Empty;
                 }
                 if (string.IsNullOrEmpty(contexto.OrdenResultados))
                 {
-                    contexto.OrdenResultados = "";
+                    contexto.OrdenResultados = string.Empty;
                 }
                 if (string.IsNullOrEmpty(contexto.NamespacesExtra))
                 {
-                    contexto.NamespacesExtra = "";
+                    contexto.NamespacesExtra = string.Empty;
                 }
                 if (string.IsNullOrEmpty(contexto.ResultadosExcluir))
                 {
-                    contexto.ResultadosExcluir = "";
+                    contexto.ResultadosExcluir = string.Empty;
                 }
             }
 
@@ -643,12 +651,12 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
                     }
                     else
                     {
-                        return "NOMBRECORTO REPETIDO|||" + gadget.Key.ToString();
+                        return $"NOMBRECORTO REPETIDO|||{gadget.Key}";
                     }
                 }
             }
 
-            return "";
+            return string.Empty;
         }
 
         private void AgregarGadgetNuevo(ContextoModel pGadget, DataWrapperProyecto pDataWrapperProyecto)
@@ -658,20 +666,19 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
             filaNuevoGadget.GadgetID = pGadget.Key;
             filaNuevoGadget.ProyectoID = ProyectoSeleccionado.Clave;
             filaNuevoGadget.OrganizacionID = ProyectoSeleccionado.FilaProyecto.OrganizacionID;
-
             filaNuevoGadget.Tipo = (short)pGadget.TipoGadget;
             filaNuevoGadget.Ubicacion = "10";
             filaNuevoGadget.TipoUbicacion = 1;
             filaNuevoGadget.MultiIdioma = false;
+            filaNuevoGadget.Contenido = pGadget.Contenido;
 
             GuardarDatosFilaGadget(filaNuevoGadget, pGadget);
 
-            pDataWrapperProyecto.ListaProyectoGadget.Add(filaNuevoGadget);
             if (!(mEntityContext.ProyectoGadget.Where(proyectoGadget => proyectoGadget.OrganizacionID.Equals(filaNuevoGadget.OrganizacionID) && proyectoGadget.ProyectoID.Equals(filaNuevoGadget.ProyectoID) && proyectoGadget.GadgetID.Equals(filaNuevoGadget.GadgetID)).ToList().Count > 0))
             {
+                pDataWrapperProyecto.ListaProyectoGadget.Add(filaNuevoGadget);
                 mEntityContext.ProyectoGadget.Add(filaNuevoGadget);
             }
-
 
             if (pGadget.Contexto != null && pGadget.TipoGadget == TipoGadget.RecursosContextos)
             {
@@ -692,97 +699,87 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
                 }
             }
         }
-        private void GuardarDatosFilaGadget(ProyectoGadget pFilaGadget, ContextoModel pGadget)
+
+        private void GuardarDatosFilaGadget(ProyectoGadget pGadgetBD, ContextoModel pGadgetVista)
         {
-            pFilaGadget.Titulo = pGadget.Name;
-            pFilaGadget.Clases = pGadget.Clases;
-            pFilaGadget.Visible = pGadget.Visible;
-            pFilaGadget.Orden = pGadget.Orden;
-            pFilaGadget.MultiIdioma = false;
+            pGadgetBD.Titulo = pGadgetVista.Name;
+            pGadgetBD.Clases = pGadgetVista.Clases;
+            pGadgetBD.Visible = pGadgetVista.Visible;
+            pGadgetBD.Orden = pGadgetVista.Orden;
+            pGadgetBD.MultiIdioma = false;
+            pGadgetBD.CargarPorAjax = false;
+            pGadgetBD.ComunidadDestinoFiltros = pGadgetVista.FiltrosDestino;
 
-            pFilaGadget.ComunidadDestinoFiltros = pGadget.FiltrosDestino;
-            
-
-            if (string.IsNullOrEmpty(pGadget.ShortName))
+            if (string.IsNullOrEmpty(pGadgetVista.ShortName))
             {
-                pFilaGadget.NombreCorto = pFilaGadget.GadgetID.ToString();
-                //https://riamgnoss.atlassian.net/browse/CORE-431
-                pGadget.ShortName = pFilaGadget.NombreCorto;
+                pGadgetBD.NombreCorto = pGadgetBD.GadgetID.ToString();
+                pGadgetVista.ShortName = pGadgetBD.NombreCorto;
             }
             else
             {
-                pFilaGadget.NombreCorto = pGadget.ShortName;
+                pGadgetBD.NombreCorto = pGadgetVista.ShortName;
+            }
+                        
+            if (pGadgetVista.TipoGadget == TipoGadget.CMS)
+            {
+                pGadgetBD.CargarPorAjax = pGadgetVista.Ajax;
+            }
+            else if (pGadgetVista.TipoGadget == TipoGadget.RecursosContextos)
+            {
+                pGadgetBD.CargarPorAjax = true;
             }
 
-            pFilaGadget.CargarPorAjax = false;
-            if (pGadget.TipoGadget == TipoGadget.CMS)
+            string contenido = string.Empty;
+            if (!string.IsNullOrEmpty(pGadgetVista.Contenido) && (pGadgetVista.TipoGadget == TipoGadget.HtmlIncrustado || pGadgetVista.TipoGadget == TipoGadget.Consulta || pGadgetVista.TipoGadget == TipoGadget.CMS))
             {
-                pFilaGadget.CargarPorAjax = pGadget.Ajax;
-            }
-            else if (pGadget.TipoGadget == TipoGadget.RecursosContextos)
-            {
-                pFilaGadget.CargarPorAjax = true;
-            }
+                pGadgetVista.Contenido = HttpUtility.UrlDecode(pGadgetVista.Contenido);
 
-            string contenido = "";
-            if (!string.IsNullOrEmpty(pGadget.Contenido) && (pGadget.TipoGadget == TipoGadget.HtmlIncrustado || pGadget.TipoGadget == TipoGadget.Consulta || pGadget.TipoGadget == TipoGadget.CMS))
-            {
-                pGadget.Contenido = HttpUtility.UrlDecode(pGadget.Contenido);
-                Dictionary<string, string> listaContenidoMultiidioma = UtilCadenas.ObtenerTextoPorIdiomas(pGadget.Contenido);
-
-                if (pGadget.TipoGadget == TipoGadget.Consulta || pGadget.TipoGadget == TipoGadget.CMS || listaContenidoMultiidioma.Count == 0)
+                Dictionary<string, string> listaContenidoMultiIdioma = UtilCadenas.ObtenerTextoPorIdiomas(pGadgetVista.Contenido);
+                if (pGadgetVista.TipoGadget == TipoGadget.Consulta || pGadgetVista.TipoGadget == TipoGadget.CMS || listaContenidoMultiIdioma.Count == 0)
                 {
-                    contenido = pGadget.Contenido;
+                    contenido = pGadgetVista.Contenido;
                 }
                 else
                 {
-                    List<ProyectoGadgetIdioma> filasIdimiomas = pFilaGadget.ProyectoGadgetIdioma.ToList();
+                    ProyectoCN proyectoCN = new ProyectoCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+                    List<ProyectoGadgetIdioma> listaProyectoGadgetIdioma = proyectoCN.ObtenerProyectoGadgetIdiomaDeGadget(pGadgetBD.GadgetID);
 
-                    if (listaContenidoMultiidioma.Count == 1)
+                    if (listaContenidoMultiIdioma.Count == 1)
                     {
                         //Si solo hay un idioma no creo las filas en la tabla ProyectoGadgetIdioma, y elimino si habia alguna
-                        contenido = listaContenidoMultiidioma.First().Value;
-
-                        foreach (ProyectoGadgetIdioma filaIdioma in filasIdimiomas)
+                        contenido = listaContenidoMultiIdioma.First().Value;
+                        foreach (ProyectoGadgetIdioma filaIdioma in listaProyectoGadgetIdioma)
                         {
-                            pFilaGadget.ProyectoGadgetIdioma.Remove(filaIdioma);
+                            pGadgetBD.ProyectoGadgetIdioma.Remove(filaIdioma);
                         }
                     }
                     else
                     {
-                        pFilaGadget.MultiIdioma = true;
-                        foreach (string idioma in listaContenidoMultiidioma.Keys)
+                        pGadgetBD.MultiIdioma = true;
+                        foreach (string idioma in listaContenidoMultiIdioma.Keys)
                         {
-                            ProyectoGadgetIdioma filaIdioma = filasIdimiomas.Find(fila => fila.Idioma == idioma);
-                            if (filaIdioma == null)
+                            ProyectoGadgetIdioma proyectoGadgetIdioma = listaProyectoGadgetIdioma.Where(fila => fila.Idioma == idioma).FirstOrDefault();
+                            if (proyectoGadgetIdioma == null)
                             {
-                                filaIdioma = new ProyectoGadgetIdioma();
-                                filaIdioma.GadgetID = pFilaGadget.GadgetID;
-                                filaIdioma.OrganizacionID = pFilaGadget.OrganizacionID;
-                                filaIdioma.ProyectoID = pFilaGadget.ProyectoID;
-                                filaIdioma.Idioma = idioma;
-                                filaIdioma.Contenido = listaContenidoMultiidioma[idioma];
-                                pFilaGadget.ProyectoGadgetIdioma.Add(filaIdioma);
-                                mEntityContext.ProyectoGadgetIdioma.Add(filaIdioma);
-                                DataWrapperProyecto.ListaProyectoGadgetIdioma.Add(filaIdioma);
+                                proyectoGadgetIdioma = new ProyectoGadgetIdioma();
+                                proyectoGadgetIdioma.GadgetID = pGadgetBD.GadgetID;
+                                proyectoGadgetIdioma.OrganizacionID = pGadgetBD.OrganizacionID;
+                                proyectoGadgetIdioma.ProyectoID = pGadgetBD.ProyectoID;
+                                proyectoGadgetIdioma.Idioma = idioma;
+                                proyectoGadgetIdioma.Contenido = listaContenidoMultiIdioma[idioma];
+                                mEntityContext.ProyectoGadgetIdioma.Add(proyectoGadgetIdioma);
+                                DataWrapperProyecto.ListaProyectoGadgetIdioma.Add(proyectoGadgetIdioma);
                             }
-                            else
+                            else if(proyectoGadgetIdioma != null)
                             {
-                                filaIdioma.Contenido = listaContenidoMultiidioma[idioma];
-                            }
-                        }
-
-                        foreach (ProyectoGadgetIdioma filaIdioma in filasIdimiomas)
-                        {
-                            if (!listaContenidoMultiidioma.ContainsKey(filaIdioma.Idioma))
-                            {
-                                pFilaGadget.ProyectoGadgetIdioma.Remove(filaIdioma);
+                                proyectoGadgetIdioma.Contenido = listaContenidoMultiIdioma[idioma];
                             }
                         }
                     }
                 }
             }
-            if (pGadget.TipoGadget == TipoGadget.CMS)
+
+            if (pGadgetVista.TipoGadget == TipoGadget.CMS)
             {
                 Guid testGuid = Guid.Empty;
 
@@ -792,9 +789,9 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
                 }
             }
 
-            pFilaGadget.Contenido = contenido;
-
+            pGadgetBD.Contenido = contenido;
         }
+
         private void GuardarDatosFilaContexto(ProyectoGadgetContexto pFilaContexto, ContextoModel.ContextModel pContexto)
         {
             pFilaContexto.ComunidadOrigen = pContexto.ComunidadOrigen;
@@ -818,7 +815,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
         private void EliminarGadget(ProyectoGadget pFilaGadget, DataWrapperProyecto pDataWrapperProyecto)
         {
             List<ProyectoGadgetIdioma> filasGadgetIdioma = pFilaGadget.ProyectoGadgetIdioma.ToList();
-            if(filasGadgetIdioma.Any())
+            if (filasGadgetIdioma.Any())
             {
                 filasGadgetIdioma = pDataWrapperProyecto.ListaProyectoGadgetIdioma.Where(x => x.GadgetID.Equals(pFilaGadget.GadgetID)).ToList();
             }
@@ -831,12 +828,12 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
             }
             ProyectoGadgetContexto filaGadgetContexto = pFilaGadget.ProyectoGadgetContexto;
 
-            if(filaGadgetContexto == null)
+            if (filaGadgetContexto == null)
             {
                 filaGadgetContexto = pDataWrapperProyecto.ListaProyectoGadgetContexto.Where(x => x.GadgetID.Equals(pFilaGadget.GadgetID)).FirstOrDefault();
             }
 
-            if (filaGadgetContexto!= null)
+            if (filaGadgetContexto != null)
             {
                 mEntityContext.EliminarElemento(filaGadgetContexto);
                 pDataWrapperProyecto.ListaProyectoGadgetContexto.Remove(filaGadgetContexto);

@@ -464,7 +464,7 @@ namespace Es.Riam.Util
                     requestParameters = string.Concat(requestParameters, key, "=", HttpUtility.UrlEncode(pParametros[key]), "&");
                 }
 
-                requestParameters = requestParameters.Substring(requestParameters.Length - 1);
+                requestParameters = requestParameters.Substring(0, requestParameters.Length - 1);
 
                 byte[] byteData = Encoding.UTF8.GetBytes(requestParameters);
                 wr.ContentLength = byteData.Length;

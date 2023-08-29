@@ -844,6 +844,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Models
             /// Indica se el administrador puede cambiar el rol a este usuario (Administrador, supervisor o usuario)
             /// </summary>
             public bool ChangeRol { get; set; }
+            public bool ResetPassword { get; set; }
         }
 
         /// <summary>
@@ -956,5 +957,18 @@ namespace Es.Riam.Gnoss.Web.MVC.Models
         /// Plain user rol
         /// </summary>
         User = 2
+    }
+
+    /// <summary>
+    /// Modelo de peticionContrasenya
+    /// </summary>
+    [Serializable]
+    public partial class PeticionContrasenya
+    {
+        public string pass { get; set; }
+
+        public string nombreCortoUsu { get; set; }
+
+
     }
 }

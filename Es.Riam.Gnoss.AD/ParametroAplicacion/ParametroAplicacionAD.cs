@@ -401,9 +401,14 @@ namespace Es.Riam.Gnoss.AD.ParametroAplicacion
         public static string MantenerSesionActiva { get { return "MantenerSesionActiva"; } }
 
         /// <summary>
-        /// Indica si el usuario sólo se puede estar logueado en un sólo navegador al mismo tiempo
+        /// Indica si se va bloquear el envío de correo a un usuario cuando se sigue a su perfil
         /// </summary>
-        public static string LoginUnicoPorUsuario { get { return "LoginUnicoPorUsuario"; } }
+        public static string NoEnviarCorreoSeguirPerfil { get { return "NoEnviarCorreoSeguirPerfil"; } }
+
+		/// <summary>
+		/// Indica si el usuario sólo se puede estar logueado en un sólo navegador al mismo tiempo
+		/// </summary>
+		public static string LoginUnicoPorUsuario { get { return "LoginUnicoPorUsuario"; } }
 
         /// <summary>
         /// Indica si el usuario se le desconecta de otros navegadores

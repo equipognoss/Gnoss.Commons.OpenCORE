@@ -52,10 +52,10 @@ namespace Es.Riam.Gnoss.UtilServiciosWeb
 
         private byte[] BajarDocumento(string pDirectorio, string pNombreArchivo, string pExtension)
         {
+            mLoggingService.AgregarEntrada("INICIO Peticion BajarDocumento");
             string peticion = Url + "/GetFile?Name=" + pNombreArchivo + "&Extension=" + pExtension + "&Path=" + pDirectorio;
             byte[] respuesta = WebRequestGetBytes(peticion, mToken);
-
-            //return Convert.FromBase64String(respuesta.Replace("\"", ""));
+            mLoggingService.AgregarEntrada("FIN Peticion BajarDocumento");
             return respuesta;
         }
 
@@ -105,15 +105,16 @@ namespace Es.Riam.Gnoss.UtilServiciosWeb
 
         private string SubirDocumento(byte[] pFichero, string pDirectorio, string pNombreArchivo, string pExtension)
         {
+            mLoggingService.AgregarEntrada("INICIO Peticion SubirDocumento");    
             string peticion = Url + "/SetFile?Name=" + pNombreArchivo + "&Extension=" + HttpUtility.UrlEncode(pExtension) + "&Path=" + HttpUtility.UrlEncode(pDirectorio);
-
             //string requestParameters = "FileBytes=" + Convert.ToBase64String(pFichero);
             //byte[] byteData = Encoding.UTF8.GetBytes(requestParameters);
             //requestParameters = null;
             string respuesta = WebRequest("POST", peticion, pFichero, mToken);
+            mLoggingService.AgregarEntrada("FIN Peticion SubirDocumento");
             //byteData = null;
 
-            if(respuesta == "")
+            if (respuesta == "")
             {
                 return respuesta;
             }
@@ -152,9 +153,10 @@ namespace Es.Riam.Gnoss.UtilServiciosWeb
 
         public double ObtenerTamañoArchivo(string pDirectorio, string pNombreArchivo, string pExtension)
         {
+            mLoggingService.AgregarEntrada("INICIO Peticion ObtenerTamañoArchivo");
             string peticion = Url + "/GetSizeFile?Name=" + pNombreArchivo + "&Extension=" + pExtension + "&Path=" + pDirectorio;
             string respuesta = WebRequest("GET", peticion, null, mToken);
-
+            mLoggingService.AgregarEntrada("FIN Peticion ObtenerTamañoArchivo");
             return JsonConvert.DeserializeObject<double>(respuesta);
         }
 
@@ -174,9 +176,10 @@ namespace Es.Riam.Gnoss.UtilServiciosWeb
 
         public bool BorrarDocumentoDeDirectorio(string pDirectorio, string pNombreArchivo, string pExtension)
         {
+            mLoggingService.AgregarEntrada("INICIO Peticion BorrarDocumentoDeDirectorio");
             string peticion = Url + "/DeleteFile?Name=" + pNombreArchivo + "&Extension=" + pExtension + "&Path=" + pDirectorio;
             string respuesta = WebRequest("POST", peticion, null, mToken);
-
+            mLoggingService.AgregarEntrada("FIN Peticion BorrarDocumentoDeDirectorio");
             return JsonConvert.DeserializeObject<bool>(respuesta);
         }
 
@@ -210,17 +213,19 @@ namespace Es.Riam.Gnoss.UtilServiciosWeb
 
         public bool BorrarDocumentosDeDirectorio(string pDirectorio)
         {
+            mLoggingService.AgregarEntrada("INICIO Peticion BorrarDocumentosDeDirectorio");
             string peticion = Url + "/DeleteFilesDirectory?Path=" + pDirectorio ;
             string respuesta = WebRequest("POST", peticion, null, mToken);
-
+            mLoggingService.AgregarEntrada("FIN Peticion BorrarDocumentosDeDirectorio");
             return JsonConvert.DeserializeObject<bool>(respuesta);
         }
 
         public bool BorrarArchivosDeOntologia(Guid pOntologiaID)
         {
+            mLoggingService.AgregarEntrada("INICIO Peticion BorrarArchivosDeOntologia");
             string peticion = Url + "/DeleteFilesOntology?Ontology=" + pOntologiaID;
             string respuesta = WebRequest("POST", peticion, null, mToken);
-
+            mLoggingService.AgregarEntrada("FIN Peticion BorrarArchivosDeOntologia");
             return JsonConvert.DeserializeObject<bool>(respuesta);
         }
 
@@ -228,9 +233,10 @@ namespace Es.Riam.Gnoss.UtilServiciosWeb
         {
             string functionName = (pCopiar ? "CopyFile" : "MoveFile");
 
+            mLoggingService.AgregarEntrada("INICIO Peticion CopiarCortarDocumento");
             string peticion = Url + "/" + functionName + "?Name=" + pNombreArchivo + "&Extension=" + pExtension + "&PathOrigin=" + pDirectorioOrigen + "&PathDestination=" + pDirectorioDestino + "&NameDestination=" + pNombreArchivoDestino;
             string respuesta = WebRequest("POST", peticion, null, mToken);
-
+            mLoggingService.AgregarEntrada("FIN Peticion CopiarCortarDocumento");
             return JsonConvert.DeserializeObject<bool>(respuesta);
         }
 
@@ -252,15 +258,17 @@ namespace Es.Riam.Gnoss.UtilServiciosWeb
             {
                 pDirectorioDestino = pDirectorioDestino.Substring(0, pDirectorioDestino.Length - 1);
             }
-
+            mLoggingService.AgregarEntrada("INICIO Peticion CopiarDocumentosDeDirectorio");
             string peticion = Url + "/CopyDocsDirectory?PathOrigin=" + pDirectorioOrigen + "&PathDestination=" + pDirectorioDestino;
             string respuesta = WebRequest("POST", peticion, null, mToken);
-
+            mLoggingService.AgregarEntrada("FIN Peticion CopiarDocumentosDeDirectorio");
             return JsonConvert.DeserializeObject<bool>(respuesta);
         }
 
         public string[] ObtenerListadoDeDocumentosDeDirectorio(string pDirectorio)
         {
+            mLoggingService.AgregarEntrada("INICIO Peticion BajarDocumento");
+            mLoggingService.AgregarEntrada("FIN Peticion BajarDocumento");
             string peticion = Url + "/GetFilesName?Path=" + pDirectorio;
             string respuesta = WebRequest("GET", peticion, null, mToken);
 
@@ -270,6 +278,8 @@ namespace Es.Riam.Gnoss.UtilServiciosWeb
 
         public string[] ObtenerListadoDeDirectoriosDeDirectorio(string pDirectorio)
         {
+            mLoggingService.AgregarEntrada("INICIO Peticion BajarDocumento");
+            mLoggingService.AgregarEntrada("FIN Peticion BajarDocumento");
             string peticion = Url + "/GetDirectoriesName?Path=" + pDirectorio;
             string respuesta = WebRequest("GET", peticion, null, mToken);
 

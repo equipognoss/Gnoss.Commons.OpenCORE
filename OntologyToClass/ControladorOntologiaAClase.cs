@@ -135,8 +135,8 @@ namespace OntologiaAClase
 
         public void CrearEntidades(ElementoOntologia pEntidad, string pNombreOnto, string pRdfType)
         {
-            EntidadAClase entidadAClase = new EntidadAClase(ontologia, pNombreOnto, contentXML, esPrincipal, listaIdiomas, nombreCortoProy, proyID, nombresOntologia, listaObjetosPropiedad, mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mMassiveOntologyToClass);
-            File.WriteAllText(Path.Combine(directorio, carpetaPadre, nombreCarpeta, $"{pNombreOnto}", UtilCadenasOntology.ObtenerNombreProp(pEntidad.TipoEntidad) + ".cs"), entidadAClase.GenerarClase(pEntidad, pRdfType, listaPropiedadesSearch, listaPropiedadesPadreAnidadasSearch));
+            EntidadAClase entidadAClase = new EntidadAClase(ontologia, pNombreOnto, contentXML, esPrincipal, listaIdiomas, nombreCortoProy, proyID, nombresOntologia, listaObjetosPropiedad, mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mMassiveOntologyToClass, pRdfType);
+            File.WriteAllText(Path.Combine(directorio, carpetaPadre, nombreCarpeta, $"{pNombreOnto}", UtilCadenasOntology.ObtenerNombreProp(pEntidad.TipoEntidad) + ".cs"), entidadAClase.GenerarClase(pEntidad, listaPropiedadesSearch, listaPropiedadesPadreAnidadasSearch));
         }
 
         /// <summary>
@@ -223,9 +223,14 @@ namespace OntologiaAClase
             Clase.AppendLine($"{UtilCadenasOntology.Tabs(3)}{{");
             Clase.AppendLine($"{UtilCadenasOntology.Tabs(4)}this.mGNOSSID = value;");
             Clase.AppendLine($"{UtilCadenasOntology.Tabs(4)}var GnossIDSplit = this.mGNOSSID.Split('_');");
-            Clase.AppendLine($"{UtilCadenasOntology.Tabs(4)}Guid nuevoResource = Guid.Parse(GnossIDSplit[GnossIDSplit.Count() - 2]);");
-            Clase.AppendLine($"{UtilCadenasOntology.Tabs(4)}Guid nuevoArticle = Guid.Parse(GnossIDSplit.Last());");
-            Clase.AppendLine($"{UtilCadenasOntology.Tabs(4)}if(!this.ResourceID.Equals(nuevoResource))");
+            Clase.AppendLine($"{UtilCadenasOntology.Tabs(4)}Guid nuevoResource = Guid.Empty;");
+            Clase.AppendLine($"{UtilCadenasOntology.Tabs(4)}Guid nuevoArticle = Guid.Empty;");
+            Clase.AppendLine($"{UtilCadenasOntology.Tabs(4)}if (GnossIDSplit.Length > 2)");
+            Clase.AppendLine($"{UtilCadenasOntology.Tabs(4)}{{");
+            Clase.AppendLine($"{UtilCadenasOntology.Tabs(5)}nuevoResource = Guid.Parse(GnossIDSplit[GnossIDSplit.Count() - 2]);");
+            Clase.AppendLine($"{UtilCadenasOntology.Tabs(5)}nuevoArticle = Guid.Parse(GnossIDSplit.Last());");
+            Clase.AppendLine($"{UtilCadenasOntology.Tabs(4)}}}");
+            Clase.AppendLine($"{UtilCadenasOntology.Tabs(4)}if (!this.resourceID.Equals(nuevoResource))");
             Clase.AppendLine($"{UtilCadenasOntology.Tabs(4)}{{");
             Clase.AppendLine($"{UtilCadenasOntology.Tabs(5)}this.resourceID = nuevoResource;");
             Clase.AppendLine($"{UtilCadenasOntology.Tabs(4)}}}");
@@ -279,6 +284,8 @@ namespace OntologiaAClase
             Clase.AppendLine();
             ObtenerNumberFloatPropertyValueSemCMS();
             Clase.AppendLine();
+            ObtenerMultiNumberFloatPropertyValueSemCMS();
+			Clase.AppendLine();
             ObtenerDateTimePropertyValueSemCMS();
             Clase.AppendLine();
             ObtenerBoolPropertyValueSemCMS();
@@ -444,7 +451,11 @@ $@"
             Clase.AppendLine();
             Clase.AppendLine($"{UtilCadenasOntology.Tabs(2)}internal string GetExtension(string file)");
             Clase.AppendLine($"{UtilCadenasOntology.Tabs(2)}{{");
-            Clase.AppendLine($"{UtilCadenasOntology.Tabs(3)}return file.Substring(file.LastIndexOf('.'));");
+            Clase.AppendLine($"{UtilCadenasOntology.Tabs(3)}if(!string.IsNullOrEmpty(file))");
+            Clase.AppendLine($"{UtilCadenasOntology.Tabs(3)}{{");
+            Clase.AppendLine($"{UtilCadenasOntology.Tabs(4)}return file.Substring(file.LastIndexOf('.'));");
+            Clase.AppendLine($"{UtilCadenasOntology.Tabs(3)}}}");
+            Clase.AppendLine($"{UtilCadenasOntology.Tabs(3)}return string.Empty;");
             Clase.AppendLine($"{UtilCadenasOntology.Tabs(2)}}}");
             Clase.AppendLine();
         }
@@ -495,7 +506,20 @@ $@"
             Clase.AppendLine($"{UtilCadenasOntology.Tabs(3)}return 0;");
             Clase.AppendLine($"{UtilCadenasOntology.Tabs(2)}}}");
         }
-        public void ObtenerBoolPropertyValueSemCMS()
+
+        public void ObtenerMultiNumberFloatPropertyValueSemCMS()
+        {
+			Clase.AppendLine($"{UtilCadenasOntology.Tabs(2)}public static float? GetNumberFloatPropertyValueSemCms(string pProperty)");
+			Clase.AppendLine($"{UtilCadenasOntology.Tabs(2)}{{");
+			Clase.AppendLine($"{UtilCadenasOntology.Tabs(3)}if(!string.IsNullOrEmpty(pProperty))");
+			Clase.AppendLine($"{UtilCadenasOntology.Tabs(3)}{{");
+			Clase.AppendLine($"{UtilCadenasOntology.Tabs(4)}return float.Parse(pProperty.Replace('.',','));");
+			Clase.AppendLine($"{UtilCadenasOntology.Tabs(3)}}}");
+			Clase.AppendLine($"{UtilCadenasOntology.Tabs(3)}return 0;");
+			Clase.AppendLine($"{UtilCadenasOntology.Tabs(2)}}}");
+		}
+
+		public void ObtenerBoolPropertyValueSemCMS()
         {
             Clase.AppendLine($"{UtilCadenasOntology.Tabs(2)}public static bool GetBooleanPropertyValueSemCms(SemanticPropertyModel pProperty)");
             Clase.AppendLine($"{UtilCadenasOntology.Tabs(2)}{{");

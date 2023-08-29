@@ -38,6 +38,7 @@ using Es.Riam.Gnoss.Util.Configuracion;
 using Es.Riam.Gnoss.Util.General;
 using Es.Riam.Gnoss.Util.Seguridad;
 using Es.Riam.Gnoss.Web.Controles.Proyectos;
+using Es.Riam.Gnoss.Web.Controles.ServicioImagenesWrapper;
 using Es.Riam.Gnoss.Web.MVC.Models;
 using Es.Riam.Gnoss.Web.MVC.Models.Administracion;
 using Es.Riam.Interfaces.InterfacesOpen;
@@ -202,14 +203,22 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
             }
 
             string componentName = RequestParams("ComponentName");
-            if (!string.IsNullOrEmpty(componentName))
+			string componenteid = RequestParams("componenteid");
+
+			if (!string.IsNullOrEmpty(componentName))
             {
                 idiomaPedido = UtilIdiomas.LanguageCode;
                 PintarComponente = true;
                 mRefrescar = false;
             }
+			else if (!string.IsNullOrEmpty(componenteid))
+			{
+				idiomaPedido = UtilIdiomas.LanguageCode;
+				PintarComponente = true;
+				mRefrescar = false;
+			}
 
-            return CargarComponente(PintarComponente, mRefrescar, idiomaPedido);
+			return CargarComponente(PintarComponente, mRefrescar, idiomaPedido);
         }
 
         public CMSComponent CargarComponente(bool pPintar, bool pRefrescar, string pIdioma)
@@ -1365,7 +1374,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
                     }
                     else
                     {
-                        parametros += "&" + pComponente.AtributoDeBusqueda + "=" + filtroDeAtributo;
+                        parametros = pComponente.AtributoDeBusqueda + "=" + filtroDeAtributo + "&" + parametros;
                     }
                 }
 
@@ -1397,6 +1406,10 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
                     //Agregamos los filtros extra
                     foreach (string filtro in listaFiltrosExtra)
                     {
+                        //if (parametros.StartsWith("&&"))
+                        //{
+                        //    parametros = parametros + filtro;
+                        //}
                         if (parametros.StartsWith("&&"))
                         {
                             parametros = filtro + parametros;
@@ -1747,6 +1760,28 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
             proyCL.Dispose();
         }
 
+        private void NumeroRecursosYPersonasYOrganizacionesComunidad(CommunityModel pComunidad, bool pContarPersonasNoVisibles, Guid pProyectoID, TipoProyecto pTipo, Guid pOrganizacion)
+        {
+            ProyectoCL proyCL = new ProyectoCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mVirtuosoAD, mServicesUtilVirtuosoAndReplication);
+
+            bool esMovil = RequestParams("esMovil") == "true";
+
+            int? numRecursos = proyCL.ObtenerContadorRecursosComunidad(mControlador.UrlIntragnoss, pProyectoID, pOrganizacion, pTipo, esMovil);
+
+            if (numRecursos.HasValue)
+            {
+                pComunidad.NumberOfResources = numRecursos.Value;
+            }
+
+            int? numPersonasYOrganizaciones = proyCL.ObtenerContadorPersonasYOrganizacionesComunidad(mControlador.UrlIntragnoss, pProyectoID, pTipo, pContarPersonasNoVisibles);
+
+            if (numPersonasYOrganizaciones.HasValue)
+            {
+                pComunidad.NumberOfPerson = numPersonasYOrganizaciones.Value;
+            }
+            proyCL.Dispose();
+        }
+
         /// <summary>
         /// Obtiene la ficha de un componente de Usuarios Recomendados
         /// </summary>
@@ -2089,6 +2124,18 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
                         mListaProyectos.Add(proyecto);
                     }
                     break;
+                case TipoListadoProyectosCMS.ComunidadesUsuario:
+                    List<Guid> listaComunidades = proyCN.ObtenerProyectosIDParticipaUsuario(UsuarioActual.UsuarioID, pComponente.NumeroItems);
+                    GestionProyecto gestor = new GestionProyecto(proyCN.ObtenerProyectosPorIDsCargaLigera(listaComunidades), mLoggingService, mEntityContext);
+
+                    foreach (Guid proyectoID in listaComunidades)
+                    {
+                        if (gestor.ListaProyectos.ContainsKey(proyectoID))
+                        {
+                            mListaProyectos.Add(gestor.ListaProyectos[proyectoID]);
+                        }
+                    }
+                    break;
             }
             proyCN.Dispose();
 
@@ -2109,12 +2156,22 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
 
                 string nombreImagenePeque = new ControladorProyecto(mLoggingService, mEntityContext, mConfigService, mRedisCacheWrapper, mGnossCache, mEntityContextBASE, mVirtuosoAD, mHttpContextAccessor, mServicesUtilVirtuosoAndReplication).ObtenerFilaParametrosGeneralesDeProyecto(proy.Clave).NombreImagenPeque;
                 string urlFoto = mControlador.BaseURLContent + "/" + UtilArchivos.ContentImagenes + "/" + UtilArchivos.ContentImagenesProyectos + "/" + nombreImagenePeque;
+                comunidad.Logo = urlFoto;
                 if (nombreImagenePeque == "peque")
                 {
                     urlFoto = mControlador.BaseURLStatic + "/img" + "/" + UtilArchivos.ContentImgIconos + "/" + UtilArchivos.ContentImagenesProyectos + "/" + "anonimo_peque.png";
+                    comunidad.Logo = CargarImagenSup(proy.Clave);
+                    if (string.IsNullOrEmpty(comunidad.Logo))
+                    {
+                        comunidad.Logo = urlFoto;
+                    }
                 }
-                comunidad.Logo = urlFoto;
-
+                
+                
+                comunidad.AccessType = (CommunityModel.TypeAccessProject) proy.TipoAcceso;
+                NumeroRecursosYPersonasYOrganizacionesComunidad(comunidad, true, proy.Clave, proy.TipoProyecto, proy.FilaProyecto.OrganizacionID);
+                //comunidad.NumberOfResources = proy.NumRecusosTotales;
+                comunidad.ProyectType = (CommunityModel.TypeProyect) proy.TipoProyecto;
                 fichaComponenteListaProyectos.Communities.Add(comunidad);
             }
 
@@ -2598,10 +2655,10 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
                 if (pestanyaBusqueda == null)
                 {
                     //SANTI. Comprobar primero que empieza por pUrlAux +  @es. Si es nulo comprobar que contiene ||| + pUrlAux + @ + idiomaOriginal
-                    pestanyaBusqueda = mControlador.ProyectoSeleccionado.ListaPestanyasMenu.Values.FirstOrDefault(item => item.Ruta.StartsWith($"{pUrlAux}@es", StringComparison.InvariantCultureIgnoreCase));
+                    pestanyaBusqueda = mControlador.ProyectoSeleccionado.ListaPestanyasMenu.Values.FirstOrDefault(item => !string.IsNullOrEmpty(item.Ruta) && item.Ruta.StartsWith($"{pUrlAux}@es", StringComparison.InvariantCultureIgnoreCase));
                     if (pestanyaBusqueda == null)
                     {
-                        pestanyaBusqueda = mControlador.ProyectoSeleccionado.ListaPestanyasMenu.Values.FirstOrDefault(item => item.Ruta.Contains($"|||{pUrlAux}@{idiomaOriginal}", StringComparison.InvariantCultureIgnoreCase));
+                        pestanyaBusqueda = mControlador.ProyectoSeleccionado.ListaPestanyasMenu.Values.FirstOrDefault(item => !string.IsNullOrEmpty(item.Ruta) && item.Ruta.Contains($"|||{pUrlAux}@{idiomaOriginal}", StringComparison.InvariantCultureIgnoreCase));
                         if (pestanyaBusqueda == null)
                         {
                             foreach (Guid idPestanya in mControlador.ProyectoSeleccionado.ListaPestanyasMenu.Keys)

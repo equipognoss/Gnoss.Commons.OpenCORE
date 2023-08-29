@@ -41,7 +41,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
         private IServicesUtilVirtuosoAndReplication mServicesUtilVirtuosoAndReplication;
 
         /// <summary>
-        /// 
+        /// Constructor del ControladorSeoGoogle con parámetros
         /// </summary>
         public ControladorSeoGoogle(Proyecto pProyecto, EntityContext entityContext, LoggingService loggingService, RedisCacheWrapper redisCacheWrapper, ConfigService configService, VirtuosoAD virtuosoAD, IHttpContextAccessor httpContextAccessor, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication)
         {
@@ -56,7 +56,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
         }
 
         /// <summary>
-        /// 
+        /// Constructor del ControladorSeoGoogle 
         /// </summary>
         public ControladorSeoGoogle()
         {
@@ -68,9 +68,13 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
             ControladorProyecto controladorProyecto = new ControladorProyecto(mLoggingService, mEntityContext, mConfigService, mRedisCacheWrapper, null, null, mVirtuosoAD, mHttpContextAccessor, null);
             
             controladorProyecto.GuardarParametroString(ParametrosGeneralesDS, ParametroAD.RobotsComunidad, pOptions.ValorRobotsBusqueda);
-            controladorProyecto.GuardarParametroString(ParametrosGeneralesDS, "ScriptGoogleAnalytics", pOptions.ScriptGoogleAnalytics);
+            controladorProyecto.GuardarParametroString(ParametrosGeneralesDS, "ScriptGoogleAnalytics", pOptions.ScriptGoogleAnalyticsPropio);
             controladorProyecto.GuardarParametroString(ParametrosGeneralesDS, "CodigoGoogleAnalytics", pOptions.CodigoGoogleAnalytics);
-            
+
+            ParametroGeneral parametroGeneral = ParametrosGeneralesDS.ListaParametroGeneral.Where(p => p.ProyectoID.Equals(ProyectoSeleccionado.Clave)).FirstOrDefault();
+            parametroGeneral.ScriptGoogleAnalytics = pOptions.ScriptGoogleAnalyticsPropio;
+            parametroGeneral.CodigoGoogleAnalytics = pOptions.CodigoGoogleAnalytics;
+
             mEntityContext.NoConfirmarTransacciones = true;
             try
             {
@@ -113,6 +117,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
                 return mGestorParametrosAplicacion;
             }
         }
+
         /// <summary>
         /// Obtiene el dataset de parámetros generales
         /// </summary>
@@ -128,13 +133,13 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
                     foreach (string parametro in ParametroProyecto.Keys)
                     {
                         ParametroProyecto parametroProyecto = new ParametroProyecto(ProyectoSeleccionado.FilaProyecto.OrganizacionID, ProyectoSeleccionado.Clave, parametro, ParametroProyecto[parametro]);
-                        //mParametrosGeneralesDS.ParametroProyecto.AddParametroProyectoRow(ProyectoSeleccionado.FilaProyecto.OrganizacionID, ProyectoSeleccionado.Clave, parametro, ParametroProyecto[parametro]);
                         mParametrosGeneralesDS.ListaParametroProyecto.Add(parametroProyecto);
                     }
                 }
                 return mParametrosGeneralesDS;
             }
         }
+
         /// <summary>
         /// Parámetros de un proyecto.
         /// </summary>
@@ -159,12 +164,12 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
             {
                 if (mFilaParametrosGenerales == null)
                 {
-                    //mFilaParametrosGenerales = ParametrosGeneralesDS.ParametroGeneral.FindByOrganizacionIDProyectoID(ProyectoSeleccionado.FilaProyecto.OrganizacionID, ProyectoSeleccionado.Clave);
                     mFilaParametrosGenerales = ParametrosGeneralesDS.ListaParametroGeneral.Find(parametrosGenerales => parametrosGenerales.OrganizacionID.Equals(ProyectoSeleccionado.FilaProyecto.OrganizacionID) && parametrosGenerales.ProyectoID.Equals(ProyectoSeleccionado.Clave));
                 }
                 return mFilaParametrosGenerales;
             }
         }
+
         public void InvalidarCaches()
         {
             ParametroGeneralCL parametroGeneralCL = new ParametroGeneralCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, null);

@@ -1,14 +1,12 @@
 using Es.Riam.Gnoss.AD.Documentacion;
 using Es.Riam.Gnoss.AD.EncapsuladoDatos;
 using Es.Riam.Gnoss.AD.EntityModel;
-using Es.Riam.Gnoss.AD.Parametro;
 using Es.Riam.Gnoss.AD.RDF.Model;
 using Es.Riam.Gnoss.AD.ServiciosGenerales;
 using Es.Riam.Gnoss.Elementos.Documentacion.AddToGnoss;
 using Es.Riam.Gnoss.Elementos.Documentacion.FichaDocumento;
 using Es.Riam.Gnoss.Elementos.Identidad;
 using Es.Riam.Gnoss.Elementos.Tesauro;
-using Es.Riam.Gnoss.Logica.ParametroAplicacion;
 using Es.Riam.Gnoss.Util.General;
 using Es.Riam.Gnoss.Util.Seguridad;
 using Es.Riam.Gnoss.Web.MVC.Models;
@@ -767,7 +765,7 @@ namespace Es.Riam.Gnoss.Elementos.Documentacion
                 pDocumento.FilaDocumento.UltimaVersion = false;
                 mEntityContext.Documento.Update(pDocumento.FilaDocumento);
             }
-            else if(!filaDocumento.Tipo.Equals(TiposDocumentacion.Hipervinculo))
+            else if (!filaDocumento.Tipo.Equals(TiposDocumentacion.Hipervinculo))
             {
                 filaDocumento.Enlace = filaDocumento.Enlace = pDocumento.FilaDocumento.Enlace; // David: El enlace en las versiones no se mantiene ya que es obligatorio cambiarlo
             }
@@ -833,7 +831,7 @@ namespace Es.Riam.Gnoss.Elementos.Documentacion
                 {
                     filaDocWebVinBR.PrivadoEditores = filaAuxBaseRecursos.PrivadoEditores;
                 }
-                
+
                 if (filaAuxBaseRecursos.NivelCertificacionID.HasValue)
                 {
                     filaDocWebVinBR.NivelCertificacionID = filaAuxBaseRecursos.NivelCertificacionID;
@@ -1371,8 +1369,7 @@ namespace Es.Riam.Gnoss.Elementos.Documentacion
             }
 
             if (pOrdenarPorFecha)
-            {//   return pTabla.Select("", pCampo + " DESC");
-
+            {
                 if (DataWrapperDocumentacion != null)
                 {
                     foreach (AD.EntityModel.Models.Documentacion.Documento filaDocumento in DataWrapperDocumentacion.ListaDocumento.OrderByDescending(doc => doc.FechaCreacion.Value))
@@ -1390,7 +1387,6 @@ namespace Es.Riam.Gnoss.Elementos.Documentacion
                         }
                     }
                 }
-
             }
             else
             {
@@ -2672,7 +2668,7 @@ namespace Es.Riam.Gnoss.Elementos.Documentacion
             {
                 documentoMetaDatos.MetaTitulo = pMetaTitulo;
             }
-            
+
             mEntityContext.SaveChanges();
             return documentoMetaDatos;
         }
@@ -2698,7 +2694,7 @@ namespace Es.Riam.Gnoss.Elementos.Documentacion
             {
                 documentoMetaDatos.MetaDescripcion = pMetaDescripcion;
             }
-            
+
             mEntityContext.SaveChanges();
             return documentoMetaDatos;
         }
@@ -3795,7 +3791,7 @@ namespace Es.Riam.Gnoss.Elementos.Documentacion
         /// <param name="disposing">Determina si se está llamando desde el Dispose()</param>
         protected override void Dispose(bool disposing)
         {
-            if (!this.disposed)
+            if (!disposed)
             {
                 disposed = true;
                 try
@@ -3804,41 +3800,49 @@ namespace Es.Riam.Gnoss.Elementos.Documentacion
                     {
                         //Libero todos los recursos administrados que he añadido a esta clase
 
-                        if (this.mListaDocumentos != null)
+                        if (mListaDocumentos != null)
                         {
                             foreach (Documento doc in mListaDocumentos.Values)
                             {
                                 doc.Dispose();
                             }
-
-                            this.mListaDocumentos.Clear();
+                            mListaDocumentos.Clear();
                         }
 
+                        if (mListaDocumentosCopiados != null)
+                        {
+                            mListaDocumentosCopiados.Clear();
+                        }   
 
-                        if (this.mListaDocumentosCopiados != null)
-                            this.mListaDocumentosCopiados.Clear();
+                        if (mListaDocumentosDestacados != null)
+                        {
+                            mListaDocumentosDestacados.Clear();
+                        }   
 
-                        if (this.mListaDocumentosDestacados != null)
-                            this.mListaDocumentosDestacados.Clear();
+                        if (mListaDocumentosSubidosServidor != null)
+                        {
+                            mListaDocumentosSubidosServidor.Clear();
+                        }   
 
-                        if (this.mListaDocumentosSubidosServidor != null)
-                            this.mListaDocumentosSubidosServidor.Clear();
-
-                        if (this.mListaDocumentosAEliminarDelServidor != null)
-                            this.mListaDocumentosAEliminarDelServidor.Clear();
+                        if (mListaDocumentosAEliminarDelServidor != null)
+                        {
+                            mListaDocumentosAEliminarDelServidor.Clear();
+                        }   
 
                         if (mRdfDS != null)
+                        {
                             mRdfDS.Dispose();
+                        }   
                     }
                 }
                 finally
                 {
-                    this.mListaDocumentos = null;
-                    this.mListaDocumentosCopiados = null;
-                    this.mListaDocumentosDestacados = null;
-                    this.mListaDocumentosSubidosServidor = null;
-                    this.mListaDocumentosAEliminarDelServidor = null;
-                    this.mRdfDS = null;
+                    mListaDocumentos = null;
+                    mListaDocumentosCopiados = null;
+                    mListaDocumentosDestacados = null;
+                    mListaDocumentosSubidosServidor = null;
+                    mListaDocumentosAEliminarDelServidor = null;
+                    mRdfDS = null;
 
                     // Llamo al dispose de la clase base
                     base.Dispose(disposing);

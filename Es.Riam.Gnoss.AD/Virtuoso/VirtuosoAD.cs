@@ -61,20 +61,13 @@ namespace Es.Riam.Gnoss.AD.Virtuoso
         public VirtuosoAD(LoggingService loggingService, EntityContext entityContext, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication, string cadenaConexion = "")
         {
             mServicesUtilVirtuosoAndReplication = servicesUtilVirtuosoAndReplication;
-            if (mServicesUtilVirtuosoAndReplication != null)
-            {
-                if (string.IsNullOrEmpty(cadenaConexion))
-                {
-                    mServicesUtilVirtuosoAndReplication.CadenaConexion = configService.ObtenerVirtuosoConnectionString();
-                }
-                else
-                {
-                    mServicesUtilVirtuosoAndReplication.CadenaConexion = cadenaConexion;
-                }
-            }
             mLoggingService = loggingService;
             mEntityContext = entityContext;
-            mConfigService = configService; 
+            mConfigService = configService;
+            if (!string.IsNullOrEmpty(cadenaConexion))
+            {
+                mServicesUtilVirtuosoAndReplication.CadenaConexion = cadenaConexion;
+            }
         }
 
         #endregion
@@ -459,7 +452,7 @@ namespace Es.Riam.Gnoss.AD.Virtuoso
             }
         }
        
-        public string AfinidadVirtuoso { get; set; }
+        public string AfinidadVirtuoso { get { return mServicesUtilVirtuosoAndReplication.ConexionAfinidadVirtuoso; } }
         
         /// <summary>
         /// Terminamos la transaccción

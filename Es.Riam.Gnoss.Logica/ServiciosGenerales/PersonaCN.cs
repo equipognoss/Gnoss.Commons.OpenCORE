@@ -751,6 +751,11 @@ namespace Es.Riam.Gnoss.Logica.ServiciosGenerales
             return PersonaAD.ObtenerPersonasDeUsuarios(pListaUsuariosID);
         }
 
+        public void ModificarCorreoPersona(Guid pPersonaID, string pCorreoNuevo)
+        {
+            PersonaAD.ModificarCorreoPersona(pPersonaID, pCorreoNuevo);
+        }
+
         /// <summary>
         /// Obtiene el nombre de las personas de unos usuarios.
         /// </summary>

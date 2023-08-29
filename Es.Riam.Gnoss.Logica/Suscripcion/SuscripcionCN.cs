@@ -194,7 +194,7 @@ namespace Es.Riam.Gnoss.Logica.Suscripcion
         /// <returns>Identidad del seguidor de un blog</returns>
         public Guid ObtenerIdentidadSeguidorBlogPorIDSuscripcion(Guid pSuscripcionID)
         {
-            return ObtenerIdentidadSeguidorBlogPorIDSuscripcion(pSuscripcionID);
+            return SuscripcionAD.ObtenerIdentidadSeguidorBlogPorIDSuscripcion(pSuscripcionID);
         }
 
         /// <summary>

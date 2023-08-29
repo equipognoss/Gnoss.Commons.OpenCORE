@@ -661,7 +661,7 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextOracleMigrations
                     CompartirPermitido = table.Column<bool>(type: "NUMBER(1)", nullable: false),
                     ElementoVinculadoID = table.Column<Guid>(type: "RAW(16)", nullable: true),
                     Titulo = table.Column<string>(type: "NVARCHAR2(1000)", maxLength: 1000, nullable: false),
-                    Descripcion = table.Column<string>(type: "NVARCHAR2(2000)", nullable: true),
+                    Descripcion = table.Column<string>(type: "NCLOB", nullable: true),
                     Tipo = table.Column<short>(type: "NUMBER(5)", nullable: false),
                     Enlace = table.Column<string>(type: "NVARCHAR2(1200)", maxLength: 1200, nullable: true),
                     FechaCreacion = table.Column<DateTime>(type: "TIMESTAMP(7)", nullable: true),
@@ -2393,7 +2393,7 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextOracleMigrations
                     Ubicacion = table.Column<short>(type: "NUMBER(5)", nullable: false),
                     BloquePadreID = table.Column<Guid>(type: "RAW(16)", nullable: true),
                     Orden = table.Column<short>(type: "NUMBER(5)", nullable: false),
-                    Estilos = table.Column<string>(type: "NCLOB", nullable: false),
+                    Estilos = table.Column<string>(type: "NVARCHAR2(2000)", nullable: false),
                     Borrador = table.Column<bool>(type: "NUMBER(1)", nullable: false)
                 },
                 constraints: table =>
@@ -3604,7 +3604,7 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextOracleMigrations
                     VisibleSinAcceso = table.Column<bool>(type: "NUMBER(1)", nullable: false),
                     CSSBodyClass = table.Column<string>(type: "NVARCHAR2(2000)", nullable: true),
                     Activa = table.Column<bool>(type: "NUMBER(1)", nullable: false),
-                    MetaDescription = table.Column<string>(type: "NVARCHAR2(500)", maxLength: 500, nullable: true)
+                    MetaDescription = table.Column<string>(type: "NVARCHAR2(1000)", maxLength: 1000, nullable: true)
                 },
                 constraints: table =>
                 {
@@ -4856,7 +4856,7 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextOracleMigrations
                     Nombre = table.Column<string>(type: "NVARCHAR2(100)", maxLength: 100, nullable: true),
                     NombreCorto = table.Column<string>(type: "NVARCHAR2(50)", maxLength: 50, nullable: true),
                     Tipo = table.Column<short>(type: "NUMBER(5)", nullable: false),
-                    Descripcion = table.Column<string>(type: "NVARCHAR2(2000)", nullable: true),
+                    Descripcion = table.Column<string>(type: "NCLOB", nullable: true),
                     EsEditable = table.Column<bool>(type: "NUMBER(1)", nullable: false),
                     CategoriaID = table.Column<Guid>(type: "RAW(16)", nullable: false),
                     ProyectoID = table.Column<Guid>(type: "RAW(16)", nullable: false),

@@ -190,7 +190,7 @@ namespace Es.Riam.Semantica.Plantillas
                 string nombrePropiedadEncaminante = null;
                 string nombreVerdaderaPropiedad = null;
 
-                if (pNombre.Contains("/") && !pNombre.Contains("http://"))
+                if (pNombre.Contains("/") && !pNombre.Contains("http://") && !pNombre.Contains("https://"))
                 {
                     nombrePropiedadEncaminante = pNombre.Substring(0, pNombre.IndexOf("/"));
                     nombreVerdaderaPropiedad = pNombre.Substring(pNombre.IndexOf("/") + 1);
@@ -209,10 +209,14 @@ namespace Es.Riam.Semantica.Plantillas
                         {
                             if (propiedad.FunctionalProperty && propiedad.UnicoValor.Key != null)
                             {
-                                Propiedad propAux = ObtenerPropiedadACualquierNivelPorNombre(pNombre, pTipoEntidad, propiedad.UnicoValor.Value);
-                                if (propAux != null)
+                                if (propiedad.UnicoValor.Value != null && !propiedad.UnicoValor.Value.ID.Equals(pEntidad.ID))
                                 {
-                                    return propAux;
+                                    Propiedad propAux = ObtenerPropiedadACualquierNivelPorNombre(pNombre, pTipoEntidad, propiedad.UnicoValor.Value);
+
+                                    if (propAux != null)
+                                    {
+                                        return propAux;
+                                    }
                                 }
                             }
                             else if (!propiedad.FunctionalProperty && propiedad.ListaValores.Count > 0)
@@ -220,12 +224,17 @@ namespace Es.Riam.Semantica.Plantillas
                                 //Devolvemos la 1º entidad ya que solo nos intersa el nombre  de la propiedad que tenga ésta:
                                 foreach (ElementoOntologia entidad in propiedad.ListaValores.Values)
                                 {
-                                    Propiedad propAux = ObtenerPropiedadACualquierNivelPorNombre(pNombre, pTipoEntidad, entidad);
-                                    if (propAux != null)
+                                    if (entidad != null && !entidad.ID.Equals(pEntidad.ID))
                                     {
-                                        return propAux;
+                                        Propiedad propAux = ObtenerPropiedadACualquierNivelPorNombre(pNombre, pTipoEntidad, entidad);
+
+                                        if (propAux != null)
+                                        {
+                                            return propAux;
+                                        }
+
+                                        break;
                                     }
-                                    break;
                                 }
                             }
                             else
@@ -245,10 +254,13 @@ namespace Es.Riam.Semantica.Plantillas
                         {
                             if (propiedad.FunctionalProperty && propiedad.UnicoValor.Key != null)
                             {
-                                Propiedad propAux = ObtenerPropiedadACualquierNivelPorNombre(nombreVerdaderaPropiedad, pTipoEntidad, propiedad.UnicoValor.Value);
-                                if (propAux != null)
+                                if (propiedad.UnicoValor.Value != null && !propiedad.UnicoValor.Value.ID.Equals(pEntidad.ID))
                                 {
-                                    return propAux;
+                                    Propiedad propAux = ObtenerPropiedadACualquierNivelPorNombre(nombreVerdaderaPropiedad, pTipoEntidad, propiedad.UnicoValor.Value);
+                                    if (propAux != null)
+                                    {
+                                        return propAux;
+                                    }
                                 }
                             }
                             else if (!propiedad.FunctionalProperty && propiedad.ListaValores.Count > 0)
@@ -256,12 +268,15 @@ namespace Es.Riam.Semantica.Plantillas
                                 //Devolvemos la 1º entidad ya que solo nos intersa el nombre  de la propiedad que tenga ésta:
                                 foreach (ElementoOntologia entidad in propiedad.ListaValores.Values)
                                 {
-                                    Propiedad propAux = ObtenerPropiedadACualquierNivelPorNombre(nombreVerdaderaPropiedad, pTipoEntidad, entidad);
-                                    if (propAux != null)
+                                    if (entidad != null && !entidad.ID.Equals(pEntidad.ID))
                                     {
-                                        return propAux;
+                                        Propiedad propAux = ObtenerPropiedadACualquierNivelPorNombre(nombreVerdaderaPropiedad, pTipoEntidad, entidad);
+                                        if (propAux != null)
+                                        {
+                                            return propAux;
+                                        }
+                                        break;
                                     }
-                                    break;
                                 }
                             }
                             else

@@ -391,21 +391,44 @@ namespace Es.Riam.Gnoss.AD.Facetado
         }
 
         /// <summary>
-        /// Obtiene el id de la organizacion
+        /// Obtiene la lista de identidad id a partir de un persona id
         /// </summary>
-        /// <param name="IDproyecto"></param>
-        /// <param name="IDpersona"></param>
+        /// <param name="pProyectoID"></param>
+        /// <param name="pPersonaID"></param>
         /// <param name="pTraerEliminados"></param>
         /// <returns></returns>
-        public Guid? ObtieneIDIdentidadOrg(Guid IDproyecto, Guid IDpersona, bool pTraerEliminados)
+        public List<Guid> ObtieneListaIDsIdentidad(Guid pProyectoID, Guid pPersonaID, bool pTraerEliminados)
         {
-            var consulta = mEntityContext.Perfil.JoinIdentidad().Where(x => x.Identidad.ProyectoID.Equals(IDproyecto) && x.Perfil.PersonaID.Equals(IDpersona) && x.Identidad.Tipo == 3);
+            var consulta = mEntityContext.Perfil.JoinIdentidad().Where(x => x.Identidad.ProyectoID.Equals(pProyectoID) && x.Perfil.PersonaID.Equals(pPersonaID));
 
             if (!pTraerEliminados)
             {
                 consulta = consulta.Where(x => !x.Identidad.FechaBaja.HasValue && x.Perfil.Eliminado == false && !x.Identidad.FechaExpulsion.HasValue);
             }
-            if (IDproyecto.Equals(ProyectoAD.MetaProyecto))
+            if (pProyectoID.Equals(ProyectoAD.MetaProyecto))
+            {
+                consulta = consulta.Where(x => x.Identidad.Tipo == 0);
+            }
+
+            return consulta.Select(x => x.Identidad.IdentidadID).ToList();
+        }
+
+        /// <summary>
+        /// Obtiene el id de la organizacion
+        /// </summary>
+        /// <param name="pProyectoID"></param>
+        /// <param name="pOrganizacionID"></param>
+        /// <param name="pTraerEliminados"></param>
+        /// <returns></returns>
+        public Guid? ObtieneIDIdentidadOrg(Guid pProyectoID, Guid pOrganizacionID, bool pTraerEliminados)
+        {
+            var consulta = mEntityContext.Perfil.JoinIdentidad().Where(x => x.Identidad.ProyectoID.Equals(pProyectoID) && x.Perfil.OrganizacionID.Equals(pOrganizacionID) && x.Identidad.Tipo == 3);
+
+            if (!pTraerEliminados)
+            {
+                consulta = consulta.Where(x => !x.Identidad.FechaBaja.HasValue && x.Perfil.Eliminado == false && !x.Identidad.FechaExpulsion.HasValue);
+            }
+            if (pProyectoID.Equals(ProyectoAD.MetaProyecto))
             {
                 consulta = consulta.Where(x => x.Identidad.Tipo == 0);
             }
@@ -491,7 +514,7 @@ namespace Es.Riam.Gnoss.AD.Facetado
                     {
                         Sujeto = $"<http://gnoss/{item.Identidad.IdentidadID.ToString().ToUpper()}>",
                         Predicado = hasPrivacidad,
-                        Objeto = "\"publicReg\""
+                        Objeto = "\"publicoreg\""
                     }).Distinct()).Union(consulta3.ToList().Select(item => new QueryTriples
                     {
                         Sujeto = $"<http://gnoss/{item.Identidad.IdentidadID.ToString().ToUpper()}>",
@@ -531,7 +554,7 @@ namespace Es.Riam.Gnoss.AD.Facetado
                     {
                         Sujeto = $"<http://gnoss/{item.Identidad.IdentidadID.ToString().ToUpper()}>",
                         Predicado = hasPrivacidad,
-                        Objeto = "\"publicoReg\""
+                        Objeto = "\"publicoreg\""
                     })).Union(consulta3.Select(item => new QueryTriples
                     {
                         Sujeto = $"<http://gnoss/{item.Identidad.IdentidadID.ToString().ToUpper()}>",
@@ -783,7 +806,7 @@ namespace Es.Riam.Gnoss.AD.Facetado
             {
                 Sujeto = $"<http://gnoss/{item.Documento.DocumentoID.ToString().ToUpper()}>",
                 Predicado = "<http://gnoss/haspublicador>",
-                Objeto = $"\"{item.Perfil.NombrePerfil} - {item.Perfil.NombreOrganizacion}\" ."
+                Objeto = $"\"{item.Perfil.NombrePerfil} {ConstantesDeSeparacion.SEPARACION_CONCATENADOR} {item.Perfil.NombreOrganizacion}\" ."
             })).Union(consulta10.Select(item => new QueryTriples
             {
                 Sujeto = $"<http://gnoss/{item.Documento.DocumentoID.ToString().ToUpper()}>",
@@ -980,7 +1003,7 @@ namespace Es.Riam.Gnoss.AD.Facetado
             {
                 Sujeto = $"<http://gnoss/{item.Documento.DocumentoID.ToString().ToUpper()}>",
                 Predicado = "<http://gnoss/haspublicador>",
-                Objeto = $"\"{item.Perfil.NombrePerfil} - {item.Perfil.NombreOrganizacion}\" ."
+                Objeto = $"\"{item.Perfil.NombrePerfil} {ConstantesDeSeparacion.SEPARACION_CONCATENADOR} {item.Perfil.NombreOrganizacion}\" ."
             })).Union(consulta10.Select(item => new QueryTriples
             {
                 Sujeto = $"<http://gnoss/{item.Documento.DocumentoID.ToString().ToUpper()}>",
@@ -995,7 +1018,7 @@ namespace Es.Riam.Gnoss.AD.Facetado
             {
                 Sujeto = $"<http://gnoss/{item.Documento.DocumentoID.ToString().ToUpper()}>",
                 Predicado = "<http://gnoss/hasautor>",
-                Objeto = $"\"{item.Perfil.NombrePerfil} - {item.Perfil.NombreOrganizacion}\" ."
+                Objeto = $"\"{item.Perfil.NombrePerfil} {ConstantesDeSeparacion.SEPARACION_CONCATENADOR} {item.Perfil.NombreOrganizacion}\" ."
             })).Union(consulta13.Select(item => new QueryTriples
             {
                 Sujeto = $"<http://gnoss/{item.Documento.DocumentoID.ToString().ToUpper()}>",
@@ -1201,7 +1224,7 @@ namespace Es.Riam.Gnoss.AD.Facetado
                 if (!pProyectoID.Equals(ProyectoAD.MetaProyecto))
                 {
                     var consultaDocumentoRolGrupoIdentidades = mEntityContext.Documento.JoinDocumentoDocumentoRolGrupoIdentidades().JoinGrupoIdentidades().Where(item => !item.Documento.Eliminado && item.Documento.UltimaVersion && pListaRecursoId.Contains(item.DocumentoRolGrupoIdentidades.DocumentoID))
-                        .Select(x => new { x.Documento.DocumentoID , x.DocumentoRolGrupoIdentidades.Editor , x.DocumentoRolGrupoIdentidades.GrupoID , x.GrupoIdentidades.Nombre}).Distinct();
+                        .Select(x => new { x.Documento.DocumentoID, x.DocumentoRolGrupoIdentidades.Editor, x.DocumentoRolGrupoIdentidades.GrupoID, x.GrupoIdentidades.Nombre }).Distinct();
 
                     //DocumentoRolGrupoIdentidades
                     foreach (var resultado in consultaDocumentoRolGrupoIdentidades)
@@ -1218,7 +1241,7 @@ namespace Es.Riam.Gnoss.AD.Facetado
                     }
 
                     var consultaDocumentoRolIdentidad = mEntityContext.Identidad.JoinDocumentoRolIdentidad().JoinDocumento().JoinPerfil().JoinProyecto().Where(item => !item.Documento.Eliminado && item.Proyecto.ProyectoID.Equals(pProyectoID) && pListaRecursoId.Contains(item.DocumentoRolIdentidad.DocumentoID) && !item.Identidad.FechaBaja.HasValue && !item.Identidad.FechaExpulsion.HasValue)
-                        .Select(x => new { x.Documento.DocumentoID, x.DocumentoRolIdentidad.Editor ,x.Identidad.IdentidadID , x.Perfil.NombrePerfil , x.Perfil.NombreOrganizacion , x.Identidad.Tipo }).Distinct();
+                        .Select(x => new { x.Documento.DocumentoID, x.DocumentoRolIdentidad.Editor, x.Identidad.IdentidadID, x.Perfil.NombrePerfil, x.Perfil.NombreOrganizacion, x.Identidad.Tipo }).Distinct();
 
                     //DocumentoRolIdentidad
                     foreach (var resultado in consultaDocumentoRolIdentidad)
@@ -1246,7 +1269,7 @@ namespace Es.Riam.Gnoss.AD.Facetado
                     }
 
                     var consultaDocumentoWebVinBaseRecursos = mEntityContext.Documento.JoinDocumentoWebVinBaseRecursos().JoinBaseRecursosProyecto().JoinIdentidad().JoinPerfil().JoinProyecto().Where(item => !item.Documento.Eliminado && item.Documento.UltimaVersion && !item.DocumentoWebVinBaseRecursos.Eliminado && pListaRecursoId.Contains(item.DocumentoWebVinBaseRecursos.DocumentoID) && item.BaseRecursosProyecto.ProyectoID.Equals(pProyectoID))
-                        .Select(x=> new { x.Documento.DocumentoID, x.DocumentoWebVinBaseRecursos.PrivadoEditores , x.Documento.Visibilidad, x.Proyecto.TipoAcceso, x.Identidad.Tipo , x.DocumentoWebVinBaseRecursos.IdentidadPublicacionID , x.DocumentoWebVinBaseRecursos.FechaPublicacion , x.Documento.FechaModificacion , x.Documento.NumeroTotalConsultas , x.Perfil.NombrePerfil , x.Perfil.NombreOrganizacion , x.Documento.NumeroComentariosPublicos , x.DocumentoWebVinBaseRecursos.NumeroComentarios , x.DocumentoWebVinBaseRecursos.Rank_Tiempo }).Distinct();
+                        .Select(x => new { x.Documento.DocumentoID, x.DocumentoWebVinBaseRecursos.PrivadoEditores, x.Documento.Visibilidad, x.Proyecto.TipoAcceso, x.Identidad.Tipo, x.DocumentoWebVinBaseRecursos.IdentidadPublicacionID, x.DocumentoWebVinBaseRecursos.FechaPublicacion, x.Documento.FechaModificacion, x.Documento.NumeroTotalConsultas, x.Perfil.NombrePerfil, x.Perfil.NombreOrganizacion, x.Documento.NumeroComentariosPublicos, x.DocumentoWebVinBaseRecursos.NumeroComentarios, x.DocumentoWebVinBaseRecursos.Rank_Tiempo }).Distinct();
 
                     //DocumentoWebVinBaseRecursos
                     foreach (var resultado in consultaDocumentoWebVinBaseRecursos)
@@ -1296,8 +1319,8 @@ namespace Es.Riam.Gnoss.AD.Facetado
                 else
                 {
                     var consultaDocumento = mEntityContext.Documento.JoinDocumentoWebVinBaseRecursos().JoinBaseRecursosProyecto().JoinIdentidadDocumento().JoinPerfil().Where(item => !item.Documento.Eliminado && item.Documento.UltimaVersion && pListaRecursoId.Contains(item.Documento.DocumentoID))
-                        .Select(x => new { x.Documento.DocumentoID, x.Documento.Rank_Tiempo,x.Identidad.Tipo, x.Documento.Valoracion, x.Documento.NumeroTotalConsultas , x.Documento.NumeroComentariosPublicos , x.Documento.FechaCreacion, x.BaseRecursosProyecto.ProyectoID, x.Documento.Titulo, x.Perfil.NombrePerfil, x.Perfil.NombreOrganizacion, x.Documento.FechaModificacion}).Distinct();
-                    string consulta = consultaDocumento.ToQueryString();
+                        .Select(x => new { x.Documento.DocumentoID, x.Documento.Rank_Tiempo, x.Identidad.Tipo, x.Documento.Valoracion, x.Documento.NumeroTotalConsultas, x.Documento.NumeroComentariosPublicos, x.Documento.FechaCreacion, x.BaseRecursosProyecto.ProyectoID, x.Documento.Titulo, x.Perfil.NombrePerfil, x.Perfil.NombreOrganizacion, x.Documento.FechaModificacion }).Distinct();
+                    //string consulta = consultaDocumento.ToQueryString();
                     //Documento
                     foreach (var resultado in consultaDocumento)
                     {
@@ -1324,8 +1347,8 @@ namespace Es.Riam.Gnoss.AD.Facetado
 
                     //Identidad
                     var consultaIdentidad = mEntityContext.Identidad.JoinDocumentoRolIdentidad().JoinDocumento().JoinPerfil().JoinIdentidad().Where(item => !item.Documento.Eliminado && item.Documento.UltimaVersion && pListaRecursoId.Contains(item.Documento.DocumentoID) && item.IdentidadMyGnoss.ProyectoID.Equals(ProyectoAD.MetaProyecto))
-                        .Select(x => new { x.Documento.DocumentoID, x.IdentidadMyGnoss.IdentidadID ,x.Perfil.NombrePerfil , x.Perfil.NombreOrganizacion, x.DocumentoRolIdentidad.Editor , x.Identidad.Tipo }).Distinct();
-                    string consulta2 = consultaIdentidad.ToQueryString();
+                        .Select(x => new { x.Documento.DocumentoID, x.IdentidadMyGnoss.IdentidadID, x.Perfil.NombrePerfil, x.Perfil.NombreOrganizacion, x.DocumentoRolIdentidad.Editor, x.Identidad.Tipo }).Distinct();
+                    //string consulta2 = consultaIdentidad.ToQueryString();
                     foreach (var resultado in consultaIdentidad)
                     {
                         resultadoConsulta.Add(new QueryTriples { Sujeto = $"<http://gnoss/{resultado.DocumentoID.ToString().ToUpper()}>", Predicado = "<http://gnoss/hasparticipanteIdentidadID>", Objeto = $"<http://gnoss/{resultado.IdentidadID.ToString().ToUpper()}> ." });
@@ -1345,8 +1368,8 @@ namespace Es.Riam.Gnoss.AD.Facetado
 
                     //Persona
                     var consultaPersona = mEntityContext.Persona.JoinPerfil().JoinBaseRecursosUsuario().JoinDocumentoWebVinBaseRecursos().JoinDocumento().Where(item => !item.Documento.Eliminado && item.Documento.UltimaVersion && pListaRecursoId.Contains(item.Documento.DocumentoID))
-                        .Select(x=> new { x.Documento.DocumentoID , x.Perfil.PerfilID }).Distinct();
-                    string consulta3 = consultaPersona.ToQueryString();
+                        .Select(x => new { x.Documento.DocumentoID, x.Perfil.PerfilID }).Distinct();
+                    //string consulta3 = consultaPersona.ToQueryString();
                     foreach (var resultado in consultaPersona)
                     {
                         resultadoConsulta.Add(new QueryTriples { Sujeto = $"<http://gnoss/{resultado.DocumentoID.ToString().ToUpper()}>", Predicado = "<http://gnoss/hasPerfilPersonal>", Objeto = $"<http://gnoss/{resultado.PerfilID.ToString().ToUpper()}> ." });
@@ -1793,8 +1816,8 @@ namespace Es.Riam.Gnoss.AD.Facetado
 
                     //Cuarta parte: DataSetDocumentoParticipanteEditor
                     var dataSetDocumentoParticipanteEditor = mEntityContext.Documento.JoinDocumentoWebVinBaseRecursos().JoinBaseRecursosProyecto().JoinIdentidad().JoinPerfil().JoinDocumentoRolIdentidad().JoinIdentidad().JoinPerfil().Where(x => x.IdentidadEditor.ProyectoID.Equals(ProyectoAD.MetaProyecto) && x.DocumentoRolIdentidad.Editor == true && x.Identidad.FechaBaja == null && x.Identidad.FechaExpulsion == null && pListaRecursosID.Contains(x.Documento.DocumentoID) && x.DocumentoWebVinBaseRecursos.Eliminado == false)
-                        .Select(x => new  { x.IdentidadEditor.IdentidadID, x.PerfilEditor.NombreOrganizacion, x.PerfilEditor.NombrePerfil, x.Identidad.Tipo }).Distinct();
-                    string consulta = dataSetDocumentoParticipanteEditor.ToQueryString();
+                        .Select(x => new { x.IdentidadEditor.IdentidadID, x.PerfilEditor.NombreOrganizacion, x.PerfilEditor.NombrePerfil, x.Identidad.Tipo }).Distinct();
+                    //string consulta = dataSetDocumentoParticipanteEditor.ToQueryString();
                     if (dataSetDocumentoParticipanteEditor.Any())
                     {
                         foreach (var fila in dataSetDocumentoParticipanteEditor.ToList())
@@ -1889,7 +1912,7 @@ namespace Es.Riam.Gnoss.AD.Facetado
                                 }
                                 if (!string.IsNullOrEmpty(fila.Perfil.NombreOrganizacion))
                                 {
-                                    objeto = objeto + $" - {fila.Perfil.NombreOrganizacion}";
+                                    objeto = objeto + $" {ConstantesDeSeparacion.SEPARACION_CONCATENADOR} {fila.Perfil.NombreOrganizacion}";
                                 }
                                 if (!string.IsNullOrEmpty(objeto))
                                 {
@@ -2366,32 +2389,32 @@ namespace Es.Riam.Gnoss.AD.Facetado
                 Sujeto = $"<http://gnoss/{item.InvitacionID.ToString().ToUpper()}>",
                 Predicado = "<http://www.w3.org/1999/02/22-rdf-syntax-ns#type>",
                 Objeto = "\"Invitacion\" ."
-            }).Union(consulta2.Select(item => new QueryTriples 
+            }).Union(consulta2.Select(item => new QueryTriples
             {
                 Sujeto = $"<http://gnoss/{item.InvitacionID.ToString().ToUpper()}>",
                 Predicado = "<http://purl.org/dc/elements/1.1/date>",
                 Objeto = $"{item.FechaInvitacion.ToString(dateFormat)} ."
-            })).Union(consulta3.Select(item => new QueryTriples 
+            })).Union(consulta3.Select(item => new QueryTriples
             {
                 Sujeto = $"<http://gnoss/{item.Invitacion.InvitacionID.ToString().ToUpper()}>",
                 Predicado = "<http://gnoss/to>",
                 Objeto = $"\"{RemplazarCaracteresBD(item.Perfil.NombreOrganizacion)}\" ."
-            })).Union(consulta4.Select(item => new QueryTriples 
+            })).Union(consulta4.Select(item => new QueryTriples
             {
                 Sujeto = $"<http://gnoss/{item.Invitacion.InvitacionID.ToString().ToUpper()}>",
                 Predicado = "<http://gnoss/to>",
                 Objeto = $"\"{RemplazarCaracteresBD(item.Perfil.NombrePerfil)}\" ."
-            })).Union(consulta5.Select(item => new QueryTriples 
+            })).Union(consulta5.Select(item => new QueryTriples
             {
                 Sujeto = $"<http://gnoss/{item.InvitacionID.ToString().ToUpper()}>",
                 Predicado = "<http://purl.org/dc/elements/1.1/type>",
                 Objeto = $"\"Contacto\" ."
-            })).Union(consulta6.Select(item => new QueryTriples 
+            })).Union(consulta6.Select(item => new QueryTriples
             {
                 Sujeto = $"<http://gnoss/{item.InvitacionID.ToString().ToUpper()}>",
                 Predicado = "<http://purl.org/dc/elements/1.1/type>",
                 Objeto = $"\"Comunidad\" ."
-            })).Union(consulta7.Select(item => new QueryTriples 
+            })).Union(consulta7.Select(item => new QueryTriples
             {
                 Sujeto = $"<http://gnoss/{item.InvitacionID.ToString().ToUpper()}>",
                 Predicado = "<http://purl.org/dc/elements/1.1/type>",
@@ -2427,42 +2450,42 @@ namespace Es.Riam.Gnoss.AD.Facetado
 
             var consulta8 = mEntityContext.ResultadoSuscripcion.JoinSuscripcion().Where(item => item.ResultadoSuscripcion.Sincaducidad && item.Suscripcion.SuscripcionID.Equals(pSuscripcionID) && item.ResultadoSuscripcion.RecursoID.Equals(pRecursoID)).ToList();
 
-            resultadoConsulta = consulta1.Select(item => new QueryTriples 
+            resultadoConsulta = consulta1.Select(item => new QueryTriples
             {
                 Sujeto = $"<http://gnoss/{item.ResultadoSuscripcion.SuscripcionID.ToString().ToUpper()}_{item.ResultadoSuscripcion.RecursoID.ToString().ToUpper()}>",
                 Predicado = "<http://purl.org/dc/elements/1.1/date>",
                 Objeto = $"{item.ResultadoSuscripcion.FechaModificacion.ToString(dateFormat)} ."
-            }).Union(consulta2.Select(item => new QueryTriples 
+            }).Union(consulta2.Select(item => new QueryTriples
             {
                 Sujeto = $"<http://gnoss/{item.ResultadoSuscripcion.SuscripcionID.ToString().ToUpper()}_{item.ResultadoSuscripcion.RecursoID.ToString().ToUpper()}>",
                 Predicado = "<http://purl.org/dc/elements/1.1/type>",
                 Objeto = $"\"Comunidades\" ."
-            })).Union(consulta3.Select(item => new QueryTriples 
+            })).Union(consulta3.Select(item => new QueryTriples
             {
                 Sujeto = $"<http://gnoss/{item.ResultadoSuscripcion.SuscripcionID.ToString().ToUpper()}_{item.ResultadoSuscripcion.RecursoID.ToString().ToUpper()}>",
                 Predicado = "<http://purl.org/dc/elements/1.1/type>",
                 Objeto = $"\"Personas\" ."
-            })).Union(consulta4.Select(item => new QueryTriples 
+            })).Union(consulta4.Select(item => new QueryTriples
             {
                 Sujeto = $"<http://gnoss/{item.ResultadoSuscripcion.SuscripcionID.ToString().ToUpper()}_{item.ResultadoSuscripcion.RecursoID.ToString().ToUpper()}>",
                 Predicado = "<http://rdfs.org/sioc/ns#has_space>",
                 Objeto = $"\"{item.ResultadoSuscripcion.OrigenNombre.ToLowerSearchGraph()}\" ."
-            })).Union(consulta5.Select(item => new QueryTriples 
+            })).Union(consulta5.Select(item => new QueryTriples
             {
                 Sujeto = $"<http://gnoss/{item.ResultadoSuscripcion.SuscripcionID.ToString().ToUpper()}_{item.ResultadoSuscripcion.RecursoID.ToString().ToUpper()}>",
                 Predicado = "<http://xmlns.com/foaf/0.1/firstName>",
                 Objeto = $"\"{item.ResultadoSuscripcion.OrigenNombre.ToLowerSearchGraph()}\" ."
-            })).Union(consulta6.Select(item => new QueryTriples 
+            })).Union(consulta6.Select(item => new QueryTriples
             {
                 Sujeto = $"<http://gnoss/{item.ResultadoSuscripcion.SuscripcionID.ToString().ToUpper()}_{item.ResultadoSuscripcion.RecursoID.ToString().ToUpper()}>",
                 Predicado = "<http://gnoss/Estado>",
                 Objeto = $"\"Leidas\" ."
-            })).Union(consulta7.Select(item => new QueryTriples 
+            })).Union(consulta7.Select(item => new QueryTriples
             {
                 Sujeto = $"<http://gnoss/{item.ResultadoSuscripcion.SuscripcionID.ToString().ToUpper()}_{item.ResultadoSuscripcion.RecursoID.ToString().ToUpper()}>",
                 Predicado = "<http://gnoss/Estado>",
                 Objeto = $"\"Pendientes de leer\" ."
-            })).Union(consulta8.Select(item => new QueryTriples 
+            })).Union(consulta8.Select(item => new QueryTriples
             {
                 Sujeto = $"<http://gnoss/{item.ResultadoSuscripcion.SuscripcionID.ToString().ToUpper()}_{item.ResultadoSuscripcion.RecursoID.ToString().ToUpper()}>",
                 Predicado = "<http://gnoss/Estado>",
@@ -2620,7 +2643,7 @@ namespace Es.Riam.Gnoss.AD.Facetado
         {
             Guid usuarioID = mEntityContext.Persona.JoinPerfil().JoinIdentidad().Where(item => item.Identidad.IdentidadID.Equals(pIdentidadID) && item.Persona.UsuarioID.HasValue).Select(item => item.Persona.UsuarioID.Value).FirstOrDefault();
 
-            if(usuarioID.Equals(Guid.Empty))
+            if (usuarioID.Equals(Guid.Empty))
             {
                 usuarioID = mEntityContext.Identidad.JoinPerfil().JoinOrganizacion().Where(item => item.Identidad.IdentidadID.Equals(pIdentidadID)).Select(item => item.Organizacion.OrganizacionID).FirstOrDefault();
             }
@@ -2638,23 +2661,23 @@ namespace Es.Riam.Gnoss.AD.Facetado
             List<QueryTriples> resultadoConsulta = new List<QueryTriples>();
             string dateFormat = "yyyyMMddHHmmdd";
 
-            var consultaSqlName = mEntityContext.Identidad.JoinPerfil().GroupJoin(mEntityContext.Persona, item => item.Perfil.PersonaID.Value, persona => persona.PersonaID, (item, persona) => new 
+            var consultaSqlName = mEntityContext.Identidad.JoinPerfil().GroupJoin(mEntityContext.Persona, item => item.Perfil.PersonaID.Value, persona => persona.PersonaID, (item, persona) => new
             {
                 Identidad = item.Identidad,
                 Perfil = item.Perfil,
                 Persona = persona
-            }).SelectMany(item => item.Persona.DefaultIfEmpty(), (x, y) => new 
+            }).SelectMany(item => item.Persona.DefaultIfEmpty(), (x, y) => new
             {
                 Identidad = x.Identidad,
                 Perfil = x.Perfil,
                 Persona = y
-            }).GroupJoin(mEntityContext.Organizacion, item => item.Perfil.OrganizacionID, organizacion => organizacion.OrganizacionID, (item, organizacion) => new 
+            }).GroupJoin(mEntityContext.Organizacion, item => item.Perfil.OrganizacionID, organizacion => organizacion.OrganizacionID, (item, organizacion) => new
             {
                 Identidad = item.Identidad,
                 Perfil = item.Perfil,
                 Persona = item.Persona,
                 Organizacion = organizacion
-            }).SelectMany(item => item.Organizacion.DefaultIfEmpty(), (x, y) => new 
+            }).SelectMany(item => item.Organizacion.DefaultIfEmpty(), (x, y) => new
             {
                 Identidad = x.Identidad,
                 Perfil = x.Perfil,
@@ -2662,18 +2685,18 @@ namespace Es.Riam.Gnoss.AD.Facetado
                 Organizacion = y
             }).Where(item => item.Identidad.IdentidadID.Equals(pIdentidadID) && !item.Perfil.Eliminado);
 
-            foreach(var query in consultaSqlName)
+            foreach (var query in consultaSqlName)
             {
-                if(query.Identidad.Tipo == (short)TiposIdentidad.Organizacion)
+                if (query.Identidad.Tipo == (short)TiposIdentidad.Organizacion)
                 {
                     resultadoConsulta.Add(new QueryTriples() { Sujeto = $"<http://gnoss/{query.Identidad.IdentidadID.ToString().ToUpper()}>", Predicado = "<http://xmlns.com/foaf/0.1/firstName>", Objeto = $"\"{RemplazarCaracteresBD(query.Organizacion.Nombre).ToLowerSearchGraph()}\"" });
                 }
-                else if(query.Identidad.Tipo == (short)TiposIdentidad.Personal || query.Identidad.Tipo == (short)TiposIdentidad.ProfesionalPersonal || query.Identidad.Tipo == (short)TiposIdentidad.Profesor)
+                else if (query.Identidad.Tipo == (short)TiposIdentidad.Personal || query.Identidad.Tipo == (short)TiposIdentidad.ProfesionalPersonal || query.Identidad.Tipo == (short)TiposIdentidad.Profesor)
                 {
                     resultadoConsulta.Add(new QueryTriples() { Sujeto = $"<http://gnoss/{query.Identidad.IdentidadID.ToString().ToUpper()}>", Predicado = "<http://xmlns.com/foaf/0.1/firstName>", Objeto = $"\"{RemplazarCaracteresBD(query.Persona.Nombre).ToLowerSearchGraph()}\"" });
                 }
 
-                if(query.Identidad.Tipo == (short)TiposIdentidad.Personal || query.Identidad.Tipo == (short)TiposIdentidad.ProfesionalPersonal || query.Identidad.Tipo == (short)TiposIdentidad.Profesor)
+                if (query.Identidad.Tipo == (short)TiposIdentidad.Personal || query.Identidad.Tipo == (short)TiposIdentidad.ProfesionalPersonal || query.Identidad.Tipo == (short)TiposIdentidad.Profesor)
                 {
                     resultadoConsulta.Add(new QueryTriples() { Sujeto = $"<http://gnoss/{query.Identidad.IdentidadID.ToString().ToUpper()}>", Predicado = "<http://xmlns.com/foaf/0.1/familyName>", Objeto = $"\"{RemplazarCaracteresBD(query.Persona.Apellidos)}\" ." });
                 }
@@ -2700,24 +2723,24 @@ namespace Es.Riam.Gnoss.AD.Facetado
                 Pais = pais
             }).Where(item => !item.Persona.Eliminado && !item.Perfil.Eliminado && item.Identidad.IdentidadID.Equals(pIdentidadID) && item.Persona.PaisPersonalID.HasValue);
 
-            foreach(var query in consultaRegionPers)
+            foreach (var query in consultaRegionPers)
             {
-                if(query.Identidad.Tipo == (short)TiposIdentidad.Personal || query.Identidad.Tipo == (short)TiposIdentidad.ProfesionalPersonal || query.Identidad.Tipo == (short)TiposIdentidad.Profesor)
+                if (query.Identidad.Tipo == (short)TiposIdentidad.Personal || query.Identidad.Tipo == (short)TiposIdentidad.ProfesionalPersonal || query.Identidad.Tipo == (short)TiposIdentidad.Profesor)
                 {
                     resultadoConsulta.Add(new QueryTriples() { Sujeto = $"<http://gnoss/{query.Identidad.IdentidadID.ToString().ToUpper()}>", Predicado = "<http://www.w3.org/2006/vcard/ns#country-name>", Objeto = $"\"{query.Pais.Nombre}\" ." });
                     resultadoConsulta.Add(new QueryTriples() { Sujeto = $"<http://gnoss/{query.Identidad.IdentidadID.ToString().ToUpper()}>", Predicado = "<http://www.w3.org/2006/vcard/ns#locality>", Objeto = $"\"{query.Persona.LocalidadPersonal}\" ." });
-                    if(query.Provincia != null && query.Provincia.Nombre!= null)
+                    if (query.Provincia != null && query.Provincia.Nombre != null)
                     {
                         resultadoConsulta.Add(new QueryTriples() { Sujeto = $"<http://gnoss/{query.Identidad.IdentidadID.ToString().ToUpper()}>", Predicado = "<http://d.opencalais.com/1/type/er/Geo/ProvinceOrState>", Objeto = $"\"{query.Provincia.Nombre}\" ." });
-                    }                    
-                    if(query.Identidad.Tipo == (short)TiposIdentidad.Profesor)
+                    }
+                    if (query.Identidad.Tipo == (short)TiposIdentidad.Profesor)
                     {
                         resultadoConsulta.Add(new QueryTriples() { Sujeto = $"<http://gnoss/{query.Identidad.IdentidadID.ToString().ToUpper()}>", Predicado = "<http://www.w3.org/1999/02/22-rdf-syntax-ns#type>", Objeto = $"\"Profesor\" ." });
                     }
                 }
             }
 
-            var consultaRegionOrg = mEntityContext.Organizacion.JoinOrganizacionParticipaProy().JoinProyecto().JoinPerfil().JoinIdentidad().JoinPais().Where(item => item.Organizacion.PaisID.HasValue && !item.Organizacion.Eliminada && item.Identidad.Tipo == 3 && !item.Perfil.Eliminado && !item.Perfil.PersonaID.HasValue && item.Identidad.IdentidadID.Equals(pIdentidadID));
+            var consultaRegionOrg = mEntityContext.Organizacion.JoinOrganizacionParticipaProy().JoinProyecto().JoinPerfil().JoinIdentidad().JoinPais().Where(item => /*item.Organizacion.PaisID.HasValue && */!item.Organizacion.Eliminada && item.Identidad.Tipo == 3 && !item.Perfil.Eliminado && !item.Perfil.PersonaID.HasValue && item.Identidad.IdentidadID.Equals(pIdentidadID));
 
             foreach (var query in consultaRegionOrg)
             {
@@ -2729,14 +2752,14 @@ namespace Es.Riam.Gnoss.AD.Facetado
                 Identidad = item.Identidad,
                 Perfil = item.Perfil,
                 OrganizacionClase = organizacionClase
-            }).SelectMany(item => item.OrganizacionClase.DefaultIfEmpty(), (x, y) => new 
+            }).SelectMany(item => item.OrganizacionClase.DefaultIfEmpty(), (x, y) => new
             {
                 Identidad = x.Identidad,
                 Perfil = x.Perfil,
                 OrganizacionClase = y
-            }).Where(item => !item.Perfil.Eliminado && item.Identidad.IdentidadID.Equals(pIdentidadID) && item.Perfil.OrganizacionID.HasValue);
+            }).Where(item => !item.Perfil.Eliminado && item.Identidad.IdentidadID.Equals(pIdentidadID)/* && item.Perfil.OrganizacionID.HasValue*/);
 
-            foreach(var query in consultaRegionAux)
+            foreach (var query in consultaRegionAux)
             {
                 resultadoConsulta.Add(new QueryTriples() { Sujeto = $"<http://gnoss/{query.Identidad.IdentidadID.ToString().ToUpper()}>", Predicado = "<http://gnoss/hasPerfilProyecto>", Objeto = $"<http://gnoss/{query.Identidad.PerfilID.ToString().ToUpper()}_{query.Identidad.ProyectoID.ToString().ToUpper()}> ." });
                 resultadoConsulta.Add(new QueryTriples() { Sujeto = $"<http://gnoss/{query.Identidad.IdentidadID.ToString().ToUpper()}>", Predicado = "<http://gnoss/hasPerfil>", Objeto = $"<http://gnoss/{query.Identidad.PerfilID.ToString().ToUpper()}> ." });
@@ -2749,11 +2772,11 @@ namespace Es.Riam.Gnoss.AD.Facetado
                 {
                     resultadoConsulta.Add(new QueryTriples() { Sujeto = $"<http://gnoss/{query.Identidad.IdentidadID.ToString().ToUpper()}>", Predicado = "<http://gnoss/nombreCortoOrg>", Objeto = $"\"{query.Perfil.NombreCortoOrg}\" ." });
                 }
-                if(query.Identidad.Tipo == (short)TiposIdentidad.Personal || query.Identidad.Tipo == (short)TiposIdentidad.Profesor)
+                if (query.Identidad.Tipo == (short)TiposIdentidad.Personal || query.Identidad.Tipo == (short)TiposIdentidad.Profesor)
                 {
                     resultadoConsulta.Add(new QueryTriples() { Sujeto = $"<http://gnoss/{query.Identidad.IdentidadID.ToString().ToUpper()}>", Predicado = "<http://gnoss/hasfechaAlta>", Objeto = $"{query.Identidad.FechaAlta.ToString(dateFormat)} ." });
                 }
-                if(!query.OrganizacionClase.OrganizacionID.Equals(Guid.Empty) && (query.Identidad.Tipo == (short)TiposIdentidad.ProfesionalPersonal || query.Identidad.Tipo == (short)TiposIdentidad.ProfesionalCorporativo))
+                if (query.OrganizacionClase != null && !query.OrganizacionClase.OrganizacionID.Equals(Guid.Empty) && (query.Identidad.Tipo == (short)TiposIdentidad.ProfesionalPersonal || query.Identidad.Tipo == (short)TiposIdentidad.ProfesionalCorporativo))
                 {
                     resultadoConsulta.Add(new QueryTriples() { Sujeto = $"<http://gnoss/{query.Identidad.IdentidadID.ToString().ToUpper()}>", Predicado = "<http://www.w3.org/1999/02/22-rdf-syntax-ns#type>", Objeto = $"\"Alumno\" ." });
                 }
@@ -2764,38 +2787,38 @@ namespace Es.Riam.Gnoss.AD.Facetado
                 Identidad = item.Identidad,
                 Perfil = item.Perfil,
                 Persona = persona
-            }).SelectMany(item => item.Persona.DefaultIfEmpty(), (x, y) => new 
+            }).SelectMany(item => item.Persona.DefaultIfEmpty(), (x, y) => new
             {
                 Identidad = x.Identidad,
                 Perfil = x.Perfil,
                 Persona = y
-            }).GroupJoin(mEntityContext.Organizacion, item => item.Perfil.OrganizacionID, organizacion => organizacion.OrganizacionID, (item, organizacion) => new 
+            }).GroupJoin(mEntityContext.Organizacion, item => item.Perfil.OrganizacionID, organizacion => organizacion.OrganizacionID, (item, organizacion) => new
             {
                 Identidad = item.Identidad,
                 Perfil = item.Perfil,
                 Persona = item.Persona,
                 Organizacion = organizacion
-            }).SelectMany(item => item.Organizacion.DefaultIfEmpty(), (x, y) => new 
+            }).SelectMany(item => item.Organizacion.DefaultIfEmpty(), (x, y) => new
             {
                 Identidad = x.Identidad,
                 Perfil = x.Perfil,
                 Persona = x.Persona,
                 Organizacion = y
-            }).GroupJoin(mEntityContext.PerfilPersonaOrg, item => item.Identidad.PerfilID, perfilPersonaOrg => perfilPersonaOrg.PerfilID, (item, perfilPersonaOrg) => new 
+            }).GroupJoin(mEntityContext.PerfilPersonaOrg, item => item.Identidad.PerfilID, perfilPersonaOrg => perfilPersonaOrg.PerfilID, (item, perfilPersonaOrg) => new
             {
                 Identidad = item.Identidad,
                 Perfil = item.Perfil,
                 Persona = item.Persona,
                 Organizacion = item.Organizacion,
                 PerfilPersonaOrg = perfilPersonaOrg
-            }).SelectMany(item => item.PerfilPersonaOrg.DefaultIfEmpty(), (x, y) => new 
+            }).SelectMany(item => item.PerfilPersonaOrg.DefaultIfEmpty(), (x, y) => new
             {
                 Identidad = x.Identidad,
                 Perfil = x.Perfil,
                 Persona = x.Persona,
                 Organizacion = x.Organizacion,
                 PerfilPersonaOrg = y
-            }).GroupJoin(mEntityContext.PersonaVinculoOrganizacion, item => new { item.Persona.PersonaID, item.PerfilPersonaOrg.OrganizacionID }, personaVinculoOrganizacion => new { personaVinculoOrganizacion.PersonaID, personaVinculoOrganizacion.OrganizacionID }, (item, personaVinculoOrganizacion) => new 
+            }).GroupJoin(mEntityContext.PersonaVinculoOrganizacion, item => new { item.Persona.PersonaID, item.PerfilPersonaOrg.OrganizacionID }, personaVinculoOrganizacion => new { personaVinculoOrganizacion.PersonaID, personaVinculoOrganizacion.OrganizacionID }, (item, personaVinculoOrganizacion) => new
             {
                 Identidad = item.Identidad,
                 Perfil = item.Perfil,
@@ -2803,7 +2826,7 @@ namespace Es.Riam.Gnoss.AD.Facetado
                 Organizacion = item.Organizacion,
                 PerfilPersonaOrg = item.PerfilPersonaOrg,
                 PersonaVinculoOrganizacion = personaVinculoOrganizacion
-            }).SelectMany(item => item.PersonaVinculoOrganizacion.DefaultIfEmpty(), (x, y) => new 
+            }).SelectMany(item => item.PersonaVinculoOrganizacion.DefaultIfEmpty(), (x, y) => new
             {
                 Identidad = x.Identidad,
                 Perfil = x.Perfil,
@@ -2812,11 +2835,11 @@ namespace Es.Riam.Gnoss.AD.Facetado
                 PerfilPersonaOrg = x.PerfilPersonaOrg,
                 PersonaVinculoOrganizacion = y
             })
-            .Where(x=> x.Identidad.IdentidadID.Equals(pIdentidadID));
+            .Where(x => x.Identidad.IdentidadID.Equals(pIdentidadID));
 
-            foreach(var query in consultaFoto)
+            foreach (var query in consultaFoto)
             {
-                if(query.Persona.FechaAnadidaFoto != null)
+                if (query.Persona.FechaAnadidaFoto != null)
                 {
                     if (query.Organizacion != null && query.Organizacion.VersionLogo.HasValue && (query.Identidad.Tipo == (short)TiposIdentidad.ProfesionalCorporativo || query.Identidad.Tipo == (short)TiposIdentidad.Organizacion) && !string.IsNullOrEmpty(query.Organizacion.CoordenadasLogo))
                     {
@@ -2844,7 +2867,7 @@ namespace Es.Riam.Gnoss.AD.Facetado
 
             var consultaEstadoUsuario = mEntityContext.Identidad.JoinPerfil().JoinPersona().Where(item => item.Identidad.IdentidadID.Equals(pIdentidadID) && item.Identidad.ProyectoID.Equals(pProyectoID) && item.Persona.UsuarioID.HasValue).ToList();
 
-            foreach(var query in consultaEstadoUsuario)
+            foreach (var query in consultaEstadoUsuario)
             {
                 Guid usuarioID = query.Persona.UsuarioID.Value;
 
@@ -2865,18 +2888,18 @@ namespace Es.Riam.Gnoss.AD.Facetado
                     }
                 }
             }
-            
+
             var consultaRolUsuario = mEntityContext.Identidad.JoinPerfil().JoinPersona().Where(item => item.Identidad.IdentidadID.Equals(pIdentidadID) && item.Identidad.ProyectoID.Equals(pProyectoID) && item.Persona.UsuarioID.HasValue).ToList();
 
-            foreach(var query in consultaRolUsuario)
+            foreach (var query in consultaRolUsuario)
             {
                 AdministradorProyecto administradorProyecto = mEntityContext.AdministradorProyecto.Where(item => item.UsuarioID.Equals(query.Persona.UsuarioID.Value) && item.ProyectoID.Equals(query.Identidad.ProyectoID)).FirstOrDefault();
 
-                if(administradorProyecto != null && administradorProyecto.Tipo == (short)TipoRolUsuario.Administrador)
+                if (administradorProyecto != null && administradorProyecto.Tipo == (short)TipoRolUsuario.Administrador)
                 {
                     resultadoConsulta.Add(new QueryTriples() { Sujeto = $"<http://gnoss/{query.Identidad.IdentidadID.ToString().ToUpper()}>", Predicado = "<http://gnoss/rol>", Objeto = $"{(short)TipoRolUsuario.Administrador} ." });
                 }
-                else if(administradorProyecto != null && administradorProyecto.Tipo == (short)TipoRolUsuario.Supervisor)
+                else if (administradorProyecto != null && administradorProyecto.Tipo == (short)TipoRolUsuario.Supervisor)
                 {
                     resultadoConsulta.Add(new QueryTriples() { Sujeto = $"<http://gnoss/{query.Identidad.IdentidadID.ToString().ToUpper()}>", Predicado = "<http://gnoss/rol>", Objeto = $"{(short)TipoRolUsuario.Supervisor} ." });
                 }
@@ -2900,11 +2923,11 @@ namespace Es.Riam.Gnoss.AD.Facetado
                     Persona = y
                 }).Where(item => item.Identidad.IdentidadID.Equals(pIdentidadID) && !item.Perfil.Eliminado && item.Persona.UsuarioID.HasValue).ToList();
 
-                foreach(var query in consultaNomyGnoss)
+                foreach (var query in consultaNomyGnoss)
                 {
                     AdministradorProyecto administradorProyecto = mEntityContext.AdministradorProyecto.Where(item => item.ProyectoID.Equals(query.Identidad.ProyectoID) && item.UsuarioID.Equals(query.Persona.UsuarioID.Value)).FirstOrDefault();
 
-                    if(query.Identidad.Tipo == (short)TiposIdentidad.Personal || query.Identidad.Tipo == (short)TiposIdentidad.ProfesionalPersonal || query.Identidad.Tipo == (short)TiposIdentidad.ProfesionalCorporativo || query.Identidad.Tipo == (short)TiposIdentidad.Profesor)
+                    if (query.Identidad.Tipo == (short)TiposIdentidad.Personal || query.Identidad.Tipo == (short)TiposIdentidad.ProfesionalPersonal || query.Identidad.Tipo == (short)TiposIdentidad.ProfesionalCorporativo || query.Identidad.Tipo == (short)TiposIdentidad.Profesor)
                     {
                         resultadoConsulta.Add(new QueryTriples() { Sujeto = $"<http://gnoss/{query.Identidad.IdentidadID.ToString().ToUpper()}>", Predicado = "<http://gnoss/hasPopularidad>", Objeto = $"{query.Identidad.Rank} ." });
                     }
@@ -2913,33 +2936,33 @@ namespace Es.Riam.Gnoss.AD.Facetado
                         Proyecto proyecto = mEntityContext.Proyecto.Where(item => item.ProyectoID.Equals(pProyectoID)).FirstOrDefault();
                         resultadoConsulta.Add(new QueryTriples() { Sujeto = $"<http://gnoss/{query.Identidad.IdentidadID.ToString().ToUpper()}>", Predicado = "<http://gnoss/ComunidadesAdministradas>", Objeto = $"\"{RemplazarCaracteresBD(proyecto.Nombre)}\" ." });
                     }
-                    if(query.Identidad.Tipo == (short)TiposIdentidad.Personal || query.Identidad.Tipo == (short)TiposIdentidad.ProfesionalPersonal || query.Identidad.Tipo == (short)TiposIdentidad.Profesor)
+                    if (query.Identidad.Tipo == (short)TiposIdentidad.Personal || query.Identidad.Tipo == (short)TiposIdentidad.ProfesionalPersonal || query.Identidad.Tipo == (short)TiposIdentidad.Profesor)
                     {
                         resultadoConsulta.Add(new QueryTriples() { Sujeto = $"<http://gnoss/{query.Identidad.IdentidadID.ToString().ToUpper()}>", Predicado = "<http://rdfs.org/sioc/ns#has_space>", Objeto = $"<http://gnoss/{query.Identidad.ProyectoID}> ." });
                     }
-                }               
+                }
             }
             else
             {
                 var consultaMyGnoss = mEntityContext.Identidad.JoinPerfil().JoinPersona().JoinAdministradorProyecto().JoinProyecto().Where(item => item.Identidad.IdentidadID.Equals(pIdentidadID) && !item.Perfil.Eliminado).ToList();
 
-                foreach(var query in consultaMyGnoss)
+                foreach (var query in consultaMyGnoss)
                 {
                     resultadoConsulta.Add(new QueryTriples() { Sujeto = $"<http://gnoss/{query.Identidad.IdentidadID.ToString().ToUpper()}>", Predicado = "<http://gnoss/ComunidadesAdministradas>", Objeto = $"\"{RemplazarCaracteresBD(query.Proyecto.Nombre)}\" ." });
                     resultadoConsulta.Add(new QueryTriples() { Sujeto = $"<http://gnoss/{query.Identidad.IdentidadID.ToString().ToUpper()}>", Predicado = "<http://gnoss/hasPopularidad>", Objeto = $"{query.Identidad.Rank} ." });
-                    
-                    if(query.Identidad.Tipo == (short)TiposIdentidad.Personal || query.Identidad.Tipo == (short)TiposIdentidad.Profesor)
+
+                    if (query.Identidad.Tipo == (short)TiposIdentidad.Personal || query.Identidad.Tipo == (short)TiposIdentidad.Profesor)
                     {
                         resultadoConsulta.Add(new QueryTriples() { Sujeto = $"<http://gnoss/{query.Identidad.IdentidadID.ToString().ToUpper()}>", Predicado = "<http://gnoss/hasEstadoCorreccion>", Objeto = $"{query.Persona.EstadoCorreccion} ." });
                     }
                 }
             }
 
-            var consulta1 = mEntityContext.DatoExtraProyectoOpcionIdentidad.Join(mEntityContext.DatoExtraProyectoOpcion, datoExtraProyectoOpcionIdentidad => new { datoExtraProyectoOpcionIdentidad.OrganizacionID, datoExtraProyectoOpcionIdentidad.ProyectoID, datoExtraProyectoOpcionIdentidad.DatoExtraID, datoExtraProyectoOpcionIdentidad.OpcionID }, datoExtraProyectoOpcion => new { datoExtraProyectoOpcion.OrganizacionID, datoExtraProyectoOpcion.ProyectoID, datoExtraProyectoOpcion.DatoExtraID, datoExtraProyectoOpcion.OpcionID}, (datoExtraProyectoOpcionIdentidad, datoExtraProyectoOpcion) => new 
+            var consulta1 = mEntityContext.DatoExtraProyectoOpcionIdentidad.Join(mEntityContext.DatoExtraProyectoOpcion, datoExtraProyectoOpcionIdentidad => new { datoExtraProyectoOpcionIdentidad.OrganizacionID, datoExtraProyectoOpcionIdentidad.ProyectoID, datoExtraProyectoOpcionIdentidad.DatoExtraID, datoExtraProyectoOpcionIdentidad.OpcionID }, datoExtraProyectoOpcion => new { datoExtraProyectoOpcion.OrganizacionID, datoExtraProyectoOpcion.ProyectoID, datoExtraProyectoOpcion.DatoExtraID, datoExtraProyectoOpcion.OpcionID }, (datoExtraProyectoOpcionIdentidad, datoExtraProyectoOpcion) => new
             {
                 DatoExtraProyectoOpcionIdentidad = datoExtraProyectoOpcionIdentidad,
                 DatoExtraProyectoOpcion = datoExtraProyectoOpcion
-            }).Join(mEntityContext.DatoExtraProyecto, item => new { item.DatoExtraProyectoOpcion.OrganizacionID, item.DatoExtraProyectoOpcion.ProyectoID, item.DatoExtraProyectoOpcion.DatoExtraID }, datoExtraProyecto => new { datoExtraProyecto.OrganizacionID, datoExtraProyecto.ProyectoID, datoExtraProyecto.DatoExtraID }, (item, datoExtraProyecto) => new 
+            }).Join(mEntityContext.DatoExtraProyecto, item => new { item.DatoExtraProyectoOpcion.OrganizacionID, item.DatoExtraProyectoOpcion.ProyectoID, item.DatoExtraProyectoOpcion.DatoExtraID }, datoExtraProyecto => new { datoExtraProyecto.OrganizacionID, datoExtraProyecto.ProyectoID, datoExtraProyecto.DatoExtraID }, (item, datoExtraProyecto) => new
             {
                 DatoExtraProyectoOpcionIdentidad = item.DatoExtraProyectoOpcionIdentidad,
                 DatoExtraProyectoOpcion = item.DatoExtraProyectoOpcion,
@@ -3000,7 +3023,7 @@ namespace Es.Riam.Gnoss.AD.Facetado
                 DatoExtraEcosistemaVirtuosoPerfil = item.DatoExtraEcosistemaVirtuosoPerfil,
                 Identidad = item.Identidad,
                 DatoExtraEcosistemaVirtuoso = datoExtraEcosistemaVirtuoso
-            });
+            }).Where(x => x.Identidad.IdentidadID.Equals(pIdentidadID) && !string.IsNullOrEmpty(x.DatoExtraEcosistemaVirtuoso.PredicadoRDF));
 
             resultadoConsulta.AddRange(consulta4.Select(item => new QueryTriples
             {
@@ -3038,7 +3061,7 @@ namespace Es.Riam.Gnoss.AD.Facetado
 
             var consulta4 = mEntityContext.Proyecto.JoinOrganizacionParticipaProy().JoinOrganizacion().JoinPais().JoinPerfil().JoinIdentidad().Where(item => !item.Organizacion.Eliminada && item.Identidad.Tipo == 3 && !item.Perfil.Eliminado && !item.Perfil.PersonaID.HasValue && item.Identidad.IdentidadID.Equals(pIdentidadID) && item.Organizacion.PaisID.HasValue).ToList();
 
-            var consulta5 = mEntityContext.Identidad.JoinPerfil().JoinPersona().JoinProvincia().Where(item => !item.Persona.Eliminado && new int[] { 0, 1, 4}.Contains(item.Identidad.Tipo) && !item.Perfil.Eliminado && item.Identidad.IdentidadID.Equals(pIdentidadID)).ToList();
+            var consulta5 = mEntityContext.Identidad.JoinPerfil().JoinPersona().JoinProvincia().Where(item => !item.Persona.Eliminado && new int[] { 0, 1, 4 }.Contains(item.Identidad.Tipo) && !item.Perfil.Eliminado && item.Identidad.IdentidadID.Equals(pIdentidadID)).ToList();
 
             var consulta6 = mEntityContext.Identidad.JoinPerfil().JoinPersona().Where(item => !item.Persona.Eliminado && new int[] { 0, 1, 4 }.Contains(item.Identidad.Tipo) && !item.Perfil.Eliminado && item.Identidad.IdentidadID.Equals(pIdentidadID) && !string.IsNullOrEmpty(item.Persona.ProvinciaPersonal)).ToList();
 
@@ -3047,27 +3070,27 @@ namespace Es.Riam.Gnoss.AD.Facetado
                 Sujeto = $"<http://gnoss/{item.Identidad.IdentidadID.ToString().ToUpper()}>",
                 Predicado = "<http://www.w3.org/2006/vcard/ns#locality>",
                 Objeto = $"\"{item.Persona.LocalidadPersonal}\" ."
-            }).Union(consulta2.Select(item => new QueryTriples 
+            }).Union(consulta2.Select(item => new QueryTriples
             {
                 Sujeto = $"<http://gnoss/{item.Identidad.IdentidadID.ToString().ToUpper()}>",
                 Predicado = "<http://www.w3.org/2006/vcard/ns#country-name>",
                 Objeto = $"\"{item.Pais.Nombre}\" ."
-            })).Union(consulta3.Select(item => new QueryTriples 
+            })).Union(consulta3.Select(item => new QueryTriples
             {
                 Sujeto = $"<http://gnoss/{item.Identidad.IdentidadID.ToString().ToUpper()}>",
                 Predicado = "<http://www.w3.org/2006/vcard/ns#locality>",
                 Objeto = $"\"{item.Persona.LocalidadPersonal}\" ."
-            })).Union(consulta4.Select(item => new QueryTriples 
+            })).Union(consulta4.Select(item => new QueryTriples
             {
                 Sujeto = $"<http://gnoss/{item.Identidad.IdentidadID.ToString().ToUpper()}>",
                 Predicado = "<http://www.w3.org/2006/vcard/ns#country-name>",
                 Objeto = $"\"{item.Pais.Nombre}\" ."
-            })).Union(consulta5.Select(item => new QueryTriples 
+            })).Union(consulta5.Select(item => new QueryTriples
             {
                 Sujeto = $"<http://gnoss/{item.Identidad.IdentidadID.ToString().ToUpper()}>",
                 Predicado = "<http://d.opencalais.com/1/type/er/Geo/ProvinceOrState>",
                 Objeto = $"\"{item.Provincia.Nombre}\" ."
-            })).Union(consulta6.Select(item => new QueryTriples 
+            })).Union(consulta6.Select(item => new QueryTriples
             {
                 Sujeto = $"<http://gnoss/{item.Identidad.IdentidadID.ToString().ToUpper()}>",
                 Predicado = "<http://d.opencalais.com/1/type/er/Geo/ProvinceOrState>",
@@ -3085,7 +3108,7 @@ namespace Es.Riam.Gnoss.AD.Facetado
 
             var query = mEntityContext.Suscripcion.JoinSuscripcionIdentidadProyecto().JoinIdentidad().JoinIdentidadEnProyecto().Where(item => item.SuscripcionIdentidadProyecto.ProyectoID.Equals(pProyectoID) && item.IdentidadEnProyecto.ProyectoID.Equals(pProyectoID) && listaIdentidadID.Contains(item.Suscripcion.IdentidadID));
 
-            resultadoConsulta = query.Select(item => new QueryTriples 
+            resultadoConsulta = query.Select(item => new QueryTriples
             {
                 Sujeto = $"<http://gnoss/{item.IdentidadEnProyecto.IdentidadID.ToString().ToUpper()}>",
                 Predicado = "<http://xmlns.com/foaf/0.1/knows>",
@@ -3128,17 +3151,17 @@ namespace Es.Riam.Gnoss.AD.Facetado
                 Sujeto = $"<http://gnoss/{item.DatoExtraProyectoOpcionIdentidad.IdentidadID.ToString().ToUpper()}>",
                 Predicado = $"<{item.DatoExtraProyecto.PredicadoRDF}>",
                 Objeto = $"\"{item.DatoExtraProyectoOpcion.Opcion}\" ."
-            }).Union(consultaDatoExtraProyectoVirtuoso.Select(item => new QueryTriples 
+            }).Union(consultaDatoExtraProyectoVirtuoso.Select(item => new QueryTriples
             {
                 Sujeto = $"<http://gnoss/{item.DatoExtraProyectoVirtuosoIdentidad.IdentidadID.ToString().ToUpper()}>",
                 Predicado = $"<{item.DatoExtraProyectoVirtuoso.PredicadoRDF}>",
                 Objeto = $"\"{item.DatoExtraProyectoVirtuosoIdentidad.Opcion}\" ."
-            })).Union(consultaDatoExtraEcosistemaOpcion.Select(item => new QueryTriples 
+            })).Union(consultaDatoExtraEcosistemaOpcion.Select(item => new QueryTriples
             {
                 Sujeto = $"<http://gnoss/{item.Identidad.IdentidadID.ToString().ToUpper()}>",
                 Predicado = $"<{item.DatoExtraEcosistema.PredicadoRDF}>",
                 Objeto = $"\"{item.DatoExtraEcosistemaOpcion.Opcion}\" ."
-            })).Union(consultaDatoExtraEcosistemaVirtuoso.Select(item => new QueryTriples 
+            })).Union(consultaDatoExtraEcosistemaVirtuoso.Select(item => new QueryTriples
             {
                 Sujeto = $"<http://gnoss/{item.Identidad.IdentidadID.ToString().ToUpper()}>",
                 Predicado = $"<{item.DatoExtraEcosistemaVirtuoso.PredicadoRDF}>",
@@ -3160,7 +3183,7 @@ namespace Es.Riam.Gnoss.AD.Facetado
 
             var consulta1 = mEntityContext.Identidad.JoinPerfil().JoinPersona().Where(item => item.Persona.Foto != null && (!item.Perfil.OrganizacionID.HasValue || item.Perfil.OrganizacionID.Equals(Guid.Empty)) && item.Identidad.IdentidadID.Equals(pIdentidadID) && item.Perfil.PersonaID.HasValue);
 
-            foreach(var query in consulta1)
+            foreach (var query in consulta1)
             {
                 if (query.Persona.VersionFoto.HasValue)
                 {
@@ -3174,7 +3197,7 @@ namespace Es.Riam.Gnoss.AD.Facetado
 
             var consulta2 = mEntityContext.Identidad.JoinPerfil().JoinOrganizacion().Where(item => item.Identidad.Tipo > 1 && item.Identidad.Tipo < 4 && item.Organizacion.Logotipo != null && item.Identidad.IdentidadID.Equals(pIdentidadID));
 
-            foreach(var query in consulta2)
+            foreach (var query in consulta2)
             {
                 if (query.Organizacion.VersionLogo.HasValue)
                 {
@@ -3187,8 +3210,8 @@ namespace Es.Riam.Gnoss.AD.Facetado
             }
 
             var consulta3 = mEntityContext.Identidad.JoinPerfil().JoinPersona().JoinPersonaVinculoOrganizacion().Where(item => item.Persona.Foto != null && item.Identidad.Tipo == 1 && item.PersonaVinculoOrganizacion.UsarFotoPersonal && item.Identidad.IdentidadID.Equals(pIdentidadID) && item.Perfil.PersonaID.HasValue);
-            
-            foreach(var query in consulta3)
+
+            foreach (var query in consulta3)
             {
                 if (query.Persona.VersionFoto.HasValue)
                 {
@@ -3202,7 +3225,7 @@ namespace Es.Riam.Gnoss.AD.Facetado
 
             var consulta4 = mEntityContext.Identidad.JoinPerfil().JoinPersona().JoinPersonaVinculoOrganizacion().Where(item => item.Identidad.Tipo == 1 && !item.PersonaVinculoOrganizacion.UsarFotoPersonal && item.PersonaVinculoOrganizacion.Foto != null && item.Identidad.IdentidadID.Equals(pIdentidadID) && item.Perfil.OrganizacionID.HasValue && item.Perfil.PersonaID.HasValue);
 
-            foreach(var query in consulta4)
+            foreach (var query in consulta4)
             {
                 if (query.PersonaVinculoOrganizacion.VersionFoto.HasValue)
                 {
@@ -3216,14 +3239,14 @@ namespace Es.Riam.Gnoss.AD.Facetado
 
             var consulta5 = mEntityContext.Identidad.JoinPerfil().JoinPersona().Where(item => item.Persona.Foto == null && !item.Perfil.OrganizacionID.HasValue && item.Identidad.IdentidadID.Equals(pIdentidadID));
 
-            foreach(var query in consulta5)
+            foreach (var query in consulta5)
             {
                 resultadosConsulta.Add(new QueryTriples { Sujeto = $"<http://gnoss/{query.Identidad.IdentidadID.ToString().ToUpper()}>", Predicado = "<http://gnoss/hasfoto>", Objeto = "\"sinfoto\" ." });
             }
 
             var consulta6 = mEntityContext.Organizacion.JoinPerfil().JoinIdentidad().Where(item => item.Identidad.IdentidadID.Equals(pIdentidadID) && item.Identidad.Tipo == 3 && !item.Perfil.Eliminado);
 
-            foreach(var query in consulta6)
+            foreach (var query in consulta6)
             {
                 resultadosConsulta.Add(new QueryTriples { Sujeto = $"<http://gnoss/{query.Identidad.IdentidadID.ToString().ToUpper()}>", Predicado = "<http://xmlns.com/foaf/0.1/firstName>", Objeto = $"\"{RemplazarCaracteresBD(query.Organizacion.Nombre)}\"" });
             }
@@ -3244,7 +3267,7 @@ namespace Es.Riam.Gnoss.AD.Facetado
 
             var consulta9 = mEntityContext.Organizacion.JoinPerfil().JoinIdentidad().JoinProvincia().Where(item => !item.Organizacion.Eliminada && item.Identidad.Tipo == 3 && !item.Perfil.Eliminado && !item.Perfil.PersonaID.HasValue && item.Identidad.IdentidadID.Equals(pIdentidadID));
 
-            foreach(var query in consulta9)
+            foreach (var query in consulta9)
             {
                 resultadosConsulta.Add(new QueryTriples { Sujeto = $"<http://gnoss/{query.Identidad.IdentidadID.ToString().ToUpper()}>", Predicado = "<http://d.opencalais.com/1/type/er/Geo/ProvinceOrState>", Objeto = $"\"{query.Provincia.Nombre}\" ." });
             }
@@ -3265,7 +3288,7 @@ namespace Es.Riam.Gnoss.AD.Facetado
 
             var consulta12 = mEntityContext.Identidad.Where(item => item.IdentidadID.Equals(pIdentidadID));
 
-            foreach(var query in consulta12)
+            foreach (var query in consulta12)
             {
                 resultadosConsulta.Add(new QueryTriples { Sujeto = $"<http://gnoss/{query.IdentidadID.ToString().ToUpper()}>", Predicado = "<http://gnoss/hasPerfilProyecto>", Objeto = $"<http://gnoss/{query.IdentidadID.ToString().ToUpper()}> ." });
                 resultadosConsulta.Add(new QueryTriples { Sujeto = $"<http://gnoss/{query.IdentidadID.ToString().ToUpper()}>", Predicado = "<http://gnoss/hasPerfil>", Objeto = $"<http://gnoss/{query.PerfilID.ToString().ToUpper()}> ." });
@@ -3273,21 +3296,21 @@ namespace Es.Riam.Gnoss.AD.Facetado
 
             var consulta13 = mEntityContext.Identidad.JoinPerfil().Where(item => !string.IsNullOrEmpty(item.Perfil.NombreCortoUsu) && item.Identidad.IdentidadID.Equals(pIdentidadID));
 
-            foreach(var query in consulta13)
+            foreach (var query in consulta13)
             {
                 resultadosConsulta.Add(new QueryTriples { Sujeto = $"<http://gnoss/{query.Identidad.IdentidadID.ToString().ToUpper()}>", Predicado = "<http://gnoss/nombreCortoUsu>", Objeto = $"\"{query.Perfil.NombreCortoUsu}\" ." });
             }
 
             var consulta14 = mEntityContext.Identidad.JoinPerfil().Where(item => !string.IsNullOrEmpty(item.Perfil.NombreCortoOrg) && item.Identidad.IdentidadID.Equals(pIdentidadID));
 
-            foreach(var query in consulta14)
+            foreach (var query in consulta14)
             {
                 resultadosConsulta.Add(new QueryTriples { Sujeto = $"<http://gnoss/{query.Identidad.IdentidadID.ToString().ToUpper()}>", Predicado = "<http://gnoss/nombreCortoOrg>", Objeto = $"\"{query.Perfil.NombreCortoOrg}\" ." });
             }
 
             var consulta15 = mEntityContext.Organizacion.JoinPerfil().JoinIdentidad().Where(item => !item.Organizacion.Eliminada && item.Identidad.Tipo == 3 && !item.Perfil.Eliminado && !item.Perfil.PersonaID.HasValue && item.Identidad.IdentidadID.Equals(pIdentidadID));
 
-            foreach(var query in consulta15)
+            foreach (var query in consulta15)
             {
                 resultadosConsulta.Add(new QueryTriples { Sujeto = $"<http://gnoss/{query.Identidad.IdentidadID.ToString().ToUpper()}>", Predicado = "<http://gnoss/hasfechaAlta>", Objeto = $"{query.Identidad.FechaAlta.ToString(dateFormat)} ." });
             }
@@ -3298,44 +3321,37 @@ namespace Es.Riam.Gnoss.AD.Facetado
 
                 var consulta16 = mEntityContext.Organizacion.JoinPerfil().JoinIdentidad().Where(item => !item.Organizacion.Eliminada && item.Identidad.Tipo == 3 && !item.Perfil.Eliminado && !item.Perfil.PersonaID.HasValue && !listaOrganizacionClaseID.Contains(item.Organizacion.OrganizacionID) && item.Identidad.IdentidadID.Equals(pIdentidadID));
 
-                foreach(var query in consulta16)
+                foreach (var query in consulta16)
                 {
                     resultadosConsulta.Add(new QueryTriples { Sujeto = $"<http://gnoss/{query.Identidad.IdentidadID.ToString().ToUpper()}>", Predicado = "<http://www.w3.org/1999/02/22-rdf-syntax-ns#type>", Objeto = $"\"Organizacion\" ." });
                 }
 
                 var consulta17 = mEntityContext.Organizacion.JoinPerfil().JoinIdentidad().JoinOrganizacionClase().Where(item => !item.Organizacion.Eliminada && item.Identidad.Tipo == 3 && !item.Perfil.Eliminado && !item.Perfil.PersonaID.HasValue && item.OrganizacionClase.TipoClase == (short)TipoClase.EducacionPrimaria && item.Identidad.IdentidadID.Equals(pIdentidadID));
 
-                foreach(var query in consulta17)
+                foreach (var query in consulta17)
                 {
                     resultadosConsulta.Add(new QueryTriples { Sujeto = $"<http://gnoss/{query.Identidad.IdentidadID.ToString().ToUpper()}>", Predicado = "<http://www.w3.org/1999/02/22-rdf-syntax-ns#type>", Objeto = $"\"clase de primaria\" ." });
                 }
 
                 var consulta18 = mEntityContext.Organizacion.JoinPerfil().JoinIdentidad().JoinOrganizacionClase().Where(item => !item.Organizacion.Eliminada && item.Identidad.Tipo == 3 && !item.Perfil.Eliminado && !item.Perfil.PersonaID.HasValue && item.OrganizacionClase.TipoClase == (short)TipoClase.EducacionExpandida && item.Identidad.IdentidadID.Equals(pIdentidadID));
 
-                foreach(var query in consulta18)
+                foreach (var query in consulta18)
                 {
                     resultadosConsulta.Add(new QueryTriples { Sujeto = $"<http://gnoss/{query.Identidad.IdentidadID.ToString().ToUpper()}>", Predicado = "<http://www.w3.org/1999/02/22-rdf-syntax-ns#type>", Objeto = $"\"clase de secundaria\" ." });
                 }
 
                 var consulta19 = mEntityContext.Organizacion.JoinPerfil().JoinIdentidad().JoinOrganizacionClase().Where(item => !item.Organizacion.Eliminada && item.Identidad.Tipo == 3 && !item.Perfil.Eliminado && !item.Perfil.PersonaID.HasValue && item.OrganizacionClase.TipoClase == (short)TipoClase.Universidad20 && item.Identidad.IdentidadID.Equals(pIdentidadID));
 
-                foreach(var query in consulta19)
+                foreach (var query in consulta19)
                 {
                     resultadosConsulta.Add(new QueryTriples { Sujeto = $"<http://gnoss/{query.Identidad.IdentidadID.ToString().ToUpper()}>", Predicado = "<http://www.w3.org/1999/02/22-rdf-syntax-ns#type>", Objeto = $"\"clase de universidad\" ." });
                 }
 
                 var consulta20 = mEntityContext.Organizacion.JoinPerfil().JoinIdentidad().Where(item => !item.Organizacion.Eliminada && item.Identidad.Tipo == 3 && !item.Perfil.Eliminado && !item.Perfil.PersonaID.HasValue && item.Identidad.IdentidadID.Equals(pIdentidadID));
 
-                foreach(var query in consulta20)
+                foreach (var query in consulta20)
                 {
                     resultadosConsulta.Add(new QueryTriples { Sujeto = $"<http://gnoss/{query.Identidad.IdentidadID.ToString().ToUpper()}>", Predicado = "<http://rdfs.org/sioc/ns#has_space>", Objeto = $"<http://gnoss/{query.Identidad.ProyectoID}> ." });
-                }
-
-                var consulta21 = mEntityContext.Identidad.JoinProyecto().JoinPerfil().JoinIndetidadOrgComunidades().Where(item => item.Perfil.OrganizacionID.HasValue && item.Identidad.IdentidadID.Equals(pIdentidadID) && item.Identidad.Rank.HasValue && !item.Identidad.ProyectoID.Equals(new Guid("11111111-1111-1111-1111-111111111111")) && item.IdentidadOrgComunidades.Tipo == 3).GroupBy(item => item.IdentidadOrgComunidades.IdentidadID).Select(item => new { IdentidadID = item.Key, SumRank = item.Sum(item2 => item2.Identidad.Rank)});
-
-                foreach(var query in consulta21)
-                {
-                    resultadosConsulta.Add(new QueryTriples { Sujeto = $"<http://gnoss/{query.IdentidadID.ToString().ToUpper()}>", Predicado = "<http://gnoss/hasPopularidad>", Objeto = $"{query.SumRank} ." });
                 }
             }
             else
@@ -3351,7 +3367,7 @@ namespace Es.Riam.Gnoss.AD.Facetado
 
                 var consulta17 = mEntityContext.Organizacion.JoinPerfil().JoinIdentidad().JoinOrganizacionClase().Where(item => !item.Organizacion.Eliminada && item.Identidad.Tipo == 3 && !item.Perfil.Eliminado && item.Identidad.ProyectoID.Equals(new Guid("11111111-1111-1111-1111-111111111111")) && !item.Perfil.PersonaID.HasValue && item.OrganizacionClase.TipoClase == 1 && item.Identidad.IdentidadID.Equals(pIdentidadID));
 
-                foreach(var query in consulta17)
+                foreach (var query in consulta17)
                 {
                     resultadosConsulta.Add(new QueryTriples { Sujeto = $"<http://gnoss/{query.Identidad.IdentidadID.ToString().ToUpper()}>", Predicado = "<http://www.w3.org/1999/02/22-rdf-syntax-ns#type>", Objeto = $"\"clase de secundaria\" ." });
                 }
@@ -3365,7 +3381,7 @@ namespace Es.Riam.Gnoss.AD.Facetado
 
                 var consulta19 = mEntityContext.Organizacion.JoinPerfil().JoinIdentidadMyGnoss().JoinIdentidad().Where(item => !item.Organizacion.Eliminada && item.IdentidadMyGnoss.Tipo == 3 && !item.Perfil.Eliminado && !item.Perfil.PersonaID.HasValue && item.IdentidadMyGnoss.ProyectoID.Equals(new Guid("11111111-1111-1111-1111-111111111111")) && !item.Identidad.ProyectoID.Equals(new Guid("11111111-1111-1111-1111-111111111111")) && item.Identidad.IdentidadID.Equals(pIdentidadID));
 
-                foreach(var query in consulta19)
+                foreach (var query in consulta19)
                 {
                     resultadosConsulta.Add(new QueryTriples { Sujeto = $"<http://gnoss/{query.Identidad.IdentidadID.ToString().ToUpper()}>", Predicado = "<http://rdfs.org/sioc/ns#has_space>", Objeto = $"<http://gnoss/{query.IdentidadMyGnoss.IdentidadID.ToString().ToUpper()}> ." });
                 }
@@ -3395,12 +3411,12 @@ namespace Es.Riam.Gnoss.AD.Facetado
                 Sujeto = $"<http://gnoss/{item.Identidad.IdentidadID.ToString().ToUpper()}>",
                 Predicado = "<http://www.w3.org/2006/vcard/ns#country-name>",
                 Objeto = $"\"{item.Pais.Nombre}\" ."
-            }).Union(consulta2.Select(item => new QueryTriples 
+            }).Union(consulta2.Select(item => new QueryTriples
             {
                 Sujeto = $"<http://gnoss/{item.Identidad.IdentidadID.ToString().ToUpper()}>",
                 Predicado = "<http://d.opencalais.com/1/type/er/Geo/ProvinceOrState>",
                 Objeto = $"\"{item.Provincia.Nombre}\" ."
-            })).Union(consulta3.Select(item => new QueryTriples 
+            })).Union(consulta3.Select(item => new QueryTriples
             {
                 Sujeto = $"<http://gnoss/{item.Identidad.IdentidadID.ToString().ToUpper()}>",
                 Predicado = "<http://www.w3.org/2006/vcard/ns#locality>",
@@ -3421,33 +3437,44 @@ namespace Es.Riam.Gnoss.AD.Facetado
             string dateFormat = "yyyyMMddHHmmdd";
 
             var consulta1 = mEntityContext.Proyecto.Where(item => item.ProyectoID.Equals(pProyectoID));
-            foreach(var query in consulta1)
+            foreach (var query in consulta1)
             {
                 resultadoConsulta.Add(new QueryTriples { Sujeto = $"<http://gnoss/{query.ProyectoID.ToString().ToUpper()}>", Predicado = "<http://xmlns.com/foaf/0.1/firstName>", Objeto = $"\"{RemplazarCaracteresBD(query.Nombre)}\"" });
             }
 
             var parametroAplicacion = mEntityContext.ParametroAplicacion.Where(item => item.Parametro.Equals("ComunidadesPrivadasVisibles") && item.Valor.Equals("true")).FirstOrDefault();
-
-            var consulta2 = mEntityContext.Proyecto.Where(item => new int[] { 0, 2 }.Contains(item.TipoAcceso) && parametroAplicacion != null && item.ProyectoID.Equals(pProyectoID));
-            foreach(var query in consulta2)
+            if (parametroAplicacion != null)
             {
-                resultadoConsulta.Add(new QueryTriples { Sujeto = $"<http://gnoss/{query.ProyectoID.ToString().ToUpper()}>", Predicado = "<http://gnoss/hasprivacidadMyGnoss>", Objeto = $"\"publico\" ." });
+				var consulta2 = mEntityContext.Proyecto.Where(item => new int[] { 0, 2 }.Contains(item.TipoAcceso) && parametroAplicacion != null && item.ProyectoID.Equals(pProyectoID));
+				foreach (var query in consulta2)
+				{
+					resultadoConsulta.Add(new QueryTriples { Sujeto = $"<http://gnoss/{query.ProyectoID.ToString().ToUpper()}>", Predicado = "<http://gnoss/hasprivacidadMyGnoss>", Objeto = $"\"publico\" ." });
+				}
             }
+            else
+            {
+				var consulta2 = mEntityContext.Proyecto.Where(item => new int[] { 0 }.Contains(item.TipoAcceso) && item.ProyectoID.Equals(pProyectoID));
+				foreach (var query in consulta2)
+				{
+					resultadoConsulta.Add(new QueryTriples { Sujeto = $"<http://gnoss/{query.ProyectoID.ToString().ToUpper()}>", Predicado = "<http://gnoss/hasprivacidadMyGnoss>", Objeto = $"\"publico\" ." });
+				}
+			}
+            
 
             var consulta3 = mEntityContext.Proyecto.JoinAdministradorProyecto().JoinPersona().JoinPerfil().JoinIdentidad().Where(item => !item.Persona.Eliminado && !item.Identidad.FechaBaja.HasValue && !item.Identidad.FechaExpulsion.HasValue && !item.Perfil.Eliminado && new int[] { 0, 4 }.Contains(item.Identidad.Tipo) && item.Proyecto.ProyectoID.Equals(pProyectoID));
-            foreach(var query in consulta3)
+            foreach (var query in consulta3)
             {
                 resultadoConsulta.Add(new QueryTriples { Sujeto = $"<http://gnoss/{query.Proyecto.ProyectoID.ToString().ToUpper()}>", Predicado = "<http://gnoss/hasAdministrador>", Objeto = $"\"{RemplazarCaracteresBD(query.Perfil.NombrePerfil)}\" ." });
             }
 
             var consulta4 = mEntityContext.Proyecto.JoinAdministradorProyecto().JoinPersona().JoinPerfil().JoinIdentidad().Where(item => !item.Persona.Eliminado && !item.Identidad.FechaBaja.HasValue && !item.Identidad.FechaExpulsion.HasValue && !item.Perfil.Eliminado && new int[] { 1, 2 }.Contains(item.Identidad.Tipo) && item.Proyecto.ProyectoID.Equals(pProyectoID));
-            foreach(var query in consulta4)
+            foreach (var query in consulta4)
             {
                 resultadoConsulta.Add(new QueryTriples { Sujeto = $"<http://gnoss/{query.Proyecto.ProyectoID.ToString().ToUpper()}>", Predicado = "<http://gnoss/hasAdministrador>", Objeto = $"\"{RemplazarCaracteresBD(query.Perfil.NombreOrganizacion)}\" ." });
             }
 
             var consulta5 = mEntityContext.Proyecto.Where(item => (item.TipoProyecto == (short)TipoProyecto.Universidad20 || item.TipoProyecto == (short)TipoProyecto.EducacionExpandida || item.TipoProyecto == (short)TipoProyecto.EducacionPrimaria) && item.ProyectoID.Equals(pProyectoID));
-            foreach(var query in consulta5)
+            foreach (var query in consulta5)
             {
                 resultadoConsulta.Add(new QueryTriples { Sujeto = $"<http://gnoss/{query.ProyectoID.ToString().ToUpper()}>", Predicado = "<http://www.w3.org/1999/02/22-rdf-syntax-ns#type>", Objeto = $"\"Comunidad educativa\" ." });
             }
@@ -3459,13 +3486,13 @@ namespace Es.Riam.Gnoss.AD.Facetado
             }
 
             var consulta7 = mEntityContext.Proyecto.Where(item => item.ProyectoID.Equals(pProyectoID));
-            foreach(var query in consulta7)
+            foreach (var query in consulta7)
             {
                 resultadoConsulta.Add(new QueryTriples { Sujeto = $"<http://gnoss/{query.ProyectoID.ToString().ToUpper()}>", Predicado = "<http://gnoss/hasnumerorecursos>", Objeto = $"{query.NumeroArticulos} ." });
             }
 
             var consulta8 = mEntityContext.Proyecto.Where(item => item.ProyectoID.Equals(pProyectoID) && item.FechaInicio.HasValue);
-            foreach(var query in consulta8)
+            foreach (var query in consulta8)
             {
                 resultadoConsulta.Add(new QueryTriples { Sujeto = $"<http://gnoss/{query.ProyectoID.ToString().ToUpper()}>", Predicado = "<http://gnoss/hasfechaAlta>", Objeto = $"{query.FechaInicio.Value.ToString(dateFormat)} ." });
             }
@@ -3489,7 +3516,7 @@ namespace Es.Riam.Gnoss.AD.Facetado
             {
                 return pCadena.Replace("\r\n", "").Replace("\r", "").Replace("\n", "").Replace("\\", " ");//.Replace("\"", "\\\"");
             }
-            
+
         }
 
         private string RemplazarCaracteresBDSeparadorOrganizacion(string pCadena)

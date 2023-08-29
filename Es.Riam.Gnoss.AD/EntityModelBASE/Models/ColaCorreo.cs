@@ -26,6 +26,7 @@ namespace Es.Riam.Gnoss.AD.EntityModelBASE.Models
         public string Asunto { get; set; }
 
         [Required]
+        [Column(TypeName = "NCLOB")]
         public string HtmlTexto { get; set; }
 
         public bool EsHtml { get; set; }

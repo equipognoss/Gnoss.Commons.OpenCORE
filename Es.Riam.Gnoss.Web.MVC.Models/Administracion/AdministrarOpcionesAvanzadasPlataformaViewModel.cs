@@ -275,6 +275,10 @@ namespace Es.Riam.Gnoss.Web.MVC.Models.Administracion
         /// </summary>
         public bool MantenerSesionActiva { get; set; }
 
+        /// <summary>
+        /// Indica si se va a bloquear un enviar un correo de notificación al usuario cuando se sigue a su perfil, por defecto esta desactivado para que si se envíe el correo
+        /// </summary>
+        public bool NoEnviarCorreoSeguirPerfil { get; set; }
 
         [Obsolete]
         public string ConexionEntornoProduccion { get; set; }

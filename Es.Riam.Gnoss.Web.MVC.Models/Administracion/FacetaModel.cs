@@ -155,6 +155,10 @@ namespace Es.Riam.Gnoss.Web.MVC.Models.Administracion
         /// Indica si la faceta esta eliminada o no
         /// </summary>
         public bool Modified { get; set; }
+		/// <summary>
+		/// Indica el ID de identificación en el caso que la faceta sea una faceta propuesta
+		/// </summary> 
+		public Guid SuggestedID { get; set; }
 
         [Serializable]
         public partial class FiltrosFacetas

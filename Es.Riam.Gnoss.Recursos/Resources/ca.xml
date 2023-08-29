@@ -1,6 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Resources language="Catalan" code="ca">
 	<page name="COMMON">
+		<Resource tag="BUSQUEDAOC">Cerca de OC</Resource>
 		<Resource tag="RELATEDTO">Relacionado con</Resource>
 		<Resource tag="BASERECURSOS">Recursos</Resource>
 		<Resource tag="SUBIRNEWSLETTER">Añadir nueva newsletter</Resource>
@@ -3560,7 +3561,6 @@
 		<Resource tag="ADMINISTRARCATEGORIASCOM">administrar-categories</Resource>
 		<Resource tag="ADMINISTRARCOMUNIDADGENERAL">administrar-comunitat-general</Resource>
 		<Resource tag="POLITICACOMUNIDAD">política-certificats</Resource>
-		<Resource tag="ADMINISTRARPLANTILLASCOM">administrar-plantilles</Resource>
 		<Resource tag="QUIEROTWITTEAR">piular</Resource>
 		<Resource tag="VERBIO">veure-bio</Resource>
 		<Resource tag="ENVIOTWITTERCORRECTO">twitterok</Resource>

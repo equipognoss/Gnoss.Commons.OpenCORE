@@ -3,6 +3,7 @@ using Es.Riam.Gnoss.AD.EntityModel;
 using Es.Riam.Gnoss.AD.Organizador.Correo.Model;
 using Es.Riam.Gnoss.Util.Configuracion;
 using Es.Riam.Gnoss.Util.General;
+using Npgsql;
 using Oracle.ManagedDataAccess.Client;
 using System;
 using System.Collections.Generic;
@@ -328,7 +329,7 @@ namespace Es.Riam.Gnoss.AD.Organizador.Correo
                         {
                             //Enviado
                             Guid emisor = (Guid)fila["Autor"];
-                            string tablaCorreoInterno = $"\"CorreoInterno_{emisor.ToString().Substring(0, 2)}\"";
+                            string tablaCorreoInterno = $"CorreoInterno_{emisor.ToString().Substring(0, 2)}";
                             if (dasetsActualizar.ContainsKey(tablaCorreoInterno))
                             {
                                 dasetsActualizar[tablaCorreoInterno].Tables["CorreoInterno"].ImportRow(fila);
@@ -344,7 +345,7 @@ namespace Es.Riam.Gnoss.AD.Organizador.Correo
                         {
                             //Recibido
                             Guid receptor = (Guid)fila["Destinatario"];
-                            string tablaCorreoInterno = $"\"CorreoInterno_{receptor.ToString().Substring(0, 2)}\"";
+                            string tablaCorreoInterno = $"CorreoInterno_{receptor.ToString().Substring(0, 2)}";
                             if (dasetsActualizar.ContainsKey(tablaCorreoInterno))
                             {
                                 dasetsActualizar[tablaCorreoInterno].Tables["CorreoInterno"].ImportRow(fila);
@@ -408,6 +409,7 @@ namespace Es.Riam.Gnoss.AD.Organizador.Correo
                         AgregarParametro(ModifyCorreoInternoCommand, IBD.ToParam("DestinatariosNombres"), DbType.String, "DestinatariosNombres", DataRowVersion.Current);
                         AgregarParametro(ModifyCorreoInternoCommand, IBD.ToParam("ConversacionID"), DbType.Guid, "ConversacionID", DataRowVersion.Current);
 
+                        VerificarExisteTabla(tabla, true);
                         ActualizarBaseDeDatos(dataSetAActualizar, "CorreoInterno", InsertCorreoInternoCommand, ModifyCorreoInternoCommand, null, Microsoft.Practices.EnterpriseLibrary.Data.UpdateBehavior.Transactional);
 
                         #endregion
@@ -421,7 +423,109 @@ namespace Es.Riam.Gnoss.AD.Organizador.Correo
                 throw;
             }
         }
+        /// <summary>
+        /// Comprueba si existe la tabla de RdfDocumento. Si no existe y se indica, la crea.
+        /// </summary>
+        /// <param name="pNombreTabla">Nombre de la tabla</param>
+        /// <param name="pCrearTablaSiNoExiste">TRUE si se debe crear la tabla en caso de que no exista</param>
+        /// <returns>TRUE si la tabla existe (o ha sido recién creada).</returns>
+        private bool VerificarExisteTabla(string pNombreTabla, bool pCrearTablaSiNoExiste)
+        {
+            bool existeTabla = VerificarExisteTabla(pNombreTabla);
 
+            if (!existeTabla && pCrearTablaSiNoExiste)
+            {
+                if (ConexionMaster is OracleConnection)
+                {
+                    CrearTablaOracle(pNombreTabla);
+                }
+                else if (ConexionMaster is NpgsqlConnection)
+                {
+                    CrearTablaPostgre(pNombreTabla);
+                }
+                else
+                {
+                    CrearTablaSQL(pNombreTabla);
+                }
+                existeTabla = true;
+            }
+            return existeTabla;
+        }
+        /// <summary>
+        /// Comprueba si existen las tablas sobre las que está configurado este AD. Si no existen las crea. 
+        /// </summary>
+        /// <returns>Verdad si la tabla existe (o ha sido recién creada).</returns>
+        public bool VerificarExisteTabla(string pNombreTabla)
+        {
+            string existeTabla = "SELECT 1 FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE = 'BASE TABLE' AND TABLE_NAME = " + IBD.ToParam("nombreTabla");
+            if (ConexionMaster is OracleConnection)
+            {
+                existeTabla = "SELECT 1 FROM all_tables WHERE TABLE_NAME = " + IBD.ToParam("nombreTabla") + " AND OWNER = " + IBD.ToParam("owner");
+            }
+
+            DbCommand cmdExisteTabla = ObtenerComando(existeTabla);
+            AgregarParametro(cmdExisteTabla, IBD.ToParam("nombreTabla"), DbType.String, pNombreTabla);
+
+            if (ConexionMaster is OracleConnection)
+            {
+                OracleConnectionStringBuilder stringBuilder = new OracleConnectionStringBuilder(ConexionMaster.ConnectionString);
+                string userID = stringBuilder.UserID;
+                AgregarParametro(cmdExisteTabla, IBD.ToParam("owner"), DbType.String, userID);
+            }
+
+            object resultado = EjecutarEscalar(cmdExisteTabla, true, true, mEntityContextBASE);
+            int resultadoOracle = 0;
+            try
+            {
+                resultadoOracle = Convert.ToInt32(resultado);
+            }
+            catch (Exception ex)
+            {
+                resultadoOracle = 0;
+            }
+
+            return ((resultado != null) && (resultado is int) && (((int)resultado).Equals(1))) || resultadoOracle == 1;
+        }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="pNombreTabla"></param>
+        private void CrearTablaOracle(string pNombreTabla)
+        {
+            if (pNombreTabla.Contains("CorreoInterno_"))
+            {
+                DbCommand cmdCrearTabla = ObtenerComando($"CREATE TABLE \"{pNombreTabla}\" (\"CorreoID\" RAW(16) NOT NULL, \"Autor\" RAW(16) NOT NULL, , \"Destinatario\" RAW(16) NOT NULL,\"Asunto\" NVARCHAR2(255) NOT NULL, \"Cuerpo\" NCLOB NULL, \"Fecha\" TIMESTAMP(7) NOT NULL, \"Leido\" NUMBER(1) NOT NULL, \"EnPapelera\" NUMBER(1) NOT NULL, \"Eliminado\" NUMBER(1) NOT NULL, \"DestinatariosID\" NCLOB NULL, \"DestinatariosNombres\" NCLOB NULL, \"ConversacionID\" RAW(16) NOT NULL, PRIMARY KEY(\"CorreoID\", \"Autor\", \"Destinatario\"))");
+
+                ActualizarBaseDeDatos(cmdCrearTabla, true, true, false, mEntityContextBASE);
+            }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="pNombreTabla"></param>
+        private void CrearTablaPostgre(string pNombreTabla)
+        {
+            if (pNombreTabla.Contains("CorreoInterno_"))
+            {
+                DbCommand cmdCrearTabla = ObtenerComando($"CREATE TABLE \"{pNombreTabla}\" (\"CorreoID\" UUID NOT NULL, \"Autor\" UUID NOT NULL, , \"Destinatario\" UUID NOT NULL,\"Asunto\" character varying(255) NOT NULL, \"Cuerpo\" text NULL, \"Fecha\" timestamp without time zone NOT NULL, \"Leido\" boolean NOT NULL, \"EnPapelera\" boolean NOT NULL, \"Eliminado\" boolean NOT NULL, \"DestinatariosID\" text NULL, \"DestinatariosNombres\" text NULL, \"ConversacionID\" UUID NOT NULL, PRIMARY KEY(\"CorreoID\", \"Autor\", \"Destinatario\"))");
+                ActualizarBaseDeDatos(cmdCrearTabla, true, false, true, mEntityContextBASE);
+                TerminarTransaccion(true);
+            }
+        }
+
+        /// <summary>
+        /// Crea una tabla en función de un tipo de conuslta
+        /// </summary>
+        public void CrearTablaSQL(string pNombreTabla)
+        {
+            if (pNombreTabla.Contains("CorreoInterno_"))
+            {
+                DbCommand cmdCrearTabla = ObtenerComando($"CREATE TABLE {pNombreTabla} ([CorreoID] [uniqueidentifier] NOT NULL, [Autor] [uniqueidentifier] NOT NULL, [Destinatario] [uniqueidentifier] NOT NULL, [Asunto] [nvarchar](255) NOT NULL, [Cuerpo] [nvarchar](max) NULL, [Fecha] [datetime] NOT NULL, [Leido] [bit] NOT NULL, [EnPapelera] [bit] NOT NULL, [Eliminado] [bit] NOT NULL, [DestinatariosID] [nvarchar](max) NOT NULL, [DestinatariosNombres] [nvarchar](max) NOT NULL, [ConversacionID] [uniqueidentifier] NULL, CONSTRAINT [PK_{pNombreTabla}] PRIMARY KEY NONCLUSTERED ([CorreoID], [Destinatario], [Autor]) WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]\r\n) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]");
+
+                ActualizarBaseDeDatos(cmdCrearTabla, true, false, false, mEntityContextBASE);
+            }
+        }
         /// <summary>
         /// Obtiene un correo a partir del identificador pasado como parámetro
         /// </summary>

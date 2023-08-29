@@ -118,7 +118,7 @@ namespace Es.Riam.Web.Util
             {
                 //Si el fichero no esta encriptado da error, devolvemos el original
                 MemoryStream memory = new MemoryStream();
-                cryptoStream.CopyTo(memory);
+               cryptoStream.CopyTo(memory);
                 buff = memory.ToArray();
                 // Close both streams.
                 cryptoStream.Close();

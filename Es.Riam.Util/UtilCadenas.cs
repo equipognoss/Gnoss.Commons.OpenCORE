@@ -338,16 +338,19 @@ namespace Es.Riam.Util
             return s;
         }
 
-        #endregion
+		#endregion
 
-        #region Conversión de texto
-
-        /// <summary>
-        /// Convierte un string a su representación uri
-        /// </summary>
-        /// <param name="pTexto">Cadena de texto de entrada para convertir</param>
-        /// <returns>Cadena de texto de salida con formato de representación URI</returns>
-        public static string ConvertirTextoAUri(string pTexto)
+		#region Conversión de texto
+		public static string SplitCamelCase(string input)
+		{
+			return System.Text.RegularExpressions.Regex.Replace(input, "([A-Z])", " $1", System.Text.RegularExpressions.RegexOptions.Compiled).Trim();
+		}
+		/// <summary>
+		/// Convierte un string a su representación uri
+		/// </summary>
+		/// <param name="pTexto">Cadena de texto de entrada para convertir</param>
+		/// <returns>Cadena de texto de salida con formato de representación URI</returns>
+		public static string ConvertirTextoAUri(string pTexto)
         {
             string[] caracteres = { "%", "?", "&", "=", " ", "\"" };
 
@@ -406,7 +409,16 @@ namespace Es.Riam.Util
 
             return pInputString;
         }
-
+        /// <summary>
+        /// Busca si hay algun caracter extrano en el texto
+        /// </summary>
+        /// <param name="Texto">El texto que se analizara</param>
+        /// <returns>Si el texto contiene algun caracter extrano</returns>
+        public static bool IsRareChar(string pTexto)
+        {
+            string patron = "[\\s!\"·$%&/()=¿¡?'_:;,|@#€*+.<>]";
+            return Regex.IsMatch(pTexto, patron);
+        }
         /// <summary>
         /// Quita los caracteres como '$','%','/' y el ampersand de una cadena
         /// </summary>
@@ -1656,12 +1668,23 @@ namespace Es.Riam.Util
                 }
 
                 pDescripcion = pDescripcion.Substring(pDescripcion.IndexOf('>') + 1);
-                string parrafo1 = pDescripcion.Substring(0, pDescripcion.IndexOf("</p"));
-                pDescripcion = pDescripcion.Substring(pDescripcion.IndexOf("</p>") + 4);
 
-                parrafos.Add(Es.Riam.Util.UtilCadenas.EliminarHtmlDeTexto(parrafo1));
+                if (pDescripcion.IndexOf("</p") > -1)
+                {
+                    // Si se encuentra el párrafo de cierre
+                    string parrafo1 = pDescripcion.Substring(0, pDescripcion.IndexOf("</p"));
+                    pDescripcion = pDescripcion.Substring(pDescripcion.IndexOf("</p>") + 4);
 
-                parrafos.AddRange(ObtenerParrafos(pDescripcion.Trim()));
+                    parrafos.Add(Es.Riam.Util.UtilCadenas.EliminarHtmlDeTexto(parrafo1));
+
+                    parrafos.AddRange(ObtenerParrafos(pDescripcion.Trim()));
+                }
+                else
+                {
+                    // Si no se encuentra el párrafo de cierre                    
+                    parrafos.Add(Es.Riam.Util.UtilCadenas.EliminarHtmlDeTexto(pDescripcion));
+                    parrafos.AddRange(ObtenerParrafos(pDescripcion.Trim()));
+                }
             }
             else if (pDescripcion != "")
             {

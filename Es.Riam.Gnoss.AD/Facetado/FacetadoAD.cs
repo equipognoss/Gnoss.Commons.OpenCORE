@@ -32,6 +32,9 @@ using System.Xml;
 using Es.Riam.Gnoss.AD.EntityModel.Models.ProyectoDS;
 using Es.Riam.AbstractsOpen;
 using System.Collections.Concurrent;
+using Microsoft.Azure.Amqp.Framing;
+using Es.Riam.Gnoss.AD.EntityModelBASE;
+using Microsoft.EntityFrameworkCore.Storage.ValueConversion.Internal;
 
 namespace Es.Riam.Gnoss.AD.Facetado
 {
@@ -348,12 +351,12 @@ namespace Es.Riam.Gnoss.AD.Facetado
         /// <summary>
         /// comunidad educativa
         /// </summary>
-        public const string BUSQUEDA_COMUNIDAD_EDUCATIVA = "comunidad educativa";
+        public const string BUSQUEDA_COMUNIDAD_EDUCATIVA = "Comunidad educativa";
 
         /// <summary>
         /// comunidad no educativa
         /// </summary>
-        public const string BUSQUEDA_COMUNIDAD_NO_EDUCATIVA = "comunidad no educativa";
+        public const string BUSQUEDA_COMUNIDAD_NO_EDUCATIVA = "Comunidad no educativa";
 
         /// <summary>
         /// Metabuscador
@@ -540,7 +543,7 @@ namespace Es.Riam.Gnoss.AD.Facetado
 
         private static bool mEscaparComillasDoblesPorHilo = false;
 
-
+        private static string mEvaluarFiltrosFacetasEnOrden = "";
 
         #endregion
 
@@ -878,7 +881,7 @@ namespace Es.Riam.Gnoss.AD.Facetado
             }
         }
 
-        private string mNamespacesBasicos = null;
+        private static string mNamespacesBasicos = " prefix gnoss: <http://gnoss/> prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> prefix sioc: <http://rdfs.org/sioc/ns#> prefix sioc_t: <http://rdfs.org/sioc/types#> prefix vcard: <http://www.w3.org/2006/vcard/ns#> prefix oc: <http://d.opencalais.com/1/type/er/Geo/> prefix dc: <http://purl.org/dc/terms/> prefix skos: <http://www.w3.org/2004/02/skos/core#> prefix foaf: <http://xmlns.com/foaf/0.1/> prefix nmo: <http://www.semanticdesktop.org/ontologies/2007/03/22/nmo#> prefix swrc: <http://swrc.ontoware.org/ontology#> prefix dce: <http://purl.org/dc/elements/1.1/>";
 
         /// <summary>
         /// Obtiene los namespaces para realizar consultas en virtuoso
@@ -1155,6 +1158,18 @@ namespace Es.Riam.Gnoss.AD.Facetado
             }
         }
 
+        public static string EvaluarFiltrosFacetasEnOrden
+        {
+            get
+            {
+                return mEvaluarFiltrosFacetasEnOrden;
+            }
+            set
+            {
+                mEvaluarFiltrosFacetasEnOrden = value;
+            }
+        }
+
         #endregion
         public bool UsarMismsaVariablesParaEntidadesEnFacetas
         {
@@ -1345,11 +1360,11 @@ namespace Es.Riam.Gnoss.AD.Facetado
         /// <param name="pQuery">Consulta a ejecutar (select)</param>
         /// <param name="pNombreTabla">Nombre de la tabla a cargar en el dataset</param>
         /// <returns></returns>
-        public FacetadoDS LeerDeVirtuoso(string pQuery, string pNombreTabla, string pGrafo)
+        public FacetadoDS LeerDeVirtuoso(string pQuery, string pNombreTabla, string pGrafo, bool pDesdeApi = false)
         {
             FacetadoDS facetadoDS = new FacetadoDS();
 
-            LeerDeVirtuoso(pQuery, pNombreTabla, facetadoDS, pGrafo);
+            LeerDeVirtuoso(pQuery, pNombreTabla, facetadoDS, pGrafo, pDesdeApi);
 
             return facetadoDS;
         }
@@ -1361,9 +1376,9 @@ namespace Es.Riam.Gnoss.AD.Facetado
         /// <param name="pNombreTabla">Nombre de la tabla a cargar en el dataset</param>
         /// <param name="pFacetadoDS">DataSet a cargar</param>
         /// <returns></returns>
-        public void LeerDeVirtuoso(string pQuery, string pNombreTabla, FacetadoDS pFacetadoDS, string pGrafo)
+        public void LeerDeVirtuoso(string pQuery, string pNombreTabla, FacetadoDS pFacetadoDS, string pGrafo, bool pDesdeApi = false)
         {
-            LeerDeVirtuoso(pQuery, pNombreTabla, pFacetadoDS, pGrafo, false);
+            LeerDeVirtuoso(pQuery, pNombreTabla, pFacetadoDS, pGrafo, false, pDesdeApi);
         }
 
         /// <summary>
@@ -1373,11 +1388,15 @@ namespace Es.Riam.Gnoss.AD.Facetado
         /// <param name="pNombreTabla">Nombre de la tabla a cargar en el dataset</param>
         /// <param name="pFacetadoDS">DataSet a cargar</param>
         /// <returns></returns>
-        public void LeerDeVirtuoso(string pQuery, string pNombreTabla, FacetadoDS pFacetadoDS, string pGrafo, bool pUsarHilos)
+        public void LeerDeVirtuoso(string pQuery, string pNombreTabla, FacetadoDS pFacetadoDS, string pGrafo, bool pUsarHilos, bool pDesdeApi = false)
         {
             string cadenaConexion = "";
-
-            if (FicheroConfiguracionMaster.ToLower().Contains("home"))
+            if (pDesdeApi && mConfigService.CheckBidirectionalReplicationIsActive())
+            {
+                string afinidad = mServicesUtilVirtuosoAndReplication.ConexionAfinidad;
+                cadenaConexion = mConfigService.ObtenerVirutosoEscritura(afinidad);
+            }
+            else if (FicheroConfiguracionMaster.ToLower().Contains("home"))
             {
                 cadenaConexion = mConfigService.ObtenerVirtuosoConnectionStringHome();
             }
@@ -1396,8 +1415,13 @@ namespace Es.Riam.Gnoss.AD.Facetado
             {
                 pQuery = pQuery.Trim().Substring(6);
             }
-            pQuery = MaxExecutionPlanLimit + pQuery;
+            pQuery = $"{MaxExecutionPlanLimit}{pQuery}";
 
+            if (!string.IsNullOrEmpty(EvaluarFiltrosFacetasEnOrden))
+            {
+                pQuery = $"{EvaluarFiltrosFacetasEnOrden} {pQuery}";
+            }
+            
 
             NameValueCollection parametros = GenerarParametrosParaQuery(pQuery);
 
@@ -1421,7 +1445,7 @@ namespace Es.Riam.Gnoss.AD.Facetado
 
                 if (mServicesUtilVirtuosoAndReplication.ControlarErrorVirtuosoConection(cadenaConexion, conexionAfinidadVirtuoso))
                 {
-                    LeerDeVirtuoso(pQuery, pNombreTabla, pFacetadoDS, pGrafo, pUsarHilos);
+                    LeerDeVirtuoso(pQuery, pNombreTabla, pFacetadoDS, pGrafo, pUsarHilos, pDesdeApi);
                     mLoggingService.GuardarLogError("Consulta ejecutada correctamente en el segundo intento");
                     return;
                 }
@@ -1516,20 +1540,33 @@ namespace Es.Riam.Gnoss.AD.Facetado
             return facetadoDS;
         }
 
-        public string LeerDeVirtuosoJSON(string pQuery, string pNombreTabla, string pGrafo, bool pUsarHilos = false)
+        public string ObtenerCadenaConexionLeerDeVirtuoso(bool pUsarConexionAfinidad)
         {
-            string JSON = "";
-
             string cadenaConexion = "";
-
-            if (FicheroConfiguracionMaster.ToLower().Contains("home"))
+            if (pUsarConexionAfinidad && mConfigService.CheckBidirectionalReplicationIsActive())
             {
-                cadenaConexion = mConfigService.ObtenerVirtuosoConnectionStringHome();
+                string afinidad = mServicesUtilVirtuosoAndReplication.ConexionAfinidad;
+                cadenaConexion = mConfigService.ObtenerVirutosoEscritura(afinidad);
             }
             else
             {
-                cadenaConexion = mConfigService.ObtenerVirtuosoConnectionString();
+                if (FicheroConfiguracionMaster.ToLower().Contains("home"))
+                {
+                    cadenaConexion = mConfigService.ObtenerVirtuosoConnectionStringHome();
+                }
+                else
+                {
+                    cadenaConexion = mConfigService.ObtenerVirtuosoConnectionString();
+                }
             }
+            return cadenaConexion;
+        }
+
+        public string LeerDeVirtuosoJSON(string pQuery, string pNombreTabla, string pGrafo, bool pUsarHilos = false, bool pUsarConexionAfinidad = false)
+        {
+            string JSON = "";
+
+            string cadenaConexion = ObtenerCadenaConexionLeerDeVirtuoso(pUsarConexionAfinidad);
 
 
             KeyValuePair<string, string> ip_puerto = mServicesUtilVirtuosoAndReplication.ObtenerIpVirtuosoDeCadenaConexion(cadenaConexion);
@@ -1543,34 +1580,157 @@ namespace Es.Riam.Gnoss.AD.Facetado
                 pQuery = pQuery.Trim().Substring(6);
             }
 
+            if (!string.IsNullOrEmpty(EvaluarFiltrosFacetasEnOrden))
+            {
+                pQuery = $"{EvaluarFiltrosFacetasEnOrden} {pQuery}";
+            }
+
             NameValueCollection parametros = new NameValueCollection();
             parametros.Add("query", pQuery);
             parametros.Add("timeout", TimeOutVirtuoso.ToString());
             parametros.Add("format", "application/sparql-results+json");
 
             AgregarEntradaTraza("Leo de virtuoso " + ipVirtuoso + ". " + pQuery);
-
-            Action wrappedAction = () =>
+            try
             {
-                JSON = LeerDeVirtuoso_WebClientJSON(url, pNombreTabla, pQuery, parametros);
-            };
-
-            if (!pUsarHilos)
-            {
-                try
+                Action wrappedAction = () =>
                 {
                     JSON = LeerDeVirtuoso_WebClientJSON(url, pNombreTabla, pQuery, parametros);
-                }
-                catch (ExcepcionCheckpointVirtuoso)
-                {
-                    //Virtuoso está en un checkpoint, reintento la lectura contra otro servidor
-                    JSON = ReintentarConsultaVirtuosoJSONConCheckpoint(cadenaConexion, pGrafo, pNombreTabla, pQuery, parametros);
-                }
+                };
 
-                AgregarEntradaTraza("Leído de virtuoso.");
+                if (!pUsarHilos)
+                {
+                    //try
+                    //{
+                        JSON = LeerDeVirtuoso_WebClientJSON(url, pNombreTabla, pQuery, parametros);
+                    //}
+                    //catch (ExcepcionCheckpointVirtuoso)
+                    //{
+                        //Virtuoso está en un checkpoint, reintento la lectura contra otro servidor
+                        JSON = ReintentarConsultaVirtuosoJSONConCheckpoint(cadenaConexion, pGrafo, pNombreTabla, pQuery, parametros);
+                    //}
+
+                    AgregarEntradaTraza("Leído de virtuoso.");
+                }
+            }
+            catch (ExcepcionCheckpointVirtuoso)
+            {
+                bool fallo = true;
+                for (int i = 0; i < 20 && fallo; i++)
+                {
+                    try
+                    {
+                        Thread.Sleep(500);
+                        //Virtuoso está en un checkpoint, reintento la lectura contra otro servidor                        
+                        if ((i == 3 || i == 10 || i == 15) && pUsarConexionAfinidad)
+                        {
+                            string urlBase = mConfigService.ObtenerServicioAfinidad();
+                            string urlMethod = "RelatedVirtuoso";
+                            UtilGeneral.WebRequest("GET", $"{urlBase}/{urlMethod}", null);
+                        }
+                        cadenaConexion = ObtenerCadenaConexionLeerDeVirtuoso(pUsarConexionAfinidad);
+                        ip_puerto = mServicesUtilVirtuosoAndReplication.ObtenerIpVirtuosoDeCadenaConexion(cadenaConexion);
+                        ipVirtuoso = ip_puerto.Key;
+                        puertoVirtuoso = ip_puerto.Value;
+                        url = "http://" + ipVirtuoso + ":" + puertoVirtuoso + "/sparql";
+                        JSON = LeerDeVirtuoso_WebClientJSON(url, pNombreTabla, pQuery, parametros);
+                        fallo = false;
+                    }
+                    catch (ExcepcionCheckpointVirtuoso)
+                    {
+                        fallo = true;
+                    }
+                }
+                if (fallo)
+                {
+                    throw;
+                }
+            }
+            return JSON;
+        }
+
+        public string LeerDeVirtuosoCSV(string pQuery, string pNombreTabla, string pGrafo, bool pUsarHilos = false, bool pUsarConexionAfinidad = false)
+        {
+            string csv = "";
+
+            string cadenaConexion = ObtenerCadenaConexionLeerDeVirtuoso(pUsarConexionAfinidad);
+
+
+            KeyValuePair<string, string> ip_puerto = mServicesUtilVirtuosoAndReplication.ObtenerIpVirtuosoDeCadenaConexion(cadenaConexion);
+            string ipVirtuoso = ip_puerto.Key;
+            string puertoVirtuoso = ip_puerto.Value;
+            string url = "http://" + ipVirtuoso + ":" + puertoVirtuoso + "/sparql";
+
+            //Quito el inicio de SPARQL
+            if (pQuery.Trim().ToUpper().StartsWith("SPARQL"))
+            {
+                pQuery = pQuery.Trim().Substring(6);
             }
 
-            return JSON;
+            if (!string.IsNullOrEmpty(EvaluarFiltrosFacetasEnOrden))
+            {
+                pQuery = $"{EvaluarFiltrosFacetasEnOrden} {pQuery}";
+            }
+
+            NameValueCollection parametros = null;
+
+            AgregarEntradaTraza("Leo de virtuoso " + ipVirtuoso + ". " + pQuery);
+            try
+            {
+                Action wrappedAction = () =>
+                {
+                    csv = LeerDeVirtuoso_WebClientCSV(url, pNombreTabla, pQuery, parametros);
+                };
+
+                if (!pUsarHilos)
+                {
+                    //try
+                    //{
+                        csv = LeerDeVirtuoso_WebClientCSV(url, pNombreTabla, pQuery, parametros);
+                    //}
+                    //catch (ExcepcionCheckpointVirtuoso)
+                    //{
+                    //    //Virtuoso está en un checkpoint, reintento la lectura contra otro servidor
+                    //    csv = ReintentarConsultaVirtuosoCSVConCheckpoint(cadenaConexion, pGrafo, pNombreTabla, pQuery, parametros);
+                    //}
+
+                    AgregarEntradaTraza("Leído de virtuoso.");
+                }
+            }
+            catch (ExcepcionCheckpointVirtuoso)
+            {
+                bool fallo = true;
+                for (int i = 0; i < 20 && fallo; i++)
+                {
+                    try
+                    {
+                        Thread.Sleep(500);
+                        //Virtuoso está en un checkpoint, reintento la lectura contra otro servidor                        
+                        if ((i == 3 || i == 10 || i == 15) && pUsarConexionAfinidad)
+                        {
+                            string urlBase = mConfigService.ObtenerServicioAfinidad();
+                            string urlMethod = "RelatedVirtuoso";
+                            UtilGeneral.WebRequest("GET", $"{urlBase}/{urlMethod}", null);
+                        }
+                        cadenaConexion = ObtenerCadenaConexionLeerDeVirtuoso(pUsarConexionAfinidad);
+                        ip_puerto = mServicesUtilVirtuosoAndReplication.ObtenerIpVirtuosoDeCadenaConexion(cadenaConexion);
+                        ipVirtuoso = ip_puerto.Key;
+                        puertoVirtuoso = ip_puerto.Value;
+                        url = "http://" + ipVirtuoso + ":" + puertoVirtuoso + "/sparql";
+                        csv = LeerDeVirtuoso_WebClientCSV(url, pNombreTabla, pQuery, parametros);
+                        fallo = false;
+                    }
+                    catch (ExcepcionCheckpointVirtuoso)
+                    {
+                        fallo = true;
+                    }
+                }
+                if (fallo)
+                {
+                    throw;
+                }
+            }
+            return csv;
         }
 
         private void ReintentarConsultaVirtuosoConCheckpoint(string pCadenaConexion, string pGrafo, string pNombreTabla, FacetadoDS pFacetadoDS, string pQuery, NameValueCollection pParametros)
@@ -1608,7 +1768,101 @@ namespace Es.Riam.Gnoss.AD.Facetado
 
             return LeerDeVirtuoso_WebClientJSON(url, pNombreTabla, pQuery, pParametros);
         }
+        private string ReintentarConsultaVirtuosoCSVConCheckpoint(string pCadenaConexion, string pGrafo, string pNombreTabla, string pQuery, NameValueCollection pParametros)
+        {
+            List<string> listaConexionesInvalidas = new List<string>();
+            listaConexionesInvalidas.Add(pCadenaConexion);
 
+            string cadenaConexion = ObtenerConexion(listaConexionesInvalidas, pGrafo);
+
+            KeyValuePair<string, string> ip_puerto = mServicesUtilVirtuosoAndReplication.ObtenerIpVirtuosoDeCadenaConexion(cadenaConexion);
+            string ipVirtuoso = ip_puerto.Key;
+            string puertoVirtuoso = ip_puerto.Value;
+            string url = "http://" + ipVirtuoso + ":" + puertoVirtuoso + "/sparql";
+
+            return LeerDeVirtuoso_WebClientCSV(url, pNombreTabla, pQuery, pParametros);
+        }
+        public string LeerDeVirtuoso_WebClientCSV(string pUrl, string pNombreTabla, string pQuery, NameValueCollection pParametros = null)
+        {
+            string responseCSV = "";
+            if (pParametros == null)
+            {
+                pParametros = new NameValueCollection();
+                pParametros.Add("query", pQuery);
+                pParametros.Add("timeout", TimeOutVirtuoso.ToString());
+                pParametros.Add("format", "text/csv");
+            }
+
+            AgregarEntradaTraza("LecturaWebClient: Inicio");
+
+            //Creamos un método para que si hay algún error devuelva el error, no un DS vacio.
+            //Esto se necesita para el método ServidorOperativo (Base, Base Usuarios, RefrescoCacheMensajes...)
+
+            WebClient webClient = new RiamWebClient(600);
+            webClient.Encoding = Encoding.UTF8;
+            webClient.Headers.Add(HttpRequestHeader.ContentType, "application/x-www-form-urlencoded");
+
+            WebException webExceptionAuxiliar = null;
+
+            DateTime horaInicio = DateTime.Now;
+            int milisegundos = 0;
+            string error = null;
+
+            try
+            {
+                byte[] responseArray = webClient.UploadValues(pUrl, "POST", pParametros);
+
+                milisegundos = (int)DateTime.Now.Subtract(horaInicio).TotalMilliseconds;
+
+                responseCSV = Encoding.UTF8.GetString(responseArray);
+                return responseCSV;
+            }
+            catch (WebException webException)
+            {
+                milisegundos = (int)DateTime.Now.Subtract(horaInicio).TotalMilliseconds;
+
+                string respuesta = "";
+
+                try
+                {
+                    if (webException.Response != null)
+                    {
+                        //Intento recuperar información del error
+                        StreamReader dataStream = new StreamReader(webException.Response.GetResponseStream());
+                        respuesta = dataStream.ReadToEnd();
+                        webExceptionAuxiliar = webException;
+                    }
+                }
+                catch { }
+
+                respuesta += $"\n\nQuery: {pQuery}";
+                respuesta += $"\n\nUrl: {pUrl}";
+
+                error = respuesta;
+
+                mLoggingService.GuardarLogError(webException, respuesta);
+
+                if ((webException.Status.Equals(WebExceptionStatus.ProtocolError) && !((HttpWebResponse)webException.Response).StatusCode.Equals(HttpStatusCode.BadRequest) && !((HttpWebResponse)webException.Response).StatusCode.Equals(HttpStatusCode.InternalServerError)) || webException.Message.Contains("(503)") || webException.Message.Contains("(404)") || (webException.Response != null && ((HttpWebResponse)webException.Response).StatusCode.Equals(HttpStatusCode.NotFound)))
+                {
+                    // Es un error de checkpoint o de que virtuoso se ha caído, si hay más servidores, reintentamos la consulta
+                    throw new ExcepcionCheckpointVirtuoso();
+                }
+                else if (((HttpWebResponse)webException.Response).StatusCode.Equals(HttpStatusCode.InternalServerError) && respuesta.Contains("SR171: Transaction timed out"))
+                {
+                    mLoggingService.GuardarLog($"\n\nMessage: {respuesta}\n\nQuery: {pQuery}\n\nUrl: {pUrl}", $"{LoggingService.RUTA_DIRECTORIO_ERROR}\\virtuosoTransactionTimedOut_{DateTime.Now.ToString("yyyy-MM-dd")}.txt");
+                    throw new ExcepcionConectionFailVirtuoso("SR171: Transaction timed out");
+                }
+                else if (webException.Status.Equals(WebExceptionStatus.ConnectFailure))
+                {
+                    throw new ExcepcionConectionFailVirtuoso();
+                }
+                else
+                {
+                    throw new ExcepcionDeBaseDeDatos(pQuery, respuesta, webException);
+                }
+            }
+            
+        }
         public void LeerDeVirtuoso_WebClient(string pUrl, string pNombreTabla, FacetadoDS pFacetadoDS, string pQuery, NameValueCollection pParametros = null)
         {
             if (pParametros == null)
@@ -1627,6 +1881,8 @@ namespace Es.Riam.Gnoss.AD.Facetado
             WebClient webClient = new RiamWebClient(600);
             webClient.Encoding = Encoding.UTF8;
             webClient.Headers.Add(HttpRequestHeader.ContentType, "application/x-www-form-urlencoded");
+
+            WebException webExceptionAuxiliar = null;
 
             DateTime horaInicio = DateTime.Now;
             int milisegundos = 0;
@@ -1662,7 +1918,7 @@ namespace Es.Riam.Gnoss.AD.Facetado
                         //Intento recuperar información del error
                         StreamReader dataStream = new StreamReader(webException.Response.GetResponseStream());
                         respuesta = dataStream.ReadToEnd();
-                        webException.Response.Close();
+                        webExceptionAuxiliar = webException;
                     }
                 }
                 catch { }
@@ -1702,6 +1958,17 @@ namespace Es.Riam.Gnoss.AD.Facetado
             }
             finally
             {
+
+                try
+                {
+                    if (webExceptionAuxiliar != null)
+                    {
+                        webExceptionAuxiliar.Response.Close();
+                    }
+                }
+                catch
+                { }
+
                 webClient.Dispose();
 
                 if (milisegundos > 2000)
@@ -1713,7 +1980,7 @@ namespace Es.Riam.Gnoss.AD.Facetado
             AgregarEntradaTraza("LecturaWebClient: Fin");
         }
 
-        public string LeerDeVirtuoso_WebClientHTML(string pQuery, string pGrafo)
+        public string LeerDeVirtuoso_WebClientHTML(string pQuery, string pGrafo, string format = "text/html")
         {
             string cadenaConexion = mConfigService.ObtenerVirtuosoConnectionString();
             if (FicheroConfiguracionMaster.ToLower().Contains("home"))
@@ -1729,7 +1996,7 @@ namespace Es.Riam.Gnoss.AD.Facetado
             NameValueCollection parametros = new NameValueCollection();
             parametros.Add("query", pQuery);
             parametros.Add("timeout", TimeOutVirtuoso.ToString());
-            parametros.Add("format", "text/html");
+            parametros.Add("format", format);
             string respuesta = string.Empty;
             AgregarEntradaTraza("LecturaWebClient: Inicio");
             using (WebClient webClient = new RiamWebClient(600))
@@ -2014,7 +2281,7 @@ namespace Es.Riam.Gnoss.AD.Facetado
         public int ActualizarVirtuoso(string pQuery, string pGrafo, short pPrioridad)
         {
             VirtuosoConnection conexion = ObtenerConexionParaGrafo(pGrafo, true);
-            return mServicesUtilVirtuosoAndReplication.ActualizarVirtuoso(pQuery, pGrafo, true, pPrioridad, conexion, true, null, 0);
+            return mServicesUtilVirtuosoAndReplication.ActualizarVirtuoso(pQuery, pGrafo, mConfigService.ObtenerReplicacionActivada(), pPrioridad, conexion, true, null, 0);
         }
 
         /// <summary>
@@ -2027,16 +2294,6 @@ namespace Es.Riam.Gnoss.AD.Facetado
         {
             VirtuosoConnection conexion = ObtenerConexionParaGrafo(pGrafo, true);
             return mServicesUtilVirtuosoAndReplication.ActualizarVirtuoso(pQuery, pGrafo, pReplicar, pPrioridad, conexion);
-        }
-
-
-
-        public void CambiarAfinidadVirtuoso()
-        {
-            if (!string.IsNullOrEmpty(mVirtuosoAD.AfinidadVirtuoso))
-            {
-                mVirtuosoAD.AfinidadVirtuoso = mConfigService.ObtenerNombreConexionReplica(mVirtuosoAD.AfinidadVirtuoso.Replace("_Master", ""));
-            }
         }
 
         /// <summary>
@@ -2160,15 +2417,17 @@ namespace Es.Riam.Gnoss.AD.Facetado
             where += ObtenerWhereQuery(pProyectoID, pClaveFaceta, pListaFiltros, pListaFiltrosExtra, pEstaEnMyGnoss, pEsMiembroComunidad, pEsInvitado, pIdentidadID, pTipoDisenio, pInicio, pLimite, pSemanticos, pFiltroContextoWhere, pTipoProyecto, pEsRango, pListaRangos, pExcluyente, pExcluirPersonas, true, true, 0, pTipoPropiedadesFaceta, TiposAlgoritmoTransformacion.Rangos, out numeroAuxiliarVariablesIguales, out nombreFacetaSinPrefijo, pFiltrosSearchPersonalizados, consultaReciproca, pInmutable, pEsMovil, out ultimaFacetaAux);
 
             string nombreVariablePrincipal = nombreFacetaSinPrefijo + "2000";
+            string nombreVariableSecundario = nombreFacetaSinPrefijo + "3000";
+            where += " BIND(xsd:integer(?" + nombreVariablePrincipal + ") as ?" + nombreVariableSecundario + ")";
 
             //where += " FILTER(datatype(?" + nombreVariablePrincipal + ") = xsd:integer OR datatype(?" + nombreVariablePrincipal + ") = xsd:double) ";
 
             where += " } ";
 
-            string select = "SELECT bif:length(str(?" + nombreVariablePrincipal + ")) AS ?Indice COUNT(distinct ?s)AS ?Cantidad ";
+            string select = "SELECT bif:length(str(?" + nombreVariableSecundario + ")) AS ?Indice COUNT(distinct ?s)AS ?Cantidad ";
 
-            string groupByOrderBy = " GROUP BY bif:length(str(?" + nombreVariablePrincipal + ")) ";
-            groupByOrderBy += " ORDER BY bif:length(str(?" + nombreVariablePrincipal + ")) ";
+            string groupByOrderBy = " GROUP BY bif:length(str(?" + nombreVariableSecundario + ")) ";
+            groupByOrderBy += " ORDER BY bif:length(str(?" + nombreVariableSecundario + ")) ";
 
             string query = NamespacesVirtuosoLectura + select + from + where + groupByOrderBy;
 
@@ -2257,16 +2516,19 @@ namespace Es.Riam.Gnoss.AD.Facetado
 
             string nombreVariablePrincipal = nombreFacetaSinPrefijo + "2000";
 
-            where += " FILTER(bif:length(str(?" + nombreVariablePrincipal + ")) = " + pNumCifrasCantidad;
+            string nombreVariableSecundario = nombreFacetaSinPrefijo + "3000";
+            where += " BIND(xsd:integer(?" + nombreVariablePrincipal + ") as ?" + nombreVariableSecundario + ")";
+
+            where += " FILTER(bif:length(str(?" + nombreVariableSecundario + ")) = " + pNumCifrasCantidad;
             //where += " AND datatype(?" + nombreVariablePrincipal + ") = xsd:integer"
             where += ") ";
 
             where += " } ";
 
-            string select = " SELECT substr(str(?" + nombreVariablePrincipal + "), 1, 1) AS ?Indice COUNT(DISTINCT ?s) AS ?Cantidad ";
+            string select = " SELECT substr(str(?" + nombreVariableSecundario + "), 1, 1) AS ?Indice COUNT(DISTINCT ?s) AS ?Cantidad ";
 
-            string groupByOrderBy = " GROUP BY substr(str(?" + nombreVariablePrincipal + "), 1, 1) ";
-            groupByOrderBy += " ORDER BY substr(str(?" + nombreVariablePrincipal + "), 1, 1) ";
+            string groupByOrderBy = " GROUP BY substr(str(?" + nombreVariableSecundario + "), 1, 1) ";
+            groupByOrderBy += " ORDER BY substr(str(?" + nombreVariableSecundario + "), 1, 1) ";
 
             string query = NamespacesVirtuosoLectura + select + from + where + groupByOrderBy;
 
@@ -2316,9 +2578,9 @@ namespace Es.Riam.Gnoss.AD.Facetado
         /// <param name="pOrden">Orden de los resultados</param>
         /// <param name="pInicio">Inicio</param>
         /// <param name="pLimite">límite de resultados</param>
-        public void ObtenerFaceta(string pProyectoID, FacetadoDS pFacetadoDS, string pNombreFaceta, Dictionary<string, List<string>> pListaFiltros, List<string> pListaFiltrosExtra, bool pEstaEnMyGnoss, bool pEsMiembroComunidad, bool pEsInvitado, string pIdentidadID, TipoDisenio pTipoDisenio, int pInicio, int pLimite, List<string> pSemanticos, string pFiltroContextoWhere, bool pExcluyente, bool pInmutable, bool pEsMovil, Guid pPestanyaID = new Guid())
+        public void ObtenerFaceta(string pProyectoID, FacetadoDS pFacetadoDS, string pNombreFaceta, Dictionary<string, List<string>> pListaFiltros, List<string> pListaFiltrosExtra, bool pEstaEnMyGnoss, bool pEsMiembroComunidad, bool pEsInvitado, string pIdentidadID, TipoDisenio pTipoDisenio, int pInicio, int pLimite, List<string> pSemanticos, string pFiltroContextoWhere, bool pExcluyente, bool pInmutable, bool pEsMovil, List<Guid> pListaExcluidos = null, Guid pPestanyaID = new Guid())
         {
-            ObtenerFaceta(pProyectoID, pFacetadoDS, pNombreFaceta, pListaFiltros, pListaFiltrosExtra, pEstaEnMyGnoss, pEsMiembroComunidad, pEsInvitado, pIdentidadID, pTipoDisenio, pInicio, pLimite, pSemanticos, pFiltroContextoWhere, TipoProyecto.Catalogo, pExcluyente, pInmutable, pEsMovil, pPestanyaID);
+            ObtenerFaceta(pProyectoID, pFacetadoDS, pNombreFaceta, pListaFiltros, pListaFiltrosExtra, pEstaEnMyGnoss, pEsMiembroComunidad, pEsInvitado, pIdentidadID, pTipoDisenio, pInicio, pLimite, pSemanticos, pFiltroContextoWhere, TipoProyecto.Catalogo, pExcluyente, pInmutable, pEsMovil, pPestanyaID, pListaExcluidos);
         }
 
         /// <summary>
@@ -2339,9 +2601,9 @@ namespace Es.Riam.Gnoss.AD.Facetado
         /// <param name="pFiltroContextoWhere">Filtros de contexto</param>
         /// <param name="pListaFiltrosExtra">Lista de filtros extra</param>
         /// <param name="pSemanticos">Lista de formularios semánticos</param>
-        public void ObtenerFaceta(string pProyectoID, FacetadoDS pFacetadoDS, string pNombreFaceta, Dictionary<string, List<string>> pListaFiltros, List<string> pListaFiltrosExtra, bool pEstaEnMyGnoss, bool pEsMiembroComunidad, bool pEsInvitado, string pIdentidadID, TipoDisenio pTipoDisenio, int pInicio, int pLimite, List<string> pSemanticos, string pFiltroContextoWhere, TipoProyecto pTipoProyecto, bool pExcluyente, bool pInmutable, bool pEsMovil, Guid pPestanyaID = new Guid())
+        public void ObtenerFaceta(string pProyectoID, FacetadoDS pFacetadoDS, string pNombreFaceta, Dictionary<string, List<string>> pListaFiltros, List<string> pListaFiltrosExtra, bool pEstaEnMyGnoss, bool pEsMiembroComunidad, bool pEsInvitado, string pIdentidadID, TipoDisenio pTipoDisenio, int pInicio, int pLimite, List<string> pSemanticos, string pFiltroContextoWhere, TipoProyecto pTipoProyecto, bool pExcluyente, bool pInmutable, bool pEsMovil, Guid pPestanyaID = new Guid(), List<Guid> pListaExcluidos = null)
         {
-            ObtenerFaceta(pProyectoID, pFacetadoDS, pNombreFaceta, pListaFiltros, pListaFiltrosExtra, pEstaEnMyGnoss, pEsMiembroComunidad, pEsInvitado, pIdentidadID, pTipoDisenio, pInicio, pLimite, pSemanticos, pFiltroContextoWhere, pTipoProyecto, false, null, pExcluyente, pInmutable, pEsMovil, pPestanyaID);
+            ObtenerFaceta(pProyectoID, pFacetadoDS, pNombreFaceta, pListaFiltros, pListaFiltrosExtra, pEstaEnMyGnoss, pEsMiembroComunidad, pEsInvitado, pIdentidadID, pTipoDisenio, pInicio, pLimite, pSemanticos, pFiltroContextoWhere, pTipoProyecto, false, null, pExcluyente, pInmutable, pEsMovil, pListaExcluidos, pPestanyaID);
         }
 
         /// <summary>
@@ -2362,9 +2624,9 @@ namespace Es.Riam.Gnoss.AD.Facetado
         /// <param name="pFiltroContextoWhere">Filtros de contexto</param>
         /// <param name="pListaFiltrosExtra">Lista de filtros extra</param>
         /// <param name="pSemanticos">Lista de formularios semánticos</param>
-        public void ObtenerFaceta(string pProyectoID, FacetadoDS pFacetadoDS, string pClaveFaceta, Dictionary<string, List<string>> pListaFiltros, List<string> pListaFiltrosExtra, bool pEstaEnMyGnoss, bool pEsMiembroComunidad, bool pEsInvitado, string pIdentidadID, TipoDisenio pTipoDisenio, int pInicio, int pLimite, List<string> pSemanticos, string pFiltroContextoWhere, TipoProyecto pTipoProyecto, bool pEsRango, List<int> pListaRangos, bool pExcluyente, bool pInmutable, bool pEsMovil, Guid pPestanyaID = new Guid())
+        public void ObtenerFaceta(string pProyectoID, FacetadoDS pFacetadoDS, string pClaveFaceta, Dictionary<string, List<string>> pListaFiltros, List<string> pListaFiltrosExtra, bool pEstaEnMyGnoss, bool pEsMiembroComunidad, bool pEsInvitado, string pIdentidadID, TipoDisenio pTipoDisenio, int pInicio, int pLimite, List<string> pSemanticos, string pFiltroContextoWhere, TipoProyecto pTipoProyecto, bool pEsRango, List<int> pListaRangos, bool pExcluyente, bool pInmutable, bool pEsMovil, List<Guid> pListaExcluidos = null, Guid pPestanyaID = new Guid())
         {
-            ObtenerFaceta(pProyectoID, pFacetadoDS, pClaveFaceta, pListaFiltros, pListaFiltrosExtra, pEstaEnMyGnoss, pEsMiembroComunidad, pEsInvitado, pIdentidadID, pTipoDisenio, pInicio, pLimite, pSemanticos, pFiltroContextoWhere, pTipoProyecto, pEsRango, pListaRangos, pExcluyente, false, pInmutable, pEsMovil, pPestanyaID);
+            ObtenerFaceta(pProyectoID, pFacetadoDS, pClaveFaceta, pListaFiltros, pListaFiltrosExtra, pEstaEnMyGnoss, pEsMiembroComunidad, pEsInvitado, pIdentidadID, pTipoDisenio, pInicio, pLimite, pSemanticos, pFiltroContextoWhere, pTipoProyecto, pEsRango, pListaRangos, pExcluyente, false, pInmutable, pEsMovil, pPestanyaID, pListaExcluidos);
         }
 
         /// <summary>
@@ -2385,33 +2647,9 @@ namespace Es.Riam.Gnoss.AD.Facetado
         /// <param name="pFiltroContextoWhere">Filtros de contexto</param>
         /// <param name="pListaFiltrosExtra">Lista de filtros extra</param>
         /// <param name="pSemanticos">Lista de formularios semánticos</param>
-        public void ObtenerFaceta(string pProyectoID, FacetadoDS pFacetadoDS, string pClaveFaceta, Dictionary<string, List<string>> pListaFiltros, List<string> pListaFiltrosExtra, bool pEstaEnMyGnoss, bool pEsMiembroComunidad, bool pEsInvitado, string pIdentidadID, TipoDisenio pTipoDisenio, int pInicio, int pLimite, List<string> pSemanticos, string pFiltroContextoWhere, TipoProyecto pTipoProyecto, bool pEsRango, List<int> pListaRangos, bool pExcluyente, bool pUsarHilos, bool pInmutable, bool pEsMovil, Guid pPestanyaID = new Guid())
+        public void ObtenerFaceta(string pProyectoID, FacetadoDS pFacetadoDS, string pClaveFaceta, Dictionary<string, List<string>> pListaFiltros, List<string> pListaFiltrosExtra, bool pEstaEnMyGnoss, bool pEsMiembroComunidad, bool pEsInvitado, string pIdentidadID, TipoDisenio pTipoDisenio, int pInicio, int pLimite, List<string> pSemanticos, string pFiltroContextoWhere, TipoProyecto pTipoProyecto, bool pEsRango, List<int> pListaRangos, bool pExcluyente, bool pUsarHilos, bool pInmutable, bool pEsMovil, Guid pPestanyaID = new Guid(), List<Guid> pListaExcluidos = null)
         {
-            ObtenerFaceta(pProyectoID, pFacetadoDS, pClaveFaceta, pListaFiltros, pListaFiltrosExtra, pEstaEnMyGnoss, pEsMiembroComunidad, pEsInvitado, pIdentidadID, pTipoDisenio, pInicio, pLimite, pSemanticos, pFiltroContextoWhere, pTipoProyecto, pEsRango, pListaRangos, pExcluyente, pUsarHilos, false, pInmutable, pEsMovil, pPestanyaID);
-        }
-
-        /// <summary>
-        /// Obtiene una faceta concreta
-        /// </summary>
-        /// <param name="pProyectoID">Identificador del proyecto</param>
-        /// <param name="pFacetadoDS">DataSet de facetado</param>
-        /// <param name="pNombreFaceta">Nombre de la faceta que se debe cargar</param>
-        /// <param name="pListaFiltros">Lista de filtros</param>
-        /// <param name="pEstaEnMyGnoss">Verdad si la búsqueda se hace en MyGnoss, no en una comunidad</param>
-        /// <param name="pEsMiembroComunidad">Verdad si el usuario es miembro de la comunidad</param>
-        /// <param name="pEsInvitado">Verdad si el usuario no está registrado</param>
-        /// <param name="pIdentidadID">Identificador de la identidad</param>
-        /// <param name="pOrden">Orden de los resultados</param>
-        /// <param name="pInicio">Inicio</param>
-        /// <param name="pLimite">límite de resultados</param>
-        /// <param name="pEsCatalogoNosocial">Verdad si es un catálogo no social</param>
-        /// <param name="pFiltroContextoWhere">Filtros de contexto</param>
-        /// <param name="pListaFiltrosExtra">Lista de filtros extra</param>
-        /// <param name="pSemanticos">Lista de formularios semánticos</param>
-        /// <param name="pFiltrosSearchPersonalizados">Diccionario con los filtros tipo 'search' personalizados</param>
-        public void ObtenerFaceta(string pProyectoID, FacetadoDS pFacetadoDS, string pClaveFaceta, Dictionary<string, List<string>> pListaFiltros, List<string> pListaFiltrosExtra, bool pEstaEnMyGnoss, bool pEsMiembroComunidad, bool pEsInvitado, string pIdentidadID, TipoDisenio pTipoDisenio, int pInicio, int pLimite, List<string> pSemanticos, string pFiltroContextoWhere, TipoProyecto pTipoProyecto, bool pEsRango, List<int> pListaRangos, bool pExcluyente, bool pUsarHilos, bool pExcluirPersonas, bool pInmutable, bool pEsMovil, Guid pPestanyaID = new Guid())
-        {
-            ObtenerFaceta(pProyectoID, pFacetadoDS, pClaveFaceta, pListaFiltros, pListaFiltrosExtra, pEstaEnMyGnoss, pEsMiembroComunidad, pEsInvitado, pIdentidadID, pTipoDisenio, pInicio, pLimite, pSemanticos, pFiltroContextoWhere, pTipoProyecto, pEsRango, pListaRangos, pExcluyente, pUsarHilos, pExcluirPersonas, true, true, 0, TipoPropiedadFaceta.NULL, null, pInmutable, pEsMovil, pPestanyaID);
+            ObtenerFaceta(pProyectoID, pFacetadoDS, pClaveFaceta, pListaFiltros, pListaFiltrosExtra, pEstaEnMyGnoss, pEsMiembroComunidad, pEsInvitado, pIdentidadID, pTipoDisenio, pInicio, pLimite, pSemanticos, pFiltroContextoWhere, pTipoProyecto, pEsRango, pListaRangos, pExcluyente, pUsarHilos, false, pInmutable, pEsMovil, pPestanyaID, pListaExcluidos);
         }
 
         /// <summary>
@@ -2433,7 +2671,31 @@ namespace Es.Riam.Gnoss.AD.Facetado
         /// <param name="pListaFiltrosExtra">Lista de filtros extra</param>
         /// <param name="pSemanticos">Lista de formularios semánticos</param>
         /// <param name="pFiltrosSearchPersonalizados">Diccionario con los filtros tipo 'search' personalizados</param>
-        public void ObtenerFaceta(string pProyectoID, FacetadoDS pFacetadoDS, string pClaveFaceta, Dictionary<string, List<string>> pListaFiltros, List<string> pListaFiltrosExtra, bool pEstaEnMyGnoss, bool pEsMiembroComunidad, bool pEsInvitado, string pIdentidadID, TipoDisenio pTipoDisenio, int pInicio, int pLimite, List<string> pSemanticos, string pFiltroContextoWhere, TipoProyecto pTipoProyecto, bool pEsRango, List<int> pListaRangos, bool pExcluyente, bool pUsarHilos, bool pExcluirPersonas, bool pPermitirRecursosPrivados, bool pOmitirPalabrasNoRelevantesSearch, int pReciproca, TipoPropiedadFaceta pTipoPropiedadesFaceta, Dictionary<string, Tuple<string, string, string, bool>> pFiltrosSearchPersonalizados, bool pInmutable, bool pEsMovil, Guid pPestanyaID = new Guid())
+        public void ObtenerFaceta(string pProyectoID, FacetadoDS pFacetadoDS, string pClaveFaceta, Dictionary<string, List<string>> pListaFiltros, List<string> pListaFiltrosExtra, bool pEstaEnMyGnoss, bool pEsMiembroComunidad, bool pEsInvitado, string pIdentidadID, TipoDisenio pTipoDisenio, int pInicio, int pLimite, List<string> pSemanticos, string pFiltroContextoWhere, TipoProyecto pTipoProyecto, bool pEsRango, List<int> pListaRangos, bool pExcluyente, bool pUsarHilos, bool pExcluirPersonas, bool pInmutable, bool pEsMovil, Guid pPestanyaID = new Guid(), List<Guid> pListaExcluidos = null)
+        {
+            ObtenerFaceta(pProyectoID, pFacetadoDS, pClaveFaceta, pListaFiltros, pListaFiltrosExtra, pEstaEnMyGnoss, pEsMiembroComunidad, pEsInvitado, pIdentidadID, pTipoDisenio, pInicio, pLimite, pSemanticos, pFiltroContextoWhere, pTipoProyecto, pEsRango, pListaRangos, pExcluyente, pUsarHilos, pExcluirPersonas, true, true, 0, TipoPropiedadFaceta.NULL, null, pInmutable, pEsMovil, pListaExcluidos, pPestanyaID);
+        }
+
+        /// <summary>
+        /// Obtiene una faceta concreta
+        /// </summary>
+        /// <param name="pProyectoID">Identificador del proyecto</param>
+        /// <param name="pFacetadoDS">DataSet de facetado</param>
+        /// <param name="pNombreFaceta">Nombre de la faceta que se debe cargar</param>
+        /// <param name="pListaFiltros">Lista de filtros</param>
+        /// <param name="pEstaEnMyGnoss">Verdad si la búsqueda se hace en MyGnoss, no en una comunidad</param>
+        /// <param name="pEsMiembroComunidad">Verdad si el usuario es miembro de la comunidad</param>
+        /// <param name="pEsInvitado">Verdad si el usuario no está registrado</param>
+        /// <param name="pIdentidadID">Identificador de la identidad</param>
+        /// <param name="pOrden">Orden de los resultados</param>
+        /// <param name="pInicio">Inicio</param>
+        /// <param name="pLimite">límite de resultados</param>
+        /// <param name="pEsCatalogoNosocial">Verdad si es un catálogo no social</param>
+        /// <param name="pFiltroContextoWhere">Filtros de contexto</param>
+        /// <param name="pListaFiltrosExtra">Lista de filtros extra</param>
+        /// <param name="pSemanticos">Lista de formularios semánticos</param>
+        /// <param name="pFiltrosSearchPersonalizados">Diccionario con los filtros tipo 'search' personalizados</param>
+        public void ObtenerFaceta(string pProyectoID, FacetadoDS pFacetadoDS, string pClaveFaceta, Dictionary<string, List<string>> pListaFiltros, List<string> pListaFiltrosExtra, bool pEstaEnMyGnoss, bool pEsMiembroComunidad, bool pEsInvitado, string pIdentidadID, TipoDisenio pTipoDisenio, int pInicio, int pLimite, List<string> pSemanticos, string pFiltroContextoWhere, TipoProyecto pTipoProyecto, bool pEsRango, List<int> pListaRangos, bool pExcluyente, bool pUsarHilos, bool pExcluirPersonas, bool pPermitirRecursosPrivados, bool pOmitirPalabrasNoRelevantesSearch, int pReciproca, TipoPropiedadFaceta pTipoPropiedadesFaceta, Dictionary<string, Tuple<string, string, string, bool>> pFiltrosSearchPersonalizados, bool pInmutable, bool pEsMovil, List<Guid> pListaExcluidos = null, Guid pPestanyaID = new Guid())
         {
             int numeroAuxiliarVariablesIguales = 2;
             string nombreFacetaSinPrefijo = "";
@@ -2449,7 +2711,7 @@ namespace Es.Riam.Gnoss.AD.Facetado
 
             string where = " WHERE { ";
 
-            where += ObtenerWhereQuery(pProyectoID, pClaveFaceta, pListaFiltros, pListaFiltrosExtra, pEstaEnMyGnoss, pEsMiembroComunidad, pEsInvitado, pIdentidadID, pTipoDisenio, pInicio, pLimite, pSemanticos, pFiltroContextoWhere, pTipoProyecto, pEsRango, pListaRangos, pExcluyente, pExcluirPersonas, pPermitirRecursosPrivados, pOmitirPalabrasNoRelevantesSearch, pReciproca, pTipoPropiedadesFaceta, TiposAlgoritmoTransformacion.Ninguno, out numeroAuxiliarVariablesIguales, out nombreFacetaSinPrefijo, pFiltrosSearchPersonalizados, consultaReciproca, pInmutable, pEsMovil, out ultimaFacetaAux, pPestanyaID);
+            where += ObtenerWhereQuery(pProyectoID, pClaveFaceta, pListaFiltros, pListaFiltrosExtra, pEstaEnMyGnoss, pEsMiembroComunidad, pEsInvitado, pIdentidadID, pTipoDisenio, pInicio, pLimite, pSemanticos, pFiltroContextoWhere, pTipoProyecto, pEsRango, pListaRangos, pExcluyente, pExcluirPersonas, pPermitirRecursosPrivados, pOmitirPalabrasNoRelevantesSearch, pReciproca, pTipoPropiedadesFaceta, TiposAlgoritmoTransformacion.Ninguno, out numeroAuxiliarVariablesIguales, out nombreFacetaSinPrefijo, pFiltrosSearchPersonalizados, consultaReciproca, pInmutable, pEsMovil, out ultimaFacetaAux, pListaExcluidos, pPestanyaID);
 
             where += " } ";
 
@@ -2635,7 +2897,7 @@ namespace Es.Riam.Gnoss.AD.Facetado
             return query;
         }
 
-        private string ObtenerWhereQuery(string pProyectoID, string pClaveFaceta, Dictionary<string, List<string>> pListaFiltros, List<string> pListaFiltrosExtra, bool pEstaEnMyGnoss, bool pEsMiembroComunidad, bool pEsInvitado, string pIdentidadID, TipoDisenio pTipoDisenio, int pInicio, int pLimite, List<string> pSemanticos, string pFiltroContextoWhere, TipoProyecto pTipoProyecto, bool pEsRango, List<int> pListaRangos, bool pExcluyente, bool pExcluirPersonas, bool pObtenerRecursosPrivados, bool pOmitirPalabrasNoRelevantesSearch, int pReciproca, TipoPropiedadFaceta pTipoPropiedadesFaceta, TiposAlgoritmoTransformacion pTipoAlgoritmoTransformacion, out int pNumeroAuxiliarVariablesIguales, out string nombreFacetaSinPrefijo, Dictionary<string, Tuple<string, string, string, bool>> pFiltrosSearchPersonalizados, string pConsultaReciproca, bool pInmutable, bool pEsMovil, out string pUltimaFacetaAux, Guid pPestanyaID = new Guid())
+        private string ObtenerWhereQuery(string pProyectoID, string pClaveFaceta, Dictionary<string, List<string>> pListaFiltros, List<string> pListaFiltrosExtra, bool pEstaEnMyGnoss, bool pEsMiembroComunidad, bool pEsInvitado, string pIdentidadID, TipoDisenio pTipoDisenio, int pInicio, int pLimite, List<string> pSemanticos, string pFiltroContextoWhere, TipoProyecto pTipoProyecto, bool pEsRango, List<int> pListaRangos, bool pExcluyente, bool pExcluirPersonas, bool pObtenerRecursosPrivados, bool pOmitirPalabrasNoRelevantesSearch, int pReciproca, TipoPropiedadFaceta pTipoPropiedadesFaceta, TiposAlgoritmoTransformacion pTipoAlgoritmoTransformacion, out int pNumeroAuxiliarVariablesIguales, out string nombreFacetaSinPrefijo, Dictionary<string, Tuple<string, string, string, bool>> pFiltrosSearchPersonalizados, string pConsultaReciproca, bool pInmutable, bool pEsMovil, out string pUltimaFacetaAux, List<Guid> pListaExcluidos = null, Guid pPestanyaID = new Guid())
         {
             #region Extra consulta filtro
 
@@ -2704,6 +2966,11 @@ namespace Es.Riam.Gnoss.AD.Facetado
             if (!string.IsNullOrEmpty(pConsultaReciproca))
             {
                 query += pConsultaReciproca;
+            }
+
+            if (pListaExcluidos != null && pListaExcluidos.Count > 0)
+            {
+                query += ObtenerFiltroRecursosExcluidos(pListaExcluidos);
             }
 
             return query;
@@ -3704,9 +3971,9 @@ namespace Es.Riam.Gnoss.AD.Facetado
         }
 
 
-        public void ObtenerResultadosBusqueda(string pProyectoID, bool pDescendente, FacetadoDS pFacetadoDS, string pTipoFiltro, Dictionary<string, List<string>> pListaFiltros, List<string> pListaFiltrosExtra, bool pEstaEnMyGnoss, bool pEsMiembroComunidad, bool pEsInvitado, string pIdentidadID, int pInicio, int pLimite, List<string> pSemanticos, string pFiltroContextoSelect, string pFiltroContextoWhere, string pFiltroContextoOrderBy, int pFiltroContextoPesoMinimo, bool pEsMovil)
+        public void ObtenerResultadosBusqueda(string pProyectoID, bool pDescendente, FacetadoDS pFacetadoDS, string pTipoFiltro, Dictionary<string, List<string>> pListaFiltros, List<string> pListaFiltrosExtra, bool pEstaEnMyGnoss, bool pEsMiembroComunidad, bool pEsInvitado, string pIdentidadID, int pInicio, int pLimite, List<string> pSemanticos, string pFiltroContextoSelect, string pFiltroContextoWhere, string pFiltroContextoOrderBy, int pFiltroContextoPesoMinimo, bool pEsMovil, List<Guid> pListaExcluidos, bool pUsarAfinidad = false)
         {
-            ObtenerResultadosBusqueda(pProyectoID, pDescendente, pFacetadoDS, pTipoFiltro, pListaFiltros, pListaFiltrosExtra, pEstaEnMyGnoss, pEsMiembroComunidad, pEsInvitado, pIdentidadID, pInicio, pLimite, pSemanticos, pFiltroContextoSelect, pFiltroContextoWhere, pFiltroContextoOrderBy, pFiltroContextoPesoMinimo, TipoProyecto.Catalogo, "", "", pEsMovil);
+            ObtenerResultadosBusqueda(pProyectoID, pDescendente, pFacetadoDS, pTipoFiltro, pListaFiltros, pListaFiltrosExtra, pEstaEnMyGnoss, pEsMiembroComunidad, pEsInvitado, pIdentidadID, pInicio, pLimite, pSemanticos, pFiltroContextoSelect, pFiltroContextoWhere, pFiltroContextoOrderBy, pFiltroContextoPesoMinimo, TipoProyecto.Catalogo, "", "", pEsMovil, pListaExcluidos, pUsarAfinidad);
         }
 
         /// <summary>
@@ -3730,36 +3997,9 @@ namespace Es.Riam.Gnoss.AD.Facetado
         /// <param name="pFiltroContextoOrderBy"></param>
         /// <param name="pTipoProyecto">Tipo del proyecto para el que se está haciendo la consulta</param>        
         /// <param name="pNamespaceExtra">NamespacesExtra</param>
-        public void ObtenerResultadosBusqueda(string pProyectoID, bool pDescendente, FacetadoDS pFacetadoDS, string pTipoFiltro, Dictionary<string, List<string>> pListaFiltros, List<string> pListaFiltrosExtra, bool pEstaEnMyGnoss, bool pEsMiembroComunidad, bool pEsInvitado, string pIdentidadID, int pInicio, int pLimite, List<string> pSemanticos, string pFiltroContextoSelect, string pFiltroContextoWhere, string pFiltroContextoOrderBy, int pFiltroContextoPesoMinimo, TipoProyecto pTipoProyecto, string pNamespaceExtra, string pResultadosEliminar, bool pEsMovil)
+        public void ObtenerResultadosBusqueda(string pProyectoID, bool pDescendente, FacetadoDS pFacetadoDS, string pTipoFiltro, Dictionary<string, List<string>> pListaFiltros, List<string> pListaFiltrosExtra, bool pEstaEnMyGnoss, bool pEsMiembroComunidad, bool pEsInvitado, string pIdentidadID, int pInicio, int pLimite, List<string> pSemanticos, string pFiltroContextoSelect, string pFiltroContextoWhere, string pFiltroContextoOrderBy, int pFiltroContextoPesoMinimo, TipoProyecto pTipoProyecto, string pNamespaceExtra, string pResultadosEliminar, bool pEsMovil, List<Guid> pListaExcluidos, bool pUsarAfinidad = false)
         {
-            ObtenerResultadosBusqueda(pProyectoID, pDescendente, pFacetadoDS, pTipoFiltro, pListaFiltros, pListaFiltrosExtra, pEstaEnMyGnoss, pEsMiembroComunidad, pEsInvitado, pIdentidadID, pInicio, pLimite, pSemanticos, pFiltroContextoSelect, pFiltroContextoWhere, pFiltroContextoOrderBy, pFiltroContextoPesoMinimo, TipoProyecto.Catalogo, "", "", true, pEsMovil);
-        }
-
-        /// <summary>
-        /// Obtiene los resultados de una búsqueda
-        /// </summary>
-        /// <param name="pProyectoID">Identificador del proyecto</param>
-        /// <param name="pDescendente">Indica si el orden es descendente (false si es descendente)</param>
-        /// <param name="pFacetadoDS">DataSet de facetado</param>
-        /// <param name="pTipoFiltro">Tipo de filtro</param>
-        /// <param name="pListaFiltros">Lista de filtros del usuario</param>
-        /// <param name="pEstaEnMyGnoss">Verdad si la búsqueda se hace en MyGnoss</param>
-        /// <param name="pEsMiembroComunidad">Verdad si el usuario es miembro de la comunidad</param>
-        /// <param name="pEsInvitado">Verdad si el usuario no está registrado</param>
-        /// <param name="pIdentidadID">Identificador de la identidad del usuario</param>
-        /// <param name="pInicio">Inicio de los resultados</param>
-        /// <param name="pLimite">Fin de los resultados</param>
-        /// <param name="pListaFiltrosExtra"></param>
-        /// <param name="pSemanticos"></param>
-        /// <param name="pFiltroContextoSelect"></param>
-        /// <param name="pFiltroContextoWhere"></param>
-        /// <param name="pFiltroContextoOrderBy"></param>
-        /// <param name="pTipoProyecto">Tipo del proyecto para el que se está haciendo la consulta</param>        
-        /// <param name="pNamespaceExtra">NamespacesExtra</param>
-        /// <param name="pFiltrosSearchPersonalizados">Diccionario con los filtros tipo 'search' personalizados</param>
-        public void ObtenerResultadosBusqueda(string pProyectoID, bool pDescendente, FacetadoDS pFacetadoDS, string pTipoFiltro, Dictionary<string, List<string>> pListaFiltros, List<string> pListaFiltrosExtra, bool pEstaEnMyGnoss, bool pEsMiembroComunidad, bool pEsInvitado, string pIdentidadID, int pInicio, int pLimite, List<string> pSemanticos, string pFiltroContextoSelect, string pFiltroContextoWhere, string pFiltroContextoOrderBy, int pFiltroContextoPesoMinimo, TipoProyecto pTipoProyecto, string pNamespaceExtra, string pResultadosEliminar, bool pPermitirRecursosPrivados, bool pEsMovil)
-        {
-            ObtenerResultadosBusqueda(pProyectoID, pDescendente, pFacetadoDS, pTipoFiltro, pListaFiltros, pListaFiltrosExtra, pEstaEnMyGnoss, pEsMiembroComunidad, pEsInvitado, pIdentidadID, pInicio, pLimite, pSemanticos, pFiltroContextoSelect, pFiltroContextoWhere, pFiltroContextoOrderBy, pFiltroContextoPesoMinimo, pTipoProyecto, pNamespaceExtra, pResultadosEliminar, pPermitirRecursosPrivados, true, TiposAlgoritmoTransformacion.Ninguno, null, pEsMovil);
+            ObtenerResultadosBusqueda(pProyectoID, pDescendente, pFacetadoDS, pTipoFiltro, pListaFiltros, pListaFiltrosExtra, pEstaEnMyGnoss, pEsMiembroComunidad, pEsInvitado, pIdentidadID, pInicio, pLimite, pSemanticos, pFiltroContextoSelect, pFiltroContextoWhere, pFiltroContextoOrderBy, pFiltroContextoPesoMinimo, TipoProyecto.Catalogo, "", "", true, pEsMovil, pListaExcluidos, pUsarAfinidad);
         }
 
         /// <summary>
@@ -3784,7 +4024,34 @@ namespace Es.Riam.Gnoss.AD.Facetado
         /// <param name="pTipoProyecto">Tipo del proyecto para el que se está haciendo la consulta</param>        
         /// <param name="pNamespaceExtra">NamespacesExtra</param>
         /// <param name="pFiltrosSearchPersonalizados">Diccionario con los filtros tipo 'search' personalizados</param>
-        public void ObtenerResultadosBusqueda(string pProyectoID, bool pDescendente, FacetadoDS pFacetadoDS, string pTipoFiltro, Dictionary<string, List<string>> pListaFiltros, List<string> pListaFiltrosExtra, bool pEstaEnMyGnoss, bool pEsMiembroComunidad, bool pEsInvitado, string pIdentidadID, int pInicio, int pLimite, List<string> pSemanticos, string pFiltroContextoSelect, string pFiltroContextoWhere, string pFiltroContextoOrderBy, int pFiltroContextoPesoMinimo, TipoProyecto pTipoProyecto, string pNamespaceExtra, string pResultadosEliminar, bool pObtenerRecursosPrivados, bool pOmitirPalabrasNoRelevantesSearch, TiposAlgoritmoTransformacion pTipoAlgoritmoTransformacion, Dictionary<string, Tuple<string, string, string, bool>> pFiltrosSearchPersonalizados, bool pEsMovil)
+        public void ObtenerResultadosBusqueda(string pProyectoID, bool pDescendente, FacetadoDS pFacetadoDS, string pTipoFiltro, Dictionary<string, List<string>> pListaFiltros, List<string> pListaFiltrosExtra, bool pEstaEnMyGnoss, bool pEsMiembroComunidad, bool pEsInvitado, string pIdentidadID, int pInicio, int pLimite, List<string> pSemanticos, string pFiltroContextoSelect, string pFiltroContextoWhere, string pFiltroContextoOrderBy, int pFiltroContextoPesoMinimo, TipoProyecto pTipoProyecto, string pNamespaceExtra, string pResultadosEliminar, bool pPermitirRecursosPrivados, bool pEsMovil, List<Guid> pListaExcluidos, bool pUsarAfinidad = false)
+        {
+            ObtenerResultadosBusqueda(pProyectoID, pDescendente, pFacetadoDS, pTipoFiltro, pListaFiltros, pListaFiltrosExtra, pEstaEnMyGnoss, pEsMiembroComunidad, pEsInvitado, pIdentidadID, pInicio, pLimite, pSemanticos, pFiltroContextoSelect, pFiltroContextoWhere, pFiltroContextoOrderBy, pFiltroContextoPesoMinimo, pTipoProyecto, pNamespaceExtra, pResultadosEliminar, pPermitirRecursosPrivados, true, TiposAlgoritmoTransformacion.Ninguno, null, pEsMovil, pListaExcluidos, pUsarAfinidad);
+        }
+
+        /// <summary>
+        /// Obtiene los resultados de una búsqueda
+        /// </summary>
+        /// <param name="pProyectoID">Identificador del proyecto</param>
+        /// <param name="pDescendente">Indica si el orden es descendente (false si es descendente)</param>
+        /// <param name="pFacetadoDS">DataSet de facetado</param>
+        /// <param name="pTipoFiltro">Tipo de filtro</param>
+        /// <param name="pListaFiltros">Lista de filtros del usuario</param>
+        /// <param name="pEstaEnMyGnoss">Verdad si la búsqueda se hace en MyGnoss</param>
+        /// <param name="pEsMiembroComunidad">Verdad si el usuario es miembro de la comunidad</param>
+        /// <param name="pEsInvitado">Verdad si el usuario no está registrado</param>
+        /// <param name="pIdentidadID">Identificador de la identidad del usuario</param>
+        /// <param name="pInicio">Inicio de los resultados</param>
+        /// <param name="pLimite">Fin de los resultados</param>
+        /// <param name="pListaFiltrosExtra"></param>
+        /// <param name="pSemanticos"></param>
+        /// <param name="pFiltroContextoSelect"></param>
+        /// <param name="pFiltroContextoWhere"></param>
+        /// <param name="pFiltroContextoOrderBy"></param>
+        /// <param name="pTipoProyecto">Tipo del proyecto para el que se está haciendo la consulta</param>        
+        /// <param name="pNamespaceExtra">NamespacesExtra</param>
+        /// <param name="pFiltrosSearchPersonalizados">Diccionario con los filtros tipo 'search' personalizados</param>
+        public void ObtenerResultadosBusqueda(string pProyectoID, bool pDescendente, FacetadoDS pFacetadoDS, string pTipoFiltro, Dictionary<string, List<string>> pListaFiltros, List<string> pListaFiltrosExtra, bool pEstaEnMyGnoss, bool pEsMiembroComunidad, bool pEsInvitado, string pIdentidadID, int pInicio, int pLimite, List<string> pSemanticos, string pFiltroContextoSelect, string pFiltroContextoWhere, string pFiltroContextoOrderBy, int pFiltroContextoPesoMinimo, TipoProyecto pTipoProyecto, string pNamespaceExtra, string pResultadosEliminar, bool pObtenerRecursosPrivados, bool pOmitirPalabrasNoRelevantesSearch, TiposAlgoritmoTransformacion pTipoAlgoritmoTransformacion, Dictionary<string, Tuple<string, string, string, bool>> pFiltrosSearchPersonalizados, bool pEsMovil, List<Guid> pListaExcluidos, bool pUsarAfinidad = false)
         {
             string[] filtrosContextos = null;
             if (!string.IsNullOrEmpty(pFiltroContextoOrderBy))
@@ -4110,6 +4377,13 @@ namespace Es.Riam.Gnoss.AD.Facetado
             {
                 query += filtrosContextos[0];
             }
+            
+            // resultados excluidos
+            if (pListaExcluidos != null && pListaExcluidos.Count > 0)
+            {
+                string filtroExcluidos = ObtenerFiltroRecursosExcluidos(pListaExcluidos);
+                query = $" {query}{filtroExcluidos}";
+            }
 
             query += " } ";
 
@@ -4128,6 +4402,7 @@ namespace Es.Riam.Gnoss.AD.Facetado
                 {
                     orderBy += " desc(?scoreTitle) ";
                 }
+                select += " ?scoreTitle ";
             }
 
             bool haySearchPersonalizado = false;
@@ -4257,7 +4532,7 @@ namespace Es.Riam.Gnoss.AD.Facetado
 
             query = NamespacesVirtuosoLectura + pNamespaceExtra + select + query;
 
-            LeerDeVirtuoso(query, "RecursosBusqueda", pFacetadoDS, pProyectoID);
+            LeerDeVirtuoso(query, "RecursosBusqueda", pFacetadoDS, pProyectoID, pUsarAfinidad);
 
             if (pFiltroContextoPesoMinimo > 0 && !string.IsNullOrEmpty(pFiltroContextoSelect) && !string.IsNullOrEmpty(pFiltroContextoWhere))
             {
@@ -4759,7 +5034,7 @@ namespace Es.Riam.Gnoss.AD.Facetado
                 mListaItemsBusquedaExtra = pListaFiltrosExtra;
             }
 
-            string[] filtrosChart = pFiltroChart.Split(new string[] { "|||" }, StringSplitOptions.None);
+            string[] filtrosChart = pFiltroChart.Split(new string[] { "|||", ")))" }, StringSplitOptions.None);
 
             string select = " select " + pSelectChart + " ";
 
@@ -6272,7 +6547,7 @@ namespace Es.Riam.Gnoss.AD.Facetado
         /// <param name="pEsInvitado">Verdad si el usuario no está registrado0</param>
         /// <param name="pIdentidadID">Identificador de la identidad del usuario</param>
         /// <param name="pFiltrosSearchPersonalizados">Diccionario con los filtros tipo 'search' personalizados</param>
-        public void ObtieneNumeroResultados(string pProyectoID, FacetadoDS pFacetadoDS, string pNombreFaceta, Dictionary<string, List<string>> pListaFiltros, List<string> pListaFiltrosExtra, bool pEstaEnMyGnoss, bool pEsMiembroComunidad, bool pEsInvitado, string pIdentidadID, List<string> pSemanticos, string pFiltroContextoWhere, TipoProyecto pTipoProyecto, bool pObtenerRecursosPrivados, bool pOmitirPalabrasNoRelevantesSearch, TiposAlgoritmoTransformacion pTiposAlgoritmoTransformacion, Dictionary<string, Tuple<string, string, string, bool>> pFiltrosSearchPersonalizados, bool pEsMovil)
+        public void ObtieneNumeroResultados(string pProyectoID, FacetadoDS pFacetadoDS, string pNombreFaceta, Dictionary<string, List<string>> pListaFiltros, List<string> pListaFiltrosExtra, bool pEstaEnMyGnoss, bool pEsMiembroComunidad, bool pEsInvitado, string pIdentidadID, List<string> pSemanticos, string pFiltroContextoWhere, TipoProyecto pTipoProyecto, bool pObtenerRecursosPrivados, bool pOmitirPalabrasNoRelevantesSearch, TiposAlgoritmoTransformacion pTiposAlgoritmoTransformacion, Dictionary<string, Tuple<string, string, string, bool>> pFiltrosSearchPersonalizados, bool pEsMovil, List<Guid> pListaExcluidos)
         {
             mConsultaNumeroResultados = true;
             string query = NamespacesVirtuosoLectura;
@@ -6327,6 +6602,13 @@ namespace Es.Riam.Gnoss.AD.Facetado
             }
 
             query += filtros;
+
+            // resultados excluidos
+            if (pListaExcluidos != null && pListaExcluidos.Count > 0)
+            {
+                string filtroExcluidos = ObtenerFiltroRecursosExcluidos(pListaExcluidos);
+                query = $" {query}{filtroExcluidos}";
+            }
 
             query += " } ";
 
@@ -7235,7 +7517,7 @@ from <http://pruebas.gnoss.net/4f08285b-19f9-4ff0-8c36-ccee29868a75>  WHERE {   
         /// <param name="pNombreontologia">Nombre de la ontología</param>
         /// <param name="pIDDocSem">ID del documento semántico</param>
         /// <returns>DataSet con el RDF del documento</returns>
-        public FacetadoDS ObtenerRDFXMLdeFormulario(string pNombreontologia, string pIDDocSem)
+        public FacetadoDS ObtenerRDFXMLdeFormulario(string pNombreontologia, string pIDDocSem, bool pUsarAfinidad = false)
         {
             FacetadoDS facetadoDS = new FacetadoDS();
 
@@ -7252,7 +7534,7 @@ from <http://pruebas.gnoss.net/4f08285b-19f9-4ff0-8c36-ccee29868a75>  WHERE {   
             string queryInterna = queryInternaSB.ToString();
             string query = $"{NamespacesVirtuosoLectura} {queryInterna} limit 10000";
 
-            LeerDeVirtuoso(query, pNombreontologia, facetadoDS, pNombreontologia);
+            LeerDeVirtuoso(query, pNombreontologia, facetadoDS, pNombreontologia, pUsarAfinidad);
 
             int offset = 0;
             int numResultadosMax = 10000;
@@ -7373,7 +7655,7 @@ from <http://pruebas.gnoss.net/4f08285b-19f9-4ff0-8c36-ccee29868a75>  WHERE {   
 
                     foreach (string entidadSol in entidadesSol)
                     {
-                        if (entidadSol.StartsWith("http://"))
+                        if (entidadSol.StartsWith("http://") || entidadSol.StartsWith("https://"))
                         {
                             whereTipoEntidadSol += "<" + entidadSol + ">,";
                         }
@@ -7387,7 +7669,7 @@ from <http://pruebas.gnoss.net/4f08285b-19f9-4ff0-8c36-ccee29868a75>  WHERE {   
                 }
                 else
                 {
-                    if (pTipoEntidadSolicitada.StartsWith("http://"))
+                    if (pTipoEntidadSolicitada.StartsWith("http://") || pTipoEntidadSolicitada.StartsWith("https://"))
                     {
                         whereTipoEntidadSol += "?o=<" + pTipoEntidadSolicitada + ">";
                     }
@@ -8006,7 +8288,8 @@ from <http://pruebas.gnoss.net/4f08285b-19f9-4ff0-8c36-ccee29868a75>  WHERE {   
         /// <param name="pPropiedades">Propiedades solicitadas</param>
         /// <param name="pEntsContenedoras">Indica si hay que traer el idoma de los triples</param>
         /// <returns>DataSet con las tripletas</returns>
-        public FacetadoDS ObtenerValoresPropiedadesEntidades(string pGrafo, List<string> pEntsContenedoras, List<string> pPropiedades, bool pTraerIdioma)
+        public FacetadoDS ObtenerValoresPropiedadesEntidades(string pGrafo, List<string> pEntsContenedoras, List<string> pPropiedades, bool pTraerIdioma, bool pUsarAfinidad = false
+)
         {
             FacetadoDS facetadoDS = new FacetadoDS();
             if (pEntsContenedoras.Count > 0)
@@ -8055,7 +8338,7 @@ from <http://pruebas.gnoss.net/4f08285b-19f9-4ff0-8c36-ccee29868a75>  WHERE {   
 
                     queryBucle = queryBucle.Substring(0, queryBucle.Length - 6) + "  }";
 
-                    LeerDeVirtuoso(queryBucle, "SelectPropEnt", facetadoAux, pGrafo);
+                    LeerDeVirtuoso(queryBucle, "SelectPropEnt", facetadoAux, pGrafo, pUsarAfinidad);
                     facetadoDS.Merge(facetadoAux);
                     facetadoAux.Dispose();
                     offset += 1000;
@@ -8304,7 +8587,8 @@ from <http://pruebas.gnoss.net/4f08285b-19f9-4ff0-8c36-ccee29868a75>  WHERE {   
         /// <param name="pEntsContenedora">Entidades contenedoras</param>
         /// <param name="pPropiedades">Propiedades solicitadas</param>
         /// <returns>DataSet con las tripletas</returns>
-        public FacetadoDS ObtenerValoresPropiedadesEntidadesAnidadas(string pGrafo, List<string> pEntsContenedoras, List<string> pPropiedades)
+        public FacetadoDS ObtenerValoresPropiedadesEntidadesAnidadas(string pGrafo, List<string> pEntsContenedoras, List<string> pPropiedades, bool pUsarAfinidad = false
+)
         {
             FacetadoDS facetadoDS = new FacetadoDS();
             string query = NamespacesVirtuosoLectura;
@@ -8344,7 +8628,7 @@ from <http://pruebas.gnoss.net/4f08285b-19f9-4ff0-8c36-ccee29868a75>  WHERE {   
 
             query += "  }";
 
-            LeerDeVirtuoso(query, "SelectPropEnt", facetadoDS, pGrafo);
+            LeerDeVirtuoso(query, "SelectPropEnt", facetadoDS, pGrafo, pUsarAfinidad);
 
             return facetadoDS;
         }
@@ -8356,7 +8640,7 @@ from <http://pruebas.gnoss.net/4f08285b-19f9-4ff0-8c36-ccee29868a75>  WHERE {   
         /// <param name="pListaDocumentosID">Listado de documentos</param>
         /// <param name="pPropiedades">Propiedades solicitadas</param>
         /// <returns>DataSet con las tripletas</returns>
-        public FacetadoDS ObtenerValoresPropiedadesEntidadesPorDocumentoID(string pGrafo, List<Guid> pListaDocumentosID, List<string> pPropiedades, string pIdioma, bool pUsarClienteWeb, Dictionary<string, List<string>> pListaFiltros, List<string> pListaFiltrosExtra, bool pEsMiembroComunidad, string pProyectoID, List<string> pSemanticos, string pFiltroContextoWhere, TipoProyecto pTipoProyecto, bool pExcluirPersonas, bool pOmitirPalabrasNoRelevantesSearch, Dictionary<string, Tuple<string, string, string, bool>> pFiltrosSearchPersonalizados, bool pEstaEnMyGnoss, bool pEsInvitado, string pIdentidadID, bool pEsExportacionExcel = false)
+        public FacetadoDS ObtenerValoresPropiedadesEntidadesPorDocumentoID(string pGrafo, List<Guid> pListaDocumentosID, List<string> pPropiedades, string pIdioma, bool pUsarClienteWeb, Dictionary<string, List<string>> pListaFiltros, List<string> pListaFiltrosExtra, bool pEsMiembroComunidad, string pProyectoID, List<string> pSemanticos, string pFiltroContextoWhere, TipoProyecto pTipoProyecto, bool pExcluirPersonas, bool pOmitirPalabrasNoRelevantesSearch, Dictionary<string, Tuple<string, string, string, bool>> pFiltrosSearchPersonalizados, bool pEstaEnMyGnoss, bool pEsInvitado, string pIdentidadID, bool pEsExportacionExcel = false, bool pUsarAfinidad = false)
         {
             FacetadoDS facetadoDSAux = new FacetadoDS();
 
@@ -8775,7 +9059,7 @@ from <http://pruebas.gnoss.net/4f08285b-19f9-4ff0-8c36-ccee29868a75>  WHERE {   
             string nombreTabla = "SelectPropEnt";
             if (pUsarClienteWeb)
             {
-                LeerDeVirtuoso(query, nombreTabla, facetadoDSAux, pGrafo);
+                LeerDeVirtuoso(query, nombreTabla, facetadoDSAux, pGrafo, pUsarAfinidad);
             }
             else
             {
@@ -9968,6 +10252,21 @@ from <http://pruebas.gnoss.net/4f08285b-19f9-4ff0-8c36-ccee29868a75>  WHERE {   
             return pNombreFaceta;
         }
 
+        private string ObtenerFiltroRecursosExcluidos(List<Guid> pListaExcluidos)
+        {
+            string filtroExcluidos = $"FILTER(?s NOT IN (";
+            string listaExcluidos = string.Empty;
+
+            foreach (Guid id in pListaExcluidos)
+            {
+                listaExcluidos = $"{listaExcluidos}gnoss:{id.ToString().ToUpper()},";
+            }
+
+            filtroExcluidos = $"{filtroExcluidos}{listaExcluidos.Substring(0, listaExcluidos.Length - 1)}))";
+
+            return filtroExcluidos;
+        }
+
         /// <summary>
         /// 
         /// </summary>
@@ -10419,6 +10718,20 @@ from <http://pruebas.gnoss.net/4f08285b-19f9-4ff0-8c36-ccee29868a75>  WHERE {   
                 }
 
                 return valor;
+            }
+            else if (pValor.Contains("gnoss:"))
+            {
+                string[] partes = pValor.Split(':');
+                string identificador = partes[1];
+                Guid id = Guid.Empty;
+                if (Guid.TryParse(identificador, out id))
+                {
+                    pValor = $"{partes[0]}:{identificador}";
+                }
+                else
+                {
+                    throw new Exception($"parametro no valido -- clave del parametro:{pClave} || valor del parametro: {pValor}");
+                }
             }
             return pValor;
         }
@@ -11140,7 +11453,7 @@ from <http://pruebas.gnoss.net/4f08285b-19f9-4ff0-8c36-ccee29868a75>  WHERE {   
                             }
                             else if (Key.Equals("search") && pListaFiltros[Key].Count > 0)
                             {
-                                query += ObtenerFiltroSearch(pListaFiltros, Key, pNombreFaceta, pOmitirPalabrasNoRelevantesSearch, true);
+                                query += "{" + ObtenerFiltroSearch(pListaFiltros, Key, pNombreFaceta, pOmitirPalabrasNoRelevantesSearch, true);
 
                                 if (mConsultaResultados)
                                 {
@@ -11148,6 +11461,7 @@ from <http://pruebas.gnoss.net/4f08285b-19f9-4ff0-8c36-ccee29868a75>  WHERE {   
                                     serchTitleQuery = serchTitleQuery.Replace("gnoss:search", "foaf:firstName").Replace("?search", "?searchTitle").Replace("?scoreSearch", "?scoreTitle");
                                     query += $" UNION {serchTitleQuery} bind(if(bound(?searchTitle), 1, 0) as ?scoreTitle)";
                                 }
+                                query += "}";
                             }
                             else if ((Key.Equals("sioc_t:Tag")) && pListaFiltros[Key].Count > 0)
                             {
@@ -12022,7 +12336,7 @@ from <http://pruebas.gnoss.net/4f08285b-19f9-4ff0-8c36-ccee29868a75>  WHERE {   
 
                     //if (pTipoAlgoritmoTransformacion == TiposAlgoritmoTransformacion.Rangos)
                     //{
-                    sbQuery.Append($" >= {valor1}{suplementoInicio} AND {variableFiltro} <= {valor2}{suplementoFin}). ");
+                    sbQuery.Append($" >= {valor1}{suplementoInicio} AND {variableFiltro} < {valor2}{suplementoFin}). ");
                     //}
                     //else
                     //{
@@ -13803,7 +14117,7 @@ from <http://pruebas.gnoss.net/4f08285b-19f9-4ff0-8c36-ccee29868a75>  WHERE {   
         public void BorrarTripletasFormularioSemantico(string pNombreGrafo, string pElementoaEliminarID, bool pActualizarEnVirtuoso, string pInfoExtra)
         {
             string query = $"{NamespacesVrituosoEscritura} DELETE {ObtenerFromGraph(pNombreGrafo.ToLower())} {{ ?s ?p ?o. ?documento ?hasEntidad ?s.}} {ObtenerFrom(pNombreGrafo)} WHERE {{?documento ?hasEntidad ?s.  FILTER (?documento = <{mUrlIntranet}{pElementoaEliminarID.ToLower()}>) ?s ?p ?o }}";
-            VirtuosoConnection conexion = ObtenerConexionParaGrafo(pNombreGrafo, false);
+            VirtuosoConnection conexion = ObtenerConexionParaGrafo(pNombreGrafo, true);
             mServicesUtilVirtuosoAndReplication.ActualizarVirtuoso(query, pNombreGrafo, true, 0, conexion, false);
         }
 
@@ -13855,6 +14169,29 @@ from <http://pruebas.gnoss.net/4f08285b-19f9-4ff0-8c36-ccee29868a75>  WHERE {   
         }
 
         /// <summary>
+        /// Borra todos los triples de la lista de sujetos indicada
+        /// </summary>
+        /// <param name="pGrafo">Identificador del proyecto</param>
+        /// <param name="pSujeto">Lista de sujetos a borrar</param>
+        public void BorrarListaTriplesDeSujeto(string pGrafo, List<string> pListaSujetos)
+        {           
+            StringBuilder query = new StringBuilder(NamespacesVrituosoEscritura);
+            query.AppendLine($"DELETE {ObtenerFromGraph(pGrafo)} {{ ?s ?p ?o }} ");
+            query.AppendLine($"{ObtenerFrom(pGrafo)} WHERE {{?s ?p ?o. ");
+            query.Append($"FILTER (?s IN ( ");
+            
+            foreach(string sujeto in pListaSujetos)
+            {
+                query.Append($"{AniadirMayorQueYMenorQueAIdentificador(sujeto)}, ");
+            }
+
+            string consulta = query.ToString();
+            consulta = $"{consulta.Substring(0, consulta.LastIndexOf(','))}) ). }}";
+                        
+            ActualizarVirtuoso(consulta, pGrafo);
+        }
+
+        /// <summary>
         /// Borra una tripleta concreta
         /// </summary>
         /// <param name="pProyectoID">Identificador del proyecto</param>
@@ -13887,13 +14224,35 @@ from <http://pruebas.gnoss.net/4f08285b-19f9-4ff0-8c36-ccee29868a75>  WHERE {   
             ActualizarVirtuoso(query, pProyectoID);
         }
 
+
         /// <summary>
-        /// Borra un grupo de tripletas de un grafo.
+        /// Elimina el concept pasado por parámetro del tesauro y los hijos si se le indica
         /// </summary>
-        /// <param name="pGrafo">Identificador del grafo</param>
-        /// <param name="pTripletas">Tripletas a borrar</param>
-        /// <param name="pUsarColaActualizacion">TRUE si se va a mandar </param>
-        public void BorrarGrupoTripletas(string pGrafo, string pTripletas, bool pUsarColaActualizacion)
+        /// <param name="pGrafo">Grafo del que borrar el concept</param>
+        /// <param name="pSujetoConcept">Sujeto del concept a eliminar</param>
+        /// <param name="pEliminarHijos">Si quieres eliminar o no los hijos</param>
+		public void EliminarConceptEHijos(string pGrafo, string pSujetoConcept, bool pEliminarHijos)
+		{
+            string subconsultaHijos = string.Empty;
+            if (pEliminarHijos)
+            {
+                subconsultaHijos = $"UNION {{ ?s ?p ?o. <{pSujetoConcept}> skos:narrower+ ?s .}}";
+            }
+
+            string grafo = ObtenerFromGraph(pGrafo);
+
+			string consulta = $"prefix skos:<http://www.w3.org/2008/05/skos#> delete from graph {grafo.ToLower().Replace("from", string.Empty)} {{ ?s ?p ?o }} {grafo} where {{ {{ ?s ?p ?o . filter(?s = <{pSujetoConcept}> or ?o = <{pSujetoConcept}>) }} {subconsultaHijos} }}" ;
+
+            ActualizarVirtuoso(consulta, pGrafo);
+		}
+
+		/// <summary>
+		/// Borra un grupo de tripletas de un grafo.
+		/// </summary>
+		/// <param name="pGrafo">Identificador del grafo</param>
+		/// <param name="pTripletas">Tripletas a borrar</param>
+		/// <param name="pUsarColaActualizacion">TRUE si se va a mandar </param>
+		public void BorrarGrupoTripletas(string pGrafo, string pTripletas, bool pUsarColaActualizacion)
         {
             if (string.IsNullOrEmpty(pTripletas))
             {
@@ -14020,9 +14379,9 @@ from <http://pruebas.gnoss.net/4f08285b-19f9-4ff0-8c36-ccee29868a75>  WHERE {   
 
             string query = $"{NamespacesVrituosoEscritura} MODIFY GRAPH {ObtenerUrlGrafo(pGrafo).ToLower()} DELETE {{ ?s ?p ?o }} INSERT {{{pTripletaInsertar}}} WHERE {{?s ?p ?o. FILTER (";
 
-            string objeto = pTripletaBorrar[2];
+            string objeto = pTripletaBorrar[2].Replace("\\", "\\\\");
 
-            bool objetoEsString = ((objeto.StartsWith("\"")) && (objeto.EndsWith("\"")));
+            bool objetoEsString = objeto.StartsWith("\"") && objeto.EndsWith("\"");
 
             //Si contiene comillas entre medio, se las remplazo por \"
             if ((objeto.Length > 2) && (objeto.StartsWith("\"")) && (objeto.EndsWith("\"")) && (objeto.Substring(1, objeto.Length - 2).Contains("\"")))
@@ -14030,7 +14389,6 @@ from <http://pruebas.gnoss.net/4f08285b-19f9-4ff0-8c36-ccee29868a75>  WHERE {   
                 objeto = $"\"{objeto.Substring(1, objeto.Length - 2).Replace("\"", "\\\"")}\"";
             }
 
-            objeto = objeto.Replace("\\", "\\\\");
 
             if (pTripletaBorrar.Length > 3 && !string.IsNullOrEmpty(pTripletaBorrar[3]))
             {
@@ -14068,8 +14426,8 @@ from <http://pruebas.gnoss.net/4f08285b-19f9-4ff0-8c36-ccee29868a75>  WHERE {   
 
             foreach (TripleWrapper triple in pTripletas)
             {
-                string objeto = triple.Object;
-
+                string objeto = triple.Object.Replace("\\", "\\\\");
+                
                 bool objetoEsString = objeto.StartsWith("\"") && objeto.EndsWith("\"");
 
                 //Si contiene comillas entre medio, se las remplazo por \"
@@ -14077,8 +14435,6 @@ from <http://pruebas.gnoss.net/4f08285b-19f9-4ff0-8c36-ccee29868a75>  WHERE {   
                 {
                     objeto = $"\"{objeto.Substring(1, objeto.Length - 2).Replace("\"", "\\\"")}\"";
                 }
-
-                objeto = objeto.Replace("\\", "\\\\");
 
                 if (!string.IsNullOrEmpty(triple.ObjectLanguage))
                 {
@@ -14130,9 +14486,17 @@ from <http://pruebas.gnoss.net/4f08285b-19f9-4ff0-8c36-ccee29868a75>  WHERE {   
         {
             string tripleta = $"{pSujeto} {pPredicado} ";
 
-            bool objetoEsString = pObjeto.StartsWith("\"") && pObjeto.EndsWith("\"");
+            string puntoFinalTriple = "";
+            if (pObjeto.TrimEnd().EndsWith("."))
+            {
+                puntoFinalTriple = " .";
+                pObjeto = pObjeto.Substring(0, pObjeto.LastIndexOf('.')).Trim();
+            }
 
-            if (pObjeto.Contains("\\"))
+            bool objetoEsString = pObjeto.StartsWith("\"") && pObjeto.EndsWith("\"");
+            bool objetoConTipo = pObjeto.StartsWith("\"") && pObjeto.EndsWith(">") && pObjeto.Contains("\"^^<");
+
+			if (pObjeto.Contains("\\"))
             {
                 pObjeto = pObjeto.Replace("\\n", " ").Replace("\\r", "").Replace("\\t", " ");
             }
@@ -14142,17 +14506,19 @@ from <http://pruebas.gnoss.net/4f08285b-19f9-4ff0-8c36-ccee29868a75>  WHERE {   
             //Si contiene comillas entre medio, se las remplazo por \"
             if (pObjeto.Length > 2 && objetoEsString && pObjeto.Substring(1, pObjeto.Length - 2).Contains("\""))
             {
-                pObjeto = $"\"{pObjeto.Substring(1, pObjeto.Length - 2).Replace("\"", "\\\"")}\"";
+                pObjeto = $"\"{pObjeto.Substring(1, pObjeto.Length - 2).Replace("\"", "\\\"")}\"{puntoFinalTriple}";
             }
 
             if (!string.IsNullOrEmpty(pIdioma))
             {
-                if (!objetoEsString)
+                if (!objetoEsString && !objetoConTipo)
                 {
                     pObjeto = $"\"{pObjeto.Substring(1, pObjeto.Length - 2)}\"";
                 }
-
-                pObjeto += $"@{pIdioma}";
+                if (!objetoConTipo) 
+                { 
+                    pObjeto += $"@{pIdioma}";
+                }
             }
 
             tripleta += $"{pObjeto} ";
@@ -14419,7 +14785,7 @@ from <http://pruebas.gnoss.net/4f08285b-19f9-4ff0-8c36-ccee29868a75>  WHERE {   
                 {
                     pObjeto = $"\"{pObjeto}\"^^xsd:int";
                 }
-                else if (TIPOS_GEOMETRIA.Any(item => pObjeto.StartsWith($"{item}(")))
+                else if (TIPOS_GEOMETRIA.Any(item => pObjeto.ToLower().StartsWith($"{item}(")))
                 {
                     pObjeto = $"\"{pObjetoSinMinuscula}\"^^<http://www.openlinksw.com/schemas/virtrdf#Geometry>";
                 }
@@ -14917,6 +15283,7 @@ from <http://pruebas.gnoss.net/4f08285b-19f9-4ff0-8c36-ccee29868a75>  WHERE {   
                             {
                                 sujetoExtraBorrar = $"<http://gnossAuxiliar/{idKey.ToString().ToUpper()}>";
                             }
+
 
                             //Tengo un where con los predicados y otro sin ellos, añado lo que hay ahora mismo en la variable filtro y limpio esa variable
                             whereSinPredicado += filtro;
@@ -15566,6 +15933,57 @@ from <http://pruebas.gnoss.net/4f08285b-19f9-4ff0-8c36-ccee29868a75>  WHERE {   
             LeerDeVirtuoso(query, "SelectPropEnt", dataSet, pGrafo);
 
             return dataSet;
+        }
+
+        /// <summary>
+        /// Obtiene una lista de sujetos del del tesauro según el grafo seleccionado y source indicado por parámetro.
+        /// </summary>
+        /// <param name="pGrafo">Grafo del Tesauro Semántico</param>
+        /// <param name="pSource">Source</param>
+        /// <returns>Lista de sujetos del tesauro segun el grafo y el source indicado</returns>
+        public List<string> ObtenerListaSujetosTesauroDeGrafoPorSource(string pGrafo, string pSource)
+        {
+            FacetadoDS dataSet = new FacetadoDS();
+
+            string query = $"{NamespacesVirtuosoLectura} select distinct(?s) from  {ObtenerUrlGrafo(pGrafo).ToLower()} where {{ ?s <http://purl.org/dc/elements/1.1/source> \"{pSource}\" }}";
+
+            LeerDeVirtuoso(query, "SujetosDeGrafo", dataSet, pGrafo);
+
+            List<string> listaSujetos = new List<string>();
+
+            foreach (DataRow fila in dataSet.Tables[0].Rows)
+            {
+                if (!listaSujetos.Contains((string)fila[0]))
+                {
+                    listaSujetos.Add((string)fila[0]);
+                }
+            }
+
+            return listaSujetos;
+        }
+
+        /// <summary>
+        /// Obtiene una lista de de triples con sujeto predicado objeto de la lista de sujetos dadas
+        /// </summary>
+        /// <param name="pGrafo">Grafo del que obtener los triples</param>
+        /// <param name="pSujeto">Sujeto para obtener triples</param>
+        /// <returns></returns>
+        public List<string> ObtenerListaTriplesDeSujeto(string pGrafo, string pSujeto)
+        {
+            FacetadoDS dataSet = new FacetadoDS();
+
+            string query = $"{NamespacesVirtuosoLectura} select ?p ?o from {ObtenerUrlGrafo(pGrafo).ToLower()} where {{ <{pSujeto}> ?p ?o }}";
+
+            LeerDeVirtuoso(query, "TriplesDeSujeto", dataSet, pGrafo);
+
+            List<string> listaTriples = new List<string>();
+
+            foreach(DataRow fila in dataSet.Tables[0].Rows)
+            {
+                listaTriples.Add($"{pSujeto} {(string)fila[0]} {(string)fila[1]} . ");
+            }
+
+            return listaTriples;
         }
 
         /// <summary>

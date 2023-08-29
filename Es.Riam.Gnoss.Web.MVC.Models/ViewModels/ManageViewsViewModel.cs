@@ -85,6 +85,8 @@ namespace Es.Riam.Gnoss.Web.MVC.Models.ViewModels
         /// </summary>
         public List<string> ListOriginalFacetedServiceViews { get; set; }
 
+        public List<string> ListDomainsShared { get; set; }
+
         public List<CMSComponentViewModel> ListCMSComponents { get; set; }
         public List<CMSResourceViewModel> ListCMSResources { get; set; }
         public List<CMSListResourceViewModel> ListCMSListResources { get; set; }
@@ -100,8 +102,9 @@ namespace Es.Riam.Gnoss.Web.MVC.Models.ViewModels
         public string UrlActionCMS { get; set; }
         public string UrlActionCMSExtra { get; set; }
         public string UrlActionInvalidateViews { get; set; }
-
-        public string OKMessage { get; set; }
+        public string UrlActionShareViews { get; set; }
+        public string UrlActionStopSharing { get; set; }
+		public string OKMessage { get; set; }
 
 
         [Serializable]

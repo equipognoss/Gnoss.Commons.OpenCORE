@@ -46,12 +46,12 @@ namespace Es.Riam.Gnoss.CL.ServiciosGenerales
         private ProyectoCN mProyectoCN = null;
 
         /// <summary>
-        /// Clave MAESTRA de la cach�
+        /// Clave MAESTRA de la cache
         /// </summary>
         private readonly string[] mMasterCacheKeyArray = { NombresCL.PROYECTO };
 
         /// <summary>
-        /// L�gica de par�metro
+        /// Lógica de parámetro
         /// </summary>
         private ParametroCN mParametroCN;
 
@@ -67,7 +67,7 @@ namespace Es.Riam.Gnoss.CL.ServiciosGenerales
         #region Constructores
 
         /// <summary>
-        /// Constructor a partir del fichero de configuraci�n de base de datos
+        /// Constructor a partir del fichero de configuración de base de datos
         /// </summary>
         public ProyectoCL(EntityContext entityContext, LoggingService loggingService, RedisCacheWrapper redisCacheWrapper, ConfigService configService, VirtuosoAD virtuosoAD, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication)
             : base(entityContext, loggingService, redisCacheWrapper, configService, servicesUtilVirtuosoAndReplication)
@@ -80,10 +80,10 @@ namespace Es.Riam.Gnoss.CL.ServiciosGenerales
         }
 
         /// <summary>
-        /// Constructor a partir del fichero de configuraci�n de base de datos
+        /// Constructor a partir del fichero de configuración de base de datos
         /// </summary>
-        /// <param name="pFicheroConfiguracionBD">Ruta del fichero de configuraci�n de base de datos LIVE</param>
-        /// <param name="pUsarVariableEstatica">Si se est�n usando hilos con diferentes conexiones en el LIVE: FALSE. En caso contrario TRUE</param>
+        /// <param name="pFicheroConfiguracionBD">Ruta del fichero de configuración de base de datos LIVE</param>
+        /// <param name="pUsarVariableEstatica">Si se están usando hilos con diferentes conexiones en el LIVE: FALSE. En caso contrario TRUE</param>
         public ProyectoCL(string pFicheroConfiguracionBD, EntityContext entityContext, LoggingService loggingService, RedisCacheWrapper redisCacheWrapper, ConfigService configService, VirtuosoAD virtuosoAD, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication)
             : base(pFicheroConfiguracionBD, entityContext, loggingService, redisCacheWrapper, configService, servicesUtilVirtuosoAndReplication)
         {
@@ -95,10 +95,10 @@ namespace Es.Riam.Gnoss.CL.ServiciosGenerales
         }
 
         /// <summary>
-        /// Constructor a partir del fichero de configuraci�n de base de datos
+        /// Constructor a partir del fichero de configuración de base de datos
         /// </summary>
-        /// <param name="pFicheroConfiguracionBD">Ruta del fichero de configuraci�n de base de datos LIVE</param>
-        /// <param name="pUsarVariableEstatica">Si se est�n usando hilos con diferentes conexiones en el LIVE: FALSE. En caso contrario TRUE</param>
+        /// <param name="pFicheroConfiguracionBD">Ruta del fichero de configuración de base de datos LIVE</param>
+        /// <param name="pUsarVariableEstatica">Si se están usando hilos con diferentes conexiones en el LIVE: FALSE. En caso contrario TRUE</param>
         public ProyectoCL(string pFicheroConfiguracionBD, string pPoolName, EntityContext entityContext, LoggingService loggingService, RedisCacheWrapper redisCacheWrapper, ConfigService configService, VirtuosoAD virtuosoAD, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication)
             : base(pFicheroConfiguracionBD, pPoolName, entityContext, loggingService, redisCacheWrapper, configService, servicesUtilVirtuosoAndReplication)
         {
@@ -241,7 +241,7 @@ namespace Es.Riam.Gnoss.CL.ServiciosGenerales
         }
 
         /// <summary>
-        /// Obtiene de cach� la lista de proyectos con acciones externas
+        /// Obtiene de cache la lista de proyectos con acciones externas
         /// </summary>
         /// <returns>Lista de Identificadores de proyecto con acciones externas configuradas</returns>
         public List<Guid> ObtenerListaIDsProyectosConAccionesExternas()
@@ -251,7 +251,7 @@ namespace Es.Riam.Gnoss.CL.ServiciosGenerales
 
             if (listaProyectosAccionesExternas == null)
             {
-                // Si no est�, lo cargo y lo almaceno en la cach�
+                // Si no está, lo cargo y lo almaceno en la cache
                 listaProyectosAccionesExternas = ProyectoCN.ObtenerListaIDsProyectosConAccionesExternas();
                 AgregarObjetoCache(rawKey, listaProyectosAccionesExternas);
             }
@@ -260,7 +260,7 @@ namespace Es.Riam.Gnoss.CL.ServiciosGenerales
         }
 
         /// <summary>
-        /// Invalida la cach� de la lista de proyectos con acciones externas
+        /// Invalida la cache de la lista de proyectos con acciones externas
         /// </summary>
         public void InvalidarCacheListaIDsProyectosConAccionesExternas()
         {
@@ -293,7 +293,7 @@ namespace Es.Riam.Gnoss.CL.ServiciosGenerales
         }
 
         /// <summary>
-        /// Obtiene el id autonum�rico que se le asigna a cada proyecto para crear la tabla BASE
+        /// Obtiene el id autonumérico que se le asigna a cada proyecto para crear la tabla BASE
         /// </summary>
         /// <param name="pProyectoID">Identificador de proyecto</param>
         /// <returns></returns>
@@ -301,7 +301,7 @@ namespace Es.Riam.Gnoss.CL.ServiciosGenerales
         {
             string rawKey = string.Concat(NombresCL.TABLABASEPROYECTOID, "_", pProyectoID);
 
-            // Compruebo si est� en la cach�
+            // Compruebo si está en la caché
             object id = ObtenerObjetoDeCacheLocal(rawKey);
 
             if (id == null)
@@ -315,7 +315,7 @@ namespace Es.Riam.Gnoss.CL.ServiciosGenerales
 
             if (id == null)
             {
-                // Si no est�, lo cargo y lo almaceno en la cach�
+                // Si no está, lo cargo y lo almaceno en la cache
                 id = ProyectoCN.ObtenerTablaBaseProyectoIDProyectoPorID(pProyectoID);
 
                 if (id != null && (int)id != -1)
@@ -331,14 +331,14 @@ namespace Es.Riam.Gnoss.CL.ServiciosGenerales
         /// <summary>
         /// Obtiene los tipo de documentos permitidos para un rol de usuario en un determinado proyecto
         /// </summary>
-        /// <param name="pProyectoID">Identificador del proyecto en el que se hace la comprobaci�n</param>
+        /// <param name="pProyectoID">Identificador del proyecto en el que se hace la comprobación</param>
         /// <param name="pTipoRol">Tipo de rol del usuario actual</param>
         /// <returns>Lista con los tipos de documentos permitidos para el rol</returns>
         public List<TiposDocumentacion> ObtenerTiposDocumentosPermitidosUsuarioEnProyecto(Guid pProyectoID, TipoRolUsuario pTipoRol)
         {
             string rawKey = string.Concat("TiposDocumentosPermitidos_", pProyectoID, "_" + (short)pTipoRol);
 
-            // Compruebo si est� en la cach�
+            // Compruebo si está en la caché
             List<TiposDocumentacion> listaTipos = ObtenerObjetoDeCacheLocal(rawKey) as List<TiposDocumentacion>;
 
             if (listaTipos == null)
@@ -349,7 +349,7 @@ namespace Es.Riam.Gnoss.CL.ServiciosGenerales
 
             if (listaTipos == null)
             {
-                // Si no est�, lo cargo y lo almaceno en la cach�
+                // Si no está, lo cargo y lo almaceno en la cache
                 if (TieneComunidadPadreConfigurada(pProyectoID))
                 {
                     listaTipos = ProyectoCN.ObtenerTiposDocumentosPermitidosUsuarioEnProyecto(ProyectoIDPadreEcosistema.Value, pTipoRol);
@@ -369,7 +369,7 @@ namespace Es.Riam.Gnoss.CL.ServiciosGenerales
         /// <summary>
         /// Invalida los tipo de documentos permitidos para un rol de usuario en un determinado proyecto
         /// </summary>
-        /// <param name="pProyectoID">Identificador del proyecto en el que se hace la comprobaci�n</param>
+        /// <param name="pProyectoID">Identificador del proyecto en el que se hace la comprobación</param>
         /// <param name="pTipoRol">Tipo de rol del usuario actual</param>
         /// <returns>Lista con los tipos de documentos permitidos para el rol</returns>
         public void InvalidarTiposDocumentosPermitidosUsuarioEnProyecto(Guid pProyectoID, TipoRolUsuario pTipoRol)
@@ -384,7 +384,7 @@ namespace Es.Riam.Gnoss.CL.ServiciosGenerales
         }
 
         /// <summary>
-        /// Invalidar las secciones de la home de un proyecto tipo cat�logo
+        /// Invalidar las secciones de la home de un proyecto tipo catálogo
         /// </summary>
         /// <param name="pProyectoID">Identificador del proyecto</param>
         /// <returns></returns>
@@ -397,14 +397,14 @@ namespace Es.Riam.Gnoss.CL.ServiciosGenerales
         /// <summary>
         /// Obtiene el nombre de un proyecto
         /// </summary>
-        /// <param name="pOrganizacionID">Identificador de la organizaci�n del proyecto</param>
+        /// <param name="pOrganizacionID">Identificador de la organización del proyecto</param>
         /// <param name="pProyectoID">Identificador del proyecto</param>
         /// <returns>Nombre de proyecto</returns>
         public string ObtenerNombreDeProyectoID(Guid pProyectoID)
         {
             string rawKey = string.Concat("NombreProyecto_", pProyectoID);
 
-            // Compruebo si est� en la cach�
+            // Compruebo si está en la caché
             string nombre = ObtenerObjetoDeCacheLocal(rawKey) as string;
 
             if (string.IsNullOrEmpty(nombre))
@@ -415,7 +415,7 @@ namespace Es.Riam.Gnoss.CL.ServiciosGenerales
 
             if (string.IsNullOrEmpty(nombre))
             {
-                // Si no est�, lo cargo y lo almaceno en la cach�
+                // Si no está, lo cargo y lo almaceno en la cache
                 nombre = ProyectoCN.ObtenerNombreDeProyectoID(pProyectoID);
                 AgregarObjetoCache(rawKey, nombre);
                 AgregarObjetoCacheLocal(pProyectoID, rawKey, nombre);
@@ -427,14 +427,14 @@ namespace Es.Riam.Gnoss.CL.ServiciosGenerales
         /// <summary>
         /// Obtiene el nombre corto de un proyecto
         /// </summary>
-        /// <param name="pOrganizacionID">Identificador de la organizaci�n del proyecto</param>
+        /// <param name="pOrganizacionID">Identificador de la organización del proyecto</param>
         /// <param name="pProyectoID">Identificador del proyecto</param>
         /// <returns>Nombre corto de proyecto</returns>
         public string ObtenerURLPropiaProyecto(Guid pProyectoID, string pIdiomaActual)
         {
             string rawKey = string.Concat("UrlProyecto_", pProyectoID);
 
-            // Compruebo si est� en la cach�
+            // Compruebo si está en la caché
             string urlPropia = ObtenerObjetoDeCacheLocal(rawKey) as string;
 
             if (urlPropia == null)
@@ -445,7 +445,7 @@ namespace Es.Riam.Gnoss.CL.ServiciosGenerales
 
             if (urlPropia == null)
             {
-                // Si no est�, lo cargo y lo almaceno en la cach�
+                // Si no está, lo cargo y lo almaceno en la cache
                 urlPropia = ProyectoCN.ObtenerURLPropiaProyecto(pProyectoID);
 
                 if (urlPropia == null)
@@ -472,18 +472,18 @@ namespace Es.Riam.Gnoss.CL.ServiciosGenerales
         /// <summary>
         /// Obtiene el nombre corto de un proyecto
         /// </summary>
-        /// <param name="pOrganizacionID">Identificador de la organizaci�n del proyecto</param>
+        /// <param name="pOrganizacionID">Identificador de la organización del proyecto</param>
         /// <param name="pProyectoID">Identificador del proyecto</param>
         /// <returns>Nombre corto de proyecto</returns>
         public string ObtenerNombreCortoProyecto(Guid pProyectoID)
         {
             string rawKey = string.Concat(NombresCL.NOMBRECORTOPROYECTO, "_", pProyectoID);
 
-            // Compruebo si est� en la cach�
+            // Compruebo si está en la caché
             string nombreCortoProy = ObtenerObjetoDeCache(rawKey) as string;
             if (string.IsNullOrEmpty(nombreCortoProy))
             {
-                // Si no est�, lo cargo y lo almaceno en la cach�
+                // Si no está, lo cargo y lo almaceno en la cache
                 nombreCortoProy = ProyectoCN.ObtenerNombreCortoProyecto(pProyectoID);
                 AgregarObjetoCache(rawKey, nombreCortoProy);
             }
@@ -507,12 +507,12 @@ namespace Es.Riam.Gnoss.CL.ServiciosGenerales
                 return new DataWrapperProyecto();
             }
 
-            // Compruebo si est� en la cach�
+            // Compruebo si está en la caché
             DataWrapperProyecto dataWrapperProyecto = ObtenerObjetoDeCache(rawKey) as DataWrapperProyecto;
 
-            if (dataWrapperProyecto == null || (dataWrapperProyecto.ListaProyecto != null && dataWrapperProyecto.ListaProyecto.Count == 0))
+            if (dataWrapperProyecto == null || (dataWrapperProyecto.ListaProyecto != null && dataWrapperProyecto.ListaProyecto.Count == 0) || dataWrapperProyecto.ListaProyectoPestanyaDashboardAsistente == null)
             {
-                // Si no est�, lo cargo y lo almaceno en la cach�
+                // Si no está, lo cargo y lo almaceno en la cache
                 dataWrapperProyecto = ProyectoCN.ObtenerProyectoPorID(pProyectoID);
                 if (TieneComunidadPadreConfigurada(pProyectoID))
                 {
@@ -533,7 +533,7 @@ namespace Es.Riam.Gnoss.CL.ServiciosGenerales
         }
 
         /// <summary>
-        /// Obtiene el identificador de un proyecto a partir de su nombre CORTO pasado por par�metro
+        /// Obtiene el identificador de un proyecto a partir de su nombre CORTO pasado por parámetro
         /// </summary>
         /// <param name="pNombreCorto">Nombre corto del proyecto</param>
         /// <returns>Identificador del proyecto</returns>
@@ -554,7 +554,7 @@ namespace Es.Riam.Gnoss.CL.ServiciosGenerales
 
             if (!proyectoID.HasValue || proyectoID.Value.Equals(Guid.Empty))
             {
-                // Si no est�, lo cargo y lo almaceno en la cach�
+                // Si no está, lo cargo y lo almaceno en la cache
                 proyectoID = ProyectoCN.ObtenerProyectoIDPorNombre(pNombreCorto);
                 if (proyectoID.HasValue && !proyectoID.Value.Equals(Guid.Empty))
                 {
@@ -568,7 +568,7 @@ namespace Es.Riam.Gnoss.CL.ServiciosGenerales
 
 
         /// <summary>
-        /// Obtiene el identificador de un proyecto a partir de su nombre CORTO pasado por par�metro
+        /// Obtiene el identificador de un proyecto a partir de su nombre CORTO pasado por parámetro
         /// </summary>
         /// <param name="pNombreCorto">Nombre corto del proyecto</param>
         /// <returns>Identificador del proyecto</returns>
@@ -602,7 +602,7 @@ namespace Es.Riam.Gnoss.CL.ServiciosGenerales
         }
 
         /// <summary>
-        /// Obtiene el identificador de un proyecto a partir de su nombre CORTO pasado por par�metro
+        /// Obtiene el identificador de un proyecto a partir de su nombre CORTO pasado por parámetro
         /// </summary>
         /// <param name="pNombreCorto">Nombre corto del proyecto</param>
         /// <returns>Identificador del proyecto</returns>
@@ -610,11 +610,11 @@ namespace Es.Riam.Gnoss.CL.ServiciosGenerales
         {
             string rawKey = string.Concat("ProyectoID_OrgID_", pNombreCorto);
 
-            // Compruebo si est� en la cach�
+            // Compruebo si está en la caché
             List<Guid> listaProyectoIDOrgID = ObtenerObjetoDeCache(rawKey) as List<Guid>;
             if (listaProyectoIDOrgID == null)
             {
-                // Si no est�, lo cargo y lo almaceno en la cach�
+                // Si no está, lo cargo y lo almaceno en la cache
                 listaProyectoIDOrgID = ProyectoCN.ObtenerProyectoIDOrganizacionIDPorNombreCorto(pNombreCorto);
                 AgregarObjetoCache(rawKey, listaProyectoIDOrgID);
             }
@@ -623,7 +623,7 @@ namespace Es.Riam.Gnoss.CL.ServiciosGenerales
         }
 
         /// <summary>
-        /// Obtiene el id autonum�rico que se le asigna a cada proyecto para crear la tabla BASE
+        /// Obtiene el id autonumérico que se le asigna a cada proyecto para crear la tabla BASE
         /// </summary>
         /// <param name="pProyectoID">Identificador de proyecto</param>
         /// <returns></returns>
@@ -631,11 +631,11 @@ namespace Es.Riam.Gnoss.CL.ServiciosGenerales
         {
             string rawKey = string.Concat(NombresCL.NIVELESCERTIFICACIONRECURSO, "_", pProyectoID);
             mEntityContext.UsarEntityCache = true;
-            // Compruebo si est� en la cach�
+            // Compruebo si está en la caché
             DataWrapperProyecto dataWrapperProyecto = ObtenerObjetoDeCache(rawKey) as DataWrapperProyecto;
             if (dataWrapperProyecto == null)
             {
-                // Si no est�, lo cargo y lo almaceno en la cach�
+                // Si no está, lo cargo y lo almaceno en la cache
                 dataWrapperProyecto = new DataWrapperProyecto();
                 if (TieneComunidadPadreConfigurada(pProyectoID))
                 {
@@ -659,7 +659,7 @@ namespace Es.Riam.Gnoss.CL.ServiciosGenerales
         }
 
         /// <summary>
-        /// Invalida la cache de los niveles de certificaci�n de recursos del proyecto indicado
+        /// Invalida la cache de los niveles de certificación de recursos del proyecto indicado
         /// </summary>
         /// <param name="pProyectoID">Identificador del proyecto</param>
         public void InvalidarNivelesCertificacionRecursosProyecto(Guid pProyectoID)
@@ -681,11 +681,11 @@ namespace Es.Riam.Gnoss.CL.ServiciosGenerales
             {
                 string rawKey = string.Concat(NombresCL.BASERECURSOSID, "_", pProyectoID);
 
-                // Compruebo si est� en la cach�
+                // Compruebo si está en la caché
                 baseRecursosID = ObtenerObjetoDeCache(rawKey) as string;
                 if (baseRecursosID == null)
                 {
-                    // Si no est�, lo cargo y lo almaceno en la cach�
+                    // Si no está, lo cargo y lo almaceno en la cache
                     DocumentacionCN docCN = new DocumentacionCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
                     DataWrapperDocumentacion dataWrapperDocumentacion = new DataWrapperDocumentacion();
                     docCN.ObtenerBaseRecursosProyecto(dataWrapperDocumentacion, pProyectoID, pOrganizacionID, pUsuarioID);
@@ -705,6 +705,29 @@ namespace Es.Riam.Gnoss.CL.ServiciosGenerales
         }
 
         /// <summary>
+        /// Obtiene de caché las ontologías de los proyectos a los que pertenece un determinado perfil de usuario o las añade si no están.
+        /// </summary>
+        /// <param name="pPerfil">Identificador del perfil del usuario</param>
+        /// <returns>Lista con las ontologías de los proyectos</returns>
+        public List<OntologiaProyecto> ObtenerOntologiasProyectosUsuario(Guid pPerfil)
+        {
+            string rawKey = string.Concat("OntologiasProyectoUsuario", "_", pPerfil);
+            List<OntologiaProyecto> listaOntologias = ObtenerObjetoDeCache(rawKey) as List<OntologiaProyecto>;
+
+            // Compruebo si está en la caché
+            if (listaOntologias == null)
+            {
+                // Si no está, lo cargo y lo almaceno en la caché
+                ProyectoCN proyectoCN = new ProyectoCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+                listaOntologias = proyectoCN.ObtenerOntologiasPorPerfilID(pPerfil);
+                proyectoCN.Dispose();
+                AgregarObjetoCache(rawKey, listaOntologias);
+            }
+
+            return listaOntologias;
+        }
+
+        /// <summary>
         /// Obtiene de cache el html de los paneles de autopromocion
         /// </summary>
         /// <param name="pProyectoID">Identificador del proyecto</param>
@@ -713,7 +736,7 @@ namespace Es.Riam.Gnoss.CL.ServiciosGenerales
         public bool ObtenerProyectoAutoPromocion(Guid pProyectoID, out string pHtmlPanel)
         {
             pHtmlPanel = "";
-            // Compruebo si est� en la cach�
+            // Compruebo si está en la caché
             string rawKey = string.Concat(NombresCL.PROYECTOAUTOPROMOCION, "_", pProyectoID);
             object objetoCache = ObtenerObjetoDeCache(rawKey);
             if (objetoCache != null)
@@ -744,7 +767,7 @@ namespace Es.Riam.Gnoss.CL.ServiciosGenerales
         public bool ObtenerHTMLAdministradoresProyecto(Guid pProyectoID, out string pHtmlPanel)
         {
             pHtmlPanel = "";
-            // Compruebo si est� en la cach�
+            // Compruebo si está en la caché
             string rawKey = string.Concat(NombresCL.HTMLADMINISTRADORESPROYECTO, "_", pProyectoID);
             object objetoCache = ObtenerObjetoDeCache(rawKey);
             if (objetoCache != null)
@@ -792,7 +815,7 @@ namespace Es.Riam.Gnoss.CL.ServiciosGenerales
         }
 
         /// <summary>
-        /// Invalida las pesta�as de un proyecto pasado como parametro
+        /// Invalida las pestañas de un proyecto pasado como parametro
         /// </summary>
         /// <param name="pProyectoID">Clave del proyecto del que queremos obtener los gadgets</param>
         /// <returns>DataSet con los gadgets del proyecto que se pasa por parametros</returns>
@@ -808,7 +831,7 @@ namespace Es.Riam.Gnoss.CL.ServiciosGenerales
         {
             string rawKey = "ProyectoOntologiasEcosistema";
 
-            // Compruebo si est� en la cach�
+            // Compruebo si está en la caché
             Dictionary<Guid, Guid> listaOntologiasEcosistema = ObtenerObjetoDeCacheLocal(rawKey) as Dictionary<Guid, Guid>;
             if (listaOntologiasEcosistema == null)
             {
@@ -825,7 +848,7 @@ namespace Es.Riam.Gnoss.CL.ServiciosGenerales
         }
 
         /// <summary>
-        /// Obtiene la fila de un proyecto desde cach�
+        /// Obtiene la fila de un proyecto desde cache
         /// </summary>
         /// <param name="pProyectoID">Identificador del proyecto</param>
         /// <returns></returns>
@@ -833,7 +856,7 @@ namespace Es.Riam.Gnoss.CL.ServiciosGenerales
         {
             string rawKey = NombresCL.PROYECTOSPORID + "_" + pProyectoID;
             mEntityContext.UsarEntityCache = true;
-            // Compruebo si est� en la cach�
+            // Compruebo si está en la caché
             DataWrapperProyecto dataWrapperProyecto = ObtenerObjetoDeCacheLocal(rawKey) as DataWrapperProyecto;
 
             if (dataWrapperProyecto == null)
@@ -848,7 +871,7 @@ namespace Es.Riam.Gnoss.CL.ServiciosGenerales
 
                 if (filaProy != null)
                 {
-                    // Si no est�, lo cargo y lo almaceno en la cach�
+                    // Si no está, lo cargo y lo almaceno en la cache
                     dataWrapperProyecto = new DataWrapperProyecto();
                     dataWrapperProyecto.ListaProyecto.Add(filaProy);
                     if (dataWrapperProyecto != null)
@@ -885,7 +908,7 @@ namespace Es.Riam.Gnoss.CL.ServiciosGenerales
         {
             string rawKey = NombresCL.LISTAPROYECTOSPERFIL + "_" + pPerfilID;
 
-            // Compruebo si est� en la cach�
+            // Compruebo si está en la caché
             Dictionary<string, KeyValuePair<string, short>> listaProyectosPerfil = ObtenerObjetoDeCache(rawKey) as Dictionary<string, KeyValuePair<string, short>>;
             //Si no hay nada en cache guardamos un dataset con el proyecto que nos viene por parametros
             if (listaProyectosPerfil == null)
@@ -906,7 +929,7 @@ namespace Es.Riam.Gnoss.CL.ServiciosGenerales
         {
             string rawKey = NombresCL.LISTAPROYECTOSUSUARIO + "_" + pUsuarioID;
 
-            // Compruebo si est� en la cach�
+            // Compruebo si está en la caché
             Dictionary<string, KeyValuePair<string, short>> listaProyectosUsuario = ObtenerObjetoDeCache(rawKey) as Dictionary<string, KeyValuePair<string, short>>;
             //Si no hay nada en cache guardamos un dataset con el proyecto que nos viene por parametros
             if (listaProyectosUsuario == null)
@@ -922,10 +945,10 @@ namespace Es.Riam.Gnoss.CL.ServiciosGenerales
         /// Calcula el rol permitido para un usuario en un proyecto, teniendo en cuenta los roles de los grupos a los que pertenece
         /// </summary>
         /// <param name="pUsuarioID">Identificador del usuario</param>
-        /// <param name="pLogin">Login del usuario (NULL si no se quiere comprobar que el usuario est� autenticado)</param>
-        /// <param name="pOrganizacionID">Identificador de la organizaci�n</param>
+        /// <param name="pLogin">Login del usuario (NULL si no se quiere comprobar que el usuario está autenticado)</param>
+        /// <param name="pOrganizacionID">Identificador de la organización</param>
         /// <param name="pProyectoID">Identificador del proyecto</param>
-        /// <param name="pComprobarAutenticacionUsuario">TRUE si debe comprobar que el usuario est� autenticado, FALSE en caso contrario</param>
+        /// <param name="pComprobarAutenticacionUsuario">TRUE si debe comprobar que el usuario está autenticado, FALSE en caso contrario</param>
         /// <returns>Rol permitido final del usuario en el proyecto</returns>
         public ulong CalcularRolFinalUsuarioEnProyecto(Guid pUsuarioID, string pLogin, Guid pOrganizacionID, Guid pProyectoID, DataWrapperUsuario pDataWrapperUsuario)
         {
@@ -1010,7 +1033,7 @@ namespace Es.Riam.Gnoss.CL.ServiciosGenerales
         }
 
         /// <summary>
-        /// Obtiene la fila de un proyecto desde cach�
+        /// Obtiene la fila de un proyecto desde cache
         /// </summary>
         /// <param name="pProyectoID">Identificador del proyecto</param>
         /// <returns></returns>
@@ -1018,11 +1041,11 @@ namespace Es.Riam.Gnoss.CL.ServiciosGenerales
         {
             string rawKey = NombresCL.PROYECTOSPORID;
             mEntityContext.UsarEntityCache = true;
-            // Compruebo si est� en la cach�
+            // Compruebo si está en la caché
             DataWrapperProyecto dataWrapperProyecto = ObtenerObjetoDeCache(rawKey) as DataWrapperProyecto;
             if (dataWrapperProyecto == null)
             {
-                // Si no est�, lo cargo y lo almaceno en la cach�
+                // Si no está, lo cargo y lo almaceno en la cache
                 dataWrapperProyecto = new DataWrapperProyecto();
                 dataWrapperProyecto.ListaProyecto.Add(ProyectoCN.ObtenerProyectoPorIDCargaLigera(ObtenerProyectoIDPorNombreCorto(pNombreCorto)));
                 dataWrapperProyecto.CargaRelacionesPerezosasCache();
@@ -1049,11 +1072,11 @@ namespace Es.Riam.Gnoss.CL.ServiciosGenerales
         {
             string rawKey = string.Concat(NombresCL.USUARIOBLOQUEADOPROYECTO, "_", pProyectoID, "_", pUsuarioID);
 
-            // Compruebo si est� en la cach�
+            // Compruebo si está en la caché
             bool? usuBloqueado = ObtenerObjetoDeCache(rawKey) as bool?;
             if (!usuBloqueado.HasValue)
             {
-                // Si no est�, lo cargo y lo almaceno en la cach�
+                // Si no está, lo cargo y lo almaceno en la cache
                 ProyectoCN proyCN = new ProyectoCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
                 usuBloqueado = proyCN.EstaUsuarioBloqueadoEnProyecto(pUsuarioID, pProyectoID);
                 proyCN.Dispose();
@@ -1075,11 +1098,11 @@ namespace Es.Riam.Gnoss.CL.ServiciosGenerales
         {
             string rawKey = string.Concat(NombresCL.TIPOACCESO, "_", pProyectoID);
 
-            // Compruebo si est� en la cach�
+            // Compruebo si está en la caché
             short? tipoAcceso = ObtenerObjetoDeCache(rawKey) as short?;
             if (!tipoAcceso.HasValue)
             {
-                // Si no est�, lo cargo y lo almaceno en la cach�
+                // Si no está, lo cargo y lo almaceno en la cache
                 ProyectoCN proyCN = new ProyectoCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
                 tipoAcceso = (short)proyCN.ObtenerTipoAccesoProyecto(pProyectoID);
                 proyCN.Dispose();
@@ -1090,7 +1113,7 @@ namespace Es.Riam.Gnoss.CL.ServiciosGenerales
         }
 
         /// <summary>
-        /// Obtiene las secciones de la home de un proyecto tipo cat�logo
+        /// Obtiene las secciones de la home de un proyecto tipo catálogo
         /// </summary>
         /// <param name="pProyectoID">Identificador del proyecto</param>
         /// <returns></returns>
@@ -1099,11 +1122,11 @@ namespace Es.Riam.Gnoss.CL.ServiciosGenerales
             mEntityContext.UsarEntityCache = true;
             string rawKey = string.Concat("SeccionesHomeCatalogo_", pProyectoID);
 
-            // Compruebo si est� en la cach�
+            // Compruebo si está en la caché
             DataWrapperProyecto dataWrapperProyecto = ObtenerObjetoDeCache(rawKey) as DataWrapperProyecto;
             if (dataWrapperProyecto == null)
             {
-                // Si no est�, lo cargo y lo almaceno en la cach�
+                // Si no está, lo cargo y lo almaceno en la cache
                 dataWrapperProyecto = ProyectoCN.ObtenerSeccionesHomeCatalogoDeProyecto(pProyectoID);
                 if (dataWrapperProyecto != null)
                 {
@@ -1125,11 +1148,11 @@ namespace Es.Riam.Gnoss.CL.ServiciosGenerales
         {
             string rawKey = string.Concat("TipoProy_", pProyectoID);
 
-            // Compruebo si est� en la cach�
+            // Compruebo si está en la caché
             TipoProyecto? tipoProy = ObtenerObjetoDeCache(rawKey) as TipoProyecto?;
             if (!tipoProy.HasValue)
             {
-                // Si no est�, lo cargo y lo almaceno en la cach�
+                // Si no está, lo cargo y lo almaceno en la cache
                 tipoProy = ProyectoCN.ObtenerTipoProyecto(pProyectoID);
                 AgregarObjetoCache(rawKey, tipoProy);
             }
@@ -1138,7 +1161,7 @@ namespace Es.Riam.Gnoss.CL.ServiciosGenerales
         }
 
         /// <summary>
-        /// Obtiene de la cache el HTML con el listado de la p�gina mis comunidades para el perfil dado
+        /// Obtiene de la cache el HTML con el listado de la página mis comunidades para el perfil dado
         /// </summary>
         /// <param name="pPerfilID">Identificador del perfil</param>
         /// <returns>HTML con mis proyectos</returns>
@@ -1149,7 +1172,7 @@ namespace Es.Riam.Gnoss.CL.ServiciosGenerales
         }
 
         /// <summary>
-        /// Agrega a la cache el HTML con el listado de la p�gina mis comunidades para el perfil dado
+        /// Agrega a la cache el HTML con el listado de la página mis comunidades para el perfil dado
         /// </summary>
         /// <param name="pHTML">HTML con el listado</param>
         /// <param name="pPerfilID">Identificador del perfil</param>
@@ -1160,7 +1183,7 @@ namespace Es.Riam.Gnoss.CL.ServiciosGenerales
         }
 
         /// <summary>
-        /// Invalida la cache con el HTML con el listado de la p�gina mis comunidades para el perfil dado
+        /// Invalida la cache con el HTML con el listado de la página mis comunidades para el perfil dado
         /// </summary>
         /// <param name="pPerfilID">Identificador del perfil</param>
         public void InvalidarMisProyectos(Guid pPerfilID)
@@ -1171,7 +1194,7 @@ namespace Es.Riam.Gnoss.CL.ServiciosGenerales
             InvalidarProyectosRecomendados(pPerfilID);
         }
         /// <summary>
-        /// Invalida la cache con el HTML con el listado de la p�gina mis comunidades para el perfil dado
+        /// Invalida la cache con el HTML con el listado de la página mis comunidades para el perfil dado
         /// </summary>
         /// <param name="pPerfilID">Identificador del perfil</param>
         public void InvalidarMisProyectosListaPerfiles(List<Guid> pListaPerfilIDs)
@@ -1192,7 +1215,7 @@ namespace Es.Riam.Gnoss.CL.ServiciosGenerales
         }
 
         /// <summary>
-        /// Invalida la cach� de las clausulas del registro de un proyecto.
+        /// Invalida la cache de las clausulas del registro de un proyecto.
         /// </summary>
         /// <param name="pProyectoID">ID del proyecto</param>
         /// <returns>DataSet de usuario con las clausulas</returns>
@@ -1203,7 +1226,7 @@ namespace Es.Riam.Gnoss.CL.ServiciosGenerales
         }
 
         /// <summary>
-        /// Invalida la cach� de la politica de cookies del proyecto
+        /// Invalida la cache de la politica de cookies del proyecto
         /// </summary>
         /// <param name="pProyectoID"></param>
         public void InvalidarCachePoliticaCookiesProyecto(Guid pProyectoID)
@@ -1222,7 +1245,7 @@ namespace Es.Riam.Gnoss.CL.ServiciosGenerales
             mEntityContext.UsarEntityCache = true;
             string rawKey = string.Concat(NombresCL.CLAUSULASREGITROPROYECTO, pProyectoID);
 
-            // Compruebo si est� en la cach�
+            // Compruebo si está en la caché
             DataWrapperUsuario usuarioDW = ObtenerObjetoDeCache(rawKey) as DataWrapperUsuario;
 
             if (usuarioDW != null)
@@ -1232,8 +1255,8 @@ namespace Es.Riam.Gnoss.CL.ServiciosGenerales
                 try
                 {
                     usuarioAuxDS.Merge(usuarioDW);
-                    // Le asigno el creado en esta plataforma, porque si hay campos que no ten�a el dataset de cach�, luego da problemas cuando intentas acceder a ellos. 
-                    // La comprobaci�n de la estructura no sirve, porque la tabla s� contiene la columna, pero la fila no (mu raro). 
+                    // Le asigno el creado en esta plataforma, porque si hay campos que no tenía el dataset de cache, luego da problemas cuando intentas acceder a ellos. 
+                    // La comprobación de la estructura no sirve, porque la tabla sí contiene la columna, pero la fila no (mu raro). 
                     usuarioDW = usuarioAuxDS;
                 }
                 catch { usuarioDW = null; }
@@ -1241,7 +1264,7 @@ namespace Es.Riam.Gnoss.CL.ServiciosGenerales
 
             if (usuarioDW == null)
             {
-                // Si no est�, lo cargo y lo almaceno en la cach�
+                // Si no está, lo cargo y lo almaceno en la cache
                 UsuarioCN usuarioCN = new UsuarioCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
                 usuarioDW = usuarioCN.ObtenerClausulasRegitroProyecto(pProyectoID);
                 usuarioCN.Dispose();
@@ -1252,7 +1275,7 @@ namespace Es.Riam.Gnoss.CL.ServiciosGenerales
         }
 
         /// <summary>
-        /// Obtiene la pol�tica de cookies de un proyecto (del metaproyecto si no tiene el proyecto)
+        /// Obtiene la política de cookies de un proyecto (del metaproyecto si no tiene el proyecto)
         /// </summary>
         /// <param name="pProyectoID">ID del proyecto</param>
         /// <returns>DataSet de usuario con las clausulas</returns>
@@ -1261,7 +1284,7 @@ namespace Es.Riam.Gnoss.CL.ServiciosGenerales
             mEntityContext.UsarEntityCache = true;
             string rawKey = string.Concat(NombresCL.POLITICACOOKIESPROYECTO, pProyectoID);
 
-            // Compruebo si est� en la cach�
+            // Compruebo si está en la caché
             DataWrapperUsuario usuarioDW = ObtenerObjetoDeCacheLocal(rawKey) as DataWrapperUsuario;
             if (usuarioDW == null)
             {
@@ -1276,8 +1299,8 @@ namespace Es.Riam.Gnoss.CL.ServiciosGenerales
                 try
                 {
                     usuarioAuxDW.Merge(usuarioDW);
-                    // Le asigno el creado en esta plataforma, porque si hay campos que no ten�a el dataset de cach�, luego da problemas cuando intentas acceder a ellos. 
-                    // La comprobaci�n de la estructura no sirve, porque la tabla s� contiene la columna, pero la fila no (mu raro). 
+                    // Le asigno el creado en esta plataforma, porque si hay campos que no tenía el dataset de cache, luego da problemas cuando intentas acceder a ellos. 
+                    // La comprobación de la estructura no sirve, porque la tabla sí contiene la columna, pero la fila no (mu raro). 
                     usuarioDW = usuarioAuxDW;
                 }
                 catch { usuarioDW = null; }
@@ -1285,7 +1308,7 @@ namespace Es.Riam.Gnoss.CL.ServiciosGenerales
 
             if (usuarioDW == null)
             {
-                // Si no est�, lo cargo y lo almaceno en la cach�
+                // Si no está, lo cargo y lo almaceno en la cache
                 UsuarioCN usuarioCN = new UsuarioCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
                 usuarioDW = usuarioCN.ObtenerPoliticaCookiesProyecto(pProyectoID);
                 usuarioCN.Dispose();
@@ -1306,7 +1329,7 @@ namespace Es.Riam.Gnoss.CL.ServiciosGenerales
             mEntityContext.UsarEntityCache = true;
             string rawKey = string.Concat("GadgetsProyecto_", pProyectoID);
 
-            // Compruebo si est� en la cach�
+            // Compruebo si está en la caché
             DataWrapperProyecto dataWrapperProyecto = ObtenerObjetoDeCacheLocal(rawKey) as DataWrapperProyecto;
 
             if (dataWrapperProyecto == null)
@@ -1322,7 +1345,7 @@ namespace Es.Riam.Gnoss.CL.ServiciosGenerales
 
             if (dataWrapperProyecto == null)
             {
-                // Si no est�, lo cargo y lo almaceno en la cach�
+                // Si no está, lo cargo y lo almaceno en la cache
                 dataWrapperProyecto = new DataWrapperProyecto();
                 if (TieneComunidadPadreConfigurada(pProyectoID))
                 {
@@ -1356,7 +1379,7 @@ namespace Es.Riam.Gnoss.CL.ServiciosGenerales
             mEntityContext.UsarEntityCache = true;
             string rawKey = string.Concat("PestanyasProyectoMVC_", pProyectoID);
 
-            // Compruebo si est� en la cach�
+            // Compruebo si está en la caché
             DataWrapperProyecto dataWrapperProyecto = ObtenerObjetoDeCacheLocal(rawKey) as DataWrapperProyecto;
 
             bool tieneComunidadPadreConfigurada = TieneComunidadPadreConfigurada(pProyectoID);
@@ -1379,8 +1402,8 @@ namespace Es.Riam.Gnoss.CL.ServiciosGenerales
                 try
                 {
                     dataWrapperProyectoAux.Merge(dataWrapperProyecto);
-                    // Le asigno el creado en esta plataforma, porque si hay campos que no ten�a el dataset de cach�, luego da problemas cuando intentas acceder a ellos. 
-                    // La comprobaci�n de la estructura no sirve, porque la tabla s� contiene la columna, pero la fila no (mu raro). 
+                    // Le asigno el creado en esta plataforma, porque si hay campos que no tenía el dataset de cache, luego da problemas cuando intentas acceder a ellos. 
+                    // La comprobación de la estructura no sirve, porque la tabla sí contiene la columna, pero la fila no (mu raro). 
                     dataWrapperProyecto = dataWrapperProyectoAux;
                     dataWrapperProyecto.CargaRelacionesPerezosasCache();
                 }
@@ -1390,7 +1413,7 @@ namespace Es.Riam.Gnoss.CL.ServiciosGenerales
 
             if (dataWrapperProyecto == null)
             {
-                // Si no est�, lo cargo y lo almaceno en la cach�
+                // Si no está, lo cargo y lo almaceno en la cache
                 dataWrapperProyecto = new DataWrapperProyecto();
                 if (tieneComunidadPadreConfigurada)
                 {
@@ -1453,62 +1476,73 @@ namespace Es.Riam.Gnoss.CL.ServiciosGenerales
                     {
                         if (grupoPadrePestanya.NombreCorto.Equals(grupoHija.NombreCorto))
                         {
+                            mEntityContext.DetachObjectFromEntityContext(proyectoPestanyaMenuRolGrupoIdentidades);
                             proyectoPestanyaMenuRolGrupoIdentidades.GrupoID = grupoHija.GrupoID;
                         }
                     }
                 }
             }
 
-
             foreach (ProyectoGadgetIdioma proyectoGadget in dataWrapperProyecto.ListaProyectoGadgetIdioma)
             {
+                mEntityContext.DetachObjectFromEntityContext(proyectoGadget);
                 proyectoGadget.ProyectoID = pProyectoID;
             }
             foreach (RecursosRelacionadosPresentacion recursosRelacionadosPresentacion in dataWrapperProyecto.ListaRecursosRelacionadosPresentacion)
             {
+                mEntityContext.DetachObjectFromEntityContext(recursosRelacionadosPresentacion);
                 recursosRelacionadosPresentacion.ProyectoID = pProyectoID;
             }
             foreach (PresentacionPersonalizadoSemantico presentacion in dataWrapperProyecto.ListaPresentacionPersonalizadoSemantico)
             {
+                mEntityContext.DetachObjectFromEntityContext(presentacion);
                 presentacion.ProyectoID = pProyectoID;
             }
             foreach (PresentacionPestanyaMapaSemantico presentacion in dataWrapperProyecto.ListaPresentacionPestanyaMapaSemantico)
             {
+                mEntityContext.DetachObjectFromEntityContext(presentacion);
                 presentacion.ProyectoID = pProyectoID;
             }
             foreach (PresentacionMapaSemantico presentacion in dataWrapperProyecto.ListaPresentacionMapaSemantico)
             {
+                mEntityContext.DetachObjectFromEntityContext(presentacion);
                 presentacion.ProyectoID = pProyectoID;
             }
             foreach (PresentacionMosaicoSemantico presentacion in dataWrapperProyecto.ListaPresentacionMosaicoSemantico)
             {
+                mEntityContext.DetachObjectFromEntityContext(presentacion);
                 presentacion.ProyectoID = pProyectoID;
             }
             foreach (PresentacionPestanyaMosaicoSemantico presentacion in dataWrapperProyecto.ListaPresentacionPestanyaMosaicoSemantico)
             {
+                mEntityContext.DetachObjectFromEntityContext(presentacion);
                 presentacion.ProyectoID = pProyectoID;
             }
             foreach (PresentacionListadoSemantico presentacion in dataWrapperProyecto.ListaPresentacionListadoSemantico)
             {
+                mEntityContext.DetachObjectFromEntityContext(presentacion);
                 presentacion.ProyectoID = pProyectoID;
             }
             foreach (PresentacionPestanyaListadoSemantico presentacion in dataWrapperProyecto.ListaPresentacionPestanyaListadoSemantico)
             {
+                mEntityContext.DetachObjectFromEntityContext(presentacion);
                 presentacion.ProyectoID = pProyectoID;
             }
 
             //Modificar los Gadgets
             foreach (ProyectoGadget proyectoGadget in dataWrapperProyecto.ListaProyectoGadget)
             {
+                mEntityContext.DetachObjectFromEntityContext(proyectoGadget);
                 proyectoGadget.ProyectoID = pProyectoID;
             }
             foreach (ProyectoGadgetContexto proyectoGadgetContexto in dataWrapperProyecto.ListaProyectoGadgetContexto)
             {
+                mEntityContext.DetachObjectFromEntityContext(proyectoGadgetContexto);
                 string ComunidadOrigen = proyectoGadgetContexto.ComunidadOrigen;
                 Proyecto proyectoHijo = mEntityContext.Proyecto.Where(x => x.ProyectoID.Equals(pProyectoID)).FirstOrDefault();
                 ComunidadOrigen = ComunidadOrigen.ToLower().Replace(NombreProyectoPadreEcositema, proyectoHijo.NombreCorto);
                 proyectoGadgetContexto.ComunidadOrigen = ComunidadOrigen;
-                if (proyectoGadgetContexto.ProyectoOrigenID != null && proyectoGadgetContexto.ProyectoOrigenID.Equals(ProyectoIDPadreEcosistema))
+                if (proyectoGadgetContexto.ProyectoOrigenID.Equals(ProyectoIDPadreEcosistema))
                 {
                     proyectoGadgetContexto.ProyectoOrigenID = pProyectoID;
                 }
@@ -1526,6 +1560,8 @@ namespace Es.Riam.Gnoss.CL.ServiciosGenerales
                 if (proyectoPestanyaMenuHija != null)
                 {
                     proyectoPestanyaMenu.Ruta = proyectoPestanyaMenuHija.Ruta;
+                    proyectoPestanyaMenu.Activa = proyectoPestanyaMenuHija.Activa;
+                    proyectoPestanyaMenu.Visible = proyectoPestanyaMenuHija.Visible;
                 }
                 proyectoPestanyaMenu.ProyectoID = pProyectoID;
             }
@@ -1556,6 +1592,8 @@ namespace Es.Riam.Gnoss.CL.ServiciosGenerales
             dataWrapperProyectoHija.ListaProyectoPestanyaMenu = dataWrapperProyectoPadre.ListaProyectoPestanyaMenu;
 
             dataWrapperProyectoHija.ListaProyectoPestanyaBusqueda = dataWrapperProyectoPadre.ListaProyectoPestanyaBusqueda;
+
+            dataWrapperProyectoHija.ListaProyectoPestanyaDashboardAsistente = dataWrapperProyectoPadre.ListaProyectoPestanyaDashboardAsistente;
 
             dataWrapperProyectoHija.ListaProyectoPestanyaMenuRolGrupoIdentidades = dataWrapperProyectoPadre.ListaProyectoPestanyaMenuRolGrupoIdentidades;
 
@@ -1655,27 +1693,36 @@ namespace Es.Riam.Gnoss.CL.ServiciosGenerales
         }
 
         /// <summary>
-        /// Obtiene las p�ginas html de un proyecto que se le pasa por parametros.
+        /// Obtiene las páginas html de un proyecto que se le pasa por parametros.
         /// </summary>
         /// <param name="pProyectoID">Clave del proyecto del que queremos obtener los gadgets</param>
-        /// <returns>DataSet con las p�ginas html del proyecto que se pasa por parametros</returns>
+        /// <returns>DataSet con las páginas html del proyecto que se pasa por parametros</returns>
         public DataWrapperProyecto ObtenerPaginasHtmlProyecto(Guid pProyectoID)
         {
             mEntityContext.UsarEntityCache = true;
             string rawKey = string.Concat("PaginasHtml_", pProyectoID);
 
-            // Compruebo si est� en la cach�
+            // Compruebo si está en la caché
             DataWrapperProyecto dataWrapperProyecto = ObtenerObjetoDeCache(rawKey) as DataWrapperProyecto;
 
             if (dataWrapperProyecto == null)
             {
-                // Si no est�, lo cargo y lo almaceno en la cach�
+                // Si no está, lo cargo y lo almaceno en la cache
                 dataWrapperProyecto = ProyectoCN.ObtenerPaginasHtmlProyecto(pProyectoID);
                 if (dataWrapperProyecto != null)
                 {
                     dataWrapperProyecto.CargaRelacionesPerezosasCache();
                 }
                 AgregarObjetoCache(rawKey, dataWrapperProyecto);
+            }
+            //Arreglo TFG FRAN
+            if (dataWrapperProyecto.ListaProyectoPestanyaDashboardAsistente == null)
+            {
+                dataWrapperProyecto.ListaProyectoPestanyaDashboardAsistente = new List<ProyectoPestanyaDashboardAsistente>();
+            }
+            if (dataWrapperProyecto.ListaProyectoPestanyaDashboardAsistenteDataset == null)
+            {
+                dataWrapperProyecto.ListaProyectoPestanyaDashboardAsistenteDataset = new List<ProyectoPestanyaDashboardAsistenteDataset>();
             }
 
             mEntityContext.UsarEntityCache = false;
@@ -1702,7 +1749,7 @@ namespace Es.Riam.Gnoss.CL.ServiciosGenerales
         }
 
         /// <summary>
-        /// Invalida la cach� de usuarios de una organizacion con sus identidades
+        /// Invalida la cache de usuarios de una organizacion con sus identidades
         /// </summary>
         /// <param name="pOrganizacionID">Identificador de la organizacion</param>
         public void InvalidarCacheProyectosOrgCargaLigeraParaFiltros(Guid pOrganizacionID)
@@ -1720,7 +1767,7 @@ namespace Es.Riam.Gnoss.CL.ServiciosGenerales
         {
             string rawKey = string.Concat("GeneradorMenuComunidad_", pProyectoID);
 
-            // Compruebo si est� en la cach�
+            // Compruebo si está en la caché
             return ObtenerObjetoDeCache(rawKey);
         }
 
@@ -1799,7 +1846,7 @@ namespace Es.Riam.Gnoss.CL.ServiciosGenerales
             if (dataWrapperProyecto == null)
             {
                 ProyectoCN proyectoCN = new ProyectoCN(mFicheroConfiguracionBD, mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
-                // Si no est�, lo cargo y lo almaceno en la cach�
+                // Si no está, lo cargo y lo almaceno en la cache
                 dataWrapperProyecto = proyectoCN.ObtenerTiposRecursosNoActividadReciente(pProyectoID);
                 if (dataWrapperProyecto != null)
                 {
@@ -1876,10 +1923,10 @@ namespace Es.Riam.Gnoss.CL.ServiciosGenerales
         }
 
         /// <summary>
-        /// Devuelve las im�genes por defecto seg�n el tipo de imagen por defecto
+        /// Devuelve las imágenes por defecto según el tipo de imagen por defecto
         /// </summary>
         /// <param name="pProyectoID">Identificador del proyecto</param>
-        /// <returns>Imagen por defecto seg�n el tipo de imagen por defecto</returns>
+        /// <returns>Imagen por defecto según el tipo de imagen por defecto</returns>
         public Dictionary<short, Dictionary<Guid, string>> ObtenerTipoDocImagenPorDefecto(Guid pProyectoID)
         {
             string rawKey = string.Concat("TipoDocImagenPorDefecto", "_", pProyectoID);
@@ -1903,11 +1950,11 @@ namespace Es.Riam.Gnoss.CL.ServiciosGenerales
         }
 
         /// <summary>
-        /// Obtiene los par�metros de un proyecto.
+        /// Obtiene los parámetros de un proyecto.
         /// </summary>
         /// <param name="pProyectoID">ID de proyecto</param>
-        /// <param name="pOrganizacionID">ID de la organizaci�n del proyecto</param>
-        /// <returns>Diccionario con los par�metros del proyecto</returns>
+        /// <param name="pOrganizacionID">ID de la organización del proyecto</param>
+        /// <returns>Diccionario con los parámetros del proyecto</returns>
         public Dictionary<string, string> ObtenerParametrosProyecto(Guid pProyectoID)
         {
             string rawKey = string.Concat("ParametroProyecto", "_", pProyectoID);
@@ -1940,16 +1987,16 @@ namespace Es.Riam.Gnoss.CL.ServiciosGenerales
         }
 
         /// <summary>
-        /// Obtiene los par�metros de un proyecto.
+        /// Obtiene los parámetros de un proyecto.
         /// </summary>
         /// <param name="pProyectoID">ID de proyecto</param>
-        /// <param name="pOrganizacionID">ID de la organizaci�n del proyecto</param>
-        /// <returns>Diccionario con los par�metros del proyecto</returns>
+        /// <param name="pOrganizacionID">ID de la organización del proyecto</param>
+        /// <returns>Diccionario con los parámetros del proyecto</returns>
         public void InvalidarParametrosProyecto(Guid pProyectoID, Guid pOrganizacionID)
         {
             string rawKey = string.Concat("ParametroProyecto", "_", pProyectoID);
             InvalidarCache(rawKey, true);
-
+            InvalidarCacheLocal(rawKey);
             VersionarCacheLocal(pProyectoID);
         }
 
@@ -2026,12 +2073,12 @@ namespace Es.Riam.Gnoss.CL.ServiciosGenerales
             mEntityContext.UsarEntityCache = true;
             string rawKey = string.Concat("ProyectoGrafoFichaRec_", pProyectoID);
 
-            // Compruebo si est� en la cach�
+            // Compruebo si está en la caché
             DataWrapperProyecto dataWrapperProyecto = ObtenerObjetoDeCache(rawKey) as DataWrapperProyecto;
 
             if (dataWrapperProyecto == null)
             {
-                // Si no est�, lo cargo y lo almaceno en la cach�
+                // Si no está, lo cargo y lo almaceno en la cache
                 dataWrapperProyecto = ProyectoCN.ObtenerGrafosProyecto(pProyectoID);
                 if (dataWrapperProyecto != null)
                 {
@@ -2047,7 +2094,7 @@ namespace Es.Riam.Gnoss.CL.ServiciosGenerales
         #endregion
 
         /// <summary>
-        /// Carga la presentaci�n de todos los documentos sem�ntico en una comunidad
+        /// Carga la presentación de todos los documentos semántico en una comunidad
         /// </summary>
         /// <param name="pProyectoID">ID del proyecto</param>    
         public DataWrapperProyecto ObtenerPresentacionSemantico(Guid pProyectoID)
@@ -2104,8 +2151,8 @@ namespace Es.Riam.Gnoss.CL.ServiciosGenerales
         /// Agrega el contador de personas y organizaciones del pProyectoID
         /// </summary>
         /// <param name="pProyectoID">ProyectoID</param>
-        /// <param name="pNumPersonasYOrganizaciones">N�mero de Personas y Organizaciones del pProyectoID</param>
-        /// <param name="pDuracion">Duraci�n de la cach�, si la recarga el componente, sin l�mite de tiempo, si la recarga el m�todo obtener, solo 1 d�a.</param>
+        /// <param name="pNumPersonasYOrganizaciones">Número de Personas y Organizaciones del pProyectoID</param>
+        /// <param name="pDuracion">Duración de la cache, si la recarga el componente, sin límite de tiempo, si la recarga el método obtener, solo 1 día.</param>
         public void AgregarContadorPersonasYOrganizacionesComunidad(Guid pProyectoID, int pNumPersonasYOrganizaciones, double pDuracion)
         {
             string rawKey = string.Concat(CLAVE_CACHE_CONTADOR_PERSONAS_ORGANIZACIONES_COMUNIDAD, pProyectoID, "_false");
@@ -2350,7 +2397,7 @@ namespace Es.Riam.Gnoss.CL.ServiciosGenerales
         }
 
         /// <summary>
-        /// Obtiene el n� de proyectos con el mismo dominio que el pasado por par�metro
+        /// Obtiene el nº de proyectos con el mismo dominio que el pasado por parámetro
         /// </summary>
         /// <param name="pDominio">Dominio a revisar</param>
         /// <returns></returns>
@@ -2362,7 +2409,7 @@ namespace Es.Riam.Gnoss.CL.ServiciosGenerales
 
             if (!numeroProyectosConMismosDominio.HasValue)
             {
-                // Se traen de BBDD y se almacenan en cach� por un d�a.
+                // Se traen de BBDD y se almacenan en cache por un día.
                 ProyectoCN proyCN = new ProyectoCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
                 numeroProyectosConMismosDominio = proyCN.NumeroProyectosConMismosDominio(pDominio);
                 proyCN.Dispose();
@@ -2407,7 +2454,7 @@ namespace Es.Riam.Gnoss.CL.ServiciosGenerales
         }
 
         /// <summary>
-        /// L�gica de par�metro
+        /// Lógica de parámetro
         /// </summary>
         protected ParametroCN ParametroCN
         {
@@ -2430,7 +2477,7 @@ namespace Es.Riam.Gnoss.CL.ServiciosGenerales
         }
 
         /// <summary>
-        /// Clave para la cach�
+        /// Clave para la cache
         /// </summary>
         public override string[] ClaveCache
         {
@@ -2445,7 +2492,7 @@ namespace Es.Riam.Gnoss.CL.ServiciosGenerales
         #region Dispose
 
         /// <summary>
-        /// Determina si est� disposed
+        /// Determina si está disposed
         /// </summary>
         private bool disposed = false;
 
@@ -2472,7 +2519,7 @@ namespace Es.Riam.Gnoss.CL.ServiciosGenerales
         /// <summary>
         /// Libera los recursos
         /// </summary>
-        /// <param name="disposing">Determina si se est� llamando desde el Dispose()</param>
+        /// <param name="disposing">Determina si se está llamando desde el Dispose()</param>
         protected override void Dispose(bool disposing)
         {
             if (!this.disposed)
