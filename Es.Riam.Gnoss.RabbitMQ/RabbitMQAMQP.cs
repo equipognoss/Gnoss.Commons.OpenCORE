@@ -4,6 +4,7 @@ using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
 using System;
 using System.Collections.Generic;
+using System.Linq.Expressions;
 using System.Text;
 
 namespace Es.Riam.Gnoss.RabbitMQ
@@ -26,16 +27,22 @@ namespace Es.Riam.Gnoss.RabbitMQ
         public int ContarElementosEnCola()
         {
             int numElementos = -1;
-
-            if (Conexion != null)
+            try
             {
-                IModel channel = Conexion.CreateModel();
+                if (Conexion != null)
+                {
+                    IModel channel = Conexion.CreateModel();
 
-                numElementos = (int)channel.MessageCount(mGestorRabbit.QueueName);
+                    numElementos = (int)channel.MessageCount(mGestorRabbit.QueueName);
 
-                channel.Close();
+                    channel.Close();
+                }
             }
-
+            catch(Exception ex)
+            {
+                mLoggingService.GuardarLogError(ex, $"Error en la conexion {Conexion.Endpoint}");
+                throw;
+            }
             return numElementos;
         }
 
@@ -207,8 +214,14 @@ namespace Es.Riam.Gnoss.RabbitMQ
                     {
                         ConnectionFactory connectionFactory = new ConnectionFactory();
                         connectionFactory.Uri = new Uri(cadenaRabbit);
-                        mConexion = connectionFactory.CreateConnection(RabbitMQClient.ClientName);
-
+                        try
+                        {
+                            mConexion = connectionFactory.CreateConnection(RabbitMQClient.ClientName);
+                        }
+                        catch(Exception ex){
+                            mLoggingService.GuardarLogError($"Error al crear la conexion: {cadenaRabbit}");
+                            throw;
+                        }
                         if (listaConexiones == null)
                         {
                             listaConexiones = new Dictionary<string, object>();

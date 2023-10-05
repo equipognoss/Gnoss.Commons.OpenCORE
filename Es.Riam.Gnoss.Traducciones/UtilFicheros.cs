@@ -1,8 +1,10 @@
-﻿using ExcelDataReader;
-using OfficeOpenXml;
+﻿using ClosedXML.Excel;
+using ExcelDataReader;
 using System.Collections.Generic;
 using System.Data;
 using System.IO;
+using System.Linq;
+using System.Web;
 
 namespace Es.Riam.Gnoss.Traducciones
 {
@@ -11,7 +13,8 @@ namespace Es.Riam.Gnoss.Traducciones
 
         public static DataSet LeerExcelDeRutaADataSet(Stream stream)
         {
-            using (var reader = ExcelReaderFactory.CreateReader(stream))
+			System.Text.Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance);
+			using (var reader = ExcelReaderFactory.CreateReader(stream))
             {
                 var result = reader.AsDataSet(new ExcelDataSetConfiguration()
                 {
@@ -24,56 +27,62 @@ namespace Es.Riam.Gnoss.Traducciones
             }
         }
 
-        public static void ConstruirExcel(ExcelPackage mExcel, string nombreHoja, Dictionary<string, Dictionary<string, string>> mDiccionario)
+        public static void ConstruirExcel(XLWorkbook mExcel, string nombreHoja, Dictionary<string, Dictionary<string, string>> mDiccionario)
         {
-            List<string> mListaClaves = new List<string>();
 
-            ExcelWorksheet WorkSheetTextosPersonalizados = mExcel.Workbook.Worksheets.Add(nombreHoja);
-            WorkSheetTextosPersonalizados.Cells[1, 1].Value = "Clave";
-
-            int numeroFila = WorkSheetTextosPersonalizados.Dimension.Rows + 1;
-
-            foreach (KeyValuePair<string, Dictionary<string, string>> item in mDiccionario)
+            List<string> mListaIdiomas =  mDiccionario.Values.Select(item => item.Keys.FirstOrDefault()).Distinct().ToList();
+            
+            DataSet ds = new DataSet();
+            DataTable dt = new DataTable();
+            dt.TableName = nombreHoja;
+            ds.Tables.Add(dt);
+            dt.Columns.Add("Clave");
+            foreach (string idioma in mListaIdiomas)
             {
-                string clave = item.Key;
+                dt.Columns.Add(idioma);
+            }
 
-                foreach (KeyValuePair<string, string> Traduccion in item.Value)
+            List<string> listaClaves = new List<string>(mDiccionario.Keys);
+            string[] listaClavesAux = listaClaves.ToArray();
+            int contador = 0;
+
+            List<object> listaAux = new List<object>();
+            foreach (Dictionary<string, string> entrada in mDiccionario.Values)
+            {
+                listaAux.Add(listaClavesAux[contador]);                
+                foreach (string idiomaDisponible in mListaIdiomas)
                 {
-                    string idioma = Traduccion.Key;
-                    int numeroColumnaIdioma = BuscarColumnaIdioma(idioma, WorkSheetTextosPersonalizados);
-                    string texto = Traduccion.Value;
-
-                    if (!mListaClaves.Contains(clave))
+                    if (entrada.ContainsKey(idiomaDisponible))
                     {
-                        WorkSheetTextosPersonalizados.Cells[numeroFila, 1].Value = clave;
-                        WorkSheetTextosPersonalizados.Cells[numeroFila, numeroColumnaIdioma].Value = texto;
-                        mListaClaves.Add(clave);
-                        numeroFila++;
+                        listaAux.Add(HttpUtility.HtmlDecode(entrada[idiomaDisponible]));
                     }
                     else
                     {
-                        int indiceFila = mListaClaves.IndexOf(clave) + 2;
-                        WorkSheetTextosPersonalizados.Cells[indiceFila, numeroColumnaIdioma].Value = texto;
+                        listaAux.Add(string.Empty);
                     }
                 }
+                ds.Tables[nombreHoja].Rows.Add(listaAux.ToArray());
+                contador++;
+                listaAux.Clear();
             }
+
+            mExcel.Worksheets.Add(ds);
         }
 
-
-        private static int BuscarColumnaIdioma(string pIdioma, ExcelWorksheet WorkSheetTextosPersonalizados)
+       /* private static int BuscarColumnaIdioma(string pIdioma, DataSet dsBuscar)
         {
             int numeroColumnaIdioma = 1;
             bool encontrado = false;
             while (!encontrado)
             {
                 numeroColumnaIdioma++;
-                if (string.IsNullOrEmpty(WorkSheetTextosPersonalizados.Cells[1, numeroColumnaIdioma].Value as string) || WorkSheetTextosPersonalizados.Cells[1, numeroColumnaIdioma].Value.Equals(pIdioma))
+                if (string.IsNullOrEmpty(dsBuscar.Cells[1, numeroColumnaIdioma].Value as string) || dsBuscar.Cells[1, numeroColumnaIdioma].Value.Equals(pIdioma))
                 {
-                    WorkSheetTextosPersonalizados.Cells[1, numeroColumnaIdioma].Value = pIdioma;
+                    dsBuscar.Cells[1, numeroColumnaIdioma].Value = pIdioma;
                     encontrado = true;
                 }
             }
             return numeroColumnaIdioma;
-        }
+        }*/
     }
 }

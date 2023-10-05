@@ -49,13 +49,13 @@ namespace Es.Riam.Gnoss.Logica
         /// </summary>
         private static Guid? mPadreEcosistemaProyectoID = null;
 
-        private EntityContext mEntityContext;
+        protected EntityContext mEntityContext;
 
-        private LoggingService mLoggingService;
+        protected LoggingService mLoggingService;
 
-        private ConfigService mConfigService;
+        protected ConfigService mConfigService;
 
-        private EntityContextBASE mEntityContextBASE;
+        protected EntityContextBASE mEntityContextBASE;
         protected IServicesUtilVirtuosoAndReplication mServicesUtilVirtuosoAndReplication;
 
         #endregion
@@ -109,6 +109,14 @@ namespace Es.Riam.Gnoss.Logica
             }
         }
 
+        protected DbTransaction TransaccionBASE
+        {
+            get
+            {
+                return AD.TransaccionBASE;
+            }
+        }
+
         /// <summary>
         /// Iniciamos la transacción
         /// </summary>
@@ -120,12 +128,31 @@ namespace Es.Riam.Gnoss.Logica
         }
 
         /// <summary>
+        /// Iniciamos la transacción
+        /// </summary>
+        /// <returns></returns>
+        public DbTransaction IniciarTransaccionBASE(bool pIniciarTransaccionEntity = true)
+        {
+            AD.IniciarTransaccionBASE(pIniciarTransaccionEntity);
+            return TransaccionBASE;
+        }
+
+        /// <summary>
         /// Terminamos la transaccción
         /// </summary>
         /// <param name="pExito"></param>
         public void TerminarTransaccion(bool pExito)
         {
             AD.TerminarTransaccion(pExito);
+        }
+
+        /// <summary>
+        /// Terminamos la transaccción
+        /// </summary>
+        /// <param name="pExito"></param>
+        public void TerminarTransaccionBASE(bool pExito)
+        {
+            AD.TerminarTransaccionBASE(pExito);
         }
 
         #endregion

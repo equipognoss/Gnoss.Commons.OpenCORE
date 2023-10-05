@@ -21,6 +21,7 @@ using Es.Riam.Gnoss.Logica.Facetado;
 using Es.Riam.Gnoss.Logica.Identidad;
 using Es.Riam.Gnoss.Logica.Live;
 using Es.Riam.Gnoss.Logica.Notificacion;
+using Es.Riam.Gnoss.Logica.ParametroAplicacion;
 using Es.Riam.Gnoss.Logica.ServiciosGenerales;
 using Es.Riam.Gnoss.Logica.Suscripcion;
 using Es.Riam.Gnoss.Logica.Tesauro;
@@ -257,11 +258,19 @@ namespace Es.Riam.Gnoss.Web.Controles.Suscripcion
 
                     DataWrapperNotificacion notificacionDS = new DataWrapperNotificacion();
                     GestionNotificaciones mGestionNotificaciones = new GestionNotificaciones(notificacionDS, mLoggingService, mEntityContext, mConfigService, mServicesUtilVirtuosoAndReplication);
-
-                    mGestionNotificaciones.AgregarNotificacionCorreo(pIdentidadActual, pIdentidadSuscripcion.IdentidadMyGNOSS, TiposNotificacion.SeguirPerfil, BaseURL, pProyectoSeleccionado, pLanguageCode);
-
-                    NotificacionCN notificacionCN = new NotificacionCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
-                    notificacionCN.ActualizarNotificacion();
+					//bool noEnviarNotificacion = mConfigService.ObtenerNoEnviarCorreoSuscripcion();
+					bool noEnviarNotificacion = false;
+					ParametroAplicacionCN paramCN = new ParametroAplicacionCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+					string noEnviar = paramCN.ObtenerParametroAplicacion(TiposParametrosAplicacion.NoEnviarCorreoSeguirPerfil);
+                    bool.TryParse(paramCN.ObtenerParametroAplicacion(TiposParametrosAplicacion.NoEnviarCorreoSeguirPerfil), out noEnviarNotificacion);
+					
+                    if (!noEnviarNotificacion)
+                    {
+                        mGestionNotificaciones.AgregarNotificacionCorreo(pIdentidadActual, pIdentidadSuscripcion.IdentidadMyGNOSS, TiposNotificacion.SeguirPerfil, BaseURL, pProyectoSeleccionado, pLanguageCode);
+                        NotificacionCN notificacionCN = new NotificacionCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+                        notificacionCN.ActualizarNotificacion();
+                    }
+                    
                 }
                 else
                 {
@@ -352,11 +361,17 @@ namespace Es.Riam.Gnoss.Web.Controles.Suscripcion
 
                     DataWrapperNotificacion notificacionDS = new DataWrapperNotificacion();
                     GestionNotificaciones mGestionNotificaciones = new GestionNotificaciones(notificacionDS, mLoggingService, mEntityContext, mConfigService, mServicesUtilVirtuosoAndReplication);
-
-                    mGestionNotificaciones.AgregarNotificacionCorreo(pIdentidadActual, pIdentidadSuscripcion.IdentidadMyGNOSS, TiposNotificacion.SeguirPerfilComunidad, BaseURL, pProyectoSeleccionado, pLanguageCode);
-
-                    NotificacionCN notificacionCN = new NotificacionCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
-                    notificacionCN.ActualizarNotificacion();
+					//bool noEnviarNotificacion = mConfigService.ObtenerNoEnviarCorreoSuscripcion();
+					bool noEnviarNotificacion = false;
+					ParametroAplicacionCN paramCN = new ParametroAplicacionCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+					string noEnviar = paramCN.ObtenerParametroAplicacion(TiposParametrosAplicacion.NoEnviarCorreoSeguirPerfil);
+					bool.TryParse(paramCN.ObtenerParametroAplicacion(TiposParametrosAplicacion.NoEnviarCorreoSeguirPerfil), out noEnviarNotificacion);
+					if (!noEnviarNotificacion)
+                    {
+                        mGestionNotificaciones.AgregarNotificacionCorreo(pIdentidadActual, pIdentidadSuscripcion.IdentidadMyGNOSS, TiposNotificacion.SeguirPerfilComunidad, BaseURL, pProyectoSeleccionado, pLanguageCode);
+                        NotificacionCN notificacionCN = new NotificacionCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+                        notificacionCN.ActualizarNotificacion();
+                    }                  
                 }
                 else
                 {

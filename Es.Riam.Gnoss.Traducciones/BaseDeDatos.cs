@@ -2,7 +2,6 @@
 using Es.Riam.Gnoss.AD.EntityModel.Models.Documentacion;
 using Es.Riam.Gnoss.AD.EntityModel.Models.ParametroGeneralDS;
 using Es.Riam.Gnoss.AD.EntityModel.Models.ProyectoDS;
-using OfficeOpenXml;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -21,6 +20,8 @@ using Es.Riam.Gnoss.CL;
 using Microsoft.AspNetCore.Http;
 using Es.Riam.Gnoss.AD.EntityModelBASE;
 using Es.Riam.AbstractsOpen;
+using ClosedXML.Excel;
+using Es.Riam.Semantica.OWL;
 
 namespace Es.Riam.Gnoss.Traducciones
 {
@@ -83,7 +84,7 @@ namespace Es.Riam.Gnoss.Traducciones
         /// </summary>
         /// <param name="mPersonalizacionID"></param>
         /// <param name="mExcel"></param>
-        public void TextosPersonalizadosToExcel(Guid mPersonalizacionID, ExcelPackage mExcel)
+        public void TextosPersonalizadosToExcel(Guid mPersonalizacionID, XLWorkbook mExcel)
         {
             string nombreHoja = ontologiaPrincipal + "TextosPersonalizados";
             Dictionary<string, Dictionary<string, string>> mDiccionario = new Dictionary<string, Dictionary<string, string>>();
@@ -120,20 +121,28 @@ namespace Es.Riam.Gnoss.Traducciones
             foreach (DataRow fila in tabla.Rows)
             {
                 string claveFila = fila[0].ToString();
-                string valorColumna = "";
+                //string valorColumna = "";
 
-                var filaPersonalizada = filas.FirstOrDefault(componente => componente.PersonalizacionID.Equals(claveFila));
-                if (filaPersonalizada != null)
+                //var filaPersonalizada = filas.FirstOrDefault(componente => componente.TextoID.Equals(claveFila));
+                //if (filaPersonalizada != null)
+                //{
+                for (int i = 1; i < tabla.Columns.Count; i++)
                 {
-                    for (int i = 1; i < tabla.Columns.Count; i++)
+                    if (!fila.IsNull(i) && !string.IsNullOrEmpty((string)fila[i])/* && !valorColumna.Equals(fila[i])*/)
                     {
-                        if (!fila.IsNull(i) && !string.IsNullOrEmpty((string)fila[i]) && !valorColumna.Equals(fila[i]))
+                        string idioma = tabla.Columns[i].ColumnName;
+                        var filaPersonalizada = filas.FirstOrDefault(componente => componente.TextoID.Equals(claveFila) && componente.Language.Equals(idioma));
+
+                        if (filaPersonalizada == null)
                         {
-                            valorColumna = tabla.Columns[i].ColumnName;
+                            filaPersonalizada = new TextosPersonalizadosPersonalizacion() { PersonalizacionID = mPersonalizacionID, TextoID = claveFila, Language = idioma };
+                            mEntityContext.TextosPersonalizadosPersonalizacion.Add(filaPersonalizada);
                         }
+                        filaPersonalizada.Texto = fila[i] as string;
                     }
-                    filaPersonalizada.Texto = valorColumna;
                 }
+
+                //}
             }
             mEntityContext.SaveChanges();
         }
@@ -145,7 +154,7 @@ namespace Es.Riam.Gnoss.Traducciones
         /// </summary>
         /// <param name="mProyectoID"></param>
         /// <param name="mExcel"></param>
-        public void ProyectoPestanyaMenuToExcel(Guid mProyectoID, ExcelPackage mExcel)
+        public void ProyectoPestanyaMenuToExcel(Guid mProyectoID, XLWorkbook mExcel)
         {
             Dictionary<string, Dictionary<string, string>> mDiccionario = new Dictionary<string, Dictionary<string, string>>();
             string nombreHoja = ontologiaPrincipal + "TextosPestañas";
@@ -235,7 +244,7 @@ namespace Es.Riam.Gnoss.Traducciones
         /// </summary>
         /// <param name="mProyectoID"></param>
         /// <param name="mExcel"></param>
-        public void CmsPropiedadComponenteToExcel(Guid mProyectoID, ExcelPackage mExcel)
+        public void CmsPropiedadComponenteToExcel(Guid mProyectoID, XLWorkbook mExcel)
         {
             string nombreHoja = ontologiaPrincipal + "TextosComponentesCMS";
             Dictionary<string, Dictionary<string, string>> mDiccionario = new Dictionary<string, Dictionary<string, string>>();
@@ -314,7 +323,7 @@ namespace Es.Riam.Gnoss.Traducciones
         /// <param name="mProyectoID"></param>
         /// <param name="mExcel"></param>
 
-        public void FacetaObjetoConocimientoProyectoToExcel(Guid mProyectoID, ExcelPackage mExcel)
+        public void FacetaObjetoConocimientoProyectoToExcel(Guid mProyectoID, XLWorkbook mExcel)
         {
             string nombreHoja = ontologiaPrincipal + "TextosFacetas";
             Dictionary<string, Dictionary<string, string>> mDiccionario = new Dictionary<string, Dictionary<string, string>>();
@@ -380,7 +389,7 @@ namespace Es.Riam.Gnoss.Traducciones
         /// </summary>
         /// <param name="mProyectoID"></param>
         /// <param name="mExcel"></param>
-        public void CategoriaTesauroToExcel(Guid mProyectoID, ExcelPackage mExcel)
+        public void CategoriaTesauroToExcel(Guid mProyectoID, XLWorkbook mExcel)
         {
             string nombreHoja = ontologiaPrincipal + "CategoriasTesauro";
             Dictionary<string, Dictionary<string, string>> mDiccionario = new Dictionary<string, Dictionary<string, string>>();
@@ -449,7 +458,7 @@ namespace Es.Riam.Gnoss.Traducciones
         /// </summary>
         /// <param name="mProyectoID"></param>
         /// <param name="mExcel"></param>
-        public void ClausulaRegistroToExcel(Guid mProyectoID, ExcelPackage mExcel)
+        public void ClausulaRegistroToExcel(Guid mProyectoID, XLWorkbook mExcel)
         {
             string nombreHoja = ontologiaPrincipal + "ClausulasRegistro";
             Dictionary<string, Dictionary<string, string>> mDiccionario = new Dictionary<string, Dictionary<string, string>>();
@@ -516,7 +525,7 @@ namespace Es.Riam.Gnoss.Traducciones
         /// </summary>
         /// <param name="mProyectoID"></param>
         /// <param name="mExcel"></param>
-        public void ProyectoGadgetToExcel(Guid mProyectoID, ExcelPackage mExcel)
+        public void ProyectoGadgetToExcel(Guid mProyectoID, XLWorkbook mExcel)
         {
             string nombreHoja = ontologiaPrincipal + "ComponentesRecursos";
             Dictionary<string, Dictionary<string, string>> mDiccionario = new Dictionary<string, Dictionary<string, string>>();
@@ -582,7 +591,7 @@ namespace Es.Riam.Gnoss.Traducciones
 
 
 
-        public void OntologiaProyectoToExcelSql(Guid mProyectoID, ExcelPackage mExcel)
+        public void OntologiaProyectoToExcelSql(Guid mProyectoID, XLWorkbook mExcel)
         {
             string nombreHoja = ontologiaPrincipal + "ConfiguracionOntologias";
             Dictionary<string, Dictionary<string, string>> mDiccionario = new Dictionary<string, Dictionary<string, string>>();
@@ -642,7 +651,7 @@ namespace Es.Riam.Gnoss.Traducciones
 
 
 
-        public void OntologiaProyectoToExcelVirtuosoPorFecha(Guid mProyectoID, string grafo, DateTime? fechaMax, DateTime? fechaMin, ExcelPackage mExcel, string UrlIntragnoss)
+        public void OntologiaProyectoToExcelVirtuosoPorFecha(Guid mProyectoID, string grafo, DateTime? fechaMax, DateTime? fechaMin, XLWorkbook mExcel, string UrlIntragnoss)
         {
             string nombreHoja = grafo.Substring(0, grafo.IndexOf(".owl"));
 
@@ -661,13 +670,27 @@ namespace Es.Riam.Gnoss.Traducciones
             if (dataSet.Tables.Contains(grafo))
             {
                 DataTable dtOtntologia = dataSet.Tables[grafo];
-                ExcelWorksheet ws = mExcel.Workbook.Worksheets.Add($"PrimaryOnto_{nombreHoja}");
-                dataSet.AcceptChanges();
-                ws.Cells.LoadFromDataTable(dtOtntologia, true);
+                DataTable decodedDataTable = decodeDataTable(dtOtntologia);
+				//ExcelWorksheet ws = mExcel.Workbook.Worksheets.Add($"PrimaryOnto_{nombreHoja}");
+				//ws.Cells.LoadFromDataTable(dtOtntologia, true);
+
+				mExcel.Worksheets.Add(decodedDataTable);
+                
             }
             dataSet.Dispose();
         }
 
+        public DataTable decodeDataTable(DataTable dTable)
+        {
+			foreach (DataRow drow in dTable.Rows)
+			{
+				for (int i = 0; i < drow.ItemArray.Length; i++)
+					if (drow[i].GetType() == typeof(string))
+						drow[i] = System.Web.HttpUtility.HtmlDecode(drow[i].ToString());
+			}
+			dTable.AcceptChanges();
+			return dTable;
+		}
         private string ObtenerConsultasVirtuoso(string pOntologia, FacetadoDS dataSet, string urlIntragnoss)
         {
             string grafo = urlIntragnoss + pOntologia;
@@ -917,9 +940,15 @@ namespace Es.Riam.Gnoss.Traducciones
 
                     facetadoCN.ActualizarVirtuoso(consulta, grafo, true, 1);
                 }
-                //Borramos el RDF del recurso
-                controladorDocumentacion.BorrarRDFDeBDRDFSinTransaccion(recursoID);
-
+                try 
+                { 
+                    //Borramos el RDF del recurso
+                    controladorDocumentacion.BorrarRDFDeBDRDFSinTransaccion(recursoID);
+                }
+                catch(Exception ex)
+                {
+                    mLoggingService.GuardarLogError(ex);
+                }
                 //Procesamos el recurso por el base
                 controladorDocumentacion.AgregarRecursoModeloBaseSimple(recursoID, mProyectoSeleccionado.Clave, 5, AD.BASE_BD.PrioridadBase.Alta);
             }
@@ -987,29 +1016,26 @@ namespace Es.Riam.Gnoss.Traducciones
                     {
                         string idioma = tablaExcel.Columns[i].ColumnName;
 
-                        if (tablaVirtuoso.Columns.Contains(idioma))
+                        string valorExcel = string.Empty;
+                        if (!filaExcelAModificar.IsNull(idioma) && !string.IsNullOrEmpty((string)filaExcelAModificar[idioma]))
                         {
-                            string valorExcel = string.Empty;
-                            if (!filaExcelAModificar.IsNull(idioma) && !string.IsNullOrEmpty((string)filaExcelAModificar[idioma]))
+                            valorExcel = (string)filaExcelAModificar[idioma];
+                        }
+
+                        string valorVirtuoso = string.Empty;
+                        if (tablaVirtuoso.Columns.Contains(idioma) && !filaVirtuoso.IsNull(idioma) && !string.IsNullOrEmpty((string)filaVirtuoso[idioma]))
+                        {
+                            valorVirtuoso = (string)filaVirtuoso[idioma];
+                        }
+
+                        if (!valorVirtuoso.Equals(valorExcel))
+                        {
+                            if (!triples.ContainsKey(recursoID))
                             {
-                                valorExcel = (string)filaExcelAModificar[idioma];
+                                triples.Add(recursoID, new List<Triple>());
                             }
 
-                            string valorVirtuoso = string.Empty;
-                            if (!filaVirtuoso.IsNull(idioma) && !string.IsNullOrEmpty((string)filaVirtuoso[idioma]))
-                            {
-                                valorVirtuoso = (string)filaVirtuoso[idioma];
-                            }
-
-                            if (!valorVirtuoso.Equals(valorExcel))
-                            {
-                                if (!triples.ContainsKey(recursoID))
-                                {
-                                    triples.Add(recursoID, new List<Triple>());
-                                }
-
-                                triples[recursoID].Add(GenerarTriple(s, p, valorExcel, valorVirtuoso, idioma));
-                            }
+                            triples[recursoID].Add(GenerarTriple(s, p, valorExcel, valorVirtuoso, idioma));
                         }
                     }
                 }
@@ -1028,12 +1054,12 @@ namespace Es.Riam.Gnoss.Traducciones
         {
             if (!string.IsNullOrEmpty(pObjetoNew))
             {
-                pObjetoNew = "\"" + pObjetoNew.Trim('"').Replace("\"", "''").Replace("\\", "\\\\").Replace("\n", " ").Replace("\r", "") + "\"" + "@" + pIdioma;
+                pObjetoNew = "\"" + pObjetoNew.Trim('"').Replace("\"", "\\\"").Replace("\\", "\\\\").Replace("\n", " ").Replace("\r", "") + "\"" + "@" + pIdioma;
             }
 
             if (!string.IsNullOrEmpty(pObjetoOld))
             {
-                pObjetoOld = "\"" + pObjetoOld.Replace("\"", "''").Replace("\\", "\\\\").Replace("\n", " ").Replace("\r", "") + "\"" + "@" + pIdioma;
+                pObjetoOld = "\"" + pObjetoOld.Replace("\"", "\\\"").Replace("\\", "\\\\").Replace("\n", " ").Replace("\r", "") + "\"" + "@" + pIdioma;
             }
 
             Triple triple = new Triple { s = $"<{pSujeto}>", p = $"<{pPredicado}>", objeto_new = pObjetoNew, objeto_old = pObjetoOld };
@@ -1042,7 +1068,7 @@ namespace Es.Riam.Gnoss.Traducciones
 
         }
 
-        public void OntologiasSecundariosToExcelVirtuoso(Guid mProyectoID, ExcelPackage mExcel, string urlIntragnoss)
+        public void OntologiasSecundariosToExcelVirtuoso(Guid mProyectoID, XLWorkbook mExcel, string urlIntragnoss)
         {
             List<string> ontologias = new List<string>();
 
@@ -1066,15 +1092,17 @@ namespace Es.Riam.Gnoss.Traducciones
                     DataTable dtOtntologia = dataSet.Tables[grafo];
                     if (dtOtntologia != null)
                     {
-                        ExcelWorksheet ws = mExcel.Workbook.Worksheets.Add($"SecondaryOnto_{ontologia}");
-                        ws.Cells.LoadFromDataTable(dtOtntologia, true);
+						DataTable decodedDataTable = decodeDataTable(dtOtntologia);
+						mExcel.Worksheets.Add(decodedDataTable);
+                        //ExcelWorksheet ws = mExcel.Workbook.Worksheets.Add($"SecondaryOnto_{ontologia}");
+                        //ws.Cells.LoadFromDataTable(dtOtntologia, true);
                         dataSet.Dispose();
                     }
                 }
             }
         }
 
-        public void OntologiaSecundariaToExcelSeleccionados(Guid mProyectoID, string pOntologia, ExcelPackage mExcel, string urlIntragnoss)
+        public void OntologiaSecundariaToExcelSeleccionados(Guid mProyectoID, string pOntologia, XLWorkbook mExcel, string urlIntragnoss)
         {
             string nombreHoja = pOntologia;
             string grafo = urlIntragnoss + pOntologia;
@@ -1082,16 +1110,18 @@ namespace Es.Riam.Gnoss.Traducciones
             if (dataSet.Tables.Contains(grafo))
             {
                 DataTable dtOtntologia = dataSet.Tables[grafo];
-                ExcelWorksheet ws = mExcel.Workbook.Worksheets.Add($"SecondaryOnto_{nombreHoja}");
-                ws.Cells.LoadFromDataTable(dtOtntologia, true);
+				DataTable decodedDataTable = decodeDataTable(dtOtntologia);
+
+				mExcel.Worksheets.Add(decodedDataTable);
+                //ExcelWorksheet ws = mExcel.Workbook.Worksheets.Add($"SecondaryOnto_{nombreHoja}");
+                //ws.Cells.LoadFromDataTable(dtOtntologia, true);
             }
             dataSet.Dispose();
         }
 
-        public void OntologiasSecundariasToExcelVirtuosoTaxonomy(Guid mProyectoID, ExcelPackage mExcel, string urlIntragnoss)
+        public void OntologiasSecundariasToExcelVirtuosoTaxonomy(Guid mProyectoID, XLWorkbook mExcel, string urlIntragnoss)
         {
             List<string> ontologias = new List<string>();
-
             var filas = mEntityContext.Documento.Where(item => item.ProyectoID.HasValue && item.ProyectoID.Value.Equals(mProyectoID) && item.Tipo.Equals((short)23)).ToList();
 
             foreach (var fila in filas)
@@ -1106,14 +1136,18 @@ namespace Es.Riam.Gnoss.Traducciones
             {
                 foreach (string ontologia in ontologias)
                 {
+
                     string grafo = urlIntragnoss + ontologia;
                     DataSet dataSet = CrearExcelOntologiasVirtuoso(ontologia, urlIntragnoss);
-
                     DataTable dtOtntologia = dataSet.Tables[grafo];
+                   
                     if (dtOtntologia != null)
                     {
-                        ExcelWorksheet ws = mExcel.Workbook.Worksheets.Add($"taxonomy_{ontologia}");
-                        ws.Cells.LoadFromDataTable(dtOtntologia, true);
+						DataTable decodedDataTable = decodeDataTable(dtOtntologia);
+
+						mExcel.Worksheets.Add(decodedDataTable);
+                        //ExcelWorksheet ws = mExcel.Workbook.Worksheets.Add($"taxonomy_{ontologia}");
+                        //ws.Cells.LoadFromDataTable(dtOtntologia, true);
                     }
 
                     dataSet.Dispose();

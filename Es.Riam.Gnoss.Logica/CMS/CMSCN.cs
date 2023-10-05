@@ -115,6 +115,17 @@ namespace Es.Riam.Gnoss.Logica.CMS
         }
 
         /// <summary>
+        /// Nos indica las páginas a las que esta vinculado el componente
+        /// </summary>
+        /// <param name="pComponenteID"></param>
+        /// <returns></returns>
+        public List<string> PaginasVinculadasComponente(Guid pComponenteID, Guid pProyectoID)
+        {
+            return CMSAD.PaginasVinculadasComponente(pComponenteID, pProyectoID);
+        }
+
+
+        /// <summary>
         /// Obtiene las tablas CMSComponente y CMSComponente... de una lista de componentes
         /// </summary>
         /// <param name="pComponenteID">lista de IDs de los componentes</param>
@@ -148,10 +159,22 @@ namespace Es.Riam.Gnoss.Logica.CMS
         /// Obtiene las tablas CMSComponente y CMSPropiedadComponente... de un proyecto
         /// </summary>
         /// <param name="pProyectoID">ID del proyecto</param>
-        /// <returns>DataSet de CMS</returns>
+        /// <returns>DataWrapper de CMS</returns>
         public DataWrapperCMS ObtenerComponentesCMSDeProyecto(Guid pProyectoID)
         {
             return CMSAD.ObtenerComponentesCMSDeProyecto(pProyectoID);
+        }
+
+        /// <summary>
+        /// Obtiene la tabla CMSComponente del proyecto indicado por parámetro
+        /// </summary>
+        /// <param name="pProyectoID">Identificador del proyecto</param>
+        /// <param name="pLimite">Número de componentes a cargar.</param>
+        /// <param name="pBusqueda">Título del componente a buscar</param>
+        /// <returns>Lista de CMSComponente</returns>
+        public List<CMSComponente> ObtenerCMSComponentePorProyecto(Guid pProyectoID, int pLimite = -1, string pBusqueda = "")
+        {
+            return CMSAD.ObtenerCMSComponentePorProyecto(pProyectoID, pLimite, pBusqueda);
         }
 
         /// <summary>

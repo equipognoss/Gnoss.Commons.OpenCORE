@@ -1,9 +1,10 @@
-﻿using OfficeOpenXml;
+﻿using ClosedXML.Excel;
 using System;
 using System.Collections.Generic;
 using System.Data;
 using System.IO;
 using System.Xml;
+
 
 //hecho
 
@@ -83,7 +84,7 @@ namespace Es.Riam.Gnoss.Traducciones
             }
         }
 
-        public void XmlToExcelCore(Dictionary<string, Stream> pFicheros, ExcelPackage mExcel)
+        public void XmlToExcelCore(Dictionary<string, Stream> pFicheros, XLWorkbook mExcel)
         {
             string nombreHoja = "Core";
             Dictionary<string, Dictionary<string, string>> mDiccionario = new Dictionary<string, Dictionary<string, string>>();

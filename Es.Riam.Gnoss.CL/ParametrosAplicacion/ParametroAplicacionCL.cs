@@ -200,8 +200,10 @@ namespace Es.Riam.Gnoss.CL.ParametrosAplicacion
         public void InvalidarCacheParametrosAplicacion()
         {
             InvalidarCache("GestorParametroAplicacion");
-
-            VersionarCacheLocal(Guid.Empty);
+            InvalidarCache(null, true);
+            InvalidarCacheLocal("GestorParametroAplicacion");
+			InvalidarCacheLocal(null);
+			VersionarCacheLocal(Guid.Empty);
         }
 
         #endregion

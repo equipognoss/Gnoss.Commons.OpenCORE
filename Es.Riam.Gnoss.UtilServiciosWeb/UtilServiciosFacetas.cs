@@ -353,7 +353,7 @@ namespace Es.Riam.Gnoss.UtilServiciosWeb
                 // Se trata de un filtro reciproco, quitar esa parte del filtro y poner la de la faceta correspondiente
                 if (pFacetaDW != null)
                 {
-                    List<FacetaObjetoConocimientoProyecto> filas = (List<FacetaObjetoConocimientoProyecto>)pFacetaDW.ListaFacetaObjetoConocimientoProyecto.Where(item => item.ProyectoID.Equals(pProyectoID) && item.Reciproca > 0 & item.Faceta.StartsWith("{"));
+                    List<FacetaObjetoConocimientoProyecto> filas = (List<FacetaObjetoConocimientoProyecto>)pFacetaDW.ListaFacetaObjetoConocimientoProyecto.Where(item => item.ProyectoID.Equals(pProyectoID) && item.Reciproca > 0 && item.Faceta.StartsWith("{"));
                     if (filas.Count > 0)
                     {
                         FacetaObjetoConocimientoProyecto fila = filas.First();
@@ -730,17 +730,26 @@ namespace Es.Riam.Gnoss.UtilServiciosWeb
         /// <param name="pOrganizacionID">ID de organización</param>
         /// <param name="pIdioma">Idioma del usuario</param>
         /// <returns>filtro para la consulta de chart</returns>
-        public KeyValuePair<string, string> ObtenerSelectYFiltroConsultaChartProyecto(Guid pOrganizacionID, Guid pProyectoID, Guid pChartID, string pIdioma)
+        public KeyValuePair<string, string> ObtenerSelectYFiltroConsultaChartProyecto(Guid pOrganizacionID, Guid pProyectoID, Guid pChartID, string pIdioma, VirtuosoAD mVirtuosoAD)
         {
-            FacetaCL facetaCL = new FacetaCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mServicesUtilVirtuosoAndReplication);
-            DataWrapperFacetas chartDW = facetaCL.ObtenerDatosChartProyecto(pOrganizacionID, pProyectoID);
-            facetaCL.Dispose();
 
-            FacetaConfigProyChart fila = chartDW.ListaFacetaConfigProyChart.Where(item => item.ChartID.Equals(pChartID)).FirstOrDefault();
+            //FacetaCL facetaCL = new FacetaCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService);
+            //DataWrapperFacetas chartDW = facetaCL.ObtenerDatosChartProyecto(pOrganizacionID, pProyectoID);
+            //facetaCL.Dispose();
+
+            //FacetaConfigProyChart fila = chartDW.ListaFacetaConfigProyChart.Where(item => item.ChartID.Equals(pChartID)).FirstOrDefault();
+
+
+            ProyectoCL proyectoCL = new ProyectoCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mVirtuosoAD, mServicesUtilVirtuosoAndReplication);
+            DataWrapperProyecto dashboardDW = proyectoCL.ObtenerProyectoPorID(pProyectoID);
+            proyectoCL.Dispose();
+
+            ProyectoPestanyaDashboardAsistente fila = dashboardDW.ListaProyectoPestanyaDashboardAsistente.FirstOrDefault(item => item.AsisID.Equals(pChartID));
 
             if (fila != null)
             {
-                KeyValuePair<string, string> selectFilt = new KeyValuePair<string, string>(fila.SelectConsultaVirtuoso, fila.FiltrosConsultaVirtuoso.Replace("@lang@", pIdioma));
+                //KeyValuePair<string, string> selectFilt = new KeyValuePair<string, string>(fila.SelectConsultaVirtuoso, fila.FiltrosConsultaVirtuoso.Replace("@lang@", pIdioma));
+                KeyValuePair<string, string> selectFilt = new KeyValuePair<string, string>(fila.Select, fila.Where);
                 return selectFilt;
             }
             else

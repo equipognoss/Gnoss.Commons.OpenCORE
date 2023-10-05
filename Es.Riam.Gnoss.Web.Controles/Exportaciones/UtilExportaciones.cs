@@ -127,32 +127,13 @@ namespace Es.Riam.Gnoss.Web.Controles.Exportaciones
             List<ElementoGnoss> listaDefinitiva = new List<ElementoGnoss>();
 
             Dictionary<string, TiposResultadosMetaBuscador> resultadosConTipo = JsonSerializer.Deserialize<Dictionary<string, TiposResultadosMetaBuscador>>(pResultado_ServicioResultados);
-            while (resultadosConTipo.Count > 0)
+
+            for (int i = 0; i * 250 < resultadosConTipo.Count; i++)
             {
-                Dictionary<string, TiposResultadosMetaBuscador> partialDictionary = resultadosConTipo.Take(250).ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
+				Dictionary<string, TiposResultadosMetaBuscador> partialDictionary = resultadosConTipo.Skip(250 * i).Take(250).ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
 
-                //obtenemos de 250 en 250 para que no falle la consulta a Base de datos
-                if (listaDefinitiva.Count == 0)
-                {
-                    listaDefinitiva = FiltrarRecursos(partialDictionary, pProyectoID);
-                }
-                else
-                {
-                    listaDefinitiva.AddRange(FiltrarRecursos(partialDictionary, pProyectoID));
-                }
-
-                if (resultadosConTipo.Count >= 250)
-                {
-                    foreach (string resultado in partialDictionary.Keys)
-                    {
-                        resultadosConTipo.Remove(resultado);
-                    }
-                }
-                else
-                {
-                    resultadosConTipo = new Dictionary<string, TiposResultadosMetaBuscador>();
-                }
-            }
+				listaDefinitiva.AddRange(FiltrarRecursos(partialDictionary, pProyectoID));
+			}
 
             return listaDefinitiva;
         }

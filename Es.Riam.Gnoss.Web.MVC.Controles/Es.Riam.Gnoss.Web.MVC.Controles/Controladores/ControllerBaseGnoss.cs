@@ -20,7 +20,9 @@ using Es.Riam.Gnoss.Elementos.ParametroAplicacion;
 using Es.Riam.Gnoss.Elementos.Tesauro;
 using Es.Riam.Gnoss.Logica.Documentacion;
 using Es.Riam.Gnoss.Logica.Identidad;
+using Es.Riam.Gnoss.Logica.Parametro;
 using Es.Riam.Gnoss.Logica.ParametroAplicacion;
+using Es.Riam.Gnoss.Logica.ParametrosProyecto;
 using Es.Riam.Gnoss.Logica.ServiciosGenerales;
 using Es.Riam.Gnoss.Recursos;
 using Es.Riam.Gnoss.Servicios;
@@ -91,6 +93,10 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
 
         private Dictionary<string, string> mParametroProyectoVirtual;
 
+        private bool mExisteNombrePoliticaCookiesMetaproyecto;
+
+        private string mNombrePoliticaCookiesMetaproyecto;
+
         /// <summary>
         /// Lista de grupos a los que pertenece la identidad actual
         /// </summary>
@@ -112,6 +118,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
         private string mUrlApiDesplieguesEntornoSiguiente = null;
         private string mIPFTP = null;
         private string mPuertoFTP = null;
+        private string mRamaGit = null;
 
         private ControladorPestanyas mControladorPestanyas;
 
@@ -193,8 +200,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
                 VistaVirtualCL vistaVirtualCL = new VistaVirtualCL(mEntityContext, mLoggingService, mGnossCache, mRedisCacheWrapper, mConfigService, mServicesUtilVirtuosoAndReplication);
                 DataWrapperVistaVirtual vistaVirtualDW = vistaVirtualCL.ObtenerVistasVirtualPorProyectoID(ProyectoVirtual.Clave, mControladorBase.PersonalizacionEcosistemaID, mControladorBase.ComunidadExcluidaPersonalizacionEcosistema);
 
-
-                if (vistaVirtualDW.ListaVistaVirtualProyecto.Count > 0)
+				if (vistaVirtualDW.ListaVistaVirtualProyecto.Count > 0)
                 {
                     PersonalizacionProyecto = vistaVirtualDW.ListaVistaVirtualProyecto.FirstOrDefault().PersonalizacionID;
                 }
@@ -223,6 +229,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
                         comunidad.ListaPersonalizaciones.Add("/Views/Shared/" + filaVistaVirtualGadgetRecursos.PersonalizacionComponenteID + ".cshtml");
                     }
                 }
+
                 if (mControladorBase.PersonalizacionEcosistemaID != Guid.Empty)
                 {
                     foreach (VistaVirtual filaVistaVirtual in vistaVirtualDW.ListaVistaVirtual.Where(item => item.PersonalizacionID.Equals(mControladorBase.PersonalizacionEcosistemaID)).ToList())
@@ -301,6 +308,8 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
                 comunidad.Url = BaseURLIdioma;
             }
 
+            comunidad.UrlMyGnoss = BaseURLIdioma;
+
             bool escomunidadEducativa = ProyectoVirtual.TipoProyecto == TipoProyecto.Universidad20 || ProyectoVirtual.TipoProyecto == TipoProyecto.EducacionExpandida || ProyectoVirtual.TipoProyecto == TipoProyecto.EducacionPrimaria;
             if (!escomunidadEducativa && !string.IsNullOrEmpty(ParametrosGeneralesVirtualRow.CoordenadasSup))
             {
@@ -339,6 +348,33 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
                 comunidad.NumberOfPerson = numPersonasYOrganizaciones.Value;
             }
 
+            comunidad.ListaPersonalizacionesDominio = new List<string>();
+            if (mControladorBase.PersonalizacionDominio != Guid.Empty)
+            {
+                VistaVirtualCN vistaVirtualCN = new VistaVirtualCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+                DataWrapperVistaVirtual vistaVirtualDw2 = vistaVirtualCN.ObtenerVistasVirtualPorPersonalizacionID(mControladorBase.PersonalizacionDominio);
+                
+                foreach (VistaVirtual filaVistaVirtual in vistaVirtualDw2.ListaVistaVirtual.Where(item => item.PersonalizacionID.Equals(mControladorBase.PersonalizacionDominio)).ToList())
+                {
+                    comunidad.ListaPersonalizacionesDominio.Add(filaVistaVirtual.TipoPagina);
+                }
+                
+                foreach (VistaVirtualRecursos filaVistaVirtualRecurso in vistaVirtualDw2.ListaVistaVirtualRecursos.Where(item => item.PersonalizacionID.Equals(mControladorBase.PersonalizacionDominio)).ToList())
+                {
+                    comunidad.ListaPersonalizacionesDominio.Add("/Views/FichaRecurso_" + filaVistaVirtualRecurso.RdfType + "/Index.cshtml");
+                }
+                
+                foreach (VistaVirtualCMS filaVistaVirtualCMS in vistaVirtualDw2.ListaVistaVirtualCMS.Where(item => item.PersonalizacionID.Equals(mControladorBase.PersonalizacionEcosistemaID)))
+                {
+                    comunidad.ListaPersonalizacionesDominio.Add("/Views/CMSPagina/" + filaVistaVirtualCMS.PersonalizacionComponenteID + ".cshtml");
+                }
+                
+                foreach (VistaVirtualGadgetRecursos filaVistaVirtualGadgetRecursos in vistaVirtualDw2.ListaVistaVirtualGadgetRecursos.Where(item => item.PersonalizacionID.Equals(mControladorBase.PersonalizacionDominio)))
+                {
+                    comunidad.ListaPersonalizacionesDominio.Add("/Views/Shared/" + filaVistaVirtualGadgetRecursos.PersonalizacionComponenteID + ".cshtml");
+                }
+            }
+
             comunidad.NumberOfOrganizations = ProyectoVirtual.FilaProyecto.NumeroOrgRegistradas.Value;
 
             ViewBag.PersonalizacionLayout = string.Empty;
@@ -359,7 +395,18 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
 
                     ViewBag.Personalizacion = "$$$" + comunidad.PersonalizacionProyectoID;
                 }
-                if (comunidad.ListaPersonalizacionesEcosistema != null && comunidad.ListaPersonalizacionesEcosistema.Count > 0)
+                if (comunidad.ListaPersonalizacionesDominio != null && comunidad.ListaPersonalizacionesDominio.Count > 0)
+                {
+                    if (!mControladorBase.PersonalizacionDominio.Equals(Guid.Empty))
+                    {
+                        if (ViewBag.PersonalizacionLayout == string.Empty && comunidad.ListaPersonalizacionesDominio.Contains("/Views/Shared/Layout/_Layout.cshtml"))
+                        {
+                            ViewBag.PersonalizacionLayout = $"$$${mControladorBase.PersonalizacionDominio}";
+                        }
+                        ViewBag.PersonalizacionDominio = $"$$${mControladorBase.PersonalizacionDominio}";
+                    }                    
+                }
+                if (comunidad.ListaPersonalizacionesEcosistema != null && comunidad.ListaPersonalizacionesEcosistema.Count > 0 && !mControladorBase.PersonalizacionEcosistemaID.Equals(Guid.Empty))
                 {
                     if (ViewBag.PersonalizacionLayout == string.Empty && comunidad.ListaPersonalizacionesEcosistema.Contains("/Views/Shared/Layout/_Layout.cshtml"))
                     {
@@ -449,6 +496,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
         protected CategoryModel CargarCategoria(CategoriaTesauro pCategoria)
         {
             CategoryModel categoriaTesauro = new CategoryModel();
+            categoriaTesauro.Subcategories = new List<CategoryModel>();
             categoriaTesauro.Key = pCategoria.Clave;
             categoriaTesauro.Name = pCategoria.FilaCategoria.Nombre;
             categoriaTesauro.LanguageName = pCategoria.FilaCategoria.Nombre;
@@ -461,6 +509,14 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
             {
                 categoriaTesauro.Order = pCategoria.FilaAgregacion.Orden;
                 categoriaTesauro.ParentCategoryKey = ((CategoriaTesauro)pCategoria.Padre).Clave;
+            }
+            
+            if(pCategoria.SubCategorias != null)
+            {
+                foreach (CategoriaTesauro hija in pCategoria.SubCategorias)
+                {
+                    categoriaTesauro.Subcategories.Add(CargarCategoria(hija));
+                }
             }
 
             return categoriaTesauro;
@@ -476,7 +532,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
                 {
                     mDicOntologiaMetasProyecto = new Dictionary<Guid, List<MetaKeywordsOntologia>>();
                 }
-                CallFileService servicioArc = new CallFileService(mConfigService);
+                CallFileService servicioArc = new CallFileService(mConfigService, mLoggingService);
 
                 DocumentacionCL documentacionCL = new DocumentacionCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mServicesUtilVirtuosoAndReplication);
                 Guid proyectoIDPatronOntologias;
@@ -503,7 +559,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
                     metaKeyWordOntologia.OntologiaEnlace = ontologias.Key;
                     listaMetaKeywordsOntologia.Add(metaKeyWordOntologia);
                 }
-                mDicOntologiaMetasProyecto.Add(ProyectoSeleccionado.Clave, listaMetaKeywordsOntologia);
+                mDicOntologiaMetasProyecto.TryAdd(ProyectoSeleccionado.Clave, listaMetaKeywordsOntologia);
             }
             return mDicOntologiaMetasProyecto[ProyectoSeleccionado.Clave];
         }
@@ -541,6 +597,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
             ViewBag.BaseUrlMetaProyecto = UrlPrincipal;
             ViewBag.UrlPagina = UrlPagina;
             ViewBag.UrlComunidadPrincipal = UrlComunidadPrincipal;
+            ViewBag.UrlMatomo = UrlMatomo;
 
             if (!string.IsNullOrEmpty(ViewBag.UrlComunidadPrincipal))
             {
@@ -699,6 +756,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
         [NonAction]
         protected GnossResult GnossResultHtml(string pPartialViewName, object pModel)
         {
+            Response.ContentType = "text/html; charset=utf-8";
             return new GnossResult(this, pPartialViewName, pModel, mViewEngine);
         }
 
@@ -733,7 +791,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
         {
             bool tienePersonalizacion = false;
 
-            if ((!string.IsNullOrEmpty((string)ViewBag.Personalizacion) || !string.IsNullOrEmpty((string)ViewBag.PersonalizacionEcosistema)) && Comunidad != null)
+            if ((!string.IsNullOrEmpty((string)ViewBag.Personalizacion) || !string.IsNullOrEmpty((string)ViewBag.PersonalizacionEcosistema) || !string.IsNullOrEmpty((string)ViewBag.PersonalizacionDominio)) && Comunidad != null)
             {
                 tienePersonalizacion = true;
             }
@@ -1219,6 +1277,26 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
             }
         }
 
+        public string UrlMatomo
+        {
+            get
+            {
+                return mConfigService.ObtenerUrlMatomo();
+            }
+        }
+
+        public bool IrAConfiguracionInicial
+        {
+            get
+            {
+                return mControladorBase.IrAConfiguracionInicial;
+            }
+            set
+            {
+                mControladorBase.IrAConfiguracionInicial = value;
+            }
+        }
+
         public List<CommunityModel.TabModel> MainCommunityTabs
         {
             get
@@ -1230,7 +1308,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
 
                 List<ProyectoPestanyaMenu> listaProyectoPestanyaMenu = proyectoCN.ObtenerPestanyasDeProyectoSegunPrivacidadDeIdentidad(new Guid(proyectoID), IdentidadActual.Clave);
 
-                return CargarPestanyas(listaProyectoPestanyaMenu.Where(proyPestanyaMenu => proyPestanyaMenu.PestanyaPadreID == null).ToList());
+                return CargarPestanyas(listaProyectoPestanyaMenu.Where(proyPestanyaMenu => proyPestanyaMenu.PestanyaPadreID == null).OrderBy(proyPestanyaMenu => proyPestanyaMenu.Orden).ToList());
             }
         }
 
@@ -1330,27 +1408,30 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
         {
             get
             {
-                string nombreRama = "";
-                try
+                if (string.IsNullOrEmpty(mRamaGit))
                 {
-                    if (!string.IsNullOrEmpty(UrlApiIntegracionContinua) && !string.IsNullOrEmpty(EntornoIntegracionContinua))
+                    string nombreRama = "";
+                    try
                     {
-                        if (ProyectoSeleccionado.NombreCorto == "")
+                        if (!string.IsNullOrEmpty(UrlApiIntegracionContinua) && !string.IsNullOrEmpty(EntornoIntegracionContinua))
                         {
-                            nombreRama = mUtilServicioIntegracionContinua.RamaEnUso("mygnoss", UrlApiIntegracionContinua);
-                        }
-                        else
-                        {
-                            nombreRama = mUtilServicioIntegracionContinua.RamaEnUso(ProyectoSeleccionado.NombreCorto, UrlApiIntegracionContinua);
+                            if (ProyectoSeleccionado.NombreCorto == "")
+                            {
+                                nombreRama = mUtilServicioIntegracionContinua.RamaEnUso("mygnoss", UrlApiIntegracionContinua);
+                            }
+                            else
+                            {
+                                nombreRama = mUtilServicioIntegracionContinua.RamaEnUso(ProyectoSeleccionado.NombreCorto, UrlApiIntegracionContinua);
+                            }
                         }
                     }
+                    catch
+                    {
+                        //mLoggingService.GuardarLogError(ex, "Problema al obtener el Proyecto con IC");
+                    }
+                    mRamaGit = nombreRama;
                 }
-                catch
-                {
-                    //mLoggingService.GuardarLogError(ex, "Problema al obtener el Proyecto con IC");
-                }
-
-                return nombreRama;
+                return mRamaGit;
             }
         }
 
@@ -1431,17 +1512,17 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
                 {
                     using (ProyectoCL proyectoCL = new ProyectoCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mVirtuosoAD, mServicesUtilVirtuosoAndReplication))
                     {
-                        bool? pruebas = proyectoCL.EsEntornoPruebas(ProyectoSeleccionado.Clave, EntornoIntegracionContinua);
+                        bool? pruebas = proyectoCL.EsEntornoPreproduccion(ProyectoSeleccionado.Clave, EntornoIntegracionContinua);
                         if (pruebas == null)
                         {
                             bool esPruebas = mUtilServicioIntegracionContinua.EsPreproduccion(EntornoIntegracionContinua, UrlApiIntegracionContinua);
                             if (esPruebas)
                             {
-                                proyectoCL.AgregarEsEntornoPruebas(ProyectoSeleccionado.Clave, EntornoIntegracionContinua);
+                                proyectoCL.AgregarEsEntornoPreproduccion(ProyectoSeleccionado.Clave, EntornoIntegracionContinua);
                             }
                             else
                             {
-                                proyectoCL.AgregarEsEntornoPruebas(ProyectoSeleccionado.Clave, EntornoIntegracionContinua, false);
+                                proyectoCL.AgregarEsEntornoPreproduccion(ProyectoSeleccionado.Clave, EntornoIntegracionContinua, false);
                             }
                             return esPruebas;
                         }
@@ -1497,8 +1578,11 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
             {
                 if (mUrlApiDespliegues == null)
                 {
-
                     mUrlApiDespliegues = mConfigService.ObtenerUrlApiDesplieguesEntorno();
+                    if(mUrlApiDespliegues == null)
+                    {
+                        mUrlApiDespliegues = mUtilServicioIntegracionContinua.ObtenerUrlApiDesplieguesEntornoActual(ProyectoSeleccionado.Clave, EntornoIntegracionContinua, UrlApiIntegracionContinua, UsuarioActual.UsuarioID);
+                    }
                 }
                 return mUrlApiDespliegues;
             }
@@ -1928,6 +2012,32 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
                 }
 
                 return mParametroProyecto;
+            }
+        }
+
+        public bool ExisteNombrePoliticaCookiesMetaproyecto
+        {
+            get
+            {
+                if (!mExisteNombrePoliticaCookiesMetaproyecto)
+                {
+                    ParametroCN parametroCN = new ParametroCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+                    mExisteNombrePoliticaCookiesMetaproyecto = parametroCN.ExisteNombrePoliticaCookiesMetaproyecto();
+                }
+                return mExisteNombrePoliticaCookiesMetaproyecto;
+            }
+        }
+
+        public string NombrePoliticaCookiesMetaproyecto
+        {
+            get
+            {
+                if (string.IsNullOrEmpty(mNombrePoliticaCookiesMetaproyecto))
+                {
+                    ParametroCN parametroCN = new ParametroCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+                    mNombrePoliticaCookiesMetaproyecto = parametroCN.ObtenerNombrePoliticaCookiesMetaproyecto();
+                }
+                return mNombrePoliticaCookiesMetaproyecto;
             }
         }
 

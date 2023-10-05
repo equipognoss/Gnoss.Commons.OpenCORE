@@ -1,6 +1,7 @@
 ﻿using Es.Riam.AbstractsOpen;
 using Es.Riam.Gnoss.AD.EntityModel;
 using Es.Riam.Gnoss.AD.EntityModel.Models;
+using Es.Riam.Gnoss.AD.EntityModel.Models.ParametroGeneralDS;
 using Es.Riam.Gnoss.AD.Parametro;
 using Es.Riam.Gnoss.Util.Configuracion;
 using Es.Riam.Gnoss.Util.General;
@@ -50,6 +51,17 @@ namespace Es.Riam.Gnoss.Logica.Parametro
         public Dictionary<string, string> ObtenerParametrosProyecto(Guid pProyectoID)
         {
             return ParametroAD.ObtenerParametrosProyecto(pProyectoID, null);
+        }
+
+        /// <summary>
+        /// Obtiene el parámetro proyecto indicado si existe
+        /// </summary>
+        /// <param name="pNombreParametro">Nombre del parametro a obtener</param>
+        /// <param name="pProyectoID">Identificador del proyecto donde queremos obtener el parámetro</param>
+        /// <returns></returns>
+        public ParametroProyecto ObtenerParametroDeProyecto(string pNombreParametro, Guid pProyectoID)
+        {
+            return ParametroAD.ObtenerParametroDeProyecto(pNombreParametro, pProyectoID);
         }
 
         /// <summary>
@@ -277,6 +289,16 @@ namespace Es.Riam.Gnoss.Logica.Parametro
         public List<Guid> ObtenerProyectosQueAgrupanEventosRegistroHome()
         {
             return ParametroAD.ObtenerProyectosQueAgrupanEventosRegistroHome();
+        }
+
+        public bool ExisteNombrePoliticaCookiesMetaproyecto()
+        {
+            return ParametroAD.ExisteNombrePoliticaCookiesMetaproyecto();
+        }
+
+        public string ObtenerNombrePoliticaCookiesMetaproyecto()
+        {
+            return ParametroAD.ObtenerNombrePoliticaCookiesMetaproyecto();
         }
 
         #endregion

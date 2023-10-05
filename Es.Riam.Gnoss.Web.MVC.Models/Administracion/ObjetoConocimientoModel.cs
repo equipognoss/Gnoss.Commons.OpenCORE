@@ -79,6 +79,41 @@ namespace Es.Riam.Gnoss.Web.MVC.Models.Administracion
         public PresentacionPersonalizadoModel PresentacionPersonalizado { get; set; }
 
         /// <summary>
+        /// Indica si el objeto de conocimiento es de tipo Primario.
+        /// </summary>
+        public bool EsObjetoPrimario { get; set; }
+
+        /// <summary>
+        /// Nos indica si el objeto de conocimiento acaba de ser creado
+        /// </summary>
+        public bool EsCreacion { get; set; }
+
+        /// <summary>
+        /// Es el valor del grafo que tenía antes de guardar
+        /// </summary>
+        public string GrafoActual { get; set; }
+
+        /// <summary>
+        /// Es el valor del grafo al guardar el modelo
+        /// </summary>
+        public string GrafoNuevo { get; set; }
+
+        /// <summary>
+        /// Identificador de la ontología
+        /// </summary>
+        public Guid DocumentoID { get; set; }  
+
+        /// <summary>
+        /// Nos indica si tiene recursos vinculados
+        /// </summary>
+        public bool RecursosVinculados { get; set; }
+
+        /// <summary>
+        /// Campo en el que esta la url a la imagen de la ontología
+        /// </summary>
+        public string Image { get; set; }
+
+        /// <summary>
         /// 
         /// </summary>
         public partial class PresentacionModel
@@ -112,5 +147,14 @@ namespace Es.Riam.Gnoss.Web.MVC.Models.Administracion
                 public short Orden { get; set; }
             }
         }
+    }
+
+    /// <summary>
+    /// Modelo para la vista de los elementos de una entidad secundaria
+    /// </summary>
+    [Serializable]
+    public partial class ElementosEntidadSecundariaModel
+    {
+
     }
 }

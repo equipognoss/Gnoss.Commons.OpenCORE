@@ -405,134 +405,6 @@ namespace Es.Riam.Gnoss.AD.Tesauro
     /// </summary>
     public class TesauroAD : BaseAD
     {
-        #region Consultas
-
-        private string sqlSelectTesauroProyectoDeProyecto;
-        private string sqlSelectTesauroUsuarioDeUsuario;
-        private string sqlSelectTesauroOrganizacionDeOrganizacion;
-        private string sqlSelectTesauroSuscripcion;
-        private string sqlSelectCatTesauroAgCatTesauroDeTesauro;
-        //private string sqlSelectCatTesauroCompartidaDeTesauro;
-        private string sqlSelectCategoriasTesauroSuscripcion;
-        private string sqlSelectCatTesauroAgCatTesauroSuscripcion;
-        private string sqlSelectCategoriaTesauroSugerencia;
-        private string sqlSelectCatTesauroPermiteTipoRec;
-
-        #endregion
-
-        #region Campos de tablas
-
-        private string sqlSelectTesauro;
-
-        private string sqlSelectTesauroProyecto;
-
-        private string sqlSelectTesauroUsuario;
-
-        private string sqlSelectTesauroOrganizacion;
-
-        private string sqlSelectTesauroEntidadGnoss;
-
-        private string sqlSelectCategoriaTesauro;
-
-        private string sqlSelectCategoriaTesauroPropiedades;
-
-        private string sqlSelectCatTesauroAgCatTesauro;
-
-        private string sqlSelectCatTesauroCompartida;
-
-        #endregion
-
-        #region DataAdapter
-
-        #region Tesauro
-
-        private string sqlTesauroInsert;
-        private string sqlTesauroDelete;
-        private string sqlTesauroModify;
-
-        #endregion
-
-        #region TesauroProyecto
-
-        private string sqlTesauroProyectoInsert;
-        private string sqlTesauroProyectoDelete;
-        private string sqlTesauroProyectoModify;
-
-        #endregion
-
-        #region TesauroUsuario
-
-        private string sqlTesauroUsuarioInsert;
-        private string sqlTesauroUsuarioDelete;
-        private string sqlTesauroUsuarioModify;
-
-        #endregion
-
-        #region CategoriaTesauro
-
-        private string sqlCategoriaTesauroInsert;
-        private string sqlCategoriaTesauroDelete;
-        private string sqlCategoriaTesauroModify;
-
-        #endregion
-
-        #region CategoriaTesauroPropiedades
-
-        private string sqlCategoriaTesauroPropiedadesInsert;
-        private string sqlCategoriaTesauroPropiedadesDelete;
-        private string sqlCategoriaTesauroPropiedadesModify;
-
-        #endregion
-
-        #region CatTesauroAgCatTesauro
-
-        private string sqlCatTesauroAgCatTesauroInsert;
-        private string sqlCatTesauroAgCatTesauroDelete;
-        private string sqlCatTesauroAgCatTesauroModify;
-
-        #endregion
-
-        #region CatTesauroCompartida
-
-        private string sqlCatTesauroCompartidaInsert;
-        private string sqlCatTesauroCompartidaDelete;
-        private string sqlCatTesauroCompartidaModify;
-
-        #endregion
-
-        #region TesauroOrganizacion
-
-        private string sqlTesauroOrganizacionInsert;
-        private string sqlTesauroOrganizacionDelete;
-        private string sqlTesauroOrganizacionModify;
-
-        #endregion
-
-        #region TesauroEntidadGnoss
-
-        private string sqlTesauroEntidadGnossInsert;
-        private string sqlTesauroEntidadGnossDelete;
-        private string sqlTesauroEntidadGnossModify;
-
-        #endregion
-
-        #region CategoriaTesauroSugerencia
-
-        private string sqlCategoriaTesauroSugerenciaInsert;
-        private string sqlCategoriaTesauroSugerenciaDelete;
-        private string sqlCategoriaTesauroSugerenciaModify;
-
-        #endregion
-
-        #region CatTesauroPermiteTipoRec
-
-        private string sqlCatTesauroPermiteTipoRecInsert;
-        private string sqlCatTesauroPermiteTipoRecDelete;
-        private string sqlCatTesauroPermiteTipoRecModify;
-
-        #endregion
-
-        #endregion
 
         private EntityContext mEntityContext;
 
@@ -545,7 +417,6 @@ namespace Es.Riam.Gnoss.AD.Tesauro
             : base(loggingService, entityContext, configService, servicesUtilVirtuosoAndReplication)
         {
             mEntityContext = entityContext;
-            this.CargarConsultasYDataAdapters();
         }
 
         /// <summary>
@@ -557,7 +428,6 @@ namespace Es.Riam.Gnoss.AD.Tesauro
             : base(pFicheroConfiguracionBD, loggingService, entityContext, configService, servicesUtilVirtuosoAndReplication)
         {
             mEntityContext = entityContext;
-            this.CargarConsultasYDataAdapters(IBD);
         }
 
         #endregion
@@ -809,16 +679,8 @@ namespace Es.Riam.Gnoss.AD.Tesauro
 
         public string ObtenerNombreTesauroProyOnt(Guid pProyectoID, string pOntologiaID)
         {
-            //Revisar
-
-            var consulta = mEntityContext.TesauroProyecto.JoinCategoriaTesauro().JoinCatTesauroPermiteTipoRec().Where(item => item.TesauroProyecto.ProyectoID.Equals(pProyectoID)).Select(item => new
-            {
-                CatTesauroPermiteTipoRec = item.CatTesauroPermiteTipoRec,
-                CategoriaTesauroNombre = item.CategoriaTesauro.Nombre
-            }).ToList();
-            return consulta.Where(item => item.CatTesauroPermiteTipoRec.OntologiasID.Equals(pOntologiaID)).Select(item => item.CategoriaTesauroNombre).FirstOrDefault();//El dato OntologiasID es de tipo BLOB en Oracle   
+            return mEntityContext.TesauroProyecto.JoinCategoriaTesauro().JoinCatTesauroPermiteTipoRec().Where(item => item.TesauroProyecto.ProyectoID.Equals(pProyectoID) && item.CatTesauroPermiteTipoRec.OntologiasID.Equals(pOntologiaID)).Select(item => item.CategoriaTesauro.Nombre).FirstOrDefault();
         }
-
 
         /// <summary>
         /// Comprueba si una categoría del tesauro está vinculada o no a algún elemento de Gnoss
@@ -941,167 +803,6 @@ namespace Es.Riam.Gnoss.AD.Tesauro
 
         #region Privados
 
-        /// <summary>
-        /// En caso de que se utilice el GnossConfig.xml por defecto se sigue utilizando el IBD estático
-        /// </summary>
-        private void CargarConsultasYDataAdapters()
-        {
-            this.CargarConsultasYDataAdapters(IBD);
-        }
-
-        /// <summary>
-        /// En caso de que se utilice un GnossConfig.xml que no es el de por defecto se pasa un objeto IBaseDatos creado con respecto
-        /// al fichero de configuracion que se ha apsado como parámetro
-        /// </summary>
-        /// <param name="IBD">Objecto IBaseDatos para el archivo pasado al constructor del AD</param>
-        private void CargarConsultasYDataAdapters(IBaseDatos IBD)
-        {
-            #region Campos de tablas
-
-            sqlSelectTesauro = "SELECT " + IBD.CargarGuid("Tesauro.TesauroID") + " FROM Tesauro";
-
-            sqlSelectTesauroProyecto = "SELECT " + IBD.CargarGuid("TesauroProyecto.TesauroID") + ", " + IBD.CargarGuid("TesauroProyecto.OrganizacionID") + ", " + IBD.CargarGuid("TesauroProyecto.ProyectoID") + ",TesauroProyecto.IdiomaDefecto FROM TesauroProyecto";
-
-            sqlSelectTesauroUsuario = "SELECT " + IBD.CargarGuid("TesauroUsuario.TesauroID") + ", " + IBD.CargarGuid("TesauroUsuario.UsuarioID") + ", " + IBD.CargarGuid("TesauroUsuario.CategoriaTesauroPublicoID") + ", " + IBD.CargarGuid("TesauroUsuario.CategoriaTesauroPrivadoID") + ", " + IBD.CargarGuid("TesauroUsuario.CategoriaTesauroMisImagenesID") + ", " + IBD.CargarGuid("TesauroUsuario.CategoriaTesauroMisVideosID") + " FROM TesauroUsuario";
-
-            sqlSelectTesauroOrganizacion = "SELECT " + IBD.CargarGuid("TesauroID") + ", " + IBD.CargarGuid("OrganizacionID") + ", " + IBD.CargarGuid("CategoriaTesauroPublicoID") + ", " + IBD.CargarGuid("CategoriaTesauroPrivadoID") + ", " + IBD.CargarGuid("CategoriaTesauroFavoritosID") + " FROM TesauroOrganizacion";
-
-            sqlSelectTesauroEntidadGnoss = "SELECT " + IBD.CargarGuid("TesauroID") + ", " + IBD.CargarGuid("OrganizacionID") + ", " + IBD.CargarGuid("ProyectoID") + ", " + IBD.CargarGuid("EntidadGnossID") + ", " + IBD.CargarGuid("CategoriaDocumentacionID") + " FROM TesauroEntidadGnoss";
-
-            sqlSelectCategoriaTesauro = "SELECT " + IBD.CargarGuid("CategoriaTesauro.TesauroID") + ", " + IBD.CargarGuid("CategoriaTesauro.CategoriaTesauroID") + ", CategoriaTesauro.Nombre, CategoriaTesauro.Orden, CategoriaTesauro.NumeroRecursos, CategoriaTesauro.NumeroPreguntas, CategoriaTesauro.NumeroDebates, CategoriaTesauro.NumeroDafos, CategoriaTesauro.TieneFoto, CategoriaTesauro.VersionFoto, CategoriaTesauro.Estructurante FROM CategoriaTesauro";
-
-            sqlSelectCategoriaTesauroPropiedades = "SELECT " + IBD.CargarGuid("CategoriaTesauroPropiedades.TesauroID") + ", " + IBD.CargarGuid("CategoriaTesauroPropiedades.CategoriaTesauroID") + ", CategoriaTesauroPropiedades.Obligatoria FROM CategoriaTesauroPropiedades";
-
-            sqlSelectCatTesauroAgCatTesauro = "SELECT " + IBD.CargarGuid("CatTesauroAgCatTesauro.TesauroID") + ", " + IBD.CargarGuid("CatTesauroAgCatTesauro.CategoriaSuperiorID") + ", " + IBD.CargarGuid("CatTesauroAgCatTesauro.CategoriaInferiorID") + ", CatTesauroAgCatTesauro.Orden FROM CatTesauroAgCatTesauro";
-
-            sqlSelectCatTesauroCompartida = "SELECT " + IBD.CargarGuid("CatTesauroCompartida.TesauroOrigenID") + ", " + IBD.CargarGuid("CatTesauroCompartida.CategoriaOrigenID") + ", " + IBD.CargarGuid("CatTesauroCompartida.TesauroDestinoID") + ", " + IBD.CargarGuid("CatTesauroCompartida.CategoriaSupDestinoID") + ", CatTesauroCompartida.Orden FROM CatTesauroCompartida";
-
-            #endregion
-
-            #region Consultas
-
-            this.sqlSelectTesauroProyectoDeProyecto = sqlSelectTesauroProyecto + " WHERE ProyectoID = " + IBD.GuidParamValor("proyectoID");
-
-            this.sqlSelectTesauroUsuarioDeUsuario = sqlSelectTesauroUsuario + " WHERE UsuarioID = " + IBD.GuidParamValor("usuarioID");
-
-            this.sqlSelectTesauroOrganizacionDeOrganizacion = sqlSelectTesauroOrganizacion + " WHERE OrganizacionID = " + IBD.GuidParamValor("organizacionID");
-
-            this.sqlSelectCatTesauroAgCatTesauroDeTesauro = sqlSelectCatTesauroAgCatTesauro + " INNER JOIN CategoriaTesauro ON CatTesauroAgCatTesauro.TesauroID = CategoriaTesauro.TesauroID AND CatTesauroAgCatTesauro.CategoriaInferiorID = CategoriaTesauro.CategoriaTesauroID INNER JOIN Tesauro ON CategoriaTesauro.TesauroID = Tesauro.TesauroID INNER JOIN CategoriaTesauro CategoriaTesauro_1 ON CatTesauroAgCatTesauro.TesauroID = CategoriaTesauro_1.TesauroID AND CatTesauroAgCatTesauro.CategoriaSuperiorID = CategoriaTesauro_1.CategoriaTesauroID AND Tesauro.TesauroID = CategoriaTesauro_1.TesauroID WHERE ";
-
-            this.sqlSelectTesauroSuscripcion = "SELECT " + IBD.CargarGuid("TesauroID") + " FROM Tesauro";
-
-            this.sqlSelectCategoriasTesauroSuscripcion = sqlSelectCategoriaTesauro + " INNER JOIN Tesauro ON CategoriaTesauro.TesauroID = Tesauro.TesauroID";
-
-            this.sqlSelectCatTesauroAgCatTesauroSuscripcion = sqlSelectCatTesauroAgCatTesauro + " INNER JOIN CategoriaTesauro ON CatTesauroAgCatTesauro.TesauroID = CategoriaTesauro.TesauroID AND CatTesauroAgCatTesauro.CategoriaInferiorID = CategoriaTesauro.CategoriaTesauroID INNER JOIN Tesauro ON CategoriaTesauro.TesauroID = Tesauro.TesauroID";
-
-            this.sqlSelectCategoriaTesauroSugerencia = "SELECT " + IBD.CargarGuid("CategoriaTesauroSugerencia.SugerenciaID") + ", " + IBD.CargarGuid("CategoriaTesauroSugerencia.TesauroSugerenciaID") + ", " + IBD.CargarGuid("CategoriaTesauroSugerencia.TesauroCatPadreID") + ", " + IBD.CargarGuid("CategoriaTesauroSugerencia.CategoriaTesauroPadreID") + ", CategoriaTesauroSugerencia.Nombre, " + IBD.CargarGuid("CategoriaTesauroSugerencia.IdentidadID") + ", CategoriaTesauroSugerencia.Estado, " + IBD.CargarGuid("CategoriaTesauroSugerencia.CategoriaTesauroAceptadaID") + " FROM CategoriaTesauroSugerencia";
-
-            this.sqlSelectCatTesauroPermiteTipoRec = "SELECT " + IBD.CargarGuid("CatTesauroPermiteTipoRec.TesauroID") + ", " + IBD.CargarGuid("CatTesauroPermiteTipoRec.CategoriaTesauroID") + ", TipoRecurso, OntologiasID FROM CatTesauroPermiteTipoRec";
-
-            #endregion
-
-            #region DataAdapter
-
-            #region Tesauro
-
-            this.sqlTesauroInsert = IBD.ReplaceParam("INSERT INTO Tesauro (TesauroID) VALUES (" + IBD.GuidParamColumnaTabla("TesauroID") + ")");
-            this.sqlTesauroDelete = IBD.ReplaceParam("DELETE FROM Tesauro WHERE (TesauroID = " + IBD.GuidParamColumnaTabla("O_TesauroID") + ")");
-            this.sqlTesauroModify = IBD.ReplaceParam("UPDATE Tesauro SET TesauroID = " + IBD.GuidParamColumnaTabla("TesauroID") + " WHERE (TesauroID = " + IBD.GuidParamColumnaTabla("O_TesauroID") + ")");
-
-            #endregion
-
-            #region CategoriaTesauro
-            this.sqlCategoriaTesauroInsert = IBD.ReplaceParam("INSERT INTO CategoriaTesauro (TesauroID, CategoriaTesauroID, Nombre, Orden, NumeroRecursos, NumeroPreguntas, NumeroDebates, NumeroDafos, TieneFoto, VersionFoto, Estructurante) VALUES (" + IBD.GuidParamColumnaTabla("TesauroID") + ", " + IBD.GuidParamColumnaTabla("CategoriaTesauroID") + ", @Nombre, @Orden, @NumeroRecursos, @NumeroPreguntas, @NumeroDebates, @NumeroDafos, @TieneFoto, @VersionFoto, @Estructurante)");
-            this.sqlCategoriaTesauroDelete = IBD.ReplaceParam("DELETE FROM CategoriaTesauro WHERE (TesauroID = " + IBD.GuidParamColumnaTabla("Original_TesauroID") + ") AND (CategoriaTesauroID = " + IBD.GuidParamColumnaTabla("Original_CategoriaTesauroID") + ") AND (Nombre = @Original_Nombre) AND (Orden = @Original_Orden) AND (NumeroRecursos = @Original_NumeroRecursos) AND (NumeroPreguntas = @Original_NumeroPreguntas) AND (NumeroDebates = @Original_NumeroDebates) AND (NumeroDafos = @Original_NumeroDafos) AND (TieneFoto = @Original_TieneFoto) AND (VersionFoto = @Original_VersionFoto) AND (Estructurante = @Original_Estructurante)");
-            this.sqlCategoriaTesauroModify = IBD.ReplaceParam("UPDATE CategoriaTesauro SET TesauroID = " + IBD.GuidParamColumnaTabla("TesauroID") + ", CategoriaTesauroID = " + IBD.GuidParamColumnaTabla("CategoriaTesauroID") + ", Nombre = @Nombre, Orden = @Orden, NumeroRecursos = @NumeroRecursos, NumeroPreguntas = @NumeroPreguntas, NumeroDebates = @NumeroDebates, NumeroDafos = @NumeroDafos, TieneFoto = @TieneFoto, VersionFoto = @VersionFoto, @Estructurante = Estructurante WHERE (TesauroID = " + IBD.GuidParamColumnaTabla("Original_TesauroID") + ") AND (CategoriaTesauroID = " + IBD.GuidParamColumnaTabla("Original_CategoriaTesauroID") + ") AND (Nombre = @Original_Nombre) AND (Orden = @Original_Orden) AND (NumeroRecursos = @Original_NumeroRecursos) AND (NumeroPreguntas = @Original_NumeroPreguntas) AND (NumeroDebates = @Original_NumeroDebates) AND (NumeroDafos = @Original_NumeroDafos) AND (TieneFoto = @Original_TieneFoto) AND (VersionFoto = @Original_VersionFoto) AND (Estructurante = @Original_Estructurante)");
-            #endregion
-
-            #region CategoriaTesauroPropiedades
-            this.sqlCategoriaTesauroPropiedadesInsert = IBD.ReplaceParam("INSERT INTO CategoriaTesauroPropiedades (TesauroID, CategoriaTesauroID, Obligatoria) VALUES (" + IBD.GuidParamColumnaTabla("TesauroID") + ", " + IBD.GuidParamColumnaTabla("CategoriaTesauroID") + ", @Obligatoria)");
-            this.sqlCategoriaTesauroPropiedadesDelete = IBD.ReplaceParam("DELETE FROM CategoriaTesauroPropiedades WHERE (TesauroID = " + IBD.GuidParamColumnaTabla("Original_TesauroID") + ") AND (CategoriaTesauroID = " + IBD.GuidParamColumnaTabla("Original_CategoriaTesauroID") + ") AND (Obligatoria = @Original_Obligatoria)");
-            this.sqlCategoriaTesauroPropiedadesModify = IBD.ReplaceParam("UPDATE CategoriaTesauroPropiedades SET TesauroID = " + IBD.GuidParamColumnaTabla("TesauroID") + ", CategoriaTesauroID = " + IBD.GuidParamColumnaTabla("CategoriaTesauroID") + ", Obligatoria = @Obligatoria WHERE (TesauroID = " + IBD.GuidParamColumnaTabla("Original_TesauroID") + ") AND (CategoriaTesauroID = " + IBD.GuidParamColumnaTabla("Original_CategoriaTesauroID") + ") AND (Obligatoria = @Original_Obligatoria)");
-            #endregion
-
-            #region CatTesauroAgCatTesauro
-
-            this.sqlCatTesauroAgCatTesauroInsert = IBD.ReplaceParam("INSERT INTO CatTesauroAgCatTesauro (TesauroID, CategoriaSuperiorID, CategoriaInferiorID, Orden) VALUES (" + IBD.GuidParamColumnaTabla("TesauroID") + ", " + IBD.GuidParamColumnaTabla("CategoriaSuperiorID") + ", " + IBD.GuidParamColumnaTabla("CategoriaInferiorID") + ", @Orden)");
-
-            this.sqlCatTesauroAgCatTesauroDelete = IBD.ReplaceParam("DELETE FROM CatTesauroAgCatTesauro WHERE (TesauroID = " + IBD.GuidParamColumnaTabla("O_TesauroID") + ") AND (CategoriaSuperiorID = " + IBD.GuidParamColumnaTabla("O_CategoriaSuperiorID") + ") AND (CategoriaInferiorID = " + IBD.GuidParamColumnaTabla("O_CategoriaInferiorID") + ") AND (Orden = @O_Orden)");
-
-            this.sqlCatTesauroAgCatTesauroModify = IBD.ReplaceParam("UPDATE CatTesauroAgCatTesauro SET TesauroID = " + IBD.GuidParamColumnaTabla("TesauroID") + ", CategoriaSuperiorID = " + IBD.GuidParamColumnaTabla("CategoriaSuperiorID") + ", CategoriaInferiorID = " + IBD.GuidParamColumnaTabla("CategoriaInferiorID") + ", Orden = @Orden WHERE (TesauroID = " + IBD.GuidParamColumnaTabla("O_TesauroID") + ") AND (CategoriaSuperiorID = " + IBD.GuidParamColumnaTabla("O_CategoriaSuperiorID") + ") AND (CategoriaInferiorID = " + IBD.GuidParamColumnaTabla("O_CategoriaInferiorID") + ") AND (Orden = @O_Orden)");
-
-            #endregion
-
-            #region CatTesauroCompartida
-
-            this.sqlCatTesauroCompartidaInsert = IBD.ReplaceParam("INSERT INTO CatTesauroCompartida (TesauroOrigenID, CategoriaOrigenID, TesauroDestinoID, CategoriaSupDestinoID, Orden) VALUES (" + IBD.GuidParamColumnaTabla("TesauroOrigenID") + ", " + IBD.GuidParamColumnaTabla("CategoriaOrigenID") + ", " + IBD.GuidParamColumnaTabla("TesauroDestinoID") + ", " + IBD.GuidParamColumnaTabla("CategoriaSupDestinoID") + ", @Orden)");
-
-            this.sqlCatTesauroCompartidaDelete = IBD.ReplaceParam("DELETE FROM CatTesauroCompartida WHERE (TesauroOrigenID = " + IBD.GuidParamColumnaTabla("O_TesauroOrigenID") + ") AND (CategoriaOrigenID = " + IBD.GuidParamColumnaTabla("O_CategoriaOrigenID") + ") AND (TesauroDestinoID = " + IBD.GuidParamColumnaTabla("O_TesauroDestinoID") + ")");
-
-            this.sqlCatTesauroCompartidaModify = IBD.ReplaceParam("UPDATE CatTesauroCompartida SET TesauroOrigenID = " + IBD.GuidParamColumnaTabla("TesauroOrigenID") + ", CategoriaOrigenID = " + IBD.GuidParamColumnaTabla("CategoriaOrigenID") + ", TesauroDestinoID = " + IBD.GuidParamColumnaTabla("TesauroDestinoID") + ", CategoriaSupDestinoID = " + IBD.GuidParamColumnaTabla("CategoriaSupDestinoID") + ", Orden = @Orden WHERE (TesauroOrigenID = " + IBD.GuidParamColumnaTabla("O_TesauroOrigenID") + ") AND (CategoriaOrigenID = " + IBD.GuidParamColumnaTabla("O_CategoriaOrigenID") + ") AND (TesauroDestinoID = " + IBD.GuidParamColumnaTabla("O_TesauroDestinoID") + ")");
-
-            #endregion
-
-            #region TesauroUsuario
-
-            this.sqlTesauroUsuarioInsert = IBD.ReplaceParam("INSERT INTO TesauroUsuario (TesauroID, UsuarioID, CategoriaTesauroPublicoID, CategoriaTesauroPrivadoID, CategoriaTesauroMisImagenesID, CategoriaTesauroMisVideosID) VALUES (" + IBD.GuidParamColumnaTabla("TesauroID") + ", " + IBD.GuidParamColumnaTabla("UsuarioID") + ", " + IBD.GuidParamColumnaTabla("CategoriaTesauroPublicoID") + ", " + IBD.GuidParamColumnaTabla("CategoriaTesauroPrivadoID") + ", " + IBD.GuidParamColumnaTabla("CategoriaTesauroMisImagenesID") + ", " + IBD.GuidParamColumnaTabla("CategoriaTesauroMisVideosID") + ")");
-
-            this.sqlTesauroUsuarioDelete = IBD.ReplaceParam("DELETE FROM TesauroUsuario WHERE (TesauroID = " + IBD.GuidParamColumnaTabla("O_TesauroID") + ") AND (UsuarioID = " + IBD.GuidParamColumnaTabla("O_UsuarioID") + ") AND (CategoriaTesauroPublicoID = " + IBD.GuidParamColumnaTabla("O_CategoriaTesauroPublicoID") + " OR " + IBD.GuidParamColumnaTabla("O_CategoriaTesauroPublicoID") + " IS NULL AND CategoriaTesauroPublicoID IS NULL) AND (CategoriaTesauroPrivadoID = " + IBD.GuidParamColumnaTabla("O_CategoriaTesauroPrivadoID") + " OR " + IBD.GuidParamColumnaTabla("O_CategoriaTesauroPrivadoID") + " IS NULL AND CategoriaTesauroPrivadoID IS NULL) AND (CategoriaTesauroMisImagenesID = " + IBD.GuidParamColumnaTabla("O_CategoriaTesauroMisImagenesID") + " OR " + IBD.GuidParamColumnaTabla("O_CategoriaTesauroMisImagenesID") + " IS NULL AND CategoriaTesauroMisImagenesID IS NULL) AND (CategoriaTesauroMisVideosID = " + IBD.GuidParamColumnaTabla("O_CategoriaTesauroMisVideosID") + " OR " + IBD.GuidParamColumnaTabla("O_CategoriaTesauroMisVideosID") + " IS NULL AND CategoriaTesauroMisVideosID IS NULL)");
-
-            this.sqlTesauroUsuarioModify = IBD.ReplaceParam("UPDATE TesauroUsuario SET TesauroID = " + IBD.GuidParamColumnaTabla("TesauroID") + ", UsuarioID = " + IBD.GuidParamColumnaTabla("UsuarioID") + ", CategoriaTesauroPublicoID = " + IBD.GuidParamColumnaTabla("CategoriaTesauroPublicoID") + ", CategoriaTesauroPrivadoID = " + IBD.GuidParamColumnaTabla("CategoriaTesauroPrivadoID") + ", CategoriaTesauroMisImagenesID = " + IBD.GuidParamColumnaTabla("CategoriaTesauroMisImagenesID") + " WHERE (TesauroID = " + IBD.GuidParamColumnaTabla("O_TesauroID") + ") AND (UsuarioID = " + IBD.GuidParamColumnaTabla("O_UsuarioID") + ") AND (CategoriaTesauroPublicoID = " + IBD.GuidParamColumnaTabla("O_CategoriaTesauroPublicoID") + " OR " + IBD.GuidParamColumnaTabla("O_CategoriaTesauroPublicoID") + " IS NULL AND CategoriaTesauroPublicoID IS NULL) AND (CategoriaTesauroPrivadoID = " + IBD.GuidParamColumnaTabla("O_CategoriaTesauroPrivadoID") + " OR " + IBD.GuidParamColumnaTabla("O_CategoriaTesauroPrivadoID") + " IS NULL AND CategoriaTesauroPrivadoID IS NULL) AND (CategoriaTesauroMisImagenesID = " + IBD.GuidParamColumnaTabla("O_CategoriaTesauroMisImagenesID") + " OR " + IBD.GuidParamColumnaTabla("O_CategoriaTesauroMisImagenesID") + " IS NULL AND CategoriaTesauroMisImagenesID IS NULL) AND (CategoriaTesauroMisVideosID = " + IBD.GuidParamColumnaTabla("O_CategoriaTesauroMisVideosID") + " OR " + IBD.GuidParamColumnaTabla("O_CategoriaTesauroMisVideosID") + " IS NULL AND CategoriaTesauroMisVideosID IS NULL)");
-
-            #endregion
-
-            #region TesauroProyecto
-
-            this.sqlTesauroProyectoInsert = IBD.ReplaceParam("INSERT INTO TesauroProyecto (TesauroID, OrganizacionID, ProyectoID,IdiomaDefecto) VALUES (" + IBD.GuidParamColumnaTabla("TesauroID") + ", " + IBD.GuidParamColumnaTabla("OrganizacionID") + ", " + IBD.GuidParamColumnaTabla("ProyectoID") + ", @IdiomaDefecto)");
-            this.sqlTesauroProyectoDelete = IBD.ReplaceParam("DELETE FROM TesauroProyecto WHERE (TesauroID = " + IBD.GuidParamColumnaTabla("O_TesauroID") + ") AND (OrganizacionID = " + IBD.GuidParamColumnaTabla("O_OrganizacionID") + ") AND (ProyectoID = " + IBD.GuidParamColumnaTabla("O_ProyectoID") + ")");
-            this.sqlTesauroProyectoModify = IBD.ReplaceParam("UPDATE TesauroProyecto SET TesauroID = " + IBD.GuidParamColumnaTabla("TesauroID") + ", OrganizacionID = " + IBD.GuidParamColumnaTabla("OrganizacionID") + ", ProyectoID = " + IBD.GuidParamColumnaTabla("ProyectoID") + " , IdiomaDefecto = @IdiomaDefecto WHERE (TesauroID = " + IBD.GuidParamColumnaTabla("O_TesauroID") + ") AND (OrganizacionID = " + IBD.GuidParamColumnaTabla("O_OrganizacionID") + ") AND (ProyectoID = " + IBD.GuidParamColumnaTabla("O_ProyectoID") + ")");
-
-            #endregion
-
-            #region TesauroOrganizacion
-
-            this.sqlTesauroOrganizacionInsert = IBD.ReplaceParam("INSERT INTO TesauroOrganizacion (TesauroID, OrganizacionID, CategoriaTesauroPublicoID, CategoriaTesauroPrivadoID, CategoriaTesauroFavoritosID) VALUES (" + IBD.GuidParamColumnaTabla("TesauroID") + ", " + IBD.GuidParamColumnaTabla("OrganizacionID") + ", " + IBD.GuidParamColumnaTabla("CategoriaTesauroPublicoID") + ", " + IBD.GuidParamColumnaTabla("CategoriaTesauroPrivadoID") + ", " + IBD.GuidParamColumnaTabla("CategoriaTesauroFavoritosID") + ")");
-
-            this.sqlTesauroOrganizacionDelete = IBD.ReplaceParam("DELETE FROM TesauroOrganizacion WHERE (TesauroID = " + IBD.GuidParamColumnaTabla("O_TesauroID") + ") AND (OrganizacionID = " + IBD.GuidParamColumnaTabla("O_OrganizacionID") + ") AND (CategoriaTesauroPublicoID = " + IBD.GuidParamColumnaTabla("O_CategoriaTesauroPublicoID") + " OR " + IBD.GuidParamColumnaTabla("O_CategoriaTesauroPublicoID") + " IS NULL AND CategoriaTesauroPublicoID IS NULL) AND (CategoriaTesauroPrivadoID = " + IBD.GuidParamColumnaTabla("O_CategoriaTesauroPrivadoID") + " OR " + IBD.GuidParamColumnaTabla("O_CategoriaTesauroPrivadoID") + " IS NULL AND CategoriaTesauroPrivadoID IS NULL) AND (CategoriaTesauroFavoritosID = " + IBD.GuidParamColumnaTabla("O_CategoriaTesauroFavoritosID") + " OR " + IBD.GuidParamColumnaTabla("O_CategoriaTesauroFavoritosID") + " IS NULL AND CategoriaTesauroFavoritosID IS NULL)");
-
-            this.sqlTesauroOrganizacionModify = IBD.ReplaceParam("UPDATE TesauroOrganizacion SET TesauroID = " + IBD.GuidParamColumnaTabla("TesauroID") + ", OrganizacionID = " + IBD.GuidParamColumnaTabla("OrganizacionID") + ", CategoriaTesauroPublicoID = " + IBD.GuidParamColumnaTabla("CategoriaTesauroPublicoID") + ", CategoriaTesauroPrivadoID = " + IBD.GuidParamColumnaTabla("CategoriaTesauroPrivadoID") + ", CategoriaTesauroFavoritosID = " + IBD.GuidParamColumnaTabla("CategoriaTesauroFavoritosID") + " WHERE (TesauroID = " + IBD.GuidParamColumnaTabla("O_TesauroID") + ") AND (OrganizacionID = " + IBD.GuidParamColumnaTabla("O_OrganizacionID") + ") AND (CategoriaTesauroPublicoID = " + IBD.GuidParamColumnaTabla("O_CategoriaTesauroPublicoID") + " OR " + IBD.GuidParamColumnaTabla("O_CategoriaTesauroPublicoID") + " IS NULL AND CategoriaTesauroPublicoID IS NULL) AND (CategoriaTesauroPrivadoID = " + IBD.GuidParamColumnaTabla("O_CategoriaTesauroPrivadoID") + " OR " + IBD.GuidParamColumnaTabla("O_CategoriaTesauroPrivadoID") + " IS NULL AND CategoriaTesauroPrivadoID IS NULL) AND (CategoriaTesauroFavoritosID = " + IBD.GuidParamColumnaTabla("O_CategoriaTesauroFavoritosID") + " OR " + IBD.GuidParamColumnaTabla("O_CategoriaTesauroFavoritosID") + " IS NULL AND CategoriaTesauroFavoritosID IS NULL)");
-
-            #endregion
-
-            #region TesauroEntidadGnoss
-
-            this.sqlTesauroEntidadGnossInsert = IBD.ReplaceParam("INSERT INTO TesauroEntidadGnoss (TesauroID, OrganizacionID, ProyectoID, EntidadGnossID, CategoriaDocumentacionID) VALUES (" + IBD.GuidParamColumnaTabla("TesauroID") + ", " + IBD.GuidParamColumnaTabla("OrganizacionID") + ", " + IBD.GuidParamColumnaTabla("ProyectoID") + ", " + IBD.GuidParamColumnaTabla("EntidadGnossID") + ", " + IBD.GuidParamColumnaTabla("CategoriaDocumentacionID") + ")");
-
-            this.sqlTesauroEntidadGnossDelete = IBD.ReplaceParam("DELETE FROM TesauroEntidadGnoss WHERE (TesauroID = " + IBD.GuidParamColumnaTabla("O_TesauroID") + ") AND (OrganizacionID = " + IBD.GuidParamColumnaTabla("O_OrganizacionID") + ") AND (ProyectoID = " + IBD.GuidParamColumnaTabla("O_ProyectoID") + ") AND (EntidadGnossID = " + IBD.GuidParamColumnaTabla("O_EntidadGnossID") + ") AND (CategoriaDocumentacionID = " + IBD.GuidParamColumnaTabla("O_CategoriaDocumentacionID") + ")");
-
-            this.sqlTesauroEntidadGnossModify = IBD.ReplaceParam("UPDATE TesauroEntidadGnoss SET TesauroID = " + IBD.GuidParamColumnaTabla("TesauroID") + ", OrganizacionID = " + IBD.GuidParamColumnaTabla("OrganizacionID") + ", ProyectoID = " + IBD.GuidParamColumnaTabla("ProyectoID") + ", EntidadGnossID = " + IBD.GuidParamColumnaTabla("EntidadGnossID") + ", CategoriaDocumentacionID = " + IBD.GuidParamColumnaTabla("CategoriaDocumentacionID") + " WHERE (TesauroID = " + IBD.GuidParamColumnaTabla("O_TesauroID") + ") AND (OrganizacionID = " + IBD.GuidParamColumnaTabla("O_OrganizacionID") + ") AND (ProyectoID = " + IBD.GuidParamColumnaTabla("O_ProyectoID") + ") AND (EntidadGnossID = " + IBD.GuidParamColumnaTabla("O_EntidadGnossID") + ") AND (CategoriaDocumentacionID = " + IBD.GuidParamColumnaTabla("O_CategoriaDocumentacionID") + ")");
-
-            #endregion
-
-            #region CategoriaTesauroSugerencia
-
-            this.sqlCategoriaTesauroSugerenciaInsert = IBD.ReplaceParam("INSERT INTO CategoriaTesauroSugerencia (SugerenciaID, TesauroSugerenciaID, TesauroCatPadreID, CategoriaTesauroPadreID, Nombre, IdentidadID, Estado, CategoriaTesauroAceptadaID) VALUES (" + IBD.GuidParamColumnaTabla("SugerenciaID") + ", " + IBD.GuidParamColumnaTabla("TesauroSugerenciaID") + ", " + IBD.GuidParamColumnaTabla("TesauroCatPadreID") + ", " + IBD.GuidParamColumnaTabla("CategoriaTesauroPadreID") + ", @Nombre, " + IBD.GuidParamColumnaTabla("IdentidadID") + ", @Estado, " + IBD.GuidParamColumnaTabla("CategoriaTesauroAceptadaID") + ")");
-
-            this.sqlCategoriaTesauroSugerenciaDelete = IBD.ReplaceParam("DELETE FROM CategoriaTesauroSugerencia WHERE (SugerenciaID = " + IBD.GuidParamColumnaTabla("O_SugerenciaID") + ") AND (TesauroSugerenciaID = " + IBD.GuidParamColumnaTabla("O_TesauroSugerenciaID") + ") AND (TesauroCatPadreID = " + IBD.GuidParamColumnaTabla("O_TesauroCatPadreID") + " OR " + IBD.GuidParamColumnaTabla("O_TesauroCatPadreID") + " IS NULL AND TesauroCatPadreID IS NULL) AND (CategoriaTesauroPadreID = " + IBD.GuidParamColumnaTabla("O_CategoriaTesauroPadreID") + " OR " + IBD.GuidParamColumnaTabla("O_CategoriaTesauroPadreID") + " IS NULL AND CategoriaTesauroPadreID IS NULL) AND (Nombre = @O_Nombre) AND (IdentidadID = " + IBD.GuidParamColumnaTabla("O_IdentidadID") + ") AND (Estado = @O_Estado) AND (CategoriaTesauroAceptadaID = " + IBD.GuidParamColumnaTabla("O_CategoriaTesauroAceptadaID") + " OR " + IBD.GuidParamColumnaTabla("O_CategoriaTesauroAceptadaID") + " IS NULL AND CategoriaTesauroAceptadaID IS NULL)");
-
-            this.sqlCategoriaTesauroSugerenciaModify = IBD.ReplaceParam("UPDATE CategoriaTesauroSugerencia SET SugerenciaID = " + IBD.GuidParamColumnaTabla("SugerenciaID") + ", TesauroSugerenciaID = " + IBD.GuidParamColumnaTabla("TesauroSugerenciaID") + ", TesauroCatPadreID = " + IBD.GuidParamColumnaTabla("TesauroCatPadreID") + ", CategoriaTesauroPadreID = " + IBD.GuidParamColumnaTabla("CategoriaTesauroPadreID") + ", Nombre = @Nombre, IdentidadID = " + IBD.GuidParamColumnaTabla("IdentidadID") + ", Estado = @Estado, CategoriaTesauroAceptadaID = " + IBD.GuidParamColumnaTabla("CategoriaTesauroAceptadaID") + " WHERE (SugerenciaID = " + IBD.GuidParamColumnaTabla("O_SugerenciaID") + ") AND (TesauroSugerenciaID = " + IBD.GuidParamColumnaTabla("O_TesauroSugerenciaID") + ") AND (TesauroCatPadreID = " + IBD.GuidParamColumnaTabla("O_TesauroCatPadreID") + " OR " + IBD.GuidParamColumnaTabla("O_TesauroCatPadreID") + " IS NULL AND TesauroCatPadreID IS NULL) AND (CategoriaTesauroPadreID = " + IBD.GuidParamColumnaTabla("O_CategoriaTesauroPadreID") + " OR " + IBD.GuidParamColumnaTabla("O_CategoriaTesauroPadreID") + " IS NULL AND CategoriaTesauroPadreID IS NULL) AND (Nombre = @O_Nombre) AND (IdentidadID = " + IBD.GuidParamColumnaTabla("O_IdentidadID") + ") AND (Estado = @O_Estado) AND (CategoriaTesauroAceptadaID = " + IBD.GuidParamColumnaTabla("O_CategoriaTesauroAceptadaID") + " OR " + IBD.GuidParamColumnaTabla("O_CategoriaTesauroAceptadaID") + " IS NULL AND CategoriaTesauroAceptadaID IS NULL)");
-
-            #endregion
-
-            #region CatTesauroPermiteTipoRec
-
-            this.sqlCatTesauroPermiteTipoRecInsert = IBD.ReplaceParam("INSERT INTO CatTesauroPermiteTipoRec (TesauroID, CategoriaTesauroID, TipoRecurso, OntologiasID) VALUES (" + IBD.GuidParamColumnaTabla("TesauroID") + ", " + IBD.GuidParamColumnaTabla("CategoriaTesauroID") + ", @TipoRecurso, @OntologiasID)");
-
-            this.sqlCatTesauroPermiteTipoRecDelete = IBD.ReplaceParam("DELETE FROM CatTesauroPermiteTipoRec WHERE (TesauroID = " + IBD.GuidParamColumnaTabla("O_TesauroID") + ") AND (CategoriaTesauroID = " + IBD.GuidParamColumnaTabla("O_CategoriaTesauroID") + ") AND (TipoRecurso = " + IBD.GuidParamColumnaTabla("O_TipoRecurso") + ")");
-
-            this.sqlCatTesauroPermiteTipoRecModify = IBD.ReplaceParam("UPDATE CatTesauroPermiteTipoRec SET TesauroID = " + IBD.GuidParamColumnaTabla("TesauroID") + ", CategoriaTesauroID = " + IBD.GuidParamColumnaTabla("CategoriaTesauroID") + ", TipoRecurso = @TipoRecurso, OntologiasID = @OntologiasID WHERE (TesauroID = " + IBD.GuidParamColumnaTabla("O_TesauroID") + ") AND (CategoriaTesauroID = " + IBD.GuidParamColumnaTabla("O_CategoriaTesauroID") + ") AND (TipoRecurso = @O_TipoRecurso)");
-
-            #endregion
-
-            #endregion
-        }
 
         /// <summary>
         /// Obtiene un tesauro a partir del identificador pasado por parámetro

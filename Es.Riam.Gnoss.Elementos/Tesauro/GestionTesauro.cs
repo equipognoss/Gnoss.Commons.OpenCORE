@@ -711,7 +711,8 @@ namespace Es.Riam.Gnoss.Elementos.Tesauro
         {
             mListaCategoriasTesauro.Clear();
             mListaCategoriasTesauroPrimerNivel.Clear();
-            mHijos = new List<IElementoGnoss>();
+			ListaCategoriasInferioresPorCategoriaID.Clear();
+			mHijos = new List<IElementoGnoss>();
 
             var categoriasInferiores = this.TesauroDW.ListaCatTesauroAgCatTesauro.ToDictionary(item => item.CategoriaInferiorID);
 
@@ -765,7 +766,10 @@ namespace Es.Riam.Gnoss.Elementos.Tesauro
 
             foreach (Guid categoriaID in ListaCategoriasInferioresPorCategoriaID.Keys)
             {
-                this.mListaCategoriasTesauro[categoriaID].CargarSubcategorias();
+                if (mListaCategoriasTesauro.ContainsKey(categoriaID))
+                {
+                    mListaCategoriasTesauro[categoriaID].CargarSubcategorias();
+                }                
             }
         }
 
@@ -805,7 +809,7 @@ namespace Es.Riam.Gnoss.Elementos.Tesauro
         /// </summary>
         /// <param name="pNombre">Nombre de la nueva categoría</param>
         /// <returns>Nueva categoría de tesauro</returns>
-        public CategoriaTesauro AgregarCategoria(string pNombre)
+        public CategoriaTesauro AgregarCategoria(string pNombre, short pOrden)
         {
             CategoriaTesauro nuevaCategoria = null;
 
@@ -815,7 +819,7 @@ namespace Es.Riam.Gnoss.Elementos.Tesauro
             filaNuevaCategoria.CategoriaTesauroID = Guid.NewGuid();
             filaNuevaCategoria.Nombre = pNombre;
             filaNuevaCategoria.Tesauro = FilaTesauroActual;
-            filaNuevaCategoria.Orden = 0;
+            filaNuevaCategoria.Orden = pOrden;
             filaNuevaCategoria.NumeroRecursos = 0;
             filaNuevaCategoria.NumeroPreguntas = 0;
             filaNuevaCategoria.NumeroDebates = 0;
@@ -842,7 +846,7 @@ namespace Es.Riam.Gnoss.Elementos.Tesauro
         public CategoriaTesauro AgregarSubcategoria(CategoriaTesauro pCategoriaSuperior, string pNombre)
         {
             //Creo la nueva categoría
-            CategoriaTesauro nuevaCategoria = AgregarCategoria(pNombre);
+            CategoriaTesauro nuevaCategoria = AgregarCategoria(pNombre, (short)pCategoriaSuperior.Hijos.Count);
 
             // David: Pongo esta linea porque desde el cliente en las pantallas con documentación, es posible tener varios tesauros creados
             //        y surgia el error de que las categorias se asignaban a tesauros diferentes
@@ -850,6 +854,7 @@ namespace Es.Riam.Gnoss.Elementos.Tesauro
 
             //La agrego a su categoría superior
             AgregarSubcategoriaACategoria(nuevaCategoria, pCategoriaSuperior);
+
 
             pCategoriaSuperior.Notificar(new MensajeObservador(AccionesObservador.Aniadir, nuevaCategoria));
 
@@ -863,7 +868,7 @@ namespace Es.Riam.Gnoss.Elementos.Tesauro
         /// <returns>Nueva categoría de tesauro</returns>
         public CategoriaTesauro AgregarCategoriaPrimerNivel(string pNombre)
         {
-            CategoriaTesauro categoriaNueva = AgregarCategoria(pNombre);
+            CategoriaTesauro categoriaNueva = AgregarCategoria(pNombre, 0);
 
             categoriaNueva.FilaCategoria.Orden = (short)this.Hijos.Count;
 
@@ -881,18 +886,18 @@ namespace Es.Riam.Gnoss.Elementos.Tesauro
         /// <param name="pSubCategoria">Subcategoría de tesauro</param>
         /// <param name="pCategoriaSuperior">Categoría de tesauro superior</param>
         /// <returns>El DataRow de agregación creado</returns>
-        public AD.EntityModel.Models.Tesauro.CatTesauroAgCatTesauro AgregarSubcategoriaACategoria(CategoriaTesauro pSubCategoria, CategoriaTesauro pCategoriaSuperior)
+        public CatTesauroAgCatTesauro AgregarSubcategoriaACategoria(CategoriaTesauro pSubCategoria, CategoriaTesauro pCategoriaSuperior)
         {
-            AD.EntityModel.Models.Tesauro.CatTesauroAgCatTesauro filaNuevaAgregacion = this.TesauroDW.ListaCatTesauroAgCatTesauro.FirstOrDefault(cat => cat.TesauroID.Equals(pSubCategoria.FilaCategoria.TesauroID) && cat.CategoriaSuperiorID.Equals(pCategoriaSuperior.FilaCategoria.CategoriaTesauroID) && cat.CategoriaInferiorID.Equals(pSubCategoria.FilaCategoria.CategoriaTesauroID));
+            CatTesauroAgCatTesauro filaNuevaAgregacion = this.TesauroDW.ListaCatTesauroAgCatTesauro.FirstOrDefault(cat => cat.TesauroID.Equals(pSubCategoria.FilaCategoria.TesauroID) && cat.CategoriaSuperiorID.Equals(pCategoriaSuperior.FilaCategoria.CategoriaTesauroID) && cat.CategoriaInferiorID.Equals(pSubCategoria.FilaCategoria.CategoriaTesauroID));
 
             if (filaNuevaAgregacion == null)
             {
                 //Creo la relación entre la categoría superior y la subcategoría
-                filaNuevaAgregacion = new AD.EntityModel.Models.Tesauro.CatTesauroAgCatTesauro();
+                filaNuevaAgregacion = new CatTesauroAgCatTesauro();
 
                 filaNuevaAgregacion.CategoriaSuperiorID = pCategoriaSuperior.FilaCategoria.CategoriaTesauroID;
                 filaNuevaAgregacion.CategoriaInferiorID = pSubCategoria.FilaCategoria.CategoriaTesauroID;
-                filaNuevaAgregacion.Orden = (short)pCategoriaSuperior.Hijos.Count;
+                filaNuevaAgregacion.Orden = (short)pCategoriaSuperior.Hijos.Count;                
                 filaNuevaAgregacion.TesauroID = pSubCategoria.FilaCategoria.TesauroID;
                 filaNuevaAgregacion.CategoriaTesuaro1 = pCategoriaSuperior.FilaCategoria;
                 filaNuevaAgregacion.CategoriaTesauro = pSubCategoria.FilaCategoria;
@@ -950,6 +955,7 @@ namespace Es.Riam.Gnoss.Elementos.Tesauro
 
             if (catTesauroAgCatTesauro != null)
             {
+                pSubCategoria.FilaCategoria.CatTesauroAgCatTesauroInferior.Remove(catTesauroAgCatTesauro);
                 mEntityContext.EliminarElemento(catTesauroAgCatTesauro);
                 TesauroDW.ListaCatTesauroAgCatTesauro.Remove(catTesauroAgCatTesauro);
             }
@@ -1020,12 +1026,6 @@ namespace Es.Riam.Gnoss.Elementos.Tesauro
 
             TesauroDW.ListaCategoriaTesauro.Remove(pCategoria.FilaCategoria);
             mEntityContext.EliminarElemento(pCategoria.FilaCategoria);
-
-            if (pCategoria.FilaAgregacion != null)
-            {
-                TesauroDW.ListaCatTesauroAgCatTesauro.Remove(pCategoria.FilaAgregacion);
-                mEntityContext.EliminarElemento(pCategoria.FilaAgregacion);
-            }
         }
 
         /// <summary>

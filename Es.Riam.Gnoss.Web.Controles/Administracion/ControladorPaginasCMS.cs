@@ -9,9 +9,11 @@ using Es.Riam.Gnoss.CL.ServiciosGenerales;
 using Es.Riam.Gnoss.Elementos.CMS;
 using Es.Riam.Gnoss.Elementos.ServiciosGenerales;
 using Es.Riam.Gnoss.Logica.CMS;
+using Es.Riam.Gnoss.Recursos;
 using Es.Riam.Gnoss.Util.Configuracion;
 using Es.Riam.Gnoss.Util.General;
 using Es.Riam.Gnoss.Web.MVC.Models.Administracion;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -89,6 +91,32 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
                 return paginaCMSModel;
             }
             return null;
+        }
+
+        public List<AdministrarPaginasCMSViewModel.CMSComponentModel> CargarComponentesComunidad(UtilIdiomas pUtilIdiomas, int pLimite, string pBusqueda = "")
+        {
+            CMSCN cmsCN = new CMSCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+
+            if (string.IsNullOrEmpty(pBusqueda))
+            {
+                return cmsCN.ObtenerCMSComponentePorProyecto(ProyectoSeleccionado.Clave, pLimite).Select(item => new AdministrarPaginasCMSViewModel.CMSComponentModel { Key = item.ComponenteID, Name = item.Nombre, Type = pUtilIdiomas.GetText("COMADMINCMS", $"COMPONENTE_{Enum.GetName(typeof(TipoComponenteCMS), item.TipoComponente)}") }).ToList();
+            }
+            else
+            {
+                return cmsCN.ObtenerCMSComponentePorProyecto(ProyectoSeleccionado.Clave, pLimite, pBusqueda).Select(item => new AdministrarPaginasCMSViewModel.CMSComponentModel { Key = item.ComponenteID, Name = item.Nombre, Type = pUtilIdiomas.GetText("COMADMINCMS", $"COMPONENTE_{Enum.GetName(typeof(TipoComponenteCMS), item.TipoComponente)}") }).ToList();
+            }
+        }
+
+
+        /// <summary>
+        /// Método que devuelve true o false dependiendo de si el nº de componentes existentes es mayor al límite establecido.
+        /// Si es true, desde Front se realizarán peticiones para buscar componentes vía AJAX.
+        /// Si es false, desde Front se realizarán búsquedas directamente sobre los componentes cargados.        
+        /// </summary>
+        public bool BuscarScomponentesConPeticionAjax(UtilIdiomas pUtilIdiomas, int pLimite)
+        {
+            CMSCN cmsCN = new CMSCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);                            
+            return cmsCN.ObtenerCMSComponentePorProyecto(ProyectoSeleccionado.Clave).Count > pLimite;            
         }
 
 
@@ -206,16 +234,15 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
                 {
                     Guardar(pestanyaID, pListaPaginasCMS[pestanyaID]);
                 }
-                catch(Exception ex)
+                catch (Exception)
                 {
                 }
             }
 
-            //cmsCN.ActualizarCMSEliminandoBloquesDePaginaDeProyecto(GestorCMSPaginaActual.CMSDS, ProyectoSeleccionado.Clave, mTipoUbicacionCMSPaginaActual, pBorrador);
-
             cmsCN.ActualizarCMS(GestorCMSPaginaActual.CMSDW);
             cmsCN.Dispose();
         }
+
         private void Guardar(Guid pestanyaID, AdministrarPaginasCMSViewModel pPaginaCMSModel)
         {
             var filaPestanya = ProyectoSeleccionado.GestorProyectos.DataWrapperProyectos.ListaProyectoPestanyaCMS.FirstOrDefault(pest => pest.PestanyaID == pestanyaID);
@@ -225,6 +252,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
             }
             Guardar(mTipoUbicacionCMSPaginaActual, pPaginaCMSModel);
         }
+
         public void ActualizarCMS()
         {
             using (CMSCN cmsCN = new CMSCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication))
@@ -373,7 +401,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
                 }
             }
 
-            foreach (CMSBloque bloqueID in GestorCMSPaginaActual.ListaBloques.Values.Where(bloque => /*!EntityContext.Entry(bloque.FilaBloque).State.Equals(DataRowState.Deleted) && */bloque.TipoUbicacion == mTipoUbicacionCMSPaginaActual).ToList())
+            foreach (CMSBloque bloqueID in GestorCMSPaginaActual.ListaBloques.Values.Where(bloque => bloque.TipoUbicacion == mTipoUbicacionCMSPaginaActual).ToList())
             {                
                 //Borrar los bloques que ya no esten
                 if (!listaBloques.Contains(bloqueID.Clave))
@@ -435,63 +463,109 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
 
         }
 
-        public void GuardarWeb(short pTipoUbicacionCMSPaginaActual, string estructura, string propiedadComponente, bool MostrarSoloCuerpo, bool borrador)
+        public void GuardarWeb(short pTipoUbicacionCMSPaginaActual, string estructura, string propiedadComponente, bool MostrarSoloCuerpo, bool borrador, AD.EntityModel.Models.ProyectoDS.ProyectoPestanyaMenu pPestanya)
         {
-            mTipoUbicacionCMSPaginaActual = pTipoUbicacionCMSPaginaActual;
-            mGestorCMS = null;
-            
-            List<Bloque> listaBloquesPadres = new List<Bloque>();
+            ProyectoAD proyAD = new ProyectoAD(mLoggingService, mEntityContext, mConfigService, mServicesUtilVirtuosoAndReplication);
+            bool transaccionIniciada = false;
+            try
+            {              
+                mEntityContext.NoConfirmarTransacciones = true;
+                transaccionIniciada = proyAD.IniciarTransaccion(true);
 
-            // Leemos el string y creamos los bloques padres con sus hijos
-            string[] bloquesPadre = estructura.Split(new char[] { '|' }, StringSplitOptions.RemoveEmptyEntries);
+                mTipoUbicacionCMSPaginaActual = pTipoUbicacionCMSPaginaActual;
+                mGestorCMS = null;
 
-            foreach (string bloquePadre in bloquesPadre)
-            {
-                listaBloquesPadres.Add(new Bloque(bloquePadre));
-            }
+                List<Bloque> listaBloquesPadres = new List<Bloque>();
 
-            short i = 0;
+                // Leemos el string y creamos los bloques padres con sus hijos
+                string[] bloquesPadre = estructura.Split(new char[] { '|' }, StringSplitOptions.RemoveEmptyEntries);
 
-            GestionCMS gestorCMS = new GestionCMS(new DataWrapperCMS(), mLoggingService, mEntityContext);
-
-            List<Tuple<Guid, Guid, short, string>> listaBloqueComponentePropiedadValor = new List<Tuple<Guid, Guid, short, string>>();
-            if (!string.IsNullOrEmpty(propiedadComponente))
-            {
-                string[] propiedades = propiedadComponente.Split(new string[] { "|" }, StringSplitOptions.RemoveEmptyEntries);
-
-                foreach (string propiedad in propiedades)
+                foreach (string bloquePadre in bloquesPadre)
                 {
-                    string[] valor = propiedad.Split(new string[] { "_" }, StringSplitOptions.RemoveEmptyEntries);
-                    listaBloqueComponentePropiedadValor.Add(new Tuple<Guid, Guid, short, string>(new Guid(valor[0]), new Guid(valor[1]), short.Parse(valor[2]), valor[3]));
+                    listaBloquesPadres.Add(new Bloque(bloquePadre));
                 }
-            }
 
-            foreach (Bloque bloque in listaBloquesPadres)
-            {
-                AgregarBloqueAGestorCMS(bloque, gestorCMS, i, null, true, false, listaBloqueComponentePropiedadValor);
-                i++;
-            }
+                short i = 0;
 
-            if (!borrador)
-            {
+                GestionCMS gestorCMS = new GestionCMS(new DataWrapperCMS(), mLoggingService, mEntityContext);
+
+                List<Tuple<Guid, Guid, short, string>> listaBloqueComponentePropiedadValor = new List<Tuple<Guid, Guid, short, string>>();
+                if (!string.IsNullOrEmpty(propiedadComponente))
+                {
+                    string[] propiedades = propiedadComponente.Split(new string[] { "|" }, StringSplitOptions.RemoveEmptyEntries);
+
+                    foreach (string propiedad in propiedades)
+                    {
+                        string[] valor = propiedad.Split(new string[] { "_" }, StringSplitOptions.RemoveEmptyEntries);
+                        listaBloqueComponentePropiedadValor.Add(new Tuple<Guid, Guid, short, string>(new Guid(valor[0]), new Guid(valor[1]), short.Parse(valor[2]), valor[3]));
+                    }
+                }
+
+                CMSCN cmsCN = new CMSCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+                cmsCN.ActualizarCMSEliminandoBloquesDePaginaDeProyecto(gestorCMS.CMSDW, ProyectoSeleccionado.Clave, mTipoUbicacionCMSPaginaActual, borrador);
+
                 foreach (Bloque bloque in listaBloquesPadres)
                 {
-                    AgregarBloqueAGestorCMS(bloque, gestorCMS, i, null, false, true, listaBloqueComponentePropiedadValor);
+                    AgregarBloqueAGestorCMS(bloque, gestorCMS, i, null, true, false, listaBloqueComponentePropiedadValor);
                     i++;
                 }
+
+                if (!borrador)
+                {
+                    foreach (Bloque bloque in listaBloquesPadres)
+                    {
+                        AgregarBloqueAGestorCMS(bloque, gestorCMS, i, null, false, true, listaBloqueComponentePropiedadValor);
+                        i++;
+                    }
+                }
+
+                
+
+                CMSPagina pagina = GestorCMSPaginaActual.ListaPaginasProyectos[ProyectoSeleccionado.Clave][mTipoUbicacionCMSPaginaActual];
+                pagina.MostrarSoloCuerpo = MostrarSoloCuerpo;
+                cmsCN.ActualizarCMS(GestorCMSPaginaActual.CMSDW);
+                cmsCN.Dispose();
+
+				if (pPestanya != null)
+				{
+					AD.EntityModel.Models.ProyectoDS.ProyectoPestanyaMenu filaPestanya = mEntityContext.ProyectoPestanyaMenu.FirstOrDefault(pest => pest.PestanyaID.Equals(pPestanya.PestanyaID));
+                    filaPestanya.FechaModificacion = DateTime.Now;
+                    mEntityContext.SaveChanges();
+				}
+
+				if (transaccionIniciada)
+                {
+                    mEntityContext.TerminarTransaccionesPendientes(true);
+                }
             }
+            catch (Exception ex)
+            {
+                if (transaccionIniciada)
+                {
+                    proyAD.TerminarTransaccion(false);
+                }
 
-            CMSCN cmsCN = new CMSCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
-            cmsCN.ActualizarCMSEliminandoBloquesDePaginaDeProyecto(gestorCMS.CMSDW, ProyectoSeleccionado.Clave, mTipoUbicacionCMSPaginaActual, borrador);
-
-            CMSPagina pagina = GestorCMSPaginaActual.ListaPaginasProyectos[ProyectoSeleccionado.Clave][mTipoUbicacionCMSPaginaActual];
-            pagina.MostrarSoloCuerpo = MostrarSoloCuerpo;
-            cmsCN.ActualizarCMS(GestorCMSPaginaActual.CMSDW);
-
-            cmsCN.Dispose();
+                mLoggingService.GuardarLogError($"Error en el guardado de la página CMS. {ex.Message}");
+            }
+            
         }
 
-        private void AgregarBloqueAGestorCMS(Bloque pBloque, GestionCMS pGestorCMS, short pOrden, Guid? pBloquePadreID, bool pBorrador, bool pGenerarNuevosID, List<Tuple<Guid, Guid, short, string>> pListaBloqueComponentePropiedadValor)
+        public string ComprobarErrorConcurrencia(DateTime pFechaCuandoEntraAdministracion, DateTime pFechaCuandoGuarda)
+        {
+            string error = string.Empty;
+
+            DateTime fechaCuandoEntraAdministracion = ControladorBase.DateTimeRemoveMilliseconds(pFechaCuandoEntraAdministracion);
+            DateTime fechaCuandoGuarda = ControladorBase.DateTimeRemoveMilliseconds(pFechaCuandoGuarda);
+
+            if (fechaCuandoEntraAdministracion < fechaCuandoGuarda)
+            {
+                error = $"La página ha sido modificada por otro usuario, debes recargar la página y volver a hacer los cambios.";
+            }
+
+            return error;
+        }
+
+		private void AgregarBloqueAGestorCMS(Bloque pBloque, GestionCMS pGestorCMS, short pOrden, Guid? pBloquePadreID, bool pBorrador, bool pGenerarNuevosID, List<Tuple<Guid, Guid, short, string>> pListaBloqueComponentePropiedadValor)
         {
             Guid id = pBloque.BloqueID;
 

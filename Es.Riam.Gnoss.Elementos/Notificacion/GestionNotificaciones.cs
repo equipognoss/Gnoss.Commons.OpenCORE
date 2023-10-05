@@ -2133,10 +2133,10 @@ namespace Es.Riam.Gnoss.Elementos.Notificacion
         /// <param name="pTipoNotificacion">Tipo de notificación</param>
         /// <param name="pNombreDocumento">Nombre de documento</param>
         /// <param name="urlIntragnoss">URL de la intranet de GNOSS (No le pasamos el idioma porque lo coge el archivo segun el destinatario)</param>
-        public void AgregarNotificacionCorreo(Identidad.Identidad pIdentidadOrigen, Identidad.Identidad pIdentidadDestino, TiposNotificacion pTipoNotificacion, string pNombreDocumento, string pBaseUrl, Elementos.ServiciosGenerales.Proyecto pProyecto, string pLanguageCode, bool pEsEcosistemaSinMetaProyecto = false)
+        public void AgregarNotificacionCorreo(Identidad.Identidad pIdentidadOrigen, Identidad.Identidad pIdentidadDestino, TiposNotificacion pTipoNotificacion, string pNombreDocumento, string pBaseUrl, ServiciosGenerales.Proyecto pProyecto, string pLanguageCode, bool pEsEcosistemaSinMetaProyecto = false)
         {
             Guid? personaID = null, organizacionID = null;
-            string email = "";
+            string email = string.Empty;
 
             if (pIdentidadDestino.Persona != null && !string.IsNullOrEmpty(pIdentidadDestino.Persona.Email))
             {
@@ -2152,33 +2152,33 @@ namespace Es.Riam.Gnoss.Elementos.Notificacion
             if (!string.IsNullOrEmpty(email))
             {
                 DateTime fechaHoy = DateTime.Now;
-                string UrlPerfilPersona = "";
-                string UrlPerfilRemitente = "";
+                string UrlPerfilPersona = string.Empty;
+                string UrlPerfilRemitente = string.Empty;
 
                 if (pIdentidadDestino.TrabajaConOrganizacion)
                 {
-                    UrlPerfilPersona += "identidad/" + pIdentidadDestino.PerfilUsuario.NombreCortoOrg + "/";
+                    UrlPerfilPersona += $"identidad/{pIdentidadDestino.PerfilUsuario.NombreCortoOrg}/";
                 }
                 else if (pIdentidadDestino.EsIdentidadProfesor)
                 {
-                    UrlPerfilPersona += "identidad/" + pIdentidadDestino.PerfilUsuario.NombreCortoUsu + "/";
+                    UrlPerfilPersona += $"identidad/{pIdentidadDestino.PerfilUsuario.NombreCortoUsu}/";
                 }
 
                 if (pIdentidadOrigen != null)
                 {
                     if (pIdentidadOrigen.EsIdentidadProfesor)
                     {
-                        UrlPerfilRemitente += "perfil/" + pIdentidadOrigen.PerfilUsuario + "/";
+                        UrlPerfilRemitente += $"perfil/{pIdentidadOrigen.PerfilUsuario}/";
                     }
 
                     if (pIdentidadOrigen.TrabajaConOrganizacion)
                     {
-                        UrlPerfilRemitente += "organizacion/" + pIdentidadOrigen.PerfilUsuario.NombreCortoOrg + "/";
+                        UrlPerfilRemitente += $"organizacion/{pIdentidadOrigen.PerfilUsuario.NombreCortoOrg}/";
                     }
 
                     if (pIdentidadOrigen.ModoPersonal)
                     {
-                        UrlPerfilRemitente += "perfil/" + pIdentidadOrigen.PerfilUsuario.NombreCortoUsu + "/";
+                        UrlPerfilRemitente += $"perfil/{pIdentidadOrigen.PerfilUsuario.NombreCortoUsu}/";
                     }
                 }
 

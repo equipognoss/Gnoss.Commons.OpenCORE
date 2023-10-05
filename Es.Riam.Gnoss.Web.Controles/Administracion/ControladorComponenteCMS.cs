@@ -129,7 +129,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
                     }
                     foreach (CMSComponenteRolIdentidad identidad in CMSComponente.ListaRolIdentidad.Values)
                     {
-                        listaPerfiles.Add(identidad.Clave);
+                        listaPerfiles.Add(identidad.PerfilID);
                     }
 
                     IdentidadCN identidadCN = new IdentidadCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
@@ -330,9 +330,8 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
                         break;
                     case TipoPropiedadCMS.TipoActividadRecienteCMS:
                         bool homeUsuarioPermitida = false;
-                        ParametroAplicacionCL paramCL = new ParametroAplicacionCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mServicesUtilVirtuosoAndReplication);                        
+                        ParametroAplicacionCL paramCL = new ParametroAplicacionCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mServicesUtilVirtuosoAndReplication);
                         ParametroAplicacion busqueda = mEntityContext.ParametroAplicacion.FirstOrDefault(parametro => parametro.Parametro.Equals("EcosistemaSinHomeUsuario"));
-                        //if (ParametrosAplicacionDS.ParametroAplicacion.FindByParametro("EcosistemaSinHomeUsuario") == null || ParametrosAplicacionDS.ParametroAplicacion.FindByParametro("EcosistemaSinHomeUsuario").Valor == "false")
                         if (busqueda == null || busqueda.Valor == "false")
                         {
                             homeUsuarioPermitida = true;
@@ -444,7 +443,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
                     //Recorremos esta lista para que no nos cambie el orden de los proyectos.
                     foreach (Guid proyectoID in listaProyectos)
                     {
-                        propiedad.Value += listaNombresCortos[proyectoID] + ",";
+                        propiedad.Value += $"{listaNombresCortos[proyectoID]},";
                     }
                 }
             }
@@ -530,7 +529,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
                             bool agregado = false;
                             foreach (TipoPresentacionGrupoComponentesCMS tipoPresentacion in Enum.GetValues(typeof(TipoPresentacionGrupoComponentesCMS)))
                             {
-                                if (filaVistaVirtualCMS.TipoComponente.EndsWith(tipoPresentacion.ToString() + ".cshtml"))
+                                if (filaVistaVirtualCMS.TipoComponente.EndsWith(tipoPresentacion.ToString() + ".cshtml") && !diccionarioNombresGenericosVistaGrupos.ContainsKey(tipoPresentacion))
                                 {
                                     diccionarioNombresGenericosVistaGrupos.Add(tipoPresentacion, nombre);
                                     agregado = true;
@@ -539,7 +538,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
                             }
                             if (!agregado)
                             {
-                                diccionarioNombresPersonalizacionesVistaGrupos.Add(filaVistaVirtualCMS.PersonalizacionComponenteID, nombre);
+                                diccionarioNombresPersonalizacionesVistaGrupos.TryAdd(filaVistaVirtualCMS.PersonalizacionComponenteID, nombre);
                             }
                         }
                     }
@@ -603,12 +602,16 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
                                 {
                                     if (filaVistaVirtualCMS.TipoComponente.EndsWith(tipoPresentacion.ToString() + ".cshtml"))
                                     {
-                                        diccionarioNombresListadoGenericos.Add(tipoPresentacion, nombre);
+                                        if (!diccionarioNombresListadoGenericos.ContainsKey(tipoPresentacion))
+                                        {
+                                            diccionarioNombresListadoGenericos.Add(tipoPresentacion, nombre);
+                                        }
+                                        
                                         agregado = true;
                                         break;
                                     }
                                 }
-                                if (!agregado)
+                                if (!agregado && !diccionarioNombresListadoPersonalizaciones.ContainsKey(filaVistaVirtualCMS.PersonalizacionComponenteID))
                                 {
                                     diccionarioNombresListadoPersonalizaciones.Add(filaVistaVirtualCMS.PersonalizacionComponenteID, nombre);
                                 }
@@ -703,8 +706,6 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
         {
             return UtilComponentes.ListaPropiedadesMultiIdioma.Contains(pTipoPropiedad);
         }
-
-
 
         #endregion
 
@@ -877,6 +878,10 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
                             {
                                 error = "<p>No existe la comunidad</p>";
                             }
+                            break;
+                        case TipoListadoProyectosCMS.ComunidadesUsuario:
+                            componenteListadoProyectos.NumeroItems = numItemsListadoProyectos;                            
+                            componenteListadoProyectos.ListaGuids = new List<Guid>();                           
                             break;
                     }
                     break;
@@ -1085,8 +1090,22 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
             return error;
         }
 
+		public string ComprobarErrorConcurrencia(CMSAdminComponenteEditarViewModel pComponenteEditado, CMSComponente pComponente)
+		{
+			string error = string.Empty;
 
-        private Dictionary<TipoPropiedadCMS, string> obtenerListaPropiedadesComponente(CMSAdminComponenteEditarViewModel Componente, string UrlIntragnossServicios, string BaseURLContent)
+			DateTime fechaCuandoEntraAdministracion = DateTimeRemoveMilliseconds(pComponenteEditado.FechaModificacion);
+			DateTime fechaCuandoGuarda = DateTimeRemoveMilliseconds((DateTime)pComponente.FilaComponente.FechaUltimaActualizacion);
+
+            if (fechaCuandoEntraAdministracion < fechaCuandoGuarda)
+            {
+                error = $"El componente \"{pComponenteEditado.Name}\" ha sido editado por otro usuario. Debes recargar la página y volver a editar.";
+            }
+
+			return error;
+		}
+
+		private Dictionary<TipoPropiedadCMS, string> obtenerListaPropiedadesComponente(CMSAdminComponenteEditarViewModel Componente, string UrlIntragnossServicios, string BaseURLContent)
         {
             Dictionary<TipoPropiedadCMS, string> propiedadesCallback = new Dictionary<TipoPropiedadCMS, string>();
 
@@ -1139,7 +1158,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
                             ServicioImagenes servicioImagenes = new ServicioImagenes(mLoggingService, mConfigService);
                             servicioImagenes.Url = UrlIntragnossServicios.Replace("https://", "http://");
 
-                            String ruta = UtilArchivos.ContentImagenesProyectos + "/personalizacion/" + ProyectoSeleccionado.Clave.ToString().ToLower() + "/cms/";
+                            string ruta = $"{UtilArchivos.ContentImagenesProyectos}/personalizacion/{ProyectoSeleccionado.Clave.ToString().ToLower()}/cms/";
 
                             string primeroDisponible = servicioImagenes.ObtenerNombreDisponible(ruta + nombreFichero);
                             string nombrePrimeroDisponible = primeroDisponible.Substring(0, primeroDisponible.LastIndexOf("."));
@@ -1149,12 +1168,12 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
 
                             string nombreDefinitivo = ruta + nombrePrimeroDisponible + extensionPrimeroDisponible;
 
-                            valorPropiedadDefinitivo += BaseURLContent + "/" + UtilArchivos.ContentImagenes + "/" + nombreDefinitivo + "@" + idioma + "|||";
+                            valorPropiedadDefinitivo += $"{BaseURLContent}/{UtilArchivos.ContentImagenes}/{nombreDefinitivo}@{idioma}|||";
                         }
                     }
                     else if (imagenIdioma.StartsWith("http://") || imagenIdioma.StartsWith("https://"))
                     {
-                        valorPropiedadDefinitivo += imagenIdioma + "@" + idioma + "|||";
+                        valorPropiedadDefinitivo += $"{imagenIdioma}@{idioma}|||";
                     }
                 }
             }
@@ -1193,10 +1212,8 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
             componenteEdicion.Estilos = Componente.Styles;
             componenteEdicion.Activo = Componente.Active;
             componenteEdicion.TipoCaducidadComponenteCMS = tipoCaducidadComponente;
-
-            //TODO comprobar este campo
             componenteEdicion.AccesoPublico = accesoPublico;
-
+            componenteEdicion.FilaComponente.FechaUltimaActualizacion = DateTime.Now;
             componenteEdicion.NombreCortoComponente = Componente.ShortName;
 
             #region Privacidad
@@ -1234,7 +1251,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
 
                 foreach (string idioma in Componente.ListaIdiomasDisponibles)
                 {
-                    idiomasDisponibles += "true@" + idioma + "|||";
+                    idiomasDisponibles += $"true@{idioma}|||";
                 }
                 componenteEdicion.FilaComponente.IdiomasDisponibles = idiomasDisponibles;
             }
@@ -1246,7 +1263,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
             }
 
             componenteEdicion.Personalizacion = null;
-            if (Componente.PersonalizacionSeleccionada != null && Componente.PersonalizacionSeleccionada != Guid.Empty)
+            if (!Componente.PersonalizacionSeleccionada.Equals(Guid.Empty) && Componente.PersonalizacionSeleccionada != Guid.Empty)
             {
                 componenteEdicion.Personalizacion = Componente.PersonalizacionSeleccionada;
             }
@@ -1259,7 +1276,6 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
 
                 foreach (AD.EntityModel.Models.CMS.CMSPagina pagina in paginasComponente.ListaCMSPagina)
                 {
-                    //Select("Ubicacion=" + pagina.Ubicacion + "")
                     List<ProyectoPestanyaCMS> filasProyPestCMS = ProyectoSeleccionado.GestorProyectos.DataWrapperProyectos.ListaProyectoPestanyaCMS.Where(proy => proy.Ubicacion.Equals(pagina.Ubicacion)).ToList();
 
                     if (filasProyPestCMS.Any())
@@ -1269,7 +1285,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
 
                         // Por cada página del CMS que contenga este componente enviar a reprocesar.
                         ControladorCMS controlador = new ControladorCMS(mLoggingService, mEntityContext, mConfigService, mRedisCacheWrapper, mEntityContextBASE, mVirtuosoAD);
-                        controlador.ActualizarModeloBaseSimple(filaPestanya.PestanyaID, ProyectoSeleccionado.Clave, Es.Riam.Gnoss.AD.BASE_BD.PrioridadBase.Alta, false);
+                        controlador.ActualizarModeloBaseSimple(filaPestanya.PestanyaID, ProyectoSeleccionado.Clave, AD.BASE_BD.PrioridadBase.Alta, false);
                     }
                 }
             }
@@ -1393,14 +1409,28 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
         #endregion
 
         #region Metodos de Borrado
-        public void BorrarComponenteCrearFilasIntegracionContinua(Guid ComponenteID, CMSCN cmsCN, GestionCMS gestorCMS)
+        public void BorrarComponenteCrearFilasIntegracionContinua(Guid pComponenteID, CMSCN pCmsCN, GestionCMS pGestorCMS)
         {
-            if (gestorCMS.ListaComponentes.ContainsKey(ComponenteID))
+            if (pGestorCMS.ListaComponentes.ContainsKey(pComponenteID))
             {
-                string nombreCortoComponente = gestorCMS.ListaComponentes[ComponenteID].NombreCortoComponente;
+                string nombreCortoComponente = pGestorCMS.ListaComponentes[pComponenteID].NombreCortoComponente;
 
-                gestorCMS.EliminarComponente(ComponenteID);
-                cmsCN.ActualizarCMS(gestorCMS.CMSDW);
+                List<string> listaPaginasVinculadasComponente = pCmsCN.PaginasVinculadasComponente(pComponenteID, ProyectoSeleccionado.Clave);
+                if(listaPaginasVinculadasComponente != null && listaPaginasVinculadasComponente.Count > 0)
+                {
+                    string nombrePaginas = string.Empty;
+                    foreach (string nombrePagina in listaPaginasVinculadasComponente.Distinct())
+                    {
+                        nombrePaginas += $"{UtilCadenas.ObtenerTextoDeIdioma(nombrePagina, UtilIdiomas.LanguageCode, IdiomaPorDefecto)}, ";
+                    }
+
+                    nombrePaginas = nombrePaginas.Substring(0, nombrePaginas.Length - 2);
+
+                    throw new ErrorComponenteVinculadoPagina(UtilIdiomas.GetText("COMADMINCMS", "ELIMINARCOMPONENTEVINCULADOPAGINA", nombrePaginas));
+                }
+
+                pGestorCMS.EliminarComponente(pComponenteID);
+                pCmsCN.ActualizarCMS(pGestorCMS.CMSDW);
                 try
                 {
                     ProyectoCN proyCN = new ProyectoCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);

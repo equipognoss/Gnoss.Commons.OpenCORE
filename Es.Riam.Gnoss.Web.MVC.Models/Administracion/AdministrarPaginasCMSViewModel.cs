@@ -39,6 +39,11 @@ namespace Es.Riam.Gnoss.Web.MVC.Models.Administracion
 
         public List<TipoComponenteCMS> ListaComponentesPrivados { get; set; }
 
+        public List<CMSComponentModel> ListaComponenteComunidad { get; set; }
+
+        public bool ContieneMultiplesComponentes { get; set; }
+
+        public DateTime FechaModificacion { get; set; }
         /// <summary>
         /// Modelo de bloque de una página
         /// </summary>
@@ -98,6 +103,15 @@ namespace Es.Riam.Gnoss.Web.MVC.Models.Administracion
                     public Dictionary<short, KeyValuePair<string, bool>> Options { get; set; }
                 }
             }
+        }
+
+        [Serializable]
+        public partial class CMSComponentModel
+        {
+            public string Name { get; set; }
+
+            public Guid Key { get; set; }
+            public string Type { get; set; }
         }
     }
 }

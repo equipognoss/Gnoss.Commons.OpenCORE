@@ -216,7 +216,7 @@ namespace Es.Riam.Metagnoss.ExportarImportar
         /// <param name="pFilaPersona">Fila de la persona conectada</param>
         /// <param name="pFilaProy">Fila del proyecto actual</param>
         /// <param name="pEntidades">Entidades principales desde las que se hace la consulta</param>
-        public void ObtenerDatosEntidadesExternas(Dictionary<KeyValuePair<string, string>, object[]> pDatosEntidadesExternas, string pUrlIntragnoss, Gnoss.AD.EntityModel.Models.PersonaDS.Persona pFilaPersona, Gnoss.AD.EntityModel.Models.ProyectoDS.Proyecto pFilaProy, List<ElementoOntologia> pEntidades)
+        public void ObtenerDatosEntidadesExternas(Dictionary<KeyValuePair<string, string>, object[]> pDatosEntidadesExternas, string pUrlIntragnoss, Gnoss.AD.EntityModel.Models.PersonaDS.Persona pFilaPersona, Gnoss.AD.EntityModel.Models.ProyectoDS.Proyecto pFilaProy, List<ElementoOntologia> pEntidades, bool pUsarAfinidad = false)
         {
             //Consulto a virtuoso o el modelo acido los datos:
             foreach (KeyValuePair<string, string> claveProp in pDatosEntidadesExternas.Keys)
@@ -280,14 +280,14 @@ namespace Es.Riam.Metagnoss.ExportarImportar
                             {
                                 numeroFin = listaEntidadesBusqueda.Count;
                             }
-                            facetadoDS.Merge(ObtenerDatosSelectorEntidadesExternas(pUrlIntragnoss, selectorEntidad, listaEntidadesBusqueda.GetRange(0, numeroFin), listaPropiedades, pFilaPersona, pFilaProy, pEntidades));
+                            facetadoDS.Merge(ObtenerDatosSelectorEntidadesExternas(pUrlIntragnoss, selectorEntidad, listaEntidadesBusqueda.GetRange(0, numeroFin), listaPropiedades, pFilaPersona, pFilaProy, pEntidades, pUsarAfinidad));
                             listaEntidadesBusqueda.RemoveRange(0, numeroFin);
                         }
                         pDatosEntidadesExternas[claveProp][3] = facetadoDS;
                     }
                     else
                     {
-                        FacetadoDS facetadoDS = ObtenerDatosSelectorEntidadesExternas(pUrlIntragnoss, selectorEntidad, listaEntidadesBusqueda, listaPropiedades, pFilaPersona, pFilaProy, pEntidades);
+                        FacetadoDS facetadoDS = ObtenerDatosSelectorEntidadesExternas(pUrlIntragnoss, selectorEntidad, listaEntidadesBusqueda, listaPropiedades, pFilaPersona, pFilaProy, pEntidades, pUsarAfinidad);
                         pDatosEntidadesExternas[claveProp][3] = facetadoDS;
                     }
                 }
@@ -359,7 +359,7 @@ namespace Es.Riam.Metagnoss.ExportarImportar
         /// <param name="pFilaProy">Fila del proyecto actual</param>
         /// <param name="pEntidadesPrinc">Entidades principales desde las que se hace la consulta</param>
         /// <returns>DataSet FacetadoDS con lod datos de las entidades externas al documento de virtuoso</returns>
-        public FacetadoDS ObtenerDatosSelectorEntidadesExternas(string pUrlIntragnoss, SelectorEntidad pSelectorEntidad, List<string> pEntidades, List<string> pPropiedades, Gnoss.AD.EntityModel.Models.PersonaDS.Persona pFilaPersona, Gnoss.AD.EntityModel.Models.ProyectoDS.Proyecto pFilaProy, List<ElementoOntologia> pEntidadesPrinc)
+        public FacetadoDS ObtenerDatosSelectorEntidadesExternas(string pUrlIntragnoss, SelectorEntidad pSelectorEntidad, List<string> pEntidades, List<string> pPropiedades, Gnoss.AD.EntityModel.Models.PersonaDS.Persona pFilaPersona, Gnoss.AD.EntityModel.Models.ProyectoDS.Proyecto pFilaProy, List<ElementoOntologia> pEntidadesPrinc, bool pUsarAfinidad = false)
         {
             FacetadoDS facetadoDS = null;
             FacetadoCN facetadoCN = new FacetadoCN(pUrlIntragnoss, true, mEntityContext, mLoggingService, mConfigService, mVirtuosoAD, mServicesUtilVirtuosoAndReplication);
@@ -382,12 +382,12 @@ namespace Es.Riam.Metagnoss.ExportarImportar
                 else if (!pSelectorEntidad.AnidamientoGnoss)
                 {
                     mLoggingService.AgregarEntrada("FormSem Obtener entidades externas Virtu sin anidamientoGnoss");
-                    facetadoDS = facetadoCN.ObtenerValoresPropiedadesEntidades(pSelectorEntidad.Grafo, pEntidades, pPropiedades, (pSelectorEntidad.TipoSeleccion == "Tesauro" || pSelectorEntidad.MultiIdioma));
+                    facetadoDS = facetadoCN.ObtenerValoresPropiedadesEntidades(pSelectorEntidad.Grafo, pEntidades, pPropiedades, (pSelectorEntidad.TipoSeleccion == "Tesauro" || pSelectorEntidad.MultiIdioma), pUsarAfinidad);
                 }
                 else
                 {
                     mLoggingService.AgregarEntrada("FormSem Obtener entidades externas Virtu con anidamientoGnoss");
-                    facetadoDS = facetadoCN.ObtenerValoresPropiedadesEntidadesAnidadas(pSelectorEntidad.Grafo, pEntidades, pPropiedades);
+                    facetadoDS = facetadoCN.ObtenerValoresPropiedadesEntidadesAnidadas(pSelectorEntidad.Grafo, pEntidades, pPropiedades, pUsarAfinidad);
                 }
 
                 mLoggingService.AgregarEntrada("FormSem Terminado obtener entidades externas Virtu");

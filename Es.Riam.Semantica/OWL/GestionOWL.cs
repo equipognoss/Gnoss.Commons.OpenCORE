@@ -1981,7 +1981,7 @@ namespace Es.Riam.Semantica.OWL
                 pOntologia.GestorOWL.NoPermitirNuevosElementos = new List<string>();
             }
 
-            NamespacesRDFLeyendo = InvertirNamespaces(LeerNamespaces(null, pTextoFichero));
+            NamespacesRDFLeyendo = InvertirNamespaces(LeerNamespaces(pOntologia, pTextoFichero));
             XmlTextReader reader = new XmlTextReader(new System.IO.StringReader(pTextoFichero));
 
             List<ElementoOntologia> listaEntidadesSupOPrinc = new List<ElementoOntologia>();

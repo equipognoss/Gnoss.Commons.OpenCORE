@@ -1,6 +1,7 @@
 ﻿using Es.Riam.AbstractsOpen;
 using Es.Riam.Gnoss.AD.EncapsuladoDatos;
 using Es.Riam.Gnoss.AD.EntityModel;
+using Es.Riam.Gnoss.AD.ServiciosGenerales;
 using Es.Riam.Gnoss.Logica.ParametrosProyecto;
 using Es.Riam.Gnoss.Util.Configuracion;
 using Es.Riam.Gnoss.Util.General;
@@ -114,7 +115,8 @@ namespace Es.Riam.Gnoss.CL.ParametrosProyecto
                 {
                     vistaVirtualEcosistemaDW = ObtenerObjetoDeCache(rawKey2) as DataWrapperVistaVirtual;
 
-                    AgregarObjetoCacheLocal(pProyectoID, rawKey2, vistaVirtualEcosistemaDW);
+                    AgregarObjetoCacheLocal(ProyectoAD.MetaProyecto, rawKey2, vistaVirtualEcosistemaDW);
+                    //AgregarObjetoCacheLocal(pProyectoID, rawKey2, vistaVirtualEcosistemaDW);
                 }
                 if (vistaVirtualEcosistemaDW == null)
                 {
@@ -125,7 +127,8 @@ namespace Es.Riam.Gnoss.CL.ParametrosProyecto
                         vistaVirtualEcosistemaDW.CargaRelacionesPerezosasCache();
                     }
                     AgregarObjetoCache(rawKey2, vistaVirtualEcosistemaDW);
-                    AgregarObjetoCacheLocal(pProyectoID, rawKey2, vistaVirtualEcosistemaDW);
+                    AgregarObjetoCacheLocal(ProyectoAD.MetaProyecto, rawKey2, vistaVirtualEcosistemaDW);
+                    //AgregarObjetoCacheLocal(pProyectoID, rawKey2, vistaVirtualEcosistemaDW);
                 }
 
                 if (vistaVirtualEcosistemaDW != null)

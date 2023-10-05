@@ -1,9 +1,10 @@
-﻿using OfficeOpenXml;
+﻿using ClosedXML.Excel;
 using System;
 using System.Collections.Generic;
 using System.Data;
 using System.IO;
 using System.Xml;
+
 
 //hecho
 
@@ -92,7 +93,7 @@ namespace Es.Riam.Gnoss.Traducciones
             }
         }
 
-        public void XmlToExcelMensajes(Dictionary<string, Stream> pListaFicheros, ExcelPackage mExcel)
+        public void XmlToExcelMensajes(Dictionary<string, Stream> pListaFicheros, XLWorkbook mExcel)
         {
             string nombreHoja = "MensajesCore";
             Dictionary<string, Dictionary<string, string>> mDiccionario = new Dictionary<string, Dictionary<string, string>>();

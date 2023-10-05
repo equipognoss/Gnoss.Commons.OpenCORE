@@ -98,7 +98,7 @@ namespace Es.Riam.Gnoss.Servicios
 
             if (!ONTOLOGIA_XML_CACHE.ContainsKey(pOntologiaID))
             {
-                CallFileService servicioArc = new CallFileService(mConfigService);
+                CallFileService servicioArc = new CallFileService(mConfigService, mLoggingService);
                 byteArray = servicioArc.ObtenerXmlOntologiaBytes(pOntologiaID);
                 ONTOLOGIA_XML_CACHE.Add(pOntologiaID, byteArray);
             }
@@ -558,7 +558,7 @@ namespace Es.Riam.Gnoss.Servicios
                             }
                         }
 
-                        triples += GenerarTripletaRecogidadeVirtuoso_ControlCheckPoint(pFicheroConfiguracionBD, pFicheroConfiguracionBDBase, pUrlIntragnoss, sujeto, predicado, PasarObjetoALower(objeto), objeto, Fecha, Numero, TextoInvariable, EntExt, idioma);
+                        triples += GenerarTripletaRecogidadeVirtuoso_ControlCheckPoint(pFicheroConfiguracionBD, pFicheroConfiguracionBDBase, pUrlIntragnoss, PasarObjetoALower(sujeto), predicado, PasarObjetoALower(objeto), objeto, Fecha, Numero, TextoInvariable, EntExt, idioma);
 
                         //insertamos tripleta de la entidad auxiliar
                         triples += GenerarTripletaRecogidadeVirtuoso_ControlCheckPoint(pFicheroConfiguracionBD, pFicheroConfiguracionBDBase, pUrlIntragnoss, sujetoAuxiliar, predicadoAuxiliar, PasarObjetoALower(sujeto), sujeto, Fecha, Numero, TextoInvariable, EntExt, null);
@@ -793,13 +793,7 @@ namespace Es.Riam.Gnoss.Servicios
 
             List<ConfigAutocompletarProy> configAutocompletarProyRows = mEntityContext.ConfigAutocompletarProy.Where(item => item.ProyectoID.Equals(pProyectoID)).ToList();
             List<ConfigSearchProy> configSearchProyRows = mEntityContext.ConfigSearchProy.Where(item => item.ProyectoID.Equals(pProyectoID)).ToList();
-            foreach (ConfigAutocompletarProy filaTagsAuto in configAutocompletarProyRows)
-            {
-                if (!diccionarioSearch.ContainsKey(filaTagsAuto.Clave))
-                {
-                    diccionarioSearch.Add(filaTagsAuto.Clave, filaTagsAuto.Valor);
-                }
-            }
+            
             foreach (ConfigSearchProy filaConfigSearch in configSearchProyRows)
             {
                 if (!diccionarioSearch.ContainsKey(filaConfigSearch.Clave))
@@ -807,7 +801,13 @@ namespace Es.Riam.Gnoss.Servicios
                     diccionarioSearch.Add(filaConfigSearch.Clave, filaConfigSearch.Valor);
                 }
             }
-
+            foreach (ConfigAutocompletarProy filaTagsAuto in configAutocompletarProyRows)
+            {
+                if (!diccionarioSearch.ContainsKey(filaTagsAuto.Clave))
+                {
+                    diccionarioSearch.Add(filaTagsAuto.Clave, filaTagsAuto.Valor);
+                }
+            }
             List<string> listaPropiedades = new List<string>();
             foreach (string clave in diccionarioSearch.Keys)
             {
@@ -829,17 +829,21 @@ namespace Es.Riam.Gnoss.Servicios
                 facetadoCN.InformacionOntologias = informacionOntologias;
                 List<Guid> listaDocs = new List<Guid>();
                 listaDocs.Add(pDocumentoID);
-                FacetadoDS facDSAux = facetadoCN.ObtenerValoresPropiedadesEntidadesPorDocumentoID(pProyectoID.ToString(), listaDocs, listaPropiedades);
-                facetadoCN.Dispose();
-
-                foreach (DataRow fila in facDSAux.Tables["SelectPropEnt"].Rows)
+                for (int i = 0; i < listaPropiedades.Count; i += 40)
                 {
-                    string s = fila["s"].ToString();
-                    string p = fila["p"].ToString();
-                    string o = fila["o"].ToString();
+                    FacetadoDS facDSAux = facetadoCN.ObtenerValoresPropiedadesEntidadesPorDocumentoID(pProyectoID.ToString(), listaDocs, listaPropiedades.GetRange(i, Math.Min(40, listaPropiedades.Count - i)).ToList());
 
-                    valorSearch += " " + o;
+                    foreach (DataRow fila in facDSAux.Tables["SelectPropEnt"].Rows)
+                    {
+                        string s = fila["s"].ToString();
+                        string p = fila["p"].ToString();
+                        string o = fila["o"].ToString();
+
+                        valorSearch += " " + o;
+                    }
                 }
+                facetadoCN.Dispose();
+                
             }
 
             return valorSearch;
@@ -2446,12 +2450,6 @@ namespace Es.Riam.Gnoss.Servicios
             string objetoHasPublicador = "\"" + identidadPublicador.NombreCompuesto() + "\"";
             tripletas.Append(FacetadoAD.GenerarTripleta(sujeto, predHasPublicador, PasarObjetoALower(objetoHasPublicador)));
 
-            if (identidadPublicador.TrabajaPersonaConOrganizacion)
-            {
-                objetoHasPublicador = "\"" + identidadPublicador.NombreOrganizacion + "\"";
-                tripletas.Append(FacetadoAD.GenerarTripleta(sujeto, predHasPublicador, PasarObjetoALower(objetoHasPublicador)));
-            }
-
 
             if ((pTipoAccesoProyecto.Equals(TipoAcceso.Publico) || pTipoAccesoProyecto.Equals(TipoAcceso.Restringido)) && (pDocumento.FilaDocumento.Valoracion.HasValue))
             {
@@ -2825,7 +2823,7 @@ namespace Es.Riam.Gnoss.Servicios
                         objetoHasestado = "\"Abierta\"";
                     }
 
-                    tripletas.Append(FacetadoAD.GenerarTripleta(sujeto, predHasestado, UtilidadesVirtuoso.PasarObjetoALower(objetoHasestado)));
+                    tripletas.Append(FacetadoAD.GenerarTripleta(sujeto, predHasestado, PasarObjetoALower(objetoHasestado)));
                     break;
                 case TiposDocumentacion.Semantico:
                     tripletas.Append(GenerarTripletasTipoRecursoSemantico(pFicheroConfiguracionBD, pFicheroConfiguracionBDBase, pUrlIntragnoss, pDocumento, pProyectoId, pListaTriplesRecurso, pOntologia, out rdfType));
@@ -2835,7 +2833,7 @@ namespace Es.Riam.Gnoss.Servicios
                     rdfType = "\"Recurso\"";
                     if (!string.IsNullOrEmpty(pRdfConfiguradoRecursoNoSemantico))
                     {
-                        rdfType = "\"" + pRdfConfiguradoRecursoNoSemantico + "\"";
+                        rdfType = $"\"{pRdfConfiguradoRecursoNoSemantico}\"";
                     }
                     break;
             }
@@ -2945,9 +2943,9 @@ namespace Es.Riam.Gnoss.Servicios
             }
 
             bool tipoAgregado = false;
-            string sujetoDocumentoId = "<http://gnoss/" + pDocumentoID.ToString().ToUpper() + ">";
+            string sujetoDocumentoId = $"<http://gnoss/{pDocumentoID.ToString().ToUpper()}>";
             string predicadoRdfType = "http://www.w3.org/1999/02/22-rdf-syntax-ns#type";
-            string sujetoAuxiliar = "<http://gnossAuxiliar/" + pDocumentoID.ToString().ToUpper() + ">";
+            string sujetoAuxiliar = $"<http://gnossAuxiliar/{pDocumentoID.ToString().ToUpper()}>";
             string predicadoAuxiliar = "http://gnoss/hasEntidadAuxiliar";
 
             List<FacetaConfigProyRangoFecha> filasRangoFechas = new List<FacetaConfigProyRangoFecha>();
@@ -2972,7 +2970,7 @@ namespace Es.Riam.Gnoss.Servicios
 
             if (pGenerarRdfType)
             {
-                tripletas.Append(FacetadoAD.GenerarTripleta(sujetoDocumentoId, "<" + predicadoRdfType + ">", "\"" + type + "\""));
+                tripletas.Append(FacetadoAD.GenerarTripleta(sujetoDocumentoId, $"<{predicadoRdfType}>", $"\"{type}\""));
             }
 
             if (pListaTriplesRecurso != null && pListaTriplesRecurso.Count > 0 && pListaTriplesRecurso[0] != null && !string.IsNullOrEmpty(pListaTriplesRecurso[0].Subject))
@@ -3009,7 +3007,7 @@ namespace Es.Riam.Gnoss.Servicios
 
                     if (esTripletaEntidadPadre && triple.Predicate.Contains(predicadoRdfType) && !tipoAgregado)
                     {
-                        tripletas.Append(FacetadoAD.GenerarTripleta(sujetoDocumentoId, "<http://gnoss/type>", "\"" + UtilCadenas.EliminarHtmlDeTexto(objeto) + "\""));
+                        tripletas.Append(FacetadoAD.GenerarTripleta(sujetoDocumentoId, "<http://gnoss/type>", $"\"{UtilCadenas.EliminarHtmlDeTexto(objeto)}\""));
                         tipoAgregado = true;
                     }
 
@@ -3033,7 +3031,7 @@ namespace Es.Riam.Gnoss.Servicios
                             }
                             else
                             {
-                                objeto = "\"" + fechaConvertida + "\" . ";
+                                objeto = $"\"{fechaConvertida}\" . ";
                             }
                         }
 
@@ -3318,25 +3316,25 @@ namespace Es.Riam.Gnoss.Servicios
         /// Obtiene los filtros para obtener los contextos
         /// </summary>
         /// <param name="pFiltrosOrigenDestino">Fila gadget</param>
-        public string Obtenerfiltros(string pFiltrosOrigenDestino, Guid pDocumentoID, Guid proyectoID, Guid pProyectoOrigenBusquedaID, string pUrlIntragnoss, Dictionary<string, List<string>> pInformacionOntologias, Guid pProyectoOrigenContextoID, GestionFacetas pGestorFacetas)
+        public string Obtenerfiltros(string pFiltrosOrigenDestino, Guid pDocumentoID, Guid proyectoID, Guid pProyectoOrigenBusquedaID, string pUrlIntragnoss, Dictionary<string, List<string>> pInformacionOntologias, Guid pProyectoOrigenContextoID, GestionFacetas pGestorFacetas, bool pUsarAfinidad = false)
         {
-            return Obtenerfiltros(pFiltrosOrigenDestino, pDocumentoID, proyectoID, pProyectoOrigenBusquedaID, pUrlIntragnoss, pInformacionOntologias, string.Empty, string.Empty, string.Empty, pProyectoOrigenContextoID, pGestorFacetas);
+            return Obtenerfiltros(pFiltrosOrigenDestino, pDocumentoID, proyectoID, pProyectoOrigenBusquedaID, pUrlIntragnoss, pInformacionOntologias, string.Empty, string.Empty, string.Empty, pProyectoOrigenContextoID, pGestorFacetas, pUsarAfinidad);
         }
 
         /// <summary>
         /// Obtiene los filtros para obtener los contextos
         /// </summary>
         /// <param name="pFiltrosOrigenDestino">Fila gadget</param>
-        public string Obtenerfiltros(string pFiltrosOrigenDestino, Guid pDocumentoID, Guid proyectoID, Guid pProyectoOrigenBusquedaID, string pUrlIntragnoss, Dictionary<string, List<string>> pInformacionOntologias, string pIdioma, Guid pProyectoOrigenContextoID, GestionFacetas pGestorFacetas)
+        public string Obtenerfiltros(string pFiltrosOrigenDestino, Guid pDocumentoID, Guid proyectoID, Guid pProyectoOrigenBusquedaID, string pUrlIntragnoss, Dictionary<string, List<string>> pInformacionOntologias, string pIdioma, Guid pProyectoOrigenContextoID, GestionFacetas pGestorFacetas, bool pUsarAfinidad = false)
         {
-            return Obtenerfiltros(pFiltrosOrigenDestino, pDocumentoID, proyectoID, pProyectoOrigenBusquedaID, pUrlIntragnoss, pInformacionOntologias, pIdioma, string.Empty, string.Empty, pProyectoOrigenContextoID, pGestorFacetas);
+            return Obtenerfiltros(pFiltrosOrigenDestino, pDocumentoID, proyectoID, pProyectoOrigenBusquedaID, pUrlIntragnoss, pInformacionOntologias, pIdioma, string.Empty, string.Empty, pProyectoOrigenContextoID, pGestorFacetas, pUsarAfinidad);
         }
 
         /// <summary>
         /// Obtiene los filtros para obtener los contextos
         /// </summary>
         /// <param name="pFiltrosOrigenDestino">Fila gadget</param>
-        public string Obtenerfiltros(string pFiltrosOrigenDestino, Guid pDocumentoID, Guid pProyectoID, Guid pProyectoOrigenBusquedaID, string pUrlIntragnoss, Dictionary<string, List<string>> pInformacionOntologias, string pIdioma, string pFicheroConfigBD, string pGrafo, Guid pProyectoOrigenContextoID, GestionFacetas pGestorFacetas)
+        public string Obtenerfiltros(string pFiltrosOrigenDestino, Guid pDocumentoID, Guid pProyectoID, Guid pProyectoOrigenBusquedaID, string pUrlIntragnoss, Dictionary<string, List<string>> pInformacionOntologias, string pIdioma, string pFicheroConfigBD, string pGrafo, Guid pProyectoOrigenContextoID, GestionFacetas pGestorFacetas, bool pUsarAfinidad = false)
         {
             string filtros = "";
             string[] filas = pFiltrosOrigenDestino.Split(new char[] { '&' }, StringSplitOptions.RemoveEmptyEntries);
@@ -3386,11 +3384,11 @@ namespace Es.Riam.Gnoss.Servicios
             {
                 if (!pFicheroConfigBD.Equals(string.Empty) && !pGrafo.Equals(string.Empty))
                 {
-                    datosRecurso = ObtenerDatosRecurso(propiedadesAObtener, pDocumentoID, pProyectoID, pProyectoOrigenBusquedaID, pUrlIntragnoss, pInformacionOntologias, pIdioma, pFicheroConfigBD, pGrafo);
+                    datosRecurso = ObtenerDatosRecurso(propiedadesAObtener, pDocumentoID, pProyectoID, pProyectoOrigenBusquedaID, pUrlIntragnoss, pInformacionOntologias, pIdioma, pFicheroConfigBD, pGrafo, pUsarAfinidad);
                 }
                 else
                 {
-                    datosRecurso = ObtenerDatosRecurso(propiedadesAObtener, pDocumentoID, pProyectoID, pProyectoOrigenBusquedaID, pUrlIntragnoss, pInformacionOntologias, pIdioma);
+                    datosRecurso = ObtenerDatosRecurso(propiedadesAObtener, pDocumentoID, pProyectoID, pProyectoOrigenBusquedaID, pUrlIntragnoss, pInformacionOntologias, pIdioma, pUsarAfinidad);
                 }
             }
 
@@ -3490,11 +3488,11 @@ namespace Es.Riam.Gnoss.Servicios
                 {
                     if (!pFicheroConfigBD.Equals(string.Empty) && !pGrafo.Equals(string.Empty))
                     {
-                        datosRecurso = ObtenerDatosRecurso(propiedadesAObtener, pDocumentoID, pProyectoID, pProyectoOrigenBusquedaID, pUrlIntragnoss, pInformacionOntologias, pIdioma, pFicheroConfigBD, pGrafo);
+                        datosRecurso = ObtenerDatosRecurso(propiedadesAObtener, pDocumentoID, pProyectoID, pProyectoOrigenBusquedaID, pUrlIntragnoss, pInformacionOntologias, pIdioma, pFicheroConfigBD, pGrafo, pUsarAfinidad);
                     }
                     else
                     {
-                        datosRecurso = ObtenerDatosRecurso(propiedadesAObtener, pDocumentoID, pProyectoID, pProyectoOrigenBusquedaID, pUrlIntragnoss, pInformacionOntologias, pIdioma);
+                        datosRecurso = ObtenerDatosRecurso(propiedadesAObtener, pDocumentoID, pProyectoID, pProyectoOrigenBusquedaID, pUrlIntragnoss, pInformacionOntologias, pIdioma, pUsarAfinidad);
                     }
                 }
 
@@ -3643,12 +3641,12 @@ namespace Es.Riam.Gnoss.Servicios
         }
 
 
-        public string ObtenerfiltrosOrigen(string pFiltrosOrigen, Guid pDocumentoID, Guid proyectoID, Guid pProyectoOrigenBusquedaID, string pUrlIntragnoss, Dictionary<string, List<string>> pInformacionOntologias)
+        public string ObtenerfiltrosOrigen(string pFiltrosOrigen, Guid pDocumentoID, Guid proyectoID, Guid pProyectoOrigenBusquedaID, string pUrlIntragnoss, Dictionary<string, List<string>> pInformacionOntologias, bool pUsarAfinidad = false)
         {
-            return ObtenerfiltrosOrigen(pFiltrosOrigen, pDocumentoID, proyectoID, pProyectoOrigenBusquedaID, pUrlIntragnoss, pInformacionOntologias, string.Empty, string.Empty);
+            return ObtenerfiltrosOrigen(pFiltrosOrigen, pDocumentoID, proyectoID, pProyectoOrigenBusquedaID, pUrlIntragnoss, pInformacionOntologias, string.Empty, string.Empty, pUsarAfinidad);
         }
 
-        public string ObtenerfiltrosOrigen(string pFiltrosOrigen, Guid pDocumentoID, Guid proyectoID, Guid pProyectoOrigenBusquedaID, string pUrlIntragnoss, Dictionary<string, List<string>> pInformacionOntologias, string pFicheroConfigBD, string pGrafo)
+        public string ObtenerfiltrosOrigen(string pFiltrosOrigen, Guid pDocumentoID, Guid proyectoID, Guid pProyectoOrigenBusquedaID, string pUrlIntragnoss, Dictionary<string, List<string>> pInformacionOntologias, string pFicheroConfigBD, string pGrafo, bool pUsarAfinidad = false)
         {
             string filtrosOrigenAux = pFiltrosOrigen;
 
@@ -3703,11 +3701,11 @@ namespace Es.Riam.Gnoss.Servicios
             {
                 if (!pFicheroConfigBD.Equals(string.Empty) && !pGrafo.Equals(string.Empty))
                 {
-                    datosRecurso = ObtenerDatosRecurso(listaPropiedades, pDocumentoID, proyectoID, pProyectoOrigenBusquedaID, pUrlIntragnoss, pInformacionOntologias, "", pFicheroConfigBD, pGrafo);
+                    datosRecurso = ObtenerDatosRecurso(listaPropiedades, pDocumentoID, proyectoID, pProyectoOrigenBusquedaID, pUrlIntragnoss, pInformacionOntologias, "", pFicheroConfigBD, pGrafo, pUsarAfinidad);
                 }
                 else
                 {
-                    datosRecurso = ObtenerDatosRecurso(listaPropiedades, pDocumentoID, proyectoID, pProyectoOrigenBusquedaID, pUrlIntragnoss, pInformacionOntologias);
+                    datosRecurso = ObtenerDatosRecurso(listaPropiedades, pDocumentoID, proyectoID, pProyectoOrigenBusquedaID, pUrlIntragnoss, pInformacionOntologias, pUsarAfinidad);
                 }
             }
 
@@ -3757,25 +3755,25 @@ namespace Es.Riam.Gnoss.Servicios
         /// Obtiene los datos de varias propiedades del recurso
         /// </summary>
         /// <param name="pPropiedades">Propiedades</param>
-        private Dictionary<string, string> ObtenerDatosRecurso(List<string> pPropiedades, Guid pDocumentoID, Guid proyectoID, Guid pProyectoOrigenBusquedaID, string pUrlIntragnoss, Dictionary<string, List<string>> pInformacionOntologias)
+        private Dictionary<string, string> ObtenerDatosRecurso(List<string> pPropiedades, Guid pDocumentoID, Guid proyectoID, Guid pProyectoOrigenBusquedaID, string pUrlIntragnoss, Dictionary<string, List<string>> pInformacionOntologias, bool pUsarAfinidad = false)
         {
-            return ObtenerDatosRecurso(pPropiedades, pDocumentoID, proyectoID, pProyectoOrigenBusquedaID, pUrlIntragnoss, pInformacionOntologias, string.Empty, string.Empty, string.Empty);
+            return ObtenerDatosRecurso(pPropiedades, pDocumentoID, proyectoID, pProyectoOrigenBusquedaID, pUrlIntragnoss, pInformacionOntologias, string.Empty, string.Empty, string.Empty, pUsarAfinidad);
         }
 
         /// <summary>
         /// Obtiene los datos de varias propiedades del recurso
         /// </summary>
         /// <param name="pPropiedades">Propiedades</param>
-        private Dictionary<string, string> ObtenerDatosRecurso(List<string> pPropiedades, Guid pDocumentoID, Guid proyectoID, Guid pProyectoOrigenBusquedaID, string pUrlIntragnoss, Dictionary<string, List<string>> pInformacionOntologias, string pIdioma)
+        private Dictionary<string, string> ObtenerDatosRecurso(List<string> pPropiedades, Guid pDocumentoID, Guid proyectoID, Guid pProyectoOrigenBusquedaID, string pUrlIntragnoss, Dictionary<string, List<string>> pInformacionOntologias, string pIdioma, bool pUsarAfinidad = false)
         {
-            return ObtenerDatosRecurso(pPropiedades, pDocumentoID, proyectoID, pProyectoOrigenBusquedaID, pUrlIntragnoss, pInformacionOntologias, pIdioma, string.Empty, string.Empty);
+            return ObtenerDatosRecurso(pPropiedades, pDocumentoID, proyectoID, pProyectoOrigenBusquedaID, pUrlIntragnoss, pInformacionOntologias, pIdioma, string.Empty, string.Empty, pUsarAfinidad);
         }
 
         /// <summary>
         /// Obtiene los datos de varias propiedades del recurso
         /// </summary>
         /// <param name="pPropiedades">Propiedades</param>
-        private Dictionary<string, string> ObtenerDatosRecurso(List<string> pPropiedades, Guid pDocumentoID, Guid proyectoID, Guid pProyectoOrigenBusquedaID, string pUrlIntragnoss, Dictionary<string, List<string>> pInformacionOntologias, string pIdioma, string pFicheroConfigDB, string pGrafo)
+        private Dictionary<string, string> ObtenerDatosRecurso(List<string> pPropiedades, Guid pDocumentoID, Guid proyectoID, Guid pProyectoOrigenBusquedaID, string pUrlIntragnoss, Dictionary<string, List<string>> pInformacionOntologias, string pIdioma, string pFicheroConfigDB, string pGrafo, bool pUsarAfinidad = false)
         {
             List<string> propiedadesAux = new List<string>();
             foreach (string prop in pPropiedades)
@@ -3810,7 +3808,7 @@ namespace Es.Riam.Gnoss.Servicios
                 facetadoCN = new FacetadoCN(pUrlIntragnoss, true, mEntityContext, mLoggingService, mConfigService, mVirtuosoAD, mServicesUtilVirtuosoAndReplication);
             }
             facetadoCN.InformacionOntologias = pInformacionOntologias;
-            FacetadoDS facetadoDS = facetadoCN.ObtenerValoresPropiedadesEntidadesPorDocumentoID(grafoBusqueda, recursoID, pPropiedades, pIdioma, true);
+            FacetadoDS facetadoDS = facetadoCN.ObtenerValoresPropiedadesEntidadesPorDocumentoID(grafoBusqueda, recursoID, pPropiedades, pIdioma, true, pUsarAfinidad);
             string namespacesVirtuoso = facetadoCN.FacetadoAD.NamespacesVirtuosoLectura;
             facetadoCN.Dispose();
 

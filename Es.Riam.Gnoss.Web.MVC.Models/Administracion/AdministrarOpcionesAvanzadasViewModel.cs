@@ -204,5 +204,9 @@ namespace Es.Riam.Gnoss.Web.MVC.Models.Administracion
         /// </summary>
         public string SuggestEmail { get; set; }
 
+		/// <summary>
+		/// Email al que se envia el correo de prueba
+		/// </summary>
+		public string Destinatario { get; set; }  
     }
 }

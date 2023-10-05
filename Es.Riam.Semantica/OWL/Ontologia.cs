@@ -5,6 +5,7 @@ using System.IO;
 using System.Runtime.Serialization;
 using Es.Riam.Semantica.Plantillas;
 using System.Linq;
+using static System.Net.WebRequestMethods;
 
 namespace Es.Riam.Semantica.OWL
 {
@@ -301,10 +302,26 @@ namespace Es.Riam.Semantica.OWL
             }
         }
 
-        /// <summary>
-        /// Tipo de entidades relacionadas con la entidad principal.
-        /// </summary>
-        public List<string> TiposEntidades
+		public ElementoOntologia ObtenerEntidadPrincipal()
+		{
+			foreach (ElementoOntologia pEntidad in Entidades)
+			{
+				if (Entidades.Count == EntidadesAuxiliares.Count)
+				{
+					return pEntidad;
+				}
+				if (!EntidadesAuxiliares.Exists(entidad => entidad.TipoEntidad.Equals(pEntidad.TipoEntidad)) && !pEntidad.Superclases.Any(s => !s.Contains("Thing")))
+				{
+					return pEntidad;
+				}
+			}
+			return null;
+		}
+
+		/// <summary>
+		/// Tipo de entidades relacionadas con la entidad principal.
+		/// </summary>
+		public List<string> TiposEntidades
         {
             get
             {
@@ -774,6 +791,10 @@ namespace Es.Riam.Semantica.OWL
                                     entidad.AddPropiedad(propiedad);
                                 }
                             }
+                        }
+                        if (!tipoEntidad.Equals(EstiloPlantilla.Concept_TesSem) && tipoEntidad.Equals(propiedad.Rango))
+                        {
+                            throw new Exception($"La propiedad {propiedad.Nombre} tiene como dominio y rango la entidad: {tipoEntidad} y eso no esta permitido");
                         }
                     }
                 }

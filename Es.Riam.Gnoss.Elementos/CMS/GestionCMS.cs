@@ -134,9 +134,9 @@ namespace Es.Riam.Gnoss.Elementos.CMS
 
         #endregion
 
-        #region Métodos
+        #region MÃ©todos
 
-        #region Métodos públicos
+        #region MÃ©todos pÃºblicos
 
         /// <summary>
         /// Carga las paginas
@@ -200,7 +200,7 @@ namespace Es.Riam.Gnoss.Elementos.CMS
             foreach (AD.EntityModel.Models.CMS.CMSComponente filaComponente in CMSDW.ListaCMSComponente)
             {
                     List<AD.EntityModel.Models.CMS.CMSPropiedadComponente> listaPropiedadesComponentes = new List<AD.EntityModel.Models.CMS.CMSPropiedadComponente>();
-                    foreach (AD.EntityModel.Models.CMS.CMSPropiedadComponente fila in this.CMSDW.ListaCMSPropiedadComponente.Where(item => item.ComponenteID.Equals(filaComponente.ComponenteID)).ToList())
+                    foreach (AD.EntityModel.Models.CMS.CMSPropiedadComponente fila in CMSDW.ListaCMSPropiedadComponente.Where(item => item.ComponenteID.Equals(filaComponente.ComponenteID)).ToList())
                     {
                         listaPropiedadesComponentes.Add(fila);
                     }
@@ -233,7 +233,7 @@ namespace Es.Riam.Gnoss.Elementos.CMS
                             break;
                         case 7:
                             //(short)TipoComponenteCMS.RecursosDestacados 
-                            //Desapareció y en su lugar creamos un listado dinámico ficticio
+                            //DesapareciÃ³ y en su lugar creamos un listado dinÃ¡mico ficticio
                             //Construimos un componente listado dinamico
                             filaComponente.TipoComponente = (short)TipoComponenteCMS.ListadoDinamico;
 
@@ -289,7 +289,7 @@ namespace Es.Riam.Gnoss.Elementos.CMS
                             }
 
                             //(short)TipoComponenteCMS.RecursosDestacadosEstatico                             
-                            //Desapareció y en su lugar creamos un listado estatico ficticio
+                            //DesapareciÃ³ y en su lugar creamos un listado estatico ficticio
                             //Construimos un componente listado estatico
                             filaComponente.TipoComponente = (short)TipoComponenteCMS.ListadoEstatico;
 
@@ -401,7 +401,7 @@ namespace Es.Riam.Gnoss.Elementos.CMS
         ///<param name="pProyecto"></param>
         ///<param name="pTipoUbicacionShort"></param>
         /// <returns></returns>
-        public CMSPagina AgregarNuevaPagina(Elementos.ServiciosGenerales.Proyecto pProyecto, short pTipoUbicacionShort)
+        public CMSPagina AgregarNuevaPagina(ServiciosGenerales.Proyecto pProyecto, short pTipoUbicacionShort)
         {
             AD.EntityModel.Models.CMS.CMSPagina filapagina = new AD.EntityModel.Models.CMS.CMSPagina();
             filapagina.OrganizacionID = pProyecto.FilaProyecto.OrganizacionID;
@@ -418,7 +418,7 @@ namespace Es.Riam.Gnoss.Elementos.CMS
             {
                 if (!ListaPaginasProyectos[pProyecto.Clave].ContainsKey(pTipoUbicacionShort))
                 {
-                    this.ListaPaginasProyectos[pProyecto.Clave].Add(pTipoUbicacionShort, pagina);
+                    ListaPaginasProyectos[pProyecto.Clave].Add(pTipoUbicacionShort, pagina);
                 }
             }
             else
@@ -455,7 +455,7 @@ namespace Es.Riam.Gnoss.Elementos.CMS
         /// <param name="pTipoCaducidadComponente">Caducidad del componente</param>
         /// <param name="pHTML">HTML del componente</param>
         /// <returns>Devuelve el componente creado</returns>
-        public CMSComponenteHTML AgregarNuevoComponenteHTML(Elementos.ServiciosGenerales.Proyecto pProyecto, string pTitulo, string pNombre, string pEstilos, bool pActivo, short pTipoCaducidadComponente, string pHTML, bool pAccesoPublico)
+        public CMSComponenteHTML AgregarNuevoComponenteHTML(ServiciosGenerales.Proyecto pProyecto, string pTitulo, string pNombre, string pEstilos, bool pActivo, short pTipoCaducidadComponente, string pHTML, bool pAccesoPublico)
         {
             Dictionary<TipoPropiedadCMS, string> propiedadesComponente = new Dictionary<TipoPropiedadCMS, string>();
             propiedadesComponente.Add(TipoPropiedadCMS.Titulo, pTitulo);
@@ -470,11 +470,11 @@ namespace Es.Riam.Gnoss.Elementos.CMS
         /// <param name="pProyecto">Proyecto del Gestor</param>
         /// <param name="pNombre">Nombre del componente</param>
         /// <param name="pTipoCaducidadComponente">Caducidad del componente</param>
-        /// <param name="pTitulo">Título del Componente</param>
+        /// <param name="pTitulo">TÃ­tulo del Componente</param>
         /// <param name="pRutaImagen">Ruta de la imagen destacada</param>
         /// <param name="pHTML">HTML del componente</param>
         /// <param name="pEnlace">Enlace destacado</param>
-        public CMSComponenteDestacado AgregarNuevoComponenteDestacado(Elementos.ServiciosGenerales.Proyecto pProyecto, string pNombre, string pEstilos, bool pActivo, short pTipoCaducidadComponente, string pTitulo, string pSubTitulo, string pRutaImagen, string pHTML, string pEnlace, bool pAccesoPublico)
+        public CMSComponenteDestacado AgregarNuevoComponenteDestacado(ServiciosGenerales.Proyecto pProyecto, string pNombre, string pEstilos, bool pActivo, short pTipoCaducidadComponente, string pTitulo, string pSubTitulo, string pRutaImagen, string pHTML, string pEnlace, bool pAccesoPublico)
         {
             Dictionary<TipoPropiedadCMS, string> propiedadesComponente = new Dictionary<TipoPropiedadCMS, string>();
             propiedadesComponente.Add(TipoPropiedadCMS.Titulo, pTitulo);
@@ -492,11 +492,11 @@ namespace Es.Riam.Gnoss.Elementos.CMS
         /// <param name="pProyecto">Proyecto del Gestor</param>
         /// <param name="pNombre">Nombre del componente</param>
         /// <param name="pTipoCaducidadComponente">Caducidad del componente</param>
-        /// <param name="pTitulo">Título del Componente</param>
+        /// <param name="pTitulo">TÃ­tulo del Componente</param>
         /// <param name="pListaGuids">Listado de ID de recursos</param>
-        /// <param name="pNumeroItems">Número de items que se muestran</param>
+        /// <param name="pNumeroItems">NÃºmero de items que se muestran</param>
         /// <param name="pTipoPresentacion">Tipo de presentacion</param>
-        public CMSComponenteListadoEstatico AgregarNuevoComponenteListadoEstatico(Elementos.ServiciosGenerales.Proyecto pProyecto, string pNombre, string pEstilos, bool pActivo, short pTipoCaducidadComponente, string pTitulo, List<Guid> pListaGuids, string pURLVerMas, short pNumeroItems, string pTipoPresentacion, string pTipoPresentacionListado, bool pAccesoPublico)
+        public CMSComponenteListadoEstatico AgregarNuevoComponenteListadoEstatico(ServiciosGenerales.Proyecto pProyecto, string pNombre, string pEstilos, bool pActivo, short pTipoCaducidadComponente, string pTitulo, List<Guid> pListaGuids, string pURLVerMas, short pNumeroItems, string pTipoPresentacion, string pTipoPresentacionListado, bool pAccesoPublico)
         {
             Dictionary<TipoPropiedadCMS, string> propiedadesComponente = new Dictionary<TipoPropiedadCMS, string>();
             propiedadesComponente.Add(TipoPropiedadCMS.Titulo, pTitulo);
@@ -504,7 +504,7 @@ namespace Es.Riam.Gnoss.Elementos.CMS
             string listaGuids = "";
             foreach (Guid id in pListaGuids)
             {
-                listaGuids += id + ",";
+                listaGuids += $"{id},";
             }
             propiedadesComponente.Add(TipoPropiedadCMS.URLVerMas, pURLVerMas);
             propiedadesComponente.Add(TipoPropiedadCMS.ListaIDs, listaGuids);
@@ -520,13 +520,13 @@ namespace Es.Riam.Gnoss.Elementos.CMS
         /// </summary>
         /// <param name="pProyecto">Proyecto del Gestor</param>
         /// <param name="pNombre">Nombre del componente</param>
-        /// <param name="pTitulo">Título del Componente</param>
-        /// <param name="pUrlBusqueda">Url de la búsqueda</param>
+        /// <param name="pTitulo">TÃ­tulo del Componente</param>
+        /// <param name="pUrlBusqueda">Url de la bÃºsqueda</param>
         /// <param name="pTipoDeBusqueda">Tipo de busqueda</param>
-        /// <param name="pNumeroItems">Númerom de items que se muestran</param>
-        /// <param name="pNumeroItemsMostrar">Número de items para mostrar</param>
-        /// <param name="pTipoPresentacion">Enumeración del tipo de presentación</param>
-        public CMSComponenteListadoDinamico AgregarNuevoComponenteListadoDinamico(Elementos.ServiciosGenerales.Proyecto pProyecto, string pNombre, string pEstilos, bool pActivo, short pTipoCaducidadComponente, string pTitulo, string pUrlBusqueda, string pURLVerMas, short pNumeroItems, string pTipoPresentacion, string pTipoPresentacionListado, bool pAccesoPublico)
+        /// <param name="pNumeroItems">NÃºmerom de items que se muestran</param>
+        /// <param name="pNumeroItemsMostrar">NÃºmero de items para mostrar</param>
+        /// <param name="pTipoPresentacion">EnumeraciÃ³n del tipo de presentaciÃ³n</param>
+        public CMSComponenteListadoDinamico AgregarNuevoComponenteListadoDinamico(ServiciosGenerales.Proyecto pProyecto, string pNombre, string pEstilos, bool pActivo, short pTipoCaducidadComponente, string pTitulo, string pUrlBusqueda, string pURLVerMas, short pNumeroItems, string pTipoPresentacion, string pTipoPresentacionListado, bool pAccesoPublico)
         {
             Dictionary<TipoPropiedadCMS, string> propiedadesComponente = new Dictionary<TipoPropiedadCMS, string>();
             propiedadesComponente.Add(TipoPropiedadCMS.Titulo, pTitulo);
@@ -545,8 +545,8 @@ namespace Es.Riam.Gnoss.Elementos.CMS
         /// <param name="pProyecto">Proyecto del Gestor</param>
         /// <param name="pNombre">Nombre del componente</param>
         /// <param name="pTipoCaducidadComponente">Caducidad del componente</param>
-        /// <param name="pNumeroItems">Número de items que se muestran</param>
-        public CMSComponenteActividadReciente AgregarNuevoComponenteActividadReciente(Elementos.ServiciosGenerales.Proyecto pProyecto, string pNombre, string pEstilos, bool pActivo, short pTipoCaducidadComponente, string pTitulo, short pNumeroItems, TipoActividadReciente pTipoActividadReciente, bool pAccesoPublico)
+        /// <param name="pNumeroItems">NÃºmero de items que se muestran</param>
+        public CMSComponenteActividadReciente AgregarNuevoComponenteActividadReciente(ServiciosGenerales.Proyecto pProyecto, string pNombre, string pEstilos, bool pActivo, short pTipoCaducidadComponente, string pTitulo, short pNumeroItems, TipoActividadReciente pTipoActividadReciente, bool pAccesoPublico)
         {
             Dictionary<TipoPropiedadCMS, string> propiedadesComponente = new Dictionary<TipoPropiedadCMS, string>();           
             propiedadesComponente.Add(TipoPropiedadCMS.NumItems, pNumeroItems.ToString());
@@ -563,14 +563,14 @@ namespace Es.Riam.Gnoss.Elementos.CMS
         /// <param name="pNombre">Nombre del componente</param>
         /// <param name="pTipoCaducidadComponente">Caducidad del componente</param>
         /// <param name="pListaGuids">Listado de ID de recursos</param>
-        public CMSComponenteGrupoComponentes AgregarNuevoComponenteGrupoDeComponentes(Elementos.ServiciosGenerales.Proyecto pProyecto, string pTitulo, string pNombre, string pEstilos, bool pActivo, short pTipoCaducidadComponente, List<Guid> pListaGuids, string pTipoPresentacion, bool pAccesoPublico)
+        public CMSComponenteGrupoComponentes AgregarNuevoComponenteGrupoDeComponentes(ServiciosGenerales.Proyecto pProyecto, string pTitulo, string pNombre, string pEstilos, bool pActivo, short pTipoCaducidadComponente, List<Guid> pListaGuids, string pTipoPresentacion, bool pAccesoPublico)
         {
             Dictionary<TipoPropiedadCMS, string> propiedadesComponente = new Dictionary<TipoPropiedadCMS, string>();
 
             string listaGuids = "";
             foreach (Guid id in pListaGuids)
             {
-                listaGuids += id + ",";
+                listaGuids += $"{id},";
             }
             propiedadesComponente.Add(TipoPropiedadCMS.Titulo, pTitulo);
             propiedadesComponente.Add(TipoPropiedadCMS.ListaIDs, listaGuids);
@@ -586,7 +586,7 @@ namespace Es.Riam.Gnoss.Elementos.CMS
         /// <param name="pNombre">Nombre del componente</param>
         /// <param name="pTipoCaducidadComponente">Caducidad del componente</param>
         /// <param name="pCategoriaID">indica si queremos que se pinte la categoria</param>
-        public CMSComponenteTesauro AgregarNuevoComponenteTesauro(Elementos.ServiciosGenerales.Proyecto pProyecto, string pNombre, string pEstilos, bool pActivo, string pTitulo, short pTipoCaducidadComponente, Guid pCategoriaID, bool pTieneImagen, short? pNumItemsMostrar, bool pAccesoPublico)
+        public CMSComponenteTesauro AgregarNuevoComponenteTesauro(ServiciosGenerales.Proyecto pProyecto, string pNombre, string pEstilos, bool pActivo, string pTitulo, short pTipoCaducidadComponente, Guid pCategoriaID, bool pTieneImagen, short? pNumItemsMostrar, bool pAccesoPublico)
         {
             Dictionary<TipoPropiedadCMS, string> propiedadesComponente = new Dictionary<TipoPropiedadCMS, string>();
             propiedadesComponente.Add(TipoPropiedadCMS.ElementoID, pCategoriaID.ToString());
@@ -605,11 +605,11 @@ namespace Es.Riam.Gnoss.Elementos.CMS
         /// </summary>
         /// <param name="pProyecto">Proyecto del Gestor</param>
         /// <param name="pNombre">Nombre del componente</param>
-        /// <param name="pTitulo">Título del Componente</param>
-        /// <param name="pUrlBusqueda">Url de la búsqueda</param>
+        /// <param name="pTitulo">TÃ­tulo del Componente</param>
+        /// <param name="pUrlBusqueda">Url de la bÃºsqueda</param>
         /// <param name="pTipoDeBusqueda">Tipo de busqueda</param>
-        /// <param name="pNumeroItems">Númerom de items que se muestran</param>
-        public CMSComponenteDatosComunidad AgregarNuevoComponenteDatosComunidad(Elementos.ServiciosGenerales.Proyecto pProyecto, string pNombre, string pEstilos, bool pActivo, short pTipoCaducidadComponente, string pTitulo, bool pContarPersonasNoVisibles, bool pAccesoPublico)
+        /// <param name="pNumeroItems">NÃºmerom de items que se muestran</param>
+        public CMSComponenteDatosComunidad AgregarNuevoComponenteDatosComunidad(ServiciosGenerales.Proyecto pProyecto, string pNombre, string pEstilos, bool pActivo, short pTipoCaducidadComponente, string pTitulo, bool pContarPersonasNoVisibles, bool pAccesoPublico)
         {
             Dictionary<TipoPropiedadCMS, string> propiedadesComponente = new Dictionary<TipoPropiedadCMS, string>();
             propiedadesComponente.Add(TipoPropiedadCMS.Titulo, pTitulo);
@@ -623,8 +623,8 @@ namespace Es.Riam.Gnoss.Elementos.CMS
         /// </summary>
         /// <param name="pProyecto">Proyecto del Gestor</param>
         /// <param name="pNombre">Nombre del componente</param>
-        /// <param name="pNumeroItems">Númerom de items que se muestran</param>
-        public CMSComponenteUsuariosRecomendados AgregarNuevoComponenteUsuariosRecomendados(Elementos.ServiciosGenerales.Proyecto pProyecto, string pTitulo, string pNombre, string pEstilos, bool pActivo, short pTipoCaducidadComponente, short pNumeroItems, bool pAccesoPublico)
+        /// <param name="pNumeroItems">NÃºmerom de items que se muestran</param>
+        public CMSComponenteUsuariosRecomendados AgregarNuevoComponenteUsuariosRecomendados(ServiciosGenerales.Proyecto pProyecto, string pTitulo, string pNombre, string pEstilos, bool pActivo, short pTipoCaducidadComponente, short pNumeroItems, bool pAccesoPublico)
         {
             Dictionary<TipoPropiedadCMS, string> propiedadesComponente = new Dictionary<TipoPropiedadCMS, string>();
             propiedadesComponente.Add(TipoPropiedadCMS.Titulo, pTitulo);
@@ -641,7 +641,7 @@ namespace Es.Riam.Gnoss.Elementos.CMS
         /// <param name="pTipoCaducidadComponente"></param>
         /// <param name="pTitulo"></param>
         /// <param name="pUrlBusqueda"></param>
-        public CMSComponenteCajaBuscador AgregarNuevoComponenteCajaBuscador(Elementos.ServiciosGenerales.Proyecto pProyecto, string pNombre, string pEstilos, bool pActivo, short pTipoCaducidadComponente, string pTitulo, string pUrlBusqueda, string pTextoDefecto, bool pAccesoPublico)
+        public CMSComponenteCajaBuscador AgregarNuevoComponenteCajaBuscador(ServiciosGenerales.Proyecto pProyecto, string pNombre, string pEstilos, bool pActivo, short pTipoCaducidadComponente, string pTitulo, string pUrlBusqueda, string pTextoDefecto, bool pAccesoPublico)
         {
             Dictionary<TipoPropiedadCMS, string> propiedadesComponente = new Dictionary<TipoPropiedadCMS, string>();
             propiedadesComponente.Add(TipoPropiedadCMS.Titulo, pTitulo);
@@ -657,9 +657,9 @@ namespace Es.Riam.Gnoss.Elementos.CMS
         /// <param name="pNombre">Nombre del componente</param>
         /// <param name="pEstilos">Estilos CSS</param>
         /// <param name="pTipoCaducidadComponente">Tipo de caducidad</param>
-        /// <param name="pTitulo">Título del Componente</param>
+        /// <param name="pTitulo">TÃ­tulo del Componente</param>
         /// <param name="pFaceta">Faceta</param>
-        public CMSComponenteFaceta AgregarNuevoComponenteFaceta(Elementos.ServiciosGenerales.Proyecto pProyecto, string pNombre, string pEstilos, bool pActivo, short pTipoCaducidadComponente, string pTitulo, string pFaceta, string pURLBusqueda, TipoPresentacionFacetas pTipoPresentacionFacetas, bool pAccesoPublico)
+        public CMSComponenteFaceta AgregarNuevoComponenteFaceta(ServiciosGenerales.Proyecto pProyecto, string pNombre, string pEstilos, bool pActivo, short pTipoCaducidadComponente, string pTitulo, string pFaceta, string pURLBusqueda, TipoPresentacionFacetas pTipoPresentacionFacetas, bool pAccesoPublico)
         {
             Dictionary<TipoPropiedadCMS, string> propiedadesComponente = new Dictionary<TipoPropiedadCMS, string>();
             propiedadesComponente.Add(TipoPropiedadCMS.Titulo, pTitulo);
@@ -675,8 +675,8 @@ namespace Es.Riam.Gnoss.Elementos.CMS
         /// <param name="pProyecto">Proyecto del Gestor</param>
         /// <param name="pNombre">Nombre del componente</param>
         /// <param name="pTipoCaducidadComponente">Tipo de caducidad</param>
-        /// <param name="pTitulo">Título del Componente</param>
-        public CMSComponenteListadoUsuarios AgregarNuevoComponenteListadoUsuarios(Elementos.ServiciosGenerales.Proyecto pProyecto, string pNombre, string pEstilos, bool pActivo, short pTipoCaducidadComponente, string pTitulo, TipoPresentacionListadoUsuariosCMS pTipoPresentacionListadoUsuarios, TipoListadoUsuariosCMS pTipoListadoUsuarios, short pNumeroUsuarios, bool pAccesoPublico)
+        /// <param name="pTitulo">TÃ­tulo del Componente</param>
+        public CMSComponenteListadoUsuarios AgregarNuevoComponenteListadoUsuarios(ServiciosGenerales.Proyecto pProyecto, string pNombre, string pEstilos, bool pActivo, short pTipoCaducidadComponente, string pTitulo, TipoPresentacionListadoUsuariosCMS pTipoPresentacionListadoUsuarios, TipoListadoUsuariosCMS pTipoListadoUsuarios, short pNumeroUsuarios, bool pAccesoPublico)
         {            
             Dictionary<TipoPropiedadCMS, string> propiedadesComponente = new Dictionary<TipoPropiedadCMS, string>();
             propiedadesComponente.Add(TipoPropiedadCMS.Titulo, pTitulo);
@@ -691,8 +691,8 @@ namespace Es.Riam.Gnoss.Elementos.CMS
         /// </summary>
         /// <param name="pProyecto">Proyecto del Gestor</param>
         /// <param name="pNombre">Nombre del componente</param>
-        /// <param name="pTitulo">Título del Componente</param>
-        public CMSComponenteListadoProyectos AgregarNuevoComponenteListadoProyectos(Elementos.ServiciosGenerales.Proyecto pProyecto, string pNombre, string pEstilos, bool pActivo, short pTipoCaducidadComponente, string pTitulo, short pNumeroProyectos, List<Guid> pListaID, TipoListadoProyectosCMS pTipoListadoProyectos, bool pAccesoPublico)
+        /// <param name="pTitulo">TÃ­tulo del Componente</param>
+        public CMSComponenteListadoProyectos AgregarNuevoComponenteListadoProyectos(ServiciosGenerales.Proyecto pProyecto, string pNombre, string pEstilos, bool pActivo, short pTipoCaducidadComponente, string pTitulo, short pNumeroProyectos, List<Guid> pListaID, TipoListadoProyectosCMS pTipoListadoProyectos, bool pAccesoPublico)
         {
             Dictionary<TipoPropiedadCMS, string> propiedadesComponente = new Dictionary<TipoPropiedadCMS, string>();
             propiedadesComponente.Add(TipoPropiedadCMS.Titulo, pTitulo);
@@ -701,7 +701,7 @@ namespace Es.Riam.Gnoss.Elementos.CMS
                 string listaGuids = "";
                 foreach (Guid id in pListaID)
                 {
-                    listaGuids += id + ",";
+                    listaGuids += $"{id},";
                 }
                 propiedadesComponente.Add(TipoPropiedadCMS.ListaIDs, listaGuids);
             }else
@@ -718,8 +718,8 @@ namespace Es.Riam.Gnoss.Elementos.CMS
         /// </summary>
         /// <param name="pProyecto">Proyecto del Gestor</param>
         /// <param name="pNombre">Nombre del componente</param>
-        /// <param name="pTitulo">Título del Componente</param>
-        public CMSComponenteResumenPerfil AgregarNuevoComponenteResumenPerfil(Elementos.ServiciosGenerales.Proyecto pProyecto, string pNombre, string pEstilos, bool pActivo, short pTipoCaducidadComponente, string pTitulo, bool pAccesoPublico)
+        /// <param name="pTitulo">TÃ­tulo del Componente</param>
+        public CMSComponenteResumenPerfil AgregarNuevoComponenteResumenPerfil(ServiciosGenerales.Proyecto pProyecto, string pNombre, string pEstilos, bool pActivo, short pTipoCaducidadComponente, string pTitulo, bool pAccesoPublico)
         {
             Dictionary<TipoPropiedadCMS, string> propiedadesComponente = new Dictionary<TipoPropiedadCMS, string>();
             propiedadesComponente.Add(TipoPropiedadCMS.Titulo, pTitulo);
@@ -731,9 +731,9 @@ namespace Es.Riam.Gnoss.Elementos.CMS
         /// </summary>
         /// <param name="pProyecto">Proyecto del Gestor</param>
         /// <param name="pNombre">Nombre del componente</param>
-        /// <param name="pTitulo">Título del Componente</param>
+        /// <param name="pTitulo">TÃ­tulo del Componente</param>
         /// <param name="pNumItems">Numero de elementos del Componente</param>
-        public CMSComponenteMasVistos AgregarNuevoComponenteMasVistos(Elementos.ServiciosGenerales.Proyecto pProyecto, string pNombre, string pEstilos, bool pActivo, short pTipoCaducidadComponente, string pTitulo, short pNumItems, string pTipoPresentacion, bool pAccesoPublico)
+        public CMSComponenteMasVistos AgregarNuevoComponenteMasVistos(ServiciosGenerales.Proyecto pProyecto, string pNombre, string pEstilos, bool pActivo, short pTipoCaducidadComponente, string pTitulo, short pNumItems, string pTipoPresentacion, bool pAccesoPublico)
         {
             Dictionary<TipoPropiedadCMS, string> propiedadesComponente = new Dictionary<TipoPropiedadCMS, string>();
             propiedadesComponente.Add(TipoPropiedadCMS.Titulo, pTitulo);
@@ -747,9 +747,9 @@ namespace Es.Riam.Gnoss.Elementos.CMS
         /// </summary>
         /// <param name="pProyecto">Proyecto del Gestor</param>
         /// <param name="pNombre">Nombre del componente</param>
-        /// <param name="pTitulo">Título del Componente</param>
+        /// <param name="pTitulo">TÃ­tulo del Componente</param>
         /// <param name="pNumItems">Numero de elementos del Componente</param>
-        public CMSComponenteMasVistosEnXDias AgregarNuevoComponenteMasVistosEnXDias(Elementos.ServiciosGenerales.Proyecto pProyecto, string pNombre, string pEstilos, bool pActivo, short pTipoCaducidadComponente, string pTitulo, short pNumItems, short pNumDias, string pTipoPresentacion, string pTipoPresentacionListado, bool pAccesoPublico)
+        public CMSComponenteMasVistosEnXDias AgregarNuevoComponenteMasVistosEnXDias(ServiciosGenerales.Proyecto pProyecto, string pNombre, string pEstilos, bool pActivo, short pTipoCaducidadComponente, string pTitulo, short pNumItems, short pNumDias, string pTipoPresentacion, string pTipoPresentacionListado, bool pAccesoPublico)
         {
             Dictionary<TipoPropiedadCMS, string> propiedadesComponente = new Dictionary<TipoPropiedadCMS, string>();
             propiedadesComponente.Add(TipoPropiedadCMS.Titulo, pTitulo);
@@ -765,10 +765,10 @@ namespace Es.Riam.Gnoss.Elementos.CMS
         /// </summary>
         /// <param name="pProyecto">Proyecto del Gestor</param>
         /// <param name="pNombre">Nombre del componente</param>
-        /// <param name="pTitulo">Título del Componente</param>
-        /// <param name="pTextoBoton">Texto de botón</param>
+        /// <param name="pTitulo">TÃ­tulo del Componente</param>
+        /// <param name="pTextoBoton">Texto de botÃ³n</param>
         /// <param name="pDestinatarioCorreo">Destinatario del correo</param>
-        public CMSComponenteEnvioCorreo AgregarNuevoComponenteEnvioCorreo(Elementos.ServiciosGenerales.Proyecto pProyecto, string pNombre, string pEstilos, bool pActivo, short pTipoCaducidadComponente, string pTitulo, Dictionary<short, Dictionary<TipoPropiedadEnvioCorreo, string>> pListaCamposEnvioCorreo, string pTextoBoton, string pDestinatarioCorreo, string pTextoMensajeOK, bool pAccesoPublico)
+        public CMSComponenteEnvioCorreo AgregarNuevoComponenteEnvioCorreo(ServiciosGenerales.Proyecto pProyecto, string pNombre, string pEstilos, bool pActivo, short pTipoCaducidadComponente, string pTitulo, Dictionary<short, Dictionary<TipoPropiedadEnvioCorreo, string>> pListaCamposEnvioCorreo, string pTextoBoton, string pDestinatarioCorreo, string pTextoMensajeOK, bool pAccesoPublico)
         {
             Dictionary<TipoPropiedadCMS, string> propiedadesComponente = new Dictionary<TipoPropiedadCMS, string>();
             propiedadesComponente.Add(TipoPropiedadCMS.Titulo, pTitulo);
@@ -776,7 +776,7 @@ namespace Es.Riam.Gnoss.Elementos.CMS
             string separador = "";
             foreach (short orden in pListaCamposEnvioCorreo.Keys)
             {
-                textoListaCamposEnvioCorreo += separador + pListaCamposEnvioCorreo[orden][TipoPropiedadEnvioCorreo.Nombre] + "&&&" + pListaCamposEnvioCorreo[orden][TipoPropiedadEnvioCorreo.Obligatorio] + "&&&" + pListaCamposEnvioCorreo[orden][TipoPropiedadEnvioCorreo.TipoCampo];
+                textoListaCamposEnvioCorreo += $"{separador}{pListaCamposEnvioCorreo[orden][TipoPropiedadEnvioCorreo.Nombre]}&&&{pListaCamposEnvioCorreo[orden][TipoPropiedadEnvioCorreo.Obligatorio]}&&&{pListaCamposEnvioCorreo[orden][TipoPropiedadEnvioCorreo.TipoCampo]}";
                 separador = "###";
             }
             propiedadesComponente.Add(TipoPropiedadCMS.ListaCamposEnvioCorreo, textoListaCamposEnvioCorreo);
@@ -791,8 +791,8 @@ namespace Es.Riam.Gnoss.Elementos.CMS
         /// </summary>
         /// <param name="pProyecto">Proyecto del Gestor</param>
         /// <param name="pNombre">Nombre del componente</param>
-        /// <param name="pTitulo">Título del Componente</param>
-        public CMSComponentePreguntaTIC AgregarNuevoComponentePreguntaTIC(Elementos.ServiciosGenerales.Proyecto pProyecto, string pNombre, string pEstilos, bool pActivo, short pTipoCaducidadComponente, string pTitulo, Guid pOntologiaID, bool pAccesoPublico)
+        /// <param name="pTitulo">TÃ­tulo del Componente</param>
+        public CMSComponentePreguntaTIC AgregarNuevoComponentePreguntaTIC(ServiciosGenerales.Proyecto pProyecto, string pNombre, string pEstilos, bool pActivo, short pTipoCaducidadComponente, string pTitulo, Guid pOntologiaID, bool pAccesoPublico)
         {
             Dictionary<TipoPropiedadCMS, string> propiedadesComponente = new Dictionary<TipoPropiedadCMS, string>();
             propiedadesComponente.Add(TipoPropiedadCMS.Titulo, pTitulo);
@@ -805,8 +805,8 @@ namespace Es.Riam.Gnoss.Elementos.CMS
         /// </summary>
         /// <param name="pProyecto">Proyecto del Gestor</param>
         /// <param name="pNombre">Nombre del componente</param>
-        /// <param name="pTitulo">Título del Componente</param>
-        public CMSComponenteMenu AgregarNuevoComponenteMenu(Elementos.ServiciosGenerales.Proyecto pProyecto, string pNombre, string pEstilos, bool pActivo, short pTipoCaducidadComponente, string pTitulo, Dictionary<short, KeyValuePair<short, Dictionary<TipoPropiedadMenu, string>>> pListaOpcionesMenu, bool pAccesoPublico)
+        /// <param name="pTitulo">TÃ­tulo del Componente</param>
+        public CMSComponenteMenu AgregarNuevoComponenteMenu(ServiciosGenerales.Proyecto pProyecto, string pNombre, string pEstilos, bool pActivo, short pTipoCaducidadComponente, string pTitulo, Dictionary<short, KeyValuePair<short, Dictionary<TipoPropiedadMenu, string>>> pListaOpcionesMenu, bool pAccesoPublico)
         {
             Dictionary<TipoPropiedadCMS, string> propiedadesComponente = new Dictionary<TipoPropiedadCMS, string>();
             propiedadesComponente.Add(TipoPropiedadCMS.Titulo, pTitulo);
@@ -814,7 +814,7 @@ namespace Es.Riam.Gnoss.Elementos.CMS
             string separador = "";
             foreach (short orden in pListaOpcionesMenu.Keys)
             {
-                textoListaOpcionesMenu += separador + pListaOpcionesMenu[orden].Key + "&&&" + pListaOpcionesMenu[orden].Value[TipoPropiedadMenu.Nombre] + "&&&" + pListaOpcionesMenu[orden].Value[TipoPropiedadMenu.Enlace];
+                textoListaOpcionesMenu += $"{separador}{pListaOpcionesMenu[orden].Key}&&&{pListaOpcionesMenu[orden].Value[TipoPropiedadMenu.Nombre]}&&&{pListaOpcionesMenu[orden].Value[TipoPropiedadMenu.Enlace]}";
                 separador = "###";
             }
             propiedadesComponente.Add(TipoPropiedadCMS.ListaOpcionesMenu, textoListaOpcionesMenu);
@@ -826,13 +826,13 @@ namespace Es.Riam.Gnoss.Elementos.CMS
         /// </summary>
         /// <param name="pProyecto">Proyecto del Gestor</param>
         /// <param name="pNombre">Nombre del componente</param>
-        /// <param name="pTitulo">Título del Componente</param>
-        /// <param name="pUrlBusqueda">Url de la búsqueda</param>
+        /// <param name="pTitulo">TÃ­tulo del Componente</param>
+        /// <param name="pUrlBusqueda">Url de la bÃºsqueda</param>
         /// <param name="pTipoDeBusqueda">Tipo de busqueda</param>
-        /// <param name="pNumeroItems">Númerom de items que se muestran</param>
-        /// <param name="pNumeroItemsMostrar">Número de items para mostrar</param>
-        /// <param name="pTipoPresentacion">Enumeración del tipo de presentación</param>
-        public CMSComponenteBuscador AgregarNuevoComponenteBuscador(Elementos.ServiciosGenerales.Proyecto pProyecto, string pNombre, string pEstilos, bool pActivo, short pTipoCaducidadComponente, string pTitulo, string pUrlBusqueda, string pTituloAtributoDeBusqueda, string pAtributoDeBusqueda, short pNumeroItems, string pTipoPresentacion, bool pAccesoPublico)
+        /// <param name="pNumeroItems">NÃºmerom de items que se muestran</param>
+        /// <param name="pNumeroItemsMostrar">NÃºmero de items para mostrar</param>
+        /// <param name="pTipoPresentacion">EnumeraciÃ³n del tipo de presentaciÃ³n</param>
+        public CMSComponenteBuscador AgregarNuevoComponenteBuscador(ServiciosGenerales.Proyecto pProyecto, string pNombre, string pEstilos, bool pActivo, short pTipoCaducidadComponente, string pTitulo, string pUrlBusqueda, string pTituloAtributoDeBusqueda, string pAtributoDeBusqueda, short pNumeroItems, string pTipoPresentacion, bool pAccesoPublico)
         {
             Dictionary<TipoPropiedadCMS, string> propiedadesComponente = new Dictionary<TipoPropiedadCMS, string>();
             propiedadesComponente.Add(TipoPropiedadCMS.Titulo, pTitulo);
@@ -850,8 +850,8 @@ namespace Es.Riam.Gnoss.Elementos.CMS
         /// </summary>
         /// <param name="pProyecto">Proyecto del Gestor</param>
         /// <param name="pNombre">Nombre del componente</param>
-        /// <param name="pTitulo">Título del Componente</param>
-        public CMSComponenteBuscadorSPARQL AgregarNuevoComponenteListadoDinamicoSPARQL(Elementos.ServiciosGenerales.Proyecto pProyecto, string pNombre, string pEstilos, bool pActivo, short pTipoCaducidadComponente, string pTitulo, string pQuerySPARQL, short pNumeroItems, string pTipoPresentacion, bool pAccesoPublico)
+        /// <param name="pTitulo">TÃ­tulo del Componente</param>
+        public CMSComponenteBuscadorSPARQL AgregarNuevoComponenteListadoDinamicoSPARQL(ServiciosGenerales.Proyecto pProyecto, string pNombre, string pEstilos, bool pActivo, short pTipoCaducidadComponente, string pTitulo, string pQuerySPARQL, short pNumeroItems, string pTipoPresentacion, bool pAccesoPublico)
         {
             Dictionary<TipoPropiedadCMS, string> propiedadesComponente = new Dictionary<TipoPropiedadCMS, string>();
             propiedadesComponente.Add(TipoPropiedadCMS.Titulo, pTitulo);
@@ -866,8 +866,8 @@ namespace Es.Riam.Gnoss.Elementos.CMS
         /// </summary>
         /// <param name="pProyecto">Proyecto del Gestor</param>
         /// <param name="pNombre">Nombre del componente</param>
-        /// <param name="pTitulo">Título del Componente</param>
-        public CMSComponenteUltimosRecursosVisitados AgregarNuevoComponenteUltimosRecursosVisitados(Elementos.ServiciosGenerales.Proyecto pProyecto, string pNombre, string pEstilos, bool pActivo, short pTipoCaducidadComponente, string pTitulo, short pNumeroItems, string pTipoPresentacion, string pTipoPresentacionListado, bool pAccesoPublico)
+        /// <param name="pTitulo">TÃ­tulo del Componente</param>
+        public CMSComponenteUltimosRecursosVisitados AgregarNuevoComponenteUltimosRecursosVisitados(ServiciosGenerales.Proyecto pProyecto, string pNombre, string pEstilos, bool pActivo, short pTipoCaducidadComponente, string pTitulo, short pNumeroItems, string pTipoPresentacion, string pTipoPresentacionListado, bool pAccesoPublico)
         {
             Dictionary<TipoPropiedadCMS, string> propiedadesComponente = new Dictionary<TipoPropiedadCMS, string>();
             propiedadesComponente.Add(TipoPropiedadCMS.Titulo, pTitulo);
@@ -887,7 +887,7 @@ namespace Es.Riam.Gnoss.Elementos.CMS
         /// <param name="pTipoCaducidadComponente"></param>
         /// <param name="pTitulo"></param>
         /// <param name="pDocumentoID"></param>
-        public CMSComponenteFichaDescripcionDocumento AgregarNuevoComponenteFichaDescripcionDocumento(Elementos.ServiciosGenerales.Proyecto pProyecto, string pNombre, string pEstilos, bool pActivo, short pTipoCaducidadComponente, string pTitulo, Guid pDocumentoID, bool pAccesoPublico)
+        public CMSComponenteFichaDescripcionDocumento AgregarNuevoComponenteFichaDescripcionDocumento(ServiciosGenerales.Proyecto pProyecto, string pNombre, string pEstilos, bool pActivo, short pTipoCaducidadComponente, string pTitulo, Guid pDocumentoID, bool pAccesoPublico)
         {
             Dictionary<TipoPropiedadCMS, string> propiedadesComponente = new Dictionary<TipoPropiedadCMS, string>();
             propiedadesComponente.Add(TipoPropiedadCMS.Titulo, pTitulo);
@@ -900,8 +900,8 @@ namespace Es.Riam.Gnoss.Elementos.CMS
         /// </summary>
         /// <param name="pProyecto">Proyecto del Gestor</param>
         /// <param name="pNombre">Nombre del componente</param>
-        /// <param name="pTitulo">Título del Componente</param>
-        public CMSComponenteConsultaSPARQL AgregarNuevoComponenteConsultaSPARQL(Elementos.ServiciosGenerales.Proyecto pProyecto, string pNombre, string pEstilos, bool pActivo, short pTipoCaducidadComponente, string pTitulo, string pQuerySPARQL, bool pAccesoPublico)
+        /// <param name="pTitulo">TÃ­tulo del Componente</param>
+        public CMSComponenteConsultaSPARQL AgregarNuevoComponenteConsultaSPARQL(ServiciosGenerales.Proyecto pProyecto, string pNombre, string pEstilos, bool pActivo, short pTipoCaducidadComponente, string pTitulo, string pQuerySPARQL, bool pAccesoPublico)
         {
             Dictionary<TipoPropiedadCMS, string> propiedadesComponente = new Dictionary<TipoPropiedadCMS, string>();
             propiedadesComponente.Add(TipoPropiedadCMS.Titulo, pTitulo);
@@ -914,8 +914,8 @@ namespace Es.Riam.Gnoss.Elementos.CMS
         /// </summary>
         /// <param name="pProyecto">Proyecto del Gestor</param>
         /// <param name="pNombre">Nombre del componente</param>
-        /// <param name="pTitulo">Título del Componente</param>
-        public CMSComponenteConsultaSQLSERVER AgregarNuevoComponenteConsultaSQLSERVER(Elementos.ServiciosGenerales.Proyecto pProyecto, string pNombre, string pEstilos, bool pActivo, short pTipoCaducidadComponente, string pTitulo, string pQuerySQLESRVER, bool pAccesoPublico)
+        /// <param name="pTitulo">TÃ­tulo del Componente</param>
+        public CMSComponenteConsultaSQLSERVER AgregarNuevoComponenteConsultaSQLSERVER(ServiciosGenerales.Proyecto pProyecto, string pNombre, string pEstilos, bool pActivo, short pTipoCaducidadComponente, string pTitulo, string pQuerySQLESRVER, bool pAccesoPublico)
         {
             Dictionary<TipoPropiedadCMS, string> propiedadesComponente = new Dictionary<TipoPropiedadCMS, string>();
             propiedadesComponente.Add(TipoPropiedadCMS.Titulo, pTitulo);
@@ -933,7 +933,7 @@ namespace Es.Riam.Gnoss.Elementos.CMS
         /// <param name="pTipoCaducidadComponente">Tipo de caducidad del componente</param>
         /// <param name="pPropiedadesComponente">Propiedades del componente</param>
         /// <returns></returns>
-        public CMSComponente AgregarNuevoComponente(Elementos.ServiciosGenerales.Proyecto pProyecto, string pNombre, string pEstilos, bool pActivo, short pTipoComponente, short pTipoCaducidadComponente, Dictionary<TipoPropiedadCMS, string> pPropiedadesComponente, bool pAccesoPublico)
+        public CMSComponente AgregarNuevoComponente(ServiciosGenerales.Proyecto pProyecto, string pNombre, string pEstilos, bool pActivo, short pTipoComponente, short pTipoCaducidadComponente, Dictionary<TipoPropiedadCMS, string> pPropiedadesComponente, bool pAccesoPublico)
         {
             Guid idComponente = Guid.NewGuid();
             return AgregarNuevoComponente(idComponente, pProyecto, pNombre, pEstilos, pActivo, pTipoComponente, pTipoCaducidadComponente, pPropiedadesComponente, pAccesoPublico);
@@ -950,7 +950,7 @@ namespace Es.Riam.Gnoss.Elementos.CMS
         /// <param name="pTipoCaducidadComponente">Tipo de caducidad del componente</param>
         /// <param name="pPropiedadesComponente">Propiedades del componente</param>
         /// <returns></returns>
-        public CMSComponente AgregarNuevoComponente(Guid idComponente, Elementos.ServiciosGenerales.Proyecto pProyecto, string pNombre, string pEstilos, bool pActivo, short pTipoComponente, short pTipoCaducidadComponente, Dictionary<TipoPropiedadCMS, string> pPropiedadesComponente, bool pAccesoPublico)
+        public CMSComponente AgregarNuevoComponente(Guid idComponente, ServiciosGenerales.Proyecto pProyecto, string pNombre, string pEstilos, bool pActivo, short pTipoComponente, short pTipoCaducidadComponente, Dictionary<TipoPropiedadCMS, string> pPropiedadesComponente, bool pAccesoPublico)
         {
             if (string.IsNullOrEmpty(pNombre))
             {
@@ -968,6 +968,7 @@ namespace Es.Riam.Gnoss.Elementos.CMS
             filaComponente.AccesoPublico = pAccesoPublico;
             filaComponente.TipoComponente = pTipoComponente;
             filaComponente.TipoCaducidadComponente = pTipoCaducidadComponente;
+            filaComponente.FechaUltimaActualizacion = DateTime.Now;
 
             CMSDW.ListaCMSComponente.Add(filaComponente);
             mEntityContext.CMSComponente.Add(filaComponente);
@@ -1084,9 +1085,9 @@ namespace Es.Riam.Gnoss.Elementos.CMS
                     throw new Exception("Constructor no definido para el componente " + (TipoComponenteCMS)pTipoComponente);
             }
 
-            if (!this.ListaComponentes.ContainsKey(idComponente))
+            if (!ListaComponentes.ContainsKey(idComponente))
             {
-                this.ListaComponentes.Add(idComponente, componente);
+                ListaComponentes.Add(idComponente, componente);
             }
 
             return componente;
@@ -1097,32 +1098,39 @@ namespace Es.Riam.Gnoss.Elementos.CMS
         /// </summary>
         public void EliminarComponente(Guid pComponenteID)
         {   
-            List<AD.EntityModel.Models.CMS.CMSBloqueComponentePropiedadComponente> listaCMSBloqueComponentePropiedadComponente = this.CMSDW.ListaCMSBloqueComponentePropiedadComponente.Where(item => item.ComponenteID.Equals(pComponenteID)).ToList();
+            List<AD.EntityModel.Models.CMS.CMSBloqueComponentePropiedadComponente> listaCMSBloqueComponentePropiedadComponente = CMSDW.ListaCMSBloqueComponentePropiedadComponente.Where(item => item.ComponenteID.Equals(pComponenteID)).ToList();
             foreach (AD.EntityModel.Models.CMS.CMSBloqueComponentePropiedadComponente filaCMSBloqueComponentePropiedadComponente in listaCMSBloqueComponentePropiedadComponente)
             {
                 CMSDW.ListaCMSBloqueComponentePropiedadComponente.Remove(filaCMSBloqueComponentePropiedadComponente);
                 mEntityContext.EliminarElemento(filaCMSBloqueComponentePropiedadComponente);
             }
 
-            List<AD.EntityModel.Models.CMS.CMSPropiedadComponente> listaCMSPropiedadComponente = this.CMSDW.ListaCMSPropiedadComponente.Where(item => item.ComponenteID.Equals(pComponenteID)).ToList();
+            List<AD.EntityModel.Models.CMS.CMSPropiedadComponente> listaCMSPropiedadComponente = CMSDW.ListaCMSPropiedadComponente.Where(item => item.ComponenteID.Equals(pComponenteID)).ToList();
             foreach (AD.EntityModel.Models.CMS.CMSPropiedadComponente filaPropiedadComponente in listaCMSPropiedadComponente)
             {
                 CMSDW.ListaCMSPropiedadComponente.Remove(filaPropiedadComponente);
                 mEntityContext.EliminarElemento(filaPropiedadComponente);
             }
 
-            List<AD.EntityModel.Models.CMS.CMSBloqueComponente> listaCMSBloqueComponente = this.CMSDW.ListaCMSBloqueComponente.Where(item => item.ComponenteID.Equals(pComponenteID)).ToList();
+            List<AD.EntityModel.Models.CMS.CMSBloqueComponente> listaCMSBloqueComponente = CMSDW.ListaCMSBloqueComponente.Where(item => item.ComponenteID.Equals(pComponenteID)).ToList();
             foreach (AD.EntityModel.Models.CMS.CMSBloqueComponente filaBloqueComponente in listaCMSBloqueComponente)
             {
                 CMSDW.ListaCMSBloqueComponente.Remove(filaBloqueComponente);
                 mEntityContext.EliminarElemento(filaBloqueComponente);
             }
 
-            List<AD.EntityModel.Models.CMS.CMSComponenteRolGrupoIdentidades> listaCMSComponenteRolGrupoIdentidades = this.CMSDW.ListaCMSComponenteRolGrupoIdentidades.Where(item => item.ComponenteID.Equals(pComponenteID)).ToList();
-            foreach (AD.EntityModel.Models.CMS.CMSComponenteRolGrupoIdentidades filaComponenteRolGrupoIdentidades in listaCMSComponenteRolGrupoIdentidades)//"ComponenteID='" + pComponenteID + "'"))
+            List<AD.EntityModel.Models.CMS.CMSComponenteRolGrupoIdentidades> listaCMSComponenteRolGrupoIdentidades = CMSDW.ListaCMSComponenteRolGrupoIdentidades.Where(item => item.ComponenteID.Equals(pComponenteID)).ToList();
+            foreach (AD.EntityModel.Models.CMS.CMSComponenteRolGrupoIdentidades filaComponenteRolGrupoIdentidades in listaCMSComponenteRolGrupoIdentidades)
             {
                 CMSDW.ListaCMSComponenteRolGrupoIdentidades.Remove(filaComponenteRolGrupoIdentidades);
                 mEntityContext.EliminarElemento(filaComponenteRolGrupoIdentidades);
+            }
+
+            List<AD.EntityModel.Models.CMS.CMSComponenteRolIdentidad> listaCMSComponenteRolIdentidad = CMSDW.ListaCMSComponenteRolIdentidad.Where(item => item.ComponenteID.Equals(pComponenteID)).ToList();
+            foreach (AD.EntityModel.Models.CMS.CMSComponenteRolIdentidad filaComponenteRolIdentidad in listaCMSComponenteRolIdentidad)
+            {
+                CMSDW.ListaCMSComponenteRolIdentidad.Remove(filaComponenteRolIdentidad);
+                mEntityContext.EliminarElemento(filaComponenteRolIdentidad);
             }
 
             AD.EntityModel.Models.CMS.CMSComponente cmsComponente = ListaComponentes[pComponenteID].FilaComponente;
@@ -1186,7 +1194,7 @@ namespace Es.Riam.Gnoss.Elementos.CMS
         /// <param name="idBloque">ID del bloque</param>
         /// <param name="pPagina">Pagina a la que pertenece</param>
         /// <param name="pCMSBloquePadreID">ID del padre del bloque NULL si no tiene padre</param>
-        /// <param name="pComponenteID">ID del conmponente que contiene NULL si está vacío</param>
+        /// <param name="pComponenteID">ID del conmponente que contiene NULL si estÃ¡ vacÃ­o</param>
         /// <param name="pOrden">Orden del elemento</param>
         /// <param name="pEstilos">Estilos</param>
         /// <param name="pBorrador">Borrador</param>
@@ -1212,9 +1220,9 @@ namespace Es.Riam.Gnoss.Elementos.CMS
 
             CMSBloque bloque = new CMSBloque(filaBloque, this, mLoggingService);
 
-            if (!this.ListaBloques.ContainsKey(pIdBloque))
+            if (!ListaBloques.ContainsKey(pIdBloque))
             {
-                this.ListaBloques.Add(pIdBloque, bloque);
+                ListaBloques.Add(pIdBloque, bloque);
             }
 
             return bloque;

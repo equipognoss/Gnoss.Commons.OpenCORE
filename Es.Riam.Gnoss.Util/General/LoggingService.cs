@@ -37,7 +37,6 @@ namespace Es.Riam.Gnoss.Util.General
 
         public LoggingService(UtilPeticion utilPeticion, IHttpContextAccessor httpContextAccessor, UtilTelemetry utilTelemetry, Usuario usuario)
         {
-            AgregarEntrada("Tiempos_construir_LogingService");
             _httpContextAccessor = httpContextAccessor;
             _utilPeticion = utilPeticion;
             _utilTelemetry = utilTelemetry;
@@ -45,7 +44,6 @@ namespace Es.Riam.Gnoss.Util.General
         }
         public LoggingService(UtilPeticion utilPeticion, UtilTelemetry utilTelemetry, Usuario usuario)
         {
-            AgregarEntrada("Tiempos_construir_LogingService");
             _utilPeticion = utilPeticion;
             _utilTelemetry = utilTelemetry;
             _usuario = usuario;
@@ -65,7 +63,7 @@ namespace Es.Riam.Gnoss.Util.General
 
         public static string RUTA_DIRECTORIO_ERROR
         {
-            get;set;
+            get; set;
         }
 
         #region Miembros estáticos
@@ -107,7 +105,7 @@ namespace Es.Riam.Gnoss.Util.General
             {
                 if (string.IsNullOrEmpty(pRutaFicheroError))
                 {
-                    pRutaFicheroError = Path.Combine(RUTA_DIRECTORIO_ERROR, "log_" + DateTime.Now.ToString("yyyy-MM-dd") + ".log");
+                    pRutaFicheroError = Path.Combine(RUTA_DIRECTORIO_ERROR, $"log_{DateTime.Now.ToString("yyyy-MM-dd")}.log");
                 }
 
                 FileInfo fichero = new FileInfo(pRutaFicheroError);
@@ -132,7 +130,7 @@ namespace Es.Riam.Gnoss.Util.General
                 }
 
                 //Añado el error al fichero
-                using (StreamWriter sw = new StreamWriter(pRutaFicheroError, true, System.Text.Encoding.Default))
+                using (StreamWriter sw = new StreamWriter(pRutaFicheroError, true, Encoding.Default))
                 {
                     StringBuilder sb = new StringBuilder();
                     sb.Append($"[{DateTime.Now}] \"{pError.TrimEnd()}\"");
@@ -188,8 +186,6 @@ namespace Es.Riam.Gnoss.Util.General
 
             }
         }
-
-
 
         /// <summary>
         /// Guarda el log de error
@@ -259,7 +255,7 @@ namespace Es.Riam.Gnoss.Util.General
 
         public void GuardarLogErrorAJAX(string pError)
         {
-            GuardarLogError(pError, Path.Combine(RUTA_DIRECTORIO_ERROR, "errorAJAX_" + DateTime.Now.ToString("yyyy-MM-dd") + ".log"), true);
+            GuardarLogError(pError, Path.Combine(RUTA_DIRECTORIO_ERROR, $"errorAJAX_{DateTime.Now.ToString("yyyy-MM-dd")}.log"), true);
         }
 
         /// <summary>
@@ -275,8 +271,7 @@ namespace Es.Riam.Gnoss.Util.General
             {
                 try
                 {
-                    GuardarLogError(DevolverCadenaError(pExcepcion, "") + pMensajeExtra, Path.Combine(RUTA_DIRECTORIO_ERROR, "error_redis_" + DateTime.Now.ToString("yyyy-MM-dd") + ".log"), true);
-
+                    GuardarLogError(DevolverCadenaError(pExcepcion, "") + pMensajeExtra, Path.Combine(RUTA_DIRECTORIO_ERROR, $"error_redis_{DateTime.Now.ToString("yyyy-MM-dd")}.log"), true);
                 }
                 catch
                 { }
@@ -304,7 +299,7 @@ namespace Es.Riam.Gnoss.Util.General
         /// </summary>
         public void GuardarLogConsultaCostosa(string pError)
         {
-            GuardarLogError(pError, Path.Combine(RUTA_DIRECTORIO_ERROR, "consulta_costosa_" + DateTime.Now.ToString("yyyy-MM-dd") + ".log"));
+            GuardarLogError(pError, Path.Combine(RUTA_DIRECTORIO_ERROR, $"consulta_costosa_{DateTime.Now.ToString("yyyy-MM-dd")}.log"));
         }
 
         /// <summary>
@@ -316,13 +311,13 @@ namespace Es.Riam.Gnoss.Util.General
             {
                 if (string.IsNullOrEmpty(pRutaFicheroError))
                 {
-                    pRutaFicheroError = Path.Combine(RUTA_DIRECTORIO_ERROR, "error_" + DateTime.Now.ToString("yyyy-MM-dd") + ".log");
+                    pRutaFicheroError = Path.Combine(RUTA_DIRECTORIO_ERROR, $"error_{DateTime.Now.ToString("yyyy-MM-dd")}.log");
                 }
 
                 FileInfo fichero = new FileInfo(pRutaFicheroError);
                 if (fichero.Name.Equals(pRutaFicheroError))
                 {
-                    pRutaFicheroError = Path.Combine(RUTA_DIRECTORIO_ERROR , pRutaFicheroError.TrimStart('/').TrimStart('\\'));
+                    pRutaFicheroError = Path.Combine(RUTA_DIRECTORIO_ERROR, pRutaFicheroError.TrimStart('/').TrimStart('\\'));
                     fichero = new FileInfo(pRutaFicheroError);
                 }
 
@@ -332,16 +327,13 @@ namespace Es.Riam.Gnoss.Util.General
                 }
 
                 //Si el fichero supera el tamaño máximo lo elimino
-                if (File.Exists(pRutaFicheroError))
+                if (File.Exists(pRutaFicheroError) && fichero.Length > TAMAÑO_MAXIMO_LOG)
                 {
-                    if (fichero.Length > TAMAÑO_MAXIMO_LOG)
-                    {
-                        fichero.Delete();
-                    }
+                    fichero.Delete();
                 }
 
                 //Añado el error al fichero
-                using (StreamWriter sw = new StreamWriter(pRutaFicheroError, true, System.Text.Encoding.Default))
+                using (StreamWriter sw = new StreamWriter(pRutaFicheroError, true, Encoding.Default))
                 {
                     StringBuilder sb = new StringBuilder();
                     sb.Append($"[{DateTime.Now}] {pError.TrimEnd()} \"{pTipoError.TrimEnd()}\"");
@@ -416,7 +408,6 @@ namespace Es.Riam.Gnoss.Util.General
                 identidadUsuario = "\"-\" ";
             }
 
-            //return identidadUsuario + DevolverCadenaErrorExcepcion(pExcepcion);
             return identidadUsuario + DevolverCadenaErrorExcepcion(pExcepcion);
         }
 
@@ -439,7 +430,7 @@ namespace Es.Riam.Gnoss.Util.General
 
                 if (!string.IsNullOrEmpty(pMensajeExtra))
                 {
-                    datosError.Message += ". Error: " + pExcepcion.Message;
+                    datosError.Message += $". Error: {pExcepcion.Message}";
                 }
                 else
                 {
@@ -492,7 +483,7 @@ namespace Es.Riam.Gnoss.Util.General
                 {
                     //resultado += $" \"{DevolverCadenaErrorExcepcion(pExcepcion.InnerException)}\"";
                 }
-                if(pExcepcion is AggregateException)
+                if (pExcepcion is AggregateException)
                 {
                     //AggregateException aggregateException = (AggregateException)pExcepcion;
                     //resultado += $" \"";
@@ -517,7 +508,7 @@ namespace Es.Riam.Gnoss.Util.General
         /// </summary>
         public void EnviarLogLogstash(Exception pExcepcion, string pMensajeExtra)
         {
-            if (LoggingService.Log != null)
+            if (Log != null)
             {
                 DatosError data = GenerarDatosError(pExcepcion, pMensajeExtra);
                 DatosRequest request = null;
@@ -526,8 +517,8 @@ namespace Es.Riam.Gnoss.Util.General
 
                 try
                 {
-                    datosProducto.Version = LoggingService.Version;
-                    datosProducto.Producto = LoggingService.Producto;
+                    datosProducto.Version = Version;
+                    datosProducto.Producto = Producto;
                     datosProducto.Plataforma = PLATAFORMA;
 
                     if (_httpContextAccessor != null && _httpContextAccessor.HttpContext != null && _httpContextAccessor.HttpContext.Request != null)
@@ -586,44 +577,44 @@ namespace Es.Riam.Gnoss.Util.General
                     {
                         if (pExcepcion != null)
                         {
-                            LoggingService.Log.Error(pExcepcion, "{@datosProducto},{@data}", datosProducto, data);
+                            Log.Error(pExcepcion, "{@datosProducto},{@data}", datosProducto, data);
                         }
                         else
                         {
-                            LoggingService.Log.Error("{@datosProducto},{@data}", datosProducto, data);
+                            Log.Error("{@datosProducto},{@data}", datosProducto, data);
                         }
                     }
                     else if (user != null && request == null)
                     {
                         if (pExcepcion != null)
                         {
-                            LoggingService.Log.Error(pExcepcion, "{@datosProducto},{@data},{@user}", datosProducto, data, user);
+                            Log.Error(pExcepcion, "{@datosProducto},{@data},{@user}", datosProducto, data, user);
                         }
                         else
                         {
-                            LoggingService.Log.Error("{@datosProducto},{@data},{@user}", datosProducto, data, user);
+                            Log.Error("{@datosProducto},{@data},{@user}", datosProducto, data, user);
                         }
                     }
                     else if (user == null && request != null)
                     {
                         if (pExcepcion != null)
                         {
-                            LoggingService.Log.Error(pExcepcion, "{@datosProducto},{@data},{@request}", datosProducto, data, request);
+                            Log.Error(pExcepcion, "{@datosProducto},{@data},{@request}", datosProducto, data, request);
                         }
                         else
                         {
-                            LoggingService.Log.Error("{@datosProducto},{@data},{@request}", datosProducto, data, request);
+                            Log.Error("{@datosProducto},{@data},{@request}", datosProducto, data, request);
                         }
                     }
                     else if (data != null && user != null && request != null)
                     {
                         if (pExcepcion != null)
                         {
-                            LoggingService.Log.Error(pExcepcion, "{@datosProducto},{@data},{@user},{@request}", datosProducto, data, user, request);
+                            Log.Error(pExcepcion, "{@datosProducto},{@data},{@user},{@request}", datosProducto, data, user, request);
                         }
                         else
                         {
-                            LoggingService.Log.Error("{@datosProducto},{@data},{@user},{@request}", datosProducto, data, user, request);
+                            Log.Error("{@datosProducto},{@data},{@user},{@request}", datosProducto, data, user, request);
                         }
                     }
                 }
@@ -696,14 +687,12 @@ namespace Es.Riam.Gnoss.Util.General
         /// <param name="pMensaje">Mensaje a incluir en la traza</param>
         public void AgregarEntradaDependencia(string pMensaje, bool pObtenerTrazaYMemoria, string pNombreDependencia, Stopwatch pReloj, bool pExito)
         {
-            if (TrazaHabilitada) // if (true)
+            if (TrazaHabilitada)
             {
                 try
                 {
                     if (!string.IsNullOrEmpty(pMensaje) && TrazaActual != null)
-                    //&& HttpContext.Current != null && HttpContext.Current.Trace != null)
                     {
-                        //HttpContext.Current.Trace.Write((int)horaActual.Subtract(HoraUltimaTraza).TotalMilliseconds + "|" + pMensaje);
                         TrazaActual.EscribirEntrada(pMensaje, pObtenerTrazaYMemoria, pNombreDependencia, pReloj, pExito);
                     }
                 }
@@ -717,24 +706,13 @@ namespace Es.Riam.Gnoss.Util.General
         /// <param name="pRutaFicheroTraza">Ruta del archivo de la traza</param>
         public void GuardarTraza(string pRutaFicheroTraza)
         {
-            //if (TrazaHabilitada)
+            try
             {
-                try
-                {
-                    //if (!string.IsNullOrEmpty(IP) && Puerto != 0)
-                    //{
-                    //    // Escribimos el cierre de la traza UDP
-                    //    TrazaActual.EscribirEntrada("**", false);
-                    //}
-                    //else
-                    {
-                        TrazaActual.GuardarTraza(pRutaFicheroTraza);
-                    }
-
-                    _utilPeticion.EliminarObjetoDePeticion("traza");
-                }
-                catch (Exception) { }
+                TrazaActual.GuardarTraza(pRutaFicheroTraza);
+                _utilPeticion.EliminarObjetoDePeticion("traza");
             }
+            catch (Exception) { }
+
         }
 
         private Traza CrearTraza(string pIP, int pPuerto)
@@ -773,10 +751,9 @@ namespace Es.Riam.Gnoss.Util.General
             {
                 using (StreamReader sr = new StreamReader(ruta))
                 {
-                    // Version    : 4.0.1500
                     version = sr.ReadLine();
 
-                    if (!string.IsNullOrEmpty(version) & version.Contains(":"))
+                    if (!string.IsNullOrEmpty(version) && version.Contains(":"))
                     {
                         version = version.Substring(version.IndexOf(':') + 1).Trim();
                     }
@@ -795,7 +772,7 @@ namespace Es.Riam.Gnoss.Util.General
                 {
                     sr.ReadLine(); // primera linea
                     producto = sr.ReadLine(); // segunda linea
-                    if (!string.IsNullOrEmpty(producto) & producto.Contains(":"))
+                    if (!string.IsNullOrEmpty(producto) && producto.Contains(':'))
                     {
                         producto = producto.Substring(producto.IndexOf(':') + 1).Trim();
                     }
@@ -913,7 +890,7 @@ namespace Es.Riam.Gnoss.Util.General
         /// <summary>
         /// Obtiene la traza actual
         /// </summary>
-        public  Traza TrazaActual
+        public Traza TrazaActual
         {
             get
             {
@@ -937,7 +914,6 @@ namespace Es.Riam.Gnoss.Util.General
     /// </summary>
     public class Traza
     {
-
         #region Miembros
 
         // Creación del objeto con los datos de los posibles excepciones
@@ -953,8 +929,8 @@ namespace Es.Riam.Gnoss.Util.General
         /// </summary>
         private DateTime mHoraInicio;
 
-
         private Guid mPeticionID = Guid.NewGuid();
+
         private int mOrdenTraza = 0;
 
         /// <summary>
@@ -982,11 +958,6 @@ namespace Es.Riam.Gnoss.Util.General
         /// </summary>
         protected bool mEstaTrazaHabilitada;
 
-        ///// <summary>
-        ///// Almacena por cada traza, la última hora de traza
-        ///// </summary>
-        //public static Dictionary<TraceContext, DateTime> mHorasTrazas = new Dictionary<TraceContext, DateTime>();
-
         private string IP;
 
         private int Puerto;
@@ -1008,7 +979,7 @@ namespace Es.Riam.Gnoss.Util.General
             _utilTelemetry = utilTelemetry;
             mMensajesTrazaFichero = new List<string>();
             mEstaTrazaHabilitada = LoggingService.TrazaHabilitada;
-            if (mEstaTrazaHabilitada) //  if (true)
+            if (mEstaTrazaHabilitada)
             {
                 mHoraUltimaTraza = DateTime.Now;
                 mHoraInicio = mHoraUltimaTraza;
@@ -1018,23 +989,8 @@ namespace Es.Riam.Gnoss.Util.General
 
                 IP = pIP;
                 Puerto = pPuerto;
-
-                //if (HttpContext.Current != null && HttpContext.Current.Trace != null)
-                //{
-                //    HttpContext.Current.Trace.TraceFinished += new TraceContextEventHandler(Trace_TraceFinished);
-                //}
             }
         }
-
-        #endregion
-
-        #region Metodos de eventos
-
-        //private void Trace_TraceFinished(object sender, TraceContextEventArgs e)
-        //{
-        //    GuardarTraza(mRutaTraza, e);
-        //    mHorasTrazas.Remove((TraceContext)sender);
-        //}
 
         #endregion
 
@@ -1046,7 +1002,7 @@ namespace Es.Riam.Gnoss.Util.General
 
             if (!string.IsNullOrWhiteSpace(pEntrada))
             {
-                string mensajeTraza = String.Concat((int)horaActual.Subtract(mHoraUltimaTraza).TotalMilliseconds, "|", LimpiarDatos(pEntrada), "|");
+                string mensajeTraza = string.Concat((int)horaActual.Subtract(mHoraUltimaTraza).TotalMilliseconds, "|", LimpiarDatos(pEntrada), "|");
 
                 mMensajesTrazaFichero.Add(mensajeTraza);
 
@@ -1210,9 +1166,7 @@ namespace Es.Riam.Gnoss.Util.General
         {
             if (mEstaTrazaHabilitada)
             {
-                mMensajeInicioTraza = DateTime.Now.ToString("HH:mm:ss.fff");
-                mMensajeInicioTraza += "|" + (int)DateTime.Now.Subtract(mHoraInicio).TotalMilliseconds;
-                mMensajeInicioTraza += "|";
+                mMensajeInicioTraza = $"{DateTime.Now.ToString("HH:mm:ss.fff")}|{(int)DateTime.Now.Subtract(mHoraInicio).TotalMilliseconds}|";
             }
         }
 
@@ -1220,55 +1174,51 @@ namespace Es.Riam.Gnoss.Util.General
         /// Guarda la traza en un archivo de texto
         /// </summary>
         /// <param name="pRutaFicheroTraza">Ruta del archivo de la traza</param>
-        //private void GuardarTraza(string pRutaFicheroTraza, TraceContextEventArgs pArgumentos)
         public void GuardarTraza(string pRutaFicheroTraza)
         {
-            //if (mEstaTrazaHabilitada)
+            TimeSpan tiempoPeticion = mHoraUltimaTraza - mHoraInicio;
+            if (tiempoPeticion.TotalSeconds > LoggingService.TiempoMinPeticion)
             {
-                TimeSpan tiempoPeticion = mHoraUltimaTraza - mHoraInicio;
-                //if (tiempoPeticion.TotalSeconds > LoggingService.TiempoMinPeticion)
+                try
                 {
-                    try
+                    FinalizarTraza();
+
+                    foreach (string mensaje in mMensajesTrazaFichero)
                     {
-                        FinalizarTraza();
-
-                        foreach (string mensaje in mMensajesTrazaFichero)
+                        if (mTraza == null)
                         {
-                            if (mTraza == null)
-                            {
-                                mTraza = new StringBuilder();
-                            }
-
-                            mTraza.Append(mMensajeInicioTraza);
-                            mTraza.Append(mensaje);
-                            mTraza.AppendLine(mMensajeFinalTraza);
+                            mTraza = new StringBuilder();
                         }
 
-                        FileInfo fichero = new FileInfo(pRutaFicheroTraza);
+                        mTraza.Append(mMensajeInicioTraza);
+                        mTraza.Append(mensaje);
+                        mTraza.AppendLine(mMensajeFinalTraza);
+                    }
 
-                        //Si el fichero supera el tamaño máximo lo elimino
-                        if (File.Exists(pRutaFicheroTraza))
-                        {
-                            if (fichero.Length > TAMAÑO_MAXIMO_LOG)
-                            {
-                                LoggingService.TrazaHabilitada = false; // true
-                                mEstaTrazaHabilitada = LoggingService.TrazaHabilitada;
-                            }
-                        }
+                    FileInfo fichero = new FileInfo(pRutaFicheroTraza);
 
-                        if (!fichero.Directory.Exists)
+                    //Si el fichero supera el tamaño máximo lo elimino
+                    if (File.Exists(pRutaFicheroTraza))
+                    {
+                        if (fichero.Length > TAMAÑO_MAXIMO_LOG)
                         {
-                            fichero.Directory.Create();
-                        }
-
-                        //Añado el error al fichero
-                        using (StreamWriter sw = new StreamWriter(pRutaFicheroTraza, true, System.Text.Encoding.Default))
-                        {
-                            sw.Write(mTraza);
+                            LoggingService.TrazaHabilitada = false; // true
+                            mEstaTrazaHabilitada = LoggingService.TrazaHabilitada;
                         }
                     }
-                    catch (Exception) { }
+
+                    if (!fichero.Directory.Exists)
+                    {
+                        fichero.Directory.Create();
+                    }
+
+                    //Añado el error al fichero
+                    using (StreamWriter sw = new StreamWriter(pRutaFicheroTraza, true, System.Text.Encoding.Default))
+                    {
+                        sw.Write(mTraza);
+                    }
                 }
+                catch (Exception) { }
             }
         }
         #endregion
@@ -1279,9 +1229,10 @@ namespace Es.Riam.Gnoss.Util.General
     /// </summary>
     public class TrazaWeb : Traza
     {
-
         #region Constructores
+
         private IHttpContextAccessor _httpContextAccessor;
+
         /// <summary>
         /// Crea la traza y añade los datos de la petición web
         /// </summary>
@@ -1297,7 +1248,7 @@ namespace Es.Riam.Gnoss.Util.General
                     try
                     {
                         HttpRequest request = pHttpContextAccessor.HttpContext.Request;
-                        mMensajeFinalTraza += "|" + LimpiarDatos(request.Method) + "|" + LimpiarDatos(request.PathBase) + "|" + LimpiarDatos(UriHelper.GetEncodedUrl(request)) + "|" + LimpiarDatos(request.Headers["UserAgent"]) + "|" + ObtenerParametrosPost();
+                        mMensajeFinalTraza += $"|{LimpiarDatos(request.Method)}|{LimpiarDatos(request.PathBase)}|{LimpiarDatos(UriHelper.GetEncodedUrl(request))}|{LimpiarDatos(request.Headers["UserAgent"])}|{ObtenerParametrosPost()}";
 
                         string ip = request.Headers["X-FORWARDED-FOR"];
                         if (string.IsNullOrEmpty(ip))
@@ -1305,7 +1256,7 @@ namespace Es.Riam.Gnoss.Util.General
                             ip = pHttpContextAccessor.HttpContext.Connection.RemoteIpAddress.ToString();
                         }
 
-                        mMensajeFinalTraza += "|" + LimpiarDatos(ip) + "|";
+                        mMensajeFinalTraza += $"|{LimpiarDatos(ip)}|";
 
                         string cabeceras = "";
                         string separador = "";
@@ -1313,11 +1264,11 @@ namespace Es.Riam.Gnoss.Util.General
                         {
                             string valor = request.Headers[headerKey];
 
-                            cabeceras += separador + headerKey + ": " + request.Headers[headerKey];
+                            cabeceras += $"{separador}{headerKey}: {request.Headers[headerKey]}";
                             separador = "$";
                         }
 
-                        mMensajeFinalTraza += "|" + LimpiarDatos(cabeceras) + "|";
+                        mMensajeFinalTraza += $"|{LimpiarDatos(cabeceras)}|";
                     }
                     catch (Exception) { }
                 }
@@ -1337,7 +1288,7 @@ namespace Es.Riam.Gnoss.Util.General
                 string[] keys = _httpContextAccessor.HttpContext.Request.Form.Keys.ToArray();
                 for (int i = 0; i < keys.Length; i++)
                 {
-                    parametros.Append(separador + keys[i] + "=" + _httpContextAccessor.HttpContext.Request.Form[keys[i]]);
+                    parametros.Append($"{separador}{keys[i]}={_httpContextAccessor.HttpContext.Request.Form[keys[i]]}");
                     separador = "&";
                 }
             }
@@ -1346,6 +1297,5 @@ namespace Es.Riam.Gnoss.Util.General
         }
 
         #endregion
-
     }
 }

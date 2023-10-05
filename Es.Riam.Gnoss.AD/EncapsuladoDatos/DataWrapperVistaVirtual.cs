@@ -11,6 +11,7 @@ namespace Es.Riam.Gnoss.AD.EncapsuladoDatos
         public List<VistaVirtualPersonalizacion> ListaVistaVirtualPersonalizacion { get; set; }
         public List<VistaVirtualProyecto> ListaVistaVirtualProyecto { get; set; }
         public List<VistaVirtualRecursos> ListaVistaVirtualRecursos { get; set; }
+        public List<VistaVirtualDominio> ListaVistaVirtualDominio { get; set; }
         public List<VistaVirtual> ListaVistaVirtual { get; set; }
         public List<VistaVirtualCMS> ListaVistaVirtualCMS { get; set; }
         public List<VistaVirtualGadgetRecursos> ListaVistaVirtualGadgetRecursos { get; set; }
@@ -23,6 +24,7 @@ namespace Es.Riam.Gnoss.AD.EncapsuladoDatos
             ListaVistaVirtual = new List<VistaVirtual>();
             ListaVistaVirtualCMS = new List<VistaVirtualCMS>();
             ListaVistaVirtualGadgetRecursos = new List<VistaVirtualGadgetRecursos>();
+            ListaVistaVirtualDominio = new List<VistaVirtualDominio>();
         }
         
 
@@ -35,6 +37,7 @@ namespace Es.Riam.Gnoss.AD.EncapsuladoDatos
             ListaVistaVirtual = ListaVistaVirtual.Union(dataWrapperVistaVirtual.ListaVistaVirtual).ToList();
             ListaVistaVirtualCMS = ListaVistaVirtualCMS.Union(dataWrapperVistaVirtual.ListaVistaVirtualCMS).ToList();
             ListaVistaVirtualGadgetRecursos = ListaVistaVirtualGadgetRecursos.Union(dataWrapperVistaVirtual.ListaVistaVirtualGadgetRecursos).ToList();
+            ListaVistaVirtualDominio = ListaVistaVirtualDominio.Union(dataWrapperVistaVirtual.ListaVistaVirtualDominio).ToList();
         }
 
         public void CargaRelacionesPerezosasCache()
@@ -56,6 +59,7 @@ namespace Es.Riam.Gnoss.AD.EncapsuladoDatos
             ListaVistaVirtualCMS = null;
             //ListaVistaVirtualGadgetRecursos.Clear();
             ListaVistaVirtualGadgetRecursos = null;
+            ListaVistaVirtualDominio = null;
         }
         ~DataWrapperVistaVirtual()
         {

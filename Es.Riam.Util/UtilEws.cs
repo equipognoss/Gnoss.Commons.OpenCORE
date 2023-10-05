@@ -1,11 +1,11 @@
 ﻿using Es.Riam.Util.Correo;
-using Microsoft.Exchange.WebServices.Data;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Text;
 using Es.Riam.Interfaces;
+using Microsoft.Exchange.WebServices.Data;
 
 namespace Es.Riam.Util
 {
@@ -17,7 +17,6 @@ namespace Es.Riam.Util
         /// Servidor EWS
         /// </summary>
         private ExchangeService mService;
-
         #endregion
         #region Constructores
 
@@ -150,8 +149,9 @@ namespace Es.Riam.Util
         {
             try
             {
+                Console.WriteLine($"Entra en EnviarCorreo");
                 EmailMessage email = new EmailMessage(mService);
-
+                Console.WriteLine($"mService: {mService.Url.AbsoluteUri}");
                 //Añadimos el mensaje
                 if (pFormatoHTML)
                 {
@@ -162,24 +162,28 @@ namespace Es.Riam.Util
                 {
                     email.Body = new MessageBody(BodyType.Text, pMensaje);
                 }
-
+                Console.WriteLine($"Despues de generar el body del mensaje: {pMensaje}");
 
                 //Añadimos los destinatarios 
 
                 email.ToRecipients.Add(new EmailAddress(pDestinatario));
-
+                Console.WriteLine($"Despues de anadir los destinatarios: {pDestinatario}");
 
                 ExtendedPropertyDefinition messageIdHeader = new ExtendedPropertyDefinition(DefaultExtendedPropertySet.InternetHeaders, "Message-ID", MapiPropertyType.String);
                 // Añadimos el ID personalizado al header
                 email.SetExtendedProperty(messageIdHeader, "<" + DateTime.Now.ToString("yyyyMMddHHmmss") + "." + pNotificacionID + "." + pRemitente + ">");
-
+                Console.WriteLine($"Despues de anadir ID personalizado: {messageIdHeader}");
                 email.Subject = pAsunto;
+                Console.WriteLine($"Asunto: {pAsunto}");
                 email.Sender = new EmailAddress(pMascaraRemitente, pRemitente);
+                Console.WriteLine($"Mascara remitente: {pMascaraRemitente} ||| Remitente: {pRemitente}");
+                Console.WriteLine($"Antes de enviar");
                 email.Send();
-
+                Console.WriteLine($"Despues de enviar");
             }
             catch (Exception ex)
             {
+                Console.WriteLine($"Error en EnvioCorreo: {ex.Message}");
                 throw ex;
             }
         }

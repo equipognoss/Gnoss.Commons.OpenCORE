@@ -213,6 +213,16 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
             return mEntityContext.Persona.Where(persona => persona.Email.ToUpper().Equals(pEmail.ToUpper())).Select(item => item.Email).Concat(mEntityContext.SolicitudNuevoUsuario.Join(mEntityContext.Solicitud, solNuevoUsuario => solNuevoUsuario.SolicitudID, solicitud => solicitud.SolicitudID, (solNuevoUsuario, solicitud) => new { SolicitudNuevoUsuario = solNuevoUsuario, Solicitud = solicitud }).Where(item => item.SolicitudNuevoUsuario.Email.ToUpper().Equals(pEmail.ToUpper()) && item.Solicitud.Estado.Equals((short)EstadoSolicitud.Espera) && !item.SolicitudNuevoUsuario.SolicitudID.Equals(pSolicitudID)).Select(item => item.SolicitudNuevoUsuario.Email)).Any();
         }
 
+        public void ModificarCorreoPersona(Guid pPersonaID, string pCorreoNuevo)
+        {
+            var resultado = mEntityContext.Persona.Where(persona => persona.PersonaID.Equals(pPersonaID)).FirstOrDefault();
+            if (resultado != null)
+            {
+                resultado.Email = pCorreoNuevo;
+                mEntityContext.SaveChanges();
+            }
+        }
+
         /// <summary>
         /// Comprueba si el email ya existe en la tabla de personas
         /// </summary>

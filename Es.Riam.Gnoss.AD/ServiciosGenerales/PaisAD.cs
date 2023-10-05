@@ -14,24 +14,6 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
     /// </summary>
     public class PaisAD : BaseAD
     {
-        #region Consultas
-        string sqlSelectProvinciasDePais;
-        string sqlSelectProvincias;
-        string sqlSelectPaises;
-        #endregion
-
-        #region PaisDataAdapter
-        string sqlPaisInsert;
-        string sqlPaisDelete;
-        string sqlPaisModify;
-        #endregion
-
-        #region ProvinciaDataAdapter
-        string sqlProvinciaInsert;
-        string sqlProvinciaDelete;
-        string sqlProvinciaModify;
-        #endregion
-
         private EntityContext mEntityContext;
 
         #region Constructores
@@ -43,7 +25,6 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
             : base(loggingService, entityContext, configService, servicesUtilVirtuosoAndReplication)
         {
             mEntityContext = entityContext;
-            this.CargarConsultasYDataAdapters();
         }
 
         /// <summary>
@@ -55,50 +36,11 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
             : base(pFicheroConfiguracionBD, loggingService, entityContext, configService, servicesUtilVirtuosoAndReplication)
         {
             mEntityContext = entityContext;
-            this.CargarConsultasYDataAdapters(IBD);
         }
 
         #endregion
 
         #region Métodos Generales
-
-        #region Privados
-
-        /// <summary>
-        /// En caso de que se utilice el GnossConfig.xml por defecto se sigue utilizando el IBD estático
-        /// </summary>
-        private void CargarConsultasYDataAdapters()
-        {
-            this.CargarConsultasYDataAdapters(IBD);
-        }
-
-        /// <summary>
-        /// En caso de que se utilice un GnossConfig.xml que no es el de por defecto se pasa un objeto IBaseDatos creado con respecto
-        /// al fichero de configuracion que se ha apsado como parámetro
-        /// </summary>
-        /// <param name="IBD">Objecto IBaseDatos para el archivo pasado al constructor del AD</param>
-        private void CargarConsultasYDataAdapters(IBaseDatos IBD)
-        {
-            #region Consultas
-            sqlSelectProvinciasDePais = "SELECT " + IBD.CargarGuid("Provincia.ProvinciaID") + ", Provincia.Nombre, Provincia.CP, " + IBD.CargarGuid("Provincia.PaisID") + " FROM Pais INNER JOIN Provincia ON Pais.PaisID = Provincia.PaisID WHERE (Provincia.PaisID = " + IBD.GuidParamValor("PaisID") + ") ORDER BY Provincia.Nombre";
-            sqlSelectProvincias = "SELECT " + IBD.CargarGuid("ProvinciaID") + " , Nombre, CP, " + IBD.CargarGuid("PaisID") + "  FROM Provincia ORDER BY Nombre";
-            sqlSelectPaises = "SELECT " + IBD.CargarGuid("PaisID") + ", Nombre FROM Pais ORDER BY Nombre";
-            #endregion
-
-            #region PaisDataAdapter
-            sqlPaisInsert = IBD.ReplaceParam("INSERT INTO Pais (PaisID, Nombre) VALUES (" + IBD.GuidParamColumnaTabla("PaisID") + ", @Nombre)");
-            sqlPaisDelete = IBD.ReplaceParam("DELETE FROM Pais WHERE ((PaisID = " + IBD.GuidParamColumnaTabla("O_PaisID") + ") AND (Nombre = @O_Nombre))");
-            sqlPaisModify = IBD.ReplaceParam("UPDATE Pais SET PaisID = " + IBD.GuidParamColumnaTabla("PaisID") + ", Nombre = @Nombre WHERE ((PaisID = " + IBD.GuidParamColumnaTabla("O_PaisID") + ") AND (Nombre = @O_Nombre))");
-            #endregion
-
-            #region ProvinciaDataAdapter
-            sqlProvinciaInsert = IBD.ReplaceParam("INSERT INTO Provincia (ProvinciaID, Nombre, CP, PaisID) VALUES (" + IBD.GuidParamColumnaTabla("ProvinciaID") + ",@Nombre,@CP," + IBD.GuidParamColumnaTabla("PaisID") + ")");
-            sqlProvinciaDelete = IBD.ReplaceParam("DELETE FROM Provincia WHERE (ProvinciaID = " + IBD.GuidParamColumnaTabla("O_ProvinciaID") + ") AND (PaisID = " + IBD.GuidParamColumnaTabla("O_PaisID") + ") AND (CP = @O_CP OR @O_CP IS NULL AND CP IS NULL) AND (Nombre = @O_Nombre OR @O_Nombre IS NULL AND Nombre IS NULL)");
-            sqlProvinciaModify = IBD.ReplaceParam("UPDATE Provincia SET ProvinciaID = " + IBD.GuidParamColumnaTabla("ProvinciaID") + ", Nombre = @Nombre, CP = @CP, PaisID = " + IBD.GuidParamColumnaTabla("PaisID") + " WHERE (ProvinciaID = " + IBD.GuidParamColumnaTabla("O_ProvinciaID") + ") AND (PaisID = " + IBD.GuidParamColumnaTabla("O_PaisID") + ") AND (CP = @O_CP OR @O_CP IS NULL AND CP IS NULL) AND (Nombre = @O_Nombre OR @O_Nombre IS NULL AND Nombre IS NULL)");
-            #endregion
-        }
-
-        #endregion
 
         #region Públicos
         /// <summary>
@@ -199,6 +141,7 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
         }
 
         #endregion
+
         #endregion
     }
 }

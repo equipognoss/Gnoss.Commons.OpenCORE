@@ -632,7 +632,6 @@ namespace Es.Riam.Gnoss.Logica.ServiciosGenerales
             return null;
         }
 
-
         /// <summary>
         /// Obtiene el número de alumnos de una clase
         /// </summary>

@@ -464,56 +464,12 @@ namespace Es.Riam.Gnoss.CL.Identidad
 
             // Compruebo si está en la caché
             GestionIdentidades gestorIdentidades = ObtenerObjetoDeCache(rawKey) as GestionIdentidades;
-            //GestionIdentidades gestorIdentidades = null;
-            //byte[] arrayComprimido = ObtenerObjetoDeCache(rawKey) as byte[];
-            //if (arrayComprimido == null)
             if (gestorIdentidades == null)
             {
                 // Si no está, lo cargo y lo almaceno en la caché
                 gestorIdentidades = ObtenerGestorIdentidadActual(pOrganizacionID, pPersonaID);
-
-                //arrayComprimido = UtilZip.Zip(gestorIdentidades);
-                //AgregarObjetoCache(rawKey, arrayComprimido);
                 AgregarObjetoCache(rawKey, gestorIdentidades, DURACION_CACHE_GESTOR_IDENTIDADES);
             }
-
-            //if (gestorIdentidades == null)
-            //{
-            //    object objeto = UtilZip.UnZip(arrayComprimido);
-
-            //    if (objeto != null)
-            //    {
-            //        gestorIdentidades = (GestionIdentidades)objeto;
-
-            //DataWrapperIdentidad idenAuxDW = new DataWrapperIdentidad();
-            //foreach (DataTable tabla in idenAuxDW.Tables)
-            //{
-            //    if (!gestorIdentidades.IdentidadesDS.Tables.Contains(tabla.TableName))
-            //    {
-            //        EliminarCacheGestorIdentidad(mUsuario.UsuarioActual.PersonaID.UsuarioActual.PerfilID);
-            //        gestorIdentidades = ObtenerGestorIdentidadActual();
-            //        AgregarObjetoCache(rawKey, gestorIdentidades);
-            //        break;
-            //    }
-            //}
-
-            //foreach (DataColumn columna in idenAuxDW.Identidad.Columns)
-            //{
-            //    if (!gestorIdentidades.IdentidadesDS.Identidad.Columns.Contains(columna.ColumnName))
-            //    {
-            //        EliminarCacheGestorIdentidad(mUsuario.UsuarioActual.PersonaID.UsuarioActual.PerfilID);
-            //        gestorIdentidades = ObtenerGestorIdentidadActual();
-            //        AgregarObjetoCache(rawKey, gestorIdentidades);
-            //        break;
-            //    }
-            //}
-
-            //    }
-            //    else
-            //    {
-            //        gestorIdentidades = ObtenerGestorIdentidadActual();
-            //    }
-            //}
 
             return gestorIdentidades;
         }

@@ -22,6 +22,7 @@ using System.Data;
 using System.Diagnostics;
 using System.IO;
 using System.IO.Compression;
+using System.IO.Pipelines;
 using System.Linq;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
@@ -94,6 +95,11 @@ namespace Es.Riam.Gnoss.CL
         /// Prefijo "CMS"
         /// </summary>
         public static string CMS = "CMS";
+
+        /// <summary>
+        /// Prefijo "CMS"
+        /// </summary>
+        public static string TRAZAS = "TRAZAS";
 
         /// <summary>
         /// Prefijo "MVC"
@@ -731,9 +737,9 @@ namespace Es.Riam.Gnoss.CL
 
         #region atributos
 
-        private ConfigService _configService;
+        protected ConfigService _configService;
         private EntityContext _entityContext;
-        private LoggingService _loggingService;
+        protected LoggingService _loggingService;
         private RedisCacheWrapper _redisCacheWrapper;
 
         #endregion
@@ -882,7 +888,7 @@ namespace Es.Riam.Gnoss.CL
         {
             get
             {
-                return "_5.0.0.0";
+                return "_5.11.0.0";
             }
         }
 
@@ -1048,6 +1054,16 @@ namespace Es.Riam.Gnoss.CL
             pRawKey = ObtenerClaveCache(pRawKey).ToLower();
 
             InteractuarRedis(TipoAccesoRedis.EliminarElementosSortedSet, pRawKey, pInicio, pFin);
+        }
+
+        public async void FlushDB()
+        {
+            FLUSHDB cmd = new FLUSHDB();
+            Result result = await ClienteRedisLectura.Execute(cmd, typeof(string));
+            if (result.IsError)
+            {
+                throw new RedisException(result.Messge);
+            }
         }
 
         /// <summary>
@@ -1869,7 +1885,10 @@ namespace Es.Riam.Gnoss.CL
                         resultado = ClienteRedisEscritura.CreateSequence(pRawKey).ZScore((((double, string))pParametrosExtra[0]).Item2).Result;
                         break;
                     case TipoAccesoRedis.Borrado:
-                        pRawKeyOriginal = pParametrosExtra[0].ToString();
+                        if (pParametrosExtra[0] != null)
+                        {
+                            pRawKeyOriginal = pParametrosExtra[0].ToString();
+                        }
                         pGenerarClave = (bool)pParametrosExtra[1];
                         pReintentar = (bool)pParametrosExtra[2];
                         InteractuarRedis_Borrado(pRawKey, pRawKeyOriginal, pGenerarClave, pReintentar);
@@ -2122,10 +2141,9 @@ namespace Es.Riam.Gnoss.CL
         {
             if (!UsarCacheLocal.Equals(UsoCacheLocal.Nunca) && EjecucionDeAplicacionWeb)
             {
-                if (pRawKey == null)
-                {
-                    pRawKey = this.ObtenerClaveCache(pRawKey);
-                }
+
+				pRawKey = ObtenerClaveCache(pRawKey);
+				
 
                 _loggingService.AgregarEntrada("CacheLocal: Obtenemos " + pRawKey);
 
@@ -2153,16 +2171,16 @@ namespace Es.Riam.Gnoss.CL
         /// <param name="pDato">Dato que se va a guardar con la clave de caché.</param>
         public void AgregarObjetoCacheLocal(Guid pProyectoID, string pRawKey, object pDato, bool pObtenerParametroSiempre = false, DateTime? pExpirationDate = null)
         {
-            if (pRawKey == null)
-            {
+            //if (pRawKey == null)
+            //{
                 pRawKey = this.ObtenerClaveCache(pRawKey);
-            }
+            //}
             if (!pExpirationDate.HasValue)
             {
                 pExpirationDate = DateTime.Now.AddYears(1);
             }
 
-            if (!UsarCacheLocal.Equals(UsoCacheLocal.Nunca) && EjecucionDeAplicacionWeb && pDato != null && (pObtenerParametroSiempre || UsarCacheLocal.Equals(UsoCacheLocal.Siempre)))
+            if (!UsarCacheLocal.Equals(UsoCacheLocal.Nunca) && EjecucionDeAplicacionWeb && pDato != null && (pObtenerParametroSiempre || UsarCacheLocal.Equals(UsoCacheLocal.Siempre) || _configService.ObtenerUsarCacheLocal()))
             {
                 _loggingService.AgregarEntrada("CacheLocal: Añado " + pRawKey);
 
@@ -2260,7 +2278,7 @@ namespace Es.Riam.Gnoss.CL
                 //RedisCacheWrapper.GuardarLog($"Conexion creada: {pIP} {db}");
                 clienteRedis.Host.AddWriteHost(pIP, port).Password = password;
                 //clienteRedis.Host.AddWriteHost(pIP).MaxConnections = 5000;
-                clienteRedis.Host.AddReadHost(pIP, port).Password = password;
+                //clienteRedis.Host.AddReadHost(pIP, port).Password = password;
                 //clienteRedis.Host.AddReadHost(pIP).MaxConnections = 5000;
             }
             else
@@ -2269,7 +2287,7 @@ namespace Es.Riam.Gnoss.CL
                 clienteRedis.AutoPing = false;
                 //RedisCacheWrapper.GuardarLog($"Conexion creada: {pIP} {db}");
                 clienteRedis.Host.AddWriteHost(pIP, port);
-                clienteRedis.Host.AddReadHost(pIP, port);
+                //clienteRedis.Host.AddReadHost(pIP, port);
             }
 
             _loggingService.AgregarEntrada("BaseCL_ObtenerClienteRedisParaIP_FIN");
@@ -2337,6 +2355,7 @@ namespace Es.Riam.Gnoss.CL
                     if (mClienteRedisLectura == null)
                     {
                         //BeetleX.Buffers.BufferPool.BUFFER_SIZE = 2400000;
+                        BeetleX.Buffers.BufferPool.POOL_MAX_SIZE = 204800;
                         string cadenaPeticion = nodoIPMaster;
                         Stopwatch sw = LoggingService.IniciarRelojTelemetria();
                         mClienteRedisLectura = _redisCacheWrapper.RedisLectura(mPoolName);
@@ -2347,13 +2366,86 @@ namespace Es.Riam.Gnoss.CL
                             try
                             {
                                 mClienteRedisLectura = ObtenerClienteRedisParaIP(nodoIPMaster, nodoDB);
-                                //mClienteRedisLectura = new RedisClient(nodoIP);
-                                //mClienteRedisLectura.ConnectTimeout = redisTimeOut;
-                                //mClienteRedisLectura.RetryCount = 3;
                                 mClienteRedisLectura.DB = nodoDB;
-                                if (!string.IsNullOrEmpty(nodoIPRead))
+                                //nodo master
+                                string password = null;
+                                int portMaster = 6379;
+                                int pM = 0;
+                                if (nodoIPMaster.Contains("|"))
                                 {
-                                    mClienteRedisLectura.Host.AddReadHost(nodoIPRead);
+                                    // El servidor tiene contraseña
+                                    string[] ipPassword = nodoIPMaster.Split(new string[] { "|" }, StringSplitOptions.RemoveEmptyEntries);
+                                    nodoIPMaster = ipPassword[0];
+
+                                    if (ipPassword.Length > 1)
+                                    {
+                                        password = ipPassword[1];
+                                    }
+                                }
+                                if (nodoIPMaster.Contains(':'))
+                                {
+                                    string[] ipPort = nodoIPMaster.Split(new string[] { ":" }, StringSplitOptions.RemoveEmptyEntries);
+                                    nodoIPMaster = ipPort[0];
+                                    if (ipPort.Length > 1 && int.TryParse(ipPort[1], out pM))
+                                    {
+                                        portMaster = pM;
+                                    }
+                                }
+                                ///Fin nodo master
+                                if (!string.IsNullOrEmpty(nodoIPRead))
+                                {                                 
+                                    int port = 6379;
+                                    //nodo lectura
+                                    if (nodoIPRead.Contains(':'))
+                                    {
+                                        string[] ipPort = nodoIPRead.Split(new string[] { ":" }, StringSplitOptions.RemoveEmptyEntries);
+                                        nodoIPRead = ipPort[0];
+                                        int p = 0;
+                                        if (ipPort.Length > 1 && int.TryParse(ipPort[1], out p))
+                                        {
+                                            port = p;
+                                        }
+                                        
+                                    }
+                                    //Fin nodo lectura
+                                    Random random= new Random();
+                                    int num = random.Next(101);
+                                    if (num % 2 == 0)
+                                    {
+                                        if (!string.IsNullOrEmpty(password))
+                                        {
+                                            mClienteRedisLectura.Host.AddReadHost(nodoIPMaster, portMaster).Password = password;
+                                        }
+                                        else
+                                        {
+                                            mClienteRedisLectura.Host.AddReadHost(nodoIPMaster, portMaster);
+                                        }
+                                        mClienteRedisLectura.Host.AddReadHost(nodoIPRead, port);
+                                    }
+                                    else
+                                    {
+                                        mClienteRedisLectura.Host.AddReadHost(nodoIPRead, port);
+                                        if (!string.IsNullOrEmpty(password))
+                                        {
+                                            mClienteRedisLectura.Host.AddReadHost(nodoIPMaster, portMaster).Password = password;
+                                        }
+                                        else
+                                        {
+                                            mClienteRedisLectura.Host.AddReadHost(nodoIPMaster, portMaster);
+                                        }
+                                    }
+
+                                }
+                                else
+                                {
+                                    if (!string.IsNullOrEmpty(password))
+                                    {
+                                        mClienteRedisLectura.Host.AddReadHost(nodoIPMaster, portMaster).Password = password;
+                                    }
+                                    else
+                                    {
+                                        mClienteRedisLectura.Host.AddReadHost(nodoIPMaster, portMaster);
+                                    }
                                 }
                                 
 
@@ -2523,6 +2615,7 @@ namespace Es.Riam.Gnoss.CL
                     if (mClienteRedisEscritura == null)
                     {
                         //BeetleX.Buffers.BufferPool.BUFFER_SIZE = 2400000;
+                        BeetleX.Buffers.BufferPool.POOL_MAX_SIZE = 204800;
                         string cadenaPeticion = nodoIPMaster;
                         Stopwatch sw = LoggingService.IniciarRelojTelemetria();
 
@@ -2681,8 +2774,10 @@ namespace Es.Riam.Gnoss.CL
 
         public void VersionarCacheLocal(Guid pProyectoID)
         {
-            AgregarObjetoCache(GnossCacheCL.CLAVE_REFRESCO_CACHE_LOCAL + pProyectoID, Guid.NewGuid());
-        }
+            GnossCache gnossCache = new GnossCache(_entityContext, _loggingService, _redisCacheWrapper, _configService, mServicesUtilVirtuosoAndReplication);
+
+            gnossCache.VersionarCacheLocal(pProyectoID);
+		}
 
         public bool UsarClienteEscritura
         {
@@ -2757,5 +2852,13 @@ namespace Es.Riam.Gnoss.CL
         #endregion
 
         #endregion
+    }
+
+    //Realizacion de metodo de flushdb para redis
+    public class FLUSHDB : Command
+    {
+        public override bool Read => false;
+
+        public override string Name => "FLUSHDB";
     }
 }

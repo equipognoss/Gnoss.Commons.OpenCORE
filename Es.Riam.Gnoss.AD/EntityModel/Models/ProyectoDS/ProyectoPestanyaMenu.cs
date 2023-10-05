@@ -26,7 +26,7 @@ namespace Es.Riam.Gnoss.AD.EntityModel.Models.ProyectoDS
             NombreCortoPestanya = "";
         }
 
-        public ProyectoPestanyaMenu(Guid pestanyaId, Guid organizacionID, Guid proyectoID, ProyectoPestanyaMenu p1, short tipoPestanya, string nombre, string ruta, short orden, bool nuevaPestanya, bool visible, short privacidad, string htmlAlternativo, string idiomasDisponibles, string titulo, string nombreCortoPestanya, bool visibleSinAcceso, string cssBodyClass, string metaDescription, bool activa)
+        public ProyectoPestanyaMenu(Guid pestanyaId, Guid organizacionID, Guid proyectoID, ProyectoPestanyaMenu p1, short tipoPestanya, string nombre, string ruta, short orden, bool nuevaPestanya, bool visible, short privacidad, string htmlAlternativo, string idiomasDisponibles, string titulo, string nombreCortoPestanya, bool visibleSinAcceso, string cssBodyClass, string metaDescription, bool activa, string ultimoEditor)
         {
             PresentacionPestanyaListadoSemantico = new HashSet<PresentacionPestanyaListadoSemantico>();
             PresentacionPestanyaMapaSemantico = new HashSet<PresentacionPestanyaMapaSemantico>();
@@ -56,6 +56,9 @@ namespace Es.Riam.Gnoss.AD.EntityModel.Models.ProyectoDS
             MetaDescription = metaDescription;
             Activa = activa;
             ConfigAutocompletarProy = new HashSet<ConfigAutocompletarProy>();
+            UltimoEditor = ultimoEditor;
+            FechaCreacion = DateTime.Now;
+            FechaModificacion = DateTime.Now;
         }
 
         public Guid PestanyaID { get; set; }
@@ -96,7 +99,11 @@ namespace Es.Riam.Gnoss.AD.EntityModel.Models.ProyectoDS
 
         public bool Activa { get; set; }
 
-        [StringLength(10000)]
+        public DateTime FechaCreacion { get; set; }
+        public DateTime FechaModificacion { get; set; }
+        public string UltimoEditor { get; set; }
+
+        [StringLength(1000)]
         public string MetaDescription { get; set; }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
@@ -112,6 +119,9 @@ namespace Es.Riam.Gnoss.AD.EntityModel.Models.ProyectoDS
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ProyectoPestanyaBusqueda ProyectoPestanyaBusqueda { get; set; }
+
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<ProyectoPestanyaDashboardAsistente> ProyectoPestanyaDashboardAsistente { get; set; }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<ProyectoPestanyaCMS> ProyectoPestanyaCMS { get; set; }

@@ -156,5 +156,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Models.ViewModels
             /// </summary>
             public string JS { get; set; }
         }
+
+        public DashboardViewModel Dashboard { get; set; }
     }
 }

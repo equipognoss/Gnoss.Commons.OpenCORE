@@ -462,7 +462,14 @@ namespace Es.Riam.Gnoss.CL.Documentacion
             InvalidarCache(rawKey);
         }
 
-        public void InvalidarRelacionadosRecursoMVC(Guid pDocumentoID, Guid pProyectoID)
+		public void InvalidarContextoRecursoMVC(Guid pDocumentoID, Guid pProyectoID)
+		{
+			string rawKey = "ContextoRecursoMVC_" + pDocumentoID + "_" + pProyectoID;
+
+			InvalidarCacheQueContengaCadena(rawKey);
+		}
+
+		public void InvalidarRelacionadosRecursoMVC(Guid pDocumentoID, Guid pProyectoID)
         {
             string rawKey = "RelacionadosRecursoMVC_" + pDocumentoID + "_" + pProyectoID;
 
@@ -549,12 +556,12 @@ namespace Es.Riam.Gnoss.CL.Documentacion
 
                 if (TieneComunidadPadreConfigurada(pProyectoID))
                 {
-                    DocumentacionCN.ObtenerOntologiasProyecto(ProyectoIDPadreEcosistema.Value, docDW, false, false, false);
+                    DocumentacionCN.ObtenerOntologiasProyecto(ProyectoIDPadreEcosistema.Value, docDW, false, true, false);
                     ModificarDataWrapperComunidadHijaNivelesCertificacion(pProyectoID, docDW);
                 }
                 else
                 {
-                    DocumentacionCN.ObtenerOntologiasProyecto(pProyectoID, docDW, false, false, false);
+                    DocumentacionCN.ObtenerOntologiasProyecto(pProyectoID, docDW, false, true, false);
                 }
 
                 if (docDW != null)
@@ -2067,6 +2074,26 @@ namespace Es.Riam.Gnoss.CL.Documentacion
             }
 
             InvalidarCachesMultiples(claves);
+        }
+
+        /// <summary>
+        /// Borra un elemento de la cache de recursos.
+        /// </summary>
+        /// <param name="clave">Clave a borrar</param>
+        public void BorrarRecurso(string clave)
+        {
+            if (ClienteRedisLectura != null)
+            {
+                ClienteRedisLectura.Del(clave);
+            }
+        }
+
+        /// <summary>
+        /// Obtiene todos los elemento de la cache de recursos.
+        /// </summary>
+        public string[] ObtenerRecursos(string filtro)
+        {
+            return ClienteRedisLectura.Keys(filtro).Result;
         }
 
         /// <summary>

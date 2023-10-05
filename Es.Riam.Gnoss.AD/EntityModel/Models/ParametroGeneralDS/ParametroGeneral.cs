@@ -95,7 +95,6 @@ namespace Es.Riam.Gnoss.AD.EntityModel.Models.ParametroGeneralDS
 
         public short? MetaAutomatPropietarioPro { get; set; }
 
-        [StringLength(4000)]
         public string AvisoLegal { get; set; }
 
         public bool WikiDisponible { get; set; }

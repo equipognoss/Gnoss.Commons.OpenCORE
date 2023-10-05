@@ -108,13 +108,13 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
             return CargarListaGadgets(pPrimeraPeticion, pListaGadgetsSinCargar, TipoUbicacionGadget.LateralHomeComunidad);
         }
 
-        public List<GadgetModel> CargarListaGadgetsRecurso(bool pPrimeraPeticion, List<Guid> pListaGadgetsSinCargar, Documento pDocumento, SemCmsController pGenPlantillasOWL, string pNombreSemPestanya)
+        public List<GadgetModel> CargarListaGadgetsRecurso(bool pPrimeraPeticion, List<Guid> pListaGadgetsSinCargar, Documento pDocumento, SemCmsController pGenPlantillasOWL, string pNombreSemPestanya, bool pUsarAfinidad = false)
         {
             Documento = pDocumento;
             GenPlantillasOWL = pGenPlantillasOWL;
             NombreSemPestanya = pNombreSemPestanya;
 
-            return CargarListaGadgets(pPrimeraPeticion, pListaGadgetsSinCargar, TipoUbicacionGadget.FichaRecursoComunidad);
+            return CargarListaGadgets(pPrimeraPeticion, pListaGadgetsSinCargar, TipoUbicacionGadget.FichaRecursoComunidad, pUsarAfinidad);
         }
 
         public List<GadgetModel> CargarListaGadgetsFichaPerfil(Guid pPerfilID)
@@ -224,7 +224,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
         /// </summary>
         /// <param name="pNumPeticion">Número de petición actual</param>
         /// <returns>TRUE si hay más gadget para pintar, FALSE en caso contrario</returns>
-        private List<GadgetModel> CargarListaGadgets(bool pPrimeraPeticion, List<Guid> pListaGadgetsSinCargar, TipoUbicacionGadget pTipoUbicacionGadget)
+        private List<GadgetModel> CargarListaGadgets(bool pPrimeraPeticion, List<Guid> pListaGadgetsSinCargar, TipoUbicacionGadget pTipoUbicacionGadget, bool pUsarAfinidad = false)
         {
             List<GadgetModel> listaGadgets = new List<GadgetModel>();
             Dictionary<Guid, List<Guid>> listaRecursosGadgets = new Dictionary<Guid, List<Guid>>();
@@ -630,7 +630,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
                                     gadget.UrlViewMore = filasProyectoGadgetContexto.ComunidadOrigen;
                                 }
 
-                                KeyValuePair<string, List<ResourceModel>> listaFichasContexto = CargarRecursosContexto(filasProyectoGadgetContexto, gadget.ShortName, 1, pPrimeraPeticion);
+                                KeyValuePair<string, List<ResourceModel>> listaFichasContexto = CargarRecursosContexto(filasProyectoGadgetContexto, gadget.ShortName, 1, pPrimeraPeticion, pUsarAfinidad);
 
                                 if (listaFichasContexto.Value != null)
                                 {
@@ -921,7 +921,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
         private List<Guid> MontarRecursosMasInteresantes()
         {
             DocumentacionCN docCN = new DocumentacionCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
-            List<Guid> listaIDs = docCN.ObtenerListaRecursosPopularesProyecto(ControllerBase.ProyectoSeleccionado.Clave, 3);
+            List<Guid> listaIDs = docCN.ObtenerListaRecursosPopularesProyecto(ControllerBase.ProyectoSeleccionado.Clave, 20);
             docCN.Dispose();
 
             return listaIDs;
@@ -1096,7 +1096,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
         /// Carga los resultados de la consulta que indica el gadget.
         /// </summary>
         /// <param name="pFilaProyGadget">Fila gadget</param>
-        private KeyValuePair<string, List<ResourceModel>> CargarRecursosContexto(ProyectoGadgetContexto pFilaProyGadget, string pNombreCortoGadget, int pPagina, bool pPrimeraPeticion)
+        private KeyValuePair<string, List<ResourceModel>> CargarRecursosContexto(ProyectoGadgetContexto pFilaProyGadget, string pNombreCortoGadget, int pPagina, bool pPrimeraPeticion, bool pUsarAfinidad = false)
         {
             List<ResourceModel> listaRecursosContextos = null;
 
@@ -1122,7 +1122,8 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
                         if (listaRecursos.Count > 0)
                         {
                             CargadorResultados cargadorResultadosContexto = new CargadorResultados();
-                            cargadorResultadosContexto.Url = ObtenerUrlServicioResultados(pFilaProyGadget);
+                            //cargadorResultadosContexto.Url = ObtenerUrlServicioResultados(pFilaProyGadget);
+                            cargadorResultadosContexto.Url = mConfigService.ObtenerUrlServicioResultados();
                             string parametros = "listadoRecursosEstatico:";
                             foreach (Guid id in listaRecursos)
                             {
@@ -1174,7 +1175,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
                             {
                                 //El proyecto es de otro ecosistema, hago la petición a su servicio de resultados
                                 sw = LoggingService.IniciarRelojTelemetria();
-                                listaRecursosContextos = cargadorResultadosContexto.CargarResultadosContexto(pFilaProyGadget.ProyectoOrigenID, parametros, false, ControllerBase.UtilIdiomas.LanguageCode, TipoBusqueda.Recursos, 0, pFilaProyGadget.ProyectoOrigenID.ToString(), pFilaProyGadget.ComunidadOrigen, "", false, pFilaProyGadget.MostrarEnlaceOriginal, pFilaProyGadget.NamespacesExtra, pFilaProyGadget.ItemsBusqueda, "", pFilaProyGadget.NuevaPestanya, "", identidadActualID, esUsuarioInvitado);
+                                listaRecursosContextos = cargadorResultadosContexto.CargarResultadosContexto(pFilaProyGadget.ProyectoID, parametros, false, ControllerBase.UtilIdiomas.LanguageCode, TipoBusqueda.Recursos, 0, pFilaProyGadget.ProyectoOrigenID.ToString(), pFilaProyGadget.ComunidadOrigen, "", false, pFilaProyGadget.MostrarEnlaceOriginal, pFilaProyGadget.NamespacesExtra, pFilaProyGadget.ItemsBusqueda, "", pFilaProyGadget.NuevaPestanya, "", identidadActualID, esUsuarioInvitado);
                                 mLoggingService.AgregarEntradaDependencia("Contexto externo: Llamar al servicio de resultados", false, "CargarRecursosContexto", sw, true);
                             }
                             else
@@ -1206,7 +1207,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
                         }
                     }
                 }
-                if ((listaRecursosContextos == null && (pPagina > 1 || !pPrimeraPeticion)) || mSoloGenerarRelacionados)
+                if (((listaRecursosContextos == null || listaRecursosContextos.Count == 0) && (pPagina > 1 || !pPrimeraPeticion)) || mSoloGenerarRelacionados)
                 {
                     #region Obtenemos los recursos
 
@@ -1233,8 +1234,8 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
                     {
                         FiltrosOrden = "null";
                     }
-                    string filtros = UtilidadesVirtuoso.Obtenerfiltros(FiltrosOrigenDestino, Documento.Clave, ControllerBase.ProyectoSeleccionado.Clave, ControllerBase.ProyectoOrigenBusquedaID, ControllerBase.UrlIntragnoss, ControllerBase.InformacionOntologias, ControllerBase.UtilIdiomas.LanguageCode, pFilaProyGadget.ProyectoOrigenID, GestorFacetasComunidad);
-                    FiltrosOrigen = UtilidadesVirtuoso.ObtenerfiltrosOrigen(FiltrosOrigen, Documento.Clave, ControllerBase.ProyectoSeleccionado.Clave, ControllerBase.ProyectoOrigenBusquedaID, ControllerBase.UrlIntragnoss, ControllerBase.InformacionOntologias);
+                    string filtros = UtilidadesVirtuoso.Obtenerfiltros(FiltrosOrigenDestino, Documento.Clave, ControllerBase.ProyectoSeleccionado.Clave, ControllerBase.ProyectoOrigenBusquedaID, ControllerBase.UrlIntragnoss, ControllerBase.InformacionOntologias, ControllerBase.UtilIdiomas.LanguageCode, pFilaProyGadget.ProyectoOrigenID, GestorFacetasComunidad, pUsarAfinidad);
+                    FiltrosOrigen = UtilidadesVirtuoso.ObtenerfiltrosOrigen(FiltrosOrigen, Documento.Clave, ControllerBase.ProyectoSeleccionado.Clave, ControllerBase.ProyectoOrigenBusquedaID, ControllerBase.UrlIntragnoss, ControllerBase.InformacionOntologias, pUsarAfinidad);
 
                     if (FiltrosOrigen == "nomostrar")
                     {
@@ -1341,8 +1342,8 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
                     #endregion
 
                     CargadorResultados cargadorResultadosContexto = new CargadorResultados();
-                    cargadorResultadosContexto.Url = ObtenerUrlServicioResultados(pFilaProyGadget);
-
+                    //cargadorResultadosContexto.Url = ObtenerUrlServicioResultados(pFilaProyGadget);
+                    cargadorResultadosContexto.Url = mConfigService.ObtenerUrlServicioResultados();
                     int numRecursosPagina = pFilaProyGadget.NumRecursos;
                     if (pPagina == 1)
                     {
@@ -1441,13 +1442,13 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
                             //El proyecto es de otro ecosistema, hago la petición a su servicio de resultados
                             sw = LoggingService.IniciarRelojTelemetria();
                             filtroContexto = System.Web.HttpUtility.UrlEncode(filtroContexto).Replace("+", "%20");
-                            listaRecursosContextos = cargadorResultadosContexto.CargarResultadosContexto(pFilaProyGadget.ProyectoOrigenID, "pagina=" + pPagina.ToString(), false, ControllerBase.UtilIdiomas.LanguageCode, (TipoBusqueda)tipoBusqueda, numRecursosPagina, pFilaProyGadget.ProyectoOrigenID.ToString(), rutaGadgetOrigen, filtroContexto, false, pFilaProyGadget.MostrarEnlaceOriginal, pFilaProyGadget.NamespacesExtra, pFilaProyGadget.ItemsBusqueda, docsAEliminar, pFilaProyGadget.NuevaPestanya, parametrosAdicionales, identidadActualID, esUsuarioInvitado);
+                            listaRecursosContextos = cargadorResultadosContexto.CargarResultadosContexto(pFilaProyGadget.ProyectoID, "pagina=" + pPagina.ToString(), false, ControllerBase.UtilIdiomas.LanguageCode, (TipoBusqueda)tipoBusqueda, numRecursosPagina, pFilaProyGadget.ProyectoOrigenID.ToString(), rutaGadgetOrigen, filtroContexto, false, pFilaProyGadget.MostrarEnlaceOriginal, pFilaProyGadget.NamespacesExtra, pFilaProyGadget.ItemsBusqueda, docsAEliminar, pFilaProyGadget.NuevaPestanya, parametrosAdicionales, identidadActualID, esUsuarioInvitado);
                             mLoggingService.AgregarEntradaDependencia("Contexto externo: Llamar al servicio de resultados", false, "CargarRecursosContexto", sw, true);
                         }
                         else
                         {
                             mLoggingService.AgregarEntrada("Contexto interno, llamo a virtuoso");
-                            listaRecursosContextos = CargarResultadosContexto(pFilaProyGadget.ProyectoOrigenID, "pagina=" + pPagina.ToString(), false, ControllerBase.UtilIdiomas.LanguageCode, tipoBusqueda, numRecursosPagina, pFilaProyGadget.ProyectoOrigenID.ToString(), rutaGadgetOrigen, filtroContexto, false, pFilaProyGadget.NamespacesExtra, pFilaProyGadget.ItemsBusqueda, docsAEliminar, parametrosAdicionales, identidadActualID, esUsuarioInvitado);
+                            listaRecursosContextos = CargarResultadosContexto(pFilaProyGadget.ProyectoID, "pagina=" + pPagina.ToString(), false, ControllerBase.UtilIdiomas.LanguageCode, tipoBusqueda, numRecursosPagina, pFilaProyGadget.ProyectoOrigenID.ToString(), rutaGadgetOrigen, filtroContexto, false, pFilaProyGadget.NamespacesExtra, pFilaProyGadget.ItemsBusqueda, docsAEliminar, parametrosAdicionales, identidadActualID, esUsuarioInvitado, pUsarAfinidad);
                             mLoggingService.AgregarEntrada("Fin carga contexto");
                         }
 
@@ -2149,7 +2150,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
             }
         }
 
-        public List<ResourceModel> CargarResultadosContexto(Guid pProyectoID, string pParametros, bool pPrimeraCarga, string pLanguageCode, short pTipoBusqueda, int pNumRecursosPagina, string pGrafo, string pUrlPaginaBusqueda, string pFiltroContexto, bool pEsBot, string pNamespacesExtra, string pListaItemsBusqueda, string pResultadosEliminar, string pParametrosAdicionales, Guid pIdentidadID, bool pEsUsuarioInvitado)
+        public List<ResourceModel> CargarResultadosContexto(Guid pProyectoID, string pParametros, bool pPrimeraCarga, string pLanguageCode, short pTipoBusqueda, int pNumRecursosPagina, string pGrafo, string pUrlPaginaBusqueda, string pFiltroContexto, bool pEsBot, string pNamespacesExtra, string pListaItemsBusqueda, string pResultadosEliminar, string pParametrosAdicionales, Guid pIdentidadID, bool pEsUsuarioInvitado, bool pUsarAfinidad = false)
         {
             CargadorResultadosModel cargadorResultadosModel = new CargadorResultadosModel(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mVirtuosoAD, mServicesUtilVirtuosoAndReplication);
             List<ResourceModel> listaRecursosDevolver = new List<ResourceModel>();
@@ -2214,7 +2215,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
                 bool esMovil = RequestParams("esMovil") == "true";
                 sw = LoggingService.IniciarRelojTelemetria();
 
-                UtilServicioResultados.CargarResultadosInt(pProyectoID, pIdentidadID, pIdentidadID != UsuarioAD.Invitado, pEsUsuarioInvitado, (TipoBusqueda)pTipoBusqueda, pGrafo, pParametros, pParametrosAdicionales, pPrimeraCarga, pLanguageCode, -1, pNumRecursosPagina, tipoFicha, pFiltroContexto, false, cargadorResultadosModel, esMovil);
+                UtilServicioResultados.CargarResultadosInt(pProyectoID, pIdentidadID, pIdentidadID != UsuarioAD.Invitado, pEsUsuarioInvitado, (TipoBusqueda)pTipoBusqueda, pGrafo, pParametros, pParametrosAdicionales, pPrimeraCarga, pLanguageCode, -1, pNumRecursosPagina, tipoFicha, pFiltroContexto, false, cargadorResultadosModel, esMovil, false, pUsarAfinidad);
                 mLoggingService.AgregarEntradaDependencia("Llamar al servicio de resultados para la carga de contextos", false, "CargarResultadosContexto", sw, true);
                 #endregion
 

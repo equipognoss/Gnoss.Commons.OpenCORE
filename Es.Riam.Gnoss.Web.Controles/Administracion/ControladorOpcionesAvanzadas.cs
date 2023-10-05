@@ -68,49 +68,51 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
 
         #region Métodos de carga
 
-        public AdministrarOpcionesAvanzadasViewModel CargarOpcionesAvanzadas()
+        public AdministrarOpcionesAvanzadasViewModel CargarOpcionesAvanzadas(bool pEsAdministradorEcosistema = false)
         {
             AdministrarOpcionesAvanzadasViewModel mPaginaModel = new AdministrarOpcionesAvanzadasViewModel();
-            mPaginaModel.CMSActivado = FilaParametrosGenerales.CMSDisponible;
-            if (FilaParametrosGenerales.CMSDisponible)
+            if (!pEsAdministradorEcosistema)
             {
-                mPaginaModel.GruposVisibilidadAbierto = CargarGruposVisibilidadAbierto();
+                mPaginaModel.CMSActivado = FilaParametrosGenerales.CMSDisponible;
+                if (FilaParametrosGenerales.CMSDisponible)
+                {
+                    mPaginaModel.GruposVisibilidadAbierto = CargarGruposVisibilidadAbierto();
 
-                mPaginaModel.AutocompletarSiempreVirtuoso = ControladorProyecto.ObtenerParametroBooleano(ParametroProyecto, "ConfigBBDDAutocompletarProyecto");
-                mPaginaModel.MostrarAccionesListados = FilaParametrosGenerales.MostrarAccionesEnListados;
-                mPaginaModel.IncluirGoogleSearch = ControladorProyecto.ObtenerParametroBooleano(ParametroProyecto, "IncluirGoogleSearch");
+                    mPaginaModel.AutocompletarSiempreVirtuoso = ControladorProyecto.ObtenerParametroBooleano(ParametroProyecto, "ConfigBBDDAutocompletarProyecto");
+                    mPaginaModel.MostrarAccionesListados = FilaParametrosGenerales.MostrarAccionesEnListados;
+                    mPaginaModel.IncluirGoogleSearch = ControladorProyecto.ObtenerParametroBooleano(ParametroProyecto, "IncluirGoogleSearch");
 
-                string ontologiaPatron = ControladorProyecto.ObtenerParametroString(ParametroProyecto, ParametroAD.ProyectoIDPatronOntologias);
-                mPaginaModel.OntologiaOtroProyecto = string.IsNullOrEmpty(ontologiaPatron) ? Guid.Empty : new Guid(ontologiaPatron);
+                    string ontologiaPatron = ControladorProyecto.ObtenerParametroString(ParametroProyecto, ParametroAD.ProyectoIDPatronOntologias);
+                    mPaginaModel.OntologiaOtroProyecto = string.IsNullOrEmpty(ontologiaPatron) ? Guid.Empty : new Guid(ontologiaPatron);
+                }
+
+                // Buscar en todo el ecosistema y el proyecto
+                bool buscarTodoEcosistema = true;
+                bool buscarTodoProyecto = true;
+                if (ParametrosGeneralesDS.ListaConfiguracionAmbitoBusquedaProyecto.Count > 0)
+                {
+                    ConfiguracionAmbitoBusquedaProyecto filaAmbitoBusqueda = ParametrosGeneralesDS.ListaConfiguracionAmbitoBusquedaProyecto[0];
+                    buscarTodoEcosistema = filaAmbitoBusqueda.TodoGnoss;
+                    buscarTodoProyecto = filaAmbitoBusqueda.Metabusqueda;
+                }
+                mPaginaModel.BuscarTodoEcosistema = buscarTodoEcosistema;
+                mPaginaModel.BuscarTodoProyecto = buscarTodoProyecto;
+                mPaginaModel.PestanyasSeleccionadas = HayPestanyaSeleccionada(mPaginaModel);
+
+                mPaginaModel.PermitirRecursosPrivados = FilaParametrosGenerales.PermitirRecursosPrivados;
+                mPaginaModel.InvitacionesDisponibles = FilaParametrosGenerales.InvitacionesDisponibles;
+                mPaginaModel.VotacionesDisponibles = FilaParametrosGenerales.VotacionesDisponibles;
+                mPaginaModel.PermitirVotacionesNegativas = FilaParametrosGenerales.PermitirVotacionesNegativas;
+                mPaginaModel.MostrarVotaciones = FilaParametrosGenerales.VerVotaciones;
+                mPaginaModel.ComentariosDisponibles = FilaParametrosGenerales.ComentariosDisponibles;
+                mPaginaModel.SupervisoresPuedenAdministrarGrupos = FilaParametrosGenerales.SupervisoresAdminGrupos;
+                mPaginaModel.CuentaTwitter = ProyectoSeleccionado.FilaProyecto.UsuarioTwitter;
+                mPaginaModel.HasTagTwitter = ProyectoSeleccionado.FilaProyecto.TagTwitter;
+                //mPaginaModel.RobotsBusqueda = ControladorProyecto.ObtenerParametroString(ParametroProyecto, ParametroAD.RobotsComunidad);
+                mPaginaModel.NumeroCaracteresDescripcionSuscripcion = ControladorProyecto.ObtenerParametroString(ParametroProyecto, ParametroAD.NumeroCaracteresDescripcion);
+                mPaginaModel.ParametrosExtraYoutube = ControladorProyecto.ObtenerParametroString(ParametroProyecto, ParametroAD.ParametrosExtraYoutube);
+                mPaginaModel.CompartirRecursoPermitido = FilaParametrosGenerales.CompartirRecursosPermitido;
             }
-
-            // Buscar en todo el ecosistema y el proyecto
-            bool buscarTodoEcosistema = true;
-            bool buscarTodoProyecto = true;
-            if (ParametrosGeneralesDS.ListaConfiguracionAmbitoBusquedaProyecto.Count > 0)
-            {
-                ConfiguracionAmbitoBusquedaProyecto filaAmbitoBusqueda =ParametrosGeneralesDS.ListaConfiguracionAmbitoBusquedaProyecto[0];
-                buscarTodoEcosistema = filaAmbitoBusqueda.TodoGnoss;
-                buscarTodoProyecto = filaAmbitoBusqueda.Metabusqueda;
-            }
-            mPaginaModel.BuscarTodoEcosistema = buscarTodoEcosistema;
-            mPaginaModel.BuscarTodoProyecto = buscarTodoProyecto;
-            mPaginaModel.PestanyasSeleccionadas = HayPestanyaSeleccionada(mPaginaModel);
-
-            mPaginaModel.PermitirRecursosPrivados = FilaParametrosGenerales.PermitirRecursosPrivados;
-            mPaginaModel.InvitacionesDisponibles = FilaParametrosGenerales.InvitacionesDisponibles;
-            mPaginaModel.VotacionesDisponibles = FilaParametrosGenerales.VotacionesDisponibles;
-            mPaginaModel.PermitirVotacionesNegativas = FilaParametrosGenerales.PermitirVotacionesNegativas;
-            mPaginaModel.MostrarVotaciones = FilaParametrosGenerales.VerVotaciones;
-            mPaginaModel.ComentariosDisponibles = FilaParametrosGenerales.ComentariosDisponibles;
-            mPaginaModel.SupervisoresPuedenAdministrarGrupos = FilaParametrosGenerales.SupervisoresAdminGrupos;
-            mPaginaModel.CuentaTwitter = ProyectoSeleccionado.FilaProyecto.UsuarioTwitter;
-            mPaginaModel.HasTagTwitter = ProyectoSeleccionado.FilaProyecto.TagTwitter;
-            //mPaginaModel.RobotsBusqueda = ControladorProyecto.ObtenerParametroString(ParametroProyecto, ParametroAD.RobotsComunidad);
-            mPaginaModel.NumeroCaracteresDescripcionSuscripcion = ControladorProyecto.ObtenerParametroString(ParametroProyecto, ParametroAD.NumeroCaracteresDescripcion);
-            mPaginaModel.ParametrosExtraYoutube = ControladorProyecto.ObtenerParametroString(ParametroProyecto, ParametroAD.ParametrosExtraYoutube);
-            mPaginaModel.CompartirRecursoPermitido = FilaParametrosGenerales.CompartirRecursosPermitido;
-
 
             //if (!FilaParametrosGenerales.IsCodigoGoogleAnalyticsNull())
             //if (!(FilaParametrosGenerales.CodigoGoogleAnalytics==null))
@@ -142,6 +144,69 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
                 mPaginaModel.ConfiguracionCorreo.Password = filaConfiguracionEnvioCorreo.clave;
             }
             return mPaginaModel;
+        }
+
+        public void CargarBuzonCorreo(AdministrarOpcionesAvanzadasViewModel pOpcionesAvanzadasModel)
+        {
+            ParametroCN paramCN = new ParametroCN(mEntityContext, mLoggingService, mConfigService, null);
+            ConfiguracionEnvioCorreo filaConfiguracionEnvioCorreo = paramCN.ObtenerFilaConfiguracionEnvioCorreo(ProyectoSeleccionado.Clave);
+            paramCN.Dispose();
+
+            if (filaConfiguracionEnvioCorreo != null)
+            {
+                pOpcionesAvanzadasModel.ConfiguracionCorreo = new ConfiguradorCorreo();
+
+                pOpcionesAvanzadasModel.ConfiguracionCorreo.Email = filaConfiguracionEnvioCorreo.email;
+                pOpcionesAvanzadasModel.ConfiguracionCorreo.SMTP = filaConfiguracionEnvioCorreo.smtp;
+                pOpcionesAvanzadasModel.ConfiguracionCorreo.Port = filaConfiguracionEnvioCorreo.puerto;
+                pOpcionesAvanzadasModel.ConfiguracionCorreo.User = filaConfiguracionEnvioCorreo.usuario;
+                pOpcionesAvanzadasModel.ConfiguracionCorreo.Type = filaConfiguracionEnvioCorreo.tipo;
+                pOpcionesAvanzadasModel.ConfiguracionCorreo.SSL = filaConfiguracionEnvioCorreo.SSL.HasValue && filaConfiguracionEnvioCorreo.SSL.Value == true;
+                pOpcionesAvanzadasModel.ConfiguracionCorreo.SuggestEmail = filaConfiguracionEnvioCorreo.emailsugerencias;
+                pOpcionesAvanzadasModel.ConfiguracionCorreo.Password = filaConfiguracionEnvioCorreo.clave;
+            }
+        }
+
+        public void CargarInteraccionSocial(AdministrarOpcionesAvanzadasViewModel pOpcionesAvanzadasModel)
+        {
+            pOpcionesAvanzadasModel.CMSActivado = FilaParametrosGenerales.CMSDisponible;
+            if (FilaParametrosGenerales.CMSDisponible)
+            {
+                pOpcionesAvanzadasModel.GruposVisibilidadAbierto = CargarGruposVisibilidadAbierto();
+
+                pOpcionesAvanzadasModel.AutocompletarSiempreVirtuoso = ControladorProyecto.ObtenerParametroBooleano(ParametroProyecto, "ConfigBBDDAutocompletarProyecto");
+                pOpcionesAvanzadasModel.MostrarAccionesListados = FilaParametrosGenerales.MostrarAccionesEnListados;
+                pOpcionesAvanzadasModel.IncluirGoogleSearch = ControladorProyecto.ObtenerParametroBooleano(ParametroProyecto, "IncluirGoogleSearch");
+
+                string ontologiaPatron = ControladorProyecto.ObtenerParametroString(ParametroProyecto, ParametroAD.ProyectoIDPatronOntologias);
+                pOpcionesAvanzadasModel.OntologiaOtroProyecto = string.IsNullOrEmpty(ontologiaPatron) ? Guid.Empty : new Guid(ontologiaPatron);
+            }
+
+            // Buscar en todo el ecosistema y el proyecto
+            bool buscarTodoEcosistema = true;
+            bool buscarTodoProyecto = true;
+            if (ParametrosGeneralesDS.ListaConfiguracionAmbitoBusquedaProyecto.Count > 0)
+            {
+                ConfiguracionAmbitoBusquedaProyecto filaAmbitoBusqueda = ParametrosGeneralesDS.ListaConfiguracionAmbitoBusquedaProyecto[0];
+                buscarTodoEcosistema = filaAmbitoBusqueda.TodoGnoss;
+                buscarTodoProyecto = filaAmbitoBusqueda.Metabusqueda;
+            }
+            pOpcionesAvanzadasModel.BuscarTodoEcosistema = buscarTodoEcosistema;
+            pOpcionesAvanzadasModel.BuscarTodoProyecto = buscarTodoProyecto;
+            pOpcionesAvanzadasModel.PestanyasSeleccionadas = HayPestanyaSeleccionada(pOpcionesAvanzadasModel);
+
+            pOpcionesAvanzadasModel.PermitirRecursosPrivados = FilaParametrosGenerales.PermitirRecursosPrivados;
+            pOpcionesAvanzadasModel.InvitacionesDisponibles = FilaParametrosGenerales.InvitacionesDisponibles;
+            pOpcionesAvanzadasModel.VotacionesDisponibles = FilaParametrosGenerales.VotacionesDisponibles;
+            pOpcionesAvanzadasModel.PermitirVotacionesNegativas = FilaParametrosGenerales.PermitirVotacionesNegativas;
+            pOpcionesAvanzadasModel.MostrarVotaciones = FilaParametrosGenerales.VerVotaciones;
+            pOpcionesAvanzadasModel.ComentariosDisponibles = FilaParametrosGenerales.ComentariosDisponibles;
+            pOpcionesAvanzadasModel.SupervisoresPuedenAdministrarGrupos = FilaParametrosGenerales.SupervisoresAdminGrupos;
+            pOpcionesAvanzadasModel.CuentaTwitter = ProyectoSeleccionado.FilaProyecto.UsuarioTwitter;
+            pOpcionesAvanzadasModel.HasTagTwitter = ProyectoSeleccionado.FilaProyecto.TagTwitter;
+            pOpcionesAvanzadasModel.NumeroCaracteresDescripcionSuscripcion = ControladorProyecto.ObtenerParametroString(ParametroProyecto, ParametroAD.NumeroCaracteresDescripcion);
+            pOpcionesAvanzadasModel.ParametrosExtraYoutube = ControladorProyecto.ObtenerParametroString(ParametroProyecto, ParametroAD.ParametrosExtraYoutube);
+            pOpcionesAvanzadasModel.CompartirRecursoPermitido = FilaParametrosGenerales.CompartirRecursosPermitido;
         }
 
         private Dictionary<Guid, string> CargarGruposVisibilidadAbierto()
@@ -182,9 +247,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
             try
             {
                 mEntityContext.SaveChanges();
-
-                GuardarDatosConfiguracionCorreo(pOptions);
-               
+                                
                 mEntityContext.TerminarTransaccionesPendientes(true);
             }
             catch
@@ -194,42 +257,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
             }
         }
 
-        private void GuardarDatosConfiguracionCorreo(AdministrarOpcionesAvanzadasViewModel pOptions)
-        {
-            ParametroCN paramCN = new ParametroCN(mEntityContext, mLoggingService, mConfigService, null);
-            ConfiguracionEnvioCorreo filaConfiguracionEnvioCorreo = paramCN.ObtenerFilaConfiguracionEnvioCorreo(ProyectoSeleccionado.Clave);
-
-            bool existeConfiguracionAnterior = filaConfiguracionEnvioCorreo != null;
-            if (!existeConfiguracionAnterior)
-            {
-                filaConfiguracionEnvioCorreo = new ConfiguracionEnvioCorreo();
-            }
-
-            if (pOptions.ConfiguracionCorreo != null && !string.IsNullOrEmpty(pOptions.ConfiguracionCorreo.Email))
-            {
-                if (!existeConfiguracionAnterior || !string.IsNullOrEmpty(pOptions.ConfiguracionCorreo.Password))
-                {
-                    filaConfiguracionEnvioCorreo.clave = pOptions.ConfiguracionCorreo.Password;
-                }
-
-                filaConfiguracionEnvioCorreo.ProyectoID = ProyectoSeleccionado.Clave;
-                filaConfiguracionEnvioCorreo.email = pOptions.ConfiguracionCorreo.Email;
-                filaConfiguracionEnvioCorreo.smtp = pOptions.ConfiguracionCorreo.SMTP;
-                filaConfiguracionEnvioCorreo.puerto = pOptions.ConfiguracionCorreo.Port;
-                filaConfiguracionEnvioCorreo.usuario = pOptions.ConfiguracionCorreo.User;
-                filaConfiguracionEnvioCorreo.tipo = pOptions.ConfiguracionCorreo.Type;
-                filaConfiguracionEnvioCorreo.SSL = pOptions.ConfiguracionCorreo.SSL;
-                filaConfiguracionEnvioCorreo.emailsugerencias = pOptions.ConfiguracionCorreo.SuggestEmail;
-
-                paramCN.GuardarFilaConfiguracionEnvioCorreo(filaConfiguracionEnvioCorreo, !existeConfiguracionAnterior);
-            }
-            else if (existeConfiguracionAnterior)
-            {
-                paramCN.BorrarFilaConfiguracionEnvioCorreo(ProyectoSeleccionado.Clave);
-
-            }
-            paramCN.Dispose();
-        }
+        
 
         private void PasarDatosADataSet(AdministrarOpcionesAvanzadasViewModel pOptions)
         {

@@ -20,7 +20,9 @@ namespace Es.Riam.Gnoss.Web.MVC.Models.Administracion
         BusquedaAvanzada = 12,
         Comunidades = 13,
         Contribuciones = 14,
-        Borradores = 15
+        Borradores = 15,
+        //TFG Fran
+        Dashboard = 16
 
     }
 
@@ -127,6 +129,18 @@ namespace Es.Riam.Gnoss.Web.MVC.Models.Administracion
         /// Meta descripcion de la pestaña
         /// </summary>
         public string MetaDescription { get; set; }
+        /// <summary>
+        /// Nombre y apellido del último editor de la página
+        /// </summary>
+        public string UltimoEditor { get; set; }
+        /// <summary>
+        /// Fecha de creación de la página
+        /// </summary>
+        public DateTime FechaCreacion { get; set; }
+        /// <summary>
+        /// Última fecha de modificación de la página
+        /// </summary>
+        public DateTime FechaModificacion { get; set; }
 
         /// <summary>
         /// Modelo que indica el tipo de home que es
@@ -322,12 +336,24 @@ namespace Es.Riam.Gnoss.Web.MVC.Models.Administracion
             /// 
             /// </summary>
             public string RelacionMandatory { get; set; }
-        }
+
+			/// <summary>
+			/// 
+			/// </summary>
+			public string TextoDefectoBuscador { get; set; }
+		}
 
         /// <summary>
         /// 
         /// </summary>
         public List<string> ListaIdiomasDisponibles { get; set; }
+
+        /// <summary>
+        /// Idioma por defecto de la página correspondiente con el de la comunidad
+        /// </summary>
+        public string IdiomaPorDefecto { get; set; }
+        
+
         /// <summary>
         /// 
         /// </summary>
@@ -414,6 +440,100 @@ namespace Es.Riam.Gnoss.Web.MVC.Models.Administracion
             /// 
             /// </summary>
             public Guid ClavePestanya { get; set; }
+        }
+
+        //TFG Fran
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public List<DashboardTabModel> OpcionesDashboard { get; set; }
+
+        public partial class DashboardTabModel
+        {
+            /// <summary>
+            /// 
+            /// </summary>
+            public Guid AsisID { get; set; }
+            /// <summary>
+            /// 
+            /// </summary>
+            public string Nombre { get; set; }
+            /// <summary>
+            /// 
+            /// </summary>
+            public string Select { get; set; }
+            /// <summary>
+            /// 
+            /// </summary>
+            public string Where { get; set; }
+            /// <summary>
+            /// 
+            /// </summary>
+            public string GroupBy { get; set; }
+            /// <summary>
+            /// 
+            /// </summary>
+            public string OrderBy { get; set; }
+            /// <summary>
+            /// 
+            /// </summary>
+            public string Limit { get; set; }
+            /// <summary>
+            /// 
+            /// </summary>
+            public bool Titulo { get; set; }
+            /// <summary>
+            /// 
+            /// </summary>
+            public string Tamano { get; set; }
+            /// <summary>
+            /// 
+            /// </summary>
+            public int Tipo { get; set; }
+            /// <summary>
+            /// 
+            /// </summary>
+            public string Labels { get; set; }
+            /// <summary>
+            /// 
+            /// </summary>
+            public int Orden { get; set; }
+            /// <summary>
+            /// 
+            /// </summary>
+            public bool PropExtra { get; set; }
+            /// <summary>
+            /// 
+            /// </summary>
+            public List<DatasetTabModel> OpcionesDatasets { get; set; }
+
+            public partial class DatasetTabModel
+            {
+                /// <summary>
+                /// 
+                /// </summary>
+                public string Datos { get; set; }
+                /// <summary>
+                /// 
+                /// </summary>
+                /// 
+                public string Nombre { get; set; }
+                /// <summary>
+                /// 
+                /// </summary>
+                public string Color { get; set; }
+                /// <summary>
+                /// 
+                /// </summary>
+                public Guid DatasetID { get; set; }
+                /// <summary>
+                /// 
+                /// </summary>
+                public int Orden { get; set; }
+            }
+
+
         }
     }
 }

@@ -3570,7 +3570,6 @@
 		<Resource tag="ADMINISTRARCATEGORIASCOM">kategoriak-administratu</Resource>
 		<Resource tag="ADMINISTRARCOMUNIDADGENERAL">komunitate-orokorra-administratu</Resource>
 		<Resource tag="POLITICACOMUNIDAD">ziurtagirien-politika</Resource>
-		<Resource tag="ADMINISTRARPLANTILLASCOM">txantiloiak-administratu</Resource>
 		<Resource tag="QUIEROTWITTEAR">twitteatu</Resource>
 		<Resource tag="VERBIO">ikus-bio</Resource>
 		<Resource tag="ENVIOTWITTERCORRECTO">twitterok</Resource>

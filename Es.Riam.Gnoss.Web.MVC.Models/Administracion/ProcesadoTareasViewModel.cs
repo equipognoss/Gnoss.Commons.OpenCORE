@@ -1,7 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace Es.Riam.Gnoss.Web.MVC.Models.Administracion
 {
+    [Serializable]
     public class ProcesadoTareasViewModel
     {
         public string PaginaSiguiente { get; set; }

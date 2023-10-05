@@ -240,7 +240,7 @@ namespace Es.Riam.Gnoss.Web.Controles.GeneradorPlantillasOWL
             else
             {
 
-                CallFileService servicioArc = new CallFileService(mConfigService);
+                CallFileService servicioArc = new CallFileService(mConfigService, mLoggingService);
 
 
                 if (string.IsNullOrEmpty(mNombreOntoConTipoEntidad))

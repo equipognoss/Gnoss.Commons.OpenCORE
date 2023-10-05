@@ -293,6 +293,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
             }
 
             string inpt_UrlServicioAutocompletar = mConfigService.ObtenerUrlServicio("autocompletar");
+            
 
             ViewBag.ListaInputHidden.Add(new KeyValuePair<string, string>("inpt_urlServicioAutocompletar", inpt_UrlServicioAutocompletar));
 

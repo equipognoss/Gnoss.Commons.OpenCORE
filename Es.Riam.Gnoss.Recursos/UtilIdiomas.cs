@@ -35,6 +35,10 @@ namespace Es.Riam.Gnoss.Recursos
         private XmlDocument mDocumento = null;
         private XmlDocument mDocumento_Personalizado = null;
         private XmlNode mPage = null;
+        private static Dictionary<string, Dictionary<string, string>> mDiccionarioLenguajes = null;
+        //Diccionario por idioma de las claves, sin tag.
+        private static Dictionary<string, Dictionary<string, string>> mDiccionarioLenguajesClaves = null;
+        private static object mBloqueoDiccionario = new object();
         private string mDirectorioLenguajes = "";
         private string[] mPreferenciasLenguajes;
         private string mFileName;
@@ -87,6 +91,7 @@ namespace Es.Riam.Gnoss.Recursos
             mDirectorioLenguajes = "";
             mPreferenciasLenguajes = Array.Empty<string>();
             IdiomaUsuario = pClaveIdioma;
+            ObtenerDiccionarioTraducciones();
             LoadFile();
         }
 
@@ -105,6 +110,7 @@ namespace Es.Riam.Gnoss.Recursos
             mDirectorioLenguajes = "";
             mPreferenciasLenguajes = Array.Empty<string>();
             IdiomaUsuario = pClaveIdioma;
+            ObtenerDiccionarioTraducciones();
             LoadFile();
         }
 
@@ -125,6 +131,7 @@ namespace Es.Riam.Gnoss.Recursos
             mDirectorioLenguajes = "";
             mPreferenciasLenguajes = Array.Empty<string>();
             IdiomaUsuario = pClaveIdioma;
+            ObtenerDiccionarioTraducciones();
             LoadFile();
         }
 
@@ -146,6 +153,7 @@ namespace Es.Riam.Gnoss.Recursos
             mDirectorioLenguajes = "";
             mPreferenciasLenguajes = Array.Empty<string>();
             IdiomaUsuario = pClaveIdioma;
+            ObtenerDiccionarioTraducciones();
             LoadFileDesdeTexto(pContenidoArchivo);
         }
 
@@ -168,6 +176,7 @@ namespace Es.Riam.Gnoss.Recursos
             mDirectorioLenguajes = pDirectorioLenguajes;
             mPreferenciasLenguajes = pPreferenciasLenguajes;
             IdiomaUsuario = pIdiomaUsuario;
+            ObtenerDiccionarioTraducciones();
             LoadFile();
         }
 
@@ -185,6 +194,7 @@ namespace Es.Riam.Gnoss.Recursos
             mFileName = info.GetString("FileName");
             mDirectorioLenguajes = info.GetString("DirectorioLenguajes");
             mPreferenciasLenguajes = (string[])info.GetValue("PreferenciasLenguajes", typeof(string[]));
+            ObtenerDiccionarioTraducciones();
             LoadFile();
         }
 
@@ -218,20 +228,27 @@ namespace Es.Riam.Gnoss.Recursos
             }
         }
 
-        private void LoadFile()
+        private void LoadFile(string pIdioma = null)
         {
             string contenido = "";
             string contenido_personalizado = "";
             mDocumento = new XmlDocument();
             mDocumento_Personalizado = new XmlDocument();
 
-            if (!string.IsNullOrEmpty(IdiomaUsuario) && mConfigService.ObtenerListaIdiomasDictionary().ContainsKey(IdiomaUsuario))
+            if (string.IsNullOrEmpty(pIdioma)) 
             {
-                mFileName = IdiomaUsuario;
+                if (!string.IsNullOrEmpty(IdiomaUsuario) && mConfigService.ObtenerListaIdiomasDictionary().ContainsKey(IdiomaUsuario))
+                {
+                    mFileName = IdiomaUsuario;
+                }
+                else
+                {
+                    mFileName = IdiomaDefecto;
+                }
             }
             else
             {
-                mFileName = IdiomaDefecto;
+                mFileName = pIdioma;
             }
             string idiomaFichero = mFileName;
 
@@ -298,6 +315,7 @@ namespace Es.Riam.Gnoss.Recursos
 
         #region Públicos
 
+        /*
         /// <summary>
         /// Carga el contenido de un fichero
         /// </summary>
@@ -307,7 +325,7 @@ namespace Es.Riam.Gnoss.Recursos
             mFileName = pFileName;
             LoadFile();
         }
-
+        */
         /// <summary>
         /// Selecciona la página pasada por parámetro como página actual
         /// </summary>
@@ -501,28 +519,14 @@ namespace Es.Riam.Gnoss.Recursos
                 texto = BuscarTextoPersonalizadoPlataforma(mPaginaActual + "/" + pText);
             }
 
-            //if (mParametroGeneralDS != null && mParametroGeneralDS.TextosPersonalizadosProyecto != null)
-            //{
-            //    ParametroGeneralDS.TextosPersonalizadosProyectoRow[] filasTextos = (ParametroGeneralDS.TextosPersonalizadosProyectoRow[])mParametroGeneralDS.TextosPersonalizadosProyecto.Select("TextoID = '" + mPaginaActual + "/" + pText + "' AND Language = '" + LanguageCode + "'");
-            //    if (filasTextos.Length > 0)
-            //    {
-            //        texto = filasTextos[0].Texto;
-            //    }
-            //}
-
-            //if (string.IsNullOrEmpty(texto) && mParametroAplicacionDS != null && mParametroAplicacionDS.TextosPersonalizadosPlataforma != null)
-            //{
-            //    ParametroAplicacionDS.TextosPersonalizadosPlataformaRow[] filasTextos = (ParametroAplicacionDS.TextosPersonalizadosPlataformaRow[])mParametroAplicacionDS.TextosPersonalizadosPlataforma.Select("TextoID = '" + mPaginaActual + "/" + pText + "' AND Language = '" + LanguageCode + "'");
-            //    if (filasTextos.Length > 0)
-            //    {
-            //        texto = filasTextos[0].Texto;
-            //    }
-            //}
-
             if (string.IsNullOrEmpty(texto))
             {
                 pText = pText.ToUpper(new System.Globalization.CultureInfo("en"));
 
+                mDiccionarioLenguajesClaves[mFileName].TryGetValue(pText, out texto);
+
+                //Forma antigua
+                /*
                 if (mDocumento == null)
                     return "";
 
@@ -545,7 +549,7 @@ namespace Es.Riam.Gnoss.Recursos
                 if (el != null)
                 {
                     texto = el.InnerText;
-                }
+                }*/
             }
 
             if (!string.IsNullOrEmpty(texto))
@@ -600,10 +604,10 @@ namespace Es.Riam.Gnoss.Recursos
                 string separador2 = ";|;";
                 parametros = arrayClave[2].Split(new string[] { separador2 }, StringSplitOptions.RemoveEmptyEntries);
             }
+            //No necesario con el diccionario
+            //SetPage(page);
 
-            SetPage(page);
-
-            return GetText(text, parametros);
+            return GetText(page, text, parametros);
         }
 
         /// <summary>
@@ -653,6 +657,10 @@ namespace Es.Riam.Gnoss.Recursos
         /// <returns>Cadena de texto</returns>
         public string GetText(string pPage, string pText)
         {
+            //Recorrer el diccionario https://riamgnoss.atlassian.net/browse/GCSD-3186
+            //Antiguo metodo
+            return ObtenerTexto(pPage, pText.ToUpper());
+            /*
             if (TraerDeCache)
             {
                 return GetClaveText(pPage, pText);
@@ -661,7 +669,7 @@ namespace Es.Riam.Gnoss.Recursos
             {
                 SetPage(pPage);
                 return GetText(pText);
-            }
+            }*/
         }
 
         /// <summary>
@@ -674,6 +682,17 @@ namespace Es.Riam.Gnoss.Recursos
         /// <returns>Cadena de texto</returns>
         public string GetText(string pPage, string pText, params string[] pParametros)
         {
+            string texto = GetText(pPage, pText);
+            if (texto != null && pParametros.Length > 0)
+            {
+                for (int i = 0; i < pParametros.Length; i++)
+                {
+                    texto = texto.Replace("@" + (i + 1) + "@", UtilCadenas.ObtenerTextoDeIdioma(pParametros[i], LanguageCode, IdiomaDefecto));
+                }
+            }
+            return texto;
+            //Viejo 
+            /*
             if (TraerDeCache)
             {
                 return GetClaveText(pPage, pText, pParametros);
@@ -682,7 +701,7 @@ namespace Es.Riam.Gnoss.Recursos
             {
                 SetPage(pPage);
                 return GetText(pText, pParametros);
-            }
+            }*/
         }
 
         /// <summary>
@@ -702,6 +721,147 @@ namespace Es.Riam.Gnoss.Recursos
                 }
             }
             return texto;
+        }
+
+        /// <summary>
+        /// Obtiene todos las traducciones de un archivo XML en forma de diccionario de diccionarios de la manera (idioma -> (clave -> valor))
+        /// </summary>
+        /// <param name="pPage">Página</param>
+        /// <returns>Diccionario</returns>
+        public void ObtenerDiccionarioTraducciones()
+        {
+            if (mDiccionarioLenguajes == null)
+            {
+                lock (mBloqueoDiccionario)
+                {
+                    if (mDiccionarioLenguajes == null)
+                    {
+                        mDiccionarioLenguajes = new Dictionary<string, Dictionary<string, string>>();
+                        mDiccionarioLenguajesClaves = new Dictionary<string, Dictionary<string, string>>();
+                        List<string> listaIdiomas = mConfigService.ObtenerListaIdiomas();
+                        foreach (string idioma in listaIdiomas)
+                        {
+                            Dictionary<string, string> diccionarioIdioma = new Dictionary<string, string>();
+                            Dictionary<string, string> diccionarioClaves = new Dictionary<string, string>();
+                            //recorrer los xml de los idiomas para cargar todas las claves
+                            LoadFile(idioma);
+                            XmlNodeList nodosPage = mDocumento.SelectNodes("//page");
+                            foreach (XmlNode nodePage in nodosPage)
+                            {
+                                XmlAttributeCollection xmlAttributeCollection = nodePage.Attributes;
+                                string pageName = nodePage.Attributes["name"].Value;
+                                XmlNodeList nodosResource = nodePage.SelectNodes(string.Format("//page[@name='{0}']//Resource", pageName));
+
+                                foreach (XmlNode nodeResource in nodosResource)
+                                {
+                                    string resourceTag = nodeResource.Attributes["tag"].Value;
+                                    string valor = nodeResource.InnerText;
+                                    diccionarioIdioma.TryAdd($"{pageName}__{resourceTag}", valor);
+                                    diccionarioClaves.TryAdd($"{resourceTag}", valor);
+                                }
+                            }
+							XmlNodeList nodosPagePersonalizado = mDocumento_Personalizado.SelectNodes("//page");
+							foreach (XmlNode nodePage in nodosPagePersonalizado)
+							{
+								XmlAttributeCollection xmlAttributeCollection = nodePage.Attributes;
+								string pageName = nodePage.Attributes["name"].Value;
+								XmlNodeList nodosResource = nodePage.SelectNodes(string.Format("//page[@name='{0}']//Resource", pageName));
+
+								foreach (XmlNode nodeResource in nodosResource)
+								{
+									string resourceTag = nodeResource.Attributes["tag"].Value;
+									string valor = nodeResource.InnerText;
+									diccionarioIdioma.TryAdd($"{pageName}__{resourceTag}", valor);
+									diccionarioClaves.TryAdd($"{resourceTag}", valor);
+								}
+							}
+							mDiccionarioLenguajes.Add(idioma, diccionarioIdioma);
+                            mDiccionarioLenguajesClaves.Add(idioma, diccionarioClaves);
+                        }
+                    }
+                }
+            }
+        }
+
+        public string ObtenerTexto(string pPage, string pText)
+        {
+            string texto = null;
+
+            texto = BuscarTextoPersonalizadoProyecto(pPage + "/" + pText);
+
+            if (texto == null)
+            {
+
+                texto = BuscarTextoPersonalizadoPlataforma(pPage + "/" + pText);
+            }
+
+            if (string.IsNullOrEmpty(texto))
+            {
+                pText = pText.ToUpper(new System.Globalization.CultureInfo("en"));
+
+                mDiccionarioLenguajes[mFileName].TryGetValue($"{pPage}__{pText}", out texto);
+                if (string.IsNullOrEmpty(texto))
+                {
+                    mDiccionarioLenguajesClaves[mFileName].TryGetValue($"{pText}", out texto);
+                }
+
+                //Forma antigua
+                /*
+                if (mDocumento == null)
+                    return "";
+
+                XmlNode el = null;
+
+                if (mPage != null)
+                {
+                    el = mPage.SelectSingleNode(string.Format("Resource[@tag='{0}']", pText));
+                    // if in page subnode the text doesn't exist, try in whole file
+                    if (el == null)
+                    {
+                        el = mDocumento.SelectSingleNode(string.Format("//Resource[@tag='{0}']", pText));
+                    }
+                }
+                else
+                {
+                    el = mDocumento.SelectSingleNode(string.Format("//Resource[@tag='{0}']", pText));
+                }
+
+                if (el != null)
+                {
+                    texto = el.InnerText;
+                }*/
+            }
+
+            if (!string.IsNullOrEmpty(texto))
+            {
+                texto = texto.Replace('{', '<').Replace('}', '>');
+
+                if (texto.Equals("[NULL]"))
+                {
+                    texto = string.Empty;
+                }
+
+                if (mPaginaActual.ToLower() == "urlsem")
+                {
+                    texto = texto.ToLower();
+                }
+                return texto;
+            }
+            else
+            {
+                if (mCode.Equals(IdiomaDefecto))
+                {
+                    return pText;
+                }
+                else
+                {
+                    if (UtilIdiomasDefecto == null)
+                    {
+                        UtilIdiomasDefecto = new UtilIdiomas("es", mProyectoID, mPersonalizacionID, mPersonalizacionEcosistemaID, mLoggingService, mEntityContext, mConfigService);
+                    }
+                    return UtilIdiomasDefecto.GetText(pPage, pText);
+                }
+            }
         }
 
         /// <summary>
@@ -1028,8 +1188,6 @@ namespace Es.Riam.Gnoss.Recursos
         {
             ParametroGeneralCN paramCN = new ParametroGeneralCN(mEntityContext, mLoggingService, mConfigService, null);
 
-            //select top 10 TextosPersonalizadosPersonalizacion.* from TextosPersonalizadosPersonalizacion left join VistaVirtualProyecto on TextosPersonalizadosPersonalizacion.PersonalizacionID = VistaVirtualProyecto.PersonalizacionID left join Proyecto on proyecto.proyectoid = VistaVirtualProyecto.proyectoid where proyecto.UrlPropia = 'http://premvc.didactalia.net' or TextosPersonalizadosPersonalizacion.PersonalizacionID = '79DED3E5-C7FD-40DC-9449-0817CE9C7A91'
-
             List<TextosPersonalizadosPersonalizacion> listaIdiomaPersonalizacionVistas = paramCN.ObtenerTextosPersonalizadosDominio(dominio, personalizacionEcosistemaID);
 
             Dictionary<Guid, List<LanguajeText>> tempPersonalizacionIdiomaPersonalizacion = new Dictionary<Guid, List<LanguajeText>>();
@@ -1048,14 +1206,14 @@ namespace Es.Riam.Gnoss.Recursos
                     textoIdiomas.TextoIdioma = new Dictionary<string, string>();
                     tempPersonalizacionIdiomaPersonalizacion[textoPersonalizado.PersonalizacionID].Add(textoIdiomas);
                 }
-
-                textoIdiomas.TextoIdioma.Add(textoPersonalizado.Language, textoPersonalizado.Texto);
+                if (!textoIdiomas.TextoIdioma.ContainsKey(textoPersonalizado.Language))
+                {
+                    textoIdiomas.TextoIdioma.Add(textoPersonalizado.Language, textoPersonalizado.Texto);
+                }
+                
             }
 
             PersonalizacionIdiomaPersonalizacion = tempPersonalizacionIdiomaPersonalizacion;
-
-
-            //select TextosPersonalizadosProyecto.* from TextosPersonalizadosProyecto inner join proyecto on proyecto.proyectoid = textospersonalizadosproyecto.proyectoid where proyecto.UrlPropia = 'http://premvc.didactalia.net'
 
             List<TextosPersonalizadosProyecto> listaIdiomaPersonalizacionProyecto = paramCN.ObtenerTextosPersonalizadosProyecto(dominio);
 
@@ -1140,7 +1298,5 @@ namespace Es.Riam.Gnoss.Recursos
 
             return mListaUtilIdiomas[pIdioma];
         }
-
-
     }
 }

@@ -1233,14 +1233,14 @@ namespace Es.Riam.Gnoss.AD.AutoCompetarEtiquetas
                 string consulta = "SELECT RAWTOHEX(\"ElementoID\") as \"ElementoID\", \"Tipo\", RAWTOHEX(\"ProyectoID\") as \"ProyectoID\", \"Etiquetas\"  FROM \"EtiquetasElemento\"";
                 DbCommand dbCommand = ObtenerComando($"{consulta.Replace("EtiquetasElemento", tablaElemento)} WHERE \"ElementoID\"={IBD.GuidValor(pElementoID)} AND 'Tipo'={IBD.ToParam("Tipo")} AND 'ProyectoID'={IBD.GuidValor(pProyectoID)}", mEntityContextBASE);
                 AgregarParametro(dbCommand, IBD.ToParam("Tipo"), DbType.String, pTipo);
-                CargarDataSet(dbCommand, tagsDS, "EtiquetasElemento", null, true, true, mEntityContextBASE);
+                CargarDataSet(dbCommand, tagsDS, "EtiquetasElemento", null, true, false, mEntityContextBASE);
             }
             else if (ConexionMaster is NpgsqlConnection)
             {
                 string consulta = "SELECT * FROM \"EtiquetasElemento\"";
                 DbCommand dbCommand = ObtenerComando($"{consulta.Replace("EtiquetasElemento", tablaElemento)} WHERE \"ElementoID\"={IBD.GuidValor(pElementoID)} AND \"Tipo\"={IBD.ToParam("Tipo")} AND \"ProyectoID\"={IBD.GuidValor(pProyectoID)}", mEntityContextBASE);
                 AgregarParametro(dbCommand, IBD.ToParam("Tipo"), DbType.String, pTipo);
-                CargarDataSet(dbCommand, tagsDS, "EtiquetasElemento", null, true, true, mEntityContextBASE);
+                CargarDataSet(dbCommand, tagsDS, "EtiquetasElemento", null, false, true, mEntityContextBASE);
             }
             else 
             {
@@ -1340,7 +1340,18 @@ namespace Es.Riam.Gnoss.AD.AutoCompetarEtiquetas
 
             if (ConexionMaster is OracleConnection)
             {
-                existeTabla = $"SELECT 1 FROM ALL_TABLES WHERE TABLE_NAME = {IBD.ToParam("nombreTabla")}";
+                List<string> connection = ConexionMaster.ConnectionString.Split(';').ToList();
+                string userID = "";
+                string owner = "";
+                foreach(string s in connection)
+                {
+                    if(s.Contains("User Id")|| s.Contains("UserId"))
+                    {
+                        userID = s.Split("=")[1];
+                        owner = $" and OWNER = '{userID}'";
+                    }
+                }
+                existeTabla = $"SELECT 1 FROM ALL_TABLES WHERE TABLE_NAME = {IBD.ToParam("nombreTabla")}{owner}";
             }
             else if(ConexionMaster is NpgsqlConnection)
             {

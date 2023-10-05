@@ -3808,7 +3808,6 @@
 		<Resource tag="ADMINISTRARCATEGORIASCOM">administrar-categorias</Resource>
 		<Resource tag="ADMINISTRARCOMUNIDADGENERAL">administrar-comunidade-geral</Resource>
 		<Resource tag="POLITICACOMUNIDAD">politica-certificados</Resource>
-		<Resource tag="ADMINISTRARPLANTILLASCOM">administrar-telas</Resource>
 		<Resource tag="QUIEROTWITTEAR">twittear</Resource>
 		<Resource tag="VERBIO">ver-bio</Resource>
 		<Resource tag="ENVIOTWITTERCORRECTO">twitterok</Resource>

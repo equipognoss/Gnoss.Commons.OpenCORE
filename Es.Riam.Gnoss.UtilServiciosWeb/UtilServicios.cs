@@ -200,7 +200,6 @@ namespace Es.Riam.Gnoss.UtilServiciosWeb
         public void ComprobacionCambiosCachesLocales(Guid pProyectoID)
         {
             string claveRefrescoCache = GnossCacheCL.CLAVE_REFRESCO_CACHE_LOCAL + pProyectoID;
-
             Guid? idRefrescoCacheRedis = mGnossCache.ObtenerObjetoDeCache(claveRefrescoCache) as Guid?;
             Guid? idRefrescoCacheLocal = mRedisCacheWrapper.Cache.Get(claveRefrescoCache) as Guid?;
 

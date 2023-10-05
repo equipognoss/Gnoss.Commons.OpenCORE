@@ -36,6 +36,8 @@ namespace Es.Riam.Gnoss.AD.EncapsuladoDatos
         private List<ProyectoPerfilNumElem> listaProyectoPerfilNumElem;
         private List<ProyectoPestanya> listaProyectoPestanya;
         private List<ProyectoPestanyaBusqueda> listaProyectoPestanyaBusqueda;
+        private List<ProyectoPestanyaDashboardAsistente> listaProyectoPestanyaDashboardAsistente;
+        private List<ProyectoPestanyaDashboardAsistenteDataset> listaProyectoPestanyaDashboardAsistenteDataset;
         private List<ProyectoPestanyaBusquedaExportacion> listaProyectoPestanyaBusquedaExportacion;
         private List<ProyectoPestanyaBusquedaExportacionExterna> listaProyectoPestanyaBusquedaExportacionExterna;
         private List<ProyectoPestanyaBusquedaExportacionPropiedad> listaProyectoPestanyaBusquedaExportacionPropiedad;
@@ -109,6 +111,8 @@ namespace Es.Riam.Gnoss.AD.EncapsuladoDatos
             this.ListaProyectoPestanyaBusquedaExportacionExterna = new List<ProyectoPestanyaBusquedaExportacionExterna>();
             this.ListaProyectoPestanyaBusquedaExportacionPropiedad = new List<ProyectoPestanyaBusquedaExportacionPropiedad>();
             this.ListaProyectoPestanyaCMS = new List<ProyectoPestanyaCMS>();
+            this.listaProyectoPestanyaDashboardAsistente = new List<ProyectoPestanyaDashboardAsistente>();
+            this.listaProyectoPestanyaDashboardAsistenteDataset = new List<ProyectoPestanyaDashboardAsistenteDataset>();
             this.ListaProyectoPestanyaExportacionBusqueda = new List<ProyectoPestanyaExportacionBusqueda>();
             this.ListaProyectoPestanyaFiltroOrdenRecursos = new List<ProyectoPestanyaFiltroOrdenRecursos>();
             this.ListaProyectoPestanyaMenu = new List<ProyectoPestanyaMenu>();
@@ -946,6 +950,32 @@ namespace Es.Riam.Gnoss.AD.EncapsuladoDatos
             }
         }
 
+        public List<ProyectoPestanyaDashboardAsistente> ListaProyectoPestanyaDashboardAsistente
+        {
+            get
+            {
+                return listaProyectoPestanyaDashboardAsistente;
+            }
+
+            set
+            {
+                this.listaProyectoPestanyaDashboardAsistente = value;
+            }
+        }
+
+        public List<ProyectoPestanyaDashboardAsistenteDataset> ListaProyectoPestanyaDashboardAsistenteDataset
+        {
+            get
+            {
+                return listaProyectoPestanyaDashboardAsistenteDataset;
+            }
+
+            set
+            {
+                this.listaProyectoPestanyaDashboardAsistenteDataset = value;
+            }
+        }
+
         public override void Merge(DataWrapperBase pDataWrapper)
         {
             DataWrapperProyecto encapsulado = (DataWrapperProyecto)pDataWrapper;
@@ -979,6 +1009,8 @@ namespace Es.Riam.Gnoss.AD.EncapsuladoDatos
             this.listaProyectoPestanyaBusquedaExportacionExterna = this.ListaProyectoPestanyaBusquedaExportacionExterna.Union(encapsulado.ListaProyectoPestanyaBusquedaExportacionExterna).ToList();
             this.listaProyectoPestanyaBusquedaExportacionPropiedad = this.ListaProyectoPestanyaBusquedaExportacionPropiedad.Union(encapsulado.ListaProyectoPestanyaBusquedaExportacionPropiedad).ToList();
             this.listaProyectoPestanyaCMS = this.ListaProyectoPestanyaCMS.Union(encapsulado.ListaProyectoPestanyaCMS).ToList();
+            this.listaProyectoPestanyaDashboardAsistente = this.listaProyectoPestanyaDashboardAsistente.Union(encapsulado.ListaProyectoPestanyaDashboardAsistente).ToList();
+            this.listaProyectoPestanyaDashboardAsistenteDataset = this.listaProyectoPestanyaDashboardAsistenteDataset.Union(encapsulado.ListaProyectoPestanyaDashboardAsistenteDataset).ToList();
             this.listaProyectoPestanyaExportacionBusqueda = this.ListaProyectoPestanyaExportacionBusqueda.Union(encapsulado.ListaProyectoPestanyaExportacionBusqueda).ToList();
             this.listaProyectoPestanyaFiltroOrdenRecursos = this.ListaProyectoPestanyaFiltroOrdenRecursos.Union(encapsulado.ListaProyectoPestanyaFiltroOrdenRecursos).ToList();
             this.listaProyectoPestanyaMenu = this.ListaProyectoPestanyaMenu.Union(encapsulado.ListaProyectoPestanyaMenu).ToList();
@@ -1033,10 +1065,10 @@ namespace Es.Riam.Gnoss.AD.EncapsuladoDatos
         }
 
 
-        public ProyectoPestanyaMenu AddProyectoPestanyaMenuRow(Guid pestanyaId, Guid organizacionID, Guid proyectoID, ProyectoPestanyaMenu p1, short tipoPestanya, string nombre, string ruta, short orden, bool nuevaPestanya, bool visible, short privacidad, string htmlAlternativo, string idiomasDisponibles, string titulo, string nombreCortoPestanya, bool visibleSinAcceso, string cssBodyClass, string metaDescription, bool activa)
+        public ProyectoPestanyaMenu AddProyectoPestanyaMenuRow(Guid pestanyaId, Guid organizacionID, Guid proyectoID, ProyectoPestanyaMenu p1, short tipoPestanya, string nombre, string ruta, short orden, bool nuevaPestanya, bool visible, short privacidad, string htmlAlternativo, string idiomasDisponibles, string titulo, string nombreCortoPestanya, bool visibleSinAcceso, string cssBodyClass, string metaDescription, bool activa, string ultimoEditor)
         {
-            ProyectoPestanyaMenu proyectoPestanyaMenu = new ProyectoPestanyaMenu(pestanyaId, organizacionID, proyectoID, p1, tipoPestanya, nombre, ruta, orden, nuevaPestanya, visible, privacidad, htmlAlternativo, idiomasDisponibles, titulo, nombreCortoPestanya, visibleSinAcceso, cssBodyClass, metaDescription, activa);
-            this.listaProyectoPestanyaMenu.Add(proyectoPestanyaMenu);
+            ProyectoPestanyaMenu proyectoPestanyaMenu = new ProyectoPestanyaMenu(pestanyaId, organizacionID, proyectoID, p1, tipoPestanya, nombre, ruta, orden, nuevaPestanya, visible, privacidad, htmlAlternativo, idiomasDisponibles, titulo, nombreCortoPestanya, visibleSinAcceso, cssBodyClass, metaDescription, activa, ultimoEditor);
+            listaProyectoPestanyaMenu.Add(proyectoPestanyaMenu);
             return proyectoPestanyaMenu;
         }
 

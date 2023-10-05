@@ -1,4 +1,5 @@
-﻿using Microsoft.WindowsAzure.Storage;
+﻿/*
+using Microsoft.WindowsAzure.Storage;
 using Microsoft.WindowsAzure.Storage.File;
 using System;
 using System.Collections.Generic;
@@ -431,3 +432,4 @@ namespace Es.Riam.Gnoss.FileManager
         }
     }
 }
+*/

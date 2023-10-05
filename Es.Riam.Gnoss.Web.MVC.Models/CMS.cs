@@ -184,7 +184,12 @@ namespace Es.Riam.Gnoss.AD.CMS
         /// <summary>
         /// Listado de IDS con los proyectos
         /// </summary>
-        Estaticos = 2
+        Estaticos = 2,
+        /// <summary>
+        /// Comunidades a las que pertenece el usuario conectado
+        /// </summary>
+        ComunidadesUsuario = 3
+
     }
 
     /// <summary>
@@ -732,8 +737,18 @@ namespace Es.Riam.Gnoss.Web.MVC.Models
         public string Title { get; set; }
 
         /// <summary>
+        /// Activo
+        /// </summary>
+        public bool Activo { get; set; }
+
+        /// <summary>
         /// Tipo de componente
         /// </summary>
         public TipoComponenteCMS CMSComponentType { get; set; }
+
+        /// <summary>
+        /// Fecha de modificación del componente
+        /// </summary>
+        public DateTime EditionDate { get; set; }
     }
 }

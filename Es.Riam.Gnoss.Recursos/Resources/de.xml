@@ -1,6 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Resources language="German" code="de">
 	<page name="COMMON">
+		<Resource tag="BUSQUEDAOC">Suche nach OC</Resource>
 		<Resource tag="RELATEDTO">Relacionado con</Resource>
 		<Resource tag="BASERECURSOS">Ressourcen</Resource>
 		<Resource tag="SUBIRNEWSLETTER">Neuen Newsletter hinzufügen</Resource>
@@ -3587,7 +3588,6 @@
 		<Resource tag="ADMINISTRARCATEGORIASCOM">administrar-categorias</Resource>
 		<Resource tag="ADMINISTRARCOMUNIDADGENERAL">administrar-comunidad-general</Resource>
 		<Resource tag="POLITICACOMUNIDAD">politica-certificados</Resource>
-		<Resource tag="ADMINISTRARPLANTILLASCOM">administrar-plantillas</Resource>
 		<Resource tag="QUIEROTWITTEAR">twittear</Resource>
 		<Resource tag="VERBIO">ver-bio</Resource>
 		<Resource tag="ENVIOTWITTERCORRECTO">twitterok</Resource>

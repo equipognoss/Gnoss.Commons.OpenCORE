@@ -531,7 +531,7 @@ namespace Es.Riam.Semantica.OWL
         {
             get
             {
-                if (TipoEntidad.Contains("http://"))
+                if (TipoEntidad.Contains("http://") || TipoEntidad.Contains("https://"))
                 {
                     return TipoEntidadConNamespace;
                 }

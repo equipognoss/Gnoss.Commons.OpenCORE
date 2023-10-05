@@ -3,6 +3,7 @@ using Es.Riam.Gnoss.AD.EncapsuladoDatos;
 using Es.Riam.Gnoss.AD.EntityModel;
 using Es.Riam.Gnoss.AD.EntityModel.Comparadores;
 using Es.Riam.Gnoss.AD.EntityModel.Models.Documentacion;
+using Es.Riam.Gnoss.AD.EntityModel.Models.Faceta;
 using Es.Riam.Gnoss.AD.EntityModel.Models.IdentidadDS;
 using Es.Riam.Gnoss.AD.EntityModel.Models.PersonaDS;
 using Es.Riam.Gnoss.AD.EntityModel.Models.ProyectoDS;
@@ -3040,7 +3041,7 @@ namespace Es.Riam.Gnoss.AD.Documentacion
         /// </summary>
         /// <param name="pListaDocumentosID">Lista de documentos</param>
         /// <param name="pIdentidadID">Identidad del votante</param>
-        /// <return s>Diccionario con el DocumentoID y el valor del voto realizado</return s>
+        /// <returns>Diccionario con el DocumentoID y el valor del voto realizado</return s>
         public Dictionary<Guid, double> ObtenerVotoRecurso(List<Guid> pListaDocumentosID, Guid pIdentidadID)
         {
             Dictionary<Guid, double> diccionario = null;
@@ -3089,7 +3090,7 @@ namespace Es.Riam.Gnoss.AD.Documentacion
         /// </summary>
         /// <param name="pListaDocumentosID">Lista de documentos</param>
         /// <param name="pIdentidadID">Identidad del votante</param>
-        /// <return s>Diccionario con el DocumentoID y el valor del voto realizado</return s>
+        /// <returns>Diccionario con el DocumentoID y el valor del voto realizado</return s>
         public List<Guid> ObtenerRecursosCompartidosEnBRUsuario(List<Guid> pListaDocumentosID, Guid pUsuarioID)
         {
             List<Guid> listaCompartidos = new List<Guid>();
@@ -3106,7 +3107,7 @@ namespace Es.Riam.Gnoss.AD.Documentacion
         /// </summary>
         /// <param name="pListaDocumentosID">Lista de documentos</param>
         /// <param name="pIdentidadID">Identidad del votante</param>
-        /// <return s>Diccionario con el DocumentoID y el valor del voto realizado</return s>
+        /// <returns>Diccionario con el DocumentoID y el valor del voto realizado</return s>
         public List<Guid> ObtenerRecursosCompartidosEnBROrganizacion(List<Guid> pListaDocumentosID, Guid pOrganizacionID)
         {
             List<Guid> listaCompartidos = new List<Guid>();
@@ -3129,7 +3130,7 @@ namespace Es.Riam.Gnoss.AD.Documentacion
         /// Obtiene el documento que se encuentra vinculado a un elemento y no esté marcado como eliminado
         /// </summary>
         /// <param name="pElementoVinculadoID">Identificador del elemento vinculado</param>
-        /// <return s>Dataset de documentación</return s>
+        /// <returns>Dataset de documentación</return s>
         public DataWrapperDocumentacion ObtenerDocumentoDeElementoVinculado(Guid pElementoVinculadoID)
         {
             return ObtenerDocumentoDeElementoVinculado(pElementoVinculadoID, true);
@@ -3139,7 +3140,7 @@ namespace Es.Riam.Gnoss.AD.Documentacion
         /// Obtiene el enlace del documento vinculado al documento dado
         /// </summary>
         /// <param name="pDocumentoID"></param>
-        /// <return s></return s>
+        /// <returns></return s>
         public string ObtenerEnlaceDocumentoVinculadoADocumento(Guid pDocumentoID)
         {
             return mEntityContext.Documento.Join(mEntityContext.Documento, documento => new { DocumentoID = documento.DocumentoID }, documentoOnto => new { DocumentoID = documentoOnto.ElementoVinculadoID.Value }, (documento, documentoOnto) => new
@@ -3155,7 +3156,7 @@ namespace Es.Riam.Gnoss.AD.Documentacion
         /// <param name="pClaveElementoVinculadoID">Identificador del elemento al que están vinculados los documentos</param>
         /// <param name="pHacerCargaTotalDocumentos">TRUE si debe hacerse una carga completa de los documentos resultado, 
         /// FALSE si sólo debe traerse sus datos de la tabla documento</param>
-        /// <return s>Dataset de documentación</return s>
+        /// <returns>Dataset de documentación</return s>
         public DataWrapperDocumentacion ObtenerDocumentoDeElementoVinculado(Guid pClaveElementoVinculadoID, bool pHacerCargaTotalDocumentos)
         {
             DataWrapperDocumentacion docDW = new DataWrapperDocumentacion();
@@ -3180,7 +3181,7 @@ namespace Es.Riam.Gnoss.AD.Documentacion
         /// </summary>
         /// <param name="pListaDocumentosID">Identificadores de las ontologías encontradas en un proyecto</param>
         /// <param name="pProyectoID">Identificador del proyecto en el que se quieren buscar ontologías con el mismo enlace</param>
-        /// <return s>Diccionario del tipo IDOntologiaOriginal -> IDOntologíaEnProyecto</return s>
+        /// <returns>Diccionario del tipo IDOntologiaOriginal -> IDOntologíaEnProyecto</return s>
         public Dictionary<Guid, Guid> ObtenerElementoVinculadoIDDeOtroProyectoConMismoEnlace(List<Guid> pListaDocumentosID, Guid pProyectoID)
         {
             Dictionary<Guid, Guid> dicElementosVinculadosProyecto = new Dictionary<Guid, Guid>();
@@ -3213,7 +3214,7 @@ namespace Es.Riam.Gnoss.AD.Documentacion
         /// Obtiene los elementos vinculados asociados a los documentos
         /// </summary>
         /// <param name="pClaveElementoVinculadoID"></param>
-        /// <return s>DocumentacionDS</return s>
+        /// <returns>DocumentacionDS</return s>
         public Dictionary<Guid, Guid> ObtenerElementoVinculadoIDPorDocumentoID(List<Guid> pListaDocumentosID)
         {
             Dictionary<Guid, Guid> dicElementosVinculadosDocumentos = new Dictionary<Guid, Guid>();
@@ -3243,7 +3244,7 @@ namespace Es.Riam.Gnoss.AD.Documentacion
         /// <param name="pIdentidadMyGnossID">Identificador de la identidad del usuario en MyGnoss (NULL si el usuario no está conectado)</param>
         /// <param name="pEditando">Verdad si el usuario quiere editar el recurso</param>
         /// <param name="pUsuarioPerteneceACom">Verdad si el usuario pertenece a la comunidad</param>
-        /// <return s>True si el usuario tiene acceso al recurso, False en caso contrario</return s>
+        /// <returns>True si el usuario tiene acceso al recurso, False en caso contrario</return s>
         public bool TieneUsuarioAccesoADocumentoEnProyecto(List<Guid> pProyectosID, Guid pDocumentoID, Guid? pPerfilID, Guid? pIdentidadComunidadID, Guid? pIdentidadMyGnossID, bool pEditando, bool pUsuarioPerteneceACom)
         {
             if (!pEditando)
@@ -3288,7 +3289,7 @@ namespace Es.Riam.Gnoss.AD.Documentacion
         /// Carga la tabla DocumentoWebVinBaseRecursos con la lista de los documentos modificados
         /// </summary>
         /// <param name="pDocumentosID">Lista de ids de los documentos modificados</param>
-        /// <return s>Devuelve el dataset con la tabla cargada</return s>
+        /// <returns>Devuelve el dataset con la tabla cargada</return s>
         public List<DocumentoWebVinBaseRecursos> ObtenerWebVinBaseRecursosDocumentosModificados(List<Guid> pDocumentosID)
         {
             return mEntityContext.DocumentoWebVinBaseRecursos.Where(docWebVin => pDocumentosID.Contains(docWebVin.DocumentoID)).ToList();
@@ -3299,7 +3300,7 @@ namespace Es.Riam.Gnoss.AD.Documentacion
         /// </summary>
         /// <param name="pProyectoID">Identificador de la comunidad</param>
         /// <param name="pFechaBusqueda">Fecha a partir de la cual buscar recursos con actividad</param>
-        /// <return s>Lista de identificadores de documento</return s>
+        /// <returns>Lista de identificadores de documento</return s>
         public List<Guid> ObtenerDocumentosActivosEnFecha(Guid pProyectoID, DateTime pFechaBusqueda)
         {
             var primeraParteConsulta = mEntityContext.VotoDocumento.JoinVoto().Where(item => item.Voto.FechaVotacion.Value >= pFechaBusqueda && item.VotoDocumento.ProyectoID.Value.Equals(pProyectoID)).Select(item => item.VotoDocumento.DocumentoID);
@@ -3314,7 +3315,7 @@ namespace Es.Riam.Gnoss.AD.Documentacion
         /// </summary>
         /// <param name="pListaEntidades">Lista de claves</param>
         /// <param name="pSoloUltimaVersionNoEliminados">TRUE si solo se deben traer los que sean última version y NO eliminados, FALSE para traer todos</param>
-        /// <return s>DocumentacionDS</return s>
+        /// <returns>DocumentacionDS</return s>
         public DataWrapperDocumentacion ObtenerDocumentosDeEntidades(List<Guid> pListaEntidades, bool pSoloUltimaVersionNoEliminados)
         {
             //Todo => Campo DocumentoEntidadGnoss.EntidadGnossID vacío
@@ -3372,7 +3373,7 @@ namespace Es.Riam.Gnoss.AD.Documentacion
         /// Obtiene la documentación de una organización
         /// </summary>
         /// <param name="pOrganizacionID">Identificador de organización</param>
-        /// <return s>Dataset de documentación</return s>
+        /// <returns>Dataset de documentación</return s>
         public List<Documento> ObtenerDocumentacion(Guid pOrganizacionID)
         {
             return mEntityContext.Documento.Where(doc => doc.OrganizacionID.Equals(pOrganizacionID)).ToList();
@@ -3406,7 +3407,7 @@ namespace Es.Riam.Gnoss.AD.Documentacion
         /// <param name="pListaDocumentoID">Lista de identificadores de documento</param>
         /// <param name="pTraerBasesRecurso">Indica si se debe traer las bases de recursos o no</param>
         /// <param name="pObtenerUsuariosExternos">Indica si se debe obtener los usuarios externos o no</param>
-        /// <return s>Dataset de documentación con los documentos cargados</return s>
+        /// <returns>Dataset de documentación con los documentos cargados</return s>
         public DataWrapperDocumentacion ObtenerDocumentosPorID(List<Guid> pListaDocumentoID, bool pTraerBasesRecurso)
         {
             return ObtenerDocumentosPorID(pListaDocumentoID, pTraerBasesRecurso, Guid.Empty);
@@ -3419,7 +3420,7 @@ namespace Es.Riam.Gnoss.AD.Documentacion
         /// <param name="pTraerBasesRecurso">Indica si se debe traer las tablas baseRecursos o no</param>
         /// <param name="pProyectoID">Proyecto en el que se realiza la búsqueda</param>
         /// <param name="pObtenerUsuariosExternos">Indica si se debe obtener los usuarios externos o no</param>
-        /// <return s>Dataset de documentación con los documentos cargados</return s>
+        /// <returns>Dataset de documentación con los documentos cargados</return s>
         public DataWrapperDocumentacion ObtenerDocumentosPorID(List<Guid> pListaDocumentoID, bool pTraerBasesRecurso, Guid pProyectoID)
         {
             DataWrapperDocumentacion documentacionDW = new DataWrapperDocumentacion();
@@ -3511,7 +3512,7 @@ namespace Es.Riam.Gnoss.AD.Documentacion
         /// Obtiene unos documentos a partir de sus identificadores, solo tabla Documento.
         /// </summary>
         /// <param name="pListaDocumentoID">Identificadores de documento</param>
-        /// <return s>Dataset de documentación con los documentos cargados, solo tabla Documento</return s>
+        /// <returns>Dataset de documentación con los documentos cargados, solo tabla Documento</return s>
         public List<Documento> ObtenerDocumentosPorIDSoloDocumento(List<Guid> pListaDocumentoID)
         {
             List<Documento> listaDocumentos = new List<Documento>();
@@ -3528,7 +3529,7 @@ namespace Es.Riam.Gnoss.AD.Documentacion
         /// 
         /// </summary>
         /// <param name="pListaDocumentoID"></param>
-        /// <return s></return s>
+        /// <returns></return s>
         public DataWrapperDocumentacion ObtenerDocumentosPorIDYComunidadesComparticion(List<Guid> pListaDocumentoID)
         {
             DataWrapperDocumentacion dataWrapperDocumentacion = new DataWrapperDocumentacion();
@@ -3616,7 +3617,7 @@ namespace Es.Riam.Gnoss.AD.Documentacion
         /// </summary>
         /// <param name="pProyectoID">ID del proyecto</param>
         /// <param name="pNumDocumentos">Numero de documentos que queremos traer</param>
-        /// <return s></return s>
+        /// <returns></return s>
         public DataWrapperDocumentacion ObtenerRecursosPopularesProyecto(Guid pProyectoID, int pNumDocumentos)
         {
             List<Guid> listaDocs = new List<Guid>();
@@ -3642,7 +3643,7 @@ namespace Es.Riam.Gnoss.AD.Documentacion
         /// </summary>
         /// <param name="pProyectoID">ID del proyecto</param>
         /// <param name="pNumDocumentos">Numero de documentos que queremos traer</param>
-        /// <return s>Lista de DocumentoID</return s>
+        /// <returns>Lista de DocumentoID</return s>
         public List<Guid> ObtenerListaRecursosPopularesProyecto(Guid pProyectoID, int pNumDocumentos)
         {
             List<Guid> listaDocs = new List<Guid>();
@@ -3661,10 +3662,10 @@ namespace Es.Riam.Gnoss.AD.Documentacion
         }
 
         /// <summary>
-        /// Obtiene un documento a partir de su identificador.
+        /// Obtiene un datawrapper con el documento a partir de su identificador.
         /// </summary>
         /// <param name="pDocumentoID">Identificador de documento</param>
-        /// <return s>Dataset de documentación con el documento cargado</return s>
+        /// <returns>Dataset de documentación con el documento cargado</return s>
         public DataWrapperDocumentacion ObtenerDocumentoPorID(Guid pDocumentoID)
         {
             DataWrapperDocumentacion dataWrapperDocumentacion = new DataWrapperDocumentacion();
@@ -3676,7 +3677,17 @@ namespace Es.Riam.Gnoss.AD.Documentacion
         /// Obtiene un documento a partir de su identificador.
         /// </summary>
         /// <param name="pDocumentoID">Identificador de documento</param>
-        /// <return s>Dataset de documentación con el documento cargado</return s>
+        /// <returns></returns>
+        public Documento ObtenerDocumentoPorIdentificador(Guid pDocumentoID)
+        {
+            return mEntityContext.Documento.Where(doc => doc.DocumentoID.Equals(pDocumentoID)).FirstOrDefault();            
+        }
+
+        /// <summary>
+        /// Obtiene un documento a partir de su identificador.
+        /// </summary>
+        /// <param name="pDocumentoID">Identificador de documento</param>
+        /// <returns>Dataset de documentación con el documento cargado</return s>
         public DataWrapperDocumentacion ObtenerDocumentoPorIDConSubEventos(Guid pDocumentoID, Guid pProyectoID)
         {
             DataWrapperDocumentacion dataWrapperDocumentacion = new DataWrapperDocumentacion();
@@ -3709,7 +3720,7 @@ namespace Es.Riam.Gnoss.AD.Documentacion
         /// Obtiene las filas de GrupoEditorRecurso 
         /// </summary>
         /// <param name="pGrupoID">Identificador del grupo</param>
-        /// <return s>DataSet con las filas de GrupoEditorRecurso </return s>
+        /// <returns>DataSet con las filas de GrupoEditorRecurso </return s>
         public List<DocumentoRolGrupoIdentidades> ObtenerFilasGrupoEditorRecurso(Guid pGrupoID)
         {
             return mEntityContext.DocumentoRolGrupoIdentidades.Where(doc => doc.GrupoID.Equals(pGrupoID)).ToList();
@@ -3719,7 +3730,7 @@ namespace Es.Riam.Gnoss.AD.Documentacion
         /// Obtiene el Dataset del token de brightcove de un documento a partir de su identificador.
         /// </summary>
         /// <param name="pDocumentoID">Identificador de documento</param>
-        /// <return s>Dataset del token de brightcove del documento</return s>
+        /// <returns>Dataset del token de brightcove del documento</return s>
         public DataWrapperDocumentacion ObtenerDocumentoTokenBrightcovePorID(Guid pDocumentoID)
         {
             DataWrapperDocumentacion documentacionDW = new DataWrapperDocumentacion();
@@ -3733,7 +3744,7 @@ namespace Es.Riam.Gnoss.AD.Documentacion
         /// <summary>
         /// Obtiene el Dataset de tokens de brightcove pendientes
         /// </summary>
-        /// <return s>Dataset de tokens de brightcove pendientes</return s>
+        /// <returns>Dataset de tokens de brightcove pendientes</return s>
         public DataWrapperDocumentacion ObtenerDocumentoTokenBrightcovePendientes()
         {
             DataWrapperDocumentacion documentacionDW = new DataWrapperDocumentacion();
@@ -3747,7 +3758,7 @@ namespace Es.Riam.Gnoss.AD.Documentacion
         /// <summary>
         /// Obtiene el Dataset de tokens de brightcove finalizadas
         /// </summary>
-        /// <return s>Dataset de tokens de brightcove finalizadas</return s>
+        /// <returns>Dataset de tokens de brightcove finalizadas</return s>
         public DataWrapperDocumentacion ObtenerDocumentoTokenBrightcoveFinalizadas()
         {
             DataWrapperDocumentacion documentacionDW = new DataWrapperDocumentacion();
@@ -3763,7 +3774,7 @@ namespace Es.Riam.Gnoss.AD.Documentacion
         /// Obtiene el Dataset del token de brightcove de un documento a partir de su token.
         /// </summary>
         /// <param name="pTokenID">Identificador del token</param>
-        /// <return s>Dataset del token de brightcove del documento</return s>
+        /// <returns>Dataset del token de brightcove del documento</return s>
         public DataWrapperDocumentacion ObtenerDocumentoTokenBrightcovePorTokenID(Guid pTokenID)
         {
             DataWrapperDocumentacion documentacionDW = new DataWrapperDocumentacion();
@@ -3778,7 +3789,7 @@ namespace Es.Riam.Gnoss.AD.Documentacion
         /// Obtiene el Dataset del token de TOP de un documento a partir de su identificador.
         /// </summary>
         /// <param name="pDocumentoID">Identificador de documento</param>
-        /// <return s>Dataset del token de TOP del documento</return s>
+        /// <returns>Dataset del token de TOP del documento</return s>
         public DataWrapperDocumentacion ObtenerDocumentoTokenTOPPorID(Guid pDocumentoID)
         {
             // TODO Probar -> Tabla DocumentoTokenTop vacía
@@ -3793,7 +3804,7 @@ namespace Es.Riam.Gnoss.AD.Documentacion
         /// <summary>
         /// Obtiene el Dataset de tokens de TOP pendientes
         /// </summary>
-        /// <return s>Dataset de tokens de brightcove pendientes</return s>
+        /// <returns>Dataset de tokens de brightcove pendientes</return s>
         public DataWrapperDocumentacion ObtenerDocumentoTokenTOPPendientes()
         {
             // TODO Probar -> Tabla DocumentoTokenTop vacía
@@ -3808,7 +3819,7 @@ namespace Es.Riam.Gnoss.AD.Documentacion
         /// <summary>
         /// Obtiene el Dataset de tokens de TOP finalizadas
         /// </summary>
-        /// <return s>Dataset de tokens de TOP finalizadas</return s>
+        /// <returns>Dataset de tokens de TOP finalizadas</return s>
         public DataWrapperDocumentacion ObtenerDocumentoTokenTOPFinalizadas()
         {
             // TODO Probar -> Tabla DocumentoTokenTop vacía
@@ -3825,7 +3836,7 @@ namespace Es.Riam.Gnoss.AD.Documentacion
         /// Obtiene el Dataset del token de TOP de un documento a partir de su token.
         /// </summary>
         /// <param name="pTokenID">Identificador del token</param>
-        /// <return s>Dataset del token de TOP del documento</return s>
+        /// <returns>Dataset del token de TOP del documento</return s>
         public DataWrapperDocumentacion ObtenerDocumentoTokenTOPPorTokenID(Guid pTokenID)
         {
             // TODO Probar -> Tabla DocumentoTokenTop vacía
@@ -3840,7 +3851,7 @@ namespace Es.Riam.Gnoss.AD.Documentacion
         /// <summary>
         /// Obtiene el Dataset de DocumentoEnvioNewsLetter pendientes de enviar.
         /// </summary>
-        /// <return s>DocumentoEnvioNewsLetter</return s>
+        /// <returns>DocumentoEnvioNewsLetter</return s>
         public List<NewsletterPendientes> ObtenerDocumentoEnvioNewsletterPendienteEnvio(Guid? pDocumentoID = null)
         {
             // TODO Probar -> Utilizar BD Didactalia
@@ -3888,7 +3899,7 @@ namespace Es.Riam.Gnoss.AD.Documentacion
         /// <summary>
         /// Obtiene el Dataset de DocumentoEnvioNewsLetter pendientes de enviar.
         /// </summary>
-        /// <return s>DocumentoEnvioNewsLetter</return s>
+        /// <returns>DocumentoEnvioNewsLetter</return s>
         public List<NewsletterPendientes> ObtenerDocumentoEnvioNewsletterPendienteEnvioRabbit(DocumentoEnvioNewsLetter pDocumentoEnvioNewsletter)
         {
             // TODO Probar -> Utilizar BD Didactalia
@@ -3953,7 +3964,7 @@ namespace Es.Riam.Gnoss.AD.Documentacion
         /// Obtiene el Dataset de la newsletter a partir de su identificador.
         /// </summary>
         /// <param name="pDocumentoID">Identificador de documento</param>
-        /// <return s>Dataset</return s>
+        /// <returns>Dataset</return s>
         public DataWrapperDocumentacion ObtenerDocumentoNewsletterPorDocumentoID(Guid pDocumentoID)
         {
             // TODO Probar -> Utilizar BD Didactalia
@@ -3970,7 +3981,7 @@ namespace Es.Riam.Gnoss.AD.Documentacion
         /// Obtiene la descripcion de un documento a partir de su identificador.
         /// </summary>
         /// <param name="pDocumentoID">Identificador de documento</param>
-        /// <return s>DataSet de documentación con el documento cargado.</return s>
+        /// <returns>DataSet de documentación con el documento cargado.</return s>
         public string ObtenerDescripcionDocumentoPorID(Guid pDocumentoID)
         {
             return mEntityContext.Documento.Where(documento => documento.DocumentoID.Equals(pDocumentoID)).ToList().FirstOrDefault().Descripcion;
@@ -3980,7 +3991,7 @@ namespace Es.Riam.Gnoss.AD.Documentacion
         /// Obtiene la descripcion de una suscripcion de un documento a partir de su identificador.
         /// </summary>
         /// <param name="pDocumentoID">Identificador de documento</param>
-        /// <return s>DataSet de documentación con el documento cargado.</return s>
+        /// <returns>DataSet de documentación con el documento cargado.</return s>
         public string ObtenerDescripcionSuscripcionDocumentoPorID(Guid pDocumentoID, Guid pSuscripcionID)
         {
             return mEntityContext.ResultadoSuscripcion.Where(item => item.RecursoID.Equals(pDocumentoID) && item.SuscripcionID.Equals(pSuscripcionID)).Select(item => item.Descripcion).FirstOrDefault();
@@ -3991,7 +4002,7 @@ namespace Es.Riam.Gnoss.AD.Documentacion
         /// </summary>
         /// <param name="pDocumentoID">Identificador de documento</param>
         /// <param name="pProyectoID">Identificador del proyecto</param>
-        /// <return s>DocumentacionDS de documentación con el documento cargado</return s>
+        /// <returns>DocumentacionDS de documentación con el documento cargado</return s>
         public DataWrapperDocumentacion ObtenerDocumentoDocumentoWebVinBRPorID(Guid pDocumentoID, Guid pProyectoID)
         {
             DataWrapperDocumentacion dataWrapperDocumentacion = new DataWrapperDocumentacion();
@@ -4035,7 +4046,7 @@ namespace Es.Riam.Gnoss.AD.Documentacion
         /// </summary>
         /// <param name="pDocumentoID">Identificador de documento</param>
         /// <param name="pUsuarioID">Identificador del usuario</param>
-        /// <return s>DocumentacionDS de documentación con el documento cargado</return s>
+        /// <returns>DocumentacionDS de documentación con el documento cargado</return s>
         public DataWrapperDocumentacion ObtenerDocumentoDocumentoWebVinBRPorIDDeUsuario(Guid pDocumentoID, Guid pUsuarioID)
         {
             DataWrapperDocumentacion dataWrapperDocumentacion = new DataWrapperDocumentacion();
@@ -4071,7 +4082,7 @@ namespace Es.Riam.Gnoss.AD.Documentacion
         /// </summary>
         /// <param name="pDocumentoID">Identificador de documento</param>
         /// <param name="pUsuarioID">Identificador del usuario</param>
-        /// <return s>DocumentacionDS de documentación con el documento cargado</return s>
+        /// <returns>DocumentacionDS de documentación con el documento cargado</return s>
         public DataWrapperDocumentacion ObtenerDocumentoDocumentoWebVinBRPorIDDeOrganizacion(Guid pDocumentoID, Guid pOrganizacionID)
         {
             DataWrapperDocumentacion dataWrapperDocumentacion = new DataWrapperDocumentacion();
@@ -4365,7 +4376,7 @@ namespace Es.Riam.Gnoss.AD.Documentacion
         /// <param name="pFinal"></param>
         /// <param name="pNombreTablaCOMUNIDADES"></param>
         /// <param name="pProyectoID"></param>
-        /// <return s></return s>
+        /// <returns></return s>
         public void ObtenerListaRecursosRelacionados(DataWrapperDocumentacion pDataWrapperDocumentacion, FacetadoDS pFacetadoDS, Guid pDocumentoID, int pInicio, int pFinal, string pNombreTablaCOMUNIDADES, Guid pProyectoID)
         {
             // NO SE HACE
@@ -4416,7 +4427,7 @@ namespace Es.Riam.Gnoss.AD.Documentacion
         /// </summary>
         /// <param name="pDocumentos">IDs de documento</param>
         /// <param name="pProyectoID">ProyectoID</param>
-        /// <return s>DataSet de documento con una lista de recursos para la vista prensa</return s>
+        /// <returns>DataSet de documento con una lista de recursos para la vista prensa</return s>
         public List<DocumentoTieneImagenConNombresCortoProy> ObtenerListaRecursosPrensa(List<Guid> pDocumentos, Guid pProyectoID)
         {
             List<DocumentoTieneImagenConNombresCortoProy> listaDocumentoTieneImagenConNombresCortoProy = new List<DocumentoTieneImagenConNombresCortoProy>();
@@ -4461,14 +4472,14 @@ namespace Es.Riam.Gnoss.AD.Documentacion
         /// <param name="pPerfilActualID">PerfilID actual</param>
         /// <param name="pInicio">Inicio paginación</param>
         /// <param name="pLimite">Fin paginación</param>
-        /// <return s>Documento vinculados que puede ver el perfil actual</return s>
+        /// <returns>Documento vinculados que puede ver el perfil actual</return s>
         public int ObtenerNumeroDocumentosVinculadosDocuemntoPorID(Guid pDocumentoID)
         {
             return mEntityContext.DocumentoVincDoc.Count(vinDoc => vinDoc.DocumentoID.Equals(pDocumentoID));
         }
 
         /// <param name="pIdentidadID">IdentidadID del que se traerán los vinculos</param>
-        /// <return s>Obtener los recursos publicados</return s>
+        /// <returns>Obtener los recursos publicados</return s>
         public int ObtenerNumeroRecursosPublicados(Guid pIdentidadID)
         {
             return mEntityContext.DocumentoWebVinBaseRecursos.Count(vinDoc => vinDoc.IdentidadPublicacionID.HasValue && vinDoc.IdentidadPublicacionID.Value.Equals(pIdentidadID));
@@ -4478,7 +4489,7 @@ namespace Es.Riam.Gnoss.AD.Documentacion
         /// Comprueba se un recurso tiene algún recurso vinculado
         /// </summary>
         /// <param name="pDocumentoID">Identificador del documento a comprobar</param>
-        /// <return s>True si el documento tiene algún recurso vinculado, false en caso contrario</return s>
+        /// <returns>True si el documento tiene algún recurso vinculado, false en caso contrario</return s>
         public bool TieneDocumentoDocumentosVinculados(Guid pDocumentoID)
         {
             return mEntityContext.DocumentoVincDoc.Join(mEntityContext.Documento, vinDoc => vinDoc.DocumentoID, doc => doc.DocumentoID, (vinDoc, doc) => new
@@ -4497,7 +4508,7 @@ namespace Es.Riam.Gnoss.AD.Documentacion
         /// <param name="pPerfilActualID">PerfilID actual</param>
         /// <param name="pInicio">Inicio paginación</param>
         /// <param name="pLimite">Fin paginación</param>
-        /// <return s>Documento vinculados que puede ver el perfil actual</return s>
+        /// <returns>Documento vinculados que puede ver el perfil actual</return s>
         public int ObtenerDocumentosVinculadosDocumento(DataWrapperDocumentacion pDataWrapperDocumentacion, Guid pProyectoID, Guid pDocumentoID, Guid pPerfilActualID, int pInicio, int pLimite)
         {
 
@@ -4681,7 +4692,7 @@ namespace Es.Riam.Gnoss.AD.Documentacion
         /// <param name="pPerfilActualID">PerfilID actual</param>
         /// <param name="pInicio">Inicio paginación</param>
         /// <param name="pLimite">Fin paginación</param>
-        /// <return s>Documento vinculados que puede ver el perfil actual</return s>
+        /// <returns>Documento vinculados que puede ver el perfil actual</return s>
         public Dictionary<Guid, List<Guid>> ObtenerListaDocumentosVinculadosDocumento(DataWrapperDocumentacion pDataWrapperDocumentacion, Guid pProyectoID, Guid pDocumentoID, Guid pPerfilActualID, int pInicio, int pLimite, out int pNumVinculados)
         {
             Dictionary<Guid, List<Guid>> listaClavesRecursosProyecto = new Dictionary<Guid, List<Guid>>();
@@ -4805,7 +4816,7 @@ namespace Es.Riam.Gnoss.AD.Documentacion
         /// </summary>
         /// <param name="pDocumento1ID">ID del documento 1</param>
         /// <param name="pDocumento2ID">ID del documento 2</param>
-        /// <return s>TRUE si se han desvinculado correctamente, FALSE en caso contrario</return s>
+        /// <returns>TRUE si se han desvinculado correctamente, FALSE en caso contrario</return s>
         public bool DesvincularRecursos(Guid pDocumento1ID, Guid pDocumento2ID)
         {
             try
@@ -4847,7 +4858,7 @@ namespace Es.Riam.Gnoss.AD.Documentacion
         /// </summary>
         /// <param name="pListaCategorias">Lista con las categorias a las que están agregados los documentos</param>
         /// <param name="pTesauroID">Identificador del tesauro al que pertenecen las categorías</param>
-        /// <return s>DataSet de documentación con los documentos</return s>
+        /// <returns>DataSet de documentación con los documentos</return s>
         public DataWrapperDocumentacion ObtenerVinculacionDocumentosDeCategoriasTesauro(List<Guid> pListaCategorias, Guid pTesauroID)
         {//Probar con mas de 3000 recursos
             DataWrapperDocumentacion dataWrapperDocumentacion = new DataWrapperDocumentacion();
@@ -4870,7 +4881,7 @@ namespace Es.Riam.Gnoss.AD.Documentacion
         /// Obtiene un array cuyo primer elemento es la identidad del creador del recurso  la segunda componente es el usuario
         /// </summary>
         /// <param name="pRecursoID">Recurso que busca</param>        
-        /// <return s>Array cuyo primer elemento es el perfil de la identidad del creador del recurso  la segunda componente es el usuario</return s>
+        /// <returns>Array cuyo primer elemento es el perfil de la identidad del creador del recurso  la segunda componente es el usuario</return s>
         public List<Guid> ObtenerPerfilesIDEstaCompartidoYEliminadoRecurso(Guid pRecursoID)
         {
             List<Guid> listaPerfiles = new List<Guid>();
@@ -4894,7 +4905,7 @@ namespace Es.Riam.Gnoss.AD.Documentacion
         /// Obtiene un Guid que es la organizacion del creador del recurso(Guid.Empty si no es de Organizacion) 
         /// </summary>
         /// <param name="pRecursoID">Recurso que busca</param>        
-        /// <return s>Guid que es la organizacion del creador del recurso(Guid.Empty si no es de Organizacion) </return s>
+        /// <returns>Guid que es la organizacion del creador del recurso(Guid.Empty si no es de Organizacion) </return s>
         public Guid ObtenerOrganizacionPublicadorIDdeRecurso(Guid pRecursoID)
         {
             Guid orgID = Guid.Empty;
@@ -4913,7 +4924,7 @@ namespace Es.Riam.Gnoss.AD.Documentacion
         /// Obtiene un array cuyo primer elemento es la identidad del creador del recurso  la segunda componente es la organizacion que lo tiene en su base de recursos de organizacion
         /// </summary>
         /// <param name="pRecursoID">Recurso que busca</param>        
-        /// <return s>Array cuyo primer elemento es la identidad del creador del recurso  la segunda componente es la organizacion que lo tiene en su base de recursos de organizacion</return s>
+        /// <returns>Array cuyo primer elemento es la identidad del creador del recurso  la segunda componente es la organizacion que lo tiene en su base de recursos de organizacion</return s>
         public Dictionary<Guid, Guid> ObtenerIdentidadyOrganizacionIDdeRecurso(Guid pRecursoID)
         {
 
@@ -4941,7 +4952,7 @@ namespace Es.Riam.Gnoss.AD.Documentacion
         /// Devuelve una lista con los perfiles que tienen acceso a algun recurso privado
         /// </summary>
         /// <param name="pProyectoID">Identificador del proyecto</param>
-        /// <return s>Lista con los perfiles</return s>
+        /// <returns>Lista con los perfiles</return s>
         public List<Guid> ObtenerPerfilesConRecursosPrivados(Guid pProyectoID)
         {
             List<Guid> listaPerfiles = mEntityContext.DocumentoRolIdentidad.JoinDocumentoRolIdentidadDocumentoWebVinBaseRecursos().JoinDocumentoRolIdentidadDocumentoWebVinBaseRecursos().Where(objeto => objeto.DocumentoWebVinBaseRecursos.PrivadoEditores && objeto.BaseRecursosProyecto.ProyectoID.Equals(pProyectoID)).Select(objeto => objeto.DocumentoRolIdentidad.PerfilID).Distinct().ToList();
@@ -4955,7 +4966,7 @@ namespace Es.Riam.Gnoss.AD.Documentacion
         /// Devuelve una lista con los perfiles que tienen acceso a algun debate privado
         /// </summary>
         /// <param name="pProyectoID">Identificador del proyecto</param>
-        /// <return s>Lista con los perfiles</return s>
+        /// <returns>Lista con los perfiles</return s>
         public List<Guid> ObtenerPerfilesConDebatesPrivados(Guid pProyectoID)
         {
             List<Guid> listaPerfiles = mEntityContext.Documento.JoinDocumentoDocumentoRolIdentidad().JoinDocumentoWebVinBaseRecursos().JoinBaseRecursosProyecto().Where(objeto => objeto.DocumentoWebVinBaseRecursos.PrivadoEditores && objeto.BaseRecursosProyecto.ProyectoID.Equals(pProyectoID) && objeto.Documento.Tipo.Equals((short)TiposDocumentacion.Debate) && !objeto.Documento.Eliminado).OrderBy(objeto => objeto.DocumentoRolIdentidad.PerfilID).Select(objeto => objeto.DocumentoRolIdentidad.PerfilID).ToList();
@@ -5033,7 +5044,7 @@ namespace Es.Riam.Gnoss.AD.Documentacion
         /// </summary>
         /// <param name="pListaEnlaces">Lista de enlaces para comprobar</param>
         /// <param name="pBaseRecursosID">Base de recursos en la que buscar</param>
-        /// <return s>dictionary con los enlaces y un booleano que determina si existe o no</return s>
+        /// <returns>dictionary con los enlaces y un booleano que determina si existe o no</return s>
         public Dictionary<string, bool> DocumentosRepetidosEnlaces(List<string> pListaEnlaces, Guid pBaseRecursosID)
         {
             Dictionary<string, bool> listaEnlaces = new Dictionary<string, bool>();
@@ -5070,7 +5081,7 @@ namespace Es.Riam.Gnoss.AD.Documentacion
         /// <param name="pDocumentoID">Identificador del documento que se está revisando</param>
         /// <param name="pBaseRecursosID">Identificador de base de recursos</param>
         /// <param name="pDocumentoRepetidoID">Identificador del documento repetido</param>
-        /// <return s>0 si no hay repetidos, 1 si se repite el título, 2 si se repite el enlace, 3 si se repiten ambos</return s>
+        /// <returns>0 si no hay repetidos, 1 si se repite el título, 2 si se repite el enlace, 3 si se repiten ambos</return s>
         public int DocumentoRepetidoTituloEnlace(string pTitulo, string pEnlace, Guid pDocumentoID, Guid pBaseRecursosID, out Guid pDocumentoRepetidoID)
         {
             int codigo = 0;
@@ -5157,7 +5168,7 @@ namespace Es.Riam.Gnoss.AD.Documentacion
         /// <param name="pDocumentoID">Identificador del documento que se está revisando o Guid.Empty si no se desea omitir ninguno</param>
         /// <param name="pBasesRecursosID">Lista con los identificadores de las bases de recursos</param>
         /// <param name="pDocumentoRepetidoID">Identificador del documento repetido</param>
-        /// <return s>0 si no hay repetidos, 1 si se repite el título, 2 si se repite el enlace, 3 si se repiten ambos</return s>
+        /// <returns>0 si no hay repetidos, 1 si se repite el título, 2 si se repite el enlace, 3 si se repiten ambos</return s>
         public int DocumentoRepetidoTituloEnlaceEnVariasBRs(string pTitulo, string pEnlace, Guid pDocumentoID, List<Guid> pBasesRecursosID, out Guid pDocumentoRepetidoID)
         {
             int codigo = 0;
@@ -5223,7 +5234,7 @@ namespace Es.Riam.Gnoss.AD.Documentacion
         /// Obtienen si un proyecto tiene o no articulos wiki (no eliminados)
         /// </summary>
         /// <param name="pProyectoID">Clave del proyecto</param>
-        /// <return s>True si tiene</return s>
+        /// <returns>True si tiene</return s>
         public bool TieneArticulosWikiProyecto(Guid pProyectoID)
         {
             return mEntityContext.Documento.JoinDocumentoWebVinBaseRecursos().JoinBaseRecursosProyecto().Where(objeto => !objeto.Documento.Eliminado && objeto.Documento.UltimaVersion && objeto.Documento.TipoEntidad.Equals((short)TipoEntidadVinculadaDocumento.Web) && !objeto.DocumentoWebVinBaseRecursos.Eliminado && objeto.Documento.Tipo.Equals((short)TiposDocumentacion.Wiki) && objeto.BaseRecursosProyecto.ProyectoID.Equals(pProyectoID)).Any();
@@ -5234,7 +5245,7 @@ namespace Es.Riam.Gnoss.AD.Documentacion
         /// </summary>
         /// <param name="pDocumentoID">Clave del documento</param>
         /// <param name="pProyectoID">Identificador del proyecto en el que se buscan comentarios</param>
-        /// <return s>True si tiene</return s>
+        /// <returns>True si tiene</return s>
         public bool TieneComentariosDocumento(Guid pDocumentoID, Guid pProyectoID)
         {
             return mEntityContext.DocumentoComentario.JoinComentario().Where(item => item.DocumentoComentario.DocumentoID.Equals(pDocumentoID) && !item.Comentario.Eliminado && mEntityContext.Proyecto.Where(item2 => item2.ProyectoID.Equals(item.DocumentoComentario.ProyectoID.Value) && (item2.ProyectoID.Equals(pProyectoID) || item2.TipoAcceso.Equals((short)TipoAcceso.Publico) || item2.TipoAcceso.Equals((short)TipoAcceso.Restringido))).Any()).Any();
@@ -5244,7 +5255,7 @@ namespace Es.Riam.Gnoss.AD.Documentacion
         /// Comprueba si una lista de documentos son borrador
         /// </summary>
         /// <param name="pListaDocumentoID">Claves de documentos</param>
-        /// <return s>True si el documento es borrador</return s>
+        /// <returns>True si el documento es borrador</return s>
         public Dictionary<Guid, bool> EsDocumentoBorradorLista(List<Guid> pListaDocumentoID)
         {
             Dictionary<Guid, bool> listaDocs = new Dictionary<Guid, bool>();
@@ -5275,7 +5286,7 @@ namespace Es.Riam.Gnoss.AD.Documentacion
         /// </summary>
         /// <param name="pDocumentoID">Clave del documento</param>
         /// <param name="pCategoriaTesauroID">Clave de la categoría</param>
-        /// <return s>True si el recurso está en una categoría</return s>
+        /// <returns>True si el recurso está en una categoría</return s>
         public bool EstaDocumentoEnCategoria(Guid pDocumentoID, Guid pCategoriaTesauroID)
         {
             return mEntityContext.DocumentoWebAgCatTesauro.Any(doc => doc.DocumentoID.Equals(pDocumentoID) && doc.CategoriaTesauroID.Equals(pCategoriaTesauroID));
@@ -5286,7 +5297,7 @@ namespace Es.Riam.Gnoss.AD.Documentacion
         /// </summary>
         /// <param name="pDocumentoID">Identificador del documeto</param>
         /// <param name="pProyectoID">Identificador del proyecto</param>
-        /// <return s></return s>
+        /// <returns></return s>
         public EstadoPregunta ComprobarEstadoPregunta(Guid pDocumentoID, Guid pProyectoID)
         {
             bool tieneComentarios = this.TieneComentariosDocumento(pDocumentoID, pProyectoID);
@@ -5316,7 +5327,7 @@ namespace Es.Riam.Gnoss.AD.Documentacion
         /// Comprueba si un documento es pregunta o debate
         /// </summary>
         /// <param name="pDocumentoID">Identificador del documento</param>
-        /// <return s></return s>
+        /// <returns></return s>
         public bool EsRecursoPreguntaODebate(Guid pDocumentoID)
         {
             return mEntityContext.Documento.Any(documento => documento.DocumentoID.Equals(pDocumentoID) && (documento.Tipo.Equals((short)TiposDocumentacion.Pregunta) || documento.Tipo.Equals((short)TiposDocumentacion.Debate)));
@@ -5327,7 +5338,7 @@ namespace Es.Riam.Gnoss.AD.Documentacion
         /// Obtiene la imagen principal de los documentos. Lo devuelve en formato "DocumentoID|tamaño,rutaImagenPrincipal"
         /// </summary>
         /// <param name="pListaIDsDocumentos">Lista de identificadores de los documentos</param>
-        /// <return s>Array de cadenas con el documentoID y la ruta de la imagen principal</return s>
+        /// <returns>Array de cadenas con el documentoID y la ruta de la imagen principal</return s>
         public string[] ObtenerImagenesPrincipalesDocumentos(List<Guid> pListaIDsDocumentos)
         {
             List<string> listaImagenes = new List<string>();
@@ -5352,7 +5363,7 @@ namespace Es.Riam.Gnoss.AD.Documentacion
         /// <param name="pProyID">ProyectoID</param>
         /// <param name="pPerfilID">Perfil que se va a revisar</param>
         /// <param name="pUnicoEditor">pUnicoEditor=true Documentos de los que el perfil es el único editor, pUnicoEditor=false Documentos en los que el perfil comparte edicion con más gente</param>
-        /// <return s>Documentación DS con los documentos con más de un editor</return s>
+        /// <returns>Documentación DS con los documentos con más de un editor</return s>
         public List<Documento> ObtenerRecursosIdentidadProyectoEditor(Guid pProyID, Guid pPerfilID, bool pUnicoEditor)
         {
             var queryAntesIntersect = mEntityContext.Documento.JoinDocumentoDocumentoRolIdentidad().Where(objeto => objeto.Documento.ProyectoID.Value.Equals(pProyID) && objeto.Documento.ProyectoID.HasValue && objeto.DocumentoRolIdentidad.PerfilID.Equals(pPerfilID)).Select(objeto => objeto.DocumentoRolIdentidad.DocumentoID);
@@ -5375,7 +5386,7 @@ namespace Es.Riam.Gnoss.AD.Documentacion
         /// Obtiene un diccionario de ciertos documentos los nombres cortos de los proyectos donde están subidos y compartidos.
         /// </summary>
         /// <param name="pDocumentoIDs">IDs de documentos</param>
-        /// <return s>Diccionario de ciertos documentos con los nombres cortos de los proyectos donde están subidos y compartidos</return s>
+        /// <returns>Diccionario de ciertos documentos con los nombres cortos de los proyectos donde están subidos y compartidos</return s>
         public Dictionary<Guid, List<string>> ObtenerProyectosDocumentos(List<Guid> pDocumentoIDs)
         {
             Dictionary<Guid, List<string>> dicDocs = new Dictionary<Guid, List<string>>();
@@ -5408,7 +5419,7 @@ namespace Es.Riam.Gnoss.AD.Documentacion
         /// Obtiene un diccionario de ciertos documentos con sus tipos y los IDs de los proyectos donde están subidos y compartidos.
         /// </summary>
         /// <param name="pDocumentoIDs">IDs de documentos</param>
-        /// <return s>Diccionario de ciertos documentos con sus tipos y los IDs de los proyectos donde están subidos y compartidos</return s>
+        /// <returns>Diccionario de ciertos documentos con sus tipos y los IDs de los proyectos donde están subidos y compartidos</return s>
         public Dictionary<Guid, KeyValuePair<short, List<Guid>>> ObtenerTipoYProyectosDocumentos(List<Guid> pDocumentoIDs)
         {
             Dictionary<Guid, KeyValuePair<short, List<Guid>>> listaDocs = new Dictionary<Guid, KeyValuePair<short, List<Guid>>>();
@@ -5526,11 +5537,22 @@ namespace Es.Riam.Gnoss.AD.Documentacion
         }
 
         /// <summary>
+        /// Obtiene la ontología proyecto a partir de la ontología y el proyecto id
+        /// </summary>
+        /// <param name="pOntologia">Nombre de la ontología</param>
+        /// <param name="pProyectoID">Identificador del proyecto al que pertenece la ontología</param>
+        /// <returns></returns>
+        public OntologiaProyecto ObtenerOntologiaProyectoPorOntologia(string pOntologia, Guid pProyectoID)
+        {
+            return mEntityContext.OntologiaProyecto.Where(item => item.OntologiaProyecto1.Equals(pOntologia) && item.ProyectoID.Equals(pProyectoID)).FirstOrDefault();
+        }
+
+        /// <summary>
         /// Obtiene el ID de un recurso a traves de su nombre y su proyecto
         /// </summary>
         /// <param name="pNombre">Nombre del documento</param>
         /// <param name="pProyectoID">Proyecto</param>
-        /// <return s></return s>
+        /// <returns></return s>
         public Guid ObtenerDocumentoWikiPorNombreyProyecto(string pNombre, Guid pProyectoID)
         {
             Documento documento = mEntityContext.DocumentoWebVinBaseRecursos.JoinDocumentoWebVinBaseRecursosBaseRecursosProyecto().JoinDocumento().Where(objeto => objeto.BaseRecursosProyecto.ProyectoID.Equals(pProyectoID) && objeto.Documento.Titulo.ToLower().Equals(pNombre.ToLower()) && objeto.Documento.Tipo.Equals((short)TiposDocumentacion.Wiki) && objeto.Documento.UltimaVersion && !objeto.Documento.Eliminado).Select(objeto => objeto.Documento).FirstOrDefault();
@@ -5561,7 +5583,7 @@ namespace Es.Riam.Gnoss.AD.Documentacion
         /// Obtiene id del publicador a partir del id del comentario 
         /// </summary>
         /// <param name="pComentarioID">ID del comentario</param>
-        /// <return s>ID de la identidad del publicador</return s>
+        /// <returns>ID de la identidad del publicador</return s>
         public Guid ObtenerPublicadorAPartirIDsComentario(Guid pComentarioID)
         {
             return mEntityContext.Comentario.Where(item => item.ComentarioID.Equals(pComentarioID)).Select(item => item.IdentidadID).FirstOrDefault();
@@ -5572,7 +5594,7 @@ namespace Es.Riam.Gnoss.AD.Documentacion
         /// </summary>
         /// <param name="pProyectoID">ID del proyecto</param>
         /// <param name="pDocumentoID">ID del documento</param>
-        /// <return s>ID de la identidad del publicador</return s>
+        /// <returns>ID de la identidad del publicador</return s>
         public Guid ObtenerPublicadorAPartirIDsRecursoYProyecto(Guid pProyectoID, Guid pDocumentoID)
         {
             Guid? resultado = mEntityContext.DocumentoWebVinBaseRecursos.JoinDocumentoWebVinBaseRecursosBaseRecursosProyecto().Where(objeto => objeto.DocumentoWebVinBaseRecursos.DocumentoID.Equals(pDocumentoID) && objeto.BaseRecursosProyecto.ProyectoID.Equals(pProyectoID)).Select(objeto => objeto.DocumentoWebVinBaseRecursos.IdentidadPublicacionID).FirstOrDefault();
@@ -5595,7 +5617,7 @@ namespace Es.Riam.Gnoss.AD.Documentacion
         /// </summary>
         /// <param name="pProyectoID">ID del proyecto</param>
         /// <param name="pNombre">Nombre de la ontología</param>
-        /// <return s>ID de la ontología</return s>
+        /// <returns>ID de la ontología</return s>
         public Guid ObtenerOntologiaAPartirNombre(Guid pProyectoID, string pNombre, bool ptraerSecundarias = true)
         {
             if (pNombre.Contains("/"))
@@ -5715,7 +5737,7 @@ namespace Es.Riam.Gnoss.AD.Documentacion
         /// </summary>
         /// <param name="pOntologiaID">ID de ontología</param>
         /// <param name="pNumRec">Número de recursos</param>
-        /// <return s>Lista con los IDs de los últimos recursos de la ontología</return s>
+        /// <returns>Lista con los IDs de los últimos recursos de la ontología</return s>
         public List<Guid> ObtenerUltimosRecursosDeOnto(Guid pOntologiaID, int pNumRec)
         {
             return mEntityContext.Documento.Where(documento => documento.ElementoVinculadoID.Value.Equals(pOntologiaID) && !documento.Eliminado && !documento.Borrador && documento.UltimaVersion && documento.Tipo == 5).OrderByDescending(doc => doc.FechaCreacion.Value).Take(pNumRec).Select(doc => doc.DocumentoID).ToList();
@@ -5727,7 +5749,7 @@ namespace Es.Riam.Gnoss.AD.Documentacion
         /// <param name="pProyectoID">ID de proyecto</param>
         /// <param name="pEnlaceOntologia">Enlace de la ontología</param>
         /// <param name="pDocumentoID">ID del documento con dicho enlace o NULL si se quiere comprobar en general</param>
-        /// <return s>TRUE si existe una ontología con determinado nombre en un proyecto, FALSE si no</return s>
+        /// <returns>TRUE si existe una ontología con determinado nombre en un proyecto, FALSE si no</return s>
         public bool ExisteOntologiaEnProyecto(Guid pProyectoID, string pEnlaceOntologia, Guid? pDocumentoID)
         {
             if (pDocumentoID.HasValue)
@@ -5741,11 +5763,23 @@ namespace Es.Riam.Gnoss.AD.Documentacion
 
         }
 
+
+        /// <summary>
+        /// Existe documento en proyecto.
+        /// </summary>
+        /// <param name="pProyectoID">ID de proyecto</param>
+        /// <param name="pDocumentoID">Identificador del documento</param>
+        /// <returns>TRUE si existe un documento con identificador en el proyecto indicado</returns>
+        public bool ExisteDocumentoEnProyecto(Guid pProyectoID, Guid pDocumentoID)
+        {
+            return mEntityContext.Documento.Any(documento => documento.DocumentoID.Equals(pDocumentoID) && documento.ProyectoID.HasValue && documento.ProyectoID.Equals(pProyectoID) && !documento.Eliminado);
+        }
+
         /// <summary>
         /// Obtiene una lista con IDs de documentos y sus elementosvinculadosID.
         /// </summary>
         /// <param name="pDocIDs">IDs de documentos</param>
-        /// <return s>Lista con IDs de documentos y sus elementosvinculadosID</return s>
+        /// <returns>Lista con IDs de documentos y sus elementosvinculadosID</return s>
         public Dictionary<Guid, Guid> ObtenerListaRecursosConElementoVinculadoID(List<Guid> pDocIDs)
         {
             Dictionary<Guid, Guid> docsElemV = new Dictionary<Guid, Guid>();
@@ -5769,7 +5803,7 @@ namespace Es.Riam.Gnoss.AD.Documentacion
         /// </summary>
         /// <param name="pUsuarioID">Identificador del usuario</param>
         /// <param name="pOntologia">Ontología de la que el usuario debe ser administrador</param>
-        /// <return s>Verdad si el usuario administra alguna comunidad que contenga esta ontología</return s>
+        /// <returns>Verdad si el usuario administra alguna comunidad que contenga esta ontología</return s>
         public bool ComprobarUsuarioAdministraOntologia(Guid pUsuarioID, string pOntologia)
         {
             return mEntityContext.AdministradorProyecto.Join(mEntityContext.Documento, adminProy => adminProy.ProyectoID, doc => doc.ProyectoID.Value, (adminProy, doc) => new
@@ -5789,7 +5823,7 @@ namespace Es.Riam.Gnoss.AD.Documentacion
         /// <param name="pDocumentoID">Identificador del documento</param>
         /// <param name="pFechaModificacion">Última fecha de modificación del documento</param>
         /// <param name="pNuevaVersionDocumentoID">Si esta versión del documento está obsoleta, esta variable devolverá el ID de la versión actual del documento</param>
-        /// <return s>Verdad si hay error de concurrencia</return s>
+        /// <returns>Verdad si hay error de concurrencia</return s>
         public ErroresConcurrencia ComprobarConcurrenciaDocumento(Guid pDocumentoID, DateTime pFechaModificacion, out Guid? pNuevaVersionDocumentoID)
         {
             //int version = 0;
@@ -5800,9 +5834,9 @@ namespace Es.Riam.Gnoss.AD.Documentacion
                 VersionDocumentoV2 = v2
             })
             .Where(objeto => objeto.VersionDocumentoV1.DocumentoID.Equals(pDocumentoID))
-            .OrderByDescending(item => item.VersionDocumentoV1.Version)          
+            .OrderByDescending(item => item.VersionDocumentoV1.Version)
             .Select(objeto => objeto.VersionDocumentoV1.Version).FirstOrDefault();
-           
+
 
             var consulta1 = mEntityContext.Documento.Where(documento => documento.DocumentoID.Equals(pDocumentoID) && documento.FechaModificacion.HasValue && !documento.FechaModificacion.Equals(pFechaModificacion) && documento.UltimaVersion).Select(doc => doc.DocumentoID).ToList();
             var consulta2 = mEntityContext.VersionDocumento.Join(mEntityContext.VersionDocumento, v1 => v1.DocumentoOriginalID, v2 => v2.DocumentoOriginalID, (v1, v2) => new
@@ -5835,7 +5869,7 @@ namespace Es.Riam.Gnoss.AD.Documentacion
         /// Obtiene un array cuyo primer elemento es la identidad del creador del recurso  la segunda componente es el usuario
         /// </summary>
         /// <param name="pRecursoID">Recurso que busca</param>        
-        /// <return s>Array cuyo primer elemento es el perfil de la identidad del creador del recurso  la segunda componente es el usuario</return s>
+        /// <returns>Array cuyo primer elemento es el perfil de la identidad del creador del recurso  la segunda componente es el usuario</return s>
         public Dictionary<Guid, Guid> ObtenerIdentidadyUsuarioIDdeRecurso(Guid pRecursoID)
         {
             Dictionary<Guid, Guid> DicIdUs = new Dictionary<Guid, Guid>();
@@ -5897,7 +5931,7 @@ namespace Es.Riam.Gnoss.AD.Documentacion
         /// </summary>
         /// <param name="pOntologiaID">Identificador de la ontología</param>
         /// <param name="pProyectoID">Identificador del proyecto</param>
-        /// <return s>Lista de identificadores de los documentos cuyo elemento vinculado es la ontología</return s>
+        /// <returns>Lista de identificadores de los documentos cuyo elemento vinculado es la ontología</return s>
         public List<Guid> ObtenerDocumentosIDVinculadosAOntologiaProyecto(Guid pOntologiaID, Guid pProyectoID)
         {
             return mEntityContext.Documento.Where(doc => doc.ProyectoID.Value.Equals(pProyectoID) && doc.ElementoVinculadoID.Value.Equals(pOntologiaID)).Select(doc => doc.DocumentoID).Distinct().ToList();
@@ -5906,7 +5940,7 @@ namespace Es.Riam.Gnoss.AD.Documentacion
         /// Obtiene una diccionario cuya clave es el DocumentoId y el valor el nombre de la ontología
         /// </summary>
         /// <param name="pProyectoID">Identificador del proyecto</param>
-        /// <return s>Diccionario de las ontologías para su borrado masivo</return s>
+        /// <returns>Diccionario de las ontologías para su borrado masivo</return s>
         public Dictionary<Guid, string> ObtenerOntologiasParaBorrado(Guid pProyectoID)
         {
             List<Documento> ontologias = new List<Documento>();
@@ -6010,7 +6044,7 @@ namespace Es.Riam.Gnoss.AD.Documentacion
         /// Obtiene la ontología seleccionada
         /// </summary>
         /// <param name="pOntologiaID">Identificador del documento de la ontologia</param>
-        /// <return s>Obtiene la ontología seleccionada</return s>
+        /// <returns>Obtiene la ontología seleccionada</return s>
         public Documento OntologiaSeleccionada(Guid pOntologiaID)
         {
             return mEntityContext.Documento.Where(doc => doc.DocumentoID.Equals(pOntologiaID)).FirstOrDefault();
@@ -6019,7 +6053,7 @@ namespace Es.Riam.Gnoss.AD.Documentacion
         /// Obtiene la ontología seleccionada
         /// </summary>
         /// <param name="pProyectoID">Identificador del proyecto</param>
-        /// <return s>Obtiene la ontología seleccionada</return s>
+        /// <returns>Obtiene la ontología seleccionada</return s>
         public Documento HayOntologiaSeleccionada(Guid pProyectoID)
         {
             return mEntityContext.Documento.Where(doc => doc.ProyectoID.HasValue && doc.ProyectoID.Value.Equals(pProyectoID)).FirstOrDefault();
@@ -6055,7 +6089,7 @@ namespace Es.Riam.Gnoss.AD.Documentacion
         /// Devuelve true si el proyecto que se le pasa en el parametro contiene algún documento de tipo plantilla, false en caso contrario
         /// </summary>
         /// <param name="pProyectoID">Id del proyecto que queremos comprobar</param>
-        /// <return s></return s>
+        /// <returns></return s>
         public bool ProyectoTieneDocsPlantillas(Guid pProyectoID)
         {
             return mEntityContext.Documento.Join(mEntityContext.DocumentoWebVinBaseRecursos, documento => documento.DocumentoID, docWebVin => docWebVin.DocumentoID, (documento, docWebVin) => new
@@ -6087,7 +6121,7 @@ namespace Es.Riam.Gnoss.AD.Documentacion
         /// Obtiene los ids y su tipos de los documentos de una comunidad.
         /// </summary>
         /// <param name="pProyectoID">ID de comunidad</param>
-        /// <return s>ids y su tipos de los documentos de una comunidad</return s>
+        /// <returns>ids y su tipos de los documentos de una comunidad</return s>
         public Dictionary<Guid, short> ObtenerDocumentosYTipodeProyecto(Guid pProyectoID)
         {
             Dictionary<Guid, short> docs = new Dictionary<Guid, short>();
@@ -6121,6 +6155,16 @@ namespace Es.Riam.Gnoss.AD.Documentacion
         }
 
         /// <summary>
+        /// Devuelve los recursos vinculados con el nivel de certificacion indicado
+        /// </summary>
+        /// <param name="pNivelCertifiacionID"></param>
+        /// <returns></returns>
+        public List<DocumentoWebVinBaseRecursos> ObtenerBaseRecursosPorNivelCertifiacion(Guid pNivelCertifiacionID)
+        {
+            return mEntityContext.DocumentoWebVinBaseRecursos.Where(item => item.NivelCertificacionID.Equals(pNivelCertifiacionID)).ToList();
+        }
+
+        /// <summary>
         /// Obtiene nivel certificacion
         /// </summary>
         /// <param name="pUsuarioID">ID del usuario</param>
@@ -6138,8 +6182,8 @@ namespace Es.Riam.Gnoss.AD.Documentacion
             foreach (var objeto in consulta)
             {
                 Dictionary<Guid, string> dic = new Dictionary<Guid, string>();
-                dic.Add((Guid)objeto.NivelCertificacionID, (string)objeto.Descripcion);
-                docs.Add((Guid)objeto.DocumentoID, dic);
+                dic.Add(objeto.NivelCertificacionID, objeto.Descripcion);
+                docs.Add(objeto.DocumentoID, dic);
             }
 
             return docs;
@@ -6205,7 +6249,7 @@ namespace Es.Riam.Gnoss.AD.Documentacion
         /// Obtiene la fecha de creación del documento
         /// </summary>
         /// <param name="pDocumentoID">Identificador de documento</param>
-        /// <return s>Devuelve DateTime con la fecha de creación del documento</return s>
+        /// <returns>Devuelve DateTime con la fecha de creación del documento</return s>
         public long ObtenerFechaCreacionDocumento(Guid pDocumentoID)
         {
             DateTime? fechaCreacion = mEntityContext.Documento.Where(doc => doc.DocumentoID.Equals(pDocumentoID)).Select(doc => doc.FechaCreacion).ToList().FirstOrDefault();
@@ -6254,7 +6298,7 @@ namespace Es.Riam.Gnoss.AD.Documentacion
         /// Obtiene las vinculaciones de los documentos obsoletos de una base de recursos
         /// </summary>
         /// <param name="pBaseRecursosID">Base de recursos</param>
-        /// <return s></return s>
+        /// <returns></return s>
         public DataWrapperDocumentacion ObtenerDocumentosObsoletosDeBaseRecursos(Guid pBaseRecursosID)
         {
             DataWrapperDocumentacion dataWrapperDocumentacion = new DataWrapperDocumentacion();
@@ -6310,7 +6354,7 @@ namespace Es.Riam.Gnoss.AD.Documentacion
         /// Obtiene una lista con las bases de recursos en las que esta compartido un documento.
         /// </summary>
         /// <param name="pDocumentoID">Identificador de documento</param>
-        /// <return s>Lista con las bases de recursos en las que esta compartido el documento</return s>
+        /// <returns>Lista con las bases de recursos en las que esta compartido el documento</return s>
         public List<Guid> ObtenerBREstaCompartidoDocPorID(Guid pDocumentoID)
         {
             List<Guid> listaBR = new List<Guid>();
@@ -6324,7 +6368,7 @@ namespace Es.Riam.Gnoss.AD.Documentacion
         /// </summary>
         /// <param name="pDocumentoID">Identificador del documento a comprobar</param>
         /// <param name="pProyectoID">Identificador del proyecto en el que se quiere comprobar que esté compartido el recurso</param>
-        /// <return s>Verdad si el recurso está compartido o publicado en esa comunidad</return s>
+        /// <returns>Verdad si el recurso está compartido o publicado en esa comunidad</return s>
         public bool EstaDocumentoCompartidoEnProyecto(Guid pDocumentoID, Guid pProyectoID)
         {
             return mEntityContext.Documento.Join(mEntityContext.DocumentoWebVinBaseRecursos, doc => doc.DocumentoID, docWebVinBaseRec => docWebVinBaseRec.DocumentoID, (doc, docWebVinBaseRec) => new
@@ -6343,7 +6387,7 @@ namespace Es.Riam.Gnoss.AD.Documentacion
         /// Obtiene un diccionario con clave documento y valor laa lista con las bases de recursos en las que esta compartido un documento.
         /// </summary>
         ///<param name="pListaDocumentoID">Lista de documentos</param>
-        /// <return s>Lista con las bases de recursos en las que estan compartidos los documentos</return s>
+        /// <returns>Lista con las bases de recursos en las que estan compartidos los documentos</return s>
         public Dictionary<Guid, List<Guid>> ObtenerProyectosEstanCompartidosDocsPorID(List<Guid> pListaDocumentoID)
         {
             Dictionary<Guid, List<Guid>> listaDocProy = new Dictionary<Guid, List<Guid>>();
@@ -6379,7 +6423,7 @@ namespace Es.Riam.Gnoss.AD.Documentacion
         /// Obtiene una lista con las bases de recursos en las que esta compartida una wiki.
         /// </summary>
         /// <param name="pNombreDoc">Identificador de documento</param>
-        /// <return s>Lista con las bases de recursos en las que esta compartida la wiki</return s>
+        /// <returns>Lista con las bases de recursos en las que esta compartida la wiki</return s>
         public List<Guid> ObtenerBREstaCompartidoWikiPorNombre(string pNombreDoc)
         {
             List<Guid> listaBR = new List<Guid>();
@@ -6583,6 +6627,16 @@ namespace Es.Riam.Gnoss.AD.Documentacion
         }
 
         /// <summary>
+        /// Obtiene el DocumentoWebVinBaseRecusros por el DocumentoID
+        /// </summary>
+        /// <param name="pDocumentoID">Identificador del Documento a obtener de la base de recursos</param>
+        /// <returns>Devuelve el DocumentoWebVinBaseRecursos</returns>
+        public DocumentoWebVinBaseRecursos ObtenerDocumentoWebVinBaseRecursoPorDocumentoID(Guid pDocumentoID)
+        {
+            return mEntityContext.DocumentoWebVinBaseRecursos.Where(item => item.DocumentoID.Equals(pDocumentoID)).FirstOrDefault();
+        }
+
+        /// <summary>
         /// Devuelve las filas de los documentos compartio
         /// </summary>
         /// <param name="pDocumentoID">Identificador del documento</param>
@@ -6632,7 +6686,7 @@ namespace Es.Riam.Gnoss.AD.Documentacion
         /// Obtiene los tags de varios documentos
         /// </summary>
         /// <param name="pDocumentoID">Identificador del documento</param>
-        /// <return s></return s>
+        /// <returns></return s>
         public Dictionary<Guid, string> ObtenerTagsDeDocumentos(List<Guid> pListaDocumentoID)
         {
             Dictionary<Guid, string> tags = new Dictionary<Guid, string>();
@@ -6666,7 +6720,7 @@ namespace Es.Riam.Gnoss.AD.Documentacion
         /// Obtiene los tags de un documento
         /// </summary>
         /// <param name="pDocumentoID">Identificador del documento</param>
-        /// <return s></return s>
+        /// <returns></return s>
         public string ObtenerTagsDeDocumento(Guid pDocumentoID)
         {
             List<Guid> lista = new List<Guid>();
@@ -6678,7 +6732,7 @@ namespace Es.Riam.Gnoss.AD.Documentacion
         /// Obtiene el título, la descripción y los tags de un documento
         /// </summary>
         /// <param name="pDocumentoID">Identificador del documento</param>
-        /// <return s>Fila del documento con el título la descripción y los tags cargados</return s>
+        /// <returns>Fila del documento con el título la descripción y los tags cargados</return s>
         public Documento ObtenerTituloDescripcionTagsDeDocumento(Guid pDocumentoID)
         {
             //string select = "SELECT Documento.DocumentoID, Documento.Titulo, Documento.Descripcion, Documento.Tags, Documento.ElementoVinculadoID FROM Documento WHERE Documento.DocumentoID = " + IBD.ToParam("DocumentoID"); 
@@ -6690,7 +6744,7 @@ namespace Es.Riam.Gnoss.AD.Documentacion
         /// Obtiene la lista de categorías de tesauro vinculadas con un documento
         /// </summary>
         /// <param name="pDocumentoID">Identificador de un documento</param>
-        /// <return s></return s>
+        /// <returns></return s>
         public List<string> ObtenerNombresCategoriasVinculadoDocumento(Guid pDocumentoID)
         {
             return mEntityContext.DocumentoWebAgCatTesauro.JoinCategoriaTesauro().Where(item => item.DocumentoWebAgCatTesaruo.DocumentoID.Equals(pDocumentoID)).Select(item => item.CategoriaTesauro.Nombre).ToList();
@@ -6700,7 +6754,7 @@ namespace Es.Riam.Gnoss.AD.Documentacion
         /// Obtiene el nombre de la entidad vinculada de un documento.
         /// </summary>
         /// <param name="pDocumentoID">Identificador de un documento</param>
-        /// <return s>Nombre de la entidad vinculada de un documento</return s>
+        /// <returns>Nombre de la entidad vinculada de un documento</return s>
         public string ObtenerNombreElementoVinculadoDocumento(Guid pDocumentoID)
         {
             return mEntityContext.Documento.Where(documento => documento.DocumentoID.Equals(pDocumentoID)).Select(documento => documento.NombreElementoVinculado).FirstOrDefault();
@@ -6710,7 +6764,7 @@ namespace Es.Riam.Gnoss.AD.Documentacion
         /// Obtiene el campo 'NombreCategoriaDoc' de un documento.
         /// </summary>
         /// <param name="pDocumentoID">Identificador de un documento</param>
-        /// <return s>Campo 'NombreCategoriaDoc' de un documento</return s>
+        /// <returns>Campo 'NombreCategoriaDoc' de un documento</return s>
         public string ObtenerNombreCategoriaDocDocumento(Guid pDocumentoID)
         {
             return mEntityContext.Documento.Where(documento => documento.DocumentoID.Equals(pDocumentoID)).Select(documento => documento.NombreCategoriaDoc).FirstOrDefault();
@@ -6720,7 +6774,7 @@ namespace Es.Riam.Gnoss.AD.Documentacion
         /// Obtiene el creador del documentoID pasado como parámetro.
         /// </summary>
         /// <param name="pDocID">DocumentoID del que queremos obtener el creador.</param>
-        /// <return s>CreadorID del documento.</return s>
+        /// <returns>CreadorID del documento.</return s>
         public Guid ObtenerCreadorDocumentoID(Guid pDocID)
         {
             Guid? creadorID = mEntityContext.Documento.Where(doc => doc.DocumentoID.Equals(pDocID)).Select(doc => doc.CreadorID).FirstOrDefault();
@@ -6757,7 +6811,7 @@ namespace Es.Riam.Gnoss.AD.Documentacion
         /// <param name="pProyectoID">Proyecto del que se quieren ver los últimos recursos publicados.</param>
         /// <param name="pNumElementos">Número de elementos máximo a traer</param>
         /// <param name="pOntologia">(Opcional) Ontología por la que se quiere filtrar</param>
-        /// <return s>Lista con los últimos ids de los recursos publicados.</return s>
+        /// <returns>Lista con los últimos ids de los recursos publicados.</return s>
         public List<Guid> ObtenerUltimosRecursosIDPublicados(Guid pProyectoID, int pNumElementos, string pOntologia = null)
         {
             List<Guid> listaDocumentos = new List<Guid>();
@@ -6789,7 +6843,7 @@ namespace Es.Riam.Gnoss.AD.Documentacion
         /// Devuelve un DS con los últimos recursos publicados por un perfil
         /// </summary>
         /// <param name="pProyectoID">Proyecto del que se quieren ver los últimos recursos publicados.</param>
-        /// <return s>DS Con los últimos recursos publicados.</return s>
+        /// <returns>DS Con los últimos recursos publicados.</return s>
         [Obsolete]
         public DataWrapperDocumentacion ObtenerUltimosRecursosPublicadosPorPerfil(Guid pPerfilID, Guid pUsuarioID, int pNumElementos)
         {
@@ -6823,7 +6877,7 @@ namespace Es.Riam.Gnoss.AD.Documentacion
         /// Devuelve un DS con los últimos recursos publicados por un perfil
         /// </summary>
         /// <param name="pProyectoID">Proyecto del que se quieren ver los últimos recursos publicados.</param>
-        /// <return s>DS Con los últimos recursos publicados.</return s>
+        /// <returns>DS Con los últimos recursos publicados.</return s>
         public DataWrapperDocumentacion ObtenerUltimosRecursosPublicados(Guid pProyectoID, int pNumElementos)
         {
             DataWrapperDocumentacion dataWrapperDocumentacion = new DataWrapperDocumentacion();
@@ -6848,7 +6902,7 @@ namespace Es.Riam.Gnoss.AD.Documentacion
         /// Devuelve un DS con los últimos debates y preguntas publicados y que no están borrados.
         /// </summary>
         /// <param name="pProyectoID">ProyectoID del que se traen los recursos publicados.</param>
-        /// <return s></return s>
+        /// <returns></return s>
         public DataWrapperDocumentacion ObtenerUltimosDebatesPublicados(Guid pProyectoID, int pNumElementos)
         {
             return ObtenerUltimosDebatesPreguntasPublicados(pProyectoID, pNumElementos, true, false);
@@ -6858,7 +6912,7 @@ namespace Es.Riam.Gnoss.AD.Documentacion
         /// Devuelve un DS con los últimos debates y preguntas publicados y que no están borrados.
         /// </summary>
         /// <param name="pProyectoID">ProyectoID del que se traen los recursos publicados.</param>
-        /// <return s></return s>
+        /// <returns></return s>
         public DataWrapperDocumentacion ObtenerUltimasPreguntasPublicados(Guid pProyectoID, int pNumElementos)
         {
             return ObtenerUltimosDebatesPreguntasPublicados(pProyectoID, pNumElementos, false, true);
@@ -6868,7 +6922,7 @@ namespace Es.Riam.Gnoss.AD.Documentacion
         /// Devuelve un DS con los últimos debates y preguntas publicados y que no están borrados.
         /// </summary>
         /// <param name="pProyectoID">ProyectoID del que se traen los recursos publicados.</param>
-        /// <return s></return s>
+        /// <returns></return s>
         public DataWrapperDocumentacion ObtenerUltimosDebatesPreguntasPublicados(Guid pProyectoID, int pNumElementos)
         {
             return ObtenerUltimosDebatesPreguntasPublicados(pProyectoID, pNumElementos, true, true);
@@ -6878,7 +6932,7 @@ namespace Es.Riam.Gnoss.AD.Documentacion
         /// Devuelve un DS con los últimos debates y preguntas publicados y que no están borrados.
         /// </summary>
         /// <param name="pProyectoID">ProyectoID del que se traen los recursos publicados.</param>
-        /// <return s></return s>
+        /// <returns></return s>
         private DataWrapperDocumentacion ObtenerUltimosDebatesPreguntasPublicados(Guid pProyectoID, int pNumElementos, bool pTraerDebates, bool pTraerPreguntas)
         {
             DataWrapperDocumentacion dataWrapperDocumentacion = new DataWrapperDocumentacion();
@@ -6916,7 +6970,7 @@ namespace Es.Riam.Gnoss.AD.Documentacion
         /// Devuelve una lista con los IDs de los últimos debates y preguntas publicados y que no están borrados.
         /// </summary>
         /// <param name="pProyectoID">ProyectoID del que se traen los recursos publicados.</param>
-        /// <return s>Lista de documentoID</return s>
+        /// <returns>Lista de documentoID</return s>
         public List<Guid> ObtenerListaUltimosDebatesPreguntasPublicados(Guid pProyectoID, int pNumElementos, bool pTraerDebates, bool pTraerPreguntas)
         {
             var consultaSinTipo = mEntityContext.Documento.JoinDocumentoWebVinBaseRecursosDocumento().Where(objeto => !objeto.Documento.Borrador && !objeto.Documento.Eliminado && objeto.Documento.UltimaVersion && !objeto.DocumentoWebVinBaseRecursos.Eliminado && !objeto.DocumentoWebVinBaseRecursos.PrivadoEditores && objeto.Documento.ProyectoID.Value.Equals(pProyectoID) && objeto.Documento.FechaModificacion.HasValue).OrderByDescending(objeto => objeto.Documento.FechaModificacion.Value);
@@ -7009,7 +7063,7 @@ namespace Es.Riam.Gnoss.AD.Documentacion
         /// <param name="id">Identificador del recurso</param>
         /// <param name="pOrganizacionDestinoID">Identificador de la organizacion de búsqueda</param>
         /// <param name="pProyectoDestinoID">Identificador de la comunidad de búsqueda</param>
-        /// <return s>Booleano true si esa comunidad contiene ese recurso, false en caso contrario</return s>
+        /// <returns>Booleano true si esa comunidad contiene ese recurso, false en caso contrario</return s>
         public bool ContieneRecurso(Guid id, Guid pOrganizacionID, Guid pProyectoID)
         {
             return mEntityContext.DocumentoWebVinBaseRecursos.JoinDocumentoWebVinBaseRecursosBaseRecursosProyecto().Where(objeto => !objeto.DocumentoWebVinBaseRecursos.Eliminado && objeto.DocumentoWebVinBaseRecursos.DocumentoID.Equals(id) && objeto.BaseRecursosProyecto.OrganizacionID.Equals(pOrganizacionID) && objeto.BaseRecursosProyecto.ProyectoID.Equals(pProyectoID)).Any();
@@ -7079,7 +7133,7 @@ namespace Es.Riam.Gnoss.AD.Documentacion
         /// Obtiene la clave de la base de recursos de un usuario.
         /// </summary>
         /// <param name="pUsuarioID">Identificador de usuario</param>
-        /// <return s>Clave de la base de recursos del usuario</return s>
+        /// <returns>Clave de la base de recursos del usuario</return s>
         public Guid ObtenerBaseRecursosIDUsuario(Guid pUsuarioID)
         {
             return mEntityContext.BaseRecursos.JoinBaseRecursosUsuario().Where(item => item.BaseRecursosUsuario.UsuarioID.Equals(pUsuarioID)).Select(item => item.BaseRecursos.BaseRecursosID).FirstOrDefault();
@@ -7089,7 +7143,7 @@ namespace Es.Riam.Gnoss.AD.Documentacion
         /// Obtiene la clave de la base de recursos de un proyecto.
         /// </summary>
         /// <param name="pProyectoID">Identificador de proyecto</param>
-        /// <return s>Clave de la base de recursos del proyecto</return s>
+        /// <returns>Clave de la base de recursos del proyecto</return s>
         public Guid ObtenerBaseRecursosIDProyecto(Guid pProyectoID)
         {
             Guid baseRecursosID = Guid.Empty;
@@ -7222,7 +7276,7 @@ namespace Es.Riam.Gnoss.AD.Documentacion
         /// </summary>
         /// <param name="pNombre">Nombre del documento</param>
         /// <param name="pProyectoID">Identificador del proyecto</param>
-        /// <return s>Identificador de documento</return s>
+        /// <returns>Identificador de documento</return s>
         public Guid ObtenerDocumentoIDPorNombreYProyecto(string pNombre, Guid pProyectoID)
         {
             Documento documento = mEntityContext.DocumentoWebVinBaseRecursos.JoinDocumentoWebVinBaseRecursosBaseRecursosProyecto().JoinDocumento().Where(objeto => objeto.BaseRecursosProyecto.ProyectoID.Equals(pProyectoID) && objeto.Documento.Titulo.ToLower().Equals(pNombre.ToLower())).Select(objeto => objeto.Documento).FirstOrDefault();
@@ -7240,7 +7294,7 @@ namespace Es.Riam.Gnoss.AD.Documentacion
         /// Obtiene el Identificador del proyecto en el que se ha creado un recurso
         /// </summary>
         /// <param name="pDocumentoID">Identificador del documento</param>
-        /// <return s>Identificador de proyecto</return s>
+        /// <returns>Identificador de proyecto</return s>
         public Guid ObtenerProyectoIDPorDocumentoID(Guid pDocumentoID)
         {
             Guid? resultado = mEntityContext.Documento.Where(documento => documento.DocumentoID.Equals(pDocumentoID)).Select(doc => doc.ProyectoID).ToList().FirstOrDefault();
@@ -7259,7 +7313,7 @@ namespace Es.Riam.Gnoss.AD.Documentacion
         /// Obtiene el Enlace de un recurso
         /// </summary>
         /// <param name="pDocumentoID">Identificador del documento</param>
-        /// <return s></return s>
+        /// <returns></return s>
         public string ObtenerEnlaceDocumentoPorDocumentoID(Guid pDocumentoID)
         {
             string resultado = mEntityContext.Documento.Where(documento => documento.DocumentoID.Equals(pDocumentoID) && documento.Enlace != null).Select(documento => documento.Enlace).FirstOrDefault();
@@ -7275,7 +7329,7 @@ namespace Es.Riam.Gnoss.AD.Documentacion
         /// Obtiene los Enlaces de varios recursos
         /// </summary>
         /// <param name="pListaDocumentoID">Identificadores de los documentos</param>
-        /// <return s></return s>
+        /// <returns></return s>
         public Dictionary<Guid, string> ObtenerEnlacesDocumentosPorDocumentoID(List<Guid> pListaDocumentoID)
         {
             Dictionary<Guid, string> lista = new Dictionary<Guid, string>();
@@ -7299,7 +7353,7 @@ namespace Es.Riam.Gnoss.AD.Documentacion
         /// </summary>
         /// <param name="pNombre">Nombre del documento</param>
         /// <param name="pPersonaID">Identificador de la persona</param>
-        /// <return s></return s>
+        /// <returns></return s>
         public Guid ObtenerDocumentoIDPorNombreYPersona(string pNombre, Guid pPersonaID)
         {
             Documento documento = mEntityContext.DocumentoWebVinBaseRecursos.JoinDocumentoWebVinBaseRecursosBaseRecursosUsuario().JoinDocumento().JoinPersona().Where(objeto => objeto.Persona.PersonaID.Equals(pPersonaID) && objeto.Documento.Titulo.ToLower().Equals(pNombre.ToLower()) && objeto.Documento.UltimaVersion && !objeto.Documento.Eliminado).Select(objeto => objeto.Documento).FirstOrDefault();
@@ -7317,7 +7371,7 @@ namespace Es.Riam.Gnoss.AD.Documentacion
         /// Devuelve las vinculaciones de los documentos de una organziación. Carga "DocumentoWebVinBaseRecursos" , "DocumentoWebAgCatTesauro"
         /// </summary>
         /// <param name="pOrganizacionID">Clave de la organizacion</param>
-        /// <return s>DocumentacionDS</return s>
+        /// <returns>DocumentacionDS</return s>
         public DataWrapperDocumentacion ObtenerVinculacionesDocumentosDeOrganizacion(Guid pOrganizacionID)
         {
             DataWrapperDocumentacion dataWrapperDocumentacion = new DataWrapperDocumentacion();
@@ -7335,7 +7389,7 @@ namespace Es.Riam.Gnoss.AD.Documentacion
         /// Verdad si el documento está marcado como privado para editores
         /// </summary>
         /// <param name="pDocumentoID">Identificador del documento</param>
-        /// <return s>Verdad si el documento está marcado como privado para editores</return s>
+        /// <returns>Verdad si el documento está marcado como privado para editores</return s>
         public bool EsDocumentoEnProyectoPrivadoEditores(Guid pDocumentoID, Guid pProyectoID)
         {
             if (!pProyectoID.Equals(ProyectoAD.MetaProyecto))
@@ -7352,7 +7406,7 @@ namespace Es.Riam.Gnoss.AD.Documentacion
         /// Verdad si el documento está marcado como publico sólo para los miembros de la comunidad
         /// </summary>
         /// <param name="pDocumentoID">Identificador del documento</param>
-        /// <return s>Verdad si el documento está marcado como publico sólo para los miembros de la comunidad</return s>
+        /// <returns>Verdad si el documento está marcado como publico sólo para los miembros de la comunidad</return s>
         public bool EsDocumentoEnProyectoPublicoSoloParaMiembros(Guid pDocumentoID)
         {
             short visibilidad = mEntityContext.Documento.Where(doc => doc.DocumentoID.Equals(pDocumentoID)).Select(doc => doc.Visibilidad).FirstOrDefault();
@@ -7364,7 +7418,7 @@ namespace Es.Riam.Gnoss.AD.Documentacion
         /// </summary>
         /// <param name="pPersonaID">ID de la persona</param>
         /// <param name="pDocumentoID">ID del documento</param>
-        /// <return s>Lista de categorias de un recurso en una BR de una persona</return s>
+        /// <returns>Lista de categorias de un recurso en una BR de una persona</return s>
         public List<Guid> ObtenerListaIDsCategoriasBRPersonalPersonsaDeDocumento(Guid pPersonaID, Guid pDocumentoID)
         {
             return mEntityContext.DocumentoWebAgCatTesauro.Join(mEntityContext.BaseRecursosUsuario, agCat => agCat.BaseRecursosID, baseRecUs => baseRecUs.BaseRecursosID, (agCat, baseRecUs) => new
@@ -7385,7 +7439,7 @@ namespace Es.Riam.Gnoss.AD.Documentacion
         /// </summary>
         /// <param name="pEnlace">Url del enlace del recurso</param>
         /// <param name="pProyectoID">Identificador de la comunidad</param>
-        /// <return s>Devuelve si está o no el documento con "pEnlace" en la comunidad "pProyectoID"</return s>
+        /// <returns>Devuelve si está o no el documento con "pEnlace" en la comunidad "pProyectoID"</return s>
         public bool EstaEnlaceEnComunidad(string pEnlace, Guid pProyectoID)
         {
             return mEntityContext.Documento.JoinDocumentoWebVinBaseRecursosDocumento().JoinBaseRecursosProyecto().Where(objeto => objeto.BaseRecursosProyecto.ProyectoID.Equals(pProyectoID) && objeto.Documento.Descripcion.Contains(pEnlace)).Any();
@@ -7395,7 +7449,7 @@ namespace Es.Riam.Gnoss.AD.Documentacion
         /// Devuleve el estado del documento 0 ->No eliminado, 1 -> Eliminado, 2 -> No existe
         /// </summary>
         /// <param name="pDocumentoID">Identificador del documento</param>
-        /// <return s>Devuleve el estado del documento</return s>
+        /// <returns>Devuleve el estado del documento</return s>
         public int EstaDocumentoEliminado(Guid pDocumentoID)
         {
             Documento doc = mEntityContext.Documento.Where(documento => documento.DocumentoID.Equals(pDocumentoID)).FirstOrDefault();
@@ -7419,7 +7473,7 @@ namespace Es.Riam.Gnoss.AD.Documentacion
         /// Obtiene los editores de un documento
         /// </summary>
         /// <param name="pDocumentoID">Identificador del documento</param>
-        /// <return s></return s>
+        /// <returns></return s>
         public DataWrapperDocumentacion ObtenerEditoresDocumento(Guid pDocumentoID)
         {
             DataWrapperDocumentacion dataWrapperDocumentacion = new DataWrapperDocumentacion();
@@ -7450,7 +7504,7 @@ namespace Es.Riam.Gnoss.AD.Documentacion
         /// Obtiene los votos de una encuesta
         /// </summary>
         /// <param name="pDocumentoID">Identificador del documento</param>
-        /// <return s></return s>
+        /// <returns></return s>
         public DataWrapperDocumentacion ObtenerVotosEncuestaDocumento(Guid pDocumentoID)
         {
             DataWrapperDocumentacion documentacionDS = new DataWrapperDocumentacion();
@@ -7464,7 +7518,7 @@ namespace Es.Riam.Gnoss.AD.Documentacion
         /// Obtiene los editores de una lista de documentos.
         /// </summary>
         /// <param name="pListaDocumentosID">Identificadores de los documentos</param>
-        /// <return s>Tabla DocumentoRolIdentidad cargada con los editores de los documentos</return s>
+        /// <returns>Tabla DocumentoRolIdentidad cargada con los editores de los documentos</return s>
         public DataWrapperDocumentacion ObtenerEditoresDocumentos(List<Guid> pListaDocumentosID)
         {
             DataWrapperDocumentacion dataWrapperDocumentacion = new DataWrapperDocumentacion();
@@ -7487,7 +7541,7 @@ namespace Es.Riam.Gnoss.AD.Documentacion
         /// Obtiene la fecha de edición de un recurso, si está bloqueado
         /// </summary>
         /// <param name="pDocumentoID">Identificador del recurso</param>
-        /// <return s></return s>
+        /// <returns></return s>
         public DateTime? ObtenerFechaRecursoEnEdicion(Guid pDocumentoID)
         {
             //Compruebo si alguien ya esta editando el recurso
@@ -7530,7 +7584,7 @@ namespace Es.Riam.Gnoss.AD.Documentacion
         /// </summary>
         /// <param name="pDocumentoID">Identificador del documento a comprobar</param>
         /// <param name="pIdentidadID">Identificador de la identidad del editor</param>
-        /// <return s>La fila del documento en edición, null si nadie lo está editando</return s>
+        /// <returns>La fila del documento en edición, null si nadie lo está editando</return s>
         public DocumentoEnEdicion ComprobarDocumentoEnEdicion(Guid pDocumentoID, Guid pIdentidadID, int pSegundosDuracionBloqueo = 60)
         {
             return ComprobarDocumentoEnEdicion(pDocumentoID, pIdentidadID, 3, pSegundosDuracionBloqueo);
@@ -7561,7 +7615,7 @@ namespace Es.Riam.Gnoss.AD.Documentacion
         /// </summary>
         /// <param name="pDocumentoID">Identificador del documento a comprobar</param>
         /// <param name="pIdentidadID">Identificador de la identidad del editor</param>
-        /// <return s>La fila del documento en edición, null si nadie lo está editando</return s>
+        /// <returns>La fila del documento en edición, null si nadie lo está editando</return s>
         public DocumentoEnEdicion ComprobarDocumentoEnEdicion(Guid pDocumentoID, Guid pIdentidadID, int pNumeroIntentos, int pSegundosDuracionBloqueo)
         {
             //Compruebo si alguien ya esta editando el recurso
@@ -7696,7 +7750,7 @@ namespace Es.Riam.Gnoss.AD.Documentacion
         /// Carga todas las versiones de un documento.
         /// </summary>
         /// <param name="pDocumentoID">Identificador del documento del que se quieren obtener las versiones</param>
-        /// <return s>Identificadores de los documentos</return s>
+        /// <returns>Identificadores de los documentos</return s>
         public Dictionary<Guid, int> ObtenerVersionesDocumentoIDPorID(Guid pDocumentoID)
         {
             Dictionary<Guid, int> listaDocumentosID = new Dictionary<Guid, int>();
@@ -7718,7 +7772,7 @@ namespace Es.Riam.Gnoss.AD.Documentacion
         /// Carga todas las versiones de un documento.
         /// </summary>
         /// <param name="pDocumentoID">Identificador del documento del que se quieren obtener las versiones</param>
-        /// <return s>DataSet de documentación</return s>
+        /// <returns>DataSet de documentación</return s>
         public DataWrapperDocumentacion ObtenerVersionesDocumentoPorID(Guid pDocumentoID)
         {
             DataWrapperDocumentacion dataWrapperDocumentacion = new DataWrapperDocumentacion();
@@ -7734,7 +7788,7 @@ namespace Es.Riam.Gnoss.AD.Documentacion
             {
                 Documento = doc,
                 VersionDocumento = version
-            }).Where(objeto => objeto.VersionDocumento.DocumentoOriginalID.Equals(documentoOriginal)).Select(objeto => objeto.Documento).Concat(mEntityContext.Documento.Where(doc => doc.DocumentoID.Equals(documentoOriginal))).Distinct();
+            }).Where(objeto => objeto.VersionDocumento.DocumentoOriginalID.Equals(documentoOriginal)).Select(objeto => objeto.Documento).Concat(mEntityContext.Documento.Where(doc => doc.DocumentoID.Equals(documentoOriginal))).ToList().Distinct().ToList();
 
             dataWrapperDocumentacion.ListaDocumento = consulta.ToList();
 
@@ -7815,7 +7869,7 @@ namespace Es.Riam.Gnoss.AD.Documentacion
         /// <param name="pDocumentoID">Identificador de documento</param>
         /// <param name="pProyectoID">Identificador del proyecto donde se han hecho los comentarios</param>
         /// <param name="pTraerEliminados">Indica si se deben traer los perfiles autores de los comentarios eliminados de documentos</param>
-        /// <return s>Lista de PerfilesID de los autores de los comentarios de un documento en un proyecto</return s>
+        /// <returns>Lista de PerfilesID de los autores de los comentarios de un documento en un proyecto</return s>
         public List<Guid> ObtenerPerfilesAutoresComenariosDocumento(Guid pDocumentoID, Guid pProyectoID, bool pTraerEliminados)
         {
             var query = mEntityContext.Comentario.JoinIdentidad().Join(mEntityContext.DocumentoComentario, item => new { ComentarioID = item.Comentario.ComentarioID, ProyectoID = pProyectoID }, documentoComentario => new { ComentarioID = documentoComentario.ComentarioID, ProyectoID = documentoComentario.ProyectoID.Value }, (item, documentoComentario) => new
@@ -7839,7 +7893,7 @@ namespace Es.Riam.Gnoss.AD.Documentacion
         /// Actualiza la valoración del documento según su número de votos.
         /// </summary>
         /// <param name="pDocumentoID">Identificador del documento</param>
-        /// <return s>DataSet de documentación con la información actulizada</return s>
+        /// <returns>DataSet de documentación con la información actulizada</return s>
         public DataWrapperDocumentacion ActualizarValoracionDocumento(Guid pDocumentoID)
         {
             DataWrapperDocumentacion docDW = new DataWrapperDocumentacion();
@@ -7858,7 +7912,7 @@ namespace Es.Riam.Gnoss.AD.Documentacion
         /// </summary>
         /// <param name="pClaveCSV">Clave del archivo CSV</param>
         /// <param name="pEstado">Estado</param>
-        /// <return s>TRUE si todo ha ido bien</return s>
+        /// <returns>TRUE si todo ha ido bien</return s>
         public void ActualizarRecursoColaCargaRecursosAEstado(Guid pClaveCSV, short pEstado)
         {
             ColaCargaRecursos colaCargarRecursos = mEntityContext.ColaCargaRecursos.Where(item => item.ID.Equals(pClaveCSV)).FirstOrDefault();
@@ -7888,7 +7942,7 @@ namespace Es.Riam.Gnoss.AD.Documentacion
         /// Obtiene el identificador del documento al que pertenece un voto.
         /// </summary>
         /// <param name="pVotoID">Identificador del voto</param>
-        /// <return s>Identificador del documento al que pertenece el voto</return s>
+        /// <returns>Identificador del documento al que pertenece el voto</return s>
         public Guid ObtenerIDDocumentoDeVotoPorID(Guid pVotoID)
         {
             return mEntityContext.VotoDocumento.Where(item => item.VotoID.Equals(pVotoID)).Select(item => item.DocumentoID).FirstOrDefault();
@@ -7898,7 +7952,7 @@ namespace Es.Riam.Gnoss.AD.Documentacion
         /// Obtiene el título del documento de un documento.
         /// </summary>
         /// <param name="pVotoID">Identificador del documento</param>
-        /// <return s>Título del documento</return s>
+        /// <returns>Título del documento</return s>
         public string ObtenerTituloDocumentoPorID(Guid pDocumentoID)
         {
             string nombre = mEntityContext.Documento.Where(doc => doc.DocumentoID.Equals(pDocumentoID)).Select(doc => doc.Titulo).FirstOrDefault();
@@ -7914,7 +7968,7 @@ namespace Es.Riam.Gnoss.AD.Documentacion
         /// Obtiene el identificador del documento al que pertenece el comentario.
         /// </summary>
         /// <param name="pComentarioID">Identificador del comentario</param>
-        /// <return s>Identificador del documento al que pertenece el comentario</return s>
+        /// <returns>Identificador del documento al que pertenece el comentario</return s>
         public Guid ObtenerIDDocumentoDeComentarioPorID(Guid pComentarioID)
         {
             return mEntityContext.DocumentoComentario.Where(item => item.ComentarioID.Equals(pComentarioID)).Select(item => item.DocumentoID).FirstOrDefault();
@@ -7928,7 +7982,7 @@ namespace Es.Riam.Gnoss.AD.Documentacion
         /// Devuelve el dataSet de documentación con las categorías del tesauro del los documentos requeridas.
         /// </summary>
         /// <param name="pListaDocumentosID">Lista con los identificadores de los documentos</param>
-        /// <return s>DataSet de documentación con la tabla DocumentoWebAgCatTesauro</return s>
+        /// <returns>DataSet de documentación con la tabla DocumentoWebAgCatTesauro</return s>
         public List<DocumentoWebAgCatTesauro> ObtenerCategoriasTesauroListaDocumentosProyectoID(List<Guid> pListaDocumentosID, Guid pProyectoID)
         {
             List<DocumentoWebAgCatTesauro> listaDocumentoWebAgCatTesauro = new List<DocumentoWebAgCatTesauro>();
@@ -7944,7 +7998,7 @@ namespace Es.Riam.Gnoss.AD.Documentacion
         /// Devuelve el dataSet de documentación con las categorías del tesauro del los documentos requeridas.
         /// </summary>
         /// <param name="pListaDocumentosID">Lista con los identificadores de los documentos</param>
-        /// <return s>DataSet de documentación con la tabla DocumentoWebAgCatTesauro</return s>
+        /// <returns>DataSet de documentación con la tabla DocumentoWebAgCatTesauro</return s>
         public List<DocumentoWebAgCatTesauroConVinculoTesauroID> ObtenerCategoriasTesauroYTesauroDeDocumentos(List<Guid> pListaDocumentosID)
         {
             List<DocumentoWebAgCatTesauroConVinculoTesauroID> listaDocumentoWebAgCatTesauroConVinculoTesauroID = new List<DocumentoWebAgCatTesauroConVinculoTesauroID>();
@@ -8011,7 +8065,7 @@ namespace Es.Riam.Gnoss.AD.Documentacion
         /// Devuelve la tabla DocumentoWebAgCatTesauro cargada con los datos del las categorías de un determinado tesauro.
         /// </summary>
         /// <param name="pTesauroID">Identificador del tesauro</param>
-        /// <return s>Tabla DocumentoWebAgCatTesauro cargada con los datos del las categorías de un determinado tesauro</return s>
+        /// <returns>Tabla DocumentoWebAgCatTesauro cargada con los datos del las categorías de un determinado tesauro</return s>
         public DataWrapperDocumentacion ObtenerDocAgCatTesauroDeTesauroID(Guid pTesauroID)
         {
             DataWrapperDocumentacion dataWrapperDocumentacion = new DataWrapperDocumentacion();
@@ -8032,7 +8086,7 @@ namespace Es.Riam.Gnoss.AD.Documentacion
         /// Devuelve la tabla DocumentoWebAgCatTesauro cargada con las vinculaciones entre recursos publicos y categorías
         /// </summary>
         /// <param name="pTesauroID">Identificador del tesauro</param>
-        /// <return s>Tabla DocumentoWebAgCatTesauro cargada con los datos del las categorías de un determinado tesauro</return s>
+        /// <returns>Tabla DocumentoWebAgCatTesauro cargada con los datos del las categorías de un determinado tesauro</return s>
         public List<DocumentoWebAgCatTesauro> ObtenerDocAgCatRecursosPublicosTesauroDeTesauroID(Guid pTesauroID)
         {
             List<DocumentoWebAgCatTesauro> listaDocumentoWebAgCatTesauro = new List<DocumentoWebAgCatTesauro>();
@@ -8053,7 +8107,7 @@ namespace Es.Riam.Gnoss.AD.Documentacion
         /// Devuelve la tabla DocumentoWebAgCatTesauro cargada con las vinculaciones entre preguntas publicos y categorías
         /// </summary>
         /// <param name="pTesauroID">Identificador del tesauro</param>
-        /// <return s>Tabla DocumentoWebAgCatTesauro cargada con los datos del las categorías de un determinado tesauro</return s>
+        /// <returns>Tabla DocumentoWebAgCatTesauro cargada con los datos del las categorías de un determinado tesauro</return s>
         public List<DocumentoWebAgCatTesauro> ObtenerDocAgCatPreguntasPublicasTesauroDeTesauroID(Guid pTesauroID)
         {
             List<DocumentoWebAgCatTesauro> listaDocumentoWebAgCatTesauro = new List<DocumentoWebAgCatTesauro>();
@@ -8074,7 +8128,7 @@ namespace Es.Riam.Gnoss.AD.Documentacion
         /// Devuelve la tabla DocumentoWebAgCatTesauro cargada con las vinculaciones entre debates publicos y categorías
         /// </summary>
         /// <param name="pTesauroID">Identificador del tesauro</param>
-        /// <return s>Tabla DocumentoWebAgCatTesauro cargada con los datos del las categorías de un determinado tesauro</return s>
+        /// <returns>Tabla DocumentoWebAgCatTesauro cargada con los datos del las categorías de un determinado tesauro</return s>
         public List<DocumentoWebAgCatTesauro> ObtenerDocAgCatDebatesPublicosTesauroDeTesauroID(Guid pTesauroID)
         {
             List<DocumentoWebAgCatTesauro> listaDocumentoWebAgCatTesauro = new List<DocumentoWebAgCatTesauro>();
@@ -8095,7 +8149,7 @@ namespace Es.Riam.Gnoss.AD.Documentacion
         /// Devuelve la tabla DocumentoWebAgCatTesauro cargada con las vinculaciones entre recursos privados y categorías
         /// </summary>
         /// <param name="pTesauroID">Identificador del tesauro</param>
-        /// <return s>Tabla DocumentoWebAgCatTesauro cargada con los datos del las categorías de un determinado tesauro</return s>
+        /// <returns>Tabla DocumentoWebAgCatTesauro cargada con los datos del las categorías de un determinado tesauro</return s>
         public List<DocumentoWebAgCatTesauro> ObtenerDocAgCatRecursosPrivadosTesauroDeTesauroID(Guid pTesauroID)
         {
             List<DocumentoWebAgCatTesauro> listaDocumentoWebAgCatTesauro = new List<DocumentoWebAgCatTesauro>();
@@ -8116,7 +8170,7 @@ namespace Es.Riam.Gnoss.AD.Documentacion
         /// Devuelve la tabla DocumentoWebAgCatTesauro cargada con las vinculaciones entre preguntas privados y categorías
         /// </summary>
         /// <param name="pTesauroID">Identificador del tesauro</param>
-        /// <return s>Tabla DocumentoWebAgCatTesauro cargada con los datos del las categorías de un determinado tesauro</return s>
+        /// <returns>Tabla DocumentoWebAgCatTesauro cargada con los datos del las categorías de un determinado tesauro</return s>
         public List<DocumentoWebAgCatTesauro> ObtenerDocAgCatPreguntasPrivadasTesauroDeTesauroID(Guid pTesauroID)
         {
             List<DocumentoWebAgCatTesauro> listaDocumentoWebAgCatTesauro = new List<DocumentoWebAgCatTesauro>();
@@ -8137,7 +8191,7 @@ namespace Es.Riam.Gnoss.AD.Documentacion
         /// Devuelve una lista de GUID con las vinculaciones entre documentos y una categoría concreta
         /// </summary>
         /// <param name="pCategoriaTesauroID">Identificador de la categoría</param>
-        /// <return s>Lista con los documentos
+        /// <returns>Lista con los documentos
         public List<Guid> ObtenerListaDocsAgCatDeCategoriaTesauroID(Guid pCategoriaTesauroID)
         {
             List<Guid> listaDocs = mEntityContext.DocumentoWebAgCatTesauro.JoinDocumentoWebAgCatTesauroDocumentoWebVinBaseRecursos().JoinDocumento().Where(objeto => !objeto.Documento.Eliminado && !objeto.Documento.Borrador && !objeto.DocumentoWebVinBaseRecursos.Eliminado && objeto.DocumentoWebAgCatTesauro.CategoriaTesauroID.Equals(pCategoriaTesauroID)).Select(objeto => objeto.DocumentoWebAgCatTesauro.DocumentoID).ToList();
@@ -8149,7 +8203,7 @@ namespace Es.Riam.Gnoss.AD.Documentacion
         /// Devuelve una lista de GUID con las vinculaciones entre documentos y las categorías de un tesauro
         /// </summary>
         /// <param name="pCategoriaTesauroID">Identificador de la categoría</param>
-        /// <return s>Lista con los documentos
+        /// <returns>Lista con los documentos
         public List<Guid> ObtenerListaDocsAgCatDeTesauroID(Guid pTesauroID)
         {
             List<Guid> listaDocs = mEntityContext.DocumentoWebAgCatTesauro.JoinDocumentoWebAgCatTesauroDocumentoWebVinBaseRecursos().JoinDocumento().Where(objeto => !objeto.Documento.Eliminado && !objeto.Documento.Borrador && !objeto.DocumentoWebVinBaseRecursos.Eliminado && objeto.DocumentoWebAgCatTesauro.TesauroID.Equals(pTesauroID)).Select(objeto => objeto.DocumentoWebAgCatTesauro.DocumentoID).ToList();
@@ -8187,7 +8241,7 @@ namespace Es.Riam.Gnoss.AD.Documentacion
         /// Devuelve la tabla DocumentoWebAgCatTesauro cargada con las vinculaciones entre debates privados y categorías
         /// </summary>
         /// <param name="pTesauroID">Identificador del tesauro</param>
-        /// <return s>Tabla DocumentoWebAgCatTesauro cargada con los datos del las categorías de un determinado tesauro</return s>
+        /// <returns>Tabla DocumentoWebAgCatTesauro cargada con los datos del las categorías de un determinado tesauro</return s>
         public List<DocumentoWebAgCatTesauro> ObtenerDocAgCatDebatesPrivadosTesauroDeTesauroID(Guid pTesauroID)
         {
             List<DocumentoWebAgCatTesauro> listaDocumentoWebAgCatTesauro = new List<DocumentoWebAgCatTesauro>();
@@ -8207,7 +8261,7 @@ namespace Es.Riam.Gnoss.AD.Documentacion
         /// Obtiene un dictionary cuya clave es un documento y el valor es una lista de Guid de las identidades de los editores
         /// </summary>
         /// <param name="pDocsID">Lista de identificadores de los documentos</param>
-        /// <return s>dictionary cuya clave es un documento y el valor es una lista de Guid de los editores</return s>
+        /// <returns>dictionary cuya clave es un documento y el valor es una lista de Guid de los editores</return s>
         public Dictionary<Guid, List<Guid>> ObtenerListaEditoresDeDocumentosPrivadosEnProyecto(List<Guid> pDocsID, Guid pProyectoID)
         {
             Dictionary<Guid, List<Guid>> listaEditoresRecursos = new Dictionary<Guid, List<Guid>>();
@@ -8285,7 +8339,7 @@ namespace Es.Riam.Gnoss.AD.Documentacion
         /// <param name="pUsuarioID">Identificador del usuario</param>
         /// <param name="pObtenerSimilares">Obtner los documentos que se llaman parecidos</param>
         /// <param name="pBuscarEnTitulo">Verdad si se debe buscar también en el titulo del documento</param>
-        /// <return s></return s>
+        /// <returns></return s>
         public DataWrapperDocumentacion ObtenerDocumentoDeEnlace(string pNombreEnlaceTemporal, Guid pUsuarioID, bool pObtenerSimilares, bool pBuscarEnTitulo)
         {
             DataWrapperDocumentacion dataWrapperDocumentacion = new DataWrapperDocumentacion();
@@ -8413,7 +8467,7 @@ namespace Es.Riam.Gnoss.AD.Documentacion
         /// <param name="pDocumentoOriginalID">Documento no temporal del que se ha realizado las versiones temporales</param>
         /// <param name="pIdentidadID">Identidad que ha creado los documentos temporales</param>
         /// <param name="pTipoDocumento">Indica el tipo de documento temporal o null si es indiferente</param>
-        /// <return s></return s>
+        /// <returns></return s>
         public DataWrapperDocumentacion ObtenerDocumentosTemporalesDeDocumento(Guid pDocumentoOriginalID, Guid pIdentidadID, TiposDocumentacion? pTipoDocumento)
         {
             DataWrapperDocumentacion dataWrapperDocumentacion = new DataWrapperDocumentacion();
@@ -8436,7 +8490,7 @@ namespace Es.Riam.Gnoss.AD.Documentacion
         /// <param name="pNombreDocumentoOriginal">Nombre del documento temporal</param>
         /// <param name="pIdentidadID">Identidad que ha creado los documentos temporales</param>
         /// <param name="pTipoDocumento">Indica el tipo de documento temporal o null si es indiferente</param>
-        /// <return s></return s>
+        /// <returns></return s>
         public DataWrapperDocumentacion ObtenerDocumentosTemporalesDeDocumentoPorNombre(string pNombreDocumentoOriginal, Guid pIdentidadID, TiposDocumentacion? pTipoDocumento)
         {
             DataWrapperDocumentacion docDW = new DataWrapperDocumentacion();
@@ -8473,7 +8527,7 @@ namespace Es.Riam.Gnoss.AD.Documentacion
         /// Obtiene los datos de los envios realizados de un documento de tipo newsletter.
         /// </summary>
         /// <param name="pDocumentoID">Identificador del documento newletter</param>
-        /// <return s>DataSet con los datos cargados de envio de documentos</return s>
+        /// <returns>DataSet con los datos cargados de envio de documentos</return s>
         public DataWrapperDocumentacion ObtenerEnviosNewsLetterPorDocumentoID(Guid pDocumentoID)
         {
             DataWrapperDocumentacion dataWrapperDocumentacion = new DataWrapperDocumentacion();
@@ -8544,7 +8598,7 @@ namespace Es.Riam.Gnoss.AD.Documentacion
         /// Obtiene los documentos que están en la ColaDocumento sin procesar y sin desechar.
         /// </summary>
         /// <param name="pNumDoc">Número de documentos para procesar</param>
-        /// <return s>DataSet de documentación con los datos cargados</return s>
+        /// <returns>DataSet de documentación con los datos cargados</return s>
         public DataWrapperDocumentacion ObtenerDocumentosEnColaParaProcesar(int pNumDoc)
         {
             DataWrapperDocumentacion dataWrapperDocumentacion = new DataWrapperDocumentacion();
@@ -8600,7 +8654,7 @@ namespace Es.Riam.Gnoss.AD.Documentacion
         /// Obtiene las imagenes de los documentos
         /// </summary>
         /// <param name="pDocumentosID">Lista de identificadores de documento</param>
-        /// <return s>Lista con el campo NombreCategoriaDoc </return s>
+        /// <returns>Lista con el campo NombreCategoriaDoc </return s>
         public List<string> ObtenerImagenDocumentos(List<Guid> pDocumentosID)
         {
             List<string> imagenes = new List<string>();
@@ -8614,7 +8668,7 @@ namespace Es.Riam.Gnoss.AD.Documentacion
         /// Comprueba si el documento actual es la última versión
         /// </summary>
         /// <param name="pDocumentoID">Documentoid</param>
-        /// <return s></return s>
+        /// <returns></return s>
         public bool ComprobarSiEsUltimaVersionDocumento(Guid pDocumentoID)
         {
             return mEntityContext.Documento.Any(documento => documento.DocumentoID.Equals(pDocumentoID) && documento.UltimaVersion);
@@ -8624,7 +8678,7 @@ namespace Es.Riam.Gnoss.AD.Documentacion
         /// Devuelve las versiónes de la imagenes o Nulo si no tienen imagen
         /// </summary>
         /// <param name="pListaDocumentos">Lista de documentos</param>
-        /// <return s></return s>
+        /// <returns></return s>
         public Dictionary<Guid, int?> ComprobarSiListaDocumentosTienenImagen(List<Guid> pListaDocumentos)
         {
             Dictionary<Guid, int?> listaDocs = new Dictionary<Guid, int?>();
@@ -8645,7 +8699,7 @@ namespace Es.Riam.Gnoss.AD.Documentacion
         /// Devuelve las versiónes de la imagenes o Nulo si no tienen imagen
         /// </summary>
         /// <param name="pListaDocumentos">Lista de documentos</param>
-        /// <return s></return s>
+        /// <returns></return s>
         public Dictionary<Guid, bool> ComprobarSiOntologiaTieneRecursos(List<Guid> pListaDocumentos)
         {
             Dictionary<Guid, bool> listaDocs = new Dictionary<Guid, bool>();
@@ -8657,13 +8711,22 @@ namespace Es.Riam.Gnoss.AD.Documentacion
             return listaDocs;
         }
 
+        /// Indica si la ontologia pasada por parámetro tiene algun recurso vinculado
+        /// </summary>
+        /// <param name="pOntologiaID">Identificador de la ontología</param>
+        /// <returns>True si tiene elementos vinculados, False si no</returns>
+        public bool OntologiaTieneRecursos(Guid pOntologiaID)
+        {
+            return mEntityContext.Documento.Any(documento => !documento.Eliminado && documento.ElementoVinculadoID.HasValue && pOntologiaID.Equals(documento.ElementoVinculadoID.Value));
+        }
+
         #endregion
 
         /// <summary>
         /// Obtiene los editores de una lista de documentos.
         /// </summary>
         /// <param name="pListaDocumentosID">Identificadores de los documentos</param>
-        /// <return s>Tabla NombrePerfil, NombreGrupo y NombreGrupoOrg cargadas con los editores de los documentos</return s>
+        /// <returns>Tabla NombrePerfil, NombreGrupo y NombreGrupoOrg cargadas con los editores de los documentos</return s>
         public DataWrapperDocumentacion ObtenerEditoresYGruposEditoresDocumentos(List<Guid> pListaDocumentosID)
         {
             return ObtenerEditoresLectoresDocumentos(pListaDocumentosID, true);
@@ -8673,7 +8736,7 @@ namespace Es.Riam.Gnoss.AD.Documentacion
         /// Obtiene los lectores de una lista de documentos.
         /// </summary>
         /// <param name="pListaDocumentosID">Identificadores de los documentos</param>
-        /// <return s>Tabla NombrePerfil, NombreGrupo y NombreGrupoOrg cargadas con los lectores de los documentos</return s>
+        /// <returns>Tabla NombrePerfil, NombreGrupo y NombreGrupoOrg cargadas con los lectores de los documentos</return s>
         public DataWrapperDocumentacion ObtenerLectoresYGruposLectoresDocumentos(List<Guid> pListaDocumentosID)
         {
             return ObtenerEditoresLectoresDocumentos(pListaDocumentosID, false);
@@ -8683,7 +8746,7 @@ namespace Es.Riam.Gnoss.AD.Documentacion
         /// </summary>
         /// <param name="pListaDocumentosID">Identificadores de los documentos</param>
         /// <param name="pEditores">True para obtener solo editores, False para obtener solo lectores</param>
-        /// <return s>Tabla NombrePerfil, NombreGrupo y NombreGrupoOrg cargadas con los lectores o editores de los documentos</return s>
+        /// <returns>Tabla NombrePerfil, NombreGrupo y NombreGrupoOrg cargadas con los lectores o editores de los documentos</return s>
         private DataWrapperDocumentacion ObtenerEditoresLectoresDocumentos(List<Guid> pListaDocumentosID, bool pEditores)
         {
 
@@ -8781,7 +8844,7 @@ namespace Es.Riam.Gnoss.AD.Documentacion
         /// Obtiene la URL canonica de un documento almacenada en la tabla DocumentoUrlCanonica
         /// </summary>
         /// <param name="pDocumentoID">Identificador del documento</param>
-        /// <return s></return s>
+        /// <returns></return s>
         public string ObtenerDocumentoUrlCanonica(Guid pDocumentoID)
         {
             return mEntityContext.DocumentoUrlCanonica.Where(item => item.DocumentoID.Equals(pDocumentoID)).Select(item => item.UrlCanonica).FirstOrDefault();
@@ -9597,7 +9660,7 @@ namespace Es.Riam.Gnoss.AD.Documentacion
         /// Obtiene el tipo de documento a partir de su texto.
         /// </summary>
         /// <param name="pTipoTexto">Tipo de documento en modo texto</param>
-        /// <return s>TiposDocumentacion que corresponde al tipo texto</return s>
+        /// <returns>TiposDocumentacion que corresponde al tipo texto</return s>
         public static TiposDocumentacion ObtenerTipoDocumento(string pTipoTexto)
         {
             switch (pTipoTexto)

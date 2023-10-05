@@ -1,12 +1,25 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace Es.Riam.Gnoss.Web.MVC.Models
 {
+    [Serializable]
     /// <summary>
     /// Modelo para administrar los elementos semátnicos de la comunidad.
     /// </summary>
     public class ComAdminSemanticElemModel
     {
+
+        /// <summary>
+        /// Lista de idiomas de la plataforma
+        /// </summary>
+        public Dictionary<string, string> ListaIdiomas { get; set; }
+
+        public string IdiomaPorDefecto { get; set; }
+        /// <summary>
+        /// 
+        /// </summary>
+
 
         /// <summary>
         /// Tipo de página de la administración.
@@ -51,7 +64,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Models
             SimpleGraphsEdition = 3
         }
     }
-
+    [Serializable]
     /// <summary>
     /// Modelo para la edición de tesauros semánticos.
     /// </summary>
@@ -137,11 +150,11 @@ namespace Es.Riam.Gnoss.Web.MVC.Models
         /// </summary>
         public string ExtraSemanticPropertiesValuesBK { get; set; }
     }
-
-    /// <summary>
-    /// Modelo para la edición de entidades secundarias.
-    /// </summary>
-    public class ComAdminEditSecondaryEntities
+	[Serializable]
+	/// <summary>
+	/// Modelo para la edición de entidades secundarias.
+	/// </summary>
+	public class ComAdminEditSecondaryEntities
     {
         /// <summary>
         /// Listado de entidades secundarias que son editables.
@@ -168,11 +181,11 @@ namespace Es.Riam.Gnoss.Web.MVC.Models
         /// </summary>
         public bool CreatingNewInstance { get; set; }
     }
-
-    /// <summary>
-    /// Modelo para la edición de grafos simples.
-    /// </summary>
-    public class ComAdminEditSimpleGraphs
+	[Serializable]
+	/// <summary>
+	/// Modelo para la edición de grafos simples.
+	/// </summary>
+	public class ComAdminEditSimpleGraphs
     {
         /// <summary>
         /// Listado de grafos simples que son editables.
@@ -189,11 +202,11 @@ namespace Es.Riam.Gnoss.Web.MVC.Models
         /// </summary>
         public string SimpleGraphsNameSelected { get; set; }
     }
-
-    /// <summary>
-    /// Modelo de menú para administrar los elementos semátnicos de la comunidad.
-    /// </summary>
-    public class ComAdminSemanticElemModelMenu
+	[Serializable]
+	/// <summary>
+	/// Modelo de menú para administrar los elementos semátnicos de la comunidad.
+	/// </summary>
+	public class ComAdminSemanticElemModelMenu
     {
         /// <summary>
         /// Url para administrar las plantillas ontológicas.
@@ -215,11 +228,11 @@ namespace Es.Riam.Gnoss.Web.MVC.Models
         /// </summary>
         public string SimpleGraphsEditionUrl;
     }
-
-    /// <summary>
-    /// Modelo para las acciones de edición del tesauro semántico.
-    /// </summary>
-    public class EditSemanticThesaurusModel
+	[Serializable]
+	/// <summary>
+	/// Modelo para las acciones de edición del tesauro semántico.
+	/// </summary>
+	public class EditSemanticThesaurusModel
     {
 
         /// <summary>
@@ -336,11 +349,11 @@ namespace Es.Riam.Gnoss.Web.MVC.Models
             EditExtraProperties = 11
         }
     }
-
-    /// <summary>
-    /// Modelo para las acciones de edición de entidades secundarias.
-    /// </summary>
-    public class EditSecondaryEntityModel
+	[Serializable]
+	/// <summary>
+	/// Modelo para las acciones de edición de entidades secundarias.
+	/// </summary>
+	public class EditSecondaryEntityModel
     {
         /// <summary>
         /// Url de la ontología de la entidad secundaria. Ej: 'taxonomy.owl'.
@@ -398,11 +411,11 @@ namespace Es.Riam.Gnoss.Web.MVC.Models
             SaveInstance = 5
         }
     }
-
-    /// <summary>
-    /// Modelo para las acciones de edición de grafos simples.
-    /// </summary>
-    public class EditSimpleGraphModel
+	[Serializable]
+	/// <summary>
+	/// Modelo para las acciones de edición de grafos simples.
+	/// </summary>
+	public class EditSimpleGraphModel
     {
         /// <summary>
         /// Grafo editado.

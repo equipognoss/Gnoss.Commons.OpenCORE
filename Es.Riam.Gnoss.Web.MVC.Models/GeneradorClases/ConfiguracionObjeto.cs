@@ -33,7 +33,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Models.GeneradorClases
                 case "datetime":
                     if (pProp.ValorUnico)
                     {
-                        if (!pProp.FunctionalProperty && pProp.CardinalidadMinima < 1)
+                        if (!pProp.FunctionalProperty /*&& pProp.CardinalidadMinima < 1*/)
                         {
                             Aux = ".Value.ToString(\"yyyyMMddHHmmss\")";
                         }

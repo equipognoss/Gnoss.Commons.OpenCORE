@@ -39,19 +39,11 @@ namespace Es.Riam.Gnoss.Logica.BASE_BD
         /// </summary>
         private static bool? mHayConexionRabbit = null;
 
-        private ConfigService mConfigService;
-        private EntityContextBASE mEntityContextBASE;
-        private LoggingService mLoggingService;
-
         #endregion
 
         public BaseComunidadCN(EntityContext entityContext, LoggingService loggingService, EntityContextBASE entityContextBASE, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication)
             : base(entityContext, loggingService, configService, servicesUtilVirtuosoAndReplication)
         {
-            mConfigService = configService;
-            mEntityContextBASE = entityContextBASE;
-            mLoggingService = loggingService;
-
             BaseComunidadAD = new BaseComunidadAD(loggingService, entityContext, entityContextBASE, configService, servicesUtilVirtuosoAndReplication);
         }
 
@@ -61,23 +53,13 @@ namespace Es.Riam.Gnoss.Logica.BASE_BD
         /// <param name="pFicheroConfiguracionBD">Fichero de configuración de la base de datos BASE</param>
         /// <param name="pUsarVariableEstatica">Si se están usando hilos con diferentes conexiones: FALSE. En caso contrario TRUE</param>
         public BaseComunidadCN(string pFicheroConfiguracionBD, EntityContext entityContext, LoggingService loggingService, EntityContextBASE entityContextBASE, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication)
-            : base(entityContext, loggingService, configService, servicesUtilVirtuosoAndReplication)
+            : base(entityContext, loggingService, configService, entityContextBASE, servicesUtilVirtuosoAndReplication)
         {
-            mConfigService = configService;
-            mEntityContextBASE = entityContextBASE;
-            mLoggingService = loggingService;
-
             BaseComunidadAD = new BaseComunidadAD(-1, loggingService, entityContext, entityContextBASE, configService, servicesUtilVirtuosoAndReplication);
         }
         public BaseComunidadCN(string pFicheroConfiguracionBD, int pTablaBaseProyectoID, EntityContext entityContext, LoggingService loggingService, EntityContextBASE entityContextBASE, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication)
             : base(entityContext, loggingService, configService, servicesUtilVirtuosoAndReplication)
         {
-
-            mConfigService = configService;
-
-            mEntityContextBASE = entityContextBASE;
-            mLoggingService = loggingService;
-
             this.BaseComunidadAD = new BaseComunidadAD(pTablaBaseProyectoID, loggingService, entityContext, entityContextBASE, configService, servicesUtilVirtuosoAndReplication);
         }
         #region Métodos generales        
@@ -193,7 +175,7 @@ namespace Es.Riam.Gnoss.Logica.BASE_BD
                     esSeguro = true;
                 }
 
-                IniciarTransaccion();
+                IniciarTransaccionBASE();
                 {
                     if (pMascaraRemitente == null)
                     {
@@ -211,7 +193,7 @@ namespace Es.Riam.Gnoss.Logica.BASE_BD
 
                         mEntityContextBASE.SaveChanges();
                     }
-                    TerminarTransaccion(true);
+                    TerminarTransaccionBASE(true);
 
                     InsertarCorreoIDColaCorreoRabbitMQ(correoID);
 

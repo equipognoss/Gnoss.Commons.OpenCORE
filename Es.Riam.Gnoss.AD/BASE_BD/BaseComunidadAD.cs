@@ -493,7 +493,7 @@ namespace Es.Riam.Gnoss.AD.BASE_BD
         /// <param name="pUsarVariableEstatica">Si se están usando hilos con diferentes conexiones: FALSE. En caso contrario TRUE</param>
         /// <param name="pTablaBaseProyectoID">Identificador numerico del proyecto (-1 si no se va a actualizar tablas de proyecto)</param>
         public BaseComunidadAD(int pTablaBaseProyectoID, LoggingService loggingService, EntityContext entityContext, EntityContextBASE entityContextBASE, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication)
-            : base(loggingService, entityContext, configService, servicesUtilVirtuosoAndReplication)
+            : base(loggingService, entityContext, configService, entityContextBASE, servicesUtilVirtuosoAndReplication)
         {
             mEntityContextBASE = entityContextBASE;
 
@@ -1278,7 +1278,12 @@ namespace Es.Riam.Gnoss.AD.BASE_BD
                     destinatarioEmail.FechaProcesado = colaCorreoDestinatario.FechaProcesado.Value;
                 }
 
-                listaCorreos.Find(item => item.CorreoID.Equals(destinatarioEmail.CorreoID)).Destinatarios.Add(destinatarioEmail);
+                if (listaCorreos.Find(item => item.CorreoID.Equals(destinatarioEmail.CorreoID)) != null)
+                {
+                    listaCorreos.Find(item => item.CorreoID.Equals(destinatarioEmail.CorreoID)).Destinatarios.Add(destinatarioEmail);
+                }
+
+                
             }
 
             return listaCorreos;

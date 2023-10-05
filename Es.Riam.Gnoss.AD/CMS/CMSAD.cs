@@ -2,6 +2,7 @@ using Es.Riam.AbstractsOpen;
 using Es.Riam.Gnoss.AD.EncapsuladoDatos;
 using Es.Riam.Gnoss.AD.EntityModel;
 using Es.Riam.Gnoss.AD.EntityModel.Models.CMS;
+using Es.Riam.Gnoss.AD.EntityModel.Models.ProyectoDS;
 using Es.Riam.Gnoss.Util.Configuracion;
 using Es.Riam.Gnoss.Util.General;
 using Es.Riam.Gnoss.Web.MVC.Models.Administracion;
@@ -36,6 +37,30 @@ namespace Es.Riam.Gnoss.AD.CMS
     {
         public CMSBloqueComponente CMSBloqueComponente { get; set; }
         public CMSBloque CMSBloque { get; set; }
+    }
+
+    public class JoinCMSBloqueComponenteCMSBloqueCMSPagina
+    {
+        public CMSBloqueComponente CMSBloqueComponente { get; set; }
+        public CMSBloque CMSBloque { get; set; }
+        public CMSPagina CMSPagina { get; set; }
+    }
+
+    public class JoinCMSBloqueComponenteCMSBloqueCMSPaginaProyectoPestanyaCMS
+    {
+        public CMSBloqueComponente CMSBloqueComponente { get; set; }
+        public CMSBloque CMSBloque { get; set; }
+        public CMSPagina CMSPagina { get; set; }
+        public ProyectoPestanyaCMS ProyectoPestanyaCMS { get; set; }
+    }
+
+    public class JoinCMSBloqueComponenteCMSBloqueCMSPaginaProyectoPestanyaCMSProyectoPestanyaMenu
+    {
+        public CMSBloqueComponente CMSBloqueComponente { get; set; }
+        public CMSBloque CMSBloque { get; set; }
+        public CMSPagina CMSPagina { get; set; }
+        public ProyectoPestanyaCMS ProyectoPestanyaCMS { get; set; }
+        public ProyectoPestanyaMenu ProyectoPestanyaMenu { get; set; }
     }
 
     public class JoinCMSBloqueComponenteCMSBloqueCMSComponente
@@ -194,6 +219,42 @@ namespace Es.Riam.Gnoss.AD.CMS
             {
                 CMSBloqueComponente = cmsBloqueComponente,
                 CMSBloque = cmsBloque
+            });
+        }
+
+        public static IQueryable<JoinCMSBloqueComponenteCMSBloqueCMSPagina> JoinCMSPagina(this IQueryable<JoinCMSBloqueComponenteCMSBloque> pQuery)
+        {
+            EntityContext entityContext = (EntityContext)QueryContextAccess.GetDbContext(pQuery);
+            return pQuery.Join(entityContext.CMSPagina, item  => item.CMSBloque.Ubicacion, cmsPagina => cmsPagina.Ubicacion, (item, cmsPagina) => new JoinCMSBloqueComponenteCMSBloqueCMSPagina
+                {
+                CMSBloqueComponente = item.CMSBloqueComponente,
+                CMSBloque = item.CMSBloque,
+                CMSPagina = cmsPagina
+            });
+        }
+
+        public static IQueryable<JoinCMSBloqueComponenteCMSBloqueCMSPaginaProyectoPestanyaCMS> JoinProyectoPestanyaCMS(this IQueryable<JoinCMSBloqueComponenteCMSBloqueCMSPagina> pQuery)
+        {
+            EntityContext entityContext = (EntityContext)QueryContextAccess.GetDbContext(pQuery);
+            return pQuery.Join(entityContext.ProyectoPestanyaCMS, item => item.CMSPagina.Ubicacion, proyectoPestanyaCMS => proyectoPestanyaCMS.Ubicacion, (item, proyectoPestanyaCMS) => new JoinCMSBloqueComponenteCMSBloqueCMSPaginaProyectoPestanyaCMS
+            {
+                CMSBloqueComponente = item.CMSBloqueComponente,
+                CMSBloque = item.CMSBloque,
+                CMSPagina = item.CMSPagina,
+                ProyectoPestanyaCMS = proyectoPestanyaCMS
+            });
+        }
+
+        public static IQueryable<JoinCMSBloqueComponenteCMSBloqueCMSPaginaProyectoPestanyaCMSProyectoPestanyaMenu> JoinProyectoPestanyaMenu(this IQueryable<JoinCMSBloqueComponenteCMSBloqueCMSPaginaProyectoPestanyaCMS> pQuery)
+        {
+            EntityContext entityContext = (EntityContext)QueryContextAccess.GetDbContext(pQuery);
+            return pQuery.Join(entityContext.ProyectoPestanyaMenu, item => item.ProyectoPestanyaCMS.PestanyaID, proyectoPestanyaMenu => proyectoPestanyaMenu.PestanyaID, (item, proyectoPestanyaMenu) => new JoinCMSBloqueComponenteCMSBloqueCMSPaginaProyectoPestanyaCMSProyectoPestanyaMenu
+            {
+                CMSBloqueComponente = item.CMSBloqueComponente,
+                CMSBloque = item.CMSBloque,
+                CMSPagina = item.CMSPagina,
+                ProyectoPestanyaCMS = item.ProyectoPestanyaCMS,
+                ProyectoPestanyaMenu = proyectoPestanyaMenu
             });
         }
 
@@ -643,6 +704,16 @@ namespace Es.Riam.Gnoss.AD.CMS
         }
 
         /// <summary>
+        /// Nos indica las páginas a las que esta vinculado el componente
+        /// </summary>
+        /// <param name="pComponenteID"></param>
+        /// <returns></returns>
+        public List<string> PaginasVinculadasComponente(Guid pComponenteID, Guid pProyectoID)
+        {
+            return mEntityContext.CMSBloqueComponente.JoinCMSBloque().JoinCMSPagina().JoinProyectoPestanyaCMS().JoinProyectoPestanyaMenu().Where(item => item.CMSBloque.ProyectoID.Equals(pProyectoID) && item.CMSBloqueComponente.ComponenteID.Equals(pComponenteID)).Select(item => item.ProyectoPestanyaMenu.Nombre).ToList();
+        } 
+
+        /// <summary>
         /// Obtiene las filas CMSComponente de un proyecto
         /// </summary>
         /// <param name="pProyectoID">ID del proyecto</param>
@@ -688,6 +759,27 @@ namespace Es.Riam.Gnoss.AD.CMS
         }
 
         /// <summary>
+        /// Obtiene la tabla CMSComponente del proyecto indicado por parámetro
+        /// </summary>
+        /// <param name="pProyectoID">Identificador del proyecto</param>
+        /// <param name="pLimite">Número de resultados a devolver</param>
+        /// <param name="pBusqueda">Título del componente a buscar</param>
+        /// <returns>Lista de CMSComponente</returns>
+        public List<CMSComponente> ObtenerCMSComponentePorProyecto(Guid pProyectoID, int pLimite, string pBusqueda)
+        {
+            CorregirFechaActualizacionComponentesAntiguos();
+
+            if (pLimite != -1)
+            {
+                return mEntityContext.CMSComponente.Where(item => item.ProyectoID.Equals(pProyectoID) && item.Nombre.ToLower().Contains(pBusqueda.ToLower())).OrderByDescending(item => item.FechaUltimaActualizacion.Value).Take(pLimite).ToList();
+            }
+            else
+            {
+                return mEntityContext.CMSComponente.Where(item => item.ProyectoID.Equals(pProyectoID) && item.Nombre.ToLower().Contains(pBusqueda.ToLower())).OrderByDescending(item => item.FechaUltimaActualizacion.Value).ToList();
+            }
+        }
+
+        /// <summary>
         /// Obtiene las tablas CMSComponente y CMSPropiedadComponente de un proyecto
         /// </summary>
         /// <param name="pProyectoID">ID del proyecto</param>
@@ -701,7 +793,7 @@ namespace Es.Riam.Gnoss.AD.CMS
             var queryCMSComponente = mEntityContext.CMSComponente.Where(item => item.ProyectoID.Equals(pProyectoID));
             if (!string.IsNullOrEmpty(pTexto))
             {
-                queryCMSComponente = queryCMSComponente.Where(item => item.Nombre.Contains(pTexto) || item.NombreCortoComponente.Contains(pTexto));
+                queryCMSComponente = queryCMSComponente.Where(item => item.Nombre.ToLower().Contains(pTexto) || item.NombreCortoComponente.ToLower().Contains(pTexto));
             }
             dataWrapperCMS.ListaCMSComponente = queryCMSComponente.OrderBy(item => item.Nombre).ToList();
 
@@ -709,7 +801,7 @@ namespace Es.Riam.Gnoss.AD.CMS
             var queryCMSPropiedadComponente = mEntityContext.CMSComponente.JoinCMSPropiedadComponente().Where(item => item.CMSComponente.ProyectoID.Equals(pProyectoID));
             if (!string.IsNullOrEmpty(pTexto))
             {
-                queryCMSPropiedadComponente = queryCMSPropiedadComponente.Where(item => item.CMSComponente.Nombre.Contains(pTexto));
+                queryCMSPropiedadComponente = queryCMSPropiedadComponente.Where(item => item.CMSComponente.Nombre.ToLower().Contains(pTexto));
             }
             dataWrapperCMS.ListaCMSPropiedadComponente = queryCMSPropiedadComponente.Select(item => item.CMSPropiedadComponente).ToList();
 
@@ -1011,6 +1103,24 @@ namespace Es.Riam.Gnoss.AD.CMS
             #endregion
 
             #endregion
+        }
+
+        /// <summary>
+        /// A partir de la versión 5.6.0 es necesario que los CMSComponentes tenga FechaActualizacion, este campo antes no era necesario así que actualizamos los componentes antiguos
+        /// para que también tengan, si no fallarán las instrucciones siguientes.
+        /// </summary>
+        private void CorregirFechaActualizacionComponentesAntiguos()
+        {
+            if (mEntityContext.CMSComponente.Any(item => !item.FechaUltimaActualizacion.HasValue))
+            {
+                List<CMSComponente> listaComponentesSinFecha = mEntityContext.CMSComponente.Where(item => !item.FechaUltimaActualizacion.HasValue).ToList();
+                foreach (CMSComponente cmsComponenteSinFecha in listaComponentesSinFecha)
+                {
+                    cmsComponenteSinFecha.FechaUltimaActualizacion = DateTime.Now;
+                }
+
+                mEntityContext.SaveChanges();
+            }
         }
 
         #endregion

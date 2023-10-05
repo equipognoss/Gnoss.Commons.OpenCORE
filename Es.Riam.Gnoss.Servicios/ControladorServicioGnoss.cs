@@ -5,12 +5,14 @@ using Es.Riam.Gnoss.AD.ParametroAplicacion;
 using Es.Riam.Gnoss.AD.Virtuoso;
 using Es.Riam.Gnoss.CL;
 using Es.Riam.Gnoss.CL.ParametrosAplicacion;
+using Es.Riam.Gnoss.CL.Trazas;
 using Es.Riam.Gnoss.Elementos.ParametroAplicacion;
 using Es.Riam.Gnoss.Logica.ParametroAplicacion;
 using Es.Riam.Gnoss.RabbitMQ;
 using Es.Riam.Gnoss.Util.Configuracion;
 using Es.Riam.Gnoss.Util.General;
 using Es.Riam.Util;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
@@ -157,6 +159,13 @@ namespace Es.Riam.Gnoss.Servicios
         protected RabbitMQClient RabbitMqClientLectura;
         protected bool mReiniciarLecturaRabbit = false;
         protected ConfigService mConfigService;
+        protected EntityContext mEntityContext;
+        protected LoggingService mLoggingService;
+        protected RedisCacheWrapper mRedisCacheWrapper;
+        protected IServicesUtilVirtuosoAndReplication mServicesUtilVirtuosoAndReplication;
+        private IHostingEnvironment mEnv;
+        private static object BLOQUEO_COMPROBACION_TRAZA = new object();
+        private static DateTime HORA_COMPROBACION_TRAZA;
 
         protected IServiceScopeFactory ScopedFactory { get; }
 
@@ -318,8 +327,52 @@ namespace Es.Riam.Gnoss.Servicios
         }
 
 
+        protected void ComprobarTraza(string NombreTraza, EntityContext mEntityContext, LoggingService mLoggingService, RedisCacheWrapper mRedisCacheWrapper, ConfigService mConfigService, IServicesUtilVirtuosoAndReplication mServicesUtilVirtuosoAndReplication)
+        {
+            if (DateTime.Now > HORA_COMPROBACION_TRAZA)
+            {
+                lock (BLOQUEO_COMPROBACION_TRAZA)
+                {
+                    if (DateTime.Now > HORA_COMPROBACION_TRAZA)
+                    {
+                        HORA_COMPROBACION_TRAZA = DateTime.Now.AddSeconds(15);
+                        TrazasCL trazasCL = new TrazasCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mServicesUtilVirtuosoAndReplication);
+                        string tiempoTrazaResultados = trazasCL.ObtenerTrazaEnCache(NombreTraza);
 
+                        if (!string.IsNullOrEmpty(tiempoTrazaResultados))
+                        {
+                            int valor = 0;
+                            int.TryParse(tiempoTrazaResultados, out valor);
+                            LoggingService.TrazaHabilitada = true;
+                            LoggingService.TiempoMinPeticion = valor; //Para sacar los segundos
+                        }
+                        else
+                        {
+                            LoggingService.TrazaHabilitada = false;
+                            LoggingService.TiempoMinPeticion = 0;
+                        }
+                    }
+                }
+            }
+        }
 
+        protected void GuardarTraza(LoggingService pLoggingService)
+        {
+            pLoggingService.GuardarTraza(ObtenerRutaTraza());
+        }
+
+        private string ObtenerRutaTraza()
+        {
+            string ruta = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "logs", "trazas");
+
+            if (!Directory.Exists(ruta))
+            {
+                Directory.CreateDirectory(ruta);
+            }
+            ruta = Path.Combine(ruta, $"traza_{DateTime.Now.ToString("yyyy-MM-dd")}.txt");
+
+            return ruta;
+        }
 
         /// <summary>
         /// Establece el dominio de la cache.

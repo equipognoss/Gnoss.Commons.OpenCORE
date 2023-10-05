@@ -6,6 +6,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Es.Riam.AbstractsOpen\Es.Riam.AbstractsOpen.csproj" />
+    <ProjectReference Include="..\Es.Riam.Gnoss.UtilServiciosWeb\Es.Riam.Gnoss.UtilServiciosWeb.csproj" />
   </ItemGroup>
 
 </Project>

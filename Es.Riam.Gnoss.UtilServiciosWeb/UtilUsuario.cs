@@ -171,6 +171,7 @@ namespace Es.Riam.Gnoss.UtilServiciosWeb
             {
                 identity.UsuarioID = filaUsuario.UsuarioID;
                 identity.IdentidadID = identidadID;
+                identity.PerfilID = perfilID;    
                 identity.Login = filaUsuario.Login;
                 identity.OrganizacionID = pOrganizacionID;
                 identity.ProyectoID = pProyectoID;

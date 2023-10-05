@@ -4,6 +4,7 @@ using Es.Riam.Gnoss.Recursos;
 using Es.Riam.Gnoss.Util.General;
 using Es.Riam.Gnoss.Web.MVC.Controles.Controladores;
 using Es.Riam.Gnoss.Web.MVC.Models;
+using Es.Riam.Gnoss.Web.MVC.Models.Administracion;
 using Es.Riam.Util;
 using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Http;
@@ -23,6 +24,221 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Helper
 {
     public static class HtmlHelpers
     {
+
+        /// <summary>
+        /// Método para conocer a través del ViewBag si el usuario es o no MetaAdministrador. Usado para necesidades del Front. En DevTools se puede realizar con permisosPaginas.        
+        /// </summary>
+        /// <param name="helper"></param>
+        /// <returns></returns>
+        public static bool GetEsMetaAdministrador(this IHtmlHelper helper)
+        {
+            return (bool)helper.ViewBag.EsMetaAdministrador;
+        }
+
+        /// <summary>
+        /// Devolver la clase correspondiente a una columna para la edición de páginas CMS, de tal forma que dependiendo del valor existe en base de datos (Ej: span12 break)
+        /// el valor entendible y legible para el Page Builder de CMS.
+        /// Devuelve un string con el con el valor correspondiente y un valor entero con el tamaño de la columna
+        /// </summary>
+        public static Tuple<string, string> GetValuesForGridColumnInCMSPage(this IHtmlHelper helper, String columnClassName) {
+
+            // Span o clase para que sea guardada en bd
+            string styleName= "span11";
+            // Valor entero para establecer en la columna a modo de "Previsualización del width" de la columna
+            string widthColumn = "100.0";
+
+            // Es posible que columnClassName venga separado por espacios: Ej: span12
+            if (!String.IsNullOrEmpty(columnClassName)) {
+                // Convertirlo a array
+                var arrayColumnClassName = columnClassName.Split(" ");
+
+                foreach (var className in arrayColumnClassName)
+                {
+                    switch (className)
+                    {
+                        case "span11":
+                            // 100%
+                            styleName = "span11";
+                            widthColumn = "100.0";
+                            break;
+
+                        case "span12":
+                            // 50%
+                            styleName = "span12";
+                            widthColumn = "50.0";
+                            break;
+
+                        case "span13":
+                            // 33%
+                            styleName = "span13";
+                            widthColumn = "33.33";
+                            break;
+
+                        case "span14":
+                            // 25%
+                            styleName = "span14";
+                            widthColumn = "25.0";
+                            break;
+                        case "span16":
+                            // 16,66%
+                            styleName = "span14";
+                            widthColumn = "16.66";
+                            break;
+                        case "span23":
+                            // 66,66%
+                            styleName = "span23";
+                            widthColumn = "66.66";
+                            break;
+
+                        case "span34":
+                            // 75,0%
+                            styleName = "span34";
+                            widthColumn = "75.0";
+                            break;
+
+                        case "span38":
+                            // 37,5%
+                            styleName = "span38";
+                            widthColumn = "37.5";
+                            break;
+
+                        case "span58":
+                            // 62,5%
+                            styleName = "span58";
+                            widthColumn = "62.5";
+                            break;
+                    }
+                }
+            }
+
+            return Tuple.Create(widthColumn, styleName);
+        }
+
+
+        /// <summary>
+        /// Obtener un diccionario de los valores almacenados en los diferentes idiomas: Ej: El valor en los idiomas disponibles de una página, url...
+        /// Devuelve un diccionario con Key,Value siendo key un string con el idioma en cuestión y Value con el valor en ese idioma.
+        /// El parámetro multiLanguageValueString tiene un formato así: NombreDeLaPagina@es|||PageName@en|||
+        /// </summary>
+        public static Dictionary<string, string> GetDictionaryValuesFromMultiLanguageItem(this IHtmlHelper helper, String multiLanguageValueString) {
+
+            Dictionary<string, string> dictionaryWithMultiLanguageValues = new Dictionary<string, string>();
+
+            // Obtener el nombre multiIdioma separado en arrayItems
+            if (multiLanguageValueString == null) {
+                multiLanguageValueString = "";
+            }
+            string[] arrayValues = multiLanguageValueString.Split("|||");
+
+            // Recorrer cada item según los diferentes idiomas existentes
+            foreach (var itemValue in arrayValues)
+            {
+                // Posición del separador del idioma
+                int indexLanguageSeparator = itemValue.LastIndexOf("@");
+                if (indexLanguageSeparator != -1) {
+                    // Obtener el valor en el idioma que corresponda
+                    string pageValue = itemValue.Substring(0, indexLanguageSeparator);
+                    string pageLanguageKey = itemValue.Substring(indexLanguageSeparator + 1, itemValue.Length - indexLanguageSeparator - 1);
+                    // Añadir el valor + key
+                    dictionaryWithMultiLanguageValues.Add(pageLanguageKey, pageValue);
+                }                
+            }
+            // Devuelve el valor con los Idiomas (Key) y los idiomas (Value)
+            return dictionaryWithMultiLanguageValues;
+        }
+
+
+
+        /// <summary>
+        /// Obtener el nombre del tipo de Página de la comunidad para ser mostrado en el listado de páginas de Administración ** DevTools **
+        /// </summary>
+        public static string GetNombreTipoPaginaDevTools(this IHtmlHelper helper, TabModel pestanya)
+        {            
+            // Nombre del tipo de la pestaña
+            string nombreTipoPestanya = "";
+
+            switch (pestanya.Type)
+            {
+                case TipoPestanyaMenu.Home:
+                    nombreTipoPestanya = helper.GetText("COMMON", "HOME");
+                    break;
+                case TipoPestanyaMenu.Indice:
+                    nombreTipoPestanya = helper.GetText("COMMON", "INDICE");
+                    break;
+                case TipoPestanyaMenu.Recursos:
+                    nombreTipoPestanya = helper.GetText("COMMON", "RECURSOS");
+                    break;
+                case TipoPestanyaMenu.Preguntas:
+                    nombreTipoPestanya = helper.GetText("COMMON", "PREGUNTAS");
+                    break;
+                case TipoPestanyaMenu.Debates:
+                    nombreTipoPestanya = helper.GetText("COMMON", "DEBATES");
+                    break;
+                case TipoPestanyaMenu.Encuestas:
+                    nombreTipoPestanya = helper.GetText("COMMON", "ENCUESTAS");
+                    break;
+                case TipoPestanyaMenu.PersonasYOrganizaciones:
+                    nombreTipoPestanya = helper.GetText("COMMON", "PERSONASYORGANIZACIONES");
+                    break;
+                case TipoPestanyaMenu.AcercaDe:
+                    nombreTipoPestanya = helper.GetText("COMMON", "ACERCADE");
+                    break;
+                case TipoPestanyaMenu.CMS:
+                    nombreTipoPestanya = helper.GetText("COMMON", "CMS");
+                    break;
+                case TipoPestanyaMenu.BusquedaSemantica:
+                    nombreTipoPestanya = helper.GetText("COMMON", "BUSQUEDASEMANTICA");
+                    break;
+                case TipoPestanyaMenu.EnlaceInterno:
+                    nombreTipoPestanya = helper.GetText("COMMON", "ENLACEINTERNO");
+                    break;
+                case TipoPestanyaMenu.EnlaceExterno:
+                    nombreTipoPestanya = helper.GetText("COMMON", "ENLACEEXTERNO");
+                    break;
+                case TipoPestanyaMenu.BusquedaAvanzada:
+                    nombreTipoPestanya = helper.GetText("COMMON", "BUSQUEDAAVANZADA");
+                    break;
+            }
+
+            return nombreTipoPestanya;
+        }
+
+        /// <summary>
+        /// Obtener el título de la página para las Administración/DevTools. El título se mostrará en el Header o Cabecera del Layout y lo establecerá cada Controller
+        /// </summary>
+        public static string GetHeaderTitle(this IHtmlHelper helper)
+        {
+            return (string)helper.ViewBag.HeaderTitle;
+        }
+
+        /// <summary>
+        /// Obtener el padre del titulo o la categoría a la que pertenece el título de la página para las Administración/DevTools. El títutlo "padre" se mostrará en el Header o Cabecera del Layout y lo establecerá cada Controller
+        /// </summary>
+        public static string GetHeaderParentTitle(this IHtmlHelper helper)
+        {
+            string headerParentTitle = "";
+
+            if (!string.IsNullOrEmpty((string)helper.ViewBag.HeaderParentTitle)) {
+                headerParentTitle = (string)helper.ViewBag.HeaderParentTitle;
+            }
+            return headerParentTitle;
+        }
+
+        /// <summary>
+        /// Obtener el enum correspondiente a la sección Padre para la navegación en Administración/DevTools. Indicará en que sección Padre se encuentra el usuario.
+        /// </summary>
+        public static AdministracionSeccionesDevTools.SeccionesDevTools GetActiveSeccionDevTools(this IHtmlHelper helper)
+        {
+            return (AdministracionSeccionesDevTools.SeccionesDevTools)helper.ViewBag.ActiveSection;
+        }
+
+        /// <summary>
+        /// Obtener el enum correspondiente a la subsección para la navegación en Administración/DevTools. Indicará en que subsección se encuentra el usuario.
+        /// </summary>
+        public static AdministracionSeccionesDevTools.SubSeccionesDevTools GetActiveSubSeccionDevTools(this IHtmlHelper helper)
+        {
+            return (AdministracionSeccionesDevTools.SubSeccionesDevTools)helper.ViewBag.ActiveSubSection;
+        }
 
         /// <summary>
         /// Devolver el nombre del usuario dependiendo del modo del perfil del usuario (Personal, ProfessionalPersonal, ProfessionalCorporate)
@@ -129,7 +345,8 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Helper
         public static string CleanHtmlFromMultimediaItems(this IHtmlHelper helper, string stringHtml)
         {
             // Contendrá el stringHtml pero sin las img, vídeos incrustadas, enlaces, tablas, spa, h1-h4, ul, ol, strong                      
-            while (stringHtml.Contains("<img ") || stringHtml.Contains("<iframe ") || stringHtml.Contains("<table") || stringHtml.Contains("<ul") || stringHtml.Contains("<ol") || stringHtml.Contains("<a") || stringHtml.Contains("</a>") || stringHtml.Contains("<strong>") || stringHtml.Contains("</strong>") || stringHtml.Contains("<span") || stringHtml.Contains("</span>") || stringHtml.Contains("<h1>") || stringHtml.Contains("<h1 ") || stringHtml.Contains("<h2>") || stringHtml.Contains("<h2 ") || stringHtml.Contains("<h3>") || stringHtml.Contains("<h3 ") || stringHtml.Contains("<h4>") || stringHtml.Contains("<h4 ") || stringHtml.Contains("</h1>") || stringHtml.Contains("</h2>") || stringHtml.Contains("</h3>") || stringHtml.Contains("</h4>") || stringHtml.Contains("<u>") || stringHtml.Contains("</u>") || stringHtml.Contains("<figure") )
+            while (stringHtml.Contains("<img ") || stringHtml.Contains("<iframe ") || stringHtml.Contains("<table") || stringHtml.Contains("<ul") || stringHtml.Contains("<ol") || stringHtml.Contains("<a") || stringHtml.Contains("</a>") || stringHtml.Contains("<strong>") || stringHtml.Contains("</strong>") || stringHtml.Contains("<span") || stringHtml.Contains("</span>") || stringHtml.Contains("<h1>") || stringHtml.Contains("<h1 ") || stringHtml.Contains("<h2>") || stringHtml.Contains("<h2 ") || stringHtml.Contains("<h3>") || stringHtml.Contains("<h3 ") || stringHtml.Contains("<h4>") || stringHtml.Contains("<h4 ") || stringHtml.Contains("</h1>") || stringHtml.Contains("</h2>") || stringHtml.Contains("</h3>") || stringHtml.Contains("</h4>") || stringHtml.Contains("<u>") || stringHtml.Contains("</u>") || stringHtml.Contains("<figure") || stringHtml.Contains("<em>") || stringHtml.Contains("</em>") || stringHtml.Contains("<b>") || stringHtml.Contains("</b>") ||
+                stringHtml.Contains("<li>") || stringHtml.Contains("</li>"))
             {
                 int initialPosition = 0;
                 int finalPosition = 0;
@@ -157,13 +374,6 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Helper
                     finalPosition = stringHtml.IndexOf("</table>", initialPosition);
                     // Fragmento que deberá eliminarse
                     descriptionToRemove = stringHtml.Substring(initialPosition, finalPosition - initialPosition + 8);
-                }
-                else if (stringHtml.Contains("<ul"))
-                {
-                    initialPosition = stringHtml.IndexOf("<ul");
-                    finalPosition = stringHtml.IndexOf("</ul>", initialPosition);
-                    // Fragmento que deberá eliminarse
-                    descriptionToRemove = stringHtml.Substring(initialPosition, finalPosition - initialPosition + 5);
                 }
                 else if (stringHtml.Contains("<ol"))
                 {
@@ -199,6 +409,20 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Helper
                     finalPosition = stringHtml.IndexOf("</strong>", initialPosition);
                     // Fragmento que deberá eliminarse
                     descriptionToRemove = stringHtml.Substring(initialPosition, finalPosition - initialPosition + 9);
+                }
+                else if (stringHtml.Contains("<em>"))
+                {
+                    initialPosition = stringHtml.IndexOf("<em>");
+                    finalPosition = stringHtml.IndexOf("<em>", initialPosition);
+                    // Fragmento que deberá eliminarse
+                    descriptionToRemove = stringHtml.Substring(initialPosition, finalPosition - initialPosition + 4);
+                }
+                else if (stringHtml.Contains("</em>"))
+                {
+                    initialPosition = stringHtml.IndexOf("</em>");
+                    finalPosition = stringHtml.IndexOf("</em>", initialPosition);
+                    // Fragmento que deberá eliminarse
+                    descriptionToRemove = stringHtml.Substring(initialPosition, finalPosition - initialPosition + 5);
                 }
                 else if (stringHtml.Contains("<span"))
                 {
@@ -318,6 +542,49 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Helper
                     // Fragmento que deberá eliminarse
                     descriptionToRemove = stringHtml.Substring(initialPosition, finalPosition - initialPosition + 9);
                 }
+                else if (stringHtml.Contains("<b>"))
+                {
+                    initialPosition = stringHtml.IndexOf("<b>");
+                    finalPosition = stringHtml.IndexOf("<b>", initialPosition);
+                    // Fragmento que deberá eliminarse
+                    descriptionToRemove = stringHtml.Substring(initialPosition, finalPosition - initialPosition + 3);
+                }
+                else if (stringHtml.Contains("</b>"))
+                {
+                    initialPosition = stringHtml.IndexOf("</b>");
+                    finalPosition = stringHtml.IndexOf("</b>", initialPosition);
+                    // Fragmento que deberá eliminarse
+                    descriptionToRemove = stringHtml.Substring(initialPosition, finalPosition - initialPosition + 4);
+                }
+                else if (stringHtml.Contains("<li>"))
+                {
+                    initialPosition = stringHtml.IndexOf("<li>");
+                    finalPosition = stringHtml.IndexOf("<li>", initialPosition);
+                    // Fragmento que deberá eliminarse
+                    descriptionToRemove = stringHtml.Substring(initialPosition, finalPosition - initialPosition + 4);
+                }
+                else if (stringHtml.Contains("</li>"))
+                {
+                    initialPosition = stringHtml.IndexOf("</li>");
+                    finalPosition = stringHtml.IndexOf("</li>", initialPosition);
+                    // Fragmento que deberá eliminarse
+                    descriptionToRemove = stringHtml.Substring(initialPosition, finalPosition - initialPosition + 5);
+                }
+                else if (stringHtml.Contains("<ul>"))
+                {
+                    initialPosition = stringHtml.IndexOf("<ul>");
+                    finalPosition = stringHtml.IndexOf("<ul>", initialPosition);
+                    // Fragmento que deberá eliminarse
+                    descriptionToRemove = stringHtml.Substring(initialPosition, finalPosition - initialPosition + 5);
+                }
+                else if (stringHtml.Contains("</ul>"))
+                {
+                    initialPosition = stringHtml.IndexOf("</ul>");
+                    finalPosition = stringHtml.IndexOf("</ul>", initialPosition);
+                    // Fragmento que deberá eliminarse
+                    descriptionToRemove = stringHtml.Substring(initialPosition, finalPosition - initialPosition + 5);
+                }
+
 
                 stringHtml = stringHtml.Replace(descriptionToRemove, "");
             }
@@ -328,7 +595,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Helper
         public static string CleanHtmlParagraphsStringHtml(this IHtmlHelper helper, string stringHtml)
         {
             // Contendrá el stringHtml pero sin las imagenes, vídeos incrustadas                        
-            while (stringHtml.Contains("<p>") || stringHtml.Contains("</p>") || stringHtml.Contains("<p"))
+            while (stringHtml.Contains("<p>") || stringHtml.Contains("</p>") || stringHtml.Contains("<p "))
             {
                 int initialPosition = 0;
                 int finalPosition = 0;
@@ -673,7 +940,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Helper
             CommunityModel Comunidad = htmlHelper.ViewBag.Comunidad;
             bool tienePersonalizacion = false;
 
-            if ((!string.IsNullOrEmpty((string)htmlHelper.ViewBag.Personalizacion) || !string.IsNullOrEmpty((string)htmlHelper.ViewBag.PersonalizacionEcosistema)) && Comunidad != null)
+            if ((!string.IsNullOrEmpty((string)htmlHelper.ViewBag.Personalizacion) || !string.IsNullOrEmpty((string)htmlHelper.ViewBag.PersonalizacionEcosistema) || !string.IsNullOrEmpty((string)htmlHelper.ViewBag.PersonalizacionDominio)) && Comunidad != null)
             {
                 tienePersonalizacion = true;
             }
@@ -829,7 +1096,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Helper
             return UtilCadenas.ConvertirPrimeraLetraPalabraAMayusculas(pTexto);
         }
 
-        public static string ObtenerUrlDeDoc(this IHtmlHelper helper, Guid idDocumento, string pNombreDocumento, GnossUrlsSemanticas gnossUrlsSemanticas)
+        public static string ObtenerUrlDeDoc(this IHtmlHelper helper, Guid idDocumento, string pNombreDocumento)
         {
             CommunityModel Comunidad = helper.ViewBag.Comunidad;
             UserProfileModel Perfil = helper.ViewBag.Perfil;
@@ -838,8 +1105,9 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Helper
             {
                 urlPerfil = Perfil.Url;
             }
+            GnossUrlsSemanticas gnossUrlsSemanticas = GetGeneradorURLs(helper);
 
-            return gnossUrlsSemanticas.GetURLBaseRecursosFichaConIDs(helper.ViewBag.BaseUrlIdioma, helper.ViewBag.UtilIdiomas, Comunidad.ShortName, urlPerfil, Es.Riam.Util.UtilCadenas.EliminarCaracteresUrlSem(pNombreDocumento), idDocumento, null, false);
+			return gnossUrlsSemanticas.GetURLBaseRecursosFichaConIDs(helper.ViewBag.BaseUrlIdioma, helper.ViewBag.UtilIdiomas, Comunidad.ShortName, urlPerfil, Es.Riam.Util.UtilCadenas.EliminarCaracteresUrlSem(pNombreDocumento), idDocumento, null, false);
         }
 
         public static string ObtenerNombreCompletoDeFichaIdentidad(this IHtmlHelper helper, ProfileModel pIdentidad)

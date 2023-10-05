@@ -74,7 +74,8 @@ namespace Es.Riam.Gnoss.Util.GeneradorClases
 
             nombreProp = nombreProp.Replace(".", "_");
             nombreProp = nombreProp.Replace(" ", "_");
-            if (nombreProp.Contains("string")) {
+            if (nombreProp.Contains("string"))
+            {
                 nombreProp = nombreProp.Replace("string", "String");
             }
             return nombreProp;
@@ -84,29 +85,36 @@ namespace Es.Riam.Gnoss.Util.GeneradorClases
         {
             if (rang.Contains('#'))
             {
-                try
+                if (dicPref.ContainsKey($"{rang.Split('#')[0]}#"))
                 {
-                    return dicPref[rang.Split('#')[0] + "#"];
+                    return dicPref[$"{rang.Split('#')[0]}#"];
                 }
-                catch (Exception ex)
+                else
                 {
-                    loggingService.GuardarLogError(ex, $"error en la propiedad {rang.Split('#')[0] + "#"}");
-                    throw new Exception(ex.Message);
+                    throw new Exception($"la propiedad {rang} no esta bien definida en el xml o owl.");
                 }
             }
-            else if(rang.Contains("/"))
+            else if (rang.Contains("/"))
             {
                 return dicPref[rang.Substring(0, rang.LastIndexOf('/') + 1)];
             }
             else
             {
-                return dicPref[rang];
+                if (dicPref.ContainsKey(rang))
+                {
+                    return dicPref[rang];
+                }
+                else
+                {
+                    throw new Exception($"la propiedad \"{rang}\" no tiene su namespace correctamente definido. Revisa donde y como la estás utilizando. (Recuerda si utilizas Protégé todas las propiedades deben utilizar el namespace definido en la ontología)");
+                }
             }
         }
 
         public static string Tabs(int n)
         {
             return new String('\t', n);
+
         }
     }
 }

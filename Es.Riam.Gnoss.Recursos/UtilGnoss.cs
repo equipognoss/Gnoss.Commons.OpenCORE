@@ -1,7 +1,7 @@
 using Es.Riam.Gnoss.Elementos;
 using Es.Riam.Util;
+using SixLabors.ImageSharp;
 using System.Collections.Generic;
-using System.Drawing;
 
 namespace Es.Riam.Gnoss.Recursos
 {
@@ -15,7 +15,7 @@ namespace Es.Riam.Gnoss.Recursos
         /// <summary>
         /// Lista de imágenes con su clave
         /// </summary>
-        static SortedList<string, Bitmap> mListaImagenes = new SortedList<string,Bitmap>();
+        static SortedList<string, Image> mListaImagenes = new SortedList<string, Image>();
 
         #endregion
 
@@ -38,7 +38,7 @@ namespace Es.Riam.Gnoss.Recursos
         /// <summary>
         /// Lista de imágenes con su clave
         /// </summary>
-        public static SortedList<string, Bitmap> ListaImagenesGnoss
+        public static SortedList<string, Image> ListaImagenesGnoss
         {
             get
             {

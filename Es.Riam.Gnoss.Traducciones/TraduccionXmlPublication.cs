@@ -1,4 +1,4 @@
-﻿using OfficeOpenXml;
+﻿using ClosedXML.Excel;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -13,7 +13,7 @@ namespace Es.Riam.Gnoss.Traducciones
         bool faltaID;
         string[] PALITOS = { "|||" };
 
-        public void XmlOntologiaToExcel(Stream stream, ExcelPackage mExcel, string nombreHoja)
+        public void XmlOntologiaToExcel(Stream stream, XLWorkbook mExcel, string nombreHoja)
         {
             faltaID = false;
             Dictionary<string, Dictionary<string, string>> mDiccionario = new Dictionary<string, Dictionary<string, string>>();
@@ -24,8 +24,8 @@ namespace Es.Riam.Gnoss.Traducciones
 
             addPropiedades(mDiccionario, doc);
             addEntidades(mDiccionario, doc);
-
-            if (faltaID == false)
+		
+			if (faltaID == false) 
             {
                 UtilFicheros.ConstruirExcel(mExcel, nombreHoja, mDiccionario);
             }
@@ -47,7 +47,7 @@ namespace Es.Riam.Gnoss.Traducciones
                     {
                         string clave = $"Propiedad{PALITOS[0]}{id}{PALITOS[0]}{entidadId}{PALITOS[0]}{nombre.Name}";
 
-                        if (!nombre.InnerText.Equals("") && ((nombre.Name.Equals("AtrNombreLectura") || nombre.Name.Equals("AtrNombre")) && nombre.Attributes.Equals("xml:lang") && !string.IsNullOrEmpty(nombre.Attributes["xml:lang"].Value)))
+                        if (!nombre.InnerText.Equals("") && ((nombre.Name.Equals("AtrNombreLectura") || nombre.Name.Equals("AtrNombre")) && nombre.Attributes["xml:lang"] != null && !string.IsNullOrEmpty(nombre.Attributes["xml:lang"].Value)))
                         {
                             string idioma = nombre.Attributes["xml:lang"]?.Value;
 
@@ -146,7 +146,7 @@ namespace Es.Riam.Gnoss.Traducciones
                 }
                 else if (nombreGrupo.ParentNode.Attributes["ID"] == null)
                 {
-                    faltaID = true;
+                    //faltaID = true;
                     //throw new Exception("Error: falta un atributo ID en la etiqueta Grupo padre de un AtrNombreGrupo");
                 }
             }
@@ -188,7 +188,7 @@ namespace Es.Riam.Gnoss.Traducciones
                 }
                 else
                 {
-                    faltaID = true;
+                    //faltaID = true;
                    // throw new Exception("Error: falta un ID en la etiqueta Literal ");
                 }
             }

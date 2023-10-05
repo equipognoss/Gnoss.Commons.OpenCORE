@@ -200,19 +200,11 @@ namespace Es.Riam.Gnoss.AD.ParametrosProyecto
         // public ParametroGeneralDS ObtenerTextosPersonalizacionProyecto(Guid pProyectoID)
         public List<TextosPersonalizadosPersonalizacion> ObtenerTextosPersonalizacionProyecto(Guid pProyectoID)
         {
-            var textos = mEntityContext.TextosPersonalizadosPersonalizacion.Join(mEntityContext.VistaVirtualProyecto, textoPersonalizacion => textoPersonalizacion.PersonalizacionID, vistaVirtualProyecto => vistaVirtualProyecto.PersonalizacionID, (textoPersonalizacion, textoProyecto) => new
+            return mEntityContext.TextosPersonalizadosPersonalizacion.Join(mEntityContext.VistaVirtualProyecto, textoPersonalizacion => textoPersonalizacion.PersonalizacionID, vistaVirtualProyecto => vistaVirtualProyecto.PersonalizacionID, (textoPersonalizacion, textoProyecto) => new
             {
                 VistaVirtualProyecto = textoProyecto,
                 TextoPersonalizacion = textoPersonalizacion
-            }).Where(item => item.VistaVirtualProyecto.ProyectoID.Equals(pProyectoID)).Select(item => item.TextoPersonalizacion);
-
-            var textosPers = textos.ToList();
-            //foreach(var texto in textos)
-            //{
-            //    TextosPersonalizadosPersonalizacion textosPersonalizados = new TextosPersonalizadosPersonalizacion(texto.PersonalizacionID, texto.TextoID, texto.Language, texto.Texto);
-            //    listaTextos.Add(textosPersonalizados);
-            //}
-            return textosPers;
+            }).Where(item => item.VistaVirtualProyecto.ProyectoID.Equals(pProyectoID)).Select(item => item.TextoPersonalizacion).ToList();
         }
 
         public List<TextosPersonalizadosPersonalizacion> ObtenerTextosPersonalizadosDominio(string pDominio, Guid pPersonalizacionEcosistema)
@@ -225,15 +217,13 @@ namespace Es.Riam.Gnoss.AD.ParametrosProyecto
             }
             else
             {
-                listaTextos = mEntityContext.TextosPersonalizadosPersonalizacion.Where(texto => texto.PersonalizacionID.Equals(pPersonalizacionEcosistema)).Select(item => item).Concat(mEntityContext.TextosPersonalizadosPersonalizacion.Join(mEntityContext.VistaVirtualProyecto, textoPersonalizacion => textoPersonalizacion.PersonalizacionID, vistaVirtualProyecto => vistaVirtualProyecto.PersonalizacionID, (textoPersonalizacion, vistaVirtualProyecto) => new
+                List<Guid> listaGuids = mEntityContext.VistaVirtualProyecto.Join(mEntityContext.Proyecto, vistaVirtualProyecto => vistaVirtualProyecto.ProyectoID, proyecto => proyecto.ProyectoID, (vistaVirtualProyecto, proyecto) => new
                 {
-                    TextoPersonalizacion = textoPersonalizacion,
-                    VistaVirtualProyecto = vistaVirtualProyecto
-                }).Join(mEntityContext.Proyecto, vistaVirtualProyecto => vistaVirtualProyecto.VistaVirtualProyecto.ProyectoID, proyecto => proyecto.ProyectoID, (textoPersonalizacion, proyecto) => new
-                {
-                    TextoPersonalizacion = textoPersonalizacion.TextoPersonalizacion,
+                    VistaVirtualProyecto = vistaVirtualProyecto,
                     Proyecto = proyecto
-                }).Where(proyecto => proyecto.Proyecto.URLPropia.Contains("http://" + pDominio) || proyecto.Proyecto.URLPropia.Contains("https://" + pDominio) || proyecto.Proyecto.URLPropia.Contains("://" + pDominio + "@")).Select(item => item.TextoPersonalizacion)).ToList().Distinct().ToList();
+                }).Select(item => item.VistaVirtualProyecto.PersonalizacionID).Distinct().ToList();
+
+                listaTextos = mEntityContext.TextosPersonalizadosPersonalizacion.Where(texto => texto.PersonalizacionID.Equals(pPersonalizacionEcosistema)).Select(item => item).Concat(mEntityContext.TextosPersonalizadosPersonalizacion.Where(personalizacion => listaGuids.Contains(personalizacion.PersonalizacionID)).Distinct()).ToList();
             }
 
             return listaTextos;
@@ -253,7 +243,7 @@ namespace Es.Riam.Gnoss.AD.ParametrosProyecto
                 {
                     TextoPersonalizacion = textoPersonalizacion,
                     Proyecto = proyecto
-                }).Where(item => item.Proyecto.URLPropia.Contains("http://" + pDominio) || item.Proyecto.URLPropia.Contains("https://" + pDominio) || item.Proyecto.URLPropia.Contains("://" + pDominio + "@")).Select(item => item.TextoPersonalizacion).ToList();
+                }).Where(item => item.Proyecto.URLPropia.Contains($"http://{pDominio}") || item.Proyecto.URLPropia.Contains($"https://{pDominio}") || item.Proyecto.URLPropia.Contains($"://{pDominio}@")).Select(item => item.TextoPersonalizacion).ToList();
             }
 
             return listaTextosPersonalizados;
@@ -334,6 +324,12 @@ namespace Es.Riam.Gnoss.AD.ParametrosProyecto
         {
             return mEntityContext.TextosPersonalizadosPersonalizacion.Where(textosPersonalizadosPersonalizacion => textosPersonalizadosPersonalizacion.PersonalizacionID.Equals(pPersonalizacionEcosistemaID)).ToList();
         }
+
+        public List<TextosPersonalizadosPersonalizacion> ObtenerTraduccionPorTextoIdDePersonalizacion(Guid pPersonalizacionID, string pTextoID)
+        {
+            return mEntityContext.TextosPersonalizadosPersonalizacion.Where(item => item.PersonalizacionID.Equals(pPersonalizacionID) && item.TextoID.Equals(pTextoID)).ToList();
+        }
+
 
         /// <summary>
         /// Obtiene el texto de una clave concreta de personalizacion

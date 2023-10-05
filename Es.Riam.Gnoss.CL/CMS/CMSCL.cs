@@ -121,11 +121,11 @@ namespace Es.Riam.Gnoss.CL.CMS
             {
                 componentes[i] = ObtenerClaveCache(string.Concat("ComponenteCMSDeproyectoMVC_", pProyectoID.ToString(), "_", pListaComponentesID[i].ToString(), "_", pLanguageCode));
             }
-
+                       
             if (componentes.Length > 0)
             {
-
-                Dictionary<string, object> lista = ObtenerListaObjetosCache(componentes, typeof(CMSComponent));
+                
+                Dictionary<string, object> lista = ObtenerListaObjetosCache(componentes, typeof(byte[]));
 
                 foreach (string clave in lista.Keys)
                 {
@@ -366,7 +366,7 @@ namespace Es.Riam.Gnoss.CL.CMS
         {
             string rawKey = string.Concat("ConfiguracionCMSComunidad_", pProyectoID.ToString());
             InvalidarCache(rawKey);
-
+            
             VersionarCacheLocal(pProyectoID);
         }
         #endregion

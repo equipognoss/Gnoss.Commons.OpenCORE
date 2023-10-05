@@ -1,5 +1,4 @@
-﻿using Es.Riam.Gnoss.Util.General;
-using Es.Riam.Gnoss.Web.MVC.Controles.Controladores;
+﻿using Es.Riam.Gnoss.Web.MVC.Controles.Controladores;
 using Es.Riam.Gnoss.Web.MVC.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -10,7 +9,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
 
@@ -169,18 +167,24 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles
             }
 
             string personalizacion = string.Empty;
-            if ((!string.IsNullOrEmpty((string)pViewBag.Personalizacion) || !string.IsNullOrEmpty((string)pViewBag.PersonalizacionEcosistema)) && pComunidad != null)
+            if ((!string.IsNullOrEmpty((string)pViewBag.Personalizacion) || !string.IsNullOrEmpty((string)pViewBag.PersonalizacionEcosistema) || !string.IsNullOrEmpty((string)pViewBag.PersonalizacionDominio)) && pComunidad != null)
             {
                 string nombreVista = viewName;
                 nombreVista = nombreVista.Replace("../Shared", "").Trim('/');
                 nombreVista = nombreVista.Replace($"../{pControllerName}", "").Trim('/');
-                List<string> listaPersonalizaciones = pComunidad.ListaPersonalizaciones;
-                List<string> listaPersonalizacionesEcosistema = pComunidad.ListaPersonalizacionesEcosistema;
-                if (listaPersonalizaciones.Contains("/Views/" + pControllerName + "/" + nombreVista + ".cshtml") || listaPersonalizaciones.Contains("/Views/" + "Shared" + "/" + nombreVista + ".cshtml"))
+                List<string> listaPersonalizaciones = pComunidad.ListaPersonalizaciones.Select(item => item.ToLower()).ToList();
+                List<string> listaPersonalizacionesDominio = pComunidad.ListaPersonalizacionesDominio.Select(item => item.ToLower()).ToList();
+                List<string> listaPersonalizacionesEcosistema = pComunidad.ListaPersonalizacionesEcosistema.Select(item => item.ToLower()).ToList();
+                
+                if (listaPersonalizaciones.Contains($"/Views/{pControllerName}/{nombreVista}.cshtml".ToLower()) || listaPersonalizaciones.Contains($"/Views/Shared/{nombreVista}.cshtml".ToLower()))
                 {
                     personalizacion = (string)pViewBag.Personalizacion;
                 }
-                else if (listaPersonalizacionesEcosistema.Contains("/Views/" + pControllerName + "/" + nombreVista + ".cshtml") || listaPersonalizacionesEcosistema.Contains("/Views/Shared/" + nombreVista + ".cshtml"))
+                else if (listaPersonalizacionesDominio != null && (listaPersonalizacionesDominio.Contains($"/Views/{pControllerName}/{nombreVista}.cshtml".ToLower()) || listaPersonalizacionesDominio.Contains($"/Views/Shared/{nombreVista}.cshtml".ToLower())))
+                {
+                    personalizacion = (string)pViewBag.PersonalizacionDominio;
+                }
+                else if (listaPersonalizacionesEcosistema.Contains($"/Views/{pControllerName}/{nombreVista}.cshtml".ToLower()) || listaPersonalizacionesEcosistema.Contains($"/Views/Shared/{nombreVista}.cshtml".ToLower()))
                 {
                     personalizacion = (string)pViewBag.PersonalizacionEcosistema;
                 }

@@ -282,6 +282,23 @@ namespace Es.Riam.Gnoss.Elementos.ServiciosGenerales
         }
 
         /// <summary>
+        /// Obtiene las filas de asistentes
+        /// TFG FRAN
+        /// </summary>
+        public List<ProyectoPestanyaDashboardAsistente> FilasProyectoPestanyaDashboardAsistente
+        {
+            get
+            {
+                ICollection<ProyectoPestanyaDashboardAsistente> filasAsistentes = FilaProyectoPestanyaMenu.ProyectoPestanyaDashboardAsistente;
+                if (filasAsistentes != null)
+                {
+                    return filasAsistentes.ToList();
+                }
+                return null;
+            }
+        }
+
+        /// <summary>
         /// Obtiene la fila de cms
         /// </summary>
         public ProyectoPestanyaCMS FilaProyectoPestanyaCMS

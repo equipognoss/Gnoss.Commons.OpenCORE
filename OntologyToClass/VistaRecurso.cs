@@ -277,19 +277,8 @@ namespace OntologiaAClase
 
         public ElementoOntologia ObtenerEntidadPrincipal()
         {
-            foreach (ElementoOntologia pEntidad in this.ontologia.Entidades)
-            {
-                if (ontologia.Entidades.Count == ontologia.EntidadesAuxiliares.Count)
-                {
-                    return pEntidad;
-                }
-                if (!ontologia.EntidadesAuxiliares.Exists(entidad => entidad.TipoEntidad.Equals(pEntidad.TipoEntidad)) && !pEntidad.Superclases.Any(s => !s.Contains("Thing")))
-                {
-                    return pEntidad;
-                }
-            }
-            return null;
-        }
+            return this.ontologia.ObtenerEntidadPrincipal();
+		}
 
         public Dictionary<Propiedad, Dictionary<string, string>> AtrNombreLectura(ElementoOntologia pEntidad)
         {

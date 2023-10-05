@@ -24,6 +24,7 @@ using Es.Riam.Gnoss.Elementos.ServiciosGenerales;
 using Es.Riam.Gnoss.Logica.Documentacion;
 using Es.Riam.Gnoss.Logica.Identidad;
 using Es.Riam.Gnoss.Logica.Parametro;
+using Es.Riam.Gnoss.Logica.ParametrosProyecto;
 using Es.Riam.Gnoss.Logica.ServiciosGenerales;
 using Es.Riam.Gnoss.Logica.Usuarios;
 using Es.Riam.Gnoss.RabbitMQ;
@@ -33,6 +34,7 @@ using Es.Riam.Gnoss.Util.General;
 using Es.Riam.Gnoss.Util.Seguridad;
 using Es.Riam.Gnoss.UtilServiciosWeb;
 using Es.Riam.Gnoss.Web.Controles.ParametroGeneralDSName;
+using Es.Riam.Gnoss.Web.Controles.ServicioImagenesWrapper;
 using Es.Riam.Gnoss.Web.MVC.Models;
 using Es.Riam.Gnoss.Web.MVC.Models.Administracion;
 using Es.Riam.Util;
@@ -63,7 +65,7 @@ namespace Es.Riam.Gnoss.Web.Controles
         private static ConcurrentDictionary<Guid, ConcurrentDictionary<Guid, bool>> mListaOntologiasPermitidasPorIdentidad = new ConcurrentDictionary<Guid, ConcurrentDictionary<Guid, bool>>();
 
         /// <summary>
-        /// Obtiene el proyecto externo en el que se est� haciendo la b�squeda, o NULL si se hace en el proyecto actual.
+        /// Obtiene el proyecto externo en el que se está haciendo la búsqueda, o NULL si se hace en el proyecto actual.
         /// </summary>
         private Elementos.ServiciosGenerales.Proyecto mProyectoOrigenBusqueda;
 
@@ -139,7 +141,7 @@ namespace Es.Riam.Gnoss.Web.Controles
         private bool? mEsEcosistemaSinBandejaSuscripciones = null;
 
         /// <summary>
-        /// Lista de Items que se usa para aplicaciones que no son Web. Hay una lista por thread de la aplicaci�n
+        /// Lista de Items que se usa para aplicaciones que no son Web. Hay una lista por thread de la aplicación
         /// </summary>
         private static ConcurrentDictionary<int, Dictionary<string, object>> mListaItemsPorThread = new ConcurrentDictionary<int, Dictionary<string, object>>();
 
@@ -149,6 +151,8 @@ namespace Es.Riam.Gnoss.Web.Controles
         private bool? mEsEcosistemaSinContactos = null;
 
         private string mNombreCortoProyectoPrincipal = null;
+
+        private bool? mIrAConfiguracionInicial = null;
 
         private string mUrlPrincipal = null;
 
@@ -191,6 +195,8 @@ namespace Es.Riam.Gnoss.Web.Controles
         /// </summary>
         private Guid? mPersonalizacionEcosistemaID = null;
 
+        private Guid mPersonalizacionDominio;
+
         private static string mUrlServicioLogin = null;
 
         private Guid[] mIdentidadIDActual = null;
@@ -212,7 +218,7 @@ namespace Es.Riam.Gnoss.Web.Controles
         private Guid? mProyectoPrincipalUnico = null;
 
         /// <summary>
-        /// Fila del dataset de par�metros generales del proyecto actual.
+        /// Fila del dataset de parámetros generales del proyecto actual.
         /// </summary>
         protected ParametroGeneral mParametroGeneralRow;
 
@@ -222,7 +228,7 @@ namespace Es.Riam.Gnoss.Web.Controles
         private bool? mEsEcosistemaSinMetaProyecto = null;
 
         /// <summary>
-        /// Contiene la URL del servicio web de documentaci�n.
+        /// Contiene la URL del servicio web de documentación.
         /// </summary>
         private string mBaseUrl = null;
 
@@ -238,12 +244,12 @@ namespace Es.Riam.Gnoss.Web.Controles
 
 
         /// <summary>
-        /// Parametros de configuraci�n del proyecto.
+        /// Parametros de configuración del proyecto.
         /// </summary>
         private Dictionary<string, string> mParametroProyecto;
 
         /// <summary>
-        /// Parametros de configuraci�n del proyecto de Ecosistema.
+        /// Parametros de configuración del proyecto de Ecosistema.
         /// </summary>
         private Dictionary<string, string> mParametroProyectoEcosistema;
 
@@ -258,7 +264,7 @@ namespace Es.Riam.Gnoss.Web.Controles
         private static string mNombreCortoProyectoPadreEcosistema = null;
 
         /// <summary>
-        /// Fila de par�metros de aplicaci�n
+        /// Fila de parámetros de aplicación
         /// </summary>
         //private ParametroAplicacionDS mParametrosAplicacionDS;
         private List<ParametroAplicacion> mListaParametrosAplicacion;
@@ -273,7 +279,7 @@ namespace Es.Riam.Gnoss.Web.Controles
         private string mIdiomaUsuario = null;
 
         /// <summary>
-        /// URL base de los formularios sem�nticos.
+        /// URL base de los formularios semánticos.
         /// </summary>
         private string mBaseURLFormulariosSem;
 
@@ -284,7 +290,6 @@ namespace Es.Riam.Gnoss.Web.Controles
         private static bool? mHayConexionRabbit = null;
 
         protected Elementos.ServiciosGenerales.Proyecto mProyecto;
-
         protected GnossUrlsSemanticas mGnossUrlsSemanticas;
         protected EntityContext mEntityContext;
         protected LoggingService mLoggingService;
@@ -333,7 +338,7 @@ namespace Es.Riam.Gnoss.Web.Controles
         }
 
         /// <summary>
-        /// Obtiene la URL principal de esta aplicaci�n (ej: para http://didactalia.net el dominio principal es http://gnoss.com)
+        /// Obtiene la URL principal de esta aplicación (ej: para http://didactalia.net el dominio principal es http://gnoss.com)
         /// </summary>
         public string UrlPrincipal
         {
@@ -371,6 +376,32 @@ namespace Es.Riam.Gnoss.Web.Controles
             }
         }
 
+        public bool IrAConfiguracionInicial
+        {
+            get
+            {
+                if (!mIrAConfiguracionInicial.HasValue)
+                {
+                    ProyectoCN proyectoCN = new ProyectoCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+                    int numProyectos = proyectoCN.ObtenerNumeroDeProyectos();
+                    if (numProyectos <= 1)
+                    {
+                        mIrAConfiguracionInicial = true;
+                    }
+                    else
+                    {
+                        mIrAConfiguracionInicial = false;
+                    }
+                }
+
+                return mIrAConfiguracionInicial.Value;
+            }
+            set
+            {
+                mIrAConfiguracionInicial = value;
+            }
+        }
+
         public Elementos.ServiciosGenerales.Proyecto ProyectoSeleccionado
         {
             get
@@ -384,6 +415,10 @@ namespace Es.Riam.Gnoss.Web.Controles
                     {
                         proyectoID = ProyectoSeleccionadoError404;
                     }
+                    else if (RequestParams("proyectoID") != null)
+                    {
+                        proyectoID = new Guid(RequestParams("proyectoID"));
+                    }
                     else if (RequestParams("nombreProy") != null)
                     {
                         nombreCortoProyecto = RequestParams("nombreProy");
@@ -391,10 +426,6 @@ namespace Es.Riam.Gnoss.Web.Controles
                     else if (RequestParams("NombreCortoComunidad") != null)
                     {
                         nombreCortoProyecto = RequestParams("NombreCortoComunidad");
-                    }
-                    else if (RequestParams("proyectoID") != null)
-                    {
-                        proyectoID = new Guid(RequestParams("proyectoID"));
                     }
                     else if (RequestParams("proy") != null)
                     {
@@ -416,7 +447,7 @@ namespace Es.Riam.Gnoss.Web.Controles
                     }
 
                     if (mProyecto == null || (nombreCortoProyecto != mProyecto.NombreCorto && mProyecto.Clave != proyectoID))
-                    {
+                    {   
                         ProyectoCL proyectoCL = new ProyectoCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mVirtuosoAD, mServicesUtilVirtuosoAndReplication);
 
                         if (!string.IsNullOrEmpty(nombreCortoProyecto))
@@ -437,7 +468,7 @@ namespace Es.Riam.Gnoss.Web.Controles
                         }
 
                         //TODO Javier cambiar esto de sitio cuando se migre la Web
-                        if (mHttpContextAccessor.HttpContext != null && IsSessionAvailable && mHttpContextAccessor.HttpContext.Session != null && mHttpContextAccessor.HttpContext.Session.Get<GnossIdentity>("Usuario")!= null && !(mHttpContextAccessor.HttpContext.Session.Get<GnossIdentity>("Usuario")).EsIdentidadInvitada && mProyecto.ListaAdministradoresIDs.Contains((mHttpContextAccessor.HttpContext.Session.Get<GnossIdentity>("Usuario")).UsuarioID))
+                        if (mHttpContextAccessor.HttpContext != null && IsSessionAvailable && mHttpContextAccessor.HttpContext.Session != null && mHttpContextAccessor.HttpContext.Session.Get<GnossIdentity>("Usuario") != null && !(mHttpContextAccessor.HttpContext.Session.Get<GnossIdentity>("Usuario")).EsIdentidadInvitada && mProyecto.ListaAdministradoresIDs.Contains((mHttpContextAccessor.HttpContext.Session.Get<GnossIdentity>("Usuario")).UsuarioID))
                         {
                             CrearPestanyaPersonasYOrganizaciones(mProyecto.GestorProyectos.DataWrapperProyectos, mProyecto.Clave);
                         }
@@ -465,7 +496,7 @@ namespace Es.Riam.Gnoss.Web.Controles
                         var session = mHttpContextAccessor.HttpContext.Session;
                         mIsSessionAvailable = true;
                     }
-                    catch 
+                    catch
                     {
                         mIsSessionAvailable = false;
                     }
@@ -475,7 +506,7 @@ namespace Es.Riam.Gnoss.Web.Controles
         }
 
         /// <summary>
-        /// Devuelve si el usuario que est� navegando es un bot
+        /// Devuelve si el usuario que está navegando es un bot
         /// </summary>
         public bool EsBot
         {
@@ -514,7 +545,7 @@ namespace Es.Riam.Gnoss.Web.Controles
         }
 
         /// <summary>
-        /// Lee el fichero de configuraci�n para bots
+        /// Lee el fichero de configuración para bots
         /// </summary>
         /// <param name="pBaseURLSinHTTP">Base URL sin http://</param>
         public void LeerConfigBots(string pBaseURLSinHTTP)
@@ -558,13 +589,13 @@ namespace Es.Riam.Gnoss.Web.Controles
         }
 
         /// <summary>
-        /// Carga pesta�as que son exclusivas del administrador
+        /// Carga pestañas que son exclusivas del administrador
         /// </summary>
         public static void CrearPestanyaPersonasYOrganizaciones(DataWrapperProyecto pDataWrapperProyecto, Guid pProyectoID)
         {
             if (pDataWrapperProyecto != null && !pDataWrapperProyecto.ListaProyectoPestanyaMenu.Any(pestanya => pestanya.TipoPestanya.Equals((short)TipoPestanyaMenu.PersonasYOrganizaciones)))
             {
-                // No hay pesta�a personas y organizaciones en este proyecto, le creo una para que el administrador pueda entrar 
+                // No hay pestaña personas y organizaciones en este proyecto, le creo una para que el administrador pueda entrar 
                 AD.EntityModel.Models.ProyectoDS.ProyectoPestanyaMenu filaPestanya = new AD.EntityModel.Models.ProyectoDS.ProyectoPestanyaMenu();
 
                 filaPestanya.PestanyaID = Guid.NewGuid();
@@ -607,7 +638,7 @@ namespace Es.Riam.Gnoss.Web.Controles
                 if (!mPintarFichaRecInevery.HasValue)
                 {
                     TipoFichaRecursoProyecto tipoFicha = TipoFichaRecursoProyecto.Normal;
-                    //Si se especifica en el proyecto, lo cogemos de ah�
+                    //Si se especifica en el proyecto, lo cogemos de ahí
                     if (!(ParametrosGeneralesRow.TipoFichaRecurso == null))
                     {
                         tipoFicha = (TipoFichaRecursoProyecto)ParametrosGeneralesRow.TipoFichaRecurso;
@@ -615,7 +646,7 @@ namespace Es.Riam.Gnoss.Web.Controles
                     }
                     else
                     {
-                        //Si no est� especificado en el proyecto, lo cogemos del ecosistema       
+                        //Si no está especificado en el proyecto, lo cogemos del ecosistema       
                         ParametroAplicacionCL paramCL = new ParametroAplicacionCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mServicesUtilVirtuosoAndReplication);
                         //ParametroAplicacionDS parametrosAplicacionDS = ((ParametroAplicacionDS)paramCL.ObtenerParametrosAplicacion());
                         List<AD.EntityModel.ParametroAplicacion> parametrosAplicacionDS = paramCL.ObtenerParametrosAplicacionPorContext();
@@ -640,28 +671,24 @@ namespace Es.Riam.Gnoss.Web.Controles
                 {
                     mCodigoCompletoGoogleAnalytics = "";
 
-                    //Si no tiene URL Propia cargamos Google Analytics de Gnoss
-                    string codigoGoogle = null;
+                    //Obtenemos el código de google analytics del proyecto
+                    string codigoGoogle = ParametrosGeneralesRow.CodigoGoogleAnalytics;
 
                     ParametroGeneral filaParametrosGen = ParametrosGeneralesRow;
-                    if ((ProyectoSeleccionado != null) && (ProyectoSeleccionado.FilaProyecto.URLPropia == null))
+                    if (string.IsNullOrEmpty(ParametrosGeneralesRow.ScriptGoogleAnalytics))
                     {
-                        //Sacamos el c�digo de google analytics
+                        //Si el proyecto no tiene script definido, comprobamos si lo tiene el metaproyecto
                         filaParametrosGen = ObtenerFilaParametrosGeneralesDeProyecto(ProyectoAD.MetaProyecto).ListaParametroGeneral.FirstOrDefault();
                     }
 
-                    if (filaParametrosGen != null && !(filaParametrosGen.CodigoGoogleAnalytics == null)) //Si no es nulo mostramos el script de google analytics
+                    if (!string.IsNullOrEmpty(filaParametrosGen.ScriptGoogleAnalytics)) //Si no es nulo mostramos el script de google analytics
                     {
-                        codigoGoogle = filaParametrosGen.CodigoGoogleAnalytics;
-
-                        if (!(filaParametrosGen.ScriptGoogleAnalytics == null))
+                        if (string.IsNullOrEmpty(codigoGoogle) && !string.IsNullOrEmpty(filaParametrosGen.ScriptGoogleAnalytics))
                         {
-                            mScriptGoogleAnalytics = filaParametrosGen.ScriptGoogleAnalytics;
+                            codigoGoogle = filaParametrosGen.CodigoGoogleAnalytics;
                         }
-                    }
+                        mScriptGoogleAnalytics = filaParametrosGen.ScriptGoogleAnalytics;
 
-                    if (!string.IsNullOrEmpty(codigoGoogle))
-                    {
                         mCodigoCompletoGoogleAnalytics = ScriptGoogleAnalytics.Replace("@@codigoga@@", codigoGoogle);
                     }
                 }
@@ -669,7 +696,7 @@ namespace Es.Riam.Gnoss.Web.Controles
                 string codigoGoogleAnalytics = mCodigoCompletoGoogleAnalytics;
                 if (CodigoGoogleAnalyticsBusquedaEstablecido && !string.IsNullOrEmpty(codigoGoogleAnalytics) && codigoGoogleAnalytics.IndexOf("</script><script type=\"text/javascript\">") > 0)
                 {
-                    //Si ya se ha establecido la parte del c�digo que registra las b�squedas, quito la llamada que registra la visita inicial de la p�gina
+                    //Si ya se ha establecido la parte del código que registra las búsquedas, quito la llamada que registra la visita inicial de la página
                     codigoGoogleAnalytics = codigoGoogleAnalytics.Substring(0, codigoGoogleAnalytics.IndexOf("</script><script type=\"text/javascript\">"));
                 }
 
@@ -703,7 +730,7 @@ namespace Es.Riam.Gnoss.Web.Controles
                     ParametroGeneral parametroGeneral = ParametrosGeneralesRow;
                     if ((ProyectoSeleccionado != null) && (ProyectoSeleccionado.FilaProyecto.URLPropia == null))
                     {
-                        //Sacamos el c�digo de google analytics
+                        //Sacamos el código de google analytics
 
                         parametroGeneral = new UtilUsuario(mLoggingService, mEntityContext, mConfigService, mRedisCacheWrapper).ObtenerFilaParametrosGeneralesDeProyecto(ProyectoAD.MetaProyecto);
                     }
@@ -757,7 +784,7 @@ namespace Es.Riam.Gnoss.Web.Controles
 
 
         /// <summary>
-        /// Obtiene el nombre corto del proyecto al que se conecta por defecto siempre la aplicaci�n
+        /// Obtiene el nombre corto del proyecto al que se conecta por defecto siempre la aplicación
         /// </summary>
         public string NombreCortoProyectoConexion
         {
@@ -784,7 +811,7 @@ namespace Es.Riam.Gnoss.Web.Controles
         public string mUrlServicioContextos;
 
         /// <summary>
-        /// Obtiene la URL del los elementos de contenido de la p�gina
+        /// Obtiene la URL del los elementos de contenido de la página
         /// </summary>
         public string UrlServicioContextos
         {
@@ -800,13 +827,13 @@ namespace Es.Riam.Gnoss.Web.Controles
 
 
         /// <summary>
-        /// Obtiene el dominio de la aplicaci�n (gnoss.com, proyectos.gnoss.com, ...)
+        /// Obtiene el dominio de la aplicación (gnoss.com, proyectos.gnoss.com, ...)
         /// </summary>
         public string DominoAplicacion
         {
             get
             {
-                string host = mHttpContextAccessor.HttpContext.Request.Path.ToString().ToLower().Trim();
+                string host = mHttpContextAccessor.HttpContext.Request.Host.Host.ToLower().Trim();
 
                 if ((!host.Equals("2003server")) && (!host.Equals("localhost")) && (!host.Equals("vm2003server")))
                 {
@@ -838,6 +865,25 @@ namespace Es.Riam.Gnoss.Web.Controles
                     }
                 }
                 return mComunidadExcluidaPersonalizacionEcosistema.Value;
+            }
+        }
+
+        public Guid PersonalizacionDominio
+        {
+            get
+            {			
+				if (mPersonalizacionDominio.Equals(Guid.Empty))
+				{
+					string dominio = mConfigService.ObtenerDominio();
+
+                    if (!string.IsNullOrEmpty(dominio))
+                    {
+						VistaVirtualCN vistaVirtualCN = new VistaVirtualCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+						mPersonalizacionDominio = vistaVirtualCN.ObtenerPersonalizacionDominio(dominio);
+					}					
+				}
+
+				return mPersonalizacionDominio;
             }
         }
 
@@ -875,7 +921,7 @@ namespace Es.Riam.Gnoss.Web.Controles
                 {
                     return mTipoCabecera.Value;
                 }
-                //Si se especifica en el proyecto, lo cogemos de ah�
+                //Si se especifica en el proyecto, lo cogemos de ahí
                 if (!(ParametrosGeneralesVirtualRow.TipoCabecera == null))
                 {
                     mTipoCabecera = (TipoCabeceraProyecto)ParametrosGeneralesVirtualRow.TipoCabecera;
@@ -884,7 +930,7 @@ namespace Es.Riam.Gnoss.Web.Controles
                 //EntityContext context = EntityContext.Instance;
                 //List<AD.EntityModel.ParametroAplicacion> busqueda = context.ParametroAplicacion.Where(parametro => parametro.Parametro.Equals("TipoCabecera")).ToList();
                 ParametroAplicacion busqueda = ListaParametrosAplicacion.FirstOrDefault(parametro => parametro.Parametro.Equals("TipoCabecera"));
-                //Si no est� especificado en el proyecto, lo cogemos del ecosistema
+                //Si no está especificado en el proyecto, lo cogemos del ecosistema
                 // if (ParametrosAplicacionDS.ParametroAplicacion.Select("Parametro = 'TipoCabecera'").Length > 0 && ParametrosAplicacionDS.ParametroAplicacion.Select("Parametro = 'TipoCabecera'")[0]["Valor"].ToString() == "1")
                 if (busqueda != null && busqueda.Valor == "1")
                 {
@@ -898,7 +944,7 @@ namespace Es.Riam.Gnoss.Web.Controles
         }
 
         /// <summary>
-        /// Obtiene el nombre corto del proyecto al que se conecta por defecto siempre la aplicaci�n
+        /// Obtiene el nombre corto del proyecto al que se conecta por defecto siempre la aplicación
         /// </summary>
         public string NombreCortoProyectoPrincipal
         {
@@ -916,7 +962,7 @@ namespace Es.Riam.Gnoss.Web.Controles
         }
 
         /// <summary>
-        /// Obtiene la URL de la petici�n actual para a�adirla a una url con redirect: Ej de respuesta: /redirect/comunidad/materialeducativo/recurso...
+        /// Obtiene la URL de la petición actual para añadirla a una url con redirect: Ej de respuesta: /redirect/comunidad/materialeducativo/recurso...
         /// </summary>
         public string UrlParaLoginConRedirect
         {
@@ -937,7 +983,7 @@ namespace Es.Riam.Gnoss.Web.Controles
                         url = "/" + url;
                     }
 
-                    //Redirige al login de gnoss gen�rico
+                    //Redirige al login de gnoss genérico
                     redirect = "/redirect" + url;
                 }
 
@@ -946,7 +992,7 @@ namespace Es.Riam.Gnoss.Web.Controles
         }
 
         /// <summary>
-        /// Obtiene el dominio de la aplicaci�n (gnoss.com, proyectos.gnoss.com, ...)
+        /// Obtiene el dominio de la aplicación (gnoss.com, proyectos.gnoss.com, ...)
         /// </summary>
         public string DominoAplicacionConHTTP
         {
@@ -1178,7 +1224,7 @@ namespace Es.Riam.Gnoss.Web.Controles
                 {
                     //Clase del profesor:
                     filasPerfil = IdentidadActual.GestorIdentidades.DataWrapperIdentidad.ListaPerfil.Where(perf => perf.NombreCortoOrg != null && perf.NombreCortoOrg.Equals(RequestParams("nombreOrgRewrite")) && !perf.PersonaID.HasValue).ToList();
-                    if(filasPerfil != null && filasPerfil.Count > 0)
+                    if (filasPerfil != null && filasPerfil.Count > 0)
                     {
                         Guid organizacionID = filasPerfil.First().OrganizacionID.Value;
 
@@ -1245,9 +1291,9 @@ namespace Es.Riam.Gnoss.Web.Controles
 
             mIdentidadActual = null;
 
-            if (identidadID == Guid.Empty && filasPerfil != null && filasPerfil.Count == 0)
+            if (identidadID == Guid.Empty && filasPerfil != null && filasPerfil.Count == 0 && RequestParams("nombreOrgRewrite") == null)
             {
-                //El usuario no tiene identidad personal, cargamos la primera identidad de organizaci�n que venga. 
+                //El usuario no tiene identidad personal, cargamos la primera identidad de organización que venga. 
                 filasPerfil = IdentidadActual.GestorIdentidades.DataWrapperIdentidad.ListaPerfil.Where(perf => perf.PersonaID.HasValue && perf.PersonaID.Value.Equals(pUsuario.PersonaID)).ToList();
                 if (filasPerfil.Count > 0)
                 {
@@ -1268,14 +1314,18 @@ namespace Es.Riam.Gnoss.Web.Controles
                     }
                 }
             }
+            else if (filasPerfil != null && filasPerfil.Count == 0 && RequestParams("nombreOrgRewrite") != null)
+            {
+                return null;
+            }
 
             return new Guid[] { perfilID, identidadID };
         }
 
         /// <summary>
-        /// Elimina las variables de sesi�n al limpiarla desde las p�ginas.
+        /// Elimina las variables de sesión al limpiarla desde las páginas.
         /// </summary>
-        /// <param name="pPage">P�gina</param>
+        /// <param name="pPage">Página</param>
         /// <param name="pSesiones">Variables a mantener</param>
         /// <param name="pPerfilActualID">Identificador del perfil actual</param>
         public void LimpiarSesion(string[] pSesiones)
@@ -1284,15 +1334,15 @@ namespace Es.Riam.Gnoss.Web.Controles
         }
 
         /// <summary>
-        /// Elimina las variables de sesi�n al limpiarla desde las p�ginas.
+        /// Elimina las variables de sesión al limpiarla desde las páginas.
         /// </summary>
-        /// <param name="pPage">P�gina</param>
+        /// <param name="pPage">Página</param>
         /// <param name="pSesiones">Variables a mantener</param>
         public void LimpiarSesion(string[] pSesiones, bool pMantenerSolopSesiones)
         {
             if (!mUtilWeb.RequestUrl().Contains("img/")) //Solo si no es un postBack no deseado causado por una img que no existe
             {
-                ////Eliminar todas las variables de sesi�n menos las pasadas como par�metro y las fijas
+                ////Eliminar todas las variables de sesión menos las pasadas como parámetro y las fijas
                 //Dictionary<string, object> listaSesiones = new Dictionary<string, object>();
 
 
@@ -1313,7 +1363,7 @@ namespace Es.Riam.Gnoss.Web.Controles
                 //Array.Copy(fijas, sesiones, fijas.Length);
                 //Array.Copy(pSesiones, 0, sesiones, fijas.Length, pSesiones.Length);
 
-                //// David: A�adir todas las sesiones a mantener a una lista
+                //// David: Añadir todas las sesiones a mantener a una lista
                 //foreach (string s in sesiones)
                 //{
                 //    listaSesiones.Add(s, mHttpContextAccessor.HttpContext.Session.Get(s));
@@ -1332,15 +1382,15 @@ namespace Es.Riam.Gnoss.Web.Controles
 
                 //    if (variable != null && !listaSesiones.ContainsKey(clave) && variable is IDisposable)
                 //    {
-                //        //LOZA : Lo quito porque al trabajar con objetos en sesiones, si eliminamos uno que comparta hijos con una sesion buena (que salvamos) lo borra y casca en la mitad de p�ginas
+                //        //LOZA : Lo quito porque al trabajar con objetos en sesiones, si eliminamos uno que comparta hijos con una sesion buena (que salvamos) lo borra y casca en la mitad de páginas
                 //        //((IDisposable)variable).Dispose();
-                //        mLoggingService.AgregarEntrada("UtilSesion: Limpio la sesi�n de " + clave);
+                //        mLoggingService.AgregarEntrada("UtilSesion: Limpio la sesión de " + clave);
                 //        mHttpContextAccessor.HttpContext.Session.Set(clave, null);
                 //    }
                 //}
                 mHttpContextAccessor.HttpContext.Session.Clear();
 
-                // David: Volver a a�adir las variables fijas
+                // David: Volver a añadir las variables fijas
                 //foreach (string s in listaSesiones.Keys)
                 //{
                 //    mHttpContextAccessor.HttpContext.Session.Set(s, listaSesiones[s]);
@@ -1390,7 +1440,7 @@ namespace Es.Riam.Gnoss.Web.Controles
         {
             if (pIdentidadCambio != null)
             {
-                //Cambio la cookie de perfiles para que la lea el m�dulo de rewrite
+                //Cambio la cookie de perfiles para que la lea el módulo de rewrite
                 ActualizarCookiePerfil(pIdentidadCambio.PerfilID, pIdentidadCambio.IdentidadID, UsuarioActual.UsuarioID);
 
                 UsuarioActual.IdentidadID = pIdentidadCambio.IdentidadID;
@@ -1491,7 +1541,7 @@ namespace Es.Riam.Gnoss.Web.Controles
         }
 
         /// <summary>
-        /// Obtiene el proyecto externo en el que se est� haciendo la b�squeda, o NULL si se hace en el proyecto actual.
+        /// Obtiene el proyecto externo en el que se está haciendo la búsqueda, o NULL si se hace en el proyecto actual.
         /// </summary>
         public Elementos.ServiciosGenerales.Proyecto ProyectoOrigenBusqueda
         {
@@ -1516,8 +1566,8 @@ namespace Es.Riam.Gnoss.Web.Controles
         /// Obtiene el dominio de una URL (de la manera .gnoss.com)
         /// </summary>
         /// <param name="pUrl">Url de la que se quiere saber su dominio</param>
-        /// <param name="pConApplicationPath">Verdad si se quiere a�adir el applicationPath despu�s del dominio (/Es.Riam.Gnoss.Web.Principal). Por defecto True</param>
-        /// <param name="pConHTTP">Verdad si se debe a�adir http:// al principio del dominio</param>
+        /// <param name="pConApplicationPath">Verdad si se quiere añadir el applicationPath después del dominio (/Es.Riam.Gnoss.Web.Principal). Por defecto True</param>
+        /// <param name="pConHTTP">Verdad si se debe añadir http:// al principio del dominio</param>
         /// <returns></returns>
         public static string ObtenerDominioUrl(Uri pUrl, bool pConHTTP)
         {
@@ -1525,7 +1575,7 @@ namespace Es.Riam.Gnoss.Web.Controles
         }
 
         /// <summary>
-        /// Obtiene la cadena http:// o https:// para la petici�n actual
+        /// Obtiene la cadena http:// o https:// para la petición actual
         /// </summary>
         public string HTTP
         {
@@ -1605,7 +1655,7 @@ namespace Es.Riam.Gnoss.Web.Controles
             foreach (string key in mHttpContextAccessor.HttpContext.Request.Cookies.Keys)
             {
                 string cookie = mHttpContextAccessor.HttpContext.Request.Cookies[key];
-                if (cookie != null && !key.Equals("ASP.NET_SessionId") && !key.Equals(".AspNetCore.Session") && !key.Equals("idioma" + DominoAplicacion) && !key.Equals("cookieAviso" + DominoAplicacion) && (!key.Equals(nombreCookiePolitica)))
+                if (cookie != null && !key.Equals("idioma" + DominoAplicacion) && !key.Equals("cookieAviso" + DominoAplicacion) && (!key.Equals(nombreCookiePolitica)))
                 {
                     ExpirarCookie(key);
                 }
@@ -1613,7 +1663,7 @@ namespace Es.Riam.Gnoss.Web.Controles
         }
 
         /// <summary>
-        /// Redirige al usuario invitado a la p�gina de login para que se identifique o se registre
+        /// Redirige al usuario invitado a la página de login para que se identifique o se registre
         /// </summary>
         /// <param name="pBaseUrl">URL base sin idioma</param>
         /// <param name="pBaseUrlIdioma">URL base con idioma</param>
@@ -1681,7 +1731,7 @@ namespace Es.Riam.Gnoss.Web.Controles
 
                 if (url.Contains("/redirect/"))
                 {
-                    //ya se ha hecho una redirecci�n, no voy a hacer m�s
+                    //ya se ha hecho una redirección, no voy a hacer más
                     return;
                 }
 
@@ -1695,7 +1745,7 @@ namespace Es.Riam.Gnoss.Web.Controles
                 }
                 else if ((trozos.Length > 2) && (trozos[0].Length == 2) && (trozos[1].Trim().Equals(pUtilIdiomas.GetText("URLSEM", "COMUNIDAD"))))
                 {
-                    //Redririge al login de una comunidad en ingl�s
+                    //Redririge al login de una comunidad en inglés
                     redirect = "/" + trozos[0] + "/" + trozos[1] + "/" + trozos[2];
                 }
 
@@ -1703,7 +1753,7 @@ namespace Es.Riam.Gnoss.Web.Controles
             }
             //if (!MaximoRedireccionesExcedidas())
             //{
-            //    //Realiza la redirecci�n
+            //    //Realiza la redirección
             //    if (redirect.StartsWith("http"))
             //    {
             //        pPage.Response.Redirect(redirect);
@@ -1719,12 +1769,12 @@ namespace Es.Riam.Gnoss.Web.Controles
         }
 
         /// <summary>
-        /// Identificador del proyecto al que se conecta la aplicaci�n
+        /// Identificador del proyecto al que se conecta la aplicación
         /// </summary>
         private static Guid? mProyectoConexion = null;
 
         /// <summary>
-        /// Obtiene el identificador del proyecto al que se conecta la aplicaci�n
+        /// Obtiene el identificador del proyecto al que se conecta la aplicación
         /// </summary>
         public Guid ProyectoConexion
         {
@@ -1745,7 +1795,27 @@ namespace Es.Riam.Gnoss.Web.Controles
 
         public void ExpirarCookie(string pCookieKey)
         {
-            mHttpContextAccessor.HttpContext.Response.Cookies.Append(pCookieKey, "0", new CookieOptions { Expires = DateTime.Now.AddDays(-1), Domain = DominoAplicacion });
+            if (pCookieKey.Equals("UsuarioLogueado"))
+            {
+                string[] dominio = DominoAplicacion.Split(".", StringSplitOptions.RemoveEmptyEntries);
+                if(dominio.Length > 1)
+                {
+                    mHttpContextAccessor.HttpContext.Response.Cookies.Append(pCookieKey, "0", new CookieOptions { Expires = DateTime.Now.AddDays(-1), Domain = $".{dominio[dominio.Length - 2]}.{dominio[dominio.Length - 1]}" });
+                }
+                else
+                {
+                    mHttpContextAccessor.HttpContext.Response.Cookies.Append(pCookieKey, "0", new CookieOptions { Expires = DateTime.Now.AddDays(-1) });
+                }
+            }
+            else if (pCookieKey.StartsWith("rewritte"))
+            {
+                mHttpContextAccessor.HttpContext.Response.Cookies.Append(pCookieKey, "0", new CookieOptions { Expires = DateTime.Now.AddDays(-1), Domain = DominoAplicacion });
+            }
+            else
+            {
+                mHttpContextAccessor.HttpContext.Response.Cookies.Append(pCookieKey, "0", new CookieOptions { Expires = DateTime.Now.AddDays(-1) });
+            }
+
         }
 
         public void CrearCookieLogueado()
@@ -1754,7 +1824,16 @@ namespace Es.Riam.Gnoss.Web.Controles
             {
                 //Si no existe cookie de usuario logueado para este dominio, la creo
                 CookieOptions usuarioLogueadoOptions = new CookieOptions();
-                usuarioLogueadoOptions.Domain = DominoAplicacion;
+                string[] dominio = DominoAplicacion.Split('.', StringSplitOptions.RemoveEmptyEntries);
+                if (dominio.Length > 1)
+                {
+                    usuarioLogueadoOptions.Domain = $".{dominio[dominio.Length - 2]}.{dominio[dominio.Length - 1]}";
+                }
+                else
+                {
+                    usuarioLogueadoOptions.Domain = DominoAplicacion;
+                }
+
                 usuarioLogueadoOptions.Expires = DateTime.Now.AddDays(1);
 
                 if (mConfigService.PeticionHttps())
@@ -1768,7 +1847,7 @@ namespace Es.Riam.Gnoss.Web.Controles
         }
 
         /// <summary>
-        /// Obtiene la URL base de la p�gina en el idioma correspondiente
+        /// Obtiene la URL base de la página en el idioma correspondiente
         /// </summary>
         public string BaseURLIdioma
         {
@@ -1795,7 +1874,7 @@ namespace Es.Riam.Gnoss.Web.Controles
         }
 
         /// <summary>
-        /// Indica si debe aceptar autom�ticamente los registros en el ecosistema o mantenerlos en espera hasta que se acepte la solicitud por el administrador
+        /// Indica si debe aceptar automáticamente los registros en el ecosistema o mantenerlos en espera hasta que se acepte la solicitud por el administrador
         /// </summary>
         public bool RegistroAutomaticoEcosistema
         {
@@ -1850,7 +1929,7 @@ namespace Es.Riam.Gnoss.Web.Controles
         }
 
         /// <summary>
-        /// Obtiene el proyecto al que se conecta siempre la aplicaci�n
+        /// Obtiene el proyecto al que se conecta siempre la aplicación
         /// </summary>
         public Guid ProyectoConexionID
         {
@@ -1868,10 +1947,27 @@ namespace Es.Riam.Gnoss.Web.Controles
             }
         }
 
-        /// <summary>
-        /// Redirige a la p�gina solicitarCookie.aspx, le pide la cookie al ser servicio de login y de hay redirige a la p�gina actual
-        /// </summary>
-        public RedirectResult SolicitarCookieLoginUsuario(GnossIdentity pUsuario, string pTokenLoginUsuario)
+		public string CargarImagenSup(Guid pProyecto)
+		{
+			string rutaImg = "";
+			ServicioImagenes servicioImagenes = new ServicioImagenes(mLoggingService, mConfigService);
+			servicioImagenes.Url = UrlIntragnossServicios.Replace("https://", "http://");
+            string ruta = $"{UtilArchivos.ContentImagenesProyectos}/{pProyecto.ToString().ToLower()}";
+            string rutaOriginal = $"{ruta}_sup_grande_temp";
+			byte[] imagenOriginalBytes = servicioImagenes.ObtenerImagen(rutaOriginal, ".png");
+
+			if (imagenOriginalBytes != null)
+			{
+                rutaImg = $"{BaseURLContent}/{UtilArchivos.ContentImagenes}/{rutaOriginal}.png";
+			}
+
+			return rutaImg;
+		}
+
+		/// <summary>
+		/// Redirige a la página solicitarCookie.aspx, le pide la cookie al ser servicio de login y de hay redirige a la página actual
+		/// </summary>
+		public RedirectResult SolicitarCookieLoginUsuario(GnossIdentity pUsuario, string pTokenLoginUsuario)
         {
             var usuarioLogueado = mHttpContextAccessor.HttpContext.Request.Cookies["UsuarioLogueado"];
 
@@ -1881,42 +1977,43 @@ namespace Es.Riam.Gnoss.Web.Controles
             if (busqueda != null && busqueda.Valor == "1")
             {
                 solicitarCookieSiempre = true;
-                mLoggingService.GuardarLogError($"2. solicitarCookieSiempre true");
             }
-
-            //Si la p�gina es RSS no solicita cookie
+                        
+            //Si la página es RSS no solicita cookie
             if (((usuarioLogueado != null && usuarioLogueado.Equals("1")) || solicitarCookieSiempre) && mHttpContextAccessor.HttpContext.Request.Method.Equals("GET") && (!mHttpContextAccessor.HttpContext.Request.GetDisplayUrl().EndsWith("?rss")) && !mHttpContextAccessor.HttpContext.Request.Host.ToString().Contains("anyadir-gnoss-curriculum") && !mHttpContextAccessor.HttpContext.Request.Query.ContainsKey("buscar") && (ProyectoSeleccionado.Clave.Equals(ProyectoAD.MetaProyecto) || (ProyectoSeleccionado.TipoAcceso != TipoAcceso.Reservado && ProyectoSeleccionado.TipoAcceso != TipoAcceso.Privado) || ParametrosGeneralesRow.SolicitarCoockieLogin))
             {
-                mLoggingService.GuardarLogError("4. Dentro if grande");
-                if (mHttpContextAccessor.HttpContext.Session.Keys.Contains("cookieSolicitada") && (!EsBot))
+                if (!mHttpContextAccessor.HttpContext.Session.Keys.Contains("cookieSolicitada") && (!EsBot))
                 {
-                    string url = UtilDominios.ObtenerDominioUrl(mHttpContextAccessor.HttpContext.Request.Host.ToString(), true);
-                    mLoggingService.GuardarLogError($"5. Dentro if peque�o {url}");
+                    string url = UtilDominios.ObtenerDominioUrl(mHttpContextAccessor.HttpContext.Request.GetDisplayUrl(), true);
                     if (mHttpContextAccessor.HttpContext.Request.Path.Equals("/anyadirGnoss"))
                     {
                         url += "/anyadirGnoss?addToGnoss=" + mHttpContextAccessor.HttpContext.Request.Query["addToGnoss"] + "&verAddTo=" + mHttpContextAccessor.HttpContext.Request.Query["verAddTo"];
                     }
                     else
                     {
-                        url += mHttpContextAccessor.HttpContext.Request.GetDisplayUrl();
+                        url = mHttpContextAccessor.HttpContext.Request.GetDisplayUrl();
+                    }
+
+                    if (mConfigService.PeticionHttps())
+                    {
+                        url = url.Replace("http://", "https://");
                     }
 
                     url = url.Replace("\n", "").Replace("\t", "");
-                    
+
                     if (url.ToLower().Contains("/prehome/"))
                     {
-                        url = UtilDominios.ObtenerDominioUrl(mHttpContextAccessor.HttpContext.Request.Host.ToString(), true);
+                        url = UtilDominios.ObtenerDominioUrl(mHttpContextAccessor.HttpContext.Request.GetDisplayUrl(), true);
                     }
-                    mLoggingService.GuardarLogError($"6. Despu�s de if else {url}");
 
-                    mHttpContextAccessor.HttpContext.Session.Set<DateTime>("cookieSolicitada", DateTime.Now);
+                    mHttpContextAccessor.HttpContext.Session.Set("cookieSolicitada", DateTime.Now);
 
                     string urlServicioLogin = mConfigService.ObtenerUrlServicioLogin();
 
-                    string query = "urlVuelta=" + BaseURL + "/&token=" + pTokenLoginUsuario + "&redirect=" + HttpUtility.UrlEncode(url);
+                    string query = $"urlVuelta={BaseURL}/&token={pTokenLoginUsuario.Replace("\"", "")}&redirect={HttpUtility.UrlEncode(url)}";
 
                     string urlRedireccion = urlServicioLogin + "/obtenerCookie?" + query;
-                    mLoggingService.GuardarLogError($"7. Antes redirect {urlRedireccion}");
+
                     return new RedirectResult(urlRedireccion);
                 }
             }
@@ -1925,11 +2022,11 @@ namespace Es.Riam.Gnoss.Web.Controles
         }
 
         /// <summary>
-        /// Guarda el log del tama�o.
+        /// Guarda el log del tamaño.
         /// </summary>
         public static void GuardarLogSize(string pError, string pRutaFicheroError)
         {
-            //Si el fichero supera el tama�o m�ximo lo elimino
+            //Si el fichero supera el tamaño máximo lo elimino
             if (File.Exists(pRutaFicheroError))
             {
                 FileInfo fichero = new FileInfo(pRutaFicheroError);
@@ -1939,7 +2036,7 @@ namespace Es.Riam.Gnoss.Web.Controles
                 }
             }
 
-            //A�ado el error al fichero
+            //Añado el error al fichero
             using (StreamWriter sw = new StreamWriter(pRutaFicheroError, true, System.Text.Encoding.Default))
             {
                 sw.WriteLine(Environment.NewLine + "Fecha: " + DateTime.Now + Environment.NewLine + Environment.NewLine);
@@ -2100,7 +2197,7 @@ namespace Es.Riam.Gnoss.Web.Controles
         /// <summary>
         /// Obtiene la fila de un proyecto
         /// </summary>
-        /// <param name="pOrganizacionID">Identificador de la organizaci�n del proyecto</param>
+        /// <param name="pOrganizacionID">Identificador de la organización del proyecto</param>
         /// <param name="pProyectoID">Identificador del proyecto</param>
         /// <returns>Fila de proyecto</returns>
         public AD.EntityModel.Models.ProyectoDS.Proyecto ObtenerFilaProyecto(Guid pOrganizacionID, Guid pProyectoID)
@@ -2116,7 +2213,14 @@ namespace Es.Riam.Gnoss.Web.Controles
         {
             get
             {
-                return UtilCookies.FromLegacyCookieString(mHttpContextAccessor.HttpContext.Request.Cookies["rewrite" + DominoAplicacion], mEntityContext);
+                Dictionary<string, string> value = new Dictionary<string, string>();
+                try
+                {
+                    value = UtilCookies.FromLegacyCookieString(mHttpContextAccessor.HttpContext.Request.Cookies["rewrite" + DominoAplicacion], mEntityContext);
+                }
+                catch { }
+
+                return value;
             }
         }
 
@@ -2127,8 +2231,8 @@ namespace Es.Riam.Gnoss.Web.Controles
 
             //if (requestCookie != null && mHttpContextAccessor.HttpContext.Request.Cookies.Keys.Count(key => key.Equals("ASP.NET_SessionId")) > 1)
             //{
-            //    // Hay m�s de una cookie de sesi�n, busco la m�s larga
-            //    // La busco de atr�s hacia adelante porque seguramente est� de las �ltimas
+            //    // Hay más de una cookie de sesión, busco la más larga
+            //    // La busco de atrás hacia adelante porque seguramente está de las últimas
             //    for (int i = mHttpContextAccessor.HttpContext.Request.Cookies.Count - 1; i >= 0; i--)
             //    {
             //        if (mHttpContextAccessor.HttpContext.Request.Cookies[i].Name.Equals("ASP.NET_SessionId"))
@@ -2175,7 +2279,7 @@ namespace Es.Riam.Gnoss.Web.Controles
         }
 
         /// <summary>
-        /// Devuelve si la organizaci�n es de gnossOrganiza
+        /// Devuelve si la organización es de gnossOrganiza
         /// </summary>
         public bool EsGnossOrganiza
         {
@@ -2217,7 +2321,7 @@ namespace Es.Riam.Gnoss.Web.Controles
         }
 
         /// <summary>
-        /// Obtiene la url de redirecci�n a login con la url a la que se le quiere llevar 
+        /// Obtiene la url de redirección a login con la url a la que se le quiere llevar 
         /// al usuario una vez logueado
         /// </summary>
         /// <param name="pUrl">URL a la que se le quiere llevar al usuario una vez logueado</param>
@@ -2234,7 +2338,7 @@ namespace Es.Riam.Gnoss.Web.Controles
         }
 
         /// <summary>
-        /// Obtiene el identificador de la Organizaci�n GNOSS
+        /// Obtiene el identificador de la Organización GNOSS
         /// </summary>
         public Guid OrganizacionGnoss
         {
@@ -2251,7 +2355,7 @@ namespace Es.Riam.Gnoss.Web.Controles
         }
 
         /// <summary>
-        /// Devuelve la URL del servicio de documentaci�n.
+        /// Devuelve la URL del servicio de documentación.
         /// </summary>
         public string UrlServicioWebDocumentacion
         {
@@ -2288,7 +2392,7 @@ namespace Es.Riam.Gnoss.Web.Controles
         /// Obtiene atraves de un guid y el ParametroGeneralDS la fila de parametros generales del proyecto correspondiente
         /// </summary>
         /// <param name="pProyectoID">Clave del proyecto a buscar</param>
-        /// <param name="pPage">P�gina</param>
+        /// <param name="pPage">Página</param>
         /// <returns>Fila del parametro general</returns>
         public List<ProyectoMetaRobots> ObtenerFilasProyectoMetaRobots(Guid pProyectoID)
         {
@@ -2330,8 +2434,13 @@ namespace Es.Riam.Gnoss.Web.Controles
             }
         }
 
+        public static DateTime DateTimeRemoveMilliseconds(DateTime pDate)
+        {
+            return new DateTime(pDate.Year, pDate.Month, pDate.Day, pDate.Hour, pDate.Minute, pDate.Second, 0, pDate.Kind);
+        }
+
         /// <summary>
-        /// Obtiene los par�metros extra para una b�squeda con proyecto origen.
+        /// Obtiene los parámetros extra para una búsqueda con proyecto origen.
         /// </summary>
         /// <returns></returns>
         public string ObtenerParametrosExtraBusquedaConProyOrigen()
@@ -2377,14 +2486,14 @@ namespace Es.Riam.Gnoss.Web.Controles
         }
 
         /// <summary>
-        /// Carga todo lo necesario para que se conecte el usuario invitado y agrega a la sesi�n el usuario invitado
+        /// Carga todo lo necesario para que se conecte el usuario invitado y agrega a la sesión el usuario invitado
         /// </summary>
         public void CrearUsuarioInvitado()
         {
             //Creo el usuario actual como invitado
             UsuarioActual = CrearUsuarioInvitado(UtilIdiomas);
 
-            //Lo agrego a la sesi�n
+            //Lo agrego a la sesión
             mHttpContextAccessor.HttpContext.Session.Set("Usuario", UsuarioActual);
             mHttpContextAccessor.HttpContext.Session.Set("MantenerConectado", false);
         }
@@ -2439,7 +2548,7 @@ namespace Es.Riam.Gnoss.Web.Controles
         }
 
         /// <summary>
-        /// Enumeraci�n para distinguir tipos de acceso
+        /// Enumeración para distinguir tipos de acceso
         /// </summary>
         public enum TiposPagina
         {
@@ -2550,7 +2659,11 @@ namespace Es.Riam.Gnoss.Web.Controles
             /// <summary>
             /// Borradores
             /// </summary>
-            Borradores
+            Borradores,
+            /// <summary>
+            /// Dashboard
+            /// </summary>
+            Dashboard
         }
 
         /// <summary>
@@ -2589,7 +2702,7 @@ namespace Es.Riam.Gnoss.Web.Controles
         }
 
         /// <summary>
-        /// Obtiene el origen del autocompletar seg�n el tipo de p�gina.
+        /// Obtiene el origen del autocompletar según el tipo de página.
         /// </summary>
         public string OrigenAutoCompletarPagina
         {
@@ -2637,7 +2750,7 @@ namespace Es.Riam.Gnoss.Web.Controles
                 {//FindByPestanyaID(Guid.Empty)
                     if (ProyectoSeleccionado.GestorProyectos.DataWrapperProyectos.ListaProyectoPestanyaMenu.Find(proyPestanyaMenu => proyPestanyaMenu.PestanyaID.Equals(Guid.Empty)) != null)
                     {
-                        ////////TODO ?  Eliminar de Context�?
+                        ////////TODO ?  Eliminar de Contexto?
                         ProyectoSeleccionado.GestorProyectos.DataWrapperProyectos.ListaProyectoPestanyaMenu.Remove(ProyectoSeleccionado.GestorProyectos.DataWrapperProyectos.ListaProyectoPestanyaMenu.Find(proyPestanyaMenu => proyPestanyaMenu.PestanyaID.Equals(Guid.Empty)));
                     }
 
@@ -2659,7 +2772,7 @@ namespace Es.Riam.Gnoss.Web.Controles
                             case "HomeComunidad":
                                 foreach (Elementos.ServiciosGenerales.ProyectoPestanyaMenu pestanya in ProyectoSeleccionado.ListaPestanyasMenu.Values)
                                 {
-                                    if (pestanya.TipoPestanya == TipoPestanyaMenu.Home && string.IsNullOrEmpty(pestanya.Ruta))
+                                    if (pestanya.TipoPestanya == TipoPestanyaMenu.Home)
                                     {
                                         mProyectoPestanyaActual = pestanya;
                                         break;
@@ -2669,7 +2782,7 @@ namespace Es.Riam.Gnoss.Web.Controles
                             case "Indice":
                                 foreach (Elementos.ServiciosGenerales.ProyectoPestanyaMenu pestanya in ProyectoSeleccionado.ListaPestanyasMenu.Values)
                                 {
-                                    if (pestanya.TipoPestanya == TipoPestanyaMenu.Indice && string.IsNullOrEmpty(pestanya.Ruta))
+                                    if (pestanya.TipoPestanya == TipoPestanyaMenu.Indice)
                                     {
                                         mProyectoPestanyaActual = pestanya;
                                         break;
@@ -2808,6 +2921,17 @@ namespace Es.Riam.Gnoss.Web.Controles
                                     }
                                 }
                                 break;
+                            //TFG FRAN
+                            case "Dashboard":
+                                foreach (Elementos.ServiciosGenerales.ProyectoPestanyaMenu pestanya in ProyectoSeleccionado.ListaPestanyasMenu.Values)
+                                {
+                                    if (pestanya.TipoPestanya == TipoPestanyaMenu.Dashboard && string.IsNullOrEmpty(pestanya.Ruta))
+                                    {
+                                        mProyectoPestanyaActual = pestanya;
+                                        break;
+                                    }
+                                }
+                                break;
                         }
                     }
                 }
@@ -2899,7 +3023,7 @@ namespace Es.Riam.Gnoss.Web.Controles
                     pUsuario.EsIdentidadInvitada = false;
                     try
                     {
-                        //Actualizo el n�mero de conexiones en la BD
+                        //Actualizo el número de conexiones en la BD
                         IdentidadCN identidadCN = new IdentidadCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
                         identidadCN.ActualizarNumeroConexionesProyecto(pUsuario.IdentidadID);
                         //Invalido la cache de la identidad MVC
@@ -2927,14 +3051,14 @@ namespace Es.Riam.Gnoss.Web.Controles
             if ((cambiaDeIdentidad && !pUsuario.EsUsuarioInvitado) || (pUsuario.EsProfesor && ProyectoSeleccionado.Clave == ProyectoAD.MetaProyecto))
             {
                 UsuarioCN usuarioCN = new UsuarioCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
-                CalcularPermisosUsuario(usuarioCN.ObtenerFilaUsuarioPorLoginOEmail(pUsuario.Login), pUsuario);
+                CalcularPermisosUsuario(usuarioCN.ObtenerUsuarioPorID(pUsuario.UsuarioID), pUsuario);
                 usuarioCN.Dispose();
             }
 
             if (pUsuario != null && !pUsuario.EsUsuarioInvitado && IdentidadActual.OrganizacionID.HasValue && !pUsuario.EstaAutorizadoEnOrganizacion((ulong)Capacidad.Organizacion.CapacidadesAdministrador.AdministrarOrganizacion, IdentidadActual.OrganizacionID.Value))
             {
-                // Recuperamos los permisos en las organizaciones de cach�
-                // Por si nos han dado permisos en la organizaci�n del perfil con el que estoy conectado
+                // Recuperamos los permisos en las organizaciones de cache
+                // Por si nos han dado permisos en la organización del perfil con el que estoy conectado
 
                 IdentidadCL identidadCL = new IdentidadCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mServicesUtilVirtuosoAndReplication);
                 bool esAdministrador = identidadCL.ObtenerPermisosUsuarioEnOrg(pUsuario.UsuarioID, IdentidadActual.OrganizacionID.Value) == (short)TipoAdministradoresOrganizacion.Administrador;
@@ -2950,7 +3074,7 @@ namespace Es.Riam.Gnoss.Web.Controles
         }
 
         /// <summary>
-        /// Recupera la varieble global Usuario.UsuarioActual a partir de la sesi�n
+        /// Recupera la varieble global Usuario.UsuarioActual a partir de la sesión
         /// </summary>
         public void RecuperarUsuarioDeSesion(GnossIdentity pUsuario)
         {
@@ -2980,7 +3104,10 @@ namespace Es.Riam.Gnoss.Web.Controles
                 if (ProyectoSeleccionado.Clave == ProyectoAD.MetaProyecto)
                 {
                     Guid[] identidadEnMygnoss = ObtenerIdentidadUsuarioEnMygnoss(pUsuario);
-
+                    if (identidadEnMygnoss == null)
+                    {
+                        throw new Exception("Identidad not found");
+                    }
                     perfilID = identidadEnMygnoss[0];
                     id = identidadEnMygnoss[1];
                 }
@@ -2991,7 +3118,7 @@ namespace Es.Riam.Gnoss.Web.Controles
                     if (pUsuario.PersonaID != UsuarioAD.Invitado)
                     {
                         string sesionIdentidadID = string.Format("IdentidadIDdePersonaEnProyecto_{0}_{1}", ProyectoSeleccionado.Clave, pUsuario.PersonaID);
-                        if (mHttpContextAccessor.HttpContext.Session.Keys.Contains(sesionIdentidadID))
+                        if (mHttpContextAccessor.HttpContext.Session.Keys.Contains(sesionIdentidadID) && mHttpContextAccessor.HttpContext.Session.Get<Guid[]>(sesionIdentidadID) != null)
                         {
                             identPerfil = mHttpContextAccessor.HttpContext.Session.Get<Guid[]>(sesionIdentidadID);
                         }
@@ -3038,7 +3165,7 @@ namespace Es.Riam.Gnoss.Web.Controles
                     AD.EntityModel.ParametroAplicacion busqueda = ListaParametrosAplicacion.FirstOrDefault(parametro => parametro.Parametro == TiposParametrosAplicacion.LoginUnicoPorUsuario);
                     //bool loginUnicoPorUsuario = busqueda!=null && busqueda.Valor.Equals("1");
                     bool loginUnicoPorUsuario = ListaParametrosAplicacion.Where(parametro => parametro.Parametro == TiposParametrosAplicacion.LoginUnicoPorUsuario).FirstOrDefault() != null && ListaParametrosAplicacion.Where(parametro => parametro.Parametro == TiposParametrosAplicacion.LoginUnicoPorUsuario).FirstOrDefault().Valor.Equals("1");
-                    //Crear otro parametro para permitir la desconexi�n.
+                    //Crear otro parametro para permitir la desconexión.
                     bool desconexionUsuarios = ListaParametrosAplicacion.Where(parametro => parametro.Parametro == TiposParametrosAplicacion.DesconexionUsuarios).FirstOrDefault() != null && ListaParametrosAplicacion.Where(parametro => parametro.Parametro == TiposParametrosAplicacion.DesconexionUsuarios).FirstOrDefault().Valor.Equals("1");
                     //Devolver a desconectar con un parametro que diga que se ha desconectado.
 
@@ -3059,7 +3186,7 @@ namespace Es.Riam.Gnoss.Web.Controles
         }
 
         /// <summary>
-        /// Agrega un objeto a la petici�n actual. Dicho objeto s�lo estar� disponible para �sta petici�n
+        /// Agrega un objeto a la petición actual. Dicho objeto sílo estará disponible para ésta petición
         /// </summary>
         /// <param name="pClave">Clave del objeto</param>
         /// <param name="pObjeto">Objeto a almacenar</param>
@@ -3115,7 +3242,7 @@ namespace Es.Riam.Gnoss.Web.Controles
         }
 
         /// <summary>
-        /// Par�metros de un proyecto.
+        /// Parámetros de un proyecto.
         /// </summary>
         public DataWrapperExportacionBusqueda ExportacionBusquedaDW
         {
@@ -3147,7 +3274,7 @@ namespace Es.Riam.Gnoss.Web.Controles
         }
 
         /// <summary>
-        /// Carga todo lo necesario para que se conecte el usuario invitado y agrega a la sesi�n el usuario invitado
+        /// Carga todo lo necesario para que se conecte el usuario invitado y agrega a la sesión el usuario invitado
         /// </summary>
         public void CrearUsuarioInvitado(GnossIdentity pUsuario)
         {
@@ -3175,7 +3302,7 @@ namespace Es.Riam.Gnoss.Web.Controles
             identity.RolPermitidoGeneral = 0ul;
             identity.RolPermitidoProyecto = 0ul;
 
-            //Lo agrego a la sesi�n
+            //Lo agrego a la sesión
             mHttpContextAccessor.HttpContext.Session.Set("Usuario", pUsuario);
             mHttpContextAccessor.HttpContext.Session.Set("MantenerConectado", false);
         }
@@ -3254,11 +3381,11 @@ namespace Es.Riam.Gnoss.Web.Controles
         }
 
         /// <summary>
-        /// Crea una identidad virtual para el perfil con el que est� conectado actualmente el usuario
+        /// Crea una identidad virtual para el perfil con el que está conectado actualmente el usuario
         /// </summary>
         /// <param name="pGestorIdentidades">Gestor de identidades</param>
         /// <param name="pPerfilID">Perfil al que se le quiere agregar la identidad de invitado</param>
-        /// <param name="pOrganizacionID">Identificador de la organizaci�n del proyecto</param>
+        /// <param name="pOrganizacionID">Identificador de la organización del proyecto</param>
         /// <param name="pProyectoID">Identificador del proyecto para el que se crea la identidad</param>
         public void CrearIdentidadUsuarioInvitadoParaPerfil(GestionIdentidades pGestorIdentidades, Guid pPerfilID, Guid pOrganizacionID, Guid pProyectoID, Guid pPersonaID)
         {
@@ -3286,7 +3413,7 @@ namespace Es.Riam.Gnoss.Web.Controles
             }
             Perfil perfil = pGestorIdentidades.ListaPerfiles[pPerfilID];
 
-            //Si la persona no est� cargada en el gestor, cargo el gestor de personas
+            //Si la persona no está cargada en el gestor, cargo el gestor de personas
             if (perfil.PersonaID.HasValue && (perfil.PersonaPerfil == null))
             {
                 PersonaCN personaCN = new PersonaCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
@@ -3336,7 +3463,10 @@ namespace Es.Riam.Gnoss.Web.Controles
                 else
                 {
                     fila.Tipo = (short)TiposIdentidad.Personal;
-                    fila.NombreCortoIdentidad = perfil.PersonaPerfil.Nombre;
+                    if (!perfil.Clave.Equals(UsuarioAD.Invitado))
+                    {
+                        fila.NombreCortoIdentidad = perfil.PersonaPerfil.Nombre;
+                    }
                 }
             }
             pGestorIdentidades.RecargarHijos();
@@ -3359,7 +3489,7 @@ namespace Es.Riam.Gnoss.Web.Controles
                     }
                     if ((!mGestorIdentidades.ListaIdentidades.ContainsKey(UsuarioActual.IdentidadID)) && (!UsuarioActual.IdentidadID.Equals(UsuarioAD.Invitado)))
                     {
-                        //El gestor cargado de cach� no contiene la identidad actual, la vuelvo a cargar (seguramente se acabe de hacer miembro de una comunidad)
+                        //El gestor cargado de cache no contiene la identidad actual, la vuelvo a cargar (seguramente se acabe de hacer miembro de una comunidad)
 
                         IdentidadCL identidadCL = new IdentidadCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mServicesUtilVirtuosoAndReplication);
                         identidadCL.EliminarCacheGestorIdentidadActual(UsuarioActual.UsuarioID, UsuarioActual.PersonaID, UsuarioActual.PerfilID);
@@ -3422,7 +3552,7 @@ namespace Es.Riam.Gnoss.Web.Controles
         }
 
         /// <summary>
-        /// Configura la identidad del profesor para que pueda entrar tanto a su perfil de profesor como a la administraci�n de sus clases
+        /// Configura la identidad del profesor para que pueda entrar tanto a su perfil de profesor como a la administración de sus clases
         /// </summary>
         public void ConfigurarIdentidadProfesor(Identidad pIdentidad)
         {
@@ -3448,7 +3578,7 @@ namespace Es.Riam.Gnoss.Web.Controles
         }
 
         /// <summary>
-        /// Obtiene el dataset de par�metros de aplicaci�n
+        /// Obtiene el dataset de parámetros de aplicación
         /// </summary>
         public List<ParametroAplicacion> ListaParametrosAplicacion
         {
@@ -3482,7 +3612,7 @@ namespace Es.Riam.Gnoss.Web.Controles
         }
 
         /// <summary>
-        /// Obtiene la URL del los elementos de contenido de la p�gina
+        /// Obtiene la URL del los elementos de contenido de la página
         /// </summary>
         public string BaseURLContent
         {
@@ -3503,12 +3633,12 @@ namespace Es.Riam.Gnoss.Web.Controles
         }
 
         /// <summary>
-        /// ID del proyecto externo en el que se est� haciendo la b�squeda, o GUID.EMPTY si se hace en el proyecto actual.
+        /// ID del proyecto externo en el que se está haciendo la búsqueda, o GUID.EMPTY si se hace en el proyecto actual.
         /// </summary>
         private Guid? mProyectoOrigenBusquedaID;
 
         /// <summary>
-        /// ID del proyecto externo en el que se est� haciendo la b�squeda, o GUID.EMPTY si se hace en el proyecto actual.
+        /// ID del proyecto externo en el que se está haciendo la búsqueda, o GUID.EMPTY si se hace en el proyecto actual.
         /// </summary>
         public Guid ProyectoOrigenBusquedaID
         {
@@ -3536,7 +3666,7 @@ namespace Es.Riam.Gnoss.Web.Controles
         private string mVersion = string.Empty;
 
         /// <summary>
-        /// Obtiene la versi�n de la aplicaci�n
+        /// Obtiene la versión de la aplicación
         /// </summary>
         public string Version
         {
@@ -3567,7 +3697,7 @@ namespace Es.Riam.Gnoss.Web.Controles
         private string mBaseURLPersonalizacion = null;
 
         /// <summary>
-        /// Obtiene la URL del los elementos de contenido de la p�gina
+        /// Obtiene la URL del los elementos de contenido de la página
         /// </summary>
         public string BaseURLPersonalizacion
         {
@@ -3599,7 +3729,7 @@ namespace Es.Riam.Gnoss.Web.Controles
         }
 
         /// <summary>
-        /// Obtiene la URL del los elementos de contenido de la p�gina
+        /// Obtiene la URL del los elementos de contenido de la página
         /// </summary>
         public string BaseURLPersonalizacionEcosistema
         {
@@ -3633,7 +3763,7 @@ namespace Es.Riam.Gnoss.Web.Controles
         Dictionary<string, List<string>> mInformacionOntologias;
 
         /// <summary>
-        /// Obtiene la lista de items extra que se obtendr� de la b�squeda y su prefijo (recetas, peliculas, etc)
+        /// Obtiene la lista de items extra que se obtendrá de la búsqueda y su prefijo (recetas, peliculas, etc)
         /// </summary>
         public Dictionary<string, List<string>> InformacionOntologias
         {
@@ -3650,12 +3780,12 @@ namespace Es.Riam.Gnoss.Web.Controles
         }
 
         /// <summary>
-        /// Fila del dataset de par�metros generales del proyecto virtual.
+        /// Fila del dataset de parámetros generales del proyecto virtual.
         /// </summary>
         protected ParametroGeneral mParametroGeneralVirtualRow;
 
         /// <summary>
-        /// Obtiene el dataset de par�metros generales del proyectoVirtual
+        /// Obtiene el dataset de parámetros generales del proyectoVirtual
         /// </summary>
         public ParametroGeneral ParametrosGeneralesVirtualRow
         {
@@ -3742,7 +3872,6 @@ namespace Es.Riam.Gnoss.Web.Controles
             ParametroGeneralGBD gestorController = new ParametroGeneralGBD(mEntityContext);
             gestorParametroGenral = gestorController.ObtenerParametrosGeneralesDeProyecto(gestorParametroGenral, pProyectoID);
             return gestorParametroGenral;
-            ParametroGeneralCL paramCL = new ParametroGeneralCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mServicesUtilVirtuosoAndReplication);
         }
 
         private bool? mCargarIdentidadesDeProyectosPrivadosComoAmigos;
@@ -3770,7 +3899,7 @@ namespace Es.Riam.Gnoss.Web.Controles
         private bool mCargandoProyectoVirtual = false;
 
         /// <summary>
-        /// Obtiene el identificador del proyecto al que se conecta la aplicaci�n
+        /// Obtiene el identificador del proyecto al que se conecta la aplicación
         /// </summary>
         public Guid ProyectoPrincipal
         {
@@ -3883,13 +4012,13 @@ namespace Es.Riam.Gnoss.Web.Controles
         }
 
         /// <summary>
-        /// Obtiene la URL de presentaci�n para este sitio web
+        /// Obtiene la URL de presentación para este sitio web
         /// </summary>
         public string UrlPresentacion
         {
             get
             {
-                //TODO Esto es imposible que funcione as�
+                //TODO Esto es imposible que funcione así
                 if (mUrlPresentacion == null)
                 {
                     mUrlPresentacion = mConfigService.ObtenerUrlPaginaPresentacion();
@@ -3905,7 +4034,7 @@ namespace Es.Riam.Gnoss.Web.Controles
         }
 
         /// <summary>
-        /// Obtiene la direcci�n base
+        /// Obtiene la dirección base
         /// </summary>
         public string BaseURLSinHTTP
         {
@@ -3922,7 +4051,7 @@ namespace Es.Riam.Gnoss.Web.Controles
         }
 
         /// <summary>
-        /// Obtiene la URL base de la p�gina
+        /// Obtiene la URL base de la página
         /// </summary>
         public string BaseURL
         {
@@ -3946,7 +4075,7 @@ namespace Es.Riam.Gnoss.Web.Controles
         }
 
         /// <summary>
-        /// Redirecciona el response a s� misma
+        /// Redirecciona el response a sí misma
         /// </summary>
         /// <param name="pCambiarHttps">Verdad si se debe cambiar http por https</param>
         public void RedireccionarMismaPagina(bool pCambiarHttps)
@@ -3960,7 +4089,7 @@ namespace Es.Riam.Gnoss.Web.Controles
         }
 
         /// <summary>
-        /// Obtiene la URL del los elementos estaticos de la p�gina
+        /// Obtiene la URL del los elementos estaticos de la página
         /// </summary>
         public string BaseURLStatic
         {
@@ -3981,7 +4110,7 @@ namespace Es.Riam.Gnoss.Web.Controles
         }
 
         /// <summary>
-        /// Parametros de configuraci�n del proyecto.
+        /// Parametros de configuración del proyecto.
         /// </summary>
         private Dictionary<string, string> ParametroProyecto
         {
@@ -3999,7 +4128,7 @@ namespace Es.Riam.Gnoss.Web.Controles
         }
 
         /// <summary>
-        /// Parametros de configuraci�n del proyecto.
+        /// Parametros de configuración del proyecto.
         /// </summary>
         public Dictionary<string, string> ParametroProyectoEcosistema
         {
@@ -4220,18 +4349,18 @@ namespace Es.Riam.Gnoss.Web.Controles
         /// Valida solo con el login del usuario
         /// </summary>
         /// <param name="pNombre">Nombre del usuario</param>
-        /// <returns>TRUE si usuario y contrase�a son correctos, FALSE en caso contrario</returns>
+        /// <returns>TRUE si usuario y contraseña son correctos, FALSE en caso contrario</returns>
         public GnossIdentity ValidarUsuario(string pNombre)
         {
             return ValidarUsuario(pNombre, null, false, ProyectoAD.MetaOrganizacion, ProyectoAD.MetaProyecto, false);
         }
 
         /// <summary>
-        /// Valida nombre y contrase�a del usuario (pendiente de activar)
+        /// Valida nombre y contraseña del usuario (pendiente de activar)
         /// </summary>
         /// <param name="pNombre">Nombre del usuario</param>
-        /// <param name="pContrasenia">Contrase�a de la cuenta</param>
-        /// <returns>TRUE si usuario y contrase�a son correctos, FALSE en caso contrario</returns>
+        /// <param name="pContrasenia">Contraseña de la cuenta</param>
+        /// <returns>TRUE si usuario y contraseña son correctos, FALSE en caso contrario</returns>
         public bool ValidarUsuarioPendienteDeActivar(string pNombre, string pContrasenia)
         {
             UsuarioCN usuarioCN = new UsuarioCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
@@ -4242,32 +4371,32 @@ namespace Es.Riam.Gnoss.Web.Controles
         }
 
         /// <summary>
-        /// Valida nombre y contrase�a del usuario
+        /// Valida nombre y contraseña del usuario
         /// </summary>
         /// <param name="pNombre">Nombre del usuario</param>
-        /// <param name="pContrasenia">Contrase�a de la cuenta</param>
-        /// <returns>TRUE si usuario y contrase�a son correctos, FALSE en caso contrario</returns>
+        /// <param name="pContrasenia">Contraseña de la cuenta</param>
+        /// <returns>TRUE si usuario y contraseña son correctos, FALSE en caso contrario</returns>
         public GnossIdentity ValidarUsuario(string pNombre, string pContrasenia)
         {
             return ValidarUsuario(pNombre, pContrasenia, false, ProyectoAD.MetaOrganizacion, ProyectoAD.MetaProyecto, true);
         }
 
         /// <summary>
-        /// Valida nombre y contrase�a del usuario
+        /// Valida nombre y contraseña del usuario
         /// </summary>
         /// <param name="pNombre">Nombre del usuario</param>
-        /// <param name="pContrasenia">Contrase�a de la cuenta</param>
+        /// <param name="pContrasenia">Contraseña de la cuenta</param>
         /// <param name="pLanzarExcepciones">TRUE si se deben lanzar las excepciones producidas, FALSE en caso contrario</param>
-        /// <param name="pOrganizacionID">Identificador de la organizaci�n del proyecto al que se va a conectar el usuario</param>
+        /// <param name="pOrganizacionID">Identificador de la organización del proyecto al que se va a conectar el usuario</param>
         /// <param name="pProyectoID">Identificador del proyecto al que se conecta el usuario</param>
         /// <param name="pValidarPassword">Verdad si se debe validar el password</param>
-        /// <returns>TRUE si usuario y contrase�a son correctos, FALSE en caso contrario</returns>
+        /// <returns>TRUE si usuario y contraseña son correctos, FALSE en caso contrario</returns>
         public GnossIdentity ValidarUsuario(string pNombre, string pContrasenia, bool pLanzarExcepciones, Guid pOrganizacionID, Guid pProyectoID, bool pValidarPassword)
         {
             GnossIdentity identity = null;
             try
             {
-                // Autenticamos el login para la organizaci�n (autenticaci�n parcial)
+                // Autenticamos el login para la organización (autenticación parcial)
                 UsuarioCN usuarioCN = new UsuarioCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
                 DataWrapperUsuario dataWrapperUsuario = new DataWrapperUsuario();
                 Es.Riam.Gnoss.AD.EntityModel.Models.UsuarioDS.Usuario filaUsuario = null;
@@ -4281,7 +4410,7 @@ namespace Es.Riam.Gnoss.Web.Controles
 
                         identity = GenerarGnossIdentity(filaUsuario, pOrganizacionID, pProyectoID);
 
-                        //Autenticamos la password (autenticaci�n completa)
+                        //Autenticamos la password (autenticación completa)
                         if (pValidarPassword)
                         {
                             if (!usuarioCN.ValidarPasswordUsuario(filaUsuario, pContrasenia))

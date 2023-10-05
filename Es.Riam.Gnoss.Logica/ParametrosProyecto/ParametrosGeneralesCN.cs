@@ -7,6 +7,7 @@ using Es.Riam.Gnoss.Util.General;
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Linq;
 
 namespace Es.Riam.Gnoss.Logica.ParametrosProyecto
 {
@@ -299,13 +300,24 @@ namespace Es.Riam.Gnoss.Logica.ParametrosProyecto
         }
 
         /// <summary>
-        /// Obtiene el texto de una clave concreta de personalizacion
+        /// Obtiene la traducción indicado para la personalización indicada
         /// </summary>
-        /// <param name="pPersonalizacionID">Identificador de la personalizacion</param>
-        /// <param name="pClaveIdioma">Clave del idioma (es, en...)</param>
-        /// <param name="pTextoID">Identificador del texto</param>
+        /// <param name="pPersonalizacionID">Personalización del proyecto a obtener la traducción</param>
+        /// <param name="pTextoID">Identificador de la traducción a obtener</param>
         /// <returns></returns>
-        public string ObtenerTextoPersonalizadoPersonalizacion(Guid pPersonalizacionID, string pClaveIdioma, string pTextoID)
+		public List<TextosPersonalizadosPersonalizacion> ObtenerTraduccionPorTextoIdDePersonalizacion(Guid pPersonalizacionID, string pTextoID)
+		{
+            return ParametroGeneralAD.ObtenerTraduccionPorTextoIdDePersonalizacion(pPersonalizacionID, pTextoID);
+		}
+
+		/// <summary>
+		/// Obtiene el texto de una clave concreta de personalizacion
+		/// </summary>
+		/// <param name="pPersonalizacionID">Identificador de la personalizacion</param>
+		/// <param name="pClaveIdioma">Clave del idioma (es, en...)</param>
+		/// <param name="pTextoID">Identificador del texto</param>
+		/// <returns></returns>
+		public string ObtenerTextoPersonalizadoPersonalizacion(Guid pPersonalizacionID, string pClaveIdioma, string pTextoID)
         {
             return ParametroGeneralAD.ObtenerTextoPersonalizadoPersonalizacion(pPersonalizacionID, pClaveIdioma, pTextoID);
         }

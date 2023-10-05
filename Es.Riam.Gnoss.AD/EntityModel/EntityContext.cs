@@ -59,9 +59,9 @@ namespace Es.Riam.Gnoss.AD.EntityModel
         private IServicesUtilVirtuosoAndReplication mServicesUtilVirtuosoAndReplication;
 
         /// <summary>
-        /// Constructor internal, para obtener un objeto EntityContext, llamar al m�todo ObtenerEntityContext del BaseAD
+        /// Constructor internal, para obtener un objeto EntityContext, llamar al método ObtenerEntityContext del BaseAD
         /// </summary>
-        public EntityContext(UtilPeticion utilPeticion, LoggingService loggingService, ILoggerFactory loggerFactory, DbContextOptions<EntityContext> dbContextOptions, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication, bool pCache = false)
+        public EntityContext(UtilPeticion utilPeticion, LoggingService loggingService, ILoggerFactory loggerFactory, DbContextOptions<EntityContext> dbContextOptions, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication, bool pCache = false, bool pTracking = true)
             : base(dbContextOptions)
         {
             loggingService.AgregarEntrada("Tiempos_construir_entityContext");
@@ -77,9 +77,13 @@ namespace Es.Riam.Gnoss.AD.EntityModel
             mLoggingService = loggingService;
             mDbContextOptions = dbContextOptions;
             mServicesUtilVirtuosoAndReplication = servicesUtilVirtuosoAndReplication;
+            if (!pTracking)
+            {
+                SetTrackingFalse();
+            }
         }
 
-        public EntityContext(UtilPeticion utilPeticion, LoggingService loggingService, ILoggerFactory loggerFactory, DbContextOptions<EntityContext> dbContextOptions, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication, string pDefaultSchema = null, bool pCache = false)
+        public EntityContext(UtilPeticion utilPeticion, LoggingService loggingService, ILoggerFactory loggerFactory, DbContextOptions<EntityContext> dbContextOptions, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication, string pDefaultSchema = null, bool pCache = false, bool pTracking = true)
             : base(dbContextOptions)
         {
             loggingService.AgregarEntrada("Tiempos_construir_entityContext");
@@ -95,6 +99,15 @@ namespace Es.Riam.Gnoss.AD.EntityModel
             mLoggingService = loggingService;
             mDbContextOptions = dbContextOptions;
             mServicesUtilVirtuosoAndReplication = servicesUtilVirtuosoAndReplication;
+            if (!pTracking)
+            {
+                SetTrackingFalse();
+            }
+        }
+
+        public void SetTrackingFalse()
+        {
+            this.ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.NoTracking;
         }
 
         public void Migrate()
@@ -267,6 +280,10 @@ namespace Es.Riam.Gnoss.AD.EntityModel
         public virtual DbSet<Perfil> Perfil { get; set; }
         public virtual DbSet<Identidad> Identidad { get; set; }
 
+        //TFG FRAN
+        public virtual DbSet<ProyectoPestanyaDashboardAsistente> ProyectoPestanyaDashboardAsistente { get; set; }
+        public virtual DbSet<ProyectoPestanyaDashboardAsistenteDataset> ProyectoPestanyaDashboardAsistenteDataset { get; set; }
+
         //Voto
         public virtual DbSet<VotoEntradaBlog> VotoEntradaBlog { get; set; }
         public virtual DbSet<VotoMensajeForo> VotoMensajeForo { get; set; }
@@ -309,7 +326,7 @@ namespace Es.Riam.Gnoss.AD.EntityModel
         public virtual DbSet<VistaVirtualPersonalizacion> VistaVirtualPersonalizacion { get; set; }
         public virtual DbSet<VistaVirtualProyecto> VistaVirtualProyecto { get; set; }
         public virtual DbSet<VistaVirtualRecursos> VistaVirtualRecursos { get; set; }
-
+        public virtual DbSet<VistaVirtualDominio> VistaVirtualDominio { get; set; }
 
         public virtual DbSet<RecursosRelacionadosPresentacion> RecursosRelacionadosPresentacion { get; set; }
         public virtual DbSet<PersonaVisibleEnOrg> PersonaVisibleEnOrg { get; set; }
@@ -570,6 +587,10 @@ namespace Es.Riam.Gnoss.AD.EntityModel
 
         public bool IsNumeric(string s)
         {
+            if(s == "-")
+            {
+                return false;
+            }
             int num = 0;
             return int.TryParse(s, out num);
         }
@@ -768,6 +789,8 @@ namespace Es.Riam.Gnoss.AD.EntityModel
              .HasKey(c => new { c.PersonalizacionID, c.PersonalizacionComponenteID });
             modelBuilder.Entity<VistaVirtualProyecto>()
              .HasKey(c => new { c.OrganizacionID, c.ProyectoID, c.PersonalizacionID });
+            modelBuilder.Entity<VistaVirtualDominio>()
+             .HasKey(c => new { c.PersonalizacionID, c.Dominio });
             modelBuilder.Entity<VistaVirtualRecursos>()
              .HasKey(c => new { c.PersonalizacionID, c.RdfType });
             modelBuilder.Entity<RecursosRelacionadosPresentacion>()
@@ -2012,9 +2035,14 @@ namespace Es.Riam.Gnoss.AD.EntityModel
                 .IsRequired()
                 .OnDelete(DeleteBehavior.Restrict);
 
+			modelBuilder.Entity<VistaVirtualPersonalizacion>()
+				.HasMany(e => e.VistaVirtualDominio)
+				.WithOne(e => e.VistaVirtualPersonalizacion)
+				.IsRequired()
+				.OnDelete(DeleteBehavior.Restrict);
 
-            // Solicitud
-            modelBuilder.Entity<Solicitud>()
+			// Solicitud
+			modelBuilder.Entity<Solicitud>()
                 .HasMany(e => e.SolicitudOrganizacion)
                 .WithOne(e => e.Solicitud)
                 .IsRequired()
@@ -2349,6 +2377,23 @@ namespace Es.Riam.Gnoss.AD.EntityModel
                 .HasForeignKey(e => new { e.ProyectoID, e.OrganizacionID })
                 .OnDelete(DeleteBehavior.Restrict);
 
+            //TFG FRAN
+
+            //PestanyaMenu - Asistentes
+            modelBuilder.Entity<ProyectoPestanyaMenu>()
+               .HasMany(e => e.ProyectoPestanyaDashboardAsistente)
+               .WithOne(e => e.ProyectoPestanyaMenu)
+               .IsRequired()
+               .HasForeignKey(e => e.PestanyaID)
+               .OnDelete(DeleteBehavior.Cascade);
+            //Asistente - Dataset
+            modelBuilder.Entity<ProyectoPestanyaDashboardAsistente>()
+                .HasMany(e => e.ProyectoPestanyaDashboardAsistenteDataset)
+                .WithOne(e => e.ProyectoPestanyaDashboardAsistente)
+                .IsRequired()
+                .HasForeignKey(e => e.AsisID)
+                .OnDelete(DeleteBehavior.Cascade);
+
             if (mDefaultSchema != null && mDefaultSchema.Equals("dbo"))
             {
                 if (_configService.ObtenerTipoBD().Equals("2"))
@@ -2447,7 +2492,7 @@ namespace Es.Riam.Gnoss.AD.EntityModel
         }
 
         /// <summary>
-        /// Obtiene la conexi�n a la base de datos
+        /// Obtiene la conexión a la base de datos
         /// </summary>
         protected DbConnection ObtenerConexion()
         {
@@ -2539,6 +2584,14 @@ namespace Es.Riam.Gnoss.AD.EntityModel
             else
             {
                 Entry(pElemento).State = EntityState.Deleted;
+            }
+        }
+
+        public void DetachObjectFromEntityContext(object pElemento)
+        {
+            if (Entry(pElemento).State != Microsoft.EntityFrameworkCore.EntityState.Detached)
+            {
+                Entry(pElemento).State = Microsoft.EntityFrameworkCore.EntityState.Detached;
             }
         }
 

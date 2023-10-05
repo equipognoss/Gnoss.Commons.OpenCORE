@@ -22,6 +22,7 @@ namespace Es.Riam.Gnoss.AD.EntityModel.Models.VistaVirtualDS
             VistaVirtualGadgetRecursos = new HashSet<VistaVirtualGadgetRecursos>();
             VistaVirtualProyecto = new HashSet<VistaVirtualProyecto>();
             VistaVirtualRecursos = new HashSet<VistaVirtualRecursos>();
+            VistaVirtualDominio = new HashSet<VistaVirtualDominio>();
         }
 
         [Key]
@@ -41,6 +42,9 @@ namespace Es.Riam.Gnoss.AD.EntityModel.Models.VistaVirtualDS
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<VistaVirtualRecursos> VistaVirtualRecursos { get; set; }
+
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+		public virtual ICollection<VistaVirtualDominio> VistaVirtualDominio { get; set; }
 
         public void Dispose()
         {

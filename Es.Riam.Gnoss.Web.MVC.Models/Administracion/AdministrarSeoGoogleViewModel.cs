@@ -15,21 +15,25 @@
         /// </summary>
         public string CodigoGoogleAnalytics { get; set; }
         /// <summary>
-        /// Script de Google Analytics, si se quiere usar un script distinto al de por defecto
+        /// Script de Google Analytics prodio (diferente al de por defecto y el de la plataforma)
+        /// </summary>
+        public string ScriptGoogleAnalyticsPropio { get; set; }
+        /// <summary>
+        /// Script de Google Analytics que viene desde la vista para el guardado
         /// </summary>
         public string ScriptGoogleAnalytics { get; set; }
+        /// <summary>
+        /// Script de Google Analytics de la plataforma
+        /// </summary>
+        public string ScriptGoogleAnalyticsPlataforma { get; set; }
         /// <summary>
         /// Flag que indica si la configuración de los Robots esta en la tabla ParametroProyecto
         /// </summary>
         public bool ConfiguracionEnParametroProyecto { get; set; }
         /// <summary>
-        /// Flag que indica si la configuración de Google esta en la tabla ParametroProyecto
+        /// Flag que indica si la configuración del script de Google Analytics esta en la tabla ParametroGeneral
         /// </summary>
-        public bool ConfigGoogleEnParametroProyecto { get; set; }
-        /// <summary>
-        /// Flag que indica si la configuración del script de Google Analytics esta en la tabla ParametroProyecto
-        /// </summary>
-        public bool ConfigScriptEnParametroProyecto { get; set; }
+        public bool GooglaAnalitycsScriptEnParametroGeneral { get; set; }
         public string ScriptPorDefecto { get; set; }
     }
 }

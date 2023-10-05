@@ -12,6 +12,16 @@ namespace Es.Riam.Gnoss.AD.EntityModel.Models.ParametroGeneralDS
     [Table("ParametroProyecto")]
     public partial class ParametroProyecto
     {
+        public ParametroProyecto(Guid organizacionID, Guid clave, string nombreParametro, string valor)
+        {
+            OrganizacionID = organizacionID;
+            ProyectoID = clave;
+            Parametro = nombreParametro;
+            Valor = valor;
+        }
+
+        public ParametroProyecto() { }
+
         [Column(Order = 0)]
         public Guid OrganizacionID { get; set; }
 
@@ -23,18 +33,5 @@ namespace Es.Riam.Gnoss.AD.EntityModel.Models.ParametroGeneralDS
         public string Parametro { get; set; }
 
         public string Valor { get; set; }
-
-        public ParametroProyecto()
-        {
-
-        }
-
-        public ParametroProyecto(Guid organizacionID,Guid clave, string nombreParametro,string valor)
-        {
-            OrganizacionID = organizacionID;
-            ProyectoID = clave;
-            Parametro=nombreParametro;
-            Valor = valor;
-        }
     }
 }

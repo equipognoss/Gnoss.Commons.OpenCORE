@@ -68,7 +68,7 @@ namespace SemWeb.IO {
 		private string Escape(string str, int truncate) {
 			if (str.Length > truncate)
 				str = str.Substring(0, truncate-3) + "...";
-			return str.Replace("\"", "''");
+			return str.Replace("\"", "\\\"");
 		}
 
 		private int Literal(Literal literal) {
