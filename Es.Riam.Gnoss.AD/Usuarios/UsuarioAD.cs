@@ -124,7 +124,11 @@ namespace Es.Riam.Gnoss.AD.Usuarios
         /// <summary>
         /// SharePoint
         /// </summary>
-        SharepointRefresh = 7
+        SharepointRefresh = 7,
+        /// <summary>
+        /// SharePoint
+        /// </summary>
+        Apple = 8
     }
 
     /// <summary>
@@ -3240,7 +3244,7 @@ namespace Es.Riam.Gnoss.AD.Usuarios
         /// <param name="pNombreUsuario">Nombre del usuario</param>
         /// <returns>TRUE si existe, FALSE en caso contrario</returns>
         public string ObtenerLoginLibre(string pNombreUsuario)
-        {
+       {
             string nombreUsuarioCortado = pNombreUsuario;
             int numeroInicioContador = pNombreUsuario.Length;
             int numeroDigitos = 0;

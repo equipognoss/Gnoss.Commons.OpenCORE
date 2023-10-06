@@ -261,7 +261,13 @@ namespace Es.Riam.Gnoss.Logica.Facetado
             return mActualizacionFacetadoAD.ObtieneInformacionExtraPersona(pIdentidadID, pProyectoID);
         }
 
-        public List<QueryTriples> ObtieneInformacionExtraPersonaContactos(Guid pIdentidadID, Guid pProyectoID)
+        public List<QueryTriples> ObtieneDatosExtraIdentidad(Guid pIdentidadID, Guid pProyectoID)
+        {
+            return mActualizacionFacetadoAD.ObtieneDatosExtraIdentidad(pIdentidadID, pProyectoID);
+
+		}
+
+		public List<QueryTriples> ObtieneInformacionExtraPersonaContactos(Guid pIdentidadID, Guid pProyectoID)
         {
             return mActualizacionFacetadoAD.ObtieneInformacionExtraPersonaContactos(pIdentidadID, pProyectoID);
         }

@@ -200,7 +200,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
                 VistaVirtualCL vistaVirtualCL = new VistaVirtualCL(mEntityContext, mLoggingService, mGnossCache, mRedisCacheWrapper, mConfigService, mServicesUtilVirtuosoAndReplication);
                 DataWrapperVistaVirtual vistaVirtualDW = vistaVirtualCL.ObtenerVistasVirtualPorProyectoID(ProyectoVirtual.Clave, mControladorBase.PersonalizacionEcosistemaID, mControladorBase.ComunidadExcluidaPersonalizacionEcosistema);
 
-				if (vistaVirtualDW.ListaVistaVirtualProyecto.Count > 0)
+                if (vistaVirtualDW.ListaVistaVirtualProyecto.Count > 0)
                 {
                     PersonalizacionProyecto = vistaVirtualDW.ListaVistaVirtualProyecto.FirstOrDefault().PersonalizacionID;
                 }
@@ -353,22 +353,22 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
             {
                 VistaVirtualCN vistaVirtualCN = new VistaVirtualCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
                 DataWrapperVistaVirtual vistaVirtualDw2 = vistaVirtualCN.ObtenerVistasVirtualPorPersonalizacionID(mControladorBase.PersonalizacionDominio);
-                
+
                 foreach (VistaVirtual filaVistaVirtual in vistaVirtualDw2.ListaVistaVirtual.Where(item => item.PersonalizacionID.Equals(mControladorBase.PersonalizacionDominio)).ToList())
                 {
                     comunidad.ListaPersonalizacionesDominio.Add(filaVistaVirtual.TipoPagina);
                 }
-                
+
                 foreach (VistaVirtualRecursos filaVistaVirtualRecurso in vistaVirtualDw2.ListaVistaVirtualRecursos.Where(item => item.PersonalizacionID.Equals(mControladorBase.PersonalizacionDominio)).ToList())
                 {
                     comunidad.ListaPersonalizacionesDominio.Add("/Views/FichaRecurso_" + filaVistaVirtualRecurso.RdfType + "/Index.cshtml");
                 }
-                
+
                 foreach (VistaVirtualCMS filaVistaVirtualCMS in vistaVirtualDw2.ListaVistaVirtualCMS.Where(item => item.PersonalizacionID.Equals(mControladorBase.PersonalizacionEcosistemaID)))
                 {
                     comunidad.ListaPersonalizacionesDominio.Add("/Views/CMSPagina/" + filaVistaVirtualCMS.PersonalizacionComponenteID + ".cshtml");
                 }
-                
+
                 foreach (VistaVirtualGadgetRecursos filaVistaVirtualGadgetRecursos in vistaVirtualDw2.ListaVistaVirtualGadgetRecursos.Where(item => item.PersonalizacionID.Equals(mControladorBase.PersonalizacionDominio)))
                 {
                     comunidad.ListaPersonalizacionesDominio.Add("/Views/Shared/" + filaVistaVirtualGadgetRecursos.PersonalizacionComponenteID + ".cshtml");
@@ -404,7 +404,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
                             ViewBag.PersonalizacionLayout = $"$$${mControladorBase.PersonalizacionDominio}";
                         }
                         ViewBag.PersonalizacionDominio = $"$$${mControladorBase.PersonalizacionDominio}";
-                    }                    
+                    }
                 }
                 if (comunidad.ListaPersonalizacionesEcosistema != null && comunidad.ListaPersonalizacionesEcosistema.Count > 0 && !mControladorBase.PersonalizacionEcosistemaID.Equals(Guid.Empty))
                 {
@@ -493,14 +493,20 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
 
 
         [NonAction]
-        protected CategoryModel CargarCategoria(CategoriaTesauro pCategoria)
+        protected CategoryModel CargarCategoria(CategoriaTesauro pCategoria, string pIdioma = null)
         {
+            string idioma = UtilIdiomas.LanguageCode;
+            if (!string.IsNullOrEmpty(pIdioma))
+            {
+                idioma = pIdioma;
+            }
+
             CategoryModel categoriaTesauro = new CategoryModel();
             categoriaTesauro.Subcategories = new List<CategoryModel>();
             categoriaTesauro.Key = pCategoria.Clave;
             categoriaTesauro.Name = pCategoria.FilaCategoria.Nombre;
             categoriaTesauro.LanguageName = pCategoria.FilaCategoria.Nombre;
-            categoriaTesauro.Lang = UtilIdiomas.LanguageCode;
+            categoriaTesauro.Lang = idioma;
             categoriaTesauro.Order = pCategoria.FilaCategoria.Orden;
             categoriaTesauro.Required = pCategoria.GestorTesauro.FilasPropiedadesPorCategoria.ContainsKey(pCategoria.Clave) && pCategoria.GestorTesauro.FilasPropiedadesPorCategoria[pCategoria.Clave].Obligatoria.Equals(1);
 
@@ -510,18 +516,18 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
                 categoriaTesauro.Order = pCategoria.FilaAgregacion.Orden;
                 categoriaTesauro.ParentCategoryKey = ((CategoriaTesauro)pCategoria.Padre).Clave;
             }
-            
-            if(pCategoria.SubCategorias != null)
+
+            if (pCategoria.SubCategorias != null)
             {
                 foreach (CategoriaTesauro hija in pCategoria.SubCategorias)
                 {
-                    categoriaTesauro.Subcategories.Add(CargarCategoria(hija));
+                    categoriaTesauro.Subcategories.Add(CargarCategoria(hija, idioma));
                 }
             }
 
             return categoriaTesauro;
         }
-        
+
         [NonAction]
         protected List<MetaKeywordsOntologia> ObtenerMetaEtiquetasXMLOntologiasProyectos()
         {
@@ -542,7 +548,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
                     Guid.TryParse(ParametroProyecto["ProyectoIDPatronOntologias"], out proyectoIDPatronOntologias);
                     dataWrapperDocumentacion.Merge(documentacionCL.ObtenerOntologiasProyecto(proyectoIDPatronOntologias, true));
                 }
-                
+
                 foreach (var ontologia in dataWrapperDocumentacion.ListaDocumento)
                 {
                     byte[] byteArray = servicioArc.ObtenerXmlOntologiaBytes(ontologia.DocumentoID);
@@ -1579,7 +1585,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
                 if (mUrlApiDespliegues == null)
                 {
                     mUrlApiDespliegues = mConfigService.ObtenerUrlApiDesplieguesEntorno();
-                    if(mUrlApiDespliegues == null)
+                    if (mUrlApiDespliegues == null)
                     {
                         mUrlApiDespliegues = mUtilServicioIntegracionContinua.ObtenerUrlApiDesplieguesEntornoActual(ProyectoSeleccionado.Clave, EntornoIntegracionContinua, UrlApiIntegracionContinua, UsuarioActual.UsuarioID);
                     }

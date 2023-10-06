@@ -3413,6 +3413,23 @@ namespace Es.Riam.Gnoss.AD.Documentacion
             return ObtenerDocumentosPorID(pListaDocumentoID, pTraerBasesRecurso, Guid.Empty);
         }
 
+        public List<Guid> ObtenerRecursosSemanticosPublicadosDesdeFecha(DateTime fecha, Guid? pProyectoID = null)
+        {
+            List<Guid> listaRecursos = new List<Guid>();
+
+            string condicionProyecto = "";
+            if (pProyectoID.HasValue && !pProyectoID.Value.Equals(Guid.Empty))
+            {
+                listaRecursos = mEntityContext.Documento.Where(documento => documento.Tipo.Equals(TiposDocumentacion.Semantico) && !documento.Eliminado && documento.FechaModificacion > fecha && documento.ProyectoID.Equals(pProyectoID)).Select(doc => doc.DocumentoID).ToList();
+            }
+            else
+            {
+                listaRecursos = mEntityContext.Documento.Where(documento => documento.Tipo.Equals(TiposDocumentacion.Semantico) && !documento.Eliminado && documento.FechaModificacion > fecha).Select(doc => doc.DocumentoID).ToList();
+            }
+
+            return listaRecursos;
+        }
+
         /// <summary>
         /// Obtiene unos documentos a partir de sus identificadores.
         /// </summary>
@@ -5907,6 +5924,24 @@ namespace Es.Riam.Gnoss.AD.Documentacion
             return listaDocumentosID;
         }
 
+        public List<Guid> ObtenerDocumentosSemIDVinculadosAProyecto(Guid pProyectoID)
+        {
+
+            List<Guid> listaDocumentosID = mEntityContext.Documento.Join(mEntityContext.DocumentoWebVinBaseRecursos, doc => doc.DocumentoID, docWebVin => docWebVin.DocumentoID, (doc, docWebVin) => new
+            {
+                DocumentoID = doc.DocumentoID,
+                BaseRecursosID = docWebVin.BaseRecursosID,
+                Tipo = doc.Tipo
+            }).Join(mEntityContext.BaseRecursosProyecto, objeto => objeto.BaseRecursosID, baseRecursoProy => baseRecursoProy.BaseRecursosID, (objeto, baseRecursoProy) => new
+            {
+                DocumentoID = objeto.DocumentoID,
+                ProyectoID = baseRecursoProy.ProyectoID,
+                Tipo = objeto.Tipo
+            }).Where(objeto => objeto.ProyectoID.Equals(pProyectoID) && objeto.Tipo.Equals(TiposDocumentacion.Semantico)).Select(objeto => objeto.DocumentoID).Distinct().ToList();
+
+            return listaDocumentosID;
+        }
+
         /// <summary>
         /// Obtiene registros de la tabla Documento vinculados a un proyecto
         /// </summary>
@@ -7680,7 +7715,7 @@ namespace Es.Riam.Gnoss.AD.Documentacion
                 documentoEnEdicion.DocumentoID = pDocumentoID;
                 documentoEnEdicion.IdentidadID = pIdentidadID;
                 documentoEnEdicion.FechaEdicion = DateTime.UtcNow.AddSeconds(pSegundosDuracionBloqueo);
-
+                mEntityContext.ChangeTracker.Clear();
                 docDW.ListaDocumentoEnEdicion.Add(documentoEnEdicion);
                 mEntityContext.DocumentoEnEdicion.Add(documentoEnEdicion);
                 try
@@ -7690,6 +7725,7 @@ namespace Es.Riam.Gnoss.AD.Documentacion
                 }
                 catch (Exception ex)
                 {
+                    mEntityContext.EliminarElemento(documentoEnEdicion);
                     mLoggingService.GuardarLogError(ex, $"Error intentando bloquear el recurso {pDocumentoID} para la identidad {pIdentidadID} quedan {pNumeroIntentos} intentos");
                     if (mEntityContext.Documento.Any(item => item.DocumentoID.Equals(pDocumentoID)))
                     {

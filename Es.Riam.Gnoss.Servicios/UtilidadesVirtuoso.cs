@@ -4,6 +4,7 @@ using Es.Riam.Gnoss.AD.BASE_BD.Model;
 using Es.Riam.Gnoss.AD.Documentacion;
 using Es.Riam.Gnoss.AD.EncapsuladoDatos;
 using Es.Riam.Gnoss.AD.EntityModel;
+using Es.Riam.Gnoss.AD.EntityModel.Models.BASE;
 using Es.Riam.Gnoss.AD.EntityModel.Models.Faceta;
 using Es.Riam.Gnoss.AD.EntityModel.Models.ProyectoDS;
 using Es.Riam.Gnoss.AD.EntityModelBASE;
@@ -1408,15 +1409,36 @@ namespace Es.Riam.Gnoss.Servicios
 
         private void GenerarTriplesDatosExtraIdentidad(Identidad pIdentidad, Guid pProyectoID, StringBuilder pTripletas)
         {
-            DataWrapperIdentidad identidadDW = pIdentidad.GestorIdentidades.DataWrapperIdentidad;
+			IdentidadCN identidadCN = new IdentidadCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+			DataWrapperIdentidad identidadDW = identidadCN.ObtenerDatosExtraProyectoOpcionIdentidadPorIdentidadID(pIdentidad.Clave);
 
-            if (identidadDW.ListaDatoExtraEcosistemaOpcionPerfil.Count > 0 || identidadDW.ListaDatoExtraProyectoOpcionIdentidad.Count > 0)
+			if (identidadDW.ListaDatoExtraEcosistemaOpcionPerfil.Count > 0 || identidadDW.ListaDatoExtraProyectoOpcionIdentidad.Count > 0)
             {
-                ProyectoCN proyectoCN = new ProyectoCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+                /*ProyectoCN proyectoCN = new ProyectoCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
                 DataWrapperProyecto datoExtraDW = proyectoCN.ObtenerDatosExtraProyectoPorID(pProyectoID);
                 proyectoCN.Dispose();
-                string opcion = null;
-                if (identidadDW.ListaDatoExtraEcosistemaOpcionPerfil.Count > 0)
+                string opcion = null;*/
+
+				ActualizacionFacetadoCN actualizacionFacetadoCN = new ActualizacionFacetadoCN(null, null, mEntityContext, mLoggingService, mConfigService, mVirtuosoAD, mServicesUtilVirtuosoAndReplication);
+				Guid? id = actualizacionFacetadoCN.ObtieneIDIdentidad(pProyectoID, pIdentidad.Persona.Clave, false);
+				string idRecursoMayuscula = id.Value.ToString().ToUpper();
+				string idRecursoMinuscula = id.Value.ToString();
+				
+				List<QueryTriples> listaTriplesPersona = actualizacionFacetadoCN.ObtieneDatosExtraIdentidad(id.Value, pProyectoID);
+
+				foreach (QueryTriples query in listaTriplesPersona)
+				{
+					if (!string.IsNullOrEmpty(query.Objeto))
+					{
+						string predicado = query.Predicado;
+						string objeto = (string)query.Objeto;
+
+						pTripletas.Append(FacetadoAD.GenerarTripleta((string)query.Sujeto.Replace(idRecursoMinuscula, idRecursoMayuscula), predicado, objeto));
+
+					}
+				}
+
+				/*if (identidadDW.ListaDatoExtraEcosistemaOpcionPerfil.Count > 0)
                 {
                     var datoExtraOpcion = identidadDW.ListaDatoExtraEcosistemaOpcionPerfil.FirstOrDefault();
                     var datoExtra = datoExtraDW.ListaDatoExtraEcosistemaOpcion.First(item => item.OpcionID.Equals(datoExtraOpcion.OpcionID));
@@ -1447,8 +1469,8 @@ namespace Es.Riam.Gnoss.Servicios
                         string objeto = $"\"{opcion}\"";
                         pTripletas.Append(FacetadoAD.GenerarTripleta(sujeto, predicado, objeto));
                     }
-                }
-            }
+                }*/
+			}
         }
 
         private static string ObtenerUserStatus(Identidad pIdentidad)
@@ -1590,7 +1612,6 @@ namespace Es.Riam.Gnoss.Servicios
             try
             {
                 triplesGrafoBusqueda = GenerarTriplesGrafoBusquedaRecurso(pDocumento, pProyecto, pRdfConfiguradoRecursoNoSemantico, pListaTriplesSemanticos, pOntologia, pGestorTesauro, null, null, pUrlIntragnoss);
-
                 if (!string.IsNullOrEmpty(triplesGrafoBusqueda))
                 {
                     if (pSbVirtuoso != null)
@@ -1865,10 +1886,10 @@ namespace Es.Riam.Gnoss.Servicios
                     facetadoCL.InvalidarResultadosYFacetasDeBusquedaEnProyecto(pProyecto.Clave, FacetadoAD.TipoBusquedaToString(TipoBusqueda.Recursos));
                     facetadoCL.BorrarRSSDeComunidad(pProyecto.Clave);
 
-                    if (tipoSemantico != "")
+                    /*if (tipoSemantico != "")
                     {
                         facetadoCL.InvalidarResultadosYFacetasDeBusquedaEnProyecto(pProyecto.Clave, "rdf:type=" + tipoSemantico);
-                    }
+                    }*/
 
                     facetadoCL.Dispose();
 
@@ -2450,6 +2471,11 @@ namespace Es.Riam.Gnoss.Servicios
             string objetoHasPublicador = "\"" + identidadPublicador.NombreCompuesto() + "\"";
             tripletas.Append(FacetadoAD.GenerarTripleta(sujeto, predHasPublicador, PasarObjetoALower(objetoHasPublicador)));
 
+            if (identidadPublicador.TrabajaPersonaConOrganizacion)
+            {
+                objetoHasPublicador = "\"" + identidadPublicador.NombreOrganizacion + "\"";
+                tripletas.Append(FacetadoAD.GenerarTripleta(sujeto, predHasPublicador, UtilidadesVirtuoso.PasarObjetoALower(objetoHasPublicador)));
+            }
 
             if ((pTipoAccesoProyecto.Equals(TipoAcceso.Publico) || pTipoAccesoProyecto.Equals(TipoAcceso.Restringido)) && (pDocumento.FilaDocumento.Valoracion.HasValue))
             {
@@ -2929,16 +2955,21 @@ namespace Es.Riam.Gnoss.Servicios
             List<FacetaEntidadesExternas> EntExt = new List<FacetaEntidadesExternas>();
             DocumentacionCN documentacionCN = new DocumentacionCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
             List<Es.Riam.Gnoss.AD.EntityModel.Models.Documentacion.Documento> listaEntidadesSecundarias = documentacionCN.ObtenerOntologiasSecundarias(pProyectoId);
+            EntExt = mEntityContext.FacetaEntidadesExternas.ToList();
             foreach (string grafo in selectores.Keys)
             {
                 foreach (string selector in selectores[grafo])
                 {
-                    FacetaEntidadesExternas facetaEntidad = new FacetaEntidadesExternas();
-                    facetaEntidad.Grafo = grafo;
-                    facetaEntidad.EntidadID = pUrlIntragnoss + "items/" + selector;
-                    facetaEntidad.ProyectoID = pProyectoId;
-                    facetaEntidad.EsEntidadSecundaria = listaEntidadesSecundarias.Any(item => item.Enlace.Equals(grafo));
-                    EntExt.Add(facetaEntidad);
+                    string entidadID = pUrlIntragnoss + "items/" + selector;
+                    if (!EntExt.Any(item => item.EntidadID.Equals(entidadID)))
+                    {
+                        FacetaEntidadesExternas facetaEntidad = new FacetaEntidadesExternas();
+                        facetaEntidad.Grafo = grafo;
+                        facetaEntidad.EntidadID = entidadID;
+                        facetaEntidad.ProyectoID = pProyectoId;
+                        facetaEntidad.EsEntidadSecundaria = listaEntidadesSecundarias.Any(item => item.Enlace.Equals(grafo));
+                        EntExt.Add(facetaEntidad);
+                    }
                 }
             }
 

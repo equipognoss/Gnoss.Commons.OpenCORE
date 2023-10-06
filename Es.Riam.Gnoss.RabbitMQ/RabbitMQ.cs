@@ -90,6 +90,17 @@ namespace Es.Riam.Gnoss.RabbitMQ
             Cliente.Dispose();
         }
 
+        /// <summary>
+        /// Comprueba si existe o no la cola indicada por parámetro en RabbitMQ
+        /// </summary>
+        /// <param name="pNombreCola">Nombre de la cola a comprobar si existe</param>
+        /// <returns>true o false si existe o no la cola respectivamente</returns>
+        public bool ExisteColaRabbit(string pNombreCola)
+        {
+            return Cliente.ExisteColaRabbit(pNombreCola);
+        }
+
+
         public static string ClientName
         {
             get

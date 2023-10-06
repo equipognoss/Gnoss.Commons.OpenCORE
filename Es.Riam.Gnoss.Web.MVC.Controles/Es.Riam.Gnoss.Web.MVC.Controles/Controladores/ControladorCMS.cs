@@ -2507,10 +2507,30 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
             return pTexto;
         }
 
+        //https://www.himasagar.com/list-of-timezone-ids-for-use-with-findtimezonebyid-in-charp
+        //Es: Romance Standard Time
+        private string FechaZonaHoraria(string timezoneID)
+        {
+            string fecha = "";
+            timezoneID = timezoneID.TrimStart().TrimEnd();
+            DateTime thisTime = DateTime.Now;
+            TimeZoneInfo tst = TimeZoneInfo.FindSystemTimeZoneById(timezoneID);
+            DateTime tstTime = TimeZoneInfo.ConvertTime(thisTime, TimeZoneInfo.Local, tst);
+            fecha = tstTime.ToString("yyyyMMddHHmmss");
+            return fecha;
+        }
 
         private string ReemplazarParametrosConsultaConfigurables(string pQuerySPARQL, string pIdioma, string pFiltros)
         {
             //{GETDATE} //AAAAMMDDhhmmss
+            //{GETDATE,Romance Standard Time} //AAAAMMDDhhmmss
+            if (pQuerySPARQL.Contains("{GETDATE,"))
+            {
+                int inicioTimezone = pQuerySPARQL.IndexOf("{GETDATE,") + "{GETDATE,".Length;
+                int finTimeZone = pQuerySPARQL.IndexOf('}', inicioTimezone);
+                string timeZoneID = pQuerySPARQL.Substring(inicioTimezone, finTimeZone - inicioTimezone);                
+                pQuerySPARQL = pQuerySPARQL.Replace("{GETDATE,"+timeZoneID+"}", FechaZonaHoraria(timeZoneID));
+            }
             pQuerySPARQL = pQuerySPARQL.Replace("{GETDATE}", DateTime.Now.ToString("yyyyMMddHHmmss"));
             //{GETLANG}
             pQuerySPARQL = pQuerySPARQL.Replace("{GETLANG}", pIdioma);

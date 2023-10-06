@@ -27,6 +27,7 @@ using Es.Riam.Metagnoss.ExportarImportar;
 using Es.Riam.Util;
 using Microsoft.AspNetCore.Http;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
@@ -42,22 +43,26 @@ public class GnossUrlsSemanticas
     /// <summary>
     /// Almacena una lista del tipo nombreCortoProyecto -> URL del proyecto por idioma. ej => iphone, es, preiphone.gnoss.com
     /// </summary>
-    private static Dictionary<string, Dictionary<string, string>> pListaURLComunidades = new Dictionary<string, Dictionary<string, string>>();
+    private static ConcurrentDictionary<string, Dictionary<string, string>> mListaURLComunidades = new ConcurrentDictionary<string, Dictionary<string, string>>();
+    private object BLOQUEO_ListaURLComunidades = new object();
 
     /// <summary>
     /// Almacena una lista con los nombres cortos de las comunidades que no tienen nombrecorto en la URL
     /// </summary>
-    private static List<string> pListaNombreCortoComunidadesSinNombreCortoEnURL = null;
+    private static List<string> mListaNombreCortoComunidadesSinNombreCortoEnURL = null;
+    private object BLOQUEO_ListaNombreCortoComunidadesSinNombreCortoEnURL = new object();
 
     /// <summary>
     /// Almacena una lista del tipo nombreCortoProyecto -> idOntologia -> nombreCortoOntolgia
     /// </summary>
-    private static Dictionary<string, Dictionary<Guid, string>> pListaURLOntologiasPorProyecto = new Dictionary<string, Dictionary<Guid, string>>();
+    private static ConcurrentDictionary<string, Dictionary<Guid, string>> mListaURLOntologiasPorProyecto = new ConcurrentDictionary<string, Dictionary<Guid, string>>();
+    private object BLOQUEO_ListaURLOntologiasPorProyecto = new object();
 
     /// <summary>
     /// Almacena una lista del tipo nombreCortoProyecto -> nombreOntologia(*.owl) -> idOntologia
     /// </summary>
-    private static Dictionary<string, Dictionary<string, Guid>> pListaIDsOntologiasPorProyecto = new Dictionary<string, Dictionary<string, Guid>>();
+    private static ConcurrentDictionary<string, Dictionary<string, Guid>> mListaIDsOntologiasPorProyecto = new ConcurrentDictionary<string, Dictionary<string, Guid>>();
+    private object BLOQUEO_ListaIDsOntologiasPorProyecto = new object();
 
     public static string IdiomaPrincipalDominio = "es";
 
@@ -872,42 +877,54 @@ public class GnossUrlsSemanticas
 
     private string NombreCortoOntologia(string pOntologia, string pNombreCortoProy, UtilIdiomas pUtilIdiomas)
     {
-        if (!pListaIDsOntologiasPorProyecto.ContainsKey(pNombreCortoProy))
+        if (!mListaIDsOntologiasPorProyecto.ContainsKey(pNombreCortoProy))
         {
             ProyectoCN proyCN = new ProyectoCN(mEntityContext, mLoggingService, mConfigService, null);
             Dictionary<string, Guid> idOntologiasDeProyecto = proyCN.ObtenerOntologiasConIDPorNombreCortoProy(pNombreCortoProy);
             proyCN.Dispose();
-            pListaIDsOntologiasPorProyecto.Add(pNombreCortoProy, idOntologiasDeProyecto);
 
+            lock (BLOQUEO_ListaIDsOntologiasPorProyecto)
+            {
+                if (!mListaIDsOntologiasPorProyecto.ContainsKey(pNombreCortoProy))
+                {
+                    mListaIDsOntologiasPorProyecto.TryAdd(pNombreCortoProy, idOntologiasDeProyecto);
+                }
+            }
         }
         Guid idOntologia = Guid.Empty;
-        if (pListaIDsOntologiasPorProyecto.ContainsKey(pNombreCortoProy) && pListaIDsOntologiasPorProyecto[pNombreCortoProy].ContainsKey(pOntologia))
+        if (mListaIDsOntologiasPorProyecto.ContainsKey(pNombreCortoProy) && mListaIDsOntologiasPorProyecto[pNombreCortoProy].ContainsKey(pOntologia))
         {
-            idOntologia = pListaIDsOntologiasPorProyecto[pNombreCortoProy][pOntologia];
+            idOntologia = mListaIDsOntologiasPorProyecto[pNombreCortoProy][pOntologia];
         }
         return NombreCortoOntologia(idOntologia, pNombreCortoProy, pUtilIdiomas);
     }
 
     private string NombreCortoOntologia(Guid pOntologiaID, string pNombreCortoProy, UtilIdiomas pUtilIdiomas)
     {
-        if (!pListaURLOntologiasPorProyecto.ContainsKey(pNombreCortoProy))
+        if (!mListaURLOntologiasPorProyecto.ContainsKey(pNombreCortoProy))
         {
             ProyectoCN proyCN = new ProyectoCN(mEntityContext, mLoggingService, mConfigService, null);
             Dictionary<string, Dictionary<Guid, string>> urlOntologiasDeProyecto = proyCN.ObtenerNombresCortosProyectosConNombresCortosOntologias(pNombreCortoProy);
             proyCN.Dispose();
 
-            if (urlOntologiasDeProyecto.ContainsKey(pNombreCortoProy))
+            lock (BLOQUEO_ListaURLOntologiasPorProyecto)
             {
-                pListaURLOntologiasPorProyecto.Add(pNombreCortoProy, urlOntologiasDeProyecto[pNombreCortoProy]);
-            }
-            else
-            {
-                pListaURLOntologiasPorProyecto.Add(pNombreCortoProy, new Dictionary<Guid, string>());
+                if (!mListaURLOntologiasPorProyecto.ContainsKey(pNombreCortoProy))
+                {
+                    if (urlOntologiasDeProyecto.ContainsKey(pNombreCortoProy))
+                    {
+                        mListaURLOntologiasPorProyecto.TryAdd(pNombreCortoProy, urlOntologiasDeProyecto[pNombreCortoProy]);
+                    }
+                    else
+                    {
+                        mListaURLOntologiasPorProyecto.TryAdd(pNombreCortoProy, new Dictionary<Guid, string>());
+                    }
+                }
             }
         }
-        if (pListaURLOntologiasPorProyecto.ContainsKey(pNombreCortoProy) && pListaURLOntologiasPorProyecto[pNombreCortoProy].ContainsKey(pOntologiaID))
+        if (mListaURLOntologiasPorProyecto.ContainsKey(pNombreCortoProy) && mListaURLOntologiasPorProyecto[pNombreCortoProy].ContainsKey(pOntologiaID))
         {
-            return UtilCadenas.ObtenerTextoDeIdioma(pListaURLOntologiasPorProyecto[pNombreCortoProy][pOntologiaID], pUtilIdiomas.LanguageCode, null);
+            return UtilCadenas.ObtenerTextoDeIdioma(mListaURLOntologiasPorProyecto[pNombreCortoProy][pOntologiaID], pUtilIdiomas.LanguageCode, null);
         }
         else
         {
@@ -1226,6 +1243,11 @@ public class GnossUrlsSemanticas
             claveDirecc += "ORG";
         }
 
+        if (string.IsNullOrEmpty(pNombreProy) || pNombreProy.ToLower().Equals("mygnoss"))
+        {
+            claveDirecc += "GNOSS";
+        }
+
         direccion = pUtilIdiomas.GetText(URLSEM, claveDirecc);
 
         if (pNombreProy != "")
@@ -1360,6 +1382,11 @@ public class GnossUrlsSemanticas
         if (pIdentidadOrganizacion)
         {
             claveSubirRec += "ORG";
+        }
+
+        if (string.IsNullOrEmpty(pNombreProy) || pNombreProy.ToLower().Equals("mygnoss"))
+        {
+            claveSubirRec += "GNOSS";
         }
 
         string subirRecurso = pUtilIdiomas.GetText(URLSEM, claveSubirRec);
@@ -2410,15 +2437,21 @@ public class GnossUrlsSemanticas
             {
                 ////Fernando : Si estoy depurando y no tengo un dominio configurado, que me funcionen las urls de la comunidad
 
-                    pListaNombreCortoComunidadesSinNombreCortoEnURL = new List<string>();
+                    mListaNombreCortoComunidadesSinNombreCortoEnURL = new List<string>();
             }
             else
             {
-                if (pListaNombreCortoComunidadesSinNombreCortoEnURL == null)
+                if (mListaNombreCortoComunidadesSinNombreCortoEnURL == null)
                 {
-                    ParametroCN paramCN = new ParametroCN(mEntityContext, mLoggingService, mConfigService, null);
-                    pListaNombreCortoComunidadesSinNombreCortoEnURL = paramCN.ObtenerNombresDeProyectosSinNombreCortoEnURL();
-                    paramCN.Dispose();
+                    lock (BLOQUEO_ListaNombreCortoComunidadesSinNombreCortoEnURL)
+                    {
+                        if (mListaNombreCortoComunidadesSinNombreCortoEnURL == null)
+                        {
+                            ParametroCN paramCN = new ParametroCN(mEntityContext, mLoggingService, mConfigService, null);
+                            mListaNombreCortoComunidadesSinNombreCortoEnURL = paramCN.ObtenerNombresDeProyectosSinNombreCortoEnURL();
+                            paramCN.Dispose();
+                        }
+                    }
                 }
             }
 
@@ -2431,7 +2464,7 @@ public class GnossUrlsSemanticas
     {
         string urlCom = "";
 
-        if (!pListaNombreCortoComunidadesSinNombreCortoEnURL.Contains(pNombreCorto))
+        if (!mListaNombreCortoComunidadesSinNombreCortoEnURL.Contains(pNombreCorto))
         {
             urlCom = "/" + pUtilIdiomas.GetText("URLSEM", "COMUNIDAD") + "/" + pNombreCorto;
          }
@@ -2440,16 +2473,16 @@ public class GnossUrlsSemanticas
 
         bool mostrarIdiomaURL = true;
 
-        if (!pListaURLComunidades.ContainsKey(pNombreCorto) && idiomaActual.Equals("es"))
+        if (!mListaURLComunidades.ContainsKey(pNombreCorto) && idiomaActual.Equals("es"))
         {
             //Si la lista de urls propias de la comunidad NO contiene el nombrecorto, hacemos el comportamiento por defecto(mostramos el idioma siempre que no sea español)
             mostrarIdiomaURL = false;
         }
-        else if (pListaURLComunidades.ContainsKey(pNombreCorto) && pListaURLComunidades[pNombreCorto].ContainsKey(idiomaActual))
+        else if (mListaURLComunidades.ContainsKey(pNombreCorto) && mListaURLComunidades[pNombreCorto].ContainsKey(idiomaActual))
         {
-            string dominioIdiomaActual = pListaURLComunidades[pNombreCorto][idiomaActual];
+            string dominioIdiomaActual = mListaURLComunidades[pNombreCorto][idiomaActual];
             //Si la lista de urls propias de la comunidad contiene el nombrecorto y ademas tenemos una url propia para ese idioma, el primer idioma configurado para esa url no muestra el idioma en la url
-            if (pListaURLComunidades[pNombreCorto].First(u => u.Value == dominioIdiomaActual).Key.Equals(idiomaActual))
+            if (mListaURLComunidades[pNombreCorto].First(u => u.Value == dominioIdiomaActual).Key.Equals(idiomaActual))
             {
                 mostrarIdiomaURL = false;
             }
@@ -2464,7 +2497,7 @@ public class GnossUrlsSemanticas
 
     private void CargarUrlComunidad(string pNombreCorto, string pFicheroConfiguracion = null)
     {
-        if (!pListaURLComunidades.ContainsKey(pNombreCorto))
+        if (!mListaURLComunidades.ContainsKey(pNombreCorto))
         {
             try
             {
@@ -2482,38 +2515,44 @@ public class GnossUrlsSemanticas
                 string url = proyCN.ObtenerURLPropiaProyectoPorNombreCorto(pNombreCorto);
                 proyCN.Dispose();
 
-                if (!string.IsNullOrEmpty(url))
+                lock (BLOQUEO_ListaURLComunidades)
                 {
-                    if (!pListaURLComunidades.ContainsKey(pNombreCorto))
+                    if (!mListaURLComunidades.ContainsKey(pNombreCorto))
                     {
-                        pListaURLComunidades.Add(pNombreCorto, new Dictionary<string, string>());
-
-                        string[] urls = url.Split(new string[] { "|||" }, StringSplitOptions.RemoveEmptyEntries);
-
-                        foreach (string urlPropia in urls)
+                        if (!string.IsNullOrEmpty(url))
                         {
-                            string idioma = IdiomaPrincipalDominio;
-                            string[] urlIdioma = urlPropia.Split(new string[] { "@" }, StringSplitOptions.RemoveEmptyEntries);
-                            url = UtilDominios.DomainToPunyCode(urlIdioma[0]);
-                            if (urlIdioma.Length > 1)
-                            { idioma = urlIdioma[1]; }
-
-                            if (!pListaURLComunidades[pNombreCorto].ContainsKey(idioma))
+                            if (!mListaURLComunidades.ContainsKey(pNombreCorto))
                             {
-                                pListaURLComunidades[pNombreCorto].Add(idioma, url);
+                                mListaURLComunidades.TryAdd(pNombreCorto, new Dictionary<string, string>());
+
+                                string[] urls = url.Split(new string[] { "|||" }, StringSplitOptions.RemoveEmptyEntries);
+
+                                foreach (string urlPropia in urls)
+                                {
+                                    string idioma = IdiomaPrincipalDominio;
+                                    string[] urlIdioma = urlPropia.Split(new string[] { "@" }, StringSplitOptions.RemoveEmptyEntries);
+                                    url = UtilDominios.DomainToPunyCode(urlIdioma[0]);
+                                    if (urlIdioma.Length > 1)
+                                    { idioma = urlIdioma[1]; }
+
+                                    if (!mListaURLComunidades[pNombreCorto].ContainsKey(idioma))
+                                    {
+                                        mListaURLComunidades[pNombreCorto].Add(idioma, url);
+                                    }
+                                }
                             }
                         }
-                    }
-                }
-                else
-                {
-                    if (!pListaURLComunidades.ContainsKey(pNombreCorto))
-                    {
-                        pListaURLComunidades.Add(pNombreCorto, new Dictionary<string, string>());
+                        else
+                        {
+                            if (!mListaURLComunidades.ContainsKey(pNombreCorto))
+                            {
+                                mListaURLComunidades.TryAdd(pNombreCorto, new Dictionary<string, string>());
 
-                        string idioma = "es";
+                                string idioma = "es";
 
-                        pListaURLComunidades[pNombreCorto].Add(idioma, url);
+                                mListaURLComunidades[pNombreCorto].Add(idioma, url);
+                            }
+                        }
                     }
                 }
             }
@@ -2529,9 +2568,9 @@ public class GnossUrlsSemanticas
         CargarUrlComunidad(pNombreCorto);
         string idiomaDefecto = "es";
 
-        if (pListaURLComunidades.ContainsKey(pNombreCorto))
+        if (mListaURLComunidades.ContainsKey(pNombreCorto))
         {
-            var listaUrls = pListaURLComunidades[pNombreCorto];
+            var listaUrls = mListaURLComunidades[pNombreCorto];
 
             if (listaUrls.ContainsValue(pDominio))
             {
@@ -2571,13 +2610,13 @@ public class GnossUrlsSemanticas
             if (!pBaseURL.Contains("depuracion.net") && !pBaseURL.Contains("localhost"))
             {
                 //Cojo la URL de la lista de comunidades
-                if (pListaURLComunidades[pNombreCorto].ContainsKey(pUtilIdiomas.LanguageCode))
+                if (mListaURLComunidades[pNombreCorto].ContainsKey(pUtilIdiomas.LanguageCode))
                 {
-                    url = pListaURLComunidades[pNombreCorto][pUtilIdiomas.LanguageCode];
+                    url = mListaURLComunidades[pNombreCorto][pUtilIdiomas.LanguageCode];
                 }
                 else
                 {
-                    url = pListaURLComunidades[pNombreCorto].First().Value;
+                    url = mListaURLComunidades[pNombreCorto].First().Value;
                 }
             }
             else
@@ -2627,31 +2666,37 @@ public class GnossUrlsSemanticas
 
             Dictionary<string, string> urlComunidadesAModificar = new Dictionary<string, string>();
 
-            var nombresCortos = pNombresCortos.Except(pListaURLComunidades.Keys).ToList();
+            var nombresCortos = pNombresCortos.Except(mListaURLComunidades.Keys).ToList();
 
             urlComunidadesAModificar = proyCN.ObtenerURLSPropiasProyectosPorNombresCortos(nombresCortos);
             proyCN.Dispose();
 
             foreach (string nombreCorto in urlComunidadesAModificar.Keys)
             {
-                if (!pListaURLComunidades.ContainsKey(nombreCorto))
+                if (!mListaURLComunidades.ContainsKey(nombreCorto))
                 {
                     string url = urlComunidadesAModificar[nombreCorto];
 
-                    pListaURLComunidades.Add(nombreCorto, new Dictionary<string, string>());
-
-                    string[] urls = url.Split(new string[] { "|||" }, StringSplitOptions.RemoveEmptyEntries);
-
-                    foreach (string urlPropia in urls)
+                    lock (BLOQUEO_ListaURLComunidades)
                     {
-                        string idioma = "es";
-                        string[] urlIdioma = urlPropia.Split(new string[] { "@" }, StringSplitOptions.RemoveEmptyEntries);
-                        url = UtilDominios.DomainToPunyCode(urlIdioma[0]);
-                        if (urlIdioma.Length > 1) { idioma = urlIdioma[1]; }
-
-                        if (!pListaURLComunidades[nombreCorto].ContainsKey(idioma))
+                        if (!mListaURLComunidades.ContainsKey(nombreCorto))
                         {
-                            pListaURLComunidades[nombreCorto].Add(idioma, url);
+                            mListaURLComunidades.TryAdd(nombreCorto, new Dictionary<string, string>());
+
+                            string[] urls = url.Split(new string[] { "|||" }, StringSplitOptions.RemoveEmptyEntries);
+
+                            foreach (string urlPropia in urls)
+                            {
+                                string idioma = "es";
+                                string[] urlIdioma = urlPropia.Split(new string[] { "@" }, StringSplitOptions.RemoveEmptyEntries);
+                                url = UtilDominios.DomainToPunyCode(urlIdioma[0]);
+                                if (urlIdioma.Length > 1) { idioma = urlIdioma[1]; }
+
+                                if (!mListaURLComunidades[nombreCorto].ContainsKey(idioma))
+                                {
+                                    mListaURLComunidades[nombreCorto].Add(idioma, url);
+                                }
+                            }
                         }
                     }
                 }
@@ -2662,10 +2707,10 @@ public class GnossUrlsSemanticas
             mLoggingService.GuardarLogError(ex);
         }
 
-        if (pListaNombreCortoComunidadesSinNombreCortoEnURL == null)
+        if (mListaNombreCortoComunidadesSinNombreCortoEnURL == null)
         {
             ParametroCN paramCN = new ParametroCN(mEntityContext, mLoggingService, mConfigService, null);
-            pListaNombreCortoComunidadesSinNombreCortoEnURL = paramCN.ObtenerNombresDeProyectosSinNombreCortoEnURL();
+            mListaNombreCortoComunidadesSinNombreCortoEnURL = paramCN.ObtenerNombresDeProyectosSinNombreCortoEnURL();
             paramCN.Dispose();
         }
 

@@ -35,6 +35,7 @@ using System.Collections.Concurrent;
 using Microsoft.Azure.Amqp.Framing;
 using Es.Riam.Gnoss.AD.EntityModelBASE;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion.Internal;
+using Es.Riam.Semantica.OWL;
 
 namespace Es.Riam.Gnoss.AD.Facetado
 {
@@ -1421,7 +1422,7 @@ namespace Es.Riam.Gnoss.AD.Facetado
             {
                 pQuery = $"{EvaluarFiltrosFacetasEnOrden} {pQuery}";
             }
-            
+
 
             NameValueCollection parametros = GenerarParametrosParaQuery(pQuery);
 
@@ -1562,7 +1563,7 @@ namespace Es.Riam.Gnoss.AD.Facetado
             return cadenaConexion;
         }
 
-        public string LeerDeVirtuosoJSON(string pQuery, string pNombreTabla, string pGrafo, bool pUsarHilos = false, bool pUsarConexionAfinidad = false)
+        public string LeerDeVirtuosoJSON(string pQuery, string pNombreTabla, string pGrafo, bool pUsarConexionAfinidad = false)
         {
             string JSON = "";
 
@@ -1590,66 +1591,16 @@ namespace Es.Riam.Gnoss.AD.Facetado
             parametros.Add("timeout", TimeOutVirtuoso.ToString());
             parametros.Add("format", "application/sparql-results+json");
 
-            AgregarEntradaTraza("Leo de virtuoso " + ipVirtuoso + ". " + pQuery);
-            try
-            {
-                Action wrappedAction = () =>
-                {
-                    JSON = LeerDeVirtuoso_WebClientJSON(url, pNombreTabla, pQuery, parametros);
-                };
+            AgregarEntradaTraza($"Leo de virtuoso {ipVirtuoso}. \n {pQuery}");
 
-                if (!pUsarHilos)
-                {
-                    //try
-                    //{
-                        JSON = LeerDeVirtuoso_WebClientJSON(url, pNombreTabla, pQuery, parametros);
-                    //}
-                    //catch (ExcepcionCheckpointVirtuoso)
-                    //{
-                        //Virtuoso está en un checkpoint, reintento la lectura contra otro servidor
-                        JSON = ReintentarConsultaVirtuosoJSONConCheckpoint(cadenaConexion, pGrafo, pNombreTabla, pQuery, parametros);
-                    //}
+            JSON = LeerDeVirtuoso_WebClientJSON(url, pNombreTabla, pQuery, parametros);
 
-                    AgregarEntradaTraza("Leído de virtuoso.");
-                }
-            }
-            catch (ExcepcionCheckpointVirtuoso)
-            {
-                bool fallo = true;
-                for (int i = 0; i < 20 && fallo; i++)
-                {
-                    try
-                    {
-                        Thread.Sleep(500);
-                        //Virtuoso está en un checkpoint, reintento la lectura contra otro servidor                        
-                        if ((i == 3 || i == 10 || i == 15) && pUsarConexionAfinidad)
-                        {
-                            string urlBase = mConfigService.ObtenerServicioAfinidad();
-                            string urlMethod = "RelatedVirtuoso";
-                            UtilGeneral.WebRequest("GET", $"{urlBase}/{urlMethod}", null);
-                        }
-                        cadenaConexion = ObtenerCadenaConexionLeerDeVirtuoso(pUsarConexionAfinidad);
-                        ip_puerto = mServicesUtilVirtuosoAndReplication.ObtenerIpVirtuosoDeCadenaConexion(cadenaConexion);
-                        ipVirtuoso = ip_puerto.Key;
-                        puertoVirtuoso = ip_puerto.Value;
-                        url = "http://" + ipVirtuoso + ":" + puertoVirtuoso + "/sparql";
-                        JSON = LeerDeVirtuoso_WebClientJSON(url, pNombreTabla, pQuery, parametros);
-                        fallo = false;
-                    }
-                    catch (ExcepcionCheckpointVirtuoso)
-                    {
-                        fallo = true;
-                    }
-                }
-                if (fallo)
-                {
-                    throw;
-                }
-            }
+            AgregarEntradaTraza($"Leído de virtuoso: {ipVirtuoso}. \n{pQuery}");
+
             return JSON;
         }
 
-        public string LeerDeVirtuosoCSV(string pQuery, string pNombreTabla, string pGrafo, bool pUsarHilos = false, bool pUsarConexionAfinidad = false)
+        public string LeerDeVirtuosoCSV(string pQuery, string pNombreTabla, string pGrafo, bool pUsarConexionAfinidad = false)
         {
             string csv = "";
 
@@ -1674,62 +1625,12 @@ namespace Es.Riam.Gnoss.AD.Facetado
 
             NameValueCollection parametros = null;
 
-            AgregarEntradaTraza("Leo de virtuoso " + ipVirtuoso + ". " + pQuery);
-            try
-            {
-                Action wrappedAction = () =>
-                {
-                    csv = LeerDeVirtuoso_WebClientCSV(url, pNombreTabla, pQuery, parametros);
-                };
+            AgregarEntradaTraza($"Leo de virtuoso {ipVirtuoso}. \n {pQuery}");
 
-                if (!pUsarHilos)
-                {
-                    //try
-                    //{
-                        csv = LeerDeVirtuoso_WebClientCSV(url, pNombreTabla, pQuery, parametros);
-                    //}
-                    //catch (ExcepcionCheckpointVirtuoso)
-                    //{
-                    //    //Virtuoso está en un checkpoint, reintento la lectura contra otro servidor
-                    //    csv = ReintentarConsultaVirtuosoCSVConCheckpoint(cadenaConexion, pGrafo, pNombreTabla, pQuery, parametros);
-                    //}
+            csv = LeerDeVirtuoso_WebClientCSV(url, pNombreTabla, pQuery, parametros);
 
-                    AgregarEntradaTraza("Leído de virtuoso.");
-                }
-            }
-            catch (ExcepcionCheckpointVirtuoso)
-            {
-                bool fallo = true;
-                for (int i = 0; i < 20 && fallo; i++)
-                {
-                    try
-                    {
-                        Thread.Sleep(500);
-                        //Virtuoso está en un checkpoint, reintento la lectura contra otro servidor                        
-                        if ((i == 3 || i == 10 || i == 15) && pUsarConexionAfinidad)
-                        {
-                            string urlBase = mConfigService.ObtenerServicioAfinidad();
-                            string urlMethod = "RelatedVirtuoso";
-                            UtilGeneral.WebRequest("GET", $"{urlBase}/{urlMethod}", null);
-                        }
-                        cadenaConexion = ObtenerCadenaConexionLeerDeVirtuoso(pUsarConexionAfinidad);
-                        ip_puerto = mServicesUtilVirtuosoAndReplication.ObtenerIpVirtuosoDeCadenaConexion(cadenaConexion);
-                        ipVirtuoso = ip_puerto.Key;
-                        puertoVirtuoso = ip_puerto.Value;
-                        url = "http://" + ipVirtuoso + ":" + puertoVirtuoso + "/sparql";
-                        csv = LeerDeVirtuoso_WebClientCSV(url, pNombreTabla, pQuery, parametros);
-                        fallo = false;
-                    }
-                    catch (ExcepcionCheckpointVirtuoso)
-                    {
-                        fallo = true;
-                    }
-                }
-                if (fallo)
-                {
-                    throw;
-                }
-            }
+            AgregarEntradaTraza($"Leído de virtuoso: {ipVirtuoso}. \n{pQuery}");
+
             return csv;
         }
 
@@ -1815,6 +1716,12 @@ namespace Es.Riam.Gnoss.AD.Facetado
                 milisegundos = (int)DateTime.Now.Subtract(horaInicio).TotalMilliseconds;
 
                 responseCSV = Encoding.UTF8.GetString(responseArray);
+
+                if (mConfigService.ObtenerProcesarStringGrafo())
+                {
+                    responseCSV = responseCSV.Replace("''", "\\\"");
+                }
+
                 return responseCSV;
             }
             catch (WebException webException)
@@ -1861,7 +1768,7 @@ namespace Es.Riam.Gnoss.AD.Facetado
                     throw new ExcepcionDeBaseDeDatos(pQuery, respuesta, webException);
                 }
             }
-            
+
         }
         public void LeerDeVirtuoso_WebClient(string pUrl, string pNombreTabla, FacetadoDS pFacetadoDS, string pQuery, NameValueCollection pParametros = null)
         {
@@ -1897,6 +1804,12 @@ namespace Es.Riam.Gnoss.AD.Facetado
                 string respuesta = Encoding.UTF8.GetString(responseArray);
 
                 AgregarEntradaTraza("LecturaWebClient: Respuesta obtenida de virtuoso, convertimos el CSV");
+
+                if (mConfigService.ObtenerProcesarStringGrafo())
+                {
+                    respuesta = respuesta.Replace("''", "\"\"");
+                }
+
 
                 lock (pFacetadoDS)
                 {
@@ -2179,6 +2092,12 @@ namespace Es.Riam.Gnoss.AD.Facetado
                     //Intento recuperar información del error
                     StreamReader dataStream = new StreamReader(webException.Response.GetResponseStream());
                     respuesta = dataStream.ReadToEnd();
+
+                    if (mConfigService.ObtenerProcesarStringGrafo())
+                    {
+                        respuesta = respuesta.Replace("''", "\\\"");
+                    }
+
                     webException.Response.Close();
                 }
                 catch { }
@@ -4377,7 +4296,7 @@ namespace Es.Riam.Gnoss.AD.Facetado
             {
                 query += filtrosContextos[0];
             }
-            
+
             // resultados excluidos
             if (pListaExcluidos != null && pListaExcluidos.Count > 0)
             {
@@ -4402,7 +4321,6 @@ namespace Es.Riam.Gnoss.AD.Facetado
                 {
                     orderBy += " desc(?scoreTitle) ";
                 }
-                select += " ?scoreTitle ";
             }
 
             bool haySearchPersonalizado = false;
@@ -6008,7 +5926,7 @@ namespace Es.Riam.Gnoss.AD.Facetado
             {
                 query += " ?s sioc_t:Tag ?Tag. FILTER(?Tag in (" + pTags + ")) ";
             }
-            
+
             if (!pEsCatalogoNoSocial)
             {
                 query += " } UNION {";
@@ -6078,7 +5996,7 @@ namespace Es.Riam.Gnoss.AD.Facetado
                 {
                     query += " } ";
                 }
-                
+
             }
 
             query += " OPTIONAL{ ?s gnoss:hasPopularidad ?gnosshasPopularidad.} ";
@@ -8284,12 +8202,11 @@ from <http://pruebas.gnoss.net/4f08285b-19f9-4ff0-8c36-ccee29868a75>  WHERE {   
         /// Devuelve el trozo del RDF de un formulario semántico perteneciente al filtro para seleccionar unas entidades.
         /// </summary>
         /// <param name="pGrafo">Grafo de la consulta</param>
-        /// <param name="pEntsContenedora">Entidades contenedoras</param>
+        /// <param name="pEntsContenedoras">Entidades contenedoras</param>
         /// <param name="pPropiedades">Propiedades solicitadas</param>
         /// <param name="pEntsContenedoras">Indica si hay que traer el idoma de los triples</param>
         /// <returns>DataSet con las tripletas</returns>
-        public FacetadoDS ObtenerValoresPropiedadesEntidades(string pGrafo, List<string> pEntsContenedoras, List<string> pPropiedades, bool pTraerIdioma, bool pUsarAfinidad = false
-)
+        public FacetadoDS ObtenerValoresPropiedadesEntidades(string pGrafo, List<string> pEntsContenedoras, List<string> pPropiedades, bool pTraerIdioma, bool pUsarAfinidad = false)
         {
             FacetadoDS facetadoDS = new FacetadoDS();
             if (pEntsContenedoras.Count > 0)
@@ -8303,7 +8220,7 @@ from <http://pruebas.gnoss.net/4f08285b-19f9-4ff0-8c36-ccee29868a75>  WHERE {   
                     query += "lang(?o) as ?idioma ";
                 }
 
-                query += "from " + ObtenerUrlGrafo(pGrafo).ToLower() + " WHERE {";
+                query += $"from {ObtenerUrlGrafo(pGrafo).ToLower()} WHERE {{";
 
                 List<string> listaPropsJerarquia = new List<string>();
                 string listaPropsNoJeraquia = "";
@@ -8312,12 +8229,35 @@ from <http://pruebas.gnoss.net/4f08285b-19f9-4ff0-8c36-ccee29868a75>  WHERE {   
                 {
                     if (!propSol.Contains("|"))
                     {
-                        listaPropsNoJeraquia += propSol + ",";
+                        listaPropsNoJeraquia += $"{propSol},";
                     }
                     else
                     {
-                        listaPropsNoJeraquia += propSol.Substring(0, propSol.IndexOf("|")) + ",";
-                        listaPropsJerarquia.Add(propSol);
+                        List<string> listaPropiedadesPrincipales = new List<string>();
+                        if (propSol.Contains(','))
+                        {
+                            listaPropiedadesPrincipales = propSol.Split(',').ToList();
+                        }
+                        else
+                        {
+                            listaPropiedadesPrincipales.Add(propSol);
+                        }
+
+                        foreach (string propiedad in listaPropiedadesPrincipales)
+                        {
+                            string propiedadPrincipal = propiedad;
+                            if (propiedad.Contains("|"))
+                            {
+                                propiedadPrincipal = propiedad.Substring(0, propiedad.IndexOf("|"));
+                                listaPropsJerarquia.Add(propiedad);
+                            }
+                            if (!listaPropsNoJeraquia.Contains($"{propiedadPrincipal},"))
+                            {
+                                listaPropsNoJeraquia += $"{propiedadPrincipal},";
+                            }
+
+                            listaPropsJerarquia.AddRange(ObtenerRelacionesDirectas(propiedad));
+                        }
                     }
                 }
 
@@ -8328,15 +8268,15 @@ from <http://pruebas.gnoss.net/4f08285b-19f9-4ff0-8c36-ccee29868a75>  WHERE {   
                     string queryBucle = query;
                     if (!string.IsNullOrEmpty(listaPropsNoJeraquia))
                     {
-                        queryBucle += ObtenerWhereValoresPropiedadesEntidades(pEntsContenedoras.Skip(offset).Take(1000).ToList(), listaPropsNoJeraquia) + " UNION ";
+                        queryBucle += $"{ObtenerWhereValoresPropiedadesEntidades(pEntsContenedoras.Skip(offset).Take(1000).ToList(), listaPropsNoJeraquia)} UNION ";
                     }
 
                     foreach (string propJer in listaPropsJerarquia)
                     {
-                        queryBucle += ObtenerWhereValoresPropiedadesEntidades(pEntsContenedoras.Skip(offset).Take(1000).ToList(), propJer) + " UNION ";
+                        queryBucle += $"{ObtenerWhereValoresPropiedadesEntidades(pEntsContenedoras.Skip(offset).Take(1000).ToList(), propJer)} UNION ";
                     }
 
-                    queryBucle = queryBucle.Substring(0, queryBucle.Length - 6) + "  }";
+                    queryBucle = $"{queryBucle.Substring(0, queryBucle.Length - 6)}  }}";
 
                     LeerDeVirtuoso(queryBucle, "SelectPropEnt", facetadoAux, pGrafo, pUsarAfinidad);
                     facetadoDS.Merge(facetadoAux);
@@ -8345,6 +8285,17 @@ from <http://pruebas.gnoss.net/4f08285b-19f9-4ff0-8c36-ccee29868a75>  WHERE {   
                 }
             }
             return facetadoDS;
+        }
+
+        private List<string> ObtenerRelacionesDirectas(string pPropiedad)
+        {
+            List<string> listaEntidades = new List<string>();
+            string[] entidades = pPropiedad.Split('|');
+            for (int i = 0; i < entidades.Length - 1; i++)
+            {
+                listaEntidades.Add($"{entidades[i]}|{entidades[i + 1]}");
+            }
+            return listaEntidades;
         }
 
         /// <summary>
@@ -8368,7 +8319,7 @@ from <http://pruebas.gnoss.net/4f08285b-19f9-4ff0-8c36-ccee29868a75>  WHERE {   
                 orderBy += " ?idioma";
             }
 
-            query += "from " + ObtenerUrlGrafo(pGrafo).ToLower() + " WHERE {";
+            query += $"from {ObtenerUrlGrafo(pGrafo).ToLower()} WHERE {{";
 
             List<string> listaPropsJerarquia = new List<string>();
             string listaPropsNoJeraquia = "";
@@ -8377,11 +8328,11 @@ from <http://pruebas.gnoss.net/4f08285b-19f9-4ff0-8c36-ccee29868a75>  WHERE {   
             {
                 if (!propSol.Contains("|"))
                 {
-                    listaPropsNoJeraquia += propSol + ",";
+                    listaPropsNoJeraquia += $"{propSol},";
                 }
                 else
                 {
-                    listaPropsNoJeraquia += propSol.Substring(0, propSol.IndexOf("|")) + ",";
+                    listaPropsNoJeraquia += $"{propSol.Substring(0, propSol.IndexOf("|"))},";
                     listaPropsJerarquia.Add(propSol);
                 }
             }
@@ -8393,15 +8344,15 @@ from <http://pruebas.gnoss.net/4f08285b-19f9-4ff0-8c36-ccee29868a75>  WHERE {   
 
             if (!string.IsNullOrEmpty(listaPropsNoJeraquia))
             {
-                queryBucle += ObtenerWhereValoresPropiedadesEntidadesTodas(listaPropsNoJeraquia) + " UNION ";
+                queryBucle += $"{ObtenerWhereValoresPropiedadesEntidadesTodas(listaPropsNoJeraquia)} UNION ";
             }
 
             foreach (string propJer in listaPropsJerarquia)
             {
-                queryBucle += ObtenerWhereValoresPropiedadesEntidadesTodas(propJer) + " UNION ";
+                queryBucle += $"{ObtenerWhereValoresPropiedadesEntidadesTodas(propJer)} UNION ";
             }
 
-            queryBucle = queryBucle.Substring(0, queryBucle.Length - 6) + "  }";
+            queryBucle = $"{queryBucle.Substring(0, queryBucle.Length - 6)} }}";
 
             queryBucle += orderBy;
 
@@ -8411,7 +8362,7 @@ from <http://pruebas.gnoss.net/4f08285b-19f9-4ff0-8c36-ccee29868a75>  WHERE {   
             int iteracion = 1;
             while (filas == 10000)
             {
-                string queryBucleWhile = namespacesVirtuoso + " select * where {" + queryBucle + "} offset " + iteracion * 10000 + " limit 10000";
+                string queryBucleWhile = $"{namespacesVirtuoso} select * where {{{queryBucle}}} offset {iteracion * 10000} limit 10000";
                 LeerDeVirtuoso(queryBucleWhile, "SelectPropEnt", facetadoAux, pGrafo);
                 facetadoDS.Merge(facetadoAux);
                 filas = facetadoAux.Tables["SelectPropEnt"].Rows.Count;
@@ -8523,40 +8474,40 @@ from <http://pruebas.gnoss.net/4f08285b-19f9-4ff0-8c36-ccee29868a75>  WHERE {   
         /// <returns>parte del where para la consulta para obtener valores de propiedades de entidades</returns>
         private string ObtenerWhereValoresPropiedadesEntidades(List<string> pEntsContenedoras, string pPropiedades)
         {
-            string where = "";
-            string filtros = "";
+            string where = string.Empty;
+            string filtros = string.Empty;
             string[] propsPorNivel = pPropiedades.Split(new char[] { '|' }, StringSplitOptions.RemoveEmptyEntries);
             int nivelMaximo = (propsPorNivel.Length - 1);
 
             if (pEntsContenedoras.Count == 1)
             {
-                filtros += "?s" + nivelMaximo + " = <" + pEntsContenedoras[0] + "> AND ";
+                filtros += $"?s{nivelMaximo} = <{pEntsContenedoras[0]}> AND ";
             }
             else
             {
-                filtros += "?s" + nivelMaximo + " in (";
+                filtros += $"?s{nivelMaximo} in (";
 
                 foreach (string entidadID in pEntsContenedoras)
                 {
-                    filtros += "<" + entidadID + ">,";
+                    filtros += $"<{entidadID}>,";
                 }
 
-                filtros = filtros.Substring(0, filtros.Length - 1) + ") AND ";
+                filtros = $"{filtros.Substring(0, filtros.Length - 1)}) AND ";
             }
 
             int count = 0;
 
             for (int i = nivelMaximo; i >= 0; i--)
             {
-                where += "?s" + i + " ?p" + i;
+                where += $"?s{i} ?p{i}";
 
                 if (i != 0)
                 {
-                    where += " ?s" + (i - 1) + ". ";
+                    where += $" ?s{(i - 1)}. ";
                 }
                 else
                 {
-                    where += " ?o" + i + ". ";
+                    where += $" ?o{i}. ";
                 }
 
                 string[] propDeNivel = propsPorNivel[count].Split(new char[] { ',', ';' }, StringSplitOptions.RemoveEmptyEntries);
@@ -8565,19 +8516,19 @@ from <http://pruebas.gnoss.net/4f08285b-19f9-4ff0-8c36-ccee29868a75>  WHERE {   
 
                 foreach (string prop in propDeNivel)
                 {
-                    filtros += "?p" + i + "=<" + prop + "> OR ";
+                    filtros += $"?p{i}=<{prop}> OR ";
                 }
 
-                filtros = filtros.Substring(0, filtros.Length - 3) + ") AND ";
+                filtros = $"{filtros.Substring(0, filtros.Length - 3)}) AND ";
 
                 count++;
             }
 
             filtros = filtros.Substring(0, filtros.Length - 4);
 
-            where += "FILTER (" + filtros + ")";
+            where += $"FILTER ({filtros})";
 
-            return "{" + where.Replace("?s0", "?s").Replace("?p0", "?p").Replace("?o0", "?o") + "}";
+            return $"{{{where.Replace("?s0", "?s").Replace("?p0", "?p").Replace("?o0", "?o")}}}";
         }
 
         /// <summary>
@@ -10507,7 +10458,7 @@ from <http://pruebas.gnoss.net/4f08285b-19f9-4ff0-8c36-ccee29868a75>  WHERE {   
 
                 if (!string.IsNullOrEmpty(conexionActual))
                 {
-                    mLoggingService.GuardarLogError($"Actualización de virtuoso en el servidor { pConexionVirtuoso } con resultado { pResultado }.\r\nConsulta:\r\n{ pConsulta }", conexionActual);
+                    mLoggingService.GuardarLogError($"Actualización de virtuoso en el servidor {pConexionVirtuoso} con resultado {pResultado}.\r\nConsulta:\r\n{pConsulta}", conexionActual);
                 }
             }
             catch { }
@@ -10521,11 +10472,11 @@ from <http://pruebas.gnoss.net/4f08285b-19f9-4ff0-8c36-ccee29868a75>  WHERE {   
 
             if (string.IsNullOrEmpty(NOMBRE_FICHERO_LOGS))
             {
-                NOMBRE_FICHERO_LOGS = $"{ LoggingService.RUTA_DIRECTORIO_ERROR }\\error_facetadoAD_{ numeroFichero }_{ DateTime.Now.ToString("yyyy-MM-dd") }.log";
+                NOMBRE_FICHERO_LOGS = $"{LoggingService.RUTA_DIRECTORIO_ERROR}\\error_facetadoAD_{numeroFichero}_{DateTime.Now.ToString("yyyy-MM-dd")}.log";
             }
             else
             {
-                NOMBRE_FICHERO_LOGS = $"{ LoggingService.RUTA_DIRECTORIO_ERROR }\\error_facetadoAD_{ DateTime.Now.ToString("yyyy-MM-dd") }.log";
+                NOMBRE_FICHERO_LOGS = $"{LoggingService.RUTA_DIRECTORIO_ERROR}\\error_facetadoAD_{DateTime.Now.ToString("yyyy-MM-dd")}.log";
             }
 
             while (File.Exists(NOMBRE_FICHERO_LOGS) && !ficheroValido)
@@ -12706,7 +12657,7 @@ from <http://pruebas.gnoss.net/4f08285b-19f9-4ff0-8c36-ccee29868a75>  WHERE {   
                         pFiltrosUsadosFacetaActual[claveFaceta].InsertRange(0, filtrosUsadosFacetaActual[claveFaceta].Except(pFiltrosUsadosFacetaActual[claveFaceta]));
                     }
 
-                    condicionada += $" FILTER(?{ultimaFaceta} = {ObtenerValorParaFiltro($"?{ ultimaFaceta}", valor, (short)TipoPropiedadFaceta.Texto)}) ";
+                    condicionada += $" FILTER(?{ultimaFaceta} = {ObtenerValorParaFiltro($"?{ultimaFaceta}", valor, (short)TipoPropiedadFaceta.Texto)}) ";
                 }
             }
 
@@ -14084,7 +14035,7 @@ from <http://pruebas.gnoss.net/4f08285b-19f9-4ff0-8c36-ccee29868a75>  WHERE {   
             if (pBorrarAuxiliar)
             {
                 string sujetoExtraBorrar = $"<http://gnossAuxiliar/{pElementoaEliminarID.ToString().ToUpper()}>";
-                
+
                 query = $"{NamespacesVrituosoEscritura} DELETE {ObtenerFromGraph(pGrafoID)} {{ ?s ?p ?o. ?sujAux ?predAux ?s. }} {ObtenerFrom(pGrafoID)} WHERE {{?sujAux ?predAux ?s. FILTER(?sujAux = {sujetoExtraBorrar}) ?s ?p ?o. }}";
 
                 ActualizarVirtuoso(query, pGrafoID);
@@ -14174,20 +14125,20 @@ from <http://pruebas.gnoss.net/4f08285b-19f9-4ff0-8c36-ccee29868a75>  WHERE {   
         /// <param name="pGrafo">Identificador del proyecto</param>
         /// <param name="pSujeto">Lista de sujetos a borrar</param>
         public void BorrarListaTriplesDeSujeto(string pGrafo, List<string> pListaSujetos)
-        {           
+        {
             StringBuilder query = new StringBuilder(NamespacesVrituosoEscritura);
             query.AppendLine($"DELETE {ObtenerFromGraph(pGrafo)} {{ ?s ?p ?o }} ");
             query.AppendLine($"{ObtenerFrom(pGrafo)} WHERE {{?s ?p ?o. ");
             query.Append($"FILTER (?s IN ( ");
-            
-            foreach(string sujeto in pListaSujetos)
+
+            foreach (string sujeto in pListaSujetos)
             {
                 query.Append($"{AniadirMayorQueYMenorQueAIdentificador(sujeto)}, ");
             }
 
             string consulta = query.ToString();
             consulta = $"{consulta.Substring(0, consulta.LastIndexOf(','))}) ). }}";
-                        
+
             ActualizarVirtuoso(consulta, pGrafo);
         }
 
@@ -14232,7 +14183,7 @@ from <http://pruebas.gnoss.net/4f08285b-19f9-4ff0-8c36-ccee29868a75>  WHERE {   
         /// <param name="pSujetoConcept">Sujeto del concept a eliminar</param>
         /// <param name="pEliminarHijos">Si quieres eliminar o no los hijos</param>
 		public void EliminarConceptEHijos(string pGrafo, string pSujetoConcept, bool pEliminarHijos)
-		{
+        {
             string subconsultaHijos = string.Empty;
             if (pEliminarHijos)
             {
@@ -14241,18 +14192,18 @@ from <http://pruebas.gnoss.net/4f08285b-19f9-4ff0-8c36-ccee29868a75>  WHERE {   
 
             string grafo = ObtenerFromGraph(pGrafo);
 
-			string consulta = $"prefix skos:<http://www.w3.org/2008/05/skos#> delete from graph {grafo.ToLower().Replace("from", string.Empty)} {{ ?s ?p ?o }} {grafo} where {{ {{ ?s ?p ?o . filter(?s = <{pSujetoConcept}> or ?o = <{pSujetoConcept}>) }} {subconsultaHijos} }}" ;
+            string consulta = $"prefix skos:<http://www.w3.org/2008/05/skos#> delete from graph {grafo.ToLower().Replace("from", string.Empty)} {{ ?s ?p ?o }} {grafo} where {{ {{ ?s ?p ?o . filter(?s = <{pSujetoConcept}> or ?o = <{pSujetoConcept}>) }} {subconsultaHijos} }}";
 
             ActualizarVirtuoso(consulta, pGrafo);
-		}
+        }
 
-		/// <summary>
-		/// Borra un grupo de tripletas de un grafo.
-		/// </summary>
-		/// <param name="pGrafo">Identificador del grafo</param>
-		/// <param name="pTripletas">Tripletas a borrar</param>
-		/// <param name="pUsarColaActualizacion">TRUE si se va a mandar </param>
-		public void BorrarGrupoTripletas(string pGrafo, string pTripletas, bool pUsarColaActualizacion)
+        /// <summary>
+        /// Borra un grupo de tripletas de un grafo.
+        /// </summary>
+        /// <param name="pGrafo">Identificador del grafo</param>
+        /// <param name="pTripletas">Tripletas a borrar</param>
+        /// <param name="pUsarColaActualizacion">TRUE si se va a mandar </param>
+        public void BorrarGrupoTripletas(string pGrafo, string pTripletas, bool pUsarColaActualizacion)
         {
             if (string.IsNullOrEmpty(pTripletas))
             {
@@ -14427,7 +14378,7 @@ from <http://pruebas.gnoss.net/4f08285b-19f9-4ff0-8c36-ccee29868a75>  WHERE {   
             foreach (TripleWrapper triple in pTripletas)
             {
                 string objeto = triple.Object.Replace("\\", "\\\\");
-                
+
                 bool objetoEsString = objeto.StartsWith("\"") && objeto.EndsWith("\"");
 
                 //Si contiene comillas entre medio, se las remplazo por \"
@@ -14496,7 +14447,7 @@ from <http://pruebas.gnoss.net/4f08285b-19f9-4ff0-8c36-ccee29868a75>  WHERE {   
             bool objetoEsString = pObjeto.StartsWith("\"") && pObjeto.EndsWith("\"");
             bool objetoConTipo = pObjeto.StartsWith("\"") && pObjeto.EndsWith(">") && pObjeto.Contains("\"^^<");
 
-			if (pObjeto.Contains("\\"))
+            if (pObjeto.Contains("\\"))
             {
                 pObjeto = pObjeto.Replace("\\n", " ").Replace("\\r", "").Replace("\\t", " ");
             }
@@ -14515,8 +14466,8 @@ from <http://pruebas.gnoss.net/4f08285b-19f9-4ff0-8c36-ccee29868a75>  WHERE {   
                 {
                     pObjeto = $"\"{pObjeto.Substring(1, pObjeto.Length - 2)}\"";
                 }
-                if (!objetoConTipo) 
-                { 
+                if (!objetoConTipo)
+                {
                     pObjeto += $"@{pIdioma}";
                 }
             }
@@ -14634,7 +14585,7 @@ from <http://pruebas.gnoss.net/4f08285b-19f9-4ff0-8c36-ccee29868a75>  WHERE {   
                 }
                 else if (TIPOS_GEOMETRIA.Any(item => pObjeto.StartsWith($"{item}(")))
                 {
-                    pObjeto = $"\"{pObjetoSinMinuscula }\"^^<http://www.openlinksw.com/schemas/virtrdf#Geometry>";
+                    pObjeto = $"\"{pObjetoSinMinuscula}\"^^<http://www.openlinksw.com/schemas/virtrdf#Geometry>";
                 }
                 else if (!pFecha.Contains(pPredicado) && (string.IsNullOrEmpty(predicadoSinNamespace) || !pFecha.Contains(predicadoSinNamespace)))
                 {
@@ -14831,7 +14782,7 @@ from <http://pruebas.gnoss.net/4f08285b-19f9-4ff0-8c36-ccee29868a75>  WHERE {   
 
             bool esObjetoExterno = false;
             string objetoExterno = string.Empty;
-            
+
             if (pEntExt != null)
             {
                 // Traer las entidades externas para objetos que sean URL y puedan tener otras entidades en otros grafos.
@@ -14885,7 +14836,7 @@ from <http://pruebas.gnoss.net/4f08285b-19f9-4ff0-8c36-ccee29868a75>  WHERE {   
                 {
                     tripleta = GenerarTripleta(pSujeto, $"<{pPredicado}> ", pObjeto, pIdioma);
                 }
-                
+
             }
 
             //Quitamos los posibles saltos de linea
@@ -14984,7 +14935,7 @@ from <http://pruebas.gnoss.net/4f08285b-19f9-4ff0-8c36-ccee29868a75>  WHERE {   
                             }
                             else
                             {
-                                tripletasGeonames += GenerarTripleta($"<{sujeto}>", $"<{predicado}>", $"\"{objeto }\"");
+                                tripletasGeonames += GenerarTripleta($"<{sujeto}>", $"<{predicado}>", $"\"{objeto}\"");
                             }
                         }
                     }
@@ -15340,7 +15291,15 @@ from <http://pruebas.gnoss.net/4f08285b-19f9-4ff0-8c36-ccee29868a75>  WHERE {   
 
                         // Es probable que hayamos borrado todos los triples del recurso. Compruebo si es así para hacer un Insert o un Modify
                         facetadoDS.Clear();
-                        LeerDeVirtuoso(consulta + whereConPredicado, "prueba", facetadoDS, pProyectoID);
+                        if (UsarClienteTradicional)
+                        {
+                            LeerDeVirtuosoClienteTradicional(consulta + whereConPredicado, "prueba", facetadoDS, pProyectoID);
+                        }
+                        else
+                        {
+                            LeerDeVirtuoso(consulta + whereConPredicado, "prueba", facetadoDS, pProyectoID);
+                        }
+
 
                         if (facetadoDS.Tables["prueba"].Rows.Count == 0)
                         {
@@ -15795,7 +15754,7 @@ from <http://pruebas.gnoss.net/4f08285b-19f9-4ff0-8c36-ccee29868a75>  WHERE {   
         public DataSet ObtieneTripletasRecursoEspecificoEnGrafo(string pGrafo, string pSujeto)
         {
             FacetadoDS facetadoDS = new FacetadoDS();
-            string query = $"{NamespacesVirtuosoLectura} select ?s ?p ?o lang(?o) as ?idioma {ObtenerFrom(pGrafo.ToLower())} WHERE {{ ?s ?p ?o.  FILTER (?s = <{pSujeto}>) }} "; 
+            string query = $"{NamespacesVirtuosoLectura} select ?s ?p ?o lang(?o) as ?idioma {ObtenerFrom(pGrafo.ToLower())} WHERE {{ ?s ?p ?o.  FILTER (?s = <{pSujeto}>) }} ";
 
             LeerDeVirtuoso(query, "TripleEsp", facetadoDS, pGrafo);
             return facetadoDS;
@@ -15834,7 +15793,7 @@ from <http://pruebas.gnoss.net/4f08285b-19f9-4ff0-8c36-ccee29868a75>  WHERE {   
         }
 
         public void ActualizarPublicadoresRecursos(string pUrlIntragnoss, bool pUsarColaActualizacion, Guid pGrafoID, Guid pIdentidadID, string pNombrePublicador)
-        {   
+        {
             string nombrePublicadorComillas = pNombrePublicador.Replace("\\", "\\\\");
 
             nombrePublicadorComillas = nombrePublicadorComillas.ToLower().Replace("\"", "\\\"");
@@ -15850,7 +15809,7 @@ from <http://pruebas.gnoss.net/4f08285b-19f9-4ff0-8c36-ccee29868a75>  WHERE {   
         }
 
         public void ActualizarEditoresRecursos(string pUrlIntragnoss, bool pUsarColaActualizacion, Guid pGrafoID, Guid pIdentidadID, string pNombreEditor, List<Guid> pListaRecursos)
-        {   
+        {
             string nombreEditorComillas = pNombreEditor.Replace("\\", "\\\\");
             nombreEditorComillas = nombreEditorComillas.ToLower().Replace("\"", "\\\"");
 
@@ -15876,7 +15835,7 @@ from <http://pruebas.gnoss.net/4f08285b-19f9-4ff0-8c36-ccee29868a75>  WHERE {   
         }
 
         public void ActualizarGrupoEditorRecursos(bool pUsarColaActualizacion, Guid pGrafoID, string pNombreGrupoViejo, string pNombreGrupoNuevo)
-        {   
+        {
             string nombreGrupoNuevoComillas = pNombreGrupoNuevo.Replace("\\", "\\\\");
             string nombreGrupoViejoComillas = pNombreGrupoViejo.Replace("\\", "\\\\");
 
@@ -15978,7 +15937,7 @@ from <http://pruebas.gnoss.net/4f08285b-19f9-4ff0-8c36-ccee29868a75>  WHERE {   
 
             List<string> listaTriples = new List<string>();
 
-            foreach(DataRow fila in dataSet.Tables[0].Rows)
+            foreach (DataRow fila in dataSet.Tables[0].Rows)
             {
                 listaTriples.Add($"{pSujeto} {(string)fila[0]} {(string)fila[1]} . ");
             }
@@ -16192,7 +16151,7 @@ from <http://pruebas.gnoss.net/4f08285b-19f9-4ff0-8c36-ccee29868a75>  WHERE {   
                 if (!string.IsNullOrEmpty(Tag[i]))
                 {
                     Tag[i] = Tag[i].Substring(0, Tag[i].Length - 1);
-                }   
+                }
             }
 
             string query = $"{NamespacesVirtuosoLectura} select ?GUIDFreebase ?Tag ?Coincidencia ?RutaNYT ?RutaDbpedia ?RutaFreebase ?RutaGeonames ?Descripcion from <http://{baseDatos}.com> where {{ ?GUIDFreebase <http://www.w3.org/2004/02/skos/core#prefLabel> ?Tag. FILTER";
@@ -16232,7 +16191,7 @@ from <http://pruebas.gnoss.net/4f08285b-19f9-4ff0-8c36-ccee29868a75>  WHERE {   
                 contador++;
             }
 
-            filtro += ")";            
+            filtro += ")";
             query += $"{filtro} OPTIONAL {{?GUIDFreebase <http://data.nytimes.com/elements/topicPage> ?RutaNYT. }} OPTIONAL {{?GUIDFreebase owl:sameAs ?RutaDbpedia.  FILTER (?RutaDbpedia LIKE '%dbpedia%')}} OPTIONAL {{?GUIDFreebase owl:sameAs ?RutaFreebase.  FILTER (?RutaFreebase LIKE '%freebase%')}} OPTIONAL{{?GUIDFreebase owl:sameAs ?RutaGeonames.  FILTER (?RutaGeonames LIKE '%geonames%')}} OPTIONAL {{?GUIDFreebase skos:definition ?Descripcion. }}}}";
 
             if (hayTags)

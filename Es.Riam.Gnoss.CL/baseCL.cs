@@ -1504,10 +1504,15 @@ namespace Es.Riam.Gnoss.CL
             try
             {
                 AgregarEntradaTraza("Redis. Invalido cachés multiples");
-                foreach (string clave in pListaClavesCache)
+                //foreach (string clave in pListaClavesCache)
+                //{
+                //    var t = ClienteRedisEscritura.Del(clave.ToLower()).Result;
+                //}
+                if (pListaClavesCache.Any())
                 {
-                    var t = ClienteRedisEscritura.Del(clave.ToLower()).Result;
+                    var t = ClienteRedisEscritura.Del(pListaClavesCache.Select(x => x.ToLower()).ToArray()).Result;
                 }
+                
             }
             catch (Exception ex)
             {

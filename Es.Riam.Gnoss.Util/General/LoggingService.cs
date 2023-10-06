@@ -20,7 +20,11 @@ namespace Es.Riam.Gnoss.Util.General
         /// <summary>
         /// Tamaño máximo en bytes del fichero de log de errores
         /// </summary>
-        private static long TAMAÑO_MAXIMO_LOG = 102400000;
+        private static long TAMAÑO_MAXIMO_LOG = 1073741824;
+
+        private static long TAMAÑO_MAXIMO_LOG_DIARIO = 104857600;
+
+        private static string ULTIMO = "_last";
 
         //public static string RUTA_FICHERO_ERROR = "";
 
@@ -107,6 +111,8 @@ namespace Es.Riam.Gnoss.Util.General
                 {
                     pRutaFicheroError = Path.Combine(RUTA_DIRECTORIO_ERROR, $"log_{DateTime.Now.ToString("yyyy-MM-dd")}.log");
                 }
+                bool ficheroCienMegas = false;
+                string rutaFicheroErrorLast = Path.Combine(RUTA_DIRECTORIO_ERROR, $"log_{DateTime.Now.ToString("yyyy-MM-dd")}{ULTIMO}.log");
 
                 FileInfo fichero = new FileInfo(pRutaFicheroError);
                 if (fichero.Name.Equals(pRutaFicheroError))
@@ -115,18 +121,45 @@ namespace Es.Riam.Gnoss.Util.General
                     fichero = new FileInfo(pRutaFicheroError);
                 }
 
+                FileInfo ficheroGiga = new FileInfo(rutaFicheroErrorLast);
+                if (ficheroGiga.Name.Equals(rutaFicheroErrorLast))
+                {
+                    pRutaFicheroError = Path.Combine(RUTA_DIRECTORIO_ERROR, rutaFicheroErrorLast.TrimStart('/').TrimStart('\\'));
+                    ficheroGiga = new FileInfo(rutaFicheroErrorLast);
+                }
+                //Comprobar si existe el fichero de 1 Gb para solo almacenar de 100 Mb
+                if (File.Exists(rutaFicheroErrorLast))
+                {
+                    if (ficheroGiga.Length > TAMAÑO_MAXIMO_LOG)
+                    {
+                        ficheroCienMegas = true;
+                    }
+                }
+
+
                 if (!Directory.Exists(fichero.DirectoryName))
                 {
                     Directory.CreateDirectory(fichero.DirectoryName);
                 }
 
-                //Si el fichero supera el tamaño máximo lo elimino
+                //Si el fichero supera el tamaño máximo lo dejo como last y cambio el log
                 if (File.Exists(pRutaFicheroError))
                 {
-                    if (fichero.Length > TAMAÑO_MAXIMO_LOG)
+                    if (ficheroCienMegas)
                     {
-                        fichero.Delete();
+                        if (fichero.Length > TAMAÑO_MAXIMO_LOG_DIARIO)
+                        {
+                            fichero.Delete();
+                        }
                     }
+                    else
+                    {
+                        if (fichero.Length > TAMAÑO_MAXIMO_LOG)
+                        {
+                            fichero.CopyTo(rutaFicheroErrorLast);
+                        }
+                    }
+                    
                 }
 
                 //Añado el error al fichero
@@ -314,6 +347,9 @@ namespace Es.Riam.Gnoss.Util.General
                     pRutaFicheroError = Path.Combine(RUTA_DIRECTORIO_ERROR, $"error_{DateTime.Now.ToString("yyyy-MM-dd")}.log");
                 }
 
+                bool ficheroCienMegas = false;
+                string rutaFicheroErrorLast = Path.Combine(RUTA_DIRECTORIO_ERROR, $"error_{DateTime.Now.ToString("yyyy-MM-dd")}{ULTIMO}.log");
+
                 FileInfo fichero = new FileInfo(pRutaFicheroError);
                 if (fichero.Name.Equals(pRutaFicheroError))
                 {
@@ -321,15 +357,44 @@ namespace Es.Riam.Gnoss.Util.General
                     fichero = new FileInfo(pRutaFicheroError);
                 }
 
+                FileInfo ficheroGiga = new FileInfo(rutaFicheroErrorLast);
+                if (ficheroGiga.Name.Equals(rutaFicheroErrorLast))
+                {
+                    pRutaFicheroError = Path.Combine(RUTA_DIRECTORIO_ERROR, rutaFicheroErrorLast.TrimStart('/').TrimStart('\\'));
+                    ficheroGiga = new FileInfo(rutaFicheroErrorLast);
+                }
+                //Comprobar si existe el fichero de 1 Gb para solo almacenar de 100 Mb
+                if (File.Exists(rutaFicheroErrorLast))
+                {
+                    if (ficheroGiga.Length > TAMAÑO_MAXIMO_LOG)
+                    {
+                        ficheroCienMegas = true;
+                    }
+                }
+
                 if (!Directory.Exists(fichero.DirectoryName))
                 {
                     Directory.CreateDirectory(fichero.DirectoryName);
                 }
 
-                //Si el fichero supera el tamaño máximo lo elimino
-                if (File.Exists(pRutaFicheroError) && fichero.Length > TAMAÑO_MAXIMO_LOG)
+                //Si el fichero supera el tamaño máximo lo dejo como last y cambio el log
+                if (File.Exists(pRutaFicheroError))
                 {
-                    fichero.Delete();
+                    if (ficheroCienMegas)
+                    {
+                        if (fichero.Length > TAMAÑO_MAXIMO_LOG_DIARIO)
+                        {
+                            fichero.Delete();
+                        }
+                    }
+                    else
+                    {
+                        if (fichero.Length > TAMAÑO_MAXIMO_LOG)
+                        {
+                            fichero.CopyTo(rutaFicheroErrorLast);
+                        }
+                    }
+
                 }
 
                 //Añado el error al fichero

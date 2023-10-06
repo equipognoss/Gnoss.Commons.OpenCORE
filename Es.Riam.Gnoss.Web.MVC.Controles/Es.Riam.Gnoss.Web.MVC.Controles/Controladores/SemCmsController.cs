@@ -5392,7 +5392,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
                 pintar = false;
                 IdentidadCN identCN = new IdentidadCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
                 //Buscar si la identidad participa en alguno de los grupos
-                if (identCN.ParticipaIdentidadEnGrupo(pIdentidadID, pPropiedad.EspecifPropiedad.PrivadoParaGrupoEditores))
+                if (identCN.ParticipaIdentidadEnGrupo(pIdentidadID, pPropiedad.EspecifPropiedad.PrivadoParaGrupoEditores) || identCN.ParticipaIdentidadMyGnossParticipaEnGrupo(pIdentidadID, pPropiedad.EspecifPropiedad.PrivadoParaGrupoEditores))
                 {
                     pintar = true;
                 }
@@ -5669,7 +5669,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
 
                     IdentidadCN identCN = new IdentidadCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
                     //Buscar si la identidad participa en alguno de los grupos
-                    bool pertenece = identCN.ParticipaIdentidadEnGrupo(pIdentidadID, gruposIDS);
+                    bool pertenece = identCN.ParticipaPerfilEnGrupo(UsuarioActual.PerfilID, gruposIDS);
                     identCN.Dispose();
 
                     return pertenece;

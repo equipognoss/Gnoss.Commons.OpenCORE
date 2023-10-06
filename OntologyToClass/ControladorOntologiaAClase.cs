@@ -501,7 +501,7 @@ $@"
             Clase.AppendLine($"{UtilCadenasOntology.Tabs(2)}{{");
             Clase.AppendLine($"{UtilCadenasOntology.Tabs(3)}if(pProperty != null && pProperty.PropertyValues.Count > 0 && !string.IsNullOrEmpty(pProperty.PropertyValues[0].Value))");
             Clase.AppendLine($"{UtilCadenasOntology.Tabs(3)}{{");
-            Clase.AppendLine($"{UtilCadenasOntology.Tabs(4)}return float.Parse(pProperty.PropertyValues[0].Value.Replace('.',','));");
+            Clase.AppendLine($"{UtilCadenasOntology.Tabs(4)}return float.Parse(pProperty.PropertyValues[0].Value, new CultureInfo(\"en-US\"));");
             Clase.AppendLine($"{UtilCadenasOntology.Tabs(3)}}}");
             Clase.AppendLine($"{UtilCadenasOntology.Tabs(3)}return 0;");
             Clase.AppendLine($"{UtilCadenasOntology.Tabs(2)}}}");
@@ -513,7 +513,7 @@ $@"
 			Clase.AppendLine($"{UtilCadenasOntology.Tabs(2)}{{");
 			Clase.AppendLine($"{UtilCadenasOntology.Tabs(3)}if(!string.IsNullOrEmpty(pProperty))");
 			Clase.AppendLine($"{UtilCadenasOntology.Tabs(3)}{{");
-			Clase.AppendLine($"{UtilCadenasOntology.Tabs(4)}return float.Parse(pProperty.Replace('.',','));");
+			Clase.AppendLine($"{UtilCadenasOntology.Tabs(4)}return float.Parse(pProperty, new CultureInfo(\"en-US\"));");
 			Clase.AppendLine($"{UtilCadenasOntology.Tabs(3)}}}");
 			Clase.AppendLine($"{UtilCadenasOntology.Tabs(3)}return 0;");
 			Clase.AppendLine($"{UtilCadenasOntology.Tabs(2)}}}");

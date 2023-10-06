@@ -12,6 +12,7 @@ using Es.Riam.Gnoss.Web.MVC.Models;
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Linq;
 
 namespace Es.Riam.Gnoss.Logica.Documentacion
 {
@@ -225,7 +226,6 @@ namespace Es.Riam.Gnoss.Logica.Documentacion
         {
             return this.DocumentacionAD.ObtenerDocumentacion(pOrganizacionID);
         }
-
 
         /// <summary>
         /// Obtiene los parámetros web del ID del documento pasado como parámetro.
@@ -1524,6 +1524,16 @@ namespace Es.Riam.Gnoss.Logica.Documentacion
         public Dictionary<Guid, short> ObtenerDocumentosYTipodeProyecto(Guid pProyectoID)
         {
             return DocumentacionAD.ObtenerDocumentosYTipodeProyecto(pProyectoID);
+        }
+
+        public List<Guid> ObtenerRecursosSemanticosPublicadosDesdeFecha(DateTime fecha, Guid? pProyectoID = null)
+        {
+            return DocumentacionAD.ObtenerRecursosSemanticosPublicadosDesdeFecha(fecha, pProyectoID);
+        }
+
+        public List<Guid> ObtenerDocumentosSemIDVinculadosAProyecto(Guid pProyectoID)
+        {
+            return DocumentacionAD.ObtenerDocumentosSemIDVinculadosAProyecto(pProyectoID);
         }
 
         /// <summary>

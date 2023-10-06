@@ -494,18 +494,33 @@ namespace Es.Riam.Metagnoss.ExportarImportar
         /// Obtiene el nombre o nombre de las propiedades con jerarquia, si la tiene.
         /// </summary>
         /// <param name="pEstiloProp">Estilo de la propiedad o conjunto de propiedades</param>
+        /// <param name="pNombrePadres">Cadena de propiedades padre para no perder los niveles si hay varias auxiliares en diferentes niveles</param>
         /// <returns>Nombre o nombre de las propiedades con jerarquia, si la tiene</returns>
-        private static string ObtenerNombreConJerarquiaProp(EstiloPlantillaEspecifProp pEstiloProp)
+        private static string ObtenerNombreConJerarquiaProp(EstiloPlantillaEspecifProp pEstiloProp, string pNombrePadres = "")
         {
             string nombre = pEstiloProp.NombreRealPropiedad;
-
+            string nombreActual = pEstiloProp.NombreRealPropiedad;
+            if (!string.IsNullOrEmpty(pNombrePadres))
+            {
+                nombreActual = $"{pNombrePadres}|{nombreActual}";
+            }
+            
             if (pEstiloProp.PropiedadesAuxiliares != null)
             {
-                nombre += "|";
-
+                bool primerElemento = true;
                 foreach (EstiloPlantillaEspecifProp estiloHijo in pEstiloProp.PropiedadesAuxiliares)
                 {
-                    nombre += ObtenerNombreConJerarquiaProp(estiloHijo) + ",";
+                    string nombreHijo = $"{ObtenerNombreConJerarquiaProp(estiloHijo, nombreActual)},";
+
+                    if (!primerElemento)
+                    {
+                        nombre += $"{nombreActual}|{nombreHijo}";
+                    }
+                    else
+                    {
+                        nombre += $"|{nombreHijo}";
+                    }
+                    primerElemento = false;
                 }
 
                 nombre = nombre.Substring(0, nombre.Length - 1);

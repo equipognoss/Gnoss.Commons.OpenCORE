@@ -1661,6 +1661,16 @@ namespace Es.Riam.Gnoss.Logica.ServiciosGenerales
         }
 
         /// <summary>
+        /// Obtiene una lista con los proyectos en los que participa un perfil(NO incluye myGnoss)
+        /// </summary>
+        /// <param name="pPerfilID">Identificador del perfil</param>
+        /// <returns>Lista de los proyectos en los que participa un perfil</returns>
+        public DataWrapperProyecto ObtenerProyectosParticipaPerfilLimite10(Guid pPerfilID)
+        {
+            return ProyectoAD.ObtenerProyectosParticipaPerfilLimite10(pPerfilID);
+        }
+
+        /// <summary>
         /// Obtiene una lista con los proyectos que no son de registro obligatorio.
         /// </summary>
         /// <returns>Lista de los proyectos que no son de registro obligatorio</returns>

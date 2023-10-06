@@ -501,13 +501,6 @@
     <NombreReal xml:lang="es">Definiciones</NombreReal>
     <rdfs:range rdf:resource="#Definicion"/>
   </owl:ObjectProperty>
-  <owl:ObjectProperty rdf:ID="ElementoIDEF0Referenciado">
-    <Visible rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
-    >false</Visible>
-    <NombreReal xml:lang="es">Procesos referenciados</NombreReal>
-    <rdfs:range rdf:resource="#ElementoIDEF0"/>
-    <rdfs:domain rdf:resource="#ElementoIDEF0"/>
-  </owl:ObjectProperty>
   <owl:ObjectProperty rdf:ID="Mecanismos">
     <Visible rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
     >true</Visible>
@@ -607,42 +600,6 @@
     <NombreReal xml:lang="es">Organización vinculada</NombreReal>
     <rdfs:range rdf:resource="#PersonaVinculoOrganizacion"/>
   </owl:ObjectProperty>
-  <owl:ObjectProperty rdf:ID="ElementoIDEF0Vinculado">
-    <rdfs:domain rdf:resource="#ElementoIDEF0"/>
-    <rdfs:range rdf:resource="#ElementoIDEF0"/>
-    <Visible rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
-    >false</Visible>
-    <NombreReal xml:lang="es">Elemento IDEF0 vinculado o referenciado</NombreReal>
-  </owl:ObjectProperty>
-  <owl:ObjectProperty rdf:ID="GrupoProveedor">
-    <owl:inverseOf>
-      <owl:ObjectProperty rdf:ID="GrupoCliente"/>
-    </owl:inverseOf>
-    <rdfs:range rdf:resource="#Grupo"/>
-    <Visible rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
-    >true</Visible>
-    <rdfs:domain rdf:resource="#Grupo"/>
-    <NombreReal xml:lang="es">Grupo proveedor</NombreReal>
-    <owl:equivalentProperty>
-      <owl:ObjectProperty rdf:ID="Entradas"/>
-    </owl:equivalentProperty>
-  </owl:ObjectProperty>
-  <owl:ObjectProperty rdf:ID="ElementoEstructuraSecundario">
-    <rdfs:range rdf:resource="#ElementoEstructura"/>
-    <Visible rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
-    >true</Visible>
-    <NombreReal rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
-    >Elementos de estructura inferiores</NombreReal>
-    <rdfs:domain rdf:resource="#ElementoEstructura"/>
-  </owl:ObjectProperty>
-  <owl:ObjectProperty rdf:about="#GrupoCliente">
-    <Visible rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
-    >true</Visible>
-    <rdfs:domain rdf:resource="#Grupo"/>
-    <NombreReal xml:lang="es">Grupo cliente</NombreReal>
-    <owl:inverseOf rdf:resource="#GrupoProveedor"/>
-    <rdfs:range rdf:resource="#Grupo"/>
-  </owl:ObjectProperty>
   <owl:ObjectProperty rdf:ID="Eje">
     <rdfs:range rdf:resource="#EjeMeta"/>
     <rdfs:domain>
@@ -662,7 +619,6 @@
     <rdfs:domain>
       <owl:Class>
         <owl:unionOf rdf:parseType="Collection">
-          <owl:Class rdf:about="#DimensionCompetencia"/>
           <owl:Class rdf:about="#Competencia"/>
           <owl:Class rdf:about="#TipoDimensionCompetencia"/>
         </owl:unionOf>
@@ -688,7 +644,6 @@
       <owl:Class>
         <owl:unionOf rdf:parseType="Collection">
           <owl:Class rdf:about="#ModoLibro"/>
-          <owl:Class rdf:about="#ElementoNivelModo"/>
         </owl:unionOf>
       </owl:Class>
     </rdfs:domain>
@@ -714,7 +669,6 @@
     <rdfs:domain>
       <owl:Class>
         <owl:unionOf rdf:parseType="Collection">
-          <owl:Class rdf:about="#CategoriaTesauro"/>
           <owl:Class rdf:about="#Tesauro"/>
           <owl:Class rdf:about="#DocumentoEntidad"/>
           <owl:Class rdf:about="#Comunidad"/>
@@ -764,36 +718,6 @@
     <rdfs:domain rdf:resource="#Organizacion"/>
     <rdfs:range rdf:resource="#Persona"/>
   </owl:ObjectProperty>
-  <owl:ObjectProperty rdf:ID="Factores">
-    <Visible rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
-    >true</Visible>
-    <rdfs:range rdf:resource="#Factor"/>
-    <NombreReal xml:lang="es">Factores</NombreReal>
-    <rdfs:domain>
-      <owl:Class>
-        <owl:unionOf rdf:parseType="Collection">
-          <owl:Class rdf:about="#Dafo"/>
-          <owl:Class rdf:about="#Factor"/>
-        </owl:unionOf>
-      </owl:Class>
-    </rdfs:domain>
-  </owl:ObjectProperty>
-  <owl:ObjectProperty rdf:ID="CompetenciasInferiores">
-    <rdfs:range rdf:resource="#Competencia"/>
-    <Visible rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
-    >true</Visible>
-    <NombreReal xml:lang="es">Competencias inferiores</NombreReal>
-    <rdfs:domain>
-      <owl:Class>
-        <owl:unionOf rdf:parseType="Collection">
-          <owl:Class rdf:about="#Libro"/>
-          <owl:Class rdf:about="#MiniLibro"/>
-          <owl:Class rdf:about="#Competencia"/>
-          <owl:Class rdf:about="#ElementoNivelModo"/>
-        </owl:unionOf>
-      </owl:Class>
-    </rdfs:domain>
-  </owl:ObjectProperty>
   <owl:ObjectProperty rdf:ID="TipoDimension">
     <Visible rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
     >true</Visible>
@@ -837,13 +761,6 @@
     <rdfs:range rdf:resource="#MiniLibro"/>
     <rdfs:domain rdf:resource="#Grupo"/>
     <NombreReal xml:lang="es">Minilibro</NombreReal>
-    <Visible rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
-    >true</Visible>
-  </owl:ObjectProperty>
-  <owl:ObjectProperty rdf:ID="GrupoInferior">
-    <rdfs:domain rdf:resource="#Grupo"/>
-    <NombreReal xml:lang="es">Grupo Inferior</NombreReal>
-    <rdfs:range rdf:resource="#Grupo"/>
     <Visible rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
     >true</Visible>
   </owl:ObjectProperty>
@@ -1435,7 +1352,7 @@
   </owl:FunctionalProperty>
   <owl:FunctionalProperty rdf:ID="Padre">
     <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#ObjectProperty"/>
-    <rdfs:domain rdf:resource="#EntidadExportable"/>
+    <rdfs:domain rdf:resource="#Padre"/>
     <Visible rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
     >false</Visible>
     <rdfs:range rdf:resource="#EntidadExportable"/>

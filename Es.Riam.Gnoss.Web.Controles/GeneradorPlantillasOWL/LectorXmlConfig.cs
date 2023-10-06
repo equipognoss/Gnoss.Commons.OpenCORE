@@ -15,6 +15,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
+using System.Threading;
 using System.Xml;
 
 namespace Es.Riam.Gnoss.Web.Controles.GeneradorPlantillasOWL
@@ -37,6 +38,8 @@ namespace Es.Riam.Gnoss.Web.Controles.GeneradorPlantillasOWL
         /// Estilos ya cargados.
         /// </summary>
         public volatile static Dictionary<string, KeyValuePair<Guid, Dictionary<string, List<EstiloPlantilla>>>> EstilosCargados = new Dictionary<string, KeyValuePair<Guid, Dictionary<string, List<EstiloPlantilla>>>>();
+
+        private object mBloqueoEstilosCargados = new object();
 
         #endregion
 
@@ -200,18 +203,21 @@ namespace Es.Riam.Gnoss.Web.Controles.GeneradorPlantillasOWL
 
             docCL.Dispose();
 
-            if (!EstilosCargados.ContainsKey(mProyectoID + "_" + claveEstilos) || EstilosCargados[mProyectoID + "_" + claveEstilos].Key != xmlID)
+            if (!EstilosCargados.ContainsKey(mProyectoID + "_" + claveEstilos) || EstilosCargados[mProyectoID + "_" + claveEstilos].Key != xmlID || EstilosCargados[mProyectoID + "_" + claveEstilos].Value == null)
             {
                 if (EstilosCargados.ContainsKey(mProyectoID + "_" + claveEstilos))
                 {
                     EstilosCargados.Remove(mProyectoID + "_" + claveEstilos);
                 }
 
-                Dictionary<string, List<EstiloPlantilla>> estilos = ObtenerConfiguracionXml("", mProyectoID);
+                Dictionary<string, List<EstiloPlantilla>> estilos = ObtenerConfiguracionXml("", mProyectoID, 2);
 
                 try
                 {
-                    EstilosCargados.Add(mProyectoID + "_" + claveEstilos, new KeyValuePair<Guid, Dictionary<string, List<EstiloPlantilla>>>(xmlID.Value, estilos));
+                    lock (mBloqueoEstilosCargados)
+                    {
+                        EstilosCargados.TryAdd(mProyectoID + "_" + claveEstilos, new KeyValuePair<Guid, Dictionary<string, List<EstiloPlantilla>>>(xmlID.Value, estilos));
+                    }
                 }
                 catch (Exception ex)
                 {
@@ -228,7 +234,7 @@ namespace Es.Riam.Gnoss.Web.Controles.GeneradorPlantillasOWL
         /// <param name="pTextoXML">Contenido Xml de la plantilla</param>
         /// <param name="pProyectoID">ID del proyecto actual</param>
         /// <returns>Diccionario con la configuración</returns>
-        public Dictionary<string, List<EstiloPlantilla>> ObtenerConfiguracionXml(string pTextoXML, Guid pProyectoID)
+        public Dictionary<string, List<EstiloPlantilla>> ObtenerConfiguracionXml(string pTextoXML, Guid pProyectoID, int pNumIntentos = 0)
         {
             byte[] byteArray = null;
 
@@ -256,7 +262,17 @@ namespace Es.Riam.Gnoss.Web.Controles.GeneradorPlantillasOWL
 
             if (byteArray == null)
             {
-                return null;
+                mLoggingService.GuardarLogError($"No se ha conseguido encontrar el XML de la ontologia con ID {mOntologiaID}, se vuelve a intentar {pNumIntentos}");
+                if (pNumIntentos > 0)
+                {
+                    Thread.Sleep(500);
+                    return ObtenerConfiguracionXml("", pProyectoID, pNumIntentos - 1);
+                }
+                else
+                {
+                    return null;
+                }
+                
             }
 
             return ObtenerConfiguracionXml(byteArray, pProyectoID);

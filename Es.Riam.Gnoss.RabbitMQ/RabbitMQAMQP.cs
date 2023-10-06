@@ -70,6 +70,8 @@ namespace Es.Riam.Gnoss.RabbitMQ
                                      exclusive: false,
                                      autoDelete: false,
                                      arguments: null);
+                //Pruebas Quorum
+                                     //arguments: new Dictionary<string, object>() { { "x-queue-type", "quorum" } });
 
                 if (!string.IsNullOrEmpty(mGestorRabbit.ExchangeName))
                 {
@@ -107,10 +109,8 @@ namespace Es.Riam.Gnoss.RabbitMQ
                         }
                         else
                         {
-                            //Si hay fallo ya se habra guardado el fallo en el log.
-                            //Quitar de la cola
-                            channel.BasicAck(basicDeliveryEventArgs.DeliveryTag, false);
-                            //channel.BasicNack(basicDeliveryEventArgs.DeliveryTag, false, true);
+                            //channel.BasicAck(basicDeliveryEventArgs.DeliveryTag, false);
+                            channel.BasicNack(basicDeliveryEventArgs.DeliveryTag, false, true);
                         }
                     }
                     catch (Exception ex)
@@ -176,6 +176,27 @@ namespace Es.Riam.Gnoss.RabbitMQ
                                      basicProperties: properties,
                                      body: messageBytes);
             }
+        }
+
+        /// <summary>
+        /// Comprueba si existe o no la cola indicada por parámetro en RabbitMQ
+        /// </summary>
+        /// <param name="pNombreCola">Nombre de la cola a comprobar si existe</param>
+        /// <returns>true o false si existe o no la cola respectivamente</returns>
+        public bool ExisteColaRabbit(string pNombreCola)
+        {
+            try
+            {
+                using (var channel = Conexion.CreateModel())
+                {
+                    channel.QueueDeclarePassive(pNombreCola);
+                }
+                return true;
+            }
+            catch 
+            {
+                return false;            
+            }            
         }
 
         /// <summary>

@@ -36,6 +36,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
     {
         private DataWrapperDocumentacion mDataWrapperDocumentacion = null;
         private DataWrapperProyecto mDataWrapperProyecto = null;
+        private Dictionary<string, string> mParametroProyecto;
 
         private Elementos.ServiciosGenerales.Proyecto ProyectoSeleccionado = null;
 
@@ -596,10 +597,37 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
                 {
                     DocumentacionCN documentacionCN = new DocumentacionCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
                     mDataWrapperDocumentacion = new DataWrapperDocumentacion();
+
+                    Guid proyectoIDPatronOntologias = Guid.Empty;
+                    if (ParametroProyecto.ContainsKey("ProyectoIDPatronOntologias"))
+                    {
+                        Guid.TryParse(ParametroProyecto["ProyectoIDPatronOntologias"], out proyectoIDPatronOntologias);
+                        documentacionCN.ObtenerOntologiasProyecto(proyectoIDPatronOntologias, mDataWrapperDocumentacion, false, true, true);
+                    }
+
                     documentacionCN.ObtenerOntologiasProyecto(ProyectoSeleccionado.Clave, mDataWrapperDocumentacion, true, false, false);
                     documentacionCN.Dispose();
                 }
                 return mDataWrapperDocumentacion;
+            }
+        }
+
+
+        /// <summary>
+        /// Parámetros de un proyecto.
+        /// </summary>
+        public Dictionary<string, string> ParametroProyecto
+        {
+            get
+            {
+                if (mParametroProyecto == null)
+                {
+                    ProyectoCL proyectoCL = new ProyectoCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mVirtuosoAD, mServicesUtilVirtuosoAndReplication);
+                    mParametroProyecto = proyectoCL.ObtenerParametrosProyecto(ProyectoSeleccionado.Clave);
+                    proyectoCL.Dispose();
+                }
+
+                return mParametroProyecto;
             }
         }
 

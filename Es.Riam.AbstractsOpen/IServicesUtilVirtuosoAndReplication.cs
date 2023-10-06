@@ -234,9 +234,9 @@ namespace Es.Riam.AbstractsOpen
 
                     Thread.Sleep(1000);
 
-                    if (ControlarErrorVirtuosoConection(cadenaConexion, conexionAfinidadVirtuoso))
+                    if (ControlarErrorVirtuosoConection(cadenaConexion, conexionAfinidadVirtuoso) && pNumReintentos < 10)
                     {
-                        resultado = ActualizarVirtuoso(pQuery, pGrafo, pReplicar, pPrioridad, pConexion, pLanzarExcepcionSiFallaReplicacion, pCadenaConexion);
+                        resultado = ActualizarVirtuoso(pQuery, pGrafo, pReplicar, pPrioridad, pConexion, pLanzarExcepcionSiFallaReplicacion, pCadenaConexion, pNumReintentos + 1);
                         return resultado;
                     }
                     else
@@ -365,7 +365,7 @@ namespace Es.Riam.AbstractsOpen
         }
 
         public abstract bool ControlarErrorVirtuosoConection(string cadenaConexion, string conexionAfinidadVirtuoso);
-        protected int ActualizarVirtuoso_WebClient(string pUrl, string pQuery, NameValueCollection pParametros, string pConexionAfinidad)
+        public int ActualizarVirtuoso_WebClient(string pUrl, string pQuery, NameValueCollection pParametros)
         {
             mLoggingService.AgregarEntrada("EscrituraWebClient: Inicio");
             RiamWebClient webClient = new RiamWebClient(TimeOutVirtuoso);
@@ -386,25 +386,10 @@ namespace Es.Riam.AbstractsOpen
                 string respuesta = Encoding.UTF8.GetString(responseArray);
 
                 resultado = ObtenerResultadoRespuesta(respuesta);
-
-                //Al actualizar datos en virtuoso, guardamos los datos del servidor en el que hemos guardado para acceder a él.
-                string[] cabeceraServidor = webClient.ResponseHeaders.GetValues("X-App-Server");
-                if (cabeceraServidor == null || cabeceraServidor.Length == 0)
-                {
-                    cabeceraServidor = webClient.ResponseHeaders.GetValues("Server");
-                }
-
                 mLoggingService.AgregarEntrada("EscrituraWebClient: Respuesta obtenida de virtuoso");
             }
             catch (System.Net.WebException webException)
             {
-                //int numIntentosFallidos = 0;
-                //if (UtilPeticion.ObtenerObjetoDePeticion("intentosFallidosVirtuoso") != null)
-                //{
-                //    numIntentosFallidos = (int)UtilPeticion.ObtenerObjetoDePeticion("intentosFallidosVirtuoso");
-                //}
-                //UtilPeticion.AgregarObjetoAPeticionActual("intentosFallidosVirtuoso", numIntentosFallidos + 1);
-
                 milisegundos = (int)DateTime.Now.Subtract(horaInicio).TotalMilliseconds;
                 string respuesta = "";
 
@@ -413,7 +398,7 @@ namespace Es.Riam.AbstractsOpen
                     //Intento recuperar información del error
                     StreamReader dataStream = new StreamReader(webException.Response.GetResponseStream());
                     respuesta = dataStream.ReadToEnd();
-                    webException.Response.Close();
+                    
                 }
                 catch { }
 
@@ -425,16 +410,19 @@ namespace Es.Riam.AbstractsOpen
 
                 if (webException.Message.Contains("(503)") || webException.Message.Contains("(404)") || (webException.Response != null && ((!((HttpWebResponse)webException.Response).StatusCode.Equals(HttpStatusCode.BadRequest) && !((HttpWebResponse)webException.Response).StatusCode.Equals(HttpStatusCode.InternalServerError) && webException.Status.Equals(WebExceptionStatus.ProtocolError)) || ((HttpWebResponse)webException.Response).StatusCode.Equals(HttpStatusCode.NotFound))))
                 {
+                    webException.Response.Close();
                     // Es un error de checkpoint
                     throw new ExcepcionCheckpointVirtuoso();
                 }
                 else if (webException.Status.Equals(WebExceptionStatus.ConnectFailure))
                 {
+                    webException.Response.Close();
                     // Es un error de que virtuoso se ha caído
                     throw new ExcepcionConectionFailVirtuoso();
                 }
                 else
                 {
+                    webException.Response.Close();
                     throw new ExcepcionDeBaseDeDatos(pQuery, webException);
                 }
             }
@@ -450,7 +438,7 @@ namespace Es.Riam.AbstractsOpen
 
                 if (milisegundos > 700)
                 {
-                    //Error.GuardarLogConsultaCostosa(string.Format("Consulta: {0} \r\nTiempo transcurrido:\r\n{1} \r\nUrl:\r\n{2} \r\nError:\r\n{3}", pQuery, milisegundos, pUrl, error));
+                    mLoggingService.GuardarLogConsultaCostosa(string.Format("Consulta: {0} \r\nTiempo transcurrido:\r\n{1} \r\nUrl:\r\n{2} \r\nError:\r\n{3}", pQuery, milisegundos, pUrl, error));
                 }
             }
 
@@ -1225,72 +1213,6 @@ namespace Es.Riam.AbstractsOpen
 
             return resultado;
         }
-        public int ActualizarVirtuoso_WebClient(string pUrl, string pQuery, NameValueCollection pParametros)
-        {
-            RiamWebClient webClient = new RiamWebClient(TimeOutVirtuoso);
-            webClient.Encoding = Encoding.UTF8;
-            //no se necesita la cabecera
-            //webClient.Headers.Add(HttpRequestHeader.ContentType, "application/sparql-query"); //"application/x-www-form-urlencoded"
-
-            DateTime horaInicio = DateTime.Now;
-            int milisegundos = 0;
-            string error = null;
-            int resultado = 0;
-
-            try
-            {
-                byte[] responseArray = webClient.UploadValues(pUrl, "POST", pParametros);
-                milisegundos = (int)DateTime.Now.Subtract(horaInicio).TotalMilliseconds;
-                string respuesta = System.Text.Encoding.UTF8.GetString(responseArray);
-
-                resultado = ObtenerResultadoRespuesta(respuesta);
-            }
-            catch (System.Net.WebException webException)
-            {
-                milisegundos = (int)DateTime.Now.Subtract(horaInicio).TotalMilliseconds;
-                string respuesta = "";
-
-                try
-                {
-                    //Intento recuperar información del error
-                    StreamReader dataStream = new StreamReader(webException.Response.GetResponseStream());
-                    respuesta = dataStream.ReadToEnd();
-                    webException.Response.Close();
-                }
-                catch { }
-
-                respuesta += "\n\nQuery: " + pQuery;
-                respuesta += "\n\nUrl: " + pUrl;
-                error = respuesta;
-                mLoggingService.GuardarLogError(webException, respuesta);
-
-                if (webException.Status.Equals(WebExceptionStatus.ConnectFailure) || webException.Message.Contains("(503)"))
-                {
-                    throw new ExcepcionCheckpointVirtuoso();
-                }
-                else
-                {
-                    throw new ExcepcionDeBaseDeDatos(pQuery + "\n\n" + error, webException);
-                }
-            }
-            catch (Exception ex)
-            {
-                error = ex.Message;
-                mLoggingService.GuardarLogError(ex, "\n\nQuery: " + pQuery + "\n\nUrl: " + pUrl);
-                throw new ExcepcionDeBaseDeDatos(pQuery, ex);
-            }
-            finally
-            {
-                webClient.Dispose();
-
-                if (milisegundos > 700)
-                {
-                    mLoggingService.GuardarLogConsultaCostosa(string.Format("Consulta: {0} \r\nTiempo transcurrido:\r\n{1} \r\nUrl:\r\n{2} \r\nError:\r\n{3}", pQuery, milisegundos, pUrl, error));
-                }
-            }
-
-            return resultado;
-        }
 
         /// <summary>
         /// Cierra una conexión existente a virtuoso que ha sido previamente abierta
@@ -1312,6 +1234,7 @@ namespace Es.Riam.AbstractsOpen
                 mLoggingService.GuardarLogError(ex);
             }
         }
+
         protected bool ServidorOperativo()
         {
             string cadenaConexion = mConfigService.ObtenerVirtuosoEscritura().Value;
