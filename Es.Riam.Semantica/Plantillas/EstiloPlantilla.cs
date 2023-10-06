@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using Es.Riam.Semantica.OWL;
 using System.Data;
-
+using System.Linq;
 
 namespace Es.Riam.Semantica.Plantillas
 {
@@ -196,97 +196,97 @@ namespace Es.Riam.Semantica.Plantillas
                     nombreVerdaderaPropiedad = pNombre.Substring(pNombre.IndexOf("/") + 1);
                 }
 
-                foreach (Propiedad propiedad in pEntidad.Propiedades)
+                Propiedad propiedadBuscada = pEntidad.Propiedades.FirstOrDefault(propiedad => propiedad.Nombre == pNombre && EsPropiedadDeTipoEntidad(propiedad, pEntidad, pTipoEntidad));
+
+                if (propiedadBuscada != null)
                 {
-                    if (nombrePropiedadEncaminante == null)
+                    return propiedadBuscada;
+                }
+                else if (nombrePropiedadEncaminante != null)
+                {
+                    Propiedad propiedadEncaminanteBuscada = pEntidad.Propiedades.FirstOrDefault(propiedad => propiedad.Tipo == TipoPropiedad.ObjectProperty && propiedad.Nombre == nombrePropiedadEncaminante);
+
+                    if (propiedadEncaminanteBuscada != null)
                     {
-                        if (propiedad.Nombre == pNombre && EsPropiedadDeTipoEntidad(propiedad, pEntidad, pTipoEntidad))
+                        if (propiedadEncaminanteBuscada.FunctionalProperty && propiedadEncaminanteBuscada.UnicoValor.Key != null)
                         {
-                            return propiedad;
-                        }
-
-                        if (propiedad.Tipo == TipoPropiedad.ObjectProperty)
-                        {
-                            if (propiedad.FunctionalProperty && propiedad.UnicoValor.Key != null)
+                            if (propiedadEncaminanteBuscada.UnicoValor.Value != null && !propiedadEncaminanteBuscada.UnicoValor.Value.ID.Equals(pEntidad.ID))
                             {
-                                if (propiedad.UnicoValor.Value != null && !propiedad.UnicoValor.Value.ID.Equals(pEntidad.ID))
-                                {
-                                    Propiedad propAux = ObtenerPropiedadACualquierNivelPorNombre(pNombre, pTipoEntidad, propiedad.UnicoValor.Value);
-
-                                    if (propAux != null)
-                                    {
-                                        return propAux;
-                                    }
-                                }
-                            }
-                            else if (!propiedad.FunctionalProperty && propiedad.ListaValores.Count > 0)
-                            {
-                                //Devolvemos la 1º entidad ya que solo nos intersa el nombre  de la propiedad que tenga ésta:
-                                foreach (ElementoOntologia entidad in propiedad.ListaValores.Values)
-                                {
-                                    if (entidad != null && !entidad.ID.Equals(pEntidad.ID))
-                                    {
-                                        Propiedad propAux = ObtenerPropiedadACualquierNivelPorNombre(pNombre, pTipoEntidad, entidad);
-
-                                        if (propAux != null)
-                                        {
-                                            return propAux;
-                                        }
-
-                                        break;
-                                    }
-                                }
-                            }
-                            else
-                            {
-                                ElementoOntologia entAux = propiedad.Ontologia.GetEntidadTipo(propiedad.Rango, false);
-                                Propiedad propAux = ObtenerPropiedadACualquierNivelPorNombre(pNombre, pTipoEntidad, entAux);
+                                Propiedad propAux = ObtenerPropiedadACualquierNivelPorNombre(nombreVerdaderaPropiedad, pTipoEntidad, propiedadEncaminanteBuscada.UnicoValor.Value);
                                 if (propAux != null)
                                 {
                                     return propAux;
                                 }
+                            }
+                        }
+                        else if (!propiedadEncaminanteBuscada.FunctionalProperty && propiedadEncaminanteBuscada.ListaValores.Count > 0)
+                        {
+                            //Devolvemos la 1º entidad ya que solo nos intersa el nombre  de la propiedad que tenga ésta:
+                            foreach (ElementoOntologia entidad in propiedadEncaminanteBuscada.ListaValores.Values)
+                            {
+                                if (entidad != null && !entidad.ID.Equals(pEntidad.ID))
+                                {
+                                    Propiedad propAux = ObtenerPropiedadACualquierNivelPorNombre(nombreVerdaderaPropiedad, pTipoEntidad, entidad);
+                                    if (propAux != null)
+                                    {
+                                        return propAux;
+                                    }
+                                    break;
+                                }
+                            }
+                        }
+                        else
+                        {
+                            ElementoOntologia entAux = propiedadEncaminanteBuscada.Ontologia.GetEntidadTipo(propiedadEncaminanteBuscada.Rango, false);
+                            Propiedad propAux = ObtenerPropiedadACualquierNivelPorNombre(nombreVerdaderaPropiedad, pTipoEntidad, entAux);
+                            if (propAux != null)
+                            {
+                                return propAux;
                             }
                         }
                     }
-                    else
+                }
+                else
+                {
+                    foreach (Propiedad propiedad in pEntidad.Propiedades.Where(item => item.Tipo == TipoPropiedad.ObjectProperty))
                     {
-                        if (propiedad.Tipo == TipoPropiedad.ObjectProperty && propiedad.Nombre == nombrePropiedadEncaminante)
+                        if (propiedad.FunctionalProperty && propiedad.UnicoValor.Key != null)
                         {
-                            if (propiedad.FunctionalProperty && propiedad.UnicoValor.Key != null)
+                            if (propiedad.UnicoValor.Value != null && !propiedad.UnicoValor.Value.ID.Equals(pEntidad.ID))
                             {
-                                if (propiedad.UnicoValor.Value != null && !propiedad.UnicoValor.Value.ID.Equals(pEntidad.ID))
-                                {
-                                    Propiedad propAux = ObtenerPropiedadACualquierNivelPorNombre(nombreVerdaderaPropiedad, pTipoEntidad, propiedad.UnicoValor.Value);
-                                    if (propAux != null)
-                                    {
-                                        return propAux;
-                                    }
-                                }
-                            }
-                            else if (!propiedad.FunctionalProperty && propiedad.ListaValores.Count > 0)
-                            {
-                                //Devolvemos la 1º entidad ya que solo nos intersa el nombre  de la propiedad que tenga ésta:
-                                foreach (ElementoOntologia entidad in propiedad.ListaValores.Values)
-                                {
-                                    if (entidad != null && !entidad.ID.Equals(pEntidad.ID))
-                                    {
-                                        Propiedad propAux = ObtenerPropiedadACualquierNivelPorNombre(nombreVerdaderaPropiedad, pTipoEntidad, entidad);
-                                        if (propAux != null)
-                                        {
-                                            return propAux;
-                                        }
-                                        break;
-                                    }
-                                }
-                            }
-                            else
-                            {
-                                ElementoOntologia entAux = propiedad.Ontologia.GetEntidadTipo(propiedad.Rango, false);
-                                Propiedad propAux = ObtenerPropiedadACualquierNivelPorNombre(nombreVerdaderaPropiedad, pTipoEntidad, entAux);
+                                Propiedad propAux = ObtenerPropiedadACualquierNivelPorNombre(pNombre, pTipoEntidad, propiedad.UnicoValor.Value);
+
                                 if (propAux != null)
                                 {
                                     return propAux;
                                 }
+                            }
+                        }
+                        else if (!propiedad.FunctionalProperty && propiedad.ListaValores.Count > 0)
+                        {
+                            //Devolvemos la 1º entidad ya que solo nos intersa el nombre  de la propiedad que tenga ésta:
+                            foreach (ElementoOntologia entidad in propiedad.ListaValores.Values)
+                            {
+                                if (entidad != null && !entidad.ID.Equals(pEntidad.ID))
+                                {
+                                    Propiedad propAux = ObtenerPropiedadACualquierNivelPorNombre(pNombre, pTipoEntidad, entidad);
+
+                                    if (propAux != null)
+                                    {
+                                        return propAux;
+                                    }
+
+                                    break;
+                                }
+                            }
+                        }
+                        else
+                        {
+                            ElementoOntologia entAux = propiedad.Ontologia.GetEntidadTipo(propiedad.Rango, false);
+                            Propiedad propAux = ObtenerPropiedadACualquierNivelPorNombre(pNombre, pTipoEntidad, entAux);
+                            if (propAux != null)
+                            {
+                                return propAux;
                             }
                         }
                     }

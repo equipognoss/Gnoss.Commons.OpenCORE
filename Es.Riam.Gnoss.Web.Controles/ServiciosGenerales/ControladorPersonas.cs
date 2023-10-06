@@ -579,7 +579,7 @@ namespace Es.Riam.Gnoss.Web.Controles.ServiciosGenerales
                     new ControladorDocumentacion(mLoggingService, mEntityContext, mConfigService, mRedisCacheWrapper, mGnossCache, mEntityContextBASE, mVirtuosoAD, mHttpContextAccessor, mServicesUtilVirtuosoAndReplication).ActualizarGnossLive(ProyectoSeleccionado.Clave, pIdentidad.FilaIdentidad.PerfilID, AccionLive.Agregado, (int)TipoLive.Miembro, false, PrioridadLive.Alta);
 
                     IdentidadCL identidadCL = new IdentidadCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mServicesUtilVirtuosoAndReplication);
-                    identidadCL.EliminarCacheGestorIdentidad(pIdentidad.PersonaID.Value, pIdentidad.PerfilID);
+                    identidadCL.EliminarCacheGestorIdentidad(pIdentidad.Clave, pIdentidad.PersonaID.Value);
                     identidadCL.Dispose();
                 }
             }

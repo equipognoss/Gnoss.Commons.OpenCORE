@@ -15,6 +15,7 @@ using Es.Riam.Gnoss.AD.Facetado;
 using Es.Riam.Gnoss.AD.Facetado.Model;
 using Es.Riam.Gnoss.AD.Identidad;
 using Es.Riam.Gnoss.AD.ServiciosGenerales;
+using Es.Riam.Gnoss.AD.Suscripcion;
 using Es.Riam.Gnoss.AD.Usuarios;
 using Es.Riam.Gnoss.AD.Virtuoso;
 using Es.Riam.Gnoss.CL;
@@ -36,6 +37,7 @@ using Es.Riam.Gnoss.Logica.Identidad;
 using Es.Riam.Gnoss.Logica.MVC;
 using Es.Riam.Gnoss.Logica.Notificacion;
 using Es.Riam.Gnoss.Logica.ServiciosGenerales;
+using Es.Riam.Gnoss.Logica.Suscripcion;
 using Es.Riam.Gnoss.Logica.Tesauro;
 using Es.Riam.Gnoss.Recursos;
 using Es.Riam.Gnoss.Util.Configuracion;
@@ -2747,9 +2749,9 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
             List<Guid> listaIdentSeguidas = null;
             if (mIdentidadActual != null && !mIdentidadActual.Clave.Equals(UsuarioAD.Invitado))
             {
-                SuscripcionCL suscripcionCL = new SuscripcionCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mServicesUtilVirtuosoAndReplication);
-                List<Guid> listaIdentidadesSuscritasPerfil = suscripcionCL.ObtenerListaIdentidadesSuscritasPerfil(mIdentidadActual.PerfilID);
-                listaIdentSeguidas = listaIdentidadesSuscritasPerfil.Intersect(listaIdentidades.Keys).ToList();
+                SuscripcionCN suscripcionCN = new SuscripcionCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+                List<Guid> listaIdentidadesSuscritasPerfil = suscripcionCN.ComprobarListaIdentidadesSuscritasPerfil(mIdentidadActual.PerfilID, listaIdentidades.Keys.ToList());
+                listaIdentSeguidas = listaIdentidadesSuscritasPerfil;
             }
 
             Dictionary<Guid, ProfileModel> listaIdentidadesDevolver = new Dictionary<Guid, ProfileModel>();

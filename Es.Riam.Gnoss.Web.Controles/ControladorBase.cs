@@ -29,6 +29,7 @@ using Es.Riam.Gnoss.Logica.ServiciosGenerales;
 using Es.Riam.Gnoss.Logica.Usuarios;
 using Es.Riam.Gnoss.RabbitMQ;
 using Es.Riam.Gnoss.Recursos;
+using Es.Riam.Gnoss.Servicios.ControladoresServiciosWeb;
 using Es.Riam.Gnoss.Util.Configuracion;
 using Es.Riam.Gnoss.Util.General;
 using Es.Riam.Gnoss.Util.Seguridad;
@@ -54,6 +55,7 @@ using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Web;
+using static Microsoft.ApplicationInsights.MetricDimensionNames.TelemetryContext;
 
 namespace Es.Riam.Gnoss.Web.Controles
 {
@@ -1102,8 +1104,12 @@ namespace Es.Riam.Gnoss.Web.Controles
         /// </summary>
         /// <param name="pProyectoID">ID del proyecto</param>
         /// <param name="pDocumentoID">Identificador del documento ID para el que se desea comprobar el acceso</param>
-        public bool ComprobarPermisoEnOntologiaDeProyectoEIdentidad(Guid pProyectoID, Guid pDocumentoID, bool pIdentidadDeOtroProyecto = true)
+        /// <param name="pIdentidadDeOtroProyecto">Utiliza las identidades del resto de proyectos del usuario para comprobar si tiene permisos</param>
+        /// <param name="pTieneProyectoPatronOntologias">Nos indica si tiene un proyecto patron para las ontologías y calcular los permisos utilizandolo</param>
+        public bool ComprobarPermisoEnOntologiaDeProyectoEIdentidad(Guid pProyectoID, Guid pDocumentoID, bool pIdentidadDeOtroProyecto = true, bool pTieneProyectoPatronOntologias = false)
         {
+            ProyectoCN proyCN = new ProyectoCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+            
             bool tieneAcceso = true;
             if (!mListaOntologiasPermitidasPorIdentidad.ContainsKey(IdentidadActual.Clave) || !mListaOntologiasPermitidasPorIdentidad[IdentidadActual.Clave].ContainsKey(pDocumentoID))
             {
@@ -1112,7 +1118,7 @@ namespace Es.Riam.Gnoss.Web.Controles
                     mListaOntologiasPermitidasPorIdentidad.TryAdd(IdentidadActual.Clave, new ConcurrentDictionary<Guid, bool>());
                 }
 
-                ProyectoCN proyCN = new ProyectoCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+                
                 tieneAcceso = proyCN.ComprobarOntologiasPermitidaParaIdentidadEnProyecto(IdentidadActual.Clave, IdentidadActual.IdentidadMyGNOSS.Clave, pProyectoID, TipoRolUsuarioEnProyecto, pIdentidadDeOtroProyecto, pDocumentoID);
 
                 if (tieneAcceso)
@@ -1126,6 +1132,10 @@ namespace Es.Riam.Gnoss.Web.Controles
             }
             else
             {
+                if (!mListaOntologiasPermitidasPorIdentidad[IdentidadActual.Clave][pDocumentoID] && pTieneProyectoPatronOntologias)
+                {
+                    mListaOntologiasPermitidasPorIdentidad[IdentidadActual.Clave][pDocumentoID] = proyCN.ComprobarOntologiasPermitidaParaIdentidadEnProyecto(IdentidadActual.Clave, IdentidadActual.IdentidadMyGNOSS.Clave, new Guid(ParametroProyecto[ParametroAD.ProyectoIDPatronOntologias]), TipoRolUsuarioEnProyecto, pIdentidadDeOtroProyecto, pDocumentoID);
+                }
                 return mListaOntologiasPermitidasPorIdentidad[IdentidadActual.Clave][pDocumentoID];
             }
 
@@ -3359,6 +3369,27 @@ namespace Es.Riam.Gnoss.Web.Controles
         }
 
 
+        ///// <summary>
+        ///// Carga el gestor de identidades del usuario actual
+        ///// </summary>
+        ///// <returns>Gestor de identidades</returns>
+        //public GestionIdentidades CargarGestorIdentidadesUsuarioActual(UtilIdiomas pUtilIdiomas, GnossIdentity pUsuario)
+        //{
+        //    GestionIdentidades gestorIdentidades = null;
+
+        //    if (pUsuario.EsUsuarioInvitado)
+        //    {
+        //        gestorIdentidades = ObtenerIdentidadUsuarioInvitado(pUtilIdiomas);
+        //    }
+        //    else
+        //    {
+        //        IdentidadCL identidadCL = new IdentidadCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mServicesUtilVirtuosoAndReplication);
+        //        gestorIdentidades = identidadCL.ObtenerCacheGestorIdentidadActual(pUsuario.PersonaID, pUsuario.PerfilID, pUsuario.OrganizacionID);
+        //    }
+
+        //    return gestorIdentidades;
+        //}
+
         /// <summary>
         /// Carga el gestor de identidades del usuario actual
         /// </summary>
@@ -3374,7 +3405,7 @@ namespace Es.Riam.Gnoss.Web.Controles
             else
             {
                 IdentidadCL identidadCL = new IdentidadCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mServicesUtilVirtuosoAndReplication);
-                gestorIdentidades = identidadCL.ObtenerCacheGestorIdentidadActual(pUsuario.PersonaID, pUsuario.PerfilID, pUsuario.OrganizacionID);
+                gestorIdentidades = identidadCL.ObtenerCacheGestorIdentidadActual(pUsuario.IdentidadID, pUsuario.PersonaID, pUsuario.OrganizacionID);
             }
 
             return gestorIdentidades;
@@ -3481,6 +3512,26 @@ namespace Es.Riam.Gnoss.Web.Controles
                     RecuperarUsuarioDeSesion(UsuarioActual);
                 }
 
+                if(mHttpContextAccessor != null && mHttpContextAccessor.HttpContext != null && mHttpContextAccessor.HttpContext.Request != null && mHttpContextAccessor.HttpContext.Request.Headers.ContainsKey("Authorization") && (UsuarioActual == null || UsuarioActual.EsIdentidadInvitada))
+                {
+                    string authorization = mHttpContextAccessor.HttpContext.Request.Headers["Authorization"];
+                    Guid token = Guid.Empty;
+                    if (!authorization.Contains(":"))
+                    {
+                        Guid.TryParse(authorization, out token);
+                        if (token != Guid.Empty && mEntityContext.TokenApiLogin.Any(item => item.Token.Equals(token)))
+                        {
+                            string email = mEntityContext.TokenApiLogin.FirstOrDefault(item => item.Token.Equals(token)).Login;
+                            Es.Riam.Gnoss.AD.EntityModel.Models.UsuarioDS.Usuario usuario = mEntityContext.Usuario.FirstOrDefault(item => item.Login.Equals(email));
+                            GnossIdentity identity = ValidarUsuario(email);
+                            if (identity != null)
+                            {
+                                UsuarioActual = identity;
+                            }
+                        }
+                    }                   
+                }
+
                 if ((UsuarioActual != null) && ((mIdentidadActual == null) || (mIdentidadActual != null && mIdentidadActual.FilaIdentidad == null)))
                 {
                     if (mGestorIdentidades == null)
@@ -3492,7 +3543,7 @@ namespace Es.Riam.Gnoss.Web.Controles
                         //El gestor cargado de cache no contiene la identidad actual, la vuelvo a cargar (seguramente se acabe de hacer miembro de una comunidad)
 
                         IdentidadCL identidadCL = new IdentidadCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mServicesUtilVirtuosoAndReplication);
-                        identidadCL.EliminarCacheGestorIdentidadActual(UsuarioActual.UsuarioID, UsuarioActual.PersonaID, UsuarioActual.PerfilID);
+                        identidadCL.EliminarCacheGestorIdentidadActual(UsuarioActual.UsuarioID, UsuarioActual.IdentidadID, UsuarioActual.PersonaID);
 
                         mGestorIdentidades = CargarGestorIdentidadesUsuarioActual(UtilIdiomas, UsuarioActual);
                     }

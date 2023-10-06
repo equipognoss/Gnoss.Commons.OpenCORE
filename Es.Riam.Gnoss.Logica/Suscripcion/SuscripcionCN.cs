@@ -4,6 +4,7 @@ using Es.Riam.Gnoss.AD.EntityModel;
 using Es.Riam.Gnoss.AD.Suscripcion;
 using Es.Riam.Gnoss.Util.Configuracion;
 using Es.Riam.Gnoss.Util.General;
+using Es.Riam.Gnoss.Web.MVC.Models;
 using System;
 using System.Collections.Generic;
 
@@ -58,6 +59,16 @@ namespace Es.Riam.Gnoss.Logica.Suscripcion
         public List<Guid> ObtenerListaIdentidadesSuscritasPerfil(Guid pPerfilID)
         {
             return SuscripcionAD.ObtenerListaIdentidadesSuscritasPerfil(pPerfilID);
+        }
+
+        /// <summary>
+        /// Obtiene una lista con las identidades que son seguidas por la identidad de la lista de claves
+        /// </summary>
+        /// <param name="pPerfilID">Perfil del seguidor</param>
+        /// <returns>Lista con los ids de las identidades seguidas por la identidad</returns>
+        public List<Guid> ComprobarListaIdentidadesSuscritasPerfil(Guid pPerfilID, List<Guid> pListaIdentidades)
+        {
+            return SuscripcionAD.ComprobarListaIdentidadesSuscritasPerfil(pPerfilID, pListaIdentidades);
         }
 
         /// <summary>

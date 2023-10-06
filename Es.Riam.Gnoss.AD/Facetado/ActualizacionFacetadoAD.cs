@@ -1232,12 +1232,12 @@ namespace Es.Riam.Gnoss.AD.Facetado
                         if (resultado.Editor)
                         {
                             resultadoConsulta.Add(new QueryTriples { Sujeto = $"<http://gnoss/{resultado.DocumentoID.ToString().ToUpper()}>", Predicado = "<http://gnoss/haseditorIdentidadID>", Objeto = $"<http://gnoss/{resultado.GrupoID.ToString().ToUpper()}> ." });
-                            resultadoConsulta.Add(new QueryTriples { Sujeto = $"<http://gnoss/{resultado.DocumentoID.ToString().ToUpper()}>", Predicado = "<http://gnoss/haseditor>", Objeto = $"<http://gnoss/{resultado.Nombre}> ." });
-                            resultadoConsulta.Add(new QueryTriples { Sujeto = $"<http://gnoss/{resultado.DocumentoID.ToString().ToUpper()}>", Predicado = "<http://gnoss/hasgrupoEditor>", Objeto = $"<http://gnoss/{resultado.Nombre}> ." });
-                            resultadoConsulta.Add(new QueryTriples { Sujeto = $"<http://gnoss/{resultado.DocumentoID.ToString().ToUpper()}>", Predicado = "<http://gnoss/hasgrupoLector>", Objeto = $"<http://gnoss/{resultado.Nombre}> ." });
+                            resultadoConsulta.Add(new QueryTriples { Sujeto = $"<http://gnoss/{resultado.DocumentoID.ToString().ToUpper()}>", Predicado = "<http://gnoss/haseditor>", Objeto = $"\"http://gnoss/{resultado.Nombre}\" ." });
+                            resultadoConsulta.Add(new QueryTriples { Sujeto = $"<http://gnoss/{resultado.DocumentoID.ToString().ToUpper()}>", Predicado = "<http://gnoss/hasgrupoEditor>", Objeto = $"\"http://gnoss/{resultado.Nombre}\" ." });
+                            resultadoConsulta.Add(new QueryTriples { Sujeto = $"<http://gnoss/{resultado.DocumentoID.ToString().ToUpper()}>", Predicado = "<http://gnoss/hasgrupoLector>", Objeto = $"\"http://gnoss/{resultado.Nombre}\"." });
                         }
                         resultadoConsulta.Add(new QueryTriples { Sujeto = $"<http://gnoss/{resultado.DocumentoID.ToString().ToUpper()}>", Predicado = "<http://gnoss/hasparticipanteIdentidadID>", Objeto = $"<http://gnoss/{resultado.GrupoID.ToString().ToUpper()}> ." });
-                        resultadoConsulta.Add(new QueryTriples { Sujeto = $"<http://gnoss/{resultado.DocumentoID.ToString().ToUpper()}>", Predicado = "<http://gnoss/hasparticipante>", Objeto = $"<http://gnoss/{resultado.Nombre}> ." });
+                        resultadoConsulta.Add(new QueryTriples { Sujeto = $"<http://gnoss/{resultado.DocumentoID.ToString().ToUpper()}>", Predicado = "<http://gnoss/hasparticipante>", Objeto = $"\"http://gnoss/{resultado.Nombre}\" ." });
                     }
 
                     var consultaDocumentoRolIdentidad = mEntityContext.Identidad.JoinDocumentoRolIdentidad().JoinDocumento().JoinPerfil().JoinProyecto().Where(item => !item.Documento.Eliminado && item.Proyecto.ProyectoID.Equals(pProyectoID) && pListaRecursoId.Contains(item.DocumentoRolIdentidad.DocumentoID) && !item.Identidad.FechaBaja.HasValue && !item.Identidad.FechaExpulsion.HasValue)
@@ -1283,7 +1283,7 @@ namespace Es.Riam.Gnoss.AD.Facetado
                         {
                             resultadoConsulta.Add(new QueryTriples { Sujeto = $"<http://gnoss/{resultado.DocumentoID.ToString().ToUpper()}>", Predicado = "<http://gnoss/haspublicador>", Objeto = $"\"{RemplazarCaracteresBD(resultado.NombrePerfil)}{RemplazarCaracteresBDSeparadorOrganizacion(resultado.NombreOrganizacion)}\" ." });
                         }
-                        else
+                        if (resultado.Tipo > 0)
                         {
                             resultadoConsulta.Add(new QueryTriples { Sujeto = $"<http://gnoss/{resultado.DocumentoID.ToString().ToUpper()}>", Predicado = "<http://gnoss/haspublicador>", Objeto = $"\"{RemplazarCaracteresBD(resultado.NombreOrganizacion)}\" ." });
                         }
@@ -1339,7 +1339,7 @@ namespace Es.Riam.Gnoss.AD.Facetado
                         {
                             resultadoConsulta.Add(new QueryTriples { Sujeto = $"<http://gnoss/{resultado.DocumentoID.ToString().ToUpper()}>", Predicado = "<http://gnoss/haspublicador>", Objeto = $"\"{RemplazarCaracteresBD(resultado.NombrePerfil)}{RemplazarCaracteresBDSeparadorOrganizacion(resultado.NombreOrganizacion)}\" ." });
                         }
-                        else
+                        if (resultado.Tipo > 0)
                         {
                             resultadoConsulta.Add(new QueryTriples { Sujeto = $"<http://gnoss/{resultado.DocumentoID.ToString().ToUpper()}>", Predicado = "<http://gnoss/haspublicador>", Objeto = $"\"{RemplazarCaracteresBD(resultado.NombreOrganizacion)}\"" });
                         }
@@ -2189,6 +2189,26 @@ namespace Es.Riam.Gnoss.AD.Facetado
 
             if (pListaIdRecursos.Count > 0)
             {
+
+                if (!pIdProyecto.Equals(ProyectoAD.MetaProyecto))
+                {
+                    //No MyGNOSS
+                    var queryDocumentoNoMyGnoss = mEntityContext.Documento.JoinDocumentoWebVinBaseRecursos().JoinBaseRecursosProyecto().JoinNivelCertificacion().Where(x => x.Documento.Eliminado == false && x.Documento.UltimaVersion == true && x.DocumentoWebVinBaseRecursos.Eliminado == false && x.DocumentoWebVinBaseRecursos.NivelCertificacionID.HasValue && pListaIdRecursos.Contains(x.Documento.DocumentoID) && x.BaseRecursosProyecto.ProyectoID.Equals(pIdProyecto)).Select(x => new { x.Documento.DocumentoID, x.NivelCertificacion.Orden }).ToList();
+
+                    foreach (Guid docID in pListaIdRecursos)
+                    {
+                        if (queryDocumentoNoMyGnoss.Any(x => x.DocumentoID.Equals(docID)))
+                        {
+                            resultadoTriples.Add(new QueryTriples { Sujeto = $"<http://gnoss/{docID.ToString().ToUpper()}>", Predicado = "<http://gnoss/hasnivelcertification>", Objeto = $"{queryDocumentoNoMyGnoss.Where(x => x.DocumentoID.Equals(docID)).Select(x => x.Orden).First()}." });
+                        }
+                        else
+                        {
+                            resultadoTriples.Add(new QueryTriples { Sujeto = $"<http://gnoss/{docID.ToString().ToUpper()}>", Predicado = "<http://gnoss/hasnivelcertification>", Objeto = $"100 ." });
+                        }
+                    }
+                }
+
+
                 //Comun
                 var queryDocumentoComun = mEntityContext.Documento.Where(item => !item.Eliminado && item.UltimaVersion && pListaIdRecursos.Contains(item.DocumentoID));
 
@@ -3005,7 +3025,7 @@ namespace Es.Riam.Gnoss.AD.Facetado
             {
                 DatoExtraProyectoVirtuosoIdentidad = datoExtraProyectoVirtuosoIdentidad,
                 DatoExtaProyectoVirtuoso = datoExtraProyectoVirtuoso
-            }).Where(item => item.DatoExtraProyectoVirtuosoIdentidad.ProyectoID.Equals(pProyectoID) && item.DatoExtraProyectoVirtuosoIdentidad.IdentidadID.Equals(pIdentidadID));
+            }).Where(item => item.DatoExtraProyectoVirtuosoIdentidad.ProyectoID.Equals(pProyectoID) && item.DatoExtraProyectoVirtuosoIdentidad.IdentidadID.Equals(pIdentidadID) && !string.IsNullOrEmpty(item.DatoExtaProyectoVirtuoso.PredicadoRDF));
 
             resultadoConsulta.AddRange(consulta3.Select(item => new QueryTriples
             {
@@ -3043,6 +3063,91 @@ namespace Es.Riam.Gnoss.AD.Facetado
 
             return resultadoConsulta;
         }
+
+        public List<QueryTriples> ObtieneDatosExtraIdentidad(Guid pIdentidadID, Guid pProyectoID)
+        {
+			List<QueryTriples> resultadoConsulta = new List<QueryTriples>();
+
+			if (pProyectoID.Equals(ProyectoAD.MetaProyecto))
+			{
+				var consulta2 = mEntityContext.DatoExtraEcosistemaOpcionPerfil.Join(mEntityContext.Identidad, item => item.PerfilID, identidad => identidad.PerfilID, (item, identidad) => new
+				{
+					DatoExtraEcosistemaOpcionPerfil = item,
+					Identidad = identidad
+				}).Join(mEntityContext.DatoExtraEcosistemaOpcion, item => new { item.DatoExtraEcosistemaOpcionPerfil.DatoExtraID, item.DatoExtraEcosistemaOpcionPerfil.OpcionID }, datoExtraEcosistemaOpcion => new { datoExtraEcosistemaOpcion.DatoExtraID, datoExtraEcosistemaOpcion.OpcionID }, (item, datoExtraEcosistemaOpcion) => new
+				{
+					DatoExtraEcosistemaOpcionPerfil = item.DatoExtraEcosistemaOpcionPerfil,
+					Identidad = item.Identidad,
+					DatoExtraEcosistemaOpcion = datoExtraEcosistemaOpcion
+				}).Join(mEntityContext.DatoExtraEcosistema, item => item.DatoExtraEcosistemaOpcion.DatoExtraID, datoExtraEcosistema => datoExtraEcosistema.DatoExtraID, (item, DatoExtraEcosistema) => new
+				{
+					DatoExtraEcosistemaOpcionPerfil = item.DatoExtraEcosistemaOpcionPerfil,
+					Identidad = item.Identidad,
+					DatoExtraEcosistemaOpcion = item.DatoExtraEcosistemaOpcion,
+					DatoExtraEcosistema = DatoExtraEcosistema
+				}).Where(item => item.Identidad.IdentidadID.Equals(pIdentidadID) && !string.IsNullOrEmpty(item.DatoExtraEcosistema.PredicadoRDF));
+
+				resultadoConsulta.AddRange(consulta2.Select(item => new QueryTriples
+				{
+					Sujeto = $"<http://gnoss/{item.Identidad.IdentidadID.ToString().ToUpper()}>",
+					Predicado = $"<{item.DatoExtraEcosistema.PredicadoRDF}>",
+					Objeto = $"\"{item.DatoExtraEcosistemaOpcion.Opcion}\" ."
+				}).Distinct().ToList());
+
+				var consulta4 = mEntityContext.DatoExtraEcosistemaVirtuosoPerfil.Join(mEntityContext.Identidad, datoExtraExosistemaVirtuosoPerfil => datoExtraExosistemaVirtuosoPerfil.PerfilID, identidad => identidad.PerfilID, (datoExtraEcosistemaVirtuosoPerfil, identidad) => new
+				{
+					DatoExtraEcosistemaVirtuosoPerfil = datoExtraEcosistemaVirtuosoPerfil,
+					Identidad = identidad
+				}).Join(mEntityContext.DatoExtraEcosistemaVirtuoso, item => item.DatoExtraEcosistemaVirtuosoPerfil.DatoExtraID, datoExtraEcosistemaVirtuoso => datoExtraEcosistemaVirtuoso.DatoExtraID, (item, datoExtraEcosistemaVirtuoso) => new
+				{
+					DatoExtraEcosistemaVirtuosoPerfil = item.DatoExtraEcosistemaVirtuosoPerfil,
+					Identidad = item.Identidad,
+					DatoExtraEcosistemaVirtuoso = datoExtraEcosistemaVirtuoso
+				}).Where(x => x.Identidad.IdentidadID.Equals(pIdentidadID) && !string.IsNullOrEmpty(x.DatoExtraEcosistemaVirtuoso.PredicadoRDF));
+
+				resultadoConsulta.AddRange(consulta4.Select(item => new QueryTriples
+				{
+					Sujeto = $"<http://gnoss/{item.Identidad.IdentidadID.ToString().ToUpper()}>",
+					Predicado = $"<{item.DatoExtraEcosistemaVirtuoso.PredicadoRDF}>",
+					Objeto = $"\"{item.DatoExtraEcosistemaVirtuosoPerfil.Opcion}\" ."
+				}).Distinct().ToList());
+			}
+            else
+            {
+				var consulta1 = mEntityContext.DatoExtraProyectoOpcionIdentidad.Join(mEntityContext.DatoExtraProyectoOpcion, datoExtraProyectoOpcionIdentidad => new { datoExtraProyectoOpcionIdentidad.OrganizacionID, datoExtraProyectoOpcionIdentidad.ProyectoID, datoExtraProyectoOpcionIdentidad.DatoExtraID, datoExtraProyectoOpcionIdentidad.OpcionID }, datoExtraProyectoOpcion => new { datoExtraProyectoOpcion.OrganizacionID, datoExtraProyectoOpcion.ProyectoID, datoExtraProyectoOpcion.DatoExtraID, datoExtraProyectoOpcion.OpcionID }, (datoExtraProyectoOpcionIdentidad, datoExtraProyectoOpcion) => new
+				{
+					DatoExtraProyectoOpcionIdentidad = datoExtraProyectoOpcionIdentidad,
+					DatoExtraProyectoOpcion = datoExtraProyectoOpcion
+				}).Join(mEntityContext.DatoExtraProyecto, item => new { item.DatoExtraProyectoOpcion.OrganizacionID, item.DatoExtraProyectoOpcion.ProyectoID, item.DatoExtraProyectoOpcion.DatoExtraID }, datoExtraProyecto => new { datoExtraProyecto.OrganizacionID, datoExtraProyecto.ProyectoID, datoExtraProyecto.DatoExtraID }, (item, datoExtraProyecto) => new
+				{
+					DatoExtraProyectoOpcionIdentidad = item.DatoExtraProyectoOpcionIdentidad,
+					DatoExtraProyectoOpcion = item.DatoExtraProyectoOpcion,
+					DatoExtraProyecto = datoExtraProyecto
+				}).Where(item => item.DatoExtraProyectoOpcionIdentidad.ProyectoID.Equals(pProyectoID) && item.DatoExtraProyectoOpcionIdentidad.IdentidadID.Equals(pIdentidadID) && !string.IsNullOrEmpty(item.DatoExtraProyecto.PredicadoRDF));
+
+				resultadoConsulta.AddRange(consulta1.Select(item => new QueryTriples
+				{
+					Sujeto = $"<http://gnoss/{item.DatoExtraProyectoOpcionIdentidad.IdentidadID.ToString().ToUpper()}>",
+					Predicado = $"<{item.DatoExtraProyecto.PredicadoRDF}>",
+					Objeto = $"\"{item.DatoExtraProyectoOpcion.Opcion}\" ."
+				}).Distinct().ToList());
+
+				var consulta3 = mEntityContext.DatoExtraProyectoVirtuosoIdentidad.Join(mEntityContext.DatoExtraProyectoVirtuoso, datoExtraProyectoVirtuosoIdentidad => new { datoExtraProyectoVirtuosoIdentidad.OrganizacionID, datoExtraProyectoVirtuosoIdentidad.ProyectoID, datoExtraProyectoVirtuosoIdentidad.DatoExtraID }, datoExtraProyectoVirtuoso => new { datoExtraProyectoVirtuoso.OrganizacionID, datoExtraProyectoVirtuoso.ProyectoID, datoExtraProyectoVirtuoso.DatoExtraID }, (datoExtraProyectoVirtuosoIdentidad, datoExtraProyectoVirtuoso) => new
+				{
+					DatoExtraProyectoVirtuosoIdentidad = datoExtraProyectoVirtuosoIdentidad,
+					DatoExtaProyectoVirtuoso = datoExtraProyectoVirtuoso
+				}).Where(item => item.DatoExtraProyectoVirtuosoIdentidad.ProyectoID.Equals(pProyectoID) && item.DatoExtraProyectoVirtuosoIdentidad.IdentidadID.Equals(pIdentidadID) && !string.IsNullOrEmpty(item.DatoExtaProyectoVirtuoso.PredicadoRDF));
+
+				resultadoConsulta.AddRange(consulta3.Select(item => new QueryTriples
+				{
+					Sujeto = $"<http://gnoss/{item.DatoExtraProyectoVirtuosoIdentidad.IdentidadID.ToString().ToUpper()}>",
+					Predicado = $"<{item.DatoExtaProyectoVirtuoso.PredicadoRDF}>",
+					Objeto = $"\"{item.DatoExtraProyectoVirtuosoIdentidad.Opcion}\" ."
+				}).Distinct().ToList());
+			}
+
+            return resultadoConsulta;
+		}
 
         /// <summary>
         /// Obtiene la información extra de personas y contactos
@@ -3445,21 +3550,21 @@ namespace Es.Riam.Gnoss.AD.Facetado
             var parametroAplicacion = mEntityContext.ParametroAplicacion.Where(item => item.Parametro.Equals("ComunidadesPrivadasVisibles") && item.Valor.Equals("true")).FirstOrDefault();
             if (parametroAplicacion != null)
             {
-				var consulta2 = mEntityContext.Proyecto.Where(item => new int[] { 0, 2 }.Contains(item.TipoAcceso) && parametroAplicacion != null && item.ProyectoID.Equals(pProyectoID));
-				foreach (var query in consulta2)
-				{
-					resultadoConsulta.Add(new QueryTriples { Sujeto = $"<http://gnoss/{query.ProyectoID.ToString().ToUpper()}>", Predicado = "<http://gnoss/hasprivacidadMyGnoss>", Objeto = $"\"publico\" ." });
-				}
+                var consulta2 = mEntityContext.Proyecto.Where(item => new int[] { 0, 2 }.Contains(item.TipoAcceso) && parametroAplicacion != null && item.ProyectoID.Equals(pProyectoID));
+                foreach (var query in consulta2)
+                {
+                    resultadoConsulta.Add(new QueryTriples { Sujeto = $"<http://gnoss/{query.ProyectoID.ToString().ToUpper()}>", Predicado = "<http://gnoss/hasprivacidadMyGnoss>", Objeto = $"\"publico\" ." });
+                }
             }
             else
             {
-				var consulta2 = mEntityContext.Proyecto.Where(item => new int[] { 0 }.Contains(item.TipoAcceso) && item.ProyectoID.Equals(pProyectoID));
-				foreach (var query in consulta2)
-				{
-					resultadoConsulta.Add(new QueryTriples { Sujeto = $"<http://gnoss/{query.ProyectoID.ToString().ToUpper()}>", Predicado = "<http://gnoss/hasprivacidadMyGnoss>", Objeto = $"\"publico\" ." });
-				}
-			}
-            
+                var consulta2 = mEntityContext.Proyecto.Where(item => new int[] { 0 }.Contains(item.TipoAcceso) && item.ProyectoID.Equals(pProyectoID));
+                foreach (var query in consulta2)
+                {
+                    resultadoConsulta.Add(new QueryTriples { Sujeto = $"<http://gnoss/{query.ProyectoID.ToString().ToUpper()}>", Predicado = "<http://gnoss/hasprivacidadMyGnoss>", Objeto = $"\"publico\" ." });
+                }
+            }
+
 
             var consulta3 = mEntityContext.Proyecto.JoinAdministradorProyecto().JoinPersona().JoinPerfil().JoinIdentidad().Where(item => !item.Persona.Eliminado && !item.Identidad.FechaBaja.HasValue && !item.Identidad.FechaExpulsion.HasValue && !item.Perfil.Eliminado && new int[] { 0, 4 }.Contains(item.Identidad.Tipo) && item.Proyecto.ProyectoID.Equals(pProyectoID));
             foreach (var query in consulta3)

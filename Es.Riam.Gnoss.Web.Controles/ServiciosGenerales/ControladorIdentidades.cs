@@ -552,7 +552,7 @@ namespace Es.Riam.Gnoss.Web.Controles.ServiciosGenerales
 
             IdentidadCL identidadCL = new IdentidadCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mServicesUtilVirtuosoAndReplication);
             identidadCL.EliminarPerfilMVC(pIdentidad.PerfilID);
-            identidadCL.EliminarCacheGestorIdentidad(pIdentidad.PersonaID.Value, pIdentidad.PerfilID);
+            identidadCL.EliminarCacheGestorIdentidad(pIdentidad.Clave, pIdentidad.PersonaID.Value);
             identidadCL.Dispose();
 
 
@@ -1177,7 +1177,7 @@ namespace Es.Riam.Gnoss.Web.Controles.ServiciosGenerales
 
                 //Creamos el perfil persona + organización o lo retomamos si ya existía
                 IdentidadCN identCN = new IdentidadCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
-                DataWrapperIdentidad identDW = identCN.ObtenerPerfilesDePersona(pIdentidadActual.Persona.Clave, false);
+                DataWrapperIdentidad identDW = identCN.ObtenerPerfilesDePersona(pIdentidadActual.Persona.Clave, false, pIdentidadActual.Clave);
 
                 Perfil perfil = null;
 
@@ -1341,7 +1341,7 @@ namespace Es.Riam.Gnoss.Web.Controles.ServiciosGenerales
                 //Borro la caché para que aparezca la identidad en el menú superior:
                 IdentidadCL identCL = new IdentidadCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mServicesUtilVirtuosoAndReplication);
                 identCL.EliminarCacheGestorTodasIdentidadesUsuario(pUsuario.UsuarioID, pUsuario.PersonaID);
-                identCL.EliminarCacheGestorIdentidadActual(pUsuario.UsuarioID, pUsuario.PersonaID, pUsuario.PerfilID);
+                identCL.EliminarCacheGestorIdentidadActual(pUsuario.UsuarioID, pUsuario.IdentidadID, pUsuario.PersonaID);
 
                 identCL.InvalidarCacheMiembrosOrganizacionParaFiltroGrupos(organizacionID);
 

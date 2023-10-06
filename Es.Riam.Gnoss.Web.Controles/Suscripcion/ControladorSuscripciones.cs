@@ -294,7 +294,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Suscripcion
                 if (gestorSuscripciones.ListaSuscripciones.Count > 0 && gestorSuscripciones.ListaSuscripciones[suscripcionID].FilaSuscripcionIdentidadProyecto != null)
                 {
                     List<AD.EntityModel.Models.Suscripcion.SuscripcionIdentidadProyecto> listaSuscripcionIdentidadProyecto = gestorSuscripciones.ListaSuscripciones[suscripcionID].FilaSuscripcionIdentidadProyecto.ToList();
-                    gestorSuscripciones.ListaSuscripciones.Remove(suscripcionID);
+                    //gestorSuscripciones.ListaSuscripciones.Remove(suscripcionID);
 
                     foreach (AD.EntityModel.Models.Suscripcion.SuscripcionIdentidadProyecto suscripcionIdentidadProyecto in listaSuscripcionIdentidadProyecto)
                     {
@@ -309,11 +309,15 @@ namespace Es.Riam.Gnoss.Web.Controles.Suscripcion
                 if (gestorSuscripciones.ListaSuscripciones.Count > 0 && gestorSuscripciones.ListaSuscripciones[suscripcionID].FilaSuscripcionTesauroUsuario != null)
                 {
                     AD.EntityModel.Models.Suscripcion.SuscripcionTesauroUsuario suscripcionTesauroUsuario = gestorSuscripciones.ListaSuscripciones[suscripcionID].FilaSuscripcionTesauroUsuario;
-                    gestorSuscripciones.ListaSuscripciones.Remove(suscripcionID);
+                    //gestorSuscripciones.ListaSuscripciones.Remove(suscripcionID);
 
                     mEntityContext.EliminarElemento(suscripcionTesauroUsuario);
                 }
 
+                if (gestorSuscripciones.ListaSuscripciones.Count > 0 && (gestorSuscripciones.ListaSuscripciones[suscripcionID].FilaSuscripcionTesauroUsuario != null || gestorSuscripciones.ListaSuscripciones[suscripcionID].FilaSuscripcionIdentidadProyecto != null))
+                {
+                    gestorSuscripciones.ListaSuscripciones.Remove(suscripcionID);
+                }
                 #endregion
 
                 if (pSuscribirmeTodaActividad.Value)

@@ -1921,6 +1921,19 @@ namespace Es.Riam.Gnoss.AD.BASE_BD
             baseComunidadDS.Dispose();
         }
 
+        /// <summary>
+        /// Comprueba si existe o no la cola indicada por parámetro en RabbitMQ
+        /// </summary>
+        /// <param name="pNombreCola">Nombre de la cola a comprobar si existe</param>
+        /// <returns>true o false si existe o no la cola respectivamente</returns>
+        public bool ExisteColaRabbit(string pNombreCola)
+        {
+            using (RabbitMQClient rabbitMQ = new RabbitMQClient(RabbitMQClient.BD_SERVICIOS_WIN, pNombreCola, mLoggingService, mConfigService))
+            {
+                return rabbitMQ.ExisteColaRabbit(pNombreCola);
+            }
+        }
+
         #region Verificación de existencia y creación de tablas
 
         /// <summary>

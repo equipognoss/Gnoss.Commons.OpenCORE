@@ -1013,7 +1013,12 @@ namespace OntologiaAClase
 					Clase.AppendLine($"{UtilCadenasOntology.Tabs(3)}return ToGnossApiResource(resourceAPI, listaDeCategorias, Guid.Empty, Guid.Empty);");
 					Clase.AppendLine($"{UtilCadenasOntology.Tabs(2)}}}");
 					Clase.AppendLine("");
-					Clase.AppendLine($"{UtilCadenasOntology.Tabs(2)}public {modificador} {tipoOntologyResource} ToGnossApiResource(ResourceApi resourceAPI, List<string> listaDeCategorias, Guid idrecurso, Guid idarticulo)");
+                    Clase.AppendLine($"{UtilCadenasOntology.Tabs(2)}public {modificador} {tipoOntologyResource} ToGnossApiResource(ResourceApi resourceAPI, List<Guid> listaDeCategorias)");
+                    Clase.AppendLine($"{UtilCadenasOntology.Tabs(2)}{{");
+                    Clase.AppendLine($"{UtilCadenasOntology.Tabs(3)}return ToGnossApiResource(resourceAPI, null, Guid.Empty, Guid.Empty, listaDeCategorias);");
+                    Clase.AppendLine($"{UtilCadenasOntology.Tabs(2)}}}");
+                    Clase.AppendLine("");
+                    Clase.AppendLine($"{UtilCadenasOntology.Tabs(2)}public {modificador} {tipoOntologyResource} ToGnossApiResource(ResourceApi resourceAPI, List<string> listaDeCategorias, Guid idrecurso, Guid idarticulo, List<Guid> listaIdDeCategorias = null)");
 				}
 				Clase.AppendLine($"{UtilCadenasOntology.Tabs(2)}{{");
 				Clase.AppendLine($"{UtilCadenasOntology.Tabs(3)}{tipoOntologyResource} resource = new {tipoOntologyResource}();");
@@ -1031,7 +1036,7 @@ namespace OntologiaAClase
 		{
 			if (pTipoOntologyResource.Equals("ComplexOntologyResource"))
 			{
-				Clase.AppendLine($"{UtilCadenasOntology.Tabs(3)}Ontology ontology=null;");
+				Clase.AppendLine($"{UtilCadenasOntology.Tabs(3)}Ontology ontology = null;");
 				if (listentidades.Any() || pEntidad.Superclases.Any(s => !s.Contains("http://www.w3.org/2002/07/owl#Thing")))
 				{
 					Clase.AppendLine($"{UtilCadenasOntology.Tabs(3)}GetEntities();");
@@ -1046,9 +1051,9 @@ namespace OntologiaAClase
 				Clase.AppendLine($"{UtilCadenasOntology.Tabs(3)}}}");
 				Clase.AppendLine($"{UtilCadenasOntology.Tabs(3)}resource.Id = GNOSSID;");
 				Clase.AppendLine($"{UtilCadenasOntology.Tabs(3)}resource.Ontology = ontology;");
-				Clase.AppendLine($"{UtilCadenasOntology.Tabs(3)}resource.TextCategories=listaDeCategorias;");
-
-				Clase.AppendLine($"{UtilCadenasOntology.Tabs(3)}AddResourceTitle(resource);");
+				Clase.AppendLine($"{UtilCadenasOntology.Tabs(3)}resource.TextCategories = listaDeCategorias;");
+                Clase.AppendLine($"{UtilCadenasOntology.Tabs(3)}resource.CategoriesIds = listaIdDeCategorias;");
+                Clase.AppendLine($"{UtilCadenasOntology.Tabs(3)}AddResourceTitle(resource);");
 				if (!string.IsNullOrEmpty(nombrePropDescripcionEntera))
 				{
 					Clase.AppendLine($"{UtilCadenasOntology.Tabs(3)}AddResourceDescription(resource);");
@@ -1392,7 +1397,11 @@ namespace OntologiaAClase
 							Clase.AppendLine($"{UtilCadenasOntology.Tabs(4)}{obtenerPrefijo}_{nombreProp}.GetProperties();");
 							Clase.AppendLine($"{UtilCadenasOntology.Tabs(4)}{obtenerPrefijo}_{nombreProp}.GetEntities();");
 							Clase.AppendLine($"{UtilCadenasOntology.Tabs(4)}OntologyEntity entity{obtenerPrefijo}_{nombreProp} = new OntologyEntity(\"{prop.Rango}\", \"{prop.Rango}\", \"{ObtenerPrefijoYPropiedad(dicPref, prop.Nombre)}\", {obtenerPrefijo}_{nombreProp}.propList, {obtenerPrefijo}_{nombreProp}.entList);");
-							Clase.AppendLine($"{UtilCadenasOntology.Tabs(4)}entList.Add(entity{obtenerPrefijo}_{nombreProp});");
+                            if (ontologia.EntidadesAuxiliares.Exists(entidad => entidad.TipoEntidad.Equals(prop.Rango)))
+                            {
+                                Clase.AppendLine($"{UtilCadenasOntology.Tabs(4)}{obtenerPrefijo}_{nombreProp}.Entity = entity{obtenerPrefijo}_{nombreProp};");
+                            }
+                            Clase.AppendLine($"{UtilCadenasOntology.Tabs(4)}entList.Add(entity{obtenerPrefijo}_{nombreProp});");
 							Clase.AppendLine($"{UtilCadenasOntology.Tabs(3)}}}");
 						}
 						else
@@ -1400,7 +1409,11 @@ namespace OntologiaAClase
 							Clase.AppendLine($"{UtilCadenasOntology.Tabs(3)}{obtenerPrefijo}_{nombreProp}.GetProperties();");
 							Clase.AppendLine($"{UtilCadenasOntology.Tabs(3)}{obtenerPrefijo}_{nombreProp}.GetEntities();");
 							Clase.AppendLine($"{UtilCadenasOntology.Tabs(3)}OntologyEntity entity{obtenerPrefijo}_{nombreProp} = new OntologyEntity(\"{prop.Rango}\", \"{prop.Rango}\", \"{ObtenerPrefijoYPropiedad(dicPref, prop.Nombre)}\", {obtenerPrefijo}_{nombreProp}.propList, {obtenerPrefijo}_{nombreProp}.entList);");
-							Clase.AppendLine($"{UtilCadenasOntology.Tabs(3)}entList.Add(entity{obtenerPrefijo}_{nombreProp});");
+                            if (ontologia.EntidadesAuxiliares.Exists(entidad => entidad.TipoEntidad.Equals(prop.Rango)))
+                            {
+                                Clase.AppendLine($"{UtilCadenasOntology.Tabs(4)}{obtenerPrefijo}_{nombreProp}.Entity = entity{obtenerPrefijo}_{nombreProp};");
+                            }
+                            Clase.AppendLine($"{UtilCadenasOntology.Tabs(3)}entList.Add(entity{obtenerPrefijo}_{nombreProp});");
 						}
 					}
 					else
@@ -1416,7 +1429,7 @@ namespace OntologiaAClase
 						Clase.AppendLine($"{UtilCadenasOntology.Tabs(4)}entList.Add(entity{rango});");
 						if (ontologia.EntidadesAuxiliares.Exists(entidad => entidad.TipoEntidad.Equals(prop.Rango)))
 						{
-							Clase.AppendLine($"{UtilCadenasOntology.Tabs(4)}prop.Entity= entity{rango};");
+							Clase.AppendLine($"{UtilCadenasOntology.Tabs(4)}prop.Entity = entity{rango};");
 						}
 						Clase.AppendLine($"{UtilCadenasOntology.Tabs(4)}}}");
 						Clase.AppendLine($"{UtilCadenasOntology.Tabs(3)}}}");

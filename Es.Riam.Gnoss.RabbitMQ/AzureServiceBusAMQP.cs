@@ -100,8 +100,6 @@ namespace Es.Riam.Gnoss.RabbitMQ
             }
         }
 
-        private string ficheroConexion;
-
         public int ContarElementosEnCola()
         {
             return 0;
@@ -119,7 +117,6 @@ namespace Es.Riam.Gnoss.RabbitMQ
 
         }
 
-        static bool error = false;
         async Task ProcessMessageAsync(Message message, CancellationToken token)
         {
             try
@@ -219,6 +216,11 @@ namespace Es.Riam.Gnoss.RabbitMQ
             {
                 mQueueClient.CloseAsync().GetAwaiter().GetResult();
             }
+        }
+
+        public bool ExisteColaRabbit(string pNombreCola)
+        {
+            throw new NotImplementedException();
         }
     }
 }

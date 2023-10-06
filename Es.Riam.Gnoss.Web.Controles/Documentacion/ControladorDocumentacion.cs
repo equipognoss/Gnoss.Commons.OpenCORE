@@ -1237,6 +1237,28 @@ namespace Es.Riam.Gnoss.Web.Controles.Documentacion
             baseRecursosComunidadCN.InsertarFilasEnRabbit("ColaTagsComunidadesLinkedData", baseRecursosComDS);
         }
 
+        public void InsertLinkedDataRabbit(Guid pProyectoId, string pTags)
+        {
+            ProyectoCL proyCL = new ProyectoCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mVirtuosoAD, mServicesUtilVirtuosoAndReplication);
+            int id = proyCL.ObtenerTablaBaseProyectoIDProyectoPorID(pProyectoId);
+            BaseRecursosComunidadDS baseRecursosComDS = new BaseRecursosComunidadDS();
+
+            BaseRecursosComunidadDS.ColaTagsComunidadesRow filaColaTagsDocs = baseRecursosComDS.ColaTagsComunidades.NewColaTagsComunidadesRow();
+
+            filaColaTagsDocs.Estado = (short)EstadosColaTags.Procesado;
+            filaColaTagsDocs.FechaPuestaEnCola = DateTime.Now;
+            filaColaTagsDocs.TablaBaseProyectoID = id;
+            filaColaTagsDocs.Tags = pTags;
+            filaColaTagsDocs.Tipo = 0;
+            filaColaTagsDocs.Prioridad = 0;
+
+
+            baseRecursosComDS.ColaTagsComunidades.AddColaTagsComunidadesRow(filaColaTagsDocs);
+            BaseComunidadCN baseRecursosComunidadCN = new BaseComunidadCN("base", id, mEntityContext, mLoggingService, mEntityContextBASE, mConfigService, mServicesUtilVirtuosoAndReplication);
+
+            baseRecursosComunidadCN.InsertarFilasEnRabbit("ColaTagsComunidadesLinkedData", baseRecursosComDS, "ColaTagsComunidades");
+        }
+
         /// <summary>
         /// Genera un archivo de configuración a partir de una lista de estilos, para una plantilla.
         /// </summary>

@@ -353,6 +353,7 @@
 		<Resource tag="NORESULTADOSCOMENT">You do not have any comments to your contributions</Resource>
 		<Resource tag="NORESULTADOSINVT">You do not have any pending invitation</Resource>
 		<Resource tag="NORESULTADOSSUSCRIP">You have no active subscription or they have expired</Resource>
+    <Resource tag="ULTIMASBUSQUEDAS">Latest searches</Resource>
 	</page>
 	<page name="INICIO">
 		<Resource tag="TITULO">Login </Resource>
@@ -810,6 +811,17 @@
 		<Resource tag="TODASUACTIVIDAD">all its activity</Resource>
 		<Resource tag="RECURSOSENCOMUNIDADES">published resources</Resource>
 		<Resource tag="RECURSOSENESPACIOPERSONAL">Resources in your space</Resource>
+    <Resource tag="INTRODUCENOMBRE">Enter your name</Resource>
+    <Resource tag="INTRODUCEAPELLIDO">Enter your lastname</Resource>
+    <Resource tag="INTRODUCEEMAIL">Enter your mail</Resource>
+    <Resource tag="INTRODUCETWITTER">Enter your Twitter account</Resource>
+    <Resource tag="INTRODUCEFACEBOOK">Enter your Facebook account</Resource>
+    <Resource tag="INTRODUCELINKEDIN">Enter your Linkedin account</Resource>
+    <Resource tag="INTRODUCEURL">Enter a url and add it</Resource>
+    <Resource tag="OTROSSTIOSINTERES">Other sites of interest</Resource>
+    <Resource tag="ADD">Add</Resource>
+    <Resource tag="ELIMINAR">Delete</Resource>
+    <Resource tag="ELIMINAREMAILTUTOR">As you are of legal age you can delete your parent/guardian mail.</Resource>
 	</page>
 	<page name="PERFILIMPORTARDELICIOUS">
 		<Resource tag="TITULO">Import your bookmarks from Delicious to @1@</Resource>
@@ -2160,6 +2172,9 @@
 		<Resource tag="PASSWORDCADUCADA">{p}Your password has expired, you must set a new password. {/p} {br /}</Resource>
 		<Resource tag="PASSANTERIORNOCHUNGA">Your current password is incorrect.</Resource>
 		<Resource tag="IRINICIO">Go home</Resource>
+    <Resource tag="INSERTARPASSWORDACTUAL">Enter your current password</Resource>
+    <Resource tag="INSERTARPASSWORDNUEVA">Enter your new password</Resource>
+    <Resource tag="INSERTARPASSWORDCONFIRMAR">Confirm the new password</Resource>
 	</page>
 	<page name="CONFIGURACIONGNOSS">
 		<Resource tag="SOLICITUDCONTACTO">Contact and friend requests</Resource>
@@ -2305,8 +2320,7 @@
 		</Resource>
 	</page>
 	<page name="POLITICACOOKIES">
-		<Resource tag="TITULO">
-		</Resource>
+		<Resource tag="TITULO">Cookies policy</Resource>
 	</page>
 	<page name="POLITICAPRIVACIDAD">
 		<Resource tag="TITULOPAGINA">Privacy policy</Resource>
@@ -3701,11 +3715,15 @@
 		<Resource tag="ORGANIGRAMA">organization-chart</Resource>
 		<Resource tag="SOLICITDESACCESO">requests-access</Resource>
 		<Resource tag="EDITARRECURSO">edit-resource</Resource>
+		<Resource tag="EDITARRECURSOGNOSS">edit-resource-gnoss</Resource>
 		<Resource tag="VERSIONANDORECURSO">new-version-resource</Resource>
+		<Resource tag="VERSIONANDORECURSOGNOSS">new-version-resource-gnoss</Resource>
 		<Resource tag="FALLOVERSIONANDORECURSO">error-version-resource</Resource>
+		<Resource tag="FALLOVERSIONANDORECURSOGNOSS">error-version-resource-gnoss</Resource>
 		<Resource tag="CREARDOCUMENTO">create-document</Resource>
 		<Resource tag="SUBIRRECURSOCREADO">complete-resource-created</Resource>
 		<Resource tag="SUBIRRECURSO2">complete-resource-added</Resource>
+		<Resource tag="SUBIRRECURSO2GNOSS">complete-resource-added-gnoss</Resource>
 		<Resource tag="SUBIRPREGUNTA">ask</Resource>
 		<Resource tag="SUBIRENCUESTA">make-poll</Resource>
 		<Resource tag="SUBIRDEBATE">start-discussion</Resource>

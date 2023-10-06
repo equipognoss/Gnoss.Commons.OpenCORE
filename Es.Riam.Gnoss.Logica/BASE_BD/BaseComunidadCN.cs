@@ -528,6 +528,16 @@ namespace Es.Riam.Gnoss.Logica.BASE_BD
             BaseComunidadAD.ActualizarEstadoColaActualizarContextos(pDocumentoID, pEstado, pFechaProcesado);
         }
 
+        /// <summary>
+        /// Comprueba si existe o no la cola indicada por parámetro en RabbitMQ
+        /// </summary>
+        /// <param name="pNombreCola">Nombre de la cola a comprobar si existe</param>
+        /// <returns>true o false si existe o no la cola respectivamente</returns>
+        public bool ExisteColaRabbit(string pNombreCola)
+        {
+            return BaseComunidadAD.ExisteColaRabbit(pNombreCola);
+        }
+
         ///// <summary>
         ///// Comprueba si una consulta ya existe en una réplica particular
         ///// </summary>

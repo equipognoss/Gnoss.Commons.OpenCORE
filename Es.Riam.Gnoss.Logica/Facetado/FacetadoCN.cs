@@ -1370,7 +1370,7 @@ namespace Es.Riam.Gnoss.Logica.Facetado
         /// <returns>DataSet con las tripletas</returns>
         public FacetadoDS ObtenerValoresPropiedadesEntidades(string pGrafo, List<string> pEntsContenedoras, List<string> pPropiedades, bool pUsarAfinidad = false)
         {
-            return ObtenerValoresPropiedadesEntidades(pGrafo, pEntsContenedoras, pPropiedades, false, pUsarAfinidad);
+            return ObtenerValoresPropiedadesEntidades(pGrafo, pEntsContenedoras, pPropiedades, true, pUsarAfinidad);
         }
 
         /// <summary>

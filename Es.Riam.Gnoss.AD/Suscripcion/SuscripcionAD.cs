@@ -937,6 +937,24 @@ namespace Es.Riam.Gnoss.AD.Suscripcion
         }
 
         /// <summary>
+        /// Obtiene una lista con las identidades que son seguidas por la identidad de la lista de claves
+        /// </summary>
+        /// <param name="pPerfilID">Perfil del seguidor</param>
+        /// <returns>Lista con los ids de las identidades seguidas por la identidad</returns>
+        public List<Guid> ComprobarListaIdentidadesSuscritasPerfil(Guid pPerfilID, List<Guid> pListaIdentidades)
+        {
+
+            var query = mEntityContext.Suscripcion.JoinSuscripcionIdentidadProyecto().JoinIdentidad().JoinIdentidadSeguidor().JoinIdentidadPerfilSeguidor().Where(item => item.Identidad.PerfilID.Equals(pPerfilID) && pListaIdentidades.Contains(item.IdentidadPerfilSeguidor.IdentidadID)).Select(item => item.IdentidadPerfilSeguidor.IdentidadID);
+
+            var query2 = mEntityContext.Identidad.JoinPerfilOrg().JoinSuscripcionTesauroOrganizacion().JoinSuscripcion().JoinIdentidad().Where(item => item.Identidad.PerfilID.Equals(pPerfilID) && pListaIdentidades.Contains(item.IdentidadOrg.IdentidadID) &&  (item.IdentidadOrg.Tipo.Equals((short)TiposIdentidad.ProfesionalCorporativo) || item.IdentidadOrg.Tipo.Equals((short)TiposIdentidad.Organizacion))).Select(item => item.IdentidadOrg.IdentidadID);
+
+            List<Guid> listaIdentidadesSeguidas = query.Concat(query2).ToList();
+
+            return listaIdentidadesSeguidas;
+
+        } 
+
+        /// <summary>
         /// Obtiene las suscripciones de las identidades (las suscripciones, no sus elementos)
         /// </summary>
         /// <param name="pListaIdentidadesID">Lista de IdentidadID</param>

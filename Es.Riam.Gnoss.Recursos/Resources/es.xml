@@ -70,6 +70,8 @@
 		<Resource tag="Y">y</Resource>
 		<Resource tag="EN">en</Resource>
 		<Resource tag="ES">es</Resource>
+		<Resource tag="TEXTOLIBRE">Texto libre</Resource>
+		<Resource tag="CONOPCIONES">Con opciones</Resource>
 		<Resource tag="CRITERIOS">Criterios aplicados</Resource>
 		<Resource tag="ORDENADOPOR">Ordenado por </Resource>
 		<Resource tag="ORDENARPOR">Ordenar por </Resource>
@@ -367,6 +369,7 @@
 		<Resource tag="NORESULTADOSINVT">No tienes ninguna invitación pendiente</Resource>
 		<Resource tag="NORESULTADOSNOT">No tienes ninguna notificación pendiente</Resource>
 		<Resource tag="NORESULTADOSSUSCRIP">No tienes ninguna suscripción activa o los recursos de las mismas han caducado</Resource>
+    <Resource tag="ULTIMASBUSQUEDAS">Últimas búsquedas</Resource>
 	</page>
 	<page name="INICIO">
 		<Resource tag="TITULO">Login </Resource>
@@ -835,6 +838,18 @@
 		<Resource tag="TODASUACTIVIDAD">toda su actividad</Resource>
 		<Resource tag="RECURSOSENCOMUNIDADES">Recursos publicados</Resource>
 		<Resource tag="RECURSOSENESPACIOPERSONAL">Recursos en tu espacio</Resource>
+		<Resource tag="INTRODUCENOMBRE">Introduce tu nombre</Resource>
+    <Resource tag="INTRODUCEAPELLIDO">Introduce tus apellido</Resource>
+    <Resource tag="INTRODUCEEMAIL">Introduce tu correo electrónico</Resource>
+    <Resource tag="INTRODUCETWITTER">Introduce tu cuenta de Twitter</Resource>
+    <Resource tag="INTRODUCEFACEBOOK">Introduce tu cuenta de Facebook</Resource>
+    <Resource tag="INTRODUCELINKEDIN">Introduce tu cuenta de Linkedin</Resource>
+    <Resource tag="INTRODUCEURL">Introduce una url y añádela</Resource>
+    <Resource tag="OTROSSTIOSINTERES">Otros sitios de interés</Resource>
+    <Resource tag="ADD">Añadir</Resource>
+    <Resource tag="ELIMINAR">Eliminar</Resource>
+    <Resource tag="ELIMINAREMAILTUTOR">Al ser mayor de edad puedes eliminar tu Email de Tutor.</Resource>
+    <Resource tag="COMPONENTEGUARDADOOK">Se ha guardado correctamente</Resource>
 	</page>
 	<page name="PERFILIMPORTARDELICIOUS">
 		<Resource tag="TITULO">Importa tus marcadores de Delicious a @1@</Resource>
@@ -2217,6 +2232,9 @@
 		<Resource tag="PASSCAMBIADOEXITO">La contraseña se ha cambiado con éxito.</Resource>
 		<Resource tag="PASSANTERIORNOCHUNGA">La contraseña actual no es correcta.</Resource>
 		<Resource tag="IRINICIO">Ir al inicio</Resource>
+    <Resource tag="INSERTARPASSWORDACTUAL">Introduce tu constraseña actual</Resource>
+    <Resource tag="INSERTARPASSWORDNUEVA">Introduce tu nueva constraseña</Resource>
+    <Resource tag="INSERTARPASSWORDCONFIRMAR">Confirma la nueva contraseña</Resource>
 	</page>
 	<page name="CONFIGURACIONGNOSS">
 		<Resource tag="SOLICITUDCONTACTO">Solicitudes de contactos y amigos</Resource>
@@ -2931,6 +2949,8 @@
 		<Resource tag="ADVERTENCIANIVELCERTIFICACIONCONDOCUMENTOS">Existen documentos asignados a este nivel de certificación, si borras este nivel dichos documentos se quedarán sin nivel de certificación ¿Estás seguro de que quieres borrarlo?</Resource>
 		<Resource tag="ADVERTENCIANIVELCERTIFICACIONVACIO">No puede haber niveles de certificación con el nombre en blanco</Resource>
 		<Resource tag="MIEMBROS">Miembros</Resource>
+		<Resource tag="ANADIRNUEVOGRUPO">Añadir grupo</Resource>
+		<Resource tag="ANADIRNUEVOMIEMBRO">Añadir miembro</Resource>
 		<Resource tag="MIEMBROSCOMUNIDAD">Miembros de la comunidad</Resource>
 		<Resource tag="TODOS">Todos</Resource>
 		<Resource tag="MASACTIVOS">Usuarios más activos</Resource>
@@ -3756,6 +3776,7 @@
 		<Resource tag="SOLICITDESACCESOCOM">solicitudes-acceso-com</Resource>
 		<Resource tag="SOLICITDESACCESOPROF">solicitudes-acceso-profesores</Resource>
 		<Resource tag="SUBIRRECURSO">anyadir-nuevo-recurso</Resource>
+		<Resource tag="SUBIRRECURSOMYGNOSS">anyadir-nuevo-recurso-gnoss</Resource>
 		<Resource tag="COMPROBARTOKENSP">comprobar-token-sp</Resource>
 		<Resource tag="SUBIRRECURSOENTERO">anyadir-recurso</Resource>
 		<Resource tag="CREARDOCUMENTOMULTIPLE">crear-documento-multiple</Resource>
@@ -3772,8 +3793,11 @@
 		<Resource tag="ADMINISTRARPESTANYASCOM">administrar-paginas</Resource>
 		<Resource tag="ADMINISTRARCOOKIESCOM">administrar-cookies</Resource>
 		<Resource tag="ADMINISTRARCOOKIESCOMECOSISTEMA">administrar-cookies-ecosistema</Resource>
+		<Resource tag="ADMINISTRARDATOSEXTRA">administrar-datos-extra</Resource>
+		<Resource tag="ADMINISTRARDATOSEXTRAECOSISTEMA">administrar-datos-extra-ecosistema</Resource>
 		<Resource tag="ADMINISTRARCONTEXTOSCOM">administrar-componentes-recursos</Resource>
-		<Resource tag="ADMINISTRARTRAZAS">administrar-trazas</Resource>		
+		<Resource tag="ADMINISTRARTRAZAS">administrar-trazas</Resource>
+		<Resource tag="ADMINISTRARDESCARGARCONFIGURACION">administrar-descargar-configuracion</Resource>		
 		<Resource tag="ADMINISTRARCACHE">administrar-cache</Resource>
         <Resource tag="ADMINISTRARSUGERENCIASBUSQUEDA">administrar-search</Resource>
 		<Resource tag="ADMINISTRARFACETASCOM">administrar-facetas</Resource>
@@ -3868,14 +3892,18 @@
 		<Resource tag="ORGANIGRAMA">organigrama</Resource>
 		<Resource tag="SOLICITDESACCESO">solicitudes-acceso</Resource>
 		<Resource tag="EDITARRECURSO">editar-recurso</Resource>
+		<Resource tag="EDITARRECURSOGNOSS">editar-recurso-gnoss</Resource>
 		<Resource tag="VERSIONANDORECURSO">nueva-version-recurso</Resource>
+		<Resource tag="VERSIONANDORECURSOGNOSS">nueva-version-recurso-gnoss</Resource>
 		<Resource tag="VERSIONRAPIDARECURSO">version-rapida-recurso</Resource>
 		<Resource tag="DESVINCULARSHAREPOINT">desvincular-sharepoint</Resource>
 		<Resource tag="VINCULARSHAREPOINT">link-resourceSP</Resource>
 		<Resource tag="FALLOVERSIONANDORECURSO">fallo-version-recurso</Resource>
+		<Resource tag="FALLOVERSIONANDORECURSOGNOSS">fallo-version-recurso-gnoss</Resource>
 		<Resource tag="CREARDOCUMENTO">crear-documento</Resource>
 		<Resource tag="SUBIRRECURSOCREADO">completar-recurso-creado</Resource>
 		<Resource tag="SUBIRRECURSO2">completar-recurso-subido</Resource>
+		<Resource tag="SUBIRRECURSO2GNOSS">completar-recurso-subido-gnoss</Resource>
 		<Resource tag="SUBIRPREGUNTA">hacer-pregunta</Resource>
 		<Resource tag="SUBIRENCUESTA">hacer-encuesta</Resource>
 		<Resource tag="SUBIRDEBATE">iniciar-debate</Resource>
@@ -4067,6 +4095,7 @@
 		<Resource tag="ADMINISTRARCATEGORIASCOM">Categorías</Resource>
 		<Resource tag="ADMINISTRARFOTOSCATEGORIASCOM">Fotos categorías</Resource>
 		<Resource tag="ADMINISTRARTRADUCCIONES">Traducciones</Resource>
+		<Resource tag="ADMINISTRARDATOSEXTRA">Datos extra registro</Resource>
 		<Resource tag="ADMINISTRARREDIRECCIONES">Redirecciones</Resource>
 		<Resource tag="ADMINISTRARCONSULTASPARQL">Consultas Sparql</Resource>
 		<Resource tag="ADMINISTRABORRADOMASIVO">Borrado masivo</Resource>
@@ -4599,6 +4628,7 @@
 		<Resource tag="LASNUEVASPROPUESTASDECATEGORIASENVIADASPORLOSUSUARIOSDELACOM">Las nuevas propuestas de categorías enviadas por los usuarios de la comunidad aparecen marcadas en naranja.</Resource>
 		<Resource tag="DEBESACEPTARESTASPROPUESTASPARACONVERTIRLASENCATEGORIAS.">Debes aceptar estas propuestas para convertirlas en categorías.</Resource>
 		<Resource tag="ACTIVARLAEDICIONDECATEGORIASENOTROSIDIOMAS">Activar la edición de categorías en otros idiomas</Resource>
+		<Resource tag="ESOBLIGATORIO">Obligatorio</Resource>
 		<Resource tag="CREARNUEVA">Crear nueva</Resource>
 		<Resource tag="CAMBIARNOMBRE">Cambiar nombre</Resource>
 		<Resource tag="MOVER">Mover</Resource>
@@ -4607,6 +4637,8 @@
 		<Resource tag="COMPARTIR">Compartir</Resource>
 		<Resource tag="BUSCAR">Buscar</Resource>
 		<Resource tag="GUARDAR">Guardar</Resource>
+		<Resource tag="CREAROPCION">Añadir opción</Resource>
+		<Resource tag="TIPODATOEXTRA">Tipo de dato extra</Resource>
 		<Resource tag="ÁRBOLDECATEGORIAS">Árbol de Categorías</Resource>
 		<Resource tag="UTILIDADES">Utilidades</Resource>
 		<Resource tag="CONFIGURACIONDELASOPCIONESDELOSRECURSOS">Configuración de las opciones de los recursos</Resource>
@@ -5276,6 +5308,7 @@
 		<Resource tag="NOEXISTENINGUNAVISTAPERSONALIZADAPARAELCOMPONENTE">No existe ninguna vista personalizada para el componente</Resource>
 		<Resource tag="DESCARGARELORIGINAL">Descargar el original</Resource>
 		<Resource tag="AGREGARUNANUEVAPERSONALIZACION">Agregar una nueva personalización</Resource>
+		<Resource tag="ADMINISTRARDATOSEXTRA">Administrar datos extra</Resource>
 		<Resource tag="ADMINISTRARTRADUCCIONES">Administrar traducciones</Resource>
 		<Resource tag="NUEVATRADUCCION">Nueva traducción</Resource>
 		<Resource tag="ELIMINARENTRADASVACIAS">Eliminar entradas vacías</Resource>
@@ -5532,6 +5565,8 @@
 		<Resource tag="LARGA">Larga</Resource>
 		<Resource tag="SELECCIONAELTIPODECAMPODELFORMULARIO">Selecciona el tipo de campo del formulario.</Resource>
 		<Resource tag="INTRODUCEELIDDELCOMPONENTEYPULSAENTEROAÑADIR">Introduce el id del componente y pulsa ENTER o AÑADIR</Resource>
+		<Resource tag="INTRODUCEELID(RESOURCEID)DELRECURSO">Introduce el ID (ResourceID) del recurso</Resource>
+		<Resource tag="INTRODUCEELID(PROYECTID)DELPROYECTO">Introduce el ID (ProyectID) del proyecto</Resource>
 		<Resource tag="NUEVOENLACEDEMENU">Nuevo enlace de menú</Resource>
 		<Resource tag="NOMBREDELITEMDELMENU">Nombre del item del menú.</Resource>
 		<Resource tag="ENLACE">Enlace</Resource>
@@ -5773,7 +5808,8 @@
 		<Resource tag="TESAUROSEMANTICO">Tesauro semántico</Resource>
 		<Resource tag="TESAUROSEMANTICOORDENADO">Tesauro semántico ordenado</Resource>
 		<Resource tag="TITULOQUESEMOSTRARAENLAFACETA">Título que se mostrará en la faceta.</Resource>
-		<Resource tag="DESEAELIMINARLAFACETASELECCIONADA">¿Desea eliminar la faceta seleccionada?</Resource>		
+		<Resource tag="DESEAELIMINARLAFACETASELECCIONADA">¿Desea eliminar la faceta seleccionada?</Resource>
+		<Resource tag="DESEAELIMINARELDATOEXTRASELECCIONADO">¿Desea eliminar el dato extra seleccionado?</Resource>
 		<Resource tag="CREARFILTRO">Crear filtro</Resource>
 		<Resource tag="FILTROSDELAFACETA">Filtros de la faceta</Resource>		
 		<Resource tag="DESEAELIMINARELCONTEXTOSELECCIONADO">¿Desea eliminar el contexto seleccionado?</Resource>
@@ -5788,6 +5824,7 @@
 		<Resource tag="PALABRASPARABUSQUEDASPORTEXTOLIBRE">Palabras para búsquedas por texto libre</Resource>
 		<Resource tag="PROPIEDADESPARABUSQUEDASPORTEXTOLIBRE">Propiedades para búsquedas por texto libre</Resource>
 		<Resource tag="INTRODUCEUNAPROPIEDADPARABUSQUEDAPORTEXTOLIBRE">Introduce una propiedad para búsqueda por texto libre …</Resource>
+		<Resource tag="OPCIONESDATOEXTRA">Opciones para el dato extra</Resource>
 		<Resource tag="INTRODUCELAPROPIEDADDELAONTOLOGIACORRESPONDIENTEALALATITUD">Introduce la propiedad de la ontología correspondiente a la latitud</Resource>
 		<Resource tag="PROPIEDADDELAONTOLOGIACORRESPONDIENTEALALATITUD">Propiedad de la ontología correspondiente a la latitud</Resource>
 		<Resource tag="PROPIEDADDELAONTOLOGIACORRESPONDIENTEALALONGITUD">Propiedad de la ontología correspondiente a la longitud</Resource>
@@ -5798,6 +5835,8 @@
 		<Resource tag="PROPIEDADDELAONTOLOGIACORRESPONDIENTEALCOLORDELARUTA">Propiedad de la ontología correspondiente al color de la ruta</Resource>		
 		<Resource tag="INVALIDARVISTAS">Invalidar vistas</Resource>
 		<Resource tag="COMPARTIRVISTASENDOMINIO">Compartir vistas</Resource>
+		<Resource tag="NUEVODATOEXTRA">Nuevo dato extra</Resource>
+		<Resource tag="EDITARDATOEXTRA">Editar dato extra</Resource>
 		<Resource tag="AGREGARPERSONALIZACION">Agregar personalización</Resource>
 		<Resource tag="NUEVAVISTA">Nueva vista</Resource>
 		<Resource tag="ESTADO">Estado</Resource>
@@ -6038,6 +6077,12 @@
 		<Resource tag="BUSCARSERVICIO">Buscar servicio</Resource>
 		<Resource tag="SEGUNDOS">segundos</Resource>
 		<Resource tag="TRAZAS">Trazas</Resource>
+		
+		<Resource tag="DESCARGACONFIG">Descargar configuraciones</Resource>
+		<Resource tag="DESCRIPDESCARGACONFIG">Descarga y subida de archivos comprimidos con las configuraciones del proyecto actual</Resource>
+		<Resource tag="IMPORTARTRADUCCIONES">Importar configuraciones</Resource>
+		<Resource tag="EXPLICACIONIMPORTARCONFIGURACIONES">Selecciona un fichero zip que contenga cada configuración a subir, también en ficheros zip. Puedes usar como ejemplo los archivos descargados.</Resource>
+		
 	    <Resource tag="ADMINISTRACIONDETRAZASSOBRESERVICIOSDELACOMUNIDADPARALAREALI">Administración de trazas sobre servicios de la comunidad para la realización de seguimiento de eventos y gestión de posibles errores.</Resource>
 		<Resource tag="DESCARGARTRADUCCIONES">Descargar traducciones</Resource>
 		<Resource tag="TEXTOS">Textos</Resource>
@@ -6104,7 +6149,7 @@
 		<Resource tag="ESTADODELOSSERVICIOS">Estado de los servicios</Resource>
 		<Resource tag="COMPROBACIONDELESTADODELOSSERVICIOSINSTALADOSENLACOMUNIDAD">Comprobación del estado de los servicios instalados en la comunidad.</Resource>
 		<Resource tag="FILTRODELAFACETA">Filtro de la faceta</Resource>
-		<Resource tag="INDICALAPROPIEDADPORLAQUESEDESEAQUEFUNCIONEELFILTRODELAFACET">Indica la propiedad por la que se desea que funcione el filtro de la faceta (Ej: &quot;schema:name&quot;,&quot;schema:type&quot;)</Resource>
+		<Resource tag="INDICALAPROPIEDADPORLAQUESEDESEAQUEFUNCIONEELFILTRODELAFACET">Indica la propiedad por la que se desea que funcione el filtro de la faceta (Ej: &quot;schema:name&quot;)</Resource>
 		<Resource tag="AÑADELACONDICIONPARALAFACETAYPULSAAÑADIR">Añade la condición para la faceta y pulsa Añadir.</Resource>
 
 

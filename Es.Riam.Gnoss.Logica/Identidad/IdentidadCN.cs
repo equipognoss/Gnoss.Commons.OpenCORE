@@ -450,6 +450,24 @@ namespace Es.Riam.Gnoss.Logica.Identidad
         }
 
         /// <summary>
+        /// Obtiene los perfiles de una persona pasada por parámetro
+        /// </summary>
+        /// <param name="pPersonaID">Identificador de persona</param>
+        /// <param name="pObtenerSoloActivos">TRUE si obtiene sólo lo que este activo (no eliminado, no fecha de baja,..)</param>
+        /// <returns>Dataset de identidades</returns>
+        public DataWrapperIdentidad ObtenerPerfilesDePersona(Guid pPersonaID, bool pObtenerSoloActivos, Guid pIdentidadID)
+        {
+            if (pPersonaID.Equals(UsuarioAD.Invitado))
+            {
+                return ObtenerIdentidadInvitado();
+            }
+            else
+            {
+                return IdentidadAD.ObtenerPerfilesDePersona(pPersonaID, pObtenerSoloActivos, pIdentidadID);
+            }
+        }
+
+        /// <summary>
         /// Obtiene las tablas Perfil e Identidad de personas en un proyecto determinado
         /// </summary>
         /// <param name="pIdentidadesID">Identificadores de las personas</param>
@@ -1211,6 +1229,16 @@ namespace Es.Riam.Gnoss.Logica.Identidad
         }
 
         /// <summary>
+        /// Indica si la identidad de mygnoss de esta persona participa en los grupos
+        /// </summary>
+        /// <param name="pIdentidadID">Identificador de la Identidad</param>
+        /// <returns></returns>
+        public bool ParticipaIdentidadMyGnossParticipaEnGrupo(Guid pIdentidadID, List<Guid> pListaGrupos)
+        {
+            return IdentidadAD.ParticipaIdentidadMyGnossParticipaEnGrupo(pIdentidadID, pListaGrupos);
+        }
+
+        /// <summary>
         /// Indica si la identidad ya participa en el grupo
         /// </summary>
         /// <param name="pIdentidadID">Identificador de la Identidad</param>
@@ -1873,6 +1901,27 @@ namespace Es.Riam.Gnoss.Logica.Identidad
         {
             return this.IdentidadAD.ObtenerListaPerfilesDeUsuario(pUsuarioID);
         }
+
+        /// <summary>
+        /// Obtiene a partir del identificador de usuario todos los posibles perfiles que tenga activos en una lista.
+        /// </summary>
+        /// <param name="pUsuarioID">Clave del usuario</param>
+        /// <returns>Lista de IDs de perfiles</returns>
+        public List<Guid> ObtenerListaIdentidadesDeUsuario(Guid pUsuarioID)
+        {
+            return this.IdentidadAD.ObtenerListaIdentidadesDeUsuario(pUsuarioID);
+        }
+
+        /// <summary>
+        /// Obtiene a partir de los identificadores de usuario todos los posibles perfiles que tengan activos en una lista.
+        /// </summary>
+        /// <param name="pListaUsuarioIDs">Lista de identificadores de usuario</param>
+        /// <returns>Diccionario de UsuarioID y lista de PerfilesID</returns>
+        public Dictionary<Guid, List<Guid>> ObtenerListaIdentidadesDeListaUsuarios(List<Guid> pListaUsuarioIDs)
+        {
+            return this.IdentidadAD.ObtenerListaIdentidadesDeListaUsuarios(pListaUsuarioIDs);
+        }
+
 
         /// <summary>
         /// Obtiene a partir de los identificadores de usuario todos los posibles perfiles que tengan activos en una lista.

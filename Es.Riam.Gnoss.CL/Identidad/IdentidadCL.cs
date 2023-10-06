@@ -397,11 +397,11 @@ namespace Es.Riam.Gnoss.CL.Identidad
         /// <summary>
         /// Elimina de la caché la identidad actual con la que está conectado el usuario
         /// </summary>
-        public void EliminarCacheGestorIdentidadActual(Guid pUsuarioID, Guid pPersonaID, Guid pPerfilID)
+        public void EliminarCacheGestorIdentidadActual(Guid pUsuarioID, Guid pIdentidadID, Guid pPersonaID)
         {
             if (!pUsuarioID.Equals(UsuarioAD.Invitado))
             {
-                EliminarCacheGestorIdentidad(pPersonaID, pPerfilID);
+                EliminarCacheGestorIdentidad(pIdentidadID, pPersonaID);
             }
         }
 
@@ -412,14 +412,8 @@ namespace Es.Riam.Gnoss.CL.Identidad
         {
             if (!pUsuarioID.Equals(UsuarioAD.Invitado))
             {
-                IdentidadCN identCN = new IdentidadCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
-                List<Guid> perfilesUsu = identCN.ObtenerListaPerfilesDeUsuario(pUsuarioID);
-                identCN.Dispose();
-
-                foreach (Guid perfilID in perfilesUsu)
-                {
-                    EliminarCacheGestorIdentidad(pPersonaID, perfilID);
-                }
+                List<string> listaCaches = ObtenerClavesCacheQueContengaCadena(string.Concat("IdentidadActual_", pPersonaID, "_"));
+                InvalidarCachesMultiples(listaCaches);
             }
         }
 
@@ -430,55 +424,100 @@ namespace Es.Riam.Gnoss.CL.Identidad
         {
             if (pDicUsuarioIDPersonaID != null && pDicUsuarioIDPersonaID.Keys.Count > 0)
             {
-                IdentidadCN identCN = new IdentidadCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
-                Dictionary<Guid, List<Guid>> dicUsuarioPerfiles = identCN.ObtenerListaPerfilesDeListaUsuarios(pListaUsuarioIDs);
-
                 foreach (Guid usuarioID in pDicUsuarioIDPersonaID.Keys)
                 {
                     if (!usuarioID.Equals(UsuarioAD.Invitado))
                     {
-                        foreach (Guid perfilID in dicUsuarioPerfiles[usuarioID])
-                        {
-                            EliminarCacheGestorIdentidad(pDicUsuarioIDPersonaID[usuarioID], perfilID);
-                        }
+                        List<string> listaCaches = ObtenerClavesCacheQueContengaCadena(string.Concat("IdentidadActual_", pDicUsuarioIDPersonaID[usuarioID], "_"));
+                        InvalidarCachesMultiples(listaCaches);
                     }
-                }
+                }              
             }
         }
 
         /// <summary>
         /// Elimina de la caché la identidad actual con la que está conectado el usuario
         /// </summary>
-        public void EliminarCacheGestorIdentidad(Guid pPersonaID, Guid pPerfilID)
+        public void EliminarCacheGestorIdentidad(Guid pIdentidadID, Guid pPersonaID)
         {
-            string rawKey = string.Concat("IdentidadActual_", pPersonaID, "_", pPerfilID);
+            //string rawKey = string.Concat("IdentidadActual_", pPersonaID, "_", pPerfilID);
+            string rawKey = string.Concat("IdentidadActual_", pPersonaID, "_", pIdentidadID);
             InvalidarCache(rawKey);
         }
+
+        ///// <summary>
+        ///// Almacena en la caché el gestor con la identidad actual con la que está conectado el usuario
+        ///// </summary>
+        //public GestionIdentidades ObtenerCacheGestorIdentidadActual(Guid pPersonaID, Guid pPerfilID, Guid pOrganizacionID)
+        //{
+        //    string rawKey = string.Concat("IdentidadActual_", pPersonaID, "_", pPerfilID);
+
+        //    // Compruebo si está en la caché
+        //    GestionIdentidades gestorIdentidades = ObtenerObjetoDeCache(rawKey) as GestionIdentidades;
+        //    if (gestorIdentidades == null)
+        //    {
+        //        // Si no está, lo cargo y lo almaceno en la caché
+        //        gestorIdentidades = ObtenerGestorIdentidadActual(pOrganizacionID, pPersonaID);
+        //        AgregarObjetoCache(rawKey, gestorIdentidades, DURACION_CACHE_GESTOR_IDENTIDADES);
+        //    }
+
+        //    return gestorIdentidades;
+        //}
+
 
         /// <summary>
         /// Almacena en la caché el gestor con la identidad actual con la que está conectado el usuario
         /// </summary>
-        public GestionIdentidades ObtenerCacheGestorIdentidadActual(Guid pPersonaID, Guid pPerfilID, Guid pOrganizacionID)
+        public GestionIdentidades ObtenerCacheGestorIdentidadActual(Guid pIdentidadID, Guid pPersonaID, Guid pOrganizacionID)
         {
-            string rawKey = string.Concat("IdentidadActual_", pPersonaID, "_", pPerfilID);
+            string rawKey = string.Concat("IdentidadActual_", pPersonaID, "_", pIdentidadID);
 
             // Compruebo si está en la caché
             GestionIdentidades gestorIdentidades = ObtenerObjetoDeCache(rawKey) as GestionIdentidades;
             if (gestorIdentidades == null)
             {
                 // Si no está, lo cargo y lo almaceno en la caché
-                gestorIdentidades = ObtenerGestorIdentidadActual(pOrganizacionID, pPersonaID);
+                gestorIdentidades = ObtenerGestorIdentidadActual(pOrganizacionID, pPersonaID, pIdentidadID);
                 AgregarObjetoCache(rawKey, gestorIdentidades, DURACION_CACHE_GESTOR_IDENTIDADES);
             }
 
             return gestorIdentidades;
         }
 
+        ///// <summary>
+        ///// Obtiene el gestor de la identidad acutal.
+        ///// </summary>
+        ///// <returns>Gestor de la identidad acutal</returns>
+        //private GestionIdentidades ObtenerGestorIdentidadActual(Guid pOrganizacionID, Guid pPersonaID)
+        //{
+        //    mEntityContext.UsarEntityCache = true;
+        //    PersonaCN personaCN = new PersonaCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+        //    DataWrapperPersona dataWrapperPersona = personaCN.ObtenerPersonaPorID(pPersonaID);
+        //    personaCN.Dispose();
+
+        //    DataWrapperOrganizacion organizacionDS = new DataWrapperOrganizacion();
+        //    if (pOrganizacionID != UsuarioAD.Invitado)
+        //    {
+        //        OrganizacionCN organizacionCN = new OrganizacionCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+
+        //        // Cargar todas las organizaciones de la persona porque si se comparte en una comunidad en la que se participa con otra organización diferente a la de la identidad actual y participa con perfil coporativo, falla la compartición.
+        //        organizacionDS = organizacionCN.ObtenerOrganizacionesDePersona(pPersonaID);
+        //        organizacionDS.LlenarEntidadesCache();
+        //        organizacionCN.Dispose();
+        //    }
+        //    IdentidadCN identidadCN = new IdentidadCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+        //    dataWrapperPersona.CargaRelacionesPerezosasCache();
+        //    GestionIdentidades gestorIdentidades = new GestionIdentidades(identidadCN.ObtenerPerfilesDePersona(pPersonaID, true), new GestionPersonas(dataWrapperPersona, mLoggingService, mEntityContext), new GestionOrganizaciones(organizacionDS, mLoggingService, mEntityContext), mLoggingService, mEntityContext, mConfigService, mServicesUtilVirtuosoAndReplication);
+        //    identidadCN.Dispose();
+        //    mEntityContext.UsarEntityCache = false;
+        //    return gestorIdentidades;
+        //}
+
         /// <summary>
         /// Obtiene el gestor de la identidad acutal.
         /// </summary>
         /// <returns>Gestor de la identidad acutal</returns>
-        private GestionIdentidades ObtenerGestorIdentidadActual(Guid pOrganizacionID, Guid pPersonaID)
+        private GestionIdentidades ObtenerGestorIdentidadActual(Guid pOrganizacionID, Guid pPersonaID, Guid pIdentidadID)
         {
             mEntityContext.UsarEntityCache = true;
             PersonaCN personaCN = new PersonaCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
@@ -497,11 +536,12 @@ namespace Es.Riam.Gnoss.CL.Identidad
             }
             IdentidadCN identidadCN = new IdentidadCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
             dataWrapperPersona.CargaRelacionesPerezosasCache();
-            GestionIdentidades gestorIdentidades = new GestionIdentidades(identidadCN.ObtenerPerfilesDePersona(pPersonaID, true), new GestionPersonas(dataWrapperPersona, mLoggingService, mEntityContext), new GestionOrganizaciones(organizacionDS, mLoggingService, mEntityContext), mLoggingService, mEntityContext, mConfigService, mServicesUtilVirtuosoAndReplication);
+            GestionIdentidades gestorIdentidades = new GestionIdentidades(identidadCN.ObtenerPerfilesDePersona(pPersonaID, true, pIdentidadID), new GestionPersonas(dataWrapperPersona, mLoggingService, mEntityContext), new GestionOrganizaciones(organizacionDS, mLoggingService, mEntityContext), mLoggingService, mEntityContext, mConfigService, mServicesUtilVirtuosoAndReplication);
             identidadCN.Dispose();
             mEntityContext.UsarEntityCache = false;
             return gestorIdentidades;
         }
+
 
         /// <summary>
         /// Obtiene un array con 2 valores, el primero es el ID del perfil actual del usuario y el segundo es el ID de la identidad actual del usuario

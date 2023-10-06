@@ -11,5 +11,7 @@
         void CerrarConexionLectura();
 
         void Dispose();
+
+        bool ExisteColaRabbit(string pNombreCola);
     }
 }

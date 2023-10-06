@@ -3363,6 +3363,48 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
 
 
         /// <summary>
+        /// Obtiene una lista con los proyectos en los que participa un perfil(NO incluye myGnoss)
+        /// </summary>
+        /// <param name="pPerfilID">Identificador del perfil</param>
+        /// <returns>Lista de los proyectos en los que participa un perfil</returns>
+        public DataWrapperProyecto ObtenerProyectosParticipaPerfilLimite10(Guid pPerfilID)
+        {
+            DataWrapperProyecto dataWrapperProyecto = new DataWrapperProyecto();
+
+            List<Guid> listaProyectoID = mEntityContext.AdministradorProyecto.Join(mEntityContext.Usuario, adminProy => adminProy.UsuarioID, usuario => usuario.UsuarioID, (adminProy, usuario) => new
+            {
+                AdminProyecto = adminProy,
+                Usuario = usuario
+            }).Join(mEntityContext.Persona, objeto => objeto.Usuario.UsuarioID, persona => persona.UsuarioID.Value, (objeto, persona) => new
+            {
+                AdminProyecto = objeto.AdminProyecto,
+                Persona = persona
+            }).Join(mEntityContext.Perfil, persona => persona.Persona.PersonaID, perfil => perfil.PersonaID.Value, (persona, perfil) => new
+            {
+                AdminProyecto = persona.AdminProyecto,
+                Perfil = perfil
+            }).Where(perfil => perfil.Perfil.PerfilID == pPerfilID).Select(objeto => objeto.AdminProyecto.ProyectoID).ToList();
+
+            var listaProyectosVar = mEntityContext.Proyecto.
+                Join(mEntityContext.Identidad, proyecto => proyecto.ProyectoID, identidad => identidad.ProyectoID, (proyecto, identidad) => new
+            {
+                Proyecto = proyecto,
+                Identidad = identidad
+            }).Where(objeto => objeto.Identidad.PerfilID.Equals(pPerfilID) && !objeto.Identidad.FechaBaja.HasValue && !objeto.Identidad.FechaExpulsion.HasValue && objeto.Proyecto.ProyectoID != MetaProyecto && (objeto.Proyecto.Estado.Equals((short)EstadoProyecto.Abierto) || objeto.Proyecto.Estado.Equals((short)EstadoProyecto.Cerrandose) || (objeto.Proyecto.Estado.Equals((short)EstadoProyecto.Definicion) && listaProyectoID.Contains(objeto.Proyecto.ProyectoID)))).OrderByDescending(identidad => identidad.Identidad.NumConnexiones).Take(10).ToList().Select(objeto => new ProyectoNumConexiones
+            {
+                ProyectoID = objeto.Proyecto.ProyectoID,
+                NombreCorto = objeto.Proyecto.NombreCorto,
+                Nombre = objeto.Proyecto.Nombre,
+                TipoAcceso = objeto.Proyecto.TipoAcceso,
+                NumConexiones = objeto.Identidad.NumConnexiones,
+                TipoProyecto = objeto.Proyecto.TipoProyecto
+            }).ToList();
+
+            dataWrapperProyecto.ListaProyectoNumConexiones = listaProyectosVar;
+            return dataWrapperProyecto;
+        }
+
+        /// <summary>
         /// Obtiene una lista con los proyectos que no son de registro obligatorio.
         /// </summary>
         /// <returns>Lista de los proyectos que no son de registro obligatorio</returns>

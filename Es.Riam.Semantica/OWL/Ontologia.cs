@@ -505,18 +505,21 @@ namespace Es.Riam.Semantica.OWL
             {
                 if (mConfiguracionPlantilla == null)
                 {
-                    foreach (EstiloPlantilla estilo in EstilosPlantilla["[ConfiguracionGeneral]"])
+                    if (EstilosPlantilla != null)
                     {
-                        if (estilo is EstiloPlantillaConfigGen)
+                        foreach (EstiloPlantilla estilo in EstilosPlantilla["[ConfiguracionGeneral]"])
                         {
-                            mConfiguracionPlantilla = (EstiloPlantillaConfigGen)estilo;
-
-                            if (!this.OntoAuxiliarInventada)
+                            if (estilo is EstiloPlantillaConfigGen)
                             {
-                                mConfiguracionPlantilla.Ontologia = this;
-                            }
+                                mConfiguracionPlantilla = (EstiloPlantillaConfigGen)estilo;
 
-                            break;
+                                if (!this.OntoAuxiliarInventada)
+                                {
+                                    mConfiguracionPlantilla.Ontologia = this;
+                                }
+
+                                break;
+                            }
                         }
                     }
                 }

@@ -495,7 +495,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Amigos
 
                 // Obtener por si no estuvieran cargado, todos los perfiles de la persona
                 IdentidadCN identidadCN = new IdentidadCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
-                pGestorIdentidades.DataWrapperIdentidad.Merge(identidadCN.ObtenerPerfilesDePersona(identidadUsuario.PerfilUsuario.PersonaID.Value, false));
+                pGestorIdentidades.DataWrapperIdentidad.Merge(identidadCN.ObtenerPerfilesDePersona(identidadUsuario.PerfilUsuario.PersonaID.Value, false, identidadUsuario.Clave));
                 identidadCN.Dispose();
 
                 pGestorIdentidades.RecargarHijos();
@@ -578,8 +578,8 @@ namespace Es.Riam.Gnoss.Web.Controles.Amigos
                     PersonaCN perCN = new PersonaCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
                     DataWrapperPersona dataWrapperPersona = perCN.ObtenerPersonaPorUsuario(filaUsu.UsuarioID, false, false);
                     perCN.Dispose();
-
-                    DataWrapperIdentidad identDW = identCN.ObtenerPerfilesDePersona(dataWrapperPersona.ListaPersona.First().PersonaID, true);
+                    Guid identidadIDProyecto = identCN.ObtenerIdentidadIDDePersonaEnProyecto(ProyectoSeleccionado.Clave, dataWrapperPersona.ListaPersona.First().PersonaID)[0];
+                    DataWrapperIdentidad identDW = identCN.ObtenerPerfilesDePersona(dataWrapperPersona.ListaPersona.First().PersonaID, true, identidadIDProyecto);
                     //"Tipo =" + (int)TiposIdentidad.Profesor + " AND ProyectoID = '" + ProyectoAD.MetaProyecto + "'"
                     Guid identidadID = identDW.ListaIdentidad.Where(identidad => identidad.Tipo.Equals((int)TiposIdentidad.Profesor) && identidad.ProyectoID.Equals(ProyectoAD.MetaProyecto)).Select(filaIdent => filaIdent.IdentidadID).FirstOrDefault();
                     if (identidadID.Equals(Guid.Empty))
@@ -633,8 +633,8 @@ namespace Es.Riam.Gnoss.Web.Controles.Amigos
                 {
                     PersonaCN perCN = new PersonaCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
                     DataWrapperPersona dataWrapperPersona = perCN.ObtenerPersonaPorUsuario(filaUsu.UsuarioID, false, false);
-
-                    DataWrapperIdentidad identDW = identCN.ObtenerPerfilesDePersona(dataWrapperPersona.ListaPersona.First().PersonaID, true);
+                    Guid identidadIDProyecto = identCN.ObtenerIdentidadIDDePersonaEnProyecto(ProyectoSeleccionado.Clave, dataWrapperPersona.ListaPersona.First().PersonaID)[0];
+                    DataWrapperIdentidad identDW = identCN.ObtenerPerfilesDePersona(dataWrapperPersona.ListaPersona.First().PersonaID, true, identidadIDProyecto);
 
                     //Dentro de identDS está la tabla con los perfiles de los administradores
 

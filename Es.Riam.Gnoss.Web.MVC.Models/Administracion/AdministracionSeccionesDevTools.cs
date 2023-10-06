@@ -63,6 +63,8 @@ namespace Es.Riam.Gnoss.Web.MVC.Models.Administracion
             Configuracion_OpcionesAvanzadasPlataforma,
             Configuracion_ServiciosExternos,
             Configuracion_Ecosistema,
+            Configuracion_DatosExtra,
+            Descargar_Configuraciones, 
 
             // Subsecciones de la sección Objetos de Conocimiento
             GrafoConocimiento_Home,

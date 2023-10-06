@@ -3598,6 +3598,7 @@
     <Resource tag="SOLICITDESACCESOCOM">requests-access-com</Resource>
     <Resource tag="SOLICITDESACCESOPROF">requests-access-professors</Resource>
     <Resource tag="SUBIRRECURSO">add-a-new-resource</Resource>
+    <Resource tag="SUBIRRECURSOGNOSS">add-a-new-resource-gnoss</Resource>
     <Resource tag="CREARDOCUMENTOMULTIPLE"></Resource>
     <Resource tag="CREARDOCUMENTOVIRTUAL"></Resource>
     <Resource tag="CREARDOCUMENTOORGMULTIPLE"></Resource>
@@ -3697,11 +3698,15 @@
     <Resource tag="ORGANIGRAMA">organization-chart</Resource>
     <Resource tag="SOLICITDESACCESO">requests-access</Resource>
     <Resource tag="EDITARRECURSO">edit-resource</Resource>
+    <Resource tag="EDITARRECURSOGNOSS">edit-resource-gnoss</Resource>
     <Resource tag="VERSIONANDORECURSO">new-version-resource</Resource>
+    <Resource tag="VERSIONANDORECURSOGNOSS">new-version-resource-gnoss</Resource>
     <Resource tag="FALLOVERSIONANDORECURSO">error-version-resource</Resource>
+    <Resource tag="FALLOVERSIONANDORECURSOGNOSS">error-version-resource-gnoss</Resource>
     <Resource tag="CREARDOCUMENTO">create-document</Resource>
     <Resource tag="SUBIRRECURSOCREADO">complete-resource-created</Resource>
     <Resource tag="SUBIRRECURSO2">complete-resource-added</Resource>
+    <Resource tag="SUBIRRECURSO2GNOSS">complete-resource-added-gnoss</Resource>
     <Resource tag="SUBIRPREGUNTA">ask</Resource>
     <Resource tag="SUBIRENCUESTA">make-poll</Resource>
     <Resource tag="SUBIRDEBATE">start-discussion</Resource>

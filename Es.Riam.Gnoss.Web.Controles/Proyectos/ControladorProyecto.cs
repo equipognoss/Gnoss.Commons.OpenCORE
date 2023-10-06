@@ -677,7 +677,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Proyectos
             IdentidadCL identidadCL = new IdentidadCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mServicesUtilVirtuosoAndReplication);
             if (pIdentidad.PersonaID.HasValue)
             {
-                identidadCL.EliminarCacheGestorIdentidad(pIdentidad.PersonaID.Value, pIdentidad.PerfilID);
+                identidadCL.EliminarCacheGestorIdentidad(pIdentidad.Clave, pIdentidad.PersonaID.Value);
             }
             identidadCL.EliminarPerfilMVC(pIdentidad.PerfilID);
             identidadCL.Dispose();
@@ -1339,7 +1339,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Proyectos
             IdentidadCL identidadCL = new IdentidadCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mServicesUtilVirtuosoAndReplication);
             if (identidad.PersonaID.HasValue)
             {
-                identidadCL.EliminarCacheGestorIdentidad(identidad.PersonaID.Value, identidad.PerfilID);
+                identidadCL.EliminarCacheGestorIdentidad(identidad.Clave, identidad.PersonaID.Value);
             }
             identidadCL.EliminarPerfilMVC(identidad.PerfilID);
             identidadCL.Dispose();
@@ -1363,6 +1363,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Proyectos
             filaParametrosGenerales.NumeroRecursosRelacionados = 5;
             filaParametrosGenerales.FechaNacimientoObligatoria = true;
             filaParametrosGenerales.SolicitarCoockieLogin = true;
+            filaParametrosGenerales.CMSDisponible = true;
             if (pTipoProyecto.Equals((short)TipoProyecto.EducacionExpandida) || pTipoProyecto.Equals((short)TipoProyecto.EducacionPrimaria))
             {
                 filaParametrosGenerales.ComunidadGNOSS = true;

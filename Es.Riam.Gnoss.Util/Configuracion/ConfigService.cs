@@ -27,12 +27,15 @@ namespace Es.Riam.Gnoss.Util.Configuracion
         private int numeroPersonasEnvioNewsletter;
         private string usarCache;
         private bool? usarCacheLocal;
+        private bool? usarCacheRefreshActiva;
         private string numeroPersonasEnvioNewsletterString;
         private string azureServiceBusReintentos;
         private bool? cookieSesion;
         private string azureServiceBusEspera;
         private string urlBase;
         private int mTiempocapturaurl;
+        private int mWorkerThreads;
+        private int mPortThreads;
         private bool? jsyCssUnificado;
         private bool? peticionhttps;
         private bool? sitioComunidadesPorDefecto;
@@ -457,6 +460,49 @@ namespace Es.Riam.Gnoss.Util.Configuracion
             }
             return cadenaConexionAzureStorage;
         }
+
+        public int ObtenerPortThreads()
+        {
+            string numeroPortThreads;
+            if (EnvironmentVariables.Contains("portThreads"))
+            {
+                numeroPortThreads = EnvironmentVariables["portThreads"] as string;
+            }
+            else
+            {
+                numeroPortThreads = Configuration["portThreads"];
+            }
+
+            int numeroPortThreadsOut;
+            Int32.TryParse(numeroPortThreads, out numeroPortThreadsOut);
+            if (numeroPortThreadsOut > 0)
+            {
+                mWorkerThreads = numeroPortThreadsOut;
+            }
+            return mWorkerThreads;
+        }
+
+        public int ObtenerWorkerThreads()
+        {
+            string numeroWorkThreads;
+            if (EnvironmentVariables.Contains("workerThreads"))
+            {
+                numeroWorkThreads = EnvironmentVariables["workerThreads"] as string;
+            }
+            else
+            {
+                numeroWorkThreads = Configuration["workerThreads"];
+            }
+
+            int numeroWorkThreadsOut;
+            Int32.TryParse(numeroWorkThreads, out numeroWorkThreadsOut);
+            if (numeroWorkThreadsOut > 0)
+            {
+                mPortThreads = numeroWorkThreadsOut;
+            }
+            return mPortThreads;
+        }
+
         public ConfigService()
         {
             var builder = new ConfigurationBuilder()
@@ -711,6 +757,27 @@ namespace Es.Riam.Gnoss.Util.Configuracion
                 return true;
             }
             return usarCacheLocal.Value;
+        }
+
+        public bool UsarCacheRefreshActiva()
+        {
+            if (EnvironmentVariables.Contains("usarCacheRefreshActiva"))
+            {
+                string variable = EnvironmentVariables["usarCacheRefreshActiva"] as string;
+                if (variable.ToLower() == "false")
+                {
+                    usarCacheRefreshActiva = false;
+                }
+            }
+            else
+            {
+                usarCacheRefreshActiva = Configuration.GetValue<bool?>("usarCacheRefreshActiva");
+            }
+            if (usarCacheRefreshActiva == null)
+            {
+                return true;
+            }
+            return usarCacheRefreshActiva.Value;
         }
 
         public int ObtenerCaptchaNumIntentos()
