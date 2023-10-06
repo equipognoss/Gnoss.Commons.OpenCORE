@@ -1312,5 +1312,30 @@ namespace Es.Riam.AbstractsOpen
                 mLoggingService.GuardarLogError(ex);
             }
         }
+        protected bool ServidorOperativo()
+        {
+            string cadenaConexion = mConfigService.ObtenerVirtuosoEscritura().Value;
+            KeyValuePair<string, string> ip_puerto = ObtenerIpVirtuosoDeCadenaConexion(cadenaConexion);
+            string ipVirtuoso = ip_puerto.Key;
+            string puertoVirtuoso = ip_puerto.Value;
+            string url = "http://" + ipVirtuoso + ":" + puertoVirtuoso + "/sparql";
+            try
+            {
+                HttpClient client = new HttpClient();
+                HttpResponseMessage response = null;
+                response = client.GetAsync($"{url}").Result;
+                response.EnsureSuccessStatusCode();
+                HttpStatusCode code = response.StatusCode;
+                if (code.Equals(HttpStatusCode.OK))
+                {
+                    return true;
+                }
+                return false;
+            }
+            catch
+            {
+                return false;
+            }
+        }
     }
 }

@@ -23,7 +23,7 @@ namespace Es.Riam.OpenReplication
         {
             get
             {
-                throw new NotImplementedException();
+                return "";
             }
         }
 
@@ -31,18 +31,26 @@ namespace Es.Riam.OpenReplication
         {
             get
             {
-                throw new NotImplementedException();
+                return "";
             }
         }
 
         public override bool ControlarErrorVirtuosoConection(string cadenaConexion, string conexionAfinidadVirtuoso)
         {
-            throw new NotImplementedException();
+            DateTime horaActual = DateTime.Now;
+            bool estaOperativo = ServidorOperativo();
+            while (!estaOperativo && DateTime.Now < horaActual.AddSeconds(60))
+            {
+                Thread.Sleep(1000);
+                estaOperativo = ServidorOperativo();
+            }
+            mLoggingService.GuardarLogError("Terminado de checkear el virtuoso");
+            return estaOperativo;
         }
 
         public override void InsertarEnReplicacionBidireccional(string pQuery, string pGrafo, short pPrioridad, string pNombreConexionAfinidad, string pCadenaConexion, VirtuosoConnection pConexion)
         {
-            throw new NotImplementedException();
+            
         }
     }
 }
