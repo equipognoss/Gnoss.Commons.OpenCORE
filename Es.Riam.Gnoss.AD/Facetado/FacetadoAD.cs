@@ -4309,6 +4309,8 @@ namespace Es.Riam.Gnoss.AD.Facetado
             //order by
             string orderBy = "";
 
+            bool haySubconsultaScoreTitle = false;
+
             if (hayFiltroSearch && !mConsultaNumeroResultados && (QuitaPrefijo(pTipoFiltro).Contains("relevancia")))
             {
                 //orderBy += " desc(?scoreSearch) ";
@@ -4321,6 +4323,9 @@ namespace Es.Riam.Gnoss.AD.Facetado
                 {
                     orderBy += " desc(?scoreTitle) ";
                 }
+
+                select = $" {select} where {{{select} ?scoreTitle ";
+                haySubconsultaScoreTitle = true;
             }
 
             bool haySearchPersonalizado = false;
@@ -4446,6 +4451,11 @@ namespace Es.Riam.Gnoss.AD.Facetado
             if (pInicio > 0)
             {
                 query += " OFFSET " + pInicio;
+            }
+
+            if (haySubconsultaScoreTitle)
+            {
+                query += "}";
             }
 
             query = NamespacesVirtuosoLectura + pNamespaceExtra + select + query;
