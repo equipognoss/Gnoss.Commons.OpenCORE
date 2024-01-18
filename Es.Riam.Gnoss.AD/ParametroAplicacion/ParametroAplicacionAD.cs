@@ -306,8 +306,7 @@ namespace Es.Riam.Gnoss.AD.ParametroAplicacion
         public static string LoginTwitter { get { return "loginTwitter"; } }
 
         /// <summary>
-        /// Datos de la aplicación de Google para hacer login en la plataforma
-        /// Ej: id|||880006438141-r84hn261rtct92nrt3d5adjlod4umacn.apps.googleusercontent.com@@@clientsecret|||0d8iEeZDl-qV0XRiTnCCB54n
+        /// Datos de la aplicación de Google para hacer login en la plataforma        
         /// </summary>
         public static string LoginGoogle { get { return "loginGoogle"; } }
 
