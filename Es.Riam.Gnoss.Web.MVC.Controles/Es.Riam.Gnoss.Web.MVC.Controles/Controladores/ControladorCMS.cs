@@ -1316,28 +1316,28 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
             }
             catch (Exception ex)
             {
-                mLoggingService.GuardarLogError(ex, "Error producido en el componente Buscador con ID='" + pComponente.Clave.ToString() + "' en la comunidad " + mControlador.ProyectoSeleccionado.Nombre + " \n ");
+                mLoggingService.GuardarLogError(ex, $"Error producido en el componente Buscador con ID='{pComponente.Clave}' en la comunidad {mControlador.ProyectoSeleccionado.Nombre}\n ");
             }
 
             //Comprobamos la pestaña
-            foreach (AD.EntityModel.Models.ProyectoDS.ProyectoPestanyaBusqueda filaPestanya in mControlador.ProyectoSeleccionado.GestorProyectos.DataWrapperProyectos.ListaProyectoPestanyaBusqueda)
+            foreach (ProyectoPestanyaBusqueda filaPestanya in mControlador.ProyectoSeleccionado.GestorProyectos.DataWrapperProyectos.ListaProyectoPestanyaBusqueda)
             {
                 if (tipoBusqueda.Value == filaPestanya.ProyectoPestanyaMenu.PestanyaID)
                 {
-                    parametros += "&&parametrosAdicionales:" + filaPestanya.CampoFiltro;
+                    parametros += $"&&parametrosAdicionales:{filaPestanya.CampoFiltro.Trim('|')}";
                 }
             }
 
             if (pPagina > 1)
             {
-                parametros += "&pagina=" + pPagina.ToString();
+                parametros += $"&pagina={pPagina}";
             }
             if (!string.IsNullOrEmpty(pFiltro))
             {
                 string[] filtros = pFiltro.Split(new string[] { "&" }, StringSplitOptions.RemoveEmptyEntries);
                 List<string> listaFiltros = filtros.OfType<string>().ToList();
 
-                string filtroDeAtributo = "";
+                string filtroDeAtributo = string.Empty;
                 List<string> listaFiltrosExtra = new List<string>();
 
                 foreach (string filtro in listaFiltros)
