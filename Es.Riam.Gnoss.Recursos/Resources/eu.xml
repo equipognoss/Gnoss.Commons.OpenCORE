@@ -1,6 +1,76 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Resources language="Basque" code="eu">
 	<page name="COMMON">
+		<Resource tag="DESPLEGAR">Zabaldu</Resource>
+		<Resource tag="CARGANDO">Kargatzen…</Resource>
+		<Resource tag="VISUALIZAR">Ikusi</Resource>
+		<Resource tag="SICONTINUASDESACTIVARASELREGISTROAUTOMATICOPARAESTACOMUNIDA">Jarraitzen baduzu, erregistro automatikoa komunitate honetarako desaktibatuko duzu.</Resource>
+		<Resource tag="SICONTINUASACTIVARASELREGISTROAUTOMATICOYTODOSLOSUSUARIOSDE">Jarraitzen baduzu, erregistro automatikoa aktibatuko duzu eta erakundeko erabiltzaile guztiak komunitate honen parte izango dira.</Resource>
+		<Resource tag="ABANDONARCOMUNIDAD">Komunitatea utzi</Resource>
+		<Resource tag="SICONTINUASLAORGANIZACIONABANDONARALACOMUNIDAD">Jarraitu ezkero, erakundeak komunitatea utziko du.</Resource>
+		<Resource tag="DESACTIVARREGISTROAUTOMATICO">Erregistro automatikoa desaktibatu</Resource>
+		<Resource tag="DESVINCULAR">Deslotu</Resource>
+		<Resource tag="URLDELDOCUMENTODESHAREPOINT">SharePoint dokumentuaren URLa</Resource>
+		<Resource tag="TODOSLOSDERECHOSRESERVADOS">Eskubide guztiak erreserbatuta</Resource>
+		<Resource tag="IDIOMA">Hizkuntza</Resource>
+		<Resource tag="CONFIGURACIONDELECOSISTEMA">Ekosistemaren konfigurazioa</Resource>
+		<Resource tag="URLDELRECURSO">Baliabidearen URLa</Resource>
+		<Resource tag="DESEASDESBLOQUEARLOSCOMENTARIOS">Iruzkinak desblokeatu nahi dituzu?</Resource>
+		<Resource tag="DESEASBLOQUEARLOSCOMENTARIOS">Iruzkinak blokeatu nahi dituzu?</Resource>
+		<Resource tag="DESEASDESVINCULARDELDOCUMENTOACTUALELRECURSO@1@">Uneko dokumentutik baliabidea @1@ deslotu nahi duzu?</Resource>
+		<Resource tag="CREARUNACOMUNIDAD">Komunitatea sortu</Resource>
+		<Resource tag="NOMBREDELMIEMBRO">Bazkidearen izena</Resource>
+		<Resource tag="APELLIDOSDELMIEMBRO">Bazkidearen abizenak</Resource>
+		<Resource tag="MOSTRARSOLOCOMUNIDADESENLASQUEPARTICIPA">Parte hartzen ari den bazkideak soilik erakutsi</Resource>
+		<Resource tag="CORREOQUESEASOCIARAALACUENTADELNUEVOMIEMBRO">Berria bazkidearen kontuarekin lotutako posta elektronikoa</Resource>
+		<Resource tag="CONTRASEÑADEACCESOASUCUENTA">Kontuarekin sartzeko pasahitza</Resource>
+		<Resource tag="AÑADIRMIEMBRO">Bazkidea gehitu</Resource>
+		<Resource tag="MARCARDESMARCARRECURSO">Baliabidea markatu/ez markatu</Resource>
+		<Resource tag="SELECCIONARORDENDESCENDENTE">Ordena behera hautatu</Resource>
+		<Resource tag="SELECCIONARORDENASCENDENTE">Ordena gorara hautatu</Resource>
+		<Resource tag="SELECCIONARORDEN">Ordena hautatu</Resource>
+		<Resource tag="SELECCIONARVISUALIZACION">Ikuspegi hautatu</Resource>
+		<Resource tag="SELECCIONMULTIPLEDECOMENTARIOS">Iruzkinetako aukera anitz</Resource>
+		<Resource tag="SELECCIONMULTIPLEDEMENSAJES">Mezuen aukera anitz</Resource>
+		<Resource tag="MARCAR/DESMARCARMENSAJE">Mezua markatu/ez-markatu</Resource>
+		<Resource tag="VERRECURSO">Ver recurso</Resource>
+		<Resource tag="VERRECURSO">Baliabideak ikusi</Resource>
+		<Resource tag="PRESENTACIONDE">Aurkezpena</Resource>
+		<Resource tag="DESCRIPCIONDELAPRESENTACION">Aurkezpenaren deskribapena</Resource>
+		<Resource tag="VIDEODE">Bideoa</Resource>
+		<Resource tag="DESCRIPCIONDELVIDEO">Bideoaren deskribapena</Resource>
+		<Resource tag="HELEIDOYACEPTOLAS">Kontuaren sarbidea eta erabilera-baldintzak</Resource>
+		<Resource tag="CONDICIONESDEACCESOYUSO">pribatutasun-politika irakurri</Resource>
+		<Resource tag="YLA">eta</Resource>
+		<Resource tag="POLITICADEPRIVACIDAD">Hasi saioa honetan</Resource>
+		<Resource tag="INICIARSESIONEN">Oraindik ez duzu konturik</Resource>
+		<Resource tag="SITODAVIANOTIENECUENTA">Ikaslearen kontuaren aktibazioa</Resource>
+		<Resource tag="ACTIVACIONDECUENTADEALUMNO">14 urtetik beherako ikasleek haien aita, ama edo tutore legalak haien kontua aktibatu behar dute haien irakasleek sortutako Didactalia klaseetara sartzeko.</Resource>
+		<Resource tag="LOSALUMNOSMENORESDE14AÑOSNECESITANQUESUPADREMADREOTUTORLEGA"></Resource>
+		<Resource tag="GRACIASPORUNIRTEA">eskerrik asko bat egiteagatik</Resource>
+		<Resource tag="DATOSBASICOS">Oinarrizko datuak</Resource>
+		<Resource tag="IMAGENDELUSUARIO">Erabiltzailearen irudia</Resource>
+		<Resource tag="ABRIRPANELLATERALDEUSUARIO">Erabiltzailearen alboko panela ireki</Resource>
+		<Resource tag="ENLACEPARAIRAAÑADIRRECURSOS">Esteka baliogarriak gehitzeko</Resource>
+		<Resource tag="ENLACEPARAIRACREAUNACOMUNIDAD">Esteka komunitate bat sortzeko</Resource>
+		<Resource tag="CREAUNACOMUNIDADUNAREDSOCIALDONDEPODRASCOMPARTIRINFORMACION">Sortu komunitate bat, sare soziala non…</Resource>
+		<Resource tag="ENLACEPARAVERTODASLASCOMUNIDADES">Esteka komunitate guztiak ikusteko</Resource>
+		<Resource tag="ENLACEPARAIRALESPACIOPERSONAL">Esteka espazio pertsonalera</Resource>
+		<Resource tag="INTRODUCETUCORREOELECTRONICO">Sartu zure posta elektronikoa</Resource>
+		<Resource tag="INTRODUCETUCONTRASEÑA">Sartu zure pasahitza</Resource>
+		<Resource tag="INICIASESION">Saioa hasi</Resource>
+		<Resource tag="SITODAVIANOTIENESCUENTA">Oraindik kontu bat ez baduzu</Resource>
+		<Resource tag="CORREOELECTRONICO">Posta elektronikoa</Resource>
+		<Resource tag="INICIASESIONOREGISTRATE">Saioa hasi edo erregistratu</Resource>
+		<Resource tag="CORREOELECTRONICOALQUESEENVIARAELEMAILDEPRUEBA">Proba-posta elektronikoa bidali egingo den helbide elektronikoa</Resource>
+		<Resource tag="NOSEHAENCONTRADOELPERFILQUEESTABUSCANDO">Bilatzen ari zaren profila ez da aurkitu</Resource>
+		<Resource tag="DESEASELIMINARELMENSAJESELECCIONADO">Aukeratutako mezua ezabatu nahi duzu?</Resource>		
+		<Resource tag="INTRODUCELOSCORREOSSEPARADOSPORCOMASYHAZCLICENAÑADIR">Korreoez banandutakoak sartu eta gehitu klikatu</Resource>
+		<Resource tag="NINGUNDESTINATARIOAÑADIDO">Ez da bidaltzeko inor gehitu...</Resource>
+		<Resource tag="INVITARACOMUNIDAD">Komunitatea gonbidatu</Resource>
+		<Resource tag="ANYADIRENMAYUSCULA">Gehitu</Resource>		
+		<Resource tag="INTRODUCEUNAETIQUETAYPULSAAÑADIR">Etiketa bat sartu eta sakatu GEHITU</Resource>		
+		<Resource tag="INTRODUCEUNAPERSONAY/OGRUPO">Sartu pertsona eta/edo taldea</Resource>
 		<Resource tag="RELATEDTO">Lotuta</Resource>
 		<Resource tag="CRITERIOBUSQUEDA">Bilaketa egiteko irizpidea</Resource>
 		<Resource tag="BASERECURSOS">Baliabideak</Resource>
@@ -122,6 +192,7 @@
 		<Resource tag="ENVIARINVITACION">Gonbidapena bidali</Resource>
 		<Resource tag="SOLICITARCOMUNIDAD">Komunitate bat sortu</Resource>
 		<Resource tag="SOLICITARORGANIZACION">Erakunde bat sortu</Resource>
+		<Resource tag="SOLICITUDES">Eskaerak</Resource>
 		<Resource tag="CREARWIDGETPERFIL">Nire profilaren widget-a sortu</Resource>
 		<Resource tag="CREARWIDGETCOMUNIDAD">Edukien zure widget-a sortu</Resource>
 		<Resource tag="CREARWIDGETBUSQUEDA">Zure bilaketa widget-a sortu</Resource>
@@ -422,6 +493,7 @@
 		<Resource tag="INTRODUCIRPASSWORD">Pasahitza sartu</Resource>
 	</page>
 	<page name="REGISTRO">
+		<Resource tag="PROVINCIASIMPLE">Probintzia</Resource>
 		<Resource tag="QUEESESTOALUMNO">Zer egin dezaket @1@(e)n?</Resource>
 		<Resource tag="LISTARPERFILCORTO">@1@ guztia</Resource>
 		<Resource tag="ACEPTARCONDICIONES2"> @1@rena</Resource>
@@ -804,8 +876,27 @@
 		<Resource tag="NOSEGUIREN">Ez jarraitu hemen:</Resource>
 		<Resource tag="ESTACOMUNIDAD">komunitate hau</Resource>
 		<Resource tag="TODASUACTIVIDAD">zure jarduera guztia</Resource>
-		<Resource tag="RECURSOSENCOMUNIDADES"></Resource>
-		<Resource tag="RECURSOSENESPACIOPERSONAL"></Resource>
+		<Resource tag="RECURSOSENCOMUNIDADES">Argitaratutako baliabideak</Resource>
+		<Resource tag="RECURSOSENESPACIOPERSONAL">Zure espazioan dauden baliabideak</Resource>
+
+		<Resource tag="NOSEGUIREN">Jarraitu ez:</Resource>
+		<Resource tag="ESTACOMUNIDAD">komunitate honetan</Resource>
+		<Resource tag="TODASUACTIVIDAD">beren jarduera guztia</Resource>
+		<Resource tag="RECURSOSENCOMUNIDADES">Argitaratu diren baliabideak</Resource>
+		<Resource tag="RECURSOSENESPACIOPERSONAL">Zure espazioan dauden baliabideak</Resource>
+		<Resource tag="INTRODUCENOMBRE">Sartu zure izena</Resource>
+		<Resource tag="INTRODUCEAPELLIDO">Sartu zure abizenak</Resource>
+		<Resource tag="INTRODUCEEMAIL">Sartu zure posta elektronikoa</Resource>
+		<Resource tag="INTRODUCETWITTER">Sartu zure Twitter kontua</Resource>
+		<Resource tag="INTRODUCEFACEBOOK">Sartu zure Facebook kontua</Resource>
+		<Resource tag="INTRODUCELINKEDIN">Sartu zure Linkedin kontua</Resource>
+		<Resource tag="INTRODUCEURL">Sartu URL bat eta gehitu</Resource>
+		<Resource tag="OTROSSTIOSINTERES">Intereseko beste tokiak</Resource>
+		<Resource tag="ADD">Gehitu</Resource>
+		<Resource tag="ELIMINAR">Ezabatu</Resource>
+		<Resource tag="ELIMINAREMAILTUTOR">Heldu zarenean, Zure Tutorren Emaila ezabatzeko aukera daukazu.</Resource>
+		<Resource tag="COMPONENTEGUARDADOOK">Ondo gorde da</Resource>		
+		
 	</page>
 	<page name="PERFILIMPORTARDELICIOUS">
 		<Resource tag="TITULO">Inportatu Deliciousen zure markatzaileak hona: @1@</Resource>
@@ -918,6 +1009,7 @@
 		<Resource tag="EJEMPLONOMBRECORTOASIGNATURA">Ej.:KO</Resource>
 	</page>
 	<page name="REGISTROUSUARIOORGANIZACION">
+		<Resource tag="EMAILTUTOR">Tutorearen posta elektronikoa</Resource>
 		<Resource tag="USARMYGNOSS"> Erabili nire @1@ kontuko posta elektronikoa</Resource>
 		<Resource tag="TITULOPAGINA">Erregistroa</Resource>
 		<Resource tag="DATOSCONTACTOPRINC">Kontaktu nagusiaren datuak</Resource>
@@ -1293,7 +1385,7 @@
 		<Resource tag="TITULO">Izenburua</Resource>
 		<Resource tag="DESCRIPCION">Deskripzioa</Resource>
 		<Resource tag="ENLACE">Lotura</Resource>
-		<Resource tag="ETIQUETAS">Etiketak     (Komekin bereizita)</Resource>
+		<Resource tag="ETIQUETAS">Etiketak * (Komekin bereizita)</Resource>
 		<Resource tag="AUTORPROPIO">  Dokumentu honen egilea naiz</Resource>
 		<Resource tag="FICHABIBLIOGRAFICA">Fitxa bibliografikoa</Resource>
 		<Resource tag="PUBLICAR">Argitaratu</Resource>
@@ -1785,7 +1877,7 @@
 		<Resource tag="NINGUNO">Batere ez</Resource>
 		<Resource tag="LEIDOS">Irakurriak</Resource>
 		<Resource tag="NOLEIDOS">Ez irakurriak</Resource>
-		<Resource tag="COMPACTADA">trinkotuta</Resource>
+		<Resource tag="COMPACTADA">Trinkotuta</Resource>
 		<Resource tag="NORMAL">bista normala</Resource>
 		<Resource tag="MENSAJESRELACIONADOS">Erlazionatutako mezuak</Resource>
 	</page>
@@ -2037,8 +2129,8 @@
 		<Resource tag="SOLICITUDCORRECTA"> @1@ komunitatera sartzeko zure eskaria ondo egin da.</Resource>
 	</page>
 	<page name="INVITACIONES">
-		<Resource tag="SELECCIONAGRUPOS">Si lo deseas, puedes seleccionar los grupos de comunidad en los que pueden participar</Resource>
-		<Resource tag="INVITACIONESSEENVIANAGRUPOS">y se añadirán a los grupos de comunidad: </Resource>
+		<Resource tag="SELECCIONAGRUPOS">Nahi baduzu, hautatu dezakezu komunitate-taldeetan parte hartzeko.</Resource>
+		<Resource tag="INVITACIONESSEENVIANAGRUPOS">eta komunitate-taldeetan gehituko dira: </Resource>
 		<Resource tag="NOTAS">@1@(e)n nire kontaktuen sarera gehitu nahi zintuzket.</Resource>
 		<Resource tag="TEXTODEFECTOINVITACIONCOMUNIDAD">
 			@3@ komunitate bateko kide zaren aldetik, komunikatu, pertsonak bilatu eta aurkitu, jakintzak partekatu eta komunitateko beste kideekin pentsaera kolektiboa sortu ahal izango duzu, eskaintzen dituen elkarlan tresnei esker.Zeintzuk dira @1@ komunitatearen interesak?
@@ -2433,7 +2525,7 @@
 		<Resource tag="PENDIENTESNUM">RSS/ATOM iturriak berraztertu{span class="avisoGris"}@1@{/span}</Resource>
 		<Resource tag="EDITARPENDIENTE">Egiteko dagoen baliabidea editatu</Resource>
 		<Resource tag="PUBLICAR">Aukeratutako baliabideak editatu nahi al dituzu?</Resource>
-		<Resource tag="ELIMINARUNO"></Resource>
+		<Resource tag="ELIMINARUNO">@1@ baliabidea ezabatu nahi duzu?</Resource>
 		<Resource tag="TODAS">Denak</Resource>
 		<Resource tag="OTRAS">Beste batzuk </Resource>
 		<Resource tag="FILTRARFUENTES">Iturriak iragazi</Resource>
@@ -2711,7 +2803,7 @@
 		<Resource tag="EXPLICACIONCERRADA">Komunitateko kideek, @1@(e)ko gainontzeko erabiltzaileek bezala, soilik komunitatetik nabiga dezakete eta beren edukiak aztertu.</Resource>
 		<Resource tag="EXPLICACIONCERRANDOSE">Komunitatea itxi egingo da, baina lehenik zenbait egun egongo da 'egonean'. Denbora tarte horretan erabiltzaileek honakoak egin ahal izango dituzte: baliabideak deskargatu, komunitateko edukiak irakurri eta beste @1@ gune batzuekin partekatu. Baina ezin izango da ezer berririk igo. Denbora hori igaro ondoren ezin izango da komunitatera sartu, itxita egongo baita.</Resource>
 		<Resource tag="INFOOWL4"> @1@(e)an garatu diezaiogun</Resource>
-		<Resource tag="DESCRIPCIONIDIOMACOMUNIDAD">@3@(e)ren komunitateek aukera ematen diete beren administratzaileei {a href="@1@"}kategorien indize{/a} eta {a href="@2@"}informazio panelak{/a} editatzeko (txertatutako HTML motako widget-ak) gaztelaniaz, ingelesez eta portugaleraz.  Zure @3@ komunitatea eleanitza izatea nahi al duzu? Aktibatu ondorengo check-a eta aukeratu berezko hizkuntza.</Resource>
+		<Resource tag="DESCRIPCIONIDIOMACOMUNIDAD">@3@(e)ren komunitateek aukera ematen diete beren administratzaileei {a href="@1@"}kategorien indize{/a} eta {a href="@2@"}informazio panelak{/a} editatzeko (txertatutako HTML motako widget-ak) hizkuntza asko.  Zure @3@ komunitatea eleanitza izatea nahi al duzu? Aktibatu ondorengo check-a eta aukeratu berezko hizkuntza.</Resource>
 		<Resource tag="UTILIDADES">Erabilgarritasunak</Resource>
 		<Resource tag="GADGETS">Diseinua</Resource>
 		<Resource tag="CONFIGURACION">Baliabideen aukeren konfigurazioa</Resource>
@@ -2930,7 +3022,7 @@
 		<Resource tag="CREARWIDGET">Widget bat sortu</Resource>
 		<Resource tag="FUENTESRSS">{span class="aviso"}@1@{/span} RSS iturriak</Resource>
 		<Resource tag="SOLICITUDESPERTENECERGRUPO">{span class="aviso"}@1@{/span} taldeetako kide izateko eskariak</Resource>
-		<Resource tag="SOLICITUDESACCESO">{span class="aviso"}@1@{/span} sarbide eskariak</Resource>
+		<Resource tag="SOLICITUDESACCESO">Sarbide eskariak</Resource>
 		<Resource tag="ENVIARNEWSLETTER">Newsletterra bidali</Resource>
 		<Resource tag="NEWSLETTER">Newsletterra jaso</Resource>
 		<Resource tag="ABANDONARLACOMUNIDAD">Komunitatea utzi</Resource>
@@ -2939,7 +3031,7 @@
 	<page name="COMBUSQUEDAAVANZADA">
 		<Resource tag="LIMPIARFILTROS">Iragaziak garbitu</Resource>
 		<Resource tag="FILTROS">Aplikatutako irizpideak</Resource>
-		<Resource tag="NOCERTIFI">Ez egiaztatua</Resource>
+		<Resource tag="NOCERTIFI">Ziurtatu gabea</Resource>
 		<Resource tag="NIVELCERTIFI">Ziurtapen maila</Resource>
 		<Resource tag="CATEGORIAS">Kategoriak</Resource>
 		<Resource tag="PERFILESPERSONALES">Profil pertsonalak</Resource>
@@ -3740,6 +3832,9 @@
 		<Resource tag="ADMINISTRARVISTAS">administrar-vistas</Resource>
 		<Resource tag="ADMINISTRARSOLICITUDESUSUARIOS">administrar-solicitudes-usuarios</Resource>
 	</page>
+	<page name="COMADMINCOMUNIDAD">
+		<Resource tag="ADMINMETAADMINOPTIONS">Meta-administratzailearen aukerak</Resource>
+	</page>		
 	<page name="COMADMINDISENIO">
 		<Resource tag="XMLSUBIDO">Archivo subido correctamente</Resource>
 		<Resource tag="XMLVACIO">Fitxategiak ezin du hutsik egon</Resource>
@@ -3767,4 +3862,14 @@
 		<Resource tag="NOMBRECOOKIESREDESSOCIALES">Sare sozialak</Resource>
 		<Resource tag="DESCRIPCIONCOOKIESREDESSOCIALES">Sare sozialen cookieak</Resource>
 	</page>
+	<page name="DOBLEFACTORAUTENTICACION">
+		<Resource tag="AUTENTICACIONDOBLEFACTOR">Bi faktoreko autentifikazioa</Resource>
+		<Resource tag="INTRODUCEELCODIGOPARAAUTENTICARTE">Sartu segurtasun-kodea zure posta elektronikora bidali dena zure autentifikatzeko</Resource>
+		<Resource tag="CODIGO">Kodea</Resource>
+		<Resource tag="CODIGODESEGURIDADNOVALIDOOCADUCADO">Segurtasun-kodea ez da baliozkoa edo iraungia da</Resource>
+		<Resource tag="NODISPONESDECODIGODESEGURIDAD">Ez duzu segurtasun-kode bat?</Resource>
+		<Resource tag="INICIASESIONPARASOLICITARUNO">Saioa hasi bat eskatzeko</Resource>
+		<Resource tag="INDICAAUTENTICACIONDOBLEFACTORACTIVADA">Bi faktoreko autentifikazioa aktibatuta dagoen adierazi</Resource>			
+	</page>
+
 </Resources>

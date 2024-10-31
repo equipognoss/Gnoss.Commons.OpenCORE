@@ -341,10 +341,6 @@ namespace Es.Riam.Gnoss.AD.Live
     /// </summary>
     public class LiveAD : BaseAD
     {
-        private bool mUsariRabbitSiEstaConfigurado;
-
-        private EntityContext mEntityContext;
-
         #region Constructores
 
         /// <summary>
@@ -370,58 +366,7 @@ namespace Es.Riam.Gnoss.AD.Live
 
         #endregion
 
-        #region Consultas
-
-        private string sqlSelectCola;
-        private string sqlSelectContadorPerfil;
-        private string sqlSelectConfiguracionContPerfil;
-        private string sqlSelectColaPopularidad;
-
-        #endregion
-
-        #region DataAdapter
-
-        #region Cola
-
-        private string sqlColaInsert;
-        private string sqlColaDelete;
-        private string sqlColaModify;
-
-        #endregion
-
-        #region ContadorPerfil
-        private string sqlContadorPerfilInsert;
-        private string sqlContadorPerfilDelete;
-        private string sqlContadorPerfilModify;
-        #endregion
-
-        #region ConfiguracionContPerfil
-        private string sqlConfiguracionContPerfilInsert;
-        private string sqlConfiguracionContPerfilDelete;
-        private string sqlConfiguracionContPerfilModify;
-        #endregion
-        #region ColaPopularidad
-        private string sqlColaPopularidadInsert;
-        private string sqlColaPopularidadDelete;
-        private string sqlColaPopularidadModify;
-        #endregion
-
-        #endregion
-
-
         #region Métodos AD
-
-        /// <summary>
-        /// Actualiza la base de datos
-        /// </summary>
-        /// <param name="pDataSet">Data set con las modificaciones</param>
-        public void ActualizarBD(DataSet pDataSet, bool pUsariRabbitSiEstaConfigurado = true)
-        {
-            mUsariRabbitSiEstaConfigurado = pUsariRabbitSiEstaConfigurado;
-
-            //EliminarBorrados(pDataSet);
-            //GuardarActualizaciones(pDataSet);
-        }
 
         /// Actualiza BD y el disminuye el numero de comentarios del contador de perfil.
         /// </summary>
@@ -429,16 +374,21 @@ namespace Es.Riam.Gnoss.AD.Live
         /// <param name="pPerfilID">ID del perfil actual</param>
         /// <param name="pTiposComentarioActualizar">Tipos de comentarios de los contadores que hay que disminuir</param>
         /// <param name="pDisminuir">Indica si se debe disminuir o aumentar los contadores</param>
-        public void ActualizarComentariosBD(LiveDS pLiveDS, Guid pPerfilID, List<TipoLiveComentario> pTiposComentarioActualizar, bool pDisminuir)
+        public void ActualizarComentariosBD(Guid pPerfilID, List<TipoLiveComentario> pTiposComentarioActualizar, bool pDisminuir)
         {
-            //EliminarBorrados(pLiveDS);
-            //GuardarActualizaciones(pLiveDS);
-
             ActualizarContadoresPerfil(pPerfilID, pTiposComentarioActualizar, pDisminuir);
         }
 
+        /// <summary>
+        /// Guarda los cambios realizados en la base de datos
+        /// </summary>
+        public void ActualizarBD()
+        {
+            mEntityContext.SaveChanges();
+        }
+
         #region Nuevos elementos bandeja
-        //No se usa en la Web
+
         /// <summary>
         /// Aumenta o disminuye en 1 el número de nuevos comentarios de un perfill.
         /// </summary>
@@ -454,7 +404,11 @@ namespace Es.Riam.Gnoss.AD.Live
                 {
                     contadorPerfil = mEntityContext.ContadorPerfil.FirstOrDefault(item => item.PerfilID.Equals(pPerfilID) && item.NuevosComentarios > 0 && (!item.FechaVisitaComentarios.HasValue || item.FechaVisitaComentarios < pFechaProcesado.Value));
                 }
-                contadorPerfil.NuevosComentarios = contadorPerfil.NuevosComentarios - 1;
+
+                if(contadorPerfil != null)
+                {
+                    contadorPerfil.NuevosComentarios--;
+                }
             }
             else
             {//sumar
@@ -463,7 +417,11 @@ namespace Es.Riam.Gnoss.AD.Live
                 {
                     contadorPerfil = mEntityContext.ContadorPerfil.FirstOrDefault(item => item.PerfilID.Equals(pPerfilID) && (!item.FechaVisitaComentarios.HasValue || item.FechaVisitaComentarios < pFechaProcesado.Value));
                 }
-                contadorPerfil.NuevosComentarios = contadorPerfil.NuevosComentarios + 1;
+
+                if (contadorPerfil != null)
+                {
+                    contadorPerfil.NuevosComentarios++;
+                }
             }
 
             mEntityContext.SaveChanges();
@@ -484,7 +442,11 @@ namespace Es.Riam.Gnoss.AD.Live
                 {
                     contadorPerfil = mEntityContext.ContadorPerfil.FirstOrDefault(item => item.PerfilID.Equals(pPerfilID) && item.NuevasSuscripciones > 0 && (!item.FechaVisitaSuscripciones.HasValue || item.FechaVisitaSuscripciones < pFechaProcesado.Value));
                 }
-                contadorPerfil.NuevasSuscripciones = contadorPerfil.NuevasSuscripciones - 1;
+                
+                if (contadorPerfil != null)
+                {
+                    contadorPerfil.NuevasSuscripciones--;
+                }
             }
             else
             {//sumar
@@ -493,12 +455,16 @@ namespace Es.Riam.Gnoss.AD.Live
                 {
                     contadorPerfil = mEntityContext.ContadorPerfil.FirstOrDefault(item => item.PerfilID.Equals(pPerfilID) && (!item.FechaVisitaSuscripciones.HasValue || item.FechaVisitaSuscripciones < pFechaProcesado.Value));
                 }
-                contadorPerfil.NuevasSuscripciones = contadorPerfil.NuevasSuscripciones + 1;
+
+                if(contadorPerfil != null)
+                {
+                    contadorPerfil.NuevasSuscripciones++;
+                }
             }
 
             mEntityContext.SaveChanges();
         }
-        //No se usa en la Web
+        
         /// <summary>
         /// Aumenta en 1 el contador de nuevos mensajes.
         /// </summary>
@@ -509,14 +475,14 @@ namespace Es.Riam.Gnoss.AD.Live
             if (contadorPerfil == null) //Fila de contador no creada, hay que crearla.
             {
                 contadorPerfil = CrearFilaContadorPerfil(pPerfilID);
-                contadorPerfil.NumNuevosMensajes = contadorPerfil.NumNuevosMensajes + 1;
-                contadorPerfil.NumMensajesSinLeer = contadorPerfil.NumMensajesSinLeer + 1;
+                contadorPerfil.NumNuevosMensajes++;
+                contadorPerfil.NumMensajesSinLeer++;
                 mEntityContext.ContadorPerfil.Add(contadorPerfil);
             }
             else
             {
-                contadorPerfil.NumNuevosMensajes = contadorPerfil.NumNuevosMensajes + 1;
-                contadorPerfil.NumMensajesSinLeer = contadorPerfil.NumMensajesSinLeer + 1;
+                contadorPerfil.NumNuevosMensajes++;
+                contadorPerfil.NumMensajesSinLeer++;
             }
             mEntityContext.SaveChanges();
         }
@@ -531,18 +497,18 @@ namespace Es.Riam.Gnoss.AD.Live
             if (contadorPerfil == null) //Fila de contador no creada, hay que crearla.
             {
                 contadorPerfil = CrearFilaContadorPerfil(pPerfilID);
-                contadorPerfil.NuevasInvitaciones = contadorPerfil.NuevasInvitaciones + 1;
-                contadorPerfil.NumInvitacionesSinLeer = contadorPerfil.NumInvitacionesSinLeer + 1;
+                contadorPerfil.NuevasInvitaciones++;
+                contadorPerfil.NumInvitacionesSinLeer++;
                 mEntityContext.ContadorPerfil.Add(contadorPerfil);
             }
             else
             {
-                contadorPerfil.NuevasInvitaciones = contadorPerfil.NuevasInvitaciones + 1;
-                contadorPerfil.NumInvitacionesSinLeer = contadorPerfil.NumInvitacionesSinLeer + 1;
+                contadorPerfil.NuevasInvitaciones++;
+                contadorPerfil.NumInvitacionesSinLeer++;
             }
             mEntityContext.SaveChanges();
         }
-        //No se usa en la Web
+        
         /// <summary>
         /// Aumenta en 1 el contador de nuevas Suscripciones.
         /// </summary>
@@ -556,13 +522,14 @@ namespace Es.Riam.Gnoss.AD.Live
                 contadorPerfil = CrearFilaContadorPerfil(pPerfilID);
                 mEntityContext.ContadorPerfil.Add(contadorPerfil);
             }
-            if(contadorPerfil.NuevasSuscripciones < 100)
+            if (contadorPerfil.NuevasSuscripciones < 100)
             {
-                contadorPerfil.NuevasSuscripciones = contadorPerfil.NuevasSuscripciones + 1;
+                contadorPerfil.NuevasSuscripciones++;
             }
+
             mEntityContext.SaveChanges();
         }
-        //No se usa en la Web
+
         /// <summary>
         /// Aumenta en 1 el contador de nuevos comentarios.
         /// </summary>
@@ -574,14 +541,14 @@ namespace Es.Riam.Gnoss.AD.Live
             if (contadorPerfil == null) //Fila de contador no creada, hay que crearla.
             {
                 contadorPerfil = CrearFilaContadorPerfil(pPerfilID);
-                contadorPerfil.NuevosComentarios = contadorPerfil.NuevosComentarios + 1;
-                contadorPerfil.NumComentariosSinLeer = contadorPerfil.NumComentariosSinLeer + 1;
+                contadorPerfil.NuevosComentarios++;
+                contadorPerfil.NumComentariosSinLeer++;
                 mEntityContext.ContadorPerfil.Add(contadorPerfil);
             }
             else
             {
-                contadorPerfil.NuevosComentarios = contadorPerfil.NuevosComentarios + 1;
-                contadorPerfil.NumComentariosSinLeer = contadorPerfil.NumComentariosSinLeer + 1;
+                contadorPerfil.NuevosComentarios++;
+                contadorPerfil.NumComentariosSinLeer++;
             }
 
             mEntityContext.SaveChanges();
@@ -595,7 +562,7 @@ namespace Es.Riam.Gnoss.AD.Live
             ContadorPerfil contadorPerfil = mEntityContext.ContadorPerfil.Where(x => x.PerfilID.Equals(pPerfilID) && x.NumMensajesSinLeer > 0).FirstOrDefault();
             if(contadorPerfil != null)
             {
-                contadorPerfil.NumMensajesSinLeer = contadorPerfil.NumMensajesSinLeer - 1;
+                contadorPerfil.NumMensajesSinLeer--;
             }
 
             mEntityContext.SaveChanges();
@@ -609,7 +576,7 @@ namespace Es.Riam.Gnoss.AD.Live
             ContadorPerfil contadorPerfil = mEntityContext.ContadorPerfil.Where(item => item.PerfilID.Equals(pPerfilID) && item.NumInvitacionesSinLeer > 0).FirstOrDefault();
             if (contadorPerfil != null)
             {
-                contadorPerfil.NumInvitacionesSinLeer = contadorPerfil.NumInvitacionesSinLeer - 1;
+                contadorPerfil.NumInvitacionesSinLeer--;
             }
 
             mEntityContext.SaveChanges();
@@ -623,7 +590,7 @@ namespace Es.Riam.Gnoss.AD.Live
             ContadorPerfil contadorPerfil = mEntityContext.ContadorPerfil.Where(item => item.PerfilID.Equals(pPerfilID) && item.NumComentariosSinLeer > 0).FirstOrDefault();
             if (contadorPerfil != null)
             {
-                contadorPerfil.NumComentariosSinLeer = contadorPerfil.NumComentariosSinLeer - 1;
+                contadorPerfil.NumComentariosSinLeer--;
             }
 
             mEntityContext.SaveChanges();
@@ -638,15 +605,15 @@ namespace Es.Riam.Gnoss.AD.Live
         {
             ContadorPerfil contadorPerfil = mEntityContext.ContadorPerfil.FirstOrDefault(item => item.PerfilID.Equals(pPerfilID));
 
-            if (!pDisminuir) //Fila de contador no creada, hay que crearla.
+            if (!pDisminuir && contadorPerfil != null) //Fila de contador no creada, hay que crearla.
             {
-                contadorPerfil.NumSuscripcionesSinLeer = contadorPerfil.NumSuscripcionesSinLeer + 1;
+                contadorPerfil.NumSuscripcionesSinLeer++;
             }
             else
             {
-                if (contadorPerfil.NumSuscripcionesSinLeer > 0)
+                if (contadorPerfil != null && contadorPerfil.NumSuscripcionesSinLeer > 0)
                 {
-                    contadorPerfil.NumSuscripcionesSinLeer = contadorPerfil.NumSuscripcionesSinLeer - 1;
+                    contadorPerfil.NumSuscripcionesSinLeer--;
                 }
             }
 
@@ -661,7 +628,12 @@ namespace Es.Riam.Gnoss.AD.Live
         public void EstablecerContadorSuscripcionesSinLeer(Guid pPerfilID, int pNumero)
         {
             ContadorPerfil contadorPerfil = mEntityContext.ContadorPerfil.FirstOrDefault(item => item.PerfilID.Equals(pPerfilID));
-            contadorPerfil.NumSuscripcionesSinLeer = pNumero;
+            
+            if(contadorPerfil != null)
+            {
+                contadorPerfil.NumSuscripcionesSinLeer = pNumero;
+            }
+            
             mEntityContext.SaveChanges();
         }
         //No se usa en la Web
@@ -677,30 +649,31 @@ namespace Es.Riam.Gnoss.AD.Live
                 contadorPerfil = CrearFilaContadorPerfil(pPerfilID);
                 mEntityContext.ContadorPerfil.Add(contadorPerfil);
                 mEntityContext.SaveChanges();
-            }
-            
+            }            
         }
 
         /// <summary>
         /// Creo la fila de contador para un perfil.
         /// </summary>
         /// <param name="pPerfilID">ID del perfil actual</param>
-        public ContadorPerfil CrearFilaContadorPerfil(Guid pPerfilID)
+        public static ContadorPerfil CrearFilaContadorPerfil(Guid pPerfilID)
         {
-            ContadorPerfil filaContador = new ContadorPerfil();
-            filaContador.PerfilID = pPerfilID;
-            filaContador.NuevasInvitaciones = 0;
-            filaContador.NuevasSuscripciones = 0;
-            filaContador.NuevosComentarios = 0;
-            filaContador.NumComentarios = 0;
-            filaContador.NumComentBlog = 0;
-            filaContador.NumComentContribuciones = 0;
-            filaContador.NumComentMisRec = 0;
-            filaContador.NumNuevosMensajes = 0;
-            filaContador.NumMensajesSinLeer = 0;
-            filaContador.NumComentariosSinLeer = 0;
-            filaContador.NumInvitacionesSinLeer = 0;
-            filaContador.NumSuscripcionesSinLeer = 0;
+            ContadorPerfil filaContador = new()
+            {
+                PerfilID = pPerfilID,
+                NuevasInvitaciones = 0,
+                NuevasSuscripciones = 0,
+                NuevosComentarios = 0,
+                NumComentarios = 0,
+                NumComentBlog = 0,
+                NumComentContribuciones = 0,
+                NumComentMisRec = 0,
+                NumNuevosMensajes = 0,
+                NumMensajesSinLeer = 0,
+                NumComentariosSinLeer = 0,
+                NumInvitacionesSinLeer = 0,
+                NumSuscripcionesSinLeer = 0
+            };
             return filaContador;
         }
 
@@ -764,6 +737,7 @@ namespace Es.Riam.Gnoss.AD.Live
         }
 
         #endregion
+
         #region Métodos de consultas
 
         /// <summary>
@@ -773,29 +747,27 @@ namespace Es.Riam.Gnoss.AD.Live
         /// <returns>Data set con los contadores recuperados</returns>
         public ContadorPerfil ObtenerContadoresPerfil(Guid pPerfilID)
         {
-            ContadorPerfil contadorPerfil = mEntityContext.ContadorPerfil.FirstOrDefault(item => item.PerfilID.Equals(pPerfilID));
-            return contadorPerfil;
+            return mEntityContext.ContadorPerfil.FirstOrDefault(item => item.PerfilID.Equals(pPerfilID));
         }
 
         /// <summary>
         /// Obtiene los contadores de varios Perfiles
         /// </summary>
-        /// <param name="pPerfilID">perfilID</param>
-        /// <returns>Data set con los contadores recuperados</returns>
+        /// <param name="pPerfilesIDs">Lista de identificadores de los perfiles</param>
+        /// <returns>Lista con los contadores recuperados</returns>
         public List<ContadorPerfil> ObtenerContadoresPerfiles(List<Guid> pPerfilesIDs)
         {
-            List<ContadorPerfil> listaContadorPerfiles = new List<ContadorPerfil>();
+            List<ContadorPerfil> listaContadorPerfiles = new();
 
             if (pPerfilesIDs.Count > 0)
             {
-                //TODO Comentado por edma no existe la tabla en la BD
                 try
                 {
                     listaContadorPerfiles = mEntityContext.ContadorPerfil.Where(item => pPerfilesIDs.Contains(item.PerfilID)).ToList();
                 }
-                catch (Exception)
+                catch
                 {
-
+                    //Puede que no exista la tabla según proyecto
                 }
             }
             return listaContadorPerfiles;
@@ -835,28 +807,38 @@ namespace Es.Riam.Gnoss.AD.Live
                 if (contadorPerfil != null) 
                 {
                     if (pDisminuir)
-                    {//Restar
-                        contadorPerfil.NumComentarios = contadorPerfil.NumComentarios - numTotales;
-                        contadorPerfil.NumComentContribuciones = contadorPerfil.NumComentContribuciones - numComentContr;
-                        contadorPerfil.NumComentMisRec = contadorPerfil.NumComentMisRec - numComentMisRec;
-                        contadorPerfil.NumComentBlog = contadorPerfil.NumComentBlog - numComentBlog;
+                    {
+                        contadorPerfil.NumComentarios -= numTotales;
+                        contadorPerfil.NumComentContribuciones -= numComentContr;
+                        contadorPerfil.NumComentMisRec -= numComentMisRec;
+                        contadorPerfil.NumComentBlog -= numComentBlog;
                     }
                     else
-                    {//Sumar
-                        contadorPerfil.NumComentarios = contadorPerfil.NumComentarios + numTotales;
-                        contadorPerfil.NumComentContribuciones = contadorPerfil.NumComentContribuciones + numComentContr;
-                        contadorPerfil.NumComentMisRec = contadorPerfil.NumComentMisRec + numComentMisRec;
-                        contadorPerfil.NumComentBlog = contadorPerfil.NumComentBlog + numComentBlog;
+                    {
+                        contadorPerfil.NumComentarios += numTotales;
+                        contadorPerfil.NumComentContribuciones += numComentContr;
+                        contadorPerfil.NumComentMisRec += numComentMisRec;
+                        contadorPerfil.NumComentBlog += numComentBlog;
                     }
+
                     mEntityContext.SaveChanges();
                 }
             }
         }
-        //No se usa en la Web
+
+        /// <summary>
+        /// Actualiza el contador de numero de mensajes sin leer del perfil indicado por id
+        /// </summary>
+        /// <param name="pPerfilID">Perfil a actualizar</param>
+        /// <param name="pMensajesSinLeer">Número nuevo de mensajes sin leer</param>
         public void ActualizarContadorPerfilMensajesSinLeer(Guid pPerfilID, int pMensajesSinLeer)
         {
             ContadorPerfil contadorPerfil = mEntityContext.ContadorPerfil.FirstOrDefault(item => item.PerfilID.Equals(pPerfilID));
-            contadorPerfil.NumMensajesSinLeer = pMensajesSinLeer;
+            if(contadorPerfil != null)
+            {
+                contadorPerfil.NumMensajesSinLeer = pMensajesSinLeer;
+            }
+            
             mEntityContext.SaveChanges();
         }
 

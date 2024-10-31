@@ -43,7 +43,7 @@ namespace Es.Riam.Gnoss.AD.EntityModel.Models.Documentacion
 
         public DateTime? FechaCreacion { get; set; }
 
-        public Guid? CreadorID { get; set; }
+        public Guid CreadorID { get; set; }
 
         public short TipoEntidad { get; set; }
 
@@ -129,6 +129,8 @@ namespace Es.Riam.Gnoss.AD.EntityModel.Models.Documentacion
         public virtual DocumentoLecturaAumentada DocumentoLecturaAumentada { get; set; }
 
         public virtual DocumentoMetaDatos DocumentoMetaDatos { get; set; }
+        
+        public virtual IdentidadDS.Identidad Creador { get; set; }
 
         public int CompareTo(object obj)
         {

@@ -171,6 +171,10 @@
       <asunto>Bitte um Änderung des Passworts für  {#NombreProyecto#}</asunto>
       <texto>{p}Zur Änderung deines Passworts klicke bitte auf folgenden Link: {/p} {p}{a style="display: block; font-weight: 400; color: #006eff; padding-bottom: 40px;" href="{#UrlEnlace#}"}Kambiar-Passwort{/a}</texto>
     </mensaje>
+	<mensaje id="81">
+	  <asunto>Sicherheitstoken {#NombreProyecto#}</asunto>
+	  <texto>{p}Ihr Sicherheitstoken ist: {b} {#TokenSeguridad#} {/b}{/p}</texto>
+	</mensaje>
     <mensaje id="121">
       <asunto>{#Asunto#}</asunto>
       <texto>{p}{#NombreRemitente#} schickt dir eine Nachricht über {#NombreProyecto#}{/p}{div style="margin:30px"}{#Texto#}{/div}{schreibe eine Antwort an {#NombreRemitente#} indem du hier klickst: {a href="{@UrlIntragnoss@}{$identidad$}/mensajes?mensaje={#CorreoID#}"}responder al mensaje{/a}{/p}</texto>

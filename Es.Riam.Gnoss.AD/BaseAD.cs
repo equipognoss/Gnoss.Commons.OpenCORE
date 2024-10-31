@@ -739,11 +739,11 @@ namespace Es.Riam.Gnoss.AD
             {
                 AgregarEntradaTraza("CargarDataSet");
 
-                if (pEjecutarSiEsOracle)
+                if (ConexionMaster is OracleConnection && pEjecutarSiEsOracle)
                 {
                     dataAdapter = new OracleDataAdapter();
                 }
-                else if (pEjecutarSiEsPostgres)
+                else if (ConexionMaster is NpgsqlConnection && pEjecutarSiEsPostgres)
                 {
                     dataAdapter = new NpgsqlDataAdapter();
                 }
@@ -1436,6 +1436,7 @@ namespace Es.Riam.Gnoss.AD
                 string nombreTransaccion = $"Transaccion_{((SqlConnection)ConexionMaster).ClientConnectionId.ToString().ToLower()}";
                 if (TransaccionesPendientes.ContainsKey(nombreTransaccion) || Transaccion != null)
                 {
+                    mLoggingService.GuardarLog("Se ha intentado iniciar una transacción habiendo una ya iniciada.");
                     return false;
                 }
                 else
@@ -1455,7 +1456,7 @@ namespace Es.Riam.Gnoss.AD
                     //{
                     //    IniciarTransaccionEntityContext();
                     //}
-
+                    mLoggingService.GuardarLog("Se ha iniciado una transacción.");
                     return true;
                 }
             }
@@ -1593,12 +1594,14 @@ namespace Es.Riam.Gnoss.AD
                 {
                     if (pExito)
                     {
+                        mLoggingService.GuardarLog("Se ha finalizado una transacción correctamente.");
                         mEntityContext.Database.CommitTransaction();
                     }
                     else if (Transaccion.Connection != null)
                     {
                         try
                         {
+                            mLoggingService.GuardarLog("Se ha finalizado una transacción erroneamente.");
                             mEntityContext.Database.RollbackTransaction();
                         }
                         catch (Exception ex)

@@ -1,4 +1,5 @@
 ﻿using ClosedXML.Excel;
+using Es.Riam.Gnoss.Util.Configuracion;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -13,7 +14,7 @@ namespace Es.Riam.Gnoss.Traducciones
         bool faltaID;
         string[] PALITOS = { "|||" };
 
-        public void XmlOntologiaToExcel(Stream stream, XLWorkbook mExcel, string nombreHoja)
+        public void XmlOntologiaToExcel(Stream stream, XLWorkbook mExcel, string nombreHoja, ConfigService configService)
         {
             faltaID = false;
             Dictionary<string, Dictionary<string, string>> mDiccionario = new Dictionary<string, Dictionary<string, string>>();
@@ -27,7 +28,7 @@ namespace Es.Riam.Gnoss.Traducciones
 		
 			if (faltaID == false) 
             {
-                UtilFicheros.ConstruirExcel(mExcel, nombreHoja, mDiccionario);
+                UtilFicheros.ConstruirExcel(mExcel, nombreHoja, mDiccionario, configService);
             }
 
         }

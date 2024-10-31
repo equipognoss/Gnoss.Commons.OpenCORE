@@ -62,15 +62,9 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
         {
 
         }
-        
+
         public void GuardarConfiguracionSeoGoogle(AdministrarSeoGoogleViewModel pOptions)
         {
-            ControladorProyecto controladorProyecto = new ControladorProyecto(mLoggingService, mEntityContext, mConfigService, mRedisCacheWrapper, null, null, mVirtuosoAD, mHttpContextAccessor, null);
-            
-            controladorProyecto.GuardarParametroString(ParametrosGeneralesDS, ParametroAD.RobotsComunidad, pOptions.ValorRobotsBusqueda);
-            controladorProyecto.GuardarParametroString(ParametrosGeneralesDS, "ScriptGoogleAnalytics", pOptions.ScriptGoogleAnalyticsPropio);
-            controladorProyecto.GuardarParametroString(ParametrosGeneralesDS, "CodigoGoogleAnalytics", pOptions.CodigoGoogleAnalytics);
-
             ParametroGeneral parametroGeneral = ParametrosGeneralesDS.ListaParametroGeneral.Where(p => p.ProyectoID.Equals(ProyectoSeleccionado.Clave)).FirstOrDefault();
             parametroGeneral.ScriptGoogleAnalytics = pOptions.ScriptGoogleAnalyticsPropio;
             parametroGeneral.CodigoGoogleAnalytics = pOptions.CodigoGoogleAnalytics;

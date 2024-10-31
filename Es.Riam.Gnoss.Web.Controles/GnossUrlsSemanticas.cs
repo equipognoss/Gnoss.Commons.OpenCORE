@@ -1,4 +1,5 @@
-﻿using Es.Riam.Gnoss.AD.Documentacion;
+﻿using Es.Riam.AbstractsOpen;
+using Es.Riam.Gnoss.AD.Documentacion;
 using Es.Riam.Gnoss.AD.EntityModel;
 using Es.Riam.Gnoss.AD.EntityModel.Models.Peticion;
 using Es.Riam.Gnoss.AD.EntityModel.Models.Solicitud;
@@ -15,6 +16,7 @@ using Es.Riam.Gnoss.Elementos.Tesauro;
 using Es.Riam.Gnoss.Logica.Documentacion;
 using Es.Riam.Gnoss.Logica.Identidad;
 using Es.Riam.Gnoss.Logica.Parametro;
+using Es.Riam.Gnoss.Logica.ParametroAplicacion;
 using Es.Riam.Gnoss.Logica.ServiciosGenerales;
 using Es.Riam.Gnoss.Logica.Usuarios;
 using Es.Riam.Gnoss.Recursos;
@@ -69,6 +71,7 @@ public class GnossUrlsSemanticas
     private LoggingService mLoggingService;
     private EntityContext mEntityContext;
     private ConfigService mConfigService;
+    private IServicesUtilVirtuosoAndReplication mServicesUtilVirtuosoAndReplication;
 
     #endregion
 
@@ -77,11 +80,12 @@ public class GnossUrlsSemanticas
     /// <summary>
     /// Constructor
     /// </summary>
-    public GnossUrlsSemanticas(LoggingService loggingService, EntityContext entityContext, ConfigService configService)
+    public GnossUrlsSemanticas(LoggingService loggingService, EntityContext entityContext, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication)
     {
         mLoggingService = loggingService;
         mEntityContext = entityContext;
         mConfigService = configService;
+        mServicesUtilVirtuosoAndReplication = servicesUtilVirtuosoAndReplication;
     }
 
     #endregion
@@ -2432,12 +2436,25 @@ public class GnossUrlsSemanticas
 
             url = ObtenerURLDominioComunidad(pUtilIdiomas, pBaseURLIdioma, pNombreCorto, pFicheroConfiguracion);
 
-            
-            if ((url.EndsWith("depuracion.net") || url.Contains("localhost")) && !mConfigService.ObtenerProyectoConexion().HasValue)
-            {
-                ////Fernando : Si estoy depurando y no tengo un dominio configurado, que me funcionen las urls de la comunidad
+            ParametroAplicacionCN paramCN = new ParametroAplicacionCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+            ProyectoCN proyectoCN = new ProyectoCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
 
-                    mListaNombreCortoComunidadesSinNombreCortoEnURL = new List<string>();
+            Guid? proyectoID = mConfigService.ObtenerProyectoConexion();
+            if (proyectoID == null || proyectoID.Equals(Guid.Empty))
+            {
+                Es.Riam.Gnoss.AD.EntityModel.Models.ProyectoDS.Proyecto proyectoActual = proyectoCN.ObtenerProyectoPorNombreCorto(pNombreCorto);
+
+                string valor = paramCN.ObtenerParametroAplicacion(proyectoActual.URLPropia);
+
+                if (!string.IsNullOrEmpty(valor))
+                {
+                    proyectoID = new Guid(valor);
+                }
+            }
+
+            if ((url.EndsWith("depuracion.net") || url.Contains("localhost")) && !proyectoID.HasValue)
+            {
+                mListaNombreCortoComunidadesSinNombreCortoEnURL = new List<string>();
             }
             else
             {
@@ -2447,8 +2464,8 @@ public class GnossUrlsSemanticas
                     {
                         if (mListaNombreCortoComunidadesSinNombreCortoEnURL == null)
                         {
-                            ParametroCN paramCN = new ParametroCN(mEntityContext, mLoggingService, mConfigService, null);
-                            mListaNombreCortoComunidadesSinNombreCortoEnURL = paramCN.ObtenerNombresDeProyectosSinNombreCortoEnURL();
+                            ParametroCN parametroCN = new ParametroCN(mEntityContext, mLoggingService, mConfigService, null);
+                            mListaNombreCortoComunidadesSinNombreCortoEnURL = parametroCN.ObtenerNombresDeProyectosSinNombreCortoEnURL();
                             paramCN.Dispose();
                         }
                     }
@@ -2467,7 +2484,7 @@ public class GnossUrlsSemanticas
         if (!mListaNombreCortoComunidadesSinNombreCortoEnURL.Contains(pNombreCorto))
         {
             urlCom = "/" + pUtilIdiomas.GetText("URLSEM", "COMUNIDAD") + "/" + pNombreCorto;
-         }
+        }
 
         string idiomaActual = pUtilIdiomas.LanguageCode;
 
@@ -2606,7 +2623,7 @@ public class GnossUrlsSemanticas
             {
                 CargarUrlComunidad(pNombreCorto, pFicheroConfiguracion);
             }
-            
+
             if (!pBaseURL.Contains("depuracion.net") && !pBaseURL.Contains("localhost"))
             {
                 //Cojo la URL de la lista de comunidades
@@ -3424,6 +3441,7 @@ public class GnossGeneradorUrlsRDF : IGeneradorURL
     private EntityContext mEntityContext;
     private IHttpContextAccessor mHttpContextAccessor;
     private ConfigService mConfigService;
+    private IServicesUtilVirtuosoAndReplication mServicesUtilVirtuosoAndReplication;
 
     #endregion
 
@@ -3491,12 +3509,12 @@ public class GnossGeneradorUrlsRDF : IGeneradorURL
         if (pDocumento.ProyectoID.Equals(ProyectoAD.MetaProyecto))
         {
             //Es de persona o de organización  //"IdentidadPublicacionID = '" + pDocumento.FilaDocumento.CreadorID + "'"
-            List<Es.Riam.Gnoss.AD.EntityModel.Models.Documentacion.DocumentoWebVinBaseRecursos> filas = pDocumento.GestorDocumental.DataWrapperDocumentacion.ListaDocumentoWebVinBaseRecursos.Where(docweb => docweb.IdentidadPublicacionID.HasValue && pDocumento.FilaDocumento.CreadorID.HasValue && docweb.IdentidadPublicacionID.Value.Equals(pDocumento.FilaDocumento.CreadorID.Value)).ToList();
+            List<Es.Riam.Gnoss.AD.EntityModel.Models.Documentacion.DocumentoWebVinBaseRecursos> filas = pDocumento.GestorDocumental.DataWrapperDocumentacion.ListaDocumentoWebVinBaseRecursos.Where(docweb => docweb.IdentidadPublicacionID.HasValue && docweb.IdentidadPublicacionID.Value.Equals(pDocumento.FilaDocumento.CreadorID)).ToList();
 
             if ((filas != null) && (filas.Count > 0))
             {
                 IdentidadCN identCN = new IdentidadCN(mEntityContext, mLoggingService, mConfigService, null);
-                idPersonaOOrg = identCN.ObtenerPersonaOOrganizacionIDDeIdentidad(pDocumento.FilaDocumento.CreadorID.Value).ToString();
+                idPersonaOOrg = identCN.ObtenerPersonaOOrganizacionIDDeIdentidad(pDocumento.FilaDocumento.CreadorID).ToString();
                 identCN.Dispose();
 
                 Es.Riam.Gnoss.AD.EntityModel.Models.Documentacion.DocumentoWebVinBaseRecursos filaVinDoc = filas.First();
@@ -3671,19 +3689,11 @@ public class GnossGeneradorUrlsRDF : IGeneradorURL
 
     public string ObtenerUrlIdentidad(Identidad pIdentidad)
     {
-        //TODO Juan Alvaro Usuarios
-        /*
-        string nombreCortoProy = null;
-        if (Usuario.UsuarioActual != null && Usuario.UsuarioActual.ProyectoID != ProyectoAD.MetaProyecto)
-        {
-            ProyectoCN proyCN = new ProyectoCN(mEntityContext, mLoggingService, mConfigService);
-            nombreCortoProy = proyCN.ObtenerNombreCortoProyecto(Usuario.UsuarioActual.ProyectoID);
-            proyCN.Dispose();
+        ProyectoCN proyCN = new ProyectoCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+        string nombreCortoProy = proyCN.ObtenerNombreCortoProyecto(pIdentidad.FilaIdentidad.ProyectoID);
+        proyCN.Dispose();
 
-        }
         return mGnossUrlsSemanticas.GetURLPerfilDeIdentidad(mUrlBase, nombreCortoProy, mUtilIdiomas, pIdentidad);
-        */
-        return null;//BORRAR
     }
 
     public string ObtenerUrlComunidad(string pNombreCortoProyecto)

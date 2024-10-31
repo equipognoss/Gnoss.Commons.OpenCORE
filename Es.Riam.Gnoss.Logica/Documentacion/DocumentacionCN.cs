@@ -561,6 +561,16 @@ namespace Es.Riam.Gnoss.Logica.Documentacion
         }
 
         /// <summary>
+        /// Comprueba si el documento ya esta vincualdo o viceversa
+        /// </summary>
+        /// <param name="pDocumentoID">ID del documento</param>
+        /// <param name="pDocumentoVincID">ID del documento a vincular</param>
+        public bool EstaVinculadoDocumento(Guid pDocumentoID, Guid pDocumentoVincID)
+        {
+            return DocumentacionAD.EstaVinculadoDocumento(pDocumentoID, pDocumentoVincID);
+        }
+
+        /// <summary>
         /// 
         /// </summary>
         /// <param name="pDataWrapperDocumentacion"></param>
@@ -1256,7 +1266,7 @@ namespace Es.Riam.Gnoss.Logica.Documentacion
         /// <param name="pTraerProtegidos">Indica si se deben obtener las ontologías protegidas o no</param>
         /// <param name="pTraerSecundarias">Indica si hay que cargar ontologías secundarias</param>
         /// <param name="pTraerOntosEntorno">Indica si deben traerse las ontologías del entorno</param>
-        public void ObtenerOntologiasProyecto(Guid pProyectoID, DataWrapperDocumentacion pDataWrapperDocumentacion, bool pTraerProtegidos, bool pTraerSecundarias, bool pTraerOntosEntorno, bool pTraerDocWebVinBaseRecursos = false)
+        public void ObtenerOntologiasProyecto(Guid pProyectoID, DataWrapperDocumentacion pDataWrapperDocumentacion, bool pTraerProtegidos, bool pTraerSecundarias, bool pTraerOntosEntorno, bool pTraerDocWebVinBaseRecursos = true)
         {
             DocumentacionAD.ObtenerOntologiasProyecto(pProyectoID, pDataWrapperDocumentacion, pTraerProtegidos, pTraerSecundarias, pTraerOntosEntorno, pTraerDocWebVinBaseRecursos);
         }
@@ -1309,7 +1319,6 @@ namespace Es.Riam.Gnoss.Logica.Documentacion
         /// <returns>Devuelve cierto si todo va bien, devuelve cierto y falso en caso contrario</returns>
         public void BorradoMasivoOntologias(List<Guid> pOntologiaID, Guid pProyectoID)
         {
-            List<Guid> documentos = new List<Guid>();
             DocumentacionAD.BorrarDocumentosScript(pOntologiaID, pProyectoID);
         }
         /// <summary>
@@ -1486,6 +1495,17 @@ namespace Es.Riam.Gnoss.Logica.Documentacion
         public List<Guid> ObtenerDocumentosIDVinculadosAOntologiaProyecto(Guid pOntologiaID, Guid pProyectoID)
         {
             return DocumentacionAD.ObtenerDocumentosIDVinculadosAOntologiaProyecto(pOntologiaID, pProyectoID);
+        }
+
+        /// <summary>
+        /// Obtiene si existen documentos cuyo elemento vinculado es el ID de la ontología
+        /// </summary>
+        /// <param name="pOntologiaID">Identificador de la ontología</param>
+        /// <param name="pProyectoID">Identificador del proyecto</param>
+        /// <returns>True si existe</returns>
+        public bool ExistenVinculadosAOntologiaProyecto(Guid pOntologiaID, Guid pProyectoID)
+        {
+            return DocumentacionAD.ExistenVinculadosAOntologiaProyecto(pOntologiaID, pProyectoID);
         }
 
         /// <summary>
@@ -1855,6 +1875,16 @@ namespace Es.Riam.Gnoss.Logica.Documentacion
         public DocumentoWebVinBaseRecursos ObtenerDocumentoWebVinBaseRecursoPorDocumentoID(Guid pDocumentoID)
         {
             return DocumentacionAD.ObtenerDocumentoWebVinBaseRecursoPorDocumentoID(pDocumentoID);
+        }
+
+        /// <summary>
+        /// Obtiene todas las bases de recursos del documento id pasado por parámetro
+        /// </summary>
+        /// <param name="pDocumentoID">Identificador del documento</param>
+        /// <returns>Lista de DocumentoWebVinBaseRecursos del documento pasado por parámetro</returns>
+        public List<DocumentoWebVinBaseRecursos> ObtenerListaDocumentoWebVinBaseRecursoPorDocumentoID(Guid pDocumentoID)
+        {
+            return DocumentacionAD.ObtenerListaDocumentoWebVinBaseRecursoPorDocumentoID(pDocumentoID);
         }
 
         /// <summary>
@@ -2681,6 +2711,16 @@ namespace Es.Riam.Gnoss.Logica.Documentacion
         public DataWrapperDocumentacion ObtenerOntologiasDeDocumentos(List<Guid> pListaDocumentosID)
         {
             return DocumentacionAD.ObtenerOntologiasDeDocumentos(pListaDocumentosID);
+        }
+
+        /// <summary>
+        /// Se obtiene el documento vinculado al pasado por parámetro
+        /// </summary>
+        /// <param name="pDocumentoID">Identificador del documento del cual queremos su documento vinculado</param>
+        /// <returns></returns>
+        public Documento ObtenerElementoVinculadoDeDocumento(Guid pDocumentoID)
+        {
+            return DocumentacionAD.ObtenerElementoVinculadoDeDocumento(pDocumentoID);
         }
 
         /// <summary>

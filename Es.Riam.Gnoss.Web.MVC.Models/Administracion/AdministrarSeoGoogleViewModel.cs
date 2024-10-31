@@ -19,10 +19,6 @@
         /// </summary>
         public string ScriptGoogleAnalyticsPropio { get; set; }
         /// <summary>
-        /// Script de Google Analytics que viene desde la vista para el guardado
-        /// </summary>
-        public string ScriptGoogleAnalytics { get; set; }
-        /// <summary>
         /// Script de Google Analytics de la plataforma
         /// </summary>
         public string ScriptGoogleAnalyticsPlataforma { get; set; }
@@ -31,9 +27,12 @@
         /// </summary>
         public bool ConfiguracionEnParametroProyecto { get; set; }
         /// <summary>
-        /// Flag que indica si la configuración del script de Google Analytics esta en la tabla ParametroGeneral
+        /// Flag que indica si la se utiliza un script de google analytics propio o el configurado en la plataforma
         /// </summary>
-        public bool GooglaAnalitycsScriptEnParametroGeneral { get; set; }
+        public bool EsScriptGoogleAnalitycsPropio { get; set; }
+        /// <summary>
+        /// Script de google analytics por defecto de GNOSS
+        /// </summary>
         public string ScriptPorDefecto { get; set; }
     }
 }

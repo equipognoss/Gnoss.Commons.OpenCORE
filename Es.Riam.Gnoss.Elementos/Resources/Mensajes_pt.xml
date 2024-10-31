@@ -150,6 +150,10 @@
       <asunto>Pedido de alteração de senha em {#NombreProyecto#}</asunto>
       <texto>{p}Para trocar sua senha, para continuar siga o link: {/p} {p}{a style="display: block; font-weight: 400; color: #006eff; padding-bottom: 40px;" href="{#UrlEnlace#}"}trocar senha{/a}{/p}</texto>
     </mensaje>
+	<mensaje id="81">
+	  <asunto>Token de segurança {#NombreProyecto#}</asunto>
+	  <texto>{p}Seu token de segurança é: {b} {#TokenSeguridad#} {/b}{/p}</texto>
+	</mensaje>
     <mensaje id="121">
       <asunto>{#Asunto#}</asunto>
       <texto>{p}{#NombreRemitente#} enviamos uma mensagem atraves de {#NombreProyecto#}{/p}{div style="margin:30px"}{#Texto#}{/div}{p}Para responder a {#NombreRemitente#} clique no link: {a href="{@UrlIntragnoss@}{$identidad$}/mensajes?mensaje={#CorreoID#}"}responder a mensagem{/a}{/p}</texto>

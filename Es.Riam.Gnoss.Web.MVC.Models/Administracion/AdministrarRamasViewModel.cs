@@ -1,8 +1,10 @@
 ﻿using Es.Riam.Gnoss.Web.MVC.Models.IntegracionContinua;
+using System;
 using System.Collections.Generic;
 
 namespace Es.Riam.Gnoss.Web.MVC.Models.Administracion
 {
+    [Serializable]
     public class AdministrarRamasViewModel : PeticionApiBasica
     {
         public string Nombre { get; set; }

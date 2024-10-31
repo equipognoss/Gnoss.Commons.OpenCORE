@@ -206,6 +206,16 @@ namespace Es.Riam.Gnoss.Web.MVC.Models.Administracion
         /// </summary>
         public bool ProyectoSinNombreCortoEnURL { get; set; }
 
+		/// <summary>
+		/// Indica si se desea realizar el registro automatico en las comunidades con el dominio de la url corta
+		/// </summary>
+		public bool RegistroAutomaticoCheckbox { get; set; }
+
+		/// <summary>
+		/// Indica si se quiere reiniciar la palicacion ahora o mas tarde manualmente
+		/// </summary>
+		public bool ReiniciarAplicacion { get; set; }
+
         /// <summary>
         /// Define, para una comunidad privada, si no es necesario una invitación para entrar a la comunidad. 
         /// </summary>
@@ -256,7 +266,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Models.Administracion
         public string LoginFacebook { get; set; }
 
         /// <summary>
-        /// Indica el client id y el client secret de la aplicación de Google. Ej: id|||880006438141-r84hn261rtct92aqe3d5adjlod4umacn.apps.googleusercontent.com@@@clientsecret|||0d8fxeZDl-qV0XRiTnCCB54n
+        /// Indica el client id y el client secret de la aplicación de Google. Ej: id|||880006438141-r84hn261rtct92aqe3d5adjlod4umacn.apps.googleusercontent.com@@@clientsecret|||secretid
         /// </summary>
         public string LoginGoogle { get; set; }
 

@@ -51,6 +51,7 @@ namespace Es.Riam.Gnoss.Util.Configuracion
         private string urlResultadosExterno;
         private string urlAfinidad;
         private string urlKeycloak;
+        private string urlServicioKeycloak;
         private string ubicacionIndiceLucene;
         private List<string> listaIdiomas;
         private Dictionary<string, string> listaIdiomasDictionary;
@@ -171,9 +172,18 @@ namespace Es.Riam.Gnoss.Util.Configuracion
         private string scopeIdentity;
         private string clientIDIdentity;
         private string clientIDSecret;
-        private string evaluarFiltrosFacetasEnOrden;
+        private bool? evaluarFiltrosFacetasEnOrden;
         private bool? noEnviarCorreoSuscripcion;
-
+        private int intervaloEjecucion;
+        private bool? ejecucionAutomatica;
+        private bool? comprobarGrafoBusqueda;
+        private string ficheroDocumentosReprocesar;
+        private string keycloakClientID;
+        private string keycloakClientSecret;
+        private int ventanaDeTiempoPeticionesLogin;
+        private int numMaxPeticionesLogin;
+        private string configContentSecurityPolocy;
+        private bool? forzarEjecucionSiteMaps;
         public string GetCadenaConexion()
         {
             if (string.IsNullOrEmpty(cadenaConexion))
@@ -1149,11 +1159,9 @@ namespace Es.Riam.Gnoss.Util.Configuracion
         }
 
         public List<string> ObtenerListaIdiomas()
-        {
-            string idiomas = "";
+        {            
             if (listaIdiomas == null)
             {
-
                 listaIdiomas = ObtenerListaIdiomasDictionary().Keys.ToList();
             }
 
@@ -1164,7 +1172,7 @@ namespace Es.Riam.Gnoss.Util.Configuracion
         {
             string idiomas = "";
             List<string> codes = new List<string>();
-            if (listaIdiomasDictionary == null)
+            if (listaIdiomasDictionary == null || listaIdiomasDictionary.Count == 0)
             {
                 listaIdiomasDictionary = new Dictionary<string, string>();
                 if (EnvironmentVariables.Contains($"idiomas"))
@@ -1175,7 +1183,12 @@ namespace Es.Riam.Gnoss.Util.Configuracion
                 {
                     idiomas = Configuration["idiomas"];
                 }
-                codes = idiomas.Split(',').ToList();
+                
+                if (!string.IsNullOrEmpty(idiomas))
+                {
+                    codes = idiomas.Split(',').ToList();
+                }
+                
                 foreach (string idioma in codes)
                 {
                     listaIdiomasDictionary.Add(idioma.Split('|')[0], idioma.Split('|')[1]);
@@ -3275,6 +3288,38 @@ namespace Es.Riam.Gnoss.Util.Configuracion
             return ruta;
         }
 
+        public bool LanzarHiloDescargaMasiva()
+        {
+            bool lanzarHilodescargaMasiva = true;
+
+            if (EnvironmentVariables.Contains("LanzarHiloDescargaMasiva"))
+            {
+                lanzarHilodescargaMasiva = bool.Parse(EnvironmentVariables["LanzarHiloDescargaMasiva"] as string);
+            }
+            else if (!string.IsNullOrEmpty(Configuration["LanzarHiloDescargaMasiva"]))
+            {
+                lanzarHilodescargaMasiva = bool.Parse(Configuration["LanzarHiloDescargaMasiva"]);
+            }
+
+            return lanzarHilodescargaMasiva;
+        }
+
+        public bool LanzarHiloCargaMasiva()
+        {
+            bool lanzarHiloCargaMasiva = true;
+
+            if (EnvironmentVariables.Contains("LanzarHiloCargaMasiva"))
+            {
+                lanzarHiloCargaMasiva = bool.Parse(EnvironmentVariables["LanzarHiloCargaMasiva"] as string);
+            }
+            else if (!string.IsNullOrEmpty(Configuration["LanzarHiloCargaMasiva"]))
+            {
+                lanzarHiloCargaMasiva = bool.Parse(Configuration["LanzarHiloCargaMasiva"]);
+            }
+
+            return lanzarHiloCargaMasiva;
+        }
+
         public string ObtenerUbicacionIndiceLucene()
         {
             if (string.IsNullOrEmpty(ubicacionIndiceLucene))
@@ -3544,20 +3589,112 @@ namespace Es.Riam.Gnoss.Util.Configuracion
             return clientIDSecret;
         }
 
-        public string ObtenerEvaluarFiltrosFacetasEnOrden()
+        public bool ObtenerEvaluarFiltrosFacetasEnOrden()
         {
-            if (string.IsNullOrEmpty(evaluarFiltrosFacetasEnOrden))
+            if (evaluarFiltrosFacetasEnOrden == null)
             {
-                if (EnvironmentVariables.Contains("EvaluarFiltrosFacetasEnOrden"))
+                if (EnvironmentVariables.Contains("evaluarFiltrosFacetasEnOrden"))
                 {
-                    evaluarFiltrosFacetasEnOrden = EnvironmentVariables["EvaluarFiltrosFacetasEnOrden"] as string;
+                    string variable = EnvironmentVariables["evaluarFiltrosFacetasEnOrden"] as string;
+                    if (variable.ToLower() == "true")
+                    {
+                        evaluarFiltrosFacetasEnOrden = true;
+                    }
                 }
                 else
                 {
-                    evaluarFiltrosFacetasEnOrden = Configuration["EvaluarFiltrosFacetasEnOrden"];
+                    evaluarFiltrosFacetasEnOrden = Configuration.GetValue<bool?>("evaluarFiltrosFacetasEnOrden");
                 }
             }
-            return evaluarFiltrosFacetasEnOrden;
+            if (evaluarFiltrosFacetasEnOrden == null)
+            {
+                return false;
+            }
+            return evaluarFiltrosFacetasEnOrden.Value;
+        }
+
+        public bool ObtenerEjecucionAutomaticaAlineadorGrafos()
+        {
+            if (ejecucionAutomatica == null)
+            {
+                if (EnvironmentVariables.Contains("Automatico"))
+                {
+                    string variable = EnvironmentVariables["Automatico"] as string;
+                    if (variable.ToLower() == "true")
+                    {
+                        ejecucionAutomatica = true;
+                    }
+                }
+                else
+                {
+                    ejecucionAutomatica = Configuration.GetValue<bool?>("Automatico");
+                }
+            }
+            if (ejecucionAutomatica == null)
+            {
+                return false;
+            }
+            return ejecucionAutomatica.Value;
+        }
+
+        public bool ObtenerComprobarGrafoDeBusqueda()
+        {
+            if (comprobarGrafoBusqueda == null)
+            {
+                if (EnvironmentVariables.Contains("ComprobarGrafoBusqueda"))
+                {
+                    string variable = EnvironmentVariables["ComprobarGrafoBusqueda"] as string;
+                    if (variable.ToLower() == "true")
+                    {
+                        comprobarGrafoBusqueda = true;
+                    }
+                }
+                else
+                {
+                    comprobarGrafoBusqueda = Configuration.GetValue<bool?>("ComprobarGrafoBusqueda");
+                }
+            }
+            if (comprobarGrafoBusqueda == null)
+            {
+                return false;
+            }
+            return comprobarGrafoBusqueda.Value;
+        }
+
+        public string ObtenerRutaFicheroReprocesarDocumentos()
+        {
+            if (string.IsNullOrEmpty(ficheroDocumentosReprocesar))
+            {
+                if (EnvironmentVariables.Contains("FicheroDocumentosReprocesar"))
+                {
+                    ficheroDocumentosReprocesar = EnvironmentVariables["FicheroDocumentosReprocesar"] as string;
+                }
+                else
+                {
+                    ficheroDocumentosReprocesar = Configuration["FicheroDocumentosReprocesar"];
+                }
+            }
+            return ficheroDocumentosReprocesar;
+        }
+
+        public int ObtenerIntervaloEjecucionAlineadorGrafos()
+        {
+            if (intervaloEjecucion.Equals(0))
+            {
+                string puerto;
+                if (EnvironmentVariables.Contains("IntervaloEjecucionMinutos"))
+                {
+                    puerto = EnvironmentVariables["IntervaloEjecucionMinutos"] as string;
+                }
+                else
+                {
+                    puerto = Configuration["IntervaloEjecucionMinutos"];
+                }
+
+                int.TryParse(puerto, out intervaloEjecucion);
+            }
+
+            return intervaloEjecucion;
         }
 
         public int ObtenerMinPortFTP()
@@ -3598,5 +3735,182 @@ namespace Es.Riam.Gnoss.Util.Configuracion
             return maxPort;
         }
 
+        public string ObtenerUrlServicioKeycloak()
+        {
+            if (string.IsNullOrEmpty(urlServicioKeycloak))
+            {
+                if (EnvironmentVariables.Contains("Servicios__urlKeycloak"))
+                {
+                    urlServicioKeycloak = EnvironmentVariables["Servicios__urlKeycloak"] as string;
+                }
+                else
+                {
+                    urlServicioKeycloak = Configuration.GetSection("Servicios")["urlKeycloak"];
+                }
+                if (!string.IsNullOrEmpty(urlServicioKeycloak) && urlServicioKeycloak.EndsWith("/"))
+                {
+                    urlServicioKeycloak = urlServicioKeycloak.TrimEnd('/');
+                }
+            }
+
+            return urlServicioKeycloak;
+        }
+
+        public string ObtenerUrlKeycloak()
+        {
+            if (string.IsNullOrEmpty(urlKeycloak))
+            {
+                if (EnvironmentVariables.Contains("Keycloak__ServerRealm"))
+                {
+                    urlKeycloak = EnvironmentVariables["Keycloak__ServerRealm"] as string;
+                }
+                else
+                {
+                    urlKeycloak = Configuration.GetSection("Keycloak")["ServerRealm"];
+                }
+            }
+
+            return urlKeycloak;
+        }
+
+        public string ObtenerKeycloakClientID()
+        {
+            if (string.IsNullOrEmpty(keycloakClientID))
+            {
+                if (EnvironmentVariables.Contains("Keycloak__ClientId"))
+                {
+                    keycloakClientID = EnvironmentVariables["Keycloak__ClientId"] as string;
+                }
+                else
+                {
+                    keycloakClientID = Configuration.GetSection("Keycloak")["ClientId"];
+                }
+            }
+
+            return keycloakClientID;
+        }
+
+        public string ObtenerKeycloakClientSecret()
+        {
+            if (string.IsNullOrEmpty(keycloakClientSecret))
+            {
+                if (EnvironmentVariables.Contains("Keycloak__ClientSecret"))
+                {
+                    keycloakClientSecret = EnvironmentVariables["Keycloak__ClientSecret"] as string;
+                }
+                else
+                {
+                    keycloakClientSecret = Configuration.GetSection("Keycloak")["ClientSecret"];
+                }
+            }
+
+            return keycloakClientSecret;
+        }
+
+        public bool ObtenerClasesGeneradasConPrefijo()
+        {
+            string clasesConPrefijo;
+
+			if (EnvironmentVariables.Contains("ClasesGeneradasConPrefijo"))
+            {
+                clasesConPrefijo = EnvironmentVariables["ClasesGeneradasConPrefijo"] as string;
+			}
+            else
+            {
+                clasesConPrefijo = Configuration["ClasesGeneradasConPrefijo"];
+            }
+
+            if(string.IsNullOrEmpty(clasesConPrefijo))
+            {
+                return false;
+            }
+            else
+            {
+                return bool.Parse(clasesConPrefijo);
+            }
+        }
+
+        public int ObtenerVentanaTiempoLogin()
+        {
+            string tiempo;
+            if (EnvironmentVariables.Contains("ventanaDeTiempoPeticionesLogin"))
+            {
+                tiempo = EnvironmentVariables["ventanaDeTiempoPeticionesLogin"] as string;
+
+            }
+            else
+            {
+                tiempo = Configuration["ventanaDeTiempoPeticionesLogin"];
+            }
+            int.TryParse(tiempo, out ventanaDeTiempoPeticionesLogin);
+            if (ventanaDeTiempoPeticionesLogin == 0)
+            {
+                ventanaDeTiempoPeticionesLogin = 600;
+            }
+
+            return ventanaDeTiempoPeticionesLogin;
+        }
+
+        public int ObtenerNumMaxPeticionesLogin()
+        {
+            string maxPeticiones;
+            if (EnvironmentVariables.Contains("numMaxPeticionesLogin"))
+            {
+                maxPeticiones = EnvironmentVariables["numMaxPeticionesLogin"] as string;
+            }
+            else
+            {
+                maxPeticiones = Configuration["numMaxPeticionesLogin"];
+            }
+            int.TryParse(maxPeticiones, out numMaxPeticionesLogin);
+
+            if (numMaxPeticionesLogin == 0)
+            {
+                numMaxPeticionesLogin = 5;
+            }
+
+            return numMaxPeticionesLogin;
+        }
+
+        public string GetConfigContentSecurityPolocy()
+        {
+            if (string.IsNullOrEmpty(configContentSecurityPolocy))
+            {
+                if (EnvironmentVariables.Contains("configContentSecurityPolocy"))
+                {
+                    configContentSecurityPolocy = EnvironmentVariables["configContentSecurityPolocy"] as string;
+                }
+                else
+                {
+                    configContentSecurityPolocy = Configuration["configContentSecurityPolocy"];
+                }
+            }
+
+            return configContentSecurityPolocy;
+        }
+
+        public bool ObtenerForzarEjecucionSiteMaps()
+        {
+            if (forzarEjecucionSiteMaps == null)
+            {
+                if (EnvironmentVariables.Contains("forzarEjecucionSiteMaps"))
+                {
+                    string variable = EnvironmentVariables["forzarEjecucionSiteMaps"] as string;
+                    if (variable.ToLower() == "true")
+                    {
+                        forzarEjecucionSiteMaps = true;
+                    }
+                }
+                else
+                {
+                    forzarEjecucionSiteMaps = Configuration.GetValue<bool?>("forzarEjecucionSiteMaps");
+                }
+            }
+            if (!forzarEjecucionSiteMaps.HasValue)
+            {
+                return false;
+            }
+            return forzarEjecucionSiteMaps.Value;
+        }
     }
 }

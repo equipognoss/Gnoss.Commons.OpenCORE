@@ -5265,7 +5265,7 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
                     table.PrimaryKey("PK_ProyectoGadgetIdioma", x => new { x.GadgetID, x.OrganizacionID, x.ProyectoID, x.Idioma });
                     table.ForeignKey(
                         name: "FK_ProyectoGadgetIdioma_ProyectoGadget_GadgetID_OrganizacionID_ProyectoID",
-                        columns: x => new { x.GadgetID, x.OrganizacionID, x.ProyectoID },
+                        columns: x => new { x.OrganizacionID, x.ProyectoID, x.GadgetID },
                         principalTable: "ProyectoGadget",
                         principalColumns: new[] { "OrganizacionID", "ProyectoID", "GadgetID" },
                         onDelete: ReferentialAction.Restrict);

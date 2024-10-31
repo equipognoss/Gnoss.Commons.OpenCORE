@@ -97,11 +97,11 @@ namespace Es.Riam.Gnoss.Logica.CMS
         /// </summary>
         /// <param name="pComponenteID">ID del componente</param>
         /// <returns>DataSet de CMS</returns>
-        public DataWrapperCMS ObtenerComponentePorID(Guid pComponenteID, Guid pProyectoID)
+        public DataWrapperCMS ObtenerComponentePorID(Guid pComponenteID, Guid pProyectoID, bool pCargarSoloActivos)
         {
             List<Guid> listaID = new List<Guid>();
             listaID.Add(pComponenteID);
-            return CMSAD.ObtenerComponentePorListaID(listaID, pProyectoID);
+            return CMSAD.ObtenerComponentePorListaID(listaID, pProyectoID, pCargarSoloActivos);
         }
 
         /// <summary>
@@ -130,9 +130,9 @@ namespace Es.Riam.Gnoss.Logica.CMS
         /// </summary>
         /// <param name="pComponenteID">lista de IDs de los componentes</param>
         /// <returns>DataSet de CMS</returns>
-        public DataWrapperCMS ObtenerComponentePorListaID(List<Guid> pListaComponenteID, Guid pProyectoID)
+        public DataWrapperCMS ObtenerComponentePorListaID(List<Guid> pListaComponenteID, Guid pProyectoID, bool pTraerSoloActivos)
         {
-            return CMSAD.ObtenerComponentePorListaID(pListaComponenteID, pProyectoID);
+            return CMSAD.ObtenerComponentePorListaID(pListaComponenteID, pProyectoID, pTraerSoloActivos);
         }
 
         /// <summary>

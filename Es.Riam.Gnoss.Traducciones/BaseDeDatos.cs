@@ -28,7 +28,7 @@ namespace Es.Riam.Gnoss.Traducciones
     public class BaseDeDatos
     {
         private const int LIMITE_VIRTUOSO = 10000;
-        private const int LIMITE_CELDA_EXCEL = 2000;
+        private const int LIMITE_CELDA_EXCEL = 28000;
 
         private const string ontologiaPrincipal = "tabla_";
         private readonly Elementos.ServiciosGenerales.Proyecto mProyectoSeleccionado;
@@ -104,7 +104,7 @@ namespace Es.Riam.Gnoss.Traducciones
                     }
                 }
 
-                UtilFicheros.ConstruirExcel(mExcel, nombreHoja, mDiccionario);
+                UtilFicheros.ConstruirExcel(mExcel, nombreHoja, mDiccionario, mConfigService);
             }
         }
 
@@ -178,7 +178,7 @@ namespace Es.Riam.Gnoss.Traducciones
                     }
                 }
             }
-            UtilFicheros.ConstruirExcel(mExcel, nombreHoja, mDiccionario);
+            UtilFicheros.ConstruirExcel(mExcel, nombreHoja, mDiccionario, mConfigService);
         }
 
         //HACER
@@ -273,7 +273,7 @@ namespace Es.Riam.Gnoss.Traducciones
                         EscribirExcelPorTabla(mDiccionario, clave, idiomasTextos);
                     }
                 }
-                UtilFicheros.ConstruirExcel(mExcel, nombreHoja, mDiccionario);
+                UtilFicheros.ConstruirExcel(mExcel, nombreHoja, mDiccionario, mConfigService);
             }
 
 
@@ -349,7 +349,7 @@ namespace Es.Riam.Gnoss.Traducciones
                     }
                 }
             }
-            UtilFicheros.ConstruirExcel(mExcel, nombreHoja, mDiccionario);
+            UtilFicheros.ConstruirExcel(mExcel, nombreHoja, mDiccionario, mConfigService);
         }
 
         //HACER
@@ -416,7 +416,7 @@ namespace Es.Riam.Gnoss.Traducciones
                 }
             }
 
-            UtilFicheros.ConstruirExcel(mExcel, nombreHoja, mDiccionario);
+            UtilFicheros.ConstruirExcel(mExcel, nombreHoja, mDiccionario, mConfigService);
         }
 
         //HACER
@@ -484,7 +484,7 @@ namespace Es.Riam.Gnoss.Traducciones
                     }
                 }
             }
-            UtilFicheros.ConstruirExcel(mExcel, nombreHoja, mDiccionario);
+            UtilFicheros.ConstruirExcel(mExcel, nombreHoja, mDiccionario, mConfigService);
         }
 
         public void ExcelToClausulaRegistro(Guid mProyectoID, DataTable tabla)
@@ -551,7 +551,7 @@ namespace Es.Riam.Gnoss.Traducciones
                     }
                 }
             }
-            UtilFicheros.ConstruirExcel(mExcel, nombreHoja, mDiccionario);
+            UtilFicheros.ConstruirExcel(mExcel, nombreHoja, mDiccionario, mConfigService);
         }
 
         public void ExcelToProyectoGadget(Guid mProyectoID, DataTable tabla)
@@ -618,7 +618,7 @@ namespace Es.Riam.Gnoss.Traducciones
                 }
             }
 
-            UtilFicheros.ConstruirExcel(mExcel, nombreHoja, mDiccionario);
+            UtilFicheros.ConstruirExcel(mExcel, nombreHoja, mDiccionario, mConfigService);
         }
 
         public void ExcelToOntologiaProyectoSql(Guid mProyectoID, DataTable tabla)

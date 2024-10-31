@@ -171,6 +171,10 @@
       <asunto>Petición de cambio de contrasinal en {#NombreProyecto#}</asunto>
       <texto>{p}Para cambiar o seu contrasinal, siga o enlace que se amosa a continuación: {/p} {p}{a style="display: block; font-weight: 400; color: #006eff; padding-bottom: 40px;" href="{#UrlEnlace#}"}Cambiar password{/a}{/p}</texto>
     </mensaje>
+	<mensaje id="81">
+	  <asunto>Token de seguridade {#NombreProyecto#}</asunto>
+	  <texto>{p}O teu token de seguridade é: {b} {#TokenSeguridad#} {/b}{/p}</texto>
+	</mensaje>
     <mensaje id="121">
       <asunto>{#Asunto#}</asunto>
       <texto>{p}{#NombreRemitente#} Enviouche unha mensaxe a través de {#NombreProyecto#}{/p}{div style="margin:30px"}{#Texto#}{/div}{p}Para responder a {#NombreRemitente#} fai clic neste enlace: {a href="{@UrlIntragnoss@}{$identidad$}/mensajes#mensaje={#CorreoID#}"}responder á mensaxe{/a}{/p}</texto>

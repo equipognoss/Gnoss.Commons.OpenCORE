@@ -11,6 +11,8 @@ using System.IO;
 using System.Net;
 using System.Web;
 using System.Net.Http;
+using System.Reflection;
+using Es.Riam.Util;
 
 namespace Es.Riam.Gnoss.Web.Controles.ServicioImagenesWrapper
 {
@@ -325,6 +327,7 @@ namespace Es.Riam.Gnoss.Web.Controles.ServicioImagenesWrapper
         public byte[] WebRequestToken(string httpMethod, string url, byte[] byteData = null)
         {
             MultipartFormDataContent contentData = contentData = new MultipartFormDataContent();
+            contentData.Headers.Add("UserAgent", UtilWeb.GenerarUserAgent());
             byte[] result = null;
             HttpResponseMessage response = null;
             try
@@ -514,6 +517,7 @@ namespace Es.Riam.Gnoss.Web.Controles.ServicioImagenesWrapper
             webRequest.Method = pMethod;
             webRequest.ServicePoint.Expect100Continue = false;
             webRequest.Timeout = 3600000;
+            webRequest.UserAgent = UtilWeb.GenerarUserAgent();
 
             if (mToken != null)
             {

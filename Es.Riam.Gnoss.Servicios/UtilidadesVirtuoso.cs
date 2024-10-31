@@ -45,6 +45,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Xml;
+using CallFileService = Es.Riam.Gnoss.UtilServiciosWeb.CallFileService;
 
 namespace Es.Riam.Gnoss.Servicios
 {
@@ -63,7 +64,7 @@ namespace Es.Riam.Gnoss.Servicios
 
         #endregion
 
-        private LoggingService mLoggingService;
+        readonly LoggingService mLoggingService;
         private EntityContext mEntityContext;
         private ConfigService mConfigService;
         private RedisCacheWrapper mRedisCacheWrapper;
@@ -107,7 +108,7 @@ namespace Es.Riam.Gnoss.Servicios
             {
                 byteArray = ONTOLOGIA_XML_CACHE[pOntologiaID];
             }
-            
+
             doc = new XmlDocument();
             MemoryStream ms = new MemoryStream(byteArray);
             doc.Load(ms);
@@ -115,7 +116,7 @@ namespace Es.Riam.Gnoss.Servicios
         }
         private XmlNode EspefEntidad(string proyID, string nombreCortoProy)
         {
-           
+
             XmlNodeList listaespef = null;
             if (doc.DocumentElement != null)
             {
@@ -153,11 +154,11 @@ namespace Es.Riam.Gnoss.Servicios
                 return listaespef.Item(0);
             }
             else { return null; }
-            
+
         }
+
         private XmlNode EspefPropiedad(string proyID, string nombreCortoProy)
         {
-
             XmlNodeList listaEspefPropiedad = null;
             if (doc.DocumentElement != null)
             {
@@ -201,7 +202,7 @@ namespace Es.Riam.Gnoss.Servicios
                 return listaEspefPropiedad.Item(0);
             }
             else { return null; }
-            
+
         }
         /// <summary>
         /// Devuelve los selectores del archivo XML
@@ -209,9 +210,8 @@ namespace Es.Riam.Gnoss.Servicios
         /// <returns>La clave es el grafo y el valor la lista de selectores del grafo</returns>
         private Dictionary<string, List<string>> ObtenerSelectores(Ontologia pOntologia, string pProyectoID, string pNombreCortoProy)
         {
-            string clase = string.Empty;
             Dictionary<string, List<string>> dicSelectores = new Dictionary<string, List<string>>();
-            List<string> vSelectores = new List<string>();
+
             if (EspefEntidad(pProyectoID, pNombreCortoProy) != null)
             {
 
@@ -233,7 +233,7 @@ namespace Es.Riam.Gnoss.Servicios
                             ElementoOntologia entidadPrincipal = null;
                             if (entidadesPrincipal != null && entidadesPrincipal.Count > 0)
                             {
-                                entidadPrincipal = entidadesPrincipal.First();
+                                entidadPrincipal = entidadesPrincipal[0];
                                 string tipoEntidad = entidadPrincipal.TipoEntidadRelativo;
                                 if (!listaSelectoresNombre.Contains(tipoEntidad))
                                 {
@@ -269,8 +269,7 @@ namespace Es.Riam.Gnoss.Servicios
 
                         if (dicSelectores.ContainsKey(nombreGrafo))
                         {
-                            vSelectores = dicSelectores[nombreGrafo];
-                            dicSelectores[nombreGrafo] = vSelectores.Union(listaSelectoresNombre).ToList();
+                            dicSelectores[nombreGrafo] = dicSelectores[nombreGrafo].Union(listaSelectoresNombre).ToList();
                         }
                         else
                         {
@@ -285,12 +284,11 @@ namespace Es.Riam.Gnoss.Servicios
 
         public string ObtenerTriplesFormularioSemantico(string pFicheroConfiguracionBD, string pFicheroConfiguracionBDBase, string pUrlIntragnoss, DataWrapperFacetas pFacetaDW, Guid pOrganizacionID, Guid pProyectoID, Guid pDocumentoID, Ontologia pOntologia, Dictionary<Guid, Dictionary<string, List<string>>> pDicPropiedadesOntologia, out string tipo, List<ElementoOntologia> pElementosContenedorSuperiorOHerencias)
         {
-            string triples = "";
+            StringBuilder triples = new StringBuilder();
 
             FacetadoCN facetadoCN = new FacetadoCN(pFicheroConfiguracionBD, pUrlIntragnoss, pProyectoID.ToString(), mEntityContext, mLoggingService, mConfigService, mVirtuosoAD, mServicesUtilVirtuosoAndReplication);
             facetadoCN.FacetadoAD.CadenaConexionBase = pFicheroConfiguracionBDBase;
             FacetadoDS facetadoDS = new FacetadoDS();
-
             FacetaCL facetaCL = new FacetaCL(pFicheroConfiguracionBD, pFicheroConfiguracionBD, pUrlIntragnoss, mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mServicesUtilVirtuosoAndReplication);
             Dictionary<string, List<string>> informacionOntologias = facetaCL.ObtenerPrefijosOntologiasDeProyecto(pProyectoID);
 
@@ -302,7 +300,7 @@ namespace Es.Riam.Gnoss.Servicios
                 {
                     string urlOntSinArroba = urlOnt;
 
-                    if (urlOntSinArroba.StartsWith("@"))
+                    if (urlOntSinArroba.StartsWith('@'))
                     {
                         urlOntSinArroba = urlOntSinArroba.Substring(1);
                     }
@@ -310,7 +308,7 @@ namespace Es.Riam.Gnoss.Servicios
                     if (!urlOntSinArroba.StartsWith("http"))
                     {
                         // Es el namespace de una ontologia: 
-                        urlOntSinArroba = pUrlIntragnoss + "Ontologia/" + urlOntSinArroba + ".owl#";
+                        urlOntSinArroba = $"{pUrlIntragnoss}Ontologia/{urlOntSinArroba}.owl#";
                     }
 
                     urlOntologiaPorNamespace.Add(nsOnt, urlOntSinArroba);
@@ -318,13 +316,14 @@ namespace Es.Riam.Gnoss.Servicios
             }
 
             FacetaCN facetaCN = new FacetaCN(pFicheroConfiguracionBD, mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
-
+            DocumentacionCN documentacionCN = new DocumentacionCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
             // Siempre debe haber una entidad Padre.
             List<string> listRdfTypePadre = new List<string>();
             foreach (ElementoOntologia entidad in pElementosContenedorSuperiorOHerencias)
             {
                 listRdfTypePadre.Add(entidad.TipoEntidad);
             }
+
             string type = facetadoCN.ObtieneTripletasFormularios(pFacetaDW, facetadoDS, pProyectoID.ToString(), pDocumentoID.ToString(), listRdfTypePadre);
 
             if (type.Contains(".owl"))
@@ -332,7 +331,6 @@ namespace Es.Riam.Gnoss.Servicios
                 type = type.Substring(0, type.LastIndexOf(".owl"));
                 type = type.Substring(type.LastIndexOf("/") + 1);
             }
-
 
             //Comprobamos si el recurso que se está agregando, además de ser semántico, pertenece a una base de recursos personal.
             if (pProyectoID.Equals(ProyectoAD.MetaProyecto))
@@ -358,7 +356,7 @@ namespace Es.Riam.Gnoss.Servicios
 
             foreach (FacetaObjetoConocimientoProyecto myrow in filas)
             {
-                bool autocompletar = (bool)myrow.Autocompletar;
+                bool autocompletar = myrow.Autocompletar;
                 if (autocompletar)
                 {
                     string propiedad = myrow.Faceta;
@@ -376,7 +374,7 @@ namespace Es.Riam.Gnoss.Servicios
             //Recorremos la tabla con los objetos de conocimiento.
             foreach (FacetaObjetoConocimiento myrow in pFacetaDW.ListaFacetaObjetoConocimiento)
             {
-                bool autocompletar = (bool)myrow.Autocompletar;
+                bool autocompletar = myrow.Autocompletar;
                 if (autocompletar)
                 {
                     string propiedad = myrow.Faceta;
@@ -390,23 +388,29 @@ namespace Es.Riam.Gnoss.Servicios
                 AgregarFacetaADiccionario(myrow.TipoPropiedad.Value, myrow.Faceta, urlOntologiaPorNamespace, ref Fecha, ref Numero, ref TextoInvariable);
             }
 
-            triples += FacetadoAD.GenerarTripleta($"<http://gnoss/{pDocumentoID.ToString().ToUpper()}>", "<http://www.w3.org/1999/02/22-rdf-syntax-ns#type>", "\"" + type + "\"");
+            triples.Append(FacetadoAD.GenerarTripleta($"<http://gnoss/{pDocumentoID.ToString().ToUpper()}>", "<http://www.w3.org/1999/02/22-rdf-syntax-ns#type>", "\"" + type + "\""));
 
+            DataWrapperFacetas facetasDW = facetaCL.ObtenerFacetaObjetoConocimientoProyecto(pOrganizacionID, pProyectoID);
 
-
-            byte[] bytesOntoXml = ObtenerConfiguracionXml(pOntologia.OntologiaID);
+            ObtenerConfiguracionXml(pOntologia.OntologiaID);
 
             Dictionary<string, List<string>> selectores = ObtenerSelectores(pOntologia, pProyectoID.ToString(), "");
-            List<FacetaEntidadesExternas> EntExt = new List<FacetaEntidadesExternas>();
+            List<AD.EntityModel.Models.Documentacion.Documento> listaEntidadesSecundarias = documentacionCN.ObtenerOntologiasSecundarias(pProyectoID);
+            List<FacetaEntidadesExternas> EntExt = facetasDW.ListaFacetaEntidadesExternas;
             foreach (string grafo in selectores.Keys)
             {
                 foreach (string selector in selectores[grafo])
                 {
-                    FacetaEntidadesExternas facetaEntidad = new FacetaEntidadesExternas();
-                    facetaEntidad.Grafo = grafo;
-                    facetaEntidad.EntidadID = pUrlIntragnoss + "items/" + selector;
-                    facetaEntidad.ProyectoID = pProyectoID;
-                    EntExt.Add(facetaEntidad);
+                    string uriEntidadExterna = pUrlIntragnoss + "items/" + selector;
+                    if (!EntExt.Exists(item => item.EntidadID.Equals(uriEntidadExterna)))
+                    {
+                        FacetaEntidadesExternas facetaEntidad = new FacetaEntidadesExternas();
+                        facetaEntidad.Grafo = grafo;
+                        facetaEntidad.EntidadID = uriEntidadExterna;
+                        facetaEntidad.ProyectoID = pProyectoID;
+                        facetaEntidad.EsEntidadSecundaria = listaEntidadesSecundarias.Any(item => item.Enlace.Equals(grafo));
+                        EntExt.Add(facetaEntidad);
+                    }
                 }
             }
 
@@ -441,14 +445,12 @@ namespace Es.Riam.Gnoss.Servicios
                     if (((string)myrow[1]).Contains("http://www.w3.org/1999/02/22-rdf-syntax-ns#type") && !tipoAgregado)
                     {
                         string objeto = (string)myrow[2];
-                        triples += FacetadoAD.GenerarTripleta($"<http://gnoss/{pDocumentoID.ToString().ToUpper()}>", "<http://gnoss/type>", $"\"{UtilCadenas.EliminarHtmlDeTexto(objeto)}\"");
+                        triples.Append(FacetadoAD.GenerarTripleta($"<http://gnoss/{pDocumentoID.ToString().ToUpper()}>", "<http://gnoss/type>", $"\"{UtilCadenas.EliminarHtmlDeTexto(objeto)}\""));
                         tipoAgregado = true;
                     }
                     if (!((string)myrow[1]).Contains("http://www.w3.org/1999/02/22-rdf-syntax-ns#type") && !((string)myrow[1]).Contains("http://www.w3.org/2000/01/rdf-schema#label"))
                     {
                         string objeto = (string)myrow[2];
-                        objeto = objeto.Replace("\r\n", "");
-                        objeto = objeto.Replace("\n", "");
 
                         if (!TextoInvariable.Contains(myrow[1]))
                         {
@@ -479,27 +481,13 @@ namespace Es.Riam.Gnoss.Servicios
 
                         ComprobarPropiedadEsRangoFecha(filasRangoFechas, predicado, objeto, listaTriples, propiedadFechaInicioValorFechaInicio, propiedadFechaFinValorFechaFin);
 
-                        if (filasRangoFechas.Exists(item => item.PropiedadInicio.Equals(predicado)))
-                        {
-                            DateTime fecha;
-                            if (!propiedadFechaInicioValorFechaInicio.ContainsKey(predicado) && DateTime.TryParseExact(DesconvertirFormatoFecha(objeto), "dd/MM/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out fecha))
-                            {
-                                propiedadFechaInicioValorFechaInicio.Add(predicado, fecha);
-                            }
-                        }
-                        if (filasRangoFechas.Exists(item => item.PropiedadFin.Equals(predicado)))
-                        {
-                            DateTime fecha;
-                            if (!propiedadFechaFinValorFechaFin.ContainsKey(predicado) && DateTime.TryParseExact(DesconvertirFormatoFecha(objeto), "dd/MM/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out fecha))
-                            {
-                                propiedadFechaFinValorFechaFin.Add(predicado, fecha);
-                            }
-                        }
-
-                        triples += GenerarTripletaRecogidadeVirtuoso_ControlCheckPoint(pFicheroConfiguracionBD, pFicheroConfiguracionBDBase, pUrlIntragnoss, $"<http://gnoss/{pDocumentoID.ToString().ToUpper()}>", (string)myrow[1], PasarObjetoALower(objeto), objeto, Fecha, Numero, TextoInvariable, EntExt, idioma);
+                        triples.Append(GenerarTripletaRecogidadeVirtuoso_ControlCheckPoint(pFicheroConfiguracionBD, pFicheroConfiguracionBDBase, pUrlIntragnoss, $"<http://gnoss/{pDocumentoID.ToString().ToUpper()}>", (string)myrow[1], PasarObjetoALower(objeto), objeto, Fecha, Numero, TextoInvariable, EntExt, idioma));
                     }
                 }
-                catch (Exception) { }
+                catch
+                {
+                    //Si falla al montar un triple, no deberíamos romper el resto.
+                }
             }
 
             string sujetoAuxiliar = $"<http://gnossAuxiliar/{pDocumentoID.ToString().ToUpper()}>";
@@ -513,11 +501,7 @@ namespace Es.Riam.Gnoss.Servicios
                 {
                     if (!((string)myrow[1]).Contains("http://www.w3.org/1999/02/22-rdf-syntax-ns#type") && !((string)myrow[1]).Contains("http://www.w3.org/2000/01/rdf-schema#label"))
                     {
-                        string objeto = (string)myrow[2];
-                        //objeto = UtilCadenas.PasarAANSI(objeto);
-                        objeto = objeto.Replace("\r\n", "");
-                        objeto = objeto.Replace("\n", "");
-                        objeto = UtilCadenas.EliminarHtmlDeTexto(objeto);
+                        string objeto = UtilCadenas.EliminarHtmlDeTexto((string)myrow[2]);
 
                         string idioma = null;
 
@@ -542,32 +526,19 @@ namespace Es.Riam.Gnoss.Servicios
                             }
                         }
 
-                        if (filasRangoFechas.Exists(item => item.PropiedadInicio.Equals(predicado)))
-                        {
-                            DateTime fecha;
-                            if (DateTime.TryParseExact(DesconvertirFormatoFecha(objeto), "dd/MM/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out fecha))
-                            {
-                                propiedadFechaInicioValorFechaInicio.Add(predicado, fecha);
-                            }
-                        }
-                        if (filasRangoFechas.Exists(item => item.PropiedadFin.Equals(predicado)))
-                        {
-                            DateTime fecha;
-                            if (DateTime.TryParseExact(DesconvertirFormatoFecha(objeto), "dd/MM/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out fecha))
-                            {
-                                propiedadFechaFinValorFechaFin.Add(predicado, fecha);
-                            }
-                        }
+                        triples.Append(GenerarTripletaRecogidadeVirtuoso_ControlCheckPoint(pFicheroConfiguracionBD, pFicheroConfiguracionBDBase, pUrlIntragnoss, PasarObjetoALower(sujeto), predicado, PasarObjetoALower(objeto), objeto, Fecha, Numero, TextoInvariable, EntExt, idioma));
 
-                        triples += GenerarTripletaRecogidadeVirtuoso_ControlCheckPoint(pFicheroConfiguracionBD, pFicheroConfiguracionBDBase, pUrlIntragnoss, PasarObjetoALower(sujeto), predicado, PasarObjetoALower(objeto), objeto, Fecha, Numero, TextoInvariable, EntExt, idioma);
-
-                        //insertamos tripleta de la entidad auxiliar
-                        triples += GenerarTripletaRecogidadeVirtuoso_ControlCheckPoint(pFicheroConfiguracionBD, pFicheroConfiguracionBDBase, pUrlIntragnoss, sujetoAuxiliar, predicadoAuxiliar, PasarObjetoALower(sujeto), sujeto, Fecha, Numero, TextoInvariable, EntExt, null);
-
+                        //Insertamos tripleta de la entidad auxiliar
+                        triples.Append(GenerarTripletaRecogidadeVirtuoso_ControlCheckPoint(pFicheroConfiguracionBD, pFicheroConfiguracionBDBase, pUrlIntragnoss, sujetoAuxiliar, predicadoAuxiliar, PasarObjetoALower(sujeto), sujeto, Fecha, Numero, TextoInvariable, EntExt, null));
                     }
                 }
-                catch (Exception) { }
+                catch
+                {
+                    //Si falla al montar un triple, no deberíamos romper el resto.
+                }
             }
+
+            GenerarTriplesRangoFechasConfiguradas(filasRangoFechas, propiedadFechaInicioValorFechaInicio, propiedadFechaFinValorFechaFin, facetadoDS);
 
             if (propiedadFechaInicioValorFechaInicio.Count > 0)
             {
@@ -593,7 +564,7 @@ namespace Es.Riam.Gnoss.Servicios
                         valorPropiedad = $"\"{valorPropiedad}\" . ";
                     }
 
-                    triples += GenerarTripletaRecogidadeVirtuoso_ControlCheckPoint(pFicheroConfiguracionBD, pFicheroConfiguracionBDBase, pUrlIntragnoss, $"<http://gnoss/{pDocumentoID.ToString().ToUpper()}>", filaRangoFecha.PropiedadNueva, PasarObjetoALower(valorPropiedad), valorPropiedad, Fecha, Numero, TextoInvariable, EntExt, null);
+                    triples.Append(GenerarTripletaRecogidadeVirtuoso_ControlCheckPoint(pFicheroConfiguracionBD, pFicheroConfiguracionBDBase, pUrlIntragnoss, $"<http://gnoss/{pDocumentoID.ToString().ToUpper()}>", filaRangoFecha.PropiedadNueva, PasarObjetoALower(valorPropiedad), valorPropiedad, Fecha, Numero, TextoInvariable, EntExt, null));
                     if (valorPropiedadFechaFin.HasValue && valorPropiedadFechaFin.Value > valorPropiedadFechaInicio.Value)
                     {
                         DateTime temp = valorPropiedadFechaInicio.Value.AddDays(1);
@@ -611,15 +582,151 @@ namespace Es.Riam.Gnoss.Servicios
                                 valorPropiedadTemp = $"\"{valorPropiedadTemp}\" . ";
                             }
 
-                            triples += GenerarTripletaRecogidadeVirtuoso_ControlCheckPoint(pFicheroConfiguracionBD, pFicheroConfiguracionBDBase, pUrlIntragnoss, $"<http://gnoss/{pDocumentoID.ToString().ToUpper()}>", filaRangoFecha.PropiedadNueva, PasarObjetoALower(valorPropiedadTemp), valorPropiedadTemp, Fecha, Numero, TextoInvariable, EntExt, null);
+                            triples.Append(GenerarTripletaRecogidadeVirtuoso_ControlCheckPoint(pFicheroConfiguracionBD, pFicheroConfiguracionBDBase, pUrlIntragnoss, $"<http://gnoss/{pDocumentoID.ToString().ToUpper()}>", filaRangoFecha.PropiedadNueva, PasarObjetoALower(valorPropiedadTemp), valorPropiedadTemp, Fecha, Numero, TextoInvariable, EntExt, null));
                             temp = temp.AddDays(1);
-
                         }
                     }
                 }
             }
 
-            return triples;
+            return triples.ToString();
+        }
+
+        /// <summary>
+        /// Añade la propiedad configurada como fecha inicio y la propiedad configurada como fecha fin a su respectivo diccionario con el valor de la fecha
+        /// </summary>
+        /// <param name="pRangoFechasConfigurados">Lista con los rangos de fechas configurados en base de datos</param>
+        /// <param name="pPropiedadFechaInicioValorFechaInicio">Diccionario con las propiedades configuradas como fecha inicio y el valor de esa propiedad</param>
+        /// <param name="pPropiedadFechaFinValorFechaFin">Diccionario con las propiedades configuradas como fecha final y el valor de esa propiedad</param>
+        /// <param name="pConjuntoTriples">DataSet con el conjunto de triples del recurso</param>
+        private void GenerarTriplesRangoFechasConfiguradas(List<FacetaConfigProyRangoFecha> pRangoFechasConfigurados, Dictionary<string, DateTime?> pPropiedadFechaInicioValorFechaInicio, Dictionary<string, DateTime?> pPropiedadFechaFinValorFechaFin, FacetadoDS pConjuntoTriples)
+        {
+            foreach (FacetaConfigProyRangoFecha rangoFecha in pRangoFechasConfigurados)
+            {
+                if (rangoFecha.PropiedadInicio.Contains("@@@") && rangoFecha.PropiedadFin.Contains("@@@"))
+                {
+                    //Si las propiedades configuradas no son de primer nivel buscamos entre los datos el valor siguiendo el path configurado
+                    GenerarTriplesRangoFechasConfiguradasAnidadas(rangoFecha, pPropiedadFechaInicioValorFechaInicio, pPropiedadFechaFinValorFechaFin, pConjuntoTriples);
+                }
+                else
+                {
+                    DataRow tripleFechaInicio;
+                    DataRow tripleFechaFin;
+
+                    ObtenerFilaTripleDeFormularioSemanticoPadreOHijo(out tripleFechaInicio, out tripleFechaFin, pConjuntoTriples, rangoFecha.PropiedadInicio, rangoFecha.PropiedadFin);
+
+                    AddTriplesRangoFechaInicioFechaFin(rangoFecha, pPropiedadFechaInicioValorFechaInicio, pPropiedadFechaFinValorFechaFin, tripleFechaInicio, tripleFechaFin);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Añadimos la propiedad con su valor buscando entre el conjunto de triples para propiedades anidadas siguiendo el path definido en la propiedad
+        /// </summary>
+        /// <param name="pRangoFecha">Rango de fecha configuada a obtener el valor de incio y fin</param>
+        /// <param name="pPropiedadFechaInicioValorFechaInicio">Diccionario con las propiedades configuradas como fecha inicio y el valor de esa propiedad</param>
+        /// <param name="pPropiedadFechaFinValorFechaFin">Diccionario con las propiedades configuradas como fecha final y el valor de esa propiedad</param>
+        /// <param name="pConjuntoTriples">DataSet con el conjunto de triples del recurso</param>
+        private void GenerarTriplesRangoFechasConfiguradasAnidadas(FacetaConfigProyRangoFecha pRangoFecha, Dictionary<string, DateTime?> pPropiedadFechaInicioValorFechaInicio, Dictionary<string, DateTime?> pPropiedadFechaFinValorFechaFin, FacetadoDS pConjuntoTriples)
+        {
+            string[] segmentosRangoFechaInicio = pRangoFecha.PropiedadInicio.Split("@@@", StringSplitOptions.RemoveEmptyEntries);
+            string[] segmentosRangoFechaFin = pRangoFecha.PropiedadFin.Split("@@@", StringSplitOptions.RemoveEmptyEntries);
+
+            string sujetoPropiedadBuscadaInicio = string.Empty;
+            string sujetoPropiedadBuscadaFin = string.Empty;
+
+            DataRow tripleFechaInicio = null;
+            DataRow tripleFechaFin = null;
+
+            //Recorremos los segmentos de la propiedad configurada
+            for (int i = 0; i < segmentosRangoFechaInicio.Length; i++)
+            {
+                string propiedadFechaInicio = segmentosRangoFechaInicio[i];
+                string propiedadFechaFin = segmentosRangoFechaFin[i];
+
+                ObtenerFilaTripleDeFormularioSemanticoPadreOHijo(out tripleFechaInicio, out tripleFechaFin, pConjuntoTriples, propiedadFechaInicio, propiedadFechaFin, sujetoPropiedadBuscadaInicio, sujetoPropiedadBuscadaFin);
+
+                if (tripleFechaInicio == null || tripleFechaFin == null)
+                {
+                    break;
+                }
+
+                sujetoPropiedadBuscadaInicio = (string)tripleFechaInicio[2];
+                sujetoPropiedadBuscadaFin = (string)tripleFechaFin[2];
+            }
+
+            AddTriplesRangoFechaInicioFechaFin(pRangoFecha, pPropiedadFechaInicioValorFechaInicio, pPropiedadFechaFinValorFechaFin, tripleFechaInicio, tripleFechaFin);
+        }
+
+        /// <summary>
+        /// Obtiene el triple de la fecha inicio y el triple de la fecha fin cuyos predicados se pasan por parámetro. Si aportamos un sujeto se filtra en el conjunto de triples también por el sujeto. Busca en la tabla del dataset FormulariosSemanticosPadre y si no encuentra el predicado buscado ahí lo busca en la tabla Formularios
+        /// </summary>
+        /// <param name="pTripleFechaIncio">Parámetro de salida. Devolvemos el triple que cumpla las condiciones de predicado y sujeto (si es aportado) de la propiedad configurada para la fecha inicial.</param>
+        /// <param name="pTripleFechaFin">Parámetro de salida. Devolvemos el triple que cumpla las condiciones de predicado y sujeto (si es aportado) de la propiedad configurada para la fecha final.</param>
+        /// <param name="pConjuntoTriples">DataSet con el conjunto de triples del recurso</param>
+        /// <param name="pPredicadoFechaInicio">Predicado de la fecha de inicio del cual queremos obtener el triple</param>
+        /// <param name="pPredicadoFechaFin">Predicado de la fecha de fin del cual queremos obtener el triple</param>
+        /// <param name="pSujetoFechaIncio">(Opcional) Sujeto de la fecha inicio del cual queremos obtener el triple. Solo necesario para seguir el path de las propiedades anidadas</param>
+        /// <param name="pSujetoFechaFin">(Opcional) Sujeto de la fecha fin del cual queremos obtener el triple. Solo necesario para seguir el path de las propiedades anidadas</param>
+        private void ObtenerFilaTripleDeFormularioSemanticoPadreOHijo(out DataRow pTripleFechaIncio, out DataRow pTripleFechaFin, FacetadoDS pConjuntoTriples, string pPredicadoFechaInicio, string pPredicadoFechaFin, string pSujetoFechaIncio = "", string pSujetoFechaFin = "")
+        {
+            //Buscamos en la taba FormulariosSemanticosPadre
+            pTripleFechaIncio = ObtenerPropiedadApuntada(pConjuntoTriples.Tables["FormulariosSemanticosPadre"], pPredicadoFechaInicio, pSujetoFechaIncio);
+            pTripleFechaFin = ObtenerPropiedadApuntada(pConjuntoTriples.Tables["FormulariosSemanticosPadre"], pPredicadoFechaFin, pSujetoFechaFin);
+
+            if (pTripleFechaIncio == null || pTripleFechaFin == null)
+            {
+                //Si no lo hemos encontrado en la tabla FormulariosSemanticosPadre buscamos en FormulariosSemanticosHijo
+                pTripleFechaIncio = ObtenerPropiedadApuntada(pConjuntoTriples.Tables["FormulariosSemanticosHijo"], pPredicadoFechaInicio, pSujetoFechaIncio);
+                pTripleFechaFin = ObtenerPropiedadApuntada(pConjuntoTriples.Tables["FormulariosSemanticosHijo"], pPredicadoFechaFin, pSujetoFechaFin);
+            }
+        }
+
+        /// <summary>
+        /// Obtenemos de la tabla pasada por parámetro el triple al que pertenece el predicado y sujeto (opcional) dado. Si no se pasa el sujeto solo se filtrará por el predicado.
+        /// </summary>
+        /// <param name="pConjuntoTriples">DataTable con el conjunto de triples entre los que buscar</param>
+        /// <param name="pPredicadoObtener">Predicado del triple a buscar en la tabla. Solo traerá el primer resultado, no debería haber más.</param>
+        /// <param name="pSujetoObtener">(Opcional) Sujeto del triple a buscar en la tabla. Solo traerá el primer resultado, no debería haber más</param>
+        /// <returns>La fila de la tabla con el triple obtenido.</returns>
+        private DataRow ObtenerPropiedadApuntada(DataTable pConjuntoTriples, string pPredicadoObtener, string pSujetoObtener = "")
+        {
+            if (string.IsNullOrEmpty(pSujetoObtener))
+            {
+                return pConjuntoTriples.AsEnumerable().Where(item => item[1].Equals(pPredicadoObtener)).FirstOrDefault();
+            }
+            else
+            {
+                return pConjuntoTriples.AsEnumerable().Where(item => item[1].Equals(pPredicadoObtener) && item[0].Equals(pSujetoObtener)).FirstOrDefault();
+            }
+        }
+
+        /// <summary>
+        /// Añade a el diccionario de propiedades configuradas para la fecha inicio su propiedad con el valor y al diccionario de propiedades configuradas para la fecha fin su propiedad con su valor. Si la propiedad era anidada la añadirá anidadá al diccionario con el valor final de la fecha a la que apunta la última propiedad del anidamiento.
+        /// </summary>
+        /// <param name="pRangoFecha">Rango de la fecha configurada en base de datos que vamos a añadir a los diccionarios</param>
+        /// <param name="pPropiedadFechaInicioValorFechaInicio">Diccionario con las propiedades configuradas como fecha inicio y el valor de esa propiedad</param>
+        /// <param name="pPropiedadFechaFinValorFechaFin">Diccionario con las propiedades configuradas como fecha fin y el valor de esa propiedad</param>
+        /// <param name="pTripleFechaInicio">Triple con el valor de la propiedad configurada como fecha inicial</param>
+        /// <param name="pTripleFechaFin">Triple con el valor de la propiedad configurada como fecha final</param>
+        private void AddTriplesRangoFechaInicioFechaFin(FacetaConfigProyRangoFecha pRangoFecha, Dictionary<string, DateTime?> pPropiedadFechaInicioValorFechaInicio, Dictionary<string, DateTime?> pPropiedadFechaFinValorFechaFin, DataRow pTripleFechaInicio, DataRow pTripleFechaFin)
+        {
+            if (pTripleFechaInicio != null && pTripleFechaFin != null)
+            {
+                string predicadoFechaInicio = (string)pTripleFechaInicio[1];
+                string predicadoFechaFin = (string)pTripleFechaFin[1];
+                DateTime fechaInicio;
+                DateTime fechaFin;
+
+                if (!pPropiedadFechaInicioValorFechaInicio.ContainsKey(predicadoFechaInicio) && DateTime.TryParseExact(DesconvertirFormatoFecha((string)pTripleFechaInicio[2]), "dd/MM/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out fechaInicio))
+                {
+                    pPropiedadFechaInicioValorFechaInicio.Add(pRangoFecha.PropiedadInicio, fechaInicio);
+                }
+                if (!pPropiedadFechaFinValorFechaFin.ContainsKey(predicadoFechaFin) && DateTime.TryParseExact(DesconvertirFormatoFecha((string)pTripleFechaFin[2]), "dd/MM/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out fechaFin))
+                {
+                    pPropiedadFechaFinValorFechaFin.Add(pRangoFecha.PropiedadFin, fechaFin);
+                }
+            }
         }
 
         private static List<TripleWrapper> PasarDataSetAListString(FacetadoDS pFacetadoDS)
@@ -627,13 +734,11 @@ namespace Es.Riam.Gnoss.Servicios
             List<TripleWrapper> listaTriples = new List<TripleWrapper>();
             foreach (DataRow myrow in pFacetadoDS.Tables["FormulariosSemanticosPadre"].Rows)
             {
-                string idioma = null;
                 TripleWrapper triple = null;
                 int tripleLength = 3;
                 if (myrow.ItemArray.Length > 3 && !myrow.IsNull(3) && !string.IsNullOrEmpty((string)myrow[3]))
                 {
                     tripleLength = 4;
-                    idioma = (string)myrow[3];
                 }
 
                 triple = new TripleWrapper();
@@ -656,13 +761,11 @@ namespace Es.Riam.Gnoss.Servicios
             }
             foreach (DataRow myrow in pFacetadoDS.Tables["FormulariosSemanticosHijo"].Rows)
             {
-                string idioma = null;
                 TripleWrapper triple = null;
                 int tripleLength = 3;
                 if (myrow.ItemArray.Length > 3 && !myrow.IsNull(3) && !string.IsNullOrEmpty((string)myrow[3]))
                 {
                     tripleLength = 4;
-                    idioma = (string)myrow[3];
                 }
 
                 triple = new TripleWrapper();
@@ -782,7 +885,7 @@ namespace Es.Riam.Gnoss.Servicios
 
         public string ObtenerValoresSemanticosSearch(string pFicheroConfiguracionBD, string pUrlIntragnoss, Guid pProyectoID, Guid pDocumentoID)
         {
-            string valorSearch = "";
+            string valorSearch = string.Empty;
 
             FacetaCN facCN = new FacetaCN(pFicheroConfiguracionBD, mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
             List<OntologiaProyecto> listaOntologias = facCN.ObtenerOntologias(pProyectoID);
@@ -794,19 +897,19 @@ namespace Es.Riam.Gnoss.Servicios
 
             List<ConfigAutocompletarProy> configAutocompletarProyRows = mEntityContext.ConfigAutocompletarProy.Where(item => item.ProyectoID.Equals(pProyectoID)).ToList();
             List<ConfigSearchProy> configSearchProyRows = mEntityContext.ConfigSearchProy.Where(item => item.ProyectoID.Equals(pProyectoID)).ToList();
-            
+
             foreach (ConfigSearchProy filaConfigSearch in configSearchProyRows)
             {
                 if (!diccionarioSearch.ContainsKey(filaConfigSearch.Clave))
                 {
-                    diccionarioSearch.Add(filaConfigSearch.Clave, filaConfigSearch.Valor);
+                    diccionarioSearch.Add($"{filaConfigSearch.Clave}_search", filaConfigSearch.Valor);
                 }
             }
             foreach (ConfigAutocompletarProy filaTagsAuto in configAutocompletarProyRows)
             {
                 if (!diccionarioSearch.ContainsKey(filaTagsAuto.Clave))
                 {
-                    diccionarioSearch.Add(filaTagsAuto.Clave, filaTagsAuto.Valor);
+                    diccionarioSearch.Add($"{filaTagsAuto.Clave}_autocompletar", filaTagsAuto.Valor);
                 }
             }
             List<string> listaPropiedades = new List<string>();
@@ -830,21 +933,20 @@ namespace Es.Riam.Gnoss.Servicios
                 facetadoCN.InformacionOntologias = informacionOntologias;
                 List<Guid> listaDocs = new List<Guid>();
                 listaDocs.Add(pDocumentoID);
+                StringBuilder stringBuilderSearch = new StringBuilder();
                 for (int i = 0; i < listaPropiedades.Count; i += 40)
                 {
                     FacetadoDS facDSAux = facetadoCN.ObtenerValoresPropiedadesEntidadesPorDocumentoID(pProyectoID.ToString(), listaDocs, listaPropiedades.GetRange(i, Math.Min(40, listaPropiedades.Count - i)).ToList());
 
                     foreach (DataRow fila in facDSAux.Tables["SelectPropEnt"].Rows)
                     {
-                        string s = fila["s"].ToString();
-                        string p = fila["p"].ToString();
-                        string o = fila["o"].ToString();
-
-                        valorSearch += " " + o;
+                        //Concatenamos el objeto
+                        stringBuilderSearch.Append($" {fila["o"].ToString()}");
                     }
                 }
+
+                valorSearch += stringBuilderSearch.ToString();
                 facetadoCN.Dispose();
-                
             }
 
             return valorSearch;
@@ -1239,17 +1341,16 @@ namespace Es.Riam.Gnoss.Servicios
 
         public void GuardarIdentidadEnGrafoBusqueda(Identidad pIdentidad, Guid pProyectoID, string pUrlIntragnoss)
         {
-            string triplesGrafoBusqueda = "";
             try
             {
-                triplesGrafoBusqueda = GenerarTriplesGrafoBusquedaIdentidad(pIdentidad, pProyectoID);
+                string triplesGrafoBusqueda = GenerarTriplesGrafoBusquedaIdentidad(pIdentidad, pProyectoID);
 
                 if (!string.IsNullOrEmpty(triplesGrafoBusqueda))
                 {
                     Dictionary<string, string> listaIdsEliminar = new Dictionary<string, string>();
                     listaIdsEliminar.Add(pIdentidad.Clave.ToString(), "rdf:type");
 
-                    InsertarTriplesIdentidadGrafoBusqueda(pIdentidad.Clave, pProyectoID, triplesGrafoBusqueda, listaIdsEliminar, pUrlIntragnoss);
+                    InsertarTriplesIdentidadGrafoBusqueda(pProyectoID, triplesGrafoBusqueda, listaIdsEliminar, pUrlIntragnoss);
                 }
             }
             catch (Exception ex)
@@ -1259,7 +1360,7 @@ namespace Es.Riam.Gnoss.Servicios
         }
 
 
-        private bool InsertarTriplesIdentidadGrafoBusqueda(Guid pIdentidadad, Guid pGrafo, string pTripletas, Dictionary<string, string> pListaElementosaModificarID, string pUrlIntragnoss)
+        private void InsertarTriplesIdentidadGrafoBusqueda(Guid pGrafo, string pTripletas, Dictionary<string, string> pListaElementosaModificarID, string pUrlIntragnoss)
         {
             FacetadoAD facetadoAD = null;
             bool insertado = false;
@@ -1270,7 +1371,7 @@ namespace Es.Riam.Gnoss.Servicios
                 facetadoAD.InsertaTripletasConModify(pGrafo.ToString(), pTripletas, pListaElementosaModificarID);
                 insertado = true;
             }
-            catch (Exception ex)
+            catch
             {
                 //Cerramos las conexiones
                 ControladorConexiones.CerrarConexiones();
@@ -1281,7 +1382,6 @@ namespace Es.Riam.Gnoss.Servicios
                     try
                     {
                         facetadoAD = new FacetadoAD(pUrlIntragnoss, mLoggingService, mEntityContext, mConfigService, mVirtuosoAD, mServicesUtilVirtuosoAndReplication);
-                        
 
                         if (!insertado)
                         {
@@ -1300,8 +1400,6 @@ namespace Es.Riam.Gnoss.Servicios
                 facetadoAD.Dispose();
                 facetadoAD = null;
             }
-
-            return insertado;
         }
 
 
@@ -1409,36 +1507,36 @@ namespace Es.Riam.Gnoss.Servicios
 
         private void GenerarTriplesDatosExtraIdentidad(Identidad pIdentidad, Guid pProyectoID, StringBuilder pTripletas)
         {
-			IdentidadCN identidadCN = new IdentidadCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
-			DataWrapperIdentidad identidadDW = identidadCN.ObtenerDatosExtraProyectoOpcionIdentidadPorIdentidadID(pIdentidad.Clave);
+            IdentidadCN identidadCN = new IdentidadCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+            DataWrapperIdentidad identidadDW = identidadCN.ObtenerDatosExtraProyectoOpcionIdentidadPorIdentidadID(pIdentidad.Clave);
 
-			if (identidadDW.ListaDatoExtraEcosistemaOpcionPerfil.Count > 0 || identidadDW.ListaDatoExtraProyectoOpcionIdentidad.Count > 0)
+            if (identidadDW.ListaDatoExtraEcosistemaOpcionPerfil.Count > 0 || identidadDW.ListaDatoExtraProyectoOpcionIdentidad.Count > 0)
             {
                 /*ProyectoCN proyectoCN = new ProyectoCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
                 DataWrapperProyecto datoExtraDW = proyectoCN.ObtenerDatosExtraProyectoPorID(pProyectoID);
                 proyectoCN.Dispose();
                 string opcion = null;*/
 
-				ActualizacionFacetadoCN actualizacionFacetadoCN = new ActualizacionFacetadoCN(null, null, mEntityContext, mLoggingService, mConfigService, mVirtuosoAD, mServicesUtilVirtuosoAndReplication);
-				Guid? id = actualizacionFacetadoCN.ObtieneIDIdentidad(pProyectoID, pIdentidad.Persona.Clave, false);
-				string idRecursoMayuscula = id.Value.ToString().ToUpper();
-				string idRecursoMinuscula = id.Value.ToString();
-				
-				List<QueryTriples> listaTriplesPersona = actualizacionFacetadoCN.ObtieneDatosExtraIdentidad(id.Value, pProyectoID);
+                ActualizacionFacetadoCN actualizacionFacetadoCN = new ActualizacionFacetadoCN(null, null, mEntityContext, mLoggingService, mConfigService, mVirtuosoAD, mServicesUtilVirtuosoAndReplication);
+                Guid? id = actualizacionFacetadoCN.ObtieneIDIdentidad(pProyectoID, pIdentidad.Persona.Clave, false);
+                string idRecursoMayuscula = id.Value.ToString().ToUpper();
+                string idRecursoMinuscula = id.Value.ToString();
 
-				foreach (QueryTriples query in listaTriplesPersona)
-				{
-					if (!string.IsNullOrEmpty(query.Objeto))
-					{
-						string predicado = query.Predicado;
-						string objeto = (string)query.Objeto;
+                List<QueryTriples> listaTriplesPersona = actualizacionFacetadoCN.ObtieneDatosExtraIdentidad(id.Value, pProyectoID);
 
-						pTripletas.Append(FacetadoAD.GenerarTripleta((string)query.Sujeto.Replace(idRecursoMinuscula, idRecursoMayuscula), predicado, objeto));
+                foreach (QueryTriples query in listaTriplesPersona)
+                {
+                    if (!string.IsNullOrEmpty(query.Objeto))
+                    {
+                        string predicado = query.Predicado;
+                        string objeto = (string)query.Objeto;
 
-					}
-				}
+                        pTripletas.Append(FacetadoAD.GenerarTripleta((string)query.Sujeto.Replace(idRecursoMinuscula, idRecursoMayuscula), predicado, objeto));
 
-				/*if (identidadDW.ListaDatoExtraEcosistemaOpcionPerfil.Count > 0)
+                    }
+                }
+
+                /*if (identidadDW.ListaDatoExtraEcosistemaOpcionPerfil.Count > 0)
                 {
                     var datoExtraOpcion = identidadDW.ListaDatoExtraEcosistemaOpcionPerfil.FirstOrDefault();
                     var datoExtra = datoExtraDW.ListaDatoExtraEcosistemaOpcion.First(item => item.OpcionID.Equals(datoExtraOpcion.OpcionID));
@@ -1470,7 +1568,7 @@ namespace Es.Riam.Gnoss.Servicios
                         pTripletas.Append(FacetadoAD.GenerarTripleta(sujeto, predicado, objeto));
                     }
                 }*/
-			}
+            }
         }
 
         private static string ObtenerUserStatus(Identidad pIdentidad)
@@ -1566,16 +1664,6 @@ namespace Es.Riam.Gnoss.Servicios
                 }
                 tripletas.Append(GenerarTriplesTagsRecurso(pDocumento.Clave, pDocumento.ListaTagsSoloLectura, ref valorSearch));
 
-                Guid tesauroID = Guid.Empty;
-                if (pDocumento.GestorDocumental != null && pDocumento.GestorDocumental.GestorTesauro != null && pDocumento.GestorDocumental.GestorTesauro.TesauroActualID != Guid.Empty)
-                {
-                    tesauroID = pDocumento.GestorDocumental.GestorTesauro.TesauroActualID;
-                }
-                else
-                {
-                    tesauroID = pGestorTesauro.TesauroActualID;
-                }
-
                 List<AD.EntityModel.Models.Documentacion.DocumentoWebAgCatTesauro> listaCategorias = pDocumento.GestorDocumental.DataWrapperDocumentacion.ListaDocumentoWebAgCatTesauro.Where(item => item.DocumentoID.Equals(pDocumento.Clave) && pGestorTesauro.ListaCategoriasTesauro.ContainsKey(item.CategoriaTesauroID)).ToList();
                 tripletas.Append(GenerarTripletasCategoriasRecurso(pDocumento.Clave, pProyecto.Clave, listaCategorias, pGestorTesauro, pUrlIntragnoss, false, ref valorSearch));
 
@@ -1595,10 +1683,6 @@ namespace Es.Riam.Gnoss.Servicios
                 {
                     tripletas.Append(GenerarTriplesSearchRecurso(pDocumento.Clave, triplesSearch));
                 }
-            }
-            else
-            {
-                //TODO: al grafo de contribuciones
             }
 
             return tripletas.ToString();
@@ -1647,7 +1731,7 @@ namespace Es.Riam.Gnoss.Servicios
                         }
                     }
                 }
-                else if(pDocumento.EsBorrador)
+                else if (pDocumento.EsBorrador)
                 {
                     AgregarRecursoModeloBaseSimple(pDocumento.Clave, pProyecto.Clave, (short)pDocumento.TipoDocumentacion, null, null, pOtrosArgumentosBase, PrioridadBase.Alta, false, -1, (short)TiposElementosEnCola.InsertadoEnGrafoBusquedaDesdeWeb);
                     InvalidarCacheGuardarRecursoEnGrafoBusqueda(pDocumento, pProyecto, pUrlIntragnoss, pPrioridadBase);
@@ -1764,7 +1848,7 @@ namespace Es.Riam.Gnoss.Servicios
             try
             {
                 facetadoAD = new FacetadoAD(pUrlIntragnoss, mLoggingService, mEntityContext, mConfigService, mVirtuosoAD, mServicesUtilVirtuosoAndReplication);
-                
+
 
                 facetadoAD.InsertarTriplesEdicionTagsCategoriasSearchRecurso(pDocumentoId.ToString(), pGrafo.ToString(), pTripletas, pPrioridadBase, pEliminadoTags, pEliminandoCategorias);
                 insertado = true;
@@ -1781,7 +1865,7 @@ namespace Es.Riam.Gnoss.Servicios
                     try
                     {
                         facetadoAD = new FacetadoAD(pUrlIntragnoss, mLoggingService, mEntityContext, mConfigService, mVirtuosoAD, mServicesUtilVirtuosoAndReplication);
-                        
+
 
                         if (!insertado)
                         {
@@ -2011,7 +2095,7 @@ namespace Es.Riam.Gnoss.Servicios
             try
             {
                 facetadoAD = new FacetadoAD(pUrlIntragnoss, mLoggingService, mEntityContext, mConfigService, mVirtuosoAD, mServicesUtilVirtuosoAndReplication);
-                
+
 
                 if (pEstaVersionando && pDocumentoOriginalID.HasValue)
                 {
@@ -2033,7 +2117,7 @@ namespace Es.Riam.Gnoss.Servicios
                     try
                     {
                         facetadoAD = new FacetadoAD(pUrlIntragnoss, mLoggingService, mEntityContext, mConfigService, mVirtuosoAD, mServicesUtilVirtuosoAndReplication);
-                        
+
 
                         if (pEstaVersionando && !eliminado && pDocumentoOriginalID.HasValue)
                         {
@@ -2468,13 +2552,16 @@ namespace Es.Riam.Gnoss.Servicios
                 identidadPublicador = pDocumento.GestorDocumental.GestorIdentidades.ListaIdentidades[pDocumento.FilaDocumentoWebVinBR.IdentidadPublicacionID.Value];
             }
 
-            string objetoHasPublicador = "\"" + identidadPublicador.NombreCompuesto() + "\"";
-            tripletas.Append(FacetadoAD.GenerarTripleta(sujeto, predHasPublicador, PasarObjetoALower(objetoHasPublicador)));
+            string objetoHasPublicador = "\"" + identidadPublicador.NombreCompuesto() + "\"";           
 
             if (identidadPublicador.TrabajaPersonaConOrganizacion)
             {
                 objetoHasPublicador = "\"" + identidadPublicador.NombreOrganizacion + "\"";
                 tripletas.Append(FacetadoAD.GenerarTripleta(sujeto, predHasPublicador, UtilidadesVirtuoso.PasarObjetoALower(objetoHasPublicador)));
+            }
+            else
+            {
+                tripletas.Append(FacetadoAD.GenerarTripleta(sujeto, predHasPublicador, PasarObjetoALower(objetoHasPublicador)));
             }
 
             if ((pTipoAccesoProyecto.Equals(TipoAcceso.Publico) || pTipoAccesoProyecto.Equals(TipoAcceso.Restringido)) && (pDocumento.FilaDocumento.Valoracion.HasValue))
@@ -2822,7 +2909,7 @@ namespace Es.Riam.Gnoss.Servicios
                         }
                     }
 
-                    tripletas.Append(FacetadoAD.GenerarTripleta(sujeto, predHasestado, UtilidadesVirtuoso.PasarObjetoALower(objetoHasestado)));
+                    tripletas.Append(FacetadoAD.GenerarTripleta(sujeto, predHasestado, PasarObjetoALower(objetoHasestado)));
                     break;
 
                 case TiposDocumentacion.Debate:
@@ -2838,7 +2925,7 @@ namespace Es.Riam.Gnoss.Servicios
                         }
                     }
 
-                    tripletas.Append(FacetadoAD.GenerarTripleta(sujeto, predHasestado, UtilidadesVirtuoso.PasarObjetoALower(objetoHasestado)));
+                    tripletas.Append(FacetadoAD.GenerarTripleta(sujeto, predHasestado, PasarObjetoALower(objetoHasestado)));
                     break;
                 case TiposDocumentacion.Encuesta:
                     rdfType = "\"Encuesta\"";
@@ -2889,7 +2976,7 @@ namespace Es.Riam.Gnoss.Servicios
             }
 
             //Obtengo el Tipo de cada propiedad
-            FacetaCL facetaCL = new FacetaCL(pFicheroConfiguracionBD, pFicheroConfiguracionBDBase, pUrlIntragnoss, mEntityContext, mLoggingService,  mRedisCacheWrapper, mConfigService, mServicesUtilVirtuosoAndReplication);
+            FacetaCL facetaCL = new FacetaCL(pFicheroConfiguracionBD, pFicheroConfiguracionBDBase, pUrlIntragnoss, mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mServicesUtilVirtuosoAndReplication);
             DataWrapperFacetas facetaDW = facetaCL.ObtenerTodasFacetasDeProyecto(new List<string> { type }, ProyectoAD.MetaOrganizacion, pProyectoId, false);
             Dictionary<string, List<string>> informacionOntologias = facetaCL.ObtenerPrefijosOntologiasDeProyecto(pProyectoId);
 
@@ -2917,7 +3004,7 @@ namespace Es.Riam.Gnoss.Servicios
                 {
                     string urlOntSinArroba = urlOnt;
 
-                    if (urlOntSinArroba.StartsWith("@"))
+                    if (urlOntSinArroba.StartsWith('@'))
                     {
                         urlOntSinArroba = urlOntSinArroba.Substring(1);
                     }
@@ -2925,7 +3012,7 @@ namespace Es.Riam.Gnoss.Servicios
                     if (!urlOntSinArroba.StartsWith("http"))
                     {
                         // Es el namespace de una ontologia: 
-                        urlOntSinArroba = pUrlIntragnoss + "Ontologia/" + urlOntSinArroba + ".owl#";
+                        urlOntSinArroba = $"{pUrlIntragnoss}Ontologia/{urlOntSinArroba}.owl#";
                     }
 
                     urlOntologiaPorNamespace.Add(nsOnt, urlOntSinArroba);
@@ -2949,19 +3036,19 @@ namespace Es.Riam.Gnoss.Servicios
 
             ObtenerListaPropiedadesFechaNumeroTextoIvariable(pFacetaDW, pProyectoId, urlOntologiaPorNamespace, ref Fecha, ref Numero, ref TextoInvariable, ref listaPropiedades);
 
-            byte[] bytesOntoXml = ObtenerConfiguracionXml(pOntologia.OntologiaID);
+            ObtenerConfiguracionXml(pOntologia.OntologiaID);
 
             Dictionary<string, List<string>> selectores = ObtenerSelectores(pOntologia, pProyectoId.ToString(), "");
             List<FacetaEntidadesExternas> EntExt = new List<FacetaEntidadesExternas>();
             DocumentacionCN documentacionCN = new DocumentacionCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
-            List<Es.Riam.Gnoss.AD.EntityModel.Models.Documentacion.Documento> listaEntidadesSecundarias = documentacionCN.ObtenerOntologiasSecundarias(pProyectoId);
+            List<AD.EntityModel.Models.Documentacion.Documento> listaEntidadesSecundarias = documentacionCN.ObtenerOntologiasSecundarias(pProyectoId);
             EntExt = mEntityContext.FacetaEntidadesExternas.ToList();
             foreach (string grafo in selectores.Keys)
             {
                 foreach (string selector in selectores[grafo])
                 {
-                    string entidadID = pUrlIntragnoss + "items/" + selector;
-                    if (!EntExt.Any(item => item.EntidadID.Equals(entidadID)))
+                    string entidadID = $"{pUrlIntragnoss}items/{selector}";
+                    if (!EntExt.Exists(item => item.EntidadID.Equals(entidadID)))
                     {
                         FacetaEntidadesExternas facetaEntidad = new FacetaEntidadesExternas();
                         facetaEntidad.Grafo = grafo;
@@ -3019,19 +3106,19 @@ namespace Es.Riam.Gnoss.Servicios
                     string sujeto = triple.Subject;
                     string predicado = triple.Predicate;
 
-                    if (predicado.StartsWith("<") && predicado.EndsWith(">"))
+                    if (predicado.StartsWith('<') && predicado.EndsWith('>'))
                     {
                         predicado = predicado.Substring("<".Length, predicado.Length - (">".Length * 2));
                     }
 
                     string objeto = triple.Object;
 
-                    if (objeto.StartsWith("<") && objeto.EndsWith(">"))
+                    if (objeto.StartsWith('<') && objeto.EndsWith('>'))
                     {
                         objeto = objeto.Substring("<".Length, objeto.Length - (">".Length * 2)); //quito los <> porque si no lo trata como html y llega vacío
                     }
 
-                    if (objeto.StartsWith("\"") && objeto.EndsWith("\""))
+                    if (objeto.StartsWith('"') && objeto.EndsWith('"'))
                     {
                         objeto = objeto.Substring("\"".Length, objeto.Length - ("\"".Length * 2)); //quito la 1ª y última " para que no las reemplace por ''
                     }
@@ -3044,9 +3131,6 @@ namespace Es.Riam.Gnoss.Servicios
 
                     if (!(triple.Predicate).Contains(predicadoRdfType) && !(triple.Predicate).Contains("http://www.w3.org/2000/01/rdf-schema#label"))
                     {
-                        objeto = objeto.Replace("\r\n", "");
-                        objeto = objeto.Replace("\n", "");
-
                         if (!TextoInvariable.Contains(triple.Predicate.Trim('<').Trim('>')))
                         {
                             objeto = UtilCadenas.EliminarHtmlDeTexto(objeto);
@@ -3058,7 +3142,7 @@ namespace Es.Riam.Gnoss.Servicios
                             long fechaInt;
                             if (long.TryParse(fechaConvertida, out fechaInt))
                             {
-                                objeto = fechaConvertida + " . ";
+                                objeto = $"{fechaConvertida} . ";
                             }
                             else
                             {
@@ -3066,7 +3150,7 @@ namespace Es.Riam.Gnoss.Servicios
                             }
                         }
 
-                        bool esEntidadAuxiliar = pListaTriplesRecurso.Any(item => item.Object.Equals(sujeto));
+                        bool esEntidadAuxiliar = pListaTriplesRecurso.Exists(item => item.Object.Equals(sujeto));
                         if (esEntidadAuxiliar)
                         {
                             sujeto = PasarObjetoALower(sujeto);
@@ -3178,7 +3262,7 @@ namespace Es.Riam.Gnoss.Servicios
             string[] todasPropiedades = pPropiedades.Remove(0, pPredicado.Length).Split(new string[] { "@@@" }, StringSplitOptions.RemoveEmptyEntries);
             foreach (string propiedad in todasPropiedades)
             {
-                if (!ultimoNivel.StartsWith("<") && !ultimoNivel.EndsWith(">"))
+                if (!ultimoNivel.StartsWith('<') && !ultimoNivel.EndsWith('>'))
                 {
                     ultimoNivel = $"<{ultimoNivel}>";
                 }
@@ -3207,13 +3291,9 @@ namespace Es.Riam.Gnoss.Servicios
         private static void AgregarFechaAListaRangosFecha(Dictionary<string, DateTime?> propiedadFechaValorFecha, string predicado, string objeto)
         {
             DateTime fecha;
-            if (DateTime.TryParseExact(DesconvertirFormatoFecha(objeto), "dd/MM/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out fecha))
+            if (DateTime.TryParseExact(DesconvertirFormatoFecha(objeto), "dd/MM/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out fecha) && !propiedadFechaValorFecha.ContainsKey(predicado))
             {
-                // OJO -> Este predicado es posible que tenga que contener el path completo
-                if (propiedadFechaValorFecha.ContainsKey(predicado))
-                {
-                    propiedadFechaValorFecha.Add(predicado, fecha);
-                }
+                propiedadFechaValorFecha.Add(predicado, fecha);
             }
         }
 
@@ -3333,7 +3413,7 @@ namespace Es.Riam.Gnoss.Servicios
             }
             finally
             {
-                if(virtuosoAD != null)
+                if (virtuosoAD != null)
                 {
                     virtuosoAD.Dispose();
                     virtuosoAD = null;

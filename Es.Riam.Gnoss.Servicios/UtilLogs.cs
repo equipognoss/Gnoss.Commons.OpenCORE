@@ -101,7 +101,7 @@ namespace Es.Riam.Gnoss.Servicios
         {
             try
             {
-                string nombreFichero = pRuta + "_" + DateTime.Now.ToString("yyyy-MM-dd") + ".log"; ;
+                string nombreFichero = pRuta + "_" + DateTime.Now.ToString("yyyy-MM-dd") + ".log";
 
                 // File access and writing
 

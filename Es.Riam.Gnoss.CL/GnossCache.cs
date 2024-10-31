@@ -3,6 +3,7 @@ using Es.Riam.Gnoss.AD.EntityModel;
 using Es.Riam.Gnoss.Util.Configuracion;
 using Es.Riam.Gnoss.Util.General;
 using Microsoft.Extensions.Caching.Memory;
+using ProtoBuf.WellKnownTypes;
 using System;
 using System.Collections.Generic;
 
@@ -155,6 +156,13 @@ namespace Es.Riam.Gnoss.CL
         /// </summary>
         public void VersionarCacheLocal(Guid pProyectoID)
         {
+            AgregarObjetoCache(GnossCacheCL.CLAVE_REFRESCO_CACHE_LOCAL + pProyectoID, Guid.NewGuid());
+        }
+
+        public void VersionarCacheLocalComunidadesHijas(Guid pProyectoID)
+        {
+            
+
             AgregarObjetoCache(GnossCacheCL.CLAVE_REFRESCO_CACHE_LOCAL + pProyectoID, Guid.NewGuid());
         }
 

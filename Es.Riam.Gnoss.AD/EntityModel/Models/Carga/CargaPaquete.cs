@@ -37,10 +37,6 @@ namespace Es.Riam.Gnoss.AD.EntityModel.Models.Carga
 
         public DateTime? FechaProcesado { get; set; }
 
-        [Required]
-        [StringLength(2000)]
-        public string Ontologia { get; set; }
-
         public bool Comprimido { get; set; }
 
         public virtual Carga Carga { get; set; }

@@ -42,6 +42,8 @@ namespace Es.Riam.Gnoss.AD.EntityModel.Models.UsuarioDS
 
         public bool? EstaBloqueado { get; set; }
 
+        public bool TwoFactorAuthentication { get; set; }
+
         [Required]
         [StringLength(50)]
         public string NombreCorto { get; set; }

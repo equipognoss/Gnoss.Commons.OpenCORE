@@ -272,17 +272,7 @@ namespace Es.Riam.Gnoss.CL.Facetado
         public void InvalidarOntologiasProyecto(Guid pProyectoID)
         {
             string rawKey = NombresCL.CONFIGURACIONFACETAS + "_Ontologias_2017_" + pProyectoID;
-            InvalidarCache(rawKey);
-
-            //List<string> listaIdiomas = new List<string>();
-            //listaIdiomas.Add("es");
-            //listaIdiomas.Add("en");
-            //listaIdiomas.Add("pt");
-            //foreach (string idioma in listaIdiomas)
-            //{
-            //    string rawKey = NombresCL.CONFIGURACIONFACETAS + "_Ontologias_" + pProyectoID + "_" + idioma;
-            //    InvalidarCache(rawKey);
-            //}
+            InvalidarCache(rawKey);          
 
             VersionarCacheLocal(pProyectoID);
         }
@@ -363,7 +353,7 @@ namespace Es.Riam.Gnoss.CL.Facetado
             {
                 if (!string.IsNullOrEmpty(myrow.OntologiaProyecto1.ToString()) && !string.IsNullOrEmpty(myrow.Namespace))
                 {
-                    informacionOntologias.Add((string)myrow.OntologiaProyecto1, (string)myrow.Namespace);
+                    informacionOntologias.Add(myrow.OntologiaProyecto1, myrow.Namespace);
                 }
             }
 

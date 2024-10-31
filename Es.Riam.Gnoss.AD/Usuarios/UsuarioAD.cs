@@ -16,12 +16,14 @@ using Es.Riam.Gnoss.Util.General;
 using Es.Riam.Gnoss.Web.MVC.Models;
 using Es.Riam.Util;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Exchange.WebServices.Data;
 using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
 using System.Linq;
 using VDS.RDF.Query.Expressions.Functions.Sparql.Boolean;
+using Persona = Es.Riam.Gnoss.AD.EntityModel.Models.PersonaDS.Persona;
 
 namespace Es.Riam.Gnoss.AD.Usuarios
 {
@@ -126,9 +128,13 @@ namespace Es.Riam.Gnoss.AD.Usuarios
         /// </summary>
         SharepointRefresh = 7,
         /// <summary>
-        /// SharePoint
+        /// Apple
         /// </summary>
-        Apple = 8
+        Apple = 8,
+        /// <summary>
+        /// Keycloak
+        /// </summary>
+        Keycloak = 9
     }
 
     /// <summary>
@@ -1711,6 +1717,15 @@ namespace Es.Riam.Gnoss.AD.Usuarios
             return dataWrapper;
         }
 
+        public List<Guid> ObtenerOrganizacionesAdministradasPorUsuario(Guid pUsuario)
+        {
+            List<Guid> organizaciones = new List<Guid>();
+
+            organizaciones = mEntityContext.AdministradorOrganizacion.Where(item => item.UsuarioID.Equals(pUsuario)).Select(x => x.OrganizacionID).Distinct().ToList();
+
+            return organizaciones;
+        }
+
         /// <summary>
         /// Obtiene los usuarios, sus identidades y sus permisos en proyectos 
         /// en los que tienen perfil para la organización pasada por parámetro
@@ -1900,7 +1915,8 @@ namespace Es.Riam.Gnoss.AD.Usuarios
                 item.Persona.Apellidos,
                 item.Perfil.NombreCortoUsu,
                 item.Persona.PersonaID,
-                item.Identidad.Foto
+                item.Identidad.Foto,
+                item.Usuario.TwoFactorAuthentication
             }).ToList().Select(item => new UsuarioIdentidadPersona
             {
                 UsuarioID = item.Key.UsuarioID,
@@ -1910,7 +1926,8 @@ namespace Es.Riam.Gnoss.AD.Usuarios
                 Apellidos = item.Key.Apellidos,
                 NombreCortoUsu = item.Key.NombreCortoUsu,
                 PersonaID = item.Key.PersonaID,
-                Foto = item.Key.Foto
+                Foto = item.Key.Foto,
+                TwoFactorAuthentication = item.Key.TwoFactorAuthentication
             }).ToList();
             
             var segundaconsulta = mEntityContext.Usuario.Join(mEntityContext.Persona, usu => usu.UsuarioID, pers => pers.UsuarioID.Value, (usu, pers) => new
@@ -1938,7 +1955,8 @@ namespace Es.Riam.Gnoss.AD.Usuarios
                 Apellidos = item.Persona.Apellidos,
                 NombreCortoUsu = item.Perfil.NombreCortoUsu,
                 PersonaID = item.Persona.PersonaID,
-                Foto = item.Identidad.Foto
+                Foto = item.Identidad.Foto,
+                TwoFactorAuthentication = item.Usuario.TwoFactorAuthentication
             }).ToList();
 
             dataWrapper.ListaUsuarioIdentidadPersona = primeraconsulta.Union(segundaconsulta).ToList();
@@ -2399,6 +2417,16 @@ namespace Es.Riam.Gnoss.AD.Usuarios
                 return mEntityContext.Usuario.Where(usuario => usuario.Login.Equals(pLoginOEmail)).Select(item => item.UsuarioID).FirstOrDefault();
             }
 
+        }
+
+        /// <summary>
+        /// Obtiene una persona a partir de su documento acreditativo
+        /// </summary>
+        /// <param name="pValorDocumentoAcreditativo">Documento acreditativo de la persona</param>
+        /// <returns></returns>
+        public Guid ObtenerPersonaIDPorValorDocumentoAcreditativo(string pValorDocumentoAcreditativo)
+        {
+            return mEntityContext.Persona.Where(persona => persona.ValorDocumentoAcreditativo.Equals(pValorDocumentoAcreditativo)).Select(item => item.PersonaID).FirstOrDefault();
         }
 
         /// <summary>
@@ -2968,12 +2996,22 @@ namespace Es.Riam.Gnoss.AD.Usuarios
             }).Any(item => item.Usuario.UsuarioID.Equals(pUsuarioID));
         }
 
-        /// <summary>
-        /// Obtiene la contraseña de un usuario
-        /// </summary>
-        /// <param name="pUsuario">Fila de usuario</param>
-        /// <returns>Devuelve el password o NULL en caso de no encontrarse</returns>
-        public string ObtenerPasswordUsuario(EntityModel.Models.UsuarioDS.Usuario pUsuario)
+		/// <summary>
+		/// Comprueba si un usuario tiene actiavada la doble autenticación
+		/// </summary>
+		/// <param name="pLogin">Login del usuario</param>
+		/// <returns></returns>
+		public bool ComprobarDobleAutenticacionUsuario(Guid pUsuarioId)
+		{
+			return mEntityContext.Usuario.Where(usuario => usuario.UsuarioID.Equals(pUsuarioId)).Select(usuario => usuario.TwoFactorAuthentication).FirstOrDefault();
+		}
+
+		/// <summary>
+		/// Obtiene la contraseña de un usuario
+		/// </summary>
+		/// <param name="pUsuario">Fila de usuario</param>
+		/// <returns>Devuelve el password o NULL en caso de no encontrarse</returns>
+		public string ObtenerPasswordUsuario(EntityModel.Models.UsuarioDS.Usuario pUsuario)
         {
             string password = mEntityContext.Usuario.Where(usuario => usuario.Login.Equals(pUsuario.Login)).Select(item => item.Password).FirstOrDefault();
             if (password == null)
@@ -3436,6 +3474,7 @@ namespace Es.Riam.Gnoss.AD.Usuarios
             EntityModel.Models.UsuarioDS.Usuario usuario = mEntityContext.Usuario.Where(item => item.UsuarioID.Equals(pUsuarioID)).FirstOrDefault();
             usuario.Validado = 1;
         }
+
 
         /// <summary>
         /// Obtiene una lista de identificadores de los usuarios que se han suscrito a alguna categoría del tesauro o a otros usuarios o se han hecho miembros de la comunidad

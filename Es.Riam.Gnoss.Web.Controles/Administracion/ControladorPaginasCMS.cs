@@ -1,6 +1,7 @@
 ﻿using Es.Riam.AbstractsOpen;
 using Es.Riam.Gnoss.AD.EncapsuladoDatos;
 using Es.Riam.Gnoss.AD.EntityModel;
+using Es.Riam.Gnoss.AD.EntityModelBASE;
 using Es.Riam.Gnoss.AD.ServiciosGenerales;
 using Es.Riam.Gnoss.AD.Virtuoso;
 using Es.Riam.Gnoss.CL;
@@ -12,6 +13,7 @@ using Es.Riam.Gnoss.Logica.CMS;
 using Es.Riam.Gnoss.Recursos;
 using Es.Riam.Gnoss.Util.Configuracion;
 using Es.Riam.Gnoss.Util.General;
+using Es.Riam.Gnoss.Web.Controles.ServiciosGenerales;
 using Es.Riam.Gnoss.Web.MVC.Models.Administracion;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -251,6 +253,8 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
                 mTipoUbicacionCMSPaginaActual = filaPestanya.Ubicacion;
             }
             Guardar(mTipoUbicacionCMSPaginaActual, pPaginaCMSModel);
+            ControladorCMS controlador = new ControladorCMS(mLoggingService, mEntityContext, mConfigService, mRedisCacheWrapper, null, mVirtuosoAD);
+            controlador.ActualizarModeloBaseSimple(pestanyaID, ProyectoSeleccionado.Clave, AD.BASE_BD.PrioridadBase.Alta, false);
         }
 
         public void ActualizarCMS()

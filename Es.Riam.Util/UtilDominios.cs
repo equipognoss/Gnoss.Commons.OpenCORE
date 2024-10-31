@@ -27,8 +27,6 @@ namespace Es.Riam.Util
                 {
                     host = host.Remove(host.Length - 1);
                 }
-
-
             }
             else
             {
@@ -41,6 +39,12 @@ namespace Es.Riam.Util
                     host = "." + host;
                 }
             }
+
+            if(pConHTTP && pUrl.Port != 80 && pUrl.Port != 443)
+            {
+                host += $":{pUrl.Port}";    
+            }
+
             return host;
         }
 

@@ -73,7 +73,7 @@ namespace Es.Riam.Gnoss.Elementos.ServiciosGenerales
         {
             mEntityContext = entityContext;
             mLoggingService = loggingService;
-            this.FilaProyecto = pProyecto;
+            FilaProyecto = pProyecto;
         }
 
         /// <summary>

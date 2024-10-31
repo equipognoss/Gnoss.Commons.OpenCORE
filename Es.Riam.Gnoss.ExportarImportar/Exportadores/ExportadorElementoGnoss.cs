@@ -1,6 +1,12 @@
 using Es.Riam.AbstractsOpen;
+using Es.Riam.Gnoss.AD.EncapsuladoDatos;
 using Es.Riam.Gnoss.AD.EntityModel;
+using Es.Riam.Gnoss.AD.EntityModel.Models.Faceta;
+using Es.Riam.Gnoss.AD.EntityModelBASE;
+using Es.Riam.Gnoss.AD.Facetado.Model;
+using Es.Riam.Gnoss.AD.ParametroAplicacion;
 using Es.Riam.Gnoss.AD.RDF.Model;
+using Es.Riam.Gnoss.AD.ServiciosGenerales;
 using Es.Riam.Gnoss.AD.Virtuoso;
 using Es.Riam.Gnoss.CL;
 using Es.Riam.Gnoss.CL.LinkedOpenDataCL;
@@ -10,6 +16,9 @@ using Es.Riam.Gnoss.Elementos.Documentacion;
 using Es.Riam.Gnoss.Elementos.LinkedOpenData;
 using Es.Riam.Gnoss.Elementos.ServiciosGenerales;
 using Es.Riam.Gnoss.ExportarImportar.ElementosOntologia;
+using Es.Riam.Gnoss.Logica.Documentacion;
+using Es.Riam.Gnoss.Logica.Facetado;
+using Es.Riam.Gnoss.Logica.ParametroAplicacion;
 using Es.Riam.Gnoss.Logica.RDF;
 using Es.Riam.Gnoss.Util.Configuracion;
 using Es.Riam.Gnoss.Util.General;
@@ -18,9 +27,12 @@ using Es.Riam.Metagnoss.ExportarImportar;
 using Es.Riam.Semantica.OWL;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Caching.Memory;
+using SemWeb;
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.IO;
+using System.Linq;
 
 namespace Es.Riam.Gnoss.ExportarImportar.Exportadores
 {
@@ -46,7 +58,7 @@ namespace Es.Riam.Gnoss.ExportarImportar.Exportadores
     /// <summary>
     /// Exportador de elemento gnoss
     /// </summary>
-    public abstract class ExportadorElementoGnoss: IDisposable
+    public abstract class ExportadorElementoGnoss : IDisposable
     {
         #region Miembros
 
@@ -89,6 +101,7 @@ namespace Es.Riam.Gnoss.ExportarImportar.Exportadores
         private ConfigService mConfigService;
         private RedisCacheWrapper mRedisCacheWrapper;
         private UtilSemCms mUtilSemCms;
+        protected VirtuosoAD mVirtuosoAd;
         protected IServicesUtilVirtuosoAndReplication mServicesUtilVirtuosoAndReplication;
         #endregion
 
@@ -98,20 +111,23 @@ namespace Es.Riam.Gnoss.ExportarImportar.Exportadores
         /// Crea un nuevo exportador de elemento gnoss
         /// </summary>
         /// <param name="pOntologia">Ontología</param>
-        public ExportadorElementoGnoss(Ontologia pOntologia, string pIdiomaUsuario,  LoggingService loggingService, EntityContext entityContext, ConfigService configService, RedisCacheWrapper redisCacheWrapper, UtilSemCms utilSemCms, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication)
+        public ExportadorElementoGnoss(Ontologia pOntologia, string pIdiomaUsuario, LoggingService loggingService, EntityContext entityContext, ConfigService configService, RedisCacheWrapper redisCacheWrapper, UtilSemCms utilSemCms, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication, VirtuosoAD virtuosoAd)
         {
             mLoggingService = loggingService;
             mEntityContext = entityContext;
             mConfigService = configService;
-            
+
             mRedisCacheWrapper = redisCacheWrapper;
             mUtilSemCms = utilSemCms;
+            mVirtuosoAd = virtuosoAd;
 
             this.Ontologia = pOntologia;
             mIdiomaUsuario = pIdiomaUsuario;
             mServicesUtilVirtuosoAndReplication = servicesUtilVirtuosoAndReplication;
             if (ListaEntidadesCreadas == null)
+            {
                 ListaEntidadesCreadas = new List<ElementoOntologia>();
+            }
         }
 
         #endregion
@@ -416,26 +432,26 @@ namespace Es.Riam.Gnoss.ExportarImportar.Exportadores
         /// <param name="pOntologia">Ontologia</param>
         /// <param name="pGestor">Gestor de entidades</param>
         /// <returns>Exportador de elemento Gnoss</returns>
-        public ExportadorElementoGnoss CargarExportador(string pTipoEntidad, Ontologia pOntologia, GestionGnoss pGestor,string pIdiomaUsuario)
+        public ExportadorElementoGnoss CargarExportador(string pTipoEntidad, Ontologia pOntologia, GestionGnoss pGestor, string pIdiomaUsuario)
         {
             switch (pTipoEntidad)
             {
                 case TipoElementoGnoss.Proyecto:
-                    return new ExportadorProyecto(pOntologia, pIdiomaUsuario,  mLoggingService, mEntityContext, mConfigService, mRedisCacheWrapper, mUtilSemCms, mServicesUtilVirtuosoAndReplication);
+                    return new ExportadorProyecto(pOntologia, pIdiomaUsuario, mLoggingService, mEntityContext, mConfigService, mRedisCacheWrapper, mUtilSemCms, mServicesUtilVirtuosoAndReplication, mVirtuosoAd);
                 case TipoElementoGnoss.Organizacion:
-                    return new ExportadorOrganizacion(pOntologia, pIdiomaUsuario,  mLoggingService, mEntityContext, mConfigService, mRedisCacheWrapper, mUtilSemCms, mServicesUtilVirtuosoAndReplication);
+                    return new ExportadorOrganizacion(pOntologia, pIdiomaUsuario, mLoggingService, mEntityContext, mConfigService, mRedisCacheWrapper, mUtilSemCms, mServicesUtilVirtuosoAndReplication, mVirtuosoAd);
                 case TipoElementoGnoss.CategoriasTesauro:
-                    return new ExportadorWiki(pOntologia, pIdiomaUsuario,  mLoggingService, mEntityContext, mConfigService, mRedisCacheWrapper, mUtilSemCms, mServicesUtilVirtuosoAndReplication);
+                    return new ExportadorWiki(pOntologia, pIdiomaUsuario, mLoggingService, mEntityContext, mConfigService, mRedisCacheWrapper, mUtilSemCms, mServicesUtilVirtuosoAndReplication, mVirtuosoAd);
                 case TipoElementoGnoss.Tesauro:
-                    return new ExportadorWiki(pOntologia, pIdiomaUsuario,  mLoggingService, mEntityContext, mConfigService, mRedisCacheWrapper, mUtilSemCms, mServicesUtilVirtuosoAndReplication);
+                    return new ExportadorWiki(pOntologia, pIdiomaUsuario, mLoggingService, mEntityContext, mConfigService, mRedisCacheWrapper, mUtilSemCms, mServicesUtilVirtuosoAndReplication, mVirtuosoAd);
                 case TipoElementoGnoss.ListaResultados:
                     if (pGestor is GestionOrganizaciones)
                     {
-                        return new ExportadorOrganizacion(pOntologia, pIdiomaUsuario,  mLoggingService, mEntityContext, mConfigService, mRedisCacheWrapper, mUtilSemCms, mServicesUtilVirtuosoAndReplication);
+                        return new ExportadorOrganizacion(pOntologia, pIdiomaUsuario, mLoggingService, mEntityContext, mConfigService, mRedisCacheWrapper, mUtilSemCms, mServicesUtilVirtuosoAndReplication, mVirtuosoAd);
                     }
                     else if (pGestor is GestionPersonas)
                     {
-                        return new ExportadorPersona(pOntologia, pIdiomaUsuario,  mLoggingService, mEntityContext, mConfigService, mRedisCacheWrapper, mUtilSemCms, mServicesUtilVirtuosoAndReplication);
+                        return new ExportadorPersona(pOntologia, pIdiomaUsuario, mLoggingService, mEntityContext, mConfigService, mRedisCacheWrapper, mUtilSemCms, mServicesUtilVirtuosoAndReplication, mVirtuosoAd);
                     }
                     break;
             }
@@ -445,22 +461,19 @@ namespace Es.Riam.Gnoss.ExportarImportar.Exportadores
         #region Formularios semánticos
 
         /// <summary>
-        /// Obtiene la ruta del fichero RDF de un documento semántico almacenado en la BD RDF.
+        /// Obtiene la ruta del fichero RDF de un documento semántico almacenado en la BD RDF. En caso de no estar en la bd lo obtendrá de virtuoso
         /// </summary>
         /// <param name="pDocumentoID">ID de documento</param>
         /// <param name="pProyectoID">ID del proyecto</param>
         /// <param name="pNamespaceOntologia">Namespace de la ontología</param>
-        public string ObtenerRDFDeVirtuoso(Guid pDocumentoID, Guid pProyectoID, string pNamespaceOntologia)
+        public string ObtenerRdfDeDocumento(Guid pDocumentoID, Guid pProyectoID, string pNamespaceOntologia)
         {
-            #region De BD RDF
-
-            string rdfText = "";
-
-            RdfDS rdfDS = null;
+            string rdfText = string.Empty;
+            RdfDS rdfDS;
 
             try
             {
-                RdfCN rdfCN = new RdfCN("rdf", pDocumentoID.ToString().Substring(0, 3),  mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+                RdfCN rdfCN = new RdfCN("rdf", pDocumentoID.ToString().Substring(0, 3), mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
                 rdfDS = rdfCN.ObtenerRdfPorDocumentoID(pDocumentoID, pProyectoID);
                 rdfCN.Dispose();
             }
@@ -474,6 +487,30 @@ namespace Es.Riam.Gnoss.ExportarImportar.Exportadores
                 rdfText = rdfDS.RdfDocumento[0].RdfSem;
             }
 
+            if (string.IsNullOrEmpty(rdfText))
+            {
+                mLoggingService.AgregarEntrada("FormSem RDF NO está en sqlServer, vamos a virtuoso a por él");
+                DocumentacionCN documentacionCN = new DocumentacionCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+                ParametroAplicacionCN parametroAplicacion = new ParametroAplicacionCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+
+                string nombreGrafo = documentacionCN.ObtenerElementoVinculadoDeDocumento(pDocumentoID).Enlace;
+                string urlIntragnoss = parametroAplicacion.ObtenerParametroAplicacion(TiposParametrosAplicacion.UrlIntragnoss);
+                if(!urlIntragnoss.EndsWith('/'))
+                {
+                    urlIntragnoss += '/';
+                }
+                
+                string urlOntologia = $"{urlIntragnoss}Ontologia/{nombreGrafo}#";
+                
+                byte[] rdf = ObtenerRDFDeVirtuoso(pDocumentoID.ToString(), nombreGrafo, urlIntragnoss, urlOntologia, pNamespaceOntologia, Ontologia, true);
+
+                MemoryStream buffer = new MemoryStream(rdf);
+                StreamReader reader = new StreamReader(buffer);
+                rdfText = reader.ReadToEnd();
+                reader.Close();
+                reader.Dispose();
+            }
+
             rdfDS.Dispose();
 
             if (!string.IsNullOrEmpty(pNamespaceOntologia))
@@ -482,9 +519,203 @@ namespace Es.Riam.Gnoss.ExportarImportar.Exportadores
             }
 
             return rdfText;
-
-            #endregion
         }
+
+        /// <summary>
+        /// Obtiene los bytes del fichero RDF de un documento semántico almacenado en virtuoso.
+        /// </summary>
+        /// <param name="pDocumentoID">ID de documento</param>
+        /// <param name="pNombreGrafo">Nombre del grafo en virtuoso</param>
+        /// <param name="pUrlIntragnoss">URL de intragnoss</param>
+        /// <param name="pUrlOntologia">URL de la ontología</param>
+        /// <param name="pNamespaceOntologia">Namespace de la ontología</param>
+        /// <param name="pOntologia">Ontología del documento</param>
+        public byte[] ObtenerRDFDeVirtuoso(string pDocumentoID, string pNombreGrafo, string pUrlIntragnoss, string pUrlOntologia, string pNamespaceOntologia, Ontologia pOntologia, bool pTraerEntidadesExternas, bool pUsarAfinidad = false)
+        {
+            FacetadoCN facetadoCN = null;
+            facetadoCN = new FacetadoCN(pUrlIntragnoss, "", mEntityContext, mLoggingService, mConfigService, mVirtuosoAd, mServicesUtilVirtuosoAndReplication);
+
+            FacetadoDS facetadoDS = facetadoCN.ObtenerRDFXMLdeFormulario(pNombreGrafo.ToLower(), pDocumentoID, pUsarAfinidad);
+
+            if (facetadoDS.Tables[0].Rows.Count == 0)
+            {
+                return Array.Empty<byte>();
+            }
+
+            List<FacetaEntidadesExternas> EntExt = null;
+            if (pTraerEntidadesExternas)
+            {
+                //Obtenemos el Proyecto al que pertenece el documento
+                DocumentacionCN docCN = new DocumentacionCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+                Guid proyID = docCN.ObtenerProyectoIDPorDocumentoID(new Guid(pDocumentoID));
+
+                DataWrapperFacetas facetasDW = new DataWrapperFacetas();
+                FacetaCN facCN = new FacetaCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+                facCN.CargarFacetasEntidadesExternas(ProyectoAD.MetaOrganizacion, proyID, facetasDW);
+                EntExt = facetasDW.ListaFacetaEntidadesExternas.Where(item => item.ProyectoID.Equals(proyID)).ToList();
+
+            }
+            List<string> listaEntidadesExternas = new List<string>();
+
+            MemoryStore store = new MemoryStore();
+            //foreach (DataRow fila in facetadoDS.Tables[0].Rows)
+
+            string[] delimiter = { "/@/" };
+            string type = "http://www.w3.org/1999/02/22-rdf-syntax-ns#type";
+            string label = "http://www.w3.org/2000/01/rdf-schema#label";
+            Dictionary<string, string> dicSujetosTypeLabel = ObtenerDiccionarioSujetosTypeLabel(facetadoDS.Tables[0], delimiter, type, label);
+
+            foreach (DataRow fila in facetadoDS.Tables[0].Select("", "s"))
+            {
+                AgregarDatosAlStore(fila, store, dicSujetosTypeLabel, delimiter, type, label);
+
+                //Obtener las entidades externas del proyecto
+                if (EntExt != null && Uri.IsWellFormedUriString(fila["o"].ToString(), UriKind.Absolute) && !listaEntidadesExternas.Contains(fila["o"].ToString()) && facetadoDS.Tables[0].Select("s = '" + fila["o"].ToString().Replace("'", "''") + "'").Length == 0)
+                {
+                    listaEntidadesExternas.Add(fila["o"].ToString());
+                }
+            }
+
+            if (pTraerEntidadesExternas)
+            {
+                FacetadoDS facDS = new FacetadoDS();
+                foreach (string entidadExterna in listaEntidadesExternas)
+                {
+                    //Por cada entidad externa del diccionario, debemos obtener sus triples de virtuoso y añadirlos al store.
+                    if (EntExt != null)
+                    {
+                        for (int i = 0; i < EntExt.Count; i++)
+                        {
+                            if (entidadExterna.ToLower().Contains(EntExt[i].EntidadID.ToLower()))
+                            {
+                                //Cargamos el DS
+                                facDS.Merge(facetadoCN.ObtieneTripletasOtrasEntidadesDS(entidadExterna, EntExt[i].Grafo, EntExt));
+                            }
+                        }
+                    }
+                }
+
+                //Agrupar por sujeto
+                //Por cada bloque, agregar al store primero el type y después el label
+                //Rezar para que el store no desordene las triples....
+
+                Dictionary<string, string> dicSujetosTypeLabelEntidades = ObtenerDiccionarioSujetosTypeLabel(facDS.Tables["OtrasEntidades"], delimiter, type, label);
+                foreach (DataRow fila in facDS.Tables["OtrasEntidades"].Select("", "s"))
+                {
+                    AgregarDatosAlStore(fila, store, dicSujetosTypeLabelEntidades, delimiter, type, label);
+                }
+            }
+
+            facetadoDS.Dispose();
+
+            MemoryStream archivo = new MemoryStream();
+            System.Xml.XmlWriter textWriter = System.Xml.XmlWriter.Create(archivo);
+
+            RdfWriter writer = new RdfXmlWriter(textWriter);
+            writer.Namespaces.AddNamespace("http://www.w3.org/1999/02/22-rdf-syntax-ns#", "rdf");
+            writer.Namespaces.AddNamespace("http://www.gnoss.net/ontologia.owl#", "gnoss");
+            writer.Namespaces.AddNamespace("http://www.w3.org/2001/XMLSchema#", "xsd");
+            writer.Namespaces.AddNamespace("http://www.w3.org/2000/01/rdf-schema#", "rdfs");
+            writer.Namespaces.AddNamespace("http://www.w3.org/2002/07/owl#", "owl");
+            writer.Namespaces.AddNamespace(pUrlOntologia, pNamespaceOntologia);
+
+            if (pOntologia != null)
+            {
+                foreach (string ns in pOntologia.NamespacesDefinidos.Keys)
+                {
+                    if (pOntologia.NamespacesDefinidos[ns] != "rdf" && pOntologia.NamespacesDefinidos[ns] != "gnoss" && pOntologia.NamespacesDefinidos[ns] != "xsd" && pOntologia.NamespacesDefinidos[ns] != "rdfs" && pOntologia.NamespacesDefinidos[ns] != "owl" && pOntologia.NamespacesDefinidos[ns] != pNamespaceOntologia)
+                    {
+                        writer.Namespaces.AddNamespace(ns, pOntologia.NamespacesDefinidos[ns]);
+                    }
+                }
+            }
+
+            writer.Write(store);
+            writer.Close();
+            store.Dispose();
+
+            return archivo.ToArray();
+        }
+
+        private static void AgregarDatosAlStore(DataRow pFila, MemoryStore pStore, Dictionary<string, string> pDicSujetosTypeLabel, string[] pDelimiter, string pType, string pLabel)
+        {
+            string sujeto = (string)pFila[0];
+            if (pDicSujetosTypeLabel.ContainsKey(sujeto) && !string.IsNullOrEmpty(pDicSujetosTypeLabel[sujeto]))
+            {
+                string[] delimiter = { "|" };
+
+                string[] typeYLabel = pDicSujetosTypeLabel[sujeto].Split(delimiter, StringSplitOptions.RemoveEmptyEntries);
+                foreach (string triples in typeYLabel)
+                {
+                    string[] predYObjt = triples.Split(pDelimiter, StringSplitOptions.RemoveEmptyEntries);
+                    string pred = predYObjt[0];
+                    string objt = predYObjt[1];
+                    //Agregamos al store 
+                    pStore.Add(new Statement(new Entity(sujeto), new Entity(pred), new SemWeb.Literal(objt, null, null)));
+                }
+
+                //Borramos para no agregarlo en la siguiente llamada a este método.
+                pDicSujetosTypeLabel[sujeto] = "";
+            }
+
+            string idioma = null;
+
+            if (pFila.ItemArray.Length > 3 && !pFila.IsNull(3) && !string.IsNullOrEmpty((string)pFila[3]))
+            {
+                idioma = (string)pFila[3];
+            }
+
+            if (pDicSujetosTypeLabel.ContainsKey(sujeto) && !((string)pFila[1] == pType || (string)pFila[1] == pLabel))
+            {
+                string objeto = "";
+                if (!pFila.IsNull(2))
+                {
+                    objeto = (string)pFila[2];
+                }
+
+                pStore.Add(new Statement(new Entity(sujeto), new Entity((string)pFila[1]), new SemWeb.Literal(objeto, idioma, null)));
+            }
+        }
+
+        private static Dictionary<string, string> ObtenerDiccionarioSujetosTypeLabel(DataTable pDataTable, string[] pDelimiter, string pType, string pLabel)
+        {
+            Dictionary<string, string> dicSujetosTypeLabel = new Dictionary<string, string>();
+
+            foreach (DataRow fila in pDataTable.Select("", "s"))
+            {
+                string sujeto = (string)fila[0];
+                string predicado = (string)fila[1];
+                string objeto = "";
+
+                if (!fila.IsNull(2))
+                {
+                    objeto = (string)fila[2];
+                }
+
+                string objetoYPredicado = predicado + pDelimiter[0] + objeto;
+
+                if (predicado.Equals(pType) || predicado.Equals(pLabel))
+                {
+                    if (dicSujetosTypeLabel.ContainsKey(sujeto))
+                    {
+                        if (dicSujetosTypeLabel[sujeto].Contains(pType))
+                        {
+                            dicSujetosTypeLabel[sujeto] += "|" + objetoYPredicado;
+                        }
+                        else if (dicSujetosTypeLabel[sujeto].Contains(pLabel))
+                        {
+                            dicSujetosTypeLabel[sujeto] = objetoYPredicado + "|" + dicSujetosTypeLabel[sujeto];
+                        }
+                    }
+                    else
+                    {
+                        dicSujetosTypeLabel.Add(sujeto, objetoYPredicado);
+                    }
+                }
+            }
+
+            return dicSujetosTypeLabel;
+        }       
 
         #endregion
 
@@ -551,10 +782,10 @@ namespace Es.Riam.Gnoss.ExportarImportar.Exportadores
 
             //Copiamos las propiedades especializadas
             CopiarPropiedadesEspecializadas(pEntidad, entidad);
-            
+
             //Comprobamos si se puede especializar un nivel más
             ComprobarEspecializacion(entidad, pElementoGnoss, pGestor, pModoExportacion);
-            
+
             //Clonamos la entidad especializada
             pEntidad.ClonarEntidad(entidad);
         }
@@ -589,7 +820,7 @@ namespace Es.Riam.Gnoss.ExportarImportar.Exportadores
                     {
                         pSubclase.Propiedades[contador].ListaValores.Add(valor, propiedad.ListaValores[valor]);
                     }
-					
+
                     if (propiedad.UnicoValor.Key != null)
                     {
                         pSubclase.Propiedades[contador].UnicoValor = propiedad.UnicoValor;
@@ -751,7 +982,7 @@ namespace Es.Riam.Gnoss.ExportarImportar.Exportadores
         protected Es.Riam.Semantica.OWL.ElementoOntologia AgregarYObtenerEntidadRelacionada(Es.Riam.Semantica.OWL.ElementoOntologia pEntidad, Propiedad pPropiedad, Es.Riam.Semantica.OWL.ElementoOntologia pEntidadRelacionada, IElementoGnoss pElemento, DataRow pFilaElemento, bool pEspecializacion, GestionGnoss pGestor)
         {
             Es.Riam.Semantica.OWL.ElementoOntologia entidadAuxiliar = ComprobarEntidadIncluida(pEntidadRelacionada.ID);
-            
+
             if ((entidadAuxiliar == null) || (!entidadAuxiliar.EstaCompleta))
             {
                 if (entidadAuxiliar != null)
@@ -1002,7 +1233,7 @@ namespace Es.Riam.Gnoss.ExportarImportar.Exportadores
             //    }
             //}
 
-            LinkedOpenDataCL LodCL = new LinkedOpenDataCL("lod",  mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mServicesUtilVirtuosoAndReplication);
+            LinkedOpenDataCL LodCL = new LinkedOpenDataCL("lod", mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mServicesUtilVirtuosoAndReplication);
             Dictionary<string, EntidadLOD> listaSameAs = LodCL.ObtenerListaResourcesDeListaResultados(((ElementoGnoss)pElementoGnoss).Clave);
             //Dictionary<string, string> listaResultados = LodCL.ObtenerNombreUriDeEntidadesRelacionadasPorID(((ElementoGnoss)pElementoGnoss).Clave);
 
@@ -1021,7 +1252,7 @@ namespace Es.Riam.Gnoss.ExportarImportar.Exportadores
 
                 //Para cada entidad equivalente en freebase, ponemos una etiqueta owl:sameAs en la entidad
 
-                if (listaSameAs.ContainsKey(tag)) 
+                if (listaSameAs.ContainsKey(tag))
                 {
                     EntidadLOD entidad = listaSameAs[tag];
                     entidadTag.OWLSameAs.Add(entidad.Url);
@@ -1125,7 +1356,7 @@ namespace Es.Riam.Gnoss.ExportarImportar.Exportadores
         #endregion
 
         #region Privados
-        
+
         /// <summary>
         /// Obtiene todas las entidades relacionadas con la entidad
         /// </summary>
@@ -1142,7 +1373,7 @@ namespace Es.Riam.Gnoss.ExportarImportar.Exportadores
                 if (!TratarCasoEspecial(pEntidad, pElementoGnoss, pPropiedad, pGestor))
                 {
                     List<IElementoGnoss> listaHijos = pElementoGnoss.Hijos;
-                    
+
                     //Recorremos los hijos del elemento
                     foreach (IElementoGnoss elemento in listaHijos)
                     {
@@ -1153,7 +1384,7 @@ namespace Es.Riam.Gnoss.ExportarImportar.Exportadores
                             entidad.ID = UtilImportarExportar.ObtenerID(entidad.TipoEntidad, elemento);
                             entidad.Elemento = elemento;
                             Es.Riam.Semantica.OWL.ElementoOntologia entidadAuxiliar = ComprobarEntidadIncluida(entidad.ID);
-                            
+
                             if ((entidadAuxiliar == null) || (!entidadAuxiliar.EstaCompleta))
                             {
                                 if (entidadAuxiliar != null)
@@ -1165,10 +1396,10 @@ namespace Es.Riam.Gnoss.ExportarImportar.Exportadores
                             }
                             else
                                 entidad = entidadAuxiliar;
-                            
+
                             //Lo relacionamos con la entidad
                             pEntidad.EntidadesRelacionadas.Add(entidad);
-                            
+
                             if (!pPropiedad.ListaValores.ContainsKey(entidad.ID))
                             {
                                 pPropiedad.ListaValores.Add(entidad.ID, entidad);
@@ -1197,7 +1428,7 @@ namespace Es.Riam.Gnoss.ExportarImportar.Exportadores
             }
             return true;
         }
-       
+
         /// <summary>
         /// Obtiene el padre de una entidad.
         /// </summary>
@@ -1211,7 +1442,7 @@ namespace Es.Riam.Gnoss.ExportarImportar.Exportadores
 
                 //Obtengo el padre
                 Es.Riam.Semantica.OWL.ElementoOntologia padre = new ElementoOntologiaGnoss(this.Ontologia.GetEntidadTipo(TipoPadre));
-                
+
                 //if ((pEntidad.Superclase != "") && (!padre.TipoEntidad.Equals(TipoElementoGnoss.EntidadNoExportable)))
                 if (pEntidad.Superclases.Count > 0 && !padre.TipoEntidad.Equals(TipoElementoGnoss.EntidadNoExportable))
                 {
@@ -1223,8 +1454,8 @@ namespace Es.Riam.Gnoss.ExportarImportar.Exportadores
                         return;
 
                     Es.Riam.Semantica.OWL.ElementoOntologia entidadAuxiliar = ComprobarEntidadIncluida(padre.ID);
-                    propiedadPadre.UnicoValor = new KeyValuePair<string,Es.Riam.Semantica.OWL.ElementoOntologia>(padre.ID, padre);
-                    
+                    propiedadPadre.UnicoValor = new KeyValuePair<string, Es.Riam.Semantica.OWL.ElementoOntologia>(padre.ID, padre);
+
                     if (entidadAuxiliar == null)
                     {
                         ObtenerAtributosEntidad(padre, pElementoGnoss.Padre);

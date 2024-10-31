@@ -81,12 +81,20 @@ namespace Es.Riam.Gnoss.AD.Virtuoso
             VirtuosoCommand myCommand = null;
             VirtuosoConnection conexion = null;
 
-            string instruccion = pQuery.Substring(0, pQuery.IndexOf('{') + 1);
+            int inicioConsulta = pQuery.IndexOf('{') + 1;
+            int posicionTriples = -1;
 
-            if (instruccion.Contains(" INSERT INTO ") && pQuery.Count(salto => salto.Equals('\n')) > 600)
+            string instruccion = pQuery.Substring(0, inicioConsulta);
+            if (instruccion.Contains(" INSERT INTO "))
+            {
+                string triples = pQuery.Substring(inicioConsulta, pQuery.LastIndexOf('}') - inicioConsulta);
+                posicionTriples = mServicesUtilVirtuosoAndReplication.ObtenerPosicionTriple(triples);
+            }
+
+            if (posicionTriples != -1)
             {
                 //Es un insert de más de 10000 líneas, la parto para que no falle
-                EjecutarInsertPorTrozos(pQuery);
+                EjecutarInsertPorTrozos(pQuery, posicionTriples);
             }
             else
             {
@@ -128,14 +136,20 @@ namespace Es.Riam.Gnoss.AD.Virtuoso
         {
             int resultado = 0;
 
-            string instruccion = pQuery.Substring(0, pQuery.IndexOf('{') + 1);
-            int numeroLineas = pQuery.Count(salto => salto.Equals('\n'));
-            if (instruccion.Contains(" INSERT INTO ") && numeroLineas > 600)
+            int inicioConsulta = pQuery.IndexOf('{') + 1;
+            int posicionTriples = -1;
+
+            string instruccion = pQuery.Substring(0, inicioConsulta);
+            if (instruccion.Contains(" INSERT INTO "))
             {
-                //Le pongo el resultado como el número de partes que tiene la inserción en negativo, para poder identificarlo
-                //EscribirLogActualizarVirtuoso(pQuery, "queryLarga", (numeroLineas / 500) + 1);
+                string triples = pQuery.Substring(inicioConsulta, pQuery.LastIndexOf('}') - inicioConsulta);
+                posicionTriples = mServicesUtilVirtuosoAndReplication.ObtenerPosicionTriple(triples);
+            }
+
+            if (posicionTriples != -1)
+            {
                 //Es un insert de más de 600 líneas, la parto para que no falle
-                EjecutarInsertPorTrozos(pQuery);
+                EjecutarInsertPorTrozos(pQuery, posicionTriples);
             }
             else
             {
@@ -378,47 +392,36 @@ namespace Es.Riam.Gnoss.AD.Virtuoso
         /// Actualiza virtuoso (mediante un insert / update / delete)
         /// </summary>
         /// <param name="pQuery">Query a ejecutar (insert / update / delete)</param>
-        /// <param name="pGrafo">Grafo que se va a actualiar</param>
-        /// <param name="pReplicar">Verdad si esta consulta debe replicarse (por defecto TRUE)</param>
-        /// <param name="pPrioridad">Prioridad que se le va a dar a la replicación de esta transacción</param>
-        public void EjecutarInsertPorTrozos(string pQuery)
+        /// <param name="pIndiceTriplePartir">Indice del triple por el que se va a partir los trozos a insertart</param>
+        public void EjecutarInsertPorTrozos(string pQuery, int pIndiceTriplePartir)
         {
             try
             {
                 bool transaccionIniciada = IniciarTransaccion();
-                int numeroLineasPorTrozo = 500;
                 int indiceInicioTriples = pQuery.IndexOf('{') + 1;
                 int finTriples = pQuery.LastIndexOf('}');
                 string instruccion = pQuery.Substring(0, indiceInicioTriples);
                 string triples = pQuery.Substring(indiceInicioTriples, finTriples - indiceInicioTriples);
 
-                char[] separador = { '\n' };
-                string[] lineas = triples.Split(separador, StringSplitOptions.RemoveEmptyEntries);
-                int numeroPartes = (lineas.Length / numeroLineasPorTrozo) + 1;
-
-                int lineaAnterior = 0;
-
-                for (int i = 0; i < numeroPartes; i++)
+                while (pIndiceTriplePartir != -1)
                 {
-                    int numeroLineas = numeroLineasPorTrozo;
+                    string conjuntoTriples = triples.Substring(0, pIndiceTriplePartir);
+                    triples = triples.Substring(pIndiceTriplePartir);
 
-                    if (i.Equals(numeroPartes - 1))
-                    {
-                        //Es el último trozo, cojo sólo los que quedan
-                        numeroLineas = lineas.Length % numeroLineasPorTrozo;
-                    }
+                    string consulta = $"{instruccion}{conjuntoTriples}}}";
 
-                    string[] lineasInstruccion = new string[numeroLineas];
-                    Array.Copy(lineas, lineaAnterior, lineasInstruccion, 0, numeroLineas);
-                    lineaAnterior += numeroLineas;
+                    ActualizarVirtuoso(consulta);
 
-                    string miniQuery = string.Join("\n", lineasInstruccion);
-
-                    miniQuery = instruccion + miniQuery + " } ";
-
-                    ActualizarVirtuoso(miniQuery);
-
+                    pIndiceTriplePartir = mServicesUtilVirtuosoAndReplication.ObtenerPosicionTriple(triples);
                 }
+
+                if (!string.IsNullOrEmpty(triples))
+                {
+                    string consulta = $"{instruccion}{triples}}}";
+
+                    ActualizarVirtuoso(consulta);
+                }
+
                 if (transaccionIniciada)
                 {
                     TerminarTransaccion(true);

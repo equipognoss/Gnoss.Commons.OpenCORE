@@ -455,7 +455,7 @@ namespace Es.Riam.Gnoss.Logica.Identidad
         /// <param name="pPersonaID">Identificador de persona</param>
         /// <param name="pObtenerSoloActivos">TRUE si obtiene sólo lo que este activo (no eliminado, no fecha de baja,..)</param>
         /// <returns>Dataset de identidades</returns>
-        public DataWrapperIdentidad ObtenerPerfilesDePersona(Guid pPersonaID, bool pObtenerSoloActivos, Guid pIdentidadID)
+        public DataWrapperIdentidad ObtenerPerfilesDePersona(Guid pPersonaID, bool pObtenerSoloActivos, Guid pIdentidadID, bool usarCompartir = false)
         {
             if (pPersonaID.Equals(UsuarioAD.Invitado))
             {
@@ -463,7 +463,14 @@ namespace Es.Riam.Gnoss.Logica.Identidad
             }
             else
             {
-                return IdentidadAD.ObtenerPerfilesDePersona(pPersonaID, pObtenerSoloActivos, pIdentidadID);
+                if (usarCompartir)
+                {
+                    return IdentidadAD.ObtenerPerfilesDePersonaCompartir(pPersonaID, pObtenerSoloActivos, pIdentidadID);
+                }
+                else
+                {
+                    return IdentidadAD.ObtenerPerfilesDePersona(pPersonaID, pObtenerSoloActivos, pIdentidadID);
+                }
             }
         }
 
@@ -2166,15 +2173,31 @@ namespace Es.Riam.Gnoss.Logica.Identidad
             return IdentidadAD.ObtenerGrupoPorNombreCortoYPerfilID(pNombreCorto, pPerfilID, pCargarIdentidades);
         }
 
-        /// <summary>
-        /// Obtiene unos grupos por los nombrse cortos y la organizacion
-        /// </summary>
-        /// <param name="pNombreCortos">Nombres cortos de lps grupos</param>
-        /// <param name="pOrganizacionID">Organizacion del Grupo</param>
-        /// <returns>Lista de IDs de grupos</returns>
-        public List<Guid> ObtenerGruposIDPorNombreCortoYOrganizacion(List<string> pNombresCortos, Guid pOrganizacionID)
+		/// <summary>
+		/// Obtiene unos grupos por los nombres cortos y la organizacion
+		/// </summary>
+		/// <param name="pNombresCortos">Nombres cortos de lps grupos</param>
+		/// <param name="pOrganizacionID">Organizacion del Grupo</param>
+		/// <returns>Lista de IDs de grupos</returns>
+		public List<Guid> ObtenerGruposIDPorNombreCortoYOrganizacion(List<string> pNombresCortos, Guid pOrganizacionID)
         {
             return IdentidadAD.ObtenerGruposIDPorNombreCortoYOrganizacion(pNombresCortos, pOrganizacionID);
+        }
+
+        public GrupoIdentidadesParticipacion ObtenerGrupoIdentidadesParticipacion(Guid pGrupoID, Guid pIdentidadID)
+        {
+            return IdentidadAD.ObtenerGrupoIdentidadesParticipacion(pGrupoID, pIdentidadID);
+        }
+
+		/// <summary>
+		/// Obtiene el identificador del grupo por el nombre corto y la organizacion
+		/// </summary>
+		/// <param name="pNombreCorto">Nombre corto del grupo</param>
+		/// <param name="pOrganizacionID">Organizacion del Grupo</param>
+		/// <returns>Identificador del grupo</returns>
+		public Guid ObtenerGrupoIDPorNombreCortoYOrganizacion(string pNombreCorto, Guid pOrganizacionID)
+        {
+            return IdentidadAD.ObtenerGrupoIDPorNombreCortoYOrganizacion(pNombreCorto, pOrganizacionID);
         }
 
         /// <summary>

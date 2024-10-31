@@ -146,15 +146,20 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
 
             Dictionary<Guid, string> listaOntologiasTitulo = new Dictionary<Guid, string>();
             Dictionary<Guid, string> listaOntologiasOWL = new Dictionary<Guid, string>();
+            List<Guid> listaSecundarias = new List<Guid>();
 
             foreach (AD.EntityModel.Models.Documentacion.Documento filaDoc in DataWrapperDocumentacion.ListaDocumento)
             {
-                if (filaDoc.Tipo.Equals((short)TiposDocumentacion.Ontologia))
+                if (filaDoc.Tipo.Equals((short)TiposDocumentacion.Ontologia) || filaDoc.Tipo.Equals((short)TiposDocumentacion.OntologiaSecundaria))
                 {
                     if (!listaOntologiasTitulo.ContainsKey(filaDoc.DocumentoID))
                     {
                         listaOntologiasTitulo.Add(filaDoc.DocumentoID, filaDoc.Titulo);
                         listaOntologiasOWL.Add(filaDoc.DocumentoID, filaDoc.Enlace);
+                    }
+                    if (filaDoc.Tipo.Equals((short)TiposDocumentacion.OntologiaSecundaria))
+                    {
+                        listaSecundarias.Add(filaDoc.DocumentoID);
                     }
                 }
             }
@@ -174,6 +179,12 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
                     permiso.TipoDocumento = listaOntologiasTitulo[ontologia];
                     permiso.Ontologia = listaOntologiasOWL[ontologia];
                     permiso.TipoPermiso = -1;
+                    permiso.EsSecundaria = false;
+
+                    if (listaSecundarias.Contains(ontologia))
+                    {
+                        permiso.EsSecundaria = true;
+                    }
 
                     List<AD.EntityModel.Models.ProyectoDS.TipoOntoDispRolUsuarioProy> tiposDocDispRolUsuarioProyRow = DataWrapperProyecto.ListaTipoOntoDispRolUsuarioProy.Where(onto => onto.OntologiaID.Equals(ontologia)).ToList();
 
@@ -197,7 +208,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
                     permisosDocumentacion.Add(permiso);
                 }
             }
-            return permisosDocumentacion;
+            return permisosDocumentacion.OrderBy(p => p.EsSecundaria ? 1 : 0).ToList();
         }
 
         #endregion
@@ -386,7 +397,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
 
             foreach (AD.EntityModel.Models.Documentacion.Documento filaDoc in DataWrapperDocumentacion.ListaDocumento)
             {
-                if (filaDoc.Tipo.Equals((short)TiposDocumentacion.Ontologia))
+                if (filaDoc.Tipo.Equals((short)TiposDocumentacion.Ontologia) || filaDoc.Tipo.Equals((short)TiposDocumentacion.OntologiaSecundaria))
                 {
                     if (!listaOntologiasOWL.ContainsKey(filaDoc.Enlace))
                     {
@@ -605,7 +616,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
                         documentacionCN.ObtenerOntologiasProyecto(proyectoIDPatronOntologias, mDataWrapperDocumentacion, false, true, true);
                     }
 
-                    documentacionCN.ObtenerOntologiasProyecto(ProyectoSeleccionado.Clave, mDataWrapperDocumentacion, true, false, false);
+                    documentacionCN.ObtenerOntologiasProyecto(ProyectoSeleccionado.Clave, mDataWrapperDocumentacion, true, true, false);
                     documentacionCN.Dispose();
                 }
                 return mDataWrapperDocumentacion;

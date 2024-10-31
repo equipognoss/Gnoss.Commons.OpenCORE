@@ -1370,7 +1370,7 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
 
 
         /// <summary>
-        /// actualiza los cambios de privacidad en el perfil de una organizacion
+        /// Actualiza los cambios de privacidad en el perfil de una organizacion
         /// </summary>
         /// <param name="pFilaOrganizacion">datos de la organizacion</param>
         /// <param name="pFilaConfigOrg">datos de la configuracion de la organizacion</param>
@@ -1385,10 +1385,8 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
             mEntityContext.SaveChanges();
 
             return cambiadaPrivacidadRecursos;
-
-
-
         }
+
         /// <summary>
         /// Obtiene si esta activada el registro automático en la comunidad
         /// </summary>
@@ -1399,6 +1397,7 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
         {
             return mEntityContext.OrganizacionParticipaProy.Where(item => listaComunidades.Contains(item.ProyectoID) && item.OrganizacionID.Equals(pOrganizacionID)).Select(item => new { item.ProyectoID, item.RegistroAutomatico }).ToDictionary(item => item.ProyectoID, item => item.RegistroAutomatico.Equals(1));
         }
+
         /// <summary>
         /// Lista con los usuarios que pertenecen a la organizacion
         /// </summary>
@@ -1408,6 +1407,7 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
         {
             return mEntityContext.PersonaVinculoOrganizacion.Where(item => item.OrganizacionID.Equals(pOrganizacionID)).Select(item => item.PersonaID).ToList();
         }
+
         /// <summary>
         /// Actualiza el valor del registro automático en una comunidad
         /// </summary>
@@ -1429,6 +1429,7 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
             }
             mEntityContext.SaveChanges();
         }
+
         /// <summary>
         /// Comprueba si el email pasado por parámetro ya existe en la tabla de personas vinculadas con organización
         /// </summary>
@@ -1437,49 +1438,17 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
         /// <returns>TRUE si el email ya existe, FALSE en caso contrario</returns>
         public bool ExisteEmailPersonaVinculoOrganizacion(string pEmail, Guid pPersonaID)
         {
-            //TODO: hecho
             return mEntityContext.PersonaVinculoOrganizacion.Any(item => item.EmailTrabajo.ToUpper().Equals(pEmail.ToUpper()) && !item.PersonaID.Equals(pPersonaID));
-
-            //Object personaID;
-            //DbCommand commandsqlSelectExisteEmailEnBD = ObtenerComando("SELECT PersonaID FROM PersonaVinculoOrganizacion WHERE UPPER(EmailTrabajo) = UPPER(" + IBD.ToParam("EmailTrabajo") + ") AND PersonaID <> " + IBD.GuidParamValor("personaID"));
-
-            //AgregarParametro(commandsqlSelectExisteEmailEnBD, IBD.ToParam("EmailTrabajo"), DbType.String, pEmail);
-            //AgregarParametro(commandsqlSelectExisteEmailEnBD, IBD.ToParam("personaID"), IBD.TipoGuidToString(DbType.Guid), IBD.ValorDeGuid(pPersonaID));
-
-            //try
-            //{
-            //    personaID = EjecutarEscalar(commandsqlSelectExisteEmailEnBD);
-            //}
-            //finally 
-            //{
-            //}
-            //return (personaID != null);
         }
 
-
-        /// <summary>
-        /// Comprueba si la organización pasada por parámetro ya existe en el sistema
-        /// </summary>
-        /// <param name="pNombreOrganizacion">Nombre de organización</param>
-        /// <returns>TRUE si la organización ya existe, FALSE en caso contrario</returns>
-        public bool ExisteOrganizacionPorOrganizacionID(string pOrganizacionID)
-        {
-            //TODO: hecho
-            var query = mEntityContext.Organizacion.Where(item => item.OrganizacionID.Equals(new Guid(pOrganizacionID)));
+		/// <summary>
+		/// Comprueba si la organización pasada por parámetro ya existe en el sistema
+		/// </summary>
+		/// <param name="pOrganizacionID">Identificador de la organización</param>
+		/// <returns>TRUE si la organización ya existe, FALSE en caso contrario</returns>
+		public bool ExisteOrganizacionPorOrganizacionID(string pOrganizacionID)
+        {   
             return mEntityContext.Organizacion.Any(item => item.OrganizacionID.Equals(new Guid(pOrganizacionID)));
-
-            //Object dimensionID;
-            //DbCommand commandsqlSelectExisteOrganizacionEnBD = ObtenerComando(this.sqlSelectExisteOrganizacionEnBDPorIDOrg = "SELECT " + IBD.CargarGuid("OrganizacionID") + " FROM Organizacion WHERE OrganizacionID=" + IBD.ToParam("OrganizacionID") + " ");
-            //AgregarParametro(commandsqlSelectExisteOrganizacionEnBD, IBD.ToParam("OrganizacionID"), DbType.String, pOrganizacionID);
-
-            //try
-            //{
-            //    dimensionID = EjecutarEscalar(commandsqlSelectExisteOrganizacionEnBD);
-            //}
-            //finally
-            //{
-            //}
-            //return (dimensionID != null);
         }
 
         /// <summary>
@@ -1489,21 +1458,7 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
         /// <returns>TRUE si la organización ya existe, FALSE en caso contrario</returns>
         public bool ExisteOrganizacion(string pNombreOrganizacion)
         {
-            //TODO: hecho
             return mEntityContext.Organizacion.Any(item => item.Nombre.ToUpper().Equals(pNombreOrganizacion.ToUpper()));
-
-            //Object dimensionID;
-            //DbCommand commandsqlSelectExisteOrganizacionEnBD = ObtenerComando(this.sqlSelectExisteOrganizacionEnBD = "SELECT " + IBD.CargarGuid("OrganizacionID") + " FROM Organizacion WHERE (UPPER(Nombre) = UPPER(" + IBD.ToParam("nombreOrganizacion") + "))");
-            //AgregarParametro(commandsqlSelectExisteOrganizacionEnBD, IBD.ToParam("nombreOrganizacion"), DbType.String, pNombreOrganizacion);
-
-            //try
-            //{
-            //    dimensionID = EjecutarEscalar(commandsqlSelectExisteOrganizacionEnBD);
-            //}
-            //finally
-            //{
-            //}
-            //return (dimensionID != null);
         }
 
         /// <summary>
@@ -1556,40 +1511,18 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
         /// <returns>Dataset de organizaciones</returns>
         public DataWrapperOrganizacion ObtenerOrganizacionesDePersona(Guid pPersonaID)
         {
-            //TODO: hecho
             DataWrapperOrganizacion dataWrapperOrganizacion = new DataWrapperOrganizacion();
 
-            var consulta = mEntityContext.Organizacion.JoinPerfil().Where(item => !item.Perfil.Eliminado && item.Perfil.PersonaID.Value.Equals(pPersonaID)).Select(item => item.Organizacion);
-            dataWrapperOrganizacion.ListaOrganizacion = consulta.ToList().Distinct().ToList();
-            //OrganizacionDS organizacionDS = new OrganizacionDS();
-
-            //Organizacion
-            //Obtener las organizaciones de tipo clase en las que participa el usuario PersonaID.
-
-            //DbCommand cmdObtenerOrganizaciones = ObtenerComando(SelectPesadoOrganizacion.Replace("SELECT ", "SELECT DISTINCT ") + "  INNER JOIN  Perfil ON Organizacion.Organizacionid = Perfil.OrganizacionID WHERE Perfil.Eliminado = 0 AND Perfil.PersonaID = " + IBD.GuidValor(pPersonaID));
-            //CargarDataSet(cmdObtenerOrganizaciones, organizacionDS, "Organizacion");
-
-            ////OrganizacionEmpresa
-            //DbCommand cmdObtenerOrganizacionesEmpresa = ObtenerComando(SelectOrganizacionEmpresa + " INNER JOIN PersonaVinculoOrganizacion ON PersonaVinculoOrganizacion.OrganizacionID = OrganizacionEmpresa.OrganizacionID WHERE PersonaVinculoOrganizacion.PersonaID = " + IBD.GuidValor(pPersonaID));
+			dataWrapperOrganizacion.ListaOrganizacion = mEntityContext.Organizacion.JoinPerfil().Where(item => !item.Perfil.Eliminado && item.Perfil.PersonaID.Value.Equals(pPersonaID)).Select(item => item.Organizacion).Distinct().ToList();             
+            
             dataWrapperOrganizacion.ListaOrganizacionEmpresa = mEntityContext.OrganizacionEmpresa.Join(mEntityContext.PersonaVinculoOrganizacion, orgEmpresa => orgEmpresa.OrganizacionID, persVinOrg => persVinOrg.OrganizacionID, (orgEmpresa, persVinOrg) => new
             {
                 OrganizacionEmpresa = orgEmpresa,
                 PersonaVinculoOrganizacion = persVinOrg
             }).Select(item => item.OrganizacionEmpresa).ToList();
-            //CargarDataSet(cmdObtenerOrganizacionesEmpresa, organizacionDS, "OrganizacionEmpresa");
-
-            //// OrganizacionClase
-            //DbCommand cmdObtenerOrganizacionesClase = ObtenerComando(sqlSelectOrganizacionesClaseDePersonaSinPersonaVinculadaOrganizacion);
-            //AgregarParametro(cmdObtenerOrganizacionesClase, IBD.ToParam("PersonaID"), IBD.TipoGuidToString(DbType.Guid), IBD.ValorDeGuid(pPersonaID));
-            //CargarDataSet(cmdObtenerOrganizacionesClase, organizacionDS, "OrganizacionClase");
 
             dataWrapperOrganizacion.ListaPersonaVinculoOrganizacion = mEntityContext.PersonaVinculoOrganizacion.Where(item => item.PersonaID.Equals(pPersonaID)).ToList();
 
-            ////PersonaVinculoOrganizacion
-            //DbCommand commandObtenerPersonaVinculoOrganizacion = ObtenerComando(SelectPesadoPersonaVinculoOrganizacion + " WHERE PersonaVinculoOrganizacion.PersonaID = " + IBD.GuidValor(pPersonaID));
-            //CargarDataSet(commandObtenerPersonaVinculoOrganizacion, organizacionDS, "PersonaVinculoOrganizacion");
-
-            //return organizacionDS;
             return dataWrapperOrganizacion;
         }
 
@@ -1600,49 +1533,16 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
         /// <returns>Dataset de organizaciones con las organizaciones y sus vínculos con personas</returns>
         public DataWrapperOrganizacion ObtenerOrganizacionesDeListaPersona(List<Guid> pListaPersonaID)
         {
-            //TODO: hecho
             DataWrapperOrganizacion dataWrapperOrganizacion = new DataWrapperOrganizacion();
 
             if (pListaPersonaID.Count > 0)
             {
-                dataWrapperOrganizacion.ListaOrganizacion = mEntityContext.Organizacion.JoinPersonaVinculoOrganizacion().Where(item => pListaPersonaID.Contains(item.PersonaVinculoOrganizacion.PersonaID)).Select(item => item.Organizacion).ToList().Distinct().ToList(); //.ToList().Distinct().ToList() cambiado por: Falla en oracle al acceder al login (Se esperaba - y se ha obtnido BLOB)
+                dataWrapperOrganizacion.ListaOrganizacion = mEntityContext.Organizacion.JoinPersonaVinculoOrganizacion().Where(item => pListaPersonaID.Contains(item.PersonaVinculoOrganizacion.PersonaID)).Select(item => item.Organizacion).Distinct().ToList();
 
                 dataWrapperOrganizacion.ListaPersonaVinculoOrganizacion = mEntityContext.Organizacion.JoinPersonaVinculoOrganizacion().Where(item => pListaPersonaID.Contains(item.PersonaVinculoOrganizacion.PersonaID)).Select(item => item.PersonaVinculoOrganizacion).ToList();
             }
 
             return dataWrapperOrganizacion;
-
-            //OrganizacionDS organizacionDS = new OrganizacionDS();
-
-            //if (pListaPersonaID.Count > 0)
-            //{
-            //    string concatenador = "";
-            //    string where = " WHERE ";
-
-            //    foreach (Guid id in pListaPersonaID)
-            //    {
-            //        where += concatenador + "(PersonaVinculoOrganizacion.PersonaID = " + IBD.GuidValor(id) + ")";
-            //        concatenador = " OR ";
-            //    }
-
-            //    // Organizacion
-            //    DbCommand commandObtenerOrganizaciones = ObtenerComando(SelectLigeroOrganizacion.Replace("SELECT", "SELECT DISTINCT") + " INNER JOIN PersonaVinculoOrganizacion ON PersonaVinculoOrganizacion.OrganizacionID = Organizacion.OrganizacionID " + where);
-            //    CargarDataSet(commandObtenerOrganizaciones, organizacionDS, "Organizacion");
-
-            //    //PersonaVinculoOrganizacion
-            //    DbCommand commandObtenerPersonaVinculoOrganizacion = ObtenerComando(SelectLigeroPersonaVinculoOrganizacion + where);
-            //    CargarDataSet(commandObtenerPersonaVinculoOrganizacion, organizacionDS, "PersonaVinculoOrganizacion");
-
-            //    //OrganizacionEmpresa
-            //    DbCommand commandObtenerOrganizacionesEmpresa = ObtenerComando(SelectOrganizacionEmpresa.Replace("SELECT", "SELECT DISTINCT") + " INNER JOIN PersonaVinculoOrganizacion ON PersonaVinculoOrganizacion.OrganizacionID = OrganizacionEmpresa.OrganizacionID " + where);
-            //    CargarDataSet(commandObtenerOrganizacionesEmpresa, organizacionDS, "OrganizacionEmpresa");
-
-            //    //OrganizacionClase
-            //    DbCommand commandObtenerOrganizacionesClase = ObtenerComando(SelectOrganizacionClase.Replace("SELECT", "SELECT DISTINCT") + " INNER JOIN PersonaVinculoOrganizacion ON PersonaVinculoOrganizacion.OrganizacionID = OrganizacionClase.OrganizacionID " + where);
-            //    CargarDataSet(commandObtenerOrganizacionesClase, organizacionDS, "OrganizacionClase");
-
-            //}
-            //return organizacionDS;
         }
 
         /// <summary>
@@ -1652,23 +1552,7 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
         /// <returns>Identificador de Organizacion</returns>
         public Guid ObtenerOrganizacionesIDPorNombre(string pNombreCorto)
         {
-            AD.EntityModel.Models.OrganizacionDS.Organizacion organizacionID = mEntityContext.Organizacion.Where(item => item.NombreCorto.Equals(pNombreCorto)).FirstOrDefault();
-            //TODO: hecho
             return mEntityContext.Organizacion.Where(item => item.NombreCorto.Equals(pNombreCorto)).Select(item => item.OrganizacionID).FirstOrDefault();
-
-            //DbCommand commandsqlSelectOrganizacionIDPorNombre = ObtenerComando(this.this.sqlSelectOrganizacionIDPorNombreOrg = "SELECT Organizacion.OrganizacionID FROM Organizacion WHERE UPPER(Organizacion.NombreCorto) = UPPER(" + IBD.ToParam("nombreCorto") + ")");
-            //AgregarParametro(commandsqlSelectOrganizacionIDPorNombre, IBD.ToParam("nombreCorto"), DbType.String, pNombreCorto);
-
-            //object resultado = EjecutarEscalar(commandsqlSelectOrganizacionIDPorNombre);
-
-            //if (resultado != null)
-            //{
-            //    return (Guid)resultado;
-            //}
-            //else
-            //{
-            //    return Guid.Empty;
-            //}
         }
 
         /// <summary>

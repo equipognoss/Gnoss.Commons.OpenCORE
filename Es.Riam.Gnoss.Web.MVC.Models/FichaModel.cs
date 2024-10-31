@@ -195,6 +195,10 @@ namespace Es.Riam.Gnoss.Web.MVC.Models
         public DateTime PublishDate { get; set; }
 
         /// <summary>
+        /// Fecha de modificación del recurso
+        /// </summary>
+        public DateTime ModificationDate { get; set; }
+        /// <summary>
         /// Url a la ficha completa del recrso
         /// </summary>
         public string CompletCardLink { get; set; }

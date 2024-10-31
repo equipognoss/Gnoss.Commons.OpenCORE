@@ -43,7 +43,7 @@ namespace Es.Riam.Gnoss.CL.ServiciosGenerales
         public DataWrapperPersona ObtenerPersonasDeOrganizacionCargaLigera(Guid pOrganizacionID)
         {
             mEntityContext.UsarEntityCache = true;
-            string rawKey = pOrganizacionID.ToString(); ;
+            string rawKey = pOrganizacionID.ToString();
 
             // Compruebo si está en la caché
             DataWrapperPersona dataWrapperPersona = ObtenerObjetoDeCache(rawKey) as DataWrapperPersona;

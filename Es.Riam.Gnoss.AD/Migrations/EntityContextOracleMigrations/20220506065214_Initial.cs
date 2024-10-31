@@ -2370,7 +2370,7 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextOracleMigrations
                 {
                     ComponenteID = table.Column<Guid>(type: "RAW(16)", nullable: false),
                     TipoPropiedadComponente = table.Column<short>(type: "NUMBER(5)", nullable: false),
-                    ValorPropiedad = table.Column<string>(type: "NVARCHAR2(2000)", nullable: false)
+                    ValorPropiedad = table.Column<string>(type: "NCLOB", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -3309,7 +3309,7 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextOracleMigrations
                         name: "FK_CategoriaProyectoCookie_Proyecto_ProyectoID_OrganizacionID",
                         columns: x => new { x.ProyectoID, x.OrganizacionID },
                         principalTable: "Proyecto",
-                        principalColumns: new[] { "OrganizacionID", "ProyectoID" },
+                        principalColumns: new[] { "ProyectoID", "OrganizacionID" },
                         onDelete: ReferentialAction.Restrict);
                 });
 
@@ -4875,7 +4875,7 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextOracleMigrations
                         name: "FK_ProyectoCookie_Proyecto_ProyectoID_OrganizacionID",
                         columns: x => new { x.ProyectoID, x.OrganizacionID },
                         principalTable: "Proyecto",
-                        principalColumns: new[] { "OrganizacionID", "ProyectoID" },
+                        principalColumns: new[] {"ProyectoID", "OrganizacionID" },
                         onDelete: ReferentialAction.Restrict);
                 });
 

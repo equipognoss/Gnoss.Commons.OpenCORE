@@ -944,15 +944,7 @@ namespace Es.Riam.Gnoss.Elementos.Documentacion
         {
             get
             {
-                if (FilaDocumento.CreadorID.HasValue)
-                {
-                    return FilaDocumento.CreadorID.Value;
-                }
-                else
-                {
-                    return Guid.Empty;
-                }
-
+                return FilaDocumento.CreadorID;
             }
             set
             {
@@ -1442,9 +1434,9 @@ namespace Es.Riam.Gnoss.Elementos.Documentacion
             {
                 try
                 {
-                    if (GestorDocumental != null && FilaDocumento.CreadorID.HasValue && GestorDocumental.GestorIdentidades != null && GestorDocumental.GestorIdentidades.ListaIdentidades != null && FilaDocumento != null && GestorDocumental.GestorIdentidades.ListaIdentidades.ContainsKey(FilaDocumento.CreadorID.Value) && GestorDocumental.GestorIdentidades.ListaIdentidades[FilaDocumento.CreadorID.Value].OrganizacionID.HasValue)
+                    if (GestorDocumental != null && GestorDocumental.GestorIdentidades != null && GestorDocumental.GestorIdentidades.ListaIdentidades != null && FilaDocumento != null && GestorDocumental.GestorIdentidades.ListaIdentidades.ContainsKey(FilaDocumento.CreadorID) && GestorDocumental.GestorIdentidades.ListaIdentidades[FilaDocumento.CreadorID].OrganizacionID.HasValue)
                     {
-                        return GestorDocumental.GestorIdentidades.ListaIdentidades[FilaDocumento.CreadorID.Value].OrganizacionID.Value;
+                        return GestorDocumental.GestorIdentidades.ListaIdentidades[FilaDocumento.CreadorID].OrganizacionID.Value;
                     }
                     else
                     {

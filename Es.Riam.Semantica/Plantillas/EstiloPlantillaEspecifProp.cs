@@ -431,6 +431,7 @@ namespace Es.Riam.Semantica.Plantillas
             CapturarFlash = pEstiloRef.CapturarFlash;
             HtmlObjeto = pEstiloRef.HtmlObjeto;
             NuevaPestanya = pEstiloRef.NuevaPestanya;
+            PermitirScript = pEstiloRef.PermitirScript;
             GrafoDependiente = pEstiloRef.GrafoDependiente;
             TipoEntDependiente = pEstiloRef.TipoEntDependiente;
             PropDependiente = pEstiloRef.PropDependiente;
@@ -902,7 +903,10 @@ namespace Es.Riam.Semantica.Plantillas
                 mAtrNombre = value;
             }
         }
-
+        /// <summary>
+        /// Si la propiedad puede o no permitir scripts para evitar xss
+        /// </summary>
+        public bool PermitirScript { get; set; }
         /// <summary>
         /// Nombre de la propiedad en lectura.
         /// </summary>

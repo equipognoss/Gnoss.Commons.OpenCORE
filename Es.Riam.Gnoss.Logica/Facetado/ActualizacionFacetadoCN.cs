@@ -322,19 +322,6 @@ namespace Es.Riam.Gnoss.Logica.Facetado
             return mActualizacionFacetadoAD.ObtieneIDIdentidadOrg(pProyectoID, pOrganizacionID, pTraerEliminados);
         }
 
-        public void ObtieneInformacionPrivacidadRecursoMyGnoss(List<Guid> pListaIdRecursos)
-        {
-            mActualizacionFacetadoAD.ObtieneInformacionPrivacidadRecursoMyGnoss(pListaIdRecursos);
-        }
-
-        public void ObtieneInformacionPrivacidadRecursoMyGnoss(FacetaDS FacetaDS, Guid pRecursoId)
-        {
-            List<Guid> lista = new List<Guid>();
-            lista.Add(pRecursoId);
-
-            mActualizacionFacetadoAD.ObtieneInformacionPrivacidadRecursoMyGnoss(lista);
-        }
-
         public List<QueryTriples> ObtieneInformacionComunRecurso(List<Guid> pListaIdrec, Guid pIdproy)
         {
             return mActualizacionFacetadoAD.ObtieneInformacionComunRecurso(pListaIdrec, pIdproy);

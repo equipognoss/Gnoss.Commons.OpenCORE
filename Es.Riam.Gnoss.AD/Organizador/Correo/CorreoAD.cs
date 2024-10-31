@@ -202,8 +202,9 @@ namespace Es.Riam.Gnoss.AD.Organizador.Correo
             Dictionary<Guid, string> nombres = new Dictionary<Guid, string>();
 
             bool esOracle = (ConexionMaster is OracleConnection);
+			bool esPostgress = (ConexionMaster is NpgsqlConnection);
 
-            if (pListaIdentidades.Count > 0)
+			if (pListaIdentidades.Count > 0)
             {
                 string consultaNombres = $"SELECT {IBD.CargarGuid("\"Identidad\".\"IdentidadID\"")}, CASE WHEN \"Perfil\".\"PersonaID\" IS NULL THEN {IBD.CadenaVacia} ELSE \"Perfil\".\"NombrePerfil\" END {IBD.Concatenador} CASE WHEN \"Perfil\".\"PersonaID\" IS NULL OR \"Perfil\".\"OrganizacionID\" IS NULL THEN {IBD.CadenaVacia} ELSE ' @ ' END {IBD.Concatenador} CASE WHEN \"Perfil\".\"NombreOrganizacion\" IS NOT NULL THEN  \"Perfil\".\"NombreOrganizacion\" ELSE {IBD.CadenaVacia} END FROM \"Perfil\" INNER JOIN \"Identidad\" ON \"Identidad\".\"PerfilID\" = \"Perfil\".\"PerfilID\" WHERE \"IdentidadID\" IN(";
 
@@ -218,7 +219,7 @@ namespace Es.Riam.Gnoss.AD.Organizador.Correo
                 // Identidades que han enviado correos al usuario
                 DbCommand commandSQLNombres = ObtenerComando(consultaNombres);
                 DataSet dataset = new DataSet();
-                CargarDataSet(commandSQLNombres, dataset, "Nombres", null, esOracle);
+                CargarDataSet(commandSQLNombres, dataset, "Nombres", null, esOracle, esPostgress);
 
                 foreach (DataRow fila in dataset.Tables["nombres"].Rows)
                 {
@@ -494,7 +495,7 @@ namespace Es.Riam.Gnoss.AD.Organizador.Correo
         {
             if (pNombreTabla.Contains("CorreoInterno_"))
             {
-                DbCommand cmdCrearTabla = ObtenerComando($"CREATE TABLE \"{pNombreTabla}\" (\"CorreoID\" RAW(16) NOT NULL, \"Autor\" RAW(16) NOT NULL, , \"Destinatario\" RAW(16) NOT NULL,\"Asunto\" NVARCHAR2(255) NOT NULL, \"Cuerpo\" NCLOB NULL, \"Fecha\" TIMESTAMP(7) NOT NULL, \"Leido\" NUMBER(1) NOT NULL, \"EnPapelera\" NUMBER(1) NOT NULL, \"Eliminado\" NUMBER(1) NOT NULL, \"DestinatariosID\" NCLOB NULL, \"DestinatariosNombres\" NCLOB NULL, \"ConversacionID\" RAW(16) NOT NULL, PRIMARY KEY(\"CorreoID\", \"Autor\", \"Destinatario\"))");
+                DbCommand cmdCrearTabla = ObtenerComando($"CREATE TABLE \"{pNombreTabla}\" (\"CorreoID\" RAW(16) NOT NULL, \"Autor\" RAW(16) NOT NULL, \"Destinatario\" RAW(16) NOT NULL,\"Asunto\" NVARCHAR2(255) NOT NULL, \"Cuerpo\" NCLOB NULL, \"Fecha\" TIMESTAMP(7) NOT NULL, \"Leido\" NUMBER(1) NOT NULL, \"EnPapelera\" NUMBER(1) NOT NULL, \"Eliminado\" NUMBER(1) NOT NULL, \"DestinatariosID\" NCLOB NULL, \"DestinatariosNombres\" NCLOB NULL, \"ConversacionID\" RAW(16) NOT NULL, PRIMARY KEY(\"CorreoID\", \"Autor\", \"Destinatario\"))");
 
                 ActualizarBaseDeDatos(cmdCrearTabla, true, true, false, mEntityContextBASE);
             }
@@ -508,7 +509,7 @@ namespace Es.Riam.Gnoss.AD.Organizador.Correo
         {
             if (pNombreTabla.Contains("CorreoInterno_"))
             {
-                DbCommand cmdCrearTabla = ObtenerComando($"CREATE TABLE \"{pNombreTabla}\" (\"CorreoID\" UUID NOT NULL, \"Autor\" UUID NOT NULL, , \"Destinatario\" UUID NOT NULL,\"Asunto\" character varying(255) NOT NULL, \"Cuerpo\" text NULL, \"Fecha\" timestamp without time zone NOT NULL, \"Leido\" boolean NOT NULL, \"EnPapelera\" boolean NOT NULL, \"Eliminado\" boolean NOT NULL, \"DestinatariosID\" text NULL, \"DestinatariosNombres\" text NULL, \"ConversacionID\" UUID NOT NULL, PRIMARY KEY(\"CorreoID\", \"Autor\", \"Destinatario\"))");
+                DbCommand cmdCrearTabla = ObtenerComando($"CREATE TABLE \"{pNombreTabla}\" (\"CorreoID\" UUID NOT NULL, \"Autor\" UUID NOT NULL, \"Destinatario\" UUID NOT NULL,\"Asunto\" character varying(255) NOT NULL, \"Cuerpo\" text NULL, \"Fecha\" timestamp without time zone NOT NULL, \"Leido\" boolean NOT NULL, \"EnPapelera\" boolean NOT NULL, \"Eliminado\" boolean NOT NULL, \"DestinatariosID\" text NULL, \"DestinatariosNombres\" text NULL, \"ConversacionID\" UUID NOT NULL, PRIMARY KEY(\"CorreoID\", \"Autor\", \"Destinatario\"))");
                 ActualizarBaseDeDatos(cmdCrearTabla, true, false, true, mEntityContextBASE);
                 TerminarTransaccion(true);
             }

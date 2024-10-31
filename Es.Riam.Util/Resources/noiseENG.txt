@@ -47,6 +47,7 @@ y
 z
 be
 $
+&
 because
 been
 before

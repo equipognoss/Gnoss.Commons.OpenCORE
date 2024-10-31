@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using System.Xml;
- 
+using Es.Riam.Util;
 using SemWeb;
 using SemWeb.Query;
 using SemWeb.Util;
@@ -247,7 +247,9 @@ namespace SemWeb.Remote {
 				using (Stream stream = rq.GetRequestStream())
 					stream.Write(data, 0, data.Length);
 			}
-			
+
+			rq.Headers.Add("UserAgent", UtilWeb.GenerarUserAgent());
+
 			System.Net.HttpWebResponse resp = (System.Net.HttpWebResponse)rq.GetResponse();
 			try {
 				string mimetype = resp.ContentType;

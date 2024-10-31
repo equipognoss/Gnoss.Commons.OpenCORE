@@ -1,4 +1,5 @@
 ﻿using ClosedXML.Excel;
+using Es.Riam.Gnoss.Util.Configuracion;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -12,7 +13,7 @@ namespace Es.Riam.Gnoss.Traducciones
     public class TraduccionJavaScript
     {
         //hecho
-        public void JavascriptToExcel(XLWorkbook mExcel, Dictionary<string, Stream> listaFicheros)
+        public void JavascriptToExcel(XLWorkbook mExcel, Dictionary<string, Stream> listaFicheros, ConfigService configService)
         {
             string nombreHoja = "JavaScript";
             Dictionary<string, Dictionary<string, string>> mDiccionario = new Dictionary<string, Dictionary<string, string>>();
@@ -50,7 +51,7 @@ namespace Es.Riam.Gnoss.Traducciones
                 }
             }
 
-            UtilFicheros.ConstruirExcel(mExcel, nombreHoja, mDiccionario);
+            UtilFicheros.ConstruirExcel(mExcel, nombreHoja, mDiccionario, configService);
         }
 
         public void ExcelToJavascript(DataTable table, Dictionary<string, MemoryStream> listMStream)

@@ -154,6 +154,11 @@ namespace Es.Riam.Semantica.OWL
         /// </summary>
         private string mPropiedadNodoTesSemantico;
 
+        /// <summary>
+        /// Nos indica si hemos procesado las propiedades que había que ordenar
+        /// </summary>
+        private bool mProcesadoOrdenEntidad;
+
         #endregion
 
         #region Constructores
@@ -353,7 +358,7 @@ namespace Es.Riam.Semantica.OWL
         {
             get
             {
-                return this.mTipoEntidad.Replace("/", "_").Replace(":", "_").Replace(".", "_").Replace("#", "_"); ;
+                return this.mTipoEntidad.Replace("/", "_").Replace(":", "_").Replace(".", "_").Replace("#", "_");
             }
         }
 
@@ -474,6 +479,21 @@ namespace Es.Riam.Semantica.OWL
 
                 return this.mTipoEntidadRelativo;
             }
+        }
+
+        /// <summary>
+        /// Nos indica si hemos procesado las propiedades que había que ordenar
+        /// </summary>
+        public bool ProcesadoOrdenEntidad 
+        { 
+            get 
+            { 
+                return mProcesadoOrdenEntidad; 
+            } 
+            set 
+            { 
+                mProcesadoOrdenEntidad = value; 
+            } 
         }
 
         /// <summary>

@@ -5,7 +5,9 @@ using Es.Riam.Gnoss.AD.EntityModel.Models;
 using Es.Riam.Gnoss.AD.EntityModel.Models.ProyectoDS;
 using Es.Riam.Gnoss.AD.Virtuoso;
 using Es.Riam.Gnoss.CL;
+using Es.Riam.Gnoss.CL.ParametrosAplicacion;
 using Es.Riam.Gnoss.CL.ServiciosGenerales;
+using Es.Riam.Gnoss.Logica.ParametroAplicacion;
 using Es.Riam.Gnoss.Logica.ServiciosGenerales;
 using Es.Riam.Gnoss.Util.Configuracion;
 using Es.Riam.Gnoss.Util.General;
@@ -65,8 +67,9 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
             ContextoModel gadget = CrearGadget(filaGadget);
 
             List<IntegracionContinuaPropiedad> propiedadesIntegracionContinua = new List<IntegracionContinuaPropiedad>();
+			ParametroAplicacionCL paramCL = new ParametroAplicacionCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mServicesUtilVirtuosoAndReplication);
 
-            if (filaGadget.Tipo == (short)TipoGadget.RecursosContextos)
+			if (filaGadget.Tipo == (short)TipoGadget.RecursosContextos)
             {
                 //filaGadget.GetProyectoGadgetContextoRows();
                 ProyectoGadgetContexto filasContexto = filaGadget.ProyectoGadgetContexto;
@@ -81,15 +84,15 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
                 }
             }
 
-            if (filaGadget.Tipo == (short)TipoGadget.HtmlIncrustado) 
+            if (filaGadget.Tipo == (short)TipoGadget.HtmlIncrustado)
             {
-                if(mConfigService.ObtenerListaIdiomasDictionary().Count > 1)
+                if (paramCL.ObtenerListaIdiomasDictionary().Count > 1)
                 {
-                    ProyectoCN proyectoCN = new ProyectoCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);                    
+                    ProyectoCN proyectoCN = new ProyectoCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
                     List<ProyectoGadgetIdioma> listaProyectoGadgetIdioma = proyectoCN.ObtenerProyectoGadgetIdiomaDeGadget(filaGadget.GadgetID);
-                    if(listaProyectoGadgetIdioma != null && listaProyectoGadgetIdioma.Count > 0)
+                    if (listaProyectoGadgetIdioma != null && listaProyectoGadgetIdioma.Count > 0)
                     {
-                        foreach(ProyectoGadgetIdioma proyectoGadgetIdioma in listaProyectoGadgetIdioma)
+                        foreach (ProyectoGadgetIdioma proyectoGadgetIdioma in listaProyectoGadgetIdioma)
                         {
                             gadget.Contenido += $"{proyectoGadgetIdioma.Contenido}@{proyectoGadgetIdioma.Idioma}|||";
                         }
@@ -550,22 +553,46 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
                     try
                     {
                         string nombrecorto = contexto.ComunidadOrigen;
+                        Guid proyectoOrigenID = Guid.Empty;
                         ProyectoCL proyCL = new ProyectoCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mVirtuosoAD, mServicesUtilVirtuosoAndReplication);
                         if (Uri.IsWellFormedUriString(contexto.ComunidadOrigen, UriKind.RelativeOrAbsolute) && nombrecorto.IndexOf('/') != -1)
                         {
-                            nombrecorto = contexto.ComunidadOrigen.Substring(0, contexto.ComunidadOrigen.LastIndexOf("/"));
-                            nombrecorto = nombrecorto.Substring(nombrecorto.LastIndexOf("/") + 1);                            
+
+                            ParametroAplicacionCN paramCN = new ParametroAplicacionCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+                            Guid? proyectoConexion = mConfigService.ObtenerProyectoConexion();
+                            if (proyectoConexion == null || proyectoConexion.Equals(Guid.Empty))
+                            {
+                                string valor = paramCN.ObtenerParametroAplicacion(ProyectoSeleccionado.UrlPropia(IdiomaUsuario));
+
+                                if (!string.IsNullOrEmpty(valor))
+                                {
+                                    proyectoConexion = new Guid(valor);
+                                }
+                            }
+                            if (proyectoConexion != null && !contexto.ComunidadOrigen.Contains("comunidad"))
+                            {
+                                proyectoOrigenID = proyectoConexion.Value;
+                            }
+                            else
+                            {
+                                nombrecorto = contexto.ComunidadOrigen.Substring(0, contexto.ComunidadOrigen.LastIndexOf("/"));
+                                nombrecorto = nombrecorto.Substring(nombrecorto.LastIndexOf("/") + 1);
+                            }
                         }
 
-                        Guid proyectoOrigenID = proyCL.ObtenerProyectoIDPorNombreCorto(nombrecorto);                        
-                        if(proyectoOrigenID.Equals(Guid.Empty))
+                        if (proyectoOrigenID.Equals(Guid.Empty))
+                        {
+                            proyectoOrigenID = proyCL.ObtenerProyectoIDPorNombreCorto(nombrecorto);
+                        }
+
+                        if (proyectoOrigenID.Equals(Guid.Empty))
                         {
                             errores = $"La comunidad origen {nombrecorto} no existe";
                         }
                         else
                         {
                             ListaProyectosOrigen.Add(contexto.ComunidadOrigen, proyectoOrigenID);
-                        }                        
+                        }
                     }
                     catch
                     {
@@ -719,7 +746,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
             {
                 pGadgetBD.NombreCorto = pGadgetVista.ShortName;
             }
-                        
+
             if (pGadgetVista.TipoGadget == TipoGadget.CMS)
             {
                 pGadgetBD.CargarPorAjax = pGadgetVista.Ajax;
@@ -770,7 +797,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
                                 mEntityContext.ProyectoGadgetIdioma.Add(proyectoGadgetIdioma);
                                 DataWrapperProyecto.ListaProyectoGadgetIdioma.Add(proyectoGadgetIdioma);
                             }
-                            else if(proyectoGadgetIdioma != null)
+                            else if (proyectoGadgetIdioma != null)
                             {
                                 proyectoGadgetIdioma.Contenido = listaContenidoMultiIdioma[idioma];
                             }

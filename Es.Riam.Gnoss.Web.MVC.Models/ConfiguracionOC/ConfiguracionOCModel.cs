@@ -89,7 +89,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Models.ConfiguracionOC
                     {
 						range = dataTypeProperties.Where(x => x.About.Equals(xmlProperty.ID)).Select(x => x.Range.Resource).FirstOrDefault();
 					}
-                    catch (Exception e)
+                    catch
                     {
                         //La propiedad no tiene rango definido
                         range = "";

@@ -1,4 +1,5 @@
 ﻿using ClosedXML.Excel;
+using Es.Riam.Gnoss.Util.Configuracion;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -84,7 +85,7 @@ namespace Es.Riam.Gnoss.Traducciones
             }
         }
 
-        public void XmlToExcelCore(Dictionary<string, Stream> pFicheros, XLWorkbook mExcel)
+        public void XmlToExcelCore(Dictionary<string, Stream> pFicheros, XLWorkbook mExcel, ConfigService configService)
         {
             string nombreHoja = "Core";
             Dictionary<string, Dictionary<string, string>> mDiccionario = new Dictionary<string, Dictionary<string, string>>();
@@ -115,7 +116,7 @@ namespace Es.Riam.Gnoss.Traducciones
                 }
             }
 
-            UtilFicheros.ConstruirExcel(mExcel, nombreHoja, mDiccionario);
+            UtilFicheros.ConstruirExcel(mExcel, nombreHoja, mDiccionario, configService);
         }
     }
 }

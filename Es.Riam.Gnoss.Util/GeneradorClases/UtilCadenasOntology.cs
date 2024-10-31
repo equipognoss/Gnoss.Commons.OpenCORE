@@ -1,9 +1,6 @@
-﻿using Es.Riam.Gnoss.Util.General;
+﻿using Es.Riam.Util;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Es.Riam.Gnoss.Util.GeneradorClases
 {
@@ -11,7 +8,7 @@ namespace Es.Riam.Gnoss.Util.GeneradorClases
     {
         public static string ObtenerNombreProp(string prop)
         {
-            string nombreProp = prop;
+			string nombreProp = prop;
 
             if (prop.Contains('#'))
             {
@@ -81,7 +78,7 @@ namespace Es.Riam.Gnoss.Util.GeneradorClases
             return nombreProp;
         }
 
-        public static string ObtenerPrefijo(Dictionary<string, string> dicPref, string rang, LoggingService loggingService)
+        public static string ObtenerPrefijo(Dictionary<string, string> dicPref, string rang)
         {
             if (rang.Contains('#'))
             {
@@ -96,8 +93,15 @@ namespace Es.Riam.Gnoss.Util.GeneradorClases
             }
             else if (rang.Contains("/"))
             {
-                return dicPref[rang.Substring(0, rang.LastIndexOf('/') + 1)];
-            }
+                if (dicPref.ContainsKey($"{rang.Substring(0, rang.LastIndexOf('/') + 1)}"))
+                {
+                    return dicPref[rang.Substring(0, rang.LastIndexOf('/') + 1)];
+                }
+                else
+                {
+                    throw new Exception($"La propiedad \"{rang}\" no tiene su namespace correctamente definido en el xml o owl. Revisa dónde y cómo la estás utilizando. (Recuerda si utilizas Protégé todas las propiedades deben utilizar el namespace definido en la ontología)");
+                }              
+            }           
             else
             {
                 if (dicPref.ContainsKey(rang))
@@ -111,10 +115,30 @@ namespace Es.Riam.Gnoss.Util.GeneradorClases
             }
         }
 
-        public static string Tabs(int n)
-        {
-            return new String('\t', n);
+		public static string ObtenerNombreClase(string pNombreEntidad, Dictionary<string, string> dicPref, bool pNecesitaPrefijo)
+		{
+            if (pNombreEntidad.Equals("object"))
+            {
+                return pNombreEntidad;
+            }
+            else if(pNecesitaPrefijo)
+            {
+                string prefijo = UtilCadenas.PrimerCaracterAMayuscula(ObtenerPrefijo(dicPref, pNombreEntidad));
 
+                string nombreEntidad = UtilCadenas.PrimerCaracterAMayuscula(ObtenerNombreProp(pNombreEntidad));
+
+                return $"{prefijo}_{nombreEntidad}";
+            }
+            else
+            {
+                return UtilCadenas.PrimerCaracterAMayuscula(ObtenerNombreProp(pNombreEntidad));
+			}
+		}
+
+
+		public static string Tabs(int n)
+        {
+            return new string('\t', n);
         }
     }
 }

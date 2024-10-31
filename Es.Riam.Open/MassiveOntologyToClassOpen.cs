@@ -18,7 +18,7 @@ namespace Es.Riam.Open
         {
         }
 
-        public override void CrearToAcidData(bool esPrimaria, ElementoOntologia pEntidad, Ontologia ontologia, StringBuilder Clase, string nombrePropDescripcion, string nombrePropTitulo, string nombrePropTituloEntero, Dictionary<string, bool> propListiedadesMultidioma, List<ObjetoPropiedad> listaObjetosPropiedad, Dictionary<Propiedad, bool> dicPropiedadMultiidiomaFalse)
+        public override void CrearToAcidData(bool esPrimaria, ElementoOntologia pEntidad, Ontologia ontologia, StringBuilder Clase, string nombrePropDescripcion, string nombrePropTitulo, string nombrePropTituloEntero, string pNombrePropDescripcionEntero, Dictionary<string, bool> propListiedadesMultidioma, List<ObjetoPropiedad> listaObjetosPropiedad, Dictionary<Propiedad, bool> dicPropiedadMultiidiomaFalse)
         {
             
         }

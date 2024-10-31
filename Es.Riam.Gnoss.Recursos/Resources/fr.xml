@@ -1,6 +1,78 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Resources language="French" code="fr">
 	<page name="COMMON">
+		<Resource tag="DESPLEGAR">Déplier</Resource>
+		<Resource tag="CARGANDO">Chargement...</Resource>
+		<Resource tag="VISUALIZAR">Visualiser</Resource>
+		<Resource tag="SICONTINUASDESACTIVARASELREGISTROAUTOMATICOPARAESTACOMUNIDA">Si vous continuez, vous désactiverez l'enregistrement automatique pour cette communauté.</Resource>
+		<Resource tag="SICONTINUASACTIVARASELREGISTROAUTOMATICOYTODOSLOSUSUARIOSDE">Si vous continuez, vous activerez l'enregistrement automatique et tous les utilisateurs de l'organisation feront partie de cette communauté.</Resource>
+		<Resource tag="ABANDONARCOMUNIDAD">Quitter la communauté</Resource>
+		<Resource tag="SICONTINUASLAORGANIZACIONABANDONARALACOMUNIDAD">Si vous continuez, l'organisation quittera la communauté.</Resource>
+		<Resource tag="DESACTIVARREGISTROAUTOMATICO">Désactiver l'enregistrement automatique</Resource>
+		<Resource tag="DESVINCULAR">Dissocier</Resource>
+		<Resource tag="URLDELDOCUMENTODESHAREPOINT">URL du document SharePoint</Resource>
+		<Resource tag="TODOSLOSDERECHOSRESERVADOS">Tous droits réservés</Resource>
+		<Resource tag="IDIOMA">Langue</Resource>
+		<Resource tag="CONFIGURACIONDELECOSISTEMA">Paramètres de l'écosystème</Resource>
+		<Resource tag="URLDELRECURSO">URL de la ressource</Resource>
+		<Resource tag="DESEASDESBLOQUEARLOSCOMENTARIOS">Souhaitez-vous débloquer les commentaires?</Resource>
+		<Resource tag="DESEASBLOQUEARLOSCOMENTARIOS">Souhaitez-vous bloquer les commentaires?</Resource>
+		<Resource tag="DESEASDESVINCULARDELDOCUMENTOACTUALELRECURSO@1@">Souhaitez-vous dissocier la ressource @1@ du document actuel?</Resource>
+		<Resource tag="CREARUNACOMUNIDAD">Créer une communauté</Resource>
+		<Resource tag="NOMBREDELMIEMBRO">Nom du membre</Resource>
+		<Resource tag="APELLIDOSDELMIEMBRO">Nom de famille du membre</Resource>
+		<Resource tag="MOSTRARSOLOCOMUNIDADESENLASQUEPARTICIPA">Afficher uniquement les communautés auxquelles le membre participe</Resource>
+		<Resource tag="CORREOQUESEASOCIARAALACUENTADELNUEVOMIEMBRO">E-mail à associer au compte du nouveau membre</Resource>
+		<Resource tag="CONTRASEÑADEACCESOASUCUENTA">Mot de passe pour accéder au compte</Resource>
+		<Resource tag="MARCARDESMARCARRECURSO">Marquer/démarquer ressource</Resource>
+		<Resource tag="AÑADIRMIEMBRO">Ajouter un membre</Resource>
+		<Resource tag="SELECCIONARORDENDESCENDENTE">Sélectionner l'ordre décroissant</Resource>
+		<Resource tag="SELECCIONARORDENASCENDENTE">Sélectionner l'ordre croissant</Resource>
+		<Resource tag="SELECCIONARORDEN">Sélectionner l'ordre</Resource>
+		<Resource tag="SELECCIONARVISUALIZACION">Sélectionner la visualisation</Resource>
+		<Resource tag="SELECCIONMULTIPLEDECOMENTARIOS">Sélection multiple de commentaires</Resource>
+		<Resource tag="SELECCIONMULTIPLEDEMENSAJES">Sélection multiple de messages</Resource>
+		<Resource tag="MARCAR/DESMARCARMENSAJE">Marquer/démarquer le message</Resource>
+		<Resource tag="MARCARDESMARCARRECURSO">Marquer/démarquer ressource</Resource>
+		<Resource tag="VERRECURSO">Voir la ressource</Resource>
+		<Resource tag="PRESENTACIONDE">Présentation de</Resource>
+		<Resource tag="DESCRIPCIONDELAPRESENTACION">Description de la présentation</Resource>
+		<Resource tag="VIDEODE">Vidéo de</Resource>
+		<Resource tag="DESCRIPCIONDELVIDEO">Description de la vidéo</Resource>
+		<Resource tag="HELEIDOYACEPTOLAS">J'ai lu et j'accepte</Resource>
+		<Resource tag="CONDICIONESDEACCESOYUSO">les conditions d'accès et d'utilisation</Resource>
+		<Resource tag="YLA">ainsi que la </Resource>
+		<Resource tag="POLITICADEPRIVACIDAD">politique de confidentialité</Resource>
+		<Resource tag="INICIARSESIONEN">Se connecter à</Resource>
+		<Resource tag="SITODAVIANOTIENECUENTA">Si vous n'avez pas encore de compte</Resource>
+		<Resource tag="ACTIVACIONDECUENTADEALUMNO">Activation du compte étudiant</Resource>
+		<Resource tag="LOSALUMNOSMENORESDE14AÑOSNECESITANQUESUPADREMADREOTUTORLEGA">Les élèves de moins de 14 ans doivent demander à leur père, leur mère ou leur tuteur légal d'activer leur compte pour accéder aux cours de Didactalia créés par leurs enseignants.</Resource>
+		<Resource tag="GRACIASPORUNIRTEA">merci de vous être joint(e) à</Resource>
+		<Resource tag="DATOSBASICOS">Données de base</Resource>
+		<Resource tag="IMAGENDELUSUARIO">Image de l'utilisateur</Resource>
+		<Resource tag="ABRIRPANELLATERALDEUSUARIO">Ouvrir le panneau latéral de l'utilisateur</Resource>
+		<Resource tag="ENLACEPARAIRAAÑADIRRECURSOS">Lien pour aller à Ajouter des ressources</Resource>
+		<Resource tag="ENLACEPARAIRACREAUNACOMUNIDAD">Lien pour aller à créer une communauté</Resource>
+		<Resource tag="CREAUNACOMUNIDADUNAREDSOCIALDONDEPODRASCOMPARTIRINFORMACION">Créer une communauté, un réseau social où…</Resource>
+		<Resource tag="ENLACEPARAVERTODASLASCOMUNIDADES">Lien pour voir toutes les communautés</Resource>
+		<Resource tag="ENLACEPARAIRALESPACIOPERSONAL">Lien pour accéder à l'espace personnel</Resource>
+		<Resource tag="BUSCAUNGRUPOYPULSAAÑADIR">Recherchez un groupe et appuyez sur AJOUTER</Resource>
+		<Resource tag="BUSCAUNPERFILYPULSAAÑADIR">Recherchez un profil et appuyez sur AJOUTER</Resource>		
+		<Resource tag="INTRODUCETUCORREOELECTRONICO">Entrez votre adresse e-mail</Resource>
+		<Resource tag="INTRODUCETUCONTRASEÑA">Entrez votre mot de passe</Resource>
+		<Resource tag="INICIASESION">Connexion à</Resource>
+		<Resource tag="SITODAVIANOTIENESCUENTA">Si vous n'avez pas encore de compte</Resource>
+		<Resource tag="CORREOELECTRONICO">Adresse e-mail</Resource>
+		<Resource tag="INICIASESIONOREGISTRATE">Connectez-vous ou inscrivez-vous</Resource>
+		<Resource tag="CORREOELECTRONICOALQUESEENVIARAELEMAILDEPRUEBA">Adresse e-mail à laquelle le courrier électronique de test sera envoyé</Resource>
+		<Resource tag="NOSEHAENCONTRADOELPERFILQUEESTABUSCANDO">Le profil que vous recherchez n'a pas été trouvé</Resource>		
+		<Resource tag="DESEASELIMINARELMENSAJESELECCIONADO">Voulez-vous supprimer le message sélectionné?</Resource>		
+		<Resource tag="INTRODUCELOSCORREOSSEPARADOSPORCOMASYHAZCLICENAÑADIR">Entrez les e-mails séparés par des virgules et cliquez sur ajouter</Resource>
+		<Resource tag="NINGUNDESTINATARIOAÑADIDO">Aucun destinataire ajouté...</Resource>
+		<Resource tag="INVITARACOMUNIDAD">Inviter la communauté</Resource>
+		<Resource tag="ANYADIRENMAYUSCULA">Ajouter</Resource>		
+		<Resource tag="INTRODUCEUNAETIQUETAYPULSAAÑADIR">Entrez une étiquette et appuyez sur AJOUTER</Resource>		
+		<Resource tag="INTRODUCEUNAPERSONAY/OGRUPO">Entrez une personne et/ou un groupe</Resource>
 		<Resource tag="BUSQUEDAOC">la recherche de OC</Resource>
 		<Resource tag="RELATEDTO">Relacionado con</Resource>
 		<Resource tag="BASERECURSOS">Ressources</Resource>
@@ -123,6 +195,7 @@
 		<Resource tag="ENVIARINVITACION">Envoyer une invitation</Resource>
 		<Resource tag="SOLICITARCOMUNIDAD">Créer une communauté</Resource>
 		<Resource tag="SOLICITARORGANIZACION">Créer une organisation</Resource>
+		<Resource tag="SOLICITUDES">Demandes</Resource>
 		<Resource tag="CREARWIDGETPERFIL">Créer un widget de mon profil</Resource>
 		<Resource tag="CREARWIDGETCOMUNIDAD">Créez votre widget de contenus</Resource>
 		<Resource tag="CREARWIDGETBUSQUEDA">Créez votre widget de recherche</Resource>
@@ -426,6 +499,7 @@
 		<Resource tag="INTRODUCIRPASSWORD">Introduire mot de passe</Resource>
 	</page>
 	<page name="REGISTRO">
+		<Resource tag="PROVINCIASIMPLE">Province</Resource>
 		<Resource tag="QUEESESTOALUMNO">Que puis-je faire dans@1@?</Resource>
 		<Resource tag="LISTARPERFILCORTO">Tout @1@</Resource>
 		<Resource tag="ACEPTARCONDICIONES2"> de @1@</Resource>
@@ -809,6 +883,23 @@
 		<Resource tag="TODASUACTIVIDAD">toute son activité</Resource>
 		<Resource tag="RECURSOSENCOMUNIDADES">Ressources publiées</Resource>
 		<Resource tag="RECURSOSENESPACIOPERSONAL">Ressources dans votre espace</Resource>
+		<Resource tag="NOSEGUIREN">Ne pas suivre dans :</Resource>
+		<Resource tag="ESTACOMUNIDAD">cette communauté</Resource>
+		<Resource tag="TODASUACTIVIDAD">toute leur activité</Resource>
+		<Resource tag="RECURSOSENCOMUNIDADES">Ressources publiées</Resource>
+		<Resource tag="RECURSOSENESPACIOPERSONAL">Ressources dans votre espace</Resource>
+		<Resource tag="INTRODUCENOMBRE">Entrez votre nom</Resource>
+		<Resource tag="INTRODUCEAPELLIDO">Entrez votre nom de famille</Resource>
+		<Resource tag="INTRODUCEEMAIL">Entrez votre adresse e-mail</Resource>
+		<Resource tag="INTRODUCETWITTER">Entrez votre compte Twitter</Resource>
+		<Resource tag="INTRODUCEFACEBOOK">Entrez votre compte Facebook</Resource>
+		<Resource tag="INTRODUCELINKEDIN">Entrez votre compte LinkedIn</Resource>
+		<Resource tag="INTRODUCEURL">Entrez une URL et ajoutez-la</Resource>
+		<Resource tag="OTROSSTIOSINTERES">Autres sites d'intérêt</Resource>
+		<Resource tag="ADD">Ajouter</Resource>
+		<Resource tag="ELIMINAR">Supprimer</Resource>
+		<Resource tag="ELIMINAREMAILTUTOR">Étant majeur, vous pouvez supprimer votre E-mail de Tuteur.</Resource>
+		<Resource tag="COMPONENTEGUARDADOOK">Enregistré avec succès</Resource>
 	</page>
 	<page name="PERFILIMPORTARDELICIOUS">
 		<Resource tag="TITULO">Importez vos marques de Delicious sur @1@</Resource>
@@ -921,6 +1012,7 @@
 		<Resource tag="EJEMPLONOMBRECORTOASIGNATURA">Ex. : CO</Resource>
 	</page>
 	<page name="REGISTROUSUARIOORGANIZACION">
+		<Resource tag="EMAILTUTOR">Adresse e-mail du tuteur</Resource>
 		<Resource tag="USARMYGNOSS"> Utilisez l’adresse e-mail de mon compte @1@</Resource>
 		<Resource tag="TITULOPAGINA">Registre</Resource>
 		<Resource tag="DATOSCONTACTOPRINC">Données du contact principal</Resource>
@@ -1305,7 +1397,7 @@
 		<Resource tag="TITULO">Titre</Resource>
 		<Resource tag="DESCRIPCION">Description</Resource>
 		<Resource tag="ENLACE">Lien</Resource>
-		<Resource tag="ETIQUETAS">Étiquettes     (Séparées par des virgules)</Resource>
+		<Resource tag="ETIQUETAS">Étiquettes * (Séparées par des virgules)</Resource>
 		<Resource tag="AUTORPROPIO">  Je suis l’auteur de ce document</Resource>
 		<Resource tag="FICHABIBLIOGRAFICA">Fiche bibliographique</Resource>
 		<Resource tag="PUBLICAR">Publier</Resource>
@@ -1801,7 +1893,7 @@
 		<Resource tag="NINGUNO">Aucun</Resource>
 		<Resource tag="LEIDOS">Lus</Resource>
 		<Resource tag="NOLEIDOS">Non lus</Resource>
-		<Resource tag="COMPACTADA">compactée</Resource>
+		<Resource tag="COMPACTADA">Compactée</Resource>
 		<Resource tag="NORMAL">affichage normal</Resource>
 		<Resource tag="MENSAJESRELACIONADOS">Messages rattachés</Resource>
 	</page>
@@ -2052,8 +2144,8 @@
 		<Resource tag="SOLICITUDCORRECTA">Votre demande d’accès à la communauté @1@ a été réalisée correctement.</Resource>
 	</page>
 	<page name="INVITACIONES">
-		<Resource tag="SELECCIONAGRUPOS">Si lo deseas, puedes seleccionar los grupos de comunidad en los que pueden participar</Resource>
-		<Resource tag="INVITACIONESSEENVIANAGRUPOS">y se añadirán a los grupos de comunidad: </Resource>
+		<Resource tag="SELECCIONAGRUPOS">Si vous le souhaitez, vous pouvez sélectionner les groupes de communauté auxquels ils peuvent participer</Resource>
+		<Resource tag="INVITACIONESSEENVIANAGRUPOS">et ils seront ajoutés aux groupes de communauté: </Resource>
 		<Resource tag="NOTAS">J’aimerais vous ajouter à mon réseau de contacts sur @1@.</Resource>
 		<Resource tag="TEXTODEFECTOINVITACIONCOMUNIDAD">
 			En qualité de membre d’une communauté @3@ vous pourrez communiquer, chercher et trouver des personnes, partager des connaissances et créer des idées collectives avec les autres membres de la communauté, grâce aux outils de collaboration proposés. Quels sont les avantages et intérêts de la communauté @1@ ?
@@ -2450,8 +2542,8 @@
 		<Resource tag="PENDIENTES">Réviser formats RSS/ATOM</Resource>
 		<Resource tag="PENDIENTESNUM">Réviser formats RSS/ATOM {span class="avisoGris"}@1@{/span}</Resource>
 		<Resource tag="EDITARPENDIENTE">Éditer ressource en attente</Resource>
-		<Resource tag="PUBLICAR">Souhaitez-vous publier les ressources sélectionnées ?</Resource>
-		<Resource tag="ELIMINARUNO"></Resource>
+		<Resource tag="PUBLICAR">Souhaitez-vous publier les ressources sélectionnées ?</Resource>		
+		<Resource tag="ELIMINARUNO">Souhaitez-vous supprimer la ressource @1@?</Resource>
 		<Resource tag="TODAS">Toutes</Resource>
 		<Resource tag="OTRAS">Autres</Resource>
 		<Resource tag="FILTRARFUENTES">Filtrer formats</Resource>
@@ -2729,7 +2821,7 @@
 		<Resource tag="EXPLICACIONCERRADA">Les membres de la communauté, à l’instar des autres utilisateurs de @1@, peuvent uniquement naviguer au travers de la communauté et explorer ses contenus.</Resource>
 		<Resource tag="EXPLICACIONCERRANDOSE">La communauté va fermer, mais avant cela, elle sera quelques jours en « période de grâce », et pendant cette période, les utilisateurs pourront : télécharger des ressources, lire les contenus de la communauté et les partager avec d’autres espaces @1@. Néanmoins, aucune nouveauté ne pourra être téléchargée. À l’issue de cette période, il ne sera plus possible d’accéder à la communauté car elle sera fermée.</Resource>
 		<Resource tag="INFOOWL4"> que nous développerons dans @1@</Resource>
-		<Resource tag="DESCRIPCIONIDIOMACOMUNIDAD">Les communautés de @3@ offrent à leurs administrateurs la possibilité d’éditer le {a href="@1@"}sommaire des catégories{/a} et les {a href="@2@"}panneaux d’information{/a} (widgets type HTML incrusté) en espagnol, anglais et portugais.  Souhaitez-vous que votre communauté @3@ soit multilingue ? Activez le check suivant et choisissez la langue par défaut.</Resource>
+		<Resource tag="DESCRIPCIONIDIOMACOMUNIDAD">Les communautés de @3@ offrent à leurs administrateurs la possibilité d’éditer le {a href="@1@"}sommaire des catégories{/a} et les {a href="@2@"}panneaux d’information{/a} (widgets type HTML incrusté) en plusieurs langues.  Souhaitez-vous que votre communauté @3@ soit multilingue ? Activez le check suivant et choisissez la langue par défaut.</Resource>
 		<Resource tag="UTILIDADES">Utilités</Resource>
 		<Resource tag="GADGETS">Conception</Resource>
 		<Resource tag="CONFIGURACION">Configuration des options des ressources</Resource>
@@ -2950,7 +3042,7 @@
 		<Resource tag="CREARWIDGET">Créer un widget</Resource>
 		<Resource tag="FUENTESRSS">Sources RSS {span class="aviso"}@1@{/span}</Resource>
 		<Resource tag="SOLICITUDESPERTENECERGRUPO">Demandes d’appartenance aux groupes {span class="aviso"}@1@{/span}</Resource>
-		<Resource tag="SOLICITUDESACCESO">Demandes d’accès {span class="aviso"}@1@{/span}</Resource>
+		<Resource tag="SOLICITUDESACCESO">Demandes d’accès</Resource>
 		<Resource tag="ENVIARNEWSLETTER">Envoyer newsletter</Resource>
 		<Resource tag="NEWSLETTER">Recevoir newsletter</Resource>
 		<Resource tag="ABANDONARLACOMUNIDAD">Quitter la communauté</Resource>
@@ -2960,7 +3052,7 @@
 	<page name="COMBUSQUEDAAVANZADA">
 		<Resource tag="LIMPIARFILTROS">Nettoyer filtres</Resource>
 		<Resource tag="FILTROS">Critères appliqués</Resource>
-		<Resource tag="NOCERTIFI">Non certifiés</Resource>
+		<Resource tag="NOCERTIFI">Non certifié</Resource>
 		<Resource tag="NIVELCERTIFI">Niveau de certification</Resource>
 		<Resource tag="CATEGORIAS">Catégories</Resource>
 		<Resource tag="PERFILESPERSONALES">Profils personnels</Resource>
@@ -3424,7 +3516,7 @@
 		<Resource tag="BIO">bio</Resource>
 		<Resource tag="ADMINISTRARSOLICITUDESUSUARIO">administrer-demandes-utilisateurs</Resource>
 		<Resource tag="ADMINISTRARSOLICITUDEORGANIZACION">administrer-demandes-org</Resource>
-		<Resource tag="ADMINISTRARSOLICITUACCESOPROYECTO">administrer-demandes-communauté</Resource>
+		<Resource tag="ADMINISTRARSOLICITUACCESOPROYECTO">administrer-demandes-communaute</Resource>
 		<Resource tag="ADMINISTRARSUSCRIPCIONES">gerer-souscriptions</Resource>
 		<Resource tag="ADMINISTRARSUSCRIPCIONCOMUNIDAD">gerer-souscription-communaute</Resource>
 		<Resource tag="ADMINISTRARSUSCRIPCIONIDENTIDAD">gerer-souscription-profil</Resource>
@@ -3497,7 +3589,7 @@
 		<Resource tag="MENSAJESRECIBIDOS">messages-recus</Resource>
 		<Resource tag="MENSAJESELIMINADOS">messages-elimines</Resource>
 		<Resource tag="MENSAJESENVIADOSORG">messages-envoyes-org</Resource>
-		<Resource tag="MENSAJESRECIBIDOSORG">messages-reçus-org</Resource>
+		<Resource tag="MENSAJESRECIBIDOSORG">messages-recus-org</Resource>
 		<Resource tag="MENSAJESELIMINADOSORG">messages-elimines-org</Resource>
 		<Resource tag="MIPERFIL">mon-profil</Resource>
 		<Resource tag="MIPERFILBIO">mon-profil-bio</Resource>
@@ -3757,6 +3849,9 @@
 		<Resource tag="ACTUALIZARADDTOGNOSSNAVG">actualizar-anyadirgnoss-navegador</Resource>
 		<Resource tag="ADMINISTRARVISTAS">admin-views</Resource>
 	</page>
+	<page name="COMADMINCOMUNIDAD">
+		<Resource tag="ADMINMETAADMINOPTIONS">Options du méta-administrateur</Resource>
+	</page>
 	<page name="COMADMINDISENIO">
 		<Resource tag="XMLSUBIDO">Archivo subido correctamente</Resource>
 		<Resource tag="XMLVACIO">Le fichier ne peut être vide</Resource>
@@ -3783,5 +3878,17 @@
 		<Resource tag="DESCRIPCIONCOOKIESANALITICAS">Il s'agit de cookies qui permettent à la partie qui en est responsable de suivre et d'analyser le comportement des utilisateurs des sites web auxquels ils sont liés, y compris la quantification de l'impact des publicités. Les informations recueillies par ce type de cookies sont utilisées pour mesurer l'activité des sites web, de l'application ou de la plateforme, afin d'introduire des améliorations basées sur l'analyse des données d'utilisation des utilisateurs du service.</Resource>
 		<Resource tag="NOMBRECOOKIESREDESSOCIALES">Médias sociaux</Resource>
 		<Resource tag="DESCRIPCIONCOOKIESREDESSOCIALES">Cookies de médias sociaux</Resource>
-	</page>
+	</page>	
+	<page name="DOBLEFACTORAUTENTICACION">
+		<Resource tag="AUTENTICACIONDOBLEFACTOR">Authentification à deux facteurs</Resource>
+		<Resource tag="INTRODUCEELCODIGOPARAAUTENTICARTE">Entrez le code de sécurité qui vous a été envoyé par e-mail pour vous authentifier</Resource>
+		<Resource tag="CODIGO">Code</Resource>
+		<Resource tag="CODIGODESEGURIDADNOVALIDOOCADUCADO">Le code de sécurité saisi n'est pas valide ou a expiré</Resource>
+		<Resource tag="NODISPONESDECODIGODESEGURIDAD">Vous n'avez pas de code de sécurité?</Resource>
+		<Resource tag="INICIASESIONPARASOLICITARUNO">Connectez-vous pour en demander un</Resource>
+		<Resource tag="INDICAAUTENTICACIONDOBLEFACTORACTIVADA">Indique si l'authentification à deux facteurs est activée</Resource>
+	</page>		
+	
+
+	
 </Resources>

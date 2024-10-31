@@ -824,7 +824,7 @@ namespace Es.Riam.Gnoss.Logica.BASE_BD
 
             // You can also specify additional header values like 
             // the user agent or the referer:
-            WebRequestObject.UserAgent = ".NET Framework/2.0";
+            WebRequestObject.UserAgent = UtilWeb.GenerarUserAgent();
             WebRequestObject.Referer = "http://www.example.com/";
 
             // Request response:

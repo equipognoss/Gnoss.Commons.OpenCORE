@@ -531,6 +531,11 @@ namespace Es.Riam.Gnoss.Web.MVC.Models
             public List<Tuple<ResourceModel.DocumentType, string, int, int, int>> ResourceTypeCounter { get; set; }
 
             /// <summary>
+            /// Numero de contribuciones
+            /// </summary>
+            public int ContributionsCounter { get; set; }
+
+            /// <summary>
             /// Devuelve el número de recursos publicados de un tipo en particular
             /// </summary>
             /// <param name="pType">Tipo de recurso</param>

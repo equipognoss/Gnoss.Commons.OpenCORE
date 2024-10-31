@@ -1,6 +1,7 @@
 using Es.Riam.AbstractsOpen;
 using Es.Riam.Gnoss.AD.EncapsuladoDatos;
 using Es.Riam.Gnoss.AD.EntityModel;
+using Es.Riam.Gnoss.AD.EntityModel.Models.PersonaDS;
 using Es.Riam.Gnoss.AD.EntityModel.Models.UsuarioDS;
 using Es.Riam.Gnoss.AD.Usuarios;
 using Es.Riam.Gnoss.AD.Usuarios.Model;
@@ -195,6 +196,16 @@ namespace Es.Riam.Gnoss.Logica.Usuarios
         public Guid? ObtenerUsuarioIDPorLoginOEmail(string pLoginOEmail)
         {
             return UsuarioAD.ObtenerUsuarioIDPorLoginOEmail(pLoginOEmail);
+        }
+
+        /// <summary>
+        /// Obtiene una persona a partir de su documento acreditativo
+        /// </summary>
+        /// <param name="pValorDocumentoAcreditativo">Documento acreditativo de la persona</param>
+        /// <returns></returns>
+        public Guid ObtenerPersonaIDPorValorDocumentoAcreditativo(string pValorDocumentoAcreditativo)
+        {
+            return UsuarioAD.ObtenerPersonaIDPorValorDocumentoAcreditativo(pValorDocumentoAcreditativo);
         }
 
         /// <summary>
@@ -402,10 +413,7 @@ namespace Es.Riam.Gnoss.Logica.Usuarios
         /// <param name="pComprobarAutorizacion">TRUE si se debe comprobar que el usuario que está conectado 
         /// tiene permiso para realizar la operación</param>
 		public void ActualizarUsuario(bool pComprobarAutorizacion)
-        {
-            // TODO
-            //this.ValidarUsuarios(cambiosUsuarios);
-
+        {            
             try
             {
                 bool transaccionIniciada = UsuarioAD.IniciarTransaccionEntityContext();
@@ -463,7 +471,7 @@ namespace Es.Riam.Gnoss.Logica.Usuarios
                 throw new ErrorLoginUsuario();
             }
 
-            if (this.UsuarioAD.EstaBloqueadoUsuario(dataWrapperUsuario.ListaUsuario.First()))
+            if (UsuarioAD.EstaBloqueadoUsuario(dataWrapperUsuario.ListaUsuario.First()))
             {
                 throw new ErrorUsuarioBloqueado();
             }
@@ -477,25 +485,17 @@ namespace Es.Riam.Gnoss.Logica.Usuarios
         /// <param name="pPassword">Password</param>
         public void EstablecerPasswordUsuario(AD.EntityModel.Models.UsuarioDS.Usuario pUsuario, string pPassword)
         {
-            //ChequeoSeguridad.ComprobarAutorizacion((ulong)Capacidad.General.CapacidadesAdministracion.EditarUsuarios);
-
-            string hashPassword;
-
             ValidarFormatoPassword(pPassword);
 
-            hashPassword = HashHelper.CalcularHash(pPassword, true);
+			string hashPassword = HashHelper.CalcularHash(pPassword, true);
             UsuarioAD.EstablecerPasswordUsuario(pUsuario, hashPassword);
         }
 
         public void EstablecerPasswordUsuario(Guid pUsuarioID, string pPassword)
         {
-            //ChequeoSeguridad.ComprobarAutorizacion((ulong)Capacidad.General.CapacidadesAdministracion.EditarUsuarios);
-
-            string hashPassword;
-
             ValidarFormatoPassword(pPassword);
 
-            hashPassword = HashHelper.CalcularHash(pPassword, true);
+			string hashPassword = HashHelper.CalcularHash(pPassword, true);
             UsuarioAD.EstablecerPasswordUsuario(pUsuarioID, hashPassword);
         }
 
@@ -506,11 +506,9 @@ namespace Es.Riam.Gnoss.Logica.Usuarios
         /// <param name="pPassword">Password</param>
         public void EstablecerPasswordPropioUsuario(AD.EntityModel.Models.UsuarioDS.Usuario pUsuario, string pPassword)
         {
-            string hashPassword;
-
             ValidarFormatoPassword(pPassword);
 
-            hashPassword = HashHelper.CalcularHash(pPassword, true);
+            string hashPassword = HashHelper.CalcularHash(pPassword, true);
             UsuarioAD.EstablecerPasswordUsuario(pUsuario, hashPassword);
         }
 
@@ -643,11 +641,7 @@ namespace Es.Riam.Gnoss.Logica.Usuarios
         /// <returns>TRUE si la contraseña es correcta</returns>
         public bool ValidarPasswordUsuarioParaSolicitud(AD.EntityModel.Models.UsuarioDS.Usuario pUsuario, string pPassword)
         {
-            //ChequeoSeguridad.ComprobarAutorizacion((ulong)Capacidad.General.CapacidadesAdministracion.EditarUsuarios);
-
-            string passwordUsuario;
-
-            passwordUsuario = UsuarioAD.ObtenerPasswordUsuario(pUsuario);
+            string passwordUsuario = UsuarioAD.ObtenerPasswordUsuario(pUsuario);
 
             bool usar256 = false;
 
@@ -674,8 +668,6 @@ namespace Es.Riam.Gnoss.Logica.Usuarios
         /// <returns>TRUE en caso de estar bloqueado, FALSE en caso contrario</returns>
         public bool EstaBloqueadoUsuario(AD.EntityModel.Models.UsuarioDS.Usuario pUsuario)
         {
-            // ChequeoSeguridad.ComprobarAutorizacion((ulong)Capacidad.General.CapacidadesAdministracion.EditarUsuarios | (ulong)Capacidad.General.CapacidadesAdministracion.EditarRoles);
-
             return UsuarioAD.EstaBloqueadoUsuario(pUsuario);
         }
 
@@ -705,8 +697,6 @@ namespace Es.Riam.Gnoss.Logica.Usuarios
         /// <param name="pUsuario">Fila del usuario para bloquear</param>
         public void BloquearUsuario(AD.EntityModel.Models.UsuarioDS.Usuario pUsuario)
         {
-            //ChequeoSeguridad.ComprobarAutorizacion((ulong)Es.Riam.Gnoss.Util.Seguridad.Capacidad.General.CapacidadesAdministracion.EditarUsuarios);
-
             UsuarioAD.BloquearUsuario(pUsuario);
         }
 
@@ -716,8 +706,6 @@ namespace Es.Riam.Gnoss.Logica.Usuarios
         /// <param name="pUsuario">Fila del usuario para desbloquear</param>
         public void DesbloquearUsuario(AD.EntityModel.Models.UsuarioDS.Usuario pUsuario)
         {
-            //ChequeoSeguridad.ComprobarAutorizacion((ulong)Capacidad.General.CapacidadesAdministracion.EditarUsuarios);
-
             UsuarioAD.DesbloquearUsuario(pUsuario);
         }
 
@@ -729,8 +717,6 @@ namespace Es.Riam.Gnoss.Logica.Usuarios
         /// <param name="pPersonaID">Identificador de la persona</param>
         public void AsignarUsuarioAPersona(System.Guid pUsuarioID, System.Guid pOrganizacionID, System.Guid pPersonaID)
         {
-            //ChequeoSeguridad.ComprobarAutorizacion((ulong)Capacidad.General.CapacidadesAdministracion.EditarUsuarios | (ulong)Capacidad.General.CapacidadesAdministracion.EditarRoles);
-
             UsuarioAD.AsignarUsuarioAPersona(pUsuarioID, pOrganizacionID, pPersonaID);
         }
 
@@ -740,8 +726,6 @@ namespace Es.Riam.Gnoss.Logica.Usuarios
         /// <param name="pUsuarioID">Identificador del usuario</param>
         public bool ExisteUsuarioEnBD(System.Guid pUsuarioID)
         {
-            //ChequeoSeguridad.ComprobarAutorizacion((ulong)Capacidad.General.CapacidadesAdministracion.EditarUsuarios);
-
             return UsuarioAD.ExisteUsuarioEnBD(pUsuarioID);
         }
 
@@ -751,8 +735,6 @@ namespace Es.Riam.Gnoss.Logica.Usuarios
         /// <param name="pNombreUsuario">Nombre del usuario</param>
         public bool ExisteUsuarioEnBD(string pNombreUsuario)
         {
-            //ChequeoSeguridad.ComprobarAutorizacion((ulong)Capacidad.General.CapacidadesAdministracion.EditarUsuarios);
-
             return UsuarioAD.ExisteUsuarioEnBD(pNombreUsuario);
         }
 
@@ -822,7 +804,7 @@ namespace Es.Riam.Gnoss.Logica.Usuarios
         /// <returns>Dataset de usuario con el rol propio del usuario en el proyecto</returns>
         public ProyectoRolUsuario ObtenerRolPropioUsuarioEnProyecto(Guid pProyectoID, AD.EntityModel.Models.UsuarioDS.Usuario pUsuario)
         {
-            return (this.UsuarioAD.ObtenerRolUsuarioEnProyecto(pProyectoID, pUsuario.UsuarioID));
+            return UsuarioAD.ObtenerRolUsuarioEnProyecto(pProyectoID, pUsuario.UsuarioID);
         }
 
         /// <summary>
@@ -833,9 +815,7 @@ namespace Es.Riam.Gnoss.Logica.Usuarios
         /// <returns>Rol de usuario en un proyecto</returns>
         public ProyectoRolUsuario ObtenerRolUsuarioEnProyecto(Guid pProyectoID, Guid pUsuarioID)
         {
-            //ChequeoSeguridad.ComprobarAutorizacion((ulong)Capacidad.General.CapacidadesAdministracion.EditarRoles);
-
-            return (this.UsuarioAD.ObtenerRolUsuarioEnProyecto(pProyectoID, pUsuarioID));
+            return UsuarioAD.ObtenerRolUsuarioEnProyecto(pProyectoID, pUsuarioID);
         }
 
         /// <summary>
@@ -846,7 +826,7 @@ namespace Es.Riam.Gnoss.Logica.Usuarios
         /// <returns>Dataset de usuarios con el rol de los usuarios en un proyecto</returns>
         public DataWrapperUsuario ObtenerRolListaUsuariosEnProyecto(Guid pProyectoID, List<Guid> pUsuariosID)
         {
-            return this.UsuarioAD.ObtenerRolListaUsuariosEnProyecto(pProyectoID, pUsuariosID);
+            return UsuarioAD.ObtenerRolListaUsuariosEnProyecto(pProyectoID, pUsuariosID);
         }
 
         /// <summary>
@@ -857,9 +837,7 @@ namespace Es.Riam.Gnoss.Logica.Usuarios
         /// <returns>Dataset de usuario con el rol de usuario en un proyecto</returns>
         public ProyectoRolUsuario ObtenerRolUsuarioEnProyecto(Guid pProyectoID, AD.EntityModel.Models.UsuarioDS.Usuario pUsuario)
         {
-            //ChequeoSeguridad.ComprobarAutorizacion((ulong)Capacidad.General.CapacidadesAdministracion.EditarRoles);
-
-            return (this.UsuarioAD.ObtenerRolUsuarioEnProyecto(pProyectoID, pUsuario.UsuarioID));
+            return UsuarioAD.ObtenerRolUsuarioEnProyecto(pProyectoID, pUsuario.UsuarioID);
         }
 
         /// <summary>
@@ -870,10 +848,6 @@ namespace Es.Riam.Gnoss.Logica.Usuarios
         /// <returns>Dataset de usuario con el rol asignado a dicho usuario</returns>
         public GeneralRolUsuario ObtenerRolUsuario(AD.EntityModel.Models.UsuarioDS.Usuario pUsuario, bool pComprobarAutorizacion)
         {
-            if (pComprobarAutorizacion)
-            {
-                // ChequeoSeguridad.ComprobarAutorizacion((ulong)Capacidad.General.CapacidadesAdministracion.EditarRoles);
-            }
             return UsuarioAD.ObtenerGeneralRolUsuario(pUsuario);
         }
 
@@ -1192,6 +1166,11 @@ namespace Es.Riam.Gnoss.Logica.Usuarios
             return UsuarioAD.CargarAdministradoresDeOrg(pOrganizacionID);
         }
 
+        public List<Guid> ObtenerOrganizacionesAdministradasPorUsuario(Guid pUsuario)
+        {
+            return UsuarioAD.ObtenerOrganizacionesAdministradasPorUsuario(pUsuario);
+        }
+
         /// <summary>
         /// Elimina los datos de usuario marcados para borrar
         /// </summary>
@@ -1248,9 +1227,6 @@ namespace Es.Riam.Gnoss.Logica.Usuarios
             //Comprobaciones Usuario
             List<AD.EntityModel.Models.UsuarioDS.Usuario> cambiosUsuarios = new List<AD.EntityModel.Models.UsuarioDS.Usuario>();
 
-            // TODO
-            //this.ValidarUsuarios(cambiosUsuarios);
-
             try
             {
                 if (Transaccion != null)
@@ -1266,7 +1242,6 @@ namespace Es.Riam.Gnoss.Logica.Usuarios
                         TerminarTransaccion(true);
                     }
                 }
-
             }
             catch (DBConcurrencyException ex)
             {
@@ -1428,17 +1403,27 @@ namespace Es.Riam.Gnoss.Logica.Usuarios
         public List<Guid> ObtenerUsuariosActivosEnFecha(Guid pProyectoID, DateTime pFechaBusqueda)
         {
             return UsuarioAD.ObtenerUsuariosActivosEnFecha(pProyectoID, pFechaBusqueda);
-        }
+		}
 
-        #endregion
+		/// <summary>
+		/// Comprueba si un usuario tiene actiavada la doble autenticación
+		/// </summary>
+		/// <param name="pUsuarioID">Identificador del usuario</param>
+		/// <returns></returns>
+		public bool ComprobarDobleAutenticacionUsuario(Guid pLogin)
+		{
+			return UsuarioAD.ComprobarDobleAutenticacionUsuario(pLogin);
+		}
 
-        #region Privados
+		#endregion
 
-        /// <summary>
-        /// Valida una lista de usuarios
-        /// </summary>
-        /// <param name="pUsuarios">Conjunto de filas de usuario para validar</param>
-        private void ValidarUsuarios(List<AD.EntityModel.Models.UsuarioDS.Usuario> pUsuarios)
+		#region Privados
+
+		/// <summary>
+		/// Valida una lista de usuarios
+		/// </summary>
+		/// <param name="pUsuarios">Conjunto de filas de usuario para validar</param>
+		private void ValidarUsuarios(List<AD.EntityModel.Models.UsuarioDS.Usuario> pUsuarios)
         {
             for (int i = 0; i < pUsuarios.Count; i++)
             {
@@ -1633,16 +1618,16 @@ namespace Es.Riam.Gnoss.Logica.Usuarios
             }
         }
 
-        #endregion
+		#endregion
 
-        #endregion
+		#endregion
 
-        #region Dispose
+		#region Dispose
 
-        /// <summary>
-        /// Determina si está disposed
-        /// </summary>
-        private bool disposed = false;
+		/// <summary>
+		/// Determina si está disposed
+		/// </summary>
+		private bool disposed = false;
 
         /// <summary>
         /// Destructor

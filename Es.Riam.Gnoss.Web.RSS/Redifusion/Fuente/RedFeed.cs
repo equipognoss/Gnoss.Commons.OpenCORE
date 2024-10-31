@@ -7,20 +7,13 @@ namespace Es.Riam.Gnoss.Web.RSS.Redifusion
     public class RedFuente : IDisposable
     {
         private string mTitulo = string.Empty;
-        private Uri mLink = null;
         private string mDescripcion = string.Empty;
         private string mCopyright = string.Empty;
         private List<RedPersona> mAutores = new List<RedPersona>();
         private List<RedPersona> mPublicadores = new List<RedPersona>();
         private List<RedPersona> mContribuyentes = new List<RedPersona>();
-        private string mIdentificador = string.Empty;
-        private string mGenerador = string.Empty;
         private List<RedCategoria> mCategorias = new List<RedCategoria>();
         private string mDocumentacion = string.Empty;
-        private DateTime? mFechaActualizacion = null;
-        private DateTime? mFechaPublicaion = null;
-        private RedImage mImagen = null;
-        private RedTextInput mTextInput = null;
         private List<RedItem> mItems = new List<RedItem>();
 
         public string Titulo
@@ -28,78 +21,46 @@ namespace Es.Riam.Gnoss.Web.RSS.Redifusion
             set { mTitulo = UtilCadenas.HtmlDecode(value); }
             get { return mTitulo; }
         }
-        public Uri Link
-        {
-            set { mLink = value; }
-            get { return mLink; }
-        }
+
+        public Uri Link { get; set; }
+
         public string Descripcion
         {
             set { mDescripcion = UtilCadenas.HtmlDecode(value); }
             get { return mDescripcion; }
         }
+
         public string Copyright
         {
-            set { mCopyright = UtilCadenas.HtmlDecode(value); ; }
+            set { mCopyright = UtilCadenas.HtmlDecode(value); }
             get { return mCopyright; }
         }
-        public List<RedPersona> Autores
-        {
-            set { mAutores = value; }
-            get { return mAutores; }
-        }
-        public List<RedPersona> Publicadores
-        {
-            set { mPublicadores = value; }
-            get { return mPublicadores; }
-        }
-        public List<RedPersona> Contribuyentes
-        {
-            set { mContribuyentes = value; }
-            get { return mContribuyentes; }
-        }
-        public string Identificador
-        {
-            set { mIdentificador = value; }
-            get { return mIdentificador; }
-        }
 
-        public string Generador
-        {
-            set { mGenerador = value; }
-            get { return mGenerador; }
-        }
-        public List<RedCategoria> Categorias
-        {
-            set { mCategorias = value; }
-            get { return mCategorias; }
-        }
+        public List<RedPersona> Autores { get; set; }
+
+        public List<RedPersona> Publicadores { get; set; }
+        
+        public List<RedPersona> Contribuyentes { get; set; }
+
+        public string Identificador { get; set; }
+
+        public string Generador { get; set; }
+
+        public List<RedCategoria> Categorias { get; set; }
+
         public string Documentacion
         {
-            set { mDocumentacion = UtilCadenas.HtmlDecode(value); ; }
+            set { mDocumentacion = UtilCadenas.HtmlDecode(value); }
             get { return mDocumentacion; }
         }
-        public DateTime? FechaActualizacion
-        {
-            set { mFechaActualizacion = value; }
-            get { return mFechaActualizacion; }
-        }
-        public DateTime? FechaPublicaion
-        {
-            set { mFechaPublicaion = value; }
-            get { return mFechaPublicaion; }
-        }
 
-        public RedImage Imagen
-        {
-            set { mImagen = value; }
-            get { return mImagen; }
-        }
-        public RedTextInput TextInput
-        {
-            set { mTextInput = value; }
-            get { return mTextInput; }
-        }
+        public DateTime? FechaActualizacion { get; set; }
+
+        public DateTime? FechaPublicaion { get; set; }
+
+        public RedImage Imagen { get; set; }
+
+        public RedTextInput TextInput{ get; set; }
 
         public List<RedItem> Items
         {
@@ -111,7 +72,6 @@ namespace Es.Riam.Gnoss.Web.RSS.Redifusion
             item.mFuente = this;
             mItems.Add(item);
         }
-
 
         #region dispose
 
@@ -130,7 +90,6 @@ namespace Es.Riam.Gnoss.Web.RSS.Redifusion
             Dispose(false);
         }
 
-
         /// <summary>
         /// Libera los recursos
         /// </summary>
@@ -138,7 +97,7 @@ namespace Es.Riam.Gnoss.Web.RSS.Redifusion
         {
             Dispose(true);
 
-            //impido que se finalice dos veces este objeto
+            //Impido que se finalice dos veces este objeto
             GC.SuppressFinalize(this);
         }
 
@@ -148,14 +107,14 @@ namespace Es.Riam.Gnoss.Web.RSS.Redifusion
         /// <param name="disposing">Determina si se está llamando desde el Dispose()</param>
         protected virtual void Dispose(bool disposing)
         {
-            if (!this.disposed)
+            if (!disposed)
             {
-                this.disposed = true;
+                disposed = true;
 
                 try
                 {
                     mTitulo = null;
-                    mLink = null;
+                    Link = null;
                     mDescripcion = null;
                     mCopyright = null;
                     mAutores.Clear();
@@ -164,21 +123,21 @@ namespace Es.Riam.Gnoss.Web.RSS.Redifusion
                     mPublicadores = null;
                     mContribuyentes.Clear();
                     mContribuyentes = null;
-                    mIdentificador = null;
-                    mGenerador = null;
+                    Identificador = null;
+                    Generador = null;
                     mCategorias.Clear();
                     mCategorias = null;
                     mDocumentacion = null;
-                    mFechaActualizacion = null;
-                    mFechaPublicaion = null;
-                    mImagen = null;
-                    mTextInput = null;
+                    FechaActualizacion = null;
+                    FechaPublicaion = null;
+                    Imagen = null;
+                    TextInput = null;
                     mItems.Clear();
                     mItems = null;
                 }
-                catch (Exception ex)
+                catch
                 {
-                    //mLoggingService.GuardarLogError(ex);
+                    //Si falla al hacer un dispose no rompemos el proceso
                 }
             }
         }

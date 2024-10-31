@@ -393,6 +393,11 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextOracleMigrations
                         .HasMaxLength(1200)
                         .HasColumnType("NVARCHAR2(1200)");
 
+                    b.Property<string>("Ontologia")
+                        .IsRequired()
+                        .HasMaxLength(2000)
+                        .HasColumnType("NVARCHAR2(2000)");
+
                     b.Property<Guid?>("OrganizacionID")
                         .HasColumnType("RAW(16)");
 
@@ -428,11 +433,6 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextOracleMigrations
 
                     b.Property<DateTime?>("FechaProcesado")
                         .HasColumnType("TIMESTAMP(7)");
-
-                    b.Property<string>("Ontologia")
-                        .IsRequired()
-                        .HasMaxLength(2000)
-                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<string>("RutaBusqueda")
                         .IsRequired()
@@ -1227,7 +1227,7 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextOracleMigrations
                     b.Property<bool>("CreadorEsAutor")
                         .HasColumnType("NUMBER(1)");
 
-                    b.Property<Guid?>("CreadorID")
+                    b.Property<Guid>("CreadorID")
                         .HasColumnType("RAW(16)");
 
                     b.Property<string>("Descripcion")
@@ -1329,6 +1329,10 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextOracleMigrations
                         .HasColumnType("NUMBER(5)");
 
                     b.HasKey("DocumentoID");
+
+                    b.HasIndex("CreadorID");
+
+                    b.HasIndex("Tipo", "Eliminado", "Visibilidad", "ProyectoID");
 
                     b.ToTable("Documento");
                 });
@@ -5439,6 +5443,9 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextOracleMigrations
                         .HasColumnType("RAW(16)")
                         .HasColumnOrder(2);
 
+                    b.Property<string>("NombreCorto")
+                        .HasColumnType("NVARCHAR2(2000)");
+
                     b.Property<bool>("Obligatorio")
                         .HasColumnType("NUMBER(1)");
 
@@ -5457,6 +5464,9 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextOracleMigrations
                         .IsRequired()
                         .HasMaxLength(500)
                         .HasColumnType("NVARCHAR2(500)");
+
+                    b.Property<bool>("VisiblePerfil")
+                        .HasColumnType("NUMBER(1)");
 
                     b.HasKey("OrganizacionID", "ProyectoID", "DatoExtraID");
 
@@ -6955,12 +6965,18 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextOracleMigrations
                         .HasColumnType("NUMBER(5)")
                         .HasColumnOrder(1);
 
+                    b.Property<string>("Consulta")
+                        .HasColumnType("NVARCHAR2(2000)");
+
                     b.Property<string>("FiltroOrden")
                         .IsRequired()
                         .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<string>("NombreFiltro")
                         .IsRequired()
+                        .HasColumnType("NVARCHAR2(2000)");
+
+                    b.Property<string>("OrderBy")
                         .HasColumnType("NVARCHAR2(2000)");
 
                     b.HasKey("PestanyaID", "Orden");
@@ -8725,6 +8741,9 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextOracleMigrations
                         .HasMaxLength(50)
                         .HasColumnType("NVARCHAR2(50)");
 
+                    b.Property<bool>("TwoFactorAuthentication")
+                        .HasColumnType("NUMBER(1)");
+
                     b.Property<short>("Validado")
                         .HasColumnType("NUMBER(5)");
 
@@ -9429,6 +9448,17 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextOracleMigrations
                     b.Navigation("BaseRecursos");
 
                     b.Navigation("Usuario");
+                });
+
+            modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Documentacion.Documento", b =>
+                {
+                    b.HasOne("Es.Riam.Gnoss.AD.EntityModel.Models.IdentidadDS.Identidad", "Creador")
+                        .WithMany("Documentos")
+                        .HasForeignKey("CreadorID")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Creador");
                 });
 
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Documentacion.DocumentoAtributoBiblio", b =>
@@ -11338,6 +11368,8 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextOracleMigrations
                     b.Navigation("DatoExtraProyectoOpcionIdentidad");
 
                     b.Navigation("DatoExtraProyectoVirtuosoIdentidad");
+
+                    b.Navigation("Documentos");
 
                     b.Navigation("GrupoIdentidadesParticipacion");
 

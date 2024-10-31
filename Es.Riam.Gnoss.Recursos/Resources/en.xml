@@ -1,6 +1,77 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Resources language="English" code="en">
 	<page name="COMMON">
+		<Resource tag="DESPLEGAR">Unfold</Resource>
+		<Resource tag="CARGANDO">Loading...</Resource>
+		<Resource tag="VISUALIZAR">Visualize</Resource>
+		<Resource tag="SICONTINUASDESACTIVARASELREGISTROAUTOMATICOPARAESTACOMUNIDA">If you continue, you will disable automatic logging for this community.</Resource>
+		<Resource tag="SICONTINUASACTIVARASELREGISTROAUTOMATICOYTODOSLOSUSUARIOSDE">If you continue, you will enable automatic logging and all organization users will join this community.</Resource>
+		<Resource tag="ABANDONARCOMUNIDAD">Leave community</Resource>
+		<Resource tag="SICONTINUASLAORGANIZACIONABANDONARALACOMUNIDAD">If you continue, the organization will leave the community.</Resource>
+		<Resource tag="DESACTIVARREGISTROAUTOMATICO">Disable automatic logging</Resource>
+		<Resource tag="DESVINCULAR">Unlink</Resource>
+		<Resource tag="URLDELDOCUMENTODESHAREPOINT">SharePoint document URL</Resource>
+		<Resource tag="TODOSLOSDERECHOSRESERVADOS">All rights reserved</Resource>
+		<Resource tag="IDIOMA">Language</Resource>
+		<Resource tag="CONFIGURACIONDELECOSISTEMA">Ecosystem settings</Resource>
+		<Resource tag="URLDELRECURSO">Resource URL</Resource>
+		<Resource tag="DESEASDESBLOQUEARLOSCOMENTARIOS">Do you want to unblock the comments?</Resource>
+		<Resource tag="DESEASBLOQUEARLOSCOMENTARIOS">Do you want to block comments?</Resource>
+		<Resource tag="CREARUNACOMUNIDAD">Create a community</Resource>
+		<Resource tag="DESEASDESVINCULARDELDOCUMENTOACTUALELRECURSO@1@">Do you want to unlink the resource @1@ from the current document?</Resource>
+		<Resource tag="NOMBREDELMIEMBRO">Member's Name</Resource>
+		<Resource tag="APELLIDOSDELMIEMBRO">Member's Surname</Resource>
+		<Resource tag="MOSTRARSOLOCOMUNIDADESENLASQUEPARTICIPA">Show only communities the member is participating in</Resource>
+		<Resource tag="CORREOQUESEASOCIARAALACUENTADELNUEVOMIEMBRO">Email to be associated with the new member's account</Resource>
+		<Resource tag="CONTRASEÑADEACCESOASUCUENTA">Password to access the account</Resource>
+		<Resource tag="AÑADIRMIEMBRO">Add Member</Resource>
+		<Resource tag="MARCARDESMARCARRECURSO">Mark/unmark resource</Resource>
+		<Resource tag="SELECCIONARORDENDESCENDENTE">Select descending order</Resource>
+		<Resource tag="SELECCIONARORDENASCENDENTE">Select ascending order</Resource>
+		<Resource tag="SELECCIONARORDEN">Select order</Resource>
+		<Resource tag="SELECCIONARVISUALIZACION">Select view</Resource>
+		<Resource tag="SELECCIONMULTIPLEDECOMENTARIOS">Multiple comment selection</Resource>
+		<Resource tag="SELECCIONMULTIPLEDEMENSAJES">Multiple message selection</Resource>
+		<Resource tag="MARCAR/DESMARCARMENSAJE">Mark/unmark message</Resource>
+		<Resource tag="VERRECURSO">View resource</Resource>
+		<Resource tag="PRESENTACIONDE">Presentation of</Resource>
+		<Resource tag="DESCRIPCIONDELAPRESENTACION">Presentation description</Resource>
+		<Resource tag="VIDEODE">Video of</Resource>
+		<Resource tag="DESCRIPCIONDELVIDEO">Video description</Resource>
+		<Resource tag="HELEIDOYACEPTOLAS">I have read and accept the</Resource>
+		<Resource tag="CONDICIONESDEACCESOYUSO">terms of access and use</Resource>
+		<Resource tag="YLA">and the</Resource>
+		<Resource tag="POLITICADEPRIVACIDAD">privacy policy</Resource>
+		<Resource tag="INICIARSESIONEN">Sign in to</Resource>
+		<Resource tag="SITODAVIANOTIENECUENTA">If you don't have an account yet</Resource>
+		<Resource tag="ACTIVACIONDECUENTADEALUMNO">Student account activation</Resource>
+		<Resource tag="LOSALUMNOSMENORESDE14AÑOSNECESITANQUESUPADREMADREOTUTORLEGA">Students under 14 years old need their father, mother, or legal guardian to activate their account to access the classes of Didactalia created by their teachers.</Resource>
+		<Resource tag="GRACIASPORUNIRTEA">thank you for joining</Resource>
+		<Resource tag="DATOSBASICOS">Basic data</Resource>
+		<Resource tag="IMAGENDELUSUARIO">User image</Resource>
+		<Resource tag="ABRIRPANELLATERALDEUSUARIO">Open user side panel</Resource>
+		<Resource tag="ENLACEPARAIRAAÑADIRRECURSOS">Link to go to Add resources</Resource>
+		<Resource tag="ENLACEPARAIRACREAUNACOMUNIDAD">Link to go to create a community</Resource>
+		<Resource tag="CREAUNACOMUNIDADUNAREDSOCIALDONDEPODRASCOMPARTIRINFORMACION">Create a community, a social network where…</Resource>
+		<Resource tag="ENLACEPARAVERTODASLASCOMUNIDADES">Link to see all communities</Resource>
+		<Resource tag="ENLACEPARAIRALESPACIOPERSONAL">Link to go to the personal space</Resource>
+		<Resource tag="BUSCAUNGRUPOYPULSAAÑADIR">Search a group and press ADD</Resource>
+		<Resource tag="BUSCAUNPERFILYPULSAAÑADIR">Search a profile and press ADD</Resource>		
+		<Resource tag="INTRODUCETUCORREOELECTRONICO">Enter your email</Resource>
+		<Resource tag="INTRODUCETUCONTRASEÑA">Enter your password</Resource>
+		<Resource tag="INICIASESION">Log in to</Resource>
+		<Resource tag="SITODAVIANOTIENESCUENTA">If you don't have an account yet</Resource>
+		<Resource tag="CORREOELECTRONICO">Email</Resource>
+		<Resource tag="INICIASESIONOREGISTRATE">Log in or register</Resource>
+		<Resource tag="CORREOELECTRONICOALQUESEENVIARAELEMAILDEPRUEBA">Email address to which the test email will be sent</Resource>
+		<Resource tag="NOSEHAENCONTRADOELPERFILQUEESTABUSCANDO">The profile you are looking for could not be found</Resource>
+		<Resource tag="DESEASELIMINARELMENSAJESELECCIONADO">Do you want to delete the selected message?</Resource>
+		<Resource tag="INTRODUCELOSCORREOSSEPARADOSPORCOMASYHAZCLICENAÑADIR">Enter emails separated by commas and click add</Resource>
+		<Resource tag="NINGUNDESTINATARIOAÑADIDO">No recipients added…</Resource>
+		<Resource tag="INVITARACOMUNIDAD">Invite community</Resource>
+		<Resource tag="ANYADIRENMAYUSCULA">Add</Resource>		
+		<Resource tag="INTRODUCEUNAETIQUETAYPULSAAÑADIR">Enter a tag and press ADD</Resource>		
+		<Resource tag="INTRODUCEUNAPERSONAY/OGRUPO">Enter a person and/or group</Resource>
 		<Resource tag="BUSQUEDA">Search of</Resource>
 		<Resource tag="RELATEDTO">Related to</Resource>
 		<Resource tag="BASERECURSOS">Resources</Resource>
@@ -42,6 +113,7 @@
 		<Resource tag="COMUNIDAD">Community</Resource>
 		<Resource tag="CONTRIBUCIONES">Contributions</Resource>
 		<Resource tag="REGISTRO">Register</Resource>
+		<Resource tag="INTRODUCIRCODIGOPOSTAL">Enter your posta code</Resource>
 		<Resource tag="BLOGS">Blogs</Resource>
 		<Resource tag="RECURSOS">Resources</Resource>
 		<Resource tag="CATALOGO">Catalog</Resource>
@@ -112,7 +184,7 @@
 		<Resource tag="IDIOMAFR">French</Resource>
 		<Resource tag="IDIOMAIT">Italian</Resource>
 		<Resource tag="GUARDAR">Save</Resource>
-		<Resource tag="CANCELAR">Cancelar</Resource>
+		<Resource tag="CANCELAR">Cancel</Resource>
 		<Resource tag="CERRAR">close </Resource>
 		<Resource tag="MISBLOGS">My blogs</Resource>
 		<Resource tag="MISCOMUNIDADES">My communities</Resource>
@@ -123,6 +195,7 @@
 		<Resource tag="ENVIARINVITACION">Send invitation</Resource>
 		<Resource tag="SOLICITARCOMUNIDAD">Request a community</Resource>
 		<Resource tag="SOLICITARORGANIZACION">Create an organization</Resource>
+		<Resource tag="SOLICITUDES">Requests</Resource>
 		<Resource tag="CREARWIDGETPERFIL">Create widget of my profile</Resource>
 		<Resource tag="CREARWIDGETCOMUNIDAD">Create widget of the community</Resource>
 		<Resource tag="CREARWIDGETBUSQUEDA">Crear widget de búsqueda</Resource>
@@ -428,6 +501,7 @@
 		<Resource tag="INTRODUCIRPASSWORD">Introducir contraseña</Resource>
 	</page>
 	<page name="REGISTRO">
+		<Resource tag="PROVINCIASIMPLE">Province</Resource>
 		<Resource tag="QUEESESTOALUMNO">What can I do on @1@?</Resource>
 		<Resource tag="LISTARPERFILCORTO">All @1@</Resource>
 		<Resource tag="ACEPTARCONDICIONES2"> of @1@</Resource>
@@ -811,17 +885,17 @@
 		<Resource tag="TODASUACTIVIDAD">all its activity</Resource>
 		<Resource tag="RECURSOSENCOMUNIDADES">published resources</Resource>
 		<Resource tag="RECURSOSENESPACIOPERSONAL">Resources in your space</Resource>
-    <Resource tag="INTRODUCENOMBRE">Enter your name</Resource>
-    <Resource tag="INTRODUCEAPELLIDO">Enter your lastname</Resource>
-    <Resource tag="INTRODUCEEMAIL">Enter your mail</Resource>
-    <Resource tag="INTRODUCETWITTER">Enter your Twitter account</Resource>
-    <Resource tag="INTRODUCEFACEBOOK">Enter your Facebook account</Resource>
-    <Resource tag="INTRODUCELINKEDIN">Enter your Linkedin account</Resource>
-    <Resource tag="INTRODUCEURL">Enter a url and add it</Resource>
-    <Resource tag="OTROSSTIOSINTERES">Other sites of interest</Resource>
-    <Resource tag="ADD">Add</Resource>
-    <Resource tag="ELIMINAR">Delete</Resource>
-    <Resource tag="ELIMINAREMAILTUTOR">As you are of legal age you can delete your parent/guardian mail.</Resource>
+		<Resource tag="INTRODUCENOMBRE">Enter your name</Resource>
+		<Resource tag="INTRODUCEAPELLIDO">Enter your lastname</Resource>
+		<Resource tag="INTRODUCEEMAIL">Enter your mail</Resource>
+		<Resource tag="INTRODUCETWITTER">Enter your Twitter account</Resource>
+		<Resource tag="INTRODUCEFACEBOOK">Enter your Facebook account</Resource>
+		<Resource tag="INTRODUCELINKEDIN">Enter your Linkedin account</Resource>
+		<Resource tag="INTRODUCEURL">Enter a url and add it</Resource>
+		<Resource tag="OTROSSTIOSINTERES">Other sites of interest</Resource>
+		<Resource tag="ADD">Add</Resource>
+		<Resource tag="ELIMINAR">Delete</Resource>
+		<Resource tag="ELIMINAREMAILTUTOR">As you are of legal age you can delete your parent/guardian mail.</Resource>
 	</page>
 	<page name="PERFILIMPORTARDELICIOUS">
 		<Resource tag="TITULO">Import your bookmarks from Delicious to @1@</Resource>
@@ -934,6 +1008,7 @@
 		<Resource tag="EJEMPLONOMBRECORTOASIGNATURA">Eg.:OC</Resource>
 	</page>
 	<page name="REGISTROUSUARIOORGANIZACION">
+		<Resource tag="EMAILTUTOR">Tutor's email address</Resource>
 		<Resource tag="USARMYGNOSS">Use the email of my @1@ account</Resource>
 		<Resource tag="TITULOPAGINA">Register</Resource>
 		<Resource tag="DATOSCONTACTOPRINC">Data of the main contact</Resource>
@@ -999,8 +1074,7 @@
 		<Resource tag="ELIMINARDEFAVORITOS">Remove from favorites</Resource>
 		<Resource tag="SUSCRIBIRMETODO">All his/her activity</Resource>
 		<Resource tag="RECURSOSPERFILPERSONAL">Public resources on his/her personal profile</Resource>
-		<Resource tag="GESTIONARSUSCRIPCIONESA">
-		</Resource>
+		<Resource tag="GESTIONARSUSCRIPCIONESA"></Resource>
 		<Resource tag="SUSCRIPCIONESENCOMUNIDAD">Subscriptions in this community</Resource>
 		<Resource tag="ATODASCATEGORIAS">All categories</Resource>
 		<Resource tag="SUSCRIPCIONCORRECTA">Subscription successful</Resource>
@@ -1008,6 +1082,7 @@
 		<Resource tag="DESEASRECIBIRNEWSLETTER">You want to receive the newsletter</Resource>
 		<Resource tag="SECCIONNOTIFICACIONPERFIL">notifications section of your profile</Resource>
 		<Resource tag="SECCIONSUSCRIBETECOMUNIDAD">subscribe section of @1@</Resource>
+    <Resource tag="RECURSOPUBLICADOEL">Resource published on @1@</Resource>
 	</page>
 	<page name="BANDEJAENTRADA">
 		<Resource tag="VOLVERLISTADO">back to message list</Resource>
@@ -1317,7 +1392,7 @@
 		<Resource tag="TITULO">Title</Resource>
 		<Resource tag="DESCRIPCION">Description</Resource>
 		<Resource tag="ENLACE">Link</Resource>
-		<Resource tag="ETIQUETAS">Tags     (Separated with comas)</Resource>
+		<Resource tag="ETIQUETAS">Tags * (Separated with comas)</Resource>
 		<Resource tag="AUTORPROPIO">  I am the author of this document</Resource>
 		<Resource tag="FICHABIBLIOGRAFICA">Bibliographic card</Resource>
 		<Resource tag="PUBLICAR">Publish</Resource>
@@ -1814,7 +1889,7 @@
 		<Resource tag="NINGUNO">None</Resource>
 		<Resource tag="LEIDOS">Read</Resource>
 		<Resource tag="NOLEIDOS">No read</Resource>
-		<Resource tag="COMPACTADA">compact</Resource>
+		<Resource tag="COMPACTADA">Compact</Resource>
 		<Resource tag="NORMAL">normal view</Resource>
 		<Resource tag="MENSAJESRELACIONADOS">Related messages</Resource>
 	</page>
@@ -2471,7 +2546,7 @@
 		<Resource tag="PENDIENTESNUM">Review feeds RSS/ATOM {span class="avisoGris"}@1@{/span}</Resource>
 		<Resource tag="EDITARPENDIENTE">Edit pending resource</Resource>
 		<Resource tag="PUBLICAR">Do you want to publish the selected resources?</Resource>
-		<Resource tag="ELIMINARUNO">Do you want to remove the resource @1@?</Resource>
+		<Resource tag="ELIMINARUNO">Do you want to delete the resource @1@?</Resource>
 		<Resource tag="TODAS">All</Resource>
 		<Resource tag="OTRAS">Other</Resource>
 		<Resource tag="FILTRARFUENTES">Filter sources</Resource>
@@ -2751,7 +2826,7 @@
 		<Resource tag="EXPLICACIONCERRADA">The community members, like the rest of the @1@ users, can only surf the community and explore its contents.</Resource>
 		<Resource tag="EXPLICACIONCERRANDOSE">The community will be closed, but before that it will remain in 'grace period' for some days. During this period, users will have the possibility of downloading resources, reading the community contents and sharing them with other @1@ spaces. But you cannot upload anything new. After this period the community will not be accessible.</Resource>
 		<Resource tag="INFOOWL4"> that we will develop it on @1@</Resource>
-		<Resource tag="DESCRIPCIONIDIOMACOMUNIDAD">Las comunidades de @3@ ofrecen a sus administradores la posibilidad de editar el {a href="@1@"}índice de categorías{/a} y los {a href="@2@"}paneles informativos{/a} (widgets tipo HTML incrustado) en español, inglés y portugués.  ¿Quieres que tu comunidad @3@ sea multilingüe? Activa el siguiente check y elige su idioma por defecto.</Resource>
+		<Resource tag="DESCRIPCIONIDIOMACOMUNIDAD">Las comunidades de @3@ ofrecen a sus administradores la posibilidad de editar el {a href="@1@"}índice de categorías{/a} y los {a href="@2@"}paneles informativos{/a} (widgets tipo HTML incrustado) en varios idiomas.  ¿Quieres que tu comunidad @3@ sea multilingüe? Activa el siguiente check y elige su idioma por defecto.</Resource>
 		<Resource tag="UTILIDADES">Utilities</Resource>
 		<Resource tag="GADGETS">Design</Resource>
 		<Resource tag="CONFIGURACION">Settings of the resources options</Resource>
@@ -2978,7 +3053,7 @@
 		<Resource tag="CREARWIDGET">Create widget</Resource>
 		<Resource tag="FUENTESRSS">RSS {span class = "warning"} @1@{/span}</Resource>
 		<Resource tag="SOLICITUDESPERTENECERGRUPO">Requests for group membership {span class="aviso"}@1@{/span}</Resource>
-		<Resource tag="SOLICITUDESACCESO">Manage requests {span class = "warning"} @1@{/span}</Resource>
+		<Resource tag="SOLICITUDESACCESO">Manage requests</Resource>
 		<Resource tag="ENVIARNEWSLETTER">Send newsletter</Resource>
 		<Resource tag="NEWSLETTER">Receive newsletter</Resource>
 		<Resource tag="ABANDONARLACOMUNIDAD">Leave the community</Resource>
@@ -3422,8 +3497,7 @@
 		<Resource tag="PARRAFO2">We recommend that you update your internet browser:</Resource>
 	</page>
 	<page name="GRUPO">
-		<Resource tag="CREARGRUPOCOMUNIDAD">
-		</Resource>
+		<Resource tag="CREARGRUPOCOMUNIDAD">Create community group</Resource>
 		<Resource tag="EDITARGRUPOCOMUNIDAD">
 		</Resource>
 		<Resource tag="CREARGRUPOORGANIZACION">
@@ -3434,8 +3508,7 @@
 		<Resource tag="EDITARGRUPO">Editar grupo</Resource>
 		<Resource tag="MIEMBROS">Miembros</Resource>
 		<Resource tag="MIEMBROSCONPERMISO">Miembros con permiso sobre el grupo</Resource>
-		<Resource tag="INFOMIEMBROSCOMUNIDAD">
-		</Resource>
+		<Resource tag="INFOMIEMBROSCOMUNIDAD">Select from the community members those you want to participate in this group</Resource>
 		<Resource tag="INFOMIEMBROSORGANIZACION">
 		</Resource>
 		<Resource tag="GRUPO">Grupo</Resource>
@@ -3528,6 +3601,7 @@
 		<Resource tag="INVITACIONESORG">invitations-org</Resource>
 		<Resource tag="INVITACIONINVALIDA">expired-link</Resource>
 		<Resource tag="LOGIN">login</Resource>
+		<Resource tag="AUTENTICACIONDOBLEFACTOR">two-factor-authentication</Resource>
 		<Resource tag="ACEPTARINVITACION">accept-invitation</Resource>
 		<Resource tag="LANDINGUNI20">universidad20</Resource>
 		<Resource tag="LANDINGDIDACTALIAEXP">didactalia</Resource>
@@ -3802,6 +3876,9 @@
 		<Resource tag="ACTUALIZARADDTOGNOSSNAVG">update-addtognoss-browser</Resource>
 		<Resource tag="ADMINISTRARVISTAS">admin-views</Resource>
 	</page>
+	<page name="COMADMINCOMUNIDAD">
+		<Resource tag="ADMINMETAADMINOPTIONS">Meta-administrator options</Resource>
+	</page>
 	<page name="COMADMINDISENIO">
 		<Resource tag="XMLSUBIDO">Archivo subido correctamente</Resource>
 		<Resource tag="XMLVACIO">
@@ -3825,6 +3902,46 @@
 		<Resource tag="FECHADESUBIDA">
 		</Resource>
 	</page>
+	<page name="DEVTOOLS">
+		<!--TRADUCCIONES PÁGINA ESTADO SISTEMAS-->
+		<Resource tag="SERVICIOACTIVO">The service is activate.</Resource>
+		<Resource tag="SERVICIOONTOLOGIASNOFUNCIONA">Ontologies Service is not working properly.</Resource>
+		<Resource tag="SERVICIOINTERNONOFUNCIONA">Inter Service is not working properly.</Resource>
+		<Resource tag="FALLOPETICIONAGREGARDOCUMENTOS">Fail in the recuest to add documents.</Resource>
+		<Resource tag="ERROR404ESTADOSERVICIO">Error 404. Check that service is up and the domain is configurated properly.</Resource>
+		<Resource tag="ERRORALCONECTARSEALERVICIO">Error to conect to the service. Check that service is up and the domain is configurated properly.</Resource>
+		<Resource tag="SERVICIODOCUMENTOSNOFUNCIONA">Documents Service is not working properly.</Resource>
+		<Resource tag="REPLICACIONBIDIRECCIONALNOCONFIGURADA">The bidireccional replication is not configurated.</Resource>
+		<Resource tag="FALLOALOBTENERSERVICIODEAFINIDAD">Fail to obtein the Afinity service.</Resource>
+		<Resource tag="SERVICIOSEARCHGRAPHGENERATORNOCONSUMELEMENTOSCOLA">The SearchGraphGenerator service is not consuming queue elements.</Resource>
+		<Resource tag="SERVICIOFUNCIONANDOCORRECTAMENTE">The service is working properly.</Resource>
+		<Resource tag="CONEXIONCOLASERVICIOSWINDERABBITMQNOCONFIGURADA">The parameter colaServiciosWin with the conexion of RabbitMQ is not configurated.</Resource>
+		<Resource tag="NOSEHAPODIDOCOMPROBARELSERVICIO">The service can't be checked.</Resource>
+		<Resource tag="ERRORENVIRTUOSONOAFIN">Error in @1@.</Resource>
+		<Resource tag="NOSEHAPODIDOCOMPROBARHAPROXY">Could not check the status of HaProxy.</Resource>
+		<Resource tag="NOSEHAPODIDOCOMPROBARREDIS">Could not check the status of Redis.</Resource>
+		<Resource tag="ERRORREPLICACIONBIDIRECCIONAL">Error in bidireccional replication.</Resource>
+		<Resource tag="ERRORREPLICACIONMAESTROESCLAVO">Error in master-slave replication.</Resource>
+		<Resource tag="REPLICACIONVIRTUOSONOCONFIGURADA">The replication of Virtuoso is not configurated.</Resource>
+		<Resource tag="NOSEHAPODIDOLEERTRIPLESDELRECURSOEN6INTENTOS">It was not possible to read the triples of the resorce after 6 attempts.</Resource>
+		<Resource tag="SERVICIOTHUMBNAILGENERATORNOCONSUMEELEMENTOSCOLA">ThumbnailGenerator service is not consuming queue elements.</Resource>
+		<Resource tag="CONEXIONCOLASERVICIOSWINDETHUMBNAILGENERATORNOCONFIGURADA">The parameter colaServiciosWin with the conexion of ThumbnailGenerator is not configurated.</Resource>
+		<Resource tag="LUCENEAUTOCOPLETEYAPILUCENEACTIVOS">Lucene Autocomplete and API of Lucene are activate.</Resource>
+		<Resource tag="FALLOSERVICIOAUTOCOMPLETEGENERATOR">Fail in service autocomplete generator.</Resource>
+		<Resource tag="SERVICIOSEARCHGRAPHGENERATIONSINACCESOASERVICIOONTOLOGIAS">SearchGraphGeneration service don't have access to Ontologies service.</Resource>
+		<Resource tag="SERVICIOSEARCHGRAPHGENERATIONNOCONSUMEELEMENTOSENCOLA">The service is not consuming queue elements.</Resource>
+		<Resource tag="ERRORRABBIT">Error in Rabbit.</Resource>
+		<Resource tag="NOSEHAPODIDODESCARGARLAIMAGEN">Could not donload the image.</Resource>
+		<Resource tag="LAVISTANOSEHAREGISTRADO">The visit has not registred.</Resource>
+		<Resource tag="LABDSERVICIODEREDISNOESTACONFIGURADA">The BD: @1@ of Redis is not configurated properly. \n</Resource>
+		<Resource tag="FALLOCONEXIONREDIS">Fail in the conexion to Redis: @1@.</Resource>
+		<Resource tag="REDISACTIVO">Redis is activate.</Resource>
+		<Resource tag="ONTOLOGIAS">Ontologies</Resource>
+		<Resource tag="DOCUMENTOS">Documents</Resource>
+		<Resource tag="SERVICIOINTERNO">Intern</Resource>
+		<Resource tag="REPLICACIONDEVIRTUOSO">Virtuoso replication</Resource>
+		<Resource tag="NOSEHAPODIDOGUARDARLAURL">Could not save URL, @1@ is missing</Resource>
+	</page>
 	<page name="MENSAJECOOKIES">
 		<Resource tag="AVISOPOLITICA">We use own and third party cookies to improve your browsing experience. More information in {a href="@1@"}Cookies policy{/a}.</Resource>
 		<Resource tag="MODIFICAR">Modify</Resource>
@@ -3837,5 +3954,14 @@
 		<Resource tag="DESCRIPCIONCOOKIESANALITICAS">These are cookies that allow the party responsible for them to monitor and analyse the behaviour of users of the websites to which they are linked, including the quantification of the impact of advertisements. The information collected through this type of cookies is used to measure the activity of the websites, application or platform, in order to introduce improvements based on the analysis of the usage data of the users of the service.</Resource>
 		<Resource tag="NOMBRECOOKIESREDESSOCIALES">Social networks</Resource>
 		<Resource tag="DESCRIPCIONCOOKIESREDESSOCIALES">Social network cookies</Resource>
+	</page>
+	<page name="DOBLEFACTORAUTENTICACION">		
+		<Resource tag="AUTENTICACIONDOBLEFACTOR">Two-factor authentication</Resource>
+		<Resource tag="INTRODUCEELCODIGOPARAAUTENTICARTE">Enter the security code that has been sent to your email to authenticate</Resource>
+		<Resource tag="CODIGO">Code</Resource>
+		<Resource tag="CODIGODESEGURIDADNOVALIDOOCADUCADO">The security code entered is not valid or has expired</Resource>
+		<Resource tag="NODISPONESDECODIGODESEGURIDAD">Don't you have a security code?</Resource>
+		<Resource tag="INICIASESIONPARASOLICITARUNO">Log in to request one</Resource>
+		<Resource tag="INDICAAUTENTICACIONDOBLEFACTORACTIVADA">Indicate whether two-factor authentication is activated</Resource>		
 	</page>
 </Resources>

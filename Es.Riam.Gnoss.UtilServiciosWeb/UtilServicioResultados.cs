@@ -671,6 +671,22 @@ namespace Es.Riam.Gnoss.UtilServiciosWeb
                 pCargadorResultadosModel.FiltroOrdenDescendente = filtroOrdenDescendente;
                 pCargadorResultadosModel.PaginaActual = paginaActual;
                 pCargadorResultadosModel.FiltroOrdenadoPor = filtroOrdenadoPor;
+                //FRAN
+                ProyectoCL proyCL = new ProyectoCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mVirtuosoAD, mServicesUtilVirtuosoAndReplication);
+                DataWrapperProyecto dataWrapperProyecto = proyCL.ObtenerFiltrosOrdenesDeProyecto(pCargadorResultadosModel.Proyecto.FilaProyecto.ProyectoID);
+                proyCL.Dispose();
+
+                if (dataWrapperProyecto.ListaProyectoPestanyaFiltroOrdenRecursos != null && dataWrapperProyecto.ListaProyectoPestanyaFiltroOrdenRecursos.Count > 0)
+                {
+                    ProyectoPestanyaFiltroOrdenRecursos filaFiltroOrden = dataWrapperProyecto.ListaProyectoPestanyaFiltroOrdenRecursos.Where(fila => fila.PestanyaID.Equals(pCargadorResultadosModel.PestanyaActualID) && fila.FiltroOrden.Equals(filtroOrdenadoPor)).FirstOrDefault();
+                    if (filaFiltroOrden != null)
+                    {
+                        if (!string.IsNullOrEmpty(filaFiltroOrden.Consulta) && !string.IsNullOrEmpty(filaFiltroOrden.OrderBy))
+                        {
+                            pCargadorResultadosModel.FiltroOrdenadoPor = $"###ClausulaOrdenPersonalizado###{filaFiltroOrden.OrderBy}###ClausulaOrdenPersonalizadoSeparador###{filaFiltroOrden.Consulta}###ClausulaOrdenPersonalizado###";
+                        }
+                    }
+                }
             }
 
             if (!string.IsNullOrEmpty(pCargadorResultadosModel.FiltroOrdenadoPor) && pCargadorResultadosModel.FiltroOrdenadoPor.Contains("[lang]"))
@@ -686,7 +702,7 @@ namespace Es.Riam.Gnoss.UtilServiciosWeb
             #region Filtros
             bool esBusquedaGrafoHome = EsBusquedaMyGnossGrafoHome(pCargadorResultadosModel.TipoBusqueda);
 
-            if (!pCargadorResultadosModel.ListaFiltros.ContainsKey("rdf:type") && (string.IsNullOrEmpty(pFiltroContexto) || (!pFiltroContexto.Contains("rdf:type ?rdftype ") && (!pFiltroContexto.Contains("rdf:type ?rdftype.")))))
+            if ((!pCargadorResultadosModel.ListaFiltros.ContainsKey("rdf:type") || pCargadorResultadosModel.ListaFiltros["rdf:type"].Contains("PerYOrg")) && (string.IsNullOrEmpty(pFiltroContexto) || (!pFiltroContexto.Contains("rdf:type ?rdftype ") && (!pFiltroContexto.Contains("rdf:type ?rdftype.")))))
             {
                 switch (pCargadorResultadosModel.TipoBusqueda)
                 {
@@ -771,7 +787,14 @@ namespace Es.Riam.Gnoss.UtilServiciosWeb
             //Añado a los filtros el tipo de item por el que estamos buscando
             if (pCargadorResultadosModel.ListaItemsBusqueda.Count > 0)
             {
-                pCargadorResultadosModel.ListaFiltros.Add("rdf:type", pCargadorResultadosModel.ListaItemsBusqueda);
+                if (pCargadorResultadosModel.ListaFiltros.ContainsKey("rdf:type"))
+                {
+                    pCargadorResultadosModel.ListaFiltros["rdf:type"].AddRange(pCargadorResultadosModel.ListaItemsBusqueda);
+                }
+                else
+                {
+                    pCargadorResultadosModel.ListaFiltros.Add("rdf:type", pCargadorResultadosModel.ListaItemsBusqueda);
+                }
             }
             else if (pCargadorResultadosModel.ListaFiltros.ContainsKey("rdf:type"))
             {
@@ -1501,7 +1524,7 @@ namespace Es.Riam.Gnoss.UtilServiciosWeb
             }
             else if (pCargadorResultadosModel.BusquedaTipoMapa)
             {
-                pCargadorResultadosModel.FacetadoCL.ObtenerResultadosBusquedaFormatoMapa(pCargadorResultadosModel.FacetadoDS, pCargadorResultadosModel.ListaFiltros, pCargadorResultadosModel.ListaItemsBusquedaExtra, pCargadorResultadosModel.EsMyGnoss, pCargadorResultadosModel.EstaEnProyecto, pCargadorResultadosModel.EsUsuarioInvitado, pCargadorResultadosModel.IdentidadID.ToString(), pCargadorResultadosModel.FormulariosSemanticos, pCargadorResultadosModel.FiltroContextoSelect, pCargadorResultadosModel.FiltroContextoWhere, pCargadorResultadosModel.FiltroContextoOrderBy, pCargadorResultadosModel.TipoProyecto, pCargadorResultadosModel.NamespacesExtra, pCargadorResultadosModel.ResultadosEliminar, mUtilServiciosFacetas.ObtenerDataSetConsultaMapaProyecto(pCargadorResultadosModel.Proyecto.FilaProyecto.OrganizacionID, pCargadorResultadosModel.ProyectoSeleccionado, pCargadorResultadosModel.TipoBusqueda), permitirRecursosPrivados, pCargadorResultadosModel.TipoBusqueda, pEsMovil, pCargadorResultadosModel.FiltrosSearchPersonalizados, pCargadorResultadosModel.Proyecto.Clave);
+                pCargadorResultadosModel.FacetadoCL.ObtenerResultadosBusquedaFormatoMapa(pCargadorResultadosModel.FacetadoDS, pCargadorResultadosModel.ListaFiltros, pCargadorResultadosModel.ListaItemsBusquedaExtra, pCargadorResultadosModel.EsMyGnoss, pCargadorResultadosModel.EstaEnProyecto, pCargadorResultadosModel.EsUsuarioInvitado, pCargadorResultadosModel.IdentidadID.ToString(), pCargadorResultadosModel.FormulariosSemanticos, pCargadorResultadosModel.FiltroContextoSelect, pCargadorResultadosModel.FiltroContextoWhere, pCargadorResultadosModel.FiltroContextoOrderBy, pCargadorResultadosModel.TipoProyecto, pCargadorResultadosModel.NamespacesExtra, pCargadorResultadosModel.ResultadosEliminar, mUtilServiciosFacetas.ObtenerDataSetConsultaMapaProyecto(pCargadorResultadosModel.Proyecto.FilaProyecto.OrganizacionID, pCargadorResultadosModel.ProyectoSeleccionado, pCargadorResultadosModel.TipoBusqueda), permitirRecursosPrivados, pCargadorResultadosModel.TipoBusqueda, pEsMovil, pCargadorResultadosModel.FiltrosSearchPersonalizados, pCargadorResultadosModel.Proyecto.Clave, pCargadorResultadosModel.LanguageCode);
                 pCargadorResultadosModel.NumeroResultados = pCargadorResultadosModel.FacetadoDS.Tables["RecursosBusqueda"].Rows.Count;
             }
             else if (pCargadorResultadosModel.TipoBusqueda.Equals(TipoBusqueda.PersonasYOrganizaciones))
@@ -1535,7 +1558,14 @@ namespace Es.Riam.Gnoss.UtilServiciosWeb
                     {
                         if (pCargadorResultadosModel.ListaFiltros.ContainsKey("search"))
                         {
-                            pCargadorResultadosModel.FacetadoCL.ObtenerResultadosBusqueda(pCargadorResultadosModel.FiltroOrdenDescendente, pCargadorResultadosModel.FacetadoDS, pCargadorResultadosModel.FiltroOrdenadoPor, pCargadorResultadosModel.ListaFiltros, pCargadorResultadosModel.ListaItemsBusquedaExtra, pCargadorResultadosModel.EsMyGnoss, pCargadorResultadosModel.EstaEnProyecto, pCargadorResultadosModel.EsUsuarioInvitado, pCargadorResultadosModel.IdentidadID.ToString(), pInicio, pLimite, pCargadorResultadosModel.FormulariosSemanticos, pCargadorResultadosModel.FiltroContextoSelect, pCargadorResultadosModel.FiltroContextoWhere, pCargadorResultadosModel.FiltroContextoOrderBy, pCargadorResultadosModel.FiltroContextoPesoMinimo, pCargadorResultadosModel.TipoProyecto, pCargadorResultadosModel.NamespacesExtra, pCargadorResultadosModel.ResultadosEliminar, permitirRecursosPrivados, false, tiposAlgoritmoTransformacion, pCargadorResultadosModel.FiltrosSearchPersonalizados, pEsMovil, pCargadorResultadosModel.ListaRecursosExcluidos, pUsarAfinidad);
+                            int cont = 0;
+                            foreach (string search in pCargadorResultadosModel.ListaFiltros["search"])
+                            {
+                                pCargadorResultadosModel.ListaFiltros["search"][cont] = UtilCadenas.LimpiarInyeccionCodigo(search);
+                                cont++;
+                            }
+
+                            pCargadorResultadosModel.FacetadoCL.ObtenerResultadosBusqueda(pCargadorResultadosModel.FiltroOrdenDescendente, pCargadorResultadosModel.FacetadoDS, pCargadorResultadosModel.FiltroOrdenadoPor, pCargadorResultadosModel.ListaFiltros, pCargadorResultadosModel.ListaItemsBusquedaExtra, pCargadorResultadosModel.EsMyGnoss, pCargadorResultadosModel.EstaEnProyecto, pCargadorResultadosModel.EsUsuarioInvitado, pCargadorResultadosModel.IdentidadID.ToString(), pInicio, pLimite, pCargadorResultadosModel.FormulariosSemanticos, pCargadorResultadosModel.FiltroContextoSelect, pCargadorResultadosModel.FiltroContextoWhere, pCargadorResultadosModel.FiltroContextoOrderBy, pCargadorResultadosModel.FiltroContextoPesoMinimo, pCargadorResultadosModel.TipoProyecto, pCargadorResultadosModel.NamespacesExtra, pCargadorResultadosModel.ResultadosEliminar, permitirRecursosPrivados, false, tiposAlgoritmoTransformacion, pCargadorResultadosModel.FiltrosSearchPersonalizados, pEsMovil, pCargadorResultadosModel.ListaRecursosExcluidos, pCargadorResultadosModel.LanguageCode, pUsarAfinidad);
 
                             //Si la búsqueda obtiene resutlados salimos del bucle
                             if (pCargadorResultadosModel.FacetadoDS.Tables["RecursosBusqueda"].Rows.Count > 0)
@@ -1553,7 +1583,7 @@ namespace Es.Riam.Gnoss.UtilServiciosWeb
                         if (!recursosCargados && !searchPaginadoSinResultados)
                         {
                             //Buscar cualquier otro tipo de resultado
-                            pCargadorResultadosModel.FacetadoCL.ObtenerResultadosBusqueda(pCargadorResultadosModel.FiltroOrdenDescendente, pCargadorResultadosModel.FacetadoDS, pCargadorResultadosModel.FiltroOrdenadoPor, pCargadorResultadosModel.ListaFiltros, pCargadorResultadosModel.ListaItemsBusquedaExtra, pCargadorResultadosModel.EsMyGnoss, pCargadorResultadosModel.EstaEnProyecto, pCargadorResultadosModel.EsUsuarioInvitado, pCargadorResultadosModel.IdentidadID.ToString(), pInicio, pLimite, pCargadorResultadosModel.FormulariosSemanticos, pCargadorResultadosModel.FiltroContextoSelect, pCargadorResultadosModel.FiltroContextoWhere, pCargadorResultadosModel.FiltroContextoOrderBy, pCargadorResultadosModel.FiltroContextoPesoMinimo, pCargadorResultadosModel.TipoProyecto, pCargadorResultadosModel.NamespacesExtra, pCargadorResultadosModel.ResultadosEliminar, permitirRecursosPrivados, pCargadorResultadosModel.FiltrosSearchPersonalizados, pEsMovil, pCargadorResultadosModel.ListaRecursosExcluidos, pUsarAfinidad);
+                            pCargadorResultadosModel.FacetadoCL.ObtenerResultadosBusqueda(pCargadorResultadosModel.FiltroOrdenDescendente, pCargadorResultadosModel.FacetadoDS, pCargadorResultadosModel.FiltroOrdenadoPor, pCargadorResultadosModel.ListaFiltros, pCargadorResultadosModel.ListaItemsBusquedaExtra, pCargadorResultadosModel.EsMyGnoss, pCargadorResultadosModel.EstaEnProyecto, pCargadorResultadosModel.EsUsuarioInvitado, pCargadorResultadosModel.IdentidadID.ToString(), pInicio, pLimite, pCargadorResultadosModel.FormulariosSemanticos, pCargadorResultadosModel.FiltroContextoSelect, pCargadorResultadosModel.FiltroContextoWhere, pCargadorResultadosModel.FiltroContextoOrderBy, pCargadorResultadosModel.FiltroContextoPesoMinimo, pCargadorResultadosModel.TipoProyecto, pCargadorResultadosModel.NamespacesExtra, pCargadorResultadosModel.ResultadosEliminar, permitirRecursosPrivados, pCargadorResultadosModel.FiltrosSearchPersonalizados, pEsMovil, pCargadorResultadosModel.ListaRecursosExcluidos, pCargadorResultadosModel.LanguageCode, pUsarAfinidad);
                         }
                     }));
                 }
@@ -1561,8 +1591,14 @@ namespace Es.Riam.Gnoss.UtilServiciosWeb
                 {
                     if (pCargadorResultadosModel.ListaFiltros.ContainsKey("search"))
                     {
+                        int cont = 0;
+                        foreach (string search in pCargadorResultadosModel.ListaFiltros["search"].ToList())
+                        {
+                            pCargadorResultadosModel.ListaFiltros["search"][cont] = UtilCadenas.LimpiarInyeccionCodigo(search);
+                            cont++;
+                        }
                         //Intenta hacer la consulta sin omitir palabras irrelevantes
-                        pCargadorResultadosModel.FacetadoCL.ObtenerResultadosBusqueda(pCargadorResultadosModel.FiltroOrdenDescendente, pCargadorResultadosModel.FacetadoDS, pCargadorResultadosModel.FiltroOrdenadoPor, pCargadorResultadosModel.ListaFiltros, pCargadorResultadosModel.ListaItemsBusquedaExtra, pCargadorResultadosModel.EsMyGnoss, pCargadorResultadosModel.EstaEnProyecto, pCargadorResultadosModel.EsUsuarioInvitado, pCargadorResultadosModel.IdentidadID.ToString(), pInicio, pLimite, pCargadorResultadosModel.FormulariosSemanticos, pCargadorResultadosModel.FiltroContextoSelect, pCargadorResultadosModel.FiltroContextoWhere, pCargadorResultadosModel.FiltroContextoOrderBy, pCargadorResultadosModel.FiltroContextoPesoMinimo, pCargadorResultadosModel.TipoProyecto, pCargadorResultadosModel.NamespacesExtra, pCargadorResultadosModel.ResultadosEliminar, permitirRecursosPrivados, false, tiposAlgoritmoTransformacion, pCargadorResultadosModel.FiltrosSearchPersonalizados, pEsMovil, pCargadorResultadosModel.ListaRecursosExcluidos, pUsarAfinidad);
+                        pCargadorResultadosModel.FacetadoCL.ObtenerResultadosBusqueda(pCargadorResultadosModel.FiltroOrdenDescendente, pCargadorResultadosModel.FacetadoDS, pCargadorResultadosModel.FiltroOrdenadoPor, pCargadorResultadosModel.ListaFiltros, pCargadorResultadosModel.ListaItemsBusquedaExtra, pCargadorResultadosModel.EsMyGnoss, pCargadorResultadosModel.EstaEnProyecto, pCargadorResultadosModel.EsUsuarioInvitado, pCargadorResultadosModel.IdentidadID.ToString(), pInicio, pLimite, pCargadorResultadosModel.FormulariosSemanticos, pCargadorResultadosModel.FiltroContextoSelect, pCargadorResultadosModel.FiltroContextoWhere, pCargadorResultadosModel.FiltroContextoOrderBy, pCargadorResultadosModel.FiltroContextoPesoMinimo, pCargadorResultadosModel.TipoProyecto, pCargadorResultadosModel.NamespacesExtra, pCargadorResultadosModel.ResultadosEliminar, permitirRecursosPrivados, false, tiposAlgoritmoTransformacion, pCargadorResultadosModel.FiltrosSearchPersonalizados, pEsMovil, pCargadorResultadosModel.ListaRecursosExcluidos, pCargadorResultadosModel.LanguageCode, pUsarAfinidad);
 
                         //Si la búsqueda obtiene resutlados salimos del bucle
                         if (pCargadorResultadosModel.FacetadoDS.Tables["RecursosBusqueda"].Rows.Count > 0)
@@ -1580,7 +1616,7 @@ namespace Es.Riam.Gnoss.UtilServiciosWeb
                     if (!recursosCargados && !searchPaginadoSinResultados)
                     {
                         //Buscar cualquier otro tipo de resultado
-                        pCargadorResultadosModel.FacetadoCL.ObtenerResultadosBusqueda(pCargadorResultadosModel.FiltroOrdenDescendente, pCargadorResultadosModel.FacetadoDS, pCargadorResultadosModel.FiltroOrdenadoPor, pCargadorResultadosModel.ListaFiltros, pCargadorResultadosModel.ListaItemsBusquedaExtra, pCargadorResultadosModel.EsMyGnoss, pCargadorResultadosModel.EstaEnProyecto, pCargadorResultadosModel.EsUsuarioInvitado, pCargadorResultadosModel.IdentidadID.ToString(), pInicio, pLimite, pCargadorResultadosModel.FormulariosSemanticos, pCargadorResultadosModel.FiltroContextoSelect, pCargadorResultadosModel.FiltroContextoWhere, pCargadorResultadosModel.FiltroContextoOrderBy, pCargadorResultadosModel.FiltroContextoPesoMinimo, pCargadorResultadosModel.TipoProyecto, pCargadorResultadosModel.NamespacesExtra, pCargadorResultadosModel.ResultadosEliminar, permitirRecursosPrivados, pCargadorResultadosModel.FiltrosSearchPersonalizados, pEsMovil, pCargadorResultadosModel.ListaRecursosExcluidos, pUsarAfinidad);
+                        pCargadorResultadosModel.FacetadoCL.ObtenerResultadosBusqueda(pCargadorResultadosModel.FiltroOrdenDescendente, pCargadorResultadosModel.FacetadoDS, pCargadorResultadosModel.FiltroOrdenadoPor, pCargadorResultadosModel.ListaFiltros, pCargadorResultadosModel.ListaItemsBusquedaExtra, pCargadorResultadosModel.EsMyGnoss, pCargadorResultadosModel.EstaEnProyecto, pCargadorResultadosModel.EsUsuarioInvitado, pCargadorResultadosModel.IdentidadID.ToString(), pInicio, pLimite, pCargadorResultadosModel.FormulariosSemanticos, pCargadorResultadosModel.FiltroContextoSelect, pCargadorResultadosModel.FiltroContextoWhere, pCargadorResultadosModel.FiltroContextoOrderBy, pCargadorResultadosModel.FiltroContextoPesoMinimo, pCargadorResultadosModel.TipoProyecto, pCargadorResultadosModel.NamespacesExtra, pCargadorResultadosModel.ResultadosEliminar, permitirRecursosPrivados, pCargadorResultadosModel.FiltrosSearchPersonalizados, pEsMovil, pCargadorResultadosModel.ListaRecursosExcluidos, pCargadorResultadosModel.LanguageCode, pUsarAfinidad);
                     }
                 }
             }

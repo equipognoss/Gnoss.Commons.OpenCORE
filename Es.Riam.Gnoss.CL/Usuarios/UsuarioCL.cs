@@ -1,9 +1,12 @@
 using Es.Riam.AbstractsOpen;
 using Es.Riam.Gnoss.AD.EncapsuladoDatos;
 using Es.Riam.Gnoss.AD.EntityModel;
+using Es.Riam.Gnoss.AD.ServiciosGenerales;
+using Es.Riam.Gnoss.AD.Usuarios;
 using Es.Riam.Gnoss.Logica.Usuarios;
 using Es.Riam.Gnoss.Util.Configuracion;
 using Es.Riam.Gnoss.Util.General;
+using StackExchange.Redis;
 using System;
 using System.Collections.Generic;
 
@@ -28,6 +31,24 @@ namespace Es.Riam.Gnoss.CL.Usuarios
         private EntityContext mEntityContext;
         private LoggingService mLoggingService;
 
+        private const string SlidingRateLimiter = @$"
+            local current_time = redis.call('TIME')
+            local trim_time = tonumber(current_time[1]) - @window
+            redis.call('ZREMRANGEBYSCORE', @key, 0, trim_time)
+            local request_count = redis.call('ZCARD',@key)
+
+            if request_count < tonumber(@max_requests) then
+                redis.call('ZADD', @key, current_time[1], current_time[1] .. current_time[2])
+                redis.call('EXPIRE', @key, @window)
+                return 0
+            end
+            return 1
+            ";
+        private static LuaScript SlidingRateLimiterScript => LuaScript.Prepare(SlidingRateLimiter);
+        private const string CLAVE_USUARIO_BLOQUEADO = "LoginUsuarioEstaBloqueado_";
+        private const string CLAVE_INTENTOS_LOGIN_USUARIO = "IntentosDeLoginUsuario_";
+        private string mRedisIP;
+        private int mRedisDB;
         #endregion
 
         public UsuarioCL(EntityContext entityContext, LoggingService loggingService, RedisCacheWrapper redisCacheWrapper, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication)
@@ -36,6 +57,8 @@ namespace Es.Riam.Gnoss.CL.Usuarios
             mConfigService = configService;
             mEntityContext = entityContext;
             mLoggingService = loggingService;
+            mRedisIP = mConfigService.ObtenerConexionRedisIPMaster("liveUsuarios");
+            mRedisDB = mConfigService.ObtenerConexionRedisBD("liveUsuarios");
         }
 
         #region Métodos
@@ -123,6 +146,60 @@ namespace Es.Riam.Gnoss.CL.Usuarios
             return redireccion;
         }
 
+        /// <summary>
+        /// Comprueba si un usuario puede loguearse o esta bloqueado por haberlo intentado demasiadas veces sin exito
+        /// </summary>
+        /// <param name="pUsuarioID"></param>
+        /// <returns></returns>
+        public EstadoLoginUsuario ComprobarSiUsuarioPuedeHacerLogin(Guid pUsuarioID)
+        {         
+            ConnectionMultiplexer conexion = ConnectionMultiplexer.Connect($"{mRedisIP},defaultDatabase={mRedisDB}");
+            IDatabase db = conexion.GetDatabase();
+            int ventanaDeTiempoPeticiones = mConfigService.ObtenerVentanaTiempoLogin();
+            int maximoPeticiones = mConfigService.ObtenerNumMaxPeticionesLogin();
+            string estaBloqueado = db.StringGet($"{CLAVE_USUARIO_BLOQUEADO}{pUsuarioID}");
+            if (!string.IsNullOrEmpty(estaBloqueado))
+            {
+                conexion.Close();
+                return EstadoLoginUsuario.Bloqueado;
+            }
+
+            string claveCache = $"{CLAVE_INTENTOS_LOGIN_USUARIO}{pUsuarioID}";
+            bool limited = ((int)db.ScriptEvaluate(SlidingRateLimiterScript, new { key = claveCache, window = ventanaDeTiempoPeticiones, max_requests = maximoPeticiones })) == 1;
+            if (limited)
+            {
+                db.StringSet($"{CLAVE_USUARIO_BLOQUEADO}{pUsuarioID}", "Bloqueado", TimeSpan.FromMinutes(30));
+                conexion.Close();
+                return EstadoLoginUsuario.Bloqueado;
+            }
+
+            return EstadoLoginUsuario.PuedeIntentarHacerLogin;
+        }
+
+        /// <summary>
+        /// Elimina de cache las claves que bloquean el login del usuario
+        /// </summary>
+        /// <param name="pUsuarioID"></param>
+        public void DesbloquearUsuario(Guid pUsuarioID)
+        {
+            ConnectionMultiplexer conexion = ConnectionMultiplexer.Connect($"{mRedisIP},defaultDatabase={mRedisDB}");
+            IDatabase db = conexion.GetDatabase();
+            db.KeyDelete($"{CLAVE_USUARIO_BLOQUEADO}{pUsuarioID}");
+            db.KeyDelete($"{CLAVE_INTENTOS_LOGIN_USUARIO}{pUsuarioID}");
+            conexion.Close();
+        }
+
+        /// <summary>
+        /// Elimina de cache el contador de intentos de login de un usuario
+        /// </summary>
+        /// <param name="pUsuarioID"></param>
+        public void ReiniciarNumeroIntentosDeLoginUsuario(Guid pUsuarioID)
+        {
+            ConnectionMultiplexer conexion = ConnectionMultiplexer.Connect($"{mRedisIP},defaultDatabase={mRedisDB}");
+            IDatabase db = conexion.GetDatabase();
+            db.KeyDelete($"{CLAVE_INTENTOS_LOGIN_USUARIO}{pUsuarioID}");
+            conexion.Close();
+        }
         #endregion
 
         #region Propiedades

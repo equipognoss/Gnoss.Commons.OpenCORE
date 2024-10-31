@@ -204,6 +204,14 @@ namespace Es.Riam.Gnoss.Web.MVC.Models.Administracion
                 /// <summary>
                 /// 
                 /// </summary>
+                public string Consulta { get; set; }
+                /// <summary>
+                /// 
+                /// </summary>
+                public string OrderBy { get; set; }
+                /// <summary>
+                /// 
+                /// </summary>
                 public short Orden { get; set; }
                 /// <summary>
                 /// 

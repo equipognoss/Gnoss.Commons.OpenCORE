@@ -1,5 +1,6 @@
 using Es.Riam.AbstractsOpen;
 using Es.Riam.Gnoss.AD.EntityModel;
+using Es.Riam.Gnoss.AD.Virtuoso;
 using Es.Riam.Gnoss.CL;
 using Es.Riam.Gnoss.Elementos;
 using Es.Riam.Gnoss.Elementos.ServiciosGenerales;
@@ -34,8 +35,8 @@ namespace Es.Riam.Metagnoss.ExportarImportar.Exportadores
         /// Crea un nuevo exportador de blogs y entradas de blog.
         /// </summary>
         /// <param name="pOntologia">Ontología</param>
-        public ExportadorComunidad(Ontologia pOntologia, string pIdiomaUsuario, LoggingService loggingService, EntityContext entityContext, ConfigService configService, RedisCacheWrapper redisCacheWrapper, UtilSemCms utilSemCms, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication)
-            : base(pOntologia, pIdiomaUsuario, loggingService, entityContext, configService, redisCacheWrapper, utilSemCms, servicesUtilVirtuosoAndReplication)
+        public ExportadorComunidad(Ontologia pOntologia, string pIdiomaUsuario, LoggingService loggingService, EntityContext entityContext, ConfigService configService, RedisCacheWrapper redisCacheWrapper, UtilSemCms utilSemCms, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication, VirtuosoAD virtuosoAd)
+            : base(pOntologia, pIdiomaUsuario, loggingService, entityContext, configService, redisCacheWrapper, utilSemCms, servicesUtilVirtuosoAndReplication, virtuosoAd)
         {
             mLoggingService = loggingService;
             mEntityContext = entityContext;
@@ -58,7 +59,9 @@ namespace Es.Riam.Metagnoss.ExportarImportar.Exportadores
         public override void ObtenerAtributosEntidad(ElementoOntologia pEntidadBuscada, IElementoGnoss pElementoGnoss)
         {
             if (pEntidadBuscada.TipoEntidad.Equals(TipoElementoGnoss.Comunidad))
+            {
                 UtilImportarExportar.ObtenerAtributosEntidad(pEntidadBuscada, ((Proyecto)pElementoGnoss).FilaProyecto);
+            }                
             else if (pEntidadBuscada.TipoEntidad.Equals(TipoElementoGnoss.ComunidadSioc))
             {
                 Propiedad title = UtilImportarExportar.ObtenerPropiedadDeNombre(UtilImportarExportar.PROPIEDAD_DC_TITULO, pEntidadBuscada.Propiedades);
@@ -74,7 +77,9 @@ namespace Es.Riam.Metagnoss.ExportarImportar.Exportadores
                 pEntidadBuscada.Descripcion = pElementoGnoss.Nombre;
             }
             else
+            {
                 base.ObtenerAtributosEntidad(pEntidadBuscada, pElementoGnoss);
+            }                
         }
 
         /// <summary>
@@ -153,7 +158,7 @@ namespace Es.Riam.Metagnoss.ExportarImportar.Exportadores
             {
                 ElementoOntologia entidadCategoriaTesauro = new ElementoOntologiaGnoss(Ontologia.GetEntidadTipo(TipoElementoGnoss.CategoriasTesauroSkos));
 
-                ExportadorWiki exportadorWiki = new ExportadorWiki(Ontologia, IdiomaUsuario, mLoggingService, mEntityContext, mConfigService, mRedisCacheWrapper, mUtilSemCms, mServicesUtilVirtuosoAndReplication);
+                ExportadorWiki exportadorWiki = new ExportadorWiki(Ontologia, IdiomaUsuario, mLoggingService, mEntityContext, mConfigService, mRedisCacheWrapper, mUtilSemCms, mServicesUtilVirtuosoAndReplication, mVirtuosoAd);
 
                 entidadCategoriaTesauro.Descripcion = categoria.Nombre[IdiomaUsuario];
                 Gnoss.AD.EntityModel.Models.Tesauro.CategoriaTesauro editorRow = categoria.FilaCategoria;

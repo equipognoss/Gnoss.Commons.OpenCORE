@@ -111,10 +111,9 @@ namespace Es.Riam.Gnoss.CL.LinkedOpenDataCL
 
                 for (int i = 0; i < entidadesSeparadas.Length; i++)
                 {
-                    entidadesSeparadas[i] = ObtenerClaveCache("Entidad_" + entidadesSeparadas[i]);
+                    string clave = ObtenerClaveCache("Entidad_" + entidadesSeparadas[i]);
+                    listaResultados.Add(ObtenerObjetoDeCache(clave));
                 }
-
-                listaResultados = ObtenerVariosObjetosDeCache(entidadesSeparadas);
             }
 
             return listaResultados;

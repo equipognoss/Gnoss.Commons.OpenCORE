@@ -44,6 +44,11 @@ namespace Es.Riam.Gnoss.Web.MVC.Models.ViewModels
             /// Tipo de acceso del proyecto: privado, publico....
             /// </summary>
             public CommunityModel.TypeAccessProject AccessType { get; set; }
+            
+            /// <summary>
+            /// Tipo de proyecto: Comunidad, Metacomunidad, Educación expandida...
+            /// </summary>
+            public CommunityModel.TypeProyect ProyectType { get; set; }
         }
     }
 }

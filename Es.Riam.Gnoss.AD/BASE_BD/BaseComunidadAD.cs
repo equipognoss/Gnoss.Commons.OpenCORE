@@ -1467,8 +1467,17 @@ namespace Es.Riam.Gnoss.AD.BASE_BD
             }
 
             mEntityContextBASE.ColaCorreo.Add(colaCorreo);
-
-            mEntityContextBASE.SaveChanges();
+            try
+            {
+                mEntityContextBASE.SaveChanges();
+            }
+            catch(DbUpdateException)
+            {
+                //Por defecto el CorreoID debería asignarlo atomáticamente la base de datos, si falla lo asignamos manualmente y guardamos de nuevo
+                int numCorreos = mEntityContextBASE.ColaCorreo.Count();
+                colaCorreo.CorreoID = numCorreos + 1;
+                mEntityContextBASE.SaveChanges();
+            }
 
             return colaCorreo.CorreoID;
         }

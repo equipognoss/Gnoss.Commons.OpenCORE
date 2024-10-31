@@ -16,6 +16,10 @@ namespace Es.Riam.Gnoss.AD.EntityModel.Models.ProyectoDS
         [Required]
         public string NombreFiltro { get; set; }
 
+        public string Consulta { get; set; }
+
+        public string OrderBy { get; set; }
+
         [Column(Order = 1)]
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
         public short Orden { get; set; }

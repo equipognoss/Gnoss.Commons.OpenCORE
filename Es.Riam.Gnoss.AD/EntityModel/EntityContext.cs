@@ -44,6 +44,8 @@ namespace Es.Riam.Gnoss.AD.EntityModel
     using System.Reflection;
     using Es.Riam.Gnoss.AD.EntityModel.Models.Cookies;
     using Es.Riam.AbstractsOpen;
+    using Microsoft.Extensions.Options;
+    using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
     public partial class EntityContext : DbContext
     {
@@ -1772,6 +1774,13 @@ namespace Es.Riam.Gnoss.AD.EntityModel
                 .OnDelete(DeleteBehavior.Restrict);
 
             modelBuilder.Entity<Documento>()
+                .HasOne(e => e.Creador)
+                .WithMany(e => e.Documentos)
+                .IsRequired()
+                .HasForeignKey(e => e.CreadorID)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<Documento>()
                .HasMany(e => e.DocumentoRespuestaVoto)
                .WithOne(e => e.Documento)
                .IsRequired()
@@ -1782,6 +1791,22 @@ namespace Es.Riam.Gnoss.AD.EntityModel
                 .WithOne(e => e.Documento)
                 .IsRequired()
                 .OnDelete(DeleteBehavior.Restrict);
+            
+            if (_configService.ObtenerTipoBD().Equals("0"))
+            {
+                SqlServerIndexBuilderExtensions.IncludeProperties(modelBuilder.Entity<Documento>()
+                .HasIndex(e => new { e.Tipo, e.Eliminado, e.Visibilidad }), e => e.ProyectoID);
+            }
+            else if (_configService.ObtenerTipoBD().Equals("1"))
+            {
+                modelBuilder.Entity<Documento>()
+                .HasIndex(e => new { e.Tipo, e.Eliminado, e.Visibilidad, e.ProyectoID });
+            }
+            else if (_configService.ObtenerTipoBD().Equals("2"))
+            {
+                NpgsqlIndexBuilderExtensions.IncludeProperties(modelBuilder.Entity<Documento>()
+                .HasIndex(e => new { e.Tipo, e.Eliminado, e.Visibilidad }), e => e.ProyectoID);
+            }
 
             //Voto
 

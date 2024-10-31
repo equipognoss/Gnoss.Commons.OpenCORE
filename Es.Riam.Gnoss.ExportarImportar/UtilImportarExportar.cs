@@ -1249,6 +1249,13 @@ namespace Es.Riam.Gnoss.ExportarImportar
                     //        pEntidad.ID = ((IdentidadDS.PerfilRow)pFila).NombreCortoUsu;
                     //    }
                     //    break;
+                    case TipoElementoGnoss.PerfilPersonaFoaf:
+                        object identidadID = ObtenerValorPropiedadPorReflection(pObjeto, "IdentidadID");
+                        if(identidadID != null)
+                        {
+                            pEntidad.ID = identidadID.ToString();
+                        }
+                        break;
                     case TipoElementoGnoss.CVPersona:
                     case TipoElementoGnoss.CVOrganizacion:
                     case TipoElementoGnoss.CVSemantico:

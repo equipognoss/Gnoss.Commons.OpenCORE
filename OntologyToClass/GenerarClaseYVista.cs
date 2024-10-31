@@ -337,6 +337,9 @@ namespace OntologiaAClase
                     case "TextArea":
                         tipo = ObjetoPropiedad.TipoObjeto.textEditor;
                         break;
+                    case "ArchivoLink":
+                        tipo = ObjetoPropiedad.TipoObjeto.ArchivoLink;
+                        break;
                 }
             }
             return tipo;

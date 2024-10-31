@@ -3,11 +3,14 @@ using Es.Riam.Gnoss.AD.EncapsuladoDatos;
 using Es.Riam.Gnoss.AD.EntityModel;
 using Es.Riam.Gnoss.AD.EntityModel.Models.Faceta;
 using Es.Riam.Gnoss.AD.Facetado;
+using Es.Riam.Gnoss.AD.Usuarios;
 using Es.Riam.Gnoss.Util.Configuracion;
 using Es.Riam.Gnoss.Util.General;
+using Es.Riam.Semantica.OWL;
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Linq;
 
 namespace Es.Riam.Gnoss.Logica.Facetado
 {
@@ -206,6 +209,17 @@ namespace Es.Riam.Gnoss.Logica.Facetado
         }
 
         /// <summary>
+        /// Obtenemos el modelo de base de datos de las facetas para la faceta y proyecto pasado por parámetro
+        /// </summary>
+        /// <param name="pFaceta">Clave de faceta que queremos obtener</param>
+        /// <param name="pProyectoID">Identificador del proytecto del cual queremos obtener las facetas</param>
+        /// <returns>El modelo de base de datos de las facetas solicitadas por parámetro</returns>
+        public List<FacetaObjetoConocimientoProyecto> ObtenerFacetaObjetoConocimientoPorFaceta(string pFaceta, Guid pProyectoID)
+        {
+            return FacetaAD.ObtenerFacetaObjetoConocimientoPorFaceta(pFaceta, pProyectoID);
+        }
+
+        /// <summary>
         /// Obtiene los parámetros de configuración de un proyecto.
         /// </summary>        
         /// <param name="OrganizacionID">Organizacion en la que se hace la búsqueda</param>
@@ -271,6 +285,26 @@ namespace Es.Riam.Gnoss.Logica.Facetado
         public void CargarFacetaConfigProyChart(Guid pOrganizacionID, Guid pProyectoID, DataWrapperFacetas pFacetaDW)
         {
             FacetaAD.CargarFacetaConfigProyChart(pOrganizacionID, pProyectoID, pFacetaDW);
+        }
+
+        /// <summary>
+        /// Devuelve el elemento de base de datos FacetaConfigProyChart a partir del identificador del chart
+        /// </summary>
+        /// <param name="pChartID">Identificador del chart</param>
+        /// <returns>FacetaConfigProyChart buscado</returns>
+        public FacetaConfigProyChart ObtenerFacetaConfigProyChartPorID(Guid pChartID)
+        {
+            return FacetaAD.ObtenerFacetaConfigProyChartPorID(pChartID);
+        }
+
+        /// <summary>
+        /// Devuelve una lista de FacetaConfigProyChart de la base de datos a partir de una lista de identificadores
+        /// </summary>
+        /// <param name="pChartsIds">Lista con identificadores de charts</param>
+        /// <returns>Lista de FacetaConfigProyChart buscados</returns>
+        public List<FacetaConfigProyChart> ObtenerListaFacetaConfigProyChartPorIDs(List<Guid> pChartsIds)
+        {
+            return FacetaAD.ObtenerListaFacetaConfigProyChartPorIDs(pChartsIds);
         }
 
         /// <summary>

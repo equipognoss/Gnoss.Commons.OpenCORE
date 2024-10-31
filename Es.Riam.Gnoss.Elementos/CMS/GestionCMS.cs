@@ -41,7 +41,7 @@ namespace Es.Riam.Gnoss.Elementos.CMS
 
         private LoggingService mLoggingService;
         private EntityContext mEntityContext;
-        
+
         #endregion
 
         #region Constructores
@@ -199,202 +199,202 @@ namespace Es.Riam.Gnoss.Elementos.CMS
 
             foreach (AD.EntityModel.Models.CMS.CMSComponente filaComponente in CMSDW.ListaCMSComponente)
             {
-                    List<AD.EntityModel.Models.CMS.CMSPropiedadComponente> listaPropiedadesComponentes = new List<AD.EntityModel.Models.CMS.CMSPropiedadComponente>();
-                    foreach (AD.EntityModel.Models.CMS.CMSPropiedadComponente fila in CMSDW.ListaCMSPropiedadComponente.Where(item => item.ComponenteID.Equals(filaComponente.ComponenteID)).ToList())
-                    {
-                        listaPropiedadesComponentes.Add(fila);
-                    }
+                List<AD.EntityModel.Models.CMS.CMSPropiedadComponente> listaPropiedadesComponentes = new List<AD.EntityModel.Models.CMS.CMSPropiedadComponente>();
+                foreach (AD.EntityModel.Models.CMS.CMSPropiedadComponente fila in CMSDW.ListaCMSPropiedadComponente.Where(item => item.ComponenteID.Equals(filaComponente.ComponenteID)).ToList())
+                {
+                    listaPropiedadesComponentes.Add(fila);
+                }
 
-                    switch (filaComponente.TipoComponente)
-                    {
-                        case (short)TipoComponenteCMS.HTML:
-                            mListaComponentes.Add(filaComponente.ComponenteID, new CMSComponenteHTML(filaComponente, listaPropiedadesComponentes, this, mLoggingService, mEntityContext));
-                            break;
-                        case (short)TipoComponenteCMS.Destacado:
-                            mListaComponentes.Add(filaComponente.ComponenteID, new CMSComponenteDestacado(filaComponente, listaPropiedadesComponentes, this, mLoggingService, mEntityContext));
-                            break;
-                        case (short)TipoComponenteCMS.ListadoEstatico:
-                            mListaComponentes.Add(filaComponente.ComponenteID, new CMSComponenteListadoEstatico(filaComponente, listaPropiedadesComponentes, this, mLoggingService, mEntityContext));
-                            break;
-                        case (short)TipoComponenteCMS.ListadoDinamico:
-                            mListaComponentes.Add(filaComponente.ComponenteID, new CMSComponenteListadoDinamico(filaComponente, listaPropiedadesComponentes, this, mLoggingService, mEntityContext));
-                            break;
-                        case (short)TipoComponenteCMS.ListadoPorParametros:
-                            mListaComponentes.Add(filaComponente.ComponenteID, new CMSComponenteListadoPorParametros(filaComponente, listaPropiedadesComponentes, this, mLoggingService, mEntityContext));
-                            break;
-                        case (short)TipoComponenteCMS.ActividadReciente:
-                            mListaComponentes.Add(filaComponente.ComponenteID, new CMSComponenteActividadReciente(filaComponente, listaPropiedadesComponentes, this, mLoggingService, mEntityContext));
-                            break;
-                        case (short)TipoComponenteCMS.GrupoComponentes:
-                            mListaComponentes.Add(filaComponente.ComponenteID, new CMSComponenteGrupoComponentes(filaComponente, listaPropiedadesComponentes, this, mLoggingService, mEntityContext));
-                            break;
-                        case (short)TipoComponenteCMS.Tesauro:
-                            mListaComponentes.Add(filaComponente.ComponenteID, new CMSComponenteTesauro(filaComponente, listaPropiedadesComponentes, this, mLoggingService, mEntityContext));
-                            break;
-                        case 7:
-                            //(short)TipoComponenteCMS.RecursosDestacados 
-                            //Desapareció y en su lugar creamos un listado dinámico ficticio
-                            //Construimos un componente listado dinamico
-                            filaComponente.TipoComponente = (short)TipoComponenteCMS.ListadoDinamico;
+                switch (filaComponente.TipoComponente)
+                {
+                    case (short)TipoComponenteCMS.HTML:
+                        mListaComponentes.Add(filaComponente.ComponenteID, new CMSComponenteHTML(filaComponente, listaPropiedadesComponentes, this, mLoggingService, mEntityContext));
+                        break;
+                    case (short)TipoComponenteCMS.Destacado:
+                        mListaComponentes.Add(filaComponente.ComponenteID, new CMSComponenteDestacado(filaComponente, listaPropiedadesComponentes, this, mLoggingService, mEntityContext));
+                        break;
+                    case (short)TipoComponenteCMS.ListadoEstatico:
+                        mListaComponentes.Add(filaComponente.ComponenteID, new CMSComponenteListadoEstatico(filaComponente, listaPropiedadesComponentes, this, mLoggingService, mEntityContext));
+                        break;
+                    case (short)TipoComponenteCMS.ListadoDinamico:
+                        mListaComponentes.Add(filaComponente.ComponenteID, new CMSComponenteListadoDinamico(filaComponente, listaPropiedadesComponentes, this, mLoggingService, mEntityContext));
+                        break;
+                    case (short)TipoComponenteCMS.ListadoPorParametros:
+                        mListaComponentes.Add(filaComponente.ComponenteID, new CMSComponenteListadoPorParametros(filaComponente, listaPropiedadesComponentes, this, mLoggingService, mEntityContext));
+                        break;
+                    case (short)TipoComponenteCMS.ActividadReciente:
+                        mListaComponentes.Add(filaComponente.ComponenteID, new CMSComponenteActividadReciente(filaComponente, listaPropiedadesComponentes, this, mLoggingService, mEntityContext));
+                        break;
+                    case (short)TipoComponenteCMS.GrupoComponentes:
+                        mListaComponentes.Add(filaComponente.ComponenteID, new CMSComponenteGrupoComponentes(filaComponente, listaPropiedadesComponentes, this, mLoggingService, mEntityContext));
+                        break;
+                    case (short)TipoComponenteCMS.Tesauro:
+                        mListaComponentes.Add(filaComponente.ComponenteID, new CMSComponenteTesauro(filaComponente, listaPropiedadesComponentes, this, mLoggingService, mEntityContext));
+                        break;
+                    case 7:
+                        //(short)TipoComponenteCMS.RecursosDestacados 
+                        //Desapareció y en su lugar creamos un listado dinámico ficticio
+                        //Construimos un componente listado dinamico
+                        filaComponente.TipoComponente = (short)TipoComponenteCMS.ListadoDinamico;
 
-                            AD.EntityModel.Models.CMS.CMSPropiedadComponente filaPropiedadDestComponente = null;
-                            AD.EntityModel.Models.CMS.CMSPropiedadComponente filaPropiedadRecursoDestComponente = null;
+                        AD.EntityModel.Models.CMS.CMSPropiedadComponente filaPropiedadDestComponente = null;
+                        AD.EntityModel.Models.CMS.CMSPropiedadComponente filaPropiedadRecursoDestComponente = null;
+                        foreach (AD.EntityModel.Models.CMS.CMSPropiedadComponente fila in listaPropiedadesComponentes)
+                        {
+                            if (fila.TipoPropiedadComponente == (short)TipoPropiedadCMS.TipoPresentacionListadoRecursos)
+                            {
+                                filaPropiedadDestComponente = fila;
+                                filaPropiedadDestComponente.ValorPropiedad = ((short)TipoPresentacionListadoRecursosCMS.ListadoDestacados).ToString();
+                            }
+                            if (fila.TipoPropiedadComponente == (short)TipoPropiedadCMS.TipoPresentacionRecurso)
+                            {
+                                filaPropiedadRecursoDestComponente = fila;
+                                filaPropiedadRecursoDestComponente.ValorPropiedad = ((short)TipoPresentacionRecursoCMS.Destacado).ToString();
+                            }
+                        }
+                        if (filaPropiedadDestComponente == null)
+                        {
+                            AD.EntityModel.Models.CMS.CMSPropiedadComponente propiedadComponente = new AD.EntityModel.Models.CMS.CMSPropiedadComponente();
+                            propiedadComponente.CMSComponente = filaComponente;
+                            propiedadComponente.TipoPropiedadComponente = (short)TipoPropiedadCMS.TipoPresentacionListadoRecursos;
+                            propiedadComponente.ValorPropiedad = ((short)TipoPresentacionListadoRecursosCMS.ListadoDestacados).ToString();
+                            propiedadComponente.ComponenteID = filaComponente.ComponenteID;
+
+                            listaPropiedadesComponentes.Add(propiedadComponente);
+                        }
+                        if (filaPropiedadRecursoDestComponente == null)
+                        {
+                            AD.EntityModel.Models.CMS.CMSPropiedadComponente propiedadComponente = new AD.EntityModel.Models.CMS.CMSPropiedadComponente();
+                            propiedadComponente.CMSComponente = filaComponente;
+                            propiedadComponente.TipoPropiedadComponente = (short)TipoPropiedadCMS.TipoPresentacionRecurso;
+                            propiedadComponente.ValorPropiedad = ((short)TipoPresentacionRecursoCMS.Destacado).ToString();
+                            propiedadComponente.ComponenteID = filaComponente.ComponenteID;
+
+                            listaPropiedadesComponentes.Add(propiedadComponente);
+                        }
+                        mListaComponentes.Add(filaComponente.ComponenteID, new CMSComponenteListadoDinamico(filaComponente, listaPropiedadesComponentes, this, mLoggingService, mEntityContext));
+                        break;
+                    case 11:
+                    case 12:
+                        //(short)TipoComponenteCMS.RecursoDestacado 
+                        if (filaComponente.TipoComponente == 12)
+                        {
                             foreach (AD.EntityModel.Models.CMS.CMSPropiedadComponente fila in listaPropiedadesComponentes)
                             {
-                                if (fila.TipoPropiedadComponente == (short)TipoPropiedadCMS.TipoPresentacionListadoRecursos)
+                                if (fila.TipoPropiedadComponente == (short)TipoPropiedadCMS.ElementoID)
                                 {
-                                    filaPropiedadDestComponente = fila;
-                                    filaPropiedadDestComponente.ValorPropiedad = ((short)TipoPresentacionListadoRecursosCMS.ListadoDestacados).ToString();
-                                }
-                                if (fila.TipoPropiedadComponente == (short)TipoPropiedadCMS.TipoPresentacionRecurso)
-                                {
-                                    filaPropiedadRecursoDestComponente = fila;
-                                    filaPropiedadRecursoDestComponente.ValorPropiedad = ((short)TipoPresentacionRecursoCMS.Destacado).ToString();
+                                    fila.TipoPropiedadComponente = (short)TipoPropiedadCMS.ListaIDs;
                                 }
                             }
-                            if (filaPropiedadDestComponente == null)
-                            {
-                                AD.EntityModel.Models.CMS.CMSPropiedadComponente propiedadComponente = new AD.EntityModel.Models.CMS.CMSPropiedadComponente();
-                                propiedadComponente.CMSComponente = filaComponente;
-                                propiedadComponente.TipoPropiedadComponente = (short)TipoPropiedadCMS.TipoPresentacionListadoRecursos;
-                                propiedadComponente.ValorPropiedad = ((short)TipoPresentacionListadoRecursosCMS.ListadoDestacados).ToString();
-                                propiedadComponente.ComponenteID = filaComponente.ComponenteID;
-                                
-                                listaPropiedadesComponentes.Add(propiedadComponente);
-                            }
-                            if (filaPropiedadRecursoDestComponente == null)
-                            {
-                                AD.EntityModel.Models.CMS.CMSPropiedadComponente propiedadComponente = new AD.EntityModel.Models.CMS.CMSPropiedadComponente();
-                                propiedadComponente.CMSComponente = filaComponente;
-                                propiedadComponente.TipoPropiedadComponente = (short)TipoPropiedadCMS.TipoPresentacionRecurso;
-                                propiedadComponente.ValorPropiedad = ((short)TipoPresentacionRecursoCMS.Destacado).ToString();
-                                propiedadComponente.ComponenteID = filaComponente.ComponenteID;
-                                
-                                listaPropiedadesComponentes.Add(propiedadComponente);
-                            }
-                            mListaComponentes.Add(filaComponente.ComponenteID, new CMSComponenteListadoDinamico(filaComponente, listaPropiedadesComponentes, this, mLoggingService, mEntityContext));
-                            break;
-                        case 11:
-                        case 12:
-                            //(short)TipoComponenteCMS.RecursoDestacado 
-                            if (filaComponente.TipoComponente == 12)
-                            {
-                                foreach (AD.EntityModel.Models.CMS.CMSPropiedadComponente fila in listaPropiedadesComponentes)
-                                {
-                                    if (fila.TipoPropiedadComponente == (short)TipoPropiedadCMS.ElementoID)
-                                    {
-                                        fila.TipoPropiedadComponente = (short)TipoPropiedadCMS.ListaIDs;
-                                    }
-                                }
-                            }
+                        }
 
-                            //(short)TipoComponenteCMS.RecursosDestacadosEstatico                             
-                            //Desapareció y en su lugar creamos un listado estatico ficticio
-                            //Construimos un componente listado estatico
-                            filaComponente.TipoComponente = (short)TipoComponenteCMS.ListadoEstatico;
+                        //(short)TipoComponenteCMS.RecursosDestacadosEstatico                             
+                        //Desapareció y en su lugar creamos un listado estatico ficticio
+                        //Construimos un componente listado estatico
+                        filaComponente.TipoComponente = (short)TipoComponenteCMS.ListadoEstatico;
 
-                            AD.EntityModel.Models.CMS.CMSPropiedadComponente filaPropiedadListadoDestEstaticoComponente = null;
-                            AD.EntityModel.Models.CMS.CMSPropiedadComponente filaPropiedadRecursoDestEstaticoComponente = null;
-                            foreach (AD.EntityModel.Models.CMS.CMSPropiedadComponente fila in listaPropiedadesComponentes)
+                        AD.EntityModel.Models.CMS.CMSPropiedadComponente filaPropiedadListadoDestEstaticoComponente = null;
+                        AD.EntityModel.Models.CMS.CMSPropiedadComponente filaPropiedadRecursoDestEstaticoComponente = null;
+                        foreach (AD.EntityModel.Models.CMS.CMSPropiedadComponente fila in listaPropiedadesComponentes)
+                        {
+                            if (fila.TipoPropiedadComponente == (short)TipoPropiedadCMS.TipoPresentacionListadoRecursos)
                             {
-                                if (fila.TipoPropiedadComponente == (short)TipoPropiedadCMS.TipoPresentacionListadoRecursos)
-                                {
-                                    filaPropiedadListadoDestEstaticoComponente = fila;
-                                    filaPropiedadListadoDestEstaticoComponente.ValorPropiedad = ((short)TipoPresentacionListadoRecursosCMS.ListadoDestacados).ToString();
-                                }
-                                if (fila.TipoPropiedadComponente == (short)TipoPropiedadCMS.TipoPresentacionRecurso)
-                                {
-                                    filaPropiedadRecursoDestEstaticoComponente = fila;
-                                    filaPropiedadRecursoDestEstaticoComponente.ValorPropiedad = ((short)TipoPresentacionRecursoCMS.Destacado).ToString();
-                                }
-                            }
-
-                            if (filaPropiedadListadoDestEstaticoComponente == null)
-                            {
-                                filaPropiedadListadoDestEstaticoComponente = new AD.EntityModel.Models.CMS.CMSPropiedadComponente();
-                                filaPropiedadListadoDestEstaticoComponente.CMSComponente = filaComponente;
-                                filaPropiedadListadoDestEstaticoComponente.TipoPropiedadComponente = (short)TipoPropiedadCMS.TipoPresentacionListadoRecursos;
+                                filaPropiedadListadoDestEstaticoComponente = fila;
                                 filaPropiedadListadoDestEstaticoComponente.ValorPropiedad = ((short)TipoPresentacionListadoRecursosCMS.ListadoDestacados).ToString();
-                                filaPropiedadListadoDestEstaticoComponente.ComponenteID = filaComponente.ComponenteID;
-                                
-                                listaPropiedadesComponentes.Add(filaPropiedadListadoDestEstaticoComponente);
                             }
-
-                            if (filaPropiedadRecursoDestEstaticoComponente == null)
+                            if (fila.TipoPropiedadComponente == (short)TipoPropiedadCMS.TipoPresentacionRecurso)
                             {
-                                filaPropiedadRecursoDestEstaticoComponente = new AD.EntityModel.Models.CMS.CMSPropiedadComponente();
-                                filaPropiedadRecursoDestEstaticoComponente.CMSComponente = filaComponente;
-                                filaPropiedadRecursoDestEstaticoComponente.TipoPropiedadComponente = (short)TipoPropiedadCMS.TipoPresentacionRecurso;
+                                filaPropiedadRecursoDestEstaticoComponente = fila;
                                 filaPropiedadRecursoDestEstaticoComponente.ValorPropiedad = ((short)TipoPresentacionRecursoCMS.Destacado).ToString();
-                                filaPropiedadRecursoDestEstaticoComponente.ComponenteID = filaComponente.ComponenteID;
-                                
-                                listaPropiedadesComponentes.Add(filaPropiedadRecursoDestEstaticoComponente);
                             }
-                            
-                            mListaComponentes.Add(filaComponente.ComponenteID, new CMSComponenteListadoEstatico(filaComponente, listaPropiedadesComponentes, this, mLoggingService, mEntityContext));
-                            break;
-                        case (short)TipoComponenteCMS.DatosComunidad:
-                            mListaComponentes.Add(filaComponente.ComponenteID, new CMSComponenteDatosComunidad(filaComponente, listaPropiedadesComponentes, this, mLoggingService, mEntityContext));
-                            break;
-                        case (short)TipoComponenteCMS.UsuariosRecomendados:
-                            mListaComponentes.Add(filaComponente.ComponenteID, new CMSComponenteUsuariosRecomendados(filaComponente, listaPropiedadesComponentes, this, mLoggingService, mEntityContext));
-                            break;
-                        case (short)TipoComponenteCMS.CajaBuscador:
-                            mListaComponentes.Add(filaComponente.ComponenteID, new CMSComponenteCajaBuscador(filaComponente, listaPropiedadesComponentes, this, mLoggingService, mEntityContext));
-                            break;
-                        case (short)TipoComponenteCMS.Faceta:
-                            mListaComponentes.Add(filaComponente.ComponenteID, new CMSComponenteFaceta(filaComponente, listaPropiedadesComponentes, this, mLoggingService, mEntityContext));
-                            break;
-                        case (short)TipoComponenteCMS.ListadoUsuarios:
-                            mListaComponentes.Add(filaComponente.ComponenteID, new CMSComponenteListadoUsuarios(filaComponente, listaPropiedadesComponentes, this, mLoggingService, mEntityContext));
-                            break;
-                        case (short)TipoComponenteCMS.ListadoProyectos:
-                            mListaComponentes.Add(filaComponente.ComponenteID, new CMSComponenteListadoProyectos(filaComponente, listaPropiedadesComponentes, this, mLoggingService, mEntityContext));
-                            break;
-                        case (short)TipoComponenteCMS.ResumenPerfil:
-                            mListaComponentes.Add(filaComponente.ComponenteID, new CMSComponenteResumenPerfil(filaComponente, listaPropiedadesComponentes, this, mLoggingService, mEntityContext));
-                            break;
-                        case (short)TipoComponenteCMS.MasVistos:
-                            mListaComponentes.Add(filaComponente.ComponenteID, new CMSComponenteMasVistos(filaComponente, listaPropiedadesComponentes, this, mLoggingService, mEntityContext));
-                            break;
-                        case (short)TipoComponenteCMS.MasVistosEnXDias:
-                            mListaComponentes.Add(filaComponente.ComponenteID, new CMSComponenteMasVistosEnXDias(filaComponente, listaPropiedadesComponentes, this, mLoggingService, mEntityContext));
-                            break;
-                        case (short)TipoComponenteCMS.EnvioCorreo:
-                            mListaComponentes.Add(filaComponente.ComponenteID, new CMSComponenteEnvioCorreo(filaComponente, listaPropiedadesComponentes, this, mLoggingService, mEntityContext));
-                            break;
-                        case (short)TipoComponenteCMS.PreguntaTIC:
-                            mListaComponentes.Add(filaComponente.ComponenteID, new CMSComponentePreguntaTIC(filaComponente, listaPropiedadesComponentes, this, mLoggingService, mEntityContext));
-                            break;
-                        case (short)TipoComponenteCMS.Menu:
-                            mListaComponentes.Add(filaComponente.ComponenteID, new CMSComponenteMenu(filaComponente, listaPropiedadesComponentes, this, mLoggingService, mEntityContext));
-                            break;
-                        case (short)TipoComponenteCMS.Buscador:
-                            mListaComponentes.Add(filaComponente.ComponenteID, new CMSComponenteBuscador(filaComponente, listaPropiedadesComponentes, this, mLoggingService, mEntityContext));
-                            break;
-                        case (short)TipoComponenteCMS.BuscadorSPARQL:
-                            mListaComponentes.Add(filaComponente.ComponenteID, new CMSComponenteBuscadorSPARQL(filaComponente, listaPropiedadesComponentes, this, mLoggingService, mEntityContext));
-                            break;
-                        case (short)TipoComponenteCMS.UltimosRecursosVisitados:
-                            mListaComponentes.Add(filaComponente.ComponenteID, new CMSComponenteUltimosRecursosVisitados(filaComponente, listaPropiedadesComponentes, this, mLoggingService, mEntityContext));
-                            break;
-                        case (short)TipoComponenteCMS.FichaDescripcionDocumento:
-                            mListaComponentes.Add(filaComponente.ComponenteID, new CMSComponenteFichaDescripcionDocumento(filaComponente, listaPropiedadesComponentes, this, mLoggingService, mEntityContext));
-                            break;
-                        case (short)TipoComponenteCMS.ConsultaSPARQL:
-                            mListaComponentes.Add(filaComponente.ComponenteID, new CMSComponenteConsultaSPARQL(filaComponente, listaPropiedadesComponentes, this, mLoggingService, mEntityContext));
-                            break;
-                        case (short)TipoComponenteCMS.ConsultaSQLSERVER:
-                            mListaComponentes.Add(filaComponente.ComponenteID, new CMSComponenteConsultaSQLSERVER(filaComponente, listaPropiedadesComponentes, this, mLoggingService, mEntityContext));
-                            break;
+                        }
+
+                        if (filaPropiedadListadoDestEstaticoComponente == null)
+                        {
+                            filaPropiedadListadoDestEstaticoComponente = new AD.EntityModel.Models.CMS.CMSPropiedadComponente();
+                            filaPropiedadListadoDestEstaticoComponente.CMSComponente = filaComponente;
+                            filaPropiedadListadoDestEstaticoComponente.TipoPropiedadComponente = (short)TipoPropiedadCMS.TipoPresentacionListadoRecursos;
+                            filaPropiedadListadoDestEstaticoComponente.ValorPropiedad = ((short)TipoPresentacionListadoRecursosCMS.ListadoDestacados).ToString();
+                            filaPropiedadListadoDestEstaticoComponente.ComponenteID = filaComponente.ComponenteID;
+
+                            listaPropiedadesComponentes.Add(filaPropiedadListadoDestEstaticoComponente);
+                        }
+
+                        if (filaPropiedadRecursoDestEstaticoComponente == null)
+                        {
+                            filaPropiedadRecursoDestEstaticoComponente = new AD.EntityModel.Models.CMS.CMSPropiedadComponente();
+                            filaPropiedadRecursoDestEstaticoComponente.CMSComponente = filaComponente;
+                            filaPropiedadRecursoDestEstaticoComponente.TipoPropiedadComponente = (short)TipoPropiedadCMS.TipoPresentacionRecurso;
+                            filaPropiedadRecursoDestEstaticoComponente.ValorPropiedad = ((short)TipoPresentacionRecursoCMS.Destacado).ToString();
+                            filaPropiedadRecursoDestEstaticoComponente.ComponenteID = filaComponente.ComponenteID;
+
+                            listaPropiedadesComponentes.Add(filaPropiedadRecursoDestEstaticoComponente);
+                        }
+
+                        mListaComponentes.Add(filaComponente.ComponenteID, new CMSComponenteListadoEstatico(filaComponente, listaPropiedadesComponentes, this, mLoggingService, mEntityContext));
+                        break;
+                    case (short)TipoComponenteCMS.DatosComunidad:
+                        mListaComponentes.Add(filaComponente.ComponenteID, new CMSComponenteDatosComunidad(filaComponente, listaPropiedadesComponentes, this, mLoggingService, mEntityContext));
+                        break;
+                    case (short)TipoComponenteCMS.UsuariosRecomendados:
+                        mListaComponentes.Add(filaComponente.ComponenteID, new CMSComponenteUsuariosRecomendados(filaComponente, listaPropiedadesComponentes, this, mLoggingService, mEntityContext));
+                        break;
+                    case (short)TipoComponenteCMS.CajaBuscador:
+                        mListaComponentes.Add(filaComponente.ComponenteID, new CMSComponenteCajaBuscador(filaComponente, listaPropiedadesComponentes, this, mLoggingService, mEntityContext));
+                        break;
+                    case (short)TipoComponenteCMS.Faceta:
+                        mListaComponentes.Add(filaComponente.ComponenteID, new CMSComponenteFaceta(filaComponente, listaPropiedadesComponentes, this, mLoggingService, mEntityContext));
+                        break;
+                    case (short)TipoComponenteCMS.ListadoUsuarios:
+                        mListaComponentes.Add(filaComponente.ComponenteID, new CMSComponenteListadoUsuarios(filaComponente, listaPropiedadesComponentes, this, mLoggingService, mEntityContext));
+                        break;
+                    case (short)TipoComponenteCMS.ListadoProyectos:
+                        mListaComponentes.Add(filaComponente.ComponenteID, new CMSComponenteListadoProyectos(filaComponente, listaPropiedadesComponentes, this, mLoggingService, mEntityContext));
+                        break;
+                    case (short)TipoComponenteCMS.ResumenPerfil:
+                        mListaComponentes.Add(filaComponente.ComponenteID, new CMSComponenteResumenPerfil(filaComponente, listaPropiedadesComponentes, this, mLoggingService, mEntityContext));
+                        break;
+                    case (short)TipoComponenteCMS.MasVistos:
+                        mListaComponentes.Add(filaComponente.ComponenteID, new CMSComponenteMasVistos(filaComponente, listaPropiedadesComponentes, this, mLoggingService, mEntityContext));
+                        break;
+                    case (short)TipoComponenteCMS.MasVistosEnXDias:
+                        mListaComponentes.Add(filaComponente.ComponenteID, new CMSComponenteMasVistosEnXDias(filaComponente, listaPropiedadesComponentes, this, mLoggingService, mEntityContext));
+                        break;
+                    case (short)TipoComponenteCMS.EnvioCorreo:
+                        mListaComponentes.Add(filaComponente.ComponenteID, new CMSComponenteEnvioCorreo(filaComponente, listaPropiedadesComponentes, this, mLoggingService, mEntityContext));
+                        break;
+                    case (short)TipoComponenteCMS.PreguntaTIC:
+                        mListaComponentes.Add(filaComponente.ComponenteID, new CMSComponentePreguntaTIC(filaComponente, listaPropiedadesComponentes, this, mLoggingService, mEntityContext));
+                        break;
+                    case (short)TipoComponenteCMS.Menu:
+                        mListaComponentes.Add(filaComponente.ComponenteID, new CMSComponenteMenu(filaComponente, listaPropiedadesComponentes, this, mLoggingService, mEntityContext));
+                        break;
+                    case (short)TipoComponenteCMS.Buscador:
+                        mListaComponentes.Add(filaComponente.ComponenteID, new CMSComponenteBuscador(filaComponente, listaPropiedadesComponentes, this, mLoggingService, mEntityContext));
+                        break;
+                    case (short)TipoComponenteCMS.BuscadorSPARQL:
+                        mListaComponentes.Add(filaComponente.ComponenteID, new CMSComponenteBuscadorSPARQL(filaComponente, listaPropiedadesComponentes, this, mLoggingService, mEntityContext));
+                        break;
+                    case (short)TipoComponenteCMS.UltimosRecursosVisitados:
+                        mListaComponentes.Add(filaComponente.ComponenteID, new CMSComponenteUltimosRecursosVisitados(filaComponente, listaPropiedadesComponentes, this, mLoggingService, mEntityContext));
+                        break;
+                    case (short)TipoComponenteCMS.FichaDescripcionDocumento:
+                        mListaComponentes.Add(filaComponente.ComponenteID, new CMSComponenteFichaDescripcionDocumento(filaComponente, listaPropiedadesComponentes, this, mLoggingService, mEntityContext));
+                        break;
+                    case (short)TipoComponenteCMS.ConsultaSPARQL:
+                        mListaComponentes.Add(filaComponente.ComponenteID, new CMSComponenteConsultaSPARQL(filaComponente, listaPropiedadesComponentes, this, mLoggingService, mEntityContext));
+                        break;
+                    case (short)TipoComponenteCMS.ConsultaSQLSERVER:
+                        mListaComponentes.Add(filaComponente.ComponenteID, new CMSComponenteConsultaSQLSERVER(filaComponente, listaPropiedadesComponentes, this, mLoggingService, mEntityContext));
+                        break;
                         //default:
-                            //throw new Exception("Constructor no definido para el componente " + (TipoComponenteCMS)filaComponente.TipoComponente);
-                    }
+                        //throw new Exception("Constructor no definido para el componente " + (TipoComponenteCMS)filaComponente.TipoComponente);
+                }
             }
         }
 
         #region Agregar/Editar/Eliminar Paginas
-        
+
         /// <summary>
         /// Agrega una nueva pagina
         /// </summary>
@@ -548,7 +548,7 @@ namespace Es.Riam.Gnoss.Elementos.CMS
         /// <param name="pNumeroItems">Número de items que se muestran</param>
         public CMSComponenteActividadReciente AgregarNuevoComponenteActividadReciente(ServiciosGenerales.Proyecto pProyecto, string pNombre, string pEstilos, bool pActivo, short pTipoCaducidadComponente, string pTitulo, short pNumeroItems, TipoActividadReciente pTipoActividadReciente, bool pAccesoPublico)
         {
-            Dictionary<TipoPropiedadCMS, string> propiedadesComponente = new Dictionary<TipoPropiedadCMS, string>();           
+            Dictionary<TipoPropiedadCMS, string> propiedadesComponente = new Dictionary<TipoPropiedadCMS, string>();
             propiedadesComponente.Add(TipoPropiedadCMS.NumItems, pNumeroItems.ToString());
             propiedadesComponente.Add(TipoPropiedadCMS.TipoActividadRecienteCMS, ((short)pTipoActividadReciente).ToString());
             propiedadesComponente.Add(TipoPropiedadCMS.Titulo, pTitulo);
@@ -677,7 +677,7 @@ namespace Es.Riam.Gnoss.Elementos.CMS
         /// <param name="pTipoCaducidadComponente">Tipo de caducidad</param>
         /// <param name="pTitulo">Título del Componente</param>
         public CMSComponenteListadoUsuarios AgregarNuevoComponenteListadoUsuarios(ServiciosGenerales.Proyecto pProyecto, string pNombre, string pEstilos, bool pActivo, short pTipoCaducidadComponente, string pTitulo, TipoPresentacionListadoUsuariosCMS pTipoPresentacionListadoUsuarios, TipoListadoUsuariosCMS pTipoListadoUsuarios, short pNumeroUsuarios, bool pAccesoPublico)
-        {            
+        {
             Dictionary<TipoPropiedadCMS, string> propiedadesComponente = new Dictionary<TipoPropiedadCMS, string>();
             propiedadesComponente.Add(TipoPropiedadCMS.Titulo, pTitulo);
             propiedadesComponente.Add(TipoPropiedadCMS.TipoPresentacionListadoUsuarios, ((short)pTipoPresentacionListadoUsuarios).ToString());
@@ -704,12 +704,13 @@ namespace Es.Riam.Gnoss.Elementos.CMS
                     listaGuids += $"{id},";
                 }
                 propiedadesComponente.Add(TipoPropiedadCMS.ListaIDs, listaGuids);
-            }else
+            }
+            else
             {
                 propiedadesComponente.Add(TipoPropiedadCMS.NumItems, pNumeroProyectos.ToString());
             }
-            
-            propiedadesComponente.Add(TipoPropiedadCMS.TipoListadoProyectos, ((short)pTipoListadoProyectos).ToString());            
+
+            propiedadesComponente.Add(TipoPropiedadCMS.TipoListadoProyectos, ((short)pTipoListadoProyectos).ToString());
             return (CMSComponenteListadoProyectos)AgregarNuevoComponente(pProyecto, pNombre, pEstilos, pActivo, (short)TipoComponenteCMS.ListadoProyectos, pTipoCaducidadComponente, propiedadesComponente, pAccesoPublico);
         }
 
@@ -818,7 +819,7 @@ namespace Es.Riam.Gnoss.Elementos.CMS
                 separador = "###";
             }
             propiedadesComponente.Add(TipoPropiedadCMS.ListaOpcionesMenu, textoListaOpcionesMenu);
-            return (CMSComponenteMenu)AgregarNuevoComponente(pProyecto, pNombre, pEstilos, pActivo, (short)TipoComponenteCMS.Menu, pTipoCaducidadComponente, propiedadesComponente, pAccesoPublico);         
+            return (CMSComponenteMenu)AgregarNuevoComponente(pProyecto, pNombre, pEstilos, pActivo, (short)TipoComponenteCMS.Menu, pTipoCaducidadComponente, propiedadesComponente, pAccesoPublico);
         }
 
         /// <summary>
@@ -858,7 +859,7 @@ namespace Es.Riam.Gnoss.Elementos.CMS
             propiedadesComponente.Add(TipoPropiedadCMS.QuerySPARQL, pQuerySPARQL);
             propiedadesComponente.Add(TipoPropiedadCMS.NumItems, pNumeroItems.ToString());
             propiedadesComponente.Add(TipoPropiedadCMS.TipoPresentacionRecurso, pTipoPresentacion);
-            return (CMSComponenteBuscadorSPARQL)AgregarNuevoComponente(pProyecto, pNombre, pEstilos, pActivo,  (short)TipoComponenteCMS.BuscadorSPARQL, pTipoCaducidadComponente, propiedadesComponente, pAccesoPublico);
+            return (CMSComponenteBuscadorSPARQL)AgregarNuevoComponente(pProyecto, pNombre, pEstilos, pActivo, (short)TipoComponenteCMS.BuscadorSPARQL, pTipoCaducidadComponente, propiedadesComponente, pAccesoPublico);
         }
 
         /// <summary>
@@ -1097,7 +1098,7 @@ namespace Es.Riam.Gnoss.Elementos.CMS
         /// Eliminar componente
         /// </summary>
         public void EliminarComponente(Guid pComponenteID)
-        {   
+        {
             List<AD.EntityModel.Models.CMS.CMSBloqueComponentePropiedadComponente> listaCMSBloqueComponentePropiedadComponente = CMSDW.ListaCMSBloqueComponentePropiedadComponente.Where(item => item.ComponenteID.Equals(pComponenteID)).ToList();
             foreach (AD.EntityModel.Models.CMS.CMSBloqueComponentePropiedadComponente filaCMSBloqueComponentePropiedadComponente in listaCMSBloqueComponentePropiedadComponente)
             {
@@ -1185,7 +1186,7 @@ namespace Es.Riam.Gnoss.Elementos.CMS
         public CMSBloque AgregarNuevoBloque(CMSPagina pPagina, Guid? pCMSBloquePadreID, short pOrden, string pEstilos, bool pBorrador)
         {
             Guid idBloque = Guid.NewGuid();
-            return AgregarNuevoBloque(idBloque, pPagina, pCMSBloquePadreID, pOrden,  pEstilos, pBorrador);
+            return AgregarNuevoBloque(idBloque, pPagina, pCMSBloquePadreID, pOrden, pEstilos, pBorrador);
         }
 
         /// <summary>
@@ -1199,7 +1200,7 @@ namespace Es.Riam.Gnoss.Elementos.CMS
         /// <param name="pEstilos">Estilos</param>
         /// <param name="pBorrador">Borrador</param>
         /// <returns></returns>
-        public CMSBloque AgregarNuevoBloque(Guid pIdBloque, CMSPagina pPagina, Guid? pCMSBloquePadreID, short pOrden, string pEstilos,bool pBorrador)
+        public CMSBloque AgregarNuevoBloque(Guid pIdBloque, CMSPagina pPagina, Guid? pCMSBloquePadreID, short pOrden, string pEstilos, bool pBorrador)
         {
             AD.EntityModel.Models.CMS.CMSBloque filaBloque = new AD.EntityModel.Models.CMS.CMSBloque();
             filaBloque.OrganizacionID = pPagina.Filapagina.OrganizacionID;
@@ -1228,7 +1229,7 @@ namespace Es.Riam.Gnoss.Elementos.CMS
             return bloque;
         }
 
-       
+
         /// <summary>
         /// Agegamos un componente a un bloque
         /// </summary>
@@ -1243,7 +1244,7 @@ namespace Es.Riam.Gnoss.Elementos.CMS
             filaBloqueComponente.OrganizacionID = pProyecto.FilaProyecto.OrganizacionID;
             filaBloqueComponente.ProyectoID = pProyecto.FilaProyecto.ProyectoID;
             filaBloqueComponente.BloqueID = pBloqueID;
-            if(cmsBloque != null)
+            if (cmsBloque != null)
             {
                 filaBloqueComponente.CMSBloque = cmsBloque;
             }
@@ -1259,7 +1260,7 @@ namespace Es.Riam.Gnoss.Elementos.CMS
         /// </summary>
         public void EliminarBloque(Guid pBloqueID)
         {
-            List<AD.EntityModel.Models.CMS.CMSBloqueComponente> filasBloquesComponentes= ListaBloques[pBloqueID].FilaBloque.CMSBloqueComponente.ToList();
+            List<AD.EntityModel.Models.CMS.CMSBloqueComponente> filasBloquesComponentes = ListaBloques[pBloqueID].FilaBloque.CMSBloqueComponente.ToList();
             foreach (AD.EntityModel.Models.CMS.CMSBloqueComponente filaBloqueComponente in filasBloquesComponentes)
             {
                 foreach (AD.EntityModel.Models.CMS.CMSBloqueComponentePropiedadComponente filaPropiedad in filaBloqueComponente.CMSBloqueComponentePropiedadComponente)
@@ -1269,7 +1270,7 @@ namespace Es.Riam.Gnoss.Elementos.CMS
                 mEntityContext.EliminarElemento(filaBloqueComponente);
                 ListaBloques[pBloqueID].FilaBloque.CMSBloqueComponente.Remove(filaBloqueComponente);
             }
-            mEntityContext.EliminarElemento(ListaBloques[pBloqueID].FilaBloque);            
+            mEntityContext.EliminarElemento(ListaBloques[pBloqueID].FilaBloque);
             ListaBloques.Remove(pBloqueID);
         }
 

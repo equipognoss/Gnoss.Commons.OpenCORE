@@ -6575,6 +6575,49 @@ namespace Es.Riam.Gnoss.AD.Identidad
         }
 
         /// <summary>
+        /// Obtiene los perfiles de una persona (pObtenerSoloActivos--> no eliminado, no fecha de baja,..)
+        /// </summary>
+        /// <param name="pPersonaID">Identificador de la persona</param>
+        /// <param name="pObtenerSoloActivos">TRUE si obtine s�lo lo que est� activo (no eliminado, no fecha de baja,..)</param>
+        /// <returns>Dataset de identidad</returns>
+        public DataWrapperIdentidad ObtenerPerfilesDePersonaCompartir(Guid pPersonaID, bool pObtenerSoloActivos, Guid pIdentidadID)
+        {
+            DataWrapperIdentidad dataWrapper = new DataWrapperIdentidad();
+
+            var listaPerfil = mEntityContext.Perfil.Where(item => item.PersonaID.HasValue && item.PersonaID.Value.Equals(pPersonaID)).Union(mEntityContext.Perfil.JoinPerfilPersonaOrgConOrganizacionID().Where(item => !item.Perfil.PersonaID.HasValue && item.PerfilPersonaOrg.PersonaID.Equals(pPersonaID)).Select(item => item.Perfil)); //JOIN PERFIL PERSONA ORG??
+            var listaPerfilPersonaOrg = mEntityContext.PerfilPersonaOrg.Where(item => item.PersonaID.Equals(pPersonaID));
+            var listaPerfilRedesSociales = mEntityContext.PerfilRedesSociales.JoinIdentidad().JoinPerfil().Where(item => item.Perfil.PersonaID.HasValue && item.Perfil.PersonaID.Value.Equals(pPersonaID));
+            var listaIdentidad = mEntityContext.Identidad.JoinPerfil().JoinPersona().Where(item => item.Persona.PersonaID.Equals(pPersonaID)).Select(item => item.Identidad).Union(mEntityContext.Identidad.JoinPerfil().JoinPersona().Where(item => item.Persona.PersonaID.Equals(pPersonaID) && item.Identidad.ProyectoID.Equals(ProyectoAD.MetaProyecto)).Select(item => item.Identidad).Union(mEntityContext.Identidad.JoinPerfilOrganizacion().JoinPerfilPersonaOrganizacion().Where(item => item.PerfilPersonaOrg.PersonaID.Equals(pPersonaID) && item.Identidad.ProyectoID.Equals(ProyectoAD.MetaProyecto)).Select(item => item.Identidad)));
+            var listaPerfilPersona = mEntityContext.PerfilPersona.Where(item => item.PersonaID.Equals(pPersonaID));
+            var listaPerfilOrganizacion = mEntityContext.PerfilOrganizacion.JoinPerfilPersonaOrg().Where(item => item.PerfilPersonaOrg.PersonaID.Equals(pPersonaID));
+            var listaProfesor = mEntityContext.Profesor.JoinPerfil().Where(item => item.Perfil.PersonaID.HasValue && item.Perfil.PersonaID.Equals(pPersonaID));
+
+
+            if (pObtenerSoloActivos)
+            {
+                listaPerfil = listaPerfil.Where(item => !item.Eliminado);
+                listaIdentidad = listaIdentidad.Where(item => !item.FechaExpulsion.HasValue && !item.FechaBaja.HasValue);
+                listaProfesor = listaProfesor.Where(item => !item.Perfil.Eliminado);
+            }
+
+            dataWrapper.ListaPerfil = listaPerfil.ToList();
+            dataWrapper.ListaPerfilPersonaOrg = listaPerfilPersonaOrg.ToList();
+            dataWrapper.ListaPerfilRedesSociales = listaPerfilRedesSociales.Select(item => item.PerfilRedesSociales).ToList();
+            dataWrapper.ListaIdentidad = listaIdentidad.ToList();
+            dataWrapper.ListaPerfilPersona = listaPerfilPersona.ToList();
+            dataWrapper.ListaPerfilOrganizacion = listaPerfilOrganizacion.Select(item => item.PerfilOrganizacion).ToList();
+            dataWrapper.ListaProfesor = listaProfesor.Select(item => item.Profesor).ToList();
+
+            if (dataWrapper.ListaPerfilOrganizacion.Any())
+            {
+                PerfilOrganizacion perfilOrg = dataWrapper.ListaPerfilOrganizacion.First();
+                dataWrapper.ListaPerfilRedesSocialesOrganizacion = mEntityContext.PerfilRedesSociales.Where(item => item.PerfilID.Equals(perfilOrg.PerfilID)).ToList();
+            }
+
+            return dataWrapper;
+        }
+
+        /// <summary>
         /// Obtiene las tablas Perfil e Identidad de personas en un proyecto determinado
         /// </summary>
         /// <param name="pIdentidadesID">Identificadores de las personas</param>
@@ -8600,7 +8643,7 @@ namespace Es.Riam.Gnoss.AD.Identidad
 
             var consulta1 = mEntityContext.Perfil.JoinIdentidad().JoinPersona().Where(item => pListaIdentidades.Contains(item.Identidad.IdentidadID) && !item.Perfil.OrganizacionID.HasValue).Select(item => new { item.Identidad.IdentidadID, item.Persona.EsBuscableExternos }).ToList();
 
-            var consulta2 = mEntityContext.Perfil.JoinIdentidad().JoinOrganizacion().Where(item => pListaIdentidades.Contains(item.Identidad.IdentidadID) && ((item.Perfil.PersonaID.HasValue && item.Perfil.OrganizacionID.HasValue) || (!item.Perfil.PersonaID.HasValue && item.Perfil.OrganizacionID.HasValue))).Select(item => new { item.Identidad.IdentidadID, item.Organizacion.EsBuscableExternos }).ToList(); ;
+            var consulta2 = mEntityContext.Perfil.JoinIdentidad().JoinOrganizacion().Where(item => pListaIdentidades.Contains(item.Identidad.IdentidadID) && ((item.Perfil.PersonaID.HasValue && item.Perfil.OrganizacionID.HasValue) || (!item.Perfil.PersonaID.HasValue && item.Perfil.OrganizacionID.HasValue))).Select(item => new { item.Identidad.IdentidadID, item.Organizacion.EsBuscableExternos }).ToList();
 
             var resultado = consulta1.Union(consulta2);
 
@@ -10039,7 +10082,7 @@ namespace Es.Riam.Gnoss.AD.Identidad
         {
             DataWrapperIdentidad dataWrapper = new DataWrapperIdentidad();
 
-            dataWrapper.ListaPerfil = mEntityContext.PerfilOrganizacion.JoinPerfil().Where(item => item.PerfilOrganizacion.OrganizacionID.Equals(pOrganizacionID)).Select(item => item.Perfil).ToList();
+            dataWrapper.ListaPerfil = mEntityContext.PerfilOrganizacion.JoinPerfil().Where(item => item.PerfilOrganizacion.OrganizacionID.Equals(pOrganizacionID)).Select(item => item.Perfil).Include(item => item.Identidad).ToList();
 
             dataWrapper.ListaPerfilOrganizacion = mEntityContext.PerfilOrganizacion.JoinPerfil().Where(item => item.PerfilOrganizacion.OrganizacionID.Equals(pOrganizacionID) && !item.Perfil.Eliminado).Select(item => item.PerfilOrganizacion).ToList();
 
@@ -10179,13 +10222,11 @@ namespace Es.Riam.Gnoss.AD.Identidad
         {
             Dictionary<Guid, string> listaGrupos = new Dictionary<Guid, string>();
 
-            var resultado = mEntityContext.GrupoIdentidades.JoinGrupoIdentidadesProyecto().Where(item => item.GrupoIdentidadesProyecto.ProyectoID.Equals(pProyectoID) && !item.GrupoIdentidades.FechaBaja.HasValue && (item.GrupoIdentidades.Nombre.Contains(pBusqueda) || item.GrupoIdentidades.Nombre.StartsWith(pBusqueda)))
-                .Select(item => new { item.GrupoIdentidades.GrupoID, item.GrupoIdentidades.Nombre }).Take(pNumero).OrderByDescending(item => item.Nombre).ToList();
+            var resultado = mEntityContext.GrupoIdentidades.JoinGrupoIdentidadesProyecto().Where(item => item.GrupoIdentidadesProyecto.ProyectoID.Equals(pProyectoID) && !item.GrupoIdentidades.FechaBaja.HasValue && item.GrupoIdentidades.Nombre.ToLower().Contains(pBusqueda.ToLower())).Select(item => new { item.GrupoIdentidades.GrupoID, item.GrupoIdentidades.Nombre }).Take(pNumero).OrderByDescending(item => item.Nombre).ToList();
 
             if (!pEsSupervisor)
             {
-                resultado = mEntityContext.GrupoIdentidades.JoinGrupoIdentidadesProyecto().JoinGrupoIdentidadesParticipacion().Where(item => item.GrupoIdentidadesProyecto.ProyectoID.Equals(pProyectoID) && !item.GrupoIdentidades.FechaBaja.HasValue && (item.GrupoIdentidades.Nombre.Contains(pBusqueda) || item.GrupoIdentidades.Nombre.StartsWith(pBusqueda)) && ((item.GrupoIdentidadesParticipacion.IdentidadID.Equals(pIdentidadID) && !item.GrupoIdentidadesParticipacion.FechaBaja.HasValue) || item.GrupoIdentidades.Publico.Equals(true)))
-                .Select(item => new { item.GrupoIdentidades.GrupoID, item.GrupoIdentidades.Nombre }).Take(pNumero).OrderByDescending(item => item.Nombre).ToList();
+                resultado = mEntityContext.GrupoIdentidades.JoinGrupoIdentidadesProyecto().JoinGrupoIdentidadesParticipacion().Where(item => item.GrupoIdentidadesProyecto.ProyectoID.Equals(pProyectoID) && !item.GrupoIdentidades.FechaBaja.HasValue && (item.GrupoIdentidades.Nombre.Contains(pBusqueda) || item.GrupoIdentidades.Nombre.StartsWith(pBusqueda)) && ((item.GrupoIdentidadesParticipacion.IdentidadID.Equals(pIdentidadID) && !item.GrupoIdentidadesParticipacion.FechaBaja.HasValue) || item.GrupoIdentidades.Publico.Equals(true))).Select(item => new { item.GrupoIdentidades.GrupoID, item.GrupoIdentidades.Nombre }).Take(pNumero).OrderByDescending(item => item.Nombre).ToList();
             }
 
             foreach (var item in resultado)
@@ -10195,6 +10236,7 @@ namespace Es.Riam.Gnoss.AD.Identidad
                     listaGrupos.Add(item.GrupoID, item.Nombre);
                 }
             }
+
             return listaGrupos;
         }
 
@@ -10759,25 +10801,46 @@ namespace Es.Riam.Gnoss.AD.Identidad
 
             if (pNombresCortos.Count > 0)
             {
-                var resultado = mEntityContext.GrupoIdentidades.JoinGrupoIdentidadesOrganizacion().Where(item => item.GrupoIdentidadesOrganizacion.OrganizacionID.Equals(pOrganizacionID) && pNombresCortos.Contains(item.GrupoIdentidades.NombreCorto)).Select(item => item.GrupoIdentidades);
+                List<GrupoIdentidades> listaGrupoIdentidades = mEntityContext.GrupoIdentidades.JoinGrupoIdentidadesOrganizacion().Where(item => item.GrupoIdentidadesOrganizacion.OrganizacionID.Equals(pOrganizacionID) && pNombresCortos.Contains(item.GrupoIdentidades.NombreCorto)).Select(item => item.GrupoIdentidades).ToList();
 
-                foreach (var fila in resultado)
+                foreach (GrupoIdentidades fila in listaGrupoIdentidades)
                 {
-                    lista.Add((Guid)fila.GrupoID);
+                    lista.Add(fila.GrupoID);
                 }
             }
 
             return lista;
         }
 
-
         /// <summary>
-        /// Obtiene un grupo por el nombre corto y el proyecto
+        /// Obtiene el GrupoIdentidadesParticipacion dada una identidad y un grupo
         /// </summary>
-        /// <param name="pNombreCorto">Nombre corto del grupo</param>
-        /// <param name="pProyecto">Proyecto del Grupo</param>
-        /// <returns>DataSet con el grupo</returns>
-        public DataWrapperIdentidad ObtenerGrupoPorNombreCortoYProyecto(string pNombreCorto, Guid pProyectoID)
+        /// <param name="pGrupoID">Identificador del grupo en el que participa la identidad</param>
+        /// <param name="pIdentidadID">Identidad del usuario del cual queremos obtener el grupo</param>
+        /// <returns>El valor de la tabla GrupoIdentidadesParticipacion</returns>
+		public GrupoIdentidadesParticipacion ObtenerGrupoIdentidadesParticipacion(Guid pGrupoID, Guid pIdentidadID)
+		{
+			return mEntityContext.GrupoIdentidadesParticipacion.Where(item => item.GrupoID.Equals(pGrupoID) && item.IdentidadID.Equals(pIdentidadID)).FirstOrDefault();
+		}
+
+		/// <summary>
+		/// Obtiene un grupo por el nombre corto y la organizacion
+		/// </summary>
+		/// <param name="pNombreCorto">Nombre corto del grupo</param>
+		/// <param name="pOrganizacionID">Organizacion id del Grupo</param>
+		/// <returns>DataSet con el grupo</returns>
+		public Guid ObtenerGrupoIDPorNombreCortoYOrganizacion(string pNombreCorto, Guid pOrganizacionID)
+		{
+            return mEntityContext.GrupoIdentidades.JoinGrupoIdentidadesOrganizacion().Where(item => item.GrupoIdentidadesOrganizacion.OrganizacionID.Equals(pOrganizacionID) && pNombreCorto.Equals(item.GrupoIdentidades.NombreCorto)).Select(item => item.GrupoIdentidades.GrupoID).FirstOrDefault();
+		}
+
+		/// <summary>
+		/// Obtiene un grupo por el nombre corto y el proyecto
+		/// </summary>
+		/// <param name="pNombreCorto">Nombre corto del grupo</param>
+		/// <param name="pProyecto">Proyecto del Grupo</param>
+		/// <returns>DataSet con el grupo</returns>
+		public DataWrapperIdentidad ObtenerGrupoPorNombreCortoYProyecto(string pNombreCorto, Guid pProyectoID)
         {
             return ObtenerGrupoPorNombreCortoYProyecto(pNombreCorto, pProyectoID, true);
         }

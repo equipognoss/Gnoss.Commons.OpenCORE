@@ -3,6 +3,7 @@ using Es.Riam.Gnoss.AD.EntityModel;
 using Es.Riam.Gnoss.AD.EntityModel.Models.Cookies;
 using Es.Riam.Gnoss.AD.Virtuoso;
 using Es.Riam.Gnoss.CL;
+using Es.Riam.Gnoss.CL.Cookie;
 using Es.Riam.Gnoss.Logica.Cookie;
 using Es.Riam.Gnoss.Logica.ServiciosGenerales;
 using Es.Riam.Gnoss.Util.Configuracion;
@@ -40,6 +41,76 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
             {
                 proyCN.ActualizarProyectos();
             }
+        }
+
+
+        public void GuardarCategoriasYCookies(CategoriasCookiesModel pCategoriasYCookies)
+        {
+            EliminarCategoriasYCookies();
+            foreach (CategoriaProyectoCookieModel cat in pCategoriasYCookies.Categorias)
+            {
+                CategoriaProyectoCookie categoria = new CategoriaProyectoCookie();
+                categoria.CategoriaID = cat.CategoriaID;
+                categoria.EsCategoriaTecnica = cat.EsCategoriaTecnica;
+                categoria.OrganizacionID = cat.OrganizacionID;
+                categoria.Descripcion = cat.Descripcion;
+                categoria.NombreCorto = cat.NombreCorto;
+                categoria.Nombre = cat.Nombre;
+                categoria.ProyectoID = cat.ProyectoID;
+
+                mEntityContext.CategoriaProyectoCookie.Add(categoria);
+            }
+            mEntityContext.SaveChanges();
+
+            foreach (ProyectoCookieModel cookie in pCategoriasYCookies.Cookies)
+            {
+                ProyectoCookie nuevaCookie = new ProyectoCookie();
+                nuevaCookie.ProyectoID = cookie.ProyectoID;
+                nuevaCookie.Tipo = cookie.Tipo;
+                nuevaCookie.CookieID = cookie.CookieID;
+                nuevaCookie.CategoriaID = cookie.CategoriaID;
+                nuevaCookie.Descripcion = cookie.Descripcion;
+                nuevaCookie.NombreCorto = cookie.NombreCorto;
+                nuevaCookie.Nombre = cookie.Nombre;
+                nuevaCookie.OrganizacionID = cookie.OrganizacionID;
+                nuevaCookie.ProyectoID = cookie.ProyectoID;
+                nuevaCookie.EsEditable = cookie.EsEditable;               
+
+                mEntityContext.ProyectoCookie.Add(nuevaCookie);
+            }
+            mEntityContext.SaveChanges();
+
+            CookieCL cookieCL = new CookieCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mServicesUtilVirtuosoAndReplication);
+            cookieCL.InvalidarCategoriaProyectoCookie(proyecto.Clave);
+        }
+
+
+        public void EliminarCategoriasYCookies()
+        {
+            CookieCN cookieCN = new CookieCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+
+            List<ProyectoCookie> cookiesBD = cookieCN.ObtenerCookiesDeProyecto(proyecto.Clave);
+            foreach (ProyectoCookie cookie in cookiesBD)
+            {
+                mEntityContext.ProyectoCookie.Remove(cookie);
+            }
+            mEntityContext.SaveChanges();
+
+            List<CategoriaProyectoCookie> categoriasBD = cookieCN.ObtenerCategoriasProyectoCookie(proyecto.Clave);
+            foreach (CategoriaProyectoCookie categoria in categoriasBD)
+            {
+                if (!cookieCN.HayCookiesVinculadas(categoria.CategoriaID))
+                {
+                    mEntityContext.CategoriaProyectoCookie.Remove(categoria);
+                }
+                else
+                {
+                    string mensajeError = $"No se puede eliminar una categoría que tiene cookies vinculadas\n\tCategoriaID:{categoria.CategoriaID}";
+                    mLoggingService.GuardarLogError(mensajeError);
+                    throw new Exception(mensajeError);
+                }
+            }
+            mEntityContext.SaveChanges();
         }
 
         public void GuardarCookies(List<CookiesModel> pListaCookies)

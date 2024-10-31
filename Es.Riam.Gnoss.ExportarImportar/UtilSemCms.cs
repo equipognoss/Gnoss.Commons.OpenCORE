@@ -77,12 +77,12 @@ namespace Es.Riam.Metagnoss.ExportarImportar
 
                 mLoggingService.AgregarEntrada("FormSem SelectorEntidad Reciproca para '" + pEntidadID + "' automatica con orden: " + orden);
 
-                facetadoDS = facetadoCN.ObtenerRDFXMLSelectorEntidadFormulario(pSelectorEntidad.Grafo, null, propFiltro, pEntidadID, propsLectura, orden, null, null);
+                facetadoDS = facetadoCN.ObtenerRDFXMLSelectorEntidadFormulario(pSelectorEntidad.Grafo, null, propFiltro, pEntidadID, propsLectura, orden, null, null, Guid.Empty, Guid.Empty);
             }
             else
             {
                 mLoggingService.AgregarEntrada("FormSem SelectorEntidad Reciproca para '" + pEntidadID + "' con consulta: " + pSelectorEntidad.ConsultaReciproca);
-                facetadoDS = facetadoCN.ObtenerRDFXMLSelectorEntidadFormularioPorConsulta(pSelectorEntidad.Grafo, pEntidadID, ObtenerExtraWhereConInfoUsuario(pSelectorEntidad.ConsultaReciproca, pFilaPersona, pFilaProy, pEntidades));
+                facetadoDS = facetadoCN.ObtenerRDFXMLSelectorEntidadFormularioPorConsulta(pSelectorEntidad, pEntidadID, ObtenerExtraWhereConInfoUsuario(pSelectorEntidad.ConsultaReciproca, pFilaPersona, pFilaProy, pEntidades), null);
             }
 
             facetadoCN.Dispose();

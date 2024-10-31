@@ -140,9 +140,37 @@ namespace Es.Riam.Gnoss.CL.ServiciosGenerales
         public void InvalidarComunidadMVC(Guid pProyectoID)
         {
             string rawKey = "ComunidadMVC3_" + pProyectoID;
-
+            
             InvalidarCache(rawKey);
         }
+
+        /// <summary>
+        /// Invalida las caches de la comunidad y de las hijas
+        /// </summary>
+        /// <param name="pProyectosIDs"></param>
+        public void InvalidarComunidadMVCHijas(List<Guid> pProyectosIDs)
+        {
+            List<string> listaRawKeys = new List<string>();
+            foreach(Guid proyectoID in pProyectosIDs)
+            {
+                listaRawKeys.Add(ObtenerClaveCache($"ComunidadMVC3_{proyectoID}").ToLower());
+            }
+            InvalidarCachesMultiples(listaRawKeys);
+        }
+
+        public void InvalidarFilaProyectoComunidadesHijas(List<Guid> pProyectosIDs)
+        {
+            List<string> rawKeysProyCompId3 = new List<string>();
+            List<string> rawKeysProyPorId = new List<string>();
+            foreach (Guid proyectoID in pProyectosIDs)
+            {
+                rawKeysProyPorId.Add(ObtenerClaveCache($"{NombresCL.PROYECTOSPORID}_{proyectoID}").ToLower());
+                rawKeysProyCompId3.Add(ObtenerClaveCache($"ProyectoCompletoPorID3_{proyectoID}").ToLower());
+            }
+            InvalidarCachesMultiples(rawKeysProyPorId);
+            InvalidarCachesMultiples(rawKeysProyCompId3);
+        }
+
         public void InvalidarTodasComunidadesMVC()
         {
             string rawKey = "ComunidadMVC3_";
@@ -801,15 +829,23 @@ namespace Es.Riam.Gnoss.CL.ServiciosGenerales
         }
 
         /// <summary>
-        /// Invalida los proyectos de la cache
+        /// Invalida la caché del proyecto pasado por parámetro y de sus hijos
         /// </summary>
         public void InvalidarFilaProyecto(Guid pProyectoID)
         {
-            string rawKey = NombresCL.PROYECTOSPORID + "_" + pProyectoID;
-            InvalidarCache(rawKey);
+            ProyectoCN proyectoCN = new ProyectoCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+            List<Guid> listaProyIdHijos = proyectoCN.ObtenerProyectosIdsDeProyectoSuperiorID(pProyectoID);
 
-            rawKey = string.Concat("ProyectoCompletoPorID3_", pProyectoID);
-            InvalidarCache(rawKey);
+            List<string> rawKeysProyPorId = new List<string>() { ObtenerClaveCache($"{NombresCL.PROYECTOSPORID}_{pProyectoID}").ToLower() };
+            List<string> rawKeysProyCompId3 = new List<string>() { ObtenerClaveCache($"ProyectoCompletoPorID3_{pProyectoID}").ToLower() };
+            
+            foreach (Guid proyectoID in listaProyIdHijos)
+            {
+                rawKeysProyPorId.Add(ObtenerClaveCache($"{NombresCL.PROYECTOSPORID}_{proyectoID}").ToLower());
+                rawKeysProyCompId3.Add(ObtenerClaveCache($"ProyectoCompletoPorID3_{proyectoID}").ToLower());
+            }
+            InvalidarCachesMultiples(rawKeysProyPorId);
+            InvalidarCachesMultiples(rawKeysProyCompId3);
 
             VersionarCacheLocal(pProyectoID);
         }
@@ -897,6 +933,46 @@ namespace Es.Riam.Gnoss.CL.ServiciosGenerales
             {
                 return null;
             }
+        }
+
+        /// <summary>
+        /// ¡SOLO LLAMAR EN EL INICIO DE LA APLICACIÓN!
+        /// Compruebo si existe la clave de reinicio en caché. Si existe la guardo en caché local.
+        /// </summary>
+        /// <param name="pProyectoID">Identificador del proyecto</param>
+        public void AgregarClaveReinicioAplicacion(Guid pProyectoID)
+        {
+            string rawKey = NombresCL.CLAVEREINICIO;
+            string clave = ObtenerObjetoDeCache(rawKey) as string;
+
+            //Si la clave está, la agrego a caché local
+            if (!string.IsNullOrEmpty(clave))
+            {
+                AgregarObjetoCacheLocal(pProyectoID, rawKey, clave);
+            }
+        }
+
+        /// <summary>
+        /// Compruebo si existe la caché para reiniciar la aplicación. Si existe y el valor es diferente al
+        /// almacenado en cache local es necesario reiniciar la aplicación. (Otro frontal se ha reiniciado y ha 
+        /// borrado y regenerado la clave).
+        /// </summary>
+        public bool EsNecesarioReiniciarAplicacion()
+        {
+            string rawKey = NombresCL.CLAVEREINICIO;
+            string claveCacheActual = ObtenerObjetoDeCache(rawKey) as string;
+
+            if (!string.IsNullOrEmpty(claveCacheActual))
+            {
+                string claveCacheLocal = ObtenerObjetoDeCacheLocal(rawKey) as string;
+
+                if (claveCacheLocal != claveCacheActual)
+                {
+                    return true;
+                }
+            }
+
+            return false;
         }
 
         /// <summary>
@@ -1463,6 +1539,7 @@ namespace Es.Riam.Gnoss.CL.ServiciosGenerales
                 {
                     proyectoPestanyaMenu.Ruta = proyectoPestanyaMenuHija.Ruta;
                 }
+                mEntityContext.DetachObjectFromEntityContext(proyectoPestanyaMenu);
                 proyectoPestanyaMenu.ProyectoID = pProyectoID;
             }
 
@@ -1548,7 +1625,6 @@ namespace Es.Riam.Gnoss.CL.ServiciosGenerales
                 }
                 proyectoGadgetContexto.ProyectoID = pProyectoID;
             }
-
         }
 
         private void ModificarDataWrapperProyectoHijaDW(DataWrapperProyecto dataWrapperProyectoHija, DataWrapperProyecto dataWrapperProyectoPadre, Guid pProyectoID)

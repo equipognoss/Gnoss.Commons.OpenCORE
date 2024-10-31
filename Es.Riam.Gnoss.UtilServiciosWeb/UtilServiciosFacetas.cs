@@ -44,8 +44,8 @@ namespace Es.Riam.Gnoss.UtilServiciosWeb
         }
 
         private const string GETIDENTIDADID = "GETIDENTIDADID()";
-		private const string GETUSUARIOID = "GETUSUARIOID()";
-		
+        private const string GETUSUARIOID = "GETUSUARIOID()";
+
         /// <summary>
         /// A partir de una URI obtiene el identificador del elemento (ej: http:gnoss.com/1111-1111 = 1111-1111)
         /// </summary>
@@ -253,12 +253,12 @@ namespace Es.Riam.Gnoss.UtilServiciosWeb
                                 {
                                     valor = $"gnoss:{pIdentidadID.ToString().ToUpper()}";
                                 }
-								if (valor.Equals(GETUSUARIOID))
-								{
-									UsuarioCN usuarioCN = new UsuarioCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
-									Guid usuarioID = usuarioCN.ObtenerGuidUsuarioIDporIdentidadID(pIdentidadID);
-									valor = $"gnoss:{usuarioID.ToString().ToUpper()}";
-								}
+                                if (valor.Equals(GETUSUARIOID))
+                                {
+                                    UsuarioCN usuarioCN = new UsuarioCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+                                    Guid usuarioID = usuarioCN.ObtenerGuidUsuarioIDporIdentidadID(pIdentidadID);
+                                    valor = $"gnoss:{usuarioID.ToString().ToUpper()}";
+                                }
                                 if (filtro.Length > 2)
                                 {
                                     // Hay más datos en el filtro separados por = que pertenecen al valor
@@ -426,7 +426,8 @@ namespace Es.Riam.Gnoss.UtilServiciosWeb
                 }
                 else
                 {
-                    if (pFacetaPrivadaGrupo || pFacetadoCL.TienePrivados(pProyectoID, pPerfilIdentidadID))
+                    //Quitado porque es mejor que virtuoso muestre todos los recursos, que atacar a la BD para detectar si tiene recursos privados este perfil.
+                    /*if (pFacetaPrivadaGrupo || pFacetadoCL.TienePrivados(pProyectoID, pPerfilIdentidadID))*/
                     {
                         tienePrivados = true;
                     }
@@ -732,30 +733,35 @@ namespace Es.Riam.Gnoss.UtilServiciosWeb
         /// <returns>filtro para la consulta de chart</returns>
         public KeyValuePair<string, string> ObtenerSelectYFiltroConsultaChartProyecto(Guid pOrganizacionID, Guid pProyectoID, Guid pChartID, string pIdioma, VirtuosoAD mVirtuosoAD)
         {
+            FacetaCL facetaCL = new FacetaCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mServicesUtilVirtuosoAndReplication);
+            DataWrapperFacetas chartDW = facetaCL.ObtenerDatosChartProyecto(pOrganizacionID, pProyectoID);
+            facetaCL.Dispose();
 
-            //FacetaCL facetaCL = new FacetaCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService);
-            //DataWrapperFacetas chartDW = facetaCL.ObtenerDatosChartProyecto(pOrganizacionID, pProyectoID);
-            //facetaCL.Dispose();
-
-            //FacetaConfigProyChart fila = chartDW.ListaFacetaConfigProyChart.Where(item => item.ChartID.Equals(pChartID)).FirstOrDefault();
+            FacetaConfigProyChart facetaConfigProyChart = chartDW.ListaFacetaConfigProyChart.Where(item => item.ChartID.Equals(pChartID)).FirstOrDefault();
 
 
             ProyectoCL proyectoCL = new ProyectoCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mVirtuosoAD, mServicesUtilVirtuosoAndReplication);
             DataWrapperProyecto dashboardDW = proyectoCL.ObtenerProyectoPorID(pProyectoID);
             proyectoCL.Dispose();
 
-            ProyectoPestanyaDashboardAsistente fila = dashboardDW.ListaProyectoPestanyaDashboardAsistente.FirstOrDefault(item => item.AsisID.Equals(pChartID));
+            ProyectoPestanyaDashboardAsistente proyectoPestanyaDashboardAsistente = dashboardDW.ListaProyectoPestanyaDashboardAsistente.FirstOrDefault(item => item.AsisID.Equals(pChartID));
 
-            if (fila != null)
+            KeyValuePair<string, string> selectFilt = new KeyValuePair<string, string>();
+
+            if (facetaConfigProyChart != null)
             {
-                //KeyValuePair<string, string> selectFilt = new KeyValuePair<string, string>(fila.SelectConsultaVirtuoso, fila.FiltrosConsultaVirtuoso.Replace("@lang@", pIdioma));
-                KeyValuePair<string, string> selectFilt = new KeyValuePair<string, string>(fila.Select, fila.Where);
+                selectFilt = new KeyValuePair<string, string>(facetaConfigProyChart.SelectConsultaVirtuoso, facetaConfigProyChart.FiltrosConsultaVirtuoso.Replace("@lang@", pIdioma));
                 return selectFilt;
             }
-            else
-            {
-                return new KeyValuePair<string, string>(null, null);
+
+            if (proyectoPestanyaDashboardAsistente != null)
+            {   
+                selectFilt = new KeyValuePair<string, string>(proyectoPestanyaDashboardAsistente.Select, proyectoPestanyaDashboardAsistente.Where);
+                return selectFilt;
             }
+
+            return selectFilt;
+
         }
 
         #endregion

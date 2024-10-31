@@ -4,6 +4,7 @@ using Es.Riam.Gnoss.AD.EntityModelBASE;
 using Es.Riam.Gnoss.AD.RDF.Model;
 using Es.Riam.Gnoss.Util.Configuracion;
 using Es.Riam.Gnoss.Util.General;
+using Microsoft.Data.SqlClient;
 using Npgsql;
 using Oracle.ManagedDataAccess.Client;
 using System;
@@ -73,7 +74,17 @@ namespace Es.Riam.Gnoss.AD.RDF
             mLoggingService = loggingService;
             this.CargarConsultasYDataAdapters(IBD);
         }
-
+        /// <summary>
+        /// Cuando se desea pasar directamente la ruta del fichero de configuración de conexión a la base de datos
+        /// </summary>
+        /// <param name="pFicheroConfiguracionBD">Ruta del fichero de configuración de conexión a base de datos</param>
+        /// <param name="pUsarVariableEstatica">Si se están usando hilos con diferentes conexiones: FALSE. En caso contrario TRUE</param>
+        public RdfAD(string pFicheroConfiguracionBD, LoggingService loggingService, EntityContext entityContext, EntityContextBASE entityContextBASE, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication)
+            : base(pFicheroConfiguracionBD, loggingService, entityContext, configService, entityContextBASE, servicesUtilVirtuosoAndReplication)
+        {
+            mLoggingService = loggingService;
+            this.CargarConsultasYDataAdapters(IBD);
+        }
         /// <summary>
         /// Cuando se desea pasar directamente la ruta del fichero de configuracion de conexion a la Base de datos
         /// </summary>
@@ -347,7 +358,7 @@ namespace Es.Riam.Gnoss.AD.RDF
 
                 foreach (var item in deletes)
                 {
-                    sql.Append($"Delete from RdfDocumento_{ item.Key} where documentoID ");
+                    sql.Append($"Delete from RdfDocumento_{item.Key} where documentoID ");
                     if (item.Count() > 1)
                     {
                         sql.Append("IN (");
@@ -384,16 +395,17 @@ namespace Es.Riam.Gnoss.AD.RDF
                 }
             }
         }
+
         /// <summary>
         /// Borra todos los documentos de las tablas RdfDocumento_XXX
         /// </summary>
         public void VaciarTablasRdf()
         {
-            string delete = string.Empty;
-            string numTabla = string.Empty;
+            string delete;
+            string numTabla;
             List<char> caracteres = new List<char> { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F' };
             DbCommand comSql;
-            bool esOracle = (ConexionMaster is OracleConnection);
+            
             for (int i = 0; i < caracteres.Count; i++)
             {
                 for (int j = 0; j < caracteres.Count; j++)
@@ -401,31 +413,23 @@ namespace Es.Riam.Gnoss.AD.RDF
                     for (int k = 0; k < caracteres.Count; k++)
                     {
                         numTabla = caracteres[i].ToString() + caracteres[j].ToString() + caracteres[k].ToString();
-                        if (!esOracle)
+
+                        try
                         {
-                            delete = $"IF OBJECT_ID('RdfDocumento_{numTabla}', 'U') IS NOT NULL truncate table RdfDocumento_{numTabla}";
+                            delete = $"truncate table \"RdfDocumento_{numTabla}\"";
                             comSql = ObtenerComando(delete);
                             comSql.CommandTimeout = 300;
-                            ActualizarBaseDeDatos(comSql, true, esOracle);
+                            ActualizarBaseDeDatos(comSql, false, true, true, mEntityContextBASE);
                         }
-                        else
+                        catch
                         {
-                            try
-                            {
-                                delete = $"truncate table RdfDocumento_{numTabla}";
-                                comSql = ObtenerComando(delete);
-                                comSql.CommandTimeout = 300;
-                                ActualizarBaseDeDatos(comSql, true, esOracle);
-                            }
-                            catch (ExcepcionDeBaseDeDatos)
-                            {
-                                mLoggingService.GuardarLogError($"La tabla RdfDocumento_{numTabla} no existe");
-                            }
+                            //La tabla RdfDocumento indicada no existe
                         }
                     }
                 }
             }
         }
+
         private void BorrarDocumentos(string pNumTabla, string pDocumentoIN)
         {
             bool esOracle = (ConexionMaster is OracleConnection);
@@ -461,7 +465,7 @@ namespace Es.Riam.Gnoss.AD.RDF
                 sql = $"Delete from \"{nombreBaseDeDatos}\".\"RdfDocumento_{numTabla}\" where \"DocumentoID\" = {IBD.FormatearGuid(pDocumentoID)}";
             }
             DbCommand comandoDelete = ObtenerComando(sql);
-            ActualizarBaseDeDatos(comandoDelete, true, esOracle);
+            ActualizarBaseDeDatos(comandoDelete, true, true, true, mEntityContextBASE);
         }
 
         /// <summary>
@@ -537,7 +541,7 @@ namespace Es.Riam.Gnoss.AD.RDF
                 {
                     CrearTablaOracle(pNombreTabla);
                 }
-                else if(ConexionMaster is NpgsqlConnection)
+                else if (ConexionMaster is NpgsqlConnection)
                 {
                     CrearTablaPostgre(pNombreTabla);
                 }
@@ -565,7 +569,7 @@ namespace Es.Riam.Gnoss.AD.RDF
             DbCommand cmdExisteTabla = ObtenerComando(existeTabla);
             AgregarParametro(cmdExisteTabla, IBD.ToParam("nombreTabla"), DbType.String, pNombreTabla);
 
-            if(ConexionMaster is OracleConnection)
+            if (ConexionMaster is OracleConnection)
             {
                 OracleConnectionStringBuilder stringBuilder = new OracleConnectionStringBuilder(ConexionMaster.ConnectionString);
                 string userID = stringBuilder.UserID;

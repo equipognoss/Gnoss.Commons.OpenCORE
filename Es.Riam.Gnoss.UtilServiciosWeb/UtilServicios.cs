@@ -3,6 +3,7 @@ using Es.Riam.Gnoss.AD.EntityModel;
 using Es.Riam.Gnoss.AD.ParametroAplicacion;
 using Es.Riam.Gnoss.CL;
 using Es.Riam.Gnoss.CL.ParametrosAplicacion;
+using Es.Riam.Gnoss.Logica.ServiciosGenerales;
 using Es.Riam.Gnoss.Util.Configuracion;
 using Es.Riam.Gnoss.Util.General;
 using Microsoft.AspNetCore.Http;
@@ -33,6 +34,11 @@ namespace Es.Riam.Gnoss.UtilServiciosWeb
         /// </summary>
         //private static ParametroAplicacionDS mParametrosAplicacionDS = null;
         private static List<AD.EntityModel.ParametroAplicacion> mParametrosAplicacionDS = null;
+
+
+        private static List<string> DOMINIOS_PERMITIDOS_CORS = new List<string>();
+        public static string DOMINIO_DEFECTO = "";
+        public static string IDIOMA_PRINCIPAL_DOMINIO = "es";
 
         #endregion
 
@@ -197,7 +203,7 @@ namespace Es.Riam.Gnoss.UtilServiciosWeb
             }
         }
 
-        public void ComprobacionCambiosCachesLocales(Guid pProyectoID)
+        public bool ComprobacionCambiosCachesLocales(Guid pProyectoID)
         {
             string claveRefrescoCache = GnossCacheCL.CLAVE_REFRESCO_CACHE_LOCAL + pProyectoID;
             Guid? idRefrescoCacheRedis = mGnossCache.ObtenerObjetoDeCache(claveRefrescoCache) as Guid?;
@@ -210,8 +216,10 @@ namespace Es.Riam.Gnoss.UtilServiciosWeb
                 if (idRefrescoCacheLocal.HasValue)
                 {
                     BaseCL.ActualizarCacheDependencyCacheLocal(pProyectoID, idRefrescoCacheRedis.Value.ToString());
+                    return true;
                 }
             }
+            return false;
         }
 
         public bool ComprobacionCambiosRutasPestanyas(Guid pProyectoID)
@@ -290,9 +298,7 @@ namespace Es.Riam.Gnoss.UtilServiciosWeb
         /// Comprueba si tiene que invalidar las vistas locales
         /// </summary>
         public bool ComprobacionInvalidarVistasLocales(Guid pPersonalizacionID, Guid pPersonalizacionEcosistemaID)
-        {
-            int proceso = System.Diagnostics.Process.GetCurrentProcess().Id;
-
+        {            
             try
             {
                 bool borrarVistasProyecto = ComprobacionInvalidarVistasLocalesPorPersonalizacion(pPersonalizacionID);
@@ -306,7 +312,7 @@ namespace Es.Riam.Gnoss.UtilServiciosWeb
             }
             catch
             {
-
+                //Si hay un error al comprobar si debemos o no invalidar vistas locales no invalidamos.
             }
 
             return false;
@@ -316,7 +322,7 @@ namespace Es.Riam.Gnoss.UtilServiciosWeb
         {
             if (!pPersonalizacionID.Equals(Guid.Empty))
             {
-                string claveCachePersonalizacionRedis = GnossCacheCL.CLAVE_REFRESCO_CACHE_TRADUCCIONES + pPersonalizacionID;
+                string claveCachePersonalizacionRedis = BaseCL.CLAVE_REFRESCO_CACHE_TRADUCCIONES + pPersonalizacionID;
 
                 Guid? idActualRedisPersonalizacion = mGnossCache.ObtenerObjetoDeCache(claveCachePersonalizacionRedis) as Guid?;
                 Guid? idActualLocalPersonalizacion = mRedisCacheWrapper.Cache.Get(claveCachePersonalizacionRedis) as Guid?;
@@ -324,7 +330,7 @@ namespace Es.Riam.Gnoss.UtilServiciosWeb
                 if (idActualRedisPersonalizacion.HasValue && (!idActualLocalPersonalizacion.HasValue || !idActualRedisPersonalizacion.Equals(idActualLocalPersonalizacion)))
                 {
                     mRedisCacheWrapper.Cache.Set(claveCachePersonalizacionRedis, idActualRedisPersonalizacion);
-                    return idActualLocalPersonalizacion.HasValue;
+                    return true;
                 }
             }
             return false;
@@ -342,11 +348,83 @@ namespace Es.Riam.Gnoss.UtilServiciosWeb
 
                 return invalidarPersonalizacion || invalidarPersonalizacionEcosistema;
             }
-            catch { }
+            catch 
+            {
+                //Si no se puede comprobar si debemos recalcular las traducciones no las recalculamos
+            }
 
             return false;
         }
 
-        #endregion
-    }
+        public static void CargarDominiosPermitidosCORS(EntityContext entity)
+        {
+            List<string> dominios = entity.Proyecto.Select(proyecto => proyecto.URLPropia).Distinct().ToList();
+            List<string> dominiosSinIdioma = new List<string>();
+
+            foreach(string dominio in dominios)
+            {
+                string dominioAux = dominio;
+                if (dominio.Contains("@"))
+                {
+                    dominioAux = dominio.Substring(0, dominio.IndexOf("@"));
+                }
+                DOMINIOS_PERMITIDOS_CORS.Add(dominioAux);
+            }
+                        
+            string dominiosPermitidosCORS = entity.ParametroAplicacion.Where(parametro => parametro.Parametro.Equals(TiposParametrosAplicacion.DominiosPermitidosCORS)).Select(parametro => parametro.Valor).FirstOrDefault();
+            if (!string.IsNullOrEmpty(dominiosPermitidosCORS))
+            {
+                List<string> listaOtrosDominiosPermitdosCORS = dominiosPermitidosCORS.Split('|', StringSplitOptions.RemoveEmptyEntries).ToList();
+                DOMINIOS_PERMITIDOS_CORS.AddRange(listaOtrosDominiosPermitdosCORS);
+            }
+
+            DOMINIOS_PERMITIDOS_CORS.Add("http://depuracion.net");
+            DOMINIOS_PERMITIDOS_CORS.Add("http://depuracion.net:5003");
+        }
+
+        public static bool ComprobarDominioPermitidoCORS(string dominio)
+        {
+            return DOMINIOS_PERMITIDOS_CORS.Contains(dominio);
+        }
+
+		public static void CargarIdiomasPlataforma(Es.Riam.Gnoss.AD.EntityModel.EntityContext entityContext, LoggingService loggingService, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication, RedisCacheWrapper redisCacheWrapper)
+		{
+			Dictionary<string, string> listaIdiomas = new Dictionary<string, string>();
+			ParametroAplicacionCL paramCL = new ParametroAplicacionCL(entityContext, loggingService, redisCacheWrapper, configService, servicesUtilVirtuosoAndReplication);
+			listaIdiomas = paramCL.ObtenerListaIdiomasDictionary();
+			if (listaIdiomas.Count == 1 || string.IsNullOrEmpty(DOMINIO_DEFECTO))
+			{
+				IDIOMA_PRINCIPAL_DOMINIO = listaIdiomas.First().Key;
+			}
+			else if (listaIdiomas.Count > 1)
+			{
+				ProyectoCN proyCN = new ProyectoCN(entityContext, loggingService, configService, servicesUtilVirtuosoAndReplication);
+				IDIOMA_PRINCIPAL_DOMINIO = proyCN.ObtenerIdiomaPrincipalDominio(DOMINIO_DEFECTO);//select proyectoid, URLPropia from Proyecto where URLPropia like '%pruebasiphoneen.gnoss.net@%'
+
+				if (!listaIdiomas.ContainsKey(IDIOMA_PRINCIPAL_DOMINIO))
+				{
+					IDIOMA_PRINCIPAL_DOMINIO = listaIdiomas.First().Key;
+				}
+			}
+		}
+
+		private static void CargarDominio(ConfigService configService)
+		{
+            if (string.IsNullOrEmpty(DOMINIO_DEFECTO))
+            {
+				string dominioConfig = configService.ObtenerDominio();
+				if (!string.IsNullOrEmpty(dominioConfig))
+                {
+                    DOMINIO_DEFECTO = dominioConfig;
+                }
+
+                if (DOMINIO_DEFECTO.Contains("depuracion.net"))
+                {
+                    DOMINIO_DEFECTO = "";
+                }
+            }
+		}
+
+		#endregion
+	}
 }

@@ -149,6 +149,12 @@ namespace Es.Riam.Gnoss.Elementos.Identidad
             }
         }
 
+        public void SetDataWrapperIdentidad(DataWrapperIdentidad pDataWrapperIdentidad)
+        {
+            DataWrapper = pDataWrapperIdentidad;
+            mListaIdentidades = null;
+        }
+
         /// <summary>
         /// Obtiene o establece el gestor de personas
         /// </summary>
@@ -705,9 +711,9 @@ namespace Es.Riam.Gnoss.Elementos.Identidad
 
             Identidad identidad = new Identidad(filaIdentidad, pPerfil, mLoggingService, mEntityContext, mConfigService, mServicesUtilVirtuosoAndReplication);
 
-            if (!this.ListaIdentidades.ContainsKey(identidad.Clave))
+            if (!ListaIdentidades.ContainsKey(identidad.Clave))
             {
-                this.ListaIdentidades.Add(identidad.Clave, identidad);
+                ListaIdentidades.Add(identidad.Clave, identidad);
             }
 
             if (!pPerfil.Hijos.Contains(identidad))

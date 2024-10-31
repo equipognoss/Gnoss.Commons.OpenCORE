@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Es.Riam.Util;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Net;
@@ -44,6 +45,7 @@ namespace Es.Riam.Web.Util
         {
             HttpWebRequest request = (HttpWebRequest)WebRequest.Create(pUrl);
 
+            request.UserAgent = UtilWeb.GenerarUserAgent();
             // Set some reasonable limits on resources used by this request
             request.MaximumAutomaticRedirections = 4;
             //request.MaximumResponseHeadersLength = 4;
@@ -58,7 +60,7 @@ namespace Es.Riam.Web.Util
                 request.Headers["Authorization"] = pAuthorization;
             }
 
-            request.UserAgent = "gnoss";
+            request.UserAgent = UtilWeb.GenerarUserAgent();
             request.KeepAlive = true;
             request.ContentType = pContentType;
             request.Timeout = 600000; // 10 minutos de timeout
@@ -104,6 +106,7 @@ namespace Es.Riam.Web.Util
         public static string HacerPeticionPostHttpClient(string url, string postData, string contentType, string acceptHeader = "", Dictionary<HttpRequestHeader, string> cabecerasAdicionales = null)
         {
             HttpContent contentData = new StringContent(postData, System.Text.Encoding.UTF8, contentType);
+            contentData.Headers.Add("UserAgent", UtilWeb.GenerarUserAgent());
             string result = "";
             HttpResponseMessage response = null;
             try
@@ -138,6 +141,7 @@ namespace Es.Riam.Web.Util
             request.KeepAlive = true;
             request.Credentials = CredentialCache.DefaultCredentials;
             request.Timeout = 600 * 1000; //10 minutos
+            request.UserAgent = UtilWeb.GenerarUserAgent();
 
             BinaryWriter binaryWriter = new BinaryWriter(request.GetRequestStream());
 

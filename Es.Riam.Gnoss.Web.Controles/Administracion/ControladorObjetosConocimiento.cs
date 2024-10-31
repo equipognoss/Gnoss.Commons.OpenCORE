@@ -14,6 +14,7 @@ using Es.Riam.Gnoss.Elementos.Documentacion;
 using Es.Riam.Gnoss.Logica.Documentacion;
 using Es.Riam.Gnoss.Logica.ServiciosGenerales;
 using Es.Riam.Gnoss.Logica.Tesauro;
+using Es.Riam.Gnoss.Recursos;
 using Es.Riam.Gnoss.Util.Configuracion;
 using Es.Riam.Gnoss.Util.General;
 using Es.Riam.Gnoss.Web.Controles.Documentacion;
@@ -21,6 +22,7 @@ using Es.Riam.Gnoss.Web.MVC.Models;
 using Es.Riam.Gnoss.Web.MVC.Models.Administracion;
 using Es.Riam.Semantica.OWL;
 using Es.Riam.Semantica.Plantillas;
+using Es.Riam.Util;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -106,7 +108,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
                 objetoConocimiento.ShortNameOntology = filaOntologia.NombreCortoOnt;
                 objetoConocimiento.Namespace = filaOntologia.Namespace;
                 objetoConocimiento.NamespaceExtra = filaOntologia.NamespacesExtra;
-                objetoConocimiento.RecursosVinculados = documentacionCN.ObtenerDocumentosIDVinculadosAOntologiaProyecto(ontologiaID, ProyectoSeleccionado.Clave).Count > 0;
+                objetoConocimiento.RecursosVinculados = documentacionCN.ExistenVinculadosAOntologiaProyecto(ontologiaID, ProyectoSeleccionado.Clave);
                 objetoConocimiento.NombreTesauroExclusivo = tesauroCN.ObtenerNombreTesauroProyOnt(ProyectoSeleccionado.Clave, ontologiaID.ToString());
                 objetoConocimiento.CachearDatosSemanticos = filaOntologia.CachearDatosSemanticos;
                 objetoConocimiento.EsBuscable = filaOntologia.EsBuscable;
@@ -356,7 +358,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
             if (filaDoc != null)
             {
                 objetoConocimiento = new ObjetoConocimientoModel();
-                objetoConocimiento.Ontologia = ontology.Replace(".owl", string.Empty);
+                objetoConocimiento.Ontologia = ontology.Replace(".owl", string.Empty).ToLower();
                 objetoConocimiento.Name = filaDoc.Titulo.Replace(".owl", string.Empty);
                 objetoConocimiento.EsCreacion = true;
                 objetoConocimiento.CachearDatosSemanticos = true;
@@ -376,7 +378,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
 
                 if (!string.IsNullOrEmpty(filaDoc.NombreCategoriaDoc) && filaDoc.NombreCategoriaDoc.Contains(".jpg"))
                 {
-                    objetoConocimiento.Image = filaDoc.NombreCategoriaDoc.Split(',')[1].Replace(".jpg", "_" + filaDoc.NombreCategoriaDoc.Split(',')[0] + ".jpg");
+                    objetoConocimiento.Image = filaDoc.NombreCategoriaDoc.Split(',')[1].Replace(".jpg", $"_{filaDoc.NombreCategoriaDoc.Split(',')[0]}.jpg");
                 }
 
                 Dictionary<string, string> namespaces = ontologia.NamespacesDefinidos;
@@ -604,12 +606,14 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
 
             if (pObjetoConocimiento.Subtipos != null)
             {
+                pFilaOntologia.SubTipos = string.Empty;
                 foreach (string subTipo in pObjetoConocimiento.Subtipos.Keys.Distinct())
                 {
                     pFilaOntologia.SubTipos += $"{subTipo}|||{pObjetoConocimiento.Subtipos[subTipo]}[|||]";
                 }
             }
 
+            GuardarDatosDocumento(pOntologiaID, pObjetoConocimiento);
             GuardarDatosPresentacionListado(pOntologiaID, pObjetoConocimiento);
             GuardarDatosPresentacionMosaico(pOntologiaID, pObjetoConocimiento);
             GuardarDatosPresentacionMapa(pOntologiaID, pObjetoConocimiento);
@@ -617,6 +621,17 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
             GuardarDatosPresentacionRelacionado(pOntologiaID, pObjetoConocimiento);
 
             GuardarCambios();
+        }
+
+        /// <summary>
+        /// Aplicamos los cambios hechos en la administración a la tabla Documento (solamente es necesario el título)
+        /// </summary>
+        /// <param name="pOntologiaID">Identificador de la ontología</param>
+        /// <param name="pObjetoConocimientoModel">Modelo con los cambios devuelto por la vista</param>
+        private void GuardarDatosDocumento(Guid pOntologiaID, ObjetoConocimientoModel pObjetoConocimientoModel)
+        {
+            AD.EntityModel.Models.Documentacion.Documento documento = mEntityContext.Documento.Where(item => item.DocumentoID.Equals(pOntologiaID)).First();
+            documento.Titulo = pObjetoConocimientoModel.Name;
         }
 
         private void GuardarDatosPresentacionListado(Guid pOntologiaID, ObjetoConocimientoModel pObjetoConocimiento)
@@ -801,7 +816,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
             {
                 foreach (ObjetoConocimientoModel.PresentacionModel.PropiedadModel propiedad in pObjetoConocimiento.PresentacionMapa.ListaPropiedades)
                 {
-                    if (string.IsNullOrEmpty(propiedad.Presentacion))
+                    if(propiedad.Presentacion == null)
                     {
                         propiedad.Presentacion = string.Empty;
                     }
@@ -973,13 +988,14 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
             if (filaPresentacionRelacionado == null)
             {
                 filaPresentacionRelacionado = new RecursosRelacionadosPresentacion();
-                DataWrapperProyecto.ListaRecursosRelacionadosPresentacion.Add(filaPresentacionRelacionado);
-                mEntityContext.RecursosRelacionadosPresentacion.Add(filaPresentacionRelacionado);
 
                 filaPresentacionRelacionado.OrganizacionID = ProyectoSeleccionado.FilaProyecto.OrganizacionID;
                 filaPresentacionRelacionado.ProyectoID = ProyectoSeleccionado.Clave;
                 filaPresentacionRelacionado.OntologiaID = pOntologiaID;
                 filaPresentacionRelacionado.Orden = pOrden;
+
+                DataWrapperProyecto.ListaRecursosRelacionadosPresentacion.Add(filaPresentacionRelacionado);
+                mEntityContext.RecursosRelacionadosPresentacion.Add(filaPresentacionRelacionado);
             }
 
             filaPresentacionRelacionado.OrganizacionID = ProyectoSeleccionado.FilaProyecto.OrganizacionID;

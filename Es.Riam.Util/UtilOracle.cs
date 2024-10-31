@@ -202,7 +202,7 @@ namespace Es.Riam.Util
             //    string seg = pCadena.Substring(comienzo, longitud);
             //    admite = seg == "True";
             //}
-            return false; ;
+            return false;
         }
 
         /// <summary>

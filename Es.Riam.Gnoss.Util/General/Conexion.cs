@@ -459,6 +459,7 @@ namespace Es.Riam.Gnoss.Util.General
                 {
                     HttpWebRequest myRequest = (HttpWebRequest)WebRequest.Create(pUrl);
                     myRequest.Method = "GET";
+                    myRequest.UserAgent = UtilWeb.GenerarUserAgent();
                     myResponse = myRequest.GetResponse();
                     receiveStream = myResponse.GetResponseStream();
                     readStream = new StreamReader(receiveStream);

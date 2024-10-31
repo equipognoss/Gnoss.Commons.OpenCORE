@@ -1150,7 +1150,7 @@ namespace Es.Riam.Gnoss.AD.Usuarios
 
             #region SolicitudNuevaClase
 
-            this.sqlSolicitudNuevaClaseInsert = IBD.ReplaceParam("INSERT INTO SolicitudNuevaClase (SolicitudID, UsuarioAdminID, Centro, Asignatura, Curso, Grupo, CursoAcademico, NombreCortoCentro, NombreCortoAsig, TipoClase) VALUES (" + IBD.GuidParamColumnaTabla("SolicitudID") + ", " + IBD.GuidParamColumnaTabla("UsuarioAdminID") + ", @Centro, @Asignatura, @Curso, @Grupo, @CursoAcademico, @NombreCortoCentro, @NombreCortoAsig, @TipoClase)"); ;
+            this.sqlSolicitudNuevaClaseInsert = IBD.ReplaceParam("INSERT INTO SolicitudNuevaClase (SolicitudID, UsuarioAdminID, Centro, Asignatura, Curso, Grupo, CursoAcademico, NombreCortoCentro, NombreCortoAsig, TipoClase) VALUES (" + IBD.GuidParamColumnaTabla("SolicitudID") + ", " + IBD.GuidParamColumnaTabla("UsuarioAdminID") + ", @Centro, @Asignatura, @Curso, @Grupo, @CursoAcademico, @NombreCortoCentro, @NombreCortoAsig, @TipoClase)");
 
             this.sqlSolicitudNuevaClaseDelete = IBD.ReplaceParam("DELETE FROM SolicitudNuevaClase WHERE (SolicitudID = " + IBD.GuidParamColumnaTabla("O_SolicitudID") + ")");
 

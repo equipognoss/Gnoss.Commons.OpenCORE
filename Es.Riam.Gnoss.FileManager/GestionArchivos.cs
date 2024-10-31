@@ -141,17 +141,27 @@ namespace Es.Riam.Gnoss.FileManager
                         if (pArchivoEncriptado)
                         {
                             rutaAux = Path.Combine(RutaFicheros, pRuta, $"{pNombreArchivo}_aux{pExtension}");
-                            fileStreamAux = new FileStream(rutaAux, FileMode.OpenOrCreate, FileAccess.Write);
-                            cryptoStream.CopyTo(fileStreamAux, buffer.Length);
-                            fileStreamAux.Flush();
-                            fileStreamAux.Close();
-                            fileStream = new FileStream(rutaAux, FileMode.Open, FileAccess.Read);
-                            pArchivoEncriptado = false;
-                            cryptoStream.Close();
+                            try
+                            {
+                                fileStreamAux = new FileStream(rutaAux, FileMode.OpenOrCreate, FileAccess.Write);
+                                cryptoStream.CopyTo(fileStreamAux, buffer.Length);
+                                fileStreamAux.Flush();
+                                fileStreamAux.Close();
+                                fileStream = new FileStream(rutaAux, FileMode.Open, FileAccess.Read);
+                                pArchivoEncriptado = false;
+                                cryptoStream.Close();
+                            }
+                            catch (Exception ex)
+                            {
+                                _loggingService.GuardarLogError($"Ha ocurrido un error en el intento de desencriptado: {ex.Message}");
+                                throw;
+                            }
                         }
                     }
                     catch (Exception ex)
                     {
+                        _loggingService.GuardarLogError(ex.Message);
+
                         pArchivoEncriptado = false;
                         cryptoStream.Close();
                         if (fileStreamAux != null)

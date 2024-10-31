@@ -197,7 +197,56 @@ namespace Es.Riam.Gnoss.CL.ParametrosAplicacion
             return gestorListaParametros;
         }
 
-        public void InvalidarCacheParametrosAplicacion()
+		/// <summary>
+		/// Obtiene los códigos de idioma y los nombres de la tabla "ParametrosAplicacion"
+		/// </summary>
+		/// <returns>Diccionario donde las claves son los códigos de idioma y los valores son los nombres de los idiomas</returns>
+		public Dictionary<string, string> ObtenerListaIdiomasDictionary()
+		{
+            Dictionary<string, string> listaIdiomasDictionary = (Dictionary<string, string>)ObtenerObjetoDeCacheLocal("listaIdiomasDictionary");
+			if (listaIdiomasDictionary == null || (listaIdiomasDictionary != null && !(listaIdiomasDictionary.Count > 0)))
+			{
+                listaIdiomasDictionary = new Dictionary<string, string>();
+				string idiomas = ObtenerGestorParametros().ParametroAplicacion.Where(item => item.Parametro.Equals("Idiomas")).Select(item => item.Valor).FirstOrDefault();
+				if (string.IsNullOrEmpty(idiomas))
+				{
+                    ParametroAplicacionCN parametroAplicacionCN = new ParametroAplicacionCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+					listaIdiomasDictionary = parametroAplicacionCN.ObtenerListaIdiomasDictionary();
+                    parametroAplicacionCN.Dispose();
+				}
+				else
+				{
+					// Dividir la cadena en pares de código de idioma y nombre
+					// Ej: es|Español,en|English,pt|Portuguese,ca|Català,eu|Euskera,gl|Galego,fr|Français,de|Deutsch,it|Italiano
+					string[] idiomasArray = idiomas.Split("&&&");
+					foreach (string idioma in idiomasArray)
+					{
+						string[] partes = idioma.Split('|');
+						listaIdiomasDictionary.Add(partes[0], partes[1]);
+					}
+				}
+				AgregarObjetoCacheLocal(Guid.Empty, "listaIdiomasDictionary", listaIdiomasDictionary);
+			}
+			return listaIdiomasDictionary;
+		}
+
+		/// <summary>
+		/// Obtiene los códigos de idioma de la tabla "ParametrosAplicacion"
+		/// </summary>
+		/// <returns>Lista de los códigos de idioma</returns>
+		public List<string> ObtenerListaIdiomas()
+		{
+			List<string> listacodigos = new List<string>();
+			listacodigos = ObtenerListaIdiomasDictionary().Keys.ToList();
+			return listacodigos;
+		}
+
+		public void InvalidarCacheIdiomas()
+		{
+			InvalidarCache("listaIdiomasDictionary");
+		}
+
+		public void InvalidarCacheParametrosAplicacion()
         {
             InvalidarCache("GestorParametroAplicacion");
             InvalidarCache(null, true);

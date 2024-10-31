@@ -181,6 +181,10 @@ namespace Es.Riam.Gnoss.Elementos.Notificacion
         /// Cuerpo del mensaje del evento
         /// </summary>
         CuerpoMensajeEvento = 37,
+        /// <summary>
+        /// Token de seguridad de login doble factor
+        /// </summary>
+        TokenSeguridad = 38,
 
         #endregion
 
@@ -1193,11 +1197,41 @@ namespace Es.Riam.Gnoss.Elementos.Notificacion
             Notificacion notificacion = AgregarNotificacion(TiposNotificacion.PeticionCambioPassword, fechaHoy, fechaHoy.AddDays(7), pProyecto.FilaProyecto.OrganizacionID, pProyecto.FilaProyecto.ProyectoID);
 
             AD.EntityModel.Models.Notificacion.Notificacion filaNotificacion = notificacion.FilaNotificacion;
-
+            filaNotificacion.Idioma = pLanguageCode;
             //Filas de NotificacionParametro
             Dictionary<short, string> listaParametros = new Dictionary<short, string>();
 
             listaParametros.Add((short)ClavesParametro.UrlEnlace, pLink);
+            listaParametros.Add((short)ClavesParametro.NombreProyecto, pProyecto.Nombre);
+
+            AgregarParametrosNotificacion(notificacion, listaParametros, pLanguageCode);
+
+            if (!string.IsNullOrEmpty(pPersona.FilaPersona.Email))
+            {
+                AgregarCorreoPersonaRow(notificacion.FilaNotificacion, pPersona.FilaPersona.Email, pPersona.Clave);
+            }
+            else
+            {
+                AgregarCorreoPersonaRow(notificacion.FilaNotificacion, pPersona.FilaPersona.EmailTutor, pPersona.Clave);
+            }
+        }
+
+        /// <summary>
+        /// Agrega una notificación de petición de autenticacion de doble factor
+        /// </summary>
+        public void AgregarNotificacionPeticionAutenticacionDobleFactor(Persona pPersona, string pToken, Elementos.ServiciosGenerales.Proyecto pProyecto, string pLanguageCode)
+        {
+            DateTime fechaHoy = DateTime.Now;
+
+            //Fila de la notificación
+            Notificacion notificacion = AgregarNotificacion(TiposNotificacion.PeticionAutenticacionDobleFactor, fechaHoy, fechaHoy.AddDays(7), pProyecto.FilaProyecto.OrganizacionID, pProyecto.FilaProyecto.ProyectoID);
+
+            AD.EntityModel.Models.Notificacion.Notificacion filaNotificacion = notificacion.FilaNotificacion;
+
+            //Filas de NotificacionParametro
+            Dictionary<short, string> listaParametros = new Dictionary<short, string>();
+
+            listaParametros.Add((short)ClavesParametro.TokenSeguridad, pToken);
             listaParametros.Add((short)ClavesParametro.NombreProyecto, pProyecto.Nombre);
 
             AgregarParametrosNotificacion(notificacion, listaParametros, pLanguageCode);
@@ -2305,23 +2339,31 @@ namespace Es.Riam.Gnoss.Elementos.Notificacion
             {
                 if (Editor.FilaEditor.Editor)
                 {
-                    Identidad.Identidad identidad = Editor.ObtenerIdentidadEditorEnProyecto(pIdentidad.FilaIdentidad.ProyectoID);
-
-                    //Obtenemos la configuración del creador del recurso
-                    IdentidadCN identidadCN = new IdentidadCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
-                    Logica.ServiciosGenerales.PersonaCN personaCN = new Logica.ServiciosGenerales.PersonaCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
-                    DataWrapperIdentidad dataWrapper = identidadCN.ObtenerIdentidadesPorID(new List<Guid> { pDocumento.CreadorID }, false);
-                    Guid perfilIDCreador = dataWrapper.ListaPerfil.First().PerfilID;
-                    Guid personaIDCreadorRecurso = personaCN.ObtenerPersonaIDPorPerfil(perfilIDCreador);
-                    AD.EntityModel.Models.PersonaDS.ConfiguracionGnossPersona configuracionGnossPersona = personaCN.ObtenerConfiguracionPersonaPorID(personaIDCreadorRecurso);
-
-                    if (identidad != null && configuracionGnossPersona.ComentariosRecursos)
+                    Identidad.Identidad identidad = null;
+                    try
                     {
-                        //Si el editor es el creador del comentario no hay que mandar la notificacion
-                        if (identidad.PerfilID != pIdentidad.PerfilID)
+                        identidad = Editor.ObtenerIdentidadEditorEnProyecto(pIdentidad.FilaIdentidad.ProyectoID);
+
+                        //Obtenemos la configuración del creador del recurso
+                        IdentidadCN identidadCN = new IdentidadCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+                        Logica.ServiciosGenerales.PersonaCN personaCN = new Logica.ServiciosGenerales.PersonaCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+                        DataWrapperIdentidad dataWrapper = identidadCN.ObtenerIdentidadesPorID(new List<Guid> { pDocumento.CreadorID }, false);
+                        Guid perfilIDCreador = dataWrapper.ListaPerfil.First().PerfilID;
+                        Guid personaIDCreadorRecurso = personaCN.ObtenerPersonaIDPorPerfil(perfilIDCreador);
+                        AD.EntityModel.Models.PersonaDS.ConfiguracionGnossPersona configuracionGnossPersona = personaCN.ObtenerConfiguracionPersonaPorID(personaIDCreadorRecurso);
+
+                        if (identidad != null && configuracionGnossPersona.ComentariosRecursos)
                         {
-                            AgregarNotificacionCorreo(pIdentidad, identidad, TiposNotificacion.ComentarioDocumentoCorreo, pDocumento.Titulo, urlIntragnoss, pProyecto, pLanguageCode, pEsEcosistemaSinMetaProyecto);
+                            //Si el editor es el creador del comentario no hay que mandar la notificacion
+                            if (identidad.PerfilID != pIdentidad.PerfilID)
+                            {
+                                AgregarNotificacionCorreo(pIdentidad, identidad, TiposNotificacion.ComentarioDocumentoCorreo, pDocumento.Titulo, urlIntragnoss, pProyecto, pLanguageCode, pEsEcosistemaSinMetaProyecto);
+                            }
                         }
+                    }
+                    catch(Exception ex)
+                    {
+                        mLoggingService.GuardarLogError(ex, $"No se pudo enviar la notificación del documento {pDocumento.Clave} al editor {identidad?.Clave}");
                     }
                 }
             }

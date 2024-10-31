@@ -26,8 +26,11 @@ namespace Es.Riam.AbstractsOpen
     {
         protected ConfigService mConfigService;
         protected LoggingService mLoggingService;
+
         public const string COLA_REPLICACION_MASTER = "ColaReplicacionMaster";
         public const string COLA_REPLICACION_MASTER_HOME = "ColaReplicacionMasterHome";
+        private const int NUM_MAX_TRIPLES_CONSULTA = 600;
+        
         private string mFicheroConfiguracionMaster;
         public string FicheroConfiguracion = "";
         public bool UsarClienteTradicional { get; set; }
@@ -182,15 +185,20 @@ namespace Es.Riam.AbstractsOpen
                 }
             }
 
-            string instruccion = pQuery.Substring(0, pQuery.IndexOf('{') + 1);
-            int numeroLineas = pQuery.Count(salto => salto.Equals('\n'));
-
-            if (instruccion.Contains(" INSERT INTO ") && numeroLineas > 600)
+            int inicioConsulta = pQuery.IndexOf('{') + 1;
+            int posicionTriples = -1;
+            
+            string instruccion = pQuery.Substring(0, inicioConsulta);
+            if (instruccion.Contains(" INSERT INTO "))
             {
-                //Le pongo el resultado como el número de partes que tiene la inserción en negativo, para poder identificarlo
-                //EscribirLogActualizarVirtuoso(pQuery, "queryLarga", (numeroLineas / 500) + 1);
+                string triples = pQuery.Substring(inicioConsulta, pQuery.LastIndexOf('}') - inicioConsulta);
+                posicionTriples = ObtenerPosicionTriple(triples);
+            }
+            
+            if (posicionTriples != -1)          
+            {                
                 //Es un insert de más de 600 líneas, la parto para que no falle
-                EjecutarInsertPorTrozos(pQuery, pGrafo, pReplicar, pPrioridad, pConexion);
+                EjecutarInsertPorTrozos(pQuery, pGrafo, pReplicar, pPrioridad, posicionTriples, pConexion);
             }
             else
             {
@@ -250,40 +258,40 @@ namespace Es.Riam.AbstractsOpen
 
                 if (pReplicar || mConfigService.CheckBidirectionalReplicationIsActive())
                 {
-
+                    bool configuradaCadenaConexionVirtuosoHome = !string.IsNullOrEmpty(mConfigService.ObtenerVirtuosoConnectionStringHome());
                     string nombreConexionAfinidad = ConexionAfinidad;
 
                     try
                     {
-                        if ((string.IsNullOrEmpty(FicheroConfiguracion) || !FicheroConfiguracion.ToLower().Contains("home")) && !string.IsNullOrEmpty(nombreConexionAfinidad))
+                        if ((string.IsNullOrEmpty(FicheroConfiguracion) || !FicheroConfiguracion.ToLower().Contains("home") || !configuradaCadenaConexionVirtuosoHome) && !string.IsNullOrEmpty(nombreConexionAfinidad))
                         {
                             //Para la replicaciónBidireccional
                             InsertarEnReplicacionBidireccional(pQuery, pGrafo, pPrioridad, nombreConexionAfinidad, pCadenaConexion, pConexion);
                         }
 
                         //Para la Replicación Normal.
-                        if (mConfigService.ObtenerReplicacionActivada() && (TablaReplicacion == null || TablaReplicacion.Equals(COLA_REPLICACION_MASTER)))
+                        if (mConfigService.ObtenerReplicacionActivada() && (TablaReplicacion == null || TablaReplicacion.Equals(COLA_REPLICACION_MASTER) || !configuradaCadenaConexionVirtuosoHome))
                         {
                             if (!UsarClienteTradicional)
                             {
-                                InsertarEnReplicacion(pQuery, TablaReplicacion);
+                                InsertarEnReplicacion(pQuery, COLA_REPLICACION_MASTER);
                             }
                             else if (TransaccionVirtuoso == null)
                             {
-                                InsertarEnReplicacion(pQuery, TablaReplicacion, false);
+                                InsertarEnReplicacion(pQuery, COLA_REPLICACION_MASTER, false);
                             }
                             else
                             {
-                                if (!GetListaConsultasEjecutarEnReplicas().ContainsKey(""))
+                                if (!GetListaConsultasEjecutarEnReplicas().ContainsKey(COLA_REPLICACION_MASTER))
                                 {
-                                    ListaConsultasEjecutarEnReplicasAdd("", new List<KeyValuePair<string, short>>());
+                                    ListaConsultasEjecutarEnReplicasAdd(COLA_REPLICACION_MASTER, new List<KeyValuePair<string, short>>());
                                 }
-                                ListaConsultasEjecutarEnReplicasAddValueToKey("", new KeyValuePair<string, short>(pQuery, pPrioridad));
+                                ListaConsultasEjecutarEnReplicasAddValueToKey(COLA_REPLICACION_MASTER, new KeyValuePair<string, short>(pQuery, pPrioridad));
                             }
                         }
 
                         //Para la Replicacion de la home
-                        if (mConfigService.ObtenerReplicacionActivadaHOME() && TablaReplicacion != null && TablaReplicacion.Equals(COLA_REPLICACION_MASTER_HOME))
+                        if (mConfigService.ObtenerReplicacionActivadaHOME() && TablaReplicacion != null && TablaReplicacion.Equals(COLA_REPLICACION_MASTER_HOME) && configuradaCadenaConexionVirtuosoHome)
                         {
                             if (!UsarClienteTradicional)
                             {
@@ -295,11 +303,11 @@ namespace Es.Riam.AbstractsOpen
                             }
                             else
                             {
-                                if (!GetListaConsultasEjecutarEnReplicas().ContainsKey(""))
+                                if (!GetListaConsultasEjecutarEnReplicas().ContainsKey(COLA_REPLICACION_MASTER_HOME))
                                 {
-                                    ListaConsultasEjecutarEnReplicasAdd("", new List<KeyValuePair<string, short>>());
+                                    ListaConsultasEjecutarEnReplicasAdd(COLA_REPLICACION_MASTER_HOME, new List<KeyValuePair<string, short>>());
                                 }
-                                ListaConsultasEjecutarEnReplicasAddValueToKey("", new KeyValuePair<string, short>(pQuery, pPrioridad));
+                                ListaConsultasEjecutarEnReplicasAddValueToKey(COLA_REPLICACION_MASTER_HOME, new KeyValuePair<string, short>(pQuery, pPrioridad));
                             }
                         }
                     }
@@ -339,7 +347,7 @@ namespace Es.Riam.AbstractsOpen
         }
         private bool ComprobarConexionVirtuosoSinTareasPendientes(string nombreConexionReplica)
         {
-            int numReplicacionesPendientes = ContarReplicacionesPendientesEnReplica(nombreConexionReplica); ;
+            int numReplicacionesPendientes = ContarReplicacionesPendientesEnReplica(nombreConexionReplica);
             if (numReplicacionesPendientes > 500)
             {
                 return false;
@@ -513,43 +521,36 @@ namespace Es.Riam.AbstractsOpen
         /// <param name="pQuery">Query a ejecutar (insert / update / delete)</param>
         /// <param name="pGrafo">Grafo que se va a actualiar</param>
         /// <param name="pReplicar">Verdad si esta consulta debe replicarse (por defecto TRUE)</param>
+        /// <param name="pIndiceTriplePartir">Índice del triple por el que se va a partir los trozos a insertar</param>
         /// <param name="pPrioridad">Prioridad que se le va a dar a la replicación de esta transacción</param>
-        public void EjecutarInsertPorTrozos(string pQuery, string pGrafo, bool pReplicar, short pPrioridad, VirtuosoConnection pConexion)
+        public void EjecutarInsertPorTrozos(string pQuery, string pGrafo, bool pReplicar, short pPrioridad, int pIndiceTriplePartir, VirtuosoConnection pConexion)
         {
             bool transaccionIniciada = IniciarTransaccion();
+
             try
             {
-                int numeroLineasPorTrozo = 500;
                 int indiceInicioTriples = pQuery.IndexOf('{') + 1;
                 int finTriples = pQuery.LastIndexOf('}');
                 string instruccion = pQuery.Substring(0, indiceInicioTriples);
                 string triples = pQuery.Substring(indiceInicioTriples, finTriples - indiceInicioTriples);
 
-                char[] separador = { '\n' };
-                string[] lineas = triples.Split(separador, StringSplitOptions.RemoveEmptyEntries);
-                int numeroPartes = (lineas.Length / numeroLineasPorTrozo) + 1;
-
-                int lineaAnterior = 0;
-
-                for (int i = 0; i < numeroPartes; i++)
+                while(pIndiceTriplePartir != -1)
                 {
-                    int numeroLineas = numeroLineasPorTrozo;
+                    string conjuntoTriples = triples.Substring(0, pIndiceTriplePartir);
+                    triples = triples.Substring(pIndiceTriplePartir);
 
-                    if (i.Equals(numeroPartes - 1))
-                    {
-                        //Es el último trozo, cojo sólo los que quedan
-                        numeroLineas = lineas.Length % numeroLineasPorTrozo;
-                    }
+                    string consulta = $"{instruccion}{conjuntoTriples}}}";
 
-                    string[] lineasInstruccion = new string[numeroLineas];
-                    Array.Copy(lineas, lineaAnterior, lineasInstruccion, 0, numeroLineas);
-                    lineaAnterior += numeroLineas;
+                    ActualizarVirtuoso(consulta, pGrafo, pReplicar, pPrioridad, pConexion);
 
-                    string miniQuery = string.Join("\n", lineasInstruccion);
+                    pIndiceTriplePartir = ObtenerPosicionTriple(triples);
+                }
 
-                    miniQuery = instruccion + miniQuery + " } ";
+                if (!string.IsNullOrEmpty(triples))
+                {
+                    string consulta = $"{instruccion}{triples}}}";
 
-                    ActualizarVirtuoso(miniQuery, pGrafo, pReplicar, pPrioridad, pConexion);
+                    ActualizarVirtuoso(consulta, pGrafo, pReplicar, pPrioridad, pConexion);
                 }
 
                 if (transaccionIniciada)
@@ -568,6 +569,7 @@ namespace Es.Riam.AbstractsOpen
                 throw;
             }
         }
+
         /// <summary>
         /// Terminamos la transaccción
         /// </summary>
@@ -582,9 +584,11 @@ namespace Es.Riam.AbstractsOpen
                     DbTransaction transaccion = TransaccionVirtuoso;
                     if (pExito)
                     {
+                        Console.WriteLine($"\t1.4 Comienzo a terminar transacción virtuoso - CARGA MASIVA");
                         transaccion.Commit();
-
+                        Console.WriteLine($"\t1.5 Terminada transacción en virtuoso / Comienza insertar instrucciones en réplica - CARGA MASIVA");
                         InsertarInstruccionesEnReplica();
+                        Console.WriteLine($"\t1.6 Terminada inserciones en réplica - CARGA MASIVA");
                     }
                     else if (transaccion.Connection != null)
                     {
@@ -604,14 +608,15 @@ namespace Es.Riam.AbstractsOpen
                 TransaccionVirtuoso = null;
             }
         }
+
         internal void InsertarInstruccionesEnReplica()
         {
             if (ListaConsultasEjecutarEnReplicas != null && ListaConsultasEjecutarEnReplicas.Count > 0)
             {
-                Guid transactionID = Guid.NewGuid();
                 foreach (string tablaReplicacion in GetListaConsultasEjecutarEnReplicas().Keys)
                 {
                     List<string> listaConsultas = new List<string>();
+
                     foreach (KeyValuePair<string, short> consulta in ListaConsultasEjecutarEnReplicas[tablaReplicacion])
                     {
                         listaConsultas.Add(consulta.Key);
@@ -619,7 +624,6 @@ namespace Es.Riam.AbstractsOpen
 
                     InsertarEnReplicacion(listaConsultas, tablaReplicacion, false);
                 }
-
                 ListaConsultasEjecutarEnReplicas.Clear();
             }
         }
@@ -936,7 +940,7 @@ namespace Es.Riam.AbstractsOpen
                         }
                     }catch (Exception e)
                     {
-                        mLoggingService.GuardarLogError(e, sb.ToString()); ;
+                        mLoggingService.GuardarLogError(e, sb.ToString());
                     }
 
                 }
@@ -1076,7 +1080,7 @@ namespace Es.Riam.AbstractsOpen
 
                     using (RabbitMQClient rMQ = new RabbitMQClient(rabbitBD, pTablaReplicacion, mLoggingService, mConfigService, exchange))
                     {
-                        rMQ.AgregarElementoACola(JsonConvert.SerializeObject(datosReplicacion));
+                        rMQ.AgregarElementoACola(JsonConvert.SerializeObject(datosReplicacion));                     
                     }
                 }
             }
@@ -1245,6 +1249,7 @@ namespace Es.Riam.AbstractsOpen
             try
             {
                 HttpClient client = new HttpClient();
+                client.DefaultRequestHeaders.Add("UserAgent", UtilWeb.GenerarUserAgent());
                 HttpResponseMessage response = null;
                 response = client.GetAsync($"{url}").Result;
                 response.EnsureSuccessStatusCode();
@@ -1259,6 +1264,71 @@ namespace Es.Riam.AbstractsOpen
             {
                 return false;
             }
+        }
+
+        /// <summary>
+        /// Dado un string con un conjunto de triples separados por . devuelve la posición del número de triple indicado en la variable
+        /// NUM_MAX_TRIPLES_CONSULTA, en caso de  tener menos triples que el número indicado devuelve -1
+        /// </summary>
+        /// <param name="pConjuntoTriples">Conjunto de triples separados por .</param>       
+        /// <returns>La posición del primer caracter del triple indicado</returns>
+        public int ObtenerPosicionTriple(string pConjuntoTriples)
+        {
+            bool estoyEnString = false;
+            bool estoyEnUrl = false;
+            int numTriples = 0;
+
+            //Recorremos caracter a caracter el conjunto de triples
+            for (int i = 0; i < pConjuntoTriples.Length; i++)
+            {                
+                if (pConjuntoTriples[i] == '"' && !estoyEnString)
+                {
+                    //Si el caracter son comillas y no estoy dentro de un string entramos a un string
+                    estoyEnString = true;
+                }
+                else if (pConjuntoTriples[i] == '"')
+                {
+                    //Si el caracter son comillas y estoy dentro de un string revisamos si están casteadas, en caso de no estarlo, estamos saliendo de un string
+                    if (pConjuntoTriples[i - 1] != '\\')
+                    {
+                        estoyEnString = false;
+                    }
+                }
+                else if (pConjuntoTriples[i] == '<' && !estoyEnString)
+                {
+                    //Si el caracter es menor que y no estoy en un string, estoy entrando en una URL
+                    estoyEnUrl = true;
+                }
+                else if (pConjuntoTriples[i] == '>' && estoyEnUrl)
+                {
+                    //Si el caracter es mayor que y estoy en una url, esto saliendo de la URL
+                    estoyEnUrl = false;
+                }
+                else if (pConjuntoTriples[i] == '.' && !estoyEnString && !estoyEnUrl && i + 1 < pConjuntoTriples.Length && !CaracterEsNumero(pConjuntoTriples[i + 1]))
+                {
+                    //Si el caracter es un punto, no estoy en un string ni en una URL y no hay un número después del punto, he llegado al final de un triple.
+                    numTriples++;
+                    
+                    if (numTriples == NUM_MAX_TRIPLES_CONSULTA)
+                    {
+                        //Al alcanzar el número de triples indicado, paso la posición del último caracter que incluye este triple
+                        return i + 1; 
+                    }
+                }
+            }
+
+            return -1;
+        }
+
+        /// <summary>
+        /// Indica si el caracter pasado por parámetro es un número
+        /// </summary>
+        /// <param name="pCaracter">Caracter que queremos comprobar</param>
+        /// <returns>True o False en función de si el carcter es o no un número</returns>
+        private bool CaracterEsNumero(char pCaracter)
+        {
+            //Comprobamos con la tabla ASCII si el caracter es o no un número
+            return pCaracter >= 48 && pCaracter <= 57;
         }
     }
 }
