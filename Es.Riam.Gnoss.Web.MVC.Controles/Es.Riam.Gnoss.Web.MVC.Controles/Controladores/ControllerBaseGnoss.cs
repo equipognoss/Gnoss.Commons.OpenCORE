@@ -4,6 +4,7 @@ using Es.Riam.Gnoss.AD.EntityModel;
 using Es.Riam.Gnoss.AD.EntityModel.Models.ParametroGeneralDS;
 using Es.Riam.Gnoss.AD.EntityModel.Models.ProyectoDS;
 using Es.Riam.Gnoss.AD.EntityModel.Models.VistaVirtualDS;
+using Es.Riam.Gnoss.AD.EntityModelBASE;
 using Es.Riam.Gnoss.AD.Identidad;
 using Es.Riam.Gnoss.AD.ParametroAplicacion;
 using Es.Riam.Gnoss.AD.ServiciosGenerales;
@@ -12,6 +13,7 @@ using Es.Riam.Gnoss.AD.Virtuoso;
 using Es.Riam.Gnoss.CL;
 using Es.Riam.Gnoss.CL.Cookie;
 using Es.Riam.Gnoss.CL.Documentacion;
+using Es.Riam.Gnoss.CL.ParametrosAplicacion;
 using Es.Riam.Gnoss.CL.ParametrosProyecto;
 using Es.Riam.Gnoss.CL.ServiciosGenerales;
 using Es.Riam.Gnoss.CL.Tesauro;
@@ -37,6 +39,7 @@ using Es.Riam.Gnoss.Web.MVC.Models.Administracion;
 using Es.Riam.Gnoss.Web.MVC.Models.ViewModels;
 using Es.Riam.Interfaces.InterfacesOpen;
 using Es.Riam.Util;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
@@ -124,6 +127,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
 
         protected IHttpContextAccessor mHttpContextAccessor;
         protected EntityContext mEntityContext;
+        private EntityContextBASE mEntityContextBASE;
         protected LoggingService mLoggingService;
         protected VirtuosoAD mVirtuosoAD;
         protected ConfigService mConfigService;
@@ -133,14 +137,16 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
         protected ICompositeViewEngine mViewEngine;
         protected IUtilServicioIntegracionContinua mUtilServicioIntegracionContinua;
         protected IServicesUtilVirtuosoAndReplication mServicesUtilVirtuosoAndReplication;
+        protected IHostingEnvironment mEnv;
 
         #endregion
 
-        public ControllerBaseGnoss(IHttpContextAccessor httpContextAccessor, EntityContext entityContext, LoggingService loggingService, ConfigService configService, RedisCacheWrapper redisCacheWrapper, VirtuosoAD virtuosoAD, GnossCache gnossCache, ICompositeViewEngine viewEngine, IUtilServicioIntegracionContinua utilServicioIntegracionContinua, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication)
+        public ControllerBaseGnoss(IHttpContextAccessor httpContextAccessor, EntityContext entityContext, LoggingService loggingService, ConfigService configService, RedisCacheWrapper redisCacheWrapper, VirtuosoAD virtuosoAD, GnossCache gnossCache, ICompositeViewEngine viewEngine, IUtilServicioIntegracionContinua utilServicioIntegracionContinua, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication, IHostingEnvironment env, EntityContextBASE pEntityContextBASE)
         {
             mHttpContextAccessor = httpContextAccessor;
             mLoggingService = loggingService;
             mEntityContext = entityContext;
+            mEntityContextBASE = pEntityContextBASE;
             mConfigService = configService;
             mRedisCacheWrapper = redisCacheWrapper;
             mVirtuosoAD = virtuosoAD;
@@ -148,6 +154,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
             mViewEngine = viewEngine;
             mUtilServicioIntegracionContinua = utilServicioIntegracionContinua;
             mServicesUtilVirtuosoAndReplication = servicesUtilVirtuosoAndReplication;
+            mEnv = env;
             mControladorBase = new ControladorBase(loggingService, configService, entityContext, redisCacheWrapper, gnossCache, virtuosoAD, httpContextAccessor, servicesUtilVirtuosoAndReplication);
         }
 
@@ -171,11 +178,17 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
 
             if (comunidad == null)
             {
+                Proyecto proyecto = proyCL.ObtenerProyectoPorID(ProyectoSeleccionado.Clave).ListaProyecto.FirstOrDefault();
                 comunidad = new CommunityModel();
 
                 comunidad.Name = ProyectoVirtual.Nombre;
                 comunidad.PresentationName = ProyectoVirtual.Nombre;
                 comunidad.Description = UtilCadenas.ObtenerTextoDeIdioma(ProyectoVirtual.FilaProyecto.Descripcion, UtilIdiomas.LanguageCode, ParametrosGeneralesRow.IdiomaDefecto);
+                
+                if (proyecto != null)                 
+                {
+                    comunidad.UrlPropia = proyecto.URLPropia;
+                }
 
                 if (!string.IsNullOrEmpty(ProyectoVirtual.FilaProyecto.NombrePresentacion))
                 {
@@ -445,6 +458,17 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
                 if (!EntornoActualEsPreproduccion && !EntornoActualEsPruebas)
                 {
                     comunidad.EntornoEsPro = true;
+                }
+            }
+            else
+            {
+                if (mEnv.IsProduction())
+                {
+                    comunidad.EntornoEsPro = true;
+                }
+                else if(mEnv.IsStaging())
+                {
+                    comunidad.EntornoEsPre = true;
                 }
             }
 
@@ -830,6 +854,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
         /// </summary>
         /// <param name="pFichaComponente"></param>
         /// <returns></returns>
+        [NonAction]
         public ActionResult PintarComponenteCMS(CMSComponent pFichaComponente)
         {
             if (pFichaComponente != null)
@@ -1062,7 +1087,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
             {
                 if (mControladorPestanyas == null)
                 {
-                    mControladorPestanyas = new ControladorPestanyas(ProyectoSeleccionado, new Dictionary<string, string>(), mLoggingService, mEntityContext, mConfigService, mRedisCacheWrapper, mGnossCache, mVirtuosoAD, mHttpContextAccessor, mServicesUtilVirtuosoAndReplication);
+                    mControladorPestanyas = new ControladorPestanyas(ProyectoSeleccionado, new Dictionary<string, string>(), mLoggingService, mEntityContext, mConfigService, mRedisCacheWrapper, mGnossCache, mVirtuosoAD, mHttpContextAccessor, mServicesUtilVirtuosoAndReplication, mEntityContextBASE);
                 }
                 return mControladorPestanyas;
             }
@@ -1646,7 +1671,6 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
             }
         }
 
-
         public string UrlApiDesplieguesEntornoSiguiente
         {
             get
@@ -1658,7 +1682,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
                 return mUrlApiDesplieguesEntornoSiguiente;
             }
         }
-
+        [NonAction]
         public string UrlApiEntornoSeleccionado(string pNombreEntorno)
         {
             try
@@ -1915,7 +1939,8 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
             {
                 if (mIdiomaPorDefecto == null)
                 {
-                    mIdiomaPorDefecto = !(ParametrosGeneralesRow.IdiomaDefecto == null) && mConfigService.ObtenerListaIdiomas().Contains(ParametrosGeneralesRow.IdiomaDefecto) ? ParametrosGeneralesRow.IdiomaDefecto : mConfigService.ObtenerListaIdiomas().FirstOrDefault();
+					ParametroAplicacionCL paramCL = new ParametroAplicacionCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mServicesUtilVirtuosoAndReplication);
+					mIdiomaPorDefecto = !(ParametrosGeneralesRow.IdiomaDefecto == null) && paramCL.ObtenerListaIdiomas().Contains(ParametrosGeneralesRow.IdiomaDefecto) ? ParametrosGeneralesRow.IdiomaDefecto : paramCL.ObtenerListaIdiomas().FirstOrDefault();
                 }
                 return mIdiomaPorDefecto;
             }

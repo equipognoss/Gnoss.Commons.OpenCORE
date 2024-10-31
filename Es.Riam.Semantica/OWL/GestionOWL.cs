@@ -498,7 +498,7 @@ namespace Es.Riam.Semantica.OWL
                 fin = fin - inicio + 3;
                 textoMod = textoMod.Remove(inicio, fin);
             }
-            textoMod = textoMod.Replace("\r", "").Replace("\n", "");
+            
             return textoMod;
         }
 
@@ -1450,7 +1450,7 @@ namespace Es.Riam.Semantica.OWL
             Propiedad propiedadInversa = null;
             Propiedad propiedadEquivalente = null;
             List<string> listaSuperPropiedades = new List<string>();
-            List<string> listaValoresPermitidos = new List<string>(); ;
+            List<string> listaValoresPermitidos = new List<string>();
             bool readerActivo = pReader.Read();
             string label = null;
             Dictionary<string, string> labelIdioma = new Dictionary<string, string>();
@@ -2058,10 +2058,10 @@ namespace Es.Riam.Semantica.OWL
         /// <param name="pListaEntidades">Lista de entidades que contiene las entidades relacionadas.</param>
         private void BuscarEntidadesRelacionadas(ElementoOntologia pEntidad, Dictionary<string, ElementoOntologia> pEntidadesPorId, Dictionary<string, ElementoOntologia> pEntidadesPorUri)
         {
-            List<Propiedad> entidades = pEntidad.ObtenerEntidadesRelacionadas();
+            List<Propiedad> propiedadesTipoEntidad = pEntidad.ObtenerEntidadesRelacionadas();
             ElementoOntologia entidad = null;
 
-            foreach (Propiedad propiedad in entidades)
+            foreach (Propiedad propiedad in propiedadesTipoEntidad)
             {
                 propiedad.ElementoOntologia = pEntidad;
                 if (!propiedad.FunctionalProperty)
@@ -2071,24 +2071,14 @@ namespace Es.Riam.Semantica.OWL
                     foreach (string valor in claves)
                     {
                         //Obtengo la entidad
-                        //entidad = UtilImportarExportar.ObtenerEntidadPorID(valor, pListaEntidades);
                         entidad = UtilSemantica.ObtenerEntidadPorID(valor, pEntidadesPorId, pEntidadesPorUri);
-                        //UtilImportarExportar.ObtenerNombreRealPropiedad(pEntidad, entidad, propiedad);
                         propiedad.ListaValores[valor] = entidad;
                         BuscarEntidadRelacionada(pEntidad, entidad, propiedad);
                     }
                 }
                 else
-                {
-                    // En CRFP se crean recursos sin todas sus propiedades funcionales. 
-                    // Quito esta comprobación, aunque debería haber un parámetro para que se compruebe por defecto, salvo que esa configuración diga lo contrario. TODO
-                    //if (string.IsNullOrEmpty(propiedad.UnicoValor.Key))
-                    //{
-                    //    throw new Exception($"La propiedad {propiedad.Nombre} es funcional y debe tener valor obligatoriamente");
-                    //}
-                    //entidad = UtilImportarExportar.ObtenerEntidadPorID(propiedad.UnicoValor.Key, pListaEntidades);
+                {                    
                     entidad = UtilSemantica.ObtenerEntidadPorID(propiedad.UnicoValor.Key, pEntidadesPorId, pEntidadesPorUri);
-                    //UtilImportarExportar.ObtenerNombreRealPropiedad(pEntidad, entidad, propiedad);
                     propiedad.UnicoValor = new KeyValuePair<string, ElementoOntologia>(propiedad.UnicoValor.Key, entidad);
                     BuscarEntidadRelacionada(pEntidad, entidad, propiedad);
                 }
@@ -2871,7 +2861,7 @@ namespace Es.Riam.Semantica.OWL
         /// </summary>
         private static void InicializarGestionOWL()
         {
-            GestionOWL.ListaEntidadesCreadas = null; ;
+            GestionOWL.ListaEntidadesCreadas = null;
             GestionOWL.ListaEntidadesCreadas = new List<string>();
         }
 

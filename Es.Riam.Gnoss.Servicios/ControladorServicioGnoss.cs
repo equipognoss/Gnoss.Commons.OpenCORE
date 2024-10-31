@@ -327,7 +327,7 @@ namespace Es.Riam.Gnoss.Servicios
         }
 
 
-        protected void ComprobarTraza(string NombreTraza, EntityContext mEntityContext, LoggingService mLoggingService, RedisCacheWrapper mRedisCacheWrapper, ConfigService mConfigService, IServicesUtilVirtuosoAndReplication mServicesUtilVirtuosoAndReplication)
+        protected void ComprobarTraza(string NombreTraza, EntityContext pEntityContext, LoggingService pLoggingService, RedisCacheWrapper pRedisCacheWrapper, ConfigService pConfigService, IServicesUtilVirtuosoAndReplication pServicesUtilVirtuosoAndReplication)
         {
             if (DateTime.Now > HORA_COMPROBACION_TRAZA)
             {
@@ -336,7 +336,7 @@ namespace Es.Riam.Gnoss.Servicios
                     if (DateTime.Now > HORA_COMPROBACION_TRAZA)
                     {
                         HORA_COMPROBACION_TRAZA = DateTime.Now.AddSeconds(15);
-                        TrazasCL trazasCL = new TrazasCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mServicesUtilVirtuosoAndReplication);
+                        TrazasCL trazasCL = new TrazasCL(pEntityContext, pLoggingService, pRedisCacheWrapper, pConfigService, pServicesUtilVirtuosoAndReplication);
                         string tiempoTrazaResultados = trazasCL.ObtenerTrazaEnCache(NombreTraza);
 
                         if (!string.IsNullOrEmpty(tiempoTrazaResultados))

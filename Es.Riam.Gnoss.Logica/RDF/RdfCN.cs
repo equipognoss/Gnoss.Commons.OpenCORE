@@ -30,6 +30,19 @@ namespace Es.Riam.Gnoss.Logica.RDF
 
             this.RdfAD = new RdfAD(loggingService, entityContext, configService, servicesUtilVirtuosoAndReplication);
         }
+        /// <summary>
+        /// Constructor a partir del fichero de configuración
+        /// </summary>
+        /// <param name="pFicheroConfiguracionBD">Ruta del fichero de configuración de base de datos</param>
+        /// <param name="pUsarVariableEstatica">Si se están usando hilos con diferentes conexiones: FALSE. En caso contrario TRUE</param>
+        public RdfCN(string pFicheroConfiguracionBD, EntityContext entityContext, EntityContextBASE entityContextBASE, LoggingService loggingService, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication)
+            : base(entityContext, loggingService, configService, entityContextBASE, servicesUtilVirtuosoAndReplication)
+        {
+            mLoggingService = loggingService;
+
+            RdfAD = new RdfAD(pFicheroConfiguracionBD, loggingService, entityContext, entityContextBASE, configService, servicesUtilVirtuosoAndReplication);
+            mFicheroConfiguracionBD = pFicheroConfiguracionBD;
+        }
 
         /// <summary>
         /// Constructor a partir del fichero de configuración

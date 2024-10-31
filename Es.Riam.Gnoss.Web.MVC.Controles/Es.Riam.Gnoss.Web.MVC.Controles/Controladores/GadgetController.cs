@@ -13,6 +13,7 @@ using Es.Riam.Gnoss.AD.Virtuoso;
 using Es.Riam.Gnoss.CL;
 using Es.Riam.Gnoss.CL.Documentacion;
 using Es.Riam.Gnoss.CL.Facetado;
+using Es.Riam.Gnoss.CL.ParametrosAplicacion;
 using Es.Riam.Gnoss.CL.ParametrosProyecto;
 using Es.Riam.Gnoss.CL.ServiciosGenerales;
 using Es.Riam.Gnoss.Elementos;
@@ -26,6 +27,7 @@ using Es.Riam.Gnoss.Logica.Documentacion;
 using Es.Riam.Gnoss.Logica.Facetado;
 using Es.Riam.Gnoss.Logica.Identidad;
 using Es.Riam.Gnoss.Logica.MVC;
+using Es.Riam.Gnoss.Logica.ParametroAplicacion;
 using Es.Riam.Gnoss.Logica.ServiciosGenerales;
 using Es.Riam.Gnoss.Recursos;
 using Es.Riam.Gnoss.Servicios;
@@ -71,14 +73,16 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
         private EntityContextBASE mEntityContextBASE;
         private ICompositeViewEngine mViewEngine;
         private IUtilServicioIntegracionContinua mUtilServicioIntegracionContinua;
+        Microsoft.AspNetCore.Hosting.IHostingEnvironment mEnv;
 
         /// <summary>
         /// Constructor a partir de la página que contiene al controlador
         /// </summary>
         /// <param name="pController">Controller</param>
-        public GadgetController(ControllerBaseGnoss pController, IHttpContextAccessor httpContextAccessor, LoggingService loggingService, GnossCache gnossCache, ConfigService configService, VirtuosoAD virtuosoAD, EntityContext entityContext, RedisCacheWrapper redisCacheWrapper, EntityContextBASE entityContextBASE, ICompositeViewEngine viewEngine, IUtilServicioIntegracionContinua utilServicioIntegracionContinua, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication)
+        public GadgetController(ControllerBaseGnoss pController, IHttpContextAccessor httpContextAccessor, LoggingService loggingService, GnossCache gnossCache, ConfigService configService, VirtuosoAD virtuosoAD, EntityContext entityContext, RedisCacheWrapper redisCacheWrapper, EntityContextBASE entityContextBASE, ICompositeViewEngine viewEngine, IUtilServicioIntegracionContinua utilServicioIntegracionContinua, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication, Microsoft.AspNetCore.Hosting.IHostingEnvironment env)
             : this(pController, null, httpContextAccessor, loggingService, gnossCache, configService, virtuosoAD, entityContext, redisCacheWrapper, entityContextBASE, viewEngine, utilServicioIntegracionContinua, servicesUtilVirtuosoAndReplication)
         {
+            mEnv = env;
         }
 
         /// <summary>
@@ -271,7 +275,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
                                     gadget.Title = UtilCadenas.ObtenerTextoDeIdioma(filaProyectoGadget.Titulo, ControllerBase.UtilIdiomas.LanguageCode, ControllerBase.ParametrosGeneralesRow.IdiomaDefecto);
                                     gadget.ClassName = filaProyectoGadget.Clases;
 
-                                    string nombreCorto = filaProyectoGadget.NombreCorto; ;
+                                    string nombreCorto = filaProyectoGadget.NombreCorto;
                                     if (string.IsNullOrEmpty(nombreCorto))
                                     {
                                         nombreCorto = filaProyectoGadget.GadgetID.ToString();
@@ -282,7 +286,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
 
                                     if (!filaProyectoGadget.CargarPorAjax || !pPrimeraPeticion)
                                     {
-                                        ControladorCMS controladorCMS = new ControladorCMS(this.ControllerBase, componenteID, null, this.ControllerBase.Comunidad, mHttpContextAccessor, mLoggingService, mEntityContext, mConfigService, mRedisCacheWrapper, mGnossCache, mEntityContextBASE, mVirtuosoAD, mViewEngine, mUtilServicioIntegracionContinua, mServicesUtilVirtuosoAndReplication);
+                                        ControladorCMS controladorCMS = new ControladorCMS(this.ControllerBase, componenteID, null, this.ControllerBase.Comunidad, mHttpContextAccessor, mLoggingService, mEntityContext, mConfigService, mRedisCacheWrapper, mGnossCache, mEntityContextBASE, mVirtuosoAD, mViewEngine, mUtilServicioIntegracionContinua, mServicesUtilVirtuosoAndReplication, mEnv, true);
                                         gadget.CMSComponent = controladorCMS.CargarComponente(true, false, ControllerBase.ParametrosGeneralesRow.IdiomaDefecto);
                                     }
                                     listaGadgets.Add(gadget);
@@ -370,7 +374,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
                                     gadget.Title = UtilCadenas.ObtenerTextoDeIdioma(filaProyectoGadget.Titulo, ControllerBase.UtilIdiomas.LanguageCode, ControllerBase.ParametrosGeneralesRow.IdiomaDefecto);
                                     gadget.ClassName = filaProyectoGadget.Clases;
 
-                                    string nombreCorto = filaProyectoGadget.NombreCorto; ;
+                                    string nombreCorto = filaProyectoGadget.NombreCorto;
                                     if (string.IsNullOrEmpty(nombreCorto))
                                     {
                                         nombreCorto = filaProyectoGadget.GadgetID.ToString();
@@ -442,7 +446,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
                                 gadget.Order = filaProyectoGadget.Orden;
                                 gadget.ClassName = filaProyectoGadget.Clases;
 
-                                string nombreCorto = filaProyectoGadget.NombreCorto; ;
+                                string nombreCorto = filaProyectoGadget.NombreCorto;
                                 if (string.IsNullOrEmpty(nombreCorto))
                                 {
                                     nombreCorto = filaProyectoGadget.GadgetID.ToString();
@@ -470,7 +474,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
                                 gadget.Order = filaProyectoGadget.Orden;
                                 gadget.ClassName = filaProyectoGadget.Clases;
 
-                                string nombreCorto = filaProyectoGadget.NombreCorto; ;
+                                string nombreCorto = filaProyectoGadget.NombreCorto;
                                 if (string.IsNullOrEmpty(nombreCorto))
                                 {
                                     nombreCorto = filaProyectoGadget.GadgetID.ToString();
@@ -498,7 +502,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
                                 gadget.Order = filaProyectoGadget.Orden;
                                 gadget.ClassName = filaProyectoGadget.Clases;
 
-                                string nombreCorto = filaProyectoGadget.NombreCorto; ;
+                                string nombreCorto = filaProyectoGadget.NombreCorto;
                                 if (string.IsNullOrEmpty(nombreCorto))
                                 {
                                     nombreCorto = filaProyectoGadget.GadgetID.ToString();
@@ -526,7 +530,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
                                 gadget.Order = filaProyectoGadget.Orden;
                                 gadget.ClassName = filaProyectoGadget.Clases;
 
-                                string nombreCorto = filaProyectoGadget.NombreCorto; ;
+                                string nombreCorto = filaProyectoGadget.NombreCorto;
                                 if (string.IsNullOrEmpty(nombreCorto))
                                 {
                                     nombreCorto = filaProyectoGadget.GadgetID.ToString();
@@ -554,7 +558,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
                                 gadget.Order = filaProyectoGadget.Orden;
                                 gadget.ClassName = filaProyectoGadget.Clases;
 
-                                string nombreCorto = filaProyectoGadget.NombreCorto; ;
+                                string nombreCorto = filaProyectoGadget.NombreCorto;
                                 if (string.IsNullOrEmpty(nombreCorto))
                                 {
                                     nombreCorto = filaProyectoGadget.GadgetID.ToString();
@@ -583,7 +587,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
                                 gadget.Order = filaProyectoGadget.Orden;
                                 gadget.ClassName = filaProyectoGadget.Clases;
 
-                                string nombreCorto = filaProyectoGadget.NombreCorto; ;
+                                string nombreCorto = filaProyectoGadget.NombreCorto;
                                 if (string.IsNullOrEmpty(nombreCorto))
                                 {
                                     nombreCorto = filaProyectoGadget.GadgetID.ToString();
@@ -616,7 +620,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
                                     gadget.ViewNameResources = filaProyectoGadget.PersonalizacionComponenteID.ToString();
                                 }
 
-                                string nombreCorto = filaProyectoGadget.NombreCorto; ;
+                                string nombreCorto = filaProyectoGadget.NombreCorto;
                                 if (string.IsNullOrEmpty(nombreCorto))
                                 {
                                     nombreCorto = filaProyectoGadget.GadgetID.ToString();
@@ -659,7 +663,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
                                 gadget.Order = filaProyectoGadget.Orden;
                                 gadget.ClassName = filaProyectoGadget.Clases;
 
-                                string nombreCorto = filaProyectoGadget.NombreCorto; ;
+                                string nombreCorto = filaProyectoGadget.NombreCorto;
                                 if (string.IsNullOrEmpty(nombreCorto))
                                 {
                                     nombreCorto = filaProyectoGadget.GadgetID.ToString();
@@ -677,7 +681,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
                                 gadget.Order = filaProyectoGadget.Orden;
                                 gadget.ClassName = filaProyectoGadget.Clases;
 
-                                string nombreCorto = filaProyectoGadget.NombreCorto; ;
+                                string nombreCorto = filaProyectoGadget.NombreCorto;
                                 if (string.IsNullOrEmpty(nombreCorto))
                                 {
                                     nombreCorto = filaProyectoGadget.GadgetID.ToString();
@@ -1352,9 +1356,10 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
 
                     short tipoBusqueda = (short)TipoBusqueda.Recursos;
                     string pagina = pFilaProyGadget.ComunidadOrigen.Substring(pFilaProyGadget.ComunidadOrigen.LastIndexOf("/") + 1);
-                    foreach (string idioma in mConfigService.ObtenerListaIdiomas())
+					ParametroAplicacionCL paramCL = new ParametroAplicacionCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mServicesUtilVirtuosoAndReplication);
+					foreach (string idioma in paramCL.ObtenerListaIdiomas())
                     {
-                        UtilIdiomas utilIdiomasAux = new UtilIdiomas(idioma, mLoggingService, mEntityContext, mConfigService);
+                        UtilIdiomas utilIdiomasAux = new UtilIdiomas(idioma, mLoggingService, mEntityContext, mConfigService,mRedisCacheWrapper);
 
                         if (pagina == utilIdiomasAux.GetText("URLSEM", "PREGUNTAS"))
                         {

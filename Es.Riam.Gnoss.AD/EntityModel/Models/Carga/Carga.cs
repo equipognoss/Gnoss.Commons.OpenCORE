@@ -29,6 +29,10 @@ namespace Es.Riam.Gnoss.AD.EntityModel.Models.Carga
 
         public Guid? IdentidadID { get; set; }
 
+        [Required]
+        [StringLength(2000)]
+        public string Ontologia { get; set; }
+
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<CargaPaquete> CargaPaquete { get; set; }
     }

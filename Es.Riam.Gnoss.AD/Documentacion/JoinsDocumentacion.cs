@@ -22,7 +22,7 @@ namespace Es.Riam.Gnoss.AD.Documentacion
         public static IQueryable<IdentidadPerfilDocumento> JoinDocumento(this IQueryable<IdentidadPerfil> pIQuery)
         {
             EntityContext entityContext = (EntityContext)QueryContextAccess.GetDbContext(pIQuery);
-            return pIQuery.Join(entityContext.Documento, objeto => objeto.Identidad.IdentidadID, documento => documento.CreadorID.Value, (objeto, documento) => new IdentidadPerfilDocumento
+            return pIQuery.Join(entityContext.Documento, objeto => objeto.Identidad.IdentidadID, documento => documento.CreadorID, (objeto, documento) => new IdentidadPerfilDocumento
             {
                 Perfil = objeto.Perfil,
                 Identidad = objeto.Identidad,
@@ -274,11 +274,11 @@ namespace Es.Riam.Gnoss.AD.Documentacion
         public static IQueryable<DocumentoIdentidad> JoinDocumentoIdentidad(this IQueryable<Documento> pIQuery)
         {
             EntityContext entityContext = (EntityContext)QueryContextAccess.GetDbContext(pIQuery);
-            return entityContext.Documento.Join(entityContext.Identidad, documento => documento.CreadorID.Value, identidad => identidad.IdentidadID, (documento, identidad) => new DocumentoIdentidad
+            return entityContext.Documento.Join(entityContext.Identidad, documento => documento.CreadorID, identidad => identidad.IdentidadID, (documento, identidad) => new DocumentoIdentidad
             {
                 Documento = documento,
                 Identidad = identidad
-            }).Where(objeto => objeto.Documento.CreadorID.HasValue);
+            });
         }
 
         public static IQueryable<DocumentoIdentidadPerfil> JoinPerfil(this IQueryable<DocumentoIdentidad> pIQuery)

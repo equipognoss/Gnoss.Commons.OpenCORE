@@ -13,13 +13,17 @@ namespace Es.Riam.Gnoss.Web.MVC.Models
     [Serializable]
     public partial class CommunityModel : ObjetoBuscadorModel
     {
+        private bool mDeshabilitarGuardarAdministracionIC;
+        
         public string NameMetaComunidad { get; set; }
         public const int LastCacheVersion = 3;
 
-        /// <summary>
-        /// Enumeración para distinguir tipos de proyectos
-        /// </summary>
-        public enum TypeProyect
+        
+
+		/// <summary>
+		/// Enumeración para distinguir tipos de proyectos
+		/// </summary>
+		public enum TypeProyect
         {
             /// <summary>
             /// Proyecto de organización
@@ -155,6 +159,8 @@ namespace Es.Riam.Gnoss.Web.MVC.Models
         public string Url { get; set; }
 
         public string UrlMyGnoss { get; set; }
+
+        public string UrlPropia { get; set; }
 
         /// <summary>
         /// Logotipo de la comunidad
@@ -564,6 +570,40 @@ namespace Es.Riam.Gnoss.Web.MVC.Models
         /// HTML personalizado para el Login.
         /// </summary>
         public string ProjectLoginConfiguration { get; set; }
+
+        /// <summary>
+        /// Nos indica si esta permitido guardar en las páginas cuyas configuraciones
+        /// se controlan con Integración Continua
+        /// </summary>
+        public bool DeshabilitarGuardarAdministracionIC 
+        { 
+            get 
+            {
+                return mDeshabilitarGuardarAdministracionIC;
+			} 
+            
+            set 
+            {
+                mDeshabilitarGuardarAdministracionIC = value;
+            } 
+        }
+
+        /// <summary>
+        /// Contiene el mensaje de aviso con el estado del entorno en relación a la Integración Continua
+        /// </summary>
+        public string MensajeAvisoAdministracionIC { get; set; }
+
+        /// <summary>
+        /// Indica si en el aviso del estado del entorno en ralción a la Integración Continua
+        /// hay que pintar el botón con el enlace a AdministrarDespliegues
+        /// </summary>
+        public bool MostrarBotonAdministrarDespliegues { get; set; }
+
+        /// <summary>
+        /// Indica si en el aviso del estado del entorno en ralción a la Integración Continua
+        /// hay que pintar el botón con el enlace a AdministrarRamas
+        /// </summary>
+        public bool MostrarBotonAdministrarRamas { get; set; }
 
         /// <summary>
         /// Indica si la comunidad es catálogo.

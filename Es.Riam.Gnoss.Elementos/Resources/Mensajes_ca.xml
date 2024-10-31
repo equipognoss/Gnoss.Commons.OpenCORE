@@ -171,6 +171,10 @@
       <asunto>Petició de canvi de contrasenya a {#NombreProyecto#}</asunto>
       <texto>{p}Per canviar la teva contrasenya, segueix el link que es mostra a continuació: {/p} {p}{a style="display: block; font-weight: 400; color: #006eff; padding-bottom: 40px;" href="{#UrlEnlace#}"}Canviar password{/a}{/p}</texto>
     </mensaje>
+	<mensaje id="81">
+	  <asunto>Token de seguretat {#NombreProyecto#}</asunto>
+	  <texto>{p}El teu token de seguretat és: {b} {#TokenSeguridad#} {/b}{/p}</texto>
+	</mensaje>
     <mensaje id="121">
       <asunto>{#Asunto#}</asunto>
       <texto>{p}{#NombreRemitente#} t'ha enviat un missatge a través de {#NombreProyecto#}{/p}{div style="margin:30px"}{#Texto#}{/div}{p}Per respondre a {#NombreRemitente#} fes clic en aquest enllaç: {a href="{@UrlIntragnoss@}{$identidad$}/mensajes#mensaje={#CorreoID#}"}respondre al missatge{/a}{/p}</texto>

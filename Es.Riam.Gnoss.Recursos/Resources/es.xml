@@ -1,7 +1,77 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Resources language="Spanish" code="es">
-		<Resource tag="EMAILTUTOR">Correo electrónico del tutor</Resource>
+<Resources language="Spanish" code="es">		
 	<page name="COMMON">
+		<Resource tag="DESPLEGAR">Desplegar</Resource>
+		<Resource tag="CARGANDO">Cargando...</Resource>
+		<Resource tag="VISUALIZAR">Visualizar</Resource>
+		<Resource tag="SICONTINUASDESACTIVARASELREGISTROAUTOMATICOPARAESTACOMUNIDA">Si continúas, desactivarás el registro automático para esta comunidad.</Resource>
+		<Resource tag="SICONTINUASACTIVARASELREGISTROAUTOMATICOYTODOSLOSUSUARIOSDE">Si continúas, activarás el registro automático y todos los usuarios de la organización formarán parte de esta comunidad.</Resource>
+		<Resource tag="ABANDONARCOMUNIDAD">Abandonar comunidad</Resource>
+		<Resource tag="SICONTINUASLAORGANIZACIONABANDONARALACOMUNIDAD">Si continúas, la organización abandonará la comunidad.</Resource>
+		<Resource tag="DESACTIVARREGISTROAUTOMATICO">Desactivar registro automático</Resource>
+		<Resource tag="DESVINCULAR">Desvincular</Resource>
+		<Resource tag="URLDELDOCUMENTODESHAREPOINT">URL del documento de SharePoint</Resource>
+		<Resource tag="TODOSLOSDERECHOSRESERVADOS">Todos los derechos reservados</Resource>
+		<Resource tag="IDIOMA">Idioma</Resource>
+		<Resource tag="CONFIGURACIONDELECOSISTEMA">Configuración del ecosistema</Resource>
+		<Resource tag="URLDELRECURSO">Url del recurso</Resource>
+		<Resource tag="DESEASDESBLOQUEARLOSCOMENTARIOS">¿Deseas desbloquear los comentarios?</Resource>
+		<Resource tag="DESEASBLOQUEARLOSCOMENTARIOS">¿Deseas bloquear los comentarios?</Resource>
+		<Resource tag="DESEASDESVINCULARDELDOCUMENTOACTUALELRECURSO@1@">¿Deseas desvincular del documento actual el recurso @1@?</Resource>
+		<Resource tag="NOMBREDELMIEMBRO">Nombre del miembro</Resource>
+		<Resource tag="APELLIDOSDELMIEMBRO">Apellidos del miembro</Resource>
+		<Resource tag="MOSTRARSOLOCOMUNIDADESENLASQUEPARTICIPA">Mostrar solo comunidades en las que participa</Resource>
+		<Resource tag="CORREOQUESEASOCIARAALACUENTADELNUEVOMIEMBRO">Correo que se asociará a la cuenta del nuevo miembro</Resource>
+		<Resource tag="CONTRASEÑADEACCESOASUCUENTA">Contraseña de acceso a su cuenta</Resource>
+		<Resource tag="AÑADIRMIEMBRO">Añadir Miembro</Resource>
+		<Resource tag="MARCAR/DESMARCARRECURSO">Marcar/desmarcar recurso</Resource>
+		<Resource tag="SELECCIONARORDENDESCENDENTE">Seleccionar orden descendente</Resource>
+		<Resource tag="SELECCIONARORDENASCENDENTE">Seleccionar orden ascendente</Resource>
+		<Resource tag="SELECCIONARORDEN">Seleccionar orden</Resource>
+		<Resource tag="SELECCIONARVISUALIZACION">Seleccionar visualización</Resource>		
+		<Resource tag="SELECCIONMULTIPLEDECOMENTARIOS">Selección múltiple de comentarios</Resource>
+		<Resource tag="SELECCIONMULTIPLEDEMENSAJES">Selección múltiple de mensajes</Resource>
+		<Resource tag="MARCAR/DESMARCARMENSAJE">Marcar/desmarcar mensaje</Resource>
+		<Resource tag="VERRECURSO">Ver recurso</Resource>
+		<Resource tag="PRESENTACIONDE">Presentación de</Resource>
+		<Resource tag="DESCRIPCIONDELAPRESENTACION">Descripción de la presentación</Resource>
+		<Resource tag="VIDEODE">Vídeo de</Resource>
+		<Resource tag="DESCRIPCIONDELVIDEO">Descripción del video</Resource>
+		<Resource tag="HELEIDOYACEPTOLAS">He leído y acepto las</Resource>
+		<Resource tag="CONDICIONESDEACCESOYUSO">condiciones de acceso y uso</Resource>
+		<Resource tag="YLA">y la</Resource>
+		<Resource tag="POLITICADEPRIVACIDAD">política de privacidad</Resource>
+		<Resource tag="INICIARSESIONEN">Iniciar sesión en</Resource>
+		<Resource tag="SITODAVIANOTIENECUENTA">Si todavía no tiene cuenta</Resource>
+		<Resource tag="ACTIVACIONDECUENTADEALUMNO">Activación de cuenta de alumno</Resource>
+		<Resource tag="LOSALUMNOSMENORESDE14AÑOSNECESITANQUESUPADREMADREOTUTORLEGA">Los alumnos menores de 14 años necesitan que su padre, madre o tutor legal activen su cuenta para acceder a las clases de Didactalia creadas por sus profesores.</Resource>
+		<Resource tag="GRACIASPORUNIRTEA">gracias por unirte a</Resource>
+		<Resource tag="DATOSBASICOS">Datos básicos</Resource>
+		<Resource tag="IMAGENDELUSUARIO">Imagen del usuario</Resource>
+		<Resource tag="ABRIRPANELLATERALDEUSUARIO">Abrir panel lateral de usuario</Resource>
+		<Resource tag="ENLACEPARAIRAAÑADIRRECURSOS">Enlace para ir a Añadir recursos</Resource>
+		<Resource tag="ENLACEPARAIRACREAUNACOMUNIDAD">Enlace para ir a crea una comunidad</Resource>
+		<Resource tag="CREAUNACOMUNIDADUNAREDSOCIALDONDEPODRASCOMPARTIRINFORMACION">Crea una comunidad, una red social donde podrás compartir información e invitar a personas que desees</Resource>
+		<Resource tag="ENLACEPARAVERTODASLASCOMUNIDADES">Enlace para ver todas las comunidades</Resource>
+		<Resource tag="ENLACEPARAIRALESPACIOPERSONAL">Enlace para ir al espacio personal</Resource>
+		<Resource tag="BUSCAUNGRUPOYPULSAAÑADIR">Busca un grupo y pulsa AÑADIR</Resource>
+		<Resource tag="BUSCAUNPERFILYPULSAAÑADIR">Busca un perfil y pulsa AÑADIR</Resource>
+		<Resource tag="INTRODUCETUCORREOELECTRONICO">Introduce tu correo electrónico</Resource>
+		<Resource tag="INTRODUCETUCONTRASEÑA">Introduce tu contraseña</Resource>
+		<Resource tag="INICIASESION">Inicia sesión en</Resource>
+		<Resource tag="SITODAVIANOTIENESCUENTA">Si todavía no tienes cuenta</Resource>
+		<Resource tag="CORREOELECTRONICO">Correo electrónico</Resource>
+		<Resource tag="ENVIAR">Enviar</Resource>		
+		<Resource tag="INICIASESIONOREGISTRATE">Inicia sesión o regístrate</Resource>
+		<Resource tag="CORREOELECTRONICOALQUESEENVIARAELEMAILDEPRUEBA">Correo electrónico al que se enviará el email de prueba</Resource>
+		<Resource tag="NOSEHAENCONTRADOELPERFILQUEESTABUSCANDO">No se ha encontrado el perfil que está buscando</Resource>
+		<Resource tag="DESEASELIMINARELMENSAJESELECCIONADO">¿Deseas eliminar el mensaje seleccionado?</Resource>
+		<Resource tag="INTRODUCELOSCORREOSSEPARADOSPORCOMASYHAZCLICENAÑADIR">Introduce los correos separados por comas y haz clic en añadir</Resource>
+		<Resource tag="NINGUNDESTINATARIOAÑADIDO">Ningún destinatario añadido…</Resource>
+		<Resource tag="INVITARACOMUNIDAD">Invitar a comunidad</Resource>
+		<Resource tag="ANYADIRENMAYUSCULA">Añadir</Resource>		
+		<Resource tag="INTRODUCEUNAETIQUETAYPULSAAÑADIR">Introduce una etiqueta y pulsa AÑADIR</Resource>		
+		<Resource tag="INTRODUCEUNAPERSONAY/OGRUPO">Introduce una persona y/o grupo</Resource>
 		<Resource tag="BUSQUEDAOC">Busqueda de OC</Resource>
 		<Resource tag="RELATEDTO">Relacionado con</Resource>
 		<Resource tag="CRITERIOBUSQUEDA">Criterio de busqueda</Resource>
@@ -45,6 +115,7 @@
 		<Resource tag="COMUNIDAD">Comunidad</Resource>
 		<Resource tag="CONTRIBUCIONES">Contribuciones</Resource>
 		<Resource tag="REGISTRO">Registro</Resource>
+		<Resource tag="INTRODUCIRCODIGOPOSTAL">Introduce tu código postal</Resource>
 		<Resource tag="BLOGS">Blogs</Resource>
 		<Resource tag="RECURSOS">Recursos</Resource>
 		<Resource tag="CATALOGO">Catálogo</Resource>
@@ -126,8 +197,11 @@
 		<Resource tag="ASCENDENTE">Ascendente</Resource>
 		<Resource tag="QUIEROCONPUNTITOS">Quiero...</Resource>
 		<Resource tag="ENVIARINVITACION">Enviar invitación</Resource>
-		<Resource tag="SOLICITARCOMUNIDAD">Crear una comunidad</Resource>
+		<Resource tag="CREARCOMUNIDAD">Crear una comunidad</Resource>
+		<Resource tag="SOLICITARCOMUNIDAD">Solicita una comunidad</Resource>
+		<Resource tag="CREARORGANIZACION">Crear una organización</Resource>
 		<Resource tag="SOLICITARORGANIZACION">Crear una organización</Resource>
+		<Resource tag="SOLICITUDES">Solicitudes</Resource>
 		<Resource tag="CREARWIDGETPERFIL">Crear widget de mi perfil</Resource>
 		<Resource tag="CREARWIDGETCOMUNIDAD">Crea tu widget de contenidos</Resource>
 		<Resource tag="CREARWIDGETBUSQUEDA">Crea tu widget de búsqueda</Resource>
@@ -839,7 +913,7 @@
 		<Resource tag="RECURSOSENCOMUNIDADES">Recursos publicados</Resource>
 		<Resource tag="RECURSOSENESPACIOPERSONAL">Recursos en tu espacio</Resource>
 		<Resource tag="INTRODUCENOMBRE">Introduce tu nombre</Resource>
-    <Resource tag="INTRODUCEAPELLIDO">Introduce tus apellido</Resource>
+    <Resource tag="INTRODUCEAPELLIDO">Introduce tus apellidos</Resource>
     <Resource tag="INTRODUCEEMAIL">Introduce tu correo electrónico</Resource>
     <Resource tag="INTRODUCETWITTER">Introduce tu cuenta de Twitter</Resource>
     <Resource tag="INTRODUCEFACEBOOK">Introduce tu cuenta de Facebook</Resource>
@@ -962,6 +1036,7 @@
 		<Resource tag="EJEMPLONOMBRECORTOASIGNATURA">Ej.:QO</Resource>
 	</page>
 	<page name="REGISTROUSUARIOORGANIZACION">
+		<Resource tag="EMAILTUTOR">Correo electrónico del tutor</Resource>
 		<Resource tag="USARMYGNOSS"> Usa el correo electrónico de mi cuenta @1@</Resource>
 		<Resource tag="TITULOPAGINA">Registro</Resource>
 		<Resource tag="DATOSCONTACTOPRINC">Datos del contacto principal</Resource>
@@ -1005,6 +1080,7 @@
 		<Resource tag="ACTIVARCORREO">Activar cuenta de correo</Resource>
 		<Resource tag="ESTASEN">Estás en</Resource>
 		<Resource tag="CLAVEERRONEA">El usuario o la contraseña son incorrectos. </Resource>
+		<Resource tag="LOGINUSUARIOBLOQUEADO">Por motivos de seguridad su cuenta ha sido bloqueada temporalmente, inténtelo más tarde.</Resource>
 		<Resource tag="LOGINTWICE">El usuario ya está logueado desde otro navegador. Desconéctese de los otros navegadores o espere a que termine la sesión automáticamente (@1@ minutos desde el último acceso). </Resource>
 		<Resource tag="AUTENTICACIONEXTERNA">Se ha producido un error en el servicio de autenticación. </Resource>
 		<Resource tag="CONECTATECON">Conéctate con</Resource>
@@ -1040,6 +1116,7 @@
 		<Resource tag="DESEASRECIBIRNEWSLETTER">Deseas recibir la newsletter</Resource>
 		<Resource tag="SECCIONNOTIFICACIONPERFIL">sección notificaciones de su perfil</Resource>
 		<Resource tag="SECCIONSUSCRIBETECOMUNIDAD">sección suscríbete de @1@</Resource>
+		<Resource tag="RECURSOPUBLICADOEL">Recurso publicado el @1@</Resource>
 	</page>
 	<page name="BANDEJAENTRADA">
 		<Resource tag="VOLVERLISTADO">volver a la lista de mensajes</Resource>
@@ -1363,7 +1440,7 @@
 		<Resource tag="TITULO">Título</Resource>
 		<Resource tag="DESCRIPCION">Descripción</Resource>
 		<Resource tag="ENLACE">Enlace</Resource>
-		<Resource tag="ETIQUETAS">Etiquetas     (Separadas por comas)</Resource>
+		<Resource tag="ETIQUETAS">Etiquetas * (Separadas por comas)</Resource>
 		<Resource tag="AUTORPROPIO">  Soy el autor de este documento</Resource>
 		<Resource tag="FICHABIBLIOGRAFICA">Ficha Bibliográfica</Resource>
 		<Resource tag="PUBLICAR">Publicar</Resource>
@@ -2232,8 +2309,8 @@
 		<Resource tag="PASSCAMBIADOEXITO">La contraseña se ha cambiado con éxito.</Resource>
 		<Resource tag="PASSANTERIORNOCHUNGA">La contraseña actual no es correcta.</Resource>
 		<Resource tag="IRINICIO">Ir al inicio</Resource>
-    <Resource tag="INSERTARPASSWORDACTUAL">Introduce tu constraseña actual</Resource>
-    <Resource tag="INSERTARPASSWORDNUEVA">Introduce tu nueva constraseña</Resource>
+    <Resource tag="INSERTARPASSWORDACTUAL">Introduce tu contraseña actual</Resource>
+    <Resource tag="INSERTARPASSWORDNUEVA">Introduce tu nueva contraseña</Resource>
     <Resource tag="INSERTARPASSWORDCONFIRMAR">Confirma la nueva contraseña</Resource>
 	</page>
 	<page name="CONFIGURACIONGNOSS">
@@ -2363,7 +2440,7 @@
 		<Resource tag="PREGUNTAHASIDOCERRADA">La pregunta ha sido cerrada</Resource>
 		<Resource tag="PUBLICADO">Publicado </Resource>
 		<Resource tag="COMPARTIDO">Compartido </Resource>
-		<Resource tag="ACTIVIDADRECIENTEVACIOCOM">¿Quieres compartir tu conocimiento? {br /} Empieza ahora mismo. {a href="@1@"}Añade recursos{/a}.</Resource>
+		<Resource tag="ACTIVIDADRECIENTEVACIOCOM">¿Quieres compartir tu conocimiento? {br /} Empieza ahora mismo. {a href="@1@" class="withUnderline"}Añade recursos{/a}.</Resource>
 		<Resource tag="ACTIVIDADRECIENTEVACIO">Comparte tu conocimiento. {a href="@1@"}Añade recursos{/a} en tu perfil o en {a href="@2@"}comunidades{/a}.</Resource>
 		<Resource tag="ACTIVIDADRECIENTEVACIOPROF">Comparte tu conocimiento. Añade recursos en las {a href="@1@"}comunidades{/a} de tus clases.</Resource>
 		<Resource tag="ACTIVIDADRECIENTEVACIOCLASE">Anima a tus alumnos a compartir recursos en las {a href="@1@"}comunidades de trabajo{/a}.</Resource>
@@ -2857,7 +2934,7 @@
 		<Resource tag="EXPLICACIONCERRADA">Los miembros de la comunidad, al igual que el resto de usuario de @1@, sólo pueden navegar por la comunidad y explorar sus contenidos.</Resource>
 		<Resource tag="EXPLICACIONCERRANDOSE">La comunidad se va a cerrar, pero antes estará unos días en 'periodo de gracia', tiempo durante el cual los usuarios podrán: descargar recursos, leer los contenidos de la comunidad y compartirlos con otros espacios @1@. Sin embargo, no se podrá subir nada nuevo. Pasado este periodo no se podrá acceder a la comunidad una vez cerrada.</Resource>
 		<Resource tag="INFOOWL4"> que se la desarrollemos en @1@</Resource>
-		<Resource tag="DESCRIPCIONIDIOMACOMUNIDAD">Las comunidades de @3@ ofrecen a sus administradores la posibilidad de editar el {a href="@1@"}índice de categorías{/a} y los {a href="@2@"}paneles informativos{/a} (widgets tipo HTML incrustado) en español, inglés y portugués.  ¿Quieres que tu comunidad @3@ sea multilingüe? Activa el siguiente check y elige su idioma por defecto.</Resource>
+		<Resource tag="DESCRIPCIONIDIOMACOMUNIDAD">Las comunidades de @3@ ofrecen a sus administradores la posibilidad de editar el {a href="@1@"}índice de categorías{/a} y los {a href="@2@"}paneles informativos{/a} (widgets tipo HTML incrustado) en varios idiomas.  ¿Quieres que tu comunidad @3@ sea multilingüe? Activa el siguiente check y elige su idioma por defecto.</Resource>
 		<Resource tag="UTILIDADES">Utilidades</Resource>
 		<Resource tag="GADGETS">Diseño</Resource>
 		<Resource tag="CONFIGURACION">Configuración de las opciones de los recursos</Resource>
@@ -3683,6 +3760,7 @@
 		<Resource tag="INVITACIONESORG">invitaciones-org</Resource>
 		<Resource tag="INVITACIONINVALIDA">enlace-caducado</Resource>
 		<Resource tag="LOGIN">login</Resource>
+		<Resource tag="AUTENTICACIONDOBLEFACTOR">autenticacion-doble-factor</Resource>
 		<Resource tag="ACEPTARINVITACION">aceptar-invitacion</Resource>
 		<Resource tag="LANDINGUNI20">universidad20</Resource>
 		<Resource tag="LANDINGDIDACTALIAEXP">didactalia</Resource>
@@ -4024,6 +4102,7 @@
 		<Resource tag="ADMINISTRARPREFERENCIAPROYECTO">administrar-preferencia-proyecto</Resource>
 		<Resource tag="ADMINISTRASEARCH">administrar-search</Resource>
 		<Resource tag="ADMINISTRASERVICIOSEXTERNOS">administrar-servicios-externos</Resource>
+		<Resource tag="ADMINISTRARESTADOSISTEMAS">system-status</Resource>
 		<Resource tag="ADMINISTRACREDENCIALES">administrar-credenciales</Resource>
 		<Resource tag="ADMINISTRARLISTACAMBIO">administrar-lista-cambios</Resource>
 		<Resource tag="ADMINISTRARLISTACAMBIOECOSISTEMA">administrar-lista-cambios-ecosistema</Resource>
@@ -4203,6 +4282,7 @@
 		<Resource tag="ADDFILTROSORDEN">Añadir filtro orden</Resource>
 		<Resource tag="NUEVOFILTRO">Nuevo filtro</Resource>
 		<Resource tag="FILTRO">Filtro</Resource>
+		<Resource tag="CONSULTA">Clausula</Resource>
 		<Resource tag="VISTASDISPONIBLES">Vistas disponibles</Resource>
 		<Resource tag="VISTALISTADO">Listado</Resource>
 		<Resource tag="VISTAMOSAICO">Mosaico</Resource>
@@ -4421,7 +4501,7 @@
 		<Resource tag="CLASES">Clase que le vamos a poner al componente en el html</Resource>
 		<Resource tag="VISIBLE">Indica si el componente se va a mostrar</Resource>
 		<Resource tag="FILTROSDESTINO">Condiciones que se tienen que dar en el recurso para que se muestre el componente</Resource>
-		<Resource tag="COMUNIDADORIGEN">Comunidad de la que se trae el contexto, si esta vacio, los trae de la misma comunidad</Resource>
+		<Resource tag="COMUNIDADORIGEN">Comunidad de la que se trae el contexto</Resource>
 		<Resource tag="FILTROSORIGEN">Filtros que realiza en la busqueda del contexto</Resource>
 		<Resource tag="RELACIONORIGENDESTINO">Relación de las propiedades del contexto con el recurso. ej: &quot;sioc_t:Tag|sioc_t:Tag|1&amp;skos:ConceptID|skos:ConceptID|1&quot;</Resource>
 		<Resource tag="NUMRESULTADOSCONTEXTO">Número de resultados que va a mostrar el contexto</Resource>
@@ -4900,7 +4980,7 @@
 		<Resource tag="SISTEMAS">Sistemas</Resource>
 		<Resource tag="SITEMAPACTIVADO">SiteMap activado</Resource>
 		<Resource tag="LOSRECURSOSSESUBENAGOOGLEDRIVE(NECESITACONFIGURACIÓNENSISTEM">Los recursos se suben a Google Drive (NECESITA CONFIGURACIÓN EN SISTEMAS)</Resource>
-		<Resource tag="QUITARLAPARTEDELAURL/COMUNIDAD/NOMBRECOMUNIDAD(NECESITACONFI">Quitar la parte de la URL /comunidad/nombrecomunidad (NECESITA CONFIGURACIÓN EN SISTEMAS)</Resource>
+		<Resource tag="QUITARLAPARTEDELAURL/COMUNIDAD/NOMBRECOMUNIDAD">Quitar la parte de la URL /comunidad/@1@ y se utilizará el dominio @2@ como url corta de la comunidad</Resource>
 		<Resource tag="SEGUNDOSQUESEDEJANDEINTERVALOENTREUNENVIODENEWSLETTERYOTRO">Segundos que se dejan de intervalo entre un envío de newsletter y otro </Resource>
 		<Resource tag="INDICASIESTAPERMITIDALAREPLICACIONCONVENCIONALDEGNOSS.PORDEF">Indica si esta permitida la replicacion convencional de Gnoss. Por defecto, está permitida</Resource>
 		<Resource tag="SEMANTICA">Semántica</Resource>
@@ -4928,9 +5008,9 @@
 		<Resource tag="LOGINCONFACEBOOK.CLIENTIDYCLIENTSECRETDELAAPLICACIONDEFACEBO">Login con Facebook. Client Id y Client secret de la aplicación de Facebook</Resource>
 		<Resource tag="EJ:ID|||579839168702303@@@CLIENTSECRET|||B959A4485T0E8818283">Ej: id|||579839168702303@@@clientsecret|||b959a4485t0e88182834e4149b5d47c7</Resource>
 		<Resource tag="LOGINCONGOOGLE.CLIENTIDYCLIENTSECRETDELAAPLICACIONDEGOOGLE">Login con Google. Client Id y Client secret de la aplicación de Google</Resource>
-		<Resource tag="EJ:ID|||880006438141R84HN261RTCT92AQE3D5ADJLOD4UMACN.APPS.G">Ej: id|||880006438141-r84hn261rtct92aqe3d5adjlod4umacn.apps.googleusercontent.com@@@clientsecret|||0d8fxeZDl-qV0XRiTnCCB54n</Resource>
+		<Resource tag="EJ:ID|||880006438141R84HN261RTCT92AQE3D5ADJLOD4UMACN.APPS.G">Ej: id|||880006438141-r84hn261rtct92aqe3d5adjlod4umacn.apps.googleusercontent.com@@@clientsecret|||secretid</Resource>
 		<Resource tag="LOGINCONTWITTER.CLIENTIDYCLIENTSECRETDELAAPLICACIONDETWITTER">Login con Twitter. Client Id y Client secret de la aplicación de Twitter</Resource>
-		<Resource tag="EJ:CONSUMERKEY|||LUWBKMGLYF9H6LPTM4GKJ4AY@@@CONSUMERSECRET||">Ej: consumerkey|||lUwbKMGlYF9H6lPtm4Gkj4AY@@@consumersecret|||2vY81oR1GFCAL818jafYyRglCZaDYUlxf1Z1qq5sUA6jf</Resource>
+		<Resource tag="EJ:CONSUMERKEY|||KEY@@@CONSUMERSECRET||">Ej: consumerkey|||KEY@@@consumersecret|||SECRET</Resource>
 		<Resource tag="PROYECTOS">Proyectos</Resource>
 		<Resource tag="CONFIGURARPROYECTOS">Configurar Proyectos</Resource>
 		<Resource tag="ESTILOS">Estilos</Resource>
@@ -5360,6 +5440,7 @@
 
 
 
+		<Resource tag="DESEASVALORARLAAPLICACIONQUEESTOYHACIENDOQUEESSUPERCHULI">¿Deseas valorar la aplicación que estoy haciendo que es superchuli?</Resource>
 
 
 
@@ -5383,7 +5464,7 @@
 		<Resource tag="CONFIGURACIONGENERALDELOSASPECTOSBASICOSDELACOMUNIDAD:ESTADO">Configuración general de los aspectos básicos de la comunidad: Estado, nombre, imágenes y etiquetas. Edición y creación de categorías para su utilización en los recursos de la comunidad.</Resource>
 		<Resource tag="ADMINISTRACIONDELAESTRUCTURADELACOMUNIDADMEDIANTELACREACIOND">Administración de la estructura de la comunidad mediante la creación de páginas, componentes CMS, multimedia y redirecciones para que estén disponibles en más de una dirección URL.</Resource>
 		<Resource tag="CONFIGURACIONGENERALDELACOMUNIDADPARALAGESTIONDELOSPERMISOSD">Configuración general de la comunidad para la gestión de los permisos de usuarios, servicio de integración contínua, traducciones, acceso OAuth, FTP, SEO, buzón de correo del administrador, cláusulas legales y cookies.</Resource>
-
+		<Resource tag="NOSEHAPODIDOGUARDARLAURL">No se ha podido guardar la Url, falta @1@</Resource>
 
 		<Resource tag="ADMINISTRACIONYCREACIONDEOBJETOSDECONOCIMIENTOPARALACREACION">Administración y creación de objetos de conocimiento para la creación de recursos semánticos en la comunidad.</Resource>
 		<Resource tag="DESCUBRIMIENTOYANALISIS">Descubrimiento y análisis</Resource>
@@ -5635,6 +5716,7 @@
 		<Resource tag="INTRODUCEELCODIGO">Introduce el código</Resource>
 		<Resource tag="SCRIPTDEGOOGLEANALYTICSPORDEFECTO">Script de Google Analytics por defecto</Resource>
 		<Resource tag="SCRIPTDEGOOGLEANALYTICS,SISEQUIEREUSARUNSCRIPTDISTINTOALDEPO">Script de Google Analytics, si se quiere usar un script distinto al de por defecto.</Resource>
+    <Resource tag="MENSAJESCRIPTGOOGLEANALYTICSADMINISTRACION">Si se utiliza el script de google analytics por defecto, el texto @@codigoga@@ del script será sustituido por el código indicado.</Resource>
 		<Resource tag="CONFIGURACIONDELPOSICIONAMIENTOSEODELACOMUNIDADASICOMODEUNAC">Configuración del posicionamiento SEO de la comunidad así como de una cuenta de Google Analytics.</Resource>
 		<Resource tag="CONFIGURACIONDELPOSICIONAMIENTOSEODELAPLATAFORMA">Configuración del posicionamiento SEO así como de una cuenta de Google Analytics.</Resource>
 		<Resource tag="SCRIPTDEGOOGLEANALYTICSPROPIO">Script de Google Analytics propio</Resource>
@@ -5732,7 +5814,7 @@
 		<Resource tag="CONFIGURACION">Configuración</Resource>
 		<Resource tag="PRESENTACIONDERECURSOS">Presentación de recursos</Resource>
 		<Resource tag="RUTARELATIVA/URLREFERENTEDELOBJETODECONOCIMIENTO">Ruta relativa / Url referente del objeto de conocimiento</Resource>
-		<Resource tag="NOMBREINDETIFICATIVODELAONTOLOGIA">Nombre indetificativo de la ontología.</Resource>		
+		<Resource tag="NOMBREINDETIFICATIVODELAONTOLOGIA">Nombre identificativo de la ontología.</Resource>		
 		<Resource tag="URLASOCIADAALOBJETODECONOCIMIENTO">Url asociada al objeto de conocimiento.</Resource>
 		<Resource tag="CREAROBJETODECONOCIMIENTO">Crear objeto de conocimiento</Resource>
 		<Resource tag="PUEDESCREARUNAONTOLOGIA/OBJETODECONOCIMIENTODESDECEROUSANDOA">Puedes crear una ontología/objeto de conocimiento desde cero usando alguna de las siguientes aplicaciones</Resource>
@@ -5866,7 +5948,8 @@
 		<Resource tag="ADMINISTRARRAMAS">Administrar ramas</Resource>
 		<Resource tag="ADMINISTRARDESPLIEGUES">Administrar despliegues</Resource>
 		<Resource tag="ESTASENLARAMARELEASE(VERSION@1@)PUEDESHACERCAMBIOSENLAADMIN">Estás en la rama release (version @1@). Puedes hacer cambios en la administración y desplegar.</Resource>
-		<Resource tag="ESTASENLA@1@,SOLOSETEPERMITEHACERCAMBIOSENADMINISTRACIONYCER">Estás en la @1@, solo se te permite hacer cambios en administración y cerrar la rama.</Resource>
+		<Resource tag="ESTASENLA@1@,SOLOSETEPERMITEHACERCAMBIOSENADMINISTRACIONYCER">Estás en la @1@, puedes hacer cambios en la administración o cerrar la rama.</Resource>
+		<Resource tag="ESTASENPRERAMAACTIVANOPUEDESHACERCAMBIOS">Estás en preproducción en la @1@, solo se te permite hacer cambios en las páginas de la administración que no tienen IC.</Resource>
 		<Resource tag="CONFIGURACIONINICIAL">Configuración inicial</Resource>
 		<Resource tag="PARACOMPLETARLAINSTALACION,CONFIGURAACONTINUACIONLASIGUIENTE">Para completar la instalación, configura a continuación la siguiente información para que tu proyecto esté disponible y sea accesible.</Resource>
 		<Resource tag="DATOSDEACCESO">Datos de acceso</Resource>
@@ -5906,10 +5989,11 @@
 		<Resource tag="URLBASEDESERVICIOS">Url base de servicios</Resource>
 		<Resource tag="CONFIGURACIONDELAURLBASEPARALACONSTRUCCIONDELASURLSDELOSSERV">Configuración de la url base para la construcción de las urls de los servicios externos de la comunidad.</Resource>
 		<Resource tag="{P}SISECONFIGURALAURLCOMOHTTP://SERVICIOSGNOSSCOM/{SERVICE">{p}Si se configura la url como http://servicios.gnoss.com/{ServiceName}, los servicios se generarán como http://servicios.gnoss.com/servicioexterno.{/p}{p}Si por el contrario, se configura de la siguiente manera http://{ServiceName}.azurewebsites.net, los servicios se generarán como http://servicioexterno.azurewebsites.net.{/p}</Resource>
-		<Resource tag="ESNECESARIOQUELAURLCONTENGAELTEXTOSERVICENAMEPARAUNACORREC">Es necesario que la url contenga el texto ServiceName para una correcta configuración posterior de los servicios.</Resource>
+		<Resource tag="ESNECESARIOQUELAURLCONTENGAELTEXTOSERVICENAMEPARAUNACORREC">Es necesario que la url contenga el texto @1@ para una correcta configuración posterior de los servicios.</Resource>
 		<Resource tag="NUEVOSERVICIO">Nuevo servicio</Resource>
 		<Resource tag="SERVICIOEXTERNO">Servicio externo</Resource>
-		<Resource tag="SERVICIOSEXTERNOS">Servicios externos</Resource>
+		<Resource tag="SERVICIOSEXTERNOS">Servicios externos</Resource>		
+		<Resource tag="ADMINISTRARESTADOSISTEMAS">Estado sistemas</Resource>
 		<Resource tag="SPARQL">SPARQL</Resource>
 		<Resource tag="ACCESOFTP">Acceso FTP</Resource>
 		<Resource tag="OAUTH">Oauth</Resource>
@@ -6081,7 +6165,9 @@
 		<Resource tag="DESCARGACONFIG">Descargar configuraciones</Resource>
 		<Resource tag="DESCRIPDESCARGACONFIG">Descarga y subida de archivos comprimidos con las configuraciones del proyecto actual</Resource>
 		<Resource tag="IMPORTARTRADUCCIONES">Importar configuraciones</Resource>
-		<Resource tag="EXPLICACIONIMPORTARCONFIGURACIONES">Selecciona un fichero zip que contenga cada configuración a subir, también en ficheros zip. Puedes usar como ejemplo los archivos descargados.</Resource>
+		<Resource tag="EXPLICACIONIMPORTARCONFIGURACIONES">Selecciona un fichero zip que contenga cada configuración a subir, también en ficheros zip. Puedes usar como ejemplo los archivos descargados.</Resource>	
+		<Resource tag="IMPORTARCONFIGURACIONES">Importar configuraciones</Resource>
+		<Resource tag="DESCRIPCION">Descripción</Resource>
 		
 	    <Resource tag="ADMINISTRACIONDETRAZASSOBRESERVICIOSDELACOMUNIDADPARALAREALI">Administración de trazas sobre servicios de la comunidad para la realización de seguimiento de eventos y gestión de posibles errores.</Resource>
 		<Resource tag="DESCARGARTRADUCCIONES">Descargar traducciones</Resource>
@@ -6140,9 +6226,7 @@
 		<Resource tag="INDICASIDESEASELIMINARLACACHEDETODALACOMUNIDADOSOLODECIERTOS">Indica si deseas eliminar la caché de toda la comunidad o solo de ciertos elementos.</Resource>
 		<Resource tag="FILTRARPORELEMENTOSCACHEDELACOMUNIDAD">Filtrar por elementos Caché de la comunidad</Resource>
 		<Resource tag="BUSCARELEMENTOSDELACACHEDELACOMUNIDADPARAHACERUNBORRADOSELEC">Buscar elementos de la Caché de la comunidad para hacer un borrado selectivo.</Resource>
-		<Resource tag="BUSCARCACHEENCOMUNIDAD">Buscar caché en comunidad</Resource>
-		<Resource tag="SEMUESTRAUNMAXIMODE100RESULTADOSENCONTRADOSENCACHE">Se muestra un máximo de 100 resultados encontrados en caché.</Resource>
-		<Resource tag="BORRARCACHE">Borrar caché</Resource>
+		<Resource tag="BUSCARCACHEENCOMUNIDAD">Buscar caché en comunidad</Resource>		
 		<Resource tag="ADMINISTRACIONDELBORRADODELAMEMORIACACHEDELACOMUNIDAD,RECURS">Administración del borrado de la memoria caché de la comunidad, recursos y búsquedas.</Resource>
 		<Resource tag="EDITARFICHASOC">Editar visualización del objeto de conocimiento</Resource>
 		<Resource tag="CONFIGURARPROPIEDADESOC">Configurar las propiedades del objeto de conocimiento</Resource>
@@ -6151,9 +6235,72 @@
 		<Resource tag="FILTRODELAFACETA">Filtro de la faceta</Resource>
 		<Resource tag="INDICALAPROPIEDADPORLAQUESEDESEAQUEFUNCIONEELFILTRODELAFACET">Indica la propiedad por la que se desea que funcione el filtro de la faceta (Ej: &quot;schema:name&quot;)</Resource>
 		<Resource tag="AÑADELACONDICIONPARALAFACETAYPULSAAÑADIR">Añade la condición para la faceta y pulsa Añadir.</Resource>
-
-
-	</page>
+		<Resource tag="ESTADISTICASDELACOMUNIDAD">Estadísticas de la comunidad</Resource>
+		<Resource tag="ANALIZAELTRAFICODELACOMUNIDADDESDEESTASECCIONENCUENTRADATOS">Analiza el tráfico de la comunidad desde esta sección. Encuentra datos detallados sobre páginas visitadas, tiempo de permanencia y fuentes de tráfico. Los informes personalizables ofrecen insights específicos para una comprensión profunda del rendimiento de la comunidad, priorizando la privacidad de los usuarios.</Resource>
+		<Resource tag="INDICARLAFECHAINICIAL">Indicar la fecha inicial</Resource>
+		<Resource tag="INDICARLAFECHAFINAL">Indicar la fecha final</Resource>
+		<Resource tag="MOVERFACETA">Mover faceta</Resource>
+		<Resource tag="DEFINELAPOSICIONEXACTADELAFACETAELIGIENDOSUUBICACIONESPECIFI">Define la posición exacta de la faceta eligiendo su ubicación específica en este menú desplegable. Asigna con precisión la faceta que quedará directamente debajo de ella.</Resource>
+		<Resource tag="LAFACETAQUEQUEDARADIRECTAMENTEDEBAJODELASELECCIONADA">La faceta que quedará directamente debajo de la seleccionada.</Resource>
+		<Resource tag="MOVERPAGINA">Mover página</Resource>
+		<Resource tag="DEFINELAPOSICIONEXACTADELAPAGINAELIGIENDOSUUBICACIONESPECIFI">Define la posición exacta de la página eligiendo su ubicación específica en este menú desplegable. Asigna con precisión la página que quedará directamente debajo de ella.</Resource>
+		<Resource tag="LAPAGINAQUEQUEDARADIRECTAMENTEDEBAJODELASELECCIONADA">La página que quedará directamente debajo de la seleccionada.</Resource>
+		<Resource tag="SPARQLENDPOINT">SPARQL Endpoint</Resource>
+		<Resource tag="URLDEDOMINIO">Url de Dominio</Resource>
+		<Resource tag="INTRODUCELANUEVAURLDEDOMINIO">Introduce la nueva url de dominio</Resource>
+		<Resource tag="PARACONFIRMARLAURLDEDOMINIO,PULSAENGUARDAR">Para confirmar la url de dominio, pulsa en guardar</Resource>
+		<Resource tag="ADMINISTRARGRAFICOS">Administrar gráficos</Resource>
+		<Resource tag="URLDEAPLICACIONESWEBEXTERNAS(WORDPRESS,LIFERAY,ETC)QUEUSANP">URL de aplicaciones web externas (Wordpress, Liferay, etc.) que usan por AJAX los servicios de búsqueda de esta plataforma</Resource>
+		<Resource tag="SIVANAEXISTIRPAGINASWEBAJENASAESTEDESPLIEGUE(WORDPRESS,LIFER">Si van a existir páginas Web ajenas a este despliegue (Wordpress, Liferay, etc.) que van a hacer peticiones AJAX a los servicios de búsqueda, escribe aquí la URL donde está alojada esa Web para que los servicios de GNOSS añadan las cabeceras CORS necesarias que los navegadores Exigen. Ej:https://wordpress.gnoss.com. Si hay más de un dominio, los puedes separar con el carácter "|". Ej:https://wordpress.gnoss.com|https://liferay.gnoss.com.</Resource>
+		<Resource tag="LISTADEIDIOMASDISPONIBLESENLAPLATAFORMA">Lista de idiomas disponibles en la plataforma</Resource>
+		<Resource tag="EXPORTARRESULTADOS">Exportar resultados</Resource>
+		<Resource tag="EXPORTARAXML">Exportar a XML</Resource>
+		<Resource tag="EXPORTARAJSON">Exportar a JSON</Resource>
+		<Resource tag="EXPORTARACSV">Exportar a CSV</Resource>
+		<!--TRADUCCIONES PÁGINA ESTADO SISTEMAS-->
+		<Resource tag="SERVICIOACTIVO">El servicio está activo.</Resource>
+		<Resource tag="SERVICIOONTOLOGIASNOFUNCIONA">Servicio de ontologias no funciona correctamente.</Resource>
+		<Resource tag="SERVICIOINTERNONOFUNCIONA">Servicio interno no funciona correctamente.</Resource>
+		<Resource tag="FALLOPETICIONAGREGARDOCUMENTOS">Fallo en la petición para agregar documentos.</Resource>
+		<Resource tag="ERROR404ESTADOSERVICIO">Error 404. Comprueba que el servicio está levantado y el dominio está configurado correctamente.</Resource>
+		<Resource tag="ERRORALCONECTARSEALERVICIO">Error al conectarse al servicio. Comprueba que el servicio está levantado y el dominio está configurado correctamente.</Resource>
+		<Resource tag="SERVICIODOCUMENTOSNOFUNCIONA">Servicio de documentos no funciona correctamente.</Resource>
+		<Resource tag="REPLICACIONBIDIRECCIONALNOCONFIGURADA">La replicación bidireccional no está configurada.</Resource>
+		<Resource tag="FALLOALOBTENERSERVICIODEAFINIDAD">Fallo al obtener el servicio de afinidad.</Resource>
+		<Resource tag="SERVICIOSEARCHGRAPHGENERATORNOCONSUMELEMENTOSCOLA">El servicio SearchGraphGenerator no está consumiendo elementos de la cola.</Resource>
+		<Resource tag="SERVICIOFUNCIONANDOCORRECTAMENTE">El servicio esta funcionando correctamente.</Resource>
+		<Resource tag="CONEXIONCOLASERVICIOSWINDERABBITMQNOCONFIGURADA">La conexión colaServiciosWin de RabbitMQ no está configurada.</Resource>
+		<Resource tag="NOSEHAPODIDOCOMPROBARELSERVICIO">No se ha podido comprobar el servicio.</Resource>
+		<Resource tag="ERRORENVIRTUOSONOAFIN">Error en el @1@.</Resource>
+		<Resource tag="NOSEHAPODIDOCOMPROBARHAPROXY">No se ha podido comprobar el estado de HaProxy.</Resource>
+		<Resource tag="NOSEHAPODIDOCOMPROBARREDIS">No se ha podido comprobar el estado de Redis.</Resource>
+		<Resource tag="ERRORREPLICACIONBIDIRECCIONAL">Error en replicación bidireccional.</Resource>
+		<Resource tag="ERRORREPLICACIONMAESTROESCLAVO">Error en replicación maestro-esclavo.</Resource>
+		<Resource tag="REPLICACIONVIRTUOSONOCONFIGURADA">La replicación del Virtuoso no está configurada.</Resource>
+		<Resource tag="NOSEHAPODIDOLEERTRIPLESDELRECURSOEN6INTENTOS">No se han podido leer los triples del recurso tras 6 intentos.</Resource>
+		<Resource tag="SERVICIOTHUMBNAILGENERATORNOCONSUMEELEMENTOSCOLA">El servicio ThumbnailGenerator no está consumiendo elementos de la cola.</Resource>
+		<Resource tag="CONEXIONCOLASERVICIOSWINDETHUMBNAILGENERATORNOCONFIGURADA">La conexión colaServiciosWin de ThumbnailGenerator no está configurada.</Resource>
+		<Resource tag="LUCENEAUTOCOPLETEYAPILUCENEACTIVOS">Lucene Autocomplete y el API de Lucene están activos.</Resource>
+		<Resource tag="FALLOSERVICIOAUTOCOMPLETEGENERATOR">Fallo en el servicio autocomplete generator.</Resource>
+		<Resource tag="SERVICIOSEARCHGRAPHGENERATIONSINACCESOASERVICIOONTOLOGIAS">El servicio SearchGraphGeneration no tiene acceso al servicio de Ontologias.</Resource>
+		<Resource tag="SERVICIOSEARCHGRAPHGENERATIONNOCONSUMEELEMENTOSENCOLA">El servicio SearchGraphGeneration no está consumiendo elementos de la cola.</Resource>
+		<Resource tag="ERRORRABBIT">Error en Rabbit.</Resource>
+		<Resource tag="NOSEHAPODIDODESCARGARLAIMAGEN">No se ha podido descargar la imagen.</Resource>
+		<Resource tag="LAVISTANOSEHAREGISTRADO">La visita no se ha registrado.</Resource>
+		<Resource tag="LABDSERVICIODEREDISNOESTACONFIGURADA">La BD: @1@ de Redis no está correctamente configurada.</Resource>
+		<Resource tag="FALLOCONEXIONREDIS">Fallo en la conexión a Redis: @1@.</Resource>
+		<Resource tag="REDISACTIVO">Redis está activo.</Resource>
+		<Resource tag="ONTOLOGIAS">Ontologias</Resource>
+		<Resource tag="DOCUMENTOS">Documentos</Resource>
+		<Resource tag="SERVICIOINTERNO">Servicio Interno</Resource>
+		<Resource tag="REPLICACIONDEVIRTUOSO">Replicación de Virtuoso</Resource>
+		<Resource tag="VERGRAFOS">Ver grafos</Resource>
+	    <Resource tag="NUEVACONSULTA">Nueva consulta</Resource>
+		<Resource tag="COPIAR">Copiar</Resource>
+		<Resource tag="USACTRL+ENTERPARAEJECUTARLACONSULTA">Usa Ctrl + ENTER para ejecutar la consulta</Resource>
+		<Resource tag="BUSCAR">Buscar ...</Resource>
+    <Resource tag="SIMODIFICASLARUTARELATIVAELCAMBIONOSURTIRAEFECTOHASTAQUESERE">Si modificas la ruta relativa el cambio no surtirá efecto hasta que se reinicie la plataforma. Ponte en contacto con el administrador de sistemas para ello.</Resource>
+  </page>	
 	<page name="MENSAJECOOKIES">
 		<Resource tag="AVISOPOLITICA">Utilizamos cookies propias y de terceros para mejorar tu experiencia de navegación. Más información en {a href="@1@"}Política de cookies{/a}.</Resource>
 		<Resource tag="MODIFICAR">Modificar</Resource>
@@ -6166,5 +6313,14 @@
 		<Resource tag="DESCRIPCIONCOOKIESANALITICAS">Son aquellas que permiten al responsable de las mismas el seguimiento y análisis del comportamiento de los usuarios de los sitios web a los que están vinculadas, incluida la cuantificación de los impactos de los anuncios. La información recogida mediante este tipo de cookies se utiliza en la medición de la actividad de los sitios web, aplicación o plataforma, con el fin de introducir mejoras en función del análisis de los datos de uso que hacen los usuarios del servicio.</Resource>
 		<Resource tag="NOMBRECOOKIESREDESSOCIALES">Redes sociales</Resource>
 		<Resource tag="DESCRIPCIONCOOKIESREDESSOCIALES">Cookies de redes sociales</Resource>
+	</page>
+	<page name="DOBLEFACTORAUTENTICACION">
+		<Resource tag="AUTENTICACIONDOBLEFACTOR">Autenticación doble factor</Resource>
+		<Resource tag="INTRODUCEELCODIGOPARAAUTENTICARTE">Introduce el código de seguridad que te ha llegado al correo para autenticarte</Resource>
+		<Resource tag="CODIGO">Código</Resource>
+		<Resource tag="CODIGODESEGURIDADNOVALIDOOCADUCADO">El código de seguridad introducido no es válido o ha caducado</Resource>
+		<Resource tag="NODISPONESDECODIGODESEGURIDAD">¿No dispones de un código de seguridad? </Resource>
+		<Resource tag="INICIASESIONPARASOLICITARUNO"> Inicia sesión para solicitar uno</Resource>
+		<Resource tag="INDICAAUTENTICACIONDOBLEFACTORACTIVADA">Indica si está activada la autenticacion de doble factor</Resource>
 	</page>
 </Resources>

@@ -23,7 +23,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Models.GeneradorClases
 
         public ConfiguracionObjeto(Dictionary<string, string> pDicPref, Propiedad pProp, ElementoOntologia pElem, bool esOntologia, LoggingService loggingService)
         {
-            PrefijoPropiedad = UtilCadenas.PrimerCaracterAMayuscula(UtilCadenasOntology.ObtenerPrefijo(pDicPref, pProp.Nombre, loggingService));
+            PrefijoPropiedad = UtilCadenas.PrimerCaracterAMayuscula(UtilCadenasOntology.ObtenerPrefijo(pDicPref, pProp.Nombre));
             NombrePropiedad = UtilCadenasOntology.ObtenerNombreProp(pProp.Nombre);            
             
             Rango = UtilCadenasOntology.ObtenerNombreProp(pProp.Rango);

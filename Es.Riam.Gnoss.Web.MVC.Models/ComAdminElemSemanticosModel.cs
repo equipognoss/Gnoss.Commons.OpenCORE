@@ -180,6 +180,12 @@ namespace Es.Riam.Gnoss.Web.MVC.Models
         /// Indica si se está creando una nueva instancia secundaria o por el contrario se está editando una.
         /// </summary>
         public bool CreatingNewInstance { get; set; }
+
+        /// <summary>
+        /// Nombre de la propiedad que representa el título o el nombre de la ontología.
+        /// </summary>
+        public string PropertyNameRepresentOntologyTitle { get; set; }
+
     }
 	[Serializable]
 	/// <summary>

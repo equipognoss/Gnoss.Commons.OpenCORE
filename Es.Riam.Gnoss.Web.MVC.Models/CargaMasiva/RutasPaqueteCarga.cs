@@ -14,8 +14,10 @@ namespace Es.Riam.Gnoss.Web.MVC.Models.CargaMasiva
         private string rutaDocumentoWebVinBaseExtra;
         private string rutaDocuemntoRolIndentidad;
         private string ontologia;
-        private Guid proyectoID;
-        private Guid paqueteID;
+        private Guid proyectoId;
+        private Guid paqueteId;
+        private Guid cargaId;
+
         /// <summary>
         /// Ruta triples del grafo de ontolgia
         /// </summary>
@@ -24,6 +26,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Models.CargaMasiva
             get { return rutaTriplesOntologia; }
             set { rutaTriplesOntologia = value; }
         }
+
         /// <summary>
         /// Ruta de los triples del grafo de búsqueda
         /// </summary>
@@ -32,6 +35,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Models.CargaMasiva
             get { return rutaTriplesBusqueda; }
             set { rutaTriplesBusqueda = value; }
         }
+
         /// <summary>
         /// Ruta del archivo de datos sql
         /// </summary>
@@ -40,6 +44,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Models.CargaMasiva
             get { return rutaDocumento; }
             set { rutaDocumento = value; }
         }
+
         /// <summary>
         /// Ruta del archivo de datos sql
         /// </summary>
@@ -48,6 +53,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Models.CargaMasiva
             get { return rutaDocumentoWebVinBase; }
             set { rutaDocumentoWebVinBase = value; }
         }
+
         /// <summary>
         /// Ruta del archivo de datos sql
         /// </summary>
@@ -56,6 +62,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Models.CargaMasiva
             get { return rutaDocumentoWebVinBaseExtra; }
             set { rutaDocumentoWebVinBaseExtra = value; }
         }
+
         /// <summary>
         /// Ruta del archivo de datos sql
         /// </summary>
@@ -64,6 +71,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Models.CargaMasiva
             get { return rutaDocuemntoRolIndentidad; }
             set { rutaDocuemntoRolIndentidad = value; }
         }
+
         /// <summary>
         /// Ontologia a la que pertenece
         /// </summary>
@@ -72,21 +80,32 @@ namespace Es.Riam.Gnoss.Web.MVC.Models.CargaMasiva
             get { return ontologia; }
             set { ontologia = value; }
         }
+
         /// <summary>
         /// Id del proyecto
         /// </summary>
-        public Guid ProyectoID
+        public Guid ProyectoId
         {
-            get { return proyectoID; }
-            set { proyectoID = value; }
+            get { return proyectoId; }
+            set { proyectoId = value; }
         }
+
         /// <summary>
         /// Id del paquete
         /// </summary>
-        public Guid PaqueteID
+        public Guid PaqueteId
         {
-            get { return paqueteID; }
-            set { paqueteID = value; }
+            get { return paqueteId; }
+            set { paqueteId = value; }
+        }
+
+        /// <summary>
+        /// Id de la carga
+        /// </summary>
+        public Guid CargaId
+        {
+            get { return cargaId; }
+            set { cargaId = value; }
         }
     }
 }

@@ -1,6 +1,8 @@
 using Es.Riam.AbstractsOpen;
 using Es.Riam.Gnoss.AD.EncapsuladoDatos;
 using Es.Riam.Gnoss.AD.EntityModel;
+using Es.Riam.Gnoss.AD.EntityModel.Models.ProyectoDS;
+using Es.Riam.Gnoss.AD.ServiciosGenerales;
 using Es.Riam.Gnoss.Logica.CMS;
 using Es.Riam.Gnoss.Util.Configuracion;
 using Es.Riam.Gnoss.Util.General;
@@ -234,6 +236,26 @@ namespace Es.Riam.Gnoss.CL.CMS
             InvalidarCachesMultiples(claves);
 
             VersionarCacheLocal(pProyectoID);
+        }
+
+        public void InvalidarCachesCMSDeUbicacionesDeProyectos(List<Proyecto> pListaProy)
+        {
+            string rawKey1 = ObtenerClaveCache(string.Concat("ConfiguracionCMSDeUbicacionEnComunidad_*_*_", true.ToString()));
+            string rawKey2 = ObtenerClaveCache(string.Concat("ConfiguracionCMSDeUbicacionEnComunidad_*_*_", false.ToString()));
+
+            List<string> claves = new List<string>();
+            if (ClienteRedisLectura != null)
+            {
+                claves = ClienteRedisLectura.Keys(rawKey1.ToLower()).Result.ToList();
+                claves.AddRange(ClienteRedisLectura.Keys(rawKey2.ToLower()).Result.ToList());
+            }
+            InvalidarCachesMultiples(claves);
+
+            foreach (Proyecto proy in pListaProy)
+            {
+                VersionarCacheLocal(proy.ProyectoID);
+            }
+           
         }
 
         /// <summary>

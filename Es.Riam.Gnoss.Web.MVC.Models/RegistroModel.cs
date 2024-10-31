@@ -215,5 +215,9 @@ namespace Es.Riam.Gnoss.Web.MVC.Models
         /// Indica si el campo se va a autocompletar
         /// </summary>
         public bool AutoCompleted { get; set; }
+        /// <summary>
+        /// Indica si el campo será visible en la edicion del perfil
+        /// </summary>
+        public bool Visible { get; set; }
     }
 }

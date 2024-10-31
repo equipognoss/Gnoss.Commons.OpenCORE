@@ -24,6 +24,7 @@ using Es.Riam.Gnoss.Elementos.ServiciosGenerales;
 using Es.Riam.Gnoss.Logica.Documentacion;
 using Es.Riam.Gnoss.Logica.Identidad;
 using Es.Riam.Gnoss.Logica.Parametro;
+using Es.Riam.Gnoss.Logica.ParametroAplicacion;
 using Es.Riam.Gnoss.Logica.ParametrosProyecto;
 using Es.Riam.Gnoss.Logica.ServiciosGenerales;
 using Es.Riam.Gnoss.Logica.Usuarios;
@@ -372,7 +373,7 @@ namespace Es.Riam.Gnoss.Web.Controles
             {
                 if (mGnossUrlsSemanticas == null)
                 {
-                    mGnossUrlsSemanticas = new GnossUrlsSemanticas(mLoggingService, mEntityContext, mConfigService);
+                    mGnossUrlsSemanticas = new GnossUrlsSemanticas(mLoggingService, mEntityContext, mConfigService, mServicesUtilVirtuosoAndReplication);
                 }
                 return mGnossUrlsSemanticas;
             }
@@ -452,9 +453,13 @@ namespace Es.Riam.Gnoss.Web.Controles
                     {   
                         ProyectoCL proyectoCL = new ProyectoCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mVirtuosoAD, mServicesUtilVirtuosoAndReplication);
 
-                        if (!string.IsNullOrEmpty(nombreCortoProyecto))
+                        if (!string.IsNullOrEmpty(nombreCortoProyecto) && !nombreCortoProyecto.Equals("mygnoss"))
                         {
                             proyectoID = proyectoCL.ObtenerProyectoIDPorNombreCorto(nombreCortoProyecto);
+                        }
+                        else if(proyectoID.Equals(Guid.Empty))
+                        {
+                            proyectoID = ProyectoAD.MetaProyecto;
                         }
 
                         GestionProyecto gestorProyecto = new GestionProyecto(proyectoCL.ObtenerProyectoPorID(proyectoID), mLoggingService, mEntityContext);
@@ -1021,11 +1026,11 @@ namespace Es.Riam.Gnoss.Web.Controles
 
                     if (ProyectoVirtual != null)
                     {
-                        mUtilIdiomas = new UtilIdiomas(AppDomain.CurrentDomain.SetupInformation.ApplicationBase + Path.DirectorySeparatorChar + "languages", array, IdiomaUsuario, ProyectoVirtual.Clave, ProyectoVirtual.PersonalizacionID, PersonalizacionEcosistemaID, mLoggingService, mEntityContext, mConfigService);
+                        mUtilIdiomas = new UtilIdiomas(AppDomain.CurrentDomain.SetupInformation.ApplicationBase + Path.DirectorySeparatorChar + "languages", array, IdiomaUsuario, ProyectoVirtual.Clave, ProyectoVirtual.PersonalizacionID, PersonalizacionEcosistemaID, mLoggingService, mEntityContext, mConfigService, mRedisCacheWrapper);
                     }
                     else
                     {
-                        mUtilIdiomas = new UtilIdiomas(IdiomaUsuario, mLoggingService, mEntityContext, mConfigService);
+                        mUtilIdiomas = new UtilIdiomas(IdiomaUsuario, mLoggingService, mEntityContext, mConfigService,mRedisCacheWrapper);
                     }
                 }
                 return mUtilIdiomas;
@@ -1222,21 +1227,21 @@ namespace Es.Riam.Gnoss.Web.Controles
             {
 
                 //Perfil Profesional    //"NombreCortoOrg='" + RequestParams("nombreOrgRewrite") + "' AND PersonaID='" + Usuario.UsuarioActual.PersonaID + "'"
-                filasPerfil = IdentidadActual.GestorIdentidades.DataWrapperIdentidad.ListaPerfil.Where(perf => perf.NombreCortoOrg != null && perf.NombreCortoOrg.Equals(RequestParams("nombreOrgRewrite")) && perf.PersonaID.HasValue && perf.PersonaID.Value.Equals(pUsuario.PersonaID)).ToList();
+                filasPerfil = IdentidadActual.GestorIdentidades.DataWrapperIdentidad.ListaPerfil.Where(perf => perf.NombreCortoOrg != null && perf.NombreCortoOrg.ToLower().Equals(RequestParams("nombreOrgRewrite").ToLower()) && perf.PersonaID.HasValue && perf.PersonaID.Value.Equals(pUsuario.PersonaID)).ToList();
 
                 if (filasPerfil.Count == 0)
                 {
                     //Profesor
-                    filasPerfil = IdentidadActual.GestorIdentidades.DataWrapperIdentidad.ListaPerfil.Where(perf => perf.NombreCortoUsu != null && perf.NombreCortoUsu.Equals(RequestParams("nombreOrgRewrite")) && perf.PersonaID.HasValue && perf.PersonaID.Value.Equals(pUsuario.PersonaID)).ToList();
+                    filasPerfil = IdentidadActual.GestorIdentidades.DataWrapperIdentidad.ListaPerfil.Where(perf => perf.NombreCortoUsu != null && perf.NombreCortoUsu.ToLower().Equals(RequestParams("nombreOrgRewrite").ToLower()) && perf.PersonaID.HasValue && perf.PersonaID.Value.Equals(pUsuario.PersonaID)).ToList();
                 }
 
                 if (filasPerfil.Count == 0)
                 {
                     //Clase del profesor:
-                    filasPerfil = IdentidadActual.GestorIdentidades.DataWrapperIdentidad.ListaPerfil.Where(perf => perf.NombreCortoOrg != null && perf.NombreCortoOrg.Equals(RequestParams("nombreOrgRewrite")) && !perf.PersonaID.HasValue).ToList();
+                    filasPerfil = IdentidadActual.GestorIdentidades.DataWrapperIdentidad.ListaPerfil.Where(perf => perf.NombreCortoOrg != null && perf.NombreCortoOrg.ToLower().Equals(RequestParams("nombreOrgRewrite").ToLower()) && !perf.PersonaID.HasValue).ToList();
                     if (filasPerfil != null && filasPerfil.Count > 0)
                     {
-                        Guid organizacionID = filasPerfil.First().OrganizacionID.Value;
+                        Guid organizacionID = filasPerfil[0].OrganizacionID.Value;
 
                         OrganizacionCN orgCN = new OrganizacionCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
                         bool usuAdminClase = orgCN.EsUsuarioAdministradorClase(organizacionID, pUsuario.UsuarioID);
@@ -1631,14 +1636,14 @@ namespace Es.Riam.Gnoss.Web.Controles
             }
         }
 
-        public void ExpirarCookies(GnossIdentity pUsuario = null)
+        public void ExpirarCookies(bool pExisteNombrePoliticaCookiesMetaproyecto, string pNombrePoliticaCookiesMetaproyecto, GnossIdentity pUsuario = null)
         {
             if (pUsuario == null)
             {
                 pUsuario = UsuarioActual;
             }
 
-            string nombreCookiePolitica = string.Empty;
+            string nombreCookieAviso = "cookieAviso";
 
             try
             {
@@ -1652,8 +1657,12 @@ namespace Es.Riam.Gnoss.Web.Controles
                     {
                         if (!string.IsNullOrEmpty(parametrosProyecto[ParametroAD.NombrePoliticaCookies]))
                         {
-                            nombreCookiePolitica = parametrosProyecto[ParametroAD.NombrePoliticaCookies] + DominoAplicacion;
+                            nombreCookieAviso = parametrosProyecto[ParametroAD.NombrePoliticaCookies];
                         }
+                    }
+                    else if (pExisteNombrePoliticaCookiesMetaproyecto)
+                    {
+                        nombreCookieAviso = pNombrePoliticaCookiesMetaproyecto;
                     }
                 }
             }
@@ -1665,7 +1674,7 @@ namespace Es.Riam.Gnoss.Web.Controles
             foreach (string key in mHttpContextAccessor.HttpContext.Request.Cookies.Keys)
             {
                 string cookie = mHttpContextAccessor.HttpContext.Request.Cookies[key];
-                if (cookie != null && !key.Equals("idioma" + DominoAplicacion) && !key.Equals("cookieAviso" + DominoAplicacion) && (!key.Equals(nombreCookiePolitica)))
+                if (cookie != null && !key.Equals("idioma" + DominoAplicacion) && !key.Equals(nombreCookieAviso + DominoAplicacion))
                 {
                     ExpirarCookie(key);
                 }
@@ -1790,7 +1799,17 @@ namespace Es.Riam.Gnoss.Web.Controles
         {
             get
             {
+                ParametroAplicacionCN paramCN = new ParametroAplicacionCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
                 Guid? proyConexion = mConfigService.ObtenerProyectoConexion();
+                if (proyConexion == null || proyConexion.Equals(Guid.Empty))
+                {
+                    string valor = paramCN.ObtenerParametroAplicacion(ProyectoSeleccionado.UrlPropia(IdiomaUsuario));
+
+                    if (!string.IsNullOrEmpty(valor))
+                    {
+                        proyConexion = new Guid(valor);
+                    }
+                }
                 if (proyConexion.HasValue)
                 {
                     mProyectoConexion = proyConexion;
@@ -1947,7 +1966,17 @@ namespace Es.Riam.Gnoss.Web.Controles
             {
                 if (mProyectoConexionID == null)
                 {
+                    ParametroAplicacionCN paramCN = new ParametroAplicacionCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
                     mProyectoConexionID = mConfigService.ObtenerProyectoConexion();
+                    if (mProyectoConexionID == null || mProyectoConexionID.Equals(Guid.Empty))
+                    {
+                        string valor = paramCN.ObtenerParametroAplicacion(ProyectoSeleccionado.UrlPropia(IdiomaUsuario));
+
+                        if (!string.IsNullOrEmpty(valor))
+                        {
+                            mProyectoConexionID = new Guid(valor);
+                        }
+                    }
                     if (!mProyectoConexionID.HasValue)
                     {
                         mProyectoConexionID = ProyectoAD.MetaProyecto;
@@ -1961,7 +1990,7 @@ namespace Es.Riam.Gnoss.Web.Controles
 		{
 			string rutaImg = "";
 			ServicioImagenes servicioImagenes = new ServicioImagenes(mLoggingService, mConfigService);
-			servicioImagenes.Url = UrlIntragnossServicios.Replace("https://", "http://");
+			servicioImagenes.Url = UrlIntragnossServicios;
             string ruta = $"{UtilArchivos.ContentImagenesProyectos}/{pProyecto.ToString().ToLower()}";
             string rutaOriginal = $"{ruta}_sup_grande_temp";
 			byte[] imagenOriginalBytes = servicioImagenes.ObtenerImagen(rutaOriginal, ".png");
@@ -2020,7 +2049,7 @@ namespace Es.Riam.Gnoss.Web.Controles
 
                     string urlServicioLogin = mConfigService.ObtenerUrlServicioLogin();
 
-                    string query = $"urlVuelta={BaseURL}/&token={pTokenLoginUsuario.Replace("\"", "")}&redirect={HttpUtility.UrlEncode(url)}";
+                    string query = $"urlVuelta={BaseURL}/&token={pTokenLoginUsuario.Replace("\"", "")}&redirect={HttpUtility.UrlEncode(url)}&proyectoID={ProyectoSeleccionado.Clave}";
 
                     string urlRedireccion = urlServicioLogin + "/obtenerCookie?" + query;
 
@@ -2079,7 +2108,8 @@ namespace Es.Riam.Gnoss.Web.Controles
         {
             get
             {
-                return !(ParametrosGeneralesRow.IdiomaDefecto == null) ? ParametrosGeneralesRow.IdiomaDefecto : mConfigService.ObtenerListaIdiomas().First();
+				ParametroAplicacionCL paramCL = new ParametroAplicacionCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mServicesUtilVirtuosoAndReplication);
+				return !(ParametrosGeneralesRow.IdiomaDefecto == null) ? ParametrosGeneralesRow.IdiomaDefecto : paramCL.ObtenerListaIdiomas().First();
             }
         }
 
@@ -3097,6 +3127,10 @@ namespace Es.Riam.Gnoss.Web.Controles
 
 
                 GnossIdentity usuario = mHttpContextAccessor.HttpContext.Session.Get<GnossIdentity>("Usuario");
+                if(usuario == null)
+                {
+                    return;
+                }
                 AgregarObjetoAPeticionActual("GnossIdentity", usuario);
 
                 // Calculo IdentidadID
@@ -4200,17 +4234,18 @@ namespace Es.Riam.Gnoss.Web.Controles
         {
             get
             {
-                //EntityContext context = EntityContext.Instance;
-                //List<AD.EntityModel.ParametroAplicacion> busqueda = context.ParametroAplicacion.Where(parametro => parametro.Parametro.Equals("NombreEspacioPersonal")).ToList();
-                List<AD.EntityModel.ParametroAplicacion> busqueda = ListaParametrosAplicacion.Where(parametro => parametro.Parametro.Equals("NombreEspacioPersonal")).ToList();
+                List<ParametroAplicacion> busqueda = ListaParametrosAplicacion.Where(parametro => parametro.Parametro.Equals("NombreEspacioPersonal")).ToList();
                 if (string.IsNullOrEmpty(mEspacioPersonal) && busqueda.Count > 0)
                 {
                     mEspacioPersonal = busqueda.First().Valor;
-                    /*if (string.IsNullOrEmpty(mEspacioPersonal) && ParametrosAplicacionDS.ParametroAplicacion.Select("Parametro = 'NombreEspacioPersonal'").Length > 0)
-                    {
-                        mEspacioPersonal = (string)ParametrosAplicacionDS.ParametroAplicacion.Select("Parametro = 'NombreEspacioPersonal'")[0]["Valor"];*/
 
                 }
+
+                if (string.IsNullOrEmpty(mEspacioPersonal))
+                {
+                    mEspacioPersonal = UtilIdiomas.GetText("COMMON", "MIESPACIOPERSONAL");
+                }
+
                 return mEspacioPersonal;
             }
         }

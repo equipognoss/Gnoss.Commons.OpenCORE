@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 
 namespace Es.Riam.Gnoss.Web.MVC.Models.Administracion
@@ -35,4 +36,12 @@ namespace Es.Riam.Gnoss.Web.MVC.Models.Administracion
         public bool Eliminada { get; set; }
     }
 
+    /// <summary>
+    /// Clase que almacena el ID y su posición en la lista para su posterior comparación y guardado en base de datos
+    /// </summary>
+    public class ChartViewInfoOrder
+    {
+        public Guid ChartId { get; set; }
+        public int Orden { get; set; }
+    }
 }

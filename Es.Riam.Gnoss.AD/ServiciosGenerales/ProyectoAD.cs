@@ -17,6 +17,7 @@ using Es.Riam.Gnoss.Web.MVC.Models;
 using Es.Riam.Gnoss.Web.MVC.Models.Administracion;
 using Es.Riam.Gnoss.Web.MVC.Models.ViewModels;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Exchange.WebServices.Data;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -30,12 +31,12 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
     #region Enumeraciones
 
     /// <summary>
-    /// Enumeración para distinguir tipos de proyectos
+    /// Enumeraciï¿½n para distinguir tipos de proyectos
     /// </summary>
     public enum TipoProyecto
     {
         /// <summary>
-        /// Proyecto de organización
+        /// Proyecto de organizaciï¿½n
         /// </summary>
         DeOrganizacion = 0,
         /// <summary>
@@ -59,7 +60,7 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
         /// </summary>
         Catalogo = 5,
         /// <summary>
-        /// Educación primaria
+        /// Educaciï¿½n primaria
         /// </summary>
         EducacionPrimaria = 6,
         /// <summary>
@@ -103,12 +104,12 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
     }
 
     /// <summary>
-    /// Enumeración para distinguir tipos de acceso
+    /// Enumeraciï¿½n para distinguir tipos de acceso
     /// </summary>
     public enum TipoAcceso
     {
         /// <summary>
-        /// Proyecto público
+        /// Proyecto pï¿½blico
         /// </summary>
         Publico = 0,
         /// <summary>
@@ -126,7 +127,7 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
     }
 
     /// <summary>
-    /// Enumeración para distinguir estados de un proyecto
+    /// Enumeraciï¿½n para distinguir estados de un proyecto
     /// </summary>
     public enum EstadoProyecto
     {
@@ -153,7 +154,7 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
     }
 
     /// <summary>
-    /// Enumeración para distinguir tipos administradores/supervisores/usuarios del proyecto
+    /// Enumeraciï¿½n para distinguir tipos administradores/supervisores/usuarios del proyecto
     /// </summary>
     public enum TipoRolUsuario
     {
@@ -170,13 +171,13 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
         /// </summary>
         Usuario = 2,
         /// <summary>
-        /// Diseñador
+        /// Diseï¿½ador
         /// </summary>
         Diseniador = 3
     }
 
     /// <summary>
-    /// Vistas que pueden tener los recursos en la home de tipo catálogo
+    /// Vistas que pueden tener los recursos en la home de tipo catï¿½logo
     /// </summary>
     public enum TipoVistaHomeCatalogo
     {
@@ -194,7 +195,7 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
     public enum TipoUbicacionGadget
     {
         /// <summary>
-        /// Gadgets en el lateral de la Home de la comunidad(No catálogos)
+        /// Gadgets en el lateral de la Home de la comunidad(No catï¿½logos)
         /// </summary>
         LateralHomeComunidad = 0,
         /// <summary>
@@ -214,39 +215,39 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
         /// </summary>
         CabeceraHomeComunidad = 4,
         /// <summary>
-        /// Gadgets en la cabecera del índice de la comunidad
+        /// Gadgets en la cabecera del ï¿½ndice de la comunidad
         /// </summary>
         CabeceraIndiceComunidad = 5,
         /// <summary>
-        /// Gadgets en la cabecera de la página de recursos
+        /// Gadgets en la cabecera de la pï¿½gina de recursos
         /// </summary>
         CabeceraRecursosComunidad = 6,
         /// <summary>
-        /// Gadgets en la cabecera de las pestañas de la comunidad
+        /// Gadgets en la cabecera de las pestaï¿½as de la comunidad
         /// </summary>
         CabeceraPestanyasComunidad = 7,
         /// <summary>
-        /// Gadgets en la cabecera de la página de debates
+        /// Gadgets en la cabecera de la pï¿½gina de debates
         /// </summary>
         CabeceraDebatesComunidad = 8,
         /// <summary>
-        /// Gadgets en la cabecera de la página de dafos
+        /// Gadgets en la cabecera de la pï¿½gina de dafos
         /// </summary>
         CabeceraDafosComunidad = 9,
         /// <summary>
-        /// Gadgets en la cabecera de la página de preguntas
+        /// Gadgets en la cabecera de la pï¿½gina de preguntas
         /// </summary>
         CabeceraPreguntasComunidad = 10,
         /// <summary>
-        /// Gadgets en la cabecera de la página de encuestas
+        /// Gadgets en la cabecera de la pï¿½gina de encuestas
         /// </summary>
         CabeceraEncuestasComunidad = 11,
         /// <summary>
-        /// Gadgets en la cabecera de la página de personas y organizaciones
+        /// Gadgets en la cabecera de la pï¿½gina de personas y organizaciones
         /// </summary>
         CabeceraPersonasYOrgDeComunidad = 12,
         /// <summary>
-        /// Gadgets en la cabecera de la página de acerca-de
+        /// Gadgets en la cabecera de la pï¿½gina de acerca-de
         /// </summary>
         CabeceraAcercaDeComunidad = 13,
     }
@@ -268,7 +269,7 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
     }
 
     /// <summary>
-    /// Enumeración para distinguir los tipos de cabeceras
+    /// Enumeraciï¿½n para distinguir los tipos de cabeceras
     /// </summary>
     public enum TipoCabeceraProyecto
     {
@@ -283,7 +284,7 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
     }
 
     /// <summary>
-    /// Enumeración para distinguir los tipos de fichas
+    /// Enumeraciï¿½n para distinguir los tipos de fichas
     /// </summary>
     public enum TipoFichaRecursoProyecto
     {
@@ -338,6 +339,7 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
         LoginFacebook = 62,
         LoginTwitter = 63,
         LoginSantillana = 64,
+        LoginKeycloak = 65,
 
         ClickGoogle = 71,
         ClickFacebook = 72,
@@ -349,31 +351,31 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
     }
 
     /// <summary>
-    /// Enumeración para distinguir los pasos del registro
+    /// Enumeraciï¿½n para distinguir los pasos del registro
     /// </summary>
     public enum PasosRegistro
     {
         /// <summary>
-        /// Página de Preferencias
+        /// Pï¿½gina de Preferencias
         /// </summary>
         Preferencias = 0,
         /// <summary>
-        /// Página de Datos
+        /// Pï¿½gina de Datos
         /// </summary>
         Datos = 1,
         /// <summary>
-        /// Página de Conecta
+        /// Pï¿½gina de Conecta
         /// </summary>
         Conecta = 2
     }
 
     /// <summary>
-    /// Enumeración para distinguir los campos genericos del registro
+    /// Enumeraciï¿½n para distinguir los campos genericos del registro
     /// </summary>
     public enum TipoCampoGenericoRegistro
     {
         /// <summary>
-        /// País
+        /// Paï¿½s
         /// </summary>
         Pais = 0,
         /// <summary>
@@ -391,7 +393,7 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
     }
 
     /// <summary>
-    /// Enumeración para distinguir tipos de privacidad de una pagina
+    /// Enumeraciï¿½n para distinguir tipos de privacidad de una pagina
     /// </summary>
     public enum TipoPrivacidadPagina
     {
@@ -410,20 +412,20 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
     }
 
     /// <summary>
-    /// Tipos de configuración extra para los elementos semánticos de una comunidad.
+    /// Tipos de configuraciï¿½n extra para los elementos semï¿½nticos de una comunidad.
     /// </summary>
     public enum TipoConfigExtraSemantica
     {
         /// <summary>
-        /// Configuración para tesauro semántico.
+        /// Configuraciï¿½n para tesauro semï¿½ntico.
         /// </summary>
         TesauroSemantico = 0,
         /// <summary>
-        /// Configuración para una entidad secundaria.
+        /// Configuraciï¿½n para una entidad secundaria.
         /// </summary>
         EntidadSecundaria = 1,
         /// <summary>
-        /// Configuración para un grafo simple.
+        /// Configuraciï¿½n para un grafo simple.
         /// </summary>
         GrafoSimple = 2
     }
@@ -466,7 +468,7 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
         #region Constructores
 
         /// <summary>
-        /// Constructor por defecto, sin parámetros, utilizado cuando se requiere el GnossConfig.xml por defecto
+        /// Constructor por defecto, sin parï¿½metros, utilizado cuando se requiere el GnossConfig.xml por defecto
         /// </summary>
         public ProyectoAD(LoggingService loggingService, EntityContext entityContext, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication)
             : base(loggingService, entityContext, configService, servicesUtilVirtuosoAndReplication)
@@ -479,10 +481,10 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
         }
 
         /// <summary>
-        /// Constructor a partir del fichero de configuración de conexión a la base de datos
+        /// Constructor a partir del fichero de configuraciï¿½n de conexiï¿½n a la base de datos
         /// </summary>
-        /// <param name="pFicheroConfiguracionBD">Ruta del fichero de configuración de la conexión a base de datos</param>
-        /// <param name="pUsarVariableEstatica">Si se están usando hilos con diferentes conexiones: FALSE. En caso contrario TRUE</param>
+        /// <param name="pFicheroConfiguracionBD">Ruta del fichero de configuraciï¿½n de la conexiï¿½n a base de datos</param>
+        /// <param name="pUsarVariableEstatica">Si se estï¿½n usando hilos con diferentes conexiones: FALSE. En caso contrario TRUE</param>
         public ProyectoAD(string pFicheroConfiguracionBD, LoggingService loggingService, EntityContext entityContext, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication)
             : base(pFicheroConfiguracionBD, loggingService, entityContext, configService, servicesUtilVirtuosoAndReplication)
         {
@@ -525,9 +527,9 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
 
         #endregion
 
-        //#region Métodos generales
+        //#region Mï¿½todos generales
 
-        #region Públicos
+        #region Pï¿½blicos
 
         /// <summary>
         /// Obtiene la fecha de alta del grupo de organizaci?n en un proyecto
@@ -561,7 +563,7 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
         }
 
         /// <summary>
-        /// Obtiene los gadget por idioma asociados al identificador del gadget pasado por parámetro
+        /// Obtiene los gadget por idioma asociados al identificador del gadget pasado por parï¿½metro
         /// </summary>
         /// <param name="pGadgetID">Identificador del gadget</param>
         /// <returns></returns>
@@ -905,8 +907,8 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
         /// <param name="identidadId">Id de la identidad del sujeto de la carga</param>
         /// <param name="nombre">Nombre de la carga</param>
         /// <param name="organizacionId">Id de la organizacion de la carga</param>
-        /// <returns>Devuelve cierto si se ha añadido una nueva carga</returns>
-        public bool CrearNuevaCargaMasiva(Guid idCarga, int estado, DateTime fechaAlta, Guid proyectoId, Guid identidadId, string nombre = null, Guid? organizacionId = null)
+        /// <returns>Devuelve cierto si se ha aï¿½adido una nueva carga</returns>
+        public bool CrearNuevaCargaMasiva(Guid idCarga, int estado, DateTime fechaAlta, Guid proyectoId, Guid identidadId, string ontologia, string nombre = null, Guid? organizacionId = null)
         {
             bool creada = false;
             try
@@ -922,6 +924,7 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
                     nuevaCarga.ProyectoID = proyectoId;
                     nuevaCarga.OrganizacionID = organizacionId;
                     nuevaCarga.IdentidadID = identidadId;
+                    nuevaCarga.Ontologia = ontologia;
 
                     mEntityContext.Carga.Add(nuevaCarga);
                     mEntityContext.SaveChanges();
@@ -989,7 +992,7 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
         /// <param name="comprimido">Los archivos estan comprimidos</param>
         /// <param name="fechaProcesado">Fecha en la que se ha procesado el paquete</param>
         /// <returns>Devuelve cierto si se ha creado el paquete</returns>
-        public bool CrearNuevoPaqueteCargaMasiva(Guid paqueteID, Guid cargaId, string rutaOnto, string rutaSearch, string rutaSql, int estado, string error, DateTime? fechaAlta, string ontologia, bool comprimido = false, DateTime? fechaProcesado = null)
+        public bool CrearNuevoPaqueteCargaMasiva(Guid paqueteID, Guid cargaId, string rutaOnto, string rutaSearch, string rutaSql, int estado, string error, DateTime? fechaAlta, bool comprimido = false, DateTime? fechaProcesado = null)
         {
             bool creado = false;
             try
@@ -1007,9 +1010,7 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
                     nuevoPaquete.Error = string.Empty;
                     nuevoPaquete.FechaAlta = fechaAlta;
                     nuevoPaquete.FechaProcesado = fechaProcesado;
-                    nuevoPaquete.Ontologia = ontologia;
                     nuevoPaquete.Comprimido = comprimido;
-
                     mEntityContext.CargaPaquete.Add(nuevoPaquete);
                     mEntityContext.SaveChanges();
                     creado = true;
@@ -2275,6 +2276,27 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
         }
 
         /// <summary>
+        /// Obtiene el valor de un texto traducido a un idioma especifico
+        /// </summary>
+        /// <param name="pCommunityShortName">Nombre corto de la comuidad</param>
+        /// <param name="pLanguage">Idioma del texto</param>
+        /// <param name="pTextoID">Clave del texto</param>
+        /// <returns>Texto en el idioma especificado</returns>
+        public string ObtenerValorTraduccionDeTexto(string pCommunityShortName, string pLanguage, string pTextoID)
+        {
+            Guid proyectoID = mEntityContext.Proyecto.Where(item => item.NombreCorto.Equals(pCommunityShortName)).Select(item => item.ProyectoID).FirstOrDefault();
+            Guid personalizacionID = mEntityContext.VistaVirtualProyecto.Where(item => item.ProyectoID.Equals(proyectoID)).Select(item => item.PersonalizacionID).FirstOrDefault();
+            if (!personalizacionID.Equals(Guid.Empty))
+            {   
+                return mEntityContext.TextosPersonalizadosPersonalizacion.Where(item => item.PersonalizacionID.Equals(personalizacionID) && item.TextoID.Equals(pTextoID) && item.Language.Equals(pLanguage)).Select(item => item.Texto).FirstOrDefault();
+            }
+            else
+            {
+                throw new Exception($"El proyecto {pCommunityShortName} no tiene personalizaciï¿½n");
+            }
+        }
+
+        /// <summary>
         /// Obtiene la lista de proyectos en las que participa un usuario pasado por par?metro
         /// </summary>
         /// <param name="pUsuarioID">Identificador del usuario</param>
@@ -2973,9 +2995,9 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
         }
 
         /// <summary>
-        /// Obtiene los proyectos en los que participa una organización ordenados por relevancia (Número de visitas en GNOSS)
+        /// Obtiene los proyectos en los que participa una organizaciï¿½n ordenados por relevancia (Nï¿½mero de visitas en GNOSS)
         /// </summary>
-        /// <param name="pOrganizacionID">Identificador de la organización</param>
+        /// <param name="pOrganizacionID">Identificador de la organizaciï¿½n</param>
         /// <returns>Dataset de proyectos</returns>
         public DataWrapperProyecto ObtenerProyectosParticipaOrganizacionPorRelevancia(Guid pOrganizacionID)
         {
@@ -3022,7 +3044,7 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
         }
 
         /// <summary>
-        /// Obtiene los proyectos en los que participa un usuario ordenados por relevancia (Número de visitas del usuario)
+        /// Obtiene los proyectos en los que participa un usuario ordenados por relevancia (Nï¿½mero de visitas del usuario)
         /// </summary>
         /// <param name="pPerfilID">Identificador del perfil</param>
         /// <returns>Dataset de proyectos</returns>
@@ -3106,19 +3128,7 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
         /// <returns>TRUE si el usuario participa con alguna de sus identidadez</returns>
         public bool ParticipaUsuarioEnProyecto(Guid pProyectoID, Guid pUsuarioID)
         {
-            Object identidades;
-            identidades = mEntityContext.Identidad.Join(mEntityContext.Perfil, identidad => identidad.PerfilID, perfil => perfil.PerfilID, (identidad, perfil) => new
-            {
-                Identidad = identidad,
-                Perfil = perfil
-            }).Join(mEntityContext.Persona, objeto => new { PersonaID = objeto.Perfil.PersonaID.Value }, persona => new { PersonaID = persona.PersonaID }, (objeto, persona) => new
-            {
-                Identidad = objeto.Identidad,
-                Perfil = objeto.Perfil,
-                Persona = persona
-            }).Where(objeto => objeto.Perfil.PersonaID.HasValue && objeto.Identidad.ProyectoID.Equals(pProyectoID) && objeto.Persona.UsuarioID.HasValue && objeto.Persona.UsuarioID.Value.Equals(pUsuarioID)).FirstOrDefault();
-
-            return identidades != null;
+           return mEntityContext.Identidad.JoinPerfil().JoinPersona().Any(objeto => objeto.Perfil.PersonaID.HasValue && objeto.Identidad.ProyectoID.Equals(pProyectoID) && objeto.Persona.UsuarioID.HasValue && objeto.Persona.UsuarioID.Value.Equals(pUsuarioID));
         }
 
         /// <summary>
@@ -3153,7 +3163,7 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
         }
 
         /// <summary>
-        /// Obtiene el identificador de un proyecto a partir de su nombre CORTO pasado por parámetro
+        /// Obtiene el identificador de un proyecto a partir de su nombre CORTO pasado por parï¿½metro
         /// </summary>
         /// <param name="pNombre">Nombre corto del proyecto</param>
         /// <returns>Identificador del proyecto</returns>
@@ -3163,7 +3173,7 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
         }
 
         /// <summary>
-        /// Obtiene el proyecto a través de su nombre corto
+        /// Obtiene el proyecto a travï¿½s de su nombre corto
         /// </summary>
         /// <param name="pNombreCorto">Nombre corto del proyecto a obtener</param>
         /// <returns></returns>
@@ -3173,7 +3183,7 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
         }
 
         /// <summary>
-        /// Nos indica si existe algún proyecto con el nombre corto indicado
+        /// Nos indica si existe algï¿½n proyecto con el nombre corto indicado
         /// </summary>
         /// <param name="pNombreCorto">Nombre corto a comprobar</param>
         /// <returns></returns>
@@ -3454,6 +3464,15 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
             }
             return listaProyectos;
         }
+        /// <summary>
+        /// Obtiene la lista de proyectos en las que participa una persona pasada por parï¿½metro
+        /// </summary>
+        /// <param name="pPersonaID">Identificador de la persona</param>
+        /// <returns>lista de guids con to
+        public List<Guid> ObtenerIdProyectosParticipaPersona(Guid pPersonaID)
+        {
+           return mEntityContext.Identidad.JoinPerfil().Where(item => !item.Identidad.FechaBaja.HasValue && !item.Identidad.FechaExpulsion.HasValue && !item.Perfil.Eliminado && item.Perfil.PersonaID.Equals(pPersonaID)).Select(item => item.Identidad.ProyectoID).ToList();
+        }
 
         /// <summary>
         /// Obtiene una lista con los identificadores de los proyectos en los que participa el usuario
@@ -3597,7 +3616,7 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
         }
 
         /// <summary>
-        /// Obtiene un número específico de proyectos en los que participa el usuario
+        /// Obtiene un nï¿½mero especï¿½fico de proyectos en los que participa el usuario
         /// </summary>
         /// <param name="pUsuarioID">Id del usuario</param>
         /// <param name="numeroResultados">Numero de proyectos que se van a devolver</param>
@@ -3882,34 +3901,45 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
         {
             return mEntityContext.ParametroAplicacion.Where(param => param.Parametro.Equals(parametro)).Select(param => param.Valor).FirstOrDefault();
         }
+        
         /// <summary>
-        /// Guarda un nuevo parametro aplicacion
+        /// Actualiza la tabla ParametroAplicacion con el parametro y valor dado. Si el paramerto no existe en la base de datos lo aï¿½ade.
         /// </summary>
-        /// <param name="parametro">Nombre parametro de aplicacion</param>
-        /// <param name="valor">Valor del paramentro</param>       
-        public void GuardarParametroAplicacion(string parametro, string valor)
+        /// <param name="pParametro">Nombre del parametro a guardar. Clave</param>
+        /// <param name="pValor">Valor del paramentro</param>       
+        public void ActualizarParametroAplicacion(string pParametro, string pValor)
         {
-            mEntityContext.ParametroAplicacion.Add(new AD.EntityModel.ParametroAplicacion(parametro, valor));
-            ActualizarBaseDeDatosEntityContext();
+            AD.EntityModel.ParametroAplicacion parametroAplicacion = mEntityContext.ParametroAplicacion.Where(item => item.Parametro.Equals(pParametro)).FirstOrDefault();
+            
+            if(parametroAplicacion != null)
+            {
+                parametroAplicacion.Valor = pValor;
+            }
+            else
+            {
+                parametroAplicacion = new AD.EntityModel.ParametroAplicacion() { Parametro = pParametro, Valor = pValor };
+                mEntityContext.ParametroAplicacion.Add(parametroAplicacion);
+            }
 
+            mEntityContext.SaveChanges();
         }
         /// <summary>
         /// Guarda en la tabla EcosistemaServicioExterno una nueva fila
         /// </summary>
         /// <param name="eco">Objeto de tipo EcosistemaServicioExterno</param> 
-        public void ActualizarServiceNameEcosistema(EcosistemaServicioExterno eco)
+        public void AgregarServicioExternoEcosistema(EcosistemaServicioExterno eco)
         {
             mEntityContext.EcosistemaServicioExterno.Add(eco);
-            ActualizarBaseDeDatosEntityContext();
         }
+        
+
         /// <summary>
         ///  Guarda en la tabla ProyectoServicioExterno una nueva fila
         /// </summary>
         /// <param name="proy">Objeto de tipo ProyectoServicioExterno</param> 
-        public void ActualizarServiceNameProyecto(ProyectoServicioExterno proy)
+        public void AgregarProyectoServicioExterno(ProyectoServicioExterno proy)
         {
-            mEntityContext.ProyectoServicioExterno.Add(proy);
-            ActualizarBaseDeDatosEntityContext();
+            mEntityContext.ProyectoServicioExterno.Add(proy);            
         }
         /// <summary>
         ///  Elimina de la tabla EcosistemaServicioExterno una fila
@@ -3918,7 +3948,6 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
         public void EliminarEcosistemaServicioExterno(EcosistemaServicioExterno eco)
         {
             mEntityContext.Entry(eco).State = EntityState.Deleted;
-            ActualizarBaseDeDatosEntityContext();
         }
         /// <summary>
         ///  Elimina de la tabla ProyectoServicioExterno una fila
@@ -3927,7 +3956,6 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
         public void EliminarProyectoServicioExterno(ProyectoServicioExterno proy)
         {
             mEntityContext.Entry(proy).State = EntityState.Deleted;
-            ActualizarBaseDeDatosEntityContext();
         }
         /// <summary>
         ///  Obtiene la OrganizacionID a la que corresponde un proyecto
@@ -4639,21 +4667,21 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
         }
 
         /// <summary>
-        /// Nos indica si actualmente existen permisos para administrar los documentos semánticos
+        /// Nos indica si actualmente existen permisos para administrar los documentos semï¿½nticos
         /// </summary>
         /// <param name="pProyectoID">Identificador del proyecto</param>
-        /// <returns>Si existe o no permisos para que se puedan administrar los documentos semánticos</returns>
+        /// <returns>Si existe o no permisos para que se puedan administrar los documentos semï¿½nticos</returns>
         public bool ExisteTipoDocDispRolUsuarioProySemantico(Guid pProyectoID)
         {
            return mEntityContext.TipoDocDispRolUsuarioProy.Any(item => item.ProyectoID.Equals(pProyectoID) && item.TipoDocumento == (short)TiposDocumentacion.Semantico);
         }
 
         /// <summary>
-        /// Nos indica si actualmente existen permisos para administrar la ontología indicada
+        /// Nos indica si actualmente existen permisos para administrar la ontologï¿½a indicada
         /// </summary>
         /// <param name="pProyectoID">Identificador del proyecto</param>
         /// <param name="pDocumentoID">Identificador del documento de la ontologia</param>
-        /// <returns>Si existe o no permisos para que se puedan administrar los documentos semánticos</returns>
+        /// <returns>Si existe o no permisos para que se puedan administrar los documentos semï¿½nticos</returns>
         public bool ExisteTipoOntoDispRolUsuarioProy(Guid pProyectoID, Guid pDocumentoID)
         {
             return mEntityContext.TipoOntoDispRolUsuarioProy.Any(item => item.ProyectoID.Equals(pProyectoID) && item.OntologiaID.Equals(pDocumentoID));
@@ -4761,6 +4789,18 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
         public bool ExisteNombreEnBD(object pNombreProyecto)
         {
             List<Guid> listaGuidEncontrado = mEntityContext.Proyecto.Where(proyecto => proyecto.Nombre.ToUpper().Equals(((string)pNombreProyecto).ToString())).Select(proyect => proyect.ProyectoID).ToList();
+
+            return (listaGuidEncontrado.Count > 0);
+        }
+
+        /// <summary>
+        /// Comprueba si existe un proyecto con el ID
+        /// </summary>
+        /// <param name="pProyectoID"></param>
+        /// <returns></returns>
+        public bool ExisteProyectoConID(Guid pProyectoID)
+        {
+            List<Guid> listaGuidEncontrado = mEntityContext.Proyecto.Where(proyecto => proyecto.ProyectoID.Equals(pProyectoID)).Select(proyect => proyect.ProyectoID).ToList();
 
             return (listaGuidEncontrado.Count > 0);
         }
@@ -5912,6 +5952,7 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
             Carga carga = mEntityContext.Carga.Where(item => item.CargaID.Equals(pCargaID)).FirstOrDefault();
             return carga;
         }
+
         /// <summary>
         /// Obtener los datos del paquete de una carga masiva
         /// </summary>
@@ -5919,9 +5960,20 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
         /// <returns></returns>
         public CargaPaquete ObtenerDatosPaquete(Guid pPaqueteID)
         {
-            CargaPaquete cargaPaquete = mEntityContext.CargaPaquete.Where(item => item.PaqueteID.Equals(pPaqueteID)).FirstOrDefault();
-            return cargaPaquete;
+            return mEntityContext.CargaPaquete.Where(item => item.PaqueteID.Equals(pPaqueteID)).FirstOrDefault();            
         }
+
+        /// <summary>
+        /// Obtiene la ontologï¿½a a la que pertenece una carga masiva a partir
+        /// del id de la carga
+        /// </summary>
+        /// <param name="pCargaId">Identificador de la carga de la cual queremos obtener la ontologï¿½a</param>
+        /// <returns>La ontologï¿½a a la que pertenece la carga</returns>
+        public string ObtenerOntologiaCarga(Guid pCargaId)
+        {
+            return mEntityContext.Carga.Where(item => item.CargaID.Equals(pCargaId)).Select(item => item.Ontologia).FirstOrDefault();
+        }
+
         /// <summary>
         /// Devuelve el proyectoID a partir de la base de recursos de un proyecto
         /// </summary>
@@ -6110,7 +6162,7 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
 
         #endregion
 
-        #region Documentación
+        #region Documentaciï¿½n
 
         /// <summary>
         /// Actualiza el n?mero de recursos, preguntas y debates de un proyecto
@@ -6941,36 +6993,25 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
             string whereDocumento = "";
             List<Guid> listaGuids = new List<Guid>();
             if (pDocumentoID.HasValue)
-            {
-                //whereDocumento = $" and DocumentoID={pDocumentoID.Value}";
-                listaGuids = mEntityContext.Documento.Join(mEntityContext.DocumentoRolGrupoIdentidades, doc => doc.DocumentoID, docRolGrupoIden => docRolGrupoIden.DocumentoID, (doc, docRolGrupoIden) => new
-                {
-                    Documento = doc,
-                    DocumentoRolGrupoIdentidades = docRolGrupoIden
-                }).Join(mEntityContext.GrupoIdentidadesParticipacion, objeto => objeto.DocumentoRolGrupoIdentidades.GrupoID, participacion => participacion.GrupoID, (objeto, participacion) => new
-                {
-                    Documento = objeto.Documento,
-                    DocumentoRolGrupoIdentidades = objeto.DocumentoRolGrupoIdentidades,
-                    GrupoIdentidadesParticipacion = participacion
-                }).Where(objeto => objeto.Documento.ProyectoID.HasValue && objeto.Documento.ProyectoID.Value.Equals(pProyectoID) && (objeto.GrupoIdentidadesParticipacion.IdentidadID.Equals(pIdentidadEnProyID) || objeto.GrupoIdentidadesParticipacion.IdentidadID.Equals(pIdentidadEnMyGnossID)) && objeto.Documento.Tipo == 7 && objeto.Documento.Eliminado == false && objeto.Documento.DocumentoID.Equals(pDocumentoID.Value)).Select(objeto => objeto.Documento.DocumentoID).ToList();
+            {                
+                List<Guid> listaDocumentosTotalesDisponibles = mEntityContext.Documento.JoinDocumentoWebVinBaseRecursos().JoinBaseRecursosProyecto().Where(item => item.BaseRecursosProyecto.ProyectoID.Equals(pProyectoID) && item.Documento.Tipo == 7 && !item.Documento.Eliminado && item.Documento.DocumentoID.Equals(pDocumentoID.Value)).Select(item => item.Documento.DocumentoID).ToList();
+
+                listaGuids = mEntityContext.DocumentoRolGrupoIdentidades.Join(mEntityContext.GrupoIdentidadesParticipacion, documentoRolGrupoIdentidades => documentoRolGrupoIdentidades.GrupoID, grupoIdentidadesParticipacion => grupoIdentidadesParticipacion.GrupoID, (documentoRolGrupoIdentidades, grupoIdentidadesParticipacion) => new
+                {                    
+                    DocumentoRolGrupoIdentidades = documentoRolGrupoIdentidades,
+                    GrupoIdentidadesParticipacion = grupoIdentidadesParticipacion
+                }).Where(item => (item.GrupoIdentidadesParticipacion.IdentidadID.Equals(pIdentidadEnProyID) || item.GrupoIdentidadesParticipacion.IdentidadID.Equals(pIdentidadEnMyGnossID)) && listaDocumentosTotalesDisponibles.Contains(item.DocumentoRolGrupoIdentidades.DocumentoID)).Select(item => item.DocumentoRolGrupoIdentidades.DocumentoID).ToList();
             }
             else
             {
-                listaGuids = mEntityContext.Documento.Join(mEntityContext.DocumentoRolGrupoIdentidades, doc => doc.DocumentoID, docRolGrupoIden => docRolGrupoIden.DocumentoID, (doc, docRolGrupoIden) => new
-                {
-                    Documento = doc,
-                    DocumentoRolGrupoIdentidades = docRolGrupoIden
-                }).Join(mEntityContext.GrupoIdentidadesParticipacion, objeto => objeto.DocumentoRolGrupoIdentidades.GrupoID, participacion => participacion.GrupoID, (objeto, participacion) => new
-                {
-                    Documento = objeto.Documento,
-                    DocumentoRolGrupoIdentidades = objeto.DocumentoRolGrupoIdentidades,
-                    GrupoIdentidadesParticipacion = participacion
-                }).Where(objeto => objeto.Documento.ProyectoID.HasValue && objeto.Documento.ProyectoID.Value.Equals(pProyectoID) && (objeto.GrupoIdentidadesParticipacion.IdentidadID.Equals(pIdentidadEnProyID) || objeto.GrupoIdentidadesParticipacion.IdentidadID.Equals(pIdentidadEnMyGnossID)) && objeto.Documento.Tipo == 7 && objeto.Documento.Eliminado == false).Select(objeto => objeto.Documento.DocumentoID).ToList();
-            }
+                List<Guid> listaDocumentosTotalesDisponibles = mEntityContext.Documento.JoinDocumentoWebVinBaseRecursos().JoinBaseRecursosProyecto().Where(item => item.BaseRecursosProyecto.ProyectoID.Equals(pProyectoID) && item.Documento.Tipo == 7 && !item.Documento.Eliminado).Select(item => item.Documento.DocumentoID).ToList();
 
-            //sb.AppendLine("select Documento.DocumentoID FROM Documento");
-            //sb.AppendLine("inner join DocumentoRolGrupoIdentidades on Documento.DocumentoID = DocumentoRolGrupoIdentidades.DocumentoID");
-            //sb.AppendLine($"inner join GrupoIdentidadesParticipacion on GrupoIdentidadesParticipacion.GrupoID = DocumentoRolGrupoIdentidades.GrupoID WHERE Documento.ProyectoID = {IBD.GuidValor(pProyectoID)} and (GrupoIdentidadesParticipacion.IdentidadID = {IBD.GuidValor(pIdentidadEnProyID)} OR GrupoIdentidadesParticipacion.IdentidadID = {IBD.GuidValor(pIdentidadEnMyGnossID)}) and Documento.Tipo = 7 and Documento.Eliminado = 0 {whereDocumento}");
+                listaGuids = mEntityContext.DocumentoRolGrupoIdentidades.Join(mEntityContext.GrupoIdentidadesParticipacion, documentoRolGrupoIdentidades => documentoRolGrupoIdentidades.GrupoID, grupoIdentidadesParticipacion => grupoIdentidadesParticipacion.GrupoID, (documentoRolGrupoIdentidades, grupoIdentidadesParticipacion) => new
+                {
+                    DocumentoRolGrupoIdentidades = documentoRolGrupoIdentidades,
+                    GrupoIdentidadesParticipacion = grupoIdentidadesParticipacion
+                }).Where(item => (item.GrupoIdentidadesParticipacion.IdentidadID.Equals(pIdentidadEnProyID) || item.GrupoIdentidadesParticipacion.IdentidadID.Equals(pIdentidadEnMyGnossID)) && listaDocumentosTotalesDisponibles.Contains(item.DocumentoRolGrupoIdentidades.DocumentoID)).Select(item => item.DocumentoRolGrupoIdentidades.DocumentoID).ToList();
+            }
 
             if (pIdentidadDeOtroProyecto)
             {
@@ -7393,6 +7434,16 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
         }
 
         /// <summary>
+        /// Obtiene los proyectos hijos del proyecto indicado. 
+        /// </summary>
+        /// <param name="pProyectoSuperiorID">Proyecto superior de los proyectos ids que quiero obtener</param>
+        /// <returns>Todos los proyectos cuyo proyecto superior sea el dado por parï¿½metro</returns>
+        public List<Guid> ObtenerProyectosIdsDeProyectoSuperiorID(Guid pProyectoSuperiorID)
+        {
+            return mEntityContext.Proyecto.Where(item => item.ProyectoSuperiorID.Equals(pProyectoSuperiorID)).Select(item => item.ProyectoID).ToList();
+        }
+
+        /// <summary>
         /// Obtiene el ID del proyecto origen del actual, si lo tiene o GUID.Empty si no.
         /// </summary>
         /// <param name="pProyectoID">ID del proyecto</param>
@@ -7441,20 +7492,15 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
             }
 
             return url;
-        }
-
+        }       
+        
         public string ObtenerIdiomaPrincipalDominio(string pDominio)
         {
-            string idioma = "es";
+            string idioma = string.Empty;
 
             if (!string.IsNullOrEmpty(pDominio))
             {
-                //DbCommand cmdSelectUrlPropia = ObtenerComando("SELECT URLPropia from Proyecto WHERE URLPropia LIKE " + IBD.ToParam("dominio"));
-                //AgregarParametro(cmdSelectUrlPropia, IBD.ToParam("dominio"), DbType.String, "%" + pDominio + "@%");
-
                 string url = mEntityContext.Proyecto.Where(proyecto => proyecto.URLPropia.Contains(pDominio + "@")).Select(proyecto => proyecto.URLPropia).FirstOrDefault();
-
-
 
                 if ((url != null) && ((string)url).IndexOf(pDominio) >= 0)
                 {
@@ -7742,14 +7788,14 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
     {
         public Proyecto Proyecto { get; set; }
         public AdministradorProyecto AdministradorProyecto { get; set; }
-        public Persona Persona { get; set; }
+        public AD.EntityModel.Models.PersonaDS.Persona Persona { get; set; }
     }
 
     public class JoinProyectoAdministradorProyectoPersonaPerfil
     {
         public Proyecto Proyecto { get; set; }
         public AdministradorProyecto AdministradorProyecto { get; set; }
-        public Persona Persona { get; set; }
+        public AD.EntityModel.Models.PersonaDS.Persona Persona { get; set; }
         public Perfil Perfil { get; set; }
     }
 
@@ -7757,7 +7803,7 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
     {
         public Proyecto Proyecto { get; set; }
         public AdministradorProyecto AdministradorProyecto { get; set; }
-        public Persona Persona { get; set; }
+        public AD.EntityModel.Models.PersonaDS.Persona Persona { get; set; }
         public Perfil Perfil { get; set; }
         public Es.Riam.Gnoss.AD.EntityModel.Models.IdentidadDS.Identidad Identidad { get; set; }
     }
@@ -7888,7 +7934,7 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
             get; set;
         }
 
-        public Persona Persona
+        public AD.EntityModel.Models.PersonaDS.Persona Persona
         {
             get; set;
         }
@@ -7920,7 +7966,7 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
             get; set;
         }
 
-        public Persona Persona
+        public AD.EntityModel.Models.PersonaDS.Persona Persona
         {
             get; set;
         }

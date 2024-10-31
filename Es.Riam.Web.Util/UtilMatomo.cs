@@ -2,18 +2,19 @@
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Net;
 
 namespace Es.Riam.Web.Util
 {
     public class UtilMatomo
     {
-        private string mOAuth;
-        private string mUrlMatomo;
+        private readonly string mOAuth;
+        private readonly string mUrlMatomo;
 
         public UtilMatomo(string pOAuth, string pUrlMatomo)
         {
             mOAuth = pOAuth;
-            mUrlMatomo = pUrlMatomo;
+            mUrlMatomo = $"https://{pUrlMatomo}";
         }
 
         #region User
@@ -31,7 +32,7 @@ namespace Es.Riam.Web.Util
             }
             catch (Exception)
             {
-                return null;
+                return new List<MatomoUserModel>();
             }
         }
 
@@ -86,6 +87,34 @@ namespace Es.Riam.Web.Util
 
         #endregion
 
+        #region Widget
+        public string GetWidget(MatomoWidgetViewModel pWidgetModel)
+        {
+            string url = $"{mUrlMatomo}?module=Widgetize&action=iframe&containerId=VisitOverviewWithGraph&disableLink=1&widget=1&token_auth=9338f0eb2f2523212b83305a11c5ecb8&moduleToWidgetize=CoreHome&actionToWidgetize={pWidgetModel.actionToWidgetize}&idSite=1&period={pWidgetModel.period}&date={pWidgetModel.date}&segment=pageUrl=@https://testing.gnoss.com/comunidad/testing-publica";
+            string content = UtilWeb.WebRequest("GET", url);
+
+            return content;
+        }
+
+        public WebResponse MatomoRequest(string pPage, string pQueryString)
+        {
+            string url = $"{mUrlMatomo}/{pPage}{pQueryString}";
+            return UtilWeb.HacerPeticionGetDevolviendoWebResponse(url);
+        }
+
+
+        #endregion
+
+        #region Graphic
+
+        public string GetGraphic(MatomoGraphicsViewModel pModel)
+        {
+            string url = $"{mUrlMatomo}?module=API&idSite=1&format=json"; 
+            Dictionary<string, string> contentRequest = new Dictionary<string, string>() { ["token_auth"] = mOAuth, ["segment"] = pModel.segment, ["method"] = pModel.method,["module"] = pModel.module, ["apiAction"] = pModel.apiAction, ["period"] = pModel.period, ["date"] = pModel.date, ["width"] = pModel.width, ["height"] = pModel.height, ["graphType"] = pModel.graphType, ["idSubtable"] =pModel.idSubtable,["force_api_session"] = pModel.force_api_session};
+            return UtilWeb.HacerPeticionPost(url, contentRequest);
+        }
+
+        #endregion
         #region Classes
 
         public class MatomoUserModel
@@ -108,6 +137,28 @@ namespace Es.Riam.Web.Util
             public string password { get; set; }
             public string passwordConfirmation { get; set; }
         }
+
+        public class MatomoGraphicsViewModel
+        {
+            public string method { get; set; }
+            public string module { get; set; }
+            public string apiAction { get; set; }
+            public string period { get; set; }
+            public string date { get; set; }
+            public string width { get; set; }
+            public string height { get; set; }
+            public string graphType { get; set; }
+            public string segment { get; set; }
+            public string force_api_session { get; set; }
+            public string idSubtable { get; set; }
+        }
+        public class MatomoWidgetViewModel
+        {
+            public string period { get; set; }
+            public string date { get; set; }
+            public string actionToWidgetize { get; set; }
+        }
+
 
         private class StandarMatomoResponseModel
         {

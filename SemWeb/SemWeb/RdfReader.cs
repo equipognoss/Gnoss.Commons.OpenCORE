@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.IO;
+using Es.Riam.Util;
 
 #if !DOTNET2
 using VariableSet = System.Collections.Hashtable;
@@ -173,6 +174,8 @@ namespace SemWeb {
 			// TODO: Add Accept header for HTTP resources.
 			
 			System.Net.WebRequest rq = System.Net.WebRequest.Create(webresource);
+			rq.Headers.Add("UserAgent", UtilWeb.GenerarUserAgent());
+
 			System.Net.WebResponse resp = rq.GetResponse();
 			
 			string mimetype = resp.ContentType;

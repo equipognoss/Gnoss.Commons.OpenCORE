@@ -6,7 +6,9 @@ using Es.Riam.Gnoss.AD.ServiciosGenerales;
 using Es.Riam.Gnoss.AD.Virtuoso;
 using Es.Riam.Gnoss.CL;
 using Es.Riam.Gnoss.CL.Facetado;
+using Es.Riam.Gnoss.CL.ParametrosAplicacion;
 using Es.Riam.Gnoss.Logica.Facetado;
+using Es.Riam.Gnoss.Logica.ParametroAplicacion;
 using Es.Riam.Gnoss.Util.Configuracion;
 using Es.Riam.Gnoss.Util.General;
 using Es.Riam.Gnoss.Web.Controles;
@@ -40,9 +42,10 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
         public AdministrarChartsViewModel LoadChartsFromBBDD()
         {
             AdministrarChartsViewModel resultado = new AdministrarChartsViewModel();
-            try
+			ParametroAplicacionCL paramCL = new ParametroAplicacionCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mServicesUtilVirtuosoAndReplication);
+			try
             {
-                resultado.Idiomas = _configService.ObtenerListaIdiomas();
+                resultado.Idiomas = paramCL.ObtenerListaIdiomas();
 
                 using (FacetaCN facetaCN = new FacetaCN(_entityContext, _loggingService, _configService, mServicesUtilVirtuosoAndReplication))
                 {
@@ -70,32 +73,102 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
         }
 
 
-        public void SaveListCharts(List<ChartViewModel> pListaCharts)
+        /// <summary>
+        /// Guardamos los cambios para el chart pasado por parámetro y actualizamos el orden del resto
+        /// </summary>
+        /// <param name="pChartViewModel">Vista con los datos a modificar o agregar del chart</param>
+        public void SaveChart(ChartViewModel pChartViewModel, List<ChartViewInfoOrder> pChartViewInfoOrderList)
         {
             using (FacetaCN facetaCN = new FacetaCN(_entityContext, _loggingService, _configService, mServicesUtilVirtuosoAndReplication))
             using (FacetaCL facetadoCL = new FacetaCL(_entityContext, _loggingService, _redisCacheWrapper, _configService, mServicesUtilVirtuosoAndReplication))
             {
-                DataWrapperFacetas facetaDW = new DataWrapperFacetas();
-                facetaCN.CargarFacetaConfigProyChart(ProyectoAD.MyGnoss, ProyectoSeleccionado.Clave, facetaDW);
-                foreach (var chart in pListaCharts)
+                if (pChartViewInfoOrderList != null)
                 {
-                    GuardarFilaNueva(facetaDW, chart);
+                    ActualizarOrdenCharts(pChartViewInfoOrderList, facetaCN);
                 }
-                foreach (var fila in facetaDW.ListaFacetaConfigProyChart)
+                
+                FacetaConfigProyChart facetaConfigProyChart = facetaCN.ObtenerFacetaConfigProyChartPorID(new Guid(pChartViewModel.ChartID));
+
+                if(facetaConfigProyChart != null)
                 {
-                    GuardarChartsEnDataSet(pListaCharts, fila);
+                    if (pChartViewModel.Eliminada)
+                    {
+                        _entityContext.FacetaConfigProyChart.Remove(facetaConfigProyChart);
+                    }
+                    else
+                    {
+                        facetaConfigProyChart.FiltrosConsultaVirtuoso = pChartViewModel.Where;
+                        facetaConfigProyChart.JSBase = pChartViewModel.Javascript;
+                        facetaConfigProyChart.JSBusqueda = pChartViewModel.FuncionJS;
+                        facetaConfigProyChart.Nombre = pChartViewModel.Nombre;
+                        facetaConfigProyChart.Orden = pChartViewModel.Orden;
+                        facetaConfigProyChart.SelectConsultaVirtuoso = pChartViewModel.Select;
+                    }
                 }
+                else
+                {
+                    FacetaConfigProyChart nuevoChart = new FacetaConfigProyChart();
+                    nuevoChart.ChartID = new Guid(pChartViewModel.ChartID);
+                    nuevoChart.JSBusqueda = pChartViewModel.FuncionJS;
+                    nuevoChart.JSBase = pChartViewModel.Javascript;
+                    nuevoChart.Nombre = pChartViewModel.Nombre;
+                    nuevoChart.Orden = pChartViewModel.Orden;
+                    nuevoChart.OrganizacionID = ProyectoAD.MyGnoss;
+                    nuevoChart.ProyectoID = ProyectoSeleccionado.Clave;
+                    nuevoChart.FiltrosConsultaVirtuoso = pChartViewModel.Where;
+                    nuevoChart.SelectConsultaVirtuoso = pChartViewModel.Select;
+                    _entityContext.FacetaConfigProyChart.Add(nuevoChart);
+                }
+                
                 _entityContext.SaveChanges();
-                facetadoCL.InvalidarCache(pListaCharts.Select(x => x.ChartID).ToList());
+                facetadoCL.InvalidarCache(pChartViewModel.ChartID);
                 facetadoCL.EliminarDatosChartProyecto(ProyectoSeleccionado.Clave);
                 _gnossCache.VersionarCacheLocal(ProyectoSeleccionado.Clave);
             }
         }
 
+        public void GuardarGraficos(List<ChartViewModel> pListaGraficos)
+        {
+            FacetaCL facetadoCL = new FacetaCL(_entityContext, _loggingService, _redisCacheWrapper, _configService, mServicesUtilVirtuosoAndReplication);
+            FacetaCN facetaCN = new FacetaCN(_entityContext, _loggingService, _configService, mServicesUtilVirtuosoAndReplication);
+
+            AdministrarChartsViewModel graficos = LoadChartsFromBBDD();
+            foreach (ChartViewModel grafico in graficos.ListaCharts)
+            {
+                FacetaConfigProyChart facetaConfigProyChart = facetaCN.ObtenerFacetaConfigProyChartPorID(new Guid(grafico.ChartID));
+                _entityContext.FacetaConfigProyChart.Remove(facetaConfigProyChart);
+            }
+
+            _entityContext.SaveChanges();
+
+            foreach (ChartViewModel grafico in pListaGraficos)
+            {
+                SaveChart(grafico, null);
+            }
+
+            _entityContext.SaveChanges();
+            facetadoCL.EliminarDatosChartProyecto(ProyectoSeleccionado.Clave);
+            _gnossCache.VersionarCacheLocal(ProyectoSeleccionado.Clave);
+            facetadoCL.Dispose();
+            facetaCN.Dispose();
+        }
+
+        private void ActualizarOrdenCharts(List<ChartViewInfoOrder> pChartViewInfoOrderList, FacetaCN pFacetaCN)
+        {
+            List<FacetaConfigProyChart> listaChartsOrdenar = pFacetaCN.ObtenerListaFacetaConfigProyChartPorIDs(pChartViewInfoOrderList.Select(item => item.ChartId).ToList());
+
+            foreach(FacetaConfigProyChart chart in listaChartsOrdenar)
+            {
+                chart.Orden = (short)pChartViewInfoOrderList.Where(item => item.ChartId.Equals(chart.ChartID)).Select(item => item.Orden).First();
+            }
+
+            _entityContext.SaveChanges();
+        }
+
         private void GuardarFilaNueva(DataWrapperFacetas facetaDW, ChartViewModel chart)
         {
             Guid auxi = Guid.Parse(chart.ChartID);
-            if (!facetaDW.ListaFacetaConfigProyChart.Any(x => x.ChartID == auxi))
+            if (!facetaDW.ListaFacetaConfigProyChart.Exists(x => x.ChartID == auxi))
             {
                 var fila = new FacetaConfigProyChart();
                 fila.ChartID = auxi;
@@ -114,7 +187,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
 
         private void GuardarChartsEnDataSet(List<ChartViewModel> pListaCharts, FacetaConfigProyChart fila)
         {
-            foreach (var chart in pListaCharts)
+            foreach (ChartViewModel chart in pListaCharts)
             {
                 if (fila.ChartID == Guid.Parse(chart.ChartID))
                 {

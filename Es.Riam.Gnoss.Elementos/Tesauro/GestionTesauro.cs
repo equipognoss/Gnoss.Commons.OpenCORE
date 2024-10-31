@@ -1,5 +1,6 @@
 using Es.Riam.Gnoss.AD.EncapsuladoDatos;
 using Es.Riam.Gnoss.AD.EntityModel;
+using Es.Riam.Gnoss.AD.EntityModel.Models.Suscripcion;
 using Es.Riam.Gnoss.AD.EntityModel.Models.Tesauro;
 using Es.Riam.Gnoss.AD.Facetado.Model;
 using Es.Riam.Gnoss.AD.Tesauro;
@@ -712,9 +713,17 @@ namespace Es.Riam.Gnoss.Elementos.Tesauro
             mListaCategoriasTesauro.Clear();
             mListaCategoriasTesauroPrimerNivel.Clear();
 			ListaCategoriasInferioresPorCategoriaID.Clear();
-			mHijos = new List<IElementoGnoss>();
+            mNumElementosCategoria = new Dictionary<Guid, int>();
+            mHijos = new List<IElementoGnoss>();
 
-            var categoriasInferiores = this.TesauroDW.ListaCatTesauroAgCatTesauro.ToDictionary(item => item.CategoriaInferiorID);
+            Dictionary<Guid, CatTesauroAgCatTesauro> categoriasInferiores = new Dictionary<Guid, CatTesauroAgCatTesauro>();
+            foreach (CatTesauroAgCatTesauro categoria in this.TesauroDW.ListaCatTesauroAgCatTesauro)
+            {
+                if (!categoriasInferiores.ContainsKey(categoria.CategoriaInferiorID))
+                {
+                    categoriasInferiores.Add(categoria.CategoriaInferiorID, categoria);
+                }
+            }
 
             foreach (AD.EntityModel.Models.Tesauro.CategoriaTesauro filaCategoria in this.TesauroDW.ListaCategoriaTesauro.OrderBy(cat => cat.Orden))
             {
@@ -735,7 +744,7 @@ namespace Es.Riam.Gnoss.Elementos.Tesauro
                     CategoriaTesauro categoria = new CategoriaTesauro(filaCategoria, this, mLoggingService);
                     this.mListaCategoriasTesauroPrimerNivel.Add(filaCategoria.CategoriaTesauroID, categoria);
                     this.mListaCategoriasTesauro.Add(filaCategoria.CategoriaTesauroID, categoria);
-
+                    this.mNumElementosCategoria.Add(filaCategoria.CategoriaTesauroID, filaCategoria.NumeroRecursos);
                     categoria.Padre = this;
 
                     this.Hijos.Add(categoria);
@@ -744,7 +753,7 @@ namespace Es.Riam.Gnoss.Elementos.Tesauro
                 {
                     CategoriaTesauro categoria = new CategoriaTesauro(filaCategoria, this, mLoggingService);
                     this.mListaCategoriasTesauro.Add(filaCategoria.CategoriaTesauroID, categoria);
-
+                    this.mNumElementosCategoria.Add(filaCategoria.CategoriaTesauroID, filaCategoria.NumeroRecursos);
                     if (catTesauroAgCatTesauro != null)
                     {
                         if (!ListaCategoriasInferioresPorCategoriaID.ContainsKey(catTesauroAgCatTesauro.CategoriaSuperiorID))
@@ -1003,7 +1012,6 @@ namespace Es.Riam.Gnoss.Elementos.Tesauro
             }
 
             //Borra las sugerencias que cuelgan de la categoría (aceptadas o sin aceptar)
-
             foreach (AD.EntityModel.Models.Tesauro.CategoriaTesauroSugerencia filaSugerencia in TesauroDW.ListaCategoriaTesauroSugerencia.ToList())
             {
                 if (filaSugerencia.CategoriaTesauroPadreID != null && filaSugerencia.CategoriaTesauroPadreID == pCategoria.Clave)
@@ -1022,7 +1030,14 @@ namespace Es.Riam.Gnoss.Elementos.Tesauro
                 }
             }
 
-            this.mListaCategoriasTesauro.Remove(pCategoria.Clave);
+            //Eliminamos las suscripciones de usuarios a la categoría que vamos a eliminar
+            foreach(CategoriaTesVinSuscrip categoriaTesVinSuscrip in mEntityContext.CategoriaTesVinSuscrip.Where(item => item.CategoriaTesauroID.Equals(pCategoria.Clave)))
+            {
+                mEntityContext.CategoriaTesVinSuscrip.Remove(categoriaTesVinSuscrip);
+            }
+
+            //Eliminamos finalmente la categoría
+            mListaCategoriasTesauro.Remove(pCategoria.Clave);
 
             TesauroDW.ListaCategoriaTesauro.Remove(pCategoria.FilaCategoria);
             mEntityContext.EliminarElemento(pCategoria.FilaCategoria);

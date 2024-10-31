@@ -2,6 +2,7 @@ using Es.Riam.AbstractsOpen;
 using Es.Riam.Gnoss.AD.EncapsuladoDatos;
 using Es.Riam.Gnoss.AD.EntityModel;
 using Es.Riam.Gnoss.AD.EntityModel.Models.PersonaDS;
+using Es.Riam.Gnoss.AD.EntityModel.Models.UsuarioDS;
 using Es.Riam.Gnoss.AD.Identidad;
 using Es.Riam.Gnoss.AD.Usuarios;
 using Es.Riam.Gnoss.Util.Configuracion;
@@ -13,6 +14,26 @@ using System.Linq;
 
 namespace Es.Riam.Gnoss.AD.ServiciosGenerales
 {
+
+    public class JoinPersonaUsuario
+    {
+        public AD.EntityModel.Models.PersonaDS.Persona Persona { get; set; }
+        public Usuario Usuario { get; set; }
+    }
+
+    public static class JoinsPersona
+    {
+        public static IQueryable<JoinPersonaUsuario> JoinUsuario(this IQueryable<Persona> pQuery)
+        {
+            EntityContext entityContext = (EntityContext)QueryContextAccess.GetDbContext(pQuery);
+            return pQuery.Join(entityContext.Usuario, persona => persona.UsuarioID, usuario => usuario.UsuarioID, (persona, usuario) => new JoinPersonaUsuario
+            {
+               Persona = persona,
+               Usuario = usuario
+
+            });
+        }
+    }
     #region Enumeraciones
 
     /// <summary>
@@ -341,6 +362,33 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
                     if (!nombresUsuarios.ContainsKey(usuarioID))
                     {
                         nombresUsuarios.Add(usuarioID, nombre + " " + apellidos);
+                    }
+                }
+            }
+            return nombresUsuarios;
+        }
+
+        /// <summary>
+        /// Obtiene el nombre de las personas de unos usuarios.
+        /// </summary>
+        /// <param name="pListaUsuariosID">Lista de identificadores de usuario</param>
+        /// <returns>Lista con el nombrecorto del usuario y el nombre de la persona</returns>
+        public Dictionary<string, string> ObtenerNombreCortoYNombresPersonasDeUsuariosID(List<Guid> pListaUsuariosID)
+        {
+            Dictionary<string, string> nombresUsuarios = new Dictionary<string, string>();
+            if (pListaUsuariosID.Count > 0)
+            {
+                var listaPersonas = mEntityContext.Persona.JoinUsuario().Where(item => item.Persona.UsuarioID.HasValue && pListaUsuariosID.Contains(item.Persona.UsuarioID.Value)).Select(item => new { item.Usuario.NombreCorto, item.Persona.Nombre, item.Persona.Apellidos }).ToList();
+
+                foreach (var item in listaPersonas)
+                {
+                    string nombreCorto = item.NombreCorto;
+                    string nombre = item.Nombre;
+                    string apellidos = item.Apellidos;
+
+                    if (!nombresUsuarios.ContainsKey(nombreCorto))
+                    {
+                        nombresUsuarios.Add(nombreCorto, nombre + " " + apellidos);
                     }
                 }
             }

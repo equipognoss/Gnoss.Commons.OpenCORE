@@ -171,6 +171,10 @@
       <asunto>Richiesta di modifica della password su {#NombreProyecto#}</asunto>
       <texto>{p}Per modificare la password, segui il link indicato di seguito: {/p}{p}{a style="display: block; font-weight: 400; color: #006eff; padding-bottom: 40px;" href="{#UrlEnlace#}"}Modifica della password{/a}{/p}</texto>
     </mensaje>
+	<mensaje id="81">
+	  <asunto>Token di sicurezza {#NombreProyecto#}</asunto>
+	  <texto>{p}Il tuo token di sicurezza è: {b} {#TokenSeguridad#} {/b}{/p}</texto>
+	</mensaje>
     <mensaje id="121">
       <asunto>{#Asunto#}</asunto>
       <texto>{p}{#NombreRemitente#} ti ha inviato un messaggio tramite {#NombreProyecto#}{/p}{div style="margin:30px"}{#Texto#}{/div}{p}Per rispondere a {#NombreRemitente#} clicca su questo link: {a href="{@UrlIntragnoss@}{$identidad$}/mensajes?mensaje={#CorreoID#}"}rispondi al messaggio{/a}{/p}</texto>

@@ -49,8 +49,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Models.Administracion
             // Subsecciones de la sección Configuración
             Configuracion_Home,
             Configuracion_TraduccionesComunidad,
-            Configuracion_Trazas,
-            Estado_Servicios,
+            Configuracion_Trazas,            
             Configuracion_Cache,
             Configuracion_OAuth,
             Configuracion_AccesoFTP,
@@ -62,9 +61,10 @@ namespace Es.Riam.Gnoss.Web.MVC.Models.Administracion
             Configuracion_OpcionesMetaAdministrador,
             Configuracion_OpcionesAvanzadasPlataforma,
             Configuracion_ServiciosExternos,
+            Configuracion_EstadoSistemas,
             Configuracion_Ecosistema,
             Configuracion_DatosExtra,
-            Descargar_Configuraciones, 
+            Descargar_Configuraciones,            
 
             // Subsecciones de la sección Objetos de Conocimiento
             GrafoConocimiento_Home,

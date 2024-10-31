@@ -70,6 +70,7 @@ using System.Text.RegularExpressions;
 using System.Threading;
 using System.Web;
 using System.Xml;
+using CallFileService = Es.Riam.Gnoss.UtilServiciosWeb.CallFileService;
 
 namespace Es.Riam.Gnoss.Web.Controles.Documentacion
 {
@@ -450,7 +451,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Documentacion
         public bool DuplicarDocumentoFisicamente(Documento pOrigen, Documento pDestino, Identidad pIdentidadOrganizacion, bool pMasterComunidad, GnossIdentity pUsuario)
         {
             GestionDocumental servicioArchivos = null;
-            CallInterntService servicioVideos = null;
+            ServicioVideos servicioVideos = null;
             ServicioImagenes servicioImagenes = null;
             Stopwatch sw = null;
             bool correcto = false;
@@ -510,7 +511,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Documentacion
                 }
                 else if (pOrigen.TipoDocumentacion == TiposDocumentacion.Video)
                 {
-                    servicioVideos = new CallInterntService(mConfigService, mLoggingService);
+                    servicioVideos = new ServicioVideos(mConfigService, mLoggingService);
                     sw = LoggingService.IniciarRelojTelemetria();
 
                     if (!pMasterComunidad && pOrigen.TipoEntidadVinculada == TipoEntidadVinculadaDocumento.Web)
@@ -885,34 +886,29 @@ namespace Es.Riam.Gnoss.Web.Controles.Documentacion
             if (!publico)
             {
                 DocumentacionCN docCN = new DocumentacionCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
-                List<Guid> listaDocumentosID = new List<Guid>();
-                listaDocumentosID.Add(pDocumento.Clave);
-                GestorDocumental gestorDocAux = new GestorDocumental(docCN.ObtenerDocumentosPorID(listaDocumentosID, true), mLoggingService, mEntityContext);
+                ProyectoCN proyCN = new ProyectoCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+
+                GestorDocumental gestorDocAux = new GestorDocumental(docCN.ObtenerDocumentosPorID(new List<Guid> { pDocumento.Clave }, true), mLoggingService, mEntityContext);
                 gestorDocAux.CargarDocumentos(false);
                 Documento docAux = gestorDocAux.ListaDocumentos[pDocumento.Clave];
 
                 List<Guid> listaProyectos = new List<Guid>();
 
                 foreach (AD.EntityModel.Models.Documentacion.BaseRecursosProyecto filaBRProy in gestorDocAux.DataWrapperDocumentacion.ListaBaseRecursosProyecto)
-                {//"DocumentoID='" + pDocumento.Clave + "' AND BaseRecursosID='" + filaBRProy.BaseRecursosID + "'"
+                {
                     List<AD.EntityModel.Models.Documentacion.DocumentoWebVinBaseRecursos> filaDocVinBR = gestorDocAux.DataWrapperDocumentacion.ListaDocumentoWebVinBaseRecursos.Where(doc => doc.DocumentoID.Equals(pDocumento.Clave) && doc.BaseRecursosID.Equals(filaBRProy.BaseRecursosID)).ToList();
                     if (filaDocVinBR.Count > 0 && filaDocVinBR[0].Eliminado == false)
                     {
                         listaProyectos.Add(filaBRProy.ProyectoID);
                     }
                 }
-                ProyectoCN proyCN = new ProyectoCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+                
                 dataWrapperProyecto = proyCN.ObtenerProyectosPorID(listaProyectos);
 
-                if (pIdentidadActual.Persona != null)
-                {
-                    gestorDocAux.GestorTesauro = new GestionTesauro(new TesauroCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication).ObtenerTesauroUsuario(pIdentidadActual.Persona.UsuarioID), mLoggingService, mEntityContext);
-                }
                 publico = ComprobarPrivacidadRecursoEnMetaBuscador(docAux, dataWrapperProyecto, pIdentidadActual);
 
                 docAux.Dispose();
                 gestorDocAux.Dispose();
-
             }
 
             if (pDocumento.FilaDocumento.Publico != publico)
@@ -1731,9 +1727,6 @@ namespace Es.Riam.Gnoss.Web.Controles.Documentacion
                         }
                     }
 
-                    objeto = objeto.Replace("\r\n", "");
-                    objeto = objeto.Replace("\n", "");
-
                     EscribirTripletaEntidad(sujeto, $"<{propiedad.NombreFormatoUri}>", objeto, sb, pTripletasDSList, pEscribirNT, null, tipo);
                 }
 
@@ -1759,12 +1752,9 @@ namespace Es.Riam.Gnoss.Web.Controles.Documentacion
                             }
                             else if (!objeto.StartsWith("http"))
                             {
-                                objeto = pUrlIntragnoss + "items/" + objeto;
+                                objeto = pUrlIntragnoss + $"items/{objeto}";
                             }
                         }
-
-                        objeto = objeto.Replace("\r\n", "");
-                        objeto = objeto.Replace("\n", "");
 
                         EscribirTripletaEntidad(sujeto, $"<{propiedad.NombreFormatoUri}>", objeto, sb, pTripletasDSList, pEscribirNT, idioma, tipo);
                     }
@@ -1800,7 +1790,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Documentacion
             Uri uri = null;
             Uri.TryCreate(pObjeto, UriKind.Absolute, out uri);
 
-            if (uri != null && pObjeto.Contains("http://") && !pObjeto.Contains("|") && !pObjeto.Contains(" ") && !pObjeto.Contains(","))
+            if (uri != null && pObjeto.StartsWith("http") && !pObjeto.Contains("|") && !pObjeto.Contains(" ") && !pObjeto.Contains(","))
             {
                 pObjeto = $"<{pObjeto}>";
             }
@@ -1840,7 +1830,6 @@ namespace Es.Riam.Gnoss.Web.Controles.Documentacion
         /// <param name="pEsribirNT">Indica si las tripletas se escribirán en un NT</param>
         public void EscribirTripletaEntidad(string pSujeto, string pPredicado, string pObjeto, StringBuilder sb, List<TripleWrapper> pTripletasDSList, bool pEsribirNT, string pIdioma, string pTipo)
         {
-
             if (!pSujeto.StartsWith("<"))
             {
                 pSujeto = $"<{pSujeto}>";
@@ -1874,13 +1863,13 @@ namespace Es.Riam.Gnoss.Web.Controles.Documentacion
                     pObjeto = $"\"{pObjeto}\"";
                 }
 
-                if (pObjeto.Contains("^^"))
+                if (FacetadoAD.ObjetoTieneTipo(pObjeto))
                 {
-                    pObjeto = pObjeto.Substring(0, pObjeto.IndexOf("^^"));
+                    pObjeto = pObjeto.Substring(0, pObjeto.IndexOf("^^<"));
                 }
             }
 
-            sb.Append(new FacetadoAD("", mLoggingService, mEntityContext, mConfigService, mVirtuosoAD, mServicesUtilVirtuosoAndReplication).GenerarTripletaSinConversionesAbsurdas(pSujeto, pPredicado, /*FacetadoAD.PasarAUtf8(*/pObjeto/*)*/, pIdioma));
+            sb.Append(new FacetadoAD("", mLoggingService, mEntityContext, mConfigService, mVirtuosoAD, mServicesUtilVirtuosoAndReplication).GenerarTripletaSinConversionesAbsurdas(pSujeto, pPredicado, pObjeto, pIdioma));
 
             pTripletasDSList.Add(new TripleWrapper() { Subject = pSujeto, Predicate = pPredicado, Object = pObjeto, ObjectLanguage = pIdioma, ObjectType = pTipo });
         }
@@ -1922,7 +1911,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Documentacion
                 if (!string.IsNullOrEmpty(fila) && fila.Contains(" "))
                 {
                     string sujeto = fila.Substring(0, fila.IndexOf(' '));
-                    if (!listaSujetos.Contains(sujeto))
+                    if (!listaSujetos.Contains(sujeto) && !string.IsNullOrEmpty(sujeto) && (FacetadoAD.SujetoValido(sujeto) || pDocumentoID.Contains("entidadsecun_")))
                     {
                         listaSujetos.Add(sujeto);
                         //pTripletas += saltoDeLinea + sujetoDocumento + "<http://gnoss/hasEntidad> " + sujeto + " ." + saltoDeLinea;
@@ -2027,7 +2016,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Documentacion
                     Thread.Sleep(2000);
                     if (pNumIntentos == 0)
                     {
-                        CallWebMethods.CallGetApi(mConfigService.ObtenerServicioAfinidad(), "RelatedVirtuoso");
+                        UtilServiciosWeb.CallWebMethods.CallGetApi(mConfigService.ObtenerServicioAfinidad(), "RelatedVirtuoso");
                     }
                     BorrarYEscribirEnVirtuosoConCilenteTradicional(pDocumentoID, pNombreGrafo, pUrlIntragnoss, pFicheroConfiguracion, pProyectoID, pInfoExtra, pUsarColareplicacion, pEscribirNT, pTripletas, pNumIntentos + 1);
                 }
@@ -2070,7 +2059,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Documentacion
                 filaRdfDoc = (RdfDS.RdfDocumentoRow)pRdfDS.RdfDocumento.Select("DocumentoID='" + pDocumentoID + "' AND ProyectoID='" + pProyectoID + "'")[0];
             }
 
-            if (IsValidXmlString(pFicheroRDF))
+            if (!IsValidXmlString(pFicheroRDF))
             {
                 pFicheroRDF = RemoveInvalidXmlChars(pFicheroRDF);
             }
@@ -2097,7 +2086,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Documentacion
             filaRdfDoc.ProyectoID = pProyectoID;
             rdfDS.RdfDocumento.AddRdfDocumentoRow(filaRdfDoc);
 
-            if (IsValidXmlString(pRDF))
+            if (!IsValidXmlString(pRDF))
             {
                 pRDF = RemoveInvalidXmlChars(pRDF);
             }
@@ -3292,21 +3281,18 @@ namespace Es.Riam.Gnoss.Web.Controles.Documentacion
                                 break;
                         }
 
-                        #region borramos cache preguntas
+                        #region borramos cache facetado
 
-                        ParametroAplicacionCL paramAplicCL = new ParametroAplicacionCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mServicesUtilVirtuosoAndReplication);
-                        //string urlIntragnoss = (string)paramAplicCL.ObtenerParametrosAplicacion().ParametroAplicacion.Select("Parametro = 'UrlIntragnoss'")[0]["Valor"];
-                        string urlIntragnoss = paramAplicCL.ObtenerParametrosAplicacionPorContext().Where(parametro => parametro.Parametro.Equals("UrlIntragnoss")).ToList().First().Valor;
-                        string dominio = UtilDominios.ObtenerDominioUrl(new Uri(urlIntragnoss), false);
-
-                        //No sirve invalidarla si antes se ha eliminado el recurso que se haya modificado.
                         if (pEliminarCacheResultadosYFacetas)
                         {
                             FacetadoCL facetadoCL = new FacetadoCL(UrlIntragnoss, mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mVirtuosoAD, mServicesUtilVirtuosoAndReplication);
-                            facetadoCL.Dominio = dominio;
                             facetadoCL.InvalidarResultadosYFacetasDeBusquedaEnProyecto(mProyectoActuAsincID, FacetadoAD.TipoBusquedaToString(tipo));
+
+                            mGnossCache.VersionarCacheLocal(ProyectoSeleccionado.Clave);
+
                             facetadoCL.Dispose();
                         }
+
                         #endregion
 
                     }
@@ -5794,7 +5780,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Documentacion
             string nombreOntologia = pDocOntologia.FilaDocumento.Enlace;
 
             //Guardo triples grafo tesauro semántico:
-             BorrarGrupoTripletasEnListaVirtuoso(pUrlIntragnoss, nombreOntologia, triplesComBorrar, pUsarColaReplicacion);
+            BorrarGrupoTripletasEnListaVirtuoso(pUrlIntragnoss, nombreOntologia, triplesComBorrar, pUsarColaReplicacion);
             InsertaTripletasVirtuoso(pUrlIntragnoss, nombreOntologia, triplesInsertar, PrioridadBase.ApiRecursos, pUsarColaReplicacion);
 
             //Guardo triples en los proyectos en los que está subido y compartido el tesauro semántico:
@@ -6445,7 +6431,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Documentacion
             }
 
             List<string> padres = FacetadoCN.ObtenerObjetosDataSetSegunPropiedad(dataSetCategorias, pCategoriaAEliminarID, arrayTesSem[7]);
-                        
+
             //Borramos la relación entre el padre e hijo:
             foreach (string padreID in padres)
             {
@@ -7314,7 +7300,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Documentacion
             FacetadoAD facetadoAD = new FacetadoAD("acid", pUrlIntragnoss, mLoggingService, mEntityContext, mConfigService, mVirtuosoAD, mServicesUtilVirtuosoAndReplication);
 
             List<FacetaEntidadesExternas> entExt = dataWrapperFacetas.ListaFacetaEntidadesExternas.Where(item => item.ProyectoID.Equals(pProyectoID)).ToList();
-            string tripletasComunidad = "";
+            StringBuilder tripletasComunidad = new StringBuilder();
             Dictionary<string, string> parametroProyecto = ObtenerParametroProyecto(pProyectoID);
             bool textoTesauroInvariable = parametroProyecto.ContainsKey("TextoInvariableTesauroSemantico") && parametroProyecto["TextoInvariableTesauroSemantico"] == "1";
 
@@ -7326,9 +7312,6 @@ namespace Es.Riam.Gnoss.Web.Controles.Documentacion
                     if (!triple.Predicate.Contains("http://www.w3.org/1999/02/22-rdf-syntax-ns#type") && !triple.Predicate.Contains("http://www.w3.org/2000/01/rdf-schema#label"))
                     {
                         string objeto = (string)triple.Object;
-
-                        objeto = objeto.Replace("\r\n", "");
-                        objeto = objeto.Replace("\n", "");
 
                         if (objeto[0] == '"')
                         {
@@ -7356,7 +7339,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Documentacion
                         string sujeto = triple.Subject;
                         if (objeto.Contains("/") && (predicado.Contains("fecha") || predicado.Contains("date")))
                         {
-                            objeto = ConvertirFormatoFecha(objeto) + " . ";
+                            objeto = $"{ConvertirFormatoFecha(objeto)} . ";
                         }
 
                         string aux = string.Empty;
@@ -7366,7 +7349,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Documentacion
                             objeto = PasarObjetoALower(objeto, FacetadoAD.ListaTiposBase);
                         }
 
-                        tripletasComunidad += facetadoAD.GenerarTripletaRecogidadeVirtuosoSinConversionesAbsurdas(PasarObjetoALower(sujeto, FacetadoAD.ListaTiposBase), predicado, objeto, objeto, Fecha, Numero, entExt, ref aux, triple.ObjectLanguage, triple.ObjectType);
+                        tripletasComunidad.Append(facetadoAD.GenerarTripletaRecogidadeVirtuosoSinConversionesAbsurdas(PasarObjetoALower(sujeto, FacetadoAD.ListaTiposBase), predicado, PasarObjetoALower(objeto, FacetadoAD.ListaTiposBase), objeto, Fecha, Numero, entExt, ref aux, triple.ObjectLanguage, triple.ObjectType, textoTesauroInvariable));
                     }
                 }
                 catch (Exception) { }
@@ -7384,8 +7367,9 @@ namespace Es.Riam.Gnoss.Web.Controles.Documentacion
                     BorrarRDFDeVirtuoso(idHasEntidadPrincipal, pProyectoID.ToString().ToLower(), pUrlIntragnoss, "acid", pProyectoID, false);
                 }
 
-                facCN.ModificarListaTripletas(pProyectoID.ToString().ToLower(), tripletasComunidad, (short)PrioridadBase.ApiRecursos, PasarObjetoALower(sujetoBorrar, FacetadoAD.ListaTiposBase));
+                facCN.ModificarListaTripletas(pProyectoID.ToString().ToLower(), tripletasComunidad.ToString(), (short)PrioridadBase.ApiRecursos, PasarObjetoALower(sujetoBorrar, FacetadoAD.ListaTiposBase));
             }
+
             #endregion
         }
 
@@ -7398,7 +7382,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Documentacion
         /// <param name="pUrlIntragnoss">Url de intragnoss</param>
         private static void AgregarTipletaGrafoEntSecudTieneEntSecud(List<TripleWrapper> pTripletas, string pIdHasEntidadPrincipal, string pNombreOntologia, string pUrlIntragnoss)
         {
-            pTripletas.Add(new TripleWrapper { Subject = "<" + pUrlIntragnoss + pNombreOntologia.ToLower() + "> ", Predicate = "<http://gnoss/hasEntidad>", Object = "<" + pUrlIntragnoss + pIdHasEntidadPrincipal + ">" });
+            pTripletas.Add(new TripleWrapper { Subject = $"<{pUrlIntragnoss}{pNombreOntologia.ToLower()}> ", Predicate = "<http://gnoss/hasEntidad>", Object = $"<{pUrlIntragnoss}{pIdHasEntidadPrincipal}>" });
         }
 
         /// <summary>
@@ -7562,7 +7546,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Documentacion
             string mensajeOrigenID = "";
             if (pMensajeOrigenID.HasValue)
             {
-                mensajeOrigenID = "," + Constantes.ID_MENSAJE_ORIGEN + pMensajeOrigenID.Value + Constantes.ID_MENSAJE_ORIGEN;
+                mensajeOrigenID = $",{Constantes.ID_MENSAJE_ORIGEN}{pMensajeOrigenID.Value}{Constantes.ID_MENSAJE_ORIGEN}";
             }
 
             //Agregamos peticiones a la cola
@@ -7581,7 +7565,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Documentacion
         {
             ProyectoCN proyCN = new ProyectoCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
             Guid baseRecursosID = proyCN.ObtenerBaseRecursosProyectoPorProyectoID(pProyectoID);
-            byte[] sdata = Encoding.ASCII.GetBytes(pTipoDato + "|" + pDocumentoID + "|" + pProyectoID + "|" + pIdentidadID + "|" + baseRecursosID + "|" + pCreadorID);
+            byte[] sdata = Encoding.ASCII.GetBytes($"{pTipoDato}|{pDocumentoID}|{pProyectoID}|{pIdentidadID}|{baseRecursosID}|{pCreadorID}");
 
             LlamadaUDP_ServicioSocketsOffline(sdata);
         }
@@ -7629,7 +7613,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Documentacion
                 filaColaTagsDocs.Estado = 0;
                 filaColaTagsDocs.FechaPuestaEnCola = DateTime.Now;
                 filaColaTagsDocs.TablaBaseProyectoID = tablaBaseProyectoID;
-                filaColaTagsDocs.Tags = Constantes.ID_TAG_DOCUMENTO + row.DocumentoID.ToString() + Constantes.ID_TAG_DOCUMENTO + "," + Constantes.TIPO_DOC + row.Documento.Tipo + Constantes.TIPO_DOC + "," + new UtilidadesVirtuoso(mLoggingService, mEntityContext, mConfigService, mRedisCacheWrapper, mEntityContextBASE, mVirtuosoAD, mServicesUtilVirtuosoAndReplication).TagBaseAfinidadVirtuoso;
+                filaColaTagsDocs.Tags = $"{Constantes.ID_TAG_DOCUMENTO}{row.DocumentoID}{Constantes.ID_TAG_DOCUMENTO},{Constantes.TIPO_DOC}{row.Documento.Tipo}{Constantes.TIPO_DOC},{new UtilidadesVirtuoso(mLoggingService, mEntityContext, mConfigService, mRedisCacheWrapper, mEntityContextBASE, mVirtuosoAD, mServicesUtilVirtuosoAndReplication).TagBaseAfinidadVirtuoso}";
                 filaColaTagsDocs.Tipo = 0;
                 filaColaTagsDocs.Prioridad = 1;
 
@@ -7657,7 +7641,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Documentacion
         {
             string rdfConfiguradoRecursoNoSemantico = "";
             ParametroGeneralCN paramGralCN = new ParametroGeneralCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
-            //ParametroGeneralDS filaProyectoRdfType = paramGralCN.ObtenerProyectoRDFType(pProyectoId, pTipoDocumentacion);
+
             List<ProyectoRDFType> filaProyectoRdfType = paramGralCN.ObtenerProyectoRDFType(pProyectoId, pTipoDocumentacion);
             if (filaProyectoRdfType.Count > 0)
             {
@@ -7691,15 +7675,8 @@ namespace Es.Riam.Gnoss.Web.Controles.Documentacion
         /// <returns></returns>
         static string RemoveInvalidXmlChars(string pRdfText)
         {
-            string correctedXMlString = Regex.Replace(pRdfText, @"[^\u0000-\u007F]", string.Empty);
-
-            if (IsValidXmlString(pRdfText))
-            {
-                var validXmlChars = pRdfText.Where(ch => XmlConvert.IsXmlChar(ch)).ToArray();
-                return new string(validXmlChars);
-            }
-
-            return correctedXMlString;
+            var validXmlChars = pRdfText.Where(ch => XmlConvert.IsXmlChar(ch)).ToArray();
+            return new string(validXmlChars);
         }
 
 
@@ -7781,7 +7758,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Documentacion
             try
             {
                 gestionDoc.Url = pUrlServicioDocs;
-                bool copiado = gestionDoc.CopiarDocumentosDeDirectorio(Path.Combine(UtilArchivos.ContentDocumentosSem, UtilArchivos.DirectorioDocumento(pDocumentoOriginalID)), UtilArchivos.ContentDocumentosSem + "\\" + UtilArchivos.DirectorioDocumento(pDocumentoNuevoID));
+                bool copiado = gestionDoc.CopiarDocumentosDeDirectorio(Path.Combine(UtilArchivos.ContentDocumentosSem, UtilArchivos.DirectorioDocumento(pDocumentoOriginalID)), $"{UtilArchivos.ContentDocumentosSem}\\{UtilArchivos.DirectorioDocumento(pDocumentoNuevoID)}");
                 mLoggingService.AgregarEntradaDependencia("Copiar archivo desde servicio docs", false, "CopiarImagenDocumentoSemantico", sw, true);
                 return copiado;
             }

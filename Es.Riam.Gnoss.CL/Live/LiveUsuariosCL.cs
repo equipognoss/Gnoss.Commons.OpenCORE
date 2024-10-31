@@ -224,7 +224,7 @@ namespace Es.Riam.Gnoss.CL.Live
         {
             string rawKey = string.Concat("LiveProyectoSusc_", pProyectoID, "_", pUsuarioID, "_");
 
-            return EliminarObjetoDeSortedSet(rawKey, pObjeto.ToString()); ;
+            return EliminarObjetoDeSortedSet(rawKey, pObjeto.ToString());
         }
 
         #endregion

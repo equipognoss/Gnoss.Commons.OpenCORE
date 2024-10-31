@@ -2733,7 +2733,7 @@
     <Resource tag="EXPLICACIONCERRADA">The community members, like the rest of the @1@ users, can only surf the community and explore its contents.</Resource>
     <Resource tag="EXPLICACIONCERRANDOSE">The community will be closed, but before that it will remain in 'grace period' for some days. During this period, users will have the possibility of downloading resources, reading the community contents and sharing them with other @1@ spaces. But you cannot upload anything new. After this period the community will not be accessible.</Resource>
     <Resource tag="INFOOWL4"> that we will develop it on @1@</Resource>
-    <Resource tag="DESCRIPCIONIDIOMACOMUNIDAD">Las comunidades de @3@ ofrecen a sus administradores la posibilidad de editar el {a href="@1@"}índice de categorías{/a} y los {a href="@2@"}paneles informativos{/a} (widgets tipo HTML incrustado) en español, inglés y portugués.  ¿Quieres que tu comunidad @3@ sea multilingüe? Activa el siguiente check y elige su idioma por defecto.</Resource>
+    <Resource tag="DESCRIPCIONIDIOMACOMUNIDAD">Las comunidades de @3@ ofrecen a sus administradores la posibilidad de editar el {a href="@1@"}índice de categorías{/a} y los {a href="@2@"}paneles informativos{/a} (widgets tipo HTML incrustado) en varios idiomas.  ¿Quieres que tu comunidad @3@ sea multilingüe? Activa el siguiente check y elige su idioma por defecto.</Resource>
     <Resource tag="UTILIDADES">Utilities</Resource>
     <Resource tag="GADGETS">Design</Resource>
     <Resource tag="CONFIGURACION">Settings of the resources options</Resource>
@@ -2960,7 +2960,7 @@
     <Resource tag="CREARWIDGET">Create widget</Resource>
     <Resource tag="FUENTESRSS">RSS {span class = "warning"} @1@{/span}</Resource>
     <Resource tag="SOLICITUDESPERTENECERGRUPO">Requests for group membership {span class="aviso"}@1@{/span}</Resource>
-    <Resource tag="SOLICITUDESACCESO">Manage requests {span class = "warning"} @1@{/span}</Resource>
+    <Resource tag="SOLICITUDESACCESO">Manage requests</Resource>
     <Resource tag="ENVIARNEWSLETTER">Send newsletter</Resource>
     <Resource tag="NEWSLETTER">Receive newsletter</Resource>
     <Resource tag="ABANDONARLACOMUNIDAD">Leave the community</Resource>

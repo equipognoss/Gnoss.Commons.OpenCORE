@@ -61,6 +61,7 @@ using Es.Riam.Gnoss.Web.Controles.Suscripcion;
 using Es.Riam.Gnoss.Web.MVC.Models;
 using Es.Riam.Util;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Exchange.WebServices.Data;
 using Newtonsoft.Json;
 using SixLabors.ImageSharp;
 using System;
@@ -413,8 +414,11 @@ namespace Es.Riam.Gnoss.Web.Controles.ServiciosGenerales
             //{
             Identidad ObjetoIdentidadProy = AgregarIdentidadPerfilYUsuarioAProyecto(gestorIdentidades, gestorUsuario, pProyectoSeleccionado.FilaProyecto.OrganizacionID, pProyectoSeleccionado.Clave, filaUsuario, pIdentidad.PerfilUsuario, recibirNewsletterDefectoProyectos);
 
-            //Invalido la cache de Mis comunidades
-            ProyectoCL proyCL = new ProyectoCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mVirtuosoAD, mServicesUtilVirtuosoAndReplication);
+			ControladorDeSolicitudes controladorDeSolicitudes = new ControladorDeSolicitudes(mLoggingService, mEntityContext, mConfigService, mRedisCacheWrapper, mGnossCache, mEntityContextBASE, mVirtuosoAD, mHttpContextAccessor, mServicesUtilVirtuosoAndReplication);
+			controladorDeSolicitudes.RegistrarUsuarioEnProyectoAutomatico(pIdentidad.PerfilUsuario, filaUsuario, gestorUsuario, gestorIdentidades);
+
+			//Invalido la cache de Mis comunidades
+			ProyectoCL proyCL = new ProyectoCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mVirtuosoAD, mServicesUtilVirtuosoAndReplication);
             proyCL.InvalidarMisProyectos(ObjetoIdentidadProy.PerfilID);
             proyCL.Dispose();
 
@@ -599,7 +603,11 @@ namespace Es.Riam.Gnoss.Web.Controles.ServiciosGenerales
             gestorIdentidades.GestorPersonas = new GestionPersonas(persCN.ObtenerPersonaPorUsuario(pUsuarioID), mLoggingService, mEntityContext);
 
             Identidad ObjetoIdentidadProy = AgregarIdentidadPerfilYUsuarioAProyecto(gestorIdentidades, gestorUsuario, proy.FilaProyecto.OrganizacionID, proy.Clave, filaUsuario, pPerfil, pRecibirNewsletterDefectoProyectos);
-            ObjetoIdentidadProy.FilaIdentidad.Tipo = (short)pTipoIdentidad;
+
+			ControladorDeSolicitudes controladorDeSolicitudes = new ControladorDeSolicitudes(mLoggingService, mEntityContext, mConfigService, mRedisCacheWrapper, mGnossCache, mEntityContextBASE, mVirtuosoAD, mHttpContextAccessor, mServicesUtilVirtuosoAndReplication);
+			controladorDeSolicitudes.RegistrarUsuarioEnProyectoAutomatico(pPerfil, filaUsuario, gestorUsuario, gestorIdentidades);
+
+			ObjetoIdentidadProy.FilaIdentidad.Tipo = (short)pTipoIdentidad;
             filaIdentidad = ObjetoIdentidadProy.FilaIdentidad;
 
             //Invalido la cache de Mis comunidades
@@ -684,7 +692,7 @@ namespace Es.Riam.Gnoss.Web.Controles.ServiciosGenerales
                 gestorProyectos.GestionUsuarios.GestorIdentidades = gestorIdentidades;
                 gestorUsuarios.GestorSuscripciones = new GestionSuscripcion(new DataWrapperSuscripcion(), mLoggingService, mEntityContext);
                 gestorUsuarios.GestorSuscripciones.GestorNotificaciones = new GestionNotificaciones(new DataWrapperNotificacion(), mLoggingService, mEntityContext, mConfigService, mServicesUtilVirtuosoAndReplication);
-                Persona persona = gestorPersonas.ListaPersonas[personaCN.ObtenerPersonaIDPorPerfil(pPerfilID)];
+				Elementos.ServiciosGenerales.Persona persona = gestorPersonas.ListaPersonas[personaCN.ObtenerPersonaIDPorPerfil(pPerfilID)];
                 List<Guid> listaProyectos = new List<Guid>();
                 listaProyectos.Add(pProyectoID);
                 gestorProyectos.DataWrapperProyectos.Merge(proyCN.ObtenerAccionesExternasProyectoPorListaIDs(listaProyectos));
@@ -927,7 +935,7 @@ namespace Es.Riam.Gnoss.Web.Controles.ServiciosGenerales
             foreach (Guid usuarioID in listaUsuariosIDs)
             {
                 Guid identidadID = dicUsuariosIDsIdentidadesIDs[usuarioID];
-                Persona persona = gestorPersonas.ListaPersonas[personaCN.ObtenerPersonaIDPorPerfil(dicUsuariosIDsPerfilesIDs[usuarioID])];
+				Elementos.ServiciosGenerales.Persona persona = gestorPersonas.ListaPersonas[personaCN.ObtenerPersonaIDPorPerfil(dicUsuariosIDsPerfilesIDs[usuarioID])];
                 JsonEstado respuestaAccionExterna = AccionEnServicioExternoProyecto(TipoAccionExterna.InvalidarUsuario, persona, gestorIdentidades.ListaIdentidades[identidadID].FilaIdentidad.ProyectoID, identidadID, "", "", gestorIdentidades.ListaIdentidades[identidadID].FilaIdentidad.FechaAlta, gestorProyectos.DataWrapperProyectos);
 
                 if (respuestaAccionExterna != null && !respuestaAccionExterna.Correcto)
@@ -1130,7 +1138,7 @@ namespace Es.Riam.Gnoss.Web.Controles.ServiciosGenerales
             if (pInvitacionAOrganizacion != null)
             {
                 //Aceptamos la petición
-                GestionIdentidades gestorIdentidades = new GestionIdentidades(pIdentidadActual.GestorIdentidades.DataWrapperIdentidad, pIdentidadActual.GestorIdentidades.GestorPersonas, pIdentidadActual.GestorIdentidades.GestorUsuarios, pIdentidadActual.GestorIdentidades.GestorOrganizaciones, mLoggingService, mEntityContext, mConfigService, mServicesUtilVirtuosoAndReplication);
+                GestionIdentidades gestorIdentidades = new GestionIdentidades(new DataWrapperIdentidad(), pIdentidadActual.GestorIdentidades.GestorPersonas, pIdentidadActual.GestorIdentidades.GestorUsuarios, pIdentidadActual.GestorIdentidades.GestorOrganizaciones, mLoggingService, mEntityContext, mConfigService, mServicesUtilVirtuosoAndReplication);
                 pInvitacionAOrganizacion.FilaPeticion.FechaProcesado = DateTime.Now;
                 pInvitacionAOrganizacion.FilaPeticion.Estado = (short)EstadoPeticion.Aceptada;
                 Guid organizacionID = pInvitacionAOrganizacion.FilaInvitacionOrganizacion.OrganizacionID;
@@ -1199,8 +1207,8 @@ namespace Es.Riam.Gnoss.Web.Controles.ServiciosGenerales
                         pIdentidadActual.Persona.GestorPersonas.GestorUsuarios.DataWrapperUsuario.Merge(dataWrapperUsuario);
                         pIdentidadActual.Persona.GestorPersonas.GestorUsuarios.RecargarUsuarios();
                     }
-
                 }
+
                 DataWrapperUsuario usuDW = pIdentidadActual.Persona.GestorPersonas.GestorUsuarios.DataWrapperUsuario;
                 GestionUsuarios gestorUsuario = new GestionUsuarios(usuDW, mLoggingService, mEntityContext, mConfigService);
 
@@ -1213,7 +1221,7 @@ namespace Es.Riam.Gnoss.Web.Controles.ServiciosGenerales
 
                 ProyectoCN proyCN = new ProyectoCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
                 Dictionary<Guid, bool> recibirNewsletterDefectoProyectos = proyCN.ObtenerProyectosConConfiguracionNewsletterPorDefecto();
-                //"OrganizacionID =  '" + organizacionID + "' AND PersonaID ='" + pIdentidadActual.Persona.Clave + "'"
+
                 if (!identDW.ListaPerfilPersonaOrg.Any(perfilPersOrg => perfilPersOrg.OrganizacionID.Equals(organizacionID) && perfilPersOrg.PersonaID.Equals(pIdentidadActual.Persona.Clave)))
                 {
                     //Lo creamos nuevo
@@ -1232,12 +1240,15 @@ namespace Es.Riam.Gnoss.Web.Controles.ServiciosGenerales
                     filaPerfilPersonaOrg = gestorIdentidades.DataWrapperIdentidad.ListaPerfilPersonaOrg.FirstOrDefault(perfilPersonOrg => perfilPersonOrg.OrganizacionID.Equals(organizacionID) && perfilPersonOrg.PersonaID.Equals(pIdentidadActual.Persona.Clave));
                     AD.EntityModel.Models.UsuarioDS.Usuario filaUsuario = gestorUsuario.DataWrapperUsuario.ListaUsuario.FirstOrDefault(usuario => usuario.UsuarioID.Equals(pUsuario.UsuarioID));
                     gestorUsuario.AgregarUsuarioAProyecto(filaUsuario, ProyectoAD.MetaOrganizacion, ProyectoAD.MetaProyecto, perfil.IdentidadMyGNOSS.Clave, false);
-                    //"ProyectoID = '" + pProyectoID.Value + "' AND Tipo <> 3"
+
                     if (pProyectoID.HasValue && !pProyectoID.Value.Equals(ProyectoAD.MetaProyecto) && !gestorIdentidades.DataWrapperIdentidad.ListaIdentidad.Any(ident => ident.ProyectoID.Equals(pProyectoID.Value) && ident.Tipo != 3))
                     {
                         //Hay que añadir al usuario al proyecto pProyectoID
                         Identidad identidadProyecto = AgregarIdentidadPerfilYUsuarioAProyecto(gestorIdentidades, gestorUsuario, ProyectoAD.MetaOrganizacion, pProyectoID.Value, filaUsuario, perfil, recibirNewsletterDefectoProyectos);
-                    }
+
+						ControladorDeSolicitudes controladorDeSolicitudes = new ControladorDeSolicitudes(mLoggingService, mEntityContext, mConfigService, mRedisCacheWrapper, mGnossCache, mEntityContextBASE, mVirtuosoAD, mHttpContextAccessor, mServicesUtilVirtuosoAndReplication);
+						controladorDeSolicitudes.RegistrarUsuarioEnProyectoAutomatico(perfil, filaUsuario, gestorUsuario, gestorIdentidades, pProyectoID);
+					}
 
                     //Invalido la cache de Mis comunidades
                     ProyectoCL proyCL = new ProyectoCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mVirtuosoAD, mServicesUtilVirtuosoAndReplication);
@@ -1247,7 +1258,7 @@ namespace Es.Riam.Gnoss.Web.Controles.ServiciosGenerales
 
                     //Agregamos al modelo base las comunidades en las que se ha hecho miembro el usuario:
                     foreach (LiveDS.ColaRow colaLiveRow in liveDS.Cola)
-                    {//"ProyectoID='" + colaLiveRow.ProyectoId + "' AND PerfilID='" + perfil.Clave + "'"
+                    {
                         List<AD.EntityModel.Models.IdentidadDS.Identidad> filasIdentidad = perfil.GestorIdentidades.DataWrapperIdentidad.ListaIdentidad.Where(ident => ident.ProyectoID.Equals(colaLiveRow.ProyectoId) && ident.PerfilID.Equals(perfil.Clave)).ToList();
 
                         if (filasIdentidad.Count > 0)
@@ -1424,7 +1435,7 @@ namespace Es.Riam.Gnoss.Web.Controles.ServiciosGenerales
 
             #region Correo
 
-            UtilIdiomas utilIdiomas = new UtilIdiomas(pUsuario.Idioma, mLoggingService, mEntityContext, mConfigService);
+            UtilIdiomas utilIdiomas = new UtilIdiomas(pUsuario.Idioma, mLoggingService, mEntityContext, mConfigService,mRedisCacheWrapper);
 
             GestionCorreo gestorCorreo = new GestionCorreo(mLoggingService, mEntityContext, mConfigService, mServicesUtilVirtuosoAndReplication);
             List<Guid> listaDestinatarioCorreo = new List<Guid>();
@@ -1490,8 +1501,11 @@ namespace Es.Riam.Gnoss.Web.Controles.ServiciosGenerales
 
                 Identidad ObjetoIdentidadProy = AgregarIdentidadPerfilYUsuarioAProyecto(pIdentidadActual.GestorIdentidades, gestorUsuarios, pOrganizacionID, pProyectoID, filaUsuario, pIdentidadActual.PerfilUsuario, recibirNewsletterDefectoProyectos);
 
-                //Invalido la cache de Mis comunidades
-                ProyectoCL proyCL = new ProyectoCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mVirtuosoAD, mServicesUtilVirtuosoAndReplication);
+				ControladorDeSolicitudes controladorDeSolicitudes = new ControladorDeSolicitudes(mLoggingService, mEntityContext, mConfigService, mRedisCacheWrapper, mGnossCache, mEntityContextBASE, mVirtuosoAD, mHttpContextAccessor, mServicesUtilVirtuosoAndReplication);
+				controladorDeSolicitudes.RegistrarUsuarioEnProyectoAutomatico(pIdentidadActual.PerfilUsuario, filaUsuario, gestorUsuarios, pIdentidadActual.GestorIdentidades, pProyectoID);
+
+				//Invalido la cache de Mis comunidades
+				ProyectoCL proyCL = new ProyectoCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mVirtuosoAD, mServicesUtilVirtuosoAndReplication);
                 proyCL.InvalidarMisProyectos(ObjetoIdentidadProy.PerfilID);
                 proyCL.Dispose();
 
@@ -1530,6 +1544,7 @@ namespace Es.Riam.Gnoss.Web.Controles.ServiciosGenerales
             //request.MaximumResponseHeadersLength = 4;
             // Set credentials to use for this request.
             request.Credentials = CredentialCache.DefaultCredentials;
+            request.UserAgent = UtilWeb.GenerarUserAgent();
 
             if (!string.IsNullOrEmpty(pMetodo))
             {
@@ -1598,7 +1613,7 @@ namespace Es.Riam.Gnoss.Web.Controles.ServiciosGenerales
 
         #endregion
 
-        public Perfil AgregarPerfilPersonaOrganizacion(GestionIdentidades pGestorIdentidades, GestionOrganizaciones pGestorOrganizaciones, GestionUsuarios pGestorUsuarios, Persona pPersona, Elementos.ServiciosGenerales.Organizacion pOrganizacion, bool pCrearIdentidadEnMetaProyecto, Guid? pMetaOrganizacionID, Guid? pMetaProyectoID, LiveDS pLiveDS, Dictionary<Guid, bool> pRecibirNewsletterDefectoProyectos)
+        public Perfil AgregarPerfilPersonaOrganizacion(GestionIdentidades pGestorIdentidades, GestionOrganizaciones pGestorOrganizaciones, GestionUsuarios pGestorUsuarios, Es.Riam.Gnoss.Elementos.ServiciosGenerales.Persona pPersona, Elementos.ServiciosGenerales.Organizacion pOrganizacion, bool pCrearIdentidadEnMetaProyecto, Guid? pMetaOrganizacionID, Guid? pMetaProyectoID, LiveDS pLiveDS, Dictionary<Guid, bool> pRecibirNewsletterDefectoProyectos)
         {
             Perfil perfil = pGestorIdentidades.AgregarPerfilPersonaOrganizacion(pPersona, pOrganizacion, pCrearIdentidadEnMetaProyecto, pMetaOrganizacionID, pMetaProyectoID, pRecibirNewsletterDefectoProyectos);
 
@@ -1628,8 +1643,13 @@ namespace Es.Riam.Gnoss.Web.Controles.ServiciosGenerales
                     ////Si el perfil no tiene identidad
                     //if (pGestorIdentidades.IdentidadesDS.Identidad.Select("PerfilID = '" + perfilID + "' AND ProyectoID = '" + comunidadID + "'").Length == 0)
                     //{
-                    Identidad ObjetoIdentidadProy = new ControladorIdentidades(pGestorIdentidades, mLoggingService, mEntityContext, mConfigService, mRedisCacheWrapper, mGnossCache, mEntityContextBASE, mVirtuosoAD, mHttpContextAccessor, mServicesUtilVirtuosoAndReplication).AgregarIdentidadPerfilYUsuarioAProyecto(pGestorIdentidades, pGestorUsuarios, organizacionID, comunidadID, filaUsuario, perfil, pRecibirNewsletterDefectoProyectos);
-                    identidadID = ObjetoIdentidadProy.Clave;
+                    ControladorIdentidades controladorIdentidades = new ControladorIdentidades(pGestorIdentidades, mLoggingService, mEntityContext, mConfigService, mRedisCacheWrapper, mGnossCache, mEntityContextBASE, mVirtuosoAD, mHttpContextAccessor, mServicesUtilVirtuosoAndReplication);
+                    Identidad ObjetoIdentidadProy = controladorIdentidades.AgregarIdentidadPerfilYUsuarioAProyecto(pGestorIdentidades, pGestorUsuarios, organizacionID, comunidadID, filaUsuario, perfil, pRecibirNewsletterDefectoProyectos);
+
+					ControladorDeSolicitudes controladorDeSolicitudes = new ControladorDeSolicitudes(mLoggingService, mEntityContext, mConfigService, mRedisCacheWrapper, mGnossCache, mEntityContextBASE, mVirtuosoAD, mHttpContextAccessor, mServicesUtilVirtuosoAndReplication);
+					controladorDeSolicitudes.RegistrarUsuarioEnProyectoAutomatico(perfil, filaUsuario, pGestorUsuarios, pGestorIdentidades);
+
+					identidadID = ObjetoIdentidadProy.Clave;
                     ObjetoIdentidadProy.Tipo = (TiposIdentidad)filaOrgPartProy.RegistroAutomatico;
                     pGestorIdentidades.RecargarHijos();
                     //}
@@ -1711,7 +1731,7 @@ namespace Es.Riam.Gnoss.Web.Controles.ServiciosGenerales
         /// <param name="pMetaOrganizacionID">Identificador de la metaorganización</param>
         /// <param name="pMetaProyectoID">Identificador del metaproyecto</param>
         /// <param name="pLiveDS">Dataset para el modelo LIVE</param>
-        public void CrearPerfilPersonaOrganizacion(Persona pPersona, Elementos.ServiciosGenerales.Organizacion pOrganizacion, bool pCrearIdentidadEnMetaProyecto, Guid? pMetaOrganizacionID, Guid? pMetaProyectoID, LiveDS pLiveDS, Dictionary<Guid, bool> pRecibirNewsletterDefectoProyectos)
+        public void CrearPerfilPersonaOrganizacion(Elementos.ServiciosGenerales.Persona pPersona, Elementos.ServiciosGenerales.Organizacion pOrganizacion, bool pCrearIdentidadEnMetaProyecto, Guid? pMetaOrganizacionID, Guid? pMetaProyectoID, LiveDS pLiveDS, Dictionary<Guid, bool> pRecibirNewsletterDefectoProyectos)
         {
             //Lo tengo que crear nuevo
             if (!pPersona.GestorPersonas.GestorUsuarios.GestorIdentidades.DataWrapperIdentidad.ListaPerfilPersonaOrg.Any(item => item.OrganizacionID.Equals(pOrganizacion.Clave) && item.PersonaID.Equals(pPersona.Clave)))
@@ -1758,7 +1778,11 @@ namespace Es.Riam.Gnoss.Web.Controles.ServiciosGenerales
                 //{
                 //Variable que nos indica si este usuario ya pertenece a este proyecto aunque con otra identidad
                 AgregarIdentidadPerfilYUsuarioAProyecto(pGestorIdentidades, pGestorUsuarios, organizacionID, comunidadID, filaUsuario, perfil, pRecibirNewsletterDefectoProyectos);
-                pGestorIdentidades.RecargarHijos();
+
+				ControladorDeSolicitudes controladorDeSolicitudes = new ControladorDeSolicitudes(mLoggingService, mEntityContext, mConfigService, mRedisCacheWrapper, mGnossCache, mEntityContextBASE, mVirtuosoAD, mHttpContextAccessor, mServicesUtilVirtuosoAndReplication);
+				controladorDeSolicitudes.RegistrarUsuarioEnProyectoAutomatico(perfil, filaUsuario, pGestorUsuarios, pGestorIdentidades);
+
+				pGestorIdentidades.RecargarHijos();
                 //}
                 ////si la tiene es que esta dado de baja
                 //else if (pGestorIdentidades.IdentidadesDS.Identidad.Select("PerfilID = '" + perfilID + "' AND ProyectoID = '" + comunidadID + "'").Length == 1)
@@ -1817,9 +1841,9 @@ namespace Es.Riam.Gnoss.Web.Controles.ServiciosGenerales
         public void AceptarUsuario(Identidad pIdentidadActual, Guid pIdSolicitud, DataWrapperSolicitud pSolicitudDW, DataWrapperUsuario pDataWrapperUsuario, ParametroGeneral pParametroGeneralRow, Elementos.ServiciosGenerales.Proyecto pProyectoSeleccionado, int? pAnio, int? pMes, int? pDia, ProyectoEvento pInvitacionAEventoComunidad, Dictionary<string, string> pParametroProyecto, string pBaseURL, PeticionInvComunidad pInvitacionAComunidad, string pUrlIntraGnoss, string pUrlIntragnossServicios, PeticionInvOrganizacion pInvitacionAOrganizacion, TipoRedSocialLogin? pTipoRedSocial, string pIDEnRedSocial, bool? pEsRegistroPreActivado, bool pRegistroDesdeAdmin = false)
         {
             SolicitudNuevoUsuario filaSU = pSolicitudDW.ListaSolicitudNuevoUsuario.Where(item => item.SolicitudID.Equals(pIdSolicitud)).FirstOrDefault();
-            UtilIdiomas utilIdiomas = new UtilIdiomas(filaSU.Idioma, mLoggingService, mEntityContext, mConfigService);
+            UtilIdiomas utilIdiomas = new UtilIdiomas(filaSU.Idioma, mLoggingService, mEntityContext, mConfigService,mRedisCacheWrapper);
 
-            Solicitud fila = pSolicitudDW.ListaSolicitud.Where(item => item.SolicitudID.Equals(pIdSolicitud)).FirstOrDefault();
+            Solicitud solicitud = pSolicitudDW.ListaSolicitud.Where(item => item.SolicitudID.Equals(pIdSolicitud)).FirstOrDefault();
 
             AD.EntityModel.Models.UsuarioDS.Usuario filaUsuario = pDataWrapperUsuario.ListaUsuario.FirstOrDefault();
             filaUsuario.Validado = (short)ValidacionUsuario.Verificado;
@@ -1827,7 +1851,7 @@ namespace Es.Riam.Gnoss.Web.Controles.ServiciosGenerales
             //Persona
             DataWrapperPersona dataWrapperPersona = new DataWrapperPersona();
             GestionPersonas gestorPersonas = new GestionPersonas(dataWrapperPersona, mLoggingService, mEntityContext);
-            Persona persona = gestorPersonas.AgregarPersona();
+			Elementos.ServiciosGenerales.Persona persona = gestorPersonas.AgregarPersona();
 
             AD.EntityModel.Models.PersonaDS.Persona filaPersona = persona.FilaPersona;
 
@@ -1915,20 +1939,18 @@ namespace Es.Riam.Gnoss.Web.Controles.ServiciosGenerales
             ProyectoCL proyCL = new ProyectoCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mVirtuosoAD, mServicesUtilVirtuosoAndReplication);
             ProyectoCN proyCN = new ProyectoCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
 
-            Perfil perfilPersona = null;
+            Perfil perfilPersonal = null;
             Identidad objetoIdentidad = null;
             AD.EntityModel.Models.IdentidadDS.Identidad filaIdentidad = null;
 
             Dictionary<Guid, bool> recibirNewsletterDefectoProyectos = proyCN.ObtenerProyectosConConfiguracionNewsletterPorDefecto();
 
-
             if (PerfilPersonalDisponible)
             {
-                perfilPersona = gestorIdentidades.AgregarPerfilPersonal(filaPersona, true, ProyectoAD.MetaOrganizacion, ProyectoAD.MetaProyecto, recibirNewsletterDefectoProyectos);
+                perfilPersonal = gestorIdentidades.AgregarPerfilPersonal(filaPersona, true, ProyectoAD.MetaOrganizacion, ProyectoAD.MetaProyecto, recibirNewsletterDefectoProyectos);
 
-                objetoIdentidad = (Identidad)perfilPersona.Hijos[0];
+                objetoIdentidad = (Identidad)perfilPersonal.Hijos[0];
                 filaIdentidad = objetoIdentidad.FilaIdentidad;
-
 
                 if (!proyCN.ParticipaUsuarioEnProyecto(ProyectoAD.MetaProyecto, filaUsuario.UsuarioID))
                 {
@@ -1937,7 +1959,6 @@ namespace Es.Riam.Gnoss.Web.Controles.ServiciosGenerales
 
                 gestorIdentidades.RecargarHijos();
 
-
                 //Invalido la cache de Mis comunidades
                 proyCL.InvalidarMisProyectos(filaIdentidad.PerfilID);
                 proyCL.Dispose();
@@ -1945,9 +1966,8 @@ namespace Es.Riam.Gnoss.Web.Controles.ServiciosGenerales
                 Guid organizacionRegistroUsuario = filaSU.Solicitud.OrganizacionID;
                 Guid proyectoRegistroUsuario = filaSU.Solicitud.ProyectoID;
 
-                new ControladorDeSolicitudes(mLoggingService, mEntityContext, mConfigService, mRedisCacheWrapper, mGnossCache, mEntityContextBASE, mVirtuosoAD, mHttpContextAccessor, mServicesUtilVirtuosoAndReplication).RegistrarUsuarioEnProyectosObligatorios(organizacionRegistroUsuario, proyectoRegistroUsuario, filaPersona.PersonaID, perfilPersona, filaUsuario, gestorUsuarios, gestorIdentidades);
-                gestorIdentidades.RecargarHijos();
-
+                RegistrosAutomaticosEnComunidades(filaSU, perfilPersonal, filaUsuario, gestorUsuarios, gestorIdentidades);
+		
                 //Si el proyecto es Didactalia, no actualizamos la home de los usuarios registrados en gnoss y a los que se les asocia didactalia directamente.
                 if (!filaSU.Solicitud.ProyectoID.Equals(ProyectoAD.ProyectoDidactalia))
                 {
@@ -1966,25 +1986,7 @@ namespace Es.Riam.Gnoss.Web.Controles.ServiciosGenerales
                         identidad.ActivoEnComunidad = true;
                     }
                 }
-
-                if (filaSU.ProyectosAutoAcceso != null && filaSU.ProyectosAutoAcceso != "")
-                {
-                    string[] proysAutoAccesoID = filaSU.ProyectosAutoAcceso.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
-
-                    foreach (string proyAutoAccID in proysAutoAccesoID)
-                    {
-                        Guid proyAutoAccesoID = new Guid(proyAutoAccID);
-
-                        if (!proyCN.ParticipaUsuarioEnProyecto(proyAutoAccesoID, filaUsuario.UsuarioID))
-                        {
-                            Guid orgAutoAccID = proyCN.ObtenerOrganizacionIDProyecto(proyAutoAccesoID);
-                            Identidad ObjetoIdentidadProy = AgregarIdentidadPerfilYUsuarioAProyecto(gestorIdentidades, gestorUsuarios, orgAutoAccID, proyAutoAccesoID, filaUsuario, perfilPersona, recibirNewsletterDefectoProyectos);
-                            gestorIdentidades.RecargarHijos();
-                            //listaProyectos.Add(proyAutoAccesoID);
-                        }
-                    }
-                }
-
+                
                 //Invalido la cache de Mis comunidades
                 DataWrapperIdentidad idenDW = new IdentidadCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication).ObtenerIdentidadPorID(gestorIdentidades.ObtenerIdentidadDeProyecto(ProyectoAD.ProyectoFAQ, filaPersona.PersonaID), true);
 
@@ -1999,7 +2001,6 @@ namespace Es.Riam.Gnoss.Web.Controles.ServiciosGenerales
             {
                 gestorUsuarios.AgregarProyectoRolUsuario(filaUsuario.UsuarioID, ProyectoAD.MetaOrganizacion, ProyectoAD.MetaProyecto);
             }
-
 
             if (!filaSU.Solicitud.ProyectoID.Equals(ProyectoAD.MetaProyecto) && !filaSU.Solicitud.ProyectoID.Equals(ProyectoAD.ProyectoFAQ) && !filaSU.Solicitud.ProyectoID.Equals(ProyectoAD.ProyectoNoticias) && !filaSU.Solicitud.ProyectoID.Equals(ProyectoAD.ProyectoDidactalia))
             {
@@ -2028,10 +2029,13 @@ namespace Es.Riam.Gnoss.Web.Controles.ServiciosGenerales
                         //si el usuario aún no participa en el proyecto se agrega
                         if (!proyCN.ParticipaUsuarioEnProyecto(proyectoID, filaUsuario.UsuarioID) && !gestorIdentidades.DataWrapperIdentidad.ListaIdentidad.Any(ident => ident.ProyectoID.Equals(proyectoID)))
                         {
-                            Identidad ObjetoIdentidadProy = AgregarIdentidadPerfilYUsuarioAProyecto(gestorIdentidades, gestorUsuarios, organizacionID, proyectoID, filaUsuario, perfilPersona, recibirNewsletterDefectoProyectos);
+                            Identidad ObjetoIdentidadProy = AgregarIdentidadPerfilYUsuarioAProyecto(gestorIdentidades, gestorUsuarios, organizacionID, proyectoID, filaUsuario, perfilPersonal, recibirNewsletterDefectoProyectos);
 
-                            //Invalido la cache de Mis comunidades
-                            proyCL = new ProyectoCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mVirtuosoAD, mServicesUtilVirtuosoAndReplication);
+							ControladorDeSolicitudes controladorDeSolicitudes = new ControladorDeSolicitudes(mLoggingService, mEntityContext, mConfigService, mRedisCacheWrapper, mGnossCache, mEntityContextBASE, mVirtuosoAD, mHttpContextAccessor, mServicesUtilVirtuosoAndReplication);
+							controladorDeSolicitudes.RegistrarUsuarioEnProyectoAutomatico(perfilPersonal, filaUsuario, gestorUsuarios, gestorIdentidades, proyectoID);
+
+							//Invalido la cache de Mis comunidades
+							proyCL = new ProyectoCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mVirtuosoAD, mServicesUtilVirtuosoAndReplication);
                             proyCL.InvalidarMisProyectos(ObjetoIdentidadProy.PerfilID);
                             proyCL.Dispose();
 
@@ -2115,17 +2119,6 @@ namespace Es.Riam.Gnoss.Web.Controles.ServiciosGenerales
                 GuardarDatosExtraSolicitud(dataWrapperIdentidad, filaIdentidad.PerfilID, pIdSolicitud, pSolicitudDW);
             }
 
-            if (pTipoRedSocial.HasValue != null && !string.IsNullOrEmpty(pIDEnRedSocial))
-            {
-                //Insertamos en la tabla  UsuarioVinculadoLoginRedesSociales      
-                // TODO TABLA
-                //UsuarioDS.UsuarioVinculadoLoginRedesSocialesRow filaUsuarioVinculadoLoginRedesSociales = pDataWrapperUsuario.UsuarioVinculadoLoginRedesSociales.NewUsuarioVinculadoLoginRedesSocialesRow();
-                //filaUsuarioVinculadoLoginRedesSociales.UsuarioID = filaUsuario.UsuarioID;
-                //filaUsuarioVinculadoLoginRedesSociales.TipoRedSocial = (short)pTipoRedSocial.Value;
-                //filaUsuarioVinculadoLoginRedesSociales.IDenRedSocial = pIDEnRedSocial;
-                //pDataWrapperUsuario.UsuarioVinculadoLoginRedesSociales.AddUsuarioVinculadoLoginRedesSocialesRow(filaUsuarioVinculadoLoginRedesSociales);
-            }
-
             DataWrapperSuscripcion suscripcionDW = null;
             if (gestorIdentidades.GestorSuscripciones != null && gestorIdentidades.GestorSuscripciones.SuscripcionDW.ListaSuscripcion.Count > 0)
             {
@@ -2156,6 +2149,7 @@ namespace Es.Riam.Gnoss.Web.Controles.ServiciosGenerales
             }
 
             #region Actualizar cola GnossLIVE
+
             LiveCN liveCN = new LiveCN("base", mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
             LiveDS liveDS = new LiveDS();
             foreach (Identidad iden in gestorIdentidades.ListaIdentidades.Values)
@@ -2185,7 +2179,6 @@ namespace Es.Riam.Gnoss.Web.Controles.ServiciosGenerales
                         {
                             try
                             {
-
                                 InsertarFilaEnColaRabbitMQ(iden.FilaIdentidad.ProyectoID, iden.FilaIdentidad.PerfilID, (int)AccionLive.Agregado, (int)TipoLive.Miembro, 0, DateTime.Now, false, (short)PrioridadLive.Alta);
                             }
                             catch (Exception ex)
@@ -2197,6 +2190,7 @@ namespace Es.Riam.Gnoss.Web.Controles.ServiciosGenerales
                     }
                 }
             }
+
             liveCN.ActualizarBD(liveDS);
             liveCN.Dispose();
             liveDS.Dispose();
@@ -2242,13 +2236,12 @@ namespace Es.Riam.Gnoss.Web.Controles.ServiciosGenerales
                     mEntityContext.SaveChanges();
                     solCN2.Dispose();
                 }
-
             }
 
             if (PerfilPersonalDisponible)
             {
                 LiveUsuariosCL liveUsuariosCL = new LiveUsuariosCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mServicesUtilVirtuosoAndReplication);
-                liveUsuariosCL.ClonarLiveProyectoAHomeUsu(filaSU.UsuarioID, perfilPersona.Clave, pProyectoSeleccionado.Clave);
+                liveUsuariosCL.ClonarLiveProyectoAHomeUsu(filaSU.UsuarioID, perfilPersonal.Clave, pProyectoSeleccionado.Clave);
             }
 
             //Iniciamos sesión automáticamente
@@ -2268,6 +2261,7 @@ namespace Es.Riam.Gnoss.Web.Controles.ServiciosGenerales
                     }
                 }
             }
+
             AceptarExtrasInvitacionAComunidad(persona, pInvitacionAComunidad, pProyectoSeleccionado, pUrlIntraGnoss, pInvitacionAEventoComunidad, UtilIdiomas.LanguageCode);
         }
 
@@ -2395,7 +2389,7 @@ namespace Es.Riam.Gnoss.Web.Controles.ServiciosGenerales
         /// <summary>
         /// 
         /// </summary>
-        public void AceptarExtrasInvitacionAComunidad(Persona pPersona, PeticionInvComunidad pInvitacionAComunidad, Elementos.ServiciosGenerales.Proyecto pProyectoSeleccionado, string pUrlIntragnoss, ProyectoEvento pInvitacionAEventoComunidad, string pLanguageCode)
+        public void AceptarExtrasInvitacionAComunidad(Elementos.ServiciosGenerales.Persona pPersona, PeticionInvComunidad pInvitacionAComunidad, Elementos.ServiciosGenerales.Proyecto pProyectoSeleccionado, string pUrlIntragnoss, ProyectoEvento pInvitacionAEventoComunidad, string pLanguageCode)
         {
             if (pInvitacionAComunidad != null)
             {
@@ -2480,7 +2474,7 @@ namespace Es.Riam.Gnoss.Web.Controles.ServiciosGenerales
             }
         }
 
-        public void AgregarParticipanteEvento(Persona pPersona, Elementos.ServiciosGenerales.Proyecto pProyectoSeleccionado, ProyectoEvento pInvitacionAEventoComunidad, string pUrlIntragnoss, string pLanguageCode)
+        public void AgregarParticipanteEvento(Elementos.ServiciosGenerales.Persona pPersona, Elementos.ServiciosGenerales.Proyecto pProyectoSeleccionado, ProyectoEvento pInvitacionAEventoComunidad, string pUrlIntragnoss, string pLanguageCode)
         {
             try
             {
@@ -2582,9 +2576,9 @@ namespace Es.Riam.Gnoss.Web.Controles.ServiciosGenerales
                                 }
 
                                 JsonDatosExtraUsuario datoExtraUsuario = new JsonDatosExtraUsuario();
-                                datoExtraUsuario.Nombre = depvr.Titulo;
-                                datoExtraUsuario.NombreID = depvr.DatoExtraID;
-                                datoExtraUsuario.Valor = valor;
+                                datoExtraUsuario.name = depvr.Titulo;
+                                datoExtraUsuario.name_id = depvr.DatoExtraID;
+                                datoExtraUsuario.value = valor;
                                 datosExtraUsuario.Add(datoExtraUsuario);
                             }
                         }
@@ -2606,9 +2600,9 @@ namespace Es.Riam.Gnoss.Web.Controles.ServiciosGenerales
                                 }
 
                                 JsonDatosExtraUsuario datoExtraUsuario = new JsonDatosExtraUsuario();
-                                datoExtraUsuario.Nombre = depvr.Titulo;
-                                datoExtraUsuario.NombreID = depvr.DatoExtraID;
-                                datoExtraUsuario.Valor = valor;
+                                datoExtraUsuario.name = depvr.Titulo;
+                                datoExtraUsuario.name_id = depvr.DatoExtraID;
+                                datoExtraUsuario.value = valor;
                                 datosExtraUsuario.Add(datoExtraUsuario);
                             }
                         }
@@ -2616,15 +2610,15 @@ namespace Es.Riam.Gnoss.Web.Controles.ServiciosGenerales
                     AccionesExternas filaAccionesExrternas = pParametroAplicacionDS.ListaAccionesExternas.Where(acciones => acciones.TipoAccion.Equals((short)pTipoAccionExterna)).ToList()[0];
 
                     JsonUsuario usuario = new JsonUsuario();
-                    usuario.Nombre = pNombre;
-                    usuario.Apellidos = pApellidos;
-                    usuario.Email = pEmail;
-                    usuario.Pass = pPass;
-                    usuario.ProyectoID = pProyectoID;
-                    usuario.UsuarioID = pUsuarioID;
-                    usuario.DatosExtra = datosExtraUsuario;
-                    usuario.DatoAux = pDatoAuxiliar;
-                    usuario.Idioma = pIdioma;
+                    usuario.name = pNombre;
+                    usuario.last_name = pApellidos;
+                    usuario.email = pEmail;
+                    usuario.password = pPass;
+                    usuario.community_id = pProyectoID;
+                    usuario.user_id = pUsuarioID;
+                    usuario.extra_data = datosExtraUsuario;
+                    usuario.aux_data = pDatoAuxiliar;
+                    usuario.languaje = pIdioma;
 
                     string url = filaAccionesExrternas.URL;//POST
                     string respuesta = string.Empty;
@@ -2660,7 +2654,7 @@ namespace Es.Riam.Gnoss.Web.Controles.ServiciosGenerales
         }
 
 
-        public JsonEstado AccionEnServicioExternoProyecto(TipoAccionExterna pTipoAccionExterna, Persona pPersona, Guid pProyectoID, Guid pIdentidadID, string pPass, string pDatoAuxiliar, DateTime? pFechaRegistroComunidad, DataWrapperProyecto pProyectoDS)
+        public JsonEstado AccionEnServicioExternoProyecto(TipoAccionExterna pTipoAccionExterna, Elementos.ServiciosGenerales.Persona pPersona, Guid pProyectoID, Guid pIdentidadID, string pPass, string pDatoAuxiliar, DateTime? pFechaRegistroComunidad, DataWrapperProyecto pProyectoDS)
         {
             return AccionEnServicioExternoProyecto(pTipoAccionExterna, pProyectoID, pIdentidadID, pPersona.UsuarioID, pPersona.Nombre, pPersona.Apellidos, pPersona.Mail, pPass, pDatoAuxiliar, pPersona.Fecha, pPersona.PaisID, pPersona.Localidad, pPersona.Sexo, pFechaRegistroComunidad, pProyectoDS, pPersona.ProvinciaID, pPersona.Provincia, pPersona.CodPostal, pPersona.ValorDocumentoAcreditativo, pPersona.FilaPersona.Idioma);
         }
@@ -2716,10 +2710,10 @@ namespace Es.Riam.Gnoss.Web.Controles.ServiciosGenerales
                             if (filasDatoExtraProy.Count > 0 && filasDatoExtraProyOpcion.Count > 0)
                             {
                                 JsonDatosExtraUsuario datosExtraUsuario = new JsonDatosExtraUsuario();
-                                datosExtraUsuario.Nombre = filasDatoExtraProy[0].Titulo;
-                                datosExtraUsuario.NombreID = filasDatoExtraProy[0].DatoExtraID;
-                                datosExtraUsuario.Valor = filasDatoExtraProyOpcion[0].Opcion;
-                                datosExtraUsuario.ValorID = filasDatoExtraProyOpcion[0].OpcionID;
+                                datosExtraUsuario.name = filasDatoExtraProy[0].Titulo;
+                                datosExtraUsuario.name_id = filasDatoExtraProy[0].DatoExtraID;
+                                datosExtraUsuario.value = filasDatoExtraProyOpcion[0].Opcion;
+                                datosExtraUsuario.value_id = filasDatoExtraProyOpcion[0].OpcionID;
                                 listaDatosExtra.Add(datosExtraUsuario);
                             }
                         }
@@ -2736,9 +2730,9 @@ namespace Es.Riam.Gnoss.Web.Controles.ServiciosGenerales
                             if (filaDatoExtraVirtuosoProy != null)
                             {
                                 JsonDatosExtraUsuario datosExtraUsuario = new JsonDatosExtraUsuario();
-                                datosExtraUsuario.Nombre = filaDatoExtraVirtuosoProy.Titulo;
-                                datosExtraUsuario.NombreID = filaDatoExtraVirtuosoProy.DatoExtraID;
-                                datosExtraUsuario.Valor = filaDatoExtraProyVirtuosoIdent.Opcion;
+                                datosExtraUsuario.name = filaDatoExtraVirtuosoProy.Titulo;
+                                datosExtraUsuario.name_id = filaDatoExtraVirtuosoProy.DatoExtraID;
+                                datosExtraUsuario.value = filaDatoExtraProyVirtuosoIdent.Opcion;
                                 listaDatosExtra.Add(datosExtraUsuario);
                             }
                         }
@@ -2749,55 +2743,55 @@ namespace Es.Riam.Gnoss.Web.Controles.ServiciosGenerales
                     usuarioCN.Dispose();
 
                     JsonUsuario usuario = new JsonUsuario();
-                    usuario.Nombre = pNombre;
-                    usuario.Apellidos = pApellidos;
-                    usuario.Email = pEmail;
-                    usuario.ProyectoID = pProyectoID;
-                    usuario.UsuarioID = pUsuarioID;
-                    usuario.NombreCortoUsuario = nombreCortoUsu;
-                    usuario.RecibirNewsletter = recibirNews;
-                    usuario.Idioma = pIdioma;
+                    usuario.name = pNombre;
+                    usuario.last_name = pApellidos;
+                    usuario.email = pEmail;
+                    usuario.community_id = pProyectoID;
+                    usuario.user_id = pUsuarioID;
+                    usuario.user_short_name = nombreCortoUsu;
+                    usuario.receive_newsletter = recibirNews;
+                    usuario.languaje = pIdioma;
 
                     ProyectoCN proyCN = new ProyectoCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
-                    usuario.NombreCortoComunidad = proyCN.ObtenerNombreCortoProyecto(pProyectoID);
+                    usuario.community_short_name = proyCN.ObtenerNombreCortoProyecto(pProyectoID);
                     proyCN.Dispose();
 
                     if (listaDatosExtra.Count > 0)
                     {
-                        usuario.DatosExtra = listaDatosExtra;
+                        usuario.extra_data = listaDatosExtra;
                     }
-                    usuario.EventosUsuario = listadoEventosusuarioProyecto;
-                    usuario.DatoAux = pDatoAuxiliar;
+                    usuario.user_events = listadoEventosusuarioProyecto;
+                    usuario.aux_data = pDatoAuxiliar;
 
                     if (pFechaNacimiento.HasValue)
                     {
-                        usuario.FechaNacimiento = pFechaNacimiento.Value;
+                        usuario.born_date = pFechaNacimiento.Value;
                     }
 
                     PaisCN paisCN = new PaisCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
                     if (pPaisID.HasValue && !pPaisID.Value.Equals(Guid.Empty))
                     {
-                        usuario.PaisID = pPaisID.Value;
-                        usuario.Pais = paisCN.ObtenerNombrePais(pPaisID.Value);
+                        usuario.country_id = pPaisID.Value;
+                        usuario.country = paisCN.ObtenerNombrePais(pPaisID.Value);
                     }
 
-                    usuario.ProvinciaID = pProvinciaID;
-                    usuario.Provincia = pProvincia;
+                    usuario.province_id = pProvinciaID;
+                    usuario.provice = pProvincia;
                     if (pPaisID.HasValue && !pPaisID.Value.Equals(Guid.Empty) && !pProvinciaID.Equals(Guid.Empty) && string.IsNullOrEmpty(pProvincia))
                     {
-                        usuario.Provincia = paisCN.ObtenerNombreProvincia(pPaisID.Value, pProvinciaID);
+                        usuario.provice = paisCN.ObtenerNombreProvincia(pPaisID.Value, pProvinciaID);
                     }
 
                     if (pFechaRegistroComunidad.HasValue)
                     {
-                        usuario.FechaRegistroComunidad = pFechaRegistroComunidad.Value;
+                        usuario.join_community_date = pFechaRegistroComunidad.Value;
                     }
                     paisCN.Dispose();
 
-                    usuario.Localidad = pLocalidad;
-                    usuario.Sexo = pSexo;
-                    usuario.CodigoPostal = pCodigoPostal;
-                    usuario.DNI = pDNI;
+                    usuario.city = pLocalidad;
+                    usuario.sex = pSexo;
+                    usuario.postal_code = pCodigoPostal;
+                    usuario.id_card = pDNI;
 
                     //Suscripciones
                     SuscripcionCN suscCN = new SuscripcionCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
@@ -2806,7 +2800,7 @@ namespace Es.Riam.Gnoss.Web.Controles.ServiciosGenerales
                     suscCN.Dispose();
                     Elementos.Suscripcion.Suscripcion suscripcion = gestorSuscripciones.ObtenerSuscripcionAProyecto(pProyectoID);
 
-                    usuario.Preferencias = new Dictionary<Guid, string>();
+                    usuario.preferences = new Dictionary<Guid, string>();
                     usuario.ListaPreferenciasJerarquicas = new List<JsonPreferenciaJerarquica>();
 
                     if (suscripcion != null && suscripcion.FilasCategoriasVinculadas != null)
@@ -2819,7 +2813,7 @@ namespace Es.Riam.Gnoss.Web.Controles.ServiciosGenerales
                         foreach (AD.EntityModel.Models.Suscripcion.CategoriaTesVinSuscrip filaCat in suscripcion.FilasCategoriasVinculadas)
                         {
                             string nomCat = gestorTesauro.ListaCategoriasTesauro[filaCat.CategoriaTesauroID].Nombre["es"];
-                            usuario.Preferencias.Add(filaCat.CategoriaTesauroID, nomCat);
+                            usuario.preferences.Add(filaCat.CategoriaTesauroID, nomCat);
                             usuario.ListaPreferenciasJerarquicas.Add(ObtenerCategoriasJerarquicas(filaCat.CategoriaTesauroID, gestorTesauro.ListaCategoriasTesauro));
                         }
                     }
@@ -2870,7 +2864,7 @@ namespace Es.Riam.Gnoss.Web.Controles.ServiciosGenerales
 
             GestionPersonas gestorPersonas = new GestionPersonas(dataWrapperPersona, mLoggingService, mEntityContext);
             gestorPersonas.CargarGestor();
-            Persona persona = gestorPersonas.ListaPersonas[pPersonaID];
+			Elementos.ServiciosGenerales.Persona persona = gestorPersonas.ListaPersonas[pPersonaID];
 
             IdentidadCN idenCN = new IdentidadCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
             GestionIdentidades gestorIdentidades = new GestionIdentidades(idenCN.ObtenerIdentidadesDePersonaMuyLigera(pPersonaID), mLoggingService, mEntityContext, mConfigService, mServicesUtilVirtuosoAndReplication);
@@ -3169,9 +3163,60 @@ namespace Es.Riam.Gnoss.Web.Controles.ServiciosGenerales
             return rolCambiado;
         }
 
-        #region Métodos Auxiliares AccionesExternas
+		/// <summary>
+		/// Registra el usuario en las comunidades configuradas como registro automático y obligatorio. Si el usuario ha sido creado a partir de una invitación a una organización, lo añadirá a las comunidades 
+		/// que tenga la organización configuradas como registro automático.
+		/// </summary>
+		/// <param name="pSolicitudNuevoUsuario">Solicitud de la creación del usuario del cual vamos a crear las identidades</param>
+		/// <param name="pPerfil">Perfil a partir del cual se crearán las identidades</param>
+		/// <param name="pUsuario">Usuario del cual se van a crear las identidades</param>
+		/// <param name="pGestionUsuarios">Gestor de usuarios necesario para el registro</param>
+		/// <param name="pGestionIdentidades">Gestor de identidades necesario para el registro</param>		
+		private void RegistrosAutomaticosEnComunidades(SolicitudNuevoUsuario pSolicitudNuevoUsuario, Perfil pPerfil, AD.EntityModel.Models.UsuarioDS.Usuario pUsuario, GestionUsuarios pGestionUsuarios, GestionIdentidades pGestionIdentidades)
+        {
+			ControladorDeSolicitudes controladorDeSolicitudes = new ControladorDeSolicitudes(mLoggingService, mEntityContext, mConfigService, mRedisCacheWrapper, mGnossCache, mEntityContextBASE, mVirtuosoAD, mHttpContextAccessor, mServicesUtilVirtuosoAndReplication);
 
-        private static JsonPreferenciaJerarquica ObtenerCategoriasJerarquicas(Guid pCategoriaID, SortedList<Guid, CategoriaTesauro> pListaCategoriasTesauro)
+			controladorDeSolicitudes.RegistrarUsuarioEnProyectosObligatorios(pSolicitudNuevoUsuario.Solicitud.OrganizacionID, pSolicitudNuevoUsuario.Solicitud.ProyectoID, pPerfil.PersonaID.Value, pPerfil, pUsuario, pGestionUsuarios, pGestionIdentidades);
+			controladorDeSolicitudes.RegistrarUsuarioEnProyectoAutomatico(pPerfil, pUsuario, pGestionUsuarios, pGestionIdentidades);
+			RegistrarEnProyectoAutoacceso(controladorDeSolicitudes, pSolicitudNuevoUsuario, pUsuario, pGestionIdentidades, pGestionUsuarios, pPerfil);
+
+            pGestionIdentidades.RecargarHijos();
+		}
+
+		/// <summary>
+		/// Se registra en los proyectos definidos en el campo ProyectoAutoAcceso de la tabla SolicitudNuevoUsuario
+		/// </summary>
+		/// <param name="pControladorDeSolicitudes">Controlador de solicitudes para realizar la gestión del registro</param>
+        /// <param name="pSolicitudNuevoUsuario">Solicitud de registro del usuario nuevo</param>
+		/// <param name="pUsuario">Usuario del cual se crearán las identidades en la comunidad</param>
+		/// <param name="pGestionIdentidades">Gestor de identidades necesario para el registro</param>
+		/// <param name="pGestionUsuarios">Gestor de usuarios necesario para el registro</param>
+		/// <param name="pPerfil">Perfil a partir del cual se crearán las identidades</param>
+		private void RegistrarEnProyectoAutoacceso(ControladorDeSolicitudes pControladorDeSolicitudes, SolicitudNuevoUsuario pSolicitudNuevoUsuario, AD.EntityModel.Models.UsuarioDS.Usuario pUsuario, GestionIdentidades pGestionIdentidades, GestionUsuarios pGestionUsuarios, Perfil pPerfil)
+        {
+			if (pSolicitudNuevoUsuario.ProyectosAutoAcceso != null && pSolicitudNuevoUsuario.ProyectosAutoAcceso != "")
+			{
+                ProyectoCN proyectoCN = new ProyectoCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+				string[] proysAutoAccesoID = pSolicitudNuevoUsuario.ProyectosAutoAcceso.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
+
+				foreach (string proyAutoAccID in proysAutoAccesoID)
+				{
+					Guid proyAutoAccesoID = new Guid(proyAutoAccID);
+
+					if (!proyectoCN.ParticipaUsuarioEnProyecto(proyAutoAccesoID, pUsuario.UsuarioID))
+					{
+						Guid orgAutoAccID = proyectoCN.ObtenerOrganizacionIDProyecto(proyAutoAccesoID);
+						AgregarIdentidadPerfilYUsuarioAProyecto(pGestionIdentidades, pGestionUsuarios, orgAutoAccID, proyAutoAccesoID, pUsuario, pPerfil, null);
+
+						pControladorDeSolicitudes.RegistrarUsuarioEnProyectoAutomatico(pPerfil, pUsuario, pGestionUsuarios, pGestionIdentidades);
+					}
+				}
+			}
+		}
+
+		#region Métodos Auxiliares AccionesExternas
+
+		private static JsonPreferenciaJerarquica ObtenerCategoriasJerarquicas(Guid pCategoriaID, SortedList<Guid, CategoriaTesauro> pListaCategoriasTesauro)
         {
             JsonPreferenciaJerarquica preferenciaJerarquica = new JsonPreferenciaJerarquica();
             preferenciaJerarquica.CategoriaID = pCategoriaID;
@@ -3220,9 +3265,9 @@ namespace Es.Riam.Gnoss.Web.Controles.ServiciosGenerales
                 if (filasProyRolClau != null)
                 {
                     JsonDatosExtraUsuario jsonDatosExtra = new JsonDatosExtraUsuario();
-                    jsonDatosExtra.NombreID = filaClausula.ClausulaID;
-                    jsonDatosExtra.Nombre = filaClausula.Texto;
-                    jsonDatosExtra.Valor = filasProyRolClau.Valor.ToString();
+                    jsonDatosExtra.name_id = filaClausula.ClausulaID;
+                    jsonDatosExtra.name = filaClausula.Texto;
+                    jsonDatosExtra.value = filasProyRolClau.Valor.ToString();
                     pListaJsonDatosExtra.Add(jsonDatosExtra);
                 }
             }
@@ -3242,9 +3287,9 @@ namespace Es.Riam.Gnoss.Web.Controles.ServiciosGenerales
                     foreach (DataRow fila in ds.Tables["EventosProyectoIdentidad"].Rows)
                     {
                         JsonEventoUsuario jsonEventoUsuario = new JsonEventoUsuario();
-                        jsonEventoUsuario.IdentificadorEvento = (Guid)fila["EventoID"];
-                        jsonEventoUsuario.NombreEvento = fila["InfoExtra"].ToString();
-                        jsonEventoUsuario.Fecha = (DateTime)fila["Fecha"];
+                        jsonEventoUsuario.event_id = (Guid)fila["EventoID"];
+                        jsonEventoUsuario.name = fila["InfoExtra"].ToString();
+                        jsonEventoUsuario.Date = (DateTime)fila["Fecha"];
                         pListadoEventosUsuarioProyecto.Add(jsonEventoUsuario);
                     }
                 }

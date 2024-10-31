@@ -11,6 +11,7 @@ using Es.Riam.Gnoss.AD.Parametro;
 using Es.Riam.Gnoss.AD.ServiciosGenerales;
 using Es.Riam.Gnoss.AD.Virtuoso;
 using Es.Riam.Gnoss.CL;
+using Es.Riam.Gnoss.CL.ParametrosAplicacion;
 using Es.Riam.Gnoss.CL.ServiciosGenerales;
 using Es.Riam.Gnoss.Elementos.Identidad;
 using Es.Riam.Gnoss.Elementos.ParametroGeneralDSEspacio;
@@ -21,6 +22,7 @@ using Es.Riam.Gnoss.Logica.Documentacion;
 using Es.Riam.Gnoss.Logica.ExportacionBusqueda;
 using Es.Riam.Gnoss.Logica.Facetado;
 using Es.Riam.Gnoss.Logica.Identidad;
+using Es.Riam.Gnoss.Logica.ParametroAplicacion;
 using Es.Riam.Gnoss.Logica.ParametrosProyecto;
 using Es.Riam.Gnoss.Logica.ServiciosGenerales;
 using Es.Riam.Gnoss.Logica.Tesauro;
@@ -1548,7 +1550,8 @@ namespace Es.Riam.Gnoss.Web.Controles.Proyectos
                 if (!string.IsNullOrEmpty(pestanya.IdiomasDisponibles))
                 {
                     string idiomas="";
-                    List<string> listaIdiomas = mConfigService.ObtenerListaIdiomas();
+					ParametroAplicacionCL paramCL = new ParametroAplicacionCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mServicesUtilVirtuosoAndReplication);
+					List<string> listaIdiomas = paramCL.ObtenerListaIdiomas();
                     foreach (string idioma in listaIdiomas)
                     {
                         if (UtilCadenas.ObtenerTextoDeIdioma(pestanya.IdiomasDisponibles, idioma, null, true) == "true")

@@ -291,7 +291,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
                     rdfType = System.IO.Path.GetFileNameWithoutExtension(pDocumento.GestorDocumental.ListaDocumentos[pDocumento.ElementoVinculadoID].Enlace);
                 }
 
-                return (listaPersonalizaciones.Contains("/Views/" + pNombreControlador + "_" + rdfType + "/Index.cshtml"));
+                return (listaPersonalizaciones.Contains("/Views/" + pNombreControlador + "_" + rdfType + "/Index.cshtml", StringComparer.OrdinalIgnoreCase));
             }
 
             return false;

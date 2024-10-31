@@ -271,7 +271,7 @@ namespace Es.Riam.Gnoss.Logica.ServiciosGenerales
         /// <returns></returns>
         public Guid? ObtenerOrganizacionIDPorIDTesauro(Guid pTesauroID)
         {
-            return this.OrganizacionAD.ObtenerOrganizacionIDPorIDTesauro(pTesauroID);
+            return OrganizacionAD.ObtenerOrganizacionIDPorIDTesauro(pTesauroID);
         }
         /// <summary>
         /// CARGA LIGERA. Obtiene las tablas "Organizacion" y "PersonaVinculoOrganizacion" de las organizaciones de una lista de identidades (se entiende que para identidades de tipo 1,2 0 3)  NO SE OBTIENEN LOS CAMPOS DE ORGANIZACION.LOGOTIPO NI DE PERSONAVINCULOORGANIZACION.FOTO
@@ -280,7 +280,7 @@ namespace Es.Riam.Gnoss.Logica.ServiciosGenerales
         /// <returns>Dataset de organizaciones</returns>
         public DataWrapperOrganizacion ObtenerOrganizacionesDeIdentidades(List<Guid> pIdentidades)
         {
-            return this.OrganizacionAD.ObtenerOrganizacionesDeIdentidades(pIdentidades);
+            return OrganizacionAD.ObtenerOrganizacionesDeIdentidades(pIdentidades);
         }
 
         /// <summary>
@@ -290,7 +290,7 @@ namespace Es.Riam.Gnoss.Logica.ServiciosGenerales
         /// <returns>Identificador de organización</returns>
         public Guid ObtenerOrganizacionesIDPorNombre(string pNombreCorto)
         {
-            return this.OrganizacionAD.ObtenerOrganizacionesIDPorNombre(pNombreCorto);
+            return OrganizacionAD.ObtenerOrganizacionesIDPorNombre(pNombreCorto);
         }
 
         /// <summary>

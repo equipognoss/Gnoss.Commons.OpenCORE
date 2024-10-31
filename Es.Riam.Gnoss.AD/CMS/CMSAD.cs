@@ -14,7 +14,6 @@ using System.Linq;
 
 namespace Es.Riam.Gnoss.AD.CMS
 {
-    //JOINS
     public class JoinCMSPropiedadComponenteCMSComponente
     {
         public CMSPropiedadComponente CMSPropiedadComponente { get; set; }
@@ -622,13 +621,13 @@ namespace Es.Riam.Gnoss.AD.CMS
             }
             dataWrapperCMS.ListaCMSBloqueComponentePropiedadComponente = queyCMSBloqueComponentePropiedadComponente.Select(item => item.CMSBloqueComponentePropiedadComponente).ToList().Distinct().ToList();
 
-            dataWrapperCMS = RecargarComponentesDeGruposDeComponentes(dataWrapperCMS, pProyectoID);
+            dataWrapperCMS = RecargarComponentesDeGruposDeComponentes(dataWrapperCMS, pProyectoID, pTraerSoloActivos);
 
             return dataWrapperCMS;
 
         }
 
-        public DataWrapperCMS RecargarComponentesDeGruposDeComponentes(DataWrapperCMS pCMSDW, Guid pProyectoID)
+        public DataWrapperCMS RecargarComponentesDeGruposDeComponentes(DataWrapperCMS pCMSDW, Guid pProyectoID, bool pTraerSoloActivos)
         {
             List<Guid> listaComponentesCargados = pCMSDW.ListaCMSComponente.Select(item => item.ComponenteID).ToList().Distinct().ToList();
 
@@ -659,12 +658,12 @@ namespace Es.Riam.Gnoss.AD.CMS
                 }
             }
 
-            DataWrapperCMS nuevosCMSDR = ObtenerComponentePorListaID(listaComponentesRecargar, pProyectoID);
+            DataWrapperCMS nuevosCMSDR = ObtenerComponentePorListaID(listaComponentesRecargar, pProyectoID, pTraerSoloActivos);
 
             if (nuevosCMSDR.ListaCMSComponente.Count > 0)
             {
                 pCMSDW.Merge(nuevosCMSDR);
-                RecargarComponentesDeGruposDeComponentes(pCMSDW, pProyectoID);
+                RecargarComponentesDeGruposDeComponentes(pCMSDW, pProyectoID, pTraerSoloActivos);
             }
             return pCMSDW;
         }
@@ -674,13 +673,20 @@ namespace Es.Riam.Gnoss.AD.CMS
         /// </summary>
         /// <param name="pComponenteID">lista de IDs de los componentes</param>
         /// <returns>DataSet de CMS</returns>
-        public DataWrapperCMS ObtenerComponentePorListaID(List<Guid> pListaComponenteID, Guid pProyectoID)
+        public DataWrapperCMS ObtenerComponentePorListaID(List<Guid> pListaComponenteID, Guid pProyectoID, bool pCargarSoloActivos)
         {
             DataWrapperCMS CMSDW = new DataWrapperCMS();
 
             if (pListaComponenteID.Count > 0)
             {
-                CMSDW.ListaCMSComponente = mEntityContext.CMSComponente.Where(item => pListaComponenteID.Contains(item.ComponenteID) && item.ProyectoID.Equals(pProyectoID)).ToList();
+                var consultaCMSComponente = mEntityContext.CMSComponente.Where(item => pListaComponenteID.Contains(item.ComponenteID) && item.ProyectoID.Equals(pProyectoID));
+                
+                if (pCargarSoloActivos)
+                {
+                    consultaCMSComponente = consultaCMSComponente.Where(item => item.Activo);
+                }
+                
+                CMSDW.ListaCMSComponente =  consultaCMSComponente.ToList();
                 CMSDW.ListaCMSPropiedadComponente = mEntityContext.CMSPropiedadComponente.Where(item => pListaComponenteID.Contains(item.ComponenteID)).ToList();
                 CMSDW.ListaCMSComponenteRolGrupoIdentidades = mEntityContext.CMSComponenteRolGrupoIdentidades.Where(item => pListaComponenteID.Contains(item.ComponenteID)).ToList();
                 CMSDW.ListaCMSComponenteRolIdentidad = mEntityContext.CMSComponenteRolIdentidad.Where(item => pListaComponenteID.Contains(item.ComponenteID)).ToList();
@@ -823,7 +829,7 @@ namespace Es.Riam.Gnoss.AD.CMS
             var queryCMSComponente = mEntityContext.CMSComponente.Where(item => item.ProyectoID.Equals(pProyectoID) && item.TipoComponente.Equals((short)pTipoComponente));
             if (!string.IsNullOrEmpty(pTexto))
             {
-                queryCMSComponente = queryCMSComponente.Where(item => item.Nombre.Equals(pTexto) || item.NombreCortoComponente.Equals(pTexto));
+                queryCMSComponente = queryCMSComponente.Where(item => item.Nombre.ToLower().Contains(pTexto.ToLower()) || item.NombreCortoComponente.Equals(pTexto.ToLower()));
             }
             dataWrapperCMS.ListaCMSComponente = queryCMSComponente.OrderBy(item => item.Nombre).ToList();
 
@@ -832,7 +838,7 @@ namespace Es.Riam.Gnoss.AD.CMS
             .ProyectoID.Equals(pProyectoID) && item.CMSComponente.TipoComponente.Equals((short)pTipoComponente));
             if (!string.IsNullOrEmpty(pTexto))
             {
-                queryCMSPropiedadComponente = queryCMSPropiedadComponente.Where(item => item.CMSComponente.Nombre.Equals(pTexto) || item.CMSComponente.NombreCortoComponente.Equals(pTexto));
+                queryCMSPropiedadComponente = queryCMSPropiedadComponente.Where(item => item.CMSComponente.Nombre.ToLower().Contains(pTexto.ToLower()) || item.CMSComponente.NombreCortoComponente.ToLower().Contains(pTexto.ToLower()));
             }
             dataWrapperCMS.ListaCMSPropiedadComponente = queryCMSPropiedadComponente.Select(item => item.CMSPropiedadComponente).ToList();
 
@@ -921,7 +927,7 @@ namespace Es.Riam.Gnoss.AD.CMS
         {
             DataSet dataSet = new DataSet();
             DbCommand commandsqlSelectSQLSERVER = ObtenerComando(pQuery);
-            CargarDataSet(commandsqlSelectSQLSERVER, dataSet, "Resultado");
+            CargarDataSet(commandsqlSelectSQLSERVER, dataSet, "Resultado", pEjecutarSiEsOracle: true, pEjecutarSiEsPostgres: true);
             return dataSet;
         }
 

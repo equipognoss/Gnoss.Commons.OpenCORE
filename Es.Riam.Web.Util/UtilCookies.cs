@@ -80,6 +80,7 @@ namespace Es.Riam.Web.Util
                 rnd.NextBytes(key);
                 ParametroAplicacion paramAplicacion = new ParametroAplicacion("ClaveEncriptado", Convert.ToBase64String(key));
                 entityContext.ParametroAplicacion.Add(paramAplicacion);
+                entityContext.SaveChanges();
             }
             else
             {
@@ -92,12 +93,12 @@ namespace Es.Riam.Web.Util
                 rnd.NextBytes(iv);
                 ParametroAplicacion paramAplicacion = new ParametroAplicacion("ClaveVectorEncriptado", Convert.ToBase64String(iv));
                 entityContext.ParametroAplicacion.Add(paramAplicacion);
+                entityContext.SaveChanges();
             }
             else
             {
                 iv = Convert.FromBase64String(claveVectorEncriptado);
             }
-            entityContext.SaveChanges();
 
             //Establecer la clave secreta para el algoritmo DES. 
             encriptador.Key = key;

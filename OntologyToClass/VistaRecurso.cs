@@ -416,7 +416,7 @@ namespace OntologiaAClase
 
         public void EscribirPropiedad(Propiedad pPropiedad)
         {
-            Vista.AppendLine($"<span class=\"value\" about=\"@semCmsModel.RootEntities.First().AboutRDFA\" property=\"{UtilCadenasOntology.ObtenerPrefijo(ontologia.NamespacesDefinidos, pPropiedad.Nombre, mLoggingService)}:{UtilCadenas.PrimerCaracterAMayuscula(UtilCadenasOntology.ObtenerNombreProp(pPropiedad.Nombre))}\"> @{UtilCadenasOntology.ObtenerNombreProp(pPropiedad.ElementoOntologia.TipoEntidad).ToLower()}.{ObtenerPrefijoPropiedad(pPropiedad)}_{UtilCadenasOntology.ObtenerNombreProp(pPropiedad.Nombre)} </span>");
+            Vista.AppendLine($"<span class=\"value\" about=\"@semCmsModel.RootEntities.First().AboutRDFA\" property=\"{UtilCadenasOntology.ObtenerPrefijo(ontologia.NamespacesDefinidos, pPropiedad.Nombre)}:{UtilCadenas.PrimerCaracterAMayuscula(UtilCadenasOntology.ObtenerNombreProp(pPropiedad.Nombre))}\"> @{UtilCadenasOntology.ObtenerNombreProp(pPropiedad.ElementoOntologia.TipoEntidad).ToLower()}.{ObtenerPrefijoPropiedad(pPropiedad)}_{UtilCadenasOntology.ObtenerNombreProp(pPropiedad.Nombre)} </span>");
         }
 
         public void EscribirHTML(ElementoOntologia pEntidad, bool esHelper)
@@ -585,7 +585,7 @@ namespace OntologiaAClase
         {
             string idioma = "";
 
-            string nombrePrefijo = UtilCadenas.PrimerCaracterAMayuscula(UtilCadenasOntology.ObtenerPrefijo(dicPref, propiedad.Attributes[0].InnerText, mLoggingService));
+            string nombrePrefijo = UtilCadenas.PrimerCaracterAMayuscula(UtilCadenasOntology.ObtenerPrefijo(dicPref, propiedad.Attributes[0].InnerText));
             string nombrePropiedad = UtilCadenasOntology.ObtenerNombreProp(propiedad.Attributes[0].InnerText);
             string nombreEntidad = UtilCadenasOntology.ObtenerNombreProp(propiedad.Attributes[1].InnerText);
             string rango = pNombrePadre;
@@ -630,7 +630,7 @@ namespace OntologiaAClase
                         else
                         {
                             string noment = UtilCadenasOntology.ObtenerNombreProp(objetoPropiedad1.NombreEntidad);
-                            string nombpref2 = UtilCadenas.PrimerCaracterAMayuscula(UtilCadenasOntology.ObtenerPrefijo(dicPref, objetoPropiedad1.NombrePropiedad, mLoggingService));
+                            string nombpref2 = UtilCadenas.PrimerCaracterAMayuscula(UtilCadenasOntology.ObtenerPrefijo(dicPref, objetoPropiedad1.NombrePropiedad));
                             string nombprop = UtilCadenasOntology.ObtenerNombreProp(objetoPropiedad1.NombrePropiedad);
 
                             Vista.AppendLine($@"{UtilCadenasOntology.Tabs(2)}foreach({nombrepref}Ontology.{rangoHijas} p{rangoHijas} in  p{noment}.{nombpref2}_{nombprop})");
@@ -664,7 +664,7 @@ namespace OntologiaAClase
                     {
                         string nombreOnto = UtilCadenas.PrimerCaracterAMayuscula(objetoPropiedad1.NombreOntologia);
                         string rang = UtilCadenasOntology.ObtenerNombreProp(objetoPropiedad1.Rango);
-                        Vista.AppendLine($@"{UtilCadenasOntology.Tabs(2)}foreach({nombreOnto}Ontology.{rang} p{rang} in  p{UtilCadenasOntology.ObtenerNombreProp(objetoPropiedad1.NombreEntidad)}.{UtilCadenas.PrimerCaracterAMayuscula(UtilCadenasOntology.ObtenerPrefijo(dicPref, objetoPropiedad1.NombrePropiedad, mLoggingService))}_{UtilCadenasOntology.ObtenerNombreProp(objetoPropiedad1.NombrePropiedad)})");
+                        Vista.AppendLine($@"{UtilCadenasOntology.Tabs(2)}foreach({nombreOnto}Ontology.{rang} p{rang} in  p{UtilCadenasOntology.ObtenerNombreProp(objetoPropiedad1.NombreEntidad)}.{UtilCadenas.PrimerCaracterAMayuscula(UtilCadenasOntology.ObtenerPrefijo(dicPref, objetoPropiedad1.NombrePropiedad))}_{UtilCadenasOntology.ObtenerNombreProp(objetoPropiedad1.NombrePropiedad)})");
                         Vista.AppendLine("{");
                         Vista.AppendLine("<div>");
                         Vista.AppendLine($@"{UtilCadenasOntology.Tabs(2)}<strong>@p{rang}.GetLabel(nameof(p{rang}.{nombrePrefijo}_{nombrePropiedad}),idiomaUsuario)</strong>");
@@ -711,7 +711,7 @@ namespace OntologiaAClase
          }*/
         private string ObtenerPrefijoPropiedad(Propiedad pPropiedad)
         {
-            return UtilCadenas.PrimerCaracterAMayuscula(UtilCadenasOntology.ObtenerPrefijo(dicPref, pPropiedad.Nombre, mLoggingService));
+            return UtilCadenas.PrimerCaracterAMayuscula(UtilCadenasOntology.ObtenerPrefijo(dicPref, pPropiedad.Nombre));
         }
 
         public void TratarTipoCampo(Propiedad pPropiedad, string pProperty)
@@ -810,7 +810,7 @@ namespace OntologiaAClase
 
         public string ObtenerPrefijoYPropiedad(string rang)
         {
-            return UtilCadenasOntology.ObtenerPrefijo(ontologia.NamespacesDefinidos, rang, mLoggingService) + ":" + UtilCadenasOntology.ObtenerNombreProp(rang);
+            return UtilCadenasOntology.ObtenerPrefijo(ontologia.NamespacesDefinidos, rang) + ":" + UtilCadenasOntology.ObtenerNombreProp(rang);
         }
         public void EscribirElementos(XmlNode nodo, Dictionary<Propiedad, Dictionary<string, string>> pDicAtributos, ElementoOntologia pEntidad)
         {
@@ -821,7 +821,7 @@ namespace OntologiaAClase
 
                 if (prop != null)
                 {
-                    string nombrePropiedad = $"{UtilCadenas.PrimerCaracterAMayuscula(UtilCadenasOntology.ObtenerPrefijo(dicPref, prop.Nombre, mLoggingService))}_{UtilCadenasOntology.ObtenerNombreProp(prop.Nombre)}";
+                    string nombrePropiedad = $"{UtilCadenas.PrimerCaracterAMayuscula(UtilCadenasOntology.ObtenerPrefijo(dicPref, prop.Nombre))}_{UtilCadenasOntology.ObtenerNombreProp(prop.Nombre)}";
                     string nombreRango = $"{UtilCadenasOntology.ObtenerNombreProp(prop.Rango)}";
                     string nombreEntidad = $"p{UtilCadenasOntology.ObtenerNombreProp(prop.ElementoOntologia.TipoEntidad)}";
                     if (!prop.FunctionalProperty)
@@ -885,7 +885,7 @@ namespace OntologiaAClase
                             nombrePropiedad += "[idiomaUsuario]";
                         }
 
-                        string propertyValue = $"@{nombreEntidad}.GetPropertyURI(nameof({nombreEntidad}.{ UtilCadenas.PrimerCaracterAMayuscula(UtilCadenasOntology.ObtenerPrefijo(dicPref, prop.Nombre, mLoggingService))}_{ UtilCadenasOntology.ObtenerNombreProp(prop.Nombre)}))";
+                        string propertyValue = $"@{nombreEntidad}.GetPropertyURI(nameof({nombreEntidad}.{ UtilCadenas.PrimerCaracterAMayuscula(UtilCadenasOntology.ObtenerPrefijo(dicPref, prop.Nombre))}_{ UtilCadenasOntology.ObtenerNombreProp(prop.Nombre)}))";
                         Vista.AppendLine("<span class=\"values\">");
                         if (prop.ValorUnico)
                         {

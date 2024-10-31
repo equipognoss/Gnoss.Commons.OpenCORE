@@ -16,8 +16,6 @@ namespace Es.Riam.Gnoss.Logica.Live
     /// </summary>
     public class LiveCN : BaseCN, IDisposable
     {
-        private LoggingService mLoggingService;
-
         #region Constructores
 
         /// <summary>
@@ -56,20 +54,19 @@ namespace Es.Riam.Gnoss.Logica.Live
             {
                 if (Transaccion != null)
                 {
-                    this.LiveAD.ActualizarBD(pLiveDS, pUsarRabbitSiEstaConfigurado);
+                    LiveAD.ActualizarBD();
                 }
                 else
                 {
                     IniciarTransaccion(false);
-                    {
-                        this.LiveAD.ActualizarBD(pLiveDS, pUsarRabbitSiEstaConfigurado);
 
-                        if (pLiveDS != null)
-                        {
-                            pLiveDS.AcceptChanges();
-                        }
-                        TerminarTransaccion(true);
+                    LiveAD.ActualizarBD();
+
+                    if (pLiveDS != null)
+                    {
+                        pLiveDS.AcceptChanges();
                     }
+                    TerminarTransaccion(true);
                 }
             }
             catch (DBConcurrencyException ex)
@@ -106,20 +103,20 @@ namespace Es.Riam.Gnoss.Logica.Live
             {
                 if (Transaccion != null)
                 {
-                    this.LiveAD.ActualizarComentariosBD(pLiveDS, pPerfilID, pTiposComentarioActualizar, pDisminuir);
+                    LiveAD.ActualizarComentariosBD(pPerfilID, pTiposComentarioActualizar, pDisminuir);
                 }
                 else
                 {
                     IniciarTransaccion();
-                    {
-                        this.LiveAD.ActualizarComentariosBD(pLiveDS, pPerfilID, pTiposComentarioActualizar, pDisminuir);
 
-                        if (pLiveDS != null)
-                        {
-                            pLiveDS.AcceptChanges();
-                        }
-                        TerminarTransaccion(true);
+                    LiveAD.ActualizarComentariosBD(pPerfilID, pTiposComentarioActualizar, pDisminuir);
+
+                    if (pLiveDS != null)
+                    {
+                        pLiveDS.AcceptChanges();
                     }
+                    TerminarTransaccion(true);
+
                 }
             }
             catch (DBConcurrencyException ex)

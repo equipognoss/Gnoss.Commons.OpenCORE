@@ -229,7 +229,7 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
                         .HasColumnType("boolean");
 
                     b.Property<DateTime>("Fecha")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<string>("Licencia")
                         .HasMaxLength(10)
@@ -293,7 +293,7 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
                         .HasColumnOrder(2);
 
                     b.Property<DateTime>("Fecha")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
                     b.HasKey("TesauroID", "CategoriaTesauroID", "BlogID");
 
@@ -347,10 +347,10 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
                         .HasColumnType("smallint");
 
                     b.Property<DateTime>("FechaCreacion")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<DateTime>("FechaModificacion")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<string>("Tags")
                         .HasColumnType("text");
@@ -384,7 +384,7 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
                         .HasColumnType("smallint");
 
                     b.Property<DateTime>("FechaAlta")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<Guid?>("IdentidadID")
                         .HasColumnType("uuid");
@@ -392,6 +392,11 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
                     b.Property<string>("Nombre")
                         .HasMaxLength(1200)
                         .HasColumnType("character varying(1200)");
+
+                    b.Property<string>("Ontologia")
+                        .IsRequired()
+                        .HasMaxLength(2000)
+                        .HasColumnType("character varying(2000)");
 
                     b.Property<Guid?>("OrganizacionID")
                         .HasColumnType("uuid");
@@ -424,15 +429,10 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
                         .HasColumnType("smallint");
 
                     b.Property<DateTime?>("FechaAlta")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<DateTime?>("FechaProcesado")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("Ontologia")
-                        .IsRequired()
-                        .HasMaxLength(2000)
-                        .HasColumnType("character varying(2000)");
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<string>("RutaBusqueda")
                         .IsRequired()
@@ -561,7 +561,7 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
                         .HasColumnType("text");
 
                     b.Property<DateTime?>("FechaUltimaActualizacion")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<string>("IdiomasDisponibles")
                         .IsUnicode(false)
@@ -756,7 +756,7 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
                         .HasColumnType("boolean");
 
                     b.Property<DateTime>("Fecha")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<Guid>("IdentidadID")
                         .HasColumnType("uuid");
@@ -1151,7 +1151,7 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
                         .HasColumnType("smallint");
 
                     b.Property<DateTime>("Fecha")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<Guid>("ID")
                         .HasColumnType("uuid");
@@ -1193,10 +1193,10 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
                         .HasColumnType("bigint");
 
                     b.Property<DateTime>("FechaEncolado")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<DateTime?>("FechaProcesado")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<string>("InfoExtra")
                         .HasColumnType("text");
@@ -1227,7 +1227,7 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
                     b.Property<bool>("CreadorEsAutor")
                         .HasColumnType("boolean");
 
-                    b.Property<Guid?>("CreadorID")
+                    b.Property<Guid>("CreadorID")
                         .HasColumnType("uuid");
 
                     b.Property<string>("Descripcion")
@@ -1244,13 +1244,13 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
                         .HasColumnType("character varying(1200)");
 
                     b.Property<DateTime?>("FechaCreacion")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<DateTime?>("FechaModificacion")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<DateTime?>("FechaProteccion")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<Guid?>("FichaBibliograficaID")
                         .HasColumnType("uuid");
@@ -1330,6 +1330,12 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
 
                     b.HasKey("DocumentoID");
 
+                    b.HasIndex("CreadorID");
+
+                    b.HasIndex("Tipo", "Eliminado", "Visibilidad");
+
+                    NpgsqlIndexBuilderExtensions.IncludeProperties(b.HasIndex("Tipo", "Eliminado", "Visibilidad"), new[] { "ProyectoID" });
+
                     b.ToTable("Documento");
                 });
 
@@ -1382,7 +1388,7 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
                         .HasColumnType("uuid");
 
                     b.Property<DateTime>("FechaEdicion")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<Guid>("IdentidadID")
                         .HasColumnType("uuid");
@@ -1430,7 +1436,7 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
                         .HasColumnOrder(1);
 
                     b.Property<DateTime>("Fecha")
-                        .HasColumnType("timestamp with time zone")
+                        .HasColumnType("timestamp without time zone")
                         .HasColumnOrder(2);
 
                     b.Property<bool>("EnvioRealizado")
@@ -1648,7 +1654,7 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
                         .HasColumnType("smallint");
 
                     b.Property<DateTime>("FechaCreacion")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<string>("NombreArchivo")
                         .HasColumnType("text");
@@ -1680,7 +1686,7 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
                         .HasColumnType("smallint");
 
                     b.Property<DateTime>("FechaCreacion")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<string>("NombreArchivo")
                         .HasColumnType("text");
@@ -1726,7 +1732,7 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
                         .HasColumnOrder(1);
 
                     b.Property<DateTime>("Fecha")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<Guid>("IdentidadID")
                         .HasColumnType("uuid");
@@ -1757,7 +1763,7 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
                         .HasColumnOrder(3);
 
                     b.Property<DateTime?>("Fecha")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
                     b.HasKey("TesauroID", "CategoriaTesauroID", "BaseRecursosID", "DocumentoID");
 
@@ -1781,13 +1787,13 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
                         .HasColumnType("boolean");
 
                     b.Property<DateTime?>("FechaCertificacion")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<DateTime?>("FechaPublicacion")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<DateTime?>("FechaUltimaVisita")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<bool?>("IdentPubVisibleExt")
                         .HasColumnType("boolean");
@@ -1873,7 +1879,7 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
                         .HasColumnOrder(1);
 
                     b.Property<DateTime?>("FechaUltimaVisita")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<int>("NumeroConsultas")
                         .HasColumnType("integer");
@@ -1922,7 +1928,7 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
                         .HasColumnType("uuid");
 
                     b.Property<DateTime>("Fecha")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<Guid>("IdentidadID")
                         .HasColumnType("uuid");
@@ -1961,10 +1967,10 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
                         .HasColumnType("character varying(1000)");
 
                     b.Property<DateTime>("FechaModificacion")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<DateTime?>("FechaProcesado")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<bool>("Leido")
                         .HasColumnType("boolean");
@@ -2666,7 +2672,7 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
                         .HasColumnOrder(2);
 
                     b.Property<DateTime>("FechaAlta")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<short>("TipoPerfil")
                         .HasColumnType("smallint");
@@ -2690,7 +2696,7 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
                         .HasColumnType("boolean");
 
                     b.Property<DateTime>("Fecha")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
                     b.HasKey("IdentidadAmigoID", "IdentidadID");
 
@@ -2712,7 +2718,7 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
                         .HasColumnOrder(2);
 
                     b.Property<DateTime>("Fecha")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<Guid?>("GrupoAmigosGrupoID")
                         .HasColumnType("uuid");
@@ -2731,10 +2737,10 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
                         .HasColumnType("uuid");
 
                     b.Property<DateTime?>("FechaVisitaComentarios")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<DateTime?>("FechaVisitaSuscripciones")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<int>("NuevasInvitaciones")
                         .HasColumnType("integer");
@@ -2858,7 +2864,7 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
                         .HasColumnType("boolean");
 
                     b.Property<DateTime>("Fecha")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<Guid>("IdentidadID")
                         .HasColumnType("uuid");
@@ -2887,10 +2893,10 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
                         .HasColumnType("text");
 
                     b.Property<DateTime>("FechaAlta")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<DateTime?>("FechaBaja")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<string>("Nombre")
                         .IsRequired()
@@ -2942,10 +2948,10 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
                         .HasColumnOrder(1);
 
                     b.Property<DateTime>("FechaAlta")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<DateTime?>("FechaBaja")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
                     b.HasKey("GrupoID", "IdentidadID");
 
@@ -2992,13 +2998,13 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
                         .HasColumnType("integer");
 
                     b.Property<DateTime>("FechaAlta")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<DateTime?>("FechaBaja")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<DateTime?>("FechaExpulsion")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<string>("Foto")
                         .HasMaxLength(200)
@@ -3460,7 +3466,7 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
                         .HasColumnType("boolean");
 
                     b.Property<DateTime>("Fecha")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
                     b.HasKey("CorreoID");
 
@@ -3536,10 +3542,10 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
                         .HasColumnType("integer");
 
                     b.Property<DateTime>("FechaInvitacion")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<DateTime?>("FechaProcesado")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<Guid>("IdentidadDestinoID")
                         .HasColumnType("uuid");
@@ -3567,10 +3573,10 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
                         .HasColumnType("uuid");
 
                     b.Property<DateTime?>("FechaFin")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<DateTime>("FechaNotificacion")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<string>("Idioma")
                         .HasMaxLength(5)
@@ -3601,7 +3607,7 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
                         .HasColumnOrder(1);
 
                     b.Property<DateTime?>("FechaLectura")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
                     b.HasKey("NotificacionID", "PersonaID");
 
@@ -3626,7 +3632,7 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
                         .HasColumnType("smallint");
 
                     b.Property<DateTime?>("FechaEnvio")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<Guid?>("OrganizacionPersonaID")
                         .HasColumnType("uuid");
@@ -3652,7 +3658,7 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
                         .HasColumnType("smallint");
 
                     b.Property<DateTime?>("FechaEnvio")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<short>("Prioridad")
                         .HasColumnType("smallint");
@@ -3870,7 +3876,7 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
                         .HasColumnType("integer");
 
                     b.Property<DateTime?>("FechaCreacion")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<short>("SectorOrganizacion")
                         .HasColumnType("smallint");
@@ -3911,7 +3917,7 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
                         .HasColumnType("boolean");
 
                     b.Property<DateTime>("FechaInicio")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<Guid>("IdentidadID")
                         .HasColumnType("uuid");
@@ -4039,10 +4045,10 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
                         .HasColumnType("character varying(100)");
 
                     b.Property<DateTime?>("FechaAnadidaFoto")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<DateTime>("FechaVinculacion")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<byte[]>("Foto")
                         .HasColumnType("bytea");
@@ -4851,7 +4857,7 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
                         .HasColumnType("text");
 
                     b.Property<DateTime?>("FechaPublicacion")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<bool>("Publicado")
                         .HasColumnType("boolean");
@@ -4968,13 +4974,13 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
                         .HasColumnType("smallint");
 
                     b.Property<DateTime?>("FechaAnadidaFoto")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<DateTime?>("FechaNacimiento")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<DateTime?>("FechaNotificacionCorreccion")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<byte[]>("Foto")
                         .HasColumnType("bytea");
@@ -5049,10 +5055,10 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
                         .HasColumnType("smallint");
 
                     b.Property<DateTime>("FechaPeticion")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<DateTime?>("FechaProcesado")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<short>("Tipo")
                         .HasColumnType("smallint");
@@ -5439,6 +5445,9 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
                         .HasColumnType("uuid")
                         .HasColumnOrder(2);
 
+                    b.Property<string>("NombreCorto")
+                        .HasColumnType("text");
+
                     b.Property<bool>("Obligatorio")
                         .HasColumnType("boolean");
 
@@ -5457,6 +5466,9 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
                         .IsRequired()
                         .HasMaxLength(500)
                         .HasColumnType("character varying(500)");
+
+                    b.Property<bool>("VisiblePerfil")
+                        .HasColumnType("boolean");
 
                     b.HasKey("OrganizacionID", "ProyectoID", "DatoExtraID");
 
@@ -5977,10 +5989,10 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
                         .HasColumnType("smallint");
 
                     b.Property<DateTime?>("FechaFin")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<DateTime?>("FechaInicio")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<string>("Nombre")
                         .IsRequired()
@@ -6108,10 +6120,10 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
                         .HasColumnOrder(1);
 
                     b.Property<DateTime>("FechaCierre")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<DateTime>("FechaReapertura")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<string>("Motivo")
                         .IsRequired()
@@ -6134,7 +6146,7 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
                         .HasColumnOrder(1);
 
                     b.Property<DateTime>("FechaCierre")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<int>("PeriodoDeGracia")
                         .HasColumnType("integer");
@@ -6263,7 +6275,7 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
                         .HasColumnOrder(1);
 
                     b.Property<DateTime>("Fecha")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
                     b.HasKey("EventoID", "IdentidadID");
 
@@ -6955,12 +6967,18 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
                         .HasColumnType("smallint")
                         .HasColumnOrder(1);
 
+                    b.Property<string>("Consulta")
+                        .HasColumnType("text");
+
                     b.Property<string>("FiltroOrden")
                         .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<string>("NombreFiltro")
                         .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("OrderBy")
                         .HasColumnType("text");
 
                     b.HasKey("PestanyaID", "Orden");
@@ -6981,10 +6999,10 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
                         .HasColumnType("text");
 
                     b.Property<DateTime>("FechaCreacion")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<DateTime>("FechaModificacion")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<string>("HtmlAlternativo")
                         .HasColumnType("text");
@@ -7419,7 +7437,7 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
                         .HasColumnType("character varying(250)");
 
                     b.Property<DateTime>("FechaCreacion")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<string>("NombreParametro")
                         .HasMaxLength(250)
@@ -7609,10 +7627,10 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
                         .HasColumnType("smallint");
 
                     b.Property<DateTime?>("FechaProcesado")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<DateTime>("FechaSolicitud")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<Guid>("OrganizacionID")
                         .HasColumnType("uuid");
@@ -7740,7 +7758,7 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
                         .HasColumnType("integer");
 
                     b.Property<DateTime?>("FechaFundacion")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<short>("Sector")
                         .HasColumnType("smallint");
@@ -7833,7 +7851,7 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
                         .HasColumnType("boolean");
 
                     b.Property<DateTime?>("FechaNacimiento")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<string>("Idioma")
                         .IsRequired()
@@ -7957,7 +7975,7 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
                         .HasColumnType("boolean");
 
                     b.Property<DateTime?>("FechaSuscripcion")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<Guid>("IdentidadID")
                         .HasColumnType("uuid");
@@ -7969,7 +7987,7 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
                         .HasColumnType("integer");
 
                     b.Property<DateTime>("UltimoEnvio")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
                     b.HasKey("SuscripcionID");
 
@@ -8337,7 +8355,7 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
                         .HasColumnType("text");
 
                     b.Property<DateTime>("FechaActualizacion")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
                     b.HasKey("ProyectoID");
 
@@ -8505,11 +8523,11 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
                         .HasColumnOrder(3);
 
                     b.Property<DateTime>("FechaEntrada")
-                        .HasColumnType("timestamp with time zone")
+                        .HasColumnType("timestamp without time zone")
                         .HasColumnOrder(4);
 
                     b.Property<DateTime?>("FechaSalida")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
                     b.HasKey("UsuarioID", "OrganizacionGnossID", "ProyectoID", "IdentidadID", "FechaEntrada");
 
@@ -8651,7 +8669,7 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
                         .HasColumnOrder(3);
 
                     b.Property<DateTime?>("FechaEntrada")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<int?>("Reputacion")
                         .HasColumnType("integer");
@@ -8709,7 +8727,7 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
                         .HasColumnType("boolean");
 
                     b.Property<DateTime?>("FechaCambioPassword")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<string>("Login")
                         .IsRequired()
@@ -8724,6 +8742,9 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
                     b.Property<string>("Password")
                         .HasMaxLength(50)
                         .HasColumnType("character varying(50)");
+
+                    b.Property<bool>("TwoFactorAuthentication")
+                        .HasColumnType("boolean");
 
                     b.Property<short>("Validado")
                         .HasColumnType("smallint");
@@ -8742,7 +8763,7 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
                         .HasColumnType("uuid");
 
                     b.Property<DateTime?>("FechaUltimaVisita")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<int>("NumeroAccesos")
                         .HasColumnType("integer");
@@ -8938,7 +8959,7 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
                         .HasColumnType("uuid");
 
                     b.Property<DateTime?>("FechaVotacion")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<Guid>("IdentidadID")
                         .HasColumnType("uuid");
@@ -9103,7 +9124,7 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
                         .HasColumnType("uuid");
 
                     b.Property<DateTime>("Fecha")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<string>("Login")
                         .IsRequired()
@@ -9429,6 +9450,17 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
                     b.Navigation("BaseRecursos");
 
                     b.Navigation("Usuario");
+                });
+
+            modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Documentacion.Documento", b =>
+                {
+                    b.HasOne("Es.Riam.Gnoss.AD.EntityModel.Models.IdentidadDS.Identidad", "Creador")
+                        .WithMany("Documentos")
+                        .HasForeignKey("CreadorID")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Creador");
                 });
 
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Documentacion.DocumentoAtributoBiblio", b =>
@@ -11339,6 +11371,8 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
                     b.Navigation("DatoExtraProyectoOpcionIdentidad");
 
                     b.Navigation("DatoExtraProyectoVirtuosoIdentidad");
+
+                    b.Navigation("Documentos");
 
                     b.Navigation("GrupoIdentidadesParticipacion");
 

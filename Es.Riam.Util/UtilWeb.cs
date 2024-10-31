@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using System.Net.Http;
+using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Web;
@@ -141,6 +142,10 @@ namespace Es.Riam.Util
                 webRequest.UserAgent = _httpContextAccessor.HttpContext.Request.Headers["UserAgent"];
                 UriActual = new Uri(UriHelper.GetEncodedUrl(_httpContextAccessor.HttpContext.Request));
             }
+            else
+            {
+                webRequest.UserAgent = GenerarUserAgent();
+            }
 
             if (_httpContextAccessor.HttpContext != null)
             {
@@ -231,13 +236,18 @@ namespace Es.Riam.Util
             webRequest.ServicePoint.Expect100Continue = false;
             if (pRequest != null)
             {
-                webRequest.UserAgent = pRequest.HttpContext.Request.Headers["UserAgent"];
+                //webRequest.UserAgent = pRequest.HttpContext.Request.Headers["UserAgent"];
+                webRequest.UserAgent = GenerarUserAgent();
                 UriActual = new Uri(UriHelper.GetEncodedUrl(pRequest.HttpContext.Request));
                 if (pRequest.HttpContext.Request.Headers != null)
                 {
                     string accept = pRequest.HttpContext.Request.Headers["Accept"];
                     webRequest.Accept = accept;
                 }
+            }
+            else
+            {
+                webRequest.UserAgent = GenerarUserAgent();
             }
             
 
@@ -369,10 +379,11 @@ namespace Es.Riam.Util
         /// <returns></returns>
         public static string HacerPeticionPost(string pUrl, Dictionary<string, string> pParametros, Dictionary<string, string> pCabeceras = null)
         {
-            WebRequest wr = (HttpWebRequest)System.Net.WebRequest.Create(pUrl);
+            HttpWebRequest wr = (HttpWebRequest)System.Net.WebRequest.Create(pUrl);
             wr.Method = "POST";
             wr.ContentType = "application/x-www-form-urlencoded";
             wr.Timeout = 300000;
+            wr.UserAgent = GenerarUserAgent();
 
             if (pCabeceras != null)
             {
@@ -449,10 +460,11 @@ namespace Es.Riam.Util
         /// <returns></returns>
         private static WebResponse HacerPeticionDevolviendoWebResponse(string pMethod, string pUrl, Dictionary<string, string> pParametros)
         {
-            WebRequest wr = (HttpWebRequest)System.Net.WebRequest.Create(pUrl);
+            HttpWebRequest wr = (HttpWebRequest)System.Net.WebRequest.Create(pUrl);
             wr.Timeout = 1200000;//20 minutos
             wr.Method = pMethod;
             wr.ContentType = "application/x-www-form-urlencoded";
+            wr.UserAgent = GenerarUserAgent();
 
             //Codificación del mensaje
             string requestParameters = "";
@@ -618,6 +630,7 @@ namespace Es.Riam.Util
         public static string WebRequest(string httpMethod, string url, string postData = "", string contentType = "", string acceptHeader = "", Dictionary<HttpRequestHeader, string> cabecerasAdicionales = null)
         {
             HttpContent contentData = new StringContent(postData, System.Text.Encoding.UTF8, "application/json");
+            contentData.Headers.Add("UserAgent", GenerarUserAgent());
             string result = "";
             HttpResponseMessage response = null;
             try
@@ -708,7 +721,16 @@ namespace Es.Riam.Util
             return responseData;
         }*/
 
-
+        /// <summary>
+        /// Generate the UserAgent
+        /// </summary>
+        /// <returns>The custom UserAgent</returns>
+        public static string GenerarUserAgent()
+        {
+            string OSVersion = Environment.OSVersion.ToString();
+            Version assemblyVersion = Assembly.GetEntryAssembly().GetName().Version;
+            return $"Mozilla/5.0 ({OSVersion}) +https://www.gnoss.com Gnoss.WebRequestModule/{assemblyVersion}";
+        }
 
         #endregion
     }

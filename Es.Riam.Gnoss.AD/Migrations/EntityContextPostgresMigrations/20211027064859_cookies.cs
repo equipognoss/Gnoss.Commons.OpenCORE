@@ -26,7 +26,7 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
                         name: "FK_CategoriaProyectoCookie_Proyecto_ProyectoID_OrganizacionID",
                         columns: x => new { x.ProyectoID, x.OrganizacionID },
                         principalTable: "Proyecto",
-                        principalColumns: new[] { "OrganizacionID", "ProyectoID" },
+                        principalColumns: new[] { "ProyectoID", "OrganizacionID" },
                         onDelete: ReferentialAction.Restrict);
                 });
 
@@ -57,7 +57,7 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
                         name: "FK_ProyectoCookie_Proyecto_ProyectoID_OrganizacionID",
                         columns: x => new { x.ProyectoID, x.OrganizacionID },
                         principalTable: "Proyecto",
-                        principalColumns: new[] { "OrganizacionID", "ProyectoID" },
+                        principalColumns: new[] {"ProyectoID", "OrganizacionID" },
                         onDelete: ReferentialAction.Restrict);
                 });
 

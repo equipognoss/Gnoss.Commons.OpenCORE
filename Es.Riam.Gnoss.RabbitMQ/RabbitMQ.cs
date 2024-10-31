@@ -16,48 +16,27 @@ namespace Es.Riam.Gnoss.RabbitMQ
         public delegate void ShutDownDelegate();
 
         [ThreadStatic]
-        public static string mClientName = "";
+        private static string mClientName;
 
-        private string mTipoCola = "";
+        private readonly string mTipoCola;
 
-        private string mQueueName = "";
+        private readonly string mQueueName;
 
-        private string mExchangeName = "";
+        private readonly string mExchangeName;
 
-        private string mRouting = "";
+        private readonly string mRouting;
 
         private static ConcurrentDictionary<string, ConcurrentDictionary<string, string>> mListaCadenasConexiones = new ConcurrentDictionary<string, ConcurrentDictionary<string, string>>();
 
-        private IAMQPClient Cliente;
+        private readonly IAMQPClient Cliente;
 
-        private static bool mEsAzureServiceBus;
-
-        public RabbitMQClient(string pTipoCola, string pQueueName, LoggingService loggingService,ConfigService configService, string pExchangeName = "", string pRouting = "")
+        public RabbitMQClient(string pTipoCola, string pQueueName, LoggingService loggingService, ConfigService configService, string pExchangeName = "", string pRouting = "")
         {
             mTipoCola = pTipoCola;
             mQueueName = pQueueName;
             mExchangeName = pExchangeName;
             mRouting = pRouting;
-
-            if (mEsAzureServiceBus)//Comprobar si es AzureServiceBus
-            {
-                Cliente = new AzureServiceBusAMQP(this, loggingService, configService);
-
-
-                if (!string.IsNullOrEmpty(configService.ObtenerAzureServiceBusReintentos()))
-                {
-                    AzureServiceBusAMQP.Reintentos = int.Parse(configService.ObtenerAzureServiceBusReintentos());
-                }
-                else if (!string.IsNullOrEmpty(configService.ObtenerAzureServiceBusEspera()))
-                {
-                    AzureServiceBusAMQP.Espera = int.Parse(configService.ObtenerAzureServiceBusEspera());
-                }
-
-            }
-            else
-            {
-                Cliente = new RabbitMQAMQP(this, loggingService, configService);
-            }
+            Cliente = new RabbitMQAMQP(this, loggingService, configService);
         }
 
         public int ContarElementosEnCola()
@@ -99,7 +78,6 @@ namespace Es.Riam.Gnoss.RabbitMQ
         {
             return Cliente.ExisteColaRabbit(pNombreCola);
         }
-
 
         public static string ClientName
         {
@@ -145,5 +123,4 @@ namespace Es.Riam.Gnoss.RabbitMQ
             }
         }
     }
-
 }

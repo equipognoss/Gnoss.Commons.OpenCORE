@@ -803,7 +803,7 @@ namespace Es.Riam.Gnoss.Elementos
                     }
                     if (GestorGnoss != null)
                     {
-                        this.GestorGnoss.OperacionConjunta = false; ;
+                        this.GestorGnoss.OperacionConjunta = false;
                     }
                     #endregion
 

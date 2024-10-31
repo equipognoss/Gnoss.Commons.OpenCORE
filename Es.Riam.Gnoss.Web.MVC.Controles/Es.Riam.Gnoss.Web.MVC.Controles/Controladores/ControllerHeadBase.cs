@@ -15,6 +15,7 @@ using Es.Riam.Gnoss.Util.Configuracion;
 using Es.Riam.Gnoss.Util.General;
 using Es.Riam.Gnoss.Web.Controles;
 using Es.Riam.Gnoss.Web.MVC.Models;
+using Es.Riam.Util;
 using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections.Generic;
@@ -102,6 +103,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
 
         protected virtual void ObtenerListaInputsHidden()
         {
+            
             ViewBag.ListaInputHidden = new List<KeyValuePair<string, string>>();
             ViewBag.ListaInputHidden.Add(new KeyValuePair<string, string>("inpt_proyID", ProyectoSeleccionado.Clave.ToString()));
             ViewBag.ListaInputHidden.Add(new KeyValuePair<string, string>("inpt_usuarioID", ControllerBase.UsuarioActual.UsuarioID.ToString()));
@@ -109,14 +111,15 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
             ViewBag.ListaInputHidden.Add(new KeyValuePair<string, string>("inpt_bool_estaEnProyecto", (!ControllerBase.UsuarioActual.EsIdentidadInvitada).ToString()));
             ViewBag.ListaInputHidden.Add(new KeyValuePair<string, string>("inpt_bool_esUsuarioInvitado", ControllerBase.UsuarioActual.EsUsuarioInvitado.ToString()));
             ViewBag.ListaInputHidden.Add(new KeyValuePair<string, string>("inpt_perfilID", IdentidadActual.PerfilID.ToString()));
+            
 
             string uridbpedia = GestorParametrosAplicacion.ParametroAplicacion.FirstOrDefault(item => item.Parametro.Equals(TiposParametrosAplicacion.URIGrafoDbpedia))?.Valor;
             if (!string.IsNullOrEmpty(uridbpedia))
             {
                 ViewBag.ListaInputHidden.Add(new KeyValuePair<string, string>("inpt_proyIDDbpedia", uridbpedia));
             }
-
-            if (ControllerBase.RequestParams("organizacion") != null && bool.Parse(ControllerBase.RequestParams("organizacion")) && IdentidadActual.IdentidadOrganizacion != null)
+            Guid guidParse = Guid.Empty;
+            if (ControllerBase.RequestParams("organizacion") != null && Guid.TryParse(ControllerBase.RequestParams("organizacion"), out guidParse) && IdentidadActual.IdentidadOrganizacion != null)
             {
                 ViewBag.ListaInputHidden.Add(new KeyValuePair<string, string>("inpt_identidadID", IdentidadActual.IdentidadOrganizacion.Clave.ToString().ToUpper()));
             }
@@ -195,10 +198,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
             string[] delimiter = { "|" };
 
             string proyecto = "";
-            if (!ProyectoVirtual.Clave.Equals(ProyectoAD.MetaProyecto))
-            {
-                proyecto = "&proyectoID=" + ProyectoVirtual.Clave;
-            }
+            proyecto = "&proyectoID=" + ProyectoVirtual.Clave;
 
             if (ProyectoVirtual.TipoAcceso.Equals(TipoAcceso.Privado) || ProyectoVirtual.TipoAcceso.Equals(TipoAcceso.Reservado))
             {
@@ -207,6 +207,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
 
             //string UrlRedirectLogin = mControllerBase.ObtenerUrlHomeConectado();
             string UrlRedirectLogin = "";
+            string UrlParametros = "";
 
             if (!string.IsNullOrEmpty(ControllerBase.RequestParams("redirect")))
             {
@@ -254,28 +255,62 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
                 {
                     UrlRedirectLogin = UrlRedirectLogin + "/" + ControllerBase.RequestParams("redirect");
                 }
-
-                if (!UrlRedirectLogin.Contains("?") && mHttpContextAccessor.HttpContext.Request.QueryString.HasValue)
-                    if (!mHttpContextAccessor.HttpContext.Request.QueryString.ToString().Trim().Equals(""))
+                try
+                {
+                    if (!string.IsNullOrEmpty(UrlRedirectLogin)) 
                     {
-                        UrlRedirectLogin = UrlRedirectLogin + "?" + mHttpContextAccessor.HttpContext.Request.QueryString;
+                        string hostRedirect = new Uri(UrlRedirectLogin).Host;
+                        string hostProyecto = new Uri(ProyectoSeleccionado.UrlPropia(IdiomaUsuario)).Host;
+                        string urlRedirectLimpio = UtilCadenas.LimpiarInyeccionCodigo(UrlRedirectLogin);
+                        if (!hostRedirect.Equals(hostProyecto) || !urlRedirectLimpio.Equals(UrlRedirectLogin))
+                        {
+                            UrlRedirectLogin = "";
+                        }
                     }
+                   
+                }
+                catch(Exception ex)
+                {
+                    UrlRedirectLogin = "";
+                }
+                
+               
+                //Comprobamos si el redirect tiene parámetros
+                if (!UrlRedirectLogin.Contains("?") && mHttpContextAccessor.HttpContext.Request.QueryString.HasValue)
+                {
+                    UrlParametros = ObtenerParametrosParaRedireccio();
+                }
             }
 
             if (!string.IsNullOrEmpty(UrlRedirectLogin))
             {
-                UrlRedirectLogin = "&redirect=" + HttpUtility.UrlEncode(UrlRedirectLogin);
+                UrlRedirectLogin = $"&redirect={HttpUtility.UrlEncode(UrlRedirectLogin)}";
             }
 
-            ViewBag.UrlActionLogin = UrlServicioLogin + "/login?token=" + HttpUtility.UrlEncode(TokenLoginUsuario) + UrlRedirectLogin + proyecto;
-            //ViewBag.UrlActionLogin = UrlServicioLogin + "/login.aspx?token=" + HttpUtility.UrlEncode(MachineKeyCryptography.Encriptar(UtilUsuario.TokenLoginUsuario)) + UrlRedirectLogin + proyecto;
+            UrlRedirectLogin += UrlParametros;
+
+            string idioma = $"&idioma={IdiomaUsuario}";
+
+            string baseURL = $"&baseURL={BaseURLIdioma}";
+
+            ViewBag.UrlActionLogin = $"{UrlServicioLogin}/login?token={HttpUtility.UrlEncode(TokenLoginUsuario)}{UrlRedirectLogin}{proyecto}{idioma}{baseURL}";
+            
+            if(string.IsNullOrEmpty(UrlRedirectLogin))
+            {
+                GnossUrlsSemanticas gnossUrlsSemanticas = new GnossUrlsSemanticas(mLoggingService, mEntityContext, mConfigService, mServicesUtilVirtuosoAndReplication);
+                string UrlRedirect = gnossUrlsSemanticas.ObtenerURLComunidad(new Recursos.UtilIdiomas(IdiomaUsuario, mLoggingService, mEntityContext, mConfigService, mRedisCacheWrapper), BaseURLIdioma, ProyectoVirtual.NombreCorto);
+                ViewBag.UrlActionTwoFactorAuthentication = $"{UrlServicioLogin}/externallogin?loginToken={HttpUtility.UrlEncode(TokenLoginUsuario)}&redirect={UrlRedirect}&proyectoID={ProyectoVirtual.Clave}";
+            }
+            else
+            {
+                ViewBag.UrlActionTwoFactorAuthentication = $"{UrlServicioLogin}/externallogin?loginToken={HttpUtility.UrlEncode(TokenLoginUsuario)}{UrlRedirectLogin}&proyectoID={ProyectoVirtual.Clave}";
+            }
 
             ViewBag.ListaInputHidden.Add(new KeyValuePair<string, string>("inpt_UrlLogin", ViewBag.UrlActionLogin));
 
             ViewBag.ListaInputHidden.Add(new KeyValuePair<string, string>("inpt_UrlLoginCookie", UrlServicioLogin));
 
             //EtiquetadoAutomático
-
             ViewBag.ListaInputHidden.Add(new KeyValuePair<string, string>("inpt_usarMasterParaLectura", ControllerBase.UsuarioActual.UsarMasterParaLectura.ToString()));
             string inpt_UrlServicioFacetas = mConfigService.ObtenerUrlServicioFacetasExterno();
             string inpt_UrlServicioResultados = mConfigService.ObtenerUrlServicioResultadosExterno();
@@ -286,6 +321,8 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
 
 
             ViewBag.ListaInputHidden.Add(new KeyValuePair<string, string>("inpt_UrlServicioContextos", mConfigService.ObtenerUrlServicio("contextosHome")));
+
+            ViewBag.ListaInputHidden.Add(new KeyValuePair<string, string>("inpt_Notificaciones", mConfigService.ObtenerVapidPublicKey()));
 
             if (!string.IsNullOrEmpty(UrlServicioContextos))
             {
@@ -352,6 +389,74 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
                     ViewBag.ListaInputHidden.Add(new KeyValuePair<string, string>("inpt_DuracionCookieUsuario", filasParamDuracionCookieUsuario.First().Valor));
                 }
             }
+
+            bool matomoConfigurado = !string.IsNullOrEmpty(mConfigService.ObtenerUrlMatomo());
+            if(matomoConfigurado)
+            {
+                ViewBag.ListaInputHidden.Add(new KeyValuePair<string, string>("inpt_matomoConfigurado", "True"));
+            }
+            else
+            {
+                ViewBag.ListaInputHidden.Add(new KeyValuePair<string, string>("inpt_matomoConfigurado", "False"));
+            }
+        }
+
+        /// <summary>
+        /// Metodo para añadirele los parametros necesarios a la url de redireccion si los hay
+        /// </summary>
+        /// <param name="UrlRedirectLogin">Url redireccion</param>
+        /// <returns></returns>
+        private string ObtenerParametrosParaRedireccio()
+        {
+            string parametros = mHttpContextAccessor.HttpContext.Request.QueryString.ToString();
+
+            if (!string.IsNullOrEmpty(parametros.Trim()))
+            {
+                //Comprobamos si en los parámetros adicionales se incluye el propio redirect
+                if (parametros.Contains("?redirect") || parametros.Contains("&redirect"))
+                {
+                    int comienzoParametroRedirect = parametros.IndexOf("?redirect");
+
+                    //Si contiene redirect y comienza por redirect
+                    if (comienzoParametroRedirect != -1)
+                    {
+                        int finParametroRedirect = parametros.IndexOf("&");
+                        //Comprobamos si hay algún parámetro más a parte del redirect
+                        if (finParametroRedirect != -1)
+                        {
+                            //Si hay más parámetros, eliminamos el parámetro redirect y dejamos el resto
+                            parametros = parametros.Replace(parametros.Substring(comienzoParametroRedirect, finParametroRedirect), "");
+                        }
+                        else
+                        {
+                            //Si no hay más parámetros que el redirect lo eliminamos
+                            parametros = string.Empty;
+                        }
+                    }
+                    else
+                    {
+                        //Si el redirect no es el primer parámetro obtenemos el siguiente en caso de haberlo
+                        comienzoParametroRedirect = parametros.IndexOf("&redirect");
+
+                        int siguieteParametro = parametros.Substring(comienzoParametroRedirect + 1).IndexOf("&");
+
+                        if (siguieteParametro != -1)
+                        {
+                            //Si hay parámetro después del redirect eliminamos el redirect
+                            parametros = parametros.Replace(parametros.Substring(comienzoParametroRedirect, siguieteParametro + 1), "");
+                        }
+                        else
+                        {
+                            //Si no hay parámetros despúes del redirect, nos quedamos con los parámetros anteriores
+                            parametros = parametros.Substring(0, comienzoParametroRedirect);
+                        }
+                    }
+                }
+                //Cambiamos los ? por &
+                parametros.Replace('?', '&');
+            }
+
+            return parametros;
         }
     }
 }

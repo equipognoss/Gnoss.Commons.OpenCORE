@@ -57,6 +57,7 @@ using System.Data;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using Proyecto = Es.Riam.Gnoss.AD.EntityModel.Models.ProyectoDS.Proyecto;
 
 namespace Es.Riam.Gnoss.Web.Controles.Solicitudes
 {
@@ -218,7 +219,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Solicitudes
             
             List<AD.EntityModel.Models.IdentidadDS.GrupoAmigos> filasGrupoAmigos = gestorIdentidades.GestorAmigos.AmigosDW.ListaGrupoAmigos.Where(item => item.Tipo == (int)TipoGrupoAmigos.AutomaticoOrganizacion && item.Automatico && item.IdentidadID.Equals(perfilOrg.IdentidadMyGNOSS.Clave)).ToList();
 
-            UtilIdiomas utilIdiomas = new UtilIdiomas("", null, persona.FilaPersona.Idioma, ProyectoSeleccionado.Clave, Guid.Empty, Guid.Empty, mLoggingService, mEntityContext, mConfigService);
+            UtilIdiomas utilIdiomas = new UtilIdiomas("", null, persona.FilaPersona.Idioma, ProyectoSeleccionado.Clave, Guid.Empty, Guid.Empty, mLoggingService, mEntityContext, mConfigService, mRedisCacheWrapper);
 
             gestorOrg.AgregarAdministradorDeOrganizacion(filaUsuario.UsuarioID, org.Clave, gestorUsuarios);
             mEntityContext.SaveChanges();
@@ -603,6 +604,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Solicitudes
                         Guid proyectoRegistroUsuario = filaSU.Solicitud.ProyectoID;
 
                         RegistrarUsuarioEnProyectosObligatorios(organizacionRegistroUsuario, proyectoRegistroUsuario, filaPersona.PersonaID, perfil, filaUsuario, gestorUsuarios, gestorIdentidades);
+                        RegistrarUsuarioEnProyectoAutomatico(perfil, filaUsuario, gestorUsuarios, gestorIdentidades);
                         gestorIdentidades.RecargarHijos();
                     }
                     else
@@ -635,7 +637,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Solicitudes
                     }
                     List<AD.EntityModel.Models.IdentidadDS.GrupoAmigos> filasGrupoAmigos = gestorIdentidades.GestorAmigos.AmigosDW.ListaGrupoAmigos.Where(item => item.Tipo == (int)TipoGrupoAmigos.AutomaticoOrganizacion && item.Automatico && item.IdentidadID.Equals(perfilOrg.IdentidadMyGNOSS.Clave)).ToList();
 
-                    UtilIdiomas utilIdiomas = new UtilIdiomas("", null, persona.FilaPersona.Idioma, ProyectoSeleccionado.Clave, Guid.Empty, Guid.Empty, mLoggingService, mEntityContext, mConfigService);
+                    UtilIdiomas utilIdiomas = new UtilIdiomas("", null, persona.FilaPersona.Idioma, ProyectoSeleccionado.Clave, Guid.Empty, Guid.Empty, mLoggingService, mEntityContext, mConfigService, mRedisCacheWrapper);
 
                     gestorOrg.AgregarAdministradorDeOrganizacion(filaUsuario.UsuarioID, org.Clave, gestorUsuarios);
 
@@ -1092,15 +1094,20 @@ namespace Es.Riam.Gnoss.Web.Controles.Solicitudes
                     Guid organizacionRegistroUsuario = filaNuevoUsuario.Solicitud.OrganizacionID;
                     Guid proyectoRegistroUsuario = filaNuevoUsuario.Solicitud.ProyectoID;
 
-                    new ControladorDeSolicitudes(mLoggingService, mEntityContext, mConfigService, mRedisCacheWrapper, mGnossCache, mEntityContextBASE, mVirtuosoAD, mHttpContextAccessor, mServicesUtilVirtuosoAndReplication).RegistrarUsuarioEnProyectosObligatorios(organizacionRegistroUsuario, proyectoRegistroUsuario, filaPersona.PersonaID, perfilPersona, filaUsuario, gestorUsuarios, gestorIdentidades);
-                    gestorIdentidades.RecargarHijos();
+					RegistrarUsuarioEnProyectosObligatorios(organizacionRegistroUsuario, proyectoRegistroUsuario, filaPersona.PersonaID, perfilPersona, filaUsuario, gestorUsuarios, gestorIdentidades);
+					RegistrarUsuarioEnProyectoAutomatico(perfilPersona, filaUsuario, gestorUsuarios, gestorIdentidades);
+					gestorIdentidades.RecargarHijos();
 
                     if (!filaNuevoUsuario.Solicitud.ProyectoID.Equals(ProyectoAD.MetaProyecto) && !filaNuevoUsuario.Solicitud.ProyectoID.Equals(ProyectoAD.ProyectoFAQ) && !filaNuevoUsuario.Solicitud.ProyectoID.Equals(ProyectoAD.ProyectoNoticias) && !filaNuevoUsuario.Solicitud.ProyectoID.Equals(ProyectoAD.ProyectoDidactalia))
                     {
                         Guid organizacionID = filaNuevoUsuario.Solicitud.OrganizacionID;
                         Guid proyectoID = filaNuevoUsuario.Solicitud.ProyectoID;
-                        Identidad ObjetoIdentidadProy = new ControladorIdentidades(gestorIdentidades, mLoggingService, mEntityContext, mConfigService, mRedisCacheWrapper, mGnossCache, mEntityContextBASE, mVirtuosoAD, mHttpContextAccessor, mServicesUtilVirtuosoAndReplication).AgregarIdentidadPerfilYUsuarioAProyecto(gestorIdentidades, gestorUsuarios, organizacionID, proyectoID, filaUsuario, perfilPersona, recibirNewsletterDefectoProyectos);
-                        gestorIdentidades.RecargarHijos();
+                        ControladorIdentidades controladorIdentidades = new ControladorIdentidades(gestorIdentidades, mLoggingService, mEntityContext, mConfigService, mRedisCacheWrapper, mGnossCache, mEntityContextBASE, mVirtuosoAD, mHttpContextAccessor, mServicesUtilVirtuosoAndReplication);
+						Identidad ObjetoIdentidadProy = controladorIdentidades.AgregarIdentidadPerfilYUsuarioAProyecto(gestorIdentidades, gestorUsuarios, organizacionID, proyectoID, filaUsuario, perfilPersona, recibirNewsletterDefectoProyectos);
+
+						RegistrarUsuarioEnProyectoAutomatico(perfilPersona, filaUsuario, gestorUsuarios, gestorIdentidades, proyectoID);
+
+						gestorIdentidades.RecargarHijos();
                         listaProyectosParticipaUsuario.Add(proyectoID);
                     }
                 }
@@ -1266,7 +1273,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Solicitudes
 
                 //ControladorCorreo.AgregarNotificacionCorreoNuevoAIdentidades(listaDestinatarios);
             }
-            return gestorIdentidades.ListaIdentidades[identidadId]; ;
+            return gestorIdentidades.ListaIdentidades[identidadId];
         }
 
         /// <summary>
@@ -1290,11 +1297,15 @@ namespace Es.Riam.Gnoss.Web.Controles.Solicitudes
             Dictionary<Guid, bool> recibirNewsletterDefectoProyectos = proyCN.ObtenerProyectosConConfiguracionNewsletterPorDefecto();
             proyCN.Dispose();
 
-            Identidad ObjetoIdentidadProy = new ControladorIdentidades(pGestorIdentidades, mLoggingService, mEntityContext, mConfigService, mRedisCacheWrapper, mGnossCache, mEntityContextBASE, mVirtuosoAD, mHttpContextAccessor, mServicesUtilVirtuosoAndReplication).AgregarIdentidadPerfilYUsuarioAProyecto(pGestorIdentidades, pGestorUsuarios, pPeticion.FilaInvitacionComunidad.OrganizacionID, pPeticion.FilaInvitacionComunidad.ProyectoID, pFilaUsuario, pPerfilPublico, recibirNewsletterDefectoProyectos);
-            identidadID = ObjetoIdentidadProy.Clave;
+            ControladorIdentidades controladorIdentidades = new ControladorIdentidades(pGestorIdentidades, mLoggingService, mEntityContext, mConfigService, mRedisCacheWrapper, mGnossCache, mEntityContextBASE, mVirtuosoAD, mHttpContextAccessor, mServicesUtilVirtuosoAndReplication);
+			Identidad ObjetoIdentidadProy = controladorIdentidades.AgregarIdentidadPerfilYUsuarioAProyecto(pGestorIdentidades, pGestorUsuarios, pPeticion.FilaInvitacionComunidad.OrganizacionID, pPeticion.FilaInvitacionComunidad.ProyectoID, pFilaUsuario, pPerfilPublico, recibirNewsletterDefectoProyectos);
 
-            //Actualizo el modelo Base:
-            ControladorPersonas controladorPersonas = new ControladorPersonas(mLoggingService, mEntityContext, mConfigService, mRedisCacheWrapper, mGnossCache, mEntityContextBASE, mVirtuosoAD, mHttpContextAccessor, mServicesUtilVirtuosoAndReplication);
+			RegistrarUsuarioEnProyectoAutomatico(pPerfilPublico, pFilaUsuario, pGestorUsuarios, pGestorIdentidades);
+
+			identidadID = ObjetoIdentidadProy.Clave;
+            			
+			//Actualizo el modelo Base:
+			ControladorPersonas controladorPersonas = new ControladorPersonas(mLoggingService, mEntityContext, mConfigService, mRedisCacheWrapper, mGnossCache, mEntityContextBASE, mVirtuosoAD, mHttpContextAccessor, mServicesUtilVirtuosoAndReplication);
             controladorPersonas.ActualizarModeloBASE(ObjetoIdentidadProy, pPeticion.FilaInvitacionComunidad.ProyectoID, true, true, PrioridadBase.Alta);
 
             new ControladorDocumentacion(mLoggingService, mEntityContext, mConfigService, mRedisCacheWrapper, mGnossCache, mEntityContextBASE, mVirtuosoAD, mHttpContextAccessor, mServicesUtilVirtuosoAndReplication).ActualizarGnossLive(pPeticion.FilaInvitacionComunidad.ProyectoID, pPerfilPublico.Clave, AccionLive.Agregado, (int)TipoLive.Miembro, false, PrioridadLive.Alta);
@@ -1644,9 +1655,53 @@ namespace Es.Riam.Gnoss.Web.Controles.Solicitudes
 
                 if (gestorIdentidades.DataWrapperIdentidad.ListaIdentidad.Count(identidad => identidad.ProyectoID.Equals(proyectoID)) == 0)
                 {
+					//se agrega la identidad al perfil
+					ControladorIdentidades controladorIdentidades = new ControladorIdentidades(gestorIdentidades, mLoggingService, mEntityContext, mConfigService, mRedisCacheWrapper, mGnossCache, mEntityContextBASE, mVirtuosoAD, mHttpContextAccessor, mServicesUtilVirtuosoAndReplication);
+					Identidad identidad = controladorIdentidades.AgregarIdentidadPerfilYUsuarioAProyecto(gestorIdentidades, gestorUsuarios, organizacionID, proyectoID, filaUsuario, pPerfilPersona, recibirNewsletterDefectoProyectos);
+					identidad.FilaIdentidad.ActivoEnComunidad = visibleUsuariosActivos;
+				}
+            }
+
+            proyCN.Dispose();
+            paramApliCN.Dispose();
+        }
+
+		/// <summary>
+		/// Agrega al usuario en el proyecto configurado con registro automaticon con la misma UrlPropia que el proyecto en el que se esta registrando
+		/// </summary>
+		/// <param name="filaUsuario">Fila Usuario</param>
+		/// <param name="gestorUsuarios">Gestor de usuarios con el usuario ya cargado</param>
+		/// <param name="gestorIdentidades">Gestor de identidades con la identidad ya cargada</param>
+		public void RegistrarUsuarioEnProyectoAutomatico(Perfil pPerfilPersona, AD.EntityModel.Models.UsuarioDS.Usuario filaUsuario, GestionUsuarios gestorUsuarios, GestionIdentidades gestorIdentidades, Guid? pProyectoID = null)
+        {
+            ParametroAplicacionCN paramApliCN = new ParametroAplicacionCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+            ProyectoCN proyCN = new ProyectoCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+
+            string url = string.Empty;
+
+			if (pProyectoID != null && !pProyectoID.Equals(Guid.Empty))
+            {
+                url = proyCN.ObtenerURLPropiaProyecto(pProyectoID.Value);
+            }
+            else
+            {
+				url = ProyectoSeleccionado.UrlPropia(IdiomaUsuario);
+			}
+            
+            //se le quita a la url la parte de http:// o https://
+            url = url.Substring(url.LastIndexOf("://")+3);
+            //se comprueba si esta configurado el reguistro automático para la UrlPropia del ProyectoSeleccionado
+			Guid proyectoID = mEntityContext.ParametroProyecto.Where(item => item.Valor.EndsWith(url) && item.Parametro.Equals("RegistroAutomatico")).Select(item => item.ProyectoID).FirstOrDefault();
+
+            if (proyectoID != Guid.Empty)
+            {
+                Proyecto proyecto = proyCN.ObtenerProyectoPorIDCargaLigera(proyectoID);
+
+                if (gestorIdentidades.DataWrapperIdentidad.ListaIdentidad.Count(identidad => identidad.ProyectoID.Equals(proyectoID)) == 0)
+                {
                     //se agrega la identidad al perfil
-                    Identidad identidad = new ControladorIdentidades(gestorIdentidades, mLoggingService, mEntityContext, mConfigService, mRedisCacheWrapper, mGnossCache, mEntityContextBASE, mVirtuosoAD, mHttpContextAccessor, mServicesUtilVirtuosoAndReplication).AgregarIdentidadPerfilYUsuarioAProyecto(gestorIdentidades, gestorUsuarios, organizacionID, proyectoID, filaUsuario, pPerfilPersona, recibirNewsletterDefectoProyectos);
-                    identidad.FilaIdentidad.ActivoEnComunidad = visibleUsuariosActivos;
+                    ControladorIdentidades controladorIdentidades = new ControladorIdentidades(gestorIdentidades, mLoggingService, mEntityContext, mConfigService, mRedisCacheWrapper, mGnossCache, mEntityContextBASE, mVirtuosoAD, mHttpContextAccessor, mServicesUtilVirtuosoAndReplication);
+                    Identidad identidad = controladorIdentidades.AgregarIdentidadPerfilYUsuarioAProyecto(gestorIdentidades, gestorUsuarios, proyecto.OrganizacionID, proyectoID, filaUsuario, pPerfilPersona, null);
                 }
             }
 

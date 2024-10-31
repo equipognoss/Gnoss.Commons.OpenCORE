@@ -699,6 +699,10 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
                 {
                     tipoPropiedad = TipoPropiedadFaceta.TextoInvariable;
                 }
+                else if(pFaceta.Type == TipoFaceta.Siglo)
+                {
+                    tipoPropiedad = TipoPropiedadFaceta.Siglo;
+                }
 
                 filaFacetaNueva.TipoPropiedad = (short)tipoPropiedad;
 

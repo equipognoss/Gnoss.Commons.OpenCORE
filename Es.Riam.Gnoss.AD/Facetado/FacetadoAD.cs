@@ -28,14 +28,19 @@ using System.Net;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
-using System.Xml;
 using Es.Riam.Gnoss.AD.EntityModel.Models.ProyectoDS;
 using Es.Riam.AbstractsOpen;
 using System.Collections.Concurrent;
-using Microsoft.Azure.Amqp.Framing;
-using Es.Riam.Gnoss.AD.EntityModelBASE;
-using Microsoft.EntityFrameworkCore.Storage.ValueConversion.Internal;
+using Es.Riam.Semantica.Plantillas;
+using Es.Riam.Gnoss.AD.Documentacion;
+using Es.Riam.Gnoss.AD.EntityModel.Models.Documentacion;
 using Es.Riam.Semantica.OWL;
+using System.Xml;
+using Es.Riam.Gnoss.Util.Seguridad;
+using Microsoft.Exchange.WebServices.Data;
+using System.Net.Http;
+using Es.Riam.Interfaces.Observador;
+using Es.Riam.Gnoss.Web.MVC.Models;
 
 namespace Es.Riam.Gnoss.AD.Facetado
 {
@@ -218,7 +223,6 @@ namespace Es.Riam.Gnoss.AD.Facetado
 
         public static readonly List<string> TIPOS_GEOMETRIA = new List<string>() { "linestring", "multilinestring", "multipoint", "multipolygon", "polygon", "point", "geometrycollection", "multicurve" };
 
-        //private static List<string> CARACTERES_REGEX_ACENTOS = new List<string>() { "aÃ¡Ã Ã¤Ã¢", "eÃ©Ã¨Ã«Ãª", "iÃ­Ã¬Ã¯Ã®", "oÃ³Ã²Ã¶Ã´", "uÃºÃ¹Ã¼Ã»", "cÃ§", "nÃ±" };
         private static List<string> CARACTERES_REGEX_ACENTOS = new List<string>() { "aáàäâ", "eéèëê", "iíìïî", "oóòöô", "uúùüû", "cç", "nñ" };
 
         private static char[] SEPARADORES_PALABRAS = { ' ', '.', ',', ':', ';', '-', '/', '(', ')' };
@@ -364,7 +368,6 @@ namespace Es.Riam.Gnoss.AD.Facetado
         /// </summary>
         public const string BUSQUEDA_AVANZADA = "Meta";
 
-
         /// <summary>
         /// Contribuciones Preguntas
         /// </summary>
@@ -480,6 +483,7 @@ namespace Es.Riam.Gnoss.AD.Facetado
         /// </summary>
         public const string BUSQUEDA_CONTACTOS = "Contactos";
 
+        public const string BUSQUEDA_MIS_RECURSOS = "Mis Recursos";
 
         /// <summary>
         /// Indica el valor sin foto de virtuoso.
@@ -514,7 +518,7 @@ namespace Es.Riam.Gnoss.AD.Facetado
         /// <summary>
         /// Lista de tipos para el base.
         /// </summary>
-        public static List<string> mListaTiposBase;
+        private static List<string> mListaTiposBase;
 
         /// <summary>
         /// Configuración de servidores para los grafos
@@ -524,7 +528,6 @@ namespace Es.Riam.Gnoss.AD.Facetado
         /// <summary>
         /// Verdad si existe el fichero bd.config con el elemento acidMaster, falso en caso contrario
         /// </summary>
-        //private static bool? mExisteFicheroMaster = null;
 
         //Búsqueda con/sin acentos
         private const string consignos = "âáàäêéèëîíìïôóòöûúüùñÂÁÀÄÊÉÈËÎÍÌÏÔÓÒÖÛÚÙÜÑçÇ";
@@ -533,14 +536,13 @@ namespace Es.Riam.Gnoss.AD.Facetado
         /// <summary>
         /// Idiomas que tienenen como idioma secundario el español
         /// </summary>
-        public static readonly List<string> SECUNDARIO_ESPANNOL = new List<string>(new string[] { "ca", "gl", "eu" });
+        private static readonly List<string> SECUNDARIO_ESPANNOL = new List<string>(new string[] { "ca", "gl", "eu" });
 
         /// <summary>
         /// Indica si se trata de una petición de facetas
         /// </summary>
-        public static bool mEsPeticionFacetas = false;
-
-        private static bool mEscaparComillasDoblesEstatica = false;
+        private static bool mEsPeticionFacetas = false;
+        private static bool mUsarPrivacidadEnFacetasYResultados = true;
 
         private static bool mEscaparComillasDoblesPorHilo = false;
 
@@ -563,7 +565,7 @@ namespace Es.Riam.Gnoss.AD.Facetado
         /// <summary>
         /// Url de la Intranet
         /// </summary>
-        private string mUrlIntranet;
+        private readonly string mUrlIntranet;
 
         /// <summary>
         /// Lista de las comunidades privadas de un usuario
@@ -614,14 +616,14 @@ namespace Es.Riam.Gnoss.AD.Facetado
         /// <summary>
         /// Directorio de escritura de triples especial para DBLP
         /// </summary>
-        public static string DirectorioEscrituraNT = "";
+        private static string DirectorioEscrituraNT = "";
 
         /// <summary>
         /// Condición extra para la consulta de facetas.
         /// </summary>
         private string mCondicionExtraFacetas;
 
-        private ConcurrentDictionary<Guid, List<Guid>> mListaGruposPorIdentidad = new ConcurrentDictionary<Guid, List<Guid>>();
+        private readonly ConcurrentDictionary<Guid, List<Guid>> mListaGruposPorIdentidad = new ConcurrentDictionary<Guid, List<Guid>>();
 
         /// <summary>
         /// Lista que indica que identidades tienes grupos de comunidad y cuales no.
@@ -640,7 +642,7 @@ namespace Es.Riam.Gnoss.AD.Facetado
 
         private static string mMaxExecutionPlanLimit;
 
-        private VirtuosoAD mVirtuosoAD;
+        private readonly VirtuosoAD mVirtuosoAD;
         #endregion
 
         #region Constructores
@@ -731,20 +733,22 @@ namespace Es.Riam.Gnoss.AD.Facetado
             {
                 if (mListaTiposBase == null)
                 {
-                    mListaTiposBase = new List<string>();
-                    mListaTiposBase.Add("\"" + FacetadoAD.BUSQUEDA_BLOGS + "\" .");
-                    mListaTiposBase.Add("\"" + FacetadoAD.BUSQUEDA_CLASE_UNIVERSIDAD + "\" .");
-                    mListaTiposBase.Add("\"" + FacetadoAD.BUSQUEDA_CLASE_SECUNDARIA + "\" .");
-                    mListaTiposBase.Add("\"" + FacetadoAD.BUSQUEDA_COMUNIDAD_EDUCATIVA + "\" .");
-                    mListaTiposBase.Add("\"" + FacetadoAD.BUSQUEDA_COMUNIDAD_NO_EDUCATIVA + "\" .");
-                    mListaTiposBase.Add("\"" + FacetadoAD.BUSQUEDA_COMUNIDADES + "\" .");
-                    mListaTiposBase.Add("\"" + FacetadoAD.BUSQUEDA_DAFOS + "\" .");
-                    mListaTiposBase.Add("\"" + FacetadoAD.BUSQUEDA_DEBATES + "\" .");
-                    mListaTiposBase.Add("\"" + FacetadoAD.BUSQUEDA_ORGANIZACION + "\" .");
-                    mListaTiposBase.Add("\"" + FacetadoAD.BUSQUEDA_PERSONA + "\" .");
-                    mListaTiposBase.Add("\"" + FacetadoAD.BUSQUEDA_PREGUNTAS + "\" .");
-                    mListaTiposBase.Add("\"" + FacetadoAD.BUSQUEDA_ENCUESTAS + "\" .");
-                    mListaTiposBase.Add("\"" + FacetadoAD.BUSQUEDA_RECURSOS + "\" .");
+                    mListaTiposBase = new List<string>
+                    {
+                        "\"" + FacetadoAD.BUSQUEDA_BLOGS + "\" .",
+                        "\"" + FacetadoAD.BUSQUEDA_CLASE_UNIVERSIDAD + "\" .",
+                        "\"" + FacetadoAD.BUSQUEDA_CLASE_SECUNDARIA + "\" .",
+                        "\"" + FacetadoAD.BUSQUEDA_COMUNIDAD_EDUCATIVA + "\" .",
+                        "\"" + FacetadoAD.BUSQUEDA_COMUNIDAD_NO_EDUCATIVA + "\" .",
+                        "\"" + FacetadoAD.BUSQUEDA_COMUNIDADES + "\" .",
+                        "\"" + FacetadoAD.BUSQUEDA_DAFOS + "\" .",
+                        "\"" + FacetadoAD.BUSQUEDA_DEBATES + "\" .",
+                        "\"" + FacetadoAD.BUSQUEDA_ORGANIZACION + "\" .",
+                        "\"" + FacetadoAD.BUSQUEDA_PERSONA + "\" .",
+                        "\"" + FacetadoAD.BUSQUEDA_PREGUNTAS + "\" .",
+                        "\"" + FacetadoAD.BUSQUEDA_ENCUESTAS + "\" .",
+                        "\"" + FacetadoAD.BUSQUEDA_RECURSOS + "\" ."
+                    };
                 }
 
                 return mListaTiposBase;
@@ -1003,6 +1007,8 @@ namespace Es.Riam.Gnoss.AD.Facetado
             set;
         }
 
+        public static bool UsarRegexParaBusquedaPorTextoLibre { get; set; } = false;
+
         public bool UsuarioTieneRecursosPrivados { get; set; }
 
         public bool ObtenerContadorDeFaceta { get; set; } = true;
@@ -1139,6 +1145,18 @@ namespace Es.Riam.Gnoss.AD.Facetado
             }
         }
 
+        public static bool UsarPrivacidadEnFacetasYResultados
+        {
+            get
+            {
+                return mUsarPrivacidadEnFacetasYResultados;
+            }
+            set
+            {
+                mUsarPrivacidadEnFacetasYResultados = value;
+            }
+        }
+
         public static bool EscaparComillasDoblesPorHilo
         {
             get
@@ -1159,10 +1177,15 @@ namespace Es.Riam.Gnoss.AD.Facetado
             }
         }
 
-        public static string EvaluarFiltrosFacetasEnOrden
+        public string EvaluarFiltrosFacetasEnOrden
         {
             get
             {
+                if (mConfigService.ObtenerEvaluarFiltrosFacetasEnOrden())
+                {
+                    mEvaluarFiltrosFacetasEnOrden = $"DEFINE sql:select-option \"order\"";
+                }
+
                 return mEvaluarFiltrosFacetasEnOrden;
             }
             set
@@ -1257,7 +1280,6 @@ namespace Es.Riam.Gnoss.AD.Facetado
             else if (string.IsNullOrEmpty(mServicesUtilVirtuosoAndReplication.FicheroConfiguracion))
             {
                 cadenaConexion = mConfigService.ObtenerVirtuosoConnectionString();
-                // cadenaConexion = ObtenerCadenaConexionVirtuoso(pConexionesInvalidas);
             }
             else
             {
@@ -1339,7 +1361,6 @@ namespace Es.Riam.Gnoss.AD.Facetado
             {
                 QuickOpen(conexion);
                 mLoggingService.AgregarEntrada("Conexión abierta: " + conexion.ConnectionString);
-                //conexion.Open();
             }
             return conexion;
         }
@@ -1459,59 +1480,12 @@ namespace Es.Riam.Gnoss.AD.Facetado
             AgregarEntradaTraza("Leído de virtuoso.");
         }
 
-        //TODO Javi: Descomentar
-        //private bool ControlarErrorVirtuosoConectionReplica(string cadenaConexion, string conexionAfinidadVirtuoso)
-        //{
-        //    DateTime InicioPeticionVirtuoso = DateTime.Now;
-
-        //    if (UtilPeticion.ObtenerObjetoDePeticion("InicioPeticionVirtuosoReplica") != null)
-        //    {
-        //        InicioPeticionVirtuoso = (DateTime)UtilPeticion.ObtenerObjetoDePeticion("InicioPeticionVirtuosoReplica");
-        //    }
-        //    else
-        //    {
-        //        UtilPeticion.AgregarObjetoAPeticionActual("InicioPeticionVirtuosoReplica", InicioPeticionVirtuoso);
-        //    }
-
-        //    string nombreConexionAfinidad = "";
-
-        //    if (!EsConexionHAPROXY(FicheroConfiguracionMaster, cadenaConexion))
-        //    {
-        //        nombreConexionAfinidad = (string)UtilPeticion.ObtenerObjetoDePeticion(conexionAfinidadVirtuoso);
-        //    }
-
-        //    bool conexionLibreEncontrada = false;
-        //    while (!conexionLibreEncontrada && (InicioPeticionVirtuoso.AddSeconds(10) - DateTime.Now).TotalSeconds > 0)
-        //    {
-        //        string nombreConexionReplica = ObtenerConexionVirtuosoProximoIntento(nombreConexionAfinidad);
-
-        //        if (string.IsNullOrEmpty(nombreConexionReplica))
-        //        {
-        //            conexionLibreEncontrada = true;
-        //        }
-        //        else
-        //        {
-        //            UtilPeticion.AgregarObjetoAPeticionActual(conexionAfinidadVirtuoso, $"{nombreConexionReplica}_Master");
-        //            int numReplicacionesPendientes = ObtenerNumeroReplicacionesPendienes(nombreConexionReplica);
-        //            if (numReplicacionesPendientes > 0)
-        //            {
-        //                Thread.Sleep(1000);
-        //            }
-        //            conexionLibreEncontrada = true;
-        //        }
-        //    }
-        //    return conexionLibreEncontrada;
-        //}
-
-
         private int ObtenerNumeroReplicacionesPendienes(string nombreConexion)
         {
             int numReplicacionesPendientes = new ReplicacionAD(mLoggingService, mEntityContext, mConfigService, mServicesUtilVirtuosoAndReplication).ContarReplicacionesPendientesEnReplica(nombreConexion);
 
             return numReplicacionesPendientes;
         }
-
-
 
         private NameValueCollection GenerarParametrosParaQuery(string pQuery)
         {
@@ -1569,11 +1543,10 @@ namespace Es.Riam.Gnoss.AD.Facetado
 
             string cadenaConexion = ObtenerCadenaConexionLeerDeVirtuoso(pUsarConexionAfinidad);
 
-
             KeyValuePair<string, string> ip_puerto = mServicesUtilVirtuosoAndReplication.ObtenerIpVirtuosoDeCadenaConexion(cadenaConexion);
             string ipVirtuoso = ip_puerto.Key;
             string puertoVirtuoso = ip_puerto.Value;
-            string url = "http://" + ipVirtuoso + ":" + puertoVirtuoso + "/sparql";
+            string url = $"http://{ipVirtuoso}:{puertoVirtuoso}/sparql";
 
             //Quito el inicio de SPARQL
             if (pQuery.Trim().ToUpper().StartsWith("SPARQL"))
@@ -1602,15 +1575,12 @@ namespace Es.Riam.Gnoss.AD.Facetado
 
         public string LeerDeVirtuosoCSV(string pQuery, string pNombreTabla, string pGrafo, bool pUsarConexionAfinidad = false)
         {
-            string csv = "";
-
             string cadenaConexion = ObtenerCadenaConexionLeerDeVirtuoso(pUsarConexionAfinidad);
-
 
             KeyValuePair<string, string> ip_puerto = mServicesUtilVirtuosoAndReplication.ObtenerIpVirtuosoDeCadenaConexion(cadenaConexion);
             string ipVirtuoso = ip_puerto.Key;
             string puertoVirtuoso = ip_puerto.Value;
-            string url = "http://" + ipVirtuoso + ":" + puertoVirtuoso + "/sparql";
+            string url = $"http://{ipVirtuoso}:{puertoVirtuoso}/sparql";
 
             //Quito el inicio de SPARQL
             if (pQuery.Trim().ToUpper().StartsWith("SPARQL"))
@@ -1627,7 +1597,7 @@ namespace Es.Riam.Gnoss.AD.Facetado
 
             AgregarEntradaTraza($"Leo de virtuoso {ipVirtuoso}. \n {pQuery}");
 
-            csv = LeerDeVirtuoso_WebClientCSV(url, pNombreTabla, pQuery, parametros);
+            string csv = LeerDeVirtuoso_WebClientCSV(url, pNombreTabla, pQuery, parametros);
 
             AgregarEntradaTraza($"Leído de virtuoso: {ipVirtuoso}. \n{pQuery}");
 
@@ -1652,6 +1622,7 @@ namespace Es.Riam.Gnoss.AD.Facetado
             }
             catch (Exception)
             {
+                //Si falla no seguimos reintentándolo. La gestión de reintentos esta en el controlador
             }
         }
 
@@ -1719,7 +1690,7 @@ namespace Es.Riam.Gnoss.AD.Facetado
 
                 if (mConfigService.ObtenerProcesarStringGrafo())
                 {
-                    responseCSV = responseCSV.Replace("''", "\\\"");
+                    responseCSV = responseCSV.Replace("''", "\"\"");
                 }
 
                 return responseCSV;
@@ -1771,7 +1742,7 @@ namespace Es.Riam.Gnoss.AD.Facetado
 
         }
         public void LeerDeVirtuoso_WebClient(string pUrl, string pNombreTabla, FacetadoDS pFacetadoDS, string pQuery, NameValueCollection pParametros = null)
-        {
+        {            
             if (pParametros == null)
             {
                 pParametros = new NameValueCollection();
@@ -1810,7 +1781,6 @@ namespace Es.Riam.Gnoss.AD.Facetado
                     respuesta = respuesta.Replace("''", "\"\"");
                 }
 
-
                 lock (pFacetadoDS)
                 {
                     LeerResultadosCSV(respuesta, pNombreTabla, pFacetadoDS);
@@ -1834,7 +1804,10 @@ namespace Es.Riam.Gnoss.AD.Facetado
                         webExceptionAuxiliar = webException;
                     }
                 }
-                catch { }
+                catch
+                {
+                    //Si falla la lectura no rompemos todo el proceso
+                }
 
                 respuesta += $"\n\nQuery: {pQuery}";
                 respuesta += $"\n\nUrl: {pUrl}";
@@ -1880,14 +1853,11 @@ namespace Es.Riam.Gnoss.AD.Facetado
                     }
                 }
                 catch
-                { }
+                {
+                    //Si falla al cerrar el stream no rompemos el proceso
+                }
 
                 webClient.Dispose();
-
-                if (milisegundos > 2000)
-                {
-                    //Error.GuardarLogConsultaCostosa(string.Format("Consulta: {0} \r\nTiempo transcurrido:\r\n{1} \r\nUrl:\r\n{2} \r\nError:\r\n{3}", pQuery, milisegundos, pUrl, error));
-                }
             }
 
             AgregarEntradaTraza("LecturaWebClient: Fin");
@@ -1916,6 +1886,7 @@ namespace Es.Riam.Gnoss.AD.Facetado
             {
                 webClient.Encoding = Encoding.UTF8;
                 webClient.Headers.Add(HttpRequestHeader.ContentType, "application/x-www-form-urlencoded");
+                HttpStatusCode status = HttpStatusCode.OK;
                 try
                 {
                     byte[] responseArray = webClient.UploadValues(url, "POST", parametros);
@@ -1925,6 +1896,7 @@ namespace Es.Riam.Gnoss.AD.Facetado
                 catch (WebException webException)
                 {
                     string errorString = string.Empty;
+                    status = ((HttpWebResponse)webException.Response).StatusCode;
                     try
                     {
                         if (webException.Response != null)
@@ -1939,7 +1911,7 @@ namespace Es.Riam.Gnoss.AD.Facetado
 
                     mLoggingService.GuardarLogError(webException, errorString);
 
-                    if ((webException.Status.Equals(WebExceptionStatus.ProtocolError) && !((HttpWebResponse)webException.Response).StatusCode.Equals(HttpStatusCode.BadRequest)) || webException.Message.Contains("(503)") || webException.Message.Contains("(404)") || (webException.Response != null && ((HttpWebResponse)webException.Response).StatusCode.Equals(HttpStatusCode.NotFound)))
+                    if ((webException.Status.Equals(WebExceptionStatus.ProtocolError) && !status.Equals(HttpStatusCode.BadRequest)) || webException.Message.Contains("(503)") || webException.Message.Contains("(404)") || (webException.Response != null && status.Equals(HttpStatusCode.NotFound)))
                     {
                         // Es un error de checkpoint o de que virtuoso se ha caído, si hay más servidores, reintentamos la consulta
                         throw new ExcepcionCheckpointVirtuoso();
@@ -3890,9 +3862,9 @@ namespace Es.Riam.Gnoss.AD.Facetado
         }
 
 
-        public void ObtenerResultadosBusqueda(string pProyectoID, bool pDescendente, FacetadoDS pFacetadoDS, string pTipoFiltro, Dictionary<string, List<string>> pListaFiltros, List<string> pListaFiltrosExtra, bool pEstaEnMyGnoss, bool pEsMiembroComunidad, bool pEsInvitado, string pIdentidadID, int pInicio, int pLimite, List<string> pSemanticos, string pFiltroContextoSelect, string pFiltroContextoWhere, string pFiltroContextoOrderBy, int pFiltroContextoPesoMinimo, bool pEsMovil, List<Guid> pListaExcluidos, bool pUsarAfinidad = false)
+        public void ObtenerResultadosBusqueda(string pProyectoID, bool pDescendente, FacetadoDS pFacetadoDS, string pTipoFiltro, Dictionary<string, List<string>> pListaFiltros, List<string> pListaFiltrosExtra, bool pEstaEnMyGnoss, bool pEsMiembroComunidad, bool pEsInvitado, string pIdentidadID, int pInicio, int pLimite, List<string> pSemanticos, string pFiltroContextoSelect, string pFiltroContextoWhere, string pFiltroContextoOrderBy, int pFiltroContextoPesoMinimo, bool pEsMovil, List<Guid> pListaExcluidos, string pLanguageCode, bool pUsarAfinidad = false)
         {
-            ObtenerResultadosBusqueda(pProyectoID, pDescendente, pFacetadoDS, pTipoFiltro, pListaFiltros, pListaFiltrosExtra, pEstaEnMyGnoss, pEsMiembroComunidad, pEsInvitado, pIdentidadID, pInicio, pLimite, pSemanticos, pFiltroContextoSelect, pFiltroContextoWhere, pFiltroContextoOrderBy, pFiltroContextoPesoMinimo, TipoProyecto.Catalogo, "", "", pEsMovil, pListaExcluidos, pUsarAfinidad);
+            ObtenerResultadosBusqueda(pProyectoID, pDescendente, pFacetadoDS, pTipoFiltro, pListaFiltros, pListaFiltrosExtra, pEstaEnMyGnoss, pEsMiembroComunidad, pEsInvitado, pIdentidadID, pInicio, pLimite, pSemanticos, pFiltroContextoSelect, pFiltroContextoWhere, pFiltroContextoOrderBy, pFiltroContextoPesoMinimo, TipoProyecto.Catalogo, "", "", pEsMovil, pListaExcluidos, pLanguageCode, pUsarAfinidad);
         }
 
         /// <summary>
@@ -3916,36 +3888,9 @@ namespace Es.Riam.Gnoss.AD.Facetado
         /// <param name="pFiltroContextoOrderBy"></param>
         /// <param name="pTipoProyecto">Tipo del proyecto para el que se está haciendo la consulta</param>        
         /// <param name="pNamespaceExtra">NamespacesExtra</param>
-        public void ObtenerResultadosBusqueda(string pProyectoID, bool pDescendente, FacetadoDS pFacetadoDS, string pTipoFiltro, Dictionary<string, List<string>> pListaFiltros, List<string> pListaFiltrosExtra, bool pEstaEnMyGnoss, bool pEsMiembroComunidad, bool pEsInvitado, string pIdentidadID, int pInicio, int pLimite, List<string> pSemanticos, string pFiltroContextoSelect, string pFiltroContextoWhere, string pFiltroContextoOrderBy, int pFiltroContextoPesoMinimo, TipoProyecto pTipoProyecto, string pNamespaceExtra, string pResultadosEliminar, bool pEsMovil, List<Guid> pListaExcluidos, bool pUsarAfinidad = false)
+        public void ObtenerResultadosBusqueda(string pProyectoID, bool pDescendente, FacetadoDS pFacetadoDS, string pTipoFiltro, Dictionary<string, List<string>> pListaFiltros, List<string> pListaFiltrosExtra, bool pEstaEnMyGnoss, bool pEsMiembroComunidad, bool pEsInvitado, string pIdentidadID, int pInicio, int pLimite, List<string> pSemanticos, string pFiltroContextoSelect, string pFiltroContextoWhere, string pFiltroContextoOrderBy, int pFiltroContextoPesoMinimo, TipoProyecto pTipoProyecto, string pNamespaceExtra, string pResultadosEliminar, bool pEsMovil, List<Guid> pListaExcluidos, string pLanguageCode, bool pUsarAfinidad = false)
         {
-            ObtenerResultadosBusqueda(pProyectoID, pDescendente, pFacetadoDS, pTipoFiltro, pListaFiltros, pListaFiltrosExtra, pEstaEnMyGnoss, pEsMiembroComunidad, pEsInvitado, pIdentidadID, pInicio, pLimite, pSemanticos, pFiltroContextoSelect, pFiltroContextoWhere, pFiltroContextoOrderBy, pFiltroContextoPesoMinimo, TipoProyecto.Catalogo, "", "", true, pEsMovil, pListaExcluidos, pUsarAfinidad);
-        }
-
-        /// <summary>
-        /// Obtiene los resultados de una búsqueda
-        /// </summary>
-        /// <param name="pProyectoID">Identificador del proyecto</param>
-        /// <param name="pDescendente">Indica si el orden es descendente (false si es descendente)</param>
-        /// <param name="pFacetadoDS">DataSet de facetado</param>
-        /// <param name="pTipoFiltro">Tipo de filtro</param>
-        /// <param name="pListaFiltros">Lista de filtros del usuario</param>
-        /// <param name="pEstaEnMyGnoss">Verdad si la búsqueda se hace en MyGnoss</param>
-        /// <param name="pEsMiembroComunidad">Verdad si el usuario es miembro de la comunidad</param>
-        /// <param name="pEsInvitado">Verdad si el usuario no está registrado</param>
-        /// <param name="pIdentidadID">Identificador de la identidad del usuario</param>
-        /// <param name="pInicio">Inicio de los resultados</param>
-        /// <param name="pLimite">Fin de los resultados</param>
-        /// <param name="pListaFiltrosExtra"></param>
-        /// <param name="pSemanticos"></param>
-        /// <param name="pFiltroContextoSelect"></param>
-        /// <param name="pFiltroContextoWhere"></param>
-        /// <param name="pFiltroContextoOrderBy"></param>
-        /// <param name="pTipoProyecto">Tipo del proyecto para el que se está haciendo la consulta</param>        
-        /// <param name="pNamespaceExtra">NamespacesExtra</param>
-        /// <param name="pFiltrosSearchPersonalizados">Diccionario con los filtros tipo 'search' personalizados</param>
-        public void ObtenerResultadosBusqueda(string pProyectoID, bool pDescendente, FacetadoDS pFacetadoDS, string pTipoFiltro, Dictionary<string, List<string>> pListaFiltros, List<string> pListaFiltrosExtra, bool pEstaEnMyGnoss, bool pEsMiembroComunidad, bool pEsInvitado, string pIdentidadID, int pInicio, int pLimite, List<string> pSemanticos, string pFiltroContextoSelect, string pFiltroContextoWhere, string pFiltroContextoOrderBy, int pFiltroContextoPesoMinimo, TipoProyecto pTipoProyecto, string pNamespaceExtra, string pResultadosEliminar, bool pPermitirRecursosPrivados, bool pEsMovil, List<Guid> pListaExcluidos, bool pUsarAfinidad = false)
-        {
-            ObtenerResultadosBusqueda(pProyectoID, pDescendente, pFacetadoDS, pTipoFiltro, pListaFiltros, pListaFiltrosExtra, pEstaEnMyGnoss, pEsMiembroComunidad, pEsInvitado, pIdentidadID, pInicio, pLimite, pSemanticos, pFiltroContextoSelect, pFiltroContextoWhere, pFiltroContextoOrderBy, pFiltroContextoPesoMinimo, pTipoProyecto, pNamespaceExtra, pResultadosEliminar, pPermitirRecursosPrivados, true, TiposAlgoritmoTransformacion.Ninguno, null, pEsMovil, pListaExcluidos, pUsarAfinidad);
+            ObtenerResultadosBusqueda(pProyectoID, pDescendente, pFacetadoDS, pTipoFiltro, pListaFiltros, pListaFiltrosExtra, pEstaEnMyGnoss, pEsMiembroComunidad, pEsInvitado, pIdentidadID, pInicio, pLimite, pSemanticos, pFiltroContextoSelect, pFiltroContextoWhere, pFiltroContextoOrderBy, pFiltroContextoPesoMinimo, TipoProyecto.Catalogo, "", "", true, pEsMovil, pListaExcluidos, pLanguageCode, pUsarAfinidad);
         }
 
         /// <summary>
@@ -3970,7 +3915,34 @@ namespace Es.Riam.Gnoss.AD.Facetado
         /// <param name="pTipoProyecto">Tipo del proyecto para el que se está haciendo la consulta</param>        
         /// <param name="pNamespaceExtra">NamespacesExtra</param>
         /// <param name="pFiltrosSearchPersonalizados">Diccionario con los filtros tipo 'search' personalizados</param>
-        public void ObtenerResultadosBusqueda(string pProyectoID, bool pDescendente, FacetadoDS pFacetadoDS, string pTipoFiltro, Dictionary<string, List<string>> pListaFiltros, List<string> pListaFiltrosExtra, bool pEstaEnMyGnoss, bool pEsMiembroComunidad, bool pEsInvitado, string pIdentidadID, int pInicio, int pLimite, List<string> pSemanticos, string pFiltroContextoSelect, string pFiltroContextoWhere, string pFiltroContextoOrderBy, int pFiltroContextoPesoMinimo, TipoProyecto pTipoProyecto, string pNamespaceExtra, string pResultadosEliminar, bool pObtenerRecursosPrivados, bool pOmitirPalabrasNoRelevantesSearch, TiposAlgoritmoTransformacion pTipoAlgoritmoTransformacion, Dictionary<string, Tuple<string, string, string, bool>> pFiltrosSearchPersonalizados, bool pEsMovil, List<Guid> pListaExcluidos, bool pUsarAfinidad = false)
+        public void ObtenerResultadosBusqueda(string pProyectoID, bool pDescendente, FacetadoDS pFacetadoDS, string pTipoFiltro, Dictionary<string, List<string>> pListaFiltros, List<string> pListaFiltrosExtra, bool pEstaEnMyGnoss, bool pEsMiembroComunidad, bool pEsInvitado, string pIdentidadID, int pInicio, int pLimite, List<string> pSemanticos, string pFiltroContextoSelect, string pFiltroContextoWhere, string pFiltroContextoOrderBy, int pFiltroContextoPesoMinimo, TipoProyecto pTipoProyecto, string pNamespaceExtra, string pResultadosEliminar, bool pPermitirRecursosPrivados, bool pEsMovil, List<Guid> pListaExcluidos, string pLanguageCode, bool pUsarAfinidad = false)
+        {
+            ObtenerResultadosBusqueda(pProyectoID, pDescendente, pFacetadoDS, pTipoFiltro, pListaFiltros, pListaFiltrosExtra, pEstaEnMyGnoss, pEsMiembroComunidad, pEsInvitado, pIdentidadID, pInicio, pLimite, pSemanticos, pFiltroContextoSelect, pFiltroContextoWhere, pFiltroContextoOrderBy, pFiltroContextoPesoMinimo, pTipoProyecto, pNamespaceExtra, pResultadosEliminar, pPermitirRecursosPrivados, true, TiposAlgoritmoTransformacion.Ninguno, null, pEsMovil, pListaExcluidos, pLanguageCode, pUsarAfinidad);
+        }
+
+        /// <summary>
+        /// Obtiene los resultados de una búsqueda
+        /// </summary>
+        /// <param name="pProyectoID">Identificador del proyecto</param>
+        /// <param name="pDescendente">Indica si el orden es descendente (false si es descendente)</param>
+        /// <param name="pFacetadoDS">DataSet de facetado</param>
+        /// <param name="pTipoFiltro">Tipo de filtro</param>
+        /// <param name="pListaFiltros">Lista de filtros del usuario</param>
+        /// <param name="pEstaEnMyGnoss">Verdad si la búsqueda se hace en MyGnoss</param>
+        /// <param name="pEsMiembroComunidad">Verdad si el usuario es miembro de la comunidad</param>
+        /// <param name="pEsInvitado">Verdad si el usuario no está registrado</param>
+        /// <param name="pIdentidadID">Identificador de la identidad del usuario</param>
+        /// <param name="pInicio">Inicio de los resultados</param>
+        /// <param name="pLimite">Fin de los resultados</param>
+        /// <param name="pListaFiltrosExtra"></param>
+        /// <param name="pSemanticos"></param>
+        /// <param name="pFiltroContextoSelect"></param>
+        /// <param name="pFiltroContextoWhere"></param>
+        /// <param name="pFiltroContextoOrderBy"></param>
+        /// <param name="pTipoProyecto">Tipo del proyecto para el que se está haciendo la consulta</param>        
+        /// <param name="pNamespaceExtra">NamespacesExtra</param>
+        /// <param name="pFiltrosSearchPersonalizados">Diccionario con los filtros tipo 'search' personalizados</param>
+        public void ObtenerResultadosBusqueda(string pProyectoID, bool pDescendente, FacetadoDS pFacetadoDS, string pTipoFiltro, Dictionary<string, List<string>> pListaFiltros, List<string> pListaFiltrosExtra, bool pEstaEnMyGnoss, bool pEsMiembroComunidad, bool pEsInvitado, string pIdentidadID, int pInicio, int pLimite, List<string> pSemanticos, string pFiltroContextoSelect, string pFiltroContextoWhere, string pFiltroContextoOrderBy, int pFiltroContextoPesoMinimo, TipoProyecto pTipoProyecto, string pNamespaceExtra, string pResultadosEliminar, bool pObtenerRecursosPrivados, bool pOmitirPalabrasNoRelevantesSearch, TiposAlgoritmoTransformacion pTipoAlgoritmoTransformacion, Dictionary<string, Tuple<string, string, string, bool>> pFiltrosSearchPersonalizados, bool pEsMovil, List<Guid> pListaExcluidos, string pLanguageCode, bool pUsarAfinidad = false)
         {
             string[] filtrosContextos = null;
             if (!string.IsNullOrEmpty(pFiltroContextoOrderBy))
@@ -4120,32 +4092,43 @@ namespace Es.Riam.Gnoss.AD.Facetado
 
             string optional = "";
 
-            string[] tiposFiltro = new string[] { null };
+            List<string> tiposFiltro = new List<string>();
             Dictionary<string, string> condicionesAdicionalesPorTipoFiltro = new Dictionary<string, string>();
 
             if (!string.IsNullOrEmpty(pTipoFiltro))
             {
-                tiposFiltro = pTipoFiltro.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
-
-                for (int i = 0; i < tiposFiltro.Length; i++)
+                if (pTipoFiltro.Contains("###ClausulaOrdenPersonalizado###"))
                 {
-                    int indiceCondicion = tiposFiltro[i].IndexOf('[');
-                    if (indiceCondicion > 0)
-                    {
-                        // Lleva una condición adicional, la separo del filtro
-                        string filtro = tiposFiltro[i].Substring(0, indiceCondicion);
-                        string condicion = tiposFiltro[i].Substring(indiceCondicion + 1).TrimEnd(']');
+                    tiposFiltro.Add(pTipoFiltro);
+                }
+                else
+                {
+                    tiposFiltro = pTipoFiltro.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries).ToList();
 
-                        tiposFiltro[i] = filtro;
-                        condicionesAdicionalesPorTipoFiltro.Add(filtro, condicion);
+                    for (int i = 0; i < tiposFiltro.Count(); i++)
+                    {
+                        int indiceCondicion = tiposFiltro[i].IndexOf('[');
+                        if (indiceCondicion > 0)
+                        {
+                            // Lleva una condición adicional, la separo del filtro
+                            string filtro = tiposFiltro[i].Substring(0, indiceCondicion);
+                            string condicion = tiposFiltro[i].Substring(indiceCondicion + 1).TrimEnd(']');
+
+                            tiposFiltro[i] = filtro;
+                            condicionesAdicionalesPorTipoFiltro.Add(filtro, condicion);
+                        }
                     }
                 }
             }
 
+            List<DatosPropiedadOntologia> datosPropiedadesOntologias = new List<DatosPropiedadOntologia>();
+            CargarDatosPropiedadesOntologias(pListaFiltros, tiposFiltro, datosPropiedadesOntologias);
+
             foreach (string tipoFiltro in tiposFiltro)
             {
                 string ultimoFiltro = QuitaPrefijo(tipoFiltro);
-                bool multiIdioma = FiltroEsMultiIdioma(tipoFiltro, pListaFiltros);
+                
+                bool multiIdioma = PropiedadFiltroEsMultiIdioma(datosPropiedadesOntologias, tipoFiltro);
 
                 //order by
                 //Apaño Ineverycrea, problema con las fechas traidas a través del optional desde virtuoso.
@@ -4155,7 +4138,7 @@ namespace Es.Riam.Gnoss.AD.Facetado
                     //order by
                     if (!string.IsNullOrEmpty(tipoFiltro) && pListaFiltros.ContainsKey("rdf:type") && pListaFiltros["rdf:type"].Contains(BUSQUEDA_RECURSOS))
                     {
-                        if (!filtros.Contains("?s " + tipoFiltro + " ?" + QuitaPrefijo(tipoFiltro) + " ") && !QuitaPrefijo(tipoFiltro).Contains("relevancia"))
+                        if (!filtros.Contains("?s " + tipoFiltro + " ?" + QuitaPrefijo(tipoFiltro) + " ") && !QuitaPrefijo(tipoFiltro).Contains("relevancia") && !tipoFiltro.Contains("###ClausulaOrdenPersonalizado###"))
                         {
                             optional += "OPTIONAL { ?s " + tipoFiltro + " ?" + QuitaPrefijo(tipoFiltro) + " . " + ObtenerCondicionAdicionalTipoFiltro(tipoFiltro, condicionesAdicionalesPorTipoFiltro, false) + " } ";
                         }
@@ -4187,7 +4170,7 @@ namespace Es.Riam.Gnoss.AD.Facetado
                                 {
                                     if (tipoFiltro != "gnoss:haspopularidad" && tipoFiltro != "gnoss:hasnumerorecursos" && tipoFiltro != "gnoss:hasfechapublicacion" && !tipoFiltro.Equals("gnoss:relevancia"))
                                     {
-                                        optional += ObtenerFiltroOptional(tipoFiltro, query, out ultimoFiltro, multiIdioma, condicionesAdicionalesPorTipoFiltro);
+                                        optional += ObtenerFiltroOptional(tipoFiltro, query, out ultimoFiltro, multiIdioma, condicionesAdicionalesPorTipoFiltro, pLanguageCode);
                                     }
                                     else if (tipoFiltro.Equals("gnoss:relevancia"))
                                     {
@@ -4201,7 +4184,7 @@ namespace Es.Riam.Gnoss.AD.Facetado
                                 {
                                     if (!optional.Contains("?s " + tipoFiltro))
                                     {
-                                        optional += ObtenerFiltroOptional(tipoFiltro, query, out ultimoFiltro, multiIdioma, condicionesAdicionalesPorTipoFiltro);
+                                        optional += ObtenerFiltroOptional(tipoFiltro, query, out ultimoFiltro, multiIdioma, condicionesAdicionalesPorTipoFiltro, pLanguageCode);
                                     }
                                     else if (condicionesAdicionalesPorTipoFiltro.ContainsKey(tipoFiltro))
                                     {
@@ -4313,8 +4296,6 @@ namespace Es.Riam.Gnoss.AD.Facetado
 
             if (hayFiltroSearch && !mConsultaNumeroResultados && (QuitaPrefijo(pTipoFiltro).Contains("relevancia")))
             {
-                //orderBy += " desc(?scoreSearch) ";
-
                 if (query.Contains("?scoreTitle") && query.Contains("?scoreSearch"))
                 {
                     orderBy += " desc(sum(?scoreTitle)) desc(sum(?scoreSearch)) ";
@@ -4324,7 +4305,7 @@ namespace Es.Riam.Gnoss.AD.Facetado
                     orderBy += " desc(?scoreTitle) ";
                 }
 
-                select = $" {select} where {{{select} ?scoreTitle ";
+                select = $" {select} where {{{select}";
                 haySubconsultaScoreTitle = true;
             }
 
@@ -4373,54 +4354,60 @@ namespace Es.Riam.Gnoss.AD.Facetado
             }
             else
             {
-                // JUAN: Comento el Group By porque no se está usando ninguna funcion de agregación, con el distinct que hay arriba ya vale
-                // Además, en Virtuoso 7 falla. 
-                //if (pTipoProyecto.Equals(TipoProyecto.CatalogoNoSocialConUnTipoDeRecurso))
-                //{
-                //    query += " group by  ?s ?rdftype (?" + QuitaPrefijo(pTipoFiltro) + ") "; //?gnosshaspopularidad  
-                //}
-                // JUAN: Lo quito porque la consulta no falla, y si no cuando se filtra por fecha de publicación los resultados no se ordenan
-                // Además, SI tiene sentido ordenar, ya que los años tienen meses, días...
-                //else if (pListaFiltros.ContainsKey(pTipoFiltro))
-                //{
-                //    //No tiene sentido filtrar por un campo y a su vez ordenar por ese campo.
-                //    //Ejemplo: Filtramos por Año de creacción de un recurso y a su vez ordenamos por Año de creacción de un recurso. Si el año es 2012 y solo devuelve resultados de ese año, no tiene sentido ordenar 2012, aparte de que da error en la consulta de VIRTUOSO.
-                //}
-                //else
+                foreach (string tipoFiltro in tiposFiltro)
                 {
-                    foreach (string tipoFiltro in tiposFiltro)
+                    string ultimoFiltro = QuitaPrefijo(tipoFiltro);
+
+                    if (pDescendente)
                     {
-                        TipoPropiedadFaceta tipoPropiedadFaceta = TipoPropiedadFaceta.Numero;
-                        if (mFacetaDW != null && mFacetaDW.ListaFacetaObjetoConocimientoProyecto.Any(item => item.Faceta.Equals(tipoFiltro)))
+                        orderBy += " desc ";
+                    }
+
+                    if (ultimoFiltro.Contains("@@@"))
+                    {
+                        ultimoFiltro = ultimoFiltro.Substring(ultimoFiltro.LastIndexOf("@@@") + 3);
+
+                        int varAux = 0;
+                        while (query.Contains("?" + ultimoFiltro + varAux))
                         {
-                            tipoPropiedadFaceta = (TipoPropiedadFaceta)(mFacetaDW.ListaFacetaObjetoConocimientoProyecto.FirstOrDefault(item => item.Faceta.Equals(tipoFiltro)).TipoPropiedad);
+                            varAux++;
                         }
 
-                        string ultimoFiltro = QuitaPrefijo(tipoFiltro);
+                        varAux--; //Quitamos uno porque se supone que nos tenemos que quedar con la última aparición de la variable.
 
-                        if (pDescendente)
+                        ultimoFiltro = ultimoFiltro + varAux;
+                    }
+
+                    DatosPropiedadOntologia datosPropiedadOntologia = ObtenerDatosPropiedadOntologiaDeFiltro(datosPropiedadesOntologias, tipoFiltro);
+                    if (datosPropiedadOntologia != null && (datosPropiedadOntologia.Propiedad.Rango.Equals("xsd:string") || datosPropiedadOntologia.Propiedad.Rango.Equals(XSD_STRING)))
+                    {
+                        //Si la propiedad por la que se ordena es un string ordenamos teniendo en cuenta los acentos.
+                        orderBy += $"(bif:rdf_collation_order_string('DB.DBA.LEXICAL_ACUTE', lcase(?{ultimoFiltro}))) ";
+                    }
+                    else
+                    {
+                        if (ultimoFiltro.Contains("###ClausulaOrdenPersonalizado###"))
                         {
-                            orderBy += " desc ";
-                        }
-
-                        if (ultimoFiltro.Contains("@@@"))
-                        {
-                            ultimoFiltro = ultimoFiltro.Substring(ultimoFiltro.LastIndexOf("@@@") + 3);
-
-                            int varAux = 0;
-                            while (query.Contains("?" + ultimoFiltro + varAux))
+                            string parteOrderBy = ultimoFiltro.Split("###ClausulaOrdenPersonalizadoSeparador###")[0].Replace("###ClausulaOrdenPersonalizado###", "");
+                            if (pDescendente)
                             {
-                                varAux++;
+                                string[] listaOrder = parteOrderBy.Split(' ');
+                                for (int i = 0; i < listaOrder.Length; i++)
+                                {
+                                    if (i == 0)
+                                    {
+                                        orderBy += $"({listaOrder[i]})";
+                                    }
+                                    else
+                                    {
+                                        orderBy += $" desc({listaOrder[i]})";
+                                    }
+                                }
                             }
-
-                            varAux--;//Quitamos uno porque se supone que nos tenemos que quedar con la última aparición de la variable.
-
-                            ultimoFiltro = ultimoFiltro + varAux;
-                        }
-
-                        if (tipoPropiedadFaceta.Equals(TipoPropiedadFaceta.NULL) || tipoPropiedadFaceta.Equals(TipoPropiedadFaceta.Texto) || tipoPropiedadFaceta.Equals(TipoPropiedadFaceta.TextoInvariable))
-                        {
-                            orderBy += $"(bif:rdf_collation_order_string('DB.DBA.LEXICAL_ACUTE', lcase(?{ultimoFiltro}))) ";
+                            else
+                            {
+                                orderBy += parteOrderBy + " ";
+                            }
                         }
                         else
                         {
@@ -4440,9 +4427,6 @@ namespace Es.Riam.Gnoss.AD.Facetado
                 orderBy = " order by " + orderBy;
                 query += orderBy;
             }
-
-            //order by desc (?a) desc (?gnosshasfechapublicacion) desc (?gnosshaspopularidad) 
-            //}
 
             if (pLimite > 0)
             {
@@ -4550,10 +4534,247 @@ namespace Es.Riam.Gnoss.AD.Facetado
             return multiIdioma;
         }
 
-        private string ObtenerFiltroOptional(string pTipoFiltro, string pQuery, out string pUltimoFiltro, bool pMultiIdioma, Dictionary<string, string> pListaCondicionesTipoFiltro)
+        /// <summary>
+        /// Generamos una lista a partir del análisis de los xml y owl necesarios con los datos imprescindibles para trabajar con las propiedades definidas en los filtros pasados por parámetro
+        /// </summary>
+        /// <param name="pListaFiltros">Lista de filtros pasados por el usuario</param>
+        /// <param name="pTiposFiltro">Array con las Propiedad de las cuales queremos obtener su configuración. Si una propiedad tiene un selector de entidad o apunta a una entidad auxiliar estará concatenada por @@@</param>
+        /// <param name="pDatosPropiedadesOntologias">Lista de DatosPropiedadOntologia (NombrePropiedad, RdfType, Propiedad, Xml) que queremos obtener a partir del análisis de la ontología</param>
+        private void CargarDatosPropiedadesOntologias(Dictionary<string, List<string>> pListaFiltros, IEnumerable<string> pTiposFiltro, List<DatosPropiedadOntologia> pDatosPropiedadesOntologias)
+        {
+            foreach (string tipoFiltro in pTiposFiltro)
+            {
+                string nombreOntologia = null;
+                if (pListaFiltros.ContainsKey("rdf:type") && pListaFiltros["rdf:type"].Count > 0)
+                {
+                    nombreOntologia = $"{pListaFiltros["rdf:type"][0]}.owl";
+                }
+
+                CargarDatosPropiedadOntologia(nombreOntologia, tipoFiltro, pDatosPropiedadesOntologias);
+            }
+        }
+
+        /// <summary>
+        /// Obtenemos y analizamos el xml y el owl de la ontología pasada por parámetro para obtener los datos necesarios de la propiedad final definida en el filtro.
+        /// Si el filtro tiene varios niveles concatenados con @@@ navegamos entre ellos hasta llegar a la propiedad final.
+        /// </summary>
+        /// <param name="pNombreOntologia">Nombre de la ontologia a la que pertenece la propiedad actual del filtro</param>
+        /// <param name="pTipoFiltro">Propiedad de la cual queremos obtener su configuración. Si la propiedad tiene un selector de entidad o apunta a una entidad auxiliar estará concatenada por @@@</param>
+        /// <param name="pListaDatosPropiedadOntologia">Lista de DatosPropiedadOntologia (NombrePropiedad, RdfType, Propiedad, XmlOntologia) que queremos obtener a partir del análisis de la ontología</param>
+        private void CargarDatosPropiedadOntologia(string pNombreOntologia, string pTipoFiltro, List<DatosPropiedadOntologia> pListaDatosPropiedadOntologia)
+        {
+            Documento documento = mEntityContext.Documento.Where(item => item.Enlace == pNombreOntologia && !item.Eliminado && (item.Tipo == (int)TiposDocumentacion.Ontologia || item.Tipo == (int)TiposDocumentacion.OntologiaSecundaria)).FirstOrDefault();
+            if (documento != null)
+            {
+                byte[] bytesOntologias = ObtenerOntologia(documento.DocumentoID);
+                byte[] bytesXmlOntologia = ObtenerXmlOntologia(documento.DocumentoID);
+                Ontologia ontologia = new Ontologia(bytesOntologias);
+                ontologia.LeerOntologia();
+
+                XmlDocument doc = new XmlDocument();
+                MemoryStream ms = new MemoryStream(bytesXmlOntologia);
+                doc.Load(ms);
+
+                if (!pTipoFiltro.Contains("@@@"))
+                {
+                    Propiedad propiedad = ObtenerPropiedadDeEntidad(ontologia.Entidades, pTipoFiltro);
+                    if(propiedad != null)
+                    {
+                        pListaDatosPropiedadOntologia.Add(new DatosPropiedadOntologia() { NombrePropiedad = pTipoFiltro, Propiedad = propiedad, RdfType = pNombreOntologia, XmlOntologia = doc });
+                    }                    
+                }
+                else
+                {
+                    string propiedadFinal = pTipoFiltro.Substring(pTipoFiltro.IndexOf("@@@") + 3);
+                    string propiedadActual = pTipoFiltro.Substring(0, pTipoFiltro.IndexOf("@@@"));
+
+                    string grafo = ObtenerGrafoSelectorEntidad(propiedadActual, ontologia.Entidades, doc);
+
+                    if (!string.IsNullOrEmpty(grafo))
+                    {
+                        CargarDatosPropiedadOntologia(grafo, propiedadFinal, pListaDatosPropiedadOntologia);
+                    }
+                    else
+                    {
+                        ObtenerDatosPropiedadAuxiliar(propiedadFinal, ontologia.EntidadesAuxiliares, doc, pListaDatosPropiedadOntologia, pNombreOntologia);
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// Obtiene el objeto Propiedad de la lista de entidades pasadas por parámetro en función del nombre de la propiedad a buscar
+        /// </summary>
+        /// <param name="pEntidades">Lista de elementos de la ontología a la que pertenece la propiedad buscada</param>
+        /// <param name="pNombrePropiedad">Nombre de la propiedad a buscar</param>
+        /// <returns>El objeto Propiedad si es encontrado. En caso de no encontrarlo devolverá null</returns>
+        private Propiedad ObtenerPropiedadDeEntidad(List<ElementoOntologia> pEntidades, string pNombrePropiedad)
+        {
+            foreach (ElementoOntologia elemento in pEntidades)
+            {
+                Propiedad propiedadBuscada = elemento.Propiedades.Where(item => item.NombreConNamespace.Equals(pNombrePropiedad)).FirstOrDefault();
+                if (propiedadBuscada != null)
+                {
+                    return propiedadBuscada;
+                }
+            }
+
+            return null;
+        }
+
+        /// <summary>
+        /// Obtiene los datos de la propiedad final que nos interesan de la lista, según el filtro pasados por parámetro, el cual contendrá una propiedad o una cadena de propiedades concatenadas con @@@.
+        /// </summary>
+        /// <param name="pDatosPropiedadesOntologias">Lista de DatosPropiedadOntologia (NombrePropiedad, RdfType, Propiedad, XmlOntologia) de la que queremos obtener los datos</param>
+        /// <param name="pTipoFiltro">Filtro que contiene una propiedad o una cadena de propiedades concatenadas con @@@ por la que vamos a filtrar para obtener los DatosPropiedadOntologia de la propiedad final.</param>
+        /// <returns>El objeto DatosPropiedadOntologia (NombrePropiedad, RdfType, Propiedad, XmlOntologia) perteneciente a la propiedad final del filtro pasado por parámetro. En caso de no encontrarlo devolverá null</returns>
+        private DatosPropiedadOntologia ObtenerDatosPropiedadOntologiaDeFiltro(List<DatosPropiedadOntologia> pDatosPropiedadesOntologias, string pTipoFiltro)
+        {
+            string[] propiedadesAnidadas = pTipoFiltro.Split("@@@");
+            string nombrePropiedad = propiedadesAnidadas[propiedadesAnidadas.Length - 1];
+
+            return pDatosPropiedadesOntologias.Where(item => item.NombrePropiedad.Equals(nombrePropiedad)).FirstOrDefault();
+        }
+
+        /// <summary>
+        /// Dado un filtro que contiene una propiedad o una cadena de propiedades concatenadas con @@@, comprobamos si la propiedad final (propiedad destino) es o no multi idioma.
+        /// </summary>
+        /// <param name="pDatosPropiedadesOntologias">Lista de DatosPropiedadOntologia (NombrePropiedad, RdfType, Propiedad, XmlOntologia) que necesitamos para comprobar si el filtro es multi idioma</param>
+        /// <param name="pTipoFiltro">Filtro que contiene la propiedad de la cual queremos comprobar si es multi idioma</param>
+        /// <returns>True o False en función de si la propiedad final del filtro es o no multi idioma</returns>
+        private bool PropiedadFiltroEsMultiIdioma(List<DatosPropiedadOntologia> pDatosPropiedadesOntologias, string pTipoFiltro)
+        {
+            DatosPropiedadOntologia datosPropiedadOntologia = ObtenerDatosPropiedadOntologiaDeFiltro(pDatosPropiedadesOntologias, pTipoFiltro);
+            if(datosPropiedadOntologia  == null)
+            {
+                return false;
+            }
+            return PropiedadEsMultiIdioma(datosPropiedadOntologia);
+        }
+
+        /// <summary>
+        /// Comprueba si la propiedad pasada por parámetro es o no multidioma analizando el Xml de la ontología a la cual pertenece la propiedad.
+        /// </summary>
+        /// <param name="pDatosPropiedadOntologia">DatosPropiedadOntologia (NombrePropiedad, RdfType, Propiedad, XmlOntologia) de la propiedad de la cual queremos saber si es multi idioma o no</param>
+        /// <returns>True o False en función de si la propiedad pasada por parámetro es o no multi idioma</returns>
+        private bool PropiedadEsMultiIdioma(DatosPropiedadOntologia pDatosPropiedadOntologia)
+        {
+            bool propiedadEsMultiIdioma = false;
+
+            Propiedad propiedad = pDatosPropiedadOntologia.Propiedad;
+            XmlDocument doc = pDatosPropiedadOntologia.XmlOntologia;
+
+            if (propiedad.Rango.Equals("http://www.w3.org/2001/XMLSchema#string"))
+            {
+                XmlNode multiidioma = doc.SelectSingleNode("config/ConfiguracionGeneral/MultiIdioma");
+                if (multiidioma != null)
+                {
+                    if (multiidioma.InnerText.ToLower().Equals("true") || multiidioma.InnerText.Equals(string.Empty))
+                    {
+                        XmlNode multiidiomaPropiedad = doc.SelectSingleNode($"config/EspefPropiedad/Propiedad[@ID =\"{propiedad.Nombre}\" and @EntidadID=\"{propiedad.ElementoOntologia.TipoEntidad}\"]/MultiIdioma");
+
+                        if (multiidiomaPropiedad == null)
+                        {
+                            XmlNode tipoObjeto = doc.SelectSingleNode($"config/EspefPropiedad/Propiedad[@ID =\"{propiedad.Nombre}\" and @EntidadID=\"{propiedad.ElementoOntologia.TipoEntidad}\"]/TipoCampo");
+                            if (tipoObjeto == null || (tipoObjeto != null && !tipoObjeto.InnerText.Equals("Link") && !tipoObjeto.InnerText.Equals("Imagen")))
+                            {
+                                propiedadEsMultiIdioma = true;
+                            }
+                        }
+                        else
+                        {
+                            if (multiidiomaPropiedad.InnerText.ToLower().Equals("true") || multiidiomaPropiedad.InnerText.Equals(string.Empty))
+                            {
+                                propiedadEsMultiIdioma = true;
+                            }
+                        }
+                    }
+                }
+            }
+            return propiedadEsMultiIdioma;
+        }
+
+        /// <summary>
+        /// Obtiene el grafo del selector de entidad de la propiedad pasada por parámetro leyendo el xml de su ontología. Si la propiedad no tiene selector de entidad (es una auxiliar) devuelve null.
+        /// </summary>
+        /// <param name="pPropiedad">Nombre de la propiedad de la cual queremos buscar el grafo del selector de entidad en caso de tenerlo</param>
+        /// <param name="pEntidades">Lista de entidades de la ontología a la que pertenece la propiedad de la cual estamos buscando el grafo</param>
+        /// <param name="doc">Xml de la ontología a la que pertenece la propiedad</param>
+        /// <returns></returns>
+        private string ObtenerGrafoSelectorEntidad(string pPropiedad, List<ElementoOntologia> pEntidades, XmlDocument doc)
+        {
+            Propiedad propiedad = ObtenerPropiedadDeEntidad(pEntidades, pPropiedad);
+            XmlNode grafo = doc.SelectSingleNode($"config/EspefPropiedad/Propiedad[@ID =\"{propiedad.Nombre}\" and @EntidadID=\"{propiedad.ElementoOntologia.TipoEntidad}\"]/SeleccionEntidad/Grafo");
+            if (grafo != null)
+            {
+                return grafo.InnerText;
+            }
+            return null;
+        }
+
+        /// <summary>
+        /// Analizamos la propiedad auxiliar de la ontología pasada por parametros para obtener los datos necesarios de la propiedad final
+        /// Si la propiedad auxiliar tiene varios niveles concatenados con @@@ navegamos entre ellos hasta llegar a la propiedad final.
+        /// </summary>
+        /// <param name="pNombrePropiedad">Propiedad auxiliar de la cual queremos obtener su configuración. Si esta propiedad tiene un selector de entidad o apunta a otra entidad auxiliar estará concatenada por @@@</param>
+        /// <param name="pEntidades">Lista de elementos auxiliares de la ontología a la que pertenece la propiedad</param>
+        /// <param name="doc">Xml de la ontología a la que pertenece la propiedad</param>
+        /// <param name="pListaDatosPropiedadOntologia">Lista de DatosPropiedadOntologia (NombrePropiedad, RdfType, Propiedad, Xml) que queremos obtener a partir del análisis de la ontología</param>
+        /// <param name="pNombreOntologia">Nombre de la ontología</param>
+        private void ObtenerDatosPropiedadAuxiliar(string pNombrePropiedad, List<ElementoOntologia> pEntidades, XmlDocument doc, List<DatosPropiedadOntologia> pListaDatosPropiedadOntologia, string pNombreOntologia)
+        {
+            if (!pNombrePropiedad.Contains("@@@"))
+            {
+                Propiedad propiedad = ObtenerPropiedadDeEntidad(pEntidades, pNombrePropiedad);
+
+                pListaDatosPropiedadOntologia.Add(new DatosPropiedadOntologia() { NombrePropiedad = pNombrePropiedad, Propiedad = propiedad, RdfType = pNombreOntologia, XmlOntologia = doc });
+            }
+            else
+            {
+                string propiedadFinal = pNombrePropiedad.Substring(pNombrePropiedad.IndexOf("@@@") + 3);
+                string propiedadActual = pNombrePropiedad.Substring(0, pNombrePropiedad.IndexOf("@@@"));
+
+                string grafo = ObtenerGrafoSelectorEntidad(propiedadActual, pEntidades, doc);
+
+                if (!string.IsNullOrEmpty(grafo))
+                {
+                    CargarDatosPropiedadOntologia(grafo, propiedadFinal, pListaDatosPropiedadOntologia);
+                }
+                else
+                {
+                    ObtenerDatosPropiedadAuxiliar(propiedadFinal, pEntidades, doc, pListaDatosPropiedadOntologia, pNombreOntologia);
+                }
+            }
+        }
+
+        private byte[] ObtenerOntologia(Guid pOntologiaID)
+        {
+            CallFileService fileService = new CallFileService(mConfigService, mLoggingService);
+            byte[] bytesArchivo = null;
+            bytesArchivo = fileService.ObtenerOntologiaBytes(pOntologiaID);
+            return bytesArchivo;
+        }
+
+        private byte[] ObtenerXmlOntologia(Guid pOntologiaID)
+        {
+            CallFileService fileService = new CallFileService(mConfigService, mLoggingService);
+            byte[] bytesArchivo = fileService.ObtenerXmlOntologiaBytes(pOntologiaID);
+            return bytesArchivo;
+        }
+
+        private string ObtenerFiltroOptional(string pTipoFiltro, string pQuery, out string pUltimoFiltro, bool pMultiIdioma, Dictionary<string, string> pListaCondicionesTipoFiltro, string pLanguageCode)
         {
             pUltimoFiltro = pTipoFiltro;
             string optional = "";
+
+            //fran
+            if (pTipoFiltro.Contains("###ClausulaOrdenPersonalizado###"))
+            {
+                string clausula = pTipoFiltro.Split("###ClausulaOrdenPersonalizadoSeparador###")[1].Replace("###ClausulaOrdenPersonalizado###", "");
+                optional = $"OPTIONAL {{ {clausula} }} ";
+                return optional;
+            }
+
             if (!pMultiIdioma && pListaCondicionesTipoFiltro.ContainsKey(pTipoFiltro) && pListaCondicionesTipoFiltro[pTipoFiltro].Contains("lang("))
             {
                 pMultiIdioma = true;
@@ -4585,11 +4806,11 @@ namespace Es.Riam.Gnoss.AD.Facetado
                 if (!pMultiIdioma)
                 {
                     //Quitamos los filtros con idioma para que no duplique resultados.
-                    optional += " FILTER(lang(" + sujeto + ") = '' " + ObtenerCondicionAdicionalTipoFiltro(pTipoFiltro, pListaCondicionesTipoFiltro, true) + ")";
+                    optional += $" FILTER(lang({sujeto}) = '' {ObtenerCondicionAdicionalTipoFiltro(pTipoFiltro, pListaCondicionesTipoFiltro, true)})";
                 }
                 else
                 {
-                    optional += ObtenerCondicionAdicionalTipoFiltro(pTipoFiltro, pListaCondicionesTipoFiltro, false);
+                    optional += $" FILTER(lang({sujeto}) = '{pLanguageCode}' {ObtenerCondicionAdicionalTipoFiltro(pTipoFiltro, pListaCondicionesTipoFiltro, true)})";
                 }
 
                 optional += " }";
@@ -4601,11 +4822,11 @@ namespace Es.Riam.Gnoss.AD.Facetado
                 if (!pMultiIdioma)
                 {
                     //Quitamos los filtros con idioma para que no duplique resultados.
-                    optional += " FILTER(lang(?" + QuitaPrefijo(pTipoFiltro) + ") = '' " + ObtenerCondicionAdicionalTipoFiltro(pTipoFiltro, pListaCondicionesTipoFiltro, true) + ")";
+                    optional += $" FILTER(lang(?{QuitaPrefijo(pTipoFiltro)}) = '' {ObtenerCondicionAdicionalTipoFiltro(pTipoFiltro, pListaCondicionesTipoFiltro, true)})";
                 }
                 else
                 {
-                    optional += ObtenerCondicionAdicionalTipoFiltro(pTipoFiltro, pListaCondicionesTipoFiltro, false);
+                    optional += $" FILTER(lang(?{QuitaPrefijo(pTipoFiltro)}) = '{pLanguageCode}' {ObtenerCondicionAdicionalTipoFiltro(pTipoFiltro, pListaCondicionesTipoFiltro, false)})";
                 }
 
                 optional += " } ";
@@ -4685,7 +4906,7 @@ namespace Es.Riam.Gnoss.AD.Facetado
         /// <param name="pFiltroContextoOrderBy"></param>
         /// <param name="pEsCatalogoNoSocial">Verdad si es un catálogo no social</param>        
         /// <param name="pNamespaceExtra">NamespacesExtra</param>
-        public void ObtenerResultadosBusquedaFormatoMapa(string pProyectoID, FacetadoDS pFacetadoDS, Dictionary<string, List<string>> pListaFiltros, List<string> pListaFiltrosExtra, bool pEstaEnMyGnoss, bool pEsMiembroComunidad, bool pEsInvitado, string pIdentidadID, List<string> pSemanticos, string pFiltroContextoSelect, string pFiltroContextoWhere, string pFiltroContextoOrderBy, TipoProyecto pTipoProyecto, string pNamespaceExtra, string pResultadosEliminar, DataWrapperFacetas pFiltroMapaDataWrapper, bool pPermitirRecursosPrivados, TipoBusqueda pTipoBusqueda, bool pEsMovil, Dictionary<string, Tuple<string, string, string, bool>> pFiltrosSearchPersonalizados, List<PresentacionMapaSemantico> pListaPresentacionMapaSemantico = null)
+        public void ObtenerResultadosBusquedaFormatoMapa(string pProyectoID, FacetadoDS pFacetadoDS, Dictionary<string, List<string>> pListaFiltros, List<string> pListaFiltrosExtra, bool pEstaEnMyGnoss, bool pEsMiembroComunidad, bool pEsInvitado, string pIdentidadID, List<string> pSemanticos, string pFiltroContextoSelect, string pFiltroContextoWhere, string pFiltroContextoOrderBy, TipoProyecto pTipoProyecto, string pNamespaceExtra, string pResultadosEliminar, DataWrapperFacetas pFiltroMapaDataWrapper, bool pPermitirRecursosPrivados, TipoBusqueda pTipoBusqueda, bool pEsMovil, Dictionary<string, Tuple<string, string, string, bool>> pFiltrosSearchPersonalizados, List<PresentacionMapaSemantico> pListaPresentacionMapaSemantico = null, string pLanguageCode = null)
         {
             var configMapa = pFiltroMapaDataWrapper.ListaFacetaConfigProyMapa.FirstOrDefault();
             bool puntos = false;
@@ -4699,7 +4920,7 @@ namespace Es.Riam.Gnoss.AD.Facetado
             if (rutas)
             {
                 FacetadoDS facDSRutas = new FacetadoDS();
-                ObtenerResultadosBusquedaFormatoMapaVirtuoso(pFiltroMapaDataWrapper, pTipoBusqueda, pProyectoID, facDSRutas, pListaFiltros, pListaFiltrosExtra, pEstaEnMyGnoss, pEsMiembroComunidad, pEsInvitado, pIdentidadID, pSemanticos, pFiltroContextoSelect, pFiltroContextoWhere, pFiltroContextoOrderBy, pTipoProyecto, pNamespaceExtra, pResultadosEliminar, pPermitirRecursosPrivados, false, true, pEsMovil, pFiltrosSearchPersonalizados, pListaPresentacionMapaSemantico);
+                ObtenerResultadosBusquedaFormatoMapaVirtuoso(pFiltroMapaDataWrapper, pTipoBusqueda, pProyectoID, facDSRutas, pListaFiltros, pListaFiltrosExtra, pEstaEnMyGnoss, pEsMiembroComunidad, pEsInvitado, pIdentidadID, pSemanticos, pFiltroContextoSelect, pFiltroContextoWhere, pFiltroContextoOrderBy, pTipoProyecto, pNamespaceExtra, pResultadosEliminar, pPermitirRecursosPrivados, false, true, pEsMovil, pFiltrosSearchPersonalizados, pListaPresentacionMapaSemantico, pLanguageCode);
                 pFacetadoDS.Merge(facDSRutas);
             }
 
@@ -4708,7 +4929,7 @@ namespace Es.Riam.Gnoss.AD.Facetado
 
                 FacetadoDS facDSPuntos = new FacetadoDS();
 
-                ObtenerResultadosBusquedaFormatoMapaVirtuoso(pFiltroMapaDataWrapper, pTipoBusqueda, pProyectoID, facDSPuntos, pListaFiltros, pListaFiltrosExtra, pEstaEnMyGnoss, pEsMiembroComunidad, pEsInvitado, pIdentidadID, pSemanticos, pFiltroContextoSelect, pFiltroContextoWhere, pFiltroContextoOrderBy, pTipoProyecto, pNamespaceExtra, pResultadosEliminar, pPermitirRecursosPrivados, true, false, pEsMovil, pFiltrosSearchPersonalizados, pListaPresentacionMapaSemantico);
+                ObtenerResultadosBusquedaFormatoMapaVirtuoso(pFiltroMapaDataWrapper, pTipoBusqueda, pProyectoID, facDSPuntos, pListaFiltros, pListaFiltrosExtra, pEstaEnMyGnoss, pEsMiembroComunidad, pEsInvitado, pIdentidadID, pSemanticos, pFiltroContextoSelect, pFiltroContextoWhere, pFiltroContextoOrderBy, pTipoProyecto, pNamespaceExtra, pResultadosEliminar, pPermitirRecursosPrivados, true, false, pEsMovil, pFiltrosSearchPersonalizados, pListaPresentacionMapaSemantico, pLanguageCode);
 
                 pFacetadoDS.Merge(facDSPuntos);
             }
@@ -4737,9 +4958,14 @@ namespace Es.Riam.Gnoss.AD.Facetado
         /// <param name="pEsCatalogoNoSocial">Verdad si es un catálogo no social</param>        
         /// <param name="pNamespaceExtra">NamespacesExtra</param>
         /// <paraparam name="pPuntos">TRUE para que traiga los puntos, FALSE para que traiga las rutas</paraparam>
-        public void ObtenerResultadosBusquedaFormatoMapaVirtuoso(DataWrapperFacetas pFiltroMapaDataWrapper, TipoBusqueda pTipoBusqueda, string pProyectoID, FacetadoDS pFacetadoDS, Dictionary<string, List<string>> pListaFiltros, List<string> pListaFiltrosExtra, bool pEstaEnMyGnoss, bool pEsMiembroComunidad, bool pEsInvitado, string pIdentidadID, List<string> pSemanticos, string pFiltroContextoSelect, string pFiltroContextoWhere, string pFiltroContextoOrderBy, TipoProyecto pTipoProyecto, string pNamespaceExtra, string pResultadosEliminar, bool pPermitirRecursosPrivados, bool pPuntos, bool pRutas, bool pEsMovil, Dictionary<string, Tuple<string, string, string, bool>> pFiltrosSearchPersonalizados, List<PresentacionMapaSemantico> pListaPresentacionMapaSemantico = null)
+        public void ObtenerResultadosBusquedaFormatoMapaVirtuoso(DataWrapperFacetas pFiltroMapaDataWrapper, TipoBusqueda pTipoBusqueda, string pProyectoID, FacetadoDS pFacetadoDS, Dictionary<string, List<string>> pListaFiltros, List<string> pListaFiltrosExtra, bool pEstaEnMyGnoss, bool pEsMiembroComunidad, bool pEsInvitado, string pIdentidadID, List<string> pSemanticos, string pFiltroContextoSelect, string pFiltroContextoWhere, string pFiltroContextoOrderBy, TipoProyecto pTipoProyecto, string pNamespaceExtra, string pResultadosEliminar, bool pPermitirRecursosPrivados, bool pPuntos, bool pRutas, bool pEsMovil, Dictionary<string, Tuple<string, string, string, bool>> pFiltrosSearchPersonalizados, List<PresentacionMapaSemantico> pListaPresentacionMapaSemantico = null, string pLanguageCode = null)
         {
             string[] filtrosContextos = null;
+            string idioma = pLanguageCode;
+            if (string.IsNullOrEmpty(idioma))
+            {
+                idioma = "es";
+            }
             if (!string.IsNullOrEmpty(pFiltroContextoOrderBy))
             {
                 filtrosContextos = GenerarOrderByContextos(pFiltroContextoOrderBy);
@@ -4865,11 +5091,15 @@ namespace Es.Riam.Gnoss.AD.Facetado
 
             if (pListaPresentacionMapaSemantico != null)
             {
-                //Dictionary<string, string> diccionarioPropiedad = ObtenerDiccionarioPropiedadVariableSelect(pListaPresentacionMapaSemantico);
                 int contadorPropiedades = 0;
                 int contadorPartes = 0;
                 foreach (PresentacionMapaSemantico presentacionMapaSemantico in pListaPresentacionMapaSemantico)
                 {
+                    //fran
+                    string nombreOntologia = mEntityContext.Documento.Where(doc => doc.DocumentoID.Equals(presentacionMapaSemantico.OntologiaID)).Select(d => d.Enlace).FirstOrDefault();
+                    List<DatosPropiedadOntologia> datosPropiedadesOntologias = new List<DatosPropiedadOntologia>();
+                    CargarDatosPropiedadOntologia(nombreOntologia, presentacionMapaSemantico.Propiedad, datosPropiedadesOntologias);
+                    bool multiidioma = PropiedadFiltroEsMultiIdioma(datosPropiedadesOntologias, presentacionMapaSemantico.Propiedad);
                     string[] partesPropiedad = presentacionMapaSemantico.Propiedad.Split(new string[] { "@@@" }, StringSplitOptions.RemoveEmptyEntries);
                     select += $" ?prop{contadorPropiedades}";
                     int i = 0;
@@ -4901,6 +5131,10 @@ namespace Es.Riam.Gnoss.AD.Facetado
                         }
                         i++;
                         contadorPartes++;
+                    }
+                    if (multiidioma)
+                    {
+                        query = $"{query} FILTER (lang(?prop{contadorPropiedades}) = '{idioma}') ";                   
                     }
                     contadorPropiedades++;
                 }
@@ -4974,11 +5208,6 @@ namespace Es.Riam.Gnoss.AD.Facetado
 
             query += "{";
 
-            if (!busquedaMensajesOComent && !pProyectoID.Contains("contactos"))
-            {
-                query += ObtenerBloqueHasPrivacidad(pListaFiltros, pEstaEnMyGnoss, pEsInvitado, pEsMiembroComunidad, pIdentidadID, pProyectoID, pObtenerRecursosPrivados);
-            }
-
             bool esRecomendacion = false;
 
             if (pProyectoID.Contains("contactos"))
@@ -5032,6 +5261,11 @@ namespace Es.Riam.Gnoss.AD.Facetado
             if (filtrosContextos != null)
             {
                 query += filtrosContextos[0];
+            }
+
+            if (!busquedaMensajesOComent && !pProyectoID.Contains("contactos"))
+            {
+                query += ObtenerBloqueHasPrivacidad(pListaFiltros, pEstaEnMyGnoss, pEsInvitado, pEsMiembroComunidad, pIdentidadID, pProyectoID, pObtenerRecursosPrivados);
             }
 
             query += " } ";
@@ -5255,8 +5489,8 @@ namespace Es.Riam.Gnoss.AD.Facetado
                         query += " FILTER ( ?p=cv:OrganizationUnitNameTitulaciones and  (?Etiqueta LIKE '" + filtro + "%' or ?Etiqueta LIKE '% " + filtro + "%') ) }  UNION ";
                         query += " { ?s gnoss:hasCv ?CV. ?CV ?p ?Etiqueta . ";
                         query += " FILTER ( ?p=cv:PositionTitleEmpresaAnterior and  (?Etiqueta LIKE '" + filtro + "%' or ?Etiqueta LIKE '% " + filtro + "%') ) } "; // UNION
-                        //foreach (string sem in pSemanticos)
-                        //{
+                                                                                                                                                                    //foreach (string sem in pSemanticos)
+                                                                                                                                                                    //{
 
                         //    query += " { ?s ?p ?Etiqueta. ";
                         //    query += " FILTER ( ?p=" + sem + " and  (?Etiqueta LIKE '" + filtro + "%' or ?Etiqueta LIKE '% " + filtro + "%') ) } UNION";
@@ -7414,7 +7648,7 @@ from <http://pruebas.gnoss.net/4f08285b-19f9-4ff0-8c36-ccee29868a75>  WHERE {   
 
             query += " select  ?o ";
 
-            query += "from " + ObtenerUrlGrafo(nombregrafo); ;
+            query += "from " + ObtenerUrlGrafo(nombregrafo);
 
             query += " WHERE {  ";
             query += "  gnoss:" + nombregrafo + " gnoss:has" + nombregrafo + " ?o.  ";
@@ -7560,9 +7794,10 @@ from <http://pruebas.gnoss.net/4f08285b-19f9-4ff0-8c36-ccee29868a75>  WHERE {   
         /// <param name="pExtraWhere">Cadena extra para el where de la consulta</param>
         /// <param name="pIdioma">Idioma</param>
         /// <returns>DataSet con las tripletas</returns>
-        public FacetadoDS ObtenerRDFXMLSelectorEntidadFormulario(string pGrafo, string pEntContenedora, string pPropiedad, string pTipoEntidadSolicitada, List<string> pPropSolicitadas, string pFiltro, string pExtraWhere, string pIdioma)
+        public FacetadoDS ObtenerRDFXMLSelectorEntidadFormulario(string pGrafo, string pEntContenedora, string pPropiedad, string pTipoEntidadSolicitada, List<string> pPropSolicitadas, string pFiltro, string pExtraWhere, string pIdioma, Guid pIdentidadID, Guid pProyectoID)
         {
             FacetadoDS facetadoDS = new FacetadoDS();
+            bool esEntidadPrincipal = EsEntidadPrincipal(pGrafo);
             string query = NamespacesVirtuosoLectura;
             string limiteConfig = null;
 
@@ -7585,38 +7820,44 @@ from <http://pruebas.gnoss.net/4f08285b-19f9-4ff0-8c36-ccee29868a75>  WHERE {   
                     {
                         if (entidadSol.StartsWith("http://") || entidadSol.StartsWith("https://"))
                         {
-                            whereTipoEntidadSol += "<" + entidadSol + ">,";
+                            whereTipoEntidadSol += $"<{entidadSol}>,";
                         }
                         else
                         {
-                            whereTipoEntidadSol += "'" + entidadSol + "',";
+                            whereTipoEntidadSol += $"'{entidadSol}',";
                         }
                     }
 
-                    whereTipoEntidadSol = whereTipoEntidadSol.Substring(0, whereTipoEntidadSol.Length - 1) + ")";
+                    whereTipoEntidadSol = $"{whereTipoEntidadSol.Substring(0, whereTipoEntidadSol.Length - 1)})";
                 }
                 else
                 {
                     if (pTipoEntidadSolicitada.StartsWith("http://") || pTipoEntidadSolicitada.StartsWith("https://"))
                     {
-                        whereTipoEntidadSol += "?o=<" + pTipoEntidadSolicitada + ">";
+                        whereTipoEntidadSol += $"?o = <{pTipoEntidadSolicitada}>";
                     }
                     else
                     {
-                        whereTipoEntidadSol += "?o='" + pTipoEntidadSolicitada + "'";
+                        whereTipoEntidadSol += $"?o = '{pTipoEntidadSolicitada}'";
                     }
                 }
             }
 
+            query += " select distinct ?s ?p ?o ";
+            if (string.IsNullOrEmpty(pIdioma))
+            {
+                query += " lang(?o) as ?idioma ";
+            }
+
+            query += $"from {ObtenerUrlGrafo(pGrafo).ToLower()} ";
+
+            if (!pIdentidadID.Equals(Guid.Empty) && !pProyectoID.Equals(Guid.Empty) && esEntidadPrincipal)
+            {
+                query += $"from {ObtenerUrlGrafo(pProyectoID.ToString()).ToLower()}";
+            }
+
             if (!string.IsNullOrEmpty(pPropiedad) && pPropSolicitadas.Count > 0 && pPropiedad == pPropSolicitadas[0])
             {
-                query += " select distinct ?s ?p ?o ";
-                if (string.IsNullOrEmpty(pIdioma))
-                {
-                    query += " lang(?o) as ?idioma ";
-                }
-                query += "from " + ObtenerUrlGrafo(pGrafo).ToLower() + " ";
-
                 string where = "";
                 string jerquia = null;
 
@@ -7624,7 +7865,7 @@ from <http://pruebas.gnoss.net/4f08285b-19f9-4ff0-8c36-ccee29868a75>  WHERE {   
                 {
                     if (!propSol.Contains("|"))
                     {
-                        where += "?p=<" + propSol + "> OR ";
+                        where += $"?p = <{propSol}> OR ";
                     }
                     else
                     {
@@ -7633,19 +7874,19 @@ from <http://pruebas.gnoss.net/4f08285b-19f9-4ff0-8c36-ccee29868a75>  WHERE {   
                         {
                             if (jerquia == null)
                             {
-                                jerquia = "?s ?p" + count + " ?o" + count + ". ";
+                                jerquia = $" ?s ?p{count} ?o{count}. ";
                                 where += "(";
                             }
                             else
                             {
-                                jerquia += "?o" + (count - 1) + " ?p" + count + " ?o" + count + ". ";
+                                jerquia += $"?o{(count - 1)} ?p{count} ?o{count}. ";
                             }
 
-                            where += "?p" + count + " =<" + propJerq + "> AND ";
+                            where += $"?p{count} =<{propJerq}> AND ";
                             count++;
                         }
 
-                        where = where.Substring(0, where.Length - 4) + ") OR ";
+                        where = $"{where.Substring(0, where.Length - 4)}) OR ";
                         break;
                     }
 
@@ -7657,15 +7898,15 @@ from <http://pruebas.gnoss.net/4f08285b-19f9-4ff0-8c36-ccee29868a75>  WHERE {   
 
                 if (string.IsNullOrEmpty(jerquia))
                 {
-                    query += " WHERE { ?s ?p ?o. FILTER ((" + where;
+                    query += $" WHERE {{ ?s ?p ?o. FILTER (({where}";
                 }
                 else
                 {
-                    query += " WHERE { " + jerquia.Substring(0, jerquia.LastIndexOf("?o")) + " ?o. FILTER ((" + where;
+                    query += $" WHERE {{ {jerquia.Substring(0, jerquia.LastIndexOf("?o"))} ?o. FILTER (({where}";
                     query = query.Replace("?p0 ", "?p ");
                 }
 
-                query = query.Substring(0, query.Length - 3) + ")  ";
+                query = $"{query.Substring(0, query.Length - 3)})  ";
 
                 if (!string.IsNullOrEmpty(pFiltro))
                 {
@@ -7686,32 +7927,24 @@ from <http://pruebas.gnoss.net/4f08285b-19f9-4ff0-8c36-ccee29868a75>  WHERE {   
                         //caso2 = UtilCadenas.ToSparql(PasarAUtf8(PasarAUtf8(caso2)));
 
                         //query += " AND (?o LIKE '" + caso1 + "%' or ?o LIKE '% " + caso1 + "%' or ?o LIKE '" + caso2 + "%' or ?o LIKE '% " + caso2 + "%') ";
-                        query += " AND (bif:lower(str(?o)) LIKE '%" + UtilCadenas.ToSparql(pFiltro.ToLower()) + "%') ";
+                        query += $" AND (bif:lower(str(?o)) LIKE '%{UtilCadenas.ToSparql(pFiltro.ToLower())}%') ";
                     }
                     else
                     {
                         pFiltro = UtilCadenas.ToSparql(pFiltro);
-                        query += " AND (?o = '" + pFiltro + "') ";
+                        query += $" AND (?o = '{pFiltro}') ";
                     }
                 }
 
                 if (!string.IsNullOrEmpty(pIdioma))
                 {
-                    query += " AND (lang(?o)='" + pIdioma + "' OR lang(?o)='') ";
+                    query += $" AND (lang(?o)='{pIdioma}' OR lang(?o)='') ";
                 }
 
-                query += " ) " + pExtraWhere + " }";
+                query += $" ) {pExtraWhere} }}";
             }
             else
             {
-                query += " select distinct ?s ?p ?o ";
-                if (string.IsNullOrEmpty(pIdioma))
-                {
-                    query += " lang(?o) as ?idioma ";
-                }
-
-                query += "from " + ObtenerUrlGrafo(pGrafo).ToLower() + " ";
-
                 //"@@@?s2?p2?o2@@@" se sustiuira por ?s2 ?p2 ?o2. si se va a usar en el where, si no se usa se elimina al final.
                 query += " WHERE { @@@?s2?p2?o2@@@ ?s ?p ?o. FILTER (";
 
@@ -7719,12 +7952,12 @@ from <http://pruebas.gnoss.net/4f08285b-19f9-4ff0-8c36-ccee29868a75>  WHERE {   
                 {
                     if (pEntContenedora != null)
                     {
-                        query += " ?s2 = <" + pEntContenedora + "> AND";
+                        query += $" ?s2 = <{pEntContenedora}> AND";
                     }
 
                     if (pPropiedad != null)
                     {
-                        query += " ?p2 = <" + pPropiedad + "> AND";
+                        query += $" ?p2 = <{pPropiedad}> AND";
                     }
 
                     query += " ?o2 = ?s ";
@@ -7734,20 +7967,20 @@ from <http://pruebas.gnoss.net/4f08285b-19f9-4ff0-8c36-ccee29868a75>  WHERE {   
                 else if (string.IsNullOrEmpty(pEntContenedora) && string.IsNullOrEmpty(pPropiedad) && !string.IsNullOrEmpty(pTipoEntidadSolicitada))
                 {
                     query += " ?p2 = <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> AND ";
-                    query += whereTipoEntidadSol.Replace("?o", "?o2") + " AND ?s2 = ?s ";
+                    query += $"{whereTipoEntidadSol.Replace("?o", "?o2")} ";
                     query += " AND (";
-                    query = query.Replace("@@@?s2?p2?o2@@@", "?s2 ?p2 ?o2.");
+                    query = query.Replace("@@@?s2?p2?o2@@@", "?s ?p2 ?o2.");
                 }
                 else if (!string.IsNullOrEmpty(pPropiedad) && !string.IsNullOrEmpty(pTipoEntidadSolicitada))
                 {
                     if (pPropiedad != "ANY")
                     {
-                        query += " ?p2 = <" + pPropiedad + "> AND";
+                        query += $" ?p2 = <{pPropiedad}> AND";
                     }
 
-                    query += whereTipoEntidadSol.Replace("?o", "?o2") + " AND ?s2 = ?s ";
+                    query += $"{whereTipoEntidadSol.Replace("?o", "?o2")} ";
                     query += " AND (";
-                    query = query.Replace("@@@?s2?p2?o2@@@", "?s2 ?p2 ?o2.");
+                    query = query.Replace("@@@?s2?p2?o2@@@", "?s ?p2 ?o2.");
                 }
                 else
                 {
@@ -7760,7 +7993,7 @@ from <http://pruebas.gnoss.net/4f08285b-19f9-4ff0-8c36-ccee29868a75>  WHERE {   
                 {
                     if (!propSol.Contains("|"))
                     {
-                        query += "?p=<" + propSol + "> OR ";
+                        query += $"?p=<{propSol}> OR ";
                     }
                     else
                     {
@@ -7769,19 +8002,19 @@ from <http://pruebas.gnoss.net/4f08285b-19f9-4ff0-8c36-ccee29868a75>  WHERE {   
                         {
                             if (jerquia == null)
                             {
-                                jerquia = "?s ?p" + count + " ?o" + count + ". ";
+                                jerquia = $"?s ?p{count} ?o{count}. ";
                                 query += "(";
                             }
                             else
                             {
-                                jerquia += "?o" + (count - 1) + " ?p" + count + " ?o" + count + ". ";
+                                jerquia += $"?o{(count - 1)} ?p{count} ?o{count}. ";
                             }
 
-                            query += "?p" + count + " =<" + propJerq + "> AND ";
+                            query += $"?p{count} =<{propJerq}> AND ";
                             count++;
                         }
 
-                        query = query.Substring(0, query.Length - 4) + ") OR ";
+                        query = $"{query.Substring(0, query.Length - 4)}) OR ";
                         break;
                     }
 
@@ -7791,11 +8024,11 @@ from <http://pruebas.gnoss.net/4f08285b-19f9-4ff0-8c36-ccee29868a75>  WHERE {   
                     }
                 }
 
-                query = query.Substring(0, query.Length - 3) + ")  ";
+                query = $"{query.Substring(0, query.Length - 3)})  ";
 
                 if (!string.IsNullOrEmpty(jerquia))
                 {
-                    query = query.Replace("?s ?p ?o. FILTER", jerquia.Substring(0, jerquia.LastIndexOf("?o")) + " ?o. FILTER").Replace("?p0 ", "?p ");
+                    query = query.Replace("?s ?p ?o. FILTER", $"{jerquia.Substring(0, jerquia.LastIndexOf("?o"))} ?o. FILTER").Replace("?p0 ", "?p ");
                 }
 
                 string tipoOrden = null;
@@ -7807,7 +8040,7 @@ from <http://pruebas.gnoss.net/4f08285b-19f9-4ff0-8c36-ccee29868a75>  WHERE {   
                         tipoOrden = pFiltro.Split('|')[1];
                         string prop = pFiltro.Split('|')[2];
 
-                        query += " ) ?s2 <" + prop + "> ?ordenProp";
+                        query += $" ) ?s2 <{prop}> ?ordenProp";
                         query = query.Replace("@@@?s2?p2?o2@@@", "?s2 ?p2 ?o2.");
                     }
                     else
@@ -7815,17 +8048,17 @@ from <http://pruebas.gnoss.net/4f08285b-19f9-4ff0-8c36-ccee29868a75>  WHERE {   
                         if (pFiltro[0] == '%')
                         {
                             pFiltro = pFiltro.Substring(1);
-                            query += " AND " + ObtenerExpresionRegularParaAutocompletar(pFiltro, "?o");
+                            query += $" AND {ObtenerExpresionRegularParaAutocompletar(pFiltro, "?o")}";
                         }
                         else
                         {
                             pFiltro = UtilCadenas.ToSparql(pFiltro);
-                            query += " AND (?o = '" + pFiltro + "') ";
+                            query += $" AND (?o = '{pFiltro}') ";
                         }
 
                         if (!string.IsNullOrEmpty(pIdioma))
                         {
-                            query += " AND (lang(?o)='" + pIdioma + "' OR lang(?o)='') ";
+                            query += $" AND (lang(?o)='{pIdioma}' OR lang(?o)='') ";
                         }
 
                         query += " )";
@@ -7835,17 +8068,23 @@ from <http://pruebas.gnoss.net/4f08285b-19f9-4ff0-8c36-ccee29868a75>  WHERE {   
                 {
                     if (!string.IsNullOrEmpty(pIdioma))
                     {
-                        query += " AND (lang(?o)='" + pIdioma + "' OR lang(?o)='') ";
+                        query += $" AND (lang(?o)='{pIdioma}' OR lang(?o)='') ";
                     }
 
                     query += " )";
                 }
 
-                query += pExtraWhere + " }";
+                query += pExtraWhere;
+                if (!pIdentidadID.Equals(Guid.Empty) && !pProyectoID.Equals(Guid.Empty) && esEntidadPrincipal)
+                {
+                    query += GenerarBloqueGrafoBusqueda(pIdentidadID, pProyectoID);
+                }
+
+                query += " }";
 
                 if (tipoOrden != null)
                 {
-                    query += " order by " + tipoOrden + " (?ordenProp) ";
+                    query += $" order by {tipoOrden} (?ordenProp) ";
                 }
                 else if (!string.IsNullOrEmpty(pFiltro))
                 {
@@ -7856,7 +8095,7 @@ from <http://pruebas.gnoss.net/4f08285b-19f9-4ff0-8c36-ccee29868a75>  WHERE {   
                     }
                     else
                     {
-                        query += " LIMIT " + limiteConfig;
+                        query += $" LIMIT {limiteConfig}";
                     }
                 }
             }
@@ -7866,6 +8105,65 @@ from <http://pruebas.gnoss.net/4f08285b-19f9-4ff0-8c36-ccee29868a75>  WHERE {   
             LeerDeVirtuoso(query, "SelectPropEnt", facetadoDS, pGrafo);//SelectEnt
 
             return facetadoDS;
+        }
+
+        /// <summary>
+        /// Genera la parte de la consulta para filtrar por privacidad el grafo de búsqueda. Obtiene al partir del triple hasEntidad la URI del grafo de búsqueda
+        /// </summary>
+        /// <returns>El bloque de la consulta referente al grafo de búsqueda</returns>
+        private string GenerarBloqueGrafoBusqueda(Guid pIdentidadID, Guid pProyectoID)
+        {
+            string urlIntragnoss = ObtenerUrlIntragnoss();
+
+            StringBuilder query = new StringBuilder();
+
+            query.AppendLine(" ?sujetoOntologia <http://gnoss/hasEntidad> ?s .");
+            query.AppendLine($"bind(IRI(REPLACE(bif:upper(?sujetoOntologia), '{urlIntragnoss.ToUpper()}', 'http://gnoss/')) as ?sujetoBusqueda) .");
+            query.AppendLine(GenerarBloquePrivacidadSujetoBusqueda(pIdentidadID, pProyectoID));
+            return query.ToString();
+        }
+
+        /// <summary>
+        /// Dentro el bloque del grafo de búqueda genera el filtro de la privacidad a partir del proyecto y la identidad dada por parámetro
+        /// </summary>
+        /// <param name="pIdentidadID">Identidad del usuario que está llamando al autocompletar</param>
+        /// <param name="pProyectoID">Identificador del proyecto donde se está utilizando el autocompletar</param>
+        /// <returns></returns>
+        private string GenerarBloquePrivacidadSujetoBusqueda(Guid pIdentidadID, Guid pProyectoID)
+        {
+            IdentidadAD idenAD = new IdentidadAD(mLoggingService, mEntityContext, mConfigService, mServicesUtilVirtuosoAndReplication);
+            List<Guid> listaGruposOrganizacion = idenAD.ObtenerGruposDeOrganizacionDeIdentidad(pIdentidadID);
+            StringBuilder query = new StringBuilder();
+
+            query.AppendLine("?sujetoBusqueda gnoss:hasprivacidadCom ?privacidad.");
+            query.AppendLine("OPTIONAL { ?sujetoBusqueda gnoss:hasparticipanteIdentidadID ?hasparticipanteIdentidadID }");
+            query.AppendLine("OPTIONAL {");
+            query.AppendLine(" ?sujetoBusqueda gnoss:hasparticipanteIdentidadID ?grupo.");
+            query.AppendLine(" OPTIONAL { ?grupo gnoss:hasparticipanteID  ?hasparticipanteIDGrupo } }");
+            query.AppendLine($"FILTER(?privacidad in('publico', 'publicoreg') || ?hasparticipanteIdentidadID = gnoss:{pIdentidadID.ToString().ToUpper()} || ?hasparticipanteIDGrupo = gnoss:{pIdentidadID.ToString().ToUpper()}");
+
+            if (listaGruposOrganizacion.Count > 0)
+            {
+                query.Append(" || ?grupo in (");
+                foreach (Guid grupo in listaGruposOrganizacion)
+                {
+                    query.Append($"gnoss:{grupo.ToString().ToUpper()},");
+                }
+                query.Remove(query.Length - 1, 1);
+                query.Append(")");
+            }
+            query.Append(")");
+
+            return query.ToString();
+        }
+
+        /// <summary>
+        /// Obtiene la url intragnoss del entorno de la base de datos
+        /// </summary>
+        /// <returns></returns>
+        private string ObtenerUrlIntragnoss()
+        {
+            return mEntityContext.ParametroAplicacion.Where(item => item.Parametro == "UrlIntragnoss").Select(item => item.Valor).FirstOrDefault();
         }
 
         private string ObtenerExpresionRegularParaAutocompletar(string pFiltro, string objeto)
@@ -7928,7 +8226,7 @@ from <http://pruebas.gnoss.net/4f08285b-19f9-4ff0-8c36-ccee29868a75>  WHERE {   
         /// <param name="pEntidadID">ID de la entidad origen</param>
         /// <param name="pConsulta">Consulta a realizar</param>
         /// <returns>DataSet con las tripletas</returns>
-        public FacetadoDS ObtenerRDFXMLSelectorEntidadFormularioPorConsulta(string pGrafo, string pEntidadID, string pConsulta)
+        public FacetadoDS ObtenerRDFXMLSelectorEntidadFormularioPorConsulta(SelectorEntidad pSelectorEntidad, string pEntidadID, string pConsulta, string pIdioma)
         {
             FacetadoDS facetadoDS = new FacetadoDS();
             string query = NamespacesVirtuosoLectura + " " + pConsulta;
@@ -7938,7 +8236,19 @@ from <http://pruebas.gnoss.net/4f08285b-19f9-4ff0-8c36-ccee29868a75>  WHERE {   
                 query = query.Replace("@EntidadID@", "= <" + pEntidadID + ">");
             }
 
-            LeerDeVirtuoso(query, "SelectPropEnt", facetadoDS, pGrafo);//SelectEnt
+            if (pSelectorEntidad.MultiIdioma)
+            {
+                if (query.Contains("@GETLANG@") && !string.IsNullOrEmpty(pIdioma))
+                {
+                    query = query.Replace("@GETLANG@", $"'{pIdioma}'");
+                }
+                else
+                {
+                    query = GenerarQuerySelectorEntidadMultiidioma(query);
+                }
+            }
+
+            LeerDeVirtuoso(query, "SelectPropEnt", facetadoDS, pSelectorEntidad.Grafo);//SelectEnt
 
             if (facetadoDS.Tables["SelectPropEnt"].Columns.Count > 4)//SelectEnt
             {
@@ -8003,6 +8313,46 @@ from <http://pruebas.gnoss.net/4f08285b-19f9-4ff0-8c36-ccee29868a75>  WHERE {   
             }
 
             return facetadoDS;
+        }
+
+        /// <summary>
+        /// A partir de la consulta sparql dada en un selector de entidad, se devuelve la misma consulta pero añadiendo una propiedad al select 
+        /// para obtener el idioma también a parte del sujeto, predicado y objeto
+        /// </summary>
+        /// <param name="pQuery">Consulta sparql a la que añadir el idioma</param>
+        /// <returns>La consulta dada pero con el parámetro en el select del idioma del objeto</returns>
+        private string GenerarQuerySelectorEntidadMultiidioma(string pQuery)
+        {
+            //Expresión regex que busca que la consulta cumpla un select con tres parámetros, y se captura el último para poder utilizarlo más adelante
+            string regexObjeto = "select[ ]+(?:distinct[ ]+)?\\?[a-zA-Z0-9]+[ ]+\\?[a-zA-Z0-9]+[ ]+(\\?[a-zA-Z0-9]+)[ ]+";
+            Match matchObjeto = Regex.Match(pQuery, regexObjeto, RegexOptions.IgnoreCase);
+
+            if (matchObjeto.Success)
+            {
+                string objetoConsulta = matchObjeto.Groups[1].Value;
+                string idioma = $" lang({objetoConsulta}) as ?idioma";
+
+                string regexFrom = "(FROM)";
+                Match matchFrom = Regex.Match(pQuery, regexFrom, RegexOptions.IgnoreCase);
+
+                if (matchFrom.Success)
+                {
+                    string from = matchFrom.Groups[1].Value;
+                    pQuery = $"{pQuery.Substring(0, pQuery.IndexOf(from))} {idioma} {pQuery.Substring(pQuery.IndexOf(from))}";
+                }
+                else
+                {
+                    string regexWhere = "(WHERE)";
+                    Match matchWhere = Regex.Match(pQuery, regexWhere, RegexOptions.IgnoreCase);
+                    if (matchWhere.Success)
+                    {
+                        string where = matchWhere.Groups[1].Value;
+                        pQuery = $"{pQuery.Substring(0, pQuery.IndexOf(where))} {idioma} {pQuery.Substring(pQuery.IndexOf(where))}";
+                    }
+                }
+            }
+
+            return pQuery;
         }
 
         /// <summary>
@@ -10119,6 +10469,16 @@ from <http://pruebas.gnoss.net/4f08285b-19f9-4ff0-8c36-ccee29868a75>  WHERE {   
             return nodosRep;
         }
 
+        private bool EsEntidadPrincipal(string pGrafo)
+        {
+            if (pGrafo.IndexOf(".Owl") == -1)
+            {
+                pGrafo += ".owl";
+            }
+
+            return mEntityContext.Documento.Any(item => item.Enlace.Equals(pGrafo) && item.Tipo == 7 && !item.Eliminado);
+        }
+
         /// <summary>
         ///
         /// </summary>
@@ -10327,109 +10687,126 @@ from <http://pruebas.gnoss.net/4f08285b-19f9-4ff0-8c36-ccee29868a75>  WHERE {   
         private string ObtenerBloqueHasPrivacidad(Dictionary<string, List<string>> pListaFiltros, bool pEstaEnMyGnoss, bool pEsInvitado, bool pEsMiembroComunidad, string pIdentidadID, string pProyectoID, bool pObtenerRecursosPrivados)
         {
             string query = "";
-            Guid identidadID = new Guid(pIdentidadID);
-
-            if (pEstaEnMyGnoss)
+            if (UsarPrivacidadEnFacetasYResultados)
             {
-                query += "{?s gnoss:hasprivacidadMyGnoss 'publico'. } ";
+                Guid identidadID = new Guid(pIdentidadID);
 
-                if (pObtenerRecursosPrivados)
+                if (pEstaEnMyGnoss)
                 {
-                    if (ObtenerPrivados)
-                    {
-                        query += "UNION {?s gnoss:hasprivacidadMyGnoss 'privado'.} ";
-                        query += "UNION {?s gnoss:hasprivacidadMyGnoss 'publicoreg'.} ";
-                    }
-                    else if (pEsMiembroComunidad)
-                    {
-                        query += " UNION { ?s gnoss:hasprivacidadMyGnoss 'publicoreg'. } ";
+                    query += "{?s gnoss:hasprivacidadMyGnoss 'publico'. } ";
 
-                        if (UsuarioTieneRecursosPrivados)
+                    if (pObtenerRecursosPrivados)
+                    {
+                        if (ObtenerPrivados)
                         {
-                            query += " UNION {?s gnoss:hasparticipanteIdentidadID gnoss:" + pIdentidadID.ToUpper() + ".  }";
-                            query += " UNION {?s  gnoss:hasparticipanteIdentidadID ?grupo.?grupo gnoss:hasparticipanteID gnoss:" + pIdentidadID.ToUpper() + "}";
+                            query += "UNION {?s gnoss:hasprivacidadMyGnoss 'privado'.} ";
+                            query += "UNION {?s gnoss:hasprivacidadMyGnoss 'publicoreg'.} ";
                         }
-                    }
-                }
-            }
-            else
-            {
-                //esta en la comunidad
-                string privacidad = "{ ?s gnoss:hasprivacidadCom 'publico'. } ";
-
-                if (pObtenerRecursosPrivados)
-                {
-                    if (ObtenerPrivados)
-                    {
-                        privacidad += " UNION { ?s gnoss:hasprivacidadCom 'privado'.} ";
-                        privacidad += " UNION { ?s gnoss:hasprivacidadCom 'publicoreg'. } ";
-                    }
-                    else if (pEsMiembroComunidad)
-                    {
-                        privacidad += " UNION { ?s gnoss:hasprivacidadCom 'publicoreg'. } ";
-
-                        if (UsuarioTieneRecursosPrivados)
+                        else if (pEsMiembroComunidad)
                         {
-                            privacidad += " UNION {?s gnoss:hasparticipanteIdentidadID gnoss:" + pIdentidadID.ToUpper() + ". }";
+                            query += " UNION { ?s gnoss:hasprivacidadMyGnoss 'publicoreg'. } ";
 
-                            if (mIdentidadTieneGruposComunidad == null)
+                            if (UsuarioTieneRecursosPrivados)
                             {
-                                mIdentidadTieneGruposComunidad = new ConcurrentDictionary<Guid, bool>();
-                            }
-
-                            if (!mIdentidadTieneGruposComunidad.ContainsKey(identidadID))
-                            {
-                                Guid proyID = Guid.Empty;
-                                Guid.TryParse(pProyectoID, out proyID);
-                                bool tieneGruposProy = true;
-                                if (!proyID.Equals(Guid.Empty))
+                                IdentidadAD identidadAD = new IdentidadAD(mLoggingService, mEntityContext, mConfigService, mServicesUtilVirtuosoAndReplication);
+                                Guid perfilID = identidadAD.ObtenerIdentidadPorID(new Guid(pIdentidadID), true).ListaIdentidad.Where(x => x.IdentidadID.Equals(new Guid(pIdentidadID))).FirstOrDefault().PerfilID;
+                                DataWrapperIdentidad dwIdentidad = identidadAD.ObtenerIdentidadesDePerfil(perfilID);
+                                string identidades = string.Empty;
+                                foreach (EntityModel.Models.IdentidadDS.Identidad identidad in dwIdentidad.ListaIdentidad)
                                 {
-                                    IdentidadAD idenAD = new IdentidadAD(mLoggingService, mEntityContext, mConfigService, mServicesUtilVirtuosoAndReplication);
-                                    tieneGruposProy = idenAD.TieneIdentidadGruposDeProyeto(proyID, identidadID);
-                                    idenAD.Dispose();
+                                    identidades = $"{identidades}gnoss:{identidad.IdentidadID.ToString().ToUpper()},";
+                                }
+                                if (identidades.EndsWith(','))
+                                {
+                                    identidades = identidades.Substring(0, identidades.Length - 1);
                                 }
 
-                                mIdentidadTieneGruposComunidad.TryAdd(identidadID, tieneGruposProy);
-                            }
+                                query += " UNION {?s gnoss:hasparticipanteIdentidadID ?identidad . FILTER (?identidad  in (" + identidades + ")) . }";
 
-                            if (mIdentidadTieneGruposComunidad[identidadID])
-                            {
-                                privacidad += " UNION {?s  gnoss:hasparticipanteIdentidadID ?grupo.?grupo gnoss:hasparticipanteID gnoss:" + pIdentidadID.ToUpper() + "}";
+                                query += " UNION {?s  gnoss:hasparticipanteIdentidadID ?grupo. ?grupo gnoss:hasparticipanteID ?identidadParticipaGrupo . FILTER (?identidadParticipaGrupo in (" + identidades + ")) . }";
                             }
                         }
                     }
                 }
-                query += privacidad;
-            }
-
-            if (pObtenerRecursosPrivados)
-            {
-                if (!mListaGruposPorIdentidad.ContainsKey(identidadID))
+                else
                 {
-                    if (identidadID.Equals(UsuarioAD.Invitado))
+                    //esta en la comunidad
+                    string privacidad = "{ ?s gnoss:hasprivacidadCom 'publico'. } ";
+
+                    if (pObtenerRecursosPrivados)
                     {
-                        mListaGruposPorIdentidad.TryAdd(identidadID, new List<Guid>());
+                        if (ObtenerPrivados)
+                        {
+                            privacidad += " UNION { ?s gnoss:hasprivacidadCom 'privado'.} ";
+                            privacidad += " UNION { ?s gnoss:hasprivacidadCom 'publicoreg'. } ";
+                        }
+                        else if (pEsMiembroComunidad)
+                        {
+                            privacidad += " UNION { ?s gnoss:hasprivacidadCom 'publicoreg'. } ";
+
+                            if (UsuarioTieneRecursosPrivados)
+                            {
+                                privacidad += " UNION {?s gnoss:hasparticipanteIdentidadID gnoss:" + pIdentidadID.ToUpper() + ". }";
+
+                                if (mIdentidadTieneGruposComunidad == null)
+                                {
+                                    mIdentidadTieneGruposComunidad = new ConcurrentDictionary<Guid, bool>();
+                                }
+
+                                if (!mIdentidadTieneGruposComunidad.ContainsKey(identidadID))
+                                {
+                                    Guid proyID = Guid.Empty;
+                                    Guid.TryParse(pProyectoID, out proyID);
+                                    bool tieneGruposProy = true;
+                                    if (!proyID.Equals(Guid.Empty))
+                                    {
+                                        IdentidadAD idenAD = new IdentidadAD(mLoggingService, mEntityContext, mConfigService, mServicesUtilVirtuosoAndReplication);
+                                        tieneGruposProy = idenAD.TieneIdentidadGruposDeProyeto(proyID, identidadID);
+                                        idenAD.Dispose();
+                                    }
+
+                                    mIdentidadTieneGruposComunidad.TryAdd(identidadID, tieneGruposProy);
+                                }
+
+                                if (mIdentidadTieneGruposComunidad[identidadID])
+                                {
+                                    privacidad += " UNION {?s  gnoss:hasparticipanteIdentidadID ?grupo.?grupo gnoss:hasparticipanteID gnoss:" + pIdentidadID.ToUpper() + "}";
+                                }
+                            }
+                        }
                     }
-                    else
-                    {
-                        IdentidadAD idenAD = new IdentidadAD(mLoggingService, mEntityContext, mConfigService, mServicesUtilVirtuosoAndReplication);
-                        mListaGruposPorIdentidad.TryAdd(identidadID, idenAD.ObtenerGruposDeOrganizacionDeIdentidad(identidadID));
-                        idenAD.Dispose();
-                    }
+                    query += privacidad;
                 }
 
-                List<Guid> listaGrupos = mListaGruposPorIdentidad[identidadID];
-                if (listaGrupos.Count > 0)
+                if (pObtenerRecursosPrivados)
                 {
-                    query += " UNION { ?s  gnoss:hasparticipanteIdentidadID ?grupo. FILTER(?grupo in (";
-
-                    foreach (Guid grupo in listaGrupos)
+                    if (!mListaGruposPorIdentidad.ContainsKey(identidadID))
                     {
-                        query += "gnoss:" + grupo.ToString().ToUpper() + ",";
+                        if (identidadID.Equals(UsuarioAD.Invitado))
+                        {
+                            mListaGruposPorIdentidad.TryAdd(identidadID, new List<Guid>());
+                        }
+                        else
+                        {
+                            IdentidadAD idenAD = new IdentidadAD(mLoggingService, mEntityContext, mConfigService, mServicesUtilVirtuosoAndReplication);
+                            mListaGruposPorIdentidad.TryAdd(identidadID, idenAD.ObtenerGruposDeOrganizacionDeIdentidad(identidadID));
+                            idenAD.Dispose();
+                        }
                     }
-                    query = query.Substring(0, query.Length - 1);
 
-                    query += " ))} ";
+                    List<Guid> listaGrupos = mListaGruposPorIdentidad[identidadID];
+                    if (listaGrupos.Count > 0)
+                    {
+                        query += " UNION { ?s  gnoss:hasparticipanteIdentidadID ?grupo. FILTER(?grupo in (";
+
+                        foreach (Guid grupo in listaGrupos)
+                        {
+                            query += "gnoss:" + grupo.ToString().ToUpper() + ",";
+                        }
+                        query = query.Substring(0, query.Length - 1);
+
+                        query += " ))} ";
+                    }
                 }
             }
             return query;
@@ -10999,7 +11376,7 @@ from <http://pruebas.gnoss.net/4f08285b-19f9-4ff0-8c36-ccee29868a75>  WHERE {   
                                         int i = 0;
                                         foreach (string palabra in palabrasFiltro)
                                         {
-                                            string palabraLimpia = RemoverSignosSearch(palabra);
+                                            string palabraLimpia = RemoverSignosSearch(palabra).Replace("'","\\'");
 
                                             i++;
                                             if (i == palabrasFiltro.Count)
@@ -11420,7 +11797,7 @@ from <http://pruebas.gnoss.net/4f08285b-19f9-4ff0-8c36-ccee29868a75>  WHERE {   
                                 {
                                     string serchTitleQuery = ObtenerFiltroSearch(pListaFiltros, Key, pNombreFaceta, pOmitirPalabrasNoRelevantesSearch, false);
                                     serchTitleQuery = serchTitleQuery.Replace("gnoss:search", "foaf:firstName").Replace("?search", "?searchTitle").Replace("?scoreSearch", "?scoreTitle");
-                                    query += $" UNION {serchTitleQuery} bind(if(bound(?searchTitle), 1, 0) as ?scoreTitle)";
+                                    query += $" UNION {serchTitleQuery}";
                                 }
                                 query += "}";
                             }
@@ -12138,7 +12515,7 @@ from <http://pruebas.gnoss.net/4f08285b-19f9-4ff0-8c36-ccee29868a75>  WHERE {   
             }
             else
             {
-                sbQuery.Append($" FILTER (?{pKeySinPrefijo}");
+                sbQuery.Append($" FILTER (?{pKeySinPrefijo} ");
             }
 
 
@@ -12168,12 +12545,12 @@ from <http://pruebas.gnoss.net/4f08285b-19f9-4ff0-8c36-ccee29868a75>  WHERE {   
                 if (pValor.StartsWith(">>"))
                 {
                     // Quitamos el parámetro del filtro
-                    sbQuery = sbQuery.Replace($"(?{pKeySinPrefijo} ", $" bif:contains (?{pKeySinPrefijo}, '");
+                    sbQuery = sbQuery.Replace($"(?{pKeySinPrefijo} ", $" (bif:contains (?{pKeySinPrefijo}, '");
 
                     pValor = pValor.Substring(2);
                     sbQuery.Append(ObtenerFiltroBifContains(pValor, false));
 
-                    sbQuery.Append("') ");
+                    sbQuery.Append("')) ");
                 }
                 else
                 {
@@ -12969,7 +13346,7 @@ from <http://pruebas.gnoss.net/4f08285b-19f9-4ff0-8c36-ccee29868a75>  WHERE {   
 
         private string ObtenerFiltroSearch(Dictionary<string, List<string>> pListaFiltros, string pFiltro, string pNombreFaceta, bool pOmitirPalabrasNoRelevantesSearch, bool pQuitarAcentos)
         {
-            string searchQuery = " {?s gnoss:search ?search.";
+            StringBuilder searchQuery = new StringBuilder(" {?s gnoss:search ?search.");
 
             string campoBusqueda = pListaFiltros[pFiltro][0].ToLowerSearchGraph();
 
@@ -12996,18 +13373,37 @@ from <http://pruebas.gnoss.net/4f08285b-19f9-4ff0-8c36-ccee29868a75>  WHERE {   
                 palabrasFiltro = AnalizadorSintactico.ObtenerTagsFrase(campoBusqueda, out numeroTagsDespreciadosTitulo, " ", false);
             }
 
-            string and = "";
-            searchQuery += " FILTER (";
-            foreach (string palabra in palabrasFiltro)
+            if (UsarRegexParaBusquedaPorTextoLibre)
             {
-                searchQuery += and;
-                searchQuery += ObtenerExpresionRegularParaAutocompletar(palabra, "?search");
-                and = "AND";
+                string and = "";
+                searchQuery.Append(" FILTER (");
+                foreach (string palabra in palabrasFiltro)
+                {
+                    searchQuery.Append(and);
+                    searchQuery.Append(ObtenerExpresionRegularParaAutocompletar(palabra, "?search"));
+                    and = "AND";
+                }
+                searchQuery.Append(")");
             }
-            searchQuery += ")";
-            searchQuery += "} ";
+            else
+            {
+                searchQuery.Append("?search bif:contains \"");
+                string and = "";
+                foreach (string palabra in palabrasFiltro)
+                {
+                    searchQuery.Append($"{and}'{palabra.Replace("'", "''")}'");
+                    and = " AND ";
+                }
+                searchQuery.Append("\" ");
 
-            return searchQuery;
+                if (!mConsultaNumeroResultados && string.IsNullOrEmpty(pNombreFaceta))
+                {
+                    searchQuery.Append("OPTION ( SCORE ?scoreSearch )");
+                }
+            }
+            searchQuery.Append("} ");
+
+            return searchQuery.ToString();
         }
 
         public string ObtenerFiltroConsultaMapaProyectoDesdeDataSetParaFacetas(DataWrapperFacetas pDataWrapperFacetas, TipoBusqueda pTipoBusqueda, Dictionary<string, List<string>> pListaFiltros)
@@ -13638,7 +14034,7 @@ from <http://pruebas.gnoss.net/4f08285b-19f9-4ff0-8c36-ccee29868a75>  WHERE {   
 
             if (facetadoDS.Tables["NumeroActual"].Rows.Count > 0)
             {
-                string modify = $"{NamespacesVrituosoEscritura} MODIFY GRAPH {ObtenerUrlGrafo(pProyectoID)} DELETE {{ ?s ?p ?o }} INSERT {{ ?s ?p ?o_new }} FROM {ObtenerUrlGrafo(pProyectoID)} WHERE {{{{ SELECT (?o + {pNumVisitas}) AS ?o_new  ?s ?p ?o from {ObtenerUrlGrafo(pProyectoID)} WHERE {{ ?s ?p ?o FILTER (?p=<http://gnoss/hasnumero{pTipoElementoAModificar}> and ?s=gnoss:{pElementoAModificarID.ToUpper()})}}}}";
+                string modify = $"{NamespacesVrituosoEscritura} MODIFY GRAPH {ObtenerUrlGrafo(pProyectoID)} DELETE {{ ?s ?p ?o }} INSERT {{ ?s ?p ?o_new }} FROM {ObtenerUrlGrafo(pProyectoID)} WHERE {{ SELECT (?o + {pNumVisitas}) AS ?o_new  ?s ?p ?o from {ObtenerUrlGrafo(pProyectoID)} WHERE {{ ?s ?p ?o FILTER (?p=<http://gnoss/hasnumero{pTipoElementoAModificar}> and ?s=gnoss:{pElementoAModificarID.ToUpper()})}}}}";
 
                 ActualizarVirtuoso(modify, pProyectoID);
             }
@@ -13688,7 +14084,7 @@ from <http://pruebas.gnoss.net/4f08285b-19f9-4ff0-8c36-ccee29868a75>  WHERE {   
 
                     foreach (string listaDocs in DocumentosIn)
                     {
-                        string modify = $"{NamespacesVrituosoEscritura} MODIFY GRAPH {ObtenerUrlGrafo(pProyectoID.ToString())} DELETE {{ ?s ?p ?o }} INSERT {{ ?s ?p ?o_new }} FROM {ObtenerUrlGrafo(pProyectoID.ToString())} WHERE {{{{ SELECT ({nivelCert}) AS ?o_new ?s ?p ?o from {ObtenerUrlGrafo(pProyectoID.ToString())} WHERE {{ ?s ?p ?o FILTER (?p=<http://gnoss/hasnivelcertification> and ?s IN {listaDocs}) }}}}";
+                        string modify = $"{NamespacesVrituosoEscritura} MODIFY GRAPH {ObtenerUrlGrafo(pProyectoID.ToString())} DELETE {{ ?s ?p ?o }} INSERT {{ ?s ?p ?o_new }} FROM {ObtenerUrlGrafo(pProyectoID.ToString())} WHERE {{{{ SELECT ({nivelCert}) AS ?o_new ?s ?p ?o from {ObtenerUrlGrafo(pProyectoID.ToString())} WHERE {{ ?s ?p ?o FILTER (?p=<http://gnoss/hasnivelcertification> and ?s IN {listaDocs}) }}}}}}";
 
                         ActualizarVirtuoso(modify, pProyectoID.ToString(), 1);
                     }
@@ -14192,7 +14588,7 @@ from <http://pruebas.gnoss.net/4f08285b-19f9-4ff0-8c36-ccee29868a75>  WHERE {   
         /// <param name="pGrafo">Grafo del que borrar el concept</param>
         /// <param name="pSujetoConcept">Sujeto del concept a eliminar</param>
         /// <param name="pEliminarHijos">Si quieres eliminar o no los hijos</param>
-		public void EliminarConceptEHijos(string pGrafo, string pSujetoConcept, bool pEliminarHijos)
+        public void EliminarConceptEHijos(string pGrafo, string pSujetoConcept, bool pEliminarHijos)
         {
             string subconsultaHijos = string.Empty;
             if (pEliminarHijos)
@@ -14455,7 +14851,7 @@ from <http://pruebas.gnoss.net/4f08285b-19f9-4ff0-8c36-ccee29868a75>  WHERE {   
             }
 
             bool objetoEsString = pObjeto.StartsWith("\"") && pObjeto.EndsWith("\"");
-            bool objetoConTipo = pObjeto.StartsWith("\"") && pObjeto.EndsWith(">") && pObjeto.Contains("\"^^<");
+            bool objetoConTipo = ObjetoTieneTipo(pObjeto);
 
             if (pObjeto.Contains("\\"))
             {
@@ -14467,14 +14863,19 @@ from <http://pruebas.gnoss.net/4f08285b-19f9-4ff0-8c36-ccee29868a75>  WHERE {   
             //Si contiene comillas entre medio, se las remplazo por \"
             if (pObjeto.Length > 2 && objetoEsString && pObjeto.Substring(1, pObjeto.Length - 2).Contains("\""))
             {
-                pObjeto = $"\"{pObjeto.Substring(1, pObjeto.Length - 2).Replace("\"", "\\\"")}\"{puntoFinalTriple}";
+                pObjeto = $"\"\"\"{pObjeto.Substring(1, pObjeto.Length - 2).Replace("\"", "\\\"")}\"\"\"{puntoFinalTriple}";
+            }
+            else if(objetoEsString)
+            {
+                //Se añaden dos comillas más para tener 3. De esta forma el texto se puede insertar con saltos de linea y caracteres de control.
+                pObjeto = $"\"\"{pObjeto}\"\"";
             }
 
             if (!string.IsNullOrEmpty(pIdioma))
             {
                 if (!objetoEsString && !objetoConTipo)
                 {
-                    pObjeto = $"\"{pObjeto.Substring(1, pObjeto.Length - 2)}\"";
+                    pObjeto = $"\"\"\"{pObjeto.Substring(1, pObjeto.Length - 2)}\"\"\"";
                 }
                 if (!objetoConTipo)
                 {
@@ -14489,9 +14890,28 @@ from <http://pruebas.gnoss.net/4f08285b-19f9-4ff0-8c36-ccee29868a75>  WHERE {   
                 tripleta += " . ";
             }
 
-            //Quitamos los posibles saltos de linea
-            tripleta = $"{tripleta.Replace("\n", " ").Replace("\r", "")} \n ";
-            return tripleta;
+            return $"{tripleta} \n ";
+        }
+
+        /// <summary>
+        /// Nos indica si el objeto del triple pasado por parámetro tiene definido o no el tipo.
+        /// Se comprueba con una expresión Regex que valida que el objeto comience por " (siempre serán string) y termine con el tipo escrito con url(<http://www.w3.org/2001/XMLSchema#string>) o con prefijo (xsd:string)
+        /// </summary>
+        /// <param name="pObjeto">Objeto del triple a comprobar</param>
+        /// <returns></returns>
+        public static bool ObjetoTieneTipo(string pObjeto)
+        {
+            return Regex.IsMatch(pObjeto, "^\"(?s).+\"\\^\\^(?:(?:<https?:\\/\\/.+>)|(?:[A-Za-z0-9\\-_]+:[^\\s\"]*))$", RegexOptions.None, new TimeSpan(TimeSpan.TicksPerSecond));
+        }
+
+        /// <summary>
+        /// Nos indica si el objeto del triple pasado por parámettro sigue una estructura valida para entidades principales
+        /// </summary>
+        /// <param name="pSujeto">Sujeto a comprobar</param>
+        /// <returns></returns>
+        public static bool SujetoValido(string pSujeto)
+        {
+            return Regex.IsMatch(pSujeto, "(^<https?:\\/\\/.*)([0-9A-Fa-f]{8}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{12}_[0-9A-Fa-f]{8}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{12}>)", RegexOptions.None, new TimeSpan(TimeSpan.TicksPerSecond));
         }
 
         /// <summary>
@@ -14523,20 +14943,26 @@ from <http://pruebas.gnoss.net/4f08285b-19f9-4ff0-8c36-ccee29868a75>  WHERE {   
             //Si contiene comillas entre medio, se las remplazo por \"
             if (pObjeto.Length > 2 && pObjeto.StartsWith("\"") && pObjeto.EndsWith("\"") && pObjeto.Substring(1, pObjeto.Length - 2).Contains("\""))
             {
-                pObjeto = $"\"{pObjeto.Substring(1, pObjeto.Length - 2).Replace("\"", "\\\"")}\"";
+                pObjeto = $"\"\"\"{pObjeto.Substring(1, pObjeto.Length - 2).Replace("\"", "\\\"")}\"\"\"";
+            }
+            else if(objetoEsString)
+            {
+                //Se añaden dos comillas más para tener 3. De esta forma el texto se puede insertar con saltos de linea y caracteres de control.
+                pObjeto = $"\"\"{pObjeto}\"\"";
             }
 
             if (!string.IsNullOrEmpty(pIdioma))
             {
                 if (!objetoEsString)
                 {
-                    pObjeto = $"\"{pObjeto.Substring(1, pObjeto.Length - 2)}\"";
+                    pObjeto = $"\"\"\"{pObjeto.Substring(1, pObjeto.Length - 2)}\"\"\"";
                 }
 
                 pObjeto += $"@{pIdioma}";
             }
 
             string tripleta = "";
+
             if (string.IsNullOrEmpty(pTipo) || string.IsNullOrWhiteSpace(pTipo))
             {
                 tripleta = $"{pSujeto} {pPredicado} {pObjeto} ";
@@ -14551,15 +14977,15 @@ from <http://pruebas.gnoss.net/4f08285b-19f9-4ff0-8c36-ccee29868a75>  WHERE {   
                 tripleta += " . ";
             }
 
-            return $"{tripleta.Replace("\n", " ").Replace("\r", "")} \n ";
+            return $"{tripleta} \n ";
         }
 
-        public string GenerarTripletaRecogidadeVirtuosoSinConversionesAbsurdas(string pSujeto, string pPredicado, string pObjeto, string pObjetoSinMinuscula, List<string> pFecha, List<string> pNumero, List<FacetaEntidadesExternas> pEntExt, ref string pTripletasSemanticasAdiccionales)
+        public string GenerarTripletaRecogidadeVirtuosoSinConversionesAbsurdas(string pSujeto, string pPredicado, string pObjeto, string pObjetoSinMinuscula, List<string> pFecha, List<string> pNumero, List<FacetaEntidadesExternas> pEntExt, ref string pTripletasSemanticasAdiccionales, bool pTextoTesauroInvariable = false)
         {
-            return GenerarTripletaRecogidadeVirtuosoSinConversionesAbsurdas(pSujeto, pPredicado, pObjeto, pObjetoSinMinuscula, pFecha, pNumero, pEntExt, ref pTripletasSemanticasAdiccionales, null);
+            return GenerarTripletaRecogidadeVirtuosoSinConversionesAbsurdas(pSujeto, pPredicado, pObjeto, pObjetoSinMinuscula, pFecha, pNumero, pEntExt, ref pTripletasSemanticasAdiccionales, null, null, pTextoTesauroInvariable);
         }
 
-        public string GenerarTripletaRecogidadeVirtuosoSinConversionesAbsurdas(string pSujeto, string pPredicado, string pObjeto, string pObjetoSinMinuscula, List<string> pFecha, List<string> pNumero, List<FacetaEntidadesExternas> pEntExt, ref string pTripletasSemanticasAdiccionales, string pIdioma, string pTipo = null)
+        public string GenerarTripletaRecogidadeVirtuosoSinConversionesAbsurdas(string pSujeto, string pPredicado, string pObjeto, string pObjetoSinMinuscula, List<string> pFecha, List<string> pNumero, List<FacetaEntidadesExternas> pEntExt, ref string pTripletasSemanticasAdiccionales, string pIdioma, string pTipo = null, bool pTextoTesauroInvariable = false)
         {
             string tripleta = "";
             string tripletaGeonames = "";
@@ -14597,7 +15023,7 @@ from <http://pruebas.gnoss.net/4f08285b-19f9-4ff0-8c36-ccee29868a75>  WHERE {   
                 {
                     pObjeto = $"\"{pObjetoSinMinuscula}\"^^<http://www.openlinksw.com/schemas/virtrdf#Geometry>";
                 }
-                else if (!pFecha.Contains(pPredicado) && (string.IsNullOrEmpty(predicadoSinNamespace) || !pFecha.Contains(predicadoSinNamespace)))
+                else if (!pFecha.Contains(pPredicado) && (string.IsNullOrEmpty(predicadoSinNamespace) || !pFecha.Contains(predicadoSinNamespace)) && !pTextoTesauroInvariable)
                 {
                     pObjeto = UtilCadenas.EliminarHtmlDeTexto(pObjeto);
 
@@ -14606,6 +15032,10 @@ from <http://pruebas.gnoss.net/4f08285b-19f9-4ff0-8c36-ccee29868a75>  WHERE {   
                     pObjeto = pObjeto.Replace("\"", "\\\"");
 
                     pObjeto = $"\"{pObjeto}\"";
+                }
+                else if (pTextoTesauroInvariable)
+                {
+                    pObjeto = $"\"{pObjetoSinMinuscula}\"";
                 }
             }
             else
@@ -14625,12 +15055,17 @@ from <http://pruebas.gnoss.net/4f08285b-19f9-4ff0-8c36-ccee29868a75>  WHERE {   
                     pObjeto = $"\"{pObjeto}\"";
                 }
             }
-            bool objetoEsString = ((pObjeto.StartsWith("\"")) && (pObjeto.EndsWith("\"")));
+
+            bool objetoEsString = pObjeto.StartsWith("\"") && pObjeto.EndsWith("\"");
 
             //Si contiene comillas entre medio, se las remplazo por \"
             if ((pObjeto.Length > 2) && objetoEsString && (pObjeto.Substring(1, pObjeto.Length - 2).Contains("\"")))
             {
                 pObjeto = $"\"{pObjeto.Substring(1, pObjeto.Length - 2).Replace("\"", "\\\"")}\"";
+            }
+            else if (objetoEsString)
+            {
+                pObjeto = $"\"\"{pObjeto}\"\"";
             }
 
             if (objetoEsString && !string.IsNullOrEmpty(pIdioma))
@@ -14684,9 +15119,6 @@ from <http://pruebas.gnoss.net/4f08285b-19f9-4ff0-8c36-ccee29868a75>  WHERE {   
                 tripleta += " . ";
             }
 
-            //Quitamos los posibles saltos de linea
-            tripleta = tripleta.Replace("\n", " ").Replace("\r", "");
-
             tripleta += " \n ";
 
             if (pObjeto.Contains("geonames"))
@@ -14705,12 +15137,12 @@ from <http://pruebas.gnoss.net/4f08285b-19f9-4ff0-8c36-ccee29868a75>  WHERE {   
             string tripleta = "";
             string tripletaGeonames = "";
 
-            if (pPredicado.StartsWith("<") && pPredicado.EndsWith(">"))
+            if (pPredicado.StartsWith('<') && pPredicado.EndsWith('>'))
             {
                 pPredicado = pPredicado.Replace("<", "").Replace(">", "");
             }
 
-            if (pObjeto.StartsWith("<http") && pObjeto.EndsWith(">"))
+            if (pObjeto.StartsWith("<http") && pObjeto.EndsWith('>'))
             {
                 pObjeto = pObjeto.Replace("<", "").Replace(">", "");
             }
@@ -14777,18 +15209,6 @@ from <http://pruebas.gnoss.net/4f08285b-19f9-4ff0-8c36-ccee29868a75>  WHERE {   
                     pObjeto = $"\"{pObjeto}\"";
                 }
             }
-            /*bool objetoEsString = pObjeto.StartsWith("\"") && pObjeto.EndsWith("\"");
-
-            //Si contiene comillas entre medio, se las remplazo por \"
-            if ((pObjeto.Length > 2) && objetoEsString && (pObjeto.Substring(1, pObjeto.Length - 2).Contains("\"")))
-            {
-                pObjeto = $"\"{pObjeto.Substring(1, pObjeto.Length - 2).Replace("\"", "\\\"")}\"";
-            }
-
-            if (objetoEsString && !string.IsNullOrEmpty(pIdioma))
-            {
-                pObjeto += $"@{pIdioma}";
-            }*/
 
             bool esObjetoExterno = false;
             string objetoExterno = string.Empty;
@@ -14802,7 +15222,7 @@ from <http://pruebas.gnoss.net/4f08285b-19f9-4ff0-8c36-ccee29868a75>  WHERE {   
                     {
                         string entidadID = pEntExt[i].EntidadID;
 
-                        if (!entidadID.EndsWith("_"))
+                        if (!entidadID.EndsWith('_'))
                         {
                             entidadID += "_";
                         }
@@ -14846,11 +15266,10 @@ from <http://pruebas.gnoss.net/4f08285b-19f9-4ff0-8c36-ccee29868a75>  WHERE {   
                 {
                     tripleta = GenerarTripleta(pSujeto, $"<{pPredicado}> ", pObjeto, pIdioma);
                 }
-
             }
 
             //Quitamos los posibles saltos de linea
-            tripleta = $"{tripleta.Replace("\n", " ").Replace("\r", "")} \n ";
+            tripleta = $"{tripleta.Replace("\n", " ").Replace("\r", string.Empty)} \n ";
 
             if (pObjeto.Contains("geonames"))
             {
@@ -15454,7 +15873,7 @@ from <http://pruebas.gnoss.net/4f08285b-19f9-4ff0-8c36-ccee29868a75>  WHERE {   
 
             FacetadoDS facetadoDS = new FacetadoDS();
             // Aquí consulto con el predicado, si existe, hay que hacer un modify
-            LeerDeVirtuoso(consulta + whereConPredicado, "prueba", facetadoDS, pNombreGrafo);
+            LeerDeVirtuoso(consulta + whereConPredicado, "prueba", facetadoDS, pNombreGrafo, true);
 
             if (facetadoDS.Tables["prueba"].Rows.Count > 0 && facetadoDS.Tables["prueba"].Rows[0][0].Equals("1"))
             {
@@ -16670,6 +17089,191 @@ from <http://pruebas.gnoss.net/4f08285b-19f9-4ff0-8c36-ccee29868a75>  WHERE {   
         }
 
         #endregion
+
+        #endregion
+
+        #region FileService
+
+        protected class CallFileService
+        {
+            private ConfigService mConfigService;
+            private string mServicioArchivosUrl;
+            private CallTokenService mCallTokenService;
+            private LoggingService mLoggingService;
+            private TokenBearer mToken;
+
+            public CallFileService(ConfigService configService, LoggingService loggingService)
+            {
+                mConfigService = configService;
+                mServicioArchivosUrl = mConfigService.ObtenerUrlServicio("urlArchivos");
+#if !DEBUG
+            if (!mConfigService.PeticionHttps())
+            {
+                if (mServicioArchivosUrl.StartsWith("https://"))
+                {
+                    mServicioArchivosUrl = mServicioArchivosUrl.Replace("https://", "http://");
+                }
+            }
+#endif
+                mLoggingService = loggingService;
+                mLoggingService.AgregarEntrada("INICIO Peticion para obtener el token del identity");
+                mCallTokenService = new CallTokenService(configService);
+                mToken = mCallTokenService.CallTokenApi();
+                mLoggingService.AgregarEntrada("FIN Peticion para obtener el token del identity");
+            }
+
+            public byte[] ObtenerOntologiaBytes(Guid pOntologiaID)
+            {
+                mLoggingService.AgregarEntrada("INICIO Peticion ObtenerOntologia");
+                string result = CallWebMethods.CallGetApiToken(mServicioArchivosUrl, $"ObtenerOntologia?pOntologiaID={pOntologiaID}", mToken);
+                mLoggingService.AgregarEntrada("FIN Peticion ObtenerOntologia");
+                byte[] buffer = JsonConvert.DeserializeObject<byte[]>(result);
+                return buffer;
+            }
+
+            public byte[] ObtenerXmlOntologiaBytes(Guid pOntologiaID)
+            {
+                mLoggingService.AgregarEntrada("INICIO Peticion ObtenerXmlOntologia");
+                string result = CallWebMethods.CallGetApiToken(mServicioArchivosUrl, $"ObtenerXmlOntologia?pOntologiaID={pOntologiaID}", mToken);
+                mLoggingService.AgregarEntrada("FIN Peticion ObtenerXmlOntologia");
+                byte[] buffer = JsonConvert.DeserializeObject<byte[]>(result);
+                return buffer;
+            }
+        }
+
+        /// <summary>
+        /// Clase que contiene información util de una propiedad dada
+        /// </summary>
+        protected class DatosPropiedadOntologia
+        {
+            /// <summary>
+            /// Nombre de la propiedad
+            /// </summary>
+            public string NombrePropiedad { get; set; }
+
+            /// <summary>
+            /// RdfType de la ontología a la que pertenece la propiedad
+            /// </summary>
+            public string RdfType { get; set; }
+
+            /// <summary>
+            /// Objeto con información sobre la configuración de la propiedad
+            /// </summary>
+            public Propiedad Propiedad { get; set; }
+
+            /// <summary>
+            /// Xml de la ontología a la que pertenece la propiedad
+            /// </summary>
+            public XmlDocument XmlOntologia { get; set; }
+        }
+
+
+        protected class CallTokenService
+        {
+            private ConfigService mConfigService;
+
+            public CallTokenService(ConfigService configService)
+            {
+                mConfigService = configService;
+            }
+
+            public TokenBearer CallTokenApi()
+            {
+                if (string.IsNullOrEmpty(mConfigService.ObtenerClientIDIdentity()) || string.IsNullOrEmpty(mConfigService.ObtenerClientSecretIDIdentity()) || string.IsNullOrEmpty(mConfigService.ObtenerScopeIdentity()))
+                {
+                    throw new Exception("Es necesario configurar los parametro para el Identity Provider");
+                }
+                string stringData = $"grant_type=client_credentials&scope={mConfigService.ObtenerScopeIdentity()}&client_id={mConfigService.ObtenerClientIDIdentity()}&client_secret={mConfigService.ObtenerClientSecretIDIdentity()}";
+                return CallTokenIdentity(stringData);
+            }
+
+            protected TokenBearer CallTokenIdentity(string stringData)
+            {
+                var contentData = new StringContent(stringData, System.Text.Encoding.UTF8, "application/x-www-form-urlencoded");
+                contentData.Headers.Add("UserAgent", UtilWeb.GenerarUserAgent());
+                HttpResponseMessage response = null;
+                try
+                {
+                    HttpClient client = new HttpClient();
+                    client.Timeout = TimeSpan.FromDays(1);
+                    string authority = mConfigService.GetAuthority() + "/connect/token";
+                    response = client.PostAsync($"{authority}", contentData).Result;
+                    response.EnsureSuccessStatusCode();
+                    string result = response.Content.ReadAsStringAsync().Result;
+                    TokenBearer token = JsonConvert.DeserializeObject<TokenBearer>(result);
+                    return token;
+                }
+                catch (HttpRequestException)
+                {
+                    if (response != null && !string.IsNullOrEmpty(response.Content.ReadAsStringAsync().Result))
+                    {
+                        throw new HttpRequestException(response.Content.ReadAsStringAsync().Result);
+                    }
+                    else if (response != null)
+                    {
+                        throw new HttpRequestException(response.ReasonPhrase);
+                    }
+                    else
+                    {
+                        throw new HttpRequestException();
+                    }
+                }
+            }
+        }
+
+        protected class CallWebMethods
+        {
+            /// <summary>
+            /// Hace una petición get
+            /// </summary>
+            /// <param name="urlBase">Url donde se encuentra el api</param>
+            /// <param name="urlMethod">Url del método</param>
+            /// <param name="pToken">Token para validar la peticion</param>
+            public static string CallGetApiToken(string urlBase, string urlMethod, TokenBearer pToken = null)
+            {
+                string result = "";
+                HttpResponseMessage response = null;
+                if (!string.IsNullOrEmpty(urlBase) && !urlBase.EndsWith("/") && !string.IsNullOrEmpty(urlMethod) && !urlMethod.StartsWith("/"))
+                {
+                    urlBase = $"{urlBase}/";
+                }
+                try
+                {
+                    HttpClient client = new HttpClient();
+                    client.DefaultRequestHeaders.Add("UserAgent", UtilWeb.GenerarUserAgent());
+                    if (pToken != null)
+                    {
+                        client.DefaultRequestHeaders.Add("Authorization", $"{pToken.token_type} {pToken.access_token}");
+                    }
+                    response = client.GetAsync($"{urlBase}{urlMethod}").Result;
+                    response.EnsureSuccessStatusCode();
+                    result = response.Content.ReadAsStringAsync().Result;
+                }
+                catch (HttpRequestException)
+                {
+                    StringBuilder except = new StringBuilder();
+                    except.AppendLine($"Url del intento de llamada: {urlBase}{urlMethod} --------- error: ");
+                    if (!string.IsNullOrEmpty(response.Content.ReadAsStringAsync().Result))
+                    {
+                        except.AppendLine(response.Content.ReadAsStringAsync().Result);
+                        throw new HttpRequestException(except.ToString());
+                    }
+                    else
+                    {
+                        except.AppendLine(response.ReasonPhrase);
+                        throw new HttpRequestException(except.ToString());
+                    }
+                }
+                catch (Exception ex)
+                {
+                    StringBuilder except = new StringBuilder();
+                    except.AppendLine($"Url del intento de llamada: {urlBase}{urlMethod} --------- error: ");
+                    except.AppendLine(ex.Message);
+                    throw new Exception(except.ToString());
+                }
+                return result;
+            }
+        }
 
         #endregion
     }

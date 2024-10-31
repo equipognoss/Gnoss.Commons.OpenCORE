@@ -48,7 +48,11 @@ namespace Es.Riam.Gnoss.AD.Peticion
         /// <summary>
         /// Peticion para acceder a grupos y a la comunidad de los grupos (con esta peticion se generan filas en la tabla peticion, PeticionInvitacionComunidad y PeticionInvitacionGrupo
         /// </summary>
-        AccesoAGruposYComunidad = 7
+        AccesoAGruposYComunidad = 7,
+        /// <summary>
+        /// Peticion para autenticarse con doble factor
+        /// </summary>
+        AutenticacionDobleFactor = 8
     }
 
     /// <summary>
@@ -707,7 +711,7 @@ namespace Es.Riam.Gnoss.AD.Peticion
 
             this.sqlSelectPeticionInvitacionGrupo = SelectPeticionInvitacionGrupo + " FROM PeticionInvitacionGrupo";
 
-            this.sqlSelectPeticionInvitacionGrupoPorUsuarioID = sqlSelectPeticionInvitacionGrupo + " INNER JOIN Peticion ON PeticionInvitacionGrupo.PeticionID = Peticion.PeticionID WHERE Peticion.UsuarioID = " + IBD.GuidParamValor("UsuarioID"); ;
+            this.sqlSelectPeticionInvitacionGrupoPorUsuarioID = sqlSelectPeticionInvitacionGrupo + " INNER JOIN Peticion ON PeticionInvitacionGrupo.PeticionID = Peticion.PeticionID WHERE Peticion.UsuarioID = " + IBD.GuidParamValor("UsuarioID");
 
             #endregion
 

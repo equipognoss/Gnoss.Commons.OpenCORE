@@ -426,16 +426,20 @@ namespace Es.Riam.Gnoss.AD.Parametro
         /// <param name="configAuto">Lista de nuevos valores para el proyecto</param>
         public void ActualizarConfigAutocompletar(Guid pProyectoID, List<string> configAuto)
         {
-            //Controlar los vacios
-            string valor = configAuto.Count == 0 ? "" : configAuto[0];
-            for (int i = 1; i < configAuto.Count; i++)
+            string valor = string.Join("|", configAuto);
+
+            List<ConfigAutocompletarProy> listaConfigAutocompletarProyProyecto = mEntityContext.ConfigAutocompletarProy.Where(proy => proy.ProyectoID.Equals(pProyectoID)).ToList();
+
+            if (string.IsNullOrEmpty(valor) && listaConfigAutocompletarProyProyecto.Count == 1)
             {
-                valor = valor + "|" + configAuto[i];
+                //Si no hay valor y hay alguna entrada en base de datos la eliminamos
+                EliminarElementosAutocompletarProy(listaConfigAutocompletarProyProyecto);
             }
-            List<ConfigAutocompletarProy> filas = mEntityContext.ConfigAutocompletarProy.Where(proy => proy.ProyectoID.Equals(pProyectoID)).ToList();
-            int numFilas = filas.Count();
-            if (numFilas == 0)
+            else if (!string.IsNullOrEmpty(valor) && listaConfigAutocompletarProyProyecto.Count > 1)
             {
+                //Si hay valor y hay más de un elemento en base de datos eliminamos todos los elementos y lo unificamos en uno
+                EliminarElementosAutocompletarProy(listaConfigAutocompletarProyProyecto);
+
                 ConfigAutocompletarProy confAuto = new ConfigAutocompletarProy();
                 confAuto.OrganizacionID = ProyectoAD.MetaOrganizacion;
                 confAuto.ProyectoID = pProyectoID;
@@ -444,26 +448,32 @@ namespace Es.Riam.Gnoss.AD.Parametro
                 confAuto.PestanyaID = null;
                 mEntityContext.ConfigAutocompletarProy.Add(confAuto);
             }
-            else if (numFilas == 1)
+            else if (!string.IsNullOrEmpty(valor) && listaConfigAutocompletarProyProyecto.Count == 1)
             {
-                ConfigAutocompletarProy filaActualizar = filas.First();
+                //Si hay valor y un elemento en base de datos, actualizamos el valor de ese elemento
+                ConfigAutocompletarProy filaActualizar = listaConfigAutocompletarProyProyecto[0];
                 filaActualizar.Valor = valor;
             }
-            else
+            else if (!string.IsNullOrEmpty(valor) && listaConfigAutocompletarProyProyecto.Count == 0)
             {
-                foreach (ConfigAutocompletarProy fila in filas)
-                {
-                    mEntityContext.EliminarElemento(fila);
-                }
-                ConfigAutocompletarProy confAuto = new ConfigAutocompletarProy();
-                confAuto.OrganizacionID = ProyectoAD.MetaOrganizacion;
-                confAuto.ProyectoID = pProyectoID;
-                confAuto.Clave = "FacetasCom";
-                confAuto.Valor = valor;
-                confAuto.PestanyaID = null;
-                mEntityContext.ConfigAutocompletarProy.Add(confAuto);
-            }
+				ConfigAutocompletarProy confAuto = new ConfigAutocompletarProy();
+				confAuto.OrganizacionID = ProyectoAD.MetaOrganizacion;
+				confAuto.ProyectoID = pProyectoID;
+				confAuto.Clave = "FacetasCom";
+				confAuto.Valor = valor;
+				confAuto.PestanyaID = null;
+				mEntityContext.ConfigAutocompletarProy.Add(confAuto);
+			}
+
             ActualizarBaseDeDatosEntityContext();
+        }
+
+        private void EliminarElementosAutocompletarProy(List<ConfigAutocompletarProy> pListaConfigAutocompletarProyProyecto)
+        {
+            foreach (ConfigAutocompletarProy fila in pListaConfigAutocompletarProyProyecto)
+            {
+                mEntityContext.EliminarElemento(fila);
+            }
         }
 
         /// <summary>
@@ -488,6 +498,7 @@ namespace Es.Riam.Gnoss.AD.Parametro
             }
             return listaFinal;
         }
+
         /// <summary>
         /// Actualiza en la tabla ConfigSearchProy el nuevo valor dado
         /// </summary>
@@ -496,32 +507,21 @@ namespace Es.Riam.Gnoss.AD.Parametro
         public void ActualizarConfigSearch(Guid pProyectoID, List<string> configSearch)
         {
             //Controlar los vacios
-            string valor = configSearch.Count == 0 ? "" : configSearch[0];
-            for (int i = 1; i < configSearch.Count; i++)
+            string valor = string.Join("|", configSearch);
+            //for (int i = 1; i < configSearch.Count; i++)
+            //{
+            //    valor = valor + "|" + configSearch[i];
+            //}
+            List<ConfigSearchProy> listaConfigSearchProy = mEntityContext.ConfigSearchProy.Where(proy => proy.ProyectoID.Equals(pProyectoID)).ToList();
+
+            if (listaConfigSearchProy.Count != 1)
             {
-                valor = valor + "|" + configSearch[i];
-            }
-            List<ConfigSearchProy> filas = mEntityContext.ConfigSearchProy.Where(proy => proy.ProyectoID.Equals(pProyectoID)).ToList();
-            int numFilas = filas.Count();
-            if (numFilas == 0)
-            {
-                ConfigSearchProy confSearch = new ConfigSearchProy();
-                confSearch.OrganizacionID = ProyectoAD.MetaOrganizacion;
-                confSearch.ProyectoID = pProyectoID;
-                confSearch.Clave = "FacetasCom";
-                confSearch.Valor = valor;
-                mEntityContext.ConfigSearchProy.Add(confSearch);
-            }
-            else if (numFilas == 1)
-            {
-                ConfigSearchProy confSearch = filas.FirstOrDefault();
-                confSearch.Valor = valor;
-            }
-            else
-            {
-                foreach (ConfigSearchProy fila in filas)
+                if (listaConfigSearchProy.Count > 0)
                 {
-                    mEntityContext.EliminarElemento(fila);
+                    foreach (ConfigSearchProy configSearchProy in listaConfigSearchProy)
+                    {
+                        mEntityContext.EliminarElemento(configSearchProy);
+                    }
                 }
                 ConfigSearchProy confSearch = new ConfigSearchProy();
                 confSearch.OrganizacionID = ProyectoAD.MetaOrganizacion;
@@ -530,8 +530,15 @@ namespace Es.Riam.Gnoss.AD.Parametro
                 confSearch.Valor = valor;
                 mEntityContext.ConfigSearchProy.Add(confSearch);
             }
+            else
+            {
+                ConfigSearchProy confSearch = listaConfigSearchProy[0];
+                confSearch.Valor = valor;
+            }
+
             ActualizarBaseDeDatosEntityContext();
         }
+
         /// <summary>
         /// Obtiene los parámetros de ConfiguracionEnvioCorreo de un proyecto.
         /// </summary>
@@ -589,7 +596,7 @@ namespace Es.Riam.Gnoss.AD.Parametro
         /// <returns></returns>
         public List<int> ObtenerListaTablaBaseProyectoIDConGrafoDbPedia()
         {
-           return mEntityContext.ParametroProyecto.Join(mEntityContext.Proyecto, paramProy => paramProy.ProyectoID, proy => proy.ProyectoID, (paramProy, proy) => new
+            return mEntityContext.ParametroProyecto.Join(mEntityContext.Proyecto, paramProy => paramProy.ProyectoID, proy => proy.ProyectoID, (paramProy, proy) => new
             {
                 ParametroProyecto = paramProy,
                 Proyecto = proy
@@ -846,7 +853,7 @@ namespace Es.Riam.Gnoss.AD.Parametro
         {
             return mEntityContext.ParametroProyecto.Any(item => item.Parametro.Equals("NombrePoliticaCookies") && item.ProyectoID.Equals(ProyectoAD.MetaProyecto));
         }
-        
+
         public string ObtenerNombrePoliticaCookiesMetaproyecto()
         {
             return mEntityContext.ParametroProyecto.Where(item => item.Parametro.Equals("NombrePoliticaCookies") && item.ProyectoID.Equals(ProyectoAD.MetaProyecto)).Select(item => item.Valor).FirstOrDefault();

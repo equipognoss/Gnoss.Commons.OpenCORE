@@ -1,12 +1,7 @@
 using BeetleX.Redis;
 using Es.Riam.AbstractsOpen;
-using Es.Riam.Gnoss.AD.EncapsuladoDatos;
 using Es.Riam.Gnoss.AD.EntityModel;
 using Es.Riam.Gnoss.AD.Parametro;
-using Es.Riam.Gnoss.AD.ParametroAplicacion;
-using Es.Riam.Gnoss.AD.Virtuoso;
-using Es.Riam.Gnoss.CL.ServiciosGenerales;
-using Es.Riam.Gnoss.Logica.Parametro;
 using Es.Riam.Gnoss.Logica.ParametroAplicacion;
 using Es.Riam.Gnoss.Logica.ServiciosGenerales;
 using Es.Riam.Gnoss.Util.Configuracion;
@@ -22,144 +17,142 @@ using System.Data;
 using System.Diagnostics;
 using System.IO;
 using System.IO.Compression;
-using System.IO.Pipelines;
 using System.Linq;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 
 namespace Es.Riam.Gnoss.CL
 {
     /// <summary>
     /// Clase que contiene variables estaticas con los prefijos de los nombres de la cache
     /// </summary>
-    public class NombresCL
+    public static class NombresCL
     {
         /// <summary>
         /// Prefijo "Tesauro"
         /// </summary>
-        public static string TESAURO = "Tesauro";
+        public static readonly string TESAURO = "Tesauro";
 
         /// <summary>
         /// Prefijo "EstadosCiviles"
         /// </summary>
-        public static string ESTADOSCIVILES = "EstadosCiviles";
+        public static readonly string ESTADOSCIVILES = "EstadosCiviles";
 
         /// <summary>
         /// Prefijo "Paises"
         /// </summary>
-        public static string PAISES = "Paises";
+        public static readonly string PAISES = "Paises";
 
         /// <summary>
         /// Prefijo "ParametroAplicacion"
         /// </summary>
-        public static string PARAMETOAPLICACION = "ParametroAplicacion";
+        public static readonly string PARAMETOAPLICACION = "ParametroAplicacion";
 
         /// <summary>
         /// Prefijo "ParametroGeneralDS"
         /// </summary>
-        public static string PARAMETROGENERAL = "ParametroGeneral";
+        public static readonly string PARAMETROGENERAL = "ParametroGeneral";
 
         /// <summary>
         /// Prefijo "TodosParametrosGeneralesLigera"
         /// </summary>
-        public static string TODOSPARAMETROSGENERALESLIGERA = "TodosParametrosGeneralesLigera";
+        public static readonly string TODOSPARAMETROSGENERALESLIGERA = "TodosParametrosGeneralesLigera";
 
         /// <summary>
         /// Prefijo "TieneProyectoImagenHome"
         /// </summary>
-        public static string TIENEPROYECTOIMAGENHOME = "TieneProyectoImagenHome";
+        public static readonly string TIENEPROYECTOIMAGENHOME = "TieneProyectoImagenHome";
 
         /// <summary>
         /// Prefijo "Facetado"
         /// </summary>
-        public static string FACETADO = "Facetado";
+        public static readonly string FACETADO = "Facetado";
 
         /// <summary>
         /// Prefijo "TABLACONFIGURACIONFACETADO"
         /// </summary>
-        public static string TABLACONFIGURACIONFACETADO = "TablaConfigFacetado";
+        public static readonly string TABLACONFIGURACIONFACETADO = "TablaConfigFacetado";
 
         /// <summary>
         /// Prefijo "CONFIGURACIONFACETAS"
         /// </summary>
-        public static string CONFIGURACIONFACETAS = "ConfigFacetas";
+        public static readonly string CONFIGURACIONFACETAS = "ConfigFacetas";
 
         /// <summary>
         /// Prefijo "ParametroAplicacion"
         /// </summary>
-        public static string LINKEDOPENDATA = "LOD";
+        public static readonly string LINKEDOPENDATA = "LOD";
 
         /// <summary>
         /// Prefijo "CMS"
         /// </summary>
-        public static string CMS = "CMS";
+        public static readonly string CMS = "CMS";
 
         /// <summary>
         /// Prefijo "CMS"
         /// </summary>
-        public static string TRAZAS = "TRAZAS";
+        public static readonly string TRAZAS = "TRAZAS";
 
         /// <summary>
         /// Prefijo "MVC"
         /// </summary>
-        public static string MVCModel = "MVC";
+        public static readonly string MVCModel = "MVC";
 
         /// <summary>
         /// Prefijo "ExportacionBusqueda"
         /// </summary>
-        public static string EXPORTACIONBUSQUEDA = "ExportacionBusqueda";
+        public static readonly string EXPORTACIONBUSQUEDA = "ExportacionBusqueda";
 
         #region AMIGOS
 
         /// <summary>
         /// Prefijo "Amigos"
         /// </summary>
-        public static string AMIGOS = "Amigos";
+        public static readonly string AMIGOS = "Amigos";
 
         /// <summary>
         /// Prefijo "Org"
         /// </summary>
-        public static string AMIGOSORG = "Org";
+        public static readonly string AMIGOSORG = "Org";
 
         /// <summary>
         /// Prefijo "Autocompletar"
         /// </summary>
-        public static string AUTOCOMPLETARINVALIDARCACHE = "AutocompletarInvalidarCache";
+        public static readonly string AUTOCOMPLETARINVALIDARCACHE = "AutocompletarInvalidarCache";
 
         /// <summary>
         /// Prefijo "Org"
         /// </summary>
-        public static string AMIGOSORGEIDENTPROYPRIV = "OrgEIdentPryPri";
+        public static readonly string AMIGOSORGEIDENTPROYPRIV = "OrgEIdentPryPri";
 
         /// <summary>
         /// Prefijo "Per"
         /// </summary>
-        public static string AMIGOSPER = "Per";
+        public static readonly string AMIGOSPER = "Per";
 
         /// <summary>
         /// Prefijo "Per"
         /// </summary>
-        public static string AMIGOSPEREIDENTPROYPRIV = "PerEIdentPryPri";
+        public static readonly string AMIGOSPEREIDENTPROYPRIV = "PerEIdentPryPri";
 
-        public static string IDENTIDADDS = "IdentidadDS";
+        public static readonly string IDENTIDADDS = "IdentidadDS";
 
-        public static string PERSONADS = "PersonaDS";
+        public static readonly string PERSONADS = "PersonaDS";
 
-        public static string TAGDS = "TagDS";
+        public static readonly string TAGDS = "TagDS";
 
-        public static string USUARIODS = "UsuarioDS";
+        public static readonly string USUARIODS = "UsuarioDS";
 
-        public static string ORGANIZACIONDS = "OrganizacionDS";
+        public static readonly string ORGANIZACIONDS = "OrganizacionDS";
 
-        public static string AMIGOSDS = "AmigosDS";
+        public static readonly string AMIGOSDS = "AmigosDS";
 
-        public static string AMIGOSENPROYECTO = "AmigosEnProyecto";
+        public static readonly string AMIGOSENPROYECTO = "AmigosEnProyecto";
 
-        public static string CONTACTOSRECOMEN = "ContactosRecomen";
+        public static readonly string CONTACTOSRECOMEN = "ContactosRecomen";
 
-        public static string COMUNIDADESRECOMEN = "ComunidadesRecomen";
+        public static readonly string COMUNIDADESRECOMEN = "ComunidadesRecomen";
 
         #endregion
 
@@ -168,97 +161,97 @@ namespace Es.Riam.Gnoss.CL
         /// <summary>
         /// Prefijo "Documentacion"
         /// </summary>
-        public static string DOCUMENTACION = "Documentacion";
+        public static readonly string DOCUMENTACION = "Documentacion";
 
         /// <summary>
         /// Prefijo "FichaRecursoMVC"
         /// </summary>
-        public static string FICHARECURSOMVC = "FichaRecursoMVC3";
+        public static readonly string FICHARECURSOMVC = "FichaRecursoMVC3";
 
         /// <summary>
         /// Prefijo "RecursosComunidad"
         /// </summary>
-        public static string RECURSOSCOMUNIDAD = "RecursosComunidad";
+        public static readonly string RECURSOSCOMUNIDAD = "RecursosComunidad";
 
         /// <summary>
         /// Prefijo "PrimerosRecursos"
         /// </summary>
-        public static string PRIMEROSRECURSOS = "PrimerosRecursos";
+        public static readonly string PRIMEROSRECURSOS = "PrimerosRecursos";
 
         /// <summary>
         /// Prefijo "RssComunidad"
         /// </summary>
-        public static string RSSSCOMUNIDAD = "RssComunidad";
+        public static readonly string RSSSCOMUNIDAD = "RssComunidad";
 
         /// <summary>
         /// Prefijo "TotalResultadosRecursos"
         /// </summary>
-        public static string TOTALRESULTADOSRECURSOS = "TotalResultadosRecursos";
+        public static readonly string TOTALRESULTADOSRECURSOS = "TotalResultadosRecursos";
 
         /// <summary>
         /// Prefijo "PerfilesConRecursosPrivados"
         /// </summary>
-        public static string PERFILESCONRECURSOSPRIVADOS = "PerfilesConRecursosPrivados";
+        public static readonly string PERFILESCONRECURSOSPRIVADOS = "PerfilesConRecursosPrivados";
 
         /// <summary>
         /// Prefijo "PrimerosDebates"
         /// </summary>
-        public static string PRIMEROSDEBATES = "PrimerosDebates";
+        public static readonly string PRIMEROSDEBATES = "PrimerosDebates";
 
         /// <summary>
         /// Prefijo "PrimerasPersonas"
         /// </summary>
-        public static string PRIMERASPERSONAS = "PrimerasPersonas";
+        public static readonly string PRIMERASPERSONAS = "PrimerasPersonas";
 
         /// <summary>
         /// Prefijo "TotalResultadosDebates"
         /// </summary>
-        public static string TOTALRESULTADOSDEBATES = "TotalResultadosDebates";
+        public static readonly string TOTALRESULTADOSDEBATES = "TotalResultadosDebates";
 
         /// <summary>
         /// Prefijo "PerfilesConDebatesPrivados"
         /// </summary>
-        public static string PERFILESCONDEBATESPRIVADOS = "PerfilesConDebatesPrivados";
+        public static readonly string PERFILESCONDEBATESPRIVADOS = "PerfilesConDebatesPrivados";
 
         /// <summary>
         /// Prefijo "PrimerasPreguntas"
         /// </summary>
-        public static string PRIMERASPREGUNTAS = "PrimerasPreguntas";
+        public static readonly string PRIMERASPREGUNTAS = "PrimerasPreguntas";
 
         /// <summary>
         /// Prefijo "TotalResultadosPreguntas"
         /// </summary>
-        public static string TOTALRESULTADOSPREGUNTAS = "TotalResultadosPreguntas";
+        public static readonly string TOTALRESULTADOSPREGUNTAS = "TotalResultadosPreguntas";
 
         /// <summary>
         /// Prefijo "RecursosRelacionadosContextos"
         /// </summary>
-        public static string RECURSOSRELACIONADOSCONTEXTOS = "Cont";
+        public static readonly string RECURSOSRELACIONADOSCONTEXTOS = "Cont";
 
         /// <summary>
         /// Prefijo "RecursosRelacionados"
         /// </summary>
-        public static string RECURSOSRELACIONADOS = "RecursosRelacionados";
+        public static readonly string RECURSOSRELACIONADOS = "RecursosRelacionados";
 
         /// <summary>
         /// Prefijo "RecursosRelacionados"
         /// </summary>
-        public static string NUMRECURSOSRELACIONADOS = "NumRecursosRelacionados";
+        public static readonly string NUMRECURSOSRELACIONADOS = "NumRecursosRelacionados";
 
         /// <summary>
         /// Prefijo "QueEstaPasando"
         /// </summary>
-        public static string QUEESTAPASANDO = "QueEstaPasando";
+        public static readonly string QUEESTAPASANDO = "QueEstaPasando";
 
         /// <summary>
         /// Prefijo "QueSeEstaLeyendo"
         /// </summary>
-        public static string QUESEESTALEYENDO = "QueSeEstaLeyendo";
+        public static readonly string QUESEESTALEYENDO = "QueSeEstaLeyendo";
 
         /// <summary>
         /// Prefijo "QueSeEstaLeyendo"
         /// </summary>
-        public static string AUTOCOMPETIQUETAS = "autocompletaretiquetas";
+        public static readonly string AUTOCOMPETIQUETAS = "autocompletaretiquetas";
 
         #endregion
 
@@ -267,85 +260,31 @@ namespace Es.Riam.Gnoss.CL
         /// <summary>
         /// Prefijo "Live"
         /// </summary>
-        public static string LIVE = "Live";
+        public static readonly string LIVE = "Live";
 
         /// <summary>
         /// Prefijo "OrgsConRecursos"
         /// </summary>
-        public static string ORGSCONRECURSOS = "OrgsConRecursos";
+        public static readonly string ORGSCONRECURSOS = "OrgsConRecursos";
 
         /// <summary>
         /// Prefijo "IdenConPrivados"
         /// </summary>
-        public static string IDENCONPRIVADOS = "IdenConPrivados";
+        public static readonly string IDENCONPRIVADOS = "IdenConPrivados";
 
         /// <summary>
         /// Prefijo "OrgID"
         /// </summary>
-        public static string ORGID = "OrgID";
+        public static readonly string ORGID = "OrgID";
 
         /// <summary>
         /// Prefijo "IdenID"
         /// </summary>
-        public static string IDENID = "IdenID";
+        public static readonly string IDENID = "IdenID";
 
-        public static string INVITADOGNOSS = "InvitadoGnoss";
+        public static readonly string INVITADOGNOSS = "InvitadoGnoss";
 
-        public static string INVITADOCOM = "InvitadoCom";
-
-        #endregion
-
-        #region METABUSCADOR
-
-        ///// <summary>
-        ///// Prefijo "Metabuscador"
-        ///// </summary>
-        //public static string METABUSCADOR = "Metabuscador";
-
-        ///// <summary>
-        ///// Prefijo "Inv"
-        ///// </summary>
-        //public static string INVITADO = "Inv";
-
-        ///// <summary>
-        ///// Prefijo "PerComunidad"
-        ///// </summary>
-        //public static string PERSONACOMUNIDAD = "PerComunidad";
-
-        ///// <summary>
-        ///// Prefijo "OrgComunidad"
-        ///// </summary>
-        //public static string ORGANIZACIONCOMUNIDAD = "OrgComunidad";
-
-        ///// <summary>
-        ///// Prefijo "CVPerComunidad"
-        ///// </summary>
-        //public static string CVPERSONACOMUNIDAD = "CVPerComunidad";
-
-        ///// <summary>
-        ///// Prefijo "CVOrgComunidad"
-        ///// </summary>
-        //public static string CVORGANIZACIONCOMUNIDAD = "CVOrgComunidad";
-
-        ///// <summary>
-        ///// Prefijo "Iden_PerOrg_Com"
-        ///// </summary>
-        //public static string IDENTIDADESPERORGCOMUNIDAD = "Iden_PerOrg_Com";
-
-        ///// <summary>
-        ///// Prefijo "Num_PerOrg"
-        ///// </summary>
-        //public static string NUMRESULTADOSPERORG = "Num_PerOrg";
-
-        ///// <summary>
-        ///// Prefijo "ContadorTags_PerOrg"
-        ///// </summary>
-        //public static string CONTADORTAGSPERORG = "ContadorTags_PerOrg";
-
-        ///// <summary>
-        ///// Prefijo "OrdenElem_PerOrg"
-        ///// </summary>
-        //public static string ORDENELEMPERORG = "OrdenElem_PerOrg";
+        public static readonly string INVITADOCOM = "InvitadoCom";
 
         #endregion
 
@@ -354,12 +293,12 @@ namespace Es.Riam.Gnoss.CL
         /// <summary>
         /// Prefijo "Organizacion"
         /// </summary>
-        public static string ORGANIZACION = "Organizacion";
+        public static readonly string ORGANIZACION = "Organizacion";
 
         /// <summary>
         /// Prefijo "TablaBaseOrganizacionID"
         /// </summary>
-        public static string TABLABASEORGANIZACIONID = "TablaBaseOrganizacionID";
+        public static readonly string TABLABASEORGANIZACIONID = "TablaBaseOrganizacionID";
 
         #endregion
 
@@ -368,22 +307,22 @@ namespace Es.Riam.Gnoss.CL
         /// <summary>
         /// Prefijo "Personas"
         /// </summary>
-        public static string PERSONAS = "Personas";
+        public static readonly string PERSONAS = "Personas";
 
         /// <summary>
         /// Prefijo "Todas"
         /// </summary>
-        public static string TODAS = "Todas";
+        public static readonly string TODAS = "Todas";
 
         /// <summary>
         /// Prefijo "PersonasAcceden"
         /// </summary>
-        public static string PERSONASACCEDEN = "PersonasAcceden";
+        public static readonly string PERSONASACCEDEN = "PersonasAcceden";
 
         /// <summary>
         /// Prefijo "NotificacionPendiente"
         /// </summary>
-        public static string NOTIFICACIONPENDIENTE = "NotificacionPendiente";
+        public static readonly string NOTIFICACIONPENDIENTE = "NotificacionPendiente";
 
         #endregion
 
@@ -392,87 +331,92 @@ namespace Es.Riam.Gnoss.CL
         /// <summary>
         /// Prefijo "Proyecto"
         /// </summary>
-        public static string PROYECTO = "Proyecto";
+        public static readonly string PROYECTO = "Proyecto";
 
         /// <summary>
         /// Prefijo "TablaBaseProyectoID"
         /// </summary>
-        public static string TABLABASEPROYECTOID = "TablaBaseProyectoID";
+        public static readonly string TABLABASEPROYECTOID = "TablaBaseProyectoID";
 
         /// <summary>
         /// Prefijo "ProyectoEventoAccion"
         /// </summary>
-        public static string PROYECTOEVENTOACCION = "ProyectoEventoAccion";
+        public static readonly string PROYECTOEVENTOACCION = "ProyectoEventoAccion";
 
         /// <summary>
         /// Prefijo "ProyectosAccionesExternas"
         /// </summary>
-        public static string PROYECTOSACCIONESEXTERNAS = "ProyectosAccionesExternas";
+        public static readonly string PROYECTOSACCIONESEXTERNAS = "ProyectosAccionesExternas";
 
         /// <summary>
         /// Prefijo "NivelesCertificacionRecurso"
         /// </summary>
-        public static string NIVELESCERTIFICACIONRECURSO = "NivelesCertificacionRecurso";
+        public static readonly string NIVELESCERTIFICACIONRECURSO = "NivelesCertificacionRecurso";
 
         /// <summary>
         /// Prefijo "NombreCortoProyecto"
         /// </summary>
-        public static string NOMBRECORTOPROYECTO = "NombreCortoProyecto";
+        public static readonly string NOMBRECORTOPROYECTO = "NombreCortoProyecto";
 
         /// <summary>
         /// Prefijo "BRID"
         /// </summary>
-        public static string BASERECURSOSID = "BRID";
+        public static readonly string BASERECURSOSID = "BRID";
 
         /// <summary>
         /// Prefijo "ProyectoAutoPromocion"
         /// </summary>
-        public static string PROYECTOAUTOPROMOCION = "ProyectoAutoPromocion";
+        public static readonly string PROYECTOAUTOPROMOCION = "ProyectoAutoPromocion";
 
         /// <summary>
         /// Prefijo "HTMLAdministradoresProyecto"
         /// </summary>
-        public static string HTMLADMINISTRADORESPROYECTO = "HTMLAdministradoresProyecto";
+        public static readonly string HTMLADMINISTRADORESPROYECTO = "HTMLAdministradoresProyecto";
 
         /// <summary>
         /// Prefijo "ProyectosPorID"
         /// </summary>
-        public static string PROYECTOSPORID = "ProyectosPorID";
+        public static readonly string PROYECTOSPORID = "ProyectosPorID";
+
+        /// <summary>
+        /// Prefijo "ClaveReinicio"
+        /// </summary>
+        public static readonly string CLAVEREINICIO = "ClaveReinicio";
 
         /// <summary>
         /// Prefijo "TipoAcceso"
         /// </summary>
-        public static string USUARIOBLOQUEADOPROYECTO = "UsuarioBloqueadoProyecto";
+        public static readonly string USUARIOBLOQUEADOPROYECTO = "UsuarioBloqueadoProyecto";
 
         /// <summary>
         /// Prefijo "TipoAcceso"
         /// </summary>
-        public static string TIPOACCESO = "TipoAcceso";
+        public static readonly string TIPOACCESO = "TipoAcceso";
 
         /// <summary>
         /// Prefijo "MisComunidades"
         /// </summary>
-        public static string MISCOMUNIDADES = "MisComunidades";
+        public static readonly string MISCOMUNIDADES = "MisComunidades";
 
         /// <summary>
         /// Prefijo "ClausulasRegitroProyecto"
         /// </summary>
-        public static string CLAUSULASREGITROPROYECTO = "ClausulasRegitroProyecto";
+        public static readonly string CLAUSULASREGITROPROYECTO = "ClausulasRegitroProyecto";
 
         /// <summary>
         /// Prefijo "ClausulasRegitroProyecto"
         /// </summary>
-        public static string POLITICACOOKIESPROYECTO = "PoliticaCookiesProyecto";
+        public static readonly string POLITICACOOKIESPROYECTO = "PoliticaCookiesProyecto";
 
         /// <summary>
         /// Prefijo "ListaProyectosPerfil"
         /// </summary>
-        public static string LISTAPROYECTOSPERFIL = "ListaProyectosPerfil";
+        public static readonly string LISTAPROYECTOSPERFIL = "ListaProyectosPerfil";
 
         /// <summary>
         /// Prefijo "ListaProyectosUsuario"
         /// </summary>
-        public static string LISTAPROYECTOSUSUARIO = "ListaProyectosUsuario";
+        public static readonly string LISTAPROYECTOSUSUARIO = "ListaProyectosUsuario";
 
         #endregion
 
@@ -481,7 +425,7 @@ namespace Es.Riam.Gnoss.CL
         /// <summary>
         /// Prefijo "Tag"
         /// </summary>
-        public static string TAG = "Tag";
+        public static readonly string TAG = "Tag";
 
         #endregion
 
@@ -490,45 +434,63 @@ namespace Es.Riam.Gnoss.CL
         /// <summary>
         /// Prefijo "Home_Comunidades_Destacadas_Html"
         /// </summary>
-        public static string HOMECOMUNIDADESDESTACADASHTML = "Home_Comunidades_Destacadas_Html";
+        public static readonly string HOMECOMUNIDADESDESTACADASHTML = "Home_Comunidades_Destacadas_Html";
 
         /// <summary>
         /// Prefijo "Home_Comunidades_Destacadas_DS"
         /// </summary>
-        public static string HOMECOMUNIDADESDESTACADASDS = "Home_Comunidades_Destacadas_DS";
+        public static readonly string HOMECOMUNIDADESDESTACADASDS = "Home_Comunidades_Destacadas_DS";
 
         /// <summary>
         /// Prefijo "Home_Recursos_Destacados_Html"
         /// </summary>
-        public static string HOMERECURSOSDESTACADOSHTML = "Home_Recursos_Destacados_Html";
+        public static readonly string HOMERECURSOSDESTACADOSHTML = "Home_Recursos_Destacados_Html";
 
         /// <summary>
         /// Prefijo "Home_Recursos_Destacados_DS"
         /// </summary>
-        public static string HOMERECURSOSDESTACADOSDS = "Home_Recursos_Destacados_DS";
+        public static readonly string HOMERECURSOSDESTACADOSDS = "Home_Recursos_Destacados_DS";
 
         /// <summary>
         /// Prefijo "Home_Usuarios_Destacados_DS"
         /// </summary>
-        public static string HOMEUSUARIOSDESTACADOSDS = "Home_Usuarios_Destacados_DS";
+        public static readonly string HOMEUSUARIOSDESTACADOSDS = "Home_Usuarios_Destacados_DS";
 
         #endregion
 
-        /// <summary>
-        /// Prefijo "FichaIdentidadMVC"
-        /// </summary>
-        public static string FichaIdentidadMVC = "FichaIdentidadMVC3";
+		#region TAREAS
+        public static readonly string CONTADORTAREA = "ContadorTarea";
+		#endregion
+
+		#region Identidad
+		/// <summary>
+		/// Prefijo "FichaIdentidadMVC"
+		/// </summary>
+		public static readonly string FichaIdentidadMVC = "FichaIdentidadMVC3";
 
         /// <summary>
         /// Prefijo "InfoExtraFichaIdentidadMVC"
         /// </summary>
-        public static string InfoExtraFichaIdentidadMVC = "InfoExtraFichaIdentidadMVC3";
-    }
+        public static readonly string InfoExtraFichaIdentidadMVC = "InfoExtraFichaIdentidadMVC3";
 
-    /// <summary>
-    /// Tipos de clausulas adicionales para el registro de un proyecto.
-    /// </summary>
-    public enum TipoAccesoRedis
+		/// <summary>
+		/// Prefijo "IdentidadActual"
+		/// </summary>
+		public static readonly string IdentidadActual = "IdentidadActual";
+		#endregion
+
+		#region Perfil
+		/// <summary>
+		/// Prefijo "PerfilMVC"
+		/// </summary>
+		public static readonly string PerfilMVC = "PerfilMVC";
+		#endregion
+	}
+
+	/// <summary>
+	/// Tipos de clausulas adicionales para el registro de un proyecto.
+	/// </summary>
+	public enum TipoAccesoRedis
     {
         /// <summary>
         /// Lectura.
@@ -625,6 +587,12 @@ namespace Es.Riam.Gnoss.CL
         /// Clave de caché para recalcular los Idiomas de la plataforma
         /// </summary>
         IdiomasPlataforma = 10
+    }
+
+    public enum EstadoLoginUsuario
+    {
+        PuedeIntentarHacerLogin = 1,
+        Bloqueado = 2
     }
 
     public enum UsoCacheLocal
@@ -1511,8 +1479,7 @@ namespace Es.Riam.Gnoss.CL
                 if (pListaClavesCache.Any())
                 {
                     var t = ClienteRedisEscritura.Del(pListaClavesCache.Select(x => x.ToLower()).ToArray()).Result;
-                }
-                
+                }                
             }
             catch (Exception ex)
             {
@@ -2715,7 +2682,7 @@ namespace Es.Riam.Gnoss.CL
         {
             get
             {
-                return _redisCacheWrapper.Cache != null;
+                return _redisCacheWrapper != null && _redisCacheWrapper.Cache != null;
             }
         }
 

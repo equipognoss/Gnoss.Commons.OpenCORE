@@ -30,13 +30,7 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_CategoriaProyectoCookie", x => x.CategoriaID);
-                    table.ForeignKey(
-                        name: "FK_CategoriaProyectoCookie_Proyecto_ProyectoID_OrganizacionID",
-                        columns: x => new { x.ProyectoID, x.OrganizacionID },
-                        principalTable: "Proyecto",
-                        principalColumns: new[] { "OrganizacionID", "ProyectoID" },
-                        onDelete: ReferentialAction.Restrict);
+                    table.PrimaryKey("PK_CategoriaProyectoCookie", x => x.CategoriaID);                    
                 });
 
             migrationBuilder.CreateTable(
@@ -86,13 +80,7 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
                         column: x => x.CategoriaID,
                         principalTable: "CategoriaProyectoCookie",
                         principalColumn: "CategoriaID",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_ProyectoCookie_Proyecto_ProyectoID_OrganizacionID",
-                        columns: x => new { x.ProyectoID, x.OrganizacionID },
-                        principalTable: "Proyecto",
-                        principalColumns: new[] { "OrganizacionID", "ProyectoID" },
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Restrict);                    
                 });
 
             migrationBuilder.CreateIndex(

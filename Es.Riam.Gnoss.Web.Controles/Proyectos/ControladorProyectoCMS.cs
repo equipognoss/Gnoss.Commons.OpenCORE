@@ -714,7 +714,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Proyectos
             // Creamos el nodo Bloques
             XmlElement NodoBloques = pXmlDoc.CreateElement("Bloques");
             NodoPagina.AppendChild(NodoBloques);
-            foreach (CMSBloque bloque in GestorCMSPaginaActual.ListaBloques.Values)
+            foreach (CMSBloque bloque in GestorCMSPaginaActual.ListaBloques.Values.OrderBy(item => item.Orden))
             {
                 if (!bloque.BloquePadreID.HasValue)
                 {
@@ -757,6 +757,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Proyectos
                 // Creamos el nodo Bloques
                 XmlElement NodoBloques = pXmlDoc.CreateElement("Bloques");
                 NodoBloque.AppendChild(NodoBloques);
+
                 foreach (CMSBloque bloque in pBloque.Hijos)
                 {
                     PintarBloquePaginaCMS(pXmlDoc, NodoBloques, bloque);

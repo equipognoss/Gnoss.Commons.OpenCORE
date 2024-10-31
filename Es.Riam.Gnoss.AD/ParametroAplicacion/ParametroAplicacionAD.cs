@@ -91,11 +91,11 @@ namespace Es.Riam.Gnoss.AD.ParametroAplicacion
         /// Correo para solicitudes
         /// </summary>
         public static string CodigoGoogleAnalyticsProyecto { get { return "CodigoGoogleAnalyticsProyecto"; } }
-
-        /// <summary>
-        /// Copyright
-        /// </summary>
-        public static string Copyright { get { return "copyright"; } }
+        
+		/// <summary>
+		/// Copyright
+		/// </summary>
+		public static string Copyright { get { return "copyright"; } }
 
         /// <summary>
         /// Registro, mostrar los datos demográficos (Población, localidad, país) TRUE se muestra, FALSE no.
@@ -306,7 +306,7 @@ namespace Es.Riam.Gnoss.AD.ParametroAplicacion
         public static string LoginTwitter { get { return "loginTwitter"; } }
 
         /// <summary>
-        /// Datos de la aplicación de Google para hacer login en la plataforma        
+        /// Datos de la aplicación de Google para hacer login en la plataforma
         /// </summary>
         public static string LoginGoogle { get { return "loginGoogle"; } }
 
@@ -476,6 +476,11 @@ namespace Es.Riam.Gnoss.AD.ParametroAplicacion
 
         public static string EscaparComillasDobles { get { return "EscaparComillasDobles"; } }
         public static string UsarHilosEnFacetas { get { return "UsarHilosEnFacetas"; } }
+        public static string UsarPrivacidadEnFacetasYResultados { get { return "UsarPrivacidadEnFacetasYResultados"; } }
+
+        public static string DominiosPermitidosCORS { get { return "DominiosPermitidosCORS"; } }
+        public static string UsarRegexParaBusquedaPorTextoLibre { get { return "UsarRegexParaBusquedaPorTextoLibre"; } }
+        public static string NumElementosVisiblesEstrictoFacetas { get { return "NumElementosVisiblesEstrictoFacetas"; } }
         #endregion
     }
 
@@ -582,7 +587,11 @@ namespace Es.Riam.Gnoss.AD.ParametroAplicacion
         /// <summary>
         /// Eliminar un recurso
         /// </summary>
-        EliminarRecurso = 12
+        EliminarRecurso = 12,
+        /// <summary>
+        /// Crear el search
+        /// </summary>
+        GenerarSearch = 13
     }
 
     /// <summary>
@@ -627,6 +636,15 @@ namespace Es.Riam.Gnoss.AD.ParametroAplicacion
         public string ObtenerUrl()
         {
             return mEntityContext.ParametroAplicacion.Where(parametroApp => parametroApp.Parametro.Equals("UrlIntragnoss")).First().Valor;
+        }
+
+        /// <summary>
+        /// Obtiene los idiomas configurados en la base de datos para la plataforma
+        /// </summary>
+        /// <returns></returns>
+        public string ObtenerIdiomas()
+        {
+            return mEntityContext.ParametroAplicacion.Where(parametroApp => parametroApp.Parametro.Equals("Idiomas")).Select(item => item.Valor).FirstOrDefault();
         }
 
         /// <summary>
@@ -812,6 +830,16 @@ namespace Es.Riam.Gnoss.AD.ParametroAplicacion
         public string ObtenerParametroAplicacion(string parametro)
         {
             return mEntityContext.ParametroAplicacion.Where(proy => proy.Parametro.Equals(parametro)).Select(item => item.Valor).FirstOrDefault();
+        }
+
+        /// <summary>
+        /// Obtiene los valores de los parámetros de la base de datos que contengan la cadena proporcionada
+        /// </summary>
+        /// <param name="pParametro">Cadena que debe contener el parámetro</param>
+        /// <returns>Valores de parametro aplicacion cuyo paramtro contenga la cadena proporcionada</returns>
+        public List<string> ObtenerParametroAplicacionSeaContenidoParametro(string pParametro)
+        {
+            return mEntityContext.ParametroAplicacion.Where(item => pParametro.Contains(item.Parametro)).Select(item => item.Valor).ToList();
         }
 
         public EntityModel.ParametroAplicacion ObtenerFilaParametroAplicacion(string parametro)

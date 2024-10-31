@@ -579,6 +579,11 @@ namespace Es.Riam.Semantica.Plantillas
             }
         }
 
+        public bool PermitirScript
+        {
+            get; set;
+        }
+
         /// <summary>
         /// Nombre de la entidad en lectura.
         /// </summary>

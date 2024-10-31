@@ -569,6 +569,7 @@ namespace Es.Riam.Gnoss.Elementos.CMS
             mFilasPropiedadesComponente = pListaPropiedades;
             mLoggingService = loggingService;
             mEntityContext = entityContext;
+            Activo = pFilaComponente.Activo;
         }
 
         #endregion

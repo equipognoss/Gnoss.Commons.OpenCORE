@@ -85,7 +85,13 @@ namespace Es.Riam.Gnoss.FirstDataLoad
                 Valor = "aes"
             };
 
-            CategoriaProyectoCookie categoriaProyectoCookie = new CategoriaProyectoCookie()
+			ParametroAplicacion parametroAplicacion10 = new ParametroAplicacion()
+			{
+				Parametro = "NumElementosVisiblesEstrictoFacetas",
+				Valor = "true"
+			};
+
+			CategoriaProyectoCookie categoriaProyectoCookie = new CategoriaProyectoCookie()
             {
                 CategoriaID = new Guid("F4DE719F-B93A-4015-84A9-F1F1A2C11533"),
                 Nombre = "Técnica@es|||Technical@en",//|||Técnica@pt|||Tècnica@ca|||Teknikoak@eu|||Técnicas@gl|||Technique@fr|||Technische@de|||Tecnici@it
@@ -173,8 +179,9 @@ namespace Es.Riam.Gnoss.FirstDataLoad
             mEntityContext.ParametroAplicacion.Add(parametroAplicacion7);
             mEntityContext.ParametroAplicacion.Add(parametroAplicacion8);
             mEntityContext.ParametroAplicacion.Add(parametroAplicacion9);
+			mEntityContext.ParametroAplicacion.Add(parametroAplicacion10);
 
-            ProyectoPestanyaMenu proyectoPestanyaMenu1 = new ProyectoPestanyaMenu()
+			ProyectoPestanyaMenu proyectoPestanyaMenu1 = new ProyectoPestanyaMenu()
             {
                 PestanyaID = new Guid("0B449C0B-9E2A-4A03-B436-299DE6668968"),
                 OrganizacionID = new Guid("11111111-1111-1111-1111-111111111111"),

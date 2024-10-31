@@ -44,8 +44,8 @@ namespace Es.Riam.Gnoss.ExportarImportar.Exportadores
         /// Crea un nuevo exportador de organización a partir de la ontología pasada por parámetro
         /// </summary>
         /// <param name="pOntologia">Ontología</param>
-        public ExportadorOrganizacion(Ontologia pOntologia, string pIdiomaUsuario, LoggingService loggingService, EntityContext entityContext, ConfigService configService, RedisCacheWrapper redisCacheWrapper, UtilSemCms utilSemCms, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication)
-            : base(pOntologia, pIdiomaUsuario, loggingService, entityContext, configService, redisCacheWrapper, utilSemCms, servicesUtilVirtuosoAndReplication)
+        public ExportadorOrganizacion(Ontologia pOntologia, string pIdiomaUsuario, LoggingService loggingService, EntityContext entityContext, ConfigService configService, RedisCacheWrapper redisCacheWrapper, UtilSemCms utilSemCms, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication, VirtuosoAD virtuosoAd)
+            : base(pOntologia, pIdiomaUsuario, loggingService, entityContext, configService, redisCacheWrapper, utilSemCms, servicesUtilVirtuosoAndReplication, virtuosoAd)
         {
             mLoggingService = loggingService;
             mEntityContext = entityContext;
@@ -210,7 +210,7 @@ namespace Es.Riam.Gnoss.ExportarImportar.Exportadores
         private void ObtenerPersonalDeOrganizacion(ElementoOntologia pEntidad, IElementoGnoss pElementoGnoss, Propiedad pPropiedad, GestionGnoss pGestor)
         {
             Organizacion org = (Organizacion)pElementoGnoss;
-            ExportadorPersona exportEstr = new ExportadorPersona(Ontologia, IdiomaUsuario, mLoggingService, mEntityContext, mConfigService, mRedisCacheWrapper, mUtilSemCms, mServicesUtilVirtuosoAndReplication);
+            ExportadorPersona exportEstr = new ExportadorPersona(Ontologia, IdiomaUsuario, mLoggingService, mEntityContext, mConfigService, mRedisCacheWrapper, mUtilSemCms, mServicesUtilVirtuosoAndReplication, mVirtuosoAd);
 
             foreach (Persona elemPersona in org.ListaPersonasVinculadasConLaOrganizacion.Values)
             {

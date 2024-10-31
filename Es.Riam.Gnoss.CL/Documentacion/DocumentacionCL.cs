@@ -282,6 +282,10 @@ namespace Es.Riam.Gnoss.CL.Documentacion
                     {
                         objetosCache[clave] = null;
                     }
+                    else if (objetosCache[clave] != null && !((ResourceModel)objetosCache[clave]).Key.Equals(idRecurso))
+                    {
+                        objetosCache[clave] = null;
+                    }
 
                     listaFichas.Add(idRecurso, (ResourceModel)(objetosCache[clave]));
                 }
@@ -489,7 +493,8 @@ namespace Es.Riam.Gnoss.CL.Documentacion
             {
                 case -1:
                 case (int)TiposDocumentacion.Debate:
-                    return PerfilesConRecursosPrivados(pProyectoID).Contains(pPerfilID);
+                    //return PerfilesConRecursosPrivados(pProyectoID).Contains(pPerfilID);
+                    return true;
                 default:
                     return false;
             }
@@ -797,7 +802,7 @@ namespace Es.Riam.Gnoss.CL.Documentacion
                 List<string> claves = new List<string>();
                 if (ClienteRedisLectura != null)
                 {
-                    claves = ClienteRedisLectura.Keys(rawKey.ToLower() + "*").Result.ToList(); ;
+                    claves = ClienteRedisLectura.Keys(rawKey.ToLower() + "*").Result.ToList();
                 }
                 List<string> clavesEliminar = new List<string>(claves);
 

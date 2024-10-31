@@ -173,6 +173,10 @@ namespace Es.Riam.Gnoss.Web.MVC.Models.ViewModels
             /// </summary>
             public string BornDate { get; set; }
             /// <summary>
+            /// Autenticacion
+            /// </summary>
+            public bool TwoFactorAuthentication { get; set; }
+            /// <summary>
             /// Email
             /// </summary>
             public string Email { get; set; }

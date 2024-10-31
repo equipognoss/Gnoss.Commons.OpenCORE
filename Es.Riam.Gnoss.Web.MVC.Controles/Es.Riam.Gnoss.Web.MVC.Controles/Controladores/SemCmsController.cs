@@ -13,6 +13,7 @@ using Es.Riam.Gnoss.AD.Usuarios;
 using Es.Riam.Gnoss.AD.Virtuoso;
 using Es.Riam.Gnoss.CL;
 using Es.Riam.Gnoss.CL.Facetado;
+using Es.Riam.Gnoss.CL.ParametrosAplicacion;
 using Es.Riam.Gnoss.CL.ServiciosGenerales;
 using Es.Riam.Gnoss.Elementos.Documentacion;
 using Es.Riam.Gnoss.Elementos.Facetado;
@@ -22,6 +23,7 @@ using Es.Riam.Gnoss.ExportarImportar;
 using Es.Riam.Gnoss.Logica.Documentacion;
 using Es.Riam.Gnoss.Logica.Facetado;
 using Es.Riam.Gnoss.Logica.Identidad;
+using Es.Riam.Gnoss.Logica.ParametroAplicacion;
 using Es.Riam.Gnoss.Recursos;
 using Es.Riam.Gnoss.Util.Configuracion;
 using Es.Riam.Gnoss.Util.General;
@@ -37,6 +39,7 @@ using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
@@ -44,6 +47,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Web;
 using System.Xml;
+using VDS.RDF;
 
 namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
 {
@@ -359,21 +363,25 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
         {
             foreach (ElementoOntologia entidad in pEntidades)
             {
-                if (entidad.EntidadesRelacionadas.Count > 0)
+                if (!entidad.ProcesadoOrdenEntidad)
                 {
-                    foreach (Propiedad prop in entidad.Propiedades)
+                    if (entidad.EntidadesRelacionadas.Count > 0)
                     {
-                        if (prop.Tipo == TipoPropiedad.ObjectProperty)
+                        foreach (Propiedad prop in entidad.Propiedades)
                         {
-                            if (prop.EntidadesHijasConOrden)
+                            if (prop.Tipo == TipoPropiedad.ObjectProperty)
                             {
-                                prop.ListaValores = prop.ListaValoresOrdCampoEntidad;
+                                if (prop.EntidadesHijasConOrden)
+                                {
+                                    prop.ListaValores = prop.ListaValoresOrdCampoEntidad;
+                                }
                             }
                         }
                     }
-                }
 
-                OrdenarEntidadesAuxiliaresConCampoOrden(entidad.EntidadesRelacionadas);
+                    entidad.ProcesadoOrdenEntidad = true;
+                    OrdenarEntidadesAuxiliaresConCampoOrden(entidad.EntidadesRelacionadas);
+                }
             }
         }
 
@@ -1964,7 +1972,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
                                     else
                                     {
                                         mSemRecModel.AuxiliaryCategoryTesSemNameInfo = string.Concat(mSemRecModel.AuxiliaryCategoryTesSemNameInfo, entidadID + "|" + valor + "|||");
-                                    }                                   
+                                    }
                                 }
                             }
                         }
@@ -2513,20 +2521,25 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
                 elemOrd.NombrePropiedad = new KeyValuePair<string, Propiedad>(propiedad.Nombre, propiedad);
                 pEntidadAux.EspecifEntidad.ElementosOrdenadosLectura.Add(elemOrd);
 
-                DataRow[] filasProp = pFacetadoDS.Tables[0].Select("s='" + pEntidadID + "' AND p='" + pEstiloProp.NombreRealPropiedad + "'");
+                DataRow[] filasProp = pFacetadoDS.Tables[0].Select($"s='{pEntidadID}' AND p='{pEstiloProp.NombreRealPropiedad}'");
 
                 foreach (DataRow filaProp in filasProp)
                 {
                     string entidadHijaID = (string)filaProp["o"];
-                    ElementoOntologia instanciaEntidad = pEntidadAux.Ontologia.GetEntidadTipo(propiedad.Rango, true);
-                    instanciaEntidad.ID = entidadHijaID;
-                    instanciaEntidad.EspecifEntidad.NombreLectura = "";
-                    propiedad.ListaValores.Add(entidadHijaID, instanciaEntidad);
-                    pEntidadAux.EntidadesRelacionadas.Add(instanciaEntidad);
 
-                    foreach (EstiloPlantillaEspecifProp estiloHijo in pEstiloProp.PropiedadesAuxiliares)
+                    if (!propiedad.ListaValores.ContainsKey(entidadHijaID))
                     {
-                        GenerarDatosPropiedadEHijosSelEnt(pSemPropModel, pFacetadoDS, entidadHijaID, estiloHijo, instanciaEntidad, pIdentidadID);
+                        //Si ha sido añadida a la entidad padre la hija, no es necesario añadirla de nuevo (es reciproca) y ya tiene todos sus datos cargados
+                        ElementoOntologia instanciaEntidad = pEntidadAux.Ontologia.GetEntidadTipo(propiedad.Rango, true);
+                        instanciaEntidad.ID = entidadHijaID;
+                        instanciaEntidad.EspecifEntidad.NombreLectura = "";
+                        propiedad.ListaValores.TryAdd(entidadHijaID, instanciaEntidad);
+                        pEntidadAux.EntidadesRelacionadas.Add(instanciaEntidad);
+
+                        foreach (EstiloPlantillaEspecifProp estiloHijo in pEstiloProp.PropiedadesAuxiliares)
+                        {
+                            GenerarDatosPropiedadEHijosSelEnt(pSemPropModel, pFacetadoDS, entidadHijaID, estiloHijo, instanciaEntidad, pIdentidadID);
+                        }
                     }
                 }
             }
@@ -2702,7 +2715,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
                     }
                     else
                     {
-                        pPropiedad.EspecifPropiedad.UrlLinkDelValor = mBaseUrl + "/" + mUtilIdiomas.GetText("URLSEM", "RECURSOINVITADO") + "/" + UtilCadenas.EliminarCaracteresUrlSem(pPropiedad.PrimerValorPropiedad) + "/" + idRec;
+                        pPropiedad.EspecifPropiedad.UrlLinkDelValor = mBaseURLIdioma + "/" + mUtilIdiomas.GetText("URLSEM", "RECURSOINVITADO") + "/" + UtilCadenas.EliminarCaracteresUrlSem(pPropiedad.PrimerValorPropiedad) + "/" + idRec;
                     }
 
                     pPropiedad.EspecifPropiedad.NuevaPestanya = pSemPropModel.Element.Propiedad.EspecifPropiedad.SelectorEntidad.NuevaPestanya;
@@ -3311,7 +3324,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
                 }
             }
 
-            string grafo = HttpUtility.UrlEncode(selectorEnt.Grafo); ;
+            string grafo = HttpUtility.UrlEncode(selectorEnt.Grafo);
             string urlentCont = "";
             string urlProp = "";
             string urlTipoEntSol = "";
@@ -3613,7 +3626,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
                 FacetadoCN facetadoCN = new FacetadoCN(mUrlIntragnoss, true, mEntityContext, mLoggingService, mConfigService, mVirtuosoAD, mServicesUtilVirtuosoAndReplication);
                 if (!pCargaDependeciaProps && !string.IsNullOrEmpty(propiedad.EspecifPropiedad.SelectorEntidad.ConsultaEdicion))
                 {
-                    pFacetadoDS = facetadoCN.ObtenerRDFXMLSelectorEntidadFormularioPorConsulta(propiedad.EspecifPropiedad.SelectorEntidad.Grafo, null, propiedad.EspecifPropiedad.SelectorEntidad.ConsultaEdicion);
+                    pFacetadoDS = facetadoCN.ObtenerRDFXMLSelectorEntidadFormularioPorConsulta(propiedad.EspecifPropiedad.SelectorEntidad, null, propiedad.EspecifPropiedad.SelectorEntidad.ConsultaEdicion, Ontologia.IdiomaUsuario);
                 }
                 else if ((propiedad.EspecifPropiedad.SelectorEntidad.TipoSeleccion == "Combo" || propiedad.EspecifPropiedad.SelectorEntidad.TipoSeleccion == "ListaCheck"))
                 {
@@ -3636,7 +3649,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
                             idioma = Ontologia.IdiomaUsuario;
                         }
 
-                        pFacetadoDS = facetadoCN.ObtenerRDFXMLSelectorEntidadFormulario(propiedad.EspecifPropiedad.SelectorEntidad.Grafo, propiedad.EspecifPropiedad.SelectorEntidad.UrlEntContenedora, propiedad.EspecifPropiedad.SelectorEntidad.UrlPropiedad, propiedad.EspecifPropiedad.SelectorEntidad.UrlTipoEntSolicitada, propiedad.EspecifPropiedad.SelectorEntidad.PropiedadesEdicion, null, extraWhere, idioma);
+                        pFacetadoDS = facetadoCN.ObtenerRDFXMLSelectorEntidadFormulario(propiedad.EspecifPropiedad.SelectorEntidad.Grafo, propiedad.EspecifPropiedad.SelectorEntidad.UrlEntContenedora, propiedad.EspecifPropiedad.SelectorEntidad.UrlPropiedad, propiedad.EspecifPropiedad.SelectorEntidad.UrlTipoEntSolicitada, propiedad.EspecifPropiedad.SelectorEntidad.PropiedadesEdicion, null, extraWhere, idioma, Guid.Empty, Guid.Empty);
                     }
                     else
                     {
@@ -3809,7 +3822,17 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
                     pEntidadesExtOrdenadas = new SortedDictionary<string, List<string>>();
                 }
 
-                foreach (DataRow fila in pFacetadoDS.Tables[0].Rows)
+                List<DataRow> filas = null;
+                if (pPropiedad.EspecifPropiedad.SelectorEntidad.MultiIdioma && pFacetadoDS.Tables[0].Columns.Contains("idioma"))
+                {
+                    filas = pFacetadoDS.Tables[0].AsEnumerable().Where(row => row.Field<string>("idioma") == IdiomaUsuario || string.IsNullOrEmpty(row.Field<string>("idioma"))).ToList();
+                }
+                else
+                {
+                    filas = pFacetadoDS.Tables[0].AsEnumerable().ToList();
+                }
+
+                foreach (DataRow fila in filas)
                 {
                     string sujeto = (string)fila[0];
                     string predicado = (string)fila[1];
@@ -4378,9 +4401,9 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
             pSemPropModel.OntologyPropInfo.MultiLanguage = PropiedadEsMultidioma(propiedad);
 
             if (pSemPropModel.OntologyPropInfo.MultiLanguage)
-            {
-                pSemPropModel.OntologyPropInfo.MultiLanguageWithTabs = (EsEntidadPrincipalMirandoHerencias(propiedad.ElementoOntologia) || propiedad.EspecifPropiedad.TipoCampo == TipoCampoOntologia.Archivo || propiedad.EspecifPropiedad.TipoCampo == TipoCampoOntologia.ArchivoLink);
-                EstablecerValoresMultiIdiomaPropiedadDatos(pSemPropModel);
+            {                
+                pSemPropModel.OntologyPropInfo.MultiLanguageWithTabs = true;
+                EstablecerValoresMultiIdiomaPropiedadDatos(pSemPropModel);                                               
             }
 
             if (pElemOrdenado.MensajeAyuda != null)
@@ -4976,7 +4999,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
             //Codificamos el nombre el fichero para no tener problemas con simbolos como el + (se convierte en espacio)
             string baseUrl = UtilDominios.ObtenerDominioUrl(ProyectoSeleccionado.UrlPropia(UtilIdiomas.LanguageCode), true);
             string urlComunidad = UrlsSemanticas.ObtenerURLComunidad(UtilIdiomas, BaseURLIdioma, ProyectoSeleccionado.NombreCorto);
-            string enlace = $"{urlComunidad}/download-file?doc={documentoDescargaID}&ext={extension}&archivoAdjuntoSem={archivo}&ontologiaAdjuntoSem={mOntologia.OntologiaID}&ID={pIdentidadID}&proy={mDocumento.ProyectoID}{extraDesc}";
+            string enlace = $"{urlComunidad}/download-file?doc={documentoDescargaID}&ext={extension}&archivoAdjuntoSem={HttpUtility.UrlEncode(archivo)}&ontologiaAdjuntoSem={mOntologia.OntologiaID}&ID={pIdentidadID}&proy={mDocumento.ProyectoID}{extraDesc}";
             if (!string.IsNullOrEmpty(pIdiomaValor))
             {
                 enlace += $"&idiomaFichero={pIdiomaValor}";
@@ -5063,7 +5086,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
         {
             string idiomaDefecto = mConfigService.ObtenerIdiomaDefecto();
             if (!pSemPropModel.ReadMode)
-            {                
+            {
                 if (string.IsNullOrEmpty(idiomaDefecto))
                 {
                     throw new Exception("El recurso es multiIdioma, pero la comunidad no hay idiomas configurados.");
@@ -5440,7 +5463,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
                 {
                     KeyValuePair<string, string> claveEntExt = new KeyValuePair<string, string>(primeraEntHija.PropiedadNodoTesSemantico, primeraEntHija.TipoEntidad);
 
-                    if (mDatosEntidadesExternas.ContainsKey(claveEntExt) && ((FacetadoDS)mDatosEntidadesExternas[claveEntExt][3]) != null &&((FacetadoDS)mDatosEntidadesExternas[claveEntExt][3]).Tables["SelectPropEnt"].Select("p='" + EstiloPlantilla.PrefLabel_TesSem + "' AND (idioma='' OR idioma='" + mUtilIdiomas.LanguageCode + "')").Length == 0)
+                    if (mDatosEntidadesExternas.ContainsKey(claveEntExt) && ((FacetadoDS)mDatosEntidadesExternas[claveEntExt][3]) != null && ((FacetadoDS)mDatosEntidadesExternas[claveEntExt][3]).Tables["SelectPropEnt"].Select("p='" + EstiloPlantilla.PrefLabel_TesSem + "' AND (idioma='' OR idioma='" + mUtilIdiomas.LanguageCode + "')").Length == 0)
                     {
                         return false;
                     }
@@ -5951,11 +5974,12 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
         }
 
         private void CargarIdiomasModel()
-        {   
+        {
+            ParametroAplicacionCL paramCL = new ParametroAplicacionCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mServicesUtilVirtuosoAndReplication);
             if (mOntologia.ConfiguracionPlantilla != null && mOntologia.ConfiguracionPlantilla.MultiIdioma && !(ParametrosGeneralesRow.IdiomaDefecto == null) && !string.IsNullOrEmpty(ParametrosGeneralesRow.IdiomaDefecto))
             {//Es multiidioma:
                 IdiomaDefecto = ParametrosGeneralesRow.IdiomaDefecto;
-                IdiomasDisponibles = mConfigService.ObtenerListaIdiomasDictionary();
+                IdiomasDisponibles = paramCL.ObtenerListaIdiomasDictionary();
             }
 
             if (IdiomaDefecto != null)
@@ -7052,24 +7076,19 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
             if (propiedad.Tipo == TipoPropiedad.DatatypeProperty)
             {
                 string valor = pTexto.Replace("[--C]", "<").Replace("[C--]", ">");
+                if (!propiedad.EspecifPropiedad.PermitirScript)
+                {
+                    valor = UtilCadenas.LimpiarInyeccionCodigo(valor);
+                }
                 if (!string.IsNullOrEmpty(valor))
                 {
                     if (propiedad.EspecifPropiedad.TipoCampo.Equals(TipoCampoOntologia.DateTime))
-                    {
-                        DateTime fechaCorrecta = new DateTime();
-                        if (!DateTime.TryParse(valor, out fechaCorrecta))
+                    {                       
+                        if (!DateTime.TryParseExact(valor, UtilCadenas.FormatosFecha, CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime fechaCorrecta))
                         {
-                            try
-                            {
-                                fechaCorrecta = DateTime.ParseExact(valor, "yyyyMMddHHmmss", System.Globalization.CultureInfo.InvariantCulture);
-                            }
-                            catch (Exception ex)
-                            {
-                                GuardarMensajeErrorAdmin("La fecha '" + valor + "' no es una fecha correcta.", ex);
-                                GuardarLogErrorAJAX("La fecha '" + valor + "' no es una fecha correcta.");
-                                throw new Exception("Fecha incorreta.", ex);
-                            }
-                        }
+                            mLoggingService.GuardarLogError($"La fecha '{valor}' no tiene un formato válido.");
+							throw new Exception($"La fecha '{valor}' no tiene un formato válido.");
+						}
                     }
                     #region Modficar valor según propiedad
 
@@ -7131,11 +7150,16 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
                     {
                         List<string> idiomasSinAgregar = new List<string>(IdiomasDisponibles.Keys);
                         string valorPorDefectoIdioma = "";
+                        valor  = pTexto.Replace("[--C]", "<").Replace("[C--]", ">"); // Recuperamos el texto original ya que si es multi idioma se debe limpiar cada texto de cada idioma individualmente CORE-5944
 
                         foreach (string valorIdioma in valor.Split(new string[] { "[|lang|]" }, StringSplitOptions.RemoveEmptyEntries))
                         {
                             string idioma = valorIdioma.Substring(valorIdioma.LastIndexOf("@") + 1);
                             string valorSinIdioma = valorIdioma.Substring(0, valorIdioma.LastIndexOf("@"));
+                            if (!propiedad.EspecifPropiedad.PermitirScript)
+                            {
+                                valorSinIdioma = UtilCadenas.LimpiarInyeccionCodigo(valorSinIdioma);
+                            }
 
                             idiomasSinAgregar.Remove(idioma);
 
@@ -7183,6 +7207,10 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
 
                 if (propiedad.EspecifPropiedad.SelectorEntidad != null && propiedad.EspecifPropiedad.SelectorEntidad.TipoSeleccion != "Edicion")
                 {
+                    if (!propiedad.EspecifPropiedad.PermitirScript)
+                    {
+                        pTexto = UtilCadenas.LimpiarInyeccionCodigo(pTexto);
+                    }
                     if (!string.IsNullOrEmpty(pTexto))
                     {
                         if (propiedad.EspecifPropiedad.SelectorEntidad.TipoSeleccion == "GruposGnoss" && pTexto.StartsWith("g_"))

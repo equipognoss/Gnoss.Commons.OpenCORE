@@ -1,5 +1,9 @@
-﻿using Es.Riam.Gnoss.AD.EntityModel;
+﻿using Es.Riam.AbstractsOpen;
+using Es.Riam.Gnoss.AD.EntityModel;
 using Es.Riam.Gnoss.AD.EntityModel.Models.ParametroGeneralDS;
+using Es.Riam.Gnoss.CL;
+using Es.Riam.Gnoss.CL.ParametrosAplicacion;
+using Es.Riam.Gnoss.Logica.ParametroAplicacion;
 using Es.Riam.Gnoss.Logica.ParametrosProyecto;
 using Es.Riam.Gnoss.Util.Configuracion;
 using Es.Riam.Gnoss.Util.General;
@@ -73,21 +77,22 @@ namespace Es.Riam.Gnoss.Recursos
         private LoggingService mLoggingService;
         private EntityContext mEntityContext;
         private ConfigService mConfigService;
+        private RedisCacheWrapper mRedisCacheWrapper;
 
-        #endregion
+		#endregion
 
-        #region Constructores
+		#region Constructores
 
-        /// <summary>
-        /// Constructor a partir de el contenido del fichero de idomas
-        /// </summary>
-        /// <param name="pClaveIdioma">Clave del idioma</param>
-        public UtilIdiomas(string pClaveIdioma, LoggingService loggingService, EntityContext entityContext, ConfigService configService)
+		/// <summary>
+		/// Constructor a partir de el contenido del fichero de idomas
+		/// </summary>
+		/// <param name="pClaveIdioma">Clave del idioma</param>
+		public UtilIdiomas(string pClaveIdioma, LoggingService loggingService, EntityContext entityContext, ConfigService configService, RedisCacheWrapper redisCacheWrapper)
         {
             mLoggingService = loggingService;
             mEntityContext = entityContext;
             mConfigService = configService;
-
+            mRedisCacheWrapper = redisCacheWrapper;
             mDirectorioLenguajes = "";
             mPreferenciasLenguajes = Array.Empty<string>();
             IdiomaUsuario = pClaveIdioma;
@@ -99,15 +104,15 @@ namespace Es.Riam.Gnoss.Recursos
         /// Constructor a partir de el contenido del fichero de idomas
         /// </summary>
         /// <param name="pClaveIdioma">Clave del idioma</param>
-        public UtilIdiomas(string pClaveIdioma, Guid pProyectoID, LoggingService loggingService, EntityContext entityContext, ConfigService configService)
+        public UtilIdiomas(string pClaveIdioma, Guid pProyectoID, LoggingService loggingService, EntityContext entityContext, ConfigService configService, RedisCacheWrapper redisCacheWrapper)
         {
             mLoggingService = loggingService;
             mEntityContext = entityContext;
             mConfigService = configService;
 
             mProyectoID = pProyectoID;
-
-            mDirectorioLenguajes = "";
+			mRedisCacheWrapper = redisCacheWrapper;
+			mDirectorioLenguajes = "";
             mPreferenciasLenguajes = Array.Empty<string>();
             IdiomaUsuario = pClaveIdioma;
             ObtenerDiccionarioTraducciones();
@@ -118,7 +123,7 @@ namespace Es.Riam.Gnoss.Recursos
         /// Constructor a partir de el contenido del fichero de idomas
         /// </summary>
         /// <param name="pClaveIdioma">Clave del idioma</param>
-        public UtilIdiomas(string pClaveIdioma, Guid pProyectoID, Guid pPersonalizacionID, Guid pPersonalizacionEcosistemaID, LoggingService loggingService, EntityContext entityContext, ConfigService configService)
+        public UtilIdiomas(string pClaveIdioma, Guid pProyectoID, Guid pPersonalizacionID, Guid pPersonalizacionEcosistemaID, LoggingService loggingService, EntityContext entityContext, ConfigService configService, RedisCacheWrapper redisCacheWrapper) 
         {
             mLoggingService = loggingService;
             mEntityContext = entityContext;
@@ -127,8 +132,8 @@ namespace Es.Riam.Gnoss.Recursos
             mProyectoID = pProyectoID;
             mPersonalizacionID = pPersonalizacionID;
             mPersonalizacionEcosistemaID = pPersonalizacionEcosistemaID;
-
-            mDirectorioLenguajes = "";
+			mRedisCacheWrapper = redisCacheWrapper;
+			mDirectorioLenguajes = "";
             mPreferenciasLenguajes = Array.Empty<string>();
             IdiomaUsuario = pClaveIdioma;
             ObtenerDiccionarioTraducciones();
@@ -140,7 +145,7 @@ namespace Es.Riam.Gnoss.Recursos
         /// </summary>
         /// <param name="pClaveIdioma">Clave del idioma</param>
         /// <param name="pContenidoArchivo">Contenido del archivo de idioma</param>
-        public UtilIdiomas(string pClaveIdioma, string pContenidoArchivo, Guid pProyectoID, Guid pPersonalizacionID, Guid pPersonalizacionEcosistemaID, LoggingService loggingService, EntityContext entityContext, ConfigService configService)
+        public UtilIdiomas(string pClaveIdioma, string pContenidoArchivo, Guid pProyectoID, Guid pPersonalizacionID, Guid pPersonalizacionEcosistemaID, LoggingService loggingService, EntityContext entityContext, ConfigService configService, RedisCacheWrapper redisCacheWrapper)
         {
             mLoggingService = loggingService;
             mEntityContext = entityContext;
@@ -153,6 +158,7 @@ namespace Es.Riam.Gnoss.Recursos
             mDirectorioLenguajes = "";
             mPreferenciasLenguajes = Array.Empty<string>();
             IdiomaUsuario = pClaveIdioma;
+            mRedisCacheWrapper = redisCacheWrapper;
             ObtenerDiccionarioTraducciones();
             LoadFileDesdeTexto(pContenidoArchivo);
         }
@@ -163,7 +169,7 @@ namespace Es.Riam.Gnoss.Recursos
         /// <param name="pDirectorioLenguajes">Directorio donde se encuentran los xml de los idiomas</param>
         /// <param name="pPreferenciasLenguajes">Array con las preferencias de idioma del usuario</param>
         /// <param name="pIdiomaUsuario">Idioma del usuario</param>
-        public UtilIdiomas(string pDirectorioLenguajes, string[] pPreferenciasLenguajes, string pIdiomaUsuario, Guid pProyectoID, Guid pPersonalizacionID, Guid pPersonalizacionEcosistemaID, LoggingService loggingService, EntityContext entityContext, ConfigService configService)
+        public UtilIdiomas(string pDirectorioLenguajes, string[] pPreferenciasLenguajes, string pIdiomaUsuario, Guid pProyectoID, Guid pPersonalizacionID, Guid pPersonalizacionEcosistemaID, LoggingService loggingService, EntityContext entityContext, ConfigService configService, RedisCacheWrapper redisCacheWrapper)
         {
             mLoggingService = loggingService;
             mEntityContext = entityContext;
@@ -176,7 +182,8 @@ namespace Es.Riam.Gnoss.Recursos
             mDirectorioLenguajes = pDirectorioLenguajes;
             mPreferenciasLenguajes = pPreferenciasLenguajes;
             IdiomaUsuario = pIdiomaUsuario;
-            ObtenerDiccionarioTraducciones();
+			mRedisCacheWrapper = redisCacheWrapper;
+			ObtenerDiccionarioTraducciones();
             LoadFile();
         }
 
@@ -185,13 +192,13 @@ namespace Es.Riam.Gnoss.Recursos
         /// </summary>
         /// <param name="info">Datos serializados</param>
         /// <param name="context">Contexto de serialización</param>
-        protected UtilIdiomas(SerializationInfo info, LoggingService loggingService, EntityContext entityContext, ConfigService configService)
+        protected UtilIdiomas(SerializationInfo info, LoggingService loggingService, EntityContext entityContext, ConfigService configService, RedisCacheWrapper redisCacheWrapper)
         {
             mLoggingService = loggingService;
             mEntityContext = entityContext;
             mConfigService = configService;
-
-            mFileName = info.GetString("FileName");
+			mRedisCacheWrapper = redisCacheWrapper;
+			mFileName = info.GetString("FileName");
             mDirectorioLenguajes = info.GetString("DirectorioLenguajes");
             mPreferenciasLenguajes = (string[])info.GetValue("PreferenciasLenguajes", typeof(string[]));
             ObtenerDiccionarioTraducciones();
@@ -234,10 +241,10 @@ namespace Es.Riam.Gnoss.Recursos
             string contenido_personalizado = "";
             mDocumento = new XmlDocument();
             mDocumento_Personalizado = new XmlDocument();
-
+			ParametroAplicacionCL paramCL = new ParametroAplicacionCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, null);
             if (string.IsNullOrEmpty(pIdioma)) 
             {
-                if (!string.IsNullOrEmpty(IdiomaUsuario) && mConfigService.ObtenerListaIdiomasDictionary().ContainsKey(IdiomaUsuario))
+                if (!string.IsNullOrEmpty(IdiomaUsuario) && paramCL.ObtenerListaIdiomasDictionary().ContainsKey(IdiomaUsuario))
                 {
                     mFileName = IdiomaUsuario;
                 }
@@ -577,7 +584,7 @@ namespace Es.Riam.Gnoss.Recursos
                 {
                     if (UtilIdiomasDefecto == null)
                     {
-                        UtilIdiomasDefecto = new UtilIdiomas("es", mProyectoID, mPersonalizacionID, mPersonalizacionEcosistemaID, mLoggingService, mEntityContext, mConfigService);
+                        UtilIdiomasDefecto = new UtilIdiomas("es", mProyectoID, mPersonalizacionID, mPersonalizacionEcosistemaID, mLoggingService, mEntityContext, mConfigService, mRedisCacheWrapper);
                     }
                     return UtilIdiomasDefecto.GetText(mPaginaActual, pText);
                 }
@@ -738,7 +745,8 @@ namespace Es.Riam.Gnoss.Recursos
                     {
                         mDiccionarioLenguajes = new Dictionary<string, Dictionary<string, string>>();
                         mDiccionarioLenguajesClaves = new Dictionary<string, Dictionary<string, string>>();
-                        List<string> listaIdiomas = mConfigService.ObtenerListaIdiomas();
+						ParametroAplicacionCL paramCL = new ParametroAplicacionCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, null);
+						List<string> listaIdiomas = paramCL.ObtenerListaIdiomas();
                         foreach (string idioma in listaIdiomas)
                         {
                             Dictionary<string, string> diccionarioIdioma = new Dictionary<string, string>();
@@ -782,6 +790,12 @@ namespace Es.Riam.Gnoss.Recursos
                 }
             }
         }
+
+        public void VaciarDiccionarioLenguajes()
+        {
+            mDiccionarioLenguajes = null;
+            mDiccionarioLenguajesClaves = null;
+		}
 
         public string ObtenerTexto(string pPage, string pText)
         {
@@ -857,7 +871,7 @@ namespace Es.Riam.Gnoss.Recursos
                 {
                     if (UtilIdiomasDefecto == null)
                     {
-                        UtilIdiomasDefecto = new UtilIdiomas("es", mProyectoID, mPersonalizacionID, mPersonalizacionEcosistemaID, mLoggingService, mEntityContext, mConfigService);
+                        UtilIdiomasDefecto = new UtilIdiomas("es", mProyectoID, mPersonalizacionID, mPersonalizacionEcosistemaID, mLoggingService, mEntityContext, mConfigService, mRedisCacheWrapper);
                     }
                     return UtilIdiomasDefecto.GetText(pPage, pText);
                 }
@@ -1280,20 +1294,24 @@ namespace Es.Riam.Gnoss.Recursos
         private EntityContext mEntityContext;
         private ConfigService mConfigService;
         private ConcurrentDictionary<string, UtilIdiomas> mListaUtilIdiomas;
+        private RedisCacheWrapper mRedisCacheWrapper;
 
-        public UtilIdiomasFactory(LoggingService loggingService, EntityContext entityContext, ConfigService configService)
+
+		public UtilIdiomasFactory(LoggingService loggingService, EntityContext entityContext, ConfigService configService, RedisCacheWrapper redisCacheWrapper)
         {
             mListaUtilIdiomas = new ConcurrentDictionary<string, UtilIdiomas>();
             mLoggingService = loggingService;
             mEntityContext = entityContext;
             mConfigService = configService;
-        }
+            mRedisCacheWrapper = redisCacheWrapper;
+
+		}
 
         public UtilIdiomas ObtenerUtilIdiomas(string pIdioma)
         {
             if (!mListaUtilIdiomas.ContainsKey(pIdioma))
             {
-                mListaUtilIdiomas.TryAdd(pIdioma, new UtilIdiomas(pIdioma, mLoggingService, mEntityContext, mConfigService));
+                mListaUtilIdiomas.TryAdd(pIdioma, new UtilIdiomas(pIdioma, mLoggingService, mEntityContext, mConfigService, mRedisCacheWrapper));
             }
 
             return mListaUtilIdiomas[pIdioma];

@@ -1,5 +1,6 @@
 ﻿using Es.Riam.Gnoss.Util.Configuracion;
 using Es.Riam.Gnoss.Util.General;
+using Newtonsoft.Json;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
 using System;
@@ -109,16 +110,12 @@ namespace Es.Riam.Gnoss.RabbitMQ
                         }
                         else
                         {
-                            //channel.BasicAck(basicDeliveryEventArgs.DeliveryTag, false);
                             channel.BasicNack(basicDeliveryEventArgs.DeliveryTag, false, true);
                         }
                     }
                     catch (Exception ex)
                     {
                         channel.BasicNack(basicDeliveryEventArgs.DeliveryTag, false, true);
-                        //channel.Close();
-                        //Conexion.Close();
-                        //shutdownFunction();
                         mLoggingService.GuardarLogError(ex);
                         throw;
                     }
@@ -132,7 +129,7 @@ namespace Es.Riam.Gnoss.RabbitMQ
 
                 channel.BasicConsume(mGestorRabbit.QueueName, false, eventingBasicConsumer);
             }
-            catch (Exception)
+            catch
             {
                 throw;
             }
@@ -142,7 +139,6 @@ namespace Es.Riam.Gnoss.RabbitMQ
         {
 
             byte[] messageBytes = Encoding.UTF8.GetBytes(message);
-
             using (var channel = Conexion.CreateModel())
             {
                 channel.ConfirmSelect();

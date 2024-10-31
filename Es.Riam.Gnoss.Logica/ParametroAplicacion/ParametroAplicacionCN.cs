@@ -6,6 +6,7 @@ using Es.Riam.Gnoss.Util.General;
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Linq;
 
 namespace Es.Riam.Gnoss.Logica.ParametroAplicacion
 {
@@ -17,7 +18,7 @@ namespace Es.Riam.Gnoss.Logica.ParametroAplicacion
 
         #region Miembros
 
-        private LoggingService mLoggingService;
+        private static Dictionary<string, string> mListaIdiomasDictionary = new Dictionary<string, string>();
 
         #endregion
 
@@ -29,7 +30,6 @@ namespace Es.Riam.Gnoss.Logica.ParametroAplicacion
         public ParametroAplicacionCN(EntityContext entityContext, LoggingService loggingService, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication)
             : base(entityContext, loggingService, configService, servicesUtilVirtuosoAndReplication)
         {
-            mLoggingService = loggingService;
             ParametroAplicacionAD = new ParametroAplicacionAD(loggingService, entityContext, configService, servicesUtilVirtuosoAndReplication);
         }
 
@@ -41,7 +41,6 @@ namespace Es.Riam.Gnoss.Logica.ParametroAplicacion
         public ParametroAplicacionCN(string pFicheroConfiguracionBD, EntityContext entityContext, LoggingService loggingService, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication)
             : base(entityContext, loggingService, configService, servicesUtilVirtuosoAndReplication)
         {
-            mLoggingService = loggingService;
             ParametroAplicacionAD = new ParametroAplicacionAD(pFicheroConfiguracionBD, loggingService, entityContext, configService, servicesUtilVirtuosoAndReplication);
         }
 
@@ -53,10 +52,12 @@ namespace Es.Riam.Gnoss.Logica.ParametroAplicacion
         {
             return ParametroAplicacionAD.ObtenerParametroBusquedaPorTextoLibrePersonalizado();
         }
+
         public List<ConfiguracionBBDD> ObtenerConfiguracionBBDD()
         {
             return ParametroAplicacionAD.ObtenerConfiguracionBBDD();
         }
+
         /// <summary>
         /// Obtiene las filas de los proyectos en los que es necesario registrar al usuario que se está registrando.
         /// </summary>
@@ -122,6 +123,51 @@ namespace Es.Riam.Gnoss.Logica.ParametroAplicacion
         }
 
         /// <summary>
+        /// Obtiene los códigos de idioma y los nombres de la tabla "ParametrosAplicacion"
+        /// </summary>
+        /// <returns>Diccionario donde las claves son los códigos de idioma y los valores son los nombres de los idiomas</returns>
+        public Dictionary<string, string> ObtenerListaIdiomasDictionary()
+        {
+            if (mListaIdiomasDictionary.Count == 0)
+            {
+                string idiomas = ParametroAplicacionAD.ObtenerIdiomas();
+                if (string.IsNullOrEmpty(idiomas))
+                {
+                    mListaIdiomasDictionary = mConfigService.ObtenerListaIdiomasDictionary();
+                }
+                else
+                {
+                    // Dividir la cadena en pares de código de idioma y nombre
+                    // Ej: es|Español,en|English,pt|Portuguese,ca|Català,eu|Euskera,gl|Galego,fr|Français,de|Deutsch,it|Italiano
+                    string[] idiomasArray = idiomas.Split("&&&");
+                    foreach (string idioma in idiomasArray)
+                    {
+                        string[] partes = idioma.Split('|');
+                        mListaIdiomasDictionary.Add(partes[0], partes[1]);
+                    }
+                }
+            }
+            return mListaIdiomasDictionary;
+        }
+
+        /// <summary>
+        /// Obtiene los códigos de idioma de la tabla "ParametrosAplicacion"
+        /// </summary>
+        /// <returns>Lista de los códigos de idioma</returns>
+        public List<string> ObtenerListaIdiomas()
+        {
+            return ObtenerListaIdiomasDictionary().Keys.ToList();
+        }
+
+        /// <summary>
+        /// Vacía la lista estática de idiomas
+        /// </summary>
+        public void VaciarListaIdiomas()
+        {
+            mListaIdiomasDictionary = new Dictionary<string, string>();
+        }
+
+        /// <summary>
         /// Obtiene el valor de la UrlIntragnoss de la tabla "ParametrosAplicacion"
         /// </summary>
         /// <returns>Cadena de texto con la url de la intranet de Gnoss</returns>
@@ -184,6 +230,16 @@ namespace Es.Riam.Gnoss.Logica.ParametroAplicacion
         public string ObtenerParametroAplicacion(string parametro)
         {
             return ParametroAplicacionAD.ObtenerParametroAplicacion(parametro);
+        }
+
+        /// <summary>
+        /// Obtiene los valores de los parámetros de la base de datos que contengan la cadena proporcionada
+        /// </summary>
+        /// <param name="pParametro">Cadena que debe contener el parámetro</param>
+        /// <returns>Valores de parametro aplicacion cuyo paramtro contenga la cadena proporcionada</returns>
+        public List<string> ObtenerParametroAplicacionSeaContenidoParametro(string pParametro)
+        {
+            return ParametroAplicacionAD.ObtenerParametroAplicacionSeaContenidoParametro(pParametro);
         }
 
         public AD.EntityModel.ParametroAplicacion ObtenerFilaParametroAplicacion(string parametro)

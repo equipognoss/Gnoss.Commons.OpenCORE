@@ -52,6 +52,7 @@ using Es.Riam.Gnoss.Logica.Identidad;
 using Es.Riam.Gnoss.Logica.Live;
 using Es.Riam.Gnoss.Logica.Notificacion;
 using Es.Riam.Gnoss.Logica.Parametro;
+using Es.Riam.Gnoss.Logica.ParametroAplicacion;
 using Es.Riam.Gnoss.Logica.ParametrosProyecto;
 using Es.Riam.Gnoss.Logica.ServiciosGenerales;
 using Es.Riam.Gnoss.Logica.Suscripcion;
@@ -63,6 +64,7 @@ using Es.Riam.Gnoss.UtilServiciosWeb;
 using Es.Riam.Gnoss.Web.Controles.Documentacion;
 using Es.Riam.Gnoss.Web.Controles.ParametroGeneralDSName;
 using Es.Riam.Gnoss.Web.Controles.ServiciosGenerales;
+using Es.Riam.Gnoss.Web.Controles.Solicitudes;
 using Es.Riam.Gnoss.Web.MVC.Models;
 using Es.Riam.Gnoss.Web.MVC.Models.Administracion;
 using Es.Riam.Util;
@@ -1038,9 +1040,9 @@ namespace Es.Riam.Gnoss.Web.Controles.Proyectos
         /// <param name="pDebatesDisponibles">Debates disponibles</param>
         /// <param name="pBrightcoveDisponible">Brightcove disponibles</param>
         /// <returns></returns>
-        public Elementos.ServiciosGenerales.Proyecto CrearNuevoProyecto(string pNombre, string pNombreCorto, string pDescripcion, string[] pEtiquetas, short pTipoAcceso, short pTipoProyecto, Guid pUsuarioCreadorID, Guid pPerfilCreadorID, Guid pOrganizacionID, Guid pComPrivadaPadreID, bool pInvitacionesDisponibles, bool pPreguntasDisponibles, bool pEncuestasDisponibles, bool pDebatesDisponibles, bool pBrightcoveDisponible, byte[] pImagenLogo, out DataWrapperOrganizacion pOrganizacionDW, out DataWrapperProyecto pProyectoDS, out GestorParametroGeneral pParametroGeneralDS, out DataWrapperTesauro pTesauroDW, out DataWrapperDocumentacion pDataWrapperDocumentacion, out DataWrapperUsuario pUsuarioDW, out DataWrapperIdentidad pIdentidadDS, string pUrlsPropias = null)
+        public Elementos.ServiciosGenerales.Proyecto CrearNuevoProyecto(string pNombre, string pNombreCorto, string pDescripcion, string[] pEtiquetas, short pTipoAcceso, short pTipoProyecto, Guid pUsuarioCreadorID, Guid pPerfilCreadorID, Guid pOrganizacionID, Guid pComPrivadaPadreID, bool pInvitacionesDisponibles, bool pPreguntasDisponibles, bool pEncuestasDisponibles, bool pDebatesDisponibles, bool pBrightcoveDisponible, byte[] pImagenLogo, out DataWrapperOrganizacion pOrganizacionDW, out DataWrapperProyecto pProyectoDS, out GestorParametroGeneral pParametroGeneralDS, out DataWrapperTesauro pTesauroDW, out DataWrapperDocumentacion pDataWrapperDocumentacion, out DataWrapperUsuario pUsuarioDW, out DataWrapperIdentidad pIdentidadDS, string pUrlsPropias = null, string pDominio = null)
         {
-            return CrearNuevoProyecto(pNombre, pNombreCorto, pDescripcion, pEtiquetas, pTipoAcceso, pTipoProyecto, pUsuarioCreadorID, pPerfilCreadorID, pOrganizacionID, pComPrivadaPadreID, pInvitacionesDisponibles, pPreguntasDisponibles, pEncuestasDisponibles, pDebatesDisponibles, pBrightcoveDisponible, pImagenLogo, out pOrganizacionDW, out pProyectoDS, out pParametroGeneralDS, out pTesauroDW, out pDataWrapperDocumentacion, out pUsuarioDW, out pIdentidadDS, true, pUrlsPropias, null);
+            return CrearNuevoProyecto(pNombre, pNombreCorto, pDescripcion, pEtiquetas, pTipoAcceso, pTipoProyecto, pUsuarioCreadorID, pPerfilCreadorID, pOrganizacionID, pComPrivadaPadreID, pInvitacionesDisponibles, pPreguntasDisponibles, pEncuestasDisponibles, pDebatesDisponibles, pBrightcoveDisponible, pImagenLogo, out pOrganizacionDW, out pProyectoDS, out pParametroGeneralDS, out pTesauroDW, out pDataWrapperDocumentacion, out pUsuarioDW, out pIdentidadDS, true, pUrlsPropias, pDominio);
         }
 
         /// <summary>
@@ -1202,9 +1204,13 @@ namespace Es.Riam.Gnoss.Web.Controles.Proyectos
             gestorUsuarios.DataWrapperUsuario.ListaProyectoRolUsuario.Add(proyectoRolUsuario);
             mEntityContext.ProyectoRolUsuario.Add(proyectoRolUsuario);
 
-            Identidad identidad = new ControladorIdentidades(gestorUsuarios.GestorIdentidades, mLoggingService, mEntityContext, mConfigService, mRedisCacheWrapper, mGnossCache, mEntityContextBASE, mVirtuosoAD, mHttpContextAccessor, mServicesUtilVirtuosoAndReplication).AgregarIdentidadPerfilYUsuarioAProyecto(gestorUsuarios.GestorIdentidades, gestorUsuarios, organizacionID, FilaProyectoNuevo.ProyectoID, filaUsuario, perfil, recibirNewsletterDefectoProyectos);
+            ControladorIdentidades controladorIdentidades = new ControladorIdentidades(gestorUsuarios.GestorIdentidades, mLoggingService, mEntityContext, mConfigService, mRedisCacheWrapper, mGnossCache, mEntityContextBASE, mVirtuosoAD, mHttpContextAccessor, mServicesUtilVirtuosoAndReplication);
+			Identidad identidad = controladorIdentidades.AgregarIdentidadPerfilYUsuarioAProyecto(gestorUsuarios.GestorIdentidades, gestorUsuarios, organizacionID, FilaProyectoNuevo.ProyectoID, filaUsuario, perfil, recibirNewsletterDefectoProyectos);
 
-            LiveCN liveCN = new LiveCN("base", mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+            ControladorDeSolicitudes controladorDeSolicitudes = new ControladorDeSolicitudes(mLoggingService, mEntityContext, mConfigService, mRedisCacheWrapper, mGnossCache, mEntityContextBASE, mVirtuosoAD, mHttpContextAccessor, mServicesUtilVirtuosoAndReplication);
+            controladorDeSolicitudes.RegistrarUsuarioEnProyectoAutomatico(perfil, filaUsuario, gestorUsuarios, gestorUsuarios.GestorIdentidades, FilaProyectoNuevo.ProyectoID);
+
+			LiveCN liveCN = new LiveCN("base", mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
             LiveDS liveDS = new LiveDS();
 
             try
@@ -1485,6 +1491,12 @@ namespace Es.Riam.Gnoss.Web.Controles.Proyectos
 
             #endregion
 
+            #region Creo las facetas por defecto
+
+            CrearFacetasDefectoProyecto(FilaProyectoNuevo.ProyectoID);
+
+            #endregion
+
             Elementos.ServiciosGenerales.Proyecto proy = new Elementos.ServiciosGenerales.Proyecto(FilaProyectoNuevo, gestorProyectos, mLoggingService, mEntityContext);
 
             if (pActualizarLive)
@@ -1684,6 +1696,47 @@ namespace Es.Riam.Gnoss.Web.Controles.Proyectos
             {
                 mEntityContext.TipoDocDispRolUsuarioProy.Add(tipoDocDispRolUsuarioProy8);
             }
+        }
+
+        /// <summary>
+        /// Crea las facetas por defecto para el proyecto
+        /// </summary>
+        /// <param name="pProyectoID">Idenfificador del proyecto en el que se crean las facetas</param>
+        private void CrearFacetasDefectoProyecto(Guid pProyectoID)
+        {
+            FacetaObjetoConocimientoProyecto facetaObjetoConocimientoProyectoAutor = new FacetaObjetoConocimientoProyecto();
+            facetaObjetoConocimientoProyectoAutor.OrganizacionID = new Guid("11111111-1111-1111-1111-111111111111");
+            facetaObjetoConocimientoProyectoAutor.ProyectoID = pProyectoID;
+            facetaObjetoConocimientoProyectoAutor.ObjetoConocimiento = "recurso";
+            facetaObjetoConocimientoProyectoAutor.Faceta = "Autores@es|||Authors@en";
+            facetaObjetoConocimientoProyectoAutor.Orden = 0;
+            facetaObjetoConocimientoProyectoAutor.Autocompletar = false;
+            facetaObjetoConocimientoProyectoAutor.TipoPropiedad = 0;
+            facetaObjetoConocimientoProyectoAutor.Comportamiento = 0;
+            facetaObjetoConocimientoProyectoAutor.MostrarSoloCaja = false;
+            facetaObjetoConocimientoProyectoAutor.Excluida = 0;
+            facetaObjetoConocimientoProyectoAutor.Oculta = null;
+            facetaObjetoConocimientoProyectoAutor.TipoDisenio= 1;
+            facetaObjetoConocimientoProyectoAutor.ElementosVisibles = 5;
+            facetaObjetoConocimientoProyectoAutor.AlgoritmoTransformacion = 8;
+            facetaObjetoConocimientoProyectoAutor.NivelSemantico = null;
+            facetaObjetoConocimientoProyectoAutor.EsSemantica = false;
+            facetaObjetoConocimientoProyectoAutor.Mayusculas = 1;
+            facetaObjetoConocimientoProyectoAutor.NombreFaceta = "Autores@es|||Authors@en";
+            facetaObjetoConocimientoProyectoAutor.Excluyente = false;
+            facetaObjetoConocimientoProyectoAutor.SubTipo = null;
+            facetaObjetoConocimientoProyectoAutor.Reciproca = 0;
+            facetaObjetoConocimientoProyectoAutor.FacetaPrivadaParaGrupoEditores = string.Empty;
+            facetaObjetoConocimientoProyectoAutor.ComportamientoOr = false;
+            facetaObjetoConocimientoProyectoAutor.OcultaEnFacetas = false;
+            facetaObjetoConocimientoProyectoAutor.OcultaEnFiltros = false;
+            facetaObjetoConocimientoProyectoAutor.Condicion = string.Empty;
+            facetaObjetoConocimientoProyectoAutor.PriorizarOrdenResultados = false;
+            facetaObjetoConocimientoProyectoAutor.Inmutable = false;
+            facetaObjetoConocimientoProyectoAutor.AgrupacionID = new Guid();
+
+
+
         }
 
         /// <summary>
@@ -3054,8 +3107,20 @@ namespace Es.Riam.Gnoss.Web.Controles.Proyectos
                 }
 
 
+                //Buscamos si las categorias hijas estan dentro del nodo Categories o en la raíz de la categoría padre
+                XmlNode nodoCategorias = nodoCategoria.SelectSingleNode("Categories");
+                XmlNodeList categoriasHijas = null;
                 //la categoria recien insertada será la categoriaSuperior de las hijas
-                XmlNodeList categoriasHijas = nodoCategoria.SelectNodes("Category");
+                if (nodoCategorias != null)
+                {
+                    categoriasHijas = nodoCategorias.SelectNodes("Category");
+                }
+                else
+                {
+                    categoriasHijas = nodoCategoria.SelectNodes("Category");
+                }
+                
+                
 
                 if (categoriasHijas == null || categoriasHijas.Count == 0)
                 {
@@ -3830,6 +3895,20 @@ namespace Es.Riam.Gnoss.Web.Controles.Proyectos
                 else if (strInvitacionesDisponibles.Equals("1") || strInvitacionesDisponibles.Equals("true"))
                 {
                     pFilaParametroGral.InvitacionesDisponibles = true;
+                }
+            }
+
+            //IdiomasDisponibles
+            if (pUtilidades.SelectSingleNode("IdiomasDisponibles") != null)
+            {
+                string strIdiomasDisponibles = ((string)LeerNodo(pUtilidades, "IdiomasDisponibles", typeof(string))).ToLower();
+                if (strIdiomasDisponibles.Equals("0") || strIdiomasDisponibles.Equals("false"))
+                {
+                    pFilaParametroGral.IdiomasDisponibles = false;
+                }
+                else if (strIdiomasDisponibles.Equals("1") || strIdiomasDisponibles.Equals("true"))
+                {
+                    pFilaParametroGral.IdiomasDisponibles = true;
                 }
             }
 
@@ -4617,10 +4696,11 @@ namespace Es.Riam.Gnoss.Web.Controles.Proyectos
         /// <param name="pDataWrapperProyecto">DataSet de Proyectos</param>
         private void ConfigurarGadgets(XmlNodeList pGadgets, Guid pOrganizacionID, Guid pProyectoID, DataWrapperProyecto pDataWrapperProyecto)
         {
-            List<ProyectoGadget> listaGadgetsModificados = new List<ProyectoGadget>();
+			ParametroAplicacionCL paramCL = new ParametroAplicacionCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mServicesUtilVirtuosoAndReplication);
+			List<ProyectoGadget> listaGadgetsModificados = new List<ProyectoGadget>();
             List<object> listaGadgetsContextoModificados = new List<object>();
             List<object> listaGadgetsIdiomaModificados = new List<object>();
-            List<string> listaIdiomasBBDD = mConfigService.ObtenerListaIdiomas();
+            List<string> listaIdiomasBBDD = paramCL.ObtenerListaIdiomas();
             //esta lista servirá para ignorar campos que se modifican siempre, por ejemplo los autonuméricos, y que no queremos tener en cuenta
             //para el borrado de la cache en caso de cambios en el DS.
             List<string> listaCamposIgnorados = new List<string>();
@@ -5565,7 +5645,8 @@ namespace Es.Riam.Gnoss.Web.Controles.Proyectos
                 {
                     string stIdiomasDisponibles = ((string)LeerNodo(pestanya, "IdiomasDisponibles", typeof(string))).ToLower();
                     List<string> listaIdiomas = stIdiomasDisponibles.Split(new string[] { "," }, StringSplitOptions.RemoveEmptyEntries).ToList();
-                    List<string> listaIdiomasBBDD = mConfigService.ObtenerListaIdiomas();
+					ParametroAplicacionCL paramCL = new ParametroAplicacionCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mServicesUtilVirtuosoAndReplication);
+					List<string> listaIdiomasBBDD = paramCL.ObtenerListaIdiomas();
                     foreach (string idioma in listaIdiomas)
                     {
                         if (listaIdiomasBBDD.Contains(idioma))

@@ -171,6 +171,10 @@
       <asunto>Demande de changement de mot de passe dans {#NombreProyecto#}</asunto>
       <texto>{p}Pour changer le mot de passe, suivez le lien indiqué ci-après : {/p} {p}{a style="display: block; font-weight: 400; color: #006eff; padding-bottom: 40px;" href="{#UrlEnlace#}"}Changer le mot de passe{/a}{/p}</texto>
     </mensaje>
+	<mensaje id="81">
+	  <asunto>Jeton de sécurité {#NombreProyecto#}</asunto>
+	  <texto>{p}Votre jeton de sécurité est: {b} {#TokenSeguridad#} {/b}{/p}</texto>
+	</mensaje>
     <mensaje id="121">
       <asunto>{#Asunto#}</asunto>
       <texto>{p}{#NombreRemitente#} vous a envoyé un message au travers de {#NombreProyecto#}{/p}{div style="margin:30px"}{#Texto#}{/div}{p}Pour répondre à {#NombreRemitente#} cliquez sur ce lien : {a href="{@UrlIntragnoss@}{$identidad$}/mensajes?mensaje={#CorreoID#}"}répondre au message{/a}{/p}</texto>

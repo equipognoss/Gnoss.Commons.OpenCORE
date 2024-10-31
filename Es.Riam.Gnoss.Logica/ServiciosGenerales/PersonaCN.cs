@@ -767,6 +767,16 @@ namespace Es.Riam.Gnoss.Logica.ServiciosGenerales
         }
 
         /// <summary>
+        /// Obtiene el nombre de las personas de unos usuarios.
+        /// </summary>
+        /// <param name="pListaUsuariosID">Lista de identificadores de usuario</param>
+        /// <returns>Lista con el nombrecorto del usuario y el nombre de la persona</returns>
+        public Dictionary<string, string> ObtenerNombreCortoYNombresPersonasDeUsuariosID(List<Guid> pListaUsuariosID)
+        {
+            return PersonaAD.ObtenerNombreCortoYNombresPersonasDeUsuariosID(pListaUsuariosID);
+        }
+
+        /// <summary>
         /// Obtenemos todos los datos de la persona a través de su usuario
         /// </summary>
         /// <param name="pUsuarioID">Identificador de usuario</param>

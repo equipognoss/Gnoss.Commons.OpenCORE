@@ -42,8 +42,8 @@ namespace Es.Riam.Gnoss.ExportarImportar.Exportadores
         /// Crea un nuevo exportador de persona a partir de la ontología pasada por parámetro
         /// </summary>
         /// <param name="pOntologia">Ontología</param>
-        public ExportadorPersona(Ontologia pOntologia, string pIdiomaUsuario, LoggingService loggingService, EntityContext entityContext, ConfigService configService, RedisCacheWrapper redisCacheWrapper, UtilSemCms utilSemCms, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication)
-            : base(pOntologia, pIdiomaUsuario, loggingService, entityContext, configService, redisCacheWrapper, utilSemCms, servicesUtilVirtuosoAndReplication)
+        public ExportadorPersona(Ontologia pOntologia, string pIdiomaUsuario, LoggingService loggingService, EntityContext entityContext, ConfigService configService, RedisCacheWrapper redisCacheWrapper, UtilSemCms utilSemCms, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication, VirtuosoAD virtuosoAd)
+            : base(pOntologia, pIdiomaUsuario, loggingService, entityContext, configService, redisCacheWrapper, utilSemCms, servicesUtilVirtuosoAndReplication, virtuosoAd)
         {
             mLoggingService = loggingService;
             mEntityContext = entityContext;

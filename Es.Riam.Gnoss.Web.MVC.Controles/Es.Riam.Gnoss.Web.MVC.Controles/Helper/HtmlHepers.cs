@@ -22,6 +22,7 @@ using Microsoft.Extensions.Primitives;
 using static System.Net.Mime.MediaTypeNames;
 using AngleSharp.Dom;
 using System.Xml.Linq;
+using System.Text.RegularExpressions;
 
 namespace Es.Riam.Gnoss.Web.MVC.Controles.Helper
 {
@@ -43,7 +44,8 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Helper
         /// el valor entendible y legible para el Page Builder de CMS.
         /// Devuelve un string con el con el valor correspondiente y un valor entero con el tamaño de la columna
         /// </summary>
-        public static Tuple<string, string> GetValuesForGridColumnInCMSPage(this IHtmlHelper helper, String columnClassName) {
+        public static Tuple<string, string> GetValuesForGridColumnInCMSPage(this IHtmlHelper helper, String columnClassName)
+        {
 
             // Span o clase para que sea guardada en bd
             string styleName = "span11";
@@ -51,7 +53,8 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Helper
             string widthColumn = "100.0";
 
             // Es posible que columnClassName venga separado por espacios: Ej: span12
-            if (!String.IsNullOrEmpty(columnClassName)) {
+            if (!String.IsNullOrEmpty(columnClassName))
+            {
                 // Convertirlo a array
                 var arrayColumnClassName = columnClassName.Split(" ");
 
@@ -110,6 +113,12 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Helper
                             styleName = "span58";
                             widthColumn = "62.5";
                             break;
+
+                        case "span56":
+                            // 83,3%
+                            styleName = "span58";
+                            widthColumn = "83.3";
+                            break;
                     }
                 }
             }
@@ -123,12 +132,14 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Helper
         /// Devuelve un diccionario con Key,Value siendo key un string con el idioma en cuestión y Value con el valor en ese idioma.
         /// El parámetro multiLanguageValueString tiene un formato así: NombreDeLaPagina@es|||PageName@en|||
         /// </summary>
-        public static Dictionary<string, string> GetDictionaryValuesFromMultiLanguageItem(this IHtmlHelper helper, String multiLanguageValueString) {
+        public static Dictionary<string, string> GetDictionaryValuesFromMultiLanguageItem(this IHtmlHelper helper, String multiLanguageValueString)
+        {
 
             Dictionary<string, string> dictionaryWithMultiLanguageValues = new Dictionary<string, string>();
 
             // Obtener el nombre multiIdioma separado en arrayItems
-            if (multiLanguageValueString == null) {
+            if (multiLanguageValueString == null)
+            {
                 multiLanguageValueString = "";
             }
             string[] arrayValues = multiLanguageValueString.Split("|||");
@@ -138,7 +149,8 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Helper
             {
                 // Posición del separador del idioma
                 int indexLanguageSeparator = itemValue.LastIndexOf("@");
-                if (indexLanguageSeparator != -1) {
+                if (indexLanguageSeparator != -1)
+                {
                     // Obtener el valor en el idioma que corresponda
                     string pageValue = itemValue.Substring(0, indexLanguageSeparator);
                     string pageLanguageKey = itemValue.Substring(indexLanguageSeparator + 1, itemValue.Length - indexLanguageSeparator - 1);
@@ -285,7 +297,8 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Helper
             }
 
             // Si no se encuentra un logo asociable a la red Social, devolver la inicial de la red para que pinte algo
-            if (string.IsNullOrEmpty(currentLogo)) {
+            if (string.IsNullOrEmpty(currentLogo))
+            {
                 currentLogo = $"<strong>{socialNetworkName.Substring(0, 1)}</strong>";
             }
             return currentLogo;
@@ -298,7 +311,8 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Helper
         {
             string headerParentTitle = "";
 
-            if (!string.IsNullOrEmpty((string)helper.ViewBag.HeaderParentTitle)) {
+            if (!string.IsNullOrEmpty((string)helper.ViewBag.HeaderParentTitle))
+            {
                 headerParentTitle = (string)helper.ViewBag.HeaderParentTitle;
             }
             return headerParentTitle;
@@ -338,7 +352,8 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Helper
                     {
                         userNameByProfileMode = perfil.Name + " @ " + perfil.NameOrg;
                     }
-                    else {
+                    else
+                    {
                         userNameByProfileMode = perfil.Name;
                     }
                     break;
@@ -389,7 +404,8 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Helper
         /// <summary>
         /// Convertir la primera letra en maýuscula y dejar las demás en minúscula. Útil para evitar añadir nuevos textos traducidos y aprovechar los ya existentes
         /// </summary>
-        public static string FirstLetterToUpper(this IHtmlHelper helper, string texto) {
+        public static string FirstLetterToUpper(this IHtmlHelper helper, string texto)
+        {
             if (texto == null)
                 return null;
 
@@ -419,96 +435,106 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Helper
             return extractString;
         }
 
-        private static Dictionary<string, string> ELEMENTOS_HTML_LIMPIAR = new Dictionary<string, string>() { { "<img ", ">" }, { "<iframe ", "</iframe>" }, { "<table", "</table>" }, { "<strong>", "<strong>" }, { "</strong>", "</strong>" }, { "<ul", ">" }, { "</ul>", "</ul>" }, { "<ol", ">" }, { "</ol>", "</ol>" }, { "<a", ">" }, { "</a>", "</a>" }, { "<span", ">" }, { "</span>", "</span>" }, { "<h1", ">" }, { "</h1>", "</h1>" }, { "<h2", ">" }, { "</h2>", "</h2>" }, { "<h3>", ">" }, { "</h3>", "</h3>" }, { "<h4>", ">" }, { "</h4>", "</h4>" }, { "<figure", ">" }, { "<em", ">" }, { "</em>", "</em>" }, { "<b>", ">" }, { "</b>", "</b>" }, { "<li>", ">" }, { "</li>", "</li>" } };
+        private static Dictionary<string, string> ELEMENTOS_HTML_LIMPIAR = new Dictionary<string, string>() { { "<pre ", "</pre>" }, { "<img ", ">" }, { "<iframe ", "</iframe>" }, { "<table", "</table>" }, { "<strong>", "<strong>" }, { "</strong>", "</strong>" }, { "<ul", ">" }, { "</ul>", "</ul>" }, { "<ol", ">" }, { "</ol>", "</ol>" }, { "<a", ">" }, { "</a>", "</a>" }, { "<span", ">" }, { "</span>", "</span>" }, { "<h1", ">" }, { "</h1>", "</h1>" }, { "<h2", ">" }, { "</h2>", "</h2>" }, { "<h3>", ">" }, { "</h3>", "</h3>" }, { "<h4>", ">" }, { "</h4>", "</h4>" }, { "<figure", ">" }, { "<em", ">" }, { "</em>", "</em>" }, { "<b>", ">" }, { "</b>", "</b>" }, { "<li>", ">" }, { "</li>", "</li>" }, { "<i>", "</i>" }, { "<code>", "</code>" } };
 
         // Método para limpiar un String que contiene imagenes, videos de youtube pero no se desean ser mostrados (Ej: Ficha Mini Recurso)
         public static string CleanHtmlFromMultimediaItems(this IHtmlHelper helper, string stringHtml)
         {
-            foreach (string clave in ELEMENTOS_HTML_LIMPIAR.Keys)
+            if (!string.IsNullOrEmpty(stringHtml))
             {
-                stringHtml = LimpiarFragmentoHTML(stringHtml, clave, ELEMENTOS_HTML_LIMPIAR[clave]);
+                foreach (string clave in ELEMENTOS_HTML_LIMPIAR.Keys)
+                {
+                    stringHtml = LimpiarFragmentoHTML(stringHtml, clave, ELEMENTOS_HTML_LIMPIAR[clave]);
+                }
             }
             return stringHtml;
 
         }
+
+
+        private static readonly List<string> ELEMENTOS_HTML_MENSAJES_LIMPIAR = new List<string> { "img", "iframe", "table", "strong", "ul", "ol", "a", "span", "h1", "h2", "h3", "h4", "figure", "em", "b", "li", "i", "article" };
+
+        /// <summary>
+        /// Método para limpiar las etiquetas de los mensajes con el objetivo de que su visualización sea correcta en la Bandeja de entrada       
+        /// </summary>
+        /// <param name="helper"></param>
+        /// <param name="stringHtml"></param>
+        /// <returns></returns>
+        public static string CleanHtmlInMessages(this IHtmlHelper helper, string stringHtml)
+        {
+            if (!string.IsNullOrEmpty(stringHtml))
+            {
+                foreach (string elemento in ELEMENTOS_HTML_MENSAJES_LIMPIAR)
+                {
+                    // Eliminar etiquetas de apertura
+                    stringHtml = Regex.Replace(stringHtml, $"<{Regex.Escape(elemento)}[^>]*>", " ", RegexOptions.IgnoreCase);
+                    // Eliminar etiquetas de cierre correspondientes
+                    stringHtml = Regex.Replace(stringHtml, $"</{Regex.Escape(elemento)}>", " ", RegexOptions.IgnoreCase);
+                }
+            }
+            return stringHtml;
+        }
+
+
 
         private static string LimpiarFragmentoHTML(string stringHtml, string inicio, string fin)
         {
-            int lengthFinal = fin.Length;
-            if (stringHtml.Contains(inicio))
+            int inicioIndex = stringHtml.IndexOf(inicio);
+            while (inicioIndex != -1)
             {
-                int initialPosition = stringHtml.IndexOf(inicio);
-                int finalPosition = stringHtml.IndexOf(fin, initialPosition);
-
-                if(finalPosition < 0)
+                int finIndex = stringHtml.IndexOf(fin, inicioIndex);
+                if (finIndex != -1)
                 {
-                    if (!fin.Equals(">") && !inicio.EndsWith(">"))
-                    {
-                        // Intentamos buscar el cierre de la etiqueta para eliminarla (Ej: <iframe src="http://www.test.com />"
-                        finalPosition = stringHtml.IndexOf(">", initialPosition);
-                        lengthFinal = 1;
-                        if (finalPosition < 0)
-                        {
-                            // No hemos encontrado el cierre, la descripción ha cortado el iframe, borramos hasta el fin del HTML (Ej: <iframe src="...)
-                            finalPosition = stringHtml.Length;
-                            lengthFinal = 0;
-                        }
-                    }
-                    else if  (fin.Equals(">"))
-                    {
-                        // No se ha encontrado el cierre del elemento, eliminar hasta el final (Ej: <img src="...)
-                        finalPosition = stringHtml.Length;
-                        lengthFinal = 0;
-                    }
-                    else if (inicio.EndsWith(">"))
-                    {
-                        // Eliminar la etiqueta entera (ej: <strong>)
-                        finalPosition = initialPosition;
-                        lengthFinal = inicio.Length;
-
-                    }
+                    stringHtml = stringHtml.Remove(inicioIndex, finIndex - inicioIndex + fin.Length);
                 }
-                // Fragmento que deberá eliminarse
-                string descriptionToRemove = stringHtml.Substring(initialPosition, finalPosition - initialPosition + lengthFinal);
-                return stringHtml.Replace(descriptionToRemove, "");
+                else
+                {
+                    break;
+                }
+                inicioIndex = stringHtml.IndexOf(inicio, inicioIndex);
             }
             return stringHtml;
         }
+
 
         // Método para de parrafo (<p>) un texto para que no se muestre en pantalla para que no genere espacio adicional        
         public static string CleanHtmlParagraphsStringHtml(this IHtmlHelper helper, string stringHtml)
         {
-            // Contendrá el stringHtml pero sin las imagenes, vídeos incrustadas                        
-            while (stringHtml.Contains("<p>") || stringHtml.Contains("</p>") || stringHtml.Contains("<p "))
+            if (!string.IsNullOrEmpty(stringHtml))
             {
-                int initialPosition = 0;
-                int finalPosition = 0;
-
-                string descriptionToRemove = "";
-
-                // Controlar si dispone de párrafos
-                if (stringHtml.Contains("<p>"))
+                // Contendrá el stringHtml pero sin las imagenes, vídeos incrustadas                        
+                while (stringHtml.Contains("<p>") || stringHtml.Contains("</p>") || stringHtml.Contains("<p "))
                 {
-                    initialPosition = stringHtml.IndexOf("<p>");
-                    finalPosition = stringHtml.IndexOf(">", initialPosition);
-                    // Fragmento que deberá eliminarse
-                    descriptionToRemove = stringHtml.Substring(initialPosition, finalPosition - initialPosition + 1);
-                }
-                else if (stringHtml.Contains("</p>"))
-                {
-                    initialPosition = stringHtml.IndexOf("</p>");
-                    finalPosition = stringHtml.IndexOf(">", initialPosition);
-                    // Fragmento que deberá eliminarse
-                    descriptionToRemove = stringHtml.Substring(initialPosition, finalPosition - initialPosition + 1);
-                }
-                else if (stringHtml.Contains("<p ")) {
-                    initialPosition = stringHtml.IndexOf("<p ");
-                    finalPosition = stringHtml.IndexOf(">", initialPosition);
-                    // Fragmento que deberá eliminarse
-                    descriptionToRemove = stringHtml.Substring(initialPosition, finalPosition - initialPosition + 1);
-                }
+                    int initialPosition = 0;
+                    int finalPosition = 0;
 
-                stringHtml = stringHtml.Replace(descriptionToRemove, "");
+                    string descriptionToRemove = "";
+
+                    // Controlar si dispone de párrafos
+                    if (stringHtml.Contains("<p>"))
+                    {
+                        initialPosition = stringHtml.IndexOf("<p>");
+                        finalPosition = stringHtml.IndexOf(">", initialPosition);
+                        // Fragmento que deberá eliminarse
+                        descriptionToRemove = stringHtml.Substring(initialPosition, finalPosition - initialPosition + 1);
+                    }
+                    else if (stringHtml.Contains("</p>"))
+                    {
+                        initialPosition = stringHtml.IndexOf("</p>");
+                        finalPosition = stringHtml.IndexOf(">", initialPosition);
+                        // Fragmento que deberá eliminarse
+                        descriptionToRemove = stringHtml.Substring(initialPosition, finalPosition - initialPosition + 1);
+                    }
+                    else if (stringHtml.Contains("<p "))
+                    {
+                        initialPosition = stringHtml.IndexOf("<p ");
+                        finalPosition = stringHtml.IndexOf(">", initialPosition);
+                        // Fragmento que deberá eliminarse
+                        descriptionToRemove = stringHtml.Substring(initialPosition, finalPosition - initialPosition + 1);
+                    }
+
+                    stringHtml = stringHtml.Replace(descriptionToRemove, "");
+                }
             }
             return (stringHtml);
         }
@@ -721,10 +747,10 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Helper
             return (string)helper.ViewBag.SessionTimeout;
         }
 
-        public static Dictionary<string, string> GetParametrosAplicacion(this IHtmlHelper helper)
-        {
-            return helper.ViewBag.ParametrosAplicacion;
-        }
+        //public static Dictionary<string, string> GetParametrosAplicacion(this IHtmlHelper helper)
+        //{
+        //    return helper.ViewBag.ParametrosAplicacion;
+        //}
 
         public static Dictionary<Guid, ProfileModel> GetIdentitiesByUserID(this IHtmlHelper helper, List<Guid> pListUsers, bool pExtraData = false)
         {
@@ -844,7 +870,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Helper
                 {
                     resultado = HtmlHelperPartialExtensions.Partial(htmlHelper, partialViewName + personalizacion);
                 }
-                catch(Exception ex)
+                catch (Exception ex)
                 {
                     LoggingService loggingService = new LoggingService(null, null, null);
 
@@ -869,13 +895,13 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Helper
             try
             {
                 if (TienePersonalizacion(htmlHelper))
-                {         
+                {
                     string personalizacion = MultiViewResult.ComprobarPersonalizacion(htmlHelper.ViewBag, Comunidad, partialViewName);
                     try
                     {
                         resultado = HtmlHelperPartialExtensions.Partial(htmlHelper, partialViewName + personalizacion, model);
                     }
-                    catch(Exception ex)
+                    catch (Exception ex)
                     {
                         loggingService.GuardarLogError(ex);
                     }
@@ -890,7 +916,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Helper
             {
                 loggingService.GuardarLogError(ex);
             }
-            
+
             return resultado;
         }
         public static IHtmlContent PartialView(this IHtmlHelper htmlHelper, string partialViewName, object model, ViewDataDictionary diccionario)
@@ -908,7 +934,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Helper
                     {
                         resultado = HtmlHelperPartialExtensions.Partial(htmlHelper, partialViewName + personalizacion, model, diccionario);
                     }
-                    catch(Exception ex)
+                    catch (Exception ex)
                     {
                         loggingService.GuardarLogError(ex);
                     }
@@ -991,7 +1017,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Helper
             }
             GnossUrlsSemanticas gnossUrlsSemanticas = GetGeneradorURLs(helper);
 
-			return gnossUrlsSemanticas.GetURLBaseRecursosFichaConIDs(helper.ViewBag.BaseUrlIdioma, helper.ViewBag.UtilIdiomas, Comunidad.ShortName, urlPerfil, Es.Riam.Util.UtilCadenas.EliminarCaracteresUrlSem(pNombreDocumento), idDocumento, null, false);
+            return gnossUrlsSemanticas.GetURLBaseRecursosFichaConIDs(helper.ViewBag.BaseUrlIdioma, helper.ViewBag.UtilIdiomas, Comunidad.ShortName, urlPerfil, Es.Riam.Util.UtilCadenas.EliminarCaracteresUrlSem(pNombreDocumento), idDocumento, null, false);
         }
 
         public static string ObtenerNombreCompletoDeFichaIdentidad(this IHtmlHelper helper, ProfileModel pIdentidad)
@@ -1045,7 +1071,8 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Helper
         public static string ObtenerUrlPerfil(this IHtmlHelper helper, ProfileModel pPerfil)
         {
             string urlPerfil = "";
-            if (pPerfil != null) {
+            if (pPerfil != null)
+            {
                 if (!string.IsNullOrEmpty(pPerfil.UrlPerson))
                 {
                     urlPerfil += pPerfil.UrlPerson;
@@ -1443,7 +1470,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Helper
             return string.Empty;
 
             //string styleVersion = string.Empty;
-            
+
             //if (httpContextAccessor.HttpContext.Session.Keys.Contains("VersionEstilos"))
             //{
             //    styleVersion = string.Format("/versiones/{0}", httpContextAccessor.HttpContext.Session.Get("VersionEstilos"));
@@ -1586,6 +1613,11 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Helper
         public static string GetUrlActionLogin(this IHtmlHelper helper)
         {
             return (string)helper.ViewBag.UrlActionLogin;
+        }
+        
+        public static string GetUrlActionTwoFactorAuthentication(this IHtmlHelper helper)
+        {
+            return (string)helper.ViewBag.UrlActionTwoFactorAuthentication;
         }
 
         public static int GetEdadMinimaRegistro(this IHtmlHelper helper)
@@ -1735,7 +1767,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Helper
 
         public static void AddBodyClass(this IHtmlHelper helper, string pBodyClass)
         {
-            helper.ViewBag.BodyClass = $"{ helper.ViewBag.BodyClass } { pBodyClass }";
+            helper.ViewBag.BodyClass = $"{helper.ViewBag.BodyClass} {pBodyClass}";
         }
 
         public static void SetBodyClass(this IHtmlHelper helper, string pBodyClass)

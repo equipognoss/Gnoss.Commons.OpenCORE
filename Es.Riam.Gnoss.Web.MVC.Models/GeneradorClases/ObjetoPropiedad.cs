@@ -13,6 +13,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Models.GeneradorClases
             image,
             link,
             textEditor,
+            ArchivoLink,
             other
         }
         public string NombrePropiedad { get; set; }

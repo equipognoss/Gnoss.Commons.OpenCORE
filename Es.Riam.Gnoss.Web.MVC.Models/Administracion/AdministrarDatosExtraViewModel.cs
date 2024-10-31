@@ -17,6 +17,10 @@ namespace Es.Riam.Gnoss.Web.MVC.Models.Administracion
 		public List<DatoExtraModel>	ListaDatosExtraProyecto { get; set; }
 
 		public List<DatoExtraVirtuosoModel> ListaDatosExtraVirtuoso { get; set; }
+
+		public Dictionary<string, string> ListaIdiomas { get; set; }
+
+		public string IdiomaDefecto { get; set; }
 	}
 
 	[Serializable]
@@ -41,7 +45,11 @@ namespace Es.Riam.Gnoss.Web.MVC.Models.Administracion
 		public Guid OrganizacionID { get; set; }
 
 		public bool Deleted { get; set; }
-	}
+
+        public bool VisibleEnPerfil { get; set; }
+
+		public string NombreCorto { get; set; }
+    }
 
 	[Serializable]
 	public class DatoExtraOpcionModel
@@ -77,7 +85,11 @@ namespace Es.Riam.Gnoss.Web.MVC.Models.Administracion
 		public string QueryVirtuoso { get; set; }
 
 		public string PredicadoRDF { get; set; }
-	}
+
+		public bool VisibleEnPerfil { get; set; }
+
+        public string NombreCorto { get; set; }
+    }
 
 	[Serializable]
 	public class DatoExtraEditModel
@@ -95,7 +107,11 @@ namespace Es.Riam.Gnoss.Web.MVC.Models.Administracion
 		public List<DatoExtraOpcionModel> Opciones { get; set; }
 
 		public int Orden { get; set; }
-	}
+
+        public bool VisibleEnPerfil { get; set; }
+
+        public string NombreCorto { get; set; }
+    }
 
 	public enum TipoDatoExtra
 	{

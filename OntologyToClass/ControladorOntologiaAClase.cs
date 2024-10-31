@@ -135,8 +135,8 @@ namespace OntologiaAClase
 
         public void CrearEntidades(ElementoOntologia pEntidad, string pNombreOnto, string pRdfType)
         {
-            EntidadAClase entidadAClase = new EntidadAClase(ontologia, pNombreOnto, contentXML, esPrincipal, listaIdiomas, nombreCortoProy, proyID, nombresOntologia, listaObjetosPropiedad, mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mMassiveOntologyToClass, pRdfType);
-            File.WriteAllText(Path.Combine(directorio, carpetaPadre, nombreCarpeta, $"{pNombreOnto}", UtilCadenasOntology.ObtenerNombreProp(pEntidad.TipoEntidad) + ".cs"), entidadAClase.GenerarClase(pEntidad, listaPropiedadesSearch, listaPropiedadesPadreAnidadasSearch));
+            EntidadAClase entidadAClase = new EntidadAClase(ontologia, pNombreOnto, contentXML, esPrincipal, listaIdiomas, nombreCortoProy, proyID, nombresOntologia, listaObjetosPropiedad, mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mMassiveOntologyToClass, pRdfType, this.listaPrefijosOntologias);
+            File.WriteAllText(Path.Combine(directorio, carpetaPadre, nombreCarpeta, $"{pNombreOnto}", $"{UtilCadenasOntology.ObtenerNombreClase(pEntidad.TipoEntidad, listaPrefijosOntologias, mConfigService.ObtenerClasesGeneradasConPrefijo())}.cs"), entidadAClase.GenerarClase(pEntidad, listaPropiedadesSearch, listaPropiedadesPadreAnidadasSearch));
         }
 
         /// <summary>
@@ -204,7 +204,8 @@ namespace OntologiaAClase
             Clase.AppendLine($"{UtilCadenasOntology.Tabs(2)}internal Guid articleID;");
             Clase.AppendLine($"{UtilCadenasOntology.Tabs(2)}private static List<string> NoEnIdiomas = new List<string> {{ \"Não\",\"Non\", \"Ez\", \"Nein\", \"No\" }};");
             Clase.AppendLine($"{UtilCadenasOntology.Tabs(2)}public List<string> tagList = new List<string>();");
-
+            ObtenerFormatosFechas();
+            Clase.AppendLine();
             Clase.AppendLine($"{UtilCadenasOntology.Tabs(2)}public GnossOCBase()");
             Clase.AppendLine($"{UtilCadenasOntology.Tabs(2)}{{");
             foreach (string nmspace in listaPrefijosOntologias.Keys)
@@ -253,10 +254,11 @@ namespace OntologiaAClase
             Clase.AppendLine($"{UtilCadenasOntology.Tabs(4)}this.resourceID = value;");
             Clase.AppendLine($"{UtilCadenasOntology.Tabs(4)}string primeraParte = this.mGNOSSID.Substring(0, this.mGNOSSID.LastIndexOf('/') + 1);");
             Clase.AppendLine($"{UtilCadenasOntology.Tabs(4)}string antiguoGuid = this.mGNOSSID.Substring(this.mGNOSSID.LastIndexOf('/') + 1, this.mGNOSSID.LastIndexOf('_'));");
+            Clase.AppendLine($"{UtilCadenasOntology.Tabs(4)}string oc = antiguoGuid.Substring(0, antiguoGuid.IndexOf('_'));");
             Clase.AppendLine($"{UtilCadenasOntology.Tabs(4)}string ultimaParte = this.mGNOSSID.Substring(this.mGNOSSID.LastIndexOf('_') + 1);");
             Clase.AppendLine($"{UtilCadenasOntology.Tabs(4)}if(!antiguoGuid.Equals(this.resourceID.ToString()))");
             Clase.AppendLine($"{UtilCadenasOntology.Tabs(4)}{{");
-            Clase.AppendLine($"{UtilCadenasOntology.Tabs(5)}this.mGNOSSID = $\"{{primeraParte}}{{this.resourceID.ToString()}}{{ultimaParte}}\";");
+            Clase.AppendLine($"{UtilCadenasOntology.Tabs(5)}this.mGNOSSID = $\"{{primeraParte}}{{oc}}_{{this.resourceID.ToString()}}_{{ultimaParte}}\";");
             Clase.AppendLine($"{UtilCadenasOntology.Tabs(4)}}}");
             Clase.AppendLine($"{UtilCadenasOntology.Tabs(3)}}}");
             Clase.AppendLine($"{UtilCadenasOntology.Tabs(2)}}}");
@@ -481,7 +483,7 @@ $@"
             Clase.AppendLine($"{UtilCadenasOntology.Tabs(3)}{{");
             Clase.AppendLine($"{UtilCadenasOntology.Tabs(4)}return int.Parse(pProperty.PropertyValues[0].Value);");
             Clase.AppendLine($"{UtilCadenasOntology.Tabs(3)}}}");
-            Clase.AppendLine($"{UtilCadenasOntology.Tabs(3)}return 0;");
+            Clase.AppendLine($"{UtilCadenasOntology.Tabs(3)}return null;");
             Clase.AppendLine($"{UtilCadenasOntology.Tabs(2)}}}");
         }
         public void ObtenerNumberIntMultiplePropertyValueSemCMS()
@@ -492,7 +494,7 @@ $@"
             Clase.AppendLine($"{UtilCadenasOntology.Tabs(3)}{{");
             Clase.AppendLine($"{UtilCadenasOntology.Tabs(4)}return int.Parse(pProperty.Value);");
             Clase.AppendLine($"{UtilCadenasOntology.Tabs(3)}}}");
-            Clase.AppendLine($"{UtilCadenasOntology.Tabs(3)}return 0;");
+            Clase.AppendLine($"{UtilCadenasOntology.Tabs(3)}return null;");
             Clase.AppendLine($"{UtilCadenasOntology.Tabs(2)}}}");
         }
         public void ObtenerNumberFloatPropertyValueSemCMS()
@@ -503,7 +505,7 @@ $@"
             Clase.AppendLine($"{UtilCadenasOntology.Tabs(3)}{{");
             Clase.AppendLine($"{UtilCadenasOntology.Tabs(4)}return float.Parse(pProperty.PropertyValues[0].Value, new CultureInfo(\"en-US\"));");
             Clase.AppendLine($"{UtilCadenasOntology.Tabs(3)}}}");
-            Clase.AppendLine($"{UtilCadenasOntology.Tabs(3)}return 0;");
+            Clase.AppendLine($"{UtilCadenasOntology.Tabs(3)}return null;");
             Clase.AppendLine($"{UtilCadenasOntology.Tabs(2)}}}");
         }
 
@@ -539,45 +541,62 @@ $@"
         {
             Clase.AppendLine($"{UtilCadenasOntology.Tabs(2)}public static DateTime? GetDateValuePropertySemCms(SemanticPropertyModel pProperty)");
             Clase.AppendLine($"{UtilCadenasOntology.Tabs(2)}{{");
-            Clase.AppendLine($"{UtilCadenasOntology.Tabs(2)}string stringDate = GetPropertyValueSemCms(pProperty);");
-            Clase.AppendLine($"{UtilCadenasOntology.Tabs(2)}if (!string.IsNullOrEmpty(stringDate))");
-            Clase.AppendLine($"{UtilCadenasOntology.Tabs(2)}{{");
-            Clase.AppendLine($"{UtilCadenasOntology.Tabs(2)}int year = 0;");
-            Clase.AppendLine($"{UtilCadenasOntology.Tabs(2)}int month = 0;");
-            Clase.AppendLine($"{UtilCadenasOntology.Tabs(2)}int day = 0;");
-            Clase.AppendLine($"{UtilCadenasOntology.Tabs(2)}if (stringDate.Contains('/'))");
-            Clase.AppendLine($"{UtilCadenasOntology.Tabs(2)}{{");
-            Clase.AppendLine($"{UtilCadenasOntology.Tabs(2)}day = int.Parse(stringDate.Split('/')[0]);");
-            Clase.AppendLine($"{UtilCadenasOntology.Tabs(2)}month = int.Parse(stringDate.Split('/')[1]);");
-            Clase.AppendLine($"{UtilCadenasOntology.Tabs(2)}year = int.Parse(stringDate.Split('/')[2].Split(' ')[0]);");
+            Clase.AppendLine($"{UtilCadenasOntology.Tabs(3)}string stringDate = GetPropertyValueSemCms(pProperty);");
+            Clase.AppendLine($"{UtilCadenasOntology.Tabs(3)}if (DateTime.TryParseExact(stringDate, formatosFecha, CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime date))");
+            Clase.AppendLine($"{UtilCadenasOntology.Tabs(3)}{{");
+            Clase.AppendLine($"{UtilCadenasOntology.Tabs(4)}return date;");
+            Clase.AppendLine($"{UtilCadenasOntology.Tabs(3)}}}");
+            Clase.AppendLine();
+            Clase.AppendLine($"{UtilCadenasOntology.Tabs(3)}return null;");
             Clase.AppendLine($"{UtilCadenasOntology.Tabs(2)}}}");
-            Clase.AppendLine($"{UtilCadenasOntology.Tabs(2)}else");
-            Clase.AppendLine($"{UtilCadenasOntology.Tabs(2)}{{");
-            Clase.AppendLine($"{UtilCadenasOntology.Tabs(2)}year = int.Parse(stringDate.Substring(0, 4));");
-            Clase.AppendLine($"{UtilCadenasOntology.Tabs(2)}month = int.Parse(stringDate.Substring(4, 2));");
-            Clase.AppendLine($"{UtilCadenasOntology.Tabs(2)}day = int.Parse(stringDate.Substring(6, 2));");
-            Clase.AppendLine($"{UtilCadenasOntology.Tabs(2)}}}");
-            Clase.AppendLine($"{UtilCadenasOntology.Tabs(2)}if (stringDate.Length == 14)");
-            Clase.AppendLine($"{UtilCadenasOntology.Tabs(2)}{{");
-            Clase.AppendLine($"{UtilCadenasOntology.Tabs(2)}if (month == 0 || day == 0)");
-            Clase.AppendLine($"{UtilCadenasOntology.Tabs(2)}{{");
-            Clase.AppendLine($"{UtilCadenasOntology.Tabs(2)}return new DateTime(year);");
-            Clase.AppendLine($"{UtilCadenasOntology.Tabs(2)}}}");
-            Clase.AppendLine($"{UtilCadenasOntology.Tabs(2)}else");
-            Clase.AppendLine($"{UtilCadenasOntology.Tabs(2)}{{");
-            Clase.AppendLine($"{UtilCadenasOntology.Tabs(2)}int hour = int.Parse(stringDate.Substring(8, 2));");
-            Clase.AppendLine($"{UtilCadenasOntology.Tabs(2)}int minute = int.Parse(stringDate.Substring(10, 2));");
-            Clase.AppendLine($"{UtilCadenasOntology.Tabs(2)}int second = int.Parse(stringDate.Substring(12, 2));");
-            Clase.AppendLine($"{UtilCadenasOntology.Tabs(2)}return new DateTime(year, month, day, hour, minute, second);");
-            Clase.AppendLine($"{UtilCadenasOntology.Tabs(2)}}}");
-            Clase.AppendLine($"{UtilCadenasOntology.Tabs(2)}}}");
-            Clase.AppendLine($"{UtilCadenasOntology.Tabs(2)}else");
-            Clase.AppendLine($"{UtilCadenasOntology.Tabs(2)}{{");
-            Clase.AppendLine($"{UtilCadenasOntology.Tabs(2)}return new DateTime(year, month, day);");
-            Clase.AppendLine($"{UtilCadenasOntology.Tabs(2)}}}");
-            Clase.AppendLine($"{UtilCadenasOntology.Tabs(2)}}}");
-            Clase.AppendLine($"{UtilCadenasOntology.Tabs(2)}return null;");
-            Clase.AppendLine($"{UtilCadenasOntology.Tabs(2)}}}");
+        }
+
+        public void ObtenerFormatosFechas()
+        {
+            Clase.AppendLine($"{UtilCadenasOntology.Tabs(2)}// Formatos de fecha permitidos en el estandar ISO 8601");
+            Clase.AppendLine($"{UtilCadenasOntology.Tabs(2)}public static string[] formatosFecha = {{");
+            Clase.AppendLine($"{UtilCadenasOntology.Tabs(3)}// Formato de GNOSS");
+            Clase.AppendLine($"{UtilCadenasOntology.Tabs(3)}\"yyyyMMddHHmmss\",");
+            Clase.AppendLine($"{UtilCadenasOntology.Tabs(3)}\"yyyyMMddHHmm\",");
+            Clase.AppendLine($"{UtilCadenasOntology.Tabs(3)}\"yyyyMMddHH\",");
+            Clase.AppendLine($"{UtilCadenasOntology.Tabs(3)}// Formato basico");
+            Clase.AppendLine($"{UtilCadenasOntology.Tabs(3)}\"yyyyMMddTHHmmsszzz\",");
+            Clase.AppendLine($"{UtilCadenasOntology.Tabs(3)}\"yyyyMMddTHHmmsszz\",");
+            Clase.AppendLine($"{UtilCadenasOntology.Tabs(3)}\"yyyyMMddTHHmmssZ\",");
+            Clase.AppendLine($"{UtilCadenasOntology.Tabs(3)}// Formato extendido");
+            Clase.AppendLine($"{UtilCadenasOntology.Tabs(3)}\"yyyy-MM-ddTHH:mm:sszzz\",");
+            Clase.AppendLine($"{UtilCadenasOntology.Tabs(3)}\"yyyy-MM-ddTHH:mm:sszz\",");
+            Clase.AppendLine($"{UtilCadenasOntology.Tabs(3)}\"yyyy-MM-ddTHH:mm:ssZ\",");
+            Clase.AppendLine($"{UtilCadenasOntology.Tabs(3)}\"yyyyMMddTHHmmzzz\",");
+            Clase.AppendLine($"{UtilCadenasOntology.Tabs(3)}\"yyyyMMddTHHmmzz\",");
+            Clase.AppendLine($"{UtilCadenasOntology.Tabs(3)}\"yyyyMMddTHHmmZ\",");
+            Clase.AppendLine($"{UtilCadenasOntology.Tabs(3)}\"yyyy-MM-ddTHH:mmzzz\",");
+            Clase.AppendLine($"{UtilCadenasOntology.Tabs(3)}\"yyyy-MM-ddTHH:mmzz\",");
+            Clase.AppendLine($"{UtilCadenasOntology.Tabs(3)}\"yyyy-MM-ddTHH:mmZ\",");
+            Clase.AppendLine($"{UtilCadenasOntology.Tabs(3)}// Precision reducida a horas");
+            Clase.AppendLine($"{UtilCadenasOntology.Tabs(3)}\"yyyyMMddTHHzzz\",");
+            Clase.AppendLine($"{UtilCadenasOntology.Tabs(3)}\"yyyyMMddTHHzz\",");
+            Clase.AppendLine($"{UtilCadenasOntology.Tabs(3)}\"yyyyMMddTHHZ\",");
+            Clase.AppendLine($"{UtilCadenasOntology.Tabs(3)}\"yyyy-MM-ddTHHzzz\",");
+            Clase.AppendLine($"{UtilCadenasOntology.Tabs(3)}\"yyyy-MM-ddTHHzz\",");
+            Clase.AppendLine($"{UtilCadenasOntology.Tabs(3)}\"yyyy-MM-ddTHHZ\",");
+            Clase.AppendLine($"{UtilCadenasOntology.Tabs(3)}// Precision reducida a dias");
+            Clase.AppendLine($"{UtilCadenasOntology.Tabs(3)}\"yyyyMMdd\",");
+            Clase.AppendLine($"{UtilCadenasOntology.Tabs(3)}\"yyyy-MM-dd\",");
+            Clase.AppendLine($"{UtilCadenasOntology.Tabs(3)}\"yyyy/MM/dd\",");
+            Clase.AppendLine($"{UtilCadenasOntology.Tabs(3)}// Otros formatos");
+            Clase.AppendLine($"{UtilCadenasOntology.Tabs(3)}\"yyyy/MM/dd HH:mm:ss\",");
+            Clase.AppendLine($"{UtilCadenasOntology.Tabs(3)}\"yyyy/MM/dd HH:mm\",");
+            Clase.AppendLine($"{UtilCadenasOntology.Tabs(3)}\"yyyy/MM/dd HH\",");
+            Clase.AppendLine($"{UtilCadenasOntology.Tabs(3)}\"yyyy-MM-dd HH:mm:ss\",");
+            Clase.AppendLine($"{UtilCadenasOntology.Tabs(3)}\"yyyy-MM-dd HH:mm\",");
+            Clase.AppendLine($"{UtilCadenasOntology.Tabs(3)}\"yyyy-MM-dd HH\",");
+            Clase.AppendLine($"{UtilCadenasOntology.Tabs(3)}\"dd/MM/yyyy HH:mm:ss\",");
+            Clase.AppendLine($"{UtilCadenasOntology.Tabs(3)}\"dd/MM/yyyy HH:mm\",");
+            Clase.AppendLine($"{UtilCadenasOntology.Tabs(3)}\"dd/MM/yyyy HH\",");
+            Clase.AppendLine($"{UtilCadenasOntology.Tabs(3)}\"dd/MM/yyyy\"");
+
+            Clase.AppendLine($"{UtilCadenasOntology.Tabs(2)}}};");
         }
 
         /// <summary>
@@ -597,6 +616,7 @@ $@"
             Clase.AppendLine("using System.Diagnostics.CodeAnalysis;");
             Clase.AppendLine("using System.Reflection;");
             Clase.AppendLine("using System.Collections;");
+            Clase.AppendLine("using System.Globalization;");
             Clase.AppendLine();
         }
 
@@ -607,7 +627,11 @@ $@"
         {
             Clase.AppendLine($"{UtilCadenasOntology.Tabs(2)}protected string GenerarTextoSinSaltoDeLinea(string pTexto)");
             Clase.AppendLine($"{UtilCadenasOntology.Tabs(2)}{{");
-            Clase.AppendLine($"{UtilCadenasOntology.Tabs(3)}return pTexto.Replace(\"\\r\\n\", \" \").Replace(\"\\n\", \" \").Replace(\"\\r\", \" \").Replace(\"\\\\\", \"\\\\\\\\\").Replace(\"\\\"\", \"\\\\\\\"\");");
+            Clase.AppendLine($"{UtilCadenasOntology.Tabs(3)}if(!string.IsNullOrEmpty(pTexto))");
+            Clase.AppendLine($"{UtilCadenasOntology.Tabs(3)}{{");
+            Clase.AppendLine($"{UtilCadenasOntology.Tabs(4)}return pTexto.Replace(\"\\r\\n\", \" \").Replace(\"\\n\", \" \").Replace(\"\\r\", \" \").Replace(\"\\\\\", \"\\\\\\\\\").Replace(\"\\\"\", \"\\\\\\\"\");");
+            Clase.AppendLine($"{UtilCadenasOntology.Tabs(3)}}}");
+            Clase.AppendLine($"{UtilCadenasOntology.Tabs(3)}return pTexto;");
             Clase.AppendLine($"{UtilCadenasOntology.Tabs(2)}}}");
         }
 

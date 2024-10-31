@@ -184,6 +184,11 @@ namespace Es.Riam.Gnoss.AD.Notificacion
         /// </summary>
         PeticionCambioPassword = 80,//12,
 
+        /// <summary>
+        /// Notifica una petición de autenticación de doble factor
+        /// </summary>
+        PeticionAutenticacionDobleFactor = 81,
+
         #endregion
 
         #region Sugerencia 100..119

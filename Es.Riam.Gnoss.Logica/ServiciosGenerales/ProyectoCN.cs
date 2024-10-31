@@ -301,29 +301,29 @@ namespace Es.Riam.Gnoss.Logica.ServiciosGenerales
             return ProyectoAD.ObtenerParametroAplicacion(parametro);
         }
         /// <summary>
-        /// Guarda un nuevo parametro aplicacion
+        /// Actualiza la tabla ParametroAplicacion con el parametro y valor dado. Si el paramerto no existe en la base de datos lo añade.
         /// </summary>
-        /// <param name="parametro">Nombre parametro de aplicacion</param>
-        /// <param name="valor">Valor del paramentro</param>   
-        public void GuardarParamentroAplicacion(string parametro, string valor)
+        /// <param name="pParametro">Nombre del parametro a guardar. Clave</param>
+        /// <param name="pValor">Valor del paramentro</param>   
+        public void ActualizarParametroAplicacion(string pParametro, string pValor)
         {
-            ProyectoAD.GuardarParametroAplicacion(parametro, valor);
+            ProyectoAD.ActualizarParametroAplicacion(pParametro, pValor);
         }
         /// <summary>
         /// Guarda en la tabla EcosistemaServicioExterno una nueva fila
         /// </summary>
         /// <param name="eco">Objeto de tipo EcosistemaServicioExterno</param> 
-        public void ActualizarServiceNameEcosistema(EcosistemaServicioExterno eco)
+        public void AgregarServicioExternoEcosistema(EcosistemaServicioExterno eco)
         {
-            ProyectoAD.ActualizarServiceNameEcosistema(eco);
+            ProyectoAD.AgregarServicioExternoEcosistema(eco);
         }
         /// <summary>
         ///  Guarda en la tabla ProyectoServicioExterno una nueva fila
         /// </summary>
         /// <param name="proy">Objeto de tipo ProyectoServicioExterno</param> 
-        public void ActualizarServiceNameProyecto(ProyectoServicioExterno proy)
+        public void AgregarProyectoServicioExterno(ProyectoServicioExterno proy)
         {
-            ProyectoAD.ActualizarServiceNameProyecto(proy);
+            ProyectoAD.AgregarProyectoServicioExterno(proy);
         }
         /// <summary>
         ///  Elimina de la tabla EcosistemaServicioExterno una fila
@@ -446,9 +446,9 @@ namespace Es.Riam.Gnoss.Logica.ServiciosGenerales
         /// <param name="nombre">Nombre de la carga</param>
         /// <param name="organizacionId">Id de la organizacion de la carga</param>
         /// <returns>Devuelve cierto si se ha creado la carga</returns>
-        public bool CrearNuevaCargaMasiva(Guid idCarga, int estado, DateTime fechaAlta, Guid proyectoId, Guid identidadId, string nombre = null, Guid? organizacionId = null)
+        public bool CrearNuevaCargaMasiva(Guid idCarga, int estado, DateTime fechaAlta, Guid proyectoId, Guid identidadId, string ontologia, string nombre = null, Guid? organizacionId = null)
         {
-            return ProyectoAD.CrearNuevaCargaMasiva(idCarga, estado, fechaAlta, proyectoId, identidadId, nombre, organizacionId);
+            return ProyectoAD.CrearNuevaCargaMasiva(idCarga, estado, fechaAlta, proyectoId, identidadId, ontologia, nombre, organizacionId);
         }
 
         public List<string> ObtenerPropiedadesSearch(Guid pProyectoID)
@@ -489,9 +489,9 @@ namespace Es.Riam.Gnoss.Logica.ServiciosGenerales
         /// <param name="comprimido">Los archivos estan comprimidos</param>
         /// <param name="fechaProcesado">Fecha en la que se ha procesado el paquete</param>
         /// <returns>Devuelve cierto si se ha creado el paquete</returns>
-        public bool CrearNuevoPaqueteCargaMasiva(Guid paqueteID, Guid cargaId, string rutaOnto, string rutaSearch, string rutaSql, int estado, string error, DateTime? fechaAlta, string ontologia, bool comprimido = false, DateTime? fechaProcesado = null)
+        public bool CrearNuevoPaqueteCargaMasiva(Guid paqueteID, Guid cargaId, string rutaOnto, string rutaSearch, string rutaSql, int estado, string error, DateTime? fechaAlta, bool comprimido = false, DateTime? fechaProcesado = null)
         {
-            return ProyectoAD.CrearNuevoPaqueteCargaMasiva(paqueteID, cargaId, rutaOnto, rutaSearch, rutaSql, estado, error, fechaAlta, ontologia, comprimido, fechaProcesado);
+            return ProyectoAD.CrearNuevoPaqueteCargaMasiva(paqueteID, cargaId, rutaOnto, rutaSearch, rutaSql, estado, error, fechaAlta, comprimido, fechaProcesado);
         }
         public void CrearFilasIntegracionContinuaParametro(List<IntegracionContinuaPropiedad> pListaPropiedades, Guid pProyectoID, TipoObjeto pTipoObjeto, string pID = null)
         {
@@ -557,6 +557,18 @@ namespace Es.Riam.Gnoss.Logica.ServiciosGenerales
         {
             return ProyectoAD.ObtenerDatosPaquete(pPaqueteID);
         }
+
+        /// <summary>
+        /// Obtiene la ontología a la que pertenece una carga masiva a partir
+        /// del id de la carga
+        /// </summary>
+        /// <param name="pCargaId">Identificador de la carga de la cual queremos obtener la ontología</param>
+        /// <returns>La ontología a la que pertenece la carga</returns>
+        public string ObtenerOntologiaCarga(Guid pCargaId)
+        {
+            return ProyectoAD.ObtenerOntologiaCarga(pCargaId);
+        }
+
         /// <summary>
         /// Obtienen los proyectos a los que acceden las identidades que tienen acceso a un proyecto pasado como parámetro
         /// </summary>
@@ -664,6 +676,7 @@ namespace Es.Riam.Gnoss.Logica.ServiciosGenerales
         {
             return ProyectoAD.ExisteNombreCortoProyectoGadget(pNombreCortoGadget, pProyectoID);
         }
+
 
         /// <summary>
         /// Obtiene los gadgets de un proyecto origen que se le pasa como parámetro
@@ -845,6 +858,10 @@ namespace Es.Riam.Gnoss.Logica.ServiciosGenerales
             return ProyectoAD.ObtenerNombreCortoProyecto(pProyectoID);
         }
 
+        public bool ExisteProyectoConID(Guid pProyectoID)
+        {
+            return ProyectoAD.ExisteProyectoConID(pProyectoID);
+        }
         /// <summary>
         /// Obtiene los nombres cortos de los proyectos
         /// </summary>
@@ -1277,6 +1294,17 @@ namespace Es.Riam.Gnoss.Logica.ServiciosGenerales
             return ProyectoAD.ObtenerEventoProyectoParticipantesPorEventoID(pEventoID);
         }
 
+        /// <summary>
+        /// Obtiene el valor de un texto traducido a un idioma especifico
+        /// </summary>
+        /// <param name="pCommunityShortName">Nombre corto de la comuidad</param>
+        /// <param name="pLanguage">Idioma del texto</param>
+        /// <param name="pTextoID">Clave del texto</param>
+        /// <returns>Texto en el idioma especificado</returns>
+        public string ObtenerValorTraduccionDeTexto(string pCommunityShortName, string pLanguage, string pTextoID)
+        {
+            return ProyectoAD.ObtenerValorTraduccionDeTexto(pCommunityShortName, pLanguage, pTextoID);
+        }
 
         public void BorrarConfiguracionSemanticaExtraDeProyecto(Guid pClave, string pNombreOntologia)
         {
@@ -1447,6 +1475,16 @@ namespace Es.Riam.Gnoss.Logica.ServiciosGenerales
         public DataWrapperProyecto ObtenerProyectosParticipaUsuario(Guid pUsuarioID)
         {
             return ObtenerProyectosParticipaUsuario(pUsuarioID, false);
+        }
+
+        /// <summary>
+        /// Obtiene la lista de proyectos en las que participa una persona pasada por parámetro
+        /// </summary>
+        /// <param name="pPersonaID">Identificador de la persona</param>
+        /// <returns>lista de guids con todos los proyectos en los que participa la persona</returns>
+        public List<Guid> ObtenerIdProyectosParticipaPersona(Guid pPersonaID)
+        {
+            return ProyectoAD.ObtenerIdProyectosParticipaPersona(pPersonaID);
         }
 
         /// <summary>
@@ -2798,6 +2836,16 @@ namespace Es.Riam.Gnoss.Logica.ServiciosGenerales
         }
 
         /// <summary>
+        /// Obtiene los proyectos hijos del proyecto indicado. 
+        /// </summary>
+        /// <param name="pProyectoSuperiorID">Proyecto superior de los proyectos ids que quiero obtener</param>
+        /// <returns>Todos los proyectos cuyo proyecto superior sea el dado por parámetro</returns>
+        public List<Guid> ObtenerProyectosIdsDeProyectoSuperiorID(Guid pProyectoSuperiorID)
+        {
+            return ProyectoAD.ObtenerProyectosIdsDeProyectoSuperiorID(pProyectoSuperiorID);
+        }
+
+        /// <summary>
         /// Obtiene el ID del proyecto origen del actual, si lo tiene o GUID.Empty si no.
         /// </summary>
         /// <param name="pProyectoID">ID del proyecto</param>
@@ -2879,7 +2927,7 @@ namespace Es.Riam.Gnoss.Logica.ServiciosGenerales
 
         public string ObtenerIdiomaPrincipalDominio(string pDominio)
         {
-            return ProyectoAD.ObtenerIdiomaPrincipalDominio(pDominio);//select proyectoid, URLPropia from Proyecto where URLPropia like '%pruebasiphoneen.gnoss.net@%'
+            return ProyectoAD.ObtenerIdiomaPrincipalDominio(pDominio);
         }
 
         public int ObtenerNumeroDeProyectos()

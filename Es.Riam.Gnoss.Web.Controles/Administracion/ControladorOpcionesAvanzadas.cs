@@ -4,9 +4,11 @@ using Es.Riam.Gnoss.AD.EntityModel.Models;
 using Es.Riam.Gnoss.AD.EntityModel.Models.ParametroGeneralDS;
 using Es.Riam.Gnoss.AD.EntityModelBASE;
 using Es.Riam.Gnoss.AD.Parametro;
+using Es.Riam.Gnoss.AD.ParametroAplicacion;
 using Es.Riam.Gnoss.AD.ServiciosGenerales;
 using Es.Riam.Gnoss.AD.Virtuoso;
 using Es.Riam.Gnoss.CL;
+using Es.Riam.Gnoss.CL.ParametrosAplicacion;
 using Es.Riam.Gnoss.CL.ParametrosProyecto;
 using Es.Riam.Gnoss.CL.ServiciosGenerales;
 using Es.Riam.Gnoss.Elementos.ParametroGeneralDSEspacio;
@@ -14,6 +16,7 @@ using Es.Riam.Gnoss.Elementos.ParametroGeneralDSName;
 using Es.Riam.Gnoss.Elementos.ServiciosGenerales;
 using Es.Riam.Gnoss.Logica.Identidad;
 using Es.Riam.Gnoss.Logica.Parametro;
+using Es.Riam.Gnoss.Logica.ParametroAplicacion;
 using Es.Riam.Gnoss.Util.Configuracion;
 using Es.Riam.Gnoss.Util.General;
 using Es.Riam.Gnoss.Web.Controles.ParametroGeneralDSName;
@@ -22,6 +25,7 @@ using Es.Riam.Gnoss.Web.MVC.Models.Administracion;
 using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Es.Riam.Gnoss.Web.Controles.Administracion
 {
@@ -44,6 +48,9 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
         private GnossCache mGnossCache;
         private EntityContextBASE mEntityContextBASE;
         private IServicesUtilVirtuosoAndReplication mServicesUtilVirtuosoAndReplication;
+        private List<ParametroAplicacion> mParametroAplicacion;
+        private Dictionary<string, string> mListaParametrosAplicacion;
+        private static string[] LISTA_IDIOMAS = { "es", "en", "pt", "ca", "eu", "gl", "fr", "de", "it" };
 
         #region Constructor
 
@@ -164,6 +171,283 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
                 pOpcionesAvanzadasModel.ConfiguracionCorreo.SSL = filaConfiguracionEnvioCorreo.SSL.HasValue && filaConfiguracionEnvioCorreo.SSL.Value == true;
                 pOpcionesAvanzadasModel.ConfiguracionCorreo.SuggestEmail = filaConfiguracionEnvioCorreo.emailsugerencias;
                 pOpcionesAvanzadasModel.ConfiguracionCorreo.Password = filaConfiguracionEnvioCorreo.clave;
+            }
+        }
+
+        public AdministrarOpcionesAvanzadasPlataformaViewModel CargarOpcionesAvanzadasEcosistema()
+        {
+            AdministrarOpcionesAvanzadasPlataformaViewModel opciones = new AdministrarOpcionesAvanzadasPlataformaViewModel();
+
+            //Parámetros string
+            opciones.CodigoGoogleAnalyticsProyecto = ControladorProyecto.ObtenerParametroString(ListaParametrosAplicacion, TiposParametrosAplicacion.CodigoGoogleAnalyticsProyecto);
+            opciones.DominiosPermitidosCORS = ControladorProyecto.ObtenerParametroString(ListaParametrosAplicacion, TiposParametrosAplicacion.DominiosPermitidosCORS);
+            opciones.ConexionEntornoPreproduccion = ControladorProyecto.ObtenerParametroString(ListaParametrosAplicacion, TiposParametrosAplicacion.ConexionEntornoPreproduccion);
+            opciones.CorreoSolicitudes = ControladorProyecto.ObtenerParametroString(ListaParametrosAplicacion, TiposParametrosAplicacion.CorreoSolicitudes);
+            opciones.CorreoSugerencias = ControladorProyecto.ObtenerParametroString(ListaParametrosAplicacion, TiposParametrosAplicacion.CorreoSugerencias);
+            opciones.DominiosSinPalco = ControladorProyecto.ObtenerParametroString(ListaParametrosAplicacion, TiposParametrosAplicacion.DominiosSinPalco);
+            opciones.HashTagEntorno = ControladorProyecto.ObtenerParametroString(ListaParametrosAplicacion, TiposParametrosAplicacion.HashTagEntorno);
+
+            string idiomas = ControladorProyecto.ObtenerParametroString(ListaParametrosAplicacion, TiposParametrosAplicacion.Idiomas);
+            if (string.IsNullOrEmpty(idiomas))
+            {
+                idiomas = mConfigService.ObtenerListaIdiomas().ToString();
+            }
+            opciones.Idiomas = idiomas;
+
+            CargarModeloIdiomasPersonalizados(idiomas, opciones);
+
+            opciones.LoginFacebook = ControladorProyecto.ObtenerParametroString(ListaParametrosAplicacion, TiposParametrosAplicacion.LoginFacebook);
+            opciones.LoginGoogle = ControladorProyecto.ObtenerParametroString(ListaParametrosAplicacion, TiposParametrosAplicacion.LoginGoogle);
+            opciones.LoginTwitter = ControladorProyecto.ObtenerParametroString(ListaParametrosAplicacion, TiposParametrosAplicacion.LoginTwitter);
+            opciones.NombreEspacioPersonal = ControladorProyecto.ObtenerParametroString(ListaParametrosAplicacion, TiposParametrosAplicacion.NombreEspacioPersonal);
+            opciones.Copyright = ControladorProyecto.ObtenerParametroString(ListaParametrosAplicacion, TiposParametrosAplicacion.Copyright);
+            opciones.VisibilidadPerfil = ControladorProyecto.ObtenerParametroString(ListaParametrosAplicacion, TiposParametrosAplicacion.VisibilidadPerfil);
+            opciones.OntologiasNoLive = ControladorProyecto.ObtenerParametroString(ListaParametrosAplicacion, TiposParametrosAplicacion.OntologiasNoLive);
+            opciones.ImplementationKey = ControladorProyecto.ObtenerParametroString(ListaParametrosAplicacion, TiposParametrosAplicacion.ImplementationKey);
+            opciones.UrlHomeConectado = ControladorProyecto.ObtenerParametroString(ListaParametrosAplicacion, TiposParametrosAplicacion.UrlHomeConectado);
+            opciones.GoogleRecaptchaSecret = ControladorProyecto.ObtenerParametroString(ListaParametrosAplicacion, TiposParametrosAplicacion.GoogleRecaptchaSecret);
+            opciones.DominiosEmailLoginRedesSociales = ControladorProyecto.ObtenerParametroString(ListaParametrosAplicacion, TiposParametrosAplicacion.DominiosEmailLoginRedesSociales);
+            opciones.UrlsPropiasProyecto = ControladorProyecto.ObtenerParametroString(ListaParametrosAplicacion, TiposParametrosAplicacion.UrlsPropiasProyecto);
+            opciones.DuracionCookieUsuario = ControladorProyecto.ObtenerParametroString(ListaParametrosAplicacion, TiposParametrosAplicacion.DuracionCookieUsuario);
+            opciones.ExtensionesImagenesCMSMultimedia = ControladorProyecto.ObtenerParametroString(ListaParametrosAplicacion, TiposParametrosAplicacion.ExtensionesImagenesCMSMultimedia);
+            opciones.ExtensionesDocumentosCMSMultimedia = ControladorProyecto.ObtenerParametroString(ListaParametrosAplicacion, TiposParametrosAplicacion.ExtensionesDocumentosCMSMultimedia);
+
+            opciones.ipFTP = ControladorProyecto.ObtenerParametroString(ListaParametrosAplicacion, TiposParametrosAplicacion.ipFTP);
+            opciones.UrlContent = ControladorProyecto.ObtenerParametroString(ListaParametrosAplicacion, TiposParametrosAplicacion.UrlContent);
+            opciones.UrlIntragnoss = ControladorProyecto.ObtenerParametroString(ListaParametrosAplicacion, TiposParametrosAplicacion.UrlIntragnoss);
+            opciones.UrlIntragnossServicios = ControladorProyecto.ObtenerParametroString(ListaParametrosAplicacion, TiposParametrosAplicacion.UrlIntragnossServicios);
+            opciones.UrlBaseService = ControladorProyecto.ObtenerParametroString(ListaParametrosAplicacion, TiposParametrosAplicacion.UrlBaseService);
+            opciones.ScriptGoogleAnalytics = ControladorProyecto.ObtenerParametroString(ListaParametrosAplicacion, TiposParametrosAplicacion.ScriptGoogleAnalytics);
+            opciones.ComunidadesExcluidaPersonalizacion = ControladorProyecto.ObtenerParametroString(ListaParametrosAplicacion, TiposParametrosAplicacion.ComunidadesExcluidaPersonalizacion);
+            opciones.LoginUnicoUsuariosExcluidos = ControladorProyecto.ObtenerParametroString(ListaParametrosAplicacion, TiposParametrosAplicacion.LoginUnicoUsuariosExcluidos);
+            opciones.PasosAsistenteCreacionComunidad = ControladorProyecto.ObtenerParametroString(ListaParametrosAplicacion, TiposParametrosAplicacion.PasosAsistenteCreacionComunidad);
+            opciones.GrafoMetaBusquedaRecursos = ControladorProyecto.ObtenerParametroString(ListaParametrosAplicacion, TiposParametrosAplicacion.GrafoMetaBusquedaRecursos);
+            opciones.GrafoMetaBusquedaPerYOrg = ControladorProyecto.ObtenerParametroString(ListaParametrosAplicacion, TiposParametrosAplicacion.GrafoMetaBusquedaPerYOrg);
+            opciones.GrafoMetaBusquedaComunidades = ControladorProyecto.ObtenerParametroString(ListaParametrosAplicacion, TiposParametrosAplicacion.GrafoMetaBusquedaComunidades);
+            //Parámetros booleanos
+            opciones.EcosistemaSinBandejaSuscripciones = ControladorProyecto.ObtenerParametroBooleano(ListaParametrosAplicacion, TiposParametrosAplicacion.EcosistemaSinBandejaSuscripciones, true);
+            opciones.EcosistemaSinContactos = ControladorProyecto.ObtenerParametroBooleano(ListaParametrosAplicacion, TiposParametrosAplicacion.EcosistemaSinContactos, true);
+            opciones.VersionFotoDocumentoNegativo = ControladorProyecto.ObtenerParametroBooleano(ListaParametrosAplicacion, TiposParametrosAplicacion.VersionFotoDocumentoNegativo);
+            opciones.CVUnicoPorPerfil = ControladorProyecto.ObtenerParametroBooleano(ListaParametrosAplicacion, TiposParametrosAplicacion.CVUnicoPorPerfil);
+            opciones.DatosDemograficosPerfil = ControladorProyecto.ObtenerParametroBooleano(ListaParametrosAplicacion, TiposParametrosAplicacion.DatosDemograficosPerfil, true);
+            opciones.EcosistemaSinMetaproyecto = ControladorProyecto.ObtenerParametroBooleano(ListaParametrosAplicacion, TiposParametrosAplicacion.EcosistemaSinMetaProyecto);
+            opciones.PanelMensajeImportarContactos = ControladorProyecto.ObtenerParametroBooleano(ListaParametrosAplicacion, TiposParametrosAplicacion.PanelMensajeImportarContactos, true);
+            opciones.PerfilGlobalEnComunidadPrincipal = ControladorProyecto.ObtenerParametroBooleano(ListaParametrosAplicacion, TiposParametrosAplicacion.PerfilGlobalEnComunidadPrincipal);
+            opciones.PestanyaImportarContactosCorreo = ControladorProyecto.ObtenerParametroBooleano(ListaParametrosAplicacion, TiposParametrosAplicacion.PestanyaImportarContactosCorreo, true);
+            opciones.RegistroAutomaticoEcosistema = ControladorProyecto.ObtenerParametroBooleano(ListaParametrosAplicacion, TiposParametrosAplicacion.RegistroAutomaticoEcosistema, true);
+            opciones.SeguirEnTodaLaActividad = ControladorProyecto.ObtenerParametroBooleano(ListaParametrosAplicacion, TiposParametrosAplicacion.SeguirEnTodaLaActividad);
+            opciones.EcosistemaSinHomeUsuario = ControladorProyecto.ObtenerParametroBooleano(ListaParametrosAplicacion, TiposParametrosAplicacion.EcosistemaSinHomeUsuario, true);
+            opciones.MostrarGruposIDEnHtml = ControladorProyecto.ObtenerParametroBooleano(ListaParametrosAplicacion, TiposParametrosAplicacion.MostrarGruposIDEnHtml);
+            opciones.UsarSoloCategoriasPrivadasEnEspacioPersonal = ControladorProyecto.ObtenerParametroBooleano(ListaParametrosAplicacion, TiposParametrosAplicacion.UsarSoloCategoriasPrivadasEnEspacioPersonal);
+            opciones.NotificacionesAgrupadas = ControladorProyecto.ObtenerParametroBooleano(ListaParametrosAplicacion, TiposParametrosAplicacion.NotificacionesAgrupadas);
+            opciones.RecibirNewsletterDefecto = ControladorProyecto.ObtenerParametroBooleano(ListaParametrosAplicacion, TiposParametrosAplicacion.RecibirNewsletterDefecto);
+            opciones.PerfilPersonalDisponible = ControladorProyecto.ObtenerParametroBooleano(ListaParametrosAplicacion, TiposParametrosAplicacion.PerfilPersonalDisponible, true);
+            opciones.GenerarGrafoContribuciones = ControladorProyecto.ObtenerParametroBooleano(ListaParametrosAplicacion, TiposParametrosAplicacion.GenerarGrafoContribuciones, true);
+            opciones.MantenerSesionActiva = ControladorProyecto.ObtenerParametroBooleano(ListaParametrosAplicacion, TiposParametrosAplicacion.MantenerSesionActiva, true);
+            opciones.NoEnviarCorreoSeguirPerfil = ControladorProyecto.ObtenerParametroBooleano(ListaParametrosAplicacion, TiposParametrosAplicacion.NoEnviarCorreoSeguirPerfil, false);
+            opciones.LoginUnicoPorUsuario = ControladorProyecto.ObtenerParametroBooleano(ListaParametrosAplicacion, TiposParametrosAplicacion.LoginUnicoPorUsuario, true);
+            opciones.EnviarNotificacionesDeSuscripciones = ControladorProyecto.ObtenerParametroBooleano(ListaParametrosAplicacion, TiposParametrosAplicacion.EnviarNotificacionesDeSuscripciones, true);
+
+
+            //Parámetros Int
+            opciones.EdadLimiteRegistroEcosistema = ControladorProyecto.ObtenerParametroInt(ListaParametrosAplicacion, TiposParametrosAplicacion.EdadLimiteRegistroEcosistema);
+            opciones.SegundosMaxSesionBloqueada = ControladorProyecto.ObtenerParametroInt(ListaParametrosAplicacion, TiposParametrosAplicacion.SegundosMaxSesionBloqueada);
+            opciones.TamanioPoolRedis = ControladorProyecto.ObtenerParametroInt(ListaParametrosAplicacion, TiposParametrosAplicacion.TamanioPoolRedis);
+            opciones.UbicacionLogs = ControladorProyecto.ObtenerParametroInt(ListaParametrosAplicacion, TiposParametrosAplicacion.UbicacionLogs);
+            opciones.UbicacionTrazas = ControladorProyecto.ObtenerParametroInt(ListaParametrosAplicacion, TiposParametrosAplicacion.UbicacionTrazas);
+
+            opciones.puertoFTP = ControladorProyecto.ObtenerParametroInt(ListaParametrosAplicacion, TiposParametrosAplicacion.puertoFTP);
+            opciones.VersionJSEcosistema = ControladorProyecto.ObtenerParametroInt(ListaParametrosAplicacion, TiposParametrosAplicacion.VersionJSEcosistema);
+            opciones.VersionCSSEcosistema = ControladorProyecto.ObtenerParametroInt(ListaParametrosAplicacion, TiposParametrosAplicacion.VersionCSSEcosistema);
+            opciones.AceptacionComunidadesAutomatica = ControladorProyecto.ObtenerParametroInt(ListaParametrosAplicacion, TiposParametrosAplicacion.AceptacionComunidadesAutomatica);
+            opciones.TipoCabecera = ControladorProyecto.ObtenerParametroInt(ListaParametrosAplicacion, TiposParametrosAplicacion.TipoCabecera);
+            opciones.TamanioPoolRedis = ControladorProyecto.ObtenerParametroInt(ListaParametrosAplicacion, TiposParametrosAplicacion.TamanioPoolRedis);
+            opciones.usarHTTPSParaDominioPrincipal = ControladorProyecto.ObtenerParametroInt(ListaParametrosAplicacion, TiposParametrosAplicacion.usarHTTPSParaDominioPrincipal);
+            opciones.CargarIdentidadesDeProyectosPrivadosComoAmigos = ControladorProyecto.ObtenerParametroInt(ListaParametrosAplicacion, TiposParametrosAplicacion.CargarIdentidadesDeProyectosPrivadosComoAmigos);
+
+            return opciones;
+        }
+
+        public void InvalidarCachesEcosistema()
+        {
+            ParametroAplicacionCL parametroAplicacionCL = new ParametroAplicacionCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mServicesUtilVirtuosoAndReplication);
+            parametroAplicacionCL.InvalidarCacheParametrosAplicacion();
+            parametroAplicacionCL.Dispose();
+            if (mGnossCache == null)
+            {
+                mGnossCache = new GnossCache(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mServicesUtilVirtuosoAndReplication);
+            }
+            mGnossCache.VersionarCacheLocal(ProyectoSeleccionado.Clave);
+            mGnossCache.VersionarCacheLocal(Guid.Empty);
+        }
+
+        public void GuardarOpcionesAvanzadasEcosistema(AdministrarOpcionesAvanzadasPlataformaViewModel pOptions)
+        {
+            if (!string.IsNullOrEmpty(pOptions.UrlBaseService))
+            {
+                if (pOptions.UrlBaseService.Contains("{ServiceName}"))
+                {
+                    GuardarParametroString(TiposParametrosAplicacion.UrlBaseService, pOptions.UrlBaseService);
+                }
+                else
+                {
+                    throw new Exception("La UrlBaseService no contiene {ServiceName}");
+                }
+            }
+
+            GuardarParametroString(TiposParametrosAplicacion.CodigoGoogleAnalyticsProyecto, pOptions.CodigoGoogleAnalyticsProyecto);
+            GuardarParametroString(TiposParametrosAplicacion.DominiosPermitidosCORS, pOptions.DominiosPermitidosCORS);
+            GuardarParametroString(TiposParametrosAplicacion.ConexionEntornoPreproduccion, pOptions.ConexionEntornoPreproduccion);
+            GuardarParametroString(TiposParametrosAplicacion.Copyright, pOptions.Copyright);
+            GuardarParametroString(TiposParametrosAplicacion.CorreoSolicitudes, pOptions.CorreoSolicitudes);
+            GuardarParametroString(TiposParametrosAplicacion.CorreoSugerencias, pOptions.CorreoSugerencias);
+            GuardarParametroString(TiposParametrosAplicacion.DominiosEmailLoginRedesSociales, pOptions.DominiosEmailLoginRedesSociales);
+            if (!string.IsNullOrEmpty(pOptions.UrlsPropiasProyecto))
+            {
+                GuardarParametroString(TiposParametrosAplicacion.UrlsPropiasProyecto, pOptions.UrlsPropiasProyecto);
+            }
+            GuardarParametroString(TiposParametrosAplicacion.DominiosSinPalco, pOptions.DominiosSinPalco);
+            GuardarParametroString(TiposParametrosAplicacion.GoogleRecaptchaSecret, pOptions.GoogleRecaptchaSecret);
+            GuardarParametroString(TiposParametrosAplicacion.HashTagEntorno, pOptions.HashTagEntorno);
+            GuardarParametroString(TiposParametrosAplicacion.Idiomas, pOptions.Idiomas);
+            GuardarParametroString(TiposParametrosAplicacion.ImplementationKey, pOptions.ImplementationKey);
+            GuardarParametroString(TiposParametrosAplicacion.LoginFacebook, pOptions.LoginFacebook);
+            GuardarParametroString(TiposParametrosAplicacion.LoginGoogle, pOptions.LoginGoogle);
+            GuardarParametroString(TiposParametrosAplicacion.LoginTwitter, pOptions.LoginTwitter);
+            GuardarParametroString(TiposParametrosAplicacion.NombreEspacioPersonal, pOptions.NombreEspacioPersonal);
+            GuardarParametroString(TiposParametrosAplicacion.OntologiasNoLive, pOptions.OntologiasNoLive);
+            GuardarParametroString(TiposParametrosAplicacion.UrlHomeConectado, pOptions.UrlHomeConectado);
+            GuardarParametroString(TiposParametrosAplicacion.VisibilidadPerfil, pOptions.VisibilidadPerfil);
+            GuardarParametroString(TiposParametrosAplicacion.DuracionCookieUsuario, pOptions.DuracionCookieUsuario);
+            GuardarParametroString(TiposParametrosAplicacion.ExtensionesImagenesCMSMultimedia, pOptions.ExtensionesImagenesCMSMultimedia);
+            GuardarParametroString(TiposParametrosAplicacion.ExtensionesDocumentosCMSMultimedia, pOptions.ExtensionesDocumentosCMSMultimedia);
+
+
+            GuardarParametroString(TiposParametrosAplicacion.ipFTP, pOptions.ipFTP);
+            GuardarParametroString(TiposParametrosAplicacion.UrlContent, pOptions.UrlContent);
+            GuardarParametroString(TiposParametrosAplicacion.UrlIntragnoss, pOptions.UrlIntragnoss);
+            GuardarParametroString(TiposParametrosAplicacion.UrlIntragnossServicios, pOptions.UrlIntragnossServicios);
+
+            GuardarParametroString(TiposParametrosAplicacion.ScriptGoogleAnalytics, pOptions.ScriptGoogleAnalytics);
+            GuardarParametroString(TiposParametrosAplicacion.ComunidadesExcluidaPersonalizacion, pOptions.ComunidadesExcluidaPersonalizacion);
+            GuardarParametroString(TiposParametrosAplicacion.LoginUnicoUsuariosExcluidos, pOptions.LoginUnicoUsuariosExcluidos);
+            GuardarParametroString(TiposParametrosAplicacion.PasosAsistenteCreacionComunidad, pOptions.PasosAsistenteCreacionComunidad);
+            GuardarParametroString(TiposParametrosAplicacion.GrafoMetaBusquedaRecursos, pOptions.GrafoMetaBusquedaRecursos);
+            GuardarParametroString(TiposParametrosAplicacion.GrafoMetaBusquedaPerYOrg, pOptions.GrafoMetaBusquedaPerYOrg);
+            GuardarParametroString(TiposParametrosAplicacion.GrafoMetaBusquedaComunidades, pOptions.GrafoMetaBusquedaComunidades);
+            GuardarParametroString(TiposParametrosAplicacion.EdadLimiteRegistroEcosistema, pOptions.EdadLimiteRegistroEcosistema > 0 ? pOptions.EdadLimiteRegistroEcosistema.ToString() : null);
+            GuardarParametroString(TiposParametrosAplicacion.SegundosMaxSesionBloqueada, pOptions.SegundosMaxSesionBloqueada > 0 ? pOptions.SegundosMaxSesionBloqueada.ToString() : null);
+            GuardarParametroString(TiposParametrosAplicacion.UbicacionLogs, pOptions.UbicacionLogs > 0 ? pOptions.UbicacionLogs.ToString() : null);
+            GuardarParametroString(TiposParametrosAplicacion.UbicacionTrazas, pOptions.UbicacionTrazas > 0 ? pOptions.UbicacionTrazas.ToString() : null);
+
+            GuardarParametroString(TiposParametrosAplicacion.puertoFTP, pOptions.puertoFTP > 0 ? pOptions.puertoFTP.ToString() : null);
+            GuardarParametroString(TiposParametrosAplicacion.VersionJSEcosistema, pOptions.VersionJSEcosistema > 0 ? pOptions.VersionJSEcosistema.ToString() : null);
+            GuardarParametroString(TiposParametrosAplicacion.VersionCSSEcosistema, pOptions.VersionCSSEcosistema > 0 ? pOptions.VersionCSSEcosistema.ToString() : null);
+            GuardarParametroString(TiposParametrosAplicacion.AceptacionComunidadesAutomatica, pOptions.AceptacionComunidadesAutomatica > 0 ? pOptions.AceptacionComunidadesAutomatica.ToString() : null);
+            GuardarParametroString(TiposParametrosAplicacion.TipoCabecera, pOptions.TipoCabecera > 0 ? pOptions.TipoCabecera.ToString() : null);
+            GuardarParametroString(TiposParametrosAplicacion.TamanioPoolRedis, pOptions.TamanioPoolRedis > 0 ? pOptions.TamanioPoolRedis.ToString() : null);
+            GuardarParametroString(TiposParametrosAplicacion.usarHTTPSParaDominioPrincipal, pOptions.usarHTTPSParaDominioPrincipal > 0 ? pOptions.usarHTTPSParaDominioPrincipal.ToString() : null);
+            GuardarParametroString(TiposParametrosAplicacion.CargarIdentidadesDeProyectosPrivadosComoAmigos, pOptions.CargarIdentidadesDeProyectosPrivadosComoAmigos > 0 ? pOptions.CargarIdentidadesDeProyectosPrivadosComoAmigos.ToString() : null);
+            GuardarParametroBooleano(TiposParametrosAplicacion.EcosistemaSinBandejaSuscripciones, pOptions.EcosistemaSinBandejaSuscripciones, true);
+            GuardarParametroBooleano(TiposParametrosAplicacion.EcosistemaSinContactos, pOptions.EcosistemaSinContactos, true);
+            GuardarParametroBooleano(TiposParametrosAplicacion.VersionFotoDocumentoNegativo, pOptions.VersionFotoDocumentoNegativo);
+            GuardarParametroBooleano(TiposParametrosAplicacion.CVUnicoPorPerfil, pOptions.CVUnicoPorPerfil);
+            GuardarParametroBooleano(TiposParametrosAplicacion.DatosDemograficosPerfil, pOptions.DatosDemograficosPerfil, true);
+            GuardarParametroBooleano(TiposParametrosAplicacion.EcosistemaSinMetaProyecto, pOptions.EcosistemaSinMetaproyecto);
+            GuardarParametroBooleano(TiposParametrosAplicacion.PanelMensajeImportarContactos, pOptions.PanelMensajeImportarContactos, true);
+            GuardarParametroBooleano(TiposParametrosAplicacion.PerfilGlobalEnComunidadPrincipal, pOptions.PerfilGlobalEnComunidadPrincipal);
+            GuardarParametroBooleano(TiposParametrosAplicacion.PestanyaImportarContactosCorreo, pOptions.PestanyaImportarContactosCorreo, true);
+            GuardarParametroBooleano(TiposParametrosAplicacion.RegistroAutomaticoEcosistema, pOptions.RegistroAutomaticoEcosistema, true);
+            GuardarParametroBooleano(TiposParametrosAplicacion.SeguirEnTodaLaActividad, pOptions.SeguirEnTodaLaActividad);
+            GuardarParametroBooleano(TiposParametrosAplicacion.MostrarGruposIDEnHtml, pOptions.MostrarGruposIDEnHtml);
+            GuardarParametroBooleano(TiposParametrosAplicacion.UsarSoloCategoriasPrivadasEnEspacioPersonal, pOptions.UsarSoloCategoriasPrivadasEnEspacioPersonal);
+            GuardarParametroBooleano(TiposParametrosAplicacion.EcosistemaSinHomeUsuario, pOptions.EcosistemaSinHomeUsuario, true);
+            GuardarParametroBooleano(TiposParametrosAplicacion.NotificacionesAgrupadas, pOptions.NotificacionesAgrupadas);
+            GuardarParametroBooleano(TiposParametrosAplicacion.RecibirNewsletterDefecto, pOptions.RecibirNewsletterDefecto);
+            GuardarParametroBooleano(TiposParametrosAplicacion.PerfilPersonalDisponible, pOptions.PerfilPersonalDisponible, true);
+            GuardarParametroBooleano(TiposParametrosAplicacion.GenerarGrafoContribuciones, pOptions.GenerarGrafoContribuciones, true);
+            GuardarParametroBooleano(TiposParametrosAplicacion.MantenerSesionActiva, pOptions.MantenerSesionActiva, true);
+            GuardarParametroBooleano(TiposParametrosAplicacion.NoEnviarCorreoSeguirPerfil, pOptions.NoEnviarCorreoSeguirPerfil, false);
+            GuardarParametroBooleano(TiposParametrosAplicacion.LoginUnicoPorUsuario, pOptions.LoginUnicoPorUsuario, true);
+            GuardarParametroBooleano(TiposParametrosAplicacion.EnviarNotificacionesDeSuscripciones, pOptions.EnviarNotificacionesDeSuscripciones, true);
+        }
+
+        private void GuardarParametroString(string pNombreParametro, string pValor)
+        {
+            AD.EntityModel.ParametroAplicacion filaParametro = mEntityContext.ParametroAplicacion.FirstOrDefault(parametro => parametro.Parametro.Equals(pNombreParametro));
+            if (!string.IsNullOrEmpty(pValor))
+            {
+                if (filaParametro != null && !filaParametro.Valor.Equals(pValor))
+                {
+                    filaParametro.Valor = pValor;
+                }
+                else if (filaParametro == null)
+                {
+                    mEntityContext.ParametroAplicacion.Add(new ParametroAplicacion(pNombreParametro, pValor));
+                }
+            }
+            else if (filaParametro != null)
+            {
+                mEntityContext.ParametroAplicacion.Remove(filaParametro);
+            }
+        }
+
+        private void GuardarParametroBooleano(string pNombreParametro, bool pValor, bool pValorPorDefecto = false, string pValorTrue = "true", string pValorFalse = "false")
+        {
+            if (pValor != pValorPorDefecto)
+            {
+                GuardarParametroString(pNombreParametro, pValor ? pValorTrue : pValorFalse);
+            }
+            else
+            {
+                GuardarParametroString(pNombreParametro, null);
+            }
+        }
+
+        // Carga los idiomas personalizas en el modelo
+        private void CargarModeloIdiomasPersonalizados(string pIdiomas, AdministrarOpcionesAvanzadasPlataformaViewModel pOpciones)
+        {
+            string idiomasPersonalizados = "";
+
+            string[] idiomas = pIdiomas.Split("&&&");
+            foreach (string idioma in idiomas)
+            {
+                string clave = idioma.Substring(0, 2);
+                if (!LISTA_IDIOMAS.Contains(clave))
+                {
+                    idiomasPersonalizados += $"{idioma}&&&";
+                }
+            }
+            if (!string.IsNullOrEmpty(idiomasPersonalizados))
+            {
+                // ELiminar las tres ultimos caracteres
+                pOpciones.IdiomasPersonalizados = idiomasPersonalizados.Substring(0, idiomasPersonalizados.Length - 3);
+            }
+        }
+
+        private Dictionary<string, string> ListaParametrosAplicacion
+        {
+            get
+            {
+                if (mListaParametrosAplicacion == null)
+                {
+                    mListaParametrosAplicacion = ParametroAplicacion.ToDictionary(parametro => parametro.Parametro, parametro => parametro.Valor);
+                }
+                return mListaParametrosAplicacion;
+            }
+        }
+
+        private List<ParametroAplicacion> ParametroAplicacion
+        {
+
+            get
+            {
+                if (mParametroAplicacion == null)
+                {
+                    ParametroAplicacionCN paramCN = new ParametroAplicacionCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+                    mParametroAplicacion = mEntityContext.ParametroAplicacion.ToList();
+                }
+                return mParametroAplicacion;
             }
         }
 
@@ -303,7 +587,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
             ////else if (!FilaParametrosGenerales.IsCodigoGoogleAnalyticsNull())
             //else if (!(FilaParametrosGenerales.CodigoGoogleAnalytics==null))
             //{
-            //    FilaParametrosGenerales.CodigoGoogleAnalytics = null; ;
+            //    FilaParametrosGenerales.CodigoGoogleAnalytics = null;
             //    //FilaParametrosGenerales.SetCodigoGoogleAnalyticsNull();
             //}
 

@@ -5,7 +5,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Models.CargaMasiva
     /// <summary>
     /// Datos para meter la carga en rabbit
     /// </summary>
-    public class DatosRabbitCarga
+    public class DatosRabbitCarga : IDisposable
     {
         private Guid cargaID;
         private Guid paqueteID;
@@ -74,7 +74,14 @@ namespace Es.Riam.Gnoss.Web.MVC.Models.CargaMasiva
             set { bytesTriplesBusqueda = value; }
         }
 
-        public bool sonDatosdebug()
+        public void Dispose()
+        {
+            bytesDatosAcido = null;
+            bytesTriplesOntologia = null;
+            bytesTriplesBusqueda = null;
+        }
+
+        public bool SonDatosdebug()
         {
             if (bytesDatosAcido != null && bytesTriplesBusqueda != null && bytesTriplesOntologia != null)
             {

@@ -80,6 +80,9 @@ namespace Es.Riam.Gnoss.AD.EntityModel.Models.IdentidadDS
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<OrganizacionParticipaProy> OrganizacionParticipaProyecto { get; set; }
+
         public virtual ICollection<ProyectoUsuarioIdentidad> ProyectoUsuarioIdentidad { get; set; }
+
+        public virtual ICollection<Documentacion.Documento> Documentos { get; set; }
     }
 }

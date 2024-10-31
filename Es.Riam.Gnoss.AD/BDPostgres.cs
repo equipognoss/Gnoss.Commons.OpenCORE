@@ -614,7 +614,7 @@ namespace Es.Riam.Gnoss.AD
         {
             get
             {
-                return "+";
+                return "||";
             }
         }
 

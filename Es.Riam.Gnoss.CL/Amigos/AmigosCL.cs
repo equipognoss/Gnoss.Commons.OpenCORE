@@ -513,7 +513,7 @@ namespace Es.Riam.Gnoss.CL.Amigos
         /// <param name="pIdentidadID">Identificador de la identidad</param>
         public void InvalidarAmigosEIdentidadesEnMisProyectosPrivados(Guid pIdentidadID)
         {
-            string rawKey = string.Concat(NombresCL.AMIGOSORGEIDENTPROYPRIV, "_", pIdentidadID.ToString()); ;
+            string rawKey = string.Concat(NombresCL.AMIGOSORGEIDENTPROYPRIV, "_", pIdentidadID.ToString());
             string rawKey2 = string.Concat(NombresCL.AMIGOSPEREIDENTPROYPRIV, "_", pIdentidadID.ToString());
 
             InvalidarCache(string.Concat(rawKey, "_", NombresCL.IDENTIDADDS), true);

@@ -393,6 +393,11 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
                         .HasMaxLength(1200)
                         .HasColumnType("nvarchar(1200)");
 
+                    b.Property<string>("Ontologia")
+                        .IsRequired()
+                        .HasMaxLength(2000)
+                        .HasColumnType("nvarchar(2000)");
+
                     b.Property<Guid?>("OrganizacionID")
                         .HasColumnType("uniqueidentifier");
 
@@ -428,11 +433,6 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
 
                     b.Property<DateTime?>("FechaProcesado")
                         .HasColumnType("datetime2");
-
-                    b.Property<string>("Ontologia")
-                        .IsRequired()
-                        .HasMaxLength(2000)
-                        .HasColumnType("nvarchar(2000)");
 
                     b.Property<string>("RutaBusqueda")
                         .IsRequired()
@@ -1227,7 +1227,7 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
                     b.Property<bool>("CreadorEsAutor")
                         .HasColumnType("bit");
 
-                    b.Property<Guid?>("CreadorID")
+                    b.Property<Guid>("CreadorID")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Descripcion")
@@ -1329,6 +1329,12 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
                         .HasColumnType("smallint");
 
                     b.HasKey("DocumentoID");
+
+                    b.HasIndex("CreadorID");
+
+                    b.HasIndex("Tipo", "Eliminado", "Visibilidad");
+
+                    SqlServerIndexBuilderExtensions.IncludeProperties(b.HasIndex("Tipo", "Eliminado", "Visibilidad"), new[] { "ProyectoID" });
 
                     b.ToTable("Documento");
                 });
@@ -5439,6 +5445,9 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
                         .HasColumnType("uniqueidentifier")
                         .HasColumnOrder(2);
 
+                    b.Property<string>("NombreCorto")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<bool>("Obligatorio")
                         .HasColumnType("bit");
 
@@ -5457,6 +5466,9 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
                         .IsRequired()
                         .HasMaxLength(500)
                         .HasColumnType("nvarchar(500)");
+
+                    b.Property<bool>("VisiblePerfil")
+                        .HasColumnType("bit");
 
                     b.HasKey("OrganizacionID", "ProyectoID", "DatoExtraID");
 
@@ -6955,12 +6967,18 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
                         .HasColumnType("smallint")
                         .HasColumnOrder(1);
 
+                    b.Property<string>("Consulta")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("FiltroOrden")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("NombreFiltro")
                         .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("OrderBy")
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("PestanyaID", "Orden");
@@ -8725,6 +8743,9 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
+                    b.Property<bool>("TwoFactorAuthentication")
+                        .HasColumnType("bit");
+
                     b.Property<short>("Validado")
                         .HasColumnType("smallint");
 
@@ -9429,6 +9450,17 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
                     b.Navigation("BaseRecursos");
 
                     b.Navigation("Usuario");
+                });
+
+            modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Documentacion.Documento", b =>
+                {
+                    b.HasOne("Es.Riam.Gnoss.AD.EntityModel.Models.IdentidadDS.Identidad", "Creador")
+                        .WithMany("Documentos")
+                        .HasForeignKey("CreadorID")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Creador");
                 });
 
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Documentacion.DocumentoAtributoBiblio", b =>
@@ -11338,6 +11370,8 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
                     b.Navigation("DatoExtraProyectoOpcionIdentidad");
 
                     b.Navigation("DatoExtraProyectoVirtuosoIdentidad");
+
+                    b.Navigation("Documentos");
 
                     b.Navigation("GrupoIdentidadesParticipacion");
 

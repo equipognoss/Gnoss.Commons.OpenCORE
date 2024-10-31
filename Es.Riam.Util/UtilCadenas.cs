@@ -1,9 +1,11 @@
 ﻿using Es.Riam.Util.AnalisisSintactico;
+using Ganss.Xss;
 using System;
 using System.Collections.Generic;
 using System.Data;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Web;
@@ -39,15 +41,57 @@ namespace Es.Riam.Util
 
         private static string[] mListaIdiomasPosibles = new string[] { "es", "en", "eu", "pt", "ca", "de", "fr", "gl", "it" };
         public static bool LowerStringGraph { get; set; } = false;
+        public static string[] FormatosFecha = {
+	        // Formato de GNOSS
+	        "yyyyMMddHHmmss",
+            "yyyyMMddHHmm",
+            "yyyyMMddHH",
+	        // Formato basico
+	        "yyyyMMddTHHmmsszzz",
+            "yyyyMMddTHHmmsszz",
+            "yyyyMMddTHHmmssZ",
+	        // Formato extendido
+	        "yyyy-MM-ddTHH:mm:sszzz",
+            "yyyy-MM-ddTHH:mm:sszz",
+            "yyyy-MM-ddTHH:mm:ssZ",
+            "yyyyMMddTHHmmzzz",
+            "yyyyMMddTHHmmzz",
+            "yyyyMMddTHHmmZ",
+            "yyyy-MM-ddTHH:mmzzz",
+            "yyyy-MM-ddTHH:mmzz",
+            "yyyy-MM-ddTHH:mmZ",
+	        // Precision reducida a horas
+	        "yyyyMMddTHHzzz",
+            "yyyyMMddTHHzz",
+            "yyyyMMddTHHZ",
+            "yyyy-MM-ddTHHzzz",
+            "yyyy-MM-ddTHHzz",
+            "yyyy-MM-ddTHHZ",
+	        // Precision reducida a dias
+	        "yyyyMMdd",
+            "yyyy-MM-dd",
+            "yyyy/MM/dd",
+	        // Otros formatos
+	        "yyyy/MM/dd HH:mm:ss",
+            "yyyy/MM/dd HH:mm",
+            "yyyy/MM/dd HH",
+            "yyyy-MM-dd HH:mm:ss",
+            "yyyy-MM-dd HH:mm",
+            "yyyy-MM-dd HH",
+            "dd/MM/yyyy HH:mm:ss",
+            "dd/MM/yyyy HH:mm",
+            "dd/MM/yyyy HH",
+            "dd/MM/yyyy"
+        };
 
-        #endregion
+		#endregion
 
-        #region Constantes
+		#region Constantes
 
-        /// <summary>
-        /// Longitud máxima del texto
-        /// </summary>
-        private const int LONGITUD_TEXTO = 50;
+		/// <summary>
+		/// Longitud máxima del texto
+		/// </summary>
+		private const int LONGITUD_TEXTO = 50;
 
         /// <summary>
         /// Constante con las letras del abecedario
@@ -1255,32 +1299,25 @@ namespace Es.Riam.Util
         }
 
         /// <summary>
-        /// Limpia el nombre para los caracteres estén en la siguiente lista: [a-zA-Z0-9ñÑüÜáéíóúÁÉÍÓÚàèìòùÀÈÌÒÙâêîôûÂÊÎÔÛ'´`çÇ-]{4,30}
+        /// Convierte el nombre corto a minúsculas, elimina los acentos/caracteres especiales de las letras y deja solo letras, número y guiones
         /// </summary>
-        /// <param name="pNombre"></param>
-        /// <returns></returns>
-        public static string LimpiarCaracteresNombreCortoRegistro(string pNombre)
-        {
-            string nombreLimpio = "";
-            List<char> nombreLimpioArray = new List<char>();
-            char[] cartPermi = { 'ñ', 'Ñ', 'ü', 'Ü', 'á', 'é', 'í', 'ó', 'ú', 'Á', 'É', 'Í', 'Ó', 'Ú', 'à', 'è', 'ì', 'ò', 'ù', 'À', 'È', 'Ì', 'Ò', 'Ù', 'â', 'ê', 'î', 'ô', 'û', 'Â', 'Ê', 'Î', 'Ô', 'Û', '\'', '´', '`', 'ç', 'Ç', '-' };//ñÑüÜáéíóúÁÉÍÓÚàèìòùÀÈÌÒÙâêîôûÂÊÎÔÛ'´`çÇ-
-            List<char> caracteresPermitidos = new List<char>(cartPermi);
+        /// <param name="pNombreCorto">Nombre a limpiar</param>
+        /// <returns>El nombre pasado por parámetro limpio</returns>
+        public static string LimpiarCaracteresNombreCortoRegistro(string pNombreCorto)
+        {         
+            pNombreCorto = pNombreCorto.ToLower();
+            pNombreCorto = pNombreCorto.Replace(' ', '-');
+            pNombreCorto = Regex.Replace(pNombreCorto, "[áàâäåã]", "a", RegexOptions.None, new TimeSpan(TimeSpan.TicksPerSecond));
+            pNombreCorto = Regex.Replace(pNombreCorto, "[éèêë]", "e", RegexOptions.None, new TimeSpan(TimeSpan.TicksPerSecond));
+            pNombreCorto = Regex.Replace(pNombreCorto, "[íìîï]", "i", RegexOptions.None, new TimeSpan(TimeSpan.TicksPerSecond));
+            pNombreCorto = Regex.Replace(pNombreCorto, "[óòôöðõø]", "o", RegexOptions.None, new TimeSpan(TimeSpan.TicksPerSecond));
+            pNombreCorto = Regex.Replace(pNombreCorto, "[úùûü]", "u", RegexOptions.None, new TimeSpan(TimeSpan.TicksPerSecond));
+            pNombreCorto = Regex.Replace(pNombreCorto, "ñ", "n", RegexOptions.None, new TimeSpan(TimeSpan.TicksPerSecond));
+            pNombreCorto = Regex.Replace(pNombreCorto, "ç", "c", RegexOptions.None, new TimeSpan(TimeSpan.TicksPerSecond));
+            pNombreCorto = Regex.Replace(pNombreCorto, "[ýÿ]", "y", RegexOptions.None, new TimeSpan(TimeSpan.TicksPerSecond));
+            pNombreCorto = Regex.Replace(pNombreCorto, "[^a-z0-9\\-]", "", RegexOptions.None, new TimeSpan(TimeSpan.TicksPerSecond));
 
-            foreach (char caracter in pNombre)
-            {
-                if ((caracter >= 'a' && caracter <= 'z') || (caracter >= 'A' && caracter <= 'Z') || (caracter >= '0' && caracter <= '9') || caracteresPermitidos.Contains(caracter))
-                {
-                    nombreLimpioArray.Add(caracter);
-                }
-                else if (caracter == ' ')
-                {
-                    nombreLimpioArray.Add('-');
-                }
-            }
-
-            nombreLimpio = new string(nombreLimpioArray.ToArray()).ToLower();
-
-            return nombreLimpio;
+            return pNombreCorto;
         }
 
         public static string ObtenerUrlPropiaDeIdioma(string pUrl, string pIdioma)
@@ -1749,6 +1786,36 @@ namespace Es.Riam.Util
             return false;
         }
 
+        /// <summary>
+        /// Se encarga de limpiar inyección de código a través de textos como formularios de la web.
+        /// </summary>
+        /// <param name="pTexto">Texto a limpiar</param>
+        /// <returns>Devuelve el texto introducido pero limpio</returns>
+        public static string LimpiarInyeccionCodigo(string pTexto)
+        {
+            //Decodificar el texto para evitar que con varias codificaciones url se pase el filtro
+            pTexto = DecodificarTextoCodificadoMultiplesVeces(pTexto);
+
+            HtmlSanitizer sanitizer = new HtmlSanitizer();
+            sanitizer.AllowedAttributes.Add("class");
+            sanitizer.AllowedTags.Add("iframe");
+            sanitizer.AllowedTags.Remove("form");
+            string sanitizedText = sanitizer.Sanitize(pTexto);
+            return sanitizedText;
+        }
+
+        private static string DecodificarTextoCodificadoMultiplesVeces(string pTexto)
+        {
+			string textoDecodificado = HttpUtility.UrlDecode(pTexto);
+
+			if (pTexto == textoDecodificado)
+			{
+				return pTexto;
+			}
+
+			return DecodificarTextoCodificadoMultiplesVeces(textoDecodificado);
+		}
+
         #endregion
 
         #region HTML
@@ -1851,7 +1918,7 @@ namespace Es.Riam.Util
         {
             string parrafos = "";
 
-            string pHtmlEdicion = pHtml.Replace("<div>", "").Replace("</div>", ""); ;
+            string pHtmlEdicion = pHtml.Replace("<div>", "").Replace("</div>", "");
 
             if (!pHtmlEdicion.Contains("<p>"))
             {
@@ -2086,9 +2153,8 @@ namespace Es.Riam.Util
                 return mListaCaracteresNoReconocidosJavascript;
             }
         }
-
-        #endregion
-    }
+		#endregion
+	}
 
     /// <summary>
     /// Determina el idioma de un texto

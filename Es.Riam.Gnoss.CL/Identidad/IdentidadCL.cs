@@ -104,6 +104,17 @@ namespace Es.Riam.Gnoss.CL.Identidad
             return listaGrupos;
         }
 
+        public void InvalidarFichaGruposMVC(List<Guid> pListaGruposID)
+        {
+            if (pListaGruposID.Count > 0)
+            {
+                foreach (Guid idGrupo in pListaGruposID)
+                {
+                    InvalidarCache($"FichaGrupoMVC_{idGrupo}".ToLower());
+                }
+            }
+        }
+
         public void GuardarFichasGruposMVC(Dictionary<Guid, GroupCardModel> pListaModelosGrupos)
         {
             string[] listaClavesAgregar = new string[pListaModelosGrupos.Count];

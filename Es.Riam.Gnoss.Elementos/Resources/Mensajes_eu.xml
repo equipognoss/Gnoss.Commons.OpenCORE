@@ -171,6 +171,10 @@
       <asunto>Pasahitza aldatzeko eskaera {#NombreProyecto#}(e)n</asunto>
       <texto>{p}Zure pasahitza aldatzeko, jarraitu ondorengo lotura: {/p}{p}{a style="display: block; font-weight: 400; color: #006eff; padding-bottom: 40px;" href="{#UrlEnlace#}"}Aldatu pasahitza{/a}{/p}</texto>
     </mensaje>
+	<mensaje id="81">
+	  <asunto>Segurtasun-tokena {#NombreProyecto#}</asunto>
+	  <texto>{p}Zure segurtasun-tokena da: {b} {#TokenSeguridad#} {/b}{/p}</texto>
+	</mensaje>
     <mensaje id="121">
       <asunto>{#Asunto#}</asunto>
       <texto>{p}{#NombreRemitente#}(e)k mezu bat bidali dizu {#NombreProyecto#}(a)ren bitartez{/p}{div style="margin:30px"}{#Texto#}{/div}{p}{#NombreRemitente#}(e)ri erantzuteko sakatu lotura honetan: {a href="{@UrlIntragnoss@}{$identidad$}/mensajes#mensaje={#CorreoID#}"}erantzun mezuari{/a}{/p}</texto>

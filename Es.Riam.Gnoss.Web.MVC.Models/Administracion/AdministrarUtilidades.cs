@@ -13,6 +13,8 @@ namespace Es.Riam.Gnoss.Web.MVC.Models.Administracion
         public List<NivelCertificacion> NivelesCertificacion { get; set; }
         public string PoliticaCertificacion { get; set; }
         public bool PermitirDescargarDocUsuInvitado { get; set; }
+        public Dictionary<string, string> ListaIdiomas { get; set; }
+        public string IdiomaDefecto { get; set; }
 
         public class PermisoDocumentacion
         {
@@ -25,6 +27,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Models.Administracion
             public string Ontologia { get; set; }
             public short TipoPermiso { get; set; }
             public Dictionary<Guid, string> PrivacidadGrupos { get; set; }
+            public bool EsSecundaria { get; set; }
         }
         public class NivelCertificacion
         {

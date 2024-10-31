@@ -1,9 +1,9 @@
 ﻿using ClosedXML.Excel;
+using Es.Riam.Gnoss.Util.Configuracion;
 using ExcelDataReader;
 using System.Collections.Generic;
 using System.Data;
 using System.IO;
-using System.Linq;
 using System.Web;
 
 namespace Es.Riam.Gnoss.Traducciones
@@ -27,10 +27,9 @@ namespace Es.Riam.Gnoss.Traducciones
             }
         }
 
-        public static void ConstruirExcel(XLWorkbook mExcel, string nombreHoja, Dictionary<string, Dictionary<string, string>> mDiccionario)
+        public static void ConstruirExcel(XLWorkbook mExcel, string nombreHoja, Dictionary<string, Dictionary<string, string>> mDiccionario, ConfigService configService)
         {
-
-            List<string> mListaIdiomas =  mDiccionario.Values.Select(item => item.Keys.FirstOrDefault()).Distinct().ToList();
+            List<string> mListaIdiomas = configService.ObtenerListaIdiomas();
             
             DataSet ds = new DataSet();
             DataTable dt = new DataTable();

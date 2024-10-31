@@ -1,4 +1,5 @@
 ﻿using Es.Riam.Gnoss.Util.Seguridad;
+using Es.Riam.Util;
 using Microsoft.AspNetCore.Http;
 using Newtonsoft.Json;
 using System;
@@ -30,6 +31,7 @@ namespace Es.Riam.Gnoss.UtilServiciosWeb
             try
             {
                 HttpClient client = new HttpClient();
+                client.DefaultRequestHeaders.Add("UserAgent", UtilWeb.GenerarUserAgent());
                 response = client.GetAsync($"{urlBase}{urlMethod}").Result;
                 response.EnsureSuccessStatusCode();
                 result = response.Content.ReadAsStringAsync().Result;
@@ -108,6 +110,7 @@ namespace Es.Riam.Gnoss.UtilServiciosWeb
             try
             {
                 HttpClient client = new HttpClient();
+                contentData.Headers.Add("UserAgent", UtilWeb.GenerarUserAgent());
                 response = client.PostAsync($"{urlBase}{urlMethod}", contentData).Result;
                 response.EnsureSuccessStatusCode();
                 result = response.Content.ReadAsStringAsync().Result;
@@ -178,6 +181,7 @@ namespace Es.Riam.Gnoss.UtilServiciosWeb
             try
             {
                 HttpClient client = new HttpClient();
+                contentData.Headers.Add("UserAgent", UtilWeb.GenerarUserAgent());
                 if (pToken != null)
                 {
                     client.DefaultRequestHeaders.Add("Authorization", $"{pToken.token_type} {pToken.access_token}");
@@ -217,6 +221,7 @@ namespace Es.Riam.Gnoss.UtilServiciosWeb
             try
             {
                 HttpClient client = new HttpClient();
+                client.DefaultRequestHeaders.Add("UserAgent", UtilWeb.GenerarUserAgent());
                 if (pToken != null)
                 {
                     client.DefaultRequestHeaders.Add("Authorization", $"{pToken.token_type} {pToken.access_token}");

@@ -1,5 +1,6 @@
 ﻿using Es.Riam.Gnoss.Util.Configuracion;
 using Es.Riam.Gnoss.Util.Seguridad;
+using Es.Riam.Util;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
@@ -45,6 +46,7 @@ namespace Es.Riam.Gnoss.UtilServiciosWeb
         private TokenBearer CallTokenIdentity(string stringData)
         {
             var contentData = new StringContent(stringData, System.Text.Encoding.UTF8, "application/x-www-form-urlencoded");
+            contentData.Headers.Add("UserAgent", UtilWeb.GenerarUserAgent());
             HttpResponseMessage response = null;
             try
             {

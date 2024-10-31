@@ -30,6 +30,8 @@ namespace Es.Riam.Gnoss.AD.EntityModel.Models.ProyectoDS
         [StringLength(500)]
         public string Titulo { get; set; }
 
+        public string NombreCorto { get; set; }
+
         [Required]
         [StringLength(500)]
         public string PredicadoRDF { get; set; }
@@ -38,6 +40,8 @@ namespace Es.Riam.Gnoss.AD.EntityModel.Models.ProyectoDS
 
         public bool Paso1Registro { get; set; }
 
+        public bool VisiblePerfil { get; set; }
+        
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<DatoExtraProyectoOpcion> DatoExtraProyectoOpcion { get; set; }
     }

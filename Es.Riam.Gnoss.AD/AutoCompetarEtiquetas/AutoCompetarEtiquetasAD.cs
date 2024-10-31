@@ -1174,13 +1174,13 @@ namespace Es.Riam.Gnoss.AD.AutoCompetarEtiquetas
                 }
                 else
                 {
-                    DbCommand comandoUpdateXML = ObtenerComando($"UPDATE \"{nombreTabla}\" SET Etiquetas={IBD.ToParam("Tags")} WHERE \"ElementoID\"={IBD.GuidValor(pElementoID)} AND \"Tipo\"={IBD.ToParam("Tipo")} AND \"ProyectoID\"={IBD.GuidValor(pProyectoID)}", mEntityContextBASE);
+                    DbCommand comandoUpdateXML = ObtenerComando($"UPDATE \"{nombreTabla}\" SET \"Etiquetas\"={IBD.ToParam("Tags")} WHERE \"ElementoID\"={IBD.GuidValor(pElementoID)} AND \"Tipo\"={IBD.ToParam("Tipo")} AND \"ProyectoID\"={IBD.GuidValor(pProyectoID)}", mEntityContextBASE);
                     AgregarParametro(comandoUpdateXML, IBD.ToParam("Tags"), DbType.String, pJson);
                     AgregarParametro(comandoUpdateXML, IBD.ToParam("Tipo"), DbType.String, pTipo);
 
                     if (ActualizarBaseDeDatos(comandoUpdateXML, false, true, true, mEntityContextBASE) == 0) //Hay que hacer un INSERT
                     {
-                        comandoUpdateXML = ObtenerComando($"INSERT INTO \"{nombreTabla}\" (\"ElementoID\", \"Tipo\", \"ProyectoID\", Etiquetas) VALUES ({IBD.GuidValor(pElementoID)}, {IBD.ToParam("Tipo")}, {IBD.GuidValor(pProyectoID)}, {IBD.ToParam("Tags")})", mEntityContextBASE);
+                        comandoUpdateXML = ObtenerComando($"INSERT INTO \"{nombreTabla}\" (\"ElementoID\", \"Tipo\", \"ProyectoID\", \"Etiquetas\") VALUES ({IBD.GuidValor(pElementoID)}, {IBD.ToParam("Tipo")}, {IBD.GuidValor(pProyectoID)}, {IBD.ToParam("Tags")})", mEntityContextBASE);
                         AgregarParametro(comandoUpdateXML, IBD.ToParam("Tags"), DbType.String, pJson);
                         AgregarParametro(comandoUpdateXML, IBD.ToParam("Tipo"), DbType.String, pTipo);
                         ActualizarBaseDeDatos(comandoUpdateXML, false, true, true, mEntityContextBASE);

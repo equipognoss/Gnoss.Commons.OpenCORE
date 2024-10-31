@@ -99,6 +99,7 @@ namespace Es.Riam.Util
             webRequest.ServicePoint.Expect100Continue = false;
             webRequest.Timeout = 600000;
             webRequest.ContentType = "application/x-www-form-urlencoded";
+            webRequest.UserAgent = UtilWeb.GenerarUserAgent();
 
             if (httpMethod == "POST")
             {
@@ -147,6 +148,7 @@ namespace Es.Riam.Util
             webRequest.Timeout = 600000;
             webRequest.ContentType = "application/x-www-form-urlencoded";
             webRequest.Headers.Add("Authorization", "Bearer " + token);
+            webRequest.UserAgent = UtilWeb.GenerarUserAgent();
             if (httpMethod == "POST")
             {
                 webRequest.ContentLength = 0;
@@ -190,6 +192,7 @@ namespace Es.Riam.Util
             webRequest.Method = "POST";
             webRequest.ServicePoint.Expect100Continue = false;
             webRequest.Timeout = 3600000;
+            webRequest.UserAgent = UtilWeb.GenerarUserAgent();
 
             if (pObjeto != null)
             {
@@ -250,6 +253,7 @@ namespace Es.Riam.Util
             webRequest.ServicePoint.Expect100Continue = false;
             webRequest.Timeout = 600000;
             webRequest.ContentType = "application/x-www-form-urlencoded";
+            webRequest.UserAgent = UtilWeb.GenerarUserAgent();
 
             if (httpMethod == "POST")
             {
@@ -317,7 +321,6 @@ namespace Es.Riam.Util
             }
             return responseData;
         }
-
 
         #endregion
     }

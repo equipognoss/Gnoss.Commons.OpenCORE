@@ -15,7 +15,7 @@ namespace Es.Riam.Gnoss.AD.Usuarios.Model
         public Guid PersonaID { get; set; }
         public short Tipo { get; set; }
         public string Foto { get; set; }
-
+        public bool TwoFactorAuthentication { get; set; }
         public string Login { get; set; }
     }
 }

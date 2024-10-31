@@ -18,6 +18,11 @@ namespace Es.Riam.Gnoss.Web.MVC.Models.Administracion
         public string CodigoGoogleAnalyticsProyecto { get; set; }
 
         /// <summary>
+        /// URL de aplicaciones web externas 
+        /// </summary>
+        public string DominiosPermitidosCORS { get; set; }
+
+        /// <summary>
         /// URL en la que van a estar disponibles las comunidades nuevas según su tipo 
         /// Formato: tipoProyecto=codigo|tipoProyecto=codigo
         /// Ejemplo: 0=http://prered.gnoss.com|2=http://prered.gnoss.com|1=https://preredprivada.gnoss.com|3=https://preredprivada.gnoss.com
@@ -61,6 +66,11 @@ namespace Es.Riam.Gnoss.Web.MVC.Models.Administracion
         public string Idiomas { get; set; }
 
         /// <summary>
+        /// Lista de idiomas personalizados configurados en la plataforma
+        /// </summary>
+        public string IdiomasPersonalizados { get; set; }
+
+        /// <summary>
         /// Lista de extensiones de imágenes permitidas en la plataforma para la edición de componentes multimedia
         /// Ej: .jpg&&&.jpeg&&&.png&&&.gif
         /// </summary>
@@ -79,8 +89,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Models.Administracion
         public string LoginFacebook { get; set; }
 
         /// <summary>
-        /// Datos de la aplicación de Google para hacer login en la plataforma
-        /// Ej: id|||880006438141-r84hn261rtct92nrt3d5adjlod4umacn.apps.googleusercontent.com@@@clientsecret|||0d8iEeZDl-qV0XRiTnCCB54n
+        /// Datos de la aplicación de Google para hacer login en la plataforma        
         /// </summary>
         public string LoginGoogle { get; set; }
 
@@ -227,6 +236,16 @@ namespace Es.Riam.Gnoss.Web.MVC.Models.Administracion
         /// Especifica si se deben generar los grafos de contirbuciones de los usuarios
         /// </summary>
         public bool GenerarGrafoContribuciones { get; set; }
+
+        /// <summary>
+        /// Indica si se quiere reiniciar la aplicacion ahora o mas tarde manualmente
+        /// </summary>
+        public bool ReiniciarAplicacion { get; set; }
+
+        /// <summary>
+        /// Indica si el numero de elementos visibles de una faceta debe ser estrictamente el especificado en la administracion de facetas
+        /// </summary>
+        public bool NumElementosVisiblesEstrictoFacetas { get; set; }
 
         /// <summary>
         /// Define la edad mínima con la que los usuarios pueden registrarse en la plataforma

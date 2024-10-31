@@ -2,6 +2,7 @@
 
 namespace Es.Riam.Gnoss.Web.MVC.Models.IntegracionContinua
 {
+    [Serializable]
     public class PeticionApiBasica
     {
         public Guid Entorno { get; set; }

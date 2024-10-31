@@ -16,6 +16,7 @@ using System.Linq;
 using Es.Riam.Gnoss.AD.EntityModel.Models.ProyectoDS;
 using System.Text;
 using static Es.Riam.Gnoss.Web.MVC.Models.Tesauro.TesauroModels;
+using Es.Riam.Semantica.Plantillas;
 
 namespace Es.Riam.Gnoss.Logica.Facetado
 {
@@ -723,17 +724,17 @@ namespace Es.Riam.Gnoss.Logica.Facetado
 
         public void ObtenerResultadosBusqueda(bool pDescendente, FacetadoDS pFacetadoDS, string pTipoFiltro, Dictionary<string, List<string>> pListaFiltros, List<string> pListaFiltrosExtra, bool pEstaEnMyGnoss, bool pEsMiembroComunidad, bool pEsInvitado, string pIdentidadID, int pInicio, int pLimite, List<string> pSemanticos, string pFiltroContextoSelect, string pFiltroContextoWhere, string pFiltroContextoOrderBy, int pFiltroContextoPesoMinimo, bool pEsMovil = false, List<Guid> pListaExcluidos = null, bool pUsarAfinidad = false)
         {
-            FacetadoAD.ObtenerResultadosBusqueda(mIdGrafo, pDescendente, pFacetadoDS, pTipoFiltro, pListaFiltros, pListaFiltrosExtra, pEstaEnMyGnoss, pEsMiembroComunidad, pEsInvitado, pIdentidadID.ToUpper(), pInicio, pLimite, pSemanticos, pFiltroContextoSelect, pFiltroContextoWhere, pFiltroContextoOrderBy, pFiltroContextoPesoMinimo, pEsMovil, pListaExcluidos, pUsarAfinidad);
+            FacetadoAD.ObtenerResultadosBusqueda(mIdGrafo, pDescendente, pFacetadoDS, pTipoFiltro, pListaFiltros, pListaFiltrosExtra, pEstaEnMyGnoss, pEsMiembroComunidad, pEsInvitado, pIdentidadID.ToUpper(), pInicio, pLimite, pSemanticos, pFiltroContextoSelect, pFiltroContextoWhere, pFiltroContextoOrderBy, pFiltroContextoPesoMinimo, pEsMovil, pListaExcluidos, string.Empty, pUsarAfinidad);
         }
 
         public void ObtenerResultadosBusqueda(bool pDescendente, FacetadoDS pFacetadoDS, string pTipoFiltro, Dictionary<string, List<string>> pListaFiltros, List<string> pListaFiltrosExtra, bool pEstaEnMyGnoss, bool pEsMiembroComunidad, bool pEsInvitado, string pIdentidadID, int pInicio, int pLimite, List<string> pSemanticos, string pFiltroContextoSelect, string pFiltroContextoWhere, string pFiltroContextoOrderBy, int pFiltroContextoPesoMinimo, TipoProyecto pTipoProyecto, string pNamespacesExtra, string pResultadosEliminar, bool pEsMovil = false, List<Guid> pListaExcluidos = null, bool pUsarAfinidad = false)
         {
-            FacetadoAD.ObtenerResultadosBusqueda(mIdGrafo, pDescendente, pFacetadoDS, pTipoFiltro, pListaFiltros, pListaFiltrosExtra, pEstaEnMyGnoss, pEsMiembroComunidad, pEsInvitado, pIdentidadID.ToUpper(), pInicio, pLimite, pSemanticos, pFiltroContextoSelect, pFiltroContextoWhere, pFiltroContextoOrderBy, pFiltroContextoPesoMinimo, pTipoProyecto, pNamespacesExtra, pResultadosEliminar, pEsMovil, pListaExcluidos, pUsarAfinidad);
+            FacetadoAD.ObtenerResultadosBusqueda(mIdGrafo, pDescendente, pFacetadoDS, pTipoFiltro, pListaFiltros, pListaFiltrosExtra, pEstaEnMyGnoss, pEsMiembroComunidad, pEsInvitado, pIdentidadID.ToUpper(), pInicio, pLimite, pSemanticos, pFiltroContextoSelect, pFiltroContextoWhere, pFiltroContextoOrderBy, pFiltroContextoPesoMinimo, pTipoProyecto, pNamespacesExtra, pResultadosEliminar, pEsMovil, pListaExcluidos, string.Empty, pUsarAfinidad);
         }
 
-        public void ObtenerResultadosBusqueda(bool pDescendente, FacetadoDS pFacetadoDS, string pTipoFiltro, Dictionary<string, List<string>> pListaFiltros, List<string> pListaFiltrosExtra, bool pEstaEnMyGnoss, bool pEsMiembroComunidad, bool pEsInvitado, string pIdentidadID, int pInicio, int pLimite, List<string> pSemanticos, string pFiltroContextoSelect, string pFiltroContextoWhere, string pFiltroContextoOrderBy, int pFiltroContextoPesoMinimo, TipoProyecto pTipoProyecto, string pNamespacesExtra, string pResultadosEliminar, bool pPermitirRecursosPrivados, bool pOmitirPalabrasNoRelevantesSearch, TiposAlgoritmoTransformacion pTipoAlgoritmoTransformacion, Dictionary<string, Tuple<string, string, string, bool>> pFiltrosSearchPersonalizados, bool pEsMovil = false, List<Guid> pListaExcluidos = null, bool pUsarAfinidad = false)
+        public void ObtenerResultadosBusqueda(bool pDescendente, FacetadoDS pFacetadoDS, string pTipoFiltro, Dictionary<string, List<string>> pListaFiltros, List<string> pListaFiltrosExtra, bool pEstaEnMyGnoss, bool pEsMiembroComunidad, bool pEsInvitado, string pIdentidadID, int pInicio, int pLimite, List<string> pSemanticos, string pFiltroContextoSelect, string pFiltroContextoWhere, string pFiltroContextoOrderBy, int pFiltroContextoPesoMinimo, TipoProyecto pTipoProyecto, string pNamespacesExtra, string pResultadosEliminar, bool pPermitirRecursosPrivados, bool pOmitirPalabrasNoRelevantesSearch, TiposAlgoritmoTransformacion pTipoAlgoritmoTransformacion, Dictionary<string, Tuple<string, string, string, bool>> pFiltrosSearchPersonalizados, string pLanguageCode, bool pEsMovil = false, List<Guid> pListaExcluidos = null, bool pUsarAfinidad = false)
         {
-            FacetadoAD.ObtenerResultadosBusqueda(mIdGrafo, pDescendente, pFacetadoDS, pTipoFiltro, pListaFiltros, pListaFiltrosExtra, pEstaEnMyGnoss, pEsMiembroComunidad, pEsInvitado, pIdentidadID.ToUpper(), pInicio, pLimite, pSemanticos, pFiltroContextoSelect, pFiltroContextoWhere, pFiltroContextoOrderBy, pFiltroContextoPesoMinimo, pTipoProyecto, pNamespacesExtra, pResultadosEliminar, pPermitirRecursosPrivados, pOmitirPalabrasNoRelevantesSearch, pTipoAlgoritmoTransformacion, pFiltrosSearchPersonalizados, pEsMovil, pListaExcluidos, pUsarAfinidad);
+            FacetadoAD.ObtenerResultadosBusqueda(mIdGrafo, pDescendente, pFacetadoDS, pTipoFiltro, pListaFiltros, pListaFiltrosExtra, pEstaEnMyGnoss, pEsMiembroComunidad, pEsInvitado, pIdentidadID.ToUpper(), pInicio, pLimite, pSemanticos, pFiltroContextoSelect, pFiltroContextoWhere, pFiltroContextoOrderBy, pFiltroContextoPesoMinimo, pTipoProyecto, pNamespacesExtra, pResultadosEliminar, pPermitirRecursosPrivados, pOmitirPalabrasNoRelevantesSearch, pTipoAlgoritmoTransformacion, pFiltrosSearchPersonalizados, pEsMovil, pListaExcluidos, pLanguageCode, pUsarAfinidad);
         }
 
 
@@ -763,9 +764,9 @@ namespace Es.Riam.Gnoss.Logica.Facetado
         /// <param name="pFiltroContextoOrderBy"></param>
         /// <param name="pEsCatalogoNoSocial">Verdad si es un catálogo no social</param>        
         /// <param name="pNamespaceExtra">NamespacesExtra</param>
-        public void ObtenerResultadosBusquedaFormatoMapa(FacetadoDS pFacetadoDS, Dictionary<string, List<string>> pListaFiltros, List<string> pListaFiltrosExtra, bool pEstaEnMyGnoss, bool pEsMiembroComunidad, bool pEsInvitado, string pIdentidadID, List<string> pSemanticos, string pFiltroContextoSelect, string pFiltroContextoWhere, string pFiltroContextoOrderBy, TipoProyecto pTipoProyecto, string pNamespaceExtra, string pResultadosEliminar, DataWrapperFacetas pFiltroMapaDataWrapper, bool pPermitirRecursosPrivados, TipoBusqueda pTipoBusqueda, bool pEsMovil, Dictionary<string, Tuple<string, string, string, bool>> pFiltrosSearchPersonalizados, List<PresentacionMapaSemantico> pListaPresentacionMapaSemantico = null)
+        public void ObtenerResultadosBusquedaFormatoMapa(FacetadoDS pFacetadoDS, Dictionary<string, List<string>> pListaFiltros, List<string> pListaFiltrosExtra, bool pEstaEnMyGnoss, bool pEsMiembroComunidad, bool pEsInvitado, string pIdentidadID, List<string> pSemanticos, string pFiltroContextoSelect, string pFiltroContextoWhere, string pFiltroContextoOrderBy, TipoProyecto pTipoProyecto, string pNamespaceExtra, string pResultadosEliminar, DataWrapperFacetas pFiltroMapaDataWrapper, bool pPermitirRecursosPrivados, TipoBusqueda pTipoBusqueda, bool pEsMovil, Dictionary<string, Tuple<string, string, string, bool>> pFiltrosSearchPersonalizados, List<PresentacionMapaSemantico> pListaPresentacionMapaSemantico = null, string pLanguageCode = null)
         {
-            FacetadoAD.ObtenerResultadosBusquedaFormatoMapa(mIdGrafo, pFacetadoDS, pListaFiltros, pListaFiltrosExtra, pEstaEnMyGnoss, pEsMiembroComunidad, pEsInvitado, pIdentidadID.ToUpper(), pSemanticos, pFiltroContextoSelect, pFiltroContextoWhere, pFiltroContextoOrderBy, pTipoProyecto, pNamespaceExtra, pResultadosEliminar, pFiltroMapaDataWrapper, pPermitirRecursosPrivados, pTipoBusqueda, pEsMovil, pFiltrosSearchPersonalizados, pListaPresentacionMapaSemantico);
+            FacetadoAD.ObtenerResultadosBusquedaFormatoMapa(mIdGrafo, pFacetadoDS, pListaFiltros, pListaFiltrosExtra, pEstaEnMyGnoss, pEsMiembroComunidad, pEsInvitado, pIdentidadID.ToUpper(), pSemanticos, pFiltroContextoSelect, pFiltroContextoWhere, pFiltroContextoOrderBy, pTipoProyecto, pNamespaceExtra, pResultadosEliminar, pFiltroMapaDataWrapper, pPermitirRecursosPrivados, pTipoBusqueda, pEsMovil, pFiltrosSearchPersonalizados, pListaPresentacionMapaSemantico, pLanguageCode);
         }
 
         /// <summary>
@@ -1111,7 +1112,7 @@ namespace Es.Riam.Gnoss.Logica.Facetado
         /// <param name="pPropSolicitadas">Propiedades de la entidad solicitadas</param>
         public FacetadoDS ObtenerRDFXMLSelectorEntidadFormulario(string pGrafo, string pEntContenedora, string pPropiedad, string pTipoEntidadSolicitada, List<string> pPropSolicitadas)
         {
-            return FacetadoAD.ObtenerRDFXMLSelectorEntidadFormulario(pGrafo, pEntContenedora, pPropiedad, pTipoEntidadSolicitada, pPropSolicitadas, null, null, null);
+            return FacetadoAD.ObtenerRDFXMLSelectorEntidadFormulario(pGrafo, pEntContenedora, pPropiedad, pTipoEntidadSolicitada, pPropSolicitadas, null, null, null, Guid.Empty, Guid.Empty);
         }
 
         /// <summary>
@@ -1126,7 +1127,7 @@ namespace Es.Riam.Gnoss.Logica.Facetado
         /// <param name="pExtraWhere">Cadena extra para el where de la consulta</param>
         /// <param name="pIdioma">Idioma</param>
         /// <returns>DataSet con las tripletas</returns>
-        public FacetadoDS ObtenerRDFXMLSelectorEntidadFormulario(string pGrafo, string pEntContenedora, string pPropiedad, string pTipoEntidadSolicitada, List<string> pPropSolicitadas, string pFiltro, string pExtraWhere, string pIdioma)
+        public FacetadoDS ObtenerRDFXMLSelectorEntidadFormulario(string pGrafo, string pEntContenedora, string pPropiedad, string pTipoEntidadSolicitada, List<string> pPropSolicitadas, string pFiltro, string pExtraWhere, string pIdioma, Guid pIdentidadID, Guid pProyectoID)
         {
             pExtraWhere = ExtraerYHacerConsultasInternasWhere(pExtraWhere);
 
@@ -1155,7 +1156,7 @@ namespace Es.Riam.Gnoss.Logica.Facetado
 
             if (propsSinJerarquia.Count > 0)
             {
-                facetadoAuxDS = FacetadoAD.ObtenerRDFXMLSelectorEntidadFormulario(pGrafo, pEntContenedora, pPropiedad, pTipoEntidadSolicitada, propsSinJerarquia, pFiltro, pExtraWhere, pIdioma);
+                facetadoAuxDS = FacetadoAD.ObtenerRDFXMLSelectorEntidadFormulario(pGrafo, pEntContenedora, pPropiedad, pTipoEntidadSolicitada, propsSinJerarquia, pFiltro, pExtraWhere, pIdioma, pIdentidadID, pProyectoID);
 
                 if (propsConJerarquia.Count > 0)
                 {
@@ -1277,9 +1278,9 @@ namespace Es.Riam.Gnoss.Logica.Facetado
         /// <param name="pEntidadID">ID de la entidad origen</param>
         /// <param name="pConsulta">Consulta a realizar</param>
         /// <returns>DataSet con las tripletas</returns>
-        public FacetadoDS ObtenerRDFXMLSelectorEntidadFormularioPorConsulta(string pGrafo, string pEntidadID, string pConsulta)
+        public FacetadoDS ObtenerRDFXMLSelectorEntidadFormularioPorConsulta(SelectorEntidad pSelectorEntidad, string pEntidadID, string pConsulta, string pIdioma)
         {
-            return FacetadoAD.ObtenerRDFXMLSelectorEntidadFormularioPorConsulta(pGrafo, pEntidadID, pConsulta);
+            return FacetadoAD.ObtenerRDFXMLSelectorEntidadFormularioPorConsulta(pSelectorEntidad, pEntidadID, pConsulta, pIdioma);
         }
 
         /// <summary>

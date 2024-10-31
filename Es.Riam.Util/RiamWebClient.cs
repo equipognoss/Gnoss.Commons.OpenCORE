@@ -22,6 +22,7 @@ namespace Es.Riam.Util
         protected override WebRequest GetWebRequest(Uri uri)
         {
             WebRequest w = base.GetWebRequest(uri);
+            w.Headers.Add("UserAgent", UtilWeb.GenerarUserAgent());
             if (Timeout > 0)
             {
                 w.Timeout = Timeout * 1000;

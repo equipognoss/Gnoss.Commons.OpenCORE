@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 namespace Es.Riam.Gnoss.Web.MVC.Models.ViewModels
 {
+    [Serializable]
     public class Error500ViewModel
     {
         public bool ShowError { get; set; }

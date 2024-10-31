@@ -18,6 +18,7 @@ using Es.Riam.Gnoss.Elementos.Documentacion;
 using Es.Riam.Gnoss.Logica.CMS;
 using Es.Riam.Gnoss.Logica.Documentacion;
 using Es.Riam.Gnoss.Logica.Identidad;
+using Es.Riam.Gnoss.Logica.ParametroAplicacion;
 using Es.Riam.Gnoss.Logica.ServiciosGenerales;
 using Es.Riam.Gnoss.Recursos;
 using Es.Riam.Gnoss.Util.Configuracion;
@@ -88,7 +89,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
         {
             CMSAdminComponenteEditarViewModel resultado = null;
             using (CMSCN cmsCN = new CMSCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication))
-            using (GestionCMS gestorCMS = new GestionCMS(cmsCN.ObtenerComponentePorID(pComponenteKey, ProyectoSeleccionado.Clave), mLoggingService, mEntityContext))
+            using (GestionCMS gestorCMS = new GestionCMS(cmsCN.ObtenerComponentePorID(pComponenteKey, ProyectoSeleccionado.Clave, false), mLoggingService, mEntityContext))
             {
                 if (gestorCMS.CMSDW.ListaCMSComponente.Count != 0)
                 {
@@ -143,8 +144,9 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
                 paginaModel.AccesoPublicoComponente = CMSComponente.AccesoPublico;
                 paginaModel.Styles = CMSComponente.Estilos;
 
-                List<string> listaIdiomasDisponibles = new List<string>();
-                List<string> listaIdiomas = mConfigService.ObtenerListaIdiomas();
+				ParametroAplicacionCL paramCL = new ParametroAplicacionCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mServicesUtilVirtuosoAndReplication);
+				List<string> listaIdiomasDisponibles = new List<string>();
+                List<string> listaIdiomas = paramCL.ObtenerListaIdiomas();
                 foreach (string idioma in listaIdiomas)
                 {
                     if (!string.IsNullOrEmpty(CMSComponente.FilaComponente.IdiomasDisponibles) && UtilCadenas.ObtenerTextoDeIdioma(CMSComponente.FilaComponente.IdiomasDisponibles, idioma, null, true) == "true")
@@ -855,9 +857,20 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
                         {
                             if (!string.IsNullOrEmpty(id))
                             {
-                                ProyectoCN proyCN3 = new ProyectoCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
-                                listaComponentesListadoProyectos.Add(proyCN3.ObtenerProyectoIDPorNombre(id));
-                                proyCN3.Dispose();
+                                if (Guid.TryParse(id, out Guid proyId) && !Guid.Empty.Equals(proyId))
+                                {
+                                    listaComponentesListadoProyectos.Add(proyId);
+                                }
+                                else
+                                {
+                                    ProyectoCN proyCN3 = new ProyectoCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+                                    Guid proyID = proyCN3.ObtenerProyectoIDPorNombre(id);
+                                    if (!Guid.Empty.Equals(proyID))
+                                    {
+                                        listaComponentesListadoProyectos.Add(proyID);
+                                    }                                   
+                                    proyCN3.Dispose();
+                                }                             
                             }
                         }
                     }
@@ -1093,11 +1106,16 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
 		public string ComprobarErrorConcurrencia(CMSAdminComponenteEditarViewModel pComponenteEditado, CMSComponente pComponente)
 		{
 			string error = string.Empty;
-
 			DateTime fechaCuandoEntraAdministracion = DateTimeRemoveMilliseconds(pComponenteEditado.FechaModificacion);
 			DateTime fechaCuandoGuarda = DateTimeRemoveMilliseconds((DateTime)pComponente.FilaComponente.FechaUltimaActualizacion);
+            bool caducidadConfigurada = false;
 
-            if (fechaCuandoEntraAdministracion < fechaCuandoGuarda)
+            if (!pComponente.TipoCaducidadComponenteCMS.Equals(TipoCaducidadComponenteCMS.NoCaducidad) && !pComponente.TipoCaducidadComponenteCMS.Equals(TipoCaducidadComponenteCMS.NoCache))
+            {
+                caducidadConfigurada = true;
+            }
+
+            if (!caducidadConfigurada && (fechaCuandoEntraAdministracion < fechaCuandoGuarda))
             {
                 error = $"El componente \"{pComponenteEditado.Name}\" ha sido editado por otro usuario. Debes recargar la página y volver a editar.";
             }
@@ -1128,8 +1146,9 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
         private string ComprobarValorImagen(string valorPropiedad, string UrlIntragnossServicios, string BaseURLContent)
         {
             string valorPropiedadDefinitivo = "";
+			ParametroAplicacionCL paramCL = new ParametroAplicacionCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mServicesUtilVirtuosoAndReplication);
 
-            foreach (string idioma in mConfigService.ObtenerListaIdiomas())
+			foreach (string idioma in paramCL.ObtenerListaIdiomas())
             {
                 string imagenIdioma = UtilCadenas.ObtenerTextoDeIdioma(valorPropiedad, idioma, null, true);
 
@@ -1400,6 +1419,12 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
                         {
                             cmsCL.InvalidarCacheCMSDeUbicacionDeProyecto(tipoPagina, ProyectoSeleccionado.Clave);
                         }
+
+                        ProyectoCN proyCN = new ProyectoCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+                        List<Guid> proys = new List<Guid> { ProyectoSeleccionado.Clave };
+                        DataWrapperProyecto dw = proyCN.ObtenerProyectosHijosDeProyectos(proys, UsuarioActual.UsuarioID);
+                        cmsCL.InvalidarCachesCMSDeUbicacionesDeProyectos(dw.ListaProyecto);
+                        proyCN.Dispose();
                     }
 
                 }

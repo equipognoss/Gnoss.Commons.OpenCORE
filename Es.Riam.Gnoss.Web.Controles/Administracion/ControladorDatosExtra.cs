@@ -60,7 +60,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
 			ProyectoSeleccionado = pProyecto;
 		}
 
-		public void GuardarNuevoDatoExtraVirtuosoEcosistema(Guid pDatoExtraID, string pNombre, bool pObligatorio, int pOrden, string pPredicadoRDF)
+		public void GuardarNuevoDatoExtraVirtuosoEcosistema(Guid pDatoExtraID, string pNombre, bool pObligatorio, int pOrden, string pPredicadoRDF, bool pVisible, string pNombreCorto)
 		{
 			DatoExtraEcosistemaVirtuoso datoVirtuoso = new DatoExtraEcosistemaVirtuoso();
 
@@ -73,9 +73,9 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
 			datoVirtuoso.ConexionBD = "";
 			datoVirtuoso.Obligatorio = pObligatorio;
 			datoVirtuoso.Paso1Registro = false;
-			datoVirtuoso.VisibilidadFichaPerfil = true;
+			datoVirtuoso.VisibilidadFichaPerfil = pVisible;
 			datoVirtuoso.PredicadoRDF = pPredicadoRDF;
-			datoVirtuoso.NombreCampo = pNombre;
+			datoVirtuoso.NombreCampo = pNombreCorto;
 			datoVirtuoso.EstructuraHTMLFicha = "";
 
 			mEntityContext.DatoExtraEcosistemaVirtuoso.Add(datoVirtuoso);
@@ -174,7 +174,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
 			}
         }
 
-        public void ModificarDatoExtraVirtuosoEcosistema(Guid pDatoExtraID, string pNombre, bool pObligatorio, int pOrden, string pPredicadoRDF)
+        public void ModificarDatoExtraVirtuosoEcosistema(Guid pDatoExtraID, string pNombre, bool pObligatorio, int pOrden, string pPredicadoRDF, bool pVisible, string pNombreCorto)
 		{
 			DatoExtraEcosistemaVirtuoso datoExtra = mEntityContext.DatoExtraEcosistemaVirtuoso.Where(x => x.DatoExtraID.Equals(pDatoExtraID)).FirstOrDefault();
 
@@ -184,7 +184,8 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
 				datoExtra.Orden = pOrden;
 				datoExtra.Obligatorio = pObligatorio;
 				datoExtra.InputID = pNombre;
-				datoExtra.NombreCampo = pNombre;
+				datoExtra.NombreCampo = pNombreCorto;
+				datoExtra.VisibilidadFichaPerfil = pVisible;
 				datoExtra.PredicadoRDF = pPredicadoRDF;
 
 				mEntityContext.DatoExtraEcosistemaVirtuoso.Update(datoExtra);
@@ -235,7 +236,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
 			return listaOpciones;
 		}
 
-		public void GuardarNuevoDatoExtraProyecto(Guid pProyectoID, Guid pOrganizacion, Guid pDatoExtraID, string pNombre, bool pObligatorio, string pOpciones, int pOrden, string pPredicadoRDF)
+		public void GuardarNuevoDatoExtraProyecto(Guid pProyectoID, Guid pOrganizacion, Guid pDatoExtraID, string pNombre, bool pObligatorio, string pOpciones, int pOrden, string pPredicadoRDF, string pNombreCorto, bool pVisiblePerfil)
 		{
 			DatoExtraProyecto datoExtra = new DatoExtraProyecto();
 
@@ -247,6 +248,9 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
 			datoExtra.PredicadoRDF = pPredicadoRDF;
 			datoExtra.Obligatorio = pObligatorio;
 			datoExtra.Paso1Registro = false;
+			datoExtra.NombreCorto = pNombreCorto;
+			datoExtra.VisiblePerfil = pVisiblePerfil;
+
 
 			mEntityContext.DatoExtraProyecto.Add(datoExtra);
 			GuardarCambios();
@@ -272,7 +276,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
 			}
 		}
 
-		public void ModificarDatoExtraProyecto(Guid pProyectoID, Guid pOrganizacion, Guid pDatoExtraID, string pNombre, bool pObligatorio, string pOpciones, int pOrden, string pPredicadoRDF)
+		public void ModificarDatoExtraProyecto(Guid pProyectoID, Guid pOrganizacion, Guid pDatoExtraID, string pNombre, bool pObligatorio, string pOpciones, int pOrden, string pPredicadoRDF, string pNombreCorto, bool pVisiblePerfil)
 		{
             DatoExtraProyecto datoExtra = mEntityContext.DatoExtraProyecto.Where(x => x.DatoExtraID.Equals(pDatoExtraID)).FirstOrDefault();
 
@@ -280,6 +284,9 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
             datoExtra.Titulo = pNombre;
             datoExtra.Obligatorio = pObligatorio;
 			datoExtra.PredicadoRDF = pPredicadoRDF;
+			datoExtra.VisiblePerfil = pVisiblePerfil;
+			datoExtra.NombreCorto = pNombreCorto;
+
 
 			mEntityContext.DatoExtraProyecto.Update(datoExtra);
             GuardarCambios();
@@ -333,7 +340,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
             }
         }
 
-        public void GuardarNuevoDatoExtraVirtuosoProyecto(Guid pProyectoID, Guid pOrganizacion, Guid pDatoExtraID, string pNombre, bool pObligatorio, int pOrden, string pPredicadoRDF)
+        public void GuardarNuevoDatoExtraVirtuosoProyecto(Guid pProyectoID, Guid pOrganizacion, Guid pDatoExtraID, string pNombre, bool pObligatorio, int pOrden, string pPredicadoRDF, bool pVisible, string pNombreCorto)
 		{
 			DatoExtraProyectoVirtuoso datoVirtuoso = new DatoExtraProyectoVirtuoso();
 
@@ -348,15 +355,15 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
 			datoVirtuoso.ConexionBD = "";
 			datoVirtuoso.Obligatorio = pObligatorio;
 			datoVirtuoso.Paso1Registro = false;
-			datoVirtuoso.VisibilidadFichaPerfil = true;
+			datoVirtuoso.VisibilidadFichaPerfil = pVisible;
 			datoVirtuoso.PredicadoRDF = pPredicadoRDF;
-			datoVirtuoso.NombreCampo = pNombre;
+			datoVirtuoso.NombreCampo = pNombreCorto;
 			datoVirtuoso.EstructuraHTMLFicha = "";
 
 			mEntityContext.DatoExtraProyectoVirtuoso.Add(datoVirtuoso);
 		}
 
-        public void ModificarDatoExtraVirtuosoProyecto(Guid pProyectoID, Guid pOrganizacion, Guid pDatoExtraID, string pNombre, bool pObligatorio, int pOrden, string pPredicadoRDF)
+        public void ModificarDatoExtraVirtuosoProyecto(Guid pProyectoID, Guid pOrganizacion, Guid pDatoExtraID, string pNombre, bool pObligatorio, int pOrden, string pPredicadoRDF, bool pVisible, string pNombreCorto)
         {
 			DatoExtraProyectoVirtuoso datoVirtuoso = mEntityContext.DatoExtraProyectoVirtuoso.Where(x => x.DatoExtraID.Equals(pDatoExtraID)).FirstOrDefault();
 
@@ -369,6 +376,8 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
             datoVirtuoso.Obligatorio = pObligatorio;
             datoVirtuoso.NombreCampo = pNombre;
 			datoVirtuoso.PredicadoRDF = pPredicadoRDF;
+			datoVirtuoso.VisibilidadFichaPerfil = pVisible;
+			datoVirtuoso.NombreCampo = pNombreCorto;
 
 			mEntityContext.DatoExtraProyectoVirtuoso.Update(datoVirtuoso);
         }
@@ -568,11 +577,11 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
 							
 							if (datoExtraEcosistemaVirtuoso != null)
 							{
-								ModificarDatoExtraVirtuosoEcosistema(datoExtra.DatoExtraID, datoExtra.Nombre, datoExtra.Obligatorio, datoExtra.Orden, datoExtra.PredicadoRDF);
+								ModificarDatoExtraVirtuosoEcosistema(datoExtra.DatoExtraID, datoExtra.Nombre, datoExtra.Obligatorio, datoExtra.Orden, datoExtra.PredicadoRDF, datoExtra.VisibleEnPerfil, datoExtra.NombreCorto);
 							}
 							else
 							{
-								GuardarNuevoDatoExtraVirtuosoEcosistema(datoExtra.DatoExtraID, datoExtra.Nombre, datoExtra.Obligatorio, datoExtra.Orden, datoExtra.PredicadoRDF);
+								GuardarNuevoDatoExtraVirtuosoEcosistema(datoExtra.DatoExtraID, datoExtra.Nombre, datoExtra.Obligatorio, datoExtra.Orden, datoExtra.PredicadoRDF, datoExtra.VisibleEnPerfil, datoExtra.NombreCorto);
 							}							
 						}
 					}
@@ -584,11 +593,11 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
 
 							if (datoExtraProyecto != null)
 							{
-								ModificarDatoExtraProyecto(datoExtraProyecto.ProyectoID, datoExtraProyecto.OrganizacionID, datoExtra.DatoExtraID, datoExtra.Nombre, datoExtra.Obligatorio, opciones, datoExtra.Orden, datoExtra.PredicadoRDF);
+								ModificarDatoExtraProyecto(datoExtraProyecto.ProyectoID, datoExtraProyecto.OrganizacionID, datoExtra.DatoExtraID, datoExtra.Nombre, datoExtra.Obligatorio, opciones, datoExtra.Orden, datoExtra.PredicadoRDF, datoExtra.NombreCorto, datoExtra.VisibleEnPerfil);
 							}
 							else
 							{
-								GuardarNuevoDatoExtraProyecto(pProyecto, pOrganizacion, datoExtra.DatoExtraID, datoExtra.Nombre, datoExtra.Obligatorio, opciones, datoExtra.Orden, datoExtra.PredicadoRDF);
+								GuardarNuevoDatoExtraProyecto(pProyecto, pOrganizacion, datoExtra.DatoExtraID, datoExtra.Nombre, datoExtra.Obligatorio, opciones, datoExtra.Orden, datoExtra.PredicadoRDF, datoExtra.NombreCorto, datoExtra.VisibleEnPerfil);
 							}							
 						}
 						else
@@ -597,11 +606,11 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
 
 							if (datoExtraProyectoVirtuoso != null)
 							{
-								ModificarDatoExtraVirtuosoProyecto(datoExtraProyectoVirtuoso.ProyectoID, datoExtraProyectoVirtuoso.OrganizacionID, datoExtra.DatoExtraID, datoExtra.Nombre, datoExtra.Obligatorio, datoExtra.Orden, datoExtra.PredicadoRDF);
+								ModificarDatoExtraVirtuosoProyecto(datoExtraProyectoVirtuoso.ProyectoID, datoExtraProyectoVirtuoso.OrganizacionID, datoExtra.DatoExtraID, datoExtra.Nombre, datoExtra.Obligatorio, datoExtra.Orden, datoExtra.PredicadoRDF, datoExtra.VisibleEnPerfil, datoExtra.NombreCorto);
 							}
 							else
 							{
-								GuardarNuevoDatoExtraVirtuosoProyecto(pProyecto, pOrganizacion, datoExtra.DatoExtraID, datoExtra.Nombre, datoExtra.Obligatorio, datoExtra.Orden, datoExtra.PredicadoRDF);
+								GuardarNuevoDatoExtraVirtuosoProyecto(pProyecto, pOrganizacion, datoExtra.DatoExtraID, datoExtra.Nombre, datoExtra.Obligatorio, datoExtra.Orden, datoExtra.PredicadoRDF, datoExtra.VisibleEnPerfil, datoExtra.NombreCorto);
 							}	
 						}
 					}

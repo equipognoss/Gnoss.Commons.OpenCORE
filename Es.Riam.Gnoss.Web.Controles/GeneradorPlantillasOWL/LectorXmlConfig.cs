@@ -954,6 +954,10 @@ namespace Es.Riam.Gnoss.Web.Controles.GeneradorPlantillasOWL
                                 estiloEntidad.AtrNombre.Add(nodo.Attributes["xml:lang"].Value, nodo.InnerText);
                             }
                         }
+                        else if (nodo.Name.Equals("PermitirScript"))
+                        {
+                            estiloEntidad.PermitirScript = true;
+                        }
                         else if (nodo.Name == "AtrNombreLectura")
                         {
                             if (nodo.Attributes["xml:lang"] == null)
@@ -1673,6 +1677,10 @@ namespace Es.Riam.Gnoss.Web.Controles.GeneradorPlantillasOWL
                     {
                         estiloProp.AtrNombre.Add(nodo.Attributes["xml:lang"].Value, nodo.InnerText);
                     }
+                }
+                else if (nodo.Name.Equals("PermitirScript"))
+                {
+                    estiloProp.PermitirScript = true;
                 }
                 else if (nodo.Name == "AtrNombreLectura")
                 {

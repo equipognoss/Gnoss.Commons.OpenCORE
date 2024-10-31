@@ -187,33 +187,41 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
                     {
                         NombrePresentacion = Nombre;
                     }
+                    string urlIntragnoss = ParametrosAplicacion.Where(parametro => parametro.Parametro.Equals("UrlIntragnoss")).ToList().First().Valor;
 
                     string Descripcion = "";
                     if (comunidadObtenida.Descripcion != null)
                     {
                         Descripcion = comunidadObtenida.Descripcion;
                     }
-                    int NumeroOrg = comunidadObtenida.NumeroOrgRegistradas.Value;
+                    //int NumeroOrg = comunidadObtenida.NumeroOrgRegistradas.Value;
+                    List<string> recursosTipoOrg = new List<string>();
+                    recursosTipoOrg.Add("Organizacion");
+                    int NumeroOrg = ObtenerContadorComunidad(urlIntragnoss, clave.ToString(), TipoProyecto.Comunidad, recursosTipoOrg);
 
-                    int NumeroPers = 0;
-                    if (contadoresPersonasComunidades.ContainsKey(clave) && contadoresPersonasComunidades[clave] != null)
-                    {
-                        NumeroPers = (int)contadoresPersonasComunidades[clave];
-                    }
-                    else
-                    {
-                        NumeroPers = comunidadObtenida.NumeroMiembros.Value;
-                    }
+                    List<string> recursosTipoPersona = new List<string>();
+                    recursosTipoPersona.Add("Persona");
+                    int NumeroPers = ObtenerContadorComunidad(urlIntragnoss, clave.ToString(), TipoProyecto.Comunidad, recursosTipoPersona);
 
-                    int NumeroRecursos = 0;
-                    if (contadoresRecursosComunidades.ContainsKey(clave) && contadoresRecursosComunidades[clave] != null)
-                    {
-                        NumeroRecursos = (int)contadoresRecursosComunidades[clave];
-                    }
-                    else
-                    {
-                        NumeroRecursos = comunidadObtenida.NumeroRecursos.Value;
-                    }
+                    //if (contadoresPersonasComunidades.ContainsKey(clave) && contadoresPersonasComunidades[clave] != null)
+                    //{
+                    //    NumeroPers = (int)contadoresPersonasComunidades[clave];
+                    //}
+                    //else
+                    //{
+                    //    NumeroPers = comunidadObtenida.NumeroMiembros.Value;
+                    //}
+                    List<string> recursosTipoRecurso = new List<string>();
+                    recursosTipoRecurso.Add("Recurso");
+                    int NumeroRecursos = ObtenerContadorComunidad(urlIntragnoss, clave.ToString(), TipoProyecto.Comunidad, recursosTipoRecurso);
+                    //if (contadoresRecursosComunidades.ContainsKey(clave) && contadoresRecursosComunidades[clave] != null)
+                    //{
+                    //    NumeroRecursos = (int)contadoresRecursosComunidades[clave];
+                    //}
+                    //else
+                    //{
+                    //    NumeroRecursos = comunidadObtenida.NumeroRecursos.Value;
+                    //}
 
                     short TipoAcceso = comunidadObtenida.TipoAcceso;
                     string Tags = "";
@@ -242,7 +250,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
                     comunidad.AccessType = (CommunityModel.TypeAccessProject)TipoAcceso;
 
                     comunidad.Tags = new List<string>(Tags.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries));
-
+                    
 					string urlFoto = $"{BaseURLContent}/{UtilArchivos.ContentImagenes}/{UtilArchivos.ContentImagenesProyectos}/{NombreImagen}";
 					comunidad.Logo = urlFoto;
 					if (string.IsNullOrEmpty(NombreImagen) || NombreImagen.Equals("peque"))
@@ -298,6 +306,38 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
             }
 
             return listaComunidades;
+        }
+
+        private int ObtenerContadorComunidad(string pUrlIntragnoss, string pProyecto, TipoProyecto pTipoProyecto, List<string> pRecursosTipo)
+        {
+            int resultado = 0;
+            Dictionary<string, List<string>> listaFiltrosPers = new Dictionary<string, List<string>>();          
+            listaFiltrosPers.Add("rdf:type", pRecursosTipo);
+            FacetadoDS facDS = new FacetadoDS();
+            FacetadoCN facCN = new FacetadoCN(pUrlIntragnoss, pProyecto, mEntityContext, mLoggingService, mConfigService, mVirtuosoAD, mServicesUtilVirtuosoAndReplication);
+            
+            facCN.ObtieneNumeroResultados(facDS, "RecursosBusqueda", listaFiltrosPers, new List<string>(), false, true, false, UsuarioAD.Invitado.ToString(), new List<string>(), "", pTipoProyecto, true, true, TiposAlgoritmoTransformacion.Ninguno, null);
+            
+            if ((facDS.Tables.Contains("NResultadosBusqueda")) && (facDS.Tables["NResultadosBusqueda"].Rows.Count > 0))
+            {
+                object numeroResultados = facDS.Tables["NResultadosBusqueda"].Rows[0][0];
+                if (numeroResultados is long)
+                {
+                    resultado = (int)(long)numeroResultados;
+                }
+                else if (numeroResultados is int)
+                {
+                    resultado = (int)numeroResultados;
+                }
+                else if (numeroResultados is string)
+                {
+                    int numeroResultadosInt;
+                    int.TryParse((string)numeroResultados, out numeroResultadosInt);
+                    resultado = numeroResultadosInt;
+                }
+            }
+
+            return resultado;
         }
 
         /// <summary>
@@ -1687,10 +1727,10 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
         /// <param name="pIdentidadActual">IdentidadActual (null = usuario invitado)</param>
         /// <param name="pBaseRecursosPersonalID">ID de la base de recurso personal en caso de que estemos en uno, NULL para comunidades o MyGnoss y un booleano que indica si la BR es de organización o no</param>
         /// <returns></returns>
-        public Dictionary<Guid, ResourceModel> ObtenerRecursosPorIDSinProcesarIdioma(List<Guid> pListaRecursosID, string pUrlBaseUrlBusqueda, KeyValuePair<Guid?, bool> pBaseRecursosPersonalID)
+        public Dictionary<Guid, ResourceModel> ObtenerRecursosPorIDSinProcesarIdioma(List<Guid> pListaRecursosID, string pUrlBaseUrlBusqueda, KeyValuePair<Guid?, bool> pBaseRecursosPersonalID, Guid? pProyectoID = null)
         {
             //Procesamos los modelos para su presentación
-            Dictionary<Guid, ResourceModel> listaRecursos = ObtenerRecursosPorIDInt(pListaRecursosID, pUrlBaseUrlBusqueda, pBaseRecursosPersonalID);
+            Dictionary<Guid, ResourceModel> listaRecursos = ObtenerRecursosPorIDInt(pListaRecursosID, pUrlBaseUrlBusqueda, pBaseRecursosPersonalID, true, false, pProyectoID);
             Dictionary<Guid, ResourceModel> listaRecursosDevolver = new Dictionary<Guid, ResourceModel>();
             foreach (Guid id in listaRecursos.Keys)
             {
@@ -1714,13 +1754,19 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
         /// <param name="pIdentidadActual">IdentidadActual (null = usuario invitado)</param>
         /// <param name="pBaseRecursosPersonalID">ID de la base de recurso personal en caso de que estemos en uno, NULL para comunidades o MyGnoss y un booleano que indica si la BR es de organización o no</param>
         /// <returns></returns>
-        private Dictionary<Guid, ResourceModel> ObtenerRecursosPorIDInt(List<Guid> pListaRecursosID, string pUrlBaseUrlBusqueda, KeyValuePair<Guid?, bool> pBaseRecursosPersonalID, bool pObtenerIdentidades = true, bool pObtenerDatosExtraIdentidades = false)
+        private Dictionary<Guid, ResourceModel> ObtenerRecursosPorIDInt(List<Guid> pListaRecursosID, string pUrlBaseUrlBusqueda, KeyValuePair<Guid?, bool> pBaseRecursosPersonalID, bool pObtenerIdentidades = true, bool pObtenerDatosExtraIdentidades = false, Guid? pProyectoID = null)
         {
             //Obtiene los modelos de caché
             DocumentacionCL documentacionCL = new DocumentacionCL("acid", "recursos", mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mServicesUtilVirtuosoAndReplication);
-            Dictionary<Guid, ResourceModel> listaRecursos = documentacionCL.ObtenerFichasRecursoMVC(pListaRecursosID, mProyecto.Clave);
+            Guid proyectoID = mProyecto.Clave;
+            Guid? proyConexion = mConfigService.ObtenerProyectoConexion();
+            if ((proyConexion != null && !proyConexion.Equals(Guid.Empty)) && proyConexion.Equals(mProyecto.Clave) && pProyectoID != null && pProyectoID.Equals(ProyectoAD.MetaProyecto))
+            {
+                proyectoID = pProyectoID.Value;
+            }
+            Dictionary<Guid, ResourceModel> listaRecursos = documentacionCL.ObtenerFichasRecursoMVC(pListaRecursosID, proyectoID);
             documentacionCL.Dispose();
-
+            
             List<Guid> listaRecursosPendientes = new List<Guid>();
             foreach (Guid idRecurso in listaRecursos.Keys)
             {
@@ -1733,8 +1779,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
                     listaRecursosPendientes.Add(idRecurso);
                 }
             }
-
-            Guid proyectoID = mProyecto.Clave;
+          
             if (mProyectoOrigenID != Guid.Empty)
             {
                 proyectoID = mProyectoOrigenID;
@@ -2009,6 +2054,16 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
                         recurso.PublishDate = fechaPublicacion;
                         recurso.FullyLoaded = false;
                         recurso.AllowVotes = mParametrosGeneralesRow.VotacionesDisponibles;
+
+                        DateTime? fechaModificacion = recursoMVC.FechaModificacion;
+                        if (fechaModificacion.HasValue && !fechaModificacion.Value.Equals(DateTime.MinValue))
+                        {
+                            recurso.ModificationDate = fechaModificacion.Value;
+                        }
+                        else
+                        {
+                            recurso.ModificationDate = fechaPublicacion;
+                        }
 
                         listaRecursos[recurso.Key] = recurso;
                         listaRecursosBBDD.Add(recurso.Key, recurso);
@@ -2768,10 +2823,12 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
                     ficha.UrlPerson = urlBaseEnlaces + "/" + ficha.UrlPerson.Replace("URLORGANIZACIONREPLACE", mUtilIdiomas.GetText("URLSEM", "ORGANIZACION")).Replace("URLPERSONAREPLACE", mUtilIdiomas.GetText("URLSEM", "PERSONA"));
                 }
 
-                ficha.ListActions = new ProfileModel.UrlActions();
-                ficha.ListActions.UrlFollow = ficha.UrlPerson + "/follow";
-                ficha.ListActions.UrlUnfollow = ficha.UrlPerson + "/unfollow";
-
+                if (IdentidadActual == null || !IdentidadActual.Clave.Equals(id))
+                {
+                    ficha.ListActions = new ProfileModel.UrlActions();
+                    ficha.ListActions.UrlFollow = ficha.UrlPerson + "/follow";
+                    ficha.ListActions.UrlUnfollow = ficha.UrlPerson + "/unfollow";
+                }
 
                 if (listaIdentSeguidas != null)
                 {
@@ -2788,6 +2845,10 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
 
                 if (ficha.TypeProfile == ProfileType.ProfessionalCorporate || ficha.TypeProfile == ProfileType.Organization)
                 {
+                    if (ficha.ListActions == null)
+                    {
+                        ficha.ListActions = new ProfileModel.UrlActions();
+                    }
                     ficha.ListActions.UrlFollow = ficha.UrlOrganization + "/follow";
                     ficha.ListActions.UrlUnfollow = ficha.UrlOrganization + "/unfollow";
 

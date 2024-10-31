@@ -65,8 +65,8 @@ namespace Es.Riam.Metagnoss.ExportarImportar.Exportadores
         /// </summary>
         /// <param name="pOntologia">Ontología</param>
         /// <param name="pGestor">Gestor de libro</param>
-        public ExportadorCurriculum(Ontologia pOntologia, GestionGnoss pGestor, string pIdiomaUsuario, LoggingService loggingService, EntityContext entityContext, ConfigService configService, RedisCacheWrapper redisCacheWrapper, UtilSemCms utilSemCms, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication)
-            : base(pOntologia, pIdiomaUsuario, loggingService, entityContext, configService, redisCacheWrapper, utilSemCms, servicesUtilVirtuosoAndReplication)
+        public ExportadorCurriculum(Ontologia pOntologia, GestionGnoss pGestor, string pIdiomaUsuario, LoggingService loggingService, EntityContext entityContext, ConfigService configService, RedisCacheWrapper redisCacheWrapper, UtilSemCms utilSemCms, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication, VirtuosoAD virtuosoAd)
+            : base(pOntologia, pIdiomaUsuario, loggingService, entityContext, configService, redisCacheWrapper, utilSemCms, servicesUtilVirtuosoAndReplication, virtuosoAd)
         {
             mLoggingService = loggingService;
             mEntityContext = entityContext;
@@ -158,7 +158,16 @@ namespace Es.Riam.Metagnoss.ExportarImportar.Exportadores
                                 gestorIdentidades.GestorOrganizaciones.OrganizacionDW.Merge(orgCn.ObtenerOrganizacionPorID(identPers.OrganizacionID.Value));
                                 orgCn.Dispose();
                             }
-                            identOrg = gestorIdentidades.ListaIdentidades[filasPerfil.First().Identidad.First().IdentidadID];
+                            //if (filasPerfil[0].Identidad != null )
+                            //{
+                                identOrg = gestorIdentidades.ListaIdentidades[filasPerfil[0].Identidad.First().IdentidadID];
+                            //}
+                            //else
+                            //{
+                            //    Perfil perfilOrg = new Perfil(filasPerfil[0], gestorIdentidades, mLoggingService);
+                            //    identOrg = new Identidad(identCN.ObtenerIdentidadesDePerfil(filasPerfil[0].PerfilID).ListaIdentidad[0], perfilOrg, mLoggingService, mEntityContext, mConfigService, mServicesUtilVirtuosoAndReplication);
+                            //}
+                            
                         }
 
                         if (identOrg != null)

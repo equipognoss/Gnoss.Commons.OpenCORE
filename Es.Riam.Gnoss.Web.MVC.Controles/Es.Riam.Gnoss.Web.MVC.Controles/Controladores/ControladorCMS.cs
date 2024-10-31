@@ -17,6 +17,7 @@ using Es.Riam.Gnoss.AD.Virtuoso;
 using Es.Riam.Gnoss.CL;
 using Es.Riam.Gnoss.CL.CMS;
 using Es.Riam.Gnoss.CL.Facetado;
+using Es.Riam.Gnoss.CL.ParametrosAplicacion;
 using Es.Riam.Gnoss.CL.ParametrosProyecto;
 using Es.Riam.Gnoss.CL.ServiciosGenerales;
 using Es.Riam.Gnoss.CL.Tesauro;
@@ -31,6 +32,7 @@ using Es.Riam.Gnoss.Logica.CMS;
 using Es.Riam.Gnoss.Logica.Documentacion;
 using Es.Riam.Gnoss.Logica.Facetado;
 using Es.Riam.Gnoss.Logica.Identidad;
+using Es.Riam.Gnoss.Logica.ParametroAplicacion;
 using Es.Riam.Gnoss.Logica.ServiciosGenerales;
 using Es.Riam.Gnoss.Recursos;
 using Es.Riam.Gnoss.Servicios.ControladoresServiciosWeb;
@@ -45,6 +47,7 @@ using Es.Riam.Interfaces.InterfacesOpen;
 using Es.Riam.Util;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.ViewEngines;
+using Microsoft.Exchange.WebServices.Data;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -71,6 +74,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
         private short? mTipoUbicacionCMSPaginaActual;
 
         private static List<string> mListaIdiomas = null;
+        private Microsoft.AspNetCore.Hosting.IHostingEnvironment mEnv;
 
         /// <summary>
         /// Lista de componentes cacheados
@@ -107,12 +111,13 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
         private EntityContextBASE mEntityContextBASE;
         private ICompositeViewEngine mViewEngine;
         private IUtilServicioIntegracionContinua mUtilServicioIntegracionContinua;
+        private bool mSoloCargarComponentesActivos;
 
         #endregion
 
         #region Constructores
 
-        public ControladorCMS(ControllerBaseGnoss pControlador, Guid? pComponenteID, short? pTipoUbicacionCMSPaginaActual, CommunityModel pModeloComunidad, IHttpContextAccessor httpContextAccessor, LoggingService loggingService, EntityContext entityContext, ConfigService configService, RedisCacheWrapper redisCacheWrapper, GnossCache gnossCache, EntityContextBASE entityContextBASE, VirtuosoAD virtuosoAD, ICompositeViewEngine viewEngine, IUtilServicioIntegracionContinua utilServicioIntegracionContinua, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication)
+        public ControladorCMS(ControllerBaseGnoss pControlador, Guid? pComponenteID, short? pTipoUbicacionCMSPaginaActual, CommunityModel pModeloComunidad, IHttpContextAccessor httpContextAccessor, LoggingService loggingService, EntityContext entityContext, ConfigService configService, RedisCacheWrapper redisCacheWrapper, GnossCache gnossCache, EntityContextBASE entityContextBASE, VirtuosoAD virtuosoAD, ICompositeViewEngine viewEngine, IUtilServicioIntegracionContinua utilServicioIntegracionContinua, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication, Microsoft.AspNetCore.Hosting.IHostingEnvironment env, bool pSoloCargarComponentesActivos)
            : base(loggingService, configService, entityContext, redisCacheWrapper, gnossCache, virtuosoAD, httpContextAccessor, servicesUtilVirtuosoAndReplication)
         {
             mControlador = pControlador;
@@ -129,6 +134,8 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
             mVirtuosoAD = virtuosoAD;
             mViewEngine = viewEngine;
             mUtilServicioIntegracionContinua = utilServicioIntegracionContinua;
+            mEnv = env;
+            mSoloCargarComponentesActivos = pSoloCargarComponentesActivos;
         }
 
         #endregion
@@ -188,7 +195,8 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
             bool.TryParse(RequestParams("pintar"), out pintar);
             PintarComponente = pintar;
 
-            List<string> listaIdiomas = mConfigService.ObtenerListaIdiomas();
+			ParametroAplicacionCL paramCL = new ParametroAplicacionCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mServicesUtilVirtuosoAndReplication);
+			List<string> listaIdiomas = paramCL.ObtenerListaIdiomas();
             if (string.IsNullOrEmpty(idiomaPedido) || !listaIdiomas.Contains(idiomaPedido))
             {
                 //Si no se especifica idioma no se pinta
@@ -197,26 +205,15 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
 
             //Hay que generar el HTML (bool refrescar)
             bool.TryParse(RequestParams("refrescar"), out mRefrescar);
-            if (!PintarComponente)
-            {
-                mRefrescar = true;
-            }
-
+            
             string componentName = RequestParams("ComponentName");
 			string componenteid = RequestParams("componenteid");
 
-			if (!string.IsNullOrEmpty(componentName))
+			if (!string.IsNullOrEmpty(componentName) || !string.IsNullOrEmpty(componenteid))
             {
                 idiomaPedido = UtilIdiomas.LanguageCode;
                 PintarComponente = true;
-                mRefrescar = false;
             }
-			else if (!string.IsNullOrEmpty(componenteid))
-			{
-				idiomaPedido = UtilIdiomas.LanguageCode;
-				PintarComponente = true;
-				mRefrescar = false;
-			}
 
 			return CargarComponente(PintarComponente, mRefrescar, idiomaPedido);
         }
@@ -347,9 +344,10 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
         public CMSComponent ObtenerFichaDeComponente(CMSBloque pCMSBloque, CMSComponente pComponente, string pIdioma)
         {
             CMSComponent fichaComponente = null;
+			ParametroAplicacionCL paramCL = new ParametroAplicacionCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mServicesUtilVirtuosoAndReplication);
 
-            //Comprobamos su cumple el idioma
-            bool cumpleIdioma = !mControlador.ParametroProyecto.ContainsKey(ParametroAD.PropiedadContenidoMultiIdioma) && (!mControlador.ParametroProyecto.ContainsKey(ParametroAD.PropiedadCMSMultiIdioma) || mControlador.ParametroProyecto[ParametroAD.PropiedadCMSMultiIdioma] == "0") || pComponente.ListaIdiomasDisponibles(mConfigService.ObtenerListaIdiomas()).Contains(IdiomaUsuario);
+			//Comprobamos su cumple el idioma
+			bool cumpleIdioma = !mControlador.ParametroProyecto.ContainsKey(ParametroAD.PropiedadContenidoMultiIdioma) && (!mControlador.ParametroProyecto.ContainsKey(ParametroAD.PropiedadCMSMultiIdioma) || mControlador.ParametroProyecto[ParametroAD.PropiedadCMSMultiIdioma] == "0") || pComponente.ListaIdiomasDisponibles(paramCL.ObtenerListaIdiomas()).Contains(IdiomaUsuario);
 
             //Comprobamos si cumple la privacidad
             bool cumplePrivacidad = true;
@@ -386,7 +384,6 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
             {
                 try
                 {
-
                     if (pComponente.TipoComponenteCMS == TipoComponenteCMS.Faceta && ((CMSComponenteFaceta)pComponente).TipoPresentacionFaceta != TipoPresentacionFacetas.Normal)
                     {
                         CargarJSGraficasGoogle();
@@ -469,7 +466,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
                         }
                         else if (pComponente is CMSComponenteBuscadorSPARQL)
                         {
-                            fichaComponente = ObtenerFichaBuscadorSPARQL((CMSComponenteBuscadorSPARQL)pComponente, pIdioma, 1, "");
+                            fichaComponente = ObtenerFichaBuscadorSPARQL((CMSComponenteBuscadorSPARQL)pComponente, pIdioma, 1, RequestParams("filtro"));
                         }
                         else if (pComponente is CMSComponenteUltimosRecursosVisitados)
                         {
@@ -599,50 +596,30 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
 
         private string ObtenerComponenteVistaPersonalizada(CMSComponente pComponente, string pNombreVista)
         {
-            string nombreVista = pNombreVista;
-
-            List<string> listaPersonalizaciones = Comunidad.ListaPersonalizaciones;
-            List<string> listaPersonalizacionesEcosistema = Comunidad.ListaPersonalizacionesEcosistema;
-
-            if ((listaPersonalizaciones != null && listaPersonalizaciones.Count > 0) || (listaPersonalizacionesEcosistema != null && listaPersonalizacionesEcosistema.Count > 0))
+            if (pComponente.Personalizacion.HasValue)
             {
-                List<VistaVirtualCMS> filas = VistaVirtualDW.ListaVistaVirtualCMS.Where(item => item.TipoComponente.Equals(nombreVista)).ToList();
+                VistaVirtualCMS filaVistaVirtualCMS = VistaVirtualDW.ListaVistaVirtualCMS.Find(item => item.TipoComponente.Equals(pNombreVista) && item.PersonalizacionComponenteID == pComponente.Personalizacion);
 
-                if (filas.Count > 0)
+                if (filaVistaVirtualCMS != null)
                 {
-                    //Devolvemos la primera vista personalizada
-                    string nombreVistaDefecto = filas.First().PersonalizacionComponenteID.ToString();
-                    if (ComprobarExisteVista(nombreVistaDefecto))
+                    string nombreVista = filaVistaVirtualCMS.PersonalizacionComponenteID.ToString();
+                    if (ComprobarExisteVista(nombreVista))
                     {
-                        nombreVista = nombreVistaDefecto;
+                        return nombreVista.Replace("/Views/CMSPagina/", "").Replace(".cshtml", "");
                     }
-                }
-
-                if (pComponente.Personalizacion.HasValue)
-                {
-                    VistaVirtualCMS filaVistaVirtualCMS = filas.FirstOrDefault(f => f.PersonalizacionComponenteID == pComponente.Personalizacion);
-
-                    if (filaVistaVirtualCMS != null)
-                    {
-                        string nombreVistaAux = filaVistaVirtualCMS.PersonalizacionComponenteID.ToString();
-                        if (ComprobarExisteVista(nombreVistaAux))
-                        {
-                            nombreVista = nombreVistaAux;
-                        }
-                    }
-
                 }
             }
-            return nombreVista.Replace("/Views/CMSPagina/", "").Replace(".cshtml", "");
+            
+            return pNombreVista;
         }
 
         private bool ComprobarExisteVista(string pNombreVista)
         {
-            if (Comunidad.ListaPersonalizaciones.Contains("/Views/CMSPagina/" + pNombreVista + ".cshtml"))
+            if (Comunidad.ListaPersonalizaciones.Contains($"/Views/CMSPagina/{pNombreVista}.cshtml"))
             {
                 return true;
             }
-            else if (Comunidad.ListaPersonalizacionesEcosistema.Contains("/Views/CMSPagina/" + pNombreVista + ".cshtml"))
+            else if (Comunidad.ListaPersonalizacionesEcosistema.Contains($"/Views/CMSPagina/{pNombreVista}.cshtml"))
             {
                 return true;
             }
@@ -877,7 +854,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
         /// <returns></returns>
         public CMSComponentHTML ObtenerFichaHtmlLibre(CMSComponenteHTML pComponente, string pIdioma)
         {
-            CMSComponenteHTML componenteHTML = (CMSComponenteHTML)pComponente;
+            CMSComponenteHTML componenteHTML = pComponente;
             CMSComponentHTML fichaComponenteHTMLLibre = new CMSComponentHTML();
             fichaComponenteHTMLLibre.Key = componenteHTML.Clave;
             fichaComponenteHTMLLibre.Styles = componenteHTML.Estilos;
@@ -895,7 +872,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
         /// <returns></returns>
         public CMSComponentHot ObtenerFichaComponenteDestacado(CMSComponenteDestacado pComponente, string pIdioma)
         {
-            CMSComponenteDestacado componenteDestacado = (CMSComponenteDestacado)pComponente;
+            CMSComponenteDestacado componenteDestacado = pComponente;
             CMSComponentHot fichaComponenteDestacado = new CMSComponentHot();
             fichaComponenteDestacado.Key = componenteDestacado.Clave;
             fichaComponenteDestacado.Styles = componenteDestacado.Estilos;
@@ -916,7 +893,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
         /// <returns></returns>
         public CMSComponentGroupComponents ObtenerFichaGrupoComponentes(CMSBloque pCMSBloque, CMSComponenteGrupoComponentes pComponente, string pIdioma)
         {
-            CMSComponenteGrupoComponentes componenteGrupo = (CMSComponenteGrupoComponentes)pComponente;
+            CMSComponenteGrupoComponentes componenteGrupo = pComponente;
             CMSComponentGroupComponents fichaComponenteGrupo = new CMSComponentGroupComponents();
             fichaComponenteGrupo.Key = componenteGrupo.Clave;
             fichaComponenteGrupo.Styles = componenteGrupo.Estilos;
@@ -956,7 +933,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
             {
                 string nombreCampo = UtilCadenas.ObtenerTextoDeIdioma(componenteEnvioCorreo.ListaCamposEnvioCorreo[orden][TipoPropiedadEnvioCorreo.Nombre], pIdioma, ParametrosGeneralesRow.IdiomaDefecto);
                 bool obligatorio = bool.Parse(componenteEnvioCorreo.ListaCamposEnvioCorreo[orden][TipoPropiedadEnvioCorreo.Obligatorio]);
-                CMSComponentMail.CMSFormFiled.CMSFormFiledType TipoCampo = (CMSComponentMail.CMSFormFiled.CMSFormFiledType)short.Parse(componenteEnvioCorreo.ListaCamposEnvioCorreo[orden][TipoPropiedadEnvioCorreo.TipoCampo]); ;
+                CMSComponentMail.CMSFormFiled.CMSFormFiledType TipoCampo = (CMSComponentMail.CMSFormFiled.CMSFormFiledType)short.Parse(componenteEnvioCorreo.ListaCamposEnvioCorreo[orden][TipoPropiedadEnvioCorreo.TipoCampo]);
 
                 CMSComponentMail.CMSFormFiled campoFormulario = new CMSComponentMail.CMSFormFiled();
                 campoFormulario.Name = nombreCampo;
@@ -966,7 +943,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
                 fichaComponenteEnvioCorreo.FormFields.Add(campoFormulario);
             }
             fichaComponenteEnvioCorreo.UrlSendForm = mControlador.BaseURLIdioma;
-            UtilIdiomas utilIdiomasAux = new UtilIdiomas(pIdioma, mLoggingService, mEntityContext, mConfigService);
+            UtilIdiomas utilIdiomasAux = new UtilIdiomas(pIdioma, mLoggingService, mEntityContext, mConfigService,mRedisCacheWrapper);
             if (ProyectoSeleccionado.Clave != ProyectoAD.MetaProyecto)
             {
                 fichaComponenteEnvioCorreo.UrlSendForm = UrlsSemanticas.ObtenerURLComunidad(utilIdiomasAux, mControlador.BaseURLIdioma, ProyectoSeleccionado.NombreCorto);
@@ -999,7 +976,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
             short nivelAnterior = 0;
             Dictionary<int, List<CMSComponentMenu.CMSComponentMenuItem>> listaOpcinesPadresDisponibles = new Dictionary<int, List<CMSComponentMenu.CMSComponentMenuItem>>();
             listaOpcinesPadresDisponibles.Add(0, fichaComponenteMenu.ItemList);
-            UtilIdiomas utilIdiomasAux = new UtilIdiomas(pIdioma, mLoggingService, mEntityContext, mConfigService);
+            UtilIdiomas utilIdiomasAux = new UtilIdiomas(pIdioma, mLoggingService, mEntityContext, mConfigService,mRedisCacheWrapper);
             string urlcomunidad = UrlsSemanticas.ObtenerURLComunidad(utilIdiomasAux, mControlador.BaseURLIdioma, ProyectoSeleccionado.NombreCorto);
             foreach (short orden in componenteMenu.ListaOpcionesMenu.Keys)
             {
@@ -1324,7 +1301,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
             {
                 if (tipoBusqueda.Value == filaPestanya.ProyectoPestanyaMenu.PestanyaID)
                 {
-                    parametros += "&&parametrosAdicionales:" + filaPestanya.CampoFiltro;
+                    parametros += "&&parametrosAdicionales:" + filaPestanya.CampoFiltro.Trim('|');
                 }
             }
 
@@ -1493,7 +1470,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
             fichaComponentebuscador.AttributeSearchTittle = UtilCadenas.ObtenerTextoDeIdioma(pComponente.TituloAtributoDeBusqueda, pIdioma, mControlador.ParametrosGeneralesRow.IdiomaDefecto);
 
             fichaComponentebuscador.UrlSearcherCMS = mControlador.BaseURLIdioma;
-            UtilIdiomas utilIdiomasAux = new UtilIdiomas(pIdioma, mLoggingService, mEntityContext, mConfigService);
+            UtilIdiomas utilIdiomasAux = new UtilIdiomas(pIdioma, mLoggingService, mEntityContext, mConfigService,mRedisCacheWrapper);
             if (mControlador.ProyectoSeleccionado.Clave != ProyectoAD.MetaProyecto)
             {
                 fichaComponentebuscador.UrlSearcherCMS = UrlsSemanticas.ObtenerURLComunidad(utilIdiomasAux, mControlador.BaseURLIdioma, mControlador.ProyectoSeleccionado.NombreCorto);
@@ -1511,14 +1488,14 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
         public CMSComponentRecentActivity ObtenerFichaActividadReciente(CMSComponenteActividadReciente pComponente, string pIdioma, int pPagina)
         {
             CMSComponentRecentActivity fichaComponenteActividadReciente = new CMSComponentRecentActivity();
-            ActividadReciente actividadReciente = new ActividadReciente(mLoggingService, mEntityContext, mConfigService, mHttpContextAccessor, mRedisCacheWrapper, mVirtuosoAD, mGnossCache, mEntityContextBASE, mViewEngine, mUtilServicioIntegracionContinua, mServicesUtilVirtuosoAndReplication);
+            ActividadReciente actividadReciente = new ActividadReciente(mLoggingService, mEntityContext, mConfigService, mHttpContextAccessor, mRedisCacheWrapper, mVirtuosoAD, mGnossCache, mEntityContextBASE, mViewEngine, mUtilServicioIntegracionContinua, mServicesUtilVirtuosoAndReplication, mEnv);
             fichaComponenteActividadReciente.RecentActivity = actividadReciente.ObtenerActividadReciente(pPagina, pComponente.NumeroItems, pComponente.TipoActividadReciente, null, false, pComponente.Clave);
             fichaComponenteActividadReciente.RecentActivity.ComponentKey = pComponente.Clave;
             fichaComponenteActividadReciente.Title = UtilCadenas.ObtenerTextoDeIdioma(pComponente.Titulo, pIdioma, mControlador.ParametrosGeneralesRow.IdiomaDefecto);
             fichaComponenteActividadReciente.Styles = pComponente.Estilos;
 
             fichaComponenteActividadReciente.RecentActivity.UrlLoadMoreActivity = mControlador.BaseURLIdioma;
-            UtilIdiomas utilIdiomasAux = new UtilIdiomas(pIdioma, mLoggingService, mEntityContext, mConfigService);
+            UtilIdiomas utilIdiomasAux = new UtilIdiomas(pIdioma, mLoggingService, mEntityContext, mConfigService,mRedisCacheWrapper);
             if (mControlador.ProyectoSeleccionado.Clave != ProyectoAD.MetaProyecto)
             {
                 fichaComponenteActividadReciente.RecentActivity.UrlLoadMoreActivity = UrlsSemanticas.ObtenerURLComunidad(utilIdiomasAux, mControlador.BaseURLIdioma, mControlador.ProyectoSeleccionado.NombreCorto);
@@ -1657,7 +1634,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
             fichaComponenteFaceta.PresentatioType = (CMSComponentFacet.CMSComponentFacetPresentation)(short)pComponente.TipoPresentacionFaceta;
 
             fichaComponenteFaceta.UrlSearcherCMS = mControlador.BaseURLIdioma;
-            UtilIdiomas utilIdiomasAux = new UtilIdiomas(pIdioma, mLoggingService, mEntityContext, mConfigService);
+            UtilIdiomas utilIdiomasAux = new UtilIdiomas(pIdioma, mLoggingService, mEntityContext, mConfigService, mRedisCacheWrapper);
             if (mControlador.ProyectoSeleccionado.Clave != ProyectoAD.MetaProyecto)
             {
                 fichaComponenteFaceta.UrlSearcherCMS = UrlsSemanticas.ObtenerURLComunidad(utilIdiomasAux, mControlador.BaseURLIdioma, mControlador.ProyectoSeleccionado.NombreCorto);
@@ -1685,7 +1662,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
             GestionTesauro gestTesauro = new GestionTesauro(tesauroCL.ObtenerTesauroDeProyecto(pComponente.ProyectoID), mLoggingService, mEntityContext);
             CategoriaTesauro catTesauro = gestTesauro.ListaCategoriasTesauro[pComponente.ElementoID];
 
-            UtilIdiomas utilIdiomasAux = new UtilIdiomas(pIdioma, mLoggingService, mEntityContext, mConfigService);
+            UtilIdiomas utilIdiomasAux = new UtilIdiomas(pIdioma, mLoggingService, mEntityContext, mConfigService,mRedisCacheWrapper);
 
             fichaComponenteTesauro.CategoryName = UtilCadenas.ObtenerTextoDeIdioma(pComponente.Titulo, utilIdiomasAux.LanguageCode, mControlador.ParametrosGeneralesRow.IdiomaDefecto);
 
@@ -1706,6 +1683,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
                 categoria.Name = catHija.Nombre[pIdioma];
                 categoria.LanguageName = catHija.Nombre[pIdioma];
                 categoria.Key = catHija.Clave;
+                categoria.NumResources = catHija.NumeroElementos;
                 fichaComponenteTesauro.Categories.Add(categoria);
                 i++;
             }
@@ -1726,7 +1704,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
 
             FacetaCL facetaCL = new FacetaCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mServicesUtilVirtuosoAndReplication);
             FacetadoCN facCN = new FacetadoCN(mControlador.UrlIntragnoss, mControlador.ProyectoSeleccionado.Clave.ToString(), mEntityContext, mLoggingService, mConfigService, mVirtuosoAD, mServicesUtilVirtuosoAndReplication);
-            UtilIdiomas utilIdiomasAux = new UtilIdiomas(pIdioma, mLoggingService, mEntityContext, mConfigService);
+            UtilIdiomas utilIdiomasAux = new UtilIdiomas(pIdioma, mLoggingService, mEntityContext, mConfigService,mRedisCacheWrapper);
             fichaComponenteDatosComunidad.ResourcesUrl = UrlsSemanticas.ObtenerURLComunidad(utilIdiomasAux, mControlador.BaseURLIdioma, mControlador.ProyectoSeleccionado.NombreCorto) + "/" + utilIdiomasAux.GetText("URLSEM", "RECURSOS");
             fichaComponenteDatosComunidad.IdentitiesUrl = UrlsSemanticas.ObtenerURLComunidad(mControlador.UtilIdiomas, mControlador.BaseURLIdioma, mControlador.ProyectoSeleccionado.NombreCorto) + "/" + utilIdiomasAux.GetText("URLSEM", "PERSONASYORGANIZACIONES");
 
@@ -1790,7 +1768,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
         public CMSComponentRecommendedUsers ObtenerFichaUsuariosRecomendados(CMSComponenteUsuariosRecomendados pComponente, string pIdioma)
         {
             CMSComponentRecommendedUsers fichaComponenteUsuariosRecomendados = new CMSComponentRecommendedUsers();
-            UtilIdiomas utilIdiomasAux = new UtilIdiomas(pIdioma, mLoggingService, mEntityContext, mConfigService);
+            UtilIdiomas utilIdiomasAux = new UtilIdiomas(pIdioma, mLoggingService, mEntityContext, mConfigService,mRedisCacheWrapper);
             if (string.IsNullOrEmpty(pComponente.Titulo))
             {
                 fichaComponenteUsuariosRecomendados.Title = utilIdiomasAux.GetText("COMADMINCMS", "PERSONASQUEDEBERIASCONOCER");
@@ -1893,7 +1871,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
             }
 
             fichaComponenteListadoRecursos.UrlSearcherCMS = mControlador.BaseURLIdioma;
-            UtilIdiomas utilIdiomasAux = new UtilIdiomas(pIdioma, mLoggingService, mEntityContext, mConfigService);
+            UtilIdiomas utilIdiomasAux = new UtilIdiomas(pIdioma, mLoggingService, mEntityContext, mConfigService,mRedisCacheWrapper);
             if (mControlador.ProyectoSeleccionado.Clave != ProyectoAD.MetaProyecto)
             {
                 fichaComponenteListadoRecursos.UrlSearcherCMS = UrlsSemanticas.ObtenerURLComunidad(utilIdiomasAux, mControlador.BaseURLIdioma, mControlador.ProyectoSeleccionado.NombreCorto);
@@ -1921,7 +1899,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
             fichaComponenteFichaDescripcionDocumento.Title = UtilCadenas.ObtenerTextoDeIdioma(pComponente.Titulo, pIdioma, mControlador.ParametrosGeneralesRow.IdiomaDefecto);
             fichaComponenteFichaDescripcionDocumento.Key = pComponente.Clave;
             fichaComponenteFichaDescripcionDocumento.Styles = pComponente.Estilos;
-            UtilIdiomas utilIdiomasAux = new UtilIdiomas(pIdioma, mLoggingService, mEntityContext, mConfigService);
+            UtilIdiomas utilIdiomasAux = new UtilIdiomas(pIdioma, mLoggingService, mEntityContext, mConfigService,mRedisCacheWrapper);
             fichaComponenteFichaDescripcionDocumento.SemanticResourceModel = SemCmsController.ObtenerControladorSemCMS(documento, mControlador.ProyectoSeleccionado, IdentidadActual, mControlador.BaseURLFormulariosSem, utilIdiomasAux, mControlador.BaseURL, mControlador.BaseURLIdioma, mControlador.BaseURLContent, mControlador.BaseURLStatic, mControlador.UrlIntragnoss, false, null, null).SemanticResourceModel;
 
             return fichaComponenteFichaDescripcionDocumento;
@@ -1962,12 +1940,12 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
                 GestionIdentidades gestorIdentidadesSiguiendo = new GestionIdentidades(identidadCN.ObtenerIdentidadesSusucritasPorPerfil(PerfilID), mLoggingService, mEntityContext, mConfigService, mServicesUtilVirtuosoAndReplication);
                 numSiguiendo = gestorIdentidadesSiguiendo.ListaIdentidades.Count;
 
-                UtilIdiomas utilIdiomasAux = new UtilIdiomas(pIdioma, mLoggingService, mEntityContext, mConfigService);
+                UtilIdiomas utilIdiomasAux = new UtilIdiomas(pIdioma, mLoggingService, mEntityContext, mConfigService, mRedisCacheWrapper);
 
                 fichaComponenteResumenPerfil = new CMSComponentProfileSummary();
                 fichaComponenteResumenPerfil.ProfileUrl = UrlsSemanticas.ObtenerUrlMiPerfil(mControlador.BaseURL, utilIdiomasAux, "", mControlador.UrlPerfil);
                 fichaComponenteResumenPerfil.ProfileName = IdentidadActual.Nombre();
-                fichaComponenteResumenPerfil.ProfileUrlImage = mControlador.BaseURLContent + "/" + UtilArchivos.ContentImagenes + IdentidadActual.UrlImagenGrande; ;
+                fichaComponenteResumenPerfil.ProfileUrlImage = mControlador.BaseURLContent + "/" + UtilArchivos.ContentImagenes + IdentidadActual.UrlImagenGrande;
                 fichaComponenteResumenPerfil.ProfileFollowersUrl = UrlsSemanticas.ObtenerUrlMiPerfil(mControlador.BaseURL, utilIdiomasAux, "", mControlador.UrlPerfil) + "?seguidores";
                 fichaComponenteResumenPerfil.ProfileFollowersNumber = numSeguidores;
                 fichaComponenteResumenPerfil.ProfileFollowingUrl = UrlsSemanticas.ObtenerUrlMiPerfil(mControlador.BaseURL, utilIdiomasAux, "", mControlador.UrlPerfil) + "?sigue-a";
@@ -2149,7 +2127,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
             foreach (Proyecto proy in mListaProyectos)
             {
                 CommunityModel comunidad = new CommunityModel();
-                comunidad.Name = proy.Nombre;
+                comunidad.Name = UtilCadenas.ObtenerTextoDeIdioma(proy.Nombre, pIdioma, IdiomaPorDefecto);
                 comunidad.Description = UtilCadenas.ObtenerTextoDeIdioma(proy.FilaProyecto.Descripcion, mControlador.UtilIdiomas.LanguageCode, mControlador.ParametrosGeneralesRow.IdiomaDefecto);
                 comunidad.ShortName = proy.NombreCorto;
                 comunidad.Url = UrlsSemanticas.ObtenerURLComunidad(mControlador.UtilIdiomas, mControlador.BaseURLIdioma, proy.NombreCorto);
@@ -2406,7 +2384,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
         public CMSComponentQuerySQLSERVER ObtenerFichaConsultaSQLSERVER(CMSComponenteConsultaSQLSERVER pComponente, string pIdioma)
         {
             string querySQLSERVER = ReemplazarDatosUsuarioActual(pComponente.QuerySQLSERVER, false);
-
+            querySQLSERVER = ReemplazarParametrosConsulta(querySQLSERVER);
             CMSComponentQuerySQLSERVER fichaComponenteConsultaSQLSERVER = new CMSComponentQuerySQLSERVER();
             fichaComponenteConsultaSQLSERVER.Title = UtilCadenas.ObtenerTextoDeIdioma(pComponente.Titulo, pIdioma, mControlador.ParametrosGeneralesRow.IdiomaDefecto);
             fichaComponenteConsultaSQLSERVER.Key = pComponente.Clave;
@@ -2498,7 +2476,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
                 string parametro = parametroReemplazar.Replace("<param_", "").Trim('>');
 
                 string valor = RequestParams(parametro);
-
+                valor.Replace("'", "''").Replace("\"", "''");
                 pTexto = pTexto.Replace(parametroReemplazar, valor);
 
                 pTexto = ReemplazarParametrosConsulta(pTexto);
@@ -2535,7 +2513,10 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
             //{GETLANG}
             pQuerySPARQL = pQuerySPARQL.Replace("{GETLANG}", pIdioma);
 
-
+            if (pFiltros == null)
+            {
+                pFiltros = "";
+            }
             //querysparql: {PARAM-INICIO|||and ?o >= INICIO||| } {PARAM-FIN|||and ?o <= FIN||| }
             //filtros: INICIO=XXX|||FIN=XXXX
             string[] filtros = pFiltros.Split(new string[] { "|||" }, StringSplitOptions.None);
@@ -2639,19 +2620,19 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
                 UtilIdiomas utilIdiomasUrlOriginal = UtilIdiomas;
                 if (idiomaOriginal != IdiomaUsuario)
                 {
-                    utilIdiomasUrlOriginal = new UtilIdiomas(idiomaOriginal, mLoggingService, mEntityContext, mConfigService);
+                    utilIdiomasUrlOriginal = new UtilIdiomas(idiomaOriginal, mLoggingService, mEntityContext, mConfigService,mRedisCacheWrapper);
                 }
                 else if (urlRelativa.Contains("/"))
                 {
                     if (urlRelativa.Substring(0, urlRelativa.IndexOf("/")).Length == 2)
                     {
                         idiomaOriginal = urlRelativa.Substring(0, urlRelativa.IndexOf("/"));
-                        utilIdiomasUrlOriginal = new UtilIdiomas(idiomaOriginal, mLoggingService, mEntityContext, mConfigService);
+                        utilIdiomasUrlOriginal = new UtilIdiomas(idiomaOriginal, mLoggingService, mEntityContext, mConfigService,mRedisCacheWrapper);
                     }
                 }
                 else
                 {
-                    utilIdiomasUrlOriginal = new UtilIdiomas(IdiomaPorDefecto, mLoggingService, mEntityContext, mConfigService);
+                    utilIdiomasUrlOriginal = new UtilIdiomas(IdiomaPorDefecto, mLoggingService, mEntityContext, mConfigService,mRedisCacheWrapper);
                 }
 
                 string pUrlAux = pUrl;
@@ -2670,15 +2651,15 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
                     pUrlAux = pUrlAux.Replace(urlComunidad + "/", "");
                 }
 
-                ProyectoPestanyaMenu pestanyaBusqueda = mControlador.ProyectoSeleccionado.ListaPestanyasMenu.Values.FirstOrDefault(p => string.Equals(p.Ruta, pUrlAux, StringComparison.InvariantCultureIgnoreCase));
+                ProyectoPestanyaMenu pestanyaBusqueda = mControlador.ProyectoSeleccionado.ListaPestanyasMenu.Values.FirstOrDefault(p => string.Equals(p.Ruta, pUrlAux, StringComparison.InvariantCultureIgnoreCase) && !p.TipoPestanya.Equals(TipoPestanyaMenu.EnlaceInterno));
 
                 if (pestanyaBusqueda == null)
                 {
                     //SANTI. Comprobar primero que empieza por pUrlAux +  @es. Si es nulo comprobar que contiene ||| + pUrlAux + @ + idiomaOriginal
-                    pestanyaBusqueda = mControlador.ProyectoSeleccionado.ListaPestanyasMenu.Values.FirstOrDefault(item => !string.IsNullOrEmpty(item.Ruta) && item.Ruta.StartsWith($"{pUrlAux}@es", StringComparison.InvariantCultureIgnoreCase));
+                    pestanyaBusqueda = mControlador.ProyectoSeleccionado.ListaPestanyasMenu.Values.FirstOrDefault(item => !string.IsNullOrEmpty(item.Ruta) && item.Ruta.StartsWith($"{pUrlAux}@es", StringComparison.InvariantCultureIgnoreCase) && !item.TipoPestanya.Equals(TipoPestanyaMenu.EnlaceInterno));
                     if (pestanyaBusqueda == null)
                     {
-                        pestanyaBusqueda = mControlador.ProyectoSeleccionado.ListaPestanyasMenu.Values.FirstOrDefault(item => !string.IsNullOrEmpty(item.Ruta) && item.Ruta.Contains($"|||{pUrlAux}@{idiomaOriginal}", StringComparison.InvariantCultureIgnoreCase));
+                        pestanyaBusqueda = mControlador.ProyectoSeleccionado.ListaPestanyasMenu.Values.FirstOrDefault(item => !string.IsNullOrEmpty(item.Ruta) && item.Ruta.Contains($"|||{pUrlAux}@{idiomaOriginal}", StringComparison.InvariantCultureIgnoreCase) && !item.TipoPestanya.Equals(TipoPestanyaMenu.EnlaceInterno));
                         if (pestanyaBusqueda == null)
                         {
                             foreach (Guid idPestanya in mControlador.ProyectoSeleccionado.ListaPestanyasMenu.Keys)
@@ -2781,7 +2762,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
                 {
                     idioma = pUrlAux.Substring(0, pUrlAux.IndexOf("/"));
                 }
-                Recursos.UtilIdiomas utilIdiomasAux = new UtilIdiomas(idioma, mLoggingService, mEntityContext, mConfigService);
+                Recursos.UtilIdiomas utilIdiomasAux = new UtilIdiomas(idioma, mLoggingService, mEntityContext, mConfigService,mRedisCacheWrapper);
 
                 if (pUrl.Contains("?"))
                 {
@@ -2924,8 +2905,8 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
                 {
                     idioma = pUrlAux.Substring(0, pUrlAux.IndexOf("/"));
                 }
-                UtilIdiomas utilIdiomasAux = new UtilIdiomas(idioma, mLoggingService, mEntityContext, mConfigService);
-                UtilIdiomas utilIdiomasActual = new UtilIdiomas(pIdioma, mLoggingService, mEntityContext, mConfigService);
+                UtilIdiomas utilIdiomasAux = new UtilIdiomas(idioma, mLoggingService, mEntityContext, mConfigService,mRedisCacheWrapper);
+                UtilIdiomas utilIdiomasActual = new UtilIdiomas(pIdioma, mLoggingService, mEntityContext, mConfigService,mRedisCacheWrapper);
                 string urlExtra = "";
 
                 if (pUrl.Contains("?"))
@@ -3030,7 +3011,8 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
             {
                 if (mListaIdiomas == null)
                 {
-                    mListaIdiomas = mConfigService.ObtenerListaIdiomas();
+					ParametroAplicacionCL paramCL = new ParametroAplicacionCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mServicesUtilVirtuosoAndReplication);
+					mListaIdiomas = paramCL.ObtenerListaIdiomas();
                 }
                 return mListaIdiomas;
             }
@@ -3068,11 +3050,11 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
                         {
                             proyectoID = ProyectoSeleccionado.FilaProyecto.ProyectoSuperiorID.Value;
                         }
-                        mGestorCMSActual = new GestionCMS(cms2CN.ObtenerComponentePorID(mComponenteID.Value, proyectoID), mLoggingService, mEntityContext);
+                        mGestorCMSActual = new GestionCMS(cms2CN.ObtenerComponentePorID(mComponenteID.Value, proyectoID, mSoloCargarComponentesActivos), mLoggingService, mEntityContext);
 
                         if (!mGestorCMSActual.ListaComponentes.Any())
                         {
-                            mGestorCMSActual = new GestionCMS(cms2CN.ObtenerComponentePorID(mComponenteID.Value, ProyectoSeleccionado.Clave), mLoggingService, mEntityContext);
+                            mGestorCMSActual = new GestionCMS(cms2CN.ObtenerComponentePorID(mComponenteID.Value, ProyectoSeleccionado.Clave, mSoloCargarComponentesActivos), mLoggingService, mEntityContext);
                         }
 
                         var listaGrupos = mGestorCMSActual.ListaComponentes.Values.Where(item => item is CMSComponenteGrupoComponentes).ToList();
@@ -3084,7 +3066,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
                                 CMSComponenteGrupoComponentes grupo = (CMSComponenteGrupoComponentes)componente;
                                 foreach (Guid idComponente in grupo.ListaGuids)
                                 {
-                                    mGestorCMSActual.CMSDW.Merge(cms2CN.ObtenerComponentePorID(idComponente, proyectoID));
+                                    mGestorCMSActual.CMSDW.Merge(cms2CN.ObtenerComponentePorID(idComponente, proyectoID, mSoloCargarComponentesActivos));
                                 }
                             }
                         }
@@ -3101,7 +3083,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
             CMSCN cmsCN = new CMSCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
             foreach (Guid idComponente in pGrupoComponentes.ListaGuids)
             {
-                mGestorCMSActual.CMSDW.Merge(cmsCN.ObtenerComponentePorID(idComponente, ProyectoSeleccionado.Clave));
+                mGestorCMSActual.CMSDW.Merge(cmsCN.ObtenerComponentePorID(idComponente, ProyectoSeleccionado.Clave, mSoloCargarComponentesActivos));
             }
 
             mGestorCMSActual.CargarComponentes();

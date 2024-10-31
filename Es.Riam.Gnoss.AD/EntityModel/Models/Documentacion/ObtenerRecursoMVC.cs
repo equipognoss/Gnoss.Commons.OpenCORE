@@ -27,6 +27,7 @@ namespace Es.Riam.Gnoss.AD.EntityModel.Models.Documentacion
         public string NombreElementoVinculado { get; set; }
         public Guid? IdentidadPublicacionID { get; set; }
         public DateTime? FechaPublicacion { get; set; }
+        public DateTime? FechaModificacion { get; set; }
         public short TipoPublicacion { get; set; }
         public bool PrivadoEditores { get; set; }
         public int NumeroComentarios { get; set; }

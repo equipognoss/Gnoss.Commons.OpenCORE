@@ -47,7 +47,7 @@ namespace Es.Riam.Gnoss.Servicios.ControladoresServiciosWeb
             parametros.Add("pParametros", pParametros);
             parametros.Add("pPrimeraCarga", pPrimeraCarga.ToString());
             parametros.Add("pLanguageCode", pLanguageCode);
-            parametros.Add("pNumeroParteResultados",pNumeroParteResultados.ToString());
+            parametros.Add("pNumeroParteResultados", pNumeroParteResultados.ToString(new System.Globalization.CultureInfo("en-US")));
             parametros.Add("pFiltroContexto", pFiltroContexto);
             parametros.Add("pJson", pJson.ToString());
             string tokenAfinidad = string.Empty;

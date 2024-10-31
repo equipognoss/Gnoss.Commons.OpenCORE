@@ -20,6 +20,9 @@ using Es.Riam.Gnoss.Util.General;
 using Es.Riam.Gnoss.Web.MVC.Models;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
+using Npgsql;
+using Oracle.ManagedDataAccess.Client;
+using OracleInternal.SqlAndPlsqlParser.RuleProcessors;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -28,6 +31,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading;
+using static Microsoft.Azure.Amqp.Serialization.SerializableType;
 
 
 namespace Es.Riam.Gnoss.AD.Documentacion
@@ -3050,7 +3054,7 @@ namespace Es.Riam.Gnoss.AD.Documentacion
             {
                 diccionario = new Dictionary<Guid, double>();
 
-                List<RegistroVotoDocumento> consulta = mEntityContext.Voto.JoinVotoDocumento().JoinDocumento().Where(item => item.Voto.IdentidadID.Equals(pIdentidadID) && !item.Documento.CreadorID.Value.Equals(pIdentidadID) && pListaDocumentosID.Contains(item.Documento.DocumentoID)).Select(item => new RegistroVotoDocumento
+                List<RegistroVotoDocumento> consulta = mEntityContext.Voto.JoinVotoDocumento().JoinDocumento().Where(item => item.Voto.IdentidadID.Equals(pIdentidadID) && !item.Documento.CreadorID.Equals(pIdentidadID) && pListaDocumentosID.Contains(item.Documento.DocumentoID)).Select(item => new RegistroVotoDocumento
                 {
                     DocumentoID = item.VotoDocumento.DocumentoID,
                     Voto = item.Voto.Voto1
@@ -3417,14 +3421,13 @@ namespace Es.Riam.Gnoss.AD.Documentacion
         {
             List<Guid> listaRecursos = new List<Guid>();
 
-            string condicionProyecto = "";
             if (pProyectoID.HasValue && !pProyectoID.Value.Equals(Guid.Empty))
             {
-                listaRecursos = mEntityContext.Documento.Where(documento => documento.Tipo.Equals(TiposDocumentacion.Semantico) && !documento.Eliminado && documento.FechaModificacion > fecha && documento.ProyectoID.Equals(pProyectoID)).Select(doc => doc.DocumentoID).ToList();
+                listaRecursos = mEntityContext.Documento.Where(documento => documento.Tipo.Equals((short)TiposDocumentacion.Semantico) && !documento.Eliminado && documento.FechaModificacion > fecha && documento.ProyectoID.Equals(pProyectoID)).Select(doc => doc.DocumentoID).ToList();
             }
             else
             {
-                listaRecursos = mEntityContext.Documento.Where(documento => documento.Tipo.Equals(TiposDocumentacion.Semantico) && !documento.Eliminado && documento.FechaModificacion > fecha).Select(doc => doc.DocumentoID).ToList();
+                listaRecursos = mEntityContext.Documento.Where(documento => documento.Tipo.Equals((short)TiposDocumentacion.Semantico) && !documento.Eliminado && documento.FechaModificacion > fecha).Select(doc => doc.DocumentoID).ToList();
             }
 
             return listaRecursos;
@@ -3699,7 +3702,7 @@ namespace Es.Riam.Gnoss.AD.Documentacion
         {
             return mEntityContext.Documento.Where(doc => doc.DocumentoID.Equals(pDocumentoID)).FirstOrDefault();            
         }
-
+        
         /// <summary>
         /// Obtiene un documento a partir de su identificador.
         /// </summary>
@@ -4049,6 +4052,16 @@ namespace Es.Riam.Gnoss.AD.Documentacion
             return dataWrapperDocumentacion;
         }
 
+        /// <summary>
+        /// Obtiene todas las bases de recursos del documento id pasado por parámetro
+        /// </summary>
+        /// <param name="pDocumentoID">Identificador del documento</param>
+        /// <returns>Lista de DocumentoWebVinBaseRecursos del documento pasado por parámetro</returns>
+        public List<DocumentoWebVinBaseRecursos> ObtenerListaDocumentoWebVinBaseRecursoPorDocumentoID(Guid pDocumentoID)
+        {
+            return mEntityContext.DocumentoWebVinBaseRecursos.Where(item => item.DocumentoID.Equals(pDocumentoID)).ToList();
+        }
+
         public List<DocumentoWebVinBaseRecursos> ObtenerDocumentoWebVinBRPorDocIDYProyID(Guid pDocumentoID, Guid pProyectoID)
         {
             return mEntityContext.DocumentoWebVinBaseRecursos.Join(mEntityContext.BaseRecursosProyecto, docWebVin => docWebVin.BaseRecursosID, baseRecProy => baseRecProy.BaseRecursosID, (docWebVin, baseRecProy) => new
@@ -4383,6 +4396,17 @@ namespace Es.Riam.Gnoss.AD.Documentacion
             }
             return dataWrapperDocumentacion;
         }
+
+        /// <summary>
+        /// Comprueba si el documento ya esta vincualdo o viceversa
+        /// </summary>
+        /// <param name="pDocumentoID">ID del documento</param>
+        /// <param name="pDocumentoVincID">ID del documento a vincular</param>
+        public bool EstaVinculadoDocumento(Guid pDocumentoID, Guid pDocumentoVincID)
+        {
+            return mEntityContext.DocumentoVincDoc.Any(doc => (doc.DocumentoID.Equals(pDocumentoID) && doc.DocumentoVincID.Equals(pDocumentoVincID)) || (doc.DocumentoID.Equals(pDocumentoVincID) && doc.DocumentoVincID.Equals(pDocumentoID)));
+        }
+
         public string obtenerIDDesdeURI(string URIID) { return URIID.Substring(URIID.IndexOf("gnoss") + 6); }
         /// <summary>
         /// 
@@ -5410,7 +5434,7 @@ namespace Es.Riam.Gnoss.AD.Documentacion
 
             if (pDocumentoIDs.Count > 0)
             {
-                var resultado = mEntityContext.Documento.JoinDocumentoWebVinBaseRecursosDocumento().JoinBaseRecursosProyecto().JoinProyecto().Where(objeto => !objeto.Documento.Eliminado && objeto.Documento.UltimaVersion && !objeto.Documento.Borrador && !objeto.DocumentoWebVinBaseRecursos.Eliminado && pDocumentoIDs.Contains(objeto.Documento.DocumentoID)).Select(objeto => new { objeto.Documento.DocumentoID, objeto.Proyecto.NombreCorto }).ToList(); ;
+                var resultado = mEntityContext.Documento.JoinDocumentoWebVinBaseRecursosDocumento().JoinBaseRecursosProyecto().JoinProyecto().Where(objeto => !objeto.Documento.Eliminado && objeto.Documento.UltimaVersion && !objeto.Documento.Borrador && !objeto.DocumentoWebVinBaseRecursos.Eliminado && pDocumentoIDs.Contains(objeto.Documento.DocumentoID)).Select(objeto => new { objeto.Documento.DocumentoID, objeto.Proyecto.NombreCorto }).ToList();
 
                 foreach (var fila in resultado)
                 {
@@ -5506,6 +5530,13 @@ namespace Es.Riam.Gnoss.AD.Documentacion
 
         #region Ontologías
 
+        public class DocumentoConsulta
+        {
+            public Documento Documento { get; set; }
+            public DocumentoWebVinBaseRecursos DocumentoWebVinBaseRecursos { get; set; }
+            public BaseRecursosProyecto BaseRecursosProyecto { get; set; }
+        }
+
         /// <summary>
         /// Carga el dataSet con las ontologías del proyecto.
         /// </summary>
@@ -5515,11 +5546,16 @@ namespace Es.Riam.Gnoss.AD.Documentacion
         /// <param name="pTraerSecundarias">Indica si hay que cargar ontologías secundarias</param>
         /// <param name="pTraerOntosEntorno">Indica si deben traerse las ontologías del entorno</param>
         public void ObtenerOntologiasProyecto(Guid pProyectoID, DataWrapperDocumentacion pDataWrapperDocumentacion, bool pTraerProtegidos, bool pTraerSecundarias, bool pTraerOntosEntorno, bool pTraerDocWebVinBaseRecursos)
-        {
+        {  
             List<Documento> listaDocs = new List<Documento>();
             if (pTraerSecundarias)
             {
-                listaDocs = mEntityContext.Documento.JoinDocumentoWebVinBaseRecursosDocumento().JoinBaseRecursosProyecto().Where(objeto => (objeto.Documento.Tipo.Equals((short)TiposDocumentacion.Ontologia) || objeto.Documento.Tipo.Equals((short)TiposDocumentacion.OntologiaSecundaria)) && objeto.BaseRecursosProyecto.ProyectoID.Equals(pProyectoID) && !objeto.Documento.Eliminado && !objeto.DocumentoWebVinBaseRecursos.Eliminado).Select(objeto => objeto.Documento).ToList();
+                var listaAux = mEntityContext.Documento.JoinDocumentoWebVinBaseRecursosDocumento().JoinBaseRecursosProyecto().Where(objeto => objeto.Documento.Tipo.Equals((short)TiposDocumentacion.Ontologia) || objeto.Documento.Tipo.Equals((short)TiposDocumentacion.OntologiaSecundaria)).ToList();
+
+                listaDocs = listaAux.Where(x => x.BaseRecursosProyecto.ProyectoID.Equals(pProyectoID) && !x.Documento.Eliminado && !x.DocumentoWebVinBaseRecursos.Eliminado).Select(x => x.Documento).ToList();
+
+
+                //listaDocs = mEntityContext.Documento.JoinDocumentoWebVinBaseRecursosDocumento().JoinBaseRecursosProyecto().Where(objeto => (objeto.Documento.Tipo.Equals((short)TiposDocumentacion.Ontologia) || objeto.Documento.Tipo.Equals((short)TiposDocumentacion.OntologiaSecundaria)) && objeto.BaseRecursosProyecto.ProyectoID.Equals(pProyectoID) && !objeto.Documento.Eliminado && !objeto.DocumentoWebVinBaseRecursos.Eliminado).Select(objeto => objeto.Documento).ToList();
             }
             else
             {
@@ -5647,11 +5683,10 @@ namespace Es.Riam.Gnoss.AD.Documentacion
                 pNombre = pNombre.Substring(0, pNombre.Length - 1);
             }
 
-
-            var resOnto = mEntityContext.Documento.JoinDocumentoWebVinBaseRecursosDocumento().JoinBaseRecursosProyecto().Where(objeto => (objeto.Documento.Tipo.Equals((short)TiposDocumentacion.Ontologia) || objeto.Documento.Tipo.Equals((short)TiposDocumentacion.OntologiaSecundaria)) && objeto.Documento.Enlace.ToLower().Equals(pNombre.ToLower()) && !objeto.Documento.Eliminado && !objeto.DocumentoWebVinBaseRecursos.Eliminado);
+            var resOnto = mEntityContext.Documento.JoinDocumentoWebVinBaseRecursosDocumento().JoinBaseRecursosProyecto().Where(objeto => (objeto.Documento.Tipo.Equals((short)TiposDocumentacion.Ontologia) || objeto.Documento.Tipo.Equals((short)TiposDocumentacion.OntologiaSecundaria)) && objeto.Documento.Enlace.ToLower().Equals(pNombre.ToLower()));
             if (!ptraerSecundarias)
             {
-                resOnto = mEntityContext.Documento.JoinDocumentoWebVinBaseRecursosDocumento().JoinBaseRecursosProyecto().Where(objeto => objeto.Documento.Tipo.Equals((short)TiposDocumentacion.Ontologia) && objeto.Documento.Enlace.ToLower().Equals(pNombre.ToLower()) && !objeto.Documento.Eliminado && !objeto.DocumentoWebVinBaseRecursos.Eliminado);
+                resOnto = mEntityContext.Documento.JoinDocumentoWebVinBaseRecursosDocumento().JoinBaseRecursosProyecto().Where(objeto => objeto.Documento.Tipo.Equals((short)TiposDocumentacion.Ontologia) && objeto.Documento.Enlace.ToLower().Equals(pNombre.ToLower()));
             }
 
             string patronIDOntologias = mEntityContext.ParametroProyecto.Where(param => param.Parametro.Equals(ParametroAD.ProyectoIDPatronOntologias) && param.ProyectoID.Equals(pProyectoID)).Select(param => param.Valor).FirstOrDefault();
@@ -5671,21 +5706,25 @@ namespace Es.Riam.Gnoss.AD.Documentacion
             {
                 mLoggingService.GuardarLogError(e, "Error al procesar el patronIDOntologia");
             }
-
+            List<Guid> listaIDs = new List<Guid>();
             if (pProyectoID != Guid.Empty)
             {
+                IEnumerable<DocumentoWebVinBaseRecursosDocumentoBaseRecursosProyecto> resOntoMemory;
                 if (patronOntologia != Guid.Empty)
                 {
-                    resOnto = resOnto.Where(objeto => objeto.BaseRecursosProyecto.ProyectoID.Equals(pProyectoID) || objeto.BaseRecursosProyecto.ProyectoID.Equals(patronOntologia));
+                    resOntoMemory = resOnto.ToList().Where(objeto => objeto.BaseRecursosProyecto.ProyectoID.Equals(pProyectoID) || objeto.BaseRecursosProyecto.ProyectoID.Equals(patronOntologia));
                 }
                 else
                 {
-                    resOnto = resOnto.Where(objeto => objeto.BaseRecursosProyecto.ProyectoID.Equals(pProyectoID));
+                    resOntoMemory = resOnto.ToList().Where(objeto => objeto.BaseRecursosProyecto.ProyectoID.Equals(pProyectoID));
                 }
+                listaIDs = resOntoMemory.ToList().Where(objeto => !objeto.Documento.Eliminado && !objeto.DocumentoWebVinBaseRecursos.Eliminado).Select(objeto => objeto.Documento.DocumentoID).ToList().Union(mEntityContext.Documento.Where(doc => doc.Tipo.Equals((short)TiposDocumentacion.Ontologia)).ToList().Where(doc => !doc.Eliminado && doc.Visibilidad == 1 && doc.Enlace.ToLower().Equals(pNombre.ToLower())).Select(doc => doc.DocumentoID)).ToList();
             }
-            List<Guid> listaIDs = resOnto.Select(objeto => objeto.Documento.DocumentoID).Union(mEntityContext.Documento.Where(doc => doc.Tipo.Equals((short)TiposDocumentacion.Ontologia) && !doc.Eliminado && doc.Visibilidad == 1 && doc.Enlace.ToLower().Equals(pNombre.ToLower())).Select(doc => doc.DocumentoID)).ToList();
+            else
+            {
+                listaIDs = resOnto.ToList().Where(objeto => !objeto.Documento.Eliminado && !objeto.DocumentoWebVinBaseRecursos.Eliminado).Select(objeto => objeto.Documento.DocumentoID).ToList().Union(mEntityContext.Documento.Where(doc => doc.Tipo.Equals((short)TiposDocumentacion.Ontologia)).ToList().Where(doc => !doc.Eliminado && doc.Visibilidad == 1 && doc.Enlace.ToLower().Equals(pNombre.ToLower())).Select(doc => doc.DocumentoID)).ToList();
 
-
+            }
             Guid documentoID = Guid.Empty;
 
             if (listaIDs.Count > 0)
@@ -5827,7 +5866,7 @@ namespace Es.Riam.Gnoss.AD.Documentacion
             {
                 AdministradorProyecto = adminProy,
                 Documento = doc
-            }).Where(objeto => (objeto.Documento.Tipo == 7 || objeto.Documento.Tipo == 23) && objeto.AdministradorProyecto.Tipo == 0 && objeto.Documento.Enlace.Equals(pOntologia) && objeto.AdministradorProyecto.UsuarioID.Equals(pUsuarioID) && !objeto.Documento.Eliminado).Any();
+            }).Where(objeto => (objeto.Documento.Tipo == 7 || objeto.Documento.Tipo == 23) && objeto.AdministradorProyecto.Tipo == 0 && objeto.Documento.Enlace.ToLower().Equals(pOntologia.ToLower()) && objeto.AdministradorProyecto.UsuarioID.Equals(pUsuarioID) && !objeto.Documento.Eliminado).Any();
         }
 
         #endregion
@@ -5971,6 +6010,18 @@ namespace Es.Riam.Gnoss.AD.Documentacion
         {
             return mEntityContext.Documento.Where(doc => doc.ProyectoID.Value.Equals(pProyectoID) && doc.ElementoVinculadoID.Value.Equals(pOntologiaID)).Select(doc => doc.DocumentoID).Distinct().ToList();
         }
+
+        /// <summary>
+        /// Obtiene si existen documentos cuyo elemento vinculado es el ID de la ontología
+        /// </summary>
+        /// <param name="pOntologiaID">Identificador de la ontología</param>
+        /// <param name="pProyectoID">Identificador del proyecto</param>
+        /// <returns>True si existe</returns>
+        public bool ExistenVinculadosAOntologiaProyecto(Guid pOntologiaID, Guid pProyectoID)
+        {
+            return mEntityContext.Documento.Any(doc => doc.ProyectoID.Value.Equals(pProyectoID) && doc.ElementoVinculadoID.Value.Equals(pOntologiaID));
+        }
+
         /// <summary>
         /// Obtiene una diccionario cuya clave es el DocumentoId y el valor el nombre de la ontología
         /// </summary>
@@ -5988,81 +6039,94 @@ namespace Es.Riam.Gnoss.AD.Documentacion
             }
             return ontologiasBorrado;
         }
+
         /// <summary>
         /// Borra los documentos de forma FISICA, NO LÓGICA
         /// </summary>
         /// <param name="pDocumentoIN"></param>
         public void BorrarDocumentosScript(List<Guid> pDocumentosIN, Guid pProyectoID)
         {
-            string sqlDeleteDocumento = string.Empty;
-            string sqlSelectDocumento = string.Empty;
+            string deleteDocumentoQuery;
+            string selectDocumentoQuery;
+
+            bool isSQLServerConnection = !(ConexionMaster is NpgsqlConnection) && !(ConexionMaster is OracleConnection);
+
+            string tablock = string.Empty;
+
+            if (isSQLServerConnection)
+            {
+                tablock = "WITH(TABLOCK)";
+            }
+
             if (pDocumentosIN.Count == 1)
             {
-                sqlDeleteDocumento = $"delete from \"Documento\" where \"ElementoVinculadoID\" = {IBD.FormatearGuid(pDocumentosIN.FirstOrDefault())} and \"ProyectoID\" = {IBD.FormatearGuid(pProyectoID)}";
-                sqlSelectDocumento = $"select \"DocumentoID\" from \"Documento\" where \"ElementoVinculadoID\" = {IBD.FormatearGuid(pDocumentosIN.FirstOrDefault())} and \"ProyectoID\" = {IBD.FormatearGuid(pProyectoID)}";
+                deleteDocumentoQuery = $"delete from \"Documento\" {tablock} where \"ElementoVinculadoID\" = {IBD.FormatearGuid(pDocumentosIN.FirstOrDefault())} and \"ProyectoID\" = {IBD.FormatearGuid(pProyectoID)}";
+                selectDocumentoQuery = $"select \"DocumentoID\" from \"Documento\" where \"ElementoVinculadoID\" = {IBD.FormatearGuid(pDocumentosIN.FirstOrDefault())} and \"ProyectoID\" = {IBD.FormatearGuid(pProyectoID)}";
             }
             else
             {
+                StringBuilder stringBuilder = new StringBuilder();
                 string INconsulta = IBD.FormatearGuid(pDocumentosIN[0]);
                 for (int i = 1; i < pDocumentosIN.Count; i++)
                 {
-                    INconsulta += ", " + IBD.FormatearGuid(pDocumentosIN[i]);
+                    stringBuilder.Append($", {IBD.FormatearGuid(pDocumentosIN[i])}");
                 }
-                sqlDeleteDocumento = $"delete from \"Documento\" where \"ElementoVinculadoID\" IN ({INconsulta}) and \"ProyectoID\" = {IBD.FormatearGuid(pProyectoID)}";
-                sqlSelectDocumento = $"select \"DocumentoID\" from \"Documento\" where \"ElementoVinculadoID\" IN ({INconsulta}) and \"ProyectoID\" = {IBD.FormatearGuid(pProyectoID)}";
+                INconsulta += stringBuilder.ToString();
+                deleteDocumentoQuery = $"delete from \"Documento\" {tablock} where \"ElementoVinculadoID\" IN ({INconsulta}) and \"ProyectoID\" = {IBD.FormatearGuid(pProyectoID)}";
+                selectDocumentoQuery = $"select \"DocumentoID\" from \"Documento\" where \"ElementoVinculadoID\" IN ({INconsulta}) and \"ProyectoID\" = {IBD.FormatearGuid(pProyectoID)}";
             }
-            string sqlDocumentoEnEdicion = $"delete from \"DocumentoEnEdicion\" where \"DocumentoID\" IN ({sqlSelectDocumento})";
-            string sqlDeleteVotoDocumento = $"delete from \"VotoDocumento\" where \"DocumentoID\" IN ({sqlSelectDocumento})";
-            string sqlDelteDocumentoWebVinBaseRecursosExtra = $"delete from \"DocumentoWebVinBaseRecursosExtra\" where \"DocumentoID\" IN ({sqlSelectDocumento})";
-            string sqlDelteDocumentoWebVinBaseRecursos = $"delete from \"DocumentoWebVinBaseRecursos\" where \"DocumentoID\" IN ({sqlSelectDocumento})";
-            string sqlDelteDocumentoWebAgCatTesauro = $"delete from \"DocumentoWebAgCatTesauro\" where \"DocumentoID\" IN ({sqlSelectDocumento})";
-            string sqlDeleteDocumentoRolIdentidad = $"delete from \"DocumentoRolIdentidad\" where \"DocumentoID\" IN ({sqlSelectDocumento})";
-            string sqlDeleteHistorialDocumento = $"delete from \"HistorialDocumento\" where \"DocumentoID\" IN ({sqlSelectDocumento})";
-            string sqlDeleteDocumentoComentario = $"delete from \"DocumentoComentario\" where \"DocumentoID\" IN ({sqlSelectDocumento})";
-            string sqlDelteDocumentoRolGrupoIdentidades = $"delete from \"DocumentoRolGrupoIdentidades\" where \"DocumentoID\" IN ({sqlSelectDocumento})";
+            string sqlDocumentoEnEdicion = $"delete from \"DocumentoEnEdicion\" {tablock} where \"DocumentoID\" IN ({selectDocumentoQuery})";
+            string sqlDeleteVotoDocumento = $"delete from \"VotoDocumento\" {tablock} where \"DocumentoID\" IN ({selectDocumentoQuery})";
+            string sqlDelteDocumentoWebVinBaseRecursosExtra = $"delete from \"DocumentoWebVinBaseRecursosExtra\" {tablock} where \"DocumentoID\" IN ({selectDocumentoQuery})";
+            string sqlDelteDocumentoWebVinBaseRecursos = $"delete from \"DocumentoWebVinBaseRecursos\" {tablock} where \"DocumentoID\" IN ({selectDocumentoQuery})";
+            string sqlDelteDocumentoWebAgCatTesauro = $"delete from \"DocumentoWebAgCatTesauro\" {tablock} where \"DocumentoID\" IN ({selectDocumentoQuery})";
+            string sqlDeleteDocumentoRolIdentidad = $"delete from \"DocumentoRolIdentidad\" {tablock} where \"DocumentoID\" IN ({selectDocumentoQuery})";
+            string sqlDeleteHistorialDocumento = $"delete from \"HistorialDocumento\" {tablock} where \"DocumentoID\" IN ({selectDocumentoQuery})";
+            string sqlDeleteDocumentoComentario = $"delete from \"DocumentoComentario\" {tablock} where \"DocumentoID\" IN ({selectDocumentoQuery})";
+            string sqlDelteDocumentoRolGrupoIdentidades = $"delete from \"DocumentoRolGrupoIdentidades\" {tablock} where \"DocumentoID\" IN ({selectDocumentoQuery})";
 
             try
             {
                 bool transaccionIniciada = IniciarTransaccion();
                 DbCommand comsqlDeleteDocumentoRolIdentidad = ObtenerComando(sqlDeleteDocumentoRolIdentidad);
                 comsqlDeleteDocumentoRolIdentidad.CommandTimeout = 600;
-                ActualizarBaseDeDatos(comsqlDeleteDocumentoRolIdentidad);
+                ActualizarBaseDeDatos(comsqlDeleteDocumentoRolIdentidad, false, true, true);
 
                 DbCommand comsqlDeleteDocumentoComentario = ObtenerComando(sqlDeleteDocumentoComentario);
                 comsqlDeleteDocumentoComentario.CommandTimeout = 600;
-                ActualizarBaseDeDatos(comsqlDeleteDocumentoComentario);
+                ActualizarBaseDeDatos(comsqlDeleteDocumentoComentario, false, true, true);
 
                 DbCommand comsqlDeleteHistorialDocumento = ObtenerComando(sqlDeleteHistorialDocumento);
                 comsqlDeleteHistorialDocumento.CommandTimeout = 600;
-                ActualizarBaseDeDatos(comsqlDeleteHistorialDocumento);
+                ActualizarBaseDeDatos(comsqlDeleteHistorialDocumento, false, true, true);
 
                 DbCommand comsqlDelteDocumentoWebVinBaseRecursosExtra = ObtenerComando(sqlDelteDocumentoWebVinBaseRecursosExtra);
                 comsqlDelteDocumentoWebVinBaseRecursosExtra.CommandTimeout = 600;
-                ActualizarBaseDeDatos(comsqlDelteDocumentoWebVinBaseRecursosExtra);
+                ActualizarBaseDeDatos(comsqlDelteDocumentoWebVinBaseRecursosExtra, false, true, true);
 
                 DbCommand comsqlDelteDocumentoWebVinBaseRecursos = ObtenerComando(sqlDelteDocumentoWebVinBaseRecursos);
                 comsqlDelteDocumentoWebVinBaseRecursos.CommandTimeout = 600;
-                ActualizarBaseDeDatos(comsqlDelteDocumentoWebVinBaseRecursos);
+                ActualizarBaseDeDatos(comsqlDelteDocumentoWebVinBaseRecursos, false, true, true);
 
                 DbCommand comsqlDelteDocumentoWebAgCatTesauro = ObtenerComando(sqlDelteDocumentoWebAgCatTesauro);
                 comsqlDelteDocumentoWebAgCatTesauro.CommandTimeout = 600;
-                ActualizarBaseDeDatos(comsqlDelteDocumentoWebAgCatTesauro);
+                ActualizarBaseDeDatos(comsqlDelteDocumentoWebAgCatTesauro, false, true, true);
 
                 DbCommand comsqlDelteDocumentoRolGrupoIdentidades = ObtenerComando(sqlDelteDocumentoRolGrupoIdentidades);
                 comsqlDelteDocumentoRolGrupoIdentidades.CommandTimeout = 600;
-                ActualizarBaseDeDatos(comsqlDelteDocumentoRolGrupoIdentidades);
+                ActualizarBaseDeDatos(comsqlDelteDocumentoRolGrupoIdentidades, false, true, true);
 
                 DbCommand comsqlDeleteVotoDocumento = ObtenerComando(sqlDeleteVotoDocumento);
                 comsqlDeleteVotoDocumento.CommandTimeout = 600;
-                ActualizarBaseDeDatos(comsqlDeleteVotoDocumento);
+                ActualizarBaseDeDatos(comsqlDeleteVotoDocumento, false, true, true);
 
                 DbCommand comsqlDeleteDocumentoEnEdicion = ObtenerComando(sqlDocumentoEnEdicion);
                 comsqlDeleteDocumentoEnEdicion.CommandTimeout = 600;
-                ActualizarBaseDeDatos(comsqlDeleteDocumentoEnEdicion);
+                ActualizarBaseDeDatos(comsqlDeleteDocumentoEnEdicion, false, true, true);
 
-                DbCommand comsqlDeleteDocumento = ObtenerComando(sqlDeleteDocumento);
+                DbCommand comsqlDeleteDocumento = ObtenerComando(deleteDocumentoQuery);
                 comsqlDeleteDocumento.CommandTimeout = 600;
-                ActualizarBaseDeDatos(comsqlDeleteDocumento);
+                ActualizarBaseDeDatos(comsqlDeleteDocumento, false, true, true);
 
                 if (transaccionIniciada)
                 {
@@ -6075,6 +6139,7 @@ namespace Es.Riam.Gnoss.AD.Documentacion
                 throw;
             }
         }
+
         /// <summary>
         /// Obtiene la ontología seleccionada
         /// </summary>
@@ -6632,7 +6697,7 @@ namespace Es.Riam.Gnoss.AD.Documentacion
         public void EjecutarScriptCargaMasiva(string pScript)
         {
             var comando = ObtenerComando(pScript);
-            ActualizarBaseDeDatos(comando, pEjecutarSiEsOracle: true);
+            ActualizarBaseDeDatos(comando, pEjecutarSiEsOracle: true, pEjecutarSiEsPostgres: true);
         }
 
         /// <summary>
@@ -7661,11 +7726,10 @@ namespace Es.Riam.Gnoss.AD.Documentacion
             if (docDW.ListaDocumentoEnEdicion.Count > 0)
             {
                 DocumentoEnEdicion filaEnEdicion = docDW.ListaDocumentoEnEdicion.FirstOrDefault();
-                TimeSpan diferencia = DateTime.Now - filaEnEdicion.FechaEdicion;
 
                 if (DateTime.UtcNow > filaEnEdicion.FechaEdicion)
                 {
-                    //Si hace más de 1 minuto que el recurso estaba en edición y aún sigue marcado como en edición, quiere decir que algo fué mal, elimino la fila de edición. 
+                    //Si hace más de 1 minuto que el recurso estaba en edición y aún sigue marcado como en edición, quiere decir que algo fué mal, elimino la fila de edición. (FechaEdicion se crea con 60 segundos añadidos)
                     docDW.ListaDocumentoEnEdicion.Remove(filaEnEdicion);
                     mEntityContext.EliminarElemento(filaEnEdicion);
 
@@ -7715,7 +7779,7 @@ namespace Es.Riam.Gnoss.AD.Documentacion
                 documentoEnEdicion.DocumentoID = pDocumentoID;
                 documentoEnEdicion.IdentidadID = pIdentidadID;
                 documentoEnEdicion.FechaEdicion = DateTime.UtcNow.AddSeconds(pSegundosDuracionBloqueo);
-                mEntityContext.ChangeTracker.Clear();
+
                 docDW.ListaDocumentoEnEdicion.Add(documentoEnEdicion);
                 mEntityContext.DocumentoEnEdicion.Add(documentoEnEdicion);
                 try
@@ -8510,11 +8574,11 @@ namespace Es.Riam.Gnoss.AD.Documentacion
 
             if (pTipoDocumento.HasValue)
             {
-                dataWrapperDocumentacion.ListaDocumento = mEntityContext.Documento.Where(doc => !doc.Eliminado && doc.TipoEntidad.Equals((short)TipoEntidadVinculadaDocumento.Temporal) && doc.ElementoVinculadoID.Value.Equals(pDocumentoOriginalID) && doc.CreadorID.HasValue && doc.CreadorID.Value.Equals(pIdentidadID) && doc.Tipo.Equals((short)pTipoDocumento.Value)).ToList();
+                dataWrapperDocumentacion.ListaDocumento = mEntityContext.Documento.Where(doc => !doc.Eliminado && doc.TipoEntidad.Equals((short)TipoEntidadVinculadaDocumento.Temporal) && doc.ElementoVinculadoID.Value.Equals(pDocumentoOriginalID) && doc.CreadorID.Equals(pIdentidadID) && doc.Tipo.Equals((short)pTipoDocumento.Value)).ToList();
             }
             else
             {
-                dataWrapperDocumentacion.ListaDocumento = mEntityContext.Documento.Where(doc => !doc.Eliminado && doc.TipoEntidad.Equals((short)TipoEntidadVinculadaDocumento.Temporal) && doc.ElementoVinculadoID.Value.Equals(pDocumentoOriginalID) && doc.CreadorID.HasValue && doc.CreadorID.Value.Equals(pIdentidadID)).ToList();
+                dataWrapperDocumentacion.ListaDocumento = mEntityContext.Documento.Where(doc => !doc.Eliminado && doc.TipoEntidad.Equals((short)TipoEntidadVinculadaDocumento.Temporal) && doc.ElementoVinculadoID.Value.Equals(pDocumentoOriginalID) && doc.CreadorID.Equals(pIdentidadID)).ToList();
             }
 
             return dataWrapperDocumentacion;
@@ -8533,7 +8597,7 @@ namespace Es.Riam.Gnoss.AD.Documentacion
             List<Documento> listaDocumento = new List<Documento>();
             if (!string.IsNullOrEmpty(pNombreDocumentoOriginal))
             {
-                listaDocumento = mEntityContext.Documento.Where(doc => !doc.Eliminado && doc.TipoEntidad.Equals((short)TipoEntidadVinculadaDocumento.Temporal) && doc.Titulo.Equals(pNombreDocumentoOriginal) && doc.CreadorID.HasValue && doc.CreadorID.Value.Equals(pIdentidadID)).ToList();
+                listaDocumento = mEntityContext.Documento.Where(doc => !doc.Eliminado && doc.TipoEntidad.Equals((short)TipoEntidadVinculadaDocumento.Temporal) && doc.Titulo.Equals(pNombreDocumentoOriginal) && doc.CreadorID.Equals(pIdentidadID)).ToList();
                 if (pTipoDocumento.HasValue)
                 {
                     listaDocumento = listaDocumento.Where(doc => doc.Tipo.Equals((short)pTipoDocumento.Value)).ToList();
@@ -8541,7 +8605,7 @@ namespace Es.Riam.Gnoss.AD.Documentacion
             }
             else
             {
-                listaDocumento = mEntityContext.Documento.Where(doc => !doc.Eliminado && doc.TipoEntidad.Equals((short)TipoEntidadVinculadaDocumento.Temporal) && doc.CreadorID.HasValue && doc.CreadorID.Value.Equals(pIdentidadID)).ToList();
+                listaDocumento = mEntityContext.Documento.Where(doc => !doc.Eliminado && doc.TipoEntidad.Equals((short)TipoEntidadVinculadaDocumento.Temporal) && doc.CreadorID.Equals(pIdentidadID)).ToList();
                 if (pTipoDocumento.HasValue)
                 {
                     listaDocumento = listaDocumento.Where(doc => doc.Tipo.Equals((short)pTipoDocumento.Value)).ToList();
@@ -8871,9 +8935,23 @@ namespace Es.Riam.Gnoss.AD.Documentacion
             {
                 DocOriginal = docOriginal,
                 DocVinculado = docVinculado
-            }).Where(objeto => objeto.DocOriginal.ElementoVinculadoID.HasValue && objeto.DocOriginal.Tipo != 7 && objeto.DocVinculado.Tipo == 7 && pListaDocumentosID.Contains(objeto.DocOriginal.DocumentoID)).Select(objeto => objeto.DocVinculado).ToList().Distinct().ToList();
+            }).Where(objeto => objeto.DocOriginal.ElementoVinculadoID.HasValue && objeto.DocOriginal.Tipo != 7 && objeto.DocVinculado.Tipo == 7 && pListaDocumentosID.Contains(objeto.DocOriginal.DocumentoID)).Select(objeto => objeto.DocVinculado).Distinct().ToList();
 
             return dataWrapperDocumentacion;
+        }
+
+        /// <summary>
+        /// Se obtiene el documento vinculado al pasado por parámetro
+        /// </summary>
+        /// <param name="pDocumentoID">Identificador del documento del cual queremos su documento vinculado</param>
+        /// <returns></returns>
+        public Documento ObtenerElementoVinculadoDeDocumento(Guid pDocumentoID)
+        {
+            return mEntityContext.Documento.Join(mEntityContext.Documento, documentoOriginal => documentoOriginal.ElementoVinculadoID, documentoVinculado => documentoVinculado.DocumentoID, (documentoOriginal, documentoVinculado) => new
+            {
+                DocumentoOriginal = documentoOriginal,
+                DocumentoVinculado = documentoVinculado
+            }).Where(item => item.DocumentoOriginal.ElementoVinculadoID.HasValue && item.DocumentoOriginal.DocumentoID.Equals(pDocumentoID)).Select(item => item.DocumentoVinculado).FirstOrDefault();
         }
 
         /// <summary>
@@ -9156,7 +9234,7 @@ namespace Es.Riam.Gnoss.AD.Documentacion
 
             this.sqlSelectOntologiasPrincYSecundariasProyecto = selectDocumento + " FROM Documento INNER JOIN DocumentoWebVinBaseRecursos ON DocumentoWebVinBaseRecursos.DocumentoID = Documento.DocumentoID INNER JOIN BaseRecursosProyecto ON DocumentoWebVinBaseRecursos.BaseRecursosID = BaseRecursosProyecto.BaseRecursosID WHERE (Tipo = " + (short)TiposDocumentacion.Ontologia + " OR Tipo = " + (short)TiposDocumentacion.OntologiaSecundaria + ") AND BaseRecursosProyecto.ProyectoID =" + pIBD.GuidParamValor("ProyectoID") + " AND Documento.Eliminado = 0 AND DocumentoWebVinBaseRecursos.Eliminado = 0 ";
 
-            this.sqlSelectTieneArticulosWikiProyecto = "SELECT " + pIBD.CargarGuid("Documento.DocumentoID") + " FROM Documento INNER JOIN DocumentoWebVinBaseRecursos ON (Documento.DocumentoID=DocumentoWebVinBaseRecursos.DocumentoID) INNER JOIN BaseRecursosProyecto ON BaseRecursosProyecto.BaseRecursosID = DocumentoWebVinBaseRecursos.BaseRecursosID WHERE Documento.Eliminado = 0 AND Documento.UltimaVersion = 1 AND Documento.TipoEntidad=" + (short)TipoEntidadVinculadaDocumento.Web + " AND DocumentoWebVinBaseRecursos.Eliminado=0 AND Documento.Tipo = " + (short)TiposDocumentacion.Wiki + "AND BaseRecursosProyecto.ProyectoID =" + pIBD.GuidParamValor("proyectoID") + ""; ;
+            this.sqlSelectTieneArticulosWikiProyecto = "SELECT " + pIBD.CargarGuid("Documento.DocumentoID") + " FROM Documento INNER JOIN DocumentoWebVinBaseRecursos ON (Documento.DocumentoID=DocumentoWebVinBaseRecursos.DocumentoID) INNER JOIN BaseRecursosProyecto ON BaseRecursosProyecto.BaseRecursosID = DocumentoWebVinBaseRecursos.BaseRecursosID WHERE Documento.Eliminado = 0 AND Documento.UltimaVersion = 1 AND Documento.TipoEntidad=" + (short)TipoEntidadVinculadaDocumento.Web + " AND DocumentoWebVinBaseRecursos.Eliminado=0 AND Documento.Tipo = " + (short)TiposDocumentacion.Wiki + "AND BaseRecursosProyecto.ProyectoID =" + pIBD.GuidParamValor("proyectoID") + "";
 
             #endregion
 

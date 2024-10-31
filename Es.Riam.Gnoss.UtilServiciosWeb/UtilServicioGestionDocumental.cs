@@ -1,6 +1,7 @@
 ﻿using Es.Riam.Gnoss.Util.Configuracion;
 using Es.Riam.Gnoss.Util.General;
 using Es.Riam.Gnoss.Util.Seguridad;
+using Es.Riam.Util;
 using Microsoft.AspNetCore.Http;
 using Newtonsoft.Json;
 using System;
@@ -343,7 +344,8 @@ namespace Es.Riam.Gnoss.UtilServiciosWeb
                         ByteArrayContent bytes = new ByteArrayContent(byteData);
                         contentData = new MultipartFormDataContent();
                         ((MultipartFormDataContent)contentData).Add(bytes, "FileBytes", "FileBytes");
-                    }
+						contentData.Headers.Add("UserAgent", UtilWeb.GenerarUserAgent());
+					}
                     response = client.PostAsync($"{url}", contentData).Result;
                     response.EnsureSuccessStatusCode();
                     result = response.Content.ReadAsStringAsync().Result;
@@ -351,6 +353,7 @@ namespace Es.Riam.Gnoss.UtilServiciosWeb
                 }
                 else
                 {
+                    client.DefaultRequestHeaders.Add("UserAgent", UtilWeb.GenerarUserAgent());
                     response = client.GetAsync(url).Result;
                     response.EnsureSuccessStatusCode();
                     result = response.Content.ReadAsStringAsync().Result;
@@ -391,6 +394,7 @@ namespace Es.Riam.Gnoss.UtilServiciosWeb
 
                 HttpResponseMessage response = null;
                 HttpClient client = new HttpClient();
+                client.DefaultRequestHeaders.Add("UserAgent", UtilWeb.GenerarUserAgent());
                 if (pToken != null)
                 {
                     client.DefaultRequestHeaders.Add("Authorization", $"{pToken.token_type} {pToken.access_token}");
@@ -416,64 +420,7 @@ namespace Es.Riam.Gnoss.UtilServiciosWeb
 
             return result;
         }
-        /// <summary>
-        /// Request an url with an oauth sign
-        /// </summary>
-        /// <param name="httpMethod">Http method (GET, POST, PUT...)</param>
-        /// <param name="url">Url to make the request</param>
-        /// <param name="postData">(Optional) Post data to send in the body request</param>
-        /// <param name="contentType">(Optional) Content type of the postData</param>
-        /// <param name="acceptHeader">(Optional) Accept header</param>
-        /// <returns>Response of the server</returns>
-        private string WebRequestCopia(string httpMethod, string url, byte[] byteData)
-        {
-            mLoggingService.AgregarEntrada("URL => " + url);
-
-            HttpWebRequest webRequest;
-            string responseData = "";
-
-            webRequest = System.Net.WebRequest.Create(url) as HttpWebRequest;
-            webRequest.Method = httpMethod;
-            webRequest.ServicePoint.Expect100Continue = false;
-            webRequest.Timeout = 600000;
-            webRequest.ContentType = "application/x-www-form-urlencoded";
-
-            if (httpMethod == "POST" )
-            {
-                webRequest.ContentLength = 0;
-
-                if (byteData != null)
-                {
-                    webRequest.ContentLength = byteData.Length;
-
-                    Stream dataStream = webRequest.GetRequestStream();
-                    dataStream.Write(byteData, 0, byteData.Length);
-                    dataStream.Close();
-                }
-            }
-            try
-            {
-                responseData = WebResponseGet(webRequest);
-            }
-            catch (WebException ex)
-            {
-                string message;
-                try
-                {
-                    StreamReader sr = new StreamReader(ex.Response.GetResponseStream());
-                    message = sr.ReadToEnd();
-                }
-                catch { }
-
-                // Error reading the error response, throw the original exception
-                throw;
-            }
-
-            webRequest = null;
-
-            return responseData;
-        }
-
+        
         /// <summary>
         /// Make a http get request
         /// </summary>

@@ -1335,6 +1335,25 @@ namespace Es.Riam.Gnoss.AD.Facetado
             pFacetaDW.ListaFacetaConfigProyChart = mEntityContext.FacetaConfigProyChart.Where(item => item.OrganizacionID.Equals(pOrganizacionID) && item.ProyectoID.Equals(pProyectoID)).ToList();
         }
 
+        /// <summary>
+        /// Devuelve el elemento de base de datos FacetaConfigProyChart a partir del identificador del chart
+        /// </summary>
+        /// <param name="pChartID">Identificador del chart</param>
+        /// <returns>FacetaConfigProyChart buscado</returns>
+        public FacetaConfigProyChart ObtenerFacetaConfigProyChartPorID(Guid pChartID)
+        {
+            return mEntityContext.FacetaConfigProyChart.Where(item => item.ChartID.Equals(pChartID)).FirstOrDefault();
+        }
+
+        /// <summary>
+        /// Devuelve una lista de FacetaConfigProyChart de la base de datos a partir de una lista de identificadores
+        /// </summary>
+        /// <param name="pChartsIds">Lista con identificadores de charts</param>
+        /// <returns>Lista de FacetaConfigProyChart buscados</returns>
+        public List<FacetaConfigProyChart> ObtenerListaFacetaConfigProyChartPorIDs(List<Guid> pChartsIds)
+        {
+            return mEntityContext.FacetaConfigProyChart.Where(item => pChartsIds.Contains(item.ChartID)).ToList();
+        }
 
         /// <summary>
         /// Carga en el dataset pasado como parámetro la tabla FacetaConfigProyRanfoFecha
@@ -1561,7 +1580,17 @@ namespace Es.Riam.Gnoss.AD.Facetado
                 AdministradorProyecto = admin,
                 OntologiaProyecto = ontologia
             }).Any(item => item.AdministradorProyecto.Tipo.Equals(0) && item.OntologiaProyecto.OntologiaProyecto1.Equals(pOntologia) && item.AdministradorProyecto.UsuarioID.Equals(pUsuarioID));
+        }
 
+        /// <summary>
+        /// Obtenemos el modelo de base de datos de las facetas para la faceta y proyecto pasado por parámetro
+        /// </summary>
+        /// <param name="pFaceta">Clave de faceta que queremos obtener</param>
+        /// <param name="pProyectoID">Identificador del proytecto del cual queremos obtener las facetas</param>
+        /// <returns>El modelo de base de datos de las facetas solicitadas por parámetro</returns>
+        public List<FacetaObjetoConocimientoProyecto> ObtenerFacetaObjetoConocimientoPorFaceta(string pFaceta, Guid pProyectoID)
+        {
+            return mEntityContext.FacetaObjetoConocimientoProyecto.Where(item => item.Faceta.Equals(pFaceta) && item.ProyectoID.Equals(pProyectoID)).ToList();
         }
 
         private void AgregarNamespacesComoOntologias(List<OntologiaProyecto> pListaFaceta)

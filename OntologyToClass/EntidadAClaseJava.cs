@@ -14,7 +14,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using System.Xml;
 
 namespace OntologiaAClase
@@ -585,7 +584,7 @@ namespace OntologiaAClase
         {
             foreach (KeyValuePair<string, PropiedadTipo> propiedad in propListiedadesTipo)
             {
-                string prefijoPropiedad = UtilCadenas.PrimerCaracterAMayuscula(UtilCadenasOntology.ObtenerPrefijo(dicPref, propiedad.Key, mLoggingService));
+                string prefijoPropiedad = UtilCadenas.PrimerCaracterAMayuscula(UtilCadenasOntology.ObtenerPrefijo(dicPref, propiedad.Key));
                 string nombrePropiedad = UtilCadenasOntology.ObtenerNombrePropJava(propiedad.Key);
                 string tipoPropiedad = "";
                 string aux = "";
@@ -727,7 +726,7 @@ namespace OntologiaAClase
         /// <returns></returns>
         public string ObtenerPrefijoYPropiedad(Dictionary<string, string> pDiccionarioPrefijos, string pRango)
         {
-            return UtilCadenasOntology.ObtenerPrefijo(pDiccionarioPrefijos, pRango, mLoggingService) + ":" + UtilCadenasOntology.ObtenerNombrePropSinNamespaceJava(pRango);
+            return UtilCadenasOntology.ObtenerPrefijo(pDiccionarioPrefijos, pRango) + ":" + UtilCadenasOntology.ObtenerNombrePropSinNamespaceJava(pRango);
         }
 
         /// <summary>
@@ -849,7 +848,7 @@ namespace OntologiaAClase
                 string rango = UtilCadenasOntology.ObtenerNombrePropJava(prop.Rango);
                 if (!rango.Equals("object"))
                 {
-                    string obtenerPrefijo = UtilCadenas.PrimerCaracterAMayuscula(UtilCadenasOntology.ObtenerPrefijo(dicPref, prop.Nombre, mLoggingService));
+                    string obtenerPrefijo = UtilCadenas.PrimerCaracterAMayuscula(UtilCadenasOntology.ObtenerPrefijo(dicPref, prop.Nombre));
                     string nombreProp = UtilCadenasOntology.ObtenerNombrePropJava(prop.Nombre);
                     if (prop.ValorUnico)
                     {
@@ -914,7 +913,7 @@ namespace OntologiaAClase
             if (nodoTitulo != null)
             {
                 nombrePropTituloEntero = nodoTitulo.InnerText;
-                nombrePropTitulo = $"this.{ UtilCadenas.PrimerCaracterAMayuscula(UtilCadenasOntology.ObtenerPrefijo(dicPref, nodoTitulo.InnerText, mLoggingService))}_{ UtilCadenasOntology.ObtenerNombrePropJava(nodoTitulo.InnerText)}";
+                nombrePropTitulo = $"this.{ UtilCadenas.PrimerCaracterAMayuscula(UtilCadenasOntology.ObtenerPrefijo(dicPref, nodoTitulo.InnerText))}_{ UtilCadenasOntology.ObtenerNombrePropJava(nodoTitulo.InnerText)}";
             }
             if (esPrimaria)
             {
@@ -922,14 +921,14 @@ namespace OntologiaAClase
                 if (nodoDescripcion != null)
                 {
                     nombrePropDescripcionEntera = nodoDescripcion.InnerText;
-                    nombrePropDescripcion = $"this.{ UtilCadenas.PrimerCaracterAMayuscula(UtilCadenasOntology.ObtenerPrefijo(dicPref, nodoDescripcion.InnerText, mLoggingService))}_{ UtilCadenasOntology.ObtenerNombrePropJava(nodoDescripcion.InnerText)}";
+                    nombrePropDescripcion = $"this.{ UtilCadenas.PrimerCaracterAMayuscula(UtilCadenasOntology.ObtenerPrefijo(dicPref, nodoDescripcion.InnerText))}_{ UtilCadenasOntology.ObtenerNombrePropJava(nodoDescripcion.InnerText)}";
                 }
             }
         }
 
         private string ObtenerPrefijoPropiedad(Propiedad pPropiedad)
         {
-            string pref = UtilCadenasOntology.ObtenerPrefijo(dicPref, pPropiedad.Nombre, mLoggingService).Trim();
+            string pref = UtilCadenasOntology.ObtenerPrefijo(dicPref, pPropiedad.Nombre).Trim();
             if (!string.IsNullOrEmpty(pref))
             {
                 return UtilCadenas.PrimerCaracterAMayuscula(pref);
@@ -1980,7 +1979,7 @@ namespace OntologiaAClase
         /// <param name="pListaPadrePropiedadesAnidadas">Lista de propiedades anidadas para generar el search</param>
         private void PintarEntidadesAuxiliares(ElementoOntologia pElem, Propiedad pPropiedadPadre, ElementoOntologia pElemPadre, bool pEsOntologia, string pSujetoEntidadSuperior, string pNombrePadres = "this", List<string> pListaPropiedadesSearch = null, List<string> pListaPadrePropiedadesAnidadas = null, List<FacetaObjetoConocimientoProyecto> pListaFacetaObjetoConocimientoProyecto = null, int pNumIteraciones = 0)
         {
-            string prefijoPadre = UtilCadenas.PrimerCaracterAMayuscula(UtilCadenasOntology.ObtenerPrefijo(dicPref, pPropiedadPadre.Nombre, mLoggingService));
+            string prefijoPadre = UtilCadenas.PrimerCaracterAMayuscula(UtilCadenasOntology.ObtenerPrefijo(dicPref, pPropiedadPadre.Nombre));
             string nombrePropPadre = UtilCadenasOntology.ObtenerNombrePropJava(pPropiedadPadre.Nombre);
             string nombreCompletoPadre = $"{pNombrePadres}.{prefijoPadre}_{nombrePropPadre}";
             TiposSujeto tipoSujeto = TiposSujeto.Busqueda;
@@ -2522,12 +2521,12 @@ namespace OntologiaAClase
                 {
                     if (prop.ValorUnico)
                     {
-                        Clase.AppendLine($"{UtilCadenasOntology.Tabs(3)}this.{UtilCadenas.PrimerCaracterAMayuscula(UtilCadenasOntology.ObtenerPrefijo(dicPref, prop.Nombre, mLoggingService))}_{UtilCadenasOntology.ObtenerNombrePropJava(prop.Nombre)}.AddImages(pResource);");
+                        Clase.AppendLine($"{UtilCadenasOntology.Tabs(3)}this.{UtilCadenas.PrimerCaracterAMayuscula(UtilCadenasOntology.ObtenerPrefijo(dicPref, prop.Nombre))}_{UtilCadenasOntology.ObtenerNombrePropJava(prop.Nombre)}.AddImages(pResource);");
                     }
                     else
                     {
-                        Clase.AppendLine($"{UtilCadenasOntology.Tabs(3)}if({ UtilCadenas.PrimerCaracterAMayuscula(UtilCadenasOntology.ObtenerPrefijo(dicPref, prop.Nombre, mLoggingService))}_{UtilCadenasOntology.ObtenerNombrePropJava(prop.Nombre)}!=null){{");
-                        Clase.AppendLine($"{ UtilCadenasOntology.Tabs(4)}for ({UtilCadenasOntology.ObtenerNombrePropJava(prop.Rango)} prop : { UtilCadenas.PrimerCaracterAMayuscula(UtilCadenasOntology.ObtenerPrefijo(dicPref, prop.Nombre, mLoggingService))}_{UtilCadenasOntology.ObtenerNombrePropJava(prop.Nombre)})");
+                        Clase.AppendLine($"{UtilCadenasOntology.Tabs(3)}if({ UtilCadenas.PrimerCaracterAMayuscula(UtilCadenasOntology.ObtenerPrefijo(dicPref, prop.Nombre))}_{UtilCadenasOntology.ObtenerNombrePropJava(prop.Nombre)}!=null){{");
+                        Clase.AppendLine($"{ UtilCadenasOntology.Tabs(4)}for ({UtilCadenasOntology.ObtenerNombrePropJava(prop.Rango)} prop : { UtilCadenas.PrimerCaracterAMayuscula(UtilCadenasOntology.ObtenerPrefijo(dicPref, prop.Nombre))}_{UtilCadenasOntology.ObtenerNombrePropJava(prop.Nombre)})");
                         Clase.AppendLine($"{UtilCadenasOntology.Tabs(3)}{{");
                         Clase.AppendLine($"{UtilCadenasOntology.Tabs(4)}prop.AddImages(pResource);");
                         Clase.AppendLine($"{UtilCadenasOntology.Tabs(4)}}}");
@@ -2591,13 +2590,13 @@ namespace OntologiaAClase
                         {
                             if (propiedad.ValorUnico)
                             {
-                                string nombre = $"this.{ UtilCadenas.PrimerCaracterAMayuscula(UtilCadenasOntology.ObtenerPrefijo(dicPref, propiedad.Nombre, mLoggingService))}_{UtilCadenasOntology.ObtenerNombrePropJava(propiedad.Nombre)}";
+                                string nombre = $"this.{ UtilCadenas.PrimerCaracterAMayuscula(UtilCadenasOntology.ObtenerPrefijo(dicPref, propiedad.Nombre))}_{UtilCadenasOntology.ObtenerNombrePropJava(propiedad.Nombre)}";
                                 AnadirImagenesSimples(propiedad, pEntidad, nombre);
                             }
                             else
                             {
-                                Clase.AppendLine($"{UtilCadenasOntology.Tabs(3)}if(this.{UtilCadenas.PrimerCaracterAMayuscula(UtilCadenasOntology.ObtenerPrefijo(dicPref, propiedad.Nombre, mLoggingService))}_{UtilCadenasOntology.ObtenerNombrePropJava(propiedad.Nombre)}!=null){{");
-                                Clase.AppendLine($"{UtilCadenasOntology.Tabs(4)}for(String prop : this.{UtilCadenas.PrimerCaracterAMayuscula(UtilCadenasOntology.ObtenerPrefijo(dicPref, propiedad.Nombre, mLoggingService))}_{UtilCadenasOntology.ObtenerNombrePropJava(propiedad.Nombre)})");
+                                Clase.AppendLine($"{UtilCadenasOntology.Tabs(3)}if(this.{UtilCadenas.PrimerCaracterAMayuscula(UtilCadenasOntology.ObtenerPrefijo(dicPref, propiedad.Nombre))}_{UtilCadenasOntology.ObtenerNombrePropJava(propiedad.Nombre)}!=null){{");
+                                Clase.AppendLine($"{UtilCadenasOntology.Tabs(4)}for(String prop : this.{UtilCadenas.PrimerCaracterAMayuscula(UtilCadenasOntology.ObtenerPrefijo(dicPref, propiedad.Nombre))}_{UtilCadenasOntology.ObtenerNombrePropJava(propiedad.Nombre)})");
                                 Clase.AppendLine($"{UtilCadenasOntology.Tabs(4)}{{");
                                 AnadirImagenesMultiples(propiedad, pEntidad, "prop");
                                 Clase.AppendLine($"{UtilCadenasOntology.Tabs(4)}}}");
@@ -2649,12 +2648,12 @@ namespace OntologiaAClase
                 {
                     if (prop.ValorUnico)
                     {
-                        Clase.AppendLine($"{UtilCadenasOntology.Tabs(3)}this.{UtilCadenas.PrimerCaracterAMayuscula(UtilCadenasOntology.ObtenerPrefijo(dicPref, prop.Nombre, mLoggingService))}_{UtilCadenasOntology.ObtenerNombrePropJava(prop.Nombre)}.AddFiles(pResource);");
+                        Clase.AppendLine($"{UtilCadenasOntology.Tabs(3)}this.{UtilCadenas.PrimerCaracterAMayuscula(UtilCadenasOntology.ObtenerPrefijo(dicPref, prop.Nombre))}_{UtilCadenasOntology.ObtenerNombrePropJava(prop.Nombre)}.AddFiles(pResource);");
                     }
                     else
                     {
-                        Clase.AppendLine($"{UtilCadenasOntology.Tabs(3)}if({UtilCadenas.PrimerCaracterAMayuscula(UtilCadenasOntology.ObtenerPrefijo(dicPref, prop.Nombre, mLoggingService))}_{UtilCadenasOntology.ObtenerNombrePropJava(prop.Nombre)}!=null){{");
-                        Clase.AppendLine($"{UtilCadenasOntology.Tabs(3)}for({UtilCadenasOntology.ObtenerNombrePropJava(prop.Rango)} prop : {UtilCadenas.PrimerCaracterAMayuscula(UtilCadenasOntology.ObtenerPrefijo(dicPref, prop.Nombre, mLoggingService))}_{UtilCadenasOntology.ObtenerNombrePropJava(prop.Nombre)})");
+                        Clase.AppendLine($"{UtilCadenasOntology.Tabs(3)}if({UtilCadenas.PrimerCaracterAMayuscula(UtilCadenasOntology.ObtenerPrefijo(dicPref, prop.Nombre))}_{UtilCadenasOntology.ObtenerNombrePropJava(prop.Nombre)}!=null){{");
+                        Clase.AppendLine($"{UtilCadenasOntology.Tabs(3)}for({UtilCadenasOntology.ObtenerNombrePropJava(prop.Rango)} prop : {UtilCadenas.PrimerCaracterAMayuscula(UtilCadenasOntology.ObtenerPrefijo(dicPref, prop.Nombre))}_{UtilCadenasOntology.ObtenerNombrePropJava(prop.Nombre)})");
                         Clase.AppendLine($"{UtilCadenasOntology.Tabs(3)}{{");
                         Clase.AppendLine($"{UtilCadenasOntology.Tabs(4)}prop.AddFiles(pResource);");
                         Clase.AppendLine($"{UtilCadenasOntology.Tabs(4)}}}");
@@ -2689,7 +2688,7 @@ namespace OntologiaAClase
                 foreach (Propiedad propiedad in propTipoArchivo)
                 {
                     ObjetoPropiedad objeto = listaObjetosPropiedad.FirstOrDefault(x => x.NombrePropiedad.Equals(propiedad.Nombre) && x.NombreEntidad.Equals(propiedad.ElementoOntologia.TipoEntidad));
-                    string prefijoPropiedad = UtilCadenas.PrimerCaracterAMayuscula(UtilCadenasOntology.ObtenerPrefijo(dicPref, objeto.NombrePropiedad, mLoggingService));
+                    string prefijoPropiedad = UtilCadenas.PrimerCaracterAMayuscula(UtilCadenasOntology.ObtenerPrefijo(dicPref, objeto.NombrePropiedad));
                     string nombrePropiedad = UtilCadenasOntology.ObtenerNombrePropJava(objeto.NombrePropiedad);
                     if (!objeto.Multivaluada)
                     {
