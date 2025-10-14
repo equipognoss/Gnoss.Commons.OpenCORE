@@ -1,8 +1,10 @@
 using Es.Riam.AbstractsOpen;
 using Es.Riam.Gnoss.AD.EncapsuladoDatos;
 using Es.Riam.Gnoss.AD.EntityModel;
+using Es.Riam.Gnoss.AD.ParametroAplicacion;
 using Es.Riam.Gnoss.Util.Configuracion;
 using Es.Riam.Gnoss.Util.General;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,7 +19,8 @@ namespace Es.Riam.Gnoss.CL.Live
         /// Clave MAESTRA de la caché
         /// </summary>
         private readonly string[] mMasterCacheKeyArray = { NombresCL.LIVE };
-
+        private ILogger mlogger;
+        private ILoggerFactory mLoggerFactory;
         #endregion
 
         #region Constructores
@@ -27,9 +30,11 @@ namespace Es.Riam.Gnoss.CL.Live
         /// </summary>
         /// <param name="pFicheroConfiguracionBD">Ruta del fichero de configuración de base de datos LIVE</param>
         /// <param name="pUsarVariableEstatica">Si se están usando hilos con diferentes conexiones en el LIVE: FALSE. En caso contrario TRUE</param>
-        public LiveCL(string pFicheroConfiguracionBD, EntityContext entityContext, LoggingService loggingService, RedisCacheWrapper redisCacheWrapper, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication)
-            : base(pFicheroConfiguracionBD, entityContext, loggingService, redisCacheWrapper, configService, servicesUtilVirtuosoAndReplication)
+        public LiveCL(string pFicheroConfiguracionBD, EntityContext entityContext, LoggingService loggingService, RedisCacheWrapper redisCacheWrapper, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication, ILogger<LiveCL> logger, ILoggerFactory loggerFactory)
+            : base(pFicheroConfiguracionBD, entityContext, loggingService, redisCacheWrapper, configService, servicesUtilVirtuosoAndReplication,logger,loggerFactory)
         {
+            mlogger = logger;
+            mLoggerFactory = loggerFactory;
         }
 
         /// <summary>
@@ -38,9 +43,11 @@ namespace Es.Riam.Gnoss.CL.Live
         /// <param name="pFicheroConfiguracionBD">Ruta del fichero de configuración de base de datos LIVE</param>
         /// <param name="pUsarVariableEstatica">Si se están usando hilos con diferentes conexiones en el LIVE: FALSE. En caso contrario TRUE</param>
         /// <param name="pPoolName">Nombre del pool de conexión</param>
-        public LiveCL(string pFicheroConfiguracionBD, string pPoolName, EntityContext entityContext, LoggingService loggingService, RedisCacheWrapper redisCacheWrapper, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication)
-            : base(pFicheroConfiguracionBD, pPoolName, entityContext, loggingService, redisCacheWrapper, configService, servicesUtilVirtuosoAndReplication)
+        public LiveCL(string pFicheroConfiguracionBD, string pPoolName, EntityContext entityContext, LoggingService loggingService, RedisCacheWrapper redisCacheWrapper, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication, ILogger<LiveCL> logger, ILoggerFactory loggerFactory)
+            : base(pFicheroConfiguracionBD, pPoolName, entityContext, loggingService, redisCacheWrapper, configService, servicesUtilVirtuosoAndReplication,logger, loggerFactory)
         {
+            mlogger = logger;
+            mLoggerFactory = loggerFactory;
         }
 
         #endregion
@@ -67,7 +74,7 @@ namespace Es.Riam.Gnoss.CL.Live
         public string ObtenerComunidadesHomeGNOSSHtml(string pIdioma)
         {
             string rawKey = string.Concat(NombresCL.HOMECOMUNIDADESDESTACADASHTML, "_", pIdioma);
-            return (string)ObtenerObjetoDeCache(rawKey);
+            return (string)ObtenerObjetoDeCache(rawKey, typeof(string));
         }
 
         /// <summary>
@@ -99,7 +106,7 @@ namespace Es.Riam.Gnoss.CL.Live
         public DataWrapperProyecto ObtenerComunidadesHomeGNOSSDS()
         {
             string rawKey = NombresCL.HOMECOMUNIDADESDESTACADASDS;
-            return (DataWrapperProyecto)ObtenerObjetoDeCache(rawKey);
+            return (DataWrapperProyecto)ObtenerObjetoDeCache(rawKey, typeof(DataWrapperProyecto));
         }
 
         /// <summary>
@@ -129,7 +136,7 @@ namespace Es.Riam.Gnoss.CL.Live
         public string ObtenerRecursosHomeGNOSSHtml(string pIdioma)
         {
             string rawKey = string.Concat(NombresCL.HOMERECURSOSDESTACADOSHTML, "_", pIdioma);
-            return (string)ObtenerObjetoDeCache(rawKey);
+            return (string)ObtenerObjetoDeCache(rawKey, typeof(string));
         }
 
         /// <summary>
@@ -161,7 +168,7 @@ namespace Es.Riam.Gnoss.CL.Live
         public DataWrapperDocumentacion ObtenerRecursosHomeGNOSSDS()
         {
             string rawKey = NombresCL.HOMERECURSOSDESTACADOSDS;
-            return (DataWrapperDocumentacion)ObtenerObjetoDeCache(rawKey);
+            return (DataWrapperDocumentacion)ObtenerObjetoDeCache(rawKey, typeof(DataWrapperDocumentacion));
         }
 
         /// <summary>
@@ -193,7 +200,7 @@ namespace Es.Riam.Gnoss.CL.Live
         public DataWrapperIdentidad ObtenerUsuariosHomeGNOSSDS()
         {
             string rawKey = NombresCL.HOMEUSUARIOSDESTACADOSDS;
-            return (DataWrapperIdentidad)ObtenerObjetoDeCache(rawKey);
+            return (DataWrapperIdentidad)ObtenerObjetoDeCache(rawKey, typeof(DataWrapperIdentidad));
         }
 
         /// <summary>

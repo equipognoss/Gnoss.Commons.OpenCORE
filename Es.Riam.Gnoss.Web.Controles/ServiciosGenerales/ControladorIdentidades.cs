@@ -59,9 +59,11 @@ using Es.Riam.Gnoss.Web.Controles.ServicioImagenesWrapper;
 using Es.Riam.Gnoss.Web.Controles.Solicitudes;
 using Es.Riam.Gnoss.Web.Controles.Suscripcion;
 using Es.Riam.Gnoss.Web.MVC.Models;
+using Es.Riam.Interfaces.InterfacesOpen;
 using Es.Riam.Util;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Exchange.WebServices.Data;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using SixLabors.ImageSharp;
 using System;
@@ -89,7 +91,8 @@ namespace Es.Riam.Gnoss.Web.Controles.ServiciosGenerales
         /// </summary>
         private GestionIdentidades mGestorIdentidades;
         private EntityContextBASE mEntityContextBASE;
-
+        private ILogger mlogger;
+        private ILoggerFactory mloggerFactory;
 
         #endregion
 
@@ -99,11 +102,13 @@ namespace Es.Riam.Gnoss.Web.Controles.ServiciosGenerales
         /// Constructor del controlador
         /// </summary>
         /// <param name="pGestorIdentidades">Gestor de identidades</param>
-        public ControladorIdentidades(GestionIdentidades pGestorIdentidades, LoggingService loggingService, EntityContext entityContext, ConfigService configService, RedisCacheWrapper redisCacheWrapper, GnossCache gnossCache, EntityContextBASE entityContextBASE, VirtuosoAD virtuosoAD, IHttpContextAccessor httpContextAccessor, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication)
-            : base(loggingService, configService, entityContext, redisCacheWrapper, gnossCache, virtuosoAD, httpContextAccessor, servicesUtilVirtuosoAndReplication)
+        public ControladorIdentidades(GestionIdentidades pGestorIdentidades, LoggingService loggingService, EntityContext entityContext, ConfigService configService, RedisCacheWrapper redisCacheWrapper, GnossCache gnossCache, EntityContextBASE entityContextBASE, VirtuosoAD virtuosoAD, IHttpContextAccessor httpContextAccessor, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication, ILogger<ControladorIdentidades> logger,ILoggerFactory loggerFactory)
+            : base(loggingService, configService, entityContext, redisCacheWrapper, gnossCache, virtuosoAD, httpContextAccessor, servicesUtilVirtuosoAndReplication, logger, loggerFactory)
         {
             mEntityContextBASE = entityContextBASE;
             mGestorIdentidades = pGestorIdentidades;
+            mlogger = logger;
+            mloggerFactory = loggerFactory;
         }
 
         #endregion
@@ -156,14 +161,14 @@ namespace Es.Riam.Gnoss.Web.Controles.ServiciosGenerales
         #region Metodos generales
 
         /// <summary>
-        /// Lista de nombres de los grupos de comunidad ˙ organizaciÛn(nombreCortoOrg|||nombreCortoGr) a partir de sus identificadores
+        /// Lista de nombres de los grupos de comunidad u organizaci√≥n(nombreCortoOrg|||nombreCortoGr) a partir de sus identificadores
         /// </summary>
         /// <param name="pListaGruposID">Lista de identificadores de los grupos</param>
-        /// <returns>Lista de nombres de los grupos de comunidad ˙ organizaciÛn(nombreCortoOrg|||nombreCortoGr) a partir de sus identificadores.</returns>
+        /// <returns>Lista de nombres de los grupos de comunidad u organizaci√≥n(nombreCortoOrg|||nombreCortoGr) a partir de sus identificadores.</returns>
         public Dictionary<Guid, string> ObtenerNombresGrupos(List<Guid> pListaGruposID)
         {
             Dictionary<Guid, string> listaNombres = new Dictionary<Guid, string>();
-            IdentidadCN identCN = new IdentidadCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+            IdentidadCN identCN = new IdentidadCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<IdentidadCN>(), mLoggerFactory);
             if (pListaGruposID.Count > 0)
             {
                 DataWrapperIdentidad identDW = identCN.ObtenerGruposPorIDGrupo(pListaGruposID, false);
@@ -179,7 +184,7 @@ namespace Es.Riam.Gnoss.Web.Controles.ServiciosGenerales
                         if (filasGrupoOrg != null && filasGrupoOrg.Count > 0)
                         {
                             Guid orgID = filasGrupoOrg[0].OrganizacionID;
-                            OrganizacionCN orgCN = new OrganizacionCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+                            OrganizacionCN orgCN = new OrganizacionCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<OrganizacionCN>(), mLoggerFactory);
                             List<Guid> listaOrgs = new List<Guid>();
                             listaOrgs.Add(orgID);
                             nombreGr = orgCN.ObtenerNombreOrganizacionesPorIDs(listaOrgs)[orgID].Value + "|||" + nombreGr;
@@ -193,7 +198,7 @@ namespace Es.Riam.Gnoss.Web.Controles.ServiciosGenerales
                     }
                     catch (Exception ex)
                     {
-                        mLoggingService.GuardarLogError(ex);
+                        mLoggingService.GuardarLogError(ex, mlogger);
                     }
                 }
             }
@@ -202,33 +207,33 @@ namespace Es.Riam.Gnoss.Web.Controles.ServiciosGenerales
             return listaNombres;
         }
 
-        public void RegistrarOrganizacionEnProyecto(AD.EntityModel.Models.IdentidadDS.Perfil pFilaPerfil, AD.EntityModel.Models.IdentidadDS.PerfilOrganizacion pFilaPerfilOrg, Elementos.ServiciosGenerales.Proyecto pProyectoSeleccionado)
+        public void RegistrarOrganizacionEnProyecto(AD.EntityModel.Models.IdentidadDS.Perfil pFilaPerfil, AD.EntityModel.Models.IdentidadDS.PerfilOrganizacion pFilaPerfilOrg, Elementos.ServiciosGenerales.Proyecto pProyectoSeleccionado, IAvailableServices pAvailableServices)
         {
-            RegistrarOrganizacionEnProyecto(pFilaPerfil, pFilaPerfilOrg, pProyectoSeleccionado, 0);
+            RegistrarOrganizacionEnProyecto(pFilaPerfil, pFilaPerfilOrg, pProyectoSeleccionado, 0, pAvailableServices);
         }
 
-        public void RegistrarOrganizacionEnProyecto(AD.EntityModel.Models.IdentidadDS.Perfil pFilaPerfil, AD.EntityModel.Models.IdentidadDS.PerfilOrganizacion pFilaPerfilOrg, Elementos.ServiciosGenerales.Proyecto pProyectoSeleccionado, int pRegistroAutomaticoEnProy)
+        public void RegistrarOrganizacionEnProyecto(AD.EntityModel.Models.IdentidadDS.Perfil pFilaPerfil, AD.EntityModel.Models.IdentidadDS.PerfilOrganizacion pFilaPerfilOrg, Elementos.ServiciosGenerales.Proyecto pProyectoSeleccionado, int pRegistroAutomaticoEnProy, IAvailableServices pAvailableServices)
         {
-            RegistrarOrganizacionEnProyecto(pFilaPerfil, pFilaPerfilOrg, pProyectoSeleccionado, pRegistroAutomaticoEnProy, false);
+            RegistrarOrganizacionEnProyecto(pFilaPerfil, pFilaPerfilOrg, pProyectoSeleccionado, pRegistroAutomaticoEnProy, false, pAvailableServices);
         }
 
-        public void RegistrarOrganizacionEnProyecto(AD.EntityModel.Models.IdentidadDS.Perfil pFilaPerfil, AD.EntityModel.Models.IdentidadDS.PerfilOrganizacion pFilaPerfilOrg, Elementos.ServiciosGenerales.Proyecto pProyectoSeleccionado, int pRegistroAutomaticoEnProy, bool pActualizarLive)
+        public void RegistrarOrganizacionEnProyecto(AD.EntityModel.Models.IdentidadDS.Perfil pFilaPerfil, AD.EntityModel.Models.IdentidadDS.PerfilOrganizacion pFilaPerfilOrg, Elementos.ServiciosGenerales.Proyecto pProyectoSeleccionado, int pRegistroAutomaticoEnProy, bool pActualizarLive, IAvailableServices pAvailableServices)
         {
             DataWrapperOrganizacion organizacionDW = null;
             if (pFilaPerfil.OrganizacionID.HasValue)
             {
-                organizacionDW = new OrganizacionCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication).ObtenerOrganizacionPorID(pFilaPerfil.OrganizacionID.Value);
+                organizacionDW = new OrganizacionCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<OrganizacionCN>(), mLoggerFactory).ObtenerOrganizacionPorID(pFilaPerfil.OrganizacionID.Value);
             }
 
 
-            IdentidadCN identCN = new IdentidadCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+            IdentidadCN identCN = new IdentidadCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<IdentidadCN>(), mLoggerFactory);
             DataWrapperIdentidad identDW = identCN.ObtenerIdentidadesDePerfil(pFilaPerfil.PerfilID, true);
             GestionIdentidades gestIdentidad = new GestionIdentidades(identDW, null, new GestionOrganizaciones(organizacionDW, mLoggingService, mEntityContext), mLoggingService, mEntityContext, mConfigService, mServicesUtilVirtuosoAndReplication);
             identCN.Dispose();
 
             AD.EntityModel.Models.IdentidadDS.Identidad filaIdentidad = null;
 
-            ProyectoCN proyCN = new ProyectoCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+            ProyectoCN proyCN = new ProyectoCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<ProyectoCN>(), mLoggerFactory);
             Dictionary<Guid, bool> recibirNewsletterDefectoProyectos = proyCN.ObtenerProyectosConConfiguracionNewsletterPorDefecto();
             proyCN.Dispose();
 
@@ -261,8 +266,8 @@ namespace Es.Riam.Gnoss.Web.Controles.ServiciosGenerales
                     mEntityContext.OrganizacionParticipaProy.Add(filaOrgParticipaProy);
 
                     //Actualizo los tags del modelo BASE
-                    ControladorOrganizaciones contrOrg = new ControladorOrganizaciones(mLoggingService, mEntityContext, mConfigService, mRedisCacheWrapper, mEntityContextBASE, mVirtuosoAD, mServicesUtilVirtuosoAndReplication);
-                    contrOrg.ActualizarModeloBASE(gestIdentidad.ListaIdentidades[filaIdentidad.IdentidadID], pProyectoSeleccionado.Clave, true, true, PrioridadBase.Alta);
+                    ControladorOrganizaciones contrOrg = new ControladorOrganizaciones(mLoggingService, mEntityContext, mConfigService, mRedisCacheWrapper, mEntityContextBASE, mVirtuosoAD, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<ControladorOrganizaciones>(), mLoggerFactory);
+                    contrOrg.ActualizarModeloBASE(gestIdentidad.ListaIdentidades[filaIdentidad.IdentidadID], pProyectoSeleccionado.Clave, true, true, PrioridadBase.Alta, pAvailableServices);
 
                     //Guardo
                     mEntityContext.SaveChanges();
@@ -295,30 +300,30 @@ namespace Es.Riam.Gnoss.Web.Controles.ServiciosGenerales
                 mEntityContext.OrganizacionParticipaProy.Add(filaOrgParticipaProy);
 
                 //Actualizo los tags del modelo BASE
-                ControladorOrganizaciones contrOrg = new ControladorOrganizaciones(mLoggingService, mEntityContext, mConfigService, mRedisCacheWrapper, mEntityContextBASE, mVirtuosoAD, mServicesUtilVirtuosoAndReplication);
-                contrOrg.ActualizarModeloBASE(ident, pProyectoSeleccionado.Clave, true, true, PrioridadBase.Alta);
+                ControladorOrganizaciones contrOrg = new ControladorOrganizaciones(mLoggingService, mEntityContext, mConfigService, mRedisCacheWrapper, mEntityContextBASE, mVirtuosoAD, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<ControladorOrganizaciones>(), mLoggerFactory);
+                contrOrg.ActualizarModeloBASE(ident, pProyectoSeleccionado.Clave, true, true, PrioridadBase.Alta, pAvailableServices);
 
                 //Guardo
                 mEntityContext.SaveChanges();
                 gestIdentidad.Dispose();
             }
 
-            if(filaIdentidad != null && filaIdentidad.Perfil != null)
+            if (filaIdentidad != null && filaIdentidad.Perfil != null)
             {
-                ControladorOrganizaciones controladorOrganizaciones = new ControladorOrganizaciones(mLoggingService, mEntityContext, mConfigService, mRedisCacheWrapper, mEntityContextBASE, mVirtuosoAD, mServicesUtilVirtuosoAndReplication);
-                controladorOrganizaciones.ActualizarModeloBaseSimple(filaIdentidad.Perfil.OrganizacionID.Value, pProyectoSeleccionado.Clave, PrioridadBase.Alta);
+                ControladorOrganizaciones controladorOrganizaciones = new ControladorOrganizaciones(mLoggingService, mEntityContext, mConfigService, mRedisCacheWrapper, mEntityContextBASE, mVirtuosoAD, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<ControladorOrganizaciones>(), mLoggerFactory);
+                controladorOrganizaciones.ActualizarModeloBaseSimple(filaIdentidad.Perfil.OrganizacionID.Value, pProyectoSeleccionado.Clave, PrioridadBase.Alta, pAvailableServices);
             }
 
             #region Actualizar cola GnossLIVE
             if (pActualizarLive)
             {
-                new ControladorDocumentacion(mLoggingService, mEntityContext, mConfigService, mRedisCacheWrapper, mGnossCache, mEntityContextBASE, mVirtuosoAD, mHttpContextAccessor, mServicesUtilVirtuosoAndReplication).ActualizarGnossLive(pProyectoSeleccionado.Clave, pFilaPerfilOrg.PerfilID, AccionLive.Agregado, (int)TipoLive.Miembro, false, PrioridadLive.Alta);
+                new ControladorDocumentacion(mLoggingService, mEntityContext, mConfigService, mRedisCacheWrapper, mGnossCache, mEntityContextBASE, mVirtuosoAD, mHttpContextAccessor, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<ControladorDocumentacion>(),mloggerFactory).ActualizarGnossLive(pProyectoSeleccionado.Clave, pFilaPerfilOrg.PerfilID, AccionLive.Agregado, (int)TipoLive.Miembro, false, PrioridadLive.Alta, pAvailableServices);
             }
             #endregion
         }
 
         /// <summary>
-        /// Carga la persona y la organizaciÛn de la identidad si a˙n no las tiene cargadas
+        /// Carga la persona y la organizaci√≥n de la identidad si a√∫n no las tiene cargadas
         /// </summary>
         /// <param name="pGestorIdentidades">Gestor de identidades</param>
         /// <param name="pIdentidadID">Identificador de la identidad que se desea cargar</param>
@@ -331,14 +336,14 @@ namespace Es.Riam.Gnoss.Web.Controles.ServiciosGenerales
             }
             else
             {
-                throw new Exception("La identidad " + pIdentidadID + " no se encuentra en la lista de identidades. Es necesario cerrar sesiÛn y volver a entrar para que se cargue correctamente.");
+                throw new Exception("La identidad " + pIdentidadID + " no se encuentra en la lista de identidades. Es necesario cerrar sesi√≥n y volver a entrar para que se cargue correctamente.");
             }
 
-            //Si la identidad que comparte no est· obtenida por completo, la obtengo ahora
+            //Si la identidad que comparte no est√° obtenida por completo, la obtengo ahora
             if (ident != null && (!ident.EsOrganizacion) && (ident.Persona == null))
             {
                 //Cargo la persona
-                PersonaCN persCN = new PersonaCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+                PersonaCN persCN = new PersonaCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<PersonaCN>(), mLoggerFactory);
                 DataWrapperPersona dataWrapperPersona = new DataWrapperPersona();
                 //PersonaDS persDS = (PersonaDS)persCN.ObtenerPersonaPorIdentidadCargaLigera(pIdentidadID).Table.DataSet;
                 dataWrapperPersona.ListaPersona.Add(persCN.ObtenerPersonaPorIdentidadCargaLigera(pIdentidadID));
@@ -354,8 +359,8 @@ namespace Es.Riam.Gnoss.Web.Controles.ServiciosGenerales
             }
             if (ident != null && (ident.TrabajaConOrganizacion) && (ident.OrganizacionPerfil == null))
             {
-                //Cargo la organizaciÛn
-                OrganizacionCN orgCN = new OrganizacionCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+                //Cargo la organizaci√≥n
+                OrganizacionCN orgCN = new OrganizacionCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<OrganizacionCN>(), mLoggerFactory);
                 DataWrapperOrganizacion orgDW = orgCN.ObtenerOrganizacionDeIdentidad(pIdentidadID);
                 orgCN.Dispose();
 
@@ -369,12 +374,12 @@ namespace Es.Riam.Gnoss.Web.Controles.ServiciosGenerales
             }
         }
 
-        public void RegistrarPerfilPersonalEnProyecto(Guid pUsuarioID, Identidad pIdentidad, Elementos.ServiciosGenerales.Proyecto pProyectoSeleccionado)
+        public void RegistrarPerfilPersonalEnProyecto(Guid pUsuarioID, Identidad pIdentidad, Elementos.ServiciosGenerales.Proyecto pProyectoSeleccionado, IAvailableServices pAvailableServices)
         {
-            RegistrarPerfilPersonalEnProyecto(pUsuarioID, pIdentidad, pProyectoSeleccionado, false);
+            RegistrarPerfilPersonalEnProyecto(pUsuarioID, pIdentidad, pProyectoSeleccionado, false, pAvailableServices);
         }
 
-        public void RegistrarPerfilPersonalEnProyecto(Guid pUsuarioID, Identidad pIdentidad, Elementos.ServiciosGenerales.Proyecto pProyectoSeleccionado, bool pActualizarLive)
+        public void RegistrarPerfilPersonalEnProyecto(Guid pUsuarioID, Identidad pIdentidad, Elementos.ServiciosGenerales.Proyecto pProyectoSeleccionado, bool pActualizarLive, IAvailableServices pAvailableServices)
         {
             Guid usuarioID = pUsuarioID;
 
@@ -382,7 +387,7 @@ namespace Es.Riam.Gnoss.Web.Controles.ServiciosGenerales
             {
                 if (pIdentidad.Persona == null)
                 {
-                    ControladorIdentidades contrIdentidades = new ControladorIdentidades(pIdentidad.GestorIdentidades, mLoggingService, mEntityContext, mConfigService, mRedisCacheWrapper, mGnossCache, mEntityContextBASE, mVirtuosoAD, mHttpContextAccessor, mServicesUtilVirtuosoAndReplication);
+                    ControladorIdentidades contrIdentidades = new ControladorIdentidades(pIdentidad.GestorIdentidades, mLoggingService, mEntityContext, mConfigService, mRedisCacheWrapper, mGnossCache, mEntityContextBASE, mVirtuosoAD, mHttpContextAccessor, mServicesUtilVirtuosoAndReplication,mloggerFactory.CreateLogger<ControladorIdentidades>(),mloggerFactory);
                     contrIdentidades.CompletarCargaIdentidad(pIdentidad.Clave);
                 }
                 if (pIdentidad.Persona.FilaPersona.UsuarioID.HasValue)
@@ -392,20 +397,20 @@ namespace Es.Riam.Gnoss.Web.Controles.ServiciosGenerales
 
             }
 
-            UsuarioCN usuarioCN = new UsuarioCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+            UsuarioCN usuarioCN = new UsuarioCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<UsuarioCN>(), mLoggerFactory);
             DataWrapperUsuario dataWrapperUsuario = usuarioCN.ObtenerUsuarioCompletoPorID(usuarioID);
 
             usuarioCN.Dispose();
-            GestionUsuarios gestorUsuario = new GestionUsuarios(dataWrapperUsuario, mLoggingService, mEntityContext, mConfigService);
+            GestionUsuarios gestorUsuario = new GestionUsuarios(dataWrapperUsuario, mLoggingService, mEntityContext, mConfigService, mLoggerFactory.CreateLogger<GestionUsuarios>(), mLoggerFactory);
             AD.EntityModel.Models.UsuarioDS.Usuario filaUsuario = gestorUsuario.DataWrapperUsuario.ListaUsuario.FirstOrDefault();
 
-            IdentidadCN identidadCN = new IdentidadCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+            IdentidadCN identidadCN = new IdentidadCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<IdentidadCN>(), mLoggerFactory);
             DataWrapperIdentidad dataWrapperIdentidad = identidadCN.ObtenerIdentidadesDePerfil(pIdentidad.FilaIdentidad.PerfilID, true);
             identidadCN.Dispose();
             GestionIdentidades gestorIdentidades = new GestionIdentidades(dataWrapperIdentidad, pIdentidad.GestorIdentidades.GestorPersonas, pIdentidad.GestorIdentidades.GestorOrganizaciones, mLoggingService, mEntityContext, mConfigService, mServicesUtilVirtuosoAndReplication);
             AD.EntityModel.Models.IdentidadDS.Identidad filaIdentidad = null;
 
-            ProyectoCN proyCN = new ProyectoCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+            ProyectoCN proyCN = new ProyectoCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<ProyectoCN>(), mLoggerFactory);
             Dictionary<Guid, bool> recibirNewsletterDefectoProyectos = proyCN.ObtenerProyectosConConfiguracionNewsletterPorDefecto();
             proyCN.Dispose();
 
@@ -414,11 +419,11 @@ namespace Es.Riam.Gnoss.Web.Controles.ServiciosGenerales
             //{
             Identidad ObjetoIdentidadProy = AgregarIdentidadPerfilYUsuarioAProyecto(gestorIdentidades, gestorUsuario, pProyectoSeleccionado.FilaProyecto.OrganizacionID, pProyectoSeleccionado.Clave, filaUsuario, pIdentidad.PerfilUsuario, recibirNewsletterDefectoProyectos);
 
-			ControladorDeSolicitudes controladorDeSolicitudes = new ControladorDeSolicitudes(mLoggingService, mEntityContext, mConfigService, mRedisCacheWrapper, mGnossCache, mEntityContextBASE, mVirtuosoAD, mHttpContextAccessor, mServicesUtilVirtuosoAndReplication);
+			ControladorDeSolicitudes controladorDeSolicitudes = new ControladorDeSolicitudes(mLoggingService, mEntityContext, mConfigService, mRedisCacheWrapper, mGnossCache, mEntityContextBASE, mVirtuosoAD, mHttpContextAccessor, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<ControladorDeSolicitudes>(), mLoggerFactory);
 			controladorDeSolicitudes.RegistrarUsuarioEnProyectoAutomatico(pIdentidad.PerfilUsuario, filaUsuario, gestorUsuario, gestorIdentidades);
 
 			//Invalido la cache de Mis comunidades
-			ProyectoCL proyCL = new ProyectoCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mVirtuosoAD, mServicesUtilVirtuosoAndReplication);
+			ProyectoCL proyCL = new ProyectoCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mVirtuosoAD, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<ProyectoCL>(), mLoggerFactory);
             proyCL.InvalidarMisProyectos(ObjetoIdentidadProy.PerfilID);
             proyCL.Dispose();
 
@@ -444,7 +449,7 @@ namespace Es.Riam.Gnoss.Web.Controles.ServiciosGenerales
             //}
             //else if (gestorIdentidades.IdentidadesDS.Identidad.Select("PerfilID = '" + pIdentidad.PerfilUsuario.Clave + "' AND ProyectoID = '" + pProyectoSeleccionado.Clave + "'").Length > 1)
             //{
-            //    //Nunca deberÌa entrar por aquÌ
+            //    //Nunca deber√≠a entrar por aqu√≠
             //}
             Guid identidadAuxID = filaIdentidad.IdentidadID;
             Guid perfilAuxID = filaIdentidad.PerfilID;
@@ -452,7 +457,7 @@ namespace Es.Riam.Gnoss.Web.Controles.ServiciosGenerales
             gestorIdentidades.DataWrapperIdentidad.Merge(dataWrapperIdentidad);
             gestorIdentidades.RecargarHijos();
 
-            #region Agrego cl·usulas adicionales
+            #region Agrego cl√°usulas adicionales
 
             string clausulasAdicionales = "";
 
@@ -467,8 +472,8 @@ namespace Es.Riam.Gnoss.Web.Controles.ServiciosGenerales
 
             if (clausulasAdicionales != "")
             {
-                gestorUsuario.DataWrapperUsuario.Merge(new ProyectoCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mVirtuosoAD, mServicesUtilVirtuosoAndReplication).ObtenerClausulasRegitroProyecto(pProyectoSeleccionado.Clave));
-                gestorUsuario.DataWrapperUsuario.Merge(new ProyectoCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mVirtuosoAD, mServicesUtilVirtuosoAndReplication).ObtenerClausulasRegitroProyecto(ProyectoAD.MetaProyecto));
+                gestorUsuario.DataWrapperUsuario.Merge(new ProyectoCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mVirtuosoAD, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<ProyectoCL>(), mLoggerFactory).ObtenerClausulasRegitroProyecto(pProyectoSeleccionado.Clave));
+                gestorUsuario.DataWrapperUsuario.Merge(new ProyectoCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mVirtuosoAD, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<ProyectoCL>(), mLoggerFactory).ObtenerClausulasRegitroProyecto(ProyectoAD.MetaProyecto));
 
                 List<AD.EntityModel.Models.UsuarioDS.ProyRolUsuClausulaReg> listaAuxiliarProyRolUsuClausulaReg = gestorUsuario.DataWrapperUsuario.ListaProyRolUsuClausulaReg.Where(item => item.UsuarioID.Equals(filaUsuario.UsuarioID) && item.ProyectoID.Equals(pProyectoSeleccionado.Clave) && item.OrganizacionID.Equals(pProyectoSeleccionado.FilaProyecto.OrganizacionID)).ToList();
                 foreach (AD.EntityModel.Models.UsuarioDS.ProyRolUsuClausulaReg filaProyRolClau in listaAuxiliarProyRolUsuClausulaReg)
@@ -488,7 +493,7 @@ namespace Es.Riam.Gnoss.Web.Controles.ServiciosGenerales
                     }
                 }
 
-                UsuarioCN usuarioCN2 = new UsuarioCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+                UsuarioCN usuarioCN2 = new UsuarioCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<UsuarioCN>(), mLoggerFactory);
                 DataWrapperUsuario usuDW = usuarioCN2.ObtenerClausulasRegitroPorID(clausulasTrue);
                 usuarioCN2.Dispose();
 
@@ -518,16 +523,16 @@ namespace Es.Riam.Gnoss.Web.Controles.ServiciosGenerales
 
             mEntityContext.SaveChanges();
 
-            ControladorPersonas controladorPersonas = new ControladorPersonas(mLoggingService, mEntityContext, mConfigService, mRedisCacheWrapper, mGnossCache, mEntityContextBASE, mVirtuosoAD, mHttpContextAccessor, mServicesUtilVirtuosoAndReplication);
-            controladorPersonas.ActualizarModeloBASE(gestorIdentidades.ListaIdentidades[filaIdentidad.IdentidadID], pProyectoSeleccionado.Clave, true, true, PrioridadBase.Alta);
+            ControladorPersonas controladorPersonas = new ControladorPersonas(mLoggingService, mEntityContext, mConfigService, mRedisCacheWrapper, mGnossCache, mEntityContextBASE, mVirtuosoAD, mHttpContextAccessor, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<ControladorPersonas>(), mLoggerFactory);
+            controladorPersonas.ActualizarModeloBASE(gestorIdentidades.ListaIdentidades[filaIdentidad.IdentidadID], pProyectoSeleccionado.Clave, true, true, PrioridadBase.Alta, pAvailableServices);
 
-            NotificarEdicionPerfilEnProyectos(TipoAccionExterna.Registro, gestorIdentidades.ListaIdentidades[filaIdentidad.IdentidadID].PersonaID.Value, "", "", pProyectoSeleccionado.Clave);
+            NotificarEdicionPerfilEnProyectos(TipoAccionExterna.Registro, gestorIdentidades.ListaIdentidades[filaIdentidad.IdentidadID].PersonaID.Value, string.Empty, string.Empty);
 
 
             #region Actualizar cola GnossLIVE
             if (pActualizarLive)
             {
-                new ControladorDocumentacion(mLoggingService, mEntityContext, mConfigService, mRedisCacheWrapper, mGnossCache, mEntityContextBASE, mVirtuosoAD, mHttpContextAccessor, mServicesUtilVirtuosoAndReplication).ActualizarGnossLive(pProyectoSeleccionado.Clave, pIdentidad.FilaIdentidad.PerfilID, AccionLive.Agregado, (int)TipoLive.Miembro, false, PrioridadLive.Alta);
+                new ControladorDocumentacion(mLoggingService, mEntityContext, mConfigService, mRedisCacheWrapper, mGnossCache, mEntityContextBASE, mVirtuosoAD, mHttpContextAccessor, mServicesUtilVirtuosoAndReplication,mloggerFactory.CreateLogger<ControladorDocumentacion>(), mloggerFactory).ActualizarGnossLive(pProyectoSeleccionado.Clave, pIdentidad.FilaIdentidad.PerfilID, AccionLive.Agregado, (int)TipoLive.Miembro, false, PrioridadLive.Alta, pAvailableServices);
             }
             #endregion
 
@@ -542,19 +547,19 @@ namespace Es.Riam.Gnoss.Web.Controles.ServiciosGenerales
             gestorUsuario.Dispose();
             gestorUsuario = null;
 
-            //Cuando un usuario se registra en una comunidad se actualiza automaticamente el n∫ de miembros en la BD, pero el DS del gestor (el que tenemos en memoria) esta desactualizado. Por ello hacemos el siguiente Merge de abajo para refrescar las estadisticas en memoria
-            ProyectoCN proyectoCN = new ProyectoCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+            //Cuando un usuario se registra en una comunidad se actualiza automaticamente el n¬∫ de miembros en la BD, pero el DS del gestor (el que tenemos en memoria) esta desactualizado. Por ello hacemos el siguiente Merge de abajo para refrescar las estadisticas en memoria
+            ProyectoCN proyectoCN = new ProyectoCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<ProyectoCN>(), mLoggerFactory);
 
             DataWrapperProyecto dataWrapperProyecto = proyectoCN.ObtenerProyectoPorID(pProyectoSeleccionado.Clave);
             pProyectoSeleccionado.GestorProyectos.DataWrapperProyectos.Merge(dataWrapperProyecto);
 
-            ProyectoCL proyectoCL = new ProyectoCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mVirtuosoAD, mServicesUtilVirtuosoAndReplication);
+            ProyectoCL proyectoCL = new ProyectoCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mVirtuosoAD, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<ProyectoCL>(), mLoggerFactory);
             proyectoCL.InvalidarProyectosRecomendados(pIdentidad.PerfilID);
             proyectoCL.InvalidarCacheListaProyectosPerfil(pIdentidad.PerfilID);
             proyectoCL.InvalidarCacheListaProyectosUsuario(usuarioID);
             proyectoCL.Dispose();
 
-            IdentidadCL identidadCL = new IdentidadCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mServicesUtilVirtuosoAndReplication);
+            IdentidadCL identidadCL = new IdentidadCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<IdentidadCL>(), mLoggerFactory);
             identidadCL.EliminarPerfilMVC(pIdentidad.PerfilID);
             identidadCL.EliminarCacheGestorIdentidad(pIdentidad.Clave, pIdentidad.PersonaID.Value);
             identidadCL.Dispose();
@@ -569,9 +574,9 @@ namespace Es.Riam.Gnoss.Web.Controles.ServiciosGenerales
         /// <param name="pUsuarioID">ID del usuario</param>
         /// <param name="pIdentidad">Identidad del usuario</param>
         /// <param name="pProyectoID">ID del proyecto</param>
-        public void RegistrarUsuarioEnProyecto(Guid pUsuarioID, Perfil pPerfil, Guid pProyectoID, TiposIdentidad pTipoIdentidad, Dictionary<Guid, bool> pRecibirNewsletterDefectoProyectos)
+        public void RegistrarUsuarioEnProyecto(Guid pUsuarioID, Perfil pPerfil, Guid pProyectoID, TiposIdentidad pTipoIdentidad, Dictionary<Guid, bool> pRecibirNewsletterDefectoProyectos, IAvailableServices pAvailableServices)
         {
-            RegistrarUsuarioEnProyecto(pUsuarioID, pPerfil, pProyectoID, pTipoIdentidad, false, pRecibirNewsletterDefectoProyectos);
+            RegistrarUsuarioEnProyecto(pUsuarioID, pPerfil, pProyectoID, pTipoIdentidad, false, pRecibirNewsletterDefectoProyectos, pAvailableServices);
         }
 
         /// <summary>
@@ -580,38 +585,38 @@ namespace Es.Riam.Gnoss.Web.Controles.ServiciosGenerales
         /// <param name="pUsuarioID">ID del usuario</param>
         /// <param name="pIdentidad">Identidad del usuario</param>
         /// <param name="pProyectoID">ID del proyecto</param>
-        public void RegistrarUsuarioEnProyecto(Guid pUsuarioID, Perfil pPerfil, Guid pProyectoID, TiposIdentidad pTipoIdentidad, bool pActualizarLive, Dictionary<Guid, bool> pRecibirNewsletterDefectoProyectos)
+        public void RegistrarUsuarioEnProyecto(Guid pUsuarioID, Perfil pPerfil, Guid pProyectoID, TiposIdentidad pTipoIdentidad, bool pActualizarLive, Dictionary<Guid, bool> pRecibirNewsletterDefectoProyectos, IAvailableServices pAvailableServices)
         {
-            ProyectoCN proyCN = new ProyectoCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+            ProyectoCN proyCN = new ProyectoCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<ProyectoCN>(), mLoggerFactory);
             DataWrapperProyecto dataWrapperProyecto = proyCN.ObtenerProyectoPorID(pProyectoID);
             proyCN.Dispose();
-            GestionProyecto gestorProy = new GestionProyecto(dataWrapperProyecto, mLoggingService, mEntityContext);
+            GestionProyecto gestorProy = new GestionProyecto(dataWrapperProyecto, mLoggingService, mEntityContext, mLoggerFactory.CreateLogger<GestionProyecto>(), mLoggerFactory);
             Elementos.ServiciosGenerales.Proyecto proy = gestorProy.ListaProyectos[pProyectoID];
 
-            UsuarioCN usuarioCN = new UsuarioCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+            UsuarioCN usuarioCN = new UsuarioCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<UsuarioCN>(), mLoggerFactory);
             DataWrapperUsuario dataWrapperUsuario = usuarioCN.ObtenerUsuarioCompletoPorID(pUsuarioID);
             usuarioCN.Dispose();
-            GestionUsuarios gestorUsuario = new GestionUsuarios(dataWrapperUsuario, mLoggingService, mEntityContext, mConfigService);
+            GestionUsuarios gestorUsuario = new GestionUsuarios(dataWrapperUsuario, mLoggingService, mEntityContext, mConfigService, mLoggerFactory.CreateLogger<GestionUsuarios>(), mLoggerFactory);
             AD.EntityModel.Models.UsuarioDS.Usuario filaUsuario = gestorUsuario.DataWrapperUsuario.ListaUsuario.FirstOrDefault();
 
-            IdentidadCN identidadCN = new IdentidadCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+            IdentidadCN identidadCN = new IdentidadCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<IdentidadCN>(), mLoggerFactory);
             GestionIdentidades gestorIdentidades = new GestionIdentidades(identidadCN.ObtenerIdentidadDePerfilEnProyecto(pPerfil.Clave, pProyectoID), mLoggingService, mEntityContext, mConfigService, mServicesUtilVirtuosoAndReplication);
             identidadCN.Dispose();
             AD.EntityModel.Models.IdentidadDS.Identidad filaIdentidad = null;
 
-            PersonaCN persCN = new PersonaCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+            PersonaCN persCN = new PersonaCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<PersonaCN>(), mLoggerFactory);
             gestorIdentidades.GestorPersonas = new GestionPersonas(persCN.ObtenerPersonaPorUsuario(pUsuarioID), mLoggingService, mEntityContext);
 
             Identidad ObjetoIdentidadProy = AgregarIdentidadPerfilYUsuarioAProyecto(gestorIdentidades, gestorUsuario, proy.FilaProyecto.OrganizacionID, proy.Clave, filaUsuario, pPerfil, pRecibirNewsletterDefectoProyectos);
 
-			ControladorDeSolicitudes controladorDeSolicitudes = new ControladorDeSolicitudes(mLoggingService, mEntityContext, mConfigService, mRedisCacheWrapper, mGnossCache, mEntityContextBASE, mVirtuosoAD, mHttpContextAccessor, mServicesUtilVirtuosoAndReplication);
+			ControladorDeSolicitudes controladorDeSolicitudes = new ControladorDeSolicitudes(mLoggingService, mEntityContext, mConfigService, mRedisCacheWrapper, mGnossCache, mEntityContextBASE, mVirtuosoAD, mHttpContextAccessor, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<ControladorDeSolicitudes>(), mLoggerFactory);
 			controladorDeSolicitudes.RegistrarUsuarioEnProyectoAutomatico(pPerfil, filaUsuario, gestorUsuario, gestorIdentidades);
 
-			ObjetoIdentidadProy.FilaIdentidad.Tipo = (short)pTipoIdentidad;
+            ObjetoIdentidadProy.FilaIdentidad.Tipo = (short)pTipoIdentidad;
             filaIdentidad = ObjetoIdentidadProy.FilaIdentidad;
 
             //Invalido la cache de Mis comunidades
-            ProyectoCL proyCL = new ProyectoCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mVirtuosoAD, mServicesUtilVirtuosoAndReplication);
+            ProyectoCL proyCL = new ProyectoCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mVirtuosoAD, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<ProyectoCL>(), mLoggerFactory);
             proyCL.InvalidarMisProyectos(ObjetoIdentidadProy.PerfilID);
             proyCL.Dispose();
 
@@ -620,8 +625,8 @@ namespace Es.Riam.Gnoss.Web.Controles.ServiciosGenerales
             Guid identidadAuxID = filaIdentidad.IdentidadID;
             Guid perfilAuxID = filaIdentidad.PerfilID;
 
-            ControladorPersonas controladorPersonas = new ControladorPersonas(mLoggingService, mEntityContext, mConfigService, mRedisCacheWrapper, mGnossCache, mEntityContextBASE, mVirtuosoAD, mHttpContextAccessor, mServicesUtilVirtuosoAndReplication);
-            controladorPersonas.ActualizarModeloBASE(gestorIdentidades.ListaIdentidades[filaIdentidad.IdentidadID], pProyectoID, true, true, PrioridadBase.Alta);
+            ControladorPersonas controladorPersonas = new ControladorPersonas(mLoggingService, mEntityContext, mConfigService, mRedisCacheWrapper, mGnossCache, mEntityContextBASE, mVirtuosoAD, mHttpContextAccessor, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<ControladorPersonas>(), mLoggerFactory);
+            controladorPersonas.ActualizarModeloBASE(gestorIdentidades.ListaIdentidades[filaIdentidad.IdentidadID], pProyectoID, true, true, PrioridadBase.Alta, pAvailableServices);
 
             mEntityContext.SaveChanges();
 
@@ -639,7 +644,7 @@ namespace Es.Riam.Gnoss.Web.Controles.ServiciosGenerales
             #region Actualizar cola GnossLIVE
             if (pActualizarLive)
             {
-                LiveCN liveCN = new LiveCN("base", mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+                LiveCN liveCN = new LiveCN("base", mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<LiveCN>(), mLoggerFactory);
                 LiveDS liveDS = new LiveDS();
 
                 try
@@ -647,12 +652,12 @@ namespace Es.Riam.Gnoss.Web.Controles.ServiciosGenerales
                     ParametroAplicacion busqueda = mEntityContext.ParametroAplicacion.FirstOrDefault(parametro => parametro.Parametro.Equals("EcosistemaSinHomeUsuario"));
                     if (!(busqueda != null && busqueda.Valor == "true"))
                     {
-                        InsertarFilaEnColaRabbitMQ(pProyectoID, pPerfil.Clave, (int)AccionLive.Agregado, (int)TipoLive.Miembro, 0, DateTime.Now, false, 0);
+                        InsertarFilaEnColaRabbitMQ(pProyectoID, pPerfil.Clave, (int)AccionLive.Agregado, (int)TipoLive.Miembro, 0, DateTime.Now, false, 0, pAvailableServices);
                     }
                 }
                 catch (Exception ex)
                 {
-                    mLoggingService.GuardarLogError(ex, "Fallo al insertar en Rabbit, insertamos en la base de datos 'BASE', tabla 'cola'");
+                    mLoggingService.GuardarLogError(ex, "Fallo al insertar en Rabbit, insertamos en la base de datos 'BASE', tabla 'cola'", mlogger);
                     liveDS.Cola.AddColaRow(pProyectoID, pPerfil.Clave, (int)AccionLive.Agregado, (int)TipoLive.Miembro, 0, DateTime.Now, false, 0, null);
                 }
 
@@ -663,15 +668,15 @@ namespace Es.Riam.Gnoss.Web.Controles.ServiciosGenerales
             }
             #endregion
 
-            IdentidadCL identidadCL = new IdentidadCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mServicesUtilVirtuosoAndReplication);
+            IdentidadCL identidadCL = new IdentidadCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<IdentidadCL>(), mLoggerFactory);
             identidadCL.EliminarPerfilMVC(filaIdentidad.PerfilID);
             identidadCL.Dispose();
         }
 
-        public bool AbandonarComunidad(Guid pProyectoID, Guid pUsuarioID, Guid pIdentidadID, Guid pOrganizacionID, Guid pPerfilID)
+        public bool AbandonarComunidad(Guid pProyectoID, Guid pUsuarioID, Guid pIdentidadID, Guid pOrganizacionID, Guid pPerfilID, IAvailableServices pAvailableServices)
         {
             bool error = false;
-            ProyectoCN proyCN = new ProyectoCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+            ProyectoCN proyCN = new ProyectoCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<ProyectoCN>(), mLoggerFactory);
 
             if (proyCN.EsUsuarioAdministradorProyecto(pUsuarioID, pProyectoID))
             {
@@ -680,18 +685,18 @@ namespace Es.Riam.Gnoss.Web.Controles.ServiciosGenerales
             }
             else
             {
-                UsuarioCN usuarioCN = new UsuarioCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
-                IdentidadCN identidadCN = new IdentidadCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
-                PersonaCN personaCN = new PersonaCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
-                GestionProyecto gestorProyectos = new GestionProyecto(new DataWrapperProyecto(), mLoggingService, mEntityContext);
-                GestionUsuarios gestorUsuarios = new GestionUsuarios(usuarioCN.ObtenerUsuarioCompletoPorID(pUsuarioID), mLoggingService, mEntityContext, mConfigService);
+                UsuarioCN usuarioCN = new UsuarioCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<UsuarioCN>(), mLoggerFactory);
+                IdentidadCN identidadCN = new IdentidadCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<IdentidadCN>(), mLoggerFactory);
+                PersonaCN personaCN = new PersonaCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<PersonaCN>(), mLoggerFactory);
+                GestionProyecto gestorProyectos = new GestionProyecto(new DataWrapperProyecto(), mLoggingService, mEntityContext, mLoggerFactory.CreateLogger<GestionProyecto>(), mLoggerFactory);
+                GestionUsuarios gestorUsuarios = new GestionUsuarios(usuarioCN.ObtenerUsuarioCompletoPorID(pUsuarioID), mLoggingService, mEntityContext, mConfigService, mLoggerFactory.CreateLogger<GestionUsuarios>(), mLoggerFactory);
                 GestionIdentidades gestorIdentidades = new GestionIdentidades(identidadCN.ObtenerIdentidadPorID(pIdentidadID, false), mLoggingService, mEntityContext, mConfigService, mServicesUtilVirtuosoAndReplication);
                 GestionPersonas gestorPersonas = new GestionPersonas(personaCN.ObtenerPersonaPorPerfil(pPerfilID), mLoggingService, mEntityContext);
                 gestorProyectos.GestionPersonas = gestorPersonas;
                 gestorProyectos.GestionUsuarios = gestorUsuarios;
                 gestorProyectos.GestionUsuarios.GestorIdentidades = gestorIdentidades;
                 gestorUsuarios.GestorSuscripciones = new GestionSuscripcion(new DataWrapperSuscripcion(), mLoggingService, mEntityContext);
-                gestorUsuarios.GestorSuscripciones.GestorNotificaciones = new GestionNotificaciones(new DataWrapperNotificacion(), mLoggingService, mEntityContext, mConfigService, mServicesUtilVirtuosoAndReplication);
+                gestorUsuarios.GestorSuscripciones.GestorNotificaciones = new GestionNotificaciones(new DataWrapperNotificacion(), mLoggingService, mEntityContext, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<GestionNotificaciones>(),mloggerFactory);
 				Elementos.ServiciosGenerales.Persona persona = gestorPersonas.ListaPersonas[personaCN.ObtenerPersonaIDPorPerfil(pPerfilID)];
                 List<Guid> listaProyectos = new List<Guid>();
                 listaProyectos.Add(pProyectoID);
@@ -706,7 +711,7 @@ namespace Es.Riam.Gnoss.Web.Controles.ServiciosGenerales
 
                     //Invalido la cache de Mis comunidades
                     DataWrapperIdentidad idenDW = identidadCN.ObtenerIdentidadPorID(pIdentidadID, true);
-                    ProyectoCL proyCL = new ProyectoCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mVirtuosoAD, mServicesUtilVirtuosoAndReplication);
+                    ProyectoCL proyCL = new ProyectoCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mVirtuosoAD, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<ProyectoCL>(), mLoggerFactory);
                     proyCL.InvalidarMisProyectos(pPerfilID);
 
                     proyCL.InvalidarCacheListaProyectosPerfil(pPerfilID);
@@ -714,18 +719,18 @@ namespace Es.Riam.Gnoss.Web.Controles.ServiciosGenerales
                     proyCL.Dispose();
 
 
-                    ControladorPersonas controladorPersonas = new ControladorPersonas(mLoggingService, mEntityContext, mConfigService, mRedisCacheWrapper, mGnossCache, mEntityContextBASE, mVirtuosoAD, mHttpContextAccessor, mServicesUtilVirtuosoAndReplication);
-                    controladorPersonas.ActualizarModeloBASE(gestorIdentidades.ListaIdentidades[pIdentidadID], pProyectoID, false, true, PrioridadBase.Alta);
+                    ControladorPersonas controladorPersonas = new ControladorPersonas(mLoggingService, mEntityContext, mConfigService, mRedisCacheWrapper, mGnossCache, mEntityContextBASE, mVirtuosoAD, mHttpContextAccessor, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<ControladorPersonas>(), mLoggerFactory);
+                    controladorPersonas.ActualizarModeloBASE(gestorIdentidades.ListaIdentidades[pIdentidadID], pProyectoID, false, true, PrioridadBase.Alta, pAvailableServices);
 
-                    #region EliminaciÛn de las Suscripciones de la identidad que abandona el proyecto
+                    #region Eliminaci√≥n de las Suscripciones de la identidad que abandona el proyecto
 
                     #region Eliminamos todas las suscripciones de esta identidad (No se incluyen las suscripciones a identidades)
 
-                    SuscripcionCN suscripCN = new SuscripcionCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+                    SuscripcionCN suscripCN = new SuscripcionCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<SuscripcionCN>(), mLoggerFactory);
                     DataWrapperSuscripcion suscripcionDW = suscripCN.ObtenerSuscripcionesDeIdentidad(pIdentidadID, true);
                     if (suscripcionDW.ListaSuscripcion.Count > 0)
                     {
-                        NotificacionCN notificacionCN = new NotificacionCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+                        NotificacionCN notificacionCN = new NotificacionCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<NotificacionCN>(), mLoggerFactory);
                         List<Guid> listaSuscripciones = new List<Guid>();
                         gestorUsuarios.GestorSuscripciones.SuscripcionDW.Merge(suscripcionDW);
                         foreach (AD.EntityModel.Models.Suscripcion.Suscripcion filaSuscripcion in suscripcionDW.ListaSuscripcion)
@@ -748,12 +753,12 @@ namespace Es.Riam.Gnoss.Web.Controles.ServiciosGenerales
 
                     #region Eliminamos todas las suscripciones a identidades en este proyecto
 
-                    SuscripcionCN suscripCN2 = new SuscripcionCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+                    SuscripcionCN suscripCN2 = new SuscripcionCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<SuscripcionCN>(), mLoggerFactory);
                     Guid identidadIDMyGNOSS = identidadCN.ObtenerIdentidadIDDeMyGNOSSPorIdentidad(pIdentidadID);
                     DataWrapperSuscripcion suscripcionDS2 = suscripCN2.ObtenerSuscripcionesDeIdentidad(identidadIDMyGNOSS, true);
                     if (suscripcionDS2.ListaSuscripcion.Count > 0)
                     {
-                        NotificacionCN notificacionCN = new NotificacionCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+                        NotificacionCN notificacionCN = new NotificacionCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<NotificacionCN>(), mLoggerFactory);
                         List<Guid> listaSuscripciones = new List<Guid>();
                         gestorUsuarios.GestorSuscripciones.SuscripcionDW.Merge(suscripcionDS2);
                         foreach (AD.EntityModel.Models.Suscripcion.Suscripcion filaSuscripcion in suscripcionDS2.ListaSuscripcion)
@@ -777,7 +782,7 @@ namespace Es.Riam.Gnoss.Web.Controles.ServiciosGenerales
 
                     #endregion
 
-                    #region Eliminamos la configuraciÛn de datos extra del proyecto
+                    #region Eliminamos la configuraci√≥n de datos extra del proyecto
 
                     gestorIdentidades.DataWrapperIdentidad.Merge(identidadCN.ObtenerDatosExtraProyectoOpcionIdentidadPorIdentidadID(pIdentidadID));
                     List<DatoExtraProyectoOpcionIdentidad> listaDatoExtraProyectoOpcionIdentidad = gestorIdentidades.DataWrapperIdentidad.ListaDatoExtraProyectoOpcionIdentidad;
@@ -791,21 +796,36 @@ namespace Es.Riam.Gnoss.Web.Controles.ServiciosGenerales
 
                     mEntityContext.SaveChanges();
 
-                    //Eliminamos la cache de contactos en la comunidad
-                    AmigosCL amigosCL = new AmigosCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mServicesUtilVirtuosoAndReplication);
-                    amigosCL.InvalidarAmigosPertenecenProyecto(pProyectoID);
+                    //Eliminamos la cache de contactos en la comunidad y eliminamos los amigos de la identidad que se sale
+                    AmigosCL amigosCL = new AmigosCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mServicesUtilVirtuosoAndReplication,mLoggerFactory.CreateLogger<AmigosCL>(),mloggerFactory);
+                    amigosCL.InvalidarAmigos(identidadIDMyGNOSS);
+                    DataWrapperIdentidad dwIdentidad = identidadCN.ObtenerIdentidadesDeProyecto(pProyectoID);
+
+                    foreach(AD.EntityModel.Models.IdentidadDS.Identidad identidad in dwIdentidad.ListaIdentidad)
+                    {
+                        Guid identidadMyGnoss = identidadCN.ObtenerIdentidadIDDeMyGNOSSPorIdentidad(identidad.IdentidadID);
+                        amigosCL.InvalidarAmigos(identidadMyGnoss);
+                        amigosCL.RefrescarCacheAmigos(identidadIDMyGNOSS, mEntityContextBASE, pAvailableServices);
+                    }
+
+                    AmigosCN amigosCN = new AmigosCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<AmigosCN>(), mLoggerFactory);
+                    GestionAmigos gestionAmigos = new GestionAmigos(amigosCN.CargarAmigosCompleto(identidadIDMyGNOSS), gestorIdentidades, mLoggingService, mEntityContext, mConfigService, mServicesUtilVirtuosoAndReplication);
+                    gestionAmigos.EliminarAmigosReciproco(identidadIDMyGNOSS);
+
                     amigosCL.Dispose();
+                    amigosCN.Dispose();
+                    gestionAmigos.Dispose();
 
                     #region Actualizar cola GnossLIVE
 
-                    new ControladorDocumentacion(mLoggingService, mEntityContext, mConfigService, mRedisCacheWrapper, mGnossCache, mEntityContextBASE, mVirtuosoAD, mHttpContextAccessor, mServicesUtilVirtuosoAndReplication).ActualizarGnossLive(pProyectoID, pPerfilID, AccionLive.Eliminado, (int)TipoLive.Miembro, false, PrioridadLive.Alta);
+                    new ControladorDocumentacion(mLoggingService, mEntityContext, mConfigService, mRedisCacheWrapper, mGnossCache, mEntityContextBASE, mVirtuosoAD, mHttpContextAccessor, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<ControladorDocumentacion>(), mloggerFactory).ActualizarGnossLive(pProyectoID, pPerfilID, AccionLive.Eliminado, (int)TipoLive.Miembro, false, PrioridadLive.Alta, pAvailableServices);
 
                     #endregion
 
                     identidadCN.ActualizaIdentidades();
 
-                    IdentidadCL identidadCL = new IdentidadCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mServicesUtilVirtuosoAndReplication);
-                    //Se debe eliminar la cachÈ para todos los perfiles del usuario, no para el perfil de la identidad actual, ya que puede dar problemas con otros perfiles sobre la misma comunidad.
+                    IdentidadCL identidadCL = new IdentidadCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<IdentidadCL>(), mLoggerFactory);
+                    //Se debe eliminar la cach√© para todos los perfiles del usuario, no para el perfil de la identidad actual, ya que puede dar problemas con otros perfiles sobre la misma comunidad.
                     identidadCL.EliminarCacheGestorTodasIdentidadesUsuario(pUsuarioID, gestorIdentidades.ListaIdentidades[pIdentidadID].PersonaID.Value);
 
                     List<string> listaClavesInvalidar = new List<string>();
@@ -855,12 +875,12 @@ namespace Es.Riam.Gnoss.Web.Controles.ServiciosGenerales
             return error;
         }
 
-        public void AbandonarComunidadMasivo(Elementos.ServiciosGenerales.Proyecto pProyecto, Dictionary<Guid, Guid> dicUsuariosIDsPerfilesIDs, Dictionary<Guid, Guid> dicUsuariosIDsIdentidadesIDs, Guid pGrupoID)
+        public void AbandonarComunidadMasivo(Elementos.ServiciosGenerales.Proyecto pProyecto, Dictionary<Guid, Guid> dicUsuariosIDsPerfilesIDs, Dictionary<Guid, Guid> dicUsuariosIDsIdentidadesIDs, Guid pGrupoID, IAvailableServices pAvailableServices)
         {
-            ProyectoCN proyCN = new ProyectoCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
-            UsuarioCN usuarioCN = new UsuarioCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
-            IdentidadCN identidadCN = new IdentidadCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
-            PersonaCN personaCN = new PersonaCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+            ProyectoCN proyCN = new ProyectoCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<ProyectoCN>(), mLoggerFactory);
+            UsuarioCN usuarioCN = new UsuarioCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<UsuarioCN>(), mLoggerFactory);
+            IdentidadCN identidadCN = new IdentidadCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<IdentidadCN>(), mLoggerFactory);
+            PersonaCN personaCN = new PersonaCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<PersonaCN>(), mLoggerFactory);
 
             Dictionary<Guid, Guid> administradoresProyecto = proyCN.ObtenerUsuarioIDPerfilIDAdministradoresDeProyecto(pProyecto.Clave);
 
@@ -877,7 +897,7 @@ namespace Es.Riam.Gnoss.Web.Controles.ServiciosGenerales
             List<Guid> listaIdentidadesIDs = new List<Guid>(dicUsuariosIDsIdentidadesIDs.Values);
             GestionIdentidades gestorIdentidades = new GestionIdentidades(identidadCN.ObtenerIdentidadesPorID(listaIdentidadesIDs, false), mLoggingService, mEntityContext, mConfigService, mServicesUtilVirtuosoAndReplication);
 
-            //si es un grupo el que est· abandonando la comunidad, quita los usuarios miembros que pertenecÌan a la comunidad antes de que el grupo se hiciera miembro y los que ya est·n dados de baja
+            //si es un grupo el que est√° abandonando la comunidad, quita los usuarios miembros que pertenec√≠an a la comunidad antes de que el grupo se hiciera miembro y los que ya est√°n dados de baja
             if (!pGrupoID.Equals(Guid.Empty))
             {
                 DateTime? fechaAltaGrupoOrg = proyCN.ObtenerFechaAltaGrupoOrganizacionEnProyecto(pGrupoID, pProyecto.FilaProyecto.OrganizacionID, pProyecto.Clave);
@@ -896,7 +916,7 @@ namespace Es.Riam.Gnoss.Web.Controles.ServiciosGenerales
                         }
                         else if (fechaAltaGrupoOrg != null)
                         {
-                            //quita los usuarios que pertenecÌan a la comunidad antes de que el grupo se hiciera miembro
+                            //quita los usuarios que pertenec√≠an a la comunidad antes de que el grupo se hiciera miembro
                             if (gestorIdentidades.ListaIdentidades[identidadID].FilaIdentidad.FechaAlta < fechaAltaGrupoOrg)
                             {
                                 quitarDeLista = true;
@@ -912,21 +932,21 @@ namespace Es.Riam.Gnoss.Web.Controles.ServiciosGenerales
                 }
             }
 
-            //Recarga la lista habiendo quitado los usuarios que ya pertenecÌan a la comunidad antes que el grupo y los que ya se habÌan dado de baja antes de que lo hiciera el grupo
+            //Recarga la lista habiendo quitado los usuarios que ya pertenec√≠an a la comunidad antes que el grupo y los que ya se hab√≠an dado de baja antes de que lo hiciera el grupo
             listaUsuariosIDs = new List<Guid>(dicUsuariosIDsPerfilesIDs.Keys);
             listaPerfilesIDs = new List<Guid>(dicUsuariosIDsPerfilesIDs.Values);
             listaIdentidadesIDs = new List<Guid>(dicUsuariosIDsIdentidadesIDs.Values);
             gestorIdentidades = new GestionIdentidades(identidadCN.ObtenerIdentidadesPorID(listaIdentidadesIDs, false), mLoggingService, mEntityContext, mConfigService, mServicesUtilVirtuosoAndReplication);
 
             GestionPersonas gestorPersonas = new GestionPersonas(personaCN.ObtenerPersonasPorPerfilesID(listaPerfilesIDs), mLoggingService, mEntityContext);
-            GestionUsuarios gestorUsuarios = new GestionUsuarios(usuarioCN.ObtenerUsuariosCompletosPorID(listaUsuariosIDs), mLoggingService, mEntityContext, mConfigService);
-            GestionProyecto gestorProyectos = new GestionProyecto(new DataWrapperProyecto(), mLoggingService, mEntityContext);
+            GestionUsuarios gestorUsuarios = new GestionUsuarios(usuarioCN.ObtenerUsuariosCompletosPorID(listaUsuariosIDs), mLoggingService, mEntityContext, mConfigService, mLoggerFactory.CreateLogger<GestionUsuarios>(), mLoggerFactory);
+            GestionProyecto gestorProyectos = new GestionProyecto(new DataWrapperProyecto(), mLoggingService, mEntityContext, mLoggerFactory.CreateLogger<GestionProyecto>(), mLoggerFactory);
             gestorProyectos.GestionPersonas = gestorPersonas;
             gestorProyectos.GestionUsuarios = gestorUsuarios;
             gestorProyectos.GestionUsuarios.GestorIdentidades = gestorIdentidades;
             gestorIdentidades.GestorPersonas = gestorPersonas;
             gestorUsuarios.GestorSuscripciones = new GestionSuscripcion(new DataWrapperSuscripcion(), mLoggingService, mEntityContext);
-            gestorUsuarios.GestorSuscripciones.GestorNotificaciones = new GestionNotificaciones(new DataWrapperNotificacion(), mLoggingService, mEntityContext, mConfigService, mServicesUtilVirtuosoAndReplication);
+            gestorUsuarios.GestorSuscripciones.GestorNotificaciones = new GestionNotificaciones(new DataWrapperNotificacion(), mLoggingService, mEntityContext, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<GestionNotificaciones>(), mloggerFactory);
 
             List<Guid> listaProyectos = new List<Guid>();
             listaProyectos.Add(pProyecto.Clave);
@@ -935,7 +955,7 @@ namespace Es.Riam.Gnoss.Web.Controles.ServiciosGenerales
             foreach (Guid usuarioID in listaUsuariosIDs)
             {
                 Guid identidadID = dicUsuariosIDsIdentidadesIDs[usuarioID];
-				Elementos.ServiciosGenerales.Persona persona = gestorPersonas.ListaPersonas[personaCN.ObtenerPersonaIDPorPerfil(dicUsuariosIDsPerfilesIDs[usuarioID])];
+                Elementos.ServiciosGenerales.Persona persona = gestorPersonas.ListaPersonas[personaCN.ObtenerPersonaIDPorPerfil(dicUsuariosIDsPerfilesIDs[usuarioID])];
                 JsonEstado respuestaAccionExterna = AccionEnServicioExternoProyecto(TipoAccionExterna.InvalidarUsuario, persona, gestorIdentidades.ListaIdentidades[identidadID].FilaIdentidad.ProyectoID, identidadID, "", "", gestorIdentidades.ListaIdentidades[identidadID].FilaIdentidad.FechaAlta, gestorProyectos.DataWrapperProyectos);
 
                 if (respuestaAccionExterna != null && !respuestaAccionExterna.Correcto)
@@ -957,7 +977,7 @@ namespace Es.Riam.Gnoss.Web.Controles.ServiciosGenerales
                 gestorProyectos.EliminarUsuarioDeProyecto(usuarioID, pProyecto.Clave, pProyecto.FilaProyecto.OrganizacionID, identidadID, gestorUsuarios, gestorIdentidades);
             }
 
-            ProyectoCL proyCL = new ProyectoCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mVirtuosoAD, mServicesUtilVirtuosoAndReplication);
+            ProyectoCL proyCL = new ProyectoCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mVirtuosoAD, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<ProyectoCL>(), mLoggerFactory);
             int tablaBaseProyectoID = proyCL.ObtenerTablaBaseProyectoIDProyectoPorID(pProyecto.Clave);
             bool entraEnCom = false;
             bool actualizarTagsPersonas = true;
@@ -969,18 +989,18 @@ namespace Es.Riam.Gnoss.Web.Controles.ServiciosGenerales
             try
             {
                 List<Identidad> listaIdentidades = new List<Identidad>(gestorIdentidades.ListaIdentidades.Values);
-                ControladorPersonas controladorPersonas = new ControladorPersonas(mLoggingService, mEntityContext, mConfigService, mRedisCacheWrapper, mGnossCache, mEntityContextBASE, mVirtuosoAD, mHttpContextAccessor, mServicesUtilVirtuosoAndReplication);
-                controladorPersonas.ActualizarModeloBASEMasivo(listaIdentidades, pProyecto.Clave, tablaBaseProyectoID, entraEnCom, actualizarTagsPersonas, actualizarModeloAcido, PrioridadBase.Alta);
+                ControladorPersonas controladorPersonas = new ControladorPersonas(mLoggingService, mEntityContext, mConfigService, mRedisCacheWrapper, mGnossCache, mEntityContextBASE, mVirtuosoAD, mHttpContextAccessor, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<ControladorPersonas>(), mLoggerFactory);
+                controladorPersonas.ActualizarModeloBASEMasivo(listaIdentidades, pProyecto.Clave, tablaBaseProyectoID, entraEnCom, actualizarTagsPersonas, actualizarModeloAcido, PrioridadBase.Alta, pAvailableServices);
 
-                #region EliminaciÛn de las Suscripciones de la identidad que abandona el proyecto
+                #region Eliminaci√≥n de las Suscripciones de la identidad que abandona el proyecto
 
                 #region Eliminamos todas las suscripciones de esta identidad (No se incluyen las suscripciones a identidades)
 
-                SuscripcionCN suscripCN = new SuscripcionCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+                SuscripcionCN suscripCN = new SuscripcionCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<SuscripcionCN>(), mLoggerFactory);
                 DataWrapperSuscripcion suscripcionDW = suscripCN.ObtenerSuscripcionesDeListaIdentidades(listaIdentidadesIDs, true);
                 if (suscripcionDW.ListaSuscripcion.Count > 0)
                 {
-                    NotificacionCN notificacionCN = new NotificacionCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+                    NotificacionCN notificacionCN = new NotificacionCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<NotificacionCN>(), mLoggerFactory);
                     List<Guid> listaSuscripciones = new List<Guid>();
                     gestorUsuarios.GestorSuscripciones.SuscripcionDW.Merge(suscripcionDW);
                     foreach (AD.EntityModel.Models.Suscripcion.Suscripcion filaSuscripcion in suscripcionDW.ListaSuscripcion)
@@ -1006,7 +1026,7 @@ namespace Es.Riam.Gnoss.Web.Controles.ServiciosGenerales
                 DataWrapperSuscripcion suscripcionDW2 = suscripCN.ObtenerSuscripcionesDeListaIdentidades(identidadesIDMyGNOSS, true);
                 if (suscripcionDW2.ListaSuscripcion.Count > 0)
                 {
-                    NotificacionCN notificacionCN = new NotificacionCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+                    NotificacionCN notificacionCN = new NotificacionCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<NotificacionCN>(), mLoggerFactory);
                     List<Guid> listaSuscripciones = new List<Guid>();
                     gestorUsuarios.GestorSuscripciones.SuscripcionDW.Merge(suscripcionDW2);
                     foreach (AD.EntityModel.Models.Suscripcion.Suscripcion filaSuscripcion in suscripcionDW2.ListaSuscripcion)
@@ -1029,7 +1049,7 @@ namespace Es.Riam.Gnoss.Web.Controles.ServiciosGenerales
 
                 #endregion
 
-                #region Eliminamos la configuraciÛn de datos extra del proyecto
+                #region Eliminamos la configuraci√≥n de datos extra del proyecto
 
                 gestorIdentidades.DataWrapperIdentidad.Merge(identidadCN.ObtenerDatosExtraProyectoOpcionIdentidadPorIdentidadID(listaIdentidadesIDs));
                 List<DatoExtraProyectoOpcionIdentidad> listaAuxiliarDatoExtra = gestorIdentidades.DataWrapperIdentidad.ListaDatoExtraProyectoOpcionIdentidad;
@@ -1052,16 +1072,16 @@ namespace Es.Riam.Gnoss.Web.Controles.ServiciosGenerales
 
                 // Actualizar cola GnossLIVE masivo
 
-                new ControladorDocumentacion(mLoggingService, mEntityContext, mConfigService, mRedisCacheWrapper, mGnossCache, mEntityContextBASE, mVirtuosoAD, mHttpContextAccessor, mServicesUtilVirtuosoAndReplication).ActualizarGnossLiveMasivo(pProyecto.Clave, listaPerfilesIDs, AccionLive.Eliminado, (int)TipoLive.Miembro, false, "base", PrioridadLive.Alta, null);
+                new ControladorDocumentacion(mLoggingService, mEntityContext, mConfigService, mRedisCacheWrapper, mGnossCache, mEntityContextBASE, mVirtuosoAD, mHttpContextAccessor, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<ControladorDocumentacion>(), mloggerFactory).ActualizarGnossLiveMasivo(pProyecto.Clave, listaPerfilesIDs, AccionLive.Eliminado, (int)TipoLive.Miembro, false, "base", PrioridadLive.Alta, null, pAvailableServices);
                 mEntityContext.TerminarTransaccionesPendientes(true);
             }
             catch (Exception ex)
             {
-                mLoggingService.GuardarLogError(ex);
+                mLoggingService.GuardarLogError(ex, mlogger);
                 mEntityContext.TerminarTransaccionesPendientes(false);
             }
 
-            #region CachÈ masivo
+            #region Cach√© masivo
 
             //Invalido la cache de Mis comunidades
             proyCL.InvalidarMisProyectosListaPerfiles(listaPerfilesIDs);
@@ -1070,11 +1090,11 @@ namespace Es.Riam.Gnoss.Web.Controles.ServiciosGenerales
 
 
             //Eliminamos la cache de contactos en la comunidad
-            AmigosCL amigosCL = new AmigosCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mServicesUtilVirtuosoAndReplication);
+            AmigosCL amigosCL = new AmigosCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mServicesUtilVirtuosoAndReplication,mloggerFactory.CreateLogger<AmigosCL>(),mloggerFactory);
             amigosCL.InvalidarAmigosPertenecenProyecto(pProyecto.Clave);
 
-            IdentidadCL identidadCL = new IdentidadCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mServicesUtilVirtuosoAndReplication);
-            //Se debe eliminar la cachÈ para todos los perfiles del usuario, no para el perfil de la identidad actual, ya que puede dar problemas con otros perfiles sobre la misma comunidad.
+            IdentidadCL identidadCL = new IdentidadCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<IdentidadCL>(), mLoggerFactory);
+            //Se debe eliminar la cach√© para todos los perfiles del usuario, no para el perfil de la identidad actual, ya que puede dar problemas con otros perfiles sobre la misma comunidad.
             identidadCL.EliminarCacheGestorTodasIdentidadesListaUsuarios(dicUsuarioIDPersonaID, listaUsuariosIDs);
 
             List<string> listaClavesInvalidar = new List<string>();
@@ -1131,14 +1151,14 @@ namespace Es.Riam.Gnoss.Web.Controles.ServiciosGenerales
         /// <summary>
         /// 
         /// </summary>
-        public bool AceptarInvitacionOrganizacion(PeticionInvOrganizacion pInvitacionAOrganizacion, Identidad pIdentidadActual, string pUrlIntraGnoss, GnossIdentity pUsuario, Guid? pProyectoID = null)
+        public bool AceptarInvitacionOrganizacion(PeticionInvOrganizacion pInvitacionAOrganizacion, Identidad pIdentidadActual, string pUrlIntraGnoss, GnossIdentity pUsuario, IAvailableServices pAvailableServices, Guid? pProyectoID = null)
         {
             bool correcto = true;
 
             if (pInvitacionAOrganizacion != null)
             {
-                //Aceptamos la peticiÛn
-                GestionIdentidades gestorIdentidades = new GestionIdentidades(new DataWrapperIdentidad(), pIdentidadActual.GestorIdentidades.GestorPersonas, pIdentidadActual.GestorIdentidades.GestorUsuarios, pIdentidadActual.GestorIdentidades.GestorOrganizaciones, mLoggingService, mEntityContext, mConfigService, mServicesUtilVirtuosoAndReplication);
+                //Aceptamos la petici√≥n
+                GestionIdentidades gestorIdentidades = new GestionIdentidades(new DataWrapperIdentidad(), pIdentidadActual.GestorIdentidades.GestorPersonas, pIdentidadActual.GestorIdentidades.GestorUsuarios, pIdentidadActual.GestorIdentidades.GestorOrganizaciones, mLoggingService, mEntityContext, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<GestionIdentidades>(), mLoggerFactory);
                 pInvitacionAOrganizacion.FilaPeticion.FechaProcesado = DateTime.Now;
                 pInvitacionAOrganizacion.FilaPeticion.Estado = (short)EstadoPeticion.Aceptada;
                 Guid organizacionID = pInvitacionAOrganizacion.FilaInvitacionOrganizacion.OrganizacionID;
@@ -1157,7 +1177,7 @@ namespace Es.Riam.Gnoss.Web.Controles.ServiciosGenerales
                 pInvitacionAOrganizacion.FilaPeticion.UsuarioID = pUsuario.UsuarioID;
 
                 //Necesitamos cargar la tabla: OrganizacionParticipaProy para registrar a la org en esas comunidades...
-                GestionOrganizaciones gestOrg = new GestionOrganizaciones(new OrganizacionCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication).ObtenerOrganizacionPorID(organizacionID), mLoggingService, mEntityContext);
+                GestionOrganizaciones gestOrg = new GestionOrganizaciones(new OrganizacionCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<OrganizacionCN>(), mLoggerFactory).ObtenerOrganizacionPorID(organizacionID), mLoggingService, mEntityContext);
 
                 Elementos.ServiciosGenerales.Organizacion organizacion = gestOrg.ListaOrganizaciones[organizacionID];
 
@@ -1183,8 +1203,8 @@ namespace Es.Riam.Gnoss.Web.Controles.ServiciosGenerales
                     gestorIdentidades.GestorOrganizaciones.CargarOrganizaciones();
                 }
 
-                //Creamos el perfil persona + organizaciÛn o lo retomamos si ya existÌa
-                IdentidadCN identCN = new IdentidadCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+                //Creamos el perfil persona + organizaci√≥n o lo retomamos si ya exist√≠a
+                IdentidadCN identCN = new IdentidadCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<IdentidadCN>(), mLoggerFactory);
                 DataWrapperIdentidad identDW = identCN.ObtenerPerfilesDePersona(pIdentidadActual.Persona.Clave, false, pIdentidadActual.Clave);
 
                 Perfil perfil = null;
@@ -1193,11 +1213,10 @@ namespace Es.Riam.Gnoss.Web.Controles.ServiciosGenerales
                 {
                     if (pIdentidadActual.Persona.GestorPersonas.GestorUsuarios == null)
                     {
-                        pIdentidadActual.Persona.GestorPersonas.GestorUsuarios = new GestionUsuarios(new DataWrapperUsuario(), mLoggingService, mEntityContext, mConfigService);
+                        pIdentidadActual.Persona.GestorPersonas.GestorUsuarios = new GestionUsuarios(new DataWrapperUsuario(), mLoggingService, mEntityContext, mConfigService, mLoggerFactory.CreateLogger<GestionUsuarios>(), mLoggerFactory);
                     }
 
-                    UsuarioCN usuarioCN = new UsuarioCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
-
+                    UsuarioCN usuarioCN = new UsuarioCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication,mloggerFactory.CreateLogger<UsuarioCN>(), mloggerFactory);
                     AD.EntityModel.Models.UsuarioDS.Usuario usuario = usuarioCN.ObtenerUsuarioPorID(pIdentidadActual.Persona.UsuarioID);
 
                     if (usuario != null)
@@ -1210,7 +1229,7 @@ namespace Es.Riam.Gnoss.Web.Controles.ServiciosGenerales
                 }
 
                 DataWrapperUsuario usuDW = pIdentidadActual.Persona.GestorPersonas.GestorUsuarios.DataWrapperUsuario;
-                GestionUsuarios gestorUsuario = new GestionUsuarios(usuDW, mLoggingService, mEntityContext, mConfigService);
+                GestionUsuarios gestorUsuario = new GestionUsuarios(usuDW, mLoggingService, mEntityContext, mConfigService, mLoggerFactory.CreateLogger<GestionUsuarios>(), mLoggerFactory);
 
                 gestorIdentidades.GestorUsuarios = gestorUsuario;
                 gestorIdentidades.GestorPersonas.GestorUsuarios = gestorUsuario;
@@ -1219,19 +1238,19 @@ namespace Es.Riam.Gnoss.Web.Controles.ServiciosGenerales
                 List<string> listaContactosOrganizacion = new List<string>();
                 string identidadReal = "";
 
-                ProyectoCN proyCN = new ProyectoCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+                ProyectoCN proyCN = new ProyectoCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<ProyectoCN>(), mLoggerFactory);
                 Dictionary<Guid, bool> recibirNewsletterDefectoProyectos = proyCN.ObtenerProyectosConConfiguracionNewsletterPorDefecto();
 
                 if (!identDW.ListaPerfilPersonaOrg.Any(perfilPersOrg => perfilPersOrg.OrganizacionID.Equals(organizacionID) && perfilPersOrg.PersonaID.Equals(pIdentidadActual.Persona.Clave)))
                 {
                     //Lo creamos nuevo
-                    LiveCN liveCN = new LiveCN("base", mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+                    LiveCN liveCN = new LiveCN("base", mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<LiveCN>(), mLoggerFactory);
                     LiveDS liveDS = new LiveDS();
-                    identCN = new IdentidadCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+                    identCN = new IdentidadCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<IdentidadCN>(), mLoggerFactory);
                     gestorIdentidades.DataWrapperIdentidad.Merge(identCN.ObtenerIdentidadesDeOrganizacion(organizacionID, ProyectoAD.MetaProyecto));
-                    AmigosCN amigosCN = new AmigosCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+                    AmigosCN amigosCN = new AmigosCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<AmigosCN>(), mLoggerFactory);
                     gestorIdentidades.GestorAmigos = new GestionAmigos(new DataWrapperAmigos(), gestorIdentidades, mLoggingService, mEntityContext, mConfigService, mServicesUtilVirtuosoAndReplication);
-                    perfil = AgregarPerfilPersonaOrganizacion(gestorIdentidades, gestorIdentidades.GestorOrganizaciones, gestorIdentidades.GestorUsuarios, pIdentidadActual.Persona, organizacion, true, ProyectoAD.MetaOrganizacion, ProyectoAD.MetaProyecto, liveDS, recibirNewsletterDefectoProyectos);
+                    perfil = AgregarPerfilPersonaOrganizacion(gestorIdentidades, gestorIdentidades.GestorOrganizaciones, gestorIdentidades.GestorUsuarios, pIdentidadActual.Persona, organizacion, true, ProyectoAD.MetaOrganizacion, ProyectoAD.MetaProyecto, liveDS, recibirNewsletterDefectoProyectos, pAvailableServices);
 
                     liveCN.ActualizarBD(liveDS);
                     amigosCN.Actualizar();
@@ -1243,15 +1262,15 @@ namespace Es.Riam.Gnoss.Web.Controles.ServiciosGenerales
 
                     if (pProyectoID.HasValue && !pProyectoID.Value.Equals(ProyectoAD.MetaProyecto) && !gestorIdentidades.DataWrapperIdentidad.ListaIdentidad.Any(ident => ident.ProyectoID.Equals(pProyectoID.Value) && ident.Tipo != 3))
                     {
-                        //Hay que aÒadir al usuario al proyecto pProyectoID
+                        //Hay que a√±adir al usuario al proyecto pProyectoID
                         Identidad identidadProyecto = AgregarIdentidadPerfilYUsuarioAProyecto(gestorIdentidades, gestorUsuario, ProyectoAD.MetaOrganizacion, pProyectoID.Value, filaUsuario, perfil, recibirNewsletterDefectoProyectos);
 
-						ControladorDeSolicitudes controladorDeSolicitudes = new ControladorDeSolicitudes(mLoggingService, mEntityContext, mConfigService, mRedisCacheWrapper, mGnossCache, mEntityContextBASE, mVirtuosoAD, mHttpContextAccessor, mServicesUtilVirtuosoAndReplication);
+						ControladorDeSolicitudes controladorDeSolicitudes = new ControladorDeSolicitudes(mLoggingService, mEntityContext, mConfigService, mRedisCacheWrapper, mGnossCache, mEntityContextBASE, mVirtuosoAD, mHttpContextAccessor, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<ControladorDeSolicitudes>(), mLoggerFactory);
 						controladorDeSolicitudes.RegistrarUsuarioEnProyectoAutomatico(perfil, filaUsuario, gestorUsuario, gestorIdentidades, pProyectoID);
 					}
 
                     //Invalido la cache de Mis comunidades
-                    ProyectoCL proyCL = new ProyectoCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mVirtuosoAD, mServicesUtilVirtuosoAndReplication);
+                    ProyectoCL proyCL = new ProyectoCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mVirtuosoAD, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<ProyectoCL>(), mLoggerFactory);
                     proyCL.InvalidarMisProyectos(filaPerfilPersonaOrg.PerfilID);
 
                     gestorIdentidades.RecargarHijos();
@@ -1263,13 +1282,13 @@ namespace Es.Riam.Gnoss.Web.Controles.ServiciosGenerales
 
                         if (filasIdentidad.Count > 0)
                         {
-                            ControladorPersonas controladorPersonas = new ControladorPersonas(mLoggingService, mEntityContext, mConfigService, mRedisCacheWrapper, mGnossCache, mEntityContextBASE, mVirtuosoAD, mHttpContextAccessor, mServicesUtilVirtuosoAndReplication);
-                            controladorPersonas.ActualizarModeloBASE(perfil.GestorIdentidades.ListaIdentidades[(filasIdentidad[0]).IdentidadID], colaLiveRow.ProyectoId, true, true, PrioridadBase.Alta);
+                            ControladorPersonas controladorPersonas = new ControladorPersonas(mLoggingService, mEntityContext, mConfigService, mRedisCacheWrapper, mGnossCache, mEntityContextBASE, mVirtuosoAD, mHttpContextAccessor, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<ControladorPersonas>(), mLoggerFactory);
+                            controladorPersonas.ActualizarModeloBASE(perfil.GestorIdentidades.ListaIdentidades[(filasIdentidad[0]).IdentidadID], colaLiveRow.ProyectoId, true, true, PrioridadBase.Alta, pAvailableServices);
                         }
                     }
 
-                    //Agregamos como contactos a las personas de la organizaciÛn y a la propia organizaciÛn
-                    ControladorAmigos controlador = new ControladorAmigos(mLoggingService, mEntityContext, mConfigService, mRedisCacheWrapper, mGnossCache, mEntityContextBASE, mVirtuosoAD, mHttpContextAccessor, mServicesUtilVirtuosoAndReplication);
+                    //Agregamos como contactos a las personas de la organizaci√≥n y a la propia organizaci√≥n
+                    ControladorAmigos controlador = new ControladorAmigos(mLoggingService, mEntityContext, mConfigService, mRedisCacheWrapper, mGnossCache, mEntityContextBASE, mVirtuosoAD, mHttpContextAccessor, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<ControladorAmigos>(), mLoggerFactory);
                     listaContactosOrganizacion = controlador.AgregarContactosOrganizacion(organizacionID, perfil.IdentidadMyGNOSS.Clave, gestorIdentidades);
                     identidadReal = perfil.IdentidadMyGNOSS.Clave.ToString();
                 }
@@ -1288,8 +1307,8 @@ namespace Es.Riam.Gnoss.Web.Controles.ServiciosGenerales
                         gestorIdentidades.DataWrapperIdentidad.ListaIdentidad.Add(filaIdentidad);
                         gestorIdentidades.RecargarHijos();
 
-                        //Agregamos como contactos a las personas de la organizaciÛn y a la propia organizaciÛn
-                        ControladorAmigos controlador = new ControladorAmigos(mLoggingService, mEntityContext, mConfigService, mRedisCacheWrapper, mGnossCache, mEntityContextBASE, mVirtuosoAD, mHttpContextAccessor, mServicesUtilVirtuosoAndReplication);
+                        //Agregamos como contactos a las personas de la organizaci√≥n y a la propia organizaci√≥n
+                        ControladorAmigos controlador = new ControladorAmigos(mLoggingService, mEntityContext, mConfigService, mRedisCacheWrapper, mGnossCache, mEntityContextBASE, mVirtuosoAD, mHttpContextAccessor, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<ControladorAmigos>(), mLoggerFactory);
                         listaContactosOrganizacion = controlador.AgregarContactosOrganizacion(organizacionID, filaIdentidad.IdentidadID, gestorIdentidades);
                         identidadReal = filaIdentidad.IdentidadID.ToString();
                         //Retomamos el perfil y la identidad en el metaproyecto
@@ -1299,7 +1318,7 @@ namespace Es.Riam.Gnoss.Web.Controles.ServiciosGenerales
                         gestorUsuario.AgregarUsuarioAProyecto(gestorUsuario.ListaUsuarios[pUsuario.UsuarioID].FilaUsuario, ProyectoAD.MetaOrganizacion, ProyectoAD.MetaProyecto, filaIdentidad.IdentidadID, false);
 
                         //Invalido la cache de Mis comunidades
-                        ProyectoCL proyCL = new ProyectoCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mVirtuosoAD, mServicesUtilVirtuosoAndReplication);
+                        ProyectoCL proyCL = new ProyectoCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mVirtuosoAD, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<ProyectoCL>(), mLoggerFactory);
                         proyCL.InvalidarMisProyectos(filaIdentidad.PerfilID);
 
                         gestorIdentidades.RecargarHijos();
@@ -1312,8 +1331,8 @@ namespace Es.Riam.Gnoss.Web.Controles.ServiciosGenerales
                 }
                 gestorUsuario.AgregarOrganizacionRolUsuario(pUsuario.UsuarioID, organizacionID);
 
-                NotificacionCN notifCN = new NotificacionCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
-                GestionNotificaciones gestorNotificaciones = new GestionNotificaciones(notifCN.ObtenerInvitacionesPendientesDeMyGnoss(pIdentidadActual.FilaIdentidad.PerfilID, pIdentidadActual.Persona.Clave, null, false), gestorIdentidades, mLoggingService, mEntityContext, mConfigService, mServicesUtilVirtuosoAndReplication);
+                NotificacionCN notifCN = new NotificacionCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<NotificacionCN>(), mLoggerFactory);
+                GestionNotificaciones gestorNotificaciones = new GestionNotificaciones(notifCN.ObtenerInvitacionesPendientesDeMyGnoss(pIdentidadActual.FilaIdentidad.PerfilID, pIdentidadActual.Persona.Clave, null, false), gestorIdentidades, mLoggingService, mEntityContext, mConfigService, mServicesUtilVirtuosoAndReplication,mloggerFactory.CreateLogger<GestionNotificaciones>(),mloggerFactory);
 
 
                 int numInvitacionesAcepRecha = 1;
@@ -1333,8 +1352,8 @@ namespace Es.Riam.Gnoss.Web.Controles.ServiciosGenerales
                 mEntityContext.SaveChanges();
 
                 //Agregamos a Virtuoso e Insertamos una fila en BASE
-                ControladorContactos contrContactos = new ControladorContactos(mLoggingService, mEntityContext, mConfigService, mEntityContextBASE, mRedisCacheWrapper, mVirtuosoAD, mServicesUtilVirtuosoAndReplication);
-                FacetadoCN facetadoCN = new FacetadoCN(pUrlIntraGnoss, "contactos/", mEntityContext, mLoggingService, mConfigService, mVirtuosoAD, mServicesUtilVirtuosoAndReplication);
+                ControladorContactos contrContactos = new ControladorContactos(mLoggingService, mEntityContext, mConfigService, mEntityContextBASE, mRedisCacheWrapper, mVirtuosoAD, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<ControladorContactos>(), mLoggerFactory);
+                FacetadoCN facetadoCN = new FacetadoCN(pUrlIntraGnoss, "contactos/", mEntityContext, mLoggingService, mConfigService, mVirtuosoAD, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<FacetadoCN>(), mLoggerFactory);
                 if (listaContactosOrganizacion.Count > 0)
                 {
                     foreach (string idAmigo in listaContactosOrganizacion)
@@ -1345,18 +1364,18 @@ namespace Es.Riam.Gnoss.Web.Controles.ServiciosGenerales
                 }
                 facetadoCN.Dispose();
 
-                new ControladorAmigos(mLoggingService, mEntityContext, mConfigService, mRedisCacheWrapper, mGnossCache, mEntityContextBASE, mVirtuosoAD, mHttpContextAccessor, mServicesUtilVirtuosoAndReplication).AgregarNotificacionInvitacionLeidaAPerfil(pIdentidadActual.PerfilID, numInvitacionesAcepRecha);
+                new ControladorAmigos(mLoggingService, mEntityContext, mConfigService, mRedisCacheWrapper, mGnossCache, mEntityContextBASE, mVirtuosoAD, mHttpContextAccessor, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<ControladorAmigos>(), mLoggerFactory).AgregarNotificacionInvitacionLeidaAPerfil(pIdentidadActual.PerfilID, numInvitacionesAcepRecha);
 
                 #endregion
 
-                //Borro la cachÈ para que aparezca la identidad en el men˙ superior:
-                IdentidadCL identCL = new IdentidadCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mServicesUtilVirtuosoAndReplication);
+                //Borro la cach√© para que aparezca la identidad en el men√∫ superior:
+                IdentidadCL identCL = new IdentidadCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<IdentidadCL>(), mLoggerFactory);
                 identCL.EliminarCacheGestorTodasIdentidadesUsuario(pUsuario.UsuarioID, pUsuario.PersonaID);
                 identCL.EliminarCacheGestorIdentidadActual(pUsuario.UsuarioID, pUsuario.IdentidadID, pUsuario.PersonaID);
 
                 identCL.InvalidarCacheMiembrosOrganizacionParaFiltroGrupos(organizacionID);
 
-                UsuarioCL usuarioCL = new UsuarioCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mServicesUtilVirtuosoAndReplication);
+                UsuarioCL usuarioCL = new UsuarioCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<UsuarioCL>(), mLoggerFactory);
                 usuarioCL.EliminarCacheUsuariosCargaLigeraParaFiltros(organizacionID);
                 usuarioCL.Dispose();
             }
@@ -1366,7 +1385,7 @@ namespace Es.Riam.Gnoss.Web.Controles.ServiciosGenerales
 
 
         /// <summary>
-        /// Aceptamos una invitaciÛn a ser contacto y hacemos contactos a las dos identidades
+        /// Aceptamos una invitaci√≥n a ser contacto y hacemos contactos a las dos identidades
         /// </summary>
         /// <param name="pIdentidadInvitacionContactoID">ID de la identidad que quiere ser contacto de otra.</param>
         /// <param name="pIdentidadActual">Identidad actual que se va a hacer contacto de la pIdentidadInvitacionContactoID</param>
@@ -1375,29 +1394,29 @@ namespace Es.Riam.Gnoss.Web.Controles.ServiciosGenerales
         /// <param name="pBaseURLIdioma"></param>
         /// <param name="pProyectoSeleccionado">Proyecto en el que se van a hacer contactos</param>
         /// <param name="pPeticionActual"></param>
-        public void AceptarInvitacionContacto(Guid pIdentidadInvitacionContactoID, Identidad pIdentidadActual, string pUrlIntragnoss, string pBaseUrl, string pBaseURLIdioma, Elementos.ServiciosGenerales.Proyecto pProyectoSeleccionado, Peticion pPeticionActual, string pLanguageCode, GnossIdentity pUsuario)
+        public void AceptarInvitacionContacto(Guid pIdentidadInvitacionContactoID, Identidad pIdentidadActual, string pUrlIntragnoss, string pBaseUrl, string pBaseURLIdioma, Elementos.ServiciosGenerales.Proyecto pProyectoSeleccionado, Peticion pPeticionActual, string pLanguageCode, GnossIdentity pUsuario, IAvailableServices pAvailableServices)
         {
-            PersonaCN personaCN = new PersonaCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+            PersonaCN personaCN = new PersonaCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<PersonaCN>(), mLoggerFactory);
             GestionPersonas GestorPersonas = new GestionPersonas(personaCN.ObtenerPersonasPorIdentidad(pIdentidadInvitacionContactoID), mLoggingService, mEntityContext);
             personaCN.Dispose();
 
-            OrganizacionCN organizacionCN = new OrganizacionCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+            OrganizacionCN organizacionCN = new OrganizacionCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<OrganizacionCN>(), mLoggerFactory);
             GestionOrganizaciones GestorOrganizaciones = new GestionOrganizaciones(organizacionCN.ObtenerOrganizacionesPorIdentidad(pIdentidadInvitacionContactoID), mLoggingService, mEntityContext);
             personaCN.Dispose();
 
 
-            IdentidadCN idenCN = new IdentidadCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+            IdentidadCN idenCN = new IdentidadCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<IdentidadCN>(), mLoggerFactory);
             Identidad identidadOrigen = new GestionIdentidades(idenCN.ObtenerIdentidadPorID(pIdentidadInvitacionContactoID, true), GestorPersonas, GestorOrganizaciones, mLoggingService, mEntityContext, mConfigService, mServicesUtilVirtuosoAndReplication).ListaIdentidades[pIdentidadInvitacionContactoID];
             Identidad identidadDestino = pIdentidadActual;
             idenCN.Dispose();
 
-            ControladorAmigos controladorAmigos = new ControladorAmigos(mLoggingService, mEntityContext, mConfigService, mRedisCacheWrapper, mGnossCache, mEntityContextBASE, mVirtuosoAD, mHttpContextAccessor, mServicesUtilVirtuosoAndReplication);
+            ControladorAmigos controladorAmigos = new ControladorAmigos(mLoggingService, mEntityContext, mConfigService, mRedisCacheWrapper, mGnossCache, mEntityContextBASE, mVirtuosoAD, mHttpContextAccessor, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<ControladorAmigos>(), mLoggerFactory);
             //controladorAmigos.CargarAmigos(identidadOrigen);
             //controladorAmigos.CargarAmigos(pIdentidadActual);
 
             #region Cargo Grupo Necesarios
 
-            AmigosCN amigosCN = new AmigosCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+            AmigosCN amigosCN = new AmigosCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<AmigosCN>(), mLoggerFactory);
             //gestionAmigos.AmigosDS.Merge(amigosCN.ObtenerGruposAmigosConAccesoParaIdentidad(identidadOrigen.IdentidadMyGNOSS.Clave));
             //gestionAmigos.AmigosDS.Merge(amigosCN.ObtenerGruposAmigosConAccesoParaIdentidad(pIdentidadActual.Clave));
             //gestionAmigos.AmigosDS.Merge(amigosCN.ObtenerGruposAmigosConAccesoParaIdentidad(pIdentidadActual.IdentidadMyGNOSS.Clave));
@@ -1405,27 +1424,27 @@ namespace Es.Riam.Gnoss.Web.Controles.ServiciosGenerales
 
             #endregion
 
-            GestionNotificaciones gestorNotificaciones = new GestionNotificaciones(new DataWrapperNotificacion(), mLoggingService, mEntityContext, mConfigService, mServicesUtilVirtuosoAndReplication);
+            GestionNotificaciones gestorNotificaciones = new GestionNotificaciones(new DataWrapperNotificacion(), mLoggingService, mEntityContext, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<GestionNotificaciones>(), mloggerFactory);
 
             gestorNotificaciones.AgregarNotificacionCorreo(pIdentidadActual, identidadOrigen, TiposNotificacion.ConfirmacionContacto, pBaseUrl, pProyectoSeleccionado, pLanguageCode);
 
             mEntityContext.SaveChanges();
 
-            NotificacionCN notCN = new NotificacionCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
-            notCN.ActualizarNotificacion();
+            NotificacionCN notCN = new NotificacionCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<NotificacionCN>(), mLoggerFactory);
+            notCN.ActualizarNotificacion(pAvailableServices);
             notCN.Dispose();
 
             //Agregamos a Virtuoso
-            FacetadoCN facetadoCN = new FacetadoCN(pUrlIntragnoss, "contactos/", mEntityContext, mLoggingService, mConfigService, mVirtuosoAD, mServicesUtilVirtuosoAndReplication);
+            FacetadoCN facetadoCN = new FacetadoCN(pUrlIntragnoss, "contactos/", mEntityContext, mLoggingService, mConfigService, mVirtuosoAD, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<FacetadoCN>(), mLoggerFactory);
             facetadoCN.InsertarNuevoContacto(identidadOrigen.IdentidadMyGNOSS.Clave.ToString(), pIdentidadActual.IdentidadMyGNOSS.Clave.ToString());
             facetadoCN.Dispose();
 
             //Agregamos una fila al BASE
-            ControladorContactos contrContactos = new ControladorContactos(mLoggingService, mEntityContext, mConfigService, mEntityContextBASE, mRedisCacheWrapper, mVirtuosoAD, mServicesUtilVirtuosoAndReplication);
+            ControladorContactos contrContactos = new ControladorContactos(mLoggingService, mEntityContext, mConfigService, mEntityContextBASE, mRedisCacheWrapper, mVirtuosoAD, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<ControladorContactos>(), mLoggerFactory);
             contrContactos.ActualizarModeloBaseSimple(identidadOrigen.IdentidadMyGNOSS.Clave, pIdentidadActual.IdentidadMyGNOSS.Clave);
 
             //Limpiamos la cache de los contactos
-            AmigosCL amigosCL = new AmigosCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mServicesUtilVirtuosoAndReplication);
+            AmigosCL amigosCL = new AmigosCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mServicesUtilVirtuosoAndReplication,mLoggerFactory.CreateLogger<AmigosCL>(), mloggerFactory);
             amigosCL.InvalidarAmigos(identidadOrigen.IdentidadMyGNOSS.Clave);
             amigosCL.InvalidarAmigos(pIdentidadActual.IdentidadMyGNOSS.Clave);
             amigosCL.Dispose();
@@ -1435,9 +1454,9 @@ namespace Es.Riam.Gnoss.Web.Controles.ServiciosGenerales
 
             #region Correo
 
-            UtilIdiomas utilIdiomas = new UtilIdiomas(pUsuario.Idioma, mLoggingService, mEntityContext, mConfigService,mRedisCacheWrapper);
+            UtilIdiomas utilIdiomas = new UtilIdiomas(pUsuario.Idioma, mLoggingService, mEntityContext, mConfigService,mRedisCacheWrapper, mLoggerFactory.CreateLogger<UtilIdiomas>(), mLoggerFactory);
 
-            GestionCorreo gestorCorreo = new GestionCorreo(mLoggingService, mEntityContext, mConfigService, mServicesUtilVirtuosoAndReplication);
+            GestionCorreo gestorCorreo = new GestionCorreo(mLoggingService, mEntityContext, mConfigService, mServicesUtilVirtuosoAndReplication, pAvailableServices, mLoggerFactory.CreateLogger<GestionCorreo>(), mLoggerFactory);
             List<Guid> listaDestinatarioCorreo = new List<Guid>();
             listaDestinatarioCorreo.Add(identidadOrigen.Clave);
 
@@ -1445,18 +1464,23 @@ namespace Es.Riam.Gnoss.Web.Controles.ServiciosGenerales
             string cuerpo = utilIdiomas.GetText("INVITACIONES", "CUERPO_ACEPTACIONINVITACIONCONTACTO", identidadDestino.Nombre(), UrlsSemanticas.GetURLPerfilDeIdentidad(pBaseURLIdioma, utilIdiomas, identidadDestino));
             Guid correoEnviado = gestorCorreo.AgregarCorreo(identidadDestino.Clave, listaDestinatarioCorreo, asunto, cuerpo, null, TipoEnvioCorreoBienvenida.CorreoInterno, pProyectoSeleccionado, TiposNotificacion.AvisoCorreoNuevoContacto, pLanguageCode);
 
-            ControladorDocumentacion controladorDocumentacion = new ControladorDocumentacion(mLoggingService, mEntityContext, mConfigService, mRedisCacheWrapper, mGnossCache, mEntityContextBASE, mVirtuosoAD, mHttpContextAccessor, mServicesUtilVirtuosoAndReplication);
+            ControladorDocumentacion controladorDocumentacion = new ControladorDocumentacion(mLoggingService, mEntityContext, mConfigService, mRedisCacheWrapper, mGnossCache, mEntityContextBASE, mVirtuosoAD, mHttpContextAccessor, mServicesUtilVirtuosoAndReplication,mLoggerFactory.CreateLogger<ControladorDocumentacion>(), mloggerFactory);
+            string destinatarios = "";
             foreach (Guid destinatario in listaDestinatarioCorreo)
             {
-                controladorDocumentacion.AgregarMensajeFacModeloBaseSimple(correoEnviado, identidadDestino.Clave, pProyectoSeleccionado.Clave, "base", destinatario.ToString(), null, PrioridadBase.Alta);
+                destinatarios += $"|{destinatario.ToString()}";
             }
+
+            if (destinatarios.StartsWith("|")) destinatarios = destinatarios.Substring(1);
+
+            controladorDocumentacion.AgregarMensajeFacModeloBaseSimple(correoEnviado, identidadDestino.Clave, pProyectoSeleccionado.Clave, "base", destinatarios, null, PrioridadBase.Alta, pAvailableServices);
 
             //Pongo el correo como eliminado para que no le aparezca a la persona que envia el correo en su bandeja de salida:
             foreach (CorreoDS.CorreoInternoRow fila in gestorCorreo.CorreoDS.CorreoInterno.Rows)
             {
                 if (fila.CorreoID == correoEnviado)
                 {
-                    Correo correo = new Correo(fila, gestorCorreo, mLoggingService);
+                    Correo correo = new Correo(fila, gestorCorreo);
                     if (correo.Enviado)
                     {
                         correo.FilaCorreo.Eliminado = true;
@@ -1465,7 +1489,7 @@ namespace Es.Riam.Gnoss.Web.Controles.ServiciosGenerales
                 }
             }
 
-            CorreoCN correoCN = new CorreoCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+            CorreoCN correoCN = new CorreoCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<CorreoCN>(), mLoggerFactory);
             correoCN.ActualizarCorreo(gestorCorreo.CorreoDS);
             gestorCorreo.CorreoDS.Dispose();
             gestorCorreo.Dispose();
@@ -1480,16 +1504,16 @@ namespace Es.Riam.Gnoss.Web.Controles.ServiciosGenerales
             pPeticionActual.FilaPeticion.Estado = (short)EstadoPeticion.Aceptada;
             pPeticionActual.FilaPeticion.UsuarioID = pUsuario.UsuarioID;
 
-            PeticionCN petCN = new PeticionCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+            PeticionCN petCN = new PeticionCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<PeticionCN>(), mLoggerFactory);
             petCN.ActualizarBD();
             petCN.Dispose();
         }
 
-        public void AceptarInvitacionComunidadConInvitacion(Guid pProyectoID, Guid pOrganizacionID, Identidad pIdentidadActual, DataWrapperUsuario pDataWrapperUsuario, Guid pUsuarioID)
+        public void AceptarInvitacionComunidadConInvitacion(Guid pProyectoID, Guid pOrganizacionID, Identidad pIdentidadActual, DataWrapperUsuario pDataWrapperUsuario, Guid pUsuarioID, IAvailableServices pAvailableServices)
         {
-            GestionUsuarios gestorUsuarios = new GestionUsuarios(new DataWrapperUsuario(), mLoggingService, mEntityContext, mConfigService);
+            GestionUsuarios gestorUsuarios = new GestionUsuarios(new DataWrapperUsuario(), mLoggingService, mEntityContext, mConfigService, mLoggerFactory.CreateLogger<GestionUsuarios>(), mLoggerFactory);
 
-            ProyectoCN proyectoCN = new ProyectoCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+            ProyectoCN proyectoCN = new ProyectoCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<ProyectoCN>(), mLoggerFactory);
             AD.EntityModel.Models.UsuarioDS.Usuario filaUsuario = pDataWrapperUsuario.ListaUsuario.FirstOrDefault(usuario => usuario.UsuarioID.Equals(pUsuarioID));
 
             Dictionary<Guid, bool> recibirNewsletterDefectoProyectos = proyectoCN.ObtenerProyectosConConfiguracionNewsletterPorDefecto();
@@ -1497,25 +1521,37 @@ namespace Es.Riam.Gnoss.Web.Controles.ServiciosGenerales
 
             if (!proyectoCN.ParticipaUsuarioEnProyecto(pProyectoID, pUsuarioID))
             {
-                Elementos.ServiciosGenerales.Proyecto proyecto = new GestionProyecto(proyectoCN.ObtenerProyectoPorID(pProyectoID), mLoggingService, mEntityContext).ListaProyectos[pProyectoID];
+                Elementos.ServiciosGenerales.Proyecto proyecto = new GestionProyecto(proyectoCN.ObtenerProyectoPorID(pProyectoID), mLoggingService, mEntityContext, mLoggerFactory.CreateLogger<GestionProyecto>(), mLoggerFactory).ListaProyectos[pProyectoID];
 
                 Identidad ObjetoIdentidadProy = AgregarIdentidadPerfilYUsuarioAProyecto(pIdentidadActual.GestorIdentidades, gestorUsuarios, pOrganizacionID, pProyectoID, filaUsuario, pIdentidadActual.PerfilUsuario, recibirNewsletterDefectoProyectos);
 
-				ControladorDeSolicitudes controladorDeSolicitudes = new ControladorDeSolicitudes(mLoggingService, mEntityContext, mConfigService, mRedisCacheWrapper, mGnossCache, mEntityContextBASE, mVirtuosoAD, mHttpContextAccessor, mServicesUtilVirtuosoAndReplication);
+				ControladorDeSolicitudes controladorDeSolicitudes = new ControladorDeSolicitudes(mLoggingService, mEntityContext, mConfigService, mRedisCacheWrapper, mGnossCache, mEntityContextBASE, mVirtuosoAD, mHttpContextAccessor, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<ControladorDeSolicitudes>(), mLoggerFactory);
 				controladorDeSolicitudes.RegistrarUsuarioEnProyectoAutomatico(pIdentidadActual.PerfilUsuario, filaUsuario, gestorUsuarios, pIdentidadActual.GestorIdentidades, pProyectoID);
 
 				//Invalido la cache de Mis comunidades
-				ProyectoCL proyCL = new ProyectoCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mVirtuosoAD, mServicesUtilVirtuosoAndReplication);
+				ProyectoCL proyCL = new ProyectoCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mVirtuosoAD, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<ProyectoCL>(), mLoggerFactory);
                 proyCL.InvalidarMisProyectos(ObjetoIdentidadProy.PerfilID);
                 proyCL.Dispose();
 
                 pIdentidadActual.GestorIdentidades.RecargarHijos();
                 //listaProyectos.Add(proyectoID);
 
-                //Limpiar la cachÈ de los miembros de la comunidad para el servicio web autocompletar de editores...
-                IdentidadCL identidadCL = new IdentidadCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mServicesUtilVirtuosoAndReplication);
+                //Limpiar la cach√© de los miembros de la comunidad para el servicio web autocompletar de editores...
+                IdentidadCL identidadCL = new IdentidadCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<IdentidadCL>(), mLoggerFactory);
                 identidadCL.InvalidarCacheMiembrosComunidad(pProyectoID);
                 identidadCL.Dispose();
+
+                //Limpiar la cache de amigos de los miembros de la comunidad
+                AmigosCL amigosCL = new AmigosCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mServicesUtilVirtuosoAndReplication, mloggerFactory.CreateLogger<AmigosCL>(),mloggerFactory);
+                IdentidadCN identidadCN = new IdentidadCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<IdentidadCN>(), mLoggerFactory);
+                DataWrapperIdentidad dwIdentidad = identidadCN.ObtenerIdentidadesDeProyecto(pProyectoID);
+
+                foreach (AD.EntityModel.Models.IdentidadDS.Identidad identidad in dwIdentidad.ListaIdentidad)
+                {
+                    Guid identidadMyGnoss = identidadCN.ObtenerIdentidadIDDeMyGNOSSPorIdentidad(identidad.IdentidadID);
+                    amigosCL.InvalidarAmigos(identidadMyGnoss);
+                    amigosCL.RefrescarCacheAmigos(identidadMyGnoss, mEntityContextBASE, pAvailableServices);
+                }
 
                 mEntityContext.SaveChanges();
             }
@@ -1523,11 +1559,11 @@ namespace Es.Riam.Gnoss.Web.Controles.ServiciosGenerales
             proyectoCN.Dispose();
         }
 
-        #region MÈtodos Privados SmartFocus
+        #region M√©todos Privados SmartFocus
 
 
         /// <summary>
-        /// Realiza una peticiÛn HTTP
+        /// Realiza una petici√≥n HTTP
         /// </summary>
         /// <param name="pUrl"></param>
         /// <param name="pContentType"></param>
@@ -1613,11 +1649,13 @@ namespace Es.Riam.Gnoss.Web.Controles.ServiciosGenerales
 
         #endregion
 
-        public Perfil AgregarPerfilPersonaOrganizacion(GestionIdentidades pGestorIdentidades, GestionOrganizaciones pGestorOrganizaciones, GestionUsuarios pGestorUsuarios, Es.Riam.Gnoss.Elementos.ServiciosGenerales.Persona pPersona, Elementos.ServiciosGenerales.Organizacion pOrganizacion, bool pCrearIdentidadEnMetaProyecto, Guid? pMetaOrganizacionID, Guid? pMetaProyectoID, LiveDS pLiveDS, Dictionary<Guid, bool> pRecibirNewsletterDefectoProyectos)
+        public Perfil AgregarPerfilPersonaOrganizacion(GestionIdentidades pGestorIdentidades, GestionOrganizaciones pGestorOrganizaciones, GestionUsuarios pGestorUsuarios, Es.Riam.Gnoss.Elementos.ServiciosGenerales.Persona pPersona, Elementos.ServiciosGenerales.Organizacion pOrganizacion, bool pCrearIdentidadEnMetaProyecto, Guid? pMetaOrganizacionID, Guid? pMetaProyectoID, LiveDS pLiveDS, Dictionary<Guid, bool> pRecibirNewsletterDefectoProyectos, IAvailableServices pAvailableServices)
         {
             Perfil perfil = pGestorIdentidades.AgregarPerfilPersonaOrganizacion(pPersona, pOrganizacion, pCrearIdentidadEnMetaProyecto, pMetaOrganizacionID, pMetaProyectoID, pRecibirNewsletterDefectoProyectos);
 
             AD.EntityModel.Models.UsuarioDS.Usuario filaUsuario = (AD.EntityModel.Models.UsuarioDS.Usuario)pGestorUsuarios.ListaUsuarios[pPersona.UsuarioID].FilaElementoEntity;
+
+            List<string> filasInsertarBase = new List<string>();
 
             foreach (OrganizacionParticipaProy filaOrgPartProy in pGestorOrganizaciones.OrganizacionDW.ListaOrganizacionParticipaProy.Where(item => item.OrganizacionID.Equals(perfil.OrganizacionID) && item.RegistroAutomatico > 0))
             {
@@ -1643,13 +1681,13 @@ namespace Es.Riam.Gnoss.Web.Controles.ServiciosGenerales
                     ////Si el perfil no tiene identidad
                     //if (pGestorIdentidades.IdentidadesDS.Identidad.Select("PerfilID = '" + perfilID + "' AND ProyectoID = '" + comunidadID + "'").Length == 0)
                     //{
-                    ControladorIdentidades controladorIdentidades = new ControladorIdentidades(pGestorIdentidades, mLoggingService, mEntityContext, mConfigService, mRedisCacheWrapper, mGnossCache, mEntityContextBASE, mVirtuosoAD, mHttpContextAccessor, mServicesUtilVirtuosoAndReplication);
+                    ControladorIdentidades controladorIdentidades = new ControladorIdentidades(pGestorIdentidades, mLoggingService, mEntityContext, mConfigService, mRedisCacheWrapper, mGnossCache, mEntityContextBASE, mVirtuosoAD, mHttpContextAccessor, mServicesUtilVirtuosoAndReplication,mLoggerFactory.CreateLogger<ControladorIdentidades>(), mloggerFactory);
                     Identidad ObjetoIdentidadProy = controladorIdentidades.AgregarIdentidadPerfilYUsuarioAProyecto(pGestorIdentidades, pGestorUsuarios, organizacionID, comunidadID, filaUsuario, perfil, pRecibirNewsletterDefectoProyectos);
 
-					ControladorDeSolicitudes controladorDeSolicitudes = new ControladorDeSolicitudes(mLoggingService, mEntityContext, mConfigService, mRedisCacheWrapper, mGnossCache, mEntityContextBASE, mVirtuosoAD, mHttpContextAccessor, mServicesUtilVirtuosoAndReplication);
+					ControladorDeSolicitudes controladorDeSolicitudes = new ControladorDeSolicitudes(mLoggingService, mEntityContext, mConfigService, mRedisCacheWrapper, mGnossCache, mEntityContextBASE, mVirtuosoAD, mHttpContextAccessor, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<ControladorDeSolicitudes>(), mLoggerFactory);
 					controladorDeSolicitudes.RegistrarUsuarioEnProyectoAutomatico(perfil, filaUsuario, pGestorUsuarios, pGestorIdentidades);
 
-					identidadID = ObjetoIdentidadProy.Clave;
+                    identidadID = ObjetoIdentidadProy.Clave;
                     ObjetoIdentidadProy.Tipo = (TiposIdentidad)filaOrgPartProy.RegistroAutomatico;
                     pGestorIdentidades.RecargarHijos();
                     //}
@@ -1668,21 +1706,24 @@ namespace Es.Riam.Gnoss.Web.Controles.ServiciosGenerales
 
                     DateTime fechaAlta = pGestorIdentidades.DataWrapperIdentidad.ListaIdentidad.FirstOrDefault(ident => ident.PerfilID.Equals(perfilID) && ident.ProyectoID.Equals(comunidadID)).FechaAlta;
 
-                    try
+
+                    ParametroAplicacion busqueda = mEntityContext.ParametroAplicacion.FirstOrDefault(parametro => parametro.Parametro.Equals("EcosistemaSinHomeUsuario"));
+                    if (!(busqueda != null && busqueda.Valor == "true"))
                     {
-                        ParametroAplicacion busqueda = mEntityContext.ParametroAplicacion.FirstOrDefault(parametro => parametro.Parametro.Equals("EcosistemaSinHomeUsuario"));
-                        if (!(busqueda != null && busqueda.Valor == "true"))
-                        {
-                            InsertarFilaEnColaRabbitMQ(filaOrgPartProy.ProyectoID, perfilID, (int)AccionLive.Agregado, (int)TipoLive.Miembro, 0, fechaAlta, false, (short)PrioridadLive.Alta);
-                        }
+                        filasInsertarBase.Add(PreprarFilaParaColaRabbitMQ(filaOrgPartProy.ProyectoID, perfilID, (int)AccionLive.Agregado, (int)TipoLive.Miembro, 0, fechaAlta, false, (short)PrioridadLive.Alta));
                     }
-                    catch (Exception ex)
-                    {
-                        mLoggingService.GuardarLogError(ex, "Fallo al insertar en Rabbit, insertamos en la base de datos 'BASE', tabla 'cola'");
-                        pLiveDS.Cola.AddColaRow(filaOrgPartProy.ProyectoID, perfilID, (int)AccionLive.Agregado, (int)TipoLive.Miembro, 0, fechaAlta, false, (short)PrioridadLive.Alta, null);
-                    }
+
                 }
             }
+
+            #region Actualizar Base
+
+            if (filasInsertarBase.Count > 0)
+            {
+                InsertarFilasEnColaRabbitMQ(filasInsertarBase);
+            }
+
+            #endregion
 
             return perfil;
         }
@@ -1717,30 +1758,30 @@ namespace Es.Riam.Gnoss.Web.Controles.ServiciosGenerales
             {
                 pGestorIdentidades.GestorSuscripciones = new GestionSuscripcion(new DataWrapperSuscripcion(), mLoggingService, mEntityContext);
             }
-            new ControladorSuscripciones(mLoggingService, mEntityContext, mConfigService, mRedisCacheWrapper, mVirtuosoAD, mServicesUtilVirtuosoAndReplication).SuscribirIdentidadATesauroProyecto(pGestorIdentidades.GestorSuscripciones, identidad.Clave, pProyectoID);
+            new ControladorSuscripciones(mLoggingService, mEntityContext, mConfigService, mRedisCacheWrapper, mVirtuosoAD, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<ControladorSuscripciones>(), mLoggerFactory).SuscribirIdentidadATesauroProyecto(pGestorIdentidades.GestorSuscripciones, identidad.Clave, pProyectoID);
 
             return identidad;
         }
 
         /// <summary>
-        /// Crea el perfil persona+organizaciÛn para la persona y la organizaciÛn pasadas por par·metro
+        /// Crea el perfil persona+organizaci√≥n para la persona y la organizaci√≥n pasadas por par√°metro
         /// </summary>
         /// <param name="pPersona">Persona</param>
-        /// <param name="pOrganizacion">OrganizaciÛn</param>
+        /// <param name="pOrganizacion">Organizaci√≥n</param>
         /// <param name="pCrearIdentidadEnMetaProyecto">TRUE si debe crear la identidad para ese perfil en el metaproyecto, FALSE en caso contrario</param>
-        /// <param name="pMetaOrganizacionID">Identificador de la metaorganizaciÛn</param>
+        /// <param name="pMetaOrganizacionID">Identificador de la metaorganizaci√≥n</param>
         /// <param name="pMetaProyectoID">Identificador del metaproyecto</param>
         /// <param name="pLiveDS">Dataset para el modelo LIVE</param>
-        public void CrearPerfilPersonaOrganizacion(Elementos.ServiciosGenerales.Persona pPersona, Elementos.ServiciosGenerales.Organizacion pOrganizacion, bool pCrearIdentidadEnMetaProyecto, Guid? pMetaOrganizacionID, Guid? pMetaProyectoID, LiveDS pLiveDS, Dictionary<Guid, bool> pRecibirNewsletterDefectoProyectos)
+        public void CrearPerfilPersonaOrganizacion(Elementos.ServiciosGenerales.Persona pPersona, Elementos.ServiciosGenerales.Organizacion pOrganizacion, bool pCrearIdentidadEnMetaProyecto, Guid? pMetaOrganizacionID, Guid? pMetaProyectoID, LiveDS pLiveDS, Dictionary<Guid, bool> pRecibirNewsletterDefectoProyectos, IAvailableServices pAvailableServices)
         {
             //Lo tengo que crear nuevo
             if (!pPersona.GestorPersonas.GestorUsuarios.GestorIdentidades.DataWrapperIdentidad.ListaPerfilPersonaOrg.Any(item => item.OrganizacionID.Equals(pOrganizacion.Clave) && item.PersonaID.Equals(pPersona.Clave)))
             {
-                AgregarPerfilPersonaOrganizacion(pPersona.GestorPersonas.GestorUsuarios.GestorIdentidades, pPersona.GestorPersonas.GestorUsuarios.GestorIdentidades.GestorOrganizaciones, pPersona.GestorPersonas.GestorUsuarios, pPersona, pOrganizacion, pCrearIdentidadEnMetaProyecto, pMetaOrganizacionID, pMetaProyectoID, pLiveDS, pRecibirNewsletterDefectoProyectos);
+                AgregarPerfilPersonaOrganizacion(pPersona.GestorPersonas.GestorUsuarios.GestorIdentidades, pPersona.GestorPersonas.GestorUsuarios.GestorIdentidades.GestorOrganizaciones, pPersona.GestorPersonas.GestorUsuarios, pPersona, pOrganizacion, pCrearIdentidadEnMetaProyecto, pMetaOrganizacionID, pMetaProyectoID, pLiveDS, pRecibirNewsletterDefectoProyectos, pAvailableServices);
             }
             else
             {
-                //Lo tengo que retomar (y est· cargado en memoria)
+                //Lo tengo que retomar (y est√° cargado en memoria)
                 if (pPersona.GestorPersonas.GestorUsuarios.GestorIdentidades.DataWrapperIdentidad.ListaPerfilPersonaOrg.Any(item => item.OrganizacionID.Equals(pOrganizacion.Clave) && item.PersonaID.Equals(pPersona.Clave)))
                 {
                     Guid PerfilID = pPersona.GestorPersonas.GestorUsuarios.GestorIdentidades.DataWrapperIdentidad.ListaPerfilPersonaOrg.FirstOrDefault(item => item.OrganizacionID.Equals(pOrganizacion.Clave) && item.PersonaID.Equals(pPersona.Clave)).PerfilID;
@@ -1763,7 +1804,7 @@ namespace Es.Riam.Gnoss.Web.Controles.ServiciosGenerales
             Perfil perfil = pGestorIdentidades.ListaPerfiles[pPerfilID];
             AD.EntityModel.Models.UsuarioDS.Usuario filaUsuario = (AD.EntityModel.Models.UsuarioDS.Usuario)pGestorUsuarios.ListaUsuarios[pUsuarioID].FilaElementoEntity;
 
-            UsuarioCN usuCN = new UsuarioCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+            UsuarioCN usuCN = new UsuarioCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<UsuarioCN>(), mLoggerFactory);
             pGestorUsuarios.DataWrapperUsuario.Merge(usuCN.ObtenerUsuarioCompletoPorID(filaUsuario.UsuarioID));
 
             foreach (OrganizacionParticipaProy filaOrgPartProy in pGestorOrganizaciones.OrganizacionDW.ListaOrganizacionParticipaProy.Where(item => item.OrganizacionID.Equals(perfil.OrganizacionID) && item.RegistroAutomatico > 0))
@@ -1779,10 +1820,10 @@ namespace Es.Riam.Gnoss.Web.Controles.ServiciosGenerales
                 //Variable que nos indica si este usuario ya pertenece a este proyecto aunque con otra identidad
                 AgregarIdentidadPerfilYUsuarioAProyecto(pGestorIdentidades, pGestorUsuarios, organizacionID, comunidadID, filaUsuario, perfil, pRecibirNewsletterDefectoProyectos);
 
-				ControladorDeSolicitudes controladorDeSolicitudes = new ControladorDeSolicitudes(mLoggingService, mEntityContext, mConfigService, mRedisCacheWrapper, mGnossCache, mEntityContextBASE, mVirtuosoAD, mHttpContextAccessor, mServicesUtilVirtuosoAndReplication);
+				ControladorDeSolicitudes controladorDeSolicitudes = new ControladorDeSolicitudes(mLoggingService, mEntityContext, mConfigService, mRedisCacheWrapper, mGnossCache, mEntityContextBASE, mVirtuosoAD, mHttpContextAccessor, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<ControladorDeSolicitudes>(), mLoggerFactory);
 				controladorDeSolicitudes.RegistrarUsuarioEnProyectoAutomatico(perfil, filaUsuario, pGestorUsuarios, pGestorIdentidades);
 
-				pGestorIdentidades.RecargarHijos();
+                pGestorIdentidades.RecargarHijos();
                 //}
                 ////si la tiene es que esta dado de baja
                 //else if (pGestorIdentidades.IdentidadesDS.Identidad.Select("PerfilID = '" + perfilID + "' AND ProyectoID = '" + comunidadID + "'").Length == 1)
@@ -1801,11 +1842,11 @@ namespace Es.Riam.Gnoss.Web.Controles.ServiciosGenerales
 
         #endregion
 
-        #region CreaciÛn de usuarios
+        #region Creaci√≥n de usuarios
 
 
         /// <summary>
-        /// MÈtodo que acepta una solicitud de usuario
+        /// M√©todo que acepta una solicitud de usuario
         /// </summary>
         /// <param name="pUsuario">Usuario a aceptar</param>
         /// <param name="pIdSolicitud">ID de la solicitud a aceptar</param>
@@ -1813,22 +1854,22 @@ namespace Es.Riam.Gnoss.Web.Controles.ServiciosGenerales
         /// <param name="pDataWrapperUsuario">DataSet del usuario</param>
         /// <param name="pProyectoSeleccionado">Proyecto en el que nos estamos registrando</param>
         /// <param name="pUrlIntraGnoss">URLIntraGnoss</param>
-        public void AceptarUsuario(Guid pIdSolicitud, DataWrapperSolicitud pSolicitudDW, DataWrapperUsuario pDataWrapperUsuario, Elementos.ServiciosGenerales.Proyecto pProyectoSeleccionado, string pBaseURL, string pUrlIntraGnoss, string pUrlIntraGnossServicios)
+        public void AceptarUsuario(Guid pIdSolicitud, DataWrapperSolicitud pSolicitudDW, DataWrapperUsuario pDataWrapperUsuario, Elementos.ServiciosGenerales.Proyecto pProyectoSeleccionado, string pBaseURL, string pUrlIntraGnoss, string pUrlIntraGnossServicios, IAvailableServices pAvailableServices)
         {
-            AceptarUsuario(null, pIdSolicitud, pSolicitudDW, pDataWrapperUsuario, null, pProyectoSeleccionado, null, null, null, null, new Dictionary<string, string>(), pBaseURL, null, pUrlIntraGnoss, pUrlIntraGnossServicios, null, null, null, null);
+            AceptarUsuario(null, pIdSolicitud, pSolicitudDW, pDataWrapperUsuario, null, pProyectoSeleccionado, null, null, null, null, new Dictionary<string, string>(), pBaseURL, null, pUrlIntraGnoss, pUrlIntraGnossServicios, null, null, null, null, pAvailableServices);
         }
 
         /// <summary>
-        /// MÈtodo que acepta una solicitud de usuario
+        /// M√©todo que acepta una solicitud de usuario
         /// </summary>
         /// <param name="pIdentidadActual">IdentidadActual (del usuario que se va a aceptar)</param>
         /// <param name="pUsuario">Usuario a aceptar</param>
         /// <param name="pIdSolicitud">ID de la solicitud a aceptar</param>
         /// <param name="pSolicitudDW">DataSet de las solicitudes</param>
         /// <param name="pDataWrapperUsuario">DataSet del usuario</param>
-        /// <param name="pParametroGeneralRow">Fila de parametros generales del proyecto en el que se est· aceptando la solicitud</param>
+        /// <param name="pParametroGeneralRow">Fila de parametros generales del proyecto en el que se est√° aceptando la solicitud</param>
         /// <param name="pProyectoSeleccionado">Proyecto en el que nos estamos registrando</param>
-        /// <param name="pAnio">AÒo de Nacimiento</param>
+        /// <param name="pAnio">A√±o de Nacimiento</param>
         /// <param name="pMes">Mes de Nacimiento</param>
         /// <param name="pDia">Dia de Nacimiento</param>
         /// <param name="pInvitacionAEventoComunidad">Invitacion a un evento de comunidad</param>
@@ -1838,10 +1879,10 @@ namespace Es.Riam.Gnoss.Web.Controles.ServiciosGenerales
         /// <param name="pUrlIntraGnoss">URLIntraGnoss</param>
         /// <param name="pEsInvitacionAOrganizacion"></param>
         /// <param name="pInvitacionAOrganizacion"></param>        
-        public void AceptarUsuario(Identidad pIdentidadActual, Guid pIdSolicitud, DataWrapperSolicitud pSolicitudDW, DataWrapperUsuario pDataWrapperUsuario, ParametroGeneral pParametroGeneralRow, Elementos.ServiciosGenerales.Proyecto pProyectoSeleccionado, int? pAnio, int? pMes, int? pDia, ProyectoEvento pInvitacionAEventoComunidad, Dictionary<string, string> pParametroProyecto, string pBaseURL, PeticionInvComunidad pInvitacionAComunidad, string pUrlIntraGnoss, string pUrlIntragnossServicios, PeticionInvOrganizacion pInvitacionAOrganizacion, TipoRedSocialLogin? pTipoRedSocial, string pIDEnRedSocial, bool? pEsRegistroPreActivado, bool pRegistroDesdeAdmin = false)
+        public void AceptarUsuario(Identidad pIdentidadActual, Guid pIdSolicitud, DataWrapperSolicitud pSolicitudDW, DataWrapperUsuario pDataWrapperUsuario, ParametroGeneral pParametroGeneralRow, Elementos.ServiciosGenerales.Proyecto pProyectoSeleccionado, int? pAnio, int? pMes, int? pDia, ProyectoEvento pInvitacionAEventoComunidad, Dictionary<string, string> pParametroProyecto, string pBaseURL, PeticionInvComunidad pInvitacionAComunidad, string pUrlIntraGnoss, string pUrlIntragnossServicios, PeticionInvOrganizacion pInvitacionAOrganizacion, TipoRedSocialLogin? pTipoRedSocial, string pIDEnRedSocial, bool? pEsRegistroPreActivado, IAvailableServices pAvailableServices, bool pRegistroDesdeAdmin = false)
         {
             SolicitudNuevoUsuario filaSU = pSolicitudDW.ListaSolicitudNuevoUsuario.Where(item => item.SolicitudID.Equals(pIdSolicitud)).FirstOrDefault();
-            UtilIdiomas utilIdiomas = new UtilIdiomas(filaSU.Idioma, mLoggingService, mEntityContext, mConfigService,mRedisCacheWrapper);
+            UtilIdiomas utilIdiomas = new UtilIdiomas(filaSU.Idioma, mLoggingService, mEntityContext, mConfigService,mRedisCacheWrapper, mLoggerFactory.CreateLogger<UtilIdiomas>(), mLoggerFactory);
 
             Solicitud solicitud = pSolicitudDW.ListaSolicitud.Where(item => item.SolicitudID.Equals(pIdSolicitud)).FirstOrDefault();
 
@@ -1858,7 +1899,7 @@ namespace Es.Riam.Gnoss.Web.Controles.ServiciosGenerales
             filaPersona.UsuarioID = filaSU.UsuarioID;
             filaPersona.Nombre = filaSU.Nombre;
             filaPersona.Apellidos = filaSU.Apellidos;
-            filaPersona.Email = filaSU.Email;
+            filaPersona.Email = filaSU.Email.ToLower();
             filaPersona.EmailTutor = filaSU.EmailTutor;
             filaPersona.CPPersonal = filaSU.CP;
             filaPersona.EsBuscable = filaSU.EsBuscable;
@@ -1925,9 +1966,12 @@ namespace Es.Riam.Gnoss.Web.Controles.ServiciosGenerales
             }
 
             DataWrapperIdentidad dataWrapperIdentidad = new DataWrapperIdentidad();
-            GestionUsuarios gestorUsuarios = new GestionUsuarios(pDataWrapperUsuario, mLoggingService, mEntityContext, mConfigService);
+            GestionUsuarios gestorUsuarios = new GestionUsuarios(pDataWrapperUsuario, mLoggingService, mEntityContext, mConfigService, mLoggerFactory.CreateLogger<GestionUsuarios>(), mLoggerFactory);
+            UsuarioCN usuarioCN = new UsuarioCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<UsuarioCN>(), mLoggerFactory);
+            gestorUsuarios.DataWrapperUsuario.Merge(usuarioCN.ObtenerRolesUsuarioPorPerfilYProyecto(filaUsuario.UsuarioID, Guid.Empty, Guid.Empty));
+            usuarioCN.Dispose();
 
-            GestionIdentidades gestorIdentidades = new GestionIdentidades(dataWrapperIdentidad, gestorPersonas, gestorUsuarios, new GestionOrganizaciones(new DataWrapperOrganizacion(), mLoggingService, mEntityContext), mLoggingService, mEntityContext, mConfigService, mServicesUtilVirtuosoAndReplication);
+            GestionIdentidades gestorIdentidades = new GestionIdentidades(dataWrapperIdentidad, gestorPersonas, gestorUsuarios, new GestionOrganizaciones(new DataWrapperOrganizacion(), mLoggingService, mEntityContext), mLoggingService, mEntityContext, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<GestionIdentidades>(), mLoggerFactory);
 
             if (!persona.UsuarioCargado)
             {
@@ -1936,8 +1980,8 @@ namespace Es.Riam.Gnoss.Web.Controles.ServiciosGenerales
                 //personaDL.CargarDatosPesados(persona, TipoCargaElemento.UsuarioPersona, false);
             }
 
-            ProyectoCL proyCL = new ProyectoCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mVirtuosoAD, mServicesUtilVirtuosoAndReplication);
-            ProyectoCN proyCN = new ProyectoCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+            ProyectoCL proyCL = new ProyectoCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mVirtuosoAD, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<ProyectoCL>(), mLoggerFactory);
+            ProyectoCN proyCN = new ProyectoCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<ProyectoCN>(), mLoggerFactory);
 
             Perfil perfilPersonal = null;
             Identidad objetoIdentidad = null;
@@ -1967,7 +2011,7 @@ namespace Es.Riam.Gnoss.Web.Controles.ServiciosGenerales
                 Guid proyectoRegistroUsuario = filaSU.Solicitud.ProyectoID;
 
                 RegistrosAutomaticosEnComunidades(filaSU, perfilPersonal, filaUsuario, gestorUsuarios, gestorIdentidades);
-		
+
                 //Si el proyecto es Didactalia, no actualizamos la home de los usuarios registrados en gnoss y a los que se les asocia didactalia directamente.
                 if (!filaSU.Solicitud.ProyectoID.Equals(ProyectoAD.ProyectoDidactalia))
                 {
@@ -1986,13 +2030,13 @@ namespace Es.Riam.Gnoss.Web.Controles.ServiciosGenerales
                         identidad.ActivoEnComunidad = true;
                     }
                 }
-                
+
                 //Invalido la cache de Mis comunidades
-                DataWrapperIdentidad idenDW = new IdentidadCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication).ObtenerIdentidadPorID(gestorIdentidades.ObtenerIdentidadDeProyecto(ProyectoAD.ProyectoFAQ, filaPersona.PersonaID), true);
+                DataWrapperIdentidad idenDW = new IdentidadCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<IdentidadCN>(), mLoggerFactory).ObtenerIdentidadPorID(gestorIdentidades.ObtenerIdentidadDeProyecto(ProyectoAD.ProyectoFAQ, filaPersona.PersonaID), true);
 
                 if (idenDW.ListaIdentidad.Count > 0)
                 {
-                    proyCL = new ProyectoCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mVirtuosoAD, mServicesUtilVirtuosoAndReplication);
+                    proyCL = new ProyectoCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mVirtuosoAD, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<ProyectoCL>(), mLoggerFactory);
                     proyCL.InvalidarMisProyectos(idenDW.ListaIdentidad.First().PerfilID);
                     proyCL.Dispose();
                 }
@@ -2004,8 +2048,8 @@ namespace Es.Riam.Gnoss.Web.Controles.ServiciosGenerales
 
             if (!filaSU.Solicitud.ProyectoID.Equals(ProyectoAD.MetaProyecto) && !filaSU.Solicitud.ProyectoID.Equals(ProyectoAD.ProyectoFAQ) && !filaSU.Solicitud.ProyectoID.Equals(ProyectoAD.ProyectoNoticias) && !filaSU.Solicitud.ProyectoID.Equals(ProyectoAD.ProyectoDidactalia))
             {
-                ProyectoCN proyectoCN = new ProyectoCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
-                Elementos.ServiciosGenerales.Proyecto proyecto = new GestionProyecto(proyectoCN.ObtenerProyectoPorID(filaSU.Solicitud.ProyectoID), mLoggingService, mEntityContext).ListaProyectos[filaSU.Solicitud.ProyectoID];
+                ProyectoCN proyectoCN = new ProyectoCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<ProyectoCN>(), mLoggerFactory);
+                Elementos.ServiciosGenerales.Proyecto proyecto = new GestionProyecto(proyectoCN.ObtenerProyectoPorID(filaSU.Solicitud.ProyectoID), mLoggingService, mEntityContext, mLoggerFactory.CreateLogger<GestionProyecto>(), mLoggerFactory).ListaProyectos[filaSU.Solicitud.ProyectoID];
                 bool registroAbierto = pParametroProyecto.ContainsKey(ParametroAD.RegistroAbierto) && pParametroProyecto[ParametroAD.RegistroAbierto].Equals("1");
 
                 if (proyecto.TipoAcceso == TipoAcceso.Publico || pInvitacionAComunidad != null || registroAbierto || (pEsRegistroPreActivado.HasValue && pEsRegistroPreActivado.Value) || pRegistroDesdeAdmin)
@@ -2014,7 +2058,7 @@ namespace Es.Riam.Gnoss.Web.Controles.ServiciosGenerales
                     GestionOrganizaciones gestOrg = null;
                     if (pInvitacionAOrganizacion != null)
                     {
-                        gestOrg = new GestionOrganizaciones(new OrganizacionCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication).ObtenerOrganizacionPorID(pInvitacionAOrganizacion.FilaInvitacionOrganizacion.OrganizacionID), mLoggingService, mEntityContext);
+                        gestOrg = new GestionOrganizaciones(new OrganizacionCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<OrganizacionCN>(), mLoggerFactory).ObtenerOrganizacionPorID(pInvitacionAOrganizacion.FilaInvitacionOrganizacion.OrganizacionID), mLoggingService, mEntityContext);
                         if (gestOrg != null && gestOrg.OrganizacionDW.ListaOrganizacionParticipaProy.Any(item => item.ProyectoID.Equals(proyecto.Clave)))
                         {
                             registroProyecto = false;
@@ -2026,16 +2070,16 @@ namespace Es.Riam.Gnoss.Web.Controles.ServiciosGenerales
                         Guid organizacionID = filaSU.Solicitud.OrganizacionID;
                         Guid proyectoID = filaSU.Solicitud.ProyectoID;
 
-                        //si el usuario a˙n no participa en el proyecto se agrega
+                        //si el usuario a√∫n no participa en el proyecto se agrega
                         if (!proyCN.ParticipaUsuarioEnProyecto(proyectoID, filaUsuario.UsuarioID) && !gestorIdentidades.DataWrapperIdentidad.ListaIdentidad.Any(ident => ident.ProyectoID.Equals(proyectoID)))
                         {
                             Identidad ObjetoIdentidadProy = AgregarIdentidadPerfilYUsuarioAProyecto(gestorIdentidades, gestorUsuarios, organizacionID, proyectoID, filaUsuario, perfilPersonal, recibirNewsletterDefectoProyectos);
 
-							ControladorDeSolicitudes controladorDeSolicitudes = new ControladorDeSolicitudes(mLoggingService, mEntityContext, mConfigService, mRedisCacheWrapper, mGnossCache, mEntityContextBASE, mVirtuosoAD, mHttpContextAccessor, mServicesUtilVirtuosoAndReplication);
+							ControladorDeSolicitudes controladorDeSolicitudes = new ControladorDeSolicitudes(mLoggingService, mEntityContext, mConfigService, mRedisCacheWrapper, mGnossCache, mEntityContextBASE, mVirtuosoAD, mHttpContextAccessor, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<ControladorDeSolicitudes>(), mLoggerFactory);
 							controladorDeSolicitudes.RegistrarUsuarioEnProyectoAutomatico(perfilPersonal, filaUsuario, gestorUsuarios, gestorIdentidades, proyectoID);
 
 							//Invalido la cache de Mis comunidades
-							proyCL = new ProyectoCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mVirtuosoAD, mServicesUtilVirtuosoAndReplication);
+							proyCL = new ProyectoCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mVirtuosoAD, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<ProyectoCL>(), mLoggerFactory);
                             proyCL.InvalidarMisProyectos(ObjetoIdentidadProy.PerfilID);
                             proyCL.Dispose();
 
@@ -2045,25 +2089,25 @@ namespace Es.Riam.Gnoss.Web.Controles.ServiciosGenerales
                     }
                 }
 
-                //Limpiar la cachÈ de los miembros de la comunidad para el servicio web autocompletar de editores...
-                IdentidadCL identidadCL = new IdentidadCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mServicesUtilVirtuosoAndReplication);
+                //Limpiar la cach√© de los miembros de la comunidad para el servicio web autocompletar de editores...
+                IdentidadCL identidadCL = new IdentidadCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<IdentidadCL>(), mLoggerFactory);
                 identidadCL.InvalidarCacheMiembrosComunidad(filaSU.Solicitud.ProyectoID);
                 identidadCL.Dispose();
             }
 
-            #region Agrego cl·usulas adicionales
+            #region Agrego cl√°usulas adicionales
 
             bool clausulasProyectoActual = false;
             if (pParametroGeneralRow != null)
             {
                 clausulasProyectoActual = pParametroGeneralRow.ClausulasRegistro;
             }
-            bool clausulasMetaProyecto = new ControladorProyecto(mLoggingService, mEntityContext, mConfigService, mRedisCacheWrapper, mGnossCache, mEntityContextBASE, mVirtuosoAD, mHttpContextAccessor, mServicesUtilVirtuosoAndReplication).ObtenerFilaParametrosGeneralesDeProyecto(ProyectoAD.MetaProyecto).ClausulasRegistro;
+            bool clausulasMetaProyecto = new ControladorProyecto(mLoggingService, mEntityContext, mConfigService, mRedisCacheWrapper, mGnossCache, mEntityContextBASE, mVirtuosoAD, mHttpContextAccessor, mServicesUtilVirtuosoAndReplication,mloggerFactory.CreateLogger<ControladorProyecto>(),mloggerFactory).ObtenerFilaParametrosGeneralesDeProyecto(ProyectoAD.MetaProyecto).ClausulasRegistro;
 
             if (clausulasProyectoActual || clausulasMetaProyecto)
             {
-                gestorUsuarios.DataWrapperUsuario.Merge(new ProyectoCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mVirtuosoAD, mServicesUtilVirtuosoAndReplication).ObtenerClausulasRegitroProyecto(filaSU.Solicitud.ProyectoID));
-                gestorUsuarios.DataWrapperUsuario.Merge(new ProyectoCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mVirtuosoAD, mServicesUtilVirtuosoAndReplication).ObtenerClausulasRegitroProyecto(ProyectoAD.MetaProyecto));
+                gestorUsuarios.DataWrapperUsuario.Merge(new ProyectoCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mVirtuosoAD, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<ProyectoCL>(), mLoggerFactory).ObtenerClausulasRegitroProyecto(filaSU.Solicitud.ProyectoID));
+                gestorUsuarios.DataWrapperUsuario.Merge(new ProyectoCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mVirtuosoAD, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<ProyectoCL>(), mLoggerFactory).ObtenerClausulasRegitroProyecto(ProyectoAD.MetaProyecto));
 
                 List<Guid> clausulasTrue = new List<Guid>();
 
@@ -2080,7 +2124,7 @@ namespace Es.Riam.Gnoss.Web.Controles.ServiciosGenerales
                     }
                 }
 
-                UsuarioCN usuarioCN = new UsuarioCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+                usuarioCN = new UsuarioCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<UsuarioCN>(), mLoggerFactory);
                 DataWrapperUsuario usuDW = usuarioCN.ObtenerClausulasRegitroPorID(clausulasTrue);
                 usuarioCN.Dispose();
 
@@ -2110,37 +2154,37 @@ namespace Es.Riam.Gnoss.Web.Controles.ServiciosGenerales
 
             gestorPersonas.CrearDatosTrabajoPersonaLibre(persona);
 
-            gestorUsuarios.GestorTesauro = new GestionTesauro(new DataWrapperTesauro(), mLoggingService, mEntityContext);
-            gestorUsuarios.GestorDocumental = new GestorDocumental(new DataWrapperDocumentacion(), mLoggingService, mEntityContext);
+            gestorUsuarios.GestorTesauro = new GestionTesauro(new DataWrapperTesauro(), mLoggingService, mEntityContext, mLoggerFactory.CreateLogger<GestionTesauro>(), mLoggerFactory);
+            gestorUsuarios.GestorDocumental = new GestorDocumental(new DataWrapperDocumentacion(), mLoggingService, mEntityContext, mLoggerFactory.CreateLogger<GestorDocumental>(), mLoggerFactory);
             gestorUsuarios.CompletarUsuarioNuevo(filaUsuario, utilIdiomas.GetText("TESAURO", "RECURSOSPUBLICOS"), utilIdiomas.GetText("TESAURO", "RECURSOSPRIVADOS"));
 
             if (PerfilPersonalDisponible)
-            {              
+            {
                 GuardarDatosExtraSolicitud(dataWrapperIdentidad, filaIdentidad.PerfilID, pIdSolicitud, pSolicitudDW);
             }
 
             DataWrapperSuscripcion suscripcionDW = null;
             if (gestorIdentidades.GestorSuscripciones != null && gestorIdentidades.GestorSuscripciones.SuscripcionDW.ListaSuscripcion.Count > 0)
             {
-                //lo hago asÌ porque este dataset puede no rellenarse en ControladorIdentidades.CrearPerfilPersonaOrganizacion
+                //lo hago as√≠ porque este dataset puede no rellenarse en ControladorIdentidades.CrearPerfilPersonaOrganizacion
                 suscripcionDW = gestorIdentidades.GestorSuscripciones.SuscripcionDW;
             }
 
             mEntityContext.SaveChanges();
 
-            NotificarEdicionPerfilEnProyectos(TipoAccionExterna.Registro, persona.Clave, "", "", filaIdentidad.ProyectoID);
+            NotificarEdicionPerfilEnProyectos(TipoAccionExterna.Registro, persona.Clave, string.Empty, string.Empty);
 
             if (PerfilPersonalDisponible)
             {
-                IdentidadCN idenCN = new IdentidadCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+                IdentidadCN idenCN = new IdentidadCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<IdentidadCN>(), mLoggerFactory);
                 Identidad identidadnuevo = new GestionIdentidades(idenCN.ObtenerIdentidadPorID(filaIdentidad.IdentidadID, false), mLoggingService, mEntityContext, mConfigService, mServicesUtilVirtuosoAndReplication).ListaIdentidades[filaIdentidad.IdentidadID];
-                PersonaCN persCN = new PersonaCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+                PersonaCN persCN = new PersonaCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<PersonaCN>(), mLoggerFactory);
                 identidadnuevo.GestorIdentidades.GestorPersonas = new GestionPersonas(persCN.ObtenerPersonaPorID(identidadnuevo.PersonaID.Value), mLoggingService, mEntityContext);
 
                 identidadnuevo.GestorIdentidades.GestorPersonas.CargarGestor();
 
                 //Actualizo el modelo base:
-                ControladorPersonas controladorPersonas = new ControladorPersonas(mLoggingService, mEntityContext, mConfigService, mRedisCacheWrapper, mGnossCache, mEntityContextBASE, mVirtuosoAD, mHttpContextAccessor, mServicesUtilVirtuosoAndReplication);
+                ControladorPersonas controladorPersonas = new ControladorPersonas(mLoggingService, mEntityContext, mConfigService, mRedisCacheWrapper, mGnossCache, mEntityContextBASE, mVirtuosoAD, mHttpContextAccessor, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<ControladorPersonas>(), mLoggerFactory);
                 foreach (Identidad iden in gestorIdentidades.ListaIdentidades.Values)
                 {
                     //controladorPersonas.ActualizarModeloBaseSimple(filaPersona.PersonaID, iden.FilaIdentidad.ProyectoID, PrioridadBase.Alta);
@@ -2150,11 +2194,10 @@ namespace Es.Riam.Gnoss.Web.Controles.ServiciosGenerales
 
             #region Actualizar cola GnossLIVE
 
-            LiveCN liveCN = new LiveCN("base", mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
-            LiveDS liveDS = new LiveDS();
+            List<string> filasAInsertar = new List<string>();
             foreach (Identidad iden in gestorIdentidades.ListaIdentidades.Values)
             {
-                //No se notifica al LIVE los proyectos a los que se le ha hecho miembro autom·ticamente
+                //No se notifica al LIVE los proyectos a los que se le ha hecho miembro autom√°ticamente
                 if (((!iden.FilaIdentidad.ProyectoID.Equals(ProyectoAD.ProyectoNoticias)) &&
                     (!iden.FilaIdentidad.ProyectoID.Equals(ProyectoAD.ProyectoFAQ)) &&
                     (!iden.FilaIdentidad.ProyectoID.Equals(ProyectoAD.ProyectoDidactalia))) ||
@@ -2165,45 +2208,30 @@ namespace Es.Riam.Gnoss.Web.Controles.ServiciosGenerales
                     {
                         if (iden.FilaIdentidad.ProyectoID.Equals(ProyectoAD.ProyectoDidactalia))
                         {
-                            try
-                            {
-                                InsertarFilaEnColaRabbitMQ(iden.FilaIdentidad.ProyectoID, iden.FilaIdentidad.PerfilID, (int)AccionLive.Agregado, (int)TipoLive.Miembro, 0, DateTime.Now, false, (short)PrioridadLive.Alta, "didactalia");
-                            }
-                            catch (Exception ex)
-                            {
-                                mLoggingService.GuardarLogError(ex, "Fallo al insertar en Rabbit, insertamos en la base de datos 'BASE', tabla 'cola'");
-                                liveDS.Cola.AddColaRow(iden.FilaIdentidad.ProyectoID, iden.FilaIdentidad.PerfilID, (int)AccionLive.Agregado, (int)TipoLive.Miembro, 0, DateTime.Now, false, (short)PrioridadLive.Alta, "didactalia");
-                            }
+                            filasAInsertar.Add(PreprarFilaParaColaRabbitMQ(iden.FilaIdentidad.ProyectoID, iden.FilaIdentidad.PerfilID, (int)AccionLive.Agregado, (int)TipoLive.Miembro, 0, DateTime.Now, false, (short)PrioridadLive.Alta, "didactalia"));
                         }
                         else
                         {
-                            try
-                            {
-                                InsertarFilaEnColaRabbitMQ(iden.FilaIdentidad.ProyectoID, iden.FilaIdentidad.PerfilID, (int)AccionLive.Agregado, (int)TipoLive.Miembro, 0, DateTime.Now, false, (short)PrioridadLive.Alta);
-                            }
-                            catch (Exception ex)
-                            {
-                                mLoggingService.GuardarLogError(ex, "Fallo al insertar en Rabbit, insertamos en la base de datos 'BASE', tabla 'cola'");
-                                liveDS.Cola.AddColaRow(iden.FilaIdentidad.ProyectoID, iden.FilaIdentidad.PerfilID, (int)AccionLive.Agregado, (int)TipoLive.Miembro, 0, DateTime.Now, false, (short)PrioridadLive.Alta, null);
-                            }
+                            filasAInsertar.Add(PreprarFilaParaColaRabbitMQ(iden.FilaIdentidad.ProyectoID, iden.FilaIdentidad.PerfilID, (int)AccionLive.Agregado, (int)TipoLive.Miembro, 0, DateTime.Now, false, (short)PrioridadLive.Alta));
                         }
                     }
                 }
             }
 
-            liveCN.ActualizarBD(liveDS);
-            liveCN.Dispose();
-            liveDS.Dispose();
+            if (filasAInsertar.Count > 0)
+            {
+                InsertarFilasEnColaRabbitMQ(filasAInsertar);
+            }
 
             #endregion
 
             if (!filaSU.Solicitud.ProyectoID.Equals(ProyectoAD.MetaProyecto) && pInvitacionAComunidad == null && PerfilPersonalDisponible)
             {
-                ProyectoCN proyectoCN2 = new ProyectoCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
-                Elementos.ServiciosGenerales.Proyecto proyecto2 = new GestionProyecto(proyectoCN2.ObtenerProyectoPorID(filaSU.Solicitud.ProyectoID), mLoggingService, mEntityContext).ListaProyectos[filaSU.Solicitud.ProyectoID];
+                ProyectoCN proyectoCN2 = new ProyectoCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<ProyectoCN>(), mLoggerFactory);
+                Elementos.ServiciosGenerales.Proyecto proyecto2 = new GestionProyecto(proyectoCN2.ObtenerProyectoPorID(filaSU.Solicitud.ProyectoID), mLoggingService, mEntityContext, mLoggerFactory.CreateLogger<GestionProyecto>(), mLoggerFactory).ListaProyectos[filaSU.Solicitud.ProyectoID];
                 if (proyecto2.TipoAcceso == TipoAcceso.Restringido)
                 {
-                    SolicitudCN solCN2 = new SolicitudCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+                    SolicitudCN solCN2 = new SolicitudCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<SolicitudCN>(), mLoggerFactory);
                     DataWrapperSolicitud solDW2 = new DataWrapperSolicitud();
 
                     Solicitud filaSolicitud = new Solicitud();
@@ -2230,7 +2258,7 @@ namespace Es.Riam.Gnoss.Web.Controles.ServiciosGenerales
                     solDW2.ListaSolicitudUsuario.Add(filaSolUsu);
                     mEntityContext.SolicitudUsuario.Add(filaSolUsu);
 
-                    GestionNotificaciones gestorNotificaciones2 = new GestionNotificaciones(new DataWrapperNotificacion(), mLoggingService, mEntityContext, mConfigService, mServicesUtilVirtuosoAndReplication);
+                    GestionNotificaciones gestorNotificaciones2 = new GestionNotificaciones(new DataWrapperNotificacion(), mLoggingService, mEntityContext, mConfigService, mServicesUtilVirtuosoAndReplication,mLoggerFactory.CreateLogger<GestionNotificaciones>(), mloggerFactory);
                     gestorNotificaciones2.AgregarNotificacionSolicitud(filaSolicitud.SolicitudID, DateTime.Now, pProyectoSeleccionado.Nombre, "admin", "", TiposNotificacion.SolicitudPendiente, persona.FilaPersona.Email, persona, pProyectoSeleccionado.FilaProyecto.OrganizacionID, pProyectoSeleccionado.Clave, UtilIdiomas.LanguageCode);
 
                     mEntityContext.SaveChanges();
@@ -2240,15 +2268,16 @@ namespace Es.Riam.Gnoss.Web.Controles.ServiciosGenerales
 
             if (PerfilPersonalDisponible)
             {
-                LiveUsuariosCL liveUsuariosCL = new LiveUsuariosCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mServicesUtilVirtuosoAndReplication);
+                LiveUsuariosCL liveUsuariosCL = new LiveUsuariosCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<LiveUsuariosCL>(), mLoggerFactory);
                 liveUsuariosCL.ClonarLiveProyectoAHomeUsu(filaSU.UsuarioID, perfilPersonal.Clave, pProyectoSeleccionado.Clave);
             }
 
-            //Iniciamos sesiÛn autom·ticamente
-            if (!pRegistroDesdeAdmin) { 
+            //Iniciamos sesi√≥n autom√°ticamente
+            if (!pRegistroDesdeAdmin)
+            {
                 if (!string.IsNullOrEmpty(filaPersona.Email) || ComprobarPersonaEsMayorAnios(filaPersona.FechaNacimiento.Value, 14))
                 {
-                    GnossIdentity identity = new UtilUsuario(mLoggingService, mEntityContext, mConfigService, mRedisCacheWrapper).ValidarUsuario(filaUsuario.Login, filaSU.Solicitud.OrganizacionID, filaSU.Solicitud.ProyectoID);
+                    GnossIdentity identity = new UtilUsuario(mLoggingService, mEntityContext, mConfigService, mRedisCacheWrapper, mLoggerFactory.CreateLogger<UtilUsuario>(), mLoggerFactory).ValidarUsuario(filaUsuario.Login, filaSU.Solicitud.OrganizacionID, filaSU.Solicitud.ProyectoID);
                     if (identity != null)
                     {
                         mHttpContextAccessor.HttpContext.Session.Clear();
@@ -2262,11 +2291,11 @@ namespace Es.Riam.Gnoss.Web.Controles.ServiciosGenerales
                 }
             }
 
-            AceptarExtrasInvitacionAComunidad(persona, pInvitacionAComunidad, pProyectoSeleccionado, pUrlIntraGnoss, pInvitacionAEventoComunidad, UtilIdiomas.LanguageCode);
+            AceptarExtrasInvitacionAComunidad(persona, pInvitacionAComunidad, pProyectoSeleccionado, pUrlIntraGnoss, pInvitacionAEventoComunidad, UtilIdiomas.LanguageCode, pAvailableServices);
         }
 
         /// <summary>
-        /// Comprobar si es mayor de X aÒos
+        /// Comprobar si es mayor de X a√±os
         /// </summary>
         /// <param name="fecha">Fecha de nacimineto.</param>
         /// <param name="edad">Edad limite.</param>
@@ -2354,7 +2383,7 @@ namespace Es.Riam.Gnoss.Web.Controles.ServiciosGenerales
         {
             try
             {
-                ServicioImagenes servicioImagenes = new ServicioImagenes(mLoggingService, mConfigService);
+                ServicioImagenes servicioImagenes = new ServicioImagenes(mLoggingService, mConfigService, mLoggerFactory.CreateLogger<ServicioImagenes>(), mLoggerFactory);
                 //string url = pUrlIntragnossServicios.Replace("https://", "http://");
                 servicioImagenes.Url = pUrlIntragnossServicios;
                 byte[] resultado = servicioImagenes.ObtenerImagen(UtilArchivos.ContentImagenesSolicitudes + "/" + pSolicitudID.ToString(), ".png");
@@ -2369,7 +2398,7 @@ namespace Es.Riam.Gnoss.Web.Controles.ServiciosGenerales
                     servicioImagenes.BorrarImagen(UtilArchivos.ContentImagenesSolicitudes + "/" + pSolicitudID.ToString() + ".png");
                     Image image = UtilImages.ConvertirArrayBytesEnImagen(resultado);
 
-                    //Ajusto su tamaÒo
+                    //Ajusto su tama√±o
                     SizeF tamanioProporcional = UtilImages.CalcularTamanioProporcionado(image, 54, 54);
                     image = UtilImages.AjustarImagen(image, tamanioProporcional.Width, tamanioProporcional.Height);
 
@@ -2389,7 +2418,7 @@ namespace Es.Riam.Gnoss.Web.Controles.ServiciosGenerales
         /// <summary>
         /// 
         /// </summary>
-        public void AceptarExtrasInvitacionAComunidad(Elementos.ServiciosGenerales.Persona pPersona, PeticionInvComunidad pInvitacionAComunidad, Elementos.ServiciosGenerales.Proyecto pProyectoSeleccionado, string pUrlIntragnoss, ProyectoEvento pInvitacionAEventoComunidad, string pLanguageCode)
+        public void AceptarExtrasInvitacionAComunidad(Elementos.ServiciosGenerales.Persona pPersona, PeticionInvComunidad pInvitacionAComunidad, Elementos.ServiciosGenerales.Proyecto pProyectoSeleccionado, string pUrlIntragnoss, ProyectoEvento pInvitacionAEventoComunidad, string pLanguageCode, IAvailableServices pAvailableServices)
         {
             if (pInvitacionAComunidad != null)
             {
@@ -2409,7 +2438,7 @@ namespace Es.Riam.Gnoss.Web.Controles.ServiciosGenerales
                         }
                     }
                     DataWrapperIdentidad dataWrapperIdentidad = new DataWrapperIdentidad();
-                    IdentidadCN identidadCN2 = new IdentidadCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+                    IdentidadCN identidadCN2 = new IdentidadCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<IdentidadCN>(), mLoggerFactory);
                     GestionIdentidades gestorIden = new GestionIdentidades(identidadCN2.ObtenerIdentidadDePersonaEnProyecto(filaPeticionGrupo.ProyectoID, pPersona.Clave), mLoggingService, mEntityContext, mConfigService, mServicesUtilVirtuosoAndReplication);
 
                     List<Guid> listaGruposPertenece = identidadCN2.ObtenerIDGruposDeIdentidad(gestorIden.ListaIdentidades.Keys[0]);
@@ -2418,9 +2447,9 @@ namespace Es.Riam.Gnoss.Web.Controles.ServiciosGenerales
 
                     string tripletasVirtuoso = "";
 
-                    IdentidadCN identidadCN = new IdentidadCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
-                    IdentidadCL identidadCL = new IdentidadCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mServicesUtilVirtuosoAndReplication);
-                    LiveUsuariosCL liveUsuariosCL = new LiveUsuariosCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mServicesUtilVirtuosoAndReplication);
+                    IdentidadCN identidadCN = new IdentidadCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<IdentidadCN>(), mLoggerFactory);
+                    IdentidadCL identidadCL = new IdentidadCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<IdentidadCL>(), mLoggerFactory);
+                    LiveUsuariosCL liveUsuariosCL = new LiveUsuariosCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<LiveUsuariosCL>(), mLoggerFactory);
 
                     foreach (Guid grupoID in listaGrupos)
                     {
@@ -2435,7 +2464,7 @@ namespace Es.Riam.Gnoss.Web.Controles.ServiciosGenerales
 
                             dataWrapperIdentidad.ListaGrupoIdentidadesParticipacion.Add(filaGrupoIdentidadesParticipacion);
 
-                            //Asignar la cachÈ del grupo al usuario
+                            //Asignar la cach√© del grupo al usuario
                             liveUsuariosCL.ClonarLiveGrupoProyectoAUsu(pPersona.UsuarioID, filaPeticionGrupo.ProyectoID, grupoID);
                             identidadCL.InvalidarCacheGrupoPorNombreCortoYProyecto(nombrecortoGrupo, filaPeticionGrupo.ProyectoID);
 
@@ -2451,7 +2480,7 @@ namespace Es.Riam.Gnoss.Web.Controles.ServiciosGenerales
 
                     if (!string.IsNullOrEmpty(tripletasVirtuoso))
                     {
-                        FacetadoCN facetadoCN2 = new FacetadoCN(pUrlIntragnoss, false, mEntityContext, mLoggingService, mConfigService, mVirtuosoAD, mServicesUtilVirtuosoAndReplication);
+                        FacetadoCN facetadoCN2 = new FacetadoCN(pUrlIntragnoss, false, mEntityContext, mLoggingService, mConfigService, mVirtuosoAD, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<FacetadoCN>(), mLoggerFactory);
                         facetadoCN2.InsertaTripletas(filaPeticionGrupo.ProyectoID.ToString(), tripletasVirtuoso, (short)PrioridadLive.Alta, true);
                         facetadoCN2.Dispose();
                     }
@@ -2464,26 +2493,26 @@ namespace Es.Riam.Gnoss.Web.Controles.ServiciosGenerales
                 pInvitacionAComunidad.FilaPeticion.Estado = (short)EstadoPeticion.Aceptada;
                 pInvitacionAComunidad.FilaPeticion.FechaProcesado = DateTime.Now;
                 pInvitacionAComunidad.FilaPeticion.UsuarioID = pPersona.UsuarioID;
-                PeticionCN peticionCN = new PeticionCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+                PeticionCN peticionCN = new PeticionCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<PeticionCN>(), mLoggerFactory);
                 peticionCN.ActualizarBD();
                 peticionCN.Dispose();
             }
             else if (pInvitacionAEventoComunidad != null)
             {
-                AgregarParticipanteEvento(pPersona, pProyectoSeleccionado, pInvitacionAEventoComunidad, pUrlIntragnoss, pLanguageCode);
+                AgregarParticipanteEvento(pPersona, pProyectoSeleccionado, pInvitacionAEventoComunidad, pUrlIntragnoss, pLanguageCode, pAvailableServices);
             }
         }
 
-        public void AgregarParticipanteEvento(Elementos.ServiciosGenerales.Persona pPersona, Elementos.ServiciosGenerales.Proyecto pProyectoSeleccionado, ProyectoEvento pInvitacionAEventoComunidad, string pUrlIntragnoss, string pLanguageCode)
+        public void AgregarParticipanteEvento(Elementos.ServiciosGenerales.Persona pPersona, Elementos.ServiciosGenerales.Proyecto pProyectoSeleccionado, ProyectoEvento pInvitacionAEventoComunidad, string pUrlIntragnoss, string pLanguageCode, IAvailableServices pAvailableServices)
         {
             try
             {
-                IdentidadCN idenCN = new IdentidadCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+                IdentidadCN idenCN = new IdentidadCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<IdentidadCN>(), mLoggerFactory);
                 GestionIdentidades gestorIden = new GestionIdentidades(idenCN.ObtenerIdentidadDePersonaEnProyecto(pProyectoSeleccionado.Clave, pPersona.Clave), mLoggingService, mEntityContext, mConfigService, mServicesUtilVirtuosoAndReplication);
                 idenCN.Dispose();
 
                 DataWrapperProyecto dataWrapperProyecto = new DataWrapperProyecto();
-                if(gestorIden.ListaIdentidades.Count > 0)
+                if (gestorIden.ListaIdentidades.Count > 0)
                 {
                     Guid identidadID = gestorIden.ListaIdentidades.FirstOrDefault().Key;
                     ProyectoEventoParticipante proyectoEventoParticipante = new ProyectoEventoParticipante();
@@ -2494,22 +2523,22 @@ namespace Es.Riam.Gnoss.Web.Controles.ServiciosGenerales
                     mEntityContext.ProyectoEventoParticipante.Add(proyectoEventoParticipante);
                 }
 
-                ProyectoCN proyCN = new ProyectoCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+                ProyectoCN proyCN = new ProyectoCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<ProyectoCN>(), mLoggerFactory);
                 proyCN.ActualizarProyectos();
                 proyCN.Dispose();
 
                 if (!string.IsNullOrEmpty(pInvitacionAEventoComunidad.Descripcion))
                 {
-                    GestionNotificaciones gestorNotificaciones = new GestionNotificaciones(new DataWrapperNotificacion(), mLoggingService, mEntityContext, mConfigService, mServicesUtilVirtuosoAndReplication);
+                    GestionNotificaciones gestorNotificaciones = new GestionNotificaciones(new DataWrapperNotificacion(), mLoggingService, mEntityContext, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<GestionNotificaciones>(),mloggerFactory);
                     gestorNotificaciones.AgregarNotificacionConfirmacionEventoComunidad(gestorIden.ListaIdentidades.Values[0].Nombre(), pInvitacionAEventoComunidad.Nombre, pInvitacionAEventoComunidad.Descripcion, pPersona.Clave, pProyectoSeleccionado.FilaProyecto.OrganizacionID, pProyectoSeleccionado.FilaProyecto.ProyectoID, pProyectoSeleccionado.Nombre, gestorIden.ListaIdentidades.Values[0].Email, pLanguageCode);
-                    NotificacionCN notificacionCN = new NotificacionCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
-                    notificacionCN.ActualizarNotificacion();
+                    NotificacionCN notificacionCN = new NotificacionCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<NotificacionCN>(), mLoggerFactory);
+                    notificacionCN.ActualizarNotificacion(pAvailableServices);
                     notificacionCN.Dispose();
                 }
 
                 if (!string.IsNullOrEmpty(pInvitacionAEventoComunidad.Grupo))
                 {
-                    IdentidadCN identidadCN = new IdentidadCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+                    IdentidadCN identidadCN = new IdentidadCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<IdentidadCN>(), mLoggerFactory);
                     DataWrapperIdentidad identidadDW = new DataWrapperIdentidad();
 
                     Guid grupoID = identidadCN.ObtenerGrupoIDPorNombreCorto(pInvitacionAEventoComunidad.Grupo);
@@ -2531,12 +2560,12 @@ namespace Es.Riam.Gnoss.Web.Controles.ServiciosGenerales
 
                     if (!string.IsNullOrEmpty(tripletasVirtuoso))
                     {
-                        FacetadoCN facetadoCN2 = new FacetadoCN(pUrlIntragnoss, false, mEntityContext, mLoggingService, mConfigService, mVirtuosoAD, mServicesUtilVirtuosoAndReplication);
+                        FacetadoCN facetadoCN2 = new FacetadoCN(pUrlIntragnoss, false, mEntityContext, mLoggingService, mConfigService, mVirtuosoAD, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<FacetadoCN>(), mLoggerFactory);
                         facetadoCN2.InsertaTripletas(pProyectoSeleccionado.Clave.ToString(), tripletasVirtuoso, (short)PrioridadLive.Alta, true);
                         facetadoCN2.Dispose();
                     }
 
-                    IdentidadCL identidadCL = new IdentidadCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mServicesUtilVirtuosoAndReplication);
+                    IdentidadCL identidadCL = new IdentidadCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<IdentidadCL>(), mLoggerFactory);
                     identidadCL.InvalidarCacheQueContengaCadena("Grupo_*_" + pProyectoSeleccionado.Clave);
                     identidadCN.Dispose();
                     identidadCL.Dispose();
@@ -2628,7 +2657,7 @@ namespace Es.Riam.Gnoss.Web.Controles.ServiciosGenerales
                     }
                     catch (Exception ex)
                     {
-                        mLoggingService.GuardarLogError(ex, "Error en servicio externo: " + url);
+                        mLoggingService.GuardarLogError(ex, "Error en servicio externo: " + url,mlogger);
                     }
 
                     JsonEstado jsonEstado = new JsonEstado();
@@ -2644,7 +2673,7 @@ namespace Es.Riam.Gnoss.Web.Controles.ServiciosGenerales
                     if (!jsonEstado.Correcto)
                     {
                         Exception ex = new Exception(jsonEstado.InfoExtra);
-                        mLoggingService.GuardarLogError(ex, "ERROR AccionEnServicioExterno. Respuesta servicio externo : " + respuesta);
+                        mLoggingService.GuardarLogError(ex, "ERROR AccionEnServicioExterno. Respuesta servicio externo : " + respuesta, mlogger);
                     }
 
                     return jsonEstado;
@@ -2664,20 +2693,20 @@ namespace Es.Riam.Gnoss.Web.Controles.ServiciosGenerales
         {
             if (!pUsuarioID.Equals(UsuarioAD.Invitado))
             {
-                //cuando se llame a este mÈtodo en un bucle, proyectoDS deber· estar cargado con los datos de todos los proyectos del usuario 
+                //cuando se llame a este m√©todo en un bucle, proyectoDS deber√° estar cargado con los datos de todos los proyectos del usuario 
                 //para no cargar n veces el DS
-                //cuando se llama para un solo proyecto, proyectoDS puede mandarse null y que se cargue porque sÛlo lo har· una vez
+                //cuando se llama para un solo proyecto, proyectoDS puede mandarse null y que se cargue porque s√≥lo lo har√° una vez
                 if (pdataWrapperProyecto == null)
                 {
-                    //Compruebo que hay alg˙n proyecto con acciones externas 
-                    ProyectoCL proyectoCL = new ProyectoCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mVirtuosoAD, mServicesUtilVirtuosoAndReplication);
+                    //Compruebo que hay alg√∫n proyecto con acciones externas 
+                    ProyectoCL proyectoCL = new ProyectoCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mVirtuosoAD, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<ProyectoCL>(), mLoggerFactory);
                     List<Guid> proyectosConAccionesExternas = proyectoCL.ObtenerListaIDsProyectosConAccionesExternas();
                     proyectoCL.Dispose();
 
                     if (proyectosConAccionesExternas != null && proyectosConAccionesExternas.Contains(pProyectoID))
                     {
                         //Cargamos todos los datos del proyecto
-                        ProyectoCN proyectoCN = new ProyectoCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+                        ProyectoCN proyectoCN = new ProyectoCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<ProyectoCN>(), mLoggerFactory);
                         pdataWrapperProyecto = proyectoCN.ObtenerDatosExtraProyectoPorID(pProyectoID);
                         pdataWrapperProyecto.Merge(proyectoCN.ObtenerAccionesExternasProyectoPorProyectoID(pProyectoID));
                         proyectoCN.Dispose();
@@ -2688,10 +2717,10 @@ namespace Es.Riam.Gnoss.Web.Controles.ServiciosGenerales
                 {
                     List<JsonEventoUsuario> listadoEventosusuarioProyecto;
                     List<JsonDatosExtraUsuario> listaDatosExtra = new List<JsonDatosExtraUsuario>();
-                    //ObtenciÛn de las cl·usulas del registro y eventos activos
+                    //Obtenci√≥n de las cl√°usulas del registro y eventos activos
                     ObtenerClausulasYEventosUsuarioEnProyecto(pUsuarioID, pProyectoID, ref listaDatosExtra, out listadoEventosusuarioProyecto);
 
-                    IdentidadCN identidadCN = new IdentidadCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+                    IdentidadCN identidadCN = new IdentidadCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<IdentidadCN>(), mLoggerFactory);
                     DataWrapperIdentidad dataWrapperIdentidad = identidadCN.ObtenerDatosExtraProyectoOpcionIdentidadPorIdentidadID(pIdentidadID);
                     dataWrapperIdentidad.Merge(identidadCN.ObtenerIdentidadPorID(pIdentidadID, false));
                     GestionIdentidades gestorIdent = new GestionIdentidades(dataWrapperIdentidad, mLoggingService, mEntityContext, mConfigService, mServicesUtilVirtuosoAndReplication);
@@ -2738,7 +2767,7 @@ namespace Es.Riam.Gnoss.Web.Controles.ServiciosGenerales
                         }
                     }
 
-                    UsuarioCN usuarioCN = new UsuarioCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+                    UsuarioCN usuarioCN = new UsuarioCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<UsuarioCN>(), mLoggerFactory);
                     string nombreCortoUsu = usuarioCN.ObtenerNombreCortoUsuarioPorID(pUsuarioID);
                     usuarioCN.Dispose();
 
@@ -2752,7 +2781,7 @@ namespace Es.Riam.Gnoss.Web.Controles.ServiciosGenerales
                     usuario.receive_newsletter = recibirNews;
                     usuario.languaje = pIdioma;
 
-                    ProyectoCN proyCN = new ProyectoCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+                    ProyectoCN proyCN = new ProyectoCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<ProyectoCN>(), mLoggerFactory);
                     usuario.community_short_name = proyCN.ObtenerNombreCortoProyecto(pProyectoID);
                     proyCN.Dispose();
 
@@ -2768,7 +2797,7 @@ namespace Es.Riam.Gnoss.Web.Controles.ServiciosGenerales
                         usuario.born_date = pFechaNacimiento.Value;
                     }
 
-                    PaisCN paisCN = new PaisCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+                    PaisCN paisCN = new PaisCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<PaisCN>(), mLoggerFactory);
                     if (pPaisID.HasValue && !pPaisID.Value.Equals(Guid.Empty))
                     {
                         usuario.country_id = pPaisID.Value;
@@ -2794,7 +2823,7 @@ namespace Es.Riam.Gnoss.Web.Controles.ServiciosGenerales
                     usuario.id_card = pDNI;
 
                     //Suscripciones
-                    SuscripcionCN suscCN = new SuscripcionCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+                    SuscripcionCN suscCN = new SuscripcionCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<SuscripcionCN>(), mLoggerFactory);
                     DataWrapperSuscripcion suscDW = suscCN.ObtenerSuscripcionesDeIdentidad(pIdentidadID, true);
                     GestionSuscripcion gestorSuscripciones = new GestionSuscripcion(suscDW, mLoggingService, mEntityContext);
                     suscCN.Dispose();
@@ -2805,8 +2834,8 @@ namespace Es.Riam.Gnoss.Web.Controles.ServiciosGenerales
 
                     if (suscripcion != null && suscripcion.FilasCategoriasVinculadas != null)
                     {
-                        TesauroCL tesauroCL = new TesauroCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mServicesUtilVirtuosoAndReplication);
-                        GestionTesauro gestorTesauro = new GestionTesauro(tesauroCL.ObtenerTesauroDeProyecto(pProyectoID), mLoggingService, mEntityContext);
+                        TesauroCL tesauroCL = new TesauroCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<TesauroCL>(), mLoggerFactory);
+                        GestionTesauro gestorTesauro = new GestionTesauro(tesauroCL.ObtenerTesauroDeProyecto(pProyectoID), mLoggingService, mEntityContext, mLoggerFactory.CreateLogger<GestionTesauro>(), mLoggerFactory);
                         gestorTesauro.CargarCategorias();
                         tesauroCL.Dispose();
 
@@ -2830,7 +2859,7 @@ namespace Es.Riam.Gnoss.Web.Controles.ServiciosGenerales
                     }
                     catch (Exception ex)
                     {
-                        mLoggingService.GuardarLogError(ex, "Error en servicio externo: " + url);
+                        mLoggingService.GuardarLogError(ex, "Error en servicio externo: " + url, mlogger);
                     }
 
                     JsonEstado jsonEstado = new JsonEstado();
@@ -2846,7 +2875,7 @@ namespace Es.Riam.Gnoss.Web.Controles.ServiciosGenerales
                     if (!jsonEstado.Correcto)
                     {
                         Exception ex = new Exception(jsonEstado.InfoExtra);
-                        mLoggingService.GuardarLogError(ex, "ERROR AccionEnServicioExternoProyecto. Respuesta servicio externo : " + respuesta);
+                        mLoggingService.GuardarLogError(ex, "ERROR AccionEnServicioExternoProyecto. Respuesta servicio externo : " + respuesta, mlogger);
                     }
 
                     return jsonEstado;
@@ -2856,17 +2885,17 @@ namespace Es.Riam.Gnoss.Web.Controles.ServiciosGenerales
         }
 
 
-        public void NotificarEdicionPerfilEnProyectos(TipoAccionExterna pTipoAccionExterna, Guid pPersonaID, string pPass, string pDatoAuxiliar, Guid pProyectoID)
+        public void NotificarEdicionPerfilEnProyectos(TipoAccionExterna pTipoAccionExterna, Guid pPersonaID, string pPass, string pDatoAuxiliar)
         {
-            PersonaCN personaCN = new PersonaCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+            PersonaCN personaCN = new PersonaCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<PersonaCN>(), mLoggerFactory);
             DataWrapperPersona dataWrapperPersona = personaCN.ObtenerPersonaPorID(pPersonaID);
             personaCN.Dispose();
 
             GestionPersonas gestorPersonas = new GestionPersonas(dataWrapperPersona, mLoggingService, mEntityContext);
             gestorPersonas.CargarGestor();
-			Elementos.ServiciosGenerales.Persona persona = gestorPersonas.ListaPersonas[pPersonaID];
+            Elementos.ServiciosGenerales.Persona persona = gestorPersonas.ListaPersonas[pPersonaID];
 
-            IdentidadCN idenCN = new IdentidadCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+            IdentidadCN idenCN = new IdentidadCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<IdentidadCN>(), mLoggerFactory);
             GestionIdentidades gestorIdentidades = new GestionIdentidades(idenCN.ObtenerIdentidadesDePersonaMuyLigera(pPersonaID), mLoggingService, mEntityContext, mConfigService, mServicesUtilVirtuosoAndReplication);
             idenCN.Dispose();
 
@@ -2879,40 +2908,37 @@ namespace Es.Riam.Gnoss.Web.Controles.ServiciosGenerales
                 }
             }
 
-            //Compruebo que hay alg˙n proyecto con acciones externas 
-            ProyectoCL proyectoCL = new ProyectoCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mVirtuosoAD, mServicesUtilVirtuosoAndReplication);
+            //Compruebo que hay alg√∫n proyecto con acciones externas 
+            ProyectoCL proyectoCL = new ProyectoCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mVirtuosoAD, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<ProyectoCL>(), mLoggerFactory);
             List<Guid> proyectosConAccionesExternas = proyectoCL.ObtenerListaIDsProyectosConAccionesExternas();
             proyectoCL.Dispose();
 
             if (proyectosConAccionesExternas != null && proyectosConAccionesExternas.Count > 0)
             {
                 //Cargamos todos los datos de todos los proyectos en los que participa el usuario
-                ProyectoCN proyectoCN = new ProyectoCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+                ProyectoCN proyectoCN = new ProyectoCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<ProyectoCN>(), mLoggerFactory);
                 DataWrapperProyecto dataWrapperProyecto = proyectoCN.ObtenerAccionesExternasProyectoPorListaIDs(listaproyectosUsuario);
                 dataWrapperProyecto.Merge(proyectoCN.ObtenerDatosExtraProyectoPorListaIDs(listaproyectosUsuario));
                 proyectoCN.Dispose();
 
                 foreach (Guid identidadID in gestorIdentidades.ListaIdentidades.Keys)
                 {
-                    if (pProyectoID.Equals(Guid.Empty) || gestorIdentidades.ListaIdentidades[identidadID].FilaIdentidad.ProyectoID == pProyectoID)
-                    {
-                        AccionEnServicioExternoProyecto(pTipoAccionExterna, persona, gestorIdentidades.ListaIdentidades[identidadID].FilaIdentidad.ProyectoID, identidadID, pPass, pDatoAuxiliar, gestorIdentidades.ListaIdentidades[identidadID].FilaIdentidad.FechaAlta, dataWrapperProyecto);
-                    }
+                    AccionEnServicioExternoProyecto(pTipoAccionExterna, persona, gestorIdentidades.ListaIdentidades[identidadID].FilaIdentidad.ProyectoID, identidadID, pPass, pDatoAuxiliar, gestorIdentidades.ListaIdentidades[identidadID].FilaIdentidad.FechaAlta, dataWrapperProyecto);
                 }
             }
         }
 
         public void BloquearDesbloquearUsuario(Identidad pIdentidad, bool pBloquear)
         {
-            UsuarioCN usuarioCN = new UsuarioCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
-            SuscripcionCN suscripCN = new SuscripcionCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+            UsuarioCN usuarioCN = new UsuarioCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication,mloggerFactory.CreateLogger<UsuarioCN>(), mloggerFactory);
+            SuscripcionCN suscripCN = new SuscripcionCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<SuscripcionCN>(), mLoggerFactory);
 
             if (pIdentidad.EsOrganizacion)
             {
-                //Cargar todas las identidades de la organizaciÛn
+                //Cargar todas las identidades de la organizaci√≥n
                 //Cargar los usuarios de las identidades cargadas
-                IdentidadCN identidadCN = new IdentidadCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
-                PersonaCN personaCN = new PersonaCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+                IdentidadCN identidadCN = new IdentidadCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<IdentidadCN>(), mLoggerFactory);
+                PersonaCN personaCN = new PersonaCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<PersonaCN>(), mLoggerFactory);
 
                 GestionIdentidades gestorIdentidades = new GestionIdentidades(identidadCN.ObtenerIdentidadesDeOrganizacion(pIdentidad.OrganizacionID.Value, pIdentidad.FilaIdentidad.ProyectoID), mLoggingService, mEntityContext, mConfigService, mServicesUtilVirtuosoAndReplication);
                 gestorIdentidades.GestorPersonas = new GestionPersonas(personaCN.ObtenerPersonasDeOrganizacion(pIdentidad.OrganizacionID.Value), mLoggingService, mEntityContext);
@@ -2920,14 +2946,14 @@ namespace Es.Riam.Gnoss.Web.Controles.ServiciosGenerales
                 DataWrapperUsuario proyectoRolUsuarioDW = usuarioCN.ObtenerUsuariosCompletosPorID(gestorIdentidades.GestorPersonas.ListaPersonas.Values.Select(persona => persona.UsuarioID).ToList());
                 usuarioCN.Dispose();
 
-                gestorIdentidades.GestorUsuarios = new GestionUsuarios(proyectoRolUsuarioDW, mLoggingService, mEntityContext, mConfigService);
+                gestorIdentidades.GestorUsuarios = new GestionUsuarios(proyectoRolUsuarioDW, mLoggingService, mEntityContext, mConfigService, mLoggerFactory.CreateLogger<GestionUsuarios>(), mLoggerFactory);
 
                 DataWrapperSuscripcion TodasSuscripcionDW = new DataWrapperSuscripcion();
                 Guid organizacionSeleccionadaID = (Guid)pIdentidad.OrganizacionID;
 
                 // Bloqueamos/DesBloqueamos a la Organizacion en si (perfil tipo 3) del proyecto
 
-                OrganizacionCN organizaCN = new OrganizacionCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+                OrganizacionCN organizaCN = new OrganizacionCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<OrganizacionCN>(), mLoggerFactory);
                 DataWrapperOrganizacion orgDW = organizaCN.ObtenerOrganizacionPorID(organizacionSeleccionadaID);
                 organizaCN.Dispose();
 
@@ -2980,9 +3006,9 @@ namespace Es.Riam.Gnoss.Web.Controles.ServiciosGenerales
                 }
                 usuarioCN.Dispose();
 
-                pIdentidad.GestorIdentidades.GestorUsuarios = new GestionUsuarios(proyectoRolUsuarioDW, mLoggingService, mEntityContext, mConfigService);
+                pIdentidad.GestorIdentidades.GestorUsuarios = new GestionUsuarios(proyectoRolUsuarioDW, mLoggingService, mEntityContext, mConfigService, mLoggerFactory.CreateLogger<GestionUsuarios>(), mLoggerFactory);
                 // Bloqueamos/Desbloqueamos al usuario en el proyecto (perfil tipo 0 , 1)
-                if(proyectoRolUsuarioDW != null)
+                if (proyectoRolUsuarioDW != null)
                 {
                     AD.EntityModel.Models.UsuarioDS.ProyectoRolUsuario proyectoRolUsuario = proyectoRolUsuarioDW.ListaProyectoRolUsuario.FirstOrDefault(proyRolUs => proyRolUs.OrganizacionGnossID.Equals(pIdentidad.FilaIdentidad.OrganizacionID) && proyRolUs.ProyectoID.Equals(pIdentidad.FilaIdentidad.ProyectoID) && proyRolUs.UsuarioID.Equals(pIdentidad.Usuario.Clave));
                     if (proyectoRolUsuario != null)
@@ -3006,7 +3032,7 @@ namespace Es.Riam.Gnoss.Web.Controles.ServiciosGenerales
                 }
             }
 
-            ProyectoCL proyCL = new ProyectoCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mVirtuosoAD, mServicesUtilVirtuosoAndReplication);
+            ProyectoCL proyCL = new ProyectoCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mVirtuosoAD, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<ProyectoCL>(), mLoggerFactory);
             if (pIdentidad.Persona.FilaPersona.UsuarioID.HasValue)
             {
                 proyCL.InvalidarUsuarioBloqueadoProyecto(pIdentidad.FilaIdentidad.ProyectoID, pIdentidad.Persona.FilaPersona.UsuarioID.Value);
@@ -3022,7 +3048,7 @@ namespace Es.Riam.Gnoss.Web.Controles.ServiciosGenerales
             TipoRolUsuario tipoRolUsuario;
             if (!Enum.TryParse(pRol.ToString(), out tipoRolUsuario))
             {
-                mLoggingService.GuardarLogError(new Exception("ERROR: CambiarRolUsuarioEnProyecto. El rol no es v·lido. Rol: " + pRol));
+                mLoggingService.GuardarLogError(new Exception("ERROR: CambiarRolUsuarioEnProyecto. El rol no es v√°lido. Rol: " + pRol), mlogger);
                 return false;
             }
 
@@ -3032,7 +3058,7 @@ namespace Es.Riam.Gnoss.Web.Controles.ServiciosGenerales
 
             short rolAnterior = 2; // usuario
 
-            ProyectoCN proyCN = new ProyectoCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+            ProyectoCN proyCN = new ProyectoCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<ProyectoCN>(), mLoggerFactory);
             DataWrapperProyecto administradorProyectoDS = proyCN.ObtenerAdministradorProyectoDeProyecto(proyectoID);
 
             AD.EntityModel.Models.ProyectoDS.AdministradorProyecto filaAdministrador = administradorProyectoDS.ListaAdministradorProyecto.FirstOrDefault(filaAdminProy => filaAdminProy.ProyectoID.Equals(proyectoID) && filaAdminProy.UsuarioID.Equals(usuarioID));
@@ -3045,8 +3071,8 @@ namespace Es.Riam.Gnoss.Web.Controles.ServiciosGenerales
             rolCambiado = rolAnterior != pRol;
             if (rolCambiado)
             {
-                UsuarioCN usuCN = new UsuarioCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
-                GestionUsuarios gestorUsuarios = new GestionUsuarios(usuCN.ObtenerUsuarioCompletoPorID(usuarioID), mLoggingService, mEntityContext, mConfigService);
+                UsuarioCN usuCN = new UsuarioCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<UsuarioCN>(), mLoggerFactory);
+                GestionUsuarios gestorUsuarios = new GestionUsuarios(usuCN.ObtenerUsuarioCompletoPorID(usuarioID), mLoggingService, mEntityContext, mConfigService, mLoggerFactory.CreateLogger<GestionUsuarios>(), mLoggerFactory);
                 usuCN.Dispose();
                 AD.EntityModel.Models.UsuarioDS.ProyectoRolUsuario filaProyectoRolUsuario = gestorUsuarios.DataWrapperUsuario.ListaProyectoRolUsuario.FirstOrDefault(proyRolUs => proyRolUs.OrganizacionGnossID.Equals(organizacionID) && proyRolUs.ProyectoID.Equals(proyectoID) && proyRolUs.UsuarioID.Equals(usuarioID));
 
@@ -3137,7 +3163,7 @@ namespace Es.Riam.Gnoss.Web.Controles.ServiciosGenerales
                 }
                 else if (pRol == (short)TipoRolUsuario.Diseniador)
                 {
-                    // Le pongo como DiseÒador
+                    // Le pongo como Dise√±ador
                     string rolPermitido = UsuarioAD.FilaPermisosSinDefinir;
 
                     //Si no tiene el permiso permitido
@@ -3152,71 +3178,71 @@ namespace Es.Riam.Gnoss.Web.Controles.ServiciosGenerales
 
                 mEntityContext.SaveChanges();
 
-                ProyectoCL proyectoCL = new ProyectoCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mVirtuosoAD, mServicesUtilVirtuosoAndReplication);
+                ProyectoCL proyectoCL = new ProyectoCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mVirtuosoAD, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<ProyectoCL>(), mLoggerFactory);
                 proyectoCL.InvalidarHTMLAdministradoresProyecto(proyectoID);
                 proyectoCL.InvalidarFilaProyecto(proyectoID);
 
-                IdentidadCL identidadCL = new IdentidadCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mServicesUtilVirtuosoAndReplication);
+                IdentidadCL identidadCL = new IdentidadCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<IdentidadCL>(), mLoggerFactory);
                 identidadCL.EliminarCacheGestorTodasIdentidadesUsuario(usuarioID, pIdentidad.PersonaID.Value);
             }
 
             return rolCambiado;
         }
 
-		/// <summary>
-		/// Registra el usuario en las comunidades configuradas como registro autom·tico y obligatorio. Si el usuario ha sido creado a partir de una invitaciÛn a una organizaciÛn, lo aÒadir· a las comunidades 
-		/// que tenga la organizaciÛn configuradas como registro autom·tico.
-		/// </summary>
-		/// <param name="pSolicitudNuevoUsuario">Solicitud de la creaciÛn del usuario del cual vamos a crear las identidades</param>
-		/// <param name="pPerfil">Perfil a partir del cual se crear·n las identidades</param>
-		/// <param name="pUsuario">Usuario del cual se van a crear las identidades</param>
-		/// <param name="pGestionUsuarios">Gestor de usuarios necesario para el registro</param>
-		/// <param name="pGestionIdentidades">Gestor de identidades necesario para el registro</param>		
-		private void RegistrosAutomaticosEnComunidades(SolicitudNuevoUsuario pSolicitudNuevoUsuario, Perfil pPerfil, AD.EntityModel.Models.UsuarioDS.Usuario pUsuario, GestionUsuarios pGestionUsuarios, GestionIdentidades pGestionIdentidades)
+        /// <summary>
+        /// Registra el usuario en las comunidades configuradas como registro autom√°tico y obligatorio. Si el usuario ha sido creado a partir de una invitaci√≥n a una organizaci√≥n, lo a√±adir√° a las comunidades 
+        /// que tenga la organizaci√≥n configuradas como registro autom√°tico.
+        /// </summary>
+        /// <param name="pSolicitudNuevoUsuario">Solicitud de la creaci√≥n del usuario del cual vamos a crear las identidades</param>
+        /// <param name="pPerfil">Perfil a partir del cual se crear√°n las identidades</param>
+        /// <param name="pUsuario">Usuario del cual se van a crear las identidades</param>
+        /// <param name="pGestionUsuarios">Gestor de usuarios necesario para el registro</param>
+        /// <param name="pGestionIdentidades">Gestor de identidades necesario para el registro</param>		
+        private void RegistrosAutomaticosEnComunidades(SolicitudNuevoUsuario pSolicitudNuevoUsuario, Perfil pPerfil, AD.EntityModel.Models.UsuarioDS.Usuario pUsuario, GestionUsuarios pGestionUsuarios, GestionIdentidades pGestionIdentidades)
         {
-			ControladorDeSolicitudes controladorDeSolicitudes = new ControladorDeSolicitudes(mLoggingService, mEntityContext, mConfigService, mRedisCacheWrapper, mGnossCache, mEntityContextBASE, mVirtuosoAD, mHttpContextAccessor, mServicesUtilVirtuosoAndReplication);
+			ControladorDeSolicitudes controladorDeSolicitudes = new ControladorDeSolicitudes(mLoggingService, mEntityContext, mConfigService, mRedisCacheWrapper, mGnossCache, mEntityContextBASE, mVirtuosoAD, mHttpContextAccessor, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<ControladorDeSolicitudes>(), mLoggerFactory);
 
-			controladorDeSolicitudes.RegistrarUsuarioEnProyectosObligatorios(pSolicitudNuevoUsuario.Solicitud.OrganizacionID, pSolicitudNuevoUsuario.Solicitud.ProyectoID, pPerfil.PersonaID.Value, pPerfil, pUsuario, pGestionUsuarios, pGestionIdentidades);
-			controladorDeSolicitudes.RegistrarUsuarioEnProyectoAutomatico(pPerfil, pUsuario, pGestionUsuarios, pGestionIdentidades);
-			RegistrarEnProyectoAutoacceso(controladorDeSolicitudes, pSolicitudNuevoUsuario, pUsuario, pGestionIdentidades, pGestionUsuarios, pPerfil);
+            controladorDeSolicitudes.RegistrarUsuarioEnProyectosObligatorios(pSolicitudNuevoUsuario.Solicitud.OrganizacionID, pSolicitudNuevoUsuario.Solicitud.ProyectoID, pPerfil.PersonaID.Value, pPerfil, pUsuario, pGestionUsuarios, pGestionIdentidades);
+            controladorDeSolicitudes.RegistrarUsuarioEnProyectoAutomatico(pPerfil, pUsuario, pGestionUsuarios, pGestionIdentidades);
+            RegistrarEnProyectoAutoacceso(controladorDeSolicitudes, pSolicitudNuevoUsuario, pUsuario, pGestionIdentidades, pGestionUsuarios, pPerfil);
 
             pGestionIdentidades.RecargarHijos();
-		}
+        }
 
-		/// <summary>
-		/// Se registra en los proyectos definidos en el campo ProyectoAutoAcceso de la tabla SolicitudNuevoUsuario
-		/// </summary>
-		/// <param name="pControladorDeSolicitudes">Controlador de solicitudes para realizar la gestiÛn del registro</param>
+        /// <summary>
+        /// Se registra en los proyectos definidos en el campo ProyectoAutoAcceso de la tabla SolicitudNuevoUsuario
+        /// </summary>
+        /// <param name="pControladorDeSolicitudes">Controlador de solicitudes para realizar la gesti√≥n del registro</param>
         /// <param name="pSolicitudNuevoUsuario">Solicitud de registro del usuario nuevo</param>
-		/// <param name="pUsuario">Usuario del cual se crear·n las identidades en la comunidad</param>
-		/// <param name="pGestionIdentidades">Gestor de identidades necesario para el registro</param>
-		/// <param name="pGestionUsuarios">Gestor de usuarios necesario para el registro</param>
-		/// <param name="pPerfil">Perfil a partir del cual se crear·n las identidades</param>
-		private void RegistrarEnProyectoAutoacceso(ControladorDeSolicitudes pControladorDeSolicitudes, SolicitudNuevoUsuario pSolicitudNuevoUsuario, AD.EntityModel.Models.UsuarioDS.Usuario pUsuario, GestionIdentidades pGestionIdentidades, GestionUsuarios pGestionUsuarios, Perfil pPerfil)
+        /// <param name="pUsuario">Usuario del cual se crear√°n las identidades en la comunidad</param>
+        /// <param name="pGestionIdentidades">Gestor de identidades necesario para el registro</param>
+        /// <param name="pGestionUsuarios">Gestor de usuarios necesario para el registro</param>
+        /// <param name="pPerfil">Perfil a partir del cual se crear√°n las identidades</param>
+        private void RegistrarEnProyectoAutoacceso(ControladorDeSolicitudes pControladorDeSolicitudes, SolicitudNuevoUsuario pSolicitudNuevoUsuario, AD.EntityModel.Models.UsuarioDS.Usuario pUsuario, GestionIdentidades pGestionIdentidades, GestionUsuarios pGestionUsuarios, Perfil pPerfil)
         {
 			if (pSolicitudNuevoUsuario.ProyectosAutoAcceso != null && pSolicitudNuevoUsuario.ProyectosAutoAcceso != "")
 			{
-                ProyectoCN proyectoCN = new ProyectoCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+                ProyectoCN proyectoCN = new ProyectoCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<ProyectoCN>(), mLoggerFactory);
 				string[] proysAutoAccesoID = pSolicitudNuevoUsuario.ProyectosAutoAcceso.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
 
-				foreach (string proyAutoAccID in proysAutoAccesoID)
-				{
-					Guid proyAutoAccesoID = new Guid(proyAutoAccID);
+                foreach (string proyAutoAccID in proysAutoAccesoID)
+                {
+                    Guid proyAutoAccesoID = new Guid(proyAutoAccID);
 
-					if (!proyectoCN.ParticipaUsuarioEnProyecto(proyAutoAccesoID, pUsuario.UsuarioID))
-					{
-						Guid orgAutoAccID = proyectoCN.ObtenerOrganizacionIDProyecto(proyAutoAccesoID);
-						AgregarIdentidadPerfilYUsuarioAProyecto(pGestionIdentidades, pGestionUsuarios, orgAutoAccID, proyAutoAccesoID, pUsuario, pPerfil, null);
+                    if (!proyectoCN.ParticipaUsuarioEnProyecto(proyAutoAccesoID, pUsuario.UsuarioID))
+                    {
+                        Guid orgAutoAccID = proyectoCN.ObtenerOrganizacionIDProyecto(proyAutoAccesoID);
+                        AgregarIdentidadPerfilYUsuarioAProyecto(pGestionIdentidades, pGestionUsuarios, orgAutoAccID, proyAutoAccesoID, pUsuario, pPerfil, null);
 
-						pControladorDeSolicitudes.RegistrarUsuarioEnProyectoAutomatico(pPerfil, pUsuario, pGestionUsuarios, pGestionIdentidades);
-					}
-				}
-			}
-		}
+                        pControladorDeSolicitudes.RegistrarUsuarioEnProyectoAutomatico(pPerfil, pUsuario, pGestionUsuarios, pGestionIdentidades);
+                    }
+                }
+            }
+        }
 
-		#region MÈtodos Auxiliares AccionesExternas
+        #region M√©todos Auxiliares AccionesExternas
 
-		private static JsonPreferenciaJerarquica ObtenerCategoriasJerarquicas(Guid pCategoriaID, SortedList<Guid, CategoriaTesauro> pListaCategoriasTesauro)
+        private static JsonPreferenciaJerarquica ObtenerCategoriasJerarquicas(Guid pCategoriaID, SortedList<Guid, CategoriaTesauro> pListaCategoriasTesauro)
         {
             JsonPreferenciaJerarquica preferenciaJerarquica = new JsonPreferenciaJerarquica();
             preferenciaJerarquica.CategoriaID = pCategoriaID;
@@ -3240,7 +3266,7 @@ namespace Es.Riam.Gnoss.Web.Controles.ServiciosGenerales
         /// <param name="listadoEventosusuarioProyecto">Eventos del proyecto activos durante el registro del usuario</param>
         ///// <param name="recibirComMedio">Booleano que indica si el usuario desea recibir comunicados por parte del medio</param>
         ///// <param name="recibirComTerceros">Booleano que indica si el usuario desea recibir comunicados por parte de terceros</param>
-        ///// <param name="medio_origen">Medio de origen con el que se registro el usuario (campaÒa web, redes sociales...)</param>
+        ///// <param name="medio_origen">Medio de origen con el que se registro el usuario (campa√±a web, redes sociales...)</param>
         ///// <param name="nombre_medio_origen">Nombre del medio de origen con el que se registro el usuario(Landing..., Facebook, Twitter...)</param>
         private void ObtenerClausulasYEventosUsuarioEnProyecto(Guid pUsuarioID, Guid pProyectoID, ref List<JsonDatosExtraUsuario> pListaJsonDatosExtra, /*out bool recibirComMedio, out bool recibirComTerceros, out string medio_origen, out string nombre_medio_origen,*/out List<JsonEventoUsuario> pListadoEventosUsuarioProyecto)
         {
@@ -3250,11 +3276,11 @@ namespace Es.Riam.Gnoss.Web.Controles.ServiciosGenerales
             }
             pListadoEventosUsuarioProyecto = new List<JsonEventoUsuario>();
 
-            ProyectoCL proyCL = new ProyectoCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mVirtuosoAD, mServicesUtilVirtuosoAndReplication);
+            ProyectoCL proyCL = new ProyectoCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mVirtuosoAD, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<ProyectoCL>(), mLoggerFactory);
             DataWrapperUsuario usuClauProyDW = proyCL.ObtenerClausulasRegitroProyecto(pProyectoID);
             proyCL.Dispose();
 
-            UsuarioCN usuCN = new UsuarioCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+            UsuarioCN usuCN = new UsuarioCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<UsuarioCN>(),mLoggerFactory);
             usuClauProyDW.Merge(usuCN.ObtenerProyClausulasUsuPorUsuarioID(pUsuarioID));
             usuCN.Dispose();
 
@@ -3272,13 +3298,13 @@ namespace Es.Riam.Gnoss.Web.Controles.ServiciosGenerales
                 }
             }
 
-            IdentidadCN identCN = new IdentidadCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+            IdentidadCN identCN = new IdentidadCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<IdentidadCN>(), mLoggerFactory);
             Guid identidadID = identCN.ObtenerIdentidadUsuarioEnProyecto(pUsuarioID, pProyectoID);
             identCN.Dispose();
 
             if (!identidadID.Equals(Guid.Empty))
             {
-                ProyectoCN proyCN = new ProyectoCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+                ProyectoCN proyCN = new ProyectoCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<ProyectoCN>(), mLoggerFactory);
                 DataSet ds = proyCN.ObtenerEventoProyectoIdentidadID(pProyectoID, identidadID);
                 proyCN.Dispose();
 

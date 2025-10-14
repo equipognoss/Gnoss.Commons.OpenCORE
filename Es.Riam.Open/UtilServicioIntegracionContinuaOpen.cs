@@ -44,6 +44,40 @@ namespace Es.Riam.Open
         {
         }
 
+        public void CompilarVersion(Guid pClaveProyectoSeleccionado, Guid pUsuarioID, string pEntornoIntegracionContinua, string pUrlApiIntegracionContinua, string pVersion, string pNombreRepositorio, string pTokenRepositorio, string pNombreCortoComunidad)
+        {
+
+        }
+
+        public void DesplegarVersion(Guid pClaveProyectoSeleccionado, Guid pUsuarioID, string pEntornoIntegracionContinua, string pUrlApiIntegracionContinua, string pVersion, string pNombreCortoComunidad)
+        {
+
+        }
+
+        public string ObtenerVersionWeb(string pNombreCorto, string pUrlApiIntegracionContinua)
+        {
+            return "";
+        }
+        public int ObtenerEstadoWeb(string pNombreCorto, string pUrlApiIntegracionContinua)
+        {
+            return 0;
+        }
+
+        public List<string> ObtenerListaVersionesDesplegadas(string pNombreCorto, string pUrlApiIntegracionContinua)
+        {
+            return null;
+        }
+
+        public string ObtenerIdFrontAnsible(string pNombreCorto, string pUrlApiIntegracionContinua)
+        {
+            return "";
+        }
+        public string ObtenerIdBackAnsible(string pNombreCorto, string pUrlApiIntegracionContinua)
+        {
+            return "";
+        }
+
+
         public HttpStatusCode DeployVersion(Guid pClaveProyectoSeleccionado, Guid pUsuarioID, string pEntornoIntegracionContinua, string UrlApiIntegracionContinua, string pTagName, string pUrlApiDespliegue)
         {
             return HttpStatusCode.BadRequest;

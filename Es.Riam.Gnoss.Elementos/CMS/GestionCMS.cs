@@ -8,6 +8,7 @@ using Es.Riam.Gnoss.AD.EntityModel;
 using System.Linq;
 using Es.Riam.Gnoss.Util.General;
 using Es.Riam.Gnoss.Web.MVC.Models;
+using Microsoft.Extensions.Logging;
 
 namespace Es.Riam.Gnoss.Elementos.CMS
 {
@@ -46,12 +47,14 @@ namespace Es.Riam.Gnoss.Elementos.CMS
 
         #region Constructores
 
+        public GestionCMS() { }
+
         /// <summary>
         /// Crea el gestor de CMS
         /// </summary>
         /// <param name="pCMSDS">Dataset de CMS</param>
         public GestionCMS(DataWrapperCMS pCMSDS, LoggingService loggingService, EntityContext entityContext)
-            : base(pCMSDS, loggingService)
+            : base(pCMSDS)
         {
             mLoggingService = loggingService;
             mEntityContext = entityContext;
@@ -149,12 +152,12 @@ namespace Es.Riam.Gnoss.Elementos.CMS
             {
                 if (mListaPaginas.ContainsKey(filaPagina.ProyectoID))
                 {
-                    mListaPaginas[filaPagina.ProyectoID].Add(filaPagina.Ubicacion, new CMSPagina(filaPagina, this, mLoggingService));
+                    mListaPaginas[filaPagina.ProyectoID].Add(filaPagina.Ubicacion, new CMSPagina(filaPagina, this));
                 }
                 else
                 {
                     Dictionary<short, CMSPagina> listaPaginas = new Dictionary<short, CMSPagina>();
-                    listaPaginas.Add(filaPagina.Ubicacion, new CMSPagina(filaPagina, this, mLoggingService));
+                    listaPaginas.Add(filaPagina.Ubicacion, new CMSPagina(filaPagina, this));
                     mListaPaginas.Add(filaPagina.ProyectoID, listaPaginas);
                 }
             }
@@ -169,7 +172,7 @@ namespace Es.Riam.Gnoss.Elementos.CMS
 
             foreach (AD.EntityModel.Models.CMS.CMSBloque filaBloque in CMSDW.ListaCMSBloque)
             {
-                mListaBloques.Add(filaBloque.BloqueID, new CMSBloque(filaBloque, this, mLoggingService));
+                mListaBloques.Add(filaBloque.BloqueID, new CMSBloque(filaBloque, this));
             }
             foreach (CMSBloque bloque in mListaBloques.Values)
             {
@@ -412,7 +415,7 @@ namespace Es.Riam.Gnoss.Elementos.CMS
             CMSDW.ListaCMSPagina.Add(filapagina);
             mEntityContext.CMSPagina.Add(filapagina);
 
-            CMSPagina pagina = new CMSPagina(filapagina, this, mLoggingService);
+            CMSPagina pagina = new CMSPagina(filapagina, this);
 
             if (ListaPaginasProyectos.ContainsKey(pProyecto.Clave))
             {
@@ -1219,7 +1222,7 @@ namespace Es.Riam.Gnoss.Elementos.CMS
             CMSDW.ListaCMSBloque.Add(filaBloque);
             mEntityContext.CMSBloque.Add(filaBloque);
 
-            CMSBloque bloque = new CMSBloque(filaBloque, this, mLoggingService);
+            CMSBloque bloque = new CMSBloque(filaBloque, this);
 
             if (!ListaBloques.ContainsKey(pIdBloque))
             {

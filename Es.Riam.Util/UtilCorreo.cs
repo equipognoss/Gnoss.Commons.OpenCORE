@@ -260,8 +260,8 @@ namespace Es.Riam.Util
                 }
                 //Asunto
                 mensaje.Subject = pAsunto;
-                //mensaje.SubjectEncoding = System.Text.Encoding.UTF8;
-                mensaje.SubjectEncoding = CodificacionANSI;
+                mensaje.SubjectEncoding = Encoding.UTF8;
+                //mensaje.SubjectEncoding = CodificacionANSI;
                 //mensaje.SubjectEncoding = null;
                 mensaje.BodyEncoding = null;
 
@@ -332,8 +332,8 @@ namespace Es.Riam.Util
                 }
                 //Asunto
                 mensaje.Subject = pCorreo.Asunto;
-                //mensaje.SubjectEncoding = System.Text.Encoding.UTF8;
-                mensaje.SubjectEncoding = CodificacionANSI;
+                mensaje.SubjectEncoding = Encoding.UTF8;
+                //mensaje.SubjectEncoding = CodificacionANSI;
                 //mensaje.SubjectEncoding = null;
                 mensaje.BodyEncoding = null;
 
@@ -447,7 +447,8 @@ namespace Es.Riam.Util
 
             //Asunto
             mensaje.Subject = pAsunto;
-            mensaje.SubjectEncoding = CodificacionANSI;
+            //mensaje.SubjectEncoding = CodificacionANSI;
+            mensaje.SubjectEncoding = Encoding.UTF8;
             mensaje.Headers.Add("Message-ID", "<" + DateTime.Now.ToString("yyyyMMddHHmmss") + "." + pNotificacionID + "." + pRemitente + ">");
 
             if (!DOMINIO_SERVIDOR_CLIENTE.Equals("gnoss"))
@@ -627,11 +628,11 @@ namespace Es.Riam.Util
         private static void CrearMensajeHTML(MailMessage pMail, string pMensaje)
         {
             //Creamos la vista en texto plano del mensaje
-            AlternateView plainView = AlternateView.CreateAlternateViewFromString(UtilCadenas.EliminarHtmlParaMensajes(pMensaje), CodificacionANSI, "text/plain");
+            AlternateView plainView = AlternateView.CreateAlternateViewFromString(UtilCadenas.EliminarHtmlParaMensajes(pMensaje), Encoding.UTF8, "text/plain");
             pMail.AlternateViews.Add(plainView);
 
             //Creamos la vista HTML del mensaje
-            AlternateView htmlView = AlternateView.CreateAlternateViewFromString(pMensaje, CodificacionANSI, "text/html");
+            AlternateView htmlView = AlternateView.CreateAlternateViewFromString(pMensaje, Encoding.UTF8, "text/html");
 
             pMail.AlternateViews.Add(htmlView);
         }

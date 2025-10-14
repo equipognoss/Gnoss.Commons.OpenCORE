@@ -1,5 +1,6 @@
 using Es.Riam.Gnoss.AD.Documentacion;
 using Es.Riam.Gnoss.AD.EntityModel;
+using Es.Riam.Gnoss.AD.ParametroAplicacion;
 using Es.Riam.Gnoss.AD.Virtuoso;
 using Es.Riam.Gnoss.CL;
 using Es.Riam.Gnoss.CL.Documentacion;
@@ -11,6 +12,8 @@ using Es.Riam.Gnoss.UtilServiciosWeb;
 using Es.Riam.Semantica.OWL;
 using Es.Riam.Semantica.Plantillas;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Logging;
+using Serilog.Core;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -77,7 +80,6 @@ namespace Es.Riam.Gnoss.Web.Controles.GeneradorPlantillasOWL
         /// Parametro especial semcms que se envia en la url.
         /// </summary>
         private string mParametroSemCms;
-
         #endregion
 
         #region Propiedades
@@ -102,7 +104,8 @@ namespace Es.Riam.Gnoss.Web.Controles.GeneradorPlantillasOWL
         private EntityContext mEntityContext;
         private ConfigService mConfigService;
         private RedisCacheWrapper mRedisCacheWrapper;
-
+        private ILogger mlogger;
+        private ILoggerFactory mLoggerFactory;
         #endregion
 
         #region Constructor
@@ -112,14 +115,15 @@ namespace Es.Riam.Gnoss.Web.Controles.GeneradorPlantillasOWL
         /// </summary>
         /// <param name="pOntologiaID">ID de la ontolgía</param>
         /// <param name="pProyectoID">ID del proyecto actual</param>
-        public LectorXmlConfig(Guid pOntologiaID, Guid pProyectoID, LoggingService loggingService, EntityContext entityContext, ConfigService configService, RedisCacheWrapper redisCacheWrapper, VirtuosoAD virtuosoAD)
+        public LectorXmlConfig(Guid pOntologiaID, Guid pProyectoID, LoggingService loggingService, EntityContext entityContext, ConfigService configService, RedisCacheWrapper redisCacheWrapper, VirtuosoAD virtuosoAD, ILogger<LectorXmlConfig> logger, ILoggerFactory loggerFactory)
         {
             mVirtuosoAD = virtuosoAD;
             mLoggingService = loggingService;
             mEntityContext = entityContext;
             mConfigService = configService;
             mRedisCacheWrapper = redisCacheWrapper;
-
+            mlogger = logger;
+            mLoggerFactory = loggerFactory;
             mOntologiaID = pOntologiaID;
             mProyectoID = pProyectoID;
         }
@@ -130,9 +134,11 @@ namespace Es.Riam.Gnoss.Web.Controles.GeneradorPlantillasOWL
         /// <param name="pOntologiaID">ID de la ontolgía</param>
         /// <param name="pProyectoID">ID del proyecto actual</param>
         /// <param name="pFicheroConfiguracionBD">Fichero de configuración de BD</param>
-        public LectorXmlConfig(Guid pOntologiaID, Guid pProyectoID, string pFicheroConfiguracionBD, LoggingService loggingService, EntityContext entityContext, ConfigService configService, RedisCacheWrapper redisCacheWrapper, VirtuosoAD virtuosoAD)
-            : this(pOntologiaID, pProyectoID, loggingService, entityContext, configService, redisCacheWrapper, virtuosoAD)
+        public LectorXmlConfig(Guid pOntologiaID, Guid pProyectoID, string pFicheroConfiguracionBD, LoggingService loggingService, EntityContext entityContext, ConfigService configService, RedisCacheWrapper redisCacheWrapper, VirtuosoAD virtuosoAD, ILogger<LectorXmlConfig> logger, ILoggerFactory loggerFactory)
+            : this(pOntologiaID, pProyectoID, loggingService, entityContext, configService, redisCacheWrapper, virtuosoAD,logger,loggerFactory)
         {
+            mlogger = logger;
+            mLoggerFactory = loggerFactory;
             mFicheroConfiguracionBD = pFicheroConfiguracionBD;
         }
 
@@ -144,9 +150,11 @@ namespace Es.Riam.Gnoss.Web.Controles.GeneradorPlantillasOWL
         /// <param name="pFicheroConfiguracionBD">Fichero de configuración de BD</param>
         /// <param name="pNombreOnto">Nombre de la ontología</param>
         /// <param name="pTipoEntidad">Tipo de entidad con namespace</param>
-        public LectorXmlConfig(Guid pOntologiaID, Guid pProyectoID, string pFicheroConfiguracionBD, string pNombreOnto, string pTipoEntidad, LoggingService loggingService, EntityContext entityContext, ConfigService configService, RedisCacheWrapper redisCacheWrapper, VirtuosoAD virtuosoAD)
-            : this(pOntologiaID, pProyectoID, pFicheroConfiguracionBD, loggingService, entityContext, configService, redisCacheWrapper, virtuosoAD)
+        public LectorXmlConfig(Guid pOntologiaID, Guid pProyectoID, string pFicheroConfiguracionBD, string pNombreOnto, string pTipoEntidad, LoggingService loggingService, EntityContext entityContext, ConfigService configService, RedisCacheWrapper redisCacheWrapper, VirtuosoAD virtuosoAD, ILogger<LectorXmlConfig> logger, ILoggerFactory loggerFactory)
+            : this(pOntologiaID, pProyectoID, pFicheroConfiguracionBD, loggingService, entityContext, configService, redisCacheWrapper, virtuosoAD,logger, loggerFactory)
         {
+            mlogger = logger;
+            mLoggerFactory = loggerFactory;
             mNombreOntoConTipoEntidad = pNombreOnto.Substring(0, pNombreOnto.LastIndexOf(".")).ToLower() + "_" + pTipoEntidad.ToLower().Replace(":", "_");
         }
 
@@ -164,11 +172,11 @@ namespace Es.Riam.Gnoss.Web.Controles.GeneradorPlantillasOWL
             DocumentacionCL docCL = null;
             if (!string.IsNullOrEmpty(mFicheroConfiguracionBD))
             {
-                docCL = new DocumentacionCL(mFicheroConfiguracionBD, mFicheroConfiguracionBD, mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, null);
+                docCL = new DocumentacionCL(mFicheroConfiguracionBD, mFicheroConfiguracionBD, mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, null, mLoggerFactory.CreateLogger<DocumentacionCL>(), mLoggerFactory);
             }
             else
             {
-                docCL = new DocumentacionCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, null);
+                docCL = new DocumentacionCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, null, mLoggerFactory.CreateLogger<DocumentacionCL>(), mLoggerFactory);
             }
 
             string claveEstilos = null;
@@ -262,7 +270,7 @@ namespace Es.Riam.Gnoss.Web.Controles.GeneradorPlantillasOWL
 
             if (byteArray == null)
             {
-                mLoggingService.GuardarLogError($"No se ha conseguido encontrar el XML de la ontologia con ID {mOntologiaID}, se vuelve a intentar {pNumIntentos}");
+                mLoggingService.GuardarLogError($"No se ha conseguido encontrar el XML de la ontologia con ID {mOntologiaID}, se vuelve a intentar {pNumIntentos}", mlogger);
                 if (pNumIntentos > 0)
                 {
                     Thread.Sleep(500);
@@ -290,11 +298,11 @@ namespace Es.Riam.Gnoss.Web.Controles.GeneradorPlantillasOWL
 
             if (!string.IsNullOrEmpty(mFicheroConfiguracionBD))
             {
-                proyCL = new ProyectoCL(mFicheroConfiguracionBD, mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mVirtuosoAD, null);
+                proyCL = new ProyectoCL(mFicheroConfiguracionBD, mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mVirtuosoAD, null, mLoggerFactory.CreateLogger<ProyectoCL>(), mLoggerFactory);
             }
             else
             {
-                proyCL = new ProyectoCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mVirtuosoAD, null);
+                proyCL = new ProyectoCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mVirtuosoAD, null, mLoggerFactory.CreateLogger<ProyectoCL>(), mLoggerFactory);
             }
 
             mNombreCortoProy = proyCL.ObtenerNombreCortoProyecto(mProyectoID);
@@ -319,6 +327,29 @@ namespace Es.Riam.Gnoss.Web.Controles.GeneradorPlantillasOWL
                 if (nodoNamespace != null)
                 {
                     estiloConfig.Namespace = nodoNamespace.InnerText;
+                }
+
+                XmlNode nodoOrdenAutocompletar = GetNodo(nodoConfig, "OrdenAutocompletar");
+
+                if(nodoOrdenAutocompletar != null)
+                {
+                    estiloConfig.OrdenAutocompletarIsAsc = false;
+                    string ordenAutocompletar = "";
+                    XmlNode nodoOrdenDesc = GetNodo(nodoOrdenAutocompletar, "OrderDesc");
+                    if(nodoOrdenDesc == null)
+                    {
+                        XmlNode nodoOrdenAsc = GetNodo(nodoOrdenAutocompletar, "OrderAsc");
+                        if (nodoOrdenAsc != null)
+                        {
+                            ordenAutocompletar = nodoOrdenAsc.InnerText;
+                            estiloConfig.OrdenAutocompletarIsAsc = true;
+                        }
+                    }
+                    else
+                    {
+                        ordenAutocompletar = nodoOrdenDesc.InnerText;
+                    }
+                    estiloConfig.OrdenAutocompletar = ordenAutocompletar;
                 }
 
                 XmlNode nodoIdiomas = GetNodo(nodoConfig, "idiomasOnto");
@@ -547,6 +578,12 @@ namespace Es.Riam.Gnoss.Web.Controles.GeneradorPlantillasOWL
                 if (nodoCatTesOblig != null && nodoCatTesOblig.InnerText.ToLower() == "false")
                 {
                     estiloConfig.CategorizacionTesauroGnossNoObligatoria = true;
+                }
+
+                XmlNode nodoTagsOblig = GetNodo(nodoConfig, "EtiquetacionGnossObligatoria");
+                if (nodoTagsOblig != null && nodoTagsOblig.InnerText.ToLower() == "false")
+                {
+                    estiloConfig.EtiquetacionGnossNoObligatoria = true;
                 }
 
                 XmlNode nodoPropArchCargMasiva = GetNodo(nodoConfig, "PropiedadArchivoCargaMasiva");
@@ -1089,7 +1126,7 @@ namespace Es.Riam.Gnoss.Web.Controles.GeneradorPlantillasOWL
                             string[] delimiter = { "|" };
                             List<string> listaNombresCortosGrupos = new List<string>(nodo.InnerText.Split(delimiter, StringSplitOptions.RemoveEmptyEntries));
 
-                            IdentidadCN identCN = new IdentidadCN(mEntityContext, mLoggingService, mConfigService, null);
+                            IdentidadCN identCN = new IdentidadCN(mEntityContext, mLoggingService, mConfigService, null, mLoggerFactory.CreateLogger<IdentidadCN>(), mLoggerFactory);
                             estiloEntidad.PrivadoParaGrupoEditores = identCN.ObtenerGruposIDPorNombreCortoEnProyectoYEnOrganizacion(listaNombresCortosGrupos, mProyectoID);
 
                             identCN.Dispose();
@@ -1871,6 +1908,7 @@ namespace Es.Riam.Gnoss.Web.Controles.GeneradorPlantillasOWL
                                     estiloProp.SelectorEntidad.PropiedadesEdicion.Add(nodoNombrePropEdit.InnerText);
                                 }
                             }
+                            estiloProp.SelectorEntidad.PropiedadesEdicion.Add("http://www.w3.org/1999/02/22-rdf-syntax-ns#type");
                         }
                         else if (nodoSelecEnt.Name == "PropsEntLectura")
                         {
@@ -1905,6 +1943,7 @@ namespace Es.Riam.Gnoss.Web.Controles.GeneradorPlantillasOWL
                                     CompletarElemOrdNodoBoton(nodoPropLectura, elemOrd);
                                     estiloPropPropsLect.ElementoOrdenadoAuxiliar = elemOrd;
                                 }
+                                estiloProp.SelectorEntidad.PropiedadesLectura.Add(GenerarPropiedadLecturaRdfType());
                             }
                         }
                         else if (nodoSelecEnt.Name == "TipoPresentacion")
@@ -2264,7 +2303,7 @@ namespace Es.Riam.Gnoss.Web.Controles.GeneradorPlantillasOWL
                     string[] delimiter = { "|" };
                     List<string> listaNombresCortosGrupos = new List<string>(nodo.InnerText.Split(delimiter, StringSplitOptions.RemoveEmptyEntries));
 
-                    IdentidadCN identCN = new IdentidadCN(mEntityContext, mLoggingService, mConfigService, null);
+                    IdentidadCN identCN = new IdentidadCN(mEntityContext, mLoggingService, mConfigService, null, mLoggerFactory.CreateLogger<IdentidadCN>(), mLoggerFactory);
                     estiloProp.PrivadoParaGrupoEditores = identCN.ObtenerGruposIDPorNombreCortoEnProyectoYEnOrganizacion(listaNombresCortosGrupos, mProyectoID);
 
                     identCN.Dispose();
@@ -2401,7 +2440,7 @@ namespace Es.Riam.Gnoss.Web.Controles.GeneradorPlantillasOWL
 
                     if (clausula.Tipo == "PerteneceAGrupo")
                     {
-                        IdentidadCN identCN = new IdentidadCN(mEntityContext, mLoggingService, mConfigService, null);
+                        IdentidadCN identCN = new IdentidadCN(mEntityContext, mLoggingService, mConfigService, null, mLoggerFactory.CreateLogger<IdentidadCN>(), mLoggerFactory);
                         List<Guid> iDsGrupos = identCN.ObtenerGruposIDPorNombreCortoEnProyectoYEnOrganizacion(clausula.Valores, mProyectoID);
                         identCN.Dispose();
                         clausula.Valores.Clear();
@@ -2862,6 +2901,19 @@ namespace Es.Riam.Gnoss.Web.Controles.GeneradorPlantillasOWL
             archivo = null;
 
             return bytes;
+        }
+
+        private EstiloPlantillaEspecifProp GenerarPropiedadLecturaRdfType()
+        {
+            EstiloPlantillaEspecifProp estiloProp = new EstiloPlantillaEspecifProp();
+            estiloProp.NombreRealPropiedad = "http://www.w3.org/1999/02/22-rdf-syntax-ns#type";
+            estiloProp.AtrNombre.Add("es", "Tipo");
+
+            ElementoOrdenado elemOrd = new ElementoOrdenado();
+            elemOrd.NombrePropiedad = new KeyValuePair<string, Propiedad>(estiloProp.NombreRealPropiedad, null);            
+            estiloProp.ElementoOrdenadoAuxiliar = elemOrd;
+
+            return estiloProp;
         }
 
         #endregion

@@ -2,6 +2,9 @@
 using Es.Riam.Util;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Extensions;
+using Microsoft.Exchange.WebServices.Data;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 using Serilog;
 using Serilog.Core;
 using System;
@@ -23,6 +26,8 @@ namespace Es.Riam.Gnoss.Util.General
         private static long TAMAÑO_MAXIMO_LOG = 1073741824;
 
         private static long TAMAÑO_MAXIMO_LOG_DIARIO = 104857600;
+        private Microsoft.Extensions.Logging.ILogger mlogger;
+        private ILoggerFactory mLoggerFactory;
 
         private static string ULTIMO = "_last";
 
@@ -39,35 +44,22 @@ namespace Es.Riam.Gnoss.Util.General
         private readonly UtilTelemetry _utilTelemetry;
         private readonly Usuario _usuario;
 
-        public LoggingService(UtilPeticion utilPeticion, IHttpContextAccessor httpContextAccessor, UtilTelemetry utilTelemetry, Usuario usuario)
+        public LoggingService(UtilPeticion utilPeticion, IHttpContextAccessor httpContextAccessor, UtilTelemetry utilTelemetry, Usuario usuario, ILogger<LoggingService> logger, ILoggerFactory loggerFactory)
         {
             _httpContextAccessor = httpContextAccessor;
             _utilPeticion = utilPeticion;
             _utilTelemetry = utilTelemetry;
             _usuario = usuario;
+            mlogger = logger;
+            mLoggerFactory = loggerFactory;
         }
-        public LoggingService(UtilPeticion utilPeticion, UtilTelemetry utilTelemetry, Usuario usuario)
+        public LoggingService(UtilPeticion utilPeticion, UtilTelemetry utilTelemetry, Usuario usuario, ILogger<LoggingService> logger, ILoggerFactory loggerFactory)
         {
             _utilPeticion = utilPeticion;
             _utilTelemetry = utilTelemetry;
             _usuario = usuario;
-        }
-
-        public string PLATAFORMA
-        {
-            get
-            {
-                return _utilPeticion.ObtenerObjetoDePeticion("PLATAFORMA") as string;
-            }
-            set
-            {
-                _utilPeticion.AgregarObjetoAPeticionActual("PLATAFORMA", value);
-            }
-        }
-
-        public static string RUTA_DIRECTORIO_ERROR
-        {
-            get; set;
+            mlogger = logger;
+            mLoggerFactory = loggerFactory;
         }
 
         #region Miembros estáticos
@@ -101,102 +93,111 @@ namespace Es.Riam.Gnoss.Util.General
 
         #region Metodos
 
+        /// <summary>
+        /// Escribe unan entrada en el log con el nivel TRACE
+        /// </summary>
+        /// <param name="pMensaje">Mensaje a insertar en el log</param>
+        /// <param name="pLogger">Implementacion del sistema de registros</param>
+        public void GuardarLogTrace(string pMensaje, Microsoft.Extensions.Logging.ILogger pLogger)
+        {
+            try
+            {
+                string rutaFichero = ObtenerRutaFichero(null, LogLevel.Trace);
+
+                string mensajeLog = PrepararMensajeLog(pMensaje, string.Empty);
+                string lineaLog = $"[{DateTime.Now}] {mensajeLog}";
+
+                //Escribo el error
+                pLogger.LogTrace(lineaLog);
+
+                //Añado el error al fichero
+                EscribirLogEnFichero(rutaFichero, lineaLog);
+            }
+            catch
+            {
+
+            }
+        }
+
+        /// <summary>
+        /// Escribe unan entrada en el log con el nivel DEBUG
+        /// </summary>
+        /// <param name="pMensaje">Mensaje a insertar en el log</param>
+        /// <param name="pLogger">Implementacion del sistema de registros</param>
+        public void GuardarLogDebug(string pMensaje, Microsoft.Extensions.Logging.ILogger pLogger)
+        {
+            try
+            {
+                string rutaFichero = ObtenerRutaFichero(null, LogLevel.Debug);
+
+                string mensajeLog = PrepararMensajeLog(pMensaje, string.Empty);
+                string lineaLog = $"[{DateTime.Now}] {mensajeLog}";
+
+                //Escribo el error
+                pLogger.LogDebug(lineaLog);
+
+                //Añado el error al fichero
+                EscribirLogEnFichero(rutaFichero, lineaLog);
+            }
+            catch
+            {
+
+            }
+        }
+
         //Guardar el log de ver donde pasa;
         /// <param name="pExcepcion">Excepción producida</param>
+        [Obsolete("Este metodo dejara de estar disponible en futuras versiones, use el metodo con ILogger")]
         public void GuardarLog(string pError, string pRutaFicheroError = null, bool pYaEnviado = false)
         {
             try
             {
-                if (string.IsNullOrEmpty(pRutaFicheroError))
-                {
-                    pRutaFicheroError = Path.Combine(RUTA_DIRECTORIO_ERROR, $"log_{DateTime.Now.ToString("yyyy-MM-dd")}.log");
-                }
-                bool ficheroCienMegas = false;
-                string rutaFicheroErrorLast = Path.Combine(RUTA_DIRECTORIO_ERROR, $"log_{DateTime.Now.ToString("yyyy-MM-dd")}{ULTIMO}.log");
+                pRutaFicheroError = ObtenerRutaFichero(pRutaFicheroError, LogLevel.Information);
 
-                FileInfo fichero = new FileInfo(pRutaFicheroError);
-                if (fichero.Name.Equals(pRutaFicheroError))
-                {
-                    pRutaFicheroError = Path.Combine(RUTA_DIRECTORIO_ERROR, pRutaFicheroError.TrimStart('/').TrimStart('\\'));
-                    fichero = new FileInfo(pRutaFicheroError);
-                }
-
-                FileInfo ficheroGiga = new FileInfo(rutaFicheroErrorLast);
-                if (ficheroGiga.Name.Equals(rutaFicheroErrorLast))
-                {
-                    pRutaFicheroError = Path.Combine(RUTA_DIRECTORIO_ERROR, rutaFicheroErrorLast.TrimStart('/').TrimStart('\\'));
-                    ficheroGiga = new FileInfo(rutaFicheroErrorLast);
-                }
-                //Comprobar si existe el fichero de 1 Gb para solo almacenar de 100 Mb
-                if (File.Exists(rutaFicheroErrorLast))
-                {
-                    if (ficheroGiga.Length > TAMAÑO_MAXIMO_LOG)
-                    {
-                        ficheroCienMegas = true;
-                    }
-                }
-
-
-                if (!Directory.Exists(fichero.DirectoryName))
-                {
-                    Directory.CreateDirectory(fichero.DirectoryName);
-                }
-
-                //Si el fichero supera el tamaño máximo lo dejo como last y cambio el log
-                if (File.Exists(pRutaFicheroError))
-                {
-                    if (ficheroCienMegas)
-                    {
-                        if (fichero.Length > TAMAÑO_MAXIMO_LOG_DIARIO)
-                        {
-                            fichero.Delete();
-                        }
-                    }
-                    else
-                    {
-                        if (fichero.Length > TAMAÑO_MAXIMO_LOG)
-                        {
-                            fichero.CopyTo(rutaFicheroErrorLast);
-                        }
-                    }
-                    
-                }
+                string mensajeLog = PrepararMensajeLog(pError, string.Empty);
+                string lineaLog = $"[{DateTime.Now}] {mensajeLog}";
 
                 //Añado el error al fichero
-                using (StreamWriter sw = new StreamWriter(pRutaFicheroError, true, Encoding.Default))
-                {
-                    StringBuilder sb = new StringBuilder();
-                    sb.Append($"[{DateTime.Now}] \"{pError.TrimEnd()}\"");
-                    // Escribo el error
+                EscribirLogEnFichero(pRutaFicheroError, lineaLog);
 
+                if (!pYaEnviado && !UBICACIONLOGS.Equals(UtilTelemetry.UbicacionLogsYTrazas.Archivo) && UtilTelemetry.EstaConfiguradaTelemetria)
+                {
                     try
                     {
-                        if (_httpContextAccessor != null && _httpContextAccessor.HttpContext != null && _httpContextAccessor.HttpContext.Request != null)
-                        {
-                            sb.Append($" \"{_httpContextAccessor.HttpContext.Request.Path.ToString()}\"");
-                            //sw.WriteLine(HttpContext.Current.Request.Url.ToString());
-                            sb.Append($" '");
-                            if (_httpContextAccessor.HttpContext.Request.Headers.Keys.Count == 0)
-                            {
-                                sb.Append($"-");
-                            }
-                            foreach (string key in _httpContextAccessor.HttpContext.Request.Headers.Keys)
-                            {
-                                sb.Append($" {key}: {_httpContextAccessor.HttpContext.Request.Headers[key]}");
-                            }
-                            sb.Append($"'");
-                        }
-                        else
-                        {
-                            sb.Append($" \"-\"");
-                            sb.Append($" '-'");
-                        }
+                        _utilTelemetry.EnviarTelemetriaExcepcion(new Exception(), pError);
                     }
-                    catch { }
-                    string error = sb.ToString().Replace('\r', ' ').Replace('\n', ' ');
-                    sw.WriteLine(error);
-                    //sw.WriteLine(Environment.NewLine + Environment.NewLine + "___________________________________________________________________________________________" + Environment.NewLine + Environment.NewLine + Environment.NewLine);
+                    catch
+                    { }
                 }
+
+                if (!pYaEnviado)
+                {
+                    //Envia el error al servidor Logstash
+                    EnviarLogLogstash(null, pError);
+                }
+            }
+            catch
+            {
+
+            }
+        }
+
+        //Guardar el log de ver donde pasa;
+        /// <param name="pExcepcion">Excepción producida</param>
+        public void GuardarLog(string pError, Microsoft.Extensions.Logging.ILogger pLogger, string pRutaFicheroError = null, bool pYaEnviado = false)
+        {
+            try
+            {
+                pRutaFicheroError = ObtenerRutaFichero(pRutaFicheroError, LogLevel.Information);
+
+                string mensajeLog = PrepararMensajeLog(pError, string.Empty);
+                string lineaLog = $"[{DateTime.Now}] {mensajeLog}";
+
+                //Escribo el error
+                pLogger.LogInformation(lineaLog);
+
+                //Añado el error al fichero
+                EscribirLogEnFichero(pRutaFicheroError, lineaLog);
 
                 if (!pYaEnviado && !UBICACIONLOGS.Equals(UtilTelemetry.UbicacionLogsYTrazas.Archivo) && UtilTelemetry.EstaConfiguradaTelemetria)
                 {
@@ -221,9 +222,36 @@ namespace Es.Riam.Gnoss.Util.General
         }
 
         /// <summary>
+        /// Escribe unan entrada en el log con el nivel WARNING
+        /// </summary>
+        /// <param name="pMensaje">Mensaje a insertar en el log</param>
+        /// <param name="pLogger">Implementacion del sistema de registros</param>
+        public void GuardarLogWarning(string pMensaje, Microsoft.Extensions.Logging.ILogger pLogger)
+        {
+            try
+            {
+                string rutaFichero = ObtenerRutaFichero(null, LogLevel.Warning);
+
+                string mensajeLog = PrepararMensajeLog(pMensaje, string.Empty);
+                string lineaLog = $"[{DateTime.Now}] {mensajeLog}";
+
+                //Escribo el error
+                pLogger.LogWarning(lineaLog);
+
+                //Añado el error al fichero
+                EscribirLogEnFichero(rutaFichero, lineaLog);
+            }
+            catch
+            {
+
+            }
+        }
+
+        /// <summary>
         /// Guarda el log de error
         /// </summary>
         /// <param name="pExcepcion">Excepción producida</param>
+        [Obsolete("Este metodo dejara de estar disponible en futuras versiones, use el metodo con ILogger")]
         public void GuardarLogError(Exception pExcepcion)
         {
             GuardarLogError(pExcepcion, null);
@@ -233,10 +261,9 @@ namespace Es.Riam.Gnoss.Util.General
         /// Guarda el log de error
         /// </summary>
         /// <param name="pExcepcion">Excepción producida</param>
-        public string GuardarLogErrorView(Exception pExcepcion)
+        public void GuardarLogError(Exception pExcepcion, Microsoft.Extensions.Logging.ILogger pLogger)
         {
-            GuardarLogError(pExcepcion, null);
-            return string.Empty;
+            GuardarLogError(pExcepcion, null, pLogger);
         }
 
         /// <summary>
@@ -244,6 +271,7 @@ namespace Es.Riam.Gnoss.Util.General
         /// </summary>
         /// <param name="pExcepcion">Excepción producida</param>
         /// <param name="pMensajeExtra">Mensaje extra a guardar</param>
+        [Obsolete("Este metodo dejara de estar disponible en futuras versiones, use el metodo con ILogger")]
         public void GuardarLogError(Exception pExcepcion, string pMensajeExtra, bool pErrorCritico = false, string pTipoError = "-")
         {
             if (!UBICACIONLOGS.Equals(UtilTelemetry.UbicacionLogsYTrazas.ApplicationInsights))
@@ -286,9 +314,168 @@ namespace Es.Riam.Gnoss.Util.General
             EnviarLogLogstash(pExcepcion, pMensajeExtra);
         }
 
+        /// <summary>
+        /// Guarda el log de error
+        /// </summary>
+        /// <param name="pExcepcion">Excepción producida</param>
+        /// <param name="pMensajeExtra">Mensaje extra a guardar</param>
+        public void GuardarLogError(Exception pExcepcion, string pMensajeExtra, Microsoft.Extensions.Logging.ILogger pLogger, bool pErrorCritico = false, string pTipoError = "-")
+        {
+            if (!UBICACIONLOGS.Equals(UtilTelemetry.UbicacionLogsYTrazas.ApplicationInsights))
+            {
+                try
+                {
+                    if (!(pExcepcion is ThreadAbortException))
+                    {
+                        GuardarLogError(DevolverCadenaError(pExcepcion, "") + $" \"{pMensajeExtra}\"", pLogger, null, true, pTipoError);
+                        if (pExcepcion.InnerException != null)
+                        {
+                            GuardarLogError(pExcepcion.InnerException, pMensajeExtra, pLogger, pErrorCritico, "INNER EXCEPTION");
+                        }
+                        //JUAN
+                        //else if (pExcepcion is AggregateException)
+                        //{
+                        //    AggregateException aggregateException = (AggregateException)pExcepcion;
+                        //    GuardarLogError(aggregateException, pMensajeExtra, pErrorCritico, "Aggregate Exception");
+                        //}
+                    }
+                }
+                catch
+                { }
+            }
+
+            if (UtilTelemetry.EstaConfiguradaTelemetria && !UBICACIONLOGS.Equals(UtilTelemetry.UbicacionLogsYTrazas.Archivo))
+            {
+                try
+                {
+                    if (!(pExcepcion is ThreadAbortException))
+                    {
+                        _utilTelemetry.EnviarTelemetriaExcepcion(pExcepcion, pMensajeExtra, pErrorCritico);
+                    }
+                }
+                catch
+                { }
+            }
+
+            //Envia el error al servidor Logstash
+            EnviarLogLogstash(pExcepcion, pMensajeExtra);
+        }
+
+        /// <summary>
+        /// Guarda el log de error
+        /// </summary>
+        [Obsolete("Este metodo dejara de estar disponible en futuras versiones, use el metodo con ILogger")]
+        public void GuardarLogError(string pError, string pRutaFicheroError = null, bool pYaEnviado = false, string pTipoError = "-")
+        {
+            try
+            {
+                pRutaFicheroError = ObtenerRutaFichero(pRutaFicheroError, LogLevel.Error);
+
+                string mensajeLog = PrepararMensajeLog(pError, pTipoError);
+                string lineaLog = $"[{DateTime.Now}] {mensajeLog}";
+
+                //Añado el error al fichero
+                EscribirLogEnFichero(pRutaFicheroError, lineaLog);
+
+                if (!pYaEnviado && !UBICACIONLOGS.Equals(UtilTelemetry.UbicacionLogsYTrazas.Archivo) && UtilTelemetry.EstaConfiguradaTelemetria)
+                {
+                    try
+                    {
+                        _utilTelemetry.EnviarTelemetriaExcepcion(new Exception(), pError);
+                    }
+                    catch
+                    { }
+                }
+
+                if (!pYaEnviado)
+                {
+                    //Envia el error al servidor Logstash
+                    EnviarLogLogstash(null, pError);
+                }
+            }
+            catch
+            {
+            }
+        }
+
+        /// <summary>
+        /// Guarda el log de error
+        /// </summary>
+        public void GuardarLogError(string pError, Microsoft.Extensions.Logging.ILogger pLogger, string pRutaFicheroError = null, bool pYaEnviado = false, string pTipoError = "-")
+        {
+            try
+            {
+                pRutaFicheroError = ObtenerRutaFichero(pRutaFicheroError, LogLevel.Error);
+
+                string mensajeLog = PrepararMensajeLog(pError, pTipoError);
+                string lineaLog = $"[{DateTime.Now}] {mensajeLog}";
+                //Escribo el error
+                pLogger.LogError(lineaLog);
+
+                //Añado el error al fichero
+                EscribirLogEnFichero(pRutaFicheroError, lineaLog);
+
+                if (!pYaEnviado && !UBICACIONLOGS.Equals(UtilTelemetry.UbicacionLogsYTrazas.Archivo) && UtilTelemetry.EstaConfiguradaTelemetria)
+                {
+                    try
+                    {
+                        _utilTelemetry.EnviarTelemetriaExcepcion(new Exception(), pError);
+                    }
+                    catch
+                    { }
+                }
+
+                if (!pYaEnviado)
+                {
+                    //Envia el error al servidor Logstash
+                    EnviarLogLogstash(null, pError);
+                }
+            }
+            catch
+            {
+            }
+        }
+
+        /// <summary>
+        /// Escribe unan entrada en el log con el nivel CRITICAL
+        /// </summary>
+        /// <param name="pMensaje">Mensaje a insertar en el log</param>
+        /// <param name="pLogger">Implementacion del sistema de registros</param>
+        public void GuardarLogCritical(string pMensaje, Microsoft.Extensions.Logging.ILogger pLogger)
+        {
+            try
+            {
+                string rutaFichero = ObtenerRutaFichero(null, LogLevel.Critical);
+
+                string mensajeLog = PrepararMensajeLog(pMensaje, string.Empty);
+                string lineaLog = $"[{DateTime.Now}] {mensajeLog}";
+
+                //Escribo el error
+                pLogger.LogCritical(mensajeLog);
+
+                //Añado el error al fichero
+                EscribirLogEnFichero(rutaFichero, lineaLog);
+            }
+            catch
+            {
+
+            }
+        }
+
+        /// <summary>
+        /// Guarda el log de error
+        /// </summary>
+        /// <param name="pExcepcion">Excepción producida</param>
+        public string GuardarLogErrorView(Exception pExcepcion)
+        {
+            GuardarLogError(pExcepcion, null);
+            return string.Empty;
+        }
+
+
         public void GuardarLogErrorAJAX(string pError)
         {
-            GuardarLogError(pError, Path.Combine(RUTA_DIRECTORIO_ERROR, $"errorAJAX_{DateTime.Now.ToString("yyyy-MM-dd")}.log"), true);
+            GuardarLogError(pError, mlogger ,Path.Combine(RUTA_DIRECTORIO_ERROR, $"errorAJAX_{DateTime.Now.ToString("yyyy-MM-dd")}.log"),true);
         }
 
         /// <summary>
@@ -304,7 +491,7 @@ namespace Es.Riam.Gnoss.Util.General
             {
                 try
                 {
-                    GuardarLogError(DevolverCadenaError(pExcepcion, "") + pMensajeExtra, Path.Combine(RUTA_DIRECTORIO_ERROR, $"error_redis_{DateTime.Now.ToString("yyyy-MM-dd")}.log"), true);
+                    GuardarLogError(DevolverCadenaError(pExcepcion, "") + pMensajeExtra,mlogger, Path.Combine(RUTA_DIRECTORIO_ERROR, $"error_redis_{DateTime.Now.ToString("yyyy-MM-dd")}.log"), true);
                 }
                 catch
                 { }
@@ -332,127 +519,7 @@ namespace Es.Riam.Gnoss.Util.General
         /// </summary>
         public void GuardarLogConsultaCostosa(string pError)
         {
-            GuardarLogError(pError, Path.Combine(RUTA_DIRECTORIO_ERROR, $"consulta_costosa_{DateTime.Now.ToString("yyyy-MM-dd")}.log"));
-        }
-
-        /// <summary>
-        /// Guarda el log de error
-        /// </summary>
-        public void GuardarLogError(string pError, string pRutaFicheroError = null, bool pYaEnviado = false, string pTipoError = "-")
-        {
-            try
-            {
-                if (string.IsNullOrEmpty(pRutaFicheroError))
-                {
-                    pRutaFicheroError = Path.Combine(RUTA_DIRECTORIO_ERROR, $"error_{DateTime.Now.ToString("yyyy-MM-dd")}.log");
-                }
-
-                bool ficheroCienMegas = false;
-                string rutaFicheroErrorLast = Path.Combine(RUTA_DIRECTORIO_ERROR, $"error_{DateTime.Now.ToString("yyyy-MM-dd")}{ULTIMO}.log");
-
-                FileInfo fichero = new FileInfo(pRutaFicheroError);
-                if (fichero.Name.Equals(pRutaFicheroError))
-                {
-                    pRutaFicheroError = Path.Combine(RUTA_DIRECTORIO_ERROR, pRutaFicheroError.TrimStart('/').TrimStart('\\'));
-                    fichero = new FileInfo(pRutaFicheroError);
-                }
-
-                FileInfo ficheroGiga = new FileInfo(rutaFicheroErrorLast);
-                if (ficheroGiga.Name.Equals(rutaFicheroErrorLast))
-                {
-                    pRutaFicheroError = Path.Combine(RUTA_DIRECTORIO_ERROR, rutaFicheroErrorLast.TrimStart('/').TrimStart('\\'));
-                    ficheroGiga = new FileInfo(rutaFicheroErrorLast);
-                }
-                //Comprobar si existe el fichero de 1 Gb para solo almacenar de 100 Mb
-                if (File.Exists(rutaFicheroErrorLast))
-                {
-                    if (ficheroGiga.Length > TAMAÑO_MAXIMO_LOG)
-                    {
-                        ficheroCienMegas = true;
-                    }
-                }
-
-                if (!Directory.Exists(fichero.DirectoryName))
-                {
-                    Directory.CreateDirectory(fichero.DirectoryName);
-                }
-
-                //Si el fichero supera el tamaño máximo lo dejo como last y cambio el log
-                if (File.Exists(pRutaFicheroError))
-                {
-                    if (ficheroCienMegas)
-                    {
-                        if (fichero.Length > TAMAÑO_MAXIMO_LOG_DIARIO)
-                        {
-                            fichero.Delete();
-                        }
-                    }
-                    else
-                    {
-                        if (fichero.Length > TAMAÑO_MAXIMO_LOG)
-                        {
-                            fichero.CopyTo(rutaFicheroErrorLast);
-                        }
-                    }
-
-                }
-
-                //Añado el error al fichero
-                using (StreamWriter sw = new StreamWriter(pRutaFicheroError, true, Encoding.Default))
-                {
-                    StringBuilder sb = new StringBuilder();
-                    sb.Append($"[{DateTime.Now}] {pError.TrimEnd()} \"{pTipoError.TrimEnd()}\"");
-
-                    try
-                    {
-                        if (_httpContextAccessor != null && _httpContextAccessor.HttpContext != null && _httpContextAccessor.HttpContext.Request != null)
-                        {
-
-                            //sw.WriteLine(HttpContext.Current.Request.Url.ToString());
-                            sb.Append($" \"{_httpContextAccessor.HttpContext.Request.Path.ToString()}\"");
-                            sb.Append($" ''");
-                            if (_httpContextAccessor.HttpContext.Request.Headers.Keys.Count == 0)
-                            {
-                                sb.Append($"-");
-                            }
-                            foreach (string key in _httpContextAccessor.HttpContext.Request.Headers.Keys)
-                            {
-                                sb.Append($" {key}: {_httpContextAccessor.HttpContext.Request.Headers[key]}");
-                            }
-                            sb.Append($" ''");
-                        }
-                        else
-                        {
-                            sb.Append($" \"-\"");
-                            sb.Append($" '-'");
-                        }
-                    }
-                    catch { }
-                    string error = sb.ToString().Replace('\r', ' ').Replace('\n', ' ');
-                    sw.WriteLine(error);
-                    Console.WriteLine(error);
-                    //sw.WriteLine(Environment.NewLine + Environment.NewLine + "___________________________________________________________________________________________" + Environment.NewLine + Environment.NewLine + Environment.NewLine);
-                }
-
-                if (!pYaEnviado && !UBICACIONLOGS.Equals(UtilTelemetry.UbicacionLogsYTrazas.Archivo) && UtilTelemetry.EstaConfiguradaTelemetria)
-                {
-                    try
-                    {
-                        _utilTelemetry.EnviarTelemetriaExcepcion(new Exception(), pError);
-                    }
-                    catch
-                    { }
-                }
-
-                if (!pYaEnviado)
-                {
-                    //Envia el error al servidor Logstash
-                    EnviarLogLogstash(null, pError);
-                }
-            }
-            catch
-            {
-            }
+            GuardarLogError(pError,mlogger ,Path.Combine(RUTA_DIRECTORIO_ERROR, $"consulta_costosa_{DateTime.Now.ToString("yyyy-MM-dd")}.log"));
         }
 
         /// <summary>
@@ -466,7 +533,7 @@ namespace Es.Riam.Gnoss.Util.General
             string identidadUsuario = "";
             if (_usuario != null && _usuario.UsuarioActual != null)
             {
-                identidadUsuario = "\"Versión Gnoss:   " + pVersion + Environment.NewLine + Environment.NewLine + "UsuarioID: " + _usuario.UsuarioActual.UsuarioID.ToString() + " IdentidadID: " + _usuario.UsuarioActual.IdentidadID.ToString() + " ProyectoID: " + _usuario.UsuarioActual.ProyectoID.ToString()+"\" ";
+                identidadUsuario = "\"Versión Gnoss:   " + pVersion + Environment.NewLine + Environment.NewLine + "UsuarioID: " + _usuario.UsuarioActual.UsuarioID.ToString() + " IdentidadID: " + _usuario.UsuarioActual.IdentidadID.ToString() + " ProyectoID: " + _usuario.UsuarioActual.ProyectoID.ToString() + "\" ";
             }
             else
             {
@@ -476,6 +543,107 @@ namespace Es.Riam.Gnoss.Util.General
             return identidadUsuario + DevolverCadenaErrorExcepcion(pExcepcion);
         }
 
+        private string ObtenerRutaFichero(string pRutaFicheroError, LogLevel pTipoLog)
+        {
+            string ficheroPorDefecto = (pTipoLog == LogLevel.Error || pTipoLog == LogLevel.Critical) ? "error" : "log";
+            if (string.IsNullOrEmpty(pRutaFicheroError))
+            {
+                pRutaFicheroError = Path.Combine(RUTA_DIRECTORIO_ERROR, $"{ficheroPorDefecto}_{DateTime.Now.ToString("yyyy-MM-dd")}.log");
+            }
+            bool ficheroCienMegas = false;
+            string rutaFicheroErrorLast = Path.Combine(RUTA_DIRECTORIO_ERROR, $"{ficheroPorDefecto}_{DateTime.Now.ToString("yyyy-MM-dd")}{ULTIMO}.log");
+
+            FileInfo fichero = new FileInfo(pRutaFicheroError);
+            if (fichero.Name.Equals(pRutaFicheroError))
+            {
+                pRutaFicheroError = Path.Combine(RUTA_DIRECTORIO_ERROR, pRutaFicheroError.TrimStart('/').TrimStart('\\'));
+                fichero = new FileInfo(pRutaFicheroError);
+            }
+
+            FileInfo ficheroGiga = new FileInfo(rutaFicheroErrorLast);
+            if (ficheroGiga.Name.Equals(rutaFicheroErrorLast))
+            {
+                pRutaFicheroError = Path.Combine(RUTA_DIRECTORIO_ERROR, rutaFicheroErrorLast.TrimStart('/').TrimStart('\\'));
+                ficheroGiga = new FileInfo(rutaFicheroErrorLast);
+            }
+            //Comprobar si existe el fichero de 1 Gb para solo almacenar de 100 Mb
+            if (File.Exists(rutaFicheroErrorLast))
+            {
+                if (ficheroGiga.Length > TAMAÑO_MAXIMO_LOG)
+                {
+                    ficheroCienMegas = true;
+                }
+            }
+
+            if (!Directory.Exists(fichero.DirectoryName))
+            {
+                Directory.CreateDirectory(fichero.DirectoryName);
+            }
+
+            //Si el fichero supera el tamaño máximo lo dejo como last y cambio el log
+            if (File.Exists(pRutaFicheroError))
+            {
+                if (ficheroCienMegas)
+                {
+                    if (fichero.Length > TAMAÑO_MAXIMO_LOG_DIARIO)
+                    {
+                        fichero.Delete();
+                    }
+                }
+                else
+                {
+                    if (fichero.Length > TAMAÑO_MAXIMO_LOG)
+                    {
+                        fichero.CopyTo(rutaFicheroErrorLast);
+                    }
+                }
+
+            }
+            return pRutaFicheroError;
+        }
+
+        private string PrepararMensajeLog(string pMensaje, string pTipoError)
+        {
+
+            StringBuilder sb = new StringBuilder();
+            sb.Append($"{pMensaje?.TrimEnd()} \"{pTipoError?.TrimEnd()}\"");
+
+            try
+            {
+                if (_httpContextAccessor != null && _httpContextAccessor.HttpContext != null && _httpContextAccessor.HttpContext.Request != null)
+                {
+                    //sw.WriteLine(HttpContext.Current.Request.Url.ToString());
+                    sb.Append($" \"{_httpContextAccessor.HttpContext.Request.Path.ToString()}\"");
+
+                    sb.Append($" ''");
+                    if (_httpContextAccessor.HttpContext.Request.Headers.Keys.Count == 0)
+                    {
+                        sb.Append($"-");
+                    }
+                    foreach (string key in _httpContextAccessor.HttpContext.Request.Headers.Keys)
+                    {
+                        sb.Append($" {key}: {_httpContextAccessor.HttpContext.Request.Headers[key]}");
+                    }
+                    sb.Append($" ''");
+                }
+                else
+                {
+                    sb.Append($" \"-\"");
+                    sb.Append($" '-'");
+                }
+            }
+            catch { }
+            string linea = sb.ToString().Replace('\r', ' ').Replace('\n', ' ');
+            return linea;
+        }
+
+        private void EscribirLogEnFichero(string pRutaFicheroError, string lineaLog)
+        {
+            using (StreamWriter sw = new StreamWriter(pRutaFicheroError, true, Encoding.Default))
+            {
+                sw.WriteLine(lineaLog);
+            }
+        }
         private static DatosError GenerarDatosError(Exception pExcepcion, string pMensajeExtra = null)
         {
             DatosError datosError = new DatosError();
@@ -802,9 +970,11 @@ namespace Es.Riam.Gnoss.Util.General
 
         public static void InicializarLogstash(string pEndpoint)
         {
+            // QueueLimitBytes: Limite en bytes que va a guardar los log en memoria
+            // Si es nulo no está limitado
             Log = new LoggerConfiguration()
-                    .WriteTo.Http(pEndpoint, 104857600) // 100Mb
-                    .CreateLogger();
+                .WriteTo.Http(requestUri: pEndpoint, queueLimitBytes: null)
+                .CreateLogger();
         }
 
 
@@ -969,6 +1139,22 @@ namespace Es.Riam.Gnoss.Util.General
 
         public static string IP { get; set; }
         public static int Puerto { get; set; }
+        public string PLATAFORMA
+        {
+            get
+            {
+                return _utilPeticion.ObtenerObjetoDePeticion("PLATAFORMA") as string;
+            }
+            set
+            {
+                _utilPeticion.AgregarObjetoAPeticionActual("PLATAFORMA", value);
+            }
+        }
+
+        public static string RUTA_DIRECTORIO_ERROR
+        {
+            get; set;
+        }
 
         #endregion
 

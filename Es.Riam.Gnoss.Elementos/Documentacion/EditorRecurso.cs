@@ -1,5 +1,6 @@
 using Es.Riam.Gnoss.Util.General;
 using Es.Riam.Gnoss.Util.Seguridad;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -20,8 +21,8 @@ namespace Es.Riam.Gnoss.Elementos.Documentacion
         /// </summary>
         /// <param name="pFilaEditor">Fila del editor</param>
         /// <param name="pGestorDocumental">Gestor documental</param>
-        public EditorRecurso(AD.EntityModel.Models.Documentacion.DocumentoRolIdentidad pFilaEditor, GestorDocumental pGestorDocumental, LoggingService loggingService)
-            : base(pFilaEditor, pGestorDocumental, loggingService)
+        public EditorRecurso(AD.EntityModel.Models.Documentacion.DocumentoRolIdentidad pFilaEditor, GestorDocumental pGestorDocumental)
+            : base(pFilaEditor, pGestorDocumental)
         {
         }
 

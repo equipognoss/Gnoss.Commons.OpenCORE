@@ -1,6 +1,7 @@
 using Es.Riam.AbstractsOpen;
 using Es.Riam.Gnoss.AD.EncapsuladoDatos;
 using Es.Riam.Gnoss.AD.EntityModel;
+using Es.Riam.Gnoss.AD.ParametroAplicacion;
 using Es.Riam.Gnoss.AD.Virtuoso;
 using Es.Riam.Gnoss.Elementos.Voto;
 using Es.Riam.Gnoss.Util.Configuracion;
@@ -8,6 +9,8 @@ using Es.Riam.Gnoss.Util.General;
 using Es.Riam.Util;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Logging;
+using Serilog.Core;
 using System;
 using System.Runtime.Serialization;
 using System.Security.Permissions;
@@ -25,7 +28,8 @@ namespace Es.Riam.Gnoss.Elementos.Comentario
         private GestionComentarios mGestionComentarios;
 
         private EntityContext mEntityContext;
-
+        private ILogger mlogger;
+        private ILoggerFactory mLoggerFactory;
         #endregion
 
         #region Constructores
@@ -33,9 +37,11 @@ namespace Es.Riam.Gnoss.Elementos.Comentario
         /// <summary>
         /// Constructor vacío
         /// </summary>
-        public GestorVotosComentario( LoggingService loggingService, EntityContext entityContext, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication)
-            :base(loggingService, entityContext, configService, servicesUtilVirtuosoAndReplication)
+        public GestorVotosComentario( LoggingService loggingService, EntityContext entityContext, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication, ILogger<GestorVotosComentario> logger, ILoggerFactory loggerFactory)
+            :base(loggingService, entityContext, configService, servicesUtilVirtuosoAndReplication,logger,loggerFactory)
         {
+            mlogger = logger;
+            mLoggerFactory = loggerFactory;
             mEntityContext = entityContext;
         }
 
@@ -44,10 +50,12 @@ namespace Es.Riam.Gnoss.Elementos.Comentario
         /// </summary>
         /// <param name="pVotoDS">Dataset de votos</param>
         /// <param name="pGestionComentarios">Gestor de comentarios</param>
-        public GestorVotosComentario(DataWrapperVoto pVotoDS, GestionComentarios pGestionComentarios,  LoggingService loggingService, EntityContext entityContext, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication) 
-            : base(pVotoDS, loggingService, entityContext, configService, servicesUtilVirtuosoAndReplication)
+        public GestorVotosComentario(DataWrapperVoto pVotoDS, GestionComentarios pGestionComentarios,  LoggingService loggingService, EntityContext entityContext, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication, ILogger<GestorVotosComentario> logger, ILoggerFactory loggerFactory) 
+            : base(pVotoDS, loggingService, entityContext, configService, servicesUtilVirtuosoAndReplication,logger,loggerFactory)
         {
             mGestionComentarios = pGestionComentarios;
+            mlogger = logger;
+            mLoggerFactory = loggerFactory;
         }
 
         /// <summary>

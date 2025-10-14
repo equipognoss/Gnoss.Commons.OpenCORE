@@ -8,6 +8,7 @@ using Es.Riam.Gnoss.AD.ServiciosGenerales;
 using Es.Riam.Gnoss.AD.Virtuoso;
 using Es.Riam.Gnoss.CL;
 using Es.Riam.Gnoss.CL.ServiciosGenerales;
+using Es.Riam.Gnoss.Elementos.Amigos;
 using Es.Riam.Gnoss.Elementos.Identidad;
 using Es.Riam.Gnoss.Elementos.ServiciosGenerales;
 using Es.Riam.Gnoss.Logica.Identidad;
@@ -15,8 +16,10 @@ using Es.Riam.Gnoss.Util.Configuracion;
 using Es.Riam.Gnoss.Util.General;
 using Es.Riam.Gnoss.Web.Controles;
 using Es.Riam.Gnoss.Web.MVC.Models;
+using Es.Riam.Gnoss.Web.MVC.Models.ViewModels;
 using Es.Riam.Util;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -34,21 +37,11 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
 
         protected dynamic ViewBag;
 
-        protected Identidad IdentidadActual;
-        protected Proyecto ProyectoSeleccionado;
-        protected Proyecto ProyectoVirtual;
-
-        protected EntityContext mEntityContext;
-        protected LoggingService mLoggingService;
-        protected VirtuosoAD mVirtuosoAD;
-        protected ConfigService mConfigService;
-        protected IHttpContextAccessor mHttpContextAccessor;
-        protected RedisCacheWrapper mRedisCacheWrapper;
-        protected GnossCache mGnossCache;
         protected EntityContextBASE mEntityContextBASE;
-
-        public ControllerHeadBase(ControllerBaseGnoss pControllerBase, LoggingService loggingService, ConfigService configService, EntityContext entityContext, IHttpContextAccessor httpContextAccessor, RedisCacheWrapper redisCacheWrapper, GnossCache gnossCache, VirtuosoAD virtuosoAD, EntityContextBASE entityContextBASE, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication)
-            : base(loggingService, configService, entityContext, redisCacheWrapper, gnossCache, virtuosoAD, httpContextAccessor, servicesUtilVirtuosoAndReplication)
+        private ILogger mlogger;
+        private ILoggerFactory mLoggerFactory;
+        public ControllerHeadBase(ControllerBaseGnoss pControllerBase, LoggingService loggingService, ConfigService configService, EntityContext entityContext, IHttpContextAccessor httpContextAccessor, RedisCacheWrapper redisCacheWrapper, GnossCache gnossCache, VirtuosoAD virtuosoAD, EntityContextBASE entityContextBASE, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication, ILogger<ControllerHeadBase> logger, ILoggerFactory loggerFactory)
+            : base(loggingService, configService, entityContext, redisCacheWrapper, gnossCache, virtuosoAD, httpContextAccessor, servicesUtilVirtuosoAndReplication,logger,loggerFactory)
         {
             mEntityContextBASE = entityContextBASE;
             mLoggingService = loggingService;
@@ -58,14 +51,11 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
             mRedisCacheWrapper = redisCacheWrapper;
             mHttpContextAccessor = httpContextAccessor;
             mGnossCache = gnossCache;
-
+            mlogger = logger;
+            mLoggerFactory = loggerFactory;
             ControllerBase = pControllerBase;
 
             ViewBag = pControllerBase.ViewBag;
-
-            IdentidadActual = ControllerBase.IdentidadActual;
-            ProyectoSeleccionado = ControllerBase.ProyectoSeleccionado;
-            ProyectoVirtual = ControllerBase.ProyectoVirtual;
         }
 
         public void CargarDatosHead()
@@ -78,7 +68,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
 
             ViewBag.ListaJS = new List<string>();
             ViewBag.BusquedasXml = new List<string>();
-            ViewBag.ListaMetas = new List<KeyValuePair<string, string>>();
+            ViewBag.ListaMetas = new List<ViewMetaData>();
             ViewBag.ListaMetasComplejas = new List<Dictionary<string, string>>();
 
             ObtenerListaInputsHidden();
@@ -156,7 +146,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
                     string grupos = "";
                     string nombres = "";
 
-                    IdentidadCN identCN = new IdentidadCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+                    IdentidadCN identCN = new IdentidadCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<IdentidadCN>(), mLoggerFactory);
                     Dictionary<Guid, string> gruposPerfil = identCN.ObtenerGruposIDParticipaPerfil(IdentidadActual.Clave, IdentidadActual.IdentidadMyGNOSS.Clave);
 
 
@@ -172,7 +162,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
                 }
             }
 
-            ProyectoCL proyCL = new ProyectoCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mVirtuosoAD, mServicesUtilVirtuosoAndReplication);
+            ProyectoCL proyCL = new ProyectoCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mVirtuosoAD, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<ProyectoCL>(), mLoggerFactory);
             DataWrapperUsuario dataWrapperUsuario = proyCL.ObtenerPoliticaCookiesProyecto(ControllerBase.ProyectoSeleccionado.Clave);
             proyCL.Dispose();
 
@@ -297,8 +287,8 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
             
             if(string.IsNullOrEmpty(UrlRedirectLogin))
             {
-                GnossUrlsSemanticas gnossUrlsSemanticas = new GnossUrlsSemanticas(mLoggingService, mEntityContext, mConfigService, mServicesUtilVirtuosoAndReplication);
-                string UrlRedirect = gnossUrlsSemanticas.ObtenerURLComunidad(new Recursos.UtilIdiomas(IdiomaUsuario, mLoggingService, mEntityContext, mConfigService, mRedisCacheWrapper), BaseURLIdioma, ProyectoVirtual.NombreCorto);
+                GnossUrlsSemanticas gnossUrlsSemanticas = new GnossUrlsSemanticas(mLoggingService, mEntityContext, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<GnossUrlsSemanticas>(), mLoggerFactory);
+                string UrlRedirect = gnossUrlsSemanticas.ObtenerURLComunidad(new Recursos.UtilIdiomas(IdiomaUsuario, mLoggingService, mEntityContext, mConfigService, mRedisCacheWrapper, mLoggerFactory.CreateLogger<Recursos.UtilIdiomas>(), mLoggerFactory), BaseURLIdioma, ProyectoVirtual.NombreCorto);
                 ViewBag.UrlActionTwoFactorAuthentication = $"{UrlServicioLogin}/externallogin?loginToken={HttpUtility.UrlEncode(TokenLoginUsuario)}&redirect={UrlRedirect}&proyectoID={ProyectoVirtual.Clave}";
             }
             else
@@ -398,6 +388,18 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
             else
             {
                 ViewBag.ListaInputHidden.Add(new KeyValuePair<string, string>("inpt_matomoConfigurado", "False"));
+            }
+
+            string apiIntegracionContinua = mConfigService.ObtenerUrlApiIntegracionContinua();
+            if (!string.IsNullOrEmpty(apiIntegracionContinua))
+            {
+                ViewBag.ListaInputHidden.Add(new KeyValuePair<string, string>("inpt_apiIntegracionContinua", apiIntegracionContinua));
+            }
+
+            string rutaEjecucionWeb = mConfigService.ObtenerRutaEjecucionWeb();
+            if (!string.IsNullOrEmpty(rutaEjecucionWeb))
+            {
+                ViewBag.ListaInputHidden.Add(new KeyValuePair<string, string>("inpt_rutaEjecucionWeb", rutaEjecucionWeb));
             }
         }
 

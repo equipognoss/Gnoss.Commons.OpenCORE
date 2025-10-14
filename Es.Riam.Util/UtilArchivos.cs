@@ -41,11 +41,11 @@ namespace Es.Riam.Util
     {
         public const string ContentImg = "img";
         public const string ContentImgIconos = "iconos";
-
         public const string ContentImagenes = "imagenes";
+        public const string ContentMiniaturas = "miniaturas";
         public const string ContentImagenesPersonas = "Personas";
         public const string ContentImagenesPersona_Organizacion = "Persona_Organizacion";
-        public const string ContentImagenesOrganizaciones = "Organizaciones";
+        public const string ContentImagenesOrganizaciones = "organizaciones";
         public const string ContentImagenesProyectos = "proyectos";
         public const string ContentImagenesSolicitudes = "solicitudes";
         public const string ContentImagenesCategorias = "categorias";
@@ -58,13 +58,14 @@ namespace Es.Riam.Util
         public const string ContentImgCapSemanticasAntiguo = "capturassemanticas";
         public const string ContentImgCapSemanticas = "capsem";
 
-        public const string ContentDocumentosSem = "docsem";
+		public const string ContentDocumentosSem = "docsem";
         public const string ContentDocumentosSemAntiguo = "DocumentosSemanticos";
 
         public const string ContentOntologias = "Ontologias";
         public const string ContentVideos = "videos";
+        public const string ContentVideosSemanticos = "VideosSemanticos";       
         public const string ContentDLLs = "dll";
-
+        public const string ContentTemporales = "temporales";
         /// <summary>
         /// Content para los documentos que son links.
         /// </summary>

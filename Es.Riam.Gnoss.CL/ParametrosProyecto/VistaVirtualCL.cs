@@ -1,10 +1,14 @@
 ﻿using Es.Riam.AbstractsOpen;
 using Es.Riam.Gnoss.AD.EncapsuladoDatos;
 using Es.Riam.Gnoss.AD.EntityModel;
+using Es.Riam.Gnoss.AD.ParametroAplicacion;
 using Es.Riam.Gnoss.AD.ServiciosGenerales;
 using Es.Riam.Gnoss.Logica.ParametrosProyecto;
+using Es.Riam.Gnoss.Logica.ServiciosGenerales;
 using Es.Riam.Gnoss.Util.Configuracion;
 using Es.Riam.Gnoss.Util.General;
+using Microsoft.Extensions.Logging;
+using Serilog.Core;
 using System;
 
 namespace Es.Riam.Gnoss.CL.ParametrosProyecto
@@ -22,7 +26,8 @@ namespace Es.Riam.Gnoss.CL.ParametrosProyecto
         private EntityContext mEntityContext;
         private LoggingService mLoggingService;
         private GnossCache mGnossCache;
-
+        private ILogger mlogger;
+        private ILoggerFactory mLoggerFactory;
         #endregion
 
         #region Constructores
@@ -30,25 +35,29 @@ namespace Es.Riam.Gnoss.CL.ParametrosProyecto
         /// <summary>
         /// Constructor para VistaVirtualCL
         /// </summary>
-        public VistaVirtualCL(EntityContext entityContext, LoggingService loggingService, GnossCache gnossCache, RedisCacheWrapper redisCacheWrapper, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication)
-            : base(entityContext, loggingService, redisCacheWrapper, configService, servicesUtilVirtuosoAndReplication)
+        public VistaVirtualCL(EntityContext entityContext, LoggingService loggingService, GnossCache gnossCache, RedisCacheWrapper redisCacheWrapper, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication,ILogger<VistaVirtualCL> logger, ILoggerFactory loggerFactory)
+            : base(entityContext, loggingService, redisCacheWrapper, configService, servicesUtilVirtuosoAndReplication,logger,loggerFactory)
         {
             mConfigService = configService;
             mEntityContext = entityContext;
             mLoggingService = loggingService;
             mGnossCache = gnossCache;
+            mlogger = logger;
+            mLoggerFactory = loggerFactory;
         }
 
         /// <summary>
         /// Constructor para VistaVirtualCL con parámetros
         /// </summary>
-        public VistaVirtualCL(string pFicheroConfiguracionBD, string pPoolName, EntityContext entityContext, LoggingService loggingService, GnossCache gnossCache, RedisCacheWrapper redisCacheWrapper, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication)
-            : base(pFicheroConfiguracionBD, pPoolName, entityContext, loggingService, redisCacheWrapper, configService, servicesUtilVirtuosoAndReplication)
+        public VistaVirtualCL(string pFicheroConfiguracionBD, string pPoolName, EntityContext entityContext, LoggingService loggingService, GnossCache gnossCache, RedisCacheWrapper redisCacheWrapper, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication, ILogger<VistaVirtualCL> logger, ILoggerFactory loggerFactory)
+            : base(pFicheroConfiguracionBD, pPoolName, entityContext, loggingService, redisCacheWrapper, configService, servicesUtilVirtuosoAndReplication,logger,loggerFactory)
         {
             mConfigService = configService;
             mEntityContext = entityContext;
             mLoggingService = loggingService;
             mGnossCache = gnossCache;
+            mlogger = logger;
+            mLoggerFactory = loggerFactory;
         }
 
         #endregion
@@ -68,7 +77,7 @@ namespace Es.Riam.Gnoss.CL.ParametrosProyecto
             DataWrapperVistaVirtual vistaVirtualDW = (DataWrapperVistaVirtual)ObtenerObjetoDeCacheLocal(rawKey);
             if (vistaVirtualDW == null)
             {
-                vistaVirtualDW = ObtenerObjetoDeCache(rawKey) as DataWrapperVistaVirtual;
+                vistaVirtualDW = ObtenerObjetoDeCache(rawKey, typeof(DataWrapperVistaVirtual)) as DataWrapperVistaVirtual;
                 if (vistaVirtualDW != null)
                 {
                     vistaVirtualDW.CargaRelacionesPerezosasCache();
@@ -94,7 +103,7 @@ namespace Es.Riam.Gnoss.CL.ParametrosProyecto
 
             if (vistaVirtualDW == null)
             {
-                VistaVirtualCN vistaVirtualCN = new VistaVirtualCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+                VistaVirtualCN vistaVirtualCN = new VistaVirtualCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<VistaVirtualCN>(), mLoggerFactory);
                 vistaVirtualDW = vistaVirtualCN.ObtenerVistasVirtualPorProyectoID(pProyectoID);
                 if (vistaVirtualDW != null)
                 {
@@ -113,14 +122,14 @@ namespace Es.Riam.Gnoss.CL.ParametrosProyecto
 
                 if (vistaVirtualEcosistemaDW == null)
                 {
-                    vistaVirtualEcosistemaDW = ObtenerObjetoDeCache(rawKey2) as DataWrapperVistaVirtual;
+                    vistaVirtualEcosistemaDW = ObtenerObjetoDeCache(rawKey2, typeof(DataWrapperVistaVirtual)) as DataWrapperVistaVirtual;
 
                     AgregarObjetoCacheLocal(ProyectoAD.MetaProyecto, rawKey2, vistaVirtualEcosistemaDW);
                     //AgregarObjetoCacheLocal(pProyectoID, rawKey2, vistaVirtualEcosistemaDW);
                 }
                 if (vistaVirtualEcosistemaDW == null)
                 {
-                    VistaVirtualCN vistaVirtualCN = new VistaVirtualCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+                    VistaVirtualCN vistaVirtualCN = new VistaVirtualCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<VistaVirtualCN>(), mLoggerFactory);
                     vistaVirtualEcosistemaDW = vistaVirtualCN.ObtenerVistasVirtualPorEcosistemaID(pPersonalizacionEcosistemaID);
                     if (vistaVirtualEcosistemaDW != null)
                     {
@@ -254,7 +263,7 @@ namespace Es.Riam.Gnoss.CL.ParametrosProyecto
                 }
                 catch (Exception e)
                 {
-                    mLoggingService.GuardarLogError(e);
+                    mLoggingService.GuardarLogError(e, mlogger);
                 }
             }
         }

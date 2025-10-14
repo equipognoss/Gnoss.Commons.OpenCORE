@@ -1,4 +1,5 @@
 using Es.Riam.Gnoss.Util.General;
+using Microsoft.Extensions.Logging;
 using System;
 
 namespace Es.Riam.Gnoss.Elementos.ServiciosGenerales
@@ -19,7 +20,7 @@ namespace Es.Riam.Gnoss.Elementos.ServiciosGenerales
         /// <summary>
         /// Constructor sin parámetros
         /// </summary>
-        public OrganizacionEmpresa(LoggingService loggingService) : base(loggingService)
+        public OrganizacionEmpresa() : base()
         {
         }
 
@@ -28,8 +29,8 @@ namespace Es.Riam.Gnoss.Elementos.ServiciosGenerales
         /// </summary>
         /// <param name="pOrganizacionEmpresa">Fila de organización empresa</param>
         /// <param name="pGestorOrganizaciones">Gestor de organizaciones</param>
-        public OrganizacionEmpresa(Es.Riam.Gnoss.AD.EntityModel.Models.OrganizacionDS.Organizacion pOrganizacion, Es.Riam.Gnoss.AD.EntityModel.Models.OrganizacionDS.OrganizacionEmpresa pOrganizacionEmpresa, GestionOrganizaciones pGestorOrganizaciones, LoggingService loggingService)
-            : base(pOrganizacion, pGestorOrganizaciones, loggingService)
+        public OrganizacionEmpresa(Es.Riam.Gnoss.AD.EntityModel.Models.OrganizacionDS.Organizacion pOrganizacion, Es.Riam.Gnoss.AD.EntityModel.Models.OrganizacionDS.OrganizacionEmpresa pOrganizacionEmpresa, GestionOrganizaciones pGestorOrganizaciones)
+            : base(pOrganizacion, pGestorOrganizaciones)
         {
             mOrganizacionEmpresa = pOrganizacionEmpresa;
         }

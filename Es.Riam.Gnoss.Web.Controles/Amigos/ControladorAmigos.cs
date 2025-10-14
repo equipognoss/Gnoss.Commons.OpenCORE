@@ -6,6 +6,7 @@ using Es.Riam.Gnoss.AD.EncapsuladoDatos;
 using Es.Riam.Gnoss.AD.EntityModel;
 using Es.Riam.Gnoss.AD.EntityModelBASE;
 using Es.Riam.Gnoss.AD.Identidad;
+using Es.Riam.Gnoss.AD.ParametroAplicacion;
 using Es.Riam.Gnoss.AD.ServiciosGenerales;
 using Es.Riam.Gnoss.AD.Usuarios.Model;
 using Es.Riam.Gnoss.AD.Virtuoso;
@@ -24,8 +25,10 @@ using Es.Riam.Gnoss.Logica.Usuarios;
 using Es.Riam.Gnoss.Util.Configuracion;
 using Es.Riam.Gnoss.Util.General;
 using Es.Riam.Gnoss.UtilServiciosWeb;
+using Es.Riam.Interfaces.InterfacesOpen;
 using Es.Riam.Util;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -42,18 +45,21 @@ namespace Es.Riam.Gnoss.Web.Controles.Amigos
         private RedisCacheWrapper mRedisCacheWrapper;
         private EntityContextBASE mEntityContextBASE;
         private IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication;
-
+        private ILogger mlogger;
+        private ILoggerFactory mLoggerFactory;
         #region Constructor
 
         /// <summary>
         /// Constructor sin parámetros
         /// </summary>
-        public ControladorAmigos(LoggingService loggingService, EntityContext entityContext, ConfigService configService, RedisCacheWrapper redisCacheWrapper, GnossCache gnossCache, EntityContextBASE entityContextBASE, VirtuosoAD virtuosoAD, IHttpContextAccessor httpContextAccessor, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication)
-            : base(loggingService, configService, entityContext, redisCacheWrapper, gnossCache, virtuosoAD, httpContextAccessor, servicesUtilVirtuosoAndReplication)
+        public ControladorAmigos(LoggingService loggingService, EntityContext entityContext, ConfigService configService, RedisCacheWrapper redisCacheWrapper, GnossCache gnossCache, EntityContextBASE entityContextBASE, VirtuosoAD virtuosoAD, IHttpContextAccessor httpContextAccessor, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication, ILogger<ControladorAmigos> logger, ILoggerFactory loggerFactory)
+            : base(loggingService, configService, entityContext, redisCacheWrapper, gnossCache, virtuosoAD, httpContextAccessor, servicesUtilVirtuosoAndReplication,logger,loggerFactory)
         {
             mVirtuosoAD = virtuosoAD;
             mLoggingService = loggingService;
             mEntityContext = entityContext;
+            mlogger = logger;
+            mLoggerFactory = loggerFactory;
             mConfigService = configService;
             mRedisCacheWrapper = redisCacheWrapper;
             mEntityContextBASE = entityContextBASE;
@@ -69,11 +75,11 @@ namespace Es.Riam.Gnoss.Web.Controles.Amigos
         /// <param name="pIdentidad">Identidad a cargar los amigos</param>
         /// <param name="pCargarAmigosIdentidadOrganizacion">TRUE si se deben cargar los amigos de la organización o FALSE si se deben cargar los de la persona</param>
         /// <param name="pSoloComprobar">TRUE si solo se debe comprobar que la clave existe</param>
-        public void CargarAmigos(Identidad pIdentidad, bool pEsAdministradorDeOrganizacion, bool pCargarAmigosIdentidadOrganizacion = true, bool pSoloComprobar = false)
+        public void CargarAmigos(Identidad pIdentidad, bool pEsAdministradorDeOrganizacion, IAvailableServices pAvailableServices, bool pCargarAmigosIdentidadOrganizacion = true, bool pSoloComprobar = false)
         {
             GestionIdentidades gestorIdentidadesAmigos = null;
 
-            AmigosCL amigosCL = new AmigosCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mServicesUtilVirtuosoAndReplication);
+             AmigosCL amigosCL = new AmigosCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<AmigosCL>(), mLoggerFactory);
 
             DataWrapperIdentidad dataWrapperIdentidad = new DataWrapperIdentidad();
             DataWrapperPersona dataWrapperPersona = new DataWrapperPersona();
@@ -93,7 +99,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Amigos
 
             if (!amigosCL.ObtenerAmigos(identidad, dataWrapperIdentidad, dataWrapperPersona, organizacionDW, amigosDW, pCargarAmigosIdentidadOrganizacion, pSoloComprobar))
             {
-                gestorIdentidadesAmigos = CargarAmigosDeBBDD(pIdentidad, pCargarAmigosIdentidadOrganizacion, pEsAdministradorDeOrganizacion);
+                gestorIdentidadesAmigos = CargarAmigosDeBBDD(pIdentidad, pCargarAmigosIdentidadOrganizacion, pEsAdministradorDeOrganizacion, pAvailableServices);
 
                 amigosCL.AgregarAmigos(identidad, gestorIdentidadesAmigos.DataWrapperIdentidad, gestorIdentidadesAmigos.GestorPersonas.DataWrapperPersonas, gestorIdentidadesAmigos.GestorOrganizaciones.OrganizacionDW, gestorIdentidadesAmigos.GestorAmigos.AmigosDW, pCargarAmigosIdentidadOrganizacion);
             }
@@ -139,13 +145,13 @@ namespace Es.Riam.Gnoss.Web.Controles.Amigos
         /// <param name="pIdentidad"></param>
         /// <param name="pCargarAmigosIdentidadOrganizacion"></param>
         /// <returns></returns>
-        private GestionIdentidades CargarAmigosDeBBDD(Identidad pIdentidad, bool pCargarAmigosIdentidadOrganizacion, bool pEsAdministradorDeOrganizacion)
+        private GestionIdentidades CargarAmigosDeBBDD(Identidad pIdentidad, bool pCargarAmigosIdentidadOrganizacion, bool pEsAdministradorDeOrganizacion, IAvailableServices pAvailableServices)
         {
             mEntityContext.UsarEntityCache = true;
             GestionIdentidades gestorIdentidadesAmigos = null;
             try
             {
-                AmigosCN amigosCN = new AmigosCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+                AmigosCN amigosCN = new AmigosCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<AmigosCN>(), mLoggerFactory);
 
                 DataWrapperIdentidad dataWrapperIdentidad = new DataWrapperIdentidad();
                 DataWrapperPersona dataWrapperPersona = new DataWrapperPersona();
@@ -168,7 +174,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Amigos
                 {
                     if (pIdentidad.IdentidadOrganizacion == null && pIdentidad.OrganizacionID.HasValue)
                     {
-                        IdentidadCN IdentidadCN = new IdentidadCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+                        IdentidadCN IdentidadCN = new IdentidadCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<IdentidadCN>(), mLoggerFactory);
                         gestorIdentidadesAmigos.DataWrapperIdentidad.Merge(IdentidadCN.ObtenerPerfilDeOrganizacion(pIdentidad.OrganizacionID.Value));
                         IdentidadCN.Dispose();
 
@@ -248,7 +254,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Amigos
 
 
                 // Cargar las identidades de los amigos en el gestor
-                IdentidadCN identidadCN = new IdentidadCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+                IdentidadCN identidadCN = new IdentidadCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<IdentidadCN>(), mLoggerFactory);
                 dataWrapperIdentidad = identidadCN.ObtenerIdentidadesPorID(listaIdentidades, true);
                 gestorIdentidadesAmigos.DataWrapperIdentidad.Merge(dataWrapperIdentidad);
                 identidadCN.Dispose();
@@ -257,7 +263,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Amigos
                 // Cargar las personas y organizaciones
                 dataWrapperPersona = new DataWrapperPersona();
                 organizacionDW = new DataWrapperOrganizacion();
-                UtilServicioResultados utilServicioResultados = new UtilServicioResultados(mLoggingService, mEntityContext, mConfigService, mRedisCacheWrapper, mVirtuosoAD, mServicesUtilVirtuosoAndReplication);
+                UtilServicioResultados utilServicioResultados = new UtilServicioResultados(mLoggingService, mEntityContext, mConfigService, mRedisCacheWrapper, mVirtuosoAD, mServicesUtilVirtuosoAndReplication, pAvailableServices, mLoggerFactory.CreateLogger<UtilServicioResultados>(), mLoggerFactory);
                 utilServicioResultados.ObtenerPersonasYOrgDeIdentidades(gestorIdentidadesAmigos.DataWrapperIdentidad, dataWrapperPersona, organizacionDW, true);
 
                 //gestorIdentidadesAmigos.GestorPersonas.GestorUsuarios = new GestionUsuarios(usuarioCN.ObtenerUsuariosPorIdentidadesCargaLigera(listaIdentidades));
@@ -272,7 +278,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Amigos
                 gestorIdentidadesAmigos.GestorAmigos = new GestionAmigos(amigosDW, gestorIdentidadesAmigos, mLoggingService, mEntityContext, mConfigService, mServicesUtilVirtuosoAndReplication);
                 if (pIdentidad.IdentidadMyGNOSS != null)
                 {
-                    IdentidadCN idenCN = new IdentidadCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+                    IdentidadCN idenCN = new IdentidadCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<IdentidadCN>(), mLoggerFactory);
                     //GUID Identidad: gestorIdentidades.GestorAmigos.ListaPermitidosPorOrg[0]
                     //IDENTIDAD gestorIdentidades.ListaIdentidades[gestorIdentidades.GestorAmigos.listaPermitidosPorOrg[0]]
                     gestorIdentidadesAmigos.GestorAmigos.ListaPermitidosPorOrg = idenCN.ObtenerListaIdentidadesPermitidasPorOrg(pIdentidad.IdentidadMyGNOSS.Clave);
@@ -333,10 +339,10 @@ namespace Es.Riam.Gnoss.Web.Controles.Amigos
             if (CargarIdentidadesDeProyectosPrivadosComoAmigos)
             {
                 DataWrapperIdentidad dataWrapperIdentidad = new DataWrapperIdentidad();
-                AmigosCL amigosCL = new AmigosCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mServicesUtilVirtuosoAndReplication);
+                AmigosCL amigosCL = new AmigosCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<AmigosCL>(), mLoggerFactory);
                 if (!amigosCL.ObtenerAmigosEIdentidadesEnMisProyectosPrivados(identidad, dataWrapperIdentidad, pCargarAmigosIdentidadOrganizacion, pSoloComprobar))
                 {
-                    IdentidadCN identidadCN = new IdentidadCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+                    IdentidadCN identidadCN = new IdentidadCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<IdentidadCN>(), mLoggerFactory);
 
                     List<Guid> identEnMisProyPriv = identidadCN.ObtenerIdentidadesIDEnMisProyectosPrivados(identidad);
 
@@ -394,7 +400,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Amigos
         /// <param name="pIdentidadID">Identificador de la identidad</param>
         public void InvalidarAmigosIdentidad(Guid pIdentidadID)
         {
-            AmigosCL amigosCL = new AmigosCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mServicesUtilVirtuosoAndReplication);
+            AmigosCL amigosCL = new AmigosCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<AmigosCL>(), mLoggerFactory);
             amigosCL.InvalidarAmigos(pIdentidadID);
         }
         /// <summary>
@@ -403,7 +409,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Amigos
         /// <param name="newGuid"></param>
         private void InvalidarCacheLocalAutocompletar(Guid pGuid)
         {
-            AmigosCL amigosCL = new AmigosCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mServicesUtilVirtuosoAndReplication);
+            AmigosCL amigosCL = new AmigosCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<AmigosCL>(), mLoggerFactory);
             amigosCL.AgregarCacheAutocompletarInvalidar(pGuid);
         }
 
@@ -415,16 +421,16 @@ namespace Es.Riam.Gnoss.Web.Controles.Amigos
         public GestionIdentidades ObtenerGestorIdentidadesMiembrosOrganizacion(Guid pOrganizacionID)
         {
             List<Guid> listaIdentidades = new List<Guid>();
-            DataWrapperIdentidad idnTermporalDW = new IdentidadCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication).ObtenerIdentidadesDeOrganizacionYEmpleados(pOrganizacionID);
+            DataWrapperIdentidad idnTermporalDW = new IdentidadCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<IdentidadCN>(), mLoggerFactory).ObtenerIdentidadesDeOrganizacionYEmpleados(pOrganizacionID);
 
             foreach (AD.EntityModel.Models.IdentidadDS.Identidad filaIdentidad in idnTermporalDW.ListaIdentidad)
             {
                 listaIdentidades.Add(filaIdentidad.IdentidadID);
             }
 
-            DataWrapperOrganizacion orgTemporalDW = new OrganizacionCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication).ObtenerOrganizacionesPorIdentidadesCargaLigera(listaIdentidades);
+            DataWrapperOrganizacion orgTemporalDW = new OrganizacionCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<OrganizacionCN>(), mLoggerFactory).ObtenerOrganizacionesPorIdentidadesCargaLigera(listaIdentidades);
             DataWrapperPersona dataWrapperPersona = new DataWrapperPersona();
-            dataWrapperPersona = new PersonaCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication).ObtenerPersonasPorIdentidadesCargaLigera(listaIdentidades);
+            dataWrapperPersona = new PersonaCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<PersonaCN>(), mLoggerFactory).ObtenerPersonasPorIdentidadesCargaLigera(listaIdentidades);
 
             return new GestionIdentidades(idnTermporalDW, new GestionPersonas(dataWrapperPersona, mLoggingService, mEntityContext), new GestionOrganizaciones(orgTemporalDW, mLoggingService, mEntityContext), mLoggingService, mEntityContext, mConfigService, mServicesUtilVirtuosoAndReplication);
         }
@@ -457,7 +463,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Amigos
             if (idIdentidadOrganizacion.Equals(Guid.Empty))
             {
                 // En caso de que no estén, se cargan de la base de datos su identidad y la de sus empleados
-                IdentidadCN identidadCN = new IdentidadCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+                IdentidadCN identidadCN = new IdentidadCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<IdentidadCN>(), mLoggerFactory);
                 pGestorIdentidades.DataWrapperIdentidad.Merge(identidadCN.ObtenerIdentidadesDeOrganizacionYEmpleados(pOrganizacionID));
                 identidadCN.Dispose();
 
@@ -480,7 +486,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Amigos
             //Se añaden más abajo, es necesario hacer esto aquí¿?
 
             // Crear un gestor de amigos donde almacenar todos los cambios
-            AmigosCN amigosCN = new AmigosCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+            AmigosCN amigosCN = new AmigosCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<AmigosCN>(), mLoggerFactory);
             DataWrapperAmigos dataWrapperAmigos = amigosCN.CargarAmigosCompleto(pIdentidadID);
             GestionAmigos gestorAmigos = new GestionAmigos(dataWrapperAmigos, pGestorIdentidades, mLoggingService, mEntityContext, mConfigService, mServicesUtilVirtuosoAndReplication);
 
@@ -494,7 +500,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Amigos
                 Identidad identidadOrganizacion = pGestorIdentidades.ListaIdentidades[idIdentidadOrganizacion];
 
                 // Obtener por si no estuvieran cargado, todos los perfiles de la persona
-                IdentidadCN identidadCN = new IdentidadCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+                IdentidadCN identidadCN = new IdentidadCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<IdentidadCN>(), mLoggerFactory);
                 pGestorIdentidades.DataWrapperIdentidad.Merge(identidadCN.ObtenerPerfilesDePersona(identidadUsuario.PerfilUsuario.PersonaID.Value, false, identidadUsuario.Clave));
                 identidadCN.Dispose();
 
@@ -567,15 +573,15 @@ namespace Es.Riam.Gnoss.Web.Controles.Amigos
             #region Agregamos al profesor y la organizacion como contacos
 
             //Si es una clase, hay que hacer contactos al profesor y al alumno:
-            if (new OrganizacionCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mServicesUtilVirtuosoAndReplication).ComprobarOrganizacionEsClase(pOrganizacionID))
+            if (new OrganizacionCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<OrganizacionCL>(), mLoggerFactory).ComprobarOrganizacionEsClase(pOrganizacionID))
             {
-                UsuarioCN usuCN = new UsuarioCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+                UsuarioCN usuCN = new UsuarioCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<UsuarioCN>(), mLoggerFactory);
                 List<UsuarioIdentidadPersona> listaUsuarioIdentidadPersona = usuCN.ObtenerAdministradoresNombreApellidosPorOrganizacion(pOrganizacionID);
 
-                IdentidadCN identCN = new IdentidadCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+                IdentidadCN identCN = new IdentidadCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<IdentidadCN>(), mLoggerFactory);
                 foreach (UsuarioIdentidadPersona filaUsu in listaUsuarioIdentidadPersona)
                 {
-                    PersonaCN perCN = new PersonaCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+                    PersonaCN perCN = new PersonaCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<PersonaCN>(), mLoggerFactory);
                     DataWrapperPersona dataWrapperPersona = perCN.ObtenerPersonaPorUsuario(filaUsu.UsuarioID, false, false);
                     perCN.Dispose();
                     Guid identidadIDProyecto = identCN.ObtenerIdentidadIDDePersonaEnProyecto(ProyectoSeleccionado.Clave, dataWrapperPersona.ListaPersona.First().PersonaID)[0];
@@ -625,13 +631,13 @@ namespace Es.Riam.Gnoss.Web.Controles.Amigos
                     gestorAmigos.CrearFilaAmigo(idIdentidadOrganizacion, pIdentidadID);
                 }
 
-                UsuarioCN usuCN = new UsuarioCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+                UsuarioCN usuCN = new UsuarioCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<UsuarioCN>(), mLoggerFactory);
                 List<UsuarioIdentidadPersona> listaUsuarioIdentidadPersona = usuCN.ObtenerAdministradoresNombreApellidosPorOrganizacion(pOrganizacionID);
 
-                IdentidadCN identCN = new IdentidadCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+                IdentidadCN identCN = new IdentidadCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<IdentidadCN>(), mLoggerFactory);
                 foreach (UsuarioIdentidadPersona filaUsu in listaUsuarioIdentidadPersona)
                 {
-                    PersonaCN perCN = new PersonaCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+                    PersonaCN perCN = new PersonaCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<PersonaCN>(), mLoggerFactory);
                     DataWrapperPersona dataWrapperPersona = perCN.ObtenerPersonaPorUsuario(filaUsu.UsuarioID, false, false);
                     Guid identidadIDProyecto = identCN.ObtenerIdentidadIDDePersonaEnProyecto(ProyectoSeleccionado.Clave, dataWrapperPersona.ListaPersona.First().PersonaID)[0];
                     DataWrapperIdentidad identDW = identCN.ObtenerPerfilesDePersona(dataWrapperPersona.ListaPersona.First().PersonaID, true, identidadIDProyecto);
@@ -717,7 +723,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Amigos
         /// <param name="pPerfiles">Perfiles destinatarios</param>
         public void AgregarNotificacionInvitacionNuevaAPerfiles(List<Guid> pPerfiles)
         {
-            LiveCN liveCN = new LiveCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+            LiveCN liveCN = new LiveCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<LiveCN>(), mLoggerFactory);
             foreach (Guid perfilID in pPerfiles)
             {
                 liveCN.AumentarContadorNuevasInvitaciones(perfilID);
@@ -734,7 +740,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Amigos
         {
             BaseInvitacionesDS baseInvitacionesDS = new BaseInvitacionesDS();
 
-            ProyectoCL proyCL = new ProyectoCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mVirtuosoAD, mServicesUtilVirtuosoAndReplication);
+            ProyectoCL proyCL = new ProyectoCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mVirtuosoAD, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<ProyectoCL>(), mLoggerFactory);
             int id = proyCL.ObtenerTablaBaseProyectoIDProyectoPorID(ProyectoAD.MetaProyecto);
             proyCL.Dispose();
 
@@ -768,7 +774,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Amigos
             #endregion
 
 
-            BaseComunidadCN brComCN = new BaseComunidadCN(mEntityContext, mLoggingService, mEntityContextBASE, mConfigService, mServicesUtilVirtuosoAndReplication);//, -1
+            BaseComunidadCN brComCN = new BaseComunidadCN(mEntityContext, mLoggingService, mEntityContextBASE, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<BaseComunidadCN>(), mLoggerFactory);//, -1
             brComCN.InsertarFilasEnRabbit("ColaTagsInvitaciones", baseInvitacionesDS);
             brComCN.Dispose();
 
@@ -792,7 +798,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Amigos
         /// <param name="pPerfilID">PerfilID</param>
         public void AgregarNotificacionInvitacionLeidaAPerfil(Guid pPerfilID, int pNumDisminucion)
         {
-            LiveCN liveCN = new LiveCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+            LiveCN liveCN = new LiveCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<LiveCN>(), mLoggerFactory);
             for (int i = 0; i < pNumDisminucion; i++)
             {
                 liveCN.DisminuirContadoInvitacionesLeidas(pPerfilID);
@@ -806,7 +812,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Amigos
         /// <param name="pPerfilID">ID del perfil</param>
         public void ResetearContadorNuevasInvitaciones(Guid pPerfilID)
         {
-            LiveCN liveCN = new LiveCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+            LiveCN liveCN = new LiveCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<LiveCN>(), mLoggerFactory);
             liveCN.ResetearContadorNuevasInvitaciones(pPerfilID);
             liveCN.Dispose();
         }

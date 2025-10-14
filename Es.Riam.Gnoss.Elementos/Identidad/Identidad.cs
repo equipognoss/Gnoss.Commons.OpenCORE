@@ -4,6 +4,7 @@ using Es.Riam.Gnoss.AD.EntityModel;
 using Es.Riam.Gnoss.AD.EntityModel.Models.IdentidadDS;
 using Es.Riam.Gnoss.AD.EntityModel.Models.OrganizacionDS;
 using Es.Riam.Gnoss.AD.Identidad;
+using Es.Riam.Gnoss.AD.ParametroAplicacion;
 using Es.Riam.Gnoss.AD.ServiciosGenerales;
 using Es.Riam.Gnoss.AD.Usuarios;
 using Es.Riam.Gnoss.Elementos.Amigos;
@@ -15,6 +16,7 @@ using Es.Riam.Gnoss.Logica.ServiciosGenerales;
 using Es.Riam.Gnoss.Util.Configuracion;
 using Es.Riam.Gnoss.Util.General;
 using Es.Riam.Util;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -78,7 +80,6 @@ namespace Es.Riam.Gnoss.Elementos.Identidad
         private EntityContext mEntityContext;
         private ConfigService mConfigService;
         private IServicesUtilVirtuosoAndReplication mServicesUtilVirtuosoAndReplication;
-
         #endregion
 
         #region Constructor
@@ -89,12 +90,11 @@ namespace Es.Riam.Gnoss.Elementos.Identidad
         /// <param name="pPerfil">Perfil de la identidad</param>
         /// <param name="pFilaIdentidad">Fila de la identidad</param>
         public Identidad(AD.EntityModel.Models.IdentidadDS.Identidad pFilaIdentidad, Perfil pPerfil, LoggingService loggingService, EntityContext entityContext, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication)
-            : base(pFilaIdentidad, pPerfil.GestorIdentidades, loggingService)
+            : base(pFilaIdentidad, pPerfil.GestorIdentidades)
         {
             mLoggingService = loggingService;
             mEntityContext = entityContext;
             mConfigService = configService;
-
             mPerfil = pPerfil;
             mServicesUtilVirtuosoAndReplication = servicesUtilVirtuosoAndReplication;
         }
@@ -752,7 +752,7 @@ namespace Es.Riam.Gnoss.Elementos.Identidad
 
                     if (string.IsNullOrEmpty(urlFoto))
                     {
-                        IdentidadCN identCN = new IdentidadCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+                        IdentidadCN identCN = new IdentidadCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, null, null);
                         urlFoto = identCN.ObtenerSiIdentidadTieneFoto(Clave, Tipo);
                         identCN.Dispose();
                     }
@@ -878,18 +878,16 @@ namespace Es.Riam.Gnoss.Elementos.Identidad
                         AD.EntityModel.Models.IdentidadDS.Perfil perfilOrganizacion = GestorIdentidades.DataWrapperIdentidad.ListaPerfil.FirstOrDefault(perfilOrg => perfilOrg.OrganizacionID.HasValue && !perfilOrg.PersonaID.HasValue && perfilOrg.OrganizacionID.Value.Equals(OrganizacionID.Value));
                         if (perfilOrganizacion != null)
                         {
-                            List<AD.EntityModel.Models.IdentidadDS.Identidad> filasIdentidadesOrganizacion = null;
-
-                            filasIdentidadesOrganizacion = GestorIdentidades.DataWrapperIdentidad.ListaIdentidad.Where(identidad => identidad.ProyectoID.Equals(FilaIdentidad.ProyectoID) && identidad.PerfilID.Equals(perfilOrganizacion.PerfilID)).ToList();
+                            List<AD.EntityModel.Models.IdentidadDS.Identidad> filasIdentidadesOrganizacion = GestorIdentidades.DataWrapperIdentidad.ListaIdentidad.Where(identidad => identidad.ProyectoID.Equals(FilaIdentidad.ProyectoID) && identidad.PerfilID.Equals(perfilOrganizacion.PerfilID)).ToList();
 
                             //Si no encontramos identidades en el proyecto actual, cogeremos la identidad de MYGNOSS
-                            if (filasIdentidadesOrganizacion == null || filasIdentidadesOrganizacion.Count == 0)
+                            if (filasIdentidadesOrganizacion.Count == 0)
                             {
                                 filasIdentidadesOrganizacion = GestorIdentidades.DataWrapperIdentidad.ListaIdentidad.Where(identidad => identidad.ProyectoID.Equals(ProyectoAD.MetaProyecto) && identidad.PerfilID.Equals(perfilOrganizacion.PerfilID)).ToList();
                             }
 
                             //Si no encontramos identidades en MyGnoss, cogeremos lo que haya (debería estar sólo el proyecto en el que ha entrado el usuario)
-                            if (filasIdentidadesOrganizacion == null || filasIdentidadesOrganizacion.Count == 0)
+                            if (filasIdentidadesOrganizacion.Count == 0)
                             {
                                 filasIdentidadesOrganizacion = GestorIdentidades.DataWrapperIdentidad.ListaIdentidad.Where(identidad => identidad.PerfilID.Equals(perfilOrganizacion.PerfilID)).ToList();
                             }
@@ -1028,7 +1026,7 @@ namespace Es.Riam.Gnoss.Elementos.Identidad
                 }
                 else if (Tipo == TiposIdentidad.Organizacion)
                 {
-                    OrganizacionCN orgCN = new OrganizacionCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+                    OrganizacionCN orgCN = new OrganizacionCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, null, null);
                     DataWrapperOrganizacion orgDW = orgCN.ObtenerOrganizacionDeIdentidad(Clave);
                     if (orgDW.ListaOrganizacion.Count > 0)
                     {
@@ -1041,7 +1039,7 @@ namespace Es.Riam.Gnoss.Elementos.Identidad
                 }
                 else
                 {
-                    PersonaCN perCN = new PersonaCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+                    PersonaCN perCN = new PersonaCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, null, null);
                     AD.EntityModel.Models.PersonaDS.ConfiguracionGnossPersona filaConf = perCN.ObtenerConfiguracionPersonaPorID(perCN.ObtenerPersonaPorIdentidadCargaLigera(Clave).PersonaID);
                     perCN.Dispose();
                     if (filaConf != null)
@@ -1074,7 +1072,7 @@ namespace Es.Riam.Gnoss.Elementos.Identidad
                                 bool visibleMyGnoss = false;
                                 if (IdentidadContacto.Tipo == TiposIdentidad.Organizacion)
                                 {
-                                    OrganizacionCN orgContactoCN = new OrganizacionCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+                                    OrganizacionCN orgContactoCN = new OrganizacionCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, null, null);
                                     DataWrapperOrganizacion orgContactoDW = orgContactoCN.ObtenerOrganizacionDeIdentidad(IdentidadContacto.Clave);
                                     if (orgContactoDW.ListaOrganizacion.Count > 0)
                                     {
@@ -1083,7 +1081,7 @@ namespace Es.Riam.Gnoss.Elementos.Identidad
                                 }
                                 else
                                 {
-                                    PersonaCN perContactoCN = new PersonaCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+                                    PersonaCN perContactoCN = new PersonaCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, null, null);
                                     AD.EntityModel.Models.PersonaDS.Persona filaPersona = perContactoCN.ObtenerPersonaPorIdentidadCargaLigera(Clave);
                                     perContactoCN.Dispose();
 
@@ -1104,7 +1102,7 @@ namespace Es.Riam.Gnoss.Elementos.Identidad
                         //Si el usuario tiene la visibilidad para contactos de contactos
                         if (visibilidad == TipoVisibilidadContactosOrganizacion.ContactosDeContactos)
                         {
-                            AmigosCN amigosCN = new AmigosCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+                            AmigosCN amigosCN = new AmigosCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, null, null);
                             bool esContasctoDeContacto = amigosCN.ComprobarIdentidadAmigosDeAmigos(Clave, identidadMyGnossDeIdentiad.Clave);
                             amigosCN.Dispose();
                             //si el usuario es contacto o contacto de contacto
@@ -1114,7 +1112,7 @@ namespace Es.Riam.Gnoss.Elementos.Identidad
                                 bool visibleMyGnoss = false;
                                 if (IdentidadContacto.Tipo == TiposIdentidad.Organizacion)
                                 {
-                                    OrganizacionCN orgContactoCN = new OrganizacionCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+                                    OrganizacionCN orgContactoCN = new OrganizacionCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, null, null);
                                     DataWrapperOrganizacion orgContactoDW = orgContactoCN.ObtenerOrganizacionDeIdentidad(IdentidadContacto.Clave);
                                     if (orgContactoDW.ListaOrganizacion.Count > 0)
                                     {
@@ -1123,7 +1121,7 @@ namespace Es.Riam.Gnoss.Elementos.Identidad
                                 }
                                 else
                                 {
-                                    PersonaCN perContactoCN = new PersonaCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+                                    PersonaCN perContactoCN = new PersonaCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, null, null);
                                     AD.EntityModel.Models.PersonaDS.Persona filaPers = perContactoCN.ObtenerPersonaPorIdentidadCargaLigera(IdentidadContacto.Clave);
                                     perContactoCN.Dispose();
 
@@ -1149,7 +1147,7 @@ namespace Es.Riam.Gnoss.Elementos.Identidad
             else
             {
 
-                ProyectoCN proyCN = new ProyectoCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+                ProyectoCN proyCN = new ProyectoCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, null, null);
 
                 foreach (Identidad identidad in ListaContactos.Values)
                 {

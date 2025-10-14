@@ -52,7 +52,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Models.ViewModels
         /// <summary>
         /// Lista de vistas personalizables editadas
         /// </summary>
-        public List<string> ListEditedViews { get; set; }
+        public List<EditedView> ListEditedViews { get; set; }
         /// <summary>
         /// Lista de vistas personalizables sin editar
         /// </summary>
@@ -61,7 +61,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Models.ViewModels
         /// <summary>
         /// Lista de formularios semanticos personalizables editados
         /// </summary>
-        public List<string> ListEditedFormsViews { get; set; }
+        public List<EditedView> ListEditedFormsViews { get; set; }
         /// <summary>
         /// Lista de formularios semanticos personalizables sin editar
         /// </summary>
@@ -70,7 +70,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Models.ViewModels
         /// <summary>
         /// Lista de vistas del servicio de resultados editados
         /// </summary>
-        public List<string> ListEditedResultsServiceViews { get; set; }
+        public List<EditedView> ListEditedResultsServiceViews { get; set; }
         /// <summary>
         /// Lista de vistas del servicio de resultados sin editar
         /// </summary>
@@ -79,7 +79,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Models.ViewModels
         /// <summary>
         /// Lista de vistas del servicio de facetas editados
         /// </summary>
-        public List<string> ListEditedFacetedServiceViews { get; set; }
+        public List<EditedView> ListEditedFacetedServiceViews { get; set; }
         /// <summary>
         /// Lista de vistas del servicio de facetas sin editar
         /// </summary>
@@ -121,7 +121,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Models.ViewModels
             /// <summary>
             /// Diccionario clave:identificador de la vista, nombre: nombre de la personalización de la vista
             /// </summary>
-            public Dictionary<Guid, string> CustomizationName { get; set; }
+            public Dictionary<Guid, EditedView> CustomizationName { get; set; }
         }
 
         [Serializable]
@@ -143,10 +143,19 @@ namespace Es.Riam.Gnoss.Web.MVC.Models.ViewModels
             /// Identificador
             /// </summary>
             public Guid CustomizationID { get; set; }
-            /// <summary>
-            /// Datos extra para cargar
-            /// </summary>
-            public Dictionary<ExtraInformation, bool> ExtraInformation { get; set; }
+			/// <summary>
+			/// Fecha de creacion de la vista personalizada
+			/// </summary>
+			public DateTime FechaCreacion { get; set; }
+
+			/// <summary>
+			/// Fecha de modificacion de la vista personalizada
+			/// </summary>
+			public DateTime FechaModificacion { get; set; }
+			/// <summary>
+			/// Datos extra para cargar
+			/// </summary>
+			public Dictionary<ExtraInformation, bool> ExtraInformation { get; set; }
         }
 
         [Serializable]
@@ -168,7 +177,16 @@ namespace Es.Riam.Gnoss.Web.MVC.Models.ViewModels
             /// Identificador
             /// </summary>
             public Guid CustomizationID { get; set; }
-        }
+			/// <summary>
+			/// Fecha de creacion de la vista personalizada
+			/// </summary>
+			public DateTime FechaCreacion { get; set; }
+
+			/// <summary>
+			/// Fecha de modificacion de la vista personalizada
+			/// </summary>
+			public DateTime FechaModificacion { get; set; }
+		}
 
         [Serializable]
         public class CMSGroupComponentViewModel
@@ -189,6 +207,34 @@ namespace Es.Riam.Gnoss.Web.MVC.Models.ViewModels
             /// Identificador
             /// </summary>
             public Guid CustomizationID { get; set; }
+			/// <summary>
+			/// Fecha de creacion de la vista personalizada
+			/// </summary>
+			public DateTime FechaCreacion { get; set; }
+
+			/// <summary>
+			/// Fecha de modificacion de la vista personalizada
+			/// </summary>
+			public DateTime FechaModificacion { get; set; }
+		}
+
+        [Serializable]
+        public class EditedView
+        {
+            /// <summary>
+            /// Nombre de la vista personalizada
+            /// </summary>
+            public string Name { get; set; }
+
+            /// <summary>
+            /// Fecha de creacion de la vista personalizada
+            /// </summary>
+            public DateTime FechaCreacion { get; set; }
+
+            /// <summary>
+            /// Fecha de modificacion de la vista personalizada
+            /// </summary>
+            public DateTime FechaModificacion { get; set; }
         }
     }
 }

@@ -10,6 +10,8 @@
 
 #pragma warning disable 1591
 
+using System;
+
 namespace Es.Riam.Gnoss.AD.BASE_BD.Model {
     
     
@@ -37,7 +39,9 @@ namespace Es.Riam.Gnoss.AD.BASE_BD.Model {
         private ColaTagsComunidadesSearchDataTable tableColaTagsComunidadesSearch;
         
         private ColaTagsComunidadesDataTable tableColaTagsComunidades;
-        
+
+        private ColaFacetasDataTable tableColaFacetas;
+
         private COMUNIDADDataTable tableCOMUNIDAD;
         
         private ColaTagsComPrivDataTable tableColaTagsComPriv;
@@ -96,6 +100,10 @@ namespace Es.Riam.Gnoss.AD.BASE_BD.Model {
                 }
                 if ((ds.Tables["ColaTagsComunidades"] != null)) {
                     base.Tables.Add(new ColaTagsComunidadesDataTable(ds.Tables["ColaTagsComunidades"]));
+                }
+                if ((ds.Tables["ColaFacetas"] != null))
+                {
+                    base.Tables.Add(new ColaFacetasDataTable(ds.Tables["ColaFacetas"]));
                 }
                 if ((ds.Tables["COMUNIDAD"] != null)) {
                     base.Tables.Add(new COMUNIDADDataTable(ds.Tables["COMUNIDAD"]));
@@ -199,7 +207,19 @@ namespace Es.Riam.Gnoss.AD.BASE_BD.Model {
                 return this.tableColaTagsComunidades;
             }
         }
-        
+
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+        [global::System.ComponentModel.Browsable(false)]
+        [global::System.ComponentModel.DesignerSerializationVisibility(global::System.ComponentModel.DesignerSerializationVisibility.Content)]
+        public ColaFacetasDataTable ColaFacetas
+        {
+            get
+            {
+                return this.tableColaFacetas;
+            }
+        }
+
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
         [global::System.ComponentModel.Browsable(false)]
@@ -338,6 +358,10 @@ namespace Es.Riam.Gnoss.AD.BASE_BD.Model {
                 if ((ds.Tables["ColaTagsComunidades"] != null)) {
                     base.Tables.Add(new ColaTagsComunidadesDataTable(ds.Tables["ColaTagsComunidades"]));
                 }
+                if ((ds.Tables["ColaFacetas"] != null))
+                {
+                    base.Tables.Add(new ColaFacetasDataTable(ds.Tables["ColaFacetas"]));
+                }
                 if ((ds.Tables["COMUNIDAD"] != null)) {
                     base.Tables.Add(new COMUNIDADDataTable(ds.Tables["COMUNIDAD"]));
                 }
@@ -428,6 +452,14 @@ namespace Es.Riam.Gnoss.AD.BASE_BD.Model {
                     this.tableColaTagsComunidades.InitVars();
                 }
             }
+            this.tableColaFacetas = ((ColaFacetasDataTable)(base.Tables["ColaFacetas"]));
+            if ((initTable == true))
+            {
+                if ((this.tableColaFacetas != null))
+                {
+                    this.tableColaFacetas.InitVars();
+                }
+            }
             this.tableCOMUNIDAD = ((COMUNIDADDataTable)(base.Tables["COMUNIDAD"]));
             if ((initTable == true)) {
                 if ((this.tableCOMUNIDAD != null)) {
@@ -482,6 +514,8 @@ namespace Es.Riam.Gnoss.AD.BASE_BD.Model {
             base.Tables.Add(this.tableColaTagsComunidadesSearch);
             this.tableColaTagsComunidades = new ColaTagsComunidadesDataTable();
             base.Tables.Add(this.tableColaTagsComunidades);
+            this.tableColaFacetas = new ColaFacetasDataTable();
+            base.Tables.Add(this.tableColaFacetas);
             this.tableCOMUNIDAD = new COMUNIDADDataTable();
             base.Tables.Add(this.tableCOMUNIDAD);
             this.tableColaTagsComPriv = new ColaTagsComPrivDataTable();
@@ -1725,8 +1759,9 @@ namespace Es.Riam.Gnoss.AD.BASE_BD.Model {
                     return this.columnFechaPuestaEnCola;
                 }
             }
-            
-            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+
+
+			[global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
             public global::System.Data.DataColumn FechaProcesadoColumn {
                 get {
@@ -2767,8 +2802,12 @@ namespace Es.Riam.Gnoss.AD.BASE_BD.Model {
             private global::System.Data.DataColumn columnEstadoCargaID;
             
             private global::System.Data.DataColumn columnTipoAccionCarga;
-            
-            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+
+			private global::System.Data.DataColumn columnIdentificadorTarea;
+
+
+
+			[global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
             public ColaTagsComunidadesDataTable() {
                 this.TableName = "ColaTagsComunidades";
@@ -2840,16 +2879,26 @@ namespace Es.Riam.Gnoss.AD.BASE_BD.Model {
                     return this.columnEstado;
                 }
             }
-            
-            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+
+			[global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
             public global::System.Data.DataColumn FechaPuestaEnColaColumn {
                 get {
                     return this.columnFechaPuestaEnCola;
                 }
             }
-            
-            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+
+			[global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+			[global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+			public global::System.Data.DataColumn IdentificadorTareaColumn
+			{
+				get
+				{
+					return this.columnIdentificadorTarea;
+				}
+			}
+
+			[global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
             public global::System.Data.DataColumn FechaProcesadoColumn {
                 get {
@@ -2888,8 +2937,8 @@ namespace Es.Riam.Gnoss.AD.BASE_BD.Model {
                     return this.columnTipoAccionCarga;
                 }
             }
-            
-            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+
+			[global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
             [global::System.ComponentModel.Browsable(false)]
             public int Count {
@@ -2905,8 +2954,8 @@ namespace Es.Riam.Gnoss.AD.BASE_BD.Model {
                     return ((ColaTagsComunidadesRow)(this.Rows[index]));
                 }
             }
-            
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+
+			[global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
             public event ColaTagsComunidadesRowChangeEventHandler ColaTagsComunidadesRowChanging;
             
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
@@ -2980,6 +3029,7 @@ namespace Es.Riam.Gnoss.AD.BASE_BD.Model {
                 this.columnEstadoTags = base.Columns["EstadoTags"];
                 this.columnEstadoCargaID = base.Columns["EstadoCargaID"];
                 this.columnTipoAccionCarga = base.Columns["TipoAccionCarga"];
+                this.columnIdentificadorTarea = base.Columns["IdentificadorTarea"];
             }
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
@@ -2997,7 +3047,7 @@ namespace Es.Riam.Gnoss.AD.BASE_BD.Model {
                 base.Columns.Add(this.columnEstado);
                 this.columnFechaPuestaEnCola = new global::System.Data.DataColumn("FechaPuestaEnCola", typeof(global::System.DateTime), null, global::System.Data.MappingType.Element);
                 base.Columns.Add(this.columnFechaPuestaEnCola);
-                this.columnFechaProcesado = new global::System.Data.DataColumn("FechaProcesado", typeof(global::System.DateTime), null, global::System.Data.MappingType.Element);
+				this.columnFechaProcesado = new global::System.Data.DataColumn("FechaProcesado", typeof(global::System.DateTime), null, global::System.Data.MappingType.Element);
                 base.Columns.Add(this.columnFechaProcesado);
                 this.columnPrioridad = new global::System.Data.DataColumn("Prioridad", typeof(short), null, global::System.Data.MappingType.Element);
                 base.Columns.Add(this.columnPrioridad);
@@ -3007,7 +3057,10 @@ namespace Es.Riam.Gnoss.AD.BASE_BD.Model {
                 base.Columns.Add(this.columnEstadoCargaID);
                 this.columnTipoAccionCarga = new global::System.Data.DataColumn("TipoAccionCarga", typeof(short), null, global::System.Data.MappingType.Element);
                 base.Columns.Add(this.columnTipoAccionCarga);
-                this.Constraints.Add(new global::System.Data.UniqueConstraint("Constraint1", new global::System.Data.DataColumn[] {
+				this.columnIdentificadorTarea = new global::System.Data.DataColumn("IdentificadorTarea", typeof(string), null, global::System.Data.MappingType.Element);
+				base.Columns.Add(this.columnIdentificadorTarea);
+
+				this.Constraints.Add(new global::System.Data.UniqueConstraint("Constraint1", new global::System.Data.DataColumn[] {
                                 this.columnOrdenEjecucion}, true));
                 this.columnOrdenEjecucion.AutoIncrement = true;
                 this.columnOrdenEjecucion.AllowDBNull = false;
@@ -3023,6 +3076,7 @@ namespace Es.Riam.Gnoss.AD.BASE_BD.Model {
                 this.columnPrioridad.DefaultValue = ((short)(0));
                 this.columnEstadoTags.AllowDBNull = false;
                 this.columnEstadoTags.DefaultValue = ((short)(0));
+                this.columnIdentificadorTarea.AllowDBNull = true;
             }
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
@@ -3148,7 +3202,314 @@ namespace Es.Riam.Gnoss.AD.BASE_BD.Model {
                 return type;
             }
         }
-        
+
+
+
+
+
+        /// <summary>
+        ///Represents the strongly named DataTable class.
+        ///</summary>
+        [global::System.Serializable()]
+        [global::System.Xml.Serialization.XmlSchemaProviderAttribute("GetTypedTableSchema")]
+        public partial class ColaFacetasDataTable : global::System.Data.TypedTableBase<ColaFacetasRow>
+        {
+            private global::System.Data.DataColumn columnTablaBaseProyectoID;
+
+            private global::System.Data.DataColumn columnTags;
+
+            private global::System.Data.DataColumn columnTipo;
+
+            private global::System.Data.DataColumn columnFechaPuestaEnCola;
+
+            private global::System.Data.DataColumn columnIdentificadorTarea;
+
+
+
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public ColaFacetasDataTable()
+            {
+                this.TableName = "ColaFacetas";
+                this.BeginInit();
+                this.InitClass();
+                this.EndInit();
+            }
+
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            internal ColaFacetasDataTable(global::System.Data.DataTable table)
+            {
+                this.TableName = table.TableName;
+                if ((table.CaseSensitive != table.DataSet.CaseSensitive))
+                {
+                    this.CaseSensitive = table.CaseSensitive;
+                }
+                if ((table.Locale.ToString() != table.DataSet.Locale.ToString()))
+                {
+                    this.Locale = table.Locale;
+                }
+                if ((table.Namespace != table.DataSet.Namespace))
+                {
+                    this.Namespace = table.Namespace;
+                }
+                this.Prefix = table.Prefix;
+                this.MinimumCapacity = table.MinimumCapacity;
+            }
+
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            protected ColaFacetasDataTable(global::System.Runtime.Serialization.SerializationInfo info, global::System.Runtime.Serialization.StreamingContext context) :
+                    base(info, context)
+            {
+                this.InitVars();
+            }
+
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public global::System.Data.DataColumn TablaBaseProyectoIDColumn
+            {
+                get
+                {
+                    return this.columnTablaBaseProyectoID;
+                }
+            }
+
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public global::System.Data.DataColumn TagsColumn
+            {
+                get
+                {
+                    return this.columnTags;
+                }
+            }
+
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public global::System.Data.DataColumn TipoColumn
+            {
+                get
+                {
+                    return this.columnTipo;
+                }
+            }
+
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public global::System.Data.DataColumn FechaPuestaEnColaColumn
+            {
+                get
+                {
+                    return this.columnFechaPuestaEnCola;
+                }
+            }
+
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public global::System.Data.DataColumn IdentificadorTareaColumn
+            {
+                get
+                {
+                    return this.columnIdentificadorTarea;
+                }
+            }
+
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            [global::System.ComponentModel.Browsable(false)]
+            public int Count
+            {
+                get
+                {
+                    return this.Rows.Count;
+                }
+            }
+
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public ColaFacetasRow this[int index]
+            {
+                get
+                {
+                    return ((ColaFacetasRow)(this.Rows[index]));
+                }
+            }
+
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public void AddColaFacetaRow(ColaFacetasRow row)
+            {
+                this.Rows.Add(row);
+            }
+
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public ColaFacetasRow AddColaFacetaRow(int TablaBaseProyectoID, string Tags, short Tipo, System.DateTime FechaPuestaEnCola)
+            {
+                ColaFacetasRow rowColaFaceta = ((ColaFacetasRow)(this.NewRow()));
+                object[] columnValuesArray = new object[] {
+                        TablaBaseProyectoID,
+                        Tags,
+                        Tipo,
+                        FechaPuestaEnCola,
+                    };
+                rowColaFaceta.ItemArray = columnValuesArray;
+                this.Rows.Add(rowColaFaceta);
+                return rowColaFaceta;
+            }
+
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public override global::System.Data.DataTable Clone()
+            {
+                ColaFacetasDataTable cln = ((ColaFacetasDataTable)(base.Clone()));
+                cln.InitVars();
+                return cln;
+            }
+
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            protected override global::System.Data.DataTable CreateInstance()
+            {
+                return new ColaFacetasDataTable();
+            }
+
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            internal void InitVars()
+            {
+                this.columnTablaBaseProyectoID = base.Columns["TablaBaseProyectoID"];
+                this.columnTags = base.Columns["Tags"];
+                this.columnTipo = base.Columns["Tipo"];
+                this.columnFechaPuestaEnCola = base.Columns["FechaPuestaEnCola"];
+                this.columnIdentificadorTarea = base.Columns["IdentificadorTarea"];
+            }
+
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            private void InitClass()
+            {
+                this.columnTablaBaseProyectoID = new global::System.Data.DataColumn("TablaBaseProyectoID", typeof(int), null, global::System.Data.MappingType.Element);
+                base.Columns.Add(this.columnTablaBaseProyectoID);
+                this.columnTags = new global::System.Data.DataColumn("Tags", typeof(string), null, global::System.Data.MappingType.Element);
+                base.Columns.Add(this.columnTags);
+                this.columnTipo = new global::System.Data.DataColumn("Tipo", typeof(short), null, global::System.Data.MappingType.Element);
+                base.Columns.Add(this.columnTipo);
+                this.columnFechaPuestaEnCola = new global::System.Data.DataColumn("FechaPuestaEnCola", typeof(global::System.DateTime), null, global::System.Data.MappingType.Element);
+                base.Columns.Add(this.columnFechaPuestaEnCola);
+                this.columnIdentificadorTarea = new global::System.Data.DataColumn("IdentificadorTarea", typeof(string), null, global::System.Data.MappingType.Element);
+                base.Columns.Add(this.columnIdentificadorTarea);
+                this.columnTablaBaseProyectoID.AllowDBNull = false;
+                this.columnTags.AllowDBNull = false;
+                this.columnTags.MaxLength = 2147483647;
+                this.columnTipo.AllowDBNull = false;
+                this.columnFechaPuestaEnCola.AllowDBNull = false;
+                this.columnIdentificadorTarea.AllowDBNull = true;
+            }
+
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public ColaFacetasRow NewColaFacetasRow()
+            {
+                return ((ColaFacetasRow)(this.NewRow()));
+            }
+
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            protected override global::System.Data.DataRow NewRowFromBuilder(global::System.Data.DataRowBuilder builder)
+            {
+                return new ColaFacetasRow(builder);
+            }
+
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            protected override global::System.Type GetRowType()
+            {
+                return typeof(ColaFacetasRow);
+            }
+
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public void RemoveColaTagsComunidadesRow(ColaTagsComunidadesRow row)
+            {
+                this.Rows.Remove(row);
+            }
+
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public static global::System.Xml.Schema.XmlSchemaComplexType GetTypedTableSchema(global::System.Xml.Schema.XmlSchemaSet xs)
+            {
+                global::System.Xml.Schema.XmlSchemaComplexType type = new global::System.Xml.Schema.XmlSchemaComplexType();
+                global::System.Xml.Schema.XmlSchemaSequence sequence = new global::System.Xml.Schema.XmlSchemaSequence();
+                BaseRecursosComunidadDS ds = new BaseRecursosComunidadDS();
+                global::System.Xml.Schema.XmlSchemaAny any1 = new global::System.Xml.Schema.XmlSchemaAny();
+                any1.Namespace = "http://www.w3.org/2001/XMLSchema";
+                any1.MinOccurs = new decimal(0);
+                any1.MaxOccurs = decimal.MaxValue;
+                any1.ProcessContents = global::System.Xml.Schema.XmlSchemaContentProcessing.Lax;
+                sequence.Items.Add(any1);
+                global::System.Xml.Schema.XmlSchemaAny any2 = new global::System.Xml.Schema.XmlSchemaAny();
+                any2.Namespace = "urn:schemas-microsoft-com:xml-diffgram-v1";
+                any2.MinOccurs = new decimal(1);
+                any2.ProcessContents = global::System.Xml.Schema.XmlSchemaContentProcessing.Lax;
+                sequence.Items.Add(any2);
+                global::System.Xml.Schema.XmlSchemaAttribute attribute1 = new global::System.Xml.Schema.XmlSchemaAttribute();
+                attribute1.Name = "namespace";
+                attribute1.FixedValue = ds.Namespace;
+                type.Attributes.Add(attribute1);
+                global::System.Xml.Schema.XmlSchemaAttribute attribute2 = new global::System.Xml.Schema.XmlSchemaAttribute();
+                attribute2.Name = "tableTypeName";
+                attribute2.FixedValue = "ColaFacetasDataTable";
+                type.Attributes.Add(attribute2);
+                type.Particle = sequence;
+                global::System.Xml.Schema.XmlSchema dsSchema = ds.GetSchemaSerializable();
+                if (xs.Contains(dsSchema.TargetNamespace))
+                {
+                    global::System.IO.MemoryStream s1 = new global::System.IO.MemoryStream();
+                    global::System.IO.MemoryStream s2 = new global::System.IO.MemoryStream();
+                    try
+                    {
+                        global::System.Xml.Schema.XmlSchema schema = null;
+                        dsSchema.Write(s1);
+                        for (global::System.Collections.IEnumerator schemas = xs.Schemas(dsSchema.TargetNamespace).GetEnumerator(); schemas.MoveNext();)
+                        {
+                            schema = ((global::System.Xml.Schema.XmlSchema)(schemas.Current));
+                            s2.SetLength(0);
+                            schema.Write(s2);
+                            if ((s1.Length == s2.Length))
+                            {
+                                s1.Position = 0;
+                                s2.Position = 0;
+                                for (; ((s1.Position != s1.Length)
+                                            && (s1.ReadByte() == s2.ReadByte()));)
+                                {
+                                    ;
+                                }
+                                if ((s1.Position == s1.Length))
+                                {
+                                    return type;
+                                }
+                            }
+                        }
+                    }
+                    finally
+                    {
+                        if ((s1 != null))
+                        {
+                            s1.Close();
+                        }
+                        if ((s2 != null))
+                        {
+                            s2.Close();
+                        }
+                    }
+                }
+                xs.Add(dsSchema);
+                return type;
+            }
+        }
+
         /// <summary>
         ///Represents the strongly named DataTable class.
         ///</summary>
@@ -5636,7 +5997,7 @@ namespace Es.Riam.Gnoss.AD.BASE_BD.Model {
         }
         
         /// <summary>
-        ///Represents strongly named DataRow class.
+        ///Represents strongly named DataRow class.     
         ///</summary>
         public partial class ColaTagsComunidadesRow : global::System.Data.DataRow {
             
@@ -5714,8 +6075,9 @@ namespace Es.Riam.Gnoss.AD.BASE_BD.Model {
                     this[this.tableColaTagsComunidades.FechaPuestaEnColaColumn] = value;
                 }
             }
-            
-            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+
+
+			[global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
             public System.DateTime FechaProcesado {
                 get {
@@ -5787,8 +6149,37 @@ namespace Es.Riam.Gnoss.AD.BASE_BD.Model {
                     this[this.tableColaTagsComunidades.TipoAccionCargaColumn] = value;
                 }
             }
-            
-            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+
+			[global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+			[global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+			public string IdentificadorTarea
+			{
+				get
+				{
+					try
+					{
+						return ((string)(this[this.tableColaTagsComunidades.IdentificadorTareaColumn]));
+					}
+					catch (global::System.InvalidCastException e)
+					{
+						return string.Empty;
+					}
+					
+				}
+				set
+				{
+                    if (value == null)
+                    {
+						this[this.tableColaTagsComunidades.IdentificadorTareaColumn] = "";
+					}
+                    else
+                    {
+                        this[this.tableColaTagsComunidades.IdentificadorTareaColumn] = value;
+                    }
+				}
+			}
+
+			[global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
             public bool IsFechaProcesadoNull() {
                 return this.IsNull(this.tableColaTagsComunidades.FechaProcesadoColumn);
@@ -5824,7 +6215,115 @@ namespace Es.Riam.Gnoss.AD.BASE_BD.Model {
                 this[this.tableColaTagsComunidades.TipoAccionCargaColumn] = global::System.Convert.DBNull;
             }
         }
-        
+
+
+
+        /// <summary>
+        ///Represents strongly named DataRow class.     
+        ///</summary>
+        public partial class ColaFacetasRow : global::System.Data.DataRow
+        {
+
+            private ColaFacetasDataTable tableColaFacetas;
+
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            internal ColaFacetasRow(global::System.Data.DataRowBuilder rb) :
+                    base(rb)
+            {
+                this.tableColaFacetas = ((ColaFacetasDataTable)(this.Table));
+            }
+
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public int TablaBaseProyectoID
+            {
+                get
+                {
+                    return ((int)(this[this.tableColaFacetas.TablaBaseProyectoIDColumn]));
+                }
+                set
+                {
+                    this[this.tableColaFacetas.TablaBaseProyectoIDColumn] = value;
+                }
+            }
+
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public string Tags
+            {
+                get
+                {
+                    return ((string)(this[this.tableColaFacetas.TagsColumn]));
+                }
+                set
+                {
+                    this[this.tableColaFacetas.TagsColumn] = value;
+                }
+            }
+
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public short Tipo
+            {
+                get
+                {
+                    return ((short)(this[this.tableColaFacetas.TipoColumn]));
+                }
+                set
+                {
+                    this[this.tableColaFacetas.TipoColumn] = value;
+                }
+            }
+
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public System.DateTime FechaPuestaEnCola
+            {
+                get
+                {
+                    return ((global::System.DateTime)(this[this.tableColaFacetas.FechaPuestaEnColaColumn]));
+                }
+                set
+                {
+                    this[this.tableColaFacetas.FechaPuestaEnColaColumn] = value;
+                }
+            }
+
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public string IdentificadorTarea
+            {
+                get
+                {
+                    try
+                    {
+                        return ((string)(this[this.tableColaFacetas.IdentificadorTareaColumn]));
+                    }
+                    catch (global::System.InvalidCastException e)
+                    {
+                        return string.Empty;
+                    }
+
+                }
+                set
+                {
+                    if (value == null)
+                    {
+                        this[this.tableColaFacetas.IdentificadorTareaColumn] = "";
+                    }
+                    else
+                    {
+                        this[this.tableColaFacetas.IdentificadorTareaColumn] = value;
+                    }
+                }
+            }
+        }
+
+
+
+
+
         /// <summary>
         ///Represents strongly named DataRow class.
         ///</summary>

@@ -1,12 +1,14 @@
 ﻿using DotNetOpenAuth.OAuth.ChannelElements;
 using Es.Riam.AbstractsOpen;
 using Es.Riam.Gnoss.AD.EntityModel;
+using Es.Riam.Gnoss.Elementos.Amigos;
 using Es.Riam.Gnoss.LogicaOAuth.OAuth;
 using Es.Riam.Gnoss.OAuthAD;
 using Es.Riam.Gnoss.OAuthAD.OAuth;
 using Es.Riam.Gnoss.OAuthAD.OAuth.EncapsuladoDatos;
 using Es.Riam.Gnoss.Util.Configuracion;
 using Es.Riam.Gnoss.Util.General;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -45,7 +47,8 @@ namespace Es.Riam.Gnoss.Web.UtilOAuth
         private ConfigService mConfigService;
         private EntityContext mEntityContext;
         private IServicesUtilVirtuosoAndReplication mServicesUtilVirtuosoAndReplication;
-
+        private ILogger mlogger;
+        private ILoggerFactory mLoggerFactory;
         #endregion
 
         #region Constructores
@@ -53,7 +56,7 @@ namespace Es.Riam.Gnoss.Web.UtilOAuth
         /// <summary>
         /// Constructor de la clase
         /// </summary>
-        public ControladorTokens(EntityContextOauth entityContextOauth, LoggingService loggingService, EntityContext entityContext, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication)
+        public ControladorTokens(EntityContextOauth entityContextOauth, LoggingService loggingService, EntityContext entityContext, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication, ILogger<ControladorTokens> logger, ILoggerFactory loggerFactory)
         {
             mOAuthDW = new DataWrapperOAuth();
             //mOAuthDW = new OAuthDS();
@@ -63,6 +66,8 @@ namespace Es.Riam.Gnoss.Web.UtilOAuth
             mEntityContext = entityContext;
             mConfigService = configService;
             mServicesUtilVirtuosoAndReplication = servicesUtilVirtuosoAndReplication;
+            mlogger = logger;
+            mLoggerFactory = loggerFactory;
         }
 
         #endregion
@@ -254,7 +259,7 @@ namespace Es.Riam.Gnoss.Web.UtilOAuth
             {
                 if (mOauthCN == null)
                 {
-                    mOauthCN = new OAuthCN("oauth", mEntityContext, mLoggingService, mConfigService, mEntityContextOauth, mServicesUtilVirtuosoAndReplication);
+                    mOauthCN = new OAuthCN("oauth", mEntityContext, mLoggingService, mConfigService, mEntityContextOauth, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<OAuthCN>(), mLoggerFactory);
                 }
 
                 return mOauthCN;

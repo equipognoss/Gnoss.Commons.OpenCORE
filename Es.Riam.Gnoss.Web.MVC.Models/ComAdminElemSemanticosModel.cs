@@ -76,9 +76,9 @@ namespace Es.Riam.Gnoss.Web.MVC.Models
         public Dictionary<string, string> ListaOntologias { get; set; }
 
         /// <summary>
-        /// Tesauros semáticos editables. Url de la ontologia, Source, Nombre del tesauro.
+        /// Tesauros semáticos editables. Url de la ontologia, Source, Objeto con el nombre y fecha de creacion del tesauro.
         /// </summary>
-        public Dictionary<KeyValuePair<string, string>, string> SemanticThesaurusEditables;
+        public Dictionary<KeyValuePair<string, string>, ComAdminSemanticThesaurusData> SemanticThesaurusEditables;
 
         /// <summary>
         /// Modelo para la edición del tesauro de la administración de categorías.
@@ -149,6 +149,21 @@ namespace Es.Riam.Gnoss.Web.MVC.Models
         /// Valores de las propiedades extra de las categorias.
         /// </summary>
         public string ExtraSemanticPropertiesValuesBK { get; set; }
+    }
+    /// <summary>
+    /// Modelo para almacenar la informacion de los tesauros semánticos
+    /// </summary>
+    [Serializable]
+    public class ComAdminSemanticThesaurusData
+    {
+        /// <summary>
+        /// Indica el nombre del tesauro
+        /// </summary>
+        public string Nombre { get; set; }
+        /// <summary>
+        /// Indica la fecha de Creacion del Tesauro
+        /// </summary>
+        public DateTime FechaCreacion { get; set; }
     }
 	[Serializable]
 	/// <summary>

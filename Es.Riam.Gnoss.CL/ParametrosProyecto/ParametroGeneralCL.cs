@@ -1,9 +1,12 @@
 using Es.Riam.AbstractsOpen;
 using Es.Riam.Gnoss.AD.EntityModel;
+using Es.Riam.Gnoss.AD.ParametroAplicacion;
 using Es.Riam.Gnoss.Elementos.ParametroGeneralDSEspacio;
 using Es.Riam.Gnoss.Logica.ParametrosProyecto;
+using Es.Riam.Gnoss.Logica.ServiciosGenerales;
 using Es.Riam.Gnoss.Util.Configuracion;
 using Es.Riam.Gnoss.Util.General;
+using Microsoft.Extensions.Logging;
 using System;
 
 namespace Es.Riam.Gnoss.CL.ParametrosProyecto
@@ -23,7 +26,8 @@ namespace Es.Riam.Gnoss.CL.ParametrosProyecto
         private ConfigService mConfigService;
         private EntityContext mEntityContext;
         private LoggingService mLoggingService;
-
+        private ILogger mlogger;
+        private ILoggerFactory mLoggerFactory;
         #endregion
 
         #region Constructores
@@ -33,23 +37,27 @@ namespace Es.Riam.Gnoss.CL.ParametrosProyecto
         /// </summary>
         /// <param name="pFicheroConfiguracionBD">Fichero de configuración</param>
         /// <param name="pUsarVariableEstatica">Si se están usando hilos con diferentes conexiones: FALSE. En caso contrario TRUE</param>
-        public ParametroGeneralCL(string pFicheroConfiguracionBD, EntityContext entityContext, LoggingService loggingService, RedisCacheWrapper redisCacheWrapper, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication)
-            : base(pFicheroConfiguracionBD, entityContext, loggingService, redisCacheWrapper, configService, servicesUtilVirtuosoAndReplication)
+        public ParametroGeneralCL(string pFicheroConfiguracionBD, EntityContext entityContext, LoggingService loggingService, RedisCacheWrapper redisCacheWrapper, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication, ILogger<ParametroGeneralCL> logger, ILoggerFactory loggerFactory)
+            : base(pFicheroConfiguracionBD, entityContext, loggingService, redisCacheWrapper, configService, servicesUtilVirtuosoAndReplication,logger,loggerFactory)
         {
             mConfigService = configService;
             mEntityContext = entityContext;
             mLoggingService = loggingService;
+            mlogger = logger;
+            mLoggerFactory = loggerFactory;
         }
 
         /// <summary>
         /// Constructor para ParametroGeneralCL
         /// </summary>
-        public ParametroGeneralCL(EntityContext entityContext, LoggingService loggingService, RedisCacheWrapper redisCacheWrapper, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication)
-            : base(entityContext, loggingService, redisCacheWrapper, configService, servicesUtilVirtuosoAndReplication)
+        public ParametroGeneralCL(EntityContext entityContext, LoggingService loggingService, RedisCacheWrapper redisCacheWrapper, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication, ILogger<ParametroGeneralCL> logger, ILoggerFactory loggerFactory)
+            : base(entityContext, loggingService, redisCacheWrapper, configService, servicesUtilVirtuosoAndReplication, logger, loggerFactory)
         {
             mConfigService = configService;
             mEntityContext = entityContext;
             mLoggingService = loggingService;
+            mlogger = logger;
+            mLoggerFactory = loggerFactory;
         }
 
         #endregion
@@ -69,7 +77,7 @@ namespace Es.Riam.Gnoss.CL.ParametrosProyecto
             GestorParametroGeneral paramDS = ObtenerObjetoDeCacheLocal(ObtenerClaveCache(rawKey)) as GestorParametroGeneral;
             if (paramDS == null)
             {
-                paramDS = ObtenerObjetoDeCache(rawKey) as GestorParametroGeneral;
+                paramDS = ObtenerObjetoDeCache(rawKey, typeof(GestorParametroGeneral)) as GestorParametroGeneral;
                 AgregarObjetoCacheLocal(pProyectoID, ObtenerClaveCache(rawKey), paramDS);
             }
 
@@ -104,7 +112,7 @@ namespace Es.Riam.Gnoss.CL.ParametrosProyecto
             if (!pProyectoID.Equals(Guid.Empty))
             {
                 mEntityContext.UsarEntityCache = true;
-                ParametroGeneralCN parametroGeneralCN = new ParametroGeneralCN(mFicheroConfiguracionBD, mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+                ParametroGeneralCN parametroGeneralCN = new ParametroGeneralCN(mFicheroConfiguracionBD, mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<ParametroGeneralCN>(), mLoggerFactory);
                 var param = parametroGeneralCN.ObtenerFilaParametrosGeneralesDeProyecto(pProyectoID);
                 if (param != null)
                 {
@@ -170,7 +178,7 @@ namespace Es.Riam.Gnoss.CL.ParametrosProyecto
             GestorParametroGeneral paramDS = ObtenerObjetoDeCacheLocal(rawKey) as GestorParametroGeneral;
             if (paramDS == null)
             {
-                paramDS = ObtenerObjetoDeCache(rawKey) as GestorParametroGeneral;
+                paramDS = ObtenerObjetoDeCache(rawKey, typeof(GestorParametroGeneral)) as GestorParametroGeneral;
                 AgregarObjetoCacheLocal(pPersonalizacionEcosistemaID, rawKey, paramDS);
             }
 
@@ -180,14 +188,14 @@ namespace Es.Riam.Gnoss.CL.ParametrosProyecto
                 if (!string.IsNullOrEmpty(mFicheroConfiguracionBD))
                 {
                     // Si no está, lo cargo y lo almaceno en la caché
-                    ParametroGeneralCN parametroGeneralCN = new ParametroGeneralCN(mFicheroConfiguracionBD, mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+                    ParametroGeneralCN parametroGeneralCN = new ParametroGeneralCN(mFicheroConfiguracionBD, mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<ParametroGeneralCN>(), mLoggerFactory);
                     paramDS.ListaTextosPersonalizadosPersonalizacion = parametroGeneralCN.ObtenerTextosPersonalizadosPersonalizacionEcosistema(pPersonalizacionEcosistemaID);
                     parametroGeneralCN.Dispose();
                 }
                 else
                 {
                     // Si no está, lo cargo y lo almaceno en la caché
-                    ParametroGeneralCN parametroGeneralCN = new ParametroGeneralCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+                    ParametroGeneralCN parametroGeneralCN = new ParametroGeneralCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<ParametroGeneralCN>(), mLoggerFactory);
                     paramDS.ListaTextosPersonalizadosPersonalizacion = parametroGeneralCN.ObtenerTextosPersonalizadosPersonalizacionEcosistema(pPersonalizacionEcosistemaID);
                     parametroGeneralCN.Dispose();
                 }
@@ -213,14 +221,14 @@ namespace Es.Riam.Gnoss.CL.ParametrosProyecto
 
             if (!tieneImagen.HasValue)
             {
-                tieneImagen = (bool?)ObtenerObjetoDeCache(rawKey);
+                tieneImagen = (bool?)ObtenerObjetoDeCache(rawKey, typeof(bool));
                 AgregarObjetoCacheLocal(pProyectoID, rawKey, tieneImagen);
             }
 
             if (!tieneImagen.HasValue)
             {
                 // Si no está, lo cargo y lo almaceno en la caché
-                ParametroGeneralCN parametroGeneralCN = new ParametroGeneralCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+                ParametroGeneralCN parametroGeneralCN = new ParametroGeneralCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<ParametroGeneralCN>(), mLoggerFactory);
                 tieneImagen = parametroGeneralCN.TieneProyectoImagenHome(pProyectoID);
                 parametroGeneralCN.Dispose();
                 AgregarObjetoCache(rawKey, tieneImagen);

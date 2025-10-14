@@ -14,6 +14,7 @@ using Es.Riam.Gnoss.AD.Identidad;
 using Es.Riam.Gnoss.AD.ServiciosGenerales;
 using Es.Riam.Gnoss.Util.Configuracion;
 using Es.Riam.Gnoss.Util.General;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -915,8 +916,8 @@ namespace Es.Riam.Gnoss.AD.MVC
         /// <summary>
         /// El por defecto, utilizado cuando se requiere el GnossConfig.xml por defecto
         /// </summary>
-        public MVCAD(LoggingService loggingService, EntityContext entityContext, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication)
-            : base(loggingService, entityContext, configService, servicesUtilVirtuosoAndReplication)
+        public MVCAD(LoggingService loggingService, EntityContext entityContext, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication, ILogger<MVCAD> logger, ILoggerFactory loggerFactory)
+            : base(loggingService, entityContext, configService, servicesUtilVirtuosoAndReplication,logger, loggerFactory)
         {
             mEntityContext = entityContext;
         }
@@ -926,8 +927,8 @@ namespace Es.Riam.Gnoss.AD.MVC
         /// </summary>
         /// <param name="pFicheroConfiguracionBD">Ruta del fichero de configuración de conexión a la base de datos</param>
         /// <param name="pUsarVariableEstatica">Si se están usando hilos con diferentes conexiones: FALSE. En caso contrario TRUE</param>
-        public MVCAD(string pFicheroConfiguracionBD, LoggingService loggingService, EntityContext entityContext, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication)
-            : base(pFicheroConfiguracionBD, loggingService, entityContext, configService, servicesUtilVirtuosoAndReplication)
+        public MVCAD(string pFicheroConfiguracionBD, LoggingService loggingService, EntityContext entityContext, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication, ILogger<MVCAD> logger, ILoggerFactory loggerFactory)
+            : base(pFicheroConfiguracionBD, loggingService, entityContext, configService, servicesUtilVirtuosoAndReplication,logger, loggerFactory)
         {
             mEntityContext = entityContext;
         }
@@ -968,7 +969,8 @@ namespace Es.Riam.Gnoss.AD.MVC
                     NumeroOrgRegistradas = item.Proyecto.NumeroOrgRegistradas.Value,
                     NumeroRecursos = item.Proyecto.NumeroRecursos,
                     Tags = item.Proyecto.Tags,
-                    TipoAcceso = item.Proyecto.TipoAcceso
+                    TipoAcceso = item.Proyecto.TipoAcceso,
+                    FechaInicio = item.Proyecto.FechaInicio
                 }).ToList();
 
                 return listaComunidades;
@@ -1251,7 +1253,11 @@ namespace Es.Riam.Gnoss.AD.MVC
                     NumConnexiones = item.Identidad.NumConnexiones,
                     Tags = item.Curriculum != null ? item.Curriculum.Tags : null,
                     FechaNacimiento = item.Persona != null ? item.Persona.FechaNacimiento : null,
-                    TieneEmailTutor = (item.Persona != null && !string.IsNullOrEmpty(item.Persona.EmailTutor)) ? true : false
+                    TieneEmailTutor = (item.Persona != null && !string.IsNullOrEmpty(item.Persona.EmailTutor)) ? true : false,
+                    RecibirNewsLetter = item.Identidad.RecibirNewsLetter,
+                    FechaBaja = item.Identidad.FechaBaja,
+                    FechaExpulsion = item.Identidad.FechaExpulsion,
+                    UsuarioID = item.Persona != null ? item.Persona.UsuarioID : null
                 });
                 return consulta2.ToList();
             }
@@ -1401,10 +1407,9 @@ namespace Es.Riam.Gnoss.AD.MVC
             if (pListaMensajesID.Count > 0)
             {
                 //EntityContext.CorreoInterno.Where(item => pListaMensajesID.Contains(item.CorreoID) && item.EnPapelera.Equals(0) && item.)
+                string consulta = $@"SELECT {IBD.CargarGuid(@"""CorreoInterno"".""CorreoID""")}, {IBD.CargarGuid(@"""CorreoInterno"".""Destinatario""")}, {IBD.CargarGuid(@"""CorreoInterno"".""Autor""")}, ""CorreoInterno"".""Asunto"", ""CorreoInterno"".""Cuerpo"", ""CorreoInterno"".""Fecha"", ""CorreoInterno"".""Leido"", ""CorreoInterno"".""Eliminado"", ""CorreoInterno"".""EnPapelera"", ""CorreoInterno"".""DestinatariosID"", ""CorreoInterno"".""DestinatariosNombres"", ""CorreoInterno"".""ConversacionID"" FROM ""CorreoInterno""";
 
-                string consulta = "SELECT " + IBD.CargarGuid("CorreoInterno.CorreoID") + ", " + IBD.CargarGuid("CorreoInterno.Destinatario") + ", " + IBD.CargarGuid("CorreoInterno.Autor") + ", CorreoInterno.Asunto, CorreoInterno.Cuerpo, CorreoInterno.Fecha, CorreoInterno.Leido, CorreoInterno.Eliminado, CorreoInterno.EnPapelera, CorreoInterno.DestinatariosID, CorreoInterno.DestinatariosNombres, CorreoInterno.ConversacionID FROM CorreoInterno ";
-
-                string where = " WHERE CorreoID IN (";
+                string where = @" WHERE ""CorreoID"" IN (";
                 foreach (Guid idCorreo in pListaMensajesID)
                 {
                     where += "'" + idCorreo.ToString() + "',";
@@ -1416,23 +1421,23 @@ namespace Es.Riam.Gnoss.AD.MVC
                 {
                     if (pTipoBandeja.Value == 0)
                     {
-                        where += " AND EnPapelera=0 AND Destinatario = " + IBD.GuidValor(pIdentidadID);
+                        where += $@" AND ""EnPapelera""='0' AND ""Destinatario"" = {IBD.GuidValor(pIdentidadID)}";
                     }
                     else if (pTipoBandeja.Value == 1)
                     {
-                        where += " AND EnPapelera=0 AND Destinatario = " + IBD.GuidValor(Guid.Empty);
+                        where += $@" AND ""EnPapelera""='0' AND ""Destinatario"" = {IBD.GuidValor(Guid.Empty)}";
                     }
                     else if (pTipoBandeja.Value == 2)
                     {
-                        where += " AND EnPapelera=1";
+                        where += @" AND ""EnPapelera""='1'";
                     }
                 }
                 else
                 {
-                    where += "  AND (Autor = " + IBD.GuidValor(pIdentidadID) + " AND Destinatario = " + IBD.GuidValor(Guid.Empty) + " or destinatario = " + IBD.GuidValor(pIdentidadID) + ")";
+                    where += @$"  AND (""Autor"" = {IBD.GuidValor(pIdentidadID)} AND ""Destinatario"" = {IBD.GuidValor(Guid.Empty)} or ""Destinatario"" = {IBD.GuidValor(pIdentidadID)})";
                 }
 
-                string tablaCorreoInterno = "CorreoInterno_" + pIdentidadID.ToString().Substring(0, 2);
+                string tablaCorreoInterno = $"CorreoInterno_{pIdentidadID.ToString().Substring(0, 2)}";
 
                 consulta = (consulta + where).Replace("CorreoInterno", tablaCorreoInterno);
 

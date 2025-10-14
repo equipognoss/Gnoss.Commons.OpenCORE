@@ -1,4 +1,5 @@
 using Es.Riam.Gnoss.Util.General;
+using Microsoft.Extensions.Logging;
 
 namespace Es.Riam.Gnoss.Elementos.ServiciosGenerales
 {
@@ -19,7 +20,7 @@ namespace Es.Riam.Gnoss.Elementos.ServiciosGenerales
         /// Constructor sin parámetros
         /// </summary>
         public OrganizacionClase(LoggingService loggingService)
-            : base(loggingService)
+            : base()
         {
         }
 

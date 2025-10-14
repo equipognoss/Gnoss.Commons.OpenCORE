@@ -1,4 +1,5 @@
 using Es.Riam.Gnoss.Util.General;
+using Microsoft.Extensions.Logging;
 using System;
 
 namespace Es.Riam.Gnoss.Elementos.Tesauro
@@ -54,8 +55,8 @@ namespace Es.Riam.Gnoss.Elementos.Tesauro
         /// </summary>
         /// <param name="pFilaCatSugerencia">Fila de la sugerencia de categoría</param>
         /// <param name="pGestorTesauro">Gestor de tesauro</param>
-        public CategoriaTesauroSugerencia(AD.EntityModel.Models.Tesauro.CategoriaTesauroSugerencia pFilaCatSugerencia, GestionTesauro pGestorTesauro, LoggingService loggingService)
-            : base(loggingService)
+        public CategoriaTesauroSugerencia(AD.EntityModel.Models.Tesauro.CategoriaTesauroSugerencia pFilaCatSugerencia, GestionTesauro pGestorTesauro)
+            : base()
         {
             if (pFilaCatSugerencia.CategoriaTesauroPadreID.HasValue && pGestorTesauro.ListaCategoriasTesauro.ContainsKey(pFilaCatSugerencia.CategoriaTesauroPadreID.Value))
             {

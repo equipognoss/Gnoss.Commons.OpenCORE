@@ -3,9 +3,11 @@ using Es.Riam.Gnoss.AD.Amigos.Model;
 using Es.Riam.Gnoss.AD.EncapsuladoDatos;
 using Es.Riam.Gnoss.AD.EntityModel;
 using Es.Riam.Gnoss.AD.Identidad;
+using Es.Riam.Gnoss.AD.ParametroAplicacion;
 using Es.Riam.Gnoss.AD.ServiciosGenerales;
 using Es.Riam.Gnoss.Util.Configuracion;
 using Es.Riam.Gnoss.Util.General;
+using Microsoft.Extensions.Logging;
 using Microsoft.Practices.EnterpriseLibrary.Data;
 using System;
 using System.Collections.Generic;
@@ -58,14 +60,18 @@ namespace Es.Riam.Gnoss.AD.Amigos
     /// </summary>
     public class AmigosAD : BaseAD
     {
+        private ILogger mlogger;
+        private ILoggerFactory mLoggerFactory;
         #region Constructores
 
         /// <summary>
         /// El por defecto, utilizado cuando se requiere el GnossConfig.xml por defecto
         /// </summary>
-        public AmigosAD(LoggingService loggingService, EntityContext entityContext, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication)
-            : base(loggingService, entityContext, configService, servicesUtilVirtuosoAndReplication)
+        public AmigosAD(LoggingService loggingService, EntityContext entityContext, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication,ILogger<AmigosAD> logger, ILoggerFactory loggerFactory)
+            : base(loggingService, entityContext, configService, servicesUtilVirtuosoAndReplication,logger,loggerFactory)
         {
+            mlogger = logger;
+            mLoggerFactory = loggerFactory;
             this.CargarConsultasYDataAdapters();
         }
 
@@ -74,9 +80,11 @@ namespace Es.Riam.Gnoss.AD.Amigos
         /// </summary>
         /// <param name="pFicheroConfiguracionBD">Ruta del fichero de configuración de base de datos</param>
         /// <param name="pUsarVariableEstatica">Si se están usando hilos con diferentes conexiones: FALSE. En caso contrario TRUE</param>
-        public AmigosAD(string pFicheroConfiguracionBD, LoggingService loggingService, EntityContext entityContext, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication)
-            : base(pFicheroConfiguracionBD, loggingService, entityContext, configService, servicesUtilVirtuosoAndReplication)
+        public AmigosAD(string pFicheroConfiguracionBD, LoggingService loggingService, EntityContext entityContext, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication, ILogger<AmigosAD> logger, ILoggerFactory loggerFactory)
+            : base(pFicheroConfiguracionBD, loggingService, entityContext, configService, servicesUtilVirtuosoAndReplication, logger, loggerFactory)
         {
+            mlogger = logger;
+            mLoggerFactory = loggerFactory;
             this.CargarConsultasYDataAdapters(IBD);
         }
 
@@ -714,7 +722,7 @@ namespace Es.Riam.Gnoss.AD.Amigos
         /// <returns></returns>
         public DataWrapperAmigos ObtenerAmigosDeOrganizacionesAdministradas(Guid pUsuarioID, Guid? pProyectoID)
         {
-            IdentidadAD identAD = new IdentidadAD(mLoggingService, mEntityContext, mConfigService, mServicesUtilVirtuosoAndReplication);
+            IdentidadAD identAD = new IdentidadAD(mLoggingService, mEntityContext, mConfigService, mServicesUtilVirtuosoAndReplication,mLoggerFactory.CreateLogger<IdentidadAD>(),mLoggerFactory);
             List<EntityModel.Models.IdentidadDS.Identidad> listaIdentdad = identAD.ObtenerIdentidadesDeMyGnossDEOrganizacionesAdministradas(pUsuarioID, pProyectoID);
 
             DataWrapperAmigos amigosDW = new DataWrapperAmigos();

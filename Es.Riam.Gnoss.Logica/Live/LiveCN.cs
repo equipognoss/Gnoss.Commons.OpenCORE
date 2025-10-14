@@ -3,8 +3,11 @@ using Es.Riam.Gnoss.AD.EntityModel;
 using Es.Riam.Gnoss.AD.EntityModel.Models.IdentidadDS;
 using Es.Riam.Gnoss.AD.Live;
 using Es.Riam.Gnoss.AD.Live.Model;
+using Es.Riam.Gnoss.AD.ParametroAplicacion;
 using Es.Riam.Gnoss.Util.Configuracion;
 using Es.Riam.Gnoss.Util.General;
+using Microsoft.Extensions.Logging;
+using Serilog.Core;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -16,16 +19,20 @@ namespace Es.Riam.Gnoss.Logica.Live
     /// </summary>
     public class LiveCN : BaseCN, IDisposable
     {
+        private ILogger mlogger;
+        private ILoggerFactory mLoggerFactory;
         #region Constructores
 
         /// <summary>
         /// Constructor sin parámetros
         /// </summary>
-        public LiveCN(EntityContext entityContext, LoggingService loggingService, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication)
-            : base(entityContext, loggingService, configService, servicesUtilVirtuosoAndReplication)
+        public LiveCN(EntityContext entityContext, LoggingService loggingService, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication, ILogger<LiveCN> logger, ILoggerFactory loggerFactory)
+            : base(entityContext, loggingService, configService, servicesUtilVirtuosoAndReplication,logger,loggerFactory)
         {
             mLoggingService = loggingService;
-            this.LiveAD = new LiveAD(loggingService, entityContext, configService, servicesUtilVirtuosoAndReplication);
+            mlogger = logger;
+            mLoggerFactory = loggerFactory;
+            this.LiveAD = new LiveAD(loggingService, entityContext, configService, servicesUtilVirtuosoAndReplication,mLoggerFactory.CreateLogger<LiveAD>(),mLoggerFactory);
         }
 
         /// <summary>
@@ -33,11 +40,13 @@ namespace Es.Riam.Gnoss.Logica.Live
         /// </summary>
         /// <param name="pFicheroConfiguracionBD">Ruta del fichero de configuración de base de datos</param>
         /// <param name="pUsarVariableEstatica">Si se están usando hilos con diferentes conexiones: FALSE. En caso contrario TRUE</param>
-        public LiveCN(string pFicheroConfiguracionBD, EntityContext entityContext, LoggingService loggingService, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication)
-            : base(entityContext, loggingService, configService, servicesUtilVirtuosoAndReplication)
+        public LiveCN(string pFicheroConfiguracionBD, EntityContext entityContext, LoggingService loggingService, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication, ILogger<LiveCN> logger, ILoggerFactory loggerFactory)
+            : base(entityContext, loggingService, configService, servicesUtilVirtuosoAndReplication, logger, loggerFactory)
         {
             mLoggingService = loggingService;
-            this.LiveAD = new LiveAD(pFicheroConfiguracionBD, loggingService, entityContext, configService, servicesUtilVirtuosoAndReplication);
+            mlogger = logger;
+            mLoggerFactory = loggerFactory;
+            this.LiveAD = new LiveAD(pFicheroConfiguracionBD, loggingService, entityContext, configService, servicesUtilVirtuosoAndReplication,mLoggerFactory.CreateLogger<LiveAD>(),mLoggerFactory);
         }
 
         #endregion
@@ -73,14 +82,14 @@ namespace Es.Riam.Gnoss.Logica.Live
             {
                 TerminarTransaccion(false);
                 // Error de concurrencia
-                mLoggingService.GuardarLogError(ex);
+                mLoggingService.GuardarLogError(ex,mlogger);
                 throw new ErrorConcurrencia(ex.Row);
             }
             catch (DataException ex)
             {
                 TerminarTransaccion(false);
                 //Error interno de la aplicación
-                mLoggingService.GuardarLogError(ex);
+                mLoggingService.GuardarLogError(ex,mlogger);
                 throw new ErrorInterno();
             }
             catch
@@ -123,14 +132,14 @@ namespace Es.Riam.Gnoss.Logica.Live
             {
                 TerminarTransaccion(false);
                 // Error de concurrencia
-                mLoggingService.GuardarLogError(ex);
+                mLoggingService.GuardarLogError(ex, mlogger);
                 throw new ErrorConcurrencia(ex.Row);
             }
             catch (DataException ex)
             {
                 TerminarTransaccion(false);
                 //Error interno de la aplicación
-                mLoggingService.GuardarLogError(ex);
+                mLoggingService.GuardarLogError(ex, mlogger);
                 throw new ErrorInterno();
             }
             catch

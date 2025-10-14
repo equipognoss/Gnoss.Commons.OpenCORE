@@ -3,6 +3,7 @@ using Es.Riam.Gnoss.AD.EncapsuladoDatos;
 using Es.Riam.Gnoss.AD.EntityModel;
 using Es.Riam.Gnoss.AD.EntityModel.Models;
 using Es.Riam.Gnoss.AD.EntityModel.Models.ProyectoDS;
+using Es.Riam.Gnoss.AD.ParametroAplicacion;
 using Es.Riam.Gnoss.AD.Virtuoso;
 using Es.Riam.Gnoss.CL;
 using Es.Riam.Gnoss.CL.ParametrosAplicacion;
@@ -11,10 +12,12 @@ using Es.Riam.Gnoss.Logica.ParametroAplicacion;
 using Es.Riam.Gnoss.Logica.ServiciosGenerales;
 using Es.Riam.Gnoss.Util.Configuracion;
 using Es.Riam.Gnoss.Util.General;
+using Es.Riam.Gnoss.UtilServiciosWeb;
 using Es.Riam.Gnoss.Web.MVC.Models.Administracion;
 using Es.Riam.Util;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -36,14 +39,15 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
         private EntityContext mEntityContext;
         private ConfigService mConfigService;
         private RedisCacheWrapper mRedisCacheWrapper;
-
+        private ILogger mlogger;
+        private ILoggerFactory mLoggerFactory;
         #region Constructor
 
         /// <summary>
         /// 
         /// </summary>
-        public ControladorContextos(Elementos.ServiciosGenerales.Proyecto pProyecto, Dictionary<string, string> pParametroProyecto, LoggingService loggingService, EntityContext entityContext, ConfigService configService, RedisCacheWrapper redisCacheWrapper, VirtuosoAD virtuosoAD, GnossCache gnossCache, IHttpContextAccessor httpContextAccessor, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication, bool pCrearFilasPropiedadesExportacion = false)
-            : base(loggingService, configService, entityContext, redisCacheWrapper, gnossCache, virtuosoAD, httpContextAccessor, servicesUtilVirtuosoAndReplication)
+        public ControladorContextos(Elementos.ServiciosGenerales.Proyecto pProyecto, Dictionary<string, string> pParametroProyecto, LoggingService loggingService, EntityContext entityContext, ConfigService configService, RedisCacheWrapper redisCacheWrapper, VirtuosoAD virtuosoAD, GnossCache gnossCache, IHttpContextAccessor httpContextAccessor, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication, ILogger<ControladorContextos> logger, ILoggerFactory loggerFactory, bool pCrearFilasPropiedadesExportacion = false)
+            : base(loggingService, configService, entityContext, redisCacheWrapper, gnossCache, virtuosoAD, httpContextAccessor, servicesUtilVirtuosoAndReplication,logger,loggerFactory)
         {
             mVirtuosoAD = virtuosoAD;
             mLoggingService = loggingService;
@@ -55,6 +59,8 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
             ParametroProyecto = pParametroProyecto;
 
             CrearFilasPropiedadesExportacion = pCrearFilasPropiedadesExportacion;
+            mlogger = logger;
+            mLoggerFactory = loggerFactory;
         }
 
         #endregion
@@ -67,7 +73,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
             ContextoModel gadget = CrearGadget(filaGadget);
 
             List<IntegracionContinuaPropiedad> propiedadesIntegracionContinua = new List<IntegracionContinuaPropiedad>();
-			ParametroAplicacionCL paramCL = new ParametroAplicacionCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mServicesUtilVirtuosoAndReplication);
+			ParametroAplicacionCL paramCL = new ParametroAplicacionCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<ParametroAplicacionCL>(), mLoggerFactory);
 
 			if (filaGadget.Tipo == (short)TipoGadget.RecursosContextos)
             {
@@ -88,7 +94,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
             {
                 if (paramCL.ObtenerListaIdiomasDictionary().Count > 1)
                 {
-                    ProyectoCN proyectoCN = new ProyectoCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+                    ProyectoCN proyectoCN = new ProyectoCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<ProyectoCN>(), mLoggerFactory);
                     List<ProyectoGadgetIdioma> listaProyectoGadgetIdioma = proyectoCN.ObtenerProyectoGadgetIdiomaDeGadget(filaGadget.GadgetID);
                     if (listaProyectoGadgetIdioma != null && listaProyectoGadgetIdioma.Count > 0)
                     {
@@ -132,7 +138,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
             {
                 try
                 {
-                    ProyectoCN proyCN = new ProyectoCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+                    ProyectoCN proyCN = new ProyectoCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<ProyectoCN>(), mLoggerFactory);
                     proyCN.CrearFilasIntegracionContinuaParametro(propiedadesIntegracionContinua, ProyectoSeleccionado.Clave, TipoObjeto.Gadget, filaGadget.NombreCorto);
                     proyCN.Dispose();
                 }
@@ -155,6 +161,8 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
             gadget.Contenido = filaGadget.Contenido;
             gadget.Ajax = filaGadget.CargarPorAjax;
             gadget.FiltrosDestino = filaGadget.ComunidadDestinoFiltros;
+            gadget.FechaCreacion = filaGadget.FechaCreacion;
+            gadget.FechaModificacion = filaGadget.FechaActualizacion;
             if (string.IsNullOrEmpty(filaGadget.NombreCorto))
             {
                 gadget.ShortName = filaGadget.GadgetID.ToString();
@@ -259,7 +267,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
         {
             List<Guid> listaGadgetsNuevos = new List<Guid>();
 
-            ProyectoCN proyCN = new ProyectoCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+            ProyectoCN proyCN = new ProyectoCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<ProyectoCN>(), mLoggerFactory);
             DataWrapperProyecto proyDS = proyCN.ObtenerDataSetGadget(pGadget.Key, ProyectoSeleccionado.Clave);
 
 
@@ -318,7 +326,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
                 }
             }
 
-            using (ProyectoCN proyCN = new ProyectoCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication))
+            using (ProyectoCN proyCN = new ProyectoCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<ProyectoCN>(), mLoggerFactory))
             {
                 proyCN.ActualizarProyectos();
             }
@@ -397,7 +405,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
                     todasLasPropiedadesIntegracionContinua.AddRange(propiedadesIntegracionUnGadget);
 
                 }
-                using (ProyectoCN proyCN = new ProyectoCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication))
+                using (ProyectoCN proyCN = new ProyectoCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<ProyectoCN>(), mLoggerFactory))
                 {
                     proyCN.CrearFilasIntegracionContinuaParametro(todasLasPropiedadesIntegracionContinua, ProyectoSeleccionado.Clave, TipoObjeto.Gadget);
 
@@ -480,7 +488,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
             errores = ComprobarErroresGadget(errores, pGadget);
             if (errores == "")
             {
-                ProyectoCN proyCN = new ProyectoCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+                ProyectoCN proyCN = new ProyectoCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<ProyectoCN>(), mLoggerFactory);
                 DataWrapperProyecto dataWrapperProyecto = proyCN.ObtenerDataSetGadget(pGadget.Key, ProyectoSeleccionado.Clave);
                 foreach (ProyectoGadgetContexto filaGadget in dataWrapperProyecto.ListaProyectoGadgetContexto)
                 {
@@ -554,11 +562,11 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
                     {
                         string nombrecorto = contexto.ComunidadOrigen;
                         Guid proyectoOrigenID = Guid.Empty;
-                        ProyectoCL proyCL = new ProyectoCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mVirtuosoAD, mServicesUtilVirtuosoAndReplication);
+                        ProyectoCL proyCL = new ProyectoCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mVirtuosoAD, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<ProyectoCL>(), mLoggerFactory);
                         if (Uri.IsWellFormedUriString(contexto.ComunidadOrigen, UriKind.RelativeOrAbsolute) && nombrecorto.IndexOf('/') != -1)
                         {
 
-                            ParametroAplicacionCN paramCN = new ParametroAplicacionCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+                            ParametroAplicacionCN paramCN = new ParametroAplicacionCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<ParametroAplicacionCN>(), mLoggerFactory);
                             Guid? proyectoConexion = mConfigService.ObtenerProyectoConexion();
                             if (proyectoConexion == null || proyectoConexion.Equals(Guid.Empty))
                             {
@@ -689,7 +697,8 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
         private void AgregarGadgetNuevo(ContextoModel pGadget, DataWrapperProyecto pDataWrapperProyecto)
         {
             //Agregar fila gadget
-            ProyectoGadget filaNuevoGadget = new ProyectoGadget();
+            DateTime fechaActual = DateTime.Now;
+			ProyectoGadget filaNuevoGadget = new ProyectoGadget();
             filaNuevoGadget.GadgetID = pGadget.Key;
             filaNuevoGadget.ProyectoID = ProyectoSeleccionado.Clave;
             filaNuevoGadget.OrganizacionID = ProyectoSeleccionado.FilaProyecto.OrganizacionID;
@@ -698,6 +707,8 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
             filaNuevoGadget.TipoUbicacion = 1;
             filaNuevoGadget.MultiIdioma = false;
             filaNuevoGadget.Contenido = pGadget.Contenido;
+            filaNuevoGadget.FechaCreacion = fechaActual;
+            filaNuevoGadget.FechaActualizacion = fechaActual;
 
             GuardarDatosFilaGadget(filaNuevoGadget, pGadget);
 
@@ -736,6 +747,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
             pGadgetBD.MultiIdioma = false;
             pGadgetBD.CargarPorAjax = false;
             pGadgetBD.ComunidadDestinoFiltros = pGadgetVista.FiltrosDestino;
+            pGadgetBD.FechaActualizacion = DateTime.Now;
 
             if (string.IsNullOrEmpty(pGadgetVista.ShortName))
             {
@@ -768,7 +780,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
                 }
                 else
                 {
-                    ProyectoCN proyectoCN = new ProyectoCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+                    ProyectoCN proyectoCN = new ProyectoCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<ProyectoCN>(), mLoggerFactory);
                     List<ProyectoGadgetIdioma> listaProyectoGadgetIdioma = proyectoCN.ObtenerProyectoGadgetIdiomaDeGadget(pGadgetBD.GadgetID);
 
                     if (listaContenidoMultiIdioma.Count == 1)
@@ -875,7 +887,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
 
         public void InvalidarCaches()
         {
-            ProyectoCL proyCL = new ProyectoCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mVirtuosoAD, mServicesUtilVirtuosoAndReplication);
+            ProyectoCL proyCL = new ProyectoCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mVirtuosoAD, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<ProyectoCL>(), mLoggerFactory);
             proyCL.InvalidarGadgetsProyecto(ProyectoSeleccionado.Clave);
             proyCL.Dispose();
         }
@@ -891,7 +903,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
                 if (mDataWrapperProyecto == null)
                 {
                     mDataWrapperProyecto = new DataWrapperProyecto();
-                    ProyectoCN proyCN = new ProyectoCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+                    ProyectoCN proyCN = new ProyectoCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<ProyectoCN>(), mLoggerFactory);
                     proyCN.ObtenerGadgetsProyecto(ProyectoSeleccionado.Clave, mDataWrapperProyecto);
                 }
                 return mDataWrapperProyecto;

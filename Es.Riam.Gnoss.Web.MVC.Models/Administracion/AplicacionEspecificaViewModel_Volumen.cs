@@ -5,7 +5,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Models.Administracion
 {
     public class AplicacionEspecificaViewModel_Volumen
     {
-        public List<Volumen> volumen { get; set; }
+        public List<Volumen> Volumen { get; set; }
 
         // Nombre corto de la personalización
         public string NombreCortoPersonalizacion { get; set; }

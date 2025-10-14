@@ -1,8 +1,11 @@
 ﻿using Es.Riam.AbstractsOpen;
+using Es.Riam.Gnoss.AD.Amigos;
 using Es.Riam.Gnoss.AD.EntityModel;
+using Es.Riam.Gnoss.AD.ParametroAplicacion;
 using Es.Riam.Gnoss.AD.ServiciosGenerales;
 using Es.Riam.Gnoss.Util.Configuracion;
 using Es.Riam.Gnoss.Util.General;
+using Microsoft.Extensions.Logging;
 using Oracle.ManagedDataAccess.Client;
 using System;
 using System.Collections.Generic;
@@ -19,8 +22,8 @@ namespace Es.Riam.Gnoss.AD.AutocompletarNombres
         /// <summary>
         /// El por defecto, utilizado cuando se requiere el GnossConfig.xml por defecto
         /// </summary>
-        public AutoCompletarNombresAD(LoggingService loggingService, EntityContext entityContext, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication)
-            : base(loggingService, entityContext, configService, servicesUtilVirtuosoAndReplication)
+        public AutoCompletarNombresAD(LoggingService loggingService, EntityContext entityContext, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication, ILogger<AutoCompletarNombresAD> logger, ILoggerFactory loggerFactory)
+            : base(loggingService, entityContext, configService, servicesUtilVirtuosoAndReplication, logger, loggerFactory)
         {
             this.CargarConsultasYDataAdapters();
         }
@@ -30,8 +33,8 @@ namespace Es.Riam.Gnoss.AD.AutocompletarNombres
         /// </summary>
         /// <param name="pFicheroConfiguracionBD">Ruta del fichero de configuración de conexión a base de datos</param>
         /// <param name="pUsarVariableEstatica">Si se están usando hilos con diferentes conexiones: FALSE. En caso contrario TRUE</param>
-        public AutoCompletarNombresAD(string pFicheroConfiguracionBD, LoggingService loggingService, EntityContext entityContext, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication)
-            : base(pFicheroConfiguracionBD, loggingService, entityContext, configService, servicesUtilVirtuosoAndReplication)
+        public AutoCompletarNombresAD(string pFicheroConfiguracionBD, LoggingService loggingService, EntityContext entityContext, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication, ILogger<AutoCompletarNombresAD> logger, ILoggerFactory loggerFactory)
+            : base(pFicheroConfiguracionBD, loggingService, entityContext, configService, servicesUtilVirtuosoAndReplication, logger, loggerFactory)
         {
             this.CargarConsultasYDataAdapters(IBD);
         }

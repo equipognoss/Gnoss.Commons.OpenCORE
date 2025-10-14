@@ -25,6 +25,10 @@ namespace Es.Riam.Gnoss.AD.EntityModel.Models.VistaVirtualDS
         [Column(TypeName = "NCLOB")]
         public string HTML { get; set; }
 
+        public DateTime FechaCreacion { get; set; }
+
+        public DateTime FechaModificacion { get; set; }
+
         public virtual VistaVirtualPersonalizacion VistaVirtualPersonalizacion { get; set; }
 
         public void Dispose()

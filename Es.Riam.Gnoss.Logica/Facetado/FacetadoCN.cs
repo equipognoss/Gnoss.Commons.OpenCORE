@@ -17,6 +17,10 @@ using Es.Riam.Gnoss.AD.EntityModel.Models.ProyectoDS;
 using System.Text;
 using static Es.Riam.Gnoss.Web.MVC.Models.Tesauro.TesauroModels;
 using Es.Riam.Semantica.Plantillas;
+using Microsoft.Extensions.Logging;
+using Es.Riam.Gnoss.AD.ParametroAplicacion;
+using Serilog.Core;
+using Es.Riam.Gnoss.Logica.ServiciosGenerales;
 
 namespace Es.Riam.Gnoss.Logica.Facetado
 {
@@ -32,7 +36,8 @@ namespace Es.Riam.Gnoss.Logica.Facetado
 
         private LoggingService mLoggingService;
         private EntityContext mEntityContext;
-
+        private ILogger mlogger;
+        private ILoggerFactory mLoggerFactory;
         #endregion
 
         #region Constructores
@@ -41,12 +46,14 @@ namespace Es.Riam.Gnoss.Logica.Facetado
         /// Constructor sin parámetros
         /// </summary>
         /// <param name="pUrlIntragnoss">URL de intragnoss</param>
-        public FacetadoCN(string pUrlIntragnoss, string pIdGrafo, EntityContext entityContext, LoggingService loggingService, ConfigService configService, VirtuosoAD virtuosoAD, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication)
-            : base(entityContext, loggingService, configService, servicesUtilVirtuosoAndReplication)
+        public FacetadoCN(string pUrlIntragnoss, string pIdGrafo, EntityContext entityContext, LoggingService loggingService, ConfigService configService, VirtuosoAD virtuosoAD, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication, ILogger<FacetadoCN> logger, ILoggerFactory loggerFactory)
+            : base(entityContext, loggingService, configService, servicesUtilVirtuosoAndReplication,loggerFactory.CreateLogger<BaseCN>(),loggerFactory)
         {
             mLoggingService = loggingService;
             mEntityContext = entityContext;
-            this.FacetadoAD = new FacetadoAD(pUrlIntragnoss, loggingService, entityContext, configService, virtuosoAD, servicesUtilVirtuosoAndReplication);
+            mlogger = logger;
+            mLoggerFactory = loggerFactory;
+            this.FacetadoAD = new FacetadoAD(pUrlIntragnoss, loggingService, entityContext, configService, virtuosoAD, servicesUtilVirtuosoAndReplication,mLoggerFactory.CreateLogger<FacetadoAD>(),mLoggerFactory);
             this.mIdGrafo = pIdGrafo;
         }
 
@@ -54,12 +61,14 @@ namespace Es.Riam.Gnoss.Logica.Facetado
         /// El por defecto, utilizado cuando se requiere el GnossConfig.xml por defecto
         /// </summary>
         /// <param name="pUrlIntragnoss">URL de intragnoss</param>
-        public FacetadoCN(string pUrlIntragnoss, EntityContext entityContext, LoggingService loggingService, ConfigService configService, VirtuosoAD virtuosoAD, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication)
-            : base(entityContext, loggingService, configService, servicesUtilVirtuosoAndReplication)
+        public FacetadoCN(string pUrlIntragnoss, EntityContext entityContext, LoggingService loggingService, ConfigService configService, VirtuosoAD virtuosoAD, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication, ILogger<FacetadoCN> logger, ILoggerFactory loggerFactory)
+            : base(entityContext, loggingService, configService, servicesUtilVirtuosoAndReplication, loggerFactory.CreateLogger<BaseCN>(), loggerFactory)
         {
             mLoggingService = loggingService;
             mEntityContext = entityContext;
-            this.FacetadoAD = new FacetadoAD(pUrlIntragnoss, loggingService, entityContext, configService, virtuosoAD, servicesUtilVirtuosoAndReplication);
+            mlogger = logger;
+            mLoggerFactory = loggerFactory;
+            this.FacetadoAD = new FacetadoAD(pUrlIntragnoss, loggingService, entityContext, configService, virtuosoAD, servicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<FacetadoAD>(), mLoggerFactory);
         }
 
         /// <summary>
@@ -68,12 +77,14 @@ namespace Es.Riam.Gnoss.Logica.Facetado
         /// <param name="pTipoBD">Tipo de BD de configuración de base de datos</param>
         /// <param name="pUsarVariableEstatica">Si se están usando hilos con diferentes conexiones: FALSE. En caso contrario TRUE</param>
         /// <param name="pUrlIntragnoss">URL de intragnoss</param>
-        public FacetadoCN(string pTipoBD, string pUrlIntragnoss, string pIdGrafo, EntityContext entityContext, LoggingService loggingService, ConfigService configService, VirtuosoAD virtuosoAD, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication)
-            : base(entityContext, loggingService, configService, servicesUtilVirtuosoAndReplication)
+        public FacetadoCN(string pTipoBD, string pUrlIntragnoss, string pIdGrafo, EntityContext entityContext, LoggingService loggingService, ConfigService configService, VirtuosoAD virtuosoAD, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication, ILogger<FacetadoCN> logger, ILoggerFactory loggerFactory)
+            : base(entityContext, loggingService, configService, servicesUtilVirtuosoAndReplication, loggerFactory.CreateLogger<BaseCN>(), loggerFactory)
         {
             mLoggingService = loggingService;
             mEntityContext = entityContext;
-            this.FacetadoAD = new FacetadoAD(pTipoBD, pUrlIntragnoss, loggingService, entityContext, configService, virtuosoAD, servicesUtilVirtuosoAndReplication);
+            mlogger = logger;
+            mLoggerFactory = loggerFactory;
+            this.FacetadoAD = new FacetadoAD(pTipoBD, pUrlIntragnoss, loggingService, entityContext, configService, virtuosoAD, servicesUtilVirtuosoAndReplication,mLoggerFactory.CreateLogger<FacetadoAD>(),mLoggerFactory);
             this.mIdGrafo = pIdGrafo;
         }
 
@@ -84,12 +95,14 @@ namespace Es.Riam.Gnoss.Logica.Facetado
         /// <param name="pUsarVariableEstatica">Si se están usando hilos con diferentes conexiones: FALSE. En caso contrario TRUE</param>
         /// <param name="pUrlIntragnoss">URL de intragnoss</param>
         ///<param name="pTablaReplica">Tabla donde se va a insertar la consulta ("ColaReplicacionMaster" o "ColaReplicacionMasterHome")</param>
-        public FacetadoCN(string pTipoBD, string pUrlIntragnoss, string pIdGrafo, string pTablaReplica, EntityContext entityContext, LoggingService loggingService, ConfigService configService, VirtuosoAD virtuosoAD, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication)
-            : base(entityContext, loggingService, configService, servicesUtilVirtuosoAndReplication)
+        public FacetadoCN(string pTipoBD, string pUrlIntragnoss, string pIdGrafo, string pTablaReplica, EntityContext entityContext, LoggingService loggingService, ConfigService configService, VirtuosoAD virtuosoAD, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication, ILogger<FacetadoCN> logger, ILoggerFactory loggerFactory)
+            : base(entityContext, loggingService, configService, servicesUtilVirtuosoAndReplication, loggerFactory.CreateLogger<BaseCN>(), loggerFactory)
         {
             mLoggingService = loggingService;
             mEntityContext = entityContext;
-            this.FacetadoAD = new FacetadoAD(pTipoBD, pUrlIntragnoss, pTablaReplica, loggingService, entityContext, configService, virtuosoAD, servicesUtilVirtuosoAndReplication);
+            mlogger = logger;
+            mLoggerFactory = loggerFactory;
+            this.FacetadoAD = new FacetadoAD(pTipoBD, pUrlIntragnoss, pTablaReplica, loggingService, entityContext, configService, virtuosoAD, servicesUtilVirtuosoAndReplication,mLoggerFactory.CreateLogger<FacetadoAD>(),mLoggerFactory);
             this.mIdGrafo = pIdGrafo;
         }
 
@@ -103,12 +116,14 @@ namespace Es.Riam.Gnoss.Logica.Facetado
         /// </summary>
         /// <param name="pUrlIntragnoss">URL de intragnoss</param>
         /// <param name="pObtenerPrivados">Verdad si el usuario actual puede obtener los privados</param>
-        public FacetadoCN(string pUrlIntragnoss, bool pObtenerPrivados, EntityContext entityContext, LoggingService loggingService, ConfigService configService, VirtuosoAD virtuosoAD, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication)
-            : base(entityContext, loggingService, configService, servicesUtilVirtuosoAndReplication)
+        public FacetadoCN(string pUrlIntragnoss, bool pObtenerPrivados, EntityContext entityContext, LoggingService loggingService, ConfigService configService, VirtuosoAD virtuosoAD, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication, ILogger<FacetadoCN> logger, ILoggerFactory loggerFactory)
+            : base(entityContext, loggingService, configService, servicesUtilVirtuosoAndReplication,logger,loggerFactory)
         {
             mLoggingService = loggingService;
             mEntityContext = entityContext;
-            this.FacetadoAD = new FacetadoAD(pUrlIntragnoss, pObtenerPrivados, loggingService, entityContext, configService, virtuosoAD, servicesUtilVirtuosoAndReplication);
+            mlogger = logger;
+            mLoggerFactory = loggerFactory;
+            this.FacetadoAD = new FacetadoAD(pUrlIntragnoss, pObtenerPrivados, loggingService, entityContext, configService, virtuosoAD, servicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<FacetadoAD>(), mLoggerFactory);
         }
 
         /// <summary>
@@ -116,12 +131,14 @@ namespace Es.Riam.Gnoss.Logica.Facetado
         /// </summary>
         /// <param name="pUrlIntragnoss">URL de intragnoss</param>
         /// <param name="pObtenerPrivados">Verdad si el usuario actual puede obtener los privados</param>
-        public FacetadoCN(string pUrlIntragnoss, bool pObtenerPrivados, string pIdGrafo, EntityContext entityContext, LoggingService loggingService, ConfigService configService, VirtuosoAD virtuosoAD, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication)
-            : base(entityContext, loggingService, configService, servicesUtilVirtuosoAndReplication)
+        public FacetadoCN(string pUrlIntragnoss, bool pObtenerPrivados, string pIdGrafo, EntityContext entityContext, LoggingService loggingService, ConfigService configService, VirtuosoAD virtuosoAD, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication, ILogger<FacetadoCN> logger, ILoggerFactory loggerFactory)
+            : base(entityContext, loggingService, configService, servicesUtilVirtuosoAndReplication, logger, loggerFactory)
         {
             mLoggingService = loggingService;
             mEntityContext = entityContext;
-            this.FacetadoAD = new FacetadoAD(pUrlIntragnoss, pObtenerPrivados, loggingService, entityContext, configService, virtuosoAD, servicesUtilVirtuosoAndReplication);
+            mlogger = logger;
+            mLoggerFactory = loggerFactory;
+            this.FacetadoAD = new FacetadoAD(pUrlIntragnoss, pObtenerPrivados, loggingService, entityContext, configService, virtuosoAD, servicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<FacetadoAD>(), mLoggerFactory);
             this.mIdGrafo = pIdGrafo;
         }
 
@@ -430,7 +447,7 @@ namespace Es.Riam.Gnoss.Logica.Facetado
             }
             catch (Exception e)
             {
-                mLoggingService.GuardarLogError(e);
+                mLoggingService.GuardarLogError(e,mlogger);
             }
         }
 
@@ -464,10 +481,83 @@ namespace Es.Riam.Gnoss.Logica.Facetado
             FacetadoAD.ModificarCertificacionesRecursos(pProyectoID, pElementosAModificar);
         }
 
-        //Eliminado en la versión 2.1.1795.1
+		//Eliminado en la versión 2.1.1795.1
 
 
-        public void ObtenerAutocompletar(string proyectoID, FacetadoDS pFacetadoDS, Dictionary<string, List<string>> pListaFiltros, List<string> pListaFiltrosExtra, bool estaMyGnoss, bool EsMienbroComunidad, bool EsInvitado, string Identidad, int pInicio, int pLimite, List<string> pSemanticos, string pFiltrosContexto)
+
+		/// <summary>
+		/// Dado un recurso en un proyecto devuelve el contenido de su triple search
+		/// </summary>
+		/// <param name="pProyectoID">identificador del proyecto seleccionado.</param>
+		/// <param name="pGuidRecurso">identificador del recurso a buscar.</param>
+		/// <returns>Contenido del triple search del recurso.</returns>
+		public string ObtenerSearchDeRecurso(string pProyectoID, string pGuidRecurso)
+        {
+            return FacetadoAD.ObtenerSearchDeRecurso(pProyectoID, pGuidRecurso);
+        }
+
+		/// <summary>
+		/// Devuelve una lista con los identificadores de los recursos del proyecto que coincidan con los filtros introducidos
+		/// </summary>
+		/// <param name="pListaFiltros">filtros que deben cumplir los recursos. Es un diccionario donde la clave es el tipo de filtro (por ejemplo: rdf:type, schema:name, etc.) y el valor es una lista con los valores a verificar</param>
+		/// <param name="pProyectoId">identificador del proyecto seleccionado</param>
+		/// <param name="pTipoProyecto">tipo del proyecto seleccionado</param>
+		/// <returns>Lista de los identificadores de los recursos del proyecto que cumplen el filtro</returns>
+		public List<string> ObtenerIdsRecursos(Dictionary<string, List<string>> pListaFiltros, string pProyectoId, TipoProyecto pTipoProyecto, bool pConsultaFiltrosBusqueda = false)
+        {
+            return FacetadoAD.ObtenerIdsRecursos(pListaFiltros, pProyectoId, pTipoProyecto, pConsultaFiltrosBusqueda);
+        }
+
+
+		/// <summary>
+		/// Devuelve una lista con los identificadores de los recursos del proyecto que coincidan con los filtros introducidos
+		/// </summary>
+		/// <param name="pListaFiltros">filtros que deben cumplir los recursos. Es un diccionario donde la clave es el tipo de filtro (por ejemplo: rdf:type, schema:name, etc.) y el valor es una lista con los valores a verificar</param>
+		/// <param name="pProyectoId">identificador del proyecto seleccionado</param>
+		/// <param name="pTipoProyecto">tipo del proyecto seleccionado</param>
+		/// <returns>Lista de los identificadores de los recursos del proyecto que cumplen el filtro</returns>
+		/// <returns></returns>
+		public int ObtenerNumRecursos(Dictionary<string, List<string>> pListaFiltros, string pProyectoId, TipoProyecto pTipoProyecto, bool pConsultaFiltrosBusqueda = false)
+		{
+            return FacetadoAD.ObtenerNumRecursos(pListaFiltros, pProyectoId, pTipoProyecto, pConsultaFiltrosBusqueda);
+		}
+
+		/// <summary>
+		/// Comprueba si un proyecto contiene un recurso concreto
+		/// </summary>
+		/// <param name="pProyectoID">Identificador del proyecto seleccionado</param>
+		/// <param name="pRecurso">Identificador del recurso</param>
+		/// <returns>Cierto si el recurso pertenece al proyecto y falso en caso contrario</returns>
+		public bool RecursoEstaEnProyecto(string pProyectoID, string pRecurso)
+        {
+            return FacetadoAD.RecursoEstaEnProyecto(pProyectoID, pRecurso);
+        }
+
+
+		/// <summary>
+		/// Devuelve los IDs de los recursos del proyecto dado que contienen pTermino en su triple search 
+		/// </summary>
+		/// <param name="pProyectoID"></param>
+		/// <param name="pTermino"></param>
+		/// <returns></returns>
+		public List<string> ObtenerIdRecursosConBusquedaPorTextoLibre(string pProyectoID, string pTermino)
+        {
+            return FacetadoAD.ObtenerIdRecursosConBusquedaPorTextoLibre(pProyectoID, pTermino);
+        }
+
+		/// <summary>
+		/// Comprueba si la búsqueda mediante la instrucción bif:contains por un término encuentra un recurso concreto
+		/// </summary>
+		/// <param name="pProyectoID">Identificador del proyecto seleccionado</param>
+		/// <param name="pGuidRecurso">Identificador del recurso a buscar</param>
+		/// <param name="pTermino">término de búsqueda</param>
+		/// <returns>Cierto si el recurso es indexable por el término y falso en caso contrario.</returns>
+		public bool RecursoBuscablePorTermino(string pProyectoID, string pRecurso, string pTermino)
+        {
+            return FacetadoAD.RecursoBuscablePorTermino(pProyectoID, pRecurso, pTermino);
+        }
+
+		public void ObtenerAutocompletar(string proyectoID, FacetadoDS pFacetadoDS, Dictionary<string, List<string>> pListaFiltros, List<string> pListaFiltrosExtra, bool estaMyGnoss, bool EsMienbroComunidad, bool EsInvitado, string Identidad, int pInicio, int pLimite, List<string> pSemanticos, string pFiltrosContexto)
         {
             //Obtener predicados semánticos. arecipe:type, arecipe:nutrition
             FacetadoAD.ObtenerAutocompletar(proyectoID, pFacetadoDS, pListaFiltros, pListaFiltrosExtra, estaMyGnoss, EsMienbroComunidad, EsInvitado, Identidad, pInicio, pLimite, pSemanticos, pFiltrosContexto);
@@ -930,7 +1020,9 @@ namespace Es.Riam.Gnoss.Logica.Facetado
         }
 
         public void ObtieneDatosAutocompletar(string nombregrafo, string filtro, FacetadoDS pfacetadoDS)
-        { FacetadoAD.ObtieneDatosAutocompletar(nombregrafo, filtro, pfacetadoDS); }
+        { 
+            FacetadoAD.ObtieneDatosAutocompletar(nombregrafo, filtro, pfacetadoDS); 
+        }
 
         /// <summary>
         /// Inserta una serie valores para unos determinados grafos.
@@ -2145,6 +2237,33 @@ namespace Es.Riam.Gnoss.Logica.Facetado
             return FacetadoAD.ObtenerEntidadesEnProyectoIDDocumentoID(pProyectoID, pDocumentoID);
         }
 
+
+		public string ObtenerConsultaDeFaceta(string pProyectoID, string pClaveFaceta, Dictionary<string, List<string>> pListaFiltros, List<string> pListaFiltrosExtra,
+            bool pEstaEnMyGnoss, bool pEsMiembroComunidad, bool pEsInvitado, string pIdentidadID, TipoDisenio pTipoDisenio, int pInicio, int pLimite, 
+            List<string> pSemanticos, string pFiltroContextoWhere, TipoProyecto pTipoProyecto, bool pEsRango, List<int> pListaRangos, bool pExcluyente, 
+            bool pExcluirPersonas, bool pPermitirRecursosPrivados, bool pOmitirPalabrasNoRelevantesSearch, int pReciproca, 
+            TipoPropiedadFaceta pTipoPropiedadesFaceta, Dictionary<string, Tuple<string, string, string, bool>> pFiltrosSearchPersonalizados, bool pInmutable, 
+            bool pEsMovil, List<Guid> pListaExcluidos = null, Guid pPestanyaID = new Guid()) 
+        {
+            int numeroAuxiliarVariablesIguales = 2;
+            string nombreFacetaSinPrefijo = string.Empty;
+            string consultaReciproca = string.Empty;
+			string ultimaFacetaAux = string.Empty;
+			if (pListaFiltros.ContainsKey("autocompletar"))
+			{
+				ultimaFacetaAux = "autocompletar";
+			}
+			FacetadoAD.ObtenerDatosFiltroReciproco(out consultaReciproca, pClaveFaceta, out pClaveFaceta);
+
+			return FacetadoAD.ObtenerConsultaDeFaceta(numeroAuxiliarVariablesIguales, nombreFacetaSinPrefijo, consultaReciproca, ultimaFacetaAux,
+                pProyectoID, pClaveFaceta, pListaFiltros, pListaFiltrosExtra, pEstaEnMyGnoss, pEsMiembroComunidad, pEsInvitado, pIdentidadID,
+                pTipoDisenio, pInicio, pLimite, pSemanticos, pFiltroContextoWhere, pTipoProyecto, pEsRango, pListaRangos, pExcluyente, pExcluirPersonas,
+                pPermitirRecursosPrivados, pOmitirPalabrasNoRelevantesSearch, pReciproca, pTipoPropiedadesFaceta, pFiltrosSearchPersonalizados,
+                pInmutable, pEsMovil, pListaExcluidos, pPestanyaID);
+        }
+
+
+
         #endregion
 
         #region Propiedades
@@ -2591,6 +2710,11 @@ namespace Es.Riam.Gnoss.Logica.Facetado
         public List<string> ObtenerSujetosConObjetos(string pGrafo, List<string> pObjetos)
         {
             return FacetadoAD.ObtenerSujetosConObjetos(pGrafo, pObjetos);
+        }
+
+        public Dictionary<string, List<string>> ObtenerInformacionOntologias(Guid organizacionID, Guid proyectoID)
+        {
+            return FacetadoAD.ObtenerInformacionOntologias(organizacionID, proyectoID);
         }
 
         #endregion

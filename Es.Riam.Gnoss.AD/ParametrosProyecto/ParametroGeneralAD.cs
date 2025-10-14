@@ -1,8 +1,11 @@
 using Es.Riam.AbstractsOpen;
 using Es.Riam.Gnoss.AD.EntityModel;
 using Es.Riam.Gnoss.AD.EntityModel.Models.ParametroGeneralDS;
+using Es.Riam.Gnoss.AD.ParametroAplicacion;
 using Es.Riam.Gnoss.Util.Configuracion;
 using Es.Riam.Gnoss.Util.General;
+using Microsoft.Extensions.Logging;
+using Serilog.Core;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -163,14 +166,18 @@ namespace Es.Riam.Gnoss.AD.ParametrosProyecto
         #region Constructor
 
         private EntityContext mEntityContext;
+        private ILogger mLogger;
+        private ILoggerFactory mLoggerFactory;
 
         /// <summary>
         /// Constructor sin parámetros
         /// </summary>
-        public ParametroGeneralAD(LoggingService loggingService, EntityContext entityContext, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication)
-            : base(loggingService, entityContext, configService, servicesUtilVirtuosoAndReplication)
+        public ParametroGeneralAD(LoggingService loggingService, EntityContext entityContext, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication, ILogger<ParametroGeneralAD> logger, ILoggerFactory loggerFactory)
+            : base(loggingService, entityContext, configService, servicesUtilVirtuosoAndReplication,logger,loggerFactory)
         {
             mEntityContext = entityContext;
+            mLogger = logger;
+            mLoggerFactory = loggerFactory;
             CargarConsultasYDataAdapters(IBD);
         }
 
@@ -179,10 +186,12 @@ namespace Es.Riam.Gnoss.AD.ParametrosProyecto
         /// </summary>
         /// <param name="pFicheroConfiguracionBD"></param>
         /// <param name="pUsarVariableEstatica">Si se están usando hilos con diferentes conexiones: FALSE. En caso contrario TRUE</param>
-        public ParametroGeneralAD(string pFicheroConfiguracionBD, LoggingService loggingService, EntityContext entityContext, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication)
-            : base(pFicheroConfiguracionBD, loggingService, entityContext, configService, servicesUtilVirtuosoAndReplication)
+        public ParametroGeneralAD(string pFicheroConfiguracionBD, LoggingService loggingService, EntityContext entityContext, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication, ILogger<ParametroGeneralAD> logger, ILoggerFactory loggerFactory)
+            : base(pFicheroConfiguracionBD, loggingService, entityContext, configService, servicesUtilVirtuosoAndReplication,logger,loggerFactory)
         {
             mEntityContext = entityContext;
+            mLogger = logger;
+            mLoggerFactory = loggerFactory;
             this.CargarConsultasYDataAdapters(IBD);
         }
 
@@ -205,9 +214,9 @@ namespace Es.Riam.Gnoss.AD.ParametrosProyecto
                 VistaVirtualProyecto = textoProyecto,
                 TextoPersonalizacion = textoPersonalizacion
             }).Where(item => item.VistaVirtualProyecto.ProyectoID.Equals(pProyectoID)).Select(item => item.TextoPersonalizacion).ToList();
-        }
+		}
 
-        public List<TextosPersonalizadosPersonalizacion> ObtenerTextosPersonalizadosDominio(string pDominio, Guid pPersonalizacionEcosistema)
+		public List<TextosPersonalizadosPersonalizacion> ObtenerTextosPersonalizadosDominio(string pDominio, Guid pPersonalizacionEcosistema)
         {
             List<TextosPersonalizadosPersonalizacion> listaTextos = new List<TextosPersonalizadosPersonalizacion>();
 
@@ -223,7 +232,9 @@ namespace Es.Riam.Gnoss.AD.ParametrosProyecto
                     Proyecto = proyecto
                 }).Select(item => item.VistaVirtualProyecto.PersonalizacionID).Distinct().ToList();
 
-                listaTextos = mEntityContext.TextosPersonalizadosPersonalizacion.Where(texto => texto.PersonalizacionID.Equals(pPersonalizacionEcosistema)).Select(item => item).Concat(mEntityContext.TextosPersonalizadosPersonalizacion.Where(personalizacion => listaGuids.Contains(personalizacion.PersonalizacionID)).Distinct()).ToList();
+                listaTextos = mEntityContext.TextosPersonalizadosPersonalizacion.Where(item => item.PersonalizacionID.Equals(pPersonalizacionEcosistema) || listaGuids.Contains(item.PersonalizacionID)).ToList();
+
+                //listaTextos = mEntityContext.TextosPersonalizadosPersonalizacion.Where(texto => texto.PersonalizacionID.Equals(pPersonalizacionEcosistema)).Select(item => item).Concat(mEntityContext.TextosPersonalizadosPersonalizacion.Where(personalizacion => listaGuids.Contains(personalizacion.PersonalizacionID)).Distinct()).ToList();
             }
 
             return listaTextos;
@@ -323,6 +334,17 @@ namespace Es.Riam.Gnoss.AD.ParametrosProyecto
         public List<TextosPersonalizadosPersonalizacion> ObtenerTextosPersonalizadosPersonalizacionEcosistema(Guid pPersonalizacionEcosistemaID)
         {
             return mEntityContext.TextosPersonalizadosPersonalizacion.Where(textosPersonalizadosPersonalizacion => textosPersonalizadosPersonalizacion.PersonalizacionID.Equals(pPersonalizacionEcosistemaID)).ToList();
+        }
+
+        /// <summary>
+        /// Obtiene las traducciones de una personalizacion por el idioma
+        /// </summary>
+        /// <param name="pPersonalizacionEcosistemaID"></param>
+        /// <param name="pLanguage"></param>
+        /// <returns></returns>
+        public List<TextosPersonalizadosPersonalizacion> ObtenerTextosPersonalizadosPersonalizacionEcosistemaPorIdioma(Guid pPersonalizacionEcosistemaID, string pLanguage)
+        {
+            return mEntityContext.TextosPersonalizadosPersonalizacion.Where(textosPersonalizadosPersonalizacion => textosPersonalizadosPersonalizacion.PersonalizacionID.Equals(pPersonalizacionEcosistemaID) && textosPersonalizadosPersonalizacion.Language.Equals(pLanguage)).ToList();
         }
 
         public List<TextosPersonalizadosPersonalizacion> ObtenerTraduccionPorTextoIdDePersonalizacion(Guid pPersonalizacionID, string pTextoID)

@@ -1,5 +1,6 @@
 ﻿using Es.Riam.AbstractsOpen;
 using Es.Riam.Gnoss.AD.EntityModel;
+using Es.Riam.Gnoss.Elementos.Amigos;
 using Es.Riam.Gnoss.Logica.ServiciosGenerales;
 using Es.Riam.Gnoss.Util.Configuracion;
 using Es.Riam.Gnoss.Util.GeneradorClases;
@@ -7,6 +8,7 @@ using Es.Riam.Gnoss.Util.General;
 using Es.Riam.Gnoss.Web.MVC.Models.GeneradorClases;
 using Es.Riam.Semantica.OWL;
 using Es.Riam.Util;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -39,11 +41,14 @@ namespace OntologiaAClase
         private string nombreOntoOriginal;
         private Dictionary<string, string> listaPrefijosOntologias;
         private IServicesUtilVirtuosoAndReplication mServicesUtilVirtuosoAndReplication;
-
-        public ControladorOntologiaAClaseJava(OntologiaGenerar pOnto, string pCarpetaPadre, string pNombreCarpeta, string pDirectorio, string pNombreCortoProy, Guid pProyID, List<string> pNombresOntologia, List<ObjetoPropiedad> pListaObjetosPropiedad, Dictionary<string, string> pListaPrefijosOntologias, EntityContext pEntityContext, LoggingService pLoggingService, ConfigService pConfigService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication)
+        private ILogger mlogger;
+        private ILoggerFactory mLoggerFactory;
+        public ControladorOntologiaAClaseJava(OntologiaGenerar pOnto, string pCarpetaPadre, string pNombreCarpeta, string pDirectorio, string pNombreCortoProy, Guid pProyID, List<string> pNombresOntologia, List<ObjetoPropiedad> pListaObjetosPropiedad, Dictionary<string, string> pListaPrefijosOntologias, EntityContext pEntityContext, LoggingService pLoggingService, ConfigService pConfigService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication, ILogger<ControladorOntologiaAClaseJava> logger, ILoggerFactory loggerFactory)
         {
             nombreCortoProy = pNombreCortoProy;
             proyID = pProyID;
+            mlogger = logger;
+            mLoggerFactory = loggerFactory;
             this.Clase = new StringBuilder();
             this.directorio = pDirectorio;
             this.nombreOnto = pOnto.nombreOnto;
@@ -103,7 +108,7 @@ namespace OntologiaAClase
 
         private List<string> ObtenerPropiedadesSearch()
         {
-            ProyectoCN proyectoCN = new ProyectoCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+            ProyectoCN proyectoCN = new ProyectoCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<ProyectoCN>(), mLoggerFactory);
             return proyectoCN.ObtenerPropiedadesSearch(proyID);
         }
 
@@ -122,7 +127,7 @@ namespace OntologiaAClase
 
         public void CrearEntidades(ElementoOntologia pEntidad, string pNombreOnto, string pRdfType)
         {
-            EntidadAClaseJava entidadAClaseJava = new EntidadAClaseJava(ontologia, pNombreOnto, contentXML, esPrimaria, listaIdiomas, nombreCortoProy, proyID, nombresOntologia, listaObjetosPropiedad, mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+            EntidadAClaseJava entidadAClaseJava = new EntidadAClaseJava(ontologia, pNombreOnto, contentXML, esPrimaria, listaIdiomas, nombreCortoProy, proyID, nombresOntologia, listaObjetosPropiedad, mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<EntidadAClaseJava>(), mLoggerFactory);
             GenerarEnumJava enumJava = new GenerarEnumJava(contentXML, listaIdiomas, nombreCortoProy, proyID, nombresOntologia, listaObjetosPropiedad);
             File.WriteAllText(Path.Combine(directorio, carpetaPadre, nombreCarpeta, pNombreOnto, UtilCadenasOntology.ObtenerNombreProp(pEntidad.TipoEntidad) + ".java"), entidadAClaseJava.GenerarClaseJava(pEntidad, pNombreOnto, pRdfType, listaPropiedadesSearch, listaPropiedadesPadreAnidadasSearch));
             File.WriteAllText(Path.Combine(directorio, carpetaPadre, nombreCarpeta, pNombreOnto, "LanguageEnum" + ".java"), enumJava.CrearEnum(listaIdiomas, pNombreOnto));

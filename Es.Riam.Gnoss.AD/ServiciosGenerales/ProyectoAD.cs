@@ -3,40 +3,46 @@ using Es.Riam.Gnoss.AD.Documentacion;
 using Es.Riam.Gnoss.AD.EncapsuladoDatos;
 using Es.Riam.Gnoss.AD.EntityModel;
 using Es.Riam.Gnoss.AD.EntityModel.Models;
+using Es.Riam.Gnoss.AD.EntityModel.Models.Cache;
 using Es.Riam.Gnoss.AD.EntityModel.Models.Carga;
 using Es.Riam.Gnoss.AD.EntityModel.Models.Documentacion;
 using Es.Riam.Gnoss.AD.EntityModel.Models.Faceta;
 using Es.Riam.Gnoss.AD.EntityModel.Models.IdentidadDS;
 using Es.Riam.Gnoss.AD.EntityModel.Models.OrganizacionDS;
-using Es.Riam.Gnoss.AD.EntityModel.Models.PersonaDS;
 using Es.Riam.Gnoss.AD.EntityModel.Models.ProyectoDS;
+using Es.Riam.Gnoss.AD.EntityModel.Models.Roles;
 using Es.Riam.Gnoss.AD.Identidad;
+using Es.Riam.Gnoss.AD.Usuarios;
+using Es.Riam.Gnoss.AD.ParametroAplicacion;
 using Es.Riam.Gnoss.Util.Configuracion;
 using Es.Riam.Gnoss.Util.General;
 using Es.Riam.Gnoss.Web.MVC.Models;
 using Es.Riam.Gnoss.Web.MVC.Models.Administracion;
 using Es.Riam.Gnoss.Web.MVC.Models.ViewModels;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using Microsoft.Exchange.WebServices.Data;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Data;
 using System.Data.Common;
 using System.Drawing;
 using System.Linq;
 using System.Text;
 
+
 namespace Es.Riam.Gnoss.AD.ServiciosGenerales
 {
     #region Enumeraciones
 
     /// <summary>
-    /// Enumeraci�n para distinguir tipos de proyectos
+    /// Enumeraci?n para distinguir tipos de proyectos
     /// </summary>
     public enum TipoProyecto
     {
         /// <summary>
-        /// Proyecto de organizaci�n
+        /// Proyecto de organizaci?n
         /// </summary>
         DeOrganizacion = 0,
         /// <summary>
@@ -60,7 +66,7 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
         /// </summary>
         Catalogo = 5,
         /// <summary>
-        /// Educaci�n primaria
+        /// Educaci?n primaria
         /// </summary>
         EducacionPrimaria = 6,
         /// <summary>
@@ -72,6 +78,15 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
         /// </summary>
         CatalogoNoSocial = 8
     }
+
+    public class SectionAttribute : Attribute
+    {
+        public string Nombre { get; set; }
+		public SectionAttribute(string name)
+		{
+			this.Nombre = name;
+		}
+	}
 
     public static class TipoProyectoExt
     {
@@ -104,12 +119,12 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
     }
 
     /// <summary>
-    /// Enumeraci�n para distinguir tipos de acceso
+    /// Enumeraci?n para distinguir tipos de acceso
     /// </summary>
     public enum TipoAcceso
     {
         /// <summary>
-        /// Proyecto p�blico
+        /// Proyecto p?blico
         /// </summary>
         Publico = 0,
         /// <summary>
@@ -127,7 +142,7 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
     }
 
     /// <summary>
-    /// Enumeraci�n para distinguir estados de un proyecto
+    /// Enumeraci?n para distinguir estados de un proyecto
     /// </summary>
     public enum EstadoProyecto
     {
@@ -154,7 +169,7 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
     }
 
     /// <summary>
-    /// Enumeraci�n para distinguir tipos administradores/supervisores/usuarios del proyecto
+    /// Enumeraci?n para distinguir tipos administradores/supervisores/usuarios del proyecto
     /// </summary>
     public enum TipoRolUsuario
     {
@@ -171,13 +186,424 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
         /// </summary>
         Usuario = 2,
         /// <summary>
-        /// Dise�ador
+        /// Dise?ador
         /// </summary>
         Diseniador = 3
     }
 
+    public enum TipoDePermiso
+    {
+        Comunidad,
+        Contenidos,
+        Recursos,
+        Ecosistema
+    }
+
+	public enum PermisoComunidad : ulong
+	{
+		[Description("DESCPERMISOINFOGENERAL")]
+        [Section("COMUNIDAD")]
+		GestionarInformacionGeneral = 1,
+		[Description("DESCPERMISOTIPOCONTENIDO")]
+		[Section("COMUNIDAD")]
+		GestionarTiposDeContenidosYPermisos = 2,
+		[Description("DESCPERMISOINTERACCIONESSOCIALES")]
+		[Section("COMUNIDAD")]
+		GestionarInteraccionesSociales = 4,
+		[Description("DESCPERMISOMIEMBROS")]
+		[Section("COMUNIDAD")]
+		GestionarMiembros = 8,
+		[Description("DESCPERMISOSOLICITUDESGRUPO")]
+		[Section("COMUNIDAD")]
+		GestionarSolicitudesDeAccesoAGrupo = 16,
+		[Description("DESCPERMISONIVELESCERTIFICACION")]
+		[Section("COMUNIDAD")]
+		GestionarNivelesDeCertificacion = 32,
+		[Description("DESCPERMISOPESOSAUTOCOMPLETAR")]
+		[Section("ESTRUCTURA")]
+		GestionarPesosAutocompletado = 64,
+		[Description("DESCPERMISOREDIRECCIONES")]
+		[Section("ESTRUCTURA")]
+		GestionarRedirecciones = 128,
+		[Description("DESCPERMISOOAUTH")]
+		[Section("CONFIGURACION")]
+		DescargarConfiguracionOAuth = 256,
+		[Description("DESCPERMISOCOOKIES")]
+		[Section("CONFIGURACION")]
+		GestionarCookies = 512,
+		[Description("DESCPERMISOFTP")]
+		[Section("CONFIGURACION")]
+		AccederAlFTP = 1024,
+		[Description("DESCPERMISOTRADUCCIONES")]
+		[Section("CONFIGURACION")]
+		GestionarTraducciones = 2048,
+		[Description("DESCPERMISODATOSEXTRA")]
+		[Section("CONFIGURACION")]
+		GestionarDatosExtraRegistro = 4096,
+		[Description("DESCPERMISOTRAZAS")]
+		[Section("CONFIGURACION")]
+		GestionarTrazas = 8192,
+		[Description("DESCPERMISOCONFIGURACIONES")]
+		[Section("CONFIGURACION")]
+		GestionarConfiguraciones = 16384,
+		[Description("DESCPERMISOCACHE")]
+		[Section("CONFIGURACION")]
+		GestionarCache = 32768,
+		[Description("DESCPERMISOSEO")]
+		[Section("CONFIGURACION")]
+		AdministrarSEOYGoogleAnalytics = 65536,
+		[Description("DESCPERMISOESTADISTICAS")]
+		[Section("CONFIGURACION")]
+		AccederAEstadisticasDeLaComunidad = 131072,
+		[Description("DESCPERMISOCLAUSULAS")]
+		[Section("CONFIGURACION")]
+		GestionarClausulasDeRegistro = 262144,
+		[Description("DESCPERMISOCORREO")]
+		[Section("CONFIGURACION")]
+		GestionarBuzonDeCorreo = 524288,
+		[Description("DESCPERMISOSERVICIOSEXTERNOS")]
+		[Section("CONFIGURACION")]
+		GestionarServiciosExternos = 1048576,
+		[Description("DESCPERMISOESTADOSERVICIOS")]
+		[Section("CONFIGURACION")]
+		AccederAlEstadoDeLosServicios = 2097152,
+		[Description("DESCPERMISOOPCIONESMETA")]
+		[Section("CONFIGURACION")]
+		GestionarOpcionesDelMetaadministrador = 4194304,
+		[Description("DESCPERMISOEVENTOS")]
+		[Section("CONFIGURACION")]
+		GestionarEventosExternos = 8388608,
+		[Description("DESCPERMISOSPARQL")]
+		[Section("GRAFO")]
+		AccesoSparqlEndpoint = 16777216,
+		[Description("DESCPERMISOCARGAMASIVA")]
+		[Section("GRAFO")]
+		ConsultarCargasMasivas = 33554432,
+		[Description("DESCPERMISOBORRADOMASIVO")]
+		[Section("GRAFO")]
+		EjecutarBorradoMasivo = 67108864,
+		[Description("DESCPERMISOSUGERENCIASBUSQUEDA")]
+		[Section("GRAFO")]
+		GestionarSugerenciasDeBusqueda = 134217728,
+		[Description("DESCPERMISOCONTEXTOS")]
+		[Section("GRAFO")]
+		GestionarInformacionContextual = 268435456,
+		[Description("DESCPERMISOSEARCHPERSONALIZADO")]
+		[Section("DESCUBRIMIENTO")]
+		GestionarParametrosDeBusquedaPersonalizados = 536870912,
+		[Description("DESCPERMISOMAPA")]
+		[Section("DESCUBRIMIENTO")]
+		GestionarMapa = 1073741824,
+		[Description("DESCPERMISOGRAFICOS")]
+		[Section("DESCUBRIMIENTO")]
+		AdministrarGraficos = 2147483648,
+		[Description("DESCPERMISOVISTAS")]
+		[Section("APARIENCIA")]
+		GestionarVistas = 4294967296,
+		[Description("DESCPERMISOIC")]
+		[Section("IC")]
+		GestionarIntegracionContinua = 8589934592,
+		[Description("DESCPERMISOREPROCESAR")]
+		[Section("MANTENIMIENTO")]
+		EjecutarReprocesadosDeRecursos = 17179869184,
+		[Description("DESCPERMISOAPLICACIONES")]
+		[Section("APLICACIONES")]
+		GestionarAplicacionesEspecificas = 34359738368,
+		[Description("DESCPERMISOROLES")]
+		[Section("COMUNIDAD")]
+		GestionarRolesYPermisos = 68719476736
+	}
+
+	public enum PermisoContenidos : ulong
+	{
+		[Description("DESCPERMISOVERCATEGORIA")]
+		[Section("COMUNIDAD")]
+		VerCategorias = 1,
+		[Description("DESCPERMISOANYADIRCATEGORIA")]
+		[Section("COMUNIDAD")]
+		AnyadirCategoria = 2,
+		[Description("DESCPERMISOEDITARCATEGORIA")]
+		[Section("COMUNIDAD")]
+		ModificarCategoria = 4,
+		[Description("DESCPERMISOELIMINARCATEGORIA")]
+		[Section("COMUNIDAD")]
+		EliminarCategoria = 8,
+
+		[Description("DESCPERMISOVERPAGINA")]
+		[Section("ESTRUCTURA")]
+		VerPagina = 16,
+		[Description("DESCPERMISOCREARPAGINA")]
+		[Section("ESTRUCTURA")]
+		CrearPagina = 32,
+		[Description("DESCPERMISOPUBLICARPAGINA")]
+		[Section("ESTRUCTURA")]
+		PublicarPagina = 64,
+		[Description("DESCPERMISOEDITARPAGINA")]
+		[Section("ESTRUCTURA")]
+		EditarPagina = 128,
+		[Description("DESCPERMISOELIMINARPAGINA")]
+		[Section("ESTRUCTURA")]
+		EliminarPagina = 256,
+
+		[Description("DESCPERMISOVERCMS")]
+		[Section("ESTRUCTURA")]
+		VerComponenteCMS = 512,
+		[Description("DESCPERMISOCREARCMS")]
+		[Section("ESTRUCTURA")]
+		CrearComponenteCMS = 1024,
+		[Description("DESCPERMISOEDITARCMS")]
+		[Section("ESTRUCTURA")]
+		EditarComponenteCMS = 2048,
+		[Description("DESCPERMISOELIMINARCMS")]
+		[Section("ESTRUCTURA")]
+		EliminarComponenteCMS = 4096,
+		[Description("DESCPERMISOMULTIMEDIACMS")]
+		[Section("ESTRUCTURA")]
+		GestionarMultimediaCMS = 8192,
+
+		[Description("DESCPERMISOGESTIONAROC")]
+		[Section("GRAFO")]
+		GestionarOC = 16384,
+		[Description("DESCPERMISOANYADIRSECUNDARIA")]
+		[Section("GRAFO")]
+		AnyadirValorEntidadSecundaria = 32768,
+		[Description("DESCPERMISOMODIFICARSECUNDARIA")]
+		[Section("GRAFO")]
+		ModificarValorEntidadSecundaria = 65536,
+		[Description("DESCPERMISOELIMINARSECUNDARIA")]
+		[Section("GRAFO")]
+		EliminarValorEntidadSecundaria = 131072,
+
+		[Description("DESCPERMISOVERTESAURO")]
+		[Section("GRAFO")]
+		VerTesauroSemantico = 262144,
+		[Description("DESCPERMISOANYADIRTESAURO")]
+		[Section("GRAFO")]
+		AnyadirValorTesauro = 524288,
+		[Description("DESCPERMISOMODIFICARTESAURO")]
+		[Section("GRAFO")]
+		ModificarValorTesauro = 1048576,
+		[Description("DESCPERMISOELIMINARTESAURO")]
+		[Section("GRAFO")]
+		EliminarValorTesauro = 2097152,
+
+		[Description("DESCPERMISOVERFACETA")]
+		[Section("DESCUBRIMIENTO")]
+		VerFaceta = 4194304,
+		[Description("DESCPERMISOCREARFACETA")]
+		[Section("DESCUBRIMIENTO")]
+		CrearFaceta = 8388608,
+		[Description("DESCPERMISOMODIFICARFACETA")]
+		[Section("DESCUBRIMIENTO")]
+		ModificarFaceta = 16777216,
+		[Description("DESCPERMISOELIMINARFACETA")]
+		[Section("DESCUBRIMIENTO")]
+		EliminarFaceta = 33554432,
+
+		[Description("DESCPERMISORESTAURARVERSIONCMS")]
+		[Section("ESTRUCTURA")]
+		RestaurarVersionCMS = 67108864,
+		[Description("DESCPERMISOELIMINARVERSIONCMS")]
+		[Section("ESTRUCTURA")]
+		EliminarVersionCMS = 134217728,
+
+		[Description("DESCPERMISORESTAURARVERSIONPAGINA")]
+		[Section("ESTRUCTURA")]
+		RestaurarVersionPagina = 268435456,
+		[Description("DESCPERMISOELIMINARVERSIONPAGINA")]
+		[Section("ESTRUCTURA")]
+		EliminarVersionPagina = 536870912
+	}
+
+    public enum PermisoEcosistema : ulong
+    {
+		[Description("DESCPERMISOECOSISTEMATRADUCCIONES")]
+		[Section("ECOSISTEMA")]
+		GestionarTraduccionesEcosistema = 1,
+		[Description("DESCPERMISOECOSISTEMADATOSEXTRA")]
+		[Section("ECOSISTEMA")]
+		GestionarDatosExtraRegistroEcosistema = 2,
+		[Description("DESCPERMISOECOSISTEMACORREO")]
+		[Section("ECOSISTEMA")]
+		GestionarBuzonDeCorreoEcosistema = 4,
+		[Description("DESCPERMISOECOSISTEMAEVENTOS")]
+		[Section("ECOSISTEMA")]
+		GestionarEventosExternosEcosistema = 8,
+		[Description("DESCPERMISOECOSISTEMACATEGORIAS")]
+		[Section("ECOSISTEMA")]
+		GestionarCategoriasDePlataforma = 16,
+		[Description("DESCPERMISOECOSISTEMACONFIGURACION")]
+		[Section("ECOSISTEMA")]
+		GestionarLaConfiguracionPlataforma = 32,
+		[Description("DESCPERMISOECOSISTEMASHAREPOINT")]
+		[Section("ECOSISTEMA")]
+		ConfiguracionDeSharePoint = 64,
+		[Description("DESCPERMISOECOSISTEMAVISTAS")]
+		[Section("ECOSISTEMA")]
+		GestionarVistasEcosistema = 128,
+		[Description("DESCPERMISOECOSISTEMAIC")]
+		[Section("ECOSISTEMA")]
+		AdministrarIntegracionContinua = 256,
+		[Description("DESCPERMISOECOSISTEMASOLICITUDES")]
+		[Section("ECOSISTEMA")]
+		AdministrarSolicitudesComunidad = 512,
+		[Description("DESCPERMISOECOSISTEMAROLES")]
+		[Section("ECOSISTEMA")]
+		GestionarRolesYPermisosEcosistema = 1024,
+		[Description("DESCPERMISOECOSISTEMAMIEMBROS")]
+		[Section("ECOSISTEMA")]
+		AdministrarMiembrosEcosistema = 2048
+	}
+
+    public enum PermisoRecursos : ulong
+    {
+		[Description("DESCPERMISOCREARADJUNTO")]
+		[Section("RECURSOS")]
+		CrearRecursoTipoAdjunto = 1,
+		[Description("DESCPERMISOEDITARADJUNTO")]
+		[Section("RECURSOS")]
+		EditarRecursoTipoAdjunto = 2,
+		[Description("DESCPERMISOELIMINARADJUNTO")]
+		[Section("RECURSOS")]
+		EliminarRecursoTipoAdjunto = 4,
+
+		[Description("DESCPERMISOCREARREFERENCIA")]
+		[Section("RECURSOS")]
+		CrearRecursoTipoReferenciaADocumentoFisico = 8,
+		[Description("DESCPERMISOEDITARREFERENCIA")]
+		[Section("RECURSOS")]
+		EditarRecursoTipoReferenciaADocumentoFisico = 16,
+		[Description("DESCPERMISOELIMINARREFERNCIA")]
+		[Section("RECURSOS")]
+		EliminarRecursoTipoReferenciaADocumentoFisico = 32,
+
+		[Description("DESCPERMISOCREARENLACE")]
+		[Section("RECURSOS")]
+		CrearRecursoTipoEnlace = 64,
+		[Description("DESCPERMISOEDITARENLACE")]
+		[Section("RECURSOS")]
+		EditarRecursoTipoEnlace = 128,
+		[Description("DESCPERMISOELIMINARENLACE")]
+		[Section("RECURSOS")]
+		EliminarRecursoTipoEnlace = 256,
+
+		[Description("DESCPERMISOCREARNOTA")]
+		[Section("RECURSOS")]
+		CrearNota = 512,
+		[Description("DESCPERMISOEDITARNOTA")]
+		[Section("RECURSOS")]
+		EditarNota = 1024,
+		[Description("DESCPERMISOELIMINARNOTA")]
+		[Section("RECURSOS")]
+		EliminarNota = 2048,
+
+		[Description("DESCPERMISOCREARPREGUNTA")]
+		[Section("RECURSOS")]
+		CrearPregunta = 4096,
+		[Description("DESCPERMISOEDITARPREGUNTA")]
+		[Section("RECURSOS")]
+		EditarPregunta = 8192,
+		[Description("DESCPERMISOELIMINARPREGUNTA")]
+		[Section("RECURSOS")]
+		EliminarPregunta = 16384,
+
+		[Description("DESCPERMISOCREARENCUESTA")]
+		[Section("RECURSOS")]
+		CrearEncuesta = 32768,
+		[Description("DESCPERMISOEDITARENCUESTA")]
+		[Section("RECURSOS")]
+		EditarEncuesta = 65536,
+		[Description("DESCPERMISOELIMINARENCUESTA")]
+		[Section("RECURSOS")]
+		EliminarEncuesta = 131072,
+
+		[Description("DESCPERMISOCREARDEBATE")]
+		[Section("RECURSOS")]
+		CrearDebate = 262144,
+		[Description("DESCPERMISOEDITARDEBATE")]
+		[Section("RECURSOS")]
+		EditarDebate = 524288,
+		[Description("DESCPERMISOELIMINARDEBATE")]
+		[Section("RECURSOS")]
+		EliminarDebate = 1048576,
+
+		[Description("DESCPERMISOCREARSEMANTICO")]
+		[Section("RECURSOS")]
+		CrearRecursoSemantico = 2097152,
+		[Description("DESCPERMISOEDITARSEMANTICO")]
+		[Section("RECURSOS")]
+		EditarRecursoSemantico = 4194304,
+		[Description("DESCPERMISOELIMINARSEMANTICO")]
+		[Section("RECURSOS")]
+		EliminarRecursoSemantico = 8388608,
+
+		[Description("DESCPERMISORESTAURARVERSIONENLACE")]
+		[Section("RECURSOS")]
+		RestaurarVersionEnlace = 16777216,
+		[Description("DESCPERMISOELIMINARVERSIONENLACE")]
+		[Section("RECURSOS")]
+		EliminarVersionEnlace = 33554432,
+
+		[Description("DESCPERMISORESTAURARVERSIONADJUNTO")]
+		[Section("RECURSOS")]
+		RestaurarVersionAdjunto = 67108864,
+		[Description("DESCPERMISOELIMINARVERSIONADJUNTO")]
+		[Section("RECURSOS")]
+		EliminarVersionAdjunto = 134217728,
+
+		[Description("DESCPERMISORESTAURARVERSIONREFERNCIA")]
+		[Section("RECURSOS")]
+		RestaurarVersionReferencia = 268435456,
+		[Description("DESCPERMISOELIMINARVERSIONREFERNCIA")]
+		[Section("RECURSOS")]
+		EliminarVersionReferencia = 536870912,
+
+		[Description("DESCPERMISORESTAURARVERSIONNOTA")]
+		[Section("RECURSOS")]
+		RestaurarVersionNota = 1073741824,
+		[Description("DESCPERMISORESELIMINARVERSIONNOTA")]
+		[Section("RECURSOS")]
+		EliminarVersionNota = 2147483648,
+
+		[Description("DESCPERMISORESTAURARVERSIONPREGUNTA")]
+		[Section("RECURSOS")]
+		RestaurarVersionPregunta = 4294967296,
+		[Description("DESCPERMISOELIMINARVERSIONPREGUNTA")]
+		[Section("RECURSOS")]
+		EliminarVersionPregunta = 8589934592,
+
+		[Description("DESCPERMISORESTAURARVERSIONENCUESTA")]
+		[Section("RECURSOS")]
+		RestaurarVersionEncuesta = 17179869184,
+		[Description("DESCPERMISOELIMINARVERSIONENCUESTA")]
+		[Section("RECURSOS")]
+		EliminarVersionEncuesta = 34359738368,
+        
+		[Description("DESCPERMISORESTAURARVERSIONDEBATE")]
+		[Section("RECURSOS")]
+		RestaurarVersionDebate = 68719476736,
+		[Description("DESCPERMISOELIMINARVERSIONDEBATE")]
+		[Section("RECURSOS")]
+		EliminarVersionDebate = 137438953472
+	}
+
+    public enum TipoPermisoRecursosSemanticos : ulong
+    {
+        Crear = 1,
+        Modificar = 2,
+        Eliminar = 4,
+        RestaurarVersion = 8,
+        EliminarVersion = 16
+    }
+
+    public enum AmbitoRol
+    {
+        Comunidad,
+        Ecosistema
+    }
+
     /// <summary>
-    /// Vistas que pueden tener los recursos en la home de tipo cat�logo
+    /// Vistas que pueden tener los recursos en la home de tipo cat?logo
     /// </summary>
     public enum TipoVistaHomeCatalogo
     {
@@ -195,7 +621,7 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
     public enum TipoUbicacionGadget
     {
         /// <summary>
-        /// Gadgets en el lateral de la Home de la comunidad(No cat�logos)
+        /// Gadgets en el lateral de la Home de la comunidad(No cat?logos)
         /// </summary>
         LateralHomeComunidad = 0,
         /// <summary>
@@ -215,39 +641,39 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
         /// </summary>
         CabeceraHomeComunidad = 4,
         /// <summary>
-        /// Gadgets en la cabecera del �ndice de la comunidad
+        /// Gadgets en la cabecera del ?ndice de la comunidad
         /// </summary>
         CabeceraIndiceComunidad = 5,
         /// <summary>
-        /// Gadgets en la cabecera de la p�gina de recursos
+        /// Gadgets en la cabecera de la p?gina de recursos
         /// </summary>
         CabeceraRecursosComunidad = 6,
         /// <summary>
-        /// Gadgets en la cabecera de las pesta�as de la comunidad
+        /// Gadgets en la cabecera de las pesta?as de la comunidad
         /// </summary>
         CabeceraPestanyasComunidad = 7,
         /// <summary>
-        /// Gadgets en la cabecera de la p�gina de debates
+        /// Gadgets en la cabecera de la p?gina de debates
         /// </summary>
         CabeceraDebatesComunidad = 8,
         /// <summary>
-        /// Gadgets en la cabecera de la p�gina de dafos
+        /// Gadgets en la cabecera de la p?gina de dafos
         /// </summary>
         CabeceraDafosComunidad = 9,
         /// <summary>
-        /// Gadgets en la cabecera de la p�gina de preguntas
+        /// Gadgets en la cabecera de la p?gina de preguntas
         /// </summary>
         CabeceraPreguntasComunidad = 10,
         /// <summary>
-        /// Gadgets en la cabecera de la p�gina de encuestas
+        /// Gadgets en la cabecera de la p?gina de encuestas
         /// </summary>
         CabeceraEncuestasComunidad = 11,
         /// <summary>
-        /// Gadgets en la cabecera de la p�gina de personas y organizaciones
+        /// Gadgets en la cabecera de la p?gina de personas y organizaciones
         /// </summary>
         CabeceraPersonasYOrgDeComunidad = 12,
         /// <summary>
-        /// Gadgets en la cabecera de la p�gina de acerca-de
+        /// Gadgets en la cabecera de la p?gina de acerca-de
         /// </summary>
         CabeceraAcercaDeComunidad = 13,
     }
@@ -255,7 +681,7 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
     public enum TipoEventoProyecto
     {
         /// <summary>
-        /// Evento disponible para todo el mundo
+        /// Evento disponible
         /// </summary>
         SinRestriccion = 0,
         /// <summary>
@@ -269,7 +695,7 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
     }
 
     /// <summary>
-    /// Enumeraci�n para distinguir los tipos de cabeceras
+    /// Enumeraci?n para distinguir los tipos de cabeceras
     /// </summary>
     public enum TipoCabeceraProyecto
     {
@@ -284,7 +710,7 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
     }
 
     /// <summary>
-    /// Enumeraci�n para distinguir los tipos de fichas
+    /// Enumeraci?n para distinguir los tipos de fichas
     /// </summary>
     public enum TipoFichaRecursoProyecto
     {
@@ -351,31 +777,31 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
     }
 
     /// <summary>
-    /// Enumeraci�n para distinguir los pasos del registro
+    /// Enumeraci?n para distinguir los pasos del registro
     /// </summary>
     public enum PasosRegistro
     {
         /// <summary>
-        /// P�gina de Preferencias
+        /// P?gina de Preferencias
         /// </summary>
         Preferencias = 0,
         /// <summary>
-        /// P�gina de Datos
+        /// P?gina de Datos
         /// </summary>
         Datos = 1,
         /// <summary>
-        /// P�gina de Conecta
+        /// P?gina de Conecta
         /// </summary>
         Conecta = 2
     }
 
     /// <summary>
-    /// Enumeraci�n para distinguir los campos genericos del registro
+    /// Enumeraci?n para distinguir los campos genericos del registro
     /// </summary>
     public enum TipoCampoGenericoRegistro
     {
         /// <summary>
-        /// Pa�s
+        /// Pa?s
         /// </summary>
         Pais = 0,
         /// <summary>
@@ -393,7 +819,7 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
     }
 
     /// <summary>
-    /// Enumeraci�n para distinguir tipos de privacidad de una pagina
+    /// Enumeraci?n para distinguir tipos de privacidad de una pagina
     /// </summary>
     public enum TipoPrivacidadPagina
     {
@@ -402,7 +828,7 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
         /// </summary>
         Normal = 0,
         /// <summary>
-        /// Tiene la privacidad contraria a la comunidad (si la comunidad es public es visible solo para miembros y si la comunidad es privada es publico para todo el mundo)
+        /// Tiene la privacidad contraria a la comunidad (si la comunidad es public es visible solo para miembros y si la comunidad es privada es publico)
         /// </summary>
         Especial = 1,
         /// <summary>
@@ -412,25 +838,55 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
     }
 
     /// <summary>
-    /// Tipos de configuraci�n extra para los elementos sem�nticos de una comunidad.
+    /// Tipos de configuraci?n extra para los elementos sem?nticos de una comunidad.
     /// </summary>
     public enum TipoConfigExtraSemantica
     {
         /// <summary>
-        /// Configuraci�n para tesauro sem�ntico.
+        /// Configuraci?n para tesauro sem?ntico.
         /// </summary>
         TesauroSemantico = 0,
         /// <summary>
-        /// Configuraci�n para una entidad secundaria.
+        /// Configuraci?n para una entidad secundaria.
         /// </summary>
         EntidadSecundaria = 1,
         /// <summary>
-        /// Configuraci�n para un grafo simple.
+        /// Configuraci?n para un grafo simple.
         /// </summary>
         GrafoSimple = 2
     }
 
     #endregion
+
+    #region Clases Join
+
+    public class JoinProyectoPestanyaBusquedaProyectoPestanyaMenu
+    {
+        public ProyectoPestanyaBusqueda ProyectoPestanyaBusqueda { get; set; }
+        public ProyectoPestanyaMenu ProyectoPestanyaMenu { get; set; }
+    }
+
+    #endregion
+
+    #region Joins
+
+    public static class JoinsProyecto
+    {
+        public static IQueryable<JoinProyectoPestanyaBusquedaProyectoPestanyaMenu> JoinProyectoPestanyaMenu(this IQueryable<ProyectoPestanyaBusqueda> pQuery)
+        {
+            EntityContext entityContext = (EntityContext)QueryContextAccess.GetDbContext(pQuery);
+
+            return pQuery.Join(entityContext.ProyectoPestanyaMenu, pestanyaBusqueda => pestanyaBusqueda.PestanyaID, pestanyaMenu => pestanyaMenu.PestanyaID, (pestanyaBusqueda, pestanyaMenu) => new JoinProyectoPestanyaBusquedaProyectoPestanyaMenu
+            {
+                ProyectoPestanyaBusqueda = pestanyaBusqueda,
+                ProyectoPestanyaMenu = pestanyaMenu
+            });
+        }
+    }
+
+    #endregion
+
+
 
     /// <summary>
     /// DataAdapter de proyecto
@@ -462,36 +918,40 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
         private EntityContext mEntityContext;
         private ConfigService mConfigService;
         private LoggingService mLoggingService;
+        private ILogger mlogger;
+        private ILoggerFactory mLoggerFactory;
 
         #endregion
 
         #region Constructores
 
         /// <summary>
-        /// Constructor por defecto, sin par�metros, utilizado cuando se requiere el GnossConfig.xml por defecto
+        /// Constructor por defecto, sin par?metros, utilizado cuando se requiere el GnossConfig.xml por defecto
         /// </summary>
-        public ProyectoAD(LoggingService loggingService, EntityContext entityContext, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication)
-            : base(loggingService, entityContext, configService, servicesUtilVirtuosoAndReplication)
+        public ProyectoAD(LoggingService loggingService, EntityContext entityContext, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication, ILogger<ProyectoAD> logger, ILoggerFactory loggerFactory)
+            : base(loggingService, entityContext, configService, servicesUtilVirtuosoAndReplication,logger,loggerFactory)
         {
             mEntityContext = entityContext;
             mLoggingService = loggingService;
             mConfigService = configService;
-
+            mlogger = logger;
+            mLoggerFactory = loggerFactory;
             CargarConsultasYDataAdapters();
         }
 
         /// <summary>
-        /// Constructor a partir del fichero de configuraci�n de conexi�n a la base de datos
+        /// Constructor a partir del fichero de configuraci?n de conexi?n a la base de datos
         /// </summary>
-        /// <param name="pFicheroConfiguracionBD">Ruta del fichero de configuraci�n de la conexi�n a base de datos</param>
-        /// <param name="pUsarVariableEstatica">Si se est�n usando hilos con diferentes conexiones: FALSE. En caso contrario TRUE</param>
-        public ProyectoAD(string pFicheroConfiguracionBD, LoggingService loggingService, EntityContext entityContext, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication)
-            : base(pFicheroConfiguracionBD, loggingService, entityContext, configService, servicesUtilVirtuosoAndReplication)
+        /// <param name="pFicheroConfiguracionBD">Ruta del fichero de configuraci?n de la conexi?n a base de datos</param>
+        /// <param name="pUsarVariableEstatica">Si se est?n usando hilos con diferentes conexiones: FALSE. En caso contrario TRUE</param>
+        public ProyectoAD(string pFicheroConfiguracionBD, LoggingService loggingService, EntityContext entityContext, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication, ILogger<ProyectoAD> logger, ILoggerFactory loggerFactory)
+            : base(pFicheroConfiguracionBD, loggingService, entityContext, configService, servicesUtilVirtuosoAndReplication,logger,loggerFactory)
         {
             mEntityContext = entityContext;
             mLoggingService = loggingService;
             mConfigService = configService;
-
+            mlogger = logger;
+            mLoggerFactory = loggerFactory;
             CargarConsultasYDataAdapters(IBD);
         }
 
@@ -499,13 +959,6 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
 
         #region Consultas
 
-        private string sqlSelectProyectoGadgetIdioma;
-        private string sqlSelectPresentacionListadoSemantico;
-        private string sqlSelectPresentacionPestanyaListadoSemantico;
-        private string sqlSelectProyectosParticipaUsuario;
-        private string sqlSelectProyectosUsuarioPuedeCompartirRecurso;
-        private string sqlSelectProyectoUsuarioIdentidadUsuarioPuedeCompartirRecurso;
-        private string sqlSelectProyectosParticipaUsuarioSinBloquear;
         private string sqlSelectExisteProyectoFAQ;
         private string sqlSelectExisteProyectoNoticias;
         private string sqlSelectExisteProyectoDidactalia;
@@ -513,11 +966,6 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
         private string sqlSelectTipoDocImagenPorDefecto;
         private string sqlUpdateAumentarNumeroMiembrosDelProyecto;
         private string sqlSelectEventosProyectoPorIdentidadID;
-
-        //Consultas parte select
-        private string SelectProyectoPesado;
-        private string SelectProyectoLigero;
-        private string SelectAdministradorProyecto;
 
         #region Twitter
 
@@ -527,9 +975,20 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
 
         #endregion
 
-        //#region M�todos generales
+        #region P?blicos
 
-        #region P�blicos
+        public Guid ObtenerGuidPestanyaPorTipo(Guid pProyectoId, short pTipo)
+        {
+            var proyectoPestanyaMenu = mEntityContext.ProyectoPestanyaMenu.Where(item => item.ProyectoID == pProyectoId && item.TipoPestanya == pTipo).FirstOrDefault();
+            if (proyectoPestanyaMenu!=null)
+            {
+                return proyectoPestanyaMenu.PestanyaID;
+            }
+
+            return Guid.Empty;
+                
+        }
+
 
         /// <summary>
         /// Obtiene la fecha de alta del grupo de organizaci?n en un proyecto
@@ -563,7 +1022,7 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
         }
 
         /// <summary>
-        /// Obtiene los gadget por idioma asociados al identificador del gadget pasado por par�metro
+        /// Obtiene los gadget por idioma asociados al identificador del gadget pasado por par?metro
         /// </summary>
         /// <param name="pGadgetID">Identificador del gadget</param>
         /// <returns></returns>
@@ -709,7 +1168,7 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
             }
             foreach (Guid id in listaCategoriasSeleccionadas)
             {
-                ProyectoAD proyAD = new ProyectoAD(mLoggingService, mEntityContext, mConfigService, mServicesUtilVirtuosoAndReplication);
+                ProyectoAD proyAD = new ProyectoAD(mLoggingService, mEntityContext, mConfigService, mServicesUtilVirtuosoAndReplication,mLoggerFactory.CreateLogger<ProyectoAD>(),mLoggerFactory);
                 AD.EntityModel.Models.Tesauro.CategoriaTesauro cateTesauro = mEntityContext.CategoriaTesauro.Where(proy => proy.CategoriaTesauroID.Equals(id)).FirstOrDefault();
                 PreferenciaProyecto pref = new PreferenciaProyecto();
                 pref.TesauroID = cateTesauro.TesauroID;
@@ -788,13 +1247,13 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
         /// </summary>
         /// <param name="pDominio"></param>
         /// <returns></returns>
-        public List<RedireccionRegistroRuta> ObtenerRedireccionRegistroRutaPorDominio(string pDominio, bool pMantenerContextoAbierto)
+        public List<RedireccionRegistroRuta> ObtenerRedireccionRegistroRutaPorDominio(string pDominio, bool pCargarRelaciones)
         {
             mLoggingService.AgregarEntrada("ObtenerRedireccionRegistroRutaPorDominio - INICIO");
 
-            List<RedireccionRegistroRuta> filasRedirecciones = null;
+            List<RedireccionRegistroRuta> filasRedirecciones;
 
-            if (pMantenerContextoAbierto)
+            if (!pCargarRelaciones)
             {
                 filasRedirecciones = mEntityContext.RedireccionRegistroRuta.Where(fila => fila.Dominio == pDominio).OrderByDescending(r => r.FechaCreacion).ToList();
             }
@@ -814,7 +1273,7 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
         /// <param name="pRedireccionRegistroRuta"></param>
         public void AniadirRedireccionRegistroRuta(RedireccionRegistroRuta pRedireccionRegistroRuta)
         {
-            mEntityContext.RedireccionRegistroRuta.Add(pRedireccionRegistroRuta);            
+            mEntityContext.RedireccionRegistroRuta.Add(pRedireccionRegistroRuta);
         }
 
         /// <summary>
@@ -854,7 +1313,7 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
                         foreach (RedireccionValorParametro filaValor in redireccion.Key.RedireccionValorParametro.ToList())
                         {
                             RedireccionValorParametro redireccionValorParametro = mEntityContext.RedireccionValorParametro.Where(item => item.RedireccionID.Equals(filaValor.RedireccionID) && item.ValorParametro.Equals(filaValor.ValorParametro)).FirstOrDefault();
-                            if(redireccionValorParametro != null)
+                            if (redireccionValorParametro != null)
                             {
                                 redireccionValorParametro.UrlRedireccion = filaValor.UrlRedireccion;
                                 redireccionValorParametro.RedireccionRegistroRuta = filaValor.RedireccionRegistroRuta;
@@ -907,35 +1366,30 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
         /// <param name="identidadId">Id de la identidad del sujeto de la carga</param>
         /// <param name="nombre">Nombre de la carga</param>
         /// <param name="organizacionId">Id de la organizacion de la carga</param>
-        /// <returns>Devuelve cierto si se ha a�adido una nueva carga</returns>
+        /// <returns>Devuelve cierto si se ha a?adido una nueva carga</returns>
         public bool CrearNuevaCargaMasiva(Guid idCarga, int estado, DateTime fechaAlta, Guid proyectoId, Guid identidadId, string ontologia, string nombre = null, Guid? organizacionId = null)
         {
             bool creada = false;
-            try
-            {
-                bool existe = mEntityContext.Carga.Any(item => item.CargaID.Equals(idCarga));
-                if (!existe)
-                {
-                    Carga nuevaCarga = new Carga();
-                    nuevaCarga.CargaID = idCarga;
-                    nuevaCarga.Nombre = nombre;
-                    nuevaCarga.Estado = (short)estado;
-                    nuevaCarga.FechaAlta = fechaAlta;
-                    nuevaCarga.ProyectoID = proyectoId;
-                    nuevaCarga.OrganizacionID = organizacionId;
-                    nuevaCarga.IdentidadID = identidadId;
-                    nuevaCarga.Ontologia = ontologia;
 
-                    mEntityContext.Carga.Add(nuevaCarga);
-                    mEntityContext.SaveChanges();
-                    creada = true;
-                }
-                return creada;
-            }
-            catch (Exception ex)
+            bool existe = mEntityContext.Carga.Any(item => item.CargaID.Equals(idCarga));
+            if (!existe)
             {
-                throw ex;
+                Carga nuevaCarga = new Carga();
+                nuevaCarga.CargaID = idCarga;
+                nuevaCarga.Nombre = nombre;
+                nuevaCarga.Estado = (short)estado;
+                nuevaCarga.FechaAlta = fechaAlta;
+                nuevaCarga.ProyectoID = proyectoId;
+                nuevaCarga.OrganizacionID = organizacionId;
+                nuevaCarga.IdentidadID = identidadId;
+                nuevaCarga.Ontologia = ontologia;
+
+                mEntityContext.Carga.Add(nuevaCarga);
+                mEntityContext.SaveChanges();
+                creada = true;
             }
+
+            return creada;
         }
 
         public List<string> ObtenerPropiedadesSearch(Guid pProyectoID)
@@ -995,33 +1449,29 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
         public bool CrearNuevoPaqueteCargaMasiva(Guid paqueteID, Guid cargaId, string rutaOnto, string rutaSearch, string rutaSql, int estado, string error, DateTime? fechaAlta, bool comprimido = false, DateTime? fechaProcesado = null)
         {
             bool creado = false;
-            try
+
+            bool existe = mEntityContext.CargaPaquete.Any(item => item.PaqueteID.Equals(paqueteID));
+            if (!existe)
             {
-                bool existe = mEntityContext.CargaPaquete.Any(item => item.PaqueteID.Equals(paqueteID));
-                if (!existe)
-                {
-                    CargaPaquete nuevoPaquete = new CargaPaquete();
-                    nuevoPaquete.PaqueteID = paqueteID;
-                    nuevoPaquete.CargaID = cargaId;
-                    nuevoPaquete.RutaOnto = rutaOnto;
-                    nuevoPaquete.RutaBusqueda = rutaSearch;
-                    nuevoPaquete.RutaSQL = rutaSql;
-                    nuevoPaquete.Estado = (short)estado;
-                    nuevoPaquete.Error = string.Empty;
-                    nuevoPaquete.FechaAlta = fechaAlta;
-                    nuevoPaquete.FechaProcesado = fechaProcesado;
-                    nuevoPaquete.Comprimido = comprimido;
-                    mEntityContext.CargaPaquete.Add(nuevoPaquete);
-                    mEntityContext.SaveChanges();
-                    creado = true;
-                }
-                return creado;
+                CargaPaquete nuevoPaquete = new CargaPaquete();
+                nuevoPaquete.PaqueteID = paqueteID;
+                nuevoPaquete.CargaID = cargaId;
+                nuevoPaquete.RutaOnto = rutaOnto;
+                nuevoPaquete.RutaBusqueda = rutaSearch;
+                nuevoPaquete.RutaSQL = rutaSql;
+                nuevoPaquete.Estado = (short)estado;
+                nuevoPaquete.Error = string.Empty;
+                nuevoPaquete.FechaAlta = fechaAlta;
+                nuevoPaquete.FechaProcesado = fechaProcesado;
+                nuevoPaquete.Comprimido = comprimido;
+                mEntityContext.CargaPaquete.Add(nuevoPaquete);
+                mEntityContext.SaveChanges();
+                creado = true;
             }
-            catch (Exception)
-            {
-                throw;
-            }
+
+            return creado;
         }
+
         public void CrearFilasIntegracionContinuaParametro(List<IntegracionContinuaPropiedad> pListaPropiedades, Guid pProyectoID, TipoObjeto pTipoObjeto, string pID)
         {
             try
@@ -1069,7 +1519,10 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
                     throw;
                 }
             }
-            catch { }
+            catch
+            {
+                //No interrumpimos la ejecuci?n por este error
+            }
         }
 
         public void GuardarFilasIntegracionContinuaParametro(List<IntegracionContinuaPropiedad> pListaPropiedades, Guid pProyectoID)
@@ -1102,6 +1555,40 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
             }
 
             ActualizarBaseDeDatosEntityContext();
+        }
+
+        public Dictionary<string, Guid> ObtenerOntologiasConIDPorNombreCortoProyIncluyendoSecundarias(string pNombreCortoProyecto)
+        {
+            Dictionary<string, Guid> resultado = new Dictionary<string, Guid>();
+
+            var resultadoConsulta = mEntityContext.Documento.Join(mEntityContext.DocumentoWebVinBaseRecursos, documento => documento.DocumentoID, docWebVin => docWebVin.DocumentoID, (documento, docWebVin) => new
+            {
+                Documento = documento,
+                DocumentoWebVinBaseRecursos = docWebVin
+            }).Join(mEntityContext.BaseRecursosProyecto, objeto => objeto.DocumentoWebVinBaseRecursos.BaseRecursosID, baseRecursosProyecto => baseRecursosProyecto.BaseRecursosID, (objeto, baseRecursosProyecto) => new
+            {
+                Documento = objeto.Documento,
+                DocumentoWebVinBaseRecursos = objeto.DocumentoWebVinBaseRecursos,
+                BaseRecursosProyecto = baseRecursosProyecto
+            }).Join(mEntityContext.Proyecto, objeto => objeto.BaseRecursosProyecto.ProyectoID, proyecto => proyecto.ProyectoID, (objeto, proyecto) => new
+            {
+                Documento = objeto.Documento,
+                DocumentoWebVinBaseRecursos = objeto.DocumentoWebVinBaseRecursos,
+                BaseRecursosProyecto = objeto.BaseRecursosProyecto,
+                Proyecto = proyecto
+            }).Where(objeto => (objeto.Documento.Tipo.Equals((short)TiposDocumentacion.Ontologia) || objeto.Documento.Tipo.Equals((short)TiposDocumentacion.OntologiaSecundaria)) && objeto.Documento.Eliminado == false && objeto.DocumentoWebVinBaseRecursos.Eliminado == false && objeto.Proyecto.NombreCorto.Equals(pNombreCortoProyecto)).Select(objeto => new { objeto.Documento.DocumentoID, objeto.Documento.Enlace }).ToList();
+
+            foreach (var fila in resultadoConsulta)
+            {
+                Guid idOnt = fila.DocumentoID;
+                string nombreOnt = fila.Enlace;
+                if (!resultado.ContainsKey(nombreOnt))
+                {
+                    resultado.Add(nombreOnt.ToLower(), idOnt);
+                }
+            }
+
+            return resultado;
         }
 
         /// <summary>
@@ -1271,7 +1758,7 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
             if (num > 0)
             {
                 //Se trata de una web
-                resultado += (int)num;
+                resultado += num;
             }
             else
             {
@@ -1280,7 +1767,7 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
                 if (numProy > 0)
                 {
                     //ConfiguracionServiciosProyecto
-                    resultado += (int)numProy;
+                    resultado += numProy;
                 }
 
                 List<Guid> listaProyectoID = mEntityContext.ConfiguracionServiciosProyecto.Where(config => !config.Url.Equals(pDominio)).Select(config => config.ProyectoID).ToList();
@@ -1347,8 +1834,6 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
         public Dictionary<string, string> ObtenerURLSPropiasProyectosPorNombresCortos(List<string> pNombresCortos)
         {
             Dictionary<string, string> resultado = new Dictionary<string, string>();
-
-            bool demasiadosParametros = pNombresCortos.Count > 2000;
 
             if (pNombresCortos.Count > 0)
             {
@@ -1505,7 +1990,7 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
                 DocumentoWebVinBaseRecursos = objeto.DocumentoWebVinBaseRecursos,
                 BaseRecursosProyecto = objeto.BaseRecursosProyecto,
                 Proyecto = proyecto
-            }).Where(objeto => objeto.Documento.Tipo.Equals((short)TiposDocumentacion.Ontologia) && objeto.Documento.Eliminado == false && objeto.DocumentoWebVinBaseRecursos.Eliminado == false && objeto.Proyecto.NombreCorto.Equals(pNombreCortoProyecto)).Select(objeto => new { objeto.Documento.DocumentoID, objeto.Documento.Enlace }).ToList();
+            }).Where(objeto => objeto.Documento.Tipo.Equals((short)TiposDocumentacion.Ontologia) && !objeto.Documento.Eliminado && !objeto.DocumentoWebVinBaseRecursos.Eliminado && objeto.Proyecto.NombreCorto.Equals(pNombreCortoProyecto)).Select(objeto => new { objeto.Documento.DocumentoID, objeto.Documento.Enlace }).ToList();
 
             foreach (var fila in resultadoConsulta)
             {
@@ -1535,6 +2020,18 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
         }
 
         /// <summary>
+        /// Obtiene el nombre de la ontolog?a a partir de su identificador pasado por par?metro
+        /// </summary>
+        /// <param name="pOntologiaID">Identificador de la ontolog?a</param>
+        /// <returns>Nombre de la ontolog?a</returns>
+        public string ObtenerNombreOntologiaProyectoPorOntologiaID(Guid pOntologiaID)
+        {
+            string enlace = mEntityContext.Documento.Where(item => item.DocumentoID.Equals(pOntologiaID)).Select(item => item.Enlace).FirstOrDefault();
+
+            return enlace.Replace(".owl", string.Empty);
+        }
+
+        /// <summary>
         /// Obtiene el id autonum?rico que se le asigna a cada proyecto para crear la tabla BASE
         /// </summary>
         /// <param name="pProyectoID">Identificador del proyecto</param>
@@ -1560,12 +2057,71 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
             return mEntityContext.Proyecto.Select(proy => proy.ProyectoID).Count();
         }
 
-        /// <summary>
-        /// Obtiene el id autonum?rico que se le asigna a cada proyecto para crear la tabla BASE
-        /// </summary>
-        /// <param name="pListaProyectosID">Identificadores de los proyectos</param>
-        /// <returns></returns>
-        public Dictionary<Guid, int> ObtenerTablasBaseProyectoIDProyectoPorID(List<Guid> pListaProyectosID)
+		/// <summary>
+		/// Cambia el tipo de autocompletado que se usa en un proyecto
+		/// </summary>
+		/// <param name="pProyectoID"></param>
+		/// <param name="pPestanyaID">Pesta?a de b?squeda a cambiar el tipo de autocompletado</param>
+		/// <param name="pTipoAutocompletar">Tipo del autocompletado que se va a usar en la pesta?a</param>
+		/// <exception cref="NotImplementedException"></exception>
+		public void CambiarTipoAutocompletadoProyecto(Guid pProyectoID, Guid pPestanyaID, TipoAutocompletar pTipoAutocompletar)
+		{
+			ProyectoPestanyaBusqueda proyectoPestanyaBusqueda = mEntityContext.ProyectoPestanyaBusqueda.Join(mEntityContext.ProyectoPestanyaMenu, proyPestBusqueda => proyPestBusqueda.PestanyaID, proyPestMenu => proyPestMenu.PestanyaID, (proyPestBusqueda, proyPestMenu) => new
+			{
+				ProyectPestanyaBusqueda = proyPestBusqueda,
+				ProyectoID = proyPestMenu.ProyectoID
+			}).Where(proyecto => proyecto.ProyectoID.Equals(pProyectoID) && proyecto.ProyectPestanyaBusqueda.PestanyaID.Equals(pPestanyaID)).Select(proyecto => proyecto.ProyectPestanyaBusqueda).FirstOrDefault();
+            if(proyectoPestanyaBusqueda != null && proyectoPestanyaBusqueda.TipoAutocompletar != pTipoAutocompletar)
+            {
+                proyectoPestanyaBusqueda.TipoAutocompletar = pTipoAutocompletar;
+                mEntityContext.SaveChanges();
+			}
+		}
+		/// <summary>
+		/// Elimina las entradas de ProyectoPestanyaBusquedaPesoOC para un proyecto y una pesta?a determinada
+		/// </summary>
+		/// <param name="pProyectoID"></param>
+		/// <param name="pPestanyaID"></param>
+		/// <exception cref="NotImplementedException"></exception>
+		public void EliminarProyectoPestanyaPesosBusqueda(Guid pProyectoID, Guid pPestanyaID)
+		{
+            List<ProyectoPestanyaBusquedaPesoOC> listaProyectoPestanyaBusquedaPesoOC = mEntityContext.ProyectoPestanyaBusquedaPesoOC.Where(item => item.PestanyaID.Equals(pPestanyaID) && item.ProyectoID.Equals(pProyectoID)).ToList();
+            foreach(ProyectoPestanyaBusquedaPesoOC proyectoPestanyaBusquedaPesoOC in listaProyectoPestanyaBusquedaPesoOC)
+            {
+                mEntityContext.EliminarElemento(proyectoPestanyaBusquedaPesoOC);
+            }
+            mEntityContext.SaveChanges();
+		}
+		/// <summary>
+		/// Inserta las filas en la tabla ProyectoPestanyaBusquedaPesoOC para la configuraci?n del tipo de autocompletado
+		/// </summary>
+		/// <param name="pListaProyectoPestanyaBusquedaPesoOC"></param>
+		/// <exception cref="NotImplementedException"></exception>
+		public void GuardarProyectoPestanyaBusquedaPeso(List<ProyectoPestanyaBusquedaPesoOC> pListaProyectoPestanyaBusquedaPesoOC)
+		{
+            foreach (ProyectoPestanyaBusquedaPesoOC proyectoPestanyaBusquedaPesoOC in pListaProyectoPestanyaBusquedaPesoOC)
+            {
+                ProyectoPestanyaBusquedaPesoOC filaBD = mEntityContext.ProyectoPestanyaBusquedaPesoOC.FirstOrDefault(item => item.ProyectoID.Equals(proyectoPestanyaBusquedaPesoOC.ProyectoID) && item.OntologiaProyecto1.Equals(proyectoPestanyaBusquedaPesoOC.OntologiaProyecto1) && item.Tipo.Equals(proyectoPestanyaBusquedaPesoOC.Tipo) && item.PestanyaID.Equals(proyectoPestanyaBusquedaPesoOC.PestanyaID));
+                if (filaBD != null)
+                {
+                    if (filaBD.Peso != proyectoPestanyaBusquedaPesoOC.Peso) 
+                    {
+                        filaBD.Peso = proyectoPestanyaBusquedaPesoOC.Peso;
+                    }
+				}
+                else
+                {
+                    mEntityContext.ProyectoPestanyaBusquedaPesoOC.Add(proyectoPestanyaBusquedaPesoOC);
+                }
+			}
+            mEntityContext.SaveChanges();
+		}
+		/// <summary>
+		/// Obtiene el id autonum?rico que se le asigna a cada proyecto para crear la tabla BASE
+		/// </summary>
+		/// <param name="pListaProyectosID">Identificadores de los proyectos</param>
+		/// <returns></returns>
+		public Dictionary<Guid, int> ObtenerTablasBaseProyectoIDProyectoPorID(List<Guid> pListaProyectosID)
         {
             Dictionary<Guid, int> diccionarioProyectoBaseProyectoID = new Dictionary<Guid, int>();
 
@@ -1646,6 +2202,7 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
 
             return listadoProyectos;
         }
+
         /// <summary>
         /// Obtiene los NombreFiltro de los ProyectosSearchPersonalizados del proyecto
         /// </summary>
@@ -1653,12 +2210,9 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
         /// <returns>Lista con los NombreFiltro del proyecto</returns>
         public List<ProyectoSearchPersonalizado> ObtenerProyectosSearchPersonalizado(Guid pProyectoID)
         {
-            List<ProyectoSearchPersonalizado> listaNombreFiltro = new List<ProyectoSearchPersonalizado>();
-
-            listaNombreFiltro = mEntityContext.ProyectoSearchPersonalizado.Where(proy => proy.ProyectoID.Equals(pProyectoID)).ToList();
-
-            return listaNombreFiltro;
+            return mEntityContext.ProyectoSearchPersonalizado.Where(proy => proy.ProyectoID.Equals(pProyectoID)).ToList();
         }
+
         /// <summary>
         /// Obtiene los valores de la consulta SPARQL asociada al filtro
         /// </summary>
@@ -1677,6 +2231,7 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
 
             return consultaSPARQL;
         }
+
         /// <summary>
         /// Actualiza los valores de la consulta de SPARQL, en caso de no existir lo a?ade 
         /// </summary>
@@ -1743,6 +2298,11 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
                     if (param.Deleted)
                     {
                         mEntityContext.Entry(proyecto).State = EntityState.Deleted;
+                        List<ProyectoPestanyaBusqueda> listaProyectoPestanyaBusqueda = mEntityContext.ProyectoPestanyaBusqueda.JoinProyectoPestanyaMenu().Where(x => x.ProyectoPestanyaMenu.ProyectoID.Equals(pProyectoID) && x.ProyectoPestanyaBusqueda.SearchPersonalizado.Equals(param.NombreParametro)).Select(item=>item.ProyectoPestanyaBusqueda).ToList();
+                        foreach(ProyectoPestanyaBusqueda proyectoPestanyaBusqueda in listaProyectoPestanyaBusqueda) 
+                        {
+                            proyectoPestanyaBusqueda.SearchPersonalizado = "";
+                        }
                     }
                     else
                     {
@@ -1924,7 +2484,6 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
         /// <returns>Dataset de proyecto</returns>
         public List<Proyecto> ObtenerProyectosRecomendadosPorPersona(Guid pPersonaID, int pNumeroProyectos)
         {
-            ////TODO NUEVO
             List<Proyecto> listaProyectos = new List<Proyecto>();
             if (pNumeroProyectos > 0)
             {
@@ -1962,7 +2521,6 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
             return listaProyectos;
         }
 
-        //TFG FRAN
         public DataWrapperProyecto ObtenerProyectoDashboardPorID(Guid pProyectoID)
         {
             DataWrapperProyecto dataWrapperProyecto = new DataWrapperProyecto();
@@ -2063,9 +2621,20 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
             dataWrapperProyecto.ListaVistaVirtualProyecto = mEntityContext.VistaVirtualProyecto.Where(vistaVirtualProy => vistaVirtualProy.ProyectoID.Equals(pProyectoID)).ToList();
 
             dataWrapperProyecto.ListaConfigAutocompletarProy = mEntityContext.ConfigAutocompletarProy.Where(config => config.ProyectoID.Equals(pProyectoID)).ToList();
-
+            dataWrapperProyecto.ListaProyectoPestanyaBusquedaPesoOC = mEntityContext.ProyectoPestanyaBusquedaPesoOC.Where(item => item.ProyectoID.Equals(pProyectoID)).ToList();
             return dataWrapperProyecto;
         }
+
+        public List<Guid> ObtenerCategoriasProyecto(Guid pProyectoID)
+        {
+            List<Guid> categoriasDeComunidad = mEntityContext.TesauroProyecto.Join(mEntityContext.CategoriaTesauro, item => item.TesauroID, item => item.TesauroID, (tesauroProyecto, categoriaTesauro) => new
+            {
+                TesauroProyecto = tesauroProyecto,
+                CategoriaTesauro = categoriaTesauro
+            }).Where(item => item.TesauroProyecto.ProyectoID.Equals(pProyectoID)).Select(item => item.CategoriaTesauro.CategoriaTesauroID).ToList();
+            return categoriasDeComunidad;
+        }
+
 
         /// <summary>
         /// Obtiene los datos Extra de un proyecto (incluidos los del ecosistema) (para los regisrtros de usuarios)
@@ -2130,7 +2699,7 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
 
             dataWrapperProyecto.ListaPreferenciaProyecto = mEntityContext.PreferenciaProyecto.Where(preferencia => preferencia.ProyectoID.Equals(pProyectoID)).OrderBy(preferencia => preferencia.Orden).ToList();
 
-            return (dataWrapperProyecto);
+            return dataWrapperProyecto;
         }
 
         /// <summary>
@@ -2141,8 +2710,10 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
         public DataWrapperProyecto ObtenerAccionesExternasProyectoPorProyectoID(Guid pProyectoID)
         {
             DataWrapperProyecto dataWrapperProyecto = new DataWrapperProyecto();
+
             dataWrapperProyecto.ListaAccionesExternasProyecto = mEntityContext.AccionesExternasProyecto.Where(acciones => acciones.ProyectoID.Equals(pProyectoID)).ToList();
-            return (dataWrapperProyecto);
+
+            return dataWrapperProyecto;
         }
 
         /// <summary>
@@ -2153,8 +2724,10 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
         public DataWrapperProyecto ObtenerAccionesExternasProyectoPorListaIDs(List<Guid> pListaProyectosID)
         {
             DataWrapperProyecto dataWrapperProyecto = new DataWrapperProyecto();
+
             dataWrapperProyecto.ListaAccionesExternasProyecto = mEntityContext.AccionesExternasProyecto.Where(acciones => pListaProyectosID.Contains(acciones.ProyectoID)).ToList();
-            return (dataWrapperProyecto);
+
+            return dataWrapperProyecto;
         }
 
         /// <summary>
@@ -2202,7 +2775,7 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
             List<ProyectoEvento> listaProyectoEvento = mEntityContext.ProyectoEvento.Where(proyecto => proyecto.EventoID.Equals(pEventoID)).ToList();
             if (pSoloActivos)
             {
-                listaProyectoEvento = listaProyectoEvento.Where(proyecto => proyecto.Activo == true).ToList();
+                listaProyectoEvento = listaProyectoEvento.Where(proyecto => proyecto.Activo).ToList();
             }
             dataWrapperProyecto.ListaProyectoEvento = listaProyectoEvento;
 
@@ -2287,12 +2860,12 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
             Guid proyectoID = mEntityContext.Proyecto.Where(item => item.NombreCorto.Equals(pCommunityShortName)).Select(item => item.ProyectoID).FirstOrDefault();
             Guid personalizacionID = mEntityContext.VistaVirtualProyecto.Where(item => item.ProyectoID.Equals(proyectoID)).Select(item => item.PersonalizacionID).FirstOrDefault();
             if (!personalizacionID.Equals(Guid.Empty))
-            {   
+            {
                 return mEntityContext.TextosPersonalizadosPersonalizacion.Where(item => item.PersonalizacionID.Equals(personalizacionID) && item.TextoID.Equals(pTextoID) && item.Language.Equals(pLanguage)).Select(item => item.Texto).FirstOrDefault();
             }
             else
             {
-                throw new Exception($"El proyecto {pCommunityShortName} no tiene personalizaci�n");
+                throw new ExcepcionWeb($"El proyecto {pCommunityShortName} no tiene personalizaci?n");
             }
         }
 
@@ -2306,14 +2879,8 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
         {
             DataWrapperProyecto dataWrapperProyecto = new DataWrapperProyecto();
 
-            string sqlParaProyecto;
-            string sqlParaProyectoUsuarioIdentidad;
-
             if (pTipoDocumentoCompartido != TiposDocumentacion.EntradaBlog)
             {
-                sqlParaProyecto = sqlSelectProyectosUsuarioPuedeCompartirRecurso;
-                sqlParaProyectoUsuarioIdentidad = sqlSelectProyectoUsuarioIdentidadUsuarioPuedeCompartirRecurso;
-
                 dataWrapperProyecto.ListaProyecto = mEntityContext.Proyecto.Join(mEntityContext.ProyectoUsuarioIdentidad, proyecto => new { proyecto.OrganizacionID, proyecto.ProyectoID }, proyUserIden => new { OrganizacionID = proyUserIden.OrganizacionGnossID, proyUserIden.ProyectoID }, (proyecto, proyUserIden) => new
                 {
                     Proyecto = proyecto,
@@ -2357,7 +2924,7 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
                             TesauroProyecto = objeto.TesauroProyecto,
                             CategoriaTesauro = catTes
                         }).Where(objeto => objeto.AdministradorProyecto.UsuarioID.Equals(pUsuarioID)).Select(objeto => objeto.Proyecto)
-                    ).OrderBy(objeto => objeto.Nombre).ToList().Distinct().ToList();
+                    ).OrderBy(objeto => objeto.Nombre).Distinct().ToList();
             }
             else
             {
@@ -2383,11 +2950,10 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
                         TesauroProyecto = objeto.TesauroProyecto,
                         CategoriaTesauro = catTes
                     }).Where(objeto => objeto.AdministradorProyecto.UsuarioID.Equals(pUsuarioID)).Select(objeto => objeto.Proyecto)
-                    ).OrderBy(objeto => objeto.Nombre).ToList().Distinct().ToList();
-
+                    ).OrderBy(objeto => objeto.Nombre).Distinct().ToList();
             }
 
-            return (dataWrapperProyecto);
+            return dataWrapperProyecto;
         }
 
         /// <summary>
@@ -2417,9 +2983,9 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
                 ProyectoRolUsuario = objeto.ProyectoRolUsuario,
                 Identidad = identidad
             })
-            .Where(objeto => objeto.ProyectoRolUsuario.UsuarioID.Equals(pUsuarioID) && (objeto.Proyecto.Estado.Equals((short)EstadoProyecto.Abierto) || objeto.Proyecto.Estado.Equals((short)EstadoProyecto.Cerrandose)) && objeto.ProyectoRolUsuario.EstaBloqueado == false && (objeto.Identidad.Tipo < 2 || objeto.Identidad.Tipo == 4) && !objeto.Identidad.FechaBaja.HasValue && !objeto.Identidad.FechaExpulsion.HasValue).OrderBy(objeto => objeto.Proyecto.Nombre);
+            .Where(objeto => objeto.ProyectoRolUsuario.UsuarioID.Equals(pUsuarioID) && (objeto.Proyecto.Estado.Equals((short)EstadoProyecto.Abierto) || objeto.Proyecto.Estado.Equals((short)EstadoProyecto.Cerrandose)) && !objeto.ProyectoRolUsuario.EstaBloqueado && (objeto.Identidad.Tipo < 2 || objeto.Identidad.Tipo == 4) && !objeto.Identidad.FechaBaja.HasValue && !objeto.Identidad.FechaExpulsion.HasValue).OrderBy(objeto => objeto.Proyecto.Nombre);
 
-            dataWrapperProyecto.ListaProyecto = resultadoConsulta.Select(objeto => objeto.Proyecto).ToList().Distinct().ToList();
+            dataWrapperProyecto.ListaProyecto = resultadoConsulta.Select(objeto => objeto.Proyecto).Distinct().ToList();
 
             return (dataWrapperProyecto);
         }
@@ -2434,7 +3000,6 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
         {
             DataWrapperProyecto dataWrapperProyecto = new DataWrapperProyecto();
 
-            string sqlParaProyecto = sqlSelectProyectosParticipaUsuario;
             var lista = mEntityContext.Proyecto.Join(mEntityContext.ProyectoUsuarioIdentidad, proyecto => new { proyecto.OrganizacionID, proyecto.ProyectoID }, proyUserIden => new { OrganizacionID = proyUserIden.OrganizacionGnossID, proyUserIden.ProyectoID }, (proyecto, proyUserIden) => new
             {
                 Proyecto = proyecto,
@@ -2442,8 +3007,6 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
             }).Where(objeto => objeto.ProyectoUsuarioIdentidad.UsuarioID.Equals(pUsuarioID)).OrderBy(objeto => objeto.Proyecto.Nombre).Select(objeto => objeto.Proyecto).ToList();
             if (pSoloUsuariosSinBloquear)
             {
-
-                sqlParaProyecto = sqlSelectProyectosParticipaUsuarioSinBloquear;
                 lista = mEntityContext.Proyecto.Join(mEntityContext.ProyectoUsuarioIdentidad, proyecto => new { proyecto.OrganizacionID, proyecto.ProyectoID }, proyUserIden => new { OrganizacionID = proyUserIden.OrganizacionGnossID, proyUserIden.ProyectoID }, (proyecto, proyUserIden) => new
                 {
                     Proyecto = proyecto,
@@ -2453,12 +3016,12 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
                     Proyecto = objeto.Proyecto,
                     ProyectoUsuarioIdentidad = objeto.ProyectoUsuarioIdentidad,
                     ProyectoRolUsuario = proyectoRolIden
-                }).Where(objeto => objeto.ProyectoUsuarioIdentidad.UsuarioID.Equals(pUsuarioID) && objeto.ProyectoRolUsuario.EstaBloqueado == false).OrderBy(objeto => objeto.Proyecto.Nombre).Select(objeto => objeto.Proyecto).ToList();
+                }).Where(objeto => objeto.ProyectoUsuarioIdentidad.UsuarioID.Equals(pUsuarioID) && !objeto.ProyectoRolUsuario.EstaBloqueado).OrderBy(objeto => objeto.Proyecto.Nombre).Select(objeto => objeto.Proyecto).ToList();
             }
 
             dataWrapperProyecto.ListaProyecto = lista;
 
-            return (dataWrapperProyecto);
+            return dataWrapperProyecto;
         }
 
         /// <summary>
@@ -2498,7 +3061,6 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
             return proys;
         }
 
-        // TODO Pasar a EF
         /// <summary>
         /// Obtiene la lista de proyectos en las que participa un usuario pasado por par?metro.
         /// </summary>
@@ -2563,22 +3125,8 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
         /// <param name="pUsuarioID">Identificador de usuario</param>
         /// <returns>Diccionario ProyectoID,NombreCorto de cada proyecto</returns>
         public Dictionary<Guid, string> ObtenerNombresCortosProyectosAdministraUsuarioSinBloquearNiAbandonar(Guid pUsuarioID, bool ecosistema)
-        {
-            DataSet proyectoDS = new DataSet();
-
-            string fromProyecto = " FROM Proyecto INNER JOIN AdministradorProyecto ON Proyecto.ProyectoID = AdministradorProyecto.ProyectoID INNER JOIN Identidad ON (Proyecto.ProyectoID=Identidad.ProyectoID AND Proyecto.OrganizacionID=Identidad.OrganizacionID) INNER JOIN Perfil ON (Identidad.PerfilID=Perfil.PerfilID) INNER JOIN Persona ON (Perfil.PersonaID=Persona.PersonaID AND Persona.UsuarioID=AdministradorProyecto.UsuarioID)";
-            string whereProyecto = " WHERE AdministradorProyecto.Tipo = " + (short)TipoRolUsuario.Administrador + " AND AdministradorProyecto.UsuarioID = " + IBD.GuidValor(pUsuarioID);
-            if (!ecosistema)
-            {
-                whereProyecto = whereProyecto + " AND Proyecto.ProyectoID != " + IBD.GuidValor(ProyectoAD.MetaProyecto);
-            }
-
-            whereProyecto = whereProyecto + " AND Identidad.FechaBaja IS NULL AND Identidad.FechaExpulsion IS NULL ";
-
-
-            //Proyecto
-            DbCommand commandsqlSelectProyecto = ObtenerComando("SELECT Proyecto.ProyectoID, NombreCorto" + fromProyecto + whereProyecto);
-
+        {            
+            //Proyecto           
             var resultadoConsulta = mEntityContext.Proyecto.Join(mEntityContext.AdministradorProyecto, proyecto => proyecto.ProyectoID, adminProy => adminProy.ProyectoID, (proyecto, adminProy) => new
             {
                 Proyecto = proyecto,
@@ -2612,7 +3160,7 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
 
             if (!ecosistema)
             {
-                resultadoFinal = resultadoConsulta.Where(objeto => objeto.AdministradorProyecto.Tipo.Equals((short)TipoRolUsuario.Administrador) && objeto.Perfil.PersonaID.HasValue && objeto.AdministradorProyecto.UsuarioID.Equals(pUsuarioID) && objeto.UsuarioID.HasValue && !objeto.Proyecto.ProyectoID.Equals(ProyectoAD.MetaProyecto) && !objeto.Identidad.FechaBaja.HasValue && !objeto.Identidad.FechaExpulsion.HasValue).Select(objeto => new
+                resultadoFinal = resultadoConsulta.Where(objeto => objeto.AdministradorProyecto.Tipo.Equals((short)TipoRolUsuario.Administrador) && objeto.Perfil.PersonaID.HasValue && objeto.AdministradorProyecto.UsuarioID.Equals(pUsuarioID) && objeto.UsuarioID.HasValue && !objeto.Proyecto.ProyectoID.Equals(MetaProyecto) && !objeto.Identidad.FechaBaja.HasValue && !objeto.Identidad.FechaExpulsion.HasValue).Select(objeto => new
                 {
                     ProyectoID = objeto.Proyecto.ProyectoID,
                     NombreCorto = objeto.Proyecto.NombreCorto
@@ -2653,7 +3201,7 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
                 Identidad = identidad
             }).Where(objeto => objeto.ProyectoUsuarioIdentidad.UsuarioID.Equals(pUsuarioID) && objeto.Identidad.PerfilID.Equals(pPerfilID) && (objeto.Proyecto.Estado.Equals((short)EstadoProyecto.Abierto) || objeto.Proyecto.Estado.Equals((short)EstadoProyecto.Cerrandose))).OrderBy(objeto => objeto.Proyecto.Nombre).Select(objeto => objeto.Proyecto).ToList();
 
-            return (dataWrapperProyecto);
+            return dataWrapperProyecto;
         }
 
         /// <summary>
@@ -2665,10 +3213,9 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
         {
             DataWrapperProyecto dataWrapperProyecto = new DataWrapperProyecto();
 
-            DbCommand commandSQL = ObtenerComando(SelectAdministradorProyecto + " FROM AdministradorProyecto WHERE (UsuarioID = " + IBD.GuidParamValor("usuarioID") + ")");
             dataWrapperProyecto.ListaAdministradorProyecto = mEntityContext.AdministradorProyecto.Where(adminProy => adminProy.UsuarioID.Equals(pUsuarioID)).ToList();
 
-            return (dataWrapperProyecto);
+            return dataWrapperProyecto;
         }
 
         /// <summary>
@@ -2686,7 +3233,7 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
                 Persona = persona
             }).Where(objeto => objeto.Persona.UsuarioID.HasValue && objeto.Persona.PersonaID.Equals(pPersonaID)).Select(objeto => objeto.AdministradorProyecto).ToList();
 
-            return (dataWrapperProyecto);
+            return dataWrapperProyecto;
         }
 
         /// <summary>
@@ -2729,7 +3276,7 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
         {
             DataWrapperProyecto dataWrapperProyecto = new DataWrapperProyecto();
             dataWrapperProyecto.ListaAdministradorProyecto = mEntityContext.AdministradorProyecto.Where(adminProy => adminProy.ProyectoID.Equals(pProyectoID)).ToList();
-            return (dataWrapperProyecto);
+            return dataWrapperProyecto;
         }
 
 
@@ -2741,7 +3288,7 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
         /// <returns>Dataset de proyecto con los proyectos hijos cargados</returns>
         public DataWrapperProyecto ObtenerProyectosHijosDeProyectos(List<Guid> pListaProyectosID, Guid pUsuarioID)
         {
-            List<Proyecto> listaProyecto = mEntityContext.Proyecto.Where(proyecto => (!proyecto.TipoAcceso.Equals((short)TipoAcceso.Reservado) || mEntityContext.ProyectoRolUsuario.Any(rolUsuario => rolUsuario.EstaBloqueado == false && rolUsuario.OrganizacionGnossID.Equals(proyecto.OrganizacionID) && proyecto.ProyectoID.Equals(rolUsuario.ProyectoID) && rolUsuario.UsuarioID.Equals(pUsuarioID))) && pListaProyectosID.Contains((Guid)proyecto.ProyectoSuperiorID)).ToList();
+            List<Proyecto> listaProyecto = mEntityContext.Proyecto.Where(proyecto => (!proyecto.TipoAcceso.Equals((short)TipoAcceso.Reservado) || mEntityContext.ProyectoRolUsuario.Any(rolUsuario => !rolUsuario.EstaBloqueado && rolUsuario.OrganizacionGnossID.Equals(proyecto.OrganizacionID) && proyecto.ProyectoID.Equals(rolUsuario.ProyectoID) && rolUsuario.UsuarioID.Equals(pUsuarioID))) && pListaProyectosID.Contains((Guid)proyecto.ProyectoSuperiorID)).ToList();
 
             List<Guid> listaProyectos = new List<Guid>();
 
@@ -2770,7 +3317,6 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
         public DataWrapperProyecto ObtenerProyectosPadresDeProyectos(List<Guid> pListaProyectosID)
         {
             DataWrapperProyecto dataWrapperProyecto = new DataWrapperProyecto();
-
 
             //Hijos            
             List<Guid> subconsulta = mEntityContext.Proyecto.Where(proyecto => proyecto.ProyectoSuperiorID.HasValue && pListaProyectosID.Contains(proyecto
@@ -2807,9 +3353,9 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
                 Proyecto = objeto.Proyecto,
                 ProyectoUsuarioIdentidad = objeto.ProyectoUsuarioIdentidad,
                 Identidad = identidad
-            }).Where(objeto => objeto.ProyectoUsuarioIdentidad.IdentidadID.Equals(pIdentidad) && (objeto.Proyecto.Estado.Equals((short)EstadoProyecto.Abierto) || objeto.Proyecto.Estado.Equals((short)EstadoProyecto.Cerrandose)) && !objeto.Identidad.FechaBaja.HasValue).Select(objeto => objeto.Proyecto).ToList().Distinct().ToList();
+            }).Where(objeto => objeto.ProyectoUsuarioIdentidad.IdentidadID.Equals(pIdentidad) && (objeto.Proyecto.Estado.Equals((short)EstadoProyecto.Abierto) || objeto.Proyecto.Estado.Equals((short)EstadoProyecto.Cerrandose)) && !objeto.Identidad.FechaBaja.HasValue).Select(objeto => objeto.Proyecto).Distinct().ToList();
 
-            return (dataWrapperProyecto);
+            return dataWrapperProyecto;
         }
 
         /// <summary>
@@ -2819,10 +3365,7 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
         /// <returns>TRUE si lo es, FALSE en caso contrario</returns>
         public bool EsUsuarioAdministradorProyectoMYGnoss(Guid pUsuarioID)
         {
-            List<AdministradorProyecto> listaAdministradorProyecto = mEntityContext.AdministradorProyecto.Where(administradorProy => administradorProy.ProyectoID.Equals(MetaProyecto) && administradorProy.UsuarioID.Equals(pUsuarioID) && administradorProy.Tipo.Equals((short)TipoRolUsuario.Administrador)).ToList();
-            bool EsAdministrador = (listaAdministradorProyecto.Count > 0);
-
-            return (EsAdministrador);
+            return mEntityContext.AdministradorProyecto.Any(administradorProy => administradorProy.ProyectoID.Equals(MetaProyecto) && administradorProy.UsuarioID.Equals(pUsuarioID) && administradorProy.Tipo.Equals((short)TipoRolUsuario.Administrador));
         }
 
 
@@ -2834,7 +3377,7 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
         /// <returns>TRUE si lo es, FALSE en caso contrario</returns>
         public bool EstaUsuarioBloqueadoEnProyecto(Guid pUsuarioID, Guid pProyectoID)
         {
-            return mEntityContext.ProyectoRolUsuario.Any(proyecto => proyecto.ProyectoID.Equals(pProyectoID) && proyecto.UsuarioID.Equals(pUsuarioID) && proyecto.EstaBloqueado == true);
+            return mEntityContext.ProyectoRolUsuario.Any(proyecto => proyecto.ProyectoID.Equals(pProyectoID) && proyecto.UsuarioID.Equals(pUsuarioID) && proyecto.EstaBloqueado);
         }
 
         /// <summary>
@@ -2858,11 +3401,9 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
                 Identidad = objeto.Identidad,
                 PerfilPersonaOrg = perfilPersonaOrg
             }).Where(objeto => objeto.ProyectoUsuarioIdentidad.UsuarioID.Equals(pUsuarioID) && objeto.PerfilPersonaOrg.OrganizacionID.Equals(pOrganizacionID) && !objeto.ProyectoUsuarioIdentidad.ProyectoID.Equals(MetaProyecto)).Select(objeto => objeto.ProyectoUsuarioIdentidad.ProyectoID).ToList();
-            dataWrapperProyecto.ListaProyecto = mEntityContext.Proyecto.Where(proyecto => listaProyectoID.Contains(proyecto.ProyectoID)).ToList().Distinct().ToList();
+            dataWrapperProyecto.ListaProyecto = mEntityContext.Proyecto.Where(proyecto => listaProyectoID.Contains(proyecto.ProyectoID)).Distinct().ToList();
 
-            //AdministradorProyecto
-            //SelectAdministradorProyecto + " FROM AdministradorProyecto WHERE AdministradorProyecto.ProyectoID IN (SELECT ProyectoUsuarioIdentidad.ProyectoID FROM ProyectoUsuarioIdentidad INNER JOIN Identidad ON Identidad.IdentidadID = ProyectoUsuarioIdentidad.IdentidadID INNER JOIN PerfilPersonaOrg ON PerfilPersonaOrg.PerfilID = Identidad.PerfilID WHERE ProyectoUsuarioIdentidad.UsuarioID = " + IBD.GuidParamValor("usuarioID") + " AND PerfilPersonaOrg.OrganizacionID = " + IBD.GuidParamValor("organizacionID") + " AND ProyectoUsuarioIdentidad.ProyectoID <> '" + MetaProyecto + "' )";
-
+            //AdministradorProyecto            
             List<Guid> listaAdminProyectoID = mEntityContext.ProyectoUsuarioIdentidad.Join(mEntityContext.Identidad, proyectoUsuarioIden => proyectoUsuarioIden.IdentidadID, identidad => identidad.IdentidadID, (proyectoUsuarioIden, identidad) => new
             {
                 ProyectoUsuarioIdentidad = proyectoUsuarioIden,
@@ -2887,10 +3428,36 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
         /// <returns>TRUE si lo es, FALSE en caso contrario</returns>
         public bool EsUsuarioAdministradorProyecto(Guid pUsuarioID, Guid pProyectoID, TipoRolUsuario pTipo)
         {
-            List<AdministradorProyecto> listaAdministradorProyecto = mEntityContext.AdministradorProyecto.Where(adminProy => adminProy.ProyectoID.Equals(pProyectoID) && adminProy.UsuarioID.Equals(pUsuarioID) && adminProy.Tipo.Equals((short)pTipo)).ToList();
+			bool esAdministrador = false;
+
+			if (pProyectoID.Equals(ProyectoAD.MetaProyecto))
+			{
+				RolEcosistemaUsuario rolEcosistema = mEntityContext.RolEcosistemaUsuario.Where(x => x.UsuarioID.Equals(pUsuarioID) && x.RolID.Equals(ProyectoAD.RolAdministradorEcosistema)).FirstOrDefault();
+				if (rolEcosistema != null)
+				{
+					esAdministrador = true;
+				}
+			}
+			else
+			{
+				Es.Riam.Gnoss.AD.EntityModel.Models.PersonaDS.Persona persona = mEntityContext.Persona.Where(x => x.UsuarioID.Equals(pUsuarioID)).FirstOrDefault();
+				if (persona != null)
+				{
+					Guid perfilID = mEntityContext.PerfilPersona.Where(x => x.PersonaID.Equals(persona.PersonaID)).Select(x => x.PerfilID).FirstOrDefault();
+					Guid identidadID = mEntityContext.Identidad.Where(x => x.PerfilID.Equals(perfilID) && x.ProyectoID.Equals(pProyectoID)).Select(x => x.IdentidadID).FirstOrDefault();
+					RolIdentidad rolIdentidad = mEntityContext.RolIdentidad.Where(x => x.IdentidadID.Equals(identidadID) && x.RolID.Equals(ProyectoAD.RolAdministrador)).FirstOrDefault();
+					if (rolIdentidad != null)
+					{
+						esAdministrador = true;
+					}
+				}
+			}
+
+			return esAdministrador;
+			/*List<AdministradorProyecto> listaAdministradorProyecto = mEntityContext.AdministradorProyecto.Where(adminProy => adminProy.ProyectoID.Equals(pProyectoID) && adminProy.UsuarioID.Equals(pUsuarioID) && adminProy.Tipo.Equals((short)pTipo)).ToList();
             bool EsAdministrador = (listaAdministradorProyecto.Count > 0);
-            return (EsAdministrador);
-        }
+            return (EsAdministrador);*/
+		}
 
         /// <summary>
         /// Comprueba si la identidad es administrador del proyecto
@@ -2901,7 +3468,28 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
         /// <returns>TRUE si lo es, FALSE en caso contrario</returns>
         public bool EsIdentidadAdministradorProyecto(Guid pIdentidadID, Guid pProyectoID, TipoRolUsuario pTipo)
         {
-            var listaAdministradorProyectoVar = mEntityContext.AdministradorProyecto.Join(mEntityContext.Persona, adminProy => adminProy.UsuarioID, persona => persona.UsuarioID, (adminProy, persona) => new
+			bool esAdministrador = false;
+
+			if (pProyectoID.Equals(ProyectoAD.MetaProyecto))
+			{
+                Guid usuarioID = mEntityContext.ProyectoUsuarioIdentidad.Where(x => x.IdentidadID.Equals(pIdentidadID) && x.ProyectoID.Equals(pProyectoID)).Select(x => x.UsuarioID).FirstOrDefault();
+				RolEcosistemaUsuario rolEcosistema = mEntityContext.RolEcosistemaUsuario.Where(x => x.UsuarioID.Equals(usuarioID) && x.RolID.Equals(ProyectoAD.RolAdministradorEcosistema)).FirstOrDefault();
+				if (rolEcosistema != null)
+				{
+					esAdministrador = true;
+				}
+			}
+			else
+			{
+			    RolIdentidad rolIdentidad = mEntityContext.RolIdentidad.Where(x => x.IdentidadID.Equals(pIdentidadID) && x.RolID.Equals(ProyectoAD.RolAdministrador)).FirstOrDefault();
+				if (rolIdentidad != null)
+				{
+				    esAdministrador = true;
+				}				
+			}
+
+			return esAdministrador;
+			/*var listaAdministradorProyectoVar = mEntityContext.AdministradorProyecto.Join(mEntityContext.Persona, adminProy => adminProy.UsuarioID, persona => persona.UsuarioID, (adminProy, persona) => new
             {
                 ProyectoID = adminProy.ProyectoID,
                 PersonaID = persona.PersonaID,
@@ -2926,8 +3514,8 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
             }).Where(adminProyPerPerIden => adminProyPerPerIden.IdentidadID.Equals(pIdentidadID) && adminProyPerPerIden.ProyectoID.Equals(pProyectoID) && adminProyPerPerIden.Tipo <= (short)pTipo).ToList();
             bool EsAdministrador = (listaAdministradorProyectoVar.ToList().Count > 0);
 
-            return (EsAdministrador);
-        }
+            return (EsAdministrador);*/
+		}
 
         /// <summary>
         /// Obtiene nombre completo de un determinado proyecto (pProyectoID)
@@ -2942,7 +3530,7 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
 
             if (nombre != null)
             {
-                resultado = (string)nombre;
+                resultado = nombre;
             }
             return resultado;
         }
@@ -2973,7 +3561,6 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
         //public DataWrapperProyecto ObtenerProyectosParticipaOrganizacion(Guid pOrganizacionID, bool pExcluirMyGNOSS)
         public DataWrapperProyecto ObtenerProyectosParticipaOrganizacion(Guid pOrganizacionID, bool pExcluirMyGNOSS)
         {
-            //TODO
             DataWrapperProyecto dataWrapperProyecto = new DataWrapperProyecto();
 
             List<Proyecto> proyectos = mEntityContext.Proyecto.Join(mEntityContext.OrganizacionParticipaProy, proyecto => new { ProyectoID = proyecto.ProyectoID, OrganizcionID = proyecto.OrganizacionID }, orgParticipaProy => new { ProyectoID = orgParticipaProy.ProyectoID, OrganizcionID = orgParticipaProy.OrganizacionProyectoID }, (proyecto, orgParticipaProy) => new
@@ -2995,9 +3582,9 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
         }
 
         /// <summary>
-        /// Obtiene los proyectos en los que participa una organizaci�n ordenados por relevancia (N�mero de visitas en GNOSS)
+        /// Obtiene los proyectos en los que participa una organizaci?n ordenados por relevancia (N?mero de visitas en GNOSS)
         /// </summary>
-        /// <param name="pOrganizacionID">Identificador de la organizaci�n</param>
+        /// <param name="pOrganizacionID">Identificador de la organizaci?n</param>
         /// <returns>Dataset de proyectos</returns>
         public DataWrapperProyecto ObtenerProyectosParticipaOrganizacionPorRelevancia(Guid pOrganizacionID)
         {
@@ -3014,7 +3601,7 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
                 ProyectosMasActivos = proyectoMasActivo
             }).OrderByDescending(objeto => objeto.ProyectosMasActivos.Peso).Select(objeto => objeto.Proyecto).ToList();
 
-            return (dataWrapperProyecto);
+            return dataWrapperProyecto;
         }
 
 
@@ -3026,8 +3613,6 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
         /// <returns>Lista con los IDs de los proyectos en los que participa la organizacion</returns>
         public List<Guid> ObtenerListaProyectoIDDeOrganizacion(Guid pOrganizacion, bool pObtenerSoloActivos)
         {
-            List<Guid> listaProyectos = new List<Guid>();
-
             var listaProyectosVAR = mEntityContext.Identidad.Join(mEntityContext.Perfil, identidad => identidad.PerfilID, perfil => perfil.PerfilID, (identidad, perfil) => new
             {
                 Perfil = perfil,
@@ -3038,13 +3623,12 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
             {
                 listaProyectosVAR = listaProyectosVAR.Where(objeto => objeto.Identidad.FechaBaja == null && objeto.Identidad.FechaExpulsion == null).ToList();
             }
-            listaProyectos = listaProyectosVAR.Select(objeto => objeto.Identidad.ProyectoID).Distinct().ToList();
 
-            return listaProyectos;
+            return listaProyectosVAR.Select(objeto => objeto.Identidad.ProyectoID).Distinct().ToList();
         }
 
         /// <summary>
-        /// Obtiene los proyectos en los que participa un usuario ordenados por relevancia (N�mero de visitas del usuario)
+        /// Obtiene los proyectos en los que participa un usuario ordenados por relevancia (N?mero de visitas del usuario)
         /// </summary>
         /// <param name="pPerfilID">Identificador del perfil</param>
         /// <returns>Dataset de proyectos</returns>
@@ -3056,21 +3640,20 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
             {
                 Proyecto = proyecto,
                 Identidad = identidad
-            }).Where(objeto => objeto.Identidad.PerfilID.Equals(pPerfilID) && !objeto.Identidad.FechaBaja.HasValue && !objeto.Identidad.FechaExpulsion.HasValue && !objeto.Proyecto.ProyectoID.Equals(ProyectoAD.MetaProyecto)).OrderByDescending(objeto => objeto.Identidad.NumConnexiones).Select(objeto => objeto.Proyecto).ToList();
+            }).Where(objeto => objeto.Identidad.PerfilID.Equals(pPerfilID) && !objeto.Identidad.FechaBaja.HasValue && !objeto.Identidad.FechaExpulsion.HasValue && !objeto.Proyecto.ProyectoID.Equals(MetaProyecto)).OrderByDescending(objeto => objeto.Identidad.NumConnexiones).Select(objeto => objeto.Proyecto).ToList();
 
-            return (dataWrapperProyecto);
+            return dataWrapperProyecto;
         }
 
         public DataSet ObtenerDatosProyectosDesplegarAcciones(List<Guid> pListaProyectos)
         {
-            string listaProyectos = "";
+            StringBuilder listaProyectos = new StringBuilder();
             foreach (Guid proyectoid in pListaProyectos)
             {
-                listaProyectos += IBD.GuidValor(proyectoid) + ", ";
+                listaProyectos.Append($"{IBD.GuidValor(proyectoid)}, ");
             }
-            listaProyectos = listaProyectos.Substring(0, listaProyectos.Length - 2);
 
-            string select = "SELECT Proyecto.ProyectoID, Proyecto.TipoProyecto, Proyecto.NombreCorto, ParametroGeneral.MostrarPersonasEnCatalogo, ParametroGeneral.VotacionesDisponibles, ParametroGeneral.PermitirVotacionesNegativas, ParametroGeneral.ComentariosDisponibles, ParametroGeneral.CompartirRecursosPermitido FROM ParametroGeneral INNER JOIN Proyecto ON Proyecto.ProyectoID = ParametroGeneral.ProyectoID WHERE Proyecto.ProyectoID IN (" + listaProyectos + ")";
+            string select = $"SELECT Proyecto.ProyectoID, Proyecto.TipoProyecto, Proyecto.NombreCorto, ParametroGeneral.MostrarPersonasEnCatalogo, ParametroGeneral.VotacionesDisponibles, ParametroGeneral.PermitirVotacionesNegativas, ParametroGeneral.ComentariosDisponibles, ParametroGeneral.CompartirRecursosPermitido FROM ParametroGeneral INNER JOIN Proyecto ON Proyecto.ProyectoID = ParametroGeneral.ProyectoID WHERE Proyecto.ProyectoID IN ({listaProyectos.ToString().Substring(0, listaProyectos.Length - 2)})";
             DbCommand commandsql = ObtenerComando(select);
 
             DataSet dataset = new DataSet();
@@ -3120,6 +3703,7 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
             }
             return listaProyectos;
         }
+
         /// <summary>
         /// Obtiene si el usuario participa en el proyecto con alguna de sus identidades
         /// </summary>
@@ -3128,7 +3712,7 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
         /// <returns>TRUE si el usuario participa con alguna de sus identidadez</returns>
         public bool ParticipaUsuarioEnProyecto(Guid pProyectoID, Guid pUsuarioID)
         {
-           return mEntityContext.Identidad.JoinPerfil().JoinPersona().Any(objeto => objeto.Perfil.PersonaID.HasValue && objeto.Identidad.ProyectoID.Equals(pProyectoID) && objeto.Persona.UsuarioID.HasValue && objeto.Persona.UsuarioID.Value.Equals(pUsuarioID));
+            return mEntityContext.Identidad.JoinPerfil().JoinPersona().Any(objeto => objeto.Perfil.PersonaID.HasValue && objeto.Identidad.ProyectoID.Equals(pProyectoID) && objeto.Persona.UsuarioID.HasValue && objeto.Persona.UsuarioID.Value.Equals(pUsuarioID));
         }
 
         /// <summary>
@@ -3140,7 +3724,6 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
         {
             return mEntityContext.ParametroAplicacion.Where(parametroApp => parametroApp.Parametro.Equals("UrlServicioIntegracionEntornos")).Select(parametroApp => parametroApp.Valor).FirstOrDefault();
         }
-
 
         /// <summary>
         /// Obtiene el la URL del API de Integracion Continua
@@ -3163,7 +3746,7 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
         }
 
         /// <summary>
-        /// Obtiene el identificador de un proyecto a partir de su nombre CORTO pasado por par�metro
+        /// Obtiene el identificador de un proyecto a partir de su nombre CORTO pasado por par?metro
         /// </summary>
         /// <param name="pNombre">Nombre corto del proyecto</param>
         /// <returns>Identificador del proyecto</returns>
@@ -3173,7 +3756,7 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
         }
 
         /// <summary>
-        /// Obtiene el proyecto a trav�s de su nombre corto
+        /// Obtiene el proyecto a trav?s de su nombre corto
         /// </summary>
         /// <param name="pNombreCorto">Nombre corto del proyecto a obtener</param>
         /// <returns></returns>
@@ -3183,7 +3766,7 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
         }
 
         /// <summary>
-        /// Nos indica si existe alg�n proyecto con el nombre corto indicado
+        /// Nos indica si existe alg?n proyecto con el nombre corto indicado
         /// </summary>
         /// <param name="pNombreCorto">Nombre corto a comprobar</param>
         /// <returns></returns>
@@ -3191,7 +3774,7 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
         {
             return mEntityContext.Proyecto.Any(item => item.Nombre.Equals(pNombreCorto));
         }
-        
+
         /// Obtiene el identificador de un proyecto y del proyecto del que hereda en caso de hacerlo
         /// </summary>
         /// <param name="pNombre">Nombre corto del proyecto</param>
@@ -3357,7 +3940,7 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
             {
                 Proyecto = proyecto,
                 Identidad = identidad
-            }).Where(objeto => objeto.Identidad.PerfilID.Equals(pPerfilID) && !objeto.Identidad.FechaBaja.HasValue && !objeto.Identidad.FechaExpulsion.HasValue && objeto.Proyecto.ProyectoID != MetaProyecto && (objeto.Proyecto.Estado.Equals((short)EstadoProyecto.Abierto) || objeto.Proyecto.Estado.Equals((short)EstadoProyecto.Cerrandose) || (objeto.Proyecto.Estado.Equals((short)EstadoProyecto.Definicion) && listaProyectoID.Contains(objeto.Proyecto.ProyectoID)))).ToList().Select(objeto => new ProyectoNumConexiones
+            }).Where(objeto => objeto.Identidad.PerfilID.Equals(pPerfilID) && !objeto.Identidad.FechaBaja.HasValue && !objeto.Identidad.FechaExpulsion.HasValue && objeto.Proyecto.ProyectoID != MetaProyecto && (objeto.Proyecto.Estado.Equals((short)EstadoProyecto.Abierto) || objeto.Proyecto.Estado.Equals((short)EstadoProyecto.Cerrandose) || (objeto.Proyecto.Estado.Equals((short)EstadoProyecto.Definicion) && listaProyectoID.Contains(objeto.Proyecto.ProyectoID)))).Select(objeto => new ProyectoNumConexiones
             {
                 ProyectoID = objeto.Proyecto.ProyectoID,
                 NombreCorto = objeto.Proyecto.NombreCorto,
@@ -3397,18 +3980,18 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
 
             var listaProyectosVar = mEntityContext.Proyecto.
                 Join(mEntityContext.Identidad, proyecto => proyecto.ProyectoID, identidad => identidad.ProyectoID, (proyecto, identidad) => new
-            {
-                Proyecto = proyecto,
-                Identidad = identidad
-            }).Where(objeto => objeto.Identidad.PerfilID.Equals(pPerfilID) && !objeto.Identidad.FechaBaja.HasValue && !objeto.Identidad.FechaExpulsion.HasValue && objeto.Proyecto.ProyectoID != MetaProyecto && (objeto.Proyecto.Estado.Equals((short)EstadoProyecto.Abierto) || objeto.Proyecto.Estado.Equals((short)EstadoProyecto.Cerrandose) || (objeto.Proyecto.Estado.Equals((short)EstadoProyecto.Definicion) && listaProyectoID.Contains(objeto.Proyecto.ProyectoID)))).OrderByDescending(identidad => identidad.Identidad.NumConnexiones).Take(10).ToList().Select(objeto => new ProyectoNumConexiones
-            {
-                ProyectoID = objeto.Proyecto.ProyectoID,
-                NombreCorto = objeto.Proyecto.NombreCorto,
-                Nombre = objeto.Proyecto.Nombre,
-                TipoAcceso = objeto.Proyecto.TipoAcceso,
-                NumConexiones = objeto.Identidad.NumConnexiones,
-                TipoProyecto = objeto.Proyecto.TipoProyecto
-            }).ToList();
+                {
+                    Proyecto = proyecto,
+                    Identidad = identidad
+                }).Where(objeto => objeto.Identidad.PerfilID.Equals(pPerfilID) && !objeto.Identidad.FechaBaja.HasValue && !objeto.Identidad.FechaExpulsion.HasValue && objeto.Proyecto.ProyectoID != MetaProyecto && (objeto.Proyecto.Estado.Equals((short)EstadoProyecto.Abierto) || objeto.Proyecto.Estado.Equals((short)EstadoProyecto.Cerrandose) || (objeto.Proyecto.Estado.Equals((short)EstadoProyecto.Definicion) && listaProyectoID.Contains(objeto.Proyecto.ProyectoID)))).OrderByDescending(identidad => identidad.Identidad.NumConnexiones).Take(10).Select(objeto => new ProyectoNumConexiones
+                {
+                    ProyectoID = objeto.Proyecto.ProyectoID,
+                    NombreCorto = objeto.Proyecto.NombreCorto,
+                    Nombre = objeto.Proyecto.Nombre,
+                    TipoAcceso = objeto.Proyecto.TipoAcceso,
+                    NumConexiones = objeto.Identidad.NumConnexiones,
+                    TipoProyecto = objeto.Proyecto.TipoProyecto
+                }).ToList();
 
             dataWrapperProyecto.ListaProyectoNumConexiones = listaProyectosVar;
             return dataWrapperProyecto;
@@ -3465,13 +4048,13 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
             return listaProyectos;
         }
         /// <summary>
-        /// Obtiene la lista de proyectos en las que participa una persona pasada por par�metro
+        /// Obtiene la lista de proyectos en las que participa una persona pasada por par?metro
         /// </summary>
         /// <param name="pPersonaID">Identificador de la persona</param>
         /// <returns>lista de guids con to
         public List<Guid> ObtenerIdProyectosParticipaPersona(Guid pPersonaID)
         {
-           return mEntityContext.Identidad.JoinPerfil().Where(item => !item.Identidad.FechaBaja.HasValue && !item.Identidad.FechaExpulsion.HasValue && !item.Perfil.Eliminado && item.Perfil.PersonaID.Equals(pPersonaID)).Select(item => item.Identidad.ProyectoID).ToList();
+            return mEntityContext.Identidad.JoinPerfil().Where(item => !item.Identidad.FechaBaja.HasValue && !item.Identidad.FechaExpulsion.HasValue && !item.Perfil.Eliminado && item.Perfil.PersonaID.Equals(pPersonaID)).Select(item => item.Identidad.ProyectoID).ToList();
         }
 
         /// <summary>
@@ -3508,7 +4091,7 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
             {
                 Proyecto = proyecto,
                 Identidad = identidad
-            }).Where(objeto => listaPerfilID.Contains(objeto.Identidad.PerfilID) && !objeto.Identidad.FechaBaja.HasValue && !objeto.Identidad.FechaExpulsion.HasValue && !objeto.Proyecto.ProyectoID.Equals(ProyectoAD.MetaProyecto) && (objeto.Proyecto.Estado.Equals((short)EstadoProyecto.Abierto) || objeto.Proyecto.Estado.Equals((short)EstadoProyecto.Cerrandose) || (objeto.Proyecto.Estado.Equals((short)EstadoProyecto.Definicion)) && listaProyectoID.Contains(objeto.Proyecto.ProyectoID))).OrderBy(objeto => objeto.Identidad.NumConnexiones).Select(objeto => objeto.Proyecto.ProyectoID).Distinct().ToList();
+            }).Where(objeto => listaPerfilID.Contains(objeto.Identidad.PerfilID) && !objeto.Identidad.FechaBaja.HasValue && !objeto.Identidad.FechaExpulsion.HasValue && !objeto.Proyecto.ProyectoID.Equals(MetaProyecto) && (objeto.Proyecto.Estado.Equals((short)EstadoProyecto.Abierto) || objeto.Proyecto.Estado.Equals((short)EstadoProyecto.Cerrandose) || (objeto.Proyecto.Estado.Equals((short)EstadoProyecto.Definicion)) && listaProyectoID.Contains(objeto.Proyecto.ProyectoID))).OrderBy(objeto => objeto.Identidad.NumConnexiones).Select(objeto => objeto.Proyecto.ProyectoID).Distinct().ToList();
 
             return listaProyecto;
         }
@@ -3547,7 +4130,7 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
             {
                 Proyecto = proyecto,
                 Identidad = identidad
-            }).Where(objeto => listaPerfilID.Contains(objeto.Identidad.PerfilID) && !objeto.Identidad.FechaBaja.HasValue && !objeto.Identidad.FechaExpulsion.HasValue && !objeto.Proyecto.ProyectoID.Equals(ProyectoAD.MetaProyecto) && (objeto.Proyecto.Estado.Equals((short)EstadoProyecto.Abierto) || objeto.Proyecto.Estado.Equals((short)EstadoProyecto.Cerrandose) || (objeto.Proyecto.Estado.Equals((short)EstadoProyecto.Definicion) && listaProyectoID.Contains(objeto.Proyecto.ProyectoID)))).OrderByDescending(objeto => objeto.Identidad.NumConnexiones).Select(objeto => new
+            }).Where(objeto => listaPerfilID.Contains(objeto.Identidad.PerfilID) && !objeto.Identidad.FechaBaja.HasValue && !objeto.Identidad.FechaExpulsion.HasValue && !objeto.Proyecto.ProyectoID.Equals(MetaProyecto) && (objeto.Proyecto.Estado.Equals((short)EstadoProyecto.Abierto) || objeto.Proyecto.Estado.Equals((short)EstadoProyecto.Cerrandose) || (objeto.Proyecto.Estado.Equals((short)EstadoProyecto.Definicion) && listaProyectoID.Contains(objeto.Proyecto.ProyectoID)))).OrderByDescending(objeto => objeto.Identidad.NumConnexiones).Select(objeto => new
             {
                 objeto.Proyecto.NombreCorto,
                 objeto.Proyecto.Nombre,
@@ -3566,6 +4149,7 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
 
             return listaProyectos;
         }
+
         /// <summary>
         /// Obtiene los proyectos en los que participa el usuario
         /// </summary>
@@ -3605,18 +4189,18 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
                 objeto.Proyecto.ProyectoID
             }).ToList();
 
-            foreach (var proyecto in listaProyecto)
+            foreach (var proyectoID in listaProyecto.Select(item => item.ProyectoID))
             {
-                if (!proyectosUsuario.Contains(proyecto.ProyectoID))
+                if (!proyectosUsuario.Contains(proyectoID))
                 {
-                    proyectosUsuario.Add(proyecto.ProyectoID);
+                    proyectosUsuario.Add(proyectoID);
                 }
             }
             return proyectosUsuario;
         }
 
         /// <summary>
-        /// Obtiene un n�mero espec�fico de proyectos en los que participa el usuario
+        /// Obtiene un n?mero espec?fico de proyectos en los que participa el usuario
         /// </summary>
         /// <param name="pUsuarioID">Id del usuario</param>
         /// <param name="numeroResultados">Numero de proyectos que se van a devolver</param>
@@ -3655,11 +4239,11 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
                 objeto.Proyecto.ProyectoID
             }).ToList();
 
-            foreach (var proyecto in listaProyecto)
+            foreach (var proyectoID in listaProyecto.Select(item => item.ProyectoID))
             {
-                if (!proyectosUsuario.Contains(proyecto.ProyectoID))
+                if (!proyectosUsuario.Contains(proyectoID))
                 {
-                    proyectosUsuario.Add(proyecto.ProyectoID);
+                    proyectosUsuario.Add(proyectoID);
                 }
                 if (pNumeroResultados.Equals(proyectosUsuario.Count))
                 {
@@ -3688,6 +4272,7 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
             }
             return usuariosNoPertenecen;
         }
+
         /// <summary>
         /// Obtiene las urls de la busqueda
         /// </summary>
@@ -3710,21 +4295,22 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
             string[] trozos = url.Split('/');
             if (trozos[3].Length == 2)
             {
-                urlNueva = trozos[0] + "//" + trozos[2] + "/" + trozos[3];
+                urlNueva = $"{trozos[0]}//{trozos[2]}/{trozos[3]}";
                 for (int i = 6; i < trozos.Length; i++)
                 {
-                    urlNueva = urlNueva + "/" + trozos[i];
+                    urlNueva = $"{urlNueva}/{trozos[i]}";
                 }
             }
             else
             {
-                urlNueva = trozos[0] + "//" + trozos[2];
+                urlNueva = $"{trozos[0]}//{trozos[2]}";
                 for (int i = 5; i < trozos.Length; i++)
                 {
-                    urlNueva = urlNueva + "/" + trozos[i];
+                    urlNueva = $"{urlNueva}/{trozos[i]}";
                 }
             }
-            Guid componenteId = mEntityContext.CMSComponente.Where(tipo => tipo.TipoComponente.Equals((short)TipoComponenteCMS.CajaBuscador) && tipo.ProyectoID.Equals(pProyectoID)).Select(tipo => tipo.ComponenteID).FirstOrDefault();
+            Guid 
+                componenteId = mEntityContext.CMSComponente.Where(tipo => tipo.TipoComponente.Equals((short)TipoComponenteCMS.CajaBuscador) && tipo.ProyectoID.Equals(pProyectoID)).Select(tipo => tipo.ComponenteID).FirstOrDefault();
             mEntityContext.CMSPropiedadComponente.Where(tipo => tipo.TipoPropiedadComponente.Equals((short)TipoPropiedadCMS.URLBusqueda) && tipo.ComponenteID.Equals(componenteId) && tipo.ValorPropiedad.Equals(url)).FirstOrDefault().ValorPropiedad = urlNueva;
             mEntityContext.SaveChanges();
 
@@ -3847,7 +4433,7 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
                 Identidad = objeto.Identidad,
                 Perfil = objeto.Perfil,
                 Persona = persona
-            }).Where(objeto => objeto.ProyectoUsuarioIdentidad.ProyectoID.Equals(pProyectoID) && objeto.Identidad.FechaBaja == null && objeto.Perfil.Eliminado == false && !objeto.Perfil.OrganizacionID.HasValue && objeto.Persona.Email != null).ToList().Select(objeto => new EmailsMiembrosDeProyecto { IdentidadID = objeto.ProyectoUsuarioIdentidad.IdentidadID, PersonaID = objeto.Perfil.PersonaID, Nombre = objeto.Persona.Nombre, Email = objeto.Persona.Email })
+            }).Where(objeto => objeto.ProyectoUsuarioIdentidad.ProyectoID.Equals(pProyectoID) && objeto.Identidad.FechaBaja == null && !objeto.Perfil.Eliminado && !objeto.Perfil.OrganizacionID.HasValue && objeto.Persona.Email != null).Select(objeto => new EmailsMiembrosDeProyecto { IdentidadID = objeto.ProyectoUsuarioIdentidad.IdentidadID, PersonaID = objeto.Perfil.PersonaID, Nombre = objeto.Persona.Nombre, Email = objeto.Persona.Email })
             .Union(mEntityContext.ProyectoUsuarioIdentidad.Join(mEntityContext.Identidad, proyectoUsuarioIdentidad => proyectoUsuarioIdentidad.IdentidadID, identidad => identidad.IdentidadID, (proyectoUsuarioIdentidad, identidad) => new
             {
                 ProyectoUsuarioIdentidad = proyectoUsuarioIdentidad,
@@ -3870,10 +4456,11 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
                 Perfil = objeto.Perfil,
                 Persona = objeto.Persona,
                 PersonaVinculoOrganizacion = personaVinculoOrganizacion
-            }).Where(objeto => objeto.ProyectoUsuarioIdentidad.ProyectoID.Equals(pProyectoID) && !objeto.Identidad.FechaBaja.HasValue && objeto.Perfil.Eliminado == false && objeto.Perfil.PersonaID.HasValue && objeto.Perfil.OrganizacionID.HasValue && objeto.PersonaVinculoOrganizacion.EmailTrabajo != null).ToList().Select(objeto => new EmailsMiembrosDeProyecto { IdentidadID = objeto.ProyectoUsuarioIdentidad.IdentidadID, PersonaID = objeto.Perfil.PersonaID, Nombre = objeto.Persona.Nombre, Email = objeto.PersonaVinculoOrganizacion.EmailTrabajo })).ToList();
+            }).Where(objeto => objeto.ProyectoUsuarioIdentidad.ProyectoID.Equals(pProyectoID) && !objeto.Identidad.FechaBaja.HasValue && !objeto.Perfil.Eliminado && objeto.Perfil.PersonaID.HasValue && objeto.Perfil.OrganizacionID.HasValue && objeto.PersonaVinculoOrganizacion.EmailTrabajo != null).Select(objeto => new EmailsMiembrosDeProyecto { IdentidadID = objeto.ProyectoUsuarioIdentidad.IdentidadID, PersonaID = objeto.Perfil.PersonaID, Nombre = objeto.Persona.Nombre, Email = objeto.PersonaVinculoOrganizacion.EmailTrabajo })).ToList();
 
             return lista;
         }
+
         /// <summary>
         /// Obtiene una lista con los servicios externos si es MetaProyecto
         /// </summary>
@@ -3882,6 +4469,7 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
         {
             return mEntityContext.EcosistemaServicioExterno.ToList();
         }
+
         /// <summary>
         /// Obtiene una lista con los servicios externos si no es MetaProyecto
         /// </summary>
@@ -3901,17 +4489,17 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
         {
             return mEntityContext.ParametroAplicacion.Where(param => param.Parametro.Equals(parametro)).Select(param => param.Valor).FirstOrDefault();
         }
-        
+
         /// <summary>
-        /// Actualiza la tabla ParametroAplicacion con el parametro y valor dado. Si el paramerto no existe en la base de datos lo a�ade.
+        /// Actualiza la tabla ParametroAplicacion con el parametro y valor dado. Si el paramerto no existe en la base de datos lo a?ade.
         /// </summary>
         /// <param name="pParametro">Nombre del parametro a guardar. Clave</param>
         /// <param name="pValor">Valor del paramentro</param>       
         public void ActualizarParametroAplicacion(string pParametro, string pValor)
         {
             AD.EntityModel.ParametroAplicacion parametroAplicacion = mEntityContext.ParametroAplicacion.Where(item => item.Parametro.Equals(pParametro)).FirstOrDefault();
-            
-            if(parametroAplicacion != null)
+
+            if (parametroAplicacion != null)
             {
                 parametroAplicacion.Valor = pValor;
             }
@@ -3931,7 +4519,6 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
         {
             mEntityContext.EcosistemaServicioExterno.Add(eco);
         }
-        
 
         /// <summary>
         ///  Guarda en la tabla ProyectoServicioExterno una nueva fila
@@ -3939,8 +4526,9 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
         /// <param name="proy">Objeto de tipo ProyectoServicioExterno</param> 
         public void AgregarProyectoServicioExterno(ProyectoServicioExterno proy)
         {
-            mEntityContext.ProyectoServicioExterno.Add(proy);            
+            mEntityContext.ProyectoServicioExterno.Add(proy);
         }
+
         /// <summary>
         ///  Elimina de la tabla EcosistemaServicioExterno una fila
         /// </summary>
@@ -3949,6 +4537,7 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
         {
             mEntityContext.Entry(eco).State = EntityState.Deleted;
         }
+
         /// <summary>
         ///  Elimina de la tabla ProyectoServicioExterno una fila
         /// </summary>
@@ -3957,6 +4546,7 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
         {
             mEntityContext.Entry(proy).State = EntityState.Deleted;
         }
+
         /// <summary>
         ///  Obtiene la OrganizacionID a la que corresponde un proyecto
         /// </summary>
@@ -3966,6 +4556,7 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
         {
             return mEntityContext.Proyecto.Where(proy => proy.ProyectoID.Equals(pProyectoID)).Select(proy => proy.OrganizacionID).FirstOrDefault();
         }
+
         /// <summary>
         /// Obtiene una DataSet sin tipar con una tabla "Emails" que contiene los campos (IdentidadID,PersonaID,Nombre,Email) de cada uno de los miembros que participan en un determinado evento
         /// </summary>
@@ -3979,7 +4570,7 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
             AgregarParametro(commandsqlSelectEmailsMiembrosDeEventoDeProyecto, IBD.ToParam("eventoID"), IBD.TipoGuidToString(DbType.Guid), IBD.ValorDeGuid(pEventoID));
             CargarDataSet(commandsqlSelectEmailsMiembrosDeEventoDeProyecto, dataSet, "Emails");
 
-            return (dataSet);
+            return dataSet;
         }
 
         /// <summary>
@@ -4011,7 +4602,7 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
                 Perfil = objeto.Perfil,
                 Persona = objeto.Persona,
                 AdministradorProyecto = adminProy
-            }).Where(objeto => objeto.Perfil.PersonaID.HasValue && objeto.ProyectoUsuarioIdentidad.ProyectoID.Equals(pProyectoID) && !objeto.Identidad.FechaBaja.HasValue && objeto.Perfil.Eliminado == false && !objeto.Perfil.OrganizacionID.HasValue && objeto.Persona.Email != null && objeto.AdministradorProyecto.Tipo == 0).Select(item => item.Persona.Email).Distinct().Union(
+            }).Where(objeto => objeto.Perfil.PersonaID.HasValue && objeto.ProyectoUsuarioIdentidad.ProyectoID.Equals(pProyectoID) && !objeto.Identidad.FechaBaja.HasValue && !objeto.Perfil.Eliminado && !objeto.Perfil.OrganizacionID.HasValue && objeto.Persona.Email != null && objeto.AdministradorProyecto.Tipo == 0).Select(item => item.Persona.Email).Distinct().Union(
                 mEntityContext.ProyectoUsuarioIdentidad.Join(mEntityContext.Identidad, proyectoUsuarioIdentidad => proyectoUsuarioIdentidad.IdentidadID, identidad => identidad.IdentidadID, (proyectoUsuarioIdentidad, identidad) => new
                 {
                     ProyectoUsuarioIdentidad = proyectoUsuarioIdentidad,
@@ -4042,7 +4633,7 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
                     Persona = objeto.Persona,
                     PersonaVinculoOrganizacion = objeto.PersonaVinculoOrganizacion,
                     AdministradorProyecto = adminProyect
-                }).Where(objeto => objeto.ProyectoUsuarioIdentidad.ProyectoID.Equals(pProyectoID) && !objeto.Identidad.FechaBaja.HasValue && objeto.Perfil.Eliminado == false && objeto.Perfil.PersonaID.HasValue && objeto.Perfil.OrganizacionID.HasValue && objeto.PersonaVinculoOrganizacion.EmailTrabajo != null && objeto.AdministradorProyecto.Tipo == 0).Select(item => item.Persona.Email).Distinct()
+                }).Where(objeto => objeto.ProyectoUsuarioIdentidad.ProyectoID.Equals(pProyectoID) && !objeto.Identidad.FechaBaja.HasValue && !objeto.Perfil.Eliminado && objeto.Perfil.PersonaID.HasValue && objeto.Perfil.OrganizacionID.HasValue && objeto.PersonaVinculoOrganizacion.EmailTrabajo != null && objeto.AdministradorProyecto.Tipo == 0).Select(item => item.Persona.Email).Distinct()
                 ).ToList();
         }
 
@@ -4114,24 +4705,6 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
         /// <returns>N?mero de recursos</returns>
         public int ObtenerNumRecursosProyecto30Dias(Guid pProyectoID, int pNumDias)
         {
-            //List<Documento> listaDocumento = mEntityContext.Documento.Join(mEntityContext.DocumentoWebVinBaseRecursos, doc => doc.DocumentoID, docWebVin => docWebVin.DocumentoID, (doc, docWebVin) => new
-            //{
-            //    Documento = doc,
-            //    DocumentoWebVinBaseRecursos = docWebVin
-            //}).Join(mEntityContext.BaseRecursosProyecto, objeto => objeto.DocumentoWebVinBaseRecursos.BaseRecursosID, baseRecurso => baseRecurso.BaseRecursosID, (objeto, baseRecurso) => new
-            //{
-            //    Documento = objeto.Documento,
-            //    DocumentoWebVinBaseRecursos = objeto.DocumentoWebVinBaseRecursos,
-            //    BaseRecursosProyecto = baseRecurso
-            //}).Where(objeto => objeto.BaseRecursosProyecto.ProyectoID.Equals(pProyectoID) && objeto.Documento.Borrador.Equals(false) && objeto.Documento.Eliminado.Equals(false) && objeto.DocumentoWebVinBaseRecursos.Eliminado.Equals(false) && objeto.Documento.UltimaVersion.Equals(true) && objeto.DocumentoWebVinBaseRecursos.PrivadoEditores.Equals(false) && objeto.Documento.Tipo != (short)TiposDocumentacion.Ontologia && objeto.Documento.Tipo != (short)TiposDocumentacion.OntologiaSecundaria).Select(objeto => objeto.Documento).ToList();
-
-            //if (pNumDias != -1)
-            //{
-            //    listaDocumento = listaDocumento.Where(documento => documento.FechaCreacion > DateTime.Now.AddDays(pNumDias)).ToList();
-            //}
-
-            //return listaDocumento.Count;
-
             var query = mEntityContext.Documento.JoinDocumentoWebVinBaseRecursos().JoinBaseRecursosProyecto().Where(item => item.BaseRecursosProyecto.ProyectoID.Equals(pProyectoID) && !item.Documento.Borrador && !item.Documento.Eliminado && !item.DocumentoWebVinBaseRecursos.Eliminado && item.Documento.UltimaVersion && !item.DocumentoWebVinBaseRecursos.PrivadoEditores && !item.Documento.Tipo.Equals((short)TiposDocumentacion.Ontologia) && !item.Documento.Tipo.Equals((short)TiposDocumentacion.OntologiaSecundaria));
 
             if (pNumDias != -1)
@@ -4142,7 +4715,11 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
             return query.Count();
         }
 
-
+        public Proyecto ObtenerProyectoDeBaseRecursos(Guid pBaseRecursosID)
+        {
+            Guid proyectoID = mEntityContext.BaseRecursosProyecto.Where(x => x.BaseRecursosID.Equals(pBaseRecursosID)).Select(x => x.ProyectoID).FirstOrDefault();
+            return mEntityContext.Proyecto.Where(proy => proy.ProyectoID.Equals(proyectoID)).FirstOrDefault();
+		}
 
         /// <summary>
         /// Obtiene las secciones de la home de un proyecto tipo cat?logo
@@ -4151,21 +4728,11 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
         /// <returns></returns>
         public DataWrapperProyecto ObtenerSeccionesHomeCatalogoDeProyecto(Guid pProyectoID)
         {
-            //TODO TABLA
-            //ProyectoDS proyectoDS = new ProyectoDS();
-            //this.sqlSelectSeccionProyCatalogo = "SELECT " + IBD.CargarGuid("SeccionProyCatalogo.OrganizacionID") + ", " + IBD.CargarGuid("SeccionProyCatalogo.ProyectoID") + ", " + IBD.CargarGuid("SeccionProyCatalogo.OrganizacionBusquedaID") + ", " + IBD.CargarGuid("SeccionProyCatalogo.ProyectoBusquedaID") + ", SeccionProyCatalogo.Tipo, SeccionProyCatalogo.Nombre, SeccionProyCatalogo.Faceta, SeccionProyCatalogo.Filtro, SeccionProyCatalogo.NumeroResultados, SeccionProyCatalogo.Orden FROM SeccionProyCatalogo";
-            //string consulta = this.sqlSelectSeccionProyCatalogo + " WHERE ProyectoID = " + IBD.ToParam("ProyectoID");
-
             List<SeccionProyCatalogo> listaSeccionProyCatalogo = mEntityContext.SeccionProyCatalogo.Where(proy => proy.ProyectoID.Equals(pProyectoID)).ToList();
 
-            //DbCommand commandsqlSelectSeccionesHomeCatalogoDeProyecto = ObtenerComando(consulta);
-            //AgregarParametro(commandsqlSelectSeccionesHomeCatalogoDeProyecto, IBD.ToParam("ProyectoID"), IBD.TipoGuidToString(DbType.Guid), IBD.ValorDeGuid(pProyectoID));
-            //CargarDataSet(commandsqlSelectSeccionesHomeCatalogoDeProyecto, proyectoDS, "SeccionProyCatalogo");
-
-            //return proyectoDS;
             DataWrapperProyecto dataWrapperProyecto = new DataWrapperProyecto();
             dataWrapperProyecto.ListaSeccionProyCatalogo = listaSeccionProyCatalogo;
-            //dataWrapperProyecto.ListaSeccionProyCatalogo
+
             return dataWrapperProyecto;
         }
 
@@ -4246,10 +4813,6 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
 
             if (pListaProyectos.Count > 0)
             {
-                string sqlSelectNombre = SelectProyectoLigero + "FROM Proyecto WHERE ";
-
-                Dictionary<Guid, string> listaParmetros = new Dictionary<Guid, string>();
-
                 List<Proyecto> listaProyectos = mEntityContext.Proyecto.Where(proyecto => pListaProyectos.Contains(proyecto.ProyectoID)).ToList();
 
                 foreach (Proyecto filaProy in listaProyectos)
@@ -4344,7 +4907,7 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
                 Tags = objeto.Proyecto.Tags,
                 TagTwitterGnoss = objeto.Proyecto.TagTwitterGnoss,
                 NombrePresentacion = objeto.Proyecto.NombrePresentacion
-            }).OrderBy(objeto => objeto.Nombre).ToList().Distinct().ToList();
+            }).OrderBy(objeto => objeto.Nombre).Distinct().ToList();
 
             List<Proyecto> listaProyectos = new List<Proyecto>();
             foreach (var proyectoCorto in proyectos)
@@ -4420,11 +4983,9 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
 
             foreach (ProyectoGadget gadget in listaProyectoGadget)
             {
-                ProyectoGadgetContexto contexto = listaProyectoGadgetContexto.Where(x => x.GadgetID.Equals(gadget.GadgetID)).FirstOrDefault();
+                ProyectoGadgetContexto contexto = listaProyectoGadgetContexto.FirstOrDefault(x => x.GadgetID.Equals(gadget.GadgetID));
                 gadget.ProyectoGadgetContexto = contexto;
             }
-
-            string sqlGadgetIdioma = sqlSelectProyectoGadgetIdioma + " WHERE ProyectoGadgetIdioma.ProyectoID = " + IBD.GuidValor(pProyectoID);
 
             List<ProyectoGadgetIdioma> listaProyectoGadgetIdioma = mEntityContext.ProyectoGadgetIdioma.Where(proyectoGadgetIdioma => proyectoGadgetIdioma.ProyectoID.Equals(pProyectoID)).ToList();
 
@@ -4433,7 +4994,6 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
             dataWrapperProyecto.ListaProyectoGadgetIdioma = listaProyectoGadgetIdioma;
 
             pDataWrapperProyecto.Merge(dataWrapperProyecto);
-
         }
 
         /// <summary>
@@ -4490,7 +5050,6 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
         /// <returns>True si existen gadgets de tipo Recursos Relacionados</returns>
         public bool TieneGadgetRecursosRelacionados(Guid pProyectoID)
         {
-            string sql = "select count(*) from ProyectoGadget where ProyectoID = " + IBD.GuidValor(pProyectoID) + " and Tipo = " + (short)TipoGadget.RecursosRelacionados;
             int numeroProyectoGadget = mEntityContext.ProyectoGadget.Where(proyectoGadget => proyectoGadget.ProyectoID.Equals(pProyectoID) && proyectoGadget.Tipo.Equals((short)TipoGadget.RecursosRelacionados)).ToList().Count;
 
             return numeroProyectoGadget > 0;
@@ -4571,9 +5130,8 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
         /// <returns>Lista con las pesta?as del proyecto que se pasa por parametros</returns>
         public Dictionary<Guid, string> ObtenerPestanyasProyectoNombre(Guid pProyectoID)
         {
-            List<ProyectoPestanyaMenu> listaProyectoPestanyaMenu = new List<ProyectoPestanyaMenu>();
-            var varProyectoPestanyaMenuQuery = mEntityContext.ProyectoPestanyaMenu.Where(proyPestanya => proyPestanya.TipoPestanya.Equals((short)TipoPestanyaMenu.Recursos) || proyPestanya.TipoPestanya.Equals((short)TipoPestanyaMenu.Preguntas) || proyPestanya.TipoPestanya.Equals((short)TipoPestanyaMenu.Debates) || proyPestanya.TipoPestanya.Equals((short)TipoPestanyaMenu.Encuestas) || proyPestanya.TipoPestanya.Equals((short)TipoPestanyaMenu.PersonasYOrganizaciones) || proyPestanya.TipoPestanya.Equals((short)TipoPestanyaMenu.BusquedaSemantica) || proyPestanya.TipoPestanya.Equals((short)TipoPestanyaMenu.BusquedaAvanzada)).Where(objeto => objeto.ProyectoID.Equals(pProyectoID));
-            listaProyectoPestanyaMenu = varProyectoPestanyaMenuQuery.ToList();
+            List<ProyectoPestanyaMenu> listaProyectoPestanyaMenu = mEntityContext.ProyectoPestanyaMenu.Where(proyPestanya => proyPestanya.TipoPestanya.Equals((short)TipoPestanyaMenu.Recursos) || proyPestanya.TipoPestanya.Equals((short)TipoPestanyaMenu.Preguntas) || proyPestanya.TipoPestanya.Equals((short)TipoPestanyaMenu.Debates) || proyPestanya.TipoPestanya.Equals((short)TipoPestanyaMenu.Encuestas) || proyPestanya.TipoPestanya.Equals((short)TipoPestanyaMenu.PersonasYOrganizaciones) || proyPestanya.TipoPestanya.Equals((short)TipoPestanyaMenu.BusquedaSemantica) || proyPestanya.TipoPestanya.Equals((short)TipoPestanyaMenu.BusquedaAvanzada)).Where(objeto => objeto.ProyectoID.Equals(pProyectoID)).ToList();
+
             Dictionary<Guid, string> dicNombres = new Dictionary<Guid, string>();
             foreach (ProyectoPestanyaMenu pes in listaProyectoPestanyaMenu)
             {
@@ -4588,42 +5146,66 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
             }
             return dicNombres;
         }
-        /// <summary>
-        /// Obtiene las pesta?as de un proyecto que se le pasa por parametros
-        /// </summary>
-        /// <param name="pProyectoID">Clave del proyecto del que queremos obtener los gadgets</param>
-        /// <param name="pDataWrapperProyecto">Dataset de proyectos</param>
-        /// <param name="pOmitirGenericas"></param>
-        /// <returns>DataSet con las pesta?as del proyecto que se pasa por parametros</returns>
-        public void ObtenerPestanyasProyecto(Guid? pProyectoID, DataWrapperProyecto pDataWrapperProyecto, bool pOmitirGenericas)
+		/// <summary>
+		/// Obtiene la informaci?n de las tablas ProyectoPestanyaBusqueda con autocompletado enriquecido, ProyectoPestanyaBusquedaPesoOC, OntologiaProyecto y FacetaObjetoConocimientoProyectoPestanya para la configuraci?n del autocotocompletado enriquecido para un proyecto dado
+		/// </summary>
+		/// <param name="pProyectoID">identificador del proyecto</param>
+		/// <returns>Data wraper del proyecto</returns>
+		public DataWrapperProyecto ObtenerInformacionAutocompletadoEnriquecidoProyecto(Guid pProyectoID)
+		{
+            DataWrapperProyecto dataWrapperProyecto = new DataWrapperProyecto();
+			dataWrapperProyecto.ListaProyectoPestanyaBusqueda = mEntityContext.ProyectoPestanyaBusqueda.Join(mEntityContext.ProyectoPestanyaMenu, proyPestBusqueda => proyPestBusqueda.PestanyaID, proyPestMenu => proyPestMenu.PestanyaID, (proyPestBusqueda, proyPestMenu) => new
+			{
+				ProyectPestanyaBusqueda = proyPestBusqueda,
+				ProyectoID = proyPestMenu.ProyectoID
+			}).Where(proyecto => proyecto.ProyectoID.Equals(pProyectoID) /*&& proyecto.ProyectPestanyaBusqueda.TipoAutocompletar != 0*/).Select(proyecto => proyecto.ProyectPestanyaBusqueda).ToList();
+
+            dataWrapperProyecto.ListaProyectoPestanyaMenu = mEntityContext.ProyectoPestanyaMenu.Where(item => dataWrapperProyecto.ListaProyectoPestanyaBusqueda.Select(pestanya => pestanya.PestanyaID).Contains(item.PestanyaID)).ToList();
+
+            dataWrapperProyecto.ListaFacetaObjetoConocimientoProyectoPestanya = mEntityContext.FacetaObjetoConocimientoProyectoPestanya.Where(item => item.ProyectoID.Equals(pProyectoID)).ToList();
+
+			dataWrapperProyecto.ListaProyectoPestanyaBusquedaPesoOC = mEntityContext.ProyectoPestanyaBusquedaPesoOC.Where(item => item.ProyectoID.Equals(pProyectoID)).ToList();
+
+            dataWrapperProyecto.ListaOntologiaProyecto = mEntityContext.OntologiaProyecto.Where(item => item.ProyectoID.Equals(pProyectoID)).ToList();
+			return dataWrapperProyecto;
+		}
+
+		/// <summary>
+		/// Obtiene las pesta?as de un proyecto que se le pasa por parametros
+		/// </summary>
+		/// <param name="pProyectoID">Clave del proyecto del que queremos obtener los gadgets</param>
+		/// <param name="pDataWrapperProyecto">Dataset de proyectos</param>
+		/// <param name="pOmitirGenericas"></param>
+		/// <returns>DataSet con las pesta?as del proyecto que se pasa por parametros</returns>
+		public void ObtenerPestanyasProyecto(Guid? pProyectoID, DataWrapperProyecto pDataWrapperProyecto, bool pOmitirGenericas)
         {
             DataWrapperProyecto dataWrapperProyecto = new DataWrapperProyecto();
 
-            List<ProyectoPestanyaMenu> listaProyectoPestanyaMenu = new List<ProyectoPestanyaMenu>();
+            List<ProyectoPestanyaMenu> listaProyectoPestanyaMenu;
             var listaProyectoPestanyaMenuQuery = mEntityContext.ProyectoPestanyaMenu.AsQueryable();
 
-            List<ProyectoPestanyaCMS> listaProyectoPestanyaCMS = new List<ProyectoPestanyaCMS>();
+            List<ProyectoPestanyaCMS> listaProyectoPestanyaCMS;
             var varProyectoPestanyaCMSQuery = mEntityContext.ProyectoPestanyaCMS.Join(mEntityContext.ProyectoPestanyaMenu, proyectoPestanyaCMS => proyectoPestanyaCMS.PestanyaID, proyectoPestanyaMenu => proyectoPestanyaMenu.PestanyaID, (proyectoPestanyaCMS, proyectoPestanyaMenu) => new
             {
                 ProyectoPestanyaCMS = proyectoPestanyaCMS,
                 ProyectoPestanyaMenu = proyectoPestanyaMenu
             });
 
-            List<ProyectoPestanyaBusqueda> listaProyectoPestanyaBusqueda = new List<ProyectoPestanyaBusqueda>();
+            List<ProyectoPestanyaBusqueda> listaProyectoPestanyaBusqueda;
             var varProyectoPestanyaBusquedaQuery = mEntityContext.ProyectoPestanyaBusqueda.Join(mEntityContext.ProyectoPestanyaMenu, proyectoPestanyaBusqueda => proyectoPestanyaBusqueda.PestanyaID, proyectoPestanyaMenu => proyectoPestanyaMenu.PestanyaID, (proyectoPestanyaBusqueda, proyectoPestanyaMenu) => new
             {
                 ProyectoPestanyaBusqueda = proyectoPestanyaBusqueda,
                 ProyectoPestanyaMenu = proyectoPestanyaMenu
             });
 
-            List<ProyectoPestanyaMenuRolGrupoIdentidades> listProyectoPestanyaMenuRolGrupoIdentidades = new List<ProyectoPestanyaMenuRolGrupoIdentidades>();
+            List<ProyectoPestanyaMenuRolGrupoIdentidades> listProyectoPestanyaMenuRolGrupoIdentidades;
             var varProyectoPestanyaMenuRolGrupoIdentidadesQuery = mEntityContext.ProyectoPestanyaMenuRolGrupoIdentidades.Join(mEntityContext.ProyectoPestanyaMenu, proyectoPestanyaMenuRolGrupoIdentidades => proyectoPestanyaMenuRolGrupoIdentidades.PestanyaID, proyectoPestanya => proyectoPestanya.PestanyaID, (proyectoPestanyaMenuRolGrupoIdentidades, proyectoPestanya) => new
             {
                 ProyectoPestanyaMenuRolGrupoIdentidades = proyectoPestanyaMenuRolGrupoIdentidades,
                 ProyectoPestanyaMenu = proyectoPestanya
             });
 
-            List<ProyectoPestanyaMenuRolIdentidad> listProyectoPestanyaMenuRolIdentidad = new List<ProyectoPestanyaMenuRolIdentidad>();
+            List<ProyectoPestanyaMenuRolIdentidad> listProyectoPestanyaMenuRolIdentidad;
             var varProyectoPestanyaMenuRolIdentidadQuery = mEntityContext.ProyectoPestanyaMenuRolIdentidad.Join(mEntityContext.ProyectoPestanyaMenu, proyectoPestanyaMenuRolIdentidad => proyectoPestanyaMenuRolIdentidad.PestanyaID, proyectoPestanyaMenu => proyectoPestanyaMenu.PestanyaID, (proyectoPestanyaMenuRolIdentidad, proyectoPestanyaMenu) => new
             {
                 ProyectoPestanyaMenuRolIdentidad = proyectoPestanyaMenuRolIdentidad,
@@ -4667,21 +5249,21 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
         }
 
         /// <summary>
-        /// Nos indica si actualmente existen permisos para administrar los documentos sem�nticos
+        /// Nos indica si actualmente existen permisos para administrar los documentos sem?nticos
         /// </summary>
         /// <param name="pProyectoID">Identificador del proyecto</param>
-        /// <returns>Si existe o no permisos para que se puedan administrar los documentos sem�nticos</returns>
+        /// <returns>Si existe o no permisos para que se puedan administrar los documentos sem?nticos</returns>
         public bool ExisteTipoDocDispRolUsuarioProySemantico(Guid pProyectoID)
         {
-           return mEntityContext.TipoDocDispRolUsuarioProy.Any(item => item.ProyectoID.Equals(pProyectoID) && item.TipoDocumento == (short)TiposDocumentacion.Semantico);
+            return mEntityContext.TipoDocDispRolUsuarioProy.Any(item => item.ProyectoID.Equals(pProyectoID) && item.TipoDocumento == (short)TiposDocumentacion.Semantico);
         }
 
         /// <summary>
-        /// Nos indica si actualmente existen permisos para administrar la ontolog�a indicada
+        /// Nos indica si actualmente existen permisos para administrar la ontolog?a indicada
         /// </summary>
         /// <param name="pProyectoID">Identificador del proyecto</param>
         /// <param name="pDocumentoID">Identificador del documento de la ontologia</param>
-        /// <returns>Si existe o no permisos para que se puedan administrar los documentos sem�nticos</returns>
+        /// <returns>Si existe o no permisos para que se puedan administrar los documentos sem?nticos</returns>
         public bool ExisteTipoOntoDispRolUsuarioProy(Guid pProyectoID, Guid pDocumentoID)
         {
             return mEntityContext.TipoOntoDispRolUsuarioProy.Any(item => item.ProyectoID.Equals(pProyectoID) && item.OntologiaID.Equals(pDocumentoID));
@@ -4741,7 +5323,6 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
             pDataWrapperProyecto.Merge(dataWrapperProyecto);
         }
 
-
         /// <summary>
         /// Actualiza los proyectos
         /// </summary>
@@ -4751,7 +5332,6 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
         {
             mEntityContext.SaveChanges();
         }
-
 
         private List<DataRow> OrdenarFilasPestanyasmenu(DataRow[] filasPestanyaMenu, DataTable pTablaProyectoPestanyaMenu)
         {
@@ -4768,17 +5348,14 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
             return listaOrdenada;
         }
 
-
-
         /// <summary>
         /// Comprueba si existe un nombre corto de proyecto en BD
         /// </summary>
         /// <param name="pNombreCortoProyecto"></param>
         /// <returns>TRUE si existe un nombroCorto en BD igual al pasado por par?metro</returns>
-        public bool ExisteNombreCortoEnBD(object pNombreCortoProyecto)
+        public bool ExisteNombreCortoEnBD(string pNombreCortoProyecto)
         {
-            List<Guid> listaGuidEncontrado = mEntityContext.Proyecto.Where(proyecto => proyecto.NombreCorto.Equals(((string)pNombreCortoProyecto))).Select(proyecto => proyecto.ProyectoID).ToList();
-            return (listaGuidEncontrado.Count > 0);
+            return mEntityContext.Proyecto.Any(proyecto => proyecto.NombreCorto == pNombreCortoProyecto);
         }
 
         /// <summary>
@@ -4786,11 +5363,9 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
         /// </summary>
         /// <param name="pNombreProyecto">Nombre de proyecto</param>
         /// <returns>TRUE si existe un nombre en BD igual al pasado por par?metro</returns>
-        public bool ExisteNombreEnBD(object pNombreProyecto)
+        public bool ExisteNombreEnBD(string pNombreProyecto)
         {
-            List<Guid> listaGuidEncontrado = mEntityContext.Proyecto.Where(proyecto => proyecto.Nombre.ToUpper().Equals(((string)pNombreProyecto).ToString())).Select(proyect => proyect.ProyectoID).ToList();
-
-            return (listaGuidEncontrado.Count > 0);
+            return mEntityContext.Proyecto.Any(proyecto => proyecto.Nombre.ToUpper() == pNombreProyecto);
         }
 
         /// <summary>
@@ -4800,9 +5375,7 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
         /// <returns></returns>
         public bool ExisteProyectoConID(Guid pProyectoID)
         {
-            List<Guid> listaGuidEncontrado = mEntityContext.Proyecto.Where(proyecto => proyecto.ProyectoID.Equals(pProyectoID)).Select(proyect => proyect.ProyectoID).ToList();
-
-            return (listaGuidEncontrado.Count > 0);
+            return mEntityContext.Proyecto.Any(proyecto => proyecto.ProyectoID.Equals(pProyectoID));
         }
 
         /// <summary>
@@ -4814,26 +5387,17 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
         /// <returns>TRUE si se encuentra algun usuario de la organizaci?n que sea administrador del proyecto</returns>
         public bool EsAlguienDeLAOrganizacionAdministradorProyecto(Guid pOrganizacionID, Guid pProyectoID)
         {
-            string sqlSelectAdministradores = "SELECT * FROM ( SELECT Perfil.OrganizacionID FROM Identidad INNER JOIN perfil ON perfil.perfilID = identidad.perfilID WHERE Identidad.identidadID IN ( SELECT IdentidadID FROM AdministradorProyecto INNER JOIN proyectousuarioIdentidad on proyectousuarioIdentidad.UsuarioID = AdministradorProyecto.UsuarioID WHERE (AdministradorProyecto.ProyectoID = " + IBD.GuidParamValor("proyectoID") + ") AND (proyectousuarioIdentidad.ProyectoID = " + IBD.GuidParamValor("proyectoID") + ") AND AdministradorProyecto.Tipo = " + (short)TipoRolUsuario.Administrador + " )AND Perfil.OrganizacionID IS NOT NULL ) OrganizacionesAdmin WHERE OrganizacionID = " + IBD.GuidParamValor("organizacionID");
-
-
             List<Guid> listaIdentidadID = mEntityContext.AdministradorProyecto.Join(mEntityContext.ProyectoUsuarioIdentidad, adminProy => adminProy.UsuarioID, proyUsuarioIdentidad => proyUsuarioIdentidad.UsuarioID, (adminProy, proyUsuarioIdentidad) => new
             {
                 AdministradorProyecto = adminProy,
                 ProyectoUsuarioIdentidad = proyUsuarioIdentidad
             }).Where(objeto => objeto.AdministradorProyecto.ProyectoID.Equals(pProyectoID) && objeto.ProyectoUsuarioIdentidad.ProyectoID.Equals(pProyectoID) && objeto.AdministradorProyecto.Tipo.Equals((short)TipoRolUsuario.Administrador)).Select(objeto => objeto.ProyectoUsuarioIdentidad.IdentidadID).ToList();
 
-            List<Guid?> administradores = mEntityContext.Identidad.Join(mEntityContext.Perfil, identidad => identidad.PerfilID, perfil => perfil.PerfilID, (identidad, perfil) => new
+            return mEntityContext.Identidad.Join(mEntityContext.Perfil, identidad => identidad.PerfilID, perfil => perfil.PerfilID, (identidad, perfil) => new
             {
                 Idenitdad = identidad,
                 Perfil = perfil
-            }).Where(objeto => listaIdentidadID.Contains(objeto.Idenitdad.IdentidadID) && objeto.Perfil.OrganizacionID != null).Select(objeto => objeto.Perfil.OrganizacionID).ToList().Where(orgID => orgID.Equals(pOrganizacionID)).ToList();
-
-
-            bool EsAdministrador = (administradores.Count > 0);
-
-
-            return (EsAdministrador);
+            }).Any(objeto => listaIdentidadID.Contains(objeto.Idenitdad.IdentidadID) && objeto.Perfil.OrganizacionID != null);
         }
 
         /// <summary>
@@ -4845,18 +5409,22 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
             DataWrapperProyecto dataWrapperProyecto = new DataWrapperProyecto();
 
             #region Listado
+
             dataWrapperProyecto.ListaPresentacionListadoSemantico = mEntityContext.PresentacionListadoSemantico.Where(presentacionListSemantico => presentacionListSemantico.ProyectoID.Equals(pProyectoID)).OrderBy(presentacionListSemantico => presentacionListSemantico.Orden).ToList();
 
             dataWrapperProyecto.ListaPresentacionPestanyaListadoSemantico = mEntityContext.PresentacionPestanyaListadoSemantico.Where(presentacionPestListadoSeman => presentacionPestListadoSeman.ProyectoID.Equals(pProyectoID)).OrderBy(presentacionPestListadoSeman => presentacionPestListadoSeman.Orden).ToList();
+            
             #endregion
 
             #region Mosaico
+
             dataWrapperProyecto.ListaPresentacionMosaicoSemantico = mEntityContext.PresentacionMosaicoSemantico.Where(presentacionMosaicoSmenatico => presentacionMosaicoSmenatico.ProyectoID.Equals(pProyectoID)).OrderBy(presentacion => presentacion.Orden).ToList();
 
             dataWrapperProyecto.ListaPresentacionPestanyaMosaicoSemantico = mEntityContext.PresentacionPestanyaMosaicoSemantico.Where(presentacionPestanyaMosaicoSemantico => presentacionPestanyaMosaicoSemantico.ProyectoID.Equals(pProyectoID)).OrderBy(presentacion => presentacion.Orden).ToList();
             #endregion
 
             #region Mapa
+
             dataWrapperProyecto.ListaPresentacionMapaSemantico = mEntityContext.PresentacionMapaSemantico.Where(presentacionMapa => presentacionMapa.ProyectoID.Equals(pProyectoID)).OrderBy(presentacionMapa => presentacionMapa.Orden).ToList();
 
             dataWrapperProyecto.ListaPresentacionPestanyaMapaSemantico = mEntityContext.PresentacionPestanyaMapaSemantico.Where(presentacionPestanyaMapa => presentacionPestanyaMapa.ProyectoID.Equals(pProyectoID)).OrderBy(presentacion => presentacion.Orden).ToList();
@@ -4864,13 +5432,19 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
             #endregion
 
             #region Dataset
+
             dataWrapperProyecto.ListaPresentacionPersonalizadoSemantico = mEntityContext.PresentacionPersonalizadoSemantico.Where(presentacionPersonalizadoSemantico => presentacionPersonalizadoSemantico.ProyectoID.Equals(pProyectoID)).OrderBy(presentacionPersonalizadoSemantico => presentacionPersonalizadoSemantico.Orden).ToList();
+
             #endregion
+
+            dataWrapperProyecto.ListaProyectoPestanyaBusqueda = mEntityContext.ProyectoPestanyaBusqueda.JoinProyectoPestanyaMenu().Where(objeto => objeto.ProyectoPestanyaMenu.ProyectoID.Equals(pProyectoID)).Select(objeto => objeto.ProyectoPestanyaBusqueda).ToList();
 
             #region Contextos
 
             dataWrapperProyecto.ListaRecursosRelacionadosPresentacion = mEntityContext.RecursosRelacionadosPresentacion.Where(recursosRelacionados => recursosRelacionados.ProyectoID.Equals(pProyectoID)).OrderBy(recursosRelacionados => recursosRelacionados.Orden).ToList();
+
             #endregion
+
             return dataWrapperProyecto;
         }
 
@@ -4894,9 +5468,8 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
         /// <returns>Lista con los tipos de documentos permitidos para el rol</returns>
         public List<TiposDocumentacion> ObtenerTiposDocumentosPermitidosUsuarioEnProyectoPorUsuID(Guid pProyectoID, Guid pUsuarioID)
         {
-            List<AdministradorProyecto> listaAdministradoresProyecto = new List<AdministradorProyecto>();
-            TipoRolUsuario tipoRolUsuario = TipoRolUsuario.Usuario;
-            listaAdministradoresProyecto = mEntityContext.AdministradorProyecto.Where(admin => admin.ProyectoID.Equals(pProyectoID) && admin.UsuarioID.Equals(pUsuarioID)).ToList();
+            TipoRolUsuario tipoRolUsuario;
+            List<AdministradorProyecto> listaAdministradoresProyecto = mEntityContext.AdministradorProyecto.Where(admin => admin.ProyectoID.Equals(pProyectoID) && admin.UsuarioID.Equals(pUsuarioID)).ToList();
 
             if (listaAdministradoresProyecto.Count == 0)
             {
@@ -4904,7 +5477,7 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
             }
             else
             {
-                tipoRolUsuario = (TipoRolUsuario)listaAdministradoresProyecto.First().Tipo;
+                tipoRolUsuario = (TipoRolUsuario)listaAdministradoresProyecto[0].Tipo;
             }
 
             return ObtenerTiposDocumentosPermitidosUsuarioEnProyecto(pProyectoID, tipoRolUsuario);
@@ -4918,13 +5491,11 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
             DataWrapperProyecto dataWrapperProyecto = new DataWrapperProyecto();
 
             #region Listado
-            string sqlSelectPresentacionListadoSemanticoDeProyecto = sqlSelectPresentacionListadoSemantico + " WHERE PresentacionListadoSemantico.ProyectoID = " + IBD.ToParam("ProyectoID") + " Order by Orden ASC";
-
+            
             dataWrapperProyecto.ListaPresentacionListadoSemantico = mEntityContext.PresentacionListadoSemantico.Where(presentacionListadoSmenantico => presentacionListadoSmenantico.ProyectoID.Equals(pProyectoID)).OrderBy(presentacion => presentacion.Orden).ToList();
-
-            string sqlSelectPresentacionPestanyaListadoSemanticoDeProyecto = sqlSelectPresentacionPestanyaListadoSemantico + " WHERE PresentacionPestanyaListadoSemantico.ProyectoID = " + IBD.ToParam("ProyectoID") + " Order by Orden ASC";
-
+            
             dataWrapperProyecto.ListaPresentacionPestanyaListadoSemantico = mEntityContext.PresentacionPestanyaListadoSemantico.Where(presentacionPestanya => presentacionPestanya.ProyectoID.Equals(pProyectoID)).OrderBy(presentacion => presentacion.Orden).ToList();
+
             #endregion
 
             return dataWrapperProyecto;
@@ -4943,7 +5514,9 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
             dataWrapperProyecto.ListaPresentacionMosaicoSemantico = mEntityContext.PresentacionMosaicoSemantico.Where(presentacionMosaicoSmenantico => presentacionMosaicoSmenantico.ProyectoID.Equals(pProyectoID)).OrderBy(presentacion => presentacion.Orden).ToList();
 
             dataWrapperProyecto.ListaPresentacionPestanyaMosaicoSemantico = mEntityContext.PresentacionPestanyaMosaicoSemantico.Where(presentacionPestanya => presentacionPestanya.ProyectoID.Equals(pProyectoID)).OrderBy(presentacion => presentacion.Orden).ToList();
-
+            
+            #endregion
+            
             return dataWrapperProyecto;
         }
 
@@ -4960,52 +5533,11 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
             dataWrapperProyecto.ListaPresentacionMapaSemantico = mEntityContext.PresentacionMapaSemantico.Where(presentacionMapaSmenantico => presentacionMapaSmenantico.ProyectoID.Equals(pProyectoID)).OrderBy(presentacion => presentacion.Orden).ToList();
 
             dataWrapperProyecto.ListaPresentacionPestanyaMapaSemantico = mEntityContext.PresentacionPestanyaMapaSemantico.Where(presentacionPestanya => presentacionPestanya.ProyectoID.Equals(pProyectoID)).OrderBy(presentacion => presentacion.Orden).ToList();
+
             #endregion
 
             return dataWrapperProyecto;
         }
-
-
-
-
-        /// <summary>
-        /// Obtiene una lista con las tablas del dataSet en orden
-        /// </summary>
-        /// <param name="pDataSet">DataSet del que se quieren ordenar las tablas</param>
-        /// <returns>Lista con las tablas del dataSet en orden</returns>
-        //public List<DataTable> ObtenerOrdenTablas(ProyectoDS pProyectoDS)
-        //{
-        //    List<DataTable> listaTablas = new List<DataTable>();
-
-        //    listaTablas.Add(pProyectoDS.Proyecto);
-        //    listaTablas.Add(pProyectoDS.AdministradorProyecto);
-        //    listaTablas.Add(pProyectoDS.AdministradorGrupoProyecto);
-        //    listaTablas.Add(pProyectoDS.ProyectosMasActivos);
-        //    listaTablas.Add(pProyectoDS.ProyectoAgCatTesauro);
-        //    listaTablas.Add(pProyectoDS.NivelCertificacion);
-        //    listaTablas.Add(pProyectoDS.TipoDocDispRolUsuarioProy);
-        //    listaTablas.Add(pProyectoDS.TipoOntoDispRolUsuarioProy);
-        //    listaTablas.Add(pProyectoDS.ProyectoCerradoTmp);
-        //    listaTablas.Add(pProyectoDS.ProyectoCerrandose);
-        //    listaTablas.Add(pProyectoDS.ProyectoRelacionado);
-        //    listaTablas.Add(pProyectoDS.ProyectoGadget);
-        //    listaTablas.Add(pProyectoDS.ProyectoGadgetContexto);
-        //    //listaTablas.Add(pProyectoDS.ProyectoGadgetContextoHTMLplano);
-        //    listaTablas.Add(pProyectoDS.ProyectoGadgetIdioma);
-        //    listaTablas.Add(pProyectoDS.RecursosRelacionadosPresentacion);
-        //    listaTablas.Add(pProyectoDS.ProyectoPaginaHtml);
-        //    listaTablas.Add(pProyectoDS.ProyectoPasoRegistro);
-        //    listaTablas.Add(pProyectoDS.ProyectoPestanyaMenu);
-        //    listaTablas.Add(pProyectoDS.ProyectoPestanyaCMS);
-        //    listaTablas.Add(pProyectoDS.ProyectoPestanyaBusqueda);
-        //    listaTablas.Add(pProyectoDS.ProyectoPestanyaMenuRolGrupoIdentidades);
-        //    listaTablas.Add(pProyectoDS.ProyectoPestanyaMenuRolIdentidad);
-        //    listaTablas.Add(pProyectoDS.ProyectoSearchPersonalizado);
-        //    listaTablas.Add(pProyectoDS.ProyectoServicioExterno);
-        //    listaTablas.Add(pProyectoDS.EcosistemaServicioExterno);
-
-        //    return listaTablas;
-        //}
 
         /// <summary>
         /// Elimina los registros de proyectos del dataset pasado como par?metro
@@ -5014,823 +5546,6 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
         public void EliminarProyectos()
         {
             mEntityContext.SaveChanges();
-            //#region Eliminar tablas que dependen de proyecto
-
-            // ** DAVID
-            // A FECHA 13/03/2009 S?LO EST?N LAS TABLAS QUE CONTIENEN DATOS INTRODUCIDOS EN EL ASISTENTE DE CREACI?N
-            // CUANDO SE HAGA LA ELIMINACI?N COMPLETA SE DEBEN A?ADIR TODAS LAS TABLAS QUE DEPENDAN DE PROYECTO
-            // **
-
-            //ProyectoDS.ProyectoDataTable proyectosEliminados = (ProyectoDS.ProyectoDataTable)pProyectoDS.Proyecto.GetChanges(DataRowState.Deleted);
-
-            //if (proyectosEliminados != null)
-            //{
-            //    string filtroBorrado = " WHERE (ProyectoID = " + IBD.GuidParamValor("proyectoID") + ")";
-
-            //    foreach (ProyectoDS.ProyectoRow filaProyecto in proyectosEliminados.Rows)
-            //    {
-            //        Guid proyectoID = (Guid)filaProyecto["ProyectoID", DataRowVersion.Original];
-            //        Guid organizacionID = (Guid)filaProyecto["OrganizacionID", DataRowVersion.Original];
-
-            //        // Configurar los par?metros del comando s?lo una vez
-            //        DbCommand comandoSQL = ObtenerComando("Prueba");
-            //        AgregarParametro(comandoSQL, IBD.ToParam("proyectoID"), IBD.TipoGuidToString(DbType.Guid), IBD.ValorDeGuid(proyectoID));
-
-            //        #region Tablas de ProyectoDS
-
-            //        // Eliminar las filas de ProyectosMasActivos
-            //        comandoSQL.CommandText = "DELETE FROM ProyectosMasActivos" + filtroBorrado;
-            //        ActualizarBaseDeDatos(comandoSQL);
-
-            //        // Eliminar las filas de NivelCertificacion
-            //        comandoSQL.CommandText = "DELETE FROM NivelCertificacion" + filtroBorrado;
-            //        ActualizarBaseDeDatos(comandoSQL);
-
-            //        #endregion
-
-            //        #region Tablas de EstructuraDS
-
-            //        // Eliminar las filas de MetaEstructura
-            //        comandoSQL.CommandText = "DELETE FROM MetaEstructura" + filtroBorrado;
-            //        ActualizarBaseDeDatos(comandoSQL);
-
-            //        // Eliminar las filas de ElementoEstructura
-            //        comandoSQL.CommandText = "DELETE FROM ElementoEstructura" + filtroBorrado;
-            //        ActualizarBaseDeDatos(comandoSQL);
-
-            //        // Eliminar las filas de Estructura
-            //        comandoSQL.CommandText = "DELETE FROM Estructura" + filtroBorrado;
-            //        ActualizarBaseDeDatos(comandoSQL);
-
-            //        #endregion
-
-            //        #region Tablas de LibroDS
-
-            //        // Eliminar las filas de Libro
-            //        comandoSQL.CommandText = "DELETE FROM Libro" + filtroBorrado;
-            //        ActualizarBaseDeDatos(comandoSQL);
-
-            //        #endregion
-
-            //        #region Tablas de ProcesoDS
-
-            //        // Eliminar las filas de Proceso
-            //        // ** Las tablas que se encuentan en GrupoDS se borran despu?s
-            //        comandoSQL.CommandText = "DELETE FROM Proceso" + filtroBorrado;
-            //        ActualizarBaseDeDatos(comandoSQL);
-
-            //        #endregion
-
-            //        #region Tablas de ObjetivoDS
-
-            //        // Eliminar las filas de Objetivo
-            //        // ** Las tablas que se encuentan en GrupoDS se borran despu?s
-            //        comandoSQL.CommandText = "DELETE FROM Objetivo" + filtroBorrado;
-            //        ActualizarBaseDeDatos(comandoSQL);
-
-            //        #endregion
-
-            //        #region Tablas de GrupoFuncionalDS
-
-            //        // Eliminar las filas de GrupoFuncional
-            //        // ** Las tablas que se encuentan en GrupoDS se borran despu?s
-            //        comandoSQL.CommandText = "DELETE FROM GrupoFuncional" + filtroBorrado;
-            //        ActualizarBaseDeDatos(comandoSQL);
-
-            //        #endregion
-
-            //        #region Tablas de TesauroDS
-
-            //        // Obtener el ID del tesauro de proyecto para eliminarlo de la tabla Tesauro
-            //        Guid idTesauro = Guid.Empty;
-
-            //        using (TesauroAD tesauroAD = new TesauroAD())
-            //        {
-            //            idTesauro = tesauroAD.ObtenerIDTesauroDeProyecto(proyectoID);
-            //        }
-            //        // Eliminar las filas de TesauroProyecto
-            //        comandoSQL.CommandText = "DELETE FROM TesauroProyecto" + filtroBorrado;
-            //        ActualizarBaseDeDatos(comandoSQL);
-
-            //        // Eliminar las filas de Tesauro
-            //        comandoSQL.CommandText = "DELETE FROM Tesauro WHERE TesauroID = " + IBD.GuidValor(idTesauro);
-            //        ActualizarBaseDeDatos(comandoSQL);
-
-            //        #endregion
-
-            //        #region Tablas de DocumentacionDS
-
-            //        // Obtener el ID de la base de recursos de proyecto para eliminarlo de la tabla BaseRecursos
-            //        Guid idBaseRecursos = Guid.Empty;
-
-            //        using (DocumentacionAD documentacionAD = new DocumentacionAD())
-            //        {
-            //            DocumentacionDS documentacionDS = new DocumentacionDS();
-            //            documentacionAD.ObtenerBaseRecursosProyecto(documentacionDS, proyectoID, organizacionID);
-
-            //            if (documentacionDS.BaseRecursos.Rows.Count.Equals(1))
-            //            {
-            //                idBaseRecursos = ((DocumentacionDS.BaseRecursosRow)documentacionDS.BaseRecursos.Rows[0]).BaseRecursosID;
-            //            }
-            //            documentacionDS.Dispose();
-            //        }
-            //        // Eliminar las filas de BaseRecursosProyecto
-            //        comandoSQL.CommandText = "DELETE FROM BaseRecursosProyecto" + filtroBorrado;
-            //        ActualizarBaseDeDatos(comandoSQL);
-
-            //        // Eliminar las filas de BaseRecursos
-            //        comandoSQL.CommandText = "DELETE FROM BaseRecursos WHERE BaseRecursosID = " + IBD.GuidValor(idBaseRecursos);
-            //        ActualizarBaseDeDatos(comandoSQL);
-
-            //        #endregion
-
-            //        #region Tablas de GrupoDS
-
-            //        // Eliminar las filas de GestorGrupo
-            //        comandoSQL.CommandText = "DELETE FROM GestorGrupo" + filtroBorrado;
-            //        ActualizarBaseDeDatos(comandoSQL);
-
-            //        // Eliminar las filas de Grupo
-            //        comandoSQL.CommandText = "DELETE FROM Grupo" + filtroBorrado;
-            //        ActualizarBaseDeDatos(comandoSQL);
-
-            //        // ** Las tablas que se encuentan en EntidadDS se borran despu?s
-
-            //        #endregion
-
-            //        #region Tablas de EntidadDS
-
-            //        // Eliminar las filas de EntidadGnoss
-            //        comandoSQL.CommandText = "DELETE FROM EntidadGnoss" + filtroBorrado;
-            //        ActualizarBaseDeDatos(comandoSQL);
-
-            //        #endregion
-
-            //        #region Tablas de OrganizacionDS
-
-            //        // Eliminar las filas de OrganizacionParticipaProy
-            //        comandoSQL.CommandText = "DELETE FROM OrganizacionParticipaProy" + filtroBorrado;
-            //        ActualizarBaseDeDatos(comandoSQL);
-
-            //        // Eliminar las filas de HistoricoOrgParticipaProy
-            //        comandoSQL.CommandText = "DELETE FROM HistoricoOrgParticipaProy" + filtroBorrado;
-            //        ActualizarBaseDeDatos(comandoSQL);
-
-            //        #endregion
-
-            //        #region Tablas de UsuarioDS
-
-            //        // Eliminar las filas de InicioSesion
-            //        comandoSQL.CommandText = "DELETE FROM InicioSesion" + filtroBorrado;
-            //        ActualizarBaseDeDatos(comandoSQL);
-
-            //        // Eliminar las filas de HistoricoProyectoUsuario
-            //        comandoSQL.CommandText = "DELETE FROM HistoricoProyectoUsuario" + filtroBorrado;
-            //        ActualizarBaseDeDatos(comandoSQL);
-
-            //        // Eliminar las filas de ProyectoRolUsuario
-            //        comandoSQL.CommandText = "DELETE FROM ProyectoRolUsuario" + filtroBorrado;
-            //        ActualizarBaseDeDatos(comandoSQL);
-
-            //        // Eliminar las filas de ProyectoRolGrupoUsuario
-            //        comandoSQL.CommandText = "DELETE FROM ProyectoRolGrupoUsuario" + filtroBorrado;
-            //        ActualizarBaseDeDatos(comandoSQL);
-
-            //        // Eliminar las filas de ProyectoUsuarioIdentidad
-            //        comandoSQL.CommandText = "DELETE FROM ProyectoUsuarioIdentidad" + filtroBorrado;
-            //        ActualizarBaseDeDatos(comandoSQL);
-
-            //        #endregion
-
-            //        #region Tablas de IdentidadDS
-
-            //        // Eliminar las filas de Identidad
-            //        comandoSQL.CommandText = "DELETE FROM Identidad" + filtroBorrado;
-            //        ActualizarBaseDeDatos(comandoSQL);
-
-            //        #endregion
-
-            //        proyectosEliminados.Dispose();
-            //    }
-            //}
-            //#endregion
-
-            //#region Actualizar Nivel de certificaci?n de Documento
-
-            //ProyectoDS.NivelCertificacionDataTable nivelCertificacionEliminados = (ProyectoDS.NivelCertificacionDataTable)pProyectoDS.NivelCertificacion.GetChanges(DataRowState.Deleted);
-
-            //if (nivelCertificacionEliminados != null)
-            //{
-            //    foreach (ProyectoDS.NivelCertificacionRow filaNivelCertificacion in nivelCertificacionEliminados.Rows)
-            //    {
-
-            //        string consulta = IBD.ReplaceParam("UPDATE DocumentoWebVinBaseRecursos SET NivelCertificacionID = NULL WHERE DocumentoWebVinBaseRecursos.NivelCertificacionID = " + IBD.GuidParamValor("NivelCertificacionID") + " ");
-
-            //        DbCommand comandoNivelesCertificacion = ObtenerComando(consulta);
-            //        AgregarParametro(comandoNivelesCertificacion, IBD.ToParam("NivelCertificacionID"), IBD.TipoGuidToString(DbType.Guid), IBD.ValorDeGuid((Guid)filaNivelCertificacion["NivelCertificacionID", DataRowVersion.Original]));
-
-            //        ActualizarBaseDeDatos(comandoNivelesCertificacion);
-            //    }
-
-            //    nivelCertificacionEliminados.Dispose();
-            //}
-            //#endregion
-
-            //#region Tablas del Dataset ProyectoDS
-
-            //DataSet deletedDataSet = pProyectoDS.GetChanges(DataRowState.Deleted);
-
-            //if (deletedDataSet != null)
-            //{
-            //    #region Eliminar tabla ConfigAutocompletarProy
-            //    DbCommand DeleteConfigAutocompletarProyCommand = ObtenerComando(sqlConfigAutocompletarProyDelete);
-            //    AgregarParametro(DeleteConfigAutocompletarProyCommand, IBD.ToParam("Original_OrganizacionID"), DbType.Guid, "OrganizacionID", DataRowVersion.Original);
-            //    AgregarParametro(DeleteConfigAutocompletarProyCommand, IBD.ToParam("Original_ProyectoID"), DbType.Guid, "ProyectoID", DataRowVersion.Original);
-            //    AgregarParametro(DeleteConfigAutocompletarProyCommand, IBD.ToParam("Original_Clave"), DbType.String, "Clave", DataRowVersion.Original);
-
-            //    ActualizarBaseDeDatos(deletedDataSet, "ConfigAutocompletarProy", null, null, DeleteConfigAutocompletarProyCommand, Microsoft.Practices.EnterpriseLibrary.Data.UpdateBehavior.Transactional);
-
-            //    #endregion Eliminar tabla ConfigAutocompletarProy
-
-            //    #region Eliminar tabla OntologiaProyecto
-            //    DbCommand DeleteOntologiaProyectoCommand = ObtenerComando(sqlOntologiaProyectoDelete);
-            //    AgregarParametro(DeleteOntologiaProyectoCommand, IBD.ToParam("Original_OrganizacionID"), IBD.TipoGuidToObject(DbType.Guid), "OrganizacionID", DataRowVersion.Original);
-            //    AgregarParametro(DeleteOntologiaProyectoCommand, IBD.ToParam("Original_ProyectoID"), IBD.TipoGuidToObject(DbType.Guid), "ProyectoID", DataRowVersion.Original);
-            //    AgregarParametro(DeleteOntologiaProyectoCommand, IBD.ToParam("Original_OntologiaProyecto"), DbType.String, "OntologiaProyecto", DataRowVersion.Original);
-
-            //    ActualizarBaseDeDatos(deletedDataSet, "OntologiaProyecto", null, null, DeleteOntologiaProyectoCommand, Microsoft.Practices.EnterpriseLibrary.Data.UpdateBehavior.Transactional);
-
-            //    #endregion
-
-            //    #region Eliminar tabla EcosistemaServicioExterno
-
-            //    DbCommand DeleteEcosistemaServicioExternoCommand = ObtenerComando(sqlEcosistemaServicioExternoDelete);
-            //    AgregarParametro(DeleteEcosistemaServicioExternoCommand, IBD.ToParam("O_NombreServicio"), IBD.TipoGuidToObject(DbType.String), "NombreServicio", DataRowVersion.Original);
-            //    ActualizarBaseDeDatos(deletedDataSet, "EcosistemaServicioExterno", null, null, DeleteEcosistemaServicioExternoCommand, Microsoft.Practices.EnterpriseLibrary.Data.UpdateBehavior.Transactional);
-
-            //    #endregion
-
-            //    #region Eliminar tabla ProyectoServicioExterno
-
-            //    DbCommand DeleteProyectoServicioExternoCommand = ObtenerComando(sqlProyectoServicioExternoDelete);
-            //    AgregarParametro(DeleteProyectoServicioExternoCommand, IBD.ToParam("O_OrganizacionID"), IBD.TipoGuidToObject(DbType.Guid), "OrganizacionID", DataRowVersion.Original);
-            //    AgregarParametro(DeleteProyectoServicioExternoCommand, IBD.ToParam("O_ProyectoID"), IBD.TipoGuidToObject(DbType.Guid), "ProyectoID", DataRowVersion.Original);
-            //    AgregarParametro(DeleteProyectoServicioExternoCommand, IBD.ToParam("O_NombreServicio"), IBD.TipoGuidToObject(DbType.String), "NombreServicio", DataRowVersion.Original);
-            //    ActualizarBaseDeDatos(deletedDataSet, "ProyectoServicioExterno", null, null, DeleteProyectoServicioExternoCommand, Microsoft.Practices.EnterpriseLibrary.Data.UpdateBehavior.Transactional);
-
-            //    #endregion
-
-            //    #region Eliminar tabla PresentacionPestanyaMapaSemantico
-            //    DbCommand DeletePresentacionPestanyaMapaSemanticoCommand = ObtenerComando(sqlPresentacionPestanyaMapaSemanticoDelete);
-            //    AgregarParametro(DeletePresentacionPestanyaMapaSemanticoCommand, IBD.ToParam("Original_OrganizacionID"), IBD.TipoGuidToObject(DbType.Guid), "OrganizacionID", DataRowVersion.Original);
-            //    AgregarParametro(DeletePresentacionPestanyaMapaSemanticoCommand, IBD.ToParam("Original_ProyectoID"), IBD.TipoGuidToObject(DbType.Guid), "ProyectoID", DataRowVersion.Original);
-            //    AgregarParametro(DeletePresentacionPestanyaMapaSemanticoCommand, IBD.ToParam("Original_PestanyaID"), IBD.TipoGuidToObject(DbType.Guid), "PestanyaID", DataRowVersion.Original);
-            //    AgregarParametro(DeletePresentacionPestanyaMapaSemanticoCommand, IBD.ToParam("Original_OntologiaID"), IBD.TipoGuidToObject(DbType.Guid), "OntologiaID", DataRowVersion.Original);
-            //    AgregarParametro(DeletePresentacionPestanyaMapaSemanticoCommand, IBD.ToParam("Original_Orden"), DbType.Int16, "Orden", DataRowVersion.Original);
-            //    AgregarParametro(DeletePresentacionPestanyaMapaSemanticoCommand, IBD.ToParam("Original_Ontologia"), IBD.TipoGuidToObject(DbType.String), "Ontologia", DataRowVersion.Original);
-            //    AgregarParametro(DeletePresentacionPestanyaMapaSemanticoCommand, IBD.ToParam("Original_Propiedad"), IBD.TipoGuidToObject(DbType.String), "Propiedad", DataRowVersion.Original);
-            //    AgregarParametro(DeletePresentacionPestanyaMapaSemanticoCommand, IBD.ToParam("Original_Nombre"), IBD.TipoGuidToObject(DbType.String), "Nombre", DataRowVersion.Original);
-
-            //    ActualizarBaseDeDatos(deletedDataSet, "PresentacionPestanyaMapaSemantico", null, null, DeletePresentacionPestanyaMapaSemanticoCommand, Microsoft.Practices.EnterpriseLibrary.Data.UpdateBehavior.Transactional);
-
-            //    #endregion
-
-            //    #region Eliminar tabla PresentacionPestanyaMosaicoSemantico
-            //    DbCommand DeletePresentacionPestanyaMosaicoSemanticoCommand = ObtenerComando(sqlPresentacionPestanyaMosaicoSemanticoDelete);
-            //    AgregarParametro(DeletePresentacionPestanyaMosaicoSemanticoCommand, IBD.ToParam("Original_OrganizacionID"), IBD.TipoGuidToObject(DbType.Guid), "OrganizacionID", DataRowVersion.Original);
-            //    AgregarParametro(DeletePresentacionPestanyaMosaicoSemanticoCommand, IBD.ToParam("Original_ProyectoID"), IBD.TipoGuidToObject(DbType.Guid), "ProyectoID", DataRowVersion.Original);
-            //    AgregarParametro(DeletePresentacionPestanyaMosaicoSemanticoCommand, IBD.ToParam("Original_PestanyaID"), IBD.TipoGuidToObject(DbType.Guid), "PestanyaID", DataRowVersion.Original);
-            //    AgregarParametro(DeletePresentacionPestanyaMosaicoSemanticoCommand, IBD.ToParam("Original_OntologiaID"), IBD.TipoGuidToObject(DbType.Guid), "OntologiaID", DataRowVersion.Original);
-            //    AgregarParametro(DeletePresentacionPestanyaMosaicoSemanticoCommand, IBD.ToParam("Original_Orden"), DbType.Int16, "Orden", DataRowVersion.Original);
-            //    AgregarParametro(DeletePresentacionPestanyaMosaicoSemanticoCommand, IBD.ToParam("Original_Ontologia"), IBD.TipoGuidToObject(DbType.String), "Ontologia", DataRowVersion.Original);
-            //    AgregarParametro(DeletePresentacionPestanyaMosaicoSemanticoCommand, IBD.ToParam("Original_Propiedad"), IBD.TipoGuidToObject(DbType.String), "Propiedad", DataRowVersion.Original);
-            //    AgregarParametro(DeletePresentacionPestanyaMosaicoSemanticoCommand, IBD.ToParam("Original_Nombre"), IBD.TipoGuidToObject(DbType.String), "Nombre", DataRowVersion.Original);
-
-            //    ActualizarBaseDeDatos(deletedDataSet, "PresentacionPestanyaMosaicoSemantico", null, null, DeletePresentacionPestanyaMosaicoSemanticoCommand, Microsoft.Practices.EnterpriseLibrary.Data.UpdateBehavior.Transactional);
-
-            //    #endregion
-
-            //    #region Eliminar tabla PresentacionPestanyaListadoSemantico
-            //    DbCommand DeletePresentacionPestanyaListadoSemanticoCommand = ObtenerComando(sqlPresentacionPestanyaListadoSemanticoDelete);
-            //    AgregarParametro(DeletePresentacionPestanyaListadoSemanticoCommand, IBD.ToParam("Original_OrganizacionID"), IBD.TipoGuidToObject(DbType.Guid), "OrganizacionID", DataRowVersion.Original);
-            //    AgregarParametro(DeletePresentacionPestanyaListadoSemanticoCommand, IBD.ToParam("Original_ProyectoID"), IBD.TipoGuidToObject(DbType.Guid), "ProyectoID", DataRowVersion.Original);
-            //    AgregarParametro(DeletePresentacionPestanyaListadoSemanticoCommand, IBD.ToParam("Original_PestanyaID"), IBD.TipoGuidToObject(DbType.Guid), "PestanyaID", DataRowVersion.Original);
-            //    AgregarParametro(DeletePresentacionPestanyaListadoSemanticoCommand, IBD.ToParam("Original_OntologiaID"), IBD.TipoGuidToObject(DbType.Guid), "OntologiaID", DataRowVersion.Original);
-            //    AgregarParametro(DeletePresentacionPestanyaListadoSemanticoCommand, IBD.ToParam("Original_Orden"), DbType.Int16, "Orden", DataRowVersion.Original);
-            //    AgregarParametro(DeletePresentacionPestanyaListadoSemanticoCommand, IBD.ToParam("Original_Ontologia"), IBD.TipoGuidToObject(DbType.String), "Ontologia", DataRowVersion.Original);
-            //    AgregarParametro(DeletePresentacionPestanyaListadoSemanticoCommand, IBD.ToParam("Original_Propiedad"), IBD.TipoGuidToObject(DbType.String), "Propiedad", DataRowVersion.Original);
-            //    AgregarParametro(DeletePresentacionPestanyaListadoSemanticoCommand, IBD.ToParam("Original_Nombre"), IBD.TipoGuidToObject(DbType.String), "Nombre", DataRowVersion.Original);
-
-            //    ActualizarBaseDeDatos(deletedDataSet, "PresentacionPestanyaListadoSemantico", null, null, DeletePresentacionPestanyaListadoSemanticoCommand, Microsoft.Practices.EnterpriseLibrary.Data.UpdateBehavior.Transactional);
-
-            //    #endregion
-
-            //    #region Eliminar tabla ProyectoPestanyaFiltroOrdenRecursos
-            //    DbCommand DeleteProyectoPestanyaFiltroOrdenRecursosCommand = ObtenerComando(sqlProyectoPestanyaFiltroOrdenRecursosDelete);
-            //    AgregarParametro(DeleteProyectoPestanyaFiltroOrdenRecursosCommand, IBD.ToParam("Original_PestanyaID"), IBD.TipoGuidToObject(DbType.Guid), "PestanyaID", DataRowVersion.Original);
-            //    AgregarParametro(DeleteProyectoPestanyaFiltroOrdenRecursosCommand, IBD.ToParam("Original_FiltroOrden"), DbType.String, "FiltroOrden", DataRowVersion.Original);
-            //    AgregarParametro(DeleteProyectoPestanyaFiltroOrdenRecursosCommand, IBD.ToParam("Original_NombreFiltro"), DbType.String, "NombreFiltro", DataRowVersion.Original);
-            //    AgregarParametro(DeleteProyectoPestanyaFiltroOrdenRecursosCommand, IBD.ToParam("Original_Orden"), DbType.Int16, "Orden", DataRowVersion.Original);
-            //    ActualizarBaseDeDatos(deletedDataSet, "ProyectoPestanyaFiltroOrdenRecursos", null, null, DeleteProyectoPestanyaFiltroOrdenRecursosCommand, Microsoft.Practices.EnterpriseLibrary.Data.UpdateBehavior.Transactional);
-
-            //    #endregion
-
-            //    #region Eliminar tabla ProyectoSearchPersonalizado
-            //    DbCommand DeleteProyectoSearchPersonalizadoCommand = ObtenerComando(sqlProyectoSearchPersonalizadoDelete);
-            //    AgregarParametro(DeleteProyectoSearchPersonalizadoCommand, IBD.ToParam("Original_OrganizacionID"), IBD.TipoGuidToObject(DbType.Guid), "OrganizacionID", DataRowVersion.Original);
-            //    AgregarParametro(DeleteProyectoSearchPersonalizadoCommand, IBD.ToParam("Original_ProyectoID"), IBD.TipoGuidToObject(DbType.Guid), "ProyectoID", DataRowVersion.Original);
-            //    AgregarParametro(DeleteProyectoSearchPersonalizadoCommand, IBD.ToParam("Original_NombreFaceta"), IBD.TipoGuidToObject(DbType.String), "NombreFaceta", DataRowVersion.Original);
-            //    ActualizarBaseDeDatos(deletedDataSet, "ProyectoSearchPersonalizado", null, null, DeleteProyectoSearchPersonalizadoCommand, Microsoft.Practices.EnterpriseLibrary.Data.UpdateBehavior.Transactional);
-            //    #endregion
-
-            //    #region Eliminar tabla ProyectoPestanyaMenuRolGrupoIdentidades
-            //    DbCommand DeleteProyectoPestanyaMenuRolGrupoIdentidadesCommand = ObtenerComando(sqlProyectoPestanyaMenuRolGrupoIdentidadesDelete);
-            //    AgregarParametro(DeleteProyectoPestanyaMenuRolGrupoIdentidadesCommand, IBD.ToParam("Original_PestanyaID"), IBD.TipoGuidToObject(DbType.Guid), "PestanyaID", DataRowVersion.Original);
-            //    AgregarParametro(DeleteProyectoPestanyaMenuRolGrupoIdentidadesCommand, IBD.ToParam("Original_GrupoID"), IBD.TipoGuidToObject(DbType.Guid), "GrupoID", DataRowVersion.Original);
-            //    ActualizarBaseDeDatos(deletedDataSet, "ProyectoPestanyaMenuRolGrupoIdentidades", null, null, DeleteProyectoPestanyaMenuRolGrupoIdentidadesCommand, Microsoft.Practices.EnterpriseLibrary.Data.UpdateBehavior.Transactional);
-            //    #endregion
-
-            //    #region Eliminar tabla ProyectoPestanyaMenuRolIdentidad
-            //    DbCommand DeleteProyectoPestanyaMenuRolIdentidadCommand = ObtenerComando(sqlProyectoPestanyaMenuRolIdentidadDelete);
-            //    AgregarParametro(DeleteProyectoPestanyaMenuRolIdentidadCommand, IBD.ToParam("Original_PestanyaID"), IBD.TipoGuidToObject(DbType.Guid), "PestanyaID", DataRowVersion.Original);
-            //    AgregarParametro(DeleteProyectoPestanyaMenuRolIdentidadCommand, IBD.ToParam("Original_PerfilID"), IBD.TipoGuidToObject(DbType.Guid), "PerfilID", DataRowVersion.Original);
-            //    ActualizarBaseDeDatos(deletedDataSet, "ProyectoPestanyaMenuRolIdentidad", null, null, DeleteProyectoPestanyaMenuRolIdentidadCommand, Microsoft.Practices.EnterpriseLibrary.Data.UpdateBehavior.Transactional);
-            //    #endregion
-
-            //    #region Eliminar tabla ProyectoPestanyaCMS
-            //    DbCommand DeleteProyectoPestanyaCMSCommand = ObtenerComando(sqlProyectoPestanyaCMSDelete);
-            //    AgregarParametro(DeleteProyectoPestanyaCMSCommand, IBD.ToParam("Original_PestanyaID"), IBD.TipoGuidToObject(DbType.Guid), "PestanyaID", DataRowVersion.Original);
-            //    ActualizarBaseDeDatos(deletedDataSet, "ProyectoPestanyaCMS", null, null, DeleteProyectoPestanyaCMSCommand, Microsoft.Practices.EnterpriseLibrary.Data.UpdateBehavior.Transactional);
-            //    #endregion
-
-            //    #region Eliminar tabla ProyectoPestanyaBusqueda
-            //    DbCommand DeleteProyectoPestanyaBusquedaCommand = ObtenerComando(sqlProyectoPestanyaBusquedaDelete);
-            //    AgregarParametro(DeleteProyectoPestanyaBusquedaCommand, IBD.ToParam("Original_PestanyaID"), IBD.TipoGuidToObject(DbType.Guid), "PestanyaID", DataRowVersion.Original);
-            //    ActualizarBaseDeDatos(deletedDataSet, "ProyectoPestanyaBusqueda", null, null, DeleteProyectoPestanyaBusquedaCommand, Microsoft.Practices.EnterpriseLibrary.Data.UpdateBehavior.Transactional);
-            //    #endregion
-
-            //    #region Eliminar tabla ProyectoPestanyaMenu
-            //    DbCommand DeleteProyectoPestanyaMenuCommand = ObtenerComando(sqlProyectoPestanyaMenuDelete);
-            //    AgregarParametro(DeleteProyectoPestanyaMenuCommand, IBD.ToParam("Original_PestanyaID"), IBD.TipoGuidToObject(DbType.Guid), "PestanyaID", DataRowVersion.Original);
-            //    ActualizarBaseDeDatos(deletedDataSet, "ProyectoPestanyaMenu", null, null, DeleteProyectoPestanyaMenuCommand, Microsoft.Practices.EnterpriseLibrary.Data.UpdateBehavior.Transactional);
-            //    #endregion
-
-            //    #region Eliminar tabla AccionesExternasProyecto
-            //    DbCommand DeleteAccionesExternasProyectoCommand = ObtenerComando(sqlAccionesExternasProyectoDelete);
-            //    AgregarParametro(DeleteAccionesExternasProyectoCommand, IBD.ToParam("O_TipoAccion"), DbType.Int16, "TipoAccion", DataRowVersion.Original);
-            //    AgregarParametro(DeleteAccionesExternasProyectoCommand, IBD.ToParam("O_OrganizacionID"), IBD.TipoGuidToObject(DbType.Guid), "OrganizacionID", DataRowVersion.Original);
-            //    AgregarParametro(DeleteAccionesExternasProyectoCommand, IBD.ToParam("O_ProyectoID"), IBD.TipoGuidToObject(DbType.Guid), "ProyectoID", DataRowVersion.Original);
-            //    AgregarParametro(DeleteAccionesExternasProyectoCommand, IBD.ToParam("O_URL"), DbType.String, "URL", DataRowVersion.Original);
-            //    ActualizarBaseDeDatos(deletedDataSet, "AccionesExternasProyecto", null, null, DeleteAccionesExternasProyectoCommand, Microsoft.Practices.EnterpriseLibrary.Data.UpdateBehavior.Transactional);
-            //    #endregion
-
-            //    #region Eliminar tabla ProyectoPasoRegistro
-
-            //    DbCommand DeleteProyectoPasoRegistroCommand = ObtenerComando(sqlProyectoPasoRegistroDelete);
-            //    AgregarParametro(DeleteProyectoPasoRegistroCommand, IBD.ToParam("Original_OrganizacionID"), IBD.TipoGuidToObject(DbType.Guid), "OrganizacionID", DataRowVersion.Original);
-            //    AgregarParametro(DeleteProyectoPasoRegistroCommand, IBD.ToParam("Original_ProyectoID"), IBD.TipoGuidToObject(DbType.Guid), "ProyectoID", DataRowVersion.Original);
-            //    AgregarParametro(DeleteProyectoPasoRegistroCommand, IBD.ToParam("Original_Orden"), DbType.Int16, "Orden", DataRowVersion.Original);
-
-            //    ActualizarBaseDeDatos(deletedDataSet, "ProyectoPasoRegistro", null, null, DeleteProyectoPasoRegistroCommand, Microsoft.Practices.EnterpriseLibrary.Data.UpdateBehavior.Transactional);
-
-            //    #endregion
-
-            //    #region Eliminar tabla ProyectoEventoParticipante
-
-            //    DbCommand DeleteProyectoEventoParticipante = ObtenerComando(sqlProyectoEventoParticipanteDelete);
-            //    AgregarParametro(DeleteProyectoEventoParticipante, IBD.ToParam("Original_IdentidadID"), IBD.TipoGuidToObject(DbType.Guid), "IdentidadID", DataRowVersion.Original);
-            //    AgregarParametro(DeleteProyectoEventoParticipante, IBD.ToParam("Original_EventoID"), IBD.TipoGuidToObject(DbType.Guid), "EventoID", DataRowVersion.Original);
-            //    AgregarParametro(DeleteProyectoEventoParticipante, IBD.ToParam("Original_Fecha"), IBD.TipoGuidToObject(DbType.DateTime), "Fecha", DataRowVersion.Original);
-
-            //    ActualizarBaseDeDatos(deletedDataSet, "ProyectoEventoParticipante", null, null, DeleteProyectoEventoParticipante, Microsoft.Practices.EnterpriseLibrary.Data.UpdateBehavior.Transactional);
-
-            //    #endregion
-
-            //    #region Eliminar tabla ProyectoEvento
-
-            //    DbCommand DeleteProyectoEventoCommand = ObtenerComando(sqlProyectoEventoDelete);
-            //    AgregarParametro(DeleteProyectoEventoCommand, IBD.ToParam("Original_EventoID"), IBD.TipoGuidToObject(DbType.Guid), "EventoID", DataRowVersion.Original);
-            //    ActualizarBaseDeDatos(deletedDataSet, "ProyectoEvento", null, null, DeleteProyectoEventoCommand, Microsoft.Practices.EnterpriseLibrary.Data.UpdateBehavior.Transactional);
-
-            //    #endregion
-
-            //    #region Eliminar tabla ProyectoEventoAccion
-
-            //    DbCommand DeleteProyectoEventoAccionCommand = ObtenerComando(sqlProyectoEventoAccionDelete);
-            //    AgregarParametro(DeleteProyectoEventoAccionCommand, IBD.ToParam("Original_OrganizacionID"), IBD.TipoGuidToObject(DbType.Guid), "OrganizacionID", DataRowVersion.Original);
-            //    AgregarParametro(DeleteProyectoEventoAccionCommand, IBD.ToParam("Original_ProyectoID"), IBD.TipoGuidToObject(DbType.Guid), "ProyectoID", DataRowVersion.Original);
-            //    AgregarParametro(DeleteProyectoEventoAccionCommand, IBD.ToParam("Original_Evento"), IBD.TipoGuidToObject(DbType.Int16), "Evento", DataRowVersion.Original);
-            //    ActualizarBaseDeDatos(deletedDataSet, "ProyectoEventoAccion", null, null, DeleteProyectoEventoAccionCommand, Microsoft.Practices.EnterpriseLibrary.Data.UpdateBehavior.Transactional);
-
-            //    #endregion
-
-            //    #region Eliminar tabla PreferenciaProyecto
-
-            //    DbCommand DeletePreferenciaProyectoCommand = ObtenerComando(sqlPreferenciaProyectoDelete);
-            //    AgregarParametro(DeletePreferenciaProyectoCommand, IBD.ToParam("Original_OrganizacionID"), IBD.TipoGuidToObject(DbType.Guid), "OrganizacionID", DataRowVersion.Original);
-            //    AgregarParametro(DeletePreferenciaProyectoCommand, IBD.ToParam("Original_ProyectoID"), IBD.TipoGuidToObject(DbType.Guid), "ProyectoID", DataRowVersion.Original);
-            //    AgregarParametro(DeletePreferenciaProyectoCommand, IBD.ToParam("Original_TesauroID"), IBD.TipoGuidToObject(DbType.Guid), "TesauroID", DataRowVersion.Original);
-            //    AgregarParametro(DeletePreferenciaProyectoCommand, IBD.ToParam("Original_CategoriaTesauroID"), IBD.TipoGuidToObject(DbType.Guid), "CategoriaTesauroID", DataRowVersion.Original);
-            //    AgregarParametro(DeletePreferenciaProyectoCommand, IBD.ToParam("Original_Orden"), IBD.TipoGuidToObject(DbType.Int16), "Orden", DataRowVersion.Original);
-            //    ActualizarBaseDeDatos(deletedDataSet, "PreferenciaProyecto", null, null, DeletePreferenciaProyectoCommand, Microsoft.Practices.EnterpriseLibrary.Data.UpdateBehavior.Transactional);
-
-            //    #endregion
-
-            //    #region Eliminar tabla CamposRegistroProyectoGenericos
-
-            //    DbCommand DeleteCamposRegistroProyectoGenericosCommand = ObtenerComando(sqlCamposRegistroProyectoGenericosDelete);
-            //    AgregarParametro(DeleteCamposRegistroProyectoGenericosCommand, IBD.ToParam("Original_OrganizacionID"), IBD.TipoGuidToObject(DbType.Guid), "OrganizacionID", DataRowVersion.Original);
-            //    AgregarParametro(DeleteCamposRegistroProyectoGenericosCommand, IBD.ToParam("Original_ProyectoID"), IBD.TipoGuidToObject(DbType.Guid), "ProyectoID", DataRowVersion.Original);
-            //    AgregarParametro(DeleteCamposRegistroProyectoGenericosCommand, IBD.ToParam("Original_Orden"), IBD.TipoGuidToObject(DbType.Int16), "Orden", DataRowVersion.Original);
-            //    AgregarParametro(DeleteCamposRegistroProyectoGenericosCommand, IBD.ToParam("Original_Tipo"), IBD.TipoGuidToObject(DbType.Int16), "Tipo", DataRowVersion.Original);
-            //    ActualizarBaseDeDatos(deletedDataSet, "CamposRegistroProyectoGenericos", null, null, DeleteCamposRegistroProyectoGenericosCommand, Microsoft.Practices.EnterpriseLibrary.Data.UpdateBehavior.Transactional);
-
-            //    #endregion
-
-            //    #region Eliminar tabla DatoExtraProyectoOpcion
-
-            //    DbCommand DeleteDatoExtraProyectoOpcionCommand = ObtenerComando(sqlDatoExtraProyectoOpcionDelete);
-            //    AgregarParametro(DeleteDatoExtraProyectoOpcionCommand, IBD.ToParam("Original_OrganizacionID"), IBD.TipoGuidToObject(DbType.Guid), "OrganizacionID", DataRowVersion.Original);
-            //    AgregarParametro(DeleteDatoExtraProyectoOpcionCommand, IBD.ToParam("Original_ProyectoID"), IBD.TipoGuidToObject(DbType.Guid), "ProyectoID", DataRowVersion.Original);
-            //    AgregarParametro(DeleteDatoExtraProyectoOpcionCommand, IBD.ToParam("Original_DatoExtraID"), IBD.TipoGuidToObject(DbType.Guid), "DatoExtraID", DataRowVersion.Original);
-            //    AgregarParametro(DeleteDatoExtraProyectoOpcionCommand, IBD.ToParam("Original_OpcionID"), IBD.TipoGuidToObject(DbType.Guid), "OpcionID", DataRowVersion.Original);
-            //    AgregarParametro(DeleteDatoExtraProyectoOpcionCommand, IBD.ToParam("Original_Orden"), IBD.TipoGuidToObject(DbType.Int16), "Orden", DataRowVersion.Original);
-            //    AgregarParametro(DeleteDatoExtraProyectoOpcionCommand, IBD.ToParam("Original_Opcion"), IBD.TipoGuidToObject(DbType.String), "Opcion", DataRowVersion.Original);
-            //    ActualizarBaseDeDatos(deletedDataSet, "DatoExtraProyectoOpcion", null, null, DeleteDatoExtraProyectoOpcionCommand, Microsoft.Practices.EnterpriseLibrary.Data.UpdateBehavior.Transactional);
-
-            //    #endregion
-
-            //    #region Eliminar tabla DatoExtraProyecto
-            //    DbCommand DeleteDatoExtraProyectoCommand = ObtenerComando(sqlDatoExtraProyectoDelete);
-            //    AgregarParametro(DeleteDatoExtraProyectoCommand, IBD.ToParam("Original_OrganizacionID"), IBD.TipoGuidToObject(DbType.Guid), "OrganizacionID", DataRowVersion.Original);
-            //    AgregarParametro(DeleteDatoExtraProyectoCommand, IBD.ToParam("Original_ProyectoID"), IBD.TipoGuidToObject(DbType.Guid), "ProyectoID", DataRowVersion.Original);
-            //    AgregarParametro(DeleteDatoExtraProyectoCommand, IBD.ToParam("Original_DatoExtraID"), IBD.TipoGuidToObject(DbType.Guid), "DatoExtraID", DataRowVersion.Original);
-            //    AgregarParametro(DeleteDatoExtraProyectoCommand, IBD.ToParam("Original_Orden"), IBD.TipoGuidToObject(DbType.Int16), "Orden", DataRowVersion.Original);
-            //    AgregarParametro(DeleteDatoExtraProyectoCommand, IBD.ToParam("Original_Titulo"), IBD.TipoGuidToObject(DbType.String), "Titulo", DataRowVersion.Original);
-            //    AgregarParametro(DeleteDatoExtraProyectoCommand, IBD.ToParam("Original_PredicadoRDF"), IBD.TipoGuidToObject(DbType.String), "PredicadoRDF", DataRowVersion.Original);
-            //    AgregarParametro(DeleteDatoExtraProyectoCommand, IBD.ToParam("Original_Obligatorio"), IBD.TipoGuidToObject(DbType.Boolean), "Obligatorio", DataRowVersion.Original);
-            //    AgregarParametro(DeleteDatoExtraProyectoCommand, IBD.ToParam("Original_Paso1Registro"), IBD.TipoGuidToObject(DbType.Boolean), "Paso1Registro", DataRowVersion.Original);
-            //    ActualizarBaseDeDatos(deletedDataSet, "DatoExtraProyecto", null, null, DeleteDatoExtraProyectoCommand, Microsoft.Practices.EnterpriseLibrary.Data.UpdateBehavior.Transactional);
-
-            //    #endregion
-
-            //    #region Eliminar tabla DatoExtraProyectoVirtuoso
-
-            //    DbCommand DeleteDatoExtraProyectoVirtuosoCommand = ObtenerComando(sqlDatoExtraProyectoVirtuosoDelete);
-            //    AgregarParametro(DeleteDatoExtraProyectoVirtuosoCommand, IBD.ToParam("Original_DatoExtraID"), IBD.TipoGuidToObject(DbType.Guid), "DatoExtraID", DataRowVersion.Original);
-            //    ActualizarBaseDeDatos(deletedDataSet, "DatoExtraProyectoVirtuoso", null, null, DeleteDatoExtraProyectoVirtuosoCommand, Microsoft.Practices.EnterpriseLibrary.Data.UpdateBehavior.Transactional);
-
-            //    #endregion
-
-            //    #region Eliminar tabla DatoExtraEcosistemaOpcion
-
-            //    DbCommand DeleteDatoExtraEcosistemaOpcionCommand = ObtenerComando(sqlDatoExtraEcosistemaOpcionDelete);
-            //    AgregarParametro(DeleteDatoExtraEcosistemaOpcionCommand, IBD.ToParam("Original_DatoExtraID"), IBD.TipoGuidToObject(DbType.Guid), "DatoExtraID", DataRowVersion.Original);
-            //    AgregarParametro(DeleteDatoExtraEcosistemaOpcionCommand, IBD.ToParam("Original_OpcionID"), IBD.TipoGuidToObject(DbType.Guid), "OpcionID", DataRowVersion.Original);
-            //    AgregarParametro(DeleteDatoExtraEcosistemaOpcionCommand, IBD.ToParam("Original_Orden"), IBD.TipoGuidToObject(DbType.Int16), "Orden", DataRowVersion.Original);
-            //    AgregarParametro(DeleteDatoExtraEcosistemaOpcionCommand, IBD.ToParam("Original_Opcion"), IBD.TipoGuidToObject(DbType.String), "Opcion", DataRowVersion.Original);
-            //    ActualizarBaseDeDatos(deletedDataSet, "DatoExtraEcosistemaOpcion", null, null, DeleteDatoExtraEcosistemaOpcionCommand, Microsoft.Practices.EnterpriseLibrary.Data.UpdateBehavior.Transactional);
-
-            //    #endregion
-
-            //    #region Eliminar tabla DatoExtraEcosistema
-            //    DbCommand DeleteDatoExtraEcosistemaCommand = ObtenerComando(sqlDatoExtraEcosistemaDelete);
-            //    AgregarParametro(DeleteDatoExtraEcosistemaCommand, IBD.ToParam("Original_DatoExtraID"), IBD.TipoGuidToObject(DbType.Guid), "DatoExtraID", DataRowVersion.Original);
-            //    AgregarParametro(DeleteDatoExtraEcosistemaCommand, IBD.ToParam("Original_Orden"), IBD.TipoGuidToObject(DbType.Int16), "Orden", DataRowVersion.Original);
-            //    AgregarParametro(DeleteDatoExtraEcosistemaCommand, IBD.ToParam("Original_Titulo"), IBD.TipoGuidToObject(DbType.String), "Titulo", DataRowVersion.Original);
-            //    AgregarParametro(DeleteDatoExtraEcosistemaCommand, IBD.ToParam("Original_PredicadoRDF"), IBD.TipoGuidToObject(DbType.String), "PredicadoRDF", DataRowVersion.Original);
-            //    AgregarParametro(DeleteDatoExtraEcosistemaCommand, IBD.ToParam("Original_Obligatorio"), IBD.TipoGuidToObject(DbType.Boolean), "Obligatorio", DataRowVersion.Original);
-            //    AgregarParametro(DeleteDatoExtraEcosistemaCommand, IBD.ToParam("Original_Paso1Registro"), IBD.TipoGuidToObject(DbType.Boolean), "Paso1Registro", DataRowVersion.Original);
-            //    ActualizarBaseDeDatos(deletedDataSet, "DatoExtraEcosistema", null, null, DeleteDatoExtraEcosistemaCommand, Microsoft.Practices.EnterpriseLibrary.Data.UpdateBehavior.Transactional);
-
-            //    #endregion
-
-            //    #region Eliminar tabla DatoExtraEcosistemaVirtuoso
-
-            //    DbCommand DeleteDatoExtraEcosistemaVirtuosoCommand = ObtenerComando(sqlDatoExtraEcosistemaVirtuosoDelete);
-            //    AgregarParametro(DeleteDatoExtraEcosistemaVirtuosoCommand, IBD.ToParam("Original_DatoExtraID"), IBD.TipoGuidToObject(DbType.Guid), "DatoExtraID", DataRowVersion.Original);
-            //    ActualizarBaseDeDatos(deletedDataSet, "DatoExtraEcosistemaVirtuoso", null, null, DeleteDatoExtraEcosistemaVirtuosoCommand, Microsoft.Practices.EnterpriseLibrary.Data.UpdateBehavior.Transactional);
-
-            //    #endregion
-
-            //    #region Eliminar tabla ProyectoLoginConfiguracion
-            //    DbCommand DeleteProyectoLoginConfiguracionCommand = ObtenerComando(sqlProyectoLoginConfiguracionDelete);
-            //    AgregarParametro(DeleteProyectoLoginConfiguracionCommand, IBD.ToParam("Original_OrganizacionID"), IBD.TipoGuidToObject(DbType.Guid), "OrganizacionID", DataRowVersion.Original);
-            //    AgregarParametro(DeleteProyectoLoginConfiguracionCommand, IBD.ToParam("Original_ProyectoID"), IBD.TipoGuidToObject(DbType.Guid), "ProyectoID", DataRowVersion.Original);
-            //    AgregarParametro(DeleteProyectoLoginConfiguracionCommand, IBD.ToParam("Original_Mensaje"), IBD.TipoGuidToObject(DbType.String), "Mensaje", DataRowVersion.Original);
-            //    ActualizarBaseDeDatos(deletedDataSet, "ProyectoLoginConfiguracion", null, null, DeleteProyectoLoginConfiguracionCommand, Microsoft.Practices.EnterpriseLibrary.Data.UpdateBehavior.Transactional);
-
-            //    #endregion
-
-            //    #region Eliminar tabla PresentacionMapaSemantico
-            //    DbCommand DeletePresentacionMapaSemanticoCommand = ObtenerComando(sqlPresentacionMapaSemanticoDelete);
-            //    AgregarParametro(DeletePresentacionMapaSemanticoCommand, IBD.ToParam("Original_OrganizacionID"), IBD.TipoGuidToObject(DbType.Guid), "OrganizacionID", DataRowVersion.Original);
-            //    AgregarParametro(DeletePresentacionMapaSemanticoCommand, IBD.ToParam("Original_ProyectoID"), IBD.TipoGuidToObject(DbType.Guid), "ProyectoID", DataRowVersion.Original);
-            //    AgregarParametro(DeletePresentacionMapaSemanticoCommand, IBD.ToParam("Original_OntologiaID"), IBD.TipoGuidToObject(DbType.Guid), "OntologiaID", DataRowVersion.Original);
-            //    AgregarParametro(DeletePresentacionMapaSemanticoCommand, IBD.ToParam("Original_Orden"), DbType.Int16, "Orden", DataRowVersion.Original);
-            //    AgregarParametro(DeletePresentacionMapaSemanticoCommand, IBD.ToParam("Original_Ontologia"), IBD.TipoGuidToObject(DbType.String), "Ontologia", DataRowVersion.Original);
-            //    AgregarParametro(DeletePresentacionMapaSemanticoCommand, IBD.ToParam("Original_Propiedad"), IBD.TipoGuidToObject(DbType.String), "Propiedad", DataRowVersion.Original);
-            //    AgregarParametro(DeletePresentacionMapaSemanticoCommand, IBD.ToParam("Original_Nombre"), IBD.TipoGuidToObject(DbType.String), "Nombre", DataRowVersion.Original);
-
-            //    ActualizarBaseDeDatos(deletedDataSet, "PresentacionMapaSemantico", null, null, DeletePresentacionMapaSemanticoCommand, Microsoft.Practices.EnterpriseLibrary.Data.UpdateBehavior.Transactional);
-
-            //    #endregion
-
-            //    #region Eliminar tabla PresentacionMosaicoSemantico
-            //    DbCommand DeletePresentacionMosaicoSemanticoCommand = ObtenerComando(sqlPresentacionMosaicoSemanticoDelete);
-            //    AgregarParametro(DeletePresentacionMosaicoSemanticoCommand, IBD.ToParam("Original_OrganizacionID"), IBD.TipoGuidToObject(DbType.Guid), "OrganizacionID", DataRowVersion.Original);
-            //    AgregarParametro(DeletePresentacionMosaicoSemanticoCommand, IBD.ToParam("Original_ProyectoID"), IBD.TipoGuidToObject(DbType.Guid), "ProyectoID", DataRowVersion.Original);
-            //    AgregarParametro(DeletePresentacionMosaicoSemanticoCommand, IBD.ToParam("Original_OntologiaID"), IBD.TipoGuidToObject(DbType.Guid), "OntologiaID", DataRowVersion.Original);
-            //    AgregarParametro(DeletePresentacionMosaicoSemanticoCommand, IBD.ToParam("Original_Orden"), DbType.Int16, "Orden", DataRowVersion.Original);
-            //    AgregarParametro(DeletePresentacionMosaicoSemanticoCommand, IBD.ToParam("Original_Ontologia"), IBD.TipoGuidToObject(DbType.String), "Ontologia", DataRowVersion.Original);
-            //    AgregarParametro(DeletePresentacionMosaicoSemanticoCommand, IBD.ToParam("Original_Propiedad"), IBD.TipoGuidToObject(DbType.String), "Propiedad", DataRowVersion.Original);
-            //    AgregarParametro(DeletePresentacionMosaicoSemanticoCommand, IBD.ToParam("Original_Nombre"), IBD.TipoGuidToObject(DbType.String), "Nombre", DataRowVersion.Original);
-
-            //    ActualizarBaseDeDatos(deletedDataSet, "PresentacionMosaicoSemantico", null, null, DeletePresentacionMosaicoSemanticoCommand, Microsoft.Practices.EnterpriseLibrary.Data.UpdateBehavior.Transactional);
-
-            //    #endregion
-
-            //    #region Eliminar tabla PresentacionListadoSemantico
-            //    DbCommand DeletePresentacionListadoSemanticoCommand = ObtenerComando(sqlPresentacionListadoSemanticoDelete);
-            //    AgregarParametro(DeletePresentacionListadoSemanticoCommand, IBD.ToParam("Original_OrganizacionID"), IBD.TipoGuidToObject(DbType.Guid), "OrganizacionID", DataRowVersion.Original);
-            //    AgregarParametro(DeletePresentacionListadoSemanticoCommand, IBD.ToParam("Original_ProyectoID"), IBD.TipoGuidToObject(DbType.Guid), "ProyectoID", DataRowVersion.Original);
-            //    AgregarParametro(DeletePresentacionListadoSemanticoCommand, IBD.ToParam("Original_OntologiaID"), IBD.TipoGuidToObject(DbType.Guid), "OntologiaID", DataRowVersion.Original);
-            //    AgregarParametro(DeletePresentacionListadoSemanticoCommand, IBD.ToParam("Original_Orden"), DbType.Int16, "Orden", DataRowVersion.Original);
-            //    AgregarParametro(DeletePresentacionListadoSemanticoCommand, IBD.ToParam("Original_Ontologia"), IBD.TipoGuidToObject(DbType.String), "Ontologia", DataRowVersion.Original);
-            //    AgregarParametro(DeletePresentacionListadoSemanticoCommand, IBD.ToParam("Original_Propiedad"), IBD.TipoGuidToObject(DbType.String), "Propiedad", DataRowVersion.Original);
-            //    AgregarParametro(DeletePresentacionListadoSemanticoCommand, IBD.ToParam("Original_Nombre"), IBD.TipoGuidToObject(DbType.String), "Nombre", DataRowVersion.Original);
-
-            //    ActualizarBaseDeDatos(deletedDataSet, "PresentacionListadoSemantico", null, null, DeletePresentacionListadoSemanticoCommand, Microsoft.Practices.EnterpriseLibrary.Data.UpdateBehavior.Transactional);
-
-            //    #endregion
-
-            //    #region Eliminar tabla SeccionProyCatalogo
-            //    DbCommand DeleteSeccionProyCatalogoCommand = ObtenerComando(sqlSeccionProyCatalogoDelete);
-            //    AgregarParametro(DeleteSeccionProyCatalogoCommand, IBD.ToParam("Original_OrganizacionID"), IBD.TipoGuidToObject(DbType.Guid), "OrganizacionID", DataRowVersion.Original);
-            //    AgregarParametro(DeleteSeccionProyCatalogoCommand, IBD.ToParam("Original_ProyectoID"), IBD.TipoGuidToObject(DbType.Guid), "ProyectoID", DataRowVersion.Original);
-            //    AgregarParametro(DeleteSeccionProyCatalogoCommand, IBD.ToParam("Original_OrganizacionBusquedaID"), IBD.TipoGuidToObject(DbType.Guid), "OrganizacionBusquedaID", DataRowVersion.Original);
-            //    AgregarParametro(DeleteSeccionProyCatalogoCommand, IBD.ToParam("Original_ProyectoBusquedaID"), IBD.TipoGuidToObject(DbType.Guid), "ProyectoBusquedaID", DataRowVersion.Original);
-            //    AgregarParametro(DeleteSeccionProyCatalogoCommand, IBD.ToParam("Original_Tipo"), DbType.Int16, "Tipo", DataRowVersion.Original);
-            //    AgregarParametro(DeleteSeccionProyCatalogoCommand, IBD.ToParam("Original_Nombre"), DbType.String, "Nombre", DataRowVersion.Original);
-            //    AgregarParametro(DeleteSeccionProyCatalogoCommand, IBD.ToParam("Original_Faceta"), DbType.String, "Faceta", DataRowVersion.Original);
-            //    AgregarParametro(DeleteSeccionProyCatalogoCommand, IBD.ToParam("Original_Filtro"), DbType.String, "Filtro", DataRowVersion.Original);
-            //    AgregarParametro(DeleteSeccionProyCatalogoCommand, IBD.ToParam("Original_NumeroResultados"), DbType.Int16, "NumeroResultados", DataRowVersion.Original);
-            //    AgregarParametro(DeleteSeccionProyCatalogoCommand, IBD.ToParam("Original_Orden"), DbType.Int16, "Orden", DataRowVersion.Original);
-            //    ActualizarBaseDeDatos(deletedDataSet, "SeccionProyCatalogo", null, null, DeleteSeccionProyCatalogoCommand, Microsoft.Practices.EnterpriseLibrary.Data.UpdateBehavior.Transactional);
-
-            //    #endregion
-
-            //    #region Eliminar tabla ProyectoPerfilNumElem
-            //    DbCommand DeleteProyectoPerfilNumElemCommand = ObtenerComando(sqlProyectoPerfilNumElemDelete);
-            //    AgregarParametro(DeleteProyectoPerfilNumElemCommand, IBD.ToParam("Original_ProyectoID"), IBD.TipoGuidToObject(DbType.Guid), "ProyectoID", DataRowVersion.Original);
-            //    AgregarParametro(DeleteProyectoPerfilNumElemCommand, IBD.ToParam("Original_PerfilID"), IBD.TipoGuidToObject(DbType.Guid), "PerfilID", DataRowVersion.Original);
-            //    AgregarParametro(DeleteProyectoPerfilNumElemCommand, IBD.ToParam("Original_NumRecursos"), DbType.Int32, "NumRecursos", DataRowVersion.Original);
-            //    ActualizarBaseDeDatos(deletedDataSet, "ProyectoPerfilNumElem", null, null, DeleteProyectoPerfilNumElemCommand, Microsoft.Practices.EnterpriseLibrary.Data.UpdateBehavior.Transactional);
-
-            //    #endregion
-
-            //    #region Eliminar tabla ProyectoRelacionado
-            //    DbCommand DeleteProyectoRelacionadoCommand = ObtenerComando(sqlProyectoRelacionadoDelete);
-            //    AgregarParametro(DeleteProyectoRelacionadoCommand, IBD.ToParam("Original_OrganizacionID"), IBD.TipoGuidToObject(DbType.Guid), "OrganizacionID", DataRowVersion.Original);
-            //    AgregarParametro(DeleteProyectoRelacionadoCommand, IBD.ToParam("Original_ProyectoID"), IBD.TipoGuidToObject(DbType.Guid), "ProyectoID", DataRowVersion.Original);
-            //    AgregarParametro(DeleteProyectoRelacionadoCommand, IBD.ToParam("Original_OrganizacionRelacionadaID"), IBD.TipoGuidToObject(DbType.Guid), "OrganizacionRelacionadaID", DataRowVersion.Original);
-            //    AgregarParametro(DeleteProyectoRelacionadoCommand, IBD.ToParam("Original_ProyectoRelacionadoID"), IBD.TipoGuidToObject(DbType.Guid), "ProyectoRelacionadoID", DataRowVersion.Original);
-            //    AgregarParametro(DeleteProyectoRelacionadoCommand, IBD.ToParam("O_Orden"), DbType.Int16, "Orden", DataRowVersion.Original);
-            //    ActualizarBaseDeDatos(deletedDataSet, "ProyectoRelacionado", null, null, DeleteProyectoRelacionadoCommand, Microsoft.Practices.EnterpriseLibrary.Data.UpdateBehavior.Transactional);
-
-            //    #endregion
-
-            //    #region Eliminar tabla NivelCertificacion
-
-            //    DbCommand DeleteNivelCertificacionCommand = ObtenerComando(sqlNivelCertificacionDelete);
-            //    AgregarParametro(DeleteNivelCertificacionCommand, IBD.ToParam("O_NivelCertificacionID"), IBD.TipoGuidToObject(DbType.Guid), "NivelCertificacionID", DataRowVersion.Original);
-            //    AgregarParametro(DeleteNivelCertificacionCommand, IBD.ToParam("O_OrganizacionID"), IBD.TipoGuidToObject(DbType.Guid), "OrganizacionID", DataRowVersion.Original);
-            //    AgregarParametro(DeleteNivelCertificacionCommand, IBD.ToParam("O_ProyectoID"), IBD.TipoGuidToObject(DbType.Guid), "ProyectoID", DataRowVersion.Original);
-            //    AgregarParametro(DeleteNivelCertificacionCommand, IBD.ToParam("O_Orden"), DbType.Int16, "Orden", DataRowVersion.Original);
-            //    AgregarParametro(DeleteNivelCertificacionCommand, IBD.ToParam("O_Descripcion"), DbType.String, "Descripcion", DataRowVersion.Original);
-            //    ActualizarBaseDeDatos(deletedDataSet, "NivelCertificacion", null, null, DeleteNivelCertificacionCommand, Microsoft.Practices.EnterpriseLibrary.Data.UpdateBehavior.Transactional);
-
-            //    #endregion
-
-            //    #region Eliminar tabla ProyectosMasActivos
-
-            //    DbCommand DeleteProyectosMasActivosCommand = ObtenerComando(sqlProyectosMasActivosDelete);
-            //    AgregarParametro(DeleteProyectosMasActivosCommand, IBD.ToParam("O_OrganizacionID"), IBD.TipoGuidToObject(DbType.Guid), "OrganizacionID", DataRowVersion.Original);
-            //    AgregarParametro(DeleteProyectosMasActivosCommand, IBD.ToParam("O_ProyectoID"), IBD.TipoGuidToObject(DbType.Guid), "ProyectoID", DataRowVersion.Original);
-            //    AgregarParametro(DeleteProyectosMasActivosCommand, IBD.ToParam("O_Nombre"), DbType.String, "Nombre", DataRowVersion.Original);
-            //    AgregarParametro(DeleteProyectosMasActivosCommand, IBD.ToParam("O_Peso"), DbType.Int32, "Peso", DataRowVersion.Original);
-            //    AgregarParametro(DeleteProyectosMasActivosCommand, IBD.ToParam("O_NumeroConsultas"), DbType.Int32, "NumeroConsultas", DataRowVersion.Original);
-            //    ActualizarBaseDeDatos(deletedDataSet, "ProyectosMasActivos", null, null, DeleteProyectosMasActivosCommand, Microsoft.Practices.EnterpriseLibrary.Data.UpdateBehavior.Transactional);
-
-            //    #endregion
-
-            //    #region Eliminar tabla AdministradorProyecto
-
-            //    DbCommand DeleteAdministradorProyectoCommand = ObtenerComando(sqlAdministradorProyectoDelete);
-            //    AgregarParametro(DeleteAdministradorProyectoCommand, IBD.ToParam("O_OrganizacionID"), IBD.TipoGuidToObject(DbType.Guid), "OrganizacionID", DataRowVersion.Original);
-            //    AgregarParametro(DeleteAdministradorProyectoCommand, IBD.ToParam("O_ProyectoID"), IBD.TipoGuidToObject(DbType.Guid), "ProyectoID", DataRowVersion.Original);
-            //    AgregarParametro(DeleteAdministradorProyectoCommand, IBD.ToParam("O_UsuarioID"), IBD.TipoGuidToObject(DbType.Guid), "UsuarioID", DataRowVersion.Original);
-            //    AgregarParametro(DeleteAdministradorProyectoCommand, IBD.ToParam("O_Tipo"), DbType.Int16, "Tipo", DataRowVersion.Original);
-            //    ActualizarBaseDeDatos(deletedDataSet, "AdministradorProyecto", null, null, DeleteAdministradorProyectoCommand, Microsoft.Practices.EnterpriseLibrary.Data.UpdateBehavior.Transactional);
-
-            //    #endregion
-
-            //    #region Eliminar tabla AdministradorGrupoProyecto
-
-            //    DbCommand DeleteAdministradorGrupoProyectoCommand = ObtenerComando(sqlAdministradorGrupoProyectoDelete);
-            //    AgregarParametro(DeleteAdministradorGrupoProyectoCommand, IBD.ToParam("O_OrganizacionID"), IBD.TipoGuidToObject(DbType.Guid), "OrganizacionID", DataRowVersion.Original);
-            //    AgregarParametro(DeleteAdministradorGrupoProyectoCommand, IBD.ToParam("O_ProyectoID"), IBD.TipoGuidToObject(DbType.Guid), "ProyectoID", DataRowVersion.Original);
-            //    AgregarParametro(DeleteAdministradorGrupoProyectoCommand, IBD.ToParam("O_GrupoID"), IBD.TipoGuidToObject(DbType.Guid), "GrupoID", DataRowVersion.Original);
-            //    ActualizarBaseDeDatos(deletedDataSet, "AdministradorGrupoProyecto", null, null, DeleteAdministradorGrupoProyectoCommand, Microsoft.Practices.EnterpriseLibrary.Data.UpdateBehavior.Transactional);
-
-            //    #endregion
-
-            //    #region Eliminar tabla ProyectoAgCatTesauro
-
-            //    DbCommand DeleteProyectoAgCatTesauroCommand = ObtenerComando(sqlProyectoAgCatTesauroDelete);
-            //    AgregarParametro(DeleteProyectoAgCatTesauroCommand, IBD.ToParam("O_OrganizacionID"), IBD.TipoGuidToObject(DbType.Guid), "OrganizacionID", DataRowVersion.Original);
-            //    AgregarParametro(DeleteProyectoAgCatTesauroCommand, IBD.ToParam("O_ProyectoID"), IBD.TipoGuidToObject(DbType.Guid), "ProyectoID", DataRowVersion.Original);
-            //    AgregarParametro(DeleteProyectoAgCatTesauroCommand, IBD.ToParam("O_TesauroID"), IBD.TipoGuidToObject(DbType.Guid), "TesauroID", DataRowVersion.Original);
-            //    AgregarParametro(DeleteProyectoAgCatTesauroCommand, IBD.ToParam("O_CategoriaTesauroID"), IBD.TipoGuidToObject(DbType.Guid), "CategoriaTesauroID", DataRowVersion.Original);
-            //    ActualizarBaseDeDatos(deletedDataSet, "ProyectoAgCatTesauro", null, null, DeleteProyectoAgCatTesauroCommand, Microsoft.Practices.EnterpriseLibrary.Data.UpdateBehavior.Transactional);
-
-            //    #endregion
-
-            //    #region Eliminar tabla TipoDocDispRolUsuarioProy
-
-            //    DbCommand DeleteTipoDocDispRolUsuarioProyCommand = ObtenerComando(sqlTipoDocDispRolUsuarioProyDelete);
-            //    AgregarParametro(DeleteTipoDocDispRolUsuarioProyCommand, IBD.ToParam("O_OrganizacionID"), IBD.TipoGuidToObject(DbType.Guid), "OrganizacionID", DataRowVersion.Original);
-            //    AgregarParametro(DeleteTipoDocDispRolUsuarioProyCommand, IBD.ToParam("O_ProyectoID"), IBD.TipoGuidToObject(DbType.Guid), "ProyectoID", DataRowVersion.Original);
-            //    AgregarParametro(DeleteTipoDocDispRolUsuarioProyCommand, IBD.ToParam("O_TipoDocumento"), DbType.Int16, "TipoDocumento", DataRowVersion.Original);
-            //    AgregarParametro(DeleteTipoDocDispRolUsuarioProyCommand, IBD.ToParam("O_RolUsuario"), DbType.Int16, "RolUsuario", DataRowVersion.Original);
-            //    ActualizarBaseDeDatos(deletedDataSet, "TipoDocDispRolUsuarioProy", null, null, DeleteTipoDocDispRolUsuarioProyCommand, Microsoft.Practices.EnterpriseLibrary.Data.UpdateBehavior.Transactional);
-
-            //    #endregion
-
-            //    #region Eliminar tabla TipoOntoDispRolUsuarioProy
-
-            //    DbCommand DeleteTipoOntoDispRolUsuarioProyCommand = ObtenerComando(sqlTipoOntoDispRolUsuarioProyDelete);
-            //    AgregarParametro(DeleteTipoOntoDispRolUsuarioProyCommand, IBD.ToParam("O_OrganizacionID"), IBD.TipoGuidToObject(DbType.Guid), "OrganizacionID", DataRowVersion.Original);
-            //    AgregarParametro(DeleteTipoOntoDispRolUsuarioProyCommand, IBD.ToParam("O_ProyectoID"), IBD.TipoGuidToObject(DbType.Guid), "ProyectoID", DataRowVersion.Original);
-            //    AgregarParametro(DeleteTipoOntoDispRolUsuarioProyCommand, IBD.ToParam("O_OntologiaID"), IBD.TipoGuidToObject(DbType.Guid), "OntologiaID", DataRowVersion.Original);
-            //    AgregarParametro(DeleteTipoOntoDispRolUsuarioProyCommand, IBD.ToParam("O_RolUsuario"), DbType.Int16, "RolUsuario", DataRowVersion.Original);
-            //    ActualizarBaseDeDatos(deletedDataSet, "TipoOntoDispRolUsuarioProy", null, null, DeleteTipoOntoDispRolUsuarioProyCommand, Microsoft.Practices.EnterpriseLibrary.Data.UpdateBehavior.Transactional);
-
-            //    #endregion
-
-            //    #region Eliminar tabla ProyectoCerradoTmp
-
-            //    DbCommand DeleteProyectoCerradoTmpCommand = ObtenerComando(sqlProyectoCerradoTmpDelete);
-            //    AgregarParametro(DeleteProyectoCerradoTmpCommand, IBD.ToParam("O_OrganizacionID"), IBD.TipoGuidToObject(DbType.Guid), "OrganizacionID", DataRowVersion.Original);
-            //    AgregarParametro(DeleteProyectoCerradoTmpCommand, IBD.ToParam("O_ProyectoID"), IBD.TipoGuidToObject(DbType.Guid), "ProyectoID", DataRowVersion.Original);
-            //    AgregarParametro(DeleteProyectoCerradoTmpCommand, IBD.ToParam("O_Motivo"), DbType.String, "Motivo", DataRowVersion.Original);
-            //    AgregarParametro(DeleteProyectoCerradoTmpCommand, IBD.ToParam("O_FechaCierre"), DbType.DateTime, "FechaCierre", DataRowVersion.Original);
-            //    AgregarParametro(DeleteProyectoCerradoTmpCommand, IBD.ToParam("O_FechaReapertura"), DbType.DateTime, "FechaReapertura", DataRowVersion.Original);
-            //    ActualizarBaseDeDatos(deletedDataSet, "ProyectoCerradoTmp", null, null, DeleteProyectoCerradoTmpCommand, Microsoft.Practices.EnterpriseLibrary.Data.UpdateBehavior.Transactional);
-
-            //    #endregion
-
-            //    #region Eliminar tabla ProyectoCerrandose
-
-            //    DbCommand DeleteProyectoCerrandoseCommand = ObtenerComando(sqlProyectoCerrandoseDelete);
-            //    AgregarParametro(DeleteProyectoCerrandoseCommand, IBD.ToParam("O_OrganizacionID"), IBD.TipoGuidToObject(DbType.Guid), "OrganizacionID", DataRowVersion.Original);
-            //    AgregarParametro(DeleteProyectoCerrandoseCommand, IBD.ToParam("O_ProyectoID"), IBD.TipoGuidToObject(DbType.Guid), "ProyectoID", DataRowVersion.Original);
-            //    AgregarParametro(DeleteProyectoCerrandoseCommand, IBD.ToParam("O_FechaCierre"), DbType.DateTime, "FechaCierre", DataRowVersion.Original);
-            //    AgregarParametro(DeleteProyectoCerrandoseCommand, IBD.ToParam("O_PeriodoDeGracia"), DbType.Int32, "PeriodoDeGracia", DataRowVersion.Original);
-            //    ActualizarBaseDeDatos(deletedDataSet, "ProyectoCerrandose", null, null, DeleteProyectoCerrandoseCommand, Microsoft.Practices.EnterpriseLibrary.Data.UpdateBehavior.Transactional);
-
-            //    #endregion
-
-            //    #region Eliminar tabla ProyectoGadgetContexto
-
-            //    DbCommand DeleteProyectoGadgetContextoCommand = ObtenerComando(sqlProyectoGadgetContextoDelete);
-            //    AgregarParametro(DeleteProyectoGadgetContextoCommand, IBD.ToParam("Original_OrganizacionID"), IBD.TipoGuidToObject(DbType.Guid), "OrganizacionID", DataRowVersion.Original);
-            //    AgregarParametro(DeleteProyectoGadgetContextoCommand, IBD.ToParam("Original_ProyectoID"), IBD.TipoGuidToObject(DbType.Guid), "ProyectoID", DataRowVersion.Original);
-            //    AgregarParametro(DeleteProyectoGadgetContextoCommand, IBD.ToParam("Original_GadgetID"), IBD.TipoGuidToObject(DbType.Guid), "GadgetID", DataRowVersion.Original);
-
-            //    ActualizarBaseDeDatos(deletedDataSet, "ProyectoGadgetContexto", null, null, DeleteProyectoGadgetContextoCommand, Microsoft.Practices.EnterpriseLibrary.Data.UpdateBehavior.Transactional);
-
-            //    #endregion
-
-            //    #region Eliminar tabla ProyectoGadgetContextoHTMLplano
-
-            //    //DbCommand DeleteProyectoGadgetContextoHTMLplanoCommand = ObtenerComando(sqlProyectoGadgetContextoHTMLplanoDelete);
-            //    //AgregarParametro(DeleteProyectoGadgetContextoHTMLplanoCommand, IBD.ToParam("Original_OrganizacionID"), IBD.TipoGuidToObject(DbType.Guid), "OrganizacionID", DataRowVersion.Original);
-            //    //AgregarParametro(DeleteProyectoGadgetContextoHTMLplanoCommand, IBD.ToParam("Original_ProyectoID"), IBD.TipoGuidToObject(DbType.Guid), "ProyectoID", DataRowVersion.Original);
-            //    //AgregarParametro(DeleteProyectoGadgetContextoHTMLplanoCommand, IBD.ToParam("Original_GadgetID"), IBD.TipoGuidToObject(DbType.Guid), "GadgetID", DataRowVersion.Original);
-            //    //AgregarParametro(DeleteProyectoGadgetContextoHTMLplanoCommand, IBD.ToParam("Original_ComunidadDestinoFiltros"), DbType.String, "ComunidadDestinoFiltros", DataRowVersion.Original);
-            //    //ActualizarBaseDeDatos(deletedDataSet, "ProyectoGadgetContextoHTMLplano", null, null, DeleteProyectoGadgetContextoHTMLplanoCommand, Microsoft.Practices.EnterpriseLibrary.Data.UpdateBehavior.Transactional);
-
-            //    #endregion
-
-            //    #region Eliminar tabla ProyectoGadgetIdioma
-
-            //    DbCommand DeleteProyectoGadgetIdiomaCommand = ObtenerComando(sqlProyectoGadgetIdiomaDelete);
-            //    AgregarParametro(DeleteProyectoGadgetIdiomaCommand, IBD.ToParam("Original_OrganizacionID"), IBD.TipoGuidToObject(DbType.Guid), "OrganizacionID", DataRowVersion.Original);
-            //    AgregarParametro(DeleteProyectoGadgetIdiomaCommand, IBD.ToParam("Original_ProyectoID"), IBD.TipoGuidToObject(DbType.Guid), "ProyectoID", DataRowVersion.Original);
-            //    AgregarParametro(DeleteProyectoGadgetIdiomaCommand, IBD.ToParam("Original_GadgetID"), IBD.TipoGuidToObject(DbType.Guid), "GadgetID", DataRowVersion.Original);
-            //    AgregarParametro(DeleteProyectoGadgetIdiomaCommand, IBD.ToParam("Original_Idioma"), DbType.String, "Idioma", DataRowVersion.Original);
-            //    AgregarParametro(DeleteProyectoGadgetIdiomaCommand, IBD.ToParam("Original_Contenido"), DbType.String, "Contenido", DataRowVersion.Original);
-            //    ActualizarBaseDeDatos(deletedDataSet, "ProyectoGadgetIdioma", null, null, DeleteProyectoGadgetIdiomaCommand, Microsoft.Practices.EnterpriseLibrary.Data.UpdateBehavior.Transactional);
-
-            //    #endregion
-
-            //    #region Eliminar tabla ProyectoGadget
-
-            //    DbCommand DeleteProyectoGadgetCommand = ObtenerComando(sqlProyectoGadgetDelete);
-            //    AgregarParametro(DeleteProyectoGadgetCommand, IBD.ToParam("Original_OrganizacionID"), IBD.TipoGuidToObject(DbType.Guid), "OrganizacionID", DataRowVersion.Original);
-            //    AgregarParametro(DeleteProyectoGadgetCommand, IBD.ToParam("Original_ProyectoID"), IBD.TipoGuidToObject(DbType.Guid), "ProyectoID", DataRowVersion.Original);
-            //    AgregarParametro(DeleteProyectoGadgetCommand, IBD.ToParam("Original_GadgetID"), IBD.TipoGuidToObject(DbType.Guid), "GadgetID", DataRowVersion.Original);
-
-            //    ActualizarBaseDeDatos(deletedDataSet, "ProyectoGadget", null, null, DeleteProyectoGadgetCommand, Microsoft.Practices.EnterpriseLibrary.Data.UpdateBehavior.Transactional);
-
-            //    #endregion             
-
-            //    #region Eliminar tabla RecursosRelacionadosPresentacion
-
-            //    DbCommand DeleteRecursosRelacionadosPresentacionCommand = ObtenerComando(sqlRecursosRelacionadosPresentacionDelete);
-
-            //    AgregarParametro(DeleteRecursosRelacionadosPresentacionCommand, IBD.ToParam("Original_OrganizacionID"), IBD.TipoGuidToObject(DbType.Guid), "OrganizacionID", DataRowVersion.Original);
-            //    AgregarParametro(DeleteRecursosRelacionadosPresentacionCommand, IBD.ToParam("Original_ProyectoID"), IBD.TipoGuidToObject(DbType.Guid), "ProyectoID", DataRowVersion.Original);
-            //    AgregarParametro(DeleteRecursosRelacionadosPresentacionCommand, IBD.ToParam("Original_OntologiaID"), DbType.Guid, "OntologiaID", DataRowVersion.Original);
-            //    AgregarParametro(DeleteRecursosRelacionadosPresentacionCommand, IBD.ToParam("Original_Orden"), DbType.Int16, "Orden", DataRowVersion.Original);
-            //    AgregarParametro(DeleteRecursosRelacionadosPresentacionCommand, IBD.ToParam("Original_Ontologia"), DbType.String, "Ontologia", DataRowVersion.Original);
-            //    AgregarParametro(DeleteRecursosRelacionadosPresentacionCommand, IBD.ToParam("Original_Propiedad"), DbType.String, "Propiedad", DataRowVersion.Original);
-            //    AgregarParametro(DeleteRecursosRelacionadosPresentacionCommand, IBD.ToParam("Original_Nombre"), DbType.String, "Nombre", DataRowVersion.Original);
-
-            //    ActualizarBaseDeDatos(deletedDataSet, "RecursosRelacionadosPresentacion", null, null, DeleteRecursosRelacionadosPresentacionCommand, Microsoft.Practices.EnterpriseLibrary.Data.UpdateBehavior.Transactional);
-
-            //    #endregion
-
-            //    #region Eliminar tabla ProyectoPaginaHtml
-
-            //    DbCommand DeleteProyectoPaginaHtmlCommand = ObtenerComando(sqlProyectoPaginaHtmlDelete);
-            //    AgregarParametro(DeleteProyectoPaginaHtmlCommand, IBD.ToParam("Original_ProyectoID"), IBD.TipoGuidToObject(DbType.Guid), "ProyectoID", DataRowVersion.Original);
-            //    AgregarParametro(DeleteProyectoPaginaHtmlCommand, IBD.ToParam("Original_Nombre"), DbType.String, "Nombre", DataRowVersion.Original);
-
-            //    ActualizarBaseDeDatos(deletedDataSet, "ProyectoPaginaHtml", null, null, DeleteProyectoPaginaHtmlCommand, Microsoft.Practices.EnterpriseLibrary.Data.UpdateBehavior.Transactional);
-
-            //    #endregion
-
-            //    #region Eliminar tabla Proyecto
-
-            //    DbCommand DeleteProyectoCommand = ObtenerComando(sqlProyectoDelete);
-            //    AgregarParametro(DeleteProyectoCommand, IBD.ToParam("O_OrganizacionID"), IBD.TipoGuidToObject(DbType.Guid), "OrganizacionID", DataRowVersion.Original);
-            //    AgregarParametro(DeleteProyectoCommand, IBD.ToParam("O_ProyectoID"), IBD.TipoGuidToObject(DbType.Guid), "ProyectoID", DataRowVersion.Original);
-            //    AgregarParametro(DeleteProyectoCommand, IBD.ToParam("O_Nombre"), DbType.String, "Nombre", DataRowVersion.Original);
-            //    AgregarParametro(DeleteProyectoCommand, IBD.ToParam("O_Descripcion"), DbType.String, "Descripcion", DataRowVersion.Original);
-            //    AgregarParametro(DeleteProyectoCommand, IBD.ToParam("O_FechaInicio"), DbType.DateTime, "FechaInicio", DataRowVersion.Original);
-            //    AgregarParametro(DeleteProyectoCommand, IBD.ToParam("O_FechaFin"), DbType.DateTime, "FechaFin", DataRowVersion.Original);
-            //    AgregarParametro(DeleteProyectoCommand, IBD.ToParam("O_TipoProyecto"), DbType.Int16, "TipoProyecto", DataRowVersion.Original);
-            //    AgregarParametro(DeleteProyectoCommand, IBD.ToParam("O_TipoAcceso"), DbType.Int16, "TipoAcceso", DataRowVersion.Original);
-            //    AgregarParametro(DeleteProyectoCommand, IBD.ToParam("O_NumeroRecursos"), DbType.Int32, "NumeroRecursos", DataRowVersion.Original);
-            //    AgregarParametro(DeleteProyectoCommand, IBD.ToParam("O_NumeroPreguntas"), DbType.Int32, "NumeroPreguntas", DataRowVersion.Original);
-            //    AgregarParametro(DeleteProyectoCommand, IBD.ToParam("O_NumeroDebates"), DbType.Int32, "NumeroDebates", DataRowVersion.Original);
-            //    AgregarParametro(DeleteProyectoCommand, IBD.ToParam("O_NumeroMiembros"), DbType.Int32, "NumeroMiembros", DataRowVersion.Original);
-            //    AgregarParametro(DeleteProyectoCommand, IBD.ToParam("O_NumeroOrgRegistradas"), DbType.Int32, "NumeroOrgRegistradas", DataRowVersion.Original);
-            //    AgregarParametro(DeleteProyectoCommand, IBD.ToParam("O_NumeroArticulos"), DbType.Int32, "NumeroArticulos", DataRowVersion.Original);
-            //    AgregarParametro(DeleteProyectoCommand, IBD.ToParam("O_NumeroDafos"), DbType.Int32, "NumeroDafos", DataRowVersion.Original);
-            //    AgregarParametro(DeleteProyectoCommand, IBD.ToParam("O_NumeroForos"), DbType.Int32, "NumeroForos", DataRowVersion.Original);
-            //    AgregarParametro(DeleteProyectoCommand, IBD.ToParam("O_ProyectoSuperiorID"), IBD.TipoGuidToObject(DbType.Guid), "ProyectoSuperiorID", DataRowVersion.Original);
-            //    AgregarParametro(DeleteProyectoCommand, IBD.ToParam("O_EsProyectoDestacado"), DbType.Boolean, "EsProyectoDestacado", DataRowVersion.Original);
-            //    AgregarParametro(DeleteProyectoCommand, IBD.ToParam("O_Estado"), DbType.Int16, "Estado", DataRowVersion.Original);
-            //    AgregarParametro(DeleteProyectoCommand, IBD.ToParam("O_URLPropia"), DbType.String, "URLPropia", DataRowVersion.Original);
-            //    AgregarParametro(DeleteProyectoCommand, IBD.ToParam("O_NombreCorto"), DbType.String, "NombreCorto", DataRowVersion.Original);
-            //    AgregarParametro(DeleteProyectoCommand, IBD.ToParam("O_TieneTwitter"), DbType.Boolean, "TieneTwitter", DataRowVersion.Original);
-            //    AgregarParametro(DeleteProyectoCommand, IBD.ToParam("O_TagTwitter"), DbType.String, "TagTwitter", DataRowVersion.Original);
-            //    AgregarParametro(DeleteProyectoCommand, IBD.ToParam("O_UsuarioTwitter"), DbType.String, "UsuarioTwitter", DataRowVersion.Original);
-            //    AgregarParametro(DeleteProyectoCommand, IBD.ToParam("O_TokenTwitter"), DbType.String, "TokenTwitter", DataRowVersion.Original);
-            //    AgregarParametro(DeleteProyectoCommand, IBD.ToParam("O_TokenSecretoTwitter"), DbType.String, "TokenSecretoTwitter", DataRowVersion.Original);
-            //    AgregarParametro(DeleteProyectoCommand, IBD.ToParam("O_EnviarTwitterComentario"), DbType.Boolean, "EnviarTwitterComentario", DataRowVersion.Original);
-            //    AgregarParametro(DeleteProyectoCommand, IBD.ToParam("O_EnviarTwitterNuevaCat"), DbType.Boolean, "EnviarTwitterNuevaCat", DataRowVersion.Original);
-            //    AgregarParametro(DeleteProyectoCommand, IBD.ToParam("O_EnviarTwitterNuevoAdmin"), DbType.Boolean, "EnviarTwitterNuevoAdmin", DataRowVersion.Original);
-            //    AgregarParametro(DeleteProyectoCommand, IBD.ToParam("O_EnviarTwitterNuevaPolitCert"), DbType.Boolean, "EnviarTwitterNuevaPolitCert", DataRowVersion.Original);
-            //    AgregarParametro(DeleteProyectoCommand, IBD.ToParam("O_EnviarTwitterNuevoTipoDoc"), DbType.Boolean, "EnviarTwitterNuevoTipoDoc", DataRowVersion.Original);
-            //    AgregarParametro(DeleteProyectoCommand, IBD.ToParam("O_ProcesoVinculadoID"), IBD.TipoGuidToObject(DbType.Guid), "ProcesoVinculadoID", DataRowVersion.Original);
-            //    AgregarParametro(DeleteProyectoCommand, IBD.ToParam("O_Tags"), DbType.String, "Tags", DataRowVersion.Original);
-            //    AgregarParametro(DeleteProyectoCommand, IBD.ToParam("O_TagTwitterGnoss"), DbType.String, "TagTwitterGnoss", DataRowVersion.Original);
-            //    AgregarParametro(DeleteProyectoCommand, IBD.ToParam("O_NombrePresentacion"), DbType.String, "NombrePresentacion", DataRowVersion.Original);
-
-            //    ActualizarBaseDeDatos(deletedDataSet, "Proyecto", null, null, DeleteProyectoCommand, Microsoft.Practices.EnterpriseLibrary.Data.UpdateBehavior.Transactional);
-
-            //    #endregion
-
-            //    #region Eliminar tabla ProyectoConfigExtraSem
-            //    DbCommand DeleteProyectoConfigExtraSemCommand = ObtenerComando(sqlProyectoConfigExtraSemDelete);
-            //    AgregarParametro(DeleteProyectoConfigExtraSemCommand, IBD.ToParam("Original_ProyectoID"), IBD.TipoGuidToObject(DbType.Guid), "ProyectoID", DataRowVersion.Original);
-            //    AgregarParametro(DeleteProyectoConfigExtraSemCommand, IBD.ToParam("Original_UrlOntologia"), DbType.String, "UrlOntologia", DataRowVersion.Original);
-            //    AgregarParametro(DeleteProyectoConfigExtraSemCommand, IBD.ToParam("Original_SourceTesSem"), DbType.String, "SourceTesSem", DataRowVersion.Original);
-
-            //    ActualizarBaseDeDatos(deletedDataSet, "ProyectoConfigExtraSem", null, null, DeleteProyectoConfigExtraSemCommand, Microsoft.Practices.EnterpriseLibrary.Data.UpdateBehavior.Transactional);
-
-            //    #endregion
-            //}
-
-            //if (deletedDataSet != null)
-            //{
-            //    deletedDataSet.Dispose();
-            //}
-            //#endregion
         }
 
         /// <summary>
@@ -5839,15 +5554,7 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
         /// <returns>Identificador del metaproyecto</returns>
         public Guid ObtenerMetaProyectoID()
         {
-            //DbCommand sqlSelectMetaProyectoID = ObtenerComando("SELECT ProyectoID FROM Proyecto WHERE TipoProyecto = 2");
-
-            object idMetaProyecto = mEntityContext.Proyecto.Where(proyecto => proyecto.TipoProyecto.Equals((short)TipoProyecto.MetaComunidad)).Select(proyecto => proyecto.ProyectoID).FirstOrDefault();
-
-            if (idMetaProyecto is Guid)
-            {
-                return (Guid)idMetaProyecto;
-            }
-            return Guid.Empty;
+            return mEntityContext.Proyecto.Where(proyecto => proyecto.TipoProyecto.Equals((short)TipoProyecto.MetaComunidad)).Select(proyecto => proyecto.ProyectoID).FirstOrDefault();
         }
 
         /// <summary>
@@ -5856,15 +5563,7 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
         /// <returns>Identificador de la metaorganizaci?n</returns>
         public Guid ObtenerMetaOrganizacionID()
         {
-            //DbCommand sqlSelectMetaProyectoID = ObtenerComando("SELECT OrganizacionID FROM Proyecto WHERE TipoProyecto = 2");
-
-            object idMetaOrganizacion = mEntityContext.Proyecto.Where(proyecto => proyecto.TipoProyecto.Equals((short)TipoProyecto.MetaComunidad)).Select(proyecto => proyecto.OrganizacionID).FirstOrDefault();
-
-            if (idMetaOrganizacion is Guid)
-            {
-                return (Guid)idMetaOrganizacion;
-            }
-            return Guid.Empty;
+            return mEntityContext.Proyecto.Where(proyecto => proyecto.TipoProyecto.Equals((short)TipoProyecto.MetaComunidad)).Select(proyecto => proyecto.OrganizacionID).FirstOrDefault();
         }
 
         /// <summary>
@@ -5882,10 +5581,7 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
         /// <returns>Lista de strings</returns>
         public List<string> ObtenerUrlPropiasProyectosPublicos()
         {
-            List<string> listaUrlPropia = new List<string>();
-            listaUrlPropia = mEntityContext.Proyecto.Where(proyecto => proyecto.URLPropia != null && (proyecto.TipoAcceso.Equals((short)TipoAcceso.Publico) || proyecto.TipoAcceso.Equals((short)TipoAcceso.Restringido))).Select(proyecto => proyecto.URLPropia).Distinct().ToList();
-
-            return listaUrlPropia;
+            return mEntityContext.Proyecto.Where(proyecto => proyecto.URLPropia != null && (proyecto.TipoAcceso.Equals((short)TipoAcceso.Publico) || proyecto.TipoAcceso.Equals((short)TipoAcceso.Restringido))).Select(proyecto => proyecto.URLPropia).Distinct().ToList();
         }
 
         /// <summary>
@@ -5896,18 +5592,9 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
         public DataWrapperProyecto ObtenerContadoresProyecto(Guid pProyectoID)
         {
             DataWrapperProyecto proyectoDataWrapper = new DataWrapperProyecto();
-            List<Proyecto> proyectos = mEntityContext.Proyecto.Where(proy => proy.ProyectoID.Equals(pProyectoID)).Select(proy => proy).ToList();
-            //foreach( var proyect in proyectos.ToList())
-            //{
-            //    Proyecto proyecto = new Proyecto();
-            //    proyecto.NumeroRecursos = proyect.NumeroRecursos;
-            //    proyecto.NumeroMiembros = proyect.NumeroMiembros;
-            //    proyecto.NumeroOrgRegistradas = proyect.NumeroOrgRegistradas;
-            //    proyecto.NumeroPreguntas = proyect.NumeroPreguntas;
-            //    proyecto.NumeroDebates = proyect.NumeroDebates;
-            //    proyectoDataWrapper.ListaProyecto.Add(proyecto);
-            //}
-            proyectoDataWrapper.ListaProyecto = proyectos;
+            
+            proyectoDataWrapper.ListaProyecto = mEntityContext.Proyecto.Where(proy => proy.ProyectoID.Equals(pProyectoID)).Select(proy => proy).ToList();
+            
             return proyectoDataWrapper;
         }
 
@@ -5942,6 +5629,7 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
             }
             return tags;
         }
+
         /// <summary>
         /// Obtiene los datos de una carga a partir de su ID
         /// </summary>
@@ -5960,15 +5648,15 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
         /// <returns></returns>
         public CargaPaquete ObtenerDatosPaquete(Guid pPaqueteID)
         {
-            return mEntityContext.CargaPaquete.Where(item => item.PaqueteID.Equals(pPaqueteID)).FirstOrDefault();            
+            return mEntityContext.CargaPaquete.Where(item => item.PaqueteID.Equals(pPaqueteID)).FirstOrDefault();
         }
 
         /// <summary>
-        /// Obtiene la ontolog�a a la que pertenece una carga masiva a partir
+        /// Obtiene la ontolog?a a la que pertenece una carga masiva a partir
         /// del id de la carga
         /// </summary>
-        /// <param name="pCargaId">Identificador de la carga de la cual queremos obtener la ontolog�a</param>
-        /// <returns>La ontolog�a a la que pertenece la carga</returns>
+        /// <param name="pCargaId">Identificador de la carga de la cual queremos obtener la ontolog?a</param>
+        /// <returns>La ontolog?a a la que pertenece la carga</returns>
         public string ObtenerOntologiaCarga(Guid pCargaId)
         {
             return mEntityContext.Carga.Where(item => item.CargaID.Equals(pCargaId)).Select(item => item.Ontologia).FirstOrDefault();
@@ -5981,16 +5669,7 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
         /// <returns>Si encuentra el proyectoID sino Guid.empty</returns>
         public Guid ObtenerProyectoIDPorBaseRecursos(Guid pBaseRecursosID)
         {
-            object resultado = mEntityContext.BaseRecursosProyecto.Where(baseRecursoProyecto => baseRecursoProyecto.BaseRecursosID.Equals(pBaseRecursosID)).Select(baseRecursoProyecto => baseRecursoProyecto.ProyectoID).FirstOrDefault();
-
-            if (resultado != null)
-            {
-                return (Guid)resultado;
-            }
-            else
-            {
-                return Guid.Empty;
-            }
+            return mEntityContext.BaseRecursosProyecto.Where(baseRecursoProyecto => baseRecursoProyecto.BaseRecursosID.Equals(pBaseRecursosID)).Select(baseRecursoProyecto => baseRecursoProyecto.ProyectoID).FirstOrDefault();
         }
 
         /// <summary>
@@ -6015,24 +5694,20 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
                 OrganizacionID = objeto.Perfil.OrganizacionID
             }).ToList();
 
-
-            /* "SELECT Identidad.ProyectoID, Identidad.IdentidadID, Perfil.OrganizacionID FROM BaseRecursosProyecto inner join Identidad on Identidad.ProyectoID = BaseRecursosProyecto.ProyectoID inner join Perfil on Identidad.PerfilID = Perfil.PerfilID WHERE Identidad.FechaBaja IS NULL AND Perfil.PersonaID = " + IBD.GuidValor(pPersonaID) + " AND BaseRecursosProyecto.BaseRecursosID = " + IBD.GuidValor(pBaseRecursosID);*/
-
             pProyectoID = Guid.Empty;
             pIdentidadID = Guid.Empty;
             pOrganizacionID = Guid.Empty;
 
             if (datos.Count > 0)
             {
-                pProyectoID = datos.First().ProyectoID;
-                pIdentidadID = datos.First().IdentidadID;
+                pProyectoID = datos[0].ProyectoID;
+                pIdentidadID = datos[0].IdentidadID;
 
-                if (datos.First().OrganizacionID.HasValue)
+                if (datos[0].OrganizacionID.HasValue)
                 {
-                    pOrganizacionID = datos.First().OrganizacionID.Value;
+                    pOrganizacionID = datos[0].OrganizacionID.Value;
                 }
             }
-
         }
 
         /// <summary>
@@ -6042,15 +5717,7 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
         /// <returns>Base de recursos ID</returns>
         public Guid ObtenerBaseRecursosProyectoPorProyectoID(Guid pProyectoID)
         {
-            Guid proyectoID = Guid.Empty;
-
-            List<Guid> listaProyectoID = mEntityContext.BaseRecursosProyecto.Where(baseRecurso => baseRecurso.ProyectoID.Equals(pProyectoID)).Select(baseRecurso => baseRecurso.BaseRecursosID).ToList();
-            if (listaProyectoID.Count > 0)
-            {
-                proyectoID = listaProyectoID.First();
-            }
-
-            return proyectoID;
+           return mEntityContext.BaseRecursosProyecto.Where(baseRecurso => baseRecurso.ProyectoID.Equals(pProyectoID)).Select(baseRecurso => baseRecurso.BaseRecursosID).FirstOrDefault();
         }
 
         /// <summary>
@@ -6068,44 +5735,13 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
         }
 
         /// <summary>
-        /// Obtiene los eventos de acciones disponibles en un proyecto
-        /// </summary>
-        /// <param name="pProyectoID">Clave del proyecto</param>
-        /// <returns>Diccionario de eventos del Proyecto</returns>
-        //public Dictionary<TipoProyectoEventoAccion, string> ObtenerEventosAccionProyectoPorProyectoID(Guid pProyectoID)
-        //{
-
-        //    Dictionary<TipoProyectoEventoAccion, string> listaEventos = new Dictionary<TipoProyectoEventoAccion, string>();
-        //    ProyectoDS proyectoDS = new ProyectoDS();
-        //    proyectoDS.EnforceConstraints = false;
-
-        //    DbCommand commandsqlSelectEventosAccionProyectoPorProyectoID = ObtenerComando(sqlSelectEventosAccionProyectoPorProyectoID);
-        //    AgregarParametro(commandsqlSelectEventosAccionProyectoPorProyectoID, IBD.ToParam("proyectoID"), IBD.TipoGuidToString(DbType.Guid), IBD.ValorDeGuid(pProyectoID));
-        //    CargarDataSet(commandsqlSelectEventosAccionProyectoPorProyectoID, proyectoDS, "ProyectoEventoAccion");
-        //    if (proyectoDS.ProyectoEventoAccion.Rows.Count > 0)
-        //    {
-        //        foreach (ProyectoDS.ProyectoEventoAccionRow filaEvento in proyectoDS.ProyectoEventoAccion.Rows)
-        //        {
-        //            listaEventos.Add((TipoProyectoEventoAccion)filaEvento.Evento, filaEvento.AccionJS);
-        //        }
-        //    }
-
-        //    proyectoDS.Dispose();
-        //    return (listaEventos);
-        //}
-
-        /// <summary>
         /// Obtiene los nosmbres cortos de todas las comunidades de los tipos especificados
         /// </summary>
         /// <param name="pListaTipos">Lista de tipos de comunidades</param>
         /// <returns>Nombres cortos</returns>
         public List<string> ObtenerNombresCortosProyectosPorTipo(List<TipoProyecto> pListaTipos)
         {
-            List<string> listaNombresCortos = new List<string>();
-
-            listaNombresCortos = mEntityContext.Proyecto.Where(proyecto => pListaTipos.Contains((TipoProyecto)proyecto.TipoProyecto)).Select(proyecto => proyecto.NombreCorto).Distinct().ToList();
-
-            return listaNombresCortos;
+            return mEntityContext.Proyecto.Where(proyecto => pListaTipos.Contains((TipoProyecto)proyecto.TipoProyecto)).Select(proyecto => proyecto.NombreCorto).Distinct().ToList();
         }
 
         /// <summary>
@@ -6116,8 +5752,7 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
         {
             Dictionary<Guid, bool> NewsletterProyecto = new Dictionary<Guid, bool>();
 
-            //Proyecto
-            //DbCommand commandSQL = ObtenerComando("Select ProyectoID,Valor FROM parametroproyecto WHERE Parametro = '" + Es.Riam.Gnoss.AD.Parametro.ParametroAD.RecibirNewsletterDefecto + "'");
+            //Proyecto            
             var resultsProyecto = mEntityContext.ParametroProyecto.Where(parametroProyecto => parametroProyecto.Parametro.Equals(Parametro.ParametroAD.RecibirNewsletterDefecto)).Select(parametroProyecto => new { parametroProyecto.ProyectoID, parametroProyecto.Valor }).ToList();
 
             foreach (var resultProyecto in resultsProyecto)
@@ -6128,7 +5763,6 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
             }
 
             //Ecosistema
-            //DbCommand commandSQLEcosistema = ObtenerComando("Select Valor FROM parametroaplicacion WHERE Parametro = '" + Es.Riam.Gnoss.AD.ParametroAplicacion.TiposParametrosAplicacion.RecibirNewsletterDefecto + "'");
             List<string> resultsEcosistema = mEntityContext.ParametroAplicacion.Where(parametroAplicacion => parametroAplicacion.Parametro.Equals(ParametroAplicacion.TiposParametrosAplicacion.RecibirNewsletterDefecto)).Select(parametro => parametro.Valor).ToList();
 
             foreach (string resultEcosistema in resultsEcosistema)
@@ -6139,7 +5773,6 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
 
             return NewsletterProyecto;
         }
-
 
         #region Datos para Twitter
 
@@ -6157,20 +5790,19 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
             AgregarParametro(commandsqlActualizarTokensTwitterProyecto, IBD.ToParam("TokenTwitter"), DbType.String, pTokenTwitter);
             AgregarParametro(commandsqlActualizarTokensTwitterProyecto, IBD.ToParam("TokenSecretoTwitter"), DbType.String, pTokenSecretoTwitter);
 
-            int i = ActualizarBaseDeDatos(commandsqlActualizarTokensTwitterProyecto);
+            ActualizarBaseDeDatos(commandsqlActualizarTokensTwitterProyecto);
         }
 
         #endregion
 
-        #region Documentaci�n
+        #region Documentaci?n
 
         /// <summary>
         /// Actualiza el n?mero de recursos, preguntas y debates de un proyecto
         /// </summary>
         /// <param name="pProyectoID">Identificador del proyecto</param>
         public void ActulizarNumeroDocumentacion(Guid pProyectoID)
-        {
-            //Lo meto en un try/catch porque a veces falla en pruebas por la lentitud de este entorno, adem?s si falla se recalcular? al subir otro recurso o cada vez que sea pasado el servicio de optimizaci?n.
+        {            
             try
             {
                 var comun = mEntityContext.Documento.Join(mEntityContext.DocumentoWebVinBaseRecursos, documento => documento.DocumentoID, docWebVin => docWebVin.DocumentoID, (documento, docWebVin) => new
@@ -6198,7 +5830,6 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
                     proyecto.NumeroPreguntas = numPre;
                     proyecto.NumeroDebates = numDeb;
                 }
-
 
                 #region ProyectoPerfilNumElem
 
@@ -6231,16 +5862,15 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
                     newProyectoPerfilNumElem.ProyectoID = elementoInsertar.ProyectoID;
                     newProyectoPerfilNumElem.NumRecursos = elementoInsertar.Documentos;
 
-                    //ActualizarBaseDeDatos(comandoUpdateProyPerfilNumElem);
                     mEntityContext.ProyectoPerfilNumElem.Add(newProyectoPerfilNumElem);
                     mEntityContext.SaveChanges();
                 }
-                #endregion
 
+                #endregion
             }
             catch (Exception e)
             {
-                mLoggingService.GuardarLogError(e);
+                mLoggingService.GuardarLogError(e,mlogger);
             }
         }
 
@@ -6251,13 +5881,12 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
         /// <returns></returns>
         public TipoProyecto ObtenerTipoProyecto(Guid pProyectoID)
         {
-            DbCommand commandsqlObtenerTipoProyecto = ObtenerComando("SELECT Proyecto.TipoProyecto FROM Proyecto WHERE Proyecto.ProyectoID = " + IBD.ToParam("ProyectoID"));
 
             short tipoProyecto = 0;
 
             object resultado = mEntityContext.Proyecto.Where(proyecto => proyecto.ProyectoID.Equals(pProyectoID)).Select(proyecto => proyecto.TipoProyecto).FirstOrDefault();
 
-            if ((resultado != null) && (resultado is short))
+            if (resultado != null)
             {
                 tipoProyecto = (short)resultado;
             }
@@ -6309,9 +5938,11 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
                 ProyectoID = objetoAgrup.ProyectoID,
                 Nombre = objetoAgrup.Nombre,
                 Administrado = g.ToList().Count > 0 ? 0 : 1
-            }).ToList().Select(objeto => new ProyectoConAdministrado { OrganizacionID = objeto.OrganizacionID, ProyectoID = objeto.ProyectoID, Nombre = objeto.Nombre, Administrado = objeto.Administrado }).Distinct().ToList();
+            }).Select(objeto => new ProyectoConAdministrado { OrganizacionID = objeto.OrganizacionID, ProyectoID = objeto.ProyectoID, Nombre = objeto.Nombre, Administrado = objeto.Administrado }).Distinct().ToList();
+
             dataWrapperProyecto.ListaProyectoConAdministrado = proyectos;
-            return (dataWrapperProyecto);
+            
+            return dataWrapperProyecto;
         }
 
 
@@ -6333,7 +5964,7 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
             }).Distinct();
 
 
-            List<UsuarioAdministradorComunidad> administradoresProyecto = administradoresProyectoSQL3.ToList().Select(x => new UsuarioAdministradorComunidad
+            List<UsuarioAdministradorComunidad> administradoresProyecto = administradoresProyectoSQL3.Select(x => new UsuarioAdministradorComunidad
             {
                 OrganizacionID = x.OrganizacionID,
                 ProyectoID = x.ProyectoID,
@@ -6354,15 +5985,8 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
         /// <returns></returns>
         public EstadoProyecto ObtenerEstadoProyecto(Guid pProyectoID)
         {
+            short estado = mEntityContext.Proyecto.Where(proyecto => proyecto.ProyectoID.Equals(pProyectoID)).Select(proyecto => proyecto.Estado).FirstOrDefault();
 
-            short estado = 0;
-
-            object resultado = mEntityContext.Proyecto.Where(proyecto => proyecto.ProyectoID.Equals(pProyectoID)).Select(proyecto => proyecto.Estado).FirstOrDefault();
-
-            if ((resultado != null) && (resultado is short))
-            {
-                estado = (short)resultado;
-            }
             return (EstadoProyecto)estado;
         }
 
@@ -6373,15 +5997,8 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
         /// <returns></returns>
         public TipoAcceso ObtenerTipoAccesoProyecto(Guid pProyectoID)
         {
-
-            short tipoAcceso = 0;
-
-            object resultado = mEntityContext.Proyecto.Where(proyecto => proyecto.ProyectoID.Equals(pProyectoID)).Select(proyecto => proyecto.TipoAcceso).FirstOrDefault();
-
-            if ((resultado != null) && (resultado is short))
-            {
-                tipoAcceso = (short)resultado;
-            }
+            short tipoAcceso = mEntityContext.Proyecto.Where(proyecto => proyecto.ProyectoID.Equals(pProyectoID)).Select(proyecto => proyecto.TipoAcceso).FirstOrDefault();
+            
             return (TipoAcceso)tipoAcceso;
         }
 
@@ -6413,8 +6030,7 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
         /// <returns>El rol de usuario en un determinado proyecto</returns>
         public TipoRolUsuario ObtenerRolUsuarioEnProyecto(Guid pProyectoID, Guid pUsuarioID)
         {
-
-            TipoRolUsuario tipoRolUsuario = TipoRolUsuario.Usuario;
+            TipoRolUsuario tipoRolUsuario;
 
             var adminProyecto = mEntityContext.AdministradorProyecto.Where(adminProy => adminProy.ProyectoID.Equals(pProyectoID) && adminProy.UsuarioID.Equals(pUsuarioID)).Select(adminProy => new
             {
@@ -6445,8 +6061,7 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
         /// <returns>Lista con los tipos de documentos permitidos para el rol</returns>
         public List<TiposDocumentacion> ObtenerTiposDocumentosPermitidosUsuarioEnProyectoPorSuID(Guid pProyectoID, Guid pUsuarioID)
         {
-            List<TiposDocumentacion> listaTiposDoc = new List<TiposDocumentacion>();
-            TipoRolUsuario tipoRolUsuario = TipoRolUsuario.Usuario;
+            TipoRolUsuario tipoRolUsuario;
 
             var adminProyecto = mEntityContext.AdministradorProyecto.Where(adminProy => adminProy.ProyectoID.Equals(pProyectoID) && adminProy.UsuarioID.Equals(pUsuarioID)).Select(adminProy => new
             {
@@ -6509,22 +6124,31 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
         public DataWrapperProyecto ObtenerConfiguracionSemanticaExtraDeProyecto(Guid pProyectoID)
         {
             DataWrapperProyecto dataWrapperProyDS = new DataWrapperProyecto();
-            //this.sqlSelectProyectoConfigExtraSem = "SELECT " + IBD.CargarGuid("ProyectoConfigExtraSem.ProyectoID") + ", ProyectoConfigExtraSem.UrlOntologia, ProyectoConfigExtraSem.SourceTesSem, ProyectoConfigExtraSem.Tipo, ProyectoConfigExtraSem.Nombre, ProyectoConfigExtraSem.Idiomas, ProyectoConfigExtraSem.PrefijoTesSem, ProyectoConfigExtraSem.Editable FROM ProyectoConfigExtraSem";
             List<ProyectoConfigExtraSem> listProyectoConfigExtraSem = mEntityContext.ProyectoConfigExtraSem.Where(proyectoConfigExtr => proyectoConfigExtr.ProyectoID.Equals(pProyectoID)).ToList();
             dataWrapperProyDS.ListaProyectoConfigExtraSem = listProyectoConfigExtraSem;
             return dataWrapperProyDS;
         }
 
-        /// <summary>
-        /// Indica si el recurso es de un Tipo de recursos que se encuentra en la lista de recursos que no se publican en la actividad reciente
-        /// </summary>
-        /// <param name="pRecursoID">ID del recurso</param>
-        /// <param name="pProyectoID">ID del proyecto</param>
-        /// <returns></returns>
-        public bool ComprobarSiRecursoSePublicaEnActividadReciente(Guid pRecursoID, Guid pProyectoID)
-        {
-            //TO-DO Juan: Comprobar el proyecto y mejorar la funcionalidad. Esto solo funciona
+		/// <summary>
+		/// Obtiene los tesauros sem?nticos configurados para edici?n.
+		/// </summary>
+		/// <returns>DataSet de ProyectoDS con la tabla 'ProyectoConfigExtraSem' cargada para un proyecto</returns>
+		public DataWrapperProyecto ObtenerConfiguracionSemanticaExtraDeProyectos()
+		{
+			DataWrapperProyecto dataWrapperProyDS = new DataWrapperProyecto();
+			List<ProyectoConfigExtraSem> listProyectoConfigExtraSem = mEntityContext.ProyectoConfigExtraSem.ToList();
+			dataWrapperProyDS.ListaProyectoConfigExtraSem = listProyectoConfigExtraSem;
+			return dataWrapperProyDS;
+		}
 
+		/// <summary>
+		/// Indica si el recurso es de un Tipo de recursos que se encuentra en la lista de recursos que no se publican en la actividad reciente
+		/// </summary>
+		/// <param name="pRecursoID">ID del recurso</param>
+		/// <param name="pProyectoID">ID del proyecto</param>
+		/// <returns></returns>
+		public bool ComprobarSiRecursoSePublicaEnActividadReciente(Guid pRecursoID, Guid pProyectoID)
+        {
             Guid? ontologiaID = mEntityContext.Documento.Where(Documento => Documento.DocumentoID == pRecursoID && Documento.ElementoVinculadoID.HasValue).Select(Documento => Documento.ElementoVinculadoID).FirstOrDefault();
 
             if (ontologiaID.HasValue)
@@ -6546,8 +6170,7 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
         public DataWrapperProyecto ObtenerTiposRecursosNoActividadReciente(Guid pProyectoID)
         {
             DataWrapperProyecto dataWrapperProyectoDS = new DataWrapperProyecto();
-            //this.sqlSelectProyTipoRecNoActivReciente = "SELECT " + IBD.CargarGuid("ProyectoID") + ", TipoRecurso, OntologiasID FROM ProyTipoRecNoActivReciente";
-
+           
             List<ProyTipoRecNoActivReciente> listaProyTipoRecNoActivReciente = mEntityContext.ProyTipoRecNoActivReciente.Where(proyTipoNoRec => proyTipoNoRec.ProyectoID.Equals(pProyectoID)).ToList();
             dataWrapperProyectoDS.ListaProyTipoRecNoActivReciente = listaProyTipoRecNoActivReciente;
             return dataWrapperProyectoDS;
@@ -6560,7 +6183,6 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
         /// <returns>Imagen por defecto seg?n el tipo de imagen por defecto</returns>
         public Dictionary<short, Dictionary<Guid, string>> ObtenerTipoDocImagenPorDefecto(Guid pProyectoID)
         {
-            //this.sqlSelectTipoDocImagenPorDefecto = "SELECT " + IBD.CargarGuid("ProyectoID") + ", TipoRecurso, " + IBD.CargarGuid("OntologiaID") + ", UrlImagen FROM TipoDocImagenPorDefecto";
             DataSet dataSet = new DataSet();
 
             DbCommand comandoSel = ObtenerComando(sqlSelectTipoDocImagenPorDefecto + " WHERE ProyectoID=" + IBD.GuidValor(pProyectoID));
@@ -6570,12 +6192,12 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
 
             foreach (var fila in seleccion)
             {
-                if (!listaTipo.ContainsKey((short)fila.TipoRecurso))
+                if (!listaTipo.ContainsKey(fila.TipoRecurso))
                 {
-                    listaTipo.Add((short)fila.TipoRecurso, new Dictionary<Guid, string>());
+                    listaTipo.Add(fila.TipoRecurso, new Dictionary<Guid, string>());
                 }
 
-                listaTipo[(short)fila.TipoRecurso].Add((Guid)fila.OntologiaID, (string)fila.UrlImagen);
+                listaTipo[fila.TipoRecurso].Add(fila.OntologiaID, fila.UrlImagen);
             }
 
             dataSet.Dispose();
@@ -6603,14 +6225,10 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
         /// </summary>
         /// <param name="pProyectoID">Proyecto del que queremos obtener sus administradores</param>
         /// <returns>Lista con las identidades de los administradores de un proyecto</returns>
-        /// 
-            //TODO Realizar con IdentidadDS
+        ///            
         public List<Guid> ObtenerListaIdentidadesAdministradoresPorProyecto(Guid pProyectoID)
         {
-            List<Guid> listaAdministradores = new List<Guid>();
-            //string AdministradoresPorProyecto = "SELECT " + IBD.CargarGuid("Identidad.IdentidadID") + " FROM Identidad INNER JOIN ProyectoUsuarioIdentidad ON (ProyectoUsuarioIdentidad.IdentidadID=Identidad.IdentidadID) INNER JOIN AdministradorProyecto ON (AdministradorProyecto.UsuarioID = ProyectoUsuarioIdentidad.UsuarioID) AND (AdministradorProyecto.ProyectoID = Identidad.ProyectoID) WHERE Identidad.ProyectoID= " + IBD.GuidParamValor("proyectoID") + " AND AdministradorProyecto.Tipo=" + IBD.ToParam("tipoAdmin") + " AND Identidad.FechaBaja IS NULL AND Identidad.FechaExpulsion IS NULL";
-
-            listaAdministradores = mEntityContext.Identidad.Join(mEntityContext.ProyectoUsuarioIdentidad, identidad => identidad.IdentidadID, proyectoUsuarioIdentidad => proyectoUsuarioIdentidad.IdentidadID, (identidad, proyectoUsuarioIdentidad) => new
+            List<Guid> listaAdministradores = mEntityContext.Identidad.Join(mEntityContext.ProyectoUsuarioIdentidad, identidad => identidad.IdentidadID, proyectoUsuarioIdentidad => proyectoUsuarioIdentidad.IdentidadID, (identidad, proyectoUsuarioIdentidad) => new
             {
                 Identidad = identidad,
                 ProyectoUsuarioIdentidad = proyectoUsuarioIdentidad
@@ -6631,12 +6249,9 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
         /// </summary>
         /// <param name="pProyectoID">Proyecto del que queremos obtener sus supervisores</param>
         /// <returns>Lista con las identidades de los supervisores de un proyecto</returns>
-         //TODO Realizar con IdentidadDS
         public List<Guid> ObtenerListaIdentidadesSupervisoresPorProyecto(Guid pProyectoID)
         {
-            List<Guid> listaSupervisores = new List<Guid>();
-
-            listaSupervisores = mEntityContext.Identidad.Join(mEntityContext.Perfil, identidad => identidad.PerfilID, perfil => perfil.PerfilID, (identidad, perfil) => new
+            List<Guid> listaSupervisores = mEntityContext.Identidad.Join(mEntityContext.Perfil, identidad => identidad.PerfilID, perfil => perfil.PerfilID, (identidad, perfil) => new
             {
                 Idenitdad = identidad,
                 Perfil = perfil
@@ -6671,19 +6286,8 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
         /// <returns>Dataset de proyectos</returns>
         public DataWrapperProyecto ObtenerNombresProyectosAdministradosPorUsuarioID(Guid pUsuarioID, Guid pPerfilID)
         {
-            ////TODO
             DataWrapperProyecto dataWrapperProyecto = new DataWrapperProyecto();
-            //ProyectoDS proyectoDS = new ProyectoDS();
-
-            //Lo ponemos porque solo cojemos el campo "Nombre"
-            //proyectoDS.EnforceConstraints = false;
-
-            //Proyecto
-            //DbCommand commandsqlSelectProyectoPorAdministradorID = ObtenerComando(sqlSelectProyectoPorAdministradorID);
-            //AgregarParametro(commandsqlSelectProyectoPorAdministradorID, IBD.ToParam("usuarioID"), IBD.TipoGuidToString(DbType.Guid), IBD.ValorDeGuid(pUsuarioID));
-            //AgregarParametro(commandsqlSelectProyectoPorAdministradorID, IBD.ToParam("perfilID"), IBD.TipoGuidToString(DbType.Guid), IBD.ValorDeGuid(pPerfilID));
-            //CargarDataSet(commandsqlSelectProyectoPorAdministradorID, proyectoDS, "Proyecto");
-            //Lo ponemos porque solo cojemos el campo "Nombre"
+            
             List<Proyecto> listaProyectos = mEntityContext.Proyecto.Join(mEntityContext.AdministradorProyecto, proy => proy.ProyectoID, adminProy => adminProy.ProyectoID, (proy, adminProy) => new
             {
                 NombreProy = proy.Nombre,
@@ -6699,11 +6303,11 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
                     UsuarioID = proyAdminProy.UsuarioID,
                     PerfilID = identidad.PerfilID
                 }
-                ).Where(proyAdminProy => ((proyAdminProy.TipoAcceso.Equals((short)TipoAcceso.Privado) || proyAdminProy.TipoAcceso.Equals((short)TipoAcceso.Reservado)) && proyAdminProy.UsuarioID.Equals(pUsuarioID)) && proyAdminProy.PerfilID.Equals(pPerfilID)).ToList().Select(proyAdminProyIden => new Proyecto { Nombre = proyAdminProyIden.NombreProy }).ToList();
+                ).Where(proyAdminProy => ((proyAdminProy.TipoAcceso.Equals((short)TipoAcceso.Privado) || proyAdminProy.TipoAcceso.Equals((short)TipoAcceso.Reservado)) && proyAdminProy.UsuarioID.Equals(pUsuarioID)) && proyAdminProy.PerfilID.Equals(pPerfilID)).Select(proyAdminProyIden => new Proyecto { Nombre = proyAdminProyIden.NombreProy }).ToList();
 
             dataWrapperProyecto.ListaProyecto = listaProyectos;
 
-            return (dataWrapperProyecto);
+            return dataWrapperProyecto;
         }
 
         /// <summary>
@@ -6749,8 +6353,6 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
         {
             DataWrapperProyecto dataWrapperProyecto = new DataWrapperProyecto();
 
-            //string fromProyecto = " FROM Proyecto INNER JOIN Identidad ON Identidad.ProyectoID = Proyecto.ProyectoID INNER JOIN ProyectoUsuarioIdentidad ON Identidad.IdentidadID = ProyectoUsuarioIdentidad.IdentidadID AND  Identidad.ProyectoID = ProyectoUsuarioIdentidad.ProyectoID INNER JOIN AdministradorProyecto ON ProyectoUsuarioIdentidad.ProyectoID = AdministradorProyecto.ProyectoID AND  ProyectoUsuarioIdentidad.UsuarioID = AdministradorProyecto.UsuarioID ";
-            //string whereProyecto = " WHERE AdministradorProyecto.Tipo = " + (short)TipoRolUsuario.Administrador + " AND Identidad.PerfilID = " + IBD.GuidValor(pPerfilID) + " AND Proyecto.ProyectoID != " + IBD.GuidValor(ProyectoAD.MetaProyecto) + " ";
             List<Proyecto> listaProyectos = mEntityContext.Proyecto.Join(mEntityContext.Identidad, proyecto => proyecto.ProyectoID, identidad => identidad.ProyectoID, (proyecto, identidad) => new
             {
                 Proyecto = proyecto,
@@ -6767,11 +6369,10 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
                 ProyectoUsuarioIdentidad = objeto.ProyectoUsuarioIdentidad,
                 AdministradorProyecto = adminProy
             }).Where(objeto => objeto.AdministradorProyecto.Tipo.Equals((short)TipoRolUsuario.Administrador) && objeto.Identidad.PerfilID.Equals(pPerfilID) && !objeto.Proyecto.ProyectoID.Equals(ProyectoAD.MetaProyecto)).Select(objeto => objeto.Proyecto).ToList();
-            //Proyecto
 
             dataWrapperProyecto.ListaProyecto = listaProyectos;
 
-            return (dataWrapperProyecto);
+            return dataWrapperProyecto;
         }
 
         /// <summary>
@@ -6790,13 +6391,6 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
         /// <returns>True si es el ?nico administrador del proyecto</returns>
         public bool EsUsuarioAdministradorUnicoDeProyecto(Guid pUsuarioID, Guid pProyectoID)
         {
-            //obtenemos una tabla con los proyectos de la q el usuario es admin y el numero de admin de los proyectos
-            //string sql = "SELECT COUNT(*) NumAdmin,AdministradorProyecto.Proyectoid ";
-            //sql += " FROM AdministradorProyecto ";
-            //sql += " where proyectoid in ";
-            //sql += " (select ProyectoID from AdministradorProyecto WHERE UsuarioID = " + IBD.GuidValor(pUsuarioID) + "   AND Tipo=" + (short)TipoRolUsuario.Administrador + ")";
-            //sql += " group by ProyectoID ";
-
             List<Guid> listaGuidAdmin = mEntityContext.AdministradorProyecto.Where(adminProy => adminProy.UsuarioID.Equals(pUsuarioID) && adminProy.Tipo.Equals((short)TipoRolUsuario.Administrador)).Select(adminProy => adminProy.ProyectoID).ToList();
 
             var listaAdministradoresProyecto = mEntityContext.AdministradorProyecto.Where(adminProy => listaGuidAdmin.Contains(adminProy.ProyectoID)).GroupBy(adminProy => adminProy.ProyectoID, adminProy => adminProy.ProyectoID, (agrupacion, g) => new
@@ -6812,7 +6406,7 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
 
             if (listaAdministradoresProyecto != null && listaAdministradoresProyecto.Count == 1)
             {
-                return listaAdministradoresProyecto.First().NumAdmin == 1;
+                return listaAdministradoresProyecto[0].NumAdmin == 1;
             }
             else
             {
@@ -6828,9 +6422,6 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
         public DataWrapperProyecto ObtenerProyectosAdministradosPorOrganizacionID(Guid pOrganizacionID)
         {
             DataWrapperProyecto dataWrapperProyecto = new DataWrapperProyecto();
-
-            //string fromProyecto = " FROM Proyecto INNER JOIN Identidad ON Identidad.ProyectoID = Proyecto.ProyectoID INNER JOIN Perfil ON Identidad.PerfilID = Perfil.PerfilID INNER JOIN ProyectoUsuarioIdentidad ON Identidad.IdentidadID = ProyectoUsuarioIdentidad.IdentidadID AND  Identidad.ProyectoID = ProyectoUsuarioIdentidad.ProyectoID INNER JOIN AdministradorProyecto ON ProyectoUsuarioIdentidad.ProyectoID = AdministradorProyecto.ProyectoID AND  ProyectoUsuarioIdentidad.UsuarioID = AdministradorProyecto.UsuarioID ";
-            //string whereProyecto = " WHERE AdministradorProyecto.Tipo = " + (short)TipoRolUsuario.Administrador + " AND Perfil.OrganizacionID = " + IBD.GuidValor(pOrganizacionID) + " ";
 
             List<Proyecto> listaProyectosConsulta = mEntityContext.Proyecto.Join(mEntityContext.Identidad, proyecto => proyecto.ProyectoID, identidad => identidad.ProyectoID, (proyecto, identidad) => new
             {
@@ -6854,8 +6445,7 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
                 Perfil = objeto.Perfil,
                 ProyectoUsuarioIdentidad = objeto.ProyectoUsuarioIdentidad,
                 AdministradorProyecto = adminProy
-            }).Where(objeto => objeto.AdministradorProyecto.Tipo.Equals((short)TipoRolUsuario.Administrador) && objeto.Perfil.OrganizacionID.Value.Equals(pOrganizacionID)).Select(objeto => objeto.Proyecto).ToList().Distinct().ToList();
-            //Proyecto
+            }).Where(objeto => objeto.AdministradorProyecto.Tipo.Equals((short)TipoRolUsuario.Administrador) && objeto.Perfil.OrganizacionID.Value.Equals(pOrganizacionID)).Select(objeto => objeto.Proyecto).Distinct().ToList();
 
             dataWrapperProyecto.ListaProyecto = listaProyectosConsulta;
 
@@ -6888,7 +6478,7 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
             dataWrapperProyecto.ListaNivelCertificacion = listaNivelCertificacion;
             dataWrapperProyecto.ListaTipoDocDispRolUsuarioProy = listaTipoDocDispRolUsuarioProy;
             dataWrapperProyecto.ListaTipoOntoDispRolUsuarioProy = listaTipoOntoDispRolUsuarioProy;
-            return (dataWrapperProyecto);
+            return dataWrapperProyecto;
         }
 
 
@@ -6905,11 +6495,7 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
 
             if (pListaOntologiasID.Count > 0)
             {
-                //string sql = "Select DocumentoID, GrupoID, Editor from DocumentoRolGrupoIdentidades where DocumentoID in (";
-
-
                 var objetoConsulta = mEntityContext.DocumentoRolGrupoIdentidades.Where(documento => pListaOntologiasID.Contains(documento.DocumentoID)).ToList();
-
 
                 foreach (DocumentoRolGrupoIdentidades fila in objetoConsulta)
                 {
@@ -6924,6 +6510,7 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
                     }
                 }
             }
+
             return dicGruposOntologias;
         }
 
@@ -6942,8 +6529,8 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
             DataWrapperProyecto dataWrapperProyecto = new DataWrapperProyecto();
             HashSet<Guid> listaOntologiasDisponibles = new HashSet<Guid>();
             bool primera = true;
+
             //TipoOntoDispRolUsuarioProy
-            // DbCommand commandsqlSelectTipoOntoDispRolUsuarioProy = ObtenerComando(sqlSelectTipoOntoDispRolUsuarioProy + " WHERE ProyectoID=" + IBD.GuidValor(pProyectoID) + " AND TipoOntoDispRolUsuarioProy.RolUsuario >= " + (short)pTipoRol);
             List<TipoOntoDispRolUsuarioProy> listaTipoOntoDispRolUsuarioProy = mEntityContext.TipoOntoDispRolUsuarioProy.Where(tipoOnto => tipoOnto.ProyectoID.Equals(pProyectoID) && tipoOnto.RolUsuario >= (short)pTipoRol).ToList();
             dataWrapperProyecto.ListaTipoOntoDispRolUsuarioProy = listaTipoOntoDispRolUsuarioProy;
             if (pOntologiasEcosistema == null)
@@ -6953,8 +6540,6 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
 
             if (pOntologiasEcosistema != null && pOntologiasEcosistema.Count > 0)
             {
-                //commandsqlSelectTipoOntoDispRolUsuarioProy = ObtenerComando(sqlSelectTipoOntoDispRolUsuarioProy + " WHERE");
-
                 foreach (Guid ontologiaID in pOntologiasEcosistema.Keys)
                 {
                     if (!pOntologiasEcosistema[ontologiaID].Equals(pProyectoID))
@@ -6968,13 +6553,10 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
                         {
                             listaTipoOntoDispRolUsuarioProy = listaTipoOntoDispRolUsuarioProy.Union(mEntityContext.TipoOntoDispRolUsuarioProy.Where(tipoOnto => tipoOnto.ProyectoID.Equals(pOntologiasEcosistema[ontologiaID]) && tipoOnto.OntologiaID.Equals(ontologiaID) && tipoOnto.RolUsuario >= (short)pTipoRol)).ToList();
                         }
-                        //commandsqlSelectTipoOntoDispRolUsuarioProy.CommandText += " (ProyectoID=" + IBD.GuidValor(pOntologiasEcosistema[ontologiaID]) + " AND OntologiaID=" + IBD.GuidValor(ontologiaID) + " AND TipoOntoDispRolUsuarioProy.RolUsuario >= " + (short)pTipoRol + ") OR";
                     }
                 }
 
-                //commandsqlSelectTipoOntoDispRolUsuarioProy.CommandText = commandsqlSelectTipoOntoDispRolUsuarioProy.CommandText.Substring(0, commandsqlSelectTipoOntoDispRolUsuarioProy.CommandText.Length - 3);
                 dataWrapperProyecto.ListaTipoOntoDispRolUsuarioProy = dataWrapperProyecto.ListaTipoOntoDispRolUsuarioProy.Union(listaTipoOntoDispRolUsuarioProy).ToList();
-                //CargarDataSet(commandsqlSelectTipoOntoDispRolUsuarioProy, dataWrapperProyecto, "TipoOntoDispRolUsuarioProy");
             }
 
             //rellenar lista
@@ -6982,22 +6564,16 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
             {
                 listaOntologiasDisponibles.Add(fila.OntologiaID);
             }
-
-            string whereDocumentoID = "";
-            if (pDocumentoID.HasValue)
-            {
-                whereDocumentoID = $"and Documento.DocumentoID = {IBD.GuidValor(pDocumentoID.Value)}";
-            }
-
+            
             StringBuilder sb = new StringBuilder();
             string whereDocumento = "";
-            List<Guid> listaGuids = new List<Guid>();
+            List<Guid> listaGuids;
             if (pDocumentoID.HasValue)
-            {                
+            {
                 List<Guid> listaDocumentosTotalesDisponibles = mEntityContext.Documento.JoinDocumentoWebVinBaseRecursos().JoinBaseRecursosProyecto().Where(item => item.BaseRecursosProyecto.ProyectoID.Equals(pProyectoID) && item.Documento.Tipo == 7 && !item.Documento.Eliminado && item.Documento.DocumentoID.Equals(pDocumentoID.Value)).Select(item => item.Documento.DocumentoID).ToList();
 
                 listaGuids = mEntityContext.DocumentoRolGrupoIdentidades.Join(mEntityContext.GrupoIdentidadesParticipacion, documentoRolGrupoIdentidades => documentoRolGrupoIdentidades.GrupoID, grupoIdentidadesParticipacion => grupoIdentidadesParticipacion.GrupoID, (documentoRolGrupoIdentidades, grupoIdentidadesParticipacion) => new
-                {                    
+                {
                     DocumentoRolGrupoIdentidades = documentoRolGrupoIdentidades,
                     GrupoIdentidadesParticipacion = grupoIdentidadesParticipacion
                 }).Where(item => (item.GrupoIdentidadesParticipacion.IdentidadID.Equals(pIdentidadEnProyID) || item.GrupoIdentidadesParticipacion.IdentidadID.Equals(pIdentidadEnMyGnossID)) && listaDocumentosTotalesDisponibles.Contains(item.DocumentoRolGrupoIdentidades.DocumentoID)).Select(item => item.DocumentoRolGrupoIdentidades.DocumentoID).ToList();
@@ -7100,17 +6676,11 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
                     ).ToList();
                 }
             }
-
-            //Obtengo las ontolog?as disponibles por grupo
-
-
-
+            
             foreach (Guid id in listaGuids)
             {
                 listaOntologiasDisponibles.Add(id);
             }
-
-
 
             return listaOntologiasDisponibles.ToList();
         }
@@ -7122,8 +6692,8 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
         public Dictionary<Guid, Guid> ObtenerOntologiasEcosistema()
         {
             Dictionary<Guid, Guid> listaOntologias = new Dictionary<Guid, Guid>();
-            //Obtengo las ontolog?as disponibles para todo el entorno:
-            //DbCommand commandsqlSelectTipoOntoDispRolUsuarioProy = ObtenerComando("SELECT DocumentoID, ProyectoID FROM Documento WHERE Visibilidad=1 AND Tipo=" + (short)TiposDocumentacion.Ontologia + " AND Eliminado=0");
+            
+            //Obtengo las ontolog?as disponibles:
             var resultadoConsulta = mEntityContext.Documento.Where(documento => documento.Visibilidad == 1 && documento.Tipo.Equals((short)TiposDocumentacion.Ontologia) && documento.Eliminado.Equals(false)).Select(documento => new { documento.DocumentoID, documento.ProyectoID }).ToList();
 
             foreach (var fila in resultadoConsulta)
@@ -7134,45 +6704,8 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
                 listaOntologias.Add(documentoID, proyectoID);
             }
 
-
             return listaOntologias;
         }
-
-        ///// <summary>
-        ///// Obtiene las ontolog?as permitidas para un rol de usuario en un determinado proyecto
-        ///// </summary>
-        ///// <param name="pProyectoID">ID de proyecto</param>
-        ///// <returns>DataSet con las ontolog?as permitidas para un rol de usuario en un determinado proyecto cargadas</returns>
-        //public ProyectoDS ObtenerOntologiasDisponiblesProyecto(Guid pProyectoID)
-        //{
-        //    ProyectoDS proyectoDS = new ProyectoDS();
-
-        //    //TipoOntoDispRolUsuarioProy
-        //    DbCommand commandsqlSelectTipoOntoDispRolUsuarioProy = ObtenerComando(sqlSelectTipoOntoDispRolUsuarioProy + " WHERE ProyectoID=" + IBD.GuidValor(pProyectoID));
-        //    CargarDataSet(commandsqlSelectTipoOntoDispRolUsuarioProy, proyectoDS, "TipoOntoDispRolUsuarioProy");
-
-        //    //Obtengo las ontologias disponibles para todo el entorno:
-        //    commandsqlSelectTipoOntoDispRolUsuarioProy = ObtenerComando("SELECT DocumentoID, ProyectoID FROM Documento WHERE Visibilidad=1 AND ProyectoID<>" + IBD.GuidValor(pProyectoID) + " AND Tipo=" + (short)TiposDocumentacion.Ontologia + " AND Eliminado=0");
-        //    DataSet dataSetAux = new DataSet();
-        //    CargarDataSet(commandsqlSelectTipoOntoDispRolUsuarioProy, dataSetAux, "Documento");
-
-        //    if (dataSetAux.Tables[0].Rows.Count > 0)
-        //    {
-        //        commandsqlSelectTipoOntoDispRolUsuarioProy = ObtenerComando(sqlSelectTipoOntoDispRolUsuarioProy + " WHERE");
-
-        //        foreach (DataRow fila in dataSetAux.Tables[0].Rows)
-        //        {
-        //            commandsqlSelectTipoOntoDispRolUsuarioProy.CommandText += " (ProyectoID=" + IBD.GuidValor((Guid)fila["ProyectoID"]) + " AND OntologiaID=" + IBD.GuidValor((Guid)fila["DocumentoID"]) + ") OR";
-        //        }
-
-        //        commandsqlSelectTipoOntoDispRolUsuarioProy.CommandText = commandsqlSelectTipoOntoDispRolUsuarioProy.CommandText.Substring(0, commandsqlSelectTipoOntoDispRolUsuarioProy.CommandText.Length - 3);
-        //        CargarDataSet(commandsqlSelectTipoOntoDispRolUsuarioProy, proyectoDS, "TipoOntoDispRolUsuarioProy");
-        //    }
-
-        //    dataSetAux.Dispose();
-
-        //    return (proyectoDS);
-        //}
 
         /// <summary>
         /// Devuelve una lista con las claves de los proyectos que tienen alguna categoria del tesauro de MyGnoss en comun con el pProyectoID
@@ -7181,9 +6714,8 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
         /// <returns>Lista de Claves de Proyectos</returns>
         public List<Guid> ObtenerListaProyectoRelacionados(Guid pProyectoID)
         {
-            List<int> l = new List<int>();
+            List<int> l;
             return ObtenerListaProyectoRelacionados(pProyectoID, out l);
-            ;
         }
 
         /// <summary>
@@ -7194,7 +6726,7 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
         /// <returns>Lista de Claves de Proyectos</returns>
         public List<Guid> ObtenerListaProyectoRelacionados(Guid pProyectoID, out bool pManual)
         {
-            List<int> l = new List<int>();
+            List<int> l;
             return ObtenerListaProyectoRelacionados(pProyectoID, out l, out pManual);
         }
 
@@ -7223,9 +6755,6 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
             listaIdNumerico = new List<int>();
             List<Guid> listaProyectosRelacionados = new List<Guid>();
             DataWrapperProyecto proyectoDS = new DataWrapperProyecto();
-            //proyectoDS.EnforceConstraints = false;
-
-            //string sqlProyectoTablaRelacion = "SELECT " + IBD.CargarGuid("ProyectoRelacionado.ProyectoRelacionadoID") + " ProyectoID, 0 Tipo, ProyectoRelacionado.Orden, TablaBaseProyectoId FROM Proyecto INNER JOIN ProyectoRelacionado ON (Proyecto.ProyectoID=ProyectoRelacionado.ProyectoID AND Proyecto.OrganizacionID=ProyectoRelacionado.OrganizacionID) WHERE Proyecto.ProyectoID = " + IBD.GuidParamValor("proyectoID") + " ";
 
             var listaProyectoTablaRelacion = mEntityContext.Proyecto.Join(mEntityContext.ProyectoRelacionado, proy => new { proy.ProyectoID, proy.OrganizacionID }, proyRelacionado => new { proyRelacionado.ProyectoID, proyRelacionado.OrganizacionID }, (proy, proyRelacionado) => new
             {
@@ -7236,8 +6765,6 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
                 TablaBaseProyectoId = proy.TablaBaseProyectoID
             }).Where(proyectosTablaRelacion => proyectosTablaRelacion.ProyectoID.Equals(pProyectoID));
 
-            //string sqlProyectoPadre = "SELECT " + IBD.CargarGuid("Proyecto.ProyectoID") + ", 1 Tipo, 0 Orden, TablaBaseProyectoId FROM Proyecto WHERE Proyecto.ProyectoID IN (Select Proyecto.ProyectoSuperiorID from proyecto WHERE Proyecto.ProyectoID = " + IBD.GuidParamValor("proyectoID") + ") AND Proyecto.TipoProyecto <> " + (short)TipoProyecto.MetaComunidad + " AND Proyecto.Estado <> " + (short)EstadoProyecto.Cerrado + " AND Proyecto.Estado <> " + (short)EstadoProyecto.CerradoTemporalmente + " AND Proyecto.Estado  <> " + (short)EstadoProyecto.Definicion + "  AND (Proyecto.TipoAcceso=" + (short)TipoAcceso.Publico + " OR Proyecto.TipoAcceso=" + (short)TipoAcceso.Restringido + ") ";
-
             var listaGuidsProyectoSuperiorID = mEntityContext.Proyecto.Where(proy => proy.ProyectoID.Equals(pProyectoID) && proy.ProyectoSuperiorID.HasValue).Select(proyect => proyect.ProyectoSuperiorID.Value);
 
             var resultadoProyectoPadre = mEntityContext.Proyecto.Where(proy => listaGuidsProyectoSuperiorID.Contains(proy.ProyectoID) && !proy.TipoProyecto.Equals((short)TipoProyecto.MetaComunidad) && !proy.Estado.Equals((short)EstadoProyecto.Cerrado) && !proy.Estado.Equals((short)EstadoProyecto.CerradoTemporalmente) && !proy.Estado.Equals((short)EstadoProyecto.Definicion) && (proy.TipoAcceso.Equals((short)TipoAcceso.Publico) || proy.TipoAcceso.Equals((short)TipoAcceso.Restringido))).Select(proy => new
@@ -7247,9 +6774,7 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
                 Orden = 0,
                 TablaBaseProyectoID = proy.TablaBaseProyectoID
             });
-            //////////
-            //string sqlProyectosHijos = "SELECT " + IBD.CargarGuid("Proyecto.ProyectoID") + ", 2 Tipo, 0 Orden, TablaBaseProyectoId FROM Proyecto WHERE Proyecto.ProyectoSuperiorID = " + IBD.GuidParamValor("proyectoID") + " AND Proyecto.TipoProyecto <> " + (short)TipoProyecto.MetaComunidad + " AND Proyecto.Estado <> " + (short)EstadoProyecto.Cerrado + " AND Proyecto.Estado <> " + (short)EstadoProyecto.CerradoTemporalmente + " AND Proyecto.Estado  <> " + (short)EstadoProyecto.Definicion + "  AND (Proyecto.TipoAcceso=" + (short)TipoAcceso.Publico + " OR Proyecto.TipoAcceso=" + (short)TipoAcceso.Restringido + ") ";
-
+            
             var listaProyectosHijos = mEntityContext.Proyecto.Where(proy => proy.ProyectoSuperiorID.HasValue && proy.ProyectoSuperiorID.Value.Equals(pProyectoID) && !proy.TipoProyecto.Equals((short)TipoProyecto.MetaComunidad) && !proy.Estado.Equals((short)EstadoProyecto.Cerrado) && !proy.Estado.Equals((short)EstadoProyecto.CerradoTemporalmente) && !proy.Estado.Equals((short)EstadoProyecto.Definicion) && (proy.TipoAcceso.Equals((short)TipoAcceso.Publico) || proy.TipoAcceso.Equals((short)TipoAcceso.Restringido))).Select(proy => new
             {
                 ProyectoID = proy.ProyectoID,
@@ -7257,9 +6782,7 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
                 Orden = 0,
                 TablaBaseProyectoID = proy.TablaBaseProyectoID
             });
-            /////////
-            //string sqlProyectosHermanos = "SELECT " + IBD.CargarGuid("Proyecto.ProyectoID") + ", 3 Tipo, 0 Orden, TablaBaseProyectoId FROM Proyecto WHERE Proyecto.ProyectoSuperiorID IN (Select Proyecto.ProyectoSuperiorID from proyecto WHERE Proyecto.ProyectoID = " + IBD.GuidParamValor("proyectoID") + ") AND Proyecto.TipoProyecto <> " + (short)TipoProyecto.MetaComunidad + " AND Proyecto.Estado <> " + (short)EstadoProyecto.Cerrado + " AND Proyecto.Estado <> " + (short)EstadoProyecto.CerradoTemporalmente + " AND Proyecto.Estado <> " + (short)EstadoProyecto.Definicion + "  AND (Proyecto.TipoAcceso=" + (short)TipoAcceso.Publico + " OR Proyecto.TipoAcceso=" + (short)TipoAcceso.Restringido + ") ";
-
+        
             var listaProyectosHermanos = mEntityContext.Proyecto.Where(proy => listaGuidsProyectoSuperiorID.Contains(proy.ProyectoID) && !proy.TipoProyecto.Equals((short)TipoProyecto.MetaComunidad) && !proy.Estado.Equals((short)EstadoProyecto.Cerrado) && !proy.Estado.Equals((short)EstadoProyecto.CerradoTemporalmente) && !proy.Estado.Equals((short)EstadoProyecto.Definicion) && (proy.TipoAcceso.Equals((short)TipoAcceso.Publico) || proy.TipoAcceso.Equals((short)TipoAcceso.Restringido))).Select(proy => new
             {
                 ProyectoID = proy.ProyectoID,
@@ -7267,9 +6790,6 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
                 Orden = 0,
                 TablaBaseProyectoID = proy.TablaBaseProyectoID
             });
-
-            /////////
-            //string sqlProyectosRelacionados = "SELECT DISTINCT " + IBD.CargarGuid("Proyecto.ProyectoID") + ", 4 Tipo, 0 Orden, TablaBaseProyectoId FROM Proyecto INNER JOIN ProyectoAgCatTesauro ON ProyectoAgCatTesauro.ProyectoID = Proyecto.ProyectoID WHERE ProyectoAgCatTesauro.CategoriaTesauroID IN ( SELECT ProyectoAgCatTesauro.CategoriaTesauroID FROM Proyecto INNER JOIN ProyectoAgCatTesauro ON ProyectoAgCatTesauro.ProyectoID = Proyecto.ProyectoID WHERE Proyecto.ProyectoID= " + IBD.GuidParamValor("proyectoID") + ") AND Proyecto.ProyectoID <> '" + ProyectoAD.ProyectoFAQ + "' AND Proyecto.ProyectoID <> '" + ProyectoAD.ProyectoNoticias + "' AND Proyecto.TipoProyecto <> " + (short)TipoProyecto.MetaComunidad + " AND Proyecto.Estado <> " + (short)EstadoProyecto.Cerrado + " AND Proyecto.Estado <> " + (short)EstadoProyecto.CerradoTemporalmente + " AND Proyecto.Estado <> " + (short)EstadoProyecto.Definicion + "  AND (Proyecto.TipoAcceso=" + (short)TipoAcceso.Publico + " OR Proyecto.TipoAcceso=" + (short)TipoAcceso.Restringido + ") ";
 
             var listaGuidProyectoAgCategoriaTesauro = mEntityContext.Proyecto.Join(mEntityContext.ProyectoAgCatTesauro, proy => proy.ProyectoID, proyAgCatTes => proyAgCatTes.ProyectoID, (proy, ProyectoAgCatTesauro) => new
             {
@@ -7288,9 +6808,7 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
                 Estado = proy.Estado,
                 TipoAcceso = proy.TipoAcceso
             }).Where(proyRel => listaGuidProyectoAgCategoriaTesauro.Contains(proyRel.CategoriaTesauroID) && !proyRel.ProyectoID.Equals(ProyectoAD.ProyectoFAQ) && !proyRel.ProyectoID.Equals(ProyectoAD.ProyectoNoticias) && !proyRel.TipoProyecto.Equals((short)TipoProyecto.MetaComunidad) && !proyRel.Estado.Equals((short)EstadoProyecto.Cerrado) && !proyRel.Estado.Equals((short)EstadoProyecto.CerradoTemporalmente) && !proyRel.Estado.Equals((short)EstadoProyecto.Definicion) && (proyRel.TipoAcceso.Equals((short)TipoAcceso.Publico) || proyRel.TipoAcceso.Equals((short)TipoAcceso.Restringido))).Select(proyRel => proyRel);
-            /////////
-            //string sqlManual = "SELECT " + IBD.CargarGuid("TablaProyectos.ProyectoID") + ", TablaProyectos.Tipo, TablaProyectos.Orden, ProyectosMasActivos.Peso FROM ( " + sqlProyectoTablaRelacion + " )TablaProyectos INNER JOIN ProyectosMasActivos ON TablaProyectos.ProyectoID = ProyectosMasActivos.ProyectoID Order By TablaProyectos.Tipo, TablaProyectos.Orden, ProyectosMasActivos.Peso DESC ";
-
+          
             var resManual = listaProyectoTablaRelacion.Join(mEntityContext.ProyectosMasActivos, tablaProyectos => new { ProyectoID = tablaProyectos.ProyectoRelacionadoID }, masActivos => new { ProyectoID = masActivos.ProyectoID }, (tablaProyectos, masActivos) => new
             {
                 ProyectoID = tablaProyectos.ProyectoRelacionadoID,
@@ -7299,8 +6817,6 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
                 Peso = masActivos.Peso,
                 TablaBaseProyectoID = tablaProyectos.TablaBaseProyectoId
             }).OrderByDescending(tablaProyectosMasActivos => tablaProyectosMasActivos.Orden).ThenByDescending(tablaProyectosMasActivos => tablaProyectosMasActivos.Peso);
-            /////////
-            //string sqlAuto = "SELECT " + IBD.CargarGuid("TablaProyectos.ProyectoID") + ", TablaProyectos.Tipo, TablaProyectos.Orden, ProyectosMasActivos.Peso FROM ( " + sqlProyectoPadre + " UNION ALL " + sqlProyectosHijos + " UNION ALL " + sqlProyectosHermanos + " UNION ALL " + sqlProyectosRelacionados + " )TablaProyectos INNER JOIN ProyectosMasActivos ON TablaProyectos.ProyectoID = ProyectosMasActivos.ProyectoID Order By TablaProyectos.Tipo, TablaProyectos.Orden, ProyectosMasActivos.Peso DESC ";
 
             var listaProyectosRelacionadosResForUnion = listaProyectosRelacionadosRes.Select(proy => new
             {
@@ -7341,10 +6857,6 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
             {
                 pManual = false;
 
-                //DbCommand commandProyectoRelacionadosAuto = ObtenerComando(sqlAuto);
-                //AgregarParametro(commandProyectoRelacionadosAuto, IBD.ToParam("proyectoID"), IBD.TipoGuidToString(DbType.Guid), IBD.ValorDeGuid(pProyectoID));
-                //CargarDataSet(commandProyectoRelacionadosAuto, proyectoDS, "Proyecto");
-
                 foreach (var proyect in auto.ToList())
                 {
                     Proyecto proyecto = new Proyecto();
@@ -7374,15 +6886,11 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
         /// <returns>Lista de Claves de Proyectos</returns>
         public List<Guid> ObtenerListaProyectosAdministraUsuarioYPerfil(Guid pUsuarioID, Guid pPerfilID)
         {
-            List<Guid> listaProyectosAdministra = new List<Guid>();
-
-            listaProyectosAdministra = mEntityContext.AdministradorProyecto.Join(mEntityContext.Identidad, adminProy => adminProy.ProyectoID, identidad => identidad.ProyectoID, (adminProy, identidad) => new
+            return mEntityContext.AdministradorProyecto.Join(mEntityContext.Identidad, adminProy => adminProy.ProyectoID, identidad => identidad.ProyectoID, (adminProy, identidad) => new
             {
                 AdministradorProyecto = adminProy,
                 Identidad = identidad
             }).Where(objeto => objeto.AdministradorProyecto.UsuarioID.Equals(pUsuarioID) && objeto.Identidad.PerfilID.Equals(pPerfilID)).Select(objeto => objeto.AdministradorProyecto.ProyectoID).ToList();
-
-            return listaProyectosAdministra;
         }
 
         #endregion
@@ -7437,10 +6945,17 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
         /// Obtiene los proyectos hijos del proyecto indicado. 
         /// </summary>
         /// <param name="pProyectoSuperiorID">Proyecto superior de los proyectos ids que quiero obtener</param>
-        /// <returns>Todos los proyectos cuyo proyecto superior sea el dado por par�metro</returns>
-        public List<Guid> ObtenerProyectosIdsDeProyectoSuperiorID(Guid pProyectoSuperiorID)
+        /// <returns>Todos los proyectos cuyo proyecto superior sea el dado por parámetro</returns>
+        public List<Guid> ObtenerProyectosIdsDeProyectoSuperiorID(Guid pProyectoSuperiorID, bool pCargarProyectosCerrados)
         {
-            return mEntityContext.Proyecto.Where(item => item.ProyectoSuperiorID.Equals(pProyectoSuperiorID)).Select(item => item.ProyectoID).ToList();
+            if (pCargarProyectosCerrados)
+            {
+                return mEntityContext.Proyecto.Where(item => item.ProyectoSuperiorID.Equals(pProyectoSuperiorID)).Select(item => item.ProyectoID).ToList();
+            }
+            else
+            {
+                return mEntityContext.Proyecto.Where(item => item.ProyectoSuperiorID.Equals(pProyectoSuperiorID) && item.Estado != (short)EstadoProyecto.Cerrado && !item.FechaFin.HasValue).Select(item => item.ProyectoID).ToList();
+            }
         }
 
         /// <summary>
@@ -7449,20 +6964,12 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
         /// <param name="pProyectoID">ID del proyecto</param>
         /// <returns>ID del proyecto origen del actual, si lo tiene o GUID.Empty si no</returns>
         public Guid ObtenerProyectoOrigenDeProyecto(Guid pProyectoID)
-        {//"SELECT Distinct ProyectoPestanyaBusqueda.ProyectoOrigenID FROM ProyectoPestanyaBusqueda INNER JOIN ProyectoPestanyaMenu ON ProyectoPestanyaMenu.PestanyaID=ProyectoPestanyaBusqueda.PestanyaID WHERE ProyectoPestanyaMenu.ProyectoID=" + IBD.GuidValor(pProyectoID));
-            var resultadoConsulta = mEntityContext.ProyectoPestanyaBusqueda.Join(mEntityContext.ProyectoPestanyaMenu, proyPestBus => proyPestBus.PestanyaID, proyPestMenu => proyPestMenu.PestanyaID, (proyPestBus, proyPestMenu) => new
+        {
+             return mEntityContext.ProyectoPestanyaBusqueda.Join(mEntityContext.ProyectoPestanyaMenu, proyPestBus => proyPestBus.PestanyaID, proyPestMenu => proyPestMenu.PestanyaID, (proyPestBus, proyPestMenu) => new
             {
                 ProyectoOrigenID = proyPestBus.ProyectoOrigenID,
                 ProyectoID = proyPestMenu.ProyectoID
-            }).Where(proyJoin => proyJoin.ProyectoID.Equals(pProyectoID) && proyJoin.ProyectoOrigenID.HasValue).Select(proyJoin => proyJoin.ProyectoOrigenID.Value).Distinct();
-
-            Guid proyOrgID = Guid.Empty;
-
-            if (resultadoConsulta.ToList().Count > 0)
-            {
-                proyOrgID = resultadoConsulta.ToList().First();
-            }
-            return proyOrgID;
+            }).Where(proyJoin => proyJoin.ProyectoID.Equals(pProyectoID) && proyJoin.ProyectoOrigenID.HasValue).Select(proyJoin => proyJoin.ProyectoOrigenID.Value).FirstOrDefault();
         }
 
         #endregion
@@ -7492,8 +6999,30 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
             }
 
             return url;
-        }       
-        
+        }
+
+        /// <summary>
+        /// Obtiene el peso de una ontologia para una pesta?a concreta para poder crear el autocompletar con dicho peso
+        /// </summary>
+        /// <param name="proyectoID">identificador del proyecto donde se encuentra la pesta?a</param>
+        /// <param name="organizacionID">Identificador de la organizaci?n</param>
+        /// <param name="valorOnto">Ontologia del proyecto</param>
+        /// <param name="pestanyaID">Identificador de la pesta?a</param>
+        /// <param name="subtipo">subtipo de la ontologia</param>
+        /// <returns>peso del subtipo para ese OC</returns>
+        public int ObtenerPesoPestanyaBusquedaOC(Guid pProyectoID, Guid pOrganizacionID, string pValorOnto, Guid pPestanyaID, string pSubtipo)
+        {
+            int peso = mEntityContext.ProyectoPestanyaBusquedaPesoOC.Where(item => item.ProyectoID.Equals(pProyectoID) && item.OrganizacionID.Equals(pOrganizacionID) && item.PestanyaID.Equals(pPestanyaID) && item.Tipo.Equals(pSubtipo)).Select(item => item.Peso).FirstOrDefault();          
+            return peso;
+        }
+
+        public List<string> ObtenerNombresDeProyectoPorBusquedaAutocompletar(string pQuery)
+        {
+            List<string> resultados = mEntityContext.Proyecto.Where(fila => fila.Nombre.ToLower().Contains(pQuery.ToLower()) || fila.NombreCorto.ToLower().Contains(pQuery.ToLower())).Select(fila => fila.NombreCorto).ToList();
+
+            return resultados;
+		}
+
         public string ObtenerIdiomaPrincipalDominio(string pDominio)
         {
             string idioma = string.Empty;
@@ -7502,9 +7031,9 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
             {
                 string url = mEntityContext.Proyecto.Where(proyecto => proyecto.URLPropia.Contains(pDominio + "@")).Select(proyecto => proyecto.URLPropia).FirstOrDefault();
 
-                if ((url != null) && ((string)url).IndexOf(pDominio) >= 0)
+                if (url != null && url.IndexOf(pDominio) >= 0)
                 {
-                    string urlAux = (string)url;
+                    string urlAux = url;
 
                     urlAux = urlAux.Substring(urlAux.IndexOf(pDominio) + pDominio.Length + 1);
 
@@ -7522,7 +7051,165 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
             return idioma;
         }
 
-        #endregion
+        public ConfiguracionCachesCostosas ObtenerConfiguracionCachesCostosasDeProyecto(Guid pProyectoID)
+        {
+            return mEntityContext.ConfiguracionCachesCostosas.Where(x => x.ProyectoID.Equals(pProyectoID)).FirstOrDefault();
+        }
+
+        public bool EstanCachesDeBusquedasActivas(Guid pProyectoID)
+        {
+            return mEntityContext.ConfiguracionCachesCostosas.Where(x => x.ProyectoID.Equals(pProyectoID)).Select(config => config.CachesDeBusquedasActivas).FirstOrDefault();
+        }
+
+        public List<Rol> ObtenerRolesDeProyecto(Guid pProyectoID)
+        {
+            return mEntityContext.Rol.Where(x => x.ProyectoID.Equals(pProyectoID) || x.ProyectoID.Equals(MetaProyecto) || x.Tipo.Equals(AmbitoRol.Ecosistema)).OrderBy(r => r.Nombre).ToList();
+        }
+
+        public List<RolEcosistema> ObtenerRolesAdministracionEcosistema()
+        {
+            return mEntityContext.RolEcosistema.ToList();
+        }
+
+        public List<RolEcosistema> ObtenerRolesAdministracionEcosistemaDeUsuario(Guid pUsuarioID)
+        {
+			return mEntityContext.RolEcosistema.Join(mEntityContext.RolEcosistemaUsuario, rol => rol.RolID, rolUsuario => rolUsuario.RolID, (rol, rolUsuario) => new
+			{
+				RolEcosistema = rol,
+				RolEcosistemaUsuario = rolUsuario
+			}).Where(objeto => objeto.RolEcosistemaUsuario.UsuarioID.Equals(pUsuarioID)).Select(objeto => objeto.RolEcosistema).ToList();
+		}
+
+        public List<Guid> ObtenerIdentidadesAdministradorasDeProyecto(Guid pProyectoID)
+        {
+			List<Guid> identidadesAdministradoras = mEntityContext.RolIdentidad.Join(mEntityContext.Identidad, rolIdentidad => rolIdentidad.IdentidadID, identidad => identidad.IdentidadID, (rolIdentidad, identidad) => new { identidad.IdentidadID, rolIdentidad.RolID, identidad.ProyectoID }).Where(x => x.RolID == ProyectoAD.RolAdministrador && x.ProyectoID == pProyectoID).Select(x => x.IdentidadID).ToList();
+            return identidadesAdministradoras;
+		}
+
+        public List<Guid> ObtenerIdentidadesDeRol(Guid pRolID, Guid pProyectoID)
+        {
+			List<Guid> identidadesAdministradoras = mEntityContext.RolIdentidad.Join(mEntityContext.Identidad, rolIdentidad => rolIdentidad.IdentidadID, identidad => identidad.IdentidadID, (rolIdentidad, identidad) => new { identidad.IdentidadID, rolIdentidad.RolID, identidad.ProyectoID }).Where(x => x.RolID == pRolID && x.ProyectoID == pProyectoID).Select(x => x.IdentidadID).ToList();
+			return identidadesAdministradoras;
+		}
+
+        public void GuardarRolProyecto(Rol pRol)
+        {
+            Rol rol = mEntityContext.Rol.Where(x => x.RolID.Equals(pRol.RolID)).FirstOrDefault();
+            if (rol != null)
+            {
+                rol.Nombre = pRol.Nombre;
+                rol.FechaModificacion = pRol.FechaModificacion;
+                rol.Descripcion = pRol.Descripcion;
+                rol.PermisosRecursos = pRol.PermisosRecursos;
+                rol.PermisosAdministracion = pRol.PermisosAdministracion;
+                rol.PermisosContenidos = pRol.PermisosContenidos;
+				// si cambia el tipo, cambia el proyecto
+				rol.Tipo = pRol.Tipo;
+				rol.ProyectoID = pRol.ProyectoID;               
+				rol.OrganizacionID = pRol.OrganizacionID;               
+            }
+            else
+            {
+                mEntityContext.Rol.Add(pRol);
+            }
+
+            mEntityContext.SaveChanges();
+        }
+
+        public void GuardarRolEcosistema(RolEcosistema pRol)
+        {
+			RolEcosistema rol = mEntityContext.RolEcosistema.Where(x => x.RolID.Equals(pRol.RolID)).FirstOrDefault();
+			if (rol != null)
+			{
+				rol.Nombre = pRol.Nombre;
+				rol.FechaModificacion = pRol.FechaModificacion;
+				rol.Descripcion = pRol.Descripcion;
+                rol.Permisos = pRol.Permisos;
+                rol.FechaModificacion = pRol.FechaModificacion;
+			}
+			else
+			{
+				mEntityContext.RolEcosistema.Add(pRol);
+			}
+
+			mEntityContext.SaveChanges();
+		}
+
+        public void EliminarRolDeProyecto(Guid pRolID)
+        {
+            Rol rol = mEntityContext.Rol.Where(x => x.RolID.Equals(pRolID)).FirstOrDefault();
+            if (rol != null)
+            {
+                mEntityContext.EliminarElemento(rol);
+                mEntityContext.SaveChanges();
+            }
+		}
+
+        public void EliminarRolDeAdministracionEcosistema(Guid pRolID)
+        {
+			RolEcosistema rol = mEntityContext.RolEcosistema.Where(x => x.RolID.Equals(pRolID)).FirstOrDefault();
+			if (rol != null)
+			{
+				mEntityContext.EliminarElemento(rol);
+				mEntityContext.SaveChanges();
+			}
+		}
+
+        public List<Rol> ObtenerRolesDeGrupo(Guid pGrupoID)
+        {
+			return mEntityContext.Rol.Join(mEntityContext.RolGrupoIdentidades, rol => rol.RolID, rolGrupo => rolGrupo.RolID, (rol, rolGrupo) => new
+			{
+				Rol = rol,
+				RolGrupoIdentidades = rolGrupo
+			}).Where(objeto => objeto.RolGrupoIdentidades.GrupoID.Equals(pGrupoID)).Select(objeto => objeto.Rol).ToList();
+		}
+
+		public List<Rol> ObtenerRolesDeGrupos(List<Guid> pListaGrupos)
+		{
+            List<Rol> listaRoles = new List<Rol>();
+            foreach (Guid grupoID in pListaGrupos)
+            {
+				listaRoles = listaRoles.Union(ObtenerRolesDeGrupo(grupoID)).ToList();
+            }
+
+			return listaRoles;
+		}
+
+
+
+		#endregion
+
+
+        public void GuardarDetallesDocumentacion(DetallesDocumentacion detallesDocumentacion)
+        {
+
+            if(mEntityContext.DetallesDocumentacion.Where(x => x.ProyectoID.Equals(detallesDocumentacion.ProyectoID)).FirstOrDefault() == null)
+            {
+                mEntityContext.DetallesDocumentacion.Add(detallesDocumentacion);
+            }
+            else
+            {
+                DetallesDocumentacion existente = mEntityContext.DetallesDocumentacion.Find(detallesDocumentacion.ProyectoID);
+                if (existente != null)
+                {
+                    mEntityContext.Entry(existente).CurrentValues.SetValues(detallesDocumentacion);
+                    mEntityContext.SaveChanges();
+                }
+
+
+            }
+        }
+
+        public DetallesDocumentacion ObtenerDetallesDocumentacion(Guid proyectoID)
+        {
+            return mEntityContext.DetallesDocumentacion.Where(x => x.ProyectoID.Equals(proyectoID)).FirstOrDefault();
+        }
+
+        public Dictionary<String, String> ObtenerTitulosOntologias(Guid proyectoID)
+        {
+            return mEntityContext.Documento.Where(x => x.ProyectoID.Equals(proyectoID) && x.Tipo.Equals(7)).GroupBy(d => d.Titulo).ToDictionary(g => g.Key, g => g.First().Enlace);
+        }
+
 
         #region Privados
 
@@ -7531,7 +7218,7 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
         /// </summary>
         private void CargarConsultasYDataAdapters()
         {
-            this.CargarConsultasYDataAdapters(IBD);
+            CargarConsultasYDataAdapters(IBD);
         }
 
         /// <summary>
@@ -7542,20 +7229,7 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
         private void CargarConsultasYDataAdapters(IBaseDatos IBD)
         {
             #region Consultas
-
-            
-            sqlSelectPresentacionListadoSemantico = "SELECT " + IBD.CargarGuid("PresentacionListadoSemantico.OrganizacionID") + ", " + IBD.CargarGuid("PresentacionListadoSemantico.ProyectoID") + ", " + IBD.CargarGuid("PresentacionListadoSemantico.OntologiaID") + ",  PresentacionListadoSemantico.Orden,PresentacionListadoSemantico.Ontologia, PresentacionListadoSemantico.Propiedad, PresentacionListadoSemantico.Nombre FROM PresentacionListadoSemantico ";
-
-            sqlSelectPresentacionPestanyaListadoSemantico = "SELECT " + IBD.CargarGuid("PresentacionPestanyaListadoSemantico.OrganizacionID") + ", " + IBD.CargarGuid("PresentacionPestanyaListadoSemantico.ProyectoID") + ", " + IBD.CargarGuid("PresentacionPestanyaListadoSemantico.PestanyaID") + ", " + IBD.CargarGuid("PresentacionPestanyaListadoSemantico.OntologiaID") + ",  PresentacionPestanyaListadoSemantico.Orden,PresentacionPestanyaListadoSemantico.Ontologia, PresentacionPestanyaListadoSemantico.Propiedad, PresentacionPestanyaListadoSemantico.Nombre FROM PresentacionPestanyaListadoSemantico ";
-
-            //parte SELECT
-
-            SelectProyectoPesado = "SELECT " + IBD.CargarGuid("Proyecto.OrganizacionID") + ", " + IBD.CargarGuid("Proyecto.ProyectoID") + ", Proyecto.Nombre, Proyecto.Descripcion, Proyecto.FechaInicio, Proyecto.FechaFin, Proyecto.TipoProyecto, Proyecto.TipoAcceso, Proyecto.NumeroRecursos, Proyecto.NumeroPreguntas, Proyecto.NumeroDebates, Proyecto.NumeroMiembros, Proyecto.NumeroOrgRegistradas, Proyecto.NumeroArticulos, Proyecto.NumeroDafos, Proyecto.NumeroForos, Proyecto.Estado , " + IBD.CargarGuid("Proyecto.ProyectoSuperiorID") + ", EsProyectoDestacado, Proyecto.URLPropia, Proyecto.NombreCorto, Proyecto.TieneTwitter, Proyecto.TagTwitter, Proyecto.UsuarioTwitter, Proyecto.TokenTwitter, Proyecto.TokenSecretoTwitter, Proyecto.EnviarTwitterComentario, Proyecto.EnviarTwitterNuevaCat, Proyecto.EnviarTwitterNuevoAdmin, Proyecto.EnviarTwitterNuevaPolitCert, Proyecto.EnviarTwitterNuevoTipoDoc, Proyecto.TablaBaseProyectoID, Proyecto.ProcesoVinculadoID, Proyecto.Tags, Proyecto.TagTwitterGnoss, Proyecto.NombrePresentacion ";
-
-            SelectProyectoLigero = "SELECT " + IBD.CargarGuid("Proyecto.OrganizacionID") + ", " + IBD.CargarGuid("Proyecto.ProyectoID") + ", Proyecto.Nombre, Proyecto.TipoProyecto, Proyecto.TipoAcceso, Proyecto.NumeroRecursos, Proyecto.NumeroPreguntas, Proyecto.NumeroDebates, Proyecto.NumeroMiembros, Proyecto.NumeroOrgRegistradas, Proyecto.EsProyectoDestacado, Proyecto.Estado, Proyecto.URLPropia,Proyecto.NombreCorto, Proyecto.Descripcion, " + IBD.CargarGuid("Proyecto.ProyectoSuperiorID") + ", Proyecto.TieneTwitter, Proyecto.TagTwitter, Proyecto.UsuarioTwitter, Proyecto.TokenTwitter, Proyecto.TokenSecretoTwitter,  Proyecto.EnviarTwitterComentario, Proyecto.EnviarTwitterNuevaCat, Proyecto.EnviarTwitterNuevoAdmin, Proyecto.EnviarTwitterNuevaPolitCert, Proyecto.EnviarTwitterNuevoTipoDoc, Proyecto.TablaBaseProyectoID, Proyecto.ProcesoVinculadoID, Proyecto.Tags, Proyecto.TagTwitterGnoss, Proyecto.NombrePresentacion ";
-
-            SelectAdministradorProyecto = "SELECT " + IBD.CargarGuid("AdministradorProyecto.OrganizacionID") + ", " + IBD.CargarGuid("AdministradorProyecto.ProyectoID") + ", " + IBD.CargarGuid("AdministradorProyecto.UsuarioID") + ", AdministradorProyecto.Tipo ";
-
+           
             //Consultas
             sqlSelectExisteProyectoFAQ = "SELECT 1 FROM Proyecto WHERE ProyectoID = " + IBD.GuidValor(ProyectoFAQ);
 
@@ -7563,22 +7237,11 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
 
             sqlSelectExisteProyectoDidactalia = "SELECT 1 FROM Proyecto WHERE ProyectoID = " + IBD.GuidValor(ProyectoDidactalia);
 
-            sqlSelectProyectosUsuarioPuedeCompartirRecurso = SelectProyectoLigero.Replace("SELECT", "SELECT DISTINCT") + " FROM PROYECTO INNER JOIN ProyectoUsuarioIdentidad ON Proyecto.OrganizacionID = ProyectoUsuarioIdentidad.OrganizacionGnossID AND Proyecto.ProyectoID = ProyectoUsuarioIdentidad.ProyectoID INNER JOIN AdministradorProyecto ON AdministradorProyecto.OrganizacionID = Proyecto.OrganizacionID AND AdministradorProyecto.ProyectoID = Proyecto.ProyectoID AND AdministradorProyecto.UsuarioID = ProyectoUsuarioIdentidad.UsuarioID INNER JOIN TipoDocDispRolUsuarioProy ON TipoDocDispRolUsuarioProy.ProyectoID = Proyecto.ProyectoID AND TipoDocDispRolUsuarioProy.OrganizacionID = Proyecto.OrganizacionID AND TipoDocDispRolUsuarioProy.RolUsuario >= AdministradorProyecto.Tipo WHERE (ProyectoUsuarioIdentidad.UsuarioID = " + IBD.GuidParamValor("usuarioID") + ") AND Proyecto.Estado = " + (short)EstadoProyecto.Abierto + " AND TipoDocDispRolUsuarioProy.TipoDocumento = " + IBD.ToParam("tipoDocumento") + " UNION " + SelectProyectoLigero.Replace("SELECT", "SELECT DISTINCT") + " FROM PROYECTO INNER JOIN ProyectoUsuarioIdentidad ON Proyecto.OrganizacionID = ProyectoUsuarioIdentidad.OrganizacionGnossID AND Proyecto.ProyectoID = ProyectoUsuarioIdentidad.ProyectoID INNER JOIN TipoDocDispRolUsuarioProy ON TipoDocDispRolUsuarioProy.ProyectoID = Proyecto.ProyectoID AND TipoDocDispRolUsuarioProy.OrganizacionID = Proyecto.OrganizacionID WHERE (ProyectoUsuarioIdentidad.UsuarioID = " + IBD.GuidParamValor("usuarioID") + ") AND Proyecto.Estado = " + (short)EstadoProyecto.Abierto + " AND TipoDocDispRolUsuarioProy.RolUsuario = " + (short)TipoRolUsuario.Usuario + " AND TipoDocDispRolUsuarioProy.TipoDocumento = " + IBD.ToParam("tipoDocumento") + " UNION " + SelectProyectoLigero.Replace("SELECT", "SELECT DISTINCT") + " FROM Proyecto INNER JOIN AdministradorProyecto ON Proyecto.Proyectoid = AdministradorProyecto.ProyectoID INNER JOIN TesauroProyecto ON Proyecto.ProyectoID = TesauroProyecto.ProyectoID INNER JOIN CategoriaTesauro ON TesauroProyecto.TesauroID = CategoriaTesauro.TesauroID WHERE AdministradorProyecto.UsuarioID = " + IBD.GuidParamValor("usuarioID") + " ORDER BY Proyecto.Nombre";
-
-            //Ojito con esta consulta (3er union)
-            sqlSelectProyectoUsuarioIdentidadUsuarioPuedeCompartirRecurso = "SELECT " + IBD.CargarGuid("ProyectoUsuarioIdentidad.OrganizacionGnossID") + ", " + IBD.CargarGuid("ProyectoUsuarioIdentidad.ProyectoID") + ", " + IBD.CargarGuid("ProyectoUsuarioIdentidad.UsuarioID") + ", " + IBD.CargarGuid("ProyectoUsuarioIdentidad.IdentidadID") + ", FechaEntrada, Reputacion FROM PROYECTO INNER JOIN ProyectoUsuarioIdentidad ON Proyecto.OrganizacionID = ProyectoUsuarioIdentidad.OrganizacionGnossID AND Proyecto.ProyectoID = ProyectoUsuarioIdentidad.ProyectoID INNER JOIN AdministradorProyecto ON AdministradorProyecto.OrganizacionID = Proyecto.OrganizacionID AND AdministradorProyecto.ProyectoID = Proyecto.ProyectoID AND AdministradorProyecto.UsuarioID = ProyectoUsuarioIdentidad.UsuarioID INNER JOIN TipoDocDispRolUsuarioProy ON TipoDocDispRolUsuarioProy.ProyectoID = Proyecto.ProyectoID AND TipoDocDispRolUsuarioProy.OrganizacionID = Proyecto.OrganizacionID AND TipoDocDispRolUsuarioProy.RolUsuario >= AdministradorProyecto.Tipo WHERE (ProyectoUsuarioIdentidad.UsuarioID = " + IBD.GuidParamValor("usuarioID") + ") AND Proyecto.Estado = " + (short)EstadoProyecto.Abierto + " AND TipoDocDispRolUsuarioProy.TipoDocumento = " + IBD.ToParam("tipoDocumento") + " UNION SELECT " + IBD.CargarGuid("ProyectoUsuarioIdentidad.OrganizacionGnossID") + ", " + IBD.CargarGuid("ProyectoUsuarioIdentidad.ProyectoID") + ", " + IBD.CargarGuid("ProyectoUsuarioIdentidad.UsuarioID") + ", " + IBD.CargarGuid("ProyectoUsuarioIdentidad.IdentidadID") + ", FechaEntrada, Reputacion FROM PROYECTO INNER JOIN ProyectoUsuarioIdentidad ON Proyecto.OrganizacionID = ProyectoUsuarioIdentidad.OrganizacionGnossID AND Proyecto.ProyectoID = ProyectoUsuarioIdentidad.ProyectoID INNER JOIN TipoDocDispRolUsuarioProy ON TipoDocDispRolUsuarioProy.ProyectoID = Proyecto.ProyectoID AND TipoDocDispRolUsuarioProy.OrganizacionID = Proyecto.OrganizacionID WHERE (ProyectoUsuarioIdentidad.UsuarioID = " + IBD.GuidParamValor("usuarioID") + ") AND Proyecto.Estado = " + (short)EstadoProyecto.Abierto + " AND TipoDocDispRolUsuarioProy.RolUsuario = " + (short)TipoRolUsuario.Usuario + " AND TipoDocDispRolUsuarioProy.TipoDocumento = " + IBD.ToParam("tipoDocumento") + " UNION SELECT DISTINCT " + IBD.CargarGuid("ProyectoUsuarioIdentidad.OrganizacionGnossID") + ", " + IBD.CargarGuid("ProyectoUsuarioIdentidad.ProyectoID") + ", " + IBD.CargarGuid("ProyectoUsuarioIdentidad.UsuarioID") + ", " + IBD.CargarGuid("ProyectoUsuarioIdentidad.IdentidadID") + ", FechaEntrada, Reputacion FROM Proyecto INNER JOIN AdministradorProyecto ON Proyecto.Proyectoid = AdministradorProyecto.ProyectoID INNER JOIN ProyectoUsuarioIdentidad ON Proyecto.OrganizacionID = ProyectoUsuarioIdentidad.OrganizacionGnossID AND ProyectoUsuarioIdentidad.UsuarioID = AdministradorProyecto.UsuarioID INNER JOIN TipoDocDispRolUsuarioProy ON TipoDocDispRolUsuarioProy.ProyectoID = Proyecto.ProyectoID AND TipoDocDispRolUsuarioProy.OrganizacionID = Proyecto.OrganizacionID INNER JOIN TesauroProyecto ON Proyecto.ProyectoID = TesauroProyecto.ProyectoID INNER JOIN CategoriaTesauro ON TesauroProyecto.TesauroID = CategoriaTesauro.TesauroID WHERE (ProyectoUsuarioIdentidad.UsuarioID = " + IBD.GuidParamValor("usuarioID") + ") AND Proyecto.Estado = " + (short)EstadoProyecto.Definicion + " AND TipoDocDispRolUsuarioProy.RolUsuario = " + (short)TipoRolUsuario.Administrador + " AND TipoDocDispRolUsuarioProy.TipoDocumento = " + IBD.ToParam("tipoDocumento") + " AND AdministradorProyecto.UsuarioID = " + IBD.GuidParamValor("usuarioID");
-
-            sqlSelectProyectosParticipaUsuario = SelectProyectoPesado.Replace("SELECT", "SELECT DISTINCT") + " FROM PROYECTO INNER JOIN ProyectoUsuarioIdentidad ON Proyecto.OrganizacionID = ProyectoUsuarioIdentidad.OrganizacionGnossID AND Proyecto.ProyectoID = ProyectoUsuarioIdentidad.ProyectoID WHERE (ProyectoUsuarioIdentidad.UsuarioID = " + IBD.GuidParamValor("usuarioID") + ") ORDER BY Proyecto.Nombre";
-
-            sqlSelectProyectosParticipaUsuarioSinBloquear = SelectProyectoPesado.Replace("SELECT", "SELECT DISTINCT") + " FROM Proyecto INNER JOIN ProyectoUsuarioIdentidad ON Proyecto.OrganizacionID = ProyectoUsuarioIdentidad.OrganizacionGnossID AND Proyecto.ProyectoID = ProyectoUsuarioIdentidad.ProyectoID INNER JOIN ProyectoRolUsuario ON (Proyecto.ProyectoID=ProyectoRolUsuario.ProyectoID AND Proyecto.OrganizacionID=ProyectoRolUsuario.OrganizacionGnossID) WHERE (ProyectoUsuarioIdentidad.UsuarioID = " + IBD.GuidParamValor("usuarioID") + ") AND ProyectoRolUsuario.EstaBloqueado = 0 ORDER BY Proyecto.Nombre";
-
             sqlSelectEmailsMiembrosDeEventoDeProyecto = "SELECT ProyectoUsuarioIdentidad.IdentidadID,Perfil.PersonaID,Persona.Nombre,Persona.Apellidos, Persona.Email FROM proyectoUsuarioIdentidad INNER JOIN Identidad ON proyectoUsuarioIdentidad.IdentidadID = Identidad.identidadID INNER JOIN Perfil ON Perfil.PerfilID = Identidad.PerfilID INNER JOIN Persona ON Persona.PersonaID = Perfil.PersonaID INNER JOIN ProyectoeventoParticipante on ProyectoeventoParticipante.identidadid=Identidad.identidadid WHERE ProyectoeventoParticipante.EventoID = " + IBD.GuidParamValor("eventoID") + " AND Perfil.OrganizacionID IS NULL AND Persona.Email IS NOT NULL  UNION  Select proyectoUsuarioIdentidad.IdentidadID,Perfil.PersonaID,Persona.Nombre,Persona.Apellidos, PersonaVinculoOrganizacion.EmailTrabajo as Email FROM proyectoUsuarioIdentidad INNER JOIN Identidad ON proyectoUsuarioIdentidad.IdentidadID = Identidad.IdentidadID INNER JOIN Perfil ON Perfil.PerfilID = Identidad.PerfilID INNER JOIN Persona ON Persona.personaID = Perfil.PersonaID INNER JOIN PersonaVinculoOrganizacion ON PersonaVinculoOrganizacion.PersonaID = Persona.PersonaID AND PersonaVinculoOrganizacion.OrganizacionID = Perfil.OrganizacionID INNER JOIN ProyectoeventoParticipante on ProyectoeventoParticipante.identidadid=Identidad.identidadid WHERE ProyectoeventoParticipante.EventoID = " + IBD.GuidParamValor("eventoID") + " AND Perfil.PersonaID IS NOT NULL AND Perfil.OrganizacionID IS NOT NULL AND PersonaVinculoOrganizacion.EmailTrabajo IS NOT NULL ";
 
             sqlUpdateAumentarNumeroMiembrosDelProyecto = "UPDATE Proyecto SET NumeroMiembros = NumeroMiembros + 1 WHERE ProyectoID = " + IBD.GuidParamValor("proyectoID");
 
             sqlSelectTipoDocImagenPorDefecto = "SELECT " + IBD.CargarGuid("ProyectoID") + ", TipoRecurso, " + IBD.CargarGuid("OntologiaID") + ", UrlImagen FROM TipoDocImagenPorDefecto";
-
-            sqlSelectProyectoGadgetIdioma = "SELECT " + IBD.CargarGuid("ProyectoGadgetIdioma.OrganizacionID") + ", " + IBD.CargarGuid("ProyectoGadgetIdioma.ProyectoID") + ", " + IBD.CargarGuid("ProyectoGadgetIdioma.GadgetID") + ", ProyectoGadgetIdioma.Idioma, ProyectoGadgetIdioma.Contenido FROM ProyectoGadgetIdioma";
 
             #region Documentacion
 
@@ -7593,18 +7256,41 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
             #endregion
 
             #endregion
-
-            #endregion
         }
 
-        #endregion
+        public void CargarFacetaObjetoConocimientoProyectoPestanya(DataWrapperProyecto pProyectoDW, Guid pProyectoID, Guid? pOrganizacionID)
+        {
+            throw new NotImplementedException();
+        }
 
-        #region Propiedades
+        public ProyectoPestanyaBusqueda ObtenerProyectoPestanyasBusqueda(Guid pPestanyaID)
+        {
+            return mEntityContext.ProyectoPestanyaBusqueda.Where(item => item.PestanyaID.Equals(pPestanyaID)).FirstOrDefault();
+        }
 
-        /// <summary>
-        /// Obtiene el identificador de myGnoss (todo unos)
-        /// </summary>
-        public static Guid MyGnoss
+        public List<Guid> ObtenerPestanyasBusquedaProyectoSinAutocompletarFaceta(Guid pProyectoID, string pFaceta, string pObjetoConocimiento)
+        {
+            List<Guid> listaPestanyasBusquedaSinAutocompletar = new List<Guid>();
+            var consultaPestanyasSinAutocompletar = mEntityContext.ProyectoPestanyaMenu.Where(item => item.ProyectoID.Equals(pProyectoID)).Select(item => item.PestanyaID)
+                .Except(mEntityContext.FacetaObjetoConocimientoProyectoPestanya.Where(item => item.ProyectoID.Equals(pProyectoID) && item.Faceta.Equals(pFaceta) && item.ObjetoConocimiento.Equals(pObjetoConocimiento) && item.AutocompletarEnriquecido).Select(item => item.PestanyaID));
+            listaPestanyasBusquedaSinAutocompletar = mEntityContext.ProyectoPestanyaBusqueda.Where(item => consultaPestanyasSinAutocompletar.Contains(item.PestanyaID)).Select(item => item.PestanyaID).ToList();
+            return listaPestanyasBusquedaSinAutocompletar;
+        }
+
+		public Rol ObtenerRolUsuarioEnProyecto(Guid pProyectoID)
+		{            
+            return mEntityContext.Rol.FirstOrDefault(x => x.ProyectoID.Equals(pProyectoID) && x.EsRolUsuario);
+		}
+
+
+		#endregion
+
+		#region Propiedades
+
+		/// <summary>
+		/// Obtiene el identificador de myGnoss (todo unos)
+		/// </summary>
+		public static Guid MyGnoss
         {
             get
             {
@@ -7642,10 +7328,26 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
             }
         }
 
-        /// <summary>
-        /// Obtiene el identificador de la tabla base del metaproyecto
-        /// </summary>
-        public static int TablaBaseIdMetaProyecto
+        public static Guid RolAdministrador
+        {
+            get
+            {
+                return new Guid("B56237B6-19D1-493D-8558-07E12B8A2B31");
+			}
+        }
+
+        public static Guid RolAdministradorEcosistema
+        {
+            get
+            {
+				return new Guid("20896DFD-283B-465A-AFCE-D6C2AB96E6EC");
+			}
+        }
+
+		/// <summary>
+		/// Obtiene el identificador de la tabla base del metaproyecto
+		/// </summary>
+		public static int TablaBaseIdMetaProyecto
         {
             get
             {

@@ -1817,12 +1817,12 @@ namespace Es.Riam.Semantica.OWL
                     }
                 }
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 if (reader != null)
                     reader.Close();
                 
-                throw new Exception($"El fichero que está intentando importar no es válido. Ontologia: {pOntologia.OntologiaID} TextoFichero: {pTextoFichero}", ex);
+                throw new Exception("El fichero que está intentando importar no es válido.");
             }
 
             //reader.Close();
@@ -2021,7 +2021,7 @@ namespace Es.Riam.Semantica.OWL
             }
             catch (Exception ex)
             {
-                throw new Exception($"El fichero que está intentando importar no es válido. Ontologia: {pOntologia.OntologiaID} TextoFichero: {pTextoFichero}:" + Environment.NewLine + ex.Message, ex);
+                throw new Exception("El fichero que está intentando importar no es válido:" + Environment.NewLine + ex.Message);
             }
             finally
             {

@@ -4,6 +4,7 @@ using Es.Riam.Gnoss.AD.Parametro;
 using Es.Riam.Gnoss.Util.Configuracion;
 using Es.Riam.Gnoss.Util.General;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -32,6 +33,12 @@ namespace Es.Riam.Gnoss.AD.ParametroAplicacion
         /// Url de configuracion de la página
         /// </summary>
         public static string UrlBaseService { get { return "UrlBaseService"; } }
+
+        /// <summary>
+        /// Dominio donde se alojarán las páginas de administración
+        /// </summary>
+        public static string DominioPaginasAdministracion { get { return "DominioPaginasAdministracion"; } }
+
         /// <summary>
         /// Url del servicio Web para la gestión de documentos.
         /// </summary>
@@ -600,6 +607,8 @@ namespace Es.Riam.Gnoss.AD.ParametroAplicacion
     public class ParametroAplicacionAD : BaseAD
     {
         private EntityContext mEntityContext;
+        private ILogger mLogger;
+        private ILoggerFactory mLoggerFactory;
 
         #region Constructores
 
@@ -608,19 +617,23 @@ namespace Es.Riam.Gnoss.AD.ParametroAplicacion
         /// </summary>
         /// <param name="pFicheroConfiguracionBD">Ruta del fichero de configuración de la conexión a la base de datos</param>
         /// <param name="pUsarVariableEstatica">Si se están usando hilos con diferentes conexiones: FALSE. En caso contrario TRUE</param>
-        public ParametroAplicacionAD(string pFicheroConfiguracionBD, LoggingService loggingService, EntityContext entityContext, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication)
-            : base(pFicheroConfiguracionBD, loggingService, entityContext, configService, servicesUtilVirtuosoAndReplication)
+        public ParametroAplicacionAD(string pFicheroConfiguracionBD, LoggingService loggingService, EntityContext entityContext, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication, ILogger<ParametroAplicacionAD> logger, ILoggerFactory loggerFactory)
+            : base(pFicheroConfiguracionBD, loggingService, entityContext, configService, servicesUtilVirtuosoAndReplication, logger,loggerFactory)
         {
             mEntityContext = entityContext;
+            mLogger = logger;
+            mLoggerFactory = loggerFactory;
         }
 
         /// <summary>
         /// Constructor sin parámetros
         /// </summary>
-        public ParametroAplicacionAD(LoggingService loggingService, EntityContext entityContext, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication)
-            : base(loggingService, entityContext, configService, servicesUtilVirtuosoAndReplication)
+        public ParametroAplicacionAD(LoggingService loggingService, EntityContext entityContext, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication, ILogger<ParametroAplicacionAD> logger, ILoggerFactory loggerFactory)
+            : base(loggingService, entityContext, configService, servicesUtilVirtuosoAndReplication,logger,loggerFactory)
         {
             mEntityContext = entityContext;
+            mLogger = logger;
+            mLoggerFactory = loggerFactory;
         }
 
         #endregion

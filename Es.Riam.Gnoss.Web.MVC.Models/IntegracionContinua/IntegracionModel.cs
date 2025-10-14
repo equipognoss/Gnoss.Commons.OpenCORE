@@ -44,6 +44,10 @@ namespace Es.Riam.Gnoss.Web.MVC.Models.IntegracionContinua
         ConfigSearch,
         ConfigAutocompletar,
         DatosExtra,
-        Graficos
+        Graficos,
+        AplicacionEspecifica,
+        ConfiguracionCaches,
+        EventosExternos,
+        Mapa
     }
 }

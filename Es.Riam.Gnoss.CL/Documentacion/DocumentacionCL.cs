@@ -2,16 +2,21 @@ using Es.Riam.AbstractsOpen;
 using Es.Riam.Gnoss.AD.Documentacion;
 using Es.Riam.Gnoss.AD.EncapsuladoDatos;
 using Es.Riam.Gnoss.AD.EntityModel;
+using Es.Riam.Gnoss.AD.EntityModel.Models.Documentacion;
 using Es.Riam.Gnoss.AD.Facetado;
 using Es.Riam.Gnoss.AD.Facetado.Model;
+using Es.Riam.Gnoss.AD.ParametroAplicacion;
 using Es.Riam.Gnoss.Elementos.MapeoTesauroComunidad;
 using Es.Riam.Gnoss.Logica.Documentacion;
+using Es.Riam.Gnoss.Logica.ServiciosGenerales;
 using Es.Riam.Gnoss.Util.Configuracion;
 using Es.Riam.Gnoss.Util.General;
 using Es.Riam.Gnoss.Web.MVC.Models;
 using Es.Riam.Semantica.OWL;
 using Es.Riam.Semantica.Plantillas;
 using Es.Riam.Util;
+using Microsoft.Extensions.Logging;
+using Serilog.Core;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -53,7 +58,8 @@ namespace Es.Riam.Gnoss.CL.Documentacion
         private EntityContext mEntityContext;
         private LoggingService mLoggingService;
         private RedisCacheWrapper mRedisCacheWrapper;
-
+        private ILogger mlogger;
+        private ILoggerFactory mLoggerFactory;
         #endregion
 
         #region Constructores
@@ -61,24 +67,28 @@ namespace Es.Riam.Gnoss.CL.Documentacion
         /// <summary>
         /// Constructor para DocumentacionCL
         /// </summary>
-        public DocumentacionCL(EntityContext entityContext, LoggingService loggingService, RedisCacheWrapper redisCacheWrapper, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication)
-            : base(entityContext, loggingService, redisCacheWrapper, configService, servicesUtilVirtuosoAndReplication)
+        public DocumentacionCL(EntityContext entityContext, LoggingService loggingService, RedisCacheWrapper redisCacheWrapper, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication, ILogger<DocumentacionCL> logger, ILoggerFactory loggerFactory)
+            : base(entityContext, loggingService, redisCacheWrapper, configService, servicesUtilVirtuosoAndReplication,logger,loggerFactory)
         {
             mConfigService = configService;
             mEntityContext = entityContext;
             mLoggingService = loggingService;
+            mlogger = logger;
+            mLoggerFactory = loggerFactory;
         }
 
         /// <summary>
         /// Constructor para DocumentacionCL
         /// </summary>
         /// <param name="pPoolName">Nombre del pool de conexión</param>
-        public DocumentacionCL(string pFicheroConfiguracionBD, EntityContext entityContext, LoggingService loggingService, RedisCacheWrapper redisCacheWrapper, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication)
-            : base(pFicheroConfiguracionBD, entityContext, loggingService, redisCacheWrapper, configService, servicesUtilVirtuosoAndReplication)
+        public DocumentacionCL(string pFicheroConfiguracionBD, EntityContext entityContext, LoggingService loggingService, RedisCacheWrapper redisCacheWrapper, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication, ILogger<DocumentacionCL> logger, ILoggerFactory loggerFactory)
+            : base(pFicheroConfiguracionBD, entityContext, loggingService, redisCacheWrapper, configService, servicesUtilVirtuosoAndReplication,logger,loggerFactory)
         {
             mConfigService = configService;
             mEntityContext = entityContext;
             mLoggingService = loggingService;
+            mlogger = logger;
+            mLoggerFactory = loggerFactory;
         }
 
         /// <summary>
@@ -86,12 +96,14 @@ namespace Es.Riam.Gnoss.CL.Documentacion
         /// </summary>
         /// <param name="pFicheroConfiguracionBD">Fichero de configuración</param>
         /// <param name="pPoolName">Nombre del pool de conexión</param>
-        public DocumentacionCL(string pFicheroConfiguracionBD, string pPoolName, EntityContext entityContext, LoggingService loggingService, RedisCacheWrapper redisCacheWrapper, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication)
-            : base(pFicheroConfiguracionBD, pPoolName, entityContext, loggingService, redisCacheWrapper, configService, servicesUtilVirtuosoAndReplication)
+        public DocumentacionCL(string pFicheroConfiguracionBD, string pPoolName, EntityContext entityContext, LoggingService loggingService, RedisCacheWrapper redisCacheWrapper, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication, ILogger<DocumentacionCL> logger, ILoggerFactory loggerFactory)
+            : base(pFicheroConfiguracionBD, pPoolName, entityContext, loggingService, redisCacheWrapper, configService, servicesUtilVirtuosoAndReplication,logger,loggerFactory)
         {
             mConfigService = configService;
             mEntityContext = entityContext;
             mLoggingService = loggingService;
+            mlogger = logger;
+            mLoggerFactory = loggerFactory;
         }
 
         #endregion
@@ -120,7 +132,8 @@ namespace Es.Riam.Gnoss.CL.Documentacion
                     listaClaves[i] = clave.ToLower();
                     i++;
                 }
-                Dictionary<string, object> objetosCache = ObtenerListaObjetosCache(listaClaves, typeof(FacetadoDS));
+                Dictionary<string, object> objetosCache = ObtenerListaObjetosCache(listaClaves);
+
                 foreach (Guid idRecurso in keysRecursos.Keys)
                 {
                     string clave = keysRecursos[idRecurso];
@@ -149,7 +162,7 @@ namespace Es.Riam.Gnoss.CL.Documentacion
                     listaClaves[i] = clave.ToLower();
                     i++;
                 }
-                Dictionary<string, object> objetosCache = ObtenerListaObjetosCache(listaClaves, typeof(FacetadoDS));
+                Dictionary<string, object> objetosCache = ObtenerListaObjetosCache(listaClaves);
                 foreach (Guid idRecurso in keysRecursos.Keys)
                 {
                     string clave = keysRecursos[idRecurso];
@@ -183,7 +196,7 @@ namespace Es.Riam.Gnoss.CL.Documentacion
                 listaClaves[i] = clave.ToLower();
                 i++;
             }
-            Dictionary<string, object> objetosCache = ObtenerListaObjetosCache(listaClaves, typeof(FacetadoDS));
+            Dictionary<string, object> objetosCache = ObtenerListaObjetosCache(listaClaves);
             i = 0;
             foreach (Guid idRecurso in keysRecursos.Keys)
             {
@@ -204,7 +217,7 @@ namespace Es.Riam.Gnoss.CL.Documentacion
                 listaObjetosAgregar[i] = configVistaFicha;
                 i++;
             }
-            AgregarListaObjetosCache(listaClaves, listaObjetosAgregar, false, DuracionCacheFichaRecursos);
+            AgregarListaObjetosCache(listaClaves, listaObjetosAgregar, true, DuracionCacheFichaRecursos);
         }
 
         public void AgregarFichasRecursosPropiedadesPersonalizadasSemanticasMVC(Dictionary<Guid, FacetadoDS> pListaRecursos, Guid pProyectoID, string pIdioma)
@@ -220,7 +233,7 @@ namespace Es.Riam.Gnoss.CL.Documentacion
                 listaClaves[i] = clave.ToLower();
                 i++;
             }
-            Dictionary<string, object> objetosCache = ObtenerListaObjetosCache(listaClaves, typeof(FacetadoDS));
+            Dictionary<string, object> objetosCache = ObtenerListaObjetosCache(listaClaves);
             i = 0;
             foreach (Guid idRecurso in keysRecursos.Keys)
             {
@@ -241,7 +254,7 @@ namespace Es.Riam.Gnoss.CL.Documentacion
                 listaObjetosAgregar[i] = configVistaFicha;
                 i++;
             }
-            AgregarListaObjetosCache(listaClaves, listaObjetosAgregar, false, DuracionCacheFichaRecursos);
+            AgregarListaObjetosCache(listaClaves, listaObjetosAgregar, true, DuracionCacheFichaRecursos);
         }
 
         public ResourceModel ObtenerFichaRecursoMVC(Guid pDocumentoID, Guid pProyectoID)
@@ -269,7 +282,7 @@ namespace Es.Riam.Gnoss.CL.Documentacion
                     listaClaves[i] = clave.ToLower();
                     i++;
                 }
-                Dictionary<string, object> objetosCache = ObtenerListaObjetosCache(listaClaves, typeof(ResourceModel));
+                Dictionary<string, object> objetosCache = ObtenerListaObjetosCache(listaClaves);
                 foreach (Guid idRecurso in keysRecursos.Keys)
                 {
                     string clave = keysRecursos[idRecurso];
@@ -350,7 +363,7 @@ namespace Es.Riam.Gnoss.CL.Documentacion
                     listaClaves[i] = clave.ToLower();
                     i++;
                 }
-                Dictionary<string, object> objetosCache = ObtenerListaObjetosCache(listaClaves, typeof(ResourceEventModel));
+                Dictionary<string, object> objetosCache = ObtenerListaObjetosCache(listaClaves);
                 foreach (Guid idRecurso in keysRecursos.Keys)
                 {
                     string clave = keysRecursos[idRecurso];
@@ -364,16 +377,16 @@ namespace Es.Riam.Gnoss.CL.Documentacion
         {
             string rawKey = "ComentariosRecursoMVC_" + pDocumentoID + "_" + pProyectoID;
 
-            object comentarios = ObtenerObjetoDeCache(rawKey);
+            object comentarios = ObtenerObjetoDeCache(rawKey, typeof(List<CommentModel>));
 
             return comentarios;
         }
-
+        // TODO: Revisar
         public object ObtenerVinculadosRecursoMVC(Guid pDocumentoID, Guid pProyectoID)
         {
             string rawKey = "VinculadosRecursoMVC_" + pDocumentoID + "_" + pProyectoID;
 
-            object vinculados = ObtenerObjetoDeCache(rawKey);
+            object vinculados = ObtenerObjetoDeCache(rawKey, typeof(List<Guid>));
 
             return vinculados;
         }
@@ -382,7 +395,7 @@ namespace Es.Riam.Gnoss.CL.Documentacion
         {
             string rawKey = "ContextoRecursoMVC_" + pDocumentoID + "_" + pProyectoID + "_" + pGadgetID;
 
-            List<Guid> contexto = ObtenerObjetoDeCache(rawKey) as List<Guid>;
+            List<Guid> contexto = ObtenerObjetoDeCache(rawKey, typeof(List<Guid>)) as List<Guid>;
 
             return contexto;
         }
@@ -391,7 +404,7 @@ namespace Es.Riam.Gnoss.CL.Documentacion
         {
             string rawKey = "RelacionadosRecursoMVC_" + pDocumentoID + "_" + pProyectoID;
 
-            object relaccionados = ObtenerObjetoDeCache(rawKey);
+            object relaccionados = ObtenerObjetoDeCache(rawKey, typeof(List<Guid>));
 
             return relaccionados;
         }
@@ -509,7 +522,7 @@ namespace Es.Riam.Gnoss.CL.Documentacion
         {
             string rawKey = string.Concat(NombresCL.PERFILESCONRECURSOSPRIVADOS, "_", pProyectoID.ToString());
 
-            List<Guid> perfilesConRecursosPrivados = ObtenerObjetoDeCache(rawKey) as List<Guid>;
+            List<Guid> perfilesConRecursosPrivados = ObtenerObjetoDeCache(rawKey, typeof(List<Guid>)) as List<Guid>;
 
             if (perfilesConRecursosPrivados == null)
             {
@@ -540,7 +553,7 @@ namespace Es.Riam.Gnoss.CL.Documentacion
         public string ObtenerEnlaceDocumentoPorDocumentoID(Guid pDocumentoID)
         {
             string rawKey = string.Concat("Enlace_", pDocumentoID.ToString());
-            string enlace = (string)ObtenerObjetoDeCache(rawKey);
+            string enlace = (string)ObtenerObjetoDeCache(rawKey, typeof(string));
             if (enlace == null)
             {
                 enlace = DocumentacionCN.ObtenerEnlaceDocumentoPorDocumentoID(pDocumentoID);
@@ -553,7 +566,7 @@ namespace Es.Riam.Gnoss.CL.Documentacion
         {
             string rawKey = string.Concat("DocumentosOntologiasProyecto_", pProyectoID.ToString());
             mEntityContext.UsarEntityCache = true;
-            DataWrapperDocumentacion docDW = ObtenerObjetoDeCache(rawKey) as DataWrapperDocumentacion;
+            DataWrapperDocumentacion docDW = ObtenerObjetoDeCache(rawKey, typeof(DataWrapperDocumentacion)) as DataWrapperDocumentacion;
 
             if (docDW == null)
             {
@@ -578,7 +591,7 @@ namespace Es.Riam.Gnoss.CL.Documentacion
 
             if (pTraerOntosEntorno)
             {
-                DataWrapperDocumentacion docDWEntorno = ObtenerObjetoDeCache("DocumentosOntologiasEntorno") as DataWrapperDocumentacion;
+                DataWrapperDocumentacion docDWEntorno = ObtenerObjetoDeCache("DocumentosOntologiasEntorno",typeof(DataWrapperDocumentacion)) as DataWrapperDocumentacion;
 
                 if (docDWEntorno == null)
                 {
@@ -651,8 +664,8 @@ namespace Es.Riam.Gnoss.CL.Documentacion
                     break;
             }
 
-            documentacionDS = (DataWrapperDocumentacion)ObtenerObjetoDeCache(rawKey);
-            cuantos = (int?)ObtenerObjetoDeCache(string.Concat(rawKeyCuantos));
+            documentacionDS = (DataWrapperDocumentacion)ObtenerObjetoDeCache(rawKey, typeof(DataWrapperDocumentacion));
+            cuantos = (int?)ObtenerObjetoDeCache(string.Concat(rawKeyCuantos), typeof(int));
             if (cuantos.HasValue)
             {
                 pCuantos = cuantos.Value;
@@ -809,7 +822,7 @@ namespace Es.Riam.Gnoss.CL.Documentacion
                 foreach (string claveCache in claves)
                 {
                     //Para cada cache obtenida, comprobamos si el documento esta en ella
-                    docDW = (DataWrapperDocumentacion)ObtenerObjetoDeCache(claveCache, false);
+                    docDW = (DataWrapperDocumentacion)ObtenerObjetoDeCache(claveCache, false,typeof(DataWrapperDocumentacion));
                     if (docDW != null)
                     {
                         bool contieneElRecurso = false;
@@ -914,7 +927,7 @@ namespace Es.Riam.Gnoss.CL.Documentacion
         {
             string rawKey = "LeccionesDidactalia";
 
-            return (string)ObtenerObjetoDeCache(rawKey);
+            return (string)ObtenerObjetoDeCache(rawKey, typeof(string));
         }
         #endregion
 
@@ -936,11 +949,11 @@ namespace Es.Riam.Gnoss.CL.Documentacion
         public AD.EntityModel.Models.Documentacion.DocumentoMetaDatos ObtenerMetaDatos(Guid pDocumentoID)
         {
             string rawKey = string.Concat("DocumentoMetaDatos_DocumentoID_", pDocumentoID);
-            AD.EntityModel.Models.Documentacion.DocumentoMetaDatos documentoMetaDatos = ObtenerObjetoDeCache(rawKey) as AD.EntityModel.Models.Documentacion.DocumentoMetaDatos;
+            AD.EntityModel.Models.Documentacion.DocumentoMetaDatos documentoMetaDatos = ObtenerObjetoDeCache(rawKey, typeof(DocumentoMetaDatos)) as AD.EntityModel.Models.Documentacion.DocumentoMetaDatos;
 
             if (documentoMetaDatos == null)
             {
-                DocumentacionAD documentacionAD = new DocumentacionAD(mLoggingService, mEntityContext, mConfigService, mServicesUtilVirtuosoAndReplication);
+                DocumentacionAD documentacionAD = new DocumentacionAD(mLoggingService, mEntityContext, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<DocumentacionAD>(), mLoggerFactory);
                 documentoMetaDatos = documentacionAD.ObtenerEtiquetasMeta(pDocumentoID);
                 if (documentoMetaDatos != null)
                 {
@@ -993,7 +1006,7 @@ namespace Es.Riam.Gnoss.CL.Documentacion
 
             string rawKey = string.Concat(NombresCL.RECURSOSRELACIONADOSCONTEXTOS, "_", pTablaBaseProyectoID.ToString(), "_", pDocumentoID.ToString(), "_", pNombreCortoGadget, "_", pIdioma, "_");
 
-            return (string)ObtenerObjetoDeCache(rawKey);
+            return (string)ObtenerObjetoDeCache(rawKey, typeof(string));
         }
 
         /// <summary>
@@ -1007,7 +1020,7 @@ namespace Es.Riam.Gnoss.CL.Documentacion
             mEntityContext.UsarEntityCache = true;
             string rawKey = string.Concat("RecursosPopularesProyecto_", pProyectoID.ToString());
 
-            DataWrapperDocumentacion docDW = (DataWrapperDocumentacion)ObtenerObjetoDeCache(rawKey);
+            DataWrapperDocumentacion docDW = (DataWrapperDocumentacion)ObtenerObjetoDeCache(rawKey, typeof(DataWrapperDocumentacion));
             if (docDW == null)
             {
                 docDW = new DataWrapperDocumentacion();
@@ -1053,7 +1066,7 @@ namespace Es.Riam.Gnoss.CL.Documentacion
             string rawKey = string.Concat(NombresCL.RECURSOSRELACIONADOS, "_", pProyectoID.ToString(), "_", pDocumentoID.ToString(), "_", pIdioma);
             string rawKeyNum = string.Concat(NombresCL.NUMRECURSOSRELACIONADOS, "_", pProyectoID.ToString(), "_", pDocumentoID.ToString(), "_", pIdioma);
 
-            int? numRecursos = (int?)ObtenerObjetoDeCache(rawKeyNum);
+            int? numRecursos = (int?)ObtenerObjetoDeCache(rawKeyNum, typeof(int));
             if (numRecursos.HasValue)
             {
                 pNumRecursos = numRecursos.Value;
@@ -1064,7 +1077,7 @@ namespace Es.Riam.Gnoss.CL.Documentacion
             }
 
             string relacionados = null;
-            byte[] comprimido = (byte[])ObtenerObjetoDeCache(rawKey);
+            byte[] comprimido = (byte[])ObtenerObjetoDeCache(rawKey, typeof(byte[]));
 
             if (comprimido != null)
             {
@@ -1186,7 +1199,7 @@ namespace Es.Riam.Gnoss.CL.Documentacion
             DataWrapperDocumentacion dataWrapperDocumentacion = ObtenerObjetoDeCacheLocal(rawKey) as DataWrapperDocumentacion;
             if (dataWrapperDocumentacion == null)
             {
-                dataWrapperDocumentacion = ObtenerObjetoDeCache(rawKey) as DataWrapperDocumentacion;
+                dataWrapperDocumentacion = ObtenerObjetoDeCache(rawKey, typeof(DataWrapperDocumentacion)) as DataWrapperDocumentacion;
                 if (dataWrapperDocumentacion != null)
                 {
                     dataWrapperDocumentacion.CargaRelacionesPerezosasCache();
@@ -1277,7 +1290,7 @@ namespace Es.Riam.Gnoss.CL.Documentacion
             DataWrapperDocumentacion dataWrapperDocumentacion = ObtenerObjetoDeCacheLocal(rawKey) as DataWrapperDocumentacion;
             if (dataWrapperDocumentacion == null)
             {
-                dataWrapperDocumentacion = (DataWrapperDocumentacion)ObtenerObjetoDeCache(rawKey);
+                dataWrapperDocumentacion = (DataWrapperDocumentacion)ObtenerObjetoDeCache(rawKey, typeof(DataWrapperDocumentacion));
                 if (dataWrapperDocumentacion != null)
                 {
                     dataWrapperDocumentacion.CargaRelacionesPerezosasCache();
@@ -1312,7 +1325,7 @@ namespace Es.Riam.Gnoss.CL.Documentacion
             DataWrapperDocumentacion dataWrapperDocumentacion = ObtenerObjetoDeCacheLocal(rawKey) as DataWrapperDocumentacion;
             if (dataWrapperDocumentacion == null)
             {
-                dataWrapperDocumentacion = (DataWrapperDocumentacion)ObtenerObjetoDeCache(rawKey);
+                dataWrapperDocumentacion = (DataWrapperDocumentacion)ObtenerObjetoDeCache(rawKey, typeof(DataWrapperDocumentacion));
                 if (dataWrapperDocumentacion != null)
                 {
                     dataWrapperDocumentacion.CargaRelacionesPerezosasCache();
@@ -1359,7 +1372,7 @@ namespace Es.Riam.Gnoss.CL.Documentacion
         public string ObtenerQueSeEstaLeyendo(Guid pProyectoID)
         {
             string rawKey = string.Concat(NombresCL.QUESEESTALEYENDO, "_", pProyectoID.ToString());
-            return (string)ObtenerObjetoDeCache(rawKey);
+            return (string)ObtenerObjetoDeCache(rawKey, typeof(string));
         }
 
         #endregion
@@ -1765,7 +1778,7 @@ namespace Es.Riam.Gnoss.CL.Documentacion
 
             if (pDiccionarioMapeoCategorias == null || pListaMapeoPropiedadesEntidades == null)
             {
-                DocumentacionCL docCL = new DocumentacionCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mServicesUtilVirtuosoAndReplication);
+                DocumentacionCL docCL = new DocumentacionCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<DocumentacionCL>(), mLoggerFactory);
                 docCL.CargarPropiedadesYMappingCategoriasTesauroSemantico(pProyectoID, pDiccionarioMapeoCategorias, pListaMapeoPropiedadesEntidades, pArrayMapeo);
                 docCL.Dispose();
             }
@@ -1791,7 +1804,7 @@ namespace Es.Riam.Gnoss.CL.Documentacion
         public Dictionary<string, List<Guid>> ObtenerDiccionarioMapeoCategoriasTesauroSemantico(Guid pProyectoID)
         {
             string rawKey = string.Concat("MapeoCategoriasTesauroSemantico", "_", pProyectoID.ToString());
-            Dictionary<string, List<Guid>> diccionarioMapeo = (Dictionary<string, List<Guid>>)ObtenerObjetoDeCache(rawKey);
+            Dictionary<string, List<Guid>> diccionarioMapeo = (Dictionary<string, List<Guid>>)ObtenerObjetoDeCache(rawKey, typeof(Dictionary<string, List<Guid>>));
             return diccionarioMapeo;
         }
 
@@ -1822,7 +1835,7 @@ namespace Es.Riam.Gnoss.CL.Documentacion
         public MapeoTesauroComunidad ObtenerDeCacheMapeoCategoriasTesauroComunidad(Guid pProyectoID)
         {
             string rawKey = string.Concat("MapeoCategoriasTesauroComunidad", "_", pProyectoID.ToString());
-            MapeoTesauroComunidad mapeoTesauroComunidad = (MapeoTesauroComunidad)ObtenerObjetoDeCache(rawKey);
+            MapeoTesauroComunidad mapeoTesauroComunidad = (MapeoTesauroComunidad)ObtenerObjetoDeCache(rawKey, typeof(MapeoTesauroComunidad));
             return mapeoTesauroComunidad;
         }
 
@@ -1848,7 +1861,7 @@ namespace Es.Riam.Gnoss.CL.Documentacion
         public List<List<string>> ObtenerListaMapeoPropiedadesEntidades(Guid pProyectoID)
         {
             string rawKey = string.Concat("MapeoPropiedadesEntidades", "_", pProyectoID.ToString());
-            List<List<string>> listaPropiedadesEntidades = (List<List<string>>)ObtenerObjetoDeCache(rawKey);
+            List<List<string>> listaPropiedadesEntidades = (List<List<string>>)ObtenerObjetoDeCache(rawKey, typeof(List<List<string>>));
             return listaPropiedadesEntidades;
         }
 
@@ -1880,7 +1893,7 @@ namespace Es.Riam.Gnoss.CL.Documentacion
         public byte[] ObtenerDocumentoMapeoTesauro(Guid pProyectoID, string pNombreDocumento)
         {
             string rawKey = string.Concat(pNombreDocumento, "_", pProyectoID.ToString());
-            byte[] onto = (byte[])ObtenerObjetoDeCache(rawKey);
+            byte[] onto = (byte[])ObtenerObjetoDeCache(rawKey, typeof(byte[]));
             return onto;
         }
 
@@ -1912,7 +1925,7 @@ namespace Es.Riam.Gnoss.CL.Documentacion
         public byte[] ObtenerOntologia(Guid pDocumentoID)
         {
             string rawKey = string.Concat("OntologiaDocSem", "_", pDocumentoID.ToString());
-            byte[] onto = (byte[])ObtenerObjetoDeCache(rawKey);
+            byte[] onto = (byte[])ObtenerObjetoDeCache(rawKey, typeof(byte[]));
             return onto;
         }
 
@@ -1943,8 +1956,8 @@ namespace Es.Riam.Gnoss.CL.Documentacion
         public Guid? ObtenerIDXmlOntologia(Guid pDocumentoID)
         {
             string rawKey = string.Concat("XmlOntologiaDocSem", "_", pDocumentoID.ToString());
-            Guid? xmlID = (Guid?)ObtenerObjetoDeCache(rawKey);
-            return xmlID;
+            Guid? xmlID = ObtenerObjetoDeCache(rawKey, typeof(Guid?)) as Guid?;
+			return xmlID;
         }
 
         /// <summary>
@@ -1997,7 +2010,7 @@ namespace Es.Riam.Gnoss.CL.Documentacion
             string claveVin = ObtenerClaveCache(ClaveControlVinculadosFichaRecursos(pProyectoID, pDocumentoID)).ToLower();
 
             string[] array = new string[] { claveRec, claveComen, claveVin };
-            Dictionary<string, object> objetos = ObtenerListaObjetosCache(array, typeof(object));
+            Dictionary<string, object> objetos = ObtenerListaObjetosCache(array);
             if (objetos != null)
             {
                 string[] controles = new string[3];
@@ -2059,7 +2072,7 @@ namespace Es.Riam.Gnoss.CL.Documentacion
         {
             string rawKey = ClaveControlFichaRecursos(pProyectoID, pDocumentoID);
 
-            string html = (string)ObtenerObjetoDeCache(rawKey);
+            string html = (string)ObtenerObjetoDeCache(rawKey, typeof(string));
 
             return html;
         }
@@ -2134,7 +2147,7 @@ namespace Es.Riam.Gnoss.CL.Documentacion
         {
             string rawKey = ClaveControlComentariosFichaRecursos(pProyectoID, pDocumentoID);
 
-            string html = (string)ObtenerObjetoDeCache(rawKey);
+            string html = (string)ObtenerObjetoDeCache(rawKey, typeof(string));
 
             return html;
         }
@@ -2189,7 +2202,7 @@ namespace Es.Riam.Gnoss.CL.Documentacion
         {
             string rawKey = ClaveControlVinculadosFichaRecursos(pProyectoID, pDocumentoID);
 
-            string html = (string)ObtenerObjetoDeCache(rawKey);
+            string html = (string)ObtenerObjetoDeCache(rawKey, typeof(string));
 
             return html;
         }
@@ -2228,11 +2241,11 @@ namespace Es.Riam.Gnoss.CL.Documentacion
                 {
                     if (mFicheroConfiguracionBD != null && mFicheroConfiguracionBD != "")
                     {
-                        mDocumentacionCN = new DocumentacionCN(mFicheroConfiguracionBD, true, mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+                        mDocumentacionCN = new DocumentacionCN(mFicheroConfiguracionBD, true, mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<DocumentacionCN>(), mLoggerFactory);
                     }
                     else
                     {
-                        mDocumentacionCN = new DocumentacionCN(true, mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+                        mDocumentacionCN = new DocumentacionCN(true, mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<DocumentacionCN>(), mLoggerFactory);
                     }
                 }
 
@@ -2313,7 +2326,7 @@ namespace Es.Riam.Gnoss.CL.Documentacion
                 }
                 catch (Exception e)
                 {
-                    mLoggingService.GuardarLogError(e);
+                    mLoggingService.GuardarLogError(e, mlogger);
                 }
             }
         }

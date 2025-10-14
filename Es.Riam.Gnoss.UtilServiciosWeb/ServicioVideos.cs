@@ -2,6 +2,7 @@
 using Es.Riam.Gnoss.Util.General;
 using Es.Riam.Gnoss.Util.Seguridad;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -10,6 +11,7 @@ using System.Linq;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
+using System.Web;
 
 namespace Es.Riam.Gnoss.UtilServiciosWeb
 {
@@ -20,8 +22,10 @@ namespace Es.Riam.Gnoss.UtilServiciosWeb
         private CallTokenService mCallTokenService;
         private TokenBearer mToken;
         private LoggingService mLoggingService;
+        private ILogger mlogger;
+        private ILoggerFactory mLoggerFactory;
 
-        public ServicioVideos(ConfigService configService, LoggingService loggingService)
+        public ServicioVideos(ConfigService configService, LoggingService loggingService, ILogger<ServicioVideos> logger,ILoggerFactory loggerFactory)
         {
             mConfigService = configService;
             mUrlInternService = mConfigService.ObtenerUrlServicioInterno();
@@ -30,6 +34,9 @@ namespace Es.Riam.Gnoss.UtilServiciosWeb
             mLoggingService.AgregarEntrada("INICIO Peticion para obtener el token del identity");
             mToken = mCallTokenService.CallTokenApi();
             mLoggingService.AgregarEntrada("FIN Peticion para obtener el token del identity");
+            mlogger = logger;
+            mLoggerFactory = loggerFactory;
+
         }
 
         public bool AgregarDocumento(byte[] pBytes, Guid pDocumentoID,string pNombre, string pExtension)
@@ -44,7 +51,7 @@ namespace Es.Riam.Gnoss.UtilServiciosWeb
             }
             catch(Exception ex)
             {
-                mLoggingService.GuardarLogError(ex, $"Error al agregar el documento {pDocumentoID} con nombre {pNombre}{pExtension}");
+                mLoggingService.GuardarLogError(ex, $"Error al agregar el documento {pDocumentoID} con nombre {pNombre}{pExtension}", mlogger);
                 return false;
             }            
         }
@@ -61,9 +68,26 @@ namespace Es.Riam.Gnoss.UtilServiciosWeb
             }
             catch (Exception ex)
             {
-                mLoggingService.GuardarLogError(ex, $"Error al agregar el vídeo {pDocumentoID}{pExtensionArchivo}");
+                mLoggingService.GuardarLogError(ex, $"Error al agregar el vídeo {pDocumentoID}{pExtensionArchivo}", mlogger);
                 return 0;
             }         
+        }
+
+        public int BorrarVideosDeRecurso(string pRuta)
+        {
+            try
+            {
+                mLoggingService.AgregarEntrada("INICIO Peticion BorrarVideosDeRecurso");
+                string result = CallWebMethods.CallGetApiToken(mUrlInternService, $"Videos/BorrarVideosDeRecurso?pRuta={HttpUtility.UrlEncode(pRuta)}", mToken);
+                mLoggingService.AgregarEntrada("FIN Peticion BorrarVideosDeRecurso");
+                int exito = JsonConvert.DeserializeObject<int>(result);
+                return exito;
+            }
+            catch (Exception ex)
+            {
+                mLoggingService.GuardarLogError(ex, $"Error al eliminar los videos de la ruta '{pRuta}'", mlogger);
+                return 0;
+            }
         }
 
         public int AgregarVideoOrganizacion(byte[] bufferRecurso, string pExtensionArchivo, Guid pDocumentoID, Guid pOrganizacionID)
@@ -78,7 +102,7 @@ namespace Es.Riam.Gnoss.UtilServiciosWeb
             }
             catch (Exception ex)
             {
-                mLoggingService.GuardarLogError(ex, $"Error al agregar vídeo el vídeo {pDocumentoID}{pExtensionArchivo} de la organización {pOrganizacionID}");
+                mLoggingService.GuardarLogError(ex, $"Error al agregar vídeo el vídeo {pDocumentoID}{pExtensionArchivo} de la organización {pOrganizacionID}", mlogger);
                 return 0;
             }
         }
@@ -95,11 +119,39 @@ namespace Es.Riam.Gnoss.UtilServiciosWeb
             }
             catch (Exception ex)
             {
-                mLoggingService.GuardarLogError(ex, $"Error al agregar el vídeo {pDocumentoID}{pExtensionArchivo} a la persona {pPersonaID}");
+                mLoggingService.GuardarLogError(ex, $"Error al agregar el vídeo {pDocumentoID}{pExtensionArchivo} a la persona {pPersonaID}", mlogger);
                 return 0;
             }
         }
-        
+
+        public bool MoverVideoRecursoModificado(string pVideo, Guid pDocumentoID)
+        {
+            try
+            {
+                CallWebMethods.CallGetApiToken(mUrlInternService, $"Videos/move-video-modified-resource?pImagen={HttpUtility.UrlEncode(pVideo)}&pDocumentoID={pDocumentoID}", mToken);
+                return true;
+            }
+            catch (Exception ex)
+            {
+                mLoggingService.GuardarLogError(ex, mlogger);
+                return false;
+            }
+        }
+
+        public bool MoverVideosRecursoOtroAlmacenamiento(string pRuta, Guid pDocumentoID)
+        {
+            try
+            {
+                CallWebMethods.CallGetApiToken(mUrlInternService, $"Videos/move-videos-deleted-resource?relative_path={HttpUtility.UrlEncode(pRuta)}&pDocumentoID={pDocumentoID}", mToken);
+                return true;
+            }
+            catch (Exception ex)
+            {
+                mLoggingService.GuardarLogError(ex, mlogger);
+                return false;
+            }
+        }
+
         public double ObtenerEspacioVideoPersonal(Guid pDocumentoID, Guid pPersonaID)
         {
             try
@@ -112,7 +164,7 @@ namespace Es.Riam.Gnoss.UtilServiciosWeb
             }
             catch (Exception ex)
             {
-                mLoggingService.GuardarLogError(ex, $"Error al obtener el vídeo {pDocumentoID} de la persona {pPersonaID}");
+                mLoggingService.GuardarLogError(ex, $"Error al obtener el vídeo {pDocumentoID} de la persona {pPersonaID}", mlogger);
                 return 0;
             }            
         }
@@ -129,34 +181,26 @@ namespace Es.Riam.Gnoss.UtilServiciosWeb
             }
             catch (Exception ex)
             {
-                mLoggingService.GuardarLogError(ex, $"Error al obtener el espacio del vídeo {pDocumentoID} de la organización {pPersonaID}");
+                mLoggingService.GuardarLogError(ex, $"Error al obtener el espacio del vídeo {pDocumentoID} de la organización {pPersonaID}", mlogger);
                 return 0;
             }            
         }
 
-        public bool CopiarVideo(Guid pDocumentoID, Guid pDocumentoIDCopia, Guid pPersonaID, Guid pOrganizacionID, Guid pPersonaIDDestino, Guid pOrganizacionIDDestino)
+        public bool CopiarVideo(Guid pDocumentoID, Guid pDocumentoIDCopia, Guid pPersonaID, Guid pOrganizacionID, Guid pPersonaIDDestino, Guid pOrganizacionIDDestino, string pExtension)
         {
             try
             {
-                object objetoPeticion = new
-                {
-                    pDocumentoID = pDocumentoID,
-                    pDocumentoIDCopia = pDocumentoIDCopia,
-                    pOrganizacionID = pOrganizacionID,
-                    pPersonaID = pPersonaID,
-                    pOrganizacionIDDestino = pOrganizacionIDDestino
-                };
                 mLoggingService.AgregarEntrada("INICIO Peticion CopiarVideo");
-                string result = CallWebMethods.CallPostApiToken(mUrlInternService, $"Videos/CopiarVideo", objetoPeticion, false, "file", mToken);
+                string result = CallWebMethods.CallPostApiToken(mUrlInternService, $"Videos/CopiarVideo?pDocumentoID={pDocumentoID}&pPersonaID={pPersonaID}&pDocumentoIDCopia={pDocumentoIDCopia}&pOrganizacionID={pOrganizacionID}&pPersonaIDDestino{pPersonaIDDestino}&pOrganizacionIDDestino={pOrganizacionIDDestino}&pExtension={pExtension}", "", false, "file", mToken);
                 mLoggingService.AgregarEntrada("FIN Peticion CopiarVideo");
                 bool exito = JsonConvert.DeserializeObject<bool>(result);
                 return exito;
             }
             catch (Exception ex)
             {
-                mLoggingService.GuardarLogError(ex, $"Error al copiar el vídeo");
+                mLoggingService.GuardarLogError(ex, $"Error al copiar el vídeo", mlogger);
                 return false;
-            }           
+            }
         }
 
         public int AgregarVideoSemantico(byte[] pFichero, string pExtension, Guid pDocumentoID, Guid pVideoID)
@@ -171,7 +215,7 @@ namespace Es.Riam.Gnoss.UtilServiciosWeb
             }
             catch(Exception ex)
             {
-                mLoggingService.GuardarLogError(ex, $"Error al agregar el vídeo semántico {pVideoID}{pExtension} del documento {pDocumentoID}");
+                mLoggingService.GuardarLogError(ex, $"Error al agregar el vídeo semántico {pVideoID}{pExtension} del documento {pDocumentoID}", mlogger);
                 return 0;
             }            
         }

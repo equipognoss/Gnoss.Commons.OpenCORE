@@ -1,4 +1,5 @@
 using Es.Riam.Gnoss.Util.General;
+using Microsoft.Extensions.Logging;
 using System;
 
 namespace Es.Riam.Gnoss.Elementos.Peticiones
@@ -17,8 +18,8 @@ namespace Es.Riam.Gnoss.Elementos.Peticiones
         /// </summary>
         /// <param name="pFilaPeticion">Fila de la petición</param>
         /// <param name="pGestorPeticiones">Gestor de peticiones</param>
-        public Peticion(AD.EntityModel.Models.Peticion.Peticion pFilaPeticion, GestionPeticiones pGestorPeticiones, LoggingService loggingService)
-            : base(pFilaPeticion, pGestorPeticiones, loggingService)
+        public Peticion(AD.EntityModel.Models.Peticion.Peticion pFilaPeticion, GestionPeticiones pGestorPeticiones)
+            : base(pFilaPeticion, pGestorPeticiones)
         {
 
         }

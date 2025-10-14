@@ -13,6 +13,8 @@ using Es.Riam.Gnoss.Elementos.Tesauro;
 using Es.Riam.Gnoss.Util.General;
 using Es.Riam.Interfaces.Observador;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
+using Serilog.Core;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -69,22 +71,26 @@ namespace Es.Riam.Gnoss.Elementos.ServiciosGenerales
 
         private EntityContext mEntityContext;
         private LoggingService mLoggingService;
-        
+        private ILogger mlogger;
+        private ILoggerFactory mLoggerFactory;
 
         #endregion
 
         #region Constructores
 
+        public GestionProyecto() { }
+
         /// <summary>
         /// Constructor
         /// </summary>
         /// <param name="dataWrapperProyecto">Dataset de proyecto</param>
-        public GestionProyecto(DataWrapperProyecto dataWrapperProyecto, LoggingService loggingService, EntityContext entityContext) 
-            : base(dataWrapperProyecto, loggingService)
+        public GestionProyecto(DataWrapperProyecto dataWrapperProyecto, LoggingService loggingService, EntityContext entityContext, ILogger<GestionProyecto> logger, ILoggerFactory loggerFactory) 
+            : base(dataWrapperProyecto)
         {
             mLoggingService = loggingService;
             mEntityContext = entityContext;
-
+            mlogger = logger;
+            mLoggerFactory = loggerFactory;
             RecargarProyectos();
         }
 
@@ -98,7 +104,6 @@ namespace Es.Riam.Gnoss.Elementos.ServiciosGenerales
         {
             //mLoggingService = loggingService;
             //mEntityContext = entityContext;
-
             mParametroGeneralDS = (GestorParametroGeneral)info.GetValue("ParametroGeneralDS", typeof(GestorParametroGeneral));
             mGestorOrganizaciones = (GestionOrganizaciones)info.GetValue("GestionOrganizaciones", typeof(GestionOrganizaciones));
             mGestionPersonas = (GestionPersonas)info.GetValue("GestionPersonas", typeof(GestionPersonas));

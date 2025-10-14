@@ -120,6 +120,15 @@ namespace Es.Riam.Gnoss.Web.MVC.Models
                 /// Indica si está seleccionado
                 /// </summary>
                 public bool Selected { get; set; }
+                /// <summary>
+                /// Indica el tipo de autocompletar que se va a usar en la pestaña
+                /// </summary>
+                public short TipoAutocompletar {  get; set; }
+                /// <summary>
+                /// Indica el search personalizado que usa la pestaña
+                /// </summary>
+                public string SearchPersonalizado { get; set; }
+
             }
         }
     }

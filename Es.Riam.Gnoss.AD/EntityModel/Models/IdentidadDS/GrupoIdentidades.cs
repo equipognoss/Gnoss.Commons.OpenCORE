@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Es.Riam.Gnoss.AD.EntityModel.Models.Roles;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -45,8 +46,11 @@ namespace Es.Riam.Gnoss.AD.EntityModel.Models.IdentidadDS
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<GrupoIdentidadesParticipacion> GrupoIdentidadesParticipacion { get; set; }
+
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<GrupoIdentidadesProyecto> GrupoIdentidadesProyecto { get; set; }
 
-    }
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+		public virtual ICollection<RolGrupoIdentidades> RolGrupoIdentidades { get; set; }
+	}
 }

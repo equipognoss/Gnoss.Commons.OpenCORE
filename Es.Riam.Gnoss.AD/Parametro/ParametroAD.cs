@@ -9,6 +9,7 @@ using Es.Riam.Gnoss.Util.Configuracion;
 using Es.Riam.Gnoss.Util.General;
 using Es.Riam.Gnoss.Web.MVC.Models;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -271,14 +272,18 @@ namespace Es.Riam.Gnoss.AD.Parametro
         #region Constructor
 
         private EntityContext mEntityContext;
+        private ILogger mlogger;
+        private ILoggerFactory mLoggerFactory;
 
         /// <summary>
         /// Constructor sin parámetros
         /// </summary>
-        public ParametroAD(LoggingService loggingService, EntityContext entityContext, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication)
-            : base(loggingService, entityContext, configService, servicesUtilVirtuosoAndReplication)
+        public ParametroAD(LoggingService loggingService, EntityContext entityContext, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication, ILogger<ParametroAD> logger,ILoggerFactory loggerFactory)
+            : base(loggingService, entityContext, configService, servicesUtilVirtuosoAndReplication,logger,loggerFactory)
         {
             mEntityContext = entityContext;
+            mlogger = logger;
+            mLoggerFactory = loggerFactory;
         }
 
         /// <summary>
@@ -286,10 +291,12 @@ namespace Es.Riam.Gnoss.AD.Parametro
         /// </summary>
         /// <param name="pFicheroConfiguracionBD"></param>
         /// <param name="pUsarVariableEstatica">Si se están usando hilos con diferentes conexiones: FALSE. En caso contrario TRUE</param>
-        public ParametroAD(string pFicheroConfiguracionBD, LoggingService loggingService, EntityContext entityContext, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication)
-            : base(pFicheroConfiguracionBD, loggingService, entityContext, configService, servicesUtilVirtuosoAndReplication)
+        public ParametroAD(string pFicheroConfiguracionBD, LoggingService loggingService, EntityContext entityContext, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication, ILogger<ParametroAD> logger, ILoggerFactory loggerFactory)
+            : base(pFicheroConfiguracionBD, loggingService, entityContext, configService, servicesUtilVirtuosoAndReplication,logger,loggerFactory)
         {
             mEntityContext = entityContext;
+            mlogger = logger;
+            mLoggerFactory = loggerFactory;
         }
 
         #endregion
@@ -334,13 +341,26 @@ namespace Es.Riam.Gnoss.AD.Parametro
             return parametros;
         }
 
-        /// <summary>
-        /// Obtiene el parámetro proyecto indicado si existe
-        /// </summary>
-        /// <param name="pNombreParametro">Nombre del parametro a obtener</param>
-        /// <param name="pProyectoID">Identificador del proyecto donde queremos obtener el parámetro</param>
-        /// <returns></returns>
-        public ParametroProyecto ObtenerParametroDeProyecto(string pNombreParametro, Guid pProyectoID)
+		/// <summary>
+		/// Obtiene los eventos configurados para la publicación de eventos externos
+		/// </summary>
+		/// <param name="pProyectoID">ID del proyecto</param>
+		/// <returns></returns>
+		public string ObtenerEventosConfigurados(Guid pProyectoID, bool pEsEcosistema)
+		{
+            string parametro = "EventosConfigurados";
+            if (pEsEcosistema) parametro = "EventosConfiguradosEcosistema";
+            string eventosConfigurados = mEntityContext.ParametroProyecto.Where(item => item.ProyectoID.Equals(pProyectoID) && item.Parametro.Equals(parametro)).Select(item => item.Valor).FirstOrDefault();
+			return eventosConfigurados;
+		}
+
+		/// <summary>
+		/// Obtiene el parámetro proyecto indicado si existe
+		/// </summary>
+		/// <param name="pNombreParametro">Nombre del parametro a obtener</param>
+		/// <param name="pProyectoID">Identificador del proyecto donde queremos obtener el parámetro</param>
+		/// <returns></returns>
+		public ParametroProyecto ObtenerParametroDeProyecto(string pNombreParametro, Guid pProyectoID)
         {
             return mEntityContext.ParametroProyecto.Where(item => item.ProyectoID.Equals(pProyectoID) && item.Parametro.Equals(pNombreParametro)).FirstOrDefault();
         }

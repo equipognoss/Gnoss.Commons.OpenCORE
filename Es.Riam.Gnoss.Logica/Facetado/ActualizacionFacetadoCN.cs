@@ -3,9 +3,13 @@ using Es.Riam.Gnoss.AD.EntityModel;
 using Es.Riam.Gnoss.AD.EntityModel.Models.BASE;
 using Es.Riam.Gnoss.AD.Facetado;
 using Es.Riam.Gnoss.AD.Facetado.Model;
+using Es.Riam.Gnoss.AD.ParametroAplicacion;
 using Es.Riam.Gnoss.AD.Virtuoso;
+using Es.Riam.Gnoss.Logica.ServiciosGenerales;
 using Es.Riam.Gnoss.Util.Configuracion;
 using Es.Riam.Gnoss.Util.General;
+using Microsoft.Extensions.Logging;
+using Serilog.Core;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -22,7 +26,8 @@ namespace Es.Riam.Gnoss.Logica.Facetado
         /// DataAdapter de Blog
         /// </summary>
         private ActualizacionFacetadoAD mActualizacionFacetadoAD;
-
+        private ILogger mlogger;
+        private ILoggerFactory mLoggerFactory;
         #endregion
 
         #region Constructores
@@ -31,9 +36,11 @@ namespace Es.Riam.Gnoss.Logica.Facetado
         /// Constructor sin parámetros
         /// </summary>
         /// <param name="pUrlIntragnoss">URL de intragnoss</param>
-        public ActualizacionFacetadoCN(string pUrlIntragnoss, EntityContext entityContext, LoggingService loggingService, ConfigService configService, VirtuosoAD virtuosoAD, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication)
+        public ActualizacionFacetadoCN(string pUrlIntragnoss, EntityContext entityContext, LoggingService loggingService, ConfigService configService, VirtuosoAD virtuosoAD, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication, ILogger<ActualizacionFacetadoCN> logger, ILoggerFactory loggerFactory)
         {
-            this.mActualizacionFacetadoAD = new ActualizacionFacetadoAD(pUrlIntragnoss, loggingService, entityContext, configService, virtuosoAD, servicesUtilVirtuosoAndReplication);
+            mlogger = logger;
+            mLoggerFactory = loggerFactory;
+            this.mActualizacionFacetadoAD = new ActualizacionFacetadoAD(pUrlIntragnoss, loggingService, entityContext, configService, virtuosoAD, servicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<ActualizacionFacetadoAD>(), mLoggerFactory);
         }
 
         /// <summary>
@@ -42,9 +49,11 @@ namespace Es.Riam.Gnoss.Logica.Facetado
         /// <param name="pFicheroConfiguracionBD"></param>
         /// <param name="pUsarVariableEstatica"></param>
         /// <param name="pUrlIntragnoss">URL de intragnoss</param>
-        public ActualizacionFacetadoCN(string pFicheroConfiguracionBD, string pUrlIntragnoss, EntityContext entityContext, LoggingService loggingService, ConfigService configService, VirtuosoAD virtuosoAD, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication)
+        public ActualizacionFacetadoCN(string pFicheroConfiguracionBD, string pUrlIntragnoss, EntityContext entityContext, LoggingService loggingService, ConfigService configService, VirtuosoAD virtuosoAD, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication, ILogger<ActualizacionFacetadoCN> logger, ILoggerFactory loggerFactory)
         {
-            mActualizacionFacetadoAD = new ActualizacionFacetadoAD(pFicheroConfiguracionBD, pUrlIntragnoss, loggingService, entityContext, configService, virtuosoAD, servicesUtilVirtuosoAndReplication);
+            mlogger = logger;
+            mLoggerFactory = loggerFactory;
+            mActualizacionFacetadoAD = new ActualizacionFacetadoAD(pFicheroConfiguracionBD, pUrlIntragnoss, loggingService, entityContext, configService, virtuosoAD, servicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<ActualizacionFacetadoAD>(), mLoggerFactory);
         }
         #endregion
 

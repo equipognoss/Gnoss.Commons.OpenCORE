@@ -1,9 +1,12 @@
 using Es.Riam.AbstractsOpen;
 using Es.Riam.Gnoss.AD.EncapsuladoDatos;
 using Es.Riam.Gnoss.AD.EntityModel;
+using Es.Riam.Gnoss.AD.ParametroAplicacion;
 using Es.Riam.Gnoss.AD.ServiciosGenerales;
 using Es.Riam.Gnoss.Util.Configuracion;
 using Es.Riam.Gnoss.Util.General;
+using Microsoft.Extensions.Logging;
+using Serilog.Core;
 using System;
 
 namespace Es.Riam.Gnoss.Logica.ServiciosGenerales
@@ -13,15 +16,18 @@ namespace Es.Riam.Gnoss.Logica.ServiciosGenerales
     /// </summary>
     public class PaisCN : BaseCN, IDisposable
     {
-
+        private ILogger mlogger;
+        private ILoggerFactory mLoggerFactory;
         #region Constructores
         /// <summary>
         /// Constructor de PaisCN
         /// </summary>
-        public PaisCN(EntityContext entityContext, LoggingService loggingService, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication)
-            : base(entityContext, loggingService, configService, servicesUtilVirtuosoAndReplication)
+        public PaisCN(EntityContext entityContext, LoggingService loggingService, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication, ILogger<PaisCN> logger, ILoggerFactory loggerFactory)
+            : base(entityContext, loggingService, configService, servicesUtilVirtuosoAndReplication, logger, loggerFactory)
         {
-            PaisAD = new PaisAD(loggingService, entityContext, configService, servicesUtilVirtuosoAndReplication);
+            mlogger = logger;
+            mLoggerFactory = loggerFactory;
+            PaisAD = new PaisAD(loggingService, entityContext, configService, servicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<PaisAD>(), mLoggerFactory);
         }
         #endregion
 

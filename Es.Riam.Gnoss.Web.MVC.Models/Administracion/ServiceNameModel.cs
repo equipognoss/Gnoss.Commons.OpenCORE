@@ -9,5 +9,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Models.Administracion
         public string UrlServicio { get; set; }
         public bool Nueva { get; set; }
         public bool Deleted { get; set; }
+        public DateTime FechaCreacion { get; set; }
+        public DateTime FechaActualizacion { get; set; }
     }
 }

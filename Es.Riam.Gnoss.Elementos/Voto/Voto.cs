@@ -1,4 +1,5 @@
 using Es.Riam.Gnoss.Util.General;
+using Microsoft.Extensions.Logging;
 using System;
 
 namespace Es.Riam.Gnoss.Elementos.Voto
@@ -24,8 +25,8 @@ namespace Es.Riam.Gnoss.Elementos.Voto
         /// <summary>
         /// Constructor sin parámetros
         /// </summary> 
-        public Voto(LoggingService loggingService)
-            : base(loggingService)
+        public Voto()
+            : base()
         {
         }
 
@@ -34,8 +35,8 @@ namespace Es.Riam.Gnoss.Elementos.Voto
         /// </summary>
         /// <param name="pFilaVoto">Fila de voto</param>
         /// <param name="pGestionVoto">Gestor de votos</param>
-        public Voto(AD.EntityModel.Models.Voto.Voto pFilaVoto, GestorVotos pGestionVoto, LoggingService loggingService)
-             : base(loggingService)
+        public Voto(AD.EntityModel.Models.Voto.Voto pFilaVoto, GestorVotos pGestionVoto)
+             : base()
         {
             mFilaVoto = pFilaVoto;
             mGestionVoto = pGestionVoto;

@@ -2,6 +2,7 @@ namespace Es.Riam.Gnoss.AD.EntityModel.Models.Faceta
 {
     using System;
     using System.Collections.Generic;
+    using System.ComponentModel;
     using System.ComponentModel.DataAnnotations;
     using System.ComponentModel.DataAnnotations.Schema;
 
@@ -81,6 +82,10 @@ namespace Es.Riam.Gnoss.AD.EntityModel.Models.Faceta
         public bool Inmutable { get; set; }
         
         public Guid? AgrupacionID { get; set; }
+
+        public DateTime FechaCreacion { get; set; }
+        [DefaultValue(true)]
+        public bool MostrarContador { get; set; }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<FacetaFiltroProyecto> FacetaFiltroProyecto { get; set; }

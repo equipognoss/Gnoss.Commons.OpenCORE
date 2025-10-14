@@ -2,6 +2,7 @@
 using Es.Riam.Gnoss.AD.EncapsuladoDatos;
 using Es.Riam.Gnoss.AD.EntityModel;
 using Es.Riam.Gnoss.AD.MetaBuscadorAD;
+using Es.Riam.Gnoss.AD.ParametroAplicacion;
 using Es.Riam.Gnoss.AD.Virtuoso;
 using Es.Riam.Gnoss.CL;
 using Es.Riam.Gnoss.CL.Tesauro;
@@ -17,6 +18,8 @@ using Es.Riam.Gnoss.Logica.Identidad;
 using Es.Riam.Gnoss.Logica.ServiciosGenerales;
 using Es.Riam.Gnoss.Util.Configuracion;
 using Es.Riam.Gnoss.Util.General;
+using Es.Riam.Gnoss.UtilServiciosWeb;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -34,21 +37,24 @@ namespace Es.Riam.Gnoss.Web.Controles.Exportaciones
         private ConfigService mConfigService;
         private RedisCacheWrapper mRedisCacheWrapper;
         private IServicesUtilVirtuosoAndReplication mServicesUtilVirtuosoAndReplication;
-        public UtilExportaciones(LoggingService loggingService, EntityContext entityContext, ConfigService configService, RedisCacheWrapper redisCacheWrapper, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication)
+        private ILogger mlogger;
+        private ILoggerFactory mLoggerFactory;
+        public UtilExportaciones(LoggingService loggingService, EntityContext entityContext, ConfigService configService, RedisCacheWrapper redisCacheWrapper, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication, ILogger<UtilExportaciones> logger, ILoggerFactory loggerFactory)
         {
             mLoggingService = loggingService;
             mEntityContext = entityContext;
             mConfigService = configService;
             mRedisCacheWrapper = redisCacheWrapper;
-            mServicesUtilVirtuosoAndReplication = servicesUtilVirtuosoAndReplication;
+            mServicesUtilVirtuosoAndReplication = servicesUtilVirtuosoAndReplication; mlogger = logger;
+            mLoggerFactory = loggerFactory;
         }
 
         public static MemoryStream EscribirDataTableEnExcel(DataTable dataTable, string nombreHoja = "Hoja1")
         {
+            //TODO: Hay que implementar la exportación a Excel
             MemoryStream escritor = new MemoryStream();
 
-            //Step 1 : Create object of ExcelPackage class and pass file path to constructor.
-            //TODO Juan Migrar a .NetCore
+            //Step 1 : Create object of ExcelPackage class and pass file path to constructor.            
             /*using (var package = new ExcelPackage(escritor))
             {
                 //Step 2 : Add a new worksheet to ExcelPackage object and give a suitable name
@@ -147,13 +153,13 @@ namespace Es.Riam.Gnoss.Web.Controles.Exportaciones
         /// <param name="pOrganizacionDW">Dataset de organizaciones</param>
         public void ObtenerIdentidadesPorID(List<Guid> pListaIdentidades, DataWrapperIdentidad pDataWrapperIdentidad, DataWrapperPersona pDataWrapperPersona, DataWrapperOrganizacion pOrganizacionDW)
         {
-            IdentidadCN identidadCN = new IdentidadCN(mEntityContext, mLoggingService, mConfigService, null);
+            IdentidadCN identidadCN = new IdentidadCN(mEntityContext, mLoggingService, mConfigService, null, mLoggerFactory.CreateLogger<IdentidadCN>(), mLoggerFactory);
             pDataWrapperIdentidad.Merge(identidadCN.ObtenerIdentidadesPorID(pListaIdentidades, false));
             identidadCN.Dispose();
 
             if (pDataWrapperPersona != null)
             {
-                PersonaCN persCN = new PersonaCN(mEntityContext, mLoggingService, mConfigService, null);
+                PersonaCN persCN = new PersonaCN(mEntityContext, mLoggingService, mConfigService, null, mLoggerFactory.CreateLogger<PersonaCN>(), mLoggerFactory);
                 //pDataWrapperPersona.Merge(persCN.ObtenerPersonasIdentidadesCargadas(pIdentidadDS), true);
                 pDataWrapperPersona.Merge(persCN.ObtenerPersonasIdentidadesCargadas(pDataWrapperIdentidad));
                 persCN.Dispose();
@@ -199,16 +205,16 @@ namespace Es.Riam.Gnoss.Web.Controles.Exportaciones
 
             if (documentosIDs.Count > 0)
             {
-                DocumentacionCN documentacionCN = new DocumentacionCN(mEntityContext, mLoggingService, mConfigService, null);
+                DocumentacionCN documentacionCN = new DocumentacionCN(mEntityContext, mLoggingService, mConfigService, null, mLoggerFactory.CreateLogger<DocumentacionCN>(), mLoggerFactory);
                 dataWrapperDocumentacion = documentacionCN.ObtenerDocumentosPorID(documentosIDs, true);
                 documentacionCN.Dispose();
             }
 
             //Cargamos los documentos dentro del Gestor documental.
-            GestorDocumental gestorDocumental = new GestorDocumental(new DataWrapperDocumentacion(), mLoggingService, mEntityContext);
+            GestorDocumental gestorDocumental = new GestorDocumental(new DataWrapperDocumentacion(), mLoggingService, mEntityContext, mLoggerFactory.CreateLogger<GestorDocumental>(), mLoggerFactory);
             gestorDocumental.DataWrapperDocumentacion.Merge(dataWrapperDocumentacion);
-            TesauroCL tesCL = new TesauroCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, null);
-            gestorDocumental.GestorTesauro = new GestionTesauro(tesCL.ObtenerTesauroDeProyecto(pProyectoID), mLoggingService, mEntityContext);
+            TesauroCL tesCL = new TesauroCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, null, mLoggerFactory.CreateLogger<TesauroCL>(), mLoggerFactory);
+            gestorDocumental.GestorTesauro = new GestionTesauro(tesCL.ObtenerTesauroDeProyecto(pProyectoID), mLoggingService, mEntityContext, mLoggerFactory.CreateLogger<GestionTesauro>(), mLoggerFactory);
             gestorDocumental.CargarDocumentosWeb();
             #endregion
 
@@ -217,12 +223,12 @@ namespace Es.Riam.Gnoss.Web.Controles.Exportaciones
 
             if (comentariosIDs.Count > 0)
             {
-                ComentarioCN comentarioCN = new ComentarioCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+                ComentarioCN comentarioCN = new ComentarioCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<ComentarioCN>(), mLoggerFactory);
                 comDW = comentarioCN.ObtenerEntradasBlogPorIDConPadreElemVinYAutor(comentariosIDs);
                 comentarioCN.Dispose();
             }
 
-            GestionComentarios mGestorComentarios = new GestionComentarios(comDW, mLoggingService, mEntityContext, mConfigService, mServicesUtilVirtuosoAndReplication);
+            GestionComentarios mGestorComentarios = new GestionComentarios(comDW, mLoggingService, mEntityContext, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<GestionComentarios>(), mLoggerFactory);
             #endregion
 
             #region PersonasYOrganizaciones
@@ -238,8 +244,8 @@ namespace Es.Riam.Gnoss.Web.Controles.Exportaciones
 
                 GestionPersonas gestorPersonas = new GestionPersonas(dataWrapperPersona, mLoggingService, mEntityContext);
                 GestionOrganizaciones gestorOrganizaciones = new GestionOrganizaciones(organizacionDW, mLoggingService, mEntityContext);
-                GestionUsuarios gestorUsuarios = new GestionUsuarios(dataWrapperUsuario, mLoggingService, mEntityContext, mConfigService);
-                gestorIdentidades = new GestionIdentidades(identDW, gestorPersonas, gestorUsuarios, gestorOrganizaciones, mLoggingService, mEntityContext, mConfigService, mServicesUtilVirtuosoAndReplication);
+                GestionUsuarios gestorUsuarios = new GestionUsuarios(dataWrapperUsuario, mLoggingService, mEntityContext, mConfigService, mLoggerFactory.CreateLogger<GestionUsuarios>(), mLoggerFactory);
+                gestorIdentidades = new GestionIdentidades(identDW, gestorPersonas, gestorUsuarios, gestorOrganizaciones, mLoggingService, mEntityContext, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<GestionIdentidades>(), mLoggerFactory);
             }
             #endregion
 

@@ -9,6 +9,7 @@ using Es.Riam.Gnoss.AD.EntityModel.Models.UsuarioDS;
 using Es.Riam.Gnoss.AD.EntityModel.Models.PersonaDS;
 using Es.Riam.Gnoss.AD.EntityModel.Models.Documentacion;
 using Es.Riam.Gnoss.AD.EntityModel.Models.Tesauro;
+using Es.Riam.Gnoss.AD.EntityModel.Models.Roles;
 
 namespace Es.Riam.Gnoss.AD.EntityModel.Models.UsuarioDS
 {
@@ -85,5 +86,8 @@ namespace Es.Riam.Gnoss.AD.EntityModel.Models.UsuarioDS
         public virtual GeneralRolUsuario GeneralRolUsuario { get; set; }
         public virtual UsuarioContadores UsuarioContadores { get; set; }
         public virtual UsuarioRedirect UsuarioRedirect { get; set; }
-    }
+
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+		public virtual ICollection<RolEcosistemaUsuario> RolEcosistemaUsuario { get; set; }
+	}
 }

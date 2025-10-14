@@ -167,14 +167,8 @@ namespace Es.Riam.Util
             if (UriActual != null)
             {
                 string urlReferer = UriActual.ToString();
-
-                //if (urlReferer.Contains("?"))
-                //{
-                //    urlReferer = urlReferer.Remove(urlReferer.IndexOf("?"));
-                //}
                 webRequest.Referer = urlReferer;
             }
-            //webRequest.Timeout = 20000;
 
             if (pCabeceras != null && pCabeceras.Count > 0)
             {
@@ -204,7 +198,7 @@ namespace Es.Riam.Util
                 requestWriter = new StreamWriter(webRequest.GetRequestStream());
                 try
                 {
-                    requestWriter.Write(pPostData.Replace("+", "%2b"));
+                    requestWriter.Write(pPostData);
                 }
                 catch
                 {
@@ -214,8 +208,9 @@ namespace Es.Riam.Util
                 {
                     requestWriter.Close();
                     requestWriter = null;
-                }
+                }          
             }
+
             responseData = WebResponseGet(webRequest);
 
             webRequest = null;
@@ -236,7 +231,6 @@ namespace Es.Riam.Util
             webRequest.ServicePoint.Expect100Continue = false;
             if (pRequest != null)
             {
-                //webRequest.UserAgent = pRequest.HttpContext.Request.Headers["UserAgent"];
                 webRequest.UserAgent = GenerarUserAgent();
                 UriActual = new Uri(UriHelper.GetEncodedUrl(pRequest.HttpContext.Request));
                 if (pRequest.HttpContext.Request.Headers != null)
@@ -272,13 +266,9 @@ namespace Es.Riam.Util
             {
                 string urlReferer = UriActual.ToString();
 
-                //if (urlReferer.Contains("?"))
-                //{
-                //    urlReferer = urlReferer.Remove(urlReferer.IndexOf("?"));
-                //}
+                
                 webRequest.Referer = Encoding.ASCII.GetString(Encoding.ASCII.GetBytes(urlReferer));
             }
-            //webRequest.Timeout = 20000;
 
             if (pCabeceras != null && pCabeceras.Count > 0)
             {
@@ -314,7 +304,7 @@ namespace Es.Riam.Util
                 requestWriter = new StreamWriter(webRequest.GetRequestStream());
                 try
                 {
-                    requestWriter.Write(pPostData.Replace("+", "%2b"));
+                    requestWriter.Write(pPostData);
                 }
                 catch
                 {

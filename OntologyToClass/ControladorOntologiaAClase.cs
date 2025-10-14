@@ -1,14 +1,17 @@
 ﻿using Es.Riam.AbstractsOpen;
 using Es.Riam.Gnoss.AD.EntityModel;
 using Es.Riam.Gnoss.AD.ServiciosGenerales;
+using Es.Riam.Gnoss.Elementos.ParametroAplicacion;
 using Es.Riam.Gnoss.Logica.ServiciosGenerales;
 using Es.Riam.Gnoss.Util.Configuracion;
 using Es.Riam.Gnoss.Util.GeneradorClases;
 using Es.Riam.Gnoss.Util.General;
+using Es.Riam.Gnoss.Web.Controles.ParametroAplicacionGBD;
 using Es.Riam.Gnoss.Web.MVC.Models.GeneradorClases;
 using Es.Riam.InterfacesOpen;
 using Es.Riam.Semantica.OWL;
 using Es.Riam.Util;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -22,6 +25,7 @@ namespace OntologiaAClase
         string nombreOnto;
         bool esPrincipal;
         string nombreOntoOriginal;
+        private string grafoUrl;
         private Ontologia ontologia;
         private Constantes Constante = new Constantes();
         private List<ElementoOntologia> listaElementosPadre = new List<ElementoOntologia>();
@@ -42,13 +46,16 @@ namespace OntologiaAClase
         private ConfigService mConfigService;
         private IServicesUtilVirtuosoAndReplication mServicesUtilVirtuosoAndReplication;
         private IMassiveOntologyToClass mMassiveOntologyToClass;
-
-        public ControladorOntologiaAClase(OntologiaGenerar onto, string carpetaPadre, string nombreCarpeta, string directorio, string pNombreCortoProy, Guid pProyID, List<string> pNombresOntologia, List<ObjetoPropiedad> listaObjetosPropiedad, Dictionary<string, string> pDicPref, EntityContext entityContext, LoggingService loggingService, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication, IMassiveOntologyToClass massiveOntologyToClass)
+        private ILogger mlogger;
+        private ILoggerFactory mLoggerFactory;
+        public ControladorOntologiaAClase(OntologiaGenerar onto, string carpetaPadre, string nombreCarpeta, string directorio, string pNombreCortoProy, Guid pProyID, List<string> pNombresOntologia, List<ObjetoPropiedad> listaObjetosPropiedad, Dictionary<string, string> pDicPref, EntityContext entityContext, LoggingService loggingService, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication, IMassiveOntologyToClass massiveOntologyToClass, ILogger<ControladorOntologiaAClase> logger, ILoggerFactory loggerFactory)
         {
             nombreCortoProy = pNombreCortoProy;
             proyID = pProyID;
             this.Clase = new StringBuilder();
             this.directorio = directorio;
+            mlogger = logger;
+            mLoggerFactory = loggerFactory;
             this.nombreOnto = UtilCadenas.PrimerCaracterAMayuscula(onto.nombreOnto);
             this.nombreOntoOriginal = onto.nombreOnto;
             this.contentXML = onto.contentXML;
@@ -70,6 +77,21 @@ namespace OntologiaAClase
             mMassiveOntologyToClass = massiveOntologyToClass;
         }
 
+        public string UrlIntragnoss
+        {
+            get{
+
+                if (string.IsNullOrEmpty(grafoUrl))
+                {
+                    GestorParametroAplicacion gestorParamApp = new GestorParametroAplicacion();
+                    ParametroAplicacionGBD parametroAplicacionGBD = new ParametroAplicacionGBD(mLoggingService, mEntityContext, mConfigService);
+                    parametroAplicacionGBD.ObtenerConfiguracionGnoss(gestorParamApp);
+                    grafoUrl = gestorParamApp.ParametroAplicacion.Find(param => param.Parametro.Equals("UrlIntragnoss")).Valor;
+                }
+
+                return grafoUrl;
+            }
+        }
         /// <summary>
         /// Crea la clases a partir de las entidades de la ontología y las guarda en una carpeta llamada ClasesGeneradas
         /// </summary>
@@ -115,7 +137,7 @@ namespace OntologiaAClase
 
         private List<string> ObtenerPropiedadesSearch()
         {
-            ProyectoCN proyectoCN = new ProyectoCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+            ProyectoCN proyectoCN = new ProyectoCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<ProyectoCN>(), mLoggerFactory);
             return proyectoCN.ObtenerPropiedadesSearch(proyID);
         }
 
@@ -135,7 +157,7 @@ namespace OntologiaAClase
 
         public void CrearEntidades(ElementoOntologia pEntidad, string pNombreOnto, string pRdfType)
         {
-            EntidadAClase entidadAClase = new EntidadAClase(ontologia, pNombreOnto, contentXML, esPrincipal, listaIdiomas, nombreCortoProy, proyID, nombresOntologia, listaObjetosPropiedad, mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mMassiveOntologyToClass, pRdfType, this.listaPrefijosOntologias);
+            EntidadAClase entidadAClase = new EntidadAClase(ontologia, pNombreOnto, UrlIntragnoss, contentXML, esPrincipal, listaIdiomas, nombreCortoProy, proyID, nombresOntologia, listaObjetosPropiedad, mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mMassiveOntologyToClass, pRdfType, this.listaPrefijosOntologias);
             File.WriteAllText(Path.Combine(directorio, carpetaPadre, nombreCarpeta, $"{pNombreOnto}", $"{UtilCadenasOntology.ObtenerNombreClase(pEntidad.TipoEntidad, listaPrefijosOntologias, mConfigService.ObtenerClasesGeneradasConPrefijo())}.cs"), entidadAClase.GenerarClase(pEntidad, listaPropiedadesSearch, listaPropiedadesPadreAnidadasSearch));
         }
 
@@ -303,6 +325,9 @@ namespace OntologiaAClase
             Clase.AppendLine();
             PintarObtenerObjetosDePropiedad();
             Clase.AppendLine();
+            PintarIsPropertyOfType("SemanticEntityModel");
+            Clase.AppendLine();
+            PintarIsPropertyOfType("SemanticResourceModel");
             CrearAgregarTags();
             Clase.AppendLine();
             GetLabel();
@@ -706,6 +731,14 @@ $@"
             Clase.AppendLine($"{UtilCadenasOntology.Tabs(4)}lista.Add((string)propiedad);");
             Clase.AppendLine($"{UtilCadenasOntology.Tabs(3)}}}");
             Clase.AppendLine($"{UtilCadenasOntology.Tabs(3)}return lista;");
+            Clase.AppendLine($"{UtilCadenasOntology.Tabs(2)}}}");
+        }
+
+        private void PintarIsPropertyOfType(string pEntityModelType)
+        {
+            Clase.AppendLine($"{UtilCadenasOntology.Tabs(2)}protected static bool IsPropertyOfType(string entityName, {pEntityModelType} entityModel, string propertyEntityType)");
+            Clase.AppendLine($"{UtilCadenasOntology.Tabs(2)}{{");
+            Clase.AppendLine($"{UtilCadenasOntology.Tabs(3)}return GetPropertyValueSemCms(entityModel.GetPropertyByPath(\"http://www.w3.org/1999/02/22-rdf-syntax-ns#type\")) == entityName || propertyEntityType == entityName;");
             Clase.AppendLine($"{UtilCadenasOntology.Tabs(2)}}}");
         }
 

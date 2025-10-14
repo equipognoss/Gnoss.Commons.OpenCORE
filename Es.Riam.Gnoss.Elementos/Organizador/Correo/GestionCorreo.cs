@@ -24,6 +24,10 @@ using Es.Riam.Util;
 using IDE = Es.Riam.Gnoss.Elementos.Identidad.Identidad;
 using Es.Riam.Gnoss.AD.EntityModel.Models.IdentidadDS;
 using Es.Riam.AbstractsOpen;
+using Es.Riam.Interfaces.InterfacesOpen;
+using Es.Riam.Gnoss.Logica.ServiciosGenerales;
+using Microsoft.Extensions.Logging;
+using Es.Riam.Gnoss.AD.ParametroAplicacion;
 
 namespace Es.Riam.Gnoss.Elementos.Organizador.Correo
 {
@@ -121,21 +125,28 @@ namespace Es.Riam.Gnoss.Elementos.Organizador.Correo
         private EntityContext mEntityContext;
         private ConfigService mConfigService;
         private IServicesUtilVirtuosoAndReplication mServicesUtilVirtuosoAndReplication;
-
+        private IAvailableServices mAvailableServices;
+        private ILogger mlogger;
+        private ILoggerFactory mLoggerFactory;
         #endregion
 
         #region Constructores
 
+        public GestionCorreo() { }
+
         /// <summary>
         /// Constructor vacío
         /// </summary>
-        public GestionCorreo(LoggingService loggingService, EntityContext entityContext, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication)
-            : base(loggingService)
+        public GestionCorreo(LoggingService loggingService, EntityContext entityContext, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication, IAvailableServices availableServices, ILogger<GestionCorreo> logger, ILoggerFactory loggerFactory)
+            : base()
         {
             mLoggingService = loggingService;
             mEntityContext = entityContext;
             mConfigService = configService;
             mServicesUtilVirtuosoAndReplication = servicesUtilVirtuosoAndReplication;
+            mAvailableServices = availableServices;
+            mlogger = logger;
+            mLoggerFactory = loggerFactory;
         }
 
         /// <summary>
@@ -145,17 +156,19 @@ namespace Es.Riam.Gnoss.Elementos.Organizador.Correo
         /// <param name="pGestionPersonas">Gestor de personas</param>
         /// <param name="pGestorIdentidades">Gestor de identidades</param>
         /// <param name="pGestorAmigos">Gestor de amigos</param>
-        public GestionCorreo(CorreoDS pCorreoDS, GestionPersonas pGestionPersonas, GestionIdentidades pGestorIdentidades, GestionAmigos pGestorAmigos, LoggingService loggingService, EntityContext entityContext, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication)
-                : base(loggingService)
+        public GestionCorreo(CorreoDS pCorreoDS, GestionPersonas pGestionPersonas, GestionIdentidades pGestorIdentidades, GestionAmigos pGestorAmigos, LoggingService loggingService, EntityContext entityContext, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication, IAvailableServices availableServices, ILogger<GestionCorreo> logger, ILoggerFactory loggerFactory)
+                : base()
         {
             mLoggingService = loggingService;
             mEntityContext = entityContext;
             mConfigService = configService;
-
+            mlogger = logger;
+            mLoggerFactory = loggerFactory;
             mCorreoDS = pCorreoDS;
             mGestorIdentidades = pGestorIdentidades;
             mGestorAmigos = pGestorAmigos;
             mServicesUtilVirtuosoAndReplication = servicesUtilVirtuosoAndReplication;
+            mAvailableServices = availableServices;
         }
 
         /// <summary>
@@ -163,13 +176,12 @@ namespace Es.Riam.Gnoss.Elementos.Organizador.Correo
         /// </summary>
         /// <param name="info">Datos serializados</param>
         /// <param name="context">Contexto de serialización</param>
-        protected GestionCorreo(SerializationInfo info, StreamingContext context, LoggingService loggingService, EntityContext entityContext, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication)
-            : base(loggingService)
+        protected GestionCorreo(SerializationInfo info, StreamingContext context, LoggingService loggingService, EntityContext entityContext, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication, IAvailableServices availableServices)
+            : base()
         {
             mLoggingService = loggingService;
             mEntityContext = entityContext;
             mConfigService = configService;
-
             mCorreoDS = (CorreoDS)info.GetValue("CorreoDS", typeof(CorreoDS));
             mGestorAmigos = (GestionAmigos)info.GetValue("GestorAmigos", typeof(GestionAmigos));
             mGestorIdentidades = (GestionIdentidades)info.GetValue("GestorIdentidades", typeof(GestionIdentidades));
@@ -181,6 +193,7 @@ namespace Es.Riam.Gnoss.Elementos.Organizador.Correo
                 mIdentidadActual = mGestorIdentidades.ListaIdentidades[(Guid)idIdentidad];
             }
             mServicesUtilVirtuosoAndReplication = servicesUtilVirtuosoAndReplication;
+            mAvailableServices = availableServices;
         }
 
         #endregion
@@ -330,11 +343,19 @@ namespace Es.Riam.Gnoss.Elementos.Organizador.Correo
                     listaPersonas.Add(id);
                 }
             }
-
-            CorreoCN correoCN = new CorreoCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+            CorreoCN correoCN = null;
+            IdentidadCN identCN = null;
+            if (mLoggerFactory == null)
+            {
+                correoCN = new CorreoCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, null, mLoggerFactory);
+                identCN = new IdentidadCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, null, mLoggerFactory);
+            }
+            else
+            {
+                correoCN = new CorreoCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<CorreoCN>(), mLoggerFactory);
+                identCN = new IdentidadCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<IdentidadCN>(), mLoggerFactory);
+            }
             Dictionary<Guid, string> nombresDestinos = correoCN.ObtenerNombresCorreos(listaPersonas);
-
-            IdentidadCN identCN = new IdentidadCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
             Dictionary<Guid, string> nombresDestinosGrupos = identCN.ObtenerNombresDeGrupos(listaGrupos);
             identCN.Dispose();
 
@@ -373,7 +394,7 @@ namespace Es.Riam.Gnoss.Elementos.Organizador.Correo
 
             mCorreoDS.CorreoInterno.AddCorreoInternoRow(nuevaFilaCorreo);
 
-            Correo nuevoCorreoEnviado = new Correo(nuevaFilaCorreo, this, mLoggingService);
+            Correo nuevoCorreoEnviado = new Correo(nuevaFilaCorreo, this);
             ListaCorreosEnviados.Add(nuevoCorreoEnviado);
 
             #endregion
@@ -403,7 +424,7 @@ namespace Es.Riam.Gnoss.Elementos.Organizador.Correo
 
                     mCorreoDS.CorreoInterno.AddCorreoInternoRow(nuevaFilaCorreoRecibido);
 
-                    Correo nuevoCorreoRecibido = new Correo(nuevaFilaCorreoRecibido, this, mLoggingService);
+                    Correo nuevoCorreoRecibido = new Correo(nuevaFilaCorreoRecibido, this);
                     ListaCorreosRecibidos.Add(nuevoCorreoRecibido);
 
                     if (numCorreosDS > 100 && pEnviarDatosConTiempos)
@@ -458,7 +479,7 @@ namespace Es.Riam.Gnoss.Elementos.Organizador.Correo
                 identidadAutor = GestorIdentidades.ListaIdentidades[pAutor].IdentidadMyGNOSS;
             }
 
-            NotificacionCN notificacionCN = new NotificacionCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+            NotificacionCN notificacionCN = new NotificacionCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<NotificacionCN>(), mLoggerFactory);
             int numCorreosDS = 0;
             foreach (Guid destinatarioID in listaPersonas)
             {
@@ -481,7 +502,7 @@ namespace Es.Riam.Gnoss.Elementos.Organizador.Correo
 
                 if (numCorreosDS > 100 && pEnviarDatosConTiempos)
                 {
-                    notificacionCN.ActualizarNotificacion();
+                    notificacionCN.ActualizarNotificacion(mAvailableServices);
                     System.Threading.Thread.Sleep(1000);
                     numCorreosDS = 0;
                 }
@@ -491,7 +512,7 @@ namespace Es.Riam.Gnoss.Elementos.Organizador.Correo
 
             if (pEnviarDatosConTiempos)
             {
-                notificacionCN.ActualizarNotificacion();
+                notificacionCN.ActualizarNotificacion(mAvailableServices);
             }
         }
 
@@ -729,7 +750,7 @@ namespace Es.Riam.Gnoss.Elementos.Organizador.Correo
                     string destinatarioTrim = destinatario.Trim();
                     bool encontrada = false;
                     Guid identidadID = Guid.Empty;
-                    using (IdentidadCN identidadCN = new IdentidadCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication))
+                    using (IdentidadCN identidadCN = new IdentidadCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<IdentidadCN>(), mLoggerFactory))
                     {
                         if (destinatarioTrim.Contains("|||"))
                         {
@@ -925,7 +946,7 @@ namespace Es.Riam.Gnoss.Elementos.Organizador.Correo
             {
                 if (mGestorNotificaciones == null)
                 {
-                    mGestorNotificaciones = new GestionNotificaciones(new DataWrapperNotificacion(), mLoggingService, mEntityContext, mConfigService, mServicesUtilVirtuosoAndReplication);
+                    mGestorNotificaciones = new GestionNotificaciones(new DataWrapperNotificacion(), mLoggingService, mEntityContext, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<GestionNotificaciones>(), mLoggerFactory);
                 }
                 return mGestorNotificaciones;
             }
@@ -1019,7 +1040,7 @@ namespace Es.Riam.Gnoss.Elementos.Organizador.Correo
                     {
                         if (!filaCorreoInterno.Eliminado)
                         {
-                            Correo correo = new Correo(filaCorreoInterno, this, mLoggingService);
+                            Correo correo = new Correo(filaCorreoInterno, this);
 
                             if (filaCorreoInterno.EnPapelera)
                             {

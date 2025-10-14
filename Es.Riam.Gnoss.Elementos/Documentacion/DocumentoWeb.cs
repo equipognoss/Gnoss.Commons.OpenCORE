@@ -3,6 +3,7 @@ using Es.Riam.Gnoss.AD.ServiciosGenerales;
 using Es.Riam.Gnoss.Elementos.Documentacion;
 using Es.Riam.Gnoss.Util.General;
 using Es.Riam.Gnoss.Util.Seguridad;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -16,7 +17,6 @@ namespace Es.Riam.Gnoss.Elementos
     public class DocumentoWeb : Documento
     {
         #region Miembros
-
         #endregion
 
         #region Constructores
@@ -26,8 +26,8 @@ namespace Es.Riam.Gnoss.Elementos
         /// </summary>
         /// <param name="pFilaDocumento">Fila del documento</param>
         /// <param name="pGestorDocumental">Gestor documental</param>
-        public DocumentoWeb(AD.EntityModel.Models.Documentacion.Documento pFilaDocumento, GestorDocumental pGestorDocumental, LoggingService loggingService)
-            : base(pFilaDocumento, pGestorDocumental, loggingService)
+        public DocumentoWeb(AD.EntityModel.Models.Documentacion.Documento pFilaDocumento, GestorDocumental pGestorDocumental)
+            : base(pFilaDocumento, pGestorDocumental)
         {
             //Reemplazo el documento por el documentoweb
             if (!pGestorDocumental.Hijos.Contains(pGestorDocumental.ListaDocumentos[pFilaDocumento.DocumentoID]))

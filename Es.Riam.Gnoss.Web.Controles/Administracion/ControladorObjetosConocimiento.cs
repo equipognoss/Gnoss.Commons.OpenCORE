@@ -4,6 +4,7 @@ using Es.Riam.Gnoss.AD.EntityModel;
 using Es.Riam.Gnoss.AD.EntityModel.Models.Documentacion;
 using Es.Riam.Gnoss.AD.EntityModel.Models.Faceta;
 using Es.Riam.Gnoss.AD.EntityModel.Models.ProyectoDS;
+using Es.Riam.Gnoss.AD.ParametroAplicacion;
 using Es.Riam.Gnoss.AD.ServiciosGenerales;
 using Es.Riam.Gnoss.AD.Virtuoso;
 using Es.Riam.Gnoss.CL;
@@ -17,6 +18,7 @@ using Es.Riam.Gnoss.Logica.Tesauro;
 using Es.Riam.Gnoss.Recursos;
 using Es.Riam.Gnoss.Util.Configuracion;
 using Es.Riam.Gnoss.Util.General;
+using Es.Riam.Gnoss.UtilServiciosWeb;
 using Es.Riam.Gnoss.Web.Controles.Documentacion;
 using Es.Riam.Gnoss.Web.MVC.Models;
 using Es.Riam.Gnoss.Web.MVC.Models.Administracion;
@@ -24,11 +26,14 @@ using Es.Riam.Semantica.OWL;
 using Es.Riam.Semantica.Plantillas;
 using Es.Riam.Util;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Exchange.WebServices.Data;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Web;
+using static Es.Riam.Gnoss.Web.MVC.Models.Administracion.ObjetoConocimientoModel;
 
 namespace Es.Riam.Gnoss.Web.Controles.Administracion
 {
@@ -45,7 +50,8 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
         private IServicesUtilVirtuosoAndReplication mServicesUtilVirtuosoAndReplication;
         private RedisCacheWrapper mRedisCacheWrapper;
         private GnossCache mGnossCache;
-
+        private ILogger mlogger;
+        private ILoggerFactory mLoggerFactory;
         /// <summary>
         /// DataSet de proyecto con la configuración semántica.
         /// </summary>
@@ -56,7 +62,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
         /// <summary>
         /// 
         /// </summary>
-        public ControladorObjetosConocimiento(Elementos.ServiciosGenerales.Proyecto pProyecto, Dictionary<string, string> pParametroProyecto, LoggingService loggingService, EntityContext entityContext, ConfigService configService, RedisCacheWrapper redisCacheWrapper, GnossCache gnossCache, VirtuosoAD virtuosoAD, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication)
+        public ControladorObjetosConocimiento(Elementos.ServiciosGenerales.Proyecto pProyecto, Dictionary<string, string> pParametroProyecto, LoggingService loggingService, EntityContext entityContext, ConfigService configService, RedisCacheWrapper redisCacheWrapper, GnossCache gnossCache, VirtuosoAD virtuosoAD, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication, ILogger<ControladorObjetosConocimiento> logger, ILoggerFactory loggerFactory)
         {
             mVirtuosoAD = virtuosoAD;
             mLoggingService = loggingService;
@@ -67,6 +73,8 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
             mServicesUtilVirtuosoAndReplication = servicesUtilVirtuosoAndReplication;
             ProyectoSeleccionado = pProyecto;
             ParametroProyecto = pParametroProyecto;
+            mlogger = logger;
+            mLoggerFactory = loggerFactory;
         }
 
         #endregion
@@ -77,7 +85,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
         {
             ObjetoConocimientoModel resultado = null;
             DataWrapperDocumentacion dataWrapperDocumentacion = new DataWrapperDocumentacion();
-            using (DocumentacionCN documentacionCN = new DocumentacionCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication))
+            using (DocumentacionCN documentacionCN = new DocumentacionCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<DocumentacionCN>(), mLoggerFactory))
             {
                 documentacionCN.ObtenerDatasetConOntologiaAPartirNombre(ProyectoSeleccionado.Clave, pNombreOntologia, dataWrapperDocumentacion);
                 if (dataWrapperDocumentacion.ListaDocumento.Count != 0)
@@ -88,9 +96,9 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
             return resultado;
         }
 
-        public ObjetoConocimientoModel CargarObjetoConocimiento(AD.EntityModel.Models.Documentacion.Documento filaDoc)
+        public ObjetoConocimientoModel CargarObjetoConocimiento(AD.EntityModel.Models.Documentacion.Documento filaDoc, bool pCargarCompartidas = false)
         {
-            DocumentacionCN documentacionCN = new DocumentacionCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+            DocumentacionCN documentacionCN = new DocumentacionCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<DocumentacionCN>(), mLoggerFactory);
 
             string ontologiaProyecto = filaDoc.Enlace.Replace(".owl", "");
             OntologiaProyecto filaOntologia = DataWrapperProyecto.ListaOntologiaProyecto.FirstOrDefault(onto => onto.OrganizacionID.Equals(ProyectoSeleccionado.FilaProyecto.OrganizacionID) && onto.ProyectoID.Equals(ProyectoSeleccionado.Clave) && onto.OntologiaProyecto1.Equals(ontologiaProyecto, StringComparison.InvariantCultureIgnoreCase));
@@ -99,7 +107,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
 
             if (filaOntologia != null)
             {
-                TesauroCN tesauroCN = new TesauroCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+                TesauroCN tesauroCN = new TesauroCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<TesauroCN>(), mLoggerFactory);
 
                 ObjetoConocimientoModel objetoConocimiento = new ObjetoConocimientoModel();
                 objetoConocimiento.DocumentoID = ontologiaID;
@@ -113,6 +121,8 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
                 objetoConocimiento.CachearDatosSemanticos = filaOntologia.CachearDatosSemanticos;
                 objetoConocimiento.EsBuscable = filaOntologia.EsBuscable;
                 objetoConocimiento.GrafoActual = filaDoc.Enlace;
+                objetoConocimiento.FechaCreacion = filaDoc.FechaCreacion ?? DateTime.Parse("01/01/2024");
+                objetoConocimiento.FechaModificacion = filaDoc.FechaModificacion ?? DateTime.Parse("01/01/2024");
                 if (!string.IsNullOrEmpty(filaDoc.NombreCategoriaDoc) && filaDoc.NombreCategoriaDoc.Contains(".jpg"))
                 {
                     objetoConocimiento.Image = filaDoc.NombreCategoriaDoc.Split(',')[1].Replace(".jpg", "_" + filaDoc.NombreCategoriaDoc.Split(',')[0] + ".jpg");
@@ -138,7 +148,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
                 objetoConocimiento.PresentacionMapa = CargarPresentacionMapa(ontologiaID);
                 objetoConocimiento.PresentacionRelacionados = CargarPresentacionRecRelacionados(ontologiaID);
                 objetoConocimiento.PresentacionPersonalizado = CargarPresentacionPersonalizado(ontologiaID);
-
+                objetoConocimiento.ListaAutocompletadoPresentacionModel = CargarAutocompletadoDePropiedades(ontologiaID);
                 return objetoConocimiento;
             }
             else if (filaDoc.Tipo == (short)TiposDocumentacion.OntologiaSecundaria)
@@ -149,9 +159,25 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
                 objetoConocimiento.EsObjetoPrimario = false;
                 objetoConocimiento.Ontologia = filaDoc.Enlace.Replace(".owl", string.Empty);
                 objetoConocimiento.GrafoActual = filaDoc.Enlace;
+                objetoConocimiento.FechaCreacion = filaDoc.FechaCreacion ?? DateTime.Parse("01/01/2024"); ;
+                objetoConocimiento.FechaModificacion = filaDoc.FechaModificacion ?? DateTime.Parse("01/01/2024");
 
                 return objetoConocimiento;
             }
+            else if (pCargarCompartidas && filaDoc.Tipo == (short)TiposDocumentacion.Ontologia)
+            {
+				ObjetoConocimientoModel objetoConocimiento = new ObjetoConocimientoModel();
+				objetoConocimiento.DocumentoID = ontologiaID;
+				objetoConocimiento.Name = filaDoc.Titulo.Replace(".owl", string.Empty);
+				objetoConocimiento.EsObjetoPrimario = true;
+				objetoConocimiento.Ontologia = filaDoc.Enlace.Replace(".owl", string.Empty);
+				objetoConocimiento.GrafoActual = filaDoc.Enlace;
+				objetoConocimiento.FechaCreacion = filaDoc.FechaCreacion ?? DateTime.Parse("01/01/2024"); ;
+				objetoConocimiento.FechaModificacion = filaDoc.FechaModificacion ?? DateTime.Parse("01/01/2024");
+                objetoConocimiento.EsOntologiaCompartida = true;
+
+                return objetoConocimiento;
+			}
 
             return null;
         }
@@ -233,8 +259,26 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
             }
             return PresentacionMosaico;
         }
+        private List<ObjetoConocimientoModel.AutocompletadoPresentacionModel> CargarAutocompletadoDePropiedades(Guid pOntologiaID)
+        {
+            List<ObjetoConocimientoModel.AutocompletadoPresentacionModel> autocompletadoPresentacionModels = new List<ObjetoConocimientoModel.AutocompletadoPresentacionModel>();
+            var listaPresentaciones = DataWrapperProyecto.ListaPresentacionMapaSemantico.Where(presentacion => presentacion.OntologiaID == pOntologiaID).Select(item => new { item.Propiedad, item.MostrarEnAutocompletar})
+                .Union(DataWrapperProyecto.ListaPresentacionListadoSemantico.Where(presentacion => presentacion.OntologiaID == pOntologiaID).Select(item => new { item.Propiedad, item.MostrarEnAutocompletar }))
+                .Union(DataWrapperProyecto.ListaPresentacionMosaicoSemantico.Where(presentacion => presentacion.OntologiaID == pOntologiaID).Select(item => new { item.Propiedad, item.MostrarEnAutocompletar })).Distinct().ToList();
+            foreach(var presentacion in listaPresentaciones)
+            {
+                ObjetoConocimientoModel.AutocompletadoPresentacionModel autocompletadoPresentacionModel = new ObjetoConocimientoModel.AutocompletadoPresentacionModel()
+                {
+                    MostrarEnAutocompletar = presentacion.MostrarEnAutocompletar,
+                    Propiedad = presentacion.Propiedad
+                };
+				autocompletadoPresentacionModels.Add(autocompletadoPresentacionModel);
+			}
 
-        private ObjetoConocimientoModel.PresentacionPersonalizadoModel CargarPresentacionPersonalizado(Guid pOntologiaID)
+			return autocompletadoPresentacionModels;
+		}
+
+		private ObjetoConocimientoModel.PresentacionPersonalizadoModel CargarPresentacionPersonalizado(Guid pOntologiaID)
         {
             ObjetoConocimientoModel.PresentacionPersonalizadoModel PresentacionPersonalizado = new ObjetoConocimientoModel.PresentacionPersonalizadoModel();
 
@@ -343,13 +387,13 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
         public ObjetoConocimientoModel NuevoObjetoConocimento(string ontology)
         {
             DataWrapperDocumentacion dataWrapperDocumentacion = new DataWrapperDocumentacion();
-            DocumentacionCN documentacionCN = new DocumentacionCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+            DocumentacionCN documentacionCN = new DocumentacionCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<DocumentacionCN>(), mLoggerFactory);
             documentacionCN.ObtenerOntologiasProyecto(ProyectoSeleccionado.Clave, dataWrapperDocumentacion, false, true, true);
             documentacionCN.Dispose();
 
             AD.EntityModel.Models.Documentacion.Documento filaDoc = dataWrapperDocumentacion.ListaDocumento.FirstOrDefault(doc => (doc.Tipo == (short)TiposDocumentacion.Ontologia || doc.Tipo == (short)TiposDocumentacion.OntologiaSecundaria) && doc.Enlace.ToLower().Equals(ontology.ToLower()));
             Dictionary<string, List<EstiloPlantilla>> listaEstilos = new Dictionary<string, List<EstiloPlantilla>>();
-            ControladorDocumentacion controladorDocumentacion = new ControladorDocumentacion(mLoggingService, mEntityContext, mConfigService, mRedisCacheWrapper, mGnossCache, null, mVirtuosoAD, null, mServicesUtilVirtuosoAndReplication);
+            ControladorDocumentacion controladorDocumentacion = new ControladorDocumentacion(mLoggingService, mEntityContext, mConfigService, mRedisCacheWrapper, mGnossCache, null, mVirtuosoAD, null, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<ControladorDocumentacion>(), mLoggerFactory);
             byte[] arrayOnto = controladorDocumentacion.ObtenerOntologia(filaDoc.DocumentoID, out listaEstilos, filaDoc.ProyectoID.Value, null, null, false);
             Ontologia ontologia = new Ontologia(arrayOnto, true);
             ontologia.LeerOntologia();
@@ -365,16 +409,17 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
                 objetoConocimiento.EsBuscable = true;
                 objetoConocimiento.GrafoActual = filaDoc.Enlace;
                 objetoConocimiento.Subtipos = new Dictionary<string, string>();
-                objetoConocimiento.PresentacionListado = new ObjetoConocimientoModel.PresentacionModel();
-                objetoConocimiento.PresentacionListado.ListaPropiedades = new List<ObjetoConocimientoModel.PresentacionModel.PropiedadModel>();
-                objetoConocimiento.PresentacionMosaico = new ObjetoConocimientoModel.PresentacionModel();
-                objetoConocimiento.PresentacionMosaico.ListaPropiedades = new List<ObjetoConocimientoModel.PresentacionModel.PropiedadModel>();
-                objetoConocimiento.PresentacionMapa = new ObjetoConocimientoModel.PresentacionModel();
-                objetoConocimiento.PresentacionMapa.ListaPropiedades = new List<ObjetoConocimientoModel.PresentacionModel.PropiedadModel>();
-                objetoConocimiento.PresentacionRelacionados = new ObjetoConocimientoModel.PresentacionModel();
-                objetoConocimiento.PresentacionRelacionados.ListaPropiedades = new List<ObjetoConocimientoModel.PresentacionModel.PropiedadModel>();
-                objetoConocimiento.PresentacionPersonalizado = new ObjetoConocimientoModel.PresentacionPersonalizadoModel();
-                objetoConocimiento.PresentacionPersonalizado.ListaPropiedades = new List<ObjetoConocimientoModel.PresentacionPersonalizadoModel.PropiedadPersonalizadoModel>();
+                objetoConocimiento.PresentacionListado = new PresentacionModel();
+                objetoConocimiento.PresentacionListado.ListaPropiedades = new List<PresentacionModel.PropiedadModel>();
+                objetoConocimiento.PresentacionMosaico = new PresentacionModel();
+                objetoConocimiento.PresentacionMosaico.ListaPropiedades = new List<PresentacionModel.PropiedadModel>();
+                objetoConocimiento.PresentacionMapa = new PresentacionModel();
+                objetoConocimiento.PresentacionMapa.ListaPropiedades = new List<PresentacionModel.PropiedadModel>();
+                objetoConocimiento.PresentacionRelacionados = new PresentacionModel();
+                objetoConocimiento.PresentacionRelacionados.ListaPropiedades = new List<PresentacionModel.PropiedadModel>();
+                objetoConocimiento.PresentacionPersonalizado = new PresentacionPersonalizadoModel();
+                objetoConocimiento.PresentacionPersonalizado.ListaPropiedades = new List<PresentacionPersonalizadoModel.PropiedadPersonalizadoModel>();
+                objetoConocimiento.ListaAutocompletadoPresentacionModel = new List<AutocompletadoPresentacionModel>();
 
                 if (!string.IsNullOrEmpty(filaDoc.NombreCategoriaDoc) && filaDoc.NombreCategoriaDoc.Contains(".jpg"))
                 {
@@ -415,7 +460,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
         /// <param name="pDocumentoID">Identificador del documento de la ontología</param>
         public void AgregarPermisosAdministradorOntologia(Guid pDocumentoID)
         {
-            ProyectoCN proyectoCN = new ProyectoCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+            ProyectoCN proyectoCN = new ProyectoCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<ProyectoCN>(), mLoggerFactory);
 
             if (!proyectoCN.ExisteTipoDocDispRolUsuarioProySemantico(ProyectoSeleccionado.FilaProyecto.ProyectoID))
             {
@@ -444,7 +489,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
 
         public void GuardarObjetoConocimiento(ObjetoConocimientoModel pObjetoConocimiento)
         {
-            DocumentacionCN documentacionCN = new DocumentacionCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+            DocumentacionCN documentacionCN = new DocumentacionCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<DocumentacionCN>(), mLoggerFactory);
             OntologiaProyecto ontologiaProyecto = documentacionCN.ObtenerOntologiaProyectoPorOntologia(pObjetoConocimiento.Ontologia, ProyectoSeleccionado.Clave);
 
             if (pObjetoConocimiento.GrafoNuevo != pObjetoConocimiento.GrafoActual || !pObjetoConocimiento.EsObjetoPrimario)
@@ -452,7 +497,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
                 AD.EntityModel.Models.Documentacion.Documento ontologia = documentacionCN.ObtenerDocumentoPorID(pObjetoConocimiento.DocumentoID).ListaDocumento.FirstOrDefault();
 
                 if (documentacionCN.ObtenerDocumentosIDVinculadosAOntologiaProyecto(pObjetoConocimiento.DocumentoID, ProyectoSeleccionado.Clave).Count <= 0 && pObjetoConocimiento.GrafoNuevo != pObjetoConocimiento.GrafoActual)
-                {   
+                {
                     ontologia.Enlace = pObjetoConocimiento.GrafoNuevo;
                     if (documentacionCN.ObtenerOntologiaProyectoPorOntologia(pObjetoConocimiento.GrafoNuevo, ProyectoSeleccionado.Clave) != null)
                     {
@@ -479,7 +524,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
         public void GuardarObjetosConocimiento(List<ObjetoConocimientoModel> pListaObjetosConocimiento)
         {
             DataWrapperDocumentacion dataWrapperDocumentacion = new DataWrapperDocumentacion();
-            DocumentacionCN documentacionCN = new DocumentacionCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+            DocumentacionCN documentacionCN = new DocumentacionCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<DocumentacionCN>(), mLoggerFactory);
             Guid proyectoIDPatronOntologias = Guid.Empty;
             if (ParametroProyecto.ContainsKey("ProyectoIDPatronOntologias"))
             {
@@ -559,7 +604,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
                 }
             }
 
-            using (ProyectoCN proyCN = new ProyectoCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication))
+            using (ProyectoCN proyCN = new ProyectoCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<ProyectoCN>(), mLoggerFactory))
             {
                 proyCN.ActualizarProyectos();
             }
@@ -612,6 +657,10 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
                     pFilaOntologia.SubTipos += $"{subTipo}|||{pObjetoConocimiento.Subtipos[subTipo]}[|||]";
                 }
             }
+            else
+            {
+                pFilaOntologia.SubTipos = string.Empty;
+            }
 
             GuardarDatosDocumento(pOntologiaID, pObjetoConocimiento);
             GuardarDatosPresentacionListado(pOntologiaID, pObjetoConocimiento);
@@ -619,16 +668,58 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
             GuardarDatosPresentacionMapa(pOntologiaID, pObjetoConocimiento);
             GuardarDatosPresentacionPersonalizado(pOntologiaID, pObjetoConocimiento);
             GuardarDatosPresentacionRelacionado(pOntologiaID, pObjetoConocimiento);
-
+            GuardarDatosPropiedadesAutocompletar(pOntologiaID, pObjetoConocimiento);
             GuardarCambios();
         }
 
-        /// <summary>
-        /// Aplicamos los cambios hechos en la administración a la tabla Documento (solamente es necesario el título)
-        /// </summary>
-        /// <param name="pOntologiaID">Identificador de la ontología</param>
-        /// <param name="pObjetoConocimientoModel">Modelo con los cambios devuelto por la vista</param>
-        private void GuardarDatosDocumento(Guid pOntologiaID, ObjetoConocimientoModel pObjetoConocimientoModel)
+        private void GuardarDatosPropiedadesAutocompletar(Guid pOntologiaID, ObjetoConocimientoModel pObjetoConocimientoModel)
+		{
+            if(pObjetoConocimientoModel.ListaAutocompletadoPresentacionModel == null)
+            {
+                return;
+            }
+
+            foreach (AutocompletadoPresentacionModel propiedadAutocompletado in pObjetoConocimientoModel.ListaAutocompletadoPresentacionModel) 
+            {
+				PresentacionListadoSemantico presentacionListado = DataWrapperProyecto.ListaPresentacionListadoSemantico.FirstOrDefault(presentacion => presentacion.OntologiaID.Equals(pOntologiaID) && presentacion.Propiedad.Equals(propiedadAutocompletado.Propiedad));
+                if(presentacionListado != null)
+                {
+                    if (presentacionListado.MostrarEnAutocompletar != propiedadAutocompletado.MostrarEnAutocompletar)
+                    {
+                        presentacionListado.MostrarEnAutocompletar = propiedadAutocompletado.MostrarEnAutocompletar;
+                    }
+				}
+                else
+                {
+					PresentacionMapaSemantico presentacionMapa = DataWrapperProyecto.ListaPresentacionMapaSemantico.FirstOrDefault(presentacion => presentacion.OntologiaID.Equals(pOntologiaID) && presentacion.Propiedad.Equals(propiedadAutocompletado.Propiedad));
+                    if(presentacionMapa != null)
+                    {
+                        if (presentacionMapa.MostrarEnAutocompletar != propiedadAutocompletado.MostrarEnAutocompletar)
+                        {
+                            presentacionMapa.MostrarEnAutocompletar = propiedadAutocompletado.MostrarEnAutocompletar;
+                        }
+					}
+                    else
+                    {
+						PresentacionMosaicoSemantico presentacionMosaico = DataWrapperProyecto.ListaPresentacionMosaicoSemantico.FirstOrDefault(presentacion => presentacion.OntologiaID.Equals(pOntologiaID) && presentacion.Propiedad.Equals(propiedadAutocompletado.Propiedad));
+						if (presentacionMosaico != null)
+						{
+                            if (presentacionMosaico.MostrarEnAutocompletar != propiedadAutocompletado.MostrarEnAutocompletar)
+                            {
+                                presentacionMosaico.MostrarEnAutocompletar = propiedadAutocompletado.MostrarEnAutocompletar;
+                            }
+						}
+					}
+				}
+            }
+		}
+
+		/// <summary>
+		/// Aplicamos los cambios hechos en la administración a la tabla Documento (solamente es necesario el título)
+		/// </summary>
+		/// <param name="pOntologiaID">Identificador de la ontología</param>
+		/// <param name="pObjetoConocimientoModel">Modelo con los cambios devuelto por la vista</param>
+		private void GuardarDatosDocumento(Guid pOntologiaID, ObjetoConocimientoModel pObjetoConocimientoModel)
         {
             AD.EntityModel.Models.Documentacion.Documento documento = mEntityContext.Documento.Where(item => item.DocumentoID.Equals(pOntologiaID)).First();
             documento.Titulo = pObjetoConocimientoModel.Name;
@@ -816,7 +907,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
             {
                 foreach (ObjetoConocimientoModel.PresentacionModel.PropiedadModel propiedad in pObjetoConocimiento.PresentacionMapa.ListaPropiedades)
                 {
-                    if(propiedad.Presentacion == null)
+                    if (propiedad.Presentacion == null)
                     {
                         propiedad.Presentacion = string.Empty;
                     }
@@ -1014,17 +1105,47 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
             filaPresentacionRelacionado.Nombre = HttpUtility.UrlDecode(pPresentacion);
         }
 
-        public EditOntologyViewModel EliminarObjetoConocimientoOntologia(Guid pOntologiaID, string pObjetoConocimientoID, bool pHayIntegracionContinua, bool pEsPrincipal)
+        public EditOntologyViewModel EliminarObjetoConocimientoOntologia(Guid pOntologiaID, string pObjetoConocimientoID, bool pEsPrincipal)
         {
-            DocumentacionCN documentacionCN = new DocumentacionCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
-
-            if (pEsPrincipal)
+            DocumentacionCN documentacionCN = new DocumentacionCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<DocumentacionCN>(), mLoggerFactory);
+            if (!documentacionCN.OntologiaTieneRecursos(pOntologiaID))
             {
-                OntologiaProyecto ontologiaProyecto = documentacionCN.ObtenerOntologiaProyectoPorOntologia(pObjetoConocimientoID, ProyectoSeleccionado.Clave);
-                EliminarObjetoConocimiento(pOntologiaID, ontologiaProyecto);
+                ProyectoAD proyAD = new ProyectoAD(mLoggingService, mEntityContext, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<ProyectoAD>(), mLoggerFactory);
+                bool transaccionIniciada = proyAD.IniciarTransaccion(true);
+
+                try
+                {
+                    if (transaccionIniciada)
+                    {
+                        mEntityContext.NoConfirmarTransacciones = false;
+                    }
+
+                    if (pEsPrincipal)
+                    {
+                        OntologiaProyecto ontologiaProyecto = documentacionCN.ObtenerOntologiaProyectoPorOntologia(pObjetoConocimientoID, ProyectoSeleccionado.Clave);
+                        EliminarObjetoConocimiento(pOntologiaID, ontologiaProyecto);
+                    }
+
+                    EditOntologyViewModel modeloEdicionOntologia = EliminarOntologia(pOntologiaID);
+
+                    GuardarCambios();
+
+                    if (transaccionIniciada)
+                    {
+                        proyAD.TerminarTransaccion(true);
+                    }
+                    return modeloEdicionOntologia;
+                }
+                catch (Exception ex)
+                {
+                    proyAD.TerminarTransaccion(false);
+                    throw new Exception("Ha ocurrido un error al eliminar la ontología", ex);
+                }
             }
-            
-            return EliminarOntologia(pOntologiaID, pHayIntegracionContinua);
+            else
+            {
+                throw new Exception("No se puede eliminar la ontología porque tiene recursos asociados");
+            }
         }
 
         private void EliminarObjetoConocimiento(Guid pOntologiaID, OntologiaProyecto pFilaOntologia)
@@ -1049,69 +1170,44 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
                 mEntityContext.EliminarElemento(filaPresentacionRelacionados);
                 DataWrapperProyecto.ListaRecursosRelacionadosPresentacion.Remove(filaPresentacionRelacionados);
             }
-
+            foreach(ProyectoPestanyaBusquedaPesoOC proyectoPestanyaBusquedaPesoOC in DataWrapperProyecto.ListaProyectoPestanyaBusquedaPesoOC.Where(item => item.OntologiaProyecto1.Equals(pFilaOntologia.OntologiaProyecto1)).ToList())
+            {
+                mEntityContext.EliminarElemento(proyectoPestanyaBusquedaPesoOC);
+                DataWrapperProyecto.ListaProyectoPestanyaBusquedaPesoOC.Remove(proyectoPestanyaBusquedaPesoOC);
+            }
             mEntityContext.EliminarElemento(pFilaOntologia);
             DataWrapperProyecto.ListaOntologiaProyecto.Remove(pFilaOntologia);
         }
 
-        private EditOntologyViewModel EliminarOntologia(Guid pOntologiaID, bool pHayIntegracionContinua)
+        private EditOntologyViewModel EliminarOntologia(Guid pOntologiaID)
         {
-            DocumentacionCN documentacionCN = new DocumentacionCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
-            AD.EntityModel.Models.Documentacion.Documento documento = documentacionCN.ObtenerDocumentoPorIdentificador(pOntologiaID);
-            ProyectoAD proyAD = new ProyectoAD(mLoggingService, mEntityContext, mConfigService, mServicesUtilVirtuosoAndReplication);
-            bool transaccionIniciada = false;
+            using (DocumentacionCN docCN = new DocumentacionCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<DocumentacionCN>(), mLoggerFactory))
+            {                
+                AD.EntityModel.Models.Documentacion.Documento documento = docCN.ObtenerDocumentoPorIdentificador(pOntologiaID);
 
-            if (!documentacionCN.OntologiaTieneRecursos(pOntologiaID))
-            {
-                try
+                ProyectoConfigExtraSem filasConfig = ProyectoConfigSemDataWrapperProyecto.ListaProyectoConfigExtraSem.Where(proy => proy.UrlOntologia.Equals(documento.Enlace)).FirstOrDefault();
+
+                if (filasConfig != null)
                 {
-                    mEntityContext.NoConfirmarTransacciones = true;
-                    transaccionIniciada = proyAD.IniciarTransaccion(true);
-
-                    ProyectoConfigExtraSem filasConfig = ProyectoConfigSemDataWrapperProyecto.ListaProyectoConfigExtraSem.Where(proy => proy.UrlOntologia.Equals(documento.Enlace)).FirstOrDefault();
-
-                    if (filasConfig != null)
-                    {
-                        ProyectoConfigSemDataWrapperProyecto.ListaProyectoConfigExtraSem.Remove(filasConfig);
-                        mEntityContext.EliminarElemento(filasConfig);
-                    }
-
-                    DocumentoWebVinBaseRecursos documentoWebVinBaseRecursos = documentacionCN.ObtenerDocumentoWebVinBaseRecursoPorDocumentoID(pOntologiaID);
-                    documentoWebVinBaseRecursos.Eliminado = true;
-                    documento.Eliminado = true;
-
-                    GuardarCambios();
-
-                    EditOntologyViewModel ontologyBorrar = new EditOntologyViewModel();
-                    using (DocumentacionCN docCN = new DocumentacionCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication))
-                    using (GestorDocumental gestorDoc = new GestorDocumental(docCN.ObtenerDocumentoPorID(pOntologiaID), mLoggingService, mEntityContext))
-                    {
-                        ontologyBorrar.Name = documento.Titulo;
-                        ontologyBorrar.Deleted = true;
-                    }
-
-                    if (transaccionIniciada)
-                    {
-                        mEntityContext.TerminarTransaccionesPendientes(true);
-                    }
-
-                    return ontologyBorrar;
+                    ProyectoConfigSemDataWrapperProyecto.ListaProyectoConfigExtraSem.Remove(filasConfig);
+                    mEntityContext.EliminarElemento(filasConfig);
                 }
-                catch (Exception ex)
+
+                DocumentoWebVinBaseRecursos documentoWebVinBaseRecursos = docCN.ObtenerDocumentoWebVinBaseRecursoPorDocumentoID(pOntologiaID);
+                documentoWebVinBaseRecursos.Eliminado = true;
+                documento.Eliminado = true;
+
+                EditOntologyViewModel ontologyBorrar = new EditOntologyViewModel();
+
+                using (GestorDocumental gestorDoc = new GestorDocumental(docCN.ObtenerDocumentoPorID(pOntologiaID), mLoggingService, mEntityContext, mLoggerFactory.CreateLogger<GestorDocumental>(), mLoggerFactory))
                 {
-                    if (transaccionIniciada)
-                    {
-                        proyAD.TerminarTransaccion(false);
-                    }
-                    throw new Exception("Ha ocurrido un error al eliminar la ontología", ex);
+                    ontologyBorrar.Name = documento.Titulo;
+                    ontologyBorrar.Deleted = true;
                 }
-            }
-            else
-            {
-                throw new Exception("No se puede eliminar la ontología porque tiene recursos asociados");
-            }
+
+                return ontologyBorrar;
+            }            
         }
-
 
         /// <summary>
         /// Guarda el documento en la base de datos.
@@ -1120,10 +1216,10 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
         {
             mEntityContext.SaveChanges();
 
-            DocumentacionCL docCL = new DocumentacionCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mServicesUtilVirtuosoAndReplication);
+            DocumentacionCL docCL = new DocumentacionCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<DocumentacionCL>(), mLoggerFactory);
             docCL.InvalidarOntologiasProyecto(ProyectoSeleccionado.Clave);
 
-            ProyectoCL proyCL = new ProyectoCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mVirtuosoAD, mServicesUtilVirtuosoAndReplication);
+            ProyectoCL proyCL = new ProyectoCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mVirtuosoAD, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<ProyectoCL>(), mLoggerFactory);
             proyCL.InvalidarOntologiasEcosistema();
         }
 
@@ -1133,18 +1229,18 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
 
         public void InvalidarCaches(string UrlIntragnoss)
         {
-            ProyectoCL proyCL = new ProyectoCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mVirtuosoAD, mServicesUtilVirtuosoAndReplication);
+            ProyectoCL proyCL = new ProyectoCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mVirtuosoAD, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<ProyectoCL>(), mLoggerFactory);
             proyCL.InvalidarFilaProyecto(ProyectoSeleccionado.Clave);
             proyCL.InvalidarComunidadMVC(ProyectoSeleccionado.Clave);
             proyCL.InvalidarCabeceraMVC(ProyectoSeleccionado.Clave);
             proyCL.InvalidarPresentacionSemantico(ProyectoSeleccionado.Clave);
 
-            FacetaCL facetaCL = new FacetaCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mServicesUtilVirtuosoAndReplication);
+            FacetaCL facetaCL = new FacetaCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<FacetaCL>(), mLoggerFactory);
             bool cachearFacetas = !(ParametroProyecto.ContainsKey("CacheFacetas") && ParametroProyecto["CacheFacetas"].Equals("0"));
             facetaCL.InvalidarCacheFacetasProyecto(ProyectoSeleccionado.Clave, cachearFacetas);
             facetaCL.InvalidarOntologiasProyecto(ProyectoSeleccionado.Clave);
 
-            FacetadoCL facetadoCL = new FacetadoCL(UrlIntragnoss, mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mVirtuosoAD, mServicesUtilVirtuosoAndReplication);
+            FacetadoCL facetadoCL = new FacetadoCL(UrlIntragnoss, mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mVirtuosoAD, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<FacetadoCL>(), mLoggerFactory);
             facetadoCL.InvalidarResultadosYFacetasDeBusquedaEnProyecto(ProyectoSeleccionado.Clave, "*");
 
             mGnossCache.VersionarCacheLocal(ProyectoSeleccionado.Clave);
@@ -1186,7 +1282,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
             {
                 if (mProyectoConfigSemDataWrapperProyecto == null)
                 {
-                    ProyectoCN proyCN = new ProyectoCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+                    ProyectoCN proyCN = new ProyectoCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<ProyectoCN>(), mLoggerFactory);
                     mProyectoConfigSemDataWrapperProyecto = proyCN.ObtenerConfiguracionSemanticaExtraDeProyecto(ProyectoSeleccionado.Clave);
                     proyCN.Dispose();
                 }
@@ -1200,7 +1296,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
             {
                 if (mDataWrapperProyecto == null)
                 {
-                    ProyectoCN proyCN = new ProyectoCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+                    ProyectoCN proyCN = new ProyectoCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<ProyectoCN>(), mLoggerFactory);
                     mDataWrapperProyecto = proyCN.ObtenerProyectoPorID(ProyectoSeleccionado.Clave);
                     mDataWrapperProyecto.Merge(proyCN.ObtenerPresentacionSemantico(ProyectoSeleccionado.Clave));
                 }

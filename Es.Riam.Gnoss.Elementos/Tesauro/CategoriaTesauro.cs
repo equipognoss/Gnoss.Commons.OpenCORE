@@ -3,6 +3,7 @@ using Es.Riam.Gnoss.Elementos.Documentacion;
 using Es.Riam.Gnoss.Util.General;
 using Es.Riam.Interfaces;
 using Es.Riam.Util;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -64,8 +65,8 @@ namespace Es.Riam.Gnoss.Elementos.Tesauro
         /// </summary>
         /// <param name="pFilaCategoria">Fila de la categoría de tesauro</param>
         /// <param name="pGestionTesauro">Gestor de tesauro</param>
-        public CategoriaTesauro(AD.EntityModel.Models.Tesauro.CategoriaTesauro pFilaCategoria, GestionTesauro pGestionTesauro, LoggingService loggingService)
-            : base(pFilaCategoria, pGestionTesauro, loggingService)
+        public CategoriaTesauro(AD.EntityModel.Models.Tesauro.CategoriaTesauro pFilaCategoria, GestionTesauro pGestionTesauro)
+            : base(pFilaCategoria, pGestionTesauro)
         {
             mHijos = new List<IElementoGnoss>();
             mSubCategorias = new List<CategoriaTesauro>();
@@ -583,7 +584,7 @@ namespace Es.Riam.Gnoss.Elementos.Tesauro
                         categoria = catCompartida.CategoriaTesauro;
                     }
 
-
+                    
                     if (categoria != null && this.GestorTesauro.ListaCategoriasTesauro.ContainsKey(categoria.CategoriaTesauroID))
                     {
                         CategoriaTesauro cat = this.GestorTesauro.ListaCategoriasTesauro[categoria.CategoriaTesauroID];

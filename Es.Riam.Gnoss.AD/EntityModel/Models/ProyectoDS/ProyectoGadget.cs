@@ -79,6 +79,10 @@ namespace Es.Riam.Gnoss.AD.EntityModel.Models.ProyectoDS
         [StringLength(50)]
         public string NombreCorto { get; set; }
 
+        public DateTime FechaCreacion { get; set; }
+
+        public DateTime FechaActualizacion { get; set; }
+
         public virtual Proyecto Proyecto { get; set; }
 
         public virtual ProyectoGadgetContextoHTMLplano ProyectoGadgetContextoHTMLplano { get; set; }

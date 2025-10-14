@@ -8,10 +8,14 @@ using Es.Riam.Gnoss.CL;
 using Es.Riam.Gnoss.Elementos.Organizador.Correo;
 using Es.Riam.Gnoss.Logica.BASE_BD;
 using Es.Riam.Gnoss.Logica.Live;
+using Es.Riam.Gnoss.Logica.Usuarios;
 using Es.Riam.Gnoss.RabbitMQ;
 using Es.Riam.Gnoss.Util.Configuracion;
 using Es.Riam.Gnoss.Util.General;
+using Es.Riam.Gnoss.UtilServiciosWeb;
+using Es.Riam.Interfaces.InterfacesOpen;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using System;
 
@@ -52,7 +56,8 @@ namespace Es.Riam.Gnoss.Web.Controles.Organizador.Correo
         private IHttpContextAccessor mHttpContextAccessor;
         private ConfigService mConfigService;
         private EntityContextBASE mEntityContextBASE;
-
+        private ILogger mlogger;
+        private ILoggerFactory mloggerFactory;
         #endregion
 
         #region Constructor
@@ -60,8 +65,8 @@ namespace Es.Riam.Gnoss.Web.Controles.Organizador.Correo
         /// <summary>
         /// Construcor del controlador de correo.
         /// </summary>
-        public ControladorCorreo(LoggingService loggingService, EntityContext entityContext, ConfigService configService, RedisCacheWrapper redisCacheWrapper, GnossCache gnossCache, EntityContextBASE entityContextBASE, VirtuosoAD virtuosoAD, IHttpContextAccessor httpContextAccessor, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication)
-            : base(loggingService, configService, entityContext, redisCacheWrapper, gnossCache, virtuosoAD, httpContextAccessor, servicesUtilVirtuosoAndReplication)
+        public ControladorCorreo(LoggingService loggingService, EntityContext entityContext, ConfigService configService, RedisCacheWrapper redisCacheWrapper, GnossCache gnossCache, EntityContextBASE entityContextBASE, VirtuosoAD virtuosoAD, IHttpContextAccessor httpContextAccessor, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication, ILogger<ControladorCorreo> logger, ILoggerFactory loggerFactory)
+            : base(loggingService, configService, entityContext, redisCacheWrapper, gnossCache, virtuosoAD, httpContextAccessor, servicesUtilVirtuosoAndReplication,logger, loggerFactory)
         {
             mVirtuosoAD = virtuosoAD;
             mLoggingService = loggingService;
@@ -69,6 +74,8 @@ namespace Es.Riam.Gnoss.Web.Controles.Organizador.Correo
             mConfigService = configService;
             mHttpContextAccessor = httpContextAccessor;
             mEntityContextBASE = entityContextBASE;
+            mlogger = logger;
+            mloggerFactory = loggerFactory;
         }
 
         #endregion
@@ -115,7 +122,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Organizador.Correo
 
         public void AgregarNotificacionCorreoLeidoAPerfil(Guid pPerfilID)
         {
-            LiveCN liveCN = new LiveCN(mEntityContext, mLoggingService, mConfigService, null);
+            LiveCN liveCN = new LiveCN(mEntityContext, mLoggingService, mConfigService, null, mLoggerFactory.CreateLogger<LiveCN>(), mLoggerFactory);
             liveCN.DisminuirContadorMensajesLeidos(pPerfilID);
         }
 
@@ -125,11 +132,11 @@ namespace Es.Riam.Gnoss.Web.Controles.Organizador.Correo
         /// <param name="pPerfilID">ID del perfil</param>
         public void ResetearContadorNuevosMensajes(Guid pPerfilID)
         {
-            LiveCN liveCN = new LiveCN(mEntityContext, mLoggingService, mConfigService, null);
+            LiveCN liveCN = new LiveCN(mEntityContext, mLoggingService, mConfigService, null, mLoggerFactory.CreateLogger<LiveCN>(), mLoggerFactory);
             liveCN.ResetearContadorNuevosMensajes(pPerfilID);
         }
 
-        public void AgregarElementoARabbitMQ(int pProyectoID, Guid pCorreoID, string pDestinatarioID, Guid pIdentidadRemitenteID, PrioridadBase pPrioridadBase, string pMensajeOrigen = "")
+        public void AgregarElementoARabbitMQ(int pProyectoID, Guid pCorreoID, string pDestinatarioID, Guid pIdentidadRemitenteID, PrioridadBase pPrioridadBase, IAvailableServices pAvailableServices, string pMensajeOrigen = "")
         {
             BaseMensajesDS baseMensajesDS = new BaseMensajesDS();
             BaseMensajesDS.ColaTagsMensajeRow filaColaTagsCom = baseMensajesDS.ColaTagsMensaje.NewColaTagsMensajeRow();
@@ -146,7 +153,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Organizador.Correo
 
                 if (mConfigService.ExistRabbitConnection(RabbitMQClient.BD_SERVICIOS_WIN))
                 {
-                    using (RabbitMQClient rabbitMQ = new RabbitMQClient(RabbitMQClient.BD_SERVICIOS_WIN, COLA_RABBIT, mLoggingService, mConfigService, EXCHANGE, COLA_RABBIT))
+                    using (RabbitMQClient rabbitMQ = new RabbitMQClient(RabbitMQClient.BD_SERVICIOS_WIN, COLA_RABBIT, mLoggingService, mConfigService, mLoggerFactory.CreateLogger<RabbitMQClient>(), mLoggerFactory, EXCHANGE, COLA_RABBIT))
                     {
                         rabbitMQ.AgregarElementoACola(JsonConvert.SerializeObject(filaColaTagsCom.ItemArray));
                     }
@@ -159,16 +166,19 @@ namespace Es.Riam.Gnoss.Web.Controles.Organizador.Correo
             }
             catch (Exception ex)
             {
-                mLoggingService.GuardarLogError(ex, "Fallo al insertar en Rabbit, insertamos en la base de datos BASE, tabla Cola");
+                mLoggingService.GuardarLogError(ex, "Fallo al insertar en Rabbit, insertamos en la base de datos BASE, tabla Cola", mlogger);
                 baseMensajesDS.ColaTagsMensaje.AddColaTagsMensajeRow(filaColaTagsCom);
                 agregadoABD = true;
             }
 
             if (agregadoABD)
             {
-                BaseComunidadCN brComCN = new BaseComunidadCN(mEntityContext, mLoggingService, mEntityContextBASE, mConfigService, mServicesUtilVirtuosoAndReplication);//, -1
-                brComCN.InsertarFilasEnRabbit("ColaTagsMensaje", baseMensajesDS);
-                baseMensajesDS.Dispose();
+                if (pAvailableServices.CheckIfServiceIsAvailable(pAvailableServices.GetBackServiceCode(BackgroundService.SocialSearchGraphGeneration), ServiceType.Background))
+                {
+					BaseComunidadCN brComCN = new BaseComunidadCN(mEntityContext, mLoggingService, mEntityContextBASE, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<BaseComunidadCN>(), mLoggerFactory);//, -1
+					brComCN.InsertarFilasEnRabbit("ColaTagsMensaje", baseMensajesDS);
+					baseMensajesDS.Dispose();
+				}              
             }
         }
 

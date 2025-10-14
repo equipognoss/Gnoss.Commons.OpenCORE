@@ -1,9 +1,11 @@
 ﻿using Es.Riam.Gnoss.AD;
+using Es.Riam.Gnoss.AD.ParametroAplicacion;
 using Es.Riam.Gnoss.OAuthAD.OAuth;
 using Es.Riam.Gnoss.Util.Configuracion;
 using Es.Riam.Gnoss.Util.General;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using Microsoft.Practices.EnterpriseLibrary.Data.Sql;
 using Oracle.ManagedDataAccess.Client;
 using System;
@@ -18,25 +20,31 @@ namespace Es.Riam.Gnoss.OAuthAD
         private LoggingService mLoggingService;
         private ConfigService mConfigService;
         private string mDefaultSchema;
+        private ILogger mlogger;
+        private ILoggerFactory mLoggerFactory;
         /// <summary>
         /// Constructor internal, para obtener un objeto EntityContext, llamar al método ObtenerEntityContext del BaseAD
         /// </summary>
-        public EntityContextOauth(LoggingService loggingService, DbContextOptions<EntityContextOauth> dbContextOptions, ConfigService configService)
+        public EntityContextOauth(LoggingService loggingService, DbContextOptions<EntityContextOauth> dbContextOptions, ConfigService configService, ILogger<EntityContextOauth> logger, ILoggerFactory loggerFactory)
             : base(dbContextOptions)
         {
             mLoggingService = loggingService;
             mConfigService = configService;
+            mlogger = logger;
+            mLoggerFactory = loggerFactory;
         }
 
         /// <summary>
         /// Constructor internal, para obtener un objeto EntityContext, llamar al método ObtenerEntityContext del BaseAD
         /// </summary>
-        public EntityContextOauth(LoggingService loggingService, DbContextOptions<EntityContextOauth> dbContextOptions, ConfigService configService, string pDefaultSchema = null)
+        public EntityContextOauth(LoggingService loggingService, DbContextOptions<EntityContextOauth> dbContextOptions, ConfigService configService, ILogger<EntityContextOauth> logger, ILoggerFactory loggerFactory, string pDefaultSchema = null)
            : base(dbContextOptions)
         {
             mDefaultSchema = pDefaultSchema;
             mLoggingService = loggingService;
             mConfigService = configService;
+            mlogger = logger;
+            mLoggerFactory = loggerFactory;
         }
         public void Migrate()
         {
@@ -76,7 +84,7 @@ namespace Es.Riam.Gnoss.OAuthAD
                 }
                 catch (Exception ex)
                 {
-                    mLoggingService.GuardarLogError(ex, "Error al obtener el contexto por defecto de la base de datos: " + pConexionMaster.ConnectionString);
+                    mLoggingService.GuardarLogError(ex, "Error al obtener el contexto por defecto de la base de datos: " + pConexionMaster.ConnectionString, mlogger);
                 }
                 BaseAD.ListaDefaultSchemaPorConexion.TryAdd(pConexionMaster.ConnectionString, schemaDefecto);
             }
@@ -89,7 +97,7 @@ namespace Es.Riam.Gnoss.OAuthAD
                 }
                 catch (Exception ex)
                 {
-                    mLoggingService.GuardarLogError(ex, "Error al obtener el contexto por defecto de la base de datos: " + pConexionMaster.ConnectionString);
+                    mLoggingService.GuardarLogError(ex, "Error al obtener el contexto por defecto de la base de datos: " + pConexionMaster.ConnectionString, mlogger);
                 }
                 BaseAD.ListaDefaultSchemaPorConexion.TryAdd(pConexionMaster.ConnectionString, schemaDefecto);
 

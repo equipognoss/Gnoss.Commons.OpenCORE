@@ -750,5 +750,10 @@ namespace Es.Riam.Gnoss.Web.MVC.Models
         /// Fecha de modificación del componente
         /// </summary>
         public DateTime EditionDate { get; set; }
+
+        /// <summary>
+        /// Indica si se ha versionado por lo menos una vez el componente
+        /// </summary>
+        public bool Versionado { get; set; }
     }
 }

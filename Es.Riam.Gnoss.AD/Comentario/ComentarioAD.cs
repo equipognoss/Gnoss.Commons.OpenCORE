@@ -1,4 +1,5 @@
 using Es.Riam.AbstractsOpen;
+using Es.Riam.Gnoss.AD.Amigos;
 using Es.Riam.Gnoss.AD.EncapsuladoDatos;
 using Es.Riam.Gnoss.AD.EntityModel;
 using Es.Riam.Gnoss.AD.EntityModel.Models.Blog;
@@ -6,10 +7,12 @@ using Es.Riam.Gnoss.AD.EntityModel.Models.Comentario;
 using Es.Riam.Gnoss.AD.EntityModel.Models.Documentacion;
 using Es.Riam.Gnoss.AD.EntityModel.Models.IdentidadDS;
 using Es.Riam.Gnoss.AD.Identidad;
+using Es.Riam.Gnoss.AD.ParametroAplicacion;
 using Es.Riam.Gnoss.AD.ServiciosGenerales;
 using Es.Riam.Gnoss.Util.Configuracion;
 using Es.Riam.Gnoss.Util.General;
 using Es.Riam.Gnoss.Web.MVC.Models;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -723,6 +726,8 @@ namespace Es.Riam.Gnoss.AD.Comentario
         #region Miembros
 
         private EntityContext mEntityContext;
+        private ILogger mlogger;
+        private ILoggerFactory mLoggerFactory;
 
         #endregion
 
@@ -730,10 +735,12 @@ namespace Es.Riam.Gnoss.AD.Comentario
         /// <summary>
         /// El por defecto, utilizado cuando se requiere el GnossConfig.xml por defecto
         /// </summary>
-        public ComentarioAD(LoggingService loggingService, EntityContext entityContext, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication)
-            : base(loggingService, entityContext, configService, servicesUtilVirtuosoAndReplication)
+        public ComentarioAD(LoggingService loggingService, EntityContext entityContext, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication, ILogger<ComentarioAD> logger, ILoggerFactory loggerFactory)
+            : base(loggingService, entityContext, configService, servicesUtilVirtuosoAndReplication, logger, loggerFactory)
         {
             mEntityContext = entityContext;
+            mlogger = logger;
+            mLoggerFactory = loggerFactory;
             this.CargarConsultasYDataAdapters();          
         }
 
@@ -742,10 +749,12 @@ namespace Es.Riam.Gnoss.AD.Comentario
         /// </summary>
         /// <param name="pFicheroConfiguracionBD"></param>
         /// <param name="pUsarVariableEstatica">Si se están usando hilos con diferentes conexiones: FALSE. En caso contrario TRUE</param>
-        public ComentarioAD(string pFicheroConfiguracionBD, LoggingService loggingService, EntityContext entityContext, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication)
-            : base(pFicheroConfiguracionBD, loggingService, entityContext, configService, servicesUtilVirtuosoAndReplication)
+        public ComentarioAD(string pFicheroConfiguracionBD, LoggingService loggingService, EntityContext entityContext, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication, ILogger<ComentarioAD> logger, ILoggerFactory loggerFactory)
+            : base(pFicheroConfiguracionBD, loggingService, entityContext, configService, servicesUtilVirtuosoAndReplication, logger, loggerFactory)
         {
             mEntityContext = entityContext;
+            mlogger = logger;
+            mLoggerFactory = loggerFactory;
             this.CargarConsultasYDataAdapters(IBD);            
         }
         #endregion

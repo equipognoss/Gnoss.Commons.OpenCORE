@@ -31,5 +31,8 @@ namespace Es.Riam.Gnoss.AD.EntityModel.Models.Peticion
         public Guid PerfilCreadorID { get; set; }
 
         public virtual Peticion Peticion { get; set; }
+
+        [StringLength(50)]
+        public string IdiomaDefecto { get; set; }
     }
 }

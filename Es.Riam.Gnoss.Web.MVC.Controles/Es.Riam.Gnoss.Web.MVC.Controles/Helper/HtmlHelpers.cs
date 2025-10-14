@@ -14,15 +14,13 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
-using Es.Riam.Gnoss.Logica.Cookie;
 using Es.Riam.Gnoss.AD.EntityModel.Models.Cookies;
-using System.IO;
-using System.Text.Encodings.Web;
 using Microsoft.Extensions.Primitives;
-using static System.Net.Mime.MediaTypeNames;
-using AngleSharp.Dom;
-using System.Xml.Linq;
 using System.Text.RegularExpressions;
+using Es.Riam.Gnoss.Web.MVC.Models.ViewModels;
+using static Es.Riam.Gnoss.Web.MVC.Models.Administracion.TabModel.SearchTabModel;
+using Es.Riam.Gnoss.UtilServiciosWeb;
+using Microsoft.Extensions.Logging;
 
 namespace Es.Riam.Gnoss.Web.MVC.Controles.Helper
 {
@@ -53,7 +51,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Helper
             string widthColumn = "100.0";
 
             // Es posible que columnClassName venga separado por espacios: Ej: span12
-            if (!String.IsNullOrEmpty(columnClassName))
+            if (!string.IsNullOrEmpty(columnClassName))
             {
                 // Convertirlo a array
                 var arrayColumnClassName = columnClassName.Split(" ");
@@ -126,15 +124,13 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Helper
             return Tuple.Create(widthColumn, styleName);
         }
 
-
         /// <summary>
         /// Obtener un diccionario de los valores almacenados en los diferentes idiomas: Ej: El valor en los idiomas disponibles de una página, url...
         /// Devuelve un diccionario con Key,Value siendo key un string con el idioma en cuestión y Value con el valor en ese idioma.
         /// El parámetro multiLanguageValueString tiene un formato así: NombreDeLaPagina@es|||PageName@en|||
         /// </summary>
-        public static Dictionary<string, string> GetDictionaryValuesFromMultiLanguageItem(this IHtmlHelper helper, String multiLanguageValueString)
+        public static Dictionary<string, string> GetDictionaryValuesFromMultiLanguageItem(this IHtmlHelper helper, string multiLanguageValueString)
         {
-
             Dictionary<string, string> dictionaryWithMultiLanguageValues = new Dictionary<string, string>();
 
             // Obtener el nombre multiIdioma separado en arrayItems
@@ -158,11 +154,10 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Helper
                     dictionaryWithMultiLanguageValues.Add(pageLanguageKey, pageValue);
                 }
             }
+
             // Devuelve el valor con los Idiomas (Key) y los idiomas (Value)
             return dictionaryWithMultiLanguageValues;
         }
-
-
 
         /// <summary>
         /// Obtener el nombre del tipo de Página de la comunidad para ser mostrado en el listado de páginas de Administración ** DevTools **
@@ -226,10 +221,6 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Helper
             return (string)helper.ViewBag.HeaderTitle;
         }
 
-
-
-
-
         /// <summary>
         /// Método que proporcionará en formato string un logo en formato "SVG" para ser usado en páginas de login o registro
         /// </summary>
@@ -240,7 +231,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Helper
         public static string GetLogoForSocialNetworkName(this IHtmlHelper helper, string socialNetworkName, int tamanyo = 30)
         {
             // Logo que se devolverá. En caso de no encontrar ninguno, se devolverá "vacío".
-            string currentLogo = "";
+            string currentLogo = string.Empty;
 
             string logoTwitterSvg = $@"
             <div style=""background-color: #000; display: inline-block;"">
@@ -277,7 +268,6 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Helper
                     d=""M 23.933594 18.945313 C 23.335938 20.269531 23.050781 20.863281 22.28125 22.03125 C 21.210938 23.667969 19.695313 25.707031 17.820313 25.71875 C 16.15625 25.734375 15.726563 24.632813 13.464844 24.652344 C 11.203125 24.660156 10.730469 25.738281 9.0625 25.722656 C 7.191406 25.707031 5.757813 23.867188 4.683594 22.238281 C 1.679688 17.664063 1.363281 12.300781 3.21875 9.449219 C 4.53125 7.425781 6.609375 6.238281 8.5625 6.238281 C 10.546875 6.238281 11.796875 7.328125 13.441406 7.328125 C 15.035156 7.328125 16.003906 6.234375 18.304688 6.234375 C 20.039063 6.234375 21.878906 7.179688 23.191406 8.816406 C 18.894531 11.167969 19.59375 17.304688 23.933594 18.945313 Z M 16.558594 4.40625 C 17.394531 3.335938 18.027344 1.820313 17.800781 0.277344 C 16.433594 0.371094 14.839844 1.242188 13.90625 2.367188 C 13.0625 3.394531 12.363281 4.921875 12.636719 6.398438 C 14.125 6.445313 15.664063 5.558594 16.558594 4.40625 Z"" />
                 </svg>
             </div>";
-
 
             if (socialNetworkName.Contains("Facebook", StringComparison.OrdinalIgnoreCase) || socialNetworkName.Contains("Meta", StringComparison.OrdinalIgnoreCase))
             {
@@ -340,7 +330,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Helper
         public static string GetUserNameByProfileMode(this IHtmlHelper helper, UserProfileModel perfil)
         {
             // Nombre de la persona
-            string userNameByProfileMode = "";
+            string userNameByProfileMode = string.Empty;
 
             switch (perfil.TypeProfile)
             {
@@ -348,9 +338,9 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Helper
                     userNameByProfileMode = perfil.Name;
                     break;
                 case ProfileType.ProfessionalPersonal:
-                    if (!String.IsNullOrEmpty(perfil.NameOrg))
+                    if (!string.IsNullOrEmpty(perfil.NameOrg))
                     {
-                        userNameByProfileMode = perfil.Name + " @ " + perfil.NameOrg;
+                        userNameByProfileMode = $"{perfil.Name} @ {perfil.NameOrg}";
                     }
                     else
                     {
@@ -377,7 +367,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Helper
         public static string GetAnonimousIconByProfileMode(this IHtmlHelper helper, UserProfileModel perfil)
         {
             // Nombre del icono a devolver
-            string iconName = "";
+            string iconName = string.Empty;
 
             switch (perfil.TypeProfile)
             {
@@ -397,6 +387,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Helper
                     iconName = "person";
                     break;
             }
+
             return iconName;
         }
 
@@ -435,7 +426,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Helper
             return extractString;
         }
 
-        private static Dictionary<string, string> ELEMENTOS_HTML_LIMPIAR = new Dictionary<string, string>() { { "<pre ", "</pre>" }, { "<img ", ">" }, { "<iframe ", "</iframe>" }, { "<table", "</table>" }, { "<strong>", "<strong>" }, { "</strong>", "</strong>" }, { "<ul", ">" }, { "</ul>", "</ul>" }, { "<ol", ">" }, { "</ol>", "</ol>" }, { "<a", ">" }, { "</a>", "</a>" }, { "<span", ">" }, { "</span>", "</span>" }, { "<h1", ">" }, { "</h1>", "</h1>" }, { "<h2", ">" }, { "</h2>", "</h2>" }, { "<h3>", ">" }, { "</h3>", "</h3>" }, { "<h4>", ">" }, { "</h4>", "</h4>" }, { "<figure", ">" }, { "<em", ">" }, { "</em>", "</em>" }, { "<b>", ">" }, { "</b>", "</b>" }, { "<li>", ">" }, { "</li>", "</li>" }, { "<i>", "</i>" }, { "<code>", "</code>" } };
+        private static Dictionary<string, string> ELEMENTOS_HTML_LIMPIAR = new Dictionary<string, string>() { { "<pre ", "</pre>" }, { "<img ", ">" }, { "<iframe ", "</iframe>" }, { "<table", "</table>" }, { "<strong>", "<strong>" }, { "</strong>", "</strong>" }, { "<ul", ">" }, { "</ul>", "</ul>" }, { "<ol", ">" }, { "</ol>", "</ol>" }, { "<a", ">" }, { "</a>", "</a>" }, { "<span", ">" }, { "</span>", "</span>" }, { "<h1", ">" }, { "</h1>", "</h1>" }, { "<h2", ">" }, { "</h2>", "</h2>" }, { "<h3>", ">" }, { "</h3>", "</h3>" }, { "<h4>", ">" }, { "</h4>", "</h4>" }, { "<figure", ">" }, { "<em", ">" }, { "</em>", "</em>" }, { "<b>", ">" }, { "</b>", "</b>" }, { "<li>", ">" }, { "</li>", "</li>" }, { "<i>", "</i>" }, { "<code>", "</code>" }, { "<div>", "</div>" } };
 
         // Método para limpiar un String que contiene imagenes, videos de youtube pero no se desean ser mostrados (Ej: Ficha Mini Recurso)
         public static string CleanHtmlFromMultimediaItems(this IHtmlHelper helper, string stringHtml)
@@ -447,10 +438,9 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Helper
                     stringHtml = LimpiarFragmentoHTML(stringHtml, clave, ELEMENTOS_HTML_LIMPIAR[clave]);
                 }
             }
+
             return stringHtml;
-
         }
-
 
         private static readonly List<string> ELEMENTOS_HTML_MENSAJES_LIMPIAR = new List<string> { "img", "iframe", "table", "strong", "ul", "ol", "a", "span", "h1", "h2", "h3", "h4", "figure", "em", "b", "li", "i", "article" };
 
@@ -472,6 +462,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Helper
                     stringHtml = Regex.Replace(stringHtml, $"</{Regex.Escape(elemento)}>", " ", RegexOptions.IgnoreCase);
                 }
             }
+
             return stringHtml;
         }
 
@@ -536,7 +527,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Helper
                     stringHtml = stringHtml.Replace(descriptionToRemove, "");
                 }
             }
-            return (stringHtml);
+            return stringHtml;
         }
 
         // Método para truncar texto y añadirle "..." al final        
@@ -605,31 +596,31 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Helper
             switch (pDocumentType)
             {
                 case ResourceModel.DocumentType.Hipervinculo:
-                    nombreRecursoConTildes = "Hipervínculo";
+                    nombreRecursoConTildes = helper.GetText("CREARDOCUMENTO", "HIPERVINCULO");
                     break;
                 case ResourceModel.DocumentType.FicheroServidor:
-                    nombreRecursoConTildes = "Archivo Adjunto";
+                    nombreRecursoConTildes = helper.GetText("CREARDOCUMENTO", "ARCHIVOADJUNTO");
                     break;
                 case ResourceModel.DocumentType.Semantico:
-                    nombreRecursoConTildes = "Semántico";
+                    nombreRecursoConTildes = helper.GetText("CREARDOCUMENTO", "SEMANTICO");
                     break;
                 default:
-                    nombreRecursoConTildes = pDocumentType.ToString();
+                    nombreRecursoConTildes = helper.GetText("CREARDOCUMENTO", pDocumentType.ToString().ToUpper());
                     break;
             }
 
-            return (nombreRecursoConTildes.ToLower());
+            return nombreRecursoConTildes.ToLower();
         }
         //Obtener fotografía anónima del perfil si es Profesional o Empresa.        
         public static string ObtenerFotoAnonimaDePerfil(this IHtmlHelper helper, ProfileType pTipoPerfil)
         {
             if (pTipoPerfil == ProfileType.ProfessionalCorporate)
             {
-                return "/" + Es.Riam.Util.UtilArchivos.ContentImagenes + "/" + Es.Riam.Util.UtilArchivos.ContentImagenesOrganizaciones + "/" + "anonimo_peque.png";
+                return $"/{UtilArchivos.ContentImagenes}/{UtilArchivos.ContentImagenesOrganizaciones}/anonimo_peque.png";
             }
             else
             {
-                return "/" + Es.Riam.Util.UtilArchivos.ContentImagenes + "/" + Es.Riam.Util.UtilArchivos.ContentImagenesPersonas + "/" + "anonimo_peque.png";
+                return $"/{UtilArchivos.ContentImagenes}/{UtilArchivos.ContentImagenesPersonas}/anonimo_peque.png";
             }
         }
 
@@ -637,7 +628,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Helper
         public static string getCommunityNameType(this IHtmlHelper helper, CommunityModel pCommunity)
         {
             string communityNameType = "";
-            switch ((CommunityModel.TypeAccessProject)pCommunity.AccessType)
+            switch (pCommunity.AccessType)
             {
                 case CommunityModel.TypeAccessProject.Private:
                     communityNameType = helper.GetText("COMUNIDADES", "COMUNIDADPRIVADA");
@@ -662,7 +653,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Helper
         {
 
             string communityNameIconType = "";
-            switch ((CommunityModel.TypeAccessProject)pCommunity.AccessType)
+            switch (pCommunity.AccessType)
             {
                 case CommunityModel.TypeAccessProject.Private:
                 case CommunityModel.TypeAccessProject.Reserved:
@@ -681,9 +672,9 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Helper
         // Obtener el estado de la comunidad (Cerrada, Abierta ...)
         public static string getCommunityStateType(this IHtmlHelper helper, CommunityModel pCommunity)
         {
-            String communityState = "";
+            string communityState = string.Empty;
 
-            switch ((CommunityModel.StateProject)pCommunity.ProjectState)
+            switch (pCommunity.ProjectState)
             {
                 case CommunityModel.StateProject.Close:
                     communityState = helper.GetText("COMADMIN", "CERRADO");
@@ -740,18 +731,11 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Helper
             }
         }
 
-
-
         public static string GetSessionTimeout(this IHtmlHelper helper)
         {
             return (string)helper.ViewBag.SessionTimeout;
         }
-
-        //public static Dictionary<string, string> GetParametrosAplicacion(this IHtmlHelper helper)
-        //{
-        //    return helper.ViewBag.ParametrosAplicacion;
-        //}
-
+                
         public static Dictionary<Guid, ProfileModel> GetIdentitiesByUserID(this IHtmlHelper helper, List<Guid> pListUsers, bool pExtraData = false)
         {
             ControladorProyectoMVC controladorProyectoMVC = helper.ViewBag.ControladorProyectoMVC;
@@ -815,7 +799,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Helper
                     dia = int.Parse(pDate.Substring(0, 2));
                 }
 
-                fecha = new DateTime(anio, mes, dia, hora, minuto, segundo);
+                fecha = new DateTime(anio, mes, dia, hora, minuto, segundo, DateTimeKind.Local);
             }
             catch
             {
@@ -843,6 +827,10 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Helper
         public static string ObtenerTextoIdiomaUsuario(this IHtmlHelper helper, string pTexto, bool pTraerPrimeroSiNoEncuentra = false)
         {
             return ObtenerTextoDeIdioma(helper, pTexto, helper.GetUtilIdiomas().LanguageCode, null, !pTraerPrimeroSiNoEncuentra);
+        }
+        public static bool ObtenerEdicionMultiIidoma(this IHtmlHelper helper)
+        {
+            return (bool) helper.ViewBag.MultiIdioma;
         }
 
         private static bool TienePersonalizacion(this IHtmlHelper htmlHelper)
@@ -872,9 +860,11 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Helper
                 }
                 catch (Exception ex)
                 {
-                    LoggingService loggingService = new LoggingService(null, null, null);
+                    ILogger mLogger=null;
+                    ILoggerFactory mLoggerFactory=null;
+                    LoggingService loggingService = new LoggingService(null, null, null, mLoggerFactory.CreateLogger<LoggingService>(), mLoggerFactory);
 
-                    loggingService.GuardarLogError(ex);
+                    loggingService.GuardarLogError(ex,mLogger);
                 }
             }
 
@@ -886,12 +876,13 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Helper
             return resultado;
         }
 
-        public static IHtmlContent PartialView(this IHtmlHelper htmlHelper, string partialViewName, Object model)
+        public static IHtmlContent PartialView(this IHtmlHelper htmlHelper, string partialViewName, object model)
         {
             IHtmlContent resultado = null;
             CommunityModel Comunidad = htmlHelper.ViewBag.Comunidad;
-            DateTime date = DateTime.Now;
-            LoggingService loggingService = new LoggingService(null, null, null);
+            ILogger mLogger = null;
+            ILoggerFactory mLoggerFactory = null;
+            LoggingService loggingService = new LoggingService(null, null, null, null, null);
             try
             {
                 if (TienePersonalizacion(htmlHelper))
@@ -903,7 +894,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Helper
                     }
                     catch (Exception ex)
                     {
-                        loggingService.GuardarLogError(ex);
+                        loggingService.GuardarLogError(ex,mLogger);
                     }
                 }
 
@@ -914,11 +905,12 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Helper
             }
             catch (Exception ex)
             {
-                loggingService.GuardarLogError(ex);
+                loggingService.GuardarLogError(ex, mLogger);
             }
 
             return resultado;
         }
+
         public static IHtmlContent PartialView(this IHtmlHelper htmlHelper, string partialViewName, object model, ViewDataDictionary diccionario)
         {
             IHtmlContent resultado = null;
@@ -928,7 +920,9 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Helper
             {
                 if (TienePersonalizacion(htmlHelper))
                 {
-                    LoggingService loggingService = new LoggingService(null, null, null);
+                    ILogger mLogger = null;
+                    ILoggerFactory mLoggerFactory = null;
+                    LoggingService loggingService = new LoggingService(null, null, null, mLoggerFactory.CreateLogger<LoggingService>(), mLoggerFactory);
                     string personalizacion = MultiViewResult.ComprobarPersonalizacion(htmlHelper.ViewBag, Comunidad, partialViewName);
                     try
                     {
@@ -936,7 +930,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Helper
                     }
                     catch (Exception ex)
                     {
-                        loggingService.GuardarLogError(ex);
+                        loggingService.GuardarLogError(ex, mLogger);
                     }
                 }
 
@@ -945,10 +939,9 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Helper
                     resultado = HtmlHelperPartialExtensions.Partial(htmlHelper, partialViewName, model, diccionario);
                 }
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                //TODO Poner LoggingService en viewBag
-                //loggingService.GuardarLogError(ex);
+                //Fallo al obtener la vista parcial
             }
 
             return resultado;
@@ -958,11 +951,11 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Helper
         {
             if (!string.IsNullOrEmpty(pUrlImg))
             {
-                return pUrlImg.Substring(0, pUrlImg.LastIndexOf('.')) + "_" + pTamaño + pUrlImg.Substring(pUrlImg.LastIndexOf('.'));
+                return $"{pUrlImg.Substring(0, pUrlImg.LastIndexOf('.'))}_{pTamaño}{pUrlImg.Substring(pUrlImg.LastIndexOf('.'))}";
             }
             else
             {
-                return "";
+                return string.Empty;
             }
         }
 
@@ -979,11 +972,6 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Helper
                 return parametros;
             }
             return null;
-        }
-
-        private static string EliminarTablas(string pDescripcion)
-        {
-            return pDescripcion;
         }
 
         public static string AcortarDescripcionHtml(this IHtmlHelper helper, string pTexto, int pNumCaracteres)
@@ -1103,7 +1091,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Helper
             }
             else
             {
-                return helper.Raw(pParametro + "=\"" + pValor + "\"");
+                return helper.Raw($"{pParametro}=\"{pValor}\"");
             }
         }
 
@@ -1202,7 +1190,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Helper
             string linkDesconectar = string.Concat(comunidad.Url, "/", helper.GetUtilIdiomas().GetText("URLSEM", "DESCONECTAR"));
             if (!comunidad.Key.Equals(ProyectoAD.MetaProyecto))
             {
-                linkDesconectar += "/redirect/" + helper.GetUtilIdiomas().GetText("URLSEM", "COMUNIDAD") + "/" + comunidad.ShortName;
+                linkDesconectar += $"/redirect/{helper.GetUtilIdiomas().GetText("URLSEM", "COMUNIDAD")}/{comunidad.ShortName}";
             }
 
             return linkDesconectar;
@@ -1257,7 +1245,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Helper
             // si no encontramos ninguno añadimos el primero 
             if (string.IsNullOrEmpty(resultado))
             {
-                resultado = propiedad.First().Name;
+                resultado = propiedad[0].Name;
             }
             return resultado;
         }
@@ -1274,7 +1262,22 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Helper
             return (UserProfileModel)helper.ViewBag.Perfil;
         }
 
-        public static string GetBodyClass(this IHtmlHelper helper)
+        public static bool ComprobarPermiso(this IHtmlHelper helper, ulong pRol, ulong pPermiso)
+        {
+            return UtilPermisos.TienePermiso(pRol, pPermiso);
+        }
+
+        public static bool TienePermisoAdministracion(this IHtmlHelper helper)
+        {
+            return helper.ViewBag.IdentidadTienePermisoAdministracion;
+        }
+
+		public static bool TienePermisoAdministracionEcosistema(this IHtmlHelper helper)
+		{
+			return helper.ViewBag.UsuarioTienePermisoAdministracionEcosistema;
+		}
+
+		public static string GetBodyClass(this IHtmlHelper helper)
         {
             string bodyClass = (string)helper.ViewBag.BodyClass;
 
@@ -1303,8 +1306,6 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Helper
         {
             return (string)helper.ViewBag.MetaDescriptionPestanya;
         }
-
-
 
         public static string GetBaseUrlIdioma(this IHtmlHelper helper)
         {
@@ -1374,20 +1375,20 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Helper
         public static string GetURLRSS(this IHtmlHelper helper)
         {
             return (string)helper.ViewBag.URLRSS;
-        }
+        }   
 
         public static string GetURLRDF(this IHtmlHelper helper)
         {
             return (string)helper.ViewBag.URLRDF;
         }
 
-        public static List<KeyValuePair<string, string>> GetListaMetas(this IHtmlHelper helper)
+        public static List<ViewMetaData> GetListaMetas(this IHtmlHelper helper)
         {
             if (helper.ViewBag.ListaMetas != null)
             {
-                return (List<KeyValuePair<string, string>>)helper.ViewBag.ListaMetas;
+                return (List<ViewMetaData>)helper.ViewBag.ListaMetas;
             }
-            return new List<KeyValuePair<string, string>>();
+            return new List<ViewMetaData>();
         }
 
         public static List<string> GetListaJS(this IHtmlHelper helper)
@@ -1463,22 +1464,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Helper
         {
             return (string)helper.ViewBag.UrlServicioLogin;
         }
-
-        //TODO Juan 
-        public static string GetStyleVersion(this IHtmlHelper helper/*, IHttpContextAccessor httpContextAccessor*/)
-        {
-            return string.Empty;
-
-            //string styleVersion = string.Empty;
-
-            //if (httpContextAccessor.HttpContext.Session.Keys.Contains("VersionEstilos"))
-            //{
-            //    styleVersion = string.Format("/versiones/{0}", httpContextAccessor.HttpContext.Session.Get("VersionEstilos"));
-            //}
-
-            //return styleVersion;
-        }
-
+      
         public static string GetBaseUrlPersonalizacionEcosistema(this IHtmlHelper helper)
         {
             return (string)helper.ViewBag.BaseUrlPersonalizacionEcosistema;
@@ -1558,6 +1544,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Helper
             return new List<Dictionary<string, string>>();
         }
 
+        [Obsolete("Este método está deprecado, utilizad el CommunityModel.VersionJSEcosistema o CommunityModel.VersionCSSEcosistema en su lugar")]
         public static string GetVersion(this IHtmlHelper helper)
         {
             return (string)helper.ViewBag.Version;
@@ -1614,7 +1601,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Helper
         {
             return (string)helper.ViewBag.UrlActionLogin;
         }
-        
+
         public static string GetUrlActionTwoFactorAuthentication(this IHtmlHelper helper)
         {
             return (string)helper.ViewBag.UrlActionTwoFactorAuthentication;
@@ -1749,7 +1736,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Helper
 
         public static CommunityModel.TabModel BuscarPestanyaPorID(this IHtmlHelper helper, Guid pPestanyaID, List<CommunityModel.TabModel> listaPestanyas)
         {
-            CommunityModel.TabModel pestanya = listaPestanyas.FirstOrDefault(tab => tab.Key.Equals(pPestanyaID));
+            CommunityModel.TabModel pestanya = listaPestanyas.Find(tab => tab.Key.Equals(pPestanyaID));
             if (pestanya == null)
             {
                 foreach (CommunityModel.TabModel tab in listaPestanyas.Where(t => t.SubTab != null && t.SubTab.Count > 0))
@@ -1761,6 +1748,10 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Helper
             return pestanya;
         }
 
+        public static string GetAdministrationDomain(this IHtmlHelper helper)
+        {
+            return (string)helper.ViewBag.DominioPaginasAdministracion;
+        }
         #endregion
 
         #region ViewBag Setters

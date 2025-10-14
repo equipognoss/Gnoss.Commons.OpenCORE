@@ -3,12 +3,15 @@ using Es.Riam.Gnoss.AD.Comentario;
 using Es.Riam.Gnoss.AD.EntityModel;
 using Es.Riam.Gnoss.AD.EntityModel.Models.Comentario;
 using Es.Riam.Gnoss.AD.Identidad;
+using Es.Riam.Gnoss.AD.ParametroAplicacion;
 using Es.Riam.Gnoss.AD.Virtuoso;
 using Es.Riam.Gnoss.Logica.Identidad;
+using Es.Riam.Gnoss.Logica.ServiciosGenerales;
 using Es.Riam.Gnoss.Util.Configuracion;
 using Es.Riam.Gnoss.Util.General;
 using Es.Riam.Util;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -46,6 +49,8 @@ namespace Es.Riam.Gnoss.Elementos.Comentario
         private EntityContext mEntityContext;
         private ConfigService mConfigService;
         private IServicesUtilVirtuosoAndReplication mServicesUtilVirtuosoAndReplication;
+        private ILogger mlogger;
+        private ILoggerFactory mLoggerFactory;
         #endregion
 
         #region Constructor
@@ -55,13 +60,15 @@ namespace Es.Riam.Gnoss.Elementos.Comentario
         /// </summary>
         /// <param name="pGestionComentarios">Gestor de comentarios</param>
         /// <param name="pComentario">DataRow de comentario</param>
-        public Comentario(AD.EntityModel.Models.Comentario.Comentario pComentario, GestionComentarios pGestionComentarios,  LoggingService loggingService, EntityContext entityContext, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication)
-            : base(pComentario, pGestionComentarios, loggingService)
+        public Comentario(AD.EntityModel.Models.Comentario.Comentario pComentario, GestionComentarios pGestionComentarios,  LoggingService loggingService, EntityContext entityContext, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication, ILogger<Comentario> logger, ILoggerFactory loggerFactory)
+            : base(pComentario, pGestionComentarios)
         {
             mLoggingService = loggingService;
             mEntityContext = entityContext;
             mConfigService = configService;
             mServicesUtilVirtuosoAndReplication = servicesUtilVirtuosoAndReplication;
+            mlogger = logger;
+            mLoggerFactory = loggerFactory;
         }
 
         #endregion
@@ -228,7 +235,7 @@ namespace Es.Riam.Gnoss.Elementos.Comentario
                 {
                     if (mURLFotoIdentidad == null)
                     {
-                        IdentidadCN identCN = new IdentidadCN( mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+                        IdentidadCN identCN = new IdentidadCN( mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<IdentidadCN>(), mLoggerFactory);
                         string urlFoto = identCN.ObtenerSiIdentidadTieneFoto(FilaComentario.IdentidadID);
                         identCN.Dispose();
 
@@ -293,7 +300,7 @@ namespace Es.Riam.Gnoss.Elementos.Comentario
                 }
                 catch (Exception ex)
                 {
-                    mLoggingService.GuardarLogError(ex);
+                    mLoggingService.GuardarLogError(ex, mlogger);
                     return null;
                 }
             }
@@ -319,7 +326,7 @@ namespace Es.Riam.Gnoss.Elementos.Comentario
                 }
                 catch (Exception ex)
                 {
-                    mLoggingService.GuardarLogError(ex);
+                    mLoggingService.GuardarLogError(ex, mlogger);
                     return null;
                 }
             }
@@ -345,7 +352,7 @@ namespace Es.Riam.Gnoss.Elementos.Comentario
                 }
                 catch (Exception ex)
                 {
-                    mLoggingService.GuardarLogError(ex);
+                    mLoggingService.GuardarLogError(ex, mlogger);
                     return null;
                 }
             }

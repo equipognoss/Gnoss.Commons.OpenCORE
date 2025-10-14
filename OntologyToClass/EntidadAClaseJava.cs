@@ -1,6 +1,7 @@
 ﻿using Es.Riam.AbstractsOpen;
 using Es.Riam.Gnoss.AD.EntityModel;
 using Es.Riam.Gnoss.AD.EntityModel.Models.Faceta;
+using Es.Riam.Gnoss.Elementos.Amigos;
 using Es.Riam.Gnoss.Logica.Facetado;
 using Es.Riam.Gnoss.Util.Configuracion;
 using Es.Riam.Gnoss.Util.GeneradorClases;
@@ -9,6 +10,7 @@ using Es.Riam.Gnoss.Web.MVC.Models.GeneradorClases;
 using Es.Riam.Gnoss.Web.MVC.Models.GeneradorClases.Enumeraciones;
 using Es.Riam.Semantica.OWL;
 using Es.Riam.Util;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -64,7 +66,8 @@ namespace OntologiaAClase
         private List<FacetaObjetoConocimientoProyecto> listaFacetaObjetoConocimientoProyecto;
         private LoggingService mLoggingService;
         private IServicesUtilVirtuosoAndReplication mServicesUtilVirtuosoAndReplication;
-
+        private ILogger mlogger;
+        private ILoggerFactory mLoggerFactory;
         public EntidadAClaseJava(LoggingService loggingService)
         {
             mLoggingService = loggingService;
@@ -77,11 +80,13 @@ namespace OntologiaAClase
         /// <param name="pOntologia"></param>
         /// <param name="pNombreOnto"></param>
         /// <param name="pContentXML"></param>
-        public EntidadAClaseJava(Ontologia pOntologia, string pNombreOnto, byte[] pContentXML, bool pEsPrimaria, List<string> pListaIdiomas, string pNombreCortoProy, Guid pProyID, List<string> pNombresOntologia, List<ObjetoPropiedad> pListaObjetosPropiedad, EntityContext pEntityContext, LoggingService pLoggingService, ConfigService pConfigService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication)
+        public EntidadAClaseJava(Ontologia pOntologia, string pNombreOnto, byte[] pContentXML, bool pEsPrimaria, List<string> pListaIdiomas, string pNombreCortoProy, Guid pProyID, List<string> pNombresOntologia, List<ObjetoPropiedad> pListaObjetosPropiedad, EntityContext pEntityContext, LoggingService pLoggingService, ConfigService pConfigService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication, ILogger<EntidadAClaseJava> logger, ILoggerFactory loggerFactory)
         {
             mLoggingService = pLoggingService;
             mServicesUtilVirtuosoAndReplication = servicesUtilVirtuosoAndReplication;
-            FacetaCN facetaCN = new FacetaCN(pEntityContext, pLoggingService, pConfigService, mServicesUtilVirtuosoAndReplication);
+            mlogger = logger;
+            mLoggerFactory = loggerFactory;
+            FacetaCN facetaCN = new FacetaCN(pEntityContext, pLoggingService, pConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<FacetaCN>(), mLoggerFactory);
             nombreCortoProy = pNombreCortoProy;
             proyID = pProyID;
             Clase = new StringBuilder();

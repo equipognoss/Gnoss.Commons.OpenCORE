@@ -19,13 +19,16 @@ using Es.Riam.Gnoss.Logica.Parametro;
 using Es.Riam.Gnoss.Logica.ParametroAplicacion;
 using Es.Riam.Gnoss.Util.Configuracion;
 using Es.Riam.Gnoss.Util.General;
+using Es.Riam.Gnoss.UtilServiciosWeb;
 using Es.Riam.Gnoss.Web.Controles.ParametroGeneralDSName;
 using Es.Riam.Gnoss.Web.Controles.Proyectos;
 using Es.Riam.Gnoss.Web.MVC.Models.Administracion;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 
 namespace Es.Riam.Gnoss.Web.Controles.Administracion
 {
@@ -51,19 +54,21 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
         private List<ParametroAplicacion> mParametroAplicacion;
         private Dictionary<string, string> mListaParametrosAplicacion;
         private static string[] LISTA_IDIOMAS = { "es", "en", "pt", "ca", "eu", "gl", "fr", "de", "it" };
-
+        private ILogger mlogger;
+        private ILoggerFactory mLoggerFactory;
         #region Constructor
 
         /// <summary>
         /// 
         /// </summary>
-        public ControladorOpcionesAvanzadas(Proyecto pProyecto, LoggingService loggingService, EntityContext entityContext, ConfigService configService, RedisCacheWrapper redisCacheWrapper, EntityContextBASE entityContextBASE, VirtuosoAD virtuosoAD, IHttpContextAccessor httpContextAccessor, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication)
+        public ControladorOpcionesAvanzadas(Proyecto pProyecto, LoggingService loggingService, EntityContext entityContext, ConfigService configService, RedisCacheWrapper redisCacheWrapper, EntityContextBASE entityContextBASE, VirtuosoAD virtuosoAD, IHttpContextAccessor httpContextAccessor, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication, ILogger<ControladorOpcionesAvanzadas> logger, ILoggerFactory loggerFactory)
         {
             mVirtuosoAD = virtuosoAD;
             mLoggingService = loggingService;
             mEntityContext = entityContext;
             mConfigService = configService;
-
+            mlogger = logger;
+            mLoggerFactory = loggerFactory;
             mHttpContextAccessor = httpContextAccessor;
             mRedisCacheWrapper = redisCacheWrapper;
             mEntityContextBASE = entityContextBASE;
@@ -93,7 +98,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
                     mPaginaModel.OntologiaOtroProyecto = string.IsNullOrEmpty(ontologiaPatron) ? Guid.Empty : new Guid(ontologiaPatron);
                 }
 
-                // Buscar en todo el ecosistema y el proyecto
+                // Buscar en el ecosistema y el proyecto
                 bool buscarTodoEcosistema = true;
                 bool buscarTodoProyecto = true;
                 if (ParametrosGeneralesDS.ListaConfiguracionAmbitoBusquedaProyecto.Count > 0)
@@ -104,7 +109,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
                 }
                 mPaginaModel.BuscarTodoEcosistema = buscarTodoEcosistema;
                 mPaginaModel.BuscarTodoProyecto = buscarTodoProyecto;
-                mPaginaModel.PestanyasSeleccionadas = HayPestanyaSeleccionada(mPaginaModel);
+                mPaginaModel.PestanyasSeleccionadas = HayPestanyaSeleccionada();
 
                 mPaginaModel.PermitirRecursosPrivados = FilaParametrosGenerales.PermitirRecursosPrivados;
                 mPaginaModel.InvitacionesDisponibles = FilaParametrosGenerales.InvitacionesDisponibles;
@@ -115,25 +120,13 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
                 mPaginaModel.SupervisoresPuedenAdministrarGrupos = FilaParametrosGenerales.SupervisoresAdminGrupos;
                 mPaginaModel.CuentaTwitter = ProyectoSeleccionado.FilaProyecto.UsuarioTwitter;
                 mPaginaModel.HasTagTwitter = ProyectoSeleccionado.FilaProyecto.TagTwitter;
-                //mPaginaModel.RobotsBusqueda = ControladorProyecto.ObtenerParametroString(ParametroProyecto, ParametroAD.RobotsComunidad);
                 mPaginaModel.NumeroCaracteresDescripcionSuscripcion = ControladorProyecto.ObtenerParametroString(ParametroProyecto, ParametroAD.NumeroCaracteresDescripcion);
                 mPaginaModel.ParametrosExtraYoutube = ControladorProyecto.ObtenerParametroString(ParametroProyecto, ParametroAD.ParametrosExtraYoutube);
                 mPaginaModel.CompartirRecursoPermitido = FilaParametrosGenerales.CompartirRecursosPermitido;
             }
 
-            //if (!FilaParametrosGenerales.IsCodigoGoogleAnalyticsNull())
-            //if (!(FilaParametrosGenerales.CodigoGoogleAnalytics==null))
-            //{
-            //    mPaginaModel.CodigoGoogleAnalytics = FilaParametrosGenerales.CodigoGoogleAnalytics;
-            //}
-            ////if (!FilaParametrosGenerales.IsScriptGoogleAnalyticsNull())
-            //if (!(FilaParametrosGenerales.ScriptGoogleAnalytics==null))
-            //{
-            //    mPaginaModel.ScriptGoogleAnalytics = FilaParametrosGenerales.ScriptGoogleAnalytics;
-            //}
-
             // Correo
-            ParametroCN paramCN = new ParametroCN(mEntityContext, mLoggingService, mConfigService, null);
+            ParametroCN paramCN = new ParametroCN(mEntityContext, mLoggingService, mConfigService, null, mLoggerFactory.CreateLogger<ParametroCN>(), mLoggerFactory);
             ConfiguracionEnvioCorreo filaConfiguracionEnvioCorreo = paramCN.ObtenerFilaConfiguracionEnvioCorreo(ProyectoSeleccionado.Clave);
             paramCN.Dispose();
 
@@ -146,7 +139,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
                 mPaginaModel.ConfiguracionCorreo.Port = filaConfiguracionEnvioCorreo.puerto;
                 mPaginaModel.ConfiguracionCorreo.User = filaConfiguracionEnvioCorreo.usuario;
                 mPaginaModel.ConfiguracionCorreo.Type = filaConfiguracionEnvioCorreo.tipo;
-                mPaginaModel.ConfiguracionCorreo.SSL = filaConfiguracionEnvioCorreo.SSL.HasValue && filaConfiguracionEnvioCorreo.SSL.Value == true;
+                mPaginaModel.ConfiguracionCorreo.SSL = filaConfiguracionEnvioCorreo.SSL.HasValue && filaConfiguracionEnvioCorreo.SSL.Value;
                 mPaginaModel.ConfiguracionCorreo.SuggestEmail = filaConfiguracionEnvioCorreo.emailsugerencias;
                 mPaginaModel.ConfiguracionCorreo.Password = filaConfiguracionEnvioCorreo.clave;
             }
@@ -155,7 +148,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
 
         public void CargarBuzonCorreo(AdministrarOpcionesAvanzadasViewModel pOpcionesAvanzadasModel)
         {
-            ParametroCN paramCN = new ParametroCN(mEntityContext, mLoggingService, mConfigService, null);
+            ParametroCN paramCN = new ParametroCN(mEntityContext, mLoggingService, mConfigService, null, mLoggerFactory.CreateLogger<ParametroCN>(), mLoggerFactory);
             ConfiguracionEnvioCorreo filaConfiguracionEnvioCorreo = paramCN.ObtenerFilaConfiguracionEnvioCorreo(ProyectoSeleccionado.Clave);
             paramCN.Dispose();
 
@@ -168,7 +161,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
                 pOpcionesAvanzadasModel.ConfiguracionCorreo.Port = filaConfiguracionEnvioCorreo.puerto;
                 pOpcionesAvanzadasModel.ConfiguracionCorreo.User = filaConfiguracionEnvioCorreo.usuario;
                 pOpcionesAvanzadasModel.ConfiguracionCorreo.Type = filaConfiguracionEnvioCorreo.tipo;
-                pOpcionesAvanzadasModel.ConfiguracionCorreo.SSL = filaConfiguracionEnvioCorreo.SSL.HasValue && filaConfiguracionEnvioCorreo.SSL.Value == true;
+                pOpcionesAvanzadasModel.ConfiguracionCorreo.SSL = filaConfiguracionEnvioCorreo.SSL.HasValue && filaConfiguracionEnvioCorreo.SSL.Value;
                 pOpcionesAvanzadasModel.ConfiguracionCorreo.SuggestEmail = filaConfiguracionEnvioCorreo.emailsugerencias;
                 pOpcionesAvanzadasModel.ConfiguracionCorreo.Password = filaConfiguracionEnvioCorreo.clave;
             }
@@ -207,16 +200,18 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
             opciones.UrlHomeConectado = ControladorProyecto.ObtenerParametroString(ListaParametrosAplicacion, TiposParametrosAplicacion.UrlHomeConectado);
             opciones.GoogleRecaptchaSecret = ControladorProyecto.ObtenerParametroString(ListaParametrosAplicacion, TiposParametrosAplicacion.GoogleRecaptchaSecret);
             opciones.DominiosEmailLoginRedesSociales = ControladorProyecto.ObtenerParametroString(ListaParametrosAplicacion, TiposParametrosAplicacion.DominiosEmailLoginRedesSociales);
-            opciones.UrlsPropiasProyecto = ControladorProyecto.ObtenerParametroString(ListaParametrosAplicacion, TiposParametrosAplicacion.UrlsPropiasProyecto);
+            string urlsPropiasProyecto = ControladorProyecto.ObtenerParametroString(ListaParametrosAplicacion, TiposParametrosAplicacion.UrlsPropiasProyecto);
+            opciones.UrlProyectosPublicos = ControladorProyecto.ObtenerUrlProyectosPorTipoAcceso(urlsPropiasProyecto, TipoAcceso.Publico);
+            opciones.UrlProyectosPrivados = ControladorProyecto.ObtenerUrlProyectosPorTipoAcceso(urlsPropiasProyecto, TipoAcceso.Privado);
             opciones.DuracionCookieUsuario = ControladorProyecto.ObtenerParametroString(ListaParametrosAplicacion, TiposParametrosAplicacion.DuracionCookieUsuario);
             opciones.ExtensionesImagenesCMSMultimedia = ControladorProyecto.ObtenerParametroString(ListaParametrosAplicacion, TiposParametrosAplicacion.ExtensionesImagenesCMSMultimedia);
             opciones.ExtensionesDocumentosCMSMultimedia = ControladorProyecto.ObtenerParametroString(ListaParametrosAplicacion, TiposParametrosAplicacion.ExtensionesDocumentosCMSMultimedia);
-
             opciones.ipFTP = ControladorProyecto.ObtenerParametroString(ListaParametrosAplicacion, TiposParametrosAplicacion.ipFTP);
             opciones.UrlContent = ControladorProyecto.ObtenerParametroString(ListaParametrosAplicacion, TiposParametrosAplicacion.UrlContent);
             opciones.UrlIntragnoss = ControladorProyecto.ObtenerParametroString(ListaParametrosAplicacion, TiposParametrosAplicacion.UrlIntragnoss);
             opciones.UrlIntragnossServicios = ControladorProyecto.ObtenerParametroString(ListaParametrosAplicacion, TiposParametrosAplicacion.UrlIntragnossServicios);
             opciones.UrlBaseService = ControladorProyecto.ObtenerParametroString(ListaParametrosAplicacion, TiposParametrosAplicacion.UrlBaseService);
+            opciones.DominioPaginasAdministracion = ControladorProyecto.ObtenerParametroString(ListaParametrosAplicacion, TiposParametrosAplicacion.DominioPaginasAdministracion);
             opciones.ScriptGoogleAnalytics = ControladorProyecto.ObtenerParametroString(ListaParametrosAplicacion, TiposParametrosAplicacion.ScriptGoogleAnalytics);
             opciones.ComunidadesExcluidaPersonalizacion = ControladorProyecto.ObtenerParametroString(ListaParametrosAplicacion, TiposParametrosAplicacion.ComunidadesExcluidaPersonalizacion);
             opciones.LoginUnicoUsuariosExcluidos = ControladorProyecto.ObtenerParametroString(ListaParametrosAplicacion, TiposParametrosAplicacion.LoginUnicoUsuariosExcluidos);
@@ -248,14 +243,12 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
             opciones.LoginUnicoPorUsuario = ControladorProyecto.ObtenerParametroBooleano(ListaParametrosAplicacion, TiposParametrosAplicacion.LoginUnicoPorUsuario, true);
             opciones.EnviarNotificacionesDeSuscripciones = ControladorProyecto.ObtenerParametroBooleano(ListaParametrosAplicacion, TiposParametrosAplicacion.EnviarNotificacionesDeSuscripciones, true);
 
-
             //Parámetros Int
             opciones.EdadLimiteRegistroEcosistema = ControladorProyecto.ObtenerParametroInt(ListaParametrosAplicacion, TiposParametrosAplicacion.EdadLimiteRegistroEcosistema);
             opciones.SegundosMaxSesionBloqueada = ControladorProyecto.ObtenerParametroInt(ListaParametrosAplicacion, TiposParametrosAplicacion.SegundosMaxSesionBloqueada);
             opciones.TamanioPoolRedis = ControladorProyecto.ObtenerParametroInt(ListaParametrosAplicacion, TiposParametrosAplicacion.TamanioPoolRedis);
             opciones.UbicacionLogs = ControladorProyecto.ObtenerParametroInt(ListaParametrosAplicacion, TiposParametrosAplicacion.UbicacionLogs);
             opciones.UbicacionTrazas = ControladorProyecto.ObtenerParametroInt(ListaParametrosAplicacion, TiposParametrosAplicacion.UbicacionTrazas);
-
             opciones.puertoFTP = ControladorProyecto.ObtenerParametroInt(ListaParametrosAplicacion, TiposParametrosAplicacion.puertoFTP);
             opciones.VersionJSEcosistema = ControladorProyecto.ObtenerParametroInt(ListaParametrosAplicacion, TiposParametrosAplicacion.VersionJSEcosistema);
             opciones.VersionCSSEcosistema = ControladorProyecto.ObtenerParametroInt(ListaParametrosAplicacion, TiposParametrosAplicacion.VersionCSSEcosistema);
@@ -270,12 +263,12 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
 
         public void InvalidarCachesEcosistema()
         {
-            ParametroAplicacionCL parametroAplicacionCL = new ParametroAplicacionCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mServicesUtilVirtuosoAndReplication);
+            ParametroAplicacionCL parametroAplicacionCL = new ParametroAplicacionCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<ParametroAplicacionCL>(), mLoggerFactory);
             parametroAplicacionCL.InvalidarCacheParametrosAplicacion();
             parametroAplicacionCL.Dispose();
             if (mGnossCache == null)
             {
-                mGnossCache = new GnossCache(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mServicesUtilVirtuosoAndReplication);
+                mGnossCache = new GnossCache(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<GnossCache>(), mLoggerFactory);
             }
             mGnossCache.VersionarCacheLocal(ProyectoSeleccionado.Clave);
             mGnossCache.VersionarCacheLocal(Guid.Empty);
@@ -291,7 +284,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
                 }
                 else
                 {
-                    throw new Exception("La UrlBaseService no contiene {ServiceName}");
+                    throw new ExcepcionWeb("La UrlBaseService no contiene {ServiceName}");
                 }
             }
 
@@ -302,10 +295,9 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
             GuardarParametroString(TiposParametrosAplicacion.CorreoSolicitudes, pOptions.CorreoSolicitudes);
             GuardarParametroString(TiposParametrosAplicacion.CorreoSugerencias, pOptions.CorreoSugerencias);
             GuardarParametroString(TiposParametrosAplicacion.DominiosEmailLoginRedesSociales, pOptions.DominiosEmailLoginRedesSociales);
-            if (!string.IsNullOrEmpty(pOptions.UrlsPropiasProyecto))
-            {
-                GuardarParametroString(TiposParametrosAplicacion.UrlsPropiasProyecto, pOptions.UrlsPropiasProyecto);
-            }
+
+            GuardarParametroString(TiposParametrosAplicacion.UrlsPropiasProyecto, ControladorProyecto.GenerarUrlsPropiasProyecto(pOptions.UrlProyectosPublicos, pOptions.UrlProyectosPrivados));
+
             GuardarParametroString(TiposParametrosAplicacion.DominiosSinPalco, pOptions.DominiosSinPalco);
             GuardarParametroString(TiposParametrosAplicacion.GoogleRecaptchaSecret, pOptions.GoogleRecaptchaSecret);
             GuardarParametroString(TiposParametrosAplicacion.HashTagEntorno, pOptions.HashTagEntorno);
@@ -327,6 +319,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
             GuardarParametroString(TiposParametrosAplicacion.UrlContent, pOptions.UrlContent);
             GuardarParametroString(TiposParametrosAplicacion.UrlIntragnoss, pOptions.UrlIntragnoss);
             GuardarParametroString(TiposParametrosAplicacion.UrlIntragnossServicios, pOptions.UrlIntragnossServicios);
+            GuardarParametroString(TiposParametrosAplicacion.DominioPaginasAdministracion, pOptions.DominioPaginasAdministracion);
 
             GuardarParametroString(TiposParametrosAplicacion.ScriptGoogleAnalytics, pOptions.ScriptGoogleAnalytics);
             GuardarParametroString(TiposParametrosAplicacion.ComunidadesExcluidaPersonalizacion, pOptions.ComunidadesExcluidaPersonalizacion);
@@ -407,7 +400,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
         // Carga los idiomas personalizas en el modelo
         private void CargarModeloIdiomasPersonalizados(string pIdiomas, AdministrarOpcionesAvanzadasPlataformaViewModel pOpciones)
         {
-            string idiomasPersonalizados = "";
+            StringBuilder idiomasPersonalizados = new StringBuilder();
 
             string[] idiomas = pIdiomas.Split("&&&");
             foreach (string idioma in idiomas)
@@ -415,13 +408,13 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
                 string clave = idioma.Substring(0, 2);
                 if (!LISTA_IDIOMAS.Contains(clave))
                 {
-                    idiomasPersonalizados += $"{idioma}&&&";
+                    idiomasPersonalizados.Append($"{idioma}&&&");
                 }
             }
-            if (!string.IsNullOrEmpty(idiomasPersonalizados))
+            if (idiomasPersonalizados.Length > 0)
             {
                 // ELiminar las tres ultimos caracteres
-                pOpciones.IdiomasPersonalizados = idiomasPersonalizados.Substring(0, idiomasPersonalizados.Length - 3);
+                pOpciones.IdiomasPersonalizados = idiomasPersonalizados.ToString().Substring(0, idiomasPersonalizados.Length - 3);
             }
         }
 
@@ -439,12 +432,10 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
 
         private List<ParametroAplicacion> ParametroAplicacion
         {
-
             get
             {
                 if (mParametroAplicacion == null)
                 {
-                    ParametroAplicacionCN paramCN = new ParametroAplicacionCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
                     mParametroAplicacion = mEntityContext.ParametroAplicacion.ToList();
                 }
                 return mParametroAplicacion;
@@ -466,7 +457,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
                 pOpcionesAvanzadasModel.OntologiaOtroProyecto = string.IsNullOrEmpty(ontologiaPatron) ? Guid.Empty : new Guid(ontologiaPatron);
             }
 
-            // Buscar en todo el ecosistema y el proyecto
+            // Buscar en el ecosistema y el proyecto
             bool buscarTodoEcosistema = true;
             bool buscarTodoProyecto = true;
             if (ParametrosGeneralesDS.ListaConfiguracionAmbitoBusquedaProyecto.Count > 0)
@@ -477,8 +468,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
             }
             pOpcionesAvanzadasModel.BuscarTodoEcosistema = buscarTodoEcosistema;
             pOpcionesAvanzadasModel.BuscarTodoProyecto = buscarTodoProyecto;
-            pOpcionesAvanzadasModel.PestanyasSeleccionadas = HayPestanyaSeleccionada(pOpcionesAvanzadasModel);
-
+            pOpcionesAvanzadasModel.PestanyasSeleccionadas = HayPestanyaSeleccionada();
             pOpcionesAvanzadasModel.PermitirRecursosPrivados = FilaParametrosGenerales.PermitirRecursosPrivados;
             pOpcionesAvanzadasModel.InvitacionesDisponibles = FilaParametrosGenerales.InvitacionesDisponibles;
             pOpcionesAvanzadasModel.VotacionesDisponibles = FilaParametrosGenerales.VotacionesDisponibles;
@@ -503,7 +493,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
                 string[] arrayGrupos = gruposVisibilidadAbierto.Split(new string[] { "|||" }, StringSplitOptions.RemoveEmptyEntries);
                 foreach (string grupo in arrayGrupos)
                 {
-                    Guid grupoID = Guid.Empty;
+                    Guid grupoID;
                     Guid.TryParse(grupo, out grupoID);
 
                     if (grupoID != Guid.Empty)
@@ -513,7 +503,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
                 }
             }
 
-            IdentidadCN identidadCN = new IdentidadCN(mEntityContext, mLoggingService, mConfigService, null);
+            IdentidadCN identidadCN = new IdentidadCN(mEntityContext, mLoggingService, mConfigService, null, mLoggerFactory.CreateLogger<IdentidadCN>(), mLoggerFactory);
             Dictionary<Guid, string> nombresGrupos = identidadCN.ObtenerNombresDeGrupos(listaGrupos);
             identidadCN.Dispose();
 
@@ -531,7 +521,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
             try
             {
                 mEntityContext.SaveChanges();
-                                
+
                 mEntityContext.TerminarTransaccionesPendientes(true);
             }
             catch
@@ -541,23 +531,21 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
             }
         }
 
-        
-
         private void PasarDatosADataSet(AdministrarOpcionesAvanzadasViewModel pOptions)
         {
-            ControladorProyecto controlador = new ControladorProyecto(mLoggingService, mEntityContext, mConfigService, mRedisCacheWrapper, mGnossCache, mEntityContextBASE, mVirtuosoAD, mHttpContextAccessor, null);
+            ControladorProyecto controlador = new ControladorProyecto(mLoggingService, mEntityContext, mConfigService, mRedisCacheWrapper, mGnossCache, mEntityContextBASE, mVirtuosoAD, mHttpContextAccessor, null, mLoggerFactory.CreateLogger<ControladorProyecto>(), mLoggerFactory);
 
             if (FilaParametrosGenerales.CMSDisponible)
             {
-                string gruposVisibilidadAbierto = "";
+                StringBuilder gruposVisibilidadAbierto = new StringBuilder();
                 if (pOptions.GruposVisibilidadAbierto != null)
                 {
                     foreach (Guid grupo in pOptions.GruposVisibilidadAbierto.Keys)
                     {
-                        gruposVisibilidadAbierto += grupo.ToString() + "|||";
+                        gruposVisibilidadAbierto.Append($"{grupo.ToString()}|||");
                     }
                 }
-                controlador.GuardarParametroString(ParametrosGeneralesDS, "GruposPermitidosSeleccionarPrivacidadRecursoAbierto", gruposVisibilidadAbierto);
+                controlador.GuardarParametroString(ParametrosGeneralesDS, "GruposPermitidosSeleccionarPrivacidadRecursoAbierto", gruposVisibilidadAbierto.ToString());
 
                 string ontologiaPatron = pOptions.OntologiaOtroProyecto == Guid.Empty ? "" : pOptions.OntologiaOtroProyecto.ToString();
                 controlador.GuardarParametroString(ParametrosGeneralesDS, ParametroAD.ProyectoIDPatronOntologias, ontologiaPatron);
@@ -568,7 +556,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
             }
 
             //Guardar la opción seleccionada
-           
+
             PestanyasBusquedaProyecto(pOptions);
 
             FilaParametrosGenerales.PermitirRecursosPrivados = pOptions.PermitirRecursosPrivados;
@@ -580,28 +568,6 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
             FilaParametrosGenerales.SupervisoresAdminGrupos = pOptions.SupervisoresPuedenAdministrarGrupos;
             FilaParametrosGenerales.CompartirRecursosPermitido = pOptions.CompartirRecursoPermitido;
 
-            //if (!string.IsNullOrEmpty(pOptions.CodigoGoogleAnalytics))
-            //{
-            //    FilaParametrosGenerales.CodigoGoogleAnalytics = pOptions.CodigoGoogleAnalytics;
-            //}
-            ////else if (!FilaParametrosGenerales.IsCodigoGoogleAnalyticsNull())
-            //else if (!(FilaParametrosGenerales.CodigoGoogleAnalytics==null))
-            //{
-            //    FilaParametrosGenerales.CodigoGoogleAnalytics = null;
-            //    //FilaParametrosGenerales.SetCodigoGoogleAnalyticsNull();
-            //}
-
-            //if (!string.IsNullOrEmpty(pOptions.ScriptGoogleAnalytics))
-            //{
-            //    FilaParametrosGenerales.ScriptGoogleAnalytics = pOptions.ScriptGoogleAnalytics;
-            //}
-            ////else if (!FilaParametrosGenerales.IsScriptGoogleAnalyticsNull())
-            //else if (!(FilaParametrosGenerales.ScriptGoogleAnalytics==null))
-            //{
-            //    FilaParametrosGenerales.ScriptGoogleAnalytics = null;
-            //}
-
-            //controlador.GuardarParametroString(ParametrosGeneralesDS, ParametroAD.RobotsComunidad, pOptions.RobotsBusqueda);
             controlador.GuardarParametroString(ParametrosGeneralesDS, ParametroAD.NumeroCaracteresDescripcion, pOptions.NumeroCaracteresDescripcionSuscripcion);
             controlador.GuardarParametroString(ParametrosGeneralesDS, ParametroAD.ParametrosExtraYoutube, pOptions.ParametrosExtraYoutube);
 
@@ -618,7 +584,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
                 filaAmbitoBusqueda.TodoGnoss = pOptions.BuscarTodoEcosistema;
                 filaAmbitoBusqueda.Metabusqueda = pOptions.BuscarTodoProyecto;
             }
-            else 
+            else
             {
                 filaAmbitoBusqueda = new ConfiguracionAmbitoBusquedaProyecto();
                 filaAmbitoBusqueda.ProyectoID = ProyectoSeleccionado.Clave;
@@ -634,9 +600,6 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
                 ParametrosGeneralesDS.ListaConfiguracionAmbitoBusquedaProyecto.Add(filaAmbitoBusqueda);
                 ParametroGeneralGBD gestorController = new ParametroGeneralGBD(mEntityContext);
                 gestorController.addAmbitoBusqueda(filaAmbitoBusqueda);
-                //gestorController.saveChanges();
-                //filaAmbitoBusqueda.SetPestanyaDefectoIDNull();
-                //ParametrosGeneralesDS.ConfiguracionAmbitoBusquedaProyecto.AddConfiguracionAmbitoBusquedaProyectoRow(filaAmbitoBusqueda);
             }
         }
 
@@ -673,7 +636,8 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
                 confBusqueda.PestanyaDefectoID = pOptions.PestanyasSeleccionadas;
             }
         }
-        private Guid? HayPestanyaSeleccionada(AdministrarOpcionesAvanzadasViewModel pOptions)
+        
+        private Guid? HayPestanyaSeleccionada()
         {
             ParametroGeneralGBD gestorController = new ParametroGeneralGBD(mEntityContext);
             ConfiguracionAmbitoBusquedaProyecto confBusqueda = gestorController.ObtenerConfiguracionAmbitoBusqueda(ProyectoSeleccionado.Clave);
@@ -685,7 +649,6 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
             {
                 return null;
             }
-            
         }
 
         #endregion
@@ -694,13 +657,12 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
 
         public void InvalidarCaches()
         {
-            ParametroGeneralCL paramCL = new ParametroGeneralCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, null);
+            ParametroGeneralCL paramCL = new ParametroGeneralCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, null, mLoggerFactory.CreateLogger<ParametroGeneralCL>(), mLoggerFactory);
             paramCL.InvalidarCacheParametrosGeneralesDeProyecto(ProyectoSeleccionado.Clave);
 
-            ProyectoCL proyCL = new ProyectoCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mVirtuosoAD, null);
+            ProyectoCL proyCL = new ProyectoCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mVirtuosoAD, null, mLoggerFactory.CreateLogger<ProyectoCL>(), mLoggerFactory);
             proyCL.InvalidarParametrosProyecto(ProyectoSeleccionado.Clave, ProyectoSeleccionado.FilaProyecto.OrganizacionID);
             proyCL.InvalidarFilaProyecto(ProyectoSeleccionado.Clave);
-
             proyCL.InvalidarComunidadMVC(ProyectoSeleccionado.Clave);
             proyCL.InvalidarCabeceraMVC(ProyectoSeleccionado.Clave);
 
@@ -716,9 +678,8 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
             get
             {
                 if (mFilaParametrosGenerales == null)
-                {
-                    //mFilaParametrosGenerales = ParametrosGeneralesDS.ParametroGeneral.FindByOrganizacionIDProyectoID(ProyectoSeleccionado.FilaProyecto.OrganizacionID, ProyectoSeleccionado.Clave);
-                    mFilaParametrosGenerales = ParametrosGeneralesDS.ListaParametroGeneral.Find(parametrosGenerales=> parametrosGenerales.OrganizacionID.Equals(ProyectoSeleccionado.FilaProyecto.OrganizacionID) && parametrosGenerales.ProyectoID.Equals(ProyectoSeleccionado.Clave));
+                {                  
+                    mFilaParametrosGenerales = ParametrosGeneralesDS.ListaParametroGeneral.Find(parametrosGenerales => parametrosGenerales.OrganizacionID.Equals(ProyectoSeleccionado.FilaProyecto.OrganizacionID) && parametrosGenerales.ProyectoID.Equals(ProyectoSeleccionado.Clave));
                 }
                 return mFilaParametrosGenerales;
             }
@@ -733,7 +694,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
             {
                 if (mParametroProyecto == null)
                 {
-                    ParametroCN parametroCN = new ParametroCN(mEntityContext, mLoggingService, mConfigService, null);
+                    ParametroCN parametroCN = new ParametroCN(mEntityContext, mLoggingService, mConfigService, null, mLoggerFactory.CreateLogger<ParametroCN>(), mLoggerFactory);
                     mParametroProyecto = parametroCN.ObtenerParametrosProyecto(ProyectoSeleccionado.Clave);
                     parametroCN.Dispose();
                 }
@@ -745,27 +706,20 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
         /// <summary>
         /// Obtiene el dataset de parámetros generales
         /// </summary>
-        // private ParametroGeneralDS ParametrosGeneralesDS
         private GestorParametroGeneral ParametrosGeneralesDS
         {
             get
             {
                 if (mParametrosGeneralesDS == null)
                 {
-                    //ParametroGeneralCN paramCN = new ParametroGeneralCN();
-                    //mParametrosGeneralesDS = paramCN.ObtenerParametrosGeneralesDeProyecto(ProyectoSeleccionado.Clave);
-                    //paramCN.Dispose();
                     ParametroGeneralGBD gestorController = new ParametroGeneralGBD(mEntityContext);
                     mParametrosGeneralesDS = new GestorParametroGeneral();
-                    mParametrosGeneralesDS = gestorController.ObtenerParametrosGeneralesDeProyecto(mParametrosGeneralesDS, ProyectoSeleccionado.Clave); 
+                    mParametrosGeneralesDS = gestorController.ObtenerParametrosGeneralesDeProyecto(mParametrosGeneralesDS, ProyectoSeleccionado.Clave);
                     foreach (string parametro in ParametroProyecto.Keys)
                     {
                         ParametroProyecto parametroProyecto = new ParametroProyecto(ProyectoSeleccionado.FilaProyecto.OrganizacionID, ProyectoSeleccionado.Clave, parametro, ParametroProyecto[parametro]);
-                        //mParametrosGeneralesDS.ParametroProyecto.AddParametroProyectoRow(ProyectoSeleccionado.FilaProyecto.OrganizacionID, ProyectoSeleccionado.Clave, parametro, ParametroProyecto[parametro]);
                         mParametrosGeneralesDS.ListaParametroProyecto.Add(parametroProyecto);
                     }
-                    //gestorController.saveChanges();
-                    //mParametrosGeneralesDS.ParametroProyecto.AcceptChanges();
                 }
                 return mParametrosGeneralesDS;
             }

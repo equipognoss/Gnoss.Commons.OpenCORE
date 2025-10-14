@@ -1,12 +1,14 @@
 ﻿using Es.Riam.AbstractsOpen;
 using Es.Riam.Gnoss.AD.EntityModel;
 using Es.Riam.Gnoss.AD.Live;
+using Es.Riam.Gnoss.AD.ParametroAplicacion;
 using Es.Riam.Gnoss.AD.Virtuoso;
 using Es.Riam.Gnoss.Util.Configuracion;
 using Es.Riam.Gnoss.Util.General;
 using Es.Riam.Util;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 
@@ -30,7 +32,8 @@ namespace Es.Riam.Gnoss.CL.Live
         /// Duración de la cache de tesauro (72 horas)
         /// </summary>
         private readonly string CADENA_GRUPOS_PROYECTO_LIVE = NombresCL.LIVE + "GrupoProyectoUsuarios";
-
+        private ILogger mlogger;
+        private ILoggerFactory mLoggerFactory;
         #endregion
 
         #region Constructores
@@ -40,9 +43,11 @@ namespace Es.Riam.Gnoss.CL.Live
         /// </summary>
         /// <param name="pFicheroConfiguracionBD">Ruta del fichero de configuración de base de datos LIVE</param>
         /// <param name="pUsarVariableEstatica">Si se están usando hilos con diferentes conexiones en el LIVE: FALSE. En caso contrario TRUE</param>
-        public LiveUsuariosCL(EntityContext entityContext, LoggingService loggingService, RedisCacheWrapper redisCacheWrapper, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication)
-            : base(null, "liveUsuarios", entityContext, loggingService, redisCacheWrapper, configService, servicesUtilVirtuosoAndReplication)
+        public LiveUsuariosCL(EntityContext entityContext, LoggingService loggingService, RedisCacheWrapper redisCacheWrapper, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication, ILogger<LiveUsuariosCL> logger, ILoggerFactory loggerFactory)
+            : base(null, "liveUsuarios", entityContext, loggingService, redisCacheWrapper, configService, servicesUtilVirtuosoAndReplication, logger, loggerFactory)
         {
+            mlogger = logger;
+            mLoggerFactory = loggerFactory;
         }
 
         #endregion
@@ -449,7 +454,7 @@ namespace Es.Riam.Gnoss.CL.Live
                     //    Es.Riam.Gnoss.Web.MVC.Controles.ControladorProyectoMVC controladorMVC = new ControladorProyectoMVC(UtilIdiomas.LanguageCode, BaseURL, BaseURLsContent, BaseURLStatic, mProyecto);
                     //}
 
-                    Dictionary<string, object> listaResultados = ObtenerListaObjetosCache(listaClaves, typeof(object));
+                    Dictionary<string, object> listaResultados = ObtenerListaObjetosCache(listaClaves);
                     if (listaResultados != null)
                     {
                         foreach (string claveResultado in listaResultados.Keys)
@@ -845,7 +850,7 @@ namespace Es.Riam.Gnoss.CL.Live
         {
             string rawKey = string.Concat("LiveElemento_", pClaveElementoProyecto + "_" + pIdioma);
 
-            return ObtenerObjetoDeCache(rawKey);
+            return ObtenerObjetoDeCache(rawKey, typeof(string));
         }
 
         /// <summary>

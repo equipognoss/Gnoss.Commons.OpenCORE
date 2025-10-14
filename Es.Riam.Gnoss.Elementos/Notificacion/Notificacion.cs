@@ -1,4 +1,5 @@
 using Es.Riam.Gnoss.Util.General;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 
@@ -45,8 +46,8 @@ namespace Es.Riam.Gnoss.Elementos.Notificacion
         /// </summary>
         /// <param name="pFilaNotificacion">Fila de notificación</param>
         /// <param name="pGestorNotificaciones">Gestor de notificaciones</param>
-        public Notificacion(AD.EntityModel.Models.Notificacion.Notificacion pFilaNotificacion,GestionNotificaciones pGestorNotificaciones, LoggingService loggingService)
-            : base(pFilaNotificacion, pGestorNotificaciones, loggingService)
+        public Notificacion(AD.EntityModel.Models.Notificacion.Notificacion pFilaNotificacion,GestionNotificaciones pGestorNotificaciones)
+            : base(pFilaNotificacion, pGestorNotificaciones)
         {
         }
 

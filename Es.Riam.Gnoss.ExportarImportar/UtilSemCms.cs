@@ -3,9 +3,11 @@ using Es.Riam.Gnoss.AD.EncapsuladoDatos;
 using Es.Riam.Gnoss.AD.EntityModel;
 using Es.Riam.Gnoss.AD.Facetado;
 using Es.Riam.Gnoss.AD.Facetado.Model;
+using Es.Riam.Gnoss.AD.ParametroAplicacion;
 using Es.Riam.Gnoss.AD.ServiciosGenerales;
 using Es.Riam.Gnoss.AD.Virtuoso;
 using Es.Riam.Gnoss.CL;
+using Es.Riam.Gnoss.ExportarImportar.Exportadores;
 using Es.Riam.Gnoss.Logica.Documentacion;
 using Es.Riam.Gnoss.Logica.Facetado;
 using Es.Riam.Gnoss.Logica.Identidad;
@@ -15,6 +17,7 @@ using Es.Riam.Gnoss.Util.General;
 using Es.Riam.Semantica.OWL;
 using Es.Riam.Semantica.Plantillas;
 using Es.Riam.Util;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -30,8 +33,9 @@ namespace Es.Riam.Metagnoss.ExportarImportar
         private ConfigService mConfigService;
         private RedisCacheWrapper mRedisCacheWrapper;
         private IServicesUtilVirtuosoAndReplication mServicesUtilVirtuosoAndReplication;
-
-        public UtilSemCms(EntityContext entityContext, LoggingService loggingService, ConfigService configService, RedisCacheWrapper redisCacheWrapper, VirtuosoAD virtuosoAD, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication)
+        private ILogger mlogger;
+        private ILoggerFactory mLoggerFactory;
+        public UtilSemCms(EntityContext entityContext, LoggingService loggingService, ConfigService configService, RedisCacheWrapper redisCacheWrapper, VirtuosoAD virtuosoAD, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication, ILogger<UtilSemCms> logger, ILoggerFactory loggerFactory)
         {
             mVirtuosoAD = virtuosoAD;
             mEntityContext = entityContext;
@@ -39,6 +43,8 @@ namespace Es.Riam.Metagnoss.ExportarImportar
             mConfigService = configService;
             mRedisCacheWrapper = redisCacheWrapper;
             mServicesUtilVirtuosoAndReplication = servicesUtilVirtuosoAndReplication;
+            mlogger = logger;
+            mLoggerFactory = loggerFactory;
         }
 
         #region Métodos
@@ -53,7 +59,7 @@ namespace Es.Riam.Metagnoss.ExportarImportar
         /// <param name="pEntidades">Entidades principales desde las que se hace la consulta</param>
         public List<string> ObtenerSujetosEntiadesSelectorReciprocoDeEntidad(string pUrlIntragnoss, SelectorEntidad pSelectorEntidad, string pEntidadID, Gnoss.AD.EntityModel.Models.PersonaDS.Persona pFilaPersona, Gnoss.AD.EntityModel.Models.ProyectoDS.Proyecto pFilaProy, List<ElementoOntologia> pEntidades)
         {
-            FacetadoCN facetadoCN = new FacetadoCN(pUrlIntragnoss, mEntityContext, mLoggingService, mConfigService, mVirtuosoAD, mServicesUtilVirtuosoAndReplication);
+            FacetadoCN facetadoCN = new FacetadoCN(pUrlIntragnoss, mEntityContext, mLoggingService, mConfigService, mVirtuosoAD, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<FacetadoCN>(), mLoggerFactory);
             FacetadoDS facetadoDS;
 
             if (string.IsNullOrEmpty(pSelectorEntidad.ConsultaReciproca))
@@ -248,11 +254,11 @@ namespace Es.Riam.Metagnoss.ExportarImportar
                         }
                         catch (Exception)
                         {
-                            mLoggingService.GuardarLog("Error al añadir a la lista de Recursos, el recurso: " + url);
+                            mLoggingService.GuardarLog("Error al añadir a la lista de Recursos, el recurso: " + url, mlogger);
                         }
                     }
 
-                    DocumentacionCN docCN = new DocumentacionCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+                    DocumentacionCN docCN = new DocumentacionCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<DocumentacionCN>(), mLoggerFactory);
                     DataWrapperDocumentacion dataWrapperDocumentacion = docCN.ObtenerDocumentosPorID(new List<Guid>(listaRec), false);
                     docCN.Dispose();
 
@@ -315,7 +321,7 @@ namespace Es.Riam.Metagnoss.ExportarImportar
                 }
             }
 
-            PersonaCN perCN = new PersonaCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+            PersonaCN perCN = new PersonaCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<PersonaCN>(), mLoggerFactory);
             Dictionary<Guid, string> nombresUsus = perCN.ObtenerNombresPersonasDeUsuariosID(listaUsuarios);
             perCN.Dispose();
 
@@ -341,7 +347,7 @@ namespace Es.Riam.Metagnoss.ExportarImportar
                 }
             }
 
-            IdentidadCN identCN = new IdentidadCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+            IdentidadCN identCN = new IdentidadCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<IdentidadCN>(), mLoggerFactory);
             Dictionary<Guid, string> nombresGrupos = identCN.ObtenerNombresDeGrupos(listaGrupos);
             identCN.Dispose();
 
@@ -362,12 +368,12 @@ namespace Es.Riam.Metagnoss.ExportarImportar
         public FacetadoDS ObtenerDatosSelectorEntidadesExternas(string pUrlIntragnoss, SelectorEntidad pSelectorEntidad, List<string> pEntidades, List<string> pPropiedades, Gnoss.AD.EntityModel.Models.PersonaDS.Persona pFilaPersona, Gnoss.AD.EntityModel.Models.ProyectoDS.Proyecto pFilaProy, List<ElementoOntologia> pEntidadesPrinc, bool pUsarAfinidad = false)
         {
             FacetadoDS facetadoDS = null;
-            FacetadoCN facetadoCN = new FacetadoCN(pUrlIntragnoss, true, mEntityContext, mLoggingService, mConfigService, mVirtuosoAD, mServicesUtilVirtuosoAndReplication);
+            FacetadoCN facetadoCN = new FacetadoCN(pUrlIntragnoss, true, mEntityContext, mLoggingService, mConfigService, mVirtuosoAD, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<FacetadoCN>(), mLoggerFactory);
             string claveCache = null;
 
             if (pSelectorEntidad.Cache)
             {
-                GnossCacheCL gnossCache = new GnossCacheCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mServicesUtilVirtuosoAndReplication);
+                GnossCacheCL gnossCache = new GnossCacheCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<GnossCacheCL>(), mLoggerFactory);
                 claveCache = $"{pSelectorEntidad.Grafo}-{pSelectorEntidad.UrlPropiedad}-{pSelectorEntidad.UrlTipoEntSolicitada}-{string.Join(",", pEntidades)}";
                 facetadoDS = gnossCache.ObtenerObjetoDeCacheLocal(claveCache) as FacetadoDS;
             }
@@ -473,7 +479,7 @@ namespace Es.Riam.Metagnoss.ExportarImportar
 
                 if (pSelectorEntidad.Cache)
                 {
-                    GnossCacheCL gnossCache = new GnossCacheCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mServicesUtilVirtuosoAndReplication);
+                    GnossCacheCL gnossCache = new GnossCacheCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<GnossCacheCL>(), mLoggerFactory);
 
                     Guid proyectoID = ProyectoAD.MetaProyecto;
                     if (pFilaProy != null)

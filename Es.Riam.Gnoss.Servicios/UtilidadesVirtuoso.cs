@@ -25,15 +25,18 @@ using Es.Riam.Gnoss.Logica.Documentacion;
 using Es.Riam.Gnoss.Logica.Facetado;
 using Es.Riam.Gnoss.Logica.Identidad;
 using Es.Riam.Gnoss.Logica.ServiciosGenerales;
+using Es.Riam.Gnoss.Logica.Usuarios;
 using Es.Riam.Gnoss.RabbitMQ;
 using Es.Riam.Gnoss.Recursos;
 using Es.Riam.Gnoss.Util.Configuracion;
 using Es.Riam.Gnoss.Util.General;
 using Es.Riam.Gnoss.UtilServiciosWeb;
 using Es.Riam.Gnoss.Web.MVC.Models;
+using Es.Riam.Interfaces.InterfacesOpen;
 using Es.Riam.Semantica.OWL;
 using Es.Riam.Util;
 using Es.Riam.Util.AnalisisSintactico;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Concurrent;
@@ -72,13 +75,14 @@ namespace Es.Riam.Gnoss.Servicios
         private VirtuosoAD mVirtuosoAD;
         private XmlDocument doc;
         private IServicesUtilVirtuosoAndReplication mServicesUtilVirtuosoAndReplication;
-
+        private ILogger mlogger;
+        private ILoggerFactory mLoggerFactory;
         public static Dictionary<Guid, byte[]> ONTOLOGIA_XML_CACHE = new Dictionary<Guid, byte[]>();
 
         /// <summary>
         /// Constructor sin parámetros.
         /// </summary>
-        public UtilidadesVirtuoso(LoggingService loggingService, EntityContext entityContext, ConfigService configService, RedisCacheWrapper redisCacheWrapper, EntityContextBASE entityContextBase, VirtuosoAD virtuosoAD, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication)
+        public UtilidadesVirtuoso(LoggingService loggingService, EntityContext entityContext, ConfigService configService, RedisCacheWrapper redisCacheWrapper, EntityContextBASE entityContextBase, VirtuosoAD virtuosoAD, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication, ILogger<UtilidadesVirtuoso> logger,ILoggerFactory loggerFactory)
         {
             mVirtuosoAD = virtuosoAD;
             mLoggingService = loggingService;
@@ -87,6 +91,8 @@ namespace Es.Riam.Gnoss.Servicios
             mRedisCacheWrapper = redisCacheWrapper;
             mEntityContextBase = entityContextBase;
             mServicesUtilVirtuosoAndReplication = servicesUtilVirtuosoAndReplication;
+            mlogger = logger;
+            this.mLoggerFactory = loggerFactory;
         }
         /// <summary>
         /// Obtiene la configuración xml de una ontología.
@@ -286,10 +292,10 @@ namespace Es.Riam.Gnoss.Servicios
         {
             StringBuilder triples = new StringBuilder();
 
-            FacetadoCN facetadoCN = new FacetadoCN(pFicheroConfiguracionBD, pUrlIntragnoss, pProyectoID.ToString(), mEntityContext, mLoggingService, mConfigService, mVirtuosoAD, mServicesUtilVirtuosoAndReplication);
+            FacetadoCN facetadoCN = new FacetadoCN(pFicheroConfiguracionBD, pUrlIntragnoss, pProyectoID.ToString(), mEntityContext, mLoggingService, mConfigService, mVirtuosoAD, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<FacetadoCN>(), mLoggerFactory);
             facetadoCN.FacetadoAD.CadenaConexionBase = pFicheroConfiguracionBDBase;
             FacetadoDS facetadoDS = new FacetadoDS();
-            FacetaCL facetaCL = new FacetaCL(pFicheroConfiguracionBD, pFicheroConfiguracionBD, pUrlIntragnoss, mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mServicesUtilVirtuosoAndReplication);
+            FacetaCL facetaCL = new FacetaCL(pFicheroConfiguracionBD, pFicheroConfiguracionBD, pUrlIntragnoss, mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<FacetaCL>(), mLoggerFactory);
             Dictionary<string, List<string>> informacionOntologias = facetaCL.ObtenerPrefijosOntologiasDeProyecto(pProyectoID);
 
             Dictionary<string, string> urlOntologiaPorNamespace = new Dictionary<string, string>();
@@ -315,8 +321,8 @@ namespace Es.Riam.Gnoss.Servicios
                 }
             }
 
-            FacetaCN facetaCN = new FacetaCN(pFicheroConfiguracionBD, mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
-            DocumentacionCN documentacionCN = new DocumentacionCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+            FacetaCN facetaCN = new FacetaCN(pFicheroConfiguracionBD, mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<FacetaCN>(), mLoggerFactory);
+            DocumentacionCN documentacionCN = new DocumentacionCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<DocumentacionCN>(), mLoggerFactory);
             // Siempre debe haber una entidad Padre.
             List<string> listRdfTypePadre = new List<string>();
             foreach (ElementoOntologia entidad in pElementosContenedorSuperiorOHerencias)
@@ -887,7 +893,7 @@ namespace Es.Riam.Gnoss.Servicios
         {
             string valorSearch = string.Empty;
 
-            FacetaCN facCN = new FacetaCN(pFicheroConfiguracionBD, mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+            FacetaCN facCN = new FacetaCN(pFicheroConfiguracionBD, mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<FacetaCN>(), mLoggerFactory);
             List<OntologiaProyecto> listaOntologias = facCN.ObtenerOntologias(pProyectoID);
             facCN.Dispose();
 
@@ -928,7 +934,7 @@ namespace Es.Riam.Gnoss.Servicios
 
             if (listaPropiedades.Count > 0)
             {
-                FacetadoCN facetadoCN = new FacetadoCN(pUrlIntragnoss, mEntityContext, mLoggingService, mConfigService, mVirtuosoAD, mServicesUtilVirtuosoAndReplication);
+                FacetadoCN facetadoCN = new FacetadoCN(pUrlIntragnoss, mEntityContext, mLoggingService, mConfigService, mVirtuosoAD, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<FacetadoCN>(), mLoggerFactory);
 
                 facetadoCN.InformacionOntologias = informacionOntologias;
                 List<Guid> listaDocs = new List<Guid>();
@@ -966,7 +972,7 @@ namespace Es.Riam.Gnoss.Servicios
             FacetadoAD pFacetadoAD = null;
             try
             {
-                pFacetadoAD = new FacetadoAD(pFicheroConfiguracionBD, pUrlIntragnoss, "", mLoggingService, mEntityContext, mConfigService, mVirtuosoAD, mServicesUtilVirtuosoAndReplication);
+                pFacetadoAD = new FacetadoAD(pFicheroConfiguracionBD, pUrlIntragnoss, "", mLoggingService, mEntityContext, mConfigService, mVirtuosoAD, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<FacetadoAD>(),mLoggerFactory);
                 pFacetadoAD.CadenaConexionBase = pFicheroConfiguracionBDBase;
 
                 //Creamos el índice (si ya existe, esta instrucción no hace nada)
@@ -987,7 +993,7 @@ namespace Es.Riam.Gnoss.Servicios
                     Thread.Sleep(30 * 1000);
                 }
 
-                pFacetadoAD = new FacetadoAD(pFicheroConfiguracionBD, pUrlIntragnoss, "", mLoggingService, mEntityContext, mConfigService, mVirtuosoAD, mServicesUtilVirtuosoAndReplication);
+                pFacetadoAD = new FacetadoAD(pFicheroConfiguracionBD, pUrlIntragnoss, "", mLoggingService, mEntityContext, mConfigService, mVirtuosoAD, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<FacetadoAD>(), mLoggerFactory);
                 pFacetadoAD.CadenaConexionBase = pFicheroConfiguracionBDBase;
 
                 //Creamos el índice (si ya existe, esta instrucción no hace nada)
@@ -1019,7 +1025,7 @@ namespace Es.Riam.Gnoss.Servicios
             FacetadoAD pFacetadoAD = null;
             try
             {
-                pFacetadoAD = new FacetadoAD(pFicheroConfiguracionBD, pUrlIntragnoss, "", mLoggingService, mEntityContext, mConfigService, mVirtuosoAD, mServicesUtilVirtuosoAndReplication);
+                pFacetadoAD = new FacetadoAD(pFicheroConfiguracionBD, pUrlIntragnoss, "", mLoggingService, mEntityContext, mConfigService, mVirtuosoAD, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<FacetadoAD>(), mLoggerFactory);
                 pFacetadoAD.CadenaConexionBase = pFicheroConfiguracionBDBase;
 
                 //Creamos el índice (si ya existe, esta instrucción no hace nada)
@@ -1037,7 +1043,7 @@ namespace Es.Riam.Gnoss.Servicios
                     Thread.Sleep(30 * 1000);
                 }
 
-                pFacetadoAD = new FacetadoAD(pFicheroConfiguracionBD, pUrlIntragnoss, "", mLoggingService, mEntityContext, mConfigService, mVirtuosoAD, mServicesUtilVirtuosoAndReplication);
+                pFacetadoAD = new FacetadoAD(pFicheroConfiguracionBD, pUrlIntragnoss, "", mLoggingService, mEntityContext, mConfigService, mVirtuosoAD, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<FacetadoAD>(), mLoggerFactory);
                 pFacetadoAD.CadenaConexionBase = pFicheroConfiguracionBDBase;
 
                 //Creamos el índice (si ya existe, esta instrucción no hace nada)
@@ -1064,7 +1070,7 @@ namespace Es.Riam.Gnoss.Servicios
             FacetadoAD pFacetadoAD = null;
             try
             {
-                pFacetadoAD = new FacetadoAD(pFicheroConfiguracionBD, pUrlIntragnoss, pTablaReplica, mLoggingService, mEntityContext, mConfigService, mVirtuosoAD, mServicesUtilVirtuosoAndReplication);
+                pFacetadoAD = new FacetadoAD(pFicheroConfiguracionBD, pUrlIntragnoss, pTablaReplica, mLoggingService, mEntityContext, mConfigService, mVirtuosoAD, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<FacetadoAD>(), mLoggerFactory);
                 pFacetadoAD.CadenaConexionBase = pFicheroConfiguracionBDBase;
 
                 //Actualizamos el índice
@@ -1083,7 +1089,7 @@ namespace Es.Riam.Gnoss.Servicios
                     Thread.Sleep(30 * 1000);
                 }
 
-                pFacetadoAD = new FacetadoAD(pFicheroConfiguracionBD, pUrlIntragnoss, "", mLoggingService, mEntityContext, mConfigService, mVirtuosoAD, mServicesUtilVirtuosoAndReplication);
+                pFacetadoAD = new FacetadoAD(pFicheroConfiguracionBD, pUrlIntragnoss, "", mLoggingService, mEntityContext, mConfigService, mVirtuosoAD, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<FacetadoAD>(), mLoggerFactory);
                 pFacetadoAD.CadenaConexionBase = pFicheroConfiguracionBDBase;
 
                 //Actualizamos el índice
@@ -1308,7 +1314,7 @@ namespace Es.Riam.Gnoss.Servicios
             FacetadoAD pFacetadoAD = null;
             try
             {
-                pFacetadoAD = new FacetadoAD(pFicheroConfiguracionBD, pUrlIntragnoss, "", mLoggingService, mEntityContext, mConfigService, mVirtuosoAD, mServicesUtilVirtuosoAndReplication);
+                pFacetadoAD = new FacetadoAD(pFicheroConfiguracionBD, pUrlIntragnoss, "", mLoggingService, mEntityContext, mConfigService, mVirtuosoAD, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<FacetadoAD>(), mLoggerFactory);
                 pFacetadoAD.CadenaConexionBase = pFicheroConfiguracionBDBase;
 
                 tripletasDeVirtuoso = pFacetadoAD.GenerarTripletaRecogidadeVirtuoso(pSujeto, pPredicado, pObjeto, pObjetoSinMinuscula, Fecha, Numero, TextoInvariable, EntExt, pIdioma);
@@ -1325,7 +1331,7 @@ namespace Es.Riam.Gnoss.Servicios
                     Thread.Sleep(30 * 1000);
                 }
 
-                pFacetadoAD = new FacetadoAD(pFicheroConfiguracionBD, pUrlIntragnoss, "", mLoggingService, mEntityContext, mConfigService, mVirtuosoAD, mServicesUtilVirtuosoAndReplication);
+                pFacetadoAD = new FacetadoAD(pFicheroConfiguracionBD, pUrlIntragnoss, "", mLoggingService, mEntityContext, mConfigService, mVirtuosoAD, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<FacetadoAD>(), mLoggerFactory);
                 pFacetadoAD.CadenaConexionBase = pFicheroConfiguracionBDBase;
                 tripletasDeVirtuoso = pFacetadoAD.GenerarTripletaRecogidadeVirtuoso(pSujeto, pPredicado, pObjeto, pObjetoSinMinuscula, Fecha, Numero, TextoInvariable, EntExt, pIdioma);
             }
@@ -1355,7 +1361,7 @@ namespace Es.Riam.Gnoss.Servicios
             }
             catch (Exception ex)
             {
-                mLoggingService.GuardarLogError(ex);
+                mLoggingService.GuardarLogError(ex, mlogger);
             }
         }
 
@@ -1367,7 +1373,7 @@ namespace Es.Riam.Gnoss.Servicios
 
             try
             {
-                facetadoAD = new FacetadoAD(pUrlIntragnoss, mLoggingService, mEntityContext, mConfigService, mVirtuosoAD, mServicesUtilVirtuosoAndReplication);
+                facetadoAD = new FacetadoAD(pUrlIntragnoss, mLoggingService, mEntityContext, mConfigService, mVirtuosoAD, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<FacetadoAD>(), mLoggerFactory);
                 facetadoAD.InsertaTripletasConModify(pGrafo.ToString(), pTripletas, pListaElementosaModificarID);
                 insertado = true;
             }
@@ -1381,7 +1387,7 @@ namespace Es.Riam.Gnoss.Servicios
                 {
                     try
                     {
-                        facetadoAD = new FacetadoAD(pUrlIntragnoss, mLoggingService, mEntityContext, mConfigService, mVirtuosoAD, mServicesUtilVirtuosoAndReplication);
+                        facetadoAD = new FacetadoAD(pUrlIntragnoss, mLoggingService, mEntityContext, mConfigService, mVirtuosoAD, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<FacetadoAD>(), mLoggerFactory);
 
                         if (!insertado)
                         {
@@ -1391,7 +1397,7 @@ namespace Es.Riam.Gnoss.Servicios
                     }
                     catch (Exception exc)
                     {
-                        mLoggingService.GuardarLogError(exc);
+                        mLoggingService.GuardarLogError(exc, mlogger);
                     }
                 }
             }
@@ -1507,7 +1513,7 @@ namespace Es.Riam.Gnoss.Servicios
 
         private void GenerarTriplesDatosExtraIdentidad(Identidad pIdentidad, Guid pProyectoID, StringBuilder pTripletas)
         {
-            IdentidadCN identidadCN = new IdentidadCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+            IdentidadCN identidadCN = new IdentidadCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<IdentidadCN>(), mLoggerFactory);
             DataWrapperIdentidad identidadDW = identidadCN.ObtenerDatosExtraProyectoOpcionIdentidadPorIdentidadID(pIdentidad.Clave);
 
             if (identidadDW.ListaDatoExtraEcosistemaOpcionPerfil.Count > 0 || identidadDW.ListaDatoExtraProyectoOpcionIdentidad.Count > 0)
@@ -1517,7 +1523,7 @@ namespace Es.Riam.Gnoss.Servicios
                 proyectoCN.Dispose();
                 string opcion = null;*/
 
-                ActualizacionFacetadoCN actualizacionFacetadoCN = new ActualizacionFacetadoCN(null, null, mEntityContext, mLoggingService, mConfigService, mVirtuosoAD, mServicesUtilVirtuosoAndReplication);
+                ActualizacionFacetadoCN actualizacionFacetadoCN = new ActualizacionFacetadoCN(null, null, mEntityContext, mLoggingService, mConfigService, mVirtuosoAD, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<ActualizacionFacetadoCN>(), mLoggerFactory);
                 Guid? id = actualizacionFacetadoCN.ObtieneIDIdentidad(pProyectoID, pIdentidad.Persona.Clave, false);
                 string idRecursoMayuscula = id.Value.ToString().ToUpper();
                 string idRecursoMinuscula = id.Value.ToString();
@@ -1688,14 +1694,19 @@ namespace Es.Riam.Gnoss.Servicios
             return tripletas.ToString();
         }
 
-        public void GuardarRecursoEnGrafoBusqueda(Documento pDocumento, bool pEsDocRaiz, List<Documento> pDocumentosExtraGuardar, Elementos.ServiciosGenerales.Proyecto pProyecto, List<TripleWrapper> pListaTriplesSemanticos, Ontologia pOntologia, GestionTesauro pGestorTesauro, string pRdfConfiguradoRecursoNoSemantico, bool pCreandoVersion, Guid? pDocumentoOriginalID, string pUrlIntragnoss, string pOtrosArgumentosBase, PrioridadBase pPrioridadBase, StringBuilder pSbVirtuoso = null)
+        public void GuardarRecursoEnGrafoBusqueda(Documento pDocumento, bool pEsDocRaiz, List<Documento> pDocumentosExtraGuardar, Elementos.ServiciosGenerales.Proyecto pProyecto, List<TripleWrapper> pListaTriplesSemanticos, Ontologia pOntologia, GestionTesauro pGestorTesauro, string pRdfConfiguradoRecursoNoSemantico, bool pCreandoVersion, Guid? pDocumentoOriginalID, string pUrlIntragnoss, string pOtrosArgumentosBase, PrioridadBase pPrioridadBase, IAvailableServices pAvailableServices, StringBuilder pSbVirtuoso = null)
         {
             string triplesGrafoBusqueda = "";
             bool insercionCorrecta = false;
+            Guid documentoOriginalID = pDocumentoOriginalID ?? (pDocumento.VersionOriginalID == Guid.Empty ? pDocumento.Clave : pDocumento.VersionOriginalID);
 
             try
             {
                 triplesGrafoBusqueda = GenerarTriplesGrafoBusquedaRecurso(pDocumento, pProyecto, pRdfConfiguradoRecursoNoSemantico, pListaTriplesSemanticos, pOntologia, pGestorTesauro, null, null, pUrlIntragnoss);
+                if (pCreandoVersion)
+                {
+                    triplesGrafoBusqueda = triplesGrafoBusqueda.Replace(pDocumento.Clave.ToString().ToUpper(), pDocumento.VersionOriginalID.ToString().ToUpper());
+                }
                 if (!string.IsNullOrEmpty(triplesGrafoBusqueda))
                 {
                     if (pSbVirtuoso != null)
@@ -1719,27 +1730,27 @@ namespace Es.Riam.Gnoss.Servicios
                     else
                     {
                         Dictionary<string, string> listaIdsEliminar = new Dictionary<string, string>();
-                        listaIdsEliminar.Add(pDocumento.Clave.ToString(), "rdf:type");
+                        listaIdsEliminar.Add(documentoOriginalID.ToString(), "rdf:type");
 
-                        insercionCorrecta = InsertarTriplesGrafoBusqueda(pDocumento.Clave, pProyecto.Clave, pCreandoVersion, pDocumentoOriginalID, triplesGrafoBusqueda, listaIdsEliminar, "", "", (short)pDocumento.TipoDocumentacion, pUrlIntragnoss, pOtrosArgumentosBase, pPrioridadBase);
+                        insercionCorrecta = InsertarTriplesGrafoBusqueda(documentoOriginalID, pProyecto.Clave, pCreandoVersion, pDocumentoOriginalID, triplesGrafoBusqueda, listaIdsEliminar, "", "", (short)pDocumento.TipoDocumentacion, pUrlIntragnoss, pOtrosArgumentosBase, pPrioridadBase);
 
                         if (insercionCorrecta /*&& pDocumento.TipoDocumentacion.Equals(TiposDocumentacion.Semantico)*/)
                         {
                             //insertar al Base semánticos para que genere lo que falta (search con metatags ontologia...), resto para que genere grafo contribuciones
-                            AgregarRecursoModeloBaseSimple(pDocumento.Clave, pProyecto.Clave, (short)pDocumento.TipoDocumentacion, null, null, pOtrosArgumentosBase, PrioridadBase.Alta, false, -1, (short)TiposElementosEnCola.InsertadoEnGrafoBusquedaDesdeWeb);
-                            InvalidarCacheGuardarRecursoEnGrafoBusqueda(pDocumento, pProyecto, pUrlIntragnoss, pPrioridadBase);
+                            AgregarRecursoModeloBaseSimple(pDocumento.Clave, pProyecto.Clave, (short)pDocumento.TipoDocumentacion, null, null, pOtrosArgumentosBase, PrioridadBase.Alta, false, -1, (short)TiposElementosEnCola.InsertadoEnGrafoBusquedaDesdeWeb, pAvailableServices);
+                            InvalidarCacheGuardarRecursoEnGrafoBusqueda(pDocumento, pProyecto, pUrlIntragnoss, pPrioridadBase, pAvailableServices);
                         }
                     }
                 }
                 else if (pDocumento.EsBorrador)
                 {
-                    AgregarRecursoModeloBaseSimple(pDocumento.Clave, pProyecto.Clave, (short)pDocumento.TipoDocumentacion, null, null, pOtrosArgumentosBase, PrioridadBase.Alta, false, -1, (short)TiposElementosEnCola.InsertadoEnGrafoBusquedaDesdeWeb);
-                    InvalidarCacheGuardarRecursoEnGrafoBusqueda(pDocumento, pProyecto, pUrlIntragnoss, pPrioridadBase);
+                    AgregarRecursoModeloBaseSimple(pDocumento.Clave, pProyecto.Clave, (short)pDocumento.TipoDocumentacion, null, null, pOtrosArgumentosBase, PrioridadBase.Alta, false, -1, (short)TiposElementosEnCola.InsertadoEnGrafoBusquedaDesdeWeb, pAvailableServices);
+                    InvalidarCacheGuardarRecursoEnGrafoBusqueda(pDocumento, pProyecto, pUrlIntragnoss, pPrioridadBase, pAvailableServices);
                 }
             }
             catch (Exception ex)
             {
-                mLoggingService.GuardarLogError(ex);
+                mLoggingService.GuardarLogError(ex, mlogger);
             }
 
             //ya se hace en InsertarTriplesGrafoBusqueda
@@ -1747,11 +1758,11 @@ namespace Es.Riam.Gnoss.Servicios
             {
                 if (pCreandoVersion && pDocumentoOriginalID.HasValue)
                 {
-                    AgregarRecursoEliminadoModeloBaseSimple(pDocumentoOriginalID.Value, pProyecto.Clave, (short)pDocumento.TipoDocumentacion, PrioridadBase.Alta);
+                    AgregarRecursoEliminadoModeloBaseSimple(pDocumentoOriginalID.Value, pProyecto.Clave, (short)pDocumento.TipoDocumentacion, PrioridadBase.Alta, pAvailableServices);
                 }
 
                 //ha fallado la inserción directa, insertar fila en el BASE para que genere la info en el grafo de búsqueda
-                AgregarRecursoModeloBaseSimple(pDocumento.Clave, pProyecto.Clave, (short)pDocumento.TipoDocumentacion, null, null, pOtrosArgumentosBase, pPrioridadBase, false, -1, null);
+                AgregarRecursoModeloBaseSimple(pDocumento.Clave, pProyecto.Clave, (short)pDocumento.TipoDocumentacion, null, null, pOtrosArgumentosBase, pPrioridadBase, false, -1, null, pAvailableServices);
             }
 
             //27/02/2017 ahora las entidades externas se añaden al grafo de búsqueda en GuardarEntidadExternaDePropSeleccEntExtEditable
@@ -1767,7 +1778,7 @@ namespace Es.Riam.Gnoss.Servicios
             //}
         }
 
-        public void GuardarEdicionTagsRecursoEnGrafoBusqueda(Documento pDocumento, Guid pProyectoId, string pUrlIntragnoss, PrioridadBase pPrioridadBase, bool pEliminadoTags)
+        public void GuardarEdicionTagsRecursoEnGrafoBusqueda(Documento pDocumento, Guid pProyectoId, string pUrlIntragnoss, PrioridadBase pPrioridadBase, bool pEliminadoTags, IAvailableServices pAvailableServices)
         {
             string triplesGrafoBusqueda = "";
             bool insercionCorrecta = false;
@@ -1783,7 +1794,7 @@ namespace Es.Riam.Gnoss.Servicios
             }
             catch (Exception ex)
             {
-                mLoggingService.GuardarLogError(ex);
+                mLoggingService.GuardarLogError(ex, mlogger);
             }
 
             //si ha ido bien hay que insertar en el Base para generar el grafo de contribuciones
@@ -1795,10 +1806,10 @@ namespace Es.Riam.Gnoss.Servicios
                 tipoElemento = TiposElementosEnCola.Agregado;
             }
 
-            AgregarRecursoModeloBaseSimple(pDocumento.Clave, pProyectoId, (short)pDocumento.TipoDocumentacion, null, null, "", pPrioridadBase, false, -1, (short)tipoElemento);
+            AgregarRecursoModeloBaseSimple(pDocumento.Clave, pProyectoId, (short)pDocumento.TipoDocumentacion, null, null, "", pPrioridadBase, false, -1, (short)tipoElemento, pAvailableServices);
         }
 
-        public void GuardarEdicionCategoriasRecursoEnGrafoBusqueda(Documento pDocumento, Guid pProyectoId, bool pEliminandoCategorias, string pUrlIntragnoss, PrioridadBase pPrioridadBase)
+        public void GuardarEdicionCategoriasRecursoEnGrafoBusqueda(Documento pDocumento, Guid pProyectoId, bool pEliminandoCategorias, string pUrlIntragnoss, PrioridadBase pPrioridadBase, IAvailableServices pAvailableServices)
         {
             string triplesGrafoBusqueda = "";
             StringBuilder valorSearch = new StringBuilder();
@@ -1825,7 +1836,7 @@ namespace Es.Riam.Gnoss.Servicios
             }
             catch (Exception ex)
             {
-                mLoggingService.GuardarLogError(ex);
+                mLoggingService.GuardarLogError(ex, mlogger);
             }
 
             //si ha ido bien hay que insertar en el Base para generar el grafo de contribuciones
@@ -1837,7 +1848,7 @@ namespace Es.Riam.Gnoss.Servicios
                 tipoElemento = TiposElementosEnCola.Agregado;
             }
 
-            AgregarRecursoModeloBaseSimple(pDocumento.Clave, pProyectoId, (short)pDocumento.TipoDocumentacion, null, null, "", pPrioridadBase, false, -1, (short)tipoElemento);
+            AgregarRecursoModeloBaseSimple(pDocumento.Clave, pProyectoId, (short)pDocumento.TipoDocumentacion, null, null, "", pPrioridadBase, false, -1, (short)tipoElemento, pAvailableServices);
         }
 
         public bool InsertarTriplesEdicionTagsCategoriasSearchRecurso(Guid pDocumentoId, Guid pGrafo, string pTripletas, string pUrlIntragnoss, PrioridadBase pPrioridadBase, bool pEliminadoTags, bool pEliminandoCategorias)
@@ -1847,7 +1858,7 @@ namespace Es.Riam.Gnoss.Servicios
 
             try
             {
-                facetadoAD = new FacetadoAD(pUrlIntragnoss, mLoggingService, mEntityContext, mConfigService, mVirtuosoAD, mServicesUtilVirtuosoAndReplication);
+                facetadoAD = new FacetadoAD(pUrlIntragnoss, mLoggingService, mEntityContext, mConfigService, mVirtuosoAD, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<FacetadoAD>(), mLoggerFactory);
 
 
                 facetadoAD.InsertarTriplesEdicionTagsCategoriasSearchRecurso(pDocumentoId.ToString(), pGrafo.ToString(), pTripletas, pPrioridadBase, pEliminadoTags, pEliminandoCategorias);
@@ -1855,7 +1866,7 @@ namespace Es.Riam.Gnoss.Servicios
             }
             catch (Exception ex)
             {
-                mLoggingService.GuardarLogError(ex);
+                mLoggingService.GuardarLogError(ex, mlogger);
 
                 //Cerramos las conexiones
                 ControladorConexiones.CerrarConexiones();
@@ -1864,7 +1875,7 @@ namespace Es.Riam.Gnoss.Servicios
                 {
                     try
                     {
-                        facetadoAD = new FacetadoAD(pUrlIntragnoss, mLoggingService, mEntityContext, mConfigService, mVirtuosoAD, mServicesUtilVirtuosoAndReplication);
+                        facetadoAD = new FacetadoAD(pUrlIntragnoss, mLoggingService, mEntityContext, mConfigService, mVirtuosoAD, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<FacetadoAD>(), mLoggerFactory);
 
 
                         if (!insertado)
@@ -1875,7 +1886,7 @@ namespace Es.Riam.Gnoss.Servicios
                     }
                     catch (Exception exc)
                     {
-                        mLoggingService.GuardarLogError(exc);
+                        mLoggingService.GuardarLogError(exc, mlogger);
                     }
                 }
             }
@@ -1902,7 +1913,7 @@ namespace Es.Riam.Gnoss.Servicios
             string where = " WHERE {" + sujeto + " " + predicadoSearch + " " + "?search.}";
             string querySPARQL = "SELECT ?search" + from + where;
 
-            FacetadoCN facCN = new FacetadoCN(pUrlIntragnoss, mEntityContext, mLoggingService, mConfigService, mVirtuosoAD, mServicesUtilVirtuosoAndReplication);
+            FacetadoCN facCN = new FacetadoCN(pUrlIntragnoss, mEntityContext, mLoggingService, mConfigService, mVirtuosoAD, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<FacetadoCN>(), mLoggerFactory);
             FacetadoDS dataSetResult = facCN.RealizarConsultaAVirtuoso(pProyectoId.ToString().ToLower(), querySPARQL);
             if (dataSetResult != null && dataSetResult.Tables["Consulta"] != null && dataSetResult.Tables["Consulta"].Rows.Count > 0)
             {
@@ -1915,7 +1926,7 @@ namespace Es.Riam.Gnoss.Servicios
 
         #region Privados
 
-        private void InvalidarCacheGuardarRecursoEnGrafoBusqueda(Documento pDocumento, Elementos.ServiciosGenerales.Proyecto pProyecto, string pUrlIntragnoss, PrioridadBase pPrioridadBase)
+        private void InvalidarCacheGuardarRecursoEnGrafoBusqueda(Documento pDocumento, Elementos.ServiciosGenerales.Proyecto pProyecto, string pUrlIntragnoss, PrioridadBase pPrioridadBase, IAvailableServices pAvailableServices)
         {
             string tipoSemantico = "";
             if (pDocumento.TipoDocumentacion.Equals(TiposDocumentacion.Semantico) && pDocumento.GestorDocumental != null && pDocumento.GestorDocumental.ListaDocumentos.ContainsKey(pDocumento.ElementoVinculadoID))
@@ -1938,14 +1949,14 @@ namespace Es.Riam.Gnoss.Servicios
             {
                 if (pProyecto.FilaProyecto.NumeroRecursos > 100000)
                 {
-                    BaseComunidadCN baseComunidadCN = new BaseComunidadCN("base", mEntityContext, mLoggingService, mEntityContextBase, mConfigService, mServicesUtilVirtuosoAndReplication);
+                    BaseComunidadCN baseComunidadCN = new BaseComunidadCN("base", mEntityContext, mLoggingService, mEntityContextBase, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<BaseComunidadCN>(), mLoggerFactory);
                     try
                     {
-                        baseComunidadCN.InsertarFilaColaRefrescoCacheEnRabbitMQ(pProyecto.Clave, TiposEventosRefrescoCache.BusquedaVirtuoso, TipoBusqueda.Recursos, null);
+                        baseComunidadCN.InsertarFilaColaRefrescoCacheEnRabbitMQ(pProyecto.Clave, TiposEventosRefrescoCache.BusquedaVirtuoso, TipoBusqueda.Recursos, null, pAvailableServices);
                     }
                     catch (Exception ex)
                     {
-                        mLoggingService.GuardarLogError(ex, "Fallo al insertar en Rabbit, insertamos en la base de datos BASE, tabla colaRefrescoCache");
+                        mLoggingService.GuardarLogError(ex, "Fallo al insertar en Rabbit, insertamos en la base de datos BASE, tabla colaRefrescoCache",mlogger);
                         baseComunidadCN.InsertarFilaEnColaRefrescoCache(pProyecto.Clave, TiposEventosRefrescoCache.BusquedaVirtuoso, TipoBusqueda.Recursos);
                     }
 
@@ -1953,11 +1964,11 @@ namespace Es.Riam.Gnoss.Servicios
                     {
                         try
                         {
-                            baseComunidadCN.InsertarFilaColaRefrescoCacheEnRabbitMQ(pProyecto.Clave, TiposEventosRefrescoCache.BusquedaVirtuoso, TipoBusqueda.Recursos, $"rdf:type={tipoSemantico}");
+                            baseComunidadCN.InsertarFilaColaRefrescoCacheEnRabbitMQ(pProyecto.Clave, TiposEventosRefrescoCache.BusquedaVirtuoso, TipoBusqueda.Recursos, $"rdf:type={tipoSemantico}", pAvailableServices);
                         }
                         catch (Exception ex)
                         {
-                            mLoggingService.GuardarLogError(ex, "Fallo al insertar en Rabbit, insertamos en la base de datos BASE, tabla colaRefrescoCache");
+                            mLoggingService.GuardarLogError(ex, "Fallo al insertar en Rabbit, insertamos en la base de datos BASE, tabla colaRefrescoCache", mlogger);
                             baseComunidadCN.InsertarFilaEnColaRefrescoCache(pProyecto.Clave, TiposEventosRefrescoCache.BusquedaVirtuoso, TipoBusqueda.Recursos, $"rdf:type={tipoSemantico}");
                         }
                     }
@@ -1965,7 +1976,7 @@ namespace Es.Riam.Gnoss.Servicios
                 }
                 else
                 {
-                    FacetadoCL facetadoCL = new FacetadoCL(pUrlIntragnoss, mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mVirtuosoAD, mServicesUtilVirtuosoAndReplication);
+                    FacetadoCL facetadoCL = new FacetadoCL(pUrlIntragnoss, mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mVirtuosoAD, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<FacetadoCL>(),mLoggerFactory);
                     facetadoCL.Dominio = dominio;
                     facetadoCL.InvalidarResultadosYFacetasDeBusquedaEnProyecto(pProyecto.Clave, FacetadoAD.TipoBusquedaToString(TipoBusqueda.Recursos));
                     facetadoCL.BorrarRSSDeComunidad(pProyecto.Clave);
@@ -1977,14 +1988,14 @@ namespace Es.Riam.Gnoss.Servicios
 
                     facetadoCL.Dispose();
 
-                    BaseComunidadCN baseComunidadCN = new BaseComunidadCN("base", mEntityContext, mLoggingService, mEntityContextBase, mConfigService, mServicesUtilVirtuosoAndReplication);
+                    BaseComunidadCN baseComunidadCN = new BaseComunidadCN("base", mEntityContext, mLoggingService, mEntityContextBase, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<BaseComunidadCN>(), mLoggerFactory);
                     try
                     {
-                        baseComunidadCN.InsertarFilaColaRefrescoCacheEnRabbitMQ(pProyecto.Clave, TiposEventosRefrescoCache.RefrescarComponentesRecursos, TipoBusqueda.Recursos, null);
+                        baseComunidadCN.InsertarFilaColaRefrescoCacheEnRabbitMQ(pProyecto.Clave, TiposEventosRefrescoCache.RefrescarComponentesRecursos, TipoBusqueda.Recursos, null, pAvailableServices);
                     }
                     catch (Exception ex)
                     {
-                        mLoggingService.GuardarLogError(ex, "Fallo al insertar en Rabbit, insertamos en la base de datos BASE, tabla colaRefrescoCache");
+                        mLoggingService.GuardarLogError(ex, "Fallo al insertar en Rabbit, insertamos en la base de datos BASE, tabla colaRefrescoCache", mlogger);
                         baseComunidadCN.InsertarFilaEnColaRefrescoCache(pProyecto.Clave, TiposEventosRefrescoCache.RefrescarComponentesRecursos, TipoBusqueda.Recursos);
                     }
 
@@ -1995,7 +2006,7 @@ namespace Es.Riam.Gnoss.Servicios
                 InsertarContadores(dominio, pProyecto);
             }
 
-            DocumentacionCL docCLRec = new DocumentacionCL("recursos", mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mServicesUtilVirtuosoAndReplication);
+            DocumentacionCL docCLRec = new DocumentacionCL("recursos", mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<DocumentacionCL>(), mLoggerFactory);
             docCLRec.Dominio = dominio;
             docCLRec.InvalidarFichaRecursoMVC(pDocumento.Clave, pProyecto.Clave);
             docCLRec.Dispose();
@@ -2003,10 +2014,10 @@ namespace Es.Riam.Gnoss.Servicios
 
         private void InsertarContadores(string dominio, Elementos.ServiciosGenerales.Proyecto pProyecto)
         {
-            ProyectoCN proyCN = new ProyectoCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+            ProyectoCN proyCN = new ProyectoCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<ProyectoCN>(), mLoggerFactory);
 
             int refrescoNumeroResultados = 0;
-            ProyectoCL proyCL = new ProyectoCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mVirtuosoAD, mServicesUtilVirtuosoAndReplication);
+            ProyectoCL proyCL = new ProyectoCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mVirtuosoAD, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<ProyectoCL>(), mLoggerFactory);
             proyCL.Dominio = dominio;
 
             DateTime fechaActual = DateTime.UtcNow;
@@ -2094,7 +2105,7 @@ namespace Es.Riam.Gnoss.Servicios
 
             try
             {
-                facetadoAD = new FacetadoAD(pUrlIntragnoss, mLoggingService, mEntityContext, mConfigService, mVirtuosoAD, mServicesUtilVirtuosoAndReplication);
+                facetadoAD = new FacetadoAD(pUrlIntragnoss, mLoggingService, mEntityContext, mConfigService, mVirtuosoAD, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<FacetadoAD>(), mLoggerFactory);
 
 
                 if (pEstaVersionando && pDocumentoOriginalID.HasValue)
@@ -2116,7 +2127,7 @@ namespace Es.Riam.Gnoss.Servicios
                 {
                     try
                     {
-                        facetadoAD = new FacetadoAD(pUrlIntragnoss, mLoggingService, mEntityContext, mConfigService, mVirtuosoAD, mServicesUtilVirtuosoAndReplication);
+                        facetadoAD = new FacetadoAD(pUrlIntragnoss, mLoggingService, mEntityContext, mConfigService, mVirtuosoAD, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<FacetadoAD>(), mLoggerFactory);
 
 
                         if (pEstaVersionando && !eliminado && pDocumentoOriginalID.HasValue)
@@ -2132,7 +2143,7 @@ namespace Es.Riam.Gnoss.Servicios
                     }
                     catch (Exception exc)
                     {
-                        mLoggingService.GuardarLogError(exc);
+                        mLoggingService.GuardarLogError(exc, mlogger);
                         //if (pEstaVersionando && !eliminado && pDocumentoOriginalID.HasValue)
                         //{
                         //    AgregarRecursoEliminadoModeloBaseSimple(pDocumentoOriginalID.Value, pGrafo, pTipoDocumento, PrioridadBase.Alta);
@@ -2165,7 +2176,7 @@ namespace Es.Riam.Gnoss.Servicios
         /// <param name="pPrioridadBase">Prioridad de las filas introducidas en el modelo base</param>
         /// <param name="pEstadoCargaID"></param>
         /// <param name="pTipoElementoBase">Enumeración TipoElementoEnCola. Si no se especifica, será eliminado o agregado en función del parámetro pEliminado</param>
-        private void AgregarRecursoModeloBaseSimple(Guid pDocumentoID, Guid pProyectoID, short pTipo, BaseRecursosComunidadDS pBaseRecursosComDS, string pFicheroConfiguracionBD, string pOtrosArgumentos, PrioridadBase pPrioridadBase, bool pEliminado, long pEstadoCargaID, short? pTipoElementoBase)
+        private void AgregarRecursoModeloBaseSimple(Guid pDocumentoID, Guid pProyectoID, short pTipo, BaseRecursosComunidadDS pBaseRecursosComDS, string pFicheroConfiguracionBD, string pOtrosArgumentos, PrioridadBase pPrioridadBase, bool pEliminado, long pEstadoCargaID, short? pTipoElementoBase, IAvailableServices pAvailableServices)
         {
             int id = -1;
 
@@ -2176,13 +2187,13 @@ namespace Es.Riam.Gnoss.Servicios
 
             if (!string.IsNullOrEmpty(pFicheroConfiguracionBD))
             {
-                ProyectoCN proyCN = new ProyectoCN(pFicheroConfiguracionBD, mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+                ProyectoCN proyCN = new ProyectoCN(pFicheroConfiguracionBD, mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<ProyectoCN>(), mLoggerFactory);
                 id = proyCN.ObtenerTablaBaseProyectoIDProyectoPorID(pProyectoID);
                 proyCN.Dispose();
             }
             else
             {
-                ProyectoCL proyCL = new ProyectoCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mVirtuosoAD, mServicesUtilVirtuosoAndReplication);
+                ProyectoCL proyCL = new ProyectoCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mVirtuosoAD, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<ProyectoCL>(), mLoggerFactory);
                 id = proyCL.ObtenerTablaBaseProyectoIDProyectoPorID(pProyectoID);
                 proyCL.Dispose();
             }
@@ -2223,11 +2234,11 @@ namespace Es.Riam.Gnoss.Servicios
             //LANZAR Y PROBAR EL SERVICIO CREANDO UN RECURSO EN LA COMUNIDAD
             try
             {
-                InsertarFilaColaTagsComunidadesEnRabbitMQ(filaColaTagsDocs);
+                InsertarFilaColaTagsComunidadesEnRabbitMQ(filaColaTagsDocs, pAvailableServices);
             }
             catch (Exception ex)
             {
-                mLoggingService.GuardarLogError(ex, "Fallo al insertar en Rabbit, insertamos en la base de datos BASE, tabla ColaTagsComunidades");
+                mLoggingService.GuardarLogError(ex, "Fallo al insertar en Rabbit, insertamos en la base de datos BASE, tabla ColaTagsComunidades", mlogger);
                 baseRecursosComDS.ColaTagsComunidades.AddColaTagsComunidadesRow(filaColaTagsDocs);
             }
 
@@ -2235,8 +2246,8 @@ namespace Es.Riam.Gnoss.Servicios
 
             if (pBaseRecursosComDS == null)
             {
-                BaseComunidadCN brComCN = new BaseComunidadCN("base", -1, mEntityContext, mLoggingService, mEntityContextBase, mConfigService, mServicesUtilVirtuosoAndReplication);
-                brComCN.InsertarFilasEnRabbit("ColaTagsComunidades", baseRecursosComDS);
+                BaseComunidadCN brComCN = new BaseComunidadCN("base", -1, mEntityContext, mLoggingService, mEntityContextBase, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<BaseComunidadCN>(), mLoggerFactory);
+                brComCN.InsertarFilasEnColaTagsComunidades(baseRecursosComDS, pAvailableServices);
                 brComCN.Dispose();
 
                 baseRecursosComDS.Dispose();
@@ -2244,13 +2255,13 @@ namespace Es.Riam.Gnoss.Servicios
 
         }
 
-        public void InsertarFilaColaTagsComunidadesEnRabbitMQ(BaseRecursosComunidadDS.ColaTagsComunidadesRow pFilaCola)
+        public void InsertarFilaColaTagsComunidadesEnRabbitMQ(BaseRecursosComunidadDS.ColaTagsComunidadesRow pFilaCola, IAvailableServices pAvailableServices)
         {
             string exchange = "";
             string colaRabbit = "ColaTagsComunidades";
-            if (mConfigService.ExistRabbitConnection(RabbitMQClient.BD_SERVICIOS_WIN))
+            if (mConfigService.ExistRabbitConnection(RabbitMQClient.BD_SERVICIOS_WIN) && pAvailableServices.CheckIfServiceIsAvailable(pAvailableServices.GetBackServiceCode(BackgroundService.SearchGraphGenerator), ServiceType.Background))
             {
-                using (RabbitMQClient rabbitMQ = new RabbitMQClient(RabbitMQClient.BD_SERVICIOS_WIN, colaRabbit, mLoggingService, mConfigService, exchange, colaRabbit))
+                using (RabbitMQClient rabbitMQ = new RabbitMQClient(RabbitMQClient.BD_SERVICIOS_WIN, colaRabbit, mLoggingService, mConfigService, mLoggerFactory.CreateLogger<RabbitMQClient>(), mLoggerFactory, exchange, colaRabbit))
                 {
                     rabbitMQ.AgregarElementoACola(JsonConvert.SerializeObject(pFilaCola.ItemArray));
                 }
@@ -2265,9 +2276,9 @@ namespace Es.Riam.Gnoss.Servicios
         /// <param name="pProyectoID">Proyecto en el que se han modificado</param>
         /// <param name="pTipo">Tipo de documento</param>
         /// <param name="pPrioridadBase">Prioridad de las filas introducidas en el modelo base</param>
-        private void AgregarRecursoEliminadoModeloBaseSimple(Guid pDocumentoID, Guid pProyectoID, short pTipo, PrioridadBase pPrioridadBase)
+        private void AgregarRecursoEliminadoModeloBaseSimple(Guid pDocumentoID, Guid pProyectoID, short pTipo, PrioridadBase pPrioridadBase, IAvailableServices pAvailableServices)
         {
-            AgregarRecursoModeloBaseSimple(pDocumentoID, pProyectoID, pTipo, null, null, "", pPrioridadBase, true, -1, null);
+            AgregarRecursoModeloBaseSimple(pDocumentoID, pProyectoID, pTipo, null, null, "", pPrioridadBase, true, -1, null, pAvailableServices);
         }
 
         private static string ObtenerSearchDescripcionRecurso(string pDescripcion)
@@ -2612,7 +2623,7 @@ namespace Es.Riam.Gnoss.Servicios
             }
             if (listaGrupos.Count > 0)
             {
-                IdentidadCN identidadCN = new IdentidadCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+                IdentidadCN identidadCN = new IdentidadCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<IdentidadCN>(), mLoggerFactory);
                 DataWrapperIdentidad identDW = identidadCN.ObtenerGruposPorIDGrupo(listaGrupos, false);
 
                 GestionIdentidades gestorIdent = new GestionIdentidades(identDW, mLoggingService, mEntityContext, mConfigService, mServicesUtilVirtuosoAndReplication);
@@ -2727,7 +2738,7 @@ namespace Es.Riam.Gnoss.Servicios
             }
             if (listaEditores.Count > 0)
             {
-                IdentidadCN identidadCN = new IdentidadCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+                IdentidadCN identidadCN = new IdentidadCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<IdentidadCN>(), mLoggerFactory);
                 DataWrapperIdentidad identDW = identidadCN.ObtenerIdentidadesDePerfilesEnProyecto(listaEditores, pDocumento.ProyectoID);
 
                 GestionIdentidades gestorIdent = new GestionIdentidades(identDW, mLoggingService, mEntityContext, mConfigService, mServicesUtilVirtuosoAndReplication);
@@ -2849,7 +2860,7 @@ namespace Es.Riam.Gnoss.Servicios
 
             if (pDocumento.FilaDocumentoWebVinBR != null && pDocumento.FilaDocumentoWebVinBR.NivelCertificacionID.HasValue)
             {
-                ProyectoCN proyCN = new ProyectoCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+                ProyectoCN proyCN = new ProyectoCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<ProyectoCN>(), mLoggerFactory);
                 pProyecto.GestorProyectos.DataWrapperProyectos.Merge(proyCN.ObtenerNivelesCertificacionRecursosProyecto(pProyecto.Clave));
                 proyCN.Dispose();
                 short ordenNivelCertificacion = pProyecto.ObtenerOrdenDeNivelCertificacion(pDocumento.FilaDocumentoWebVinBR.NivelCertificacionID.Value);
@@ -2976,11 +2987,11 @@ namespace Es.Riam.Gnoss.Servicios
             }
 
             //Obtengo el Tipo de cada propiedad
-            FacetaCL facetaCL = new FacetaCL(pFicheroConfiguracionBD, pFicheroConfiguracionBDBase, pUrlIntragnoss, mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mServicesUtilVirtuosoAndReplication);
+            FacetaCL facetaCL = new FacetaCL(pFicheroConfiguracionBD, pFicheroConfiguracionBDBase, pUrlIntragnoss, mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<FacetaCL>(), mLoggerFactory);
             DataWrapperFacetas facetaDW = facetaCL.ObtenerTodasFacetasDeProyecto(new List<string> { type }, ProyectoAD.MetaOrganizacion, pProyectoId, false);
             Dictionary<string, List<string>> informacionOntologias = facetaCL.ObtenerPrefijosOntologiasDeProyecto(pProyectoId);
 
-            FacetaCN facetaCN = new FacetaCN(pFicheroConfiguracionBD, mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+            FacetaCN facetaCN = new FacetaCN(pFicheroConfiguracionBD, mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<FacetaCN>(), mLoggerFactory);
             facetaCN.CargarFacetaConfigProyRanfoFecha(ProyectoAD.MetaOrganizacion, pProyectoId, facetaDW);
 
             return GenerarTripletasTipoRecursoSemantico(pFicheroConfiguracionBD, pFicheroConfiguracionBDBase, pUrlIntragnoss, enlaceOntologia, pDocumento.Clave, pProyectoId, pListaTriplesRecurso, pOntologia, out pRdfType, facetaDW, informacionOntologias);
@@ -3040,7 +3051,7 @@ namespace Es.Riam.Gnoss.Servicios
 
             Dictionary<string, List<string>> selectores = ObtenerSelectores(pOntologia, pProyectoId.ToString(), "");
             List<FacetaEntidadesExternas> EntExt = new List<FacetaEntidadesExternas>();
-            DocumentacionCN documentacionCN = new DocumentacionCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+            DocumentacionCN documentacionCN = new DocumentacionCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<DocumentacionCN>(), mLoggerFactory);
             List<AD.EntityModel.Models.Documentacion.Documento> listaEntidadesSecundarias = documentacionCN.ObtenerOntologiasSecundarias(pProyectoId);
             EntExt = mEntityContext.FacetaEntidadesExternas.ToList();
             foreach (string grafo in selectores.Keys)
@@ -3353,11 +3364,11 @@ namespace Es.Riam.Gnoss.Servicios
             {
                 if (string.IsNullOrEmpty(pFicheroConfiguracionBD))
                 {
-                    pFacetadoCN = new FacetadoCN(pUrlIntragnoss, false, "", mEntityContext, mLoggingService, mConfigService, mVirtuosoAD, mServicesUtilVirtuosoAndReplication);
+                    pFacetadoCN = new FacetadoCN(pUrlIntragnoss, false, "", mEntityContext, mLoggingService, mConfigService, mVirtuosoAD, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<FacetadoCN>(), mLoggerFactory);
                 }
                 else
                 {
-                    pFacetadoCN = new FacetadoCN(pFicheroConfiguracionBD, pUrlIntragnoss, "", mEntityContext, mLoggingService, mConfigService, mVirtuosoAD, mServicesUtilVirtuosoAndReplication);
+                    pFacetadoCN = new FacetadoCN(pFicheroConfiguracionBD, pUrlIntragnoss, "", mEntityContext, mLoggingService, mConfigService, mVirtuosoAD, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<FacetadoCN>(), mLoggerFactory);
                 }
 
                 //pFacetadoCN = new FacetadoCN(pFicheroConfiguracionBD, false, pUrlIntragnoss, "");
@@ -3389,7 +3400,7 @@ namespace Es.Riam.Gnoss.Servicios
         /// Realizamos una consulta sencilla al servidor para saber si ya está operativo
         /// </summary>
         /// <returns>TRUE = Servidor Levantado y operativo</returns>
-        public bool VirtuosoOperativo(string pCadenaConexionVirtuoso)
+        public bool VirtuosoOperativo(VirtuosoConnectionData pVirtuosoConnectionData)
         {
             VirtuosoAD virtuosoAD = null;
             bool servidorOperativo = false;
@@ -3405,7 +3416,7 @@ namespace Es.Riam.Gnoss.Servicios
             }
             catch (Exception ex)
             {
-                mLoggingService.GuardarLogError(ex, pCadenaConexionVirtuoso);
+                mLoggingService.GuardarLogError(ex, pVirtuosoConnectionData.ConnectionString, mlogger);
                 servidorOperativo = false;
 
                 //Cerramos las conexiones
@@ -3912,11 +3923,11 @@ namespace Es.Riam.Gnoss.Servicios
             FacetadoCN facetadoCN = null;
             if (!pFicheroConfigDB.Equals(string.Empty) && !pGrafo.Equals(string.Empty))
             {
-                facetadoCN = new FacetadoCN(pFicheroConfigDB, pUrlIntragnoss, pGrafo, mEntityContext, mLoggingService, mConfigService, mVirtuosoAD, mServicesUtilVirtuosoAndReplication);
+                facetadoCN = new FacetadoCN(pFicheroConfigDB, pUrlIntragnoss, pGrafo, mEntityContext, mLoggingService, mConfigService, mVirtuosoAD, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<FacetadoCN>(), mLoggerFactory);
             }
             else
             {
-                facetadoCN = new FacetadoCN(pUrlIntragnoss, true, mEntityContext, mLoggingService, mConfigService, mVirtuosoAD, mServicesUtilVirtuosoAndReplication);
+                facetadoCN = new FacetadoCN(pUrlIntragnoss, true, mEntityContext, mLoggingService, mConfigService, mVirtuosoAD, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<FacetadoCN>(), mLoggerFactory);
             }
             facetadoCN.InformacionOntologias = pInformacionOntologias;
             FacetadoDS facetadoDS = facetadoCN.ObtenerValoresPropiedadesEntidadesPorDocumentoID(grafoBusqueda, recursoID, pPropiedades, pIdioma, true, pUsarAfinidad);
@@ -4006,11 +4017,11 @@ namespace Es.Riam.Gnoss.Servicios
             {
                 if (!pFicheroConfiguracionBD.Equals(string.Empty) && !pProyID.Equals(Guid.Empty))
                 {
-                    pFacetadoAD = new FacetadoAD(pFicheroConfiguracionBD, pUrlIntragnoss, pProyID.ToString(), mLoggingService, mEntityContext, mConfigService, mVirtuosoAD, mServicesUtilVirtuosoAndReplication);
+                    pFacetadoAD = new FacetadoAD(pFicheroConfiguracionBD, pUrlIntragnoss, pProyID.ToString(), mLoggingService, mEntityContext, mConfigService, mVirtuosoAD, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<FacetadoAD>(),mLoggerFactory);
                 }
                 else
                 {
-                    pFacetadoAD = new FacetadoAD(pUrlIntragnoss, true, mLoggingService, mEntityContext, mConfigService, mVirtuosoAD, mServicesUtilVirtuosoAndReplication);
+                    pFacetadoAD = new FacetadoAD(pUrlIntragnoss, true, mLoggingService, mEntityContext, mConfigService, mVirtuosoAD, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<FacetadoAD>(),mLoggerFactory);
                 }
             }
 

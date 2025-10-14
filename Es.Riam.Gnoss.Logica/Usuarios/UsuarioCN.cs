@@ -9,9 +9,11 @@ using Es.Riam.Gnoss.Util.Configuracion;
 using Es.Riam.Gnoss.Util.General;
 using Es.Riam.Gnoss.Util.Seguridad;
 using Es.Riam.Util;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Drawing.Text;
 using System.Linq;
 using System.Text.RegularExpressions;
 
@@ -28,7 +30,8 @@ namespace Es.Riam.Gnoss.Logica.Usuarios
         private EntityContext mEntityContext;
         private LoggingService mLoggingService;
         private ConfigService mConfigService;
-
+        private ILogger mlogger;
+        private ILoggerFactory mLoggerFactory;
         #endregion
 
         #region Constructor
@@ -36,27 +39,29 @@ namespace Es.Riam.Gnoss.Logica.Usuarios
         /// <summary>
         /// Constructor de UsuarioCN
         /// </summary>
-        public UsuarioCN(EntityContext entityContext, LoggingService loggingService, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication)
-            : base(entityContext, loggingService, configService, servicesUtilVirtuosoAndReplication)
+        public UsuarioCN(EntityContext entityContext, LoggingService loggingService, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication, ILogger<UsuarioCN> logger,ILoggerFactory loggerFactory)
+            : base(entityContext, loggingService, configService, servicesUtilVirtuosoAndReplication, logger, loggerFactory)
         {
             mConfigService = configService;
             mEntityContext = entityContext;
             mLoggingService = loggingService;
-
-            UsuarioAD = new UsuarioAD(loggingService, entityContext, configService, servicesUtilVirtuosoAndReplication);
+            mlogger = logger;
+            mLoggerFactory = loggerFactory;
+            UsuarioAD = new UsuarioAD(loggingService, entityContext, configService, servicesUtilVirtuosoAndReplication,mLoggerFactory.CreateLogger<UsuarioAD>(),mLoggerFactory);
         }
 
         /// <summary>
         /// Constructor de UsuarioCN
         /// </summary>
-        public UsuarioCN(string pFicheroConfiguracionBD, EntityContext entityContext, LoggingService loggingService, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication)
-            : base(entityContext, loggingService, configService, servicesUtilVirtuosoAndReplication)
+        public UsuarioCN(string pFicheroConfiguracionBD, EntityContext entityContext, LoggingService loggingService, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication, ILogger<UsuarioCN> logger,ILoggerFactory loggerFactory)
+            : base(entityContext, loggingService, configService, servicesUtilVirtuosoAndReplication, logger, loggerFactory)
         {
             mConfigService = configService;
             mEntityContext = entityContext;
             mLoggingService = loggingService;
-
-            UsuarioAD = new UsuarioAD(pFicheroConfiguracionBD, loggingService, entityContext, configService, servicesUtilVirtuosoAndReplication);
+            mlogger = logger;
+            mLoggerFactory= loggerFactory;
+            UsuarioAD = new UsuarioAD(pFicheroConfiguracionBD, loggingService, entityContext, configService, servicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<UsuarioAD>(), mLoggerFactory);
         }
 
         #endregion
@@ -94,7 +99,7 @@ namespace Es.Riam.Gnoss.Logica.Usuarios
         /// <returns></returns>
         public Guid ObtenerGuidUsuarioIDporIdentidadID(Guid pIdentidadID)
         {
-            using (UsuarioAD usuarioAD = new UsuarioAD(mLoggingService, mEntityContext, mConfigService, mServicesUtilVirtuosoAndReplication))
+            using (UsuarioAD usuarioAD = new UsuarioAD(mLoggingService, mEntityContext, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<UsuarioAD>(), mLoggerFactory))
             {
                 return usuarioAD.SelectGuidUsuarioIDadoIdentidadID(pIdentidadID);
             }
@@ -158,6 +163,16 @@ namespace Es.Riam.Gnoss.Logica.Usuarios
 
 
 
+        /// <summary>
+        /// Obtiene los usuarioIDs por el nombre de perfil. Tablas: "Perfil, Persona"
+        /// </summary>
+        /// <param name="pNombrePerfil">Nombre de perfil a buscar</param>
+        /// <param name="pNumero">Numero de resultados a devolver</param>
+        /// <returns></returns>
+        public Dictionary<Guid, string> ObtenerUsuariosIDParaAutocompletar(string pNombrePerfil, int pNumero)
+        {
+            return UsuarioAD.ObtenerUsuariosIdParaAutocompletar(pNombrePerfil, pNumero);
+        }
 
         /// <summary>
         /// Obtiene el ID de un usuario a partir de su id de tesauro (null si el usuario no existe)
@@ -353,9 +368,16 @@ namespace Es.Riam.Gnoss.Logica.Usuarios
         /// </summary>
         /// <param name="pLogin"></param>
         /// <returns></returns>
-        public AD.EntityModel.Models.UsuarioDS.Usuario ObtenerFilaUsuarioPorLoginOEmail(string pLogin)
+        public AD.EntityModel.Models.UsuarioDS.Usuario ObtenerFilaUsuarioPorLoginOEmail(string pLogin, bool pBloqueado = false)
         {
-            return UsuarioAD.ObtenerFilaUsuarioPorLoginOEmail(pLogin);
+            if (pBloqueado)
+            {
+                return UsuarioAD.ObtenerFilaUsuarioBloqueadoPorLoginOEmail(pLogin);
+            }
+            else
+            {
+                return UsuarioAD.ObtenerFilaUsuarioPorLoginOEmail(pLogin);
+            }
         }
 
         /// <summary>
@@ -431,14 +453,14 @@ namespace Es.Riam.Gnoss.Logica.Usuarios
             {
                 TerminarTransaccion(false);
                 // Error de concurrencia
-                mLoggingService.GuardarLogError(ex);
+                mLoggingService.GuardarLogError(ex,mlogger);
                 throw new ErrorConcurrencia();
             }
             catch (DataException ex)
             {
                 TerminarTransaccion(false);
                 //Error interno de la aplicación	
-                mLoggingService.GuardarLogError(ex);
+                mLoggingService.GuardarLogError(ex, mlogger);
                 throw new ErrorInterno();
             }
             catch
@@ -539,7 +561,7 @@ namespace Es.Riam.Gnoss.Logica.Usuarios
             }
             catch (Exception ex)
             {
-                mLoggingService.GuardarLogError(ex, string.Format("Error al actualizar el contador NumeroDeAccesos del usuario {0}", pUsuarioID));
+                mLoggingService.GuardarLogError(ex, string.Format("Error al actualizar el contador NumeroDeAccesos del usuario {0}", pUsuarioID),mlogger);
             }
         }
 
@@ -770,7 +792,7 @@ namespace Es.Riam.Gnoss.Logica.Usuarios
             ulong rolDenegadoUsuario = 0;
 
             //1º Obtenemos los roles del usuario
-            UsuarioAD rolUsuarioAD = new UsuarioAD(mLoggingService, mEntityContext, mConfigService, mServicesUtilVirtuosoAndReplication);
+            UsuarioAD rolUsuarioAD = new UsuarioAD(mLoggingService, mEntityContext, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<UsuarioAD>(), mLoggerFactory);
             GeneralRolUsuario generalRolUsuario = rolUsuarioAD.ObtenerGeneralRolUsuario(pUsuario);
 
             if (generalRolUsuario == null)
@@ -1059,7 +1081,7 @@ namespace Es.Riam.Gnoss.Logica.Usuarios
             ulong rolDenegadoUsuarioOrganizacion = 0;
 
             //1º Obtenemos los roles del usuario en pOrganizacionID
-            UsuarioAD usuarioAD = new UsuarioAD(mLoggingService, mEntityContext, mConfigService, mServicesUtilVirtuosoAndReplication);
+            UsuarioAD usuarioAD = new UsuarioAD(mLoggingService, mEntityContext, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<UsuarioAD>(), mLoggerFactory);
             DataWrapperUsuario dataWrapperUsuario = usuarioAD.ObtenerOrganizacionRolUsuario(pUsuarioID, pOrganizacionID);
 
             if ((dataWrapperUsuario == null) || (dataWrapperUsuario.ListaOrganizacionRolUsuario.Count == 0))
@@ -1201,14 +1223,14 @@ namespace Es.Riam.Gnoss.Logica.Usuarios
             {
                 TerminarTransaccion(false);
                 // Error de concurrencia
-                mLoggingService.GuardarLogError(ex);
+                mLoggingService.GuardarLogError(ex, mlogger);
                 throw new ErrorConcurrencia();
             }
             catch (DataException ex)
             {
                 TerminarTransaccion(false);
                 //Error interno de la aplicación
-                mLoggingService.GuardarLogError(ex);
+                mLoggingService.GuardarLogError(ex, mlogger);
                 throw new ErrorInterno();
             }
             catch
@@ -1247,14 +1269,14 @@ namespace Es.Riam.Gnoss.Logica.Usuarios
             {
                 TerminarTransaccion(false);
                 // Error de concurrencia
-                mLoggingService.GuardarLogError(ex);
+                mLoggingService.GuardarLogError(ex, mlogger);
                 throw new ErrorConcurrencia();
             }
             catch (DataException ex)
             {
                 TerminarTransaccion(false);
                 //Error interno de la aplicación
-                mLoggingService.GuardarLogError(ex);
+                mLoggingService.GuardarLogError(ex, mlogger);
                 throw new ErrorInterno();
             }
             catch

@@ -1,10 +1,12 @@
 using Es.Riam.AbstractsOpen;
 using Es.Riam.Gnoss.AD.EntityModel;
 using Es.Riam.Gnoss.AD.EntityModelBASE;
+using Es.Riam.Gnoss.AD.ParametroAplicacion;
 using Es.Riam.Gnoss.AD.RDF.Model;
 using Es.Riam.Gnoss.Util.Configuracion;
 using Es.Riam.Gnoss.Util.General;
 using Microsoft.Data.SqlClient;
+using Microsoft.Extensions.Logging;
 using Npgsql;
 using Oracle.ManagedDataAccess.Client;
 using System;
@@ -48,6 +50,8 @@ namespace Es.Riam.Gnoss.AD.RDF
         private string mCaracteresDoc = "";
 
         private LoggingService mLoggingService;
+        private ILogger mlogger;
+        private ILoggerFactory mloggerFactory;
 
         #endregion
 
@@ -56,10 +60,12 @@ namespace Es.Riam.Gnoss.AD.RDF
         /// <summary>
         /// El por defecto, utilizado cuando se requiere el GnossConfig.xml por defecto
         /// </summary>
-        public RdfAD(LoggingService loggingService, EntityContext entityContext, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication)
-            : base(loggingService, entityContext, configService, servicesUtilVirtuosoAndReplication)
+        public RdfAD(LoggingService loggingService, EntityContext entityContext, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication, ILogger<RdfAD> logger, ILoggerFactory loggerFactory)
+            : base(loggingService, entityContext, configService, servicesUtilVirtuosoAndReplication,logger,loggerFactory)
         {
             mLoggingService = loggingService;
+            mlogger = logger;
+            mloggerFactory = loggerFactory;
             this.CargarConsultasYDataAdapters();
         }
 
@@ -68,10 +74,12 @@ namespace Es.Riam.Gnoss.AD.RDF
         /// </summary>
         /// <param name="pFicheroConfiguracionBD">Ruta del fichero de configuración de conexión a base de datos</param>
         /// <param name="pUsarVariableEstatica">Si se están usando hilos con diferentes conexiones: FALSE. En caso contrario TRUE</param>
-        public RdfAD(string pFicheroConfiguracionBD, LoggingService loggingService, EntityContext entityContext, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication)
-            : base(pFicheroConfiguracionBD, loggingService, entityContext, configService, servicesUtilVirtuosoAndReplication)
+        public RdfAD(string pFicheroConfiguracionBD, LoggingService loggingService, EntityContext entityContext, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication, ILogger<RdfAD> logger, ILoggerFactory loggerFactory)
+            : base(pFicheroConfiguracionBD, loggingService, entityContext, configService, servicesUtilVirtuosoAndReplication,logger,loggerFactory)
         {
             mLoggingService = loggingService;
+            mlogger = logger;
+            mloggerFactory = loggerFactory;
             this.CargarConsultasYDataAdapters(IBD);
         }
         /// <summary>
@@ -79,10 +87,12 @@ namespace Es.Riam.Gnoss.AD.RDF
         /// </summary>
         /// <param name="pFicheroConfiguracionBD">Ruta del fichero de configuración de conexión a base de datos</param>
         /// <param name="pUsarVariableEstatica">Si se están usando hilos con diferentes conexiones: FALSE. En caso contrario TRUE</param>
-        public RdfAD(string pFicheroConfiguracionBD, LoggingService loggingService, EntityContext entityContext, EntityContextBASE entityContextBASE, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication)
-            : base(pFicheroConfiguracionBD, loggingService, entityContext, configService, entityContextBASE, servicesUtilVirtuosoAndReplication)
+        public RdfAD(string pFicheroConfiguracionBD, LoggingService loggingService, EntityContext entityContext, EntityContextBASE entityContextBASE, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication, ILogger<RdfAD> logger, ILoggerFactory loggerFactory)
+            : base(pFicheroConfiguracionBD, loggingService, entityContext, configService, entityContextBASE, servicesUtilVirtuosoAndReplication,logger,loggerFactory)
         {
             mLoggingService = loggingService;
+            mlogger = logger;
+            mloggerFactory = loggerFactory;
             this.CargarConsultasYDataAdapters(IBD);
         }
         /// <summary>
@@ -91,19 +101,23 @@ namespace Es.Riam.Gnoss.AD.RDF
         /// <param name="pFicheroConfiguracionBD">Ruta del fichero de configuración de conexión a base de datos</param>
         /// <param name="pUsarVariableEstatica">Si se están usando hilos con diferentes conexiones: FALSE. En caso contrario TRUE</param>
         /// <param name="pCaracteresDoc">Ultimos caracteres que se añaden a la tabla RdfDocumento</param>
-        public RdfAD(string pFicheroConfiguracionBD, string pCaracteresDoc, LoggingService loggingService, EntityContext entityContext, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication)
-            : base(pFicheroConfiguracionBD, loggingService, entityContext, configService, servicesUtilVirtuosoAndReplication)
+        public RdfAD(string pFicheroConfiguracionBD, string pCaracteresDoc, LoggingService loggingService, EntityContext entityContext, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication, ILogger<RdfAD> logger, ILoggerFactory loggerFactory)
+            : base(pFicheroConfiguracionBD, loggingService, entityContext, configService, servicesUtilVirtuosoAndReplication, logger, loggerFactory)
         {
             mLoggingService = loggingService;
             mCaracteresDoc = pCaracteresDoc;
+            mlogger = logger;
+            mloggerFactory = loggerFactory;
             this.CargarConsultasYDataAdapters(IBD);
         }
 
-        public RdfAD(string pFicheroConfiguracionBD, string pCaracteresDoc, LoggingService loggingService, EntityContext entityContext, EntityContextBASE entityContextBASE, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication)
-            : base(pFicheroConfiguracionBD, loggingService, entityContext, configService, entityContextBASE, servicesUtilVirtuosoAndReplication)
+        public RdfAD(string pFicheroConfiguracionBD, string pCaracteresDoc, LoggingService loggingService, EntityContext entityContext, EntityContextBASE entityContextBASE, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication, ILogger<RdfAD> logger, ILoggerFactory loggerFactory)
+            : base(pFicheroConfiguracionBD, loggingService, entityContext, configService, entityContextBASE, servicesUtilVirtuosoAndReplication, logger, loggerFactory)
         {
             mLoggingService = loggingService;
             mCaracteresDoc = pCaracteresDoc;
+            mlogger = logger;
+            mloggerFactory = loggerFactory;
             this.CargarConsultasYDataAdapters(IBD);
 
         }
@@ -403,7 +417,7 @@ namespace Es.Riam.Gnoss.AD.RDF
         {
             string delete;
             string numTabla;
-            List<char> caracteres = new List<char> { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F' };
+            List<char> caracteres = new List<char> { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f' };
             DbCommand comSql;
             
             for (int i = 0; i < caracteres.Count; i++)

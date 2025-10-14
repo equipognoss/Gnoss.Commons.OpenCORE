@@ -1,4 +1,5 @@
-﻿using Es.Riam.Gnoss.Util.Seguridad;
+﻿using Es.Riam.Gnoss.Util.General;
+using Es.Riam.Gnoss.Util.Seguridad;
 using Es.Riam.Util;
 using Microsoft.AspNetCore.Http;
 using Newtonsoft.Json;
@@ -142,7 +143,7 @@ namespace Es.Riam.Gnoss.UtilServiciosWeb
         /// <param name="pToken">Token para validar la peticion</param>
         public static string CallPostApiToken(string urlBase, string urlMethod, object item, bool isFile = false, string fileName = "file", TokenBearer pToken = null)
         {
-            HttpContent contentData = null;
+			HttpContent contentData = null;
             if (!string.IsNullOrEmpty(urlBase) && !urlBase.EndsWith("/") && !string.IsNullOrEmpty(urlMethod) && !urlMethod.StartsWith("/"))
             {
                 urlBase = $"{urlBase}/";

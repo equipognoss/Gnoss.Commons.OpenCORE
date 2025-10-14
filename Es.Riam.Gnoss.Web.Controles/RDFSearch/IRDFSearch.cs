@@ -4,6 +4,7 @@ using Es.Riam.Gnoss.AD.EntityModel;
 using Es.Riam.Gnoss.AD.EntityModelBASE;
 using Es.Riam.Gnoss.AD.Facetado;
 using Es.Riam.Gnoss.AD.MetaBuscadorAD;
+using Es.Riam.Gnoss.AD.ParametroAplicacion;
 using Es.Riam.Gnoss.AD.ServiciosGenerales;
 using Es.Riam.Gnoss.AD.Virtuoso;
 using Es.Riam.Gnoss.CL;
@@ -23,7 +24,7 @@ using Es.Riam.Gnoss.Recursos;
 using Es.Riam.Gnoss.Util.Configuracion;
 using Es.Riam.Gnoss.Util.General;
 using Es.Riam.Gnoss.Util.Seguridad;
-using Es.Riam.Gnoss.Web.Controles.Documentacion;
+
 using Es.Riam.Gnoss.Web.MVC.Models;
 using Es.Riam.Interfaces.InterfacesOpen;
 using Es.Riam.Metagnoss.ExportarImportar;
@@ -31,6 +32,7 @@ using Es.Riam.Semantica.OWL;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -38,7 +40,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Es.Riam.InterfacesOpen
+namespace Es.Riam.AbstractsOpen
 {
     public abstract class IRDFSearch
     {
@@ -60,9 +62,10 @@ namespace Es.Riam.InterfacesOpen
         protected GestorDocumental mGestionDocumentacion;
         protected GestionIdentidades mGestorIdentidades;
         protected GestionProyecto mGestorProyecto;
-        
+        private ILogger mlogger;
+        private ILoggerFactory mLoggerFactory;
 
-        public IRDFSearch(EntityContext entityContext, LoggingService loggingService, ConfigService configService, RedisCacheWrapper redisCacheWrapper, VirtuosoAD virtuosoAD, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication, IHttpContextAccessor httpContextAccessor, GnossCache gnossCache, EntityContextBASE entityContextBASE)
+        public IRDFSearch(EntityContext entityContext, LoggingService loggingService, ConfigService configService, RedisCacheWrapper redisCacheWrapper, VirtuosoAD virtuosoAD, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication, IHttpContextAccessor httpContextAccessor, GnossCache gnossCache, EntityContextBASE entityContextBASE, ILogger<IRDFSearch> logger, ILoggerFactory loggerFactory)
         {
             mLoggingService = loggingService;
             mEntityContext = entityContext;
@@ -73,21 +76,11 @@ namespace Es.Riam.InterfacesOpen
             mHttpContextAccessor = httpContextAccessor;
             mGnossCache = gnossCache;
             mEntityContextBASE = entityContextBASE;
+            mlogger = logger;
+            mLoggerFactory = loggerFactory;
         }
 
-        private ControladorDocumentacion mControladorDocumentacion;
-
-        public ControladorDocumentacion ControladorDocumentacion
-        {
-            get
-            {
-                if (mControladorDocumentacion == null)
-                {
-                    mControladorDocumentacion = new ControladorDocumentacion(mLoggingService, mEntityContext, mConfigService, mRedisCacheWrapper, mGnossCache, mEntityContextBASE, mVirtuosoAD, mHttpContextAccessor, mServicesUtilVirtuosoAndReplication);
-                }
-                return mControladorDocumentacion;
-            }
-        }
+        
 
         /// <summary>
         /// URL base de los formularios semánticos.
@@ -172,7 +165,7 @@ namespace Es.Riam.InterfacesOpen
                 }
             }
 
-            GestionOWLGnoss.GeneradorUrls = new GnossGeneradorUrlsRDF(UtilIdiomas, BaseURLIdioma, BaseURLContent, UrlPerfil, urlProyecto, UrlPagina, urlPagConParametros, null, UrlsSemanticas, mLoggingService, mEntityContext, mConfigService, mHttpContextAccessor);
+            GestionOWLGnoss.GeneradorUrls = new GnossGeneradorUrlsRDF(UtilIdiomas, BaseURLIdioma, BaseURLContent, UrlPerfil, urlProyecto, UrlPagina, urlPagConParametros, null, UrlsSemanticas, mLoggingService, mEntityContext, mConfigService, mHttpContextAccessor, mLoggerFactory.CreateLogger<GnossGeneradorUrlsRDF>(), mLoggerFactory);
         }
 
         /// <summary>
@@ -190,7 +183,7 @@ namespace Es.Riam.InterfacesOpen
             {
                 puedeBuscar = (!ListaItemsBusqueda.Contains(FacetadoAD.BUSQUEDA_ORGANIZACION) && !ListaItemsBusqueda.Contains(FacetadoAD.BUSQUEDA_PERSONA));
             }
-            MetaBuscadorCN metaBuscadorCN = new MetaBuscadorCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+            MetaBuscadorCN metaBuscadorCN = new MetaBuscadorCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<MetaBuscadorCN>(), mLoggerFactory);
 
             if (puedeBuscar)
             {
@@ -237,12 +230,12 @@ namespace Es.Riam.InterfacesOpen
                 metaBuscadorCN.BuscarContenidos(UsuarioActual.ProyectoID, IdentidadActual.PerfilID, UsuarioActual.EsIdentidadInvitada);
             }
 
-            TesauroCL tesauroCL = new TesauroCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mServicesUtilVirtuosoAndReplication);
+            TesauroCL tesauroCL = new TesauroCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<TesauroCL>(), mLoggerFactory);
 
             if (IdentidadActual.PerfilUsuario.OrganizacionID != null && metaBuscadorCN.OrganizacionDW != null && metaBuscadorCN.OrganizacionDW.ListaOrganizacion.Any(item => item.OrganizacionID.Equals(IdentidadActual.PerfilUsuario.OrganizacionID.Value)))
             {
                 //Obtengo la organización del usuario actual para que pinte a todas las personas que son de mi organización:
-                OrganizacionCN orgCN = new OrganizacionCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+                OrganizacionCN orgCN = new OrganizacionCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<OrganizacionCN>(), mLoggerFactory);
                 DataWrapperOrganizacion dataWrapperOrganizacionAux = new DataWrapperOrganizacion();
                 dataWrapperOrganizacionAux.ListaOrganizacion.Add(orgCN.ObtenerNombreOrganizacionPorID(IdentidadActual.PerfilUsuario.OrganizacionID.Value));
                 metaBuscadorCN.OrganizacionDW.Merge(dataWrapperOrganizacionAux);
@@ -252,13 +245,13 @@ namespace Es.Riam.InterfacesOpen
             mGestionPersonas = new GestionPersonas(metaBuscadorCN.DataWrapperPersona, mLoggingService, mEntityContext);
             if (metaBuscadorCN.ComentarioDW != null)
             {
-                mGestionComentarios = new GestionComentarios(metaBuscadorCN.ComentarioDW, mLoggingService, mEntityContext, mConfigService, mServicesUtilVirtuosoAndReplication);
+                mGestionComentarios = new GestionComentarios(metaBuscadorCN.ComentarioDW, mLoggingService, mEntityContext, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<GestionComentarios>(), mLoggerFactory);
             }
             if (metaBuscadorCN.DocumentacionDW != null)
             {
-                mGestionDocumentacion = new GestorDocumental(metaBuscadorCN.DocumentacionDW, mLoggingService, mEntityContext);
+                mGestionDocumentacion = new GestorDocumental(metaBuscadorCN.DocumentacionDW, mLoggingService, mEntityContext, mLoggerFactory.CreateLogger<GestorDocumental>(), mLoggerFactory);
 
-                mGestionDocumentacion.GestorTesauro = new GestionTesauro(tesauroCL.ObtenerTesauroDeProyecto(UsuarioActual.ProyectoID), mLoggingService, mEntityContext);
+                mGestionDocumentacion.GestorTesauro = new GestionTesauro(tesauroCL.ObtenerTesauroDeProyecto(UsuarioActual.ProyectoID), mLoggingService, mEntityContext, mLoggerFactory.CreateLogger<GestionTesauro>(), mLoggerFactory);
             }
 
             if (metaBuscadorCN.DataWrapperIdentidad != null)
@@ -280,8 +273,8 @@ namespace Es.Riam.InterfacesOpen
 
             if (metaBuscadorCN.DataWrapperProyecto != null)
             {
-                mGestorProyecto = new GestionProyecto(metaBuscadorCN.DataWrapperProyecto, mLoggingService, mEntityContext);
-                mGestorProyecto.GestionTesauro = new GestionTesauro(tesauroCL.ObtenerTesauroDeProyectoMyGnoss(), mLoggingService, mEntityContext);
+                mGestorProyecto = new GestionProyecto(metaBuscadorCN.DataWrapperProyecto, mLoggingService, mEntityContext, mLoggerFactory.CreateLogger<GestionProyecto>(), mLoggerFactory);
+                mGestorProyecto.GestionTesauro = new GestionTesauro(tesauroCL.ObtenerTesauroDeProyectoMyGnoss(), mLoggingService, mEntityContext, mLoggerFactory.CreateLogger<GestionTesauro>(), mLoggerFactory);
                 List<Guid> listaProy = new List<Guid>();
                 foreach (Gnoss.AD.EntityModel.Models.ProyectoDS.Proyecto filaProy in metaBuscadorCN.DataWrapperProyecto.ListaProyecto)
                 {
@@ -352,10 +345,10 @@ namespace Es.Riam.InterfacesOpen
                         listaIdentidadesURLSem.Add(filaDocVinBR.IdentidadPublicacionID.Value);
                     }
                 }
-                GestionPersonas gestorPersonas = new GestionPersonas(new PersonaCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication).ObtenerPersonasPorIdentidadesCargaLigera(listaIdentidadesURLSem), mLoggingService, mEntityContext);
+                GestionPersonas gestorPersonas = new GestionPersonas(new PersonaCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<PersonaCN>(), mLoggerFactory).ObtenerPersonasPorIdentidadesCargaLigera(listaIdentidadesURLSem), mLoggingService, mEntityContext);
                 GestionOrganizaciones gestorOrg = new GestionOrganizaciones(new DataWrapperOrganizacion(), mLoggingService, mEntityContext);
 
-                IdentidadCN identidadCN = new IdentidadCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+                IdentidadCN identidadCN = new IdentidadCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<IdentidadCN>(), mLoggerFactory);
                 mGestionDocumentacion.GestorIdentidades = new GestionIdentidades(identidadCN.ObtenerIdentidadesPorID(listaIdentidadesURLSem, false), gestorPersonas, gestorOrg, mLoggingService, mEntityContext, mConfigService, mServicesUtilVirtuosoAndReplication);
                 identidadCN.Dispose();
             }

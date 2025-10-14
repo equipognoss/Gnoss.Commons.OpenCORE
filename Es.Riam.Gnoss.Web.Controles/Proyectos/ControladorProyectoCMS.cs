@@ -10,6 +10,7 @@ using Es.Riam.Gnoss.AD.Virtuoso;
 using Es.Riam.Gnoss.CL;
 using Es.Riam.Gnoss.CL.CMS;
 using Es.Riam.Gnoss.CL.ParametrosProyecto;
+using Es.Riam.Gnoss.Elementos.Amigos;
 using Es.Riam.Gnoss.Elementos.CMS;
 using Es.Riam.Gnoss.Elementos.Identidad;
 using Es.Riam.Gnoss.Elementos.ServiciosGenerales;
@@ -18,9 +19,12 @@ using Es.Riam.Gnoss.Logica.Identidad;
 using Es.Riam.Gnoss.Logica.ServiciosGenerales;
 using Es.Riam.Gnoss.Util.Configuracion;
 using Es.Riam.Gnoss.Util.General;
+using Es.Riam.Gnoss.UtilServiciosWeb;
+using Es.Riam.Gnoss.Web.Controles.ServiciosGenerales;
 using Es.Riam.Gnoss.Web.MVC.Models;
 using Es.Riam.Gnoss.Web.MVC.Models.Administracion;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -68,7 +72,8 @@ namespace Es.Riam.Gnoss.Web.Controles.Proyectos
         private ConfigService mConfigService;
         private RedisCacheWrapper mRedisCacheWrapper;
         private GnossCache mGnossCache;
-
+        private ILogger mlogger;
+        private ILoggerFactory mloggerFactory;
         #endregion Miembros
 
         #region Metodos
@@ -77,22 +82,23 @@ namespace Es.Riam.Gnoss.Web.Controles.Proyectos
         /// Constructor
         /// </summary>
         /// <param name="pProyectoID">ID del proyecto seleccionado</param>
-        public ControladorProyectoCMS(Guid pProyectoID, LoggingService loggingService, EntityContext entityContext, ConfigService configService, RedisCacheWrapper redisCacheWrapper, GnossCache gnossCache, VirtuosoAD virtuosoAD, IHttpContextAccessor httpContextAccessor, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication)
-            : base(loggingService, configService, entityContext, redisCacheWrapper, gnossCache, virtuosoAD, httpContextAccessor, servicesUtilVirtuosoAndReplication)
+        public ControladorProyectoCMS(Guid pProyectoID, LoggingService loggingService, EntityContext entityContext, ConfigService configService, RedisCacheWrapper redisCacheWrapper, GnossCache gnossCache, VirtuosoAD virtuosoAD, IHttpContextAccessor httpContextAccessor, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication, ILogger<ControladorProyectoCMS> logger, ILoggerFactory loggerFactory)
+            : base(loggingService, configService, entityContext, redisCacheWrapper, gnossCache, virtuosoAD, httpContextAccessor, servicesUtilVirtuosoAndReplication,logger,loggerFactory)
         {
             mLoggingService = loggingService;
             mEntityContext = entityContext;
             mConfigService = configService;
             mRedisCacheWrapper = redisCacheWrapper;
             mGnossCache = gnossCache;
-
-            ProyectoCN proyCN = new ProyectoCN(entityContext, loggingService, configService, mServicesUtilVirtuosoAndReplication);
-            GestionProyecto gestorProy = new GestionProyecto(proyCN.ObtenerProyectoPorID(pProyectoID), loggingService, entityContext);
+            mlogger = logger;
+            mloggerFactory = loggerFactory;
+            ProyectoCN proyCN = new ProyectoCN(entityContext, loggingService, configService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<ProyectoCN>(), mLoggerFactory);
+            GestionProyecto gestorProy = new GestionProyecto(proyCN.ObtenerProyectoPorID(pProyectoID), loggingService, entityContext, mLoggerFactory.CreateLogger<GestionProyecto>(), mLoggerFactory);
             this.mProyectoActual = gestorProy.ListaProyectos[pProyectoID];
 
             if (mProyectoActual.FilaProyecto.ProyectoSuperiorID.HasValue)
             {
-                GestionProyecto gestorProyPadre = new GestionProyecto(proyCN.ObtenerProyectoPorID(mProyectoActual.FilaProyecto.ProyectoSuperiorID.Value), loggingService, entityContext);
+                GestionProyecto gestorProyPadre = new GestionProyecto(proyCN.ObtenerProyectoPorID(mProyectoActual.FilaProyecto.ProyectoSuperiorID.Value), loggingService, entityContext, mLoggerFactory.CreateLogger<GestionProyecto>(), mLoggerFactory);
                 this.mProyectoPadre = gestorProyPadre.ListaProyectos[mProyectoActual.FilaProyecto.ProyectoSuperiorID.Value];
             }
         }
@@ -224,9 +230,9 @@ namespace Es.Riam.Gnoss.Web.Controles.Proyectos
                 AgregarNodoAlPadre(pXmlDoc, NodoComponente, "IdiomasDisponibles", pComponente.FilaComponente.IdiomasDisponibles);
             }
 
-            IdentidadCN identidadCN = new IdentidadCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
-            ProyectoCN proyectoCN = new ProyectoCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
-            OrganizacionCN organizacionCN = new OrganizacionCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+            IdentidadCN identidadCN = new IdentidadCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<IdentidadCN>(), mLoggerFactory);
+            ProyectoCN proyectoCN = new ProyectoCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<ProyectoCN>(), mLoggerFactory);
+            OrganizacionCN organizacionCN = new OrganizacionCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<OrganizacionCN>(), mLoggerFactory);
             if (pComponente.ListaRolIdentidad.Count > 0 || pComponente.ListaRolGrupoIdentidades.Count > 0)
             {
                 XmlElement NodoConfiguracionPrivacidad = pXmlDoc.CreateElement("ConfiguracionPrivacidad");
@@ -707,7 +713,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Proyectos
                 AgregarNodoAlPadre(pXmlDoc, NodoPagina, "MostrarSoloCuerpo", PaginaActual.MostrarSoloCuerpo.ToString());
             }
 
-            CMSCN cmsCN = new CMSCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+            CMSCN cmsCN = new CMSCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<CMSCN>(), mLoggerFactory);
             GestionCMS GestorCMSPaginaActual = new GestionCMS(cmsCN.ObtenerCMSDeUbicacionDeProyecto(pUbicacion, ProyectoActual.Clave, 2, false), mLoggingService, mEntityContext);
             cmsCN.Dispose();
 
@@ -845,11 +851,11 @@ namespace Es.Riam.Gnoss.Web.Controles.Proyectos
             }
 
             ActualizarCMS(configXML);
-            CMSCN cmsCN = new CMSCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+            CMSCN cmsCN = new CMSCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<CMSCN>(), mLoggerFactory);
             cmsCN.ActualizarCMS(gestorCMS.CMSDW);
             cmsCN.Dispose();
 
-            CMSCL cmsCL = new CMSCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mServicesUtilVirtuosoAndReplication);
+            CMSCL cmsCL = new CMSCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<CMSCL>(), mLoggerFactory);
             cmsCL.InvalidarCachesCMSDeUbicacionesDeProyecto(ProyectoActual.Clave);
             cmsCL.InvalidarCachesDeComponentesEnProyecto(ProyectoActual.Clave);
             cmsCL.Dispose();
@@ -1238,7 +1244,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Proyectos
             {
                 XmlNode nodoConfiguracionPrivacidad = pComponente.SelectSingleNode("ConfiguracionPrivacidad");
 
-                IdentidadCN identidadCN = new IdentidadCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+                IdentidadCN identidadCN = new IdentidadCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<IdentidadCN>(), mLoggerFactory);
                 if (nodoConfiguracionPrivacidad.SelectSingleNode("PrivacidadPerfiles") != null)
                 {
                     //perfiles
@@ -1283,7 +1289,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Proyectos
                         string nombreCortoGrupo = (string)LeerNodo(nodoGrupoOrg, "NombreCortoGrupo", typeof(string));
                         string nombreCortoOrg = (string)LeerNodo(nodoGrupoOrg, "NombreCortoOrg", typeof(string));
 
-                        OrganizacionCN orgCN = new OrganizacionCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+                        OrganizacionCN orgCN = new OrganizacionCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<OrganizacionCN>(), mLoggerFactory);
                         Guid idOrganizacion = orgCN.ObtenerOrganizacionesIDPorNombre(nombreCortoOrg);
                         orgCN.Dispose();
                         DataWrapperIdentidad identiadDWGrupo = identidadCN.ObtenerGrupoPorNombreCortoYOrganizacion(nombreCortoGrupo, idOrganizacion);
@@ -1322,7 +1328,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Proyectos
                         string nombreCortoGrupo = (string)LeerNodo(nodoGrupoProy, "NombreCortoGrupo", typeof(string));
                         string nombreCortoProy = (string)LeerNodo(nodoGrupoProy, "NombreCortoProy", typeof(string));
 
-                        ProyectoCN proyCN = new ProyectoCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+                        ProyectoCN proyCN = new ProyectoCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<ProyectoCN>(), mLoggerFactory);
                         Guid idProyecto = proyCN.ObtenerProyectoIDPorNombre(nombreCortoProy);
                         proyCN.Dispose();
                         DataWrapperIdentidad identiadDWGrupo = identidadCN.ObtenerGrupoPorNombreCortoYProyecto(nombreCortoGrupo, idProyecto);
@@ -2193,7 +2199,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Proyectos
             {
                 if (mGestorCMS == null)
                 {
-                    CMSCN CMSCN = new CMSCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+                    CMSCN CMSCN = new CMSCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<CMSCN>(), mLoggerFactory);
                     mGestorCMS = new GestionCMS(CMSCN.ObtenerCMSDeProyecto(ProyectoActual.Clave), mLoggingService, mEntityContext);
                     CMSCN.Dispose();
                 }
@@ -2210,7 +2216,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Proyectos
             {
                 if (mVistaVirtualDW == null)
                 {
-                    VistaVirtualCL vistaVirtualCL = new VistaVirtualCL(mEntityContext, mLoggingService, mGnossCache, mRedisCacheWrapper, mConfigService, mServicesUtilVirtuosoAndReplication);
+                    VistaVirtualCL vistaVirtualCL = new VistaVirtualCL(mEntityContext, mLoggingService, mGnossCache, mRedisCacheWrapper, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<VistaVirtualCL>(), mLoggerFactory);
                     mVistaVirtualDW = vistaVirtualCL.ObtenerVistasVirtualPorProyectoID(ProyectoActual.Clave, PersonalizacionEcosistemaID, ComunidadExcluidaPersonalizacionEcosistema);
                     vistaVirtualCL.Dispose();
                 }

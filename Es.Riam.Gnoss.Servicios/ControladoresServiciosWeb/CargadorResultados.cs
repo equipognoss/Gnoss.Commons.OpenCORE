@@ -60,6 +60,36 @@ namespace Es.Riam.Gnoss.Servicios.ControladoresServiciosWeb
             return PeticionServicio(metodo, parametros, pRequest);
         }
 
+        public string ObtenerConsulta(Guid pProyectoID, Guid pIdentidadID, bool pEsUsuarioInvitado, string pUrlPaginaBusqueda, bool pUsarMasterParaLectura, bool pAdministradorVeTodasPersonas, TipoBusqueda pTipoBusqueda, string pGrafo, string pParametros_adiccionales, string pParametros, bool pPrimeraCarga, string pLanguageCode, int pNumeroParteResultados, string pFiltroContexto, bool pJson, Guid? pTokenAfinidad = null, HttpRequest pRequest = null)
+        {
+            string metodo = "ObtenerConsulta";
+
+            Dictionary<string, string> parametros = new Dictionary<string, string>();
+            parametros.Add("pProyectoID", pProyectoID.ToString());
+            parametros.Add("pIdentidadID", pIdentidadID.ToString());
+            parametros.Add("pEsUsuarioInvitado", pEsUsuarioInvitado.ToString());
+            parametros.Add("pUrlPaginaBusqueda", HttpUtility.UrlEncode(pUrlPaginaBusqueda));
+            parametros.Add("pUsarMasterParaLectura", pUsarMasterParaLectura.ToString());
+            parametros.Add("pAdministradorVeTodasPersonas", pAdministradorVeTodasPersonas.ToString());
+            parametros.Add("pTipoBusqueda", ((short)pTipoBusqueda).ToString());
+            parametros.Add("pGrafo", pGrafo);
+            parametros.Add("pParametros_adiccionales", pParametros_adiccionales);
+            parametros.Add("pParametros", pParametros);
+            parametros.Add("pPrimeraCarga", pPrimeraCarga.ToString());
+            parametros.Add("pLanguageCode", pLanguageCode);
+            parametros.Add("pNumeroParteResultados", pNumeroParteResultados.ToString());
+            parametros.Add("pFiltroContexto", pFiltroContexto);
+            parametros.Add("pJson", pJson.ToString());
+            string tokenAfinidad = string.Empty;
+            if (pTokenAfinidad.HasValue)
+            {
+                tokenAfinidad = pTokenAfinidad.Value.ToString();
+            }
+            parametros.Add("tokenAfinidad", tokenAfinidad);
+
+            return PeticionServicio(metodo, parametros, pRequest);
+        }
+
         public List<ResourceModel> CargarResultadosContexto(Guid pProyectoID, string pParametros, bool pPrimeraCarga, string pLanguageCode, TipoBusqueda pTipoBusqueda, int pNumRecursosPagina, string pGrafo, string pUrlPaginaBusqueda, string pFiltroContexto, bool pEsBot, bool pMostrarEnlaceOriginal, string pNamespacesExtra, string pListaItemsBusqueda, string pResultadosEliminar, bool pNuevaPestanya, string pParametrosAdicionales, Guid pIdentidadID, bool pEsUsuarioInvitado)
         {            
             string metodo = "CargarResultadosContexto";

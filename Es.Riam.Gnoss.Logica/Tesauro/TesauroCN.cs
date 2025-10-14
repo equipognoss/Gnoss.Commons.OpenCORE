@@ -1,10 +1,14 @@
 using Es.Riam.AbstractsOpen;
 using Es.Riam.Gnoss.AD.EncapsuladoDatos;
 using Es.Riam.Gnoss.AD.EntityModel;
+using Es.Riam.Gnoss.AD.ParametroAplicacion;
 using Es.Riam.Gnoss.AD.ServiciosGenerales;
 using Es.Riam.Gnoss.AD.Tesauro;
+using Es.Riam.Gnoss.Logica.ServiciosGenerales;
 using Es.Riam.Gnoss.Util.Configuracion;
 using Es.Riam.Gnoss.Util.General;
+using Microsoft.Extensions.Logging;
+using Serilog.Core;
 using System;
 using System.Collections.Generic;
 
@@ -15,16 +19,19 @@ namespace Es.Riam.Gnoss.Logica.Tesauro
     /// </summary>
     public class TesauroCN : BaseCN, IDisposable
     {
-
+        private ILogger mlogger;
+        private ILoggerFactory mLoggerFactory;
         #region Constructores
 
         /// <summary>
         /// Constructor sin parámetros
         /// </summary>
-        public TesauroCN(EntityContext entityContext, LoggingService loggingService, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication)
-            : base(entityContext, loggingService, configService, servicesUtilVirtuosoAndReplication)
+        public TesauroCN(EntityContext entityContext, LoggingService loggingService, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication, ILogger<TesauroCN> logger, ILoggerFactory loggerFactory)
+            : base(entityContext, loggingService, configService, servicesUtilVirtuosoAndReplication,logger,loggerFactory)
         {
-            TesauroAD = new TesauroAD(loggingService, entityContext, configService, servicesUtilVirtuosoAndReplication);
+            mlogger = logger;
+            mLoggerFactory = loggerFactory;
+            TesauroAD = new TesauroAD(loggingService, entityContext, configService, servicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<TesauroAD>(), mLoggerFactory);
         }
 
         /// <summary>
@@ -32,10 +39,12 @@ namespace Es.Riam.Gnoss.Logica.Tesauro
         /// </summary>
         /// <param name="pFicheroConfiguracionBD">Ruta del fichero de configuración de base de datos</param>
         /// <param name="pUsarVariableEstatica">Si se están usando hilos con diferentes conexiones: FALSE. En caso contrario TRUE</param>
-        public TesauroCN(string pFicheroConfiguracionBD, EntityContext entityContext, LoggingService loggingService, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication)
-            : base(entityContext, loggingService, configService, servicesUtilVirtuosoAndReplication)
+        public TesauroCN(string pFicheroConfiguracionBD, EntityContext entityContext, LoggingService loggingService, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication, ILogger<TesauroCN> logger, ILoggerFactory loggerFactory)
+            : base(entityContext, loggingService, configService, servicesUtilVirtuosoAndReplication, logger, loggerFactory)
         {
-            this.TesauroAD = new TesauroAD(pFicheroConfiguracionBD, loggingService, entityContext, configService, servicesUtilVirtuosoAndReplication);
+            mlogger = logger;
+            mLoggerFactory = loggerFactory;
+            this.TesauroAD = new TesauroAD(pFicheroConfiguracionBD, loggingService, entityContext, configService, servicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<TesauroAD>(), mLoggerFactory);
         }
 
         #endregion

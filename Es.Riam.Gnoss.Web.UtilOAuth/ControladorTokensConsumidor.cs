@@ -9,6 +9,8 @@ using Es.Riam.Gnoss.Util.General;
 using Es.Riam.Gnoss.AD.EntityModel;
 using Es.Riam.Gnoss.Util.Configuracion;
 using Es.Riam.AbstractsOpen;
+using Microsoft.Extensions.Logging;
+using Es.Riam.Gnoss.Elementos.Amigos;
 
 namespace Es.Riam.Gnoss.Web.UtilOAuth
 {
@@ -26,7 +28,8 @@ namespace Es.Riam.Gnoss.Web.UtilOAuth
         private string mConsumerKey;
         private string mConsumerSecret;
         private EntityContextOauth mEntityContextOauth;
-
+        private ILogger mlogger;
+        private ILoggerFactory mLoggerFactory;
         #endregion
 
         #region Constructores
@@ -37,13 +40,15 @@ namespace Es.Riam.Gnoss.Web.UtilOAuth
         /// <param name="pConsumerKey">Consumer key</param>
         /// <param name="pConsumerSecret">Consumer secret</param>
         /// <param name="pUsuarioID">Identificador del usuario para el que se solicita acceso</param>
-        public ControladorTokensConsumidor(string pConsumerKey, string pConsumerSecret, Guid pUsuarioID, EntityContextOauth entityContextOauth, LoggingService loggingService, EntityContext entityContext, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication)
-            : base(entityContextOauth, loggingService, entityContext, configService, servicesUtilVirtuosoAndReplication)
+        public ControladorTokensConsumidor(string pConsumerKey, string pConsumerSecret, Guid pUsuarioID, EntityContextOauth entityContextOauth, LoggingService loggingService, EntityContext entityContext, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication, ILogger<ControladorTokensConsumidor> logger, ILoggerFactory loggerFactory)
+            : base(entityContextOauth, loggingService, entityContext, configService, servicesUtilVirtuosoAndReplication,logger,loggerFactory)
         {
             mConsumerKey = pConsumerKey;
             mConsumerSecret = pConsumerSecret;
             mUsuarioID = pUsuarioID;
             mEntityContextOauth = entityContextOauth;
+            mlogger = logger;
+            mLoggerFactory = loggerFactory;
         }
 
         #endregion

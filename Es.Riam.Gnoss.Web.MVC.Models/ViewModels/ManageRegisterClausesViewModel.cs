@@ -113,6 +113,10 @@ namespace Es.Riam.Gnoss.Web.MVC.Models.ViewModels
             /// 
             /// </summary>
             public string CookieName { get; set; }
+
+            public DateTime DateCreation { get; set; }
+
+            public DateTime DateModification { get; set; }
         }
     }
 }

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Es.Riam.Gnoss.AD.EntityModel.Models.Roles;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -20,6 +21,7 @@ namespace Es.Riam.Gnoss.AD.EntityModel.Models.Documentacion
             DocumentoVincDoc1 = new HashSet<DocumentoVincDoc>();
             DocumentoRespuestaVoto = new HashSet<DocumentoRespuestaVoto>();
             VotoDocumento = new HashSet<VotoDocumento>();
+            RolOntologiaPermiso = new HashSet<RolOntologiaPermiso>();
         }
 
         public Guid DocumentoID { get; set; }
@@ -132,7 +134,10 @@ namespace Es.Riam.Gnoss.AD.EntityModel.Models.Documentacion
         
         public virtual IdentidadDS.Identidad Creador { get; set; }
 
-        public int CompareTo(object obj)
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+		public virtual ICollection<RolOntologiaPermiso> RolOntologiaPermiso { get; set; }
+
+		public int CompareTo(object obj)
         {
             Documento documento = (Documento) obj;
             if (documento.DocumentoID.Equals(this.DocumentoID))

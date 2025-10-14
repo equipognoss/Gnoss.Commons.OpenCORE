@@ -34,6 +34,10 @@ namespace Es.Riam.Gnoss.AD.EntityModel.Models.VistaVirtualDS
 
         public string DatosExtra { get; set; }
 
+        public DateTime FechaCreacion { get; set; }
+
+        public DateTime FechaModificacion { get; set; }
+
         public virtual VistaVirtualPersonalizacion VistaVirtualPersonalizacion { get; set; }
 
         public void Dispose()

@@ -3,8 +3,12 @@ using Es.Riam.Gnoss.AD.Amigos;
 using Es.Riam.Gnoss.AD.Amigos.Model;
 using Es.Riam.Gnoss.AD.EncapsuladoDatos;
 using Es.Riam.Gnoss.AD.EntityModel;
+using Es.Riam.Gnoss.AD.ParametroAplicacion;
+using Es.Riam.Gnoss.Logica.ServiciosGenerales;
 using Es.Riam.Gnoss.Util.Configuracion;
 using Es.Riam.Gnoss.Util.General;
+using Microsoft.Extensions.Logging;
+using Serilog.Core;
 using System;
 
 namespace Es.Riam.Gnoss.Logica.Amigos
@@ -14,24 +18,37 @@ namespace Es.Riam.Gnoss.Logica.Amigos
     /// </summary>
     public class AmigosCN : BaseCN, IDisposable
     {
+        private ILogger mlogger;
+        private ILoggerFactory mLoggerFactory;
         #region Constructores
 
         /// <summary>
         /// Constructor para AmigosCN
         /// </summary>
-        public AmigosCN( EntityContext entityContext, LoggingService loggingService, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication)
-            : base( entityContext, loggingService, configService, servicesUtilVirtuosoAndReplication)
+        public AmigosCN(EntityContext entityContext, LoggingService loggingService, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication, ILogger<AmigosCN> logger, ILoggerFactory loggerFactory)
+            : base(entityContext, loggingService, configService, servicesUtilVirtuosoAndReplication, logger, loggerFactory)
         {
-            this.AmigosAD = new AmigosAD( loggingService, entityContext, configService, servicesUtilVirtuosoAndReplication);
+            mlogger = logger;
+            mLoggerFactory = loggerFactory;
+            if (loggerFactory == null)
+            {
+                this.AmigosAD = new AmigosAD(loggingService, entityContext, configService, servicesUtilVirtuosoAndReplication, null, null);
+            }
+            else
+            {
+                this.AmigosAD = new AmigosAD(loggingService, entityContext, configService, servicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<AmigosAD>(), mLoggerFactory);
+            }
         }
 
         /// <summary>
         /// Constructor a partir del fichero de configuración
         /// </summary>
-        public AmigosCN(string pFicheroConfiguracionBD, EntityContext entityContext, LoggingService loggingService, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication)
-            : base( entityContext, loggingService, configService, servicesUtilVirtuosoAndReplication)
+        public AmigosCN(string pFicheroConfiguracionBD, EntityContext entityContext, LoggingService loggingService, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication, ILogger<AmigosCN> logger, ILoggerFactory loggerFactory)
+            : base(entityContext, loggingService, configService, servicesUtilVirtuosoAndReplication, logger, loggerFactory)
         {
-            this.AmigosAD = new AmigosAD(pFicheroConfiguracionBD, loggingService, entityContext, configService, servicesUtilVirtuosoAndReplication);
+            mlogger = logger;
+            mLoggerFactory = loggerFactory;
+            this.AmigosAD = new AmigosAD(pFicheroConfiguracionBD, loggingService, entityContext, configService, servicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<AmigosAD>(), mLoggerFactory);
             mFicheroConfiguracionBD = pFicheroConfiguracionBD;
         }
 

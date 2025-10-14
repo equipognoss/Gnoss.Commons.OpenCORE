@@ -2,6 +2,7 @@ using Es.Riam.AbstractsOpen;
 using Es.Riam.Gnoss.AD.EncapsuladoDatos;
 using Es.Riam.Gnoss.AD.EntityModel;
 using Es.Riam.Gnoss.AD.Identidad;
+using Es.Riam.Gnoss.AD.ParametroAplicacion;
 using Es.Riam.Gnoss.AD.ServiciosGenerales;
 using Es.Riam.Gnoss.AD.Virtuoso;
 using Es.Riam.Gnoss.CL;
@@ -20,6 +21,7 @@ using Es.Riam.Semantica.OWL;
 using Es.Riam.Util;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -55,7 +57,8 @@ namespace Es.Riam.Metagnoss.ExportarImportar.Exportadores
         private EntityContext mEntityContext;
         private ConfigService mConfigService;
         private RedisCacheWrapper mRedisCacheWrapper;
-
+        private ILogger mlogger;
+        private ILoggerFactory mLoggerFactory;
         #endregion
 
         #region Constructores
@@ -65,13 +68,14 @@ namespace Es.Riam.Metagnoss.ExportarImportar.Exportadores
         /// </summary>
         /// <param name="pOntologia">Ontología</param>
         /// <param name="pGestor">Gestor de libro</param>
-        public ExportadorCurriculum(Ontologia pOntologia, GestionGnoss pGestor, string pIdiomaUsuario, LoggingService loggingService, EntityContext entityContext, ConfigService configService, RedisCacheWrapper redisCacheWrapper, UtilSemCms utilSemCms, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication, VirtuosoAD virtuosoAd)
-            : base(pOntologia, pIdiomaUsuario, loggingService, entityContext, configService, redisCacheWrapper, utilSemCms, servicesUtilVirtuosoAndReplication, virtuosoAd)
+        public ExportadorCurriculum(Ontologia pOntologia, GestionGnoss pGestor, string pIdiomaUsuario, LoggingService loggingService, EntityContext entityContext, ConfigService configService, RedisCacheWrapper redisCacheWrapper, UtilSemCms utilSemCms, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication, VirtuosoAD virtuosoAd, ILogger<ExportadorCurriculum> logger, ILoggerFactory loggerFactory)
+            : base(pOntologia, pIdiomaUsuario, loggingService, entityContext, configService, redisCacheWrapper, utilSemCms, servicesUtilVirtuosoAndReplication, virtuosoAd, logger, loggerFactory)
         {
             mLoggingService = loggingService;
             mEntityContext = entityContext;
             mConfigService = configService;
-
+            mlogger = logger;
+            mloggerFactory = loggerFactory;
             mRedisCacheWrapper = redisCacheWrapper;
         }
 
@@ -105,7 +109,7 @@ namespace Es.Riam.Metagnoss.ExportarImportar.Exportadores
                     }
                     else
                     {
-                        PersonaCN personaCN = new PersonaCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+                        PersonaCN personaCN = new PersonaCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mloggerFactory.CreateLogger<PersonaCN>(), mloggerFactory);
                         Gnoss.AD.EntityModel.Models.PersonaDS.Persona persona = personaCN.ObtenerFilaPersonaPorID(((Identidad)pElementoGnoss).PerfilUsuario.PersonaID.Value);
 
                         nombrePersona = persona.Nombre;
@@ -139,7 +143,7 @@ namespace Es.Riam.Metagnoss.ExportarImportar.Exportadores
 
                         if (identOrg == null)
                         {
-                            IdentidadCN identCN = new IdentidadCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+                            IdentidadCN identCN = new IdentidadCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mloggerFactory.CreateLogger<IdentidadCN>(), mloggerFactory);
                             DataWrapperIdentidad identidadesOrgDW = identCN.ObtenerPerfilDeOrganizacion(identPers.OrganizacionID.Value);
                             identCN.Dispose();
                             //"OrganizacionID = '" + identPers.OrganizacionID + "' AND PersonaID is null"
@@ -154,7 +158,7 @@ namespace Es.Riam.Metagnoss.ExportarImportar.Exportadores
 
                             if (!gestorIdentidades.GestorOrganizaciones.ListaOrganizaciones.ContainsKey(identPers.OrganizacionID.Value))
                             {
-                                OrganizacionCN orgCn = new OrganizacionCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+                                OrganizacionCN orgCn = new OrganizacionCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mloggerFactory.CreateLogger<OrganizacionCN>(), mloggerFactory);
                                 gestorIdentidades.GestorOrganizaciones.OrganizacionDW.Merge(orgCn.ObtenerOrganizacionPorID(identPers.OrganizacionID.Value));
                                 orgCn.Dispose();
                             }
@@ -208,7 +212,7 @@ namespace Es.Riam.Metagnoss.ExportarImportar.Exportadores
                     }
                     else
                     {
-                        OrganizacionCN organizacionCN = new OrganizacionCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+                        OrganizacionCN organizacionCN = new OrganizacionCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mloggerFactory.CreateLogger<OrganizacionCN>(), mloggerFactory);
                         Gnoss.AD.EntityModel.Models.OrganizacionDS.Organizacion organizacion = organizacionCN.ObtenerNombreOrganizacionPorID(((Identidad)pElementoGnoss).PerfilUsuario.OrganizacionID.Value);
                         organizacionCN.Dispose();
 
@@ -349,7 +353,7 @@ namespace Es.Riam.Metagnoss.ExportarImportar.Exportadores
             {
                 GestionIdentidades gestorIdentidades = ((Identidad)pElementoGnoss).GestorIdentidades;
 
-                IdentidadCN identidadCN = new IdentidadCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+                IdentidadCN identidadCN = new IdentidadCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mloggerFactory.CreateLogger<IdentidadCN>(), mloggerFactory);
                 gestorIdentidades.DataWrapperIdentidad.Merge(identidadCN.ObtenerIdentidadesDeOrganizacionYEmpleados(org.Clave));
                 identidadCN.Dispose();
 
@@ -373,7 +377,7 @@ namespace Es.Riam.Metagnoss.ExportarImportar.Exportadores
 
             if (identidades.Count < 2)
             {
-                IdentidadCN identCN = new IdentidadCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+                IdentidadCN identCN = new IdentidadCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mloggerFactory.CreateLogger<IdentidadCN>(), mloggerFactory);
                 identidad.GestorIdentidades.DataWrapperIdentidad.Merge(identCN.ObtenerIdentidadesDePerfil(identidad.PerfilUsuario.Clave));
                 identCN.Dispose();
 
@@ -450,7 +454,7 @@ namespace Es.Riam.Metagnoss.ExportarImportar.Exportadores
                     List<Gnoss.AD.EntityModel.Models.IdentidadDS.Perfil> filasPerfil = identidad.GestorIdentidades.DataWrapperIdentidad.ListaPerfil.Where(perfil => perfil.OrganizacionID.Equals(identidad.OrganizacionID) && !perfil.PersonaID.HasValue).ToList();
                     if ((filasPerfil.Count == 0) || (filasPerfil.First().Identidad.Count == 0))
                     {
-                        IdentidadCN identCN = new IdentidadCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+                        IdentidadCN identCN = new IdentidadCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mloggerFactory.CreateLogger<IdentidadCN>(), mloggerFactory);
                         DataWrapperIdentidad identidadesOrgDW = identCN.ObtenerPerfilDeOrganizacion(identidad.OrganizacionID.Value);
                         identCN.Dispose();
                         //"OrganizacionID = '" + identidad.OrganizacionID + "' AND PersonaID is null"
@@ -465,7 +469,7 @@ namespace Es.Riam.Metagnoss.ExportarImportar.Exportadores
 
                         if (!gestorIdentidades.GestorOrganizaciones.ListaOrganizaciones.ContainsKey(identidad.OrganizacionID.Value))
                         {
-                            OrganizacionCN orgCn = new OrganizacionCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+                            OrganizacionCN orgCn = new OrganizacionCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mloggerFactory.CreateLogger<OrganizacionCN>(), mloggerFactory);
                             gestorIdentidades.GestorOrganizaciones.OrganizacionDW.Merge(orgCn.ObtenerOrganizacionPorID(identidad.OrganizacionID.Value));
                             orgCn.Dispose();
                         }
@@ -504,10 +508,10 @@ namespace Es.Riam.Metagnoss.ExportarImportar.Exportadores
         {
             if (mGestorProyectos == null)
             {
-                mGestorProyectos = new GestionProyecto(new DataWrapperProyecto(), mLoggingService, mEntityContext);
+                mGestorProyectos = new GestionProyecto(new DataWrapperProyecto(), mLoggingService, mEntityContext,mloggerFactory.CreateLogger<GestionProyecto>(), mloggerFactory);
             }
 
-            ProyectoCN proyCN = new ProyectoCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+            ProyectoCN proyCN = new ProyectoCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mloggerFactory.CreateLogger<ProyectoCN>(), mloggerFactory);
             mGestorProyectos.DataWrapperProyectos.Merge(proyCN.ObtenerProyectosParticipaPerfilUsuario(pPerfilID, true, pUsuarioID));
             proyCN.Dispose();
 

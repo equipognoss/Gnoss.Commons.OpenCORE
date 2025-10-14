@@ -1,8 +1,12 @@
 ﻿using Es.Riam.AbstractsOpen;
 using Es.Riam.Gnoss.AD.EntityModel;
 using Es.Riam.Gnoss.AD.EntityModel.Models.Cookies;
+using Es.Riam.Gnoss.AD.ParametroAplicacion;
+using Es.Riam.Gnoss.AD.ServiciosGenerales;
 using Es.Riam.Gnoss.Util.Configuracion;
 using Es.Riam.Gnoss.Util.General;
+using Microsoft.Extensions.Logging;
+using Serilog.Core;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,21 +20,27 @@ namespace Es.Riam.Gnoss.AD.Cookie
         private EntityContext mEntityContext;
         private ConfigService mConfigService;
         private LoggingService mLoggingService;
+        private ILogger mlogger;
+        private ILoggerFactory mLoggerFactory;
 
-        public CookieAD(LoggingService loggingService, EntityContext entityContext, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication)
-            : base(loggingService, entityContext, configService, servicesUtilVirtuosoAndReplication)
+        public CookieAD(LoggingService loggingService, EntityContext entityContext, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication, ILogger<CookieAD> logger, ILoggerFactory loggerFactory)
+            : base(loggingService, entityContext, configService, servicesUtilVirtuosoAndReplication, logger, loggerFactory)
         {
             mEntityContext = entityContext;
             mLoggingService = loggingService;
             mConfigService = configService;
+            mlogger = logger;
+            mLoggerFactory = loggerFactory;
         }
 
-        public CookieAD(string pFicheroConfiguracionBD, LoggingService loggingService, EntityContext entityContext, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication)
-            : base(pFicheroConfiguracionBD, loggingService, entityContext, configService, servicesUtilVirtuosoAndReplication)
+        public CookieAD(string pFicheroConfiguracionBD, LoggingService loggingService, EntityContext entityContext, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication, ILogger<CookieAD> logger, ILoggerFactory loggerFactory)
+            : base(pFicheroConfiguracionBD, loggingService, entityContext, configService, servicesUtilVirtuosoAndReplication, logger, loggerFactory)
         {
             mEntityContext = entityContext;
             mLoggingService = loggingService;
             mConfigService = configService;
+            mlogger = logger;
+            mLoggerFactory = loggerFactory;
 
         }
 
@@ -59,7 +69,7 @@ namespace Es.Riam.Gnoss.AD.Cookie
 
         public List<CategoriaProyectoCookie> ObtenerCategoriasProyectoCookie(Guid pProyectoID)
         {
-            return mEntityContext.CategoriaProyectoCookie.Where(item => item.ProyectoID.Equals(pProyectoID)).ToList();
+            return mEntityContext.CategoriaProyectoCookie.Where(item => item.ProyectoID.Equals(pProyectoID)).Union(mEntityContext.CategoriaProyectoCookie.Where(item => item.ProyectoID.Equals(ProyectoAD.MetaProyecto))).ToList();
         }
 
         public bool TieneCategoriaCookiesVinculadas(Guid pCategoriaID)

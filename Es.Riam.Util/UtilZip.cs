@@ -1,9 +1,15 @@
-﻿using System;
+﻿using MessagePack;
+using System;
 using System.Collections;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
 using System.Runtime.Serialization.Formatters.Binary;
+using System.Text.Json.Serialization;
+using System.Text.Json;
+using MongoDB.Bson;
+using MongoDB.Bson.Serialization;
+using Newtonsoft.Json;
 
 namespace Es.Riam.Util
 {
@@ -238,17 +244,12 @@ namespace Es.Riam.Util
 
             #endregion
 
-            MemoryStream stream = null;
             byte[] arrayComprimido = null;
-
+            
             try
             {
-                stream = new MemoryStream();
-                BinaryFormatter formatter = new BinaryFormatter();
+                byte[] buffer = MessagePackSerializer.Typeless.Serialize(pObjeto);
 
-                formatter.Serialize(stream, pObjeto);
-
-                byte[] buffer = stream.ToArray();
                 MemoryStream ms = new MemoryStream();
                 using (ICSharpCode.SharpZipLib.Zip.ZipOutputStream zip = new ICSharpCode.SharpZipLib.Zip.ZipOutputStream(ms))
                 {
@@ -261,15 +262,7 @@ namespace Es.Riam.Util
 
                 buffer = null;
             }
-            catch (Exception)
-            {
-            }
-            finally
-            {
-                if (stream != null)
-                    stream.Dispose();
-                stream = null;
-            }
+            catch (Exception ex) { }
 
             return arrayComprimido;
         }
@@ -320,7 +313,6 @@ namespace Es.Riam.Util
 
             #endregion
 
-            MemoryStream stream = null;
             object objeto = null;
             MemoryStream ms = null;
 
@@ -361,20 +353,10 @@ namespace Es.Riam.Util
                 escritor.Close();
                 ms.Close();
 
-                stream = new MemoryStream(buffer);
-                BinaryFormatter formatter = new BinaryFormatter();
-                objeto = formatter.Deserialize(stream);
+                objeto = MessagePackSerializer.Typeless.Deserialize(buffer);
             }
-            catch (Exception)
-            {
-            }
-            finally
-            {
-                if (stream != null)
-                    stream.Dispose();
-                stream = null;
-            }
-
+            catch (Exception ex){}
+            
             return objeto;
         }
 

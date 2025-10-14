@@ -1,7 +1,11 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Resources language="Spanish" code="es">		
 	<page name="COMMON">
+		<Resource tag="TEXTOAUTOCOMPLETAROPCIONDEFECTO">Ver los resultados de: </Resource>
+		<Resource tag="FECHACREACION">Fecha de creación</Resource>
+		<Resource tag="VERMASCOMENTARIOS">Ver más comentarios</Resource>
 		<Resource tag="DESPLEGAR">Desplegar</Resource>
+		<Resource tag="PLEGAR">Plegar</Resource>
 		<Resource tag="CARGANDO">Cargando...</Resource>
 		<Resource tag="VISUALIZAR">Visualizar</Resource>
 		<Resource tag="SICONTINUASDESACTIVARASELREGISTROAUTOMATICOPARAESTACOMUNIDA">Si continúas, desactivarás el registro automático para esta comunidad.</Resource>
@@ -18,6 +22,7 @@
 		<Resource tag="DESEASDESBLOQUEARLOSCOMENTARIOS">¿Deseas desbloquear los comentarios?</Resource>
 		<Resource tag="DESEASBLOQUEARLOSCOMENTARIOS">¿Deseas bloquear los comentarios?</Resource>
 		<Resource tag="DESEASDESVINCULARDELDOCUMENTOACTUALELRECURSO@1@">¿Deseas desvincular del documento actual el recurso @1@?</Resource>
+		<Resource tag="INFOELIMINARSHAREPOINT">(También se eliminará el documento de SharePoint)</Resource>
 		<Resource tag="NOMBREDELMIEMBRO">Nombre del miembro</Resource>
 		<Resource tag="APELLIDOSDELMIEMBRO">Apellidos del miembro</Resource>
 		<Resource tag="MOSTRARSOLOCOMUNIDADESENLASQUEPARTICIPA">Mostrar solo comunidades en las que participa</Resource>
@@ -188,8 +193,9 @@
 		<Resource tag="IDIOMAFR">Francés</Resource>
 		<Resource tag="IDIOMAIT">Italiano</Resource>
 		<Resource tag="GUARDAR">Guardar</Resource>
+		<Resource tag="GUARDARORDENCAT">Guardar orden</Resource>
 		<Resource tag="CANCELAR">Cancelar</Resource>
-		<Resource tag="CERRAR">cerrar </Resource>
+		<Resource tag="CERRAR">Cerrar </Resource>
 		<Resource tag="MISBLOGS">Mis blogs</Resource>
 		<Resource tag="MISCOMUNIDADES">Mis comunidades</Resource>
 		<Resource tag="FILTROSSELECCIONADOS">Etiquetas seleccionadas: </Resource>
@@ -217,6 +223,7 @@
 		<Resource tag="ADMINISTRACION">Administración</Resource>
 		<Resource tag="MOSTRAR">Mostrar</Resource>
 		<Resource tag="SELECCIONARTODOS">Seleccionar todos</Resource>
+		<Resource tag="SELECCIONARNINGUNO">Limpiar selección</Resource>
 		<Resource tag="INICIARSESION">Iniciar sesión</Resource>
 		<Resource tag="DARSEALTA">Darse de alta</Resource>
 		<Resource tag="REGISTRARSE">Regístrate</Resource>
@@ -320,6 +327,7 @@
 		<Resource tag="DESCARGARSHAREPOINT">Descargar versión día</Resource>
 		<Resource tag="DEJARDECOMPARTIR">Dejar de compartir seleccionados</Resource>
     	<Resource tag="CONFIRMARELIMINAR">¿Desea eliminar el elemento seleccionado?</Resource>
+    	<Resource tag="SINPERMISO">No tienes permiso para realizar esta acción</Resource>
 	</page>
 	<page name="METADESCRIPTION">
 		<Resource tag="INDICE">Índice de contenido de @1@, navega por sus categorías y descubre los @2@ recursos</Resource>
@@ -1572,6 +1580,20 @@
 		<Resource tag="INFONOEDICIONTESCOMPAUTO">{p}No se pueden editar las categorías del tesauro porque este recurso está compartido automáticamente desde otra comunidad.{/p}{p}Si deseas editar las categorías puedes hacerlo desde la {a href="@1@"}comunidad origen{/a}.{/p}</Resource>
 		<Resource tag="SUBIENDOARCHIVO">Subiendo archivo...</Resource>
 		<Resource tag="ARCHSELECCIONADOS">Archivos seleccionados</Resource>
+    <Resource tag="HIPERVINCULO">Hipervínculo</Resource>
+    <Resource tag="ARCHIVOADJUNTO">Archivo Adjunto</Resource>
+    <Resource tag="SEMANTICO">Semántico</Resource>
+    <Resource tag="VIDEO">Video</Resource>
+    <Resource tag="ONTOLOGIA">Ontologia</Resource>
+    <Resource tag="IMAGENWIKI">Imagen Wiki</Resource>
+    <Resource tag="IMAGEN">Imagen</Resource>
+    <Resource tag="NOTA">Nota</Resource>
+    <Resource tag="NEWSLETTER">Newsletter</Resource>
+    <Resource tag="PREGUNTA">Pregunta</Resource>
+    <Resource tag="DEBATE">Debate</Resource>
+    <Resource tag="BLOG">Blog</Resource>
+    <Resource tag="ENCUESTA">Encuesta</Resource>
+    <Resource tag="AUDIO">Audio</Resource>
 	</page>
 	<page name="CONFIGURARARCHIVOPLANTILLA">
 		<Resource tag="TITULOENTIDADEDICION">Título edición</Resource>
@@ -1751,7 +1773,10 @@
 		<Resource tag="ERRORDOCVINCMISMO">No se puede vincular el recurso consigo mismo.</Resource>
 		<Resource tag="VINCDOC">Vincular recurso</Resource>
 		<Resource tag="VINCULAR">Vincular</Resource>
+		<Resource tag="DESVINCULAR">Desvincular</Resource>
 		<Resource tag="INFOVINCULAR">Vincular recurso</Resource>
+		<Resource tag="INFODESVINCULAR">Desvincular recurso de SharePoint</Resource>
+		<Resource tag="AVISODESVINCULAR">Aviso: el documento de SharePoint será eliminado tras llevar a cabo esta acción</Resource>
 		<Resource tag="INFOVINCULARURL">Copia la url del recurso:</Resource>
 		<Resource tag="RECVINCOMUNIDAD">Recursos vinculados</Resource>
 		<Resource tag="RECVINCOMUNIDADMIN">recursos vinculados</Resource>
@@ -1975,6 +2000,7 @@
 		<Resource tag="EDITORM">editor</Resource>
 		<Resource tag="EDITORESM">editores</Resource>
 		<Resource tag="CAMBIARROL">Cambiar rol</Resource>
+		<Resource tag="CAMBIARROLGRUPO">Cambiar rol de grupo</Resource>
 		<Resource tag="ASIGNARACOMUNIDAD">Asignar a comunidad</Resource>
 		<Resource tag="CAMBIARMODOPARTICIPACIONCOMUNIDAD">Cambiar modo de participación en comunidades</Resource>
 		<Resource tag="INVITARAORGANIZACION">Invitar a un nuevo usuario</Resource>
@@ -2277,7 +2303,7 @@
 		<Resource tag="FACETASACTIVIDAD">Facetas de su actividad</Resource>
 	</page>
 	<page name="SOLICITARCOMUNIDAD">
-		<Resource tag="INFO">Para poder crear una comunidad en @1@ necesitamos que nos digas cómo quieres que se llame, nos describas cuál es su propósito y qué esperas de ella y de las contribuciones de las personas que quieran colaborar contigo y por último, si quieres que sea pública, pública de acceso restringido o privada.</Resource>
+		<Resource tag="INFO">Para poder crear una comunidad en @1@ necesitamos que nos digas cómo quieres que se llame, nos describas cuál es su propósito y qué esperas de ella y de las contribuciones de las personas que quieran colaborar contigo, si quieres que sea pública, pública de acceso restringido o privada. Y por último, seleccionar el idioma por defecto de la comunidad (Solo están los idiomas configurados en la plataforma).</Resource>
 		<Resource tag="NOMBRECORTOREPETIDO">Ya existe una comunidad en @1@ con este nombre corto.</Resource>
 		<Resource tag="NOMBREREPETIDO">Ya existe una comunidad en @1@ con este nombre largo.</Resource>
 		<Resource tag="TITULOPAGINA">Pedir una comunidad</Resource>
@@ -2457,6 +2483,9 @@
 	<page name="POLITICACOOKIES">
 		<Resource tag="TITULO">Política de cookies</Resource>
 	</page>
+	<page name="MISCOMUNIDADES">
+		<Resource tag="TITULOPAGINA">Mis comunidades</Resource>
+	</page>
 	<page name="POLITICAPRIVACIDAD">
 		<Resource tag="TITULOPAGINA">Política de privacidad</Resource>
 		<Resource tag="TITULO">Política de privacidad</Resource>
@@ -2537,6 +2566,12 @@
 		<Resource tag="DESCARGARSHAREPOINT">Descargar versión</Resource>
 		<Resource tag="CREARVERSIONRAPIDA">Crear versión rápida</Resource>
 		<Resource tag="DESVINCULARSHAREPOINT">Desvincular de SharePoint</Resource>
+		<Resource tag="REVISION">Revisión</Resource>
+		<Resource tag="COMPARARVERSIONES">Comparar versiones</Resource>
+		<Resource tag="PRIMERCOMENTARIO">Primera versión del componente CMS</Resource>
+		<Resource tag="GUARDARHISTORIAL">Guardar historial</Resource>
+		<Resource tag="RESTAURARVERSION">Restaurar a versión</Resource>
+		<Resource tag="AVISOCOMPONENTESBORRADOS">Los siguientes componentes no se restaurarán al estar borrados</Resource>
 	</page>
 	<page name="COMADMINCATEGORIAS">
 		<Resource tag="TEXTOSUPDISEÑO">Si quieres, puedes agregar texto, HTML, imágenes, cualquier widget de terceros o búsquedas en @2@ para que se muestre en el inicio de tu comunidad. {a href="@1@"}¿Cómo puedes hacerlo?{/a}</Resource>
@@ -2599,6 +2634,7 @@
 		<Resource tag="VERINGLES">Ver en inglés</Resource>
 		<Resource tag="VERPORTUGUES">Ver en portugués</Resource>
 		<Resource tag="ACTIVAREDICIONMULTIIDIOMA">Activar la edición de categorías en otros idiomas</Resource>
+		<Resource tag="DESACTIVAREDICIONMULTIIDIOMA">Desactivar edición multilenguaje</Resource>
 		<Resource tag="PROPSEXTRA">Propiedades extra</Resource>
 		<Resource tag="EDITARPROPSEXTRA">Editar propiedades extra</Resource>
 		<Resource tag="EDITARPROPSEXTRADE">Editar propiedades extra de</Resource>
@@ -2802,6 +2838,7 @@
 		<Resource tag="PROPIEDADNOVACIA">La propiedad @1@ es obligatoria</Resource>
 		<Resource tag="PROPIEDADNUMEROINCORRECTO">La propiedad @1@ debe tener un valor entre @2@ y @3@</Resource>
 		<Resource tag="ELIMINARCOMPONENTEVINCULADOPAGINA">No se puede eliminar el componente cms porque está vinculado a las páginas @1@.</Resource>
+		<Resource tag="ELIMINARCOMPONENTEPERTENECEGRUPOCOMPONENTES">No se puede eliminar el componente cms porque porque pertenece a un grupo de componentes</Resource>
 		<Resource tag="PROPIEDADLISTADOGUIDSINCORRECTO">La propiedad @1@ debe tener GUIDs</Resource>
 		<Resource tag="PROPIEDAD_NOMBRE">Nombre</Resource>
 		<Resource tag="PROPIEDAD_HTML">HTML</Resource>
@@ -2918,6 +2955,10 @@
 		<Resource tag="CREARCOMPONENTENUEVO">Crear nuevo componente</Resource>
 	</page>
 	<page name="COMADMIN">
+		<Resource tag="ADMIN">Administrador</Resource>
+		<Resource tag="SUPERVISOR">Supervisor</Resource>
+		<Resource tag="USUARIO">Usuario</Resource>
+		<Resource tag="AVISOCIERRE">Se cerrará inmediatamente</Resource>
 		<Resource tag="CREADAOK">Comunidad creada correctamente</Resource>
 		<Resource tag="HERRAMIENTASCARGASMASIVAS">Publicación con herramienta de carga masiva @1@</Resource>
 		<Resource tag="EXPLICACIONTAGSYCATEGORIAS">@1@ enlaza esta comunidad con otras comunidades @1@ relacionadas en función de las etiquetas que posee y las categorías del índice general a las que pertenece:</Resource>
@@ -2979,7 +3020,7 @@
 		<Resource tag="CUALQUIERTIPO">Cualquier tipo</Resource>
 		<Resource tag="VIDEOS">Sólo videos</Resource>
 		<Resource tag="IMAGENES">Sólo imágenes</Resource>
-		<Resource tag="INFOGENERAL">Información General</Resource>
+		<Resource tag="INFOGENERAL">Información general</Resource>
 		<Resource tag="TIPOACCESO">Tipo de acceso: </Resource>
 		<Resource tag="ESTADO">Estado de la comunidad: </Resource>
 		<Resource tag="PUBLICO">Público</Resource>
@@ -3052,6 +3093,8 @@
 		<Resource tag="CONFIRMACIONENVIARNEWSLETTER">¿Deseas enviar las newsletter a @1@?</Resource>
 		<Resource tag="CONFIRMACIONEXPULSARUSUARIO">¿Deseas expulsar a @1@ de la comunidad?</Resource>
 		<Resource tag="EXPLICACIONROLESPROYECTO">Selecciona el rol que desempeñará en la comunidad el usuario seleccionado : </Resource>
+		<Resource tag="EXPLICACIONROLESUSUARIO">Selecciona los roles que desempeñará el usuario </Resource>
+		<Resource tag="EXPLICACIONROLESGRUPO">Selecciona los roles que desempeñará el grupo </Resource>
 		<Resource tag="DESCRIPCIONCONFRECRUSOS_PUB">Los recursos de una @1@ pueden ser compartidos por sus miembros en las diferentes comunidades en las que participa, siempre y cuando estos tengan permiso para hacerlo. Esta disponibilidad depende del tipo de recurso y del rol de cada miembro.</Resource>
 		<Resource tag="DESCRIPCIONCONFRECRUSOS_PRIV">En una @1@, el administrador decide si permite que sus recursos puedan ser compartidos por sus miembros en las diferentes comunidades en las que participa, siempre y cuando estos tengan permiso para hacerlo. Esta disponibilidad depende del tipo de recurso y del rol de cada miembro. Aquí se muestra el check donde decide el administrador  si permite compartir.</Resource>
 		<Resource tag="DESCRIPCIONNIVELES">¿Quieres que los contenidos de la comunidad sean certificados por sus supervisores de los recursos?</Resource>
@@ -3679,6 +3722,9 @@
 		<Resource tag="ACEPTARTODO">Aceptar todo</Resource>
 	</page>
 	<page name="URLSEM">
+		<Resource tag="ADMINISTRARDETALLESDOCUMENTACION">administrar-documentacion-detalles</Resource>
+		<Resource tag="DOCUMENTACIONONTOLOGIA">documentacion-ontology</Resource>
+		<Resource tag="SOLICITADOPOR">Solicitado por</Resource>
 		<Resource tag="ADMINISTRARHEADESTILOS">custom-stylesheet</Resource>		
 		<Resource tag="AMIGOS">amigos</Resource>
 		<Resource tag="BIO">bio</Resource>
@@ -3686,15 +3732,22 @@
 		<Resource tag="ADMINISTRARDOCUMENTACIONCOMUNIDAD">administrar-documentacion-comunidad</Resource>
 		<Resource tag="ADMINISTRARCOMUNIDADSECTION">administrar-comunidad-seccion</Resource>
 		<Resource tag="ADMINISTRARCOMUNIDADHOME">administrar-comunidad-home</Resource>
+		<Resource tag="ADMINISTRARAPLICACIONESPECIFICA">administrar-aplicaciones-especificas</Resource>
 		<Resource tag="ADMINISTRARECOSISTEMAHOME">administrar-ecosistema-home</Resource>
-        <Resource tag="ADMINISTRARCOMUNIDADBUZONCORREO">administrar-buzon-correo</Resource>
-        <Resource tag="ADMINISTRARCOMUNIDADBUZONCORREOECOSISTEMA">administrar-buzon-ecosistema</Resource>
+		<Resource tag="ADMINISTRARCOMUNIDADBUZONCORREO">administrar-buzon-correo</Resource>
+		<Resource tag="ADMINISTRARCOMUNIDADBUZONCORREOECOSISTEMA">administrar-buzon-ecosistema</Resource>
+		<Resource tag="ADMINLISTADOPERMISOS">listado-permisos</Resource>
+		<Resource tag="ADMINLISTADOPERMISOSECOSISTEMA">listado-permisos-ecosistema</Resource>
+		<Resource tag="ADMINISTRARROLES">administrar-roles</Resource>
+		<Resource tag="ADMINISTRARROLESECOSISTEMA">administrar-roles-ecosistema</Resource>
+		<Resource tag="ADMINISTRARMIEMBROSECOSISTEMA">administrar-miembros-ecosistema</Resource>
 		<Resource tag="ADMINISTRARSOLICITUDESUSUARIO">administrar-solicitudes-usuarios</Resource>
 		<Resource tag="ADMINISTRARSOLICITUDEORGANIZACION">administrar-solicitudes-org</Resource>
 		<Resource tag="ADMINISTRARSOLICITUACCESOPROYECTO">administrar-solicitudes-comunidad</Resource>
 		<Resource tag="ADMINISTRARSUSCRIPCIONES">gestionar-suscripciones</Resource>
 		<Resource tag="ADMINISTRARSUSCRIPCIONCOMUNIDAD">gestionar-suscripcion-comunidad</Resource>
 		<Resource tag="ADMINISTRARSUSCRIPCIONIDENTIDAD">gestionar-suscripcion-perfil</Resource>
+		<Resource tag="ADMINISTRARSOLICITUDES">administrar-solicitudes</Resource>
 		<Resource tag="AGREGARTWITTER">agregar-twitter</Resource>
 		<Resource tag="ARTICULO">articulo</Resource>
 		<Resource tag="BLOG">blog</Resource>
@@ -3757,6 +3810,7 @@
 		<Resource tag="INVITARACOMUNIDADVIAMODAL">invitar-a-comunidad-modal</Resource>
 		<Resource tag="INVITACIONES">invitaciones</Resource>
 		<Resource tag="NOTIFICACIONES">notificaciones</Resource>
+		<Resource tag="NOTIFICACIONESPERSO">notificaciones-personalizadas</Resource>
 		<Resource tag="INVITACIONESORG">invitaciones-org</Resource>
 		<Resource tag="INVITACIONINVALIDA">enlace-caducado</Resource>
 		<Resource tag="LOGIN">login</Resource>
@@ -3875,13 +3929,17 @@
 		<Resource tag="ADMINISTRARDATOSEXTRAECOSISTEMA">administrar-datos-extra-ecosistema</Resource>
 		<Resource tag="ADMINISTRARCONTEXTOSCOM">administrar-componentes-recursos</Resource>
 		<Resource tag="ADMINISTRARTRAZAS">administrar-trazas</Resource>
-		<Resource tag="ADMINISTRARDESCARGARCONFIGURACION">administrar-descargar-configuracion</Resource>		
+		<Resource tag="ADMINISTRARDESCARGARCONFIGURACION">administrar-descargar-configuracion</Resource>
+		<Resource tag="ADMINISTRARDESCARGARCONFIGURACIONECOSISTEMA">administrar-descargar-configuracion-ecosistema</Resource>
 		<Resource tag="ADMINISTRARCACHE">administrar-cache</Resource>
-        <Resource tag="ADMINISTRARSUGERENCIASBUSQUEDA">administrar-search</Resource>
+		<Resource tag="ADMINISTRARSUGERENCIASBUSQUEDA">administrar-search</Resource>
 		<Resource tag="ADMINISTRARFACETASCOM">administrar-facetas</Resource>
 		<Resource tag="ADMINISTRAROBJETOSCONOCIMIENTOCOM">administrar-objetos-conocimiento</Resource>
 		<Resource tag="ADMINISTRARCOMUNIDADGENERAL">administrar-comunidad-general</Resource>
 		<Resource tag="ADMINISTRARCATEGORIASCOMUNIDADMETAPROYECTO">administrar-categorias-comunidad-metaproyecto</Resource>
+		<Resource tag="DIAGNOSTICOPROBLEMAS">diagnostico-problemas</Resource>
+		<Resource tag="REPROCESADORECURSOS">reprocesado-recursos</Resource>
+		<Resource tag="TAREASFONDO">tareas-segundo-plano</Resource>
 		<Resource tag="POLITICACOMUNIDAD">politica-certificados</Resource>
 		<Resource tag="PERSONALIZARCOOKIES">manage-cookies</Resource>
 		<Resource tag="QUIEROTWITTEAR">twittear</Resource>
@@ -4039,8 +4097,10 @@
 		<Resource tag="ADMINISTRARCOMUNIDADCMSNUEVOCOMPONENTE">administrar-comunidad-cms-nuevo-componente</Resource>
 		<Resource tag="ADMINISTRARCOMUNIDADCMSEDITARCOMPONENTE">administrar-comunidad-cms-editar-componente</Resource>
 		<Resource tag="ADMINISTRARCOMUNIDADCMSLISTADOCOMPONENTES">administrar-comunidad-cms-listado-componentes</Resource>
+		<Resource tag="ADMINISTRARCOMUNIDADCMSHISTORIALCOMPONENTE">administrar-comunidad-cms-historial-componente</Resource>
 		<Resource tag="ADMINISTRARCOMUNIDADCMSMULTIMEDIA">administrar-comunidad-cms-multimedia</Resource>
 		<Resource tag="ADMINISTRARCOMUNIDADCMSEDITARPAGINA">administrar-comunidad-cms-editar-pagina</Resource>
+		<Resource tag="ADMINISTRARCMSPAGINAHISTORIAL">administrar-cms-pagina-historial</Resource>
 		<Resource tag="ADMINISTRARDISENIOCMS">administrar-disenio-cms</Resource>
 		<Resource tag="ADMINISTRARDISENIO">administrar-disenio</Resource>
 		<Resource tag="ADMINISTRARSEM">administrar-sem</Resource>
@@ -4069,6 +4129,7 @@
 		<Resource tag="ADMINISTRARVISTAS">administrar-vistas</Resource>
 		<Resource tag="ADMINISTRARVISTASECOSISTEMA">administrar-vistas-ecosistema</Resource>
 		<Resource tag="ADMINISTRARVISTASDOMINIO">administrar-vistas-dominio</Resource>
+		<Resource tag="ADMINISTRARVISTASDIAGRAMAS">administrar-vistas-diagramas</Resource>
 		<Resource tag="ADMINISTRARCLAUSULASREGISTRO">administrar-clausulas</Resource>
 		<Resource tag="ADMINISTRARCLAUSULASREGISTROECOSISTEMA">administrar-clausulas-ecosistema</Resource>
 		<Resource tag="ADMINTESSEM">administrar-tesauros-semanticos</Resource>
@@ -4081,7 +4142,7 @@
 		<Resource tag="ADMINADVANCEDOPTIONS">administrar-opciones-avanzadas</Resource>
 		<Resource tag="ADMINISTRARSEOGOOGLE">administrar-seo-google</Resource>
 		<Resource tag="ADMINISTRARSEOGOOGLEPLATAFORMA">administrar-seo-google-plataforma</Resource>
-    <Resource tag="ADMINISTRARMATOMO">administrar-matomo</Resource>
+		<Resource tag="ADMINISTRARMATOMO">administrar-estadisticas</Resource>
 		<Resource tag="ADMINISTRARSHAREPOINT">administrar-sharepoint</Resource>
 		<Resource tag="MANUALSHAREPOINT">administrar-sharepoint-manual</Resource>
 		<Resource tag="ADMINISTRARCOMUNIDAD">administrar-comunidad</Resource>
@@ -4122,10 +4183,13 @@
 		<Resource tag="ADMINISTRARYCHARTS">administrar-charts</Resource>
 		<Resource tag="ADMINISTRARINTEGRACIONCONTINUA">administrar-integracion-continua-inicio</Resource>
 		<Resource tag="ADMINISTRARINTEGRACIONCONTINUAECOSISTEMA">administrar-integracion-continua-inicio-ecosistema</Resource>
+		<Resource tag="DESPLEGARWEB">desplegar-web</Resource>
 		<Resource tag="CONFIGURARINTEGRACIONCONTINUAINCIAL">administrar-integracion-continua-config</Resource>
 		<Resource tag="CONFIGURARINTEGRACIONCONTINUAINCIALECOSISTEMA">administrar-integracion-continua-config-ecosistema</Resource>
 		<Resource tag="CONFIGURARINTEGRACIONCONTINUAREPOSITORIO">administrar-integracion-continua-repository</Resource>
 		<Resource tag="CONFIGURARINTEGRACIONCONTINUAREPOSITORIOECOSISTEMA">administrar-integracion-continua-repository-ecosistema</Resource>
+		<Resource tag="ADMINISTRAREVENTOSEXTERNOS">administrar-eventos-externos</Resource>
+		<Resource tag="ADMINISTRAREVENTOSEXTERNOSECOSISTEMA">administrar-eventos-externos-ecosistema</Resource>
 		<Resource tag="URLAPIDESPLIEGUES">url-api-despliegues</Resource>
 		<Resource tag="CONFIGURAFTP">configurar-ftp</Resource>
 		<Resource tag="ACTUALIZARDLLS">actualizar-dlls</Resource>
@@ -4135,12 +4199,13 @@
 		<Resource tag="ADMINISTRARDESCARGARTRADUCCIONESECOSISTEMA">descargar-traducciones-ecosistema</Resource>
 		<Resource tag="CONECTORCKEDITOR">conector-ckeditor</Resource>
 		<Resource tag="ACEPTARCOOKIES">aceptar-cookies</Resource>
-		<Resource tag="ELIMINARSESION">eliminarsesion</Resource>		
+		<Resource tag="ELIMINARSESION">eliminarsesion</Resource>
+		<Resource tag="ADMINISTRARCONFIGURACIONPESOBUSQUEDAS">administrar-peso-busqueda</Resource>
 	</page>
 	<page name="COMADMINCOMUNIDAD">
 		<Resource tag="TITULO">Listado de páginas de administración de la comunidad</Resource>
 		<Resource tag="ADMINMETAADMINOPTIONS">Opciones del MetaAdministrador</Resource>
-		<Resource tag="ADMINISTRARCOMUNIDADGENERAL">Información General</Resource>
+		<Resource tag="ADMINISTRARCOMUNIDADGENERAL">Información general</Resource>
 		<Resource tag="ADMINISTRARCOMUNIDADUTILIDADES">Utilidades</Resource>
 		<Resource tag="ADMINISTRARCOMUNIDADFUENTES">Fuentes RSS/ATOM</Resource>
 		<Resource tag="COMADMINCOMGADGETS">Diseño</Resource>
@@ -4188,9 +4253,12 @@
 		<Resource tag="ADMINISTRARLISTACAMBIO">Fusionar</Resource>
 		<Resource tag="ADMINISTRAINTEGRACIONCONTINUA">Subir cambios</Resource>
 		<Resource tag="ADMINISTRARINTEGRACIONCONTINUA">Crear Integracion Continua</Resource>
+		<Resource tag="DESPLEGARWEB">Desplegar web</Resource>
 		<Resource tag="ADMINISTRARCHARTS">Charts</Resource>
 		<Resource tag="ADMINISTRARMAPA">Mapa</Resource>
 		<Resource tag="ADMINSERVICIOSWEB">Servicios Web</Resource>
+		<Resource tag="DIAGNOSTICOPROBLEMAS">Diagnóstico de problemas</Resource>
+		<Resource tag="ADMINISTRARCONFIGURACIONPESOBUSQUEDAS">Administrar pesos de búsqueda autocompletado</Resource>
 	</page>
 	<page name="COMADMINDISENIO">
 		<Resource tag="XMLSUBIDO">Archivo subido correctamente</Resource>
@@ -4245,7 +4313,7 @@
 		<Resource tag="ERRORSUBIRZIP">Error al subir el archivo zip</Resource>
 	</page>
 	<page name="COMADMINPESTANYAS">
-		<Resource tag="TITULO">Configurar páginas</Resource>
+		<Resource tag="TITULO">Configurar página</Resource>
 		<Resource tag="INFOTITULO">Configura las páginas de tu comunidad </Resource>
 		<Resource tag="SELECCIONATIPO">Selecciona un nuevo tipo de página para añadir</Resource>
 		<Resource tag="TIPOPESTANYA">Tipo de página</Resource>
@@ -4278,9 +4346,9 @@
 		<Resource tag="OPCIONESBUSQUEDA">Opciones de busqueda</Resource>
 		<Resource tag="CAMPOFILTRO">Campo Filtro</Resource>
 		<Resource tag="CREARFILTROSORDEN">Crear filtros de orden personalizados</Resource>
-		<Resource tag="LISTAFILTROSORDEN">Lista de filtros de orden</Resource>
-		<Resource tag="ADDFILTROSORDEN">Añadir filtro orden</Resource>
-		<Resource tag="NUEVOFILTRO">Nuevo filtro</Resource>
+		<Resource tag="LISTAFILTROSORDEN">Lista de criterios de orden</Resource>
+		<Resource tag="ADDFILTROSORDEN">Añadir criterio de orden</Resource>
+		<Resource tag="NUEVOFILTRO">Nuevo criterio</Resource>
 		<Resource tag="FILTRO">Filtro</Resource>
 		<Resource tag="CONSULTA">Clausula</Resource>
 		<Resource tag="VISTASDISPONIBLES">Vistas disponibles</Resource>
@@ -4312,7 +4380,6 @@
 		<Resource tag="PROPIEDAD">Propiedad</Resource>
 		<Resource tag="DESHACER">deshacer</Resource>
 		<Resource tag="ELIMINADA">eliminada</Resource>
-		<Resource tag="GUARDARTODO">Aceptar</Resource>
 		<Resource tag="GUARDARTODO">Guardar Todo</Resource>
 		<Resource tag="GUARDAROK">Los cambios se han guardado correctamente</Resource>
 		<Resource tag="GUARDARERROR">Ha habido errores en el guardado de las pestañas, revisa los errores marcados</Resource>
@@ -4331,6 +4398,23 @@
 		<Resource tag="OMITIRCARGAINICIALFACETASRESULTADOS">Omitir la carga inicial de facetas y resultados</Resource>
 		<Resource tag="RELACIONMANDATORY">Filtro de RelacionMandatory</Resource>
 		<Resource tag="TEXTODEFECTOBUSCADOR">Texto por defecto que aparecerá en el buscador</Resource>
+		<Resource tag="OPCIONESAUTOCOMPLETAR">Autocompletado</Resource>
+		<Resource tag="CAMPOTIPOAUTOCOMPLETAR">Tipo Autocompletado</Resource>
+		<Resource tag="OPCIONAUTOCOMPLETARDEFECTO">Autocompletado por defecto</Resource>
+		<Resource tag="OPCIONAUTOCOMPLETARENRIQUECIDO">Autocompletado enriquecido</Resource>
+	</page>
+	<page name="NOTIFICACIONESPERSONALIZADAS">
+		<Resource tag="TITULO">Listado Notificaciones</Resource>
+		<Resource tag="CONTENIDO">Descripción</Resource>
+		<Resource tag="FECHANOTI">Fecha</Resource>
+		<Resource tag="LEIDA">Leida</Resource>
+		<Resource tag="MASINFO">Mas información</Resource>
+	</page>
+	<page name="COMADMINPESOBUSQUEDA">
+		<Resource tag="TITULO">Configurar pesos de búsquedas</Resource>
+		<Resource tag="PESO">Peso</Resource>
+		<Resource tag="ONTOLOGIA">Ontología</Resource>
+		<Resource tag="CONFIGPESOAUTOCOMPLETAR">Configuración de los pesos del autocompletado</Resource>
 	</page>
 	<page name="COMADMINCOOKIES">
 		<Resource tag="NOMBRECATEGORIAS">Administrar categorías de las cookies</Resource>
@@ -4381,6 +4465,7 @@
 		<Resource tag="IGNORARPRIVACIDADENBUSQUEDA">Ignorar la privacidad en búsqueda</Resource>
 		<Resource tag="OMITIRCARGAINICIALFACETASRESULTADOS">Omitir la carga inicial de facetas y resultados</Resource>
 		<Resource tag="RELACIONMANDATORY">Filtro de RelacionMandatory</Resource>
+		<Resource tag="CAMPOTIPOAUTOCOMPLETAR">Tipo de autocompletado que va a tener esta página</Resource>
 	</page>
 	<page name="COMADMINFACETAS">
 		<Resource tag="TITULO">Configurar facetas</Resource>
@@ -4402,6 +4487,7 @@
 		<Resource tag="ALGORITMOTRANSFORMACION">Algoritmo de transformación</Resource>
 		<Resource tag="ELEMENTOSVISIBLES">Número de elementos visibles</Resource>
 		<Resource tag="AUTOCOMPLETAR">Autocompletar</Resource>
+		<Resource tag="CONTADORES">Contadores</Resource>
 		<Resource tag="COMPORTAMIENTO">Caja de búsqueda en la faceta</Resource>
 		<Resource tag="EXCLUYENTE">Excluyente</Resource>
 		<Resource tag="OCULTAENFACETAS">Oculta en facetas</Resource>
@@ -4433,6 +4519,7 @@
 		<Resource tag="PRESENTACION">Indica como se va a mostrar la faceta</Resource>
 		<Resource tag="COMPORTAMIENTO">Indica como se comporta la caja de busqueda de la faceta</Resource>
 		<Resource tag="AUTOCOMPLETAR">Indica si la caja de la faceta tiene el comportamiento de autocompletar</Resource>
+		<Resource tag="CONTADORES">Indica si se añade el contador a la consulta de la faceta</Resource>
 		<Resource tag="ALGORITMOTRANSFORMACION">Indica la transformacion que se va a realizar sobre la faceta</Resource>
 		<Resource tag="ORDEN">Indica el orden en el que se van a mostrar las opciones de la faceta</Resource>
 		<Resource tag="FILTROS">Filtros</Resource>
@@ -4574,8 +4661,8 @@
 		<Resource tag="TIPOPAGADMINTEXTO">Texto</Resource>
 	</page>
 	<page name="COMADMINCLAUSULASREGISTRO">
-		<Resource tag="TITULO">Configurar Cláusulas Registro</Resource>
-		<Resource tag="CLAUSULASREGISTRO">Cláusulas Registro</Resource>
+		<Resource tag="TITULO">Configurar Cláusulas registro</Resource>
+		<Resource tag="CLAUSULASREGISTRO">Cláusulas registro</Resource>
 		<Resource tag="INFOTITULO">Configura las cláusulas del registro disponibles en la comunidad</Resource>
 		<Resource tag="INFOADDCLAUSULA">Añade una nueva cláusula del tipo</Resource>
 		<Resource tag="GUARDARTODO">Guardar Todo</Resource>
@@ -4667,8 +4754,31 @@
 	<!-- Traducciones para DevTools -->	
 	<page name="DEVTOOLS">
 		<!-- Textos que ya existían en Vistas de Administración person sin traducir -> DevTools -->
+		<Resource tag="APLICACIONESESPECIFICASBETA">Aplicaciones especificas (BETA)</Resource>
+		<Resource tag="APLICACIONESESPECIFICAS">Aplicaciones especificas</Resource>
+		<Resource tag="INSERTADOSEARCH">Se ha insertado la propiedad.</Resource>
+		<Resource tag="ALERTAUSUARIO">¡Advertencia!</Resource>
+		<Resource tag="PROPIEDADNOEXISTE">La propiedad introducida: @1@ no existe.</Resource>
+		<Resource tag="APLICACIONESESPECIFICAS">Aplicaciones especificas (BETA)</Resource>
+		<Resource tag="EXPORTACIONDATOSCOMUNIDAD">Exportacion_Datos_Comunidad</Resource>
+		<Resource tag="FECHAULTIMOACCESO">Último acceso</Resource>
+		<Resource tag="FECHAALTA">Fecha de alta</Resource>
+		<Resource tag="BUSCARCATEGORIAS">Buscar categorias</Resource>
+		<Resource tag="CATEGORIASPLATAFORMA">Categorías plataforma</Resource>
+		<Resource tag="ADMINISTRAREVENTOSEXTERNOS">Eventos externos</Resource>
+		<Resource tag="ACTUALIZARESTADOEVENTOEXTERNO">Actualizar estado de evento externo</Resource>
+		<Resource tag="DESEADESACTIVARELEVENTOEXTERNOSELECCIONADO">¿Desea desactivar el evento seleccionado?</Resource>
+		<Resource tag="DESEAACTIVARELEVENTOEXTERNOSELECCIONADO">¿Desea activar el evento seleccionado?</Resource>
+		<Resource tag="EVENTOEXTERNOCOMENTARIOS">Eventos de comentarios</Resource>
+		<Resource tag="EVENTOEXTERNORECURSOS">Eventos de recursos</Resource>
+		<Resource tag="EVENTOEXTERNOUSUARIOS">Eventos de usuario</Resource>
+		<Resource tag="EVENTOSEXTERNOSMENSAJE">Las credenciales no están configuradas correctamente. Contacte con el equipo de sistemas.</Resource>
+		<Resource tag="EVENTOSEXTERNOSHABILITARCONFIGPROY">Habilitar configuración de proyecto</Resource>
+		<Resource tag="EVENTOSEXTERNOSDESHABILITARCONFIGPROY">Deshabilitar configuración de proyecto</Resource>
+		<Resource tag="EVENTOSEXTERNOSCONFIGECO">Estás viendo la configuración del ecosistema</Resource>
+		<Resource tag="EVENTOSEXTERNOSCONEXION">Cadena de conexión</Resource>
 		<Resource tag="ADMINISTRACIONBASICA">Administración Básica</Resource>
-		<Resource tag="INFORMACIONGENERAL">Información General</Resource>
+		<Resource tag="INFORMACIONGENERAL">Información general</Resource>
 		<Resource tag="ESTADODELACOMUNIDAD">Estado de la comunidad</Resource>
 		<Resource tag="ABIERTO">Abierto</Resource>
 		<Resource tag="CERRADOTEMPORALMENTE">Cerrado temporalmente</Resource>
@@ -4697,7 +4807,7 @@
 		<Resource tag="MICOMUNIDADENGNOSS">Mi comunidad en GNOSS</Resource>
 		<Resource tag="GNOSSENLAZAESTACOMUNIDADCONOTRASCOMUNIDADESGNOSSRELACIONADAS">GNOSS enlaza esta comunidad con otras comunidades GNOSS relacionadas en función de las etiquetas que posee y las categorías del índice general a las que pertenece</Resource>
 		<Resource tag="ETIQUETAS">Etiquetas</Resource>
-		<Resource tag="DINOSENQUECATEGORIASDELINDICEGLOBALDEGNOSSQUIERESQUEENCUENTR">Dinos en qué categorías del índice global de GNOSS quieres que encuentren tu comunidad</Resource>
+		<Resource tag="DINOSENQUECATEGORIASDELINDICEGLOBALDEGNOSSQUIERESQUEENCUENTR">Dinos en qué categorías del índice global de @1@ quieres que encuentren tu comunidad</Resource>
 		<Resource tag="IDIOMADELACOMUNIDAD">Idioma de la comunidad</Resource>
 		<Resource tag="LASCOMUNIDADESDEGNOSSOFRECENASUSADMINISTRADORESLAPOSIBILIDAD">Las comunidades de GNOSS ofrecen a sus administradores la posibilidad de editar el índice de categorías y los paneles informativos (widgets tipo HTML incrustado) en español, inglés y portugués. ¿Quieres que tu comunidad GNOSS sea multilingüe? Activa el siguiente check y elige su idioma por defecto.</Resource>
 		<Resource tag="ACTIVAREDICIONMULTIIDIOMAENLACOMUNIDAD">Activar edición multi-idioma en la comunidad</Resource>
@@ -4755,8 +4865,8 @@
 		<Resource tag="URL">Url</Resource>
 		<Resource tag="ACCIONES">Acciones</Resource>
 		<Resource tag="MIEMBROS">Miembros</Resource>
-		<Resource tag="CLAUSULASREGISTRO">Cláusulas Registro</Resource>
-		<Resource tag="CONFIGURARCLAUSULASREGISTRO">Configurar Cláusulas Registro</Resource>
+		<Resource tag="CLAUSULASREGISTRO">Cláusulas registro</Resource>
+		<Resource tag="CONFIGURARCLAUSULASREGISTRO">Configurar Cláusulas registro</Resource>
 		<Resource tag="CONFIGURALASCLAUSULASDELREGISTRODISPONIBLESENLACOMUNIDAD">Configura las cláusulas del registro disponibles en la comunidad</Resource>
 		<Resource tag="AÑADEUNANUEVACLAUSULADELTIPO">Añade una nueva cláusula del tipo</Resource>
 		<Resource tag="CLAUSULAOPCIONAL">Cláusula Opcional</Resource>
@@ -5004,7 +5114,6 @@
 		<Resource tag="CONDICIONPARAEXCLUIRRECURSOSCUANDOSEBUSQUEDESDEUNMOVIL">Condición para excluir recursos cuando se busque desde un móvil</Resource>
 		<Resource tag="EJ:MINUS{?SSKOS:CONCEPTID?SKOSCONCEPTIDEXCLUIDA.FILTER(?SKOS">Ej: MINUS { ?s skos:ConceptID ?skosConceptIDexcluida. FILTER(?skosConceptIDexcluida=gnoss:DA6D3DFD-CA97-4E5B-9D40-7C3BAFD80C16) }</Resource>
 		<Resource tag="INDICASISEPUDENPERMITIRLASMAYUSCULASENELGRAFODEBUSQUEDA">Indica si se puden permitir las mayúsculas en el grafo de búsqueda</Resource>
-		<Resource tag="REDESSOCIALES">Redes sociales</Resource>
 		<Resource tag="LOGINCONFACEBOOK.CLIENTIDYCLIENTSECRETDELAAPLICACIONDEFACEBO">Login con Facebook. Client Id y Client secret de la aplicación de Facebook</Resource>
 		<Resource tag="EJ:ID|||579839168702303@@@CLIENTSECRET|||B959A4485T0E8818283">Ej: id|||579839168702303@@@clientsecret|||b959a4485t0e88182834e4149b5d47c7</Resource>
 		<Resource tag="LOGINCONGOOGLE.CLIENTIDYCLIENTSECRETDELAAPLICACIONDEGOOGLE">Login con Google. Client Id y Client secret de la aplicación de Google</Resource>
@@ -5028,7 +5137,6 @@
 		<Resource tag="IMAGEN">Imagen</Resource>
 		<Resource tag="DESCRIPCION">Descripción</Resource>
 		<Resource tag="CARGASMASIVASDISPONIBLES">Cargas masivas disponibles</Resource>
-		<Resource tag="ACCIONES">Acciones</Resource>
 		<Resource tag="PLANTILLASSECUNDARIASDELACOMUNIDAD">Plantillas secundarias de la comunidad</Resource>
 		<Resource tag="TESAUROSSEMANTICOS">Tesauros semánticos</Resource>
 		<Resource tag="AÑADEUNNUEVOTESAUROSEMANTICOATUCOMUNIDAD">Añade un nuevo tesauro semantico a tu comunidad</Resource>
@@ -5047,6 +5155,7 @@
 		<Resource tag="CREARNUEVA">Crear nueva</Resource>
 		<Resource tag="EDITAR">Editar</Resource>
 		<Resource tag="ELIMINAR">Eliminar</Resource>
+		<Resource tag="RESTAURAR">Restaurar</Resource>
 		<Resource tag="CREARENTIDADSECUNDARIAENLAONTOLOGIAENUMERACION">Crear entidad secundaria en la ontología Enumeracion</Resource>
 		<Resource tag="ID(SUJETO)">ID (Sujeto)</Resource>
 		<Resource tag="PROPIEDAD">Propiedad</Resource>
@@ -5132,7 +5241,7 @@
 		<Resource tag="TESAUROSEMANTICOORDENADO">TesauroSemanticoOrdenado</Resource>
 		<Resource tag="CREARFILTROS">Crear Filtros</Resource>
 		<Resource tag="AÑADIRFILTRO">Añadir Filtro</Resource>
-		<Resource tag="NUEVOFILTRO">Nuevo Filtro</Resource>
+		<Resource tag="NUEVOFILTRO">Nuevo criterio</Resource>
 		<Resource tag="FILTRO">Filtro</Resource>
 		<Resource tag="CONDICION">Condición</Resource>
 		<Resource tag="CONDICION">Condición</Resource>
@@ -5204,8 +5313,8 @@
 		<Resource tag="MOSAICO">Mosaico</Resource>
 		<Resource tag="MAPA">Mapa</Resource>
 		<Resource tag="GRAFICO">Gráfico</Resource>
-		<Resource tag="AÑADIRFILTROORDEN">Añadir filtro orden</Resource>
-		<Resource tag="LISTADEFILTROSDEORDEN">Lista de filtros de orden</Resource>
+		<Resource tag="AÑADIRFILTROORDEN">Añadir criterio de orden</Resource>
+		<Resource tag="LISTADEFILTROSDEORDEN">Lista de criterios de orden</Resource>
 		<Resource tag="NOMBREFILTRO">Nombre filtro</Resource>
 		<Resource tag="NOMBRE">Nombre</Resource>
 		<Resource tag="FILTRO">Filtro</Resource>
@@ -5266,6 +5375,7 @@
 		<Resource tag="NUEVO3/8">nuevo 3/8</Resource>
 		<Resource tag="NUEVO5/8">nuevo 5/8</Resource>
 		<Resource tag="CERRAR">Cerrar</Resource>
+		<Resource tag="HISTORIAL">HISTORIAL</Resource>
 		<Resource tag="EDICIONDELCOMPONENTE">Edición del componente</Resource>
 		<Resource tag="PRIVADO">Privado</Resource>
 		<Resource tag="NOMBRE">Nombre</Resource>
@@ -5420,7 +5530,6 @@
 		<Resource tag="ADMINISTRARCATEGORIASDELASCOOKIES">Administrar categorías de las cookies</Resource>
 		<Resource tag="CONFIGURALASCATEGORIASDELASCOOKIESDETUCOMUNIDAD">Configura las categorias de las cookies de tu comunidad</Resource>
 		<Resource tag="AÑADIRCATEGORIA">Añadir categoría</Resource>
-		<Resource tag="REDESSOCIALES">Redes sociales</Resource>
 		<Resource tag="TECNICA">Técnica</Resource>
 		<Resource tag="ADMINISTRARCOOKIESDELPROYECTO">Administrar cookies del proyecto</Resource>
 		<Resource tag="CONFIGURALASCOOKIESDETUCOMUNIDAD">Configura las cookies de tu comunidad</Resource>
@@ -5437,6 +5546,26 @@
 		<Resource tag="THIRDPARTY">Third party</Resource>
 		<Resource tag="PERSISTENT">Persistent</Resource>
 		<Resource tag="SESSION">Session</Resource>
+		<Resource tag="REVISION">Revisión</Resource>
+		<Resource tag="EDITOR">Editor</Resource>
+		<Resource tag="COMENTARIO">Comentario</Resource>
+		<Resource tag="ACCIONES">Acciones</Resource>
+		<Resource tag="COMPARARSELECCIONADAS">Comparar seleccionadas</Resource>
+		<Resource tag="VERSIONACTIVA">Versión activa</Resource>
+		<Resource tag="TITULOPAGINA">Título de la página</Resource>
+		<Resource tag="TIPOPAGINA">Tipo</Resource>
+		<Resource tag="RUTAURLPAGINA">Ruta / URL</Resource>
+		<Resource tag="ABRIRPESTANYANUEVA">Abrir en pestaña nueva</Resource>
+		<Resource tag="METADESCRIPCIONPESTANYA">Meta descripción</Resource>
+		<Resource tag="VISIBLEENMENU">Visible en el menú</Resource>
+		
+		<Resource tag="RECURSOSEMANTICO">Recurso semántico</Resource>
+		<Resource tag="ELIMINARVERSION">Eliminar versión</Resource>
+		<Resource tag="RESTAURARVERSION">Restaurar versión</Resource>
+		<Resource tag="SECCION">Sección</Resource>
+		<Resource tag="PERMISO">Permiso</Resource>
+		<Resource tag="ESCRIBEALGO">Escribe algo...</Resource>
+		<Resource tag="CARGANDOMODAL">Cargando ...</Resource>
 
 
 
@@ -5450,6 +5579,26 @@
 		<Resource tag="TIPOSDECONTENIDO/PERMISOS">Tipos de contenido / Permisos</Resource>
 		<Resource tag="INTERACCIONSOCIAL">Interacción social</Resource>
 		<Resource tag="NIVELESDECERTIFICACION">Niveles de certificación</Resource>
+		<Resource tag="ROLES">Roles</Resource>
+		<Resource tag="ROLESYPERMISOS">Roles</Resource>
+		<Resource tag="ROLESASIGNADOS">Roles asignados</Resource>
+		<Resource tag="LISTADOPERMISOS">Permisos</Resource>
+		<Resource tag="NUEVOROL">Nuevo rol</Resource>
+		<Resource tag="CREARNUEVOROL">Crear un nuevo rol</Resource>
+		<Resource tag="VERROL">Ver rol</Resource>
+		<Resource tag="EDITARROL">Editar rol</Resource>
+		<Resource tag="PERMISO">Permiso</Resource>
+		<Resource tag="NOMBREROL">Nombre del rol</Resource>
+		<Resource tag="TIPOROL">Tipo de rol</Resource>
+		<Resource tag="AMBITO">Ámbito</Resource>
+		<Resource tag="TIPOROLCOMUNIDAD">Comunidad</Resource>
+		<Resource tag="TIPOROLECOSISTEMA">Ecosistema</Resource>
+		<Resource tag="PERMISOSADMINISTRACIONLABEL">Permisos relacionados con las páginas de administración</Resource>
+		<Resource tag="PERMISOSRECURSOS">Permisos relacionados con la creación de recursos</Resource>
+		<Resource tag="PERMISOSADMINISTRACIONECOSISTEMA">Permisos relacionados con las páginas de administración del ecosistema</Resource>
+		<Resource tag="PERMISOSECOSISTEMA">Permisos Ecosistema</Resource>
+		<Resource tag="PERMISOSCOMUNIDAD">Permisos Comunidad</Resource>
+		<Resource tag="DESEAELIMINARELROLSELECCIONADO">¿Desea eliminar el rol seleccionado?</Resource>
 		<Resource tag="INTEGRACIONCONREDESSOCIALES">Integración con redes sociales</Resource>
 		<Resource tag="ESTRUCTURA">Estructura</Resource>
 		<Resource tag="CONFIGURACION">Configuración</Resource>
@@ -5459,12 +5608,80 @@
 		<Resource tag="CONSULTARCARGASMASIVAS">Consultar cargas masivas</Resource>
 		<Resource tag="SUGERENCIASDEBUSQUEDA">Sugerencias de búsqueda</Resource>
 		<Resource tag="INFORMACIONCONTEXTUAL">Información contextual</Resource>
-		<Resource tag="INTEGRACIONCONTINUA">Integración contínua</Resource>
+		<Resource tag="INTEGRACIONCONTINUA">Integración continua</Resource>
 		<Resource tag="VISUALIZAR">Visualizar</Resource>
 		<Resource tag="CONFIGURACIONGENERALDELOSASPECTOSBASICOSDELACOMUNIDAD:ESTADO">Configuración general de los aspectos básicos de la comunidad: Estado, nombre, imágenes y etiquetas. Edición y creación de categorías para su utilización en los recursos de la comunidad.</Resource>
 		<Resource tag="ADMINISTRACIONDELAESTRUCTURADELACOMUNIDADMEDIANTELACREACIOND">Administración de la estructura de la comunidad mediante la creación de páginas, componentes CMS, multimedia y redirecciones para que estén disponibles en más de una dirección URL.</Resource>
 		<Resource tag="CONFIGURACIONGENERALDELACOMUNIDADPARALAGESTIONDELOSPERMISOSD">Configuración general de la comunidad para la gestión de los permisos de usuarios, servicio de integración contínua, traducciones, acceso OAuth, FTP, SEO, buzón de correo del administrador, cláusulas legales y cookies.</Resource>
 		<Resource tag="NOSEHAPODIDOGUARDARLAURL">No se ha podido guardar la Url, falta @1@</Resource>
+		<Resource tag="NOHAYCONSULTASDERESULTADOS">No se han encontrado consultas de resultados.</Resource>
+		<Resource tag="NOHAYCONSULTASDEFACETAS">No se han encontrado consultas de facetas.</Resource>
+		<Resource tag="NOHAYFACETASQUEMOSTRAR">No hay facetas que mostrar.</Resource>
+		<Resource tag="NOHAYRESULTADOSQUEMOSTRAR">No hay resultados que mostrar.</Resource>
+		<Resource tag="RESULTADOS">Resultados</Resource>
+		<Resource tag="DIAGNOSTICOPROBLEMAS">Diagnóstico de problemas</Resource>
+		<Resource tag="FACETANOAPARECE">No aparece mi faceta</Resource>
+		<Resource tag="FILTRONOTRAERESULTADOS">Mi filtro no trae resultados</Resource>
+		<Resource tag="BUSQUEDAPORTEXTONOTRAERESULTADOS">La búsqueda por texto no trae resultados</Resource>
+		<Resource tag="ERROROAUTHAPI">Error de OAuth con el API</Resource>
+		<Resource tag="NUMRESULTADOSDISTINTO">Número de resultados distinto al esperado</Resource>
+		<Resource tag="NOAPARECEPROPIEDADENFICHA">No aparece una propiedad en la ficha de edición</Resource>
+		<Resource tag="VERESTADOSITEMAS">Ver estado de los sistemas.</Resource>
+		<Resource tag="AYUDA">Ayuda</Resource>
+		<Resource tag="FACETANOAPARECESOLUCION">Dirijase a la administración de páginas y compruebe si la faceta está siendo aplicada a la página en la que desea que se muestre accediendo al menú "Editar" de la página y a la sección "Listado de facetas". Ahí también puede comprobar la consulta que se realiza a la base de datos y revisar si hay algún error. Si el problema persiste, pruebe a borrar la caché de la configuración de facetas y de la de búsquedas desde la página de administración de caché. </Resource>
+		<Resource tag="URLADMINISTRACIONPESTANYAS">Url de la administración de páginas.</Resource>
+		<Resource tag="URLADMINISTRACIONCACHE">Url de la administración de caché.</Resource>
+		<Resource tag="TERMINOBUSCADO">Término buscado</Resource>
+		<Resource tag="IDDELRECURSO">Identificador del recurso</Resource>
+		<Resource tag="INTRODUZCATERMINOYRECURSO">Introduzca el término buscado y el identificador del recurso donde lo espera.</Resource>
+		<Resource tag="NOSEPUDODETERMINARLACAUSADELERROR">No se pudo determinar la causa del error.</Resource>
+		<Resource tag="REVISESIHAYALGUNERRORENLACONSULTA">No se pudo determinar la causa del error, revise si hay algún error en la consulta SPARQL realizada a Virtuoso.</Resource>
+		<Resource tag="COMPROBAR">Comprobar</Resource>
+		<Resource tag="PASO1">Paso 1:  </Resource>
+		<Resource tag="PASO2">Paso 2: </Resource>
+		<Resource tag="PASO3">Paso 3: </Resource>
+		<Resource tag="VERIFIQUEQUELAFACETAESTABIENCRAEADA">Verifique que la faceta está bien creada.</Resource>
+		<Resource tag="COMPRUEBESILAFACETAESTASIENDOAPLICADA">Compruebe si la faceta está siendo aplicada a la página.</Resource>
+		<Resource tag="BORRELACACHEDECONFIGDEBUSQUEDAS">Borre la caché de configuración de búsquedas.</Resource>
+		<Resource tag="VERIFIQUEQUEELFILTROESCORRECTO">Verifique que el filtro es correcto.</Resource>
+		<Resource tag="PAGINADEESTADODELOSSISTEMAS">Página de estado de los sistemas.</Resource>
+		<Resource tag="ELRECURSONOESTAENELGRAFO">El recurso seleccionado no está en el grafo del proyecto. Revise si el identificador es correcto.</Resource>
+		<Resource tag="HAYUNPROBLEMACONLAINDEXACIONDEVIRTUOSO">Hay un problema con la indexación de Virtuoso. Pruebe a regenerar el índice de Virtuoso.</Resource>
+		<Resource tag="ELRECURSONOCONTIENEELTERMINOABUSCARENSUTRIPLESEARCH">El recurso no contiene el término a buscar en su triple search. Revise que todo esté bien configurado y, si el error persiste, pruebe a regenerar el triple search del objeto de conocimiento.</Resource>
+		<Resource tag="REVISEQUELACONFIGURACIONESCORRECTA">Revise que la configuración es correcta.</Resource>
+		<Resource tag="ERRORDESCONOCIDO">No se ha podido determinar la causa del error. Compruebe si la consulta es correcta</Resource>
+		<Resource tag="VERIFIQUEQUEELPROTOCOLOESCORRECTO">Verifique que el protocolo es correcto</Resource>
+		<Resource tag="DIRIJASEALURLENDPOINTYVERIFIQUEQUEELPROTOCOLOEMPLEADOESELCORRECTO">Dirijase al urlEndPoint y verifique que el protocolo http que está siendo usado es el correcto.</Resource>
+		<Resource tag="REPROCESADORECURSOS">Reprocesado de recursos</Resource>
+		<Resource tag="PAGINADEREPROCESADO">Página de reprocesado de recursos</Resource>
+		<Resource tag="REGENERAR">Regenerar</Resource>
+		<Resource tag="REGENERARTODOSLOSTRIPLES">Regenerar todos los triples</Resource>
+		<Resource tag="REGENERARELTRIPLESEARCH">Regenerar el triple search</Resource>
+		<Resource tag="REGENERARINDICELUCENE">Regenerar desde cero el índice de lucene</Resource>
+		<Resource tag="REGENERARINDICELUCENEAPARTIRDEUNOC">Regenerar el índice de lucene a partir de un objeto de conocimiento</Resource>
+		<Resource tag="REGENERARTRIPLESEARCH">Regenerar el triple de búsqueda de un objeto de conocimiento</Resource>
+		<Resource tag="REGENERARTODOSTRIPLES">Regenerar los triples de un objeto de conocimiento</Resource>
+		<Resource tag="REGENERARINDICEVIRTUOSO">Regenerar el índice de Virtuoso</Resource>
+		<Resource tag="REGENERARTODOS">Regenerar todos</Resource>
+		<Resource tag="INTRODUZCALOSFILTROSDELOSRECURSOSAREGENERAR">Introduzca los filtros de los recursos a regenerar</Resource>
+		<Resource tag="NUMRECURSOSAREGENERAR">Numero de recursos a regenerar: </Resource>
+		<Resource tag="CONFIRMARCONTINUAR">¿Continuar?</Resource>
+		<Resource tag="SELECCIONEUNOBJETODECONOCIMIENTO">Seleccione un objeto de conocimiento</Resource>
+		<Resource tag="MANTENIMIENTO">Mantenimiento</Resource>
+		<Resource tag="TAREASSEGUNDOPLANO">Tareas en segundo plano</Resource>
+		<Resource tag="IDTAREA">Id</Resource>
+		<Resource tag="TIPOTAREA">Tipo</Resource>
+		<Resource tag="NOMBRETAREA">Nombre</Resource>
+		<Resource tag="ESTADOTAREA">Estado</Resource>
+		<Resource tag="FECHAINICIOTAREA">Fecha de inicio</Resource>
+		<Resource tag="PROGRESOTAREA">Progreso</Resource>
+		<Resource tag="TAREAFINALIZADO">Finalizado</Resource>
+		<Resource tag="TAREAENPROCESO">En proceso</Resource>
+		<Resource tag="TAREAPENDIENTE">Pendiente</Resource>
+		<Resource tag="TAREAERROR">Error</Resource>
+		<Resource tag="SALIRMODAL">Salir</Resource>
+		
+		
 
 		<Resource tag="ADMINISTRACIONYCREACIONDEOBJETOSDECONOCIMIENTOPARALACREACION">Administración y creación de objetos de conocimiento para la creación de recursos semánticos en la comunidad.</Resource>
 		<Resource tag="DESCUBRIMIENTOYANALISIS">Descubrimiento y análisis</Resource>
@@ -5472,6 +5689,7 @@
 		<Resource tag="ESTABLECERELESTADODELACOMUNIDAD,SUNOMBRE,ELACCESOALAMISMAYSU">Establecer el estado de la comunidad, su nombre, el acceso a la misma y sus imágenes. Creación y configuración de categorías para la clasificación de los recursos de la comunidad.</Resource>
 		<Resource tag="CONFIGURACIONDELOSPERMISOSDEACCESOALOSRECURSOSDELACOMUNIDADA">Configuración de los permisos de acceso a los recursos de la comunidad así como la posibilidad de descargar ficheros adjuntos para usuarios no conectados.</Resource>
 		<Resource tag="EDICIONYCREACIONDECATEGORIASPARALACLASIFICACIONDELOSRECURSOS">Edición y creación de categorías para la clasificación de los recursos de la comunidad. Gestión de solicitudes de nuevas categorías realizadas por los usuarios.</Resource>
+		<Resource tag="EDICIONYCREACIONDECATEGORIASPARALACLASIFICACIONDECOMUNIDADES">Edición y creación de categorías para la clasificación de las comunidades. Gestión de solicitudes de nuevas categorías realizadas por los usuarios.</Resource>
 		<Resource tag="CONFIGURACIONDELOSPERMISOSDELOSMIEMBROSDELACOMUNIDADPARAPODE">Configuración de los permisos de los miembros de la comunidad para poder enviar de invitaciones a la comunidad, comentar, crear y compartir recursos en otras comunidades.</Resource>
 		<Resource tag="GESTIONDELOSMIEMBROS,GRUPOSYORGANIZACIONESQUEFORMANPARTEDELA">Gestión de los miembros, grupos y organizaciones que forman parte de la comunidad.</Resource>
 		<Resource tag="ADMINISTRACIONDELOSNIVELESDECERTIFICACIONPARALACALIFICACIOND">Administración de los niveles de certificación para la calificación de los recursos de la comunidad.</Resource>
@@ -5508,9 +5726,11 @@
 		<Resource tag="AÑADIRAGRUPOS">Añadir a grupos</Resource>
 		<Resource tag="EDITARGRUPOS">Editar grupos</Resource>
 		<Resource tag="AÑADEAGRUPOSDELACOMUNIDADPARAESTABLECERLOSPERMISOSDESEADOSPA">Añade a grupos de la comunidad para establecer los permisos deseados para un determinado objeto de conocimiento.</Resource>
+		<Resource tag="AVISOPERMISOSUSUARIOSGRUPO">Solo podrán crear recursos de este tipo los miembros del grupo que tengan los permisos indicados en el campo 'Objetos de conocimiento'</Resource>
 		<Resource tag="BUSCARENGRUPOS">Buscar en grupos …</Resource>
 		<Resource tag="OTROSIDIOMAS">Otros idiomas</Resource>
 		<Resource tag="NUEVACATEGORIA">Nueva categoría</Resource>
+		<Resource tag="NUEVACATEGORIAPRINCIPAL">Nueva categoría principal</Resource>
 		<Resource tag="SELECCIONAUNACATEGORIA">Selecciona una categoria</Resource>
 		<Resource tag="INTRODUCEELTITULODELACATEGORIA">Introduce el título de la categoría</Resource>
 		<Resource tag="HAYRECURSOSQUEESTANUTILIZANDOLACATEGORIAQUESEDESEAELIMINAR">Hay recursos que están utilizando la categoría que se desea eliminar.</Resource>
@@ -5518,7 +5738,9 @@
 		<Resource tag="QUEDESEASHACERCONLOSRECURSOSQUEESTANENOTRASCATEGORIAS">¿Qué deseas hacer con los recursos que están en otras categorías?</Resource>
 		<Resource tag="INTRODUCEELNUEVONOMBREDELACATEGORIA">Introduce el nuevo nombre de la categoría.</Resource>
 		<Resource tag="ESTASSEGURODEQUEQUIERESDESACTIVARLAEDICIONENVARIOSIDIOMASDE">¿Estás seguro de que quieres desactivar la edición en varios idiomas del índice de categorías de tu comunidad?</Resource>
+		<Resource tag="DESAACTIVAREDICIONMULTIIDIOMAECOSISTEMA">¿Estás seguro de que quieres desactivar la edición en varios idiomas del índice de categorías de ecosistema?</Resource>
 		<Resource tag="SILOHACES,SETOMARACOMOIDIOMADELACOMUNIDADELQUEHAYASELEGIDOPO">Si lo haces, se tomará como idioma de la comunidad el que hayas elegido por defecto para la comunidad</Resource>
+		<Resource tag="SILOHACES,SETOMARACOMOIDIOMADELAPLATAFORMAQUEHAYASELEGIDOPO">Si lo haces, se tomará como idioma de la plataforma el que hayas elegido por defecto</Resource>
 		<Resource tag="INTRODUCEELNOMBREPARALACERTIFICACION">Introduce el nombre para la certificación</Resource>
 		<Resource tag="EXISTENDOCUMENTOSASIGNADOSAESTENIVELDECERTIFICACION">Existen documentos asignados a este nivel de certificación.</Resource>
 		<Resource tag="ELIMINARCERTIFICADO">Eliminar certificado</Resource>
@@ -5566,9 +5788,10 @@
 		<Resource tag="INTRODUCEELNOMBREDELAPAGINA">Introduce el nombre de la página</Resource>
 		<Resource tag="INTRODUCELAURL">Introduce la URL</Resource>
 		<Resource tag="INTRODUCEELTIPO">Introduce el tipo</Resource>
-		<Resource tag="VERFACETAS">Ver facetas</Resource>
+		<Resource tag="VERFACETAS">Ver facetas con el orden especificado en la administración de facetas</Resource>
 		<Resource tag="AGREGARFACETA">Agregar faceta</Resource>
-		<Resource tag="DESEAELIMINARLAPAGINASELECCIONADA">¿Desea eliminar la página seleccionada?</Resource>	
+		<Resource tag="DESEAELIMINARLAPAGINASELECCIONADA">¿Desea eliminar la página seleccionada?</Resource>
+		<Resource tag="DESEACERRAREDICIONSINGUARDAR">¿Desea cerrar la pagina de editar sin guardar?</Resource>
 		<Resource tag="TEXTOAMOSTRARALOSUSUARIOSQUENOTENGANACCESOALAPAGINA">Texto a mostrar a los usuarios que no tengan acceso a la página.</Resource>
 		<Resource tag="INDICASILAPAGINAVAASERVISIBLEENELMENUDELACOMUNIDAD">Indica si la página va a ser visible en el menú de la comunidad.</Resource>
 		<Resource tag="INDICASILAPAGINASEABREENLAMISMAVENTANAOENUNANUEVA">Indica si la página se abre en la misma ventana o en una nueva.</Resource>
@@ -5599,6 +5822,7 @@
 		<Resource tag="LISTADODEFACETAS">Listado de facetas</Resource>
 		<Resource tag="SELECCIONALAFACETADESEADAPARALAPAGINA">Selecciona la faceta deseada para la página.</Resource>
 		<Resource tag="SELECCIONAELOBJETODECONOCIMIENTOASOCIADOALAFACETAPREVIAMENTE">Selecciona el objeto de conocimiento asociado a la faceta previamente elegida.</Resource>
+		<Resource tag="AUTOCOMPLETADOFACETAPAGINA">Incluir los valores de la faceta en el autocompletar de la página</Resource>
 		<Resource tag="DATOSAUXILIARESPARALAFACETA">Datos auxiliares para la faceta</Resource>
 		<Resource tag="OBJETODECONOCIMIENTO">Objeto de conocimiento</Resource>
 		<Resource tag="MULTIMEDIA">Multimedia</Resource>
@@ -5613,6 +5837,11 @@
 		<Resource tag="COMPONENTE">Componente</Resource>
 		<Resource tag="AÑADIRRECURSOMULTIMEDIA">Añadir recurso multimedia</Resource>
 		<Resource tag="RECURSOMULTIMEDIA">Recurso multimedia</Resource>
+		<Resource tag="IMAGENCATEGORIA">Imagen de la categoría</Resource>
+		<Resource tag="ERRORFORMATOIMAGENCATEGORIA">Error, la imagen debe estar en formato .PNG o .JPG</Resource>
+		<Resource tag="ERRORGENERICOIMAGENCATEGORIA">Error, la imagen no ha podido subirse correctamente.</Resource>
+		<Resource tag="ERRORPESOIMAGENCATEGORIA">Error, la imagen supera el tamaño máximo permitido: </Resource>
+		<Resource tag="ERRORELIMINARIMAGENCATEGORIA">Error, la imagen de la categoría no ha podido eliminarse correctamente</Resource>
 		<Resource tag="ARRASTRAYSUELTAENLAZONAPUNTEADAARCHIVOMULTIMEDIAPARASUBIR">Arrastra y suelta en la zona punteada archivo multimedia para subir</Resource>
 		<Resource tag="IMAGENESENFORMATOPNGOJPG">Imágenes en formato .PNG o .JPG</Resource>
 		<Resource tag="ARCHIVOSENFORMATODOC,DOCX,TXTOPDF">Archivos en formato .DOC, .DOCX, .TXT o .PDF</Resource>
@@ -5653,6 +5882,8 @@
 		<Resource tag="ENLACE">Enlace</Resource>
 		<Resource tag="ENLACEDELITEMDELMENU">Enlace del item del menú.</Resource>
 		<Resource tag="FILA">Fila</Resource>
+		<Resource tag="COLUMNA">Columna</Resource>
+		<Resource tag="TAMAÑO">Tamaño</Resource>
 		<Resource tag="OPCIONES">Opciones</Resource>
 		<Resource tag="DISEÑO">Diseño</Resource>
 		<Resource tag="COMPONENTES">Componentes</Resource>
@@ -5798,6 +6029,11 @@
 		<Resource tag="CREARNUEVOOC">Crear nuevo OC</Resource>		
 		<Resource tag="DESCARGARPLANTILLAOWL">Descargar plantilla OWL</Resource>
 		<Resource tag="DESCARGARARCHIVODECONFIGURACIONXML">Descargar archivo de configuración XML</Resource>
+		<Resource tag="EDITARONTOLOGIACOMUNIDADORIGINAL">Editar en la comunidad de origen:</Resource>
+		<Resource tag="COMPARTIDAPOR">Compartida por</Resource>
+		<Resource tag="COMPARTIRONTOLOGIA">Compartir ontología con otra comunidad</Resource>
+		<Resource tag="COMPARTIRONTOLOGIABUSCARPROYECTO">Selecciona los proyectos con los que quieres compartir la ontología</Resource>
+		<Resource tag="NOSEPUEDEDEJARCOMPARTIRONTOLOGIA">IMPORTANTE: No se podrá dejar de compartir las ontologías con los proyectos una vez guardado</Resource>
 		<Resource tag="PRINCIPAL">Principal</Resource>		
 		<Resource tag="EDITAROBJETODECONOCIMIENTO">Editar objeto de conocimiento</Resource>
 		<Resource tag="FICHEROSDELAONTOLOGIA">Ficheros de la ontología</Resource>
@@ -5813,6 +6049,7 @@
 		<Resource tag="ARCHIVOS">Archivos</Resource>
 		<Resource tag="CONFIGURACION">Configuración</Resource>
 		<Resource tag="PRESENTACIONDERECURSOS">Presentación de recursos</Resource>
+		<Resource tag="OPCIONESAUTOCOMPLETAR">Configurar propiedades en el autocompletado</Resource>
 		<Resource tag="RUTARELATIVA/URLREFERENTEDELOBJETODECONOCIMIENTO">Ruta relativa / Url referente del objeto de conocimiento</Resource>
 		<Resource tag="NOMBREINDETIFICATIVODELAONTOLOGIA">Nombre identificativo de la ontología.</Resource>		
 		<Resource tag="URLASOCIADAALOBJETODECONOCIMIENTO">Url asociada al objeto de conocimiento.</Resource>
@@ -5946,6 +6183,23 @@
 		<Resource tag="ELENTORNOACTUALESTABLOQUEADOPORQUESEHAVALIDADOUNAVERSIONDEB">El entorno actual esta bloqueado porque se ha validado una versión. Debes desplegar la versión del entorno de preproducción para poder hacer cambios.</Resource>
 		<Resource tag="NOTIENESUNARAMAACTIVA,DEBESCREARUNARAMAPARAPODERSUBIRLOSCAMB">No tienes una rama activa, debes crear una rama para poder subir los cambios.</Resource>
 		<Resource tag="ADMINISTRARRAMAS">Administrar ramas</Resource>
+		<Resource tag="DESPLEGARWEB">Desplegar web</Resource>
+		<Resource tag="BTNDESPLEGARWEB">Desplegar</Resource>
+		<Resource tag="BTNDESCARGARCLASES">Descargar clases</Resource>
+		<Resource tag="INFODESPLEGARWEB">La Web será reiniciada después de desplegarla.</Resource>
+		<Resource tag="INFOREPOSITORIO">No puede cambiarse el nombre del repositorio porque ya ha sido compilada.</Resource>
+		<Resource tag="INFOTOKENREPOSITORIO">No puede cambiarse el token del repositorio porque ya ha sido compilada.</Resource>
+		<Resource tag="INFONODESPLEGAR">Es necesario compilar antes una versión de la Web para poder desplegar</Resource>
+		<Resource tag="BTNCOMPILARWEB">Compilar</Resource>
+		<Resource tag="DESPLEGARVERSIONWEB">Desplegar versión de la Web</Resource>
+		<Resource tag="COMPILARVERSIONWEB">Compilar versión de la Web</Resource>
+		<Resource tag="COMPILARYDESPLEGARWEB">Compilar y desplegar versiones de la Web</Resource>
+		<Resource tag="NOCAMBIARVERSIONWEB">No puede cambiarse la version de la web porque ya ha sido compilada.</Resource>
+		<Resource tag="FORMATOFECHAVERSIONWEB">El formato de la fecha es 'HHmmddMMyy'.</Resource>
+		<Resource tag="LBLVERSIONWEB">Versión de la Web</Resource>
+		<Resource tag="LBLREPOSITORIO">Repositorio</Resource>
+		<Resource tag="LBLTOKENREPOSITORIO">Token del repositorio</Resource>
+		<Resource tag="NODESPLEGARWEBPRO">Esta acción no puede llevarse a cabo en el entorno de Producción</Resource>
 		<Resource tag="ADMINISTRARDESPLIEGUES">Administrar despliegues</Resource>
 		<Resource tag="ESTASENLARAMARELEASE(VERSION@1@)PUEDESHACERCAMBIOSENLAADMIN">Estás en la rama release (version @1@). Puedes hacer cambios en la administración y desplegar.</Resource>
 		<Resource tag="ESTASENLA@1@,SOLOSETEPERMITEHACERCAMBIOSENADMINISTRACIONYCER">Estás en la @1@, puedes hacer cambios en la administración o cerrar la rama.</Resource>
@@ -6070,8 +6324,10 @@
 		<Resource tag="URLDEINTRAGNOSS">Url de Intragnoss.</Resource>
 		<Resource tag="EJEMPLO:HTTP://GNOSSCOM/">Ejemplo: http://gnoss.com/.</Resource>
 		<Resource tag="EJEMPLO:HTTP://SERVICIOSPRUEBASGNOSSNET/INTERNO/">Ejemplo: http://serviciospruebas.gnoss.net/interno/.</Resource>
-		<Resource tag="URLBASEPARAALOJARLOSSERVICIOS">Url base para alojar los servicios.</Resource>
+		<Resource tag="URLBASEPARAALOJARLOSSERVICIOS">Url base para alojar los servicios.</Resource>		
 		<Resource tag="ESTAURLCONTIENEELPATRONCONELQUESEVANAGENERARLOSSERVICIOSESPE">Esta url contiene el patrón con el que se van a generar los servicios específicos para cada proyecto. Si configuramos "http://servicios.gnoss.com/{ServiceName}", los servicios se generarán como http://servicios.gnoss.com/loginadfs, http://servicios.gnoss.com/externoce... Si configuramos http://{ServiceName}.azurewebsites.net, los servicios se generarán como http://loginconnect.azurewebsites.net.</Resource>
+		<Resource tag="DOMINIOPAGINASADMINISTRACION">Dominio donde se alojarán las páginas de administración.</Resource>
+		<Resource tag="AYUDADOMINIOPAGINASADMINISTRACION"> Ejemplo: https://administracion.gnoss.com. Con esta configuración se separará la parte de las comunidades de las páginas de administración en diferentes dominios, es decir, el dominio público con las comunidades se alojaran en https://gnoss.com, mientras que las páginas de administración solo serán acessibles a través de https://administracion.gnoss.com.</Resource>
 		<Resource tag="EJEMPLO:VAR_GAQ=_GAQ||[];_GAQPUSH([_SETACCOUNT,@@CODIGOG">Ejemplo: var _gaq = _gaq || []; _gaq.push(['_setAccount', '@@codigoga@@']); _gaq.push(['_trackPageview']); (function() {var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true; ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js'; var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);})();.</Resource>
 		<Resource tag="COMUNIDADESEXCLUIDASDELAPERSONALIZACION">Comunidades excluidas de la personalización</Resource>
 		<Resource tag="IDSDELASCOMUNIDADESQUENOUSARANLASVISTASDELECOSISTEMA">Ids de las comunidades que no usarán las vistas del ecosistema</Resource>
@@ -6163,8 +6419,9 @@
 		<Resource tag="TRAZAS">Trazas</Resource>
 		
 		<Resource tag="DESCARGACONFIG">Descargar configuraciones</Resource>
+		<Resource tag="DESCARGACONFIGECOSISTEMA">Descargar configuraciones ecosistema</Resource>
 		<Resource tag="DESCRIPDESCARGACONFIG">Descarga y subida de archivos comprimidos con las configuraciones del proyecto actual</Resource>
-		<Resource tag="IMPORTARTRADUCCIONES">Importar configuraciones</Resource>
+		<Resource tag="IMPORTARCONFIGURACIONES">Importar configuraciones</Resource>
 		<Resource tag="EXPLICACIONIMPORTARCONFIGURACIONES">Selecciona un fichero zip que contenga cada configuración a subir, también en ficheros zip. Puedes usar como ejemplo los archivos descargados.</Resource>	
 		<Resource tag="IMPORTARCONFIGURACIONES">Importar configuraciones</Resource>
 		<Resource tag="DESCRIPCION">Descripción</Resource>
@@ -6202,6 +6459,16 @@
 		<Resource tag="ELIMINACIONDELACACHEDEBUSQUEDASDELACOMUNIDAD">Eliminación de la Caché de búsquedas de la comunidad.</Resource>
 		<Resource tag="HAZCLICAQUIPARAELIMINARLACACHE">Haz clic aquí para eliminar la caché.</Resource>
 		<Resource tag="BORRADOPORCOMPLETODELACACHEDELOSRECURSOSOSOLODELOSRECURSOSDE">Borrado por completo de la Caché de los recursos o solo de los recursos deseados.</Resource>
+		<Resource tag="CONFIGURACIONCACHESBUSQUEDA">Configuración de las cachés de búsquedas</Resource>
+		<Resource tag="CACHEARCONSULTASCOSTOSAS">Activar cachés de búsquedas</Resource>
+		<Resource tag="INFOCACHESBUSQUEDA">Se almacenarán en caché las búsquedas que sean muy costosas</Resource>
+		<Resource tag="CACHEARCONSULTASCOSTOSASIDENTIDAD">Activar cachés anónimas</Resource>
+		<Resource tag="INFOCACHEANONIMA">En el caso de activarse todos los usuarios, indistintamente de si son anónimos o registrados, compartirán la caché</Resource>
+		<Resource tag="TIEMPOEXPIRACIONCACHE">Tiempo en el que expirarán las cachés en caso de no haber sido consultadas (en horas)</Resource>
+		<Resource tag="TIEMPOEXPIRACIONCACHEDEIDENTIDAD">Tiempo en el que expirarán las cachés de cada usuario en caso de no haber sido consultadas (en horas)</Resource>
+		<Resource tag="TIEMPOCONSULTA">Duración de la consulta. Al superarse hará que se cachee la búsqueda (en segundos)</Resource>
+		<Resource tag="TIEMPOCONSULTAPLACEHOLDER">Tiempo de ejecución de la consulta</Resource>
+		<Resource tag="TIEMPORENOVARCACHES">Tiempo en el que se recalcularán las cachés cuando sean consultadas (en minutos)</Resource>	
 		<Resource tag="RECURSOSRDF">Recursos RDF</Resource>
 		<Resource tag="BORRADOPORCOMPLETODELACACHEDERDFOSOLODELOSRECURSOSRDFDESEADO">Borrado por completo de la Caché de RDF o solo de los recursos RDF deseados.</Resource>
 		<Resource tag="ELIMINARLACACHEDEBUSQUEDAS">Eliminar la cache de búsquedas</Resource>
@@ -6243,6 +6510,7 @@
 		<Resource tag="DEFINELAPOSICIONEXACTADELAFACETAELIGIENDOSUUBICACIONESPECIFI">Define la posición exacta de la faceta eligiendo su ubicación específica en este menú desplegable. Asigna con precisión la faceta que quedará directamente debajo de ella.</Resource>
 		<Resource tag="LAFACETAQUEQUEDARADIRECTAMENTEDEBAJODELASELECCIONADA">La faceta que quedará directamente debajo de la seleccionada.</Resource>
 		<Resource tag="MOVERPAGINA">Mover página</Resource>
+		<Resource tag="RESTAURARPAGINA">Restaurar versión</Resource>
 		<Resource tag="DEFINELAPOSICIONEXACTADELAPAGINAELIGIENDOSUUBICACIONESPECIFI">Define la posición exacta de la página eligiendo su ubicación específica en este menú desplegable. Asigna con precisión la página que quedará directamente debajo de ella.</Resource>
 		<Resource tag="LAPAGINAQUEQUEDARADIRECTAMENTEDEBAJODELASELECCIONADA">La página que quedará directamente debajo de la seleccionada.</Resource>
 		<Resource tag="SPARQLENDPOINT">SPARQL Endpoint</Resource>
@@ -6297,10 +6565,44 @@
 		<Resource tag="VERGRAFOS">Ver grafos</Resource>
 	    <Resource tag="NUEVACONSULTA">Nueva consulta</Resource>
 		<Resource tag="COPIAR">Copiar</Resource>
-		<Resource tag="USACTRL+ENTERPARAEJECUTARLACONSULTA">Usa Ctrl + ENTER para ejecutar la consulta</Resource>
-		<Resource tag="BUSCAR">Buscar ...</Resource>
-    <Resource tag="SIMODIFICASLARUTARELATIVAELCAMBIONOSURTIRAEFECTOHASTAQUESERE">Si modificas la ruta relativa el cambio no surtirá efecto hasta que se reinicie la plataforma. Ponte en contacto con el administrador de sistemas para ello.</Resource>
-  </page>	
+		<Resource tag="USACTRL+ENTERPARAEJECUTARLACONSULTA">Usa Ctrl + ENTER para ejecutar la consulta.</Resource>
+		<Resource tag="BUSCAR">Buscar …</Resource>
+		<Resource tag="LOGINCORRECTO">Login correcto</Resource>
+		<Resource tag="FALLOLOGIN">Fallo login</Resource>
+		<Resource tag="DEPLOYCORRECTO">Deploy correcto</Resource>
+		<Resource tag="FALLODEPLOY">Fallo deploy</Resource>
+		<Resource tag="REDISACTIVO">Redis activo</Resource>
+		<Resource tag="FALLOCONEXIONREDIS">Fallo conexion redis</Resource>
+		<Resource tag="SERVICIOACTIVO">Servicio activo</Resource>
+		<Resource tag="VIRTUOSONOFUNCIONA">Virtuoso no funciona</Resource>
+		<Resource tag="ERRORRABBIT">Error rabbit</Resource>
+		<Resource tag ="ERRORALELIMINARRECURSO" > Error al eliminar recurso. </Resource>
+		<Resource tag="SERVICIOFACETASNOFUNCIONA">Servicio facetas no funciona</Resource>
+		<Resource tag="SERVICIORESULTADOSNOFUNCIONA">Servicio resultados no funciona.</Resource>
+		<Resource tag="SERVICIOAUTOCOMPLETENOFUNCIONA">Servicio autocomplete no funciona.</Resource>
+		<Resource tag="LABELERCORRECTO">Labeler correcto</Resource>
+		<Resource tag="SERVICIOCOMMUNITYWALLNOFUNCIONA">Servicio community wall no funciona.</Resource>
+		<Resource tag="SERVICIOCOMMUNITYWALLNOCOMPROBADO">Servicio community wall no comprobado.</Resource>
+		<Resource tag="SERVICIODISTRIBUTORNOFUNCIONA">Servicio distributor no funciona.</Resource>
+		<Resource tag="SERVICIODISTRIBUTORNOCOMPROBADO">Servicio distributor no comprobado.</Resource>
+		<Resource tag="SERVICIOSOCIALCACHEREFRESHNOFUNCIONA">Servicio social cache refresh no funciona.</Resource>
+		<Resource tag="SERVICIOSOCIALCACHEREFRESHNOCOMPROBADO">Servicio social cache refresh no comprobado.</Resource>
+		<Resource tag="SERVICIOUSERWALLNOFUNCIONA">Servicio user wall no funciona.</Resource>
+		<Resource tag="SERVICIOUSERWALLNOCOMPROBADO">Servicio  user wall no comprobado.</Resource>
+		<Resource tag="SERVICIOSMTPNOCONFIGURADO">Servicio smtp no configurado.</Resource>
+		<Resource tag="REPLICACIONBIDIRECCIONALNOCONFIGURADA">Replicacion bidireccional no configurada.</Resource>
+		<Resource tag="IDENTITYSERVERNOFUNCIONA">Identity Server no funciona.</Resource>
+		<Resource tag="SIMODIFICASLARUTARELATIVAELCAMBIONOSURTIRAEFECTOHASTAQUESERE">Si modificas la ruta relativa el cambio no surtirá efecto hasta que se reinicie la plataforma. Ponte en contacto con el administrador de sistemas para ello.</Resource>
+		<Resource tag="VER">Ver</Resource>
+		<Resource tag="HISTORIALCONFIGURACION">Historial configuración</Resource>
+		<Resource tag="SELECCIONDESEARCHPERSONALIZADO">Selección de Search Personalizado</Resource>
+		<Resource tag="VISUALIZACIONDELOSRESULTADOSDELABUSQUEDAENMODOLISTADO">Visualización de los resultados de la búsqueda en modo listado.</Resource>
+		<Resource tag="VISUALIZACIONDELOSRESULTADOSDELABUSQUEDAENMODOMOSAICO">Visualización de los resultados de la búsqueda en modo mosaico.</Resource>
+		<Resource tag="VISUALIZACIONDELOSRESULTADOSDELABUSQUEDAENMODOMAPA">Visualización de los resultados de la búsqueda en modo mapa.</Resource>
+		<Resource tag="VISUALIZACIONDELOSRESULTADOSDELABUSQUEDAENMODOGRAFICO">Visualización de los resultados de la búsqueda en modo gráfico.</Resource>
+	</page>
+	
+	
 	<page name="MENSAJECOOKIES">
 		<Resource tag="AVISOPOLITICA">Utilizamos cookies propias y de terceros para mejorar tu experiencia de navegación. Más información en {a href="@1@"}Política de cookies{/a}.</Resource>
 		<Resource tag="MODIFICAR">Modificar</Resource>
@@ -6322,5 +6624,318 @@
 		<Resource tag="NODISPONESDECODIGODESEGURIDAD">¿No dispones de un código de seguridad? </Resource>
 		<Resource tag="INICIASESIONPARASOLICITARUNO"> Inicia sesión para solicitar uno</Resource>
 		<Resource tag="INDICAAUTENTICACIONDOBLEFACTORACTIVADA">Indica si está activada la autenticacion de doble factor</Resource>
+	</page>
+	<page name="ROLESYPERMISOS">
+		<Resource tag="GESTIONARINFORMACIONGENERAL">Editar información general</Resource>
+		<Resource tag="GESTIONARTIPOSDECONTENIDOSYPERMISOS">Gestionar tipos de contenido y permisos</Resource>
+		<Resource tag="GESTIONARCATEGORIAS">Modificar categorías</Resource>
+		<Resource tag="GESTIONARINTERACCIONESSOCIALES">Gestionar interacciones sociales</Resource>
+		<Resource tag="GESTIONARMIEMBROS">Administrar miembros</Resource>
+		<Resource tag="GESTIONARSOLICITUDESDEACCESOAGRUPO">Solicitudes de acceso a grupo</Resource>
+		<Resource tag="GESTIONARNIVELESDECERTIFICACION">Niveles de certificación</Resource>
+		<Resource tag="GESTIONARPAGINAS">Administrar páginas</Resource>
+		<Resource tag="GESTIONARPESOSAUTOCOMPLETADO">Configurar pesos autocompletado</Resource>
+		<Resource tag="GESTIONARREDIRECCIONES">Redirecciones</Resource>
+		<Resource tag="GESTIONARCOMPONENTESCMS">Componentes del CMS</Resource>
+		<Resource tag="GESTIONARMULTIMEDIACMS">Archivos multimedia del CMS</Resource>
+		<Resource tag="DESCARGARCONFIGURACIONOAUTH">Descargar configuración OAuth</Resource>
+		<Resource tag="GESTIONARCOOKIES">Administrar cookies</Resource>
+		<Resource tag="ACCEDERALFTP">Datos de acceso al FTP</Resource>
+		<Resource tag="GESTIONARTRADUCCIONES">Configurar traducciones</Resource>
+		<Resource tag="GESTIONARDATOSEXTRAREGISTRO">Configurar datos extra registro</Resource>
+		<Resource tag="GESTIONARTRAZAS">Trazas</Resource>
+		<Resource tag="GESTIONARCONFIGURACIONES">Desplegar configuraciones</Resource>
+		<Resource tag="GESTIONARCACHE">Administración de caché</Resource>
+		<Resource tag="ADMINISTRARSEOYGOOGLEANALYTICS">SEO y Google Analytics</Resource>
+		<Resource tag="ACCEDERAESTADISTICASDELACOMUNIDAD">Acceder a las estadísticas de la comunidad</Resource>
+		<Resource tag="GESTIONARCLAUSULASDEREGISTRO">Cláusulas de registro</Resource>
+		<Resource tag="GESTIONARBUZONDECORREO">Buzón de correo</Resource>
+		<Resource tag="GESTIONARSERVICIOSEXTERNOS">Administrar servicios externos</Resource>
+		<Resource tag="ACCEDERALESTADODELOSSERVICIOS">Acceder al estado de los servicios</Resource>
+		<Resource tag="GESTIONAROPCIONESDELMETAADMINISTRADOR">Opciones de metaadministrador</Resource>
+		<Resource tag="GESTIONAREVENTOSEXTERNOS">Gestionar eventos externos</Resource>
+		<Resource tag="GESTIONAROC">Administrar objetos de conocimiento</Resource>
+		<Resource tag="GESTIONARTESAUROSSEMANTICOS">Administrar tesauros semánticos</Resource>
+		<Resource tag="ACCESOSPARQLENDPOINT">Acceder al Endpoint de SPARQL</Resource>
+		<Resource tag="CONSULTARCARGASMASIVAS">Consultar cargas masivas</Resource>
+		<Resource tag="EJECUTARBORRADOMASIVO">Ejecutar borrado masivo</Resource>
+		<Resource tag="GESTIONARFACETAS">Administrar facetas</Resource>
+		<Resource tag="GESTIONARSUGERENCIASDEBUSQUEDA">Administrar las sugerencias de búsqueda</Resource>
+		<Resource tag="GESTIONARINFORMACIONCONTEXTUAL">Configurar información contextual</Resource>
+		<Resource tag="GESTIONARPARAMETROSDEBUSQUEDAPERSONALIZADOS">Gestionar los parámetros de búsqueda personalizados</Resource>
+		<Resource tag="GESTIONARMAPA">Configurar mapas</Resource>
+		<Resource tag="ADMINISTRARGRAFICOS">Configurar gráficos</Resource>
+		<Resource tag="GESTIONARVISTAS">Administrar vistas</Resource>
+		<Resource tag="GESTIONARINTEGRACIONCONTINUA">Configurar integración continua</Resource>
+		<Resource tag="EJECUTARREPROCESADOSDERECURSOS">Ejecutar reprocesado de recursos</Resource>
+		<Resource tag="GESTIONARAPLICACIONESESPECIFICAS">Gestionar aplicaciones específicas</Resource>
+		<Resource tag="GESTIONARCATEGORIASDEPLATAFORMA">Configurar categorías de la plataforma</Resource>
+		<Resource tag="GESTIONARLACONFIGURACIONPLATAFORMA">Configuración de la plataforma</Resource>
+		<Resource tag="CONFIGURACIONDESHAREPOINT">Configurar SharePoint</Resource>
+		<Resource tag="GESTIONARROLESYPERMISOSECOSISTEMA">Gestionar roles y permisos del ecosistema</Resource>
+		<Resource tag="ADMINISTRARMIEMBROSECOSISTEMA">Administrar miembros</Resource>
+		
+		<Resource tag="CREARRECURSOTIPOADJUNTO">Crear recursos de tipo adjunto</Resource>
+		<Resource tag="EDITARRECURSOTIPOADJUNTO">Editar recursos de tipo adjunto</Resource>
+		<Resource tag="ELIMINARRECURSOTIPOADJUNTO">Eliminar recursos de tipo adjunto</Resource>
+		
+		<Resource tag="CREARRECURSOTIPOREFERENCIAADOCUMENTOFISICO">Crear recursos de tipo referencia a documento físico</Resource>
+		<Resource tag="EDITARRECURSOTIPOREFERENCIAADOCUMENTOFISICO">Editar recursos de tipo referencia a documento físico</Resource>
+		<Resource tag="ELIMINARRECURSOTIPOREFERENCIAADOCUMENTOFISICO">Eliminar recursos de tipo referencia a documento físico</Resource>
+			
+		<Resource tag="CREARRECURSOTIPOENLACE">Crear recurso de tipo enlace</Resource>
+		<Resource tag="EDITARRECURSOTIPOENLACE">Editar recurso de tipo enlace</Resource>
+		<Resource tag="ELIMINARRECURSOTIPOENLACE">Eliminar recurso de tipo enlace</Resource>
+		
+		<Resource tag="CREARNOTA">Crear recursos de tipo nota</Resource>
+		<Resource tag="EDITARNOTA">Editar recursos de tipo nota</Resource>
+		<Resource tag="ELIMINARNOTA">Eliminar recursos de tipo nota</Resource>
+		
+		<Resource tag="CREARPREGUNTA">Crear recursos de tipo pregunta</Resource>
+		<Resource tag="EDITARPREGUNTA">Editar recursos de tipo pregunta</Resource>
+		<Resource tag="ELIMINARPREGUNTA">Eliminar recursos de tipo pregunta</Resource>
+		
+		<Resource tag="CREARENCUESTA">Crear recursos de tipo encuesta</Resource>
+		<Resource tag="EDITARENCUESTA">Editar recursos de tipo encuesta</Resource>
+		<Resource tag="ELIMINARENCUESTA">Eliminar recursos de tipo encuesta</Resource>
+		
+		<Resource tag="CREARDEBATE">Crear recursos de tipo debate</Resource>
+		<Resource tag="EDITARDEBATE">Editar recursos de tipo debate</Resource>
+		<Resource tag="ELIMINARDEBATE">Eliminar recursos de tipo debate</Resource>
+		
+		<Resource tag="CREARRECURSOSEMANTICO">Crear recurso semántico</Resource>
+		<Resource tag="EDITARRECURSOSEMANTICO">Editar recurso semántico</Resource>
+		<Resource tag="ELIMINARRECURSOSEMANTICO">Eliminar recurso semántico</Resource>
+		
+		<Resource tag="GESTIONARROLESYPERMISOS">Gestionar roles y permisos</Resource>
+		<Resource tag="ADMINISTRARSOLICITUDESCOMUNIDAD">Administrar solicitudes de comunidad</Resource>
+		<Resource tag="VERCATEGORIAS">Ver categoría</Resource>
+		<Resource tag="MODIFICARCATEGORIA">Modificar categoría</Resource>
+		<Resource tag="ANYADIRCATEGORIA">Añadir categoría</Resource>
+		<Resource tag="ELIMINARCATEGORIA">Eliminar categoría</Resource>
+		<Resource tag="VERPAGINA">Ver página</Resource>
+		<Resource tag="CREARPAGINA">Crear página</Resource>
+		<Resource tag="PUBLICARPAGINA">Publicar página</Resource>
+		<Resource tag="ELIMINARPAGINA">Eliminar página</Resource>
+		<Resource tag="EDITARPAGINA">Editar página</Resource>		
+		<Resource tag="VERCOMPONENTECMS">Ver componente CMS</Resource>
+		<Resource tag="CREARCOMPONENTECMS">Crear componente CMS</Resource>
+		<Resource tag="EDITARCOMPONENTECMS">Editar componente CMS</Resource>
+		<Resource tag="ELIMINARCOMPONENTECMS">Eliminar componente CMS</Resource>		
+		<Resource tag="VERFACETA">Ver faceta</Resource>
+		<Resource tag="CREARFACETA">Crear nueva faceta</Resource>
+		<Resource tag="MODIFICARFACETA">Modificar faceta</Resource>
+		<Resource tag="ELIMINARFACETA">Eliminar faceta</Resource>
+		
+		<Resource tag="ANYADIRVALORENTIDADSECUNDARIA">Añadir valor entidad secundaria</Resource>
+		<Resource tag="MODIFICARVALORENTIDADSECUNDARIA">Modificar valor entidad secundaria</Resource>
+		<Resource tag="ELIMINARVALORENTIDADSECUNDARIA">Eliminar valor entidad secundaria</Resource>
+		
+		<Resource tag="VERTESAUROSEMANTICO">Ver tesauro semántico</Resource>
+		<Resource tag="ANYADIRVALORTESAURO">Añadir valor tesauro semántico</Resource>
+		<Resource tag="MODIFICARVALORTESAURO">Modificar valor tesauro semántico</Resource>
+		<Resource tag="ELIMINARVALORTESAURO">Eliminar valor tesauro semántico</Resource>
+		
+		<Resource tag="RESTAURARVERSIONNOTA">Restaurar versión de recursos de tipo Nota</Resource>
+		<Resource tag="ELIMINARVERSIONNOTA">Eliminar versión de recursos de tipo Nota</Resource>
+		
+		<Resource tag="RESTAURARVERSIONENLACE">Restaurar versión de recursos de tipo Enlace</Resource>
+		<Resource tag="ELIMINARVERSIONENLACE">Eliminar versión de recursos de tipo Enlace</Resource>
+		
+		<Resource tag="RESTAURARVERSIONREFERENCIA">Restaurar versión de recursos de tipo referencia a documento físico</Resource>
+		<Resource tag="ELIMINARVERSIONREFERENCIA">Eliminar versión de recursos de tipo Referencia a documento físico</Resource>
+		
+		<Resource tag="RESTAURARVERSIONADJUNTO">Restaurar versión de recursos de tipo Adjunto</Resource>
+		<Resource tag="ELIMINARVERSIONADJUNTO">Eliminar versión de recursos de tipo Adjunto</Resource>
+		
+		<Resource tag="RESTAURARVERSIONPREGUNTA">Restaurar versión de recursos de tipo Pregunta</Resource>
+		<Resource tag="ELIMINARVERSIONPREGUNTA">Eliminar versión de recursos de tipo Pregunta</Resource>
+		
+		<Resource tag="RESTAURARVERSIONENCUESTA">Restaurar versión de recursos de tipo Encuesta</Resource>
+		<Resource tag="ELIMINARVERSIONENCUESTA">Eliminar versión de recursos de tipo Encuesta</Resource>
+		
+		<Resource tag="RESTAURARVERSIONDEBATE">Restaurar versión de recursos de tipo Debate</Resource>
+		<Resource tag="ELIMINARVERSIONDEBATE">Eliminar versión de recursos de tipo Debate</Resource>
+		
+		<Resource tag="RESTAURARVERSIONCMS">Restaurar versión de Componentes CMS</Resource>
+		<Resource tag="ELIMINARVERSIONCMS">Eliminar versión Componentes CMS</Resource>
+		
+		<Resource tag="RESTAURARVERSIONPAGINA">Restaurar versión de Páginas</Resource>
+		<Resource tag="ELIMINARVERSIONPAGINA">Eliminar versión de Páginas</Resource>
+		
+		<Resource tag="RESTAURARVERSIONSEMANTICO">Restaurar versión de recursos semánticos tipo</Resource>
+		<Resource tag="ELIMINARVERSIONSEMANTICO">Eliminar versión de recursos semánticos tipo</Resource>
+
+		<Resource tag="DESCPERMISOINFOGENERAL">Configurar los aspectos básicos de una comunidad</Resource>
+		<Resource tag="DESCPERMISOTIPOCONTENIDO">Controlar los permisos de las acciones sobre los recursos de una comunidad pública</Resource>
+		<Resource tag="DESCPERMISOINTERACCIONESSOCIALES">Configurar los aspectos relativos a las acciones permitidas o no de los usuarios dentro de una comunidad</Resource>
+		<Resource tag="DESCPERMISOMIEMBROS">Administrar los usuarios, organizaciones y grupos de la comunidad así como las acciones disponibles que pueden realizar sus miembros en la comunidad</Resource>
+		<Resource tag="DESCPERMISOSOLICITUDESGRUPO">Revisar las solicitudes de acceso a grupo</Resource>
+		<Resource tag="DESCPERMISONIVELESCERTIFICACION">Gestionar las diferentes certificaciones para los recursos</Resource>
+		<Resource tag="DESCPERMISOPESOSAUTOCOMPLETAR">Administración de la relevancia de los subtipos de ontología a la hora de ordenar en el autocompletar</Resource>
+		<Resource tag="DESCPERMISOREDIRECCIONES">Configurar redirecciones de las páginas de la web</Resource>
+		<Resource tag="DESCPERMISOOAUTH">Ver o descargar las configuraciones OAuth para trabajar con el API de GNOSS</Resource>
+		<Resource tag="DESCPERMISOCOOKIES">Administrar las cookies y las categorías a las que pertenecen</Resource>
+		<Resource tag="DESCPERMISOFTP">Permite el acceso a la información necesaria para conectarse mediante el FTP</Resource>
+		<Resource tag="DESCPERMISOTRADUCCIONES">Configurar y descargar las traducciones de términos</Resource>
+		<Resource tag="DESCPERMISODATOSEXTRA">Administrar los datos extra que serán necesarios en el momento de que un usuario se registre en la comunidad</Resource>
+		<Resource tag="DESCPERMISOTRAZAS">Activar o desactivar trazas en los diferentes servicios de GNOSS para ver posibles errores o comportamientos no deseados</Resource>
+		<Resource tag="DESCPERMISOCONFIGURACIONES">Descargar o importar las diferentes configuraciones de la web en diferentes paquetes, como por ejemplo ontologías, páginas, facetas, etc</Resource>
+		<Resource tag="DESCPERMISOCACHE">Eliminar manualmente la caché de comunidad y configurar cachés para las búsquedas</Resource>
+		<Resource tag="DESCPERMISOSEO">Configurar el posicionamiento SEO y scripts de GoogleAnalytics</Resource>
+		<Resource tag="DESCPERMISOESTADISTICAS">Acceder a las estadísticas de la comunidad, como visitas, páginas mas visitadas, etc</Resource>
+		<Resource tag="DESCPERMISOCLAUSULAS">Administrar las diferentes cláusulas de registro</Resource>
+		<Resource tag="DESCPERMISOCORREO">Configuración del buzón de correo de la comunidad. Este buzón recibirá todas los avisos y mensajes de usuarios y de servicios de la comunidad</Resource>
+		<Resource tag="DESCPERMISOSERVICIOSEXTERNOS">Creación y administración de los servicios externos</Resource>
+		<Resource tag="DESCPERMISOESTADOSERVICIOS">Ver el estado actual en el que se encuentran los diferentes servicios de GNOSS y comprobar si alguno está fallando</Resource>
+		<Resource tag="DESCPERMISOOPCIONESMETA">Configuración avanzada de permisos, apariencia, usuarios, redes sociales y estilos del proyecto</Resource>
+		<Resource tag="DESCPERMISOEVENTOS">Crear y gestionar diferentes eventos de la web para que sean procesados por servicios externos</Resource>
+		<Resource tag="DESCPERMISOSPARQL">Acceder al Endpoint para realizar consultas SPARQL</Resource>
+		<Resource tag="DESCPERMISOCARGAMASIVA">Consulta las cargas masivas realizadas a través del API de GNOSS para comprobar los paquetes procesados y si se ha producido algún error durante la carga de datos</Resource>
+		<Resource tag="DESCPERMISOBORRADOMASIVO">Ejecutar el borrado masivo de recursos subidos a la comunidad de una determinada ontología</Resource>
+		<Resource tag="DESCPERMISOSUGERENCIASBUSQUEDA">Configurar las propiedades del autocompletado y de las búsquedas por texto libre en la página</Resource>
+		<Resource tag="DESCPERMISOCONTEXTOS">Administrar los contextos, recursos relacionados, etc. de las diferentes páginas</Resource>
+		<Resource tag="DESCPERMISOSEARCHPERSONALIZADO">Configurar los parámetros de búsqueda personalizados</Resource>
+		<Resource tag="DESCPERMISOMAPA">Configurar las propiedades del mapa</Resource>
+		<Resource tag="DESCPERMISOGRAFICOS">Creación de gráficos mediante consultas SPARQL y funciones JavaScript</Resource>
+		<Resource tag="DESCPERMISOVISTAS">Personalizar las vistas de la comunidad</Resource>
+		<Resource tag="DESCPERMISOIC">Permite configurar la Integración Continua en la comunidad y realizar acciones como despliegues y fusiones</Resource>
+		<Resource tag="DESCPERMISOREPROCESAR">Permite reprocesar recursos que tengan errores</Resource>
+		<Resource tag="DESCPERMISOAPLICACIONES"></Resource>
+		<Resource tag="DESCPERMISOROLES">Gestionar los diferentes roles y permisos para realizar acciones en la administración de la comunidad o sobre recursos</Resource>
+		<Resource tag="DESCPERMISOVERCATEGORIA">Acceder a la administración de categorías y ver la ficha de una categoría en particular</Resource>
+		<Resource tag="DESCPERMISOANYADIRCATEGORIA">Crear una nueva categoría</Resource>
+		<Resource tag="DESCPERMISOEDITARCATEGORIA">Modificar una categoría existente</Resource>
+		<Resource tag="DESCPERMISOELIMINARCATEGORIA">Eliminar una categoría existente</Resource>
+		<Resource tag="DESCPERMISOVERPAGINA">Acceder a la administración de páginas y ver la ficha de una página en particular</Resource>
+		<Resource tag="DESCPERMISOCREARPAGINA">Crear una nueva página</Resource>
+		<Resource tag="DESCPERMISOPUBLICARPAGINA">Publicar una página CMS</Resource>
+		<Resource tag="DESCPERMISOEDITARPAGINA">Modificar una página ya existente</Resource>
+		<Resource tag="DESCPERMISOELIMINARPAGINA">Eliminar una página ya existente</Resource>
+		<Resource tag="DESCPERMISOVERCMS">Acceder a la administración de componentes CMS y ver la ficha de un componente en particular</Resource>
+		<Resource tag="DESCPERMISOCREARCMS">Crear un nuevo componente CMS</Resource>
+		<Resource tag="DESCPERMISOEDITARCMS">Modificar un componente CMS ya existente</Resource>
+		<Resource tag="DESCPERMISOELIMINARCMS">Eliminar un componente CMS ya existente</Resource>
+		<Resource tag="DESCPERMISOMULTIMEDIACMS">Acceder a la administración de los objetos multimedia de los componentes CMS</Resource>
+		<Resource tag="DESCPERMISOGESTIONAROC">Trabajar con los objetos de conocimiento/ontologías principales y secundarias</Resource>
+		<Resource tag="DESCPERMISOANYADIRSECUNDARIA">Crear ontologías secundarias</Resource>
+		<Resource tag="DESCPERMISOMODIFICARSECUNDARIA">Modificar una ontología secundaria ya existente</Resource>
+		<Resource tag="DESCPERMISOELIMINARSECUNDARIA">Eliminar ontología secundaria ya existente</Resource>
+		<Resource tag="DESCPERMISOVERTESAURO">Acceder a la administración de los tesauros semánticos y ver la ficha de un tesauro en particular</Resource>
+		<Resource tag="DESCPERMISOANYADIRTESAURO">Crear un nuevo tesauro semántico</Resource>
+		<Resource tag="DESCPERMISOMODIFICARTESAURO">Modifucar un tesauro semántico ya existente</Resource>
+		<Resource tag="DESCPERMISOELIMINARTESAURO">Eliminar un tesauro semántico ya existente</Resource>
+		<Resource tag="DESCPERMISOVERFACETA">Acceder a la administración de facetas y ver la ficha de una faceta en particular</Resource>
+		<Resource tag="DESCPERMISOCREARFACETA">Crear una nueva faceta</Resource>
+		<Resource tag="DESCPERMISOMODIFICARFACETA">Modificar una faceta ya existente</Resource>
+		<Resource tag="DESCPERMISOELIMINARFACETA">Eliminar una faceta ya existente</Resource>
+		<Resource tag="DESCPERMISORESTAURARVERSIONCMS">Restaurar una versión antigua de un componente CMS</Resource>
+		<Resource tag="DESCPERMISOELIMINARVERSIONCMS">Eliminar una versión de un componente CMS</Resource>
+		<Resource tag="DESCPERMISORESTAURARVERSIONPAGINA">Restaurar una versión antigua de una página</Resource>
+		<Resource tag="DESCPERMISOELIMINARVERSIONPAGINA">Eliminar una versión de una página</Resource>
+		<Resource tag="DESCPERMISOECOSISTEMATRADUCCIONES">Configurar y descargar las traducciones de términos del Ecosistema</Resource>
+		<Resource tag="DESCPERMISOECOSISTEMADATOSEXTRA">Administrar los datos extra que serán necesarios en el momento de que un usuario se registre</Resource>
+		<Resource tag="DESCPERMISOECOSISTEMACORREO">Configuración del buzón de correo del Ecosistema. Este buzón recibirá todas los avisos y mensajes de usuarios y de servicios</Resource>
+		<Resource tag="DESCPERMISOECOSISTEMAEVENTOS">Crear y gestionar en el Ecosistema diferentes eventos de la web para que sean procesados por servicios externos</Resource>
+		<Resource tag="DESCPERMISOECOSISTEMACATEGORIAS">Administrar las categorías de la plataforma</Resource>
+		<Resource tag="DESCPERMISOECOSISTEMACONFIGURACION">Configuración avanzada de usuarios, sistemas, redes sociales, dominios, ecosistema, urls y detalles SEO de la plataforma</Resource>
+		<Resource tag="DESCPERMISOECOSISTEMASHAREPOINT">Configuración del servicio SharePoint en la plataforma. Esta funcionalidad permite crear un recurso en Sharepoint para poder ser editado de forma colaborativa, crear versiones o descargar el archivo</Resource>
+		<Resource tag="DESCPERMISOECOSISTEMAVISTAS">Personalizar las vistas de la plataforma</Resource>
+		<Resource tag="DESCPERMISOECOSISTEMAIC">Permite configurar la Integración Continua en la plataforma y realizar acciones como despliegues y fusiones</Resource>
+		<Resource tag="DESCPERMISOECOSISTEMASOLICITUDES">Gestionar las solicitudes</Resource>
+		<Resource tag="DESCPERMISOECOSISTEMAROLES">Gestionar los diferentes roles y permisos para realizar acciones en la administración del Ecosistema</Resource>
+		<Resource tag="DESCPERMISOECOSISTEMAMIEMBROS">Administrar los usuarios de la plataforma así como las acciones disponibles que pueden realizar sus miembros en el Ecosistema</Resource>
+		<Resource tag="DESCPERMISOCREARADJUNTO">Creación de recursos de tipo adjunto</Resource>
+		<Resource tag="DESCPERMISOEDITARADJUNTO">Modificación de recursos de tipo adjunto</Resource>
+		<Resource tag="DESCPERMISOELIMINARADJUNTO">Eliminación de recursos de tipo adjunto</Resource>
+		<Resource tag="DESCPERMISOCREARREFERENCIA">Creación de recursos de tipo referencia a un documento físico</Resource>
+		<Resource tag="DESCPERMISOEDITARREFERENCIA">Modificación de recursos de tipo referencia a un documento físico</Resource>
+		<Resource tag="DESCPERMISOELIMINARREFERNCIA">Eliminación de recursos de tipo referencia a un documento físico</Resource>
+		<Resource tag="DESCPERMISOCREARENLACE">Creación de recursos de tipo enlace</Resource>
+		<Resource tag="DESCPERMISOEDITARENLACE">Modificación de recursos de tipo enlace</Resource>
+		<Resource tag="DESCPERMISOELIMINARENLACE">Eliminación de recursos de tipo enlace</Resource>
+		<Resource tag="DESCPERMISOCREARNOTA">Creación de recursos de tipo nota</Resource>
+		<Resource tag="DESCPERMISOEDITARNOTA">Modificación de recursos de tipo nota</Resource>
+		<Resource tag="DESCPERMISOELIMINARNOTA">Eliminación de recursos de tipo nota</Resource>
+		<Resource tag="DESCPERMISOCREARPREGUNTA">Creación de recursos de tipo pregunta</Resource>
+		<Resource tag="DESCPERMISOEDITARPREGUNTA">Modificación de recursos de tipo pregunta</Resource>
+		<Resource tag="DESCPERMISOELIMINARPREGUNTA">Eliminación de recursos de tipo pregunta</Resource>
+		<Resource tag="DESCPERMISOCREARENCUESTA">Creación de recursos de tipo encuesta</Resource>
+		<Resource tag="DESCPERMISOEDITARENCUESTA">Modificación de recursos de tipo encuesta</Resource>
+		<Resource tag="DESCPERMISOELIMINARENCUESTA">Eliminación de recursos de tipo encuesta</Resource>
+		<Resource tag="DESCPERMISOCREARDEBATE">Creación de recursos de tipo debate</Resource>
+		<Resource tag="DESCPERMISOEDITARDEBATE">Modificación de recursos de tipo debate</Resource>
+		<Resource tag="DESCPERMISOELIMINARDEBATE">Eliminación de recursos de tipo debate</Resource>
+		<Resource tag="DESCPERMISOCREARSEMANTICO">Creación de recursos semánticos. Habrá un permiso para cada ontología</Resource>
+		<Resource tag="DESCPERMISOEDITARSEMANTICO">Modificación de recursos semánticos. Habrá un permiso para cada ontología</Resource>
+		<Resource tag="DESCPERMISOELIMINARSEMANTICO">Eliminación de recursos semánticos. Habrá un permiso para cada ontología</Resource>
+		<Resource tag="DESCPERMISORESTAURARVERSIONENLACE">Restaurar una versión antigua de un recurso de tipo enlace</Resource>
+		<Resource tag="DESCPERMISOELIMINARVERSIONENLACE">Eliminar una versión de un recurso de tipo enlace</Resource>
+		<Resource tag="DESCPERMISORESTAURARVERSIONADJUNTO">Restaurar una versión antigua de un recurso de tipo adjunto</Resource>
+		<Resource tag="DESCPERMISOELIMINARVERSIONADJUNTO">Eliminar una versión de un recurso de tipo adjunto</Resource>
+		<Resource tag="DESCPERMISORESTAURARVERSIONREFERNCIA">Restaurar una versión antigua de un recurso de tipo referencia a documento físico</Resource>
+		<Resource tag="DESCPERMISOELIMINARVERSIONREFERNCIA">Eliminar una versión de un recurso de tipo referencia a documento físico</Resource>
+		<Resource tag="DESCPERMISORESTAURARVERSIONNOTA">Restaurar una versión antigua de un recurso de tipo nota</Resource>
+		<Resource tag="DESCPERMISORESELIMINARVERSIONNOTA">Eliminar una versión de un recurso de tipo nota</Resource>
+		<Resource tag="DESCPERMISORESTAURARVERSIONPREGUNTA">Restaurar una versión antigua de un recurso de tipo pregunta</Resource>
+		<Resource tag="DESCPERMISOELIMINARVERSIONPREGUNTA">Eliminar una versión de un recurso de tipo pregunta</Resource>
+		<Resource tag="DESCPERMISORESTAURARVERSIONENCUESTA">Restaurar una versión antigua de un recurso de tipo encuesta</Resource>
+		<Resource tag="DESCPERMISOELIMINARVERSIONENCUESTA">Eliminar una versión de un recurso de tipo encuesta</Resource>
+		<Resource tag="DESCPERMISORESTAURARVERSIONDEBATE">Restaurar una versión antigua de un recurso de tipo debate</Resource>
+		<Resource tag="DESCPERMISOELIMINARVERSIONDEBATE">Eliminar una versión de un recurso de tipo enlace</Resource>
+		<Resource tag="DESCPERMISORESTAURARVERSIONSEMANTICO">Restaurar una versión antigua de un recurso semántico. Habrá un permiso para cada ontología</Resource>
+		<Resource tag="DESCPERMISOELIMINARVERSIONSEMANTICO">Eliminar una versión de un recurso semántico. Habrá un permiso para cada ontología</Resource>
+		
+		<Resource tag="COMUNIDAD">Comunidad</Resource>
+		<Resource tag="ESTRUCTURA">Estructura</Resource>
+		<Resource tag="CONFIGURACION">Configuración general</Resource>
+		<Resource tag="GRAFO">Grafo de conocimiento</Resource>
+		<Resource tag="DESCUBRIMIENTO">Descubrimiento y análisis</Resource>
+		<Resource tag="APARIENCIA">Apariencia</Resource>
+		<Resource tag="IC">Integración continua</Resource>
+		<Resource tag="MANTENIMIENTO">Mantenimiento</Resource>
+		<Resource tag="APLICACIONES">Aplicaciones específicas</Resource>
+		<Resource tag="RECURSOS">Recursos</Resource>
+		<Resource tag="PERMISOS">Permisos</Resource>
+		<Resource tag="SI">Si</Resource>
+		<Resource tag="NO">No</Resource>
+		<Resource tag="ECOSISTEMA">Ecosistema</Resource>
+		<Resource tag="GESTIONARTRADUCCIONESECOSISTEMA">Configurar traducciones</Resource>
+		<Resource tag="GESTIONARDATOSEXTRAREGISTROECOSISTEMA">Gestionar los datos extra de registro</Resource>
+		<Resource tag="GESTIONARBUZONDECORREOECOSISTEMA">Buzón de correo</Resource>
+		<Resource tag="GESTIONAREVENTOSEXTERNOSECOSISTEMA">Administrar eventos externos</Resource>
+		<Resource tag="GESTIONARVISTASECOSISTEMA">Modificar vistas</Resource>
+		<Resource tag="ADMINISTRARINTEGRACIONCONTINUA">Configurar Integración continua</Resource>
+		<Resource tag="DESCAMBITOCOMUNIDAD">Un rol de ámbito Comunidad solo estará disponible en la comunidad actual, mientras que si es de ámbito Ecosistema estará disponible en todas las comunidades que forman parte de la plataforma</Resource>
+		<Resource tag="INFOROLUSUARIOS">Todos los usuarios de esta comunidad pertenecen a este rol</Resource>
+		<Resource tag="TIPONOTA">Nota</Resource>
+		<Resource tag="TIPOLINK">Enlace</Resource>
+		<Resource tag="TIPOADJUNTO">Adjunto</Resource>
+		<Resource tag="TIPOREFERENCIA">Referencia a documento físico</Resource>
+		<Resource tag="TIPOPREGUNTA">Pregunta</Resource>
+		<Resource tag="TIPODEBATE">Debate</Resource>
+		<Resource tag="TIPOENCUESTA">Encuesta</Resource>
+		<Resource tag="ACCIONCREAR">Crear</Resource>
+		<Resource tag="ACCIONEDITAR">Editar</Resource>
+		<Resource tag="ACCIONELIMINAR">Eliminar</Resource>
+		<Resource tag="ACCIONRESTAURAR">Restaurar versión</Resource>
+		<Resource tag="ACCIONELIMINARVERSION">Eliminar versión</Resource>
+	</page>
+	<page name="DOCUMENTACIONONTOLOGIA">
+		<Resource tag="TITULODOCUMENTACIONONTOLOGIA">Documentación de la Ontologia</Resource>
+		<Resource tag="TITULOONTOLOGIA">Titulo de la Ontologia</Resource>
+		<Resource tag="AUTORES">Autores</Resource>
+		<Resource tag="ONTOLOGIASIMPORTADAS">Ontologías Importadas</Resource>
+		<Resource tag="ENLACEOWL">Enlace OWL</Resource> 
+		<Resource tag="LICENCIA">Licencia</Resource>
+		<Resource tag="URLDELALICENCIA">URL de la Licencia</Resource>
+		<Resource tag="ABSTRACT">Abstract</Resource>
+		<Resource tag="ACCESOPRIVADO">Acceso Privado</Resource>
+		<Resource tag="SUBIRIMAGEN">Subir Imagen de la Ontologia</Resource>
+		<Resource tag="TITULOELIMINARIMAGEN">¿Eliminar la imagen guardada para la ontologia?</Resource>
+		<Resource tag="CONFIRMACIONELIMINARIMAGEN">Confirmar Eliminar Imagen</Resource>
+		<Resource tag="SEGUROELIMINARIMAGEN">¿Esta seguro de que desea eliminar la imagen adjuntas a la ontología?</Resource>
+		<Resource tag="EXPLICACIONPRIVADO">(Al activar "Acceso Privado" la documentación estará disponible solo para Administradores)</Resource>
+		<Resource tag="DESCARGAONTOLOGIAUNIFICADA">Descarga de la Ontologia</Resource>
 	</page>
 </Resources>

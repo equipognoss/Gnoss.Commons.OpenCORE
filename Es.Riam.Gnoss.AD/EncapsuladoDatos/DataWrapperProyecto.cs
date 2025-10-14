@@ -79,7 +79,10 @@ namespace Es.Riam.Gnoss.AD.EncapsuladoDatos
         private List<DatoExtraProyectoOpcionIdentidad> listaDatoExtraProyectoOpcionIdentidad;
 
         private List<ProyectoNumConexiones> listaProyectoNumConexiones;
-        public DataWrapperProyecto()
+        private List<ProyectoPestanyaBusquedaPesoOC> listaProyectoPestanyaBusquedaPesoOC;
+        private List<FacetaObjetoConocimientoProyectoPestanya> listaFacetaObjetoConocimientoProyectoPestanya;
+
+		public DataWrapperProyecto()
         {
             this.ListaAdministradorGrupoProyecto = new List<AdministradorGrupoProyecto>();
             this.ListaAdministradorProyecto = new List<AdministradorProyecto>();
@@ -147,8 +150,24 @@ namespace Es.Riam.Gnoss.AD.EncapsuladoDatos
             this.listaProyectoEvento = new List<ProyectoEvento>();
             this.listaProyectoNumConexiones = new List<ProyectoNumConexiones>();
             this.listaVistaVirtualProyecto = new List<VistaVirtualProyecto>();
-        }
-        public List<ProyectoNumConexiones> ListaProyectoNumConexiones
+            ListaProyectoPestanyaBusquedaPesoOC = new List<ProyectoPestanyaBusquedaPesoOC>();
+            ListaFacetaObjetoConocimientoProyectoPestanya = new List<FacetaObjetoConocimientoProyectoPestanya>();
+
+		}
+        public List<FacetaObjetoConocimientoProyectoPestanya> ListaFacetaObjetoConocimientoProyectoPestanya
+        {
+            get
+            {
+                return this.listaFacetaObjetoConocimientoProyectoPestanya;
+            }
+            set
+            {
+                this.listaFacetaObjetoConocimientoProyectoPestanya = value;
+
+			}
+		}
+
+		public List<ProyectoNumConexiones> ListaProyectoNumConexiones
         {
             get
             {
@@ -976,7 +995,20 @@ namespace Es.Riam.Gnoss.AD.EncapsuladoDatos
             }
         }
 
-        public override void Merge(DataWrapperBase pDataWrapper)
+		public List<ProyectoPestanyaBusquedaPesoOC> ListaProyectoPestanyaBusquedaPesoOC
+        {
+            get
+            {
+                return listaProyectoPestanyaBusquedaPesoOC;
+			}
+            set
+            {
+                this.listaProyectoPestanyaBusquedaPesoOC = value;
+
+			}
+        }
+
+		public override void Merge(DataWrapperBase pDataWrapper)
         {
             DataWrapperProyecto encapsulado = (DataWrapperProyecto)pDataWrapper;
             this.listaAdministradorGrupoProyecto = this.ListaAdministradorGrupoProyecto.Union(encapsulado.ListaAdministradorGrupoProyecto).ToList();
@@ -1041,7 +1073,7 @@ namespace Es.Riam.Gnoss.AD.EncapsuladoDatos
             this.listaDatoExtraProyectoOpcionIdentidad = this.listaDatoExtraProyectoOpcionIdentidad.Union(encapsulado.listaDatoExtraProyectoOpcionIdentidad).ToList();
             this.listaProyectoNumConexiones = this.listaProyectoNumConexiones.Union(encapsulado.listaProyectoNumConexiones).ToList();
             this.listaRecursosRelacionadosPresentacion = this.listaRecursosRelacionadosPresentacion.Union(encapsulado.ListaRecursosRelacionadosPresentacion).ToList();
-            ListaVistaVirtualProyecto = ListaVistaVirtualProyecto.Union(encapsulado.ListaVistaVirtualProyecto).ToList();
+			ListaVistaVirtualProyecto = ListaVistaVirtualProyecto.Union(encapsulado.ListaVistaVirtualProyecto).ToList();
         }
 
         public void DeleteProyectoCerradoTmp(ProyectoCerradoTmp proyectoCerradoTmp)

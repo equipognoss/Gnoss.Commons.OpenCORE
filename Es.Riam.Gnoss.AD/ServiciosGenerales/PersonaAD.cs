@@ -4,10 +4,12 @@ using Es.Riam.Gnoss.AD.EntityModel;
 using Es.Riam.Gnoss.AD.EntityModel.Models.PersonaDS;
 using Es.Riam.Gnoss.AD.EntityModel.Models.UsuarioDS;
 using Es.Riam.Gnoss.AD.Identidad;
+using Es.Riam.Gnoss.AD.ParametroAplicacion;
 using Es.Riam.Gnoss.AD.Usuarios;
 using Es.Riam.Gnoss.Util.Configuracion;
 using Es.Riam.Gnoss.Util.General;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -28,8 +30,8 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
             EntityContext entityContext = (EntityContext)QueryContextAccess.GetDbContext(pQuery);
             return pQuery.Join(entityContext.Usuario, persona => persona.UsuarioID, usuario => usuario.UsuarioID, (persona, usuario) => new JoinPersonaUsuario
             {
-               Persona = persona,
-               Usuario = usuario
+                Persona = persona,
+                Usuario = usuario
 
             });
         }
@@ -101,7 +103,8 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
         /// Indica si se debe omitir el guardado de el nombre y apellidos de una persona para no activar un trigger.
         /// </summary>
         public static bool NoGuardarNombreNiApellidosPersona = false;
-
+        private ILogger mlogger;
+        private ILoggerFactory mLoggerFactory;
         #endregion
 
         #region Constantes
@@ -119,9 +122,11 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
         /// <summary>
         /// Constructor por defecto, sin parámetros, utilizado cuando se requiere el GnossConfig.xml por defecto
         /// </summary>
-        public PersonaAD(LoggingService loggingService, EntityContext entityContext, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication)
-            : base(loggingService, entityContext, configService, servicesUtilVirtuosoAndReplication)
+        public PersonaAD(LoggingService loggingService, EntityContext entityContext, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication, ILogger<PersonaAD> logger, ILoggerFactory loggerFactory)
+            : base(loggingService, entityContext, configService, servicesUtilVirtuosoAndReplication,logger, loggerFactory)
         {
+            mlogger = logger;
+            mLoggerFactory = loggerFactory;
         }
 
         /// <summary>
@@ -129,9 +134,11 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
         /// </summary>
         /// <param name="pFicheroConfiguracionBD">Ruta del fichero de configuración de base de datos</param>
         /// <param name="pUsarVariableEstatica">Si se están usando hilos con diferentes conexiones: FALSE. En caso contrario TRUE</param>
-        public PersonaAD(string pFicheroConfiguracionBD, LoggingService loggingService, EntityContext entityContext, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication)
-            : base(pFicheroConfiguracionBD, loggingService, entityContext, configService, servicesUtilVirtuosoAndReplication)
+        public PersonaAD(string pFicheroConfiguracionBD, LoggingService loggingService, EntityContext entityContext, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication, ILogger<PersonaAD> logger, ILoggerFactory loggerFactory)
+            : base(pFicheroConfiguracionBD, loggingService, entityContext, configService, servicesUtilVirtuosoAndReplication, logger, loggerFactory)
         {
+            mlogger = logger;
+            mLoggerFactory = loggerFactory;
         }
 
         #endregion
@@ -175,7 +182,7 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
             }
             else
             {
-                correo = mEntityContext.Persona.Where(personaVinculoOrganizacion => personaVinculoOrganizacion.PersonaID.Equals(pPersonaID)).Select(email => email.Email).ToList().FirstOrDefault();
+                correo = mEntityContext.Persona.Where(personaVinculoOrganizacion => personaVinculoOrganizacion.PersonaID.Equals(pPersonaID)).Select(email => email.Email).FirstOrDefault();
             }
 
             return correo;
@@ -220,7 +227,7 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
         /// <returns>TRUE si ya existe, FALSE en caso contrario</returns>
         public bool ExisteEmail(string pEmail)
         {
-            return mEntityContext.Persona.Where(persona => persona.Email.ToUpper().Equals(pEmail.ToUpper()) && !persona.Eliminado).Select(item => item.Email).Concat(mEntityContext.SolicitudNuevoUsuario.Join(mEntityContext.Solicitud, solNuevoUsuario => solNuevoUsuario.SolicitudID, solicitud => solicitud.SolicitudID, (solNuevoUsuario, solicitud) => new { SolicitudNuevoUsuario = solNuevoUsuario, Solicitud = solicitud }).Where(item => item.SolicitudNuevoUsuario.Email.ToUpper().Equals(pEmail.ToUpper()) && item.Solicitud.Estado.Equals((short)EstadoSolicitud.Espera)).Select(item => item.SolicitudNuevoUsuario.Email)).Any();
+            return mEntityContext.Persona.Where(persona => persona.Email.Equals(pEmail.ToLower()) && !persona.Eliminado).Select(item => item.Email).Concat(mEntityContext.SolicitudNuevoUsuario.Join(mEntityContext.Solicitud, solNuevoUsuario => solNuevoUsuario.SolicitudID, solicitud => solicitud.SolicitudID, (solNuevoUsuario, solicitud) => new { SolicitudNuevoUsuario = solNuevoUsuario, Solicitud = solicitud }).Where(item => item.SolicitudNuevoUsuario.Email.ToUpper().Equals(pEmail.ToUpper()) && item.Solicitud.Estado.Equals((short)EstadoSolicitud.Espera)).Select(item => item.SolicitudNuevoUsuario.Email)).Any();
         }
 
         /// <summary>
@@ -231,7 +238,7 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
         /// <returns>TRUE si ya existe, FALSE en caso contrario</returns>
         public bool ExisteEmailExceptoEnSolicitud(string pEmail, Guid pSolicitudID)
         {
-            return mEntityContext.Persona.Where(persona => persona.Email.ToUpper().Equals(pEmail.ToUpper())).Select(item => item.Email).Concat(mEntityContext.SolicitudNuevoUsuario.Join(mEntityContext.Solicitud, solNuevoUsuario => solNuevoUsuario.SolicitudID, solicitud => solicitud.SolicitudID, (solNuevoUsuario, solicitud) => new { SolicitudNuevoUsuario = solNuevoUsuario, Solicitud = solicitud }).Where(item => item.SolicitudNuevoUsuario.Email.ToUpper().Equals(pEmail.ToUpper()) && item.Solicitud.Estado.Equals((short)EstadoSolicitud.Espera) && !item.SolicitudNuevoUsuario.SolicitudID.Equals(pSolicitudID)).Select(item => item.SolicitudNuevoUsuario.Email)).Any();
+            return mEntityContext.Persona.Where(persona => persona.Email.Equals(pEmail.ToLower())).Select(item => item.Email).Concat(mEntityContext.SolicitudNuevoUsuario.Join(mEntityContext.Solicitud, solNuevoUsuario => solNuevoUsuario.SolicitudID, solicitud => solicitud.SolicitudID, (solNuevoUsuario, solicitud) => new { SolicitudNuevoUsuario = solNuevoUsuario, Solicitud = solicitud }).Where(item => item.SolicitudNuevoUsuario.Email.ToUpper().Equals(pEmail.ToUpper()) && item.Solicitud.Estado.Equals((short)EstadoSolicitud.Espera) && !item.SolicitudNuevoUsuario.SolicitudID.Equals(pSolicitudID)).Select(item => item.SolicitudNuevoUsuario.Email)).Any();
         }
 
         public void ModificarCorreoPersona(Guid pPersonaID, string pCorreoNuevo)
@@ -239,7 +246,7 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
             var resultado = mEntityContext.Persona.Where(persona => persona.PersonaID.Equals(pPersonaID)).FirstOrDefault();
             if (resultado != null)
             {
-                resultado.Email = pCorreoNuevo;
+                resultado.Email = pCorreoNuevo.ToLower();
                 mEntityContext.SaveChanges();
             }
         }
@@ -252,7 +259,7 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
         /// <returns>TRUE si ya existe, FALSE en caso contrario</returns>
         public bool ExisteEmail(string pEmail, Guid pPersonaID)
         {
-            return mEntityContext.Persona.Any(persona => persona.Email.ToUpper().Equals(pEmail.ToUpper()) && !persona.PersonaID.Equals(pPersonaID) && !persona.Eliminado);
+            return mEntityContext.Persona.Any(persona => persona.Email.Equals(pEmail.ToLower()) && !persona.PersonaID.Equals(pPersonaID) && !persona.Eliminado);
         }
 
         /// <summary>
@@ -273,7 +280,7 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
         /// <returns>TRUE si ya existe, FALSE en caso contrario</returns>
         public bool ComprobarEmailUsuario(string pEmail, Guid pUsuarioID)
         {
-            return mEntityContext.Persona.Where(persona => persona.Email.ToUpper().Equals(pEmail.ToUpper()) && persona.UsuarioID.Value.Equals(pUsuarioID)).Select(item => item.Email).Concat(mEntityContext.Usuario.Join(mEntityContext.Persona, usuario => usuario.UsuarioID, persona => persona.UsuarioID, (usuario, persona) => new { Usuario = usuario, Persona = persona }).Join(mEntityContext.PersonaVinculoOrganizacion, usuarioPersona => usuarioPersona.Persona.PersonaID, persVincOrg => persVincOrg.PersonaID, (usuarioPersona, persVincOrg) => new { Usuario = usuarioPersona.Usuario, Persona = usuarioPersona.Persona, PersonaVinculoOrganizacion = persVincOrg }).Where(item => item.PersonaVinculoOrganizacion.EmailTrabajo.ToUpper().Equals(pEmail.ToUpper())).Select(item => item.Persona.Email)).Any();
+            return mEntityContext.Persona.Where(persona => persona.Email.Equals(pEmail.ToLower()) && persona.UsuarioID.Value.Equals(pUsuarioID)).Select(item => item.Email).Concat(mEntityContext.Usuario.Join(mEntityContext.Persona, usuario => usuario.UsuarioID, persona => persona.UsuarioID, (usuario, persona) => new { Usuario = usuario, Persona = persona }).Join(mEntityContext.PersonaVinculoOrganizacion, usuarioPersona => usuarioPersona.Persona.PersonaID, persVincOrg => persVincOrg.PersonaID, (usuarioPersona, persVincOrg) => new { Usuario = usuarioPersona.Usuario, Persona = usuarioPersona.Persona, PersonaVinculoOrganizacion = persVincOrg }).Where(item => item.PersonaVinculoOrganizacion.EmailTrabajo.ToUpper().Equals(pEmail.ToUpper())).Select(item => item.Persona.Email)).Any();
         }
 
         /// <summary>
@@ -396,6 +403,34 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
         }
 
         /// <summary>
+        /// Obtiene el nombre de las personas de unos usuarios.
+        /// </summary>
+        /// <param name="pListaUsuariosID">Lista de identificadores de usuario</param>
+        /// <returns>Lista con el nombrecorto del usuario y el nombre de la persona</returns>
+        public Dictionary<string, string[]> ObtenerNombreCortoYNombrePerfilPorUsuariosID(List<Guid> pListaUsuariosID)
+        {
+            Dictionary<string, string[]> nombresUsuarios = new Dictionary<string, string[]>();
+            if (pListaUsuariosID.Count > 0)
+            {
+                var listaPersonas = mEntityContext.Persona.JoinPerfil().Where(item => item.Persona.UsuarioID.HasValue && pListaUsuariosID.Contains(item.Persona.UsuarioID.Value)).Select(item => new { item.Persona.UsuarioID, item.Perfil.NombreCortoUsu, item.Perfil.NombrePerfil }).ToList();
+
+                foreach (var item in listaPersonas)
+                {
+                    string usuarioID = item.UsuarioID.ToString();
+                    string nombreCorto = item.NombreCortoUsu;
+                    string nombrePerfil = item.NombrePerfil;
+                    string[] datos = new string[] { nombreCorto, nombrePerfil };
+
+                    if (!nombresUsuarios.ContainsKey(usuarioID))
+                    {
+                        nombresUsuarios.Add(usuarioID, datos);
+                    }
+                }
+            }
+            return nombresUsuarios;
+        }
+
+        /// <summary>
         /// Obtiene la fila de persona a partir de un usuario pasado por parámetro
         /// </summary>
         /// <param name="pUsuarioID">Identificador de usuario</param>
@@ -431,7 +466,7 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
         /// <returns>email de persona</returns>
         public string ObtenerEmailPersonalPorUsuario(Guid pUsuarioID)
         {
-            string emailPersonal = mEntityContext.Persona.Where(persona => persona.UsuarioID.Value.Equals(pUsuarioID)).Select(item => item.Email).ToList().FirstOrDefault();
+            string emailPersonal = mEntityContext.Persona.Where(persona => persona.UsuarioID.Value.Equals(pUsuarioID)).Select(item => item.Email).FirstOrDefault();
 
             return emailPersonal;
         }
@@ -462,7 +497,7 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
         /// <returns>GUID de la persona a la que corresponde el email</returns>
         public Guid ObtenerPersonaPorEmail(string pEmail)
         {
-            return mEntityContext.Persona.Where(persona => persona.Email.Equals(pEmail) && !persona.Eliminado).Select(item => item.PersonaID).ToList().FirstOrDefault();
+            return mEntityContext.Persona.Where(persona => persona.Email.Equals(pEmail.ToLower()) && !persona.Eliminado).Select(item => item.PersonaID).FirstOrDefault();
         }
 
         /// <summary>
@@ -485,7 +520,7 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
         public DataWrapperPersona ObtenerPersonaPorPerfil(Guid pPerfilID)
         {
             DataWrapperPersona dataWrapperPersona = new DataWrapperPersona();
-            dataWrapperPersona.ListaPersona = mEntityContext.Persona.Join(mEntityContext.Perfil, persona => persona.PersonaID, perfil => perfil.PersonaID, (persona, perfil) => new { Persona = persona, Perfil = perfil }).Where(item => item.Perfil.PerfilID.Equals(pPerfilID)).ToList().Select(persona => new Persona
+            dataWrapperPersona.ListaPersona = mEntityContext.Persona.Join(mEntityContext.Perfil, persona => persona.PersonaID, perfil => perfil.PersonaID, (persona, perfil) => new { Persona = persona, Perfil = perfil }).Where(item => item.Perfil.PerfilID.Equals(pPerfilID)).Select(persona => new Persona
             {
                 PersonaID = persona.Persona.PersonaID,
                 UsuarioID = persona.Persona.UsuarioID,
@@ -580,7 +615,7 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
         /// <returns>Dataset de personas con las personas del proyecto</returns>
         public List<Persona> ObtenerPersonasDeProyectoCargaLigera(Guid pOrganizacionID, Guid pProyectoID)
         {
-            return mEntityContext.Persona.Join(mEntityContext.ProyectoRolUsuario, persona => persona.UsuarioID, proyectoRolUsuario => proyectoRolUsuario.UsuarioID, (persona, proyectoRolUsuario) => new { Persona = persona, ProyectoRolUsuario = proyectoRolUsuario }).Where(item => item.ProyectoRolUsuario.ProyectoID.Equals(pProyectoID) && item.ProyectoRolUsuario.OrganizacionGnossID.Equals(pOrganizacionID) && !item.Persona.Eliminado).ToList().Select(persona => new Persona
+            return mEntityContext.Persona.Join(mEntityContext.ProyectoRolUsuario, persona => persona.UsuarioID, proyectoRolUsuario => proyectoRolUsuario.UsuarioID, (persona, proyectoRolUsuario) => new { Persona = persona, ProyectoRolUsuario = proyectoRolUsuario }).Where(item => item.ProyectoRolUsuario.ProyectoID.Equals(pProyectoID) && item.ProyectoRolUsuario.OrganizacionGnossID.Equals(pOrganizacionID) && !item.Persona.Eliminado).Select(persona => new Persona
             {
                 PersonaID = persona.Persona.PersonaID,
                 UsuarioID = persona.Persona.UsuarioID,
@@ -614,7 +649,7 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
 
             if (pGruposID.Count > 0)
             {
-                listaPersonas = mEntityContext.Persona.Join(mEntityContext.Perfil, persona => persona.PersonaID, perfil => perfil.PersonaID, (persona, perfil) => new { Persona = persona, Perfil = perfil }).Join(mEntityContext.Identidad, personaPerfil => personaPerfil.Perfil.PerfilID, identidad => identidad.PerfilID, (personaPerfil, identidad) => new { Persona = personaPerfil.Persona, Perfil = personaPerfil.Perfil, Identidad = identidad }).Join(mEntityContext.GrupoIdentidadesParticipacion, personaPerfilIdentidad => personaPerfilIdentidad.Identidad.IdentidadID, grupoIdentidadesParticipacion => grupoIdentidadesParticipacion.IdentidadID, (personaPerfilIdentidad, grupoIdentidadesParticipacion) => new { Identidad = personaPerfilIdentidad.Identidad, Persona = personaPerfilIdentidad.Persona, Perfil = personaPerfilIdentidad.Perfil, GrupoIdentidadesParticipacion = grupoIdentidadesParticipacion }).Where(item => pGruposID.Contains(item.GrupoIdentidadesParticipacion.GrupoID) && !item.Persona.Eliminado).Select(item => item.Persona).ToList();
+                listaPersonas = mEntityContext.Persona.JoinPerfil().JoinIdentidad().JoinGrupoIdentidadesParticipacion().Where(item => pGruposID.Contains(item.GrupoIdentidadesParticipacion.GrupoID) && !item.Persona.Eliminado).Select(item => item.Persona).Distinct().ToList();
             }
 
             return listaPersonas;
@@ -645,7 +680,7 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
         /// <returns>True si el correo ya es un miembro de la comunidad, False si aún no lo es.</returns>
         public bool ObtenerSiCorreoPerteneceAProyecto(Guid pProyectoID, string pEmail)
         {
-            var resultado = mEntityContext.Persona.Join(mEntityContext.ProyectoRolUsuario, persona => persona.UsuarioID, proyectoRolUsuario => proyectoRolUsuario.UsuarioID, (persona, proyectoRolUsuario) => new { Persona = persona, ProyectoRolUsuario = proyectoRolUsuario }).Where(item => item.ProyectoRolUsuario.ProyectoID.Equals(pProyectoID) && item.Persona.Email.Equals(pEmail)).ToList();
+            var resultado = mEntityContext.Persona.Join(mEntityContext.ProyectoRolUsuario, persona => persona.UsuarioID, proyectoRolUsuario => proyectoRolUsuario.UsuarioID, (persona, proyectoRolUsuario) => new { Persona = persona, ProyectoRolUsuario = proyectoRolUsuario }).Where(item => item.ProyectoRolUsuario.ProyectoID.Equals(pProyectoID) && item.Persona.Email.Equals(pEmail.ToLower())).ToList();
             if (resultado.Count > 0)
             {
                 return true;
@@ -677,12 +712,10 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
         {
             DataWrapperPersona dataWrapperPersona = new DataWrapperPersona();
             List<Guid> listaGuid = new List<Guid>();
-            foreach (AD.EntityModel.Models.IdentidadDS.Perfil filaPerfil in pDataWrapperIdentidad.ListaPerfil)
-                if (filaPerfil.PersonaID.HasValue)
-                {
-                    listaGuid.Add(filaPerfil.PersonaID.Value);
-                }
-
+            foreach (AD.EntityModel.Models.IdentidadDS.Perfil filaPerfil in pDataWrapperIdentidad.ListaPerfil.Where(item => item.PersonaID.HasValue))
+            {
+                listaGuid.Add(filaPerfil.PersonaID.Value);
+            }
 
             if (listaGuid.Count > 0)
             {
@@ -963,7 +996,7 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
                 Identidad = perfPersIdent.Identidad,
                 Persona = persona
             })
-                .Where(item => item.PerfilPersona.PerfilID.Equals(pPerfilID) && item.Identidad.ProyectoID.Equals(ProyectoAD.MetaProyecto) && item.Persona.Email != null).ToList().Select(item => new PersonaIdentidad() { IdentidadId = item.Identidad.IdentidadID, PersonaID = item.PerfilPersona.PersonaID, Email = item.Persona.Email, Nombre = item.Persona.Nombre })
+                .Where(item => item.PerfilPersona.PerfilID.Equals(pPerfilID) && item.Identidad.ProyectoID.Equals(ProyectoAD.MetaProyecto) && item.Persona.Email != null).Select(item => new PersonaIdentidad() { IdentidadId = item.Identidad.IdentidadID, PersonaID = item.PerfilPersona.PersonaID, Email = item.Persona.Email, Nombre = item.Persona.Nombre })
              .Union(mEntityContext.PerfilPersonaOrg.Join(mEntityContext.Identidad, perfPersOrg => perfPersOrg.PerfilID, identidad => identidad.PerfilID, (perfPersOrg, identidad) =>
              new
              {
@@ -982,7 +1015,7 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
                  Identidad = perfPersOrgIden.Identidad,
                  PersonaVinculoOrganizacion = perfPersOrgIden.PersonaVinculoOrganizacion,
                  Persona = persona
-             }).Where(item => item.PerfilPersonaOrg.PerfilID.Equals(pPerfilID) && item.Identidad.ProyectoID.Equals(ProyectoAD.MetaProyecto) && item.PersonaVinculoOrganizacion.EmailTrabajo != null).ToList()
+             }).Where(item => item.PerfilPersonaOrg.PerfilID.Equals(pPerfilID) && item.Identidad.ProyectoID.Equals(ProyectoAD.MetaProyecto) && item.PersonaVinculoOrganizacion.EmailTrabajo != null)
              .Select(item => new PersonaIdentidad() { IdentidadId = item.Identidad.IdentidadID, PersonaID = item.PerfilPersonaOrg.PersonaID, Email = item.Persona.Email, Nombre = item.Persona.Nombre })).ToList();
         }
 
@@ -1144,7 +1177,7 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
         private void ActualizarNombrePersonaCambiado(Persona pFilaPersona)
         {
             //Tengo que actualizar en IdentidadDS / Perfil / "NombrePerfil"
-            IdentidadAD identidadAD = new IdentidadAD(mLoggingService, mEntityContext, mConfigService, mServicesUtilVirtuosoAndReplication);
+            IdentidadAD identidadAD = new IdentidadAD(mLoggingService, mEntityContext, mConfigService, mServicesUtilVirtuosoAndReplication,mLoggerFactory.CreateLogger<IdentidadAD>(),mLoggerFactory);
             identidadAD.ActualizarCambioNombrePersona(pFilaPersona.PersonaID, pFilaPersona.Nombre, pFilaPersona.Apellidos);
             identidadAD.Dispose();
         }

@@ -4,10 +4,12 @@ using Es.Riam.Gnoss.AD.ParametroAplicacion;
 using Es.Riam.Gnoss.CL;
 using Es.Riam.Gnoss.CL.ParametrosAplicacion;
 using Es.Riam.Gnoss.Logica.ServiciosGenerales;
+using Es.Riam.Gnoss.Logica.Usuarios;
 using Es.Riam.Gnoss.Util.Configuracion;
 using Es.Riam.Gnoss.Util.General;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -37,19 +39,19 @@ namespace Es.Riam.Gnoss.UtilServiciosWeb
 
 
         private static List<string> DOMINIOS_PERMITIDOS_CORS = new List<string>();
-        public static string DOMINIO_DEFECTO = "";
-        public static string IDIOMA_PRINCIPAL_DOMINIO = "es";
+		public static string DOMINIO_DEFECTO = "";
+		public static string IDIOMA_PRINCIPAL_DOMINIO = "es";
+		#endregion
 
-        #endregion
-
-        private LoggingService mLoggingService;
+		private LoggingService mLoggingService;
         private EntityContext mEntityContext;
         private ConfigService mConfigService;
         private RedisCacheWrapper mRedisCacheWrapper;
         private GnossCache mGnossCache;
         private IServicesUtilVirtuosoAndReplication mServicesUtilVirtuosoAndReplication;
-
-        public UtilServicios(LoggingService loggingService, EntityContext entityContext, ConfigService configService, RedisCacheWrapper redisCacheWrapper, GnossCache gnossCache, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication)
+        private ILogger mlogger;
+        private static ILoggerFactory mLoggerFactory;
+        public UtilServicios(LoggingService loggingService, EntityContext entityContext, ConfigService configService, RedisCacheWrapper redisCacheWrapper, GnossCache gnossCache, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication, ILogger<UtilServicios> logger,ILoggerFactory loggerFactory)
         {
             mLoggingService = loggingService;
             mEntityContext = entityContext;
@@ -57,6 +59,8 @@ namespace Es.Riam.Gnoss.UtilServiciosWeb
             mRedisCacheWrapper = redisCacheWrapper;
             mGnossCache = gnossCache;
             mServicesUtilVirtuosoAndReplication = servicesUtilVirtuosoAndReplication;
+            mlogger = logger;
+            mLoggerFactory = loggerFactory;
         }
 
         #region Métodos generales
@@ -118,11 +122,11 @@ namespace Es.Riam.Gnoss.UtilServiciosWeb
             {
                
                 string rutaConfig = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "logs", $"{pNombreLog}_{DateTime.Now.ToString("yyyy-MM-dd")}.log");
-                mLoggingService.GuardarLogError(pMensaje, rutaConfig);
+                mLoggingService.GuardarLogError(pMensaje, mlogger, rutaConfig);
             }
             catch (Exception e)
             {
-                mLoggingService.GuardarLogError(e, Environment.NewLine + Environment.NewLine + "Error Original: " + Environment.NewLine + pMensaje);
+                mLoggingService.GuardarLogError(e, Environment.NewLine + Environment.NewLine + "Error Original: " + Environment.NewLine + pMensaje,mlogger);
             }
             if (pLanzarError)
             {
@@ -150,7 +154,7 @@ namespace Es.Riam.Gnoss.UtilServiciosWeb
             }
             catch (Exception e)
             {
-                mLoggingService.GuardarLogError(e);
+                mLoggingService.GuardarLogError(e, mlogger);
             }
             RedirigirConStatusCode(500, "Internal Server Error");
         }
@@ -164,7 +168,7 @@ namespace Es.Riam.Gnoss.UtilServiciosWeb
             {
                 if (string.IsNullOrEmpty(mUrlIntragnoss))
                 {
-                    ParametroAplicacionCL paramCL = new ParametroAplicacionCL("acid", mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mServicesUtilVirtuosoAndReplication);
+                    ParametroAplicacionCL paramCL = new ParametroAplicacionCL("acid", mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<ParametroAplicacionCL>(), mLoggerFactory);
                     //ParametroAplicacionDS parametrosAplicacionDS = paramCL.ObtenerParametrosAplicacion();
                     // mUrlIntragnoss = (string)parametrosAplicacionDS.ParametroAplicacion.Select("Parametro = 'UrlIntragnoss'")[0]["Valor"];
                     List<ParametroAplicacion> parametrosAplicacionDS = paramCL.ObtenerParametrosAplicacionPorContext();
@@ -184,7 +188,7 @@ namespace Es.Riam.Gnoss.UtilServiciosWeb
             {
                 if (mParametrosAplicacionDS == null)
                 {
-                    ParametroAplicacionCL paramCL = new ParametroAplicacionCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mServicesUtilVirtuosoAndReplication);
+                    ParametroAplicacionCL paramCL = new ParametroAplicacionCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<ParametroAplicacionCL>(), mLoggerFactory);
                     // mParametrosAplicacionDS = ((ParametroAplicacionDS)paramCL.ObtenerParametrosAplicacion());
                     mParametrosAplicacionDS = paramCL.ObtenerParametrosAplicacionPorContext();
                 }
@@ -206,8 +210,9 @@ namespace Es.Riam.Gnoss.UtilServiciosWeb
         public bool ComprobacionCambiosCachesLocales(Guid pProyectoID)
         {
             string claveRefrescoCache = GnossCacheCL.CLAVE_REFRESCO_CACHE_LOCAL + pProyectoID;
-            Guid? idRefrescoCacheRedis = mGnossCache.ObtenerObjetoDeCache(claveRefrescoCache) as Guid?;
-            Guid? idRefrescoCacheLocal = mRedisCacheWrapper.Cache.Get(claveRefrescoCache) as Guid?;
+			
+            Guid? idRefrescoCacheRedis = mGnossCache.ObtenerObjetoDeCache(claveRefrescoCache, typeof(Guid?)) as Guid?;
+			Guid? idRefrescoCacheLocal = mRedisCacheWrapper.Cache.Get(claveRefrescoCache) as Guid?;
 
             if (idRefrescoCacheRedis.HasValue && (!idRefrescoCacheLocal.HasValue || !idRefrescoCacheRedis.Value.Equals(idRefrescoCacheLocal.Value)))
             {
@@ -228,7 +233,7 @@ namespace Es.Riam.Gnoss.UtilServiciosWeb
 
             string claveRefrescoRutas = GnossCacheCL.CLAVE_REFRESCO_RUTAS_PESTANYAS + pProyectoID;
 
-            Guid? idRefrescoRutasRedis = mGnossCache.ObtenerObjetoDeCache(claveRefrescoRutas) as Guid?;
+            Guid? idRefrescoRutasRedis = mGnossCache.ObtenerObjetoDeCache(claveRefrescoRutas, typeof(Guid?)) as Guid?;
             Guid? idRefrescoRutasLocal = mRedisCacheWrapper.Cache.Get(claveRefrescoRutas) as Guid?;
 
             if (!idRefrescoRutasRedis.HasValue)
@@ -251,8 +256,8 @@ namespace Es.Riam.Gnoss.UtilServiciosWeb
             // Se estaban produciendo errores al obtener de caché la clave CLAVE_RECALCULO_RUTAS, y estaba continuamente registrando rutas
             //return false;
             bool recalcularRutas = false;
-            
-            Guid? idRecalculoRutasRedis = mGnossCache.ObtenerObjetoDeCache(GnossCacheCL.CLAVE_RECALCULO_RUTAS) as Guid?;
+
+            Guid? idRecalculoRutasRedis = mGnossCache.ObtenerObjetoDeCache(GnossCacheCL.CLAVE_RECALCULO_RUTAS, typeof(Guid?)) as Guid?;
             Guid? idRecalculoRutasLocal = mRedisCacheWrapper.Cache.Get(GnossCacheCL.CLAVE_RECALCULO_RUTAS) as Guid?;
 
             if (!idRecalculoRutasRedis.HasValue)
@@ -277,7 +282,7 @@ namespace Es.Riam.Gnoss.UtilServiciosWeb
             {
                 string claveCachePersonalizacionRedis = GnossCacheCL.CLAVE_DICCIONARIO_REFRESCO_CACHE_VISTAS + pPersonalizacionID;
 
-                Dictionary<string, string> diccionarioRefrescoCache = mGnossCache.ObtenerObjetoDeCache(claveCachePersonalizacionRedis) as Dictionary<string, string>;
+                Dictionary<string, string> diccionarioRefrescoCache = mGnossCache.ObtenerObjetoDeCache(claveCachePersonalizacionRedis, typeof(Dictionary<string, string>)) as Dictionary<string, string>;
 
                 if (diccionarioRefrescoCache != null)
                 {
@@ -323,9 +328,9 @@ namespace Es.Riam.Gnoss.UtilServiciosWeb
             if (!pPersonalizacionID.Equals(Guid.Empty))
             {
                 string claveCachePersonalizacionRedis = BaseCL.CLAVE_REFRESCO_CACHE_TRADUCCIONES + pPersonalizacionID;
-
-                Guid? idActualRedisPersonalizacion = mGnossCache.ObtenerObjetoDeCache(claveCachePersonalizacionRedis) as Guid?;
-                Guid? idActualLocalPersonalizacion = mRedisCacheWrapper.Cache.Get(claveCachePersonalizacionRedis) as Guid?;
+				
+                Guid? idActualRedisPersonalizacion = mGnossCache.ObtenerObjetoDeCache(claveCachePersonalizacionRedis, typeof(Guid)) as Guid?;
+				Guid? idActualLocalPersonalizacion = mRedisCacheWrapper.Cache.Get(claveCachePersonalizacionRedis) as Guid?;
 
                 if (idActualRedisPersonalizacion.HasValue && (!idActualLocalPersonalizacion.HasValue || !idActualRedisPersonalizacion.Equals(idActualLocalPersonalizacion)))
                 {
@@ -377,7 +382,11 @@ namespace Es.Riam.Gnoss.UtilServiciosWeb
                 List<string> listaOtrosDominiosPermitdosCORS = dominiosPermitidosCORS.Split('|', StringSplitOptions.RemoveEmptyEntries).ToList();
                 DOMINIOS_PERMITIDOS_CORS.AddRange(listaOtrosDominiosPermitdosCORS);
             }
-
+            string dominioPaginasAdministracion = entity.ParametroAplicacion.Where(parametro => parametro.Parametro.Equals(TiposParametrosAplicacion.DominioPaginasAdministracion)).Select(parametro => parametro.Valor).FirstOrDefault();
+            if (!string.IsNullOrEmpty(dominioPaginasAdministracion))
+            {
+                DOMINIOS_PERMITIDOS_CORS.Add(dominioPaginasAdministracion);
+            }
             DOMINIOS_PERMITIDOS_CORS.Add("http://depuracion.net");
             DOMINIOS_PERMITIDOS_CORS.Add("http://depuracion.net:5003");
         }
@@ -387,10 +396,11 @@ namespace Es.Riam.Gnoss.UtilServiciosWeb
             return DOMINIOS_PERMITIDOS_CORS.Contains(dominio);
         }
 
-		public static void CargarIdiomasPlataforma(Es.Riam.Gnoss.AD.EntityModel.EntityContext entityContext, LoggingService loggingService, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication, RedisCacheWrapper redisCacheWrapper)
+		public static void CargarIdiomasPlataforma(Es.Riam.Gnoss.AD.EntityModel.EntityContext entityContext, LoggingService loggingService, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication, RedisCacheWrapper redisCacheWrapper,ILoggerFactory loggerFactory)
 		{
 			Dictionary<string, string> listaIdiomas = new Dictionary<string, string>();
-			ParametroAplicacionCL paramCL = new ParametroAplicacionCL(entityContext, loggingService, redisCacheWrapper, configService, servicesUtilVirtuosoAndReplication);
+            CargarDominio(configService);
+			ParametroAplicacionCL paramCL = new ParametroAplicacionCL(entityContext, loggingService, redisCacheWrapper, configService, servicesUtilVirtuosoAndReplication, loggerFactory.CreateLogger<ParametroAplicacionCL>(), loggerFactory);
 			listaIdiomas = paramCL.ObtenerListaIdiomasDictionary();
 			if (listaIdiomas.Count == 1 || string.IsNullOrEmpty(DOMINIO_DEFECTO))
 			{
@@ -398,7 +408,7 @@ namespace Es.Riam.Gnoss.UtilServiciosWeb
 			}
 			else if (listaIdiomas.Count > 1)
 			{
-				ProyectoCN proyCN = new ProyectoCN(entityContext, loggingService, configService, servicesUtilVirtuosoAndReplication);
+				ProyectoCN proyCN = new ProyectoCN(entityContext, loggingService, configService, servicesUtilVirtuosoAndReplication, loggerFactory.CreateLogger<ProyectoCN>(), loggerFactory);
 				IDIOMA_PRINCIPAL_DOMINIO = proyCN.ObtenerIdiomaPrincipalDominio(DOMINIO_DEFECTO);//select proyectoid, URLPropia from Proyecto where URLPropia like '%pruebasiphoneen.gnoss.net@%'
 
 				if (!listaIdiomas.ContainsKey(IDIOMA_PRINCIPAL_DOMINIO))
@@ -410,19 +420,19 @@ namespace Es.Riam.Gnoss.UtilServiciosWeb
 
 		private static void CargarDominio(ConfigService configService)
 		{
-            if (string.IsNullOrEmpty(DOMINIO_DEFECTO))
-            {
+			if (string.IsNullOrEmpty(DOMINIO_DEFECTO))
+			{
 				string dominioConfig = configService.ObtenerDominio();
 				if (!string.IsNullOrEmpty(dominioConfig))
-                {
-                    DOMINIO_DEFECTO = dominioConfig;
-                }
+				{
+					DOMINIO_DEFECTO = dominioConfig;
+				}
 
-                if (DOMINIO_DEFECTO.Contains("depuracion.net"))
-                {
-                    DOMINIO_DEFECTO = "";
-                }
-            }
+				if (DOMINIO_DEFECTO.Contains("depuracion.net"))
+				{
+					DOMINIO_DEFECTO = "";
+				}
+			}
 		}
 
 		#endregion

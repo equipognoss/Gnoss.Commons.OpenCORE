@@ -3,6 +3,8 @@ using Es.Riam.Gnoss.AD.EntityModel.Models.PersonaDS;
 using Es.Riam.Gnoss.AD.ServiciosGenerales;
 using Es.Riam.Gnoss.Util.General;
 using Es.Riam.Util;
+using Microsoft.Extensions.Logging;
+using Serilog.Core;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -63,8 +65,6 @@ namespace Es.Riam.Gnoss.Elementos.ServiciosGenerales
 
         private AD.EntityModel.Models.PersonaDS.Persona mFilaPersona;
 
-        private LoggingService mLoggingService;
-
         #endregion
 
         #region Constructores
@@ -72,10 +72,9 @@ namespace Es.Riam.Gnoss.Elementos.ServiciosGenerales
         /// <summary>
         /// Constructor vacío
         /// </summary>
-        public Persona(LoggingService loggingService)
-            : base(loggingService)
+        public Persona()
+            : base()
         {
-            mLoggingService = loggingService;
         }
 
 
@@ -84,10 +83,9 @@ namespace Es.Riam.Gnoss.Elementos.ServiciosGenerales
         /// </summary>
         /// <param name="pGestorPersonas">Gestor de personas</param>
         /// <param name="pPersona">row de la persona</param>
-        public Persona(AD.EntityModel.Models.PersonaDS.Persona pPersona, GestionPersonas pGestorPersonas, LoggingService loggingService)
-            : base(pPersona, pGestorPersonas, loggingService)
+        public Persona(AD.EntityModel.Models.PersonaDS.Persona pPersona, GestionPersonas pGestorPersonas)
+            : base(pPersona, pGestorPersonas)
         {
-            mLoggingService = loggingService;
         }
 
         #endregion
@@ -318,7 +316,7 @@ namespace Es.Riam.Gnoss.Elementos.ServiciosGenerales
             {
                 if (!string.IsNullOrEmpty(FilaPersona.Email))
                 {
-                    return NombreConApellidos + " <" + FilaPersona.Email + ">";
+                    return NombreConApellidos + " <" + FilaPersona.Email.ToLower() + ">";
                 }
                 else
                 {
@@ -660,7 +658,7 @@ namespace Es.Riam.Gnoss.Elementos.ServiciosGenerales
                 if (!FilaPersona.Email.Equals(value) && string.IsNullOrEmpty(value))
                     FilaPersona.Email = null;
                 else if (!FilaPersona.Email.Equals(value))
-                    FilaPersona.Email = value;
+                    FilaPersona.Email = value.ToLower();
             }
         }
 
@@ -795,7 +793,7 @@ namespace Es.Riam.Gnoss.Elementos.ServiciosGenerales
                     if (GestorPersonas.GestorOrganizaciones.ListaOrganizaciones.ContainsKey(organizacionID))
                     {
                         mListaOrganizaciones.Add(organizacionID, GestorPersonas.GestorOrganizaciones.ListaOrganizaciones[organizacionID]);
-                        mListaDatosTrabajoPersonaOrganizacion.Add(organizacionID, new DatosTrabajoPersonaOrganizacion(filaPersonaVinculoOrganizacion, GestorPersonas.GestorOrganizaciones, mLoggingService));
+                        mListaDatosTrabajoPersonaOrganizacion.Add(organizacionID, new DatosTrabajoPersonaOrganizacion(filaPersonaVinculoOrganizacion, GestorPersonas.GestorOrganizaciones));
                     }
                 }
             }

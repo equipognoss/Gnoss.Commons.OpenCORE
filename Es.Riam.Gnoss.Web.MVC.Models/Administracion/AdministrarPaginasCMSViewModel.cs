@@ -9,7 +9,8 @@ namespace Es.Riam.Gnoss.Web.MVC.Models.Administracion
     public enum TipoPropiedadMenu
     {
         Nombre = 0,
-        Enlace = 1
+        Enlace = 1,
+        Nivel = 2
     }
 
     /// <summary>

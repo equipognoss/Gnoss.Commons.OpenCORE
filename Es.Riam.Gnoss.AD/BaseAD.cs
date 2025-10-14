@@ -21,6 +21,7 @@ using Npgsql;
 using System.Net;
 using Es.Riam.Gnoss.AD.Virtuoso;
 using Es.Riam.AbstractsOpen;
+using Microsoft.Extensions.Logging;
 
 namespace Es.Riam.Gnoss.AD
 {
@@ -74,6 +75,8 @@ namespace Es.Riam.Gnoss.AD
         protected EntityContext mEntityContext;
         protected readonly ConfigService mConfigService;
         protected EntityContextBASE mEntityContextBASE;
+        private ILogger mlogger;
+        private ILoggerFactory mloggerFactory;
         #endregion
 
         #region Constructores
@@ -81,22 +84,26 @@ namespace Es.Riam.Gnoss.AD
         /// <summary>
         /// Constructor sin parámetros
         /// </summary>
-        public BaseAD(LoggingService loggingService, EntityContext entityContext, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication)
+        public BaseAD(LoggingService loggingService, EntityContext entityContext, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication,ILogger<BaseAD> logger,ILoggerFactory loggerFactory)
         {
             mLoggingService = loggingService;
             mEntityContext = entityContext;
             mConfigService = configService;
             mServicesUtilVirtuosoAndReplication = servicesUtilVirtuosoAndReplication;
+            mlogger = logger;
+            mloggerFactory = loggerFactory;
             Cargar();
         }
 
-        public BaseAD(LoggingService loggingService, EntityContext entityContext, ConfigService configService, EntityContextBASE entityContextBASE, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication)
+        public BaseAD(LoggingService loggingService, EntityContext entityContext, ConfigService configService, EntityContextBASE entityContextBASE, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication,ILogger<BaseAD> logger,ILoggerFactory loggerFactory)
         {
             mServicesUtilVirtuosoAndReplication = servicesUtilVirtuosoAndReplication;
             mLoggingService = loggingService;
             mEntityContext = entityContext;
             mConfigService = configService;
             mEntityContextBASE = entityContextBASE;
+            mlogger= logger;
+            mloggerFactory = loggerFactory;
             Cargar();
         }
 
@@ -106,12 +113,14 @@ namespace Es.Riam.Gnoss.AD
         /// <param name="pFicheroConfiguracionBD">Ruta del fichero de configuración</param>
         /// <param name="pUsarVariableEstatica">Si se están usando hilos con diferentes conexiones: FALSE. En caso contrario TRUE</param>
 
-        public BaseAD(string pFicheroConfiguracionBD, LoggingService loggingService, EntityContext entityContext, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication)
+        public BaseAD(string pFicheroConfiguracionBD, LoggingService loggingService, EntityContext entityContext, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication,ILogger<BaseAD> logger,ILoggerFactory loggerFactory)
         {
             mServicesUtilVirtuosoAndReplication = servicesUtilVirtuosoAndReplication;
             mLoggingService = loggingService;
             mEntityContext = entityContext;
             mConfigService = configService;
+            mlogger = logger;
+            mloggerFactory = loggerFactory;
             if (mServicesUtilVirtuosoAndReplication != null)
             {
                 mServicesUtilVirtuosoAndReplication.FicheroConfiguracion = pFicheroConfiguracionBD;
@@ -119,7 +128,7 @@ namespace Es.Riam.Gnoss.AD
             Cargar(pFicheroConfiguracionBD);
         }
 
-        public BaseAD(string pFicheroConfiguracionBD, LoggingService loggingService, EntityContext entityContext, ConfigService configService, EntityContextBASE entityContextBASE, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication)
+        public BaseAD(string pFicheroConfiguracionBD, LoggingService loggingService, EntityContext entityContext, ConfigService configService, EntityContextBASE entityContextBASE, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication, ILogger<BaseAD> logger, ILoggerFactory loggerFactory)
         {
             mServicesUtilVirtuosoAndReplication = servicesUtilVirtuosoAndReplication;
             mLoggingService = loggingService;
@@ -127,6 +136,8 @@ namespace Es.Riam.Gnoss.AD
             mConfigService = configService;
             mServicesUtilVirtuosoAndReplication.FicheroConfiguracion = pFicheroConfiguracionBD;
             mEntityContextBASE = entityContextBASE;
+            mlogger = logger;
+            mloggerFactory = loggerFactory;
             Cargar(pFicheroConfiguracionBD);
         }
 
@@ -317,7 +328,7 @@ namespace Es.Riam.Gnoss.AD
                                                 }
                                                 catch (Exception e)
                                                 {
-                                                    mLoggingService.GuardarLogError(e, null, true);
+                                                    mLoggingService.GuardarLogError(e, null, mlogger,true);
                                                 }
                                             }
                                         }
@@ -556,7 +567,7 @@ namespace Es.Riam.Gnoss.AD
             }
             catch (NullReferenceException ex)
             {
-                mLoggingService.GuardarLogError(ex, mensajeTraza.ToString());
+                mLoggingService.GuardarLogError(ex, mensajeTraza.ToString(), mlogger);
                 throw;
             }
         }
@@ -883,11 +894,6 @@ namespace Es.Riam.Gnoss.AD
         /// <returns></returns>
         protected IDataReader EjecutarReader(DbCommand pComando)
         {
-            if (ConexionMaster is OracleConnection)
-            {
-                return new EmptyDataReader();
-            }
-
             AgregarParametrosABaseDeDatos(BaseDatos, pComando);
             IDataReader resultado = null;
             try
@@ -975,7 +981,7 @@ namespace Es.Riam.Gnoss.AD
             }
             catch (SqlException ex)
             {
-                mLoggingService.GuardarLog($"cadena de conexion: {pComando.Connection.ConnectionString}");
+                mLoggingService.GuardarLog($"cadena de conexion: {pComando.Connection.ConnectionString}",mlogger);
                 if (ComprobarMensajeErrorParaReintento(ex))
                 {
                     AgregarEntradaTraza("Error: " + ex.Message);
@@ -1086,7 +1092,7 @@ namespace Es.Riam.Gnoss.AD
             }
             catch (Exception ex)
             {
-                mLoggingService.GuardarLogError(ex);
+                mLoggingService.GuardarLogError(ex, mlogger);
                 TerminarTransaccion(false);
                 throw;
             }
@@ -1436,7 +1442,7 @@ namespace Es.Riam.Gnoss.AD
                 string nombreTransaccion = $"Transaccion_{((SqlConnection)ConexionMaster).ClientConnectionId.ToString().ToLower()}";
                 if (TransaccionesPendientes.ContainsKey(nombreTransaccion) || Transaccion != null)
                 {
-                    mLoggingService.GuardarLog("Se ha intentado iniciar una transacción habiendo una ya iniciada.");
+                    mLoggingService.GuardarLog("Se ha intentado iniciar una transacción habiendo una ya iniciada.",mlogger);
                     return false;
                 }
                 else
@@ -1456,7 +1462,7 @@ namespace Es.Riam.Gnoss.AD
                     //{
                     //    IniciarTransaccionEntityContext();
                     //}
-                    mLoggingService.GuardarLog("Se ha iniciado una transacción.");
+                    mLoggingService.GuardarLog("Se ha iniciado una transacción.", mlogger);
                     return true;
                 }
             }
@@ -1594,19 +1600,19 @@ namespace Es.Riam.Gnoss.AD
                 {
                     if (pExito)
                     {
-                        mLoggingService.GuardarLog("Se ha finalizado una transacción correctamente.");
+                        mLoggingService.GuardarLog("Se ha finalizado una transacción correctamente.", mlogger);
                         mEntityContext.Database.CommitTransaction();
                     }
                     else if (Transaccion.Connection != null)
                     {
                         try
                         {
-                            mLoggingService.GuardarLog("Se ha finalizado una transacción erroneamente.");
+                            mLoggingService.GuardarLog("Se ha finalizado una transacción erroneamente.", mlogger);
                             mEntityContext.Database.RollbackTransaction();
                         }
                         catch (Exception ex)
                         {
-                            mLoggingService.GuardarLogError(ex);
+                            mLoggingService.GuardarLogError(ex, mlogger);
                         }
                     }
                 }
@@ -1635,7 +1641,7 @@ namespace Es.Riam.Gnoss.AD
                         }
                         catch (Exception ex)
                         {
-                            mLoggingService.GuardarLogError(ex);
+                            mLoggingService.GuardarLogError(ex, mlogger);
                         }
                     }
                 }
@@ -1824,7 +1830,7 @@ namespace Es.Riam.Gnoss.AD
                 }
                 catch (Exception ex)
                 {
-                    mLoggingService.GuardarLogError(ex);
+                    mLoggingService.GuardarLogError(ex, mlogger);
                 }
                 return null;
             }
@@ -1845,7 +1851,7 @@ namespace Es.Riam.Gnoss.AD
                 }
                 catch (Exception ex)
                 {
-                    mLoggingService.GuardarLogError(ex);
+                    mLoggingService.GuardarLogError(ex, mlogger);
                 }
                 return null;
             }

@@ -2,19 +2,16 @@
 using Es.Riam.Gnoss.AD.EncapsuladoDatos;
 using Es.Riam.Gnoss.AD.EntityModel;
 using Es.Riam.Gnoss.AD.EntityModel.Models.ProyectoDS;
+using Es.Riam.Gnoss.AD.Suscripcion;
 using Es.Riam.Gnoss.Util.Configuracion;
 using Es.Riam.Gnoss.Util.General;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Data;
 using System.Linq;
 
 namespace Es.Riam.Gnoss.AD.ParametrosProyecto
 {
-    #region Enumeraciones
-    #endregion
-
-
-
     public class JoinProyectoPestanyaBusquedaExportacionProyectoPestanyaMenu
     {
         public ProyectoPestanyaBusquedaExportacion ProyectoPestanyaBusquedaExportacion { get; set; }
@@ -46,8 +43,6 @@ namespace Es.Riam.Gnoss.AD.ParametrosProyecto
         public ProyectoPestanyaBusquedaExportacionExterna ProyectoPestanyaBusquedaExportacionExterna { get; set; }
         public ProyectoPestanyaMenu ProyectoPestanyaMenu { get; set; }
     }
-
-    //ProyectoPestanyaMenu ON ProyectoPestanyaBusquedaExportacion.PestanyaID = ProyectoPestanyaMenu.PestanyaID
 
     public static partial class Joins
     {
@@ -106,54 +101,21 @@ namespace Es.Riam.Gnoss.AD.ParametrosProyecto
 
     public class ExportacionBusquedaAD : BaseAD
     {
-        #region Consultas
-
-        string sqlSelectProyectoPestanyaBusquedaExportacion;
-        string sqlSelectProyectoPestanyaBusquedaExportacionPropiedad;
-        string sqlSelectProyectoPestanyaBusquedaExportacionExterna;
-
-        #endregion
-
-        #region DataAdapter
-
-        #region ProyectoPestanyaBusquedaExportacion
-
-        string sqlProyectoPestanyaBusquedaExportacionInsert;
-        string sqlProyectoPestanyaBusquedaExportacionDelete;
-        string sqlProyectoPestanyaBusquedaExportacionModify;
-
-        #endregion
-
-        #region ProyectoPestanyaBusquedaExportacionPropiedad
-
-        string sqlProyectoPestanyaBusquedaExportacionPropiedadInsert;
-        string sqlProyectoPestanyaBusquedaExportacionPropiedadDelete;
-        string sqlProyectoPestanyaBusquedaExportacionPropiedadModify;
-
-        #endregion
-
-        #region ProyectoPestanyaBusquedaExportacionExterna
-
-        string sqlProyectoPestanyaBusquedaExportacionExternaInsert;
-        string sqlProyectoPestanyaBusquedaExportacionExternaDelete;
-        string sqlProyectoPestanyaBusquedaExportacionExternaModify;
-
-        #endregion
-
-        #endregion
-
         #region Constructor
 
-        private EntityContext mEntityContext;
+        private readonly EntityContext mEntityContext;
+        private ILogger mlogger;
+        private ILoggerFactory mLoggerFactory;
 
         /// <summary>
         /// Constructor sin parámetros
         /// </summary>
-        public ExportacionBusquedaAD(LoggingService loggingService, EntityContext entityContext, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication)
-            : base(loggingService, entityContext, configService, servicesUtilVirtuosoAndReplication)
+        public ExportacionBusquedaAD(LoggingService loggingService, EntityContext entityContext, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication, ILogger<ExportacionBusquedaAD> logger, ILoggerFactory loggerFactory)
+            : base(loggingService, entityContext, configService, servicesUtilVirtuosoAndReplication, logger, loggerFactory)
         {
             mEntityContext = entityContext;
-            CargarConsultasYDataAdapters(IBD);
+            mlogger = logger;
+            mLoggerFactory = loggerFactory;
         }
 
         /// <summary>
@@ -161,69 +123,17 @@ namespace Es.Riam.Gnoss.AD.ParametrosProyecto
         /// </summary>
         /// <param name="pFicheroConfiguracionBD"></param>
         /// <param name="pUsarVariableEstatica">Si se están usando hilos con diferentes conexiones: FALSE. En caso contrario TRUE</param>
-        public ExportacionBusquedaAD(string pFicheroConfiguracionBD, LoggingService loggingService, EntityContext entityContext, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication)
-            : base(pFicheroConfiguracionBD, loggingService, entityContext, configService, servicesUtilVirtuosoAndReplication)
+        public ExportacionBusquedaAD(string pFicheroConfiguracionBD, LoggingService loggingService, EntityContext entityContext, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication, ILogger<ExportacionBusquedaAD> logger, ILoggerFactory loggerFactory)
+            : base(pFicheroConfiguracionBD, loggingService, entityContext, configService, servicesUtilVirtuosoAndReplication,logger,loggerFactory)
         {
             mEntityContext = entityContext;
-            this.CargarConsultasYDataAdapters(IBD);
+            mlogger = logger;
+            mLoggerFactory = loggerFactory;
         }
 
         #endregion
 
         #region Metodos Generales
-
-        #region Privados
-
-        /// <summary>
-        /// Procedimiento para construir las consultas
-        /// </summary>
-        /// <param name="pIBD">Interfaz de base de datos</param>
-        private void CargarConsultasYDataAdapters(IBaseDatos pIBD)
-        {
-            #region Consultas
-
-            sqlSelectProyectoPestanyaBusquedaExportacion = "SELECT ProyectoPestanyaBusquedaExportacion." + pIBD.CargarGuid("ExportacionID") + ", ProyectoPestanyaBusquedaExportacion." + pIBD.CargarGuid("PestanyaID") + ", ProyectoPestanyaBusquedaExportacion.NombreExportacion, ProyectoPestanyaBusquedaExportacion.Orden, ProyectoPestanyaBusquedaExportacion.GruposExportadores, ProyectoPestanyaBusquedaExportacion.FormatosExportacion FROM ProyectoPestanyaBusquedaExportacion";
-            sqlSelectProyectoPestanyaBusquedaExportacionPropiedad = "SELECT ProyectoPestanyaBusquedaExportacionPropiedad." + pIBD.CargarGuid("ExportacionID") + ", ProyectoPestanyaBusquedaExportacionPropiedad.Orden, ProyectoPestanyaBusquedaExportacionPropiedad." + pIBD.CargarGuid("OntologiaID") + ", ProyectoPestanyaBusquedaExportacionPropiedad.Ontologia, ProyectoPestanyaBusquedaExportacionPropiedad.Propiedad, ProyectoPestanyaBusquedaExportacionPropiedad.NombrePropiedad, ProyectoPestanyaBusquedaExportacionPropiedad.DatosExtraPropiedad FROM ProyectoPestanyaBusquedaExportacionPropiedad";
-            sqlSelectProyectoPestanyaBusquedaExportacionExterna = "SELECT ProyectoPestanyaBusquedaExportacionExterna." + pIBD.CargarGuid("ExportacionID") + ", ProyectoPestanyaBusquedaExportacionExterna." + pIBD.CargarGuid("PestanyaID") + ", ProyectoPestanyaBusquedaExportacionExterna.UrlServicioExterno FROM ProyectoPestanyaBusquedaExportacionExterna";
-
-            #endregion
-
-            #region DataAdapter
-
-            #region ProyectoPestanyaBusquedaExportacion
-
-            sqlProyectoPestanyaBusquedaExportacionInsert = pIBD.ReplaceParam("INSERT INTO ProyectoPestanyaBusquedaExportacion (ExportacionID, PestanyaID, NombreExportacion, Orden, GruposExportadores, FormatosExportacion ) VALUES (" + pIBD.GuidParamColumnaTabla("ExportacionID") + ", " + pIBD.GuidParamColumnaTabla("PestanyaID") + ", @NombreExportacion, @Orden, @GruposExportadores, @FormatosExportacion)");
-
-            sqlProyectoPestanyaBusquedaExportacionDelete = pIBD.ReplaceParam("DELETE FROM ProyectoPestanyaBusquedaExportacion WHERE (ExportacionID = " + pIBD.GuidParamColumnaTabla("Original_ExportacionID") + ")");
-
-            sqlProyectoPestanyaBusquedaExportacionModify = pIBD.ReplaceParam("UPDATE ProyectoPestanyaBusquedaExportacion SET ExportacionID = " + pIBD.GuidParamColumnaTabla("ExportacionID") + ", PestanyaID = " + pIBD.GuidParamColumnaTabla("PestanyaID") + ", NombreExportacion=@NombreExportacion, Orden=@Orden, GruposExportadores=@GruposExportadores, FormatosExportacion=@FormatosExportacion WHERE (ExportacionID = " + pIBD.GuidParamColumnaTabla("Original_ExportacionID") + ")");
-
-            #endregion
-
-            #region ProyectoPestanyaBusquedaExportacionPropiedad
-
-            sqlProyectoPestanyaBusquedaExportacionPropiedadInsert = pIBD.ReplaceParam("INSERT INTO ProyectoPestanyaBusquedaExportacionPropiedad (ExportacionID, Orden, OntologiaID, Ontologia, Propiedad, NombrePropiedad, DatosExtraPropiedad) VALUES (" + pIBD.GuidParamColumnaTabla("ExportacionID") + ", @Orden, " + pIBD.GuidParamColumnaTabla("OntologiaID") + ", @Ontologia, @Propiedad, @NombrePropiedad, @DatosExtraPropiedad)");
-
-            sqlProyectoPestanyaBusquedaExportacionPropiedadDelete = pIBD.ReplaceParam("DELETE FROM ProyectoPestanyaBusquedaExportacionPropiedad WHERE (ExportacionID = " + pIBD.GuidParamColumnaTabla("Original_ExportacionID") + " AND Orden=@Original_Orden)");
-
-            sqlProyectoPestanyaBusquedaExportacionPropiedadModify = pIBD.ReplaceParam("UPDATE ProyectoPestanyaBusquedaExportacionPropiedad SET ExportacionID = " + pIBD.GuidParamColumnaTabla("ExportacionID") + ", Orden=@Orden, OntologiaID=" + pIBD.GuidParamColumnaTabla("OntologiaID") + ", Ontologia=@Ontologia, Propiedad=@Propiedad, NombrePropiedad=@NombrePropiedad,  DatosExtraPropiedad=@DatosExtraPropiedad WHERE (ExportacionID = " + pIBD.GuidParamColumnaTabla("Original_ExportacionID") + " AND Orden=@Original_Orden)");
-
-            #endregion
-
-            #region ProyectoPestanyaBusquedaExportacionExterna
-
-            sqlProyectoPestanyaBusquedaExportacionExternaInsert = pIBD.ReplaceParam("INSERT INTO ProyectoPestanyaBusquedaExportacionExterna (ExportacionID, PestanyaID, UrlServicioExterno) VALUES (" + pIBD.GuidParamColumnaTabla("ExportacionID") + ", " + pIBD.GuidParamColumnaTabla("PestanyaID") + ", @UrlServicioExterno)");
-
-            sqlProyectoPestanyaBusquedaExportacionExternaDelete = pIBD.ReplaceParam("DELETE FROM ProyectoPestanyaBusquedaExportacionExterna WHERE (ExportacionID = " + pIBD.GuidParamColumnaTabla("Original_ExportacionID") + " AND PestanyaID = " + pIBD.GuidParamColumnaTabla("Original_PestanyaID") + ")");
-
-            sqlProyectoPestanyaBusquedaExportacionExternaModify = pIBD.ReplaceParam("UPDATE ProyectoPestanyaBusquedaExportacionExterna SET ExportacionID = " + pIBD.GuidParamColumnaTabla("ExportacionID") + ", PestanyaID = " + pIBD.GuidParamColumnaTabla("PestanyaID") + ", UrlServicioExterno=@UrlServicioExterno WHERE (ExportacionID = " + pIBD.GuidParamColumnaTabla("Original_ExportacionID") + " AND PestanyaID = " + pIBD.GuidParamColumnaTabla("Original_PestanyaID") + ")");
-
-            #endregion
-
-            #endregion
-        }
-
-        #endregion
 
         #region Públicos
 
@@ -452,6 +362,26 @@ namespace Es.Riam.Gnoss.AD.ParametrosProyecto
         /// Constante para los numeros de recursos publicados
         /// </summary>
         public const string FechaUltimoAcceso = "fechaultimoacceso";
+
+        /// <summary>
+        /// Constante para el rol dentro de una comunidad
+        /// </summary>
+        public const string Rol = "rol";
+
+        /// <summary>
+        /// Constante para saber si está suscrito a la newsletter
+        /// </summary>
+        public const string EstaSuscritoBoletin = "boletin";
+
+        /// <summary>
+        /// Constante para saber si está expulsado
+        /// </summary>
+        public const string EstaExpulsado = "expulsado";
+
+        /// <summary>
+        /// Constante para saber si está bloqueado
+        /// </summary>
+        public const string EstaBloqueado = "bloqueado";
     }
     public class TipoDatosExtraPropiedadExportacion
     {

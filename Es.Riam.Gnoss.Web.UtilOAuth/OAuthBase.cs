@@ -8,6 +8,8 @@ using Es.Riam.Gnoss.Util.General;
 using Es.Riam.Gnoss.AD.EntityModel;
 using Es.Riam.Gnoss.Util.Configuracion;
 using Es.Riam.AbstractsOpen;
+using Microsoft.Extensions.Logging;
+using Es.Riam.Gnoss.Elementos.Amigos;
 
 namespace Es.Riam.Gnoss.Web.UtilOAuth
 {
@@ -91,7 +93,6 @@ namespace Es.Riam.Gnoss.Web.UtilOAuth
         protected const string HMACSHA1SignatureType = "HMAC-SHA1";
         protected const string PlainTextSignatureType = "PLAINTEXT";
         protected const string RSASHA1SignatureType = "RSA-SHA1";
-
         protected Random random = new Random();
 
         protected string unreservedChars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-_.~";
@@ -362,7 +363,7 @@ namespace Es.Riam.Gnoss.Web.UtilOAuth
         /// </summary>
         /// <param name="pUrl">Url</param>
         /// <returns>QueryOauth con los parámetros OAuth</returns>
-        public static QueryOauth ObtenerParametrosUrl(string pUrl, EntityContextOauth entityContextOauth, LoggingService loggingService, EntityContext entityContext, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication)
+        public static  QueryOauth ObtenerParametrosUrl(string pUrl, EntityContextOauth entityContextOauth, LoggingService loggingService, EntityContext entityContext, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication, ILogger<QueryOauth> mlogger, ILoggerFactory mLoggerFactory)
         {
             List<QueryParameter> parametros = ObtenerOAuthQueryParameters(pUrl.Substring(pUrl.IndexOf("?")));
             string token = "";
@@ -403,7 +404,7 @@ namespace Es.Riam.Gnoss.Web.UtilOAuth
                     }
                 }
             }
-            QueryOauth queryOauth = new QueryOauth(pUrl, token, consumerKey, nonce, method, timespan, signature, entityContextOauth, loggingService, entityContext, configService, servicesUtilVirtuosoAndReplication);
+            QueryOauth queryOauth = new QueryOauth(pUrl, token, consumerKey, nonce, method, timespan, signature, entityContextOauth, loggingService, entityContext, configService, servicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<QueryOauth>(), mLoggerFactory);
             return queryOauth;
         }
 

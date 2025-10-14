@@ -1,11 +1,14 @@
 using Es.Riam.AbstractsOpen;
 using Es.Riam.Gnoss.AD.EncapsuladoDatos;
 using Es.Riam.Gnoss.AD.EntityModel;
+using Es.Riam.Gnoss.AD.ParametroAplicacion;
 using Es.Riam.Gnoss.AD.ServiciosGenerales;
 using Es.Riam.Gnoss.AD.Usuarios;
+using Es.Riam.Gnoss.Logica.ServiciosGenerales;
 using Es.Riam.Gnoss.Logica.Usuarios;
 using Es.Riam.Gnoss.Util.Configuracion;
 using Es.Riam.Gnoss.Util.General;
+using Microsoft.Extensions.Logging;
 using StackExchange.Redis;
 using System;
 using System.Collections.Generic;
@@ -30,7 +33,8 @@ namespace Es.Riam.Gnoss.CL.Usuarios
         private ConfigService mConfigService;
         private EntityContext mEntityContext;
         private LoggingService mLoggingService;
-
+        private ILogger mlogger;
+        private ILoggerFactory mLoggerFactory;
         private const string SlidingRateLimiter = @$"
             local current_time = redis.call('TIME')
             local trim_time = tonumber(current_time[1]) - @window
@@ -51,14 +55,16 @@ namespace Es.Riam.Gnoss.CL.Usuarios
         private int mRedisDB;
         #endregion
 
-        public UsuarioCL(EntityContext entityContext, LoggingService loggingService, RedisCacheWrapper redisCacheWrapper, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication)
-            : base(entityContext, loggingService, redisCacheWrapper, configService, servicesUtilVirtuosoAndReplication)
+        public UsuarioCL(EntityContext entityContext, LoggingService loggingService, RedisCacheWrapper redisCacheWrapper, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication, ILogger<UsuarioCL> logger, ILoggerFactory loggerFactory)
+            : base(entityContext, loggingService, redisCacheWrapper, configService, servicesUtilVirtuosoAndReplication,logger,loggerFactory)
         {
             mConfigService = configService;
             mEntityContext = entityContext;
             mLoggingService = loggingService;
             mRedisIP = mConfigService.ObtenerConexionRedisIPMaster("liveUsuarios");
             mRedisDB = mConfigService.ObtenerConexionRedisBD("liveUsuarios");
+            mlogger = logger;
+            mLoggerFactory = loggerFactory;
         }
 
         #region Métodos
@@ -83,10 +89,10 @@ namespace Es.Riam.Gnoss.CL.Usuarios
             string rawKey = string.Concat("UsuariosDeOrganizacionCargaLigeraParaFiltros_", pOrganizacionID);
 
             // Compruebo si está en la caché
-            DataWrapperUsuario dataWrapperUsuario = ObtenerObjetoDeCache(rawKey) as DataWrapperUsuario;
+            DataWrapperUsuario dataWrapperUsuario = ObtenerObjetoDeCache(rawKey, typeof(DataWrapperUsuario)) as DataWrapperUsuario;
             if (dataWrapperUsuario == null)
             {
-                UsuarioCN usuarioCN = new UsuarioCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+                UsuarioCN usuarioCN = new UsuarioCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<UsuarioCN>(), mLoggerFactory);
                 // Si no está, lo cargo y lo almaceno en la caché
                 dataWrapperUsuario = usuarioCN.CargarUsuariosDeOrganizacionCargaLigeraParaFiltros(pOrganizacionID);
                 if (dataWrapperUsuario != null)
@@ -120,7 +126,7 @@ namespace Es.Riam.Gnoss.CL.Usuarios
             string rawKey = string.Concat("idRedSocial_", pID);
 
             // Compruebo si está en la caché
-            datos = ObtenerObjetoDeCache(rawKey) as Dictionary<string, object>;
+            datos = ObtenerObjetoDeCache(rawKey, typeof(Dictionary<string, object>)) as Dictionary<string, object>;
             return datos;
         }
 
@@ -131,10 +137,10 @@ namespace Es.Riam.Gnoss.CL.Usuarios
         public string ObtenerRedireccionUsuario(Guid pUsuarioID)
         {
             string rawKey = string.Concat("UsuarioRedireccion_", pUsuarioID);
-            string redireccion = ObtenerObjetoDeCache(rawKey) as string;
+            string redireccion = ObtenerObjetoDeCache(rawKey, typeof(string)) as string;
             if (redireccion == null)
             {
-                UsuarioCN usuarioCN = new UsuarioCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+                UsuarioCN usuarioCN = new UsuarioCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<UsuarioCN>(), mLoggerFactory);
                 redireccion = UsuarioCN.ObtenerUrlRedirect(pUsuarioID);
                 usuarioCN.Dispose();
 
@@ -213,7 +219,7 @@ namespace Es.Riam.Gnoss.CL.Usuarios
             {
                 if (mUsuarioCN == null)
                 {
-                    mUsuarioCN = new UsuarioCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+                    mUsuarioCN = new UsuarioCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<UsuarioCN>(), mLoggerFactory);
                 }
 
                 return mUsuarioCN;
@@ -278,7 +284,7 @@ namespace Es.Riam.Gnoss.CL.Usuarios
                 }
                 catch (Exception e)
                 {
-                    mLoggingService.GuardarLogError(e);
+                    mLoggingService.GuardarLogError(e, mlogger);
                 }
             }
         }

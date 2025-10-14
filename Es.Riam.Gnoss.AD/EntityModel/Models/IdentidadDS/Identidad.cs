@@ -8,6 +8,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 using Es.Riam.Gnoss.AD.EntityModel.Models.ProyectoDS;
 using Es.Riam.Gnoss.AD.EntityModel.Models.OrganizacionDS;
 using Es.Riam.Gnoss.AD.EntityModel.Models.UsuarioDS;
+using Es.Riam.Gnoss.AD.EntityModel.Models.Roles;
 
 namespace Es.Riam.Gnoss.AD.EntityModel.Models.IdentidadDS
 {
@@ -84,5 +85,8 @@ namespace Es.Riam.Gnoss.AD.EntityModel.Models.IdentidadDS
         public virtual ICollection<ProyectoUsuarioIdentidad> ProyectoUsuarioIdentidad { get; set; }
 
         public virtual ICollection<Documentacion.Documento> Documentos { get; set; }
-    }
+
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+		public virtual ICollection<RolIdentidad> RolIdentidad { get; set; }
+	}
 }

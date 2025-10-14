@@ -1,7 +1,8 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net6.0</TargetFramework>
+	  <TargetFramework>net8.0</TargetFramework>
+	  <SonarQubeExclude>false</SonarQubeExclude>
   </PropertyGroup>
 
   <ItemGroup>
@@ -18,13 +19,19 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Es.Riam.Gnoss.AD\Es.Riam.Gnoss.AD.csproj" />
-    <ProjectReference Include="..\Es.Riam.Gnoss.Util\Es.Riam.Gnoss.Util.csproj" />
-    <ProjectReference Include="..\Es.Riam.Util\Es.Riam.Util.csproj" />
+	  <ProjectReference Include="..\Es.Riam.Gnoss.AD\Es.Riam.Gnoss.AD.csproj" />
+	  <ProjectReference Include="..\Es.Riam.Gnoss.Util\Es.Riam.Gnoss.Util.csproj" />
+	  <ProjectReference Include="..\Es.Riam.Gnoss.Web.MVC.Models\Es.Riam.Gnoss.Web.MVC.Models.csproj" />
+	  <ProjectReference Include="..\Es.Riam.Util\Es.Riam.Util.csproj" />
+	  <ProjectReference Include="..\Es.Riam.InterfacesOpen\Es.Riam.InterfacesOpen.csproj" />
   </ItemGroup>
 
   <ItemGroup>
     <Folder Include="Cookie\" />
   </ItemGroup>
 
+	<ItemGroup>
+		<PackageReference Include="Aspose.Zip" Version="24.10.0" />
+		<PackageReference Include="Microsoft.ApplicationInsights" Version="2.23.0" />
+	</ItemGroup>
 </Project>

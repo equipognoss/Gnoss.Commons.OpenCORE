@@ -1,5 +1,6 @@
 using Es.Riam.AbstractsOpen;
 using Es.Riam.Gnoss.AD.EntityModel;
+using Es.Riam.Gnoss.AD.ParametroAplicacion;
 using Es.Riam.Gnoss.AD.Virtuoso;
 using Es.Riam.Gnoss.CL;
 using Es.Riam.Gnoss.Elementos;
@@ -14,6 +15,7 @@ using Es.Riam.Util;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.Logging;
 using System;
 
 namespace Es.Riam.Gnoss.ExportarImportar.Exportadores
@@ -23,16 +25,19 @@ namespace Es.Riam.Gnoss.ExportarImportar.Exportadores
     /// </summary>
     public class ExportadorProyecto : ExportadorElementoGnoss, IDisposable
     {
-
+        private ILogger mlogger;
+        private ILoggerFactory mLoggerFactory;
         #region Constructor
 
         /// <summary>
         /// Crea un nuevo exportador de grupo
         /// </summary>
         /// <param name="pOntologia">Ontología</param>
-        public ExportadorProyecto(Ontologia pOntologia, string pIdiomaUsuario,  LoggingService loggingService, EntityContext entityContext, ConfigService configService, RedisCacheWrapper redisCacheWrapper, UtilSemCms utilSemCms, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication, VirtuosoAD virtuosoAd)
-            : base(pOntologia, pIdiomaUsuario, loggingService, entityContext, configService, redisCacheWrapper, utilSemCms, servicesUtilVirtuosoAndReplication, virtuosoAd)
+        public ExportadorProyecto(Ontologia pOntologia, string pIdiomaUsuario,  LoggingService loggingService, EntityContext entityContext, ConfigService configService, RedisCacheWrapper redisCacheWrapper, UtilSemCms utilSemCms, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication, VirtuosoAD virtuosoAd, ILogger<ExportadorProyecto> logger, ILoggerFactory loggerFactory)
+            : base(pOntologia, pIdiomaUsuario, loggingService, entityContext, configService, redisCacheWrapper, utilSemCms, servicesUtilVirtuosoAndReplication, virtuosoAd, logger, loggerFactory)
         {
+            mlogger = logger;
+            mLoggerFactory = loggerFactory;
         }
 
         #endregion

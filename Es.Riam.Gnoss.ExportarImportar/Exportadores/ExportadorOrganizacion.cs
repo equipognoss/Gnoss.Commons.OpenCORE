@@ -1,5 +1,6 @@
 using Es.Riam.AbstractsOpen;
 using Es.Riam.Gnoss.AD.EntityModel;
+using Es.Riam.Gnoss.AD.ParametroAplicacion;
 using Es.Riam.Gnoss.AD.Virtuoso;
 using Es.Riam.Gnoss.CL;
 using Es.Riam.Gnoss.Elementos;
@@ -13,6 +14,7 @@ using Es.Riam.Semantica.OWL;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.Logging;
 using System;
 
 namespace Es.Riam.Gnoss.ExportarImportar.Exportadores
@@ -35,7 +37,8 @@ namespace Es.Riam.Gnoss.ExportarImportar.Exportadores
         private ConfigService mConfigService;
         private RedisCacheWrapper mRedisCacheWrapper;
         private UtilSemCms mUtilSemCms;
-
+        private ILogger mlogger;
+        private ILoggerFactory mLoggerFactory;
         #endregion
 
         #region Constructor
@@ -44,13 +47,14 @@ namespace Es.Riam.Gnoss.ExportarImportar.Exportadores
         /// Crea un nuevo exportador de organización a partir de la ontología pasada por parámetro
         /// </summary>
         /// <param name="pOntologia">Ontología</param>
-        public ExportadorOrganizacion(Ontologia pOntologia, string pIdiomaUsuario, LoggingService loggingService, EntityContext entityContext, ConfigService configService, RedisCacheWrapper redisCacheWrapper, UtilSemCms utilSemCms, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication, VirtuosoAD virtuosoAd)
-            : base(pOntologia, pIdiomaUsuario, loggingService, entityContext, configService, redisCacheWrapper, utilSemCms, servicesUtilVirtuosoAndReplication, virtuosoAd)
+        public ExportadorOrganizacion(Ontologia pOntologia, string pIdiomaUsuario, LoggingService loggingService, EntityContext entityContext, ConfigService configService, RedisCacheWrapper redisCacheWrapper, UtilSemCms utilSemCms, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication, VirtuosoAD virtuosoAd, ILogger<ExportadorOrganizacion> logger, ILoggerFactory loggerFactory)
+            : base(pOntologia, pIdiomaUsuario, loggingService, entityContext, configService, redisCacheWrapper, utilSemCms, servicesUtilVirtuosoAndReplication, virtuosoAd, logger, loggerFactory)
         {
             mLoggingService = loggingService;
             mEntityContext = entityContext;
             mConfigService = configService;
-            
+            mlogger = logger;
+            mLoggerFactory = loggerFactory;
             mRedisCacheWrapper = redisCacheWrapper;
             mUtilSemCms = utilSemCms;
         }
@@ -210,7 +214,7 @@ namespace Es.Riam.Gnoss.ExportarImportar.Exportadores
         private void ObtenerPersonalDeOrganizacion(ElementoOntologia pEntidad, IElementoGnoss pElementoGnoss, Propiedad pPropiedad, GestionGnoss pGestor)
         {
             Organizacion org = (Organizacion)pElementoGnoss;
-            ExportadorPersona exportEstr = new ExportadorPersona(Ontologia, IdiomaUsuario, mLoggingService, mEntityContext, mConfigService, mRedisCacheWrapper, mUtilSemCms, mServicesUtilVirtuosoAndReplication, mVirtuosoAd);
+            ExportadorPersona exportEstr = new ExportadorPersona(Ontologia, IdiomaUsuario, mLoggingService, mEntityContext, mConfigService, mRedisCacheWrapper, mUtilSemCms, mServicesUtilVirtuosoAndReplication, mVirtuosoAd, mloggerFactory.CreateLogger<ExportadorPersona>(), mloggerFactory);
 
             foreach (Persona elemPersona in org.ListaPersonasVinculadasConLaOrganizacion.Values)
             {

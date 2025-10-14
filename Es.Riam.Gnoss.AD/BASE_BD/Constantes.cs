@@ -84,6 +84,23 @@ namespace Es.Riam.Gnoss.AD.BASE_BD
         public const string GENERAR_TODOS_RECURSOS = "##GENERAR_TODOS_RECURSOS##";
 
         /// <summary>
+        ///Constante para codificar el tipo de inserción de todos las facetas en el autocompletar.
+        /// </summary>
+        public const string GENERAR_TODAS_FACETAS = "##GENERAR_TODAS_FACETAS##";
+        /// <summary>
+        ///Constante para codificar el tipo de inserción de todos las facetas en el autocompletar.
+        /// </summary>
+        public const string ELIMINAR_TODAS_FACETAS = "##ELIMINAR_TODAS_FACETAS##";
+        /// <summary>
+        ///Constante para identificar la faceta en los tags de una fila de la ColaFacetas.
+        /// </summary>
+        public const string FACETA = "##FACETA##";
+        /// <summary>
+        ///Constante para identificar el objeto de conocimiento en los tags de una fila de la ColaFacetas.
+        /// </summary>
+        public const string OBJETO_CONOCIMIENTO = "##OBJETO_CONOCIMIENTO##";
+
+        /// <summary>
         /// Constante para codificar la cadena de afinidad de virtuoso
         /// </summary>
         public const string AFINIDAD_VIRTUOSO = "##AFINIDAD_VIRTUOSO##";

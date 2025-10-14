@@ -5,6 +5,7 @@ using Es.Riam.Gnoss.AD.ServiciosGenerales;
 using Es.Riam.Gnoss.Util.General;
 using Es.Riam.Gnoss.Web.MVC.Models.Administracion;
 using Es.Riam.Util;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -40,7 +41,7 @@ namespace Es.Riam.Gnoss.Elementos.ServiciosGenerales
         /// <param name="pFilaProyectoPestanyaMenu">Fila de pestaña</param>
         /// <param name="pFilaProyectoPestanyaMenu">Gestor de Proyecto</param>
         public ProyectoPestanyaMenu(AD.EntityModel.Models.ProyectoDS.ProyectoPestanyaMenu pFilaProyectoPestanyaMenu, GestionProyecto pGestorProyecto, LoggingService loggingService, EntityContext entityContext)
-            : base(pGestorProyecto, loggingService)
+            : base(pGestorProyecto)
         {
             mLoggingService = loggingService;
             mEntityContext = entityContext;
@@ -64,7 +65,7 @@ namespace Es.Riam.Gnoss.Elementos.ServiciosGenerales
                 {
                     if (!mListaRolGrupoIdentidades.ContainsKey(filaRolGrupoIdentidades.GrupoID))
                     {
-                        mListaRolGrupoIdentidades.Add(filaRolGrupoIdentidades.GrupoID, new ProyectoPestanyaMenuRolGrupoIdentidades(filaRolGrupoIdentidades, GestorProyecto, mLoggingService));
+                        mListaRolGrupoIdentidades.Add(filaRolGrupoIdentidades.GrupoID, new ProyectoPestanyaMenuRolGrupoIdentidades(filaRolGrupoIdentidades, GestorProyecto));
                     }
                 }
             }
@@ -83,7 +84,7 @@ namespace Es.Riam.Gnoss.Elementos.ServiciosGenerales
                 {
                     if (!mListaRolIdentidad.ContainsKey(filaRolIdentidad.PerfilID))
                     {
-                        mListaRolIdentidad.Add(filaRolIdentidad.PerfilID, new ProyectoPestanyaMenuRolIdentidad(filaRolIdentidad, GestorProyecto, mLoggingService));
+                        mListaRolIdentidad.Add(filaRolIdentidad.PerfilID, new ProyectoPestanyaMenuRolIdentidad(filaRolIdentidad, GestorProyecto));
                     }
                 }
             }
@@ -417,7 +418,7 @@ namespace Es.Riam.Gnoss.Elementos.ServiciosGenerales
             filaGrupoIdentidades.GrupoID = pGrupoID;
 
             GestorProyecto.DataWrapperProyectos.ListaProyectoPestanyaMenuRolGrupoIdentidades.Add(filaGrupoIdentidades);
-            ProyectoPestanyaMenuRolGrupoIdentidades RolGrupoIdentidades = new ProyectoPestanyaMenuRolGrupoIdentidades(filaGrupoIdentidades, GestorProyecto, mLoggingService);
+            ProyectoPestanyaMenuRolGrupoIdentidades RolGrupoIdentidades = new ProyectoPestanyaMenuRolGrupoIdentidades(filaGrupoIdentidades, GestorProyecto);
 
             ListaRolGrupoIdentidades.Add(pGrupoID, RolGrupoIdentidades);
 
@@ -454,7 +455,7 @@ namespace Es.Riam.Gnoss.Elementos.ServiciosGenerales
             filaIdentidad.PerfilID = pPerfilID;
 
             GestorProyecto.DataWrapperProyectos.ListaProyectoPestanyaMenuRolIdentidad.Add(filaIdentidad);
-            ProyectoPestanyaMenuRolIdentidad RolIdentidad = new ProyectoPestanyaMenuRolIdentidad(filaIdentidad, GestorProyecto, mLoggingService);
+            ProyectoPestanyaMenuRolIdentidad RolIdentidad = new ProyectoPestanyaMenuRolIdentidad(filaIdentidad, GestorProyecto);
 
             ListaRolIdentidad.Add(pPerfilID, RolIdentidad);
 
@@ -764,8 +765,8 @@ namespace Es.Riam.Gnoss.Elementos.ServiciosGenerales
         /// </summary>
         /// <param name="pFilaCMSRolGrupoIdentidades">Fila de CMSRolGrupoIdentidades</param>
         /// <param name="pGestorCMS">Gestor de CMS</param>
-        public ProyectoPestanyaMenuRolGrupoIdentidades(AD.EntityModel.Models.ProyectoDS.ProyectoPestanyaMenuRolGrupoIdentidades pFilaProyectoPestanyaMenuRolGrupoIdentidades, GestionProyecto pGestorProyecto, LoggingService loggingService)
-            : base(pGestorProyecto, loggingService)
+        public ProyectoPestanyaMenuRolGrupoIdentidades(AD.EntityModel.Models.ProyectoDS.ProyectoPestanyaMenuRolGrupoIdentidades pFilaProyectoPestanyaMenuRolGrupoIdentidades, GestionProyecto pGestorProyecto)
+            : base(pGestorProyecto)
         {
             this.FilaProyectoPestanyaMenuRolGrupoIdentidades = pFilaProyectoPestanyaMenuRolGrupoIdentidades;
         }
@@ -823,8 +824,8 @@ namespace Es.Riam.Gnoss.Elementos.ServiciosGenerales
         /// </summary>
         /// <param name="pFilaProyectoPestanyaRolIdentidad">Fila de ProyectoPestanyaRolIdentidad</param>
         /// <param name="pGestorProyectoPestanya">Gestor de ProyectoPestanya</param>
-        public ProyectoPestanyaMenuRolIdentidad(AD.EntityModel.Models.ProyectoDS.ProyectoPestanyaMenuRolIdentidad pFilaProyectoPestanyaMenuRolIdentidad, GestionProyecto pGestorProyecto, LoggingService loggingService)
-            : base(pGestorProyecto, loggingService)
+        public ProyectoPestanyaMenuRolIdentidad(AD.EntityModel.Models.ProyectoDS.ProyectoPestanyaMenuRolIdentidad pFilaProyectoPestanyaMenuRolIdentidad, GestionProyecto pGestorProyecto)
+            : base(pGestorProyecto)
         {
             this.FilaProyectoPestanyaMenuRolIdentidad = pFilaProyectoPestanyaMenuRolIdentidad;
         }

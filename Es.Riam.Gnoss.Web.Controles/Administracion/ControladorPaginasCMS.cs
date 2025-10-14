@@ -2,6 +2,7 @@
 using Es.Riam.Gnoss.AD.EncapsuladoDatos;
 using Es.Riam.Gnoss.AD.EntityModel;
 using Es.Riam.Gnoss.AD.EntityModelBASE;
+using Es.Riam.Gnoss.AD.ParametroAplicacion;
 using Es.Riam.Gnoss.AD.ServiciosGenerales;
 using Es.Riam.Gnoss.AD.Virtuoso;
 using Es.Riam.Gnoss.CL;
@@ -13,13 +14,23 @@ using Es.Riam.Gnoss.Logica.CMS;
 using Es.Riam.Gnoss.Recursos;
 using Es.Riam.Gnoss.Util.Configuracion;
 using Es.Riam.Gnoss.Util.General;
+using Es.Riam.Gnoss.UtilServiciosWeb;
+using Es.Riam.Gnoss.Web.Controles.GeneradorPlantillasOWL.ConfiguracionEstilo;
 using Es.Riam.Gnoss.Web.Controles.ServiciosGenerales;
+using Es.Riam.Gnoss.Web.MVC.Models;
 using Es.Riam.Gnoss.Web.MVC.Models.Administracion;
+using Es.Riam.Interfaces.InterfacesOpen;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
+using System.Text;
+using static Es.Riam.Gnoss.Web.MVC.Models.Administracion.AdministrarPaginasCMSViewModel;
+using static Es.Riam.Gnoss.Web.MVC.Models.Administracion.AdministrarPaginasCMSViewModel.RowCMSModel;
+using static Es.Riam.Gnoss.Web.MVC.Models.Administracion.AdministrarPaginasCMSViewModel.RowCMSModel.ColCMSModel;
 
 namespace Es.Riam.Gnoss.Web.Controles.Administracion
 {
@@ -34,13 +45,15 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
         private ConfigService mConfigService;
         private RedisCacheWrapper mRedisCacheWrapper;
         private IServicesUtilVirtuosoAndReplication mServicesUtilVirtuosoAndReplication;
-
+        private IAvailableServices mAvailableServices;
+        private ILogger mlogger;
+        private ILoggerFactory mLoggerFactory;
         #region Constructor
 
         /// <summary>
         /// 
         /// </summary>
-        public ControladorPaginasCMS(Proyecto pProyecto, LoggingService loggingService, EntityContext entityContext, ConfigService configService, RedisCacheWrapper redisCacheWrapper, VirtuosoAD virtuosoAD, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication)
+        public ControladorPaginasCMS(Proyecto pProyecto, LoggingService loggingService, EntityContext entityContext, ConfigService configService, RedisCacheWrapper redisCacheWrapper, VirtuosoAD virtuosoAD, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication, IAvailableServices availableServices, ILogger<ControladorPaginasCMS> logger, ILoggerFactory loggerFactory)
         {
             mVirtuosoAD = virtuosoAD;
             mLoggingService = loggingService;
@@ -48,7 +61,10 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
             mConfigService = configService;
             mRedisCacheWrapper = redisCacheWrapper;
             mServicesUtilVirtuosoAndReplication = servicesUtilVirtuosoAndReplication;
+            mAvailableServices = availableServices;
             ProyectoSeleccionado = pProyecto;
+            mlogger = logger;
+            mLoggerFactory = loggerFactory;
         }
 
         #endregion
@@ -97,7 +113,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
 
         public List<AdministrarPaginasCMSViewModel.CMSComponentModel> CargarComponentesComunidad(UtilIdiomas pUtilIdiomas, int pLimite, string pBusqueda = "")
         {
-            CMSCN cmsCN = new CMSCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+            CMSCN cmsCN = new CMSCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<CMSCN>(), mLoggerFactory);
 
             if (string.IsNullOrEmpty(pBusqueda))
             {
@@ -109,7 +125,6 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
             }
         }
 
-
         /// <summary>
         /// Método que devuelve true o false dependiendo de si el nº de componentes existentes es mayor al límite establecido.
         /// Si es true, desde Front se realizarán peticiones para buscar componentes vía AJAX.
@@ -117,8 +132,8 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
         /// </summary>
         public bool BuscarScomponentesConPeticionAjax(UtilIdiomas pUtilIdiomas, int pLimite)
         {
-            CMSCN cmsCN = new CMSCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);                            
-            return cmsCN.ObtenerCMSComponentePorProyecto(ProyectoSeleccionado.Clave).Count > pLimite;            
+            CMSCN cmsCN = new CMSCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<CMSCN>(), mLoggerFactory);
+            return cmsCN.ObtenerCMSComponentePorProyecto(ProyectoSeleccionado.Clave).Count > pLimite;
         }
 
 
@@ -130,7 +145,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
             {
                 bool cargarborrador = true;
 
-                if(GestorCMSPaginaActual.ListaBloques.Count(bloque2 => bloque2.Value.Borrador) == 0)
+                if (GestorCMSPaginaActual.ListaBloques.Count(bloque2 => bloque2.Value.Borrador) == 0)
                 {
                     cargarborrador = false;
                 }
@@ -214,7 +229,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
 
         public void GuardarListaPaginas(Dictionary<Guid, AdministrarPaginasCMSViewModel> pListaPaginasCMS, AdministrarPaginasCMSViewModel pPaginaHomeMiembros, AdministrarPaginasCMSViewModel pPaginaHomeNoMiembros, AdministrarPaginasCMSViewModel pPaginaHomeTodos)
         {
-            CMSCN cmsCN = new CMSCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+            CMSCN cmsCN = new CMSCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<CMSCN>(), mLoggerFactory);
             mGestorCMS = new GestionCMS(cmsCN.ObtenerCMSDeProyecto(ProyectoSeleccionado.Clave), mLoggingService, mEntityContext);
 
             if (pPaginaHomeMiembros != null)
@@ -248,33 +263,33 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
         private void Guardar(Guid pestanyaID, AdministrarPaginasCMSViewModel pPaginaCMSModel)
         {
             var filaPestanya = ProyectoSeleccionado.GestorProyectos.DataWrapperProyectos.ListaProyectoPestanyaCMS.FirstOrDefault(pest => pest.PestanyaID == pestanyaID);
-            if(filaPestanya != null)
+            if (filaPestanya != null)
             {
                 mTipoUbicacionCMSPaginaActual = filaPestanya.Ubicacion;
             }
             Guardar(mTipoUbicacionCMSPaginaActual, pPaginaCMSModel);
-            ControladorCMS controlador = new ControladorCMS(mLoggingService, mEntityContext, mConfigService, mRedisCacheWrapper, null, mVirtuosoAD);
+            ControladorCMS controlador = new ControladorCMS(mLoggingService, mEntityContext, mConfigService, mRedisCacheWrapper, null, mVirtuosoAD, mAvailableServices, mLoggerFactory.CreateLogger<ControladorCMS>(), mLoggerFactory);
             controlador.ActualizarModeloBaseSimple(pestanyaID, ProyectoSeleccionado.Clave, AD.BASE_BD.PrioridadBase.Alta, false);
         }
 
         public void ActualizarCMS()
         {
-            using (CMSCN cmsCN = new CMSCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication))
+            using (CMSCN cmsCN = new CMSCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<CMSCN>(), mLoggerFactory))
             {
                 cmsCN.ActualizarCMS(GestorCMSPaginaActual.CMSDW);
             }
         }
         public void Guardar(short pUbicacion, AdministrarPaginasCMSViewModel pPaginaCMSModel)
-        { 
+        {
             mTipoUbicacionCMSPaginaActual = pUbicacion;
-            
+
             List<Guid> listaBloques = new List<Guid>();
             //Se hace para insertar tanto los que estan con borrador 0 como los que estan con borrador 1, en este caso es para las que estan con borrador 1
             Guid guidBorradorTrueFila;
             Guid guidBorradorTrueColumna;
 
             short ordenFila = 0;
-            foreach (AdministrarPaginasCMSViewModel.RowCMSModel fila in pPaginaCMSModel.Rows)
+            foreach (RowCMSModel fila in pPaginaCMSModel.Rows)
             {
                 CMSBloque bloqueFila = null;
                 listaBloques.Add(fila.Key);
@@ -302,7 +317,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
                 ordenFila++;
 
                 short ordenColumna = 0;
-                foreach (AdministrarPaginasCMSViewModel.RowCMSModel.ColCMSModel columna in fila.Cols)
+                foreach (ColCMSModel columna in fila.Cols)
                 {
                     CMSBloque nuevoBloque = null;
 
@@ -323,7 +338,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
                     }
                     else
                     {
-                        nuevoBloque = GestorCMSPaginaActual.AgregarNuevoBloque(columna.Key, GestorCMSPaginaActual.ListaPaginasProyectos[ProyectoSeleccionado.Clave][(short)mTipoUbicacionCMSPaginaActual], fila.Key, ordenColumna, columna.Class, false);                        
+                        nuevoBloque = GestorCMSPaginaActual.AgregarNuevoBloque(columna.Key, GestorCMSPaginaActual.ListaPaginasProyectos[ProyectoSeleccionado.Clave][(short)mTipoUbicacionCMSPaginaActual], fila.Key, ordenColumna, columna.Class, false);
                     }
 
                     //Insertar los borradores
@@ -333,13 +348,13 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
 
                     List<Guid> listaComponentes = new List<Guid>();
 
-                    foreach (AdministrarPaginasCMSViewModel.RowCMSModel.ColCMSModel.ComponentCMSModel componente in columna.Components)
+                    foreach (ComponentCMSModel componente in columna.Components)
                     {
                         listaComponentes.Add(componente.Key);
 
                         CMSComponente nuevoComponente = nuevoBloque.Componentes.Values.FirstOrDefault(comp => comp.Clave == componente.Key);
 
-                        if(nuevoComponente == null)
+                        if (nuevoComponente == null)
                         {
                             AD.EntityModel.Models.CMS.CMSBloque cmsBloqueBD = GestorCMSPaginaActual.CMSDW.ListaCMSBloque.Where(x => x.BloqueID.Equals(columna.Key)).FirstOrDefault();
                             GestorCMSPaginaActual.AgregarComponenteABloque(ProyectoSeleccionado, columna.Key, componente.Key, cmsBloqueBD);
@@ -406,20 +421,30 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
             }
 
             foreach (CMSBloque bloqueID in GestorCMSPaginaActual.ListaBloques.Values.Where(bloque => bloque.TipoUbicacion == mTipoUbicacionCMSPaginaActual).ToList())
-            {                
+            {
                 //Borrar los bloques que ya no esten
                 if (!listaBloques.Contains(bloqueID.Clave))
                 {
                     GestorCMSPaginaActual.EliminarBloque(bloqueID.Clave);
                 }
             }
-            
+
             GestorCMSPaginaActual.CargarBloques();
 
             CMSPagina pagina = GestorCMSPaginaActual.ListaPaginasProyectos[ProyectoSeleccionado.Clave][mTipoUbicacionCMSPaginaActual];
             pagina.MostrarSoloCuerpo = pPaginaCMSModel.MostrarSoloCuerpo;
         }
+        public AdministrarPaginasCMSViewModel RestaurarVersionPaginaCMS(Guid pVersionID, Guid pIdentidadActual, string pComentario = "")
+        {
+            CMSCN CMSCN = new CMSCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<CMSCN>(), mLoggerFactory);
+            AdministrarPaginasCMSViewModel modeloARestaurar = JsonConvert.DeserializeObject<AdministrarPaginasCMSViewModel>(CMSCN.ObtenerVersionEstructuraPaginaCMS(pVersionID).ModeloJSON);
+            EliminarComponentesBorrados(modeloARestaurar);
 
+            Dictionary<Guid, AdministrarPaginasCMSViewModel> listaRestaurar = new Dictionary<Guid, AdministrarPaginasCMSViewModel> { { modeloARestaurar.Key, modeloARestaurar } };
+            GuardarListaPaginas(listaRestaurar, null, null, null);
+            GuardarVersionWeb(modeloARestaurar, pIdentidadActual,pVersionID, pComentario);
+            return modeloARestaurar;
+        }
         #endregion
 
         #region Métodos de Guardado Web
@@ -428,7 +453,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
         {
             GestionCMS gestorCMSDescartar = new GestionCMS(new DataWrapperCMS(), mLoggingService, mEntityContext);
 
-            CMSCN cmsCN = new CMSCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+            CMSCN cmsCN = new CMSCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<CMSCN>(), mLoggerFactory);
             Dictionary<Guid, Guid> listaGuidViejoGuidNuevo = new Dictionary<Guid, Guid>();
             foreach (CMSBloque bloqueCMS in GestorCMSPaginaActual.ListaBloques.Values)
             {
@@ -460,7 +485,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
             cmsCN.ActualizarCMSEliminandoBloquesDePaginaDeProyecto(gestorCMSDescartar.CMSDW, ProyectoSeleccionado.Clave, mTipoUbicacionCMSPaginaActual, true);
             cmsCN.Dispose();
 
-            CMSCL cmsCL = new CMSCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mServicesUtilVirtuosoAndReplication);
+            CMSCL cmsCL = new CMSCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<CMSCL>(), mLoggerFactory);
             cmsCL.InvalidarCacheConfiguracionCMSPorProyecto(ProyectoSeleccionado.Clave);
             cmsCL.InvalidarCacheCMSDeUbicacionDeProyecto(mTipoUbicacionCMSPaginaActual, ProyectoSeleccionado.Clave);
             cmsCL.Dispose();
@@ -469,10 +494,10 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
 
         public void GuardarWeb(short pTipoUbicacionCMSPaginaActual, string estructura, string propiedadComponente, bool MostrarSoloCuerpo, bool borrador, AD.EntityModel.Models.ProyectoDS.ProyectoPestanyaMenu pPestanya)
         {
-            ProyectoAD proyAD = new ProyectoAD(mLoggingService, mEntityContext, mConfigService, mServicesUtilVirtuosoAndReplication);
+            ProyectoAD proyAD = new ProyectoAD(mLoggingService, mEntityContext, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<ProyectoAD>(), mLoggerFactory);
             bool transaccionIniciada = false;
             try
-            {              
+            {
                 mEntityContext.NoConfirmarTransacciones = true;
                 transaccionIniciada = proyAD.IniciarTransaccion(true);
 
@@ -505,7 +530,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
                     }
                 }
 
-                CMSCN cmsCN = new CMSCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+                CMSCN cmsCN = new CMSCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<CMSCN>(), mLoggerFactory);
                 cmsCN.ActualizarCMSEliminandoBloquesDePaginaDeProyecto(gestorCMS.CMSDW, ProyectoSeleccionado.Clave, mTipoUbicacionCMSPaginaActual, borrador);
 
                 foreach (Bloque bloque in listaBloquesPadres)
@@ -523,21 +548,21 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
                     }
                 }
 
-                
+
 
                 CMSPagina pagina = GestorCMSPaginaActual.ListaPaginasProyectos[ProyectoSeleccionado.Clave][mTipoUbicacionCMSPaginaActual];
                 pagina.MostrarSoloCuerpo = MostrarSoloCuerpo;
                 cmsCN.ActualizarCMS(GestorCMSPaginaActual.CMSDW);
                 cmsCN.Dispose();
 
-				if (pPestanya != null)
-				{
-					AD.EntityModel.Models.ProyectoDS.ProyectoPestanyaMenu filaPestanya = mEntityContext.ProyectoPestanyaMenu.FirstOrDefault(pest => pest.PestanyaID.Equals(pPestanya.PestanyaID));
+                if (pPestanya != null)
+                {
+                    AD.EntityModel.Models.ProyectoDS.ProyectoPestanyaMenu filaPestanya = mEntityContext.ProyectoPestanyaMenu.FirstOrDefault(pest => pest.PestanyaID.Equals(pPestanya.PestanyaID));
                     filaPestanya.FechaModificacion = DateTime.Now;
                     mEntityContext.SaveChanges();
-				}
+                }
 
-				if (transaccionIniciada)
+                if (transaccionIniciada)
                 {
                     mEntityContext.TerminarTransaccionesPendientes(true);
                 }
@@ -549,12 +574,51 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
                     proyAD.TerminarTransaccion(false);
                 }
 
-                mLoggingService.GuardarLogError($"Error en el guardado de la página CMS. {ex.Message}");
+                mLoggingService.GuardarLogError($"Error en el guardado de la página CMS. {ex.Message}", mlogger);
             }
-            
+
         }
 
-        public string ComprobarErrorConcurrencia(DateTime pFechaCuandoEntraAdministracion, DateTime pFechaCuandoGuarda)
+        public void GuardarVersionWeb(AdministrarPaginasCMSViewModel pModelo, Guid pIdentidadID, string pComentario = null)
+        {
+            using (CMSCN CMSCN = new CMSCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<CMSCN>(), mLoggerFactory))
+            {
+                List<AD.EntityModel.Models.ProyectoDS.ProyectoPestanyaVersionCMS> listaVersionesEstructuraPaginaCMS = CMSCN.ObtenerVersionesEstructuraPaginaCMS(pModelo.Key);
+                Guid versionAnterior = Guid.Empty;
+
+                if (listaVersionesEstructuraPaginaCMS.Count > 0)
+                {
+                    versionAnterior = listaVersionesEstructuraPaginaCMS.OrderByDescending(item => item.Fecha).FirstOrDefault().VersionID;
+                }
+
+                GuardarVersionWeb(pModelo, pIdentidadID, versionAnterior, pComentario);
+            }
+        }
+
+        public void GuardarVersionWeb(AdministrarPaginasCMSViewModel pModelo, Guid pIdentidadID, Guid pVersionAnterior, string pComentario = null)
+        {
+                Guid versionID = Guid.NewGuid();
+                Guid versionAnterior = pVersionAnterior != Guid.Empty ? pVersionAnterior : versionID;
+                
+                //Evitmos guardar las listas de componentes de la comunidad con cada versión
+                pModelo.ListaComponentesPrivados = null;
+                pModelo.ListaComponenteComunidad = null;
+
+                string modeloJSON = JsonConvert.SerializeObject(pModelo);
+
+                AD.EntityModel.Models.ProyectoDS.ProyectoPestanyaVersionCMS filaProyectoPestanyaVersionCMS = new AD.EntityModel.Models.ProyectoDS.ProyectoPestanyaVersionCMS(versionID, pModelo.Key, pIdentidadID, versionAnterior, DateTime.Now, pComentario, modeloJSON);
+
+                mEntityContext.ProyectoPestanyaVersionCMS.Add(filaProyectoPestanyaVersionCMS);
+                mEntityContext.SaveChanges();
+        }
+
+        /// <summary>
+        /// Comprueba si otro usuario ha guardado la página mientras tu estabas haciendo cambios
+        /// </summary>
+        /// <param name="pFechaCuandoEntraAdministracion">Fecha cuando el usuario entra en la administración</param>
+        /// <param name="pFechaCuandoGuarda">Ultima fecha de guardado</param>
+        /// <returns>Mensaje con texto de error si se ha detectado alguno</returns>
+        public static string ComprobarErrorConcurrencia(DateTime pFechaCuandoEntraAdministracion, DateTime pFechaCuandoGuarda)
         {
             string error = string.Empty;
 
@@ -569,7 +633,56 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
             return error;
         }
 
-		private void AgregarBloqueAGestorCMS(Bloque pBloque, GestionCMS pGestorCMS, short pOrden, Guid? pBloquePadreID, bool pBorrador, bool pGenerarNuevosID, List<Tuple<Guid, Guid, short, string>> pListaBloqueComponentePropiedadValor)
+        /// <summary>
+        /// Comprueba si hay componentes duplicados en el mismo bloque.
+        /// </summary>
+        /// <param name="pEstructura">Estructura de la página CMS guardada</param>
+        /// <returns>Devuelve un mensaje de error indicando que componentes están duplicados en que bloque</returns>
+        public static string ComprobarErroresElementosDuplicados(string pEstructura)
+        {
+            StringBuilder error = new StringBuilder();
+            string[] bloquesPadre = pEstructura.Split(new char[] { '|' }, StringSplitOptions.RemoveEmptyEntries);
+
+            foreach (string bloquePadre in bloquesPadre)
+            {
+                Bloque bloqueComprobar = new Bloque(bloquePadre);
+                error.Append(ComprobarErrorElementosDuplicadosBloques(bloqueComprobar.Hijos));
+            }
+
+            return error.ToString();
+        }
+
+        /// <summary>
+        /// Recorre la lista de bloques pasada por parámetro y sus hijos de forma recursiva y comprueba si hay componentes duplicados en cada bloque.
+        /// </summary>
+        /// <param name="pBloquesComprobar">Lista de bloques a comprobar si tienen componentes duplicados</param>
+        /// <returns>Devuelve un mensaje de error indicando que componentes están duplicados en que bloque</returns>
+        private static string ComprobarErrorElementosDuplicadosBloques(List<Bloque> pBloquesComprobar)
+        {
+            StringBuilder error = new StringBuilder();
+
+            foreach (Bloque bloque in pBloquesComprobar)
+            {
+                List<Bloque> componentesHijos = bloque.Hijos;
+                if (componentesHijos.Count > 0)
+                {
+                    error.Append(ComprobarErrorElementosDuplicadosBloques(bloque.Hijos));
+                }
+                else
+                {
+                    var listaRepetidos = bloque.ComponentesID.GroupBy(item => item).Where(item => item.Count() > 1).Select(item => item.Key);
+
+                    if (listaRepetidos.Any())
+                    {
+                        error.Append($"El bloque {bloque.BloqueID} tiene componentes duplicados: {string.Join(", ", listaRepetidos)}. ");
+                    }
+                }
+            }
+
+            return error.ToString();
+        }
+
+        private void AgregarBloqueAGestorCMS(Bloque pBloque, GestionCMS pGestorCMS, short pOrden, Guid? pBloquePadreID, bool pBorrador, bool pGenerarNuevosID, List<Tuple<Guid, Guid, short, string>> pListaBloqueComponentePropiedadValor)
         {
             Guid id = pBloque.BloqueID;
 
@@ -609,21 +722,44 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
                 i++;
             }
         }
-
         #endregion
 
         public void InvalidarCache(short pTipoUbicacionCMSPaginaActual, bool borrador)
         {
-            CMSCL cmsCL = new CMSCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mServicesUtilVirtuosoAndReplication);
+            CMSCL cmsCL = new CMSCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<CMSCL>(), mLoggerFactory);
             cmsCL.InvalidarCacheConfiguracionCMSPorProyecto(ProyectoSeleccionado.Clave);
             cmsCL.InvalidarCacheCMSDeUbicacionDeProyecto(pTipoUbicacionCMSPaginaActual, ProyectoSeleccionado.Clave);
             cmsCL.Dispose();
 
             if (!borrador)
             {
-                ProyectoCL proyCL = new ProyectoCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mVirtuosoAD, mServicesUtilVirtuosoAndReplication);
+                ProyectoCL proyCL = new ProyectoCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mVirtuosoAD, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<ProyectoCL>(), mLoggerFactory);
                 proyCL.InvalidarFilaProyecto(ProyectoSeleccionado.Clave);
                 proyCL.InvalidarPestanyasProyecto(ProyectoSeleccionado.Clave);
+            }
+        }
+
+        private void EliminarComponentesBorrados(AdministrarPaginasCMSViewModel pModel)
+        {
+            List<Guid> idsComponentes = pModel.Rows.SelectMany(item => item.Cols.SelectMany(x => x.Components.Select(y => y.Key))).ToList();
+            using (CMSCN cmscn = new CMSCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<CMSCN>(), mLoggerFactory))
+            {
+                Dictionary<Guid, string> componentesSinBorrar = cmscn.ObtenerNombreComponentesPorIDComponente(idsComponentes);
+                foreach (RowCMSModel fila in pModel.Rows)
+                {
+                    foreach (ColCMSModel columna in fila.Cols)
+                    {
+                        List<ComponentCMSModel> componentesBorrar = new List<ComponentCMSModel>();
+                        foreach (ComponentCMSModel componente in columna.Components)
+                        {
+                            if (!componentesSinBorrar.ContainsKey(componente.Key))
+                            {
+                                componentesBorrar.Add(componente);
+                            }
+                        }
+                        columna.Components = columna.Components.Except(componentesBorrar).ToList(); 
+                    }
+                }
             }
         }
 
@@ -638,7 +774,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
             {
                 if (mGestorCMS == null)
                 {
-                    CMSCN cmsCN = new CMSCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+                    CMSCN cmsCN = new CMSCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<CMSCN>(), mLoggerFactory);
                     mGestorCMS = new GestionCMS(cmsCN.ObtenerCMSDeUbicacionDeProyecto(mTipoUbicacionCMSPaginaActual, ProyectoSeleccionado.Clave, 2, false), mLoggingService, mEntityContext);
                     cmsCN.Dispose();
                 }
@@ -766,7 +902,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
 
         public void BorrarPaginaCMS(short tipoUbicacion)
         {
-            using (CMSCN cmscn = new CMSCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication))
+            using (CMSCN cmscn = new CMSCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<CMSCN>(), mLoggerFactory))
             {
                 cmscn.BorrarPaginaCMS(ProyectoAD.MyGnoss, ProyectoSeleccionado.Clave, tipoUbicacion);
             }

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Es.Riam.Gnoss.Web.MVC.Models.Administracion;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -6,6 +7,53 @@ using System.Threading.Tasks;
 
 namespace Es.Riam.Gnoss.Web.MVC.Models.Administracion
 {
+
+    public enum ApplicationType
+    {
+		SERVICIO_ONTOLOGIAS, 
+	    SERVICIO_INTERNO,
+	    SERVICIO_DOCUMENTOS,
+	    SERVICIO_API,
+        SERVICIO_OAUTH,
+        SERVICIO_RELATED_VIRTUOSO,
+	    SERVICIO_SEARCH_GRAPH_GENERATOR,
+	    RABBITMQ,
+	    SERVICIO_REPLICACION_VIRTUOSO,
+        SERVICIO_REPLICACION_BIDIRECCIONAL_VIRTUOSO,
+        HAPROXY, 
+        SERVICIO_THUMBNAIL_GENERATOR, 
+        SERVICIO_AUTOCOMPLETE_API_LUCENE,
+	    SERVICIO_VISIT_REGISTRY,
+	    SERVICIO_VISIT_CLUSTER, 
+	    REDIS, 
+        SERVICIO_LOGIN,
+        SERVICIO_DEPLOY, 
+        SERVICIO_IDENTITYSERVER, 
+        ELIMINAR_RECURSO, 
+        SERVICIO_FACETAS,
+        SERVICIO_RESULTS, 
+        SERVICIO_AUTOCOMPLETE,
+        SERVICIO_AUTOCOMPLETE_GENERATOR,
+        SERVICIO_VIRTUOSO, 
+        SERVICIO_LABELER,
+        SERVICIO_CACHEREFRESH, 
+        SERVICIO_COMMUNITYWALL, 
+        SERVICIO_DISTRIBUTOR, 
+        SERVICIO_MAIL,
+        SERVICIO_SOCIALCACHEREFRESH, 
+        SERVICIO_USERWALL
+
+
+    }
+
+
+    public enum ApplicationStatus
+    {
+        OK, 
+        KO, 
+        UNDEFINED
+    }
+
     [Serializable]
     public class EstadoSistemasViewModel
     {
@@ -65,10 +113,18 @@ namespace Es.Riam.Gnoss.Web.MVC.Models.Administracion
         public string description;
     }
 
-    public class CreateResourceStatusServiceModel
+	public class ServicesStatusModelAPI
+	{
+		public ApplicationType Service;
+		public ApplicationStatus Status;
+		public string ErrorDescription;
+        public DateTime StatusCheckTime;
+	}
+
+	public class CreateResourceStatusServiceModelAPI
     {
         public string resourceID;
-        public List<ServicesStatusModel> serviceStatusModelList;
+        public ServicesStatusModelAPI serviceStatusModelList;
     }
 
     public class ErrorDeleteResourceViewModel

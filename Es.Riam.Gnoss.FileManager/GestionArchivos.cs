@@ -2,6 +2,7 @@
 using Es.Riam.InterfacesOpenArchivos;
 using Es.Riam.Util;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Logging;
 using SixLabors.ImageSharp;
 using System;
 using System.Collections.Generic;
@@ -10,6 +11,7 @@ using System.IO;
 using System.IO.Compression;
 using System.Linq;
 using System.Security.Cryptography;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace Es.Riam.Gnoss.FileManager
@@ -19,19 +21,24 @@ namespace Es.Riam.Gnoss.FileManager
         #region Constructores
         private readonly LoggingService _loggingService;
         private readonly IUtilArchivos _utilArchivos;
-
-        public GestionArchivos(LoggingService loggingService, IUtilArchivos utilArchivos)
+        private ILogger mlogger;
+        private ILoggerFactory mLoggerFactory;
+        public GestionArchivos(LoggingService loggingService, IUtilArchivos utilArchivos, ILogger<GestionArchivos> logger, ILoggerFactory loggerFactory)
         {
             _loggingService = loggingService;
             _utilArchivos = utilArchivos;
+            mlogger = logger;
+            mLoggerFactory = loggerFactory;
         }
 
-        public GestionArchivos(LoggingService loggingService, IUtilArchivos utilArchivos, string pRutaArchivos = null, string pAzureStorageConnectionString = null)
+        public GestionArchivos(LoggingService loggingService, IUtilArchivos utilArchivos, ILogger<GestionArchivos> logger, ILoggerFactory loggerFactory, string pRutaArchivos = null, string pAzureStorageConnectionString = null)
         {
             _loggingService = loggingService;
             _utilArchivos = utilArchivos;
             RutaFicheros = pRutaArchivos;
             AzureStorageConnectionString = pAzureStorageConnectionString;
+            mlogger = logger;
+            mLoggerFactory = loggerFactory;
         }
 
         #endregion
@@ -65,13 +72,12 @@ namespace Es.Riam.Gnoss.FileManager
 
                         if (pArchivoEncriptado)
                         {
-                            contenido = _utilArchivos.DesencriptarArchivo(contenido);
-                            //contenido = UtilArchivos.DesencriptarArchivo(contenido);
+                            contenido = _utilArchivos.DesencriptarArchivo(contenido);                            
                         }
                     }
                     catch (Exception ex)
                     {
-                        _loggingService.GuardarLogError(ex, $"Error al descargar el fichero {pNombreArchivo} en {pRuta}. Ruta ficheros: {RutaFicheros}. Ruta completa: {ruta}");
+                        _loggingService.GuardarLogError(ex, $"Error al descargar el fichero {pNombreArchivo} en {pRuta}. Ruta ficheros: {RutaFicheros}. Ruta completa: {ruta}",mlogger);
                         throw;
                     }
                     finally
@@ -84,7 +90,7 @@ namespace Es.Riam.Gnoss.FileManager
                 }
                 else
                 {
-                    _loggingService.GuardarLog($"No existe el recurso {pNombreArchivo} en {pRuta}. Ruta ficheros: {RutaFicheros}. Ruta completa: {ruta}");
+                    _loggingService.GuardarLog($"No existe el recurso {pNombreArchivo} en {pRuta}. Ruta ficheros: {RutaFicheros}. Ruta completa: {ruta}", mlogger);
                 }
             }
             else
@@ -100,7 +106,7 @@ namespace Es.Riam.Gnoss.FileManager
 
             if (contenido == null || contenido.Length == 0)
             {
-                _loggingService.GuardarLogError($"DescargarFichero: No se ha encontrado el fichero {pNombreArchivo} en {pRuta}. Ruta ficheros: {RutaFicheros}. Ruta completa: {ruta}");
+                _loggingService.GuardarLogError($"DescargarFichero: No se ha encontrado el fichero {pNombreArchivo} en {pRuta}. Ruta ficheros: {RutaFicheros}. Ruta completa: {ruta}",mlogger);
             }
 
             //Envío el contenido.
@@ -115,9 +121,9 @@ namespace Es.Riam.Gnoss.FileManager
         public void EscribirFicheroResponse(HttpResponse httpResponse, string pRuta, string pNombreArchivo, string pExtension, bool pArchivoEncriptado = false)
         {
             string ruta = "";
-            _loggingService.GuardarLog($"parametros de la llamada RutaFicheros: {RutaFicheros} -- pRuta: {pRuta} -- pNombreArchivo: {pNombreArchivo} -- pExtension: {pExtension}");
+            _loggingService.GuardarLog($"parametros de la llamada RutaFicheros: {RutaFicheros} -- pRuta: {pRuta} -- pNombreArchivo: {pNombreArchivo} -- pExtension: {pExtension}", mlogger);
             ruta = Path.Combine(RutaFicheros, pRuta, pNombreArchivo + pExtension);
-            _loggingService.GuardarLog($"Ruta al hacer el Path.Combine: {ruta}");
+            _loggingService.GuardarLog($"Ruta al hacer el Path.Combine: {ruta}", mlogger);
             FileStream fileStream = null;
             string rutaAux = "";
             if (File.Exists(ruta))
@@ -153,14 +159,14 @@ namespace Es.Riam.Gnoss.FileManager
                             }
                             catch (Exception ex)
                             {
-                                _loggingService.GuardarLogError($"Ha ocurrido un error en el intento de desencriptado: {ex.Message}");
+                                _loggingService.GuardarLogError($"Ha ocurrido un error en el intento de desencriptado: {ex.Message}",mlogger);
                                 throw;
                             }
                         }
                     }
                     catch (Exception ex)
                     {
-                        _loggingService.GuardarLogError(ex.Message);
+                        _loggingService.GuardarLogError(ex.Message, mlogger);
 
                         pArchivoEncriptado = false;
                         cryptoStream.Close();
@@ -195,7 +201,7 @@ namespace Es.Riam.Gnoss.FileManager
                 }
                 catch (Exception ex)
                 {
-                    _loggingService.GuardarLogError(ex, $"Error al descargar el fichero {pNombreArchivo} en {pRuta}. Ruta ficheros: {RutaFicheros}. Ruta completa: {ruta}");
+                    _loggingService.GuardarLogError(ex, $"Error al descargar el fichero {pNombreArchivo} en {pRuta}. Ruta ficheros: {RutaFicheros}. Ruta completa: {ruta}", mlogger);
                     throw;
                 }
                 finally
@@ -208,7 +214,7 @@ namespace Es.Riam.Gnoss.FileManager
             }
             else
             {
-                _loggingService.GuardarLog($"No existe el recurso {pNombreArchivo} en {pRuta}. Ruta ficheros: {RutaFicheros}. Ruta completa: {ruta}");
+                _loggingService.GuardarLog($"No existe el recurso {pNombreArchivo} en {pRuta}. Ruta ficheros: {RutaFicheros}. Ruta completa: {ruta}", mlogger);
             }
 
             //if (contenido == null || contenido.Length == 0)
@@ -216,6 +222,43 @@ namespace Es.Riam.Gnoss.FileManager
             //    _loggingService.GuardarLogError($"DescargarFichero: No se ha encontrado el fichero {pNombreArchivo} en {pRuta}. Ruta ficheros: {RutaFicheros}. Ruta completa: {ruta}");
             //}
 
+        }
+
+        public void MoverContenidoDirectorio(string pOrigen, string pDestino)
+        {
+            _loggingService.AgregarEntrada($"Entra en MoverContenidoDirectorio({pOrigen}, {pDestino})");
+            if (!Directory.Exists(pDestino))
+            {
+                _loggingService.AgregarEntrada($"No existe el directorio de destino '{pDestino}', lo creamos");
+                Directory.CreateDirectory(pDestino);
+            }
+            _loggingService.AgregarEntrada($"Movemos los ficheros");
+            // Mover los archivos del directorio raíz
+            foreach (string file in Directory.GetFiles(pOrigen))
+            {
+                string fileName = Path.GetFileName(file);
+                string destFile = Path.Combine(pDestino, fileName);
+                _loggingService.AgregarEntrada($"Vamos a copiar el fichero {file} a {destFile}");
+                // Mover el archivo (copiar y eliminar)
+                File.Copy(file, destFile, overwrite: true);
+                _loggingService.AgregarEntrada($"Fichero copiado, ahora lo eliminamos");
+                File.Delete(file);
+                _loggingService.AgregarEntrada($"Fichero eliminado");
+            }
+            _loggingService.AgregarEntrada($"Movemos los directorios");
+            // Mover los subdirectorios de forma recursiva
+            foreach (string directory in Directory.GetDirectories(pOrigen))
+            {
+                string dirName = Path.GetFileName(directory);
+                string destDir = Path.Combine(pDestino, dirName);
+                _loggingService.AgregarEntrada($"Vamos a copiar el directorio {dirName} a {destDir}");
+                // Llamada recursiva para mover subdirectorios
+                MoverContenidoDirectorio(directory, destDir);
+                _loggingService.AgregarEntrada($"Eliminamos el directorio {directory} despues de moverlo");
+                // Eliminar el directorio vacío original
+                Directory.Delete(directory);
+                _loggingService.AgregarEntrada($"Directorio eliminado");
+            }
         }
 
         /// <summary>
@@ -245,7 +288,7 @@ namespace Es.Riam.Gnoss.FileManager
                     }
                     catch (Exception ex)
                     {
-                        _loggingService.GuardarLogError(ex, $"Error al descargar el fichero {pNombreArchivo} en {pRuta}");
+                        _loggingService.GuardarLogError(ex, $"Error al descargar el fichero {pNombreArchivo} en {pRuta}", mlogger);
                         throw;
                     }
                     finally
@@ -264,7 +307,7 @@ namespace Es.Riam.Gnoss.FileManager
 
             if (contenido == null || contenido.Length == 0)
             {
-                _loggingService.GuardarLogError($"DescargarFicheroSinEncriptar: No se ha encontrado el fichero {pNombreArchivo} en {pRuta}");
+                _loggingService.GuardarLogError($"DescargarFicheroSinEncriptar: No se ha encontrado el fichero {pNombreArchivo} en {pRuta}",mlogger);
             }
 
             //Envío el contenido.
@@ -343,11 +386,32 @@ namespace Es.Riam.Gnoss.FileManager
             if (string.IsNullOrEmpty(AzureStorageConnectionString))
             {
                 pRuta = Path.Combine(RutaFicheros, pRuta);
+                _loggingService.GuardarLogError($"Comprobamos si existe la ruta {pRuta}", mlogger);
                 return Directory.Exists(pRuta);
             }
             else
             {
                 //return await AzureStorageClient.ExisteDirectorio(pRuta);
+                return false;
+            }
+        }
+
+        public bool EliminarDirectorio(string pRuta)
+        {
+            if (string.IsNullOrEmpty(AzureStorageConnectionString))
+            {
+                pRuta = Path.Combine(RutaFicheros, pRuta);
+                _loggingService.GuardarLogError($"Comprobamos si existe el directorio {pRuta}", mlogger);
+                if (Directory.Exists(pRuta))
+                {
+                    _loggingService.GuardarLogError($"Eliminamos el directorio {pRuta}", mlogger);
+                    Directory.Delete(pRuta, true);
+                }
+
+                return true;
+            }
+            else
+            {
                 return false;
             }
         }
@@ -391,7 +455,7 @@ namespace Es.Riam.Gnoss.FileManager
             catch (Exception ex)
             {
                 string mensajeExtra = $"Error al crear el directorio: {pRuta}";
-                _loggingService.GuardarLogError(ex, mensajeExtra);
+                _loggingService.GuardarLogError(ex, mensajeExtra, mlogger);
                 throw new FileManagerException(mensajeExtra, ex);
             }
         }
@@ -435,7 +499,7 @@ namespace Es.Riam.Gnoss.FileManager
             catch (Exception ex)
             {
                 string mensajeExtra = $"Error al crear el fichero {pNombreArchivo} en la ruta {pRuta}";
-                _loggingService.GuardarLogError(ex, mensajeExtra);
+                _loggingService.GuardarLogError(ex, mensajeExtra, mlogger);
                 throw new FileManagerException(mensajeExtra, ex);
             }
         }
@@ -444,7 +508,7 @@ namespace Es.Riam.Gnoss.FileManager
         {
             try
             {
-                _loggingService.GuardarLogError("Se va a subir el fichero");
+                _loggingService.GuardarLogError("Se va a subir el fichero", mlogger);
                 if (!string.IsNullOrEmpty(pRuta))
                 {
                     pRuta = Path.Combine(RutaFicheros, TransformarRuta(pRuta));
@@ -497,7 +561,7 @@ namespace Es.Riam.Gnoss.FileManager
             catch (Exception ex)
             {
                 string mensajeExtra = $"Error al crear el fichero {pNombreArchivo} en la ruta {pRuta}";
-                _loggingService.GuardarLogError(ex, mensajeExtra);
+                _loggingService.GuardarLogError(ex, mensajeExtra, mlogger);
                 throw new FileManagerException(mensajeExtra, ex);
             }
         }
@@ -706,12 +770,28 @@ namespace Es.Riam.Gnoss.FileManager
             }
         }
 
+        public void EliminarFicherosDirectorio(string pRuta)
+        {
+            pRuta = Path.Combine(RutaFicheros, pRuta);
+            DirectoryInfo dirInfoRaiz = new DirectoryInfo(pRuta);
+            FileInfo[] ficheros = dirInfoRaiz.GetFiles();
+            _loggingService.GuardarLogError($"Hay {ficheros.Length} ficheros en el directorio {pRuta}", mlogger);
+            foreach (FileInfo fichero in ficheros)
+            {
+                if (fichero.Exists)
+                {
+                    _loggingService.GuardarLogError($"Eliminamos el fichero {fichero.FullName}", mlogger);
+                    fichero.Delete();
+                }
+            }
+            _loggingService.GuardarLogError($"Fin EliminarFicherosDirectorio", mlogger);
+        }
+
         public void EliminarDirectorioEnCascada(string pRuta)
         {
             if (string.IsNullOrEmpty(AzureStorageConnectionString))
             {
                 pRuta = Path.Combine(RutaFicheros, pRuta);
-
                 DirectoryInfo dirInfoRaiz = new DirectoryInfo(pRuta);
                 DirectoryInfo[] directorios = dirInfoRaiz.GetDirectories();
                 foreach (DirectoryInfo dir in directorios)
@@ -756,8 +836,14 @@ namespace Es.Riam.Gnoss.FileManager
 
             if (!string.IsNullOrEmpty(pExtension))
             {
-                pNombreArchivoOrigen = pNombreArchivoOrigen + pExtension;
-                pNombreArchivoDestino = pNombreArchivoDestino + pExtension;
+                if (!pNombreArchivoOrigen.EndsWith(pExtension))
+                {
+                    pNombreArchivoOrigen = pNombreArchivoOrigen + pExtension;
+                }
+                if (!pNombreArchivoDestino.EndsWith(pExtension))
+                {
+                    pNombreArchivoDestino = pNombreArchivoDestino + pExtension;
+                }
             }
 
             if (string.IsNullOrEmpty(AzureStorageConnectionString))
@@ -779,6 +865,104 @@ namespace Es.Riam.Gnoss.FileManager
             {
                 //AzureStorageClient.CopiarArchivo(pRutaOrigen, pRutaDestino, pNombreArchivoOrigen, pCopiar, pNombreArchivoDestino);
             }
+        }
+
+        public void MoverArchivo(string pRutaOrigen, string pRutaDestino, bool pIgnorarDirectorioPrincipal = false)
+        {
+            string rutaOrigen = pRutaOrigen;
+            string rutaDestino = pRutaDestino;
+
+            if (!pIgnorarDirectorioPrincipal)
+            {
+                rutaOrigen = Path.Combine(RutaFicheros, pRutaOrigen);
+                rutaDestino = Path.Combine(RutaFicheros, pRutaDestino);
+            }
+
+            FileInfo fichOrigen = new FileInfo(rutaOrigen);
+            fichOrigen.MoveTo(rutaDestino, true);
+        }        
+
+        public List<string> ObtenerFicherosDeDirectorioRecurso(string pPath)
+        {
+            List<string> ficheros = new List<string>();
+            if (pPath == null)
+            {
+                return ficheros;
+            }
+
+            if (Directory.Exists(pPath))
+            {
+                ficheros = new DirectoryInfo(pPath).GetFiles().Select(x => x.FullName).ToList();
+            }
+
+            return ficheros;
+        }
+
+        public List<string> ObtenerDirectoriosDeDirectorio(string pPath)
+        {
+            List<string> folders = new List<string>();
+            if (pPath == null)
+            {
+                return folders;
+            }
+
+            if (Directory.Exists(pPath))
+            {
+                folders = new DirectoryInfo(pPath).GetDirectories().Select(x => x.FullName).ToList();
+            }
+
+            return folders;
+        }
+
+        public static string ObtenerRutaFicherosDeRecursosTemporal(Guid pDocumentoID)
+        {
+            string ruta = Path.Combine(UtilArchivos.ContentTemporales, DateTime.Now.ToString("yyyyMMdd"), pDocumentoID.ToString().ToLower(), DateTime.Now.ToString("HHmmss"));
+            return ruta;
+        }
+
+        public void MoverDirectorioDeRecursoAAlmacenamientoTemporal(string pRutaBase, string pDirectorioOrigen, string pRutaBaseTemporal)
+        {
+            string rutaOrigen = Path.Combine(pRutaBase, pDirectorioOrigen);
+            string rutaDestino = Path.Combine(pRutaBaseTemporal, rutaOrigen);
+            
+            Directory.Move(rutaOrigen, rutaDestino);
+        }
+
+        public bool EsFicheroValido(string file, List<string> validResourceFiles)
+        {
+            string ficheroServidor = file.Substring(0, file.LastIndexOf('.'));
+            foreach (string fich in validResourceFiles) 
+            {
+                string ficheroUsadoEnRecurso = fich.Substring(0, fich.LastIndexOf('.'));
+                if (ficheroServidor.Contains(ficheroUsadoEnRecurso))
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        public bool EsOpenSeaDragonValido(string folder, List<string> validResourceFiles)
+        {
+            string _regexIdOpenSeadragonFolder = "\\/[a-f0-9]{2}\\/[a-f0-9]{4}\\/[a-f0-9\\-]{36}\\/([a-f0-9\\-]{36})";
+            if (Regex.IsMatch(folder, _regexIdOpenSeadragonFolder))
+            {
+                string idImage = Regex.Match(folder, _regexIdOpenSeadragonFolder).Groups[1].Value;
+                return validResourceFiles.Any(x => x.Contains(idImage));
+            }
+            return false;
+        }
+
+        public bool EsMiniaturaValida(string file, List<string> validResourceFiles)
+        {
+            string _regexIdImagesemThumbnail = "\\/[a-f0-9]{2}\\/[a-f0-9]{4}\\/[a-f0-9\\-]{36}\\/([a-f0-9\\-]{36})_[0-9]+.[a-z0-9]+";
+            if (Regex.IsMatch(file, _regexIdImagesemThumbnail))
+            {
+                string idImage = Regex.Match(file, _regexIdImagesemThumbnail).Groups[1].Value;
+                return validResourceFiles.Any(x => x.Contains(idImage));
+            }
+            return false;
         }
 
         public async void CopiarArchivosDeDirectorio(string pRutaOrigen, string pRutaDestino, bool pCopiarSubdirectorios = false)

@@ -1,9 +1,13 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net6.0</TargetFramework>
+	  <TargetFramework>net8.0</TargetFramework>
+	  <SonarQubeExclude>false</SonarQubeExclude>
   </PropertyGroup>
-
+	<ItemGroup>
+		<PackageReference Include="Aspose.Zip" Version="24.10.0" />
+		<PackageReference Include="Microsoft.ApplicationInsights" Version="2.23.0" />
+	</ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Es.Riam.Gnoss.CL\Es.Riam.Gnoss.CL.csproj" />
     <ProjectReference Include="..\Es.Riam.Gnoss.Elementos\Es.Riam.Gnoss.Elementos.csproj" />

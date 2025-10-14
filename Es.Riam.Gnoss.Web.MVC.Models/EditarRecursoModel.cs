@@ -788,6 +788,11 @@ namespace Es.Riam.Gnoss.Web.MVC.Models
         public string TextSelectUsers { get; set; }
 
         /// <summary>
+        /// ID del perfil que crea un documento.
+        /// </summary>
+        public Guid DocumentCreatorProfileId { get; set; }
+
+        /// <summary>
         /// IDs con los perfiles seleccionados.
         /// </summary>
         public Dictionary<Guid, string> SelectedProfilesList
@@ -1008,6 +1013,11 @@ namespace Es.Riam.Gnoss.Web.MVC.Models
         /// Indica que las categorias del tesauro no son obligatorias, por lo que no deberá pintarse el control para seleccionar categorías.
         /// </summary>
         public bool ThesaurusCategoryNotRequired { get; set; }
+
+        /// <summary>
+        /// Indica si las etiquetas de un recurso semántico no son obligatorias, por lo que no deberá realizar la validación de etiquetas.
+        /// </summary>
+        public bool TagsNotRequired { get; set; }
 
         /// <summary>
         /// Indica que el formulario semánico contiene el título y la descripción del
@@ -1453,7 +1463,14 @@ namespace Es.Riam.Gnoss.Web.MVC.Models
         {
             get
             {
-                return Entity.EspecifEntidad;
+                if (Entity != null)
+                {
+                    return Entity.EspecifEntidad;
+                }
+                else
+                {
+                    return null;
+                }
             }
         }
 
@@ -1739,7 +1756,14 @@ namespace Es.Riam.Gnoss.Web.MVC.Models
         {
             get
             {
-                return Element.Propiedad?.EspecifPropiedad;
+                if(Element != null && Element.Propiedad != null)
+                {
+                    return Element.Propiedad.EspecifPropiedad;
+                }
+                else
+                {
+                    return null;
+                }                    
             }
         }
 

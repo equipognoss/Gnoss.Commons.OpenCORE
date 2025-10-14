@@ -1,14 +1,18 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <TargetFramework>net6.0</TargetFramework>
-  </PropertyGroup>
+	<PropertyGroup>
+		<TargetFramework>net8.0</TargetFramework>
+	</PropertyGroup>
 
-  <ItemGroup>
-    <PackageReference Include="DotNetOpenAuth.OAuth2.Client" Version="4.3.4.13329" />
-    <PackageReference Include="Google.Apis.Drive.v2" Version="1.50.0.2265" />
-    <PackageReference Include="Universal.Google.Authentication.OAuth2" Version="0.1.2" />
-  </ItemGroup>
+	<ItemGroup>
+		<PackageReference Include="Aspose.Zip" Version="24.10.0" />
+		<PackageReference Include="DotNetOpenAuth.OAuth2.Client" Version="4.3.4.13329" />
+		<PackageReference Include="Google.Apis.Drive.v2" Version="1.68.0.3544" />
+		<PackageReference Include="Microsoft.ApplicationInsights" Version="2.23.0" />
+		<PackageReference Include="Microsoft.IdentityModel.JsonWebTokens" Version="8.1.2" />
+		<PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="8.1.2" />
+		<PackageReference Include="Universal.Google.Authentication.OAuth2" Version="0.1.2" />
+	</ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\Es.Riam.Gnoss.Util\Es.Riam.Gnoss.Util.csproj" />

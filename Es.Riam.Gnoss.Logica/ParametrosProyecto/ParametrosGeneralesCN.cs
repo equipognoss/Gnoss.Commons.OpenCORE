@@ -1,9 +1,13 @@
 using Es.Riam.AbstractsOpen;
 using Es.Riam.Gnoss.AD.EntityModel;
 using Es.Riam.Gnoss.AD.EntityModel.Models.ParametroGeneralDS;
+using Es.Riam.Gnoss.AD.ParametroAplicacion;
 using Es.Riam.Gnoss.AD.ParametrosProyecto;
 using Es.Riam.Gnoss.Util.Configuracion;
 using Es.Riam.Gnoss.Util.General;
+using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
+using Serilog.Core;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -21,7 +25,8 @@ namespace Es.Riam.Gnoss.Logica.ParametrosProyecto
 
         private LoggingService mLoggingService;
         private EntityContext mEntityContext;
-
+        private ILogger mlogger;
+        private ILoggerFactory mLoggerFactory;
         #endregion
 
         #region Constructor
@@ -29,13 +34,14 @@ namespace Es.Riam.Gnoss.Logica.ParametrosProyecto
         /// <summary>
         /// Constructor sin parámetros
         /// </summary>
-        public ParametroGeneralCN(EntityContext entityContext, LoggingService loggingService, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication)
-            : base(entityContext, loggingService, configService, servicesUtilVirtuosoAndReplication)
+        public ParametroGeneralCN(EntityContext entityContext, LoggingService loggingService, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication, ILogger<ParametroGeneralCN> logger, ILoggerFactory loggerFactory)
+            : base(entityContext, loggingService, configService, servicesUtilVirtuosoAndReplication, logger, loggerFactory)
         {
             mEntityContext = entityContext;
             mLoggingService = loggingService;
-
-            this.ParametroGeneralAD = new ParametroGeneralAD(loggingService, entityContext, configService, servicesUtilVirtuosoAndReplication);
+            mlogger = logger;
+            mLoggerFactory = loggerFactory;
+            this.ParametroGeneralAD = new ParametroGeneralAD(loggingService, entityContext, configService, servicesUtilVirtuosoAndReplication,mLoggerFactory.CreateLogger<ParametroGeneralAD>(),mLoggerFactory);
         }
 
         /// <summary>
@@ -43,13 +49,14 @@ namespace Es.Riam.Gnoss.Logica.ParametrosProyecto
         /// </summary>
         /// <param name="pFicheroConfiguracionBD">Ruta del fichero de configuración de base de datos</param>
         /// <param name="pUsarVariableEstatica">Si se están usando hilos con diferentes conexiones: FALSE. En caso contrario TRUE</param>
-        public ParametroGeneralCN(string pFicheroConfiguracionBD, EntityContext entityContext, LoggingService loggingService, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication)
-            : base(entityContext, loggingService, configService, servicesUtilVirtuosoAndReplication)
+        public ParametroGeneralCN(string pFicheroConfiguracionBD, EntityContext entityContext, LoggingService loggingService, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication, ILogger<ParametroGeneralCN> logger, ILoggerFactory loggerFactory)
+            : base(entityContext, loggingService, configService, servicesUtilVirtuosoAndReplication, logger, loggerFactory)
         {
             mLoggingService = loggingService;
             mEntityContext = entityContext;
-
-            ParametroGeneralAD = new ParametroGeneralAD(pFicheroConfiguracionBD, loggingService, entityContext, configService, servicesUtilVirtuosoAndReplication);
+            mlogger = logger;
+            mLoggerFactory = loggerFactory;
+            ParametroGeneralAD = new ParametroGeneralAD(pFicheroConfiguracionBD, loggingService, entityContext, configService, servicesUtilVirtuosoAndReplication,mLoggerFactory.CreateLogger<ParametroGeneralAD>(),mLoggerFactory);
             mFicheroConfiguracionBD = pFicheroConfiguracionBD;
         }
 
@@ -138,14 +145,14 @@ namespace Es.Riam.Gnoss.Logica.ParametrosProyecto
             {
                 TerminarTransaccion(false);
                 // Error de concurrencia
-                mLoggingService.GuardarLogError(ex);
+                mLoggingService.GuardarLogError(ex,mlogger);
                 throw new ErrorConcurrencia();
             }
             catch (DataException ex)
             {
                 TerminarTransaccion(false);
                 //Error interno de la aplicación	
-                mLoggingService.GuardarLogError(ex);
+                mLoggingService.GuardarLogError(ex,mlogger);
                 throw new ErrorInterno();
             }
             catch
@@ -298,6 +305,16 @@ namespace Es.Riam.Gnoss.Logica.ParametrosProyecto
         {
             return ParametroGeneralAD.ObtenerTextosPersonalizadosPersonalizacionEcosistema(pPersonalizacionEcosistemaID);
         }
+        /// <summary>
+        /// Obtiene las traducciones de una personalizacion por el idioma
+        /// </summary>
+        /// <param name="pPersonalizacionEcosistemaID"></param>
+        /// <param name="pLanguage"></param>
+        /// <returns></returns>
+        public List<TextosPersonalizadosPersonalizacion> ObtenerTextosPersonalizadosPersonalizacionEcosistemaPorIdioma(Guid pPersonalizacionEcosistemaID, string pLanguage)
+        {
+            return ParametroGeneralAD.ObtenerTextosPersonalizadosPersonalizacionEcosistemaPorIdioma(pPersonalizacionEcosistemaID, pLanguage);
+        } 
 
         /// <summary>
         /// Obtiene la traducción indicado para la personalización indicada

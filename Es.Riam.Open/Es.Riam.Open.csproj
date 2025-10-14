@@ -1,14 +1,21 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <TargetFramework>net6.0</TargetFramework>
-  </PropertyGroup>
+	<PropertyGroup>
+		<TargetFramework>net8.0</TargetFramework>
+		<SonarQubeExclude>false</SonarQubeExclude>
+	</PropertyGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\Es.Riam.Gnoss.AD\Es.Riam.Gnoss.AD.csproj" />
-    <ProjectReference Include="..\Es.Riam.Gnoss.Web.MVC.Models\Es.Riam.Gnoss.Web.MVC.Models.csproj" />
-    <ProjectReference Include="..\Es.Riam.InterfacesOpen\Es.Riam.InterfacesOpen.csproj" />
-    <ProjectReference Include="..\Gnoss.Web.LabelerService\Gnoss.Web.LabelerService.csproj" />
-  </ItemGroup>
+	<ItemGroup>
+		<PackageReference Include="Aspose.Zip" Version="24.10.0" />
+		<PackageReference Include="Microsoft.ApplicationInsights" Version="2.23.0" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\Es.Riam.Gnoss.AD\Es.Riam.Gnoss.AD.csproj" />
+		<ProjectReference Include="..\Es.Riam.Gnoss.CL\Es.Riam.Gnoss.CL.csproj" />
+		<ProjectReference Include="..\Es.Riam.Gnoss.Web.Controles\Es.Riam.Gnoss.Web.Controles.csproj" />
+		<ProjectReference Include="..\Es.Riam.Gnoss.Web.MVC.Models\Es.Riam.Gnoss.Web.MVC.Models.csproj" />
+		<ProjectReference Include="..\Es.Riam.InterfacesOpen\Es.Riam.InterfacesOpen.csproj" />
+	</ItemGroup>
 
 </Project>

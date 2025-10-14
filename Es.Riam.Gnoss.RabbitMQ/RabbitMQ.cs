@@ -1,8 +1,11 @@
 ﻿using Es.Riam.Gnoss.Util.Configuracion;
 using Es.Riam.Gnoss.Util.General;
 using Es.Riam.InterfacesOpenArchivos;
+using Microsoft.Extensions.Logging;
 using System;
+using System.Collections;
 using System.Collections.Concurrent;
+using System.Collections.Generic;
 
 namespace Es.Riam.Gnoss.RabbitMQ
 {
@@ -25,18 +28,25 @@ namespace Es.Riam.Gnoss.RabbitMQ
         private readonly string mExchangeName;
 
         private readonly string mRouting;
-
+        private ILogger mlogger;
+        private ILoggerFactory mLoggerFactory;
         private static ConcurrentDictionary<string, ConcurrentDictionary<string, string>> mListaCadenasConexiones = new ConcurrentDictionary<string, ConcurrentDictionary<string, string>>();
 
         private readonly IAMQPClient Cliente;
 
-        public RabbitMQClient(string pTipoCola, string pQueueName, LoggingService loggingService, ConfigService configService, string pExchangeName = "", string pRouting = "")
+        public RabbitMQClient()
+        {
+        }
+
+        public RabbitMQClient(string pTipoCola, string pQueueName, LoggingService loggingService, ConfigService configService, ILogger<RabbitMQClient> logger, ILoggerFactory loggerFactory, string pExchangeName = "", string pRouting = "")
         {
             mTipoCola = pTipoCola;
             mQueueName = pQueueName;
             mExchangeName = pExchangeName;
             mRouting = pRouting;
-            Cliente = new RabbitMQAMQP(this, loggingService, configService);
+            mlogger = logger;
+            mLoggerFactory = loggerFactory;
+            Cliente = new RabbitMQAMQP(this, loggingService, configService, mLoggerFactory.CreateLogger<RabbitMQAMQP>(), mLoggerFactory);
         }
 
         public int ContarElementosEnCola()
@@ -49,11 +59,16 @@ namespace Es.Riam.Gnoss.RabbitMQ
             Cliente.AgregarElementoACola(message);
         }
 
+        public IList<string> AgregarElementosACola(IEnumerable<string> messages)
+        {
+            return Cliente.AgregarElementosACola(messages);
+        }
+
         public void ObtenerElementosDeCola(ReceivedDelegate receivedFunction, ShutDownDelegate shutdownFunction)
         {
             Cliente.ObtenerElementosDeCola(receivedFunction, shutdownFunction);
         }
-
+   
         public static bool HayConexionRabbit(string pFicheroConexion, string pTipoCola)
         {
             return mListaCadenasConexiones != null && mListaCadenasConexiones.ContainsKey(pFicheroConexion) && mListaCadenasConexiones[pFicheroConexion] != null && mListaCadenasConexiones[pFicheroConexion].ContainsKey(pTipoCola);

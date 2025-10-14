@@ -13,6 +13,9 @@ using System.Web;
 using System.Net.Http;
 using System.Reflection;
 using Es.Riam.Util;
+using Es.Riam.Gnoss.AD.ServiciosGenerales;
+using Microsoft.Extensions.Logging;
+using Serilog.Core;
 
 namespace Es.Riam.Gnoss.Web.Controles.ServicioImagenesWrapper
 {
@@ -22,10 +25,13 @@ namespace Es.Riam.Gnoss.Web.Controles.ServicioImagenesWrapper
         private LoggingService mLoggingService;
         private CallTokenService mCallTokenService;
         private TokenBearer mToken;
-
-        public ServicioImagenes(LoggingService loggingService, ConfigService configService)
+        private ILogger mlogger;
+        private ILoggerFactory mLoggerFactory;
+        public ServicioImagenes(LoggingService loggingService, ConfigService configService, ILogger<ServicioImagenes> logger, ILoggerFactory loggerFactory)
         {
             mLoggingService=loggingService;
+            mlogger = logger;
+            mLoggerFactory = loggerFactory;
             mCallTokenService = new CallTokenService(configService);
             mToken = mCallTokenService.CallTokenApi();
         }
@@ -46,7 +52,7 @@ namespace Es.Riam.Gnoss.Web.Controles.ServicioImagenesWrapper
             }
             catch (Exception ex)
             {
-                mLoggingService.GuardarLogError(ex);
+                mLoggingService.GuardarLogError(ex, mlogger);
                 return false;
             }
         }
@@ -66,7 +72,7 @@ namespace Es.Riam.Gnoss.Web.Controles.ServicioImagenesWrapper
             }
             catch (Exception ex)
             {
-                mLoggingService.GuardarLogError(ex);
+                mLoggingService.GuardarLogError(ex, mlogger);
                 return false;
             }
         }
@@ -91,7 +97,7 @@ namespace Es.Riam.Gnoss.Web.Controles.ServicioImagenesWrapper
             }
             catch (Exception ex)
             {
-                mLoggingService.GuardarLogError(ex);
+                mLoggingService.GuardarLogError(ex, mlogger);
                 return false;
             }
         }
@@ -110,7 +116,7 @@ namespace Es.Riam.Gnoss.Web.Controles.ServicioImagenesWrapper
             }
             catch (Exception ex)
             {
-                mLoggingService.GuardarLogError(ex);
+                mLoggingService.GuardarLogError(ex, mlogger);
                 return false;
             }
         }
@@ -130,7 +136,7 @@ namespace Es.Riam.Gnoss.Web.Controles.ServicioImagenesWrapper
             }
             catch (Exception ex)
             {
-                mLoggingService.GuardarLogError(ex);
+                mLoggingService.GuardarLogError(ex, mlogger);
                 return false;
             }
         }
@@ -150,7 +156,7 @@ namespace Es.Riam.Gnoss.Web.Controles.ServicioImagenesWrapper
             }
             catch (Exception ex)
             {
-                mLoggingService.GuardarLogError(ex);
+                mLoggingService.GuardarLogError(ex, mlogger);
                 return false;
             }
         }
@@ -169,7 +175,7 @@ namespace Es.Riam.Gnoss.Web.Controles.ServicioImagenesWrapper
             }
             catch (Exception ex)
             {
-                mLoggingService.GuardarLogError(ex);
+                mLoggingService.GuardarLogError(ex, mlogger);
                 return false;
             }
         }
@@ -178,6 +184,81 @@ namespace Es.Riam.Gnoss.Web.Controles.ServicioImagenesWrapper
         {
             string respuesta = PeticionWebRequest("GET", $"get-files-data-from-directory?relative_path={HttpUtility.UrlEncode(pDirectorio)}");
             return JsonConvert.DeserializeObject<List<FileInfoModel>>(respuesta);
+        }
+
+        public bool MoverImagenesRecursoAlmacenamientoTemporal(string pDirectorio, Guid pDocumentoID, string pNombre)
+        {
+            try
+            {
+                PeticionWebRequest("POST", $"move-images-deleted-resource?relative_path={HttpUtility.UrlEncode(pDirectorio)}&pDocumentoID={pDocumentoID}&pNombre={pNombre}");
+                return true;
+            }
+            catch (Exception ex)
+            {
+                mLoggingService.GuardarLogError(ex, mlogger);
+                return false;
+            }
+        }
+
+        public bool MoverImagenesDoclinksYVideosDeRecursoModificado(Guid pDocumentoID)
+        {
+            try
+            {
+                PeticionWebRequest("POST", $"move-images-docs-videos-modified-resource?pDocumentoID={pDocumentoID}");
+                return true;
+            }
+            catch (Exception ex)
+            {
+                mLoggingService.GuardarLogError(ex, mlogger);
+                return false;
+            }
+        }
+
+        public bool MoverImagenRecursoAlmacenamientoTemporal(string pRuta, Guid pDocumentoID)
+        {
+            try
+            {
+                PeticionWebRequest("POST", $"move-image-to-temp?pRuta={HttpUtility.UrlEncode(pRuta)}&pDocumentoID={pDocumentoID}");
+                return true;
+            }
+            catch (Exception ex)
+            {
+                mLoggingService.GuardarLogError(ex, mlogger);
+                return false;
+            }
+        }
+
+        public bool MoverImagenRecursoModificado(string pImagen, Guid pDocumentoID)
+        {
+            try
+            {
+                PeticionWebRequest("POST", $"move-image-modified-resource?pImagen={HttpUtility.UrlEncode(pImagen)}&pDocumentoID={pDocumentoID}");
+                return true;
+            }
+            catch (Exception ex)
+            {
+                mLoggingService.GuardarLogError(ex, mlogger);
+                return false;
+            }
+        }
+
+        public bool BorrarFichero(byte[] pFichero, string pNombre, string pExtension, string pRuta)
+        {
+            GnossFile ficheroEnviar = new GnossFile();
+            ficheroEnviar.path = pRuta;
+            ficheroEnviar.name = pNombre;
+            ficheroEnviar.extension = pExtension;
+            ficheroEnviar.file = pFichero;
+            try
+            {
+                PeticionWebRequest("DELETE", $"remove-document-to-directory", ficheroEnviar, "DocumentosLink");
+                return true;
+            }
+            catch (Exception ex)
+            {
+                mLoggingService.GuardarLogError(ex, mlogger);
+                return false;
+            }
         }
 
         public bool BorrarImagen(string pNombre)
@@ -189,7 +270,7 @@ namespace Es.Riam.Gnoss.Web.Controles.ServicioImagenesWrapper
             }
             catch (Exception ex)
             {
-                mLoggingService.GuardarLogError(ex);
+                mLoggingService.GuardarLogError(ex, mlogger);
                 return false;
             }
         }
@@ -203,7 +284,7 @@ namespace Es.Riam.Gnoss.Web.Controles.ServicioImagenesWrapper
             }
             catch (Exception ex)
             {
-                mLoggingService.GuardarLogError(ex);
+                mLoggingService.GuardarLogError(ex, mlogger);
                 return false;
             }
         }
@@ -217,7 +298,7 @@ namespace Es.Riam.Gnoss.Web.Controles.ServicioImagenesWrapper
             }
             catch (Exception ex)
             {
-                mLoggingService.GuardarLogError(ex);
+                mLoggingService.GuardarLogError(ex, mlogger);
                 return false;
             }
         }
@@ -226,13 +307,41 @@ namespace Es.Riam.Gnoss.Web.Controles.ServicioImagenesWrapper
         {
             try
             {
-                PeticionWebRequest("POST", $"remove-image-from-resource?relative_path={HttpUtility.UrlEncode(pDirectorio)}");
+                PeticionWebRequest("POST", $"remove-images-from-resource?relative_path={HttpUtility.UrlEncode(pDirectorio)}");
                 return true;
             }
             catch (Exception ex)
             {
-                mLoggingService.GuardarLogError(ex);
+                mLoggingService.GuardarLogError(ex, mlogger);
                 return false;
+            }
+        }
+
+        public bool BorrarImagenesCategoria(Guid pCategoriaID, Guid pProyectoID)
+        {
+            try
+            {
+                PeticionWebRequest("POST", $"remove-category-images?pCategoriaID={pCategoriaID}&pProyectoID={pProyectoID}");
+                return true;
+            }
+            catch (Exception ex)
+            {
+                mLoggingService.GuardarLogError(ex, mlogger);
+                return false;
+            }
+        }
+
+        public string ObtenerExtensionImagen(string pRutaImagen, string pNombreImagenSinExtension)
+        {
+            try
+            {
+                string extension = PeticionWebRequest("POST", $"get-image-extension?pRutaImagen={HttpUtility.UrlEncode(pRutaImagen)}&pNombreImagen={pNombreImagenSinExtension}");
+                return extension;
+            }
+            catch (Exception ex)
+            {
+                mLoggingService.GuardarLogError(ex, mlogger);
+                return "";
             }
         }
 
@@ -261,7 +370,7 @@ namespace Es.Riam.Gnoss.Web.Controles.ServicioImagenesWrapper
             }
             catch (Exception ex)
             {
-                mLoggingService.GuardarLogError(ex);
+                mLoggingService.GuardarLogError(ex, mlogger);
                 return false;
             }
         }
@@ -275,7 +384,7 @@ namespace Es.Riam.Gnoss.Web.Controles.ServicioImagenesWrapper
             }
             catch (Exception ex)
             {
-                mLoggingService.GuardarLogError(ex);
+                mLoggingService.GuardarLogError(ex, mlogger);
                 return false;
             }
         }

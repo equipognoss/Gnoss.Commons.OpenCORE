@@ -2,29 +2,36 @@
 using Es.Riam.Gnoss.AD.BASE_BD.Model;
 using Es.Riam.Gnoss.AD.EntityModel;
 using Es.Riam.Gnoss.AD.EntityModelBASE;
+using Es.Riam.Gnoss.AD.ParametroAplicacion;
 using Es.Riam.Gnoss.AD.Virtuoso;
 using Es.Riam.Gnoss.CL;
 using Es.Riam.Gnoss.CL.ServiciosGenerales;
 using Es.Riam.Gnoss.Logica.BASE_BD;
 using Es.Riam.Gnoss.Util.Configuracion;
 using Es.Riam.Gnoss.Util.General;
+using Es.Riam.Gnoss.UtilServiciosWeb;
+using Es.Riam.Interfaces.InterfacesOpen;
 using Es.Riam.Util;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.Logging;
 using System;
 
 namespace Es.Riam.Gnoss.Web.Controles.ServiciosGenerales
 {
     public class ControladorCMS
     {
-        private LoggingService mLoggingService;
-        private VirtuosoAD mVirtuosoAD;
-        private EntityContext mEntityContext;
-        private ConfigService mConfigService;
-        private RedisCacheWrapper mRedisCacheWrapper;
-        private EntityContextBASE mEntityContextBASE;
+        private readonly LoggingService mLoggingService;
+        private readonly VirtuosoAD mVirtuosoAD;
+        private readonly EntityContext mEntityContext;
+        private readonly ConfigService mConfigService;
+        private readonly RedisCacheWrapper mRedisCacheWrapper;
+        private readonly EntityContextBASE mEntityContextBASE;
+        private readonly IAvailableServices mAvailableServices;
+        private ILogger mlogger;
+        private ILoggerFactory mLoggerFactory;
 
-        public ControladorCMS(LoggingService loggingService, EntityContext entityContext, ConfigService configService, RedisCacheWrapper redisCacheWrapper, EntityContextBASE entityContextBASE, VirtuosoAD virtuosoAD)
+        public ControladorCMS(LoggingService loggingService, EntityContext entityContext, ConfigService configService, RedisCacheWrapper redisCacheWrapper, EntityContextBASE entityContextBASE, VirtuosoAD virtuosoAD, IAvailableServices availableServices, ILogger<ControladorCMS> logger, ILoggerFactory loggerFactory)
         {
             mVirtuosoAD = virtuosoAD;
             mLoggingService = loggingService;
@@ -32,22 +39,28 @@ namespace Es.Riam.Gnoss.Web.Controles.ServiciosGenerales
             mConfigService = configService;
             mRedisCacheWrapper = redisCacheWrapper;
             mEntityContextBASE = entityContextBASE;
+            mAvailableServices = availableServices;
+            mlogger = logger;
+            mLoggerFactory = loggerFactory;
         }
 
         public void ActualizarModeloBaseSimple(Guid pPaginaCMSID, Guid pProyectoID, PrioridadBase pPrioridadBase, bool pEliminado)
         {
-            // Creamos una fila 
-            BasePaginaCMSDS paginaCMSDS = ObtenerFilaPaginaCMS_Base(pPaginaCMSID, pProyectoID, pPrioridadBase, pEliminado);
+            if (mAvailableServices.CheckIfServiceIsAvailable(mAvailableServices.GetBackServiceCode(BackgroundService.SearchGraphGenerator), ServiceType.Background))
+            {
+				// Creamos una fila 
+				BasePaginaCMSDS paginaCMSDS = ObtenerFilaPaginaCMS_Base(pPaginaCMSID, pProyectoID, pPrioridadBase, pEliminado);
 
-            BaseComunidadCN brPaginaCMCN = new BaseComunidadCN("base", mEntityContext, mLoggingService, mEntityContextBASE, mConfigService, null);
-            brPaginaCMCN.InsertarFilasEnRabbit("ColaTagsPaginaCMS", paginaCMSDS);
+				BaseComunidadCN brPaginaCMCN = new BaseComunidadCN("base", mEntityContext, mLoggingService, mEntityContextBASE, mConfigService, null, mLoggerFactory.CreateLogger<BaseComunidadCN>(), mLoggerFactory);
+				brPaginaCMCN.InsertarFilasEnRabbit("ColaTagsPaginaCMS", paginaCMSDS);
+			}           
         }
 
         private BasePaginaCMSDS ObtenerFilaPaginaCMS_Base(Guid pPaginaCMSID, Guid pProyectoID, PrioridadBase pPrioridadBase, bool pEliminado)
         {
             int id = -1;
 
-            ProyectoCL proyCL = new ProyectoCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mVirtuosoAD, null);
+            ProyectoCL proyCL = new ProyectoCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mVirtuosoAD, null, mLoggerFactory.CreateLogger<ProyectoCL>(), mLoggerFactory);
             id = proyCL.ObtenerTablaBaseProyectoIDProyectoPorID(pProyectoID);
             proyCL.Dispose();
 

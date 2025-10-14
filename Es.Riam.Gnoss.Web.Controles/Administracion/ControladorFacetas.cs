@@ -1,22 +1,29 @@
 ﻿using Es.Riam.AbstractsOpen;
+using Es.Riam.Gnoss.AD.BASE_BD;
 using Es.Riam.Gnoss.AD.EncapsuladoDatos;
 using Es.Riam.Gnoss.AD.EntityModel;
 using Es.Riam.Gnoss.AD.EntityModel.Models;
 using Es.Riam.Gnoss.AD.EntityModel.Models.Faceta;
 using Es.Riam.Gnoss.AD.Facetado;
+using Es.Riam.Gnoss.AD.ParametroAplicacion;
 using Es.Riam.Gnoss.AD.Virtuoso;
 using Es.Riam.Gnoss.CL;
 using Es.Riam.Gnoss.CL.Facetado;
+using Es.Riam.Gnoss.Elementos.Facetado;
 using Es.Riam.Gnoss.Elementos.ServiciosGenerales;
 using Es.Riam.Gnoss.Logica.Facetado;
 using Es.Riam.Gnoss.Logica.Identidad;
 using Es.Riam.Gnoss.Logica.ServiciosGenerales;
+using Es.Riam.Gnoss.RabbitMQ;
 using Es.Riam.Gnoss.Servicios.ControladoresServiciosWeb;
 using Es.Riam.Gnoss.Util.Configuracion;
 using Es.Riam.Gnoss.Util.General;
+using Es.Riam.Gnoss.UtilServiciosWeb;
 using Es.Riam.Gnoss.Web.MVC.Models.Administracion;
 using Es.Riam.Util;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
+using Serilog.Core;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -42,13 +49,14 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
         private IServicesUtilVirtuosoAndReplication mServicesUtilVirtuosoAndReplication;
         private RedisCacheWrapper mRedisCacheWrapper;
         private GnossCache mGnossCache;
-
+        private ILogger mlogger;
+        private ILoggerFactory mLoggerFactory;
         #region Constructor
 
         /// <summary>
         /// 
         /// </summary>
-        public ControladorFacetas(Proyecto pProyecto, Dictionary<string, string> pParametroProyecto, Dictionary<string, string> pListaOntologias, LoggingService loggingService, EntityContext entityContext, ConfigService configService, RedisCacheWrapper redisCacheWrapper, GnossCache gnossCache, VirtuosoAD virtuosoAD, IServicesUtilVirtuosoAndReplication pServicesVirtuosoAndReplication, bool pCrearFilasPropiedadesExportacion = false)
+        public ControladorFacetas(Proyecto pProyecto, Dictionary<string, string> pParametroProyecto, Dictionary<string, string> pListaOntologias, LoggingService loggingService, EntityContext entityContext, ConfigService configService, RedisCacheWrapper redisCacheWrapper, GnossCache gnossCache, VirtuosoAD virtuosoAD, IServicesUtilVirtuosoAndReplication pServicesVirtuosoAndReplication, ILogger<ControladorFacetas> logger, ILoggerFactory loggerFactory, bool pCrearFilasPropiedadesExportacion = false)
         {
             mVirtuosoAD = virtuosoAD;
             mLoggingService = loggingService;
@@ -61,7 +69,8 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
             ProyectoSeleccionado = pProyecto;
             ParametroProyecto = pParametroProyecto;
             ListaOntologias = pListaOntologias;
-
+            mlogger = logger;
+            mLoggerFactory = loggerFactory;
             CrearFilasPropiedadesExportacion = pCrearFilasPropiedadesExportacion;
         }
 
@@ -166,7 +175,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
             {
                 try
                 {
-                    ProyectoCN proyCN = new ProyectoCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+                    ProyectoCN proyCN = new ProyectoCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<ProyectoCN>(), mLoggerFactory);
                     proyCN.CrearFilasIntegracionContinuaParametro(propiedadesIntegracionContinua, ProyectoSeleccionado.Clave, TipoObjeto.Faceta);
                     proyCN.Dispose();
                 }
@@ -184,6 +193,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
         {
             FacetaModel faceta = new FacetaModel();
             faceta.Name = pFilaFacetaOC.NombreFaceta;
+            faceta.FechaModificacion = pFilaFacetaOC.FechaCreacion;
 
             if (pFilaFacetaOC.TipoPropiedad == (short)TipoPropiedadFaceta.Texto)
             {
@@ -203,6 +213,10 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
             else if (pFilaFacetaOC.TipoPropiedad == (short)TipoPropiedadFaceta.Numero)
             {
                 faceta.Type = TipoFaceta.Numero;
+            }
+            else if(pFilaFacetaOC.TipoPropiedad == (short)TipoPropiedadFaceta.Siglo)
+            {
+                faceta.Type = TipoFaceta.Siglo;
             }
             else
             {
@@ -291,7 +305,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
             faceta.ListFiltro = listaFiltros;
             faceta.ListaFiltrosFacetas = listaFiltrosFiltro;
 
-            IdentidadCN identidadCN = new IdentidadCN(mEntityContext, mLoggingService, mConfigService, null);
+            IdentidadCN identidadCN = new IdentidadCN(mEntityContext, mLoggingService, mConfigService, null, mLoggerFactory.CreateLogger<IdentidadCN>(), mLoggerFactory);
 
             // TODO: Guardar en el campo FacetaPrivadaParaGrupoEditores el nombre de la organización y obtener el grupo por proyecto o organización, según proceda
             List<Guid> grupos = new List<Guid>();
@@ -319,7 +333,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
                 faceta.AgrupacionID = pFilaFacetaOC.AgrupacionID;
             }
 
-
+            faceta.MostrarContador = pFilaFacetaOC.MostrarContador;
             faceta.Orden = pFilaFacetaOC.Orden;
             return faceta;
         }
@@ -386,6 +400,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
 
         public void GuardarFacetas(List<FacetaModel> pListaFacetas, bool pMantenerOrden = false)
         {
+            List<string> listaFacetasAutocompletarRabbit = new List<string>();
             //Eliminar las que no vienen del modelo
             List<FacetaObjetoConocimientoProyecto> listaFacetas = FacetaDW.ListaFacetaObjetoConocimientoProyecto.ToList();
             foreach (FacetaObjetoConocimientoProyecto faceta in listaFacetas)
@@ -424,10 +439,9 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
                             }
                         }
                         EliminarFaceta(faceta);
-                        //mEntityContext.EliminarElemento(faceta);
                         FacetaDW.ListaFacetaObjetoConocimientoProyecto.Remove(faceta);
+                        listaFacetasAutocompletarRabbit.AddRange(AgregarFilasColaFacetasAutocompletar(ProyectoSeleccionado.FilaProyecto.TablaBaseProyectoID, faceta.Faceta, faceta.ObjetoConocimiento, 1));
                     }
-
                 }
             }
 
@@ -478,7 +492,6 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
                             {
                                 if (string.IsNullOrEmpty(faceta.ClaveFaceta))
                                 {
-                                    //faceta.ClaveFaceta = reciprocaString;
                                     faceta.ClaveFacetaYReprocidad = reciprocaString;
                                 }
                                 else
@@ -528,7 +541,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
                                     KeyValuePair<string, string> claveFacetaOC = new KeyValuePair<string, string>(columnaFaceta, objetoConocimiento);
                                     listaFacetasNuevas.Add(claveFacetaOC);
 
-                                    AgregarFilaFacetaNueva(faceta, objetoConocimiento, true);
+                                    listaFacetasAutocompletarRabbit.AddRange(AgregarFilaFacetaNueva(faceta, objetoConocimiento, true));
                                 }
                             }
                         }
@@ -576,7 +589,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
                                     }
                                     if (filaFaceta != null)
                                     {
-                                        ModificarFilaFaceta(filaFaceta, faceta, true);
+                                        listaFacetasAutocompletarRabbit.AddRange(ModificarFilaFaceta(filaFaceta, faceta, true));
                                     }
                                 }
                             }
@@ -625,7 +638,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
                                             FacetaDW.ListaFacetaObjetoConocimientoProyectoPenstanya.Remove(facetaObjetoConocimientoPestanya);
                                         }
                                     }
-                                    EliminarFaceta(filaFaceta);
+                                    listaFacetasAutocompletarRabbit.AddRange(EliminarFaceta(filaFaceta));
                                 }
                             }
                         }
@@ -645,25 +658,25 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
                                 FacetaDW.ListaFacetaObjetoConocimientoProyectoPenstanya.Remove(facetaObjetoConocimientoPestanya);
                             }
                         }
-                        EliminarFaceta(filaFaceta);
+                        listaFacetasAutocompletarRabbit.AddRange(EliminarFaceta(filaFaceta));
                     }
                 }
 
-                FacetaCN facetaCN = new FacetaCN(mEntityContext, mLoggingService, mConfigService, null);
+                FacetaCN facetaCN = new FacetaCN(mEntityContext, mLoggingService, mConfigService, null, mLoggerFactory.CreateLogger<FacetaCN>(), mLoggerFactory);
                 facetaCN.Actualizar();
                 facetaCN.Dispose();
+                AgregarColaFacetasAutocompletarRabbit(listaFacetasAutocompletarRabbit);
             }
             catch (Exception ex)
             {
-                mLoggingService.GuardarLogError(ex);
+                mLoggingService.GuardarLogError(ex, mlogger);
                 throw new Exception(ex.Message, ex);
             }
         }
 
 
-        private void EliminarFaceta(FacetaObjetoConocimientoProyecto pFilaFaceta)
+        private List<string> EliminarFaceta(FacetaObjetoConocimientoProyecto pFilaFaceta)
         {
-            FacetaCN facetaCN = new FacetaCN(mEntityContext, mLoggingService, mConfigService, null);
             List<FacetaFiltroProyecto> filasFiltros = pFilaFaceta.FacetaFiltroProyecto.ToList();
 
             foreach (FacetaFiltroProyecto filaFiltro in filasFiltros)
@@ -672,12 +685,13 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
                 mEntityContext.EliminarElemento(filaFiltro);
                 FacetaDW.ListaFacetaFiltroProyecto.Remove(filaFiltro);
             }
-                        
+            
             FacetaDW.ListaFacetaObjetoConocimientoProyecto.Remove(pFilaFaceta);
             mEntityContext.EliminarElemento(pFilaFaceta);
+            return AgregarFilasColaFacetasAutocompletar(ProyectoSeleccionado.FilaProyecto.TablaBaseProyectoID, pFilaFaceta.Faceta, pFilaFaceta.ObjetoConocimiento, 1);
         }
 
-        private void AgregarFilaFacetaNueva(FacetaModel pFaceta, string pObjetoConocimiento, bool pMantenerOrden = false)
+        private List<string> AgregarFilaFacetaNueva(FacetaModel pFaceta, string pObjetoConocimiento, bool pMantenerOrden = false)
         {
             FacetaObjetoConocimientoProyecto filaFacetaNueva = new FacetaObjetoConocimientoProyecto();
             try
@@ -685,6 +699,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
                 filaFacetaNueva.ProyectoID = ProyectoSeleccionado.Clave;
                 filaFacetaNueva.OrganizacionID = ProyectoSeleccionado.FilaProyecto.OrganizacionID;
                 filaFacetaNueva.ObjetoConocimiento = pObjetoConocimiento;
+                filaFacetaNueva.FechaCreacion = DateTime.Now;
 
                 TipoPropiedadFaceta tipoPropiedad = TipoPropiedadFaceta.Texto;
                 if (pFaceta.Type == TipoFaceta.Numero)
@@ -701,6 +716,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
                 }
                 else if(pFaceta.Type == TipoFaceta.Siglo)
                 {
+                    pFaceta.AlgoritmoTransformacion = (short)TiposAlgoritmoTransformacion.Siglo;
                     tipoPropiedad = TipoPropiedadFaceta.Siglo;
                 }
 
@@ -720,10 +736,12 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
                 ModificarFilaFaceta(filaFacetaNueva, pFaceta, pMantenerOrden);
                 mEntityContext.FacetaObjetoConocimientoProyecto.Add(filaFacetaNueva);
                 FacetaDW.ListaFacetaObjetoConocimientoProyecto.Add(filaFacetaNueva);
+
+                return AgregarFilasColaFacetasAutocompletar(ProyectoSeleccionado.FilaProyecto.TablaBaseProyectoID, filaFacetaNueva.Faceta, filaFacetaNueva.ObjetoConocimiento, 0);
             }
             catch(Exception ex)
             {
-                mLoggingService.GuardarLogError("");
+                mLoggingService.GuardarLogError("", mlogger);
                 string mensaje = "Ha ocurrido un error al intentar guardar las facetas.";
                 if(FacetaDW.ListaFacetaObjetoConocimientoProyecto.Any(item => item.OrganizacionID.Equals(filaFacetaNueva.OrganizacionID) && item.ProyectoID.Equals(filaFacetaNueva.ProyectoID) && item.Faceta.Equals(filaFacetaNueva.Faceta) && item.ObjetoConocimiento.Equals(filaFacetaNueva.ObjetoConocimiento)))
                 {
@@ -734,9 +752,11 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
         }
 
 
-        private void ModificarFilaFaceta(FacetaObjetoConocimientoProyecto pFilaFaceta, FacetaModel pFaceta, bool pMantenerOrden = false)
+        private List<string> ModificarFilaFaceta(FacetaObjetoConocimientoProyecto pFilaFaceta, FacetaModel pFaceta, bool pMantenerOrden = false)
         {
+            List<string> listaFacetasAutocompletarRabbit = new List<string>();
             pFilaFaceta.NombreFaceta = pFaceta.Name;
+            pFilaFaceta.FechaCreacion = DateTime.Now;
 
             short reciproca = 0;
 
@@ -763,6 +783,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
             }
 
             pFilaFaceta.Reciproca = reciproca;
+            pFilaFaceta.MostrarContador = pFaceta.MostrarContador;
 
             pFilaFaceta.Mayusculas = pFaceta.Presentacion;
             pFilaFaceta.TipoDisenio = pFaceta.Disenyo;
@@ -790,7 +811,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
             string facetaPrivadaParaGrupoEditores = "";
             if (pFaceta.PrivacidadGrupos != null)
             {
-                IdentidadCN identidadCN = new IdentidadCN(mEntityContext, mLoggingService, mConfigService, null);
+                IdentidadCN identidadCN = new IdentidadCN(mEntityContext, mLoggingService, mConfigService, null, mLoggerFactory.CreateLogger<IdentidadCN>(), mLoggerFactory);
 
                 pFaceta.PrivacidadGrupos = identidadCN.ObtenerNombresDeGrupos(pFaceta.PrivacidadGrupos.Keys.ToList());
 
@@ -863,7 +884,11 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
                     }
                 }
             }
-
+            if (pFaceta.Modified)
+            {
+                return AgregarFilasColaFacetasAutocompletar(ProyectoSeleccionado.FilaProyecto.TablaBaseProyectoID, pFilaFaceta.Faceta, pFilaFaceta.ObjetoConocimiento, 2);
+            }
+            return listaFacetasAutocompletarRabbit;
             //Metodo que cogia los valores de los filtros desde el textBox
             /*
             if (pFaceta.Filtros != null)
@@ -922,6 +947,43 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
             //}
         }
 
+        public string ObtenerFilaFaceta(int pTablaBaseProyectoID, string pfaceta, string pObjetoConocimiento, bool pAgregar)
+        {
+            int tipo = 0;
+            if (!pAgregar)
+            {
+                tipo = 1;
+            }
+            string fila = $"[{pTablaBaseProyectoID},'{Constantes.FACETA}{pfaceta}{Constantes.FACETA},{Constantes.OBJETO_CONOCIMIENTO}{pObjetoConocimiento}{Constantes.OBJETO_CONOCIMIENTO}',{tipo},\"2022-01-26T10:43:12.3492277\", null]";
+            return fila;
+        }
+        public List<string> AgregarFilasColaFacetasAutocompletar(int pTablaBaseProyectoID, string pfaceta, string pObjetoConocimiento, short pTipo)
+        {
+            List<string> filasFacetas = new List<string>();
+            if (pTipo.Equals(0))
+            {//Añadir
+                filasFacetas.Add(ObtenerFilaFaceta(pTablaBaseProyectoID, pfaceta, pObjetoConocimiento, true));
+            }
+            else if (pTipo.Equals(1))
+            {//Eliminar
+                filasFacetas.Add(ObtenerFilaFaceta(pTablaBaseProyectoID, pfaceta, pObjetoConocimiento, false));
+            }
+            else
+            {//Modificar
+                filasFacetas.Add(ObtenerFilaFaceta(pTablaBaseProyectoID, pfaceta, pObjetoConocimiento, false));
+                filasFacetas.Add(ObtenerFilaFaceta(pTablaBaseProyectoID, pfaceta, pObjetoConocimiento, true));
+            }
+            return filasFacetas;
+        }
+
+        public void AgregarColaFacetasAutocompletarRabbit(List<string> pFilasFacetas)
+        {
+            using (RabbitMQClient rMQ = new RabbitMQClient(RabbitMQClient.BD_SERVICIOS_WIN, "ColaFacetasGeneradorAutocompletar", mLoggingService, mConfigService, mLoggerFactory.CreateLogger<RabbitMQClient>(), mLoggerFactory))
+            {
+                rMQ.AgregarElementosACola(pFilasFacetas);
+            }
+        }
+
         public void CrearFilasPropiedadesIntegracionContinua(List<FacetaModel> pListaFacetas)
         {
             List<IntegracionContinuaPropiedad> propiedadesIntegracionContinua = new List<IntegracionContinuaPropiedad>();
@@ -955,7 +1017,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
                     }
                 }
 
-                using (ProyectoCN proyCN = new ProyectoCN(mEntityContext, mLoggingService, mConfigService, null))
+                using (ProyectoCN proyCN = new ProyectoCN(mEntityContext, mLoggingService, mConfigService, null, mLoggerFactory.CreateLogger<ProyectoCN>(), mLoggerFactory))
                 {
                     proyCN.CrearFilasIntegracionContinuaParametro(propiedadesIntegracionContinua, ProyectoSeleccionado.Clave, TipoObjeto.Faceta);
                 }
@@ -1090,9 +1152,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
                     }
                 }
 
-
                 //Modificar las que tienen cambios
-
                 if (!pFaceta.Deleted)
                 {
                     foreach (string objetoConocimiento in ListaOntologias.Keys)
@@ -1118,7 +1178,6 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
                     }
                 }
 
-
                 foreach (string objetoConocimiento in ListaOntologias.Keys)
                 {
                     if (pFaceta.Deleted || !pFaceta.ObjetosConocimiento.Contains(objetoConocimiento))
@@ -1137,51 +1196,100 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
                     }
                 }
 
-
-                FacetaCN facetaCN = new FacetaCN(mEntityContext, mLoggingService, mConfigService, null);
+                FacetaCN facetaCN = new FacetaCN(mEntityContext, mLoggingService, mConfigService, null, mLoggerFactory.CreateLogger<FacetaCN>(), mLoggerFactory);
                 facetaCN.Actualizar();
                 facetaCN.Dispose();
             }
             catch (Exception ex)
             {
-                mLoggingService.GuardarLogError(ex);
+                mLoggingService.GuardarLogError(ex, mlogger);
             }
         }
 
         #endregion
 
         #region Gestion de Errores
+
+        /// <summary>
+        /// Comprueba que las facetas que se pretenden guardar desde la administración no tengan errores
+        /// </summary>
+        /// <param name="pListaFacetas">Lista de facetas que se quieren guardar</param>
+        /// <returns>Un mensaje de error indicando el problema en caso de haberlo</returns>
         public string ComprobarErrores(List<FacetaModel> pListaFacetas)
         {
             string error = string.Empty;
-            //Todo
-            error = ComprobarErrorInmutable(pListaFacetas);
+            
+            error += ComprobarErrorInmutable(pListaFacetas);
+            error += ComprobarFacetasRepetidas(pListaFacetas);
 
             return error;
         }
+
+        /// <summary>
+        /// Se comprueba si se ha configurado alguna faceta inmutable sin marcar el comportamiento OR. 
+        /// En caso de haberlo hecho se devuelve un mensaje de error indicándolo.
+        /// </summary>
+        /// <param name="pListaFacetas">Lista de facetas que se quieren guardar</param>
+        /// <returns>Un mensaje de error indicando el problema en caso de haberlo</returns>
         private string ComprobarErrorInmutable(List<FacetaModel> pListaFacetas)
         {
-            string error = "";
             foreach (FacetaModel faceta in pListaFacetas)
             {
                 if (faceta.Inmutable && !faceta.ComportamientoOr)
                 {
-                    error = "Si se elige una faceta inmutable, el comportamientoOR tiene que estar marcado también";
+                    return "Si se elige una faceta inmutable, el comportamientoOR tiene que estar marcado también";
                 }
             }
-            return error;
+
+            return string.Empty;
         }
+
+        /// <summary>
+        /// Se comprueba que al entre las facetas guardadas no hay dos con la misma clave de faceta y objetos de conocimiento repetidos.
+        /// En caso de hacerlo se devuelve un mensaje de error indicándolo.
+        /// </summary>
+        /// <param name="pListaFacetas">Lista de facetas que se quieren guardar</param>
+        /// <returns>Un mensaje de error indicando el problema en caso de haberlo</returns>
+        private static string ComprobarFacetasRepetidas(List<FacetaModel> pListaFacetas)
+        {
+            Dictionary<string, List<string>> facetasObjetosConocimiento = new Dictionary<string, List<string>>();
+            foreach (FacetaModel faceta in pListaFacetas)
+            {
+                string datosFaceta = faceta.ClaveFaceta + faceta.Reciprocidad;
+                if (!facetasObjetosConocimiento.ContainsKey(datosFaceta))
+                {
+                    facetasObjetosConocimiento.Add(datosFaceta, faceta.ObjetosConocimiento);
+                }
+                else
+                {
+                    foreach (string objetoConocimiento in faceta.ObjetosConocimiento)
+                    {
+                        if (facetasObjetosConocimiento[datosFaceta].Contains(objetoConocimiento))
+                        {
+                            return "No puede haber facetas repetidas con los mismos objetos de conocimiento y la misma reprocidad";
+                        }
+                        else
+                        {
+                            facetasObjetosConocimiento[datosFaceta].Add(objetoConocimiento);
+                        }
+                    }
+                }
+            }
+
+            return string.Empty;
+        }
+
         #endregion
 
         #region Invalidar Caches
 
         public void InvalidarCaches(string UrlIntragnoss)
         {
-            FacetaCL facetaCL = new FacetaCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, null);
+            FacetaCL facetaCL = new FacetaCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, null, mLoggerFactory.CreateLogger<FacetaCL>(), mLoggerFactory);
             bool cachearFacetas = !(ParametroProyecto.ContainsKey("CacheFacetas") && ParametroProyecto["CacheFacetas"].Equals("0"));
             facetaCL.InvalidarCacheFacetasProyecto(ProyectoSeleccionado.Clave, cachearFacetas);
 
-            FacetadoCL facetadoCL = new FacetadoCL(UrlIntragnoss, mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mVirtuosoAD, null);
+            FacetadoCL facetadoCL = new FacetadoCL(UrlIntragnoss, mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mVirtuosoAD, null, mLoggerFactory.CreateLogger<FacetadoCL>(), mLoggerFactory);
             facetadoCL.InvalidarResultadosYFacetasDeBusquedaEnProyecto(ProyectoSeleccionado.Clave, "*");
 
             mGnossCache.VersionarCacheLocal(ProyectoSeleccionado.Clave);
@@ -1201,7 +1309,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
             {
                 if (mFacetaDW == null)
                 {
-                    FacetaCN facetaCN = new FacetaCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+                    FacetaCN facetaCN = new FacetaCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<FacetaCN>(), mLoggerFactory);
                     mFacetaDW = facetaCN.ObtenerFacetasAdministrarProyecto(ProyectoSeleccionado.Clave);
                     facetaCN.Dispose();
                 }

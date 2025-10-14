@@ -4,6 +4,7 @@ using Es.Riam.Gnoss.AD.BASE_BD.Model;
 using Es.Riam.Gnoss.AD.EncapsuladoDatos;
 using Es.Riam.Gnoss.AD.EntityModel;
 using Es.Riam.Gnoss.AD.EntityModelBASE;
+using Es.Riam.Gnoss.AD.ParametroAplicacion;
 using Es.Riam.Gnoss.AD.Virtuoso;
 using Es.Riam.Gnoss.CL;
 using Es.Riam.Gnoss.CL.ServiciosGenerales;
@@ -14,8 +15,11 @@ using Es.Riam.Gnoss.Logica.ServiciosGenerales;
 using Es.Riam.Gnoss.Recursos;
 using Es.Riam.Gnoss.Util.Configuracion;
 using Es.Riam.Gnoss.Util.General;
+using Es.Riam.Gnoss.UtilServiciosWeb;
+using Es.Riam.Interfaces.InterfacesOpen;
 using Es.Riam.Util;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -39,10 +43,11 @@ namespace Es.Riam.Gnoss.Web.Controles.ServiciosGenerales
         private RedisCacheWrapper mRedisCacheWrapper;
         private EntityContextBASE mEntityContextBASE;
         private IServicesUtilVirtuosoAndReplication mServicesUtilVirtuosoAndReplication;
-
+        private ILogger mlogger;
+        private ILoggerFactory mLoggerFactory;
         #endregion
 
-        public ControladorOrganizaciones(LoggingService loggingService, EntityContext entityContext, ConfigService configService, RedisCacheWrapper redisCacheWrapper, EntityContextBASE entityContextBASE, VirtuosoAD virtuosoAD, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication)
+        public ControladorOrganizaciones(LoggingService loggingService, EntityContext entityContext, ConfigService configService, RedisCacheWrapper redisCacheWrapper, EntityContextBASE entityContextBASE, VirtuosoAD virtuosoAD, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication, ILogger<ControladorOrganizaciones> logger, ILoggerFactory loggerFactory)
         {
             mVirtuosoAD = virtuosoAD;
             mLoggingService = loggingService;
@@ -51,6 +56,8 @@ namespace Es.Riam.Gnoss.Web.Controles.ServiciosGenerales
             mRedisCacheWrapper = redisCacheWrapper;
             mEntityContextBASE = entityContextBASE;
             mServicesUtilVirtuosoAndReplication = servicesUtilVirtuosoAndReplication;
+            mlogger = logger;
+            mLoggerFactory = loggerFactory;
         }
 
         #region Metodos generales
@@ -70,7 +77,7 @@ namespace Es.Riam.Gnoss.Web.Controles.ServiciosGenerales
 
                 if (paisDW == null)
                 {
-                    PaisCN paisCN = new PaisCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+                    PaisCN paisCN = new PaisCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<PaisCN>(), mLoggerFactory);
                     paisDW = paisCN.ObtenerPaisesProvincias();
                     paisCN.Dispose();
 
@@ -110,7 +117,7 @@ namespace Es.Riam.Gnoss.Web.Controles.ServiciosGenerales
 
                 if (paisDW == null)
                 {
-                    PaisCN paisCN = new PaisCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+                    PaisCN paisCN = new PaisCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<PaisCN>(), mLoggerFactory);
                     paisDW = paisCN.ObtenerProvinciasDePais(pOrganizacion.FilaOrganizacion.PaisID.Value);
                     paisCN.Dispose();
 
@@ -139,11 +146,11 @@ namespace Es.Riam.Gnoss.Web.Controles.ServiciosGenerales
         /// <param name="pEntraEnCom">Verdad si ha entrado en la comunidad, falso si ha salido de ella</param>
         /// <param name="pActualizarTagsOrganizacionSincronamente">Verdad si se deben actualizar los tags de las personas</param>
         /// <param name="pTagsViejos">Tags viejos antes del cambio</param>
-        public void ActualizarModeloBASE(Identidad pIdentidad, Guid pProyectoID, bool pEntraEnCom, bool pActualizarTagsOrganizacionSincronamente,PrioridadBase pPrioridadBase)
+        public void ActualizarModeloBASE(Identidad pIdentidad, Guid pProyectoID, bool pEntraEnCom, bool pActualizarTagsOrganizacionSincronamente,PrioridadBase pPrioridadBase, IAvailableServices pAvailableServices)
         {
             mIdentidad = pIdentidad;
 
-            ActualizarModeloBaseSimple(pIdentidad.PerfilUsuario.FilaPerfil.OrganizacionID.Value, pProyectoID, pPrioridadBase);
+            ActualizarModeloBaseSimple(pIdentidad.PerfilUsuario.FilaPerfil.OrganizacionID.Value, pProyectoID, pPrioridadBase, pAvailableServices);
         }
 
         private void ActualizarTagsOrganizacion()
@@ -152,7 +159,7 @@ namespace Es.Riam.Gnoss.Web.Controles.ServiciosGenerales
 
             GestionIdentidades gestorIdentidades = identidad.GestorIdentidades;
 
-            OrganizacionCN orgCN = new OrganizacionCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+            OrganizacionCN orgCN = new OrganizacionCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<OrganizacionCN>(), mLoggerFactory);
 
             bool estaOrganizacionCargada = (gestorIdentidades.GestorOrganizaciones != null) && (gestorIdentidades.GestorOrganizaciones.ListaOrganizaciones.ContainsKey(identidad.OrganizacionID.Value));
 
@@ -178,12 +185,12 @@ namespace Es.Riam.Gnoss.Web.Controles.ServiciosGenerales
         /// <param name="pOrganizacionID"></param>
         /// <param name="pProyectoID"></param>
         /// <param name="pPrioridadBase">Prioridad de las filas introducidas en el modelo base</param>
-        public void ActualizarModeloBaseSimple(Guid pOrganizacionID, Guid pProyectoID,PrioridadBase pPrioridadBase)
+        public void ActualizarModeloBaseSimple(Guid pOrganizacionID, Guid pProyectoID,PrioridadBase pPrioridadBase, IAvailableServices pAvailableServices)
         {
-            ProyectoCL proyCL = new ProyectoCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mVirtuosoAD, mServicesUtilVirtuosoAndReplication);
+            ProyectoCL proyCL = new ProyectoCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mVirtuosoAD, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<ProyectoCL>(), mLoggerFactory);
             int id = proyCL.ObtenerTablaBaseProyectoIDProyectoPorID(pProyectoID);
 
-            BaseComunidadCN basePerOrgComCN = new BaseComunidadCN("base", -1, mEntityContext, mLoggingService, mEntityContextBASE, mConfigService, mServicesUtilVirtuosoAndReplication);
+            BaseComunidadCN basePerOrgComCN = new BaseComunidadCN("base", -1, mEntityContext, mLoggingService, mEntityContextBASE, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<BaseComunidadCN>(), mLoggerFactory);
             BasePerOrgComunidadDS basePerOrgComDS = new BasePerOrgComunidadDS();
 
             string todosTags = Constantes.PERS_U_ORG + "o" + Constantes.PERS_U_ORG;
@@ -193,21 +200,21 @@ namespace Es.Riam.Gnoss.Web.Controles.ServiciosGenerales
             MeterValoresEnFilaCola(filaColaTagsCom_Per_Org_Add, todosTags, id, TiposElementosEnCola.Agregado,pPrioridadBase);
             basePerOrgComDS.ColaTagsCom_Per_Org.AddColaTagsCom_Per_OrgRow(filaColaTagsCom_Per_Org_Add);
 
-            basePerOrgComCN.InsertarFilasEnRabbit("ColaTagsCom_Per_Org", basePerOrgComDS);
+            basePerOrgComCN.InsertarFilasEnColaTagsCom_Per_Org(basePerOrgComDS, pAvailableServices);
         }
 
-        public void ActualizarModeloBaseSimpleMultiple(Guid pOrganizacionID, List<Guid> pListaProyectosID)
+        public void ActualizarModeloBaseSimpleMultiple(Guid pOrganizacionID, List<Guid> pListaProyectosID, IAvailableServices pAvailableServices)
         {
-            ActualizarModeloBaseSimpleMultiple(pOrganizacionID, pListaProyectosID, true);
+            ActualizarModeloBaseSimpleMultiple(pOrganizacionID, pListaProyectosID, true, pAvailableServices);
         }
 
-        public void ActualizarModeloBaseSimpleMultiple(Guid pOrganizacionID, List<Guid> pListaProyectosID, bool pAgregado)
+        public void ActualizarModeloBaseSimpleMultiple(Guid pOrganizacionID, List<Guid> pListaProyectosID, bool pAgregado, IAvailableServices pAvailableServices)
         {
-            ProyectoCN proyCN = new ProyectoCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+            ProyectoCN proyCN = new ProyectoCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<ProyectoCN>(), mLoggerFactory);
             Dictionary<Guid, int> diccionarioProyectoBaseProyectoID = proyCN.ObtenerTablasBaseProyectoIDProyectoPorID(pListaProyectosID);
             proyCN.Dispose();
 
-            BaseComunidadCN basePerOrgComCN = new BaseComunidadCN("base", -1, mEntityContext, mLoggingService, mEntityContextBASE, mConfigService, mServicesUtilVirtuosoAndReplication);
+            BaseComunidadCN basePerOrgComCN = new BaseComunidadCN("base", -1, mEntityContext, mLoggingService, mEntityContextBASE, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<BaseComunidadCN>(), mLoggerFactory);
             BasePerOrgComunidadDS basePerOrgComDS = new BasePerOrgComunidadDS();
 
             foreach (Guid proyectoID in diccionarioProyectoBaseProyectoID.Keys)
@@ -225,7 +232,7 @@ namespace Es.Riam.Gnoss.Web.Controles.ServiciosGenerales
                 basePerOrgComDS.ColaTagsCom_Per_Org.AddColaTagsCom_Per_OrgRow(filaColaTagsCom_Per_Org_Add);
             }
 
-            basePerOrgComCN.InsertarFilasEnRabbit("ColaTagsCom_Per_Org", basePerOrgComDS);
+            basePerOrgComCN.InsertarFilasEnColaTagsCom_Per_Org(basePerOrgComDS, pAvailableServices);
         }
 
         /// <summary>
@@ -284,7 +291,7 @@ namespace Es.Riam.Gnoss.Web.Controles.ServiciosGenerales
             }
             else
             {
-                bool esClase = new OrganizacionCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mServicesUtilVirtuosoAndReplication).ComprobarOrganizacionEsClase(pOrganizacionID);
+                bool esClase = new OrganizacionCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<OrganizacionCL>(), mLoggerFactory).ComprobarOrganizacionEsClase(pOrganizacionID);
                 
                 //Agregamos al diccionario la organización y si es clase o no.
                 mListaOrganizacionesSonClases.Add(pOrganizacionID, esClase);

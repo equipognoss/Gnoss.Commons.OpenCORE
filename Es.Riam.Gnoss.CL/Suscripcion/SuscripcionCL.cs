@@ -1,8 +1,12 @@
 ﻿using Es.Riam.AbstractsOpen;
 using Es.Riam.Gnoss.AD.EntityModel;
+using Es.Riam.Gnoss.AD.ParametroAplicacion;
+using Es.Riam.Gnoss.Logica.ServiciosGenerales;
 using Es.Riam.Gnoss.Logica.Suscripcion;
 using Es.Riam.Gnoss.Util.Configuracion;
 using Es.Riam.Gnoss.Util.General;
+using Microsoft.Extensions.Logging;
+using Serilog.Core;
 using System;
 using System.Collections.Generic;
 
@@ -25,7 +29,8 @@ namespace Es.Riam.Gnoss.CL.Suscripcion
         private ConfigService mConfigService;
         private EntityContext mEntityContext;
         private LoggingService mLoggingService;
-
+        private ILogger mlogger;
+        private ILoggerFactory mLoggerFactory;
         #endregion
 
         #region Constructores
@@ -33,12 +38,14 @@ namespace Es.Riam.Gnoss.CL.Suscripcion
         /// <summary>
         /// Constructor para IdentidadCL
         /// </summary>
-        public SuscripcionCL(EntityContext entityContext, LoggingService loggingService, RedisCacheWrapper redisCacheWrapper, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication)
-            : base(entityContext, loggingService, redisCacheWrapper, configService, servicesUtilVirtuosoAndReplication)
+        public SuscripcionCL(EntityContext entityContext, LoggingService loggingService, RedisCacheWrapper redisCacheWrapper, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication, ILogger<SuscripcionCL> logger, ILoggerFactory loggerFactory)
+            : base(entityContext, loggingService, redisCacheWrapper, configService, servicesUtilVirtuosoAndReplication,logger,loggerFactory)
         {
             mConfigService = configService;
             mEntityContext = entityContext;
             mLoggingService = loggingService;
+            mlogger = logger;
+            mLoggerFactory = loggerFactory;
         }
 
         /// <summary>
@@ -46,12 +53,14 @@ namespace Es.Riam.Gnoss.CL.Suscripcion
         /// </summary>
         /// <param name="pFicheroConfiguracionBD">Fichero de configuración</param>
         /// <param name="pUsarVariableEstatica">Si se están usando hilos con diferentes conexiones: FALSE. En caso contrario TRUE</param>
-        public SuscripcionCL(string pFicheroConfiguracionBD, EntityContext entityContext, LoggingService loggingService, RedisCacheWrapper redisCacheWrapper, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication)
-            : base(pFicheroConfiguracionBD, entityContext, loggingService, redisCacheWrapper, configService, servicesUtilVirtuosoAndReplication)
+        public SuscripcionCL(string pFicheroConfiguracionBD, EntityContext entityContext, LoggingService loggingService, RedisCacheWrapper redisCacheWrapper, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication, ILogger<SuscripcionCL> logger, ILoggerFactory loggerFactory)
+            : base(pFicheroConfiguracionBD, entityContext, loggingService, redisCacheWrapper, configService, servicesUtilVirtuosoAndReplication,logger,loggerFactory)
         {
             mConfigService = configService;
             mEntityContext = entityContext;
             mLoggingService = loggingService;
+            mlogger = logger;
+            mLoggerFactory = loggerFactory;
         }
 
         #endregion
@@ -63,11 +72,11 @@ namespace Es.Riam.Gnoss.CL.Suscripcion
             List<Guid> listaIdentidadesSuscritasPefil = null;
             try
             {
-                listaIdentidadesSuscritasPefil = (List<Guid>)ObtenerObjetoDeCache("ListaIdentidadesSuscritasPerfil_" + pPerfilID, true);
+                listaIdentidadesSuscritasPefil = (List<Guid>)ObtenerObjetoDeCache("ListaIdentidadesSuscritasPerfil_" + pPerfilID, true,typeof(List<Guid>));
             }
             catch (Exception ex)
             {
-                mLoggingService.GuardarLogError(ex);
+                mLoggingService.GuardarLogError(ex, mlogger);
             }
             if (listaIdentidadesSuscritasPefil == null)
             {
@@ -98,11 +107,11 @@ namespace Es.Riam.Gnoss.CL.Suscripcion
                 {
                     if (string.IsNullOrEmpty(mFicheroConfiguracionBD))
                     {
-                        mSuscripcionCN = new SuscripcionCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+                        mSuscripcionCN = new SuscripcionCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<SuscripcionCN>(), mLoggerFactory);
                     }
                     else
                     {
-                        mSuscripcionCN = new SuscripcionCN(mFicheroConfiguracionBD, mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+                        mSuscripcionCN = new SuscripcionCN(mFicheroConfiguracionBD, mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<SuscripcionCN>(), mLoggerFactory);
                     }
                 }
 
@@ -168,7 +177,7 @@ namespace Es.Riam.Gnoss.CL.Suscripcion
                 }
                 catch (Exception e)
                 {
-                    mLoggingService.GuardarLogError(e);
+                    mLoggingService.GuardarLogError(e, mlogger);
                 }
             }
         }

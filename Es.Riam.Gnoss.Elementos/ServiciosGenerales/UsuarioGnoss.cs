@@ -1,6 +1,9 @@
 using Es.Riam.Gnoss.AD.ServiciosGenerales;
 using Es.Riam.Gnoss.Util.General;
 using Es.Riam.Util;
+using Microsoft.Extensions.Logging;
+using Remotion.Linq.Parsing;
+using Serilog.Core;
 using System;
 using System.Data;
 using System.Linq;
@@ -19,8 +22,6 @@ namespace Es.Riam.Gnoss.Elementos.ServiciosGenerales
         /// </summary>
         private bool mRegistrosDependientesUsuarioCargados = false;
 
-        private LoggingService mLoggingService;
-
         #endregion
 
         #region Constructores
@@ -30,19 +31,17 @@ namespace Es.Riam.Gnoss.Elementos.ServiciosGenerales
         /// </summary>
         /// <param name="pUsuarioGnoss">Fila de usuario</param>
         /// <param name="pGestionUsuarios">Gestor de usuarios</param>
-        public UsuarioGnoss(AD.EntityModel.Models.UsuarioDS.Usuario pUsuarioGnoss, GestionUsuarios pGestionUsuarios, LoggingService loggingService)
-            : base(pUsuarioGnoss, pGestionUsuarios, loggingService)
+        public UsuarioGnoss(AD.EntityModel.Models.UsuarioDS.Usuario pUsuarioGnoss, GestionUsuarios pGestionUsuarios)
+            : base(pUsuarioGnoss, pGestionUsuarios)
         {
-            mLoggingService = loggingService;
         }
 
         /// <summary>
         /// Constructor sin parámetros
         /// </summary>
-        public UsuarioGnoss(LoggingService loggingService)
-            : base(loggingService)
+        public UsuarioGnoss()
+            : base()
         {
-            mLoggingService = loggingService;
         }
 
         #endregion
@@ -229,7 +228,7 @@ namespace Es.Riam.Gnoss.Elementos.ServiciosGenerales
                 }
                 catch (Exception e)
                 {
-                    mLoggingService.GuardarLogError(e);
+                    throw;
                 }
                 finally
                 {

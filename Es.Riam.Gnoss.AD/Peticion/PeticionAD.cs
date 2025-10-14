@@ -2,8 +2,10 @@ using Es.Riam.AbstractsOpen;
 using Es.Riam.Gnoss.AD.EncapsuladoDatos;
 using Es.Riam.Gnoss.AD.EntityModel;
 using Es.Riam.Gnoss.AD.EntityModel.Models.Peticion;
+using Es.Riam.Gnoss.AD.ParametroAplicacion;
 using Es.Riam.Gnoss.Util.Configuracion;
 using Es.Riam.Gnoss.Util.General;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Data;
 using System.Linq;
@@ -170,18 +172,21 @@ namespace Es.Riam.Gnoss.AD.Peticion
     {
         private EntityContext mEntityContext;
         private LoggingService mLoggingService;
+        private ILogger mlogger;
+        private ILoggerFactory mLoggerFactory;
 
         #region Constructores
 
         /// <summary>
         /// El por defecto, utilizado cuando se requiere el GnossConfig.xml por defecto
         /// </summary>
-        public PeticionAD(LoggingService loggingService, EntityContext entityContext, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication)
-            : base(loggingService, entityContext, configService, servicesUtilVirtuosoAndReplication)
+        public PeticionAD(LoggingService loggingService, EntityContext entityContext, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication, ILogger<PeticionAD> logger, ILoggerFactory loggerFactory)
+            : base(loggingService, entityContext, configService, servicesUtilVirtuosoAndReplication, logger, loggerFactory)
         {
             mEntityContext = entityContext;
             mLoggingService = loggingService;
-
+            mlogger = logger;
+            mLoggerFactory = loggerFactory;
             this.CargarConsultasYDataAdapters();
         }
 
@@ -190,11 +195,13 @@ namespace Es.Riam.Gnoss.AD.Peticion
         /// </summary>
         /// <param name="pFicheroConfiguracionBD"></param>
         /// <param name="pUsarVariableEstatica">Si se están usando hilos con diferentes conexiones: FALSE. En caso contrario TRUE</param>
-        public PeticionAD(string pFicheroConfiguracionBD, LoggingService loggingService, EntityContext entityContext, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication)
-            : base(pFicheroConfiguracionBD, loggingService, entityContext, configService, servicesUtilVirtuosoAndReplication)
+        public PeticionAD(string pFicheroConfiguracionBD, LoggingService loggingService, EntityContext entityContext, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication, ILogger<PeticionAD> logger, ILoggerFactory loggerFactory)
+            : base(pFicheroConfiguracionBD, loggingService, entityContext, configService, servicesUtilVirtuosoAndReplication, logger, loggerFactory)
         {
             mEntityContext = entityContext;
             mLoggingService = loggingService;
+            mlogger = logger;
+            mLoggerFactory = loggerFactory;
 
             this.CargarConsultasYDataAdapters(IBD);
         }
@@ -360,7 +367,7 @@ namespace Es.Riam.Gnoss.AD.Peticion
             }
             catch (Exception e)
             {
-                mLoggingService.GuardarLogError(e);
+                mLoggingService.GuardarLogError(e, mlogger);
             }
         }
 

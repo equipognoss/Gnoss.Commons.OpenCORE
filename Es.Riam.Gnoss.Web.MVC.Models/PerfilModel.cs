@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Es.Riam.Gnoss.Web.MVC.Models.Administracion;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using static Es.Riam.Gnoss.Web.MVC.Models.CommunityModel;
@@ -274,6 +275,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Models
         /// Indica si la identidad actual es administrador del proyecto.
         /// </summary>
         public bool IsProyectAdmin { get; set; }
+        public bool CanManageUsers { get; set; }
         /// <summary>
         /// Indica si la identidad actual es supervisor del proyecto.
         /// </summary>
@@ -398,6 +400,9 @@ namespace Es.Riam.Gnoss.Web.MVC.Models
         public string NombreCortoOrganizacion { get; set; }
 
         public DateTime BornDate { get; set; }
+        public bool isBlocked { get; set; }
+        public bool isExpelled { get; set; }
+        public bool isSubscribedToNewsletter { get; set; }
 
         /// <summary>
         /// Tiene Email del tutor
@@ -466,6 +471,8 @@ namespace Es.Riam.Gnoss.Web.MVC.Models
         /// Gets the User rol in this project
         /// </summary>
         public UserRol Rol { get; set; }
+
+        public List<string> Roles { get; set; }
 
         /// <summary>
         /// Modelo de información extra del perfil
@@ -941,6 +948,8 @@ namespace Es.Riam.Gnoss.Web.MVC.Models
         /// Nombre corto del proyecto
         /// </summary>
         public string ProyectShortName { get; set; }
+
+        public List<string> Roles { get; set; }
     }
 
     /// <summary>

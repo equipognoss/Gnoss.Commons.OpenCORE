@@ -5,6 +5,7 @@ using Es.Riam.Gnoss.Elementos.ParametroAplicacion;
 using Es.Riam.Gnoss.Logica.ParametroAplicacion;
 using Es.Riam.Gnoss.Util.Configuracion;
 using Es.Riam.Gnoss.Util.General;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -26,7 +27,8 @@ namespace Es.Riam.Gnoss.CL.ParametrosAplicacion
         private ConfigService mConfigService;
         private EntityContext mEntityContext;
         private LoggingService mLoggingService;
-
+        private ILogger mlogger;
+        private ILoggerFactory mLoggerFactory;
         #endregion
 
         #region Constructores
@@ -34,12 +36,14 @@ namespace Es.Riam.Gnoss.CL.ParametrosAplicacion
         /// <summary>
         /// Constructor para FacetadoCL
         /// </summary>
-        public ParametroAplicacionCL(EntityContext entityContext, LoggingService loggingService, RedisCacheWrapper redisCacheWrapper, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication)
-            : base(entityContext, loggingService, redisCacheWrapper, configService, servicesUtilVirtuosoAndReplication)
+        public ParametroAplicacionCL(EntityContext entityContext, LoggingService loggingService, RedisCacheWrapper redisCacheWrapper, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication, ILogger<ParametroAplicacionCL> logger, ILoggerFactory loggerFactory)
+            : base(entityContext, loggingService, redisCacheWrapper, configService, servicesUtilVirtuosoAndReplication, logger, loggerFactory)
         {
             mConfigService = configService;
             mEntityContext = entityContext;
             mLoggingService = loggingService;
+            mlogger = logger;
+            mLoggerFactory = loggerFactory;
         }
 
         /// <summary>
@@ -47,12 +51,14 @@ namespace Es.Riam.Gnoss.CL.ParametrosAplicacion
         /// </summary>
         /// <param name="pFicheroConfiguracionBD">Fichero de configuración</param>
         /// <param name="pUsarVariableEstatica">Si se están usando hilos con diferentes conexiones: FALSE. En caso contrario TRUE</param>
-        public ParametroAplicacionCL(string pFicheroConfiguracionBD, EntityContext entityContext, LoggingService loggingService, RedisCacheWrapper redisCacheWrapper, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication)
-            : base(pFicheroConfiguracionBD, entityContext, loggingService, redisCacheWrapper, configService, servicesUtilVirtuosoAndReplication)
+        public ParametroAplicacionCL(string pFicheroConfiguracionBD, EntityContext entityContext, LoggingService loggingService, RedisCacheWrapper redisCacheWrapper, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication, ILogger<ParametroAplicacionCL> logger, ILoggerFactory loggerFactory)
+            : base(pFicheroConfiguracionBD, entityContext, loggingService, redisCacheWrapper, configService, servicesUtilVirtuosoAndReplication,logger,loggerFactory)
         {
             mConfigService = configService;
             mEntityContext = entityContext;
             mLoggingService = loggingService;
+            mlogger = logger;
+            mLoggerFactory = loggerFactory;
         }
 
         /// <summary>
@@ -61,12 +67,14 @@ namespace Es.Riam.Gnoss.CL.ParametrosAplicacion
         /// <param name="pFicheroConfiguracionBD">Fichero de configuración</param>
         /// <param name="pUsarVariableEstatica">Si se están usando hilos con diferentes conexiones: FALSE. En caso contrario TRUE</param>
         /// <param name="pPoolName">Nombre del pool</param>
-        public ParametroAplicacionCL(string pFicheroConfiguracionBD, string pPoolName, EntityContext entityContext, LoggingService loggingService, RedisCacheWrapper redisCacheWrapper, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication)
-            : base(pFicheroConfiguracionBD, pPoolName, entityContext, loggingService, redisCacheWrapper, configService, servicesUtilVirtuosoAndReplication)
+        public ParametroAplicacionCL(string pFicheroConfiguracionBD, string pPoolName, EntityContext entityContext, LoggingService loggingService, RedisCacheWrapper redisCacheWrapper, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication, ILogger<ParametroAplicacionCL> logger, ILoggerFactory loggerFactory)
+            : base(pFicheroConfiguracionBD, pPoolName, entityContext, loggingService, redisCacheWrapper, configService, servicesUtilVirtuosoAndReplication,logger,loggerFactory)
         {
             mConfigService = configService;
             mEntityContext = entityContext;
             mLoggingService = loggingService;
+            mlogger = logger;
+            mLoggerFactory = loggerFactory;
         }
 
         #endregion
@@ -80,11 +88,11 @@ namespace Es.Riam.Gnoss.CL.ParametrosAplicacion
             // Si no está, lo cargo y lo almaceno en la caché
             if (string.IsNullOrEmpty(mFicheroConfiguracionBD))
             {
-                parametroAplicacionCN = new ParametroAplicacionCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+                parametroAplicacionCN = new ParametroAplicacionCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<ParametroAplicacionCN>(), mLoggerFactory);
             }
             else
             {
-                parametroAplicacionCN = new ParametroAplicacionCN(mFicheroConfiguracionBD, mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+                parametroAplicacionCN = new ParametroAplicacionCN(mFicheroConfiguracionBD, mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<ParametroAplicacionCN>(), mLoggerFactory);
             }
 
             // Compruebo si está en la caché
@@ -94,7 +102,7 @@ namespace Es.Riam.Gnoss.CL.ParametrosAplicacion
 
             if (!enCacheLocal)
             {
-                listaParametros = ObtenerObjetoDeCache(null) as List<ParametroAplicacion>;
+                listaParametros = ObtenerObjetoDeCache(null,typeof(List<ParametroAplicacion>)) as List<ParametroAplicacion>;
             }
 
             if (listaParametros != null)
@@ -138,11 +146,11 @@ namespace Es.Riam.Gnoss.CL.ParametrosAplicacion
             // Si no está, lo cargo y lo almaceno en la caché
             if (string.IsNullOrEmpty(mFicheroConfiguracionBD))
             {
-                parametroAplicacionCN = new ParametroAplicacionCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+                parametroAplicacionCN = new ParametroAplicacionCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<ParametroAplicacionCN>(), mLoggerFactory);
             }
             else
             {
-                parametroAplicacionCN = new ParametroAplicacionCN(mFicheroConfiguracionBD, mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+                parametroAplicacionCN = new ParametroAplicacionCN(mFicheroConfiguracionBD, mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<ParametroAplicacionCN>(), mLoggerFactory);
             }
 
             // Compruebo si está en la caché
@@ -152,7 +160,7 @@ namespace Es.Riam.Gnoss.CL.ParametrosAplicacion
 
             if (!enCacheLocal)
             {
-                gestorListaParametros = ObtenerObjetoDeCache("GestorParametroAplicacion") as GestorParametroAplicacion;
+                gestorListaParametros = ObtenerObjetoDeCache("GestorParametroAplicacion", typeof(GestorParametroAplicacion)) as GestorParametroAplicacion;
             }
 
             if (gestorListaParametros != null)
@@ -210,7 +218,7 @@ namespace Es.Riam.Gnoss.CL.ParametrosAplicacion
 				string idiomas = ObtenerGestorParametros().ParametroAplicacion.Where(item => item.Parametro.Equals("Idiomas")).Select(item => item.Valor).FirstOrDefault();
 				if (string.IsNullOrEmpty(idiomas))
 				{
-                    ParametroAplicacionCN parametroAplicacionCN = new ParametroAplicacionCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+                    ParametroAplicacionCN parametroAplicacionCN = new ParametroAplicacionCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<ParametroAplicacionCN>(), mLoggerFactory);
 					listaIdiomasDictionary = parametroAplicacionCN.ObtenerListaIdiomasDictionary();
                     parametroAplicacionCN.Dispose();
 				}

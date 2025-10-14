@@ -1,4 +1,5 @@
 using Es.Riam.Gnoss.Util.General;
+using Microsoft.Extensions.Logging;
 using System;
 
 namespace Es.Riam.Gnoss.Elementos.Documentacion
@@ -8,7 +9,6 @@ namespace Es.Riam.Gnoss.Elementos.Documentacion
     /// </summary>
     public class RespuestaRecurso : ElementoGnoss
     {
-
         #region Constructores
 
         /// <summary>
@@ -16,8 +16,8 @@ namespace Es.Riam.Gnoss.Elementos.Documentacion
         /// </summary>
         /// <param name="pFilaRespuesta">Fila de respuesta</param>
         /// <param name="pGestorDocumental">Gestor documental</param>
-        public RespuestaRecurso(AD.EntityModel.Models.Documentacion.DocumentoRespuesta pFilaRespuesta, GestorDocumental pGestorDocumental, LoggingService loggingService)
-            : base(pFilaRespuesta, pGestorDocumental, loggingService)
+        public RespuestaRecurso(AD.EntityModel.Models.Documentacion.DocumentoRespuesta pFilaRespuesta, GestorDocumental pGestorDocumental)
+            : base(pFilaRespuesta, pGestorDocumental)
         {
 
         }

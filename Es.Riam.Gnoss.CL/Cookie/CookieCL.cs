@@ -1,10 +1,14 @@
 ﻿using Es.Riam.AbstractsOpen;
 using Es.Riam.Gnoss.AD.EntityModel;
 using Es.Riam.Gnoss.AD.EntityModel.Models.Cookies;
+using Es.Riam.Gnoss.AD.ParametroAplicacion;
 using Es.Riam.Gnoss.Logica.Cookie;
+using Es.Riam.Gnoss.Logica.ServiciosGenerales;
 using Es.Riam.Gnoss.Util.Configuracion;
 using Es.Riam.Gnoss.Util.General;
 using Es.Riam.Gnoss.Web.MVC.Models.ViewModels;
+using Microsoft.Extensions.Logging;
+using Serilog.Core;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -34,7 +38,8 @@ namespace Es.Riam.Gnoss.CL.Cookie
         private ConfigService mConfigService;
         private EntityContext mEntityContext;
         private LoggingService mLoggingService;
-
+        private ILogger mlogger;
+        private ILoggerFactory mLoggerFactory;
         #endregion
 
         #region Constructores
@@ -42,12 +47,14 @@ namespace Es.Riam.Gnoss.CL.Cookie
         /// <summary>
         /// Constructor para CookieCL
         /// </summary>
-        public CookieCL(EntityContext entityContext, LoggingService loggingService, RedisCacheWrapper redisCacheWrapper, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication)
-            : base(entityContext, loggingService, redisCacheWrapper, configService, servicesUtilVirtuosoAndReplication)
+        public CookieCL(EntityContext entityContext, LoggingService loggingService, RedisCacheWrapper redisCacheWrapper, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication, ILogger<CookieCL> logger, ILoggerFactory loggerFactory)
+            : base(entityContext, loggingService, redisCacheWrapper, configService, servicesUtilVirtuosoAndReplication,logger,loggerFactory)
         {
             mConfigService = configService;
             mEntityContext = entityContext;
             mLoggingService = loggingService;
+            mlogger = logger;
+            mLoggerFactory = loggerFactory;
         }
 
         /// <summary>
@@ -55,12 +62,14 @@ namespace Es.Riam.Gnoss.CL.Cookie
         /// </summary>
         /// <param name="pFicheroConfiguracionBD">Fichero de configuración</param>
         /// <param name="pUsarVariableEstatica">Si se están usando hilos con diferentes conexiones: FALSE. En caso contrario TRUE</param>
-        public CookieCL(string pFicheroConfiguracionBD, EntityContext entityContext, LoggingService loggingService, RedisCacheWrapper redisCacheWrapper, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication)
-            : base(pFicheroConfiguracionBD, entityContext, loggingService, redisCacheWrapper, configService, servicesUtilVirtuosoAndReplication)
+        public CookieCL(string pFicheroConfiguracionBD, EntityContext entityContext, LoggingService loggingService, RedisCacheWrapper redisCacheWrapper, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication, ILogger<CookieCL> logger, ILoggerFactory loggerFactory)
+            : base(pFicheroConfiguracionBD, entityContext, loggingService, redisCacheWrapper, configService, servicesUtilVirtuosoAndReplication,logger,loggerFactory)
         {
             mConfigService = configService;
             mEntityContext = entityContext;
             mLoggingService = loggingService;
+            mlogger = logger;
+            mLoggerFactory = loggerFactory;
         }
 
         #endregion
@@ -69,7 +78,7 @@ namespace Es.Riam.Gnoss.CL.Cookie
 
         public List<CategoriaProyectoCookieViewModel> ObtenerCategoriasProyectoCookie(Guid pProyectoID)
         {
-            List<CategoriaProyectoCookieViewModel> listaCategoriaProyectoCookieViewModel = (List<CategoriaProyectoCookieViewModel>)ObtenerObjetoDeCache($"ListaCategoriaProyectoCookie_{pProyectoID}", true);            
+            List<CategoriaProyectoCookieViewModel> listaCategoriaProyectoCookieViewModel = (List<CategoriaProyectoCookieViewModel>)ObtenerObjetoDeCache($"ListaCategoriaProyectoCookie_{pProyectoID}", true, typeof(List<CategoriaProyectoCookieViewModel>));            
 
             if (listaCategoriaProyectoCookieViewModel == null || listaCategoriaProyectoCookieViewModel.Count == 0)
             {
@@ -78,7 +87,9 @@ namespace Es.Riam.Gnoss.CL.Cookie
 
                 foreach (CategoriaProyectoCookie categoriaProyectoCookie in listaCategoriaProyectoCookie)
                 {
-                    listaCategoriaProyectoCookieViewModel.Add(new CategoriaProyectoCookieViewModel() { CategoriaID = categoriaProyectoCookie.CategoriaID, Descripcion = categoriaProyectoCookie.Descripcion, EsCategoriaTecnica = categoriaProyectoCookie.EsCategoriaTecnica, Nombre = categoriaProyectoCookie.Nombre, NombreCorto = categoriaProyectoCookie.NombreCorto, OrganizacionID = categoriaProyectoCookie.OrganizacionID, ProyectoID = categoriaProyectoCookie.ProyectoID });
+                    listaCategoriaProyectoCookieViewModel.Add(new CategoriaProyectoCookieViewModel() { CategoriaID = categoriaProyectoCookie.CategoriaID, Descripcion = 
+                    categoriaProyectoCookie.Descripcion, EsCategoriaTecnica = categoriaProyectoCookie.EsCategoriaTecnica, Nombre = categoriaProyectoCookie.Nombre, NombreCorto = 
+                    categoriaProyectoCookie.NombreCorto, OrganizacionID = categoriaProyectoCookie.OrganizacionID, ProyectoID = categoriaProyectoCookie.ProyectoID });
                 }
 
                 AgregarObjetoCache($"ListaCategoriaProyectoCookie_{pProyectoID}", listaCategoriaProyectoCookieViewModel);
@@ -108,11 +119,11 @@ namespace Es.Riam.Gnoss.CL.Cookie
                 {
                     if (string.IsNullOrEmpty(mFicheroConfiguracionBD))
                     {
-                        mCookieCN = new CookieCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+                        mCookieCN = new CookieCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<CookieCN>(), mLoggerFactory);
                     }
                     else
                     {
-                        mCookieCN = new CookieCN(mFicheroConfiguracionBD, mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+                        mCookieCN = new CookieCN(mFicheroConfiguracionBD, mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<CookieCN>(), mLoggerFactory);
                     }
                 }
 
@@ -178,7 +189,7 @@ namespace Es.Riam.Gnoss.CL.Cookie
                 }
                 catch (Exception e)
                 {
-                    mLoggingService.GuardarLogError(e);
+                    mLoggingService.GuardarLogError(e, mlogger);
                 }
             }
         }

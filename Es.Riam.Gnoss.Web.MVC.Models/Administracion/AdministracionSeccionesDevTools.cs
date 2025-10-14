@@ -19,7 +19,9 @@ namespace Es.Riam.Gnoss.Web.MVC.Models.Administracion
             Apariencia,
             IntegracionContinua,
             Documentacion,
-            Ecosistema
+            Ecosistema,
+            Ayuda,
+            Mantenimiento,
         }
 
         public enum SubSeccionesDevTools {
@@ -37,6 +39,8 @@ namespace Es.Riam.Gnoss.Web.MVC.Models.Administracion
             Comunidad_IntegracionSharePoint,
             Comunidad_Solicitudes,
             Comunidad_Solicitudes_Grupos,
+            Comunidad_Roles,
+            Comunidad_Permisos,
 
             // Subsecciones de la sección Estructura
             Estructura_Home,
@@ -60,11 +64,16 @@ namespace Es.Riam.Gnoss.Web.MVC.Models.Administracion
             Configuracion_Cookies,
             Configuracion_OpcionesMetaAdministrador,
             Configuracion_OpcionesAvanzadasPlataforma,
+            Configuracion_OpcionesAvanzadas,
             Configuracion_ServiciosExternos,
             Configuracion_EstadoSistemas,
             Configuracion_Ecosistema,
             Configuracion_DatosExtra,
+            Configuracion_EventosExternos,
             Descargar_Configuraciones,            
+            Diagnostico_Problemas,
+            Configuracion_RolesEcosistema,
+            Configuracion_PermisosEcosistema,
 
             // Subsecciones de la sección Objetos de Conocimiento
             GrafoConocimiento_Home,
@@ -94,6 +103,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Models.Administracion
             IntegracionContinua_AdministrarCambios,
             IntegracionContinua_AdministrarDespliegues,
             IntegracionContinua_AdministrarIntegracionContinua,
+            IntegracionContinua_DesplegarWeb,
 
             // Subsecciones de la sección Documentación
             Documentacion_Indice,
@@ -103,7 +113,15 @@ namespace Es.Riam.Gnoss.Web.MVC.Models.Administracion
             Documentacion_GrafoConocimiento,
             Documentacion_DescubrimientoAnalisis,
             Documentacion_Apariencia,
-            Documentacion_IntegracionContinua,                        
-        }
+            Documentacion_IntegracionContinua,   
+            
+            // Subsecciones de la sección Ayuda
+            Ayuda_DiagnosticoProblemas,
+
+			// Subsecciones de la sección Mantenimiento
+			Mantenimiento_ReprocesadoRecursos,
+			Mantenimiento_TareasFondo,
+			Estructura_PesosBusqueda
+		}
     }
 }

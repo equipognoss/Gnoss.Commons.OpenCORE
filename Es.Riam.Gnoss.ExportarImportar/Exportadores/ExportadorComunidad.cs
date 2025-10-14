@@ -1,5 +1,6 @@
 using Es.Riam.AbstractsOpen;
 using Es.Riam.Gnoss.AD.EntityModel;
+using Es.Riam.Gnoss.AD.ParametroAplicacion;
 using Es.Riam.Gnoss.AD.Virtuoso;
 using Es.Riam.Gnoss.CL;
 using Es.Riam.Gnoss.Elementos;
@@ -8,11 +9,13 @@ using Es.Riam.Gnoss.Elementos.Tesauro;
 using Es.Riam.Gnoss.ExportarImportar;
 using Es.Riam.Gnoss.ExportarImportar.ElementosOntologia;
 using Es.Riam.Gnoss.ExportarImportar.Exportadores;
+using Es.Riam.Gnoss.Logica.ServiciosGenerales;
 using Es.Riam.Gnoss.Util.Configuracion;
 using Es.Riam.Gnoss.Util.General;
 using Es.Riam.Interfaces;
 using Es.Riam.Semantica.OWL;
 using Es.Riam.Util;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 
@@ -28,21 +31,24 @@ namespace Es.Riam.Metagnoss.ExportarImportar.Exportadores
         private ConfigService mConfigService;
         private RedisCacheWrapper mRedisCacheWrapper;
         private UtilSemCms mUtilSemCms;
-
+        private ILogger mlogger;
+        private ILoggerFactory mLoggerFactory;
         #region Constructor
 
         /// <summary>
         /// Crea un nuevo exportador de blogs y entradas de blog.
         /// </summary>
         /// <param name="pOntologia">Ontología</param>
-        public ExportadorComunidad(Ontologia pOntologia, string pIdiomaUsuario, LoggingService loggingService, EntityContext entityContext, ConfigService configService, RedisCacheWrapper redisCacheWrapper, UtilSemCms utilSemCms, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication, VirtuosoAD virtuosoAd)
-            : base(pOntologia, pIdiomaUsuario, loggingService, entityContext, configService, redisCacheWrapper, utilSemCms, servicesUtilVirtuosoAndReplication, virtuosoAd)
+        public ExportadorComunidad(Ontologia pOntologia, string pIdiomaUsuario, LoggingService loggingService, EntityContext entityContext, ConfigService configService, RedisCacheWrapper redisCacheWrapper, UtilSemCms utilSemCms, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication, VirtuosoAD virtuosoAd, ILogger<ExportadorComunidad> logger, ILoggerFactory loggerFactory)
+            : base(pOntologia, pIdiomaUsuario, loggingService, entityContext, configService, redisCacheWrapper, utilSemCms, servicesUtilVirtuosoAndReplication, virtuosoAd,logger,loggerFactory)
         {
             mLoggingService = loggingService;
             mEntityContext = entityContext;
             mConfigService = configService;
             mRedisCacheWrapper = redisCacheWrapper;
             mUtilSemCms = utilSemCms;
+            mlogger = logger;
+            mLoggerFactory = loggerFactory;
         }
 
         #endregion
@@ -158,7 +164,7 @@ namespace Es.Riam.Metagnoss.ExportarImportar.Exportadores
             {
                 ElementoOntologia entidadCategoriaTesauro = new ElementoOntologiaGnoss(Ontologia.GetEntidadTipo(TipoElementoGnoss.CategoriasTesauroSkos));
 
-                ExportadorWiki exportadorWiki = new ExportadorWiki(Ontologia, IdiomaUsuario, mLoggingService, mEntityContext, mConfigService, mRedisCacheWrapper, mUtilSemCms, mServicesUtilVirtuosoAndReplication, mVirtuosoAd);
+                ExportadorWiki exportadorWiki = new ExportadorWiki(Ontologia, IdiomaUsuario, mLoggingService, mEntityContext, mConfigService, mRedisCacheWrapper, mUtilSemCms, mServicesUtilVirtuosoAndReplication, mVirtuosoAd, mLoggerFactory.CreateLogger<ExportadorWiki>(), mLoggerFactory);
 
                 entidadCategoriaTesauro.Descripcion = categoria.Nombre[IdiomaUsuario];
                 Gnoss.AD.EntityModel.Models.Tesauro.CategoriaTesauro editorRow = categoria.FilaCategoria;

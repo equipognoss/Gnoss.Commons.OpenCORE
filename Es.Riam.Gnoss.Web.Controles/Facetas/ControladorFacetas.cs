@@ -2,10 +2,14 @@ using Es.Riam.Gnoss.AD.EncapsuladoDatos;
 using Es.Riam.Gnoss.AD.EntityModel;
 using Es.Riam.Gnoss.AD.EntityModel.Models.Faceta;
 using Es.Riam.Gnoss.AD.Facetado;
+using Es.Riam.Gnoss.AD.ParametroAplicacion;
 using Es.Riam.Gnoss.CL;
 using Es.Riam.Gnoss.CL.Facetado;
 using Es.Riam.Gnoss.Util.Configuracion;
 using Es.Riam.Gnoss.Util.General;
+using Es.Riam.Gnoss.UtilServiciosWeb;
+using Microsoft.Extensions.Logging;
+using Serilog.Core;
 using System;
 using System.Collections.Generic;
 
@@ -20,13 +24,16 @@ namespace Es.Riam.Gnoss.Web.Controles.Facetas
         private EntityContext mEntityContext;
         private ConfigService mConfigService;
         private RedisCacheWrapper mRedisCacheWrapper;
-
-        public ControladorFacetas(EntityContext entityContext, LoggingService loggingService, RedisCacheWrapper redisCacheWrapper, ConfigService configService)
+        private ILogger mlogger;
+        private ILoggerFactory mLoggerFactory;
+        public ControladorFacetas(EntityContext entityContext, LoggingService loggingService, RedisCacheWrapper redisCacheWrapper, ConfigService configService, ILogger<ControladorFacetas> logger, ILoggerFactory loggerFactory)
         {
             mLoggingService = loggingService;
             mEntityContext = entityContext;
             mConfigService = configService;
             mRedisCacheWrapper = redisCacheWrapper;
+            mlogger = logger;
+            mLoggerFactory = loggerFactory;
         }
 
         #region Facetado
@@ -45,7 +52,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Facetas
             if ((!pListaFiltrosFacetasUsuario.ContainsKey("rdf:type")) && (pTipoBusqueda.Equals(TipoBusqueda.Recursos) || pTipoBusqueda.Equals(TipoBusqueda.BusquedaAvanzada)))
             {
                 //ObtenerOntologias
-                FacetaCL facetaCL = new FacetaCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, null);
+                FacetaCL facetaCL = new FacetaCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, null, mLoggerFactory.CreateLogger<FacetaCL>(), mLoggerFactory);
                 DataWrapperFacetas pFacetaDW = new DataWrapperFacetas();
                 List<OntologiaProyecto> listaOntologias = facetaCL.ObtenerOntologiasProyecto(pOrganizacionID, pProyectoID);
                 foreach (OntologiaProyecto myrow in listaOntologias)
@@ -96,7 +103,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Facetas
             if ((pTipoBusqueda.Equals(TipoBusqueda.Recursos) || pTipoBusqueda.Equals(TipoBusqueda.BusquedaAvanzada) || pTipoBusqueda.Equals(TipoBusqueda.Contribuciones) || pTipoBusqueda.Equals(TipoBusqueda.EditarRecursosPerfil)))
             {
                 //ObtenerOntologias
-                FacetaCL facetaCL = new FacetaCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, null);
+                FacetaCL facetaCL = new FacetaCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, null, mLoggerFactory.CreateLogger<FacetaCL>(), mLoggerFactory);
                 List<OntologiaProyecto> listaOntologia = facetaCL.ObtenerOntologiasProyecto(pOrganizacionID, pProyectoID);
                 foreach (OntologiaProyecto myrow in listaOntologia)
                 {

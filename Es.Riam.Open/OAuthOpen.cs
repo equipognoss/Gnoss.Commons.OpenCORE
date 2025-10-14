@@ -16,13 +16,13 @@ namespace Es.Riam.Open
 {
     public class OAuthOpen : IOAuth
     {
-        public OAuthOpen(EntityContext entityContext, LoggingService loggingService, ConfigService configService, RedisCacheWrapper redisCacheWrapper, VirtuosoAD virtuosoAD, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication, IHttpContextAccessor httpContextAccessor) : base(entityContext, loggingService, configService, redisCacheWrapper, virtuosoAD, servicesUtilVirtuosoAndReplication, httpContextAccessor)
+        public OAuthOpen()
         {
         }
 
-        public override void ObtenerOAuth(Guid OrganizacionID, Guid ProyectoID)
+        public void ObtenerOAuth(Guid OrganizacionID, Guid ProyectoID)
         {
-            throw new NotImplementedException();
+            
         }
     }
 }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -51,6 +52,9 @@ namespace Es.Riam.Gnoss.AD.EntityModel.Models.ProyectoDS
 
         [StringLength(1000)]
         public string Nombre { get; set; }
+
+        [DefaultValue(false)]
+        public bool MostrarEnAutocompletar { get; set; }
 
         public virtual Proyecto Proyecto { get; set; }
     }

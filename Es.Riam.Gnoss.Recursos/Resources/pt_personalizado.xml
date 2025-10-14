@@ -423,6 +423,9 @@
       {/fieldset}
     </Resource>
   </page>
+	<page name="MISCOMUNIDADES">
+		<Resource tag="TITULOPAGINA">As minhas comunidades</Resource>
+	</page>
   <page name="POLITICAPRIVACIDAD">
     <Resource tag="INFO">
       {p}Para RIAM I+L Lab é essencial para garantir e proteger a privacidade e confidencialidade de suas informações pessoais de acordo com as normas legais em território espanhol. Não é bom ter uma política de privacidade, se não ficar bom entender de participar de nossa rede. Portanto, temos tentado escrever em linguagem clara, tentando ser o mais breve possível e evitando tecnologias excessivas.{/p}

@@ -1,12 +1,18 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <TargetFramework>net6.0</TargetFramework>
-  </PropertyGroup>
+	<PropertyGroup>
+		<TargetFramework>net8.0</TargetFramework>
+		<SonarQubeExclude>false</SonarQubeExclude>
+	</PropertyGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\Es.Riam.AbstractsOpen\Es.Riam.AbstractsOpen.csproj" />
-    <ProjectReference Include="..\Es.Riam.Gnoss.UtilServiciosWeb\Es.Riam.Gnoss.UtilServiciosWeb.csproj" />
-  </ItemGroup>
+	<ItemGroup>
+		<PackageReference Include="Aspose.Zip" Version="24.10.0" />
+		<PackageReference Include="Microsoft.ApplicationInsights" Version="2.23.0" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\Es.Riam.AbstractsOpen\Es.Riam.AbstractsOpen.csproj" />
+		<ProjectReference Include="..\Es.Riam.Gnoss.UtilServiciosWeb\Es.Riam.Gnoss.UtilServiciosWeb.csproj" />
+	</ItemGroup>
 
 </Project>

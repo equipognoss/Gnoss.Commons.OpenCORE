@@ -1,9 +1,12 @@
 ﻿using Es.Riam.AbstractsOpen;
+using Es.Riam.Gnoss.AD.Amigos;
 using Es.Riam.Gnoss.AD.EncapsuladoDatos;
 using Es.Riam.Gnoss.AD.EntityModel;
 using Es.Riam.Gnoss.AD.EntityModel.Models.Faceta;
+using Es.Riam.Gnoss.AD.ParametroAplicacion;
 using Es.Riam.Gnoss.Util.Configuracion;
 using Es.Riam.Gnoss.Util.General;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -227,16 +230,18 @@ namespace Es.Riam.Gnoss.AD.Facetado
         /// Faceta de GNOSS que se usa para indicar subtipos de entidades.
         /// </summary>
         public const string Faceta_Gnoss_SubType = "gnoss:type";
-
+        private ILogger mlogger;
+        private ILoggerFactory mLoggerFactory;
 
         #endregion
 
         #region Constructores
 
-        public FacetaAD(LoggingService loggingService, EntityContext entityContext, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication)
-            : base(loggingService, entityContext, configService, servicesUtilVirtuosoAndReplication)
+        public FacetaAD(LoggingService loggingService, EntityContext entityContext, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication, ILogger<FacetaAD> logger, ILoggerFactory loggerFactory)
+            : base(loggingService, entityContext, configService, servicesUtilVirtuosoAndReplication, logger, loggerFactory)
         {
-
+            mlogger = logger;
+            mLoggerFactory = loggerFactory;
             this.CargarConsultasYDataAdapters();
         }
 
@@ -245,11 +250,12 @@ namespace Es.Riam.Gnoss.AD.Facetado
         /// </summary>
         /// <param name="pFicheroConfiguracionBD">Fichero de configuración</param>
         /// <param name="pUsarVariableEstatica">Si se están usando hilos con diferentes conexiones: FALSE. En caso contrario TRUE</param>
-        public FacetaAD(string pFicheroConfiguracionBD, LoggingService loggingService, EntityContext entityContext, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication)
-            : base(pFicheroConfiguracionBD, loggingService, entityContext, configService, servicesUtilVirtuosoAndReplication)
+        public FacetaAD(string pFicheroConfiguracionBD, LoggingService loggingService, EntityContext entityContext, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication, ILogger<FacetaAD> logger, ILoggerFactory loggerFactory)
+            : base(pFicheroConfiguracionBD, loggingService, entityContext, configService, servicesUtilVirtuosoAndReplication,logger,loggerFactory)
         {
             mEntityContext = entityContext;
-
+            mlogger = logger;
+            mLoggerFactory = loggerFactory;
             this.CargarConsultasYDataAdapters(IBD);
         }
 
@@ -1144,7 +1150,7 @@ namespace Es.Riam.Gnoss.AD.Facetado
 
             CargarFiltroHome(facetaDW, pProyectoID, pOrganizacionID);
 
-            CargarFacetaObjetoConocimientoProyectoPestanya(facetaDW, pProyectoID, pOrganizacionID);
+            CargarFacetasObjetoConocimientoProyectoPestanya(facetaDW, pProyectoID, pOrganizacionID);
 
             CargarFacetaConfigProyMapa(pOrganizacionID, pProyectoID, facetaDW);
 
@@ -1223,7 +1229,7 @@ namespace Es.Riam.Gnoss.AD.Facetado
             pFacetaDW.ListaFacetaFiltroHome = pFacetaDW.ListaFacetaFiltroHome.Union(select.ToList()).Distinct().ToList();
         }
 
-        public void CargarFacetaObjetoConocimientoProyectoPestanya(DataWrapperFacetas pFacetaDW, Guid pProyectoID, Guid? pOrganizacionID)
+        public void CargarFacetasObjetoConocimientoProyectoPestanya(DataWrapperFacetas pFacetaDW, Guid pProyectoID, Guid? pOrganizacionID)
         {
             var select = mEntityContext.FacetaObjetoConocimientoProyectoPestanya.Where(item => item.ProyectoID.Equals(pProyectoID));
 
@@ -1233,6 +1239,18 @@ namespace Es.Riam.Gnoss.AD.Facetado
             }
 
             pFacetaDW.ListaFacetaObjetoConocimientoProyectoPenstanya = pFacetaDW.ListaFacetaObjetoConocimientoProyectoPenstanya.Union(select).Distinct().ToList();
+        }
+
+        public void CargarFacetasObjetoConocimientoProyecto(DataWrapperFacetas pFacetaDW, Guid pProyectoID, Guid? pOrganizacionID)
+        {
+            var select = mEntityContext.FacetaObjetoConocimientoProyecto.Where(item => item.ProyectoID.Equals(pProyectoID));
+
+            if (pOrganizacionID.HasValue)
+            {
+                select = select.Where(item => item.OrganizacionID.Equals(pOrganizacionID.Value));
+            }
+
+            pFacetaDW.ListaFacetaObjetoConocimientoProyecto = pFacetaDW.ListaFacetaObjetoConocimientoProyecto.Union(select).Distinct().ToList();
         }
 
         /// <summary>

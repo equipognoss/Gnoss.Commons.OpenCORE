@@ -24,6 +24,8 @@ using Es.Riam.Gnoss.Util.Configuracion;
 using Es.Riam.Gnoss.CL;
 using Microsoft.AspNetCore.Http;
 using Es.Riam.AbstractsOpen;
+using Microsoft.Extensions.Logging;
+using Es.Riam.Gnoss.Elementos.Amigos;
 
 namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
 {
@@ -36,9 +38,10 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
         private RedisCacheWrapper mRedisCacheWrapper;
         private GnossCache mGnossCache;
         private IHttpContextAccessor mHttpContextAccessor;
-
-        public ControladorDocumentoMVC(LoggingService loggingService, ConfigService configService, EntityContext entityContext, RedisCacheWrapper redisCacheWrapper, GnossCache gnossCache, VirtuosoAD virtuosoAD, IHttpContextAccessor httpContextAccessor, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication)
-            : base(loggingService, configService, entityContext, redisCacheWrapper, gnossCache, virtuosoAD, httpContextAccessor, servicesUtilVirtuosoAndReplication)
+        private ILogger mlogger;
+        private ILoggerFactory mLoggerFactory;
+        public ControladorDocumentoMVC(LoggingService loggingService, ConfigService configService, EntityContext entityContext, RedisCacheWrapper redisCacheWrapper, GnossCache gnossCache, VirtuosoAD virtuosoAD, IHttpContextAccessor httpContextAccessor, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication, ILogger<ControladorDocumentoMVC> logger, ILoggerFactory loggerFactory)
+            : base(loggingService, configService, entityContext, redisCacheWrapper, gnossCache, virtuosoAD, httpContextAccessor, servicesUtilVirtuosoAndReplication,logger,loggerFactory)
         {
             mLoggingService = loggingService;
             mVirtuosoAD = virtuosoAD;
@@ -47,6 +50,8 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
             mRedisCacheWrapper = redisCacheWrapper;
             mGnossCache = gnossCache;
             mHttpContextAccessor = httpContextAccessor;
+            mlogger = logger;
+            mLoggerFactory = loggerFactory;
         }
 
         /// <summary>
@@ -76,7 +81,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
                     Dictionary<Guid, string> listaOntologias = new Dictionary<Guid, string>();
                     listaGuidOntologias.Add(pDocumento.FilaDocumento.ElementoVinculadoID.Value);
 
-                    DocumentacionCN docCN = new DocumentacionCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+                    DocumentacionCN docCN = new DocumentacionCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<DocumentacionCN>(), mLoggerFactory);
                     listaOntologias = docCN.ObtenerEnlacesDocumentosPorDocumentoID(listaGuidOntologias);
                     docCN.Dispose();
 
@@ -281,7 +286,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
                 {
                     if (!pDocumento.GestorDocumental.ListaDocumentos.ContainsKey(pDocumento.ElementoVinculadoID))
                     {
-                        DocumentacionCN docCN = new DocumentacionCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+                        DocumentacionCN docCN = new DocumentacionCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<DocumentacionCN>(), mLoggerFactory);
                         pDocumento.GestorDocumental.DataWrapperDocumentacion.Merge(docCN.ObtenerDocumentoPorID(pDocumento.ElementoVinculadoID));
                         docCN.Dispose();
 
@@ -299,7 +304,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
 
         public void CargarIdentidadesLectoresEditores(Documento pDocumento, GestorDocumental pGestorDocumental, Guid pProyectoActualID)
         {
-            IdentidadCN identidadCN = new IdentidadCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+            IdentidadCN identidadCN = new IdentidadCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<IdentidadCN>(), mLoggerFactory);
 
             List<Guid> listaIdentidadesURLSem = new List<Guid>();
             List<Guid> listaPerfilesURlSem = new List<Guid>();
@@ -331,7 +336,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
 
             if (listaIdentidadesURLSem.Count > 0)
             {
-                GestionPersonas gestorPersonas = new GestionPersonas(new PersonaCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication).ObtenerPersonasPorIdentidadesCargaLigera(listaIdentidadesURLSem), mLoggingService, mEntityContext);
+                GestionPersonas gestorPersonas = new GestionPersonas(new PersonaCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<PersonaCN>(), mLoggerFactory).ObtenerPersonasPorIdentidadesCargaLigera(listaIdentidadesURLSem), mLoggingService, mEntityContext);
                 GestionOrganizaciones gestorOrg = new GestionOrganizaciones(new DataWrapperOrganizacion(), mLoggingService, mEntityContext);
 
                 //Obtenemos las identidades por su ID
@@ -473,7 +478,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
                             }
                             else
                             {
-                                ProyectoCL proyCL = new ProyectoCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mVirtuosoAD, mServicesUtilVirtuosoAndReplication);
+                                ProyectoCL proyCL = new ProyectoCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mVirtuosoAD, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<ProyectoCL>(), mLoggerFactory);
                                 string nombreProyGrupo = proyCL.ObtenerNombreDeProyectoID(grupoEditor.FilaGrupoIdentidadProyecto.ProyectoID);
                                 ;
 
@@ -485,7 +490,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
                         }
                         else if (grupoEditor.FilaGrupoIdentidadOrganizacion != null)
                         {
-                            OrganizacionCN orgCN = new OrganizacionCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+                            OrganizacionCN orgCN = new OrganizacionCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<OrganizacionCN>(), mLoggerFactory);
                             string nombreOrgGrupo = orgCN.ObtenerNombreOrganizacionPorID(grupoEditor.FilaGrupoIdentidadOrganizacion.OrganizacionID).Nombre;
                             orgCN.Dispose();
 
@@ -600,7 +605,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
                             }
                             else
                             {
-                                ProyectoCL proyCL = new ProyectoCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mVirtuosoAD, mServicesUtilVirtuosoAndReplication);
+                                ProyectoCL proyCL = new ProyectoCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mVirtuosoAD, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<ProyectoCL>(), mLoggerFactory);
                                 string nombreProyGrupo = proyCL.ObtenerNombreDeProyectoID(grupoLector.FilaGrupoIdentidadProyecto.ProyectoID);
                                 ;
 
@@ -612,7 +617,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
                         }
                         else if (grupoLector.FilaGrupoIdentidadOrganizacion != null)
                         {
-                            OrganizacionCN orgCN = new OrganizacionCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+                            OrganizacionCN orgCN = new OrganizacionCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<OrganizacionCN>(), mLoggerFactory);
                             string nombreOrgGrupo = orgCN.ObtenerNombreOrganizacionPorID(grupoLector.FilaGrupoIdentidadOrganizacion.OrganizacionID).Nombre;
                             orgCN.Dispose();
 

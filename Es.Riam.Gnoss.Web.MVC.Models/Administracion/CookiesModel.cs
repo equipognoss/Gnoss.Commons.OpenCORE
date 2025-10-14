@@ -45,6 +45,10 @@ namespace Es.Riam.Gnoss.Web.MVC.Models.Administracion
         /// </summary>
         public bool EsModificada { get; set; }
 
+        public DateTime FechaCreacion { get; set; }
+
+        public DateTime FechaModificacion { get; set; }
+
         public List<CategoriaCookiesModel> ListaCategorias { get; set; }
 
     }
@@ -86,6 +90,8 @@ namespace Es.Riam.Gnoss.Web.MVC.Models.Administracion
         public Guid OrganizacionID { get; set; }
         public bool Deleted { get; set; }
         public bool EsModificada { get; set; }
+        public DateTime FechaCreacion { get; set; }
+        public DateTime FechaModificacion { get; set; }
     }
 
     public partial class CategoriasCookiesModel

@@ -1,8 +1,11 @@
 ﻿using Es.Riam.AbstractsOpen;
 using Es.Riam.Gnoss.AD.EntityModel;
+using Es.Riam.Gnoss.Elementos.Amigos;
 using Es.Riam.Gnoss.OAuthAD;
 using Es.Riam.Gnoss.Util.Configuracion;
 using Es.Riam.Gnoss.Util.General;
+using Microsoft.Extensions.Logging;
+using Serilog.Core;
 
 namespace Es.Riam.Gnoss.Web.UtilOAuth
 {
@@ -52,12 +55,13 @@ namespace Es.Riam.Gnoss.Web.UtilOAuth
         /// Manejador de tokens.
         /// </summary>
         private TokenGnoss mTokenGnoss;
-
+        private ILogger mlogger;
+        private ILoggerFactory mLoggerFactory;
         #endregion
 
         #region Constructor
 
-        public QueryOauth(string pUrl, string pToken, string pConsumerKey, string pNonce, string pMethod, string pTimespan, string pSignature, EntityContextOauth entityContextOauth, LoggingService loggingService, EntityContext entityContext, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication)
+        public QueryOauth(string pUrl, string pToken, string pConsumerKey, string pNonce, string pMethod, string pTimespan, string pSignature, EntityContextOauth entityContextOauth, LoggingService loggingService, EntityContext entityContext, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication, ILogger<QueryOauth> logger, ILoggerFactory loggerFactory)
         {
             mUrl = pUrl;
             mToken = pToken;
@@ -66,8 +70,10 @@ namespace Es.Riam.Gnoss.Web.UtilOAuth
             mMethod = pMethod;
             mTimespan = pTimespan;
             mSignature = pSignature;
+            mlogger = logger;
+            mLoggerFactory = loggerFactory;
 
-            ControladorTokens tokenControler = new ControladorTokens(entityContextOauth, loggingService, entityContext, configService, servicesUtilVirtuosoAndReplication);
+            ControladorTokens tokenControler = new ControladorTokens(entityContextOauth, loggingService, entityContext, configService, servicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<ControladorTokens>(), mLoggerFactory);
             //OAuthBase oauthbase = new OAuthBase();
             mTokenGnoss = tokenControler.ObtenerToken(mToken);
         }

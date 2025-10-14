@@ -1,6 +1,8 @@
-﻿using Es.Riam.Gnoss.Util.Configuracion;
+﻿using BeetleX.Buffers;
+using Es.Riam.Gnoss.Util.Configuracion;
 using Es.Riam.Gnoss.Util.General;
 using Es.Riam.Gnoss.Util.Seguridad;
+using Es.Riam.Util;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -166,6 +168,7 @@ namespace Es.Riam.Gnoss.UtilServiciosWeb
             byte[] buffer = JsonConvert.DeserializeObject<byte[]>(result);
             return buffer;
         }
+
         public byte[] ObtenerXmlOntologiaFraccionado(Guid pOntologiaID, string pNombreFraccion)
         {
             mLoggingService.AgregarEntrada("INICIO Peticion ObtenerXmlOntologiaFraccionado");
@@ -174,6 +177,7 @@ namespace Es.Riam.Gnoss.UtilServiciosWeb
             byte[] buffer = JsonConvert.DeserializeObject<byte[]>(result);
             return buffer;
         }
+
         public string[] ObtenerHistorialOntologia(Guid pOntologiaID)
         {
             mLoggingService.AgregarEntrada("INICIO Peticion ObtenerHistorialOntologia");
@@ -182,5 +186,85 @@ namespace Es.Riam.Gnoss.UtilServiciosWeb
             string[] list = JsonConvert.DeserializeObject<string[]>(result);
             return list;
         }
+
+        public void GuardarDocumentacion(string documentacion,Guid communityID, string idioma = "en" ,bool convertBase64 = false)
+        {
+            string ontology = "";
+            byte[] buffer = Encoding.UTF8.GetBytes(documentacion);
+            if (buffer.Any())
+            {
+                if (convertBase64)
+                {ontology = Convert.ToBase64String(buffer);}
+                else
+                {ontology = System.Text.Encoding.Default.GetString(buffer);}
+            }
+            mLoggingService.AgregarEntrada("INICIO Peticion GuardarDocumentacion");
+            string url = $"GuardarDocumentacionOntologia?communityID={communityID}&lang={idioma}";
+            string result = CallWebMethods.CallPostApiToken(mServicioArchivosUrl, url, buffer, true, "pFichero", mToken);
+            mLoggingService.AgregarEntrada("FIN Peticion GuardarDocumentacion");
+        }
+
+        public void GuardarOntologiaUnificada(string ontologia, Guid communityID, bool convertBase64 = false)
+        {
+            string ontology = "";
+            byte[] buffer = Encoding.UTF8.GetBytes(ontologia);
+            if (buffer.Any())
+            {
+                if (convertBase64)
+                { ontology = Convert.ToBase64String(buffer); }
+                else
+                { ontology = System.Text.Encoding.Default.GetString(buffer); }
+            }
+            mLoggingService.AgregarEntrada("INICIO Peticion GuardarOntologiaUnificada");
+            string result = CallWebMethods.CallPostApiToken(mServicioArchivosUrl, $"GuardarOntologiaUnificada?communityID={communityID}", buffer, true, "pFichero", mToken);
+            mLoggingService.AgregarEntrada("FIN Peticion GuardarOntologiaUnificada");
+        }
+
+
+        public byte[] ObtenerDocumentacionOntologiaBytes(Guid communityID, string idioma)
+        {
+            mLoggingService.AgregarEntrada("INICIO Peticion ObtenerDocumentacionOntologia");
+            string url = $"ObtenerDocumentacionOntologia?communityID={communityID}&lang={idioma}";
+            string result = CallWebMethods.CallGetApiToken(mServicioArchivosUrl,url, mToken);
+            mLoggingService.AgregarEntrada("FIN Peticion ObtenerDocumentacionOntologia");
+            byte[] list = JsonConvert.DeserializeObject<byte[]>(result);
+            return list;
+        }
+
+        public string ObtenerDocumentacionOntologia(Guid communityID, string idioma, bool convertBase64 = false)
+        {
+            //TODO: Por el momento solo se ha implementado ingles y español por el momento por lo que cualquier otro idioma devolvera la documentacion en ingles por defecto
+            if (string.IsNullOrEmpty(idioma) || idioma.ToLower() != "en") {
+                idioma = "es";
+            }
+
+            string documentation = "";
+            byte[] buffer = ObtenerDocumentacionOntologiaBytes(communityID, idioma);
+            if (buffer.Any())
+            {
+                if (convertBase64)
+                {
+                    documentation = Convert.ToBase64String(buffer);
+                }
+                else
+                {
+                    documentation = System.Text.Encoding.Default.GetString(buffer);
+                }
+            }
+            return documentation;
+        }
+
+
+
+        public byte[] ObtenerOntologiaUnificada(Guid pOntologiaID)
+        {
+            mLoggingService.AgregarEntrada("INICIO Peticion ObtenerOntologiaUnificada");
+            string result = CallWebMethods.CallGetApiToken(mServicioArchivosUrl, $"ObtenerOntologiaUnificada?pOntologiaID={pOntologiaID}", mToken);
+            mLoggingService.AgregarEntrada("FIN Peticion ObtenerOntologiaUnificada");
+            byte[] list = JsonConvert.DeserializeObject<byte[]>(result);
+            return list;
+        }
+
+
     }
 }

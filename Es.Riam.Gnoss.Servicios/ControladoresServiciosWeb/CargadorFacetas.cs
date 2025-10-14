@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Http;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Web;
 
 namespace Es.Riam.Gnoss.Servicios.ControladoresServiciosWeb
@@ -100,7 +101,7 @@ namespace Es.Riam.Gnoss.Servicios.ControladoresServiciosWeb
             parametros.Add("pLanguageCode", pLanguageCode);
             parametros.Add("pAdministradorVeTodasPersonas", pAdministradorVeTodasPersonas.ToString());
             parametros.Add("pTipoBusqueda", ((short)pTipoBusqueda).ToString());
-            parametros.Add("pNumeroFacetas", pNumeroFacetas.ToString());
+            parametros.Add("pNumeroFacetas", pNumeroFacetas.ToString(CultureInfo.InvariantCulture));
             parametros.Add("pFaceta", pFaceta);
             parametros.Add("pGrafo", pGrafo);
             parametros.Add("pParametros_adiccionales", pParametros_adiccionales);
@@ -118,6 +119,37 @@ namespace Es.Riam.Gnoss.Servicios.ControladoresServiciosWeb
             return PeticionServicio(metodo, parametros, pRequest);
         }
 
+        public string ObtenerConsulta(Guid pProyectoID, bool pEstaEnProyecto, bool pEsUsuarioInvitado, Guid pIdentidadID, string pParametros,   string pUbicacionBusqueda, string pLanguageCode, bool pAdministradorVeTodasPersonas, TipoBusqueda pTipoBusqueda, int? pNumeroFacetas, string pFaceta, string pGrafo, string pParametros_adiccionales, string pFiltroContexto,   string pUrlPaginaActual, bool pUsarMasterParaLectura, bool? pJson, string pListaRecursosExcluidos, Guid? pTokenAfinidad = null, HttpRequest pRequest = null)
+        {
+			string metodo = "ObtenerConsulta";
+
+			Dictionary<string, string> parametros = new Dictionary<string, string>();
+			parametros.Add("pProyectoID", pProyectoID.ToString());
+			parametros.Add("pEstaEnProyecto", pEstaEnProyecto.ToString());
+			parametros.Add("pEsUsuarioInvitado", pEsUsuarioInvitado.ToString());
+			parametros.Add("pIdentidadID", pIdentidadID.ToString());
+			parametros.Add("pParametros", pParametros);
+			parametros.Add("pUbicacionBusqueda", pUbicacionBusqueda);
+			parametros.Add("pLanguageCode", pLanguageCode);
+			parametros.Add("pAdministradorVeTodasPersonas", pAdministradorVeTodasPersonas.ToString());
+			parametros.Add("pTipoBusqueda", ((short)pTipoBusqueda).ToString());
+			parametros.Add("pNumeroFacetas", pNumeroFacetas.Value.ToString(CultureInfo.InvariantCulture));
+			parametros.Add("pFaceta", pFaceta);
+			parametros.Add("pGrafo", pGrafo);
+			parametros.Add("pParametros_adiccionales", pParametros_adiccionales);
+			parametros.Add("pFiltroContexto", pFiltroContexto);
+			parametros.Add("pUrlPaginaActual", HttpUtility.UrlEncode(pUrlPaginaActual));
+			parametros.Add("pUsarMasterParaLectura", pUsarMasterParaLectura.ToString());
+			parametros.Add("pJson", pJson.ToString());
+			string tokenAfinidad = string.Empty;
+			if (pTokenAfinidad.HasValue)
+			{
+				tokenAfinidad = pTokenAfinidad.Value.ToString();
+			}
+			parametros.Add("tokenAfinidad", tokenAfinidad);
+
+			return PeticionServicio(metodo, parametros, pRequest);
+		}
 
         /// <summary>
         /// Método para refrescar las facetas

@@ -1,8 +1,11 @@
 ﻿using Es.Riam.AbstractsOpen;
 using Es.Riam.Gnoss.AD.EntityModel;
+using Es.Riam.Gnoss.Elementos.Amigos;
 using Es.Riam.Gnoss.OAuthAD;
 using Es.Riam.Gnoss.Util.Configuracion;
 using Es.Riam.Gnoss.Util.General;
+using Microsoft.Extensions.Logging;
+using Serilog.Core;
 
 namespace Es.Riam.Gnoss.Web.UtilOAuth
 {
@@ -17,7 +20,8 @@ namespace Es.Riam.Gnoss.Web.UtilOAuth
 
         private string mConsumerKey;
         private string mConsumerSecret;
-
+        private ILogger mlogger;
+        private ILoggerFactory mLoggerFactory;
         #endregion
 
         #region Constructores
@@ -25,11 +29,13 @@ namespace Es.Riam.Gnoss.Web.UtilOAuth
         /// <summary>
         /// Constructor de la clase
         /// </summary>
-        public ControladorTokensProveedor(string pConsumerKey, string pConsumerSecret, EntityContextOauth entityContextOauth, LoggingService loggingService, EntityContext entityContext, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication)
-            : base(entityContextOauth, loggingService, entityContext, configService, servicesUtilVirtuosoAndReplication)
+        public ControladorTokensProveedor(string pConsumerKey, string pConsumerSecret, EntityContextOauth entityContextOauth, LoggingService loggingService, EntityContext entityContext, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication, ILogger<ControladorTokensProveedor> logger, ILoggerFactory loggerFactory)
+            : base(entityContextOauth, loggingService, entityContext, configService, servicesUtilVirtuosoAndReplication, logger, loggerFactory)
         {
             mConsumerKey = pConsumerKey;
             mConsumerSecret = pConsumerSecret;
+            mlogger = logger;
+            mLoggerFactory = loggerFactory;
         }
 
         #endregion

@@ -8,14 +8,20 @@ using Es.Riam.Gnoss.AD.EntityModel.Models.Pais;
 using Es.Riam.Gnoss.AD.EntityModel.Models.ParametroGeneralDS;
 using Es.Riam.Gnoss.AD.EntityModel.Models.PersonaDS;
 using Es.Riam.Gnoss.AD.EntityModel.Models.ProyectoDS;
+using Es.Riam.Gnoss.AD.EntityModel.Models.Roles;
 using Es.Riam.Gnoss.AD.EntityModel.Models.Tesauro;
 using Es.Riam.Gnoss.AD.EntityModel.Models.UsuarioDS;
+using Es.Riam.Gnoss.AD.RDF;
+using Es.Riam.Gnoss.AD.ServiciosGenerales;
 using Es.Riam.Gnoss.FirstDataLoad.Properties;
+using Es.Riam.Gnoss.Logica.Identidad;
 using Es.Riam.Gnoss.OAuthAD;
 using Es.Riam.Gnoss.OAuthAD.OAuth;
 using Es.Riam.Gnoss.Util.Configuracion;
+using Es.Riam.Gnoss.Util.General;
 using Es.Riam.Gnoss.Web.MVC.Models.Administracion;
 using Es.Riam.Gnoss.Web.MVC.Models.OAuth;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -27,11 +33,18 @@ namespace Es.Riam.Gnoss.FirstDataLoad
         private EntityContext mEntityContext;
         private ConfigService mConfigService;
         private EntityContextOauth mEntityContextOauth;
-        public FirstDataLoad(EntityContext entityContext, ConfigService configService, EntityContextOauth entityContextOauth)
+        private LoggingService mLoggingService;
+        private ILogger mlogger;
+        private ILoggerFactory mloggerFactory;
+
+        public FirstDataLoad(EntityContext entityContext, ConfigService configService, EntityContextOauth entityContextOauth, LoggingService loggingService, ILogger<FirstDataLoad> logger, ILoggerFactory loggerFactory)
         {
             mEntityContext = entityContext;
             mConfigService = configService;
             mEntityContextOauth = entityContextOauth;
+            mLoggingService = loggingService;
+            mlogger = logger;
+            mloggerFactory = loggerFactory;
         }
 
         public void InsertData()
@@ -448,7 +461,7 @@ namespace Es.Riam.Gnoss.FirstDataLoad
             {
                 TesauroID = new Guid("4E2BF9A0-04AD-49FB-BC34-E4E9964BEE28"),
                 CategoriaTesauroID = new Guid("910889F3-B093-4247-9C94-10BEA646F5CF"),
-                Nombre = "Ejemplo",
+                Nombre = "Ejemplo@es|||Example@en|||Beispiel@de|||Adibidea@eu|||Exemplo@gl|||Esempio@it|||Exemplo@pt|||Exemple@fr|||Exemple@ca",
                 Orden = 0,
                 NumeroRecursos = 0,
                 NumeroPreguntas = 0,
@@ -532,6 +545,65 @@ namespace Es.Riam.Gnoss.FirstDataLoad
 
             };
             mEntityContext.Identidad.Add(identidad);
+
+			ulong permisosComunidad = 0;
+			foreach (ulong i in Enum.GetValues(typeof(PermisoComunidad)))
+			{
+				permisosComunidad += i;
+			}
+			ulong permisosContenidos = 0;
+			foreach (ulong i in Enum.GetValues(typeof(PermisoContenidos)))
+			{
+				permisosContenidos += i;
+			}
+			ulong permisosRecursos = 0;
+			foreach (ulong i in Enum.GetValues(typeof(PermisoRecursos)))
+			{
+				permisosRecursos += i;
+			}
+			Rol rol = new Rol()
+            {
+                RolID = ProyectoAD.RolAdministrador,
+                ProyectoID = new Guid("11111111-1111-1111-1111-111111111111"),
+                OrganizacionID = new Guid("11111111-1111-1111-1111-111111111111"),
+                Descripcion = "Administrador general de la comunidad@es|||General administrator of the community@en",
+                Nombre = "Administrador@es|||Administrator@en",
+				Tipo = (short)AmbitoRol.Ecosistema,
+				FechaModificacion = DateTime.Now,
+                PermisosAdministracion = permisosComunidad,
+				PermisosContenidos = permisosContenidos,
+                PermisosRecursos = permisosRecursos
+			};
+            mEntityContext.Rol.Add(rol);
+
+            RolIdentidad rolIdentidad = new RolIdentidad()
+            {
+                RolID = ProyectoAD.RolAdministrador,
+				IdentidadID = new Guid("3D9EAA8A-AF02-469C-836B-FDB2722C82DF")
+			};
+            mEntityContext.RolIdentidad.Add(rolIdentidad);            
+
+			ulong permisosEcosistema = 0;
+			foreach (ulong i in Enum.GetValues(typeof(PermisoEcosistema)))
+			{
+				permisosEcosistema += i;
+			}
+			RolEcosistema rolEcosistema = new RolEcosistema() 
+            { 
+                RolID = ProyectoAD.RolAdministradorEcosistema,
+                Nombre = "Administrador ecosistema@es|||Ecosystem Manager@en",
+                Descripcion = "Administrador general del ecosistema@es|||General Manager of the ecosystem@en",
+                FechaModificacion = DateTime.Now,
+                Permisos = permisosEcosistema
+			};
+            mEntityContext.RolEcosistema.Add(rolEcosistema);
+
+            RolEcosistemaUsuario rolEcosistemaUsuario = new RolEcosistemaUsuario() 
+            {
+                RolID = ProyectoAD.RolAdministradorEcosistema,
+                UsuarioID = new Guid("3A9436B5-3C62-4D5D-8FF2-74341758A6F2")
+			};
+            mEntityContext.RolEcosistemaUsuario.Add(rolEcosistemaUsuario);
 
             GeneralRolUsuario GeneralRolUsuario = new GeneralRolUsuario()
             {
@@ -642,6 +714,39 @@ namespace Es.Riam.Gnoss.FirstDataLoad
             };
             mEntityContext.AdministradorProyecto.Add(administradorProyecto);
 
+            FacetaObjetoConocimientoProyecto facetasMetaproyecto = new FacetaObjetoConocimientoProyecto()
+            {
+                OrganizacionID = new Guid("11111111-1111-1111-1111-111111111111"),
+                ProyectoID = new Guid("11111111-1111-1111-1111-111111111111"),
+                ObjetoConocimiento = "Recurso",
+                Faceta = "skos:ConceptID",
+                Orden = 1,
+                Autocompletar = false,
+                TipoPropiedad = 0,
+                Comportamiento = 0,
+                MostrarSoloCaja = false,
+                Excluida = 0,
+                Oculta = false,
+                TipoDisenio = 1,
+                ElementosVisibles = 5,
+                AlgoritmoTransformacion = 0,
+                NivelSemantico = string.Empty,
+                EsSemantica = false,
+                Mayusculas = 1,
+                NombreFaceta = "Categorías@es|||Categories@en|||Kategorien@de|||Kategoriak@eu|||Categorías@gl|||Categorie@it|||Categorias@pt|||Catégories@fr|||Categories@ca",
+                Excluyente = false,
+                SubTipo = string.Empty,
+                Reciproca = 0,
+                FacetaPrivadaParaGrupoEditores = string.Empty,
+                ComportamientoOr = false,
+                OcultaEnFacetas = false,
+                OcultaEnFiltros = false,
+                Condicion = string.Empty,
+                PriorizarOrdenResultados = false,
+                Inmutable = false,
+                AgrupacionID = Guid.Empty
+            };
+            mEntityContext.FacetaObjetoConocimientoProyecto.Add(facetasMetaproyecto);
             UtilProcessInsertData utilProcessInsertData = new UtilProcessInsertData();
             List<FacetaObjetoConocimiento> listaFaceta = utilProcessInsertData.ProcesarInsert<FacetaObjetoConocimiento>(Resources.carga_bd_acid_facetaobjetoconocimiento);
             mEntityContext.FacetaObjetoConocimiento.AddRange(listaFaceta);
@@ -654,6 +759,128 @@ namespace Es.Riam.Gnoss.FirstDataLoad
         public bool IsDataLoaded()
         {
             return mEntityContext.Identidad.Count() > 0;
+        }
+
+        public void InsertUserRol()
+        {
+            Dictionary<Guid,Guid> listaProyectos = mEntityContext.Proyecto.ToDictionary(key=> key.ProyectoID, val=> val.OrganizacionID);
+
+            foreach (KeyValuePair<Guid,Guid> proyecto in listaProyectos)
+            {
+				ulong permisos = (ulong)PermisoRecursos.CrearDebate + (ulong)PermisoRecursos.CrearPregunta + (ulong)PermisoRecursos.CrearNota + (ulong)PermisoRecursos.CrearRecursoTipoAdjunto + (ulong)PermisoRecursos.CrearRecursoTipoEnlace + (ulong)PermisoRecursos.CrearRecursoTipoReferenciaADocumentoFisico + (ulong)PermisoRecursos.CrearEncuesta;
+				Rol rolUsuario = new Rol()
+				{
+					RolID = Guid.NewGuid(),
+					ProyectoID = proyecto.Key,
+					OrganizacionID = proyecto.Value,
+					Descripcion = "Usuario general de la comunidad@es|||General user of the community@en",
+					Nombre = "Usuario@es|||User@en",
+					Tipo = (short)AmbitoRol.Comunidad,
+					FechaModificacion = DateTime.Now,
+					PermisosAdministracion = 0,
+					PermisosContenidos = 0,
+					PermisosRecursos = permisos,
+					EsRolUsuario = true
+				};
+
+				mEntityContext.Rol.Add(rolUsuario);				
+			}
+
+			mEntityContext.SaveChanges();
+		}
+
+        public void InsertRoles()
+        {
+			if (mEntityContext.Rol.Count() == 0)
+            {
+				InsertAdminRol();
+				InsertUserRol();
+			}		    
+		}
+
+        public void InsertAdminRol()
+        {
+				ulong permisosComunidad = 0;
+				foreach (ulong i in Enum.GetValues(typeof(PermisoComunidad)))
+				{
+					permisosComunidad += i;
+				}
+				ulong permisosContenidos = 0;
+				foreach (ulong i in Enum.GetValues(typeof(PermisoContenidos)))
+				{
+					permisosContenidos += i;
+				}
+				ulong permisosRecursos = 0;
+				foreach (ulong i in Enum.GetValues(typeof(PermisoRecursos)))
+				{
+					permisosRecursos += i;
+				}
+				ulong permisosEcosistema = 0;
+				foreach (ulong i in Enum.GetValues(typeof(PermisoEcosistema)))
+				{
+					permisosEcosistema += i;
+				}
+
+				RolEcosistema rolEcosistema = new RolEcosistema()
+				{
+					RolID = ProyectoAD.RolAdministradorEcosistema,
+					Nombre = "Administrador ecosistema@es|||Ecosystem Manager@en",
+					Descripcion = "Administrador general del ecosistema@es|||General Manager of the ecosystem@en",
+					FechaModificacion = DateTime.Now,
+					Permisos = permisosEcosistema
+				};
+				mEntityContext.RolEcosistema.Add(rolEcosistema);
+
+				Rol rol = new Rol()
+				{
+					RolID = ProyectoAD.RolAdministrador,
+					ProyectoID = new Guid("11111111-1111-1111-1111-111111111111"),
+					OrganizacionID = new Guid("11111111-1111-1111-1111-111111111111"),
+                    Descripcion = "Administrador general de la comunidad@es|||General administrator of the community@en",
+                    Nombre = "Administrador@es|||Administrator@en",
+                    Tipo = (short)AmbitoRol.Ecosistema,
+					FechaModificacion = DateTime.Now,
+					PermisosAdministracion = permisosComunidad,
+					PermisosContenidos = permisosContenidos,
+					PermisosRecursos = permisosRecursos
+				};
+				mEntityContext.Rol.Add(rol);
+                
+                List<Guid> usuariosYaAnyadidos = new List<Guid>();
+				IdentidadCN identidadCN = new IdentidadCN(mEntityContext, mLoggingService, mConfigService, null, mloggerFactory.CreateLogger<IdentidadCN>(), mloggerFactory);
+				List<AdministradorProyecto> administradores = mEntityContext.AdministradorProyecto.Where(x => x.Tipo == (short)TipoRolUsuario.Administrador).ToList();
+				foreach (AdministradorProyecto usuarioAdmin in administradores)
+                {
+                    if (!usuarioAdmin.ProyectoID.Equals(ProyectoAD.MetaProyecto))
+                    {
+						Guid identidadID = identidadCN.ObtenerIdentidadesIDDeusuariosEnProyecto(usuarioAdmin.ProyectoID, new List<Guid>() { usuarioAdmin.UsuarioID }).FirstOrDefault();
+                        if (!identidadID.Equals(Guid.Empty))
+                        {
+							RolIdentidad rolIdentidad = new RolIdentidad()
+							{
+								RolID = ProyectoAD.RolAdministrador,
+								IdentidadID = identidadID
+							};
+							mEntityContext.RolIdentidad.Add(rolIdentidad);
+						}						
+					}                   
+
+                    if (!usuariosYaAnyadidos.Contains(usuarioAdmin.UsuarioID) && usuarioAdmin.ProyectoID.Equals(ProyectoAD.MetaProyecto))
+                    {
+						RolEcosistemaUsuario rolEcosistemaUsuario = new RolEcosistemaUsuario()
+						{
+							RolID = ProyectoAD.RolAdministradorEcosistema,
+							UsuarioID = usuarioAdmin.UsuarioID
+						};
+						mEntityContext.RolEcosistemaUsuario.Add(rolEcosistemaUsuario);
+
+                        usuariosYaAnyadidos.Add(usuarioAdmin.UsuarioID);
+					}
+				}
+
+                identidadCN.Dispose();
+
+                mEntityContext.SaveChanges();			
         }
 
         public bool InsertDataIfPossible()

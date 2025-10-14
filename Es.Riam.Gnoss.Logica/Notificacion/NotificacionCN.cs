@@ -1,13 +1,19 @@
 using Es.Riam.AbstractsOpen;
 using Es.Riam.Gnoss.AD.EncapsuladoDatos;
 using Es.Riam.Gnoss.AD.EntityModel;
+using Es.Riam.Gnoss.AD.EntityModel.Models.Notificacion;
 using Es.Riam.Gnoss.AD.EntityModelBASE;
 using Es.Riam.Gnoss.AD.EntityModelBASE.Models;
 using Es.Riam.Gnoss.AD.Notificacion;
+using Es.Riam.Gnoss.AD.ParametroAplicacion;
+using Es.Riam.Gnoss.Logica.ServiciosGenerales;
 using Es.Riam.Gnoss.RabbitMQ;
 using Es.Riam.Gnoss.Util.Configuracion;
 using Es.Riam.Gnoss.Util.General;
+using Es.Riam.Interfaces.InterfacesOpen;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using Serilog.Core;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -27,7 +33,8 @@ namespace Es.Riam.Gnoss.Logica.Notificacion
         private ConfigService mConfigService;
         private LoggingService mLoggingService;
         private EntityContextBASE mEntityContextBASE;
-
+        private ILogger mlogger;
+        private ILoggerFactory mLoggerFactory;
         #endregion
 
         #region Constructores
@@ -35,25 +42,27 @@ namespace Es.Riam.Gnoss.Logica.Notificacion
         /// <summary>
         /// Constructor sin parámetros
         /// </summary>
-        public NotificacionCN(EntityContext entityContext, LoggingService loggingService, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication)
-            : base(entityContext, loggingService, configService, servicesUtilVirtuosoAndReplication)
+        public NotificacionCN(EntityContext entityContext, LoggingService loggingService, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication, ILogger<NotificacionCN> logger, ILoggerFactory loggerFactory)
+            : base(entityContext, loggingService, configService, servicesUtilVirtuosoAndReplication,logger,loggerFactory)
         {
             mEntityContext = entityContext;
             mConfigService = configService;
             mLoggingService = loggingService;
-
-            NotificacionAD = new NotificacionAD(loggingService, entityContext, configService, servicesUtilVirtuosoAndReplication);
+            mlogger = logger;
+            mLoggerFactory = loggerFactory;
+            NotificacionAD = new NotificacionAD(loggingService, entityContext, configService, servicesUtilVirtuosoAndReplication,mLoggerFactory.CreateLogger<NotificacionAD>(),mLoggerFactory);
         }
 
-        public NotificacionCN(EntityContext entityContext, LoggingService loggingService, ConfigService configService, EntityContextBASE entitycontextBASE, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication)
-            : base(entityContext, loggingService, configService, entitycontextBASE, servicesUtilVirtuosoAndReplication)
+        public NotificacionCN(EntityContext entityContext, LoggingService loggingService, ConfigService configService, EntityContextBASE entitycontextBASE, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication, ILogger<NotificacionCN> logger, ILoggerFactory loggerFactory)
+            : base(entityContext, loggingService, configService, entitycontextBASE, servicesUtilVirtuosoAndReplication,logger,loggerFactory)
         {
             mEntityContext = entityContext;
             mConfigService = configService;
             mLoggingService = loggingService;
             mEntityContextBASE = entitycontextBASE;
-
-            NotificacionAD = new NotificacionAD(loggingService, entityContext, configService, entitycontextBASE, servicesUtilVirtuosoAndReplication);
+            mlogger = logger;
+            mLoggerFactory = loggerFactory;
+            NotificacionAD = new NotificacionAD(loggingService, entityContext, configService, entitycontextBASE, servicesUtilVirtuosoAndReplication,mLoggerFactory.CreateLogger<NotificacionAD>(),mLoggerFactory);
         }
 
         /// <summary>
@@ -61,14 +70,15 @@ namespace Es.Riam.Gnoss.Logica.Notificacion
         /// </summary>
         /// <param name="pFicheroConfiguracionBD">Ruta del fichero de configuración de base de datos</param>
         /// <param name="pUsarVariableEstatica">Si se están usando hilos con diferentes conexiones: FALSE. En caso contrario TRUE</param>
-        public NotificacionCN(string pFicheroConfiguracionBD, EntityContext entityContext, LoggingService loggingService, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication)
-            : base(entityContext, loggingService, configService, servicesUtilVirtuosoAndReplication)
+        public NotificacionCN(string pFicheroConfiguracionBD, EntityContext entityContext, LoggingService loggingService, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication, ILogger<NotificacionCN> logger, ILoggerFactory loggerFactory)
+            : base(entityContext, loggingService, configService, servicesUtilVirtuosoAndReplication, logger, loggerFactory)
         {
             mEntityContext = entityContext;
             mConfigService = configService;
             mLoggingService = loggingService;
-
-            NotificacionAD = new NotificacionAD(pFicheroConfiguracionBD, loggingService, entityContext, configService, servicesUtilVirtuosoAndReplication);
+            mlogger = logger;
+            mLoggerFactory = loggerFactory;
+            NotificacionAD = new NotificacionAD(pFicheroConfiguracionBD, loggingService, entityContext, configService, servicesUtilVirtuosoAndReplication,mLoggerFactory.CreateLogger<NotificacionAD>(),mLoggerFactory);
         }
 
         #endregion
@@ -118,7 +128,7 @@ namespace Es.Riam.Gnoss.Logica.Notificacion
         /// <summary>
         /// Actualiza Notificacion 
         /// </summary>
-        public void ActualizarNotificacion()
+        public void ActualizarNotificacion(IAvailableServices pAvailableServices)
         {
             try
             {
@@ -133,20 +143,29 @@ namespace Es.Riam.Gnoss.Logica.Notificacion
                         }
                     }
                     NotificacionAD.ActualizarNotificacionEntity();
-                    if (mConfigService.ExistRabbitConnection(RabbitMQClient.BD_SERVICIOS_WIN))
+                    if (mConfigService.ExistRabbitConnection(RabbitMQClient.BD_SERVICIOS_WIN) && pAvailableServices.CheckIfServiceIsAvailable(pAvailableServices.GetBackServiceCode(BackgroundService.Mail), ServiceType.Background))
                     {
-                        using (RabbitMQClient rabbitMQ = new RabbitMQClient(RabbitMQClient.BD_SERVICIOS_WIN, "ColaNotificacion", mLoggingService, mConfigService, "", "ColaNotificacion"))
+                        using (RabbitMQClient rabbitMQ = new RabbitMQClient(RabbitMQClient.BD_SERVICIOS_WIN, "ColaNotificacion", mLoggingService, mConfigService, mLoggerFactory.CreateLogger<RabbitMQClient>(), mLoggerFactory, "", "ColaNotificacion"))
                         {
+                            List<string> filasAInsertar = new List<string>();
                             foreach (var notificacion in notificaciones)
                             {
-                                try
+                                filasAInsertar.Add(JsonConvert.SerializeObject(notificacion.NotificacionID));
+                            }
+
+                            List<string> mensajesFallidos = (List<string>)rabbitMQ.AgregarElementosACola(filasAInsertar);
+
+                            if (mensajesFallidos.Count > 0)
+                            {
+                                foreach (string mensajeFallido in mensajesFallidos)
                                 {
-                                    rabbitMQ.AgregarElementoACola(JsonConvert.SerializeObject(notificacion.NotificacionID));
-                                }
-                                catch (Exception ex)
-                                {
-                                    mLoggingService.GuardarLogError(ex);
-                                    notificacion.EnviadoRabbit = false;
+                                    Guid notificacionID = Guid.Parse(JsonConvert.DeserializeObject(mensajeFallido).ToString());
+
+                                    mLoggingService.GuardarLogError($"No se ha podido encolar la notificacion con ID: {notificacionID}",mlogger);
+
+                                    NotificacionCorreoPersona notificacionFallida = notificaciones.Where(item => item.NotificacionID.Equals(notificacionID)).FirstOrDefault();
+                                    notificacionFallida.EnviadoRabbit = false;
+
                                     mEntityContext.SaveChanges();
                                 }
                             }
@@ -167,20 +186,29 @@ namespace Es.Riam.Gnoss.Logica.Notificacion
                     }
                     NotificacionAD.ActualizarNotificacionEntity();
 
-                    if (mConfigService.ExistRabbitConnection(RabbitMQClient.BD_SERVICIOS_WIN))
+                    if (mConfigService.ExistRabbitConnection(RabbitMQClient.BD_SERVICIOS_WIN) && pAvailableServices.CheckIfServiceIsAvailable(pAvailableServices.GetBackServiceCode(BackgroundService.Mail), ServiceType.Background))
                     {
-                        using (RabbitMQClient rabbitMQ = new RabbitMQClient(RabbitMQClient.BD_SERVICIOS_WIN, "ColaNotificacion", mLoggingService, mConfigService, "", "ColaNotificacion"))
+                        using (RabbitMQClient rabbitMQ = new RabbitMQClient(RabbitMQClient.BD_SERVICIOS_WIN, "ColaNotificacion", mLoggingService, mConfigService, mLoggerFactory.CreateLogger<RabbitMQClient>(), mLoggerFactory, "", "ColaNotificacion"))
                         {
+                            List<string> filasAInsertar = new List<string>();
                             foreach (var notificacion in notificaciones)
                             {
-                                try
+                                filasAInsertar.Add(JsonConvert.SerializeObject(notificacion.NotificacionID));
+                            }
+
+                            List<string> mensajesFallidos = (List<string>)rabbitMQ.AgregarElementosACola(filasAInsertar);
+
+                            if (mensajesFallidos.Count > 0)
+                            {
+                                foreach (string mensajeFallido in mensajesFallidos)
                                 {
-                                    rabbitMQ.AgregarElementoACola(JsonConvert.SerializeObject(notificacion.NotificacionID));
-                                }
-                                catch (Exception ex)
-                                {
-                                    mLoggingService.GuardarLogError(ex);
-                                    notificacion.EnviadoRabbit = false;
+                                    Guid notificacionID = Guid.Parse(JsonConvert.DeserializeObject(mensajeFallido).ToString());
+
+                                    mLoggingService.GuardarLogError($"No se ha podido encolar la notificacion con ID: {notificacionID}",mlogger);
+
+                                    NotificacionCorreoPersona notificacionFallida = notificaciones.Where(item => item.NotificacionID.Equals(notificacionID)).FirstOrDefault();
+                                    notificacionFallida.EnviadoRabbit = false;
+
                                     mEntityContext.SaveChanges();
                                 }
                             }
@@ -195,14 +223,14 @@ namespace Es.Riam.Gnoss.Logica.Notificacion
             {
                 TerminarTransaccion(false);
                 // Error de concurrencia
-                mLoggingService.GuardarLogError(ex);
+                mLoggingService.GuardarLogError(ex, mlogger);
                 throw new ErrorConcurrencia(ex.Row);
             }
             catch (DataException ex)
             {
                 TerminarTransaccion(false);
                 //Error interno de la aplicación
-                mLoggingService.GuardarLogError(ex);
+                mLoggingService.GuardarLogError(ex, mlogger);
                 throw new ErrorInterno();
             }
             catch

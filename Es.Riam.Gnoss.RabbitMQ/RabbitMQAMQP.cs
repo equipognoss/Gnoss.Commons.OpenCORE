@@ -1,5 +1,6 @@
 ﻿using Es.Riam.Gnoss.Util.Configuracion;
 using Es.Riam.Gnoss.Util.General;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
@@ -7,6 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Text;
+using System.Threading.Channels;
 
 namespace Es.Riam.Gnoss.RabbitMQ
 {
@@ -17,12 +19,15 @@ namespace Es.Riam.Gnoss.RabbitMQ
         private IModel mChannel;
         private LoggingService mLoggingService;
         private ConfigService mConfigService;
-
-        public RabbitMQAMQP(RabbitMQClient pGestorRabbit, LoggingService loggingService, ConfigService configService)
+        private ILogger mlogger;
+        private ILoggerFactory mLoggerFactory;
+        public RabbitMQAMQP(RabbitMQClient pGestorRabbit, LoggingService loggingService, ConfigService configService, ILogger<RabbitMQAMQP> logger, ILoggerFactory loggerFactory)
         {
             mConfigService = configService;
             mLoggingService = loggingService;
             mGestorRabbit = pGestorRabbit;
+            mlogger = logger;
+            mLoggerFactory = loggerFactory;
         }
 
         public int ContarElementosEnCola()
@@ -41,7 +46,7 @@ namespace Es.Riam.Gnoss.RabbitMQ
             }
             catch(Exception ex)
             {
-                mLoggingService.GuardarLogError(ex, $"Error en la conexion {Conexion.Endpoint}");
+                mLoggingService.GuardarLogError(ex, $"Error en la conexion {Conexion.Endpoint}",mlogger);
                 throw;
             }
             return numElementos;
@@ -116,14 +121,14 @@ namespace Es.Riam.Gnoss.RabbitMQ
                     catch (Exception ex)
                     {
                         channel.BasicNack(basicDeliveryEventArgs.DeliveryTag, false, true);
-                        mLoggingService.GuardarLogError(ex);
+                        mLoggingService.GuardarLogError(ex, mlogger);
                         throw;
                     }
                 };
 
                 eventingBasicConsumer.Shutdown += (sender, shutdownEventArgs) =>
                 {
-                    mLoggingService.GuardarLogError(shutdownEventArgs.ReplyText);
+                    mLoggingService.GuardarLogError(shutdownEventArgs.ReplyText, mlogger);
                     shutdownFunction();
                 };
 
@@ -172,6 +177,59 @@ namespace Es.Riam.Gnoss.RabbitMQ
                                      basicProperties: properties,
                                      body: messageBytes);
             }
+        }
+
+        public IList<string> AgregarElementosACola(IEnumerable<string> messages)
+        {
+            List<string> failedMessages = new List<string>();
+
+            using (var channel = Conexion.CreateModel())
+            {
+                channel.ConfirmSelect();
+
+                var properties = channel.CreateBasicProperties();
+                properties.Persistent = true;
+
+
+                if (!string.IsNullOrEmpty(mGestorRabbit.ExchangeName))
+                {
+                    string tipoExchange = "fanout";
+
+                    if (!string.IsNullOrEmpty(mGestorRabbit.Routing))
+                    {
+                        tipoExchange = "direct";
+                    }
+
+                    channel.ExchangeDeclare(mGestorRabbit.ExchangeName, tipoExchange, true);
+                }
+                else
+                {
+                    channel.QueueDeclare(queue: mGestorRabbit.QueueName,
+                                     durable: true,
+                                     exclusive: false,
+                                     autoDelete: false,
+                                     arguments: null);
+                }
+
+                foreach(string message in messages)
+                {
+                    try
+                    {
+                        byte[] messageBytes = Encoding.UTF8.GetBytes(message);
+                        channel.BasicPublish(exchange: mGestorRabbit.ExchangeName,
+                                         routingKey: mGestorRabbit.QueueName,
+                                         basicProperties: properties,
+                                         body: messageBytes);
+                    }
+                    catch
+                    {
+                        mLoggingService.GuardarLogError($"Error al encolar el mensaje: \n {message} en la cola {mGestorRabbit.QueueName}.",mlogger);
+                        failedMessages.Add(message);
+                    }
+                }           
+            }
+
+            return failedMessages;
         }
 
         /// <summary>
@@ -236,7 +294,7 @@ namespace Es.Riam.Gnoss.RabbitMQ
                             mConexion = connectionFactory.CreateConnection(RabbitMQClient.ClientName);
                         }
                         catch(Exception ex){
-                            mLoggingService.GuardarLogError($"Error al crear la conexion: {cadenaRabbit}");
+                            mLoggingService.GuardarLogError($"Error al crear la conexion: {cadenaRabbit}", mlogger);
                             throw;
                         }
                         if (listaConexiones == null)

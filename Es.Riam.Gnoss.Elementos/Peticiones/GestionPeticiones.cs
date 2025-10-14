@@ -5,6 +5,8 @@ using Es.Riam.Gnoss.AD.Peticion;
 using Es.Riam.Gnoss.Elementos.Notificacion;
 using Es.Riam.Gnoss.Util.General;
 using Es.Riam.Interfaces;
+using Microsoft.Extensions.Logging;
+using Serilog.Core;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -33,20 +35,25 @@ namespace Es.Riam.Gnoss.Elementos.Peticiones
 
         private EntityContext mEntityContext;
         private LoggingService mLoggingService;
-
+        private ILogger mlogger;
+        private ILoggerFactory mLoggerFactory;
         #endregion
 
         #region Constructores
+
+        public GestionPeticiones() { }
 
         /// <summary>
         /// Constructor a partir de un dataset de peticiones pasado como parámetro
         /// </summary>
         /// <param name="pPeticionDW">Dataset de peticiones</param>
-        public GestionPeticiones(DataWrapperPeticion pPeticionDW, LoggingService loggingService, EntityContext entityContext) 
-            : base(pPeticionDW, loggingService)
+        public GestionPeticiones(DataWrapperPeticion pPeticionDW, LoggingService loggingService, EntityContext entityContext, ILogger<GestionPeticiones> logger, ILoggerFactory loggerFactory) 
+            : base(pPeticionDW)
         {
             mLoggingService = loggingService;
             mEntityContext = entityContext;
+            mlogger = logger;
+            mLoggerFactory = loggerFactory;
         }
 
         /// <summary>
@@ -57,8 +64,6 @@ namespace Es.Riam.Gnoss.Elementos.Peticiones
         protected GestionPeticiones(SerializationInfo pInfo, StreamingContext pContext) 
             : base(pInfo, pContext)
         {
-            //mLoggingService = loggingService;
-            //mEntityContext = entityContext;
             mGestionNotificaciones = (GestionNotificaciones)pInfo.GetValue("GestionNotificaciones", typeof(GestionNotificaciones));
         }
 
@@ -132,7 +137,7 @@ namespace Es.Riam.Gnoss.Elementos.Peticiones
             mEntityContext.PeticionOrgInvitaPers.Add(filaPeticionOrg);
             PeticionDW.ListaPeticionOrgInvitaPers.Add(filaPeticionOrg);
 
-            Peticion peticion = new PeticionInvOrganizacion(filaPeticionOrg, filaPeticion, this, mLoggingService);
+            Peticion peticion = new PeticionInvOrganizacion(filaPeticionOrg, filaPeticion, this);
 
             if (!ListaPeticiones.ContainsKey(peticion.Clave))
             {
@@ -166,7 +171,7 @@ namespace Es.Riam.Gnoss.Elementos.Peticiones
             PeticionDW.ListaPeticionInvitacionComunidad.Add(filaPeticionCom);
             mEntityContext.PeticionInvitacionComunidad.Add(filaPeticionCom);
 
-            Peticion peticion = new PeticionInvComunidad(filaPeticionCom, filaPeticion, this, mLoggingService);
+            Peticion peticion = new PeticionInvComunidad(filaPeticionCom, filaPeticion, this);
 
             if (!ListaPeticiones.ContainsKey(peticion.Clave))
             {
@@ -214,7 +219,7 @@ namespace Es.Riam.Gnoss.Elementos.Peticiones
             PeticionDW.ListaPeticionInvitacionComunidad.Add(filaPeticionCom);
             mEntityContext.PeticionInvitacionComunidad.Add(filaPeticionCom);
 
-            Peticion peticion = new PeticionInvComunidad(filaPeticionCom, filaPeticion, this, mLoggingService);
+            Peticion peticion = new PeticionInvComunidad(filaPeticionCom, filaPeticion, this);
 
             if (!ListaPeticiones.ContainsKey(peticion.Clave))
             {
@@ -249,7 +254,7 @@ namespace Es.Riam.Gnoss.Elementos.Peticiones
             filaPeticionCom.Peticion = filaPeticion;
             PeticionDW.ListaPeticionInvitacionComunidad.Add(filaPeticionCom);
 
-            Peticion peticion = new PeticionInvComunidad(filaPeticionCom, filaPeticion, this, mLoggingService);
+            Peticion peticion = new PeticionInvComunidad(filaPeticionCom, filaPeticion, this);
 
             if (!ListaPeticiones.ContainsKey(peticion.Clave))
             {
@@ -291,7 +296,7 @@ namespace Es.Riam.Gnoss.Elementos.Peticiones
             PeticionDW.ListaPeticionInvitacionComunidad.Add(filaPeticionComunidad);
             mEntityContext.PeticionInvitacionComunidad.Add(filaPeticionComunidad);
 
-            Peticion peticion = new PeticionInvContacto(filaPeticionContacto,filaPeticionComunidad, filaPeticion, this, mLoggingService);
+            Peticion peticion = new PeticionInvContacto(filaPeticionContacto,filaPeticionComunidad, filaPeticion, this);
 
             if (!ListaPeticiones.ContainsKey(peticion.Clave))
             {
@@ -339,7 +344,7 @@ namespace Es.Riam.Gnoss.Elementos.Peticiones
             PeticionDW.ListaPeticionInvitacionComunidad.Add(filaPeticionCom);
             mEntityContext.PeticionInvitacionComunidad.Add(filaPeticionCom);
 
-            Peticion peticion = new PeticionInvGrupoYComunidad(filaPeticionGrupo, filaPeticionCom, filaPeticion, this, mLoggingService);
+            Peticion peticion = new PeticionInvGrupoYComunidad(filaPeticionGrupo, filaPeticionCom, filaPeticion, this);
 
             if (!ListaPeticiones.ContainsKey(peticion.Clave))
             {
@@ -360,7 +365,7 @@ namespace Es.Riam.Gnoss.Elementos.Peticiones
         /// <param name="pComunidadPrivadaPadreID">GUID de la comunidad padre de la comunidad reservada que se solicita</param>
         /// <param name="pPerfilCreadorID">GUID del perfil del que solicita la comunidad</param>
         /// <returns>Petición generada</returns>
-        public Peticion AgregarPeticionDeNuevoProyecto(string pNombre, string pNombreCorto, string pDescripcion, Int16 pTipo, Guid pUsuarioID, Guid pComunidadPrivadaPadreID, Guid pPerfilCreadorID)
+        public Peticion AgregarPeticionDeNuevoProyecto(string pNombre, string pNombreCorto, string pDescripcion, string pIdiomaDefecto, Int16 pTipo, Guid pUsuarioID, Guid pComunidadPrivadaPadreID, Guid pPerfilCreadorID)
         {
             AD.EntityModel.Models.Peticion.Peticion filaPeticion = new AD.EntityModel.Models.Peticion.Peticion();
             filaPeticion.PeticionID = Guid.NewGuid();
@@ -381,10 +386,11 @@ namespace Es.Riam.Gnoss.Elementos.Peticiones
             filaPeticionNuevoProy.ComunidadPrivadaPadreID = pComunidadPrivadaPadreID;
             filaPeticionNuevoProy.PerfilCreadorID = pPerfilCreadorID;
             filaPeticionNuevoProy.Peticion = filaPeticion;
+            filaPeticionNuevoProy.IdiomaDefecto = pIdiomaDefecto;
             PeticionDW.ListaPeticionNuevoProyecto.Add(filaPeticionNuevoProy);
             mEntityContext.PeticionNuevoProyecto.Add(filaPeticionNuevoProy);
 
-            Peticion peticion = new PeticionNuevoProyecto(filaPeticionNuevoProy, filaPeticion, this, mLoggingService);
+            Peticion peticion = new PeticionNuevoProyecto(filaPeticionNuevoProy, filaPeticion, this);
 
             if (!ListaPeticiones.ContainsKey(peticion.Clave))
             {
@@ -404,7 +410,7 @@ namespace Es.Riam.Gnoss.Elementos.Peticiones
         /// <param name="pUsuarioID">GUID del usuario que solicita la comunidad</param>
         /// <param name="pPerfilCreadorID">GUID del perfil que solicita la conunidad</param>
         /// <returns>Petición generada</returns>
-        public Peticion AgregarPeticionDeNuevoProyecto(String pNombre, String pNombreCorto, String pDescripcion, Int16 pTipo, Guid pUsuarioID, Guid pPerfilCreadorID)
+        public Peticion AgregarPeticionDeNuevoProyecto(String pNombre, String pNombreCorto, String pDescripcion, string pIdiomaDefecto, Int16 pTipo, Guid pUsuarioID, Guid pPerfilCreadorID)
         {
             AD.EntityModel.Models.Peticion.Peticion filaPeticion = new AD.EntityModel.Models.Peticion.Peticion();
             filaPeticion.PeticionID = Guid.NewGuid();
@@ -423,10 +429,11 @@ namespace Es.Riam.Gnoss.Elementos.Peticiones
             filaPeticionNuevoProy.Tipo = pTipo;
             filaPeticionNuevoProy.PerfilCreadorID = pPerfilCreadorID;
             filaPeticionNuevoProy.Peticion = filaPeticion;
+            filaPeticionNuevoProy.IdiomaDefecto = pIdiomaDefecto;
             PeticionDW.ListaPeticionNuevoProyecto.Add(filaPeticionNuevoProy);
             mEntityContext.PeticionNuevoProyecto.Add(filaPeticionNuevoProy);
 
-            Peticion peticion = new PeticionNuevoProyecto(filaPeticionNuevoProy, filaPeticion, this, mLoggingService);
+            Peticion peticion = new PeticionNuevoProyecto(filaPeticionNuevoProy, filaPeticion, this);
 
             if (!ListaPeticiones.ContainsKey(peticion.Clave))
             {
@@ -446,7 +453,7 @@ namespace Es.Riam.Gnoss.Elementos.Peticiones
 
             foreach (PeticionOrgInvitaPers peticionOrg in PeticionDW.ListaPeticionOrgInvitaPers.ToList())
             {
-                Peticion peticion = new PeticionInvOrganizacion(peticionOrg, peticionOrg.Peticion, this, mLoggingService);
+                Peticion peticion = new PeticionInvOrganizacion(peticionOrg, peticionOrg.Peticion, this);
 
                 mListaPeticiones.Add(peticion.Clave, peticion);
                 mHijos.Add(peticion);
@@ -454,7 +461,7 @@ namespace Es.Riam.Gnoss.Elementos.Peticiones
 
             foreach (PeticionInvitacionComunidad peticionCom in PeticionDW.ListaPeticionInvitacionComunidad.ToList())
             {
-                Peticion peticion = new PeticionInvComunidad(peticionCom, peticionCom.Peticion, this, mLoggingService);
+                Peticion peticion = new PeticionInvComunidad(peticionCom, peticionCom.Peticion, this);
 
                 mListaPeticiones.Add(peticion.Clave, peticion);
                 mHijos.Add(peticion);
@@ -462,7 +469,7 @@ namespace Es.Riam.Gnoss.Elementos.Peticiones
 
             foreach (AD.EntityModel.Models.Peticion.PeticionNuevoProyecto peticionNuevoProy in PeticionDW.ListaPeticionNuevoProyecto.ToList())
             {
-                Peticion peticion = new PeticionNuevoProyecto(peticionNuevoProy, peticionNuevoProy.Peticion, this, mLoggingService);
+                Peticion peticion = new PeticionNuevoProyecto(peticionNuevoProy, peticionNuevoProy.Peticion, this);
 
                 mListaPeticiones.Add(peticion.Clave, peticion);
                 mHijos.Add(peticion);
@@ -472,7 +479,7 @@ namespace Es.Riam.Gnoss.Elementos.Peticiones
             {
                 if (!mListaPeticiones.ContainsKey(filaPet.PeticionID))
                 {
-                    Peticion peticion = new Peticion(filaPet, this, mLoggingService);
+                    Peticion peticion = new Peticion(filaPet, this);
 
                     mListaPeticiones.Add(peticion.Clave, peticion);
                     mHijos.Add(peticion);

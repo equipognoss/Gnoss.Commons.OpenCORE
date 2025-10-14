@@ -11,6 +11,8 @@ using Es.Riam.Gnoss.Util.General;
 using Es.Riam.Gnoss.Util.Seguridad;
 using Es.Riam.Gnoss.Web.MVC.Models;
 using Es.Riam.Interfaces;
+using Microsoft.Extensions.Logging;
+using Serilog.Core;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -66,17 +68,18 @@ namespace Es.Riam.Gnoss.Elementos.ServiciosGenerales
         private LoggingService mLoggingService;
 
         private EntityContext mEntityContext;
-
         #endregion
 
         #region Constructor
+
+        public GestionOrganizaciones() { }
 
         /// <summary>
         /// Constructor
         /// </summary>
         /// <param name="pOrganizacionDW">Dataset de organización</param>
         public GestionOrganizaciones(DataWrapperOrganizacion pOrganizacionDW, LoggingService loggingService, EntityContext entityContext)
-            : base(pOrganizacionDW, loggingService)
+            : base(pOrganizacionDW)
         {
             mEntityContext = entityContext;
             mLoggingService = loggingService;
@@ -92,9 +95,6 @@ namespace Es.Riam.Gnoss.Elementos.ServiciosGenerales
         protected GestionOrganizaciones(SerializationInfo info, StreamingContext context)
             : base(info, context)
         {
-            //mEntityContext = entityContext;
-            //mLoggingService = loggingService;
-
             mPaisDW = (DataWrapperPais)info.GetValue("PaisDW", typeof(DataWrapperPais));
             mGestorDocumental = (GestorDocumental)info.GetValue("GestorDocumental", typeof(GestorDocumental));
             mGestorIdentidades = (GestionIdentidades)info.GetValue("GestorIdentidades", typeof(GestionIdentidades));
@@ -268,11 +268,11 @@ namespace Es.Riam.Gnoss.Elementos.ServiciosGenerales
                     AD.EntityModel.Models.OrganizacionDS.OrganizacionEmpresa filaEmpresa = filaOrganizacion.OrganizacionEmpresa;
                     if(filaEmpresa != null)
                     {
-                        organizacion = new OrganizacionEmpresa(filaOrganizacion, filaOrganizacion.OrganizacionEmpresa, this, mLoggingService);
+                        organizacion = new OrganizacionEmpresa(filaOrganizacion, filaOrganizacion.OrganizacionEmpresa, this);
                     }
                     else
                     {
-                        organizacion = new Organizacion(filaOrganizacion, this, mLoggingService);
+                        organizacion = new Organizacion(filaOrganizacion, this);
                     }
                 }
                 if(organizacion != null)
@@ -389,7 +389,7 @@ namespace Es.Riam.Gnoss.Elementos.ServiciosGenerales
             {
                 filaOrgPersona = OrganizacionDW.ListaPersonaVinculoOrganizacion.Where(item => item.OrganizacionID.Equals(pOrganizacion.FilaOrganizacion.OrganizacionID) && item.PersonaID.Equals(pPersonaID)).FirstOrDefault();
             }
-            DatosTrabajoPersonaOrganizacion nuevoVinculo = new DatosTrabajoPersonaOrganizacion(filaOrgPersona, pOrganizacion.GestorOrganizaciones, mLoggingService);
+            DatosTrabajoPersonaOrganizacion nuevoVinculo = new DatosTrabajoPersonaOrganizacion(filaOrgPersona, pOrganizacion.GestorOrganizaciones);
 
             return nuevoVinculo;
         }
@@ -475,7 +475,7 @@ namespace Es.Riam.Gnoss.Elementos.ServiciosGenerales
             
             OrganizacionDW.ListaOrganizacion.Add(filaOrganizacion);
             mEntityContext.Organizacion.Add(filaOrganizacion);
-            Organizacion nueva = new Organizacion(filaOrganizacion, this, mLoggingService);
+            Organizacion nueva = new Organizacion(filaOrganizacion, this);
 
             if (!ListaOrganizaciones.ContainsKey(nueva.Clave))
             {

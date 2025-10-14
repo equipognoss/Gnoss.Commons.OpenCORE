@@ -3,7 +3,9 @@ using Es.Riam.Gnoss.Util.General;
 using Es.Riam.Gnoss.Util.Seguridad;
 using Es.Riam.Util;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using Serilog.Core;
 using System;
 using System.IO;
 using System.Net;
@@ -20,10 +22,13 @@ namespace Es.Riam.Gnoss.UtilServiciosWeb
         private string mUrl;
         private LoggingService mLoggingService;
         private TokenBearer mToken;
-
-        public GestionDocumental(LoggingService loggingService, ConfigService configService)
+        private ILogger mlogger;
+        private ILoggerFactory mLoggerFactory;
+        public GestionDocumental(LoggingService loggingService, ConfigService configService, ILogger<GestionDocumental> logger, ILoggerFactory loggerFactory)
         {
             mLoggingService = loggingService;
+            mlogger = logger;
+            mLoggerFactory = loggerFactory;
             CallTokenService callTokenService = new CallTokenService(configService);
             mToken = callTokenService.CallTokenApi();
         }
@@ -32,7 +37,6 @@ namespace Es.Riam.Gnoss.UtilServiciosWeb
         {
             get
             {
-                //return "http://servicios.depuracion.net/gestorDocumental/api/GestorDocumental";
                 return mUrl;
             }
             set
@@ -63,7 +67,7 @@ namespace Es.Riam.Gnoss.UtilServiciosWeb
         public byte[] ObtenerDocumentoDeBaseRecursosUsuario(string pTipoEntidad, Guid pPersonaID, Guid pDocumentoID, string pExtension)
         {
             string directorio = ObtenerPathFile(pTipoEntidad, Guid.Empty, Guid.Empty, pPersonaID, pExtension);
-            
+
             return BajarDocumento(directorio, pDocumentoID.ToString(), pExtension);
         }
 
@@ -76,14 +80,16 @@ namespace Es.Riam.Gnoss.UtilServiciosWeb
 
         public byte[] ObtenerDocumento(string pTipoEntidad, Guid pOrganizacionID, Guid pProyectoID, Guid pDocumentoID, string pExtension)
         {
-            mLoggingService.GuardarLog($"Parametros para obtener el directorio pTipoEntidad: {pTipoEntidad} -- pOrganizacionID: {pOrganizacionID} -- pProyectoID: {pProyectoID} -- pExtension: {pExtension}");
+            mLoggingService.GuardarLog($"Parametros para obtener el directorio pTipoEntidad: {pTipoEntidad} -- pOrganizacionID: {pOrganizacionID} -- pProyectoID: {pProyectoID} -- pExtension: {pExtension}", mlogger);
             string directorio = ObtenerPathFile(pTipoEntidad, pOrganizacionID, pProyectoID, Guid.Empty, pExtension);
-            mLoggingService.GuardarLog($"Al hacer la llamada a gesdoc el directorio es: {directorio}");
+            mLoggingService.GuardarLog($"Al hacer la llamada a gesdoc el directorio es: {directorio}", mlogger);
             return BajarDocumento(directorio, pDocumentoID.ToString(), pExtension);
         }
 
         public byte[] ObtenerDocumentoWebTemporal(Guid pIdentidadID, string pNombreArchivo, string pExtension)
         {
+            pNombreArchivo = FormatearNombreArchivoWebTemporal(pNombreArchivo);
+
             return BajarDocumento("WebTemporal", pIdentidadID.ToString() + "_" + pNombreArchivo, pExtension);
         }
 
@@ -106,14 +112,10 @@ namespace Es.Riam.Gnoss.UtilServiciosWeb
 
         private string SubirDocumento(byte[] pFichero, string pDirectorio, string pNombreArchivo, string pExtension)
         {
-            mLoggingService.AgregarEntrada("INICIO Peticion SubirDocumento");    
+            mLoggingService.AgregarEntrada("INICIO Peticion SubirDocumento");
             string peticion = Url + "/SetFile?Name=" + pNombreArchivo + "&Extension=" + HttpUtility.UrlEncode(pExtension) + "&Path=" + HttpUtility.UrlEncode(pDirectorio);
-            //string requestParameters = "FileBytes=" + Convert.ToBase64String(pFichero);
-            //byte[] byteData = Encoding.UTF8.GetBytes(requestParameters);
-            //requestParameters = null;
             string respuesta = WebRequest("POST", peticion, pFichero, mToken);
             mLoggingService.AgregarEntrada("FIN Peticion SubirDocumento");
-            //byteData = null;
 
             if (respuesta == "")
             {
@@ -123,7 +125,6 @@ namespace Es.Riam.Gnoss.UtilServiciosWeb
             {
                 return JsonConvert.DeserializeObject<string>(respuesta);
             }
-            
         }
 
         public string AdjuntarDocumento(byte[] pFichero, string pTipoEntidad, Guid pOrganizacionID, Guid pProyectoID, Guid pDocumentoID, string pExtension)
@@ -132,14 +133,14 @@ namespace Es.Riam.Gnoss.UtilServiciosWeb
 
             return SubirDocumento(pFichero, directorio, pDocumentoID.ToString(), pExtension);
         }
-        
+
         public string AdjuntarDocumentoABaseRecursosUsuario(byte[] pFichero, string pTipoEntidad, Guid pPersonaID, Guid pDocumentoID, string pExtension)
         {
             string directorio = ObtenerPathFile(pTipoEntidad, Guid.Empty, Guid.Empty, pPersonaID, pExtension);
 
             return SubirDocumento(pFichero, directorio, pDocumentoID.ToString(), pExtension);
         }
-        
+
         public string AdjuntarDocumentoABaseRecursosOrganizacion(byte[] pFichero, string pTipoEntidad, Guid pOrganizacionID, Guid pDocumentoID, string pExtension)
         {
             string directorio = ObtenerPathFile(pTipoEntidad, pOrganizacionID, Guid.Empty, Guid.Empty, pExtension);
@@ -149,6 +150,8 @@ namespace Es.Riam.Gnoss.UtilServiciosWeb
 
         public string AdjuntarDocumentoWebTemporal(byte[] pFichero, Guid pIdentidadID, string pNombreArchivo, string pExtension)
         {
+            pNombreArchivo = FormatearNombreArchivoWebTemporal(pNombreArchivo);
+
             return AdjuntarDocumentoADirectorio(pFichero, "WebTemporal/", pIdentidadID.ToString() + "_" + pNombreArchivo, pExtension);
         }
 
@@ -197,7 +200,7 @@ namespace Es.Riam.Gnoss.UtilServiciosWeb
 
             return BorrarDocumentoDeDirectorio(directorio, pDocumentoID.ToString(), pExtension);
         }
-        
+
         public bool BorrarDocumentoDeBaseRecursosOrganizacion(string pTipoEntidad, Guid pOrganizacionID, Guid pDocumentoID, string pExtension)
         {
             string directorio = ObtenerPathFile(pTipoEntidad, pOrganizacionID, Guid.Empty, Guid.Empty, pExtension);
@@ -215,7 +218,7 @@ namespace Es.Riam.Gnoss.UtilServiciosWeb
         public bool BorrarDocumentosDeDirectorio(string pDirectorio)
         {
             mLoggingService.AgregarEntrada("INICIO Peticion BorrarDocumentosDeDirectorio");
-            string peticion = Url + "/DeleteFilesDirectory?Path=" + pDirectorio ;
+            string peticion = Url + "/DeleteFilesDirectory?Path=" + pDirectorio;
             string respuesta = WebRequest("POST", peticion, null, mToken);
             mLoggingService.AgregarEntrada("FIN Peticion BorrarDocumentosDeDirectorio");
             return JsonConvert.DeserializeObject<bool>(respuesta);
@@ -232,10 +235,10 @@ namespace Es.Riam.Gnoss.UtilServiciosWeb
 
         public bool CopiarCortarDocumento(bool pCopiar, string pDirectorioOrigen, string pDirectorioDestino, string pNombreArchivo, string pExtension, string pNombreArchivoDestino = null)
         {
-            string functionName = (pCopiar ? "CopyFile" : "MoveFile");
+            string functionName = pCopiar ? "CopyFile" : "MoveFile";
 
             mLoggingService.AgregarEntrada("INICIO Peticion CopiarCortarDocumento");
-            string peticion = Url + "/" + functionName + "?Name=" + pNombreArchivo + "&Extension=" + pExtension + "&PathOrigin=" + pDirectorioOrigen + "&PathDestination=" + pDirectorioDestino + "&NameDestination=" + pNombreArchivoDestino;
+            string peticion = $"{Url}/{functionName}?Name={pNombreArchivo}&Extension={pExtension}&PathOrigin={pDirectorioOrigen}&PathDestination={pDirectorioDestino}&NameDestination={pNombreArchivoDestino}";
             string respuesta = WebRequest("POST", peticion, null, mToken);
             mLoggingService.AgregarEntrada("FIN Peticion CopiarCortarDocumento");
             return JsonConvert.DeserializeObject<bool>(respuesta);
@@ -260,7 +263,7 @@ namespace Es.Riam.Gnoss.UtilServiciosWeb
                 pDirectorioDestino = pDirectorioDestino.Substring(0, pDirectorioDestino.Length - 1);
             }
             mLoggingService.AgregarEntrada("INICIO Peticion CopiarDocumentosDeDirectorio");
-            string peticion = Url + "/CopyDocsDirectory?PathOrigin=" + pDirectorioOrigen + "&PathDestination=" + pDirectorioDestino;
+            string peticion = $"{Url}/CopyDocsDirectory?PathOrigin={pDirectorioOrigen}&PathDestination={pDirectorioDestino}";
             string respuesta = WebRequest("POST", peticion, null, mToken);
             mLoggingService.AgregarEntrada("FIN Peticion CopiarDocumentosDeDirectorio");
             return JsonConvert.DeserializeObject<bool>(respuesta);
@@ -270,7 +273,7 @@ namespace Es.Riam.Gnoss.UtilServiciosWeb
         {
             mLoggingService.AgregarEntrada("INICIO Peticion BajarDocumento");
             mLoggingService.AgregarEntrada("FIN Peticion BajarDocumento");
-            string peticion = Url + "/GetFilesName?Path=" + pDirectorio;
+            string peticion = $"{Url}/GetFilesName?Path={pDirectorio}";
             string respuesta = WebRequest("GET", peticion, null, mToken);
 
             string[] listaDocumentos = JsonConvert.DeserializeObject<string[]>(respuesta);
@@ -288,7 +291,7 @@ namespace Es.Riam.Gnoss.UtilServiciosWeb
             return listaDirectorios;
         }
 
-        private string ObtenerPathFile(string pTipoEntidad, Guid pOrganizacionID, Guid pProyectoID, Guid pPersonaID, string pExtension)
+        private static string ObtenerPathFile(string pTipoEntidad, Guid pOrganizacionID, Guid pProyectoID, Guid pPersonaID, string pExtension)
         {
             string proyecto = "";
             if (!pProyectoID.Equals(Guid.Empty))
@@ -301,7 +304,7 @@ namespace Es.Riam.Gnoss.UtilServiciosWeb
             string rutaFichero = null;
             if (pOrganizacionID != Guid.Empty)
             {
-                rutaFichero = Path.Combine("Organizaciones", organizacion,  proyecto, pTipoEntidad);
+                rutaFichero = Path.Combine("Organizaciones", organizacion, proyecto, pTipoEntidad);
             }
             else if (pPersonaID != Guid.Empty)
             {
@@ -312,6 +315,7 @@ namespace Es.Riam.Gnoss.UtilServiciosWeb
             {
                 rutaFichero = "Temporal";
             }
+
             return rutaFichero;
         }
 
@@ -324,12 +328,11 @@ namespace Es.Riam.Gnoss.UtilServiciosWeb
         /// <param name="contentType">(Optional) Content type of the postData</param>
         /// <param name="acceptHeader">(Optional) Accept header</param>
         /// <returns>Response of the server</returns>
-        private string WebRequest(string httpMethod, string url, byte[] byteData, TokenBearer pToken = null)
+        private static string WebRequest(string httpMethod, string url, byte[] byteData, TokenBearer pToken = null)
         {
             string result = "";
             try
             {
-                
                 HttpResponseMessage response = null;
                 HttpClient client = new HttpClient();
                 if (pToken != null)
@@ -344,12 +347,12 @@ namespace Es.Riam.Gnoss.UtilServiciosWeb
                         ByteArrayContent bytes = new ByteArrayContent(byteData);
                         contentData = new MultipartFormDataContent();
                         ((MultipartFormDataContent)contentData).Add(bytes, "FileBytes", "FileBytes");
-						contentData.Headers.Add("UserAgent", UtilWeb.GenerarUserAgent());
-					}
+                        contentData.Headers.Add("UserAgent", UtilWeb.GenerarUserAgent());
+                    }
                     response = client.PostAsync($"{url}", contentData).Result;
                     response.EnsureSuccessStatusCode();
                     result = response.Content.ReadAsStringAsync().Result;
-                    
+
                 }
                 else
                 {
@@ -358,7 +361,6 @@ namespace Es.Riam.Gnoss.UtilServiciosWeb
                     response.EnsureSuccessStatusCode();
                     result = response.Content.ReadAsStringAsync().Result;
                 }
-            
             }
             catch (WebException ex)
             {
@@ -368,7 +370,10 @@ namespace Es.Riam.Gnoss.UtilServiciosWeb
                     StreamReader sr = new StreamReader(ex.Response.GetResponseStream());
                     message = sr.ReadToEnd();
                 }
-                catch { }
+                catch 
+                {
+                    // Si falla no rompemos la ejecución
+                }
 
                 // Error reading the error response, throw the original exception
                 throw;
@@ -386,12 +391,11 @@ namespace Es.Riam.Gnoss.UtilServiciosWeb
         /// <param name="contentType">(Optional) Content type of the postData</param>
         /// <param name="acceptHeader">(Optional) Accept header</param>
         /// <returns>Response of the server</returns>
-        private byte[] WebRequestGetBytes(string url, TokenBearer pToken = null)
+        private static byte[] WebRequestGetBytes(string url, TokenBearer pToken = null)
         {
             byte[] result = null;
             try
             {
-
                 HttpResponseMessage response = null;
                 HttpClient client = new HttpClient();
                 client.DefaultRequestHeaders.Add("UserAgent", UtilWeb.GenerarUserAgent());
@@ -402,7 +406,6 @@ namespace Es.Riam.Gnoss.UtilServiciosWeb
                 response = client.GetAsync(url).Result;
                 response.EnsureSuccessStatusCode();
                 result = response.Content.ReadAsByteArrayAsync().Result;
-
             }
             catch (WebException ex)
             {
@@ -412,7 +415,10 @@ namespace Es.Riam.Gnoss.UtilServiciosWeb
                     StreamReader sr = new StreamReader(ex.Response.GetResponseStream());
                     message = sr.ReadToEnd();
                 }
-                catch { }
+                catch 
+                {
+                    // Si falla no rompemos la ejecución
+                }
 
                 // Error reading the error response, throw the original exception
                 throw;
@@ -420,116 +426,20 @@ namespace Es.Riam.Gnoss.UtilServiciosWeb
 
             return result;
         }
-        
+
         /// <summary>
-        /// Make a http get request
+        /// Se encarga de modificar el nombre para que cumpla con los requisitos del sistema y no falle al guardarse en el servidor
         /// </summary>
-        /// <param name="pWebRequest">HttpWebRequest object</param>
-        /// <returns>Server response</returns>
-        private string WebResponseGet(HttpWebRequest pWebRequest)
+        /// <param name="pNombreArchivo">Nombre del archivo a guardar</param>
+        /// <returns>Devuelve el nombre formateado</returns>
+        private static string FormatearNombreArchivoWebTemporal(string pNombreArchivo)
         {
-            StreamReader responseReader = null;
-            string responseData = "";
+            if (pNombreArchivo.Length > 100)
+            {
+                pNombreArchivo = pNombreArchivo.Substring(0, 100);
+            }
 
-            try
-            {
-                responseReader = new StreamReader(pWebRequest.GetResponse().GetResponseStream(), Encoding.UTF8);
-                responseData = responseReader.ReadToEnd();
-            }
-            finally
-            {
-                if (responseReader != null)
-                {
-                    responseReader.Close();
-                    responseReader = null;
-                }
-            }
-            return responseData;
+            return pNombreArchivo;
         }
-
-        ///// <remarks/>
-        //public event AdjuntarRecursoTemporalCompletedEventHandler AdjuntarRecursoTemporalCompleted;
-
-        ///// <remarks/>
-        //public event AdjuntarDocumentoWebTemporalCompletedEventHandler AdjuntarDocumentoWebTemporalCompleted;
-
-        ///// <remarks/>
-        //public event AdjuntarDocumentoADirectorioCompletedEventHandler AdjuntarDocumentoADirectorioCompleted;
-
-        ///// <remarks/>
-        //public event CopiarDocumentosDeDirectorioCompletedEventHandler CopiarDocumentosDeDirectorioCompleted;
-
-        ///// <remarks/>
-        //public event ObtenerDocumentoWebTemporalCompletedEventHandler ObtenerDocumentoWebTemporalCompleted;
-
-        ///// <remarks/>
-        //public event ObtenerDocumentoDeDirectorioCompletedEventHandler ObtenerDocumentoDeDirectorioCompleted;
-
-        ///// <remarks/>
-        //public event ObtenerListadoDeDocumentosDeDirectorioCompletedEventHandler ObtenerListadoDeDocumentosDeDirectorioCompleted;
-
-        ///// <remarks/>
-        //public event AdjuntarDocumentoCompletedEventHandler AdjuntarDocumentoCompleted;
-
-        ///// <remarks/>
-        //public event AdjuntarDocumentoABaseRecursosUsuarioCompletedEventHandler AdjuntarDocumentoABaseRecursosUsuarioCompleted;
-
-        ///// <remarks/>
-        //public event AdjuntarDocumentoABaseRecursosOrganizacionCompletedEventHandler AdjuntarDocumentoABaseRecursosOrganizacionCompleted;
-
-        ///// <remarks/>
-        //public event ObtenerDocumentoCompletedEventHandler ObtenerDocumentoCompleted;
-
-        ///// <remarks/>
-        //public event ObtenerRecursoTemporalCompletedEventHandler ObtenerRecursoTemporalCompleted;
-
-        ///// <remarks/>
-        //public event ObtenerDocumentoDeBaseRecursosUsuarioCompletedEventHandler ObtenerDocumentoDeBaseRecursosUsuarioCompleted;
-
-        ///// <remarks/>
-        //public event ObtenerEspacioDocumentoDeBaseRecursosUsuarioCompletedEventHandler ObtenerEspacioDocumentoDeBaseRecursosUsuarioCompleted;
-
-        ///// <remarks/>
-        //public event ObtenerDocumentoDeBaseRecursosOrganizacionCompletedEventHandler ObtenerDocumentoDeBaseRecursosOrganizacionCompleted;
-
-        ///// <remarks/>
-        //public event ObtenerEspacioDocumentoDeBaseRecursosOrganizacionCompletedEventHandler ObtenerEspacioDocumentoDeBaseRecursosOrganizacionCompleted;
-
-        ///// <remarks/>
-        //public event BorrarDocumentoCompletedEventHandler BorrarDocumentoCompleted;
-
-        ///// <remarks/>
-        //public event BorrarDocumentoDeDirectorioCompletedEventHandler BorrarDocumentoDeDirectorioCompleted;
-
-        ///// <remarks/>
-        //public event BorrarDocumentosDeDirectorioCompletedEventHandler BorrarDocumentosDeDirectorioCompleted;
-
-        ///// <remarks/>
-        //public event BorrarArchivosDeOntologiaCompletedEventHandler BorrarArchivosDeOntologiaCompleted;
-
-        ///// <remarks/>
-        //public event BorrarArchivosDeTodasOntologiasComunidadCompletedEventHandler BorrarArchivosDeTodasOntologiasComunidadCompleted;
-
-        ///// <remarks/>
-        //public event BorrarRecursoTemporalCompletedEventHandler BorrarRecursoTemporalCompleted;
-
-        ///// <remarks/>
-        //public event BorrarDocumentoDeBaseRecursosUsuarioCompletedEventHandler BorrarDocumentoDeBaseRecursosUsuarioCompleted;
-
-        ///// <remarks/>
-        //public event BorrarDocumentoDeBaseRecursosOrganizacionCompletedEventHandler BorrarDocumentoDeBaseRecursosOrganizacionCompleted;
-
-        ///// <remarks/>
-        //public event ObtenerEspacioEnCarpetaCompletedEventHandler ObtenerEspacioEnCarpetaCompleted;
-
-        ///// <remarks/>
-        //public event MoverDocumentoABaseRecursosComunidadCompletedEventHandler MoverDocumentoABaseRecursosComunidadCompleted;
-
-        ///// <remarks/>
-        //public event CopiarCortarDocumentoCompletedEventHandler CopiarCortarDocumentoCompleted;
-
-        ///// <remarks/>
-        //public event CopiarCortarDocumentoDirectorioAntiguoCompletedEventHandler CopiarCortarDocumentoDirectorioAntiguoCompleted;
-
     }
 }

@@ -6,6 +6,7 @@ using Es.Riam.Gnoss.AD.EncapsuladoDatos;
 using Es.Riam.Gnoss.AD.EntityModel;
 using Es.Riam.Gnoss.AD.EntityModelBASE;
 using Es.Riam.Gnoss.AD.Identidad;
+using Es.Riam.Gnoss.AD.ParametroAplicacion;
 using Es.Riam.Gnoss.AD.ServiciosGenerales;
 using Es.Riam.Gnoss.AD.Virtuoso;
 using Es.Riam.Gnoss.CL;
@@ -18,6 +19,9 @@ using Es.Riam.Gnoss.Logica.Facetado;
 using Es.Riam.Gnoss.Logica.Identidad;
 using Es.Riam.Gnoss.Util.Configuracion;
 using Es.Riam.Gnoss.Util.General;
+using Es.Riam.Gnoss.UtilServiciosWeb;
+using Microsoft.Extensions.Logging;
+using Serilog.Core;
 using System;
 using System.Data;
 
@@ -37,6 +41,8 @@ namespace Es.Riam.Gnoss.Web.Controles.ServiciosGenerales
         private EntityContextBASE mEntityContextBASE;
         private RedisCacheWrapper mRedisCacheWrapper;
         private IServicesUtilVirtuosoAndReplication mServicesUtilVirtuosoAndReplication;
+        private ILogger mlogger;
+        private ILoggerFactory mLoggerFactory;
         #endregion
 
         #region Constructores
@@ -45,7 +51,7 @@ namespace Es.Riam.Gnoss.Web.Controles.ServiciosGenerales
         /// Constructor a partir de la página que contiene al controlador
         /// </summary>
         /// <param name="pPage">Página</param>
-        public ControladorContactos(LoggingService loggingService, EntityContext entityContext, ConfigService configService, EntityContextBASE entityContextBASE, RedisCacheWrapper redisCacheWrapper, VirtuosoAD virtuosoAD, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication)
+        public ControladorContactos(LoggingService loggingService, EntityContext entityContext, ConfigService configService, EntityContextBASE entityContextBASE, RedisCacheWrapper redisCacheWrapper, VirtuosoAD virtuosoAD, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication, ILogger<ControladorContactos> logger, ILoggerFactory loggerFactory)
         {
             mVirtuosoAD = virtuosoAD;
             mLoggingService = loggingService;
@@ -54,6 +60,8 @@ namespace Es.Riam.Gnoss.Web.Controles.ServiciosGenerales
             mEntityContextBASE = entityContextBASE;
             mRedisCacheWrapper = redisCacheWrapper;
             mServicesUtilVirtuosoAndReplication = servicesUtilVirtuosoAndReplication;
+            mlogger = logger;
+            mLoggerFactory = loggerFactory;
         }
 
         #endregion
@@ -62,7 +70,7 @@ namespace Es.Riam.Gnoss.Web.Controles.ServiciosGenerales
 
         public void ActualizarModeloBaseSimple(Guid pIdentidadID, Guid pContactoID)
         {
-            BaseComunidadCN baseContactosCN = new BaseComunidadCN(mEntityContext, mLoggingService, mEntityContextBASE, mConfigService, null);
+            BaseComunidadCN baseContactosCN = new BaseComunidadCN(mEntityContext, mLoggingService, mEntityContextBASE, mConfigService, null, mLoggerFactory.CreateLogger<BaseComunidadCN>(), mLoggerFactory);
             BaseContactosDS baseContactosDS = new BaseContactosDS();
 
             string todosTags = Constantes.ID_IDENTIDAD + pIdentidadID + Constantes.ID_IDENTIDAD;
@@ -86,7 +94,7 @@ namespace Es.Riam.Gnoss.Web.Controles.ServiciosGenerales
         public void ActualizarEliminacionModeloBaseSimple(Guid pIdentidadID, Guid pContactoID)
         {
 
-            BaseComunidadCN baseContactosCN = new BaseComunidadCN(mEntityContext, mLoggingService, mEntityContextBASE, mConfigService, null);
+            BaseComunidadCN baseContactosCN = new BaseComunidadCN(mEntityContext, mLoggingService, mEntityContextBASE, mConfigService, null, mLoggerFactory.CreateLogger<BaseComunidadCN>(), mLoggerFactory);
             BaseContactosDS baseContactosDS = new BaseContactosDS();
 
             string todosTags = Constantes.ID_IDENTIDAD + pIdentidadID + Constantes.ID_IDENTIDAD;
@@ -123,8 +131,8 @@ namespace Es.Riam.Gnoss.Web.Controles.ServiciosGenerales
         /// <param name="pAmigosDS">Dataset con los miembros del grupo.</param>
         public void ProcesarDenegarMiembroAGrupoPorElBase(Guid pGrupoID, Guid pIdentidadID, AmigosDS pAmigosDS, Guid? pMiembroEliminadoID, string pUrlIntraGnoss)
         {
-            FacetadoCN facetadoCN = new FacetadoCN(pUrlIntraGnoss, "contactos/", mEntityContext, mLoggingService, mConfigService, mVirtuosoAD, mServicesUtilVirtuosoAndReplication);
-            AmigosCL amigosCL = new AmigosCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mServicesUtilVirtuosoAndReplication);
+            FacetadoCN facetadoCN = new FacetadoCN(pUrlIntraGnoss, "contactos/", mEntityContext, mLoggingService, mConfigService, mVirtuosoAD, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<FacetadoCN>(), mLoggerFactory);
+            AmigosCL amigosCL = new AmigosCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<AmigosCL>(), mLoggerFactory);
 
             if (pMiembroEliminadoID != null)
             {

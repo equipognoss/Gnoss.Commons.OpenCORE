@@ -1,11 +1,14 @@
 ﻿using Es.Riam.Util.AnalisisSintactico;
 using Ganss.Xss;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Data;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Web;
@@ -33,12 +36,13 @@ namespace Es.Riam.Util
         private static Regex mReplace_O_Accents = new Regex("[Ó|Ò|Ö|Ô]", RegexOptions.Compiled);
         private static Regex mReplace_U_Accents = new Regex("[Ú|Ù|Ü|Û]", RegexOptions.Compiled);
         private static Regex mRegexQuitarHtml = new Regex(@"<(.|\n)*?>", RegexOptions.Compiled);
-
+        
 
         private static Regex mRegexQuitarCaracteresInvalidosNombreArchivo = new Regex(@"[\\:\?<>\|]+", RegexOptions.Compiled);
         private static Regex mRegexQuitarBarraBajaNombreArchivo = new Regex(@"[_]+", RegexOptions.Compiled);
         private static Regex mRegexQuitarDosPuntosNombreArchivo = new Regex(@"[:]+", RegexOptions.Compiled);
 
+        private static string mSimbolosExadecimalesInvalidos = "[\x00-\x08\x0B\x0C\x0E-\x1F]";
         private static string[] mListaIdiomasPosibles = new string[] { "es", "en", "eu", "pt", "ca", "de", "fr", "gl", "it" };
         public static bool LowerStringGraph { get; set; } = false;
         public static string[] FormatosFecha = {
@@ -84,14 +88,14 @@ namespace Es.Riam.Util
             "dd/MM/yyyy"
         };
 
-		#endregion
+        #endregion
 
-		#region Constantes
+        #region Constantes
 
-		/// <summary>
-		/// Longitud máxima del texto
-		/// </summary>
-		private const int LONGITUD_TEXTO = 50;
+        /// <summary>
+        /// Longitud máxima del texto
+        /// </summary>
+        private const int LONGITUD_TEXTO = 50;
 
         /// <summary>
         /// Constante con las letras del abecedario
@@ -176,15 +180,15 @@ namespace Es.Riam.Util
             { "&yuml;", "ÿ" },
         };
 
-        #endregion
+		#endregion
 
-        #region Métodos de comparación lógica (no ASCII) entre cadenas
+		#region Métodos de comparación lógica (no ASCII) entre cadenas
 
-        /// <summary>
-        /// Compara dos cadenas de forma natural, p.ej. si la cadena tiene números :
-        /// cad100, cad110, cad200, cad15 -> las ordena cad15 cad100 cad110 cad200
-        /// </summary>
-        public static int ComparaCadenasLogica(string s1, string s2)
+		/// <summary>
+		/// Compara dos cadenas de forma natural, p.ej. si la cadena tiene números :
+		/// cad100, cad110, cad200, cad15 -> las ordena cad15 cad100 cad110 cad200
+		/// </summary>
+		public static int ComparaCadenasLogica(string s1, string s2)
         {
             if ((s1 == null) && (s2 == null)) return 0;
             else if (s1 == null) return -1;
@@ -382,19 +386,19 @@ namespace Es.Riam.Util
             return s;
         }
 
-		#endregion
+        #endregion
 
-		#region Conversión de texto
-		public static string SplitCamelCase(string input)
-		{
-			return System.Text.RegularExpressions.Regex.Replace(input, "([A-Z])", " $1", System.Text.RegularExpressions.RegexOptions.Compiled).Trim();
-		}
-		/// <summary>
-		/// Convierte un string a su representación uri
-		/// </summary>
-		/// <param name="pTexto">Cadena de texto de entrada para convertir</param>
-		/// <returns>Cadena de texto de salida con formato de representación URI</returns>
-		public static string ConvertirTextoAUri(string pTexto)
+        #region Conversión de texto
+        public static string SplitCamelCase(string input)
+        {
+            return System.Text.RegularExpressions.Regex.Replace(input, "([A-Z])", " $1", System.Text.RegularExpressions.RegexOptions.Compiled).Trim();
+        }
+        /// <summary>
+        /// Convierte un string a su representación uri
+        /// </summary>
+        /// <param name="pTexto">Cadena de texto de entrada para convertir</param>
+        /// <returns>Cadena de texto de salida con formato de representación URI</returns>
+        public static string ConvertirTextoAUri(string pTexto)
         {
             string[] caracteres = { "%", "?", "&", "=", " ", "\"" };
 
@@ -519,6 +523,20 @@ namespace Es.Riam.Util
         {
             return mRegexQuitarCaracteresInvalidosNombreArchivo.Replace(pFileName, string.Empty);
         }
+
+        /// <summary>
+        /// Elimina todos las coincidencias finales del caracter pasado por parámetro dentro del StringBuilder
+        /// </summary>
+        /// <param name="pStringBuilder">StringBuilder del que queremos eliminar los caracteres</param>
+        /// <param name="pCaracterEliminar">Caracter que queremos eliminar del final</param>        
+        public static void EliminarUltimosCaracteresStringBuilder(StringBuilder pStringBuilder, char pCaracterEliminar)
+        {
+            while (pStringBuilder.Length > 0 && pStringBuilder[pStringBuilder.Length - 1] == pCaracterEliminar)
+            {
+                pStringBuilder.Length--;
+            }
+        }
+
         /// <summary>
         /// Reemplaza los caracteres extraños que pueda contener un nombre de archivo
         /// </summary>
@@ -569,16 +587,55 @@ namespace Es.Riam.Util
             return pInputString;
         }
 
-        #endregion
+        public static ulong ObtenerULongDeStringBase64(string pTexto)
+        {
+			string textoDescodificado = Encoding.UTF8.GetString(Convert.FromBase64String(pTexto));
+			ulong.TryParse(textoDescodificado, out ulong resultado);
 
-        #region Texto
+            return resultado;
+        }
 
         /// <summary>
-        /// Valida que el formato y letra del CIF son correctos
+        /// Elimina todos los símbolos exadecimales no válidos en un XML de un texto.
         /// </summary>
-        /// <param name="pCif">CIF de empresa a validar</param>
-        /// <returns>Verdadero si el CIF es correcto, falso en caso contrario</returns>
-        public static bool ValidarNIFyCIF(string pCif)
+        /// <param name="pTexto">Texto a limpiar</param>
+        /// <returns>Texto pasado por parámetro paro sin los símbolos inválidos</returns>
+        public static string LimpiarSimbolosExadecimalesNoValidosXML(string pTexto)
+        {
+            return Regex.Replace(pTexto, mSimbolosExadecimalesInvalidos, "", RegexOptions.Compiled);
+        }
+
+        public static ulong ObtenerUlongDeBinario(string pTexto)
+        {
+			ulong.TryParse(pTexto, out ulong resultado);
+            return resultado;
+		}
+
+		public static int ObtenerIntDeBinario(string pTexto)
+		{
+			return Convert.ToInt32(pTexto, 2);
+		}
+
+        public static string ObtenerBinarioDeUlong(ulong pTexto)
+        {
+			return Convert.ToString((long)pTexto, 2);
+		}
+
+		public static string ObtenerBinarioDeInt(int pTexto)
+		{
+			return Convert.ToString((int)pTexto, 2);
+		}
+
+		#endregion
+
+		#region Texto
+
+		/// <summary>
+		/// Valida que el formato y letra del CIF son correctos
+		/// </summary>
+		/// <param name="pCif">CIF de empresa a validar</param>
+		/// <returns>Verdadero si el CIF es correcto, falso en caso contrario</returns>
+		public static bool ValidarNIFyCIF(string pCif)
         {
             try
             {
@@ -784,7 +841,7 @@ namespace Es.Riam.Util
                 {
                     return false;
                 }
-            }     
+            }
         }
 
         /// <summary>
@@ -1304,7 +1361,7 @@ namespace Es.Riam.Util
         /// <param name="pNombreCorto">Nombre a limpiar</param>
         /// <returns>El nombre pasado por parámetro limpio</returns>
         public static string LimpiarCaracteresNombreCortoRegistro(string pNombreCorto)
-        {         
+        {
             pNombreCorto = pNombreCorto.ToLower();
             pNombreCorto = pNombreCorto.Replace(' ', '-');
             pNombreCorto = Regex.Replace(pNombreCorto, "[áàâäåã]", "a", RegexOptions.None, new TimeSpan(TimeSpan.TicksPerSecond));
@@ -1793,28 +1850,44 @@ namespace Es.Riam.Util
         /// <returns>Devuelve el texto introducido pero limpio</returns>
         public static string LimpiarInyeccionCodigo(string pTexto)
         {
-            //Decodificar el texto para evitar que con varias codificaciones url se pase el filtro
-            pTexto = DecodificarTextoCodificadoMultiplesVeces(pTexto);
-
-            HtmlSanitizer sanitizer = new HtmlSanitizer();
-            sanitizer.AllowedAttributes.Add("class");
-            sanitizer.AllowedTags.Add("iframe");
-            sanitizer.AllowedTags.Remove("form");
-            string sanitizedText = sanitizer.Sanitize(pTexto);
-            return sanitizedText;
+            return LimpiarInyeccionCodigo(pTexto, new HtmlSanitizer());
         }
 
+        /// <summary>
+        /// Se encarga de limpiar inyección de código a través de textos como formularios de la web.
+        /// </summary>
+        /// <param name="pTexto">Texto a limpiar</param>
+        /// <returns>Devuelve el texto introducido pero limpio</returns>
+        public static string LimpiarInyeccionCodigo(string pTexto, HtmlSanitizer pSanitizer)
+        {
+            //Decodificar el texto para evitar que con varias codificaciones url se pase el filtro
+            pSanitizer.AllowedAttributes.Add("class");
+            pSanitizer.AllowDataAttributes = true;
+            pSanitizer.AllowedTags.Add("iframe");            
+            pSanitizer.AllowedTags.Add("video");
+            pSanitizer.AllowedTags.Add("audio");
+            pSanitizer.AllowedTags.Remove("form");
+            pTexto = DecodificarTextoCodificadoMultiplesVeces(pTexto);                       
+            return pSanitizer.Sanitize(pTexto);
+        }
+
+        /// <summary>
+        /// Se decodifica el texto tantas veces como sea necesario. Si el texto está codificado una vez, se decodifica. Si está codificado dos veces, se decodifica dos veces, y así sucesivamente.
+        /// </summary>
+        /// <param name="pTexto">Texto que queremos decodificar</param>
+        /// <returns>El texto pasado por parámetro decodificado</returns>
         private static string DecodificarTextoCodificadoMultiplesVeces(string pTexto)
         {
-			string textoDecodificado = HttpUtility.UrlDecode(pTexto);
+            string textoDecodificado = HttpUtility.UrlDecode(pTexto);
 
-			if (pTexto == textoDecodificado)
-			{
-				return pTexto;
-			}
+            //Si la longitud es la misma es que el texto ya estaba decodificado. Se devuelve el texto original.
+            if (pTexto.Length == textoDecodificado.Length)
+            {
+                return pTexto;
+            }
 
-			return DecodificarTextoCodificadoMultiplesVeces(textoDecodificado);
-		}
+            return DecodificarTextoCodificadoMultiplesVeces(textoDecodificado);
+        }
 
         #endregion
 
@@ -2119,14 +2192,21 @@ namespace Es.Riam.Util
             return idioma;
         }
 
-        #endregion
+		public static TAttribute ObtenerAtributoEnum<TAttribute>(this Enum value) where TAttribute : Attribute
+		{
+			var enumType = value.GetType();
+			var name = Enum.GetName(enumType, value);
+			return enumType.GetField(name).GetCustomAttributes(false).OfType<TAttribute>().SingleOrDefault();
+		}
 
-        #region Propiedades
+		#endregion
 
-        /// <summary>
-        /// Obtiene la lista de caracteres no reconocidos por javascript de la manera: caracter ascii -> código hexadecimal (8232 -> \u2028)
-        /// </summary>
-        public static Dictionary<int, string> ListaCaracteresNoReconocidosJavascript
+		#region Propiedades
+
+		/// <summary>
+		/// Obtiene la lista de caracteres no reconocidos por javascript de la manera: caracter ascii -> código hexadecimal (8232 -> \u2028)
+		/// </summary>
+		public static Dictionary<int, string> ListaCaracteresNoReconocidosJavascript
         {
             get
             {
@@ -2153,8 +2233,8 @@ namespace Es.Riam.Util
                 return mListaCaracteresNoReconocidosJavascript;
             }
         }
-		#endregion
-	}
+        #endregion
+    }
 
     /// <summary>
     /// Determina el idioma de un texto

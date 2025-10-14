@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Es.Riam.Gnoss.AD.EntityModel.Models.Roles;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -14,7 +15,8 @@ namespace Es.Riam.Gnoss.AD.EntityModel.Models.Documento
         {
             DocumentoRolIdentidad = new HashSet<DocumentoRolIdentidad>();
             DocumentoWebVinBaseRecursos = new HashSet<DocumentoWebVinBaseRecursos>();
-        }
+			RolOntologiaPermiso = new HashSet<RolOntologiaPermiso>();
+		}
 
         public Guid DocumentoID { get; set; }
 
@@ -100,5 +102,8 @@ namespace Es.Riam.Gnoss.AD.EntityModel.Models.Documento
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<DocumentoWebVinBaseRecursos> DocumentoWebVinBaseRecursos { get; set; }
-    }
+
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+		public virtual ICollection<RolOntologiaPermiso> RolOntologiaPermiso { get; set; }
+	}
 }

@@ -36,6 +36,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Models.Administracion
         {
             ListaFacetas = new List<FacetasTabModel>();
         }
+
         /// <summary>
         /// Identificador de la pestaña
         /// </summary>
@@ -141,6 +142,20 @@ namespace Es.Riam.Gnoss.Web.MVC.Models.Administracion
         /// Última fecha de modificación de la página
         /// </summary>
         public DateTime FechaModificacion { get; set; }
+        
+        /// <summary>
+        /// Consultas realizadas a Virtuoso para obtener las facetas y los resultados
+        /// </summary>
+        public Dictionary<string, string> ConsultasDeFacetas { get; set; }
+        public Dictionary<string, Dictionary<string, bool>> ComparacionesMultiIdioma { get; set; }
+        public Dictionary<string, bool> Comparaciones{ get; set; }
+        public string ConsultaDeResultados { get; set; }
+        public List<ProyectoPestanyaMenuVersionPaginaModel> VersionPagina { get; set; }
+        public bool PaginaCMSVersionado { get; set; } = false;
+        public int Version { get; set; }
+        public bool VersionActual {  get; set; }
+        public Guid VersionID { get; set; }
+        public bool Comparando { get; set; }
 
         /// <summary>
         /// Modelo que indica el tipo de home que es
@@ -159,6 +174,16 @@ namespace Es.Riam.Gnoss.Web.MVC.Models.Administracion
             /// Indica si la home es para los no miebros
             /// </summary>
             public bool HomeNoMiembros { get; set; }
+        }
+        public partial class ProyectoPestanyaMenuVersionPaginaModel
+        {
+            public Guid VersionID { get; set; }
+            public Guid PestanyaID { get; set; }
+            public Guid IdentidadID { get; set; }
+            public Guid? VersionAnterior { get; set; }
+            public DateTime Fecha { get; set; }
+            public string Comentario { get; set; }
+            public string ModeloJSON { get; set; }
         }
         /// <summary>
         /// Opciones de busqueda de la pestaña, si la pestaña es de busqueda
@@ -187,10 +212,10 @@ namespace Es.Riam.Gnoss.Web.MVC.Models.Administracion
             /// 
             /// </summary>
             public string GruposConfiguracion { get; set; }
-            /// <summary>
-            /// 
-            /// </summary>
-            [Serializable]
+			/// <summary>
+			/// 
+			/// </summary>
+			[Serializable]
             public partial class FiltroOrden
             {
                 /// <summary>
@@ -349,7 +374,17 @@ namespace Es.Riam.Gnoss.Web.MVC.Models.Administracion
 			/// 
 			/// </summary>
 			public string TextoDefectoBuscador { get; set; }
-		}
+            public List<SearchPersonalizadoTabModel> ListaSearchPersonalizado { get; set; }
+            
+            [Serializable]
+            public partial class SearchPersonalizadoTabModel
+            {
+                public string SearchPersonalizado { get; set; }
+                public bool EstaActivo { get; set; }
+
+
+            }
+        }
 
         /// <summary>
         /// 
@@ -448,6 +483,11 @@ namespace Es.Riam.Gnoss.Web.MVC.Models.Administracion
             /// 
             /// </summary>
             public Guid ClavePestanya { get; set; }
+
+            /// <summary>
+            /// Indica si debe traer incluir los valores de la faceta en el autocompletar d ela pagina de busuqeda
+            /// </summary>
+            public bool AutocompletarEnriquecido { get; set; }
         }
 
         //TFG Fran

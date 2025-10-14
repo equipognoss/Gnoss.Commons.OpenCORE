@@ -793,6 +793,31 @@ namespace Es.Riam.Gnoss.Util.General
         #endregion
     }
 
+    /// <summary>
+    /// Excepción de eliminar un componente cms que pertenece a un grupo de componetes
+    /// </summary>
+    [Serializable]
+    public class ErrorComponentePerteneceGrupoComponentes : SystemException
+    {
+        #region Constructores
+
+        /// <summary>
+        /// Constructor sin parámetros
+        /// </summary>
+        public ErrorComponentePerteneceGrupoComponentes() : base() { }
+
+        /// <summary>
+        /// Constructor a partir de un texto pasado por parámetro
+        /// </summary>
+        /// <param name="pTexto">Texto</param>
+        public ErrorComponentePerteneceGrupoComponentes(string pTexto) : base(pTexto)
+        {
+        }
+
+        #endregion
+    }
+
+
     [Serializable]
     public class ExcepcionGeneral : SystemException
     {

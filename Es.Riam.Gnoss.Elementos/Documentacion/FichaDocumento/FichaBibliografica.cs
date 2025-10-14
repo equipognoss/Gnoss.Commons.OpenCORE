@@ -1,5 +1,6 @@
 using Es.Riam.Gnoss.Elementos.Documentacion.FichaDocumento;
 using Es.Riam.Gnoss.Util.General;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 
@@ -60,8 +61,8 @@ namespace Es.Riam.Gnoss.Elementos.Documentacion
         /// <summary>
         /// Constructor sin parámetros
         /// </summary>
-        public FichaBibliografica(LoggingService loggingService)
-            : base(loggingService)
+        public FichaBibliografica()
+            : base()
         {
         }
 
@@ -69,8 +70,8 @@ namespace Es.Riam.Gnoss.Elementos.Documentacion
         /// Constructor de ficha bibliográfica
         /// </summary>
         /// <param name="pFichaBibliograficaID">Identificador de ficha bibliográfica</param>
-        public FichaBibliografica(Guid pFichaBibliograficaID, LoggingService loggingService)
-            : base(loggingService)
+        public FichaBibliografica(Guid pFichaBibliograficaID)
+            : base()
         {
             mFichaBibliograficaID = pFichaBibliograficaID;
         }

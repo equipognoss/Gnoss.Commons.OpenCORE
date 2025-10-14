@@ -22,7 +22,8 @@ namespace Es.Riam.Gnoss.AD.EntityModel.Models
         RelacionOrigenDestinoGadget,
         IdsRecursosComponente,
         TesauroComponente,
-        FiltrosFaceta
+        FiltrosFaceta,
+        EnlaceComponente
     }
     [Serializable]
 

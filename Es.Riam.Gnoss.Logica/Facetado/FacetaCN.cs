@@ -3,10 +3,14 @@ using Es.Riam.Gnoss.AD.EncapsuladoDatos;
 using Es.Riam.Gnoss.AD.EntityModel;
 using Es.Riam.Gnoss.AD.EntityModel.Models.Faceta;
 using Es.Riam.Gnoss.AD.Facetado;
+using Es.Riam.Gnoss.AD.ParametroAplicacion;
 using Es.Riam.Gnoss.AD.Usuarios;
+using Es.Riam.Gnoss.Logica.ServiciosGenerales;
 using Es.Riam.Gnoss.Util.Configuracion;
 using Es.Riam.Gnoss.Util.General;
 using Es.Riam.Semantica.OWL;
+using Microsoft.Extensions.Logging;
+using Serilog.Core;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -16,15 +20,19 @@ namespace Es.Riam.Gnoss.Logica.Facetado
 {
     public class FacetaCN : BaseCN, IDisposable
     {
+        private ILogger mlogger;
+        private ILoggerFactory mLoggerFactory;
         #region Constructores
 
         /// <summary>
         /// Constructor sin parámetros
         /// </summary>
-        public FacetaCN(EntityContext entityContext, LoggingService loggingService, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication)
-            : base(entityContext, loggingService, configService, servicesUtilVirtuosoAndReplication)
+        public FacetaCN(EntityContext entityContext, LoggingService loggingService, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication, ILogger<FacetaCN> logger, ILoggerFactory loggerFactory)
+            : base(entityContext, loggingService, configService, servicesUtilVirtuosoAndReplication,logger,loggerFactory)
         {
-            this.FacetaAD = new FacetaAD(loggingService, entityContext, configService, servicesUtilVirtuosoAndReplication);
+            mlogger = logger;
+            mLoggerFactory = loggerFactory;
+            this.FacetaAD = new FacetaAD(loggingService, entityContext, configService, servicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<FacetaAD>(), mLoggerFactory);
         }
 
         /// <summary>
@@ -32,10 +40,12 @@ namespace Es.Riam.Gnoss.Logica.Facetado
         /// </summary>
         /// <param name="pFicheroConfiguracionBD">Fichero de configuración</param>
         /// <param name="pUsarVariableEstatica">Si se están usando hilos con diferentes conexiones: FALSE. En caso contrario TRUE</param>
-        public FacetaCN(string pFicheroConfiguracionBD, EntityContext entityContext, LoggingService loggingService, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication)
-            : base(entityContext, loggingService, configService, servicesUtilVirtuosoAndReplication)
+        public FacetaCN(string pFicheroConfiguracionBD, EntityContext entityContext, LoggingService loggingService, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication, ILogger<FacetaCN> logger, ILoggerFactory loggerFactory)
+            : base(entityContext, loggingService, configService, servicesUtilVirtuosoAndReplication, logger, loggerFactory)
         {
-            this.FacetaAD = new FacetaAD(pFicheroConfiguracionBD, loggingService, entityContext, configService, servicesUtilVirtuosoAndReplication);
+            mlogger = logger;
+            mLoggerFactory = loggerFactory;
+            this.FacetaAD = new FacetaAD(pFicheroConfiguracionBD, loggingService, entityContext, configService, servicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<FacetaAD>(), mLoggerFactory);
         }
 
         #endregion
@@ -108,6 +118,12 @@ namespace Es.Riam.Gnoss.Logica.Facetado
         public DataWrapperFacetas ObtenerFacetasDeProyecto(List<string> ListaItems, Guid? pOrganizacionID, Guid pProyectoID)
         {
             return FacetaAD.ObtenerFacetasDeProyecto(ListaItems, pOrganizacionID, pProyectoID);
+        }
+
+        public void CargarFacetasObjetoConocimientoProyectoyPestanya(DataWrapperFacetas pFacetaDW, Guid pProyectoID, Guid? pOrganizacionID)
+        {
+            FacetaAD.CargarFacetasObjetoConocimientoProyectoPestanya(pFacetaDW, pProyectoID, pOrganizacionID);
+            FacetaAD.CargarFacetasObjetoConocimientoProyecto(pFacetaDW, pProyectoID, pOrganizacionID);
         }
 
         /// <summary>

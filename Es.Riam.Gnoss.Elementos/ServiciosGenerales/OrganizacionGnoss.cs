@@ -2,6 +2,7 @@ using Es.Riam.Gnoss.AD.EntityModel;
 using Es.Riam.Gnoss.AD.ServiciosGenerales;
 using Es.Riam.Gnoss.Util.General;
 using Es.Riam.Interfaces;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -27,7 +28,7 @@ namespace Es.Riam.Gnoss.Elementos.ServiciosGenerales
 
         private EntityContext mEntityContext;
         private LoggingService mLoggingService;
-        
+
 
         #endregion
 
@@ -37,7 +38,7 @@ namespace Es.Riam.Gnoss.Elementos.ServiciosGenerales
         /// Constructor vacío
         /// </summary>
         public OrganizacionGnoss(LoggingService loggingService, EntityContext entityContext)
-            : base(loggingService)
+            : base()
         {
             mEntityContext = entityContext;
             mLoggingService = loggingService;
@@ -49,7 +50,7 @@ namespace Es.Riam.Gnoss.Elementos.ServiciosGenerales
         /// <param OrganizacionGnoss="pOrganizacion">Fila de organización</param>
         /// <param OrganizacionGnoss="pOrganizacionGnossRow">Fila de organización GNOSS</param>
         public OrganizacionGnoss(AD.EntityModel.Models.OrganizacionDS.Organizacion pOrganizacion, AD.EntityModel.Models.OrganizacionDS.OrganizacionGnoss pOrganizacionGnossRow, GestionOrganizaciones pGestor, LoggingService loggingService, EntityContext entityContext) 
-            : base(pOrganizacion, pGestor, loggingService)
+            : base(pOrganizacion, pGestor)
 
         {
             mEntityContext = entityContext;

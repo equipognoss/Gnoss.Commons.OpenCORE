@@ -73,6 +73,9 @@ namespace Es.Riam.Gnoss.Web.MVC.Models.ConfiguracionOCVistas
             [XmlElement(ElementName = "CategorizacionTesauroGnossObligatoria")]
             public bool CategorizacionTesauroGnossObligatoria { get; set; }
 
+            [XmlElement(ElementName = "EtiquetasGnossObligatoria")]
+            public bool EtiquetasGnossObligatoria { get; set; }
+
             [XmlElement(ElementName = "IncluirIconoGnoss")]
             public object IncluirIconoGnoss { get; set; }
 

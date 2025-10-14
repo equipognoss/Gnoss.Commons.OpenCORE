@@ -8,14 +8,18 @@ using Es.Riam.Gnoss.CL.ParametrosAplicacion;
 using Es.Riam.Gnoss.CL.Trazas;
 using Es.Riam.Gnoss.Elementos.ParametroAplicacion;
 using Es.Riam.Gnoss.Logica.ParametroAplicacion;
+using Es.Riam.Gnoss.Logica.Usuarios;
 using Es.Riam.Gnoss.RabbitMQ;
 using Es.Riam.Gnoss.Util.Configuracion;
 using Es.Riam.Gnoss.Util.General;
+using Es.Riam.Gnoss.UtilServiciosWeb;
+using Es.Riam.Interfaces.InterfacesOpen;
 using Es.Riam.Util;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -159,14 +163,11 @@ namespace Es.Riam.Gnoss.Servicios
         protected RabbitMQClient RabbitMqClientLectura;
         protected bool mReiniciarLecturaRabbit = false;
         protected ConfigService mConfigService;
-        protected EntityContext mEntityContext;
-        protected LoggingService mLoggingService;
-        protected RedisCacheWrapper mRedisCacheWrapper;
-        protected IServicesUtilVirtuosoAndReplication mServicesUtilVirtuosoAndReplication;
         private IHostingEnvironment mEnv;
         private static object BLOQUEO_COMPROBACION_TRAZA = new object();
         private static DateTime HORA_COMPROBACION_TRAZA;
-
+        private ILogger mlogger;
+        private ILoggerFactory mLoggerFactory;
         protected IServiceScopeFactory ScopedFactory { get; }
 
         #endregion
@@ -176,10 +177,12 @@ namespace Es.Riam.Gnoss.Servicios
         /// <summary>
         /// Constructor sin parámetros.
         /// </summary>
-        public ControladorServicioGnoss(IServiceScopeFactory scopedFactory, ConfigService configService)
+        public ControladorServicioGnoss(IServiceScopeFactory scopedFactory, ConfigService configService, ILogger<ControladorServicioGnoss> logger, ILoggerFactory loggerFactory)
         {
             ScopedFactory = scopedFactory;
             mConfigService = configService;
+            mlogger = logger;
+            mLoggerFactory = loggerFactory;
             //string directorioLog = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) + Path.DirectorySeparatorChar + "logs" + Path.DirectorySeparatorChar + mPlataforma;
             string directorioLog = ObtenerRutaLog();
 
@@ -254,21 +257,20 @@ namespace Es.Riam.Gnoss.Servicios
 
         #region Métodos
 
-        public void EmpezarMantenimiento()
+        public virtual void EmpezarMantenimiento()
         {
             LoggingService.RUTA_DIRECTORIO_ERROR = mDirectorioLog;
             using (var scope = ScopedFactory.CreateScope())
             {
                 EntityContext entityContext = scope.ServiceProvider.GetRequiredService<EntityContext>();
                 EntityContextBASE entityContextBASE = scope.ServiceProvider.GetRequiredService<EntityContextBASE>();
-                /*UtilidadesVirtuoso utilidadesVirtuoso = scope.ServiceProvider.GetRequiredService<UtilidadesVirtuoso>();*/
                 LoggingService loggingService = scope.ServiceProvider.GetRequiredService<LoggingService>();
                 RedisCacheWrapper redisCacheWrapper = scope.ServiceProvider.GetRequiredService<RedisCacheWrapper>();
                 GnossCache gnossCache = scope.ServiceProvider.GetRequiredService<GnossCache>();
                 VirtuosoAD virtuosoAD = scope.ServiceProvider.GetRequiredService<VirtuosoAD>();
                 IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication = scope.ServiceProvider.GetRequiredService<IServicesUtilVirtuosoAndReplication>();
                 LoggingService.TrazaHabilitada = mConfigService.TrazaHabilitada();
-                loggingService.GuardarLog($"Trazas habilitadas: {LoggingService.TrazaHabilitada}");
+                loggingService.GuardarLog($"Trazas habilitadas: {LoggingService.TrazaHabilitada}", mlogger);
                 try
                 {
                     RegistrarInicio(loggingService);
@@ -277,8 +279,6 @@ namespace Es.Riam.Gnoss.Servicios
                     loggingService.PLATAFORMA = mPlataforma;
 
                     ThreadID = Thread.CurrentThread.ManagedThreadId;
-                    // Por si existen cosas de otro hilo, las elimino
-                    //UtilPeticion.EliminarObjetosDeHilo(ThreadID);
 
                     GestorParametroAplicacion tempGestorParametros = new GestorParametroAplicacion();
 
@@ -294,8 +294,6 @@ namespace Es.Riam.Gnoss.Servicios
                     tempGestorParametros.ListaConfiguracionServiciosProyecto = entityContext.ConfiguracionServiciosProyecto.ToList();
                     tempGestorParametros.ListaConfiguracionServiciosDominio = entityContext.ConfiguracionServiciosDominio.ToList();
                     GestorParametroAplicacionDS = tempGestorParametros;
-                    //CargarServicios(tempGestorParametros);
-
 
                     if (GestorParametroAplicacionDS.ParametroAplicacion == null || GestorParametroAplicacionDS.ParametroAplicacion.Count == 0)
                     {
@@ -308,19 +306,13 @@ namespace Es.Riam.Gnoss.Servicios
                     }
 
                     EstablecerDominioCache();
-
-                    string serviceName = this.ToString().Replace("Es.Riam.Gnoss.Win.", "");
-                    serviceName = serviceName.Substring(0, serviceName.IndexOf('.'));
-
-                    string bdName = BaseCL.DominioEstatico;
-
-                    RabbitMQClient.ClientName = $"{serviceName}_{bdName}";
+                    EstablecerNombreConexionRabbitMQ();
 
                     RealizarMantenimiento(entityContext, entityContextBASE, null, loggingService, redisCacheWrapper, gnossCache, virtuosoAD, servicesUtilVirtuosoAndReplication);
                 }
                 catch (Exception ex)
                 {
-                    loggingService.GuardarLogError(ex, $"Conexion: {mFicheroConfiguracionBDOriginal}");
+                    loggingService.GuardarLogError(ex, $"Conexion: {mFicheroConfiguracionBDOriginal}",mlogger);
                     throw;
                 }
             }
@@ -336,7 +328,7 @@ namespace Es.Riam.Gnoss.Servicios
                     if (DateTime.Now > HORA_COMPROBACION_TRAZA)
                     {
                         HORA_COMPROBACION_TRAZA = DateTime.Now.AddSeconds(15);
-                        TrazasCL trazasCL = new TrazasCL(pEntityContext, pLoggingService, pRedisCacheWrapper, pConfigService, pServicesUtilVirtuosoAndReplication);
+                        TrazasCL trazasCL = new TrazasCL(pEntityContext, pLoggingService, pRedisCacheWrapper, pConfigService, pServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<TrazasCL>(), mLoggerFactory);
                         string tiempoTrazaResultados = trazasCL.ObtenerTrazaEnCache(NombreTraza);
 
                         if (!string.IsNullOrEmpty(tiempoTrazaResultados))
@@ -377,7 +369,7 @@ namespace Es.Riam.Gnoss.Servicios
         /// <summary>
         /// Establece el dominio de la cache.
         /// </summary>
-        private void EstablecerDominioCache()
+        protected void EstablecerDominioCache()
         {
             GestorParametroAplicacion gestorParametros = GestorParametroAplicacionDS;
 
@@ -391,6 +383,16 @@ namespace Es.Riam.Gnoss.Servicios
             }
 
             BaseCL.DominioEstatico = dominio;
+        }
+
+        protected void EstablecerNombreConexionRabbitMQ()
+        {
+            string serviceName = this.ToString().Replace("Es.Riam.Gnoss.Win.", "");
+            serviceName = serviceName.Substring(0, serviceName.IndexOf('.'));
+
+            string bdName = BaseCL.DominioEstatico;
+
+            RabbitMQClient.ClientName = $"{serviceName}_{bdName}";
         }
 
         /// <summary>
@@ -460,7 +462,7 @@ namespace Es.Riam.Gnoss.Servicios
         protected void EnviarCorreo(string pMensajeError, string pVersion, string pClaveCorreoDestinatario, EntityContext entityContext)
         {
             List<ParametroAplicacion> filasConfiguracion = entityContext.ParametroAplicacion.ToList();
-           
+
             Dictionary<string, string> parametros = new Dictionary<string, string>();
 
             foreach (ParametroAplicacion fila in filasConfiguracion)
@@ -530,7 +532,7 @@ namespace Es.Riam.Gnoss.Servicios
             {
                 try
                 {
-                    string nombreFichero = Path.Combine(LoggingService.RUTA_DIRECTORIO_ERROR, $"log{ (pParametroExtra.Length > 0 ? "_" + pParametroExtra : "") }_{ DateTime.Now.ToString("yyyy-MM-dd") }.log");
+                    string nombreFichero = Path.Combine(LoggingService.RUTA_DIRECTORIO_ERROR, $"log{(pParametroExtra.Length > 0 ? "_" + pParametroExtra : "")}_{DateTime.Now.ToString("yyyy-MM-dd")}.log");
 
                     FileInfo fichero = new FileInfo(nombreFichero);
 
@@ -563,7 +565,7 @@ namespace Es.Riam.Gnoss.Servicios
                 }
                 catch (Exception ex)
                 {
-                    loggingService.GuardarLogError(ex);
+                    loggingService.GuardarLogError(ex, mlogger);
                 }
             }
         }
@@ -599,7 +601,7 @@ namespace Es.Riam.Gnoss.Servicios
                 }
                 catch (Exception ex)
                 {
-                    loggingService.GuardarLogError(ex);
+                    loggingService.GuardarLogError(ex, mlogger);
                 }
                 finally
                 {
@@ -703,7 +705,7 @@ namespace Es.Riam.Gnoss.Servicios
             }
             catch (Exception ex)
             {
-                loggingService.GuardarLogError(ex);
+                loggingService.GuardarLogError(ex, mlogger);
             }
         }
 

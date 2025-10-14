@@ -2,8 +2,10 @@
 using Es.Riam.Gnoss.AD.EntityModel;
 using Es.Riam.Gnoss.AD.Facetado;
 using Es.Riam.Gnoss.AD.Facetado.Model;
+using Es.Riam.Gnoss.AD.Suscripcion;
 using Es.Riam.Gnoss.Util.Configuracion;
 using Es.Riam.Gnoss.Util.General;
+using Microsoft.Extensions.Logging;
 using OpenLink.Data.Virtuoso;
 using System;
 using System.Collections.Generic;
@@ -53,21 +55,26 @@ namespace Es.Riam.Gnoss.AD.Virtuoso
         private EntityContext mEntityContext;
         private ConfigService mConfigService;
         private IServicesUtilVirtuosoAndReplication mServicesUtilVirtuosoAndReplication;
+        private ILogger mlogger;
+        private ILoggerFactory mloggerFactory;
 
         #endregion
 
         #region Constructores
 
-        public VirtuosoAD(LoggingService loggingService, EntityContext entityContext, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication, string cadenaConexion = "")
+        public VirtuosoAD(LoggingService loggingService, EntityContext entityContext, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication, ILogger<VirtuosoAD> logger, ILoggerFactory loggerFactory, VirtuosoConnectionData pVirtuosoConnectionData = null)
         {
             mServicesUtilVirtuosoAndReplication = servicesUtilVirtuosoAndReplication;
             mLoggingService = loggingService;
             mEntityContext = entityContext;
             mConfigService = configService;
-            if (!string.IsNullOrEmpty(cadenaConexion))
+            mlogger= logger;
+            mloggerFactory= loggerFactory;
+            
+            if(mServicesUtilVirtuosoAndReplication.VirtuosoConnectionData == null || pVirtuosoConnectionData != null)
             {
-                mServicesUtilVirtuosoAndReplication.CadenaConexion = cadenaConexion;
-            }
+                mServicesUtilVirtuosoAndReplication.VirtuosoConnectionData = pVirtuosoConnectionData;
+            }            
         }
 
         #endregion
@@ -94,11 +101,10 @@ namespace Es.Riam.Gnoss.AD.Virtuoso
             if (posicionTriples != -1)
             {
                 //Es un insert de más de 10000 líneas, la parto para que no falle
-                EjecutarInsertPorTrozos(pQuery, posicionTriples);
+                EjecutarInsertPorTrozos(pQuery, posicionTriples, false);
             }
             else
             {
-
                 try
                 {
                     conexion = ObtenerConexion();
@@ -111,7 +117,7 @@ namespace Es.Riam.Gnoss.AD.Virtuoso
                 catch (Exception ex)
                 {
                     mServicesUtilVirtuosoAndReplication.CerrarConexion();
-                    throw new ExcepcionDeBaseDeDatos(pQuery + "\r\n" + mServicesUtilVirtuosoAndReplication.CadenaConexion, ex);
+                    throw new ExcepcionDeBaseDeDatos(pQuery + "\r\n" + mServicesUtilVirtuosoAndReplication.VirtuosoConnectionData, ex);
                 }
                 finally
                 {
@@ -126,7 +132,7 @@ namespace Es.Riam.Gnoss.AD.Virtuoso
                     }
                     catch (Exception e)
                     {
-                        mLoggingService.GuardarLogError(e);
+                        mLoggingService.GuardarLogError(e, mlogger);
                     }
                 }
             }
@@ -149,15 +155,10 @@ namespace Es.Riam.Gnoss.AD.Virtuoso
             if (posicionTriples != -1)
             {
                 //Es un insert de más de 600 líneas, la parto para que no falle
-                EjecutarInsertPorTrozos(pQuery, posicionTriples);
+                EjecutarInsertPorTrozos(pQuery, posicionTriples, true);
             }
             else
             {
-                KeyValuePair<string, string> ip_puerto = ObtenerIpVirtuosoDeCadenaConexion(mServicesUtilVirtuosoAndReplication.CadenaConexion);
-                string ipVirtuoso = ip_puerto.Key;
-                string puertoVirtuoso = ip_puerto.Value;
-                string url = "http://" + ipVirtuoso + ":" + puertoVirtuoso + "/sparql";
-
                 //Quito el inicio de SPARQL
                 if (pQuery.Trim().ToUpper().StartsWith("SPARQL"))
                 {
@@ -171,11 +172,11 @@ namespace Es.Riam.Gnoss.AD.Virtuoso
 
                 try
                 {
-                    resultado = ActualizarVirtuoso_WebClient(url, pQuery, parametros);
+                    resultado = ActualizarVirtuoso_WebClient(mServicesUtilVirtuosoAndReplication.VirtuosoConnectionData, pQuery, parametros);
                 }
                 catch (ExcepcionCheckpointVirtuoso ex)
                 {
-                    mLoggingService.GuardarLogError(ex);
+                    mLoggingService.GuardarLogError(ex, mlogger);
                     //Cerramos las conexiones
                     //if (TransaccionVirtuoso != null)
                     //{
@@ -198,7 +199,7 @@ namespace Es.Riam.Gnoss.AD.Virtuoso
 
                     if (estaOperativo)
                     {
-                        ActualizarVirtuoso_WebClient(url, pQuery, parametros);
+                        ActualizarVirtuoso_WebClient(mServicesUtilVirtuosoAndReplication.VirtuosoConnectionData, pQuery, parametros);
                     }
                     else
                     {
@@ -210,9 +211,9 @@ namespace Es.Riam.Gnoss.AD.Virtuoso
             return resultado;
         }
 
-        private int ActualizarVirtuoso_WebClient(string pUrl, string pQuery, NameValueCollection pParametros)
+        private int ActualizarVirtuoso_WebClient(VirtuosoConnectionData pVirtuosoConnectionData, string pQuery, NameValueCollection pParametros)
         {
-            return mServicesUtilVirtuosoAndReplication.ActualizarVirtuoso_WebClient(pUrl, pQuery, pParametros);
+            return mServicesUtilVirtuosoAndReplication.ActualizarVirtuoso_WebClient(pVirtuosoConnectionData, pQuery, pParametros);
         }
 
         private int ObtenerResultadoRespuesta(string pRespuesta)
@@ -269,7 +270,7 @@ namespace Es.Riam.Gnoss.AD.Virtuoso
                 }
                 catch (Exception ex)
                 {
-                    mLoggingService.GuardarLogError(ex);
+                    mLoggingService.GuardarLogError(ex, mlogger);
                 }
             }
 
@@ -279,14 +280,9 @@ namespace Es.Riam.Gnoss.AD.Virtuoso
         public DataSet LeerDeVirtuoso_WebClient(string pQuery, string pNombreTablaDS)
         {
             FacetadoDS facetadoDS = new FacetadoDS();
-            FacetadoAD facetadoAD = new FacetadoAD("", mLoggingService,mEntityContext, mConfigService, this, mServicesUtilVirtuosoAndReplication);
+            FacetadoAD facetadoAD = new FacetadoAD("", mLoggingService,mEntityContext, mConfigService, this, mServicesUtilVirtuosoAndReplication,mloggerFactory.CreateLogger<FacetadoAD>(), mloggerFactory);
 
-            KeyValuePair<string, string> ip_puerto = ObtenerIpVirtuosoDeCadenaConexion(mServicesUtilVirtuosoAndReplication.CadenaConexion);
-            string ipVirtuoso = ip_puerto.Key;
-            string puertoVirtuoso = ip_puerto.Value;
-            string url = "http://" + ipVirtuoso + ":" + puertoVirtuoso + "/sparql";
-
-            facetadoAD.LeerDeVirtuoso_WebClient(url, pNombreTablaDS, facetadoDS, pQuery);
+            facetadoAD.LeerDeVirtuoso_WebClient(mServicesUtilVirtuosoAndReplication.VirtuosoConnectionData, pNombreTablaDS, facetadoDS, pQuery);
 
             return facetadoDS;
         }
@@ -363,16 +359,11 @@ namespace Es.Riam.Gnoss.AD.Virtuoso
                 }
                 catch (Exception e)
                 {
-                    mLoggingService.GuardarLogError(e);
+                    mLoggingService.GuardarLogError(e, mlogger);
                 }
             }
 
             return ds;
-        }
-
-        public KeyValuePair<string, string> ObtenerIpVirtuosoDeCadenaConexion(string pCadenaConexion)
-        {
-            return mServicesUtilVirtuosoAndReplication.ObtenerIpVirtuosoDeCadenaConexion(pCadenaConexion);
         }
 
         private VirtuosoConnection ObtenerConexion()
@@ -393,7 +384,7 @@ namespace Es.Riam.Gnoss.AD.Virtuoso
         /// </summary>
         /// <param name="pQuery">Query a ejecutar (insert / update / delete)</param>
         /// <param name="pIndiceTriplePartir">Indice del triple por el que se va a partir los trozos a insertart</param>
-        public void EjecutarInsertPorTrozos(string pQuery, int pIndiceTriplePartir)
+        public void EjecutarInsertPorTrozos(string pQuery, int pIndiceTriplePartir, bool pUsarHttpPost)
         {
             try
             {
@@ -409,8 +400,15 @@ namespace Es.Riam.Gnoss.AD.Virtuoso
                     triples = triples.Substring(pIndiceTriplePartir);
 
                     string consulta = $"{instruccion}{conjuntoTriples}}}";
-
-                    ActualizarVirtuoso(consulta);
+                    
+                    if (pUsarHttpPost)
+                    {
+                        ActualizarVirtuoso(consulta);
+                    }
+                    else
+                    {
+                        ActualizarVirtuoso_ClienteTradicional(consulta);
+                    }
 
                     pIndiceTriplePartir = mServicesUtilVirtuosoAndReplication.ObtenerPosicionTriple(triples);
                 }
@@ -419,7 +417,14 @@ namespace Es.Riam.Gnoss.AD.Virtuoso
                 {
                     string consulta = $"{instruccion}{triples}}}";
 
-                    ActualizarVirtuoso(consulta);
+                    if (pUsarHttpPost)
+                    {
+                        ActualizarVirtuoso(consulta);
+                    }
+                    else
+                    {
+                        ActualizarVirtuoso_ClienteTradicional(consulta);
+                    }
                 }
 
                 if (transaccionIniciada)
@@ -481,7 +486,7 @@ namespace Es.Riam.Gnoss.AD.Virtuoso
                         }
                         catch (Exception ex)
                         {
-                            mLoggingService.GuardarLogError(ex);
+                            mLoggingService.GuardarLogError(ex, mlogger);
                         }
 
                         mServicesUtilVirtuosoAndReplication.CerrarConexion();
@@ -516,7 +521,7 @@ namespace Es.Riam.Gnoss.AD.Virtuoso
                 }
                 catch (Exception e)
                 {
-                    mLoggingService.GuardarLogError(e);
+                    mLoggingService.GuardarLogError(e, mlogger);
                     //La cadena de conexión está mal formada
                     return false;
                 }
@@ -628,7 +633,7 @@ namespace Es.Riam.Gnoss.AD.Virtuoso
 
             try
             {
-                pFacetadoCN = new VirtuosoAD(mLoggingService, mEntityContext, mConfigService, mServicesUtilVirtuosoAndReplication);
+                pFacetadoCN = new VirtuosoAD(mLoggingService, mEntityContext, mConfigService, mServicesUtilVirtuosoAndReplication,mloggerFactory.CreateLogger<VirtuosoAD>(),mloggerFactory);
                 //Hacemos una consulta sencilla a virtuoso:
                 string query = "SPARQL ASK {?s ?p ?o.}";
                 pFacetadoCN.LeerDeVirtuoso(query, "TablaDePrueba");

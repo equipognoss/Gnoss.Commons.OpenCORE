@@ -24,6 +24,10 @@ namespace Es.Riam.Gnoss.AD.EntityModel.Models.IdentidadDS
         public string Tags { get; set; }
         public DateTime? FechaNacimiento { get; set; }
         public bool TieneEmailTutor { get; set; }
+        public DateTime? FechaBaja { get; set; }
+        public DateTime? FechaExpulsion { get; set; }
+        public bool RecibirNewsLetter { get; set; }
+        public Guid? UsuarioID { get; set; }
 
         public override bool Equals(object obj)
         {

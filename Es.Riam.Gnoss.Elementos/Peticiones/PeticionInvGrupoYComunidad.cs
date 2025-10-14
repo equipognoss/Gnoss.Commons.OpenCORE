@@ -1,5 +1,7 @@
 ﻿using Es.Riam.Gnoss.AD.EntityModel.Models.Peticion;
 using Es.Riam.Gnoss.Util.General;
+using Microsoft.Extensions.Logging;
+using Serilog.Core;
 
 namespace Es.Riam.Gnoss.Elementos.Peticiones
 {
@@ -9,7 +11,6 @@ namespace Es.Riam.Gnoss.Elementos.Peticiones
 
         private PeticionInvitacionComunidad mFilaInvComunidad;
         private PeticionInvitacionGrupo mFilaInvGrupo;
-
         #endregion
 
         #region Constructores
@@ -21,8 +22,8 @@ namespace Es.Riam.Gnoss.Elementos.Peticiones
         /// <param name="pFilaPeticionInvitacionComunidad">Fila de petición de invitación a una comunidad</param>
         /// <param name="pFilaPeticion">Fila de petición</param>
         /// <param name="pGestorPeticiones">Gestor de peticiones</param>
-        public PeticionInvGrupoYComunidad(PeticionInvitacionGrupo pFilaPeticionInvitacionGrupo, PeticionInvitacionComunidad pFilaPeticionInvitacionComunidad, AD.EntityModel.Models.Peticion.Peticion pFilaPeticion, GestionPeticiones pGestorPeticiones, LoggingService loggingService)
-            : base(pFilaPeticion, pGestorPeticiones, loggingService)
+        public PeticionInvGrupoYComunidad(PeticionInvitacionGrupo pFilaPeticionInvitacionGrupo, PeticionInvitacionComunidad pFilaPeticionInvitacionComunidad, AD.EntityModel.Models.Peticion.Peticion pFilaPeticion, GestionPeticiones pGestorPeticiones)
+            : base(pFilaPeticion, pGestorPeticiones)
         {
             this.mFilaInvComunidad = pFilaPeticionInvitacionComunidad;
             this.mFilaInvGrupo = pFilaPeticionInvitacionGrupo;

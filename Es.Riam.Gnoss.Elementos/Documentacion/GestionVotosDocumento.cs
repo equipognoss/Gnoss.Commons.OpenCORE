@@ -1,6 +1,7 @@
 using Es.Riam.AbstractsOpen;
 using Es.Riam.Gnoss.AD.EncapsuladoDatos;
 using Es.Riam.Gnoss.AD.EntityModel;
+using Es.Riam.Gnoss.AD.ParametroAplicacion;
 using Es.Riam.Gnoss.AD.Virtuoso;
 using Es.Riam.Gnoss.Elementos.Voto;
 using Es.Riam.Gnoss.Util.Configuracion;
@@ -8,6 +9,8 @@ using Es.Riam.Gnoss.Util.General;
 using Es.Riam.Util;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Logging;
+using Serilog.Core;
 using System;
 using System.Runtime.Serialization;
 using System.Security.Permissions;
@@ -28,17 +31,22 @@ namespace Es.Riam.Gnoss.Elementos.Documentacion
         private GestorDocumental mGestorDocumental;
 
         private EntityContext mEntityContext;
-
+        private ILogger mlogger;
+        private ILoggerFactory mLoggerFactory;
         #endregion
 
         #region Constructores
 
+        public GestionVotosDocumento() { }
+
         /// <summary>
         /// Constructor vacío
         /// </summary>
-        public GestionVotosDocumento( LoggingService loggingService, EntityContext entityContext, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication)
-            : base(loggingService, entityContext, configService, servicesUtilVirtuosoAndReplication)
+        public GestionVotosDocumento( LoggingService loggingService, EntityContext entityContext, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication, ILogger<GestionVotosDocumento> logger, ILoggerFactory loggerFactory)
+            : base(loggingService, entityContext, configService, servicesUtilVirtuosoAndReplication, logger, loggerFactory)
         {
+            mlogger = logger;
+            mLoggerFactory = loggerFactory;
             mEntityContext = entityContext;
         }
 
@@ -47,11 +55,13 @@ namespace Es.Riam.Gnoss.Elementos.Documentacion
         /// </summary>
         /// <param name="pVotoDS">DataSet de Voto</param>
         /// <param name="pGestorDocumental">Gestor documental</param>
-        public GestionVotosDocumento(DataWrapperVoto pVotoDS, GestorDocumental pGestorDocumental,  LoggingService loggingService, EntityContext entityContext, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication)
-            : base(pVotoDS, loggingService, entityContext, configService, servicesUtilVirtuosoAndReplication)
+        public GestionVotosDocumento(DataWrapperVoto pVotoDS, GestorDocumental pGestorDocumental,  LoggingService loggingService, EntityContext entityContext, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication, ILogger<GestionVotosDocumento> logger, ILoggerFactory loggerFactory)
+            : base(pVotoDS, loggingService, entityContext, configService, servicesUtilVirtuosoAndReplication, logger, loggerFactory)
         {
             mEntityContext = entityContext;
             mGestorDocumental = pGestorDocumental;
+            mlogger = logger;
+            mLoggerFactory = loggerFactory;
         }
 
         /// <summary>

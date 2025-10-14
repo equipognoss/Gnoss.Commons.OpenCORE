@@ -1,5 +1,4 @@
 ﻿using Es.Riam.InterfacesOpen;
-using Gnoss.Web.LabelerService;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,14 +7,12 @@ using System.Threading.Tasks;
 
 namespace Es.Riam.Open
 {
-    public class LabelerService : ILabelerService
+    public class LabelerArtificialIntelligenceOpenService : ILabelerService
     {
         public string ObtenerEtiquetas(string pTitulo, string pDescripcion, out string pEtiquetasPropuestas, string pProyectoID, string pDocumentoID, string pExtension = null)
         {
-            string resultado = "";
-            UtilLabelerService utilLabelerService = new UtilLabelerService();
-            resultado = utilLabelerService.ObtenerEtiquetasDeTituloYDescripcion(pTitulo, pDescripcion, out pEtiquetasPropuestas);
-            return resultado;
+            pEtiquetasPropuestas = "";
+            return "";
         }
     }
 }

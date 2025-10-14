@@ -3,23 +3,31 @@ using System.Collections.Generic;
 using Es.Riam.AbstractsOpen;
 using Es.Riam.Gnoss.AD.AutocompletarNombres;
 using Es.Riam.Gnoss.AD.EntityModel;
+using Es.Riam.Gnoss.AD.ParametroAplicacion;
+using Es.Riam.Gnoss.Logica.ServiciosGenerales;
 using Es.Riam.Gnoss.Util.Configuracion;
 using Es.Riam.Gnoss.Util.General;
+using Microsoft.Extensions.Logging;
+using Serilog.Core;
 //using Es.Riam.Gnoss.AD.AutocompletarNombres.Model;
 
 namespace Es.Riam.Gnoss.Logica.AutoCompletarNombres
 {
     public class AutoCompletarNombresCN : BaseCN, IDisposable
     {
+        private ILogger mlogger;
+        private ILoggerFactory mLoggerFactory;
         #region Constructores
 
         /// <summary>
         /// Constructor sin parámetros
         /// </summary>
-        public AutoCompletarNombresCN(LoggingService loggingService, EntityContext entityContext, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication)
-            : base(entityContext, loggingService, configService, servicesUtilVirtuosoAndReplication)
+        public AutoCompletarNombresCN(LoggingService loggingService, EntityContext entityContext, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication, ILogger<AutoCompletarNombresCN> logger, ILoggerFactory loggerFactory)
+            : base(entityContext, loggingService, configService, servicesUtilVirtuosoAndReplication, logger, loggerFactory)
         {
-            this.AutoCompletarNombresAD = new AutoCompletarNombresAD(loggingService, entityContext, configService, servicesUtilVirtuosoAndReplication);
+            mlogger = logger;
+            mLoggerFactory = loggerFactory;
+            this.AutoCompletarNombresAD = new AutoCompletarNombresAD(loggingService, entityContext, configService, servicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<AutoCompletarNombresAD>(), mLoggerFactory);
         }
 
 
@@ -29,10 +37,12 @@ namespace Es.Riam.Gnoss.Logica.AutoCompletarNombres
         /// <param name="pFicheroConfiguracionBD">Ruta del fichero de configuración de base de datos</param>
         /// <param name="pUsarVariableEstatica">Si se están usando hilos con diferentes conexiones: FALSE. En caso contrario TRUE</param>
         /// <param name="pCaracteresExtra">Ultimos caracteres que se añaden a la tabla de Etiqueta</param>
-        public AutoCompletarNombresCN(string pFicheroConfiguracionBD, LoggingService loggingService, EntityContext entityContext, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication)
-            : base(entityContext, loggingService, configService, servicesUtilVirtuosoAndReplication)
+        public AutoCompletarNombresCN(string pFicheroConfiguracionBD, LoggingService loggingService, EntityContext entityContext, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication, ILogger<AutoCompletarNombresCN> logger, ILoggerFactory loggerFactory)
+            : base(entityContext, loggingService, configService, servicesUtilVirtuosoAndReplication, logger, loggerFactory)
         {
-            this.AutoCompletarNombresAD = new AutoCompletarNombresAD(pFicheroConfiguracionBD, loggingService, entityContext, configService, servicesUtilVirtuosoAndReplication);
+            mlogger = logger;
+            mLoggerFactory = loggerFactory;
+            this.AutoCompletarNombresAD = new AutoCompletarNombresAD(pFicheroConfiguracionBD, loggingService, entityContext, configService, servicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<AutoCompletarNombresAD>(), mLoggerFactory);
         }
 
         #endregion

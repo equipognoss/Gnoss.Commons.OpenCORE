@@ -5,7 +5,14 @@ using System.Reflection;
 using System.Runtime.Serialization;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
+using System.Text.Json.Serialization;
+using System.Text.Json;
 using Newtonsoft.Json;
+using MongoDB.Bson;
+using MongoDB.Bson.Serialization;
+
+using System.IO.Pipelines;
+using MessagePack;
 
 namespace Es.Riam.Util
 {
@@ -32,15 +39,40 @@ namespace Es.Riam.Util
             {
                 return default(T);
             }
-            //Creamos un stream en memoria
-            IFormatter formatter = new BinaryFormatter();
-            Stream stream = new MemoryStream();
-            using (stream)
+            var options = new JsonSerializerSettings
             {
-                formatter.Serialize(stream, objeto);
-                stream.Seek(0, SeekOrigin.Begin);
-                //Deserializamos la porcón de memoria en el nuevo objeto
-                return (T)formatter.Deserialize(stream);
+                PreserveReferencesHandling = PreserveReferencesHandling.Objects,
+                TypeNameHandling = TypeNameHandling.All,
+            };
+            byte[] buffer = null;
+            try
+            {
+                //string json = JsonSerializer.Serialize(obj, options);
+                string json = JsonConvert.SerializeObject(objeto, options);
+                buffer = BsonDocument.Parse(json).ToBson();
+            }
+            catch (Exception ex)
+            {
+                buffer = MessagePackSerializer.Serialize(objeto);
+            }
+            try
+            {
+                BsonDocument bsonDoc = BsonSerializer.Deserialize<BsonDocument>(buffer);
+                string json = bsonDoc.ToJson();
+                //obj = System.Text.Json.JsonSerializer.Deserialize(json, clase, options);
+                return (T)JsonConvert.DeserializeObject(json, typeof(T), options);
+            }
+            catch (Exception ex)
+            {
+                try
+                {
+                    return (T)MessagePackSerializer.Deserialize(typeof(T), buffer);
+                }
+                catch
+                {
+                    //Ha Cambiado el modelo de datos de la cache, devolvemos null para que lo obtenga de Base de datos
+                    return default(T);
+                }
             }
         }
 
@@ -89,7 +121,7 @@ namespace Es.Riam.Util
         /// <param name="contentType">(Optional) Content type of the postData</param>
         /// <param name="acceptHeader">(Optional) Accept header</param>
         /// <returns>Response of the server</returns>
-        public static string WebRequest(string httpMethod, string url, byte[] byteData)
+        public static string WebRequest(string httpMethod, string url, byte[] byteData, bool pRedirect = true)
         {
             HttpWebRequest webRequest = null;
             string responseData = "";
@@ -101,6 +133,10 @@ namespace Es.Riam.Util
             webRequest.ContentType = "application/x-www-form-urlencoded";
             webRequest.UserAgent = UtilWeb.GenerarUserAgent();
 
+            if (!pRedirect) 
+            {
+                webRequest.AllowAutoRedirect = false;
+            }
             if (httpMethod == "POST")
             {
                 webRequest.ContentLength = 0;

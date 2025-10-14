@@ -155,10 +155,23 @@ namespace Es.Riam.Gnoss.Web.MVC.Models.Administracion
         /// Indica si la faceta esta eliminada o no
         /// </summary>
         public bool Modified { get; set; }
+
+        /// <summary>
+        /// Indica la fecha de creacion/modificacion de la faceta
+        /// </summary>
+        public DateTime FechaModificacion { get; set; }
 		/// <summary>
 		/// Indica el ID de identificación en el caso que la faceta sea una faceta propuesta
 		/// </summary> 
 		public Guid SuggestedID { get; set; }
+        /// <summary>
+        /// Consulta de la faceta
+        /// </summary>
+        public string Query { get; set; }
+        /// <summary>
+        /// Indica si debe traer o no los contadores de la faceta
+        /// </summary>
+        public bool MostrarContador { get; set; } = true;
 
         [Serializable]
         public partial class FiltrosFacetas

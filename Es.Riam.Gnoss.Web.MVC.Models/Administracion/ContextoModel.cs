@@ -96,6 +96,10 @@ namespace Es.Riam.Gnoss.Web.MVC.Models.Administracion
 
         public ContextModel Contexto { get; set; }
 
+        public DateTime FechaCreacion { get; set; }
+
+        public DateTime FechaModificacion { get; set; }
+
         /// <summary>
         /// Indica si el gadget se va a cargar vía Ajax
         /// </summary>

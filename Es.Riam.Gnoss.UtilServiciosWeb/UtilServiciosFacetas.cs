@@ -4,6 +4,7 @@ using Es.Riam.Gnoss.AD.EntityModel;
 using Es.Riam.Gnoss.AD.EntityModel.Models.Faceta;
 using Es.Riam.Gnoss.AD.EntityModel.Models.ProyectoDS;
 using Es.Riam.Gnoss.AD.Facetado;
+using Es.Riam.Gnoss.AD.ParametroAplicacion;
 using Es.Riam.Gnoss.AD.Virtuoso;
 using Es.Riam.Gnoss.CL;
 using Es.Riam.Gnoss.CL.Facetado;
@@ -11,10 +12,12 @@ using Es.Riam.Gnoss.CL.ServiciosGenerales;
 using Es.Riam.Gnoss.Elementos.Facetado;
 using Es.Riam.Gnoss.Elementos.ServiciosGenerales;
 using Es.Riam.Gnoss.Logica.Identidad;
+using Es.Riam.Gnoss.Logica.ServiciosGenerales;
 using Es.Riam.Gnoss.Logica.Usuarios;
 using Es.Riam.Gnoss.Util.Configuracion;
 using Es.Riam.Gnoss.Util.General;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -32,8 +35,9 @@ namespace Es.Riam.Gnoss.UtilServiciosWeb
         private ConfigService mConfigService;
         private RedisCacheWrapper mRedisCacheWrapper;
         private IServicesUtilVirtuosoAndReplication mServicesUtilVirtuosoAndReplication;
-
-        public UtilServiciosFacetas(LoggingService loggingService, EntityContext entityContext, ConfigService configService, RedisCacheWrapper redisCacheWrapper, VirtuosoAD virtuosoAD, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication)
+        private ILogger mlogger;
+        private ILoggerFactory mLoggerFactory;
+        public UtilServiciosFacetas(LoggingService loggingService, EntityContext entityContext, ConfigService configService, RedisCacheWrapper redisCacheWrapper, VirtuosoAD virtuosoAD, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication, ILogger<UtilServiciosFacetas> logger, ILoggerFactory loggerFactory)
         {
             mLoggingService = loggingService;
             mEntityContext = entityContext;
@@ -41,10 +45,13 @@ namespace Es.Riam.Gnoss.UtilServiciosWeb
             mRedisCacheWrapper = redisCacheWrapper;
             mVirtuosoAD = virtuosoAD;
             mServicesUtilVirtuosoAndReplication = servicesUtilVirtuosoAndReplication;
+            mlogger = logger;
+            mLoggerFactory = loggerFactory;
         }
 
         private const string GETIDENTIDADID = "GETIDENTIDADID()";
         private const string GETUSUARIOID = "GETUSUARIOID()";
+        private const string GNOSS_RELEVANCIA = "gnoss:relevancia";
 
         /// <summary>
         /// A partir de una URI obtiene el identificador del elemento (ej: http:gnoss.com/1111-1111 = 1111-1111)
@@ -74,7 +81,7 @@ namespace Es.Riam.Gnoss.UtilServiciosWeb
             }
             catch (Exception e)
             {
-                mLoggingService.GuardarLogError(e);
+                mLoggingService.GuardarLogError(e, mlogger);
             }
 
             return idGuid;
@@ -108,7 +115,7 @@ namespace Es.Riam.Gnoss.UtilServiciosWeb
             }
             catch (Exception e)
             {
-                mLoggingService.GuardarLogError(e);
+                mLoggingService.GuardarLogError(e, mlogger);
             }
 
             return idGuid;
@@ -172,7 +179,7 @@ namespace Es.Riam.Gnoss.UtilServiciosWeb
 
             char[] separadores = { '=' };
 
-            bool tieneFiltroOrden = !string.IsNullOrEmpty(pFiltroOrden);
+            bool tieneFiltroOrden = !string.IsNullOrEmpty(pFiltroOrden) && !pFiltroOrden.Equals(GNOSS_RELEVANCIA);
             bool filtrarPorRelevancia = false;
 
             for (int i = 0; i < args.Length; i++)
@@ -231,7 +238,7 @@ namespace Es.Riam.Gnoss.UtilServiciosWeb
                             string filtroSPARQL = args[i].Substring(6);
                             if (filtroSPARQL.Contains("GETUSERID()"))
                             {
-                                UsuarioCN usuarioCN = new UsuarioCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+                                UsuarioCN usuarioCN = new UsuarioCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<UsuarioCN>(), mLoggerFactory);
                                 Guid usuarioID = usuarioCN.ObtenerGuidUsuarioIDporIdentidadID(pIdentidadID);
                                 filtroSPARQL = filtroSPARQL.Replace("GETUSERID()", $"<http://gnoss/{usuarioID.ToString().ToUpper()}>");
                             }
@@ -255,7 +262,7 @@ namespace Es.Riam.Gnoss.UtilServiciosWeb
                                 }
                                 if (valor.Equals(GETUSUARIOID))
                                 {
-                                    UsuarioCN usuarioCN = new UsuarioCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+                                    UsuarioCN usuarioCN = new UsuarioCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<UsuarioCN>(), mLoggerFactory);
                                     Guid usuarioID = usuarioCN.ObtenerGuidUsuarioIDporIdentidadID(pIdentidadID);
                                     valor = $"gnoss:{usuarioID.ToString().ToUpper()}";
                                 }
@@ -291,7 +298,7 @@ namespace Es.Riam.Gnoss.UtilServiciosWeb
                                         if (!tieneFiltroOrden)
                                         {
                                             pFiltroOrden = valor;
-                                            if (valor != "gnoss:relevancia")
+                                            if (valor != GNOSS_RELEVANCIA)
                                             {
                                                 tieneFiltroOrden = true;
                                             }
@@ -335,7 +342,7 @@ namespace Es.Riam.Gnoss.UtilServiciosWeb
             }
             else if (filtrarPorRelevancia && !tieneFiltroOrden)
             {
-                pFiltroOrden = "gnoss:relevancia";
+                pFiltroOrden = GNOSS_RELEVANCIA;
             }
         }
 
@@ -493,7 +500,7 @@ namespace Es.Riam.Gnoss.UtilServiciosWeb
         /// <param name="pFacetaDW">DataWrapper de facetas</param>
         public Dictionary<string, List<string>> ObtenerInformacionOntologias(Guid pOrganizacionID, Guid pProyectoID, DataWrapperFacetas pFacetaDW)
         {
-            FacetaCL facetaCL = new FacetaCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mServicesUtilVirtuosoAndReplication);
+            FacetaCL facetaCL = new FacetaCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<FacetaCL>(), mLoggerFactory);
 
             List<OntologiaProyecto> listaOntologias = facetaCL.ObtenerOntologiasProyecto(pOrganizacionID, pProyectoID);
             pFacetaDW.ListaOntologiaProyecto = pFacetaDW.ListaOntologiaProyecto.Union(listaOntologias).ToList();
@@ -510,7 +517,7 @@ namespace Es.Riam.Gnoss.UtilServiciosWeb
         {
             List<string> propiedadesRango = new List<string>();
 
-            FacetaCL facetaCL = new FacetaCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mServicesUtilVirtuosoAndReplication);
+            FacetaCL facetaCL = new FacetaCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<FacetaCL>(), mLoggerFactory);
             List<Faceta> lista = pGestorFacetas.ListaFacetas.Where(faceta => faceta.TipoPropiedad.Equals(TipoPropiedadFaceta.Numero)).ToList();
 
             foreach (Faceta fac in lista)
@@ -547,7 +554,7 @@ namespace Es.Riam.Gnoss.UtilServiciosWeb
         {
             List<string> propiedadesFecha = new List<string>();
 
-            FacetaCL facetaCL = new FacetaCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mServicesUtilVirtuosoAndReplication);
+            FacetaCL facetaCL = new FacetaCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<FacetaCL>(), mLoggerFactory);
             List<Faceta> lista = pGestorFacetas.ListaFacetas.Where(faceta => faceta.TipoPropiedad.Equals(TipoPropiedadFaceta.Fecha) || faceta.TipoPropiedad.Equals(TipoPropiedadFaceta.Calendario) || faceta.TipoPropiedad.Equals(TipoPropiedadFaceta.CalendarioConRangos)).ToList();
 
             foreach (Faceta fac in lista)
@@ -573,7 +580,7 @@ namespace Es.Riam.Gnoss.UtilServiciosWeb
             }
             else
             {
-                IdentidadCN identCN = new IdentidadCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+                IdentidadCN identCN = new IdentidadCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<IdentidadCN>(), mLoggerFactory);
                 listaComunidadesPrivadasUsuario = identCN.ObtenerComunidadesPrivadas(pIdentidadID);
             }
 
@@ -602,8 +609,8 @@ namespace Es.Riam.Gnoss.UtilServiciosWeb
         public Dictionary<string, Tuple<string, string, string, bool>> ObtenerListaFiltrosSearchPersonalizados(Guid pProyecto)
         {
             Elementos.ServiciosGenerales.Proyecto proyecto = null;
-            ProyectoCL proyCL = new ProyectoCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mVirtuosoAD, mServicesUtilVirtuosoAndReplication);
-            GestionProyecto gestorProy = new GestionProyecto(proyCL.ObtenerProyectoPorID(pProyecto), mLoggingService, mEntityContext);
+            ProyectoCL proyCL = new ProyectoCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mVirtuosoAD, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<ProyectoCL>(), mLoggerFactory);
+            GestionProyecto gestorProy = new GestionProyecto(proyCL.ObtenerProyectoPorID(pProyecto), mLoggingService, mEntityContext, mLoggerFactory.CreateLogger<GestionProyecto>(), mLoggerFactory);
             proyecto = gestorProy.ListaProyectos[pProyecto];
 
             Dictionary<string, Tuple<string, string, string, bool>> filtrosSearchPersonalizados = new Dictionary<string, Tuple<string, string, string, bool>>();
@@ -640,11 +647,11 @@ namespace Es.Riam.Gnoss.UtilServiciosWeb
 
                 if (!string.IsNullOrEmpty(pFicheroConfiguracionBD))
                 {
-                    facetaCL = new FacetaCL(pFicheroConfiguracionBD, pFicheroConfiguracionBD, null, mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mServicesUtilVirtuosoAndReplication);
+                    facetaCL = new FacetaCL(pFicheroConfiguracionBD, pFicheroConfiguracionBD, null, mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<FacetaCL>(), mLoggerFactory);
                 }
                 else
                 {
-                    facetaCL = new FacetaCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mServicesUtilVirtuosoAndReplication);
+                    facetaCL = new FacetaCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<FacetaCL>(), mLoggerFactory);
                 }
 
                 //ObtenerOntologias
@@ -690,11 +697,11 @@ namespace Es.Riam.Gnoss.UtilServiciosWeb
 
                 if (!string.IsNullOrEmpty(pFicheroConfiguracionBD))
                 {
-                    facetaCL = new FacetaCL(pFicheroConfiguracionBD, pFicheroConfiguracionBD, null, mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mServicesUtilVirtuosoAndReplication);
+                    facetaCL = new FacetaCL(pFicheroConfiguracionBD, pFicheroConfiguracionBD, null, mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<FacetaCL>(), mLoggerFactory);
                 }
                 else
                 {
-                    facetaCL = new FacetaCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mServicesUtilVirtuosoAndReplication);
+                    facetaCL = new FacetaCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<FacetaCL>(), mLoggerFactory);
                 }
 
                 formulariosSemanticos = facetaCL.ObtenerPredicadosSemanticos(pOrganizacionID, pProyectoID);
@@ -716,7 +723,7 @@ namespace Es.Riam.Gnoss.UtilServiciosWeb
         /// <returns></returns>
         public DataWrapperFacetas ObtenerDataSetConsultaMapaProyecto(Guid pOrganizacionID, Guid pProyectoID, TipoBusqueda pTipoBusqueda)
         {
-            FacetaCL facetaCL = new FacetaCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mServicesUtilVirtuosoAndReplication);
+            FacetaCL facetaCL = new FacetaCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<FacetaCL>(), mLoggerFactory);
             DataWrapperFacetas facetaDS = facetaCL.ObtenerPropsMapaPerYOrgProyecto(pOrganizacionID, pProyectoID, pTipoBusqueda);
             facetaCL.Dispose();
 
@@ -733,14 +740,14 @@ namespace Es.Riam.Gnoss.UtilServiciosWeb
         /// <returns>filtro para la consulta de chart</returns>
         public KeyValuePair<string, string> ObtenerSelectYFiltroConsultaChartProyecto(Guid pOrganizacionID, Guid pProyectoID, Guid pChartID, string pIdioma, VirtuosoAD mVirtuosoAD)
         {
-            FacetaCL facetaCL = new FacetaCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mServicesUtilVirtuosoAndReplication);
+            FacetaCL facetaCL = new FacetaCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<FacetaCL>(), mLoggerFactory);
             DataWrapperFacetas chartDW = facetaCL.ObtenerDatosChartProyecto(pOrganizacionID, pProyectoID);
             facetaCL.Dispose();
 
             FacetaConfigProyChart facetaConfigProyChart = chartDW.ListaFacetaConfigProyChart.Where(item => item.ChartID.Equals(pChartID)).FirstOrDefault();
 
 
-            ProyectoCL proyectoCL = new ProyectoCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mVirtuosoAD, mServicesUtilVirtuosoAndReplication);
+            ProyectoCL proyectoCL = new ProyectoCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mVirtuosoAD, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<ProyectoCL>(), mLoggerFactory);
             DataWrapperProyecto dashboardDW = proyectoCL.ObtenerProyectoPorID(pProyectoID);
             proyectoCL.Dispose();
 

@@ -9,10 +9,13 @@ using Es.Riam.Gnoss.AD.Identidad;
 using Es.Riam.Gnoss.AD.MetaBuscadorAD;
 using Es.Riam.Gnoss.AD.Notificacion;
 using Es.Riam.Gnoss.AD.Organizador.Correo;
+using Es.Riam.Gnoss.AD.ParametroAplicacion;
 using Es.Riam.Gnoss.AD.ServiciosGenerales;
 using Es.Riam.Gnoss.Logica.Comentario;
+using Es.Riam.Gnoss.Logica.ServiciosGenerales;
 using Es.Riam.Gnoss.Util.Configuracion;
 using Es.Riam.Gnoss.Util.General;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -105,7 +108,8 @@ namespace Es.Riam.Gnoss.Logica.MetaBuscador
         private LoggingService mLoggingService;
         private IServicesUtilVirtuosoAndReplication mServicesUtilVirtuosoAndReplication;
 
-
+        private ILogger mlogger;
+        private ILoggerFactory mLoggerFactory;
         #endregion
 
         #region Constructor
@@ -113,13 +117,15 @@ namespace Es.Riam.Gnoss.Logica.MetaBuscador
         /// <summary>
         /// Constructor sin parámetros
         /// </summary>
-        public MetaBuscadorCN(EntityContext entityContext, LoggingService loggingService, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication
+        public MetaBuscadorCN(EntityContext entityContext, LoggingService loggingService, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication, ILogger<MetaBuscadorCN> logger, ILoggerFactory loggerFactory
 )
         {
             mConfigService = configService;
             mEntityContext = entityContext;
             mLoggingService = loggingService;
             mServicesUtilVirtuosoAndReplication = servicesUtilVirtuosoAndReplication;
+            mlogger = logger;
+            mLoggerFactory = loggerFactory;
         }
 
         #endregion
@@ -160,7 +166,7 @@ namespace Es.Riam.Gnoss.Logica.MetaBuscador
             get
             {
                 if (mOrganizacionAD == null)
-                    mOrganizacionAD = new OrganizacionAD(mLoggingService, mEntityContext, mConfigService, mServicesUtilVirtuosoAndReplication);
+                    mOrganizacionAD = new OrganizacionAD(mLoggingService, mEntityContext, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<OrganizacionAD>(), mLoggerFactory);
                 return mOrganizacionAD;
             }
         }
@@ -173,7 +179,7 @@ namespace Es.Riam.Gnoss.Logica.MetaBuscador
             get
             {
                 if (mComentarioAD == null)
-                    mComentarioAD = new ComentarioAD(mLoggingService, mEntityContext, mConfigService, mServicesUtilVirtuosoAndReplication);
+                    mComentarioAD = new ComentarioAD(mLoggingService, mEntityContext, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<ComentarioAD>(), mLoggerFactory);
                 return mComentarioAD;
             }
         }
@@ -186,7 +192,7 @@ namespace Es.Riam.Gnoss.Logica.MetaBuscador
             get
             {
                 if (mProyectoAD == null)
-                    mProyectoAD = new ProyectoAD(mLoggingService, mEntityContext, mConfigService, mServicesUtilVirtuosoAndReplication);
+                    mProyectoAD = new ProyectoAD(mLoggingService, mEntityContext, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<ProyectoAD>(), mLoggerFactory);
                 return mProyectoAD;
             }
         }
@@ -199,7 +205,7 @@ namespace Es.Riam.Gnoss.Logica.MetaBuscador
             get
             {
                 if (mDocumentacionAD == null)
-                    mDocumentacionAD = new DocumentacionAD(mLoggingService, mEntityContext, mConfigService, mServicesUtilVirtuosoAndReplication);
+                    mDocumentacionAD = new DocumentacionAD(mLoggingService, mEntityContext, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<DocumentacionAD>(), mLoggerFactory);
                 if (mDataWrapperDocumentacion == null)
                 {
                     mDataWrapperDocumentacion = new DataWrapperDocumentacion();
@@ -216,7 +222,7 @@ namespace Es.Riam.Gnoss.Logica.MetaBuscador
             get
             {
                 if (mPersonaAD == null)
-                    mPersonaAD = new PersonaAD(mLoggingService, mEntityContext, mConfigService, mServicesUtilVirtuosoAndReplication);
+                    mPersonaAD = new PersonaAD(mLoggingService, mEntityContext, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<PersonaAD>(), mLoggerFactory);
                 return mPersonaAD;
             }
         }
@@ -229,7 +235,7 @@ namespace Es.Riam.Gnoss.Logica.MetaBuscador
             get
             {
                 if (mIdentidadAD == null)
-                    mIdentidadAD = new IdentidadAD(mLoggingService, mEntityContext, mConfigService, mServicesUtilVirtuosoAndReplication);
+                    mIdentidadAD = new IdentidadAD(mLoggingService, mEntityContext, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<IdentidadAD>(), mLoggerFactory);
                 return mIdentidadAD;
             }
         }
@@ -242,7 +248,7 @@ namespace Es.Riam.Gnoss.Logica.MetaBuscador
             get
             {
                 if (mCorreoAD == null)
-                    mCorreoAD = new CorreoAD(mLoggingService, mEntityContext, mConfigService, mServicesUtilVirtuosoAndReplication);
+                    mCorreoAD = new CorreoAD(mLoggingService, mEntityContext, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<CorreoAD>(), mLoggerFactory);
                 return mCorreoAD;
             }
         }
@@ -255,7 +261,7 @@ namespace Es.Riam.Gnoss.Logica.MetaBuscador
             get
             {
                 if (mNotificacionAD == null)
-                    mNotificacionAD = new NotificacionAD(mLoggingService, mEntityContext, mConfigService, mServicesUtilVirtuosoAndReplication);
+                    mNotificacionAD = new NotificacionAD(mLoggingService, mEntityContext, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<NotificacionAD>(), mLoggerFactory);
                 return mNotificacionAD;
             }
         }
@@ -268,7 +274,7 @@ namespace Es.Riam.Gnoss.Logica.MetaBuscador
             get
             {
                 if (mAmigosAD == null)
-                    mAmigosAD = new AmigosAD(mLoggingService, mEntityContext, mConfigService, mServicesUtilVirtuosoAndReplication);
+                    mAmigosAD = new AmigosAD(mLoggingService, mEntityContext, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<AmigosAD>(), mLoggerFactory);
                 return mAmigosAD;
             }
         }
@@ -484,7 +490,7 @@ namespace Es.Riam.Gnoss.Logica.MetaBuscador
             {
                 listaGuids = ObtenerListaGuidsDeStrings(listaIdsPorTipoResultado[TiposResultadosMetaBuscador.Comentario]);
 
-                ComentarioCN comentarioCN = new ComentarioCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+                ComentarioCN comentarioCN = new ComentarioCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<ComentarioCN>(), mLoggerFactory);
                 mComentarioDW = comentarioCN.ObtenerComentariosPorID(listaGuids);
             }
 

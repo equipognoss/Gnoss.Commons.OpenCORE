@@ -474,4 +474,50 @@ namespace Es.Riam.Gnoss.Web.MVC.Models.Administracion
 
         }
     }
+
+    public class CMSAdminComponenteHistorialViewModel
+    {
+        public List<CMSAdminComponenteVersionViewModel> Componentes { get; set; } = new List<CMSAdminComponenteVersionViewModel>();
+    }
+
+    public class CMSAdminComponenteVersionViewModel
+    {
+        public Guid ComponenteID { get; set; }
+
+        public Guid VersionID { get; set; }
+
+        public int Version { get; set; }
+
+        public bool VersionActual { get; set; }
+
+        public DateTime Fecha { get; set; }
+
+        public string Comentario { get; set; }
+
+        public string Autor { get; set; }
+        public CMSAdminComponenteEditarViewModel Propiedades { get; set; }
+    }
+
+    public class CMSAdminComparadorComponentesViewModel
+    {
+        public CMSAdminComponenteVersionViewModel ComponenteVersion1 { get; set; } = new CMSAdminComponenteVersionViewModel();
+        public CMSAdminComponenteVersionViewModel ComponenteVersion2 { get; set; } = new CMSAdminComponenteVersionViewModel();
+        public bool Restaurando { get; set; }
+        public Dictionary<TipoPropiedadCMS, Dictionary<string, bool>> DiferenciasPropiedadesCMS { get; set; }
+        public Dictionary<string, bool> DiferenciasCamposComunesCMS { get; set; }
+    }
+
+    public class CMSAdminComparadorComponenteViewModel
+    {
+        public CMSAdminComponenteEditarViewModel ComponeteVersion { get; set; }
+        public Dictionary<TipoPropiedadCMS, Dictionary<string, bool>> DiferenciasPropiedadesCMS { get; set; }
+        public Dictionary<string, bool> DiferenciasCamposComunesCMS { get; set; }
+    }
+
+    public class CMSAdminPropiedadComponenteViewModel
+    {
+        public CMSAdminComponenteEditarViewModel.PropiedadComponente Propiedad { get; set; }
+        public Dictionary<string, bool> DiferenciasPropiedadesCMS { get; set; }
+    }
+
 }

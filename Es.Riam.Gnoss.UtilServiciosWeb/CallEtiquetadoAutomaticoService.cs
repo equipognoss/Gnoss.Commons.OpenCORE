@@ -1,4 +1,5 @@
 ﻿using Es.Riam.Gnoss.Util.Configuracion;
+using Es.Riam.Util;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -25,9 +26,7 @@ namespace Es.Riam.Gnoss.UtilServiciosWeb
 
         public string SeleccionarEtiquetasDesdeServicio(string titulo, string descripcion, string proyectoID)
         {
-            string result = CallWebMethods.CallGetApi(mServicioEtiquetadoUrl, $"SeleccionarEtiquetasDesdeServicio?titulo={titulo}&descripcion={descripcion}&ProyectoID={proyectoID}");
-            string buffer = JsonConvert.DeserializeObject<string>(result);
-            return buffer;
+            return UtilWeb.WebRequest(UtilWeb.Metodo.POST, $"{mServicioEtiquetadoUrl}/SeleccionarEtiquetasDesdeServicio", $"titulo={titulo}&descripcion={descripcion}&ProyectoID={proyectoID}");
         }
     }
 }

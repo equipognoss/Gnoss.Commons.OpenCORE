@@ -31,6 +31,10 @@ namespace Es.Riam.Gnoss.AD.EntityModel.Models.UsuarioDS
 
         public int Orden { get; set; }
 
+        public DateTime FechaCreacion { get; set; }
+
+        public DateTime FechaActualizacion { get; set; }
+
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<ProyRolUsuClausulaReg> ProyRolUsuClausulaReg { get; set; }
     }

@@ -1,7 +1,9 @@
 ﻿using Es.Riam.AbstractsOpen;
 using Es.Riam.Gnoss.AD.EntityModel;
+using Es.Riam.Gnoss.AD.ParametroAplicacion;
 using Es.Riam.Gnoss.Util.Configuracion;
 using Es.Riam.Gnoss.Util.General;
+using Microsoft.Extensions.Logging;
 using System;
 
 namespace Es.Riam.Gnoss.CL.Seguridad
@@ -16,13 +18,16 @@ namespace Es.Riam.Gnoss.CL.Seguridad
         private readonly string[] mMasterCacheKeyArray = { "Seguridad" };
 
         private LoggingService mLoggingService;
-
+        private ILogger mlogger;
+        private ILoggerFactory mLoggerFactory;
         #endregion
 
-        public SeguridadCL( EntityContext entityContext, LoggingService loggingService, RedisCacheWrapper redisCacheWrapper, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication)
-            :base( entityContext, loggingService, redisCacheWrapper, configService, servicesUtilVirtuosoAndReplication)
+        public SeguridadCL( EntityContext entityContext, LoggingService loggingService, RedisCacheWrapper redisCacheWrapper, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication, ILogger<SeguridadCL> logger, ILoggerFactory loggerFactory)
+            :base( entityContext, loggingService, redisCacheWrapper, configService, servicesUtilVirtuosoAndReplication,logger,loggerFactory)
         {
             mLoggingService = loggingService;
+            mlogger = logger;
+            mLoggerFactory = loggerFactory;
         }
 
         #region Métodos
@@ -37,7 +42,7 @@ namespace Es.Riam.Gnoss.CL.Seguridad
             string rawKey = string.Concat("NumIntentos_", IP);
 
             // Compruebo si está en la caché
-            int? numIntentos = ObtenerObjetoDeCache(rawKey) as int?;
+            int? numIntentos = ObtenerObjetoDeCache(rawKey, typeof(int)) as int?;
             if (!numIntentos.HasValue)
             {
                 numIntentos = 0;
@@ -55,7 +60,7 @@ namespace Es.Riam.Gnoss.CL.Seguridad
             string rawKey = string.Concat("NumIntentos_", IP);
 
             // Compruebo si está en la caché
-            int? numIntentos = ObtenerObjetoDeCache(rawKey) as int?;
+            int? numIntentos = ObtenerObjetoDeCache(rawKey, typeof(int)) as int?;
             if (!numIntentos.HasValue)
             {
                 numIntentos = 0;
@@ -77,7 +82,7 @@ namespace Es.Riam.Gnoss.CL.Seguridad
             string rawKey = string.Concat("Token_Captcha_", pToken);
 
             // Compruebo si está en la caché
-            string captcha = ObtenerObjetoDeCache(rawKey) as string;
+            string captcha = ObtenerObjetoDeCache(rawKey, typeof(string)) as string;
             if (captcha != null && pCaptcha == captcha)
             {
                 return true;
@@ -193,7 +198,7 @@ namespace Es.Riam.Gnoss.CL.Seguridad
                 }
                 catch (Exception e)
                 {
-                    mLoggingService.GuardarLogError(e);
+                    mLoggingService.GuardarLogError(e, mlogger);
                 }
             }
         }

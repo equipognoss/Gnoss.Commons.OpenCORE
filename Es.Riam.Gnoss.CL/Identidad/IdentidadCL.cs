@@ -1,6 +1,7 @@
 using Es.Riam.AbstractsOpen;
 using Es.Riam.Gnoss.AD.EncapsuladoDatos;
 using Es.Riam.Gnoss.AD.EntityModel;
+using Es.Riam.Gnoss.AD.ParametroAplicacion;
 using Es.Riam.Gnoss.AD.ServiciosGenerales;
 using Es.Riam.Gnoss.AD.Usuarios;
 using Es.Riam.Gnoss.Elementos.Identidad;
@@ -10,6 +11,7 @@ using Es.Riam.Gnoss.Logica.ServiciosGenerales;
 using Es.Riam.Gnoss.Util.Configuracion;
 using Es.Riam.Gnoss.Util.General;
 using Es.Riam.Gnoss.Web.MVC.Models;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -37,7 +39,8 @@ namespace Es.Riam.Gnoss.CL.Identidad
         private EntityContext mEntityContext;
         private LoggingService mLoggingService;
         private RedisCacheWrapper mRedisCacheWrapper;
-
+        private ILogger mlogger;
+        private ILoggerFactory mLoggerFactory;
         #endregion
 
         #region Constructores
@@ -45,13 +48,15 @@ namespace Es.Riam.Gnoss.CL.Identidad
         /// <summary>
         /// Constructor para IdentidadCL
         /// </summary>
-        public IdentidadCL(EntityContext entityContext, LoggingService loggingService, RedisCacheWrapper redisCacheWrapper, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication)
-            : base(entityContext, loggingService, redisCacheWrapper, configService, servicesUtilVirtuosoAndReplication)
+        public IdentidadCL(EntityContext entityContext, LoggingService loggingService, RedisCacheWrapper redisCacheWrapper, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication, ILogger<IdentidadCL> logger, ILoggerFactory loggerFactory)
+            : base(entityContext, loggingService, redisCacheWrapper, configService, servicesUtilVirtuosoAndReplication, logger, loggerFactory)
         {
             mConfigService = configService;
             mEntityContext = entityContext;
             mLoggingService = loggingService;
             mRedisCacheWrapper = redisCacheWrapper;
+            mlogger = logger;
+            mLoggerFactory = loggerFactory;
         }
 
         /// <summary>
@@ -59,13 +64,15 @@ namespace Es.Riam.Gnoss.CL.Identidad
         /// </summary>
         /// <param name="pFicheroConfiguracionBD">Fichero de configuración</param>
         /// <param name="pUsarVariableEstatica">Si se están usando hilos con diferentes conexiones: FALSE. En caso contrario TRUE</param>
-        public IdentidadCL(string pFicheroConfiguracionBD, EntityContext entityContext, LoggingService loggingService, RedisCacheWrapper redisCacheWrapper, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication)
-            : base(pFicheroConfiguracionBD, entityContext, loggingService, redisCacheWrapper, configService, servicesUtilVirtuosoAndReplication)
+        public IdentidadCL(string pFicheroConfiguracionBD, EntityContext entityContext, LoggingService loggingService, RedisCacheWrapper redisCacheWrapper, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication, ILogger<IdentidadCL> logger, ILoggerFactory loggerFactory)
+            : base(pFicheroConfiguracionBD, entityContext, loggingService, redisCacheWrapper, configService, servicesUtilVirtuosoAndReplication, logger, loggerFactory)
         {
             mConfigService = configService;
             mEntityContext = entityContext;
             mLoggingService = loggingService;
             mRedisCacheWrapper = redisCacheWrapper;
+            mlogger = logger;
+            mLoggerFactory = loggerFactory;
         }
 
         #endregion
@@ -88,7 +95,7 @@ namespace Es.Riam.Gnoss.CL.Identidad
                     listaClaves[i] = clave;
                     i++;
                 }
-                Dictionary<string, object> objetosCache = ObtenerListaObjetosCache(listaClaves, typeof(GroupCardModel));
+                Dictionary<string, object> objetosCache = ObtenerListaObjetosCache(listaClaves);
                 foreach (Guid idGrupo in keysGrupos.Keys)
                 {
                     string clave = keysGrupos[idGrupo];
@@ -156,7 +163,7 @@ namespace Es.Riam.Gnoss.CL.Identidad
                         i++;
                     }
                 }
-                Dictionary<string, object> objetosCache = ObtenerListaObjetosCache(listaClaves, typeof(ProfileModel));
+                Dictionary<string, object> objetosCache = ObtenerListaObjetosCache(listaClaves);
                 foreach (Guid idIdentidad in keysIdentidades.Keys)
                 {
                     string clave = keysIdentidades[idIdentidad];
@@ -254,7 +261,7 @@ namespace Es.Riam.Gnoss.CL.Identidad
                     listaClaves[i] = clave;
                     i++;
                 }
-                Dictionary<string, object> objetosCache = ObtenerListaObjetosCache(listaClaves, typeof(ProfileModel.ExtraInfoProfileModel));
+                Dictionary<string, object> objetosCache = ObtenerListaObjetosCache(listaClaves);
                 foreach (Guid idIdentidad in keysIdentidades.Keys)
                 {
                     string clave = keysIdentidades[idIdentidad];
@@ -320,7 +327,7 @@ namespace Es.Riam.Gnoss.CL.Identidad
         {
             string rawKey = "PerfilMVC_" + pPerfilID;
 
-            UserProfileModel ficha = (UserProfileModel)ObtenerObjetoDeCache(rawKey);
+            UserProfileModel ficha = (UserProfileModel)ObtenerObjetoDeCache(rawKey, typeof(UserProfileModel));
 
             if (ficha == null || ficha.CacheVersion < UserProfileModel.LastCacheVersion)
             {
@@ -392,7 +399,7 @@ namespace Es.Riam.Gnoss.CL.Identidad
             int rol = -1;
             try
             {
-                object rolDesdeCache = ObtenerObjetoDeCache("PermisoUsuarioEnOrg_" + pUserID + "_" + pOrgID, true);
+                object rolDesdeCache = ObtenerObjetoDeCache("PermisoUsuarioEnOrg_" + pUserID + "_" + pOrgID, true,typeof(string));
                 if (rolDesdeCache != null)
                 {
                     rol = int.Parse(rolDesdeCache.ToString());
@@ -400,7 +407,7 @@ namespace Es.Riam.Gnoss.CL.Identidad
             }
             catch (Exception ex)
             {
-                mLoggingService.GuardarLogError(ex);
+                mLoggingService.GuardarLogError(ex, mlogger);
             }
             return rol;
         }
@@ -484,7 +491,7 @@ namespace Es.Riam.Gnoss.CL.Identidad
             string rawKey = string.Concat("IdentidadActual_", pPersonaID, "_", pIdentidadID);
 
             // Compruebo si está en la caché
-            GestionIdentidades gestorIdentidades = ObtenerObjetoDeCache(rawKey) as GestionIdentidades;
+            GestionIdentidades gestorIdentidades = ObtenerObjetoDeCache(rawKey, typeof(GestionIdentidades)) as GestionIdentidades;
             if (gestorIdentidades == null)
             {
                 // Si no está, lo cargo y lo almaceno en la caché
@@ -531,21 +538,21 @@ namespace Es.Riam.Gnoss.CL.Identidad
         private GestionIdentidades ObtenerGestorIdentidadActual(Guid pOrganizacionID, Guid pPersonaID, Guid pIdentidadID)
         {
             mEntityContext.UsarEntityCache = true;
-            PersonaCN personaCN = new PersonaCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+            PersonaCN personaCN = new PersonaCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<PersonaCN>(), mLoggerFactory);
             DataWrapperPersona dataWrapperPersona = personaCN.ObtenerPersonaPorID(pPersonaID);
             personaCN.Dispose();
 
             DataWrapperOrganizacion organizacionDS = new DataWrapperOrganizacion();
             if (pOrganizacionID != UsuarioAD.Invitado)
             {
-                OrganizacionCN organizacionCN = new OrganizacionCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+                OrganizacionCN organizacionCN = new OrganizacionCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<OrganizacionCN>(), mLoggerFactory);
 
                 // Cargar todas las organizaciones de la persona porque si se comparte en una comunidad en la que se participa con otra organización diferente a la de la identidad actual y participa con perfil coporativo, falla la compartición.
                 organizacionDS = organizacionCN.ObtenerOrganizacionesDePersona(pPersonaID);
                 organizacionDS.LlenarEntidadesCache();
                 organizacionCN.Dispose();
             }
-            IdentidadCN identidadCN = new IdentidadCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+            IdentidadCN identidadCN = new IdentidadCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<IdentidadCN>(), mLoggerFactory);
             dataWrapperPersona.CargaRelacionesPerezosasCache();
             GestionIdentidades gestorIdentidades = new GestionIdentidades(identidadCN.ObtenerPerfilesDePersona(pPersonaID, true, pIdentidadID), new GestionPersonas(dataWrapperPersona, mLoggingService, mEntityContext), new GestionOrganizaciones(organizacionDS, mLoggingService, mEntityContext), mLoggingService, mEntityContext, mConfigService, mServicesUtilVirtuosoAndReplication);
             identidadCN.Dispose();
@@ -587,7 +594,7 @@ namespace Es.Riam.Gnoss.CL.Identidad
             else
             {
                 // Compruebo si está en la caché
-                identidadActual = ObtenerObjetoDeCache(rawKey) as Guid[];
+                identidadActual = ObtenerObjetoDeCache(rawKey, typeof(Guid[])) as Guid[];
 
                 if (identidadActual == null && pObtenerIdentidadMyGnoss)
                 {
@@ -660,7 +667,7 @@ namespace Es.Riam.Gnoss.CL.Identidad
             string rawKey = string.Concat("PerfilDeOrganizacion_", pOrganizacionID);
 
             // Compruebo si está en la caché
-            DataWrapperIdentidad identDW = ObtenerObjetoDeCache(rawKey) as DataWrapperIdentidad;
+            DataWrapperIdentidad identDW = ObtenerObjetoDeCache(rawKey, typeof(DataWrapperIdentidad)) as DataWrapperIdentidad;
             if (identDW == null)
             {
                 // Si no está, lo cargo y lo almaceno en la caché
@@ -683,7 +690,7 @@ namespace Es.Riam.Gnoss.CL.Identidad
             string rawKey = "NombrePerfil_" + pPerfilID;
 
             // Compruebo si está en la caché
-            string nombre = ObtenerObjetoDeCache(rawKey) as string;
+            string nombre = ObtenerObjetoDeCache(rawKey, typeof(string)) as string;
 
             if (nombre == null)
             {
@@ -702,7 +709,7 @@ namespace Es.Riam.Gnoss.CL.Identidad
             string rawKey = string.Concat("MiembrosComunidad_", pProyectoID.ToString());
 
             // Compruebo si está en la caché
-            DataWrapperIdentidad identDW = ObtenerObjetoDeCache(rawKey) as DataWrapperIdentidad;
+            DataWrapperIdentidad identDW = ObtenerObjetoDeCache(rawKey, typeof(DataWrapperIdentidad)) as DataWrapperIdentidad;
             if (identDW == null)
             {
                 // Si no está, lo cargo y lo almaceno en la caché
@@ -748,7 +755,7 @@ namespace Es.Riam.Gnoss.CL.Identidad
             string rawKey = string.Concat("MiembrosOrganizacion_", pOrganizacionID.ToString());
 
             // Compruebo si está en la caché
-            DataWrapperIdentidad identDW = ObtenerObjetoDeCache(rawKey) as DataWrapperIdentidad;
+            DataWrapperIdentidad identDW = ObtenerObjetoDeCache(rawKey, typeof(DataWrapperIdentidad)) as DataWrapperIdentidad;
             if (identDW == null)
             {
                 // Si no está, lo cargo y lo almaceno en la caché
@@ -796,7 +803,7 @@ namespace Es.Riam.Gnoss.CL.Identidad
             string rawKey = "MiembrosGnossVisibles";
             mEntityContext.UsarEntityCache = true;
             // Compruebo si está en la caché
-            DataWrapperIdentidad identDW = ObtenerObjetoDeCache(rawKey) as DataWrapperIdentidad;
+            DataWrapperIdentidad identDW = ObtenerObjetoDeCache(rawKey, typeof(DataWrapperIdentidad)) as DataWrapperIdentidad;
             if (identDW == null)
             {
                 // Si no está, lo cargo y lo almaceno en la caché
@@ -835,7 +842,7 @@ namespace Es.Riam.Gnoss.CL.Identidad
             string rawKey = "Grupo_" + pNombreCorto + "_" + pProyectoID;
 
             // Compruebo si está en la caché
-            DataWrapperIdentidad identDW = ObtenerObjetoDeCache(rawKey) as DataWrapperIdentidad;
+            DataWrapperIdentidad identDW = ObtenerObjetoDeCache(rawKey, typeof(DataWrapperIdentidad)) as DataWrapperIdentidad;
             if (identDW == null)
             {
                 // Si no está, lo cargo y lo almaceno en la caché
@@ -871,7 +878,7 @@ namespace Es.Riam.Gnoss.CL.Identidad
             string rawKey = "Grupo_" + pNombreCorto + "_" + pOrganizacionID;
             mEntityContext.UsarEntityCache = true;
             // Compruebo si está en la caché
-            DataWrapperIdentidad identDW = ObtenerObjetoDeCache(rawKey) as DataWrapperIdentidad;
+            DataWrapperIdentidad identDW = ObtenerObjetoDeCache(rawKey, typeof(DataWrapperIdentidad)) as DataWrapperIdentidad;
             if (identDW == null)
             {
                 // Si no está, lo cargo y lo almaceno en la caché
@@ -927,7 +934,7 @@ namespace Es.Riam.Gnoss.CL.Identidad
         /// <returns>Permiso que tiene el usuario en la organización.</returns>
         public string ObtenerChatIDDePerfil(Guid pPerfilID)
         {
-            string chatID = ObtenerObjetoDeCache("PerfilChat_" + pPerfilID, true) as string;
+            string chatID = ObtenerObjetoDeCache("PerfilChat_" + pPerfilID, true,typeof(string)) as string;
             return chatID;
         }
 
@@ -952,7 +959,7 @@ namespace Es.Riam.Gnoss.CL.Identidad
                     //}
                     //else
                     //{
-                        mIdentidadCN = new IdentidadCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+                        mIdentidadCN = new IdentidadCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<IdentidadCN>(), mLoggerFactory);
                     //}
                 }
 
@@ -1018,7 +1025,7 @@ namespace Es.Riam.Gnoss.CL.Identidad
                 }
                 catch (Exception e)
                 {
-                    mLoggingService.GuardarLogError(e);
+                    mLoggingService.GuardarLogError(e, mlogger);
                 }
             }
         }

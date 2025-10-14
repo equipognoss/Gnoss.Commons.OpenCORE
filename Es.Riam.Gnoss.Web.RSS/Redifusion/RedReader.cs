@@ -8,6 +8,8 @@ using System.Net;
 using Es.Riam.Util;
 using System.Web;
 using Es.Riam.Gnoss.Util.General;
+using Microsoft.Extensions.Logging;
+using Serilog.Core;
 
 namespace Es.Riam.Gnoss.Web.RSS.Redifusion
 {
@@ -90,7 +92,8 @@ namespace Es.Riam.Gnoss.Web.RSS.Redifusion
         private string mPass = "";
 
         private LoggingService mLoggingService;
-
+        private ILogger mlogger;
+        private ILoggerFactory mLoggerFactory;
         #endregion
 
         #region Constructores
@@ -101,12 +104,14 @@ namespace Es.Riam.Gnoss.Web.RSS.Redifusion
         /// <param name="url">URL que representa la fuente de redifusion</param>
         /// <param name="pNombre">Nombre del usuario de la fuente (vacio si no tiene)</param>
         /// <param name="pUrl">Password del usuario de la fuente (vacio si no tiene)</param>
-        public RedReader(string pUrl, string pNombre, string pPass, LoggingService loggingService)
+        public RedReader(string pUrl, string pNombre, string pPass, LoggingService loggingService, ILogger<RedReader> logger, ILoggerFactory loggerFactory)
         {
             mLoggingService = loggingService;
             mUrl = pUrl;
             mNombre = pNombre;
             mPass = pPass;
+            mlogger = logger;
+            mLoggerFactory = loggerFactory;
         }
 
         #endregion
@@ -385,7 +390,7 @@ namespace Es.Riam.Gnoss.Web.RSS.Redifusion
                                     }
                                     catch (Exception ex)
                                     {
-                                        mLoggingService.GuardarLogError(ex);
+                                        mLoggingService.GuardarLogError(ex,mlogger);
                                     }
                                 }
                                 break;
@@ -873,7 +878,7 @@ namespace Es.Riam.Gnoss.Web.RSS.Redifusion
                                     }
                                     catch (Exception ex)
                                     {
-                                        mLoggingService.GuardarLogError(ex);
+                                        mLoggingService.GuardarLogError(ex, mlogger);
                                     }
                                 }
                                 break;
@@ -959,7 +964,7 @@ namespace Es.Riam.Gnoss.Web.RSS.Redifusion
                                     }
                                     catch (Exception ex)
                                     {
-                                        mLoggingService.GuardarLogError(ex);
+                                        mLoggingService.GuardarLogError(ex, mlogger);
                                     }
                                 }
                                 break;

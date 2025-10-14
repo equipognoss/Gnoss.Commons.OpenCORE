@@ -1,5 +1,6 @@
 using Es.Riam.Gnoss.AD.CMS;
 using Es.Riam.Gnoss.Util.General;
+using Microsoft.Extensions.Logging;
 
 namespace Es.Riam.Gnoss.Elementos.CMS
 {
@@ -16,8 +17,8 @@ namespace Es.Riam.Gnoss.Elementos.CMS
         /// </summary>
         /// <param name="pFilaPagina">Fila de pagina</param>
         /// <param name="pGestorCMS">Gestor de CMS</param>
-        public CMSPagina(AD.EntityModel.Models.CMS.CMSPagina pFilaPagina, GestionCMS pGestorCMS, LoggingService loggingService)
-            : base(pFilaPagina, pGestorCMS, loggingService)
+        public CMSPagina(AD.EntityModel.Models.CMS.CMSPagina pFilaPagina, GestionCMS pGestorCMS)
+            : base(pFilaPagina, pGestorCMS)
         {            
         }
 

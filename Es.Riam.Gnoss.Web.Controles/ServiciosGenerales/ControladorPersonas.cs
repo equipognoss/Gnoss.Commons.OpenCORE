@@ -11,6 +11,7 @@ using Es.Riam.Gnoss.AD.Virtuoso;
 using Es.Riam.Gnoss.CL;
 using Es.Riam.Gnoss.CL.Identidad;
 using Es.Riam.Gnoss.CL.ServiciosGenerales;
+using Es.Riam.Gnoss.Elementos.Amigos;
 using Es.Riam.Gnoss.Elementos.Identidad;
 using Es.Riam.Gnoss.Elementos.ServiciosGenerales;
 using Es.Riam.Gnoss.Logica.BASE_BD;
@@ -20,11 +21,14 @@ using Es.Riam.Gnoss.Servicios;
 using Es.Riam.Gnoss.Util.Configuracion;
 using Es.Riam.Gnoss.Util.General;
 using Es.Riam.Gnoss.Util.Seguridad;
+using Es.Riam.Gnoss.UtilServiciosWeb;
 using Es.Riam.Gnoss.Web.Controles.Documentacion;
+using Es.Riam.Interfaces.InterfacesOpen;
 using Es.Riam.Util;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -47,7 +51,8 @@ namespace Es.Riam.Gnoss.Web.Controles.ServiciosGenerales
         private bool mActualizarTagsPersonaSincronamente = false;
         private bool mActualizarModeloAcido = true;
         private string mTagsViejos;
-
+        private ILogger mlogger;
+        private ILoggerFactory mloggerFactory;
         /// <summary>
         /// ID de la tabla base del proyecto que hay que actualizar.
         /// </summary>
@@ -63,10 +68,12 @@ namespace Es.Riam.Gnoss.Web.Controles.ServiciosGenerales
         /// Constructor a partir de la página que contiene al controlador
         /// </summary>
         /// <param name="pPage">Página</param>
-        public ControladorPersonas(LoggingService loggingService, EntityContext entityContext, ConfigService configService, RedisCacheWrapper redisCacheWrapper, GnossCache gnossCache, EntityContextBASE entityContextBASE, VirtuosoAD virtuosoAD, IHttpContextAccessor httpContextAccessor, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication)
-            : base(loggingService, configService, entityContext, redisCacheWrapper, gnossCache, virtuosoAD, httpContextAccessor, servicesUtilVirtuosoAndReplication)
+        public ControladorPersonas(LoggingService loggingService, EntityContext entityContext, ConfigService configService, RedisCacheWrapper redisCacheWrapper, GnossCache gnossCache, EntityContextBASE entityContextBASE, VirtuosoAD virtuosoAD, IHttpContextAccessor httpContextAccessor, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication, ILogger<ControladorPersonas> logger, ILoggerFactory loggerFactory)
+            : base(loggingService, configService, entityContext, redisCacheWrapper, gnossCache, virtuosoAD, httpContextAccessor, servicesUtilVirtuosoAndReplication,logger,loggerFactory)
         {
             mEntityContextBASE = entityContextBASE;
+            mlogger = logger;
+            mloggerFactory = loggerFactory;
         }
 
         #endregion
@@ -88,7 +95,7 @@ namespace Es.Riam.Gnoss.Web.Controles.ServiciosGenerales
 
                 if (paisDW == null)
                 {
-                    PaisCN paisCN = new PaisCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+                    PaisCN paisCN = new PaisCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<PaisCN>(), mLoggerFactory);
                     paisDW = paisCN.ObtenerPaisesProvincias();
                     paisCN.Dispose();
 
@@ -128,7 +135,7 @@ namespace Es.Riam.Gnoss.Web.Controles.ServiciosGenerales
 
                 if (paisDS == null)
                 {
-                    PaisCN paisCN = new PaisCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+                    PaisCN paisCN = new PaisCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<PaisCN>(), mLoggerFactory);
                     paisDS = paisCN.ObtenerProvinciasDePais(pPersona.FilaPersona.PaisPersonalID.Value);
                     paisCN.Dispose();
 
@@ -156,9 +163,9 @@ namespace Es.Riam.Gnoss.Web.Controles.ServiciosGenerales
         /// <param name="pProyectoID">Id del proyecto</param>
         /// <param name="pEntraEnCom">Verdad si ha entrado en la comunidad, falso si ha salido de ella</param>
         /// <param name="pActualizarTagsPersonas">Verdad si se deben actualizar los tags de las personas</param>
-        public void ActualizarModeloBASE(Identidad pIdentidad, Guid pProyectoID, bool pEntraEnCom, bool pActualizarTagsPersonasSincronamente, PrioridadBase pPrioridadBase)
+        public void ActualizarModeloBASE(Identidad pIdentidad, Guid pProyectoID, bool pEntraEnCom, bool pActualizarTagsPersonasSincronamente, PrioridadBase pPrioridadBase, IAvailableServices pAvailableServices)
         {
-            ActualizarModeloBASE(pIdentidad, pProyectoID, pEntraEnCom, pActualizarTagsPersonasSincronamente, null, pPrioridadBase);
+            ActualizarModeloBASE(pIdentidad, pProyectoID, pEntraEnCom, pActualizarTagsPersonasSincronamente, null, pPrioridadBase, pAvailableServices);
         }
 
         /// <summary>
@@ -169,10 +176,10 @@ namespace Es.Riam.Gnoss.Web.Controles.ServiciosGenerales
         /// <param name="pEntraEnCom">Verdad si ha entrado en la comunidad, falso si ha salido de ella</param>
         /// <param name="pActualizarTagsPersonas">Verdad si se deben actualizar los tags de las personas</param>
         /// <param name="pTablaBaseProyectoID">ID de la tabla base del proyecto que hay que actualizar</param>
-        public void ActualizarModeloBASE(Identidad pIdentidad, Guid pProyectoID, bool pEntraEnCom, bool pActualizarTagsPersonasSincronamente, int pTablaBaseProyectoID, PrioridadBase pPrioridadBase)
+        public void ActualizarModeloBASE(Identidad pIdentidad, Guid pProyectoID, bool pEntraEnCom, bool pActualizarTagsPersonasSincronamente, int pTablaBaseProyectoID, PrioridadBase pPrioridadBase, IAvailableServices pAvailableServices)
         {
             mTablaBaseProyectoID = pTablaBaseProyectoID;
-            ActualizarModeloBASE(pIdentidad, pProyectoID, pEntraEnCom, pActualizarTagsPersonasSincronamente, null, pPrioridadBase);
+            ActualizarModeloBASE(pIdentidad, pProyectoID, pEntraEnCom, pActualizarTagsPersonasSincronamente, null, pPrioridadBase, pAvailableServices);
         }
 
         /// <summary>
@@ -183,9 +190,9 @@ namespace Es.Riam.Gnoss.Web.Controles.ServiciosGenerales
         /// <param name="pEntraEnCom">Verdad si ha entrado en la comunidad, falso si ha salido de ella</param>
         /// <param name="pActualizarTagsPersonas">Verdad si se deben actualizar los tags de las personas</param>
         /// <param name="pTagsViejos">Tags viejos antes del cambio</param>
-        public void ActualizarModeloBASE(Identidad pIdentidad, Guid pProyectoID, bool pEntraEnCom, bool pActualizarTagsPersonasSincronamente, string pTagsViejos, PrioridadBase pPrioridadBase)
+        public void ActualizarModeloBASE(Identidad pIdentidad, Guid pProyectoID, bool pEntraEnCom, bool pActualizarTagsPersonasSincronamente, string pTagsViejos, PrioridadBase pPrioridadBase, IAvailableServices pAvailableServices)
         {
-            ActualizarModeloBASE(pIdentidad, pProyectoID, pEntraEnCom, pActualizarTagsPersonasSincronamente, pTagsViejos, true, pPrioridadBase);
+            ActualizarModeloBASE(pIdentidad, pProyectoID, pEntraEnCom, pActualizarTagsPersonasSincronamente, pTagsViejos, true, pPrioridadBase, pAvailableServices);
         }
 
         /// <summary>
@@ -197,7 +204,7 @@ namespace Es.Riam.Gnoss.Web.Controles.ServiciosGenerales
         /// <param name="pActualizarTagsPersonas">Verdad si se deben actualizar los tags de las personas</param>
         /// <param name="pTagsViejos">Tags viejos antes del cambio</param>
         /// <param name="pActualizarModeloAcido">Verdad si se debe actualizar también el modelo Ácido</param>
-        public void ActualizarModeloBASE(Identidad pIdentidad, Guid pProyectoID, bool pEntraEnCom, bool pActualizarTagsPersonasSincronamente, string pTagsViejos, bool pActualizarModeloAcido, PrioridadBase pPrioridadBase)
+        public void ActualizarModeloBASE(Identidad pIdentidad, Guid pProyectoID, bool pEntraEnCom, bool pActualizarTagsPersonasSincronamente, string pTagsViejos, bool pActualizarModeloAcido, PrioridadBase pPrioridadBase, IAvailableServices pAvailableServices)
         {
             mProyectoID = pProyectoID;
             mEntraEnCom = pEntraEnCom;
@@ -225,7 +232,7 @@ namespace Es.Riam.Gnoss.Web.Controles.ServiciosGenerales
             //}
             //else
             {
-                ActualizarModeloBASEAsincronamente(pPrioridadBase);
+                ActualizarModeloBASEAsincronamente(pPrioridadBase, pAvailableServices);
             }
         }
 
@@ -238,9 +245,9 @@ namespace Es.Riam.Gnoss.Web.Controles.ServiciosGenerales
         /// <param name="pActualizarTagsPersonas">Verdad si se deben actualizar los tags de las personas</param>
         /// <param name="pActualizarModeloAcido">Verdad si se debe actualizar también el modelo Ácido</param>
         /// <param name="pPrioridadBase">Prioridad para el Base</param>
-        public void ActualizarModeloBASEMasivo(List<Identidad> pListaIdentidades, Guid pProyectoID, int pTablaBaseProyectoID, bool pEntraEnCom, bool pActualizarTagsPersonasSincronamente, bool pActualizarModeloAcido, PrioridadBase pPrioridadBase)
+        public void ActualizarModeloBASEMasivo(List<Identidad> pListaIdentidades, Guid pProyectoID, int pTablaBaseProyectoID, bool pEntraEnCom, bool pActualizarTagsPersonasSincronamente, bool pActualizarModeloAcido, PrioridadBase pPrioridadBase, IAvailableServices pAvailableServices)
         {
-            ActualizarModeloBASEAsincronamenteMasivo(pListaIdentidades, pProyectoID, pTablaBaseProyectoID, pEntraEnCom, pActualizarModeloAcido, pActualizarTagsPersonasSincronamente, pPrioridadBase);
+            ActualizarModeloBASEAsincronamenteMasivo(pListaIdentidades, pProyectoID, pTablaBaseProyectoID, pEntraEnCom, pActualizarModeloAcido, pActualizarTagsPersonasSincronamente, pPrioridadBase, pAvailableServices);
         }
 
         private void ActualizarTagsPersona(bool pModificarTags)
@@ -251,7 +258,7 @@ namespace Es.Riam.Gnoss.Web.Controles.ServiciosGenerales
             {
                 GestionIdentidades gestorIdentidades = identidad.GestorIdentidades;
 
-                PersonaCN persCN = new PersonaCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+                PersonaCN persCN = new PersonaCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<PersonaCN>(), mLoggerFactory);
 
                 bool gestorContienePersona = (gestorIdentidades.GestorPersonas != null) && identidad.PerfilUsuario.FilaPerfil.PersonaID.HasValue && gestorIdentidades.GestorPersonas.ListaPersonas.ContainsKey(identidad.PerfilUsuario.FilaPerfil.PersonaID.Value);
 
@@ -268,16 +275,16 @@ namespace Es.Riam.Gnoss.Web.Controles.ServiciosGenerales
             {
                 pUrlIntragnoss = UrlIntragnoss;
             }
-            new UtilidadesVirtuoso(mLoggingService, mEntityContext, mConfigService, mRedisCacheWrapper, mEntityContextBASE, mVirtuosoAD, mServicesUtilVirtuosoAndReplication).GuardarIdentidadEnGrafoBusqueda(pIdentidad, pProyectoID, pUrlIntragnoss);
+            new UtilidadesVirtuoso(mLoggingService, mEntityContext, mConfigService, mRedisCacheWrapper, mEntityContextBASE, mVirtuosoAD, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<UtilidadesVirtuoso>(), mLoggerFactory).GuardarIdentidadEnGrafoBusqueda(pIdentidad, pProyectoID, pUrlIntragnoss);
         }
 
-        public void ActualizarModeloBaseSimpleMultiple(Guid pPersonaID, List<Guid> pListaProyectosID)
+        public void ActualizarModeloBaseSimpleMultiple(Guid pPersonaID, List<Guid> pListaProyectosID, IAvailableServices pAvailableServices)
         {
-            ProyectoCN proyCN = new ProyectoCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+            ProyectoCN proyCN = new ProyectoCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<ProyectoCN>(), mLoggerFactory);
             Dictionary<Guid, int> diccionarioProyectoBaseProyectoID = proyCN.ObtenerTablasBaseProyectoIDProyectoPorID(pListaProyectosID);
             proyCN.Dispose();
 
-            BaseComunidadCN basePerOrgComCN = new BaseComunidadCN("base", -1, mEntityContext, mLoggingService, mEntityContextBASE, mConfigService, mServicesUtilVirtuosoAndReplication);
+            BaseComunidadCN basePerOrgComCN = new BaseComunidadCN("base", -1, mEntityContext, mLoggingService, mEntityContextBASE, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<BaseComunidadCN>(), mLoggerFactory);
             BasePerOrgComunidadDS basePerOrgComDS = new BasePerOrgComunidadDS();
 
             foreach (Guid proyectoID in diccionarioProyectoBaseProyectoID.Keys)
@@ -290,15 +297,15 @@ namespace Es.Riam.Gnoss.Web.Controles.ServiciosGenerales
                 basePerOrgComDS.ColaTagsCom_Per_Org.AddColaTagsCom_Per_OrgRow(filaColaTagsCom_Per_Org_Add);
             }
 
-            basePerOrgComCN.InsertarFilasEnRabbit("ColaTagsCom_Per_Org", basePerOrgComDS);
+            basePerOrgComCN.InsertarFilasEnColaTagsCom_Per_Org(basePerOrgComDS, pAvailableServices);
         }
 
-        public void ActualizarEliminacionModeloBaseSimple(Guid pPersonaID, Guid pProyectoID, PrioridadBase pPrioridadBase)
+        public void ActualizarEliminacionModeloBaseSimple(Guid pPersonaID, Guid pProyectoID, PrioridadBase pPrioridadBase, IAvailableServices pAvailableServices)
         {
-            ProyectoCL proyCL = new ProyectoCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mVirtuosoAD, mServicesUtilVirtuosoAndReplication);
+            ProyectoCL proyCL = new ProyectoCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mVirtuosoAD, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<ProyectoCL>(), mLoggerFactory);
             int id = proyCL.ObtenerTablaBaseProyectoIDProyectoPorID(pProyectoID);
 
-            BaseComunidadCN basePerOrgComCN = new BaseComunidadCN("base", -1, mEntityContext, mLoggingService, mEntityContextBASE, mConfigService, mServicesUtilVirtuosoAndReplication);
+            BaseComunidadCN basePerOrgComCN = new BaseComunidadCN("base", -1, mEntityContext, mLoggingService, mEntityContextBASE, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<BaseComunidadCN>(), mLoggerFactory);
             BasePerOrgComunidadDS basePerOrgComDS = new BasePerOrgComunidadDS();
 
             string todosTags = Constantes.PERS_U_ORG + "p" + Constantes.PERS_U_ORG;
@@ -308,7 +315,7 @@ namespace Es.Riam.Gnoss.Web.Controles.ServiciosGenerales
             MeterValoresEnFilaCola(filaColaTagsCom_Per_Org_Del, todosTags, id, TiposElementosEnCola.Eliminado, pPrioridadBase);
             basePerOrgComDS.ColaTagsCom_Per_Org.AddColaTagsCom_Per_OrgRow(filaColaTagsCom_Per_Org_Del);
 
-            basePerOrgComCN.InsertarFilasEnRabbit("ColaTagsCom_Per_Org", basePerOrgComDS);
+            basePerOrgComCN.InsertarFilasEnColaTagsCom_Per_Org(basePerOrgComDS, pAvailableServices);
         }
 
         /// <summary>
@@ -317,9 +324,9 @@ namespace Es.Riam.Gnoss.Web.Controles.ServiciosGenerales
         /// <param name="pIdentidad">Identidad que se ha metido o salido de una comunidad</param>
         /// <param name="pProyectoID">Id del proyecto</param>
         /// <param name="pEntraEnCom">Verdad si ha entrado en la comunidad, falso si ha salido de ella</param>
-        private void ActualizarModeloBASEAsincronamente()
+        private void ActualizarModeloBASEAsincronamente(IAvailableServices pAvailableServices)
         {
-            ActualizarModeloBASEAsincronamente(PrioridadBase.Alta);
+            ActualizarModeloBASEAsincronamente(PrioridadBase.Alta, pAvailableServices);
         }
 
         /// <summary>
@@ -328,7 +335,7 @@ namespace Es.Riam.Gnoss.Web.Controles.ServiciosGenerales
         /// <param name="pIdentidad">Identidad que se ha metido o salido de una comunidad</param>
         /// <param name="pProyectoID">Id del proyecto</param>
         /// <param name="pEntraEnCom">Verdad si ha entrado en la comunidad, falso si ha salido de ella</param>
-        private void ActualizarModeloBASEAsincronamente(PrioridadBase pPrioridadBase)
+        private void ActualizarModeloBASEAsincronamente(PrioridadBase pPrioridadBase, IAvailableServices pAvailableServices)
         {
             try
             {
@@ -352,7 +359,7 @@ namespace Es.Riam.Gnoss.Web.Controles.ServiciosGenerales
                         }
                     }
                 }
-                BaseComunidadCN basePerOrgComunidadCN = new BaseComunidadCN("base", -1, mEntityContext, mLoggingService, mEntityContextBASE, mConfigService, mServicesUtilVirtuosoAndReplication);
+                BaseComunidadCN basePerOrgComunidadCN = new BaseComunidadCN("base", -1, mEntityContext, mLoggingService, mEntityContextBASE, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<BaseComunidadCN>(), mLoggerFactory);
                 BasePerOrgComunidadDS basePerOrgComunidadDS = new BasePerOrgComunidadDS();
                 AD.EntityModel.Models.IdentidadDS.Identidad filaIdentidad = identidad.FilaIdentidad;
 
@@ -379,7 +386,7 @@ namespace Es.Riam.Gnoss.Web.Controles.ServiciosGenerales
 
                     if (!string.IsNullOrEmpty(todosTags))
                     {
-                        ProyectoCL proyCL = new ProyectoCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mVirtuosoAD, mServicesUtilVirtuosoAndReplication);
+                        ProyectoCL proyCL = new ProyectoCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mVirtuosoAD, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<ProyectoCL>(), mLoggerFactory);
                         int id = proyCL.ObtenerTablaBaseProyectoIDProyectoPorID(mProyectoID);
 
                         BasePerOrgComunidadDS.ColaTagsCom_Per_OrgRow filaColaTagsCom_Per_Org = basePerOrgComunidadDS.ColaTagsCom_Per_Org.NewColaTagsCom_Per_OrgRow();
@@ -401,7 +408,7 @@ namespace Es.Riam.Gnoss.Web.Controles.ServiciosGenerales
                     listaTags.Add(Constantes.ID_TAG_PER + organizacionID + Constantes.ID_TAG_PER);
                     if (!string.IsNullOrEmpty(todosTags))
                     {
-                        ProyectoCL proyCL = new ProyectoCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mVirtuosoAD, mServicesUtilVirtuosoAndReplication);
+                        ProyectoCL proyCL = new ProyectoCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mVirtuosoAD, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<ProyectoCL>(), mLoggerFactory);
                         int id = proyCL.ObtenerTablaBaseProyectoIDProyectoPorID(mProyectoID);
 
                         if (id == -1) //Estamos creando un proyecto nuevo y todavía no está en BD.
@@ -434,7 +441,7 @@ namespace Es.Riam.Gnoss.Web.Controles.ServiciosGenerales
 
                     if (!string.IsNullOrEmpty(todosTags))
                     {
-                        ProyectoCL proyCL = new ProyectoCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mVirtuosoAD, mServicesUtilVirtuosoAndReplication);
+                        ProyectoCL proyCL = new ProyectoCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mVirtuosoAD, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<ProyectoCL>(), mLoggerFactory);
                         int id = proyCL.ObtenerTablaBaseProyectoIDProyectoPorID(mProyectoID);
 
                         if (id == -1) //Estamos creando un proyecto nuevo y todavía no está en BD.
@@ -450,12 +457,12 @@ namespace Es.Riam.Gnoss.Web.Controles.ServiciosGenerales
                     }
                 }
 
-                basePerOrgComunidadCN.InsertarFilasEnRabbit("ColaTagsCom_Per_Org", basePerOrgComunidadDS);
+                basePerOrgComunidadCN.InsertarFilasEnColaTagsCom_Per_Org(basePerOrgComunidadDS, pAvailableServices);
                 #endregion
             }
             catch (Exception ex)
             {
-                mLoggingService.GuardarLogError(ex);
+                mLoggingService.GuardarLogError(ex, mlogger);
             }
         }
 
@@ -468,9 +475,9 @@ namespace Es.Riam.Gnoss.Web.Controles.ServiciosGenerales
         /// <param name="pActualizarTagsPersonas">Verdad si se deben actualizar los tags de las personas</param>
         /// <param name="pActualizarModeloAcido">Verdad si se debe actualizar también el modelo Ácido</param>
         /// <param name="pPrioridadBase">Prioridad para el Base</param>
-        private void ActualizarModeloBASEAsincronamenteMasivo(List<Identidad> pListaIdentidades, Guid pProyectoID, int pTablaBaseProyectoID, bool pEntraEnCom, bool pActualizarModeloAcido, bool pActualizarTagsPersonaSincronamente, PrioridadBase pPrioridadBase)
+        private void ActualizarModeloBASEAsincronamenteMasivo(List<Identidad> pListaIdentidades, Guid pProyectoID, int pTablaBaseProyectoID, bool pEntraEnCom, bool pActualizarModeloAcido, bool pActualizarTagsPersonaSincronamente, PrioridadBase pPrioridadBase, IAvailableServices pAvailableServices)
         {
-            ProyectoCL proyCL = new ProyectoCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mVirtuosoAD, mServicesUtilVirtuosoAndReplication);
+            ProyectoCL proyCL = new ProyectoCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mVirtuosoAD, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<ProyectoCL>(), mLoggerFactory);
             int id = proyCL.ObtenerTablaBaseProyectoIDProyectoPorID(pProyectoID);
 
             BasePerOrgComunidadDS basePerOrgComunidadDS = new BasePerOrgComunidadDS();
@@ -530,13 +537,13 @@ namespace Es.Riam.Gnoss.Web.Controles.ServiciosGenerales
                 }
                 catch (Exception ex)
                 {
-                    mLoggingService.GuardarLogError(ex);
+                    mLoggingService.GuardarLogError(ex, mlogger);
                 }
             }
 
             //si funcionan las transacciones de Juan, meter esta parte dentro de ActualizarModeloBASEMasivo
-            BaseComunidadCN basePerOrgComunidadCN = new BaseComunidadCN("base", -1, mEntityContext, mLoggingService, mEntityContextBASE, mConfigService, mServicesUtilVirtuosoAndReplication);
-            basePerOrgComunidadCN.InsertarFilasEnRabbit("ColaTagsCom_Per_Org", basePerOrgComunidadDS);
+            BaseComunidadCN basePerOrgComunidadCN = new BaseComunidadCN("base", -1, mEntityContext, mLoggingService, mEntityContextBASE, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<BaseComunidadCN>(), mLoggerFactory);
+            basePerOrgComunidadCN.InsertarFilasEnColaTagsCom_Per_Org(basePerOrgComunidadDS, pAvailableServices);
         }
 
         private void MeterValoresEnFilaCola(DataRow pFilaCola, string pTags, int pIdProyecto, TiposElementosEnCola pTipoRelacionTags, PrioridadBase pPrioridadBase)
@@ -549,7 +556,7 @@ namespace Es.Riam.Gnoss.Web.Controles.ServiciosGenerales
             pFilaCola["Prioridad"] = (short)pPrioridadBase;
         }
 
-        public void ActivoEnComunidad(Identidad pIdentidad)
+        public void ActivoEnComunidad(Identidad pIdentidad, IAvailableServices pAvailableServices)
         {
             bool actualizarIdentidad = false;
 
@@ -567,7 +574,7 @@ namespace Es.Riam.Gnoss.Web.Controles.ServiciosGenerales
 
             if (actualizarIdentidad)
             {
-                IdentidadCN idenCN = new IdentidadCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+                IdentidadCN idenCN = new IdentidadCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<IdentidadCN>(), mLoggerFactory);
                 idenCN.ActualizaIdentidades();
                 idenCN.Dispose();
 
@@ -576,9 +583,9 @@ namespace Es.Riam.Gnoss.Web.Controles.ServiciosGenerales
                     //ActualizarModeloBaseSimple(pIdentidad.Persona.Clave, pIdentidad.FilaIdentidad.ProyectoID, PrioridadBase.Alta);
                     ActualizarModeloBaseSimple(pIdentidad, pIdentidad.FilaIdentidad.ProyectoID, UrlIntragnoss);
 
-                    new ControladorDocumentacion(mLoggingService, mEntityContext, mConfigService, mRedisCacheWrapper, mGnossCache, mEntityContextBASE, mVirtuosoAD, mHttpContextAccessor, mServicesUtilVirtuosoAndReplication).ActualizarGnossLive(ProyectoSeleccionado.Clave, pIdentidad.FilaIdentidad.PerfilID, AccionLive.Agregado, (int)TipoLive.Miembro, false, PrioridadLive.Alta);
+                    new ControladorDocumentacion(mLoggingService, mEntityContext, mConfigService, mRedisCacheWrapper, mGnossCache, mEntityContextBASE, mVirtuosoAD, mHttpContextAccessor, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<ControladorDocumentacion>(), mLoggerFactory).ActualizarGnossLive(ProyectoSeleccionado.Clave, pIdentidad.FilaIdentidad.PerfilID, AccionLive.Agregado, (int)TipoLive.Miembro, false, PrioridadLive.Alta, pAvailableServices);
 
-                    IdentidadCL identidadCL = new IdentidadCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mServicesUtilVirtuosoAndReplication);
+                    IdentidadCL identidadCL = new IdentidadCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<IdentidadCL>(), mLoggerFactory);
                     identidadCL.EliminarCacheGestorIdentidad(pIdentidad.Clave, pIdentidad.PersonaID.Value);
                     identidadCL.Dispose();
                 }

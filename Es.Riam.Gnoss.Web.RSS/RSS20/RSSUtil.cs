@@ -13,6 +13,9 @@ using Es.Riam.Gnoss.AD.EntityModel;
 using Es.Riam.Gnoss.Util.General;
 using Es.Riam.Gnoss.Util.Configuracion;
 using Es.Riam.AbstractsOpen;
+using Es.Riam.Gnoss.Logica.ServiciosGenerales;
+using Microsoft.Extensions.Logging;
+using Es.Riam.Gnoss.AD.ParametroAplicacion;
 
 namespace Es.Riam.Gnoss.Web.RSS.RSS20
 {
@@ -23,13 +26,16 @@ namespace Es.Riam.Gnoss.Web.RSS.RSS20
         private LoggingService mLoggingService;
         private ConfigService mConfigService;
         private IServicesUtilVirtuosoAndReplication mServicesUtilVirtuosoAndReplication;
-
-        public RSSUtil(EntityContext entityContext, LoggingService loggingService, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication)
+        private ILogger mlogger;
+        private ILoggerFactory mLoggerFactory;
+        public RSSUtil(EntityContext entityContext, LoggingService loggingService, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication, ILogger<RSSUtil> logger, ILoggerFactory loggerFactory)
         {
             mConfigService = configService;
             mEntityContext = entityContext;
             mLoggingService = loggingService;
             mServicesUtilVirtuosoAndReplication = servicesUtilVirtuosoAndReplication;
+            mlogger = logger;
+            mLoggerFactory = loggerFactory;
         }
 
         /// <summary>
@@ -51,7 +57,7 @@ namespace Es.Riam.Gnoss.Web.RSS.RSS20
                 string pass = nombrePass.Substring(nombrePass.IndexOf(':') + 1);
                 try
                 {
-                    UsuarioCN usuarioCN = new UsuarioCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+                    UsuarioCN usuarioCN = new UsuarioCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<UsuarioCN>(), mLoggerFactory);
                     DataWrapperUsuario dataWrapperUsuario = usuarioCN.AutenticarLogin(nombre, false);
                     AD.EntityModel.Models.UsuarioDS.Usuario filaUsuario = dataWrapperUsuario.ListaUsuario.FirstOrDefault();
                     acceso = usuarioCN.ValidarPasswordUsuarioParaSolicitud(filaUsuario, pass);
@@ -63,7 +69,7 @@ namespace Es.Riam.Gnoss.Web.RSS.RSS20
                 }
                 catch (Exception ex) 
                 {
-                    mLoggingService.GuardarLogError(ex);
+                    mLoggingService.GuardarLogError(ex, mlogger);
                 }
             }
             if (usuarioID == new Guid())
@@ -96,7 +102,7 @@ namespace Es.Riam.Gnoss.Web.RSS.RSS20
                 string pass = nombrePass.Substring(nombrePass.IndexOf(':') + 1);
                 try
                 {
-                    UsuarioCN usuarioCN = new UsuarioCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+                    UsuarioCN usuarioCN = new UsuarioCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<UsuarioCN>(), mLoggerFactory);
                     DataWrapperUsuario dataWrapperUsuario = usuarioCN.AutenticarLogin(nombre, false);
                     AD.EntityModel.Models.UsuarioDS.Usuario filaUsuario = dataWrapperUsuario.ListaUsuario.FirstOrDefault();
                     acceso = usuarioCN.ValidarPasswordUsuarioParaSolicitud(filaUsuario, pass);
@@ -111,7 +117,7 @@ namespace Es.Riam.Gnoss.Web.RSS.RSS20
                 }
                 catch (Exception ex) 
                 {
-                    mLoggingService.GuardarLogError(ex);
+                    mLoggingService.GuardarLogError(ex, mlogger);
                 }
             }
             if (usuarioID == new Guid())

@@ -1,11 +1,14 @@
 ﻿using Es.Riam.AbstractsOpen;
 using Es.Riam.Gnoss.AD;
 using Es.Riam.Gnoss.AD.EntityModel;
+using Es.Riam.Gnoss.AD.ParametroAplicacion;
 using Es.Riam.Gnoss.OAuthAD.OAuth.EncapsuladoDatos;
 using Es.Riam.Gnoss.Util.Configuracion;
 using Es.Riam.Gnoss.Util.General;
 using Es.Riam.Gnoss.Web.MVC.Models.OAuth;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
+using Serilog.Core;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -42,7 +45,8 @@ namespace Es.Riam.Gnoss.OAuthAD.OAuth
     {
 
         private EntityContextOauth mEntityContextOauth;
-
+        private ILogger mlogger;
+        private ILoggerFactory mLoggerFactory;
         /// <summary>
         /// Información acerca de la conexión a BD.
         /// </summary>
@@ -59,9 +63,11 @@ namespace Es.Riam.Gnoss.OAuthAD.OAuth
         /// <summary>
         /// El por defecto, utilizado cuando se requiere el GnossConfig.xml por defecto
         /// </summary>
-        public OAuthAD(LoggingService loggingService, EntityContext entityContext, ConfigService configService, EntityContextOauth entityContextOauth, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication)
-            : base(loggingService, entityContext, configService, servicesUtilVirtuosoAndReplication)
+        public OAuthAD(LoggingService loggingService, EntityContext entityContext, ConfigService configService, EntityContextOauth entityContextOauth, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication, ILogger<OAuthAD> logger, ILoggerFactory loggerFactory)
+            : base(loggingService, entityContext, configService, servicesUtilVirtuosoAndReplication,logger,loggerFactory)
         {
+            mlogger = logger;
+            mLoggerFactory = loggerFactory;
             mEntityContextOauth = entityContextOauth;
         }
 
@@ -70,9 +76,11 @@ namespace Es.Riam.Gnoss.OAuthAD.OAuth
         /// </summary>
         /// <param name="pFicheroConfiguracionBD"></param>
         /// <param name="pUsarVariableEstatica">Si se están usando hilos con diferentes conexiones: FALSE. En caso contrario TRUE</param>
-        public OAuthAD(string pFicheroConfiguracionBD, LoggingService loggingService, EntityContext entityContext, ConfigService configService, EntityContextOauth entityContextOauth, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication)
-            : base(pFicheroConfiguracionBD, loggingService, entityContext, configService, servicesUtilVirtuosoAndReplication)
+        public OAuthAD(string pFicheroConfiguracionBD, LoggingService loggingService, EntityContext entityContext, ConfigService configService, EntityContextOauth entityContextOauth, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication, ILogger<OAuthAD> logger, ILoggerFactory loggerFactory)
+            : base(pFicheroConfiguracionBD, loggingService, entityContext, configService, servicesUtilVirtuosoAndReplication,logger,loggerFactory)
         {
+            mlogger = logger;
+            mLoggerFactory = loggerFactory;
             mEntityContextOauth = entityContextOauth;
         }
 

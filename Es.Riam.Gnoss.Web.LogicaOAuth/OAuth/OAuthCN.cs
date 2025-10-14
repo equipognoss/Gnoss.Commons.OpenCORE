@@ -1,6 +1,8 @@
 ﻿using Es.Riam.AbstractsOpen;
 using Es.Riam.Gnoss.AD.EntityModel;
+using Es.Riam.Gnoss.AD.ParametroAplicacion;
 using Es.Riam.Gnoss.Logica;
+using Es.Riam.Gnoss.Logica.ServiciosGenerales;
 using Es.Riam.Gnoss.OAuthAD;
 using Es.Riam.Gnoss.OAuthAD.OAuth;
 using Es.Riam.Gnoss.OAuthAD.OAuth.EncapsuladoDatos;
@@ -8,6 +10,7 @@ using Es.Riam.Gnoss.Util.Configuracion;
 using Es.Riam.Gnoss.Util.General;
 using Es.Riam.Gnoss.Web.MVC.Models.OAuth;
 using Es.Riam.Gnoss.Web.MVC.Models.ViewModels;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -23,7 +26,8 @@ namespace Es.Riam.Gnoss.LogicaOAuth.OAuth
         #region Miembros
 
         //private OAuthAD.OAuth.OAuthAD mOAuthAD;
-
+        private ILogger mlogger;
+        private ILoggerFactory mLoggerFactory;
         #endregion
 
         #region Constructores
@@ -32,19 +36,23 @@ namespace Es.Riam.Gnoss.LogicaOAuth.OAuth
         /// Constructor para OAuthCN
         /// </summary>
         /// <param name="pFicheroConfiguracion">Fichero de configuración</param>
-        public OAuthCN(string pFicheroConfiguracion, EntityContext entityContext, LoggingService loggingService, ConfigService configService, EntityContextOauth entityContextOauth, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication)
-            : base(entityContext, loggingService, configService, servicesUtilVirtuosoAndReplication)
+        public OAuthCN(string pFicheroConfiguracion, EntityContext entityContext, LoggingService loggingService, ConfigService configService, EntityContextOauth entityContextOauth, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication, ILogger<OAuthCN> logger, ILoggerFactory loggerFactory)
+            : base(entityContext, loggingService, configService, servicesUtilVirtuosoAndReplication,logger,loggerFactory)
         {
-            this.OAuthAD = new OAuthAD.OAuth.OAuthAD(pFicheroConfiguracion, loggingService, entityContext, configService, entityContextOauth, servicesUtilVirtuosoAndReplication);
+            mlogger = logger;
+            mLoggerFactory = loggerFactory;
+            this.OAuthAD = new OAuthAD.OAuth.OAuthAD(pFicheroConfiguracion, loggingService, entityContext, configService, entityContextOauth, servicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<OAuthAD.OAuth.OAuthAD>(), mLoggerFactory);
         }
 
         /// <summary>
         /// Constructor para OAuthCN
         /// </summary>
-        public OAuthCN(EntityContext entityContext, LoggingService loggingService, ConfigService configService, EntityContextOauth entityContextOauth, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication)
-            : base(entityContext, loggingService, configService, servicesUtilVirtuosoAndReplication)
+        public OAuthCN(EntityContext entityContext, LoggingService loggingService, ConfigService configService, EntityContextOauth entityContextOauth, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication, ILogger<OAuthCN> logger, ILoggerFactory loggerFactory)
+            : base(entityContext, loggingService, configService, servicesUtilVirtuosoAndReplication, logger, loggerFactory)
         {
-            this.OAuthAD = new OAuthAD.OAuth.OAuthAD("oauth", loggingService, entityContext, configService, entityContextOauth, servicesUtilVirtuosoAndReplication);
+            mlogger = logger;
+            mLoggerFactory = loggerFactory;
+            this.OAuthAD = new OAuthAD.OAuth.OAuthAD("oauth", loggingService, entityContext, configService, entityContextOauth, servicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<OAuthAD.OAuth.OAuthAD>(), mLoggerFactory);
         }
 
         #endregion

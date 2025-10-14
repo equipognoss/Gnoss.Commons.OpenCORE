@@ -1,8 +1,11 @@
 using Es.Riam.AbstractsOpen;
 using Es.Riam.Gnoss.AD.EntityModel;
+using Es.Riam.Gnoss.AD.ParametroAplicacion;
+using Es.Riam.Gnoss.Logica.ServiciosGenerales;
 using Es.Riam.Gnoss.Util.Configuracion;
 using Es.Riam.Gnoss.Util.General;
 using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.Logging;
 using ProtoBuf.WellKnownTypes;
 using System;
 using System.Collections.Generic;
@@ -20,14 +23,17 @@ namespace Es.Riam.Gnoss.CL
         private RedisCacheWrapper _redisCacheWrapper;
         private ConfigService _configService;
         private IServicesUtilVirtuosoAndReplication mServicesUtilVirtuosoAndReplication;
-
-        public GnossCache(EntityContext entityContext, LoggingService loggingService, RedisCacheWrapper redisCacheWrapper, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication)
+        private ILogger mlogger;
+        private ILoggerFactory mLoggerFactory;
+        public GnossCache(EntityContext entityContext, LoggingService loggingService, RedisCacheWrapper redisCacheWrapper, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication, ILogger<GnossCache> logger, ILoggerFactory loggerFactory)
         {
             _entityContext = entityContext;
             _loggingService = loggingService;
             _configService = configService;
             _redisCacheWrapper = redisCacheWrapper;
             mServicesUtilVirtuosoAndReplication = servicesUtilVirtuosoAndReplication;
+            mlogger = logger;
+            mLoggerFactory = loggerFactory;
         }
 
         /// <summary>
@@ -39,12 +45,12 @@ namespace Es.Riam.Gnoss.CL
         public void AgregarObjetoCache(string pClave, object pValor, double pDuracion = 0)
         {
             object objetoCache = pValor;
-            if (!(pValor is KeyValuePair<object, double>))
-            {
-                objetoCache = new KeyValuePair<object, double>(pValor, pDuracion);
-            }
+            //if (!(pValor is KeyValuePair<object, double>))
+            //{
+            //    objetoCache = new KeyValuePair<object, double>(pValor, pDuracion);
+            //}
 
-            GnossCacheCL gnossCache = new GnossCacheCL(_entityContext, _loggingService, _redisCacheWrapper, _configService, mServicesUtilVirtuosoAndReplication);
+            GnossCacheCL gnossCache = new GnossCacheCL(_entityContext, _loggingService, _redisCacheWrapper, _configService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<GnossCacheCL>(), mLoggerFactory);
             gnossCache.AgregarObjetoCache(pClave, objetoCache, pDuracion);
             gnossCache.Dispose();
         }
@@ -57,7 +63,7 @@ namespace Es.Riam.Gnoss.CL
         /// <param name="pDuracion">Duración de la caché</param>
         public void AgregarObjetoCacheLocal(Guid pProyectoID, string pClave, object pValor, bool pObtenerParametroSiempre = false, DateTime? pExpirationDate = null)
         {
-            GnossCacheCL gnossCache = new GnossCacheCL(_entityContext, _loggingService, _redisCacheWrapper, _configService, mServicesUtilVirtuosoAndReplication);
+            GnossCacheCL gnossCache = new GnossCacheCL(_entityContext, _loggingService, _redisCacheWrapper, _configService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<GnossCacheCL>(), mLoggerFactory);
             gnossCache.AgregarObjetoCacheLocal(pProyectoID, pClave, pValor, pObtenerParametroSiempre, pExpirationDate);
             gnossCache.Dispose();
         }
@@ -79,7 +85,7 @@ namespace Es.Riam.Gnoss.CL
         /// <returns>Devuelve el objeto almacenado en la caché, o null si no existe nada con esa clave o ha caducado</returns>
         public object ObtenerDeCache(string pClave, bool pGenerarClave)
         {
-            GnossCacheCL gnossCache = new GnossCacheCL(_entityContext, _loggingService, _redisCacheWrapper, _configService, mServicesUtilVirtuosoAndReplication);
+            GnossCacheCL gnossCache = new GnossCacheCL(_entityContext, _loggingService, _redisCacheWrapper, _configService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<GnossCacheCL>(), mLoggerFactory);
 
             if (pGenerarClave)
             {
@@ -97,11 +103,12 @@ namespace Es.Riam.Gnoss.CL
         /// Obtiene un objeto de la caché
         /// </summary>
         /// <param name="pClave">Clave</param>
+        /// <param name="pTipo">Especifica el tipo con el que se deserializará</param>
         /// <returns>Devuelve el objeto almacenado en la caché, o null si no existe nada con esa clave o ha caducado</returns>
-        public object ObtenerObjetoDeCache(string pClave)
+        public object ObtenerObjetoDeCache(string pClave, Type pTipo)
         {
-            GnossCacheCL gnossCache = new GnossCacheCL(_entityContext, _loggingService, _redisCacheWrapper, _configService, mServicesUtilVirtuosoAndReplication);
-            object item = gnossCache.ObtenerObjetoDeCache(pClave);
+            GnossCacheCL gnossCache = new GnossCacheCL(_entityContext, _loggingService, _redisCacheWrapper, _configService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<GnossCacheCL>(), mLoggerFactory);
+            object item = gnossCache.ObtenerObjetoDeCache(pClave,pTipo);
             gnossCache.Dispose();
 
             return item;
@@ -114,7 +121,7 @@ namespace Es.Riam.Gnoss.CL
         /// <returns>Devuelve si el objeto está almacenado en la caché, o false si no existe nada con esa clave o ha caducado</returns>
         public bool ExisteClaveEnCache(string pClave)
         {
-            GnossCacheCL gnossCache = new GnossCacheCL(_entityContext, _loggingService, _redisCacheWrapper, _configService, mServicesUtilVirtuosoAndReplication);
+            GnossCacheCL gnossCache = new GnossCacheCL(_entityContext, _loggingService, _redisCacheWrapper, _configService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<GnossCacheCL>(), mLoggerFactory);
             bool existeEnCache = gnossCache.ExisteClaveEnCache(pClave);
             gnossCache.Dispose();
 
@@ -128,7 +135,7 @@ namespace Es.Riam.Gnoss.CL
         /// <returns>Devuelve el objeto almacenado en la caché, o null si no existe nada con esa clave o ha caducado</returns>
         public object ObtenerDeCacheLocal(string pClave)
         {
-            GnossCacheCL gnossCache = new GnossCacheCL(_entityContext, _loggingService, _redisCacheWrapper, _configService, mServicesUtilVirtuosoAndReplication);
+            GnossCacheCL gnossCache = new GnossCacheCL(_entityContext, _loggingService, _redisCacheWrapper, _configService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<GnossCacheCL>(), mLoggerFactory);
             object item = gnossCache.ObtenerObjetoDeCacheLocal(pClave);
             gnossCache.Dispose();
 
@@ -141,7 +148,7 @@ namespace Es.Riam.Gnoss.CL
         /// <param name="pClave">Clave</param>
         public void InvalidarDeCache(string pClave, bool pGenerarClave = false)
         {
-            GnossCacheCL gnossCache = new GnossCacheCL(_entityContext, _loggingService, _redisCacheWrapper, _configService, mServicesUtilVirtuosoAndReplication);
+            GnossCacheCL gnossCache = new GnossCacheCL(_entityContext, _loggingService, _redisCacheWrapper, _configService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<GnossCacheCL>(), mLoggerFactory);
             if (pGenerarClave)
             {
                 pClave = gnossCache.ObtenerClaveCache(pClave);
@@ -192,7 +199,7 @@ namespace Es.Riam.Gnoss.CL
         /// <param name="pDuracion">Duración de la caché (en segundos)</param>
         public void AgregarCaducidadAObjetoCache(string pClave, double pDuracion)
         {
-            GnossCacheCL gnossCache = new GnossCacheCL(_entityContext, _loggingService, _redisCacheWrapper, _configService, mServicesUtilVirtuosoAndReplication);
+            GnossCacheCL gnossCache = new GnossCacheCL(_entityContext, _loggingService, _redisCacheWrapper, _configService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<GnossCacheCL>(), mLoggerFactory);
             pClave = gnossCache.ObtenerClaveCache(pClave);
             gnossCache.AgregarCaducidadAObjetoCache(pClave, pDuracion);
             gnossCache.Dispose();
@@ -205,21 +212,21 @@ namespace Es.Riam.Gnoss.CL
     public partial class GnossCacheCL : BaseCL
     {
 
-        public GnossCacheCL(EntityContext entityContext, LoggingService loggingService, RedisCacheWrapper redisCacheWrapper, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication)
-            : base(entityContext, loggingService, redisCacheWrapper, configService, servicesUtilVirtuosoAndReplication)
+        public GnossCacheCL(EntityContext entityContext, LoggingService loggingService, RedisCacheWrapper redisCacheWrapper, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication, ILogger<GnossCacheCL> logger, ILoggerFactory loggerFactory)
+            : base(entityContext, loggingService, redisCacheWrapper, configService, servicesUtilVirtuosoAndReplication, logger, loggerFactory)
         {
         }
 
-        public GnossCacheCL(string pPoolName, EntityContext entityContext, LoggingService loggingService, RedisCacheWrapper redisCacheWrapper, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication)
-            : base(pPoolName, entityContext, loggingService, redisCacheWrapper, configService, servicesUtilVirtuosoAndReplication)
+        public GnossCacheCL(string pPoolName, EntityContext entityContext, LoggingService loggingService, RedisCacheWrapper redisCacheWrapper, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication, ILogger<GnossCacheCL> logger, ILoggerFactory loggerFactory)
+            : base(pPoolName, entityContext, loggingService, redisCacheWrapper, configService, servicesUtilVirtuosoAndReplication, logger, loggerFactory)
         {
         }
 
         /// <summary>
         /// Constructor para VistaVirtualCL con parámetros
         /// </summary>
-        public GnossCacheCL(string pFicheroConfiguracionBD, string pPoolName, EntityContext entityContext, LoggingService loggingService, RedisCacheWrapper redisCacheWrapper, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication)
-            : base(pFicheroConfiguracionBD, pPoolName, entityContext, loggingService, redisCacheWrapper, configService, servicesUtilVirtuosoAndReplication)
+        public GnossCacheCL(string pFicheroConfiguracionBD, string pPoolName, EntityContext entityContext, LoggingService loggingService, RedisCacheWrapper redisCacheWrapper, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication, ILogger<GnossCacheCL> logger, ILoggerFactory loggerFactory)
+            : base(pFicheroConfiguracionBD, pPoolName, entityContext, loggingService, redisCacheWrapper, configService, servicesUtilVirtuosoAndReplication, logger, loggerFactory)
         {
         }
 
@@ -271,15 +278,12 @@ namespace Es.Riam.Gnoss.CL
             {
                 if (ClienteRedisLectura != null)
                 {
-                    //var t = ClienteRedisLectura.Get<object>(pClave);
-                    //t.AsTask().Wait();
                     byte[] bytes = ClienteRedisLectura.Get<byte[]>(pClave).Result;
                     object diccionario = ByteArrayToObject(bytes);
-                    //object diccionario = ClienteRedisLectura.Get<object>(pClave).Result;
+                 
                     if (diccionario != null)
                     {
-                        KeyValuePair<object, double> objetoCache = (KeyValuePair<object, double>)diccionario;
-                        //ClienteRedisLectura.Dispose();
+                        KeyValuePair<object, double> objetoCache = (KeyValuePair<object, double>)diccionario;                 
                         return objetoCache.Key;
                     }
                 }

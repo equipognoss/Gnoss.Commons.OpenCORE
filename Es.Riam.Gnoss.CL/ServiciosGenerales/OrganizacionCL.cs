@@ -1,9 +1,11 @@
 using Es.Riam.AbstractsOpen;
 using Es.Riam.Gnoss.AD.EncapsuladoDatos;
 using Es.Riam.Gnoss.AD.EntityModel;
+using Es.Riam.Gnoss.AD.ParametroAplicacion;
 using Es.Riam.Gnoss.Logica.ServiciosGenerales;
 using Es.Riam.Gnoss.Util.Configuracion;
 using Es.Riam.Gnoss.Util.General;
+using Microsoft.Extensions.Logging;
 using System;
 
 namespace Es.Riam.Gnoss.CL.ServiciosGenerales
@@ -30,15 +32,18 @@ namespace Es.Riam.Gnoss.CL.ServiciosGenerales
         private EntityContext mEntityContext;
         private LoggingService mLoggingService;
         private ConfigService mConfigService;
-
+        private ILogger mlogger;
+        private ILoggerFactory mLoggerFactory;
         #endregion
 
-        public OrganizacionCL( EntityContext entityContext, LoggingService loggingService, RedisCacheWrapper redisCacheWrapper, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication)
-            : base( entityContext, loggingService, redisCacheWrapper, configService, servicesUtilVirtuosoAndReplication)
+        public OrganizacionCL( EntityContext entityContext, LoggingService loggingService, RedisCacheWrapper redisCacheWrapper, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication, ILogger<OrganizacionCL> logger, ILoggerFactory loggerFactory)
+            : base(entityContext, loggingService, redisCacheWrapper, configService, servicesUtilVirtuosoAndReplication, logger, loggerFactory)
         {
             mConfigService = configService;
             mEntityContext = entityContext;
-            mLoggingService = loggingService;    
+            mLoggingService = loggingService;
+            mlogger = logger;
+            mLoggerFactory = loggerFactory;
         }
 
         #region Métodos
@@ -53,7 +58,7 @@ namespace Es.Riam.Gnoss.CL.ServiciosGenerales
             string rawKey = string.Concat(NombresCL.ORGANIZACION, "_EsClase_", pOrganizacionID);
 
             // Compruebo si está en la caché
-            bool? esClase = ObtenerObjetoDeCache(rawKey) as bool?;
+            bool? esClase = ObtenerObjetoDeCache(rawKey, typeof(bool)) as bool?;
             if (!esClase.HasValue)
             {
                 // Si no está, lo cargo y lo almaceno en la caché
@@ -74,7 +79,7 @@ namespace Es.Riam.Gnoss.CL.ServiciosGenerales
             string rawKey = string.Concat(NombresCL.ORGANIZACION, "_EsClasePrimaria_", pOrganizacionID);
 
             // Compruebo si está en la caché
-            bool? esClase = ObtenerObjetoDeCache(rawKey) as bool?;
+            bool? esClase = ObtenerObjetoDeCache(rawKey, typeof(bool)) as bool?;
             if (!esClase.HasValue)
             {
                 // Si no está, lo cargo y lo almaceno en la caché
@@ -96,7 +101,7 @@ namespace Es.Riam.Gnoss.CL.ServiciosGenerales
             string rawKey = string.Concat("NombreOrgPorIdentidad_", pIdentidadID);
 
             // Compruebo si está en la caché
-            DataWrapperOrganizacion orgDW = (DataWrapperOrganizacion)ObtenerObjetoDeCache(rawKey);
+            DataWrapperOrganizacion orgDW = (DataWrapperOrganizacion)ObtenerObjetoDeCache(rawKey, typeof(DataWrapperOrganizacion));
             if (orgDW == null)
             {
                 // Si no está, lo cargo y lo almaceno en la caché
@@ -119,7 +124,7 @@ namespace Es.Riam.Gnoss.CL.ServiciosGenerales
                 string rawKey = string.Concat(NombresCL.TABLABASEORGANIZACIONID, "_", pOrganizacionID);
 
                 // Compruebo si está en la caché
-                object id = ObtenerObjetoDeCache(rawKey);
+                object id = ObtenerObjetoDeCache(rawKey, typeof(int));
                 if (id == null)
                 {
                     // Si no está, lo cargo y lo almaceno en la caché
@@ -158,7 +163,7 @@ namespace Es.Riam.Gnoss.CL.ServiciosGenerales
             {
                 if (mOrganizacionCN == null)
                 {
-                    mOrganizacionCN = new OrganizacionCN( mEntityContext, mLoggingService,  mConfigService, mServicesUtilVirtuosoAndReplication);
+                    mOrganizacionCN = new OrganizacionCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<OrganizacionCN>(), mLoggerFactory);
                 }
 
                 return mOrganizacionCN;
@@ -223,7 +228,7 @@ namespace Es.Riam.Gnoss.CL.ServiciosGenerales
                 }
                 catch (Exception e)
                 {
-                    mLoggingService.GuardarLogError(e);
+                    mLoggingService.GuardarLogError(e, mlogger);
                 }
             }
         }

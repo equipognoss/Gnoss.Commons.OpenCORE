@@ -8,11 +8,13 @@ using Es.Riam.Gnoss.AD.EntityModel.Models.Pais;
 using Es.Riam.Gnoss.AD.EntityModel.Models.ProyectoDS;
 using Es.Riam.Gnoss.AD.EntityModel.Models.Tesauro;
 using Es.Riam.Gnoss.AD.Identidad;
+using Es.Riam.Gnoss.AD.ParametroAplicacion;
 using Es.Riam.Gnoss.AD.Usuarios;
 using Es.Riam.Gnoss.Util.Configuracion;
 using Es.Riam.Gnoss.Util.General;
 using Es.Riam.Gnoss.Web.MVC.Models;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -1111,19 +1113,22 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
         private EntityContext mEntityContext;
         private LoggingService mLoggingService;
         private ConfigService mConfigService;
+        private ILogger mlogger;
+        private ILoggerFactory mloggerFactory;
 
         #region Constructores
 
         /// <summary>
         /// El por defecto, utilizado cuando se requiere el GnossConfig.xml por defecto
         /// </summary>
-        public OrganizacionAD(LoggingService loggingService, EntityContext entityContext, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication)
-            : base(loggingService, entityContext, configService, servicesUtilVirtuosoAndReplication)
+        public OrganizacionAD(LoggingService loggingService, EntityContext entityContext, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication, ILogger<OrganizacionAD> logger, ILoggerFactory loggerFactory)
+            : base(loggingService, entityContext, configService, servicesUtilVirtuosoAndReplication,logger,loggerFactory)
         {
             mEntityContext = entityContext;
             mConfigService = configService;
             mLoggingService = loggingService;
-            
+            mlogger = logger;
+            mloggerFactory = loggerFactory;
             this.CargarConsultasYDataAdapters();
         }
 
@@ -1132,13 +1137,14 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
         /// </summary>
         /// <param name="pFicheroConfiguracionBD"></param>
         /// <param name="pUsarVariableEstatica">Si se están usando hilos con diferentes conexiones: FALSE. En caso contrario TRUE</param>
-        public OrganizacionAD(string pFicheroConfiguracionBD, LoggingService loggingService, EntityContext entityContext, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication)
-            : base(pFicheroConfiguracionBD, loggingService, entityContext, configService, servicesUtilVirtuosoAndReplication)
+        public OrganizacionAD(string pFicheroConfiguracionBD, LoggingService loggingService, EntityContext entityContext, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication, ILogger<OrganizacionAD> logger, ILoggerFactory loggerFactory)
+            : base(pFicheroConfiguracionBD, loggingService, entityContext, configService, servicesUtilVirtuosoAndReplication,logger,loggerFactory)
         {
             mEntityContext = entityContext;
             mConfigService = configService;
             mLoggingService = loggingService;
-            
+            mlogger = logger;
+            mloggerFactory = loggerFactory;
             this.CargarConsultasYDataAdapters(IBD);
         }
 
@@ -2156,7 +2162,6 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
         /// <returns>Dataset de organizaciones</returns>
         public DataWrapperOrganizacion ObtenerOrganizacionDeIdentidad(Guid pIdentidadID, bool pCargaLigera)
         {
-            //TODO: hecho
             DataWrapperOrganizacion dataWrapperOrganizacion = new DataWrapperOrganizacion();
 
             var resultado = mEntityContext.Organizacion.JoinPerfilPersonaOrg().JoinIdentidad().Where(item => item.Identidad.IdentidadID.Equals(pIdentidadID)).Select(item => item.Organizacion.OrganizacionID)
@@ -2168,22 +2173,6 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
                  Organizacion = org,
                  resultado = res
              }).OrderBy(item => item.Organizacion.Nombre).Select(item => item.Organizacion).ToList();
-
-            //OrganizacionDS organizacionDS = new OrganizacionDS();
-
-            ////Organizacion
-            //DbCommand commandsqlSelectOrganizacionesDeIdentidad = ObtenerComando(this.sqlSelectOrganizacionesDeIdentidad = SelectPesadoOrganizacion + " INNER JOIN 
-            //(SELECT Organizacion.OrganizacionID FROM Organizacion 
-            //INNER JOIN PerfilPersonaOrg ON PerfilPersonaOrg.OrganizacionID = Organizacion.OrganizacionID 
-            //INNER JOIN Identidad ON Identidad.PerfilID = PerfilPersonaOrg.PerfilID 
-            //WHERE (Identidad.IdentidadID = " + IBD.GuidParamValor("identidadID") + ")" + " 
-            //UNION SELECT Organizacion.OrganizacionID FROM Organizacion 
-            //INNER JOIN PerfilOrganizacion ON PerfilOrganizacion.OrganizacionID = Organizacion.OrganizacionID 
-            //INNER JOIN Identidad ON Identidad.PerfilID = PerfilOrganizacion.PerfilID 
-            //WHERE (Identidad.IdentidadID = " + IBD.GuidParamValor("identidadID") + ") ) 
-            //Resultado ON Resultado.OrganizacionID = Organizacion.OrganizacionID ORDER BY Organizacion.Nombre"
-            //AgregarParametro(commandsqlSelectOrganizacionesDeIdentidad, IBD.ToParam("identidadID"), IBD.TipoGuidToString(DbType.Guid), IBD.ValorDeGuid(pIdentidadID));
-            //CargarDataSet(commandsqlSelectOrganizacionesDeIdentidad, organizacionDS, "Organizacion");
 
             var resultado2 = mEntityContext.Organizacion.JoinPerfilPersonaOrg().JoinIdentidad().Where(item => item.Identidad.IdentidadID.Equals(pIdentidadID)).Select(item => item.Organizacion.OrganizacionID)
                 .Union(mEntityContext.Organizacion.JoinPerfilOrganizacion().JoinIdentidad().Where(item => item.Identidad.IdentidadID.Equals(pIdentidadID)).Select(item => item.Organizacion.OrganizacionID));
@@ -2201,38 +2190,6 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
                      resultado2 = res2
                  }).Select(item => item.PersonaVinculoOrganizacion).ToList();
             }
-
-            ////PersonaVinculoOrganizacion
-            //string sqlPersonaVincOrg = this.sqlSelectPersonaVinculoOrganizacionDeIdentidad = SelectPesadoPersonaVinculoOrganizacion + " INNER JOIN 
-            //(SELECT Organizacion.OrganizacionID FROM Organizacion 
-            //INNER JOIN PerfilPersonaOrg ON PerfilPersonaOrg.OrganizacionID = Organizacion.OrganizacionID 
-            //INNER JOIN Identidad ON Identidad.PerfilID = PerfilPersonaOrg.PerfilID 
-            //WHERE (Identidad.IdentidadID = " + IBD.GuidParamValor("identidadID") + ")" + " 
-            //UNION SELECT Organizacion.OrganizacionID FROM Organizacion 
-            //INNER JOIN PerfilOrganizacion ON PerfilOrganizacion.OrganizacionID = Organizacion.OrganizacionID 
-            //INNER JOIN Identidad ON Identidad.PerfilID = PerfilOrganizacion.PerfilID 
-            //WHERE (Identidad.IdentidadID = " + IBD.GuidParamValor("identidadID") + ") ) Resultado ON Resultado.OrganizacionID = 
-
-            //if (pCargaLigera)
-            //{
-            //    sqlPersonaVincOrg = SelectLigeroPersonaVinculoOrganizacion + " INNER JOIN Perfil ON Perfil.PersonaID = PersonaVinculoOrganizacion.PersonaID INNER JOIN Identidad ON Identidad.PerfilID = Perfil.PerfilID WHERE (Identidad.IdentidadID = " + IBD.GuidParamValor("identidadID") + ")";
-            //}
-            //DbCommand commandsqlSelectPersonaVinculoOrganizacionDeIdentidad = ObtenerComando(sqlPersonaVincOrg);
-            //AgregarParametro(commandsqlSelectPersonaVinculoOrganizacionDeIdentidad, IBD.ToParam("identidadID"), IBD.TipoGuidToString(DbType.Guid), IBD.ValorDeGuid(pIdentidadID));
-            //CargarDataSet(commandsqlSelectPersonaVinculoOrganizacionDeIdentidad, organizacionDS, "PersonaVinculoOrganizacion");
-
-
-            ////OrganizacionEmpresa
-            //DbCommand commandsqlSelectOrganizacionesEmpresaDeIdentidad = ObtenerComando(sqlSelectOrganizacionesEmpresaDeIdentidad);
-            //AgregarParametro(commandsqlSelectOrganizacionesEmpresaDeIdentidad, IBD.ToParam("identidadID"), IBD.TipoGuidToString(DbType.Guid), IBD.ValorDeGuid(pIdentidadID));
-            //CargarDataSet(commandsqlSelectOrganizacionesEmpresaDeIdentidad, organizacionDS, "OrganizacionEmpresa");
-
-            ////OrganizacionClase
-            //DbCommand commandsqlSelectOrganizacionesClaseDeIdentidad = ObtenerComando(sqlSelectOrganizacionesClaseDeIdentidad);
-            //AgregarParametro(commandsqlSelectOrganizacionesClaseDeIdentidad, IBD.ToParam("identidadID"), IBD.TipoGuidToString(DbType.Guid), IBD.ValorDeGuid(pIdentidadID));
-            //CargarDataSet(commandsqlSelectOrganizacionesClaseDeIdentidad, organizacionDS, "OrganizacionClase");
-
-            //return (organizacionDS);
             return dataWrapperOrganizacion;
         }
 
@@ -3443,7 +3400,7 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
         private void DisminuirNumeroOrParticipanEnProyecto(Guid pProyectoID)
         {
             //Tengo que actualizar en ProyectoDS / Proyecto / "NumeroOrgRegistradas"
-            ProyectoAD proyectoAD = new ProyectoAD(mLoggingService, mEntityContext, mConfigService, mServicesUtilVirtuosoAndReplication);
+            ProyectoAD proyectoAD = new ProyectoAD(mLoggingService, mEntityContext, mConfigService, mServicesUtilVirtuosoAndReplication,mloggerFactory.CreateLogger<ProyectoAD>(),mloggerFactory);
             proyectoAD.DisminuirNumeroOrParticipanEnProyecto(pProyectoID);
             proyectoAD.Dispose();
         }
@@ -3455,7 +3412,7 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
         private void AumentarNumeroOrgParticipanEnProyecto(Guid pProyectoID)
         {
             //Tengo que actualizar en ProyectoDS / Proyecto / "NumeroOrgRegistradas"
-            ProyectoAD proyectoAD = new ProyectoAD(mLoggingService, mEntityContext, mConfigService, mServicesUtilVirtuosoAndReplication);
+            ProyectoAD proyectoAD = new ProyectoAD(mLoggingService, mEntityContext, mConfigService, mServicesUtilVirtuosoAndReplication, mloggerFactory.CreateLogger<ProyectoAD>(), mloggerFactory);
             proyectoAD.AumentarNumeroOrgParticipanEnProyecto(pProyectoID);
             proyectoAD.Dispose();
         }

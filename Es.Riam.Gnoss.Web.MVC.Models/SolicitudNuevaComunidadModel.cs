@@ -14,5 +14,10 @@ namespace Es.Riam.Gnoss.Web.MVC.Models
         public string NombreCorto { get; set; }
         public Guid PeticionID { get; set; }
         public bool IsPrivate { get; set; }
+        public short TipoComunidad { get; set; }
+        public DateTime FechaPeticion { get; set; }
+        public string NombreCreador { get; set; }
+        public string NombreCortoOrganizacion { get; set; }
+        public string UrlPerfil { get; set; }
     }
 }

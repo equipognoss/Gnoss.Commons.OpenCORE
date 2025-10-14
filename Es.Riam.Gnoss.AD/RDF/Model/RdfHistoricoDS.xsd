@@ -1,0 +1,32 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<xs:schema id="RdfHistoricoDS" targetNamespace="http://tempuri.org/RdfHistoricoDS.xsd" xmlns:mstns="http://tempuri.org/RdfHistoricoDS.xsd" xmlns="http://tempuri.org/RdfHistoricoDS.xsd" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata" xmlns:msprop="urn:schemas-microsoft-com:xml-msprop" attributeFormDefault="qualified" elementFormDefault="qualified">
+  <xs:annotation>
+    <xs:appinfo source="urn:schemas-microsoft-com:xml-msdatasource">
+      <DataSource DefaultConnectionIndex="0" FunctionsComponentName="QueriesTableAdapter" Modifier="AutoLayout, AnsiClass, Class, Public" SchemaSerializationMode="IncludeSchema" xmlns="urn:schemas-microsoft-com:xml-msdatasource">
+        <Connections />
+        <Tables />
+        <Sources />
+      </DataSource>
+    </xs:appinfo>
+  </xs:annotation>
+  <xs:element name="RdfHistoricoDS" msdata:IsDataSet="true" msdata:UseCurrentLocale="true" msprop:EnableTableAdapterManager="true" msprop:Generator_UserDSName="RdfHistoricoDS" msprop:Generator_DataSetName="RdfHistoricoDS">
+    <xs:complexType>
+      <xs:choice minOccurs="0" maxOccurs="unbounded">
+        <xs:element name="RdfHistorico" msprop:Generator_RowEvHandlerName="RdfHistoricoRowChangeEventHandler" msprop:Generator_RowDeletedName="RdfHistoricoRowDeleted" msprop:Generator_RowDeletingName="RdfHistoricoRowDeleting" msprop:Generator_RowEvArgName="RdfHistoricoRowChangeEvent" msprop:Generator_TablePropName="RdfHistorico" msprop:Generator_RowChangedName="RdfHistoricoRowChanged" msprop:Generator_RowChangingName="RdfHistoricoRowChanging" msprop:Generator_TableClassName="RdfHistoricoDataTable" msprop:Generator_RowClassName="RdfHistoricoRow" msprop:Generator_TableVarName="tableRdfHistorico" msprop:Generator_UserTableName="RdfHistorico">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="DocumentoID" msdata:DataType="System.Guid, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" msprop:Generator_ColumnPropNameInRow="DocumentoID" msprop:Generator_ColumnPropNameInTable="DocumentoIDColumn" msprop:Generator_ColumnVarNameInTable="columnDocumentoID" msprop:Generator_UserColumnName="DocumentoID" type="xs:string" />
+              <xs:element name="RdfSem" msprop:Generator_ColumnPropNameInRow="RdfSem" msprop:Generator_ColumnPropNameInTable="RdfSemColumn" msprop:Generator_ColumnVarNameInTable="columnRdfSem" msprop:Generator_UserColumnName="RdfSem" type="xs:string" minOccurs="0" />
+              <xs:element name="IdentidadID" msdata:DataType="System.Guid, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" msprop:Generator_ColumnPropNameInRow="IdentidadID" msprop:Generator_ColumnPropNameInTable="IdentidadIDColumn" msprop:Generator_ColumnVarNameInTable="columnIdentidadID" msprop:Generator_UserColumnName="IdentidadID" type="xs:string" minOccurs="0" />
+              <xs:element name="FechaModificacion" msprop:Generator_ColumnPropNameInRow="FechaModificacion" msprop:Generator_ColumnPropNameInTable="FechaModificacionColumn" msprop:Generator_ColumnVarNameInTable="columnFechaModificacion" msprop:Generator_UserColumnName="FechaModificacion" type="xs:dateTime" minOccurs="0" />
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+      </xs:choice>
+    </xs:complexType>
+    <xs:unique name="RdfHistoricoKey1" msdata:PrimaryKey="true">
+      <xs:selector xpath=".//mstns:RdfHistorico" />
+      <xs:field xpath="mstns:DocumentoID" />
+    </xs:unique>
+  </xs:element>
+</xs:schema>

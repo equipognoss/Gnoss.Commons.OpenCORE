@@ -3,9 +3,12 @@ using Es.Riam.Gnoss.AD.EncapsuladoDatos;
 using Es.Riam.Gnoss.AD.EntityModel;
 using Es.Riam.Gnoss.AD.EntityModel.Models.ProyectoDS;
 using Es.Riam.Gnoss.AD.EntityModel.Models.VistaVirtualDS;
+using Es.Riam.Gnoss.AD.ParametroAplicacion;
 using Es.Riam.Gnoss.Util.Configuracion;
 using Es.Riam.Gnoss.Util.General;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
+using Serilog.Core;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -187,24 +190,30 @@ namespace Es.Riam.Gnoss.AD.ParametrosProyecto
         #region Constructor
 
         private EntityContext mEntityContext;
+        private ILogger mlogger;
+        private ILoggerFactory mLoggerFactory;
 
         /// <summary>
         /// Constructor
         /// </summary>
-        public VistaVirtualAD(string pFicheroConfiguracionBD, LoggingService loggingService, EntityContext entityContext, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication)
-            : base(pFicheroConfiguracionBD, loggingService, entityContext, configService, servicesUtilVirtuosoAndReplication)
+        public VistaVirtualAD(string pFicheroConfiguracionBD, LoggingService loggingService, EntityContext entityContext, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication, ILogger<VistaVirtualAD> logger, ILoggerFactory loggerFactory)
+            : base(pFicheroConfiguracionBD, loggingService, entityContext, configService, servicesUtilVirtuosoAndReplication, logger, loggerFactory)
         {
             mEntityContext = entityContext;
+            mlogger = logger;
+            mLoggerFactory = loggerFactory;
             CargarConsultasYDataAdapters(IBD);
         }
 
         /// <summary>
         /// Constructor sin parámetros
         /// </summary>
-        public VistaVirtualAD(LoggingService loggingService, EntityContext entityContext, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication)
-            : base("vistas", loggingService, entityContext, configService, servicesUtilVirtuosoAndReplication)
+        public VistaVirtualAD(LoggingService loggingService, EntityContext entityContext, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication, ILogger<VistaVirtualAD> logger, ILoggerFactory loggerFactory)
+            : base("vistas", loggingService, entityContext, configService, servicesUtilVirtuosoAndReplication, logger, loggerFactory)
         {
             mEntityContext = entityContext;
+            mlogger = logger;
+            mLoggerFactory = loggerFactory;
             CargarConsultasYDataAdapters(IBD);
         }
 
@@ -560,6 +569,7 @@ namespace Es.Riam.Gnoss.AD.ParametrosProyecto
 
         public void ActualizarVistaPersonalizadaEnProyecto(Guid pPersonalizacionID, string pTipoPagina, string pHTML, bool pEsVistaRdfType)
         {
+            DateTime fechaActual = DateTime.Now;
             if (pEsVistaRdfType)
             {
                 List<VistaVirtualRecursos> listaVistaVirtualRecursos = mEntityContext.VistaVirtualRecursos.Where(item => item.PersonalizacionID.Equals(pPersonalizacionID) && item.RdfType.Equals(pTipoPagina)).ToList();
@@ -567,6 +577,7 @@ namespace Es.Riam.Gnoss.AD.ParametrosProyecto
                 foreach (VistaVirtualRecursos vistaVirtualRecursos in listaVistaVirtualRecursos)
                 {
                     vistaVirtualRecursos.HTML = pHTML;
+                    vistaVirtualRecursos.FechaModificacion = fechaActual;
                 }
             }
             else
@@ -576,6 +587,7 @@ namespace Es.Riam.Gnoss.AD.ParametrosProyecto
                 foreach (VistaVirtual vistaVirtual in listaVistaVirtual)
                 {
                     vistaVirtual.HTML = pHTML;
+                    vistaVirtual.FechaModificacion = fechaActual;
                 }
             }
 
@@ -592,6 +604,7 @@ namespace Es.Riam.Gnoss.AD.ParametrosProyecto
 
             List<VistaVirtualCMS> listaVistaVirtualCMS = mEntityContext.VistaVirtualCMS.Where(item => item.PersonalizacionID.Equals(pPersonalizacionID) && item.TipoComponente.Equals(pTipoComponente) && item.PersonalizacionComponenteID.Equals(pPersonalizacionComponenteID)).ToList();
 
+            DateTime fechaActual = DateTime.Now;
             if (listaVistaVirtualCMS.Count > 0)
             {
                 foreach (VistaVirtualCMS vistaVirtualCMS in listaVistaVirtualCMS)
@@ -599,6 +612,7 @@ namespace Es.Riam.Gnoss.AD.ParametrosProyecto
                     vistaVirtualCMS.HTML = pHTML;
                     vistaVirtualCMS.Nombre = pNombre;
                     vistaVirtualCMS.DatosExtra = pDatosExtra;
+                    vistaVirtualCMS.FechaModificacion = fechaActual;
                 }
 
                 ActualizarBaseDeDatosEntityContext();
@@ -715,6 +729,7 @@ namespace Es.Riam.Gnoss.AD.ParametrosProyecto
         }
         public void InsertarVistaPersonalizadaEnProyecto(Guid pPersonalizacionID, string pTipoPagina, string pHTML, bool pEsVistaRdfType)
         {
+            DateTime fechaActual = DateTime.Now;
             //TODO: revisar
             if (pEsVistaRdfType)
             {
@@ -722,6 +737,8 @@ namespace Es.Riam.Gnoss.AD.ParametrosProyecto
                 vistaVirtualRecursos.PersonalizacionID = pPersonalizacionID;
                 vistaVirtualRecursos.RdfType = pTipoPagina;
                 vistaVirtualRecursos.HTML = pHTML;
+                vistaVirtualRecursos.FechaCreacion = fechaActual;
+                vistaVirtualRecursos.FechaModificacion = fechaActual;
 
                 mEntityContext.VistaVirtualRecursos.Add(vistaVirtualRecursos);
             }
@@ -731,6 +748,8 @@ namespace Es.Riam.Gnoss.AD.ParametrosProyecto
                 vistaVirtual.PersonalizacionID = pPersonalizacionID;
                 vistaVirtual.TipoPagina = pTipoPagina;
                 vistaVirtual.HTML = pHTML;
+                vistaVirtual.FechaCreacion = fechaActual;
+                vistaVirtual.FechaModificacion= fechaActual;
 
                 mEntityContext.VistaVirtual.Add(vistaVirtual);
             }
@@ -740,6 +759,7 @@ namespace Es.Riam.Gnoss.AD.ParametrosProyecto
         public void InsertarVistaPersonalizadaDeComponenteCMSEnProyecto(Guid pPersonalizacionID, string pTipoComponente, string pNombre, string pHTML, Guid pPersonalizacionComponenteID, string pDatosExtra)
         {
             // IBD.ReplaceParam("INSERT INTO VistaVirtualCMS (PersonalizacionID, TipoComponente, PersonalizacionComponenteID, HTML, Nombre, DatosExtra) VALUES (" + IBD.GuidParamColumnaTabla("PersonalizacionID") + ", @TipoComponente," + IBD.GuidParamColumnaTabla("PersonalizacionComponenteID") + ", @HTML, @Nombre, @DatosExtra)");
+            DateTime fechaActual = DateTime.Now;
 
             VistaVirtualCMS vistaVirtualCMSAAniadir = new VistaVirtualCMS();
             vistaVirtualCMSAAniadir.PersonalizacionID = pPersonalizacionID;
@@ -748,6 +768,8 @@ namespace Es.Riam.Gnoss.AD.ParametrosProyecto
             vistaVirtualCMSAAniadir.HTML = pHTML;
             vistaVirtualCMSAAniadir.Nombre = pNombre;
             vistaVirtualCMSAAniadir.DatosExtra = pDatosExtra;
+            vistaVirtualCMSAAniadir.FechaCreacion = fechaActual;
+            vistaVirtualCMSAAniadir.FechaModificacion = fechaActual;
 
             mEntityContext.VistaVirtualCMS.Add(vistaVirtualCMSAAniadir);
 

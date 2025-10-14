@@ -7,6 +7,7 @@ using Es.Riam.Gnoss.Logica.ServiciosGenerales;
 using Es.Riam.Gnoss.Util.Configuracion;
 using Es.Riam.Gnoss.Util.General;
 using Es.Riam.Util;
+using MessagePack;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.FileProviders.Physical;
@@ -18,9 +19,14 @@ using System.Diagnostics;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
-using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
 using System.Threading;
+using MongoDB.Bson;
+using MongoDB.Bson.Serialization;
+using Newtonsoft.Json;
+using BeetleX.Clients;
+using Es.Riam.Gnoss.AD.Facetado;
+using Microsoft.Extensions.Logging;
 
 namespace Es.Riam.Gnoss.CL
 {
@@ -458,39 +464,39 @@ namespace Es.Riam.Gnoss.CL
 
         #endregion
 
-		#region TAREAS
+        #region TAREAS
         public static readonly string CONTADORTAREA = "ContadorTarea";
-		#endregion
+        #endregion
 
-		#region Identidad
-		/// <summary>
-		/// Prefijo "FichaIdentidadMVC"
-		/// </summary>
-		public static readonly string FichaIdentidadMVC = "FichaIdentidadMVC3";
+        #region Identidad
+        /// <summary>
+        /// Prefijo "FichaIdentidadMVC"
+        /// </summary>
+        public static readonly string FichaIdentidadMVC = "FichaIdentidadMVC3";
 
         /// <summary>
         /// Prefijo "InfoExtraFichaIdentidadMVC"
         /// </summary>
         public static readonly string InfoExtraFichaIdentidadMVC = "InfoExtraFichaIdentidadMVC3";
 
-		/// <summary>
-		/// Prefijo "IdentidadActual"
-		/// </summary>
-		public static readonly string IdentidadActual = "IdentidadActual";
-		#endregion
+        /// <summary>
+        /// Prefijo "IdentidadActual"
+        /// </summary>
+        public static readonly string IdentidadActual = "IdentidadActual";
+        #endregion
 
-		#region Perfil
-		/// <summary>
-		/// Prefijo "PerfilMVC"
-		/// </summary>
-		public static readonly string PerfilMVC = "PerfilMVC";
-		#endregion
-	}
+        #region Perfil
+        /// <summary>
+        /// Prefijo "PerfilMVC"
+        /// </summary>
+        public static readonly string PerfilMVC = "PerfilMVC";
+        #endregion
+    }
 
-	/// <summary>
-	/// Tipos de clausulas adicionales para el registro de un proyecto.
-	/// </summary>
-	public enum TipoAccesoRedis
+    /// <summary>
+    /// Tipos de clausulas adicionales para el registro de un proyecto.
+    /// </summary>
+    public enum TipoAccesoRedis
     {
         /// <summary>
         /// Lectura.
@@ -505,7 +511,7 @@ namespace Es.Riam.Gnoss.CL
         /// </summary>
         Comprobacion = 2,
         /// <summary>
-        /// Lectura de varios objetos en caché.
+        /// Lectura de varios objetos en cachï¿½.
         /// </summary>
         LecturaVariosObjetos = 3,
         /// <summary>
@@ -521,7 +527,7 @@ namespace Es.Riam.Gnoss.CL
         /// </summary>
         RangoPorScore = 6,
         /// <summary>
-        /// Lectura del número de elementos.
+        /// Lectura del nï¿½mero de elementos.
         /// </summary>
         LecturaNumElementos = 7,
         /// <summary>
@@ -529,7 +535,7 @@ namespace Es.Riam.Gnoss.CL
         /// </summary>
         EliminarElementosSortedSet = 8,
         /// <summary>
-        /// Clonacción del sorted set.
+        /// Clonacciï¿½n del sorted set.
         /// </summary>
         ClonarSortedSet = 9,
         /// <summary>
@@ -541,7 +547,7 @@ namespace Es.Riam.Gnoss.CL
         /// </summary>
         CaducidadAObjeto = 11,
         /// <summary>
-        /// Renombrado de una clave de caché
+        /// Renombrado de una clave de cachï¿½
         /// </summary>
         RenombrarClave = 12,
         /// <summary>
@@ -557,15 +563,15 @@ namespace Es.Riam.Gnoss.CL
         /// </summary>
         ObtenerScoreObjeto = 15,
         /// <summary>
-        /// Borrado de elementos de la caché.
+        /// Borrado de elementos de la cachï¿½.
         /// </summary>
         Borrado = 16,
         /// <summary>
-        /// Escritura de varios objetos en caché.
+        /// Escritura de varios objetos en cachï¿½.
         /// </summary>
         EscrituraVariosObjetos = 17,
         /// <summary>
-        /// Escritura de varios objetos en caché.
+        /// Escritura de varios objetos en cachï¿½.
         /// </summary>
         BorradoVarios = 18,
     }
@@ -580,11 +586,11 @@ namespace Es.Riam.Gnoss.CL
         /// </summary>
         RutasPestanyas = 8,
         /// <summary>
-        /// Clave de caché para recalcular las rutas registradas
+        /// Clave de cachï¿½ para recalcular las rutas registradas
         /// </summary>
         RecalcularRutas = 9,
         /// <summary>
-        /// Clave de caché para recalcular los Idiomas de la plataforma
+        /// Clave de cachï¿½ para recalcular los Idiomas de la plataforma
         /// </summary>
         IdiomasPlataforma = 10
     }
@@ -611,7 +617,7 @@ namespace Es.Riam.Gnoss.CL
         private const int REDIS_DEFAULT_PORT = 6379;
 
         /// <summary>
-        /// Duración de la Caché en segundos
+        /// Duraciï¿½n de la Cachï¿½ en segundos
         /// </summary>
         public const double DURACION_CACHE_UN_MES = 60 * 60 * 24 * 30;
         public const double DURACION_CACHE_TRES_DIAS = 60 * 60 * 72;
@@ -664,12 +670,12 @@ namespace Es.Riam.Gnoss.CL
         private RedisDB mClienteRedisEscritura;
 
         /// <summary>
-        /// Fichero de configuración de la base de datos
+        /// Fichero de configuraciï¿½n de la base de datos
         /// </summary>
         protected string mFicheroConfiguracionBD = "";
 
         /// <summary>
-        /// Si se están usando hilos con diferentes conexiones: FALSE. En caso contrario TRUE
+        /// Si se estï¿½n usando hilos con diferentes conexiones: FALSE. En caso contrario TRUE
         /// </summary>
         protected bool mUsarVariableEstatica;
 
@@ -683,7 +689,7 @@ namespace Es.Riam.Gnoss.CL
 
         private bool mUsarClienteEscritura = false;
 
-        //En el caso del servicio live espiecífico, cambiarlo para que no use hilos y para que lance excepciones...
+        //En el caso del servicio live espiecï¿½fico, cambiarlo para que no use hilos y para que lance excepciones...
         public static bool? mUsarHilos = null;
         public static bool mLanzarExcepciones = false;
 
@@ -696,7 +702,7 @@ namespace Es.Riam.Gnoss.CL
 
         private int? mTamanioPool = null;
 
-        //Bloque de cache cuando está configurado la cache y redis, para que no se pueda leer a la vez en redis con la misma conexion
+        //Bloque de cache cuando estï¿½ configurado la cache y redis, para que no se pueda leer a la vez en redis con la misma conexion
         private object mBloqueoCache = new object();
 
         protected IServicesUtilVirtuosoAndReplication mServicesUtilVirtuosoAndReplication;
@@ -709,34 +715,39 @@ namespace Es.Riam.Gnoss.CL
         private EntityContext _entityContext;
         protected LoggingService _loggingService;
         private RedisCacheWrapper _redisCacheWrapper;
+        private ILogger mlogger;
+        private ILoggerFactory mLoggerFactory;
 
         #endregion
 
         #region Constructores
 
         /// <summary>
-        /// Constructor sin parámetros
+        /// Constructor sin parï¿½metros
         /// </summary>
-        public BaseCL(EntityContext entityContext, LoggingService loggingService, RedisCacheWrapper redisCacheWrapper, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication)
+        public BaseCL(EntityContext entityContext, LoggingService loggingService, RedisCacheWrapper redisCacheWrapper, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication, ILogger<BaseCL> logger, ILoggerFactory loggerFactory)
         {
             _redisCacheWrapper = redisCacheWrapper;
             _configService = configService;
             _entityContext = entityContext;
             _loggingService = loggingService;
             mServicesUtilVirtuosoAndReplication = servicesUtilVirtuosoAndReplication;
+            mlogger = logger;
+            this.mLoggerFactory = loggerFactory;
         }
 
         /// <summary>
         /// Constructor para FacetadoCL
         /// </summary>
-        /// <param name="pFicheroConfiguracionBD">Fichero de configuración</param>
-        public BaseCL(string pFicheroConfiguracionBD, EntityContext entityContext, LoggingService loggingService, RedisCacheWrapper redisCacheWrapper, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication)
+        /// <param name="pFicheroConfiguracionBD">Fichero de configuraciï¿½n</param>
+        public BaseCL(string pFicheroConfiguracionBD, EntityContext entityContext, LoggingService loggingService, RedisCacheWrapper redisCacheWrapper, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication, ILogger<BaseCL> logger,ILoggerFactory loggerFactory)
         {
             _redisCacheWrapper = redisCacheWrapper;
             _configService = configService;
             _entityContext = entityContext;
             _loggingService = loggingService;
-
+            mlogger = logger;
+            mLoggerFactory=loggerFactory;
             if (pFicheroConfiguracionBD != null)
             {
                 mFicheroConfiguracionBD = pFicheroConfiguracionBD;
@@ -747,15 +758,16 @@ namespace Es.Riam.Gnoss.CL
         /// <summary>
         /// Constructor para FacetadoCL
         /// </summary>
-        /// <param name="pFicheroConfiguracionBD">Fichero de configuración</param>
+        /// <param name="pFicheroConfiguracionBD">Fichero de configuraciï¿½n</param>
         /// <param name="pPoolName">Nombre del pool</param>
-        public BaseCL(string pFicheroConfiguracionBD, string pPoolName, EntityContext entityContext, LoggingService loggingService, RedisCacheWrapper redisCacheWrapper, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication)
+        public BaseCL(string pFicheroConfiguracionBD, string pPoolName, EntityContext entityContext, LoggingService loggingService, RedisCacheWrapper redisCacheWrapper, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication, ILogger<BaseCL> logger,ILoggerFactory loggerFactory)
         {
             _redisCacheWrapper = redisCacheWrapper;
             _configService = configService;
             _entityContext = entityContext;
             _loggingService = loggingService;
-
+            mlogger = logger;
+            mLoggerFactory = loggerFactory;
             if (pFicheroConfiguracionBD != null)
             {
                 mFicheroConfiguracionBD = pFicheroConfiguracionBD;
@@ -769,12 +781,12 @@ namespace Es.Riam.Gnoss.CL
 
         #endregion
 
-        #region Métodos
+        #region MÃ©todos
 
         /// <summary>
         /// Comprueba si dos dataset tienen la misma estructura
         /// </summary>
-        /// <param name="pDataSetCache">DataSet de caché</param>
+        /// <param name="pDataSetCache">DataSet de cachï¿½</param>
         /// <param name="pDataSetLocal">DataSet local</param>
         /// <returns></returns>
         public bool ComprobarEstructuraDataSet(DataSet pDataSetCache, DataSet pDataSetLocal)
@@ -786,14 +798,14 @@ namespace Es.Riam.Gnoss.CL
                 {
                     if (pDataSetCache.Tables[tabla.TableName] == null)
                     {
-                        AgregarEntradaTraza(string.Format("No sirve el data set de caché porque no contiene la tabla {0}. Tipo: {1}", tabla.TableName, pDataSetCache.GetType().FullName));
+                        AgregarEntradaTraza(string.Format("No sirve el data set de cachï¿½ porque no contiene la tabla {0}. Tipo: {1}", tabla.TableName, pDataSetCache.GetType().FullName));
                         return false;
                     }
                     foreach (DataColumn columna in tabla.Columns)
                     {
                         if (!pDataSetCache.Tables[tabla.TableName].Columns.Contains(columna.ColumnName))
                         {
-                            AgregarEntradaTraza(string.Format("No sirve el data set de caché porque no contiene la columna {0} en la tabla {1}. Tipo: {2}", columna.ColumnName, tabla.TableName, pDataSetCache.GetType().FullName));
+                            AgregarEntradaTraza(string.Format("No sirve el data set de cachï¿½ porque no contiene la columna {0} en la tabla {1}. Tipo: {2}", columna.ColumnName, tabla.TableName, pDataSetCache.GetType().FullName));
                             return false;
                         }
                     }
@@ -856,11 +868,11 @@ namespace Es.Riam.Gnoss.CL
         {
             get
             {
-                return "_5.11.0.0";
+                return "_5.18.0.0";
             }
         }
 
-        protected List<object> ObtenerVariosObjetosDeCache(params string[] pRawKey)
+        public List<object> ObtenerVariosObjetosDeCache(params string[] pRawKey)
         {
             List<object> listaResultados = new List<object>();
             for (int i = 0; i < pRawKey.Length; i++)
@@ -877,20 +889,16 @@ namespace Es.Riam.Gnoss.CL
             return listaResultados;
         }
 
-        protected Dictionary<string, object> ObtenerListaObjetosCache(string[] pListaClaves, Type pTipo)
+        protected Dictionary<string, object> ObtenerListaObjetosCache(string[] pListaClaves)
         {
-            Type[] tipos = new Type[pListaClaves.Length];
             for (int i = 0; i < pListaClaves.Length; i++)
             {
                 pListaClaves[i] = pListaClaves[i].ToLower();
-                tipos[i] = pTipo;
             }
 
             Dictionary<string, object> resultado = new Dictionary<string, object>();
 
-
-
-            object objeto = InteractuarRedis(TipoAccesoRedis.LecturaDiccionarioObjetos, "", pListaClaves, tipos);
+            object objeto = InteractuarRedis(TipoAccesoRedis.LecturaDiccionarioObjetos, "", pListaClaves);
             if (objeto != null)
             {
                 resultado = (Dictionary<string, object>)objeto;
@@ -909,27 +917,30 @@ namespace Es.Riam.Gnoss.CL
             string[] clavesOriginales = pListaClaves;
             object[] objetosOriginales = pListaObjetos;
 
-            (string, object)[] test = new (string, object)[pListaClaves.Length];
+            Dictionary<string, object> claveObjeto = new Dictionary<string, object>();
 
             if (pGenerarClave)
             {
-                int i = 0;
-                foreach (string claveoriginal in clavesOriginales)
+                for (int i = 0; i < clavesOriginales.Length; i++)
                 {
                     pListaClaves[i] = ObtenerClaveCache(clavesOriginales[i]).ToLower();
 
-                    test[i] = (pListaClaves[i], "");
-                    i++;
+                    claveObjeto.Add(pListaClaves[i], "");
                 }
-
+            }
+            else
+            {
+                for (int i = 0; i < pListaClaves.Length; i++)
+                {
+                    claveObjeto.Add(pListaClaves[i], "");
+                }
             }
 
-            int j = 0;
-            foreach (object objetoOriginal in objetosOriginales)
+            for (int i = 0; i < objetosOriginales.Length; i++)
             {
-                if (objetoOriginal is DataSet)
+                if (objetosOriginales[i] is DataSet objetoOriginal)
                 {
-                    switch (((DataSet)objetoOriginal).DataSetName)
+                    switch (objetoOriginal.DataSetName)
                     {
                         case "ProyectoDS":
                         case "IdentidadDS":
@@ -939,40 +950,39 @@ namespace Es.Riam.Gnoss.CL
                         case "DocumentacionDS":
                         case "TesauroDS":
                             AgregarEntradaTraza("Redis. Obtengo xml DataSet");
-                            string xmlDataSet = ((DataSet)objetoOriginal).GetXml().Replace("\n", "").Replace("\r", "").Replace(">    <", "><").Replace(">  <", "><");
-                            pListaObjetos[j] = "[DATASET]" + Zip(xmlDataSet);
+                            string xmlDataSet = (objetoOriginal).GetXml().Replace("\n", "").Replace("\r", "").Replace(">    <", "><").Replace(">  <", "><");
+                            pListaObjetos[i] = "[DATASET]" + Zip(xmlDataSet);
                             break;
                     }
                 }
-                test[j] = (test[j].Item1, pListaObjetos[j]);
-                j++;
+                claveObjeto[pListaClaves[i]] = pListaObjetos[i];
             }
 
-            object[] parametrosExtra = new object[4];
-            parametrosExtra[0] = pListaClaves;
-            parametrosExtra[1] = pListaObjetos;
-            parametrosExtra[2] = pDuracion;
-            parametrosExtra[3] = test;
+            object[] parametrosExtra = new object[2];
+            parametrosExtra[0] = pDuracion;
+            parametrosExtra[1] = claveObjeto;
             InteractuarRedis(TipoAccesoRedis.EscrituraVariosObjetos, "", parametrosExtra);
         }
 
         /// <summary>
-        /// Obtiene un objeto de la caché
+        /// Obtiene un objeto de la cachï¿½
         /// </summary>
         /// <param name="pRawKey">Clave del objeto</param>
+        /// <param name="pTipo">Especifica el tipo con el que se deserializarï¿½</param>
         /// <returns>Objeto</returns>
-        public object ObtenerObjetoDeCache(string pRawKey)
+        public object ObtenerObjetoDeCache(string pRawKey, Type pTipo)
         {
-            return ObtenerObjetoDeCache(pRawKey, true);
+            return ObtenerObjetoDeCache(pRawKey, true, pTipo);
         }
 
         /// <summary>
-        /// Obtiene un objeto de la caché
+        /// Obtiene un objeto de la cachï¿½
         /// </summary>
         /// <param name="pRawKey">Clave del objeto</param>
         /// <param name="pGenerarClave">Indica si se debe generar la clave, o coger la pasada como parametro</param>
+        /// <param name="pTipo">Especifica el tipo con el que se deserializarï¿½</param>
         /// <returns>Objeto</returns>
-        public object ObtenerObjetoDeCache(string pRawKey, bool pGenerarClave)
+        public object ObtenerObjetoDeCache(string pRawKey, bool pGenerarClave, Type pTipo)
         {
             if (pGenerarClave && string.IsNullOrEmpty(mDominio) && string.IsNullOrEmpty(DominioEstatico))
             {
@@ -987,7 +997,7 @@ namespace Es.Riam.Gnoss.CL
             }
             pRawKey = pRawKey.ToLower();
 
-            object resultado = InteractuarRedis(TipoAccesoRedis.Lectura, pRawKey, rawKeyOriginal, pGenerarClave);
+            object resultado = InteractuarRedis(TipoAccesoRedis.Lectura, pRawKey, rawKeyOriginal, pGenerarClave, pTipo);
 
             return resultado;
         }
@@ -1035,7 +1045,7 @@ namespace Es.Riam.Gnoss.CL
         }
 
         /// <summary>
-        /// Obtiene un objeto de la caché
+        /// Obtiene un objeto de la cachï¿½
         /// </summary>
         /// <param name="pRawKey">Clave del objeto</param>
         /// <param name="pGenerarClave">Indica si se debe generar la clave, o coger la pasada como parametro</param>
@@ -1046,7 +1056,7 @@ namespace Es.Riam.Gnoss.CL
         }
 
         /// <summary>
-        /// Obtiene un objeto de la caché
+        /// Obtiene un objeto de la cachï¿½
         /// </summary>
         /// <param name="pRawKey">Clave del objeto</param>
         /// <param name="pGenerarClave">Indica si se debe generar la clave, o coger la pasada como parametro</param>
@@ -1077,7 +1087,7 @@ namespace Es.Riam.Gnoss.CL
             }
             else
             {
-                AgregarEntradaTraza("Redis. No está en caché: " + pRawKey);
+                AgregarEntradaTraza("Redis. No estï¿½ en cachï¿½: " + pRawKey);
             }
 
             if (listaResultado != null)
@@ -1087,9 +1097,9 @@ namespace Es.Riam.Gnoss.CL
 
             return listaResultado;
         }
-        
+
         /// <summary>
-        /// Obtiene un objeto de la caché
+        /// Obtiene un objeto de la cachï¿½
         /// </summary>
         /// <param name="pRawKey">Clave del objeto</param>
         /// <param name="pGenerarClave">Indica si se debe generar la clave, o coger la pasada como parametro</param>
@@ -1121,7 +1131,7 @@ namespace Es.Riam.Gnoss.CL
             }
             else
             {
-                AgregarEntradaTraza("Redis. No está en caché: " + pRawKey);
+                AgregarEntradaTraza("Redis. No estï¿½ en cachï¿½: " + pRawKey);
             }
 
 
@@ -1134,9 +1144,9 @@ namespace Es.Riam.Gnoss.CL
         }
 
         /// <summary>
-        /// Comprueba si existe una clave de caché.
+        /// Comprueba si existe una clave de cachï¿½.
         /// </summary>
-        /// <param name="pRawKey">Clavé de caché que se desea buscar.</param>
+        /// <param name="pRawKey">Clavï¿½ de cachï¿½ que se desea buscar.</param>
         /// <returns>TRUE si la clave existe, FALSE en caso contrario.</returns>
         public bool ExisteClaveEnCache(string pRawKey)
         {
@@ -1162,18 +1172,18 @@ namespace Es.Riam.Gnoss.CL
         }
 
         /// <summary>
-        /// Agrega un objeto a la caché
+        /// Agrega un objeto a la cachï¿½
         /// </summary>
         /// <param name="pRawKey">Clave del objeto</param>
         /// <param name="pObjeto">Objeto a agregar</param>
-        /// <param name="pDuracion">Duración del objeto de caché en segundos</param>
+        /// <param name="pDuracion">Duraciï¿½n del objeto de cachï¿½ en segundos</param>
         public void AgregarCaducidadAObjetoCache(string pRawKey, double pDuracion)
         {
             InteractuarRedis(TipoAccesoRedis.CaducidadAObjeto, pRawKey, pDuracion);
         }
 
         /// <summary>
-        /// Agrega un objeto a la caché
+        /// Agrega un objeto a la cachï¿½
         /// </summary>
         /// <param name="pRawKey">Clave del objeto</param>
         /// <param name="pObjeto">Objeto a agregar</param>
@@ -1183,22 +1193,22 @@ namespace Es.Riam.Gnoss.CL
         }
 
         /// <summary>
-        /// Agrega un objeto a la caché
+        /// Agrega un objeto a la cachï¿½
         /// </summary>
         /// <param name="pRawKey">Clave del objeto</param>
         /// <param name="pObjeto">Objeto a agregar</param>
-        /// <param name="pDuracion">Duración del objeto de caché en segundos</param>
+        /// <param name="pDuracion">Duraciï¿½n del objeto de cachï¿½ en segundos</param>
         public string AgregarObjetoCache(string pRawKey, object pObjeto, double pDuracion)
         {
             return AgregarObjetoCache(pRawKey, pObjeto, pDuracion, true);
         }
 
         /// <summary>
-        /// Agrega un objeto a la caché
+        /// Agrega un objeto a la cachï¿½
         /// </summary>
         /// <param name="pRawKey">Clave del objeto</param>
         /// <param name="pObjeto">Objeto a agregar</param>
-        /// <param name="pDuracion">Duración del objeto de caché en segundos</param>
+        /// <param name="pDuracion">Duraciï¿½n del objeto de cachï¿½ en segundos</param>
         public string AgregarObjetoCache(string pRawKey, object pObjeto, double pDuracion, bool pGenerarClave)
         {
             if (pGenerarClave && string.IsNullOrEmpty(mDominio) && string.IsNullOrEmpty(DominioEstatico))
@@ -1244,9 +1254,9 @@ namespace Es.Riam.Gnoss.CL
         }
 
         /// <summary>
-        /// Comprueba si una clave de caché existe.
+        /// Comprueba si una clave de cachï¿½ existe.
         /// </summary>
-        /// <param name="pRawKey">Clave de caché que se va a comprobar si existe.</param>
+        /// <param name="pRawKey">Clave de cachï¿½ que se va a comprobar si existe.</param>
         protected bool ComprobarSiClaveExiste(string pRawKey)
         {
             //pDuracion = 0;
@@ -1268,7 +1278,7 @@ namespace Es.Riam.Gnoss.CL
             }
             catch (Exception ex)
             {
-                _loggingService.GuardarLogError(ex, null, true);
+                _loggingService.GuardarLogError(ex, null,mlogger ,true);
                 //CerrarConexionCache();
             }
 
@@ -1276,10 +1286,10 @@ namespace Es.Riam.Gnoss.CL
         }
 
         /// <summary>
-        /// Renombrado de una clave de caché por otra
+        /// Renombrado de una clave de cachï¿½ por otra
         /// </summary>
-        /// <param name="pRawKey">Clavé de cache vieja</param>
-        /// <param name="pRawKeyNueva">Clavé de cache Nueva</param>
+        /// <param name="pRawKey">Clavï¿½ de cache vieja</param>
+        /// <param name="pRawKeyNueva">Clavï¿½ de cache Nueva</param>
         protected void RenombrarClave(string pRawKey, string pRawKeyNueva)
         {
             //pDuracion = 0;
@@ -1312,7 +1322,7 @@ namespace Es.Riam.Gnoss.CL
         }
 
         /// <summary>
-        /// Agrega un objeto a la caché
+        /// Agrega un objeto a la cachï¿½
         /// </summary>
         /// <param name="pRawKey">Clave del objeto</param>
         /// <param name="pObjeto">Objeto a agregar</param>
@@ -1323,8 +1333,7 @@ namespace Es.Riam.Gnoss.CL
             pRawKey = ObtenerClaveCache(pRawKey).ToLower();
 
             byte[] bytesObjeto = ObjectToByteArray(pObjeto);
-
-            AgregarEntradaTraza("Redis. Agrego a caché" + pRawKey);
+            AgregarEntradaTraza("Redis. Agrego a cachï¿½" + pRawKey);
 
             if (pScore.Equals(-1))
             {
@@ -1334,7 +1343,7 @@ namespace Es.Riam.Gnoss.CL
                 object objeto = InteractuarRedis(TipoAccesoRedis.Rango, pRawKey, pRawKey, 1, 1);
                 if (objeto != null)
                 {
-                    ultimoObjeto = (List<(double,string)>)objeto;
+                    ultimoObjeto = (List<(double, string)>)objeto;
                 }
 
                 AgregarEntradaTraza("Redis. Existe " + pRawKey);
@@ -1360,7 +1369,7 @@ namespace Es.Riam.Gnoss.CL
         }
 
         /// <summary>
-        /// Elimina un objeto de la caché
+        /// Elimina un objeto de la cachï¿½
         /// </summary>
         /// <param name="pRawKey">Clave del objeto</param>
         /// <param name="pObjeto">Objeto a agregar</param>
@@ -1372,7 +1381,7 @@ namespace Es.Riam.Gnoss.CL
             pRawKey = pRawKey.ToLower();
             try
             {
-                AgregarEntradaTraza("Redis. Elimino de caché " + pRawKey);
+                AgregarEntradaTraza("Redis. Elimino de cachï¿½ " + pRawKey);
                 ClienteRedisEscritura.CreateSequence(pRawKey).ZRem(pObjeto);
 
                 AgregarEntradaTraza("Redis. Eliminado: " + pRawKey);
@@ -1380,7 +1389,7 @@ namespace Es.Riam.Gnoss.CL
             }
             catch (Exception ex)
             {
-                _loggingService.GuardarLogError(ex, null, true);
+                _loggingService.GuardarLogError(ex, mlogger);
                 throw;
             }
 
@@ -1388,7 +1397,7 @@ namespace Es.Riam.Gnoss.CL
         }
 
         /// <summary>
-        /// Invalida la caché
+        /// Invalida la cachï¿½
         /// </summary>
         public void InvalidarCache()
         {
@@ -1397,7 +1406,7 @@ namespace Es.Riam.Gnoss.CL
         }
 
         /// <summary>
-        /// Quita un elemento de la caché
+        /// Quita un elemento de la cachï¿½
         /// </summary>
         /// <param name="pClaveCache">Clave del elemento que se va a quitar</param>
         public void InvalidarCache(string pClaveCache)
@@ -1406,7 +1415,7 @@ namespace Es.Riam.Gnoss.CL
         }
 
         /// <summary>
-        /// Quita un elemento de la caché
+        /// Quita un elemento de la cachï¿½
         /// </summary>
         /// <param name="pClaveCache">Clave del elemento que se va a quitar</param>
         /// <param name="pGenerarClave">Indica si se debe generar la clave, o coger la pasada como parametro</param>
@@ -1416,7 +1425,7 @@ namespace Es.Riam.Gnoss.CL
         }
 
         /// <summary>
-        /// Quita un elemento de la caché
+        /// Quita un elemento de la cachï¿½
         /// </summary>
         /// <param name="pClaveCache">Clave del elemento que se va a quitar</param>
         /// <param name="pGenerarClave">Indica si se debe generar la clave, o coger la pasada como parametro</param>
@@ -1435,7 +1444,7 @@ namespace Es.Riam.Gnoss.CL
         }
 
         /// <summary>
-        /// Quita un elemento de la caché
+        /// Quita un elemento de la cachï¿½
         /// </summary>
         /// <param name="pClaveCache">Clave del elemento que se va a quitar</param>
         /// <param name="pGenerarClave">Indica si se debe generar la clave, o coger la pasada como parametro</param>
@@ -1464,14 +1473,14 @@ namespace Es.Riam.Gnoss.CL
         }
 
         /// <summary>
-        /// Quita un elemento de la caché
+        /// Quita un elemento de la cachï¿½
         /// </summary>
         /// <param name="pListaClavesCache">Claves de los elementos que se van a quitar</param>
         public void InvalidarCachesMultiples(List<string> pListaClavesCache)
         {
             try
             {
-                AgregarEntradaTraza("Redis. Invalido cachés multiples");
+                AgregarEntradaTraza("Redis. Invalido cachï¿½s multiples");
                 //foreach (string clave in pListaClavesCache)
                 //{
                 //    var t = ClienteRedisEscritura.Del(clave.ToLower()).Result;
@@ -1479,16 +1488,16 @@ namespace Es.Riam.Gnoss.CL
                 if (pListaClavesCache.Any())
                 {
                     var t = ClienteRedisEscritura.Del(pListaClavesCache.Select(x => x.ToLower()).ToArray()).Result;
-                }                
+                }
             }
             catch (Exception ex)
             {
-                _loggingService.GuardarLogError(ex, null, true);
+                _loggingService.GuardarLogError(ex, null, mlogger, true);
 
                 //CerrarConexionCache();
             }
 
-            AgregarEntradaTraza("Redis. Invalidadas cachés multiples");
+            AgregarEntradaTraza("Redis. Invalidadas cachï¿½s multiples");
         }
 
         /// <summary>
@@ -1500,10 +1509,21 @@ namespace Es.Riam.Gnoss.CL
         {
             if (obj == null)
                 return null;
-            BinaryFormatter bf = new BinaryFormatter();
-            MemoryStream ms = new MemoryStream();
-            bf.Serialize(ms, obj);
-            return ms.ToArray();
+            try
+            {
+                var options = new JsonSerializerSettings
+                {
+                    PreserveReferencesHandling = PreserveReferencesHandling.Objects,
+                    TypeNameHandling = TypeNameHandling.All,
+                };
+                //string json = JsonSerializer.Serialize(obj, options);
+                string json = JsonConvert.SerializeObject(obj, options);
+                return BsonDocument.Parse(json).ToBson();
+            }
+            catch (Exception ex)
+            {
+                return MessagePackSerializer.Serialize(obj);
+            }
         }
 
         /// <summary>
@@ -1511,23 +1531,49 @@ namespace Es.Riam.Gnoss.CL
         /// </summary>
         /// <param name="arrBytes"></param>
         /// <returns></returns>
-        protected object ByteArrayToObject(byte[] arrBytes)
+        protected object ByteArrayToObject(byte[] arrBytes, Type pType = null)
         {
             object obj = null;
+
+            if(pType == null)
+            {
+                pType = typeof(object);
+            }
+
             if (arrBytes != null)
             {
                 try
                 {
-                    MemoryStream memStream = new MemoryStream();
-                    BinaryFormatter binForm = new BinaryFormatter();
-                    memStream.Write(arrBytes, 0, arrBytes.Length);
-                    memStream.Seek(0, SeekOrigin.Begin);
-                    obj = (object)binForm.Deserialize(memStream);
+                    BsonDocument bsonDoc = BsonSerializer.Deserialize<BsonDocument>(arrBytes);
+                    string json = bsonDoc.ToJson();
+                    var options = new JsonSerializerSettings
+                    {
+                        PreserveReferencesHandling = PreserveReferencesHandling.Objects,
+                        TypeNameHandling = TypeNameHandling.All,
+                    };
+                    obj = JsonConvert.DeserializeObject(json, pType, options);
                 }
                 catch (Exception ex)
                 {
-                    //Ha Cambiado el modelo de datos de la cache, devolvemos null para que lo obtenga de Base de datos
-                    return null;
+                    // Excepciones que salta al intentar deserializar con bson
+                    // un dato serializado con messagepack
+                    if(ex is EndOfStreamException || ex is FormatException)
+                    {
+                        try
+                        {
+                            obj = MessagePackSerializer.Deserialize(pType, arrBytes);
+                        }
+                        catch
+                        {
+                            //Ha Cambiado el modelo de datos de la cache, devolvemos null para que lo obtenga de Base de datos
+                            return null;
+                        }
+                    }
+                    else
+                    {
+                        _loggingService.GuardarLogError(ex, "Error al deserializar con BSON una cache",mlogger);
+                        return null;
+                    }
                 }
             }
             return obj;
@@ -1625,7 +1671,7 @@ namespace Es.Riam.Gnoss.CL
         }
 
         /// <summary>
-        /// Método para interactuar con redis creando un hilo y aguardando un máximo de 2 décimas de segundo antes de abortar la conexión con redis.
+        /// Mï¿½todo para interactuar con redis creando un hilo y aguardando un mï¿½ximo de 2 dï¿½cimas de segundo antes de abortar la conexiï¿½n con redis.
         /// </summary>
         private object InteractuarRedis(TipoAccesoRedis pTipoAccesoRedis, string pRawKey, params object[] pParametrosExtra)
         {
@@ -1685,17 +1731,17 @@ namespace Es.Riam.Gnoss.CL
                     if (!terminado)
                     {
                         //Cancelamos el hilo.
-                        AgregarEntradaTraza("Redis. Acción redis '" + pTipoAccesoRedis + "' superior a " + mDecimasSegundoEsperaRedis * 100 + " milisegundos. " + pRawKey);
+                        AgregarEntradaTraza("Redis. Acciï¿½n redis '" + pTipoAccesoRedis + "' superior a " + mDecimasSegundoEsperaRedis * 100 + " milisegundos. " + pRawKey);
                     }
                     else
                     {
-                        AgregarEntradaTraza("Redis. Acción redis '" + pTipoAccesoRedis + "' en " + (inicioHilo - finHilo) + " segundos. " + pRawKey);
+                        AgregarEntradaTraza("Redis. Acciï¿½n redis '" + pTipoAccesoRedis + "' en " + (inicioHilo - finHilo) + " segundos. " + pRawKey);
                     }
                 }
             }
             else if (mLanzarExcepciones)
             {
-                throw new RedisException("No se ha podido establecer una conexión a Redis.");
+                throw new RedisException("No se ha podido establecer una conexiï¿½n a Redis.");
             }
 
             return resultado;
@@ -1716,11 +1762,11 @@ namespace Es.Riam.Gnoss.CL
         }
 
         /// <summary>
-        /// Comprueba si ya ha pasado 1 minuto y se puede quitar el redis que estaba caído del diccionario.
+        /// Comprueba si ya ha pasado 1 minuto y se puede quitar el redis que estaba caï¿½do del diccionario.
         /// </summary>
         private void ComprobarEstadoRedis()
         {
-            //Revisamos el estado de los redis, si ha pasado más de un minuto los quitamos del diccionario.
+            //Revisamos el estado de los redis, si ha pasado mï¿½s de un minuto los quitamos del diccionario.
             List<string> tempServerList = new List<string>();
 
             foreach (string nodoIP in mServidoresRedisCaidos.Keys)
@@ -1751,13 +1797,12 @@ namespace Es.Riam.Gnoss.CL
                 double pDuracion = 0;
                 int pInicio = 0;
                 int pFin = 0;
-                object pObjeto = null;
-                object[] pObjetoArray = null;
-                (string, object)[] pArrayObjeto = null;
+                object pObjeto = null;                
                 Type[] ptype = null;
                 string pObjetoString = null;
                 string[] pRawkeyArray = null;
                 bool pReintentar = false;
+                Type pTipo = null;
 
                 switch (pTipoAccesoRedis)
                 {
@@ -1771,8 +1816,12 @@ namespace Es.Riam.Gnoss.CL
                         {
                             pRawKeyOriginal = pParametrosExtra[0].ToString();
                         }
+                        if (pParametrosExtra[2] != null)
+                        {
+                            pTipo = pParametrosExtra[2] as Type;
+                        }
                         pGenerarClave = (bool)pParametrosExtra[1];
-                        resultado = InteractuarRedis_Lectura(pRawKey, pRawKeyOriginal, pGenerarClave);
+                        resultado = InteractuarRedis_Lectura(pRawKey, pRawKeyOriginal, pGenerarClave, pTipo);
                         break;
                     case TipoAccesoRedis.Escritura:
                         if (pParametrosExtra[0] != null)
@@ -1789,19 +1838,11 @@ namespace Es.Riam.Gnoss.CL
                         resultado = InteractuarRedis_LecturaVariosObjetos(pRawkeyArray, ptype);
                         break;
                     case TipoAccesoRedis.EscrituraVariosObjetos:
-                        pRawkeyArray = (string[])(pParametrosExtra[0]);
-                        pObjetoArray = (object[])(pParametrosExtra[1]);
-                        if (pParametrosExtra.Length > 2)
-                        {
-                            pDuracion = (double)(pParametrosExtra[2]);
-                        }
-                        pArrayObjeto = ((string, object)[])(pParametrosExtra[3]);
-                        InteractuarRedis_EscrituraDiccionarioObjetos(pRawkeyArray, pObjetoArray, pDuracion, pArrayObjeto);
+                        InteractuarRedis_EscrituraDiccionarioObjetos((double)pParametrosExtra[0], (Dictionary<string, object>)pParametrosExtra[1]);
                         break;
                     case TipoAccesoRedis.LecturaDiccionarioObjetos:
-                        pRawkeyArray = (string[])pParametrosExtra[0];
-                        ptype = (Type[])pParametrosExtra[1];
-                        resultado = InteractuarRedis_LecturaDiccionarioObjetos(pRawkeyArray, ptype);
+                        pRawkeyArray = (string[])pParametrosExtra;
+                        resultado = InteractuarRedis_LecturaDiccionarioObjetos(pRawkeyArray);
                         break;
                     case TipoAccesoRedis.Rango:
                         pRawKeyOriginal = pParametrosExtra[0].ToString();
@@ -1830,10 +1871,9 @@ namespace Es.Riam.Gnoss.CL
                         List<(double, string)> bytesCache = ClienteRedisLectura.CreateSequence(rawKeyOrigen).ZRange(0, -1).Result;
                         foreach ((double, string) elemento in bytesCache)
                         {
-                            resultado = ClienteRedisEscritura.CreateSequence(rawKeyDestino).ZAdd((score,elemento.Item2)).Result;
+                            resultado = ClienteRedisEscritura.CreateSequence(rawKeyDestino).ZAdd((score, elemento.Item2)).Result;
                             score++;
                         }
-
                         resultado = score;
                         break;
                     case TipoAccesoRedis.LecturaListaObjetos:
@@ -1874,7 +1914,7 @@ namespace Es.Riam.Gnoss.CL
             }
             catch (Exception ex)
             {
-                //Llamamos a un método diferente para no mezclar los errores de redis con los de la web.
+                //Llamamos a un mï¿½todo diferente para no mezclar los errores de redis con los de la web.
                 _loggingService.GuardarLogErrorRedis(ex, "La key que intenta obtener es la siguiente: " + pRawKey, true);
                 //CerrarConexionCache();
                 mNumCaidasConsecutivas++;
@@ -1909,7 +1949,7 @@ namespace Es.Riam.Gnoss.CL
 
         private void InteractuarRedis_BorradoVariasClaves(List<string> pRawKeys)
         {
-            AgregarEntradaTraza("Redis. Invalido caché de varias claves: " + pRawKeys.Count);
+            AgregarEntradaTraza("Redis. Invalido cachï¿½ de varias claves: " + pRawKeys.Count);
             foreach (string key in pRawKeys)
             {
                 ClienteRedisEscritura.Del(key);
@@ -1918,7 +1958,7 @@ namespace Es.Riam.Gnoss.CL
 
         private void InteractuarRedis_Borrado(string pRawKey, string pRawKeyOriginal, bool pGenerarClave, bool pReintentar)
         {
-            AgregarEntradaTraza("Redis. Invalido caché " + pRawKey);
+            AgregarEntradaTraza("Redis. Invalido cachï¿½ " + pRawKey);
             long resultado = ClienteRedisEscritura.Del(pRawKey).Result;
         }
 
@@ -1926,7 +1966,7 @@ namespace Es.Riam.Gnoss.CL
         {
             AgregarEntradaTraza("Redis. Renombro la calve '" + pRawKey + "' por '" + pRawKeyNueva + "'");
             ClienteRedisEscritura.Rename(pRawKey, pRawKeyNueva);
-            AgregarEntradaTraza("Redis. Remplazo con Éxito.");
+            AgregarEntradaTraza("Redis. Remplazo con ï¿½xito.");
         }
 
         private object InteractuarRedis_RangoPorScore(string pRawKey, string pRawKeyOriginal, int pMinScore, int pNumElementos)
@@ -1941,22 +1981,26 @@ namespace Es.Riam.Gnoss.CL
             return bytesCache;
         }
 
-        private object InteractuarRedis_LecturaDiccionarioObjetos(string[] pRawkeyArray, Type[] ptypes)
+        private object InteractuarRedis_LecturaDiccionarioObjetos(string[] pRawkeyArray)
         {
             Dictionary<string, object> resultado = new Dictionary<string, object>();
 
-            AgregarEntradaTraza("Redis. Obtengo lista de claves de caché " + pRawkeyArray[0] + " ...");
+            AgregarEntradaTraza("Redis. Obtengo lista de claves de cachï¿½ " + pRawkeyArray[0] + " ...");
+            Type[] tipos = new Type[pRawkeyArray.Length];
+            for (int i = 0; i < tipos.Length; i++)
+            {
+                tipos[i] = typeof(byte[]);
+            }
 
-            object[] objetosCache = ClienteRedisLectura.MGet(pRawkeyArray, ptypes).Result;
+            object[] objetosCache = ClienteRedisLectura.MGet(pRawkeyArray, tipos).Result;
 
             for (int cont = 0; cont < pRawkeyArray.Length; cont++)
             {
                 string clave = pRawkeyArray[cont];
                 object objetoCache = objetosCache[cont];
-                if (objetoCache != null && objetoCache is byte[])
+                if (objetoCache is byte[] bytesObjeto)
                 {
-                    byte[] bytesObjeto = (byte[])objetoCache;
-                    objetoCache = (object)ByteArrayToObject(bytesObjeto);
+                    objetoCache = ByteArrayToObject(bytesObjeto);
                 }
 
                 if (!resultado.ContainsKey(clave))
@@ -1965,57 +2009,61 @@ namespace Es.Riam.Gnoss.CL
                 }
             }
 
-
             return resultado;
         }
 
-        private void InteractuarRedis_EscrituraDiccionarioObjetos(string[] pRawkeyArray, object[] pObjetosCache, double pDuracion, (string, object)[] pObjeto)
+        /// <summary>
+        /// Escribe varios objetos en Redis a partir de un diccionario clave-valor donde la clave es la clave de Redis y el valor el objeto a almacenar.
+        /// </summary>
+        /// <param name="pDuracion">Duraciï¿½n que queremos establecer a cada elemento de la cachï¿½</param>
+        /// <param name="pClaveValor">Diccionario donde la clave es la clave de Redis y el valor es el objeto a almacenar</param>
+        private void InteractuarRedis_EscrituraDiccionarioObjetos(double pDuracion, Dictionary<string, object> pClaveValor)
         {
-            AgregarEntradaTraza("Redis. Agrego lista de claves de caché " + pRawkeyArray[0] + " ...");
+            (string, object)[] listaObjetos = new (string, object)[pClaveValor.Keys.Count];
+            
             int i = 0;
-            (string, object)[] listaObjetos = new (string, object)[pObjeto.Length];
-            foreach ((string, object) objeto in pObjeto)
+            foreach (string clave in pClaveValor.Keys)
             {
-                listaObjetos[i].Item1 = objeto.Item1;
-                listaObjetos[i].Item2 = ObjectToByteArray(objeto.Item2);
+                listaObjetos[i].Item1 = clave;
+                listaObjetos[i].Item2 = ObjectToByteArray(pClaveValor[clave]);
+
                 i++;
             }
 
-            ClienteRedisEscritura.MSet(pObjeto);
+            ClienteRedisEscritura.MSet(listaObjetos);
 
-            foreach (string rawKey in pRawkeyArray)
+            if (pDuracion > 0)
             {
-                if (pDuracion > 0)
+                foreach (string clave in pClaveValor.Keys)
                 {
-                    ClienteRedisEscritura.Expire(rawKey, (int)pDuracion);
+                    ClienteRedisEscritura.Expire(clave, (int)pDuracion);
                 }
             }
-
-            AgregarEntradaTraza("Redis. Agregado lista de claves de caché " + pRawkeyArray[0] + " ...");
         }
 
         private object InteractuarRedis_LecturaVariosObjetos(string[] pRawkeyArray, Type[] ptypes)
         {
             List<object> listaResultados = new List<object>();
-            object[] objetosCache = ClienteRedisLectura.MGet(pRawkeyArray, ptypes).Result;
-            AgregarEntradaTraza("Redis. Obtengo clave de caché");
+            object[] objetosCache = ClienteRedisLectura.MGet(pRawkeyArray, [typeof(byte[])]).Result;
+            AgregarEntradaTraza("Redis. Obtengo clave de cachï¿½");
             if (objetosCache != null && objetosCache.Length > 0)
             {
                 AgregarEntradaTraza("Redis. Existe");
+                int index = 0;
                 foreach (object objeto in objetosCache)
                 {
-                    if (objeto != null && objeto is byte[])
-                    {
-                        byte[] bytesObjeto = (byte[])objeto;
-                        object objetoCache = (object)ByteArrayToObject(bytesObjeto);
+                    if (objeto is byte[] bytesObjeto)
+                    {                        
+                        object objetoCache = ByteArrayToObject(bytesObjeto);
                         AgregarEntradaTraza("Redis. Obtenido: " + pRawkeyArray);
                         listaResultados.Add(objetoCache);
                     }
+                    index++;
                 }
             }
             else
             {
-                AgregarEntradaTraza("Redis. No está en caché: " + pRawkeyArray);
+                AgregarEntradaTraza("Redis. No estï¿½ en cachï¿½: " + pRawkeyArray);
             }
 
             return listaResultados;
@@ -2023,7 +2071,7 @@ namespace Es.Riam.Gnoss.CL
 
         private void InteractuarRedis_Escritura(string pRawKey, string pRawKeyOriginal, object pObjetoCache, double pDuracion)
         {
-            AgregarEntradaTraza("Redis. Agrego a caché " + pRawKey);
+            AgregarEntradaTraza("Redis. Agrego a cachï¿½ " + pRawKey);
             if (pDuracion > 0)
             {
                 ClienteRedisEscritura.Set(pRawKey, ObjectToByteArray(pObjetoCache), (int)pDuracion);
@@ -2035,26 +2083,26 @@ namespace Es.Riam.Gnoss.CL
             AgregarEntradaTraza("Redis. Agregado con expiracion: " + pRawKey);
         }
 
-        private object InteractuarRedis_Lectura(string pRawKey, string pRawKeyOriginal, bool pGenerarClave)
+        private object InteractuarRedis_Lectura(string pRawKey, string pRawKeyOriginal, bool pGenerarClave, Type pTipo)
         {
             object resultado = null;
 
-            AgregarEntradaTraza("Redis. Obtengo clave de caché " + pRawKey);
+            AgregarEntradaTraza("Redis. Obtengo clave de cachï¿½ " + pRawKey);
 
             byte[] bytesCache = null;
             try
             {
-                 bytesCache = ClienteRedisLectura.Get<byte[]>(pRawKey).Result;
+                bytesCache = ClienteRedisLectura.Get<byte[]>(pRawKey).Result;
             }
             catch (RedisException redisException)
             {
-                _loggingService.GuardarLogError($"Error al obtener la clave {pRawKey} de cache. \nError: {redisException}");
+                _loggingService.GuardarLogError($"Error al obtener la clave {pRawKey} de cache. \nError: {redisException}", mlogger);
             }
-            
+
             if (bytesCache != null && bytesCache.Length > 0)
             {
                 AgregarEntradaTraza("Redis. Existe " + pRawKey);
-                resultado = ByteArrayToObject(bytesCache);
+                resultado = ByteArrayToObject(bytesCache, pTipo);
                 if (resultado is KeyValuePair<object, double>)
                 {
                     resultado = ((KeyValuePair<object, double>)resultado).Key;
@@ -2087,7 +2135,7 @@ namespace Es.Riam.Gnoss.CL
             }
             else
             {
-                AgregarEntradaTraza("Redis. No está en caché: " + pRawKey);
+                AgregarEntradaTraza("Redis. No estï¿½ en cachï¿½: " + pRawKey);
             }
 
             return resultado;
@@ -2105,17 +2153,17 @@ namespace Es.Riam.Gnoss.CL
         #region Cache Local
 
         /// <summary>
-        /// Devuelve el dato correspondiente a la clave de caché local
+        /// Devuelve el dato correspondiente a la clave de cachï¿½ local
         /// </summary>
-        /// <param name="pRawKey">Clave de caché que se va a buscar en local</param>
+        /// <param name="pRawKey">Clave de cachï¿½ que se va a buscar en local</param>
         /// <returns>Objeto solicitado</returns>
         public object ObtenerObjetoDeCacheLocal(string pRawKey)
         {
             if (!UsarCacheLocal.Equals(UsoCacheLocal.Nunca) && EjecucionDeAplicacionWeb)
             {
 
-				pRawKey = ObtenerClaveCache(pRawKey);
-				
+                pRawKey = ObtenerClaveCache(pRawKey);
+
 
                 _loggingService.AgregarEntrada("CacheLocal: Obtenemos " + pRawKey);
 
@@ -2137,15 +2185,15 @@ namespace Es.Riam.Gnoss.CL
         }
 
         /// <summary>
-        /// Agrega en la caché local el dato pDato con la clave de caché pRawKey
+        /// Agrega en la cachï¿½ local el dato pDato con la clave de cachï¿½ pRawKey
         /// </summary>
-        /// <param name="pRawKey">Clave de caché que va a guardar el objeto</param>
-        /// <param name="pDato">Dato que se va a guardar con la clave de caché.</param>
+        /// <param name="pRawKey">Clave de cachï¿½ que va a guardar el objeto</param>
+        /// <param name="pDato">Dato que se va a guardar con la clave de cachï¿½.</param>
         public void AgregarObjetoCacheLocal(Guid pProyectoID, string pRawKey, object pDato, bool pObtenerParametroSiempre = false, DateTime? pExpirationDate = null)
         {
             //if (pRawKey == null)
             //{
-                pRawKey = this.ObtenerClaveCache(pRawKey);
+            pRawKey = this.ObtenerClaveCache(pRawKey);
             //}
             if (!pExpirationDate.HasValue)
             {
@@ -2154,9 +2202,9 @@ namespace Es.Riam.Gnoss.CL
 
             if (!UsarCacheLocal.Equals(UsoCacheLocal.Nunca) && EjecucionDeAplicacionWeb && pDato != null && (pObtenerParametroSiempre || UsarCacheLocal.Equals(UsoCacheLocal.Siempre) || _configService.ObtenerUsarCacheLocal()))
             {
-                _loggingService.AgregarEntrada("CacheLocal: Añado " + pRawKey);
+                _loggingService.AgregarEntrada("CacheLocal: Aï¿½ado " + pRawKey);
 
-                string fileName = $"{AppDomain.CurrentDomain.SetupInformation.ApplicationBase}/config/versionCacheLocal/{pProyectoID}.config";
+                string fileName = $"{AppDomain.CurrentDomain.SetupInformation.ApplicationBase}config{Path.DirectorySeparatorChar}versionCacheLocal{Path.DirectorySeparatorChar}{pProyectoID}.config";
                 FileInfo fileInfo = new FileInfo(fileName);
 
                 if (!fileInfo.Directory.Exists)
@@ -2179,13 +2227,13 @@ namespace Es.Riam.Gnoss.CL
         {
             try
             {
-                string ruta = $"{System.AppDomain.CurrentDomain.SetupInformation.ApplicationBase}/config/versionCacheLocal";
+                string ruta = $"{System.AppDomain.CurrentDomain.SetupInformation.ApplicationBase}{Path.DirectorySeparatorChar}config{Path.DirectorySeparatorChar}versionCacheLocal";
                 if (!Directory.Exists(ruta))
                 {
                     Directory.CreateDirectory(ruta);
                 }
 
-                string fileName = $"{ruta}/{pProyectoID}.config";
+                string fileName = $"{ruta}{Path.DirectorySeparatorChar}{pProyectoID}.config";
                 using (StreamWriter sw = new StreamWriter(fileName))
                 {
                     sw.Write(pValor);
@@ -2217,13 +2265,12 @@ namespace Es.Riam.Gnoss.CL
         {
             _loggingService.AgregarEntrada("BaseCL_ObtenerClienteRedisParaIP_BEGIN");
             RedisDB clienteRedis = null;
-
             string password = null;
             int port = 6379;
             int p = 0;
             if (pIP.Contains("|"))
             {
-                // El servidor tiene contraseña
+                // El servidor tiene contraseï¿½a
                 string[] ipPassword = pIP.Split(new string[] { "|" }, StringSplitOptions.RemoveEmptyEntries);
                 pIP = ipPassword[0];
 
@@ -2273,7 +2320,7 @@ namespace Es.Riam.Gnoss.CL
 
             try
             {
-                //Si no había configuración para este dominio, o no estamos en una aplicación Web, cojo la configuración por defecto
+                //Si no habï¿½a configuraciï¿½n para este dominio, o no estamos en una aplicaciï¿½n Web, cojo la configuraciï¿½n por defecto
                 ParametroAplicacion filaParametroTamanioRedis = _entityContext.ParametroAplicacion.FirstOrDefault(parametro => parametro.Parametro == ParametroAD.TamanioPoolRedis);
                 //ParametroAplicacionDS.ParametroAplicacionRow filaParametroTamanioRedis = paramAplicDS.ParametroAplicacion.FindByParametro(ParametroAD.TamanioPoolRedis);
 
@@ -2285,7 +2332,7 @@ namespace Es.Riam.Gnoss.CL
             }
             catch (Exception ex)
             {
-                _loggingService.GuardarLogError(ex, null, true);
+                _loggingService.GuardarLogError(ex, null, mlogger,true);
             }
 
             if (tamanio > 0)
@@ -2305,7 +2352,7 @@ namespace Es.Riam.Gnoss.CL
             {
                 try
                 {
-                    // Se saca fuera para que no se compruebe siempre el nodoDB de la petición antes de devolverla
+                    // Se saca fuera para que no se compruebe siempre el nodoDB de la peticiï¿½n antes de devolverla
                     if (mPoolName == "")
                     {
                         mPoolName = "redis";
@@ -2323,7 +2370,7 @@ namespace Es.Riam.Gnoss.CL
                         var cliente = ClienteRedisEscritura;
                         return cliente;
                     }
-                    
+
                     if (mClienteRedisLectura == null)
                     {
                         //BeetleX.Buffers.BufferPool.BUFFER_SIZE = 2400000;
@@ -2331,7 +2378,7 @@ namespace Es.Riam.Gnoss.CL
                         string cadenaPeticion = nodoIPMaster;
                         Stopwatch sw = LoggingService.IniciarRelojTelemetria();
                         mClienteRedisLectura = _redisCacheWrapper.RedisLectura(mPoolName);
-                        _loggingService.AgregarEntrada("ClienteRedisLectura: Para '" + mPoolName + "' ¿existe en petición actual?" + (mClienteRedisLectura != null));
+                        _loggingService.AgregarEntrada("ClienteRedisLectura: Para '" + mPoolName + "' ï¿½existe en peticiï¿½n actual?" + (mClienteRedisLectura != null));
 
                         if (mClienteRedisLectura == null)
                         {
@@ -2345,7 +2392,7 @@ namespace Es.Riam.Gnoss.CL
                                 int pM = 0;
                                 if (nodoIPMaster.Contains("|"))
                                 {
-                                    // El servidor tiene contraseña
+                                    // El servidor tiene contraseï¿½a
                                     string[] ipPassword = nodoIPMaster.Split(new string[] { "|" }, StringSplitOptions.RemoveEmptyEntries);
                                     nodoIPMaster = ipPassword[0];
 
@@ -2365,7 +2412,7 @@ namespace Es.Riam.Gnoss.CL
                                 }
                                 ///Fin nodo master
                                 if (!string.IsNullOrEmpty(nodoIPRead))
-                                {                                 
+                                {
                                     int port = 6379;
                                     //nodo lectura
                                     if (nodoIPRead.Contains(':'))
@@ -2377,10 +2424,10 @@ namespace Es.Riam.Gnoss.CL
                                         {
                                             port = p;
                                         }
-                                        
+
                                     }
                                     //Fin nodo lectura
-                                    Random random= new Random();
+                                    Random random = new Random();
                                     int num = random.Next(101);
                                     if (num % 2 == 0)
                                     {
@@ -2419,17 +2466,21 @@ namespace Es.Riam.Gnoss.CL
                                         mClienteRedisLectura.Host.AddReadHost(nodoIPMaster, portMaster);
                                     }
                                 }
-                                
+
 
                                 _loggingService.AgregarEntradaDependencia($"ClienteRedisLectura: cargamos para la ip '{nodoIPMaster}' y BD '{nodoDB}'", false, "Cliente Redis Lectura", sw, true);
 
                                 _redisCacheWrapper.AddRedisLectura(mPoolName, mClienteRedisLectura);
-                                _loggingService.AgregarEntrada("ClienteRedisLectura: Agregado a la petición actual");
+
+
+                                var result = mClienteRedisLectura.Execute(new SETNAME(), typeof(string));
+                                result.Wait();
+                                _loggingService.AgregarEntrada("ClienteRedisLectura: Agregado a la peticiï¿½n actual");
                             }
                             catch (Exception ex)
                             {
                                 _loggingService.AgregarEntradaDependencia($"ClienteRedisLectura: Error al conectar con redis {mPoolName} a la IP {nodoIPMaster} con puerto {nodoDB}", false, "Cliente Redis Lectura", sw, false);
-                                _loggingService.GuardarLogError(ex, string.Format("Error al conectar con redis {0}, a la IP {1} con puerto {2}", mPoolName, nodoIPMaster, nodoDB), true);
+                                _loggingService.GuardarLogError(ex, string.Format("Error al conectar con redis {0}, a la IP {1} con puerto {2}",mPoolName, nodoIPMaster, nodoDB),mlogger, true);
                             }
                         }
                     }
@@ -2437,6 +2488,8 @@ namespace Es.Riam.Gnoss.CL
                     if (!mClienteRedisLectura.DB.Equals(nodoDB))
                     {
                         mClienteRedisLectura = ObtenerClienteRedisParaIP(nodoIPMaster, nodoDB);
+                        var result = mClienteRedisLectura.Execute(new SETNAME(), typeof(string));
+                        result.Wait();
                         _redisCacheWrapper.AddRedisLectura(mPoolName, mClienteRedisLectura);
                     }
 
@@ -2444,8 +2497,8 @@ namespace Es.Riam.Gnoss.CL
                 }
                 catch (Exception ex)
                 {
-                    _loggingService.AgregarEntrada($"ClienteRedisLectura: Error al conectar con redis { mPoolName}");
-                    _loggingService.GuardarLogError(ex, $"Error al conectar con redis {mPoolName}", true);
+                    _loggingService.AgregarEntrada($"ClienteRedisLectura: Error al conectar con redis {mPoolName}");
+                    _loggingService.GuardarLogError(ex, $"Error al conectar con redis {mPoolName}", mlogger,true);
                     return null;
                 }
             }
@@ -2457,20 +2510,20 @@ namespace Es.Riam.Gnoss.CL
             {
                 if (mNombreProyectoPadreEcositema == null)
                 {
-                    ParametroAplicacionCN paramCN = new ParametroAplicacionCN(_entityContext, _loggingService, _configService, mServicesUtilVirtuosoAndReplication);
+                    ParametroAplicacionCN paramCN = new ParametroAplicacionCN(_entityContext, _loggingService, _configService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<ParametroAplicacionCN>(), mLoggerFactory);
                     string ComunidadPadreEcosistemaID = paramCN.ObtenerParametroAplicacion("ComunidadPadreEcosistemaID");
                     paramCN.Dispose();
                     if (!string.IsNullOrEmpty(ComunidadPadreEcosistemaID))
                     {
                         try
                         {
-                            ProyectoCN proyCN = new ProyectoCN(_entityContext, _loggingService, _configService, mServicesUtilVirtuosoAndReplication);
+                            ProyectoCN proyCN = new ProyectoCN(_entityContext, _loggingService, _configService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<ProyectoCN>(), mLoggerFactory);
                             mNombreProyectoPadreEcositema = proyCN.ObtenerNombreCortoProyecto(Guid.Parse(ComunidadPadreEcosistemaID));
                             proyCN.Dispose();
                         }
                         catch
                         {
-                            _loggingService.GuardarLogError("El parametro ComunidadPadreEcosistemaID no esta bien configurado.");
+                            _loggingService.GuardarLogError("El parametro ComunidadPadreEcosistemaID no esta bien configurado.", mlogger);
                             mNombreProyectoPadreEcositema = "";
                         }
                     }
@@ -2489,20 +2542,20 @@ namespace Es.Riam.Gnoss.CL
             {
                 if (mNombreCortoProyectoPadreEcosistema == null)
                 {
-                    ParametroAplicacionCN paramCN = new ParametroAplicacionCN(_entityContext, _loggingService, _configService, mServicesUtilVirtuosoAndReplication);
+                    ParametroAplicacionCN paramCN = new ParametroAplicacionCN(_entityContext, _loggingService, _configService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<ParametroAplicacionCN>(), mLoggerFactory);
                     string NombreCortoEcosistema = paramCN.ObtenerParametroAplicacion("NombreCortoProyectoPadreEcositema");
                     paramCN.Dispose();
                     if (!string.IsNullOrEmpty(NombreCortoEcosistema))
                     {
                         try
                         {
-                            ProyectoCN proyCN = new ProyectoCN(_entityContext, _loggingService, _configService, mServicesUtilVirtuosoAndReplication);
+                            ProyectoCN proyCN = new ProyectoCN(_entityContext, _loggingService, _configService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<ProyectoCN>(), mLoggerFactory);
                             mNombreCortoProyectoPadreEcosistema = NombreCortoEcosistema;
                             proyCN.Dispose();
                         }
                         catch
                         {
-                            _loggingService.GuardarLogError("El parametro NombreCortoProyectoPadreEcositema no esta bien configurado.");
+                            _loggingService.GuardarLogError("El parametro NombreCortoProyectoPadreEcositema no esta bien configurado.", mlogger);
                             mNombreCortoProyectoPadreEcosistema = "";
                         }
                     }
@@ -2528,13 +2581,13 @@ namespace Es.Riam.Gnoss.CL
                     {
                         try
                         {
-                            ProyectoCN proyCN = new ProyectoCN(_entityContext, _loggingService, _configService, mServicesUtilVirtuosoAndReplication);
+                            ProyectoCN proyCN = new ProyectoCN(_entityContext, _loggingService, _configService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<ProyectoCN>(), mLoggerFactory);
                             mPadreEcosistemaProyectoID = proyCN.ObtenerProyectoIDPorNombreCorto(NombreCortoProyectoPadreEcositema);
                             proyCN.Dispose();
                         }
                         catch
                         {
-                            _loggingService.GuardarLogError("El parametro NombreCortoProyectoPadreEcositema no esta bien configurado.");
+                            _loggingService.GuardarLogError("El parametro NombreCortoProyectoPadreEcositema no esta bien configurado.", mlogger);
                             mPadreEcosistemaProyectoID = Guid.Empty;
                         }
                     }
@@ -2543,13 +2596,13 @@ namespace Es.Riam.Gnoss.CL
                     {
                         try
                         {
-                            ProyectoCN proyCN = new ProyectoCN(_entityContext, _loggingService, _configService, mServicesUtilVirtuosoAndReplication);
+                            ProyectoCN proyCN = new ProyectoCN(_entityContext, _loggingService, _configService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<ProyectoCN>(), mLoggerFactory);
                             mPadreEcosistemaProyectoID = proyCN.ObtenerProyectoIDPorNombreCorto(NombreProyectoPadreEcositema);
                             proyCN.Dispose();
                         }
                         catch
                         {
-                            _loggingService.GuardarLogError("El parametro ComunidadPadreEcosistemaID no esta bien configurado.");
+                            _loggingService.GuardarLogError("El parametro ComunidadPadreEcosistemaID no esta bien configurado.", mlogger);
                             mPadreEcosistemaProyectoID = Guid.Empty;
                         }
                     }
@@ -2577,13 +2630,13 @@ namespace Es.Riam.Gnoss.CL
                         mPoolName = "redis";
                     }
 
-                    // Se saca fuera para que no se compruebe siempre el nodoDB de la petición antes de devolverla
+                    // Se saca fuera para que no se compruebe siempre el nodoDB de la peticiï¿½n antes de devolverla
                     string poolNameEscritura = mPoolName.Replace("acid", "redis");
 
                     string nodoIPMaster = _configService.ObtenerConexionRedisIPMaster(mPoolName);
                     int nodoDB = _configService.ObtenerConexionRedisBD(mPoolName);
                     int redisTimeOut = _configService.ObtenerConexionRedisTimeout(mPoolName);
-                  
+
                     if (mClienteRedisEscritura == null)
                     {
                         //BeetleX.Buffers.BufferPool.BUFFER_SIZE = 2400000;
@@ -2592,7 +2645,7 @@ namespace Es.Riam.Gnoss.CL
                         Stopwatch sw = LoggingService.IniciarRelojTelemetria();
 
                         mClienteRedisEscritura = _redisCacheWrapper.RedisEscritura(mPoolName);
-                        _loggingService.AgregarEntrada("ClienteRedisEscritura: Para '" + mPoolName + "' ¿existe en petición actual?" + (mClienteRedisEscritura != null));
+                        _loggingService.AgregarEntrada("ClienteRedisEscritura: Para '" + mPoolName + "' ï¿½existe en peticiï¿½n actual?" + (mClienteRedisEscritura != null));
 
                         if (mClienteRedisEscritura == null)
                         {
@@ -2608,13 +2661,16 @@ namespace Es.Riam.Gnoss.CL
 
                                 _loggingService.AgregarEntradaDependencia($"ClienteRedisEscritura: cargamos para la ip '{nodoIPMaster}' y BD '{nodoDB}'", false, "Cliente Redis Escritura", sw, true);
 
+                                
+                                var result = mClienteRedisEscritura.Execute(new SETNAME(), typeof(string));
+                                result.Wait();
                                 _redisCacheWrapper.AddRedisEscritura(mPoolName, mClienteRedisEscritura);
-                                _loggingService.AgregarEntrada("ClienteRedisEscritura: Agregado a la petición actual");
+                                _loggingService.AgregarEntrada("ClienteRedisEscritura: Agregado a la peticiï¿½n actual");
                             }
                             catch (Exception ex)
                             {
                                 _loggingService.AgregarEntradaDependencia($"ClienteRedisEscritura: Error al conectar con redis {mPoolName} a la IP {nodoIPMaster} con puerto {nodoDB}", false, "Cliente Redis Escritura", sw, false);
-                                _loggingService.GuardarLogError(ex, null, true);
+                                _loggingService.GuardarLogError(ex, null, mlogger,true);
                             }
                         }
                     }
@@ -2622,6 +2678,8 @@ namespace Es.Riam.Gnoss.CL
                     if (!mClienteRedisEscritura.DB.Equals(nodoDB))
                     {
                         mClienteRedisEscritura = ObtenerClienteRedisParaIP(nodoIPMaster, nodoDB);
+                        var result = mClienteRedisLectura.Execute(new SETNAME(), typeof(string));
+                        result.Wait();
                         _redisCacheWrapper.AddRedisEscritura(mPoolName, mClienteRedisEscritura);
                     }
 
@@ -2629,15 +2687,15 @@ namespace Es.Riam.Gnoss.CL
                 }
                 catch (Exception ex)
                 {
-                    _loggingService.AgregarEntrada($"ClienteRedisEscritura: Error al conectar con redis { mPoolName}");
-                    _loggingService.GuardarLogError(ex, $"Error al conectar con redis {mPoolName}", true);
+                    _loggingService.AgregarEntrada($"ClienteRedisEscritura: Error al conectar con redis {mPoolName}");
+                    _loggingService.GuardarLogError(ex, $"Error al conectar con redis {mPoolName}", mlogger,true);
                     return null;
                 }
             }
         }
 
         /// <summary>
-        /// Devuelve la clave para la caché
+        /// Devuelve la clave para la cachï¿½
         /// </summary>
         public virtual string[] ClaveCache
         {
@@ -2676,7 +2734,7 @@ namespace Es.Riam.Gnoss.CL
         }
 
         /// <summary>
-        /// Obtiene si la aplicación actual es un entorno Web. 
+        /// Obtiene si la aplicaciï¿½n actual es un entorno Web. 
         /// </summary>
         protected bool EjecucionDeAplicacionWeb
         {
@@ -2687,7 +2745,7 @@ namespace Es.Riam.Gnoss.CL
         }
 
         /// <summary>
-        /// Obtiene el tamaño del pool de conexiones hacia Redis
+        /// Obtiene el tamaï¿½o del pool de conexiones hacia Redis
         /// </summary>
         public int TamanioPool
         {
@@ -2716,7 +2774,7 @@ namespace Es.Riam.Gnoss.CL
         public bool TieneComunidadPadreConfigurada(Guid pProyectoID)
         {
             bool tieneComunidadPadreConfigurada = false;
-            ProyectoCN proCN = new ProyectoCN(_entityContext, _loggingService, _configService, mServicesUtilVirtuosoAndReplication);
+            ProyectoCN proCN = new ProyectoCN(_entityContext, _loggingService, _configService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<ProyectoCN>(), mLoggerFactory);
             Guid proyectoSuperiorID = proCN.ObtenerProyectoSuperiorIDDeProyectoID(pProyectoID);
             if (proyectoSuperiorID != Guid.Empty && EsHijoEcosistemaProyecto(proyectoSuperiorID))
             {
@@ -2746,10 +2804,10 @@ namespace Es.Riam.Gnoss.CL
 
         public void VersionarCacheLocal(Guid pProyectoID)
         {
-            GnossCache gnossCache = new GnossCache(_entityContext, _loggingService, _redisCacheWrapper, _configService, mServicesUtilVirtuosoAndReplication);
+            GnossCache gnossCache = new GnossCache(_entityContext, _loggingService, _redisCacheWrapper, _configService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<GnossCache>(), mLoggerFactory);
 
             gnossCache.VersionarCacheLocal(pProyectoID);
-		}
+        }
 
         public bool UsarClienteEscritura
         {
@@ -2770,7 +2828,7 @@ namespace Es.Riam.Gnoss.CL
         #region Dispose
 
         /// <summary>
-        /// Determina si está disposed
+        /// Determina si estï¿½ disposed
         /// </summary>
         private bool mDisposed = false;
 
@@ -2797,7 +2855,7 @@ namespace Es.Riam.Gnoss.CL
         /// <summary>
         /// Libera los recursos
         /// </summary>
-        /// <param name="pDisposing">Determina si se está llamando desde el Dispose()</param>
+        /// <param name="pDisposing">Determina si se estï¿½ llamando desde el Dispose()</param>
         protected virtual void Dispose(bool pDisposing)
         {
             if (!this.mDisposed)
@@ -2816,7 +2874,7 @@ namespace Es.Riam.Gnoss.CL
                 }
                 catch (Exception ex)
                 {
-                    _loggingService.GuardarLogError(ex, null, true);
+                    _loggingService.GuardarLogError(ex, null, mlogger,true);
                 }
             }
         }
@@ -2832,5 +2890,30 @@ namespace Es.Riam.Gnoss.CL
         public override bool Read => false;
 
         public override string Name => "FLUSHDB";
+    }
+
+    //Realizacion de metodo de CLIENT SETNAME para redis
+    public class SETNAME : Command
+    {
+        private string _name;
+        public override bool Read => false;
+
+        public override string Name
+        {
+            get
+            {
+                if (string.IsNullOrEmpty(_name))
+                {
+                    _name = $"{AppDomain.CurrentDomain.FriendlyName}_{Environment.GetEnvironmentVariable("COMPOSE_PROJECT_NAME")}_{Guid.NewGuid()}";
+                }
+                return _name;
+            }
+
+        }
+        public SETNAME()
+        {
+            AddText("CLIENT");
+            AddText("SETNAME");
+        }
     }
 }

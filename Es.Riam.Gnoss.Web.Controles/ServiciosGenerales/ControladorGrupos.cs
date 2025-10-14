@@ -20,7 +20,10 @@ using Es.Riam.Gnoss.Logica.ServiciosGenerales;
 using Es.Riam.Gnoss.Logica.Usuarios;
 using Es.Riam.Gnoss.Util.Configuracion;
 using Es.Riam.Gnoss.Util.General;
+using Es.Riam.Gnoss.UtilServiciosWeb;
+using Es.Riam.Interfaces.InterfacesOpen;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -36,9 +39,11 @@ namespace Es.Riam.Gnoss.Web.Controles.ServiciosGenerales
         private ConfigService mConfigService;
         private RedisCacheWrapper mRedisCacheWrapper;
         private EntityContextBASE mEntityContextBASE;
+        private ILogger mlogger;
+        private ILoggerFactory mloggerFactory;
 
-        public ControladorGrupos(LoggingService loggingService, EntityContext entityContext, ConfigService configService, RedisCacheWrapper redisCacheWrapper, GnossCache gnossCache, EntityContextBASE entityContextBASE, VirtuosoAD virtuosoAD, IHttpContextAccessor httpContextAccessor, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication)
-            :  base(loggingService, configService, entityContext, redisCacheWrapper, gnossCache, virtuosoAD, httpContextAccessor, servicesUtilVirtuosoAndReplication)
+        public ControladorGrupos(LoggingService loggingService, EntityContext entityContext, ConfigService configService, RedisCacheWrapper redisCacheWrapper, GnossCache gnossCache, EntityContextBASE entityContextBASE, VirtuosoAD virtuosoAD, IHttpContextAccessor httpContextAccessor, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication, ILogger<ControladorGrupos> logger,ILoggerFactory loggerFactory)
+            :  base(loggingService, configService, entityContext, redisCacheWrapper, gnossCache, virtuosoAD, httpContextAccessor, servicesUtilVirtuosoAndReplication, logger,loggerFactory)
         {
             mVirtuosoAD = virtuosoAD;
             mLoggingService = loggingService;
@@ -46,6 +51,8 @@ namespace Es.Riam.Gnoss.Web.Controles.ServiciosGenerales
             mConfigService = configService;
             mRedisCacheWrapper = redisCacheWrapper;
             mEntityContextBASE = entityContextBASE;
+            mlogger = logger;
+            mloggerFactory = loggerFactory;
         }
 
         /// <summary>
@@ -54,9 +61,9 @@ namespace Es.Riam.Gnoss.Web.Controles.ServiciosGenerales
         /// <param name="pProyectoID">ID de la comunidad</param>
         /// <param name="pIdentidadID">ID de Identidad</param>
         /// <param name="pUrlIntragnoss">URL de intragnoss</param>
-        public void EliminarAUsuarioDeGruposDeComunidad(Guid pProyectoID, Guid pIdentidadID, string pUrlIntragnoss)
+        public void EliminarAUsuarioDeGruposDeComunidad(Guid pProyectoID, Guid pIdentidadID, string pUrlIntragnoss, IAvailableServices pAvailableServices)
         {
-            IdentidadCN identCN = new IdentidadCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+            IdentidadCN identCN = new IdentidadCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<IdentidadCN>(), mLoggerFactory);
             DataWrapperIdentidad identDW = identCN.ObtenerGruposDeProyecto(pProyectoID, true);
             identCN.Dispose();
 
@@ -71,7 +78,7 @@ namespace Es.Riam.Gnoss.Web.Controles.ServiciosGenerales
 
             foreach (object[] datoEliminacion in datosEliminar)
             {
-                EliminarIdentidadDeGruposDeComunidad(pProyectoID, pIdentidadID, pUrlIntragnoss, identDW, (Guid)datoEliminacion[0], (string)datoEliminacion[1], (string)datoEliminacion[2], false);
+                EliminarIdentidadDeGruposDeComunidad(pProyectoID, pIdentidadID, pUrlIntragnoss, identDW, (Guid)datoEliminacion[0], (string)datoEliminacion[1], (string)datoEliminacion[2], false, pAvailableServices);
             }
         }
 
@@ -82,7 +89,7 @@ namespace Es.Riam.Gnoss.Web.Controles.ServiciosGenerales
         /// <param name="pIdentidadID">ID de Identidad</param>
         /// <param name="pUrlIntragnoss">URL de intragnoss</param>
         /// <returns>Cadena con el mensaje de error ó vacío</returns>
-        public string EliminarUsuariosDeGrupoDeComunidad(Guid pProyectoID, string pUrlIntragnoss, Guid pGrupoID, List<Guid> pListaIdentidadesID)
+        public string EliminarUsuariosDeGrupoDeComunidad(Guid pProyectoID, string pUrlIntragnoss, Guid pGrupoID, List<Guid> pListaIdentidadesID, IAvailableServices pAvailableServices)
         {
             string error = "";
             try
@@ -91,7 +98,7 @@ namespace Es.Riam.Gnoss.Web.Controles.ServiciosGenerales
                 {
                     List<Guid> listaGrupos = new List<Guid>();
                     listaGrupos.Add(pGrupoID);
-                    IdentidadCN identCN = new IdentidadCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+                    IdentidadCN identCN = new IdentidadCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<IdentidadCN>(), mLoggerFactory);
                     DataWrapperIdentidad identDW = identCN.ObtenerGruposPorIDGrupo(listaGrupos);
                     identCN.Dispose();
 
@@ -102,7 +109,7 @@ namespace Es.Riam.Gnoss.Web.Controles.ServiciosGenerales
                         {
                             try
                             {
-                                EliminarIdentidadDeGruposDeComunidad(pProyectoID, identidadID, pUrlIntragnoss, identDW, pGrupoID, filaGrupo.Nombre, filaGrupo.NombreCorto, true);
+                                EliminarIdentidadDeGruposDeComunidad(pProyectoID, identidadID, pUrlIntragnoss, identDW, pGrupoID, filaGrupo.Nombre, filaGrupo.NombreCorto, true, pAvailableServices);
                             }
                             catch (Exception)
                             {
@@ -110,13 +117,13 @@ namespace Es.Riam.Gnoss.Web.Controles.ServiciosGenerales
                             }
                         }
 
-                        ActualizarBase(pProyectoID, pGrupoID);
+                        ActualizarBase(pProyectoID, pGrupoID, pAvailableServices);
                     }
                 }
             }
             catch (Exception ex)
             {
-                mLoggingService.GuardarLogError(ex, error);
+                mLoggingService.GuardarLogError(ex, error, mlogger);
                 error = "\r\n ERROR ControladorIdentidades.EliminarUsuariosDeGrupoDeComunidad." + error;
             }
 
@@ -133,21 +140,21 @@ namespace Es.Riam.Gnoss.Web.Controles.ServiciosGenerales
         /// <param name="pGrupoID">ID del grupo</param>
         /// <param name="pNombre">Nombre del grupo</param>
         /// <param name="pNombreCorto">Nombre corto del grupo</param>
-        public void EliminarIdentidadDeGruposDeComunidad(Guid pProyectoID, Guid pIdentidadID, string pUrlIntragnoss, DataWrapperIdentidad pDataWrapperIdentidad, Guid pGrupoID, string pNombre, string pNombreCorto, bool pBorradoMultiple)
+        public void EliminarIdentidadDeGruposDeComunidad(Guid pProyectoID, Guid pIdentidadID, string pUrlIntragnoss, DataWrapperIdentidad pDataWrapperIdentidad, Guid pGrupoID, string pNombre, string pNombreCorto, bool pBorradoMultiple, IAvailableServices pAvailableServices)
         {
-            EliminarIdentidadDeGrupoDeComunidad(pProyectoID, pIdentidadID, pDataWrapperIdentidad, pGrupoID, pNombre, pNombreCorto, pBorradoMultiple);
+            EliminarIdentidadDeGrupoDeComunidad(pProyectoID, pIdentidadID, pDataWrapperIdentidad, pGrupoID, pNombre, pNombreCorto, pBorradoMultiple, pAvailableServices);
 
-            IdentidadCN identidadCN = new IdentidadCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+            IdentidadCN identidadCN = new IdentidadCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<IdentidadCN>(), mLoggerFactory);
             GestionIdentidades gestIdenti = new GestionIdentidades(identidadCN.ObtenerIdentidadPorIDCargaLigeraTablas(pIdentidadID), mLoggingService, mEntityContext, mConfigService, mServicesUtilVirtuosoAndReplication);
             identidadCN.Dispose();
 
             Identidad identidad = gestIdenti.ListaIdentidades[pIdentidadID];
 
-            FacetadoCN facetadoCN = new FacetadoCN(pUrlIntragnoss, mEntityContext, mLoggingService, mConfigService, mVirtuosoAD, mServicesUtilVirtuosoAndReplication);
+            FacetadoCN facetadoCN = new FacetadoCN(pUrlIntragnoss, mEntityContext, mLoggingService, mConfigService, mVirtuosoAD, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<FacetadoCN>(), mLoggerFactory);
             facetadoCN.BorrarParticipanteDeGrupo(pGrupoID, identidad.Clave, identidad.NombreCompuesto(), pProyectoID);
             facetadoCN.Dispose();
 
-            FacetadoCL facetadoCL = new FacetadoCL(pUrlIntragnoss, mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mVirtuosoAD, mServicesUtilVirtuosoAndReplication);
+            FacetadoCL facetadoCL = new FacetadoCL(pUrlIntragnoss, mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mVirtuosoAD, mServicesUtilVirtuosoAndReplication,mLoggerFactory.CreateLogger<FacetadoCL>(),mloggerFactory);
             facetadoCL.InvalidarCacheQueContengaCadena(NombresCL.PRIMEROSRECURSOS + "_" + pProyectoID.ToString() + "_" + identidad.PerfilID);
             facetadoCL.Dispose();
         }
@@ -162,7 +169,7 @@ namespace Es.Riam.Gnoss.Web.Controles.ServiciosGenerales
         /// <param name="pNombre">Nombre del grupo</param>
         /// <param name="pNombreCorto">Nombre corto del grupo</param>
         /// <param name="pBorradoMultiple">Si se van a borrar varios usuarios no invalida la caché del grupo. Lo tendrá que borrar el que consuma este método para evitar meter una fila al Base por cada llamada</param>
-        private void EliminarIdentidadDeGrupoDeComunidad(Guid pProyectoID, Guid pIdentidadID, DataWrapperIdentidad pDataWrapperIdentidad, Guid pGrupoID, string pNombre, string pNombreCorto, bool pBorradoMultiple)
+        private void EliminarIdentidadDeGrupoDeComunidad(Guid pProyectoID, Guid pIdentidadID, DataWrapperIdentidad pDataWrapperIdentidad, Guid pGrupoID, string pNombre, string pNombreCorto, bool pBorradoMultiple, IAvailableServices pAvailableServices)
         {
             AD.EntityModel.Models.IdentidadDS.GrupoIdentidadesParticipacion grupIdentParticipacion = pDataWrapperIdentidad.ListaGrupoIdentidadesParticipacion.FirstOrDefault(grupoIdenPart => grupoIdenPart.GrupoID.Equals(pGrupoID) && grupoIdenPart.IdentidadID.Equals(pIdentidadID));
             if (grupIdentParticipacion != null)
@@ -176,25 +183,25 @@ namespace Es.Riam.Gnoss.Web.Controles.ServiciosGenerales
                 ////Notificamos a los usuarios de que han sido eliminados del grupo.
                 //EnviarMensajeMiembros(identidadEliminada, pNombre, pNombreCorto, true);
 
-                IdentidadCN identidadCN = new IdentidadCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+                IdentidadCN identidadCN = new IdentidadCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<IdentidadCN>(), mLoggerFactory);
                 identidadCN.ActualizaIdentidades();
                 identidadCN.Dispose();
 
                 if (!pBorradoMultiple)
                 {
-                    InvalidarCacheGrupo(false, null, pNombreCorto, pProyectoID, null, null);
+                    InvalidarCacheGrupo(false, null, pNombreCorto, pProyectoID, null, null, pAvailableServices);
                 }
             }
         }
 
-        public void EliminarGrupoComunidad(string pNombreCortoGrupo, Guid pProyectoID, GestionIdentidades pGestorIdentidades, ParametroGeneral pParametroGeneralRow, string pUrlIntraGnoss, bool pEsGrupoOrganizacion, Dictionary<string, List<string>> pInformacionOntologias, Guid? pOrganizacionIDIdentidadActual)
+        public void EliminarGrupoComunidad(string pNombreCortoGrupo, Guid pProyectoID, GestionIdentidades pGestorIdentidades, ParametroGeneral pParametroGeneralRow, string pUrlIntraGnoss, bool pEsGrupoOrganizacion, Dictionary<string, List<string>> pInformacionOntologias, Guid? pOrganizacionIDIdentidadActual, IAvailableServices pAvailableServices)
         {
             Guid grupoID = pGestorIdentidades.DataWrapperIdentidad.ListaGrupoIdentidades.FirstOrDefault().GrupoID;
             GrupoIdentidades grupo = pGestorIdentidades.ListaGrupos[grupoID];
 
             #region Virtuoso
 
-            FacetadoCN facetadoCN = new FacetadoCN(pUrlIntraGnoss, mEntityContext, mLoggingService, mConfigService, mVirtuosoAD, mServicesUtilVirtuosoAndReplication);
+            FacetadoCN facetadoCN = new FacetadoCN(pUrlIntraGnoss, mEntityContext, mLoggingService, mConfigService, mVirtuosoAD, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<FacetadoCN>(), mLoggerFactory);
             facetadoCN.BorrarGrupo(grupoID, grupo.Nombre, pProyectoID);
             facetadoCN.Dispose();
 
@@ -202,13 +209,13 @@ namespace Es.Riam.Gnoss.Web.Controles.ServiciosGenerales
 
             #region Cache
 
-            FacetadoCL facetadoCL = new FacetadoCL(pUrlIntraGnoss, mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mVirtuosoAD, mServicesUtilVirtuosoAndReplication);
+            FacetadoCL facetadoCL = new FacetadoCL(pUrlIntraGnoss, mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mVirtuosoAD, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<FacetadoCL>(),mloggerFactory);
             facetadoCL.InvalidarCacheQueContengaCadena(NombresCL.PRIMEROSRECURSOS + "_" + pProyectoID.ToString());
             facetadoCL.Dispose();
 
             #endregion
 
-            DocumentacionCN docCN = new DocumentacionCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+            DocumentacionCN docCN = new DocumentacionCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<DocumentacionCN>(), mLoggerFactory);
             List<AD.EntityModel.Models.Documentacion.DocumentoRolGrupoIdentidades> listaDocumentoRolGrupoIdentidades = docCN.ObtenerFilasGrupoEditorRecurso(grupoID);
 
             foreach (AD.EntityModel.Models.Documentacion.DocumentoRolGrupoIdentidades filaDocRolGrupoIdent in listaDocumentoRolGrupoIdentidades)
@@ -225,7 +232,7 @@ namespace Es.Riam.Gnoss.Web.Controles.ServiciosGenerales
             }
 
             //Eliminar las solicitudes pendientes a este grupo:
-            SolicitudCN solicitudCN = new SolicitudCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+            SolicitudCN solicitudCN = new SolicitudCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<SolicitudCN>(), mLoggerFactory);
             DataWrapperSolicitud solicitudDW = solicitudCN.ObtenerSolicitudesGrupoPorProyecto(pProyectoID);
             List<SolicitudGrupo> listaSolicitudGrupoBorrar = solicitudDW.ListaSolicitudGrupo.Where(item => item.GrupoID.Equals(grupoID)).ToList();
             foreach (SolicitudGrupo sgr in listaSolicitudGrupoBorrar)
@@ -270,12 +277,12 @@ namespace Es.Riam.Gnoss.Web.Controles.ServiciosGenerales
 
             //string nombreCortoGrupo = Encoding.UTF8.GetString(Encoding.GetEncoding("iso8859-1").GetBytes(HttpUtility.UrlDecode(Request.Params["grupo"])));
 
-            InvalidarCacheGrupo(pEsGrupoOrganizacion, pOrganizacionIDIdentidadActual, pNombreCortoGrupo, pProyectoID, pParametroGeneralRow, pInformacionOntologias);
+            InvalidarCacheGrupo(pEsGrupoOrganizacion, pOrganizacionIDIdentidadActual, pNombreCortoGrupo, pProyectoID, pParametroGeneralRow, pInformacionOntologias, pAvailableServices);
         }
 
-        public void ActualizarBase(Guid pProyectoID, Guid pGrupoID)
+        public void ActualizarBase(Guid pProyectoID, Guid pGrupoID, IAvailableServices pAvailableServices)
         {
-            ActualizarBase(pProyectoID, pGrupoID, string.Empty);
+            ActualizarBase(pProyectoID, pGrupoID, string.Empty, pAvailableServices);
         }
 
         /// <summary>
@@ -283,11 +290,11 @@ namespace Es.Riam.Gnoss.Web.Controles.ServiciosGenerales
         /// </summary>
         /// <param name="pGrupoID"></param>
         /// <param name="pNombreGrupoViejo"></param>
-        public void ActualizarBase(Guid pProyectoID, Guid pGrupoID, string pNombreGrupoViejo)
+        public void ActualizarBase(Guid pProyectoID, Guid pGrupoID, string pNombreGrupoViejo, IAvailableServices pAvailableServices)
         {
             try
             {
-                ProyectoCN proyCN = new ProyectoCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+                ProyectoCN proyCN = new ProyectoCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<ProyectoCN>(), mLoggerFactory);
                 int tablaBaseProyectoID = proyCN.ObtenerTablaBaseProyectoIDProyectoPorID(pProyectoID);
                 proyCN.Dispose();
 
@@ -310,20 +317,20 @@ namespace Es.Riam.Gnoss.Web.Controles.ServiciosGenerales
 
                 basePerOrgComDS.ColaTagsCom_Per_Org.AddColaTagsCom_Per_OrgRow(filaColaTagsCom_Per_Org_Add);
 
-                BaseComunidadCN basePerOrgComCN = new BaseComunidadCN("base", -1, mEntityContext, mLoggingService, mEntityContextBASE, mConfigService, mServicesUtilVirtuosoAndReplication);
-                basePerOrgComCN.InsertarFilasEnRabbit("ColaTagsCom_Per_Org", basePerOrgComDS);
+                BaseComunidadCN basePerOrgComCN = new BaseComunidadCN("base", -1, mEntityContext, mLoggingService, mEntityContextBASE, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<BaseComunidadCN>(), mLoggerFactory);
+                basePerOrgComCN.InsertarFilasEnColaTagsCom_Per_Org(basePerOrgComDS, pAvailableServices);
                 basePerOrgComCN.Dispose();
             }
             catch (Exception ex)
             {
-                mLoggingService.GuardarLogError(ex, $"No se ha podido ActualizarBase para el grupo {pGrupoID}");
+                mLoggingService.GuardarLogError(ex, $"No se ha podido ActualizarBase para el grupo {pGrupoID}", mlogger);
             }
         }
 
-        public void InvalidarCacheGrupo(bool pEsGrupoOrganizacion, Guid? pOrganizacionIDIdentidadActual, string pNombreCortoGrupo, Guid pProyectoID, ParametroGeneral pParametroGeneralRow, Dictionary<string, List<string>> pInformacionOntologias)
+        public void InvalidarCacheGrupo(bool pEsGrupoOrganizacion, Guid? pOrganizacionIDIdentidadActual, string pNombreCortoGrupo, Guid pProyectoID, ParametroGeneral pParametroGeneralRow, Dictionary<string, List<string>> pInformacionOntologias, IAvailableServices pAvailableServices)
         {
 
-            IdentidadCL identidadCL = new IdentidadCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mServicesUtilVirtuosoAndReplication);
+            IdentidadCL identidadCL = new IdentidadCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<IdentidadCL>(), mLoggerFactory);
             if (pEsGrupoOrganizacion && pOrganizacionIDIdentidadActual.HasValue)
             {
                 identidadCL.InvalidarCacheMiembrosOrganizacionParaFiltroGrupos(pOrganizacionIDIdentidadActual.Value);
@@ -335,14 +342,14 @@ namespace Es.Riam.Gnoss.Web.Controles.ServiciosGenerales
 
                 identidadCL.InvalidarCacheGrupoPorNombreCortoYProyecto(pNombreCortoGrupo, pProyectoID);
 
-                BaseComunidadCN baseComunidadCN = new BaseComunidadCN("base", mEntityContext, mLoggingService, mEntityContextBASE, mConfigService, mServicesUtilVirtuosoAndReplication);
+                BaseComunidadCN baseComunidadCN = new BaseComunidadCN("base", mEntityContext, mLoggingService, mEntityContextBASE, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<BaseComunidadCN>(), mLoggerFactory);
                 try
                 {
-                    baseComunidadCN.InsertarFilaColaRefrescoCacheEnRabbitMQ(pProyectoID, TiposEventosRefrescoCache.BusquedaVirtuoso, TipoBusqueda.Recursos, null);
+                    baseComunidadCN.InsertarFilaColaRefrescoCacheEnRabbitMQ(pProyectoID, TiposEventosRefrescoCache.BusquedaVirtuoso, TipoBusqueda.Recursos, null, pAvailableServices);
                 }
                 catch (Exception ex)
                 {
-                    mLoggingService.GuardarLogError(ex, "Fallo al insertar en Rabbit, insertamos en la base de datos BASE, tabla colaRefrescoCache");
+                    mLoggingService.GuardarLogError(ex, "Fallo al insertar en Rabbit, insertamos en la base de datos BASE, tabla colaRefrescoCache", mlogger);
                     baseComunidadCN.InsertarFilaEnColaRefrescoCache(pProyectoID, TiposEventosRefrescoCache.BusquedaVirtuoso, TipoBusqueda.Recursos);
                 }
 
@@ -353,11 +360,11 @@ namespace Es.Riam.Gnoss.Web.Controles.ServiciosGenerales
                     {
                         try
                         {
-                            baseComunidadCN.InsertarFilaColaRefrescoCacheEnRabbitMQ(pProyectoID, TiposEventosRefrescoCache.BusquedaVirtuoso, TipoBusqueda.Preguntas, null);
+                            baseComunidadCN.InsertarFilaColaRefrescoCacheEnRabbitMQ(pProyectoID, TiposEventosRefrescoCache.BusquedaVirtuoso, TipoBusqueda.Preguntas, null, pAvailableServices);
                         }
                         catch (Exception ex)
                         {
-                            mLoggingService.GuardarLogError(ex, "Fallo al insertar en Rabbit, insertamos en la base de datos BASE, tabla colaRefrescoCache");
+                            mLoggingService.GuardarLogError(ex, "Fallo al insertar en Rabbit, insertamos en la base de datos BASE, tabla colaRefrescoCache", mlogger);
                             baseComunidadCN.InsertarFilaEnColaRefrescoCache(pProyectoID, TiposEventosRefrescoCache.BusquedaVirtuoso, TipoBusqueda.Preguntas);
                         }
                     }
@@ -365,11 +372,11 @@ namespace Es.Riam.Gnoss.Web.Controles.ServiciosGenerales
                     {
                         try
                         {
-                            baseComunidadCN.InsertarFilaColaRefrescoCacheEnRabbitMQ(pProyectoID, TiposEventosRefrescoCache.BusquedaVirtuoso, TipoBusqueda.Debates, null);
+                            baseComunidadCN.InsertarFilaColaRefrescoCacheEnRabbitMQ(pProyectoID, TiposEventosRefrescoCache.BusquedaVirtuoso, TipoBusqueda.Debates, null, pAvailableServices);
                         }
                         catch (Exception ex)
                         {
-                            mLoggingService.GuardarLogError(ex, "Fallo al insertar en Rabbit, insertamos en la base de datos BASE, tabla colaRefrescoCache");
+                            mLoggingService.GuardarLogError(ex, "Fallo al insertar en Rabbit, insertamos en la base de datos BASE, tabla colaRefrescoCache", mlogger);
                             baseComunidadCN.InsertarFilaEnColaRefrescoCache(pProyectoID, TiposEventosRefrescoCache.BusquedaVirtuoso, TipoBusqueda.Debates);
                         }
                     }
@@ -377,11 +384,11 @@ namespace Es.Riam.Gnoss.Web.Controles.ServiciosGenerales
                     {
                         try
                         {
-                            baseComunidadCN.InsertarFilaColaRefrescoCacheEnRabbitMQ(pProyectoID, TiposEventosRefrescoCache.BusquedaVirtuoso, TipoBusqueda.Encuestas, null);
+                            baseComunidadCN.InsertarFilaColaRefrescoCacheEnRabbitMQ(pProyectoID, TiposEventosRefrescoCache.BusquedaVirtuoso, TipoBusqueda.Encuestas, null, pAvailableServices);
                         }
                         catch (Exception ex)
                         {
-                            mLoggingService.GuardarLogError(ex, "Fallo al insertar en Rabbit, insertamos en la base de datos BASE, tabla colaRefrescoCache");
+                            mLoggingService.GuardarLogError(ex, "Fallo al insertar en Rabbit, insertamos en la base de datos BASE, tabla colaRefrescoCache", mlogger);
                             baseComunidadCN.InsertarFilaEnColaRefrescoCache(pProyectoID, TiposEventosRefrescoCache.BusquedaVirtuoso, TipoBusqueda.Encuestas);
                         }
 
@@ -389,21 +396,15 @@ namespace Es.Riam.Gnoss.Web.Controles.ServiciosGenerales
                 }
                 if (pInformacionOntologias != null)
                 {
+                    List<string> filasAInsertar = new List<string>();
                     foreach (List<string> ontologias in pInformacionOntologias.Values)
                     {
                         foreach (string ns in ontologias)
                         {
-                            try
-                            {
-                                baseComunidadCN.InsertarFilaColaRefrescoCacheEnRabbitMQ(pProyectoID, TiposEventosRefrescoCache.BusquedaVirtuoso, TipoBusqueda.Recursos, $"rdf:type={ns}");
-                            }
-                            catch (Exception ex)
-                            {
-                                mLoggingService.GuardarLogError(ex, "Fallo al insertar en Rabbit, insertamos en la base de datos BASE, tabla colaRefrescoCache");
-                                baseComunidadCN.InsertarFilaEnColaRefrescoCache(pProyectoID, TiposEventosRefrescoCache.BusquedaVirtuoso, TipoBusqueda.Recursos, $"rdf:type={ns}");
-                            }
+                            filasAInsertar.Add(baseComunidadCN.PreprarFilaColaRefrescoCacheRabbitMQ(pProyectoID, TiposEventosRefrescoCache.BusquedaVirtuoso, TipoBusqueda.Recursos, $"rdf:type={ns}"));
                         }
                     }
+                    baseComunidadCN.InsertarFilasColaRefrescoCacheEnRabbitMQ(filasAInsertar, TiposEventosRefrescoCache.BusquedaVirtuoso);
                 }
 
                 baseComunidadCN.Dispose();

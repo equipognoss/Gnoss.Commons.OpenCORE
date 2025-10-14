@@ -3,6 +3,8 @@ using Es.Riam.Gnoss.AD.EntityModel.Models.Faceta;
 using Es.Riam.Gnoss.AD.Facetado;
 using Es.Riam.Gnoss.Util.General;
 using Es.Riam.Util;
+using Microsoft.Extensions.Logging;
+using Serilog.Core;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -22,16 +24,15 @@ namespace Es.Riam.Gnoss.Elementos.Facetado
         private List<string> mOntologiasNoBuscables = null;
         private Dictionary<string, Faceta> mListaFacetasPorClave = null;
         private bool mGestorCargado = false;
-        private LoggingService mLoggingService;
-
         #endregion
 
         #region Constructores
 
-        public GestionFacetas(DataWrapperFacetas pFacetaDW, LoggingService loggingService)
-            : base(pFacetaDW, loggingService)
+        public GestionFacetas() { }
+
+        public GestionFacetas(DataWrapperFacetas pFacetaDW)
+            : base(pFacetaDW)
         {
-            mLoggingService = loggingService;
             MontarFacetasHome = false;
         }
 
@@ -109,7 +110,7 @@ namespace Es.Riam.Gnoss.Elementos.Facetado
             {
                 foreach (FacetaFiltroHome filaFiltroHome in FacetasDW.ListaFacetaFiltroHome)
                 {
-                    Faceta faceta = new Faceta(filaFiltroHome, this, mLoggingService);
+                    Faceta faceta = new Faceta(filaFiltroHome, this);
 
                     bool omitirCargado = mListaFacetas.Exists(facetaMismoFiltro => facetaMismoFiltro.FilaElementoEntity is FacetaFiltroHome && ((FacetaFiltroHome)facetaMismoFiltro.FilaElementoEntity).Filtro.Equals(((FacetaFiltroHome)faceta.FilaElementoEntity).Filtro));
 
@@ -125,7 +126,7 @@ namespace Es.Riam.Gnoss.Elementos.Facetado
 
                 foreach (FacetaHome filaHome in FacetasDW.ListaFacetaHome)
                 {
-                    Faceta faceta = new Faceta(filaHome, this, mLoggingService);
+                    Faceta faceta = new Faceta(filaHome, this);
                     if (faceta != null && !mListaFacetasPorClave.ContainsKey(faceta.ClaveFaceta))
                     {
                         mListaFacetas.Add(faceta);
@@ -139,7 +140,7 @@ namespace Es.Riam.Gnoss.Elementos.Facetado
 
                 foreach (FacetaFiltroProyecto filaFiltroProyecto in FacetasDW.ListaFacetaFiltroProyecto)
                 {
-                    Faceta faceta = new Faceta(filaFiltroProyecto, this, mLoggingService);
+                    Faceta faceta = new Faceta(filaFiltroProyecto, this);
 
                     bool omitirCargado = mListaFacetas.Exists(facetaMismoFiltro => facetaMismoFiltro.FilaElementoEntity is FacetaFiltroProyecto && ((string)UtilReflection.GetValueReflection(facetaMismoFiltro.FilaElementoEntity, "Filtro")).Equals((string)UtilReflection.GetValueReflection(faceta.FilaElementoEntity, "Filtro")) && ((string)UtilReflection.GetValueReflection(facetaMismoFiltro.FilaElementoEntity, "Faceta")).Equals((string)UtilReflection.GetValueReflection(faceta.FilaElementoEntity, "Faceta")));
 
@@ -159,7 +160,7 @@ namespace Es.Riam.Gnoss.Elementos.Facetado
                     {
                         foreach (FacetaObjetoConocimientoProyecto filaFacetaObjetoConocimientoProyecto in FacetasDW.ListaFacetaObjetoConocimientoProyecto.Where(item => item.ObjetoConocimiento.ToLower().Equals(rdfType.ToLower())))
                         {
-                            Faceta faceta = new Faceta(filaFacetaObjetoConocimientoProyecto, this, mLoggingService);
+                            Faceta faceta = new Faceta(filaFacetaObjetoConocimientoProyecto, this);
                             if (faceta != null && !mListaFacetasPorClave.ContainsKey(faceta.ClaveFacetaEntity))
                             {
                                 mListaFacetas.Add(faceta);
@@ -171,7 +172,7 @@ namespace Es.Riam.Gnoss.Elementos.Facetado
 
                 foreach (FacetaObjetoConocimientoProyecto filaFacetaObjetoConocimientoProyecto in FacetasDW.ListaFacetaObjetoConocimientoProyecto)
                 {
-                    Faceta faceta = new Faceta(filaFacetaObjetoConocimientoProyecto, this, mLoggingService);
+                    Faceta faceta = new Faceta(filaFacetaObjetoConocimientoProyecto, this);
                     if (faceta != null && !mListaFacetasPorClave.ContainsKey(faceta.ClaveFacetaEntity))
                     {
                         mListaFacetas.Add(faceta);
@@ -188,7 +189,7 @@ namespace Es.Riam.Gnoss.Elementos.Facetado
 
                 foreach (FacetaObjetoConocimiento filaFacetaObjetoConocimiento in listaFacetaObjetoConocimiento)
                 {
-                    Faceta faceta = new Faceta(filaFacetaObjetoConocimiento, this, mLoggingService);
+                    Faceta faceta = new Faceta(filaFacetaObjetoConocimiento, this);
                     if (faceta != null && !mListaFacetasPorClave.ContainsKey(faceta.ClaveFacetaEntity))
                     {
                         string p = faceta.ObjetoConocimiento;

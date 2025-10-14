@@ -31,6 +31,7 @@ namespace Es.Riam.Semantica.Plantillas
             mAcciones = (Dictionary<string, AccionSemCms>)info.GetValue("Acciones", typeof(Dictionary<string, AccionSemCms>));
             mCategoriasPorDefecto = (List<string>)info.GetValue("CategoriasPorDefecto", typeof(List<string>));
             mCategorizacionTesauroGnossNoObligatoria = (bool)info.GetValue("CategorizacionTesauroGnossNoObligatoria", typeof(bool));
+            mEtiquetacionGnossNoObligatoria= (bool)info.GetValue("EtiquetacionGnossNoObligatoria", typeof(bool));
             mCKEditorComentariosCompleto = (bool)info.GetValue("CKEditorComentariosCompleto", typeof(bool));
             mCondiciones = (Dictionary<string, CondicionSemCms>)info.GetValue("Condiciones", typeof(Dictionary<string, CondicionSemCms>));
             mGrafosSimplesAutocompletar = (List<string>)info.GetValue("GrafosSimplesAutocompletar", typeof(List<string>));
@@ -52,6 +53,8 @@ namespace Es.Riam.Semantica.Plantillas
             mMostrarFechaRec = (bool)info.GetValue("MostrarFechaRec", typeof(bool));
             mMultiIdioma = (bool)info.GetValue("MultiIdioma", typeof(bool));
             mNamespace = (string)info.GetValue("Namespace", typeof(string));
+            mOrdenAutocompletar = (string)info.GetValue("OrdenAutocompletar", typeof(string));
+            mOrdenAutocompletarIsAsc = (bool)info.GetValue("OrdenAutocompletarIsAsc", typeof(bool));
             mOcultarAccionesDoc = (bool)info.GetValue("OcultarAccionesDoc", typeof(bool));
             mOcultarAutoresDoc = (bool)info.GetValue("OcultarAutoresDoc", typeof(bool));
             mOcultarAutoria = (bool)info.GetValue("OcultarAutoria", typeof(bool));
@@ -111,6 +114,16 @@ namespace Es.Riam.Semantica.Plantillas
         /// Namespace
         /// </summary>
         private string mNamespace;
+
+        /// <summary>
+        /// Orden que se va a emplear en el autocompletado complejo
+        /// </summary>
+        private string mOrdenAutocompletar;
+
+        /// <summary>
+        /// tipo de orden que se va a utilizar, true para orden ascendente, false para descendente
+        /// </summary>
+        private bool mOrdenAutocompletarIsAsc;
 
         /// <summary>
         /// Lista de idiomas
@@ -232,6 +245,11 @@ namespace Es.Riam.Semantica.Plantillas
         /// Indica si no es obligatorio categorizar sobre el tesauro de GNOSS.
         /// </summary>
         private bool mCategorizacionTesauroGnossNoObligatoria;
+
+        /// <summary>
+        /// Indica si no es obligatoria etiquetar un recurso semantico de GNOSS.
+        /// </summary>
+        private bool mEtiquetacionGnossNoObligatoria;
 
         /// <summary>
         /// Nombre de la propiedad que es archivo para la carga masiva. 
@@ -502,6 +520,36 @@ namespace Es.Riam.Semantica.Plantillas
             set
             {
                 mNamespace = value;
+            }
+        }
+
+        /// <summary>
+        /// Campo de orden que se va a utilizar en el autocompletado
+        /// </summary>
+        public string OrdenAutocompletar
+        {
+            get
+            {
+                return mOrdenAutocompletar;
+            }
+            set
+            {
+                mOrdenAutocompletar = value;
+            }
+        }
+
+        /// <summary>
+        /// Tipo de orden que se va a usar en el autocompletado, true para ascendente, false para descendente
+        /// </summary>
+        public bool OrdenAutocompletarIsAsc
+        {
+            get
+            {
+                return mOrdenAutocompletarIsAsc;
+            }
+            set
+            {
+                mOrdenAutocompletarIsAsc = value;
             }
         }
 
@@ -873,6 +921,21 @@ namespace Es.Riam.Semantica.Plantillas
             set
             {
                 mCategorizacionTesauroGnossNoObligatoria = value;
+            }
+        }
+
+        /// <summary>
+        /// Indica si no es obligatorio etiquetar un recurso semantico.
+        /// </summary>
+        public bool EtiquetacionGnossNoObligatoria
+        {
+            get
+            {
+                return mEtiquetacionGnossNoObligatoria;
+            }
+            set
+            {
+                mEtiquetacionGnossNoObligatoria = value;
             }
         }
 
@@ -1821,6 +1884,7 @@ namespace Es.Riam.Semantica.Plantillas
             info.AddValue("Acciones", mAcciones);
             info.AddValue("CategoriasPorDefecto", mCategoriasPorDefecto);
             info.AddValue("CategorizacionTesauroGnossNoObligatoria", mCategorizacionTesauroGnossNoObligatoria);
+            info.AddValue("EtiquetacionGnossNoObligatoria", mEtiquetacionGnossNoObligatoria);
             info.AddValue("CKEditorComentariosCompleto", mCKEditorComentariosCompleto);
             info.AddValue("Condiciones", mCondiciones);
             info.AddValue("GrafosSimplesAutocompletar", mGrafosSimplesAutocompletar);
@@ -1842,6 +1906,8 @@ namespace Es.Riam.Semantica.Plantillas
             info.AddValue("MostrarFechaRec", mMostrarFechaRec);
             info.AddValue("MultiIdioma", mMultiIdioma);
             info.AddValue("Namespace", mNamespace);
+            info.AddValue("OrdenAutocompletar", mOrdenAutocompletar);
+            info.AddValue("OrdenAutocompletarIsAsc", mOrdenAutocompletarIsAsc);
             info.AddValue("OcultarAccionesDoc", mOcultarAccionesDoc);
             info.AddValue("OcultarAutoresDoc", mOcultarAutoresDoc);
             info.AddValue("OcultarAutoria", mOcultarAutoria);

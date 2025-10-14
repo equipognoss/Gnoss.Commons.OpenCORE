@@ -1,5 +1,6 @@
 using Es.Riam.Gnoss.AD.Documentacion;
 using Es.Riam.Gnoss.Util.General;
+using Microsoft.Extensions.Logging;
 using System;
 
 namespace Es.Riam.Gnoss.Elementos.Documentacion.FichaDocumento
@@ -45,7 +46,6 @@ namespace Es.Riam.Gnoss.Elementos.Documentacion.FichaDocumento
         /// Orden del atributo.
         /// </summary>
         private int mOrden;
-
         #endregion
 
         #region Constructor
@@ -59,8 +59,8 @@ namespace Es.Riam.Gnoss.Elementos.Documentacion.FichaDocumento
         /// <param name="pDescripcion">Descripción</param>
         /// <param name="pTipo">Tipo de atributo</param>
         /// <param name="pOrden">Orden</param>
-        public AtributoBibliografico(Guid pFichaBibliograficaID, Guid pAtributoID, string pNombre, string pDescripcion, int pTipo, int pOrden, LoggingService loggingService)
-            : base(loggingService)
+        public AtributoBibliografico(Guid pFichaBibliograficaID, Guid pAtributoID, string pNombre, string pDescripcion, int pTipo, int pOrden)
+            : base()
         {
             mFichaBibliograficaID = pFichaBibliograficaID;
             mAtributoID = pAtributoID;
@@ -80,8 +80,8 @@ namespace Es.Riam.Gnoss.Elementos.Documentacion.FichaDocumento
         /// <param name="pTipo">Tipo de atributo</param>
         /// <param name="pOrden">Orden</param>
         /// <param name="pValor">Valor del atributo</param>
-        public AtributoBibliografico(Guid pFichaBibliograficaID, Guid pAtributoID, string pNombre, string pDescripcion, int pTipo, int pOrden, string pValor, LoggingService loggingService)
-            : base(loggingService)
+        public AtributoBibliografico(Guid pFichaBibliograficaID, Guid pAtributoID, string pNombre, string pDescripcion, int pTipo, int pOrden, string pValor)
+            : base()
         {
             mFichaBibliograficaID = pFichaBibliograficaID;
             mAtributoID = pAtributoID;

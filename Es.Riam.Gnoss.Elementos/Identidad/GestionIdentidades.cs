@@ -6,21 +6,26 @@ using Es.Riam.Gnoss.AD.EntityModel;
 using Es.Riam.Gnoss.AD.EntityModel.Models.OrganizacionDS;
 using Es.Riam.Gnoss.AD.Identidad;
 using Es.Riam.Gnoss.AD.Live.Model;
+using Es.Riam.Gnoss.AD.ParametroAplicacion;
 using Es.Riam.Gnoss.AD.ServiciosGenerales;
 using Es.Riam.Gnoss.Elementos.Amigos;
 using Es.Riam.Gnoss.Elementos.ServiciosGenerales;
 using Es.Riam.Gnoss.Elementos.Suscripcion;
+using Es.Riam.Gnoss.Logica.ServiciosGenerales;
 using Es.Riam.Gnoss.Util.Configuracion;
 using Es.Riam.Gnoss.Util.General;
 using Es.Riam.Interfaces;
 using Es.Riam.Util;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
+using Serilog.Core;
 using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Runtime.Serialization;
 using System.Security.Permissions;
+using System.Text.Json.Serialization;
 
 namespace Es.Riam.Gnoss.Elementos.Identidad
 {
@@ -45,10 +50,10 @@ namespace Es.Riam.Gnoss.Elementos.Identidad
         private SortedList<Guid, Perfil> mListaPerfiles;
 
         private SortedList<Guid, Identidad> mListaIdentidades;
-
         /// <summary>
         /// Contiene una lista con las identidades que son visibles para usuarios no gnoss
         /// </summary>
+        /// [JsonInclude]
         private SortedList<Guid, bool> mListaIdentidadesVisiblesExternos;
 
         /// <summary>
@@ -60,17 +65,21 @@ namespace Es.Riam.Gnoss.Elementos.Identidad
         private EntityContext mEntityContext;
         private ConfigService mConfigService;
         private IServicesUtilVirtuosoAndReplication mServicesUtilVirtuosoAndReplication;
-
         #endregion
 
         #region Constructores
+
+        /// <summary>
+        /// Constructor por defecto para poder deserializar el json
+        /// </summary>
+        public GestionIdentidades() { }
 
         /// <summary>
         /// Constructor
         /// </summary>
         /// <param name="pDataWrapperIdentidad">Dataset de identidades</param>
         public GestionIdentidades(DataWrapperIdentidad pDataWrapperIdentidad, LoggingService loggingService, EntityContext entityContext, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication)
-            : base(pDataWrapperIdentidad, loggingService)
+            : base(pDataWrapperIdentidad)
         {
             mLoggingService = loggingService;
             mEntityContext = entityContext;
@@ -85,12 +94,11 @@ namespace Es.Riam.Gnoss.Elementos.Identidad
         /// <param name="pGestorOrganizaciones">Gestor de organizaciones</param>
         /// <param name="pGestorPersonas">Gestor de personas</param>
         public GestionIdentidades(DataWrapperIdentidad pDataWrapperIdentidad, GestionPersonas pGestorPersonas, GestionOrganizaciones pGestorOrganizaciones, LoggingService loggingService, EntityContext entityContext, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication)
-            : base(pDataWrapperIdentidad, loggingService)
+            : base(pDataWrapperIdentidad)
         {
             mLoggingService = loggingService;
             mEntityContext = entityContext;
             mConfigService = configService;
-
             this.mGestorOrganizaciones = pGestorOrganizaciones;
             GestorPersonas = pGestorPersonas;
             mServicesUtilVirtuosoAndReplication = servicesUtilVirtuosoAndReplication;
@@ -103,13 +111,12 @@ namespace Es.Riam.Gnoss.Elementos.Identidad
         /// <param name="pGestorPersonas">Gestor de personas</param>
         /// <param name="pGestorUsuarios">Gestor de usuarios</param>
         /// <param name="pGestorOrganizaciones">Gestor de organizaciones</param>
-        public GestionIdentidades(DataWrapperIdentidad pDataWrapperIdentidad, GestionPersonas pGestorPersonas, GestionUsuarios pGestorUsuarios, GestionOrganizaciones pGestorOrganizaciones, LoggingService loggingService, EntityContext entityContext, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication)
-            : base(pDataWrapperIdentidad, loggingService)
+        public GestionIdentidades(DataWrapperIdentidad pDataWrapperIdentidad, GestionPersonas pGestorPersonas, GestionUsuarios pGestorUsuarios, GestionOrganizaciones pGestorOrganizaciones, LoggingService loggingService, EntityContext entityContext, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication, ILogger<GestionIdentidades> logger, ILoggerFactory loggerFactory)
+            : base(pDataWrapperIdentidad)
         {
             mLoggingService = loggingService;
             mEntityContext = entityContext;
             mConfigService = configService;
-
             this.mGestorOrganizaciones = pGestorOrganizaciones;
             GestorPersonas = pGestorPersonas;
             this.mGestorUsuarios = pGestorUsuarios;
@@ -124,10 +131,6 @@ namespace Es.Riam.Gnoss.Elementos.Identidad
         protected GestionIdentidades(SerializationInfo pInfo, StreamingContext pContext)
             : base(pInfo, pContext)
         {
-            //mLoggingService = loggingService;
-            //mEntityContext = entityContext;
-            //mConfigService = configService;
-
             mGestorAmigos = (GestionAmigos)pInfo.GetValue("GestorAmigos", typeof(GestionAmigos));
             mGestorOrganizaciones = (GestionOrganizaciones)pInfo.GetValue("GestorOrganizaciones", typeof(GestionOrganizaciones));
             mGestorPersonas = (GestionPersonas)pInfo.GetValue("GestorPersonas", typeof(GestionPersonas));
@@ -818,7 +821,7 @@ namespace Es.Riam.Gnoss.Elementos.Identidad
    
             DataWrapperIdentidad.ListaPerfil.Add(filaPerfil);
             mEntityContext.Perfil.Add(filaPerfil);
-            Perfil nuevoPerfil = new Perfil(filaPerfil, this, mLoggingService);
+            Perfil nuevoPerfil = new Perfil(filaPerfil, this);
 
             if (!ListaPerfiles.ContainsKey(nuevoPerfil.Clave))
             {
@@ -887,7 +890,7 @@ namespace Es.Riam.Gnoss.Elementos.Identidad
             {
                 if (!mListaPerfiles.ContainsKey(filaPerfil.PerfilID))
                 {
-                    Perfil perfil = new Perfil(filaPerfil, this, mLoggingService);
+                    Perfil perfil = new Perfil(filaPerfil, this);
 
                     foreach (AD.EntityModel.Models.IdentidadDS.Identidad filaIdentidad in this.DataWrapperIdentidad.ListaIdentidad.Where(identidad => identidad.PerfilID.Equals(filaPerfil.PerfilID)))
                     {
@@ -921,7 +924,7 @@ namespace Es.Riam.Gnoss.Elementos.Identidad
             {
                 if (!mListaGrupos.ContainsKey(filaGrupoIdentidades.GrupoID))
                 {
-                    GrupoIdentidades grupo = new GrupoIdentidades(filaGrupoIdentidades, this, mLoggingService);
+                    GrupoIdentidades grupo = new GrupoIdentidades(filaGrupoIdentidades, this);
 
                     this.mListaGrupos.Add(grupo.Clave, grupo);
                 }
@@ -1237,7 +1240,7 @@ namespace Es.Riam.Gnoss.Elementos.Identidad
 
                     if (grupoAmigo != null)
                     {
-                        GrupoAmigos grupoAmigos = new GrupoAmigos(grupoAmigo, GestorAmigos, mLoggingService);
+                        GrupoAmigos grupoAmigos = new GrupoAmigos(grupoAmigo, GestorAmigos);
                         if(grupoAmigos.FilaGrupoAmigos != null)
                         {
                             GestorAmigos.AgregarAmigoAGrupo(grupoAmigos, grupoAmigos.FilaGrupoAmigos.IdentidadID, pIdentidad.PerfilUsuario.IdentidadMyGNOSS.Clave);

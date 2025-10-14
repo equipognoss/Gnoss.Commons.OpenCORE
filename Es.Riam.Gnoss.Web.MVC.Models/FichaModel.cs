@@ -180,6 +180,11 @@ namespace Es.Riam.Gnoss.Web.MVC.Models
         public Guid Key { get; set; }
 
         /// <summary>
+        /// Si es un documento versionado es la clave del documento original
+        /// </summary>
+        public Guid OriginalKey { get; set; }
+
+        /// <summary>
         /// Título del recurso
         /// </summary>
         public string Title { get; set; }
@@ -199,9 +204,19 @@ namespace Es.Riam.Gnoss.Web.MVC.Models
         /// </summary>
         public DateTime ModificationDate { get; set; }
         /// <summary>
-        /// Url a la ficha completa del recrso
+        /// Url a la ficha completa del recurso
         /// </summary>
         public string CompletCardLink { get; set; }
+
+        /// <summary>
+        // Url a la ficha completa del recurso con el id original
+        /// </summary>
+        public string CompleteOriginalCardLink { get; set; }
+
+        /// <summary>
+        /// Url a la version de la ficha completa del recurso
+        /// </summary>
+        public string VersionCardLink { get; set; }
 
         /// <summary>
         /// Url a la edicion del recrso
@@ -427,10 +442,21 @@ namespace Es.Riam.Gnoss.Web.MVC.Models
             /// Indica la Url de vincular un recurso a SharePoint
             /// </summary>
             public string UrlLinkResourceSP { get; set; }
+
             /// <summary>
-            /// Indica la Url para accionar modal de vincular
+            /// Indica la Url de desvincular un recurso a SharePoint
+            /// </summary>
+            public string UrlUnlinkResourceSP { get; set; }
+
+            /// <summary>
+            /// Indica la Url para accionar modal de vincular con SharePoint
             /// </summary>
             public string UrlLoadActionLinkResourceSP { get; set; }
+
+            /// <summary>
+            /// Indica la Url para accionar modal de desvincular de SharePoint
+            /// </summary>
+            public string UrlLoadActionUnlinkResourceSP { get; set; }
 
             /// <summary>
             /// Indica la Url de desvincular un recurso
@@ -1013,94 +1039,154 @@ namespace Es.Riam.Gnoss.Web.MVC.Models
     [Serializable]
     public partial class ViewSettingResorceModel
     {
+        #region Miembros
+
+        private ViewResorceModel mListView;
+        private ViewResorceModel mMosaicView;
+        private ViewResorceModel mContextView;
+        private ViewResorceModel mMapView;
+
+        #endregion
+
+        #region Propiedades
+
         /// <summary>
-        /// Indica si se debe mostrar la descripcion en la vista listado
+        /// Indica las propiedades que se deben mostrar en la vista Listado
         /// </summary>
-        public bool DescriptionOnList { get; set; }
+        public ViewResorceModel ListView
+        {
+            get 
+            {
+                if(mListView == null)
+                {
+                    mListView = new ViewResorceModel();
+                }
+                return mListView;
+            }
+            set 
+            { 
+                mListView = value; 
+            }
+        }
+
         /// <summary>
-        /// Indica si se debe mostrar la descripcion en la vista mosaico
+        /// Indica las propiedades que se deben mostrar en la vista Mosaico
         /// </summary>
-        public bool DescriptionOnMosaic { get; set; }
+        public ViewResorceModel MosaicView 
+        {
+            get
+            {
+                if (mMosaicView == null)
+                {
+                    mMosaicView = new ViewResorceModel();
+                }
+                return mMosaicView;
+            }
+            set
+            {
+                mMosaicView = value;
+            }
+        }
+
         /// <summary>
-        /// Indica si se debe mostrar la descripcion en los contextos
+        /// Indica las propiedades que se deben mostrar en la vista Contexto
         /// </summary>
-        public bool DescriptionOnContext { get; set; }
+        public ViewResorceModel ContextView 
+        {
+            get
+            {
+                if (mContextView == null)
+                {
+                    mContextView = new ViewResorceModel();
+                }
+                return mContextView;
+            }
+            set
+            {
+                mContextView = value;
+            }
+        }
+
         /// <summary>
-        /// Indica si se debe mostrar la descripcion en la vista mapa
+        /// Indica las propiedades que se deben mostrar en la vista Mapa
         /// </summary>
-        public bool DescriptionOnMap { get; set; }
-        /// <summary>
-        /// Indica si se debe mostrar las categorias en la vista listado
-        /// </summary>
-        public bool CategoriesOnList { get; set; }
-        /// <summary>
-        /// Indica si se debe mostrar las categorias en la vista mosaico
-        /// </summary>
-        public bool CategoriesOnMosaic { get; set; }
-        /// <summary>
-        /// Indica si se debe mostrar las categorias en los contextos
-        /// </summary>
-        public bool CategoriesOnContext { get; set; }
-        /// <summary>
-        /// Indica si se debe mostrar las categorias en la vista mapa
-        /// </summary>
-        public bool CategoriesOnMap { get; set; }
-        /// <summary>
-        /// Indica si se debe mostrar las etiquetas en la vista listado
-        /// </summary>
-        public bool TagsOnList { get; set; }
-        /// <summary>
-        /// Indica si se debe mostrar las etiquetas en la vista mosaico
-        /// </summary>
-        public bool TagsOnMosaic { get; set; }
-        /// <summary>
-        /// Indica si se debe mostrar las etiquetas en los contextos
-        /// </summary>
-        public bool TagsOnContext { get; set; }
-        /// <summary>
-        /// Indica si se debe mostrar las etiquetas en la vista mapa
-        /// </summary>
-        public bool TagsOnMap { get; set; }
-        /// <summary>
-        /// Indica si se debe mostrar el publicador en la vista listado
-        /// </summary>
-        public bool PublisherOnList { get; set; }
-        /// <summary>
-        /// Indica si se debe mostrar el publicador en la vista mosaico
-        /// </summary>
-        public bool PublisherOnMosaic { get; set; }
-        /// <summary>
-        /// Indica si se debe mostrar el publicador en los contextos
-        /// </summary>
-        public bool PublisherOnContext { get; set; }
-        /// <summary>
-        /// Indica si se debe mostrar el publicador en la vista mapa
-        /// </summary>
-        public bool PublisherOnMap { get; set; }
-        /// <summary>
-        /// Html de los datos semanticos del recurso para la vista listado, construido segun la configuración del XML de la comunidad
-        /// </summary>
-        public string InfoExtraList { get; set; }
-        /// <summary>
-        /// Html de los datos semanticos del recurso para la vista mosaico, construido segun la configuración del XML de la comunidad
-        /// </summary>
-        public string InfoExtraMosaic { get; set; }
-        /// <summary>
-        /// Html de los datos semanticos del recurso para los contextos, construido segun la configuración del XML de la comunidad
-        /// </summary>
-        public string InfoExtraContext { get; set; }
-        /// <summary>
-        /// Html de los datos semanticos del recurso para la vista mapa, construido segun la configuración del XML de la comunidad
-        /// </summary>
-        public string InfoExtraMap { get; set; }
+        public ViewResorceModel MapView 
+        {
+            get
+            {
+                if (mMapView == null)
+                {
+                    mMapView = new ViewResorceModel();
+                }
+                return mMapView;
+            }
+            set
+            {
+                mMapView = value;
+            }
+        }
+
         /// <summary>
         /// Lista de propiedades semánticas del recurso
         /// </summary>
         public Dictionary<string, List<SemanticPropertieModel>> SemanticProperties { get; set; }
+
         /// <summary>
         /// Lista de propiedades semánticas personalizasdas del recurso
         /// </summary>
         public List<CustomSemanticPropertiesModel> CustomSemanticProperties { get; set; }
+
+        /// <summary>
+        /// Indica el tipo de vista que está por defecto
+        /// </summary>
+        public TipoVista VistaDefecto { get; set; }
+
+        #endregion
+    }
+
+    [Serializable]
+    public partial class ViewResorceModel
+    {
+        /// <summary>
+        /// Indica si se debe mostrar la descripcion
+        /// </summary>
+        public bool ShowDescription { get; set; }
+        /// <summary>
+        /// Indica si se deben mostrar las categorias
+        /// </summary>
+        public bool ShowCategories { get; set; }
+        /// <summary>
+        /// Indica si se deben mostrar las etiquetas
+        /// </summary>
+        public bool ShowTags { get; set; }
+        /// <summary>
+        /// Indica si se debe mostrar el publicador
+        /// </summary>
+        public bool ShowPublisher { get; set; }
+        /// <summary>
+        /// Html de los datos semanticos del recurso
+        /// </summary>
+        public string InfoExtra { get; set; }
+    }
+
+    public enum TipoVista
+    {
+        /// <summary>
+        /// Lista
+        /// </summary>
+        Lista = 0,
+        /// <summary>
+        /// Mosaico
+        /// </summary>
+        Mosaico = 1,
+        /// <summary>
+        /// Mapa
+        /// </summary>
+        Mapa = 2,
+        /// <summary>
+        /// Contexto
+        /// </summary>
+        Contexto = 3
     }
 
     /// <summary>

@@ -1,4 +1,5 @@
 using Es.Riam.AbstractsOpen;
+using Es.Riam.Gnoss.AD.Amigos;
 using Es.Riam.Gnoss.AD.BASE_BD.Model;
 using Es.Riam.Gnoss.AD.ComparticionAutomatica;
 using Es.Riam.Gnoss.AD.EntityModel;
@@ -7,6 +8,7 @@ using Es.Riam.Gnoss.AD.EntityModelBASE;
 using Es.Riam.Gnoss.AD.EntityModelBASE.Models;
 using Es.Riam.Gnoss.AD.Facetado;
 using Es.Riam.Gnoss.AD.Notificacion;
+using Es.Riam.Gnoss.AD.ParametroAplicacion;
 using Es.Riam.Gnoss.AD.ServiciosGenerales;
 using Es.Riam.Gnoss.RabbitMQ;
 using Es.Riam.Gnoss.Util.Configuracion;
@@ -15,6 +17,7 @@ using Es.Riam.Interfaces;
 using Es.Riam.Util;
 using Es.Riam.Util.Correo;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -176,7 +179,28 @@ namespace Es.Riam.Gnoss.AD.BASE_BD
         /// <summary>
         /// La info del recurso ha sido insertada en el grafo de búsqueda desde la Web o el ApiRecursos y hay que generar el search, contribuciones...
         /// </summary>
-        InsertadoEnGrafoBusquedaDesdeWeb = 7
+        InsertadoEnGrafoBusquedaDesdeWeb = 7,
+
+
+        /// <summary>
+        /// Eliminar el autocompletar de un documento concreto
+        /// </summary>
+        EliminarAutocompletarDocumento = 8,
+
+        /// <summary>
+        /// Marca el inicio de una tarea en segundo plano
+        /// </summary>
+        InicioTarea = 9,
+
+        /// <summary>
+        /// Marca el fin de una tarea en segundo plano
+        /// </summary>
+        FinTarea = 10,
+
+        /// <summary>
+        /// Se ha renombrado una categoría
+        /// </summary>
+        RenombrarCategoria = 11,
     }
 
     /// <summary>
@@ -278,7 +302,11 @@ namespace Es.Riam.Gnoss.AD.BASE_BD
         /// <summary>
         /// Modificar la caducidad de la cache de un documento.
         /// </summary>
-        RecalcularContadoresPerfil = 5
+        RecalcularContadoresPerfil = 5,
+        /// <summary>
+        /// Actualizar las cachés de lista de amigos
+        /// </summary>
+        CambiosAmigosPrivados = 6
 
     }
 
@@ -466,6 +494,8 @@ namespace Es.Riam.Gnoss.AD.BASE_BD
         protected bool mUsarRabbitSiEstaConfigurado = true;
 
         protected EntityContextBASE mEntityContextBASE;
+        private ILogger mlogger;
+        private ILoggerFactory mLoggerFactory;
         #endregion
 
         #region Constructores
@@ -473,11 +503,12 @@ namespace Es.Riam.Gnoss.AD.BASE_BD
         /// <summary>
         /// El por defecto, utilizado cuando se requiere el GnossConfig.xml por defecto
         /// </summary>
-        public BaseComunidadAD(LoggingService loggingService, EntityContext entityContext, EntityContextBASE entityContextBASE, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication)
-            : base(loggingService, entityContext, configService, servicesUtilVirtuosoAndReplication)
+        public BaseComunidadAD(LoggingService loggingService, EntityContext entityContext, EntityContextBASE entityContextBASE, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication,ILogger<BaseComunidadAD> logger, ILoggerFactory loggerFactory)
+            : base(loggingService, entityContext, configService, servicesUtilVirtuosoAndReplication, logger, loggerFactory)
         {
             mEntityContextBASE = entityContextBASE;
-
+            mlogger = logger;
+            mLoggerFactory = loggerFactory;
             mNomberTablaFreebase = "GnossToFreebase";
             if (mTablaBaseProyectoID > -1)
             {
@@ -492,11 +523,12 @@ namespace Es.Riam.Gnoss.AD.BASE_BD
         /// <param name="pFicheroConfiguracionBD">Fichero de configuración de la base de datos BASE</param>
         /// <param name="pUsarVariableEstatica">Si se están usando hilos con diferentes conexiones: FALSE. En caso contrario TRUE</param>
         /// <param name="pTablaBaseProyectoID">Identificador numerico del proyecto (-1 si no se va a actualizar tablas de proyecto)</param>
-        public BaseComunidadAD(int pTablaBaseProyectoID, LoggingService loggingService, EntityContext entityContext, EntityContextBASE entityContextBASE, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication)
-            : base(loggingService, entityContext, configService, entityContextBASE, servicesUtilVirtuosoAndReplication)
+        public BaseComunidadAD(int pTablaBaseProyectoID, LoggingService loggingService, EntityContext entityContext, EntityContextBASE entityContextBASE, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication, ILogger<BaseComunidadAD> logger, ILoggerFactory loggerFactory)
+            : base(loggingService, entityContext, configService, entityContextBASE, servicesUtilVirtuosoAndReplication, logger, loggerFactory)
         {
             mEntityContextBASE = entityContextBASE;
-
+            mlogger = logger;
+            mLoggerFactory = loggerFactory;
             mTablaBaseProyectoID = pTablaBaseProyectoID;
             mNomberTablaFreebase = "GnossToFreebase";
             if (mTablaBaseProyectoID > -1)
@@ -564,18 +596,20 @@ namespace Es.Riam.Gnoss.AD.BASE_BD
                     {
                         try
                         {
-                            using (RabbitMQClient rMQ = new RabbitMQClient(rabbitBD, pColaRabbit, mLoggingService, mConfigService))
+                            using (RabbitMQClient rMQ = new RabbitMQClient(rabbitBD, pColaRabbit, mLoggingService, mConfigService, mLoggerFactory.CreateLogger<RabbitMQClient>(), mLoggerFactory))
                             {
+                                List<string> elementos = new List<string>();
                                 foreach (DataRow fila in filas)
                                 {
-                                    rMQ.AgregarElementoACola(JsonConvert.SerializeObject(fila.ItemArray));
+                                    elementos.Add(JsonConvert.SerializeObject(fila.ItemArray));
                                 }
+                                rMQ.AgregarElementosACola(elementos);
                                 pDataSet.Tables[pNombreTabla].AcceptChanges();
                             }
                         }
                         catch (Exception ex)
                         {
-                            mLoggingService.GuardarLogError(ex);
+                            mLoggingService.GuardarLogError(ex, mlogger);
                         }
                     }
                 }
@@ -650,7 +684,7 @@ namespace Es.Riam.Gnoss.AD.BASE_BD
                     AgregarParametro(InsertColaComparticionAutomaticaCommand, IBD.ToParam("Prioridad"), IBD.TipoGuidToObject(DbType.Int16), "Prioridad", DataRowVersion.Current);
                     AgregarParametro(InsertColaComparticionAutomaticaCommand, IBD.ToParam("IncidenciaComparticion"), IBD.TipoGuidToObject(DbType.String), "IncidenciaComparticion", DataRowVersion.Current);
 
-                    InsertarFilasEnRabbit("ColaComparticionAutomatica", addedAndModifiedDataSet);
+					InsertarFilasEnRabbit("ColaComparticionAutomatica", addedAndModifiedDataSet);              
                     //ActualizarBaseDeDatos(addedAndModifiedDataSet, "ColaComparticionAutomatica", InsertColaComparticionAutomaticaCommand, null, null, Microsoft.Practices.EnterpriseLibrary.Data.UpdateBehavior.Transactional);
 
                     #endregion Actualizar Tabla ColaComparticionAutomatica
@@ -943,7 +977,7 @@ namespace Es.Riam.Gnoss.AD.BASE_BD
 
         public int ObtenerListaRecursosRelacionadosOtrasComunidades(DataSet pDataSet, String Recurso, int inicio, int final, Guid pProyectoId)
         {
-            ProyectoAD proyectoAD = new ProyectoAD(mLoggingService, mEntityContext, mConfigService, mServicesUtilVirtuosoAndReplication);
+            ProyectoAD proyectoAD = new ProyectoAD(mLoggingService, mEntityContext, mConfigService, mServicesUtilVirtuosoAndReplication,mLoggerFactory.CreateLogger<ProyectoAD>(),mLoggerFactory);
             List<int> proyectosRelacionados = new List<int>();
             proyectoAD.ObtenerListaProyectoRelacionados(pProyectoId, out proyectosRelacionados);
 
@@ -992,7 +1026,7 @@ namespace Es.Riam.Gnoss.AD.BASE_BD
         /// <param name="pListaDocumentosID">Lista de los últimos recursos visitados en este proyecto</param>
         public void InsertarUltimosRecursosVisitadosDeProyecto(Guid pProyectoID, List<Guid> pListaDocumentosID)
         {
-            
+
 
             string ultimosRecursosVisitadosActualizado = string.Join(",", pListaDocumentosID.ConvertAll(x => x.ToString()));
             UltimosDocumentosVisitados ultimosDocumentosVisitados = new UltimosDocumentosVisitados()
@@ -1283,7 +1317,7 @@ namespace Es.Riam.Gnoss.AD.BASE_BD
                     listaCorreos.Find(item => item.CorreoID.Equals(destinatarioEmail.CorreoID)).Destinatarios.Add(destinatarioEmail);
                 }
 
-                
+
             }
 
             return listaCorreos;
@@ -1460,7 +1494,7 @@ namespace Es.Riam.Gnoss.AD.BASE_BD
             colaCorreo.Puerto = pPuerto;
             colaCorreo.EsSeguro = pEsSeguro;
             colaCorreo.tipo = pTipo;
-            
+
             if (!string.IsNullOrWhiteSpace(mConfigService.ObtenerRabbitMQClient(RabbitMQClient.BD_SERVICIOS_WIN)))
             {
                 colaCorreo.EnviadoRabbit = true;
@@ -1471,7 +1505,7 @@ namespace Es.Riam.Gnoss.AD.BASE_BD
             {
                 mEntityContextBASE.SaveChanges();
             }
-            catch(DbUpdateException)
+            catch (DbUpdateException)
             {
                 //Por defecto el CorreoID debería asignarlo atomáticamente la base de datos, si falla lo asignamos manualmente y guardamos de nuevo
                 int numCorreos = mEntityContextBASE.ColaCorreo.Count();
@@ -1718,7 +1752,7 @@ namespace Es.Riam.Gnoss.AD.BASE_BD
                 }
                 catch (Exception e)
                 {
-                    mLoggingService.GuardarLogError(e);
+                    mLoggingService.GuardarLogError(e, mlogger);
                 }
             }
         }
@@ -1902,7 +1936,7 @@ namespace Es.Riam.Gnoss.AD.BASE_BD
             ActualizarBaseDeDatos(cmdInsertColaCache);
         }
 
-        public void InsertarFilaColaRefrescoCacheEnRabbitMQ(Guid pProyectoID, TiposEventosRefrescoCache pTipoEvento, TipoBusqueda pTipoBusqueda, string pInfoExtra)
+        public string PreprarFilaColaRefrescoCacheRabbitMQ(Guid pProyectoID, TiposEventosRefrescoCache pTipoEvento, TipoBusqueda pTipoBusqueda, string pInfoExtra)
         {
             BaseComunidadDS baseComunidadDS = new BaseComunidadDS();
             ColaRefrescoCacheRow filaColaRefrescoCache = baseComunidadDS.ColaRefrescoCache.NewColaRefrescoCacheRow();
@@ -1912,22 +1946,56 @@ namespace Es.Riam.Gnoss.AD.BASE_BD
             filaColaRefrescoCache.InfoExtra = pInfoExtra;
             filaColaRefrescoCache.Fecha = DateTime.Now;
             filaColaRefrescoCache.Estado = 0;
+            baseComunidadDS.Dispose();
 
+            return JsonConvert.SerializeObject(filaColaRefrescoCache.ItemArray);
+        }
+        public void InsertarFilasColaRefrecoCacheEnRabbitMQ(List<string> pFilasAInsertar, TiposEventosRefrescoCache pTipoEvento)
+        {
             string exchange = "";
             string colaRabbit = "ColaRefrescoCache";
             if (pTipoEvento.Equals(TiposEventosRefrescoCache.CambiosBandejaDeMensajes))
             {
                 colaRabbit = "ColaRefrescoCacheMensajes";
             }
-
             if (!string.IsNullOrWhiteSpace(mConfigService.ObtenerRabbitMQClient(RabbitMQClient.BD_SERVICIOS_WIN)))
             {
-                using (RabbitMQClient rabbitMQ = new RabbitMQClient(RabbitMQClient.BD_SERVICIOS_WIN, colaRabbit, mLoggingService, mConfigService, exchange, colaRabbit))
+                using (RabbitMQClient rabbitMQ = new RabbitMQClient(RabbitMQClient.BD_SERVICIOS_WIN, colaRabbit, mLoggingService, mConfigService, mLoggerFactory.CreateLogger<RabbitMQClient>(), mLoggerFactory, exchange, colaRabbit))
                 {
-                    rabbitMQ.AgregarElementoACola(JsonConvert.SerializeObject(filaColaRefrescoCache.ItemArray));
+                    List<string> mensajesFallidos = (List<string>)rabbitMQ.AgregarElementosACola(pFilasAInsertar);
+                    if (mensajesFallidos.Count > 0)
+                    {
+                        foreach (string mensajeFallido in mensajesFallidos)
+                        {
+                            mLoggingService.GuardarLogError("Fallo al insertar en Rabbit, insertamos en la base de datos BASE, tabla colaRefrescoCache",mlogger);
+                            ColaRefrescoCacheRow colaRefrescoCacheRow = JsonConvert.DeserializeObject<ColaRefrescoCacheRow>(mensajeFallido);
+                            InsertarFilaEnColaRefrescoCache(colaRefrescoCacheRow.ProyectoID, (TiposEventosRefrescoCache)colaRefrescoCacheRow.TipoEvento, (TipoBusqueda)colaRefrescoCacheRow.TipoBusqueda, colaRefrescoCacheRow.InfoExtra);
+                        }
+                    }
                 }
             }
-            baseComunidadDS.Dispose();
+
+        }
+
+        public void InsertarFilaColaRefrescoCacheEnRabbitMQ(Guid pProyectoID, TiposEventosRefrescoCache pTipoEvento, TipoBusqueda pTipoBusqueda, string pInfoExtra)
+        {
+            string filaColaRefrescoCacheSerializado = PreprarFilaColaRefrescoCacheRabbitMQ(pProyectoID, pTipoEvento, pTipoBusqueda, pInfoExtra);
+
+            string exchange = "";
+            string colaRabbit = "ColaRefrescoCache";
+            if (pTipoEvento.Equals(TiposEventosRefrescoCache.CambiosBandejaDeMensajes) || pTipoEvento.Equals(TiposEventosRefrescoCache.CambiosAmigosPrivados))
+            {
+                colaRabbit = "ColaRefrescoCacheMensajes";
+            }
+            
+            if (!string.IsNullOrWhiteSpace(mConfigService.ObtenerRabbitMQClient(RabbitMQClient.BD_SERVICIOS_WIN)))
+            {
+                using (RabbitMQClient rabbitMQ = new RabbitMQClient(RabbitMQClient.BD_SERVICIOS_WIN, colaRabbit, mLoggingService, mConfigService, mLoggerFactory.CreateLogger<RabbitMQClient>(), mLoggerFactory, exchange, colaRabbit))
+                {
+                    rabbitMQ.AgregarElementoACola(filaColaRefrescoCacheSerializado);
+                }
+            }
+
         }
 
         /// <summary>
@@ -1937,7 +2005,7 @@ namespace Es.Riam.Gnoss.AD.BASE_BD
         /// <returns>true o false si existe o no la cola respectivamente</returns>
         public bool ExisteColaRabbit(string pNombreCola)
         {
-            using (RabbitMQClient rabbitMQ = new RabbitMQClient(RabbitMQClient.BD_SERVICIOS_WIN, pNombreCola, mLoggingService, mConfigService))
+            using (RabbitMQClient rabbitMQ = new RabbitMQClient(RabbitMQClient.BD_SERVICIOS_WIN, pNombreCola, mLoggingService, mConfigService, mLoggerFactory.CreateLogger<RabbitMQClient>(), mLoggerFactory))
             {
                 return rabbitMQ.ExisteColaRabbit(pNombreCola);
             }
@@ -2139,11 +2207,11 @@ namespace Es.Riam.Gnoss.AD.BASE_BD
 
             if (pFila.IsNull("Estado"))
             {
-                mLoggingService.GuardarLog("El campo Estado no puede ser NULL");
+                mLoggingService.GuardarLog("El campo Estado no puede ser NULL", mlogger);
             }
             if (pFila.IsNull("OrdenEjecucion"))
             {
-                mLoggingService.GuardarLog("El campo OrdenEjecucion no puede ser NULL");
+                mLoggingService.GuardarLog("El campo OrdenEjecucion no puede ser NULL", mlogger);
             }
 
             AgregarParametro(comandoUpdateEst, IBD.ToParam("Estado"), DbType.Int16, (short)pFila["Estado"]);

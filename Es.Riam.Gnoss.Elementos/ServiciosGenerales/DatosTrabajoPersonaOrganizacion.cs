@@ -1,5 +1,6 @@
 using Es.Riam.Gnoss.AD.EntityModel.Models.OrganizacionDS;
 using Es.Riam.Gnoss.Util.General;
+using Microsoft.Extensions.Logging;
 using System;
 
 namespace Es.Riam.Gnoss.Elementos.ServiciosGenerales
@@ -16,8 +17,8 @@ namespace Es.Riam.Gnoss.Elementos.ServiciosGenerales
         /// </summary>
         /// <param name="pVinculo">Fila de vínculo entre persona y organización</param>
         /// <param name="pGestorOrganizaciones">Gestor de organizaciones</param>
-        public DatosTrabajoPersonaOrganizacion(PersonaVinculoOrganizacion pVinculo, GestionOrganizaciones pGestorOrganizaciones, LoggingService loggingService) 
-            : base(pVinculo, pGestorOrganizaciones, loggingService)
+        public DatosTrabajoPersonaOrganizacion(PersonaVinculoOrganizacion pVinculo, GestionOrganizaciones pGestorOrganizaciones) 
+            : base(pVinculo, pGestorOrganizaciones)
         {
         }
 

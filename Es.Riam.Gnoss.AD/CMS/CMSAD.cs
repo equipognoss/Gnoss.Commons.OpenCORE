@@ -3,9 +3,12 @@ using Es.Riam.Gnoss.AD.EncapsuladoDatos;
 using Es.Riam.Gnoss.AD.EntityModel;
 using Es.Riam.Gnoss.AD.EntityModel.Models.CMS;
 using Es.Riam.Gnoss.AD.EntityModel.Models.ProyectoDS;
+using Es.Riam.Gnoss.AD.ParametroAplicacion;
 using Es.Riam.Gnoss.Util.Configuracion;
 using Es.Riam.Gnoss.Util.General;
 using Es.Riam.Gnoss.Web.MVC.Models.Administracion;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -224,8 +227,8 @@ namespace Es.Riam.Gnoss.AD.CMS
         public static IQueryable<JoinCMSBloqueComponenteCMSBloqueCMSPagina> JoinCMSPagina(this IQueryable<JoinCMSBloqueComponenteCMSBloque> pQuery)
         {
             EntityContext entityContext = (EntityContext)QueryContextAccess.GetDbContext(pQuery);
-            return pQuery.Join(entityContext.CMSPagina, item  => item.CMSBloque.Ubicacion, cmsPagina => cmsPagina.Ubicacion, (item, cmsPagina) => new JoinCMSBloqueComponenteCMSBloqueCMSPagina
-                {
+            return pQuery.Join(entityContext.CMSPagina, item => item.CMSBloque.Ubicacion, cmsPagina => cmsPagina.Ubicacion, (item, cmsPagina) => new JoinCMSBloqueComponenteCMSBloqueCMSPagina
+            {
                 CMSBloqueComponente = item.CMSBloqueComponente,
                 CMSBloque = item.CMSBloque,
                 CMSPagina = cmsPagina
@@ -294,28 +297,33 @@ namespace Es.Riam.Gnoss.AD.CMS
     public class CMSAD : BaseAD
     {
         private EntityContext mEntityContext;
-
+        private ILogger mlogger;
+        private ILoggerFactory mLoggerFactory;
         #region Constructores
 
         /// <summary>
-        /// Constructor por defecto, sin parámetros, utilizado cuando se requiere el GnossConfig.xml por defecto
+        /// Constructor por defecto, sin parï¿½metros, utilizado cuando se requiere el GnossConfig.xml por defecto
         /// </summary>
-        public CMSAD(LoggingService loggingService, EntityContext entityContext, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication)
-            : base(loggingService, entityContext, configService, servicesUtilVirtuosoAndReplication)
+        public CMSAD(LoggingService loggingService, EntityContext entityContext, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication, ILogger<CMSAD> logger, ILoggerFactory loggerFactory)
+            : base(loggingService, entityContext, configService, servicesUtilVirtuosoAndReplication, logger, loggerFactory)
         {
+            mlogger = logger;
+            mLoggerFactory = loggerFactory;
             mEntityContext = entityContext;
             this.CargarConsultasYDataAdapters();
         }
 
         /// <summary>
-        /// Constructor a partir del fichero de configuración de conexión a la base de datos
+        /// Constructor a partir del fichero de configuraciï¿½n de conexiï¿½n a la base de datos
         /// </summary>
-        /// <param name="pFicheroConfiguracionBD">Ruta del fichero de configuración de la conexión a base de datos</param>
-        /// <param name="pUsarVariableEstatica">Si se están usando hilos con diferentes conexiones: FALSE. En caso contrario TRUE</param>
-        public CMSAD(string pFicheroConfiguracionBD, LoggingService loggingService, EntityContext entityContext, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication)
-            : base(pFicheroConfiguracionBD, loggingService, entityContext, configService, servicesUtilVirtuosoAndReplication)
+        /// <param name="pFicheroConfiguracionBD">Ruta del fichero de configuraciï¿½n de la conexiï¿½n a base de datos</param>
+        /// <param name="pUsarVariableEstatica">Si se estï¿½n usando hilos con diferentes conexiones: FALSE. En caso contrario TRUE</param>
+        public CMSAD(string pFicheroConfiguracionBD, LoggingService loggingService, EntityContext entityContext, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication, ILogger<CMSAD> logger, ILoggerFactory loggerFactory)
+            : base(pFicheroConfiguracionBD, loggingService, entityContext, configService, servicesUtilVirtuosoAndReplication, logger, loggerFactory)
         {
             mEntityContext = entityContext;
+            mlogger = logger;
+            mLoggerFactory = loggerFactory;
             this.CargarConsultasYDataAdapters(IBD);
         }
 
@@ -436,9 +444,9 @@ namespace Es.Riam.Gnoss.AD.CMS
 
         #endregion
 
-        #region Métodos generales
+        #region Mï¿½todos generales
 
-        #region Públicos
+        #region Pï¿½blicos
 
         /// <summary>
         /// Obtiene si un proyecto tiene algun componente con caducidad de tipo recurso
@@ -500,6 +508,26 @@ namespace Es.Riam.Gnoss.AD.CMS
             ActualizarBaseDeDatos();
         }
 
+        /// <summary>
+        /// Comprueba si un componete CMS pertenece a un grupo de componentes (TipoPropiedadComponente = 6)
+        /// </summary>
+        /// <param name="componenteID">Id del componete a verificar</param>
+        /// <returns>true si pertenece a un grupo de componentes, falso en caso contrario</returns>
+        public bool ComponenteCMSPerteneceGrupo(Guid componenteID)
+        {
+            List<string> valoresPropiedades= mEntityContext.CMSPropiedadComponente.Where(item => item.TipoPropiedadComponente == 6).Select(item=>item.ValorPropiedad).ToList();
+            List<string> pertenecenAunGrupo = new List<string>();
+            foreach(string valor in valoresPropiedades)
+            {
+                string[] listadoGrupo= valor.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
+                foreach (string id in listadoGrupo)
+                {
+                    pertenecenAunGrupo.Add(id);
+                }
+            }
+            return pertenecenAunGrupo.Contains(componenteID.ToString());
+
+        }
         public void ActualizarBaseDeDatos()
         {
             mEntityContext.SaveChanges();
@@ -509,7 +537,7 @@ namespace Es.Riam.Gnoss.AD.CMS
         /// <summary>
         /// Obtiene las tablas CMSPagina, CMSBLoque,CMSBLoqueComponente, CMSComponente, CMSPropiedadComponente de una ubicacion en un proyecto
         /// </summary>
-        /// <param name="pUbicacion">Ubicacion de la página</param>
+        /// <param name="pUbicacion">Ubicacion de la pï¿½gina</param>
         /// <param name="pProyectoID">ID del proyecto</param>        
         /// <param name="pBorradorOPublicado">0-Todo,1-Borrador,2-Publicado</param>
         /// <returns>DataSet de CMS</returns>
@@ -680,13 +708,13 @@ namespace Es.Riam.Gnoss.AD.CMS
             if (pListaComponenteID.Count > 0)
             {
                 var consultaCMSComponente = mEntityContext.CMSComponente.Where(item => pListaComponenteID.Contains(item.ComponenteID) && item.ProyectoID.Equals(pProyectoID));
-                
+
                 if (pCargarSoloActivos)
                 {
                     consultaCMSComponente = consultaCMSComponente.Where(item => item.Activo);
                 }
-                
-                CMSDW.ListaCMSComponente =  consultaCMSComponente.ToList();
+
+                CMSDW.ListaCMSComponente = consultaCMSComponente.ToList();
                 CMSDW.ListaCMSPropiedadComponente = mEntityContext.CMSPropiedadComponente.Where(item => pListaComponenteID.Contains(item.ComponenteID)).ToList();
                 CMSDW.ListaCMSComponenteRolGrupoIdentidades = mEntityContext.CMSComponenteRolGrupoIdentidades.Where(item => pListaComponenteID.Contains(item.ComponenteID)).ToList();
                 CMSDW.ListaCMSComponenteRolIdentidad = mEntityContext.CMSComponenteRolIdentidad.Where(item => pListaComponenteID.Contains(item.ComponenteID)).ToList();
@@ -710,14 +738,14 @@ namespace Es.Riam.Gnoss.AD.CMS
         }
 
         /// <summary>
-        /// Nos indica las páginas a las que esta vinculado el componente
+        /// Nos indica las pï¿½ginas a las que esta vinculado el componente
         /// </summary>
         /// <param name="pComponenteID"></param>
         /// <returns></returns>
         public List<string> PaginasVinculadasComponente(Guid pComponenteID, Guid pProyectoID)
         {
             return mEntityContext.CMSBloqueComponente.JoinCMSBloque().JoinCMSPagina().JoinProyectoPestanyaCMS().JoinProyectoPestanyaMenu().Where(item => item.CMSBloque.ProyectoID.Equals(pProyectoID) && item.CMSBloqueComponente.ComponenteID.Equals(pComponenteID)).Select(item => item.ProyectoPestanyaMenu.Nombre).ToList();
-        } 
+        }
 
         /// <summary>
         /// Obtiene las filas CMSComponente de un proyecto
@@ -765,11 +793,11 @@ namespace Es.Riam.Gnoss.AD.CMS
         }
 
         /// <summary>
-        /// Obtiene la tabla CMSComponente del proyecto indicado por parámetro
+        /// Obtiene la tabla CMSComponente del proyecto indicado por parï¿½metro
         /// </summary>
         /// <param name="pProyectoID">Identificador del proyecto</param>
-        /// <param name="pLimite">Número de resultados a devolver</param>
-        /// <param name="pBusqueda">Título del componente a buscar</param>
+        /// <param name="pLimite">Nï¿½mero de resultados a devolver</param>
+        /// <param name="pBusqueda">Tï¿½tulo del componente a buscar</param>
         /// <returns>Lista de CMSComponente</returns>
         public List<CMSComponente> ObtenerCMSComponentePorProyecto(Guid pProyectoID, int pLimite, string pBusqueda)
         {
@@ -855,9 +883,14 @@ namespace Es.Riam.Gnoss.AD.CMS
             var query = mEntityContext.CMSComponente.Where(item => item.ComponenteID.Equals(pComponenteID) && item.ProyectoID.Equals(pProyectoID)).Select(item => item.NombreCortoComponente);
             return query.FirstOrDefault();
         }
+        public Dictionary<Guid, string> ObtenerNombreComponentesPorIDComponente(List<Guid> pIdsComponentes)
+        {
+            var query = mEntityContext.CMSComponente.Where(item => pIdsComponentes.Contains(item.ComponenteID));
+            return query.ToDictionary(k => k.ComponenteID, v => v.Nombre);
+        }
 
         /// <summary>
-        /// Elimina los bloques de una página de un proyecto
+        /// Elimina los bloques de una pï¿½gina de un proyecto
         /// </summary>
         /// <param name="pProyectoID">ID del proyecto</param>
         /// <param name="pTipoUbicacionCMS">Tipo de ubicacion</param>
@@ -897,10 +930,10 @@ namespace Es.Riam.Gnoss.AD.CMS
         }
 
         /// <summary>
-        /// Actualiza la fecha de actualización de un componente
+        /// Actualiza la fecha de actualizaciï¿½n de un componente
         /// </summary>
         /// <param name="pComponenteID">ID del componente</param>
-        /// <param name="pFechaActualizacion">Fecha de la  última actualización</param>
+        /// <param name="pFechaActualizacion">Fecha de la  ï¿½ltima actualizaciï¿½n</param>
         public void ActualizarCaducidadComponente(Guid pComponenteID, DateTime pFechaActualizacion)
         {
             //Revisar
@@ -941,12 +974,67 @@ namespace Es.Riam.Gnoss.AD.CMS
             return dataWrapperCMS;
         }
 
+        public List<CMSComponenteVersion> ObtenerVersionesComponenteCMS(Guid pComponenteID)
+        {
+            return mEntityContext.CMSComponenteVersion.Where(item => item.ComponenteID.Equals(pComponenteID)).ToList();
+        }
+
+        public List<CMSComponenteVersion> ObtenerVersionesComponenteCMSSinModelo(Guid pComponenteID)
+        {
+            return mEntityContext.CMSComponenteVersion.Where(item => item.ComponenteID.Equals(pComponenteID)).Select(item => new CMSComponenteVersion
+            {
+                VersionID = item.VersionID,
+                ComponenteID = item.ComponenteID,
+                IdentidadID = item.IdentidadID,
+                VersionAnterior = item.VersionAnterior,
+                Fecha = item.Fecha,
+                Comentario = item.Comentario
+            }).ToList();
+        }
+
+        public CMSComponenteVersion ObtenerVersionComponenteCMS(Guid pComponenteID, Guid pVersionID)
+        {
+            return mEntityContext.CMSComponenteVersion.Where(item => item.ComponenteID.Equals(pComponenteID) && item.VersionID.Equals(pVersionID)).FirstOrDefault();
+        }
+
+        public List<ProyectoPestanyaVersionCMS> ObtenerVersionesEstructuraPaginaCMS(Guid pPestanyaID)
+        {
+            return mEntityContext.ProyectoPestanyaVersionCMS.Where(item => item.PestanyaID.Equals(pPestanyaID)).ToList();
+        }
+
+        /// <summary>
+        /// Obtiene las versiones de la estructura de una pagina del CMS pero evitando cargar todo el modelo de la estructura.
+        /// </summary>
+        /// <param name="pPestanyaID">Id de la pagina a consultar</param>
+        /// <returns></returns>
+        public List<ProyectoPestanyaVersionCMS> ObtenerVersionesEstructuraPaginaCMSSinEstructura(Guid pPestanyaID)
+        {
+            return mEntityContext.ProyectoPestanyaVersionCMS.Where(item => item.PestanyaID.Equals(pPestanyaID)).Select(item => new ProyectoPestanyaVersionCMS()
+            {
+                PestanyaID = item.PestanyaID,
+                VersionID = item.VersionID,
+                Fecha = item.Fecha,
+                IdentidadID = item.IdentidadID,
+                Comentario = item.Comentario
+            }).ToList();
+        }
+
+        public List<Guid> ObtenerIdVersionesEstructuraPaginaCMS(Guid pPestanyaID)
+        {
+            return mEntityContext.ProyectoPestanyaVersionCMS.Where(item => item.PestanyaID.Equals(pPestanyaID)).OrderBy(item => item.Fecha).Select(item => item.VersionID).ToList();
+        }
+
+        public ProyectoPestanyaVersionCMS ObtenerVersionEstructuraPaginaCMS(Guid pVersionID)
+        {
+            return mEntityContext.ProyectoPestanyaVersionCMS.Where(item => item.VersionID.Equals(pVersionID)).FirstOrDefault();
+        }
+
         #endregion
 
         #region Privados
 
         /// <summary>
-        /// En caso de que se utilice el GnossConfig.xml por defecto se sigue utilizando el IBD estático
+        /// En caso de que se utilice el GnossConfig.xml por defecto se sigue utilizando el IBD estï¿½tico
         /// </summary>
         private void CargarConsultasYDataAdapters()
         {
@@ -955,7 +1043,7 @@ namespace Es.Riam.Gnoss.AD.CMS
 
         /// <summary>
         /// En caso de que se utilice un GnossConfig.xml que no es el de por defecto se pasa un objeto IBaseDatos creado con respecto
-        /// al fichero de configuracion que se ha apsado como parámetro
+        /// al fichero de configuracion que se ha apsado como parï¿½metro
         /// </summary>
         /// <param name="IBD">Objecto IBaseDatos para el archivo pasado al constructor del AD</param>
         private void CargarConsultasYDataAdapters(IBaseDatos IBD)
@@ -1112,8 +1200,8 @@ namespace Es.Riam.Gnoss.AD.CMS
         }
 
         /// <summary>
-        /// A partir de la versión 5.6.0 es necesario que los CMSComponentes tenga FechaActualizacion, este campo antes no era necesario así que actualizamos los componentes antiguos
-        /// para que también tengan, si no fallarán las instrucciones siguientes.
+        /// A partir de la versiï¿½n 5.6.0 es necesario que los CMSComponentes tenga FechaActualizacion, este campo antes no era necesario asï¿½ que actualizamos los componentes antiguos
+        /// para que tambiï¿½n tengan, si no fallarï¿½n las instrucciones siguientes.
         /// </summary>
         private void CorregirFechaActualizacionComponentesAntiguos()
         {

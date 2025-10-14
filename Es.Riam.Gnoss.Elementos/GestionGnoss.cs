@@ -1,9 +1,12 @@
 using Es.Riam.Gnoss.AD.EncapsuladoDatos;
 using Es.Riam.Gnoss.AD.EntityModel.Models.ParametroGeneralDS;
+using Es.Riam.Gnoss.Elementos.Facetado;
+using Es.Riam.Gnoss.Elementos.Peticiones;
 using Es.Riam.Gnoss.Util.General;
 using Es.Riam.Interfaces;
 using Es.Riam.Interfaces.Observador;
 using Es.Riam.Util;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -68,31 +71,25 @@ namespace Es.Riam.Gnoss.Elementos
         /// Elemento cortado o copiado
         /// </summary>
         private ElementoGnoss mElementoCortadoCopiado = null;
-
         #endregion
 
         #region Constructores
 
-        /// <summary>
-        /// Constructor sin parámetros
-        /// </summary>
-        public GestionGnoss(LoggingService loggingService)
-            : base(loggingService)
-        {
-        }
+        public GestionGnoss() { }
+
 
         /// <summary>
         /// Constructor a partir de un dataset
         /// </summary>
         /// <param name="pDataSet">Dataset</param>
-        public GestionGnoss(DataSet pDataSet, LoggingService loggingService)
-            : base(pDataSet, loggingService)
+        public GestionGnoss(DataSet pDataSet)
+            : base(pDataSet)
         {
             mDataSet = pDataSet;
         }
 
-        public GestionGnoss(DataWrapperBase pDataWrapper, LoggingService loggingService)
-            : base(pDataWrapper, loggingService)
+        public GestionGnoss(DataWrapperBase pDataWrapper)
+            : base(pDataWrapper)
         {
             mDataWrapper = pDataWrapper;
         }

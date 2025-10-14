@@ -5,8 +5,11 @@ using Es.Riam.Gnoss.AD.EntityModel.Models.ProyectoDS;
 using Es.Riam.Gnoss.AD.EntityModel.Models.UsuarioDS;
 using Es.Riam.Gnoss.AD.ServiciosGenerales;
 using Es.Riam.Gnoss.AD.Suscripcion;
+using Es.Riam.Gnoss.Elementos.Peticiones;
 using Es.Riam.Gnoss.Util.General;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
+using Serilog.Core;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -44,24 +47,21 @@ namespace Es.Riam.Gnoss.Elementos.ServiciosGenerales
         /// Lista de personas
         /// </summary>
         private SortedList<Guid, Persona> mListaPersonas;
-
-        private LoggingService mLoggingService;
         private EntityContext mEntityContext;
-
         #endregion
 
         #region Constructores
+
+        public GestionPersonas() { }
 
         /// <summary>
         /// Constructor a partir del dataset de personas pasado por parámetro
         /// </summary>
         /// <param name="pDataWrapperPersona">Dataset de persona</param>
         public GestionPersonas(DataWrapperPersona pDataWrapperPersona, LoggingService loggingService, EntityContext entityContext)
-            : base(pDataWrapperPersona, loggingService)
+            : base(pDataWrapperPersona)
         {
-            mLoggingService = loggingService;
             mEntityContext = entityContext;
-
             CargarPersonas();
         }
 
@@ -79,7 +79,6 @@ namespace Es.Riam.Gnoss.Elementos.ServiciosGenerales
             mPaisDW = (DataWrapperPais)pInfo.GetValue("PaisDW", typeof(DataWrapperPais));
             mGestionOrganizaciones = (GestionOrganizaciones)pInfo.GetValue("GestorOrganizaciones", typeof(GestionOrganizaciones));
             mGestionUsuarios = (GestionUsuarios)pInfo.GetValue("GestorUsuarios", typeof(GestionUsuarios));
-
             CargarPersonas();
         }
 
@@ -172,7 +171,7 @@ namespace Es.Riam.Gnoss.Elementos.ServiciosGenerales
             {
                 foreach (AD.EntityModel.Models.PersonaDS.Persona filaPersona in DataWrapperPersonas.ListaPersona)
                 {
-                    Persona persona = new Persona(filaPersona, this, mLoggingService);
+                    Persona persona = new Persona(filaPersona, this);
                     if (!mListaPersonas.ContainsKey(persona.Clave))
                     {
                         mListaPersonas.Add(persona.Clave, persona);
@@ -208,7 +207,7 @@ namespace Es.Riam.Gnoss.Elementos.ServiciosGenerales
             filaPersona.EstadoCorreccion = (short)EstadoCorreccion.NoCorreccion;
             DataWrapperPersonas.ListaPersona.Add(filaPersona);
 
-            persona = new Persona(filaPersona, this, mLoggingService);
+            persona = new Persona(filaPersona, this);
             mListaPersonas.Add(persona.Clave, persona);
 
             return persona;

@@ -77,11 +77,11 @@ namespace Es.Riam.Gnoss.Web.MVC.Models.Administracion
         /// 
         /// </summary>
         public PresentacionPersonalizadoModel PresentacionPersonalizado { get; set; }
-
-        /// <summary>
-        /// Indica si el objeto de conocimiento es de tipo Primario.
-        /// </summary>
-        public bool EsObjetoPrimario { get; set; }
+        public List<AutocompletadoPresentacionModel> ListaAutocompletadoPresentacionModel {  get; set; }
+		/// <summary>
+		/// Indica si el objeto de conocimiento es de tipo Primario.
+		/// </summary>
+		public bool EsObjetoPrimario { get; set; }
 
         /// <summary>
         /// Nos indica si el objeto de conocimiento acaba de ser creado
@@ -113,6 +113,20 @@ namespace Es.Riam.Gnoss.Web.MVC.Models.Administracion
         /// </summary>
         public string Image { get; set; }
 
+        public DateTime FechaCreacion { get; set; }
+
+        public DateTime FechaModificacion { get; set; }
+
+      
+        public string UrlCompartir { get; set; }
+
+		public bool EsOntologiaCompartida { get; set; }
+
+		public string UrlProyectoOntologiaCompartida { get; set; }
+
+        public string NombreProyectoOntologiaCompartida { get; set; }
+
+        public List<string> ListaProyectosCompartidos { get; set; }
         /// <summary>
         /// 
         /// </summary>
@@ -146,6 +160,12 @@ namespace Es.Riam.Gnoss.Web.MVC.Models.Administracion
                 public string Where { get; set; }
                 public short Orden { get; set; }
             }
+        }
+
+        public partial class AutocompletadoPresentacionModel
+        {
+            public string Propiedad { get; set; }
+            public bool MostrarEnAutocompletar { get; set; }
         }
     }
 

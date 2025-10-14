@@ -1,4 +1,5 @@
 ﻿using Es.Riam.AbstractsOpen;
+using Es.Riam.Gnoss.AD.BASE_BD;
 using Es.Riam.Gnoss.AD.CMS;
 using Es.Riam.Gnoss.AD.EncapsuladoDatos;
 using Es.Riam.Gnoss.AD.EntityModel;
@@ -8,6 +9,7 @@ using Es.Riam.Gnoss.AD.EntityModel.Models.ProyectoDS;
 using Es.Riam.Gnoss.AD.EntityModelBASE;
 using Es.Riam.Gnoss.AD.Facetado;
 using Es.Riam.Gnoss.AD.Parametro;
+using Es.Riam.Gnoss.AD.ParametroAplicacion;
 using Es.Riam.Gnoss.AD.ParametrosProyecto;
 using Es.Riam.Gnoss.AD.ServiciosGenerales;
 using Es.Riam.Gnoss.AD.Virtuoso;
@@ -25,14 +27,20 @@ using Es.Riam.Gnoss.Logica.ExportacionBusqueda;
 using Es.Riam.Gnoss.Logica.Identidad;
 using Es.Riam.Gnoss.Logica.ParametroAplicacion;
 using Es.Riam.Gnoss.Logica.ServiciosGenerales;
+using Es.Riam.Gnoss.RabbitMQ;
 using Es.Riam.Gnoss.Recursos;
 using Es.Riam.Gnoss.Util.Configuracion;
 using Es.Riam.Gnoss.Util.General;
+using Es.Riam.Gnoss.UtilServiciosWeb;
 using Es.Riam.Gnoss.Web.Controles.ServiciosGenerales;
 using Es.Riam.Gnoss.Web.MVC.Models.Administracion;
+using Es.Riam.Interfaces.InterfacesOpen;
 using Es.Riam.Util;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Query;
+using Microsoft.Exchange.WebServices.Data;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using SemWeb.Inference;
 using System;
@@ -40,26 +48,30 @@ using System.Collections.Generic;
 using System.Data;
 using System.IO;
 using System.Linq;
+using System.Net;
+using System.Net.Http;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Web;
+using VDS.Common.Tries;
+using static Es.Riam.Gnoss.Web.MVC.Models.Administracion.TabModel.SearchTabModel;
 
 namespace Es.Riam.Gnoss.Web.Controles.Administracion
 {
-	public class ControladorPestanyas : ControladorBase
-	{
-		private Dictionary<string, Guid> mDiccionarioNombreOntoId = null;
-		private List<short> mListaPaginasCMS = null;
+    public class ControladorPestanyas : ControladorBase
+    {
+        private readonly Dictionary<string, Guid> mDiccionarioNombreOntoId;
+        private List<short> mListaPaginasCMS;
 
-		private Elementos.ServiciosGenerales.Proyecto ProyectoSeleccionado = null;
-		private GestionProyecto GestionProyectos = null;
-		private Dictionary<string, string> ParametroProyecto = null;
-		private GestionCMS mGestorCMS = null;
-		private DataWrapperExportacionBusqueda mExportacionBusquedaDW = null;
-		private DataWrapperFacetas mFacetasDW = null;
-		private bool CrearFilasPropiedadesExportacion = false;
-		private List<IntegracionContinuaPropiedad> propiedadesIntegracionContinua = null;
+        private new readonly Elementos.ServiciosGenerales.Proyecto ProyectoSeleccionado;
+        private readonly GestionProyecto GestionProyectos;
+        private readonly Dictionary<string, string> ParametroProyecto;
+        private GestionCMS mGestorCMS;
+        private DataWrapperExportacionBusqueda mExportacionBusquedaDW;
+        private DataWrapperFacetas mFacetasDW;
+        private readonly bool CrearFilasPropiedadesExportacion;
+        private List<IntegracionContinuaPropiedad> propiedadesIntegracionContinua;
 
 		private LoggingService mLoggingService;
 		private VirtuosoAD mVirtuosoAD;
@@ -68,14 +80,16 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
 		private RedisCacheWrapper mRedisCacheWrapper;
 		private GnossCache mGnossCache;
 		private EntityContextBASE mEntityContextBASE;
-
+		private IAvailableServices mAvailableServices;
+        private ILogger mlogger;
+        private ILoggerFactory mLoggerFactory;
         #region Constructor
 
         /// <summary>
         /// 
         /// </summary>
-        public ControladorPestanyas(Elementos.ServiciosGenerales.Proyecto pProyecto, Dictionary<string, string> pParametroProyecto, LoggingService loggingService, EntityContext entityContext, ConfigService configService, RedisCacheWrapper redisCacheWrapper, GnossCache gnossCache, VirtuosoAD virtuosoAD, IHttpContextAccessor httpContextAccessor, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication, EntityContextBASE pEntityContextBASE, bool pCrearFilasPropiedadesExportacion = false)
-			: base(loggingService, configService, entityContext, redisCacheWrapper, gnossCache, virtuosoAD, httpContextAccessor, servicesUtilVirtuosoAndReplication)
+        public ControladorPestanyas(Elementos.ServiciosGenerales.Proyecto pProyecto, Dictionary<string, string> pParametroProyecto, LoggingService loggingService, EntityContext entityContext, ConfigService configService, RedisCacheWrapper redisCacheWrapper, GnossCache gnossCache, VirtuosoAD virtuosoAD, IHttpContextAccessor httpContextAccessor, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication, EntityContextBASE pEntityContextBASE, IAvailableServices pAvailableService, ILogger<ControladorPestanyas> logger, ILoggerFactory loggerFactory, bool pCrearFilasPropiedadesExportacion = false)
+			: base(loggingService, configService, entityContext, redisCacheWrapper, gnossCache, virtuosoAD, httpContextAccessor, servicesUtilVirtuosoAndReplication,logger,loggerFactory)
 		{
 			mVirtuosoAD = virtuosoAD;
 			mLoggingService = loggingService;
@@ -85,8 +99,12 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
 			mGnossCache = gnossCache;
 			mEntityContextBASE = pEntityContextBASE;
             mDiccionarioNombreOntoId = new Dictionary<string, Guid>();
+			mAvailableServices = pAvailableService;
 
 			ProyectoSeleccionado = pProyecto;
+            mlogger = logger;
+            mLoggerFactory = loggerFactory;
+            ProyectoSeleccionado = pProyecto;
 			GestionProyectos = ProyectoSeleccionado.GestorProyectos;
 			ParametroProyecto = pParametroProyecto;
 
@@ -136,7 +154,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
 					}
 				}
 
-				IdentidadCN identidadCN = new IdentidadCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+				IdentidadCN identidadCN = new IdentidadCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<IdentidadCN>(), mLoggerFactory);
 				pestanya.PrivacidadGrupos = identidadCN.ObtenerNombresDeGrupos(listaGrupos);
 				pestanya.PrivacidadPerfiles = identidadCN.ObtenerNombresDePerfiles(listaPerfiles);
 				identidadCN.Dispose();
@@ -221,7 +239,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
 			if (filaPestanya.TipoPestanya.Equals((short)TipoPestanyaMenu.CMS) && ParametroProyecto.ContainsKey(ParametroAD.PropiedadContenidoMultiIdioma))
 			{
 				pestanya.ListaIdiomasDisponibles = new List<string>();
-				ParametroAplicacionCL paramCL = new ParametroAplicacionCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mServicesUtilVirtuosoAndReplication);
+				ParametroAplicacionCL paramCL = new ParametroAplicacionCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<ParametroAplicacionCL>(), mLoggerFactory);
 
 				List<string> listaIdiomas = paramCL.ObtenerListaIdiomas();
 				foreach (string idioma in listaIdiomas)
@@ -237,7 +255,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
 			{
 				try
 				{
-					ProyectoCN proyCN = new ProyectoCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+					ProyectoCN proyCN = new ProyectoCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<ProyectoCN>(), mLoggerFactory);
 					proyCN.CrearFilasIntegracionContinuaParametro(propiedadesIntegracionContinua, ProyectoSeleccionado.Clave, TipoObjeto.Pagina, filaPestanya.NombreCortoPestanya);
 					proyCN.Dispose();
 				}
@@ -255,6 +273,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
 				fcTM.ClavePestanya = item.PestanyaID;
 				fcTM.Faceta = item.Faceta;
 				fcTM.ObjetoConocimiento = item.ObjetoConocimiento;
+				fcTM.AutocompletarEnriquecido = item.AutocompletarEnriquecido;
 				lstFacetasTabModel.Add(fcTM);
 			}
 			pestanya.ListaFacetas = lstFacetasTabModel;
@@ -456,7 +475,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
 							//pestanya.OpcionesBusqueda.CampoFiltro = UtilIntegracionContinua.ObtenerMascaraPropiedad(propiedadRutaPagina);
 						}
 					}
-					using (ProyectoCN proyCN = new ProyectoCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication))
+					using (ProyectoCN proyCN = new ProyectoCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<ProyectoCN>(), mLoggerFactory))
 					{
 						proyCN.CrearFilasIntegracionContinuaParametro(propiedadesIntegracionContinua, ProyectoSeleccionado.Clave, TipoObjeto.Pagina, pestanya.ShortName);
 					}
@@ -467,9 +486,52 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
 				}
 			}
 		}
+        public void CrearFilasPropiedadesIntegracionContinuaPestanya(TabModel pPestanya)
+        {
+            try
+            {
+                propiedadesIntegracionContinua = new List<IntegracionContinuaPropiedad>();
+                if (pPestanya.Modified)
+                {
+                    if (pPestanya.Type.Equals(TipoPestanyaMenu.EnlaceExterno) && !string.IsNullOrEmpty(pPestanya.Url))
+                    {
+                        //Crear las filas de las porpiedades de Integracion Continua
+                        IntegracionContinuaPropiedad propiedadRutaPagina = new IntegracionContinuaPropiedad();
+                        propiedadRutaPagina.ProyectoID = ProyectoSeleccionado.Clave;
+                        propiedadRutaPagina.TipoObjeto = (short)TipoObjeto.Pagina;
+                        propiedadRutaPagina.ObjetoPropiedad = pPestanya.ShortName;
+                        propiedadRutaPagina.TipoPropiedad = (short)TipoPropiedad.RutaPagina;
+                        propiedadRutaPagina.ValorPropiedad = pPestanya.Url;
+                        propiedadesIntegracionContinua.Add(propiedadRutaPagina);
+                        //Encapsulamos propiedad
+                        //pestanya.Url = UtilIntegracionContinua.ObtenerMascaraPropiedad(propiedadRutaPagina);
+                    }
+                    if (pPestanya.OpcionesBusqueda != null && !string.IsNullOrEmpty(pPestanya.OpcionesBusqueda.CampoFiltro) && pPestanya.OpcionesBusqueda.CampoFiltro.Contains("skos:ConceptID"))
+                    {
+                        //Crear las filas de las porpiedades de Integracion Continua
+                        IntegracionContinuaPropiedad propiedadRutaPagina = new IntegracionContinuaPropiedad();
+                        propiedadRutaPagina.ProyectoID = ProyectoSeleccionado.Clave;
+                        propiedadRutaPagina.TipoObjeto = (short)TipoObjeto.Pagina;
+                        propiedadRutaPagina.ObjetoPropiedad = pPestanya.ShortName;
+                        propiedadRutaPagina.TipoPropiedad = (short)TipoPropiedad.CampoFiltroPagina;
+                        propiedadRutaPagina.ValorPropiedad = pPestanya.OpcionesBusqueda.CampoFiltro;
+                        propiedadesIntegracionContinua.Add(propiedadRutaPagina);
+                        //Encapsulamos propiedad
+                        //pestanya.OpcionesBusqueda.CampoFiltro = UtilIntegracionContinua.ObtenerMascaraPropiedad(propiedadRutaPagina);
+                    }
+                }
+                using (ProyectoCN proyCN = new ProyectoCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<ProyectoCN>(), mLoggerFactory))
+                {
+                    proyCN.CrearFilasIntegracionContinuaParametro(propiedadesIntegracionContinua, ProyectoSeleccionado.Clave, TipoObjeto.Pagina, pPestanya.ShortName);
+                }
+            }
+            catch
+            {
 
+            }
+        }
 
-		public void ModificarFilasIntegracionContinuaEntornoSiguiente(List<TabModel> pListaPestanyas, string UrlApiDesplieguesEntornoSeleccionado, Guid pUsuarioID)
+        public void ModificarFilasIntegracionContinuaEntornoSiguiente(List<TabModel> pListaPestanyas, string UrlApiDesplieguesEntornoSeleccionado, Guid pUsuarioID)
 		{
 			propiedadesIntegracionContinua = new List<IntegracionContinuaPropiedad>();
 			foreach (TabModel pestanya in pListaPestanyas)
@@ -519,8 +581,56 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
 
 			}
 		}
+        public void ModificarFilasIntegracionContinuaEntornoSiguientePestanya(TabModel pPestanya, string UrlApiDesplieguesEntornoSeleccionado, Guid pUsuarioID)
+        {
+            propiedadesIntegracionContinua = new List<IntegracionContinuaPropiedad>();
+            
+            try
+            {
 
-		public TabModel.SearchTabModel CargarOpcionesBusquedaPorDefecto(TipoPestanyaMenu pTipoPestanya, string pNameOnto = "")
+                //if (pestanya.Modified)
+                //{
+                if (pPestanya.Type.Equals(TipoPestanyaMenu.EnlaceExterno) && !string.IsNullOrEmpty(pPestanya.Url))
+                {
+                    //Crear las filas de las porpiedades de Integracion Continua
+                    IntegracionContinuaPropiedad propiedadRutaPagina = new IntegracionContinuaPropiedad();
+                    propiedadRutaPagina.ProyectoID = ProyectoSeleccionado.Clave;
+                    propiedadRutaPagina.TipoObjeto = (short)TipoObjeto.Pagina;
+                    propiedadRutaPagina.ObjetoPropiedad = pPestanya.ShortName;
+                    propiedadRutaPagina.TipoPropiedad = (short)TipoPropiedad.RutaPagina;
+                    propiedadRutaPagina.ValorPropiedad = pPestanya.Url;
+                    propiedadesIntegracionContinua.Add(propiedadRutaPagina);
+                }
+                if (pPestanya.OpcionesBusqueda != null && !string.IsNullOrEmpty(pPestanya.OpcionesBusqueda.CampoFiltro) && pPestanya.OpcionesBusqueda.CampoFiltro.Contains("skos:ConceptID"))
+                {
+                    //Crear las filas de las porpiedades de Integracion Continua
+                    IntegracionContinuaPropiedad propiedadRutaPagina = new IntegracionContinuaPropiedad();
+                    propiedadRutaPagina.ProyectoID = ProyectoSeleccionado.Clave;
+                    propiedadRutaPagina.TipoObjeto = (short)TipoObjeto.Pagina;
+                    propiedadRutaPagina.ObjetoPropiedad = pPestanya.ShortName;
+                    propiedadRutaPagina.TipoPropiedad = (short)TipoPropiedad.CampoFiltroPagina;
+                    propiedadRutaPagina.ValorPropiedad = pPestanya.OpcionesBusqueda.CampoFiltro;
+                    propiedadesIntegracionContinua.Add(propiedadRutaPagina);
+                }
+                //}
+            }
+            catch
+            {
+
+            }
+            
+            try
+            {
+                string peticion = $"{UrlApiDesplieguesEntornoSeleccionado}/PropiedadesIntegracion?nombreProy={ProyectoSeleccionado.NombreCorto}&UsuarioID={pUsuarioID}";
+                string requestParameters = UtilWeb.WebRequestPostWithJsonObject(peticion, propiedadesIntegracionContinua, "");
+            }
+            catch
+            {
+
+            }
+        }
+
+        public TabModel.SearchTabModel CargarOpcionesBusquedaPorDefecto(TipoPestanyaMenu pTipoPestanya, string pNameOnto = "")
 		{
 			TabModel.SearchTabModel opcionesBusqueda = new TabModel.SearchTabModel();
 
@@ -617,7 +727,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
 				}
 			}
 
-			IdentidadCN identidadCN = new IdentidadCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+			IdentidadCN identidadCN = new IdentidadCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<IdentidadCN>(), mLoggerFactory);
 			exportacion.GruposPermiso = identidadCN.ObtenerNombresDeGrupos(grupos);
 			identidadCN.Dispose();
 
@@ -927,13 +1037,342 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
 
 			mEntityContext.SaveChanges();
 
-			ProyectoCL proyCL = new ProyectoCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mVirtuosoAD, mServicesUtilVirtuosoAndReplication);
+			ProyectoCL proyCL = new ProyectoCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mVirtuosoAD, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<ProyectoCL>(), mLoggerFactory);
 			proyCL.AgregarObjetoCache(ProyectoCL.CLAVE_CACHE_LISTA_RUTAPESTANYAS_INVALIDAR + ProyectoSeleccionado.Clave, listaRutasPestanyasInvalidarEnCache, 64800);
 			proyCL.AgregarObjetoCache(ProyectoCL.CLAVE_CACHE_LISTA_RUTAPESTANYAS_REGISTRAR + ProyectoSeleccionado.Clave, listaRutasPestanyasRegistrarEnCache, 64800);
 
 		}
+		public void GuardarPestanya(TabModel pPestanya, bool pPeticionIntegracionContinua = false, string pComentario = null)
+		{
+			List<Guid> listaPestanyasNuevas = new List<Guid>();
+			List<string> listaRutasPestanyasRegistrarEnCache = new List<string>();
+			List<string> listaRutasPestanyasInvalidarEnCache = new List<string>();
 
-		private void ComprobarInconsistencias()
+			//Añadir las nuevas
+
+			if (!pPestanya.Deleted)
+			{
+				//AD.EntityModel.Models.ProyectoDS.ProyectoPestanyaMenu filaPestanya = ObtenerPestanyaSiExsite(pestanya.Key);
+				AD.EntityModel.Models.ProyectoDS.ProyectoPestanyaMenu filaPestanya = GestionProyectos.DataWrapperProyectos.ListaProyectoPestanyaMenu.FirstOrDefault(pest => pest.PestanyaID.Equals(pPestanya.Key));
+				if (filaPestanya == null)
+				{
+					listaPestanyasNuevas.Add(pPestanya.Key);
+
+					if (!pPestanya.Type.Equals(TipoPestanyaMenu.EnlaceExterno) && !pPestanya.Type.Equals(TipoPestanyaMenu.EnlaceInterno))
+					{
+						listaRutasPestanyasRegistrarEnCache.Add(pPestanya.Url);
+					}
+
+					AgregarPestanyaNueva(pPestanya, pPeticionIntegracionContinua);
+					TabModel versionado = CargarPestanya(GestionProyectos.DataWrapperProyectos.ListaProyectoPestanyaMenu.FirstOrDefault(item => item.PestanyaID.Equals(pPestanya.Key)));
+					GuardarVersionPagina(versionado, pComentario);
+                }
+			}
+
+
+			//Modificar las que tienen cambios
+			if (!pPestanya.Deleted && !listaPestanyasNuevas.Contains(pPestanya.Key))
+			{
+				AD.EntityModel.Models.ProyectoDS.ProyectoPestanyaMenu filaPestanya = GestionProyectos.DataWrapperProyectos.ListaProyectoPestanyaMenu.FirstOrDefault(pest => pest.PestanyaID.Equals(pPestanya.Key));
+				if (mEntityContext.Entry(filaPestanya).State == EntityState.Detached)
+				{
+					GestionProyectos.DataWrapperProyectos.ListaProyectoPestanyaMenu.Remove(filaPestanya);
+					filaPestanya = mEntityContext.ProyectoPestanyaMenu.FirstOrDefault(pest => pest.PestanyaID.Equals(pPestanya.Key));
+					GestionProyectos.DataWrapperProyectos.ListaProyectoPestanyaMenu.Add(filaPestanya);
+				}
+				if (pPestanya.ParentTabKey.Equals(Guid.Empty))
+				{
+					filaPestanya.PestanyaPadreID = null;
+				}
+				else if (!filaPestanya.PestanyaPadreID.Equals(pPestanya.ParentTabKey))
+				{
+					filaPestanya.PestanyaPadreID = pPestanya.ParentTabKey;
+				}
+
+				if (!filaPestanya.Orden.Equals(pPestanya.Order))
+				{
+					filaPestanya.Orden = pPestanya.Order;
+				}
+
+
+
+				if (pPestanya.Modified)
+				{
+					if (!pPestanya.Type.Equals(TipoPestanyaMenu.EnlaceExterno) && !pPestanya.Type.Equals(TipoPestanyaMenu.EnlaceInterno))
+					{
+						bool registrar = false;
+						bool invalidar = false;
+
+						if (!filaPestanya.Activa && pPestanya.Active)
+						{
+							registrar = true;
+						}
+						if (filaPestanya.Activa && !pPestanya.Active)
+						{
+							invalidar = true;
+						}
+						if (pPestanya.Active && filaPestanya.Ruta != pPestanya.Url && !pPestanya.EsUrlPorDefecto)
+						{
+							registrar = true;
+							invalidar = true;
+						}
+
+						if (registrar)
+						{
+							listaRutasPestanyasRegistrarEnCache.Add(pPestanya.Url);
+						}
+						if (invalidar)
+						{
+							listaRutasPestanyasInvalidarEnCache.Add(filaPestanya.Ruta);
+						}
+					}
+                    
+                    GuardarDatosFilaPestanyaMenu(filaPestanya, pPestanya, pPeticionIntegracionContinua);
+
+					if (pPestanya.OpcionesBusqueda != null)
+					{
+						ProyectoPestanyaBusqueda filasBusqueda = filaPestanya.ProyectoPestanyaBusqueda;
+
+						TabModel.SearchTabModel opcionesBusquedaDefecto = CargarOpcionesBusquedaPorDefecto(pPestanya.Type);
+						if (pPestanya.OpcionesBusqueda.FiltrosOrden == null)
+						{
+							pPestanya.OpcionesBusqueda.FiltrosOrden = new List<TabModel.SearchTabModel.FiltroOrden>();
+						}
+
+						if (pPestanya.OpcionesBusqueda.CampoFiltro.EndsWith("|"))
+						{
+							pPestanya.OpcionesBusqueda.CampoFiltro = pPestanya.OpcionesBusqueda.CampoFiltro.Substring(0, pPestanya.OpcionesBusqueda.CampoFiltro.Length - 1);
+						}
+
+						if (pPestanya.OpcionesBusqueda.RelacionMandatory == null)
+						{
+							pPestanya.OpcionesBusqueda.RelacionMandatory = string.Empty;
+						}
+
+						if (!CompararObjetos(opcionesBusquedaDefecto, pPestanya.OpcionesBusqueda) || TieneExportaciones(pPestanya))
+						{
+							if (filasBusqueda != null)
+							{
+								//Si existe, la modifico
+								GuardarDatosFilaPestanyaBusqueda(filasBusqueda, pPestanya);
+							}
+							else
+							{
+								//Si no existe, la agrego
+								AgregarPestanyaBusquedaNueva(pPestanya);
+							}
+						}
+						else if (filasBusqueda != null)
+						{
+							//Si existe, la elimino
+							mEntityContext.EliminarElemento(filasBusqueda);
+						}
+					}
+
+					if (pPestanya.OpcionesDashboard != null)
+					{
+
+						if (filaPestanya.ProyectoPestanyaDashboardAsistente != null)
+						{
+							List<Guid> idAntiguos = filaPestanya.ProyectoPestanyaDashboardAsistente.ToList().Select(x => x.AsisID).ToList();
+							List<Guid> idNuevos = new List<Guid>();
+							foreach (TabModel.DashboardTabModel asistente in pPestanya.OpcionesDashboard)
+							{
+								if (idAntiguos.Contains(asistente.AsisID))
+								{
+									ProyectoPestanyaDashboardAsistente asis = filaPestanya.ProyectoPestanyaDashboardAsistente.FirstOrDefault(x => x.AsisID == asistente.AsisID);
+
+									GuardarFilaAsistenteModificado(asis, asistente);
+								}
+								else
+								{
+									ProyectoPestanyaDashboardAsistente asis = new ProyectoPestanyaDashboardAsistente();
+
+									asis.PestanyaID = filaPestanya.PestanyaID;
+									asis.ProyectoPestanyaMenu = filaPestanya;
+									GuardarFilaAsistente(asis, asistente);
+
+									GestionProyectos.DataWrapperProyectos.ListaProyectoPestanyaDashboardAsistente.Add(asis);
+									mEntityContext.ProyectoPestanyaDashboardAsistente.Add(asis);
+								}
+								idNuevos.Add(asistente.AsisID);
+							}
+							List<ProyectoPestanyaDashboardAsistente> borrar = filaPestanya.ProyectoPestanyaDashboardAsistente.Where(x => !idNuevos.Contains(x.AsisID)).ToList();
+							foreach (ProyectoPestanyaDashboardAsistente asisBorrado in borrar)
+							{
+								mEntityContext.EliminarElemento(asisBorrado);
+							}
+						}
+						else
+						{
+							//Si no existe, la agrego
+							GuardarDatosFilaPestanyaDashboard(pPestanya);
+						}
+					}
+
+					GuardarExportacionesPestanya(pPestanya);
+
+					GuardarDatosFilaPestanyaCMS(filaPestanya, pPestanya);
+                    
+                    mEntityContext.SaveChanges();
+					if (pPestanya.Type.Equals(TipoPestanyaMenu.BusquedaSemantica) || pPestanya.Type.Equals(TipoPestanyaMenu.Recursos) || pPestanya.Type.Equals(TipoPestanyaMenu.Home))
+					{
+						GuardarFacetasPestanya(pPestanya);
+					}
+                    TabModel versionado = CargarPestanya(GestionProyectos.DataWrapperProyectos.ListaProyectoPestanyaMenu.FirstOrDefault(item => item.PestanyaID.Equals(pPestanya.Key)));
+                    GuardarVersionPagina(versionado, pComentario);
+                }
+			}
+
+			//Eliminar las eliminadas
+			if (pPestanya.Deleted && !listaPestanyasNuevas.Contains(pPestanya.Key))
+			{
+				AD.EntityModel.Models.ProyectoDS.ProyectoPestanyaMenu filaPestanya = GestionProyectos.DataWrapperProyectos.ListaProyectoPestanyaMenu.FirstOrDefault(pest => pest.PestanyaID.Equals(pPestanya.Key));
+				if (filaPestanya != null)
+				{
+					if (!pPestanya.Type.Equals(TipoPestanyaMenu.EnlaceExterno) && !pPestanya.Type.Equals(TipoPestanyaMenu.EnlaceInterno))
+					{
+						listaRutasPestanyasInvalidarEnCache.Add(filaPestanya.Ruta);
+					}
+					if (pPestanya.Type.Equals(TipoPestanyaMenu.Home) || pPestanya.Type.Equals(TipoPestanyaMenu.BusquedaSemantica) || pPestanya.Type.Equals(TipoPestanyaMenu.Recursos))
+					{
+						EliminarFilaFacetasPestanya(pPestanya);
+						EliminarPestanya(filaPestanya);
+					}
+				}
+
+				ComprobarInconsistencias();
+				
+				mEntityContext.SaveChanges();
+
+				ProyectoCL proyCL = new ProyectoCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mVirtuosoAD, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<ProyectoCL>(), mLoggerFactory);
+				proyCL.AgregarObjetoCache(ProyectoCL.CLAVE_CACHE_LISTA_RUTAPESTANYAS_INVALIDAR + ProyectoSeleccionado.Clave, listaRutasPestanyasInvalidarEnCache, 64800);
+				proyCL.AgregarObjetoCache(ProyectoCL.CLAVE_CACHE_LISTA_RUTAPESTANYAS_REGISTRAR + ProyectoSeleccionado.Clave, listaRutasPestanyasRegistrarEnCache, 64800);
+
+			}
+		}
+
+		public void GuardarVersionPagina(TabModel pestanya, string pComentario = null)
+		{
+			if (pestanya.Type.Equals(TipoPestanyaMenu.CMS))
+			{
+
+			}
+			
+			ProyectoPestanyaMenuVersionPagina proyectoPestanyaMenuVersionPaginaNueva = new ProyectoPestanyaMenuVersionPagina();
+            ProyectoPestanyaMenuVersionPagina proyectoPestanyaMenuVersionPaginaVieja =
+			mEntityContext.ProyectoPestanyaMenuVersionPaginas.Where(x => x.PestanyaID == pestanya.Key).OrderByDescending(x => x.Fecha).FirstOrDefault();
+
+			proyectoPestanyaMenuVersionPaginaNueva.VersionID =  Guid.NewGuid();
+            proyectoPestanyaMenuVersionPaginaNueva.PestanyaID = pestanya.Key;
+            proyectoPestanyaMenuVersionPaginaNueva.IdentidadID = IdentidadActual.Clave;
+
+            if (proyectoPestanyaMenuVersionPaginaVieja != null)
+            {
+                if (proyectoPestanyaMenuVersionPaginaVieja.PestanyaID == pestanya.Key)
+                {
+                    proyectoPestanyaMenuVersionPaginaNueva.VersionAnterior = proyectoPestanyaMenuVersionPaginaVieja.VersionID;
+                }
+                else
+                {
+                    proyectoPestanyaMenuVersionPaginaNueva.VersionAnterior = proyectoPestanyaMenuVersionPaginaNueva.VersionID;
+                }
+			}
+			else
+			{
+				proyectoPestanyaMenuVersionPaginaNueva.VersionAnterior = proyectoPestanyaMenuVersionPaginaNueva.VersionID;
+
+            }
+
+			proyectoPestanyaMenuVersionPaginaNueva.Fecha = DateTime.Now;
+			proyectoPestanyaMenuVersionPaginaNueva.ModeloJSON = JsonConvert.SerializeObject(pestanya);
+			proyectoPestanyaMenuVersionPaginaNueva.Comentario = pComentario ?? "";
+
+            mEntityContext.ProyectoPestanyaMenuVersionPaginas.Add(proyectoPestanyaMenuVersionPaginaNueva);
+			mEntityContext.SaveChanges();
+        }
+
+		public List<TabModel.ProyectoPestanyaMenuVersionPaginaModel> ObtenerListaVersiones(Guid pPestanyaID)
+		{
+            DocumentacionCN docCN = new DocumentacionCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<DocumentacionCN>(), mLoggerFactory);
+			List<TabModel.ProyectoPestanyaMenuVersionPaginaModel> proyectoPestanyaMenuVersionPaginas = docCN.ObtenerListaVersionesPaginaPorID(pPestanyaID).Select(item => new TabModel.ProyectoPestanyaMenuVersionPaginaModel()
+            {
+                VersionID = item.VersionID,
+                PestanyaID = item.PestanyaID,
+                IdentidadID = item.IdentidadID,
+                VersionAnterior = item.VersionAnterior,
+                Fecha = item.Fecha,
+                Comentario = item.Comentario,
+                ModeloJSON = item.ModeloJSON,
+            }).ToList();
+            docCN.Dispose();
+
+            return proyectoPestanyaMenuVersionPaginas;
+			
+        }
+
+		/// <summary>
+		/// Ontiene la lista de versiones evitando cargar el modelo de cada pagina
+		/// </summary>
+		/// <param name="pPestanyaID"></param>
+		/// <returns></returns>
+        public List<TabModel.ProyectoPestanyaMenuVersionPaginaModel> ObtenerListaVersionesSinModelo(Guid pPestanyaID)
+        {
+            List<TabModel.ProyectoPestanyaMenuVersionPaginaModel> proyectoPestanyaMenuVersionPaginas = mEntityContext.ProyectoPestanyaMenuVersionPaginas.Where(x => x.PestanyaID == pPestanyaID).Select(item => new TabModel.ProyectoPestanyaMenuVersionPaginaModel()
+            {
+                VersionID = item.VersionID,
+                PestanyaID = item.PestanyaID,
+                IdentidadID = item.IdentidadID,
+                VersionAnterior = item.VersionAnterior,
+                Fecha = item.Fecha,
+                Comentario = item.Comentario
+            }).ToList();
+
+            return proyectoPestanyaMenuVersionPaginas;
+        }
+
+        public List<TabModel.ProyectoPestanyaMenuVersionPaginaModel> ObtenerListaVersionesComparador(List<Guid> versionId)
+		{
+			List<ProyectoPestanyaMenuVersionPagina> proyectoPestanyaMenuVersionPaginas = new List<ProyectoPestanyaMenuVersionPagina>();
+			List<TabModel.ProyectoPestanyaMenuVersionPaginaModel> proyectoPestanyaMenuVersionPaginaModels = new List<TabModel.ProyectoPestanyaMenuVersionPaginaModel>();
+
+            foreach (Guid id in versionId)
+			{
+				ProyectoPestanyaMenuVersionPagina versiones = mEntityContext.ProyectoPestanyaMenuVersionPaginas.FirstOrDefault(x => x.VersionID == id);
+                proyectoPestanyaMenuVersionPaginas.Add(versiones);
+
+            }
+
+			foreach (ProyectoPestanyaMenuVersionPagina item in proyectoPestanyaMenuVersionPaginas)
+			{
+				TabModel.ProyectoPestanyaMenuVersionPaginaModel proyectoPestanyaMenuVersionPaginaModel = new TabModel.ProyectoPestanyaMenuVersionPaginaModel() {
+                    VersionID = item.VersionID,
+                    PestanyaID = item.PestanyaID,
+                    IdentidadID = item.IdentidadID,
+                    VersionAnterior = item.VersionAnterior,
+                    Fecha = item.Fecha,
+                    Comentario = item.Comentario,
+                    ModeloJSON = item.ModeloJSON,
+                };
+				proyectoPestanyaMenuVersionPaginaModels.Add(proyectoPestanyaMenuVersionPaginaModel);
+            }
+            
+            return proyectoPestanyaMenuVersionPaginaModels;
+		}
+
+		public TabModel RestaurarPagina(Guid? versionAnterior, string pComentario)
+		{
+            ProyectoPestanyaMenuVersionPagina proyectoPestanyaMenuVersionPaginaVieja =
+            mEntityContext.ProyectoPestanyaMenuVersionPaginas.FirstOrDefault(x => x.VersionID==versionAnterior);
+
+			TabModel pestanyaRestaurar = JsonConvert.DeserializeObject<TabModel>(proyectoPestanyaMenuVersionPaginaVieja.ModeloJSON);
+			pestanyaRestaurar.Modified = true;
+			GuardarPestanya(pestanyaRestaurar, pComentario: pComentario);
+
+			return pestanyaRestaurar;
+		}
+
+        private void ComprobarInconsistencias()
 		{
 			var nombreCortosRepetidos = GestionProyectos.DataWrapperProyectos.ListaProyectoPestanyaMenu.GroupBy(item => item.NombreCortoPestanya).Where(item => item.Count() > 1).Select(item => item.Key);
 
@@ -1076,7 +1515,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
 				if (ParametroProyecto.ContainsKey(ParametroAD.PropiedadContenidoMultiIdioma) && pPestanya.ListaIdiomasDisponibles != null)
 				{
 					//Si estan marcados todos o ninguno, lo dejamos vacio, si no, guardamos los idiomas seleccionados
-					ParametroAplicacionCL paramCL = new ParametroAplicacionCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mServicesUtilVirtuosoAndReplication);
+					ParametroAplicacionCL paramCL = new ParametroAplicacionCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<ParametroAplicacionCL>(), mLoggerFactory);
 
 					if (pPestanya.ListaIdiomasDisponibles != null && pPestanya.ListaIdiomasDisponibles.Count > 0 && pPestanya.ListaIdiomasDisponibles.Count < paramCL.ObtenerListaIdiomas().Count)
 					{
@@ -1088,7 +1527,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
 				}
 
 				pFilaPestanya.IdiomasDisponibles = idiomasDisponibles;
-				ControladorCMS controlador = new ControladorCMS(mLoggingService, mEntityContext, mConfigService, mRedisCacheWrapper, null, mVirtuosoAD);
+				ControladorCMS controlador = new ControladorCMS(mLoggingService, mEntityContext, mConfigService, mRedisCacheWrapper, null, mVirtuosoAD, mAvailableServices, mLoggerFactory.CreateLogger<ControladorCMS>(), mLoggerFactory);
 				controlador.ActualizarModeloBaseSimple(pFilaPestanya.PestanyaID, ProyectoSeleccionado.Clave, AD.BASE_BD.PrioridadBase.Alta, false);
 			}
 		}
@@ -1124,6 +1563,22 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
 			}
 
 			pFilaBusqueda.CampoFiltro = campoFiltro;
+			
+			string SearchPersonalizadoNombre="";
+
+			if (pPestanya.OpcionesBusqueda.ListaSearchPersonalizado!=null)
+			{
+				foreach (SearchPersonalizadoTabModel item in pPestanya.OpcionesBusqueda.ListaSearchPersonalizado)
+				{
+					if (item.EstaActivo)
+					{
+						SearchPersonalizadoNombre = item.SearchPersonalizado;
+					}				
+				}
+			}
+			
+
+			pFilaBusqueda.SearchPersonalizado = SearchPersonalizadoNombre;
 			pFilaBusqueda.GruposConfiguracion = pPestanya.OpcionesBusqueda.GruposConfiguracion;
 
 			GuardarFilasFiltroOrden(pPestanya, pFilaBusqueda.ProyectoPestanyaMenu);
@@ -1341,7 +1796,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
 				if (!CompararObjetos(opcionesBusquedaDefecto, pPestanya.OpcionesBusqueda) || TieneExportaciones(pPestanya))
 				{
 					AgregarPestanyaBusquedaNueva(pPestanya);
-				}
+				}				
 			}
 
 			//TFG FRAN
@@ -1359,7 +1814,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
 					AgregarExportacionBusquedaNueva(exportacion, pPestanya.Key);
 				}
 			}
-			mEntityContext.SaveChanges();
+			
 			string texto = "CMS-core";
 			var listaPrueba = mEntityContext.ProyectoPestanyaMenu.Where(item => item.Nombre.Equals(texto)).ToList();
 			if (pPestanya.Type.Equals(TipoPestanyaMenu.BusquedaSemantica) || pPestanya.Type.Equals(TipoPestanyaMenu.Recursos) || pPestanya.Type.Equals(TipoPestanyaMenu.Home))
@@ -1373,7 +1828,8 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
 			if (pPestanya.ListaFacetas != null)
 			{
 				List<FacetaObjetoConocimientoProyectoPestanya> listaCompleta = FacetasDW.ListaFacetaObjetoConocimientoProyectoPenstanya.Where(item => item.PestanyaID.Equals(pPestanya.Key)).ToList();
-				if (listaCompleta != null)
+                List<string> listaFacetasProcesarAutocompletado = new List<string>();
+                if (listaCompleta != null)
 				{
 					foreach (FacetaObjetoConocimientoProyectoPestanya fila in listaCompleta)
 					{
@@ -1383,17 +1839,22 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
 						if (aux != null)
 						{
 							mEntityContext.EliminarElemento(aux);
+							listaFacetasProcesarAutocompletado.Add(ObtenerFilaFaceta(ProyectoSeleccionado.FilaProyecto.TablaBaseProyectoID, aux.Faceta, aux.ObjetoConocimiento, false));
 						}
 					}
 				}
-				GuardarFacetasPestanyaNueva(pPestanya);
+				GuardarFacetasPestanyaNueva(pPestanya, pListaFacetasAutocompletar: listaFacetasProcesarAutocompletado);
 			}
 		}
 
-		private void GuardarFacetasPestanyaNueva(TabModel pPestanya, bool pPeticionIntegracionContinua = false)
+		private void GuardarFacetasPestanyaNueva(TabModel pPestanya, bool pPeticionIntegracionContinua = false, List<string> pListaFacetasAutocompletar = null)
 		{
 			if (pPestanya.ListaFacetas != null)
 			{
+				if(pListaFacetasAutocompletar == null)
+				{
+					pListaFacetasAutocompletar = new List<string>();
+				}
 				foreach (var faceta in pPestanya.ListaFacetas)
 				{
 					if (!faceta.Deleted)
@@ -1404,17 +1865,24 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
 						facetaPestanya.ProyectoID = ProyectoSeleccionado.Clave;
 						facetaPestanya.OrganizacionID = ProyectoSeleccionado.FilaProyecto.OrganizacionID;
 						facetaPestanya.PestanyaID = pPestanya.Key;
+						facetaPestanya.AutocompletarEnriquecido = faceta.AutocompletarEnriquecido;
+
 						if (!FacetasDW.ListaFacetaObjetoConocimientoProyectoPenstanya.Contains(facetaPestanya))
 						{
-							mLoggingService.GuardarLog($"Intento añadir a FacetaObjetoConocimientoProyectoPestanya {pPestanya.Key}\n");
+							mLoggingService.GuardarLog($"Intento añadir a FacetaObjetoConocimientoProyectoPestanya {pPestanya.Key}\n", mlogger);
 							FacetasDW.ListaFacetaObjetoConocimientoProyectoPenstanya.Add(facetaPestanya);
 							mEntityContext.FacetaObjetoConocimientoProyectoPestanya.Add(facetaPestanya);
+							pListaFacetasAutocompletar.Add(ObtenerFilaFaceta(ProyectoSeleccionado.FilaProyecto.TablaBaseProyectoID, facetaPestanya.Faceta, facetaPestanya.ObjetoConocimiento, true));
 						}
 					}
 				}
 				if (!pPeticionIntegracionContinua)
 				{
 					mEntityContext.SaveChanges();
+				}
+				if(pListaFacetasAutocompletar.Count > 0)
+				{
+					AgregarFilasColaFacetasAutocompletar(pListaFacetasAutocompletar);
 				}
 			}
 		}
@@ -1424,6 +1892,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
 			List<FacetaObjetoConocimientoProyectoPestanya> listaCompleta = FacetasDW.ListaFacetaObjetoConocimientoProyectoPenstanya.Where(item => item.PestanyaID.Equals(pPestanya.Key)).ToList();
 			if (listaCompleta != null)
 			{
+				List<string> listaFacetasAutocompletar = new List<string>();
 				foreach (FacetaObjetoConocimientoProyectoPestanya fila in listaCompleta)
 				{
 					FacetasDW.ListaFacetaObjetoConocimientoProyectoPenstanya.Remove(fila);
@@ -1432,11 +1901,14 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
 					if (aux != null)
 					{
 						mEntityContext.EliminarElemento(aux);
+						listaFacetasAutocompletar.Add(ObtenerFilaFaceta(ProyectoSeleccionado.FilaProyecto.TablaBaseProyectoID, aux.Faceta, aux.ObjetoConocimiento, false));
 					}
 
 				}
 				mEntityContext.SaveChanges();
-			}
+                AgregarFilasColaFacetasAutocompletar(listaFacetasAutocompletar);
+
+            }
 		}
 
 		public List<FacetaObjetoConocimientoProyectoPestanya> ObtenerFacetaObjetoConocimientoProyectoPestanya(Guid pPestanya)
@@ -1456,7 +1928,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
 
 				}
 			}
-			return listaAux;
+			return listaAux.OrderBy(item => item.FacetaObjetoConocimientoProyecto?.Orden).ToList();
 		}
 
 		private void GuardarExportacionesPestanya(TabModel pPestanya)
@@ -1625,7 +2097,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
 				urlOntologia = $"http://gnoss.com/Ontologia/{pPropiedad.Ontologia}.owl#";
 				if (!mDiccionarioNombreOntoId.ContainsKey(pPropiedad.Ontologia))
 				{
-					DocumentacionCN documentacionCN = new DocumentacionCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+					DocumentacionCN documentacionCN = new DocumentacionCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<DocumentacionCN>(), mLoggerFactory);
 					ontologiaID = documentacionCN.ObtenerOntologiaAPartirNombre(ProyectoSeleccionado.Clave, $"{pPropiedad.Ontologia}.owl");
 					if(ontologiaID.HasValue && !ontologiaID.Value.Equals(new Guid("11111111-1111-1111-1111-111111111111")))
 					{
@@ -1737,7 +2209,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
 		private void AgregarFilasPrivacidad(AD.EntityModel.Models.ProyectoDS.ProyectoPestanyaMenu pFilaPestanya, TabModel pPestanya)
 		{
 			var filasRolIdentidades = pFilaPestanya.ProyectoPestanyaMenuRolIdentidad;
-			foreach (AD.EntityModel.Models.ProyectoDS.ProyectoPestanyaMenuRolIdentidad filaPerfil in filasRolIdentidades)
+			foreach (AD.EntityModel.Models.ProyectoDS.ProyectoPestanyaMenuRolIdentidad filaPerfil in filasRolIdentidades.ToList())
 			{
 				Guid perfilID = filaPerfil.PerfilID;
 				if (pPestanya.PrivacidadPerfiles == null || !pPestanya.PrivacidadPerfiles.ContainsKey(perfilID))
@@ -1778,7 +2250,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
 
 			if (pPestanya.PrivacidadGrupos != null)
 			{
-				IdentidadCN identCN = new IdentidadCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+				IdentidadCN identCN = new IdentidadCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<IdentidadCN>(), mLoggerFactory);
 
 				pPestanya.PrivacidadGrupos = identCN.ObtenerNombresDeGrupos(pPestanya.PrivacidadGrupos.Keys.ToList());
 
@@ -1856,128 +2328,128 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
 				if (filasCMS.Any())
 				{
 					EliminarFilaCMSPagina(filasCMS[0].Ubicacion);
-					filaPestanya.ProyectoPestanyaCMS.Remove(filasCMS.First());
-					mEntityContext.EliminarElemento(filasCMS.First());
+					filaPestanya.ProyectoPestanyaCMS.Remove(filasCMS[0]);
+					mEntityContext.EliminarElemento(filasCMS[0]);
 				}
 
-                ControladorCMS controlador = new ControladorCMS(mLoggingService, mEntityContext, mConfigService, mRedisCacheWrapper, mEntityContextBASE, mVirtuosoAD);
+                ControladorCMS controlador = new ControladorCMS(mLoggingService, mEntityContext, mConfigService, mRedisCacheWrapper, mEntityContextBASE, mVirtuosoAD, mAvailableServices, mLoggerFactory.CreateLogger<ControladorCMS>(), mLoggerFactory);
                 controlador.ActualizarModeloBaseSimple(filaPestanya.PestanyaID, ProyectoSeleccionado.Clave, AD.BASE_BD.PrioridadBase.Alta, true);
             }
 
-			if (filaPestanya.TipoPestanya.Equals((short)TipoPestanyaMenu.Home))
-			{
-				if (ListaPaginasCMS.Contains((short)TipoUbicacionCMS.HomeProyecto))
-				{
-					EliminarFilaCMSPagina((short)TipoUbicacionCMS.HomeProyecto);
-				}
-				if (ListaPaginasCMS.Contains((short)TipoUbicacionCMS.HomeProyectoMiembro))
-				{
-					EliminarFilaCMSPagina((short)TipoUbicacionCMS.HomeProyectoMiembro);
-				}
-				if (ListaPaginasCMS.Contains((short)TipoUbicacionCMS.HomeProyectoNoMiembro))
-				{
-					EliminarFilaCMSPagina((short)TipoUbicacionCMS.HomeProyectoNoMiembro);
-				}
-			}
+            if (filaPestanya.TipoPestanya.Equals((short)TipoPestanyaMenu.Home))
+            {
+                if (ListaPaginasCMS.Contains((short)TipoUbicacionCMS.HomeProyecto))
+                {
+                    EliminarFilaCMSPagina((short)TipoUbicacionCMS.HomeProyecto);
+                }
+                if (ListaPaginasCMS.Contains((short)TipoUbicacionCMS.HomeProyectoMiembro))
+                {
+                    EliminarFilaCMSPagina((short)TipoUbicacionCMS.HomeProyectoMiembro);
+                }
+                if (ListaPaginasCMS.Contains((short)TipoUbicacionCMS.HomeProyectoNoMiembro))
+                {
+                    EliminarFilaCMSPagina((short)TipoUbicacionCMS.HomeProyectoNoMiembro);
+                }
+            }
 
-			filaPestanya.ProyectoPestanyaMenu1.Remove(filaPestanya);
-			if (mEntityContext.Entry(filaPestanya).State.Equals(EntityState.Detached))
-			{
-				AD.EntityModel.Models.ProyectoDS.ProyectoPestanyaMenu pestanyaEliminar = mEntityContext.ProyectoPestanyaMenu.FirstOrDefault(pestanya => pestanya.PestanyaID.Equals(filaPestanya.PestanyaID));
-				if (pestanyaEliminar != null)
-				{
-					mEntityContext.EliminarElemento(pestanyaEliminar, pPeticionIntegracionContinua);
-				}
+            filaPestanya.ProyectoPestanyaMenu1.Remove(filaPestanya);
+            if (mEntityContext.Entry(filaPestanya).State.Equals(EntityState.Detached))
+            {
+                AD.EntityModel.Models.ProyectoDS.ProyectoPestanyaMenu pestanyaEliminar = mEntityContext.ProyectoPestanyaMenu.FirstOrDefault(pestanya => pestanya.PestanyaID.Equals(filaPestanya.PestanyaID));
+                if (pestanyaEliminar != null)
+                {
+                    mEntityContext.EliminarElemento(pestanyaEliminar, pPeticionIntegracionContinua);
+                }
+            }
+            else
+            {
+                mEntityContext.EliminarElemento(filaPestanya, pPeticionIntegracionContinua);
+            }
+        }
 
-			}
-			else
-			{
-				mEntityContext.EliminarElemento(filaPestanya, pPeticionIntegracionContinua);
-			}
-		}
+        private void EliminarFilaCMSPagina(short pTipoUbicacionCMS)
+        {
+            AD.EntityModel.Models.CMS.CMSPagina filaCMSPagina = GestorCMS.CMSDW.ListaCMSPagina.FirstOrDefault(item => item.ProyectoID.Equals(ProyectoSeleccionado.Clave) && item.OrganizacionID.Equals(ProyectoSeleccionado.FilaProyecto.OrganizacionID) && item.Ubicacion.Equals(pTipoUbicacionCMS));
 
-		private void EliminarFilaCMSPagina(short pTipoUbicacionCMS)
-		{
-			AD.EntityModel.Models.CMS.CMSPagina filaCMSPagina = GestorCMS.CMSDW.ListaCMSPagina.FirstOrDefault(item => item.ProyectoID.Equals(ProyectoSeleccionado.Clave) && item.OrganizacionID.Equals(ProyectoSeleccionado.FilaProyecto.OrganizacionID) && item.Ubicacion.Equals((short)pTipoUbicacionCMS));
+            if (filaCMSPagina != null)
+            {
+                List<AD.EntityModel.Models.CMS.CMSBloque> filasBloques = GestorCMS.CMSDW.ListaCMSBloque.Where(item => item.ProyectoID.Equals(ProyectoSeleccionado.Clave) && item.OrganizacionID.Equals(ProyectoSeleccionado.FilaProyecto.OrganizacionID) && item.Ubicacion.Equals(pTipoUbicacionCMS)).ToList();
 
-			if (filaCMSPagina != null)
-			{
-				List<AD.EntityModel.Models.CMS.CMSBloque> filasBloques = GestorCMS.CMSDW.ListaCMSBloque.Where(item => item.ProyectoID.Equals(ProyectoSeleccionado.Clave) && item.OrganizacionID.Equals(ProyectoSeleccionado.FilaProyecto.OrganizacionID) && item.Ubicacion.Equals((short)pTipoUbicacionCMS)).ToList();
+                foreach (AD.EntityModel.Models.CMS.CMSBloque filaBloque in filasBloques)
+                {
+                    List<Guid> listaIDBloque = filasBloques.Select(item => item.BloqueID).ToList();
+                    List<AD.EntityModel.Models.CMS.CMSBloqueComponente> listaBloqueComponente = mEntityContext.CMSBloqueComponente.Where(item => listaIDBloque.Contains(item.BloqueID)).ToList();
+                    foreach (AD.EntityModel.Models.CMS.CMSBloqueComponente filaBloqueComponente in listaBloqueComponente)
+                    {
+                        List<Guid> listaIDBloqueComponente = listaBloqueComponente.Select(item => item.BloqueID).ToList();
+                        List<AD.EntityModel.Models.CMS.CMSBloqueComponentePropiedadComponente> listaBloqueComponentePropiedadaCompoenente = mEntityContext.CMSBloqueComponentePropiedadComponente.Where(item => listaIDBloqueComponente.Contains(item.BloqueID)).ToList();
+                        foreach (AD.EntityModel.Models.CMS.CMSBloqueComponentePropiedadComponente filaBloquePropiedadComponente in listaBloqueComponentePropiedadaCompoenente)
+                        {
+                            GestorCMS.CMSDW.ListaCMSBloqueComponentePropiedadComponente.Remove(filaBloquePropiedadComponente);
+                            mEntityContext.EliminarElemento(filaBloquePropiedadComponente);
+                        }
+                        GestorCMS.CMSDW.ListaCMSBloqueComponente.Remove(filaBloqueComponente);
+                        mEntityContext.EliminarElemento(filaBloqueComponente);
+                    }
+                    GestorCMS.CMSDW.ListaCMSBloque.Remove(filaBloque);
+                    mEntityContext.EliminarElemento(filaBloque);
+                }
+                GestorCMS.CMSDW.ListaCMSPagina.Remove(filaCMSPagina);
+                mEntityContext.EliminarElemento(filaCMSPagina);
+            }
+        }
 
-				foreach (AD.EntityModel.Models.CMS.CMSBloque filaBloque in filasBloques)
-				{
-					List<Guid> listaIDBloque = filasBloques.Select(item => item.BloqueID).ToList();
-					List<AD.EntityModel.Models.CMS.CMSBloqueComponente> listaBloqueComponente = mEntityContext.CMSBloqueComponente.Where(item => listaIDBloque.Contains(item.BloqueID)).ToList();
-					foreach (AD.EntityModel.Models.CMS.CMSBloqueComponente filaBloqueComponente in listaBloqueComponente)
-					{
-						List<Guid> listaIDBloqueComponente = listaBloqueComponente.Select(item => item.BloqueID).ToList();
-						List<AD.EntityModel.Models.CMS.CMSBloqueComponentePropiedadComponente> listaBloqueComponentePropiedadaCompoenente = mEntityContext.CMSBloqueComponentePropiedadComponente.Where(item => listaIDBloqueComponente.Contains(item.BloqueID)).ToList();
-						foreach (AD.EntityModel.Models.CMS.CMSBloqueComponentePropiedadComponente filaBloquePropiedadComponente in listaBloqueComponentePropiedadaCompoenente)
-						{
-							GestorCMS.CMSDW.ListaCMSBloqueComponentePropiedadComponente.Remove(filaBloquePropiedadComponente);
-							mEntityContext.EliminarElemento(filaBloquePropiedadComponente);
-						}
-						GestorCMS.CMSDW.ListaCMSBloqueComponente.Remove(filaBloqueComponente);
-						mEntityContext.EliminarElemento(filaBloqueComponente);
-					}
-					GestorCMS.CMSDW.ListaCMSBloque.Remove(filaBloque);
-					mEntityContext.EliminarElemento(filaBloque);
-				}
-				GestorCMS.CMSDW.ListaCMSPagina.Remove(filaCMSPagina);
-				mEntityContext.EliminarElemento(filaCMSPagina);
-			}
-		}
+        public string ObtenerFilaFaceta(int pTablaBaseProyectoID, string pfaceta, string pObjetoConocimiento, bool pAgregar)
+        {
+            int tipo = 0;
+            if (!pAgregar)
+            {
+                tipo = 1;
+            }
+            string fila = $"[{pTablaBaseProyectoID},'{Constantes.FACETA}{pfaceta}{Constantes.FACETA},{Constantes.OBJETO_CONOCIMIENTO}{pObjetoConocimiento}{Constantes.OBJETO_CONOCIMIENTO}',{tipo},\"2022-01-26T10:43:12.3492277\", null]";
+            return fila;
+        }
+        public void AgregarFilasColaFacetasAutocompletar(List<string> pFilasFacetas)
+        {
+            using (RabbitMQClient rMQ = new RabbitMQClient(RabbitMQClient.BD_SERVICIOS_WIN, "ColaFacetasGeneradorAutocompletar", mLoggingService, mConfigService, mLoggerFactory.CreateLogger<RabbitMQClient>(), mLoggerFactory))
+            {
+                rMQ.AgregarElementosACola(pFilasFacetas);
+            }
+        }
 
-		private void EliminarFilasPrivacidad(AD.EntityModel.Models.ProyectoDS.ProyectoPestanyaMenu pFilaPestanya)
-		{
-			List<AD.EntityModel.Models.ProyectoDS.ProyectoPestanyaMenuRolIdentidad> filasPerfiles = pFilaPestanya.ProyectoPestanyaMenuRolIdentidad.ToList();
-			foreach (AD.EntityModel.Models.ProyectoDS.ProyectoPestanyaMenuRolIdentidad filaPerfil in filasPerfiles)
-			{
-				pFilaPestanya.ProyectoPestanyaMenuRolIdentidad.Remove(filaPerfil);
-				mEntityContext.EliminarElemento(filaPerfil);
-			}
+        #endregion
 
-			List<AD.EntityModel.Models.ProyectoDS.ProyectoPestanyaMenuRolGrupoIdentidades> filasGruposIdentidades = pFilaPestanya.ProyectoPestanyaMenuRolGrupoIdentidades.ToList();
-			foreach (AD.EntityModel.Models.ProyectoDS.ProyectoPestanyaMenuRolGrupoIdentidades filaGrupoIdentidad in filasGruposIdentidades)
-			{
-				pFilaPestanya.ProyectoPestanyaMenuRolGrupoIdentidades.Remove(filaGrupoIdentidad);
-				mEntityContext.EliminarElemento(filaGrupoIdentidad);
-			}
-		}
+        #region Gestion de errores
+        public string ComprobarErrores(List<TabModel> pListaPestanyas)
+        {
+            string error = "";
 
-		#endregion
+            error = ComprobarErrorUrlsRepetidas(pListaPestanyas);
 
-		#region Gestion de errores
-		public string ComprobarErrores(List<TabModel> pListaPestanyas)
-		{
-			string error = "";
+            if (string.IsNullOrEmpty(error))
+            {
+                error = ComprobarErrorConcurrencia(pListaPestanyas);
+            }
 
-			error = ComprobarErrorUrlsRepetidas(pListaPestanyas);
+            if (string.IsNullOrEmpty(error))
+            {
+                error = ComprobarErrorNombresVacios(pListaPestanyas);
+            }
 
-			if (error.Equals(string.Empty))
-			{
-				error = ComprobarErrorConcurrencia(pListaPestanyas);
-			}
+            if (string.IsNullOrEmpty(error))
+            {
+                error = ComprobarErrorNombresCortosRepetidos(pListaPestanyas);
+            }
 
-			if (error.Equals(string.Empty))
-			{
-				error = ComprobarErrorNombresVacios(pListaPestanyas);
-			}
+            if (string.IsNullOrEmpty(error))
+            {
+                error = ComprobarErrorRuta(pListaPestanyas);
+            }
 
-			if (error.Equals(string.Empty))
-			{
-				error = ComprobarErrorNombresCortosRepetidos(pListaPestanyas);
-			}
-
-			if (error.Equals(string.Empty))
-			{
-				error = ComprobarErrorRuta(pListaPestanyas);
-			}
-
-			if (error.Equals(string.Empty))
-			{
-				error = ComprobarProyectoOrigenID(pListaPestanyas);
-			}
+            if (string.IsNullOrEmpty(error))
+            {
+                error = ComprobarProyectoOrigenID(pListaPestanyas);
+            }
 
 			return error;
 		}
@@ -1998,95 +2470,92 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
 			return "";
 		}
 
-		private string ComprobarProyectoOrigenID(List<TabModel> pListaPestanyas)
-		{
-			foreach (TabModel pestanya in pListaPestanyas)
-			{
-				if (!pestanya.Deleted && pestanya.Modified)
-				{
-					if (pestanya.OpcionesBusqueda != null && !pestanya.OpcionesBusqueda.ProyectoOrigenBusqueda.Equals(Guid.Empty))
-					{
-						//No permitimos la busqueda si el proyectoorigenid es privado o reservado
-						ProyectoCL proyCL = new ProyectoCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mVirtuosoAD, mServicesUtilVirtuosoAndReplication);
+        private string ComprobarProyectoOrigenID(List<TabModel> pListaPestanyas)
+        {
+            foreach (TabModel pestanya in pListaPestanyas)
+            {
+                if (!pestanya.Deleted && pestanya.Modified && pestanya.OpcionesBusqueda != null && !pestanya.OpcionesBusqueda.ProyectoOrigenBusqueda.Equals(Guid.Empty))
+                {
+                    //No permitimos la busqueda si el proyectoorigenid es privado o reservado
+                    ProyectoCL proyCL = new ProyectoCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mVirtuosoAD, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<ProyectoCL>(), mLoggerFactory);
 						TipoAcceso tipoAcceso = proyCL.ObtenerTipoAccesoProyecto(pestanya.OpcionesBusqueda.ProyectoOrigenBusqueda);
 						if (tipoAcceso.Equals(TipoAcceso.Privado) || tipoAcceso.Equals(TipoAcceso.Reservado))
 						{
 							return "PROYECTO_ORIGEN_BUSQUEDA_PRIVADO|||" + pestanya.Key.ToString();
 						}
-					}
 				}
 			}
 
-			return "";
-		}
+            return string.Empty;
+        }
 
-		private string ComprobarErrorConcurrencia(List<TabModel> pListaPestanyas)
-		{
-			string error = string.Empty;
+        private string ComprobarErrorConcurrencia(List<TabModel> pListaPestanyas)
+        {
+            string error = string.Empty;
 
-			foreach (TabModel pestanya in pListaPestanyas)
-			{
-				AD.EntityModel.Models.ProyectoDS.ProyectoPestanyaMenu filaPestanya = GestionProyectos.DataWrapperProyectos.ListaProyectoPestanyaMenu.FirstOrDefault(pest => pest.PestanyaID.Equals(pestanya.Key));
-				if (filaPestanya != null && !pestanya.Deleted && pestanya.Modified)
-				{
-					DateTime fechaCuandoEntraAdministracion = DateTimeRemoveMilliseconds(pestanya.FechaModificacion);
-					DateTime fechaCuandoGuarda = DateTimeRemoveMilliseconds(filaPestanya.FechaModificacion);
+            foreach (TabModel pestanya in pListaPestanyas)
+            {
+                AD.EntityModel.Models.ProyectoDS.ProyectoPestanyaMenu filaPestanya = GestionProyectos.DataWrapperProyectos.ListaProyectoPestanyaMenu.FirstOrDefault(pest => pest.PestanyaID.Equals(pestanya.Key));
+                if (filaPestanya != null && !pestanya.Deleted && pestanya.Modified)
+                {
+                    DateTime fechaCuandoEntraAdministracion = DateTimeRemoveMilliseconds(pestanya.FechaModificacion);
+                    DateTime fechaCuandoGuarda = DateTimeRemoveMilliseconds(filaPestanya.FechaModificacion);
 
-					if (!fechaCuandoEntraAdministracion.Equals(DateTime.MinValue) && fechaCuandoEntraAdministracion < fechaCuandoGuarda)
-					{
-						error = $"ERROR CONCURRENCIA|||La página {pestanya.Key} ha sido modificada antes por otro usuario. Debes recargar la página y volver a editarla.";
-					}
-				}
-			}
+                    if (!fechaCuandoEntraAdministracion.Equals(DateTime.MinValue) && fechaCuandoEntraAdministracion < fechaCuandoGuarda)
+                    {
+                        error = $"ERROR CONCURRENCIA|||La página {pestanya.Key} ha sido modificada antes por otro usuario. Debes recargar la página y volver a editarla.";
+                    }
+                }
+            }
 
-			return error;
-		}
+            return error;
+        }
 
-		private string ComprobarErrorNombresVacios(List<TabModel> pListaPestanyas)
-		{
-			ParametroAplicacionCL paramCL = new ParametroAplicacionCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mServicesUtilVirtuosoAndReplication);
-			string idiomaPorDefecto = !(ParametrosGeneralesRow.IdiomaDefecto == null) ? ParametrosGeneralesRow.IdiomaDefecto : paramCL.ObtenerListaIdiomas().First();
+        private string ComprobarErrorNombresVacios(List<TabModel> pListaPestanyas)
+        {
+            ParametroAplicacionCL paramCL = new ParametroAplicacionCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<ParametroAplicacionCL>(), mLoggerFactory);
+            string idiomaPorDefecto = ParametrosGeneralesRow.IdiomaDefecto != null ? ParametrosGeneralesRow.IdiomaDefecto : paramCL.ObtenerListaIdiomas()[0];
 
-			foreach (TabModel pestanya in pListaPestanyas)
-			{
-				if (!pestanya.Deleted && !pestanya.EsUrlPorDefecto)
-				{
-					string nombreIdiomaPorDefecto = UtilCadenas.ObtenerTextoDeIdioma(pestanya.Url, idiomaPorDefecto, null, true);
+            foreach (TabModel pestanya in pListaPestanyas)
+            {
+                if (!pestanya.Deleted && !pestanya.EsUrlPorDefecto)
+                {
+                    string nombreIdiomaPorDefecto = UtilCadenas.ObtenerTextoDeIdioma(pestanya.Url, idiomaPorDefecto, null, true);
 
-					if (string.IsNullOrEmpty(nombreIdiomaPorDefecto))
-					{
-						return "NOMBRE VACIO|||" + pestanya.Key.ToString();
-					}
-				}
-			}
+                    if (string.IsNullOrEmpty(nombreIdiomaPorDefecto))
+                    {
+                        return "NOMBRE VACIO|||" + pestanya.Key.ToString();
+                    }
+                }
+            }
 
-			return "";
-		}
+            return "";
+        }
 
-		private string ComprobarErrorUrlsRepetidas(List<TabModel> pListaPestanyas)
-		{
-			ParametroAplicacionCL paramCL = new ParametroAplicacionCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mServicesUtilVirtuosoAndReplication);
-			string idiomaPorDefecto = !(ParametrosGeneralesRow.IdiomaDefecto == null) ? ParametrosGeneralesRow.IdiomaDefecto : paramCL.ObtenerListaIdiomas().First();
+        private string ComprobarErrorUrlsRepetidas(List<TabModel> pListaPestanyas)
+        {
+            ParametroAplicacionCL paramCL = new ParametroAplicacionCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<ParametroAplicacionCL>(), mLoggerFactory);
+            string idiomaPorDefecto = ParametrosGeneralesRow.IdiomaDefecto != null ? ParametrosGeneralesRow.IdiomaDefecto : paramCL.ObtenerListaIdiomas()[0];
 
-			Dictionary<string, List<string>> listaRutasPorIdiomas = new Dictionary<string, List<string>>();
+            Dictionary<string, List<string>> listaRutasPorIdiomas = new Dictionary<string, List<string>>();
 
-			foreach (TabModel pestanya in pListaPestanyas)
-			{
-				if (!pestanya.Deleted && !pestanya.Type.Equals(TipoPestanyaMenu.EnlaceInterno) && !pestanya.Type.Equals(TipoPestanyaMenu.EnlaceExterno))
-				{
-					foreach (string idioma in paramCL.ObtenerListaIdiomas())
-					{
-						string rutaActual = "";
+            foreach (TabModel pestanya in pListaPestanyas)
+            {
+                if (!pestanya.Deleted && !pestanya.Type.Equals(TipoPestanyaMenu.EnlaceInterno) && !pestanya.Type.Equals(TipoPestanyaMenu.EnlaceExterno))
+                {
+                    foreach (string idioma in paramCL.ObtenerListaIdiomas())
+                    {
+                        string rutaActual = "";
 
-						if (!pestanya.EsUrlPorDefecto)
-						{
-							rutaActual = UtilCadenas.ObtenerTextoDeIdioma(pestanya.Url, idioma, idiomaPorDefecto);
-						}
-						else
-						{
-							string nombre = "";
-							ObtenerNameUrlMultiIdiomaPestanyaPorTipo(pestanya.Type, out nombre, out rutaActual);
-						}
+                        if (!pestanya.EsUrlPorDefecto)
+                        {
+                            rutaActual = UtilCadenas.ObtenerTextoDeIdioma(pestanya.Url, idioma, idiomaPorDefecto);
+                        }
+                        else
+                        {
+                            string nombre = "";
+                            ObtenerNameUrlMultiIdiomaPestanyaPorTipo(pestanya.Type, out nombre, out rutaActual);
+                        }
 
 						if (!listaRutasPorIdiomas.ContainsKey(idioma))
 						{
@@ -2107,7 +2576,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
 					string url = string.Empty;
 					if (ProyectoVirtual.Clave != ProyectoAD.MetaProyecto)
 					{
-						url = new GnossUrlsSemanticas(mLoggingService, mEntityContext, mConfigService, mServicesUtilVirtuosoAndReplication).ObtenerURLComunidad(UtilIdiomas, BaseURLIdioma, ProyectoVirtual.NombreCorto);
+						url = new GnossUrlsSemanticas(mLoggingService, mEntityContext, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<GnossUrlsSemanticas>(), mLoggerFactory).ObtenerURLComunidad(UtilIdiomas, BaseURLIdioma, ProyectoVirtual.NombreCorto);
 					}
 					else
 					{
@@ -2115,241 +2584,235 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
 					}
 					string urlReplace = $"{url}/";
 
-					if (pestanya.Url.StartsWith(urlReplace))
-					{
-						pestanya.Url = pestanya.Url.Substring(urlReplace.Length);
-					}
-					if (pestanya.Url.Contains($"|||{urlReplace}"))
-					{
-						pestanya.Url = pestanya.Url.Replace($"|||{urlReplace}", "|||");
-					}
-				}
-			}
-			return "";
-		}
+                    if (pestanya.Url.StartsWith(urlReplace))
+                    {
+                        pestanya.Url = pestanya.Url.Substring(urlReplace.Length);
+                    }
+                    if (pestanya.Url.Contains($"|||{urlReplace}"))
+                    {
+                        pestanya.Url = pestanya.Url.Replace($"|||{urlReplace}", "|||");
+                    }
+                }
+            }
+            return "";
+        }
 
-		private string ComprobarErrorNombresCortosRepetidos(List<TabModel> pListaPestanyas)
-		{
-			List<string> listaNombresCortos = new List<string>();
+        private static string ComprobarErrorNombresCortosRepetidos(List<TabModel> pListaPestanyas)
+        {
+            List<string> listaNombresCortos = new List<string>();
 
-			foreach (TabModel pestanya in pListaPestanyas)
-			{
-				if (!pestanya.Deleted)
-				{
-					string nombreCorto = pestanya.ShortName;
-					if (string.IsNullOrEmpty(nombreCorto))
-					{
-						nombreCorto = pestanya.Key.ToString();
-					}
+            foreach (TabModel pestanya in pListaPestanyas)
+            {
+                if (!pestanya.Deleted)
+                {
+                    string nombreCorto = pestanya.ShortName;
+                    if (string.IsNullOrEmpty(nombreCorto))
+                    {
+                        nombreCorto = pestanya.Key.ToString();
+                    }
 
-					if (!listaNombresCortos.Contains(nombreCorto))
-					{
-						listaNombresCortos.Add(nombreCorto);
-					}
-					else
-					{
-						return $"NOMBRECORTO REPETIDO|||{pestanya.Key}";
-					}
-				}
-			}
+                    if (!listaNombresCortos.Contains(nombreCorto))
+                    {
+                        listaNombresCortos.Add(nombreCorto);
+                    }
+                    else
+                    {
+                        return $"NOMBRECORTO REPETIDO|||{pestanya.Key}";
+                    }
+                }
+            }
 
-			return "";
-		}
+            return "";
+        }
 
-		private string ComprobarErrorRuta(List<TabModel> pListaPestanyas)
-		{
-			ParametroAplicacionCL paramCL = new ParametroAplicacionCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mServicesUtilVirtuosoAndReplication);
-			string idiomaPorDefecto = !(ParametrosGeneralesRow.IdiomaDefecto == null) ? ParametrosGeneralesRow.IdiomaDefecto : paramCL.ObtenerListaIdiomas().First();
+        private string ComprobarErrorRuta(List<TabModel> pListaPestanyas)
+        {
+            ParametroAplicacionCL paramCL = new ParametroAplicacionCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<ParametroAplicacionCL>(), mLoggerFactory);
+            string idiomaPorDefecto = ParametrosGeneralesRow.IdiomaDefecto != null ? ParametrosGeneralesRow.IdiomaDefecto : paramCL.ObtenerListaIdiomas()[0];
 
-			Dictionary<string, List<string>> listaRutasPorIdiomas = new Dictionary<string, List<string>>();
+            foreach (TabModel pestanya in pListaPestanyas)
+            {
+                if (!pestanya.Deleted && !pestanya.Type.Equals(TipoPestanyaMenu.EnlaceInterno) && !pestanya.Type.Equals(TipoPestanyaMenu.EnlaceExterno))
+                {
+                    foreach (string idioma in paramCL.ObtenerListaIdiomas())
+                    {
+                        string rutaActual = "";
 
-			foreach (TabModel pestanya in pListaPestanyas)
-			{
-				if (!pestanya.Deleted && !pestanya.Type.Equals(TipoPestanyaMenu.EnlaceInterno) && !pestanya.Type.Equals(TipoPestanyaMenu.EnlaceExterno))
-				{
-					foreach (string idioma in paramCL.ObtenerListaIdiomas())
-					{
-						string rutaActual = "";
+                        if (!pestanya.EsUrlPorDefecto)
+                        {
+                            rutaActual = UtilCadenas.ObtenerTextoDeIdioma(pestanya.Url, idioma, idiomaPorDefecto);
+                        }
+                        else
+                        {
+                            string nombre = "";
+                            ObtenerNameUrlMultiIdiomaPestanyaPorTipo(pestanya.Type, out nombre, out rutaActual);
+                        }
 
-						if (!pestanya.EsUrlPorDefecto)
-						{
-							rutaActual = UtilCadenas.ObtenerTextoDeIdioma(pestanya.Url, idioma, idiomaPorDefecto);
-						}
-						else
-						{
-							string nombre = "";
-							ObtenerNameUrlMultiIdiomaPestanyaPorTipo(pestanya.Type, out nombre, out rutaActual);
-						}
+                        if (!string.IsNullOrEmpty(rutaActual))
+                        {
+                            if (!Regex.IsMatch(rutaActual, "^[a-zA-Z0-9-/]+$") && !pestanya.Type.Equals(TipoPestanyaMenu.EnlaceExterno))
+                            {
+                                return $"La ruta {rutaActual} tiene caracteres no alfanúmericos, solo se permiten números, letras y los carácteres: '-' y '/' |||PestañaID:{pestanya.Key}";
+                            }
+                        }
+                        else if (!pestanya.Type.Equals(TipoPestanyaMenu.Home))
+                        {
+                            return $"La ruta de la página no puede ser nula|||PestañaID:{pestanya.Key}";
+                        }
+                    }
+                }
+            }
 
-						if (!string.IsNullOrEmpty(rutaActual))
-						{
-							if (!Regex.IsMatch(rutaActual, "^[a-zA-Z0-9-/]+$") && !pestanya.Type.Equals(TipoPestanyaMenu.EnlaceExterno))
-							{
-								return $"La ruta {rutaActual} tiene caracteres no alfanúmericos, solo se permiten números, letras y los carácteres: '-' y '/' |||PestañaID:{pestanya.Key}";
-							}
-						}
-						else if(!pestanya.Type.Equals(TipoPestanyaMenu.Home))
-						{
-							return $"La ruta de la página no puede ser nula|||PestañaID:{pestanya.Key}";
-						}
-					}
-				}
-			}
+            return string.Empty;
+        }
 
-			return "";
-		}
+        public void ObtenerNameUrlMultiIdiomaPestanyaPorTipo(TipoPestanyaMenu pTipoPestanya, out string pNombre, out string pUrl)
+        {
+            pNombre = string.Empty;
+            pUrl = string.Empty;
 
-		public void ObtenerNameUrlMultiIdiomaPestanyaPorTipo(TipoPestanyaMenu pTipoPestanya, out string pNombre, out string pUrl)
-		{
-			pNombre = string.Empty;
-			pUrl = string.Empty;
+            switch (pTipoPestanya)
+            {
+                case TipoPestanyaMenu.Home:
+                    pNombre = obtenerTextoMultiIdioma("COMMON", "HOME");
+                    break;
+                case TipoPestanyaMenu.Indice:
+                    pNombre = obtenerTextoMultiIdioma("COMMON", "INDICE");
+                    pUrl = obtenerTextoMultiIdioma("URLSEM", "INDICE");
+                    break;
+                case TipoPestanyaMenu.Recursos:
+                    pNombre = obtenerTextoMultiIdioma("COMMON", "BASERECURSOS");
+                    pUrl = obtenerTextoMultiIdioma("URLSEM", "RECURSOS");
+                    break;
+                case TipoPestanyaMenu.Preguntas:
+                    pNombre = obtenerTextoMultiIdioma("COMMON", "PREGUNTAS");
+                    pUrl = obtenerTextoMultiIdioma("URLSEM", "PREGUNTAS");
+                    break;
+                case TipoPestanyaMenu.Debates:
+                    pNombre = obtenerTextoMultiIdioma("COMMON", "DEBATES");
+                    pUrl = obtenerTextoMultiIdioma("URLSEM", "DEBATES");
+                    break;
+                case TipoPestanyaMenu.Encuestas:
+                    pNombre = obtenerTextoMultiIdioma("COMMON", "ENCUESTAS");
+                    pUrl = obtenerTextoMultiIdioma("URLSEM", "ENCUESTAS");
+                    break;
+                case TipoPestanyaMenu.PersonasYOrganizaciones:
+                    pNombre = obtenerTextoMultiIdioma("COMMON", "PERSONASYORGANIZACIONES");
+                    if (ProyectoVirtual.TipoProyecto == TipoProyecto.EducacionExpandida || ProyectoVirtual.TipoProyecto == TipoProyecto.Universidad20 || ProyectoVirtual.TipoProyecto == TipoProyecto.EducacionPrimaria)
+                    {
+                        pNombre = obtenerTextoMultiIdioma("COMMON", "PROFESORESYALUMNOS");
+                    }
+                    pUrl = obtenerTextoMultiIdioma("URLSEM", "PERSONASYORGANIZACIONES");
+                    break;
+                case TipoPestanyaMenu.AcercaDe:
+                    pNombre = obtenerTextoMultiIdioma("COMMON", "ACERCADE");
+                    pUrl = obtenerTextoMultiIdioma("URLSEM", "ACERCADE");
+                    break;
+                case TipoPestanyaMenu.BusquedaAvanzada:
+                    pNombre = obtenerTextoMultiIdioma("BUSCADORFACETADO", "TODALACOMUNIDAD");
+                    pUrl = obtenerTextoMultiIdioma("URLSEM", "BUSQUEDAAVANZADA");
+                    break;
+            }
+        }
 
-			switch (pTipoPestanya)
-			{
-				case TipoPestanyaMenu.Home:
-					pNombre = obtenerTextoMultiIdioma("COMMON", "HOME");
-					break;
-				case TipoPestanyaMenu.Indice:
-					pNombre = obtenerTextoMultiIdioma("COMMON", "INDICE");
-					pUrl = obtenerTextoMultiIdioma("URLSEM", "INDICE");
-					break;
-				case TipoPestanyaMenu.Recursos:
-					pNombre = obtenerTextoMultiIdioma("COMMON", "BASERECURSOS");
-					pUrl = obtenerTextoMultiIdioma("URLSEM", "RECURSOS");
-					break;
-				case TipoPestanyaMenu.Preguntas:
-					pNombre = obtenerTextoMultiIdioma("COMMON", "PREGUNTAS");
-					pUrl = obtenerTextoMultiIdioma("URLSEM", "PREGUNTAS");
-					break;
-				case TipoPestanyaMenu.Debates:
-					pNombre = obtenerTextoMultiIdioma("COMMON", "DEBATES");
-					pUrl = obtenerTextoMultiIdioma("URLSEM", "DEBATES");
-					break;
-				case TipoPestanyaMenu.Encuestas:
-					pNombre = obtenerTextoMultiIdioma("COMMON", "ENCUESTAS");
-					pUrl = obtenerTextoMultiIdioma("URLSEM", "ENCUESTAS");
-					break;
-				case TipoPestanyaMenu.PersonasYOrganizaciones:
-					pNombre = obtenerTextoMultiIdioma("COMMON", "PERSONASYORGANIZACIONES");
-					if (ProyectoVirtual.TipoProyecto == TipoProyecto.EducacionExpandida || ProyectoVirtual.TipoProyecto == TipoProyecto.Universidad20 || ProyectoVirtual.TipoProyecto == TipoProyecto.EducacionPrimaria)
-					{
-						pNombre = obtenerTextoMultiIdioma("COMMON", "PROFESORESYALUMNOS");
-					}
-					pUrl = obtenerTextoMultiIdioma("URLSEM", "PERSONASYORGANIZACIONES");
-					break;
-				case TipoPestanyaMenu.AcercaDe:
-					pNombre = obtenerTextoMultiIdioma("COMMON", "ACERCADE");
-					pUrl = obtenerTextoMultiIdioma("URLSEM", "ACERCADE");
-					break;
-				case TipoPestanyaMenu.BusquedaAvanzada:
-					pNombre = obtenerTextoMultiIdioma("BUSCADORFACETADO", "TODALACOMUNIDAD");
-					pUrl = obtenerTextoMultiIdioma("URLSEM", "BUSQUEDAAVANZADA");
-					break;
-			}
-		}
+        private string obtenerTextoMultiIdioma(string pPage, string pText)
+        {
+            ParametroAplicacionCL paramCL = new ParametroAplicacionCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<ParametroAplicacionCL>(), mLoggerFactory);
+            List<string> listaIdiomas = paramCL.ObtenerListaIdiomas();
 
-		private string obtenerTextoMultiIdioma(string pPage, string pText)
-		{
-			ParametroAplicacionCL paramCL = new ParametroAplicacionCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mServicesUtilVirtuosoAndReplication);
-			List<string> listaIdiomas = paramCL.ObtenerListaIdiomas();
+            StringBuilder textoMultiIdioma = new StringBuilder();
 
-			string textoMultiIdioma = "";
+            foreach (string idioma in listaIdiomas)
+            {
+                UtilIdiomas utilIdiomasAux = new UtilIdiomas(idioma, mLoggingService, mEntityContext, mConfigService, mRedisCacheWrapper, mLoggerFactory.CreateLogger<UtilIdiomas>(), mLoggerFactory);
+                textoMultiIdioma.Append($"{utilIdiomasAux.GetText(pPage, pText)}@{idioma}|||");
+            }
 
-			foreach (string idioma in listaIdiomas)
-			{
-				UtilIdiomas utilIdiomasAux = new UtilIdiomas(idioma, mLoggingService, mEntityContext, mConfigService,mRedisCacheWrapper);
-				textoMultiIdioma += $"{utilIdiomasAux.GetText(pPage, pText)}@{idioma}|||";
-			}
+            UtilCadenas.EliminarUltimosCaracteresStringBuilder(textoMultiIdioma, '|');
 
-			return textoMultiIdioma.TrimEnd('|');
-		}
+            return textoMultiIdioma.ToString();
+        }
 
-		#endregion
+        #endregion
 
-		#region Invalidar cache
+        #region Invalidar cache
 
-		public void InvalidarCaches(string UrlIntragnoss)
-		{
-			ProyectoCL proyCL = new ProyectoCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mVirtuosoAD, mServicesUtilVirtuosoAndReplication);
-			proyCL.InvalidarPestanyasProyecto(ProyectoSeleccionado.Clave);
-			proyCL.InvalidarSeccionesHomeCatalogoDeProyecto(ProyectoSeleccionado.Clave);
-			proyCL.InvalidarFilaProyecto(ProyectoSeleccionado.Clave);
+        public void InvalidarCaches(string UrlIntragnoss)
+        {
+            ProyectoCL proyCL = new ProyectoCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mVirtuosoAD, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<ProyectoCL>(), mLoggerFactory);
+            proyCL.InvalidarPestanyasProyecto(ProyectoSeleccionado.Clave);
+            proyCL.InvalidarSeccionesHomeCatalogoDeProyecto(ProyectoSeleccionado.Clave);
+            proyCL.InvalidarFilaProyecto(ProyectoSeleccionado.Clave);
+            proyCL.InvalidarPresentacionSemantico(ProyectoSeleccionado.Clave);
+            proyCL.InvalidarFiltrosOrdenesDeProyecto(ProyectoSeleccionado.Clave);
 
-			proyCL.InvalidarFiltrosOrdenesDeProyecto(ProyectoSeleccionado.Clave);
+            proyCL.InvalidarComunidadMVC(ProyectoSeleccionado.Clave);
+            proyCL.InvalidarCabeceraMVC(ProyectoSeleccionado.Clave);
 
-			proyCL.InvalidarComunidadMVC(ProyectoSeleccionado.Clave);
-			proyCL.InvalidarCabeceraMVC(ProyectoSeleccionado.Clave);
-
-			CMSCL cmsCL = new CMSCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mServicesUtilVirtuosoAndReplication);
+			CMSCL cmsCL = new CMSCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<CMSCL>(), mLoggerFactory);
 			cmsCL.InvalidarCacheConfiguracionCMSPorProyecto(ProyectoSeleccionado.Clave);
 
-			FacetaCL facetaCL = new FacetaCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mServicesUtilVirtuosoAndReplication);
-			bool cachearFacetas = !(this.ParametroProyecto.ContainsKey("CacheFacetas") && this.ParametroProyecto["CacheFacetas"].Equals("0"));
-			facetaCL.InvalidarCacheFacetasProyecto(ProyectoSeleccionado.Clave, cachearFacetas);
+            FacetaCL facetaCL = new FacetaCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<FacetaCL>(), mLoggerFactory);
+            bool cachearFacetas = !(ParametroProyecto.ContainsKey("CacheFacetas") && ParametroProyecto["CacheFacetas"].Equals("0"));
+            facetaCL.InvalidarCacheFacetasProyecto(ProyectoSeleccionado.Clave, cachearFacetas);
 
-			FacetadoCL facetadoCL = new FacetadoCL(UrlIntragnoss, mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mVirtuosoAD, mServicesUtilVirtuosoAndReplication);
+			FacetadoCL facetadoCL = new FacetadoCL(UrlIntragnoss, mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mVirtuosoAD, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<FacetadoCL>(), mLoggerFactory);
 			facetadoCL.InvalidarResultadosYFacetasDeBusquedaEnProyecto(ProyectoSeleccionado.Clave, "*");
 
-			ExportacionBusquedaCL exportacionCL = new ExportacionBusquedaCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mServicesUtilVirtuosoAndReplication);
+			ExportacionBusquedaCL exportacionCL = new ExportacionBusquedaCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<ExportacionBusquedaCL>(), mLoggerFactory);
 			exportacionCL.InvalidarCacheExportacionesProyecto(ProyectoSeleccionado.Clave);
 			exportacionCL.Dispose();
 
-			mGnossCache.VersionarCacheLocal(ProyectoSeleccionado.Clave);
-			mGnossCache.RecalcularRutasProyecto(ProyectoSeleccionado.Clave);
-		}
+            mGnossCache.VersionarCacheLocal(ProyectoSeleccionado.Clave);
+            mGnossCache.RecalcularRutasProyecto(ProyectoSeleccionado.Clave);
+        }
 
-		#endregion
+        #endregion
 
-		public bool ExistePestanyaDelMismoTipo(short TipoPestanya)
-		{
-			return GestionProyectos.DataWrapperProyectos.ListaProyectoPestanyaMenu.Any(p => p.TipoPestanya == TipoPestanya);
-		}
+        public bool ExistePestanyaDelMismoTipo(short TipoPestanya)
+        {
+            return GestionProyectos.DataWrapperProyectos.ListaProyectoPestanyaMenu.Any(p => p.TipoPestanya == TipoPestanya);
+        }
 
+        private static bool CompararObjetos(object obj1, object obj2)
+        {
+            byte[] bytesObj1 = ObjectToByteArray(obj1);
+            byte[] bytesObj2 = ObjectToByteArray(obj2);
 
-		private bool CompararObjetos(object obj1, object obj2)
-		{
-			byte[] bytesObj1 = ObjectToByteArray(obj1);
-			byte[] bytesObj2 = ObjectToByteArray(obj2);
+            return bytesObj1.SequenceEqual(bytesObj2);
+        }
 
-			return bytesObj1.SequenceEqual(bytesObj2);
-		}
-
-		private byte[] ObjectToByteArray(object obj)
-		{
-			if (obj == null)
-				return null;
-			string serializar = JsonConvert.SerializeObject(obj);
-			byte[] bytes = Encoding.ASCII.GetBytes(serializar);
-			return bytes;
-
-			/*BinaryFormatter bf = new BinaryFormatter();
-            using (MemoryStream ms = new MemoryStream())
+        private static byte[] ObjectToByteArray(object obj)
+        {
+            if (obj == null)
             {
-                bf.Serialize(ms, obj);
-                return ms.ToArray();
-            }*/
-		}
+                return new byte[0];
+            }
 
-		#region Propiedades
+            string serializar = JsonConvert.SerializeObject(obj);
+            return Encoding.ASCII.GetBytes(serializar);
+        }
 
-		private List<short> ListaPaginasCMS
-		{
-			get
-			{
-				if (mListaPaginasCMS == null)
-				{
-					mListaPaginasCMS = new List<short>();
-					if (GestorCMS.ListaPaginasProyectos.ContainsKey(ProyectoSeleccionado.Clave))
-					{
-						foreach (short paginaID in GestorCMS.ListaPaginasProyectos[ProyectoSeleccionado.Clave].Keys)
-						{
-							mListaPaginasCMS.Add(paginaID);
-						}
-					}
-				}
-				return mListaPaginasCMS;
-			}
-		}
+        #region Propiedades
+
+        private List<short> ListaPaginasCMS
+        {
+            get
+            {
+                if (mListaPaginasCMS == null)
+                {
+                    mListaPaginasCMS = new List<short>();
+                    if (GestorCMS.ListaPaginasProyectos.ContainsKey(ProyectoSeleccionado.Clave))
+                    {
+                        foreach (short paginaID in GestorCMS.ListaPaginasProyectos[ProyectoSeleccionado.Clave].Keys)
+                        {
+                            mListaPaginasCMS.Add(paginaID);
+                        }
+                    }
+                }
+                return mListaPaginasCMS;
+            }
+        }
 
 
 		/// <summary>
@@ -2361,14 +2824,14 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
 			{
 				if (mGestorCMS == null)
 				{
-					CMSCN cmsCN = new CMSCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+					CMSCN cmsCN = new CMSCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<CMSCN>(), mLoggerFactory);
 					mGestorCMS = new GestionCMS(cmsCN.ObtenerCMSDeProyecto(ProyectoSeleccionado.Clave), mLoggingService, mEntityContext);
 					cmsCN.Dispose();
 				}
 
-				return mGestorCMS;
-			}
-		}
+                return mGestorCMS;
+            }
+        }
 
 		/// <summary>
 		/// Gesotr de CMS del proyectoactual
@@ -2379,7 +2842,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
 			{
 				if (mExportacionBusquedaDW == null)
 				{
-					ExportacionBusquedaCN exporBusCN = new ExportacionBusquedaCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+					ExportacionBusquedaCN exporBusCN = new ExportacionBusquedaCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<ExportacionBusquedaCN>(), mLoggerFactory);
 					mExportacionBusquedaDW = exporBusCN.ObtenerExportacionesProyecto(ProyectoSeleccionado.Clave);
 					exporBusCN.Dispose();
 				}
@@ -2393,16 +2856,16 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
 			{
 				if (mFacetasDW == null)
 				{
-					FacetaCL facetaCL = new FacetaCL(mEntityContext,mLoggingService,mRedisCacheWrapper,mConfigService, mServicesUtilVirtuosoAndReplication);
+					FacetaCL facetaCL = new FacetaCL(mEntityContext,mLoggingService,mRedisCacheWrapper,mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<FacetaCL>(), mLoggerFactory);
 					mFacetasDW = facetaCL.ObtenerTodasFacetasDeProyecto(null, ProyectoAD.MetaOrganizacion, ProyectoSeleccionado.Clave, false);
 					facetaCL.Dispose();
 				}
 
-				return mFacetasDW;
-			}
-		}
+                return mFacetasDW;
+            }
+        }
 
-		#endregion
+        #endregion
 
-	}
+    }
 }

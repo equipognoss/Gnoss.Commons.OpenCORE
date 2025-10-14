@@ -2,11 +2,15 @@ using Es.Riam.AbstractsOpen;
 using Es.Riam.Gnoss.AD.EncapsuladoDatos;
 using Es.Riam.Gnoss.AD.EntityModel;
 using Es.Riam.Gnoss.AD.EntityModel.Models.ProyectoDS;
+using Es.Riam.Gnoss.AD.ParametroAplicacion;
 using Es.Riam.Gnoss.AD.ServiciosGenerales;
 using Es.Riam.Gnoss.Logica.CMS;
+using Es.Riam.Gnoss.Logica.ServiciosGenerales;
 using Es.Riam.Gnoss.Util.Configuracion;
 using Es.Riam.Gnoss.Util.General;
 using Es.Riam.Gnoss.Web.MVC.Models;
+using Microsoft.Extensions.Logging;
+using Serilog.Core;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -30,7 +34,8 @@ namespace Es.Riam.Gnoss.CL.CMS
         private EntityContext mEntityContext;
         private LoggingService mLoggingService;
         private ConfigService mConfigService;
-
+        private ILogger mlogger;
+        private ILoggerFactory mLoggerFactory;
         #endregion
 
         #region Constructores
@@ -38,12 +43,14 @@ namespace Es.Riam.Gnoss.CL.CMS
         /// <summary>
         /// Constructor para CMSCL
         /// </summary>
-        public CMSCL(EntityContext entityContext, LoggingService loggingService, RedisCacheWrapper redisCacheWrapper, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication)
-            : base(entityContext, loggingService, redisCacheWrapper, configService, servicesUtilVirtuosoAndReplication)
+        public CMSCL(EntityContext entityContext, LoggingService loggingService, RedisCacheWrapper redisCacheWrapper, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication, ILogger<CMSCL> logger, ILoggerFactory loggerFactory)
+            : base(entityContext, loggingService, redisCacheWrapper, configService, servicesUtilVirtuosoAndReplication,logger,loggerFactory)
         {
             mConfigService = configService;
             mEntityContext = entityContext;
             mLoggingService = loggingService;
+            mlogger = logger;
+            mLoggerFactory = loggerFactory;
         }
 
         /// <summary>
@@ -51,12 +58,14 @@ namespace Es.Riam.Gnoss.CL.CMS
         /// </summary>
         /// <param name="pFicheroConfiguracionBD">Fichero de configuración</param>
         /// <param name="pUsarVariableEstatica">Si se están usando hilos con diferentes conexiones: FALSE. En caso contrario TRUE</param>
-        public CMSCL(string pFicheroConfiguracionBD, EntityContext entityContext, LoggingService loggingService, RedisCacheWrapper redisCacheWrapper, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication)
-            : base(pFicheroConfiguracionBD, entityContext, loggingService, redisCacheWrapper, configService, servicesUtilVirtuosoAndReplication)
+        public CMSCL(string pFicheroConfiguracionBD, EntityContext entityContext, LoggingService loggingService, RedisCacheWrapper redisCacheWrapper, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication, ILogger<CMSCL> logger, ILoggerFactory loggerFactory)
+            : base(pFicheroConfiguracionBD, entityContext, loggingService, redisCacheWrapper, configService, servicesUtilVirtuosoAndReplication,logger,loggerFactory)
         {
             mConfigService = configService;
             mEntityContext = entityContext;
             mLoggingService = loggingService;
+            mlogger = logger;
+            mLoggerFactory = loggerFactory;
         }
 
         /// <summary>
@@ -65,12 +74,14 @@ namespace Es.Riam.Gnoss.CL.CMS
         /// <param name="pFicheroConfiguracionBD">Fichero de configuración</param>
         /// <param name="pUsarVariableEstatica">Si se están usando hilos con diferentes conexiones: FALSE. En caso contrario TRUE</param>
         /// <param name="pPoolName">Nombre del pool de conexión</param>
-        public CMSCL(string pFicheroConfiguracionBD, string pPoolName, EntityContext entityContext, LoggingService loggingService, RedisCacheWrapper redisCacheWrapper, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication)
-            : base(pFicheroConfiguracionBD, pPoolName, entityContext, loggingService, redisCacheWrapper, configService, servicesUtilVirtuosoAndReplication)
+        public CMSCL(string pFicheroConfiguracionBD, string pPoolName, EntityContext entityContext, LoggingService loggingService, RedisCacheWrapper redisCacheWrapper, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication, ILogger<CMSCL> logger, ILoggerFactory loggerFactory)
+            : base(pFicheroConfiguracionBD, pPoolName, entityContext, loggingService, redisCacheWrapper, configService, servicesUtilVirtuosoAndReplication,logger,loggerFactory)
         {
             mConfigService = configService;
             mEntityContext = entityContext;
             mLoggingService = loggingService;
+            mlogger = logger;
+            mLoggerFactory = loggerFactory;
         }
 
         #endregion
@@ -89,7 +100,8 @@ namespace Es.Riam.Gnoss.CL.CMS
         public CMSComponent ObtenerComponentePorIDEnProyecto(Guid pProyectoID, Guid pComponenteID, string pLanguageCode)
         {
             string rawKey = string.Concat("ComponenteCMSDeproyectoMVC_", pProyectoID.ToString(), "_", pComponenteID.ToString(), "_", pLanguageCode);
-            CMSComponent componente = ObtenerObjetoDeCache(rawKey) as CMSComponent;
+            // TODO: revisar
+            CMSComponent componente = ObtenerObjetoDeCache(rawKey, typeof(CMSComponent)) as CMSComponent;
             return componente;
         }
 
@@ -127,11 +139,11 @@ namespace Es.Riam.Gnoss.CL.CMS
             if (componentes.Length > 0)
             {
                 
-                Dictionary<string, object> lista = ObtenerListaObjetosCache(componentes, typeof(byte[]));
+                Dictionary<string, object> lista = ObtenerListaObjetosCache(componentes);
 
                 foreach (string clave in lista.Keys)
                 {
-                    CMSComponent componente = (CMSComponent)(lista[clave]);
+                    CMSComponent componente = (CMSComponent)lista[clave];
 
                     if (componente != null)
                     {
@@ -160,7 +172,7 @@ namespace Es.Riam.Gnoss.CL.CMS
             DataWrapperCMS CMSDW = ObtenerObjetoDeCacheLocal(rawKey) as DataWrapperCMS;
             if (CMSDW == null)
             {
-                CMSDW = ObtenerObjetoDeCache(rawKey) as DataWrapperCMS;
+                CMSDW = ObtenerObjetoDeCache(rawKey, typeof(DataWrapperCMS)) as DataWrapperCMS;
                 AgregarObjetoCacheLocal(pProyectoID, rawKey, CMSDW);
             }
 
@@ -318,7 +330,7 @@ namespace Es.Riam.Gnoss.CL.CMS
             DataWrapperCMS CMSDW = ObtenerObjetoDeCacheLocal(rawKey) as DataWrapperCMS;
             if (CMSDW == null)
             {
-                CMSDW = ObtenerObjetoDeCache(rawKey) as DataWrapperCMS;
+                CMSDW = ObtenerObjetoDeCache(rawKey, typeof(DataWrapperCMS)) as DataWrapperCMS;
                 AgregarObjetoCacheLocal(pProyectoID, rawKey, CMSDW);
             }
 
@@ -408,11 +420,11 @@ namespace Es.Riam.Gnoss.CL.CMS
                 {
                     if (mFicheroConfiguracionBD != null && mFicheroConfiguracionBD != "")
                     {
-                        mCMSCN = new CMSCN(mFicheroConfiguracionBD, mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+                        mCMSCN = new CMSCN(mFicheroConfiguracionBD, mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<CMSCN>(), mLoggerFactory);
                     }
                     else
                     {
-                        mCMSCN = new CMSCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+                        mCMSCN = new CMSCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<CMSCN>(), mLoggerFactory);
                     }
                 }
 
@@ -493,7 +505,7 @@ namespace Es.Riam.Gnoss.CL.CMS
                 }
                 catch (Exception e)
                 {
-                    mLoggingService.GuardarLogError(e);
+                    mLoggingService.GuardarLogError(e, mlogger);
                 }
             }
         }

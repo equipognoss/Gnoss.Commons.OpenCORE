@@ -2,6 +2,7 @@ using Es.Riam.AbstractsOpen;
 using Es.Riam.Gnoss.AD.EncapsuladoDatos;
 using Es.Riam.Gnoss.AD.EntityModel;
 using Es.Riam.Gnoss.AD.Identidad;
+using Es.Riam.Gnoss.AD.ParametroAplicacion;
 using Es.Riam.Gnoss.AD.Virtuoso;
 using Es.Riam.Gnoss.CL;
 using Es.Riam.Gnoss.Elementos;
@@ -12,6 +13,7 @@ using Es.Riam.Gnoss.Elementos.ServiciosGenerales;
 using Es.Riam.Gnoss.ExportarImportar;
 using Es.Riam.Gnoss.ExportarImportar.ElementosOntologia;
 using Es.Riam.Gnoss.ExportarImportar.Exportadores;
+using Es.Riam.Gnoss.Logica.ServiciosGenerales;
 using Es.Riam.Gnoss.Util.Configuracion;
 using Es.Riam.Gnoss.Util.General;
 using Es.Riam.Gnoss.Web.MVC.Models;
@@ -20,6 +22,8 @@ using Es.Riam.Semantica.OWL;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.Logging;
+using Serilog.Core;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -49,7 +53,8 @@ namespace Es.Riam.Metagnoss.ExportarImportar.Exportadores
         private ConfigService mConfigService;
         private RedisCacheWrapper mRedisCacheWrapper;
         private UtilSemCms mUtilSemCms;
-
+        private ILogger mlogger;
+        private ILoggerFactory mLoggerFactory;
         #endregion
 
         #region Constructor
@@ -58,8 +63,8 @@ namespace Es.Riam.Metagnoss.ExportarImportar.Exportadores
         /// Crea un nuevo exportador de blogs y entradas de blog.
         /// </summary>
         /// <param name="pOntologia">Ontología</param>
-        public ExportadorListaResultados(Ontologia pOntologia, string pIdiomaUsuario,  LoggingService loggingService, EntityContext entityContext, ConfigService configService, RedisCacheWrapper redisCacheWrapper, UtilSemCms utilSemCms, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication, VirtuosoAD virtuosoAd)
-            : base(pOntologia, pIdiomaUsuario, loggingService, entityContext, configService, redisCacheWrapper, utilSemCms, servicesUtilVirtuosoAndReplication, virtuosoAd)
+        public ExportadorListaResultados(Ontologia pOntologia, string pIdiomaUsuario,  LoggingService loggingService, EntityContext entityContext, ConfigService configService, RedisCacheWrapper redisCacheWrapper, UtilSemCms utilSemCms, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication, VirtuosoAD virtuosoAd, ILogger<ExportadorListaResultados> logger, ILoggerFactory loggerFactory)
+            : base(pOntologia, pIdiomaUsuario, loggingService, entityContext, configService, redisCacheWrapper, utilSemCms, servicesUtilVirtuosoAndReplication, virtuosoAd,logger,loggerFactory)
         {
             mLoggingService = loggingService;
             mEntityContext = entityContext;
@@ -67,6 +72,8 @@ namespace Es.Riam.Metagnoss.ExportarImportar.Exportadores
             mRedisCacheWrapper = redisCacheWrapper;
             mVirtuosoAD = virtuosoAd;
             mUtilSemCms = utilSemCms;
+            mlogger = logger;
+            mLoggerFactory = loggerFactory;
         }
 
         #endregion
@@ -159,7 +166,7 @@ namespace Es.Riam.Metagnoss.ExportarImportar.Exportadores
                     }
 
                     entidadResultado = new ElementoOntologiaGnoss(this.Ontologia.GetEntidadTipo(tipo));
-                    exportador = new ExportadorWiki(Ontologia, IdiomaUsuario,  mLoggingService, mEntityContext, mConfigService, mRedisCacheWrapper, mUtilSemCms, mServicesUtilVirtuosoAndReplication, mVirtuosoAd);
+                    exportador = new ExportadorWiki(Ontologia, IdiomaUsuario,  mLoggingService, mEntityContext, mConfigService, mRedisCacheWrapper, mUtilSemCms, mServicesUtilVirtuosoAndReplication, mVirtuosoAd, mLoggerFactory.CreateLogger<ExportadorWiki>(), mLoggerFactory);
                     resultadoRow = ((Documento)resultado).FilaDocumento;
                     gestorElemento = ((Documento)resultado).GestorDocumental;
 
@@ -184,7 +191,7 @@ namespace Es.Riam.Metagnoss.ExportarImportar.Exportadores
                 else if (resultado is Proyecto)
                 {
                     entidadResultado = new ElementoOntologiaGnoss(this.Ontologia.GetEntidadTipo(TipoElementoGnoss.ComunidadSioc));
-                    exportador = new ExportadorComunidad(Ontologia, IdiomaUsuario,  mLoggingService, mEntityContext, mConfigService, mRedisCacheWrapper, mUtilSemCms, mServicesUtilVirtuosoAndReplication, mVirtuosoAD);
+                    exportador = new ExportadorComunidad(Ontologia, IdiomaUsuario,  mLoggingService, mEntityContext, mConfigService, mRedisCacheWrapper, mUtilSemCms, mServicesUtilVirtuosoAndReplication, mVirtuosoAD, mloggerFactory.CreateLogger<ExportadorComunidad>(), mloggerFactory);
                     resultadoRow = ((Proyecto)resultado).FilaProyecto;
                     gestorElemento = ((Proyecto)resultado).GestorProyectos;
                 }
@@ -198,7 +205,7 @@ namespace Es.Riam.Metagnoss.ExportarImportar.Exportadores
                     {
                         entidadResultado = new ElementoOntologiaGnoss(this.Ontologia.GetEntidadTipo(TipoElementoGnoss.PerfilOrganizacionFoaf));
                     }
-                    exportador = new ExportadorCurriculum(Ontologia, ((Identidad)resultado).GestorIdentidades, IdiomaUsuario,  mLoggingService, mEntityContext, mConfigService, mRedisCacheWrapper, mUtilSemCms, mServicesUtilVirtuosoAndReplication, mVirtuosoAD);
+                    exportador = new ExportadorCurriculum(Ontologia, ((Identidad)resultado).GestorIdentidades, IdiomaUsuario,  mLoggingService, mEntityContext, mConfigService, mRedisCacheWrapper, mUtilSemCms, mServicesUtilVirtuosoAndReplication, mVirtuosoAD, mLoggerFactory.CreateLogger<ExportadorCurriculum>(), mLoggerFactory);
                     resultadoRow = ((Identidad)resultado).FilaIdentidad;
                     gestorElemento = ((Identidad)resultado).GestorIdentidades;
                 }
@@ -240,7 +247,7 @@ namespace Es.Riam.Metagnoss.ExportarImportar.Exportadores
             foreach (Filtro filtro in ((ListaResultados)pElementoGnoss).Filtros)
             {
                 ElementoOntologia entidadResultado = new ElementoOntologiaGnoss(this.Ontologia.GetEntidadTipo(TipoElementoGnoss.Filtro));
-                ExportadorElementoGnoss exportador = new ExportadorListaResultados(Ontologia, IdiomaUsuario,  mLoggingService, mEntityContext, mConfigService, mRedisCacheWrapper, mUtilSemCms, mServicesUtilVirtuosoAndReplication, mVirtuosoAd);
+                ExportadorElementoGnoss exportador = new ExportadorListaResultados(Ontologia, IdiomaUsuario,  mLoggingService, mEntityContext, mConfigService, mRedisCacheWrapper, mUtilSemCms, mServicesUtilVirtuosoAndReplication, mVirtuosoAd, mLoggerFactory.CreateLogger<ExportadorListaResultados>(), mLoggerFactory);
                 DataRow resultadoRow = filtro.FilaElemento;
                 GestionGnoss gestorElemento = filtro.GestorGnoss;
 

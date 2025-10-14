@@ -1,6 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Resources language="English" code="en-us">
   <page name="COMMON">
+    <Resource tag="FECHACREACION">Date of creation</Resource>
     <Resource tag="RELATEDTO">Related to</Resource>
     <Resource tag="BASERECURSOS">Resources</Resource>
     <Resource tag="SUBIRNEWSLETTER">Add a new newsletter</Resource>
@@ -2129,7 +2130,7 @@
     <Resource tag="FACETASACTIVIDAD">Activity facets</Resource>
   </page>
   <page name="SOLICITARCOMUNIDAD">
-    <Resource tag="INFO">To create a @1@ community  we need you to tell us how you want to name it, its purpose and what you expect from the community and  the contributions of people who want to collaborate with you. We also need to know the key words that identify the community, the main categories that organize its knowledge and if you find necessary to expand any of them. Finally, you have to decide if you want it to be a public, a restricted public or a private community. </Resource>
+	<Resource tag="INFO">To create a community in @1@, we need you to tell us what you want to call it, describe its purpose, and what you expect from it and from the contributions of people who want to collaborate with you, whether you want it to be public, public with restricted access, or private. And finally, select the default language of the community (only the languages configured on the platform are available).</Resource>
     <Resource tag="NOMBRECORTOREPETIDO">There is already a @1@ community with this short name.</Resource>
     <Resource tag="NOMBREREPETIDO">There is already a @1@ community with this name.</Resource>
     <Resource tag="TITULOPAGINA">Request a community</Resource>
@@ -2305,6 +2306,9 @@
     <Resource tag="TITULO">
     </Resource>
   </page>
+	<page name="MISCOMUNIDADES">
+		<Resource tag="TITULOPAGINA">My Communities</Resource>
+	</page>
   <page name="POLITICAPRIVACIDAD">
     <Resource tag="TITULOPAGINA">Privacy policy</Resource>
     <Resource tag="TITULO">Privacy policy</Resource>
@@ -2381,6 +2385,7 @@
     <Resource tag="ERRORRESTAURARVERSION">An error occured while restoring the version</Resource>
     <Resource tag="INFOVERSIONNOACTUAL">This is not the latest version of the resource. Do you want to work with the latest version?</Resource>
     <Resource tag="SELECTOR">Selector</Resource>
+	<Resource tag="AVISOCOMPONENTESBORRADOS">The following components will not be restored because they have been deleted</Resource>
   </page>
   <page name="COMADMINCATEGORIAS">
     <Resource tag="TEXTOSUPDISEÑO">If you want, you can add text, HTML, images or any widget from third parties or searches on @2@ to show it in your community home. {a href="@1@"}How can you do it?{/a}</Resource>
@@ -2590,8 +2595,8 @@
     <Resource tag="PAGINASNUEVAS"></Resource>
     <Resource tag="NOMBREPAGINA"></Resource>
     <Resource tag="URLPESTAÑA"></Resource>
-    <Resource tag="ACTIVAR"></Resource>
-    <Resource tag="DESACTIVAR"></Resource>
+    <Resource tag="ACTIVAR">Enable</Resource>
+    <Resource tag="DESACTIVAR">Disable</Resource>
     <Resource tag="GUARDARBORRADOR"></Resource>
     <Resource tag="DESCARTARBORRADOR"></Resource>
     <Resource tag="PUBLICAR"></Resource>
@@ -2716,7 +2721,7 @@
     <Resource tag="CORREOENVIADOOK"></Resource>
   </page>
   <page name="COMADMIN">
-    <Resource tag="CREADAOK"></Resource>
+    <Resource tag="CREADAOK">Community created successfully</Resource>
     <Resource tag="HERRAMIENTASCARGASMASIVAS">
     </Resource>
     <Resource tag="EXPLICACIONTAGSYCATEGORIAS">@1@ connects this community with other ones throught its tags and the categories of the @1@ global index it belongs to:</Resource>
@@ -2959,7 +2964,7 @@
     <Resource tag="ADMINISTRARCOMUNIDAD">Manage the community</Resource>
     <Resource tag="CREARWIDGET">Create widget</Resource>
     <Resource tag="FUENTESRSS">RSS {span class = "warning"} @1@{/span}</Resource>
-    <Resource tag="SOLICITUDESPERTENECERGRUPO">Requests for group membership {span class="aviso"}@1@{/span}</Resource>
+    <Resource tag="SOLICITUDESPERTENECERGRUPO">Requests for group membership</Resource>
     <Resource tag="SOLICITUDESACCESO">Manage requests</Resource>
     <Resource tag="ENVIARNEWSLETTER">Send newsletter</Resource>
     <Resource tag="NEWSLETTER">Receive newsletter</Resource>
@@ -3450,6 +3455,48 @@
     <Resource tag="ADMINISTRARSUSCRIPCIONES">manage-subscriptions</Resource>
     <Resource tag="ADMINISTRARSUSCRIPCIONCOMUNIDAD">manage-subscription-community</Resource>
     <Resource tag="ADMINISTRARSUSCRIPCIONIDENTIDAD">manage-subscription-profile</Resource>
+    <Resource tag="ADMINISTRARCOMUNIDADHOME">manage-community-home</Resource>
+    <Resource tag="ADMINISTRARINTERACCIONSOCIAL">manage-social-interaction</Resource>
+	<Resource tag="ADMINISTRARCOMUNIDADCERTIFICADOS">manage-community-certificates</Resource>
+	<Resource tag="ADMINISTRARPESTANYASCOM">manage-pages</Resource>
+	<Resource tag="ADMINISTRARREDIRECCIONES">manage-redirects</Resource>
+	<Resource tag="ADMINISTRARCOMUNIDADCMSMULTIMEDIA">manage-community-cms-multimedia</Resource>
+	<Resource tag="DESCARGAROAUTH">download-configuration-OAuth</Resource>
+	<Resource tag="ADMINISTRARCOOKIESCOM">manage-cookies</Resource>
+	<Resource tag="CONFIGURAFTP">configure-ftp</Resource>
+	<Resource tag="ADMINISTRARTRADUCCIONES">manage-translations</Resource>
+	<Resource tag="ADMINISTRARDATOSEXTRA">manage-extra-data</Resource>
+	<Resource tag="ADMINISTRARTRAZAS">manage-traces</Resource>
+	<Resource tag="ADMINISTRARDESCARGARCONFIGURACION">manage-download-configuration</Resource>
+	<Resource tag="ADMINISTRARDESCARGARCONFIGURACIONECOSISTEMA">manage-download-configuration-ecosystem</Resource>
+	<Resource tag="ADMINISTRARCACHE">manage-cache</Resource>
+	<Resource tag="ADMINISTRARSEOGOOGLE">manage-seo-google</Resource>
+	<Resource tag="ADMINISTRARMATOMO">manage-statistics</Resource>
+	<Resource tag="ADMINISTRAREVENTOSEXTERNOS">manage-external-events</Resource>
+	<Resource tag="ADMINISTRAREVENTOSEXTERNOSECOSISTEMA">manage-external-events-ecosystem</Resource>
+	<Resource tag="ADMINISTRARCLAUSULASREGISTRO">manage-clauses</Resource>
+	<Resource tag="ADMINISTRARCOMUNIDADBUZONCORREO">manage-mailbox</Resource>
+	<Resource tag="ADMINISTRASERVICIOSEXTERNOS">manage-external-services</Resource>
+	<Resource tag="ADMINISTRARESTADOSISTEMAS">system-status</Resource>
+	<Resource tag="ADMINMETAADMINOPTIONS">manage-meta-administrator-options</Resource>
+	<Resource tag="ADMINISTRAROBJETOSCONOCIMIENTOCOM">manage-knowledge-objects</Resource>
+	<Resource tag="ADMINTESSEM">manage-semantic-thesauri</Resource>
+	<Resource tag="ADMINISTRARCONSULTASPARQL">manage-sparql-queries</Resource>
+	<Resource tag="CONSULTACARGAMASIVA">bulk-load-query</Resource>
+	<Resource tag="ADMINISTRABORRADOMASIVO">manage-bulk-deletion</Resource>
+	<Resource tag="ADMINISTRARFACETASCOM">manage-facets</Resource>
+	<Resource tag="ADMINISTRASEARCH">manage-search</Resource>
+	<Resource tag="ADMINISTRARCONTEXTOSCOM">manage-resource-components</Resource>
+	<Resource tag="ADMINISTRAPARAMETROSBUSQUEDAPERSONALIZADOS">manage-custom-search-parameters</Resource>
+	<Resource tag="ADMINISTRARMAPA">manage-map</Resource>
+	<Resource tag="ADMINISTRARYCHARTS">manage-charts</Resource>
+	<Resource tag="ADMINISTRARLISTACAMBIO">manage-change-list</Resource>
+	<Resource tag="ADMINISTRARDESPLIEGUES">manage-deployments</Resource>
+	<Resource tag="ADMINISTRAINTEGRACIONCONTINUA">manage-continuous-integration</Resource>
+	<Resource tag="DIAGNOSTICOPROBLEMAS">problem-diagnosis</Resource>
+	<Resource tag="REPROCESADORECURSOS">reprocess-resources</Resource>
+	<Resource tag="TAREASFONDO">background-tasks</Resource>
+	<Resource tag="ADMINISTRARAPLICACIONESPECIFICA">manage-specific-applications</Resource>
     <Resource tag="AGREGARTWITTER">add-twitter</Resource>
     <Resource tag="ARTICULO">article</Resource>
     <Resource tag="BLOG">blog</Resource>
@@ -3632,7 +3679,7 @@
     <Resource tag="GRUPOS">grupos</Resource>
     <Resource tag="CREARGRUPO">crear-grupo</Resource>
     <Resource tag="EDITARGRUPO">editar-grupo</Resource>
-    <Resource tag="ADMINISTRARSOLICITUDES">administrar-solicitudes</Resource>
+    <Resource tag="ADMINISTRARSOLICITUDES">manage-requests</Resource>
     <Resource tag="MENSAJESORG">messages-org</Resource>
     <Resource tag="RECOMENDACIONESCONTACTOS">contactos-recomendados</Resource>
     <Resource tag="RECOMENDACIONESCOM">comunidades-recomendadas</Resource>
@@ -3785,6 +3832,74 @@
     <Resource tag="ACTUALIZARADDTOGNOSSNAVG">update-addtognoss-browser</Resource>
     <Resource tag="ADMINISTRARVISTAS">admin-views</Resource>
   </page>
+  <page name="COMADMINCOMUNIDAD">
+	<Resource tag="ADMINISTRARCOMUNIDADGENERAL">General Information</Resource>
+	<Resource tag="ADMINISTRARCATEGORIASCOM">Categories</Resource>
+	<Resource tag="COMADMINCOMMIEMBROS">Members</Resource>
+	<Resource tag="ADMINISTRARPESTANYASCOM">Pages</Resource>
+	<Resource tag="ADMINISTRARREDIRECCIONES">Redirects</Resource>
+	<Resource tag="ADMINISTRARCOMUNIDADCMSLISTADOCOMPONENTES">CMS Component List</Resource>
+	<Resource tag="ADMINISTRARCOMUNIDADCMSMULTIMEDIA">CMS Multimedia Editing</Resource>
+	<Resource tag="DESCARGAROAUTH">Download OAuth Configuration</Resource>
+	<Resource tag="ADMINISTRARCOOKIESCOM">Cookies</Resource>
+	<Resource tag="CONFIGURAFTP">Configure FTP</Resource>
+	<Resource tag="ADMINISTRARTRADUCCIONES">Translations</Resource>
+	<Resource tag="ADMINISTRARDATOSEXTRA">Additional Registration Data</Resource>
+	<Resource tag="ADMINISTRARSEOGOOGLE">Manage SEO and Google Analytics</Resource>
+	<Resource tag="ADMINISTRAROBJETOSCONOCIMIENTOCOM">Knowledge Objects</Resource>
+	<Resource tag="ADMINTESSEM">Semantic Thesauri</Resource>
+	<Resource tag="ADMINISTRABORRADOMASIVO">Mass Deletion</Resource>
+	<Resource tag="ADMINISTRARFACETASCOM">Facets</Resource>
+	<Resource tag="ADMINISTRAPARAMETROSBUSQUEDAPERSONALIZADOS">Custom Search Parameters</Resource>
+	<Resource tag="ADMINISTRARMAPA">Map</Resource>
+	<Resource tag="ADMINISTRARVISTAS">Views</Resource>
+	<Resource tag="ADMINISTRARLISTACAMBIO">Merge</Resource>
+	<Resource tag="ADMINISTRARDESPLIEGUES">Deployments</Resource>
+	<Resource tag="ADMINISTRAINTEGRACIONCONTINUA">Upload Changes</Resource>
+  </page>
+	<page name="DEVTOOLS">
+		<!-- Traducciones menu lateral devtools-->
+		<Resource tag="ADMINISTRAREVENTOSEXTERNOS">External events</Resource>
+		<Resource tag="ACTUALIZARESTADOEVENTOEXTERNO">Update external event status</Resource>
+		<Resource tag="DESEADESACTIVARELEVENTOEXTERNOSELECCIONADO">Do you wish to deactivate the selected event?</Resource>
+		<Resource tag="DESEAACTIVARELEVENTOEXTERNOSELECCIONADO">Do you wish to activate the selected event?</Resource>
+		<Resource tag="EVENTOEXTERNOCOMENTARIOS">Comment events</Resource>
+		<Resource tag="EVENTOEXTERNORECURSOS">Resource events</Resource>
+		<Resource tag="EVENTOEXTERNOUSUARIOS">User events</Resource>
+		<Resource tag="EVENTOSEXTERNOSMENSAJE">The credentials are not configured correctly. Contact the systems team.</Resource>
+		<Resource tag="EVENTOSEXTERNOSHABILITARCONFIGPROY">Enable project configuration</Resource>
+		<Resource tag="EVENTOSEXTERNOSDESHABILITARCONFIGPROY">Disable project configuration</Resource>
+		<Resource tag="EVENTOSEXTERNOSCONFIGECO">You are viewing the platform configuration</Resource>
+		<Resource tag="EVENTOSEXTERNOSCONEXION">Connection string</Resource>
+		<Resource tag="BUSCARPALABRASCLAVE">Search Keywords …</Resource>
+		<Resource tag="TIPOSDECONTENIDO/PERMISOS">Content Types / Permissions</Resource>
+		<Resource tag="INTERACCIONSOCIAL">Social Interaction</Resource>
+		<Resource tag="NIVELESDECERTIFICACION">Certification Levels</Resource>
+		<Resource tag="ESTRUCTURA">Structure</Resource>
+		<Resource tag="CONFIGURACION">Configuration</Resource>
+		<Resource tag="CONFIGURACIONGENERAL">General Configuration</Resource>
+		<Resource tag="TRAZAS">Trails</Resource>
+		<Resource tag="DESCARGACONFIG">Download Configurations</Resource>
+		<Resource tag="DESCARGACONFIGECOSISTEMA">Download Configurations Ecosystem</Resource>
+		<Resource tag="ESTADISTICASDELACOMUNIDAD">Community Statistics</Resource>
+		<Resource tag="BUZONDECORREO">Mailbox</Resource>
+		<Resource tag="SERVICIOSEXTERNOS">External Services</Resource>
+		<Resource tag="ADMINISTRARESTADOSISTEMAS">System Status</Resource>
+		<Resource tag="CONFIGURACIONDELAPLATAFORMA">Platform Configuration</Resource>
+		<Resource tag="GRAFODECONOCIMIENTO">Knowledge Graph</Resource>
+		<Resource tag="SPARQLENDPOINT">SPARQL Endpoint</Resource>
+		<Resource tag="CONSULTARCARGAMASIVA">Consult Bulk Load</Resource>
+		<Resource tag="DESCUBRIMIENTOYANALISIS">Discovery and Analysis</Resource>
+		<Resource tag="SUGERENCIASDEBUSQUEDA">Search Suggestions</Resource>
+		<Resource tag="ADMINISTRARGRAFICOS">Manage Graphs</Resource>
+		<Resource tag="INTEGRACIONCONTINUA">Continuous Integration</Resource>
+		<Resource tag="AYUDA">Help</Resource>
+		<Resource tag="DIAGNOSTICOPROBLEMAS">Problem Diagnosis</Resource>
+		<Resource tag="MANTENIMIENTO">Maintenance</Resource>
+		<Resource tag="REPROCESADORECURSOS">Resource Reprocessing</Resource>
+		<Resource tag="TAREASSEGUNDOPLANO">Background Tasks</Resource>
+		<Resource tag="INTEGRACIONCONTINUA">Continuous Integration</Resource>
+	</page>
   <page name="COMADMINDISENIO">
     <Resource tag="XMLSUBIDO">Archivo subido correctamente</Resource>
     <Resource tag="XMLVACIO">

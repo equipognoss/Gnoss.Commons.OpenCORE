@@ -19,6 +19,11 @@ using Es.Riam.Gnoss.Util.Configuracion;
 using Npgsql;
 using Es.Riam.Gnoss.AD.EntityModelBASE;
 using Es.Riam.AbstractsOpen;
+using Microsoft.Data.SqlClient;
+using Es.Riam.Gnoss.AD.ParametroAplicacion;
+using Microsoft.Extensions.Logging;
+using Serilog.Core;
+using Serilog;
 
 namespace Es.Riam.Gnoss.AD.AutoCompetarEtiquetas
 {
@@ -32,7 +37,8 @@ namespace Es.Riam.Gnoss.AD.AutoCompetarEtiquetas
         private string mCaracteresExtra = "";
 
         private static Regex REG_EXP_PRIMER_CARACTER_LETRA = new Regex("[a-zA-Z]{1}", RegexOptions.Compiled);
-
+        private Microsoft.Extensions.Logging.ILogger mlogger;
+        private ILoggerFactory mLoggerFactory;
         #endregion
 
         #region Constructores
@@ -40,9 +46,11 @@ namespace Es.Riam.Gnoss.AD.AutoCompetarEtiquetas
         /// <summary>
         /// El por defecto, utilizado cuando se requiere el GnossConfig.xml por defecto
         /// </summary>
-        public AutoCompetarEtiquetasAD(LoggingService loggingService, EntityContext entityContext, ConfigService configService, EntityContextBASE entityContextBASE, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication)
-            : base(loggingService, entityContext, configService, entityContextBASE, servicesUtilVirtuosoAndReplication)
+        public AutoCompetarEtiquetasAD(LoggingService loggingService, EntityContext entityContext, ConfigService configService, EntityContextBASE entityContextBASE, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication, ILogger<AutoCompetarEtiquetasAD> logger, ILoggerFactory loggerFactory)
+            : base(loggingService, entityContext, configService, entityContextBASE, servicesUtilVirtuosoAndReplication, logger, loggerFactory)
         {
+            mlogger = logger;
+            mLoggerFactory = loggerFactory;
             CargarConsultasYDataAdapters();
         }
 
@@ -51,9 +59,11 @@ namespace Es.Riam.Gnoss.AD.AutoCompetarEtiquetas
         /// </summary>
         /// <param name="pFicheroConfiguracionBD">Ruta del fichero de configuración de conexión a base de datos</param>
         /// <param name="pUsarVariableEstatica">Si se están usando hilos con diferentes conexiones: FALSE. En caso contrario TRUE</param>
-        public AutoCompetarEtiquetasAD(string pFicheroConfiguracionBD, LoggingService loggingService, EntityContext entityContext, ConfigService configService, EntityContextBASE entityContextBASE, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication)
-            : base(pFicheroConfiguracionBD, loggingService, entityContext, configService, entityContextBASE, servicesUtilVirtuosoAndReplication)
+        public AutoCompetarEtiquetasAD(string pFicheroConfiguracionBD, LoggingService loggingService, EntityContext entityContext, ConfigService configService, EntityContextBASE entityContextBASE, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication, ILogger<AutoCompetarEtiquetasAD> logger, ILoggerFactory loggerFactory)
+            : base(pFicheroConfiguracionBD, loggingService, entityContext, configService, entityContextBASE, servicesUtilVirtuosoAndReplication,logger,loggerFactory)
         {
+            mlogger = logger;
+            mLoggerFactory = loggerFactory;
             CargarConsultasYDataAdapters(IBD);
         }
 
@@ -63,10 +73,12 @@ namespace Es.Riam.Gnoss.AD.AutoCompetarEtiquetas
         /// <param name="pFicheroConfiguracionBD">Ruta del fichero de configuración de conexión a base de datos</param>
         /// <param name="pUsarVariableEstatica">Si se están usando hilos con diferentes conexiones: FALSE. En caso contrario TRUE</param>
         /// <param name="pCaracteresExtra">Ultimos caracteres que se añaden a la tabla de Etiqueta</param>
-        public AutoCompetarEtiquetasAD(string pFicheroConfiguracionBD, string pCaracteresExtra, LoggingService loggingService, EntityContext entityContext, ConfigService configService, EntityContextBASE entityContextBASE, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication)
-            : base(pFicheroConfiguracionBD, loggingService, entityContext, configService, entityContextBASE, servicesUtilVirtuosoAndReplication)
+        public AutoCompetarEtiquetasAD(string pFicheroConfiguracionBD, string pCaracteresExtra, LoggingService loggingService, EntityContext entityContext, ConfigService configService, EntityContextBASE entityContextBASE, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication, ILogger<AutoCompetarEtiquetasAD> logger, ILoggerFactory loggerFactory)
+            : base(pFicheroConfiguracionBD, loggingService, entityContext, configService, entityContextBASE, servicesUtilVirtuosoAndReplication, logger, loggerFactory)
         {
             mCaracteresExtra = pCaracteresExtra;
+            mlogger = logger;
+            mLoggerFactory = loggerFactory;
             CargarConsultasYDataAdapters(IBD);
         }
 
@@ -612,7 +624,7 @@ namespace Es.Riam.Gnoss.AD.AutoCompetarEtiquetas
             CargarDataSet(comandoSel, tagAutoDS, "GrupoIdentidades");
             return tagAutoDS;
         }
-
+        [Obsolete("En proceso de limpieza", true)]
         /// <summary>
         /// Obtiene las identidades de un grupo de la tabla GrupoIdentidades.
         /// </summary>
@@ -636,7 +648,7 @@ namespace Es.Riam.Gnoss.AD.AutoCompetarEtiquetas
 
             return listaIdentidades;
         }
-
+        [Obsolete("En proceso de limpieza", true)]
         /// <summary>
         /// Obtiene las identidades de un grupo de la tabla GrupoIdentidades.
         /// </summary>
@@ -831,7 +843,7 @@ namespace Es.Riam.Gnoss.AD.AutoCompetarEtiquetas
 
             return ds;
         }
-
+        [Obsolete("En proceso de limpieza",true)]
         /// <summary>
         /// Actualiza la cantidad de los tags para la tabla pasada como parámetro
         /// </summary>
@@ -1293,6 +1305,43 @@ namespace Es.Riam.Gnoss.AD.AutoCompetarEtiquetas
             return $"[{nombreTabla}]";
         }
 
+
+        public void EliminarTablasEtiquetasElemento()
+        {
+			DbCommand selectTablas = null;
+            DataSet tagsDS = new DataSet();
+
+			if (ConexionMaster is SqlConnection)
+			{
+				selectTablas = ObtenerComando("SELECT 'Truncate TABLE ' + table_name " +
+									        "FROM information_schema.tables " +
+									        "WHERE table_type = 'BASE TABLE' AND (table_name LIKE 'EtiquetasElemento%')");
+				CargarDataSet(selectTablas, tagsDS, "EtiquetasElemento", null, false, false, mEntityContextBASE);
+			}
+			else if (ConexionMaster is OracleConnection)
+			{
+				selectTablas = ObtenerComando("SELECT 'DELETE FROM \"'||TABLE_NAME||'\";' " +
+											"FROM   all_tables " +
+											"WHERE  TABLE_NAME like 'EtiquetasElemento%'");
+				CargarDataSet(selectTablas, tagsDS, "EtiquetasElemento", null, true, false, mEntityContextBASE);
+			}
+			else if (ConexionMaster is NpgsqlConnection)
+			{
+				selectTablas = ObtenerComando("SELECT 'Truncate TABLE \"'||TABLE_NAME||'\"' " +
+                                            "FROM information_schema.tables " +
+											"WHERE table_type = 'BASE TABLE' AND (table_name LIKE 'EtiquetasElemento%')");
+				CargarDataSet(selectTablas, tagsDS, "EtiquetasElemento", null, false, true, mEntityContextBASE);
+			}
+
+            DbCommand deleteTablas = null;
+            foreach (DataRow instruccion in tagsDS.Tables["EtiquetasElemento"].Rows)
+            {
+                deleteTablas = ObtenerComando(instruccion[0].ToString());
+                ActualizarBaseDeDatos(deleteTablas, true, true, true, mEntityContextBASE);
+			}
+		}
+
+
         #endregion
 
         #region Verificación de existencia y creación de tablas
@@ -1443,7 +1492,7 @@ namespace Es.Riam.Gnoss.AD.AutoCompetarEtiquetas
                 ActualizarBaseDeDatos(cmdCrearTabla, false, true, true, mEntityContextBASE);
             }
         }
-
+        [Obsolete("En proceso de limpieza", true)]
         public List<string> ObtenerNombresTablasTagsDeFacetas()
         {
             List<string> listaTablas = new List<string>();

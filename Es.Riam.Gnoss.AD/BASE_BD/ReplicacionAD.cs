@@ -1,9 +1,11 @@
 using Es.Riam.AbstractsOpen;
 using Es.Riam.Gnoss.AD.BASE_BD.Model;
 using Es.Riam.Gnoss.AD.EntityModel;
+using Es.Riam.Gnoss.AD.ParametroAplicacion;
 using Es.Riam.Gnoss.RabbitMQ;
 using Es.Riam.Gnoss.Util.Configuracion;
 using Es.Riam.Gnoss.Util.General;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -19,15 +21,18 @@ namespace Es.Riam.Gnoss.AD.BASE_BD
     {
         public const string COLA_REPLICACION_MASTER = IServicesUtilVirtuosoAndReplication.COLA_REPLICACION_MASTER;
         public const string COLA_REPLICACION_MASTER_HOME = IServicesUtilVirtuosoAndReplication.COLA_REPLICACION_MASTER_HOME;
-
+        private ILogger mlogger;
+        private ILoggerFactory mLoggerFactory;
         #region Constructores
 
         /// <summary>
         /// El por defecto
         /// </summary>
-        public ReplicacionAD(LoggingService loggingService, EntityContext entityContext, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication)
-            : base("colasReplicacion", loggingService, entityContext, configService, servicesUtilVirtuosoAndReplication)
+        public ReplicacionAD(LoggingService loggingService, EntityContext entityContext, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication, ILogger<ReplicacionAD> logger, ILoggerFactory loggerFactory)
+            : base("colasReplicacion", loggingService, entityContext, configService, servicesUtilVirtuosoAndReplication,logger,loggerFactory)
         {
+            mlogger = logger;
+            mLoggerFactory = loggerFactory;
         }
 
         #endregion
@@ -113,7 +118,7 @@ namespace Es.Riam.Gnoss.AD.BASE_BD
                         "\"InfoExtra\": \"" + pInfoExtra + "\" " +
                        " }}, ";
 
-                        mLoggingService.GuardarLogError(jsonObject);
+                        mLoggingService.GuardarLogError(jsonObject, mlogger);
                     }
                 }
             }

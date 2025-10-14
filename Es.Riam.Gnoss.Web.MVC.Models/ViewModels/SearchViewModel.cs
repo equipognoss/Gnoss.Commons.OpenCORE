@@ -74,6 +74,8 @@ namespace Es.Riam.Gnoss.Web.MVC.Models.ViewModels
 
         public string TipoPagina { get; set; }
 
+        public string SearchPersonalizadoSelected { get; set; }
+
 
         /// <summary>
         /// Modelo de exportacion

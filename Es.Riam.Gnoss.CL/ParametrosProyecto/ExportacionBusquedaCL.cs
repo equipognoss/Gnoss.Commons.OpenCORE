@@ -1,9 +1,12 @@
 ﻿using Es.Riam.AbstractsOpen;
 using Es.Riam.Gnoss.AD.EncapsuladoDatos;
 using Es.Riam.Gnoss.AD.EntityModel;
+using Es.Riam.Gnoss.AD.ParametroAplicacion;
 using Es.Riam.Gnoss.Logica.ExportacionBusqueda;
+using Es.Riam.Gnoss.Logica.ServiciosGenerales;
 using Es.Riam.Gnoss.Util.Configuracion;
 using Es.Riam.Gnoss.Util.General;
+using Microsoft.Extensions.Logging;
 using System;
 
 namespace Es.Riam.Gnoss.CL.ParametrosProyecto
@@ -20,7 +23,8 @@ namespace Es.Riam.Gnoss.CL.ParametrosProyecto
         private ConfigService _configService;
         private EntityContext _entityContext;
         private LoggingService _loggingService;
-
+        private ILogger mlogger;
+        private ILoggerFactory mLoggerFactory;
         #endregion
 
         #region Constructor
@@ -30,23 +34,27 @@ namespace Es.Riam.Gnoss.CL.ParametrosProyecto
         /// </summary>
         /// <param name="pFicheroConfiguracionBD">Fichero de configuración</param>
         /// <param name="pUsarVariableEstatica">Si se están usando hilos con diferentes conexiones: FALSE. En caso contrario TRUE</param>
-        public ExportacionBusquedaCL(string pFicheroConfiguracionBD, EntityContext entityContext, LoggingService loggingService, RedisCacheWrapper redisCacheWrapper, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication)
-            : base(pFicheroConfiguracionBD, entityContext, loggingService, redisCacheWrapper, configService, servicesUtilVirtuosoAndReplication)
+        public ExportacionBusquedaCL(string pFicheroConfiguracionBD, EntityContext entityContext, LoggingService loggingService, RedisCacheWrapper redisCacheWrapper, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication, ILogger<ExportacionBusquedaCL> logger, ILoggerFactory loggerFactory)
+            : base(pFicheroConfiguracionBD, entityContext, loggingService, redisCacheWrapper, configService, servicesUtilVirtuosoAndReplication,logger,loggerFactory)
         {
             _configService = configService;
             _entityContext = entityContext;
             _loggingService = loggingService;
+            mlogger = logger;
+            mLoggerFactory = loggerFactory;
         }
 
         /// <summary>
         /// Constructor para ParametroGeneralCL
         /// </summary>
-        public ExportacionBusquedaCL(EntityContext entityContext, LoggingService loggingService, RedisCacheWrapper redisCacheWrapper, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication)
-            : base(entityContext, loggingService, redisCacheWrapper, configService, servicesUtilVirtuosoAndReplication)
+        public ExportacionBusquedaCL(EntityContext entityContext, LoggingService loggingService, RedisCacheWrapper redisCacheWrapper, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication, ILogger<ExportacionBusquedaCL> logger, ILoggerFactory loggerFactory)
+            : base(entityContext, loggingService, redisCacheWrapper, configService, servicesUtilVirtuosoAndReplication, logger, loggerFactory)
         {
             _configService = configService;
             _entityContext = entityContext;
             _loggingService = loggingService;
+            mlogger = logger;
+            mLoggerFactory = loggerFactory;
         }
 
         #endregion
@@ -65,7 +73,7 @@ namespace Es.Riam.Gnoss.CL.ParametrosProyecto
             DataWrapperExportacionBusqueda exportacionDW = ObtenerObjetoDeCacheLocal(ObtenerClaveCache(rawKey)) as DataWrapperExportacionBusqueda;
             if (exportacionDW == null)
             {
-                exportacionDW = ObtenerObjetoDeCache(rawKey) as DataWrapperExportacionBusqueda;
+                exportacionDW = ObtenerObjetoDeCache(rawKey, typeof(DataWrapperExportacionBusqueda)) as DataWrapperExportacionBusqueda;
                 AgregarObjetoCacheLocal(pProyectoID, ObtenerClaveCache(rawKey), exportacionDW);
             }
 
@@ -74,7 +82,7 @@ namespace Es.Riam.Gnoss.CL.ParametrosProyecto
                 if (!string.IsNullOrEmpty(mFicheroConfiguracionBD))
                 {
                     // Si no está, lo cargo y lo almaceno en la caché
-                    ExportacionBusquedaCN exportacionBusquedaCN = new ExportacionBusquedaCN(mFicheroConfiguracionBD, _entityContext, _loggingService, _configService, mServicesUtilVirtuosoAndReplication);
+                    ExportacionBusquedaCN exportacionBusquedaCN = new ExportacionBusquedaCN(mFicheroConfiguracionBD, _entityContext, _loggingService, _configService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<ExportacionBusquedaCN>(), mLoggerFactory);
                     if (TieneComunidadPadreConfigurada(pProyectoID))
                     {
                         exportacionDW = exportacionBusquedaCN.ObtenerExportacionesProyecto(ProyectoIDPadreEcosistema.Value);
@@ -88,7 +96,7 @@ namespace Es.Riam.Gnoss.CL.ParametrosProyecto
                 else
                 {
                     // Si no está, lo cargo y lo almaceno en la caché
-                    ExportacionBusquedaCN exportacionBusquedaCN = new ExportacionBusquedaCN(_entityContext, _loggingService, _configService, mServicesUtilVirtuosoAndReplication);
+                    ExportacionBusquedaCN exportacionBusquedaCN = new ExportacionBusquedaCN(_entityContext, _loggingService, _configService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<ExportacionBusquedaCN>(), mLoggerFactory);
                     if (TieneComunidadPadreConfigurada(pProyectoID))
                     {
                         exportacionDW = exportacionBusquedaCN.ObtenerExportacionesProyecto(ProyectoIDPadreEcosistema.Value);

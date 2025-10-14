@@ -1,5 +1,9 @@
-﻿using Es.Riam.Util;
+﻿using Es.Riam.Gnoss.Util.General;
+using Es.Riam.Util;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc.Formatters;
 using Microsoft.Extensions.Configuration;
+using SixLabors.ImageSharp.PixelFormats;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -13,11 +17,13 @@ namespace Es.Riam.Gnoss.Util.Configuracion
     [Serializable]
     public class ConfigService
     {
-        private IConfigurationRoot Configuration { get; set; }
+		private IConfigurationRoot Configuration { get; set; }
         private IDictionary EnvironmentVariables { get; set; }
         private string sqlConnectionString { get; set; }
         private string virtuosoConnectionString;
+        private VirtuosoConnectionData virtuosoConnectionData;
         private string virtuosoConnectionStringHome;
+        private VirtuosoConnectionData virtuosoConnectionDataHome;
         private string tipoBD;
         private string timeoutVirtuoso;
         private string azure;
@@ -45,9 +51,11 @@ namespace Es.Riam.Gnoss.Util.Configuracion
         private Guid? proyectoGnoss;
         private Guid? organizacionGnoss;
         private string urlLogin;
+        private string urlDespliegues;
         private string urlFacetas;
         private string urlFacetasExterno;
         private string urlResultados;
+        private string urlCheckStatus;
         private string urlResultadosExterno;
         private string urlAfinidad;
         private string urlKeycloak;
@@ -66,6 +74,11 @@ namespace Es.Riam.Gnoss.Util.Configuracion
         private string urlApiDesplieguesEntornoAnterior;
         private string urlApiDesplieguesEntorno;
         private string urlApiIntegracionContinua;
+        private string urlApiAnsible;
+		private string passwordDescomprimir;
+		private string tokenLecturaAnsible;
+        private string tokenEscrituraAnsible;
+        private ConfiguracionDespliegue configuracionDespliegue;
         private string urlApi;
         private string urlMatomo;
         private string oAuthMatomo;
@@ -114,6 +127,7 @@ namespace Es.Riam.Gnoss.Util.Configuracion
         private int hilosAplicacion;
         private string tokenJenkins;
         private string connectionJenkins;
+        private string JenkinsLastBuildInfo;
         private int horaEnvioErrores;
         private bool? replicacionActivada;
         private bool? replicacionActivadaHome;
@@ -146,8 +160,8 @@ namespace Es.Riam.Gnoss.Util.Configuracion
         private string vapidPublicKey;
         private string vapidPrivateKey;
         private string vapidSubject;
-        private string puertoVirtuoso;
-        private string puertoVirtuosoAux;
+        private int? puertoVirtuoso;
+        private int? puertoVirtuosoAux;
         private bool? trazasHabilitadas;
         private string azureStorageConnectionString;
         private string logstashEndpoint;
@@ -173,6 +187,7 @@ namespace Es.Riam.Gnoss.Util.Configuracion
         private string clientIDIdentity;
         private string clientIDSecret;
         private bool? evaluarFiltrosFacetasEnOrden;
+        private SameSiteMode? sameSiteMode;
         private bool? noEnviarCorreoSuscripcion;
         private int intervaloEjecucion;
         private bool? ejecucionAutomatica;
@@ -180,10 +195,24 @@ namespace Es.Riam.Gnoss.Util.Configuracion
         private string ficheroDocumentosReprocesar;
         private string keycloakClientID;
         private string keycloakClientSecret;
+        private string authenticationString;
+        private string ansibleEndpoint;
+        private string servidorDestinoPlaybook;
+        private string servidorBackPlaybook;
+        private string pathLocalFrontPlaybook;
+        private string pathLocalBackPlaybook;
+        private string urlRepositorioPlaybook;
+        private string tokenRepositorio;
+
         private int ventanaDeTiempoPeticionesLogin;
         private int numMaxPeticionesLogin;
         private string configContentSecurityPolocy;
         private bool? forzarEjecucionSiteMaps;
+        private string rutaEjecucionWeb;
+        private string versionCacheMigrar;
+        private bool? borrarCacheMigracion;
+        private bool? luceneMisspelling;
+
         public string GetCadenaConexion()
         {
             if (string.IsNullOrEmpty(cadenaConexion))
@@ -1060,11 +1089,12 @@ namespace Es.Riam.Gnoss.Util.Configuracion
             return cadena;
         }
 
-        public KeyValuePair<string, string> ObtenerVirtuosoEscritura()
-        {
+        public KeyValuePair<string, VirtuosoConnectionData> ObtenerVirtuosoEscritura()
+        { 
             string cadena = "";
             string nombreConexionVirtuoso = "";
             var rand = new Random();
+            VirtuosoConnectionData virtuosoConnectionData = null;
             var virtuososEnvironment = EnvironmentVariables.Keys.Cast<string>().Where(item => item.StartsWith("Virtuoso__Escritura"));
             var virtuososSettings = Configuration.GetSection("ConnectionStrings").GetSection("Virtuoso").GetSection("Escritura").GetChildren();
             if (virtuososEnvironment.Any())
@@ -1073,26 +1103,33 @@ namespace Es.Riam.Gnoss.Util.Configuracion
                 string key = virtuososEnvironment.ElementAt(numRand);
                 cadena = EnvironmentVariables[key] as string;
                 nombreConexionVirtuoso = key.Replace("Virtuoso__Escritura__", "");
+
+                virtuosoConnectionData = new VirtuosoConnectionData(nombreConexionVirtuoso, cadena, ObtenerPuertoVirtuoso(), VirtuosoConnectionType.WriteOnly);
+                EstablecerUsuarioLecturaAConexionVirtuoso(virtuosoConnectionData);
             }
             else if (virtuososSettings.Any())
             {
                 var numRand = rand.Next(0, virtuososSettings.ToList().Count - 1);
                 cadena = virtuososSettings.ElementAt(numRand).Value;
                 nombreConexionVirtuoso = virtuososSettings.ElementAt(numRand).Key;
+
+                virtuosoConnectionData = new VirtuosoConnectionData(nombreConexionVirtuoso, cadena, ObtenerPuertoVirtuoso(), VirtuosoConnectionType.WriteOnly);
+                EstablecerUsuarioLecturaAConexionVirtuoso(virtuosoConnectionData);
             }
             else
             {
-                cadena = ObtenerVirtuosoConnectionString();
+                virtuosoConnectionData = ObtenerVirtuosoConnectionString();
+                virtuosoConnectionData.UpgradeToReadAndWriteConnection();
             }
 
-            return new KeyValuePair<string, string>(nombreConexionVirtuoso, cadena);
+            return new KeyValuePair<string, VirtuosoConnectionData>(nombreConexionVirtuoso, virtuosoConnectionData);
         }
 
-        public Dictionary<string, string> ObtenerDiccionarioVirtuososEscritura()
+        public Dictionary<string, VirtuosoConnectionData> ObtenerDiccionarioVirtuososEscritura()
         {
             string cadena = "";
             string nombreConexionVirtuoso = "";
-            Dictionary<string, string> listaVirtuosos = new Dictionary<string, string>();
+            Dictionary<string, VirtuosoConnectionData> listaVirtuosos = new Dictionary<string, VirtuosoConnectionData>();
             var virtuososEnvironment = EnvironmentVariables.Keys.Cast<string>().Where(item => item.StartsWith("Virtuoso__Escritura"));
             var virtuososSettings = Configuration.GetSection("ConnectionStrings").GetSection("Virtuoso").GetSection("Escritura").GetChildren();
             if (virtuososEnvironment.Any())
@@ -1101,7 +1138,10 @@ namespace Es.Riam.Gnoss.Util.Configuracion
                 {
                     cadena = EnvironmentVariables[key] as string;
                     nombreConexionVirtuoso = key.Replace("Virtuoso__Escritura__", "");
-                    listaVirtuosos.Add(nombreConexionVirtuoso, cadena);
+
+                    VirtuosoConnectionData virtuosoConnectionData = new VirtuosoConnectionData(nombreConexionVirtuoso, cadena, ObtenerPuertoVirtuoso(), VirtuosoConnectionType.WriteOnly);
+                    listaVirtuosos.Add(nombreConexionVirtuoso, virtuosoConnectionData);
+                    EstablecerUsuarioLecturaAConexionVirtuoso(virtuosoConnectionData);
                 }
             }
             else if (virtuososSettings.Any())
@@ -1110,16 +1150,25 @@ namespace Es.Riam.Gnoss.Util.Configuracion
                 {
                     cadena = element.Value;
                     nombreConexionVirtuoso = element.Key;
-                    listaVirtuosos.Add(nombreConexionVirtuoso, cadena);
+                    VirtuosoConnectionData virtuosoConnectionData = new VirtuosoConnectionData(nombreConexionVirtuoso, cadena, ObtenerPuertoVirtuoso(), VirtuosoConnectionType.WriteOnly);
+                    
+                    listaVirtuosos.Add(nombreConexionVirtuoso, virtuosoConnectionData);
+                    EstablecerUsuarioLecturaAConexionVirtuoso(virtuosoConnectionData);
                 }
             }
             else
             {
-                cadena = ObtenerVirtuosoConnectionString();
-                listaVirtuosos.Add(nombreConexionVirtuoso, cadena);
+                VirtuosoConnectionData virtuosoConnectionData = ObtenerVirtuosoConnectionString();
+                virtuosoConnectionData.UpgradeToReadAndWriteConnection();
+                listaVirtuosos.Add(nombreConexionVirtuoso, virtuosoConnectionData);
             }
 
             return listaVirtuosos;
+        }
+
+        private void EstablecerUsuarioLecturaAConexionVirtuoso(VirtuosoConnectionData pVirtuosoConnectionData)
+        {
+            pVirtuosoConnectionData.SetReadUserFromConnection(ObtenerVirtuosoConnectionString());
         }
 
         public bool CheckBidirectionalReplicationIsActive()
@@ -1199,7 +1248,7 @@ namespace Es.Riam.Gnoss.Util.Configuracion
         }
 
 
-        public string ObtenerVirutosoEscritura(string name)
+        public VirtuosoConnectionData ObtenerVirutosoEscritura(string name)
         {
             string cadena = "";
             if (EnvironmentVariables.Contains($"Virtuoso__Escritura__{name}"))
@@ -1211,10 +1260,13 @@ namespace Es.Riam.Gnoss.Util.Configuracion
                 cadena = Configuration.GetSection("ConnectionStrings").GetSection("Virtuoso").GetSection("Escritura")[name];
             }
 
-            return cadena;
+            VirtuosoConnectionData virtuosoConnectionData = new VirtuosoConnectionData(name, cadena, ObtenerPuertoVirtuoso(), VirtuosoConnectionType.WriteOnly);
+            EstablecerUsuarioLecturaAConexionVirtuoso(virtuosoConnectionData);
+
+            return virtuosoConnectionData;
         }
 
-        public string ObtenerVirtuosoEscrituraHome()
+        public VirtuosoConnectionData ObtenerVirtuosoEscrituraHome()
         {
             string cadena = "";
             if (EnvironmentVariables.Contains($"VirtuosoHome__VirtuosoEscrituraHome"))
@@ -1225,8 +1277,13 @@ namespace Es.Riam.Gnoss.Util.Configuracion
             {
                 cadena = Configuration.GetSection("ConnectionStrings").GetSection("Virtuosohome")["VirtuosoEscrituraHome"];
             }
+            VirtuosoConnectionData virtuosoConnectionData = new VirtuosoConnectionData("VirtuosoEscrituraHome", cadena, ObtenerPuertoVirtuoso(), VirtuosoConnectionType.WriteOnly);
 
-            return cadena;
+            VirtuosoConnectionData virtuosoConnectionDataLectura = ObtenerVirtuosoConnectionStringHome();
+
+            virtuosoConnectionData.SetReadUserFromConnection(virtuosoConnectionDataLectura);
+
+            return virtuosoConnectionData;
         }
 
         public string ObtenerVersion()
@@ -1409,42 +1466,45 @@ namespace Es.Riam.Gnoss.Util.Configuracion
             }
             return baseConnectionString;
         }
-        public string ObtenerVirtuosoConnectionString()
+        public VirtuosoConnectionData ObtenerVirtuosoConnectionString()
         {
-
             if (string.IsNullOrEmpty(virtuosoConnectionString))
             {
                 if (EnvironmentVariables.Contains("virtuosoConnectionString"))
                 {
                     virtuosoConnectionString = EnvironmentVariables["virtuosoConnectionString"] as string;
+                    virtuosoConnectionData = new VirtuosoConnectionData("virtuosoConnectionString", virtuosoConnectionString, ObtenerPuertoVirtuoso(), VirtuosoConnectionType.ReadOnly);
                 }
                 else
                 {
                     virtuosoConnectionString = Configuration.GetConnectionString("virtuosoConnectionString");
+                    virtuosoConnectionData = new VirtuosoConnectionData("virtuosoConnectionString", virtuosoConnectionString, ObtenerPuertoVirtuoso(), VirtuosoConnectionType.ReadOnly);
                 }
             }
-            return virtuosoConnectionString;
+            return virtuosoConnectionData;
         }
 
-        public string ObtenerVirtuosoConnectionStringHome()
+        public VirtuosoConnectionData ObtenerVirtuosoConnectionStringHome(bool pGetVirtuosoConnectionStringIfNull = true)
         {
             if (string.IsNullOrEmpty(virtuosoConnectionStringHome))
             {
                 if (EnvironmentVariables.Contains($"virtuosoConnectionString_home"))
                 {
                     virtuosoConnectionStringHome = EnvironmentVariables[$"virtuosoConnectionString_home"] as string;
+                    virtuosoConnectionDataHome = new VirtuosoConnectionData("virtuosoConnectionString_home", virtuosoConnectionStringHome, ObtenerPuertoVirtuoso(), VirtuosoConnectionType.ReadOnly);
                 }
                 else
                 {
                     virtuosoConnectionStringHome = Configuration.GetConnectionString($"virtuosoConnectionString_home");
+                    virtuosoConnectionDataHome = new VirtuosoConnectionData("virtuosoConnectionString_home", virtuosoConnectionStringHome, ObtenerPuertoVirtuoso(), VirtuosoConnectionType.ReadOnly);
                 }
 
-                if (string.IsNullOrEmpty(virtuosoConnectionStringHome))
+                if (pGetVirtuosoConnectionStringIfNull && string.IsNullOrEmpty(virtuosoConnectionStringHome))
                 {
-                    virtuosoConnectionStringHome = ObtenerVirtuosoConnectionString();
+                    return ObtenerVirtuosoConnectionString();
                 }
             }
-            return virtuosoConnectionStringHome;
+            return virtuosoConnectionDataHome;
         }
 
         public string ObtenerTipoBD()
@@ -1738,12 +1798,34 @@ namespace Es.Riam.Gnoss.Util.Configuracion
                 {
                     urlLogin = Configuration.GetSection("Servicios")["urlLogin"];
                 }
-                if (!string.IsNullOrEmpty(urlLogin) && urlLogin.EndsWith("/"))
+                if (!string.IsNullOrEmpty(urlLogin) && urlLogin.EndsWith('/'))
                 {
                     urlLogin = urlLogin.TrimEnd('/');
                 }
             }
             return urlLogin;
+        }
+
+        public string ObtenerUrlServicioDespliegues()
+        {
+            if (string.IsNullOrEmpty(urlDespliegues))
+            {
+                if (EnvironmentVariables.Contains("Servicios__urlDespliegues"))
+                {
+                    urlDespliegues = EnvironmentVariables["Servicios__urlDespliegues"] as string;
+                }
+                else
+                {
+                    urlDespliegues = Configuration.GetSection("Servicios")["urlDespliegues"];
+                }                
+
+                if (!string.IsNullOrEmpty(urlDespliegues) && urlDespliegues.EndsWith('/'))
+                {
+                    urlDespliegues = urlDespliegues.TrimEnd('/');
+                }
+            }
+
+            return urlDespliegues;
         }
 
         public string ObtenerUrlServicio(string servicio)
@@ -1783,6 +1865,28 @@ namespace Es.Riam.Gnoss.Util.Configuracion
             return urlResultados;
         }
 
+
+        public string ObtenerUrlServiciosCheckStatus()
+        {             
+            if (string.IsNullOrEmpty(urlCheckStatus))
+            {
+                if (EnvironmentVariables.Contains("Servicios__urlApiCheckServices"))
+                {
+                    urlCheckStatus = EnvironmentVariables["Servicios__urlApiCheckServices"] as string;
+                }
+                else
+                {
+                    urlCheckStatus = Configuration.GetSection("Servicios")["urlApiCheckServices"];
+                }
+                if (!string.IsNullOrEmpty(urlCheckStatus) && urlCheckStatus.EndsWith("/"))
+                {
+                    urlCheckStatus = urlCheckStatus.TrimEnd('/');
+                }
+            }
+            return urlCheckStatus;
+        }
+
+
         public string ObtenerUrlServicioResultadosExterno()
         {
             if (string.IsNullOrEmpty(urlResultadosExterno))
@@ -1801,22 +1905,6 @@ namespace Es.Riam.Gnoss.Util.Configuracion
                 urlResultadosExterno = ObtenerUrlServicioResultados();
             }
             return urlResultadosExterno;
-        }
-
-        public string ObtenerUrlServicioDespliegues()
-        {
-            if (string.IsNullOrEmpty(urlDespligues))
-            {
-                if (EnvironmentVariables.Contains("Servicios__urlServicioDespliegues"))
-                {
-                    urlDespligues = EnvironmentVariables["Servicios__urlServicioDespliegues"] as string;
-                }
-                else
-                {
-                    urlDespligues = Configuration.GetSection("Servicios")["urlServicioDespliegues"];
-                }
-            }
-            return urlDespligues;
         }
 
         public string ObtenerUrlServicioFacetas()
@@ -2113,6 +2201,87 @@ namespace Es.Riam.Gnoss.Util.Configuracion
                 }
             }
             return urlApiIntegracionContinua;
+        }
+        public string ObtenerUrlApiAnsible()
+        {
+            if (string.IsNullOrEmpty(urlApiAnsible))
+            {
+                if (EnvironmentVariables.Contains("Servicios__urlAnsible"))
+                {
+                    urlApiAnsible = EnvironmentVariables["Servicios__urlAnsible"] as string;
+                }
+                else
+                {
+                    urlApiAnsible = Configuration.GetSection("Servicios")["urlAnsible"];
+                }
+            }
+            return urlApiAnsible;
+        }
+
+		public string ObtenerPasswordDescomprimir()
+		{
+            if (string.IsNullOrEmpty(passwordDescomprimir))
+            {
+                if (EnvironmentVariables.Contains("passwordDescomprimir"))
+                {
+                    passwordDescomprimir = EnvironmentVariables["passwordDescomprimir"] as string;
+                }
+                else
+                {
+                    passwordDescomprimir = Configuration["passwordDescomprimir"];
+                }
+            }
+			return passwordDescomprimir;
+		}
+
+		
+
+		public ConfiguracionDespliegue ObtenerConfiguracionDespliegue()
+        {
+            if (configuracionDespliegue==null) 
+            {
+                configuracionDespliegue=new ConfiguracionDespliegue();
+                Entornos entornos=new Entornos();
+                Actual actual=new Actual();
+                Superior superior=new Superior();
+                configuracionDespliegue.Entornos = entornos;
+                configuracionDespliegue.Entornos.Actual = actual;
+                configuracionDespliegue.Entornos.Superior = superior;
+                if (EnvironmentVariables.Keys.Cast<string>().Any(item => item.StartsWith("Entornos__Actual")))
+                {
+                    configuracionDespliegue.Entornos.Actual.nombre_entorno = EnvironmentVariables["Entornos__Actual__nombre_entorno"] as string;
+                    configuracionDespliegue.Entornos.Actual.server_front = EnvironmentVariables["Entornos__Actual__server_front"] as string;
+                    configuracionDespliegue.Entornos.Actual.server_back = EnvironmentVariables["Entornos__Actual__server_back"] as string;
+                    configuracionDespliegue.Entornos.Actual.ruta_front = EnvironmentVariables["Entornos__Actual__ruta_front"] as string;
+                    configuracionDespliegue.Entornos.Actual.ruta_back = EnvironmentVariables["Entornos__Actual__ruta_back"] as string;
+                }
+                else
+                {
+                    configuracionDespliegue.Entornos.Actual.nombre_entorno = Configuration.GetSection("Entornos").GetSection("Actual")["nombre_entorno"];
+                    configuracionDespliegue.Entornos.Actual.server_front = Configuration.GetSection("Entornos").GetSection("Actual")["server_front"];
+                    configuracionDespliegue.Entornos.Actual.server_back = Configuration.GetSection("Entornos").GetSection("Actual")["server_back"];
+                    configuracionDespliegue.Entornos.Actual.ruta_front = Configuration.GetSection("Entornos").GetSection("Actual")["ruta_front"];
+                    configuracionDespliegue.Entornos.Actual.ruta_back = Configuration.GetSection("Entornos").GetSection("Actual")["ruta_back"];
+                }
+
+                if (EnvironmentVariables.Keys.Cast<string>().Any(item => item.StartsWith("Entornos__Superior")))
+                {
+                    configuracionDespliegue.Entornos.Superior.nombre_entorno = EnvironmentVariables["Entornos__Superior__nombre_entorno"] as string;
+                    configuracionDespliegue.Entornos.Superior.server_front = EnvironmentVariables["Entornos__Superior__server_front"] as string;
+                    configuracionDespliegue.Entornos.Superior.server_back = EnvironmentVariables["Entornos__Superior__server_back"] as string;
+                    configuracionDespliegue.Entornos.Superior.ruta_front = EnvironmentVariables["Entornos__Superior__ruta_front"] as string;
+                    configuracionDespliegue.Entornos.Superior.ruta_back = EnvironmentVariables["Entornos__Superior__ruta_back"] as string;
+                }
+                else
+                {
+                    configuracionDespliegue.Entornos.Superior.nombre_entorno = Configuration.GetSection("Entornos").GetSection("Superior")["nombre_entorno"];
+                    configuracionDespliegue.Entornos.Superior.server_front = Configuration.GetSection("Entornos").GetSection("Superior")["server_front"];
+                    configuracionDespliegue.Entornos.Superior.server_back = Configuration.GetSection("Entornos").GetSection("Superior")["server_back"];
+                    configuracionDespliegue.Entornos.Superior.ruta_front = Configuration.GetSection("Entornos").GetSection("Superior")["ruta_front"];
+                    configuracionDespliegue.Entornos.Superior.ruta_back = Configuration.GetSection("Entornos").GetSection("Superior")["ruta_back"];
+                }
+            }
+            return configuracionDespliegue;
         }
 
         public string ObtenerIgnorarVistasPersonalizadas()
@@ -2643,7 +2812,36 @@ namespace Es.Riam.Gnoss.Util.Configuracion
             return hilosAplicacion;
         }
 
-        public bool ObtenerProcesarStringGrafo()
+
+        public int ObtenerMinutoChequeo()
+        {
+            string hilos;
+			int minutos;
+			if (EnvironmentVariables.Contains("minutosChequeo"))
+            {
+                hilos = EnvironmentVariables["minutosChequeo"] as string;
+            }
+            else
+            {
+                hilos = Configuration["minutosChequeo"];
+            }
+            if (!string.IsNullOrEmpty(hilos))
+            {
+                Int32.TryParse(hilos, out minutos);
+                if (minutos < 10)
+                {
+                    minutos = 10;
+                }
+            }
+            else
+            {
+				minutos = 10;
+            }
+            return minutos;
+        }
+
+
+		public bool ObtenerProcesarStringGrafo()
         {
             if (procesarStringGrafo == null)
             {
@@ -2890,7 +3088,10 @@ namespace Es.Riam.Gnoss.Util.Configuracion
                 {
                     authority = Configuration["Authority"];
                 }
-
+                if (!string.IsNullOrEmpty(authority) && authority.EndsWith("/"))
+                {
+                    authority = authority.TrimEnd('/');
+                }
                 Authority = authority;
             }
             return Authority;
@@ -3384,44 +3585,47 @@ namespace Es.Riam.Gnoss.Util.Configuracion
             return vapidSubject;
         }
 
-        public string ObtenerPuertoVirtuoso()
+        public int ObtenerPuertoVirtuoso()
         {
-            if (string.IsNullOrEmpty(puertoVirtuoso))
+            if (!puertoVirtuoso.HasValue)
             {
-                if (EnvironmentVariables.Contains("puertoVirtuoso"))
+                int port;
+                if (EnvironmentVariables.Contains("puertoVirtuoso") && int.TryParse(EnvironmentVariables["puertoVirtuoso"] as string, out port))
                 {
-                    puertoVirtuoso = EnvironmentVariables["puertoVirtuoso"] as string;
+                    puertoVirtuoso = port;
                 }
-                else
+                else if (int.TryParse(Configuration.GetConnectionString("puertoVirtuoso"), out port))
                 {
-                    puertoVirtuoso = Configuration.GetConnectionString("puertoVirtuoso");
+                    puertoVirtuoso = port;
                 }
-                if (string.IsNullOrEmpty(puertoVirtuoso))
+                if (!puertoVirtuoso.HasValue)
                 {
-                    puertoVirtuoso = "8890";
+                    puertoVirtuoso = 8890;
                 }
             }
-            return puertoVirtuoso;
+            return puertoVirtuoso.Value;
         }
 
-        public string ObtenerPuertoVirtuosoAux()
+        public int ObtenerPuertoVirtuosoAux()
         {
-            if (string.IsNullOrEmpty(puertoVirtuosoAux))
+            if (!puertoVirtuosoAux.HasValue)
             {
-                if (EnvironmentVariables.Contains("puertoVirtuosoAux"))
+                int port;
+                //if (EnvironmentVariables.Contains("puertoVirtuosoAux"))
+                if (EnvironmentVariables.Contains("puertoVirtuosoAux") && int.TryParse(EnvironmentVariables["puertoVirtuosoAux"] as string, out port))
                 {
-                    puertoVirtuosoAux = EnvironmentVariables["puertoVirtuosoAux"] as string;
+                    puertoVirtuosoAux = port;
                 }
-                else
+                else if (int.TryParse(Configuration.GetConnectionString("puertoVirtuosoAux"), out port))
                 {
-                    puertoVirtuosoAux = Configuration.GetConnectionString("puertoVirtuosoAux");
+                    puertoVirtuosoAux = port;
                 }
-                if (string.IsNullOrEmpty(puertoVirtuosoAux))
+                if (!puertoVirtuosoAux.HasValue)
                 {
-                    puertoVirtuosoAux = "1111";
+                    puertoVirtuosoAux = 1111;
                 }
             }
-            return puertoVirtuosoAux;
+            return puertoVirtuosoAux.Value;
         }
 
         public bool TrazaHabilitada()
@@ -3829,6 +4033,197 @@ namespace Es.Riam.Gnoss.Util.Configuracion
                 return bool.Parse(clasesConPrefijo);
             }
         }
+        public SameSiteMode GetSameSiteCookies()
+        {
+            if (!sameSiteMode.HasValue)
+            {
+                sameSiteMode = SameSiteMode.Lax;
+                string sameSiteModeStrict = null;
+                if (EnvironmentVariables.Contains("SameSiteModeStrict"))
+                {
+                    sameSiteModeStrict = EnvironmentVariables["SameSiteModeStrict"] as string;
+                }
+                else
+                {
+                    sameSiteModeStrict = Configuration["SameSiteModeStrict"];
+                }
+
+                if(!string.IsNullOrEmpty(sameSiteModeStrict) && sameSiteModeStrict.Equals("true"))
+                {
+                    sameSiteMode = SameSiteMode.Strict;
+                }
+            }
+            return sameSiteMode.Value;
+        }
+
+        public string GetAnsibleAuthenticationString()
+        {
+            if (string.IsNullOrEmpty(authenticationString))
+            {
+                if (EnvironmentVariables.Contains("Ansible__authenticationString"))
+                {
+                    authenticationString = EnvironmentVariables["Ansible__authenticationString"] as string;
+                }
+                else
+                {
+                    authenticationString = Configuration.GetSection("Ansible")["authenticationString"];
+                }
+            }
+            return authenticationString;
+        }
+
+        public string GetAnsibleEndpoint()
+        {
+            if (string.IsNullOrEmpty(ansibleEndpoint))
+            {
+                if (EnvironmentVariables.Contains("Ansible__ansibleEndpoint"))
+                {
+                    ansibleEndpoint = EnvironmentVariables["Ansible__ansibleEndpoint"] as string;
+                }
+                else
+                {
+                    ansibleEndpoint = Configuration.GetSection("Ansible")["ansibleEndpoint"];
+                }
+                if (!string.IsNullOrEmpty(ansibleEndpoint) && ansibleEndpoint.EndsWith("/"))
+                {
+                    ansibleEndpoint = ansibleEndpoint.TrimEnd('/');
+                }
+            }
+            return ansibleEndpoint;
+        }
+
+        public string ObtenerServidorDestinoPlaybook()
+        {
+            if (string.IsNullOrEmpty(servidorDestinoPlaybook))
+            {
+                if (EnvironmentVariables.Contains("Entornos__Actual__server_front"))
+                {
+                    servidorDestinoPlaybook = EnvironmentVariables["Entornos__Actual__server_front"] as string;
+                }
+                else
+                {
+                    servidorDestinoPlaybook = Configuration.GetSection("Entornos").GetSection("Actual")["server_front"];
+                }
+            }
+            return servidorDestinoPlaybook;
+        }
+
+        public string ObtenerServidorBackPlaybook()
+        {
+            if (string.IsNullOrEmpty(servidorBackPlaybook))
+            {
+                if (EnvironmentVariables.Contains("Entornos__Actual__server_back"))
+                {
+                    servidorBackPlaybook = EnvironmentVariables["Entornos__Actual__server_back"] as string;
+                }
+                else
+                {
+                    servidorBackPlaybook = Configuration.GetSection("Entornos").GetSection("Actual")["server_back"];
+                }
+            }
+            return servidorBackPlaybook;
+        }
+
+        public string ObtenerPathLocalFrontPlaybook()
+        {
+            if (string.IsNullOrEmpty(pathLocalFrontPlaybook))
+            {
+                if (EnvironmentVariables.Contains("Entornos__Actual__ruta_front"))
+                {
+                    pathLocalFrontPlaybook = EnvironmentVariables["Entornos__Actual__ruta_front"] as string;
+                }
+                else
+                {
+                    pathLocalFrontPlaybook = Configuration.GetSection("Entornos").GetSection("Actual")["ruta_front"];
+                }
+            }
+            return pathLocalFrontPlaybook;
+        }
+
+        public string ObtenerPathLocalBackPlaybook()
+        {
+            if (string.IsNullOrEmpty(pathLocalBackPlaybook))
+            {
+                if (EnvironmentVariables.Contains("Entornos__Actual__ruta_back"))
+                {
+                    pathLocalBackPlaybook = EnvironmentVariables["Entornos__Actual__ruta_back"] as string;
+                }
+                else
+                {
+                    pathLocalBackPlaybook = Configuration.GetSection("Entornos").GetSection("Actual")["ruta_back"];
+                }
+            }
+            return pathLocalBackPlaybook;
+        }
+
+        public string ObtenerUrlRepositorioPlaybook()
+        {
+            if (string.IsNullOrEmpty(urlRepositorioPlaybook))
+            {
+                if (EnvironmentVariables.Contains("urlRepositorioPlaybook"))
+                {
+                    urlRepositorioPlaybook = EnvironmentVariables["urlRepositorioPlaybook"] as string;
+                }
+                else
+                {
+                    urlRepositorioPlaybook = Configuration["urlRepositorioPlaybook"];
+                }
+            }
+            return urlRepositorioPlaybook;
+        }
+
+        public string ObtenerTokenRepositorio()
+        {
+            if (string.IsNullOrEmpty(tokenRepositorio))
+            {
+                if (EnvironmentVariables.Contains("tokenRepositorio"))
+                {
+                    tokenRepositorio = EnvironmentVariables["tokenRepositorio"] as string;
+                }
+                else
+                {
+                    tokenRepositorio = Configuration["tokenRepositorio"];
+                }
+            }
+            return tokenRepositorio;
+        }
+
+        public string ObtenerTokenEscrituraAnsible()
+        {
+            if (string.IsNullOrEmpty(tokenEscrituraAnsible))
+            {
+                if (EnvironmentVariables.Contains("Ansible__tokenEscrituraAnsible"))
+                {
+                    tokenEscrituraAnsible = EnvironmentVariables["Ansible__tokenEscrituraAnsible"] as string;
+                }
+                else
+                {
+                    tokenEscrituraAnsible = Configuration.GetSection("Ansible")["tokenEscrituraAnsible"];
+                }
+            }
+            return tokenEscrituraAnsible;
+        }
+
+        public string ObtenerTokenLecturaAnsible()
+        {
+            if (string.IsNullOrEmpty(tokenLecturaAnsible))
+            {
+                if (EnvironmentVariables.Contains("Ansible__tokenLecturaAnsible"))
+                {
+                    tokenLecturaAnsible = EnvironmentVariables["Ansible__tokenLecturaAnsible"] as string;
+                }
+                else
+                {
+                    tokenLecturaAnsible = Configuration.GetSection("Ansible")["tokenLecturaAnsible"];
+                }
+            }
+            return tokenLecturaAnsible;
+        }
+
+
+
+
+
 
         public int ObtenerVentanaTiempoLogin()
         {
@@ -3911,6 +4306,122 @@ namespace Es.Riam.Gnoss.Util.Configuracion
                 return false;
             }
             return forzarEjecucionSiteMaps.Value;
+        }
+
+        public string ObtenerRutaEjecucionWeb()
+        {
+            if (string.IsNullOrEmpty(rutaEjecucionWeb))
+            {
+                if (EnvironmentVariables.Contains("rutaEjecucionWeb"))
+                {
+                    rutaEjecucionWeb = EnvironmentVariables["rutaEjecucionWeb"] as string;
+                }
+                else if(Configuration["rutaEjecucionWeb"] != null)
+                {
+                    rutaEjecucionWeb = Configuration["rutaEjecucionWeb"];
+                }
+                else
+                {
+                    rutaEjecucionWeb = "";
+                }
+            }
+
+            return rutaEjecucionWeb;
+        }
+
+        public string ObtenerVersionCacheMigrar()
+        {
+            if (string.IsNullOrEmpty(versionCacheMigrar))
+            {
+                if (EnvironmentVariables.Contains("versionCacheMigrar"))
+                {
+                    versionCacheMigrar = EnvironmentVariables["versionCacheMigrar"] as string;
+                }
+                else if (Configuration["versionCacheMigrar"] != null)
+                {
+                    versionCacheMigrar = Configuration["versionCacheMigrar"];
+                }
+                else
+                {
+                    versionCacheMigrar = "";
+                }
+            }
+
+            return versionCacheMigrar;
+        }
+        public bool ObtenerBorrarCacheMigrador()
+        {
+            if (borrarCacheMigracion == null)
+            {
+                if (EnvironmentVariables.Contains("borrarCacheMigracion"))
+                {
+                    string variable = EnvironmentVariables["borrarCacheMigracion"] as string;
+                    if (variable.ToLower() == "true")
+                    {
+                        borrarCacheMigracion = true;
+                    }
+                }
+                else
+                {
+                    borrarCacheMigracion = Configuration.GetValue<bool?>("borrarCacheMigracion");
+                }
+            }
+            if (!borrarCacheMigracion.HasValue)
+            {
+                return false;
+            }
+            return borrarCacheMigracion.Value;
+        }
+
+		public List<ulong> ObtenerServiciosDisponibles()
+		{
+            string serviciosDisponiblesCodificado = null;
+            List<ulong> listaServiciosDisponibles = new List<ulong>();
+
+			if (EnvironmentVariables.Contains("serviciosDisponibles"))
+			{
+				serviciosDisponiblesCodificado = EnvironmentVariables["serviciosDisponibles"] as string;
+			}
+			else
+			{
+				serviciosDisponiblesCodificado = Configuration["serviciosDisponibles"];
+			}
+
+			if (!string.IsNullOrEmpty(serviciosDisponiblesCodificado))
+            {
+                string[] serviciosDisponiblesFrontYBack = serviciosDisponiblesCodificado.Split("|||");
+                string serviciosFront = serviciosDisponiblesFrontYBack[0];
+                string serviciosBack = serviciosDisponiblesFrontYBack[1];
+
+                listaServiciosDisponibles.Add(UtilCadenas.ObtenerULongDeStringBase64(serviciosFront));
+                listaServiciosDisponibles.Add(UtilCadenas.ObtenerULongDeStringBase64(serviciosBack));                
+			}
+			
+			return listaServiciosDisponibles;
+		}
+
+        public bool ObtenerLuceneMisspelling()
+        {
+            if (luceneMisspelling == null)
+            {
+                if (EnvironmentVariables.Contains("luceneMisspelling"))
+                {
+                    string variable = EnvironmentVariables["luceneMisspelling"] as string;
+                    if (variable.ToLower() == "true")
+                    {
+                        luceneMisspelling = true;
+                    }
+                }
+                else
+                {
+                    luceneMisspelling = Configuration.GetValue<bool?>("luceneMisspelling");
+                }
+            }
+            if (!luceneMisspelling.HasValue)
+            {
+                return false;
+            }
+            return luceneMisspelling.Value;
         }
     }
 }

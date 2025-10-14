@@ -2,6 +2,7 @@ using Es.Riam.AbstractsOpen;
 using Es.Riam.Gnoss.AD.EncapsuladoDatos;
 using Es.Riam.Gnoss.AD.EntityModel;
 using Es.Riam.Gnoss.AD.EntityModel.Models.Solicitud;
+using Es.Riam.Gnoss.AD.ParametroAplicacion;
 using Es.Riam.Gnoss.AD.Usuarios;
 using Es.Riam.Gnoss.Elementos.Documentacion;
 using Es.Riam.Gnoss.Elementos.Identidad;
@@ -12,6 +13,7 @@ using Es.Riam.Gnoss.Logica.ServiciosGenerales;
 using Es.Riam.Gnoss.Logica.Usuarios;
 using Es.Riam.Gnoss.Util.Configuracion;
 using Es.Riam.Gnoss.Util.General;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -68,16 +70,19 @@ namespace Es.Riam.Gnoss.Elementos.ServiciosGenerales
         private EntityContext mEntityContext;
         private ConfigService mConfigService;
         private IServicesUtilVirtuosoAndReplication mServicesUtilVirtuosoAndReplication;
-
+        private ILogger mlogger;
+        private ILoggerFactory mLoggerFactory;
         #endregion
 
         #region Constructores
+
+        public GestionUsuarios() { }
 
         /// <summary>
         /// Constructor sin parámetros
         /// </summary>
         public GestionUsuarios( LoggingService loggingService, EntityContext entityContext, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication)
-            : base(loggingService)
+            : base()
         {
             mLoggingService = loggingService;
             mEntityContext = entityContext;
@@ -109,12 +114,14 @@ namespace Es.Riam.Gnoss.Elementos.ServiciosGenerales
         /// Constructor a partir del DataWrapperUsuario pasado por parámetro
         /// </summary>
         /// <param name="pDataWrapperUsuario">Dataset de usuarios</param>
-        public GestionUsuarios(DataWrapperUsuario pDataWrapperUsuario,  LoggingService loggingService, EntityContext entityContext, ConfigService configService)
-            : base(pDataWrapperUsuario, loggingService)
+        public GestionUsuarios(DataWrapperUsuario pDataWrapperUsuario,  LoggingService loggingService, EntityContext entityContext, ConfigService configService, ILogger<GestionUsuarios> logger, ILoggerFactory loggerFactory)
+            : base(pDataWrapperUsuario)
         {
             mLoggingService = loggingService;
             mEntityContext = entityContext;
-            mConfigService = configService;        
+            mConfigService = configService;
+            mlogger = logger;
+            mLoggerFactory = loggerFactory;
 
             CargarUsuariosGnoss();
         }
@@ -288,7 +295,7 @@ namespace Es.Riam.Gnoss.Elementos.ServiciosGenerales
             AD.EntityModel.Models.UsuarioDS.ProyectoRolUsuario filaProyectoRolUsuario = this.DataWrapperUsuario.ListaProyectoRolUsuario.FirstOrDefault(proyRolUs=>proyRolUs.OrganizacionGnossID.Equals(pOrganizacionID) && proyRolUs.ProyectoID.Equals(pProyectoID) && proyRolUs.UsuarioID.Equals(pFilaUsuario.UsuarioID));
             if (filaProyectoRolUsuario == null)
             {
-                UsuarioCN usuarioCN = new UsuarioCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+                UsuarioCN usuarioCN = new UsuarioCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<UsuarioCN>(), mLoggerFactory);
                 filaProyectoRolUsuario = usuarioCN.ObtenerRolUsuarioEnProyecto(pProyectoID, pFilaUsuario.UsuarioID);
             }
             if (pAgregarPermisos && filaProyectoRolUsuario == null)
@@ -466,7 +473,7 @@ namespace Es.Riam.Gnoss.Elementos.ServiciosGenerales
 
             this.DataWrapperUsuario.ListaUsuario.Add(filaUsuario);
             mEntityContext.Usuario.Add(filaUsuario);
-            UsuarioGnoss usuario = new UsuarioGnoss(filaUsuario, this, mLoggingService);
+            UsuarioGnoss usuario = new UsuarioGnoss(filaUsuario, this);
             mListaUsuariosGnoss.Add(usuario.Clave, usuario);
 
             if (!pCrearSoloFilaUsuario)
@@ -514,13 +521,13 @@ namespace Es.Riam.Gnoss.Elementos.ServiciosGenerales
 
                 if (GestorTesauro == null)
                 {
-                    GestorTesauro = new GestionTesauro(new DataWrapperTesauro(), mLoggingService, mEntityContext);
+                    GestorTesauro = new GestionTesauro(new DataWrapperTesauro(), mLoggingService, mEntityContext, mLoggerFactory.CreateLogger<GestionTesauro>(), mLoggerFactory);
                 }
                 GestorTesauro.AgregarTesauroUsuario(pUsuario.UsuarioID, pNombreCategoriaPublica, pNombreCategoriaPrivada);
 
                 if (GestorDocumental == null)
                 {
-                    GestorDocumental = new GestorDocumental(new DataWrapperDocumentacion(), mLoggingService, mEntityContext);
+                    GestorDocumental = new GestorDocumental(new DataWrapperDocumentacion(), mLoggingService, mEntityContext, mLoggerFactory.CreateLogger<GestorDocumental>(), mLoggerFactory);
                 }
                 GestorDocumental.AgregarBRDeUsuario(pUsuario);
             }
@@ -582,7 +589,7 @@ namespace Es.Riam.Gnoss.Elementos.ServiciosGenerales
             {
                 foreach (AD.EntityModel.Models.UsuarioDS.Usuario filaUsuario in DataWrapperUsuario.ListaUsuario)
                 {
-                    UsuarioGnoss usuario = new UsuarioGnoss(filaUsuario, this, mLoggingService);
+                    UsuarioGnoss usuario = new UsuarioGnoss(filaUsuario, this);
 
                     if (!mListaUsuariosGnoss.ContainsKey(filaUsuario.UsuarioID))
                     {
@@ -960,7 +967,7 @@ namespace Es.Riam.Gnoss.Elementos.ServiciosGenerales
             Guid organizacionID;
 
             //Obtenemos el metaproyecto
-            ProyectoCN proyCN = new ProyectoCN( mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+            ProyectoCN proyCN = new ProyectoCN( mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<ProyectoCN>(), mLoggerFactory);
             Guid? metaProyectoID = proyCN.ObtenerMetaProyectoID();
             proyCN.Dispose();
             

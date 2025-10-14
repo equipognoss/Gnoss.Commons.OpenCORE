@@ -1,11 +1,14 @@
 ﻿
 using Es.Riam.AbstractsOpen;
 using Es.Riam.Gnoss.AD.EntityModel;
+using Es.Riam.Gnoss.Elementos.Amigos;
 using Es.Riam.Gnoss.Util.Configuracion;
 using Es.Riam.Gnoss.Util.General;
 using Es.Riam.Gnoss.Web.MVC.Models.GeneradorClases;
 using Es.Riam.InterfacesOpen;
 using Es.Riam.Semantica.OWL;
+using Microsoft.Extensions.Logging;
+using Serilog.Core;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -35,8 +38,9 @@ namespace OntologiaAClase
         private ConfigService mConfigService;
         private IServicesUtilVirtuosoAndReplication mServicesUtilVirtuosoAndReplication;
         private IMassiveOntologyToClass mMassiveOntologyToClass;
-
-        public GenerarClaseYVista(string pDirectorio, string pNombreCortoProy, Guid pProyID, List<string> pNombresOntologia, Dictionary<string, string> dicPref, Dictionary<string, KeyValuePair<Ontologia, byte[]>> xmlDoc, bool pEsJava, EntityContext entityContext, LoggingService loggingService, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication, IMassiveOntologyToClass massiveOntologyToClass)
+        private ILogger mlogger;
+        private ILoggerFactory mLoggerFactory;
+        public GenerarClaseYVista(string pDirectorio, string pNombreCortoProy, Guid pProyID, List<string> pNombresOntologia, Dictionary<string, string> dicPref, Dictionary<string, KeyValuePair<Ontologia, byte[]>> xmlDoc, bool pEsJava, EntityContext entityContext, LoggingService loggingService, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication, IMassiveOntologyToClass massiveOntologyToClass, ILogger<GenerarClaseYVista> logger, ILoggerFactory loggerFactory)
         {
             nombreCortoProy = pNombreCortoProy;
             proyID = pProyID;
@@ -54,6 +58,8 @@ namespace OntologiaAClase
             mConfigService = configService;
             mServicesUtilVirtuosoAndReplication = servicesUtilVirtuosoAndReplication;
             mMassiveOntologyToClass = massiveOntologyToClass;
+            mlogger = logger;
+            mLoggerFactory = loggerFactory;
         }
        
 
@@ -68,6 +74,123 @@ namespace OntologiaAClase
 
             process.StartInfo = startInfo;
             process.Start();
+        }
+
+        public void CrearDockerFile(string pVersionWeb, string nombreProyecto)
+		{
+            String dockerfileContent = $@"FROM docker.gnoss.com/web:{pVersionWeb}
+WORKDIR /app
+
+COPY {nombreProyecto}.dll ./
+COPY Gnoss.Web.deps.json ./
+
+ENTRYPOINT [""dotnet"", ""Gnoss.Web.dll""]";
+
+            string rutaDocker = Path.Combine(directorio, carpetaPadre, "Dockerfile");
+            System.IO.File.WriteAllText(rutaDocker, dockerfileContent);
+        }
+
+        public void CrearArchivoJson(string nombreProyecto)
+		{
+            string rutaRaizProyecto = Directory.GetCurrentDirectory();
+            string rutaArchivoJson = BuscarArchivoJson(rutaRaizProyecto);
+            string jsonContent = "";
+
+            if (!string.IsNullOrEmpty(rutaArchivoJson))
+            {
+                bool semWebEncontrado = false;
+                StringBuilder stringBuilder = new StringBuilder();
+                using (var fileStream = File.OpenRead(rutaArchivoJson))
+				using (var streamReader = new StreamReader(fileStream, Encoding.UTF8))
+				{
+					String line;
+					while ((line = streamReader.ReadLine()) != null)
+					{
+                        stringBuilder.AppendLine(line);
+                        if (line.Contains(@"""SemWeb"": ""1.0.0"","))
+                        {                           
+							if (!semWebEncontrado)
+							{
+                                semWebEncontrado = true;
+                                stringBuilder.AppendLine($@"          ""{nombreProyecto}"": ""1.0.0.0"",");
+                            }
+                        }
+                        else if (line.Contains(@"SemWeb/1.0.0"))
+                        {
+                            line = streamReader.ReadLine();
+                            stringBuilder.AppendLine(line);
+                            if (line.Contains("runtime"))
+                            {
+                                for(int i = 0; i < 6; i++)
+								{
+                                    line = streamReader.ReadLine();
+                                    stringBuilder.AppendLine(line);
+                                }
+                                AniadirDllRuntime(ref stringBuilder, nombreProyecto);
+                            }
+                            else
+                            {
+                                for (int i = 0; i < 3; i++)
+                                {
+                                    line = streamReader.ReadLine();
+                                    stringBuilder.AppendLine(line);
+                                }
+                                AniadirDll(ref stringBuilder, nombreProyecto);
+                            }
+                        }
+                    }
+				}
+                jsonContent = stringBuilder.ToString();
+            }
+
+            string rutaJson = Path.Combine(directorio, carpetaPadre, "Gnoss.Web.deps.json");
+            System.IO.File.WriteAllText(rutaJson, jsonContent);
+		}
+
+        public void AniadirDllRuntime(ref StringBuilder pStringBuilder, string pNombreProyecto)
+		{
+            pStringBuilder.AppendLine($@"      ""{pNombreProyecto} / 1.0.0.0"": {{");
+            pStringBuilder.AppendLine(@"        ""runtime"": {");
+            pStringBuilder.AppendLine($@"          ""{pNombreProyecto}.dll"": {{");
+            pStringBuilder.AppendLine(@"            ""assemblyVersion"": ""1.0.0.0"",");
+            pStringBuilder.AppendLine(@"            ""fileVersion"": ""1.0.0.0""");
+            pStringBuilder.AppendLine(@"          }");
+            pStringBuilder.AppendLine(@"        },");
+            pStringBuilder.AppendLine(@"        ""compile"": {");
+            pStringBuilder.AppendLine($@"          ""{pNombreProyecto}.dll"": {{ }}");
+            pStringBuilder.AppendLine(@"        }");
+            pStringBuilder.AppendLine(@"      },");
+        }
+
+        public void AniadirDll(ref StringBuilder pStringBuilder, string pNombreProyecto)
+        { 
+            pStringBuilder.AppendLine($@"    ""{pNombreProyecto} / 1.0.0.0"": {{");
+            pStringBuilder.AppendLine(@"      ""type"": ""reference"", ");
+            pStringBuilder.AppendLine(@"      ""serviceable"": false,");
+            pStringBuilder.AppendLine(@"      ""sha512"": """"");
+            pStringBuilder.AppendLine(@"    },");
+        }
+
+        private string BuscarArchivoJson(string directorio)
+		{
+            foreach (string rutaArchivo in Directory.GetFiles(directorio, "*.json"))
+            {
+                if (Path.GetFileName(rutaArchivo).Equals("Gnoss.Web.deps.json"))
+                {
+                    return rutaArchivo;
+                }
+            }
+
+            foreach (string subdirectorio in Directory.GetDirectories(directorio))
+            {
+                string rutaArchivoEncontrado = BuscarArchivoJson(subdirectorio);
+                if (!string.IsNullOrEmpty(rutaArchivoEncontrado))
+                {
+                    return rutaArchivoEncontrado;
+                }
+            }
+            return null;
+
         }
 
         public void CrearObjetos(Dictionary<string, KeyValuePair<Ontologia, byte[]>> diccionarioOWLXML)
@@ -412,7 +535,7 @@ namespace OntologiaAClase
         /// <param name="listaIdiomas"></param>
         public void CrearClases(OntologiaGenerar ontologia)
         {
-            ControladorOntologiaAClase ontologytoclass = new ControladorOntologiaAClase(ontologia, carpetaPadre, nombreCarpeta, directorio, nombreCortoProy, proyID, nombresOntologia, listaObjetosPropiedad, dicPref, mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mMassiveOntologyToClass);
+            ControladorOntologiaAClase ontologytoclass = new ControladorOntologiaAClase(ontologia, carpetaPadre, nombreCarpeta, directorio, nombreCortoProy, proyID, nombresOntologia, listaObjetosPropiedad, dicPref, mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mMassiveOntologyToClass, mLoggerFactory.CreateLogger<ControladorOntologiaAClase>(), mLoggerFactory);
             ontologytoclass.GenerarClaseOCBase();
             ontologytoclass.CrearClasesDeLaOntologia();
         }
@@ -427,7 +550,7 @@ namespace OntologiaAClase
         /// <param name="listaIdiomas"></param>
         public void CrearClasesJava(OntologiaGenerar ontologia)
         {
-            ControladorOntologiaAClaseJava ontologytoclassJava = new ControladorOntologiaAClaseJava(ontologia, carpetaPadre, nombreCarpeta, directorio, nombreCortoProy, proyID, nombresOntologia, listaObjetosPropiedad, dicPref, mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+            ControladorOntologiaAClaseJava ontologytoclassJava = new ControladorOntologiaAClaseJava(ontologia, carpetaPadre, nombreCarpeta, directorio, nombreCortoProy, proyID, nombresOntologia, listaObjetosPropiedad, dicPref, mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<ControladorOntologiaAClaseJava>(), mLoggerFactory);
             ontologytoclassJava.GenerarClaseOCBase();
             ontologytoclassJava.CrearClasesDeLaOntologia();
         }

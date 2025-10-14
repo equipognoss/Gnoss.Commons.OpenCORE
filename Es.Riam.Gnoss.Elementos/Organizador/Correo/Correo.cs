@@ -1,6 +1,7 @@
 using Es.Riam.Gnoss.AD.Identidad;
 using Es.Riam.Gnoss.AD.Organizador.Correo.Model;
 using Es.Riam.Gnoss.Util.General;
+using Microsoft.Extensions.Logging;
 using System;
 using IDE = Es.Riam.Gnoss.Elementos.Identidad.Identidad;
 
@@ -35,8 +36,8 @@ namespace Es.Riam.Gnoss.Elementos.Organizador.Correo
         /// <summary>
         /// Constructor sin parámetros
         /// </summary>
-        public Correo(LoggingService loggingService)
-            : base(loggingService)
+        public Correo()
+            : base()
         {
         }
 
@@ -45,8 +46,8 @@ namespace Es.Riam.Gnoss.Elementos.Organizador.Correo
         /// </summary>
         /// <param name="pFilaCorreo">Fila de correo</param>
         /// <param name="pGestionCorreo">Gestor de correo</param>
-        public Correo(CorreoDS.CorreoInternoRow pFilaCorreo, GestionCorreo pGestionCorreo, LoggingService loggingService)
-            : base(loggingService)
+        public Correo(CorreoDS.CorreoInternoRow pFilaCorreo, GestionCorreo pGestionCorreo)
+            : base()
         {
             mFilaCorreo = pFilaCorreo;
             mGestionCorreo = pGestionCorreo;

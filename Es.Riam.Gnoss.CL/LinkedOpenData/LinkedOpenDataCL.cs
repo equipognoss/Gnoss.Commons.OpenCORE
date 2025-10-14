@@ -1,8 +1,10 @@
 ﻿using Es.Riam.AbstractsOpen;
 using Es.Riam.Gnoss.AD.EntityModel;
+using Es.Riam.Gnoss.AD.ParametroAplicacion;
 using Es.Riam.Gnoss.Elementos.LinkedOpenData;
 using Es.Riam.Gnoss.Util.Configuracion;
 using Es.Riam.Gnoss.Util.General;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 
@@ -27,7 +29,8 @@ namespace Es.Riam.Gnoss.CL.LinkedOpenDataCL
         /// Clave MAESTRA de la caché
         /// </summary>
         private readonly string[] mMasterCacheKeyArray = { NombresCL.LINKEDOPENDATA };
-
+        private ILogger mlogger;
+        private ILoggerFactory mLoggerFactory;
         #endregion
 
         #region Constructores
@@ -35,18 +38,22 @@ namespace Es.Riam.Gnoss.CL.LinkedOpenDataCL
         /// <summary>
         /// Constructor para FacetadoCL
         /// </summary>
-        public LinkedOpenDataCL(EntityContext entityContext, LoggingService loggingService, RedisCacheWrapper redisCacheWrapper, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication)
-            : base(entityContext, loggingService, redisCacheWrapper, configService, servicesUtilVirtuosoAndReplication)
+        public LinkedOpenDataCL(EntityContext entityContext, LoggingService loggingService, RedisCacheWrapper redisCacheWrapper, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication, ILogger<LinkedOpenDataCL> logger, ILoggerFactory loggerFactory)
+            : base(entityContext, loggingService, redisCacheWrapper, configService, servicesUtilVirtuosoAndReplication, logger, loggerFactory)
         {
+            mlogger = logger;
+            mLoggerFactory = loggerFactory;
         }
 
         /// <summary>
         /// Constructor para FacetadoCL
         /// </summary>
         /// <param name="pPool">Fichero de configuración</param>
-        public LinkedOpenDataCL(string pPool, EntityContext entityContext, LoggingService loggingService, RedisCacheWrapper redisCacheWrapper, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication)
-            : base(null, pPool, entityContext, loggingService, redisCacheWrapper, configService, servicesUtilVirtuosoAndReplication)
+        public LinkedOpenDataCL(string pPool, EntityContext entityContext, LoggingService loggingService, RedisCacheWrapper redisCacheWrapper, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication, ILogger<LinkedOpenDataCL> logger, ILoggerFactory loggerFactory)
+            : base(null, pPool, entityContext, loggingService, redisCacheWrapper, configService, servicesUtilVirtuosoAndReplication,logger,loggerFactory)
         {
+            mlogger = logger;
+            mLoggerFactory = loggerFactory;
         }
 
         #endregion
@@ -101,7 +108,7 @@ namespace Es.Riam.Gnoss.CL.LinkedOpenDataCL
         /// <returns>Países y provincias</returns>
         public List<object> ObtenerEntidadesRelacionadasPorID(Guid pID)
         {
-            string entidadesLod = ObtenerObjetoDeCache("Elemento_" + pID) as string;
+            string entidadesLod = ObtenerObjetoDeCache("Elemento_" + pID,typeof(string)) as string;
             List<object> listaResultados = new List<object>();
 
             if (entidadesLod != null && entidadesLod.Length > 0)
@@ -112,7 +119,7 @@ namespace Es.Riam.Gnoss.CL.LinkedOpenDataCL
                 for (int i = 0; i < entidadesSeparadas.Length; i++)
                 {
                     string clave = ObtenerClaveCache("Entidad_" + entidadesSeparadas[i]);
-                    listaResultados.Add(ObtenerObjetoDeCache(clave));
+                    listaResultados.Add(ObtenerObjetoDeCache(clave,typeof(string)));
                 }
             }
 
@@ -210,7 +217,7 @@ namespace Es.Riam.Gnoss.CL.LinkedOpenDataCL
 
         public List<string> ObtenerUrisEntidadesRelacionadasPorID(Guid pID)
         {
-            string entidadesLod = ObtenerObjetoDeCache("Elemento_" + pID) as string;
+            string entidadesLod = ObtenerObjetoDeCache("Elemento_" + pID,typeof(string)) as string;
             List<string> listaResultados = new List<string>();
 
             if (entidadesLod != null && entidadesLod.Length > 0)
@@ -237,7 +244,7 @@ namespace Es.Riam.Gnoss.CL.LinkedOpenDataCL
             string clave = "Entidad_" + pUriDbpedia;
             if (ExisteClaveEnCache(clave))
             {
-                return (string)ObtenerObjetoDeCache(clave, true);
+                return (string)ObtenerObjetoDeCache(clave, true,typeof(string));
             }
 
             return "";

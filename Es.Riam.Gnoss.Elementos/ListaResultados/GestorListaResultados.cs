@@ -1,5 +1,7 @@
 using Es.Riam.Gnoss.Util.General;
 using Es.Riam.Interfaces;
+using Microsoft.Extensions.Logging;
+using Serilog.Core;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -35,8 +37,6 @@ namespace Es.Riam.Gnoss.Elementos.ListaResultados
         /// </summary>
         public ListaResultados mListaResultados;
 
-        private LoggingService mLoggingService;
-
         #endregion
 
         #region Constructor
@@ -45,11 +45,9 @@ namespace Es.Riam.Gnoss.Elementos.ListaResultados
         /// Constructor a partir de un data Set generico.
         /// </summary>
         /// <param name="pDataSetDS">DataSet genérico</param>
-        public GestorListaResultados(DataSet pDataSetDS, LoggingService loggingService)
-            : base(pDataSetDS, loggingService)
+        public GestorListaResultados(DataSet pDataSetDS)
+            : base(pDataSetDS)
         {
-            mLoggingService = loggingService;
-
             CargarGestor();
         }
 
@@ -61,8 +59,6 @@ namespace Es.Riam.Gnoss.Elementos.ListaResultados
         protected GestorListaResultados(SerializationInfo info, StreamingContext context)
             : base(info, context)
         {
-            //mLoggingService = loggingService;
-
             CargarGestor();
         }
 
@@ -103,7 +99,7 @@ namespace Es.Riam.Gnoss.Elementos.ListaResultados
         /// <param name="pValor">Valor del filtro</param>
         public void AgregarFiltroAListaResultados(string pNombre, string pValor)
         {
-            ListaResultados.Filtros.Add(new Filtro(this, pNombre, pValor, mLoggingService));
+            ListaResultados.Filtros.Add(new Filtro(this, pNombre, pValor));
         }
 
         #endregion

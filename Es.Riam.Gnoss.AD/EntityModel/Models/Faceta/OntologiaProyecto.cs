@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Es.Riam.Gnoss.AD.EntityModel.Models.ProyectoDS;
+using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -22,8 +24,7 @@ namespace Es.Riam.Gnoss.AD.EntityModel.Models.Faceta
 
         [StringLength(100)]
         public string Namespace { get; set; }
-
-        [StringLength(1000)]
+        
         public string NamespacesExtra { get; set; }
 
         public string SubTipos { get; set; }
@@ -33,5 +34,8 @@ namespace Es.Riam.Gnoss.AD.EntityModel.Models.Faceta
         public bool CachearDatosSemanticos { get; set; }
 
         public bool EsBuscable { get; set; }
+
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public List<ProyectoPestanyaBusquedaPesoOC> ProyectoPestanyaBusquedaPesoOC { get; set; }
     }
 }

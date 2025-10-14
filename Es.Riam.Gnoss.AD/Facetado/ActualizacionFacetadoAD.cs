@@ -7,6 +7,7 @@ using Es.Riam.Gnoss.AD.EntityModel.Models.Documentacion;
 using Es.Riam.Gnoss.AD.EntityModel.Models.ProyectoDS;
 using Es.Riam.Gnoss.AD.EntityModel.Models.UsuarioDS;
 using Es.Riam.Gnoss.AD.Identidad;
+using Es.Riam.Gnoss.AD.ParametroAplicacion;
 using Es.Riam.Gnoss.AD.ServiciosGenerales;
 using Es.Riam.Gnoss.AD.Virtuoso;
 using Es.Riam.Gnoss.Util.Configuracion;
@@ -16,6 +17,7 @@ using Es.Riam.Util;
 using Es.Riam.Util.AnalisisSintactico;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Exchange.WebServices.Data;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -41,6 +43,8 @@ namespace Es.Riam.Gnoss.AD.Facetado
         private readonly string mUrlIntranet;
 
         private readonly VirtuosoAD mVirtuosoAD;
+        private ILogger mlogger;
+        private ILoggerFactory mloggerFactory;
 
         #endregion
 
@@ -50,11 +54,13 @@ namespace Es.Riam.Gnoss.AD.Facetado
         /// El por defecto, utilizado cuando se requiere el GnossConfig.xml por defecto
         /// </summary>
         /// <param name="pUrlIntragnoss">URL de intragnoss</param>
-        public ActualizacionFacetadoAD(string pUrlIntragnoss, LoggingService loggingService, EntityContext entityContext, ConfigService configService, VirtuosoAD virtuosoAD, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication)
-            : base(loggingService, entityContext, configService, servicesUtilVirtuosoAndReplication)
+        public ActualizacionFacetadoAD(string pUrlIntragnoss, LoggingService loggingService, EntityContext entityContext, ConfigService configService, VirtuosoAD virtuosoAD, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication,ILogger<ActualizacionFacetadoAD> logger,ILoggerFactory loggerFactory)
+            : base(loggingService, entityContext, configService, servicesUtilVirtuosoAndReplication,logger, loggerFactory)
         {
             mUrlIntranet = pUrlIntragnoss;
             mVirtuosoAD = virtuosoAD;
+            mlogger = logger;
+            mloggerFactory = loggerFactory;
         }
 
         /// <summary>
@@ -63,11 +69,13 @@ namespace Es.Riam.Gnoss.AD.Facetado
         /// <param name="pFicheroConfiguracionBD"></param>
         /// <param name="pUsarVariableEstatica">Si se están usando hilos con diferentes conexiones: FALSE. En caso contrario TRUE</param>
         /// <param name="pUrlIntragnoss">URL de intragnoss</param>
-        public ActualizacionFacetadoAD(string pFicheroConfiguracionBD, string pUrlIntragnoss, LoggingService loggingService, EntityContext entityContext, ConfigService configService, VirtuosoAD virtuosoAD, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication)
-            : base(pFicheroConfiguracionBD, loggingService, entityContext, configService, servicesUtilVirtuosoAndReplication)
+        public ActualizacionFacetadoAD(string pFicheroConfiguracionBD, string pUrlIntragnoss, LoggingService loggingService, EntityContext entityContext, ConfigService configService, VirtuosoAD virtuosoAD, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication, ILogger<ActualizacionFacetadoAD> logger, ILoggerFactory loggerFactory)
+            : base(pFicheroConfiguracionBD, loggingService, entityContext, configService, servicesUtilVirtuosoAndReplication,logger,loggerFactory)
         {
             mUrlIntranet = pUrlIntragnoss;
             mVirtuosoAD = virtuosoAD;
+            mlogger = logger;
+            mloggerFactory = loggerFactory;
         }
 
         #endregion
@@ -89,27 +97,27 @@ namespace Es.Riam.Gnoss.AD.Facetado
 
             if (tipoitem.Equals("Recurso"))
             {
-                DocumentacionAD docAD = new DocumentacionAD(mLoggingService, mEntityContext, mConfigService, mServicesUtilVirtuosoAndReplication);
+                DocumentacionAD docAD = new DocumentacionAD(mLoggingService, mEntityContext, mConfigService, mServicesUtilVirtuosoAndReplication,mloggerFactory.CreateLogger<DocumentacionAD>(),mloggerFactory);
                 tags = docAD.ObtenerTagsDeDocumentos(listaElementosID);
             }
             else if (tipoitem.Equals("Persona"))
             {
-                PersonaAD personaAD = new PersonaAD(mLoggingService, mEntityContext, mConfigService, mServicesUtilVirtuosoAndReplication);
+                PersonaAD personaAD = new PersonaAD(mLoggingService, mEntityContext, mConfigService, mServicesUtilVirtuosoAndReplication,mloggerFactory.CreateLogger<PersonaAD>(), mloggerFactory);
                 tags = personaAD.ObtenerTagsDePersonasEnProyecto(listaElementosID, proyectoID);
             }
             else if (tipoitem.Equals("Organizacion"))
             {
-                OrganizacionAD organizacionAD = new OrganizacionAD(mLoggingService, mEntityContext, mConfigService, mServicesUtilVirtuosoAndReplication);
+                OrganizacionAD organizacionAD = new OrganizacionAD(mLoggingService, mEntityContext, mConfigService, mServicesUtilVirtuosoAndReplication, mloggerFactory.CreateLogger<OrganizacionAD>(), mloggerFactory);
                 tags = organizacionAD.ObtenerTagsDeOrganizacionesEnProyecto(listaElementosID, proyectoID);
             }
             else if (tipoitem.Equals("Grupo"))
             {
-                IdentidadAD IdentidadAD = new IdentidadAD(mLoggingService, mEntityContext, mConfigService, mServicesUtilVirtuosoAndReplication);
+                IdentidadAD IdentidadAD = new IdentidadAD(mLoggingService, mEntityContext, mConfigService, mServicesUtilVirtuosoAndReplication, mloggerFactory.CreateLogger<IdentidadAD>(), mloggerFactory);
                 tags = IdentidadAD.ObtenerTagsDeGruposEnProyecto(listaElementosID, proyectoID);
             }
             else if (tipoitem.Equals("Proyecto"))
             {
-                ProyectoAD proyectoAD = new ProyectoAD(mLoggingService, mEntityContext, mConfigService, mServicesUtilVirtuosoAndReplication);
+                ProyectoAD proyectoAD = new ProyectoAD(mLoggingService, mEntityContext, mConfigService, mServicesUtilVirtuosoAndReplication, mloggerFactory.CreateLogger<ProyectoAD>(), mloggerFactory);
                 tags = proyectoAD.ObtenerTagsDeProyectos(listaElementosID);
             }
 
@@ -311,7 +319,7 @@ namespace Es.Riam.Gnoss.AD.Facetado
         /// <param name="pTextoSinSeparar"></param>
         public void AgregarTripletasDescompuestasTituloViejo(string id, string proyid, string pPropiedad, string pTextoSinSeparar)
         {
-            FacetadoAD facetadoAD = new FacetadoAD(mUrlIntranet, mLoggingService, mEntityContext, mConfigService, mVirtuosoAD, mServicesUtilVirtuosoAndReplication);
+            FacetadoAD facetadoAD = new FacetadoAD(mUrlIntranet, mLoggingService, mEntityContext, mConfigService, mVirtuosoAD, mServicesUtilVirtuosoAndReplication,mloggerFactory.CreateLogger<FacetadoAD>(),mloggerFactory);
             pTextoSinSeparar = pTextoSinSeparar.Replace("\"", "").Replace(((char)13).ToString() + ((char)10).ToString() + ((char)10).ToString() + ((char)13).ToString(), " ").Replace((char)10, ' ').Replace("\\", " ").Replace((char)13, ' ');
 
             int numeroTagsDespreciadosTitulo = 0;
@@ -1591,7 +1599,7 @@ namespace Es.Riam.Gnoss.AD.Facetado
             StringBuilder TripletasContribuciones = new StringBuilder();
             
             //Antes de hacer la query hay que comprobar que el documento no esta eliminado y es ultima version
-            DocumentacionAD docAD = new DocumentacionAD(mLoggingService, mEntityContext, mConfigService, mServicesUtilVirtuosoAndReplication);
+            DocumentacionAD docAD = new DocumentacionAD(mLoggingService, mEntityContext, mConfigService, mServicesUtilVirtuosoAndReplication, mloggerFactory.CreateLogger<DocumentacionAD>(), mloggerFactory);
             DataWrapperDocumentacion dataWrapperDocumentacion = docAD.ObtenerDocumentosPorID(pListaRecursosID, false);
             docAD.Dispose();
 
@@ -3527,7 +3535,7 @@ namespace Es.Riam.Gnoss.AD.Facetado
                 resultadoConsulta.Add(new QueryTriples { Sujeto = $"<http://gnoss/{query.ProyectoID.ToString().ToUpper()}>", Predicado = "<http://www.w3.org/1999/02/22-rdf-syntax-ns#type>", Objeto = $"\"Comunidad educativa\" ." });
             }
 
-            IdentidadAD identidadAD = new IdentidadAD(mLoggingService, mEntityContext, mConfigService, mServicesUtilVirtuosoAndReplication);
+            IdentidadAD identidadAD = new IdentidadAD(mLoggingService, mEntityContext, mConfigService, mServicesUtilVirtuosoAndReplication, mloggerFactory.CreateLogger<IdentidadAD>(), mloggerFactory);
             DataWrapperIdentidad dwIdentidad = identidadAD.ObtenerIdentidadesDeProyecto(pProyectoID);
             foreach (EntityModel.Models.IdentidadDS.Identidad identidad in dwIdentidad.ListaIdentidad)
             {

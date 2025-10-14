@@ -204,6 +204,9 @@
   <page name="CAMBIONOMBRECORTOUSUARIO">
     <Resource tag="URLEJEMPLO">http://www.gnoss.com/identity/</Resource>
   </page>
+	<page name="MISCOMUNIDADES">
+		<Resource tag="TITULOPAGINA">My Communities</Resource>
+	</page>
   <page name="RIAM">
     <Resource tag="INFO">
       {p}All the elements of development, programming and design conferring the intellectual property that make up gnoss.com and are necessary for its running, and also the ones in the webpages that form it, are protected in favor of RIAM I+L Lab. In turn, the content shared by gnoss.com users are property of their respective authors. Therefore, the design, the images, graphical icons, videos, sounds, trademarks, commercial names, distinctive signs, banners, font codes and any intellectual creations, as well as their presentations and constructions, are expressly protected.{/p}

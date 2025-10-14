@@ -1,7 +1,9 @@
 ﻿using Es.Riam.AbstractsOpen;
+using Es.Riam.Gnoss.AD.ParametroAplicacion;
 using Es.Riam.Gnoss.CL.RelatedVirtuoso;
 using Es.Riam.Gnoss.Util.Configuracion;
 using Es.Riam.Gnoss.Util.General;
+using Microsoft.Extensions.Logging;
 using OpenLink.Data.Virtuoso;
 using System;
 using System.Collections.Generic;
@@ -15,9 +17,13 @@ namespace Es.Riam.OpenReplication
     public class ServicesVirtuosoAndBidirectionalReplicationOpen : IServicesUtilVirtuosoAndReplication
     {
         RelatedVirtuosoCL mRelatedVirtuosoCL;
-        public ServicesVirtuosoAndBidirectionalReplicationOpen(ConfigService configService, LoggingService loggingService, RelatedVirtuosoCL relatedVirtuosoCL) : base(configService, loggingService)
+        private ILogger mlogger;
+        private ILoggerFactory mLoggerFactory;
+        public ServicesVirtuosoAndBidirectionalReplicationOpen(ConfigService configService, LoggingService loggingService, RelatedVirtuosoCL relatedVirtuosoCL, ILogger<ServicesVirtuosoAndBidirectionalReplicationOpen> logger, ILoggerFactory loggerFactory) : base(configService, loggingService, logger, loggerFactory)
         {
             mRelatedVirtuosoCL = relatedVirtuosoCL;
+            mlogger = logger;
+            mLoggerFactory = loggerFactory;
         }
         public override string ConexionAfinidadVirtuoso
         {
@@ -35,7 +41,7 @@ namespace Es.Riam.OpenReplication
             }
         }
 
-        public override bool ControlarErrorVirtuosoConection(string cadenaConexion, string conexionAfinidadVirtuoso)
+        public override bool ControlarErrorVirtuosoConection()
         {
             DateTime horaActual = DateTime.Now;
             bool estaOperativo = ServidorOperativo();
@@ -44,11 +50,11 @@ namespace Es.Riam.OpenReplication
                 Thread.Sleep(1000);
                 estaOperativo = ServidorOperativo();
             }
-            mLoggingService.GuardarLogError("Terminado de checkear el virtuoso");
+            mLoggingService.GuardarLogError("Terminado de checkear el virtuoso", mlogger);
             return estaOperativo;
         }
 
-        public override void InsertarEnReplicacionBidireccional(string pQuery, string pGrafo, short pPrioridad, string pNombreConexionAfinidad, string pCadenaConexion, VirtuosoConnection pConexion)
+        public override void InsertarEnReplicacionBidireccional(string pQuery, string pGrafo, short pPrioridad, string pNombreConexionAfinidad, VirtuosoConnectionData pVirtuosoConnectionData, VirtuosoConnection pConexion)
         {
             
         }

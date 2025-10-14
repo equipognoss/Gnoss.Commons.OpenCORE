@@ -4,14 +4,18 @@ using Es.Riam.Gnoss.AD.Amigos.Model;
 using Es.Riam.Gnoss.AD.EncapsuladoDatos;
 using Es.Riam.Gnoss.AD.EntityModel;
 using Es.Riam.Gnoss.AD.EntityModel.Models.IdentidadDS;
+using Es.Riam.Gnoss.AD.ParametroAplicacion;
 using Es.Riam.Gnoss.AD.Virtuoso;
 using Es.Riam.Gnoss.Elementos.Identidad;
 using Es.Riam.Gnoss.Elementos.ServiciosGenerales;
 using Es.Riam.Gnoss.Logica;
 using Es.Riam.Gnoss.Logica.Amigos;
+using Es.Riam.Gnoss.Logica.ServiciosGenerales;
 using Es.Riam.Gnoss.Util.Configuracion;
 using Es.Riam.Gnoss.Util.General;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Logging;
+using Serilog.Core;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -74,10 +78,11 @@ namespace Es.Riam.Gnoss.Elementos.Amigos
         private EntityContext mEntityContext;
         private ConfigService mConfigService;
         private IServicesUtilVirtuosoAndReplication mServicesUtilVirtuosoAndReplication;
-
         #endregion
 
         #region Constructor
+
+        public GestionAmigos() { }
 
         /// <summary>
         /// Constructor del gestor de amigos a partir del dataset de amigos y del gestor de identidades
@@ -85,7 +90,7 @@ namespace Es.Riam.Gnoss.Elementos.Amigos
         /// <param name="pAmigosDS">Dataset de amigos</param>
         /// <param name="pGestionIdentidades">Gestor de identidades</param>
         public GestionAmigos(DataWrapperAmigos pAmigosDS, GestionIdentidades pGestionIdentidades, LoggingService loggingService, EntityContext entityContext, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication)
-            : base(pAmigosDS, loggingService)
+            : base(pAmigosDS)
         {
             mLoggingService = loggingService;
             mEntityContext = entityContext;
@@ -96,7 +101,7 @@ namespace Es.Riam.Gnoss.Elementos.Amigos
         }
 
         public GestionAmigos(AmigosDS pAmigosDS, LoggingService loggingService, EntityContext entityContext, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication)
-            : base(pAmigosDS, loggingService)
+            : base(pAmigosDS)
         {
             mLoggingService = loggingService;
             mEntityContext = entityContext;
@@ -112,10 +117,6 @@ namespace Es.Riam.Gnoss.Elementos.Amigos
         protected GestionAmigos(SerializationInfo info, StreamingContext context)
             : base(info, context)
         {
-            //mLoggingService = loggingService;
-            //mEntityContext = entityContext;
-            //mConfigService = configService;
-
             mGestionIdentidades = (GestionIdentidades)info.GetValue("GestionIdentidades", typeof(GestionIdentidades));
         }
 
@@ -353,7 +354,7 @@ namespace Es.Riam.Gnoss.Elementos.Amigos
                 amigo.IdentidadID = pIdentidad;
                 amigo.IdentidadAmigoID = pIdentidadAmigo;
                 amigo.EsFanMutuo = false;
-                amigo.Fecha = new GeneralCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication).HoraServidor;
+                amigo.Fecha = new GeneralCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, null, null).HoraServidor;
 
                 AmigosDW.ListaAmigo.Add(amigo);
                 mEntityContext.Amigo.Add(amigo);
@@ -370,7 +371,7 @@ namespace Es.Riam.Gnoss.Elementos.Amigos
         {
             //Se que aquí no debería hacerse llamadas al CN, pero puesto que ya se están haciendo (GeneralCN) y creo que es más importante la eficiencia que esta arquitectura sin sentido (no tiene sentido que no se puedan hacer llamadas al CN), pues lo hago:
 
-            AmigosCN amigosCN = new AmigosCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+            AmigosCN amigosCN = new AmigosCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, null, null);
             bool sonAmigas = amigosCN.EsAmigoDeIdentidad(pIdentidadID, pAmigoID);
             amigosCN.Dispose();
 

@@ -1,5 +1,6 @@
 using Es.Riam.Gnoss.Util.General;
 using Es.Riam.Util;
+using Microsoft.Extensions.Logging;
 
 namespace Es.Riam.Gnoss.Elementos.ListaResultados
 {
@@ -23,7 +24,6 @@ namespace Es.Riam.Gnoss.Elementos.ListaResultados
         public const string CAMPO_VALOR = "Valor";
 
         #endregion
-
         #endregion
 
         #region Constructor
@@ -34,8 +34,8 @@ namespace Es.Riam.Gnoss.Elementos.ListaResultados
         /// <param name="pGestor">Gestor</param>
         /// <param name="pNombre">Nombre del filtro</param>
         /// <param name="pValor">Valor del filtro</param>
-        public Filtro(GestionGnoss pGestor, string pNombre, string pValor, LoggingService loggingService) 
-            : base(null, pGestor, loggingService)
+        public Filtro(GestionGnoss pGestor, string pNombre, string pValor) 
+            : base(null, pGestor)
         {
             //Agrego la fila auxiliar que será manejada por el exportadorGnoss:
             FilaElemento = pGestor.DataSet.Tables[GestorListaResultados.TABLA_AUXILIAR_FILTROS].NewRow();

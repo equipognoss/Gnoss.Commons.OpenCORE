@@ -1230,7 +1230,7 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
                     OntologiaProyecto = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
                     NombreOnt = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Namespace = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
-                    NamespacesExtra = table.Column<string>(type: "nvarchar(1000)", maxLength: 1000, nullable: true),
+                    NamespacesExtra = table.Column<string>(type: "nvarchar(max)", maxLength: 1000, nullable: true),
                     SubTipos = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     NombreCortoOnt = table.Column<string>(type: "varchar(max)", unicode: false, nullable: true),
                     CachearDatosSemanticos = table.Column<bool>(type: "bit", nullable: false),

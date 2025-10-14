@@ -13,5 +13,10 @@ namespace Es.Riam.Gnoss.Web.MVC.Models.Administracion
 
         public List<Guid> OntologiaSeleccionada { get; set; }
 
+        public Dictionary<Guid, long> FechaCreacionOntologias { get; set; }
+
+	    public Dictionary<Guid, long> FechaModificacionOntologias { get; set; }
+
+        public Dictionary<Guid, int> CantidadRecursosDeOntologia { get; set; }
     }
 }

@@ -1,6 +1,7 @@
 using Es.Riam.Gnoss.Elementos.Interfaces;
 using Es.Riam.Gnoss.Util.General;
 using Es.Riam.Interfaces;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -52,6 +53,8 @@ namespace Es.Riam.Gnoss.Elementos.ListaResultados
         /// Filtros agregados a la búsqueda realizada.
         /// </summary>
         private List<Filtro> mFiltros;
+        private ILogger mlogger;
+        private ILoggerFactory mLoggerFactory;
 
         #endregion
 
@@ -62,8 +65,8 @@ namespace Es.Riam.Gnoss.Elementos.ListaResultados
         /// </summary>
         /// <param name="pListaResultadosRow">Fila ficticia de la lista</param>
         /// <param name="pGestor">Gestor</param>
-        public ListaResultados(DataRow pListaResultadosRow, GestionGnoss pGestor, LoggingService loggingService)
-            : base(pListaResultadosRow, pGestor, loggingService)
+        public ListaResultados(DataRow pListaResultadosRow, GestionGnoss pGestor)
+            : base(pListaResultadosRow, pGestor)
         {
         }
 
@@ -74,8 +77,8 @@ namespace Es.Riam.Gnoss.Elementos.ListaResultados
         /// <param name="pResultados">Lista con los resultados</param>
         /// `<param name="pTotalResultados">Número total de elementos que satisfacen la búsqueda</param>
         /// <param name="pPaginaActual">Página actual en la navegación sobre el total de resultados</param>
-        public ListaResultados(GestionGnoss pGestor, List<ElementoGnoss> pResultados, int pTotalResultados, int pPaginaActual, LoggingService loggingService)
-            : base(null, pGestor, loggingService)
+        public ListaResultados(GestionGnoss pGestor, List<ElementoGnoss> pResultados, int pTotalResultados, int pPaginaActual)
+            : base(null, pGestor)
         {
             //Agrego la fila auxiliar que será manejada por el exportadorGnoss:
             FilaElemento = pGestor.DataSet.Tables[GestorListaResultados.TABLA_GENERICA].NewRow();

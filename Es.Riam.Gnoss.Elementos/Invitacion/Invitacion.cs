@@ -1,5 +1,6 @@
 using Es.Riam.Gnoss.AD.Notificacion;
 using Es.Riam.Gnoss.Util.General;
+using Microsoft.Extensions.Logging;
 using System;
 
 namespace Es.Riam.Gnoss.Elementos.Invitacion
@@ -24,8 +25,8 @@ namespace Es.Riam.Gnoss.Elementos.Invitacion
         /// <param name="pFilaInvitacion">Fila de invitación</param>
         /// <param name="pNotificacion">Notificación</param>
         /// <param name="pIdentidad">Identidad</param>
-        public Invitacion(AD.EntityModel.Models.Notificacion.Invitacion pFilaInvitacion, Notificacion.Notificacion pNotificacion, Identidad.Identidad pIdentidad, LoggingService loggingService)
-            : base(pFilaInvitacion, null, loggingService)
+        public Invitacion(AD.EntityModel.Models.Notificacion.Invitacion pFilaInvitacion, Notificacion.Notificacion pNotificacion, Identidad.Identidad pIdentidad)
+            : base(pFilaInvitacion, null)
         {
             mNotificacion = pNotificacion;
             mIdentidad = pIdentidad;

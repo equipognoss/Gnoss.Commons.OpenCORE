@@ -15,6 +15,7 @@ using Es.Riam.Gnoss.CL;
 using Es.Riam.Gnoss.CL.Facetado;
 using Es.Riam.Gnoss.CL.ParametrosAplicacion;
 using Es.Riam.Gnoss.CL.ServiciosGenerales;
+using Es.Riam.Gnoss.Elementos.Amigos;
 using Es.Riam.Gnoss.Elementos.Documentacion;
 using Es.Riam.Gnoss.Elementos.Facetado;
 using Es.Riam.Gnoss.Elementos.Identidad;
@@ -36,8 +37,12 @@ using Es.Riam.Semantica.OWL;
 using Es.Riam.Semantica.Plantillas;
 using Es.Riam.Util;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Exchange.WebServices.Data;
+using Microsoft.Extensions.Logging;
+using Serilog.Core;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Data;
 using System.Globalization;
 using System.IO;
@@ -61,12 +66,12 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
         /// <summary>
         /// Modelo del SEM CMS.
         /// </summary>
-        private SemanticResourceModel mSemRecModel;
+        private readonly SemanticResourceModel mSemRecModel;
 
         /// <summary>
         /// Ontología a la que pertenecerá el recurso.
         /// </summary>
-        private Ontologia mOntologia;
+        private readonly Ontologia mOntologia;
 
         /// <summary>
         /// ID del recurso
@@ -86,17 +91,17 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
         /// <summary>
         /// Documento asociado al formulario semántico.
         /// </summary>
-        private Documento mDocumento;
+        private readonly Documento mDocumento;
 
         /// <summary>
         /// Proyecto actual.
         /// </summary>
-        private Proyecto mProyectoActual;
+        private readonly Proyecto mProyectoActual;
 
         /// <summary>
         /// Identidad actual conectada.
         /// </summary>
-        private Identidad mIdentidadActual;
+        private readonly Identidad mIdentidadActual;
 
         /// <summary>
         /// ID de los grupos ocultos.
@@ -116,22 +121,17 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
         /// <summary>
         /// Util Idiomas.
         /// </summary>
-        private UtilIdiomas mUtilIdiomas;
-
-        /// <summary>
-        /// Base Url.
-        /// </summary>
-        private string mBaseUrl;
+        private readonly UtilIdiomas mUtilIdiomas;
 
         /// <summary>
         /// Url del Content
         /// </summary>
-        private string mBaseURLContent;
+        private readonly string mBaseURLContent;
 
         /// <summary>
         /// Url Static.
         /// </summary>
-        private string mBaseURLStatic;
+        private readonly string mBaseURLStatic;
 
         /// <summary>
         /// Datos de entidades grafo dependientes.
@@ -141,27 +141,27 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
         /// <summary>
         /// Url de intragnoss.
         /// </summary>
-        private string mUrlIntragnoss;
+        private readonly string mUrlIntragnoss;
 
         /// <summary>
         /// Base Url con Idioma
         /// </summary>
-        private string mBaseURLIdioma;
+        private readonly string mBaseURLIdioma;
 
         /// <summary>
         /// Entidades que son superclase y sus hijas.
         /// </summary>
-        private Dictionary<ElementoOntologia, List<ElementoOntologia>> mEntidadesSuperClassEHijas = new Dictionary<ElementoOntologia, List<ElementoOntologia>>();
+        private readonly Dictionary<ElementoOntologia, List<ElementoOntologia>> mEntidadesSuperClassEHijas = new Dictionary<ElementoOntologia, List<ElementoOntologia>>();
 
         /// <summary>
         /// Entidades que son superclase y su tipo de dominio funcional.
         /// </summary>
-        private Dictionary<ElementoOntologia, int> mEntidadesSuperClassTipoDominioFunc = new Dictionary<ElementoOntologia, int>();
+        private readonly Dictionary<ElementoOntologia, int> mEntidadesSuperClassTipoDominioFunc = new Dictionary<ElementoOntologia, int>();
 
         /// <summary>
         /// Entidades que se van a pintar en el SEM CMS.
         /// </summary>
-        private List<ElementoOntologia> mEntidadesSeVanAPintar = new List<ElementoOntologia>();
+        private readonly List<ElementoOntologia> mEntidadesSeVanAPintar = new List<ElementoOntologia>();
 
         /// <summary>
         /// Lista con los valores que hay que insertar en un determinado grafo para autocompletar.
@@ -229,8 +229,9 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
         private Dictionary<string, List<string>> mPropiedadesOmitirPintado;
 
 
-        private EntityContextBASE mEntityContextBASE;
-
+        private readonly EntityContextBASE mEntityContextBASE;
+        private ILogger mlogger;
+        private ILoggerFactory mLoggerFactory;
         #endregion
 
         #region Constructor
@@ -250,8 +251,8 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
         /// <param name="pBaseURLContent">Url del Content</param>
         /// <param name="pBaseURLStatic">Url Static</param>
         /// <param name="pUrlIntragnoss">Url de intragnoss</param>
-        public SemCmsController(SemanticResourceModel pSemRecModel, Ontologia pOntologia, Guid pDocumentoID, List<ElementoOntologia> pEntidades, Proyecto pProyectoActual, Identidad pIdentidadActual, UtilIdiomas pUtilIdiomas, string pBaseUrl, string pBaseURLIdioma, string pBaseURLContent, string pBaseURLStatic, string pUrlIntragnoss, LoggingService loggingService, EntityContext entityContext, ConfigService configService, IHttpContextAccessor httpContextAccessor, RedisCacheWrapper redisCacheWrapper, GnossCache gnossCache, VirtuosoAD virtuosoAD, EntityContextBASE entityContextBASE, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication)
-            : base(loggingService, configService, entityContext, redisCacheWrapper, gnossCache, virtuosoAD, httpContextAccessor, servicesUtilVirtuosoAndReplication)
+        public SemCmsController(SemanticResourceModel pSemRecModel, Ontologia pOntologia, Guid pDocumentoID, List<ElementoOntologia> pEntidades, Proyecto pProyectoActual, Identidad pIdentidadActual, UtilIdiomas pUtilIdiomas, string pBaseUrl, string pBaseURLIdioma, string pBaseURLContent, string pBaseURLStatic, string pUrlIntragnoss, LoggingService loggingService, EntityContext entityContext, ConfigService configService, IHttpContextAccessor httpContextAccessor, RedisCacheWrapper redisCacheWrapper, GnossCache gnossCache, VirtuosoAD virtuosoAD, EntityContextBASE entityContextBASE, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication, ILogger<SemCmsController> logger, ILoggerFactory loggerFactory)
+            : base(loggingService, configService, entityContext, redisCacheWrapper, gnossCache, virtuosoAD, httpContextAccessor, servicesUtilVirtuosoAndReplication,logger,loggerFactory)
         {
             GestionOWL.URLIntragnoss = pUrlIntragnoss;
             mSemRecModel = pSemRecModel;
@@ -261,12 +262,13 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
             mProyectoActual = pProyectoActual;
             mIdentidadActual = pIdentidadActual;
             mUtilIdiomas = pUtilIdiomas;
-            mBaseUrl = pBaseUrl;
             mBaseURLIdioma = pBaseURLIdioma;
             mBaseURLContent = pBaseURLContent;
             mBaseURLStatic = pBaseURLStatic;
             mUrlIntragnoss = pUrlIntragnoss;
             mEntityContextBASE = entityContextBASE;
+            mlogger = logger;
+            mLoggerFactory = loggerFactory;
         }
 
         /// <summary>
@@ -285,9 +287,11 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
         /// <param name="pBaseURLContent">Url del Content</param>
         /// <param name="pBaseURLStatic">Url Static</param>
         /// <param name="pUrlIntragnoss">Url de intragnoss</param>
-        public SemCmsController(SemanticResourceModel pSemRecModel, Ontologia pOntologia, Documento pDocumento, List<ElementoOntologia> pEntidades, Proyecto pProyectoActual, Identidad pIdentidadActual, UtilIdiomas pUtilIdiomas, string pBaseUrl, string pBaseURLIdioma, string pBaseURLContent, string pBaseURLStatic, string pUrlIntragnoss, LoggingService loggingService, EntityContext entityContext, ConfigService configService, IHttpContextAccessor httpContextAccessor, RedisCacheWrapper redisCacheWrapper, GnossCache gnossCache, VirtuosoAD virtuosoAD, EntityContextBASE entityContextBASE, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication)
-            : this(pSemRecModel, pOntologia, pDocumento.Clave, pEntidades, pProyectoActual, pIdentidadActual, pUtilIdiomas, pBaseUrl, pBaseURLIdioma, pBaseURLContent, pBaseURLStatic, pUrlIntragnoss, loggingService, entityContext, configService, httpContextAccessor, redisCacheWrapper, gnossCache, virtuosoAD, entityContextBASE, servicesUtilVirtuosoAndReplication)
+        public SemCmsController(SemanticResourceModel pSemRecModel, Ontologia pOntologia, Documento pDocumento, List<ElementoOntologia> pEntidades, Proyecto pProyectoActual, Identidad pIdentidadActual, UtilIdiomas pUtilIdiomas, string pBaseUrl, string pBaseURLIdioma, string pBaseURLContent, string pBaseURLStatic, string pUrlIntragnoss, LoggingService loggingService, EntityContext entityContext, ConfigService configService, IHttpContextAccessor httpContextAccessor, RedisCacheWrapper redisCacheWrapper, GnossCache gnossCache, VirtuosoAD virtuosoAD, EntityContextBASE entityContextBASE, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication, ILogger<SemCmsController> logger, ILoggerFactory loggerFactory)
+            : this(pSemRecModel, pOntologia, pDocumento.Clave, pEntidades, pProyectoActual, pIdentidadActual, pUtilIdiomas, pBaseUrl, pBaseURLIdioma, pBaseURLContent, pBaseURLStatic, pUrlIntragnoss, loggingService, entityContext, configService, httpContextAccessor, redisCacheWrapper, gnossCache, virtuosoAD, entityContextBASE, servicesUtilVirtuosoAndReplication,logger,loggerFactory)
         {
+            mlogger = logger;
+            mLoggerFactory = loggerFactory;
             mDocumento = pDocumento;
         }
 
@@ -317,7 +321,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
                 foreach (ElementoOntologia entidad in entidades)
                 {
                     ElementoOntologia instanciaEntidad = mOntologia.GetEntidadTipo(entidad.TipoEntidad, true);
-                    instanciaEntidad.ID = instanciaEntidad.TipoEntidad + "_" + mDocumentoID.ToString() + "_" + Guid.NewGuid();
+                    instanciaEntidad.ID = $"{instanciaEntidad.TipoEntidad}_{mDocumentoID}_{Guid.NewGuid()}";
                     mEntidades.Add(instanciaEntidad);
                 }
             }
@@ -369,12 +373,9 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
                     {
                         foreach (Propiedad prop in entidad.Propiedades)
                         {
-                            if (prop.Tipo == TipoPropiedad.ObjectProperty)
+                            if (prop.Tipo == TipoPropiedad.ObjectProperty && prop.EntidadesHijasConOrden)
                             {
-                                if (prop.EntidadesHijasConOrden)
-                                {
-                                    prop.ListaValores = prop.ListaValoresOrdCampoEntidad;
-                                }
+                                prop.ListaValores = prop.ListaValoresOrdCampoEntidad;
                             }
                         }
                     }
@@ -405,7 +406,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
                     {
                         if (string.IsNullOrEmpty(prop.EspecifPropiedad.SelectorEntidad.Grafo))
                         {
-                            throw new Exception("El selector de la propiedad '" + prop.Nombre + "' de la entidad '" + entidad.TipoEntidad + "' no tiene grafo.");
+                            throw new ExcepcionGeneral($"El selector de la propiedad '{prop.Nombre}' de la entidad '{entidad.TipoEntidad}' no tiene grafo.");
                         }
 
                         if (pParametroProyecto.ContainsKey(ParametroAD.ProyectoIDPatronOntologias))
@@ -413,19 +414,19 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
                             pProyectoID = new Guid(pParametroProyecto[ParametroAD.ProyectoIDPatronOntologias]);
                         }
 
-                        DocumentacionCN docCN = new DocumentacionCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+                        DocumentacionCN docCN = new DocumentacionCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<DocumentacionCN>(), mLoggerFactory);
                         Guid ontologiaExtID = docCN.ObtenerOntologiaAPartirNombre(pProyectoID, prop.EspecifPropiedad.SelectorEntidad.Grafo);
                         docCN.Dispose();
 
                         if (ontologiaExtID == Guid.Empty)
                         {
-                            throw new Exception("El grafo '" + prop.EspecifPropiedad.SelectorEntidad.Grafo + "' del selector de la propiedad '" + prop.Nombre + "' de la entidad '" + entidad.TipoEntidad + "' no es una ontología de la comunidad.");
+                            throw new ExcepcionGeneral($"El grafo '{prop.EspecifPropiedad.SelectorEntidad.Grafo}' del selector de la propiedad '{prop.Nombre}' de la entidad '{entidad.TipoEntidad}' no es una ontología de la comunidad.");
                         }
 
                         try
                         {
                             Dictionary<string, List<EstiloPlantilla>> listaEstilos = null;
-                            byte[] arrayOnto = new ControladorDocumentacion(mLoggingService, mEntityContext, mConfigService, mRedisCacheWrapper, mGnossCache, mEntityContextBASE, mVirtuosoAD, mHttpContextAccessor, mServicesUtilVirtuosoAndReplication).ObtenerOntologia(ontologiaExtID, out listaEstilos, pProyectoID);
+                            byte[] arrayOnto = new ControladorDocumentacion(mLoggingService, mEntityContext, mConfigService, mRedisCacheWrapper, mGnossCache, mEntityContextBASE, mVirtuosoAD, mHttpContextAccessor, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<ControladorDocumentacion>(), mLoggerFactory).ObtenerOntologia(ontologiaExtID, out listaEstilos, pProyectoID);
 
                             Ontologia ontologiaExt = new Ontologia(arrayOnto, true);
                             ontologiaExt.LeerOntologia();
@@ -495,7 +496,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
                         }
                         catch (Exception ex)
                         {
-                            throw new Exception("Error al traer y montar una ontología externa de la propiedad '" + prop.Nombre + "' de la entidad '" + entidad.TipoEntidad + "':" + ex.ToString());
+                            throw new ExcepcionGeneral($"Error al traer y montar una ontología externa de la propiedad '{prop.Nombre}' de la entidad '{entidad.TipoEntidad}':{ex}");
                         }
                     }
                 }
@@ -538,7 +539,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
                         {
                             if (prop.EspecifPropiedad.SelectorEntidad.Reciproca)
                             {
-                                List<string> sujetosEntExtReci = new UtilSemCms(mEntityContext, mLoggingService, mConfigService, mRedisCacheWrapper, mVirtuosoAD, mServicesUtilVirtuosoAndReplication).ObtenerSujetosEntiadesSelectorReciprocoDeEntidad(pUrlIntragnoss, prop.EspecifPropiedad.SelectorEntidad, pUrlIntragnoss + "items/" + entidad.ID, pFilaPersona, pFilaProy, pEntidades);
+                                List<string> sujetosEntExtReci = new UtilSemCms(mEntityContext, mLoggingService, mConfigService, mRedisCacheWrapper, mVirtuosoAD, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<UtilSemCms>(), mLoggerFactory).ObtenerSujetosEntiadesSelectorReciprocoDeEntidad(pUrlIntragnoss, prop.EspecifPropiedad.SelectorEntidad, pUrlIntragnoss + "items/" + entidad.ID, pFilaPersona, pFilaProy, pEntidades);
 
                                 foreach (string sujetoEntExt in sujetosEntExtReci)
                                 {
@@ -577,10 +578,10 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
         /// <param name="pImageRepresentativeValue">Cadena de control para las imagenes representantes</param>
         private void FuncionarRDFEntidadExternaEditable(Propiedad pPropiedad, Guid pProyectoID, string pBaseURLFormulariosSem, Ontologia pOntologia, string pUrlIntragnoss, Guid pDocumentoID, Dictionary<string, EntidadExtEditableDoc> pEntidadesExtEditablesDocID, ref string pImageRepresentativeValue)
         {
-            DocumentacionCN docCN = new DocumentacionCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+            DocumentacionCN docCN = new DocumentacionCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<DocumentacionCN>(), mLoggerFactory);
             string nombreOntologia = docCN.ObtenerEnlaceDocumentoPorDocumentoID(pOntologia.OntologiaID);
 
-            string urlOntologia = pBaseURLFormulariosSem + "/Ontologia/" + nombreOntologia + "#";
+            string urlOntologia = $"{pBaseURLFormulariosSem}/Ontologia/{nombreOntologia}#";
             int count = 0;
 
             foreach (string valor in new List<string>(pPropiedad.ValoresUnificados.Keys))
@@ -590,15 +591,24 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
                 string docT = valor.Substring(0, valor.LastIndexOf("_"));
                 docT = docT.Substring(docT.LastIndexOf("_") + 1);
                 Guid documentoID = new Guid(docT);
+                DataWrapperDocumentacion dwDocumentacion = new DataWrapperDocumentacion();
+                docCN.ObtenerDocumentoPorIDCargarTotal(documentoID, dwDocumentacion, true, false, null);
+                Guid documentoUltimaVersionID = Guid.Empty;
+
+                if (dwDocumentacion.ListaVersionDocumento.Count > 0)
+                {
+                    documentoUltimaVersionID = dwDocumentacion.ListaVersionDocumento.OrderByDescending(doc => doc.Version).FirstOrDefault().DocumentoID;
+                }
+
+                Guid docIDAux = documentoUltimaVersionID == Guid.Empty ? documentoID : documentoUltimaVersionID;
                 bool obtenidoVirtuoso = false;
 
-                string rdfTexto = ObtenerRDFDocumento(documentoID, pProyectoID, GestionOWL.NAMESPACE_ONTO_GNOSS, urlOntologia, nombreOntologia, pOntologia, pUrlIntragnoss, true, out obtenidoVirtuoso);
-                List<ElementoOntologia> entPrinc = ObtenerInstanciasPrincipalesDocumento(documentoID, pProyectoID, GestionOWL.NAMESPACE_ONTO_GNOSS, urlOntologia, nombreOntologia, pOntologia, pUrlIntragnoss, rdfTexto, true);
+                string rdfTexto = ObtenerRDFDocumento(docIDAux, pProyectoID, GestionOWL.NAMESPACE_ONTO_GNOSS, urlOntologia, nombreOntologia, pOntologia, pUrlIntragnoss, true, true, out obtenidoVirtuoso);
+                List<ElementoOntologia> entPrinc = ObtenerInstanciasPrincipalesDocumento(documentoID, GestionOWL.NAMESPACE_ONTO_GNOSS, urlOntologia, pOntologia, rdfTexto);
                 ReempazarDocumentoIDEntidad(documentoID, pDocumentoID, entPrinc[0]);
 
                 entPrinc[0].Ontologia = pPropiedad.Ontologia;//Cambiamos la ontología para que si hay estilos configurados en la actual, se conjan esos en vez de los de la orginal.
                 pPropiedad.AgregarValor(entPrinc[0]);
-                //pEntidadesExtEditablesDocID.Add(entPrinc[0].ID, documentoID);
 
                 EntidadExtEditableDoc entExtEditDoc = new EntidadExtEditableDoc();
                 entExtEditDoc.EntidadID = entPrinc[0].ID;
@@ -649,22 +659,20 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
             {
                 prop.ElementoOntologia = pEntiadad;
 
-                foreach (string valor in new List<string>(prop.ValoresUnificados.Keys))
+                List<string> listaClavesValoresUnificados = prop.ValoresUnificados.Keys.Where(item => item.Contains(docID)).ToList();
+                foreach (string valor in listaClavesValoresUnificados)
                 {
-                    if (valor.Contains(docID))
+                    if (prop.ValoresUnificados[valor] != null)
                     {
-                        if (prop.ValoresUnificados[valor] != null)
-                        {
-                            ElementoOntologia hijo = prop.ValoresUnificados[valor];
-                            prop.LimpiarValor(hijo);
-                            ReempazarDocumentoIDEntidad(pDocID, pNuevoDocID, hijo);
-                            prop.AgregarValor(hijo);
-                        }
-                        else if (prop.EspecifPropiedad.TipoCampo != TipoCampoOntologia.Archivo && prop.EspecifPropiedad.TipoCampo != TipoCampoOntologia.ArchivoLink && prop.EspecifPropiedad.TipoCampo != TipoCampoOntologia.Imagen && prop.EspecifPropiedad.TipoCampo != TipoCampoOntologia.Video)
-                        {
-                            prop.LimpiarValor(valor);
-                            prop.AgregarValor(valor.Replace(docID, nuevoDocID));
-                        }
+                        ElementoOntologia hijo = prop.ValoresUnificados[valor];
+                        prop.LimpiarValor(hijo);
+                        ReempazarDocumentoIDEntidad(pDocID, pNuevoDocID, hijo);
+                        prop.AgregarValor(hijo);
+                    }
+                    else if (prop.EspecifPropiedad.TipoCampo != TipoCampoOntologia.Archivo && prop.EspecifPropiedad.TipoCampo != TipoCampoOntologia.ArchivoLink && prop.EspecifPropiedad.TipoCampo != TipoCampoOntologia.Imagen && prop.EspecifPropiedad.TipoCampo != TipoCampoOntologia.Video)
+                    {
+                        prop.LimpiarValor(valor);
+                        prop.AgregarValor(valor.Replace(docID, nuevoDocID));
                     }
                 }
             }
@@ -768,8 +776,6 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
             mSemRecModel.OntologyNamespaces = mOntologia.NamespacesDefinidos;
             mSemRecModel.DocSemCmsProperty = "gnoss:" + UtilImportarExportar.PROPIEDAD_DOC_SEM;
 
-
-
             CargarIdiomasModel();
 
             ObtenerValoresDeEntGrafoDependientes();
@@ -823,20 +829,12 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
                         entHija.SuperEntity = entModel;
                         mEntidadesSuperClassEHijas[pEntidad].Add(instanciaEntidad);
                         entHija.Hidden = true;
-                        //if (entModel.SubEntities.Count > 1)
-                        //{
-                        //    entHija.Hidden = true;
-                        //}
-                        //else
-                        //{
-                        //    mEntidadesSeVanAPintar.Add(instanciaEntidad);
-                        //}
                     }
                 }
                 else if (pEntidad.SuperclasesUtiles.Count > 0 && (pEntidadPadre == null || !pEntidad.SuperclasesUtiles.Contains(pEntidadPadre.TipoEntidad)))//Solo si no se está agregando después de entrar por el otro IF
                 {
                     ElementoOntologia instanciaEntidadSuperClass = mOntologia.GetEntidadTipo(pEntidad.SuperclasesUtiles[0], true);
-                    instanciaEntidadSuperClass.ID = instanciaEntidadSuperClass.TipoEntidad + "_" + mDocumentoID.ToString() + "_" + Guid.NewGuid();
+                    instanciaEntidadSuperClass.ID = $"{instanciaEntidadSuperClass.TipoEntidad}_{mDocumentoID}_{Guid.NewGuid()}";
                     SemanticEntityModel entModelPadre = ObtenerModeloEntidad(instanciaEntidadSuperClass, pProfundidad, instanciaEntidadSuperClass, pSemPropPadreModel, pIdentidadID);
                     mEntidadesSuperClassEHijas.Add(instanciaEntidadSuperClass, new List<ElementoOntologia>());
                     entModelPadre.SubEntities = new List<SemanticEntityModel>();
@@ -855,7 +853,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
                         else
                         {
                             ElementoOntologia instanciaEntidad = mOntologia.GetEntidadTipo(tipoEntidadSubClass, true);
-                            instanciaEntidad.ID = instanciaEntidad.TipoEntidad + "_" + mDocumentoID.ToString() + "_" + Guid.NewGuid();
+                            instanciaEntidad.ID = $"{instanciaEntidad.TipoEntidad}_{mDocumentoID}_{Guid.NewGuid()}";
                             SemanticEntityModel entHija = ObtenerModeloEntidad(instanciaEntidad, pProfundidad + 1, instanciaEntidadSuperClass, pSemPropPadreModel, pIdentidadID);
                             entHija.Hidden = true;
                             entModelPadre.SubEntities.Add(entHija);
@@ -902,7 +900,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
                 }
 
                 //Preparo que datos hay que cargar:
-                UtilSemCms utilSemCms = new UtilSemCms(mEntityContext, mLoggingService, mConfigService, mRedisCacheWrapper, mVirtuosoAD, mServicesUtilVirtuosoAndReplication);
+                UtilSemCms utilSemCms = new UtilSemCms(mEntityContext, mLoggingService, mConfigService, mRedisCacheWrapper, mVirtuosoAD, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<UtilSemCms>(), mLoggerFactory);
                 foreach (ElementoOntologia elemPrinc in mEntidades)
                 {
                     utilSemCms.ObtenerPropiedadesSelecEntDeEntidad(elemPrinc, mDatosEntidadesExternas, mUrlIntragnoss, filaPersona, mProyectoActual.FilaProyecto, Entidades, PropiedadCallbackTraerMas.Value.Value, PropiedadCallbackTraerMas.Key, true, !string.IsNullOrEmpty(PropiedadIdiomaBusquedaComunidad));
@@ -932,7 +930,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
             {
                 if (ConfigGenXml.PropiedadesTitulo.Count > 0)
                 {
-                    string titulo = "";
+                    StringBuilder titulo = new StringBuilder();
                     Dictionary<string, string> propiedadesTitulo = ConfigGenXml.PropiedadesTitulo;
 
                     foreach (string key in propiedadesTitulo.Keys)
@@ -948,12 +946,12 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
                                     List<string> listaValores = prop.OntenerValoresIdiomaUsuarioUOtrosSiVacio(Ontologia.IdiomaUsuario);
                                     if (listaValores.Count > 0)
                                     {
-                                        titulo += listaValores[0];
+                                        titulo.Append(listaValores[0]);
                                     }
                                 }
                                 else
                                 {
-                                    titulo += prop.PrimerValorPropiedad;
+                                    titulo.Append(prop.PrimerValorPropiedad);
                                 }
                             }
                         }
@@ -965,7 +963,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
                             {
                                 string enlaceOnt = mDocumento.GestorDocumental.ListaDocumentos[mOntologia.OntologiaID].Enlace;
                                 enlaceOnt = enlaceOnt.Substring(0, enlaceOnt.IndexOf(".owl"));
-                                FacetaCN facCN = new FacetaCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+                                FacetaCN facCN = new FacetaCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<FacetaCN>(), mLoggerFactory);
                                 OntologiaProyecto filaOnto = facCN.ObtenerOntologiaProyectoPorEnlace(mDocumento.ProyectoID, enlaceOnt);
 
                                 if (filaOnto != null)
@@ -976,21 +974,21 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
                                 facCN.Dispose();
                             }
 
-                            titulo += nombreOnt;
+                            titulo.Append(nombreOnt);
                         }
                         else
                         {
-                            titulo += UtilCadenas.ObtenerTextoDeIdioma(key, Ontologia.IdiomaUsuario, null);
+                            titulo.Append(UtilCadenas.ObtenerTextoDeIdioma(key, Ontologia.IdiomaUsuario, null));
                         }
                     }
 
-                    mSemRecModel.PageTitle = titulo.Trim();
+                    mSemRecModel.PageTitle = titulo.ToString().Trim();
                 }
             }
             catch (Exception ex)
             {
                 GuardarMensajeErrorAdmin("El título de la página que se forma a partir de propiedades de la ontología que está configurado en el XML no tiene las propiedades correctas.", ex);
-                GuardarLogErrorAJAX("Error docSem '" + mDocumentoID + "' al pintar el título de la página:" + Environment.NewLine + ex.ToString());
+                GuardarLogErrorAJAX($"Error docSem '{mDocumentoID}' al pintar el título de la página:{Environment.NewLine}{ex.ToString()}");
                 throw;
             }
         }
@@ -1032,11 +1030,11 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
         /// </summary>
         private void AgregarInfoExtraElementos()
         {
-            mSemRecModel.AuxiliaryElementsFeaturesInfo = "$baseUrlStatic=" + mBaseURLStatic + "|" + "$baseUrlContent=" + mBaseURLContent + "|$txtHackImgPrincipal=txtHackValorImgRepresentante|";
+            mSemRecModel.AuxiliaryElementsFeaturesInfo = $"$baseUrlStatic={mBaseURLStatic}|$baseUrlContent={mBaseURLContent}|$txtHackImgPrincipal=txtHackValorImgRepresentante|";
 
             if (!string.IsNullOrEmpty(PropiedadIdiomaBusquedaComunidad))
             {
-                mSemRecModel.AuxiliaryElementsFeaturesInfo = string.Concat(mSemRecModel.AuxiliaryElementsFeaturesInfo, "$propLangBusqCom=" + PropiedadIdiomaBusquedaComunidad + "|");
+                mSemRecModel.AuxiliaryElementsFeaturesInfo = string.Concat(mSemRecModel.AuxiliaryElementsFeaturesInfo, $"$propLangBusqCom={PropiedadIdiomaBusquedaComunidad}|");
             }
 
             if (IdiomaDefecto != null)
@@ -1070,7 +1068,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
 
                 foreach (ElementoOntologia entidadHija in mEntidadesSuperClassEHijas[entidadSuper])
                 {
-                    mSemRecModel.AuxiliaryInheritancesInfo += "<|>" + entidadHija.TipoEntidad + "," + AgregarValoresRDF(entidadHija, tipoDominioFun);
+                    mSemRecModel.AuxiliaryInheritancesInfo += $"<|>{entidadHija.TipoEntidad},{AgregarValoresRDF(entidadHija, tipoDominioFun)}";
                 }
 
                 mSemRecModel.AuxiliaryInheritancesInfo += "<|>";
@@ -1141,7 +1139,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
         /// <param name="pTipoDominioFuncional">Indica si el dominio de la propiedad superior es funcional (1), la cardinalidad 1 (2) o no es mayor que 1 (0).</param>
         private string AgregarValoresRDF(ElementoOntologia pEntidad, int pTipoDominioFuncional)
         {
-            string texto = "";
+            StringBuilder texto = new StringBuilder();
 
             if (pEntidad.Subclases.Count > 0)
             {
@@ -1159,7 +1157,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
                 }
             }
 
-            texto += "<" + pEntidad.TipoEntidad + ">";
+            texto.Append($"<{pEntidad.TipoEntidad}>");
             string idEntidad = pEntidad.ID;
 
             if (idEntidad.Contains("/"))
@@ -1171,7 +1169,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
                 idEntidad = idEntidad.Substring(idEntidad.LastIndexOf("#") + 1);
             }
 
-            mSemRecModel.AuxiliaryEntityIDRegisterInfo += "<" + pEntidad.TipoEntidad + "><id>" + idEntidad + "</id>";
+            mSemRecModel.AuxiliaryEntityIDRegisterInfo += $"<{pEntidad.TipoEntidad}><id>{idEntidad}</id>";
 
             foreach (Propiedad propiedad in pEntidad.Propiedades)
             {
@@ -1192,7 +1190,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
 
                             foreach (string valor in propiedad.ListaValoresIdioma[idioma].Keys)
                             {
-                                string valConIdioma = valor + "@" + idioma + "[|lang|]";
+                                string valConIdioma = $"{valor}@{idioma}[|lang|]";
 
                                 if (valoresIdiomasUnificados.Count == count)
                                 {
@@ -1209,21 +1207,21 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
 
                         foreach (string valConIdioma in valoresIdiomasUnificados)
                         {
-                            texto += "<" + propiedad.Nombre + ">" + valConIdioma.Replace("<", "[--C]").Replace(">", "[C--]") + "</" + propiedad.Nombre + ">";
+                            texto.Append($"<{propiedad.Nombre}>{valConIdioma.Replace("<", "[--C]").Replace(">", "[C--]")}</{propiedad.Nombre}>");
                         }
                     }
                     else
                     {
                         if (propiedad.FunctionalProperty || propiedad.CardinalidadMenorOIgualUno || propiedad.EspecifPropiedad.ValoresSepComas || (propiedad.EspecifPropiedad.SelectorEntidad != null && propiedad.EspecifPropiedad.SelectorEntidad.TipoSeleccion == "Tesauro"))
                         {
-                            string valorProp = "";
+                            StringBuilder valorProp = new StringBuilder();
                             string nombreProp = propiedad.Nombre;
 
                             if (propiedad.UnicoValor.Key != null)
                             {
                                 if (propiedad.EspecifPropiedad.SelectorEntidad == null || pTipoDominioFuncional == 0 || (propiedad.EspecifPropiedad.SelectorEntidad.TipoPresentacion != "Combo" && propiedad.EspecifPropiedad.SelectorEntidad.TipoPresentacion != "ListaCheck") || propiedad.ListaValoresUsados.Contains(propiedad.UnicoValor.Key))
                                 {
-                                    valorProp = propiedad.UnicoValor.Key;
+                                    valorProp = new StringBuilder(propiedad.UnicoValor.Key);
                                 }
                             }
                             else if (propiedad.ListaValores != null)
@@ -1241,13 +1239,13 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
                                 {
                                     if (propiedad.EspecifPropiedad.SelectorEntidad == null || pTipoDominioFuncional == 0 || (propiedad.EspecifPropiedad.SelectorEntidad.TipoPresentacion != "Combo" && propiedad.EspecifPropiedad.SelectorEntidad.TipoPresentacion != "ListaCheck") || propiedad.ListaValoresUsados.Contains(valor))
                                     {
-                                        valorProp += coma + valor;
+                                        valorProp.Append(coma + valor);
                                         coma = ",";
                                     }
                                 }
                             }
 
-                            texto += "<" + nombreProp + ">" + valorProp.Replace("<", "[--C]").Replace(">", "[C--]") + "</" + nombreProp + ">";
+                            texto.Append($"<{nombreProp}>{valorProp.Replace("<", "[--C]").Replace(">", "[C--]")}</{nombreProp}>");
                         }
                         else if (propiedad.ListaValores != null)
                         {
@@ -1255,7 +1253,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
                             {
                                 if (propiedad.EspecifPropiedad.SelectorEntidad == null || pTipoDominioFuncional == 0 || (propiedad.EspecifPropiedad.SelectorEntidad.TipoSeleccion != "Combo" && propiedad.EspecifPropiedad.SelectorEntidad.TipoSeleccion != "ListaCheck") || propiedad.ListaValoresUsados.Contains(valor))
                                 {
-                                    texto += "<" + propiedad.Nombre + ">" + valor.Replace("<", "[--C]").Replace(">", "[C--]") + "</" + propiedad.Nombre + ">";
+                                    texto.Append($"<{propiedad.Nombre}>{valor.Replace("<", "[--C]").Replace(">", "[C--]")}</{propiedad.Nombre}>");
                                 }
                             }
                         }
@@ -1265,9 +1263,9 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
                 {//Es ObjectPropert
                     if (string.IsNullOrEmpty(propiedad.Rango))
                     {
-                        string error = "La propiedad '" + propiedad.Nombre + "' no tiene rango y no está configurada como selector de entidad.";
+                        string error = $"La propiedad '{propiedad.Nombre}' no tiene rango y no está configurada como selector de entidad.";
                         GuardarMensajeErrorAdmin(error, null);
-                        throw new Exception(error);
+                        throw new ExcepcionGeneral(error);
                     }
 
                     if (propiedad.FunctionalProperty || propiedad.CardinalidadMenorOIgualUno)
@@ -1295,11 +1293,11 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
                             tipoDomFun = 2;
                         }
 
-                        texto += "<" + propiedad.Nombre + ">";
-                        mSemRecModel.AuxiliaryEntityIDRegisterInfo += "<" + propiedad.Nombre + ">";
-                        texto += AgregarValoresRDF(entidad, tipoDomFun);
-                        texto += "</" + propiedad.Nombre + ">";
-                        mSemRecModel.AuxiliaryEntityIDRegisterInfo += "</" + propiedad.Nombre + ">";
+                        texto.Append($"<{propiedad.Nombre}>");
+                        mSemRecModel.AuxiliaryEntityIDRegisterInfo += $"<{propiedad.Nombre}>";
+                        texto.Append(AgregarValoresRDF(entidad, tipoDomFun));
+                        texto.Append($"</{propiedad.Nombre}>");
+                        mSemRecModel.AuxiliaryEntityIDRegisterInfo += $"</{propiedad.Nombre}>";
                     }
                     else
                     {//Puede tomar varios valores.
@@ -1309,11 +1307,11 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
                             {
                                 if (entidadProp != null)
                                 {
-                                    texto += "<" + propiedad.Nombre + ">";
-                                    mSemRecModel.AuxiliaryEntityIDRegisterInfo += "<" + propiedad.Nombre + ">";
-                                    texto += AgregarValoresRDF(entidadProp, 0);
-                                    texto += "</" + propiedad.Nombre + ">";
-                                    mSemRecModel.AuxiliaryEntityIDRegisterInfo += "</" + propiedad.Nombre + ">";
+                                    texto.Append($"<{propiedad.Nombre}>");
+                                    mSemRecModel.AuxiliaryEntityIDRegisterInfo += $"<{propiedad.Nombre}>";
+                                    texto.Append(AgregarValoresRDF(entidadProp, 0));
+                                    texto.Append($"</{propiedad.Nombre}>");
+                                    mSemRecModel.AuxiliaryEntityIDRegisterInfo += $"</{propiedad.Nombre}>";
                                 }
                             }
                         }
@@ -1323,10 +1321,10 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
                 RegistrarCaracteristicasPropiedad(propiedad, pEntidad, pTipoDominioFuncional);
             }
 
-            texto += "</" + pEntidad.TipoEntidad + ">";
-            mSemRecModel.AuxiliaryEntityIDRegisterInfo += "</" + pEntidad.TipoEntidad + ">";
+            texto.Append($"</{pEntidad.TipoEntidad}>");
+            mSemRecModel.AuxiliaryEntityIDRegisterInfo += $"</{pEntidad.TipoEntidad}>";
 
-            return texto;
+            return texto.ToString();
         }
 
         /// <summary>
@@ -1340,55 +1338,55 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
                 return;
             }
 
-            string idCaracteristica = pEntidad.TipoEntidad + ",,";
+            string idCaracteristica = $"{pEntidad.TipoEntidad},,";
             if (!mSemRecModel.AuxiliaryElementsFeaturesInfo.Contains(idCaracteristica))
             {
-                string caracteristica = idCaracteristica;
+                StringBuilder caracteristica = new StringBuilder(idCaracteristica);
 
                 if (pEntidad.EspecifEntidad.Representantes.Count > 0)
                 {
-                    caracteristica += "atrRepre=";
+                    caracteristica.Append("atrRepre=");
 
                     foreach (Representante representante in pEntidad.EspecifEntidad.Representantes)
                     {
-                        caracteristica += representante.Propiedad.Nombre + ";" + (short)representante.TipoRepres + "&";
+                        caracteristica.Append($"{representante.Propiedad.Nombre};{(short)representante.TipoRepres}&");
                     }
 
-                    caracteristica += ",";
+                    caracteristica.Append(",");
                 }
 
                 if (pEntidad.SuperclasesUtiles.Count > 0)
                 {
-                    caracteristica += "subclase=true,";
-                    caracteristica += "superclases=";
+                    caracteristica.Append("subclase=true,");
+                    caracteristica.Append("superclases=");
 
                     foreach (string superClase in pEntidad.SuperclasesUtiles)
                     {
-                        caracteristica += superClase + ";";
+                        caracteristica.Append($"{superClase};");
                     }
 
-                    caracteristica += ",";
+                    caracteristica.Append(",");
                 }
 
                 if (pEntidad.Subclases.Count > 0)
                 {
-                    caracteristica += "superclase=true,";
-                    caracteristica += "subclases=";
+                    caracteristica.Append("superclase=true,");
+                    caracteristica.Append("subclases=");
 
                     foreach (string subClase in pEntidad.Subclases)
                     {
-                        caracteristica += subClase + ";";
+                        caracteristica.Append($"{subClase};");
                     }
 
-                    caracteristica += ",";
+                    caracteristica.Append(",");
                 }
 
                 if (Entidades[0].TipoEntidad == pEntidad.TipoEntidad)
                 {
-                    caracteristica += "entPrincipal=true,";
+                    caracteristica.Append("entPrincipal=true,");
                 }
 
-                mSemRecModel.AuxiliaryElementsFeaturesInfo += caracteristica + "|";
+                mSemRecModel.AuxiliaryElementsFeaturesInfo += $"{caracteristica}|";
             }
         }
 
@@ -1417,12 +1415,11 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
                 clausulaRecoger += "domSupCardi1=true,";
             }
 
-            //string idCaracteristica = pEntidad.TipoEntidad + "," + pPropiedad.Nombre;
-            string idCaracteristica = pEntidad.TipoEntidad + "," + pPropiedad.Nombre;
+            string idCaracteristica = $"{pEntidad.TipoEntidad},{pPropiedad.Nombre}";
             if (!mSemRecModel.AuxiliaryElementsFeaturesInfo.Contains(idCaracteristica + ","))
             {
 
-                string caracteristica = idCaracteristica + ",tipo=";
+                StringBuilder caracteristica = new StringBuilder($"{idCaracteristica},tipo=");
 
                 if (pPropiedad.Tipo == TipoPropiedad.DatatypeProperty)
                 {
@@ -1430,60 +1427,60 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
 
                     if (pPropiedad.FunctionalProperty)
                     {
-                        caracteristica += "FD,";
+                        caracteristica.Append("FD,");
                         recogerDatos = true;
                     }
                     else if (pPropiedad.CardinalidadMenorOIgualUno)
                     {
-                        caracteristica += "CD,";
+                        caracteristica.Append("CD,");
                         recogerDatos = true;
                     }
                     else if (pPropiedad.EspecifPropiedad.ValoresSepComas)
                     {
-                        caracteristica += "VD,";
+                        caracteristica.Append("VD,");
                         recogerDatos = true;
                     }
                     else
                     {
-                        caracteristica += "LD,";
+                        caracteristica.Append("LD,");
                     }
 
-                    caracteristica += "tipoCampo=" + pPropiedad.EspecifPropiedad.TipoCampo.ToString() + ",";
+                    caracteristica.Append($"tipoCampo={pPropiedad.EspecifPropiedad.TipoCampo},");
 
                     if (!string.IsNullOrEmpty(pPropiedad.EspecifPropiedad.ValorDefectoNoSeleccionable))
                     {
-                        caracteristica += "valDefNoSelecc=" + UtilCadenas.ObtenerTextoDeIdioma(pPropiedad.EspecifPropiedad.ValorDefectoNoSeleccionable, mUtilIdiomas.LanguageCode, null) + ",";
+                        caracteristica.Append($"valDefNoSelecc={UtilCadenas.ObtenerTextoDeIdioma(pPropiedad.EspecifPropiedad.ValorDefectoNoSeleccionable, mUtilIdiomas.LanguageCode, null)},");
                     }
 
                     if (pPropiedad.EspecifPropiedad.RestrNumCaract != null)
                     {
-                        caracteristica += "numCaract=" + pPropiedad.EspecifPropiedad.RestrNumCaract.TipoRestricion + "," + pPropiedad.EspecifPropiedad.RestrNumCaract.Valor + "," + pPropiedad.EspecifPropiedad.RestrNumCaract.ValorHasta + ",";
+                        caracteristica.Append($"numCaract={pPropiedad.EspecifPropiedad.RestrNumCaract.TipoRestricion},{pPropiedad.EspecifPropiedad.RestrNumCaract.Valor},{pPropiedad.EspecifPropiedad.RestrNumCaract.ValorHasta},");
                     }
 
                     if (pTipoDominioFuncional > 0 && recogerDatos)
                     {
-                        caracteristica += clausulaRecoger;
+                        caracteristica.Append(clausulaRecoger);
                     }
 
                     if (pPropiedad.EspecifPropiedad.GrafoDependiente != null && pPropiedad.ValorUnico)
                     {
-                        caracteristica += "propGrafoDep=true,";
+                        caracteristica.Append("propGrafoDep=true,");
 
                         if (PropsEntGrafoDependientes.ContainsKey(new KeyValuePair<string, string>(pPropiedad.Nombre, pPropiedad.ElementoOntologia.TipoEntidad)))
                         {
                             KeyValuePair<string, string> propHijaDep = PropsEntGrafoDependientes[new KeyValuePair<string, string>(pPropiedad.Nombre, pPropiedad.ElementoOntologia.TipoEntidad)];
-                            caracteristica += "propEntDependiente=[" + propHijaDep.Key + "],[" + propHijaDep.Value + "],";
+                            caracteristica.Append($"propEntDependiente=[{propHijaDep.Key}],[{propHijaDep.Value}],");
                         }
 
                         if (pPropiedad.EspecifPropiedad.PropDependiente.Key == null)
                         {
-                            caracteristica += "propGrafoDepSinPadres=true,";
+                            caracteristica.Append("propGrafoDepSinPadres=true,");
                         }
                     }
 
                     if (pPropiedad.EspecifPropiedad.FechaConHora)
                     {
-                        caracteristica += "propFechaConHora=true,";
+                        caracteristica.Append("propFechaConHora=true,");
                     }
                 }
                 else
@@ -1492,123 +1489,118 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
                     {
                         if (pPropiedad.FunctionalProperty)
                         {
-                            caracteristica += "FSEO,";
+                            caracteristica.Append("FSEO,");
 
                             if (pTipoDominioFuncional > 0)
                             {
-                                caracteristica += clausulaRecoger;
+                                caracteristica.Append(clausulaRecoger);
                             }
                         }
                         else if (pPropiedad.CardinalidadMenorOIgualUno || pPropiedad.EspecifPropiedad.SelectorEntidad.TipoSeleccion == "Tesauro")
                         {
-                            caracteristica += "CSEO,";
+                            caracteristica.Append("CSEO,");
 
                             if (pTipoDominioFuncional > 0)
                             {
-                                caracteristica += clausulaRecoger;
+                                caracteristica.Append(clausulaRecoger);
                             }
                         }
                         else
                         {
-                            caracteristica += "LSEO,";
+                            caracteristica.Append("LSEO,");
                         }
 
-                        caracteristica += "tipoCampo=" + TipoCampoOntologia.Texto.ToString() + ",";
+                        caracteristica.Append($"tipoCampo={TipoCampoOntologia.Texto},");
 
                         KeyValuePair<string, string> claveDepen = new KeyValuePair<string, string>(pPropiedad.Nombre, pPropiedad.ElementoOntologia.TipoEntidad);
 
                         if (Ontologia.ConfiguracionPlantilla.PropsSelecEntDependientes != null && Ontologia.ConfiguracionPlantilla.PropsSelecEntDependientes.ContainsKey(claveDepen))
                         {
-                            caracteristica += "propSelectEntDep=true,propSelectEntDependiente=";
+                            caracteristica.Append("propSelectEntDep=true,propSelectEntDependiente=");
 
                             foreach (KeyValuePair<string, string> propsDepen in Ontologia.ConfiguracionPlantilla.PropsSelecEntDependientes[claveDepen])
                             {
-                                caracteristica += propsDepen.Key + ";" + propsDepen.Value + ";;";
+                                caracteristica.Append($"{propsDepen.Key};{propsDepen.Value};;");
                             }
 
-                            caracteristica += ",";
+                            caracteristica.Append(",");
                         }
                     }
                     else if (pPropiedad.FunctionalProperty)
                     {
-                        caracteristica += "FO,";
+                        caracteristica.Append("FO,");
                     }
                     else if (pPropiedad.CardinalidadMenorOIgualUno)
                     {
-                        caracteristica += "CO,";
+                        caracteristica.Append("CO,");
                     }
                     else
                     {
-                        caracteristica += "LO,";
+                        caracteristica.Append("LO,");
                     }
 
-                    caracteristica += "rango=" + pPropiedad.Rango + ",";
+                    caracteristica.Append("rango=" + pPropiedad.Rango + ",");
                 }
 
                 if (pEntidad.SuperclasesUtiles.Count > 0)
                 {
-                    caracteristica += "subclase=true,";
+                    caracteristica.Append("subclase=true,");
                 }
 
-                foreach (Restriccion restriccion in pEntidad.Restricciones)
+                Restriccion restriccion = pEntidad.Restricciones.Find(item => item.Propiedad == pPropiedad.Nombre);
+                if (restriccion != null)
                 {
-                    if (pPropiedad.Nombre.Equals(restriccion.Propiedad))
-                    {
-                        caracteristica += "cardi=" + restriccion.TipoRestriccion + "," + restriccion.Valor + ",";
-                        break;
-                    }
+                    caracteristica.Append($"cardi={restriccion.TipoRestriccion},{restriccion.Valor},");
                 }
-
-                string claseCSS = "EspefPropiedad_" + pPropiedad.Nombre;
 
                 if (pPropiedad.EspecifPropiedad.TextoEliminarElemSel != null)
                 {
-                    caracteristica += "textoEliminar=" + pPropiedad.EspecifPropiedad.TextoEliminarElemSel + ",";
+                    caracteristica.Append("textoEliminar=" + pPropiedad.EspecifPropiedad.TextoEliminarElemSel + ",");
                 }
 
                 if (pPropiedad.EspecifPropiedad.ImagenMini != null)
                 {
-                    caracteristica += "imagenMiniVP=";
+                    caracteristica.Append("imagenMiniVP=");
                     Dictionary<int, int> tamanyos = pPropiedad.EspecifPropiedad.ImagenMini.Tamanios;
                     foreach (int ancho in tamanyos.Keys)
                     {
-                        caracteristica += ancho + "." + tamanyos[ancho] + ".";
+                        caracteristica.Append(ancho + "." + tamanyos[ancho] + ".");
                     }
 
-                    caracteristica += ",";
+                    caracteristica.Append(",");
                 }
 
                 if (pPropiedad.EspecifPropiedad.CapturarFlash.Key != null)
                 {
-                    caracteristica += "CapturarFlash=" + pPropiedad.EspecifPropiedad.CapturarFlash.Key + "," + pPropiedad.EspecifPropiedad.CapturarFlash.Value + ",";
+                    caracteristica.Append($"CapturarFlash={pPropiedad.EspecifPropiedad.CapturarFlash.Key},{pPropiedad.EspecifPropiedad.CapturarFlash.Value},");
                 }
 
                 int numPropRep = ObtenerNumElemRepeticionProp(pPropiedad);
 
                 if (numPropRep > 0)
                 {
-                    caracteristica += "numPropRep=" + numPropRep + ",";
+                    caracteristica.Append($"numPropRep={numPropRep},");
                 }
 
                 if (pPropiedad.EspecifPropiedad.UsarJcrop)
                 {
                     if (pPropiedad.EspecifPropiedad.MinSizeJcrop.Key != 0 && pPropiedad.EspecifPropiedad.MaxSizeJcrop.Key != 0 && (pPropiedad.EspecifPropiedad.MaxSizeJcrop.Key < pPropiedad.EspecifPropiedad.MinSizeJcrop.Key || pPropiedad.EspecifPropiedad.MaxSizeJcrop.Value < pPropiedad.EspecifPropiedad.MinSizeJcrop.Value))
                     {
-                        string error = "JCrop de '" + pPropiedad.Nombre + "' mal configurado, el tamano mínimo no puede ser mayor que el máximo.";
+                        string error = $"JCrop de '{pPropiedad.Nombre}' mal configurado, el tamano mínimo no puede ser mayor que el máximo.";
                         GuardarMensajeErrorAdmin(error, null);
-                        throw new Exception(error);
+                        throw new ExcepcionGeneral(error);
                     }
 
-                    string datosJcrop = pPropiedad.EspecifPropiedad.MinSizeJcrop.Key + ";" + pPropiedad.EspecifPropiedad.MinSizeJcrop.Value + ";" + pPropiedad.EspecifPropiedad.MaxSizeJcrop.Key + ";" + pPropiedad.EspecifPropiedad.MaxSizeJcrop.Value + ";";
-                    caracteristica += "UsarJcrop=" + datosJcrop + ",";
+                    string datosJcrop = $"{pPropiedad.EspecifPropiedad.MinSizeJcrop.Key};{pPropiedad.EspecifPropiedad.MinSizeJcrop.Value};{pPropiedad.EspecifPropiedad.MaxSizeJcrop.Key};{pPropiedad.EspecifPropiedad.MaxSizeJcrop.Value};";
+                    caracteristica.Append($"UsarJcrop={datosJcrop},");
                 }
 
                 if (PropiedadEsMultidioma(pPropiedad))
                 {
-                    caracteristica += "propMultiIdioma=true,";
+                    caracteristica.Append("propMultiIdioma=true,");
                 }
 
-                mSemRecModel.AuxiliaryElementsFeaturesInfo += caracteristica + "|";
+                mSemRecModel.AuxiliaryElementsFeaturesInfo += $"{caracteristica.ToString()}|";
             }
         }
 
@@ -1619,7 +1611,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
         /// <returns>TRUE si una propiedad es multiidioma, FALSE si no</returns>
         private bool PropiedadEsMultidioma(Propiedad pPropiedad)
         {
-            return (pPropiedad.Tipo == TipoPropiedad.DatatypeProperty && !string.IsNullOrEmpty(mIdiomaDefecto) && (pPropiedad.EspecifPropiedad.TipoCampo == TipoCampoOntologia.Tiny || pPropiedad.EspecifPropiedad.TipoCampo == TipoCampoOntologia.Texto || pPropiedad.EspecifPropiedad.TipoCampo == TipoCampoOntologia.TextArea || pPropiedad.EspecifPropiedad.TipoCampo == TipoCampoOntologia.Archivo || pPropiedad.EspecifPropiedad.TipoCampo == TipoCampoOntologia.ArchivoLink || pPropiedad.EspecifPropiedad.TipoCampo == TipoCampoOntologia.EmbebedObject || pPropiedad.EspecifPropiedad.TipoCampo == TipoCampoOntologia.EmbebedLink) && (pPropiedad.EspecifPropiedad.GrafoDependiente == null || !pPropiedad.ValorUnico) && pPropiedad.EspecifPropiedad.GrafoAutocompletar == null && !pPropiedad.EspecifPropiedad.NoMultiIdioma && (string.IsNullOrEmpty(PropiedadIdiomaBusquedaComunidad) || PropiedadIdiomaBusquedaComunidad != pPropiedad.Nombre));
+            return pPropiedad.Tipo == TipoPropiedad.DatatypeProperty && !string.IsNullOrEmpty(mIdiomaDefecto) && (pPropiedad.EspecifPropiedad.TipoCampo == TipoCampoOntologia.Tiny || pPropiedad.EspecifPropiedad.TipoCampo == TipoCampoOntologia.Texto || pPropiedad.EspecifPropiedad.TipoCampo == TipoCampoOntologia.TextArea || pPropiedad.EspecifPropiedad.TipoCampo == TipoCampoOntologia.Archivo || pPropiedad.EspecifPropiedad.TipoCampo == TipoCampoOntologia.ArchivoLink || pPropiedad.EspecifPropiedad.TipoCampo == TipoCampoOntologia.EmbebedObject || pPropiedad.EspecifPropiedad.TipoCampo == TipoCampoOntologia.EmbebedLink) && (pPropiedad.EspecifPropiedad.GrafoDependiente == null || !pPropiedad.ValorUnico) && pPropiedad.EspecifPropiedad.GrafoAutocompletar == null && !pPropiedad.EspecifPropiedad.NoMultiIdioma && (string.IsNullOrEmpty(PropiedadIdiomaBusquedaComunidad) || PropiedadIdiomaBusquedaComunidad != pPropiedad.Nombre);
         }
 
         /// <summary>
@@ -1903,7 +1895,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
             }
 
             //Consulto a virtuoso o el modelo acido los datos:
-            new UtilSemCms(mEntityContext, mLoggingService, mConfigService, mRedisCacheWrapper, mVirtuosoAD, mServicesUtilVirtuosoAndReplication).ObtenerDatosEntidadesExternas(datosEntidadesExternas, mUrlIntragnoss, mIdentidadActual.Persona.FilaPersona, mProyectoActual.FilaProyecto, Entidades);
+            new UtilSemCms(mEntityContext, mLoggingService, mConfigService, mRedisCacheWrapper, mVirtuosoAD, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<UtilSemCms>(), mLoggerFactory).ObtenerDatosEntidadesExternas(datosEntidadesExternas, mUrlIntragnoss, mIdentidadActual.Persona.FilaPersona, mProyectoActual.FilaProyecto, Entidades);
 
             foreach (KeyValuePair<string, string> key in datosEntidadesExternas.Keys)
             {
@@ -1967,7 +1959,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
                                     string valor = UtilSemCms.ObtenerValorSegunPropsEdicion(facetadoDS, entidadID, sepPrin, sepEntreProps, sepFin, (List<string>)datosEntidadesExternas[key][0], Ontologia.IdiomaUsuario);
                                     if (string.IsNullOrEmpty(valor))
                                     {
-                                        mLoggingService.GuardarLogError($"La propiedad auxiliar {entidadID} no tiene valor");
+                                        mLoggingService.GuardarLogError($"La propiedad auxiliar {entidadID} no tiene valor", mlogger);
                                     }
                                     else
                                     {
@@ -2110,16 +2102,6 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
                     pEntModel.TypeofRDFA = Ontologia.NamespacesDefinidos[urlName] + ":" + tipo;
                 }
             }
-
-            //foreach (string superClase in pEntModel.Entity.SuperclasesUtiles)
-            //{
-            //    KeyValuePair<string, string> urlEnt = GestionOWL.SepararURLDeElemento(superClase);
-
-            //    if (urlEnt.Key != null && mOntologia.NamespacesDefinidos.ContainsKey(urlEnt.Key))
-            //    {
-            //        pEntModel.TypeofRDFA += " " + mOntologia.NamespacesDefinidos[urlEnt.Key] + ":" + urlEnt.Value;
-            //    }
-            //}
         }
 
         /// <summary>
@@ -2163,7 +2145,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
         /// Obtiene los elementos ordenados para la vista personalizada para una entiadad.
         /// </summary>
         /// <param name="pEntModel">Modelo de la entidad</param>
-        private List<ElementoOrdenado> ObtenerElementosEntidadParaVistaPersonalizada(SemanticEntityModel pEntModel)
+        private static List<ElementoOrdenado> ObtenerElementosEntidadParaVistaPersonalizada(SemanticEntityModel pEntModel)
         {
             List<ElementoOrdenado> elemsOrd = new List<ElementoOrdenado>();
 
@@ -2214,7 +2196,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
                 }
                 else if (pElemOrdenado.EsSelectorGrupo)
                 {
-                    elementoConContenido = CompletarModeloElementoOrdenadoSelectorGrupo(pElemOrdenado, semPropMod);
+                    elementoConContenido = CompletarModeloElementoOrdenadoSelectorGrupo(pElemOrdenado);
                 }
                 else if (pElemOrdenado.EsEspecial)
                 {
@@ -2249,19 +2231,19 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
                             tipoEntidad = pElemOrdenado.Propiedad.ElementoOntologia.TipoEntidad;
                         }
 
-                        error = " Propiedad '" + pElemOrdenado.Propiedad.Nombre + "', Entidad '" + idEntidad + "' del Tipo '" + tipoEntidad + "'";
+                        error = $" Propiedad '{pElemOrdenado.Propiedad.Nombre}', Entidad '{idEntidad}' del Tipo '{tipoEntidad}'";
                     }
                     else if (pElemOrdenado.EsGrupo)
                     {
-                        error = " Grupo '" + pElemOrdenado.TipoGrupo + "', id '" + pElemOrdenado.IdGrupoLectura + "', class '" + pElemOrdenado.ClaseGrupoLectura + "'";
+                        error = $" Grupo '{pElemOrdenado.TipoGrupo}', id '{pElemOrdenado.IdGrupoLectura}', class '{pElemOrdenado.ClaseGrupoLectura}'";
                     }
                     else if (pElemOrdenado.EsLiteral)
                     {
-                        error = " Literal '" + pElemOrdenado.NombrePropiedad.Key + "', con Link '" + pElemOrdenado.Link + "'";
+                        error = $" Literal '{pElemOrdenado.NombrePropiedad.Key}', con Link '{pElemOrdenado.Link}'";
                     }
 
-                    GuardarMensajeErrorAdmin("Error relacionado con la configuración del XML o los datos de: " + error, ex);
-                    GuardarLogErrorAJAX("Error docSem '" + mDocumentoID + "' en" + error + " Error: " + Environment.NewLine + ex.ToString());
+                    GuardarMensajeErrorAdmin($"Error relacionado con la configuración del XML o los datos de: {error}", ex);
+                    GuardarLogErrorAJAX($"Error docSem '{mDocumentoID}' en {error} Error: {Environment.NewLine}{ex.ToString()}");
                 }
 
                 throw;
@@ -2315,11 +2297,11 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
             {//Es ObjectPropert
                 if (propiedad.EspecifPropiedad.SelectorEntidad != null && (pSemPropModel.ReadMode || propiedad.EspecifPropiedad.SelectorEntidad.TipoSeleccion != "Edicion"))
                 {
-                    return AgregarObjectSelectorEntidad(pElemOrdenado, pSemPropModel, pIdentidadID);
+                    return AgregarObjectSelectorEntidad(pSemPropModel, pIdentidadID);
                 }
                 else
                 {
-                    return AgregarObjectProperty(pElemOrdenado, pSemPropModel, pIdentidadID);
+                    return AgregarObjectProperty(pSemPropModel, pIdentidadID);
                 }
             }
 
@@ -2333,7 +2315,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
         /// </summary>
         /// <param name="pElemOrdenado">Elemento ordenado del modelo de propiedad</param>
         /// <param name="pSemPropModel">Modelo de propiedad para un grupo</param>
-        private bool AgregarObjectSelectorEntidad(ElementoOrdenado pElemOrdenado, SemanticPropertyModel pSemPropModel, Guid pIdentidadID)
+        private bool AgregarObjectSelectorEntidad(SemanticPropertyModel pSemPropModel, Guid pIdentidadID)
         {
             Propiedad propiedad = pSemPropModel.Element.Propiedad;
             pSemPropModel.OntologyPropInfo.UniqueValue = (propiedad.FunctionalProperty || propiedad.CardinalidadMenorOIgualUno);
@@ -2715,7 +2697,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
                     }
                     else
                     {
-                        pPropiedad.EspecifPropiedad.UrlLinkDelValor = mBaseURLIdioma + "/" + mUtilIdiomas.GetText("URLSEM", "RECURSOINVITADO") + "/" + UtilCadenas.EliminarCaracteresUrlSem(pPropiedad.PrimerValorPropiedad) + "/" + idRec;
+                        pPropiedad.EspecifPropiedad.UrlLinkDelValor = $"{mBaseURLIdioma}/{mUtilIdiomas.GetText("URLSEM", "RECURSOINVITADO")}/{UtilCadenas.EliminarCaracteresUrlSem(pPropiedad.PrimerValorPropiedad)}/{idRec}";
                     }
 
                     pPropiedad.EspecifPropiedad.NuevaPestanya = pSemPropModel.Element.Propiedad.EspecifPropiedad.SelectorEntidad.NuevaPestanya;
@@ -2909,9 +2891,9 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
         private void GenerarDatosLecturaSelectorEntidadUrlsRecurso(SemanticPropertyModel pSemPropModel)
         {
             DataWrapperDocumentacion dataWrapperDocumentacion = null;
-            Dictionary<Guid, string> listaRec = new UtilSemCms(mEntityContext, mLoggingService, mConfigService, mRedisCacheWrapper, mVirtuosoAD, mServicesUtilVirtuosoAndReplication).GenerarOntologiaAuxiliarDocumentosExternos(pSemPropModel.Element.Propiedad, mDatosEntidadesExternas, out dataWrapperDocumentacion);
+            Dictionary<Guid, string> listaRec = new UtilSemCms(mEntityContext, mLoggingService, mConfigService, mRedisCacheWrapper, mVirtuosoAD, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<UtilSemCms>(), mLoggerFactory).GenerarOntologiaAuxiliarDocumentosExternos(pSemPropModel.Element.Propiedad, mDatosEntidadesExternas, out dataWrapperDocumentacion);
 
-            GestorDocumental gestorDocumental = new GestorDocumental(dataWrapperDocumentacion, mLoggingService, mEntityContext);
+            GestorDocumental gestorDocumental = new GestorDocumental(dataWrapperDocumentacion, mLoggingService, mEntityContext, mLoggerFactory.CreateLogger<GestorDocumental>(), mLoggerFactory);
             pSemPropModel.OntologyPropInfo.EntitySelector.LinkedResources = new List<SemanticPropertyModel.ResourceLinkedToEntitySelector>();
 
             foreach (Guid docID in listaRec.Keys)
@@ -2937,9 +2919,8 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
                 }
                 else
                 {
-                    ProyectoCL proyectoCL = new ProyectoCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mVirtuosoAD, mServicesUtilVirtuosoAndReplication);
+                    ProyectoCL proyectoCL = new ProyectoCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mVirtuosoAD, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<ProyectoCL>(), mLoggerFactory);
                     resourceLink.Link = UrlsSemanticas.GetURLBaseRecursosFichaConIDs(mBaseURLIdioma, mUtilIdiomas, proyectoCL.ObtenerNombreCortoProyecto(filaDoc.ProyectoID.Value), null, UtilCadenas.EliminarCaracteresUrlSem(filaDoc.Titulo), filaDoc.DocumentoID, null, false);
-                    //resourceLink.Link = GnossUrlsSemanticas.GetURLBaseRecursosRecursoInvitadoConIDS(mBaseURLIdioma, null, mUtilIdiomas, UtilCadenas.EliminarCaracteresUrlSem(filaDoc.Titulo), filaDoc.DocumentoID);
                 }
 
                 foreach (EstiloPlantillaEspecifProp estiloAtrRec in pSemPropModel.Element.Propiedad.EspecifPropiedad.SelectorEntidad.PropiedadesLectura)
@@ -2993,7 +2974,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
                                 string fileName = Documento.FilaDocumento.NombreCategoriaDoc;
 
                                 string[] elems = fileName.Split(new string[] { "." }, StringSplitOptions.RemoveEmptyEntries);
-                                string extension = "." + elems.Last();
+                                string extension = "." + elems[elems.Length - 1];
 
                                 if (fileName.Contains(extension))
                                 {
@@ -3071,20 +3052,17 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
 
             if (nombreElem != null)
             {
-                foreach (string valor in pSemPropModel.Element.Propiedad.ValoresUnificados.Keys)
+                foreach (string valor in pSemPropModel.Element.Propiedad.ValoresUnificados.Keys.Where(item => item.Contains('/')))
                 {
-                    if (valor.Contains("/"))
-                    {
-                        Guid peroGruID = Guid.Empty;
-                        Guid.TryParse(valor.Substring(valor.LastIndexOf("/") + 1), out peroGruID);
+                    Guid peroGruID;
+                    Guid.TryParse(valor.Substring(valor.LastIndexOf("/") + 1), out peroGruID);
 
-                        if (peroGruID != Guid.Empty && nombreElem.ContainsKey(peroGruID))
-                        {
-                            SemanticPropertyModel.ResourceLinkedToEntitySelector resource = new SemanticPropertyModel.ResourceLinkedToEntitySelector();
-                            resource.Title = nombreElem[peroGruID];
-                            resource.Key = peroGruID;
-                            pSemPropModel.OntologyPropInfo.EntitySelector.LinkedResources.Add(resource);
-                        }
+                    if (peroGruID != Guid.Empty && nombreElem.ContainsKey(peroGruID))
+                    {
+                        SemanticPropertyModel.ResourceLinkedToEntitySelector resource = new SemanticPropertyModel.ResourceLinkedToEntitySelector();
+                        resource.Title = nombreElem[peroGruID];
+                        resource.Key = peroGruID;
+                        pSemPropModel.OntologyPropInfo.EntitySelector.LinkedResources.Add(resource);
                     }
                 }
             }
@@ -3314,13 +3292,11 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
             {
                 string[] elems = selectorEnt.ExtraWhereAutocompletar.Split(new string[] { "|||" }, StringSplitOptions.RemoveEmptyEntries);
 
-                foreach (string elem in elems)
+                string elemento = elems.FirstOrDefault(item => item.StartsWith("Titulo="));
+
+                if (!string.IsNullOrEmpty(elemento))
                 {
-                    if (elem.StartsWith("Titulo="))
-                    {
-                        pSemPropModel.OntologyPropInfo.EntitySelector.ExtraTitleAutoComplete = elem.Substring(elem.IndexOf("=") + 1);
-                        break;
-                    }
+                    pSemPropModel.OntologyPropInfo.EntitySelector.ExtraTitleAutoComplete = elemento.Substring(elemento.IndexOf("=") + 1);
                 }
             }
 
@@ -3329,7 +3305,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
             string urlProp = "";
             string urlTipoEntSol = "";
             string extraWhere = "";
-            string[] propEdicion = selectorEnt.PropiedadesEdicion.ToArray();
+            List<string> propEdicion = selectorEnt.PropiedadesEdicion.Where(item => item != FacetadoAD.RDF_TYPE).ToList();
             string idioma = "";
 
             if (selectorEnt.UrlEntContenedora != null)
@@ -3362,7 +3338,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
             pSemPropModel.OntologyPropInfo.EntitySelector.EntityTypeRequestedUrl = urlTipoEntSol;
             pSemPropModel.OntologyPropInfo.EntitySelector.ExtraWhereAutoComplete = extraWhere;
             pSemPropModel.OntologyPropInfo.EntitySelector.Language = idioma;
-            pSemPropModel.OntologyPropInfo.EntitySelector.EditionProperties = new List<string>(propEdicion);
+            pSemPropModel.OntologyPropInfo.EntitySelector.EditionProperties = propEdicion;
 
             if (selectorEnt.ExtraWhereAutocompletarExtras != null)
             {
@@ -3373,13 +3349,11 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
                     string titulo = null;
                     string[] elems = extraWhereExtraL.Split(new string[] { "|||" }, StringSplitOptions.RemoveEmptyEntries);
 
-                    foreach (string elem in elems)
+                    string elemento = elems.FirstOrDefault(item => item.StartsWith("Titulo="));
+
+                    if (!string.IsNullOrEmpty(elemento))
                     {
-                        if (elem.StartsWith("Titulo="))
-                        {
-                            titulo = elem.Substring(elem.IndexOf("=") + 1);
-                            break;
-                        }
+                        titulo = elemento.Substring(elemento.IndexOf("=") + 1);
                     }
 
                     string extraWhereExtra = UtilSemCms.ObtenerExtraWhereConInfoUsuario(extraWhereExtraL, mIdentidadActual.Persona.FilaPersona, mProyectoActual.FilaProyecto, Entidades);
@@ -3416,7 +3390,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
         /// <param name="pPropHasHijo">Propiedad tiene hijo del tesauro semántico</param>
         /// <param name="pFacetadoDS">DataSet de facetas con los datos de los tesauros semánticos</param>
         /// <param name="pIdiomaUsu">Idioma del usuario</param>
-        public void GenerarDatosTesauroSemantico(SemanticPropertyModel pSemPropModel, Dictionary<string, List<KeyValuePair<string, string>>> pEntidades, SortedDictionary<string, List<string>> pEntidadesOrd, string pPropCatName, string pPropHasHijo, FacetadoDS pFacetadoDS, string pIdiomaUsu)
+        public static void GenerarDatosTesauroSemantico(SemanticPropertyModel pSemPropModel, Dictionary<string, List<KeyValuePair<string, string>>> pEntidades, SortedDictionary<string, List<string>> pEntidadesOrd, string pPropCatName, string pPropHasHijo, FacetadoDS pFacetadoDS, string pIdiomaUsu)
         {
             pSemPropModel.OntologyPropInfo.EntitySelector.EntitiesWithChildren = new List<string>();
             pSemPropModel.OntologyPropInfo.EntitySelector.EditionEntitiesValues = new Dictionary<string, string>();
@@ -3427,26 +3401,26 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
             {
                 string ordenValoresTesuroSemantico = ObtenerOrdenValoresTesauroSemantico(pFacetadoDS, pSemPropModel.Element.Propiedad.ListaValores, pSemPropModel.Element.Propiedad.EspecifPropiedad.SelectorEntidad);
 
-                string textoValor = "";
+                StringBuilder textoValor = new StringBuilder();
 
                 foreach (string entidadVal in ordenValoresTesuroSemantico.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries))
                 {
-                    DataRow[] filasEnt = pFacetadoDS.Tables[1].Select("s='" + entidadVal + "' AND p='" + pSemPropModel.Element.Propiedad.EspecifPropiedad.SelectorEntidad.PropiedadesEdicion[3] + "'");
+                    DataRow[] filasEnt = pFacetadoDS.Tables[1].Select($"s='" + entidadVal + "' AND p='" + pSemPropModel.Element.Propiedad.EspecifPropiedad.SelectorEntidad.PropiedadesEdicion[3] + "'");
 
                     if (filasEnt.Length == 0)
                     {
                         break;
                     }
 
-                    textoValor += (string)filasEnt[0]["o"] + " > ";
+                    textoValor.Append($"{(string)filasEnt[0]["o"]}> ");
                 }
 
-                if (!string.IsNullOrEmpty(textoValor))
+                if (textoValor.Length > 0)
                 {
-                    textoValor = textoValor.Substring(0, textoValor.Length - 3);
+                    textoValor.Remove(textoValor.Length - 3, 3);
                 }
 
-                pSemPropModel.OntologyPropInfo.EntitySelector.SemanticThesaurusAddedValue = new KeyValuePair<string, string>(ordenValoresTesuroSemantico, textoValor);
+                pSemPropModel.OntologyPropInfo.EntitySelector.SemanticThesaurusAddedValue = new KeyValuePair<string, string>(ordenValoresTesuroSemantico, textoValor.ToString());
             }
         }
 
@@ -3499,14 +3473,14 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
         /// <param name="pFacetadoDS">Dataset de facetas</param>
         /// <param name="pPropiedad">Propiedad de la que se extraen los valores</param>
         /// <returns>Valores ordenados por jerarquia</returns>
-        private string ObtenerOrdenValoresTesauroSemantico(FacetadoDS pFacetadoDS, Dictionary<string, ElementoOntologia> pValoresPropiedad, SelectorEntidad pSelectorEntidad)
+        private static string ObtenerOrdenValoresTesauroSemantico(FacetadoDS pFacetadoDS, Dictionary<string, ElementoOntologia> pValoresPropiedad, SelectorEntidad pSelectorEntidad)
         {
             Dictionary<string, List<string>> catsEHijos = new Dictionary<string, List<string>>();
             List<string> listaHijosTotal = new List<string>();
 
             foreach (string valor in pValoresPropiedad.Keys)
             {
-                DataRow[] filas = pFacetadoDS.Tables[0].Select("s='" + valor + "' AND p='" + pSelectorEntidad.PropiedadesEdicion[5] + "'");
+                DataRow[] filas = pFacetadoDS.Tables[0].Select($"s='{valor}' AND p='{pSelectorEntidad.PropiedadesEdicion[5]}'");
 
                 catsEHijos.Add(valor, new List<string>());
 
@@ -3533,14 +3507,14 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
                 }
             }
 
-            string ordenValoresTesuroSemantico = padre + ",";
+            StringBuilder ordenValoresTesuroSemantico = new StringBuilder($"{padre},");
 
             while (pValoresPropiedad.ContainsKey(padre))
             {
                 if (catsEHijos[padre].Count > 0)
                 {
                     padre = catsEHijos[padre][0];
-                    ordenValoresTesuroSemantico += padre + ",";
+                    ordenValoresTesuroSemantico.Append($"{padre},");
                 }
                 else
                 {
@@ -3548,7 +3522,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
                 }
             }
 
-            return ordenValoresTesuroSemantico;
+            return ordenValoresTesuroSemantico.ToString();
         }
 
         /// <summary>
@@ -3572,7 +3546,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
         /// <param name="pSeparadorPrincipal">Separador principal del selector</param>
         /// <param name="pSeparadorFin">Separador final del selector</param>
         /// <param name="pSeparadorEntreProps">Separador entre propiedades</param>
-        private void ObtenerSeparadoresSelectorEntidad(string pExtraWhereAuto, out string pSeparadorPrincipal, out string pSeparadorFin, out string pSeparadorEntreProps)
+        private static void ObtenerSeparadoresSelectorEntidad(string pExtraWhereAuto, out string pSeparadorPrincipal, out string pSeparadorFin, out string pSeparadorEntreProps)
         {
             pSeparadorPrincipal = " ";
             pSeparadorFin = null;
@@ -3623,7 +3597,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
 
             if (propiedad.EspecifPropiedad.SelectorEntidad.TipoSeleccion != "UrlRecurso" && propiedad.EspecifPropiedad.SelectorEntidad.TipoSeleccion != "UrlRecursoSemantico")
             {
-                FacetadoCN facetadoCN = new FacetadoCN(mUrlIntragnoss, true, mEntityContext, mLoggingService, mConfigService, mVirtuosoAD, mServicesUtilVirtuosoAndReplication);
+                FacetadoCN facetadoCN = new FacetadoCN(mUrlIntragnoss, true, mEntityContext, mLoggingService, mConfigService, mVirtuosoAD, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<FacetadoCN>(), mLoggerFactory);
                 if (!pCargaDependeciaProps && !string.IsNullOrEmpty(propiedad.EspecifPropiedad.SelectorEntidad.ConsultaEdicion))
                 {
                     pFacetadoDS = facetadoCN.ObtenerRDFXMLSelectorEntidadFormularioPorConsulta(propiedad.EspecifPropiedad.SelectorEntidad, null, propiedad.EspecifPropiedad.SelectorEntidad.ConsultaEdicion, Ontologia.IdiomaUsuario);
@@ -3750,7 +3724,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
                                 listaGrupos.Add(UtilSemCms.ObtenerIDGnoss(valor));
                             }
 
-                            IdentidadCN identCN = new IdentidadCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+                            IdentidadCN identCN = new IdentidadCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<IdentidadCN>(), mLoggerFactory);
                             pNombresGrupos = identCN.ObtenerNombresDeGrupos(listaGrupos);
                             identCN.Dispose();
 
@@ -3774,20 +3748,18 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
                                 listaUsuarios.Add(UtilSemCms.ObtenerIDGnoss(valor));
                             }
 
-                            IdentidadCN identCN = new IdentidadCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+                            IdentidadCN identCN = new IdentidadCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<IdentidadCN>(), mLoggerFactory);
                             Dictionary<Guid, Guid> usuPerfilID = identCN.ObtenerPerfilesIDPorUsuariosIDEnProyecto(listaUsuarios, mProyectoActual.Clave);
                             pPerfilesGnossDW = identCN.ObtenerPerfilesPorPerfilesID(new List<Guid>(usuPerfilID.Values));
                             identCN.Dispose();
 
                             propiedad.LimpiarValor();
 
-                            foreach (Guid usuID in listaUsuarios)
+                            foreach (Guid usuID in listaUsuarios.Where(item => usuPerfilID.ContainsKey(item)))
                             {
-                                if (usuPerfilID.ContainsKey(usuID))
-                                {
-                                    propiedad.AgregarValor(usuPerfilID[usuID].ToString());
-                                    mSemRecModel.AuxiliaryCategoryTesSemNameInfo = mSemRecModel.AuxiliaryCategoryTesSemNameInfo.Replace(usuID + "|", usuPerfilID[usuID] + "|");//Para que coja bien el nombre de edición del perfil.
-                                }
+                                propiedad.AgregarValor(usuPerfilID[usuID].ToString());
+                                //Para que coja bien el nombre de edición del perfil.    
+                                mSemRecModel.AuxiliaryCategoryTesSemNameInfo = mSemRecModel.AuxiliaryCategoryTesSemNameInfo.Replace($"{usuID}|", $"{usuPerfilID[usuID]}|");
                             }
                         }
                         else
@@ -3929,7 +3901,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
         /// <param name="pElemOrdenado">Elemento ordenado del modelo de propiedad</param>
         /// <param name="pSemPropModel">Modelo de propiedad para un grupo</param>
         /// <returns>TRUE si la propiedad debe agregarse al modelo, FALSE en caso contrario</returns>
-        private bool AgregarObjectProperty(ElementoOrdenado pElemOrdenado, SemanticPropertyModel pSemPropModel, Guid pIdentidadID)
+        private bool AgregarObjectProperty(SemanticPropertyModel pSemPropModel, Guid pIdentidadID)
         {
             Propiedad propiedad = pSemPropModel.Element.Propiedad;
             pSemPropModel.OntologyPropInfo.UniqueValue = (propiedad.FunctionalProperty || propiedad.CardinalidadMenorOIgualUno);
@@ -4100,33 +4072,22 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
                         valorColumna = pPropertyValue.RelatedEntity.Entity.Descripcion;
                     }
 
-                    if (pPropertyValue.RelatedEntity.Entity.Descripcion.Equals(pPropertyValue.RelatedEntity.Entity.TipoEntidad)
-                        && pPropertyValue.RelatedEntity.Entity.Propiedades.Count > 0
-                        && pPropertyValue.RelatedEntity.Entity.Propiedades[0].EspecifPropiedad != null
-                        && pPropertyValue.RelatedEntity.Entity.Propiedades[0].EspecifPropiedad.SelectorEntidad != null
-                        && pPropertyValue.RelatedEntity.Entity.Propiedades[0].EspecifPropiedad.SelectorEntidad.TipoSeleccion.Equals("Tesauro")
-                        && pPropertyValue.RelatedEntity.SemanticResourceModel != null
-                        && !string.IsNullOrEmpty(pPropertyValue.RelatedEntity.SemanticResourceModel.AuxiliaryCategoryTesSemNameInfo))
+                    if (pPropertyValue.RelatedEntity.Entity.Descripcion.Equals(pPropertyValue.RelatedEntity.Entity.TipoEntidad) && pPropertyValue.RelatedEntity.Entity.Propiedades.Count > 0 && pPropertyValue.RelatedEntity.Entity.Propiedades[0].EspecifPropiedad != null && pPropertyValue.RelatedEntity.Entity.Propiedades[0].EspecifPropiedad.SelectorEntidad != null && pPropertyValue.RelatedEntity.Entity.Propiedades[0].EspecifPropiedad.SelectorEntidad.TipoSeleccion.Equals("Tesauro") && pPropertyValue.RelatedEntity.SemanticResourceModel != null && !string.IsNullOrEmpty(pPropertyValue.RelatedEntity.SemanticResourceModel.AuxiliaryCategoryTesSemNameInfo))
                     {
-                        string auxiliaryCategoryTesSemNameInfo = ParseoAuxiliaryCategoryTesSemNameInfo(pPropertyValue.RelatedEntity.SemanticResourceModel.AuxiliaryCategoryTesSemNameInfo);
-
                         var categorias = pPropertyValue.RelatedEntity.SemanticResourceModel.AuxiliaryCategoryTesSemNameInfo.Split(new string[] { "|||" }, StringSplitOptions.RemoveEmptyEntries).ToDictionary(item => item.Split(new string[] { "|" }, StringSplitOptions.RemoveEmptyEntries)[0], item => item.Split(new string[] { "|" }, StringSplitOptions.RemoveEmptyEntries)[1]);
 
-                        string nombreCategoria = "";
+                        StringBuilder nombreCategoria = new StringBuilder();
                         string separadorCategorias = "";
                         // Es un tesauro semántico, compongo el nombre con el nombre de las categorías
-                        foreach (string uriCategoria in pPropertyValue.RelatedEntity.Entity.Propiedades[0].ValoresUnificados.Keys)
+                        foreach (string uriCategoria in pPropertyValue.RelatedEntity.Entity.Propiedades[0].ValoresUnificados.Keys.Where(item => categorias.ContainsKey(item)))
                         {
-                            if (categorias.ContainsKey(uriCategoria))
-                            {
-                                nombreCategoria += $"{separadorCategorias}{categorias[uriCategoria]}";
-                                separadorCategorias = " > ";
-                            }
+                            nombreCategoria.Append($"{separadorCategorias}{categorias[uriCategoria]}");
+                            separadorCategorias = " > ";
                         }
 
-                        if (!string.IsNullOrEmpty(nombreCategoria))
+                        if (nombreCategoria.Length > 0)
                         {
-                            valorColumna = nombreCategoria;
+                            valorColumna = nombreCategoria.ToString();
                         }
                     }
 
@@ -4146,20 +4107,6 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
             }
         }
 
-        private string ParseoAuxiliaryCategoryTesSemNameInfo(string auxiliaryCategoryTesSemNameInfo)
-        {
-            //Eliminamos cualquier propiedad que este vacia
-            string devolver = auxiliaryCategoryTesSemNameInfo;
-            while (devolver.Contains("||||"))
-            {
-                int longitud = devolver.IndexOf("||||") - devolver.LastIndexOf("|||", devolver.IndexOf("||||"));
-                string eliminar = devolver.Substring(devolver.LastIndexOf("|||", devolver.IndexOf("||||")), longitud + 1);
-                devolver = devolver.Replace(eliminar, "");
-                mLoggingService.GuardarLogError($"La propiedad {devolver.Replace("|", "")} no tiene valor en el grafo. Por favor reviselo.");
-            }
-            return devolver;
-        }
-
         /// <summary>
         /// Obtiene los títulos de los representantes de las entidades que pueden ser valor de la propiedad actual.
         /// </summary>
@@ -4173,9 +4120,9 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
 
                 if (entidadASelecionarTitulo.EspecifEntidad.Representantes.Count > 0)
                 {
-                    foreach (Representante representante in entidadASelecionarTitulo.EspecifEntidad.Representantes)
+                    foreach (Propiedad propiedadRepresentante in entidadASelecionarTitulo.EspecifEntidad.Representantes.Select(item => item.Propiedad))
                     {
-                        Propiedad propiedadEntASel = representante.Propiedad;
+                        Propiedad propiedadEntASel = propiedadRepresentante;
                         propiedadEntASel.ElementoOntologia = entidadASelecionarTitulo;
                         string valorColumna = "";
 
@@ -4334,7 +4281,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
                 }
                 catch (Exception ex)
                 {
-                    mLoggingService.GuardarLogError(ex);
+                    mLoggingService.GuardarLogError(ex, mlogger);
                 }
             }
 
@@ -4359,11 +4306,11 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
             {
                 if ((propiedad.EspecifPropiedad.TipoCampo == TipoCampoOntologia.Video || propiedad.EspecifPropiedad.TipoCampo == TipoCampoOntologia.Imagen || propiedad.EspecifPropiedad.TipoCampo == TipoCampoOntologia.Archivo || propiedad.EspecifPropiedad.TipoCampo == TipoCampoOntologia.ArchivoLink))
                 {//Así funcionan los fileUpload
-                    pSemPropModel.OntologyPropInfo.ControlID = "Campo_" + propiedad.NombreGeneracionIDs + "_ent_" + propiedad.ElementoOntologia.TipoEntidadGeneracionIDs;
+                    pSemPropModel.OntologyPropInfo.ControlID = $"Campo_{propiedad.NombreGeneracionIDs}_ent_{propiedad.ElementoOntologia.TipoEntidadGeneracionIDs}";
                 }
                 else
                 {
-                    pSemPropModel.OntologyPropInfo.ControlID = "Campo_" + propiedad.NombreGeneracionIDs + Guid.NewGuid();
+                    pSemPropModel.OntologyPropInfo.ControlID = $"Campo_{propiedad.NombreGeneracionIDs}{Guid.NewGuid()}";
                 }
 
                 RegistrarIDControlPropiedad(propiedad, pSemPropModel.OntologyPropInfo.ControlID);
@@ -4374,7 +4321,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
                 pSemPropModel.OntologyPropInfo.DefaultUnselectableValue = UtilCadenas.ObtenerTextoDeIdioma(propiedad.EspecifPropiedad.ValorDefectoNoSeleccionable, Ontologia.IdiomaUsuario, null);
             }
 
-            pSemPropModel.OntologyPropInfo.UniqueValue = (propiedad.FunctionalProperty || propiedad.CardinalidadMenorOIgualUno || propiedad.EspecifPropiedad.ValoresSepComas || pElemOrdenado.SoloPrimerValor);
+            pSemPropModel.OntologyPropInfo.UniqueValue = propiedad.FunctionalProperty || propiedad.CardinalidadMenorOIgualUno || propiedad.EspecifPropiedad.ValoresSepComas || pElemOrdenado.SoloPrimerValor;
             pSemPropModel.OntologyPropInfo.MinCardinality = propiedad.CardinalidadMinima;
             pSemPropModel.OntologyPropInfo.MaxCardinality = propiedad.CardinalidadMaxima;
             pSemPropModel.OntologyPropInfo.FunctionalProperty = propiedad.FunctionalProperty;
@@ -4401,9 +4348,9 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
             pSemPropModel.OntologyPropInfo.MultiLanguage = PropiedadEsMultidioma(propiedad);
 
             if (pSemPropModel.OntologyPropInfo.MultiLanguage)
-            {                
+            {
                 pSemPropModel.OntologyPropInfo.MultiLanguageWithTabs = true;
-                EstablecerValoresMultiIdiomaPropiedadDatos(pSemPropModel);                                               
+                EstablecerValoresMultiIdiomaPropiedadDatos(pSemPropModel);
             }
 
             if (pElemOrdenado.MensajeAyuda != null)
@@ -4433,7 +4380,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
                 }
                 else
                 {
-                    mTxtTituloDocSemID += "," + pSemPropModel.OntologyPropInfo.ControlID;
+                    mTxtTituloDocSemID += $",{pSemPropModel.OntologyPropInfo.ControlID}";
                 }
             }
 
@@ -4446,44 +4393,9 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
                 }
                 else
                 {
-                    mTxtDescripcionDocSemID += "," + pSemPropModel.OntologyPropInfo.ControlID;
+                    mTxtDescripcionDocSemID += $",{pSemPropModel.OntologyPropInfo.ControlID}";
                 }
             }
-        }
-
-        /// <summary>
-        /// Comprueba si una entidad o alguna herencia de la misma es entidad principal.
-        /// </summary>
-        /// <param name="pTipoEntidad">Tipo de entidad</param>
-        private bool EsEntidadPrincipalMirandoHerencias(ElementoOntologia pEntidad)
-        {
-            if (mEntidades.Contains(pEntidad))
-            {
-                return true;
-            }
-
-            foreach (string superClase in pEntidad.SuperclasesUtiles)
-            {
-                foreach (ElementoOntologia entidadPrin in mEntidades)
-                {
-                    if (entidadPrin.TipoEntidad == superClase)
-                    {
-                        return true;
-                    }
-                    else
-                    {
-                        foreach (string superClaseEntPrinc in entidadPrin.SuperclasesUtiles)
-                        {
-                            if (superClaseEntPrinc == superClase)
-                            {
-                                return true;
-                            }
-                        }
-                    }
-                }
-            }
-
-            return false;
         }
 
         /// <summary>
@@ -4497,10 +4409,10 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
             {
                 mSemRecModel.AuxiliaryIDRegisterInfo = "|";
             }
-            string idElem = pPropiedad.ElementoOntologia.TipoEntidad + "," + pPropiedad.Nombre + ",";
+            string idElem = $"{pPropiedad.ElementoOntologia.TipoEntidad},{pPropiedad.Nombre},";
             if (!mSemRecModel.AuxiliaryIDRegisterInfo.Contains(idElem))
             {
-                mSemRecModel.AuxiliaryIDRegisterInfo += idElem + pID + "|";
+                mSemRecModel.AuxiliaryIDRegisterInfo += $"{idElem}{pID}|";
             }
             else
             {
@@ -4508,7 +4420,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
                 string despuesProp = mSemRecModel.AuxiliaryIDRegisterInfo.Substring(mSemRecModel.AuxiliaryIDRegisterInfo.IndexOf(idElem));
                 despuesProp = despuesProp.Substring(despuesProp.IndexOf("|") + 1);
 
-                mSemRecModel.AuxiliaryIDRegisterInfo = antesProp + idElem + pID + "|" + despuesProp;
+                mSemRecModel.AuxiliaryIDRegisterInfo = $"{antesProp}{idElem}{pID}|{despuesProp}";
             }
         }
 
@@ -4516,7 +4428,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
         /// Establece los valores multiIdioma de la propiedad
         /// </summary>
         /// <param name="pSemPropModel">Modelo de propiedad para un grupo</param>
-        private void EstablecerValoresMultiIdiomaPropiedadDatos(SemanticPropertyModel pSemPropModel)
+        private static void EstablecerValoresMultiIdiomaPropiedadDatos(SemanticPropertyModel pSemPropModel)
         {
             pSemPropModel.OntologyPropInfo.PropertyLanguageValues = new Dictionary<string, List<SemanticPropertyModel.PropertyValue>>();
 
@@ -4559,7 +4471,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
                 }
                 else if (propiedad.EspecifPropiedad.TipoCampo == TipoCampoOntologia.ArchivoLink)
                 {
-                    propertyValue.DownloadUrl = mBaseURLContent + "/" + pValor;
+                    propertyValue.DownloadUrl = $"{mBaseURLContent}/{pValor}";
                     pValor = EliminarGuidControlArchivosDeValor(pValor);
                 }
                 else if (propiedad.EspecifPropiedad.TipoCampo == TipoCampoOntologia.Tiny)
@@ -4609,7 +4521,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
                         if (pintarImg)
                         {
                             string urlImg = ControladorDocumentacion.ObtenerRutaImagenDocumento(mDocumento, mBaseURLContent, mBaseURLStatic, true, null, null, "240", ProyectoSeleccionado.Clave);
-                            pValor = "<p class='miniatura'><a href=\"#\"><img title='" + mDocumento.Titulo + "' alt='" + mDocumento.Titulo + "' src='" + urlImg + "'></a></p>" + pValor;
+                            pValor = $"<p class='miniatura'><a href=\"#\"><img title='{mDocumento.Titulo}' alt='{mDocumento.Titulo}' src='{urlImg}'></a></p>{pValor}";
                         }
                     }
 
@@ -4758,13 +4670,13 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
         /// </summary>
         /// <param name="pValor">Valor del archivo</param>
         /// <returns>Valor del archivo si el GUID de control</returns>
-        private string EliminarGuidControlArchivosDeValor(string pValor)
+        private static string EliminarGuidControlArchivosDeValor(string pValor)
         {
             if (pValor.Contains(".") && pValor.Contains("_"))
             {
                 string guidValor = pValor.Substring(0, pValor.LastIndexOf("."));
                 guidValor = guidValor.Substring(guidValor.LastIndexOf("_") + 1);
-                Guid aux = Guid.Empty;
+                Guid aux;
 
                 if (Guid.TryParse(guidValor, out aux))
                 {
@@ -4786,7 +4698,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
                 return;
             }
 
-            string superPropiedad = "";
+            StringBuilder superPropiedad = new StringBuilder();
 
             foreach (string superProp in pSemPropModel.Element.Propiedad.SuperPropiedades)
             {
@@ -4794,7 +4706,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
 
                 if (urlProp.Key != null && pSemPropModel.Element.Propiedad.Ontologia.NamespacesDefinidos.ContainsKey(urlProp.Key))
                 {
-                    superPropiedad += " " + pSemPropModel.Element.Propiedad.Ontologia.NamespacesDefinidos[urlProp.Key] + ":" + urlProp.Value;
+                    superPropiedad.Append($" {pSemPropModel.Element.Propiedad.Ontologia.NamespacesDefinidos[urlProp.Key]}:{urlProp.Value}");
                 }
             }
 
@@ -4828,7 +4740,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
         /// Asigna el título correcto a la propiedad.
         /// </summary>
         /// <param name="pSemPropModel">Modelo de propiedad</param>
-        private void DarTextoCorrectoTituloProp(SemanticPropertyModel pSemPropModel)
+        private static void DarTextoCorrectoTituloProp(SemanticPropertyModel pSemPropModel)
         {
             string posibleNombrePropiedad = pSemPropModel.Element.Propiedad.EspecifPropiedad.NombrePropiedad(pSemPropModel.EntityParent.SemanticResourceModel.ReadMode);
 
@@ -4841,7 +4753,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
             }
             else
             {
-                pSemPropModel.OntologyPropInfo.LabelTitle = pSemPropModel.Element.Propiedad.Nombre; // + ": ";
+                pSemPropModel.OntologyPropInfo.LabelTitle = pSemPropModel.Element.Propiedad.Nombre;
                 pSemPropModel.OntologyPropInfo.LabelTitle = pSemPropModel.OntologyPropInfo.LabelTitle.Replace("_", " ");
             }
         }
@@ -4874,7 +4786,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
                 //si el enlace viene de youtube y el parámetro v no es null
                 if (v != null)
                 {
-                    pPropertyValue.EmbebedLinkYoutube = mHttpContextAccessor.HttpContext.Request.Scheme + "://www.youtube.com/embed/" + v;
+                    pPropertyValue.EmbebedLinkYoutube = $"{mConfigService.Scheme}://www.youtube.com/embed/{v}";
                 }
             }
             else if (pValor.StartsWith("http://www.vimeo.com") || pValor.StartsWith("http://vimeo.com") || pValor.StartsWith("https://www.vimeo.com") || pValor.StartsWith("https://vimeo.com") || pValor.StartsWith("www.vimeo.com"))
@@ -4886,7 +4798,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
 
                 if (exito)
                 {
-                    pPropertyValue.EmbebedLinkVimeo = mHttpContextAccessor.HttpContext.Request.Scheme + "://player.vimeo.com/video/" + idVideo.ToString();
+                    pPropertyValue.EmbebedLinkVimeo = $"{mConfigService.Scheme}://player.vimeo.com/video/{idVideo}";
                 }
             }
             else if (pValor.StartsWith("http://www.slideshare.net") || pValor.StartsWith("http://slideshare.net") || pValor.StartsWith("https://www.slideshare.net") || pValor.StartsWith("https://slideshare.net") || pValor.StartsWith("www.slideshare.net") || pValor.StartsWith("slideshare.net") || pValor.Contains("slideshare.net"))
@@ -4895,7 +4807,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
                 string shared_secret = "Nnmk51ur";
 
                 //timestamp               
-                string timestamp = Convert.ToInt32(Math.Floor((DateTime.UtcNow - new DateTime(1970, 1, 1, 0, 0, 0)).TotalSeconds)).ToString();
+                string timestamp = Convert.ToInt32(Math.Floor((DateTime.UtcNow - DateTime.UnixEpoch).TotalSeconds)).ToString();
 
                 //hash
                 byte[] buffer = Encoding.UTF8.GetBytes(shared_secret + timestamp);
@@ -4905,7 +4817,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
                     cryptoTransformSHA1.ComputeHash(buffer)).Replace("-", "").ToLower();
 
                 string embedCode = "No disponible";
-                string ruta = "https://www.slideshare.net/api/2/get_slideshow?api_key=" + api_key + "&ts=" + timestamp + "&hash=" + hash + "&slideshow_url=" + pValor;
+                string ruta = $"https://www.slideshare.net/api/2/get_slideshow?api_key={api_key}&ts={timestamp}&hash={hash}&slideshow_url={pValor}";
 
                 try
                 {
@@ -4942,6 +4854,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
                 }
                 catch (Exception)
                 {
+                    //No rompemos la ejecución por este fallo
                 }
 
 
@@ -4952,8 +4865,9 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
 
                     pPropertyValue.EmbebedLinkSlideshare = src;
                 }
-                catch (Exception)
+                catch
                 {
+                    //No rompemos la ejecución por un fallo al obtener el link
                 }
             }
         }
@@ -4996,8 +4910,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
                 extraDesc += "&proyectoID=" + mProyectoActual.Clave.ToString();
             }
 
-            //Codificamos el nombre el fichero para no tener problemas con simbolos como el + (se convierte en espacio)
-            string baseUrl = UtilDominios.ObtenerDominioUrl(ProyectoSeleccionado.UrlPropia(UtilIdiomas.LanguageCode), true);
+            //Codificamos el nombre el fichero para no tener problemas con simbolos como el + (se convierte en espacio)            
             string urlComunidad = UrlsSemanticas.ObtenerURLComunidad(UtilIdiomas, BaseURLIdioma, ProyectoSeleccionado.NombreCorto);
             string enlace = $"{urlComunidad}/download-file?doc={documentoDescargaID}&ext={extension}&archivoAdjuntoSem={HttpUtility.UrlEncode(archivo)}&ontologiaAdjuntoSem={mOntologia.OntologiaID}&ID={pIdentidadID}&proy={mDocumento.ProyectoID}{extraDesc}";
             if (!string.IsNullOrEmpty(pIdiomaValor))
@@ -5016,7 +4929,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
         /// <param name="pIdiomaValorSeleccionado">Idioma del valor seleccionado</param>
         private string ObtenerLinkABusquedaFiltrada(string pValorGuardado, string pLink, string pIdiomaValorSeleccionado)
         {
-            if (string.IsNullOrEmpty(pValorGuardado) || mDocumento == null || !mDocumento.GestorDocumental.ListaDocumentos.ContainsKey(mOntologia.OntologiaID) /*|| mDatosPeticion.EsBot*/)
+            if (string.IsNullOrEmpty(pValorGuardado) || mDocumento == null || !mDocumento.GestorDocumental.ListaDocumentos.ContainsKey(mOntologia.OntologiaID))
             {
                 return "";
             }
@@ -5028,25 +4941,24 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
 
             DataWrapperProyecto pestanyasProyecto;
 
-            ProyectoCL proyCL = new ProyectoCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mVirtuosoAD, mServicesUtilVirtuosoAndReplication);
+            ProyectoCL proyCL = new ProyectoCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mVirtuosoAD, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<ProyectoCL>(), mLoggerFactory);
             nombreProy = mProyectoActual.NombreCorto;
             pestanyasProyecto = proyCL.ObtenerPestanyasProyecto(mProyectoActual.Clave);
             proyCL.Dispose();
 
-            foreach (AD.EntityModel.Models.ProyectoDS.ProyectoPestanyaBusqueda filaPestanyaBusqueda in pestanyasProyecto.ListaProyectoPestanyaBusqueda)
-            {
-                if (filaPestanyaBusqueda.CampoFiltro.Contains("rdf:type=" + rdf))
-                {
-                    string idiomaSeleccionado = mUtilIdiomas.LanguageCode;
-                    if (!string.IsNullOrEmpty(pIdiomaValorSeleccionado))
-                    {
-                        idiomaSeleccionado = pIdiomaValorSeleccionado;
-                    }
 
-                    nombreSem = filaPestanyaBusqueda.ProyectoPestanyaMenu.Ruta;
-                    nombreSem = UtilCadenas.ObtenerTextoDeIdioma(nombreSem, idiomaSeleccionado, null);
-                    break;
+            AD.EntityModel.Models.ProyectoDS.ProyectoPestanyaBusqueda filaPestanyaBusqueda = pestanyasProyecto.ListaProyectoPestanyaBusqueda.Find(item => item.CampoFiltro.Contains($"rdf:type={rdf}"));
+
+            if (filaPestanyaBusqueda != null)
+            {
+                string idiomaSeleccionado = mUtilIdiomas.LanguageCode;
+                if (!string.IsNullOrEmpty(pIdiomaValorSeleccionado))
+                {
+                    idiomaSeleccionado = pIdiomaValorSeleccionado;
                 }
+
+                nombreSem = filaPestanyaBusqueda.ProyectoPestanyaMenu.Ruta;
+                nombreSem = UtilCadenas.ObtenerTextoDeIdioma(nombreSem, idiomaSeleccionado, null);
             }
 
             string idioma = null;
@@ -5056,8 +4968,8 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
                 idioma = "@" + pIdiomaValorSeleccionado;
             }
 
-            FacetaCL facetaCL = new FacetaCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mServicesUtilVirtuosoAndReplication);
-            GestionFacetas gestorFacetas = new GestionFacetas(facetaCL.ObtenerFacetasDeProyecto(null, mProyectoActual.Clave, false), mLoggingService);
+            FacetaCL facetaCL = new FacetaCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<FacetaCL>(), mLoggerFactory);
+            GestionFacetas gestorFacetas = new GestionFacetas(facetaCL.ObtenerFacetasDeProyecto(null, mProyectoActual.Clave, false));
             facetaCL.Dispose();
 
             string valorGuardado = pValorGuardado.ToLower();
@@ -5084,12 +4996,12 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
         /// <returns>Valor de la propiedad en el idioma adecuado</returns>
         private List<string> ObtenerValorSegunIdioma(Propiedad pPropiedad, out string pIdiomaValorSeleccionado, SemanticPropertyModel pSemPropModel)
         {
-            string idiomaDefecto = mConfigService.ObtenerIdiomaDefecto();
+            string idiomaDefecto = IdiomaPorDefecto;
             if (!pSemPropModel.ReadMode)
             {
                 if (string.IsNullOrEmpty(idiomaDefecto))
                 {
-                    throw new Exception("El recurso es multiIdioma, pero la comunidad no hay idiomas configurados.");
+                    throw new ExcepcionGeneral("El recurso es multiIdioma, pero la comunidad no hay idiomas configurados.");
                 }
 
                 pIdiomaValorSeleccionado = idiomaDefecto;
@@ -5174,7 +5086,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
         /// <returns>Valor de la propiedad</returns>
         private string ObtenerValorGuardadoPropiedadDatos(Propiedad pPropiedad, out string pIdiomaValorSeleccionado, SemanticPropertyModel pSemPropModel)
         {
-            string valorGuardado = null;
+            StringBuilder valorGuardado = new StringBuilder();
             string idiomaValorSeleccionado = null;
 
             if (pPropiedad.ListaValoresIdioma.Count > 0)
@@ -5183,42 +5095,38 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
 
                 if (valoresGuard.Count > 0)
                 {
-                    valorGuardado = valoresGuard[0];
+                    valorGuardado = new StringBuilder(valoresGuard[0]);
                 }
             }
             else
             {
-                valorGuardado = pPropiedad.UnicoValor.Key;
+                valorGuardado = new StringBuilder(pPropiedad.UnicoValor.Key);
 
-                if (!pPropiedad.FunctionalProperty && valorGuardado == null)
+                if (!pPropiedad.FunctionalProperty && valorGuardado.Length == 0 && pPropiedad.ListaValores.Count > 0)
                 {
                     //Es una propiedad no funcional con cardinalidad-máxima = 1 -> Tiene 1 valor o ningunao.
-                    if (pPropiedad.ListaValores.Count > 0)
+                    string separador = "";
+                    //Agregamos el 1º valor:
+                    foreach (string valor in pPropiedad.ListaValores.Keys)
                     {
-                        string separador = "";
-                        valorGuardado = "";
-                        //Agregamos el 1º valor:
-                        foreach (string valor in pPropiedad.ListaValores.Keys)
+                        if (!string.IsNullOrEmpty(valor))
                         {
-                            if (!string.IsNullOrEmpty(valor))
-                            {
-                                valorGuardado += separador + valor;
-                                separador = ", ";
-                            }
+                            valorGuardado.Append(separador + valor);
+                            separador = ", ";
                         }
                     }
                 }
             }
 
-            if (valorGuardado == null && pPropiedad.EspecifPropiedad.ValorPorDefecto != null)
+            if (valorGuardado.Length == 0 && pPropiedad.EspecifPropiedad.ValorPorDefecto != null)
             {
-                valorGuardado = pPropiedad.EspecifPropiedad.ValorPorDefecto;
+                valorGuardado = new StringBuilder(pPropiedad.EspecifPropiedad.ValorPorDefecto);
             }
 
-            valorGuardado = FormatearSegunPropiedadValor(pPropiedad, valorGuardado, pSemPropModel.ReadMode);
+            valorGuardado = new StringBuilder(FormatearSegunPropiedadValor(pPropiedad, valorGuardado.ToString(), pSemPropModel.ReadMode));
 
             pIdiomaValorSeleccionado = idiomaValorSeleccionado;
-            return valorGuardado;
+            return valorGuardado.ToString();
         }
 
         /// <summary>
@@ -5230,7 +5138,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
         /// <returns>Valor formateado de una propiedad según las características de ésta</returns>
         private string FormatearSegunPropiedadValor(Propiedad pPropiedad, string pValor, bool pReadMode)
         {
-            if (pValor != null)
+            if (!string.IsNullOrEmpty(pValor))
             {
                 pValor = pValor.Trim();
 
@@ -5245,16 +5153,16 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
 
                         if (pPropiedad.EspecifPropiedad.FechaConHora && pValor.Length == 14)
                         {
-                            hora = " " + pValor.Substring(8, 2) + ":" + pValor.Substring(10, 2) + ":" + pValor.Substring(12, 2);
+                            hora = $" {pValor.Substring(8, 2)}:{pValor.Substring(10, 2)}:{pValor.Substring(12, 2)}";
                         }
 
-                        pValor = dia + "/" + mes + "/" + ano + hora;
+                        pValor = $"{dia}/{mes}/{ano}{hora}";
                     }
                     catch (Exception ex)
                     {
-                        GuardarMensajeErrorAdmin("Fecha incorreta al convertirla de entero en propiedad '" + pPropiedad.Nombre + "'.", ex);
+                        GuardarMensajeErrorAdmin($"Fecha incorreta al convertirla de entero en propiedad '{pPropiedad.Nombre}'.", ex);
                         GuardarLogErrorAJAX(ex.ToString());
-                        throw new Exception("Fecha incorreta al convertirla de entero en propiedad '" + pPropiedad.Nombre + "'.");
+                        throw new ExcepcionGeneral($"Fecha incorreta al convertirla de entero en propiedad '{pPropiedad.Nombre}'.");
                     }
                 }
                 else if (pPropiedad.EspecifPropiedad.TipoCampo == TipoCampoOntologia.Boleano)
@@ -5328,7 +5236,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
         /// </summary>
         /// <param name="pPropiedad">Propiedad</param>
         /// <returns></returns>
-        private bool SePuedeAgregarMasValoresAPropiedad(Propiedad pPropiedad)
+        private static bool SePuedeAgregarMasValoresAPropiedad(Propiedad pPropiedad)
         {
             if (pPropiedad.ElementoOntologia.Restricciones.Count > 0)
             {
@@ -5413,7 +5321,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
             if (pintar && mSemRecModel.ReadMode && pPropiedad.EspecifPropiedad.PrivadoParaGrupoEditores != null)
             {
                 pintar = false;
-                IdentidadCN identCN = new IdentidadCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+                IdentidadCN identCN = new IdentidadCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<IdentidadCN>(), mLoggerFactory);
                 //Buscar si la identidad participa en alguno de los grupos
                 if (identCN.ParticipaIdentidadEnGrupo(pIdentidadID, pPropiedad.EspecifPropiedad.PrivadoParaGrupoEditores) || identCN.ParticipaIdentidadMyGnossParticipaEnGrupo(pIdentidadID, pPropiedad.EspecifPropiedad.PrivadoParaGrupoEditores))
                 {
@@ -5454,7 +5362,6 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
                     return false;
                 }
             }
-            //else if (pSemPropModel.Element.Propiedad.EspecifPropiedad.SelectorEntidad != null && pSemPropModel.Element.Propiedad.EspecifPropiedad.SelectorEntidad.TipoSeleccion == "Tesauro")
             else if (pPropiedad.EspecifPropiedad.SelectorEntidad == null && pPropiedad.ValoresUnificados.Count > 0)
             {
                 ElementoOntologia primeraEntHija = pPropiedad.ValoresUnificados.Values.ToList()[0];
@@ -5483,11 +5390,10 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
         {
             if (pSemPropModel.ReadMode && (string)pElemOrdenado.DatosEspecial["TipoEspecial"] == "Faceta")
             {
-                string idPanel = "panFac_" + Guid.NewGuid();
                 pSemPropModel.EspecialPropInfo = new SemanticPropertyModel.EspecialProp();
                 pSemPropModel.EspecialPropInfo.Facet = (string)pElemOrdenado.DatosEspecial["NombreFaceta"];
                 pSemPropModel.EspecialPropInfo.Graph = (string)pElemOrdenado.DatosEspecial["Grafo"];
-                string parametros = "";
+                StringBuilder parametros = new StringBuilder();
 
                 foreach (string parametro in ((string)pElemOrdenado.DatosEspecial["Parametros"]).Split(new char[] { '|' }, StringSplitOptions.RemoveEmptyEntries))
                 {
@@ -5503,22 +5409,22 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
                             Propiedad propiedad = EstiloPlantilla.ObtenerPropiedadACualquierNivelPorNombre(propEnt[0], propEnt[1], entidad);
                             if (propiedad != null && propiedad.ValoresUnificados.Count > 0)
                             {
-                                parametros += parte1 + new List<string>(propiedad.ValoresUnificados.Keys)[0].ToLower() + "|";
+                                parametros.Append($"{parte1}{new List<string>(propiedad.ValoresUnificados.Keys)[0].ToLower()}|");
                             }
                         }
                     }
                     else
                     {
-                        parametros += parametro + "|";
+                        parametros.Append($"{parametro}|");
                     }
                 }
 
                 if (parametros.Length > 0)
                 {
-                    parametros = parametros.Substring(0, parametros.Length - 1);
+                    parametros = parametros.Remove(parametros.Length - 1, 1);
                 }
 
-                pSemPropModel.EspecialPropInfo.Parameters = parametros;
+                pSemPropModel.EspecialPropInfo.Parameters = parametros.ToString();
 
                 return true;
             }
@@ -5601,7 +5507,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
 
                     foreach (string valorConf in pClausula.Valores)
                     {
-                        if (valorConf.StartsWith("@"))
+                        if (valorConf.StartsWith('@'))
                         {
                             Propiedad propClau = null;
                             List<ElementoOntologia> entidadesBuscar = Entidades;
@@ -5618,17 +5524,17 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
 
                             if (propClau != null)
                             {
-                                string valorProp = "";
+                                StringBuilder valorProp = new StringBuilder();
 
                                 foreach (string valor in propClau.ValoresUnificados.Keys)
                                 {
-                                    valorProp += valor + "[&&&]";
+                                    valorProp.Append($"{valor}[&&&]");
                                 }
 
-                                if (!string.IsNullOrEmpty(valorProp))
+                                if (valorProp.Length > 0)
                                 {
-                                    valorProp = valorProp.Substring(0, valorProp.Length - 5);
-                                    valores.Add(valorProp);
+                                    valorProp = valorProp.Remove(valorProp.Length - 5, 5);
+                                    valores.Add(valorProp.ToString());
                                 }
                             }
                         }
@@ -5663,12 +5569,9 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
                     {
                         List<string> contenedor = new List<string>(valores[0].Split(new string[] { "[&&&]" }, StringSplitOptions.RemoveEmptyEntries));
 
-                        foreach (string valor in valores[1].Split(new string[] { "[&&&]" }, StringSplitOptions.RemoveEmptyEntries))
+                        if (valores[1].Split(new string[] { "[&&&]" }, StringSplitOptions.RemoveEmptyEntries).Any(item => contenedor.Contains(item)))
                         {
-                            if (contenedor.Contains(valor))
-                            {
-                                return condicion;
-                            }
+                            return condicion;
                         }
                     }
                     else if (valores[0] == valores[1])
@@ -5690,7 +5593,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
                         gruposIDS.Add(new Guid(valor));
                     }
 
-                    IdentidadCN identCN = new IdentidadCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+                    IdentidadCN identCN = new IdentidadCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<IdentidadCN>(), mLoggerFactory);
                     //Buscar si la identidad participa en alguno de los grupos
                     bool pertenece = identCN.ParticipaPerfilEnGrupo(UsuarioActual.PerfilID, gruposIDS);
                     identCN.Dispose();
@@ -5714,14 +5617,11 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
 
             if (pEntModel.SpecificationEntity.ElementosOrdenadosPorCondicion != null)
             {
-                foreach (string condicion in pEntModel.SpecificationEntity.ElementosOrdenadosPorCondicion.Keys)
+                string condicion = pEntModel.SpecificationEntity.ElementosOrdenadosPorCondicion.Keys.FirstOrDefault(item => CumpleRecursoCondicion(item, pIdentidadID));
+                if (!string.IsNullOrEmpty(condicion))
                 {
-                    if (CumpleRecursoCondicion(condicion, pIdentidadID))
-                    {
-                        propiedadesOrdenadas.AddRange(pEntModel.SpecificationEntity.ElementosOrdenadosPorCondicion[condicion]);
-                        EstiloPlantillaEspecifEntidad.DarValorPropiedadAElementosOrdenados(propiedadesOrdenadas, pEntModel.Entity);
-                        break;
-                    }
+                    propiedadesOrdenadas.AddRange(pEntModel.SpecificationEntity.ElementosOrdenadosPorCondicion[condicion]);
+                    EstiloPlantillaEspecifEntidad.DarValorPropiedadAElementosOrdenados(propiedadesOrdenadas, pEntModel.Entity);
                 }
             }
 
@@ -5757,14 +5657,12 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
 
             if (pEntModel.SpecificationEntity.ElementosOrdenadosLecturaPorCondicion != null)
             {
-                foreach (string condicion in pEntModel.SpecificationEntity.ElementosOrdenadosLecturaPorCondicion.Keys)
+                string condicion = pEntModel.SpecificationEntity.ElementosOrdenadosLecturaPorCondicion.Keys.FirstOrDefault(item => CumpleRecursoCondicion(item, pIdentidadID));
+
+                if (!string.IsNullOrEmpty(condicion))
                 {
-                    if (CumpleRecursoCondicion(condicion, pIdentidadID))
-                    {
-                        propiedadesOrdenadasLectura.AddRange(pEntModel.SpecificationEntity.ElementosOrdenadosLecturaPorCondicion[condicion]);
-                        EstiloPlantillaEspecifEntidad.DarValorPropiedadAElementosOrdenados(propiedadesOrdenadasLectura, pEntModel.Entity);
-                        break;
-                    }
+                    propiedadesOrdenadasLectura.AddRange(pEntModel.SpecificationEntity.ElementosOrdenadosLecturaPorCondicion[condicion]);
+                    EstiloPlantillaEspecifEntidad.DarValorPropiedadAElementosOrdenados(propiedadesOrdenadasLectura, pEntModel.Entity);
                 }
             }
 
@@ -5802,7 +5700,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
         /// <param name="pElemOrdenado">Elemento ordenado del modelo de propiedad</param>
         /// <param name="pSemPropModel">Modelo de propiedad para un grupo</param>
         /// <returns>TRUE si el selector de grupo tiene que agregarse, FALSE si no</returns>
-        private bool CompletarModeloElementoOrdenadoSelectorGrupo(ElementoOrdenado pElemOrdenado, SemanticPropertyModel pSemPropModel)
+        private bool CompletarModeloElementoOrdenadoSelectorGrupo(ElementoOrdenado pElemOrdenado)
         {
             int count = 0;
 
@@ -5882,7 +5780,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
             {
                 pSemPropModel.GroupInfo.IncludeGnossIcon = true;
                 pSemPropModel.GroupInfo.GnossIconIsPrivate = (mDocumento.FilaDocumentoWebVinBR != null && mDocumento.FilaDocumentoWebVinBR.PrivadoEditores || (!mDocumento.FilaDocumento.Publico && mProyectoActual.Clave.Equals(ProyectoAD.MetaProyecto)));
-                pSemPropModel.GroupInfo.GnossIconName = new ControladorDocumentacion(mLoggingService, mEntityContext, mConfigService, mRedisCacheWrapper, mGnossCache, mEntityContextBASE, mVirtuosoAD, mHttpContextAccessor, mServicesUtilVirtuosoAndReplication).ObtenerNombreIconoDocumentoSem(mDocumento);
+                pSemPropModel.GroupInfo.GnossIconName = new ControladorDocumentacion(mLoggingService, mEntityContext, mConfigService, mRedisCacheWrapper, mGnossCache, mEntityContextBASE, mVirtuosoAD, mHttpContextAccessor, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<ControladorDocumentacion>(), mLoggerFactory).ObtenerNombreIconoDocumentoSem(mDocumento);
             }
 
             int profundidadHijos = pSemPropModel.Depth;
@@ -5975,8 +5873,8 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
 
         private void CargarIdiomasModel()
         {
-            ParametroAplicacionCL paramCL = new ParametroAplicacionCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mServicesUtilVirtuosoAndReplication);
-            if (mOntologia.ConfiguracionPlantilla != null && mOntologia.ConfiguracionPlantilla.MultiIdioma && !(ParametrosGeneralesRow.IdiomaDefecto == null) && !string.IsNullOrEmpty(ParametrosGeneralesRow.IdiomaDefecto))
+            ParametroAplicacionCL paramCL = new ParametroAplicacionCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<ParametroAplicacionCL>(), mLoggerFactory);
+            if (mOntologia.ConfiguracionPlantilla != null && mOntologia.ConfiguracionPlantilla.MultiIdioma && ParametrosGeneralesRow.IdiomaDefecto != null && !string.IsNullOrEmpty(ParametrosGeneralesRow.IdiomaDefecto))
             {//Es multiidioma:
                 IdiomaDefecto = ParametrosGeneralesRow.IdiomaDefecto;
                 IdiomasDisponibles = paramCL.ObtenerListaIdiomasDictionary();
@@ -6016,7 +5914,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
                     ObtenerPropiedadesGrafoDependientesDeEntidad(elemPrinc);
                 }
 
-                FacetadoCN facetadoCN = new FacetadoCN(mUrlIntragnoss, true, mEntityContext, mLoggingService, mConfigService, mVirtuosoAD, mServicesUtilVirtuosoAndReplication);
+                FacetadoCN facetadoCN = new FacetadoCN(mUrlIntragnoss, true, mEntityContext, mLoggingService, mConfigService, mVirtuosoAD, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<FacetadoCN>(), mLoggerFactory);
 
                 foreach (string grafo in mDatosEntidadesGrafoDep.Keys)
                 {
@@ -6095,7 +5993,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
         /// <param name="pError">Cadena de texto con el error</param>
         private void GuardarLogErrorAJAX(string pError)
         {
-            mLoggingService.GuardarLogError(pError);
+            mLoggingService.GuardarLogError(pError, mlogger);
         }
 
         /// <summary>
@@ -6182,7 +6080,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
                 semRecModel.OntologyJS = pBaseURLContent + "/" + UtilArchivos.ContentOntologias + "/Archivos/" + ontologiaID.ToString().Substring(0, 3) + "/" + ontologiaID + ".js?v=" + pDocumento.GestorDocumental.ListaDocumentos[ontologiaID].FilaDocumento.VersionFotoDocumento;
             }
 
-            SemCmsController semController = new SemCmsController(semRecModel, ontologia, pDocumento, instanciasPrincipales, pProyecto, pIdentidadActual, pUtilIdiomas, pBaseURL, pBaseURLIdioma, pBaseURLContent, pBaseURLStatic, pUrlIntragnoss, mLoggingService, mEntityContext, mConfigService, mHttpContextAccessor, mRedisCacheWrapper, mGnossCache, mVirtuosoAD, mEntityContextBASE, mServicesUtilVirtuosoAndReplication);
+            SemCmsController semController = new SemCmsController(semRecModel, ontologia, pDocumento, instanciasPrincipales, pProyecto, pIdentidadActual, pUtilIdiomas, pBaseURL, pBaseURLIdioma, pBaseURLContent, pBaseURLStatic, pUrlIntragnoss, mLoggingService, mEntityContext, mConfigService, mHttpContextAccessor, mRedisCacheWrapper, mGnossCache, mVirtuosoAD, mEntityContextBASE, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<SemCmsController>(), mLoggerFactory);
             semController.VistaPersonalizada = pVistaPersonalizada;
             semController.ResourceRDF = rdfTexto;
 
@@ -6226,11 +6124,15 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
         /// <returns></returns>
         public List<ElementoOntologia> ObtenerEntidadesPrincipalesRecursoDeBD(Documento pDocumento, Guid pOntologiaID, string pBaseURLFormulariosSem, string pUrlIntragnoss, UtilIdiomas pUtilIdiomas, Proyecto pProyecto, out string pNombreOntologia, out Ontologia pOntologia, out string pRdfTexto, string pParamSemCms, bool pUsarAfinidad = false)
         {
-            ControladorDocumentacion controladorDocumentacion = new ControladorDocumentacion(mLoggingService, mEntityContext, mConfigService, mRedisCacheWrapper, mGnossCache, mEntityContextBASE, mVirtuosoAD, mHttpContextAccessor, mServicesUtilVirtuosoAndReplication);
+            // Hay que comprobar si es la ultima version
+            // En caso de que no lo sea y no lo encuentre en RdfDocumento para regenerar la caché hay que mirar en RdfHistorico y no en virtuoso
+            bool esUltimaVersion = pDocumento.FilaDocumento.UltimaVersion;
+
+            ControladorDocumentacion controladorDocumentacion = new ControladorDocumentacion(mLoggingService, mEntityContext, mConfigService, mRedisCacheWrapper, mGnossCache, mEntityContextBASE, mVirtuosoAD, mHttpContextAccessor, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<ControladorDocumentacion>(), mLoggerFactory);
 
             if (!pDocumento.GestorDocumental.ListaDocumentos.ContainsKey(pOntologiaID))
             {
-                DocumentacionCN docCN = new DocumentacionCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+                DocumentacionCN docCN = new DocumentacionCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<DocumentacionCN>(), mLoggerFactory);
                 pDocumento.GestorDocumental.DataWrapperDocumentacion.Merge(docCN.ObtenerDocumentoPorID(pOntologiaID));
                 docCN.Dispose();
 
@@ -6240,14 +6142,10 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
             //Agrego namespaces y urls:
             string nombreOntologia = pDocumento.GestorDocumental.ListaDocumentos[pOntologiaID].FilaDocumento.Enlace;
             string urlOntologia = pBaseURLFormulariosSem + "/Ontologia/" + nombreOntologia + "#";
-
-            //GestionOWL gestorOWL = new GestionOWL();
-            //gestorOWL.UrlOntologia = urlOntologia;
-            //gestorOWL.NamespaceOntologia = GestionOWL.NAMESPACE_ONTO_GNOSS;
             string namespaceOnto = GestionOWL.NAMESPACE_ONTO_GNOSS;
 
             //Obtengo la ontología y su archivo de configuración:
-            Dictionary<string, List<EstiloPlantilla>> listaEstilos = new Dictionary<string, List<EstiloPlantilla>>();
+            Dictionary<string, List<EstiloPlantilla>> listaEstilos;
             byte[] arrayOntologia = null;
 
             Ontologia ontologia = null;
@@ -6265,7 +6163,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
                 if (listaPropiedades.ContainsKey(PropiedadesOntologia.xmlTroceado.ToString()) && listaPropiedades[PropiedadesOntologia.xmlTroceado.ToString()].ToLower() == "true")
                 {
                     bool obtenidoVirtuoso = false;
-                    rdfTexto = ObtenerRDFDocumento(pDocumento.Clave, pDocumento.FilaDocumento.ProyectoID.Value, namespaceOnto, urlOntologia, nombreOntologia, ontologia, pUrlIntragnoss, false, out obtenidoVirtuoso, pUsarAfinidad);
+                    rdfTexto = ObtenerRDFDocumento(pDocumento.Clave, pDocumento.FilaDocumento.ProyectoID.Value, namespaceOnto, urlOntologia, nombreOntologia, ontologia, pUrlIntragnoss, false, esUltimaVersion, out obtenidoVirtuoso, pUsarAfinidad);
                     rdfObtenido = !obtenidoVirtuoso;
                     urlEntPrincipal = ObtenerTipoEntidadPrincipalRDF(rdfTexto);
                     claveOnto = pOntologiaID + urlEntPrincipal;
@@ -6290,7 +6188,10 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
                         {
                             EstiloPlantilla.OntologiasTrozosCargadas.Add(claveOnto, new KeyValuePair<Guid, Ontologia>(xmlID, ontologia));
                         }
-                        catch (Exception) { }
+                        catch
+                        {
+                            //Si no se pueden añadir no rompemos la ejecución
+                        }
                     }
                     else
                     {
@@ -6319,7 +6220,10 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
                         {
                             EstiloPlantilla.OntologiasCargadas.Add(pOntologiaID, new KeyValuePair<Guid, Ontologia>(xmlID, ontologia));
                         }
-                        catch (Exception) { }
+                        catch
+                        {
+                            //Si no se puede leer la ontología no rompemos la ejecución
+                        }
                     }
                     else
                     {
@@ -6343,11 +6247,11 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
             {
                 if (urlEntPrincipal == null)
                 {
-                    throw new Exception("La ontología " + nombreOntologia + " con ID " + pOntologiaID + " o su archivo de configuración no son correctos:" + Environment.NewLine + ex.ToString());
+                    throw new ExcepcionGeneral($"La ontología {nombreOntologia} con ID {pOntologiaID} o su archivo de configuración no son correctos:{Environment.NewLine}{ex}");
                 }
                 else
                 {
-                    throw new Exception("La ontología troceada " + nombreOntologia + " con ID " + pOntologiaID + " y trozo '" + urlEntPrincipal + "' o su archivo de configuración no son correctos:" + Environment.NewLine + ex.ToString());
+                    throw new ExcepcionGeneral($"La ontología troceada {nombreOntologia} con ID {pOntologiaID} y trozo '{urlEntPrincipal}' o su archivo de configuración no son correctos:{Environment.NewLine}{ex}");
                 }
             }
 
@@ -6356,19 +6260,15 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
                 namespaceOnto = ((EstiloPlantillaConfigGen)listaEstilos["[" + LectorXmlConfig.NodoConfigGen + "]"][0]).Namespace;
             }
 
-            //Obtengo el identificador del documento semántico asociado al CV:
-            //Guid documentoID = pDocumento.Clave;
-
             if (!rdfObtenido)
             {
-                rdfTexto = ObtenerRDFDocumento(pDocumento.Clave, pDocumento.FilaDocumento.ProyectoID.Value, namespaceOnto, urlOntologia, pDocumento.GestorDocumental.ListaDocumentos[pOntologiaID].Enlace, ontologia, pUrlIntragnoss, false, out rdfObtenido, pUsarAfinidad);
+                rdfTexto = ObtenerRDFDocumento(pDocumento.Clave, pDocumento.FilaDocumento.ProyectoID.Value, namespaceOnto, urlOntologia, pDocumento.GestorDocumental.ListaDocumentos[pOntologiaID].Enlace, ontologia, pUrlIntragnoss, false, esUltimaVersion, out rdfObtenido, pUsarAfinidad);
             }
 
-            List<ElementoOntologia> instanciasPrincipales = ObtenerInstanciasPrincipalesDocumento(pDocumento.Clave, pDocumento.FilaDocumento.ProyectoID.Value, namespaceOnto, urlOntologia, pDocumento.GestorDocumental.ListaDocumentos[pOntologiaID].Enlace, ontologia, pUrlIntragnoss, rdfTexto, false);
+            List<ElementoOntologia> instanciasPrincipales = ObtenerInstanciasPrincipalesDocumento(pDocumento.Clave, namespaceOnto, urlOntologia, ontologia, rdfTexto);
 
             if (rdfObtenido)
             {
-                //string ruta = GuardarRdfEnFicheroTemporal(urlOntologia, namespaceOnto, ontologia, instanciasPrincipales);
                 Stream streamRDF = ObtenerRDF(urlOntologia, namespaceOnto, ontologia, instanciasPrincipales);
                 rdfTexto = new StreamReader(streamRDF).ReadToEnd();
 
@@ -6381,23 +6281,6 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
 
             return instanciasPrincipales;
         }
-
-        ///// <summary>
-        ///// Guarda el RDF del recurso en un fichero temporal.
-        ///// </summary>
-        ///// <returns>Ruta del fichero temporal</returns>
-        //private static string GuardarRdfEnFicheroTemporal(string mUrlOntologia, string mNamespaceOntologia, Ontologia mOntologia, List<ElementoOntologia> mEntidadesGuardar)
-        //{
-        //    string nombreTemporal = Path.GetRandomFileName() + ".rdf";
-        //    string ruta = Path.GetTempPath() + nombreTemporal;
-
-        //    GestionOWL gestionOWL = new GestionOWL();
-        //    gestionOWL.UrlOntologia = mUrlOntologia;
-        //    gestionOWL.NamespaceOntologia = mNamespaceOntologia;
-        //    gestionOWL.PasarOWL(ruta, mOntologia, mEntidadesGuardar, null, null);
-
-        //    return ruta;
-        //}
 
         /// <summary>
         /// Obtener el RDF del recurso
@@ -6413,20 +6296,6 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
             return stream;
         }
 
-        //private byte[] StreamToByte(Stream input)
-        //{
-        //    byte[] buffer = new byte[16 * 1024];
-        //    using (MemoryStream ms = new MemoryStream())
-        //    {
-        //        int read;
-        //        while ((read = input.Read(buffer, 0, buffer.Length)) > 0)
-        //        {
-        //            ms.Write(buffer, 0, read);
-        //        }
-        //        return ms.ToArray();
-        //    }
-        //}
-
         /// <summary>
         /// Obtiene el tipo de la entidad principal de un RDF en texto.
         /// </summary>
@@ -6438,7 +6307,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
 
             if (string.IsNullOrEmpty(urlEntPrincipal))
             {
-                throw new Exception("El rdf no tiene entidad principal: " + pRdf + ".");
+                throw new ExcepcionGeneral($"El rdf no tiene entidad principal: {pRdf}.");
             }
 
             urlEntPrincipal = urlEntPrincipal.Substring(urlEntPrincipal.LastIndexOf("/") + 1);
@@ -6512,7 +6381,6 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
                 entPrincID = primeraEntidad;
             }
 
-            docXml = null;
             return entPrincID;
         }
 
@@ -6528,42 +6396,39 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
         /// <param name="pUrlIntragnoss">URL de intragnoss</param>
         /// <param name="pEdicion">Indica si estamos editando el recurso o no</param>
         /// <returns>RDF de un docuemnto</returns>
-        public string ObtenerRDFDocumento(Guid pDocumentoID, Guid pProyectoID, string pNamespaceOnto, string pUrlOnto, string pEnlaceOnto, Ontologia pOntologia, string pUrlIntragnoss, bool pEdicion, out bool pObtenidoDeVirtuoso, bool pUsarAfinidad = false)
+        public string ObtenerRDFDocumento(Guid pDocumentoID, Guid pProyectoID, string pNamespaceOnto, string pUrlOnto, string pEnlaceOnto, Ontologia pOntologia, string pUrlIntragnoss, bool pEdicion, bool pUltimaVersion, out bool pObtenidoDeVirtuoso, bool pUsarAfinidad = false)
         {
-            ControladorDocumentacion controladorDocumentacion = new ControladorDocumentacion(mLoggingService, mEntityContext, mConfigService, mRedisCacheWrapper, mGnossCache, mEntityContextBASE, mVirtuosoAD, mHttpContextAccessor, mServicesUtilVirtuosoAndReplication);
-            //Leo las entidades pricipales del documento RDF:
+            ControladorDocumentacion controladorDocumentacion = new ControladorDocumentacion(mLoggingService, mEntityContext, mConfigService, mRedisCacheWrapper, mGnossCache, mEntityContextBASE, mVirtuosoAD, mHttpContextAccessor, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<ControladorDocumentacion>(), mLoggerFactory);
+            //Leo las entidades pricipales del documento RDF en RdfDocumento_XXX:
             string rdfTexto = controladorDocumentacion.ObtenerTextoRDFDeBDRDF(pDocumentoID, pProyectoID, pNamespaceOnto);
             pObtenidoDeVirtuoso = false;
 
-            if (pEdicion && !string.IsNullOrEmpty(rdfTexto))
+            if (pEdicion && !string.IsNullOrEmpty(rdfTexto) && !rdfTexto.Contains($"{pNamespaceOnto}:") && !rdfTexto.Contains($"xmlns:{pNamespaceOnto}="))
             {
-                if (!rdfTexto.Contains(pNamespaceOnto + ":") && !rdfTexto.Contains("xmlns:" + pNamespaceOnto + "="))
+                try
                 {
-                    try
-                    {
-                        string namespaceGuardado = rdfTexto.Substring(0, rdfTexto.IndexOf("=\"" + pUrlOnto + "\""));
-                        namespaceGuardado = namespaceGuardado.Substring(namespaceGuardado.LastIndexOf("xmlns:") + 6);
-                        rdfTexto = rdfTexto.Replace("xmlns:" + namespaceGuardado + "=", "xmlns:" + pNamespaceOnto + "=");
-                        rdfTexto = rdfTexto.Replace("<" + namespaceGuardado + ":", "<" + pNamespaceOnto + ":").Replace("</" + namespaceGuardado + ":", "</" + pNamespaceOnto + ":");
-                    }
-                    catch (Exception)
-                    {//Que vaya a virtuoso
-                        rdfTexto = null;
-                    }
+                    string namespaceGuardado = rdfTexto.Substring(0, rdfTexto.IndexOf("=\"" + pUrlOnto + "\""));
+                    namespaceGuardado = namespaceGuardado.Substring(namespaceGuardado.LastIndexOf("xmlns:") + 6);
+                    rdfTexto = rdfTexto.Replace($"xmlns:{namespaceGuardado}=", $"xmlns:{pNamespaceOnto}=");
+                    rdfTexto = rdfTexto.Replace($"<{namespaceGuardado}:", $"<{pNamespaceOnto}:").Replace($"</{namespaceGuardado}:", $"</{pNamespaceOnto}:");
+                }
+                catch
+                {
+                    //Que vaya a virtuoso
+                    rdfTexto = null;
                 }
             }
-
-            if (string.IsNullOrEmpty(rdfTexto))
+            // En virtuoso solo están los triples con el ID original del recurso
+            if (string.IsNullOrEmpty(rdfTexto) && pUltimaVersion)
             {
                 pObtenidoDeVirtuoso = true;
                 mLoggingService.AgregarEntrada("FormSem RDF NO está en sqlServer, vamos a virtuoso a por él");
 
-                byte[] rdf = controladorDocumentacion.ObtenerRDFDeVirtuoso(pDocumentoID, pEnlaceOnto, pUrlIntragnoss, pUrlOnto, pNamespaceOnto, pOntologia, pUsarAfinidad);
+                byte[] rdf = controladorDocumentacion.ObtenerRDFDeVirtuoso(controladorDocumentacion.ObtenerDocumentoOriginalID(pDocumentoID), pEnlaceOnto, pUrlIntragnoss, pUrlOnto, pNamespaceOnto, pOntologia, pUsarAfinidad);
 
                 if (rdf == null)
                 {
-                    //GuardarLogError("El recurso " + pDocumento.Clave + " no tiene datos en virtuoso.", null);
-                    throw new Exception("El recurso " + pDocumentoID + " no tiene datos en virtuoso.");
+                    throw new ExcepcionGeneral($"El recurso {pDocumentoID} no tiene datos en virtuoso.");
                 }
 
                 MemoryStream buffer = new MemoryStream(rdf);
@@ -6578,17 +6443,16 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
                     {
                         controladorDocumentacion.BorrarRDFDeBDRDF(pDocumentoID);
                     }
-
-                    ////No lo guardamos en virtuoso, porque el RDF es diferente al que genera en la edición
-                    //if (pOntologia != null)//Para que no se guarde un RDF malo sin los namespaces de la ontología.
-                    //{
-                    //    ControladorDocumentacion.GuardarRDFEnBDRDF(rdfTexto, pDocumentoID, pProyectoID);
-                    //}
                 }
                 catch (Exception)
                 {
-                    //GuardarLogErrorAJAX("Error al guardar el RDF en SqlServer: " + ex.ToString());
+                    //Si no está la tabla no pasa nada
                 }
+            }
+            else if (string.IsNullOrEmpty(rdfTexto))
+            {
+                pObtenidoDeVirtuoso = true;
+                rdfTexto = controladorDocumentacion.ObtenerTextoRDFDeBDRdfHistorico(pDocumentoID, pNamespaceOnto);
             }
 
             mLoggingService.AgregarEntrada("FormSem RDF de documento: " + rdfTexto);
@@ -6609,7 +6473,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
         /// <param name="pRdfTexto">RDF del documento</param>
         /// <param name="pEdicion">Indica si estamos editando el recurso o no</param>
         /// <returns></returns>
-        private List<ElementoOntologia> ObtenerInstanciasPrincipalesDocumento(Guid pDocumentoID, Guid pProyectoID, string pNamespaceOnto, string pUrlOnto, string pEnlaceOnto, Ontologia pOntologia, string pUrlIntragnoss, string pRdfTexto, bool pEdicion)
+        private List<ElementoOntologia> ObtenerInstanciasPrincipalesDocumento(Guid pDocumentoID, string pNamespaceOnto, string pUrlOnto, Ontologia pOntologia, string pRdfTexto)
         {
             List<ElementoOntologia> instanciasPrincipales = null;
 
@@ -6621,7 +6485,11 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
             {
                 urlIntragnoss = GestionOWL.URLIntragnoss;
             }
-            catch { }
+            catch
+            {
+                //Si falla es que no se ha definido la URL intragnoss
+            }
+
             if (string.IsNullOrEmpty(urlIntragnoss))
             {
                 GestionOWL.URLIntragnoss = ListaParametrosAplicacion.FirstOrDefault(item => item.Parametro.Equals(TiposParametrosAplicacion.UrlIntragnoss))?.Valor;
@@ -6633,8 +6501,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
             }
             catch (Exception ex)
             {
-                //GuardarMensajeErrorAdmin("El RDF del recurso " + pDocumento.Clave + " no es correcto. " + ex.Message, rdfTexto);
-                throw new Exception("El RDF del recurso " + pDocumentoID + " no es correcto. " + ex.Message + Environment.NewLine + pRdfTexto);
+                throw new ExcepcionGeneral($"El RDF del recurso {pDocumentoID} no es correcto. {ex.Message}{Environment.NewLine}{pRdfTexto}");
             }
 
             return instanciasPrincipales;
@@ -6673,7 +6540,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
                 }
             }
 
-            throw new Exception("No se ha encontrado la propiedad '" + pPropiedadPag + "' de la entidad '" + pEntidadPag + "' en la ontología.");
+            throw new ExcepcionGeneral("No se ha encontrado la propiedad '" + pPropiedadPag + "' de la entidad '" + pEntidadPag + "' en la ontología.");
         }
 
         /// <summary>
@@ -6699,9 +6566,9 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
                     }
                     else if (prop.Element.Propiedad.Tipo == TipoPropiedad.ObjectProperty && prop.PropertyValues.Count > 0)
                     {
-                        foreach (SemanticPropertyModel.PropertyValue propValue in prop.PropertyValues)
+                        foreach (SemanticEntityModel entityModel in prop.PropertyValues.Select(item => item.RelatedEntity))
                         {
-                            SemanticPropertyModel propHija = ObtenerPropiedadModeloACualquierNivel(pEntidad, pPropiedad, propValue.RelatedEntity, propValue.RelatedEntity.Properties);
+                            SemanticPropertyModel propHija = ObtenerPropiedadModeloACualquierNivel(pEntidad, pPropiedad, entityModel, entityModel.Properties);
 
                             if (propHija != null)
                             {
@@ -6754,7 +6621,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
 
             if (entidades.Count > 0)
             {
-                FacetadoCN facetadoCN = new FacetadoCN(mUrlIntragnoss, true, mEntityContext, mLoggingService, mConfigService, mVirtuosoAD, mServicesUtilVirtuosoAndReplication);
+                FacetadoCN facetadoCN = new FacetadoCN(mUrlIntragnoss, true, mEntityContext, mLoggingService, mConfigService, mVirtuosoAD, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<FacetadoCN>(), mLoggerFactory);
 
                 List<KeyValuePair<string, string>> propsSelectEntDependientes = new List<KeyValuePair<string, string>>();
 
@@ -6793,7 +6660,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
 
                     CargaDatosValoresSelectorEntidadYaAgregados(semPropModel, out facetadoDS, out triplesExt, out aux, out nombresGrupos, out perfilesGnossDW, true);
 
-                    if (datos.Equals(""))
+                    if (string.IsNullOrEmpty(datos))
                     {
                         datos = string.Concat(propEnt.Key, "[[|]]", pTipoEntidad, "[[|]]");
                     }
@@ -6805,27 +6672,27 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
 
                     foreach (string entidadID in triplesExt.Keys)
                     {
-                        string text = "";
+                        StringBuilder text = new StringBuilder();
 
-                        foreach (string propiedadEdicion in semPropModel.SpecificationProperty.SelectorEntidad.PropiedadesEdicion)
+                        foreach (string propiedadEdicion in semPropModel.SpecificationProperty.SelectorEntidad.PropiedadesEdicion.Where(item => item != FacetadoAD.RDF_TYPE))
                         {
                             foreach (KeyValuePair<string, string> valorPropiedad in triplesExt[entidadID].Where(item => item.Key.Equals(propiedadEdicion)))
                             {
-                                text += $"{valorPropiedad.Value} ";
+                                text.Append($"{valorPropiedad.Value} ");
                             }
                         }
 
                         foreach (KeyValuePair<string, string> valorProp in triplesExt[entidadID].Where(item => !semPropModel.SpecificationProperty.SelectorEntidad.PropiedadesEdicion.Contains(item.Key)))
                         {
-                            text += $"{valorProp.Value} ";
+                            text.Append($"{valorProp.Value} ");
                         }
 
                         if (text.Length > 0)
                         {
-                            text = text.Substring(0, text.Length - 1);
+                            text = text.Remove(text.Length - 1, 1);
                         }
 
-                        datos = string.Concat(datos, entidadID, "[[|]]", text, "[[|]]");
+                        datos = string.Concat(datos, entidadID, "[[|]]", text.ToString(), "[[|]]");
                     }
 
                     datos = string.Concat(datos, "[[|||]]");
@@ -6863,7 +6730,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
             {
                 string error = "El RDF que se va a guardar contiene alguna entidad vacía debido a una mala configuración.";
                 GuardarMensajeErrorAdmin(error, null);
-                throw new Exception(error);
+                throw new ExcepcionGeneral(error);
             }
 
             string textoIDSEntidadesAux = null;
@@ -6968,7 +6835,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
                     }
                 }
 
-                IdentidadCN identCN = new IdentidadCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+                IdentidadCN identCN = new IdentidadCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<IdentidadCN>(), mLoggerFactory);
                 Dictionary<Guid, Guid> perfilesUsusID = identCN.ObtenerUsuariosIDPorPerfilID(perfiles);
                 identCN.Dispose();
 
@@ -6979,7 +6846,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
 
                     foreach (string valor in listaValores)
                     {
-                        Guid perfilID = Guid.Empty;
+                        Guid perfilID;
 
                         if (Guid.TryParse(valor, out perfilID))
                         {
@@ -7037,7 +6904,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
                 }
                 else
                 {
-                    instanciaEntidad.ID = instanciaEntidad.TipoEntidadGeneracionClases + "_" + mDocumentoID.ToString() + "_" + Guid.NewGuid();
+                    instanciaEntidad.ID = $"{instanciaEntidad.TipoEntidadGeneracionClases}_{mDocumentoID.ToString()}_{Guid.NewGuid()}";
                 }
             }
 
@@ -7082,14 +6949,12 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
                 }
                 if (!string.IsNullOrEmpty(valor))
                 {
-                    if (propiedad.EspecifPropiedad.TipoCampo.Equals(TipoCampoOntologia.DateTime))
-                    {                       
-                        if (!DateTime.TryParseExact(valor, UtilCadenas.FormatosFecha, CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime fechaCorrecta))
-                        {
-                            mLoggingService.GuardarLogError($"La fecha '{valor}' no tiene un formato válido.");
-							throw new Exception($"La fecha '{valor}' no tiene un formato válido.");
-						}
+                    if (propiedad.EspecifPropiedad.TipoCampo.Equals(TipoCampoOntologia.DateTime) && !DateTime.TryParseExact(valor, UtilCadenas.FormatosFecha, CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime fechaCorrecta))
+                    {
+                        mLoggingService.GuardarLogError($"La fecha '{valor}' no tiene un formato válido.", mlogger);
+                        throw new ExcepcionGeneral($"La fecha '{valor}' no tiene un formato válido.");
                     }
+
                     #region Modficar valor según propiedad
 
                     if (propiedad.EspecifPropiedad.GuardarFechaComoEntero)
@@ -7113,14 +6978,14 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
 
                                 if (long.Parse(valor).ToString().Length != 14)
                                 {
-                                    throw new Exception("La fecha '" + valor + "' no tiene el formato correto.");
+                                    throw new ExcepcionGeneral($"La fecha '{valor}' no tiene el formato correto.");
                                 }
                             }
                             catch (Exception ex)
                             {
-                                GuardarMensajeErrorAdmin("Fecha incorreta al convertirla a entero. Propiedad '" + propiedad.Nombre + "'", ex);
+                                GuardarMensajeErrorAdmin($"Fecha incorreta al convertirla a entero. Propiedad '{propiedad.Nombre}'", ex);
                                 GuardarLogErrorAJAX(ex.ToString());
-                                throw new Exception("Fecha incorreta al convertirla a entero.");
+                                throw new ExcepcionGeneral("Fecha incorreta al convertirla a entero.");
                             }
                         }
                     }
@@ -7150,7 +7015,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
                     {
                         List<string> idiomasSinAgregar = new List<string>(IdiomasDisponibles.Keys);
                         string valorPorDefectoIdioma = "";
-                        valor  = pTexto.Replace("[--C]", "<").Replace("[C--]", ">"); // Recuperamos el texto original ya que si es multi idioma se debe limpiar cada texto de cada idioma individualmente CORE-5944
+                        valor = pTexto.Replace("[--C]", "<").Replace("[C--]", ">"); // Recuperamos el texto original ya que si es multi idioma se debe limpiar cada texto de cada idioma individualmente CORE-5944
 
                         foreach (string valorIdioma in valor.Split(new string[] { "[|lang|]" }, StringSplitOptions.RemoveEmptyEntries))
                         {
@@ -7203,8 +7068,8 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
                 }
             }
             else
-            {//Es ObjectPropert
-
+            {
+                //Es ObjectPropert
                 if (propiedad.EspecifPropiedad.SelectorEntidad != null && propiedad.EspecifPropiedad.SelectorEntidad.TipoSeleccion != "Edicion")
                 {
                     if (!propiedad.EspecifPropiedad.PermitirScript)
@@ -7215,7 +7080,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
                     {
                         if (propiedad.EspecifPropiedad.SelectorEntidad.TipoSeleccion == "GruposGnoss" && pTexto.StartsWith("g_"))
                         {
-                            pTexto = "http://gnoss/" + pTexto.Substring(2).ToUpper();
+                            pTexto = $"http://gnoss/{pTexto.Substring(2).ToUpper()}";
                         }
                         else if (propiedad.EspecifPropiedad.SelectorEntidad.TipoSeleccion == "PersonaGnoss" && !pTexto.StartsWith("http://"))
                         {
@@ -7245,7 +7110,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
                                 {
                                     string mens = "La URL del recurso '" + pTexto + "' insertada en la propiedad '" + propiedad.Nombre + "' de la entidad '" + propiedad.ElementoOntologia.TipoEntidad + "' no es una URL de un recurso semántico.";
                                     GuardarMensajeErrorAdmin(mens, null);
-                                    throw new Exception(mens);
+                                    throw new ExcepcionGeneral(mens);
                                 }
 
                                 mUrlRecursoSemEntidadPrincipal.Add(pTexto, entidadRecurso);
@@ -7304,16 +7169,6 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
                                 nombrePropTxtIDs = ExtraerRaizXML(ref textoIDSEntidadesAux);
                             }
                         }
-
-                        #region Propiedades repetidas
-
-                        //TODO Revisar con repetidos
-                        //if (ConfigGenXml.PropsRepetidas != null && nombrePropTxtIDs.Contains("_Rep_"))
-                        //{
-                        //    nombrePropTxtIDs = nombrePropTxtIDs.Substring(0, nombrePropTxtIDs.IndexOf("_Rep_"));
-                        //}
-
-                        #endregion
 
                         if (nombrePropTxtIDs != nombreProp)
                         {
@@ -7417,7 +7272,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
         /// </summary>
         /// <param name="pTexto">Cadena XML</param>
         /// <returns>Siguiente elemento con todos sus hijos de una cadena XML</returns>
-        private string ExtraerElementoXML(ref string pTexto)
+        private static string ExtraerElementoXML(ref string pTexto)
         {
             string elemento = pTexto.Substring(1, pTexto.IndexOf(">") - 1);
             string elemCierreXML = "</" + elemento + ">";
@@ -7434,7 +7289,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
         /// <param name="pTexto">Cadena XML</param>
         /// <param name="">Elemento a extraer</param>
         /// <returns>Siguiente elemento con todos sus hijos de una cadena XML</returns>
-        private string ExtraerElementoXML(ref string pTexto, string pElemento)
+        private static string ExtraerElementoXML(ref string pTexto, string pElemento)
         {
             string elemInicioXML = "<" + pElemento + ">";
             string elemCierreXML = "</" + pElemento + ">";
@@ -7512,30 +7367,30 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
         /// <param name="pPropiedad">Propiedad con el selector</param>
         private string ObtenerEntidadPrincipalRecursoSemAPartirUrl(string pUrlRec, Propiedad pPropiedad)
         {
-            DocumentacionCN docCN = new DocumentacionCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+            DocumentacionCN docCN = new DocumentacionCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<DocumentacionCN>(), mLoggerFactory);
             Guid ontologiaID = docCN.ObtenerOntologiaAPartirNombre(mProyectoActual.Clave, pPropiedad.EspecifPropiedad.SelectorEntidad.Grafo);
 
             if (ontologiaID == Guid.Empty)
             {
                 string mens = "Selector de entidad de la propiedad '" + pPropiedad.Nombre + "' de la entidad '" + pPropiedad.ElementoOntologia.TipoEntidad + "' está mal configurado, el grafo '" + pPropiedad.EspecifPropiedad.SelectorEntidad.Grafo + "' es incorrecto.";
                 GuardarMensajeErrorAdmin(mens, null);
-                throw new Exception(mens);
+                throw new ExcepcionGeneral(mens);
             }
 
             try
             {
-                if (pUrlRec.EndsWith("/"))
+                if (pUrlRec.EndsWith('/'))
                 {
                     pUrlRec = pUrlRec.Substring(0, pUrlRec.Length - 1);
                 }
 
                 Guid docID = new Guid(pUrlRec.Substring(pUrlRec.LastIndexOf("/") + 1));
-                GestorDocumental gestorDoc = new GestorDocumental(docCN.ObtenerDocumentoPorID(docID), mLoggingService, mEntityContext);
+                GestorDocumental gestorDoc = new GestorDocumental(docCN.ObtenerDocumentoPorID(docID), mLoggingService, mEntityContext, mLoggerFactory.CreateLogger<GestorDocumental>(), mLoggerFactory);
                 docCN.Dispose();
 
                 if (gestorDoc.ListaDocumentos[docID].ElementoVinculadoID != ontologiaID)
                 {
-                    throw new Exception("El recurso '" + pUrlRec + "' no pertenece a la ontología '" + pPropiedad.EspecifPropiedad.SelectorEntidad.Grafo + "'.");
+                    throw new ExcepcionGeneral($"El recurso '{pUrlRec}' no pertenece a la ontología '{pPropiedad.EspecifPropiedad.SelectorEntidad.Grafo}]'.");
                 }
 
                 string nombreOntologia;
@@ -7548,10 +7403,10 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
             }
             catch (Exception ex)
             {
-                string mens = "El recurso '" + pUrlRec + "' introducido en la propiedad '" + pPropiedad.Nombre + "' de la entidad '" + pPropiedad.ElementoOntologia.TipoEntidad + "' no pertenece a la ontología con grafo '" + pPropiedad.EspecifPropiedad.SelectorEntidad.Grafo + "'.";
+                string mens = $"El recurso '{pUrlRec}' introducido en la propiedad '{pPropiedad.Nombre}' de la entidad '{pPropiedad.ElementoOntologia.TipoEntidad}' no pertenece a la ontología con grafo '{pPropiedad.EspecifPropiedad.SelectorEntidad.Grafo}'.";
                 GuardarMensajeErrorAdmin(mens, null);
                 GuardarLogErrorAJAX(ex.ToString());
-                throw new Exception(mens);
+                throw new ExcepcionGeneral(mens);
             }
         }
 
@@ -7782,20 +7637,6 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
         /// RDF del recurso.
         /// </summary>
         public string ResourceRDF { get; set; }
-
-        private AD.EntityModel.Models.PersonaDS.Persona FilaPersona
-        {
-            get
-            {
-                AD.EntityModel.Models.PersonaDS.Persona filaPersona = null;
-
-                if (mIdentidadActual != null && mIdentidadActual.Persona != null)
-                {
-                    filaPersona = mIdentidadActual.Persona.FilaPersona;
-                }
-                return filaPersona;
-            }
-        }
 
         /// <summary>
         /// Propiedades que no deben pintarse.

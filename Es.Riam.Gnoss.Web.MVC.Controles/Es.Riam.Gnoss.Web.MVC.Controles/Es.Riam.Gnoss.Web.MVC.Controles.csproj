@@ -1,23 +1,31 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <TargetFramework>net6.0</TargetFramework>
-  </PropertyGroup>
+	<PropertyGroup>
+		<TargetFramework>net8.0</TargetFramework>
+		<SonarQubeExclude>false</SonarQubeExclude>
+	</PropertyGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\..\Es.Riam.Gnoss.AD\Es.Riam.Gnoss.AD.csproj" />
-    <ProjectReference Include="..\..\Es.Riam.Gnoss.CL\Es.Riam.Gnoss.CL.csproj" />
-    <ProjectReference Include="..\..\Es.Riam.Gnoss.Elementos\Es.Riam.Gnoss.Elementos.csproj" />
-    <ProjectReference Include="..\..\Es.Riam.Gnoss.ExportarImportar\Es.Riam.Gnoss.ExportarImportar.csproj" />
-    <ProjectReference Include="..\..\Es.Riam.Gnoss.Recursos\Es.Riam.Gnoss.Recursos.csproj" />
-    <ProjectReference Include="..\..\Es.Riam.Gnoss.Web.Controles\Es.Riam.Gnoss.Web.Controles.csproj" />
-    <ProjectReference Include="..\..\Es.Riam.InterfacesOpen\Es.Riam.InterfacesOpen.csproj" />
-    <ProjectReference Include="..\..\Es.Riam.Semantica\Es.Riam.Semantica.csproj" />
-    <ProjectReference Include="..\..\Es.Riam.Util\Es.Riam.Util.csproj" />
-  </ItemGroup>
+	<ItemGroup>
+		<ProjectReference Include="..\..\Es.Riam.Gnoss.AD\Es.Riam.Gnoss.AD.csproj" />
+		<ProjectReference Include="..\..\Es.Riam.Gnoss.CL\Es.Riam.Gnoss.CL.csproj" />
+		<ProjectReference Include="..\..\Es.Riam.Gnoss.Elementos\Es.Riam.Gnoss.Elementos.csproj" />
+		<ProjectReference Include="..\..\Es.Riam.Gnoss.ExportarImportar\Es.Riam.Gnoss.ExportarImportar.csproj" />
+		<ProjectReference Include="..\..\Es.Riam.Gnoss.Recursos\Es.Riam.Gnoss.Recursos.csproj" />
+		<ProjectReference Include="..\..\Es.Riam.Gnoss.Web.Controles\Es.Riam.Gnoss.Web.Controles.csproj" />
+		<ProjectReference Include="..\..\Es.Riam.InterfacesOpen\Es.Riam.InterfacesOpen.csproj" />
+		<ProjectReference Include="..\..\Es.Riam.Interfaces\Es.Riam.Interfaces.csproj" />
+		<ProjectReference Include="..\..\Es.Riam.Open\Es.Riam.Open.csproj" />
+		<ProjectReference Include="..\..\Es.Riam.Semantica\Es.Riam.Semantica.csproj" />
+		<ProjectReference Include="..\..\Es.Riam.Util\Es.Riam.Util.csproj" />
+	</ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="MyVirtualPathProvider\" />
-  </ItemGroup>
+	<ItemGroup>
+		<Folder Include="MyVirtualPathProvider\" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<PackageReference Include="Aspose.Zip" Version="24.10.0" />
+		<PackageReference Include="Microsoft.ApplicationInsights" Version="2.23.0" />
+	</ItemGroup>
 
 </Project>

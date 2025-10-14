@@ -8,6 +8,8 @@ using Es.Riam.Gnoss.Elementos.Tesauro;
 using Es.Riam.Gnoss.Util.General;
 using Es.Riam.Gnoss.Util.Seguridad;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
+using Serilog.Core;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -48,17 +50,18 @@ namespace Es.Riam.Gnoss.Elementos.Suscripcion
         private EntityContext mEntityContext;
 
         private LoggingService mLoggingService;
-        
         #endregion
 
         #region Constructores
+
+        public GestionSuscripcion() { }
 
         /// <summary>
         /// Crea el gestor de suscripciones
         /// </summary>
         /// <param name="pSuscripcionDW">Dataset de suscripciones</param>
         public GestionSuscripcion(DataWrapperSuscripcion pSuscripcionDW, LoggingService loggingService, EntityContext entityContext)
-            : base(pSuscripcionDW, loggingService)
+            : base(pSuscripcionDW)
         {
             mLoggingService = loggingService;
             mEntityContext = entityContext;
@@ -72,7 +75,7 @@ namespace Es.Riam.Gnoss.Elementos.Suscripcion
         public GestionSuscripcion(DataWrapperSuscripcion pSuscripcionDW, GestionIdentidades pGestionIdentidades, LoggingService loggingService, EntityContext entityContext)
             : this(pSuscripcionDW, loggingService, entityContext)
         {
-            mGestionIdentidades = pGestionIdentidades;
+            mGestionIdentidades = pGestionIdentidades;;
         }
 
         /// <summary>
@@ -96,7 +99,6 @@ namespace Es.Riam.Gnoss.Elementos.Suscripcion
         {
             //mLoggingService = loggingService;
             //mEntityContext = entityContext;
-            
 
             mGestionNotificaciones = (GestionNotificaciones)info.GetValue("GestionNotificaciones", typeof(GestionNotificaciones));
             mGestionProyecto = (GestionProyecto)info.GetValue("GestionProyecto", typeof(GestionProyecto));
@@ -176,7 +178,7 @@ namespace Es.Riam.Gnoss.Elementos.Suscripcion
                     List<AD.EntityModel.Models.Suscripcion.Suscripcion> filasSuscripcion = SuscripcionDW.ListaSuscripcion.ToList();
                     foreach (AD.EntityModel.Models.Suscripcion.Suscripcion filaSuscripcion in filasSuscripcion)
                     {
-                        Suscripcion suscripcion = new Suscripcion(filaSuscripcion, this, mLoggingService);
+                        Suscripcion suscripcion = new Suscripcion(filaSuscripcion, this);
                         mListaSuscripciones.Add(suscripcion.FilaSuscripcion.SuscripcionID, suscripcion);
                     }
                 }
@@ -238,7 +240,7 @@ namespace Es.Riam.Gnoss.Elementos.Suscripcion
             SuscripcionDW.ListaSuscripcion.Add(filaSuscripcion);
             mEntityContext.Suscripcion.Add(filaSuscripcion);
 
-            Suscripcion suscripcion = new Suscripcion(filaSuscripcion, this, mLoggingService);
+            Suscripcion suscripcion = new Suscripcion(filaSuscripcion, this);
 
             if (!ListaSuscripciones.ContainsKey(suscripcion.FilaSuscripcion.SuscripcionID))
             {
@@ -388,7 +390,7 @@ namespace Es.Riam.Gnoss.Elementos.Suscripcion
             SuscripcionDW.ListaSuscripcion.Add(filaSuscripcion);
             mEntityContext.Suscripcion.Add(filaSuscripcion);
 
-            Suscripcion suscripcion = new Suscripcion(filaSuscripcion, this, mLoggingService);
+            Suscripcion suscripcion = new Suscripcion(filaSuscripcion, this);
 
             if (!ListaSuscripciones.ContainsKey(suscripcion.FilaSuscripcion.SuscripcionID))
             {

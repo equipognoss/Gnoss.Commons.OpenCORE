@@ -23,6 +23,7 @@ namespace Es.Riam.Gnoss.AD.EntityModel.Models.ProyectoDS
         public short TipoAcceso { get; set; }
         public string Tags { get; set; }
         public string NombreImagenPeque { get; set; }
+        public DateTime? FechaInicio { get; set; }
 
         public override bool Equals(object obj)
         {

@@ -34,6 +34,8 @@ namespace Es.Riam.Gnoss.AD.EntityModel.Models.Faceta
         [Key]
         [Column(Order = 4)]
         public Guid PestanyaID { get; set; }
+        [Column(Order = 5)]
+        public bool AutocompletarEnriquecido {  get; set; }
 
         public virtual FacetaObjetoConocimientoProyecto FacetaObjetoConocimientoProyecto { get; set; }
 

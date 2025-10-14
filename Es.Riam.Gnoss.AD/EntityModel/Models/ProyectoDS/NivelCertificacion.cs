@@ -18,8 +18,7 @@ namespace Es.Riam.Gnoss.AD.EntityModel.Models.ProyectoDS
 
         public short Orden { get; set; }
 
-        [Required]
-        [StringLength(100)]
+        [Required]        
         public string Descripcion { get; set; }
 
         public virtual Proyecto Proyecto { get; set; }

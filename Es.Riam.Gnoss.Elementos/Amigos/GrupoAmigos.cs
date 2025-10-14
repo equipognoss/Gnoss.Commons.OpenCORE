@@ -2,6 +2,7 @@ using Es.Riam.Gnoss.AD.Amigos;
 using Es.Riam.Gnoss.AD.Amigos.Model;
 using Es.Riam.Gnoss.AD.EntityModel.Models.IdentidadDS;
 using Es.Riam.Gnoss.Util.General;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -33,8 +34,8 @@ namespace Es.Riam.Gnoss.Elementos.Amigos
         /// </summary>
         /// <param name="pFilaGrupoAmigos">Fila del grupo de amigos</param>
         /// <param name="pGestionAmigos">Gestor de amigos</param>
-        public GrupoAmigos(AD.EntityModel.Models.IdentidadDS.GrupoAmigos pFilaGrupoAmigos, GestionAmigos pGestionAmigos, LoggingService loggingService)
-            : base(pFilaGrupoAmigos, pGestionAmigos, loggingService)
+        public GrupoAmigos(AD.EntityModel.Models.IdentidadDS.GrupoAmigos pFilaGrupoAmigos, GestionAmigos pGestionAmigos)
+            : base(pFilaGrupoAmigos, pGestionAmigos)
         {
             mGestionAmigos = pGestionAmigos;
         }

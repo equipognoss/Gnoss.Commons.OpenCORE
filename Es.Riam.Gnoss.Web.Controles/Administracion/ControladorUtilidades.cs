@@ -5,6 +5,7 @@ using Es.Riam.Gnoss.AD.EntityModel;
 using Es.Riam.Gnoss.AD.EntityModel.Models.ParametroGeneralDS;
 using Es.Riam.Gnoss.AD.EntityModel.Models.ProyectoDS;
 using Es.Riam.Gnoss.AD.EntityModelBASE;
+using Es.Riam.Gnoss.AD.ParametroAplicacion;
 using Es.Riam.Gnoss.AD.ServiciosGenerales;
 using Es.Riam.Gnoss.AD.Virtuoso;
 using Es.Riam.Gnoss.CL;
@@ -20,11 +21,14 @@ using Es.Riam.Gnoss.Logica.ServiciosGenerales;
 using Es.Riam.Gnoss.Recursos;
 using Es.Riam.Gnoss.Util.Configuracion;
 using Es.Riam.Gnoss.Util.General;
+using Es.Riam.Gnoss.UtilServiciosWeb;
 using Es.Riam.Gnoss.Web.Controles.Documentacion;
 using Es.Riam.Gnoss.Web.Controles.ParametroGeneralDSName;
 using Es.Riam.Gnoss.Web.MVC.Models;
 using Es.Riam.Gnoss.Web.MVC.Models.Administracion;
+using Es.Riam.Interfaces.InterfacesOpen;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -52,13 +56,15 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
         private GnossCache mGnossCache;
         private EntityContextBASE mEntityContextBASE;
         private IServicesUtilVirtuosoAndReplication mServicesUtilVirtuosoAndReplication;
+        private ILogger mlogger;
+        private ILoggerFactory mLoggerFactory;
 
         #region Constructor
 
         /// <summary>
         /// 
         /// </summary>
-        public ControladorUtilidades(Elementos.ServiciosGenerales.Proyecto pProyecto, LoggingService loggingService, EntityContext entityContext, ConfigService configService, RedisCacheWrapper redisCacheWrapper, VirtuosoAD virtuosoAD, EntityContextBASE entityContextBASE, GnossCache gnossCache, IHttpContextAccessor httpContextAccessor, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication)
+        public ControladorUtilidades(Elementos.ServiciosGenerales.Proyecto pProyecto, LoggingService loggingService, EntityContext entityContext, ConfigService configService, RedisCacheWrapper redisCacheWrapper, VirtuosoAD virtuosoAD, EntityContextBASE entityContextBASE, GnossCache gnossCache, IHttpContextAccessor httpContextAccessor, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication, ILogger<ControladorUtilidades> logger, ILoggerFactory loggerFactory)
         {
             mVirtuosoAD = virtuosoAD;
             mLoggingService = loggingService;
@@ -70,6 +76,8 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
             mGnossCache = gnossCache;
             mServicesUtilVirtuosoAndReplication = servicesUtilVirtuosoAndReplication;
             ProyectoSeleccionado = pProyecto;
+            mlogger = logger;
+            mLoggerFactory = loggerFactory;
         }
 
         #endregion
@@ -96,7 +104,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
                 nivelesCertificacion.Add(nivelCertificacionRow.NivelCertificacionID);
             }
 
-            ProyectoCN proyCN = new ProyectoCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+            ProyectoCN proyCN = new ProyectoCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<ProyectoCN>(), mLoggerFactory);
             Dictionary<Guid, bool> listaNivelesConDocAsociados = proyCN.ExisteDocAsociadoANivelCertif(nivelesCertificacion);
 
             foreach (AD.EntityModel.Models.ProyectoDS.NivelCertificacion nivelCertificacionRow in DataWrapperProyecto.ListaNivelCertificacion)
@@ -142,7 +150,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
         {
             List<AdministrarComunidadUtilidades.PermisoDocumentacionSemantica> permisosDocumentacion = new List<AdministrarComunidadUtilidades.PermisoDocumentacionSemantica>();
 
-            DocumentacionCN documentacionCN = new DocumentacionCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+            DocumentacionCN documentacionCN = new DocumentacionCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<DocumentacionCN>(), mLoggerFactory);
 
             Dictionary<Guid, string> listaOntologiasTitulo = new Dictionary<Guid, string>();
             Dictionary<Guid, string> listaOntologiasOWL = new Dictionary<Guid, string>();
@@ -166,11 +174,11 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
 
             if (listaOntologiasTitulo.Count > 0)
             {
-                ProyectoCN proyCN = new ProyectoCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+                ProyectoCN proyCN = new ProyectoCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<ProyectoCN>(), mLoggerFactory);
                 Dictionary<Guid, List<Guid>> dicGruposOntologias = proyCN.ObtenerGruposPermitidosOntologiasEnProyecto(listaOntologiasTitulo.Keys.ToList(), ProyectoSeleccionado.Clave);
                 proyCN.Dispose();
 
-                IdentidadCN identCN = new IdentidadCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+                IdentidadCN identCN = new IdentidadCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<IdentidadCN>(), mLoggerFactory);
 
                 foreach (Guid ontologia in listaOntologiasTitulo.Keys)
                 {
@@ -289,7 +297,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
                 nivelesCertificacion.Add(nivelCertificacionRow.NivelCertificacionID);
             }
 
-            ProyectoCN proyCN = new ProyectoCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+            ProyectoCN proyCN = new ProyectoCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<ProyectoCN>(), mLoggerFactory);
             Dictionary<Guid, bool> listaNivelesConDocAsociados = proyCN.ExisteDocAsociadoANivelCertif(nivelesCertificacion);
 
             foreach (AD.EntityModel.Models.ProyectoDS.NivelCertificacion nivelCertificacionRow in DataWrapperProyecto.ListaNivelCertificacion)
@@ -387,8 +395,8 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
         {
             List<AdministrarComunidadUtilidades.PermisoDocumentacionSemantica> permisosDocumentacion = new List<AdministrarComunidadUtilidades.PermisoDocumentacionSemantica>();
 
-            DocumentacionCN documentacionCN = new DocumentacionCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
-            GestorDocumental gestorDoc = new GestorDocumental(DataWrapperDocumentacion, mLoggingService, mEntityContext);
+            DocumentacionCN documentacionCN = new DocumentacionCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<DocumentacionCN>(), mLoggerFactory);
+            GestorDocumental gestorDoc = new GestorDocumental(DataWrapperDocumentacion, mLoggingService, mEntityContext, mLoggerFactory.CreateLogger<GestorDocumental>(), mLoggerFactory);
             gestorDoc.CargarDocumentos();
             DataWrapperDocumentacion.Merge(documentacionCN.ObtenerEditoresDocumentos(new List<Guid>(gestorDoc.ListaDocumentos.Keys)));
             documentacionCN.Dispose();
@@ -441,7 +449,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
 
                         if (permisoRecurso.PrivacidadGrupos != null)
                         {
-                            IdentidadCN identCN = new IdentidadCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+                            IdentidadCN identCN = new IdentidadCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<IdentidadCN>(), mLoggerFactory);
 
                             permisoRecurso.PrivacidadGrupos = identCN.ObtenerNombresDeGrupos(permisoRecurso.PrivacidadGrupos.Keys.ToList());
 
@@ -466,7 +474,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
                                     List<AD.EntityModel.Models.Documentacion.DocumentoRolGrupoIdentidades> filas = gestorDoc.DataWrapperDocumentacion.ListaDocumentoRolGrupoIdentidades.Where(item => item.DocumentoID.Equals(doc.Clave) && item.GrupoID.Equals(grupoEditorID)).ToList();
                                     if (filas != null && filas.Count > 0)
                                     {
-                                        gestorDoc.QuitarGrupoEditorDeRecurso(new GrupoEditorRecurso(filas[0], gestorDoc, mLoggingService));
+                                        gestorDoc.QuitarGrupoEditorDeRecurso(new GrupoEditorRecurso(filas[0], gestorDoc));
                                     }
                                 }
                             }
@@ -482,7 +490,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
         /// <param name="pNivelCertificacion"></param>
         private void EliminarNivelCertificacion(NivelCertificacion pNivelCertificacion)
         {
-            DocumentacionCN documentacionCN = new DocumentacionCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+            DocumentacionCN documentacionCN = new DocumentacionCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<DocumentacionCN>(), mLoggerFactory);
 
             List<Es.Riam.Gnoss.AD.EntityModel.Models.Documentacion.DocumentoWebVinBaseRecursos> listaDocumentosRelacionadosNivelCertificacion = documentacionCN.ObtenerBaseRecursosPorNivelCertifiacion(pNivelCertificacion.NivelCertificacionID);
             foreach(Es.Riam.Gnoss.AD.EntityModel.Models.Documentacion.DocumentoWebVinBaseRecursos documentoWebVinBaseRecursos in listaDocumentosRelacionadosNivelCertificacion)
@@ -576,23 +584,24 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
 
         #region Invalidar Cache
 
-        public void InvalidarCache()
+        public void InvalidarCache(IAvailableServices pAvailableServices)
         {
             //Invalidamos la cache de los niveles de certificación
-            ProyectoCL proyectoCL = new ProyectoCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mVirtuosoAD, mServicesUtilVirtuosoAndReplication);
+            ProyectoCL proyectoCL = new ProyectoCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mVirtuosoAD, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<ProyectoCL>(), mLoggerFactory);
             proyectoCL.InvalidarNivelesCertificacionRecursosProyecto(ProyectoSeleccionado.Clave);
-
-            new ControladorDocumentacion(mLoggingService, mEntityContext, mConfigService, mRedisCacheWrapper, mGnossCache, mEntityContextBASE, mVirtuosoAD, mHttpContextAccessor, mServicesUtilVirtuosoAndReplication).EditarPoliticaCertificacionModeloBase(ProyectoSeleccionado.Clave, PrioridadBase.Alta);
+            
+            new ControladorDocumentacion(mLoggingService, mEntityContext, mConfigService, mRedisCacheWrapper, mGnossCache, mEntityContextBASE, mVirtuosoAD, mHttpContextAccessor, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<ControladorDocumentacion>(), mLoggerFactory).EditarPoliticaCertificacionModeloBase(ProyectoSeleccionado.Clave, PrioridadBase.Alta, pAvailableServices);
 
             proyectoCL.InvalidarTiposDocumentosPermitidosUsuarioEnProyecto(ProyectoSeleccionado.Clave, TipoRolUsuario.Administrador);
             proyectoCL.InvalidarTiposDocumentosPermitidosUsuarioEnProyecto(ProyectoSeleccionado.Clave, TipoRolUsuario.Supervisor);
             proyectoCL.InvalidarTiposDocumentosPermitidosUsuarioEnProyecto(ProyectoSeleccionado.Clave, TipoRolUsuario.Usuario);
+            proyectoCL.InvalidarComunidadMVC(ProyectoSeleccionado.Clave);
             proyectoCL.Dispose();
 
-            ParametroGeneralCL paramCL = new ParametroGeneralCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mServicesUtilVirtuosoAndReplication);
+            ParametroGeneralCL paramCL = new ParametroGeneralCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<ParametroGeneralCL>(), mLoggerFactory);
             paramCL.InvalidarCacheParametrosGeneralesDeProyecto(ProyectoSeleccionado.Clave);
 
-            DocumentacionCL docCL = new DocumentacionCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mServicesUtilVirtuosoAndReplication);
+            DocumentacionCL docCL = new DocumentacionCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<DocumentacionCL>(), mLoggerFactory);
             docCL.InvalidarOntologiasProyecto(ProyectoSeleccionado.Clave);
         }
 
@@ -606,7 +615,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
             {
                 if (mDataWrapperDocumentacion == null)
                 {
-                    DocumentacionCN documentacionCN = new DocumentacionCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+                    DocumentacionCN documentacionCN = new DocumentacionCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<DocumentacionCN>(), mLoggerFactory);
                     mDataWrapperDocumentacion = new DataWrapperDocumentacion();
 
                     Guid proyectoIDPatronOntologias = Guid.Empty;
@@ -633,7 +642,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
             {
                 if (mParametroProyecto == null)
                 {
-                    ProyectoCL proyectoCL = new ProyectoCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mVirtuosoAD, mServicesUtilVirtuosoAndReplication);
+                    ProyectoCL proyectoCL = new ProyectoCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mVirtuosoAD, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<ProyectoCL>(), mLoggerFactory);
                     mParametroProyecto = proyectoCL.ObtenerParametrosProyecto(ProyectoSeleccionado.Clave);
                     proyectoCL.Dispose();
                 }
@@ -648,7 +657,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
             {
                 if (mDataWrapperProyecto == null)
                 {
-                    ProyectoCN proyCN = new ProyectoCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+                    ProyectoCN proyCN = new ProyectoCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<ProyectoCN>(), mLoggerFactory);
                     mDataWrapperProyecto = proyCN.ObtenerProyectoPorIDConNiveles(ProyectoSeleccionado.Clave);
                     proyCN.Dispose();
                 }

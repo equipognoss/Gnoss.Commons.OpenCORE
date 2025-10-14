@@ -2,9 +2,12 @@ using Es.Riam.AbstractsOpen;
 using Es.Riam.Gnoss.AD.EncapsuladoDatos;
 using Es.Riam.Gnoss.AD.EntityModel;
 using Es.Riam.Gnoss.AD.EntityModel.Models;
+using Es.Riam.Gnoss.AD.EntityModel.Models.Cache;
 using Es.Riam.Gnoss.AD.EntityModel.Models.Carga;
 using Es.Riam.Gnoss.AD.EntityModel.Models.Faceta;
 using Es.Riam.Gnoss.AD.EntityModel.Models.ProyectoDS;
+using Es.Riam.Gnoss.AD.EntityModel.Models.Roles;
+using Es.Riam.Gnoss.AD.EntityModel.Models.Documentacion;
 using Es.Riam.Gnoss.AD.Identidad;
 using Es.Riam.Gnoss.AD.ServiciosGenerales;
 using Es.Riam.Gnoss.Logica.Usuarios;
@@ -13,6 +16,8 @@ using Es.Riam.Gnoss.Util.General;
 using Es.Riam.Gnoss.Web.MVC.Models;
 using Es.Riam.Gnoss.Web.MVC.Models.Administracion;
 using Es.Riam.Gnoss.Web.MVC.Models.ViewModels;
+using Microsoft.Extensions.Logging;
+using Serilog.Core;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -20,10 +25,11 @@ using System.Data.SqlClient;
 using System.Linq;
 using System.Text.RegularExpressions;
 
+
 namespace Es.Riam.Gnoss.Logica.ServiciosGenerales
 {
     /// <summary>
-    /// LÛgica referente a Proyecto Gnoss
+    /// L√≥gica referente a Proyecto Gnoss
     /// </summary>
     public class ProyectoCN : BaseCN, IDisposable
     {
@@ -33,50 +39,66 @@ namespace Es.Riam.Gnoss.Logica.ServiciosGenerales
         private EntityContext mEntityContext;
         private LoggingService mLoggingService;
         private ConfigService mConfigService;
-
+        private ILogger mlogger;
+        private ILoggerFactory mLoggerFactory;
         #endregion
 
         #region Constructores
 
         /// <summary>
-        /// Constructor sin par·metros
+        /// Constructor sin par√°metros
         /// </summary>
-        public ProyectoCN(EntityContext entityContext, LoggingService loggingService, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication)
-            : base(entityContext, loggingService, configService, servicesUtilVirtuosoAndReplication)
+        public ProyectoCN(EntityContext entityContext, LoggingService loggingService, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication, ILogger<ProyectoCN> logger, ILoggerFactory loggerFactory)
+            : base(entityContext, loggingService, configService, servicesUtilVirtuosoAndReplication,logger,loggerFactory)
         {
             mEntityContext = entityContext;
             mLoggingService = loggingService;
             mConfigService = configService;
-
-            ProyectoAD = new ProyectoAD(loggingService, entityContext, configService, servicesUtilVirtuosoAndReplication);
+            mlogger = logger;
+            mLoggerFactory = loggerFactory;
+            if(loggerFactory == null)
+            {
+                ProyectoAD = new ProyectoAD(loggingService, entityContext, configService, servicesUtilVirtuosoAndReplication, null, null);
+            }
+            else
+            {
+                ProyectoAD = new ProyectoAD(loggingService, entityContext, configService, servicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<ProyectoAD>(), mLoggerFactory);
+            }
         }
 
         /// <summary>
-        /// Constructor a partir del fichero de configuraciÛn
+        /// Constructor a partir del fichero de configuraci√≥n
         /// </summary>
-        /// <param name="pFicheroConfiguracionBD">Ruta del fichero de configuraciÛn de base de datos</param>
-        /// <param name="pUsarVariableEstatica">Si se est·n usando hilos con diferentes conexiones: FALSE. En caso contrario TRUE</param>
-        public ProyectoCN(string pFicheroConfiguracionBD, EntityContext entityContext, LoggingService loggingService, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication)
-            : base(entityContext, loggingService, configService, servicesUtilVirtuosoAndReplication)
+        /// <param name="pFicheroConfiguracionBD">Ruta del fichero de configuraci√≥n de base de datos</param>
+        /// <param name="pUsarVariableEstatica">Si se est√°n usando hilos con diferentes conexiones: FALSE. En caso contrario TRUE</param>
+        public ProyectoCN(string pFicheroConfiguracionBD, EntityContext entityContext, LoggingService loggingService, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication, ILogger<ProyectoCN> logger, ILoggerFactory loggerFactory)
+            : base(entityContext, loggingService, configService, servicesUtilVirtuosoAndReplication, logger, loggerFactory)
         {
             mEntityContext = entityContext;
             mLoggingService = loggingService;
             mConfigService = configService;
-
-            ProyectoAD = new ProyectoAD(pFicheroConfiguracionBD, loggingService, entityContext, configService, servicesUtilVirtuosoAndReplication);
+            mlogger = logger;
+            mLoggerFactory = loggerFactory;
+            ProyectoAD = new ProyectoAD(pFicheroConfiguracionBD, loggingService, entityContext, configService, servicesUtilVirtuosoAndReplication,mLoggerFactory.CreateLogger<ProyectoAD>(),mLoggerFactory);
         }
 
         #endregion
 
-        #region MÈtodos generales
+        #region M√©todos generales
 
-        #region P˙blicos
+        #region P√∫blicos
+
+
+        public Guid ObtenerGuidPestanyaPorTipo(Guid pProyectoId, short pTipo)
+        {
+            return ProyectoAD.ObtenerGuidPestanyaPorTipo(pProyectoId, pTipo);
+        }
 
         /// <summary>
-        /// Obtiene la fecha de alta del grupo de organizaciÛn en un proyecto
+        /// Obtiene la fecha de alta del grupo de organizaci√≥n en un proyecto
         /// </summary>
-        /// <param name="pGrupoID">Identificador del grupo de organizaciÛn</param>
-        /// <param name="pOrganizacionID">Identificador de la organizaciÛn del proyecto</param>
+        /// <param name="pGrupoID">Identificador del grupo de organizaci√≥n</param>
+        /// <param name="pOrganizacionID">Identificador de la organizaci√≥n del proyecto</param>
         /// <param name="pProyectoID">Identificador del proyecto</param>
         /// <returns>DateTime con la fecha de alta del grupo en el proyecto. Null en caso de no encontrarlo</returns>
         public DateTime? ObtenerFechaAltaGrupoOrganizacionEnProyecto(Guid pGrupoID, Guid pOrganizacionID, Guid pProyectoID)
@@ -85,9 +107,9 @@ namespace Es.Riam.Gnoss.Logica.ServiciosGenerales
         }
 
         /// <summary>
-        /// Obtiene los proyectos en los que participa un determinado grupo de organizaciÛn
+        /// Obtiene los proyectos en los que participa un determinado grupo de organizaci√≥n
         /// </summary>
-        /// <param name="pGrupoID">Identificador del grupo de organizaciÛn</param>
+        /// <param name="pGrupoID">Identificador del grupo de organizaci√≥n</param>
         /// <returns>Lista de filas de GrupoOrgParticipaProy con los proyectos del grupo</returns>
         public List<GrupoOrgParticipaProy> ObtenerProyectosParticipaGrupoOrganizacion(Guid pGrupoID)
         {
@@ -95,7 +117,7 @@ namespace Es.Riam.Gnoss.Logica.ServiciosGenerales
         }
 
         /// <summary>
-        /// Obtiene los gadget por idioma asociados al identificador del gadget pasado por par·metro
+        /// Obtiene los gadget por idioma asociados al identificador del gadget pasado por par√°metro
         /// </summary>
         /// <param name="pGadgetID">Identificador del gadget</param>
         /// <returns></returns>
@@ -105,9 +127,9 @@ namespace Es.Riam.Gnoss.Logica.ServiciosGenerales
         }
 
         /// <summary>
-        /// Obtiene los proyectos en los que participa un determinado grupo de organizaciÛn
+        /// Obtiene los proyectos en los que participa un determinado grupo de organizaci√≥n
         /// </summary>
-        /// <param name="pOrganizacionID">Identificador de la organizaciÛn del proyecto</param>
+        /// <param name="pOrganizacionID">Identificador de la organizaci√≥n del proyecto</param>
         /// <param name="pProyectoID">Identificador del proyecto</param>
         /// <returns>Lista de filas de GrupoOrgParticipaProy con los grupos del proyecto</returns>
         public List<GrupoOrgParticipaProy> ObtenerGruposOrganizacionParticipanProyecto(Guid pOrganizacionID, Guid pProyectoID)
@@ -118,8 +140,8 @@ namespace Es.Riam.Gnoss.Logica.ServiciosGenerales
         /// <summary>
         /// Elimina la fila de GrupoOrgParticipaProy.
         /// </summary>
-        /// <param name="pGrupoID">Identificador del grupo de organizaciÛn</param>
-        /// <param name="pOrganizacionID">Identificador de la organizaciÛn del proyecto</param>
+        /// <param name="pGrupoID">Identificador del grupo de organizaci√≥n</param>
+        /// <param name="pOrganizacionID">Identificador de la organizaci√≥n del proyecto</param>
         /// <param name="pProyectoID">Identificador del proyecto</param>
         public void BorrarFilaGrupoOrgParticipaProy(Guid pGrupoID, Guid pOrganizacionID, Guid pProyectoID)
         {
@@ -146,8 +168,8 @@ namespace Es.Riam.Gnoss.Logica.ServiciosGenerales
         /// <summary>
         /// Crea una fila de GrupoOrgParticipaProy.
         /// </summary>
-        /// <param name="pGrupoID">Identificador del grupo de organizaciÛn</param>
-        /// <param name="pOrganizacionID">Identificador de la organizaciÛn del proyecto</param>
+        /// <param name="pGrupoID">Identificador del grupo de organizaci√≥n</param>
+        /// <param name="pOrganizacionID">Identificador de la organizaci√≥n del proyecto</param>
         /// <param name="pProyectoID">Identificador del proyecto</param>
         /// <param name="pTipoIdentidad">Tipo de perfil con el que participan los miembros del grupo</param>
         public void AddFilaGrupoOrgParticipaProy(Guid pGrupoID, Guid pOrganizacionID, Guid pProyectoID, TiposIdentidad pTipoIdentidad)
@@ -156,7 +178,7 @@ namespace Es.Riam.Gnoss.Logica.ServiciosGenerales
         }
 
         /// <summary>
-        /// Obtiene los permisos de p·ginas de los usuarios en un proyecto
+        /// Obtiene los permisos de p√°ginas de los usuarios en un proyecto
         /// </summary>
         /// <param name="pProyectoID">Identificador del proyecto</param>
         /// <returns>Lista de filas de PermisosPaginasUsuarios</returns>
@@ -166,7 +188,7 @@ namespace Es.Riam.Gnoss.Logica.ServiciosGenerales
         }
 
         /// <summary>
-        /// Obtiene los permisos de p·ginas del usuario en un proyecto
+        /// Obtiene los permisos de p√°ginas del usuario en un proyecto
         /// </summary>
         /// <param name="pProyectoID">Identificador del proyecto</param>
         /// <param name="pUsuarioID">Identificador del usuario</param>
@@ -182,19 +204,19 @@ namespace Es.Riam.Gnoss.Logica.ServiciosGenerales
         }
 
         /// <summary>
-        /// Obtiene los permisos de p·ginas del usuario en un proyecto
+        /// Obtiene los permisos de p√°ginas del usuario en un proyecto
         /// </summary>
         /// <param name="pProyectoID">Identificador del proyecto</param>
         /// <param name="pUsuarioID">Identificador del usuario</param>
-        /// <param name="pTipoPagina">P·gina sobre la que se comprueba el permiso</param>
-        /// <returns>True si el usuario tiene permiso sobre el tipo de p·gina en el proyecto</returns>
+        /// <param name="pTipoPagina">P√°gina sobre la que se comprueba el permiso</param>
+        /// <returns>True si el usuario tiene permiso sobre el tipo de p√°gina en el proyecto</returns>
         public bool TienePermisoUsuarioEnPagina(Guid pOrganizacionID, Guid pProyectoID, Guid pUsuarioID, TipoPaginaAdministracion pTipoPagina)
         {
             return ProyectoAD.TienePermisoUsuarioEnPagina(pOrganizacionID, pProyectoID, pUsuarioID, pTipoPagina);
         }
 
         /// <summary>
-        /// Obtiene la lista de presentaciones mapa sem·ntico para el proyecto indicado
+        /// Obtiene la lista de presentaciones mapa sem√°ntico para el proyecto indicado
         /// </summary>
         /// <param name="pProyectoID">Identificador del proyecto del cual queremos obtener el listado</param>
         /// <returns></returns>
@@ -214,9 +236,9 @@ namespace Es.Riam.Gnoss.Logica.ServiciosGenerales
         }
 
         /// <summary>
-        /// Obtiene la lista de pestanyas configuradas para el proyectoID pasado por par·metro
+        /// Obtiene la lista de pestanyas configuradas para el proyectoID pasado por par√°metro
         /// </summary>
-        /// <param name="pProyectoID">Identificador del proyecto del cual queremos obtener las pestanÒas</param>
+        /// <param name="pProyectoID">Identificador del proyecto del cual queremos obtener las pesta√±as</param>
         /// <returns></returns>
         public List<ProyectoPestanyaMenu> ObtenerProyectoPestanyaMenuPorProyectoID(Guid pProyectoID)
         {
@@ -224,20 +246,20 @@ namespace Es.Riam.Gnoss.Logica.ServiciosGenerales
         }
 
         /// <summary>
-        /// Nos indica si actualmente existen permisos para administrar los documentos sem·nticos
+        /// Nos indica si actualmente existen permisos para administrar los documentos sem√°nticos
         /// </summary>
         /// <param name="pProyectoID">Identificador del proyecto</param>
-        /// <returns>Si existe o no permisos para que se puedan administrar los documentos sem·nticos</returns>
+        /// <returns>Si existe o no permisos para que se puedan administrar los documentos sem√°nticos</returns>
         public bool ExisteTipoDocDispRolUsuarioProySemantico(Guid pProyectoID)
         {
             return ProyectoAD.ExisteTipoDocDispRolUsuarioProySemantico(pProyectoID);
         } 
         
         /// <summary>
-        /// Nos indica si actualmente existen permisos para administrar los documentos sem·nticos
+        /// Nos indica si actualmente existen permisos para administrar los documentos sem√°nticos
         /// </summary>
         /// <param name="pProyectoID">Identificador del proyecto</param>
-        /// <returns>Si existe o no permisos para que se puedan administrar los documentos sem·nticos</returns>
+        /// <returns>Si existe o no permisos para que se puedan administrar los documentos sem√°nticos</returns>
         public bool ExisteTipoOntoDispRolUsuarioProy(Guid pProyectoID, Guid pDocumentoID)
         {
             return ProyectoAD.ExisteTipoOntoDispRolUsuarioProy(pProyectoID, pDocumentoID);
@@ -257,7 +279,7 @@ namespace Es.Riam.Gnoss.Logica.ServiciosGenerales
         /// <summary>
         /// Obtiene los tipo de documentos permitidos para un rol de usuario en un determinado proyecto.
         /// </summary>
-        /// <param name="pProyectoID">Identificador del proyecto en el que se hace la comprobaciÛn</param>
+        /// <param name="pProyectoID">Identificador del proyecto en el que se hace la comprobaci√≥n</param>
         /// <param name="pUsuarioID">Identificador de usuario</param>
         /// <returns>Lista con los tipos de documentos permitidos para el rol</returns>
         public List<TiposDocumentacion> ObtenerTiposDocumentosPermitidosUsuarioEnProyectoPorUsuID(Guid pProyectoID, Guid pUsuarioID)
@@ -301,7 +323,7 @@ namespace Es.Riam.Gnoss.Logica.ServiciosGenerales
             return ProyectoAD.ObtenerParametroAplicacion(parametro);
         }
         /// <summary>
-        /// Actualiza la tabla ParametroAplicacion con el parametro y valor dado. Si el paramerto no existe en la base de datos lo aÒade.
+        /// Actualiza la tabla ParametroAplicacion con el parametro y valor dado. Si el paramerto no existe en la base de datos lo a√±ade.
         /// </summary>
         /// <param name="pParametro">Nombre del parametro a guardar. Clave</param>
         /// <param name="pValor">Valor del paramentro</param>   
@@ -389,7 +411,7 @@ namespace Es.Riam.Gnoss.Logica.ServiciosGenerales
         }
 
         /// <summary>
-        /// AÒade a la base de datos la redirecciÛn indicada y su valor con par·metro de tener
+        /// A√±ade a la base de datos la redirecci√≥n indicada y su valor con par√°metro de tener
         /// </summary>
         /// <param name="pRedireccionRegistroRuta"></param>
         public void AniadirRedireccionRegistroRuta(RedireccionRegistroRuta pRedireccionRegistroRuta)
@@ -398,7 +420,7 @@ namespace Es.Riam.Gnoss.Logica.ServiciosGenerales
         }
 
         /// <summary>
-        /// AÒade la el valor par·metro de la redirecciÛn indicado a la base de datos
+        /// A√±ade la el valor par√°metro de la redirecci√≥n indicado a la base de datos
         /// </summary>
         /// <param name="pRedireccionValorParametro"></param>
         public void AniadirRedireccionValorParametro(RedireccionValorParametro pRedireccionValorParametro)
@@ -440,7 +462,7 @@ namespace Es.Riam.Gnoss.Logica.ServiciosGenerales
         /// </summary>
         /// <param name="idCarga">Id de la carga</param>
         /// <param name="estado">Estado de la carga</param>
-        /// <param name="fechaAlta">Fecha de creaciÛn de la carga</param>
+        /// <param name="fechaAlta">Fecha de creaci√≥n de la carga</param>
         /// <param name="proyectoId">Id el proyecto al que pertenece la carga</param>
         /// <param name="identidadId">Id de la identidad del sujeto de la carga</param>
         /// <param name="nombre">Nombre de la carga</param>
@@ -505,8 +527,8 @@ namespace Es.Riam.Gnoss.Logica.ServiciosGenerales
         /// <summary>
         /// Elimina la lista de filas de RedireccionRegistroRuta y sus filas de RedireccionValorParametro asociadas.
         /// </summary>
-        /// <param name="pGrupoID">Identificador del grupo de organizaciÛn</param>
-        /// <param name="pOrganizacionID">Identificador de la organizaciÛn del proyecto</param>
+        /// <param name="pGrupoID">Identificador del grupo de organizaci√≥n</param>
+        /// <param name="pOrganizacionID">Identificador de la organizaci√≥n del proyecto</param>
         /// <param name="pProyectoID">Identificador del proyecto</param>
         public void BorrarFilaRedireccionRegistroRuta(List<Guid> pListaRedireccionesID, bool pRetrasarGuardado)
         {
@@ -516,7 +538,7 @@ namespace Es.Riam.Gnoss.Logica.ServiciosGenerales
         /// <summary>
         /// Elimina la fila de RedireccionRegistroRuta y sus filas de RedireccionValorParametro asociadas.
         /// </summary>
-        /// <param name="pRedireccionID">Lista de identificadores de redirecciÛn</param>
+        /// <param name="pRedireccionID">Lista de identificadores de redirecci√≥n</param>
         public void BorrarRedireccionRegistroRuta(Guid pRedireccionID)
         {
             ProyectoAD.BorrarRedireccionRegistroRuta(pRedireccionID);
@@ -525,7 +547,7 @@ namespace Es.Riam.Gnoss.Logica.ServiciosGenerales
         /// <summary>
         /// Elimina la fila de RedireccionRegistroRuta y sus filas de RedireccionValorParametro asociadas.
         /// </summary>
-        /// <param name="pListaValoresRedireccionesID">Diccionario de identificadores de redirecciÛn y lista de valores de par·metros</param>
+        /// <param name="pListaValoresRedireccionesID">Diccionario de identificadores de redirecci√≥n y lista de valores de par√°metros</param>
         public void BorrarFilasRedireccionValorParametro(List<RedireccionValorParametro> pFilasValores, bool pRetrasarGuardado)
         {
             ProyectoAD.BorrarFilasRedireccionValorParametro(pFilasValores, pRetrasarGuardado);
@@ -559,18 +581,18 @@ namespace Es.Riam.Gnoss.Logica.ServiciosGenerales
         }
 
         /// <summary>
-        /// Obtiene la ontologÌa a la que pertenece una carga masiva a partir
+        /// Obtiene la ontolog√≠a a la que pertenece una carga masiva a partir
         /// del id de la carga
         /// </summary>
-        /// <param name="pCargaId">Identificador de la carga de la cual queremos obtener la ontologÌa</param>
-        /// <returns>La ontologÌa a la que pertenece la carga</returns>
+        /// <param name="pCargaId">Identificador de la carga de la cual queremos obtener la ontolog√≠a</param>
+        /// <returns>La ontolog√≠a a la que pertenece la carga</returns>
         public string ObtenerOntologiaCarga(Guid pCargaId)
         {
             return ProyectoAD.ObtenerOntologiaCarga(pCargaId);
         }
 
         /// <summary>
-        /// Obtienen los proyectos a los que acceden las identidades que tienen acceso a un proyecto pasado como par·metro
+        /// Obtienen los proyectos a los que acceden las identidades que tienen acceso a un proyecto pasado como par√°metro
         /// </summary>
         /// <param name="pProyectoID">Identificador de proyecto</param>
         /// <returns>Dataset de proyecto</returns>
@@ -580,7 +602,7 @@ namespace Es.Riam.Gnoss.Logica.ServiciosGenerales
         }
 
         /// <summary>
-        /// Obtiene los niveles de certificaciÛn de un proyecto pasado como par·metro
+        /// Obtiene los niveles de certificaci√≥n de un proyecto pasado como par√°metro
         /// </summary>
         /// <param name="pProyectoID">Identificador de proyecto</param>
         /// <returns>Dataset de proyecto</returns>
@@ -622,10 +644,10 @@ namespace Es.Riam.Gnoss.Logica.ServiciosGenerales
         }
 
         /// <summary>
-        /// Comprueba si existen documentos cuyo nivel de certificacion sea el pasado por par·metro
+        /// Comprueba si existen documentos cuyo nivel de certificacion sea el pasado por par√°metro
         /// </summary>
-        /// <param name="pNivelCertificacionID">Identificador de nivel de certificaciÛn</param>
-        /// <returns>TRUE si existe alg˙n documento, FALSE en caso contrario</returns>
+        /// <param name="pNivelCertificacionID">Identificador de nivel de certificaci√≥n</param>
+        /// <returns>TRUE si existe alg√∫n documento, FALSE en caso contrario</returns>
         public bool ExisteDocAsociadoANivelCertif(Guid pNivelCertificacionID)
         {
             return ProyectoAD.ExisteDocAsociadoANivelCertif(pNivelCertificacionID);
@@ -633,9 +655,9 @@ namespace Es.Riam.Gnoss.Logica.ServiciosGenerales
 
 
         /// <summary>
-        /// Comprueba si existen documentos que su nivel de certificaciÛn sea el pasado por par·metro
+        /// Comprueba si existen documentos que su nivel de certificaci√≥n sea el pasado por par√°metro
         /// </summary>
-        /// <param name="pNivelesCertificacionID">Identificador de los niveles de certificaciÛn</param>
+        /// <param name="pNivelesCertificacionID">Identificador de los niveles de certificaci√≥n</param>
         /// <returns>Lista con los niveles de certificacion y un booleano que indica si tiene documentos</returns>
         public Dictionary<Guid, bool> ExisteDocAsociadoANivelCertif(List<Guid> pNivelesCertificacionID)
         {
@@ -654,12 +676,12 @@ namespace Es.Riam.Gnoss.Logica.ServiciosGenerales
         }
 
         /// <summary>
-        /// Obtiene los gadgets del tipo indicado de un proyecto que se le pasa como par·metro
+        /// Obtiene los gadgets del tipo indicado de un proyecto que se le pasa como par√°metro
         /// </summary>
         /// <param name="pProyectoID">Clave del proyecto del que queremos obtener los gadgets</param>
         /// <param name="pProyectoDS">Dataset de proyectos</param>
-        /// <param name="pTipoUbicacionGadget">Indica la ubicaciÛn de los gadgets que se van a cargar(0-home, 1-ficha recursos)</param>
-        /// <returns>DataSet con los gadgets del tipo indicado del proyecto que se pasa por par·metro</returns>
+        /// <param name="pTipoUbicacionGadget">Indica la ubicaci√≥n de los gadgets que se van a cargar(0-home, 1-ficha recursos)</param>
+        /// <returns>DataSet con los gadgets del tipo indicado del proyecto que se pasa por par√°metro</returns>
         public void ObtenerGadgetsProyectoUbicacion(Guid pProyectoID, DataWrapperProyecto pProyectoDS, TipoUbicacionGadget pTipoUbicacionGadget)
         {
 
@@ -671,7 +693,7 @@ namespace Es.Riam.Gnoss.Logica.ServiciosGenerales
         /// </summary>
         /// <param name="pNombreCortoGadget">Nombre corto del gadget</param>
         /// <param name="pProyectoID">Identificador del proyecto</param>
-        /// <returns>TRUE si alg˙n gadget tiene ese nombre corto</returns>
+        /// <returns>TRUE si alg√∫n gadget tiene ese nombre corto</returns>
         public bool ExisteNombreCortoProyectoGadget(string pNombreCortoGadget, Guid pProyectoID)
         {
             return ProyectoAD.ExisteNombreCortoProyectoGadget(pNombreCortoGadget, pProyectoID);
@@ -679,7 +701,7 @@ namespace Es.Riam.Gnoss.Logica.ServiciosGenerales
 
 
         /// <summary>
-        /// Obtiene los gadgets de un proyecto origen que se le pasa como par·metro
+        /// Obtiene los gadgets de un proyecto origen que se le pasa como par√°metro
         /// </summary>
         /// <param name="pProyectoID">Clave del proyecto origen del que queremos obtener los gadgets</param>
         /// <param name="pDataWrapperProyecto">Dataset de proyectos</param>
@@ -738,43 +760,64 @@ namespace Es.Riam.Gnoss.Logica.ServiciosGenerales
             return dataWrapperProyecto.ListaProyectoGadget.Any();
         }
         /// <summary>
-        /// Obtiene las pestaÒas de men˙ un proyecto que se le pasa por parametros
+        /// Obtiene las pesta√±as de men√∫ un proyecto que se le pasa por parametros
         /// </summary>
         /// <param name="pProyectoID">Clave del proyecto del que queremos obtener los gadgets</param>
-        /// <returns>Lista con las pestaÒas del proyecto que se pasa por parametros</returns>
+        /// <returns>Lista con las pesta√±as del proyecto que se pasa por parametros</returns>
         public Dictionary<Guid, string> ObtenerPestanyasProyectoNombre(Guid pProyectoID)
         {
             return ProyectoAD.ObtenerPestanyasProyectoNombre(pProyectoID);
         }
 
         /// <summary>
-        /// Obtiene las pestaÒas de un proyecto que se le pasa por parametros
+        /// Obtiene las pesta√±as de un proyecto que se le pasa por parametros
         /// </summary>
         /// <param name="pProyectoID">Clave del proyecto del que queremos obtener los gadgets</param>
         /// <param name="pDataWrapperProyecto">Dataset de proyectos</param>
-        /// <returns>DataSet con las pestaÒas del proyecto que se pasa por parametros</returns>
+        /// <returns>DataSet con las pesta√±as del proyecto que se pasa por parametros</returns>
         public void ObtenerPestanyasProyecto(Guid? pProyectoID, DataWrapperProyecto pDataWrapperProyecto)
         {
             ProyectoAD.ObtenerPestanyasProyecto(pProyectoID, pDataWrapperProyecto, false);
         }
 
         /// <summary>
-        /// Obtiene las pestaÒas de un proyecto que se le pasa por parametros
+        /// obtiene las ¬¥p√°ginas de b√∫squeda de un proyecto
         /// </summary>
         /// <param name="pProyectoID">Clave del proyecto del que queremos obtener los gadgets</param>
         /// <param name="pDataWrapperProyecto">Dataset de proyectos</param>
-        /// <returns>DataSet con las pestaÒas del proyecto que se pasa por parametros</returns>
-        public void ObtenerPestanyasProyecto(Guid? pProyectoID, DataWrapperProyecto pDataWrapperProyecto, bool pOmitirGenericas)
+        /// <returns>DataSet con las pestaÔøΩas del proyecto que se pasa por parametros</returns>
+        public ProyectoPestanyaBusqueda ObtenerProyectoPestanyasBusqueda(Guid pPestanyaID)
+        {
+            return ProyectoAD.ObtenerProyectoPestanyasBusqueda(pPestanyaID);
+        }
+
+        /// <summary>
+        /// Obtiene la informaciÔøΩn de las tablas ProyectoPestanyaBusqueda con autocompletado enriquecido, ProyectoPestanyaBusquedaPesoOC, OntologiaProyecto y FacetaObjetoConocimientoProyectoPestanya para la configuraciÔøΩn del autocotocompletado enriquecido para un proyecto dado
+        /// </summary>
+        /// <param name="pProyectoID">identificador del proyecto</param>
+        /// <returns>Data wraper del proyecto</returns>
+        public DataWrapperProyecto ObtenerInformacionAutocompletadoEnriquecidoProyecto(Guid pProyectoID)
+		{
+            return ProyectoAD.ObtenerInformacionAutocompletadoEnriquecidoProyecto(pProyectoID);
+		}
+
+		/// <summary>
+		/// Obtiene las pesta√±as de un proyecto que se le pasa por parametros
+		/// </summary>
+		/// <param name="pProyectoID">Clave del proyecto del que queremos obtener los gadgets</param>
+		/// <param name="pDataWrapperProyecto">Dataset de proyectos</param>
+		/// <returns>DataSet con las pesta√±as del proyecto que se pasa por parametros</returns>
+		public void ObtenerPestanyasProyecto(Guid? pProyectoID, DataWrapperProyecto pDataWrapperProyecto, bool pOmitirGenericas)
         {
             ProyectoAD.ObtenerPestanyasProyecto(pProyectoID, pDataWrapperProyecto, pOmitirGenericas);
         }
 
 
         /// <summary>
-        /// Obtiene las pestaÒas de un proyecto que se le pasa por parametros
+        /// Obtiene las pesta√±as de un proyecto que se le pasa por parametros
         /// </summary>
         /// <param name="pProyectoID">Clave del proyecto del que queremos obtener los gadgets</param>
-        /// <returns>DataSet con las p·ginas html del proyecto que se pasa por parametros</returns>
+        /// <returns>DataSet con las p√°ginas html del proyecto que se pasa por parametros</returns>
         public DataWrapperProyecto ObtenerPaginasHtmlProyecto(Guid pProyectoID)
         {
             return ProyectoAD.ObtenerPaginasHtmlProyecto(pProyectoID);
@@ -791,7 +834,7 @@ namespace Es.Riam.Gnoss.Logica.ServiciosGenerales
         }
 
         /// <summary>
-        /// Obtiene los proyectos relacionados de un proyecto que se le pasa como par·metro
+        /// Obtiene los proyectos relacionados de un proyecto que se le pasa como par√°metro
         /// </summary>
         /// <param name="pProyectoID">Clave del proyecto del que queremos obtener los proyectos</param>
         /// <param name="pDataWrapperProyecto">Dataset de proyectos</param>
@@ -829,7 +872,7 @@ namespace Es.Riam.Gnoss.Logica.ServiciosGenerales
         }
 
         /// <summary>
-        /// Comprueba si existe un nombre corto de proyecto pasado por par·metro
+        /// Comprueba si existe un nombre corto de proyecto pasado por par√°metro
         /// </summary>
         /// <param name="pNombreCorto">Nombre corto del proyecto</param>
         /// <returns>TRUE si existe, FALSE en caso contrario</returns>
@@ -839,7 +882,7 @@ namespace Es.Riam.Gnoss.Logica.ServiciosGenerales
         }
 
         /// <summary>
-        /// Comprueba si existe un nombre de proyecto pasado por par·metro
+        /// Comprueba si existe un nombre de proyecto pasado por par√°metro
         /// </summary>
         /// <param name="pNombre">Nombre del proyecto</param>
         /// <returns>TRUE si existe, FALSE en caso contrario</returns>
@@ -915,7 +958,18 @@ namespace Es.Riam.Gnoss.Logica.ServiciosGenerales
         }
 
         /// <summary>
-        /// Obtiene las ontologÌas de los proyectos en los que participa un determinado perfil
+        /// 
+        /// </summary>
+        /// <param name="pOrganizacionID"></param>
+        /// <param name="pProyectoID"></param>
+        /// <returns></returns>
+        public Dictionary<string, Guid> ObtenerOntologiasConIDPorNombreCortoProyIncluyendoSecundarias(string pNombreCortoProyecto)
+        {
+            return ProyectoAD.ObtenerOntologiasConIDPorNombreCortoProyIncluyendoSecundarias(pNombreCortoProyecto);
+        }
+
+        /// <summary>
+        /// Obtiene las ontologÔøΩas de los proyectos en los que participa un determinado perfil
         /// </summary>
         /// <param name="pPerfilID">Identificador del perfil</param>
         /// <returns>Dataset de proyecto con la tabla OntologiaProyecto cargada para el perfil</returns>
@@ -925,17 +979,27 @@ namespace Es.Riam.Gnoss.Logica.ServiciosGenerales
         }
 
         /// <summary>
-        /// Obtiene el identificador de la organizaciÛn de un proyecto
+        /// Obtiene el nombre de la ontolog√≠a a partir de su identificador pasado por par√°metro
+        /// </summary>
+        /// <param name="pOntologiaID">Identificador de la ontolog√≠a</param>
+        /// <returns>Nombre de la ontolog√≠a</returns>
+        public string ObtenerNombreOntologiaProyectoPorOntologiaID(Guid pOntologiaID)
+        {
+            return ProyectoAD.ObtenerNombreOntologiaProyectoPorOntologiaID(pOntologiaID);
+        }
+
+        /// <summary>
+        /// Obtiene el identificador de la organizaci√≥n de un proyecto
         /// </summary>
         /// <param name="pProyectoID">Identificador del proyecto</param>
-        /// <returns>identificador de la organizaciÛn del proyecto</returns>
+        /// <returns>identificador de la organizaci√≥n del proyecto</returns>
         public Guid ObtenerOrganizacionIDProyecto(Guid pProyectoID)
         {
             return ProyectoAD.ObtenerOrganizacionIDProyecto(pProyectoID);
         }
 
         /// <summary>
-        /// Obtiene el id autonumÈrico que se le asigna a cada proyecto para crear la tabla BASE
+        /// Obtiene el id autonum√©roco que se le asigna a cada proyecto para crear la tabla BASE
         /// </summary>
         /// <param name="pProyectoID">Identificador del proyecto</param>
         /// <returns></returns>
@@ -945,7 +1009,7 @@ namespace Es.Riam.Gnoss.Logica.ServiciosGenerales
         }
 
         /// <summary>
-        /// Obtiene el id autonumÈrico que se le asigna a cada proyecto para crear la tabla BASE
+        /// Obtiene el id autonum√©roco que se le asigna a cada proyecto para crear la tabla BASE
         /// </summary>
         /// <param name="pListaProyectosID">Identificadores de los proyectos</param>
         /// <returns></returns>
@@ -955,7 +1019,7 @@ namespace Es.Riam.Gnoss.Logica.ServiciosGenerales
         }
 
         /// <summary>
-        /// Obtiene el proyecto a partir del id autonumÈrico que se le asigna al crear la tabla BASE.
+        /// Obtiene el proyecto a partir del id autonum√©roco que se le asigna al crear la tabla BASE.
         /// </summary>
         /// <param name="pTablaBaseProyectoID">Identificador de la tabla base del proyecto</param>
         /// <returns>DataSet del proyecto con el proyecto cargado</returns>
@@ -967,7 +1031,7 @@ namespace Es.Riam.Gnoss.Logica.ServiciosGenerales
         }
 
         /// <summary>
-        /// Obtiene el identificador proyecto a partir del id autonumÈrico que se le asigna al crear la tabla BASE.
+        /// Obtiene el identificador proyecto a partir del id autonum√©roco que se le asigna al crear la tabla BASE.
         /// </summary>
         /// <param name="pTablaBaseProyectoID">Identificador de la tabla base del proyecto</param>
         /// <returns>Identificador del proyecto con el proyecto cargado</returns>
@@ -1016,11 +1080,11 @@ namespace Es.Riam.Gnoss.Logica.ServiciosGenerales
             ProyectoAD.ActualizarValoresConsultaSPARQL(organizacionID, pProyectoID, nombreFiltro, listaValores);
         }
         /// <summary>
-        /// Actualiza los valores de la tabla ProyectoSearchPersonalizado con los nuevos valores de b˙squeda personalizada
+        /// Actualiza los valores de la tabla ProyectoSearchPersonalizado con los nuevos valores de b√∫squeda personalizada
         /// </summary>
         /// <param name="organizacionID">Id de la organizacion</param>
         /// <param name="pProyectoID">Id del proyecto</param>
-        /// <param name="listaParametros">Lista de los par·metros de b˙squeda personalizados</param>
+        /// <param name="listaParametros">Lista de los par√°metros de b√∫squeda personalizados</param>
         public void ActualizarParametrosBusquedaPersonalizados(Guid organizacionID, Guid pProyectoID, List<ParametroBusquedaPersonalizadoModel> listaParametros)
         {
             ProyectoAD.ActualizarParametrosBusquedaPersonalizados(organizacionID, pProyectoID, listaParametros);
@@ -1028,7 +1092,7 @@ namespace Es.Riam.Gnoss.Logica.ServiciosGenerales
         /// <summary>
         /// Obtiene la URL propia de un proyecto
         /// </summary>
-        /// <param name="pOrganizacionID">Identificador de la organizaciÛn del proyecto</param>
+        /// <param name="pOrganizacionID">Identificador de la organizaci√≥n del proyecto</param>
         /// <param name="pProyectoID">Identificador del proyecto</param>
         /// <returns>Url propia de proyecto</returns>
         public string ObtenerURLPropiaProyecto(Guid pProyectoID)
@@ -1037,7 +1101,7 @@ namespace Es.Riam.Gnoss.Logica.ServiciosGenerales
         }
 
         /// <summary>
-        /// Obtiene el n∫ de proyectos con el mismo dominio que el proyecto pasado por par·metro
+        /// Obtiene el n¬∫ de proyectos con el mismo dominio que el proyecto pasado por par√°metro
         /// </summary>
         /// <param name="pProyectoID">Identificador del proyecto</param>
         /// <returns></returns>
@@ -1047,7 +1111,7 @@ namespace Es.Riam.Gnoss.Logica.ServiciosGenerales
         }
 
         /// <summary>
-        /// Obtiene listado de Guid de proyectos con el mismo dominio que el proyecto pasado por par·metro
+        /// Obtiene listado de Guid de proyectos con el mismo dominio que el proyecto pasado por par√°metro
         /// </summary>
         /// <param name="pProyectoID">Identificador del proyecto</param>
         /// <returns></returns>
@@ -1057,7 +1121,7 @@ namespace Es.Riam.Gnoss.Logica.ServiciosGenerales
         }
 
         /// <summary>
-        /// Obtiene la URL propia de un proyecto cuyo nombre corto se pasa por par·metro
+        /// Obtiene la URL propia de un proyecto cuyo nombre corto se pasa por par√°metro
         /// </summary>
         /// <param name="pNombreCorto">Nombre corto del proyecto</param>
         /// <returns>URL propia del proyecto</returns>
@@ -1067,7 +1131,7 @@ namespace Es.Riam.Gnoss.Logica.ServiciosGenerales
         }
 
         /// <summary>
-        /// Obtiene las URLs propias de proyectos cuyos nombres cortos se pasan por par·metro
+        /// Obtiene las URLs propias de proyectos cuyos nombres cortos se pasan por par√°metro
         /// </summary>
         /// <param name="pNombresCortos">Nombres cortos de los proyectos</param>
         /// <returns>URLS propias de los proyectos</returns>
@@ -1098,10 +1162,10 @@ namespace Es.Riam.Gnoss.Logica.ServiciosGenerales
         }
 
         /// <summary>
-        ///Obtiene los proyectos en los que participa la organizaciÛn pasada por par·metro
+        ///Obtiene los proyectos en los que participa la organizaci√≥n pasada por par√°metro
         /// </summary>
-        /// <param name="pOrganizacionID">Identificador de la organizaciÛn</param>
-        /// <param name="pExcluidMyGNOSS">TRUE si se debe excluir MyGNOSS de la b˙squeda, FALSE en caso contrario</param>
+        /// <param name="pOrganizacionID">Identificador de la organizaci√≥n</param>
+        /// <param name="pExcluidMyGNOSS">TRUE si se debe excluir MyGNOSS de la b√∫squeda, FALSE en caso contrario</param>
         /// <returns>Dataset de proyecto</returns>
         public DataWrapperProyecto ObtenerProyectosParticipaOrganizacion(Guid pOrganizacionID, bool pExcluidMyGNOSS)
         {
@@ -1109,9 +1173,9 @@ namespace Es.Riam.Gnoss.Logica.ServiciosGenerales
         }
 
         /// <summary>
-        /// Obtiene los proyectos en los que participa una organizaciÛn ordenados por relevancia (N˙mero de visitas en GNOSS)
+        /// Obtiene los proyectos en los que participa una organizaci√≥n ordenados por relevancia (N√∫mero de visitas en GNOSS)
         /// </summary>
-        /// <param name="pOrganizacionID">Identificador de la organizaciÛn</param>
+        /// <param name="pOrganizacionID">Identificador de la organizaci√≥n</param>
         /// <returns>Dataset de proyectos</returns>
         public DataWrapperProyecto ObtenerProyectosParticipaOrganizacionPorRelevancia(Guid pOrganizacionID)
         {
@@ -1130,7 +1194,7 @@ namespace Es.Riam.Gnoss.Logica.ServiciosGenerales
         }
 
         /// <summary>
-        /// Obtiene los proyectos en los que participa un usuario ordenados por relevancia (N˙mero de visitas del usuario)
+        /// Obtiene los proyectos en los que participa un usuario ordenados por relevancia (N√∫mero de visitas del usuario)
         /// </summary>
         /// <param name="pPerfilID">Identificador del perfil</param>
         /// <returns>Dataset de proyectos</returns>
@@ -1147,9 +1211,9 @@ namespace Es.Riam.Gnoss.Logica.ServiciosGenerales
 
 
         /// <summary>
-        ///Obtiene los proyectos en los que participa la organizaciÛn
+        ///Obtiene los proyectos en los que participa la organizaci√≥n
         /// </summary>
-        /// <param name="pOrganizacionID">Identificador de la organizaciÛn</param>
+        /// <param name="pOrganizacionID">Identificador de la organizaci√≥n</param>
         /// <returns>Dataset de proyecto</returns>
         public DataWrapperProyecto ObtenerProyectosParticipaOrganizacion(Guid pOrganizacionID)
         {
@@ -1157,11 +1221,11 @@ namespace Es.Riam.Gnoss.Logica.ServiciosGenerales
         }
 
         /// <summary>
-        /// Obtiene los proyectos (carga ligera de "Proyecto") en los que un usuario de organizaciÛn 
-        /// participa con el perfil de la organizaciÛn pasada por par·metro
+        /// Obtiene los proyectos (carga ligera de "Proyecto") en los que un usuario de organizaci√≥n 
+        /// participa con el perfil de la organizaci√≥n pasada por par√°metro
         /// </summary>
-        /// <param name="pOrganizacionID">Identificador de la organizaciÛn</param>
-        /// <param name="pUsuarioID">Identificador del usuario de la organizaciÛn</param>
+        /// <param name="pOrganizacionID">Identificador de la organizaci√≥n</param>
+        /// <param name="pUsuarioID">Identificador del usuario de la organizaci√≥n</param>
         /// <returns>Dataset de proyecto</returns>
         public DataWrapperProyecto ObtenerProyectosParticipaUsuarioDeLaOrganizacion(Guid pOrganizacionID, Guid pUsuarioID)
         {
@@ -1192,6 +1256,11 @@ namespace Es.Riam.Gnoss.Logica.ServiciosGenerales
         public DataWrapperProyecto ObtenerProyectoPorIDDS(Guid pProyectoID)
         {
             return ProyectoAD.ObtenerProyectoPorID(pProyectoID);
+        }
+
+        public List<Guid> ObtenerCategoriasProyecto(Guid pProyectoID)
+        {
+            return ProyectoAD.ObtenerCategoriasProyecto(pProyectoID);
         }
 
         /// <summary>
@@ -1333,7 +1402,7 @@ namespace Es.Riam.Gnoss.Logica.ServiciosGenerales
         }
 
         /// <summary>
-        /// Obtiene (carga ligera) los datos del proyecto pasado como par·metro
+        /// Obtiene (carga ligera) los datos del proyecto pasado como par√°metro
         /// </summary>
         /// <param name="pProyectoID">Identificador de proyecto</param>
         /// <returns>ProyectoDS.ProyectoRow</returns>
@@ -1351,7 +1420,12 @@ namespace Es.Riam.Gnoss.Logica.ServiciosGenerales
             return null;
         }
 
-        public DataWrapperProyecto ObtenerProyectoPorIDCargaLigeraDataWrapper(Guid pProyectoID)
+		public Proyecto ObtenerProyectoDeBaseRecursos(Guid pBaseRecursosID)
+        {
+            return ProyectoAD.ObtenerProyectoDeBaseRecursos(pBaseRecursosID);
+        }
+
+		public DataWrapperProyecto ObtenerProyectoPorIDCargaLigeraDataWrapper(Guid pProyectoID)
         {
             List<Guid> lista = new List<Guid>();
             lista.Add(pProyectoID);
@@ -1361,7 +1435,7 @@ namespace Es.Riam.Gnoss.Logica.ServiciosGenerales
         }
 
         /// <summary>
-        /// Obtiene (carga ligera) los datos del proyecto pasado como par·metro
+        /// Obtiene (carga ligera) los datos del proyecto pasado como par√°metro
         /// </summary>
         /// <param name="pProyectoID">Identificador de proyecto</param>
         /// <returns>Dataset de proyecto</returns>
@@ -1374,7 +1448,7 @@ namespace Es.Riam.Gnoss.Logica.ServiciosGenerales
         }
 
         /// <summary>
-        /// Obtiene proyectos (carga ligera) a partir de la lista de sus identificadores pasada como par·metro
+        /// Obtiene proyectos (carga ligera) a partir de la lista de sus identificadores pasada como par√°metro
         /// </summary>
         /// <param name="pListaProyectoID">Lista de identificadores de proyecto</param>
         /// <returns>Dataset de proyecto</returns>
@@ -1387,7 +1461,7 @@ namespace Es.Riam.Gnoss.Logica.ServiciosGenerales
         /// Obtiene (carga ligera) los datos de los proyectos mas populares a los que no pertenece el usuario
         /// </summary>
         /// <param name="pPersonaID">ID de la persona</param>
-        /// <param name="pNumeroProyectos">N˙mero de proyectos</param>
+        /// <param name="pNumeroProyectos">N√∫mero de proyectos</param>
         /// <returns>Dataset de proyecto</returns>
         public DataWrapperProyecto ObtenerProyectosRecomendadosPorPersona(Guid pPersonaID, int pNumeroProyectos)
         {
@@ -1399,15 +1473,13 @@ namespace Es.Riam.Gnoss.Logica.ServiciosGenerales
 
 
         /// <summary>
-        /// Recupera todos los proyectos de una organizaciÛn
+        /// Recupera todos los proyectos de una organizaci√≥n
         /// </summary>
-        /// <param name="pOrganizacionID">Identificador de la organizaciÛn</param>
+        /// <param name="pOrganizacionID">Identificador de la organizaci√≥n</param>
         /// <param name="pProyectoID">Identificador del proyecto</param>
         /// <returns>Dataset de proyecto</returns>
         public DataWrapperProyecto ObtenerProyectoOrganizacion(Guid pOrganizacionID, Guid pProyectoID)
         {
-            //ChequeoSeguridad.ComprobarAutorizacion((ulong)Capacidad.General.CapacidadesOrganizacion.VerProyectos);
-
             return ProyectoAD.ObtenerProyectoPorID(pProyectoID);
         }
 
@@ -1468,7 +1540,7 @@ namespace Es.Riam.Gnoss.Logica.ServiciosGenerales
         }
 
         /// <summary>
-        /// Obtiene la lista de proyectos en las que participa un usuario pasado por par·metro
+        /// Obtiene la lista de proyectos en las que participa un usuario pasado por par√°metro
         /// </summary>
         /// <param name="pUsuarioID">Identificador del usuario</param>
         /// <returns>Dataset de proyecto con todos los proyectos en los que participa el usuario</returns>
@@ -1478,7 +1550,7 @@ namespace Es.Riam.Gnoss.Logica.ServiciosGenerales
         }
 
         /// <summary>
-        /// Obtiene la lista de proyectos en las que participa una persona pasada por par·metro
+        /// Obtiene la lista de proyectos en las que participa una persona pasada por par√°metro
         /// </summary>
         /// <param name="pPersonaID">Identificador de la persona</param>
         /// <returns>lista de guids con todos los proyectos en los que participa la persona</returns>
@@ -1488,7 +1560,7 @@ namespace Es.Riam.Gnoss.Logica.ServiciosGenerales
         }
 
         /// <summary>
-        /// Obtiene los proyectos en los que participa un usuario pasado por par·metro
+        /// Obtiene los proyectos en los que participa un usuario pasado por par√°metro
         /// </summary>
         /// <param name="pUsuarioID">Identificador del usuario</param>
         /// <param name="pTipoDocumentoCompartido">Tipo del recurso que va a compartir el usuario</param>
@@ -1509,20 +1581,18 @@ namespace Es.Riam.Gnoss.Logica.ServiciosGenerales
         }
 
         /// <summary>
-        /// Obtiene los proyectos en los que participa un usuario pasado por par·metro
+        /// Obtiene los proyectos en los que participa un usuario pasado por par√°metro
         /// </summary>
         /// <param name="pUsuarioID">Identificador del usuario</param>
-        /// <param name="pSoloUsuariosSinBloquear">TRUE si deben traerse sÛlo los usuarios sin bloquear, FALSE si son todos</param>
+        /// <param name="pSoloUsuariosSinBloquear">TRUE si deben traerse s√≥lo los usuarios sin bloquear, FALSE si son todos</param>
         /// <returns>Dataset de proyecto con todos los proyectos en los que participa el usuario</returns>
         public DataWrapperProyecto ObtenerProyectosParticipaUsuario(Guid pUsuarioID, bool pSoloUsuariosSinBloquear)
         {
-            //ChequeoSeguridad.ComprobarAutorizacion((ulong)Capacidad.General.CapacidadesOrganizacion.VerProyectos);
-
             return ProyectoAD.ObtenerProyectosParticipaUsuario(pUsuarioID, pSoloUsuariosSinBloquear);
         }
 
         /// <summary>
-        /// Obtiene la lista de proyectos en las que participa un usuario pasado por par·metro
+        /// Obtiene la lista de proyectos en las que participa un usuario pasado por par√°metro
         /// </summary>
         /// <param name="pUsuarioID">Identificador del usuario</param>
         /// <param name="pPerfilID">Identificador de perfil</param>
@@ -1533,7 +1603,7 @@ namespace Es.Riam.Gnoss.Logica.ServiciosGenerales
         }
 
         /// <summary>
-        /// Obtiene una lista con los proyectos en los que participa un perfil pas·ndole una identidad(NO incluye myGnoss)
+        /// Obtiene una lista con los proyectos en los que participa un perfil pas√°ndole una identidad(NO incluye myGnoss)
         /// </summary>
         /// <param name="listaProyectos">Lista con los proyectos obtenidos de Virtuoso</param>
         /// <param name="pIdentidadID">Identificador de la identidad</param>
@@ -1544,7 +1614,7 @@ namespace Es.Riam.Gnoss.Logica.ServiciosGenerales
         }
 
         /// <summary>
-        /// Obtiene la lista de proyectos en las que participa un usuario pasado por par·metro.
+        /// Obtiene la lista de proyectos en las que participa un usuario pasado por par√°metro.
         /// </summary>
         /// <param name="pUsuarioID">Identificador del usuario</param>
         /// <returns>Diccionario ProyectoID,NombreCorto de cada proyecto</returns>
@@ -1554,7 +1624,7 @@ namespace Es.Riam.Gnoss.Logica.ServiciosGenerales
         }
 
         /// <summary>
-        /// Obtiene los proyectos administrados por el perfil pasado por par·metro
+        /// Obtiene los proyectos administrados por el perfil pasado por par√°metro
         /// </summary>
         /// <param name="pUsuarioID">Identificador de usuario</param>
         /// <returns>Diccionario ProyectoID,NombreCorto de cada proyecto</returns>
@@ -1574,7 +1644,7 @@ namespace Es.Riam.Gnoss.Logica.ServiciosGenerales
         }
 
         /// <summary>
-        /// Obtiene la lista de proyectos en las que participa un usuario pasado por par·metro.
+        /// Obtiene la lista de proyectos en las que participa un usuario pasado por par√°metro.
         /// </summary>
         /// <param name="pUsuarioID">Identificador del usuario</param>
         /// <param name="pTipoDoc">Tipo de documento que se va a cargar</param>
@@ -1585,7 +1655,7 @@ namespace Es.Riam.Gnoss.Logica.ServiciosGenerales
         }
 
         /// <summary>
-        /// Obtiene los registros de AdministradorProyecto de un usuario pasado como par·metro
+        /// Obtiene los registros de AdministradorProyecto de un usuario pasado como par√°metro
         /// </summary>
         /// <param name="pUsuarioID">Identificador del usuario</param>
         /// <returns>Dataset de proyecto</returns>
@@ -1595,7 +1665,7 @@ namespace Es.Riam.Gnoss.Logica.ServiciosGenerales
         }
 
         /// <summary>
-        /// Obtiene los registros de AdministradorProyecto de una persona pasado como par·metro
+        /// Obtiene los registros de AdministradorProyecto de una persona pasado como par√°metro
         /// </summary>
         /// <param name="pPersonaID">Identificador de la persona</param>
         /// <returns>Dataset de proyecto</returns>
@@ -1625,7 +1695,7 @@ namespace Es.Riam.Gnoss.Logica.ServiciosGenerales
         }
 
         /// <summary>
-        /// Obtiene los proyectos hijos de los proyectos que se pasan por par·metro
+        /// Obtiene los proyectos hijos de los proyectos que se pasan por par√°metro
         /// </summary>
         /// <param name="pListaProyectosID">Lista de identificadores de proyecto</param>
         /// <returns>Dataset de proyecto con los proyectos hijos cargados</returns>
@@ -1645,7 +1715,7 @@ namespace Es.Riam.Gnoss.Logica.ServiciosGenerales
         }
 
         /// <summary>
-        /// Obtiene el id del proyecto padre del proyecto pasado por par·metro
+        /// Obtiene el id del proyecto padre del proyecto pasado por par√°metro
         /// </summary>
         /// <param name="pProyectoID">Identificador del proyecto del cual se quiere obtener el padre</param>
         /// <returns>Id del proyecto padre</returns>
@@ -1656,7 +1726,7 @@ namespace Es.Riam.Gnoss.Logica.ServiciosGenerales
 
 
         /// <summary>
-        /// Obtiene el proyecto en el que participa una identidad (no muestra los que estÈn cerrados)
+        /// Obtiene el proyecto en el que participa una identidad (no muestra los que est√°n cerrados)
         /// </summary>
         /// <param name="pIdentidad">Identificador de identidad</param>
         /// <returns>Dataset de proyecto con el proyecto en el que participa la identidad</returns>
@@ -1781,7 +1851,7 @@ namespace Es.Riam.Gnoss.Logica.ServiciosGenerales
         }
 
         /// <summary>
-        /// Actualiza los cambios realizados en los proyectos m·s activos. Primero vacia la tabla "ProyectosMasActivosw" y luego actualiza.
+        /// Actualiza los cambios realizados en los proyectos m√°s activos. Primero vacia la tabla "ProyectosMasActivosw" y luego actualiza.
         /// </summary>
         /// <param name="pDataWrapperProyecto">Dataset de proyectos</param>
         public void ActualizarProyectosMasActivos(DataWrapperProyecto pDataWrapperProyecto)
@@ -1794,7 +1864,7 @@ namespace Es.Riam.Gnoss.Logica.ServiciosGenerales
         /// Actualiza los cambios realizados en proyectos
         /// </summary>
         /// <param name="pProyectoDS">Dataset de proyectos</param>
-        /// <param name="pRecalculandoProyectosMasActivos">TRUE si se deben recalcular los proyectos m·s activos</param>
+        /// <param name="pRecalculandoProyectosMasActivos">TRUE si se deben recalcular los proyectos m√°s activos</param>
         public void ActualizarProyectos(bool pRecalculandoProyectosMasActivos)
         {
             try
@@ -1812,21 +1882,20 @@ namespace Es.Riam.Gnoss.Logica.ServiciosGenerales
             {
                 TerminarTransaccion(false);
                 // Error de concurrencia
-                mLoggingService.GuardarLogError(ex);
+                mLoggingService.GuardarLogError(ex,mlogger);
                 throw new ErrorConcurrencia();
             }
             catch (DataException ex)
             {
                 TerminarTransaccion(false);
-                //Error interno de la aplicaciÛn	
-                mLoggingService.GuardarLogError(ex);
+                //Error interno de la aplicaci√≥n	
+                mLoggingService.GuardarLogError(ex,mlogger);
                 throw new ErrorInterno();
             }
             catch (SqlException ex)
             {
-                TerminarTransaccion(false);
-                //MessageBox.Show("No se puede eliminar el proyecto ya que existen elementos vinculados a Èl. (" + e.Message + ")", "Error en la eliminacion del proyecto", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
-                //Error interno de la aplicaciÛn
+                TerminarTransaccion(false);              
+                //Error interno de la aplicaci√≥n
                 throw ex;
             }
             catch
@@ -1834,98 +1903,10 @@ namespace Es.Riam.Gnoss.Logica.ServiciosGenerales
                 TerminarTransaccion(false);
                 throw;
             }
-
-
-            //try
-            //{
-            //    EntityContext.SaveChanges();
-            //}
-            //catch (DbEntityValidationException e)
-            //{
-            //    foreach (var eve in e.EntityValidationErrors)
-            //    {
-
-            //        foreach (var ve in eve.ValidationErrors)
-            //        {
-
-            //        }
-            //    }
-            //}
-            //List<Proyecto> cambiosProyectos;
-
-            //cambiosProyectos =
-            //    (List<Proyecto>)pProyectoDS.Proyecto.Select(
-            //    null, null,
-            //    DataViewRowState.Added |
-            //    DataViewRowState.ModifiedCurrent);
-
-            //this.ValidarProyectos(cambiosProyectos);
-
-            //try
-            //{
-            //    if (Transaccion != null)
-            //    {
-            //        if (pRecalculandoProyectosMasActivos)
-            //        {
-            //            ProyectoAD.ActualizarProyectosMasActivos(pProyectoDS);
-            //        }
-            //        else
-            //        {
-            //            ProyectoAD.ActualizarProyectos(pProyectoDS, false);
-            //        }
-            //    }
-            //    else
-            //    {
-            //        IniciarTransaccion();
-            //        {
-            //            if (pRecalculandoProyectosMasActivos)
-            //            {
-            //                ProyectoAD.ActualizarProyectosMasActivos(pProyectoDS);
-            //            }
-            //            else
-            //            {
-            //                ProyectoAD.ActualizarProyectos(pProyectoDS, false);
-            //            }
-
-            //            if (pProyectoDS != null)
-            //            {
-            //                pProyectoDS.AcceptChanges();
-            //            }
-            //            TerminarTransaccion(true);
-            //        }
-            //    }
-            //    
-            //}
-            //catch (DBConcurrencyException ex)
-            //{
-            //    TerminarTransaccion(false);
-            //    // Error de concurrencia
-            //    Error.GuardarLogError(ex);
-            //    throw new ErrorConcurrencia();
-            //}
-            //catch (DataException ex)
-            //{
-            //    TerminarTransaccion(false);
-            //    //Error interno de la aplicaciÛn	
-            //    Error.GuardarLogError(ex);			
-            //    throw new ErrorInterno();
-            //}
-            //catch (SqlException ex)
-            //{
-            //    TerminarTransaccion(false);
-            //    //MessageBox.Show("No se puede eliminar el proyecto ya que existen elementos vinculados a Èl. (" + e.Message + ")", "Error en la eliminacion del proyecto", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
-            //    //Error interno de la aplicaciÛn
-            //    throw ex;
-            //}
-            //catch
-            //{
-            //    TerminarTransaccion(false);
-            //    throw;
-            //}
         }
 
         /// <summary>
-        /// Carga la presentaciÛn de todos los documentos sem·ntico en una comunidad
+        /// Carga la presentaci√≥n de todos los documentos sem√°ntico en una comunidad
         /// </summary>
         /// <param name="pProyectoID">ID del proyecto</param>    
         public DataWrapperProyecto ObtenerPresentacionSemantico(Guid pProyectoID)
@@ -1934,7 +1915,7 @@ namespace Es.Riam.Gnoss.Logica.ServiciosGenerales
         }
 
         /// <summary>
-        /// Carga la presentaciÛn de todos los documentos sem·ntico en una comunidad
+        /// Carga la presentaci√≥n de todos los documentos sem√°ntico en una comunidad
         /// </summary>
         /// <param name="pProyectoID">ID del proyecto</param>    
         public DataWrapperProyecto ObtenerPresentacionListadoSemantico(Guid pProyectoID)
@@ -1943,7 +1924,7 @@ namespace Es.Riam.Gnoss.Logica.ServiciosGenerales
         }
 
         /// <summary>
-        /// Carga la presentaciÛn de todos los documentos sem·ntico en una comunidad
+        /// Carga la presentaci√≥n de todos los documentos sem√°ntico en una comunidad
         /// </summary>
         /// <param name="pProyectoID">ID del proyecto</param>    
         public DataWrapperProyecto ObtenerPresentacionMosaicoSemantico(Guid pProyectoID)
@@ -1952,7 +1933,7 @@ namespace Es.Riam.Gnoss.Logica.ServiciosGenerales
         }
 
         /// <summary>
-        /// Guarda los datos de un dataset de proyecto pasado como par·metro
+        /// Guarda los datos de un dataset de proyecto pasado como par√°metro
         /// </summary>
         /// <param name="pProyecto">Dataset de proyecto</param>
         public void GuardarProyectos()
@@ -1961,22 +1942,13 @@ namespace Es.Riam.Gnoss.Logica.ServiciosGenerales
         }
 
         /// <summary>
-        /// Elimina los datos de un dataset de proyecto pasado como par·metro
+        /// Elimina los datos de un dataset de proyecto pasado como par√°metro
         /// </summary>
         /// <param name="pProyectoDS">Dataset de proyecto</param>
         public void EliminarProyectos(/*ProyectoDS pProyectoDS*/)
         {
             mEntityContext.SaveChanges();
         }
-
-        ///// <summary>
-        ///// Obtiene el peso de todos los  proyectos. Para que el servivio de optimizacion calcule "ProyectosMasActivos"
-        ///// </summary>
-        ///// <returns>Dataset de proyecto</returns>
-        //public ProyectoDS ObtenerProyectosPorPeso()
-        //{
-        //    return ProyectoAD.ObtenerProyectosPorPeso();
-        //}
 
         /// <summary>
         /// Obtiene la configuracion del login de la comunidad
@@ -1989,17 +1961,17 @@ namespace Es.Riam.Gnoss.Logica.ServiciosGenerales
         }
 
         /// <summary>
-        /// Calcula el peso del proyecto pasado como par·metro
+        /// Calcula el peso del proyecto pasado como par√°metro
         /// </summary>
         /// <param name="pProyectoID">ProyectoID del que se quiere obtener el peso</param>
         /// <returns>Peso del proyecto</returns>
         public int ObtenerPesoPorProyecto(Guid pProyectoID)
         {
-            //Calcular el n˙mero de proyectos a partir de los siguientes patrones
-            //	10 x N∫ ArtÌculos (En los ˙ltimos numDias dÌas)
-            //	15 x N∫ Dafos (En los ˙ltimos numDias dÌas)
-            //	5 x N∫ Miembros (En los ˙ltimos numDias dÌas)
-            //	5 x N∫ Organizaciones (En los ˙ltimos numDias dÌas)
+            //Calcular el n√∫mero de proyectos a partir de los siguientes patrones
+            //	10 x N¬∫ Art√≠culos (En los √∫ltimos numDias d√≠as)
+            //	15 x N¬∫ Dafos (En los √∫ltimos numDias d√≠as)
+            //	5 x N¬∫ Miembros (En los √∫ltimos numDias d√≠as)
+            //	5 x N¬∫ Organizaciones (En los √∫ltimos numDias d√≠as)
 
             int numRecursos = ProyectoAD.ObtenerNumRecursosProyecto30Dias(pProyectoID, 30);
 
@@ -2007,61 +1979,36 @@ namespace Es.Riam.Gnoss.Logica.ServiciosGenerales
         }
 
         /// <summary>
-        /// Obtiene el n˙mero de recursos publicados en el proyecto
+        /// Obtiene el n√∫mero de recursos publicados en el proyecto
         /// </summary>
         /// <param name="pProyectoID">ProyectoID del que se quiere obtener el peso.</param>
-        /// <returns>N˙mero de recursos publicados</returns>
+        /// <returns>N√∫mero de recursos publicados</returns>
         public int ObtenerNumRecursosProyecto(Guid pProyectoID)
         {
             return ProyectoAD.ObtenerNumRecursosProyecto30Dias(pProyectoID, -1);
         }
 
         /// <summary>
-        /// Obtiene el n˙mero de dafos publicados en el proyecto
-        /// </summary>
-        /// <param name="pProyectoID">ProyectoID del que se quiere obtener el peso.</param>
-        /// <returns>N˙mero de dafos publicados</returns>
-        //public int ObtenerNumDebatesProyecto(Guid pProyectoID)
-        //{
-        //    return ProyectoAD.ObtenerNumDebatesProyecto(pProyectoID);
-        //}
-
-        /// <summary>
-        /// Obtiene el n˙mero de dafos publicados en el proyecto
-        /// </summary>
-        /// <param name="pProyectoID">ProyectoID del que se quiere obtener el peso.</param>
-        /// <returns>N˙mero de dafos publicados</returns>
-        //public int ObtenerNumeroPreguntas(Guid pProyectoID)
-        //{
-        //    return ProyectoAD.ObtenerNumeroPreguntas(pProyectoID);
-        //}
-
-
-
-
-
-        /// <summary>
         /// Actualiza los contadores del proyecto
         /// </summary>
         /// <param name="pProyectoID">ID del proyecto a actualizar</param>
-        /// <param name="pNumOrg">N˙mero de miembros de organizaciÛn</param>
-        /// <param name="pNumIden">N˙mero de miembros normales</param>
-        /// <param name="pNumRec">N˙mero de recursos</param>
-        /// <param name="pNumDafos">N˙mero de dafos</param>
-        /// <param name="pNumDebates">N˙mero Debates</param>
-        /// <param name="pNumPreg">N˙mero Preguntas</param>
+        /// <param name="pNumOrg">N√∫mero de miembros de organizaci√≥n</param>
+        /// <param name="pNumIden">N√∫mero de miembros normales</param>
+        /// <param name="pNumRec">N√∫mero de recursos</param>
+        /// <param name="pNumDafos">N√∫mero de dafos</param>
+        /// <param name="pNumDebates">N√∫mero Debates</param>
+        /// <param name="pNumPreg">N√∫mero Preguntas</param>
         public void ActualizarContadoresProyecto(Guid pProyectoID, int pNumOrg, int pNumIden, int pNumRec, int pNumDafos, int pNumDebates, int pNumPreg)
         {
             ProyectoAD.ActualizarContadoresProyecto(pProyectoID, pNumOrg, pNumIden, pNumRec, pNumDafos, pNumDebates, pNumPreg);
         }
-
 
         /// <summary>
         /// Calcula el rol permitido para un usuario en un proyecto, teniendo en cuenta los roles de los grupos a los que pertenece
         /// </summary>
         /// <param name="pUsuario">Usuario para calcular su rol</param>
         /// <param name="pProyecto">Proyecto para calcular el rol</param>
-        /// <param name="pComprobarAutenticacionUsuario">TRUE si debe comprobar que el usuario est· autenticado, FALSE en caso contrario</param>
+        /// <param name="pComprobarAutenticacionUsuario">TRUE si debe comprobar que el usuario est√° autenticado, FALSE en caso contrario</param>
         /// <returns>Rol permitido final del usuario en el proyecto</returns>
         public ulong CalcularRolFinalUsuarioEnProyecto(AD.EntityModel.Models.UsuarioDS.Usuario pUsuario, Proyecto pProyecto, bool pComprobarAutenticacionUsuario)
         {
@@ -2072,10 +2019,10 @@ namespace Es.Riam.Gnoss.Logica.ServiciosGenerales
         /// Calcula el rol permitido para un usuario en un proyecto, teniendo en cuenta los roles de los grupos a los que pertenece
         /// </summary>
         /// <param name="pUsuarioID">Identificador del usuario</param>
-        /// <param name="pLogin">Login del usuario (NULL si no se quiere comprobar que el usuario estÈ autenticado)</param>
-        /// <param name="pOrganizacionID">Identificador de la organizaciÛn</param>
+        /// <param name="pLogin">Login del usuario (NULL si no se quiere comprobar que el usuario est√° autenticado)</param>
+        /// <param name="pOrganizacionID">Identificador de la organizaci√≥n</param>
         /// <param name="pProyectoID">Identificador del proyecto</param>
-        /// <param name="pComprobarAutenticacionUsuario">TRUE si debe comprobar que el usuario est· autenticado, FALSE en caso contrario</param>
+        /// <param name="pComprobarAutenticacionUsuario">TRUE si debe comprobar que el usuario est√° autenticado, FALSE en caso contrario</param>
         /// <returns>Rol permitido final del usuario en el proyecto</returns>
         public ulong CalcularRolFinalUsuarioEnProyecto(Guid pUsuarioID, string pLogin, Guid pOrganizacionID, Guid pProyectoID)
         {
@@ -2083,8 +2030,8 @@ namespace Es.Riam.Gnoss.Logica.ServiciosGenerales
             ulong rolPermitidoUsuario = 0;
             ulong rolDenegadoUsuario = 0;
 
-            //1∫ Obtenemos los roles del usuario en el proyecto
-            UsuarioCN serviciosRolUsuario = new UsuarioCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+            //1¬∫ Obtenemos los roles del usuario en el proyecto
+            UsuarioCN serviciosRolUsuario = new UsuarioCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<UsuarioCN>(), mLoggerFactory);
             AD.EntityModel.Models.UsuarioDS.ProyectoRolUsuario proyectoRolUsuario = serviciosRolUsuario.ObtenerRolUsuarioEnProyecto(pProyectoID, pUsuarioID);
 
             if (proyectoRolUsuario == null)
@@ -2102,7 +2049,7 @@ namespace Es.Riam.Gnoss.Logica.ServiciosGenerales
                 rolDenegadoUsuario = Convert.ToUInt64(proyectoRolUsuario.RolDenegado, 16);
             }
 
-            //2∫ Calculamos el rol final
+            //2¬∫ Calculamos el rol final
             ulong rolPermitidoFinal = rolPermitidoUsuario;
             ulong rolDenegadoFinal = rolDenegadoUsuario;
 
@@ -2128,7 +2075,6 @@ namespace Es.Riam.Gnoss.Logica.ServiciosGenerales
             return ProyectoAD.ObtenerURLApiIntegracionContinua();
         }
 
-
         /// <summary>
         /// Obtiene el identificador del Entorno.
         /// </summary>
@@ -2150,7 +2096,7 @@ namespace Es.Riam.Gnoss.Logica.ServiciosGenerales
 
 
         /// <summary>
-        /// Obtiene el proyecto a travÈs de su nombre corto
+        /// Obtiene el proyecto a trav√©s de su nombre corto
         /// </summary>
         /// <param name="pNombreCorto">Nombre corto del proyecto a obtener</param>
         /// <returns></returns>
@@ -2160,7 +2106,7 @@ namespace Es.Riam.Gnoss.Logica.ServiciosGenerales
         }
 
         /// <summary>
-        /// Nos indica si existe alg˙n proyecto con el nombre corto indicado
+        /// Nos indica si existe alg√∫n proyecto con el nombre corto indicado
         /// </summary>
         /// <param name="pNombreCorto">Nombre corto a comprobar</param>
         /// <returns></returns>
@@ -2180,7 +2126,7 @@ namespace Es.Riam.Gnoss.Logica.ServiciosGenerales
         }
 
         /// <summary>
-        /// Obtiene el identificador de un proyecto a partir de su nombre CORTO pasado por par·metro
+        /// Obtiene el identificador de un proyecto a partir de su nombre CORTO pasado por par√°metro
         /// </summary>
         /// <param name="pNombreCorto">Nombre corto del proyecto</param>
         /// <returns>Identificador del proyecto</returns>
@@ -2231,7 +2177,7 @@ namespace Es.Riam.Gnoss.Logica.ServiciosGenerales
 
 
         /// <summary>
-        /// Obtiene el proyecto cuyo identificador se pasa por par·metro, adem·s de sus niveles de certificaciÛn 
+        /// Obtiene el proyecto cuyo identificador se pasa por par√°metro, adem√°s de sus niveles de certificaci√≥n 
         /// y los permisos de los roles de usuario sobre los tipos de recursos del proyecto
         /// </summary>
         /// <param name="pProyectoID">Identificador de proyecto</param>
@@ -2242,7 +2188,7 @@ namespace Es.Riam.Gnoss.Logica.ServiciosGenerales
         }
 
         /// <summary>
-        /// Obtiene el proyecto cuyo identificador se pasa por par·metro
+        /// Obtiene el proyecto cuyo identificador se pasa por par√°metro
         /// TFG Fran
         /// </summary>
         /// <param name="pProyectoID">Identificador de proyecto</param>
@@ -2254,7 +2200,7 @@ namespace Es.Riam.Gnoss.Logica.ServiciosGenerales
 
 
         /// <summary>
-        /// Obtiene los nombres de los proyectos administrados por el usuario pasado por par·metro con el perfil dado
+        /// Obtiene los nombres de los proyectos administrados por el usuario pasado por par√°metro con el perfil dado
         /// </summary>
         /// <param name="pUsuarioID">Identificador de usuario</param>
         /// <param name="pPerfilID">Identificador de perfil</param>
@@ -2266,7 +2212,7 @@ namespace Es.Riam.Gnoss.Logica.ServiciosGenerales
         }
 
         /// <summary>
-        /// Obtiene los nombres de los proyectos administrados por el usuario pasado por par·metro con el perfil dado
+        /// Obtiene los nombres de los proyectos administrados por el usuario pasado por par√°metro con el perfil dado
         /// </summary>
         /// <param name="pUsuarioID">Identificador de usuario</param>
         /// <param name="pPerfilID">Identificador de perfil</param>
@@ -2277,7 +2223,7 @@ namespace Es.Riam.Gnoss.Logica.ServiciosGenerales
         }
 
         /// <summary>
-        /// Obtiene las secciones de la home de un proyecto tipo cat·logo
+        /// Obtiene las secciones de la home de un proyecto tipo cat√°logo
         /// </summary>
         /// <param name="pProyectoID">Identificador del proyecto</param>
         /// <returns></returns>
@@ -2288,7 +2234,7 @@ namespace Es.Riam.Gnoss.Logica.ServiciosGenerales
         }
 
         /// <summary>
-        /// Obtiene los proyectos administrados por el perfil pasado por par·metro
+        /// Obtiene los proyectos administrados por el perfil pasado por par√°metro
         /// </summary>
         /// <param name="pPerfilID">Identificador de perfil</param>
         /// <returns>Dataset de proyectos</returns>
@@ -2298,27 +2244,27 @@ namespace Es.Riam.Gnoss.Logica.ServiciosGenerales
         }
 
         /// <summary>
-        /// Indica si el usuario ers el ˙nico administrador de un proyecto
+        /// Indica si el usuario ers el √∫nico administrador de un proyecto
         /// </summary>
         /// <param name="pUsuarioID">Identificador de usuario</param>
-        /// <returns>True si es el ˙nico administrador de algun proyecto</returns>
+        /// <returns>True si es el √∫nico administrador de algun proyecto</returns>
         public bool EsUsuarioAdministradorUnicoDeProyecto(Guid pUsuarioID)
         {
             return ProyectoAD.EsUsuarioAdministradorUnicoDeProyecto(pUsuarioID);
         }
 
         /// <summary>
-        /// Indica si el usuario es el ˙nico administrador de un proyecto concreto
+        /// Indica si el usuario es el √∫nico administrador de un proyecto concreto
         /// </summary>
         /// <param name="pUsuarioID">Identificador de usuario</param>
-        /// <returns>True si es el ˙nico administrador del proyecto</returns>
+        /// <returns>True si es el √∫nico administrador del proyecto</returns>
         public bool EsUsuarioAdministradorUnicoDeProyecto(Guid pUsuarioID, Guid pProyectoID)
         {
             return ProyectoAD.EsUsuarioAdministradorUnicoDeProyecto(pUsuarioID, pProyectoID);
         }
 
         /// <summary>
-        /// Obtiene los proyectos administrados por la organizacion pasado por par·metro
+        /// Obtiene los proyectos administrados por la organizacion pasado por par√°metro
         /// </summary>
         /// <param name="pOrganizacionID">Identificador de la organizacion</param>
         /// <returns>Dataset de proyectos</returns>
@@ -2338,18 +2284,18 @@ namespace Es.Riam.Gnoss.Logica.ServiciosGenerales
         }
 
         /// <summary>
-        /// Comprueba si existe alguna categorÌa de tesauro en el proyecto
+        /// Comprueba si existe alguna categor√≠a de tesauro en el proyecto
         /// </summary>
         /// <param name="pProyectoID">Identificador del proyecto</param>
-        /// <returns>TRUE si existen categorÌas del tesauro, FALSE en caso contrario</returns>
+        /// <returns>TRUE si existen categor√≠as del tesauro, FALSE en caso contrario</returns>
         public bool TienecategoriasDeTesauro(Guid pProyectoID)
         {
             return ProyectoAD.TienecategoriasDeTesauro(pProyectoID);
         }
 
         /// <summary>
-        /// Comprueba si alg˙n usuario de la organizaciÛn (personas con usuario vinculadas con la organizaciÛn) 
-        /// es administrador del proyecto pasado por par·metro
+        /// Comprueba si alg√∫n usuario de la organizaci√≥n (personas con usuario vinculadas con la organizaci√≥n) 
+        /// es administrador del proyecto pasado por par√°metro
         /// </summary>
         /// <param name="pOrganizacionID">Identificador de la organizacion</param>
         /// <param name="pProyectoID">Identificador del proyecto</param>
@@ -2361,7 +2307,7 @@ namespace Es.Riam.Gnoss.Logica.ServiciosGenerales
 
 
         /// <summary>
-        /// Carga todos los proyectos que se estÈn cerrando --> ProyectoDS (Proyecto,ProyectoCerrandose) 
+        /// Carga todos los proyectos que se est√°n cerrando --> ProyectoDS (Proyecto,ProyectoCerrandose) 
         /// </summary>
         /// <returns>Dataset de proyectos</returns>
         public DataWrapperProyecto ObtenerProyectosCerrandose()
@@ -2380,7 +2326,7 @@ namespace Es.Riam.Gnoss.Logica.ServiciosGenerales
             {
                 return false;
             }
-            Regex expresionRegular = new Regex(@"(^([a-zA-Z0-9-Ò—]{4,30})$)");
+            Regex expresionRegular = new Regex(@"(^([a-zA-Z0-9-√±√ë]{4,30})$)");
 
             if (!expresionRegular.IsMatch(pNombreCorto))
             {
@@ -2403,41 +2349,41 @@ namespace Es.Riam.Gnoss.Logica.ServiciosGenerales
         }
 
         /// <summary>
-        /// Obtiene los grupos que tienen permisos sobre una ontologÌa en un determinado proyecto
+        /// Obtiene los grupos que tienen permisos sobre una ontolog√≠a en un determinado proyecto
         /// </summary>
-        /// <param name="pListaOntologiasID">Lista de identificadores de ontologÌa</param>
-        /// <param name="pProyectoID">Identificador del proyecto en el que se hace la comprobaciÛn</param>
-        /// <returns>Diccionario con los grupos de comunidad y organizaciÛn que tienen permiso sobre la ontologÌa</returns>
+        /// <param name="pListaOntologiasID">Lista de identificadores de ontolog√≠a</param>
+        /// <param name="pProyectoID">Identificador del proyecto en el que se hace la comprobaci√≥n</param>
+        /// <returns>Diccionario con los grupos de comunidad y organizaci√≥n que tienen permiso sobre la ontolog√≠a</returns>
         public Dictionary<Guid, List<Guid>> ObtenerGruposPermitidosOntologiasEnProyecto(List<Guid> pListaOntologiasID, Guid pProyectoID)
         {
             return ProyectoAD.ObtenerGruposPermitidosOntologiasEnProyecto(pListaOntologiasID, pProyectoID);
         }
 
         /// <summary>
-        /// Obtiene las ontologÌas permitidas para un rol de usuario en un determinado proyecto
+        /// Obtiene las ontolog√≠as permitidas para un rol de usuario en un determinado proyecto
         /// </summary>
         /// <param name="pIdentidadEnProyID">Identificador de la identidad del usuario en el proyecto</param>
         /// <param name="pIdentidadEnMyGnossID">Identificador de la identidad del usuario en mygnoss</param>
-        /// <param name="pProyectoID">Identificador del proyecto en el que se hace la comprobaciÛn</param>
+        /// <param name="pProyectoID">Identificador del proyecto en el que se hace la comprobaci√≥n</param>
         /// <param name="pTipoRol">Tipo de rol del usuario actual</param>
         /// <param name="pIdentidadDeOtroProyecto">Verdad si la identidad pertenece a otro proyecto distinto a pProyectoID</param>
-        /// <returns>Lista con las ontologÌas permitidas para la identidad</returns>
+        /// <returns>Lista con las ontolog√≠as permitidas para la identidad</returns>
         public List<Guid> ObtenerOntologiasPermitidasIdentidadEnProyecto(Guid pIdentidadEnProyID, Guid pIdentidadEnMyGnossID, Guid pProyectoID, TipoRolUsuario pTipoRol, bool pIdentidadDeOtroProyecto, Dictionary<Guid, Guid> pOntologiasEcosistema = null)
         {
             return ProyectoAD.ObtenerOntologiasPermitidasIdentidadEnProyecto(pIdentidadEnProyID, pIdentidadEnMyGnossID, pProyectoID, pTipoRol, pIdentidadDeOtroProyecto, pOntologiasEcosistema);
         }
 
         /// <summary>
-        /// Obtiene las ontologÌas permitidas para un rol de usuario en un determinado proyecto
+        /// Obtiene las ontolog√≠as permitidas para un rol de usuario en un determinado proyecto
         /// </summary>
         /// <param name="pIdentidadEnProyID">Identificador de la identidad del usuario en el proyecto</param>
         /// <param name="pIdentidadEnMyGnossID">Identificador de la identidad del usuario en mygnoss</param>
-        /// <param name="pProyectoID">Identificador del proyecto en el que se hace la comprobaciÛn</param>
+        /// <param name="pProyectoID">Identificador del proyecto en el que se hace la comprobaci√≥n</param>
         /// <param name="pTipoRol">Tipo de rol del usuario actual</param>
         /// <param name="pIdentidadDeOtroProyecto">Verdad si la identidad pertenece a otro proyecto distinto a pProyectoID</param>
-        /// <param name="pDocumentoID">Identificador del documento que representa la ontologÌa</param>
-        /// <param name="pOntologiasEcosistema">OntologÌas del ecosistema (puede ser null)</param>
-        /// <returns>Lista con las ontologÌas permitidas para la identidad</returns>
+        /// <param name="pDocumentoID">Identificador del documento que representa la ontolog√≠a</param>
+        /// <param name="pOntologiasEcosistema">Ontolog√≠as del ecosistema (puede ser null)</param>
+        /// <returns>Lista con las ontolog√≠as permitidas para la identidad</returns>
         public bool ComprobarOntologiasPermitidaParaIdentidadEnProyecto(Guid pIdentidadEnProyID, Guid pIdentidadEnMyGnossID, Guid pProyectoID, TipoRolUsuario pTipoRol, bool pIdentidadDeOtroProyecto, Guid pDocumentoID, Dictionary<Guid, Guid> pOntologiasEcosistema = null)
         {
             List<Guid> listaResultados = ProyectoAD.ObtenerOntologiasPermitidasIdentidadEnProyecto(pIdentidadEnProyID, pIdentidadEnMyGnossID, pProyectoID, pTipoRol, pIdentidadDeOtroProyecto, pOntologiasEcosistema, pDocumentoID);
@@ -2446,23 +2392,13 @@ namespace Es.Riam.Gnoss.Logica.ServiciosGenerales
         }
 
         /// <summary>
-        /// Obtiene las ontologÌas del ecosistema
+        /// Obtiene las ontolog√≠as del ecosistema
         /// </summary>
-        /// <returns>Lista con los DocumentoID de todas las ontologÌas con su ProyectoID como valor del diccionario</returns>
+        /// <returns>Lista con los DocumentoID de todas las ontolog√≠as con su ProyectoID como valor del diccionario</returns>
         public Dictionary<Guid, Guid> ObtenerOntologiasEcosistema()
         {
             return ProyectoAD.ObtenerOntologiasEcosistema();
         }
-
-        ///// <summary>
-        ///// Obtiene las ontologÌas permitidas para un rol de usuario en un determinado proyecto
-        ///// </summary>
-        ///// <param name="pProyectoID">ID de proyecto</param>
-        ///// <returns>DataSet con las ontologÌas permitidas para un rol de usuario en un determinado proyecto cargadas</returns>
-        //public ProyectoDS ObtenerOntologiasDisponiblesProyecto(Guid pProyectoID)
-        //{
-        //    return ProyectoAD.ObtenerOntologiasDisponiblesProyecto(pProyectoID);
-        //}
 
         /// <summary>
         /// Devuelve una lista con las claves de los proyectos que tienen alguna categoria del tesauro de MyGnoss en comun con el pProyectoID
@@ -2517,9 +2453,9 @@ namespace Es.Riam.Gnoss.Logica.ServiciosGenerales
         }
 
         /// <summary>
-        /// Obtiene el identificador de la metaorganizaciÛn
+        /// Obtiene el identificador de la metaorganizaci√≥n
         /// </summary>
-        /// <returns>Identificador de la metaorganizaciÛn</returns>
+        /// <returns>Identificador de la metaorganizaci√≥n</returns>
         public Guid ObtenerMetaOrganizacionID()
         {
             return ProyectoAD.ObtenerMetaOrganizacionID();
@@ -2593,10 +2529,10 @@ namespace Es.Riam.Gnoss.Logica.ServiciosGenerales
         }
 
         /// <summary>
-        /// Obtiene los grafos gr·ficos configurados en un proyecto.
+        /// Obtiene los grafos gr√°ficos configurados en un proyecto.
         /// </summary>
         /// <param name="pProyectoID">ID de proyecto</param>
-        /// <returns>DataSet la tabla 'ProyectoGrafoFichaRec' con los grafos gr·ficos configurados en un proyecto</returns>
+        /// <returns>DataSet la tabla 'ProyectoGrafoFichaRec' con los grafos gr√°ficos configurados en un proyecto</returns>
         public DataWrapperProyecto ObtenerGrafosProyecto(Guid pProyectoID)
         {
             return ProyectoAD.ObtenerGrafosProyecto(pProyectoID);
@@ -2621,10 +2557,10 @@ namespace Es.Riam.Gnoss.Logica.ServiciosGenerales
             return ProyectoAD.ObtenerProyectosConConfiguracionNewsletterPorDefecto();
         }
 
-        #region DocumentaciÛn
+        #region Documentaci√≥n
 
         /// <summary>
-        /// Actualiza el n˙mero de recursos de un proyecto
+        /// Actualiza el n√∫mero de recursos de un proyecto
         /// </summary>
         /// <param name="pProyectoID">Identificador del proyecto</param>
         public void ActualizarNumeroDocumentacion(Guid pProyectoID)
@@ -2635,7 +2571,7 @@ namespace Es.Riam.Gnoss.Logica.ServiciosGenerales
         /// <summary>
         /// Obtiene los tipo de documentos permitidos para un rol de usuario en un determinado proyecto
         /// </summary>
-        /// <param name="pProyectoID">Identificador del proyecto en el que se hace la comprobaciÛn</param>
+        /// <param name="pProyectoID">Identificador del proyecto en el que se hace la comprobaci√≥n</param>
         /// <param name="pTipoRol">Tipo de rol del usuario actual</param>
         /// <returns>Lista con los tipos de documentos permitidos para el rol</returns>
         public List<TiposDocumentacion> ObtenerTiposDocumentosPermitidosUsuarioEnProyecto(Guid pProyectoID, TipoRolUsuario pTipoRol)
@@ -2678,7 +2614,7 @@ namespace Es.Riam.Gnoss.Logica.ServiciosGenerales
         /// <summary>
         /// Obtiene el rol de usuario en un determinado proyecto.
         /// </summary>
-        /// <param name="pProyectoID">Identificador del proyecto en el que se hace la comprobaciÛn</param>
+        /// <param name="pProyectoID">Identificador del proyecto en el que se hace la comprobaci√≥n</param>
         /// <param name="pUsuarioID">Identificador de usuario</param>
         /// <returns>El rol de usuario en un determinado proyecto</returns>
         public TipoRolUsuario ObtenerRolUsuarioEnProyecto(Guid pProyectoID, Guid pUsuarioID)
@@ -2697,7 +2633,7 @@ namespace Es.Riam.Gnoss.Logica.ServiciosGenerales
         }
 
         /// <summary>
-        /// Obtiene los tesauros sem·nticos configurados para ediciÛn.
+        /// Obtiene los tesauros sem√°nticos configurados para edici√≥n.
         /// </summary>
         /// <param name="pProyectoID">ID del proyecto</param>
         /// <returns>DataSet de ProyectoDS con la tabla 'ProyectoConfigExtraSem' cargada para un proyecto</returns>
@@ -2707,7 +2643,7 @@ namespace Es.Riam.Gnoss.Logica.ServiciosGenerales
         }
 
         /// <summary>
-        /// Obtiene los tesauros sem·nticos configurados para ediciÛn.
+        /// Obtiene los tesauros sem√°nticos configurados para edici√≥n.
         /// </summary>
         /// <param name="pProyectoID">ID del proyecto</param>
         /// <returns>DataSet de ProyectoDS con la tabla 'ProyectoConfigExtraSem' cargada para un proyecto</returns>
@@ -2716,13 +2652,21 @@ namespace Es.Riam.Gnoss.Logica.ServiciosGenerales
             return ProyectoAD.ObtenerConfiguracionSemanticaExtraDeProyecto(pProyectoID);
         }
 
-        /// <summary>
-        /// Indica si el recurso es de un Tipo de recursos que se encuentra en la lista de recursos que no se publican en la actividad reciente
-        /// </summary>
-        /// <param name="pRecursoID">ID del recurso</param>
-        /// <param name="pProyectoID">ID del proyecto</param>
-        /// <returns></returns>
-        public bool ComprobarSiRecursoSePublicaEnActividadReciente(Guid pRecursoID, Guid pProyectoID)
+		/// <summary>
+		/// Obtiene los tesauros sem√°nticos configurados para edici√≥n de todos los proyectos
+		/// </summary>
+		/// <returns>DataSet de ProyectoDS con la tabla 'ProyectoConfigExtraSem' cargada</returns>
+		public DataWrapperProyecto ObtenerConfiguracionSemanticaExtraDeProyectos()
+		{
+			return ProyectoAD.ObtenerConfiguracionSemanticaExtraDeProyectos();
+		}
+		/// <summary>
+		/// Indica si el recurso es de un Tipo de recursos que se encuentra en la lista de recursos que no se publican en la actividad reciente
+		/// </summary>
+		/// <param name="pRecursoID">ID del recurso</param>
+		/// <param name="pProyectoID">ID del proyecto</param>
+		/// <returns></returns>
+		public bool ComprobarSiRecursoSePublicaEnActividadReciente(Guid pRecursoID, Guid pProyectoID)
         {
             return ProyectoAD.ComprobarSiRecursoSePublicaEnActividadReciente(pRecursoID, pProyectoID);
         }
@@ -2758,10 +2702,10 @@ namespace Es.Riam.Gnoss.Logica.ServiciosGenerales
         }
 
         /// <summary>
-        /// Devuelve las im·genes por defecto seg˙n el tipo de imagen por defecto
+        /// Devuelve las im√°genes por defecto seg√∫n el tipo de imagen por defecto
         /// </summary>
         /// <param name="pProyectoID">Identificador del proyecto</param>
-        /// <returns>Imagen por defecto seg˙n el tipo de imagen por defecto</returns>
+        /// <returns>Imagen por defecto seg√∫n el tipo de imagen por defecto</returns>
         public Dictionary<short, Dictionary<Guid, string>> ObtenerTipoDocImagenPorDefecto(Guid pProyectoID)
         {
             return ProyectoAD.ObtenerTipoDocImagenPorDefecto(pProyectoID);
@@ -2772,7 +2716,7 @@ namespace Es.Riam.Gnoss.Logica.ServiciosGenerales
         #region Datos Twitter de proyecto
 
         /// <summary>
-        /// Actualiza los tokens para Twitter del proyecto pasado por par·metro
+        /// Actualiza los tokens para Twitter del proyecto pasado por par√°metro
         /// </summary>
         /// <param name="pProyectoID">Identificador de proyecto</param>
         /// <param name="pTokenTwitter">Token para Twitter</param>
@@ -2784,10 +2728,10 @@ namespace Es.Riam.Gnoss.Logica.ServiciosGenerales
 
         #endregion
 
-        #region AdministraciÛn proyecto
+        #region Administraci√≥n proyecto
 
         /// <summary>
-        /// Obtiene una lista con los administradores de un proyecto (SÛlo los administradores --> Tipo = 0 )
+        /// Obtiene una lista con los administradores de un proyecto (S√≥lo los administradores --> Tipo = 0 )
         /// </summary>
         /// <param name="pProyectoID">Identificador del proyecto</param>
         /// <returns>Lista con las identidades de los administradores del proyecto</returns>
@@ -2797,7 +2741,7 @@ namespace Es.Riam.Gnoss.Logica.ServiciosGenerales
         }
 
         /// <summary>
-        /// Obtiene una lista con los supervisores de un proyecto (SÛlo los supervisores --> Tipo = 1 )
+        /// Obtiene una lista con los supervisores de un proyecto (S√≥lo los supervisores --> Tipo = 1 )
         /// </summary>
         /// <param name="pProyectoID">Identificador del proyecto</param>
         /// <returns>Lista con las identidades de los supervisores del proyecto</returns>
@@ -2808,13 +2752,13 @@ namespace Es.Riam.Gnoss.Logica.ServiciosGenerales
 
         #endregion
 
-        #region AdministraciÛn del tesauro
+        #region Administraci√≥n del tesauro
 
         /// <summary>
-        /// Obtiene todos los documentos que est·n vinculados a un serie de categorias.
+        /// Obtiene todos los documentos que est√°n vinculados a un serie de categorias.
         /// </summary>
-        /// <param name="pListaCategorias">Lista con las categorias a las que est·n agregados los documentos</param>
-        /// <param name="pTesauroID">Identificador del tesauro al que pertenecen las categorÌas</param>
+        /// <param name="pListaCategorias">Lista con las categorias a las que est√°n agregados los documentos</param>
+        /// <param name="pTesauroID">Identificador del tesauro al que pertenecen las categor√≠as</param>
         /// <returns>Dataset de proyectos</returns>
         public DataWrapperProyecto ObtenerVinculacionProyectosDeCategoriasTesauro(List<Guid> pListaCategorias, Guid pTesauroID)
         {
@@ -2839,10 +2783,11 @@ namespace Es.Riam.Gnoss.Logica.ServiciosGenerales
         /// Obtiene los proyectos hijos del proyecto indicado. 
         /// </summary>
         /// <param name="pProyectoSuperiorID">Proyecto superior de los proyectos ids que quiero obtener</param>
-        /// <returns>Todos los proyectos cuyo proyecto superior sea el dado por par·metro</returns>
-        public List<Guid> ObtenerProyectosIdsDeProyectoSuperiorID(Guid pProyectoSuperiorID)
+        /// <param name="pCargarProyectosCerrados">Indica si se cargan todos los proyectos o solo los que no est√°n cerrados</param>
+        /// <returns>Todos los proyectos cuyo proyecto superior sea el dado por par√°metro</returns>
+        public List<Guid> ObtenerProyectosIdsDeProyectoSuperiorID(Guid pProyectoSuperiorID, bool pCargarProyectosCerrados)
         {
-            return ProyectoAD.ObtenerProyectosIdsDeProyectoSuperiorID(pProyectoSuperiorID);
+            return ProyectoAD.ObtenerProyectosIdsDeProyectoSuperiorID(pProyectoSuperiorID, pCargarProyectosCerrados);
         }
 
         /// <summary>
@@ -2876,7 +2821,7 @@ namespace Es.Riam.Gnoss.Logica.ServiciosGenerales
         }
 
         /// <summary>
-        /// Obtiene un n˙mero especÌfico de proyectos en los que participa el usuario
+        /// Obtiene un n√∫mero espec√≠fico de proyectos en los que participa el usuario
         /// </summary>
         /// <param name="pUsuarioID">Id del usuario</param>
         /// <param name="numeroResultados">Numero de proyectos que se van a devolver</param>
@@ -2884,6 +2829,20 @@ namespace Es.Riam.Gnoss.Logica.ServiciosGenerales
         public List<Guid> ObtenerProyectosIDParticipaUsuario(Guid pUsuarioID, int numeroResultados)
         {
             return ProyectoAD.ObtenerProyectosIDParticipaUsuario(pUsuarioID, numeroResultados);
+        }
+
+        /// <summary>
+        /// Obtiene el peso de una ontologia para una pesta√±a concreta para poder crear el autocompletar con dicho peso
+        /// </summary>
+        /// <param name="proyectoID">identificador del proyecto donde se encuentra la pesta√±a</param>
+        /// <param name="organizacionID">Identificador de la organizaci√≥n</param>
+        /// <param name="valorOnto">Ontologia del proyecto</param>
+        /// <param name="pestanyaID">Identificador de la pesta√±a</param>
+        /// <param name="subtipo">subtipo de la ontologia</param>
+        /// <returns>peso del subtipo para ese OC</returns>
+        public int ObtenerPesoPestanyaBusquedaOC(Guid pProyectoID, Guid pOrganizacionID, string pValorOnto, Guid pPestanyaID, string pSubtipo)
+        {
+            return ProyectoAD.ObtenerPesoPestanyaBusquedaOC(pProyectoID, pOrganizacionID, pValorOnto, pPestanyaID, pSubtipo);
         }
 
         /// <summary>
@@ -2896,6 +2855,7 @@ namespace Es.Riam.Gnoss.Logica.ServiciosGenerales
         {
             return ProyectoAD.ObtenerUsuariosNoParticipanEnComunidad(listaUsuarios, pProyectoID);
         }
+
         /// <summary>
         /// Obtiene las urls de la caja de busqueda
         /// </summary>
@@ -2905,8 +2865,9 @@ namespace Es.Riam.Gnoss.Logica.ServiciosGenerales
         {
             return ProyectoAD.ObtenerUrlsComunidadCajaBusqueda(pProyectoID);
         }
+
         /// <summary>
-        /// Elimina la comunidad de la url de b˙squeda
+        /// Elimina la comunidad de la url de b√∫squeda
         /// </summary>
         /// <param name="pProyectoID">Id del proyecto</param>
         /// <param name="url">Url a la que se le quiere quitar la comunidad</param>
@@ -2914,6 +2875,7 @@ namespace Es.Riam.Gnoss.Logica.ServiciosGenerales
         {
             ProyectoAD.QuitarUrlComunidadCajaBusqueda(pProyectoID, url);
         }
+
         /// <summary>
         /// Obtiene la URL de un servicio externo de un proyecto
         /// </summary>
@@ -2935,34 +2897,161 @@ namespace Es.Riam.Gnoss.Logica.ServiciosGenerales
             return ProyectoAD.ObtenerNumeroDeProyectos();
         }
 
-        #endregion
-
-        #region Privados
+        /// <summary>
+        /// Cambia el tipo de autocompletado que se usa en un proyecto
+        /// </summary>
+        /// <param name="pProyectoID"></param>
+        /// <param name="pTipoAutocompletar"></param>
+        /// <exception cref="NotImplementedException"></exception>
+		public void CambiarTipoAutocompletadoProyecto(Guid pProyectoID, Guid pPestanyaID, short pTipoAutocompletar)
+		{
+            ProyectoAD.CambiarTipoAutocompletadoProyecto(pProyectoID, pPestanyaID, (TipoAutocompletar)pTipoAutocompletar);
+		}
 
         /// <summary>
-        /// Valida la lista de proyectos pasada como par·metro
+        /// Elimina las entradas de ProyectoPestanyaBusquedaPesoOC para un proyecto y una pesta√±a determinada
         /// </summary>
-        /// <param name="pProyectos">Lista de proyectos</param>
-        private void ValidarProyectos(List<Proyecto> pProyectos)
+        /// <param name="pProyectoID"></param>
+        /// <param name="pPestanyaID"></param>
+        /// <exception cref="NotImplementedException"></exception>
+		public void EliminarProyectoPestanyaPesosBusqueda(Guid pProyectoID, Guid pPestanyaID)
+		{
+            ProyectoAD.EliminarProyectoPestanyaPesosBusqueda(pProyectoID, pPestanyaID);
+		}
+        
+		/// <summary>
+		/// Inserta las filas en la tabla ProyectoPestanyaBusquedaPesoOC para la configuraci√≥n del tipo de autocompletado
+		/// </summary>
+		/// <param name="pListaProyectoPestanyaBusquedaPesoOC"></param>
+		/// <exception cref="NotImplementedException"></exception>
+		public void GuardarProyectoPestanyaBusquedaPeso(List<ProyectoPestanyaBusquedaPesoOC> pListaProyectoPestanyaBusquedaPesoOC)
+		{
+			ProyectoAD.GuardarProyectoPestanyaBusquedaPeso(pListaProyectoPestanyaBusquedaPesoOC);
+		}
+
+        public ConfiguracionCachesCostosas ObtenerConfiguracionCachesCostosasDeProyecto(Guid pProyectoID)
+        {
+            return ProyectoAD.ObtenerConfiguracionCachesCostosasDeProyecto(pProyectoID);
+		}
+
+        public bool EstanCachesDeBusquedasActivas(Guid pProyectoID)
+        {
+            return ProyectoAD.EstanCachesDeBusquedasActivas(pProyectoID);
+		}
+
+
+        public void GuardarDetallesDocumentacion(DetallesDocumentacion model)
+        {
+            ProyectoAD.GuardarDetallesDocumentacion(model);
+        }
+
+        public DetallesDocumentacion ObtenerDetallesDocumentacion(Guid proyectoID)
+        {
+            return ProyectoAD.ObtenerDetallesDocumentacion(proyectoID);
+        }
+
+        public Dictionary<String, String> ObtenerTitulosOntologias(Guid proyectoID)
+        {
+            return ProyectoAD.ObtenerTitulosOntologias(proyectoID);
+        }
+
+
+
+
+        public List<string> ObtenerNombresDeProyectoPorBusquedaAutocompletar(string pQuery)
+        {
+            return ProyectoAD.ObtenerNombresDeProyectoPorBusquedaAutocompletar(pQuery);
+        }
+
+        // Roles
+
+        public List<Rol> ObtenerRolesDeProyecto(Guid pProyectoID)
+        {
+            return ProyectoAD.ObtenerRolesDeProyecto(pProyectoID);
+        }
+
+        public List<RolEcosistema> ObtenerRolesAdministracionEcosistema()
+        {
+            return ProyectoAD.ObtenerRolesAdministracionEcosistema();
+        }		
+
+        public List<RolEcosistema> ObtenerRolesAdministracionEcosistemaDeUsuario(Guid pUsuarioID)
+        {
+            return ProyectoAD.ObtenerRolesAdministracionEcosistemaDeUsuario(pUsuarioID);
+		}
+
+		public List<Guid> ObtenerIdentidadesAdministradorasDeProyecto(Guid pProyectoID)
+        {
+            return ProyectoAD.ObtenerIdentidadesAdministradorasDeProyecto(pProyectoID); 
+        }
+		public List<Guid> ObtenerIdentidadesDeRol(Guid pRolID, Guid pProyectoID)
+		{
+			return ProyectoAD.ObtenerIdentidadesDeRol(pRolID, pProyectoID);
+		}
+
+		public void GuardarRolProyecto(Rol pRol)
+        {
+            ProyectoAD.GuardarRolProyecto(pRol);
+        }
+
+		public void GuardarRolEcosistema(RolEcosistema pRol)
+        {
+            ProyectoAD.GuardarRolEcosistema(pRol);
+        }
+
+		public void EliminarRolDeProyecto(Guid pRolID)
+        {
+            ProyectoAD.EliminarRolDeProyecto(pRolID);
+        }
+
+		public void EliminarRolDeAdministracionEcosistema(Guid pRolID)
+        {
+            ProyectoAD.EliminarRolDeAdministracionEcosistema(pRolID);
+        }
+
+		public List<Rol> ObtenerRolesDeGrupo(Guid pGrupoID)
+        {
+            return ProyectoAD.ObtenerRolesDeGrupo(pGrupoID);
+        }
+
+		public List<Rol> ObtenerRolesDeGrupos(List<Guid> pListaGrupos)
+        {
+            return ProyectoAD.ObtenerRolesDeGrupos(pListaGrupos);
+        }
+
+        public Rol ObtenerRolUsuario(Guid pProyectoID)
+        {
+            return ProyectoAD.ObtenerRolUsuarioEnProyecto(pProyectoID);
+        }
+
+		#endregion
+
+		#region Privados
+
+		/// <summary>
+		/// Valida la lista de proyectos pasada como par√°metro
+		/// </summary>
+		/// <param name="pProyectos">Lista de proyectos</param>
+		private void ValidarProyectos(List<Proyecto> pProyectos)
         {
             for (int i = 0; i < pProyectos.Count; i++)
             {
                 //Nombre de formato superior a 1000 caracteres
                 if (pProyectos[i].Nombre.Length > 1000)
                 {
-                    throw new ErrorDatoNoValido("El nombre del proyecto '" + pProyectos[i].Nombre + "' no puede contener m·s de 1000 caracteres");
+                    throw new ErrorDatoNoValido("El nombre del proyecto '" + pProyectos[i].Nombre + "' no puede contener m√°s de 1000 caracteres");
                 }
 
-                //Nombre cadena vacÌa
+                //Nombre cadena vac√≠a
                 if (pProyectos[i].Nombre.Trim().Length == 0)
                 {
-                    throw new ErrorDatoNoValido("El nombre del proyecto '" + pProyectos[i].Nombre + "' no puede ser una cadena vacÌa");
+                    throw new ErrorDatoNoValido("El nombre del proyecto '" + pProyectos[i].Nombre + "' no puede ser una cadena vac√≠a");
                 }
 
-                //DescripciÛn no v·lida
+                //Descripci√≥n no v√°lida
                 if (!string.IsNullOrEmpty(pProyectos[i].Descripcion))
                 {
-                    //Si es vacÌa la ponemos a Null
+                    //Si es vac√≠a la ponemos a Null
                     if (pProyectos[i].Descripcion.Trim().Length == 0)
                     {
                         pProyectos[i].Descripcion = null;
@@ -2975,10 +3064,11 @@ namespace Es.Riam.Gnoss.Logica.ServiciosGenerales
 
         #endregion
 
+
         #region Dispose
 
         /// <summary>
-        /// Determina si est· disposed
+        /// Determina si est√° disposed
         /// </summary>
         private bool mDisposed = false;
 
@@ -3005,7 +3095,7 @@ namespace Es.Riam.Gnoss.Logica.ServiciosGenerales
         /// <summary>
         /// Libera los recursos
         /// </summary>
-        /// <param name="pDisposing">Determina si se est· llamando desde el Dispose()</param>
+        /// <param name="pDisposing">Determina si se est√° llamando desde el Dispose()</param>
         protected virtual void Dispose(bool pDisposing)
         {
             if (!mDisposed)
@@ -3014,7 +3104,7 @@ namespace Es.Riam.Gnoss.Logica.ServiciosGenerales
 
                 if (pDisposing)
                 {
-                    //Libero todos los recursos administrados que he aÒadido a esta clase
+                    //Libero todos los recursos administrados que he a√±adido a esta clase
                     if (this.ProyectoAD != null)
                     {
                         ProyectoAD.Dispose();
@@ -3022,6 +3112,11 @@ namespace Es.Riam.Gnoss.Logica.ServiciosGenerales
                 }
                 ProyectoAD = null;
             }
+        }
+
+        public List<Guid> ObtenerPestanyasBusquedaProyectoSinAutocompletarFaceta(Guid pProyectoID, string pFaceta, string pObjetoConocimiento)
+        {
+            return ProyectoAD.ObtenerPestanyasBusquedaProyectoSinAutocompletarFaceta(pProyectoID, pFaceta, pObjetoConocimiento);
         }
 
         #endregion

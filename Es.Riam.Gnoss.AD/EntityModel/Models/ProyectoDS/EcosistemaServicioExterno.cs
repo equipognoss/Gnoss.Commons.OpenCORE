@@ -14,5 +14,9 @@ namespace Es.Riam.Gnoss.AD.EntityModel.Models.ProyectoDS
 
         [Required]
         public string UrlServicio { get; set; }
+
+        public DateTime FechaCreacion { get; set; }
+
+        public DateTime FechaModificacion { get; set; }
     }
 }

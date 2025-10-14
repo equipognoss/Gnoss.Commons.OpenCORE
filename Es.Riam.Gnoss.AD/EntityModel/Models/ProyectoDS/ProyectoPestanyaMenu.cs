@@ -145,5 +145,9 @@ namespace Es.Riam.Gnoss.AD.EntityModel.Models.ProyectoDS
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<FacetaObjetoConocimientoProyectoPestanya> FacetaObjetoConocimientoProyectoPestanya { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<ProyectoPestanyaMenuVersionPagina> ProyectoPestanyaMenuVersionPagina { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<ProyectoPestanyaVersionCMS> ProyectoPestanyaVersionCMS { get; set; }
     }
 }

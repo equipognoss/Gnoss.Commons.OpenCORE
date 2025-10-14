@@ -1,12 +1,16 @@
 using Es.Riam.AbstractsOpen;
 using Es.Riam.Gnoss.AD.EncapsuladoDatos;
 using Es.Riam.Gnoss.AD.EntityModel;
+using Es.Riam.Gnoss.AD.ParametroAplicacion;
 using Es.Riam.Gnoss.AD.Virtuoso;
+using Es.Riam.Gnoss.Logica.ServiciosGenerales;
 using Es.Riam.Gnoss.Util.Configuracion;
 using Es.Riam.Gnoss.Util.General;
 using Es.Riam.Util;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Logging;
+using Serilog.Core;
 using System;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
@@ -36,22 +40,27 @@ namespace Es.Riam.Gnoss.Elementos.Comentario
         private EntityContext mEntityContext;
         private ConfigService mConfigService;
         protected IServicesUtilVirtuosoAndReplication mServicesUtilVirtuosoAndReplication;
-
+        private ILogger mlogger;
+        private ILoggerFactory mLoggerFactory;
         #endregion
 
         #region Constructores
+
+        public GestionComentarios() { }
 
         /// <summary>
         /// Constructor
         /// </summary>
         /// <param name="pComentarioDW">Dataset de comentarios</param>
-        public GestionComentarios(DataWrapperComentario pComentarioDW,  LoggingService loggingService, EntityContext entityContext, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication)
-            : base(pComentarioDW, loggingService)
+        public GestionComentarios(DataWrapperComentario pComentarioDW,  LoggingService loggingService, EntityContext entityContext, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication, ILogger<GestionComentarios> logger, ILoggerFactory loggerFactory)
+            : base(pComentarioDW)
         {
             mLoggingService = loggingService;
             mEntityContext = entityContext;
             mConfigService = configService;
             mServicesUtilVirtuosoAndReplication = servicesUtilVirtuosoAndReplication;
+            mlogger = logger;
+            mLoggerFactory = loggerFactory;
         }
 
         /// <summary>
@@ -62,10 +71,6 @@ namespace Es.Riam.Gnoss.Elementos.Comentario
         protected GestionComentarios(SerializationInfo info, StreamingContext context)
             : base(info, context)
         {
-            //mLoggingService = loggingService;
-            //mEntityContext = entityContext;
-            //mConfigService = configService;
-
             mGestorVotos = (GestorVotosComentario)info.GetValue("GestorVotos", typeof(GestorVotosComentario));
         }
 
@@ -84,7 +89,7 @@ namespace Es.Riam.Gnoss.Elementos.Comentario
             {
                 if (!ListaComentarios.ContainsKey(filaComentario.ComentarioID))
                 {
-                    Comentario comentario = new Comentario(filaComentario, this,  mLoggingService, mEntityContext, mConfigService, mServicesUtilVirtuosoAndReplication);
+                    Comentario comentario = new Comentario(filaComentario, this,  mLoggingService, mEntityContext, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<Comentario>(), mLoggerFactory);
                     mListaComentarios.Add(comentario.Clave, comentario);
                 }
             }
@@ -105,7 +110,7 @@ namespace Es.Riam.Gnoss.Elementos.Comentario
             filaComentario.Fecha = DateTime.Now;
             filaComentario.Eliminado = false;
 
-            Comentario nuevoComentario = new Comentario(filaComentario, this,  mLoggingService, mEntityContext, mConfigService, mServicesUtilVirtuosoAndReplication);
+            Comentario nuevoComentario = new Comentario(filaComentario, this,  mLoggingService, mEntityContext, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<Comentario>(), mLoggerFactory);
 
             ComentarioDW.ListaComentario.Add(nuevoComentario.FilaComentario);
             mEntityContext.Comentario.Add(filaComentario);

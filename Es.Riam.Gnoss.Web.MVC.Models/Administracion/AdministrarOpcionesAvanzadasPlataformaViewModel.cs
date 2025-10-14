@@ -23,12 +23,14 @@ namespace Es.Riam.Gnoss.Web.MVC.Models.Administracion
         public string DominiosPermitidosCORS { get; set; }
 
         /// <summary>
-        /// URL en la que van a estar disponibles las comunidades nuevas según su tipo 
-        /// Formato: tipoProyecto=codigo|tipoProyecto=codigo
-        /// Ejemplo: 0=http://prered.gnoss.com|2=http://prered.gnoss.com|1=https://preredprivada.gnoss.com|3=https://preredprivada.gnoss.com
-        /// Tipos de proyecto: 0 publico, 1 privado, 2 acceso restringido, 3 reservado
+        /// Dominio que se utiliza para todos los proyectos públicos de la plataforma
         /// </summary>
-        public string UrlsPropiasProyecto { get; set; }
+        public string UrlProyectosPublicos { get; set; }
+        
+        /// <summary>
+        /// Dominio que se utiliza para todos los proyectos privados
+        /// </summary>
+        public string UrlProyectosPrivados { get; set; }
 
         /// <summary>
         /// Conexión al API del entorno de preproducción para los pasos a producción
@@ -60,7 +62,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Models.Administracion
         public string HashTagEntorno { get; set; }
 
         /// <summary>
-        /// Lista de idiomas disponibles en la plataforma
+        /// Lista de idiomas habilitados en la plataforma
         /// Ej: es|Español&&&en|English&&&pt|Portuguese&&&ca|Català&&&eu|Euskera&&&gl|Galego&&&fr|Français&&&de|Deutsch&&&it|Italiano
         /// </summary>
         public string Idiomas { get; set; }
@@ -70,6 +72,10 @@ namespace Es.Riam.Gnoss.Web.MVC.Models.Administracion
         /// </summary>
         public string IdiomasPersonalizados { get; set; }
 
+        /// <summary>
+        /// Lista de idiomas disponibles por defecto en la plataforma
+        /// </summary>
+        public string[] IdiomasBase { get; set; }
         /// <summary>
         /// Lista de extensiones de imágenes permitidas en la plataforma para la edición de componentes multimedia
         /// Ej: .jpg&&&.jpeg&&&.png&&&.gif
@@ -112,8 +118,8 @@ namespace Es.Riam.Gnoss.Web.MVC.Models.Administracion
         public string Copyright { get; set; }
 
         /// <summary>
-        /// Cadena de 4 digitos, los dos primeros configuran visibilidad en la comunidad, los dos últimos visibilidad en todo internet. De cada pareja de digitos, el primero indica si el check es visible y el segundo si está marcado
-        /// Ej.: 0111 -> es visible únicamente el check de "visible en todo internet" pero ambos están marcados
+        /// Cadena de 4 digitos, los dos primeros configuran visibilidad en la comunidad, los dos últimos visibilidad en internet. De cada pareja de digitos, el primero indica si el check es visible y el segundo si está marcado
+        /// Ej.: 0111 -> es visible únicamente el check de "visible en internet" pero ambos están marcados
         /// </summary>
         public string VisibilidadPerfil { get; set; }
 
@@ -299,38 +305,17 @@ namespace Es.Riam.Gnoss.Web.MVC.Models.Administracion
         /// </summary>
         public bool NoEnviarCorreoSeguirPerfil { get; set; }
 
-        [Obsolete]
-        public string ConexionEntornoProduccion { get; set; }
-        [Obsolete]
-        public string CadenaConexionGrafoUsuarios { get; set; }
-        [Obsolete]
-        public string CategoriasClase { get; set; }
-        [Obsolete]
-        public string ClaseFichaHome { get; set; }
-        [Obsolete]
-        public string CorreoErroresServicios { get; set; }
-
         public string CorreoErroresVistas { get; set; }
         public string GnossEduca { get; set; }
-        [Obsolete]
-        public string GnossUniversidad20 { get; set; }
-        public string ipFTP { get; set; }
-        [Obsolete]
-        public string ListaNegraIdentidades { get; set; }
-        public string PasswordSmtp { get; set; }
-        public string PersonalizacionEcosistemaExcepciones { get; set; }
-        public string PresentacionBandejas { get; set; }
-        [Obsolete]
-        public string ProyectosRelClase { get; set; }
+        public string ipFTP { get; set; }       
         public string ScriptGoogleAnalytics { get; set; }
         public string ServicioWebDocumentacion { get; set; }
-        public string UrlContent { get; set; }
-        [Obsolete]
-        public string URLGrafoVirtuoso { get; set; }
+        public string UrlContent { get; set; }        
         public string UrlIntragnoss { get; set; }
         public string UrlIntragnossServicios { get; set; }
         public string UrlBaseService { get; set; }
-        public string PintarPiePaginaSolicitudes { get; set; }
+        public string DominioPaginasAdministracion { get; set; }
+		public string PintarPiePaginaSolicitudes { get; set; }
         public string GrafoMetaBusquedaRecursos { get; set; }
         public string GrafoMetaBusquedaPerYOrg { get; set; }
         public string GrafoMetaBusquedaComunidades { get; set; }

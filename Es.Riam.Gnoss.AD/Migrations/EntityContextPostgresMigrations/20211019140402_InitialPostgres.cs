@@ -1256,7 +1256,7 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
                     OntologiaProyecto = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
                     NombreOnt = table.Column<string>(type: "text", nullable: true),
                     Namespace = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: true),
-                    NamespacesExtra = table.Column<string>(type: "character varying(1000)", maxLength: 1000, nullable: true),
+                    NamespacesExtra = table.Column<string>(type: "text", nullable: true),
                     SubTipos = table.Column<string>(type: "text", nullable: true),
                     NombreCortoOnt = table.Column<string>(type: "text", unicode: false, nullable: true),
                     CachearDatosSemanticos = table.Column<bool>(type: "boolean", nullable: false),

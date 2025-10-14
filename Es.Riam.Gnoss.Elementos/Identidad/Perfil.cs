@@ -2,6 +2,7 @@ using Es.Riam.Gnoss.AD.ServiciosGenerales;
 using Es.Riam.Gnoss.Elementos.ServiciosGenerales;
 using Es.Riam.Gnoss.Util.General;
 using Es.Riam.Interfaces;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -28,8 +29,8 @@ namespace Es.Riam.Gnoss.Elementos.Identidad
         /// </summary>
         /// <param name="pFilaPerfil">Fila del perfil</param>
         /// <param name="pGestorIdentidades">Gestor de identidades</param>
-        public Perfil(AD.EntityModel.Models.IdentidadDS.Perfil pFilaPerfil, GestionIdentidades pGestorIdentidades, LoggingService loggingService)
-            : base(pFilaPerfil, pGestorIdentidades, loggingService)
+        public Perfil(AD.EntityModel.Models.IdentidadDS.Perfil pFilaPerfil, GestionIdentidades pGestorIdentidades)
+            : base(pFilaPerfil, pGestorIdentidades)
         {
         }
 

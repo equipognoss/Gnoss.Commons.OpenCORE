@@ -183,6 +183,11 @@ namespace Es.Riam.Gnoss.Web.MVC.Models
         /// </summary>
         public string Filter { get; set; }
 
+        /// <summary>
+        /// Almacena la consulta que se realiza para obtener los datos de la faceta
+        /// </summary>
+        public string Query { get; set; }
+
     }
 
     /// <summary>

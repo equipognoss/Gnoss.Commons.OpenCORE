@@ -6,9 +6,11 @@ using Es.Riam.Gnoss.AD.EntityModel.Models.ProyectoDS;
 using Es.Riam.Gnoss.AD.EntityModel.Models.VistaVirtualDS;
 using Es.Riam.Gnoss.AD.Facetado;
 using Es.Riam.Gnoss.AD.Facetado.Model;
+using Es.Riam.Gnoss.AD.ParametroAplicacion;
 using Es.Riam.Gnoss.AD.ServiciosGenerales;
 using Es.Riam.Gnoss.AD.Usuarios;
 using Es.Riam.Gnoss.AD.Virtuoso;
+using Es.Riam.Gnoss.CL.Documentacion;
 using Es.Riam.Gnoss.CL.Facetado;
 using Es.Riam.Gnoss.Logica.Documentacion;
 using Es.Riam.Gnoss.Logica.Facetado;
@@ -20,10 +22,12 @@ using Es.Riam.Gnoss.Util.General;
 using Es.Riam.Gnoss.Web.MVC.Models;
 using Es.Riam.Util;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
+using VDS.RDF.Query.Expressions.Functions.XPath.Cast;
 
 namespace Es.Riam.Gnoss.CL.ServiciosGenerales
 {
@@ -60,7 +64,8 @@ namespace Es.Riam.Gnoss.CL.ServiciosGenerales
         private VirtuosoAD mVirtuosoAD;
         private RedisCacheWrapper mRedisCacheWrapper;
         private ConfigService mConfigService;
-
+        private ILogger mlogger;
+        private ILoggerFactory mLoggerFactory;
 
         #endregion
 
@@ -69,14 +74,16 @@ namespace Es.Riam.Gnoss.CL.ServiciosGenerales
         /// <summary>
         /// Constructor a partir del fichero de configuración de base de datos
         /// </summary>
-        public ProyectoCL(EntityContext entityContext, LoggingService loggingService, RedisCacheWrapper redisCacheWrapper, ConfigService configService, VirtuosoAD virtuosoAD, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication)
-            : base(entityContext, loggingService, redisCacheWrapper, configService, servicesUtilVirtuosoAndReplication)
+        public ProyectoCL(EntityContext entityContext, LoggingService loggingService, RedisCacheWrapper redisCacheWrapper, ConfigService configService, VirtuosoAD virtuosoAD, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication, ILogger<ProyectoCL> logger, ILoggerFactory loggerFactory)
+            : base(entityContext, loggingService, redisCacheWrapper, configService, servicesUtilVirtuosoAndReplication, logger, loggerFactory)
         {
             mConfigService = configService;
             mEntityContext = entityContext;
             mLoggingService = loggingService;
             mVirtuosoAD = virtuosoAD;
             mRedisCacheWrapper = redisCacheWrapper;
+            mlogger = logger;
+            mLoggerFactory = loggerFactory;
         }
 
         /// <summary>
@@ -84,14 +91,16 @@ namespace Es.Riam.Gnoss.CL.ServiciosGenerales
         /// </summary>
         /// <param name="pFicheroConfiguracionBD">Ruta del fichero de configuración de base de datos LIVE</param>
         /// <param name="pUsarVariableEstatica">Si se están usando hilos con diferentes conexiones en el LIVE: FALSE. En caso contrario TRUE</param>
-        public ProyectoCL(string pFicheroConfiguracionBD, EntityContext entityContext, LoggingService loggingService, RedisCacheWrapper redisCacheWrapper, ConfigService configService, VirtuosoAD virtuosoAD, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication)
-            : base(pFicheroConfiguracionBD, entityContext, loggingService, redisCacheWrapper, configService, servicesUtilVirtuosoAndReplication)
+        public ProyectoCL(string pFicheroConfiguracionBD, EntityContext entityContext, LoggingService loggingService, RedisCacheWrapper redisCacheWrapper, ConfigService configService, VirtuosoAD virtuosoAD, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication, ILogger<ProyectoCL> logger, ILoggerFactory loggerFactory)
+            : base(pFicheroConfiguracionBD, entityContext, loggingService, redisCacheWrapper, configService, servicesUtilVirtuosoAndReplication,logger,loggerFactory)
         {
             mVirtuosoAD = virtuosoAD;
             mConfigService = configService;
             mEntityContext = entityContext;
             mLoggingService = loggingService;
             mRedisCacheWrapper = redisCacheWrapper;
+            mlogger = logger;
+            mLoggerFactory = loggerFactory;
         }
 
         /// <summary>
@@ -99,8 +108,8 @@ namespace Es.Riam.Gnoss.CL.ServiciosGenerales
         /// </summary>
         /// <param name="pFicheroConfiguracionBD">Ruta del fichero de configuración de base de datos LIVE</param>
         /// <param name="pUsarVariableEstatica">Si se están usando hilos con diferentes conexiones en el LIVE: FALSE. En caso contrario TRUE</param>
-        public ProyectoCL(string pFicheroConfiguracionBD, string pPoolName, EntityContext entityContext, LoggingService loggingService, RedisCacheWrapper redisCacheWrapper, ConfigService configService, VirtuosoAD virtuosoAD, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication)
-            : base(pFicheroConfiguracionBD, pPoolName, entityContext, loggingService, redisCacheWrapper, configService, servicesUtilVirtuosoAndReplication)
+        public ProyectoCL(string pFicheroConfiguracionBD, string pPoolName, EntityContext entityContext, LoggingService loggingService, RedisCacheWrapper redisCacheWrapper, ConfigService configService, VirtuosoAD virtuosoAD, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication, ILogger<ProyectoCL> logger, ILoggerFactory loggerFactory)
+            : base(pFicheroConfiguracionBD, pPoolName, entityContext, loggingService, redisCacheWrapper, configService, servicesUtilVirtuosoAndReplication,logger,loggerFactory)
         {
 
             mVirtuosoAD = virtuosoAD;
@@ -108,6 +117,8 @@ namespace Es.Riam.Gnoss.CL.ServiciosGenerales
             mEntityContext = entityContext;
             mLoggingService = loggingService;
             mRedisCacheWrapper = redisCacheWrapper;
+            mlogger = logger;
+            mLoggerFactory = loggerFactory;
         }
 
         #endregion
@@ -118,7 +129,7 @@ namespace Es.Riam.Gnoss.CL.ServiciosGenerales
         {
             string rawKey = "ComunidadMVC3_" + pProyectoID;
 
-            CommunityModel ficha = (CommunityModel)ObtenerObjetoDeCache(rawKey);
+            CommunityModel ficha = (CommunityModel)ObtenerObjetoDeCache(rawKey, typeof(CommunityModel));
 
             if (ficha == null || CommunityModel.LastCacheVersion > ficha.CacheVersion)
             {
@@ -181,8 +192,8 @@ namespace Es.Riam.Gnoss.CL.ServiciosGenerales
         public object ObtenerCabeceraMVC(Guid pProyectoID)
         {
             string rawKey = "CabeceraMVC_" + pProyectoID;
-
-            object ficha = ObtenerObjetoDeCache(rawKey);
+            // TODO: Revisar en los demas servicios
+            object ficha = ObtenerObjetoDeCache(rawKey, typeof(object));
 
             return ficha;
         }
@@ -204,7 +215,7 @@ namespace Es.Riam.Gnoss.CL.ServiciosGenerales
         public AutenticationModel ObtenerFormularioRegistroMVC(Guid pProyectoID)
         {
             string rawKey = "FormularioRegistroMVC_" + pProyectoID;
-            AutenticationModel ficha = (AutenticationModel)ObtenerObjetoDeCache(rawKey);
+            AutenticationModel ficha = (AutenticationModel)ObtenerObjetoDeCache(rawKey, typeof(AutenticationModel));
             return ficha;
         }
 
@@ -237,7 +248,7 @@ namespace Es.Riam.Gnoss.CL.ServiciosGenerales
                     listaClaves[i] = clave.ToLower();
                     i++;
                 }
-                Dictionary<string, object> objetosCache = ObtenerListaObjetosCache(listaClaves, typeof(object));
+                Dictionary<string, object> objetosCache = ObtenerListaObjetosCache(listaClaves);
                 foreach (Guid idRecurso in keysComunidades.Keys)
                 {
                     string clave = keysComunidades[idRecurso];
@@ -257,7 +268,7 @@ namespace Es.Riam.Gnoss.CL.ServiciosGenerales
         public void AgregarEventosAccionProyectoPorProyectoYUsuarioID(Guid pProyectoID, Guid pUsuarioID, TipoProyectoEventoAccion pTipoProyectoEventoAccion)
         {
             string rawKey = string.Concat(NombresCL.PROYECTOEVENTOACCION, "_", pProyectoID, pUsuarioID);
-            List<TipoProyectoEventoAccion> listaEventos = ObtenerObjetoDeCache(rawKey) as List<TipoProyectoEventoAccion>;
+            List<TipoProyectoEventoAccion> listaEventos = ObtenerObjetoDeCache(rawKey, typeof(List<TipoProyectoEventoAccion>)) as List<TipoProyectoEventoAccion>;
 
             if (listaEventos == null)
             {
@@ -275,7 +286,7 @@ namespace Es.Riam.Gnoss.CL.ServiciosGenerales
         public List<Guid> ObtenerListaIDsProyectosConAccionesExternas()
         {
             string rawKey = string.Concat(NombresCL.PROYECTOSACCIONESEXTERNAS);
-            List<Guid> listaProyectosAccionesExternas = ObtenerObjetoDeCache(rawKey) as List<Guid>;
+            List<Guid> listaProyectosAccionesExternas = ObtenerObjetoDeCache(rawKey, typeof(List<Guid>)) as List<Guid>;
 
             if (listaProyectosAccionesExternas == null)
             {
@@ -305,7 +316,7 @@ namespace Es.Riam.Gnoss.CL.ServiciosGenerales
         public List<TipoProyectoEventoAccion> ObtenerEventosAccionProyectoPorProyectoYUsuarioID(Guid pProyectoID, Guid pUsuarioID)
         {
             string rawKey = string.Concat(NombresCL.PROYECTOEVENTOACCION, "_", pProyectoID, pUsuarioID);
-            List<TipoProyectoEventoAccion> listaEventos = ObtenerObjetoDeCache(rawKey) as List<TipoProyectoEventoAccion>;
+            List<TipoProyectoEventoAccion> listaEventos = ObtenerObjetoDeCache(rawKey, typeof(List<TipoProyectoEventoAccion>)) as List<TipoProyectoEventoAccion>;
 
             return listaEventos;
         }
@@ -334,7 +345,7 @@ namespace Es.Riam.Gnoss.CL.ServiciosGenerales
 
             if (id == null)
             {
-                id = ObtenerObjetoDeCache(rawKey);
+                id = ObtenerObjetoDeCache(rawKey, typeof(int));
                 if (id != null && (int)id != -1)
                 {
                     AgregarObjetoCacheLocal(pProyectoID, rawKey, id);
@@ -371,7 +382,7 @@ namespace Es.Riam.Gnoss.CL.ServiciosGenerales
 
             if (listaTipos == null)
             {
-                listaTipos = ObtenerObjetoDeCache(rawKey) as List<TiposDocumentacion>;
+                listaTipos = ObtenerObjetoDeCache(rawKey, typeof(List<TiposDocumentacion>)) as List<TiposDocumentacion>;
                 AgregarObjetoCacheLocal(pProyectoID, rawKey, listaTipos);
             }
 
@@ -437,7 +448,7 @@ namespace Es.Riam.Gnoss.CL.ServiciosGenerales
 
             if (string.IsNullOrEmpty(nombre))
             {
-                nombre = ObtenerObjetoDeCache(rawKey) as string;
+                nombre = ObtenerObjetoDeCache(rawKey, typeof(string)) as string;
                 AgregarObjetoCacheLocal(pProyectoID, rawKey, nombre);
             }
 
@@ -467,7 +478,7 @@ namespace Es.Riam.Gnoss.CL.ServiciosGenerales
 
             if (urlPropia == null)
             {
-                urlPropia = ObtenerObjetoDeCache(rawKey) as string;
+                urlPropia = ObtenerObjetoDeCache(rawKey, typeof(string)) as string;
                 AgregarObjetoCacheLocal(pProyectoID, rawKey, urlPropia, true);
             }
 
@@ -492,7 +503,7 @@ namespace Es.Riam.Gnoss.CL.ServiciosGenerales
                 pIdiomaActual = "es";
 
             }
-            
+
 
             return UtilCadenas.ObtenerUrlPropiaDeIdioma(urlPropia, pIdiomaActual);
         }
@@ -508,7 +519,7 @@ namespace Es.Riam.Gnoss.CL.ServiciosGenerales
             string rawKey = string.Concat(NombresCL.NOMBRECORTOPROYECTO, "_", pProyectoID);
 
             // Compruebo si está en la caché
-            string nombreCortoProy = ObtenerObjetoDeCache(rawKey) as string;
+            string nombreCortoProy = ObtenerObjetoDeCache(rawKey, typeof(string)) as string;
             if (string.IsNullOrEmpty(nombreCortoProy))
             {
                 // Si no está, lo cargo y lo almaceno en la cache
@@ -536,7 +547,7 @@ namespace Es.Riam.Gnoss.CL.ServiciosGenerales
             }
 
             // Compruebo si está en la caché
-            DataWrapperProyecto dataWrapperProyecto = ObtenerObjetoDeCache(rawKey) as DataWrapperProyecto;
+            DataWrapperProyecto dataWrapperProyecto = ObtenerObjetoDeCache(rawKey, typeof(DataWrapperProyecto)) as DataWrapperProyecto;
 
             if (dataWrapperProyecto == null || (dataWrapperProyecto.ListaProyecto != null && dataWrapperProyecto.ListaProyecto.Count == 0) || dataWrapperProyecto.ListaProyectoPestanyaDashboardAsistente == null)
             {
@@ -573,7 +584,7 @@ namespace Es.Riam.Gnoss.CL.ServiciosGenerales
 
             if (!proyectoID.HasValue || proyectoID.Value.Equals(Guid.Empty))
             {
-                proyectoID = ObtenerObjetoDeCache(rawKey) as Guid?;
+                proyectoID = ObtenerObjetoDeCache(rawKey, typeof(Guid?)) as Guid?;
                 if (proyectoID.HasValue && !proyectoID.Value.Equals(Guid.Empty))
                 {
                     AgregarObjetoCacheLocal(proyectoID.Value, rawKey, proyectoID);
@@ -608,7 +619,7 @@ namespace Es.Riam.Gnoss.CL.ServiciosGenerales
 
             if (pListaIds != null && pListaIds.Count > 0)
             {
-                pListaIds = ObtenerObjetoDeCache(rawKey) as List<Guid>;
+                pListaIds = ObtenerObjetoDeCache(rawKey, typeof(List<Guid>)) as List<Guid>;
                 if (pListaIds != null && pListaIds.Count > 0)
                 {
                     AgregarObjetoCacheLocal(pListaIds.FirstOrDefault(), rawKey, pListaIds);
@@ -639,7 +650,7 @@ namespace Es.Riam.Gnoss.CL.ServiciosGenerales
             string rawKey = string.Concat("ProyectoID_OrgID_", pNombreCorto);
 
             // Compruebo si está en la caché
-            List<Guid> listaProyectoIDOrgID = ObtenerObjetoDeCache(rawKey) as List<Guid>;
+            List<Guid> listaProyectoIDOrgID = ObtenerObjetoDeCache(rawKey, typeof(List<Guid>)) as List<Guid>;
             if (listaProyectoIDOrgID == null)
             {
                 // Si no está, lo cargo y lo almaceno en la cache
@@ -660,7 +671,7 @@ namespace Es.Riam.Gnoss.CL.ServiciosGenerales
             string rawKey = string.Concat(NombresCL.NIVELESCERTIFICACIONRECURSO, "_", pProyectoID);
             mEntityContext.UsarEntityCache = true;
             // Compruebo si está en la caché
-            DataWrapperProyecto dataWrapperProyecto = ObtenerObjetoDeCache(rawKey) as DataWrapperProyecto;
+            DataWrapperProyecto dataWrapperProyecto = ObtenerObjetoDeCache(rawKey, typeof(DataWrapperProyecto)) as DataWrapperProyecto;
             if (dataWrapperProyecto == null)
             {
                 // Si no está, lo cargo y lo almaceno en la cache
@@ -696,6 +707,7 @@ namespace Es.Riam.Gnoss.CL.ServiciosGenerales
             InvalidarCache(rawKey);
         }
 
+
         /// <summary>
         /// Obtiene el identificador de la base de recursos de la comunidad.
         /// </summary>
@@ -710,11 +722,11 @@ namespace Es.Riam.Gnoss.CL.ServiciosGenerales
                 string rawKey = string.Concat(NombresCL.BASERECURSOSID, "_", pProyectoID);
 
                 // Compruebo si está en la caché
-                baseRecursosID = ObtenerObjetoDeCache(rawKey) as string;
+                baseRecursosID = ObtenerObjetoDeCache(rawKey, typeof(string)) as string;
                 if (baseRecursosID == null)
                 {
                     // Si no está, lo cargo y lo almaceno en la cache
-                    DocumentacionCN docCN = new DocumentacionCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+                    DocumentacionCN docCN = new DocumentacionCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<DocumentacionCN>(), mLoggerFactory);
                     DataWrapperDocumentacion dataWrapperDocumentacion = new DataWrapperDocumentacion();
                     docCN.ObtenerBaseRecursosProyecto(dataWrapperDocumentacion, pProyectoID, pOrganizacionID, pUsuarioID);
                     docCN.Dispose();
@@ -740,13 +752,13 @@ namespace Es.Riam.Gnoss.CL.ServiciosGenerales
         public List<OntologiaProyecto> ObtenerOntologiasProyectosUsuario(Guid pPerfil)
         {
             string rawKey = string.Concat("OntologiasProyectoUsuario", "_", pPerfil);
-            List<OntologiaProyecto> listaOntologias = ObtenerObjetoDeCache(rawKey) as List<OntologiaProyecto>;
+            List<OntologiaProyecto> listaOntologias = ObtenerObjetoDeCache(rawKey, typeof(List<OntologiaProyecto>)) as List<OntologiaProyecto>;
 
             // Compruebo si está en la caché
             if (listaOntologias == null)
             {
                 // Si no está, lo cargo y lo almaceno en la caché
-                ProyectoCN proyectoCN = new ProyectoCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+                ProyectoCN proyectoCN = new ProyectoCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<ProyectoCN>(), mLoggerFactory);
                 listaOntologias = proyectoCN.ObtenerOntologiasPorPerfilID(pPerfil);
                 proyectoCN.Dispose();
                 AgregarObjetoCache(rawKey, listaOntologias);
@@ -766,7 +778,7 @@ namespace Es.Riam.Gnoss.CL.ServiciosGenerales
             pHtmlPanel = "";
             // Compruebo si está en la caché
             string rawKey = string.Concat(NombresCL.PROYECTOAUTOPROMOCION, "_", pProyectoID);
-            object objetoCache = ObtenerObjetoDeCache(rawKey);
+            object objetoCache = ObtenerObjetoDeCache(rawKey, typeof(string));
             if (objetoCache != null)
             {
                 pHtmlPanel = objetoCache as string;
@@ -797,7 +809,7 @@ namespace Es.Riam.Gnoss.CL.ServiciosGenerales
             pHtmlPanel = "";
             // Compruebo si está en la caché
             string rawKey = string.Concat(NombresCL.HTMLADMINISTRADORESPROYECTO, "_", pProyectoID);
-            object objetoCache = ObtenerObjetoDeCache(rawKey);
+            object objetoCache = ObtenerObjetoDeCache(rawKey, typeof(string));
             if (objetoCache != null)
             {
                 pHtmlPanel = objetoCache as string;
@@ -817,6 +829,51 @@ namespace Es.Riam.Gnoss.CL.ServiciosGenerales
             AgregarObjetoCache(rawKey, pHtmlPanel);
         }
 
+		// ------  Contador de tareas en segundo plano ------
+		/// <summary>
+		/// Inserta en Redis el contador de eventos procesados de una tarea en segundo plano y lo inicializa a cero.
+		/// </summary>
+		/// <param name="pTareaID">identificador de la tarea en segundo plano a la que pertenece el contador</param>
+		public void InicializarContadorTarea(Guid pTareaID)
+        {
+            string rawkey = string.Concat(NombresCL.CONTADORTAREA, "_", pTareaID);
+            AgregarObjetoCache(rawkey, 0);
+        }
+
+		/// <summary>
+		/// Aumenta en uno el contador de eventos procesados de una tarea en segundo plano.
+		/// </summary>
+		/// <param name="pTareaID">identificador de la tarea en segundo plano a la que pertenece el contador</param>
+		public void IncrementarContadorTarea(Guid pTareaID)
+        {
+            string rawkey = string.Concat(NombresCL.CONTADORTAREA, "_", pTareaID);
+            int cont = Convert.ToInt32(ObtenerObjetoDeCache(rawkey, typeof(int)));
+            AgregarObjetoCache(rawkey, cont + 1);
+        }
+
+		/// <summary>
+		/// Obtiene el contador de eventos procesados de una tarea en segundo plano.
+		/// </summary>
+		/// <param name="pTareaID">identificador de la tarea en segundo plano a la que pertenece el contador</param>
+		/// <returns>Progreso de la tarea en segundo plano, i.e., número de eventos procesados</returns>
+		public int ObtenerContadorTarea(Guid pTareaID)
+        {
+            string rawkey = string.Concat(NombresCL.CONTADORTAREA, "_", pTareaID);
+            return Convert.ToInt32(ObtenerObjetoDeCache(rawkey, typeof(string)));
+        }
+
+		/// <summary>
+		/// Libera el espacio de memoria reservado para el contador de eventos procesados de una tarea en segundo plano.
+		/// </summary>
+		/// <param name="pTareaID">identificador de la tarea en segundo plano a la que pertenece el contador</param>
+		public void EliminarContadorTarea(Guid pTareaID)
+        {
+			string rawkey = string.Concat(NombresCL.CONTADORTAREA, "_", pTareaID);
+            InvalidarCache(rawkey);
+		}
+        //-----------------------------------------------------------------------------
+
+
         /// <summary>
         /// Agrega a la cache un gestor de identidades con los administradores del proyecto
         /// </summary>
@@ -833,8 +890,8 @@ namespace Es.Riam.Gnoss.CL.ServiciosGenerales
         /// </summary>
         public void InvalidarFilaProyecto(Guid pProyectoID)
         {
-            ProyectoCN proyectoCN = new ProyectoCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
-            List<Guid> listaProyIdHijos = proyectoCN.ObtenerProyectosIdsDeProyectoSuperiorID(pProyectoID);
+            ProyectoCN proyectoCN = new ProyectoCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<ProyectoCN>(), mLoggerFactory);
+            List<Guid> listaProyIdHijos = proyectoCN.ObtenerProyectosIdsDeProyectoSuperiorID(pProyectoID, true);
 
             List<string> rawKeysProyPorId = new List<string>() { ObtenerClaveCache($"{NombresCL.PROYECTOSPORID}_{pProyectoID}").ToLower() };
             List<string> rawKeysProyCompId3 = new List<string>() { ObtenerClaveCache($"ProyectoCompletoPorID3_{pProyectoID}").ToLower() };
@@ -897,7 +954,7 @@ namespace Es.Riam.Gnoss.CL.ServiciosGenerales
 
             if (dataWrapperProyecto == null)
             {
-                dataWrapperProyecto = ObtenerObjetoDeCache(rawKey) as DataWrapperProyecto;
+                dataWrapperProyecto = ObtenerObjetoDeCache(rawKey, typeof(DataWrapperProyecto)) as DataWrapperProyecto;
                 AgregarObjetoCacheLocal(pProyectoID, rawKey, dataWrapperProyecto);
             }
             //Si no hay nada en cache guardamos un dataWrapper con el proyecto que nos viene por parametros
@@ -943,7 +1000,7 @@ namespace Es.Riam.Gnoss.CL.ServiciosGenerales
         public void AgregarClaveReinicioAplicacion(Guid pProyectoID)
         {
             string rawKey = NombresCL.CLAVEREINICIO;
-            string clave = ObtenerObjetoDeCache(rawKey) as string;
+            string clave = ObtenerObjetoDeCache(rawKey, typeof(string)) as string;
 
             //Si la clave está, la agrego a caché local
             if (!string.IsNullOrEmpty(clave))
@@ -960,7 +1017,7 @@ namespace Es.Riam.Gnoss.CL.ServiciosGenerales
         public bool EsNecesarioReiniciarAplicacion()
         {
             string rawKey = NombresCL.CLAVEREINICIO;
-            string claveCacheActual = ObtenerObjetoDeCache(rawKey) as string;
+            string claveCacheActual = ObtenerObjetoDeCache(rawKey, typeof(string)) as string;
 
             if (!string.IsNullOrEmpty(claveCacheActual))
             {
@@ -985,7 +1042,7 @@ namespace Es.Riam.Gnoss.CL.ServiciosGenerales
             string rawKey = NombresCL.LISTAPROYECTOSPERFIL + "_" + pPerfilID;
 
             // Compruebo si está en la caché
-            Dictionary<string, KeyValuePair<string, short>> listaProyectosPerfil = ObtenerObjetoDeCache(rawKey) as Dictionary<string, KeyValuePair<string, short>>;
+            Dictionary<string, KeyValuePair<string, short>> listaProyectosPerfil = ObtenerObjetoDeCache(rawKey, typeof(Dictionary<string, KeyValuePair<string, short>>)) as Dictionary<string, KeyValuePair<string, short>>;
             //Si no hay nada en cache guardamos un dataset con el proyecto que nos viene por parametros
             if (listaProyectosPerfil == null)
             {
@@ -1006,7 +1063,7 @@ namespace Es.Riam.Gnoss.CL.ServiciosGenerales
             string rawKey = NombresCL.LISTAPROYECTOSUSUARIO + "_" + pUsuarioID;
 
             // Compruebo si está en la caché
-            Dictionary<string, KeyValuePair<string, short>> listaProyectosUsuario = ObtenerObjetoDeCache(rawKey) as Dictionary<string, KeyValuePair<string, short>>;
+            Dictionary<string, KeyValuePair<string, short>> listaProyectosUsuario = ObtenerObjetoDeCache(rawKey, typeof(Dictionary<string, KeyValuePair<string, short>>)) as Dictionary<string, KeyValuePair<string, short>>;
             //Si no hay nada en cache guardamos un dataset con el proyecto que nos viene por parametros
             if (listaProyectosUsuario == null)
             {
@@ -1118,7 +1175,7 @@ namespace Es.Riam.Gnoss.CL.ServiciosGenerales
             string rawKey = NombresCL.PROYECTOSPORID;
             mEntityContext.UsarEntityCache = true;
             // Compruebo si está en la caché
-            DataWrapperProyecto dataWrapperProyecto = ObtenerObjetoDeCache(rawKey) as DataWrapperProyecto;
+            DataWrapperProyecto dataWrapperProyecto = ObtenerObjetoDeCache(rawKey, typeof(DataWrapperProyecto)) as DataWrapperProyecto;
             if (dataWrapperProyecto == null)
             {
                 // Si no está, lo cargo y lo almaceno en la cache
@@ -1130,7 +1187,7 @@ namespace Es.Riam.Gnoss.CL.ServiciosGenerales
             List<AD.EntityModel.Models.ProyectoDS.Proyecto> filasProyecto = dataWrapperProyecto.ListaProyecto.Where(proyecto => proyecto.NombreCorto.Equals(pNombreCorto)).ToList();
             if (filasProyecto.Count == 0)
             {
-                ProyectoCN proyCN = new ProyectoCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+                ProyectoCN proyCN = new ProyectoCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<ProyectoCN>(), mLoggerFactory);
                 DataWrapperProyecto dataWrapperProyectoNuevo = new DataWrapperProyecto();
                 dataWrapperProyectoNuevo.ListaProyecto.Add(ProyectoCN.ObtenerProyectoPorIDCargaLigera(ObtenerProyectoIDPorNombreCorto(pNombreCorto)));
                 dataWrapperProyecto.Merge(dataWrapperProyectoNuevo);
@@ -1149,11 +1206,11 @@ namespace Es.Riam.Gnoss.CL.ServiciosGenerales
             string rawKey = string.Concat(NombresCL.USUARIOBLOQUEADOPROYECTO, "_", pProyectoID, "_", pUsuarioID);
 
             // Compruebo si está en la caché
-            bool? usuBloqueado = ObtenerObjetoDeCache(rawKey) as bool?;
+            bool? usuBloqueado = ObtenerObjetoDeCache(rawKey, typeof(bool)) as bool?;
             if (!usuBloqueado.HasValue)
             {
                 // Si no está, lo cargo y lo almaceno en la cache
-                ProyectoCN proyCN = new ProyectoCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+                ProyectoCN proyCN = new ProyectoCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<ProyectoCN>(), mLoggerFactory);
                 usuBloqueado = proyCN.EstaUsuarioBloqueadoEnProyecto(pUsuarioID, pProyectoID);
                 proyCN.Dispose();
 
@@ -1175,11 +1232,11 @@ namespace Es.Riam.Gnoss.CL.ServiciosGenerales
             string rawKey = string.Concat(NombresCL.TIPOACCESO, "_", pProyectoID);
 
             // Compruebo si está en la caché
-            short? tipoAcceso = ObtenerObjetoDeCache(rawKey) as short?;
+            short? tipoAcceso = ObtenerObjetoDeCache(rawKey, typeof(short)) as short?;
             if (!tipoAcceso.HasValue)
             {
                 // Si no está, lo cargo y lo almaceno en la cache
-                ProyectoCN proyCN = new ProyectoCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+                ProyectoCN proyCN = new ProyectoCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<ProyectoCN>(), mLoggerFactory);
                 tipoAcceso = (short)proyCN.ObtenerTipoAccesoProyecto(pProyectoID);
                 proyCN.Dispose();
                 AgregarObjetoCache(rawKey, tipoAcceso.Value);
@@ -1199,7 +1256,7 @@ namespace Es.Riam.Gnoss.CL.ServiciosGenerales
             string rawKey = string.Concat("SeccionesHomeCatalogo_", pProyectoID);
 
             // Compruebo si está en la caché
-            DataWrapperProyecto dataWrapperProyecto = ObtenerObjetoDeCache(rawKey) as DataWrapperProyecto;
+            DataWrapperProyecto dataWrapperProyecto = ObtenerObjetoDeCache(rawKey, typeof(DataWrapperProyecto)) as DataWrapperProyecto;
             if (dataWrapperProyecto == null)
             {
                 // Si no está, lo cargo y lo almaceno en la cache
@@ -1225,7 +1282,7 @@ namespace Es.Riam.Gnoss.CL.ServiciosGenerales
             string rawKey = string.Concat("TipoProy_", pProyectoID);
 
             // Compruebo si está en la caché
-            TipoProyecto? tipoProy = ObtenerObjetoDeCache(rawKey) as TipoProyecto?;
+            TipoProyecto? tipoProy = ObtenerObjetoDeCache(rawKey, typeof(TipoProyecto?)) as TipoProyecto?;
             if (!tipoProy.HasValue)
             {
                 // Si no está, lo cargo y lo almaceno en la cache
@@ -1244,7 +1301,7 @@ namespace Es.Riam.Gnoss.CL.ServiciosGenerales
         public string ObtenerMisProyectos(Guid pPerfilID)
         {
             string rawKey = string.Concat(NombresCL.MISCOMUNIDADES, "_", pPerfilID.ToString());
-            return (string)ObtenerObjetoDeCache(rawKey);
+            return (string)ObtenerObjetoDeCache(rawKey, typeof(string));
         }
 
         /// <summary>
@@ -1322,7 +1379,7 @@ namespace Es.Riam.Gnoss.CL.ServiciosGenerales
             string rawKey = string.Concat(NombresCL.CLAUSULASREGITROPROYECTO, pProyectoID);
 
             // Compruebo si está en la caché
-            DataWrapperUsuario usuarioDW = ObtenerObjetoDeCache(rawKey) as DataWrapperUsuario;
+            DataWrapperUsuario usuarioDW = ObtenerObjetoDeCache(rawKey, typeof(DataWrapperUsuario)) as DataWrapperUsuario;
 
             if (usuarioDW != null)
             {
@@ -1341,7 +1398,7 @@ namespace Es.Riam.Gnoss.CL.ServiciosGenerales
             if (usuarioDW == null)
             {
                 // Si no está, lo cargo y lo almaceno en la cache
-                UsuarioCN usuarioCN = new UsuarioCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+                UsuarioCN usuarioCN = new UsuarioCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<UsuarioCN>(), mLoggerFactory);
                 usuarioDW = usuarioCN.ObtenerClausulasRegitroProyecto(pProyectoID);
                 usuarioCN.Dispose();
                 AgregarObjetoCache(rawKey, usuarioDW);
@@ -1364,7 +1421,7 @@ namespace Es.Riam.Gnoss.CL.ServiciosGenerales
             DataWrapperUsuario usuarioDW = ObtenerObjetoDeCacheLocal(rawKey) as DataWrapperUsuario;
             if (usuarioDW == null)
             {
-                usuarioDW = ObtenerObjetoDeCache(rawKey) as DataWrapperUsuario;
+                usuarioDW = ObtenerObjetoDeCache(rawKey, typeof(DataWrapperUsuario)) as DataWrapperUsuario;
                 AgregarObjetoCacheLocal(pProyectoID, rawKey, usuarioDW);
             }
 
@@ -1385,7 +1442,7 @@ namespace Es.Riam.Gnoss.CL.ServiciosGenerales
             if (usuarioDW == null)
             {
                 // Si no está, lo cargo y lo almaceno en la cache
-                UsuarioCN usuarioCN = new UsuarioCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+                UsuarioCN usuarioCN = new UsuarioCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<UsuarioCN>(), mLoggerFactory);
                 usuarioDW = usuarioCN.ObtenerPoliticaCookiesProyecto(pProyectoID);
                 usuarioCN.Dispose();
                 AgregarObjetoCache(rawKey, usuarioDW);
@@ -1410,7 +1467,7 @@ namespace Es.Riam.Gnoss.CL.ServiciosGenerales
 
             if (dataWrapperProyecto == null)
             {
-                dataWrapperProyecto = ObtenerObjetoDeCache(rawKey) as DataWrapperProyecto;
+                dataWrapperProyecto = ObtenerObjetoDeCache(rawKey, typeof(DataWrapperProyecto)) as DataWrapperProyecto;
                 if (dataWrapperProyecto != null)
                 {
                     dataWrapperProyecto.CargaRelacionesPerezosasCache();
@@ -1462,7 +1519,7 @@ namespace Es.Riam.Gnoss.CL.ServiciosGenerales
 
             if (dataWrapperProyecto == null)
             {
-                dataWrapperProyecto = ObtenerObjetoDeCache(rawKey) as DataWrapperProyecto;
+                dataWrapperProyecto = ObtenerObjetoDeCache(rawKey, typeof(DataWrapperProyecto)) as DataWrapperProyecto;
                 if (dataWrapperProyecto != null)
                 {
                     dataWrapperProyecto.CargaRelacionesPerezosasCache();
@@ -1779,7 +1836,7 @@ namespace Es.Riam.Gnoss.CL.ServiciosGenerales
             string rawKey = string.Concat("PaginasHtml_", pProyectoID);
 
             // Compruebo si está en la caché
-            DataWrapperProyecto dataWrapperProyecto = ObtenerObjetoDeCache(rawKey) as DataWrapperProyecto;
+            DataWrapperProyecto dataWrapperProyecto = ObtenerObjetoDeCache(rawKey, typeof(DataWrapperProyecto)) as DataWrapperProyecto;
 
             if (dataWrapperProyecto == null)
             {
@@ -1842,9 +1899,9 @@ namespace Es.Riam.Gnoss.CL.ServiciosGenerales
         public Object ObtenerGeneradorMenuComunidad(Guid pProyectoID)
         {
             string rawKey = string.Concat("GeneradorMenuComunidad_", pProyectoID);
-
+            // TODO: Revisar en otros servicios
             // Compruebo si está en la caché
-            return ObtenerObjetoDeCache(rawKey);
+            return ObtenerObjetoDeCache(rawKey, typeof(object));
         }
 
         /// <summary>
@@ -1874,7 +1931,7 @@ namespace Es.Riam.Gnoss.CL.ServiciosGenerales
 
             if (dataWrapperProyecto == null)
             {
-                dataWrapperProyecto = ObtenerObjetoDeCache(rawKey) as DataWrapperProyecto;
+                dataWrapperProyecto = ObtenerObjetoDeCache(rawKey, typeof(DataWrapperProyecto)) as DataWrapperProyecto;
                 if (dataWrapperProyecto != null)
                 {
                     dataWrapperProyecto.CargaRelacionesPerezosasCache();
@@ -1885,7 +1942,7 @@ namespace Es.Riam.Gnoss.CL.ServiciosGenerales
             // Si no está, lo cargo y lo almaceno en la caché
             if (dataWrapperProyecto == null)
             {
-                ProyectoCN proyectoCN = new ProyectoCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+                ProyectoCN proyectoCN = new ProyectoCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<ProyectoCN>(), mLoggerFactory);
                 
                 if (tieneComunidadPadreConfigurada)
                 {
@@ -1918,10 +1975,10 @@ namespace Es.Riam.Gnoss.CL.ServiciosGenerales
             string rawKey = string.Concat("TiposRecursosNoActividadReciente", pProyectoID);
 
             //ProyectoDS proyectoDS = ObtenerObjetoDeCache(rawKey) as ProyectoDS;
-            DataWrapperProyecto dataWrapperProyecto = ObtenerObjetoDeCache(rawKey) as DataWrapperProyecto;
+            DataWrapperProyecto dataWrapperProyecto = ObtenerObjetoDeCache(rawKey, typeof(DataWrapperProyecto)) as DataWrapperProyecto;
             if (dataWrapperProyecto == null)
             {
-                ProyectoCN proyectoCN = new ProyectoCN(mFicheroConfiguracionBD, mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+                ProyectoCN proyectoCN = new ProyectoCN(mFicheroConfiguracionBD, mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<ProyectoCN>(), mLoggerFactory);
                 // Si no está, lo cargo y lo almaceno en la cache
                 dataWrapperProyecto = proyectoCN.ObtenerTiposRecursosNoActividadReciente(pProyectoID);
                 if (dataWrapperProyecto != null)
@@ -1955,7 +2012,7 @@ namespace Es.Riam.Gnoss.CL.ServiciosGenerales
         {
             string rawKey = string.Concat("ContadorComunidad", "_", pProyectoID, "_", pRefrescoTipoBusqueda.ToString());
 
-            int? numResultados = (int?)ObtenerObjetoDeCache(rawKey);
+            int? numResultados = (int?)ObtenerObjetoDeCache(rawKey, typeof(int));
 
             if (numResultados == null && pRefrescoTipoBusqueda == TipoBusqueda.Recursos)
             {
@@ -1986,9 +2043,10 @@ namespace Es.Riam.Gnoss.CL.ServiciosGenerales
         {
             string rawKey = string.Concat("UltimoProyecto", "_", pUsuarioID, "_", pDominio);
 
-            Guid? proyectoID = ObtenerObjetoDeCache(rawKey) as Guid?;
+            Guid.TryParse((string)ObtenerObjetoDeCache(rawKey, typeof(Guid)), out Guid proyAux);
+            Guid? proyectoID = proyAux.Equals(Guid.Empty) ? null : proyAux;
 
-            if (proyectoID.HasValue)
+			if (proyectoID.HasValue)
             {
                 return proyectoID.Value;
             }
@@ -2011,7 +2069,7 @@ namespace Es.Riam.Gnoss.CL.ServiciosGenerales
 
             if (listaTipo == null)
             {
-                listaTipo = ObtenerObjetoDeCache(rawKey) as Dictionary<short, Dictionary<Guid, string>>;
+                listaTipo = ObtenerObjetoDeCache(rawKey, typeof(Dictionary<short, Dictionary<Guid, string>>)) as Dictionary<short, Dictionary<Guid, string>>;
                 AgregarObjetoCacheLocal(pProyectoID, rawKey, listaTipo);
             }
 
@@ -2038,7 +2096,7 @@ namespace Es.Riam.Gnoss.CL.ServiciosGenerales
 
             if (parametros == null)
             {
-                parametros = ObtenerObjetoDeCache(rawKey) as Dictionary<string, string>;
+                parametros = ObtenerObjetoDeCache(rawKey, typeof(Dictionary<string, string>)) as Dictionary<string, string>;
                 AgregarObjetoCacheLocal(pProyectoID, rawKey, parametros);
             }
 
@@ -2086,7 +2144,7 @@ namespace Es.Riam.Gnoss.CL.ServiciosGenerales
         public string ObtenerProyectosRecomendados(Guid pPerfilID)
         {
             string rawKey = string.Concat(NombresCL.COMUNIDADESRECOMEN, "_", pPerfilID);
-            byte[] htmlCompri = (byte[])ObtenerObjetoDeCache(rawKey);
+            byte[] htmlCompri = (byte[])ObtenerObjetoDeCache(rawKey, typeof(byte[]));
             string html = null;
 
             if (htmlCompri != null)
@@ -2150,7 +2208,7 @@ namespace Es.Riam.Gnoss.CL.ServiciosGenerales
             string rawKey = string.Concat("ProyectoGrafoFichaRec_", pProyectoID);
 
             // Compruebo si está en la caché
-            DataWrapperProyecto dataWrapperProyecto = ObtenerObjetoDeCache(rawKey) as DataWrapperProyecto;
+            DataWrapperProyecto dataWrapperProyecto = ObtenerObjetoDeCache(rawKey, typeof(DataWrapperProyecto)) as DataWrapperProyecto;
 
             if (dataWrapperProyecto == null)
             {
@@ -2177,11 +2235,11 @@ namespace Es.Riam.Gnoss.CL.ServiciosGenerales
         {
             mEntityContext.UsarEntityCache = true;
             string rawKey = string.Concat("PresentacionSemantico", "_", pProyectoID);
-            DataWrapperProyecto dataWrapperProyecto = ObtenerObjetoDeCacheLocal(rawKey) as DataWrapperProyecto;
+             DataWrapperProyecto dataWrapperProyecto = ObtenerObjetoDeCacheLocal(rawKey) as DataWrapperProyecto;
 
             if (dataWrapperProyecto == null)
             {
-                dataWrapperProyecto = ObtenerObjetoDeCache(rawKey) as DataWrapperProyecto;
+                dataWrapperProyecto = ObtenerObjetoDeCache(rawKey, typeof(DataWrapperProyecto)) as DataWrapperProyecto;
                 if (dataWrapperProyecto != null)
                 {
                     dataWrapperProyecto.CargaRelacionesPerezosasCache();
@@ -2239,11 +2297,11 @@ namespace Es.Riam.Gnoss.CL.ServiciosGenerales
         {
             string rawKey = string.Concat(CLAVE_CACHE_CONTADOR_PERSONAS_ORGANIZACIONES_COMUNIDAD, pProyectoID, "_", pContarPersonasNoVisibles);
 
-            int? numRecursosPersonasYOrganizaciones = ObtenerObjetoDeCache(rawKey) as int?;
+            int? numRecursosPersonasYOrganizaciones = ObtenerObjetoDeCache(rawKey, typeof(int)) as int?;
 
             if (!numRecursosPersonasYOrganizaciones.HasValue)
             {
-                ProyectoCL proyCL = new ProyectoCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mVirtuosoAD, mServicesUtilVirtuosoAndReplication);
+                ProyectoCL proyCL = new ProyectoCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mVirtuosoAD, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<ProyectoCL>(), mLoggerFactory);
                 Dictionary<string, List<string>> listaFiltrosPers = new Dictionary<string, List<string>>();
                 List<string> recursosTipo = new List<string>();
                 recursosTipo.Add("Organizacion");
@@ -2255,7 +2313,7 @@ namespace Es.Riam.Gnoss.CL.ServiciosGenerales
                 try
                 {
                     FacetadoDS facDS = new FacetadoDS();
-                    FacetadoCN facCN = new FacetadoCN(pUrlIntragnoss, pProyectoID.ToString(), mEntityContext, mLoggingService, mConfigService, mVirtuosoAD, mServicesUtilVirtuosoAndReplication);
+                    FacetadoCN facCN = new FacetadoCN(pUrlIntragnoss, pProyectoID.ToString(), mEntityContext, mLoggingService, mConfigService, mVirtuosoAD, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<FacetadoCN>(), mLoggerFactory);
                     facCN.ObtieneNumeroResultados(facDS, "RecursosBusqueda", listaFiltrosPers, new List<string>(), false, true, false, UsuarioAD.Invitado.ToString(), new List<string>(), "", pTipoProyecto, true, true, TiposAlgoritmoTransformacion.Ninguno, null);
 
                     if ((facDS.Tables.Contains("NResultadosBusqueda")) && (facDS.Tables["NResultadosBusqueda"].Rows.Count > 0))
@@ -2279,7 +2337,7 @@ namespace Es.Riam.Gnoss.CL.ServiciosGenerales
                 }
                 catch
                 {
-                    mLoggingService.GuardarLog("No se ha podido obtenero los numeros de recursos, personas y organizaciones");
+                    mLoggingService.GuardarLog("No se ha podido obtenero los numeros de recursos, personas y organizaciones", mlogger);
                 }
             }
 
@@ -2307,7 +2365,7 @@ namespace Es.Riam.Gnoss.CL.ServiciosGenerales
                     listaClaves[i] = rawKey.ToLower();
                     i++;
                 }
-                Dictionary<string, object> objetosCache = ObtenerListaObjetosCache(listaClaves, typeof(object));
+                Dictionary<string, object> objetosCache = ObtenerListaObjetosCache(listaClaves);
                 foreach (Guid idRecurso in keysComunidades.Keys)
                 {
                     string clave = keysComunidades[idRecurso];
@@ -2332,7 +2390,7 @@ namespace Es.Riam.Gnoss.CL.ServiciosGenerales
                     listaClaves[i] = rawKey.ToLower();
                     i++;
                 }
-                Dictionary<string, object> objetosCache = ObtenerListaObjetosCache(listaClaves, typeof(object));
+                Dictionary<string, object> objetosCache = ObtenerListaObjetosCache(listaClaves);
                 foreach (Guid idRecurso in keysComunidades.Keys)
                 {
                     string clave = keysComunidades[idRecurso];
@@ -2351,7 +2409,7 @@ namespace Es.Riam.Gnoss.CL.ServiciosGenerales
         public int? ObtenerContadorRecursosComunidad(string pUrlIntragnoss, Guid pProyectoID, Guid pOrganizacionID, TipoProyecto pTipoProyecto, bool pEsMovil)
         {
             string rawKey = string.Concat(CLAVE_CACHE_CONTADOR_RECURSOS_COMUNIDAD, pProyectoID);
-            int? numRecursosComunidad = ObtenerObjetoDeCache(rawKey) as int?;
+            int? numRecursosComunidad = ObtenerObjetoDeCache(rawKey, typeof(int)) as int?;
 
             if (!numRecursosComunidad.HasValue)
             {
@@ -2360,7 +2418,7 @@ namespace Es.Riam.Gnoss.CL.ServiciosGenerales
                 recursos.Add("Recurso");
                 listaFiltros.Add("rdf:type", recursos);
 
-                FacetaCL facetaCL = new FacetaCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mServicesUtilVirtuosoAndReplication);
+                FacetaCL facetaCL = new FacetaCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<FacetaCL>(), mLoggerFactory);
                 //facetaCL.ObtenerOntologiasProyecto(facetaDS, pOrganizacionID, pProyectoID);
                 List<OntologiaProyecto> listaOntologias = facetaCL.ObtenerOntologiasBuscablesProyecto(pOrganizacionID, pProyectoID);
 
@@ -2374,7 +2432,7 @@ namespace Es.Riam.Gnoss.CL.ServiciosGenerales
                 try
                 {
                     //Si falla al obtener de virtuoso el numero de recursos de una comunidad, controlamos el error y no lo guardamos en cache
-                    FacetadoCN facCN = new FacetadoCN(pUrlIntragnoss, pProyectoID.ToString(), mEntityContext, mLoggingService, mConfigService, mVirtuosoAD, mServicesUtilVirtuosoAndReplication);
+                    FacetadoCN facCN = new FacetadoCN(pUrlIntragnoss, pProyectoID.ToString(), mEntityContext, mLoggingService, mConfigService, mVirtuosoAD, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<FacetadoCN>(), mLoggerFactory);
                     FacetadoDS facDS = new FacetadoDS();
                     facCN.ObtieneNumeroResultados(facDS, "RecursosBusqueda", listaFiltros, listaFiltrosExtra, false, true, false, UsuarioAD.Invitado.ToString(), new List<string>(), null, pTipoProyecto, true, true, TiposAlgoritmoTransformacion.Ninguno, null, pEsMovil);
 
@@ -2404,7 +2462,7 @@ namespace Es.Riam.Gnoss.CL.ServiciosGenerales
         {
             string rawKey = "IntegracionContinua_IntegracionContinuaActivada_" + pProyectoID;
 
-            bool? tieneICActivada = (bool?)ObtenerObjetoDeCache(rawKey);
+            bool? tieneICActivada = (bool?)ObtenerObjetoDeCache(rawKey, typeof(bool));
 
             return tieneICActivada;
         }
@@ -2427,7 +2485,7 @@ namespace Es.Riam.Gnoss.CL.ServiciosGenerales
         {
             string rawKey = "IntegracionContinua_EntornoPruebas_" + pProyectoID + "_" + pEntorno;
 
-            bool? esEntornoPruebas = (bool?)ObtenerObjetoDeCache(rawKey);
+            bool? esEntornoPruebas = (bool?)ObtenerObjetoDeCache(rawKey, typeof(bool));
 
             if (esEntornoPruebas == null)
             {
@@ -2448,7 +2506,7 @@ namespace Es.Riam.Gnoss.CL.ServiciosGenerales
         {
             string rawKey = "IntegracionContinua_EntornoPre_" + pProyectoID + "_" + pEntorno;
 
-            bool? esEntornoPreproduccion = (bool?)ObtenerObjetoDeCache(rawKey);
+            bool? esEntornoPreproduccion = (bool?)ObtenerObjetoDeCache(rawKey, typeof(bool));
 
             if (esEntornoPreproduccion == null)
             {
@@ -2481,12 +2539,12 @@ namespace Es.Riam.Gnoss.CL.ServiciosGenerales
         {
             string rawKey = string.Concat("NumeroProyectosConMismosDominio", pDominio);
 
-            int? numeroProyectosConMismosDominio = ObtenerObjetoDeCache(rawKey) as int?;
+            int? numeroProyectosConMismosDominio = ObtenerObjetoDeCache(rawKey, typeof(int)) as int?;
 
             if (!numeroProyectosConMismosDominio.HasValue)
             {
                 // Se traen de BBDD y se almacenan en cache por un día.
-                ProyectoCN proyCN = new ProyectoCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+                ProyectoCN proyCN = new ProyectoCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<ProyectoCN>(), mLoggerFactory);
                 numeroProyectosConMismosDominio = proyCN.NumeroProyectosConMismosDominio(pDominio);
                 proyCN.Dispose();
 
@@ -2517,11 +2575,11 @@ namespace Es.Riam.Gnoss.CL.ServiciosGenerales
                 {
                     if (!string.IsNullOrEmpty(mFicheroConfiguracionBD))
                     {
-                        mProyectoCN = new ProyectoCN(mFicheroConfiguracionBD, mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+                        mProyectoCN = new ProyectoCN(mFicheroConfiguracionBD, mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<ProyectoCN>(), mLoggerFactory);
                     }
                     else
                     {
-                        mProyectoCN = new ProyectoCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+                        mProyectoCN = new ProyectoCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<ProyectoCN>(), mLoggerFactory);
                     }
                 }
 
@@ -2540,11 +2598,11 @@ namespace Es.Riam.Gnoss.CL.ServiciosGenerales
                 {
                     if (!string.IsNullOrEmpty(mFicheroConfiguracionBD))
                     {
-                        mParametroCN = new ParametroCN(mFicheroConfiguracionBD, mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+                        mParametroCN = new ParametroCN(mFicheroConfiguracionBD, mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<ParametroCN>(), mLoggerFactory);
                     }
                     else
                     {
-                        mParametroCN = new ParametroCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+                        mParametroCN = new ParametroCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<ParametroCN>(), mLoggerFactory);
                     }
                 }
 
@@ -2610,7 +2668,7 @@ namespace Es.Riam.Gnoss.CL.ServiciosGenerales
                 }
                 catch (Exception e)
                 {
-                    mLoggingService.GuardarLogError(e);
+                    mLoggingService.GuardarLogError(e, mlogger);
                 }
             }
         }

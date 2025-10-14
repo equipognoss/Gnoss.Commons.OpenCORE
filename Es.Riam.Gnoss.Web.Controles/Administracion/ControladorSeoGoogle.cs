@@ -3,6 +3,7 @@ using Es.Riam.Gnoss.AD;
 using Es.Riam.Gnoss.AD.EntityModel;
 using Es.Riam.Gnoss.AD.EntityModel.Models.ParametroGeneralDS;
 using Es.Riam.Gnoss.AD.Parametro;
+using Es.Riam.Gnoss.AD.ParametroAplicacion;
 using Es.Riam.Gnoss.AD.Virtuoso;
 using Es.Riam.Gnoss.CL;
 using Es.Riam.Gnoss.CL.ParametrosAplicacion;
@@ -16,10 +17,12 @@ using Es.Riam.Gnoss.Logica.ParametroAplicacion;
 using Es.Riam.Gnoss.Logica.ServiciosGenerales;
 using Es.Riam.Gnoss.Util.Configuracion;
 using Es.Riam.Gnoss.Util.General;
+using Es.Riam.Gnoss.UtilServiciosWeb;
 using Es.Riam.Gnoss.Web.Controles.ParametroGeneralDSName;
 using Es.Riam.Gnoss.Web.Controles.Proyectos;
 using Es.Riam.Gnoss.Web.MVC.Models.Administracion;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -39,11 +42,12 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
         private VirtuosoAD mVirtuosoAD;
         private IHttpContextAccessor mHttpContextAccessor;
         private IServicesUtilVirtuosoAndReplication mServicesUtilVirtuosoAndReplication;
-
+        private ILogger mlogger;
+        private ILoggerFactory mLoggerFactory;
         /// <summary>
         /// Constructor del ControladorSeoGoogle con parámetros
         /// </summary>
-        public ControladorSeoGoogle(Proyecto pProyecto, EntityContext entityContext, LoggingService loggingService, RedisCacheWrapper redisCacheWrapper, ConfigService configService, VirtuosoAD virtuosoAD, IHttpContextAccessor httpContextAccessor, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication)
+        public ControladorSeoGoogle(Proyecto pProyecto, EntityContext entityContext, LoggingService loggingService, RedisCacheWrapper redisCacheWrapper, ConfigService configService, VirtuosoAD virtuosoAD, IHttpContextAccessor httpContextAccessor, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication, ILogger<ControladorSeoGoogle> logger, ILoggerFactory loggerFactory)
         {
             ProyectoSeleccionado = pProyecto;
             mEntityContext = entityContext;
@@ -53,6 +57,8 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
             mVirtuosoAD = virtuosoAD;
             mHttpContextAccessor = httpContextAccessor;
             mServicesUtilVirtuosoAndReplication = servicesUtilVirtuosoAndReplication;
+            mlogger = logger;
+            mLoggerFactory = loggerFactory;
         }
 
         /// <summary>
@@ -72,7 +78,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
             mEntityContext.NoConfirmarTransacciones = true;
             try
             {
-                ProyectoCN proyectoCN = new ProyectoCN(mEntityContext, mLoggingService, mConfigService, null);
+                ProyectoCN proyectoCN = new ProyectoCN(mEntityContext, mLoggingService, mConfigService, null, mLoggerFactory.CreateLogger<ProyectoCN>(), mLoggerFactory);
                 proyectoCN.Actualizar();
 
                 mEntityContext.TerminarTransaccionesPendientes(true);
@@ -90,7 +96,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
         /// <param name="pOptions">Modelo que contiene los datos de la vista de la página de administración</param>
         public void GuardarConfiguracionSeoGooglePlataforma(AdministrarSeoGooglePlataformaViewModel pOptions)
         {
-            ParametroAplicacionCN parametroAplicacionCN = new ParametroAplicacionCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+            ParametroAplicacionCN parametroAplicacionCN = new ParametroAplicacionCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<ParametroAplicacionCN>(), mLoggerFactory);
 
             parametroAplicacionCN.ActualizarParametroAplicacion(ParametroAD.RobotsComunidad, pOptions.RobotsBusqueda);
             parametroAplicacionCN.ActualizarParametroAplicacion("CodigoGoogleAnalytics", pOptions.CodigoGoogleAnalytics);
@@ -104,7 +110,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
             {
                 if (mGestorParametrosAplicacion == null)
                 {
-                    ParametroAplicacionCL paramCL = new ParametroAplicacionCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, null);
+                    ParametroAplicacionCL paramCL = new ParametroAplicacionCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, null, mLoggerFactory.CreateLogger<ParametroAplicacionCL>(), mLoggerFactory);
 
                     mGestorParametrosAplicacion = paramCL.ObtenerGestorParametros();
                 }
@@ -143,7 +149,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
             {
                 if (mParametroProyecto == null)
                 {
-                    ParametroCN parametroCN = new ParametroCN(mEntityContext, mLoggingService, mConfigService, null);
+                    ParametroCN parametroCN = new ParametroCN(mEntityContext, mLoggingService, mConfigService, null, mLoggerFactory.CreateLogger<ParametroCN>(), mLoggerFactory);
                     mParametroProyecto = parametroCN.ObtenerParametrosProyecto(ProyectoSeleccionado.Clave);
                     parametroCN.Dispose();
                 }
@@ -166,18 +172,18 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
 
         public void InvalidarCaches()
         {
-            ParametroGeneralCL parametroGeneralCL = new ParametroGeneralCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, null);
+            ParametroGeneralCL parametroGeneralCL = new ParametroGeneralCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, null, mLoggerFactory.CreateLogger<ParametroGeneralCL>(), mLoggerFactory);
             parametroGeneralCL.InvalidarCacheParametrosGeneralesDeProyecto(ProyectoSeleccionado.Clave);
             parametroGeneralCL.Dispose();
 
-            ProyectoCL proyectoCL = new ProyectoCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mVirtuosoAD, null);
+            ProyectoCL proyectoCL = new ProyectoCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mVirtuosoAD, null, mLoggerFactory.CreateLogger<ProyectoCL>(), mLoggerFactory);
             proyectoCL.InvalidarParametrosProyecto(ProyectoSeleccionado.Clave, ProyectoSeleccionado.FilaProyecto.OrganizacionID);
             proyectoCL.InvalidarFilaProyecto(ProyectoSeleccionado.Clave);
             proyectoCL.InvalidarComunidadMVC(ProyectoSeleccionado.Clave);
             proyectoCL.InvalidarCabeceraMVC(ProyectoSeleccionado.Clave);
             proyectoCL.Dispose();
 
-            ParametroAplicacionCL parametroAplicacionCL = new ParametroAplicacionCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mServicesUtilVirtuosoAndReplication);
+            ParametroAplicacionCL parametroAplicacionCL = new ParametroAplicacionCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<ParametroAplicacionCL>(), mLoggerFactory);
             parametroAplicacionCL.InvalidarCacheParametrosAplicacion();
         }
     }

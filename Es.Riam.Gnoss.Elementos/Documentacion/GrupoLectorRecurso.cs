@@ -1,5 +1,6 @@
 using Es.Riam.Gnoss.AD.EntityModel.Models.IdentidadDS;
 using Es.Riam.Gnoss.Util.General;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -19,8 +20,8 @@ namespace Es.Riam.Gnoss.Elementos.Documentacion
         /// </summary>
         /// <param name="pFilaGrupoLector">Fila del grupo Lector</param>
         /// <param name="pGestorDocumental">Gestor documental</param>
-        public GrupoLectorRecurso(AD.EntityModel.Models.Documentacion.DocumentoRolGrupoIdentidades pFilaGrupoLector, GestorDocumental pGestorDocumental, LoggingService loggingService)
-            : base(pFilaGrupoLector, pGestorDocumental, loggingService)
+        public GrupoLectorRecurso(AD.EntityModel.Models.Documentacion.DocumentoRolGrupoIdentidades pFilaGrupoLector, GestorDocumental pGestorDocumental)
+            : base(pFilaGrupoLector, pGestorDocumental)
         {
 
         }

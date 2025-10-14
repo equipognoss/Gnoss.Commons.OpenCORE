@@ -7,6 +7,7 @@ using Es.Riam.Gnoss.AD.Identidad;
 using Es.Riam.Gnoss.AD.Virtuoso;
 using Es.Riam.Gnoss.CL;
 using Es.Riam.Gnoss.CL.ServiciosGenerales;
+using Es.Riam.Gnoss.Elementos.Amigos;
 using Es.Riam.Gnoss.Elementos.Identidad;
 using Es.Riam.Gnoss.Elementos.ServiciosGenerales;
 using Es.Riam.Gnoss.Logica.Facetado;
@@ -20,6 +21,7 @@ using Es.Riam.Gnoss.Web.Controles;
 using Es.Riam.Gnoss.Web.MVC.Models;
 using Es.Riam.Util;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -31,27 +33,20 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
     {
         private ControllerBaseGnoss ControllerBase;
         private Identidad mIdentidadActual;
-        private EntityContext mEntityContext;
-        private LoggingService mLoggingService;
-        private ConfigService mConfigService;
-        private RedisCacheWrapper mRedisCacheWrapper;
-        private VirtuosoAD mVirtuosoAD;
+        private ILogger mlogger;
+        private ILoggerFactory mLoggerFactory;
 
         /// <summary>
         /// Constructor a partir de la página que contiene al controlador
         /// </summary>
         /// <param name="pController">Controller</param>
-        public UsuariosRecomendadosController(ControllerBaseGnoss pController, Identidad pIdentidadActual, EntityContext entityContext, LoggingService loggingService, ConfigService configService, RedisCacheWrapper redisCacheWrapper, VirtuosoAD virtuosoAD, IHttpContextAccessor httpContextAccessor, GnossCache gnossCache, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication)
-            : base(loggingService, configService, entityContext, redisCacheWrapper, gnossCache, virtuosoAD, httpContextAccessor, servicesUtilVirtuosoAndReplication)
+        public UsuariosRecomendadosController(ControllerBaseGnoss pController, Identidad pIdentidadActual, EntityContext entityContext, LoggingService loggingService, ConfigService configService, RedisCacheWrapper redisCacheWrapper, VirtuosoAD virtuosoAD, IHttpContextAccessor httpContextAccessor, GnossCache gnossCache, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication, ILogger<UsuariosRecomendadosController> logger, ILoggerFactory loggerFactory)
+            : base(loggingService, configService, entityContext, redisCacheWrapper, gnossCache, virtuosoAD, httpContextAccessor, servicesUtilVirtuosoAndReplication,logger,loggerFactory)
         {
-            mEntityContext = entityContext;
-            mConfigService = configService;
-            mLoggingService = loggingService;
-            mRedisCacheWrapper = redisCacheWrapper;
-            mVirtuosoAD = virtuosoAD;
-
             ControllerBase = pController;
             mIdentidadActual = pIdentidadActual;
+            mlogger = logger;
+            mLoggerFactory = loggerFactory;
         }
 
         public List<ProfileModel> ObtenerUsuariosRecomendados(int pNumeroElementos)
@@ -74,7 +69,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
             Dictionary<string, string> listaDatosExtra = new Dictionary<string, string>();
             List<Guid> listaCategoriasSuscritas = new List<Guid>();
 
-            PaisCL paisCL = new PaisCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mServicesUtilVirtuosoAndReplication);
+            PaisCL paisCL = new PaisCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<PaisCL>(), mLoggerFactory);
             DataWrapperPais paisDW = paisCL.ObtenerPaisesProvincias();
 
             //Obtengo el país, provincia y localidad:
@@ -95,8 +90,8 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
                 provincia = pIdentidadActual.Persona.FilaPersona.LocalidadPersonal;
             }
 
-            SuscripcionCN suscripcionCN = new SuscripcionCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
-            IdentidadCN identCN = new IdentidadCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+            SuscripcionCN suscripcionCN = new SuscripcionCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<SuscripcionCN>(), mLoggerFactory);
+            IdentidadCN identCN = new IdentidadCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<IdentidadCN>(), mLoggerFactory);
 
             //Obtengo los datos extra de registro
             DataWrapperDatoExtra dataWrapperDatoExtra = identCN.ObtenerIdentidadDatoExtraRegistroDeProyecto(pProyectoSeleccionado.Clave, pIdentidadActual.Clave);
@@ -118,7 +113,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
                 listaCategoriasSuscritas.Add(new Guid(fila.Opcion));
             }
 
-            FacetadoCN facetadoCN = new FacetadoCN(pUrlIntragnoss, mEntityContext, mLoggingService, mConfigService, mVirtuosoAD, mServicesUtilVirtuosoAndReplication);
+            FacetadoCN facetadoCN = new FacetadoCN(pUrlIntragnoss, mEntityContext, mLoggingService, mConfigService, mVirtuosoAD, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<FacetadoCN>(), mLoggerFactory);
 
             // En la replica no existe el triple http://gnoss/hasPopularidad
             // Grafo: Inevery Crea Costa Rica
@@ -221,7 +216,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
 
             if (mListaIdentidades.Count > 0)
             {
-                IdentidadCN identidadCN = new IdentidadCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+                IdentidadCN identidadCN = new IdentidadCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<IdentidadCN>(), mLoggerFactory);
                 GestionIdentidades gestorIdentidades = new GestionIdentidades(identidadCN.ObtenerPerfilIdentidadDeIdentidadesEnProyectoNoSuscritas(pIdentidadActual.IdentidadMyGNOSS.Clave, mListaIdentidades, pProyectoSeleccionado.Clave), mLoggingService, mEntityContext, mConfigService, mServicesUtilVirtuosoAndReplication);
                 identidadCN.Dispose();
 

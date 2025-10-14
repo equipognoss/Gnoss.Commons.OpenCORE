@@ -1,4 +1,5 @@
 using Es.Riam.Gnoss.Util.General;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -23,8 +24,8 @@ namespace Es.Riam.Gnoss.Elementos.Identidad
         /// </summary>
         /// <param name="pFilaPerfil">Fila del perfil</param>
         /// <param name="pGestorIdentidades">Gestor de identidades</param>
-        public GrupoIdentidades(GrupoIdentidades pFilaGrupoIdentidades, GestionIdentidades pGestorIdentidades, LoggingService loggingService)
-            : base(pFilaGrupoIdentidades, pGestorIdentidades, loggingService)
+        public GrupoIdentidades(GrupoIdentidades pFilaGrupoIdentidades, GestionIdentidades pGestorIdentidades)
+            : base(pFilaGrupoIdentidades, pGestorIdentidades)
         {
         }
         /// <summary>
@@ -32,8 +33,8 @@ namespace Es.Riam.Gnoss.Elementos.Identidad
         /// </summary>
         /// <param name="pFilaPerfil">Fila del perfil</param>
         /// <param name="pGestorIdentidades">Gestor de identidades</param>
-        public GrupoIdentidades(AD.EntityModel.Models.IdentidadDS.GrupoIdentidades pFilaGrupoIdentidades, GestionIdentidades pGestorIdentidades, LoggingService loggingService)
-            : base(pFilaGrupoIdentidades, pGestorIdentidades, loggingService)
+        public GrupoIdentidades(AD.EntityModel.Models.IdentidadDS.GrupoIdentidades pFilaGrupoIdentidades, GestionIdentidades pGestorIdentidades)
+            : base(pFilaGrupoIdentidades, pGestorIdentidades)
         {
         }
         #endregion

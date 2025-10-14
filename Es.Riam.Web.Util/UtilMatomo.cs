@@ -110,7 +110,7 @@ namespace Es.Riam.Web.Util
         public string GetGraphic(MatomoGraphicsViewModel pModel)
         {
             string url = $"{mUrlMatomo}?module=API&idSite=1&format=json"; 
-            Dictionary<string, string> contentRequest = new Dictionary<string, string>() { ["token_auth"] = mOAuth, ["segment"] = pModel.segment, ["method"] = pModel.method,["module"] = pModel.module, ["apiAction"] = pModel.apiAction, ["period"] = pModel.period, ["date"] = pModel.date, ["width"] = pModel.width, ["height"] = pModel.height, ["graphType"] = pModel.graphType, ["idSubtable"] =pModel.idSubtable,["force_api_session"] = pModel.force_api_session};
+            Dictionary<string, string> contentRequest = new Dictionary<string, string>() { ["token_auth"] = mOAuth, ["segment"] = pModel.segment, ["method"] = pModel.method, ["filter_limit"] = pModel.filter_limit, ["module"] = pModel.module, ["apiAction"] = pModel.apiAction, ["period"] = pModel.period, ["date"] = pModel.date, ["width"] = pModel.width, ["height"] = pModel.height, ["graphType"] = pModel.graphType, ["idSubtable"] =pModel.idSubtable,["force_api_session"] = pModel.force_api_session};
             return UtilWeb.HacerPeticionPost(url, contentRequest);
         }
 
@@ -151,6 +151,7 @@ namespace Es.Riam.Web.Util
             public string segment { get; set; }
             public string force_api_session { get; set; }
             public string idSubtable { get; set; }
+            public string filter_limit { get; set; }
         }
         public class MatomoWidgetViewModel
         {

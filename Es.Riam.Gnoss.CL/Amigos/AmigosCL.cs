@@ -1,10 +1,19 @@
 using Es.Riam.AbstractsOpen;
+using Es.Riam.Gnoss.AD.BASE_BD;
 using Es.Riam.Gnoss.AD.EncapsuladoDatos;
 using Es.Riam.Gnoss.AD.EntityModel;
+using Es.Riam.Gnoss.AD.EntityModelBASE;
+using Es.Riam.Gnoss.AD.Facetado;
+using Es.Riam.Gnoss.AD.ServiciosGenerales;
+using Es.Riam.Gnoss.CL.Facetado;
+using Es.Riam.Gnoss.Logica.BASE_BD;
 using Es.Riam.Gnoss.Logica.Identidad;
+using Es.Riam.Gnoss.Logica.ServiciosGenerales;
 using Es.Riam.Gnoss.Util.Configuracion;
 using Es.Riam.Gnoss.Util.General;
+using Es.Riam.Interfaces.InterfacesOpen;
 using Es.Riam.Util;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -23,6 +32,8 @@ namespace Es.Riam.Gnoss.CL.Amigos
         private EntityContext mEntityContext;
         private LoggingService mLoggingService;
         private ConfigService mConfigService;
+        private ILogger mlogger;
+        private ILoggerFactory mLoggerFactory;
 
         #endregion
 
@@ -33,12 +44,14 @@ namespace Es.Riam.Gnoss.CL.Amigos
         /// </summary>
         /// <param name="pFicheroConfiguracionBD">Ruta del fichero de configuración de base de datos LIVE</param>
         /// <param name="pUsarVariableEstatica">Si se están usando hilos con diferentes conexiones en el LIVE: FALSE. En caso contrario TRUE</param>
-        public AmigosCL(string pFicheroConfiguracionBD, EntityContext entityContext, LoggingService loggingService, RedisCacheWrapper redisCacheWrapper, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication)
-            : base(pFicheroConfiguracionBD, entityContext, loggingService, redisCacheWrapper, configService, servicesUtilVirtuosoAndReplication)
+        public AmigosCL(string pFicheroConfiguracionBD, EntityContext entityContext, LoggingService loggingService, RedisCacheWrapper redisCacheWrapper, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication, ILogger<AmigosCL> logger,ILoggerFactory loggerFactory)
+            : base(pFicheroConfiguracionBD, entityContext, loggingService, redisCacheWrapper, configService, servicesUtilVirtuosoAndReplication, logger, loggerFactory)
         {
             mEntityContext = entityContext;
             mLoggingService = loggingService;
             mConfigService = configService;
+            mlogger = logger;
+            mLoggerFactory = loggerFactory;
         }
 
         /// <summary>
@@ -47,23 +60,27 @@ namespace Es.Riam.Gnoss.CL.Amigos
         /// <param name="pFicheroConfiguracionBD">Ruta del fichero de configuración de base de datos LIVE</param>
         /// <param name="pUsarVariableEstatica">Si se están usando hilos con diferentes conexiones en el LIVE: FALSE. En caso contrario TRUE</param>
         /// <param name="pPoolName">Nombre del pool a conectarse</param>
-        public AmigosCL(string pFicheroConfiguracionBD, string pPoolName, EntityContext entityContext, LoggingService loggingService, RedisCacheWrapper redisCacheWrapper, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication)
-            : base(pFicheroConfiguracionBD, pPoolName, entityContext, loggingService, redisCacheWrapper, configService, servicesUtilVirtuosoAndReplication)
+        public AmigosCL(string pFicheroConfiguracionBD, string pPoolName, EntityContext entityContext, LoggingService loggingService, RedisCacheWrapper redisCacheWrapper, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication, ILogger<AmigosCL> logger, ILoggerFactory loggerFactory)
+            : base(pFicheroConfiguracionBD, pPoolName, entityContext, loggingService, redisCacheWrapper, configService, servicesUtilVirtuosoAndReplication, logger, loggerFactory)
         {
             mConfigService = configService;
             mEntityContext = entityContext;
             mLoggingService = loggingService;
+            mlogger = logger;
+            mLoggerFactory = loggerFactory;
         }
 
         /// <summary>
         /// Constructor sin parámetros
         /// </summary>
-        public AmigosCL(EntityContext entityContext, LoggingService loggingService, RedisCacheWrapper redisCacheWrapper, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication)
-            : base(entityContext, loggingService, redisCacheWrapper, configService, servicesUtilVirtuosoAndReplication)
+        public AmigosCL(EntityContext entityContext, LoggingService loggingService, RedisCacheWrapper redisCacheWrapper, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication, ILogger<AmigosCL> logger, ILoggerFactory loggerFactory)
+            : base(entityContext, loggingService, redisCacheWrapper, configService, servicesUtilVirtuosoAndReplication, logger,loggerFactory)
         {
             mConfigService = configService;
             mEntityContext = entityContext;
             mLoggingService = loggingService;
+            mlogger = logger;
+            mLoggerFactory = loggerFactory;
         }
 
         #endregion
@@ -79,10 +96,11 @@ namespace Es.Riam.Gnoss.CL.Amigos
         public List<Guid> ObtenerListaIdentidadesAmigosPertenecenProyecto(Guid pIdentidadID, Guid pProyectoID)
         {
             string rawKey = string.Concat(NombresCL.AMIGOSENPROYECTO, "_", pIdentidadID, "_", pProyectoID);
-            List<Guid> amigos = (List<Guid>)ObtenerObjetoDeCache(rawKey);
+            // TODO: revisar
+            List<Guid> amigos = (List<Guid>)ObtenerObjetoDeCache(rawKey, typeof(List<Guid>));
             if (amigos == null)
             {
-                IdentidadCN idenCN = new IdentidadCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+                IdentidadCN idenCN = new IdentidadCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<IdentidadCN>(), mLoggerFactory);
                 amigos = idenCN.ObtenerListaIdentidadesAmigosPertenecenProyecto(pIdentidadID, pProyectoID);
                 idenCN.Dispose();
 
@@ -136,7 +154,7 @@ namespace Es.Riam.Gnoss.CL.Amigos
                     dataWrapperIdentidad = ObtenerObjetoDeCacheLocal(rawKeyIdentidadDS) as DataWrapperIdentidad;
                     if (dataWrapperIdentidad == null)
                     {
-                        dataWrapperIdentidad = ObtenerObjetoDeCache(rawKeyIdentidadDS) as DataWrapperIdentidad;
+                        dataWrapperIdentidad = ObtenerObjetoDeCache(rawKeyIdentidadDS, typeof(DataWrapperIdentidad)) as DataWrapperIdentidad;
                         if (dataWrapperIdentidad != null)
                         {
                             AgregarObjetoCacheLocal(Guid.Empty, rawKeyIdentidadDS, dataWrapperIdentidad, pExpirationDate: DateTime.Now.AddHours(1));
@@ -153,7 +171,7 @@ namespace Es.Riam.Gnoss.CL.Amigos
                     }
                 }
             }
-            if(cargado && pDataWrapperAmigos != null)
+            if (cargado && pDataWrapperAmigos != null)
             {
                 string rawKeyAmigosDS = string.Concat(rawKey, "_", NombresCL.AMIGOSDS);
 
@@ -166,7 +184,7 @@ namespace Es.Riam.Gnoss.CL.Amigos
                     dataWrapperAmigos = ObtenerObjetoDeCacheLocal(rawKeyAmigosDS) as DataWrapperAmigos;
                     if (dataWrapperAmigos == null)
                     {
-                        dataWrapperAmigos = ObtenerObjetoDeCache(rawKeyAmigosDS) as DataWrapperAmigos;
+                        dataWrapperAmigos = ObtenerObjetoDeCache(rawKeyAmigosDS, typeof(DataWrapperAmigos)) as DataWrapperAmigos;
                         if (dataWrapperAmigos != null)
                         {
                             AgregarObjetoCacheLocal(Guid.Empty, rawKeyAmigosDS, dataWrapperIdentidad, pExpirationDate: DateTime.Now.AddHours(1));
@@ -196,7 +214,7 @@ namespace Es.Riam.Gnoss.CL.Amigos
                     dataWrapperPersona = ObtenerObjetoDeCacheLocal(rawKeyPersonaDS) as DataWrapperPersona;
                     if (dataWrapperPersona == null)
                     {
-                        dataWrapperPersona = ObtenerObjetoDeCache(rawKeyPersonaDS) as DataWrapperPersona;
+                        dataWrapperPersona = ObtenerObjetoDeCache(rawKeyPersonaDS, typeof(DataWrapperPersona)) as DataWrapperPersona;
                         if (dataWrapperPersona != null)
                         {
                             AgregarObjetoCacheLocal(Guid.Empty, rawKeyPersonaDS, dataWrapperPersona, pExpirationDate: DateTime.Now.AddHours(1));
@@ -227,7 +245,7 @@ namespace Es.Riam.Gnoss.CL.Amigos
                     organizacionDW = (DataWrapperOrganizacion)ObtenerObjetoDeCacheLocal(rawKeyOrganizacionDS);
                     if (organizacionDW == null)
                     {
-                        organizacionDW = (DataWrapperOrganizacion)ObtenerObjetoDeCache(rawKeyOrganizacionDS);
+                        organizacionDW = (DataWrapperOrganizacion)ObtenerObjetoDeCache(rawKeyOrganizacionDS, typeof(DataWrapperOrganizacion));
                         if (organizacionDW != null)
                         {
                             AgregarObjetoCacheLocal(Guid.Empty, rawKeyOrganizacionDS, organizacionDW, pExpirationDate: DateTime.Now.AddHours(1));
@@ -350,7 +368,7 @@ namespace Es.Riam.Gnoss.CL.Amigos
                     dataWrapperIdentidad = (DataWrapperIdentidad)ObtenerObjetoDeCacheLocal(rawKeyIdentidadDS);
                     if (dataWrapperIdentidad == null)
                     {
-                        dataWrapperIdentidad = (DataWrapperIdentidad)ObtenerObjetoDeCache(rawKeyIdentidadDS);
+                        dataWrapperIdentidad = (DataWrapperIdentidad)ObtenerObjetoDeCache(rawKeyIdentidadDS, typeof(DataWrapperIdentidad));
                         if (dataWrapperIdentidad != null)
                         {
                             AgregarObjetoCacheLocal(Guid.Empty, rawKeyIdentidadDS, dataWrapperIdentidad, pExpirationDate: DateTime.Now.AddHours(1));
@@ -379,7 +397,7 @@ namespace Es.Riam.Gnoss.CL.Amigos
         public Guid ObtenerCacheAutocompletarInvalidar()
         {
             string rawkey = NombresCL.AUTOCOMPLETARINVALIDARCACHE;
-            string valor = ObtenerObjetoDeCache(rawkey) as string;
+            string valor = ObtenerObjetoDeCache(rawkey, typeof(string)) as string;
             Guid respuesta = Guid.Empty;
             Guid.TryParse(valor, out respuesta);
             return respuesta;
@@ -430,7 +448,7 @@ namespace Es.Riam.Gnoss.CL.Amigos
                 AgregarObjetoCache(rawKeyOrganizacionDS, pOrganizacionDW);
                 AgregarObjetoCacheLocal(Guid.Empty, rawKeyOrganizacionDS, pOrganizacionDW, pExpirationDate: DateTime.Now.AddHours(1));
             }
-            if(pDataWrapperAmigos != null)
+            if (pDataWrapperAmigos != null)
             {
                 string rawKeyAmigosDS = string.Concat(rawKey, "_", NombresCL.AMIGOSDS);
                 AgregarObjetoCache(rawKeyAmigosDS, pDataWrapperAmigos);
@@ -503,10 +521,10 @@ namespace Es.Riam.Gnoss.CL.Amigos
             }
             catch (Exception e)
             {
-                mLoggingService.GuardarLogError(e);
+                mLoggingService.GuardarLogError(e, mlogger);
             }
         }
-
+        
         /// <summary>
         /// Elimina de la cache los amigos e identidades de sus proys privados
         /// </summary>
@@ -540,6 +558,20 @@ namespace Es.Riam.Gnoss.CL.Amigos
 
             InvalidarCachesMultiples(claves);
         }
+        public void RefrescarCacheAmigos(Guid pIdentidadID, EntityContextBASE pEntityContextBASE, IAvailableServices pAvailableServices, bool pEsGnossOrganizador = false)
+        {
+            BaseComunidadCN baseComunidadCN = new BaseComunidadCN("base", mEntityContext, mLoggingService, pEntityContextBASE, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<BaseComunidadCN>(), mLoggerFactory);
+            try
+            {
+                baseComunidadCN.InsertarFilaColaRefrescoCacheEnRabbitMQ(ProyectoAD.MetaProyecto, TiposEventosRefrescoCache.CambiosAmigosPrivados, TipoBusqueda.Contactos, $"{pIdentidadID.ToString()}#{pEsGnossOrganizador}", pAvailableServices);
+            }
+            catch (Exception ex)
+            {
+                mLoggingService.GuardarLogError(ex, "Fallo al insertar en Rabbit, insertamos en la base de datos BASE, tabla colaRefrescoCache",mlogger);
+                baseComunidadCN.InsertarFilaEnColaRefrescoCache(ProyectoAD.MetaProyecto, TiposEventosRefrescoCache.CambiosAmigosPrivados, TipoBusqueda.Contactos, $"{pIdentidadID.ToString()}#{pEsGnossOrganizador}");
+            }
+            baseComunidadCN.Dispose();
+        }
 
         #region Recomendaciones
 
@@ -551,7 +583,7 @@ namespace Es.Riam.Gnoss.CL.Amigos
         public string ObtenerContactosRecomendados(Guid pIdentidadID)
         {
             string rawKey = string.Concat(NombresCL.CONTACTOSRECOMEN, "_", pIdentidadID);
-            byte[] htmlCompri = (byte[])ObtenerObjetoDeCache(rawKey);
+            byte[] htmlCompri = (byte[])ObtenerObjetoDeCache(rawKey, typeof(byte[]));
             string html = null;
 
             if (htmlCompri != null)

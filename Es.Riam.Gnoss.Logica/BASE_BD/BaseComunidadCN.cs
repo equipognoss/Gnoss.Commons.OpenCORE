@@ -6,11 +6,14 @@ using Es.Riam.Gnoss.AD.EntityModel.Models;
 using Es.Riam.Gnoss.AD.EntityModelBASE;
 using Es.Riam.Gnoss.AD.EntityModelBASE.Models;
 using Es.Riam.Gnoss.AD.Facetado;
+using Es.Riam.Gnoss.AD.ParametroAplicacion;
 using Es.Riam.Gnoss.RabbitMQ;
 using Es.Riam.Gnoss.Util.Configuracion;
 using Es.Riam.Gnoss.Util.General;
+using Es.Riam.Interfaces.InterfacesOpen;
 using Es.Riam.Util;
 using Es.Riam.Util.Correo;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -21,7 +24,7 @@ using System.Net;
 namespace Es.Riam.Gnoss.Logica.BASE_BD
 {
     /// <summary>
-    /// Lógica para modelo BASE de comunidad
+    /// LÃ³gica para modelo BASE de comunidad
     /// </summary>
     public class BaseComunidadCN : BaseCN, IDisposable
     {
@@ -38,39 +41,46 @@ namespace Es.Riam.Gnoss.Logica.BASE_BD
         /// Nos indica si actualmente hay conexion a RabbitMQ
         /// </summary>
         private static bool? mHayConexionRabbit = null;
-
+        private ILogger mlogger;
+        private ILoggerFactory mLoggerFactory;
         #endregion
 
-        public BaseComunidadCN(EntityContext entityContext, LoggingService loggingService, EntityContextBASE entityContextBASE, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication)
-            : base(entityContext, loggingService, configService, servicesUtilVirtuosoAndReplication)
+        public BaseComunidadCN(EntityContext entityContext, LoggingService loggingService, EntityContextBASE entityContextBASE, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication, ILogger<BaseComunidadCN> logger, ILoggerFactory loggerFactory)
+            : base(entityContext, loggingService, configService, servicesUtilVirtuosoAndReplication,logger,loggerFactory)
         {
-            BaseComunidadAD = new BaseComunidadAD(loggingService, entityContext, entityContextBASE, configService, servicesUtilVirtuosoAndReplication);
+            mlogger = logger;
+            mLoggerFactory = loggerFactory;
+            BaseComunidadAD = new BaseComunidadAD(loggingService, entityContext, entityContextBASE, configService, servicesUtilVirtuosoAndReplication,mLoggerFactory.CreateLogger<BaseComunidadAD>(),mLoggerFactory);
         }
 
         /// <summary>
         /// Cuando se desea pasar directamente la ruta del fichero de configuracion de conexion a la Base de datos
         /// </summary>
-        /// <param name="pFicheroConfiguracionBD">Fichero de configuración de la base de datos BASE</param>
-        /// <param name="pUsarVariableEstatica">Si se están usando hilos con diferentes conexiones: FALSE. En caso contrario TRUE</param>
-        public BaseComunidadCN(string pFicheroConfiguracionBD, EntityContext entityContext, LoggingService loggingService, EntityContextBASE entityContextBASE, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication)
-            : base(entityContext, loggingService, configService, entityContextBASE, servicesUtilVirtuosoAndReplication)
+        /// <param name="pFicheroConfiguracionBD">Fichero de configuraciÃ³n de la base de datos BASE</param>
+        /// <param name="pUsarVariableEstatica">Si se estÃ¡n usando hilos con diferentes conexiones: FALSE. En caso contrario TRUE</param>
+        public BaseComunidadCN(string pFicheroConfiguracionBD, EntityContext entityContext, LoggingService loggingService, EntityContextBASE entityContextBASE, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication, ILogger<BaseComunidadCN> logger, ILoggerFactory loggerFactory)
+            : base(entityContext, loggingService, configService, entityContextBASE, servicesUtilVirtuosoAndReplication,logger,loggerFactory)
         {
-            BaseComunidadAD = new BaseComunidadAD(-1, loggingService, entityContext, entityContextBASE, configService, servicesUtilVirtuosoAndReplication);
+            mlogger = logger;
+            mLoggerFactory = loggerFactory;
+            BaseComunidadAD = new BaseComunidadAD(-1, loggingService, entityContext, entityContextBASE, configService, servicesUtilVirtuosoAndReplication,mLoggerFactory.CreateLogger<BaseComunidadAD>(),mLoggerFactory);
         }
-        public BaseComunidadCN(string pFicheroConfiguracionBD, int pTablaBaseProyectoID, EntityContext entityContext, LoggingService loggingService, EntityContextBASE entityContextBASE, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication)
-            : base(entityContext, loggingService, configService, servicesUtilVirtuosoAndReplication)
+        public BaseComunidadCN(string pFicheroConfiguracionBD, int pTablaBaseProyectoID, EntityContext entityContext, LoggingService loggingService, EntityContextBASE entityContextBASE, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication, ILogger<BaseComunidadCN> logger, ILoggerFactory loggerFactory)
+            : base(entityContext, loggingService, configService, servicesUtilVirtuosoAndReplication, logger, loggerFactory)
         {
-            this.BaseComunidadAD = new BaseComunidadAD(pTablaBaseProyectoID, loggingService, entityContext, entityContextBASE, configService, servicesUtilVirtuosoAndReplication);
+            mlogger = logger;
+            mLoggerFactory = loggerFactory;
+            this.BaseComunidadAD = new BaseComunidadAD(pTablaBaseProyectoID, loggingService, entityContext, entityContextBASE, configService, servicesUtilVirtuosoAndReplication,mLoggerFactory.CreateLogger<BaseComunidadAD>(),mLoggerFactory);
         }
-        #region Métodos generales        
+        #region MÃ©todos generales        
 
-        #region Métodos de carga del DS
-
+        #region MÃ©todos de carga del DS
+        [Obsolete("En proceso de limpieza", true)]
         /// <summary>
-        /// Obtiene los documentos modificados posteriormente a la fecha pasada como parámetro
+        /// Obtiene los documentos modificados posteriormente a la fecha pasada como parÃ¡metro
         /// </summary>
-        /// <param name="pFechaModificacion">Fecha de búsqueda de modificaciones</param>
-        /// <returns>Lista con los documentosID obtenidos en la búsqueda</returns>
+        /// <param name="pFechaModificacion">Fecha de bÃºsqueda de modificaciones</param>
+        /// <returns>Lista con los documentosID obtenidos en la bÃºsqueda</returns>
         public List<Guid> ObtenerDocumentosModificados(DateTime pFechaModificacion, int pTopN)
         {
             return BaseComunidadAD.ObtenerDocumentosModificados(pFechaModificacion, pTopN);
@@ -78,19 +88,35 @@ namespace Es.Riam.Gnoss.Logica.BASE_BD
 
         #endregion
 
-        #region Métodos de colas
+        #region MÃ©todos de colas
         public void InsertarFilasEnRabbit(string pColaRabbit, DataSet pDataSet, string pNombreTabla = null)
         {
             BaseComunidadAD.InsertarFilasEnRabbit(pColaRabbit, pDataSet, pNombreTabla);
         }
 
-            public void ActualizarBD(BaseComunidadDS baseComDS, bool pUsarRabbitSiEstaConfigurado = true)
+        public void InsertarFilasEnColaTagsComunidades(DataSet pDataSet, IAvailableServices pAvailableServices)
+        {
+			if (pAvailableServices.CheckIfServiceIsAvailable(pAvailableServices.GetBackServiceCode(BackgroundService.SearchGraphGenerator), ServiceType.Background))
+			{
+				InsertarFilasEnRabbit("ColaTagsComunidades", pDataSet);
+			}
+		}
+
+        public void InsertarFilasEnColaTagsCom_Per_Org(DataSet pDataSet, IAvailableServices pAvailableServices)
+        {
+            if (pAvailableServices.CheckIfServiceIsAvailable(pAvailableServices.GetBackServiceCode(BackgroundService.SearchGraphGenerator), ServiceType.Background))
+            {
+				InsertarFilasEnRabbit("ColaTagsCom_Per_Org", pDataSet);
+			}
+        }
+
+		public void ActualizarBD(BaseComunidadDS baseComDS, bool pUsarRabbitSiEstaConfigurado = true)
         {
             BaseComunidadAD.ActualizarBD(baseComDS, pUsarRabbitSiEstaConfigurado);
         }
 
         /// <summary>
-        /// Obtiene los elementos pendientes de la cola de compartición automática
+        /// Obtiene los elementos pendientes de la cola de comparticiÃ³n automÃ¡tica
         /// </summary>
         /// <returns></returns>
         public BaseComunidadDS ObtenerColaModificacionSearchPendientes()
@@ -99,7 +125,7 @@ namespace Es.Riam.Gnoss.Logica.BASE_BD
         }
 
         /// <summary>
-        /// Obtiene los elementos pendientes de la cola de compartición automática
+        /// Obtiene los elementos pendientes de la cola de comparticiÃ³n automÃ¡tica
         /// </summary>
         /// <returns></returns>
         public BaseComunidadDS ObtenerColaComparticionAutomaticaPendientes()
@@ -145,25 +171,25 @@ namespace Es.Riam.Gnoss.Logica.BASE_BD
         /// <summary>
         /// Inserta las filas correspondientes en ColaCorreo y ColaCorreoDestinatario
         /// </summary>
-        /// <param name="pParametrosCorreo">Parámetros de configuración del servicio de correo</param>
+        /// <param name="pParametrosCorreo">PÃ¡rametros de configuraciÃ³n del servicio de correo</param>
         /// <param name="pDestinatarios">Lista de correos de los destinatarios</param>
         /// <param name="pAsunto">Asunto</param>
         /// <param name="pCuerpo">Mensaje</param>
         /// <param name="pEsHtml">Indica si el mensaje es en formato HTML</param>
-        public void InsertarCorreo(ConfiguracionEnvioCorreo pParametrosCorreo, List<string> pDestinatarios, string pAsunto, string pCuerpo, bool pEsHtml)
+        public void InsertarCorreo(ConfiguracionEnvioCorreo pParametrosCorreo, List<string> pDestinatarios, string pAsunto, string pCuerpo, bool pEsHtml, IAvailableServices pAvailableServices)
         {
-            InsertarCorreo(pParametrosCorreo, pDestinatarios, pAsunto, pCuerpo, pEsHtml, "");
+            InsertarCorreo(pParametrosCorreo, pDestinatarios, pAsunto, pCuerpo, pEsHtml, "", pAvailableServices);
         }
 
         /// <summary>
         /// Inserta las filas correspondientes en ColaCorreo y ColaCorreoDestinatario
         /// </summary>
-        /// <param name="pParametrosCorreo">Parámetros de configuración del servicio de correo</param>
+        /// <param name="pParametrosCorreo">PÃ¡rametros de configuraciÃ³n del servicio de correo</param>
         /// <param name="pDestinatarios">Lista de correos de los destinatarios</param>
         /// <param name="pAsunto">Asunto</param>
         /// <param name="pCuerpo">Mensaje</param>
         /// <param name="pEsHtml">Indica si el mensaje es en formato HTML</param>
-        public int InsertarCorreo(ConfiguracionEnvioCorreo pParametrosCorreo, List<string> pDestinatarios, string pAsunto, string pCuerpo, bool pEsHtml, string pMascaraRemitente)
+        public int InsertarCorreo(ConfiguracionEnvioCorreo pParametrosCorreo, List<string> pDestinatarios, string pAsunto, string pCuerpo, bool pEsHtml, string pMascaraRemitente, IAvailableServices pAvailableServices)
         {
             try
             {
@@ -194,9 +220,6 @@ namespace Es.Riam.Gnoss.Logica.BASE_BD
                         mEntityContextBASE.SaveChanges();
                     }
                     TerminarTransaccionBASE(true);
-
-                    InsertarCorreoIDColaCorreoRabbitMQ(correoID);
-
                 }
                 return correoID;
             }
@@ -206,7 +229,35 @@ namespace Es.Riam.Gnoss.Logica.BASE_BD
                 throw;
             }
         }
+        /// <summary>
+        /// Inserta en la cola de correo un correoID
+        /// </summary>
+        /// <param name="pCorreoID"></param>
+        public void InsertarCorreoIDColaCorreoRabbitMQ(int pCorreoID)
+        {
+            if (HayConexionRabbit)
+            {
+                using (RabbitMQClient rabbitMQ = new RabbitMQClient(RabbitMQClient.BD_SERVICIOS_WIN, COLA_CORREO, mLoggingService, mConfigService, mLoggerFactory.CreateLogger<RabbitMQClient>(), mLoggerFactory, EXCHANGE, COLA_CORREO))
+                {
+                    rabbitMQ.AgregarElementoACola(JsonConvert.SerializeObject(pCorreoID));
+                }
+            }
+        }
 
+        /// <summary>
+        /// Inserta en la cola de correo la lista de IDs pasadas por parametros en una sola conexion.
+        /// </summary>
+        /// <param name="pListaCorreoID">Lista de correos ID serializados previamente</param>
+        public void InsertarCorreosIDColaCorreoRabbitMQ(List<string> pListaCorreoID)
+        {
+            if (HayConexionRabbit)
+            {
+                using (RabbitMQClient rabbitMQClient = new RabbitMQClient(RabbitMQClient.BD_SERVICIOS_WIN, COLA_CORREO, mLoggingService, mConfigService, mLoggerFactory.CreateLogger<RabbitMQClient>(), mLoggerFactory,  EXCHANGE, COLA_CORREO))
+                {
+                    rabbitMQClient.AgregarElementosACola(pListaCorreoID);
+                }
+            }
+        }
         public bool HayConexionRabbit
         {
             get
@@ -220,11 +271,11 @@ namespace Es.Riam.Gnoss.Logica.BASE_BD
             }
         }
 
-        private void InsertarCorreoIDColaCorreoRabbitMQ(int pCorreoID)
+        private void InsertarCorreoIDColaCorreoRabbitMQ(int pCorreoID, IAvailableServices pAvailableServices)
         {
-            if (HayConexionRabbit)
+            if (HayConexionRabbit && pAvailableServices.CheckIfServiceIsAvailable(pAvailableServices.GetBackServiceCode(BackgroundService.Mail), ServiceType.Background))
             {
-                using (RabbitMQClient rabbitMQ = new RabbitMQClient(RabbitMQClient.BD_SERVICIOS_WIN, COLA_CORREO, mLoggingService, mConfigService, EXCHANGE, COLA_CORREO))
+                using (RabbitMQClient rabbitMQ = new RabbitMQClient(RabbitMQClient.BD_SERVICIOS_WIN, COLA_CORREO, mLoggingService, mConfigService, mLoggerFactory.CreateLogger<RabbitMQClient>(), mLoggerFactory, EXCHANGE, COLA_CORREO))
                 {
                     rabbitMQ.AgregarElementoACola(JsonConvert.SerializeObject(pCorreoID));
                 }
@@ -237,14 +288,14 @@ namespace Es.Riam.Gnoss.Logica.BASE_BD
         /// <param name="pRemitente">Email del remitente del mensaje</param>
         /// <param name="pAsunto">Asunto del mensaje</param>
         /// <param name="pHtmlTexto">Cuerpo del mensaje</param>
-        /// <param name="pEsHtml">Indica si el cuerpo del mensaje está en formato HTML</param>
+        /// <param name="pEsHtml">Indica si el cuerpo del mensaje estÃ¡ en formato HTML</param>
         /// <param name="pPrioridad">Prioridad para procesar el mensaje</param>
-        /// <param name="pMascaraRemitente">Máscara del remitente</param>
+        /// <param name="pMascaraRemitente">MÃ¡scara del remitente</param>
         /// <param name="pDirecionRespuesta">Email donde recibir la respuesta</param>
-        /// <param name="pMascaraDireccionRespuesta">Máscara de la dirección de respuesta</param>
+        /// <param name="pMascaraDireccionRespuesta">MÃ¡scara de la direcciÃ³n de respuesta</param>
         /// <param name="pSMTP">Url del servicio SMTP</param>
         /// <param name="pUsuario">Usuario del servicio de correo</param>
-        /// <param name="pPassword">Contraseña del servicio de correo</param>
+        /// <param name="pPassword">ContraseÃ±a del servicio de correo</param>
         /// <param name="pPuerto">Puerto del servicio de correo</param>
         /// <param name="pEsSeguro">Indica si el servicio de correo usa protocolo seguridad</param>
         /// <returns>Entero con el identificador del correo que se ha insertado</returns>
@@ -258,7 +309,7 @@ namespace Es.Riam.Gnoss.Logica.BASE_BD
         /// </summary>
         /// <param name="pCorreoID">Identificador del correo a enviar</param>
         /// <param name="pEmail">Email del destinatario</param>
-        /// <param name="pMascaraDestinatario">Máscara del destinatario</param>
+        /// <param name="pMascaraDestinatario">MÃ¡scara del destinatario</param>
         /// <returns>True si se ha insertado. False en caso contrario</returns>
         public bool InsertarFilasEnColaCorreoDestinatarios(int pCorreoID, string pEmail, string pMascaraDestinatario)
         {
@@ -271,7 +322,7 @@ namespace Es.Riam.Gnoss.Logica.BASE_BD
         /// <param name="pDocumentoID">ID del documento</param>
         /// <param name="pTipoEvento">Tipo de evento del site map</param>
         /// <param name="pEstado">Estado de la fila</param>
-        /// <param name="pFechaCreacion">Fecha de creación/comkpartición de recurso en la comunidad</param>
+        /// <param name="pFechaCreacion">Fecha de creaciÃ³n/comparticiÃ³n de recurso en la comunidad</param>
         /// <param name="pPrioridad">Priorida de la fila</param>
         /// <param name="pComunidad">Nombre corto de la comunidad</param>
         public void InsertarFilaEnColaColaSitemaps(Guid pDocumentoID, TiposEventoSitemap pTipoEvento, short pEstado, DateTime pFechaCreacion, short pPrioridad, string pComunidad)
@@ -292,7 +343,7 @@ namespace Es.Riam.Gnoss.Logica.BASE_BD
         }
 
         /// <summary>
-        /// Obtiene los elementos pendientes de la cola de compartición automática
+        /// Obtiene los elementos pendientes de la cola de comparticiÃ³n automÃ¡tica
         /// </summary>
         /// <returns></returns>
         public void ActualizarEstadoColaModificacionSearch(int pOrdenEjecucion, short pEstado)
@@ -301,7 +352,7 @@ namespace Es.Riam.Gnoss.Logica.BASE_BD
         }
 
         /// <summary>
-        /// Obtiene los elementos pendientes de la cola de compartición automática
+        /// Obtiene los elementos pendientes de la cola de comparticiÃ³n automÃ¡tica
         /// </summary>
         /// <returns></returns>
         public void ActualizarEstadoColaComparticionAutomatica(Guid pComparticionID, short pEstado)
@@ -310,7 +361,7 @@ namespace Es.Riam.Gnoss.Logica.BASE_BD
         }
 
         /// <summary>
-        /// Obtiene los elementos pendientes de la cola de compartición automática
+        /// Obtiene los elementos pendientes de la cola de comparticiÃ³n automÃ¡tica
         /// </summary>
         /// <returns></returns>
         public void ActualizarEstadoColaComparticionAutomatica(Guid pComparticionID, short pEstado, string pIncidencia)
@@ -326,7 +377,7 @@ namespace Es.Riam.Gnoss.Logica.BASE_BD
         {
             BaseComunidadAD.ActualizarEstadoColaSitemaps(pOrdenEjecucion, pEstado);
         }
-
+        [Obsolete("En proceso de limpieza", true)]
         /// <summary>
         /// Obtiene una lista con los nombres cortos de los proyectos que tienen filas pendientes en colasitemaps
         /// </summary>
@@ -340,7 +391,7 @@ namespace Es.Riam.Gnoss.Logica.BASE_BD
         /// Obtiene los elementos pendientes de la cola de tags
         /// </summary>
         /// <param name="pPrioridadBase">Prioridad del base</param>
-        /// <param name="pNumMaxItems">Numero máximo de items a traer</param>
+        /// <param name="pNumMaxItems">Numero mÃ¡ximo de items a traer</param>
         /// <returns></returns>
         public DataSet ObtenerElementosColaPendientes(int pNumMaxItems)
         {
@@ -351,7 +402,7 @@ namespace Es.Riam.Gnoss.Logica.BASE_BD
         /// Obtiene los elementos pendientes de la cola de tags
         /// </summary>
         /// <param name="pPrioridadBase">Prioridad del base</param>
-        /// <param name="pNumMaxItems">Numero máximo de items a traer</param>
+        /// <param name="pNumMaxItems">Numero mÃ¡ximo de items a traer</param>
         /// <returns></returns>
         public DataSet ObtenerElementosColaPendientes(int pNumMaxItems, bool? pSoloPrioridad0)
         {
@@ -359,7 +410,7 @@ namespace Es.Riam.Gnoss.Logica.BASE_BD
         }
 
         /// <summary>
-        /// Obtiene el número de filas que hay en la cola que se encuentran en estado 2(error) en las últimas pHoras horas
+        /// Obtiene el nÃºmero de filas que hay en la cola que se encuentran en estado 2(error) en las Ãºltimas pHoras horas
         /// </summary>
         ///<param name="pHoras">Horas</param>
         /// <returns></returns>
@@ -372,11 +423,11 @@ namespace Es.Riam.Gnoss.Logica.BASE_BD
         /// Obtiene los elementos pendientes de la cola de tags
         /// </summary>
         /// <returns>Devuelve un dataset con los elementos de la cola cargados</returns>
-        /// <param name="pEstadoInferior">Estado mínimo de los elementos de la cola</param>
-        /// <param name="pEstadoSuperior">Estado máximo de los elementos de la cola</param>
+        /// <param name="pEstadoInferior">Estado mÃ­nimo de los elementos de la cola</param>
+        /// <param name="pEstadoSuperior">Estado mÃ¡ximo de los elementos de la cola</param>
         /// <param name="pTiposElementos">Tipo de los elementos a obtener (Agregado, eliminado, ...). Null para obtener todos</param>
         /// <param name="pPrioridadBase">Prioridad del base</param>
-        /// <param name="pNumMaxItems">Numero máximo de items a traer</param>
+        /// <param name="pNumMaxItems">Numero mÃ¡ximo de items a traer</param>
         public DataSet ObtenerElementosColaPendientes(EstadosColaTags pEstadoInferior, EstadosColaTags pEstadoSuperior, TiposElementosEnCola? pTiposElementos, int pNumMaxItems, bool? pSoloPrioridad0)
         {
             if (pSoloPrioridad0.HasValue)
@@ -393,10 +444,10 @@ namespace Es.Riam.Gnoss.Logica.BASE_BD
         /// Obtiene los elementos pendientes de la cola de tags
         /// </summary>
         /// <returns>Devuelve un dataset con los elementos de la cola cargados</returns>
-        /// <param name="pEstadoInferior">Estado mínimo de los elementos de la cola</param>
-        /// <param name="pEstadoSuperior">Estado máximo de los elementos de la cola</param>
+        /// <param name="pEstadoInferior">Estado mÃ­nimo de los elementos de la cola</param>
+        /// <param name="pEstadoSuperior">Estado mÃ¡ximo de los elementos de la cola</param>
         /// <param name="pTiposElementos">Lista de los tipo de elementos a obtener (Agregado, eliminado, ...). Null para obtener todos</param>
-        /// <param name="pNumMaxItems">Numero máximo de items a traer</param>
+        /// <param name="pNumMaxItems">Numero mÃ¡ximo de items a traer</param>
         public DataSet ObtenerElementosColaPendientes(List<TiposElementosEnCola> pTiposElementos, EstadosColaTags pEstadoInferior, EstadosColaTags pEstadoSuperior, int pNumMaxItems, bool? pSoloPrioridad0)
         {
             return BaseComunidadAD.ObtenerElementosColaPendientes(pTiposElementos, pEstadoInferior, pEstadoSuperior, pNumMaxItems, pSoloPrioridad0);
@@ -406,7 +457,7 @@ namespace Es.Riam.Gnoss.Logica.BASE_BD
         ///// Obtiene los elementos pendientes de la cola de replicacion MASTER
         ///// </summary>
         ///// <param name="pPrioridadBase">Prioridad de los elementos que se quieren obtener</param>
-        ///// <param name="pNumMaxItems">Número máximo de Items a obtener</param>
+        ///// <param name="pNumMaxItems">NÃºmero mÃ¡ximo de Items a obtener</param>
         ///// <returns></returns>
         //public BaseComunidadDS ObtenerElementosPendientesColaReplicacion(int pNumMaxItems, short pEstadoMaximo)
         //{
@@ -417,7 +468,7 @@ namespace Es.Riam.Gnoss.Logica.BASE_BD
         ///// Obtiene los elementos pendientes de una cola de replicacion
         ///// </summary>
         ///// <param name="pPrioridadBase">Prioridad de los elementos que se quieren obtener</param>
-        ///// <param name="pNumMaxItems">Número máximo de Items a obtener</param>
+        ///// <param name="pNumMaxItems">NÃºmero mÃ¡ximo de Items a obtener</param>
         ///// <param name="pTablaColaReplica">Tabla de la cola que se quiere cargar</param>
         ///// <returns></returns>
         //public BaseComunidadDS ObtenerElementosPendientesColaReplicacion(int pNumMaxItems, string pTablaColaReplica, short pEstadoMaximo)
@@ -431,7 +482,7 @@ namespace Es.Riam.Gnoss.Logica.BASE_BD
         //}
 
         ///// <summary>
-        ///// Inserta en una cola de una réplica particular una consulta
+        ///// Inserta en una cola de una rÃ©plica particular una consulta
         ///// </summary>
         ///// <param name="pOrdenEjecucion">Identificador de la consulta a replicar</param>
         ///// <param name="pNombreTablaReplica">Nombre de la tabla en la que se va a replicar la consulta</param>
@@ -441,7 +492,7 @@ namespace Es.Riam.Gnoss.Logica.BASE_BD
         //}
 
         ///// <summary>
-        ///// Inserta en una cola de una réplica particular una consulta
+        ///// Inserta en una cola de una rÃ©plica particular una consulta
         ///// </summary>
         ///// <param name="pOrdenEjecucion">Identificador de la consulta a replicar</param>
         ///// <param name="pNombreTablaReplica">Nombre de la tabla en la que se va a replicar la consulta</param>
@@ -452,21 +503,21 @@ namespace Es.Riam.Gnoss.Logica.BASE_BD
         //}
 
         /// <summary>
-        /// Inserta una fila en la cola de refresco de caché para que se actualice una búsqueda determinada en un proyecto
+        /// Inserta una fila en la cola de refresco de cachÃ© para que se actualice una bÃºsqueda determinada en un proyecto
         /// </summary>
         /// <param name="pProyectoID">Identificador del proyecto</param>
-        /// <param name="pTipoBusqueda">Tipo de búsqueda que hay que refrescar</param>
+        /// <param name="pTipoBusqueda">Tipo de bÃºsqueda que hay que refrescar</param>
         public void InsertarFilaEnColaRefrescoCache(Guid pProyectoID, TiposEventosRefrescoCache pTipoEvento, TipoBusqueda pTipoBusqueda)
         {
             InsertarFilaEnColaRefrescoCache(pProyectoID, pTipoEvento, pTipoBusqueda, null);
         }
 
         /// <summary>
-        /// Inserta una fila en la cola de refresco de caché para que se actualice una búsqueda determinada en un proyecto
+        /// Inserta una fila en la cola de refresco de cachÃ© para que se actualice una bÃºsqueda determinada en un proyecto
         /// </summary>
         /// <param name="pProyectoID">Identificador del proyecto</param>
-        /// <param name="pTipoBusqueda">Tipo de búsqueda que hay que refrescar</param>
-        /// <param name="pInfoExtra">Información extra (puede ser NULL)</param>
+        /// <param name="pTipoBusqueda">Tipo de bÃºsqueda que hay que refrescar</param>
+        /// <param name="pInfoExtra">InformaciÃ³n extra (puede ser NULL)</param>
         public void InsertarFilaEnColaRefrescoCache(Guid pProyectoID, TiposEventosRefrescoCache pTipoEvento, TipoBusqueda pTipoBusqueda, string pInfoExtra)
         {
             BaseComunidadAD.InsertarFilaEnColaRefrescoCache(pProyectoID, pTipoEvento, pTipoBusqueda, pInfoExtra);
@@ -476,12 +527,28 @@ namespace Es.Riam.Gnoss.Logica.BASE_BD
         /// Inserta la fila indicada en la cola ColaRefrescoCahce
         /// </summary>
         /// <param name="pProyectoID">Identificador del proyecto</param>
-        /// <param name="pTipoEvento">Tipo de evento del proyecto señalado</param>
-        /// <param name="pTipoBusqueda">Tipo de búsqueda que hay que refrescar</param>
-        /// <param name="pInfoExtra">Información extra (puede ser NULL)</param>
-        public void InsertarFilaColaRefrescoCacheEnRabbitMQ(Guid pProyectoID, TiposEventosRefrescoCache pTipoEvento, TipoBusqueda pTipoBusqueda, string pInfoExtra)
+        /// <param name="pTipoEvento">Tipo de evento del proyecto seÃ±alado</param>
+        /// <param name="pTipoBusqueda">Tipo de bÃºsqueda que hay que refrescar</param>
+        /// <param name="pInfoExtra">InformaciÃ³n extra (puede ser NULL)</param>
+        public void InsertarFilaColaRefrescoCacheEnRabbitMQ(Guid pProyectoID, TiposEventosRefrescoCache pTipoEvento, TipoBusqueda pTipoBusqueda, string pInfoExtra, IAvailableServices pAvailableServices)
         {
-            BaseComunidadAD.InsertarFilaColaRefrescoCacheEnRabbitMQ(pProyectoID, pTipoEvento, pTipoBusqueda, pInfoExtra);
+            ulong servicio = pAvailableServices.GetBackServiceCode(BackgroundService.CacheRefresh);
+			if (pTipoEvento.Equals(TiposEventosRefrescoCache.CambiosBandejaDeMensajes))
+			{
+                servicio = pAvailableServices.GetBackServiceCode(BackgroundService.SocialCacheRefresh);
+			}
+            if (pAvailableServices.CheckIfServiceIsAvailable(servicio, ServiceType.Background))
+            {
+				BaseComunidadAD.InsertarFilaColaRefrescoCacheEnRabbitMQ(pProyectoID, pTipoEvento, pTipoBusqueda, pInfoExtra);
+			}		
+        }
+        public void InsertarFilasColaRefrescoCacheEnRabbitMQ(List<string> pFilasAInsertar, TiposEventosRefrescoCache pTipoEvento)
+        {
+            BaseComunidadAD.InsertarFilasColaRefrecoCacheEnRabbitMQ(pFilasAInsertar, pTipoEvento);
+        }
+        public string PreprarFilaColaRefrescoCacheRabbitMQ(Guid pProyectoID, TiposEventosRefrescoCache pTipoEvento, TipoBusqueda pTipoBusqueda, string pInfoExtra)
+        {
+            return BaseComunidadAD.PreprarFilaColaRefrescoCacheRabbitMQ(pProyectoID, pTipoEvento, pTipoBusqueda, pInfoExtra);
         }
 
         public BaseComunidadDS ObtenerColaRefrescoCachePendientes()
@@ -500,7 +567,7 @@ namespace Es.Riam.Gnoss.Logica.BASE_BD
         }
 
         /// <summary>
-        /// Elimina una fila de la cola de refresco de caché
+        /// Elimina una fila de la cola de refresco de cachÃ©
         /// </summary>
         /// <param name="pColaID">Identificador de la fila</param>
         public void EliminarFilaColaRefrescoCache(int pColaID)
@@ -509,7 +576,7 @@ namespace Es.Riam.Gnoss.Logica.BASE_BD
         }
 
         /// <summary>
-        /// Actualiza el estado de una fila de la cola de refresco de caché
+        /// Actualiza el estado de una fila de la cola de refresco de cachÃ©
         /// </summary>
         /// <param name="pColaID">Identificador de la fila</param>
         /// <param name="pEstado">Estado nuevo de la fila</param>
@@ -519,7 +586,7 @@ namespace Es.Riam.Gnoss.Logica.BASE_BD
         }
 
         /// <summary>
-        /// Actualiza el estado de una fila de la cola de actualización de contextos
+        /// Actualiza el estado de una fila de la cola de actualizaciÃ³n de contextos
         /// </summary>
         /// <param name="pDocumentoID"></param>
         /// <param name="pEstado"></param>
@@ -529,7 +596,7 @@ namespace Es.Riam.Gnoss.Logica.BASE_BD
         }
 
         /// <summary>
-        /// Comprueba si existe o no la cola indicada por parámetro en RabbitMQ
+        /// Comprueba si existe o no la cola indicada por parÃ¡metro en RabbitMQ
         /// </summary>
         /// <param name="pNombreCola">Nombre de la cola a comprobar si existe</param>
         /// <returns>true o false si existe o no la cola respectivamente</returns>
@@ -539,7 +606,7 @@ namespace Es.Riam.Gnoss.Logica.BASE_BD
         }
 
         ///// <summary>
-        ///// Comprueba si una consulta ya existe en una réplica particular
+        ///// Comprueba si una consulta ya existe en una rÃ©plica particular
         ///// </summary>
         ///// <param name="pOrdenEjecucion">Identificador de la consulta a comprobar</param>
         ///// <param name="pNombreTablaReplica">Nombre de la tabla en la que se va a comprobar la consulta</param>
@@ -549,7 +616,7 @@ namespace Es.Riam.Gnoss.Logica.BASE_BD
         //}
 
         ///// <summary>
-        ///// Actualiza el estado de la cola de replicación MASTER
+        ///// Actualiza el estado de la cola de replicaciÃ³n MASTER
         ///// </summary>
         ///// <param name="pOrdenEjecucion">Identificador del elemento que se va a actualizar</param>
         ///// <param name="pEstado">Nuevo estado del elemento de la cola</param>
@@ -559,7 +626,7 @@ namespace Es.Riam.Gnoss.Logica.BASE_BD
         //}
 
         ///// <summary>
-        ///// Actualiza el estado de una cola de replicación
+        ///// Actualiza el estado de una cola de replicaciÃ³n
         ///// </summary>
         ///// <param name = "pOrdenEjecucion" > Identificador del elemento que se va a actualizar</param>
         ///// <param name = "pEstado" > Nuevo estado del elemento de la cola</param>
@@ -570,7 +637,7 @@ namespace Es.Riam.Gnoss.Logica.BASE_BD
         //}
 
         ///// <summary>
-        ///// Actualiza el estado de una cola de replicación
+        ///// Actualiza el estado de una cola de replicaciÃ³n
         ///// </summary>
         ///// <param name="pOrdenEjecucion">Identificador del elemento que se va a actualizar</param>
         ///// <param name="pEstado">Nuevo estado del elemento de la cola</param>
@@ -596,12 +663,12 @@ namespace Es.Riam.Gnoss.Logica.BASE_BD
         //}
 
         /// <summary>
-        /// Elimina de la cola los elementos que han sido procesado exitósamente hace una semana
+        /// Elimina de la cola los elementos que han sido procesado exitÃ³samente hace una semana
         /// </summary>
         public virtual void EliminarElementosColaProcesadosViejos() { }
 
         ///// <summary>
-        ///// Elimina de la cola los elementos que han sido procesado exitósamente hace una semana
+        ///// Elimina de la cola los elementos que han sido procesado exitÃ³samente hace una semana
         ///// </summary>
         //public void EliminarElementosColaModificacionSearchViejos()
         //{
@@ -651,10 +718,10 @@ namespace Es.Riam.Gnoss.Logica.BASE_BD
         }
 
         /// <summary>
-        /// Obtiene true o false en función de si hay correos pendientes de enviar para el correo indicado
+        /// Obtiene true o false en funciÃ³n de si hay correos pendientes de enviar para el correo indicado
         /// </summary>
         /// <param name="pCorreoID">El id del correo que queremos enviar</param>
-        /// <returns>True si hay correos pendientes de envío y false si no los hay</returns>
+        /// <returns>True si hay correos pendientes de envÃ­o y false si no los hay</returns>
         public bool HayCorreosPendientesBuzon(int pCorreoID)
         {
             return BaseComunidadAD.HayCorreosPendientesBuzon(pCorreoID);
@@ -697,14 +764,14 @@ namespace Es.Riam.Gnoss.Logica.BASE_BD
         }
         #endregion
 
-        #region Métodos de verificación de existencia de tablas
+        #region MÃ©todos de verificaciÃ³n de existencia de tablas
 
         /// <summary>
         /// Comprueba si existe la tabla de comunidades. Si no existe la crea 
         /// </summary>
         /// <param name="pCrearTablaSiNoExiste">Verdad si se debe crear la tabla en caso de que no exista</param>
         /// <param name="pTipoConsulta">Tipo de consulta que se va a realizar</param>
-        /// <returns>Verdad si la tabla existe (o ha sido recién creada).</returns>
+        /// <returns>Verdad si la tabla existe (o ha sido reciÃ©n creada).</returns>
         public bool VerificarExisteTabla(TiposConsultaObtenerTags pTipoConsulta, bool pCrearTablaSiNoExiste)
         {
             return BaseComunidadAD.VerificarExisteTabla(pTipoConsulta, pCrearTablaSiNoExiste);
@@ -712,7 +779,7 @@ namespace Es.Riam.Gnoss.Logica.BASE_BD
 
         #endregion
 
-        #region Métodos de actualización
+        #region MÃ©todos de actualizaciÃ³n
 
         /// <summary>
         /// Genera un script con las inserciones y actualizaciones necesarias para actualizar la base de datos
@@ -726,11 +793,11 @@ namespace Es.Riam.Gnoss.Logica.BASE_BD
         #endregion
 
         #region Metodos de Freebase
-
+        [Obsolete("En proceso de limpieza", true)]
         /// <summary>
-        /// Comprueba de una lista de Guids de Freebase, cuáles NO estan ya en la tabla de Freebase de un proyecto
+        /// Comprueba de una lista de Guids de Freebase, cuÃ¡les  NO estan ya en la tabla de Freebase de un proyecto
         /// </summary>
-        /// <param name="pListaGuidFreebase">Lista de Guids de freebase que se quieren añadir</param>
+        /// <param name="pListaGuidFreebase">Lista de Guids de freebase que se quieren aÃ±adir</param>
         /// <returns>Lista de Guids de Freebase que NO estan ya agregados a la tabla de freebase</returns>
         public List<string> ComprobarSiGuidFreebaseEstaEnProyecto(List<string> pListaGuidFreebase)
         {
@@ -929,23 +996,23 @@ namespace Es.Riam.Gnoss.Logica.BASE_BD
 
         #endregion
 
-        #region Métodos de Ultimos Recursos visitados
+        #region MÃ©todos de Ultimos Recursos visitados
 
         /// <summary>
-        /// Obtiene los últimos recursos visitados de un proyecto
+        /// Obtiene los Ãºltimos recursos visitados de un proyecto
         /// </summary>
-        /// <param name="pProyectoID">Identificador del proyecto del que se quieren obtener los útlimos documentos visitados</param>
-        /// <returns>Lista de Identificadores de los últimos documentos visitados</returns>
+        /// <param name="pProyectoID">Identificador del proyecto del que se quieren obtener los Ãºltimos documentos visitados</param>
+        /// <returns>Lista de Identificadores de los Ãºltimos documentos visitados</returns>
         public List<Guid> ObtenerUltimosRecursosVisitadosDeProyecto(Guid pProyectoID)
         {
             return BaseComunidadAD.ObtenerUltimosRecursosVisitadosDeProyecto(pProyectoID);
         }
 
         /// <summary>
-        /// Actualiza los útlimos recursos visitados de un proyecto
+        /// Actualiza los Ãºltimos recursos visitados de un proyecto
         /// </summary>
         /// <param name="pProyectoID">Identificador del proyecto</param>
-        /// <param name="pListaDocumentosID">Lista de los últimos recursos visitados en este proyecto</param>
+        /// <param name="pListaDocumentosID">Lista de los Ãºltimos recursos visitados en este proyecto</param>
         /// <param name="pCrearNuevaFila">Verdad si la fila no existe y hay que crearla</param>
         public void ActualizarUltimosRecursosVisitadosDeProyecto(Guid pProyectoID, List<Guid> pListaDocumentosID, bool pCrearNuevaFila)
         {
@@ -957,7 +1024,7 @@ namespace Es.Riam.Gnoss.Logica.BASE_BD
                 }
                 catch (Exception ex)
                 {
-                    mLoggingService.GuardarLogError(ex);
+                    mLoggingService.GuardarLogError(ex,mlogger);
 
                     //Ha fallado al insertar, es posible que la fila ya exista, pruebo a actualizar
                     BaseComunidadAD.ActualizarUltimosRecursosVisitadosDeProyecto(pProyectoID, pListaDocumentosID);
@@ -971,7 +1038,7 @@ namespace Es.Riam.Gnoss.Logica.BASE_BD
                 }
                 catch (Exception ex)
                 {
-                    mLoggingService.GuardarLogError(ex);
+                    mLoggingService.GuardarLogError(ex,mlogger);
 
                     //Ha fallado al actualizar, es probable que la fila no exista, pruebo a crearla
                     BaseComunidadAD.InsertarUltimosRecursosVisitadosDeProyecto(pProyectoID, pListaDocumentosID);
@@ -986,7 +1053,7 @@ namespace Es.Riam.Gnoss.Logica.BASE_BD
         #region Propiedades
 
         /// <summary>
-        /// Obtiene o establece si la comunidad sobre la que se hacen las búsquedas es privada
+        /// Obtiene o establece si la comunidad sobre la que se hacen las bÃºsquedas es privada
         /// </summary>
         public bool EsComunidadPrivada
         {
@@ -1001,7 +1068,7 @@ namespace Es.Riam.Gnoss.Logica.BASE_BD
         }
 
         /// <summary>
-        /// Obtiene o establece si el usuario que está realizando la consulta ha hecho login.
+        /// Obtiene o establece si el usuario que estÃ¡ realizando la consulta ha hecho login.
         /// </summary>
         public bool EstaUsuarioConectado
         {
@@ -1035,7 +1102,7 @@ namespace Es.Riam.Gnoss.Logica.BASE_BD
         #region Dispose
 
         /// <summary>
-        /// Determina si está disposed
+        /// Determina si estÃ¡ disposed
         /// </summary>
         private bool disposed = false;
 
@@ -1061,7 +1128,7 @@ namespace Es.Riam.Gnoss.Logica.BASE_BD
         /// <summary>
         /// Libera los recursos
         /// </summary>
-        /// <param name="disposing">Determina si se está llamando desde el Dispose()</param>
+        /// <param name="disposing">Determina si se estÃ¡ llamando desde el Dispose()</param>
         protected void Dispose(bool disposing)
         {
             if (!disposed)
@@ -1070,7 +1137,7 @@ namespace Es.Riam.Gnoss.Logica.BASE_BD
 
                 if (disposing)
                 {
-                    //Libero todos los recursos administrados que he añadido a esta clase
+                    //Libero todos los recursos administrados que he aÃ±adido a esta clase
                     if (BaseComunidadAD != null)
                     {
                         BaseComunidadAD.Dispose();

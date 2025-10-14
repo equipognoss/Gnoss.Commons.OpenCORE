@@ -2,10 +2,13 @@ using Es.Riam.AbstractsOpen;
 using Es.Riam.Gnoss.AD.EncapsuladoDatos;
 using Es.Riam.Gnoss.AD.EntityModel;
 using Es.Riam.Gnoss.AD.EntityModel.Models.Tesauro;
+using Es.Riam.Gnoss.AD.ParametroAplicacion;
 using Es.Riam.Gnoss.AD.ServiciosGenerales;
+using Es.Riam.Gnoss.Logica.ServiciosGenerales;
 using Es.Riam.Gnoss.Logica.Tesauro;
 using Es.Riam.Gnoss.Util.Configuracion;
 using Es.Riam.Gnoss.Util.General;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -33,7 +36,8 @@ namespace Es.Riam.Gnoss.CL.Tesauro
         private ConfigService mConfigService;
         private EntityContext mEntityContext;
         private LoggingService mLoggingService;
-
+        private ILogger mlogger;
+        private ILoggerFactory mLoggerFactory;
         #endregion
 
         #region Constructores
@@ -41,24 +45,28 @@ namespace Es.Riam.Gnoss.CL.Tesauro
         /// <summary>
         /// Contructor con fichero de configuración.
         /// </summary>
-        public TesauroCL(EntityContext entityContext, LoggingService loggingService, RedisCacheWrapper redisCacheWrapper, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication)
-            : base(entityContext, loggingService, redisCacheWrapper, configService, servicesUtilVirtuosoAndReplication)
+        public TesauroCL(EntityContext entityContext, LoggingService loggingService, RedisCacheWrapper redisCacheWrapper, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication, ILogger<TesauroCL> logger, ILoggerFactory loggerFactory)
+            : base(entityContext, loggingService, redisCacheWrapper, configService, servicesUtilVirtuosoAndReplication, logger, loggerFactory)
         {
             mConfigService = configService;
             mEntityContext = entityContext;
             mLoggingService = loggingService;
+            mlogger = logger;
+            mLoggerFactory = loggerFactory;
         }
 
         /// <summary>
         /// Contructor con fichero de configuración.
         /// </summary>
         /// <param name="pFicheroConfiguracionBD">Ruta del fichero de configuración</param>
-        public TesauroCL(string pFicheroConfiguracionBD, EntityContext entityContext, LoggingService loggingService, RedisCacheWrapper redisCacheWrapper, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication)
-            : base(pFicheroConfiguracionBD, entityContext, loggingService, redisCacheWrapper, configService, servicesUtilVirtuosoAndReplication)
+        public TesauroCL(string pFicheroConfiguracionBD, EntityContext entityContext, LoggingService loggingService, RedisCacheWrapper redisCacheWrapper, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication, ILogger<TesauroCL> logger, ILoggerFactory loggerFactory)
+            : base(pFicheroConfiguracionBD, entityContext, loggingService, redisCacheWrapper, configService, servicesUtilVirtuosoAndReplication,logger,loggerFactory)
         {
             mConfigService = configService;
             mEntityContext = entityContext;
             mLoggingService = loggingService;
+            mlogger = logger;
+            mLoggerFactory = loggerFactory;
         }
 
 
@@ -90,7 +98,7 @@ namespace Es.Riam.Gnoss.CL.Tesauro
 
             if (tesauroDW == null)
             {
-                tesauroDW = ObtenerObjetoDeCache(rawKey) as DataWrapperTesauro;
+                tesauroDW = ObtenerObjetoDeCache(rawKey, typeof(DataWrapperTesauro)) as DataWrapperTesauro;
                 AgregarObjetoCacheLocal(pProyectoID, ObtenerClaveCache(rawKey), tesauroDW);
             }
 
@@ -213,7 +221,7 @@ namespace Es.Riam.Gnoss.CL.Tesauro
 
             if (tesauroDW == null)
             {
-                tesauroDW = ObtenerObjetoDeCache(rawKey) as DataWrapperTesauro;
+                tesauroDW = ObtenerObjetoDeCache(rawKey, typeof(DataWrapperTesauro)) as DataWrapperTesauro;
                 AgregarObjetoCacheLocal(pProyectoID, rawKey, tesauroDW);
             }
 
@@ -258,11 +266,11 @@ namespace Es.Riam.Gnoss.CL.Tesauro
                 {
                     if (string.IsNullOrEmpty(mFicheroConfiguracionBD))
                     {
-                        mTesauroCN = new TesauroCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+                        mTesauroCN = new TesauroCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<TesauroCN>(), mLoggerFactory);
                     }
                     else
                     {
-                        mTesauroCN = new TesauroCN(mFicheroConfiguracionBD, mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+                        mTesauroCN = new TesauroCN(mFicheroConfiguracionBD, mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<TesauroCN>(), mLoggerFactory);
                     }
                 }
                 return mTesauroCN;
@@ -327,7 +335,7 @@ namespace Es.Riam.Gnoss.CL.Tesauro
                 }
                 catch (Exception e)
                 {
-                    mLoggingService.GuardarLogError(e);
+                    mLoggingService.GuardarLogError(e, mlogger);
                 }
             }
         }

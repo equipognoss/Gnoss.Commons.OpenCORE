@@ -8,6 +8,7 @@ using Es.Riam.Gnoss.AD.EntityModel.Models.ProyectoDS;
 using Es.Riam.Gnoss.AD.EntityModelBASE;
 using Es.Riam.Gnoss.AD.Facetado;
 using Es.Riam.Gnoss.AD.Parametro;
+using Es.Riam.Gnoss.AD.ParametroAplicacion;
 using Es.Riam.Gnoss.AD.ServiciosGenerales;
 using Es.Riam.Gnoss.AD.Virtuoso;
 using Es.Riam.Gnoss.CL;
@@ -28,11 +29,14 @@ using Es.Riam.Gnoss.Logica.ServiciosGenerales;
 using Es.Riam.Gnoss.Logica.Tesauro;
 using Es.Riam.Gnoss.Util.Configuracion;
 using Es.Riam.Gnoss.Util.General;
+using Es.Riam.Gnoss.UtilServiciosWeb;
 using Es.Riam.Gnoss.Web.Controles.ParametroGeneralDSName;
 using Es.Riam.Gnoss.Web.Controles.ServiciosGenerales;
 using Es.Riam.Gnoss.Web.MVC.Models.Administracion;
 using Es.Riam.Util;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Logging;
+using Serilog.Core;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -70,12 +74,13 @@ namespace Es.Riam.Gnoss.Web.Controles.Proyectos
         private GnossCache mGnossCache;
         private IHttpContextAccessor mHttpContextAccessor;
         private EntityContextBASE mEntityContextBASE;
-
+        private ILogger mlogger;
+        private ILoggerFactory mLoggerFactory;
         #endregion Miembros
 
         #region Metodos
 
-        public ControladorProyectoPintarEstructuraXML(Guid pOrganizacionID, Guid pProyectoID, LoggingService loggingService, EntityContext entityContext, ConfigService configService, RedisCacheWrapper redisCacheWrapper, VirtuosoAD virtuosoAD, GnossCache gnossCache, IHttpContextAccessor httpContextAccessor, EntityContextBASE entityContextBASE, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication)
+        public ControladorProyectoPintarEstructuraXML(Guid pOrganizacionID, Guid pProyectoID, LoggingService loggingService, EntityContext entityContext, ConfigService configService, RedisCacheWrapper redisCacheWrapper, VirtuosoAD virtuosoAD, GnossCache gnossCache, IHttpContextAccessor httpContextAccessor, EntityContextBASE entityContextBASE, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication, ILogger<ControladorProyectoPintarEstructuraXML> logger, ILoggerFactory loggerFactory)
         {
             mVirtuosoAD = virtuosoAD;
             mLoggingService = loggingService;
@@ -89,6 +94,8 @@ namespace Es.Riam.Gnoss.Web.Controles.Proyectos
 
             this.mOrganizacionID = pOrganizacionID;
             this.mProyectoID = pProyectoID;
+            mlogger = logger;
+            mLoggerFactory = loggerFactory;
         }
 
         /// <summary>
@@ -210,7 +217,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Proyectos
                     listaGruposID.Add(new Guid(grupo));
                 }
 
-                Dictionary<Guid, string> nombresGrupos = new ControladorIdentidades(new GestionIdentidades(new DataWrapperIdentidad(), mLoggingService, mEntityContext, mConfigService, mServicesUtilVirtuosoAndReplication), mLoggingService, mEntityContext, mConfigService, mRedisCacheWrapper, mGnossCache, mEntityContextBASE, mVirtuosoAD, mHttpContextAccessor, mServicesUtilVirtuosoAndReplication).ObtenerNombresGrupos(listaGruposID);
+                Dictionary<Guid, string> nombresGrupos = new ControladorIdentidades(new GestionIdentidades(new DataWrapperIdentidad(), mLoggingService, mEntityContext, mConfigService, mServicesUtilVirtuosoAndReplication), mLoggingService, mEntityContext, mConfigService, mRedisCacheWrapper, mGnossCache, mEntityContextBASE, mVirtuosoAD, mHttpContextAccessor, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<ControladorIdentidades>(), mLoggerFactory).ObtenerNombresGrupos(listaGruposID);
 
                 foreach (Guid grupoID in nombresGrupos.Keys)
                 {
@@ -282,7 +289,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Proyectos
                 XmlElement NodoUsarOntologiasDeProyecto = pXmlDoc.CreateElement("UsarOntologiasDeProyecto");
                 pNodoComunidad.AppendChild(NodoUsarOntologiasDeProyecto);
 
-                ProyectoCL proyCL = new ProyectoCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mVirtuosoAD, mServicesUtilVirtuosoAndReplication);
+                ProyectoCL proyCL = new ProyectoCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mVirtuosoAD, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<ProyectoCL>(), mLoggerFactory);
                 string nombreCortoProyExt = proyCL.ObtenerNombreCortoProyecto(new Guid(ParametroProyecto[ParametroAD.ProyectoIDPatronOntologias]));
                 proyCL.Dispose();
 
@@ -370,7 +377,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Proyectos
             List<SeccionProyCatalogo> filasSeccion = DataWrapperProyecto.ListaSeccionProyCatalogo.Where(proy=>proy.OrganizacionID.Equals(OrganizacionID.ToString()) && proy.ProyectoID.Equals(ProyectoID.ToString())).ToList();
             if (filasSeccion != null && filasSeccion.Count > 0)
             {
-                ProyectoCN proyectoCN = new ProyectoCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+                ProyectoCN proyectoCN = new ProyectoCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<ProyectoCN>(), mLoggerFactory);
 
                 foreach (SeccionProyCatalogo fila in filasSeccion)
                 {
@@ -614,7 +621,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Proyectos
                         Guid idComp = Guid.Empty;
                         if (Guid.TryParse(filaGadget.Contenido, out idComp))
                         {
-                            CMSCN cmsCN = new CMSCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+                            CMSCN cmsCN = new CMSCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<CMSCN>(), mLoggerFactory);
                             string nombreCortoComponente = cmsCN.ObtenerNombreCortoComponentePorIDComponenteEnProyecto(idComp, ProyectoID);
 
                             AgregarNodoAlPadre(pXmlDoc, NodoGadget, "IDComponenteCMS", filaGadget.Contenido, false, true);
@@ -1188,7 +1195,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Proyectos
 
         private void PintarEstructuraXMLObjetoConocimiento(XmlDocument pXmlDoc, XmlElement pNodoComunidad, DataWrapperProyecto pDataWrapperProyecto, DataWrapperFacetas pFacetaDW, Guid pProyectoID, Guid pOrganizacionID)
         {
-            TesauroCN tesauroCN = new TesauroCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+            TesauroCN tesauroCN = new TesauroCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<TesauroCN>(), mLoggerFactory);
 
             List<OntologiaProyecto> ontologias = pFacetaDW.ListaOntologiaProyecto.Where(item => item.OrganizacionID.Equals(pOrganizacionID) && item.ProyectoID.Equals(pProyectoID)).ToList();
             if (ontologias != null && ontologias.Count > 0)
@@ -1204,7 +1211,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Proyectos
                     NodoOcs.AppendChild(NodoOc);
 
                     //obtengo el ontologiaID
-                    DocumentacionCN documentacionCN = new DocumentacionCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+                    DocumentacionCN documentacionCN = new DocumentacionCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<DocumentacionCN>(), mLoggerFactory);
 
                     Guid idProyectoOntolgias = pProyectoID;
                     if (ParametroProyecto.ContainsKey(ParametroAD.ProyectoIDPatronOntologias))
@@ -1485,9 +1492,9 @@ namespace Es.Riam.Gnoss.Web.Controles.Proyectos
 
         private void PintarPestanyasXML(DataWrapperProyecto pDataWrapperProyecto, List<ProyectoPestanyaMenu> pPestanyas, XmlDocument pXmlDoc, XmlElement pNodoPestanyas, Guid pProyectoID, DataWrapperExportacionBusqueda pExportacionBusquedaDW, ConfiguracionAmbitoBusquedaProyecto pFilaConfBusqueda)
         {
-            ProyectoCN proyectoCN = new ProyectoCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
-            IdentidadCN identidadCN = new IdentidadCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
-            OrganizacionCN organizacionCN = new OrganizacionCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+            ProyectoCN proyectoCN = new ProyectoCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<ProyectoCN>(), mLoggerFactory);
+            IdentidadCN identidadCN = new IdentidadCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<IdentidadCN>(), mLoggerFactory);
+            OrganizacionCN organizacionCN = new OrganizacionCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<OrganizacionCN>(), mLoggerFactory);
 
             foreach (ProyectoPestanyaMenu pestanya in pPestanyas)
             {
@@ -1550,7 +1557,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Proyectos
                 if (!string.IsNullOrEmpty(pestanya.IdiomasDisponibles))
                 {
                     string idiomas="";
-					ParametroAplicacionCL paramCL = new ParametroAplicacionCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mServicesUtilVirtuosoAndReplication);
+					ParametroAplicacionCL paramCL = new ParametroAplicacionCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<ParametroAplicacionCL>(), mLoggerFactory);
 					List<string> listaIdiomas = paramCL.ObtenerListaIdiomas();
                     foreach (string idioma in listaIdiomas)
                     {
@@ -1887,7 +1894,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Proyectos
                     }
                 }
 
-                IdentidadCN identCN = new IdentidadCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+                IdentidadCN identCN = new IdentidadCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<IdentidadCN>(), mLoggerFactory);
                 DataWrapperIdentidad dataWrapperIdentidad = identCN.ObtenerGruposPorIDGrupo(listaGruposID, false);
                 identCN.Dispose();
                 List<Guid> listaIDsOrganizaciones = new List<Guid>();
@@ -1906,7 +1913,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Proyectos
                     }
                 }
 
-                OrganizacionCN organizacionCN = new OrganizacionCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+                OrganizacionCN organizacionCN = new OrganizacionCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<OrganizacionCN>(), mLoggerFactory);
                 Dictionary<Guid, KeyValuePair<string, string>> dicNombresOrganizaciones = organizacionCN.ObtenerNombreOrganizacionesPorIDs(listaIDsOrganizaciones);
                 organizacionCN.Dispose();
                 string coma = "";
@@ -2000,7 +2007,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Proyectos
                 XmlElement NodoComparticionAutomatica = pXmlDoc.CreateElement("ComparticionAutomatica");
                 pNodoComunidad.AppendChild(NodoComparticionAutomatica);
 
-                ProyectoCN proyectoCN = new ProyectoCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+                ProyectoCN proyectoCN = new ProyectoCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<ProyectoCN>(), mLoggerFactory);
                 foreach (AD.EntityModel.Models.ComparticionAutomatica.ComparticionAutomatica filaC in filasCompAuto)
                 {
                     string comDestino = proyectoCN.ObtenerNombreCortoProyecto(filaC.ProyectoDestinoID);
@@ -2018,7 +2025,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Proyectos
 
                     if (identidadPublicadora != Guid.Empty)
                     {
-                        IdentidadCN identidadCN = new IdentidadCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+                        IdentidadCN identidadCN = new IdentidadCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<IdentidadCN>(), mLoggerFactory);
                         publicador = identidadCN.ObtenerNombreCortoIdentidad(identidadPublicadora);
                         identidadCN.Dispose();
 
@@ -2081,7 +2088,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Proyectos
 
                         if (filasCompAutoMapping.Count > 0)
                         {
-                            TesauroCN tesauroCN = new TesauroCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+                            TesauroCN tesauroCN = new TesauroCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<TesauroCN>(), mLoggerFactory);
 
                             foreach (AD.EntityModel.Models.ComparticionAutomatica.ComparticionAutomaticaMapping filaMaping in filasCompAutoMapping)
                             {
@@ -2203,7 +2210,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Proyectos
             {
                 if (mParametroProyecto == null)
                 {
-                    ProyectoCL proyectoCL = new ProyectoCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mVirtuosoAD, mServicesUtilVirtuosoAndReplication);
+                    ProyectoCL proyectoCL = new ProyectoCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mVirtuosoAD, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<ProyectoCL>(), mLoggerFactory);
                     mParametroProyecto = proyectoCL.ObtenerParametrosProyecto(ProyectoID);
                     proyectoCL.Dispose();
                 }
@@ -2218,7 +2225,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Proyectos
             {
                 if (mDataWrapperProyecto == null)
                 {
-                    ProyectoCN proyectoCN = new ProyectoCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+                    ProyectoCN proyectoCN = new ProyectoCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<ProyectoCN>(), mLoggerFactory);
                     mDataWrapperProyecto = proyectoCN.ObtenerProyectoPorID(ProyectoID);
                     mDataWrapperProyecto.Merge(proyectoCN.ObtenerSeccionesHomeCatalogoDeProyecto(ProyectoID));
                     mDataWrapperProyecto.Merge(proyectoCN.ObtenerPresentacionSemantico(ProyectoID));
@@ -2240,7 +2247,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Proyectos
             {
                 if (mFacetaDW == null)
                 {
-                    FacetaCN facetaCN = new FacetaCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+                    FacetaCN facetaCN = new FacetaCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<FacetaCN>(), mLoggerFactory);
                     mFacetaDW = facetaCN.ObtenerTodasFacetasDeProyecto(OrganizacionID, ProyectoID);
                     facetaCN.Dispose();
                 }
@@ -2315,7 +2322,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Proyectos
             {
                 if (mExportacionBusquedaDW == null)
                 {
-                    ExportacionBusquedaCN exportacionBusquedaCN = new ExportacionBusquedaCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+                    ExportacionBusquedaCN exportacionBusquedaCN = new ExportacionBusquedaCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<ExportacionBusquedaCN>(), mLoggerFactory);
                     mExportacionBusquedaDW = exportacionBusquedaCN.ObtenerExportacionesProyecto(ProyectoID);
                     exportacionBusquedaCN.Dispose();
                 }
@@ -2330,7 +2337,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Proyectos
             {
                 if (mComparticionAutomaticaDW == null)
                 {
-                    ComparticionAutomaticaCN comparticionCN = new ComparticionAutomaticaCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+                    ComparticionAutomaticaCN comparticionCN = new ComparticionAutomaticaCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<ComparticionAutomaticaCN>(), mLoggerFactory);
                     mComparticionAutomaticaDW = comparticionCN.ObtenerComparticionProyectoPorProyectoID(OrganizacionID, ProyectoID, false);
                     comparticionCN.Dispose();
                 }
@@ -2345,7 +2352,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Proyectos
             {
                 if(mVistaVirtualDW == null)
                 {
-                    VistaVirtualCN vistaVirtualCN = new VistaVirtualCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+                    VistaVirtualCN vistaVirtualCN = new VistaVirtualCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<VistaVirtualCN>(), mLoggerFactory);
                     mVistaVirtualDW = vistaVirtualCN.ObtenerVistasVirtualPorProyectoID(ProyectoID);
                 }
 

@@ -4,11 +4,16 @@ using Es.Riam.Gnoss.AD.EncapsuladoDatos;
 using Es.Riam.Gnoss.AD.EntityModel;
 using Es.Riam.Gnoss.AD.EntityModel.Models.Documentacion;
 using Es.Riam.Gnoss.AD.EntityModel.Models.Faceta;
+using Es.Riam.Gnoss.AD.EntityModel.Models.ProyectoDS;
 using Es.Riam.Gnoss.AD.Facetado.Model;
+using Es.Riam.Gnoss.AD.ParametroAplicacion;
 using Es.Riam.Gnoss.AD.ServiciosGenerales;
 using Es.Riam.Gnoss.Util.Configuracion;
 using Es.Riam.Gnoss.Util.General;
 using Es.Riam.Gnoss.Web.MVC.Models;
+using Es.Riam.Gnoss.Web.MVC.Models.Administracion;
+using Microsoft.Extensions.Logging;
+using Serilog.Core;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -22,30 +27,33 @@ namespace Es.Riam.Gnoss.Logica.Documentacion
     public class DocumentacionCN : BaseCN, IDisposable
     {
         private LoggingService mLoggingService;
-
+        private ILogger mlogger;
+        private ILoggerFactory mLoggerFactory;
         #region Constructores
 
         /// <summary>
         /// Constructor para DocumentacionCN
         /// </summary>
-        public DocumentacionCN(EntityContext entityContext, LoggingService loggingService, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication)
-            : base(entityContext, loggingService, configService, servicesUtilVirtuosoAndReplication)
+        public DocumentacionCN(EntityContext entityContext, LoggingService loggingService, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication, ILogger<DocumentacionCN> logger, ILoggerFactory loggerFactory)
+            : base(entityContext, loggingService, configService, servicesUtilVirtuosoAndReplication,logger,loggerFactory)
         {
             mLoggingService = loggingService;
-
-            this.DocumentacionAD = new DocumentacionAD(loggingService, entityContext, configService, servicesUtilVirtuosoAndReplication);
+            mlogger = logger;
+            mLoggerFactory = loggerFactory;
+            this.DocumentacionAD = new DocumentacionAD(loggingService, entityContext, configService, servicesUtilVirtuosoAndReplication,mLoggerFactory.CreateLogger<DocumentacionAD>(),mLoggerFactory);
             this.DesdeCL = false;
         }
 
         /// <summary>
         /// Constructor para DocumentacionCN
         /// </summary>
-        public DocumentacionCN(bool pDesdeCL, EntityContext entityContext, LoggingService loggingService, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication)
-            : base(entityContext, loggingService, configService, servicesUtilVirtuosoAndReplication)
+        public DocumentacionCN(bool pDesdeCL, EntityContext entityContext, LoggingService loggingService, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication, ILogger<DocumentacionCN> logger, ILoggerFactory loggerFactory)
+            : base(entityContext, loggingService, configService, servicesUtilVirtuosoAndReplication, logger, loggerFactory)
         {
             mLoggingService = loggingService;
-
-            this.DocumentacionAD = new DocumentacionAD(loggingService, entityContext, configService, servicesUtilVirtuosoAndReplication);
+            mlogger = logger;
+            mLoggerFactory = loggerFactory;
+            this.DocumentacionAD = new DocumentacionAD(loggingService, entityContext, configService, servicesUtilVirtuosoAndReplication,mLoggerFactory.CreateLogger<DocumentacionAD>(),mLoggerFactory);
             this.DesdeCL = pDesdeCL;
         }
 
@@ -54,12 +62,13 @@ namespace Es.Riam.Gnoss.Logica.Documentacion
         /// </summary>
         /// <param name="pFicheroConfiguracionBD">Fichero de configuración</param>
         /// <param name="pUsarVariableEstatica">Si se están usando hilos con diferentes conexiones: FALSE. En caso contrario TRUE</param>
-        public DocumentacionCN(string pFicheroConfiguracionBD, EntityContext entityContext, LoggingService loggingService, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication)
-            : base(entityContext, loggingService, configService, servicesUtilVirtuosoAndReplication)
+        public DocumentacionCN(string pFicheroConfiguracionBD, EntityContext entityContext, LoggingService loggingService, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication, ILogger<DocumentacionCN> logger, ILoggerFactory loggerFactory)
+            : base(entityContext, loggingService, configService, servicesUtilVirtuosoAndReplication, logger, loggerFactory)
         {
             mLoggingService = loggingService;
-
-            this.DocumentacionAD = new DocumentacionAD(pFicheroConfiguracionBD, loggingService, entityContext, configService, servicesUtilVirtuosoAndReplication);
+            mlogger = logger;
+            mLoggerFactory = loggerFactory;
+            this.DocumentacionAD = new DocumentacionAD(pFicheroConfiguracionBD, loggingService, entityContext, configService, servicesUtilVirtuosoAndReplication,mLoggerFactory.CreateLogger<DocumentacionAD>(),mLoggerFactory);
             this.DesdeCL = false;
         }
 
@@ -68,12 +77,13 @@ namespace Es.Riam.Gnoss.Logica.Documentacion
         /// </summary>
         /// <param name="pFicheroConfiguracionBD">Fichero de configuración</param>
         /// <param name="pUsarVariableEstatica">Si se están usando hilos con diferentes conexiones: FALSE. En caso contrario TRUE</param>
-        public DocumentacionCN(string pFicheroConfiguracionBD, bool pDesdeCL, EntityContext entityContext, LoggingService loggingService, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication)
-            : base(entityContext, loggingService, configService, servicesUtilVirtuosoAndReplication)
+        public DocumentacionCN(string pFicheroConfiguracionBD, bool pDesdeCL, EntityContext entityContext, LoggingService loggingService, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication, ILogger<DocumentacionCN> logger, ILoggerFactory loggerFactory)
+            : base(entityContext, loggingService, configService, servicesUtilVirtuosoAndReplication,logger,loggerFactory)
         {
             mLoggingService = loggingService;
-
-            this.DocumentacionAD = new DocumentacionAD(pFicheroConfiguracionBD, loggingService, entityContext, configService, servicesUtilVirtuosoAndReplication);
+            mlogger = logger;
+            mLoggerFactory = loggerFactory;
+            this.DocumentacionAD = new DocumentacionAD(pFicheroConfiguracionBD, loggingService, entityContext, configService, servicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<DocumentacionAD>(), mLoggerFactory);
             this.DesdeCL = pDesdeCL;
         }
         #endregion
@@ -1271,13 +1281,19 @@ namespace Es.Riam.Gnoss.Logica.Documentacion
             DocumentacionAD.ObtenerOntologiasProyecto(pProyectoID, pDataWrapperDocumentacion, pTraerProtegidos, pTraerSecundarias, pTraerOntosEntorno, pTraerDocWebVinBaseRecursos);
         }
 
-        /// <summary>
-        /// Obtiene la ontología proyecto a partir de la ontología y el proyecto id
-        /// </summary>
-        /// <param name="pOntologia">Nombre de la ontología</param>
-        /// <param name="pProyectoID">Identificador del proyecto al que pertenece la ontología</param>
-        /// <returns></returns>
-        public OntologiaProyecto ObtenerOntologiaProyectoPorOntologia(string pOntologia, Guid pProyectoID)
+		public void ObtenerOntologiasPlataforma(DataWrapperDocumentacion pDataWrapperDocumentacion)
+		{
+			DocumentacionAD.ObtenerOntologiasPlataforma(pDataWrapperDocumentacion);
+		}
+
+
+		/// <summary>
+		/// Obtiene la ontología proyecto a partir de la ontología y el proyecto id
+		/// </summary>
+		/// <param name="pOntologia">Nombre de la ontología</param>
+		/// <param name="pProyectoID">Identificador del proyecto al que pertenece la ontología</param>
+		/// <returns></returns>
+		public OntologiaProyecto ObtenerOntologiaProyectoPorOntologia(string pOntologia, Guid pProyectoID)
         {
             return DocumentacionAD.ObtenerOntologiaProyectoPorOntologia(pOntologia, pProyectoID);
         }
@@ -1371,6 +1387,27 @@ namespace Es.Riam.Gnoss.Logica.Documentacion
         public List<Guid> ObtenerUltimosRecursosDeOnto(Guid pOntologiaID, int pNumRec)
         {
             return DocumentacionAD.ObtenerUltimosRecursosDeOnto(pOntologiaID, pNumRec);
+        }
+
+        /// <summary>
+        /// Obtiene los ID de todos los recursos de una determinada ontología.
+        /// </summary>
+        /// <param name="pOntologiaID"></param>
+        /// <returns></returns>
+        public List<Guid> ObtenerRecursosDeOntologia(Guid pOntologiaID)
+        {
+            return DocumentacionAD.ObtenerRecursosDeOntologia(pOntologiaID);
+        }
+
+
+        /// <summary>
+        /// Obtiene la cantidad de recursos por ontología.
+        /// </summary>
+        /// <param name="pOntologiaID"></param>
+        /// <returns></returns>
+        public int ObtenerCantidadRecursosDeOntologia(Guid pOntologiaID)
+        {
+            return DocumentacionAD.ObtenerCantidadRecursosDeOntologia(pOntologiaID);
         }
 
         /// <summary>
@@ -1621,6 +1658,16 @@ namespace Es.Riam.Gnoss.Logica.Documentacion
             return this.DocumentacionAD.ObtenerFechaCreacionDocumento(pDocumentoID);
         }
 
+		/// <summary>
+		/// Obtiene la fecha de modificacion del documento
+		/// </summary>
+		/// <param name="pDocumentoID">Identificador de documento</param>
+		/// <returns>Devuelve DateTime con la fecha de modificacion del documento</returns>
+		public long ObtenerFechaModificacionDocumento(Guid pDocumentoID)
+        {
+            return this.DocumentacionAD.ObtenerFechaModificacionDocumento(pDocumentoID);
+        }
+
         /// <summary>
         /// Obtiene las comunidades web de la persona según un documento que tenga en estas, el cual es pasado como parametro.
         /// </summary>
@@ -1790,14 +1837,14 @@ namespace Es.Riam.Gnoss.Logica.Documentacion
             {
                 TerminarTransaccion(false);
                 // Error de concurrencia
-                mLoggingService.GuardarLogError(ex);
+                mLoggingService.GuardarLogError(ex,mlogger);
                 throw new ErrorConcurrencia();
             }
             catch (DataException ex)
             {
                 TerminarTransaccion(false);
                 //Error interno de la aplicación				
-                mLoggingService.GuardarLogError(ex);
+                mLoggingService.GuardarLogError(ex,mlogger);
                 throw new ErrorInterno();
             }
             catch
@@ -1912,7 +1959,7 @@ namespace Es.Riam.Gnoss.Logica.Documentacion
         /// </summary>
         /// <param name="pProyectoID">Proyecto del que se quieren ver los últimos recursos publicados.</param>
         /// <returns>DS Con los últimos recursos publicados.</returns>
-        [Obsolete]
+        [Obsolete("En proceso de limpieza", true)]
         public DataWrapperDocumentacion ObtenerUltimosRecursosPublicadosPorPerfil(Guid pPerfilID, Guid pUsuarioID, int pNumElementos)
         {
             return DocumentacionAD.ObtenerUltimosRecursosPublicadosPorPerfil(pPerfilID, pUsuarioID, pNumElementos);
@@ -2211,6 +2258,17 @@ namespace Es.Riam.Gnoss.Logica.Documentacion
         public Dictionary<Guid, int> ObtenerVersionesDocumentoIDPorID(Guid pDocumentoID)
         {
             return DocumentacionAD.ObtenerVersionesDocumentoIDPorID(pDocumentoID);
+        }
+
+
+        /// <summary>
+        /// Carga todas las versiones de una página de forma ordenada.
+        /// </summary>
+        /// <param name="pPestanyaID">Identificador de la página de la que se quieren obtener las versiones</param>
+        /// <returns>Listado ordenano por versiones de las páginas </returns>
+        public List<ProyectoPestanyaMenuVersionPagina> ObtenerListaVersionesPaginaPorID(Guid pPestanyaID)
+        {
+            return DocumentacionAD.ObtenerListaVersionesPaginaPorID(pPestanyaID);
         }
 
         /// <summary>
@@ -2603,6 +2661,11 @@ namespace Es.Riam.Gnoss.Logica.Documentacion
             DocumentacionAD.AgregarDocumentoAColaTareas(pDocumentoID, pDocAgregado, pPrioridadColaDocumento, pEstadoCargaID);
         }
 
+        public void AgregarDocumentosAColaTareas(List<Guid> pDocumentosID, bool pDocAgregado, PrioridadColaDocumento pPrioridadColaDocumento, long pEstadoCargaID)
+        {
+            DocumentacionAD.AgregarDocumentoAColaTareas(pDocumentosID, pDocAgregado, pPrioridadColaDocumento, pEstadoCargaID);
+        }
+
         /// <summary>
         /// Obtiene los documentos que están en la ColaDocumento sin procesar y sin desechar.
         /// </summary>
@@ -2851,11 +2914,12 @@ namespace Es.Riam.Gnoss.Logica.Documentacion
             }
         }
 
-        #endregion
+		
+		#endregion
 
-        #region Propiedades
+		#region Propiedades
 
-        private DocumentacionAD DocumentacionAD
+		private DocumentacionAD DocumentacionAD
         {
             get
             {

@@ -59,9 +59,8 @@ namespace Es.Riam.Util
             {
                 float Alto = pImagen.Height;
                 float Ancho = pImagen.Width;
-                float AltoFinal = Alto;
-                float AnchoFinal = Ancho;
-
+                float AltoFinal;
+                float AnchoFinal;
 
                 if ((Alto / Ancho) >= (pAlto / pAncho))
                 {
@@ -73,6 +72,7 @@ namespace Es.Riam.Util
                     AltoFinal = Alto / (Ancho / pAncho);
                     AnchoFinal = pAncho;
                 }
+
                 return new SizeF(AnchoFinal, AltoFinal);
             }
             return new SizeF(pAncho, pAlto);
@@ -112,8 +112,7 @@ namespace Es.Riam.Util
         /// <returns>Array con los bytes de la nueva imagen recortada</returns>
         public static byte[] RecortarImagen(Image pImagen, int pAnchura, int pAltura, int pCoordenadaX, int pCoordenadaY)
         {
-            pImagen.Clone(
-                   i => i.Crop(new Rectangle(pCoordenadaX, pCoordenadaY, pAnchura, pAltura)));
+            pImagen.Clone(i => i.Crop(new Rectangle(pCoordenadaX, pCoordenadaY, pAnchura, pAltura)));
             byte[] bufferRecortado;
             using (var ms = new MemoryStream())
             {
@@ -164,7 +163,6 @@ namespace Es.Riam.Util
         {
             Image imagenOriginal = Image.Load(new MemoryStream(imageFile));
             Rectangle rectanguloRecorte = new Rectangle(targetX, targetY, targetW - targetX, targetH - targetY);
-            Rectangle rectanguloDestino = new Rectangle(0, 0, targetW, targetH);
 
             var imagenCrop = imagenOriginal.Clone(x => x.Crop(rectanguloRecorte).Resize(targetW, targetH));
 
@@ -292,7 +290,6 @@ namespace Es.Riam.Util
             {
                 Image imagenCuadrada = RedimensionarDadoAncho(pImagen, tamaño);
 
-                //pImagen = imagenCuadrada;
                 imageClone = imagenCuadrada;
             }
 
@@ -330,6 +327,77 @@ namespace Es.Riam.Util
                 imageClone = pImagen.Clone(x => x.Resize(size));
             }
             return imageClone;
+        }
+
+        /// <summary>
+        /// Realizamos un recorte cuadrado de la imagen pasada por parámetro del tamaño pasado por parámetro
+        /// </summary>
+        /// <param name="pRecorte">Tamaño que tendrá el recorte de la imagen</param>
+        /// <param name="pImagenOriginal">Imagen que queremos recortar</param>
+        /// <returns>Array de bytes con el contenido de la imagen recortada</returns>
+        public static byte[] RealizarRecorteCuadrado(int pRecorte, Image pImagenOriginal)
+        {
+            Image imagenPeque = RecortarImagenACuadrada(pImagenOriginal, pRecorte);
+
+            if (imagenPeque.Width > pImagenOriginal.Width || imagenPeque.Height > pImagenOriginal.Height)
+            {
+                imagenPeque = pImagenOriginal;
+            }
+
+            return ImageToBytePng(imagenPeque);
+        }
+
+        /// <summary>
+        /// Redimensionamos una imagen cumpliendo el límite de ancho y alto pasado por parámetro y manteniendo la proporcion. En caso de que uno sea -1 se redimensionará la imagen en función
+        /// del otro parámetro manteniendo la relación de aspecto.
+        /// </summary>
+        /// <param name="pAncho">Ancho deseado para la redimensión</param>
+        /// <param name="pAlto">Alto deseado para la redimensión</param>
+        /// <param name="pImagenOriginal">Imagen que queremos redimensionar</param>
+        /// <returns>Array de bytes con el contenido de la imagen redimensionada</returns>
+        /// <exception cref="InvalidDataException">Devolvemos InvalidDataException en caso de que ambos parámetros sean -1</exception>
+        public static byte[] RedimensionarAnchoAlto(int pAncho, int pAlto, Image pImagenOriginal)
+        {
+            byte[] bytesImagenRedimensionada = null;
+
+            if (pAncho == -1 && pAlto == -1)
+            {
+                throw new InvalidDataException("No se ha configurado ni el alto ni el ancho del recorte, hay que configurar al menos un valor");
+            }
+
+            float factorRedimension = ObtenerFactorRedimension(pAncho, pAlto, pImagenOriginal.Width, pImagenOriginal.Height);
+
+            int anchoFinal = (int)(pImagenOriginal.Width / factorRedimension);
+            int altoFinal = (int)(pImagenOriginal.Height / factorRedimension);            
+            
+            Image imagenNueva = pImagenOriginal.Clone(x => x.Resize(anchoFinal, altoFinal));
+
+            using (var ms = new MemoryStream())
+            {
+                PngEncoder pngEncoder = new PngEncoder() { CompressionLevel = PngCompressionLevel.Level9 };
+                imagenNueva.Save(ms, pngEncoder);
+                bytesImagenRedimensionada = ms.ToArray();
+            }
+
+            return bytesImagenRedimensionada;
+        }
+
+        /// <summary>
+        /// Calculamos el factor de redimensión que deberemos aplicar a partir de un ancho y alto límite y el ancho y alto de la imagen original.
+        /// </summary>
+        /// <param name="pAnchoLimite">Ancho límite del recorte</param>
+        /// <param name="pAltoLimite">Alto límite del recorte</param>
+        /// <param name="pAnchoImagen">Ancho de la imagen original</param>
+        /// <param name="pAltoImagen">Alto de la imagen original</param>
+        /// <returns></returns>
+        protected static float ObtenerFactorRedimension(int pAnchoLimite, int pAltoLimite, int pAnchoImagen, int pAltoImagen)
+        {
+            float factorAncho = (float)pAnchoImagen / pAnchoLimite;
+            float factorAlto = (float)pAltoImagen / pAltoLimite;
+
+            float factorRedimension = factorAlto > factorAncho ? factorAlto : factorAncho;
+
+            return factorRedimension > 1 ? factorRedimension : 1;
         }
     }
 }

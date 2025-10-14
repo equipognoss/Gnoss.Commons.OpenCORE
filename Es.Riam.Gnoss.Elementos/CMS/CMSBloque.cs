@@ -1,6 +1,7 @@
 using Es.Riam.Gnoss.Util.General;
 using Es.Riam.Gnoss.Web.MVC.Models.Administracion;
 using Es.Riam.Interfaces;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -35,8 +36,8 @@ namespace Es.Riam.Gnoss.Elementos.CMS
         /// </summary>
         /// <param name="pFilaBloque">Fila de bloque</param>
         /// <param name="pGestorCMS">Gestor de CMS</param>
-        public CMSBloque(AD.EntityModel.Models.CMS.CMSBloque pFilaBloque, GestionCMS pGestorCMS, LoggingService loggingService)
-            : base(pFilaBloque, pGestorCMS, loggingService)
+        public CMSBloque(AD.EntityModel.Models.CMS.CMSBloque pFilaBloque, GestionCMS pGestorCMS)
+            : base(pFilaBloque, pGestorCMS)
         {
         }
 

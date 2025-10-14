@@ -11,6 +11,8 @@ using Es.Riam.Gnoss.AD.Virtuoso;
 using Es.Riam.Gnoss.Util.Configuracion;
 using Microsoft.AspNetCore.Http;
 using Es.Riam.AbstractsOpen;
+using Microsoft.Extensions.Logging;
+using Es.Riam.Gnoss.Elementos.Amigos;
 
 namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
 {
@@ -23,9 +25,10 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
         private RedisCacheWrapper mRedisCacheWrapper;
         private GnossCache mGnossCache;
         private IServicesUtilVirtuosoAndReplication mServicesUtilVirtuosoAndReplication;
-
-        public ControladorAdministrarVistas(LoggingService loggingService, ConfigService configService, EntityContext entityContext, RedisCacheWrapper redisCacheWrapper, GnossCache gnossCache, VirtuosoAD virtuosoAD, IHttpContextAccessor httpContextAccessor, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication)
-            : base(loggingService, configService, entityContext, redisCacheWrapper, gnossCache, virtuosoAD, httpContextAccessor, servicesUtilVirtuosoAndReplication)
+        private ILogger mlogger;
+        private ILoggerFactory mloggerFactory;
+        public ControladorAdministrarVistas(LoggingService loggingService, ConfigService configService, EntityContext entityContext, RedisCacheWrapper redisCacheWrapper, GnossCache gnossCache, VirtuosoAD virtuosoAD, IHttpContextAccessor httpContextAccessor, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication, ILogger<ControladorAdministrarVistas> logger, ILoggerFactory loggerFactory)
+            : base(loggingService, configService, entityContext, redisCacheWrapper, gnossCache, virtuosoAD, httpContextAccessor, servicesUtilVirtuosoAndReplication,logger,loggerFactory)
         {
             mLoggingService = loggingService;
             mVirtuosoAD = virtuosoAD;
@@ -34,6 +37,8 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
             mRedisCacheWrapper = redisCacheWrapper;
             mGnossCache = gnossCache;
             mServicesUtilVirtuosoAndReplication = servicesUtilVirtuosoAndReplication;
+            mlogger = logger;
+            mloggerFactory = loggerFactory;
         }
 
 
@@ -59,13 +64,13 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
 
             if (string.IsNullOrEmpty(pFicheroConfiguracion))
             {
-                vistaVirtualCL = new VistaVirtualCL(mEntityContext, mLoggingService, mGnossCache, mRedisCacheWrapper, mConfigService, mServicesUtilVirtuosoAndReplication);
-                proyCL = new ProyectoCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mVirtuosoAD, mServicesUtilVirtuosoAndReplication);
+                vistaVirtualCL = new VistaVirtualCL(mEntityContext, mLoggingService, mGnossCache, mRedisCacheWrapper, mConfigService, mServicesUtilVirtuosoAndReplication, mloggerFactory.CreateLogger<VistaVirtualCL>(), mloggerFactory);
+                proyCL = new ProyectoCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mVirtuosoAD, mServicesUtilVirtuosoAndReplication, mloggerFactory.CreateLogger<ProyectoCL>(), mloggerFactory);
             }
             else
             {
-                vistaVirtualCL = new VistaVirtualCL(pFicheroConfiguracion + "@@@acid", pFicheroConfiguracion + "@@@acid", mEntityContext, mLoggingService, mGnossCache, mRedisCacheWrapper, mConfigService, mServicesUtilVirtuosoAndReplication);
-                proyCL = new ProyectoCL(pFicheroConfiguracion + "@@@acid", pFicheroConfiguracion + "@@@acid", mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mVirtuosoAD, mServicesUtilVirtuosoAndReplication);
+                vistaVirtualCL = new VistaVirtualCL(pFicheroConfiguracion + "@@@acid", pFicheroConfiguracion + "@@@acid", mEntityContext, mLoggingService, mGnossCache, mRedisCacheWrapper, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<VistaVirtualCL>(), mLoggerFactory);
+                proyCL = new ProyectoCL(pFicheroConfiguracion + "@@@acid", pFicheroConfiguracion + "@@@acid", mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mVirtuosoAD, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<ProyectoCL>(), mLoggerFactory);
 
                 if (!string.IsNullOrEmpty(pUrlIntragnoss))
                 {
@@ -97,7 +102,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
 
         private void ActualizarCache(Guid pPersonalizacionID, string pVistaActualizada)
         {
-            Dictionary<string, string> diccionarioRefrescoCache = mGnossCache.ObtenerObjetoDeCache(GnossCacheCL.CLAVE_DICCIONARIO_REFRESCO_CACHE_VISTAS + pPersonalizacionID) as Dictionary<string, string>;
+            Dictionary<string, string> diccionarioRefrescoCache = mGnossCache.ObtenerObjetoDeCache(GnossCacheCL.CLAVE_DICCIONARIO_REFRESCO_CACHE_VISTAS + pPersonalizacionID, typeof(Dictionary<string, string>)) as Dictionary<string, string>;
 
             if (diccionarioRefrescoCache == null)
             {

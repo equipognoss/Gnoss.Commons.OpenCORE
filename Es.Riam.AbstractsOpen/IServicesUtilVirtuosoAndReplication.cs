@@ -1,8 +1,10 @@
 ﻿
+using AngleSharp.Io;
 using Es.Riam.Gnoss.RabbitMQ;
 using Es.Riam.Gnoss.Util.Configuracion;
 using Es.Riam.Gnoss.Util.General;
 using Es.Riam.Util;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using OpenLink.Data.Virtuoso;
 using System;
@@ -19,6 +21,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Xml;
+using static Microsoft.ApplicationInsights.MetricDimensionNames.TelemetryContext;
 
 namespace Es.Riam.AbstractsOpen
 {
@@ -30,7 +33,7 @@ namespace Es.Riam.AbstractsOpen
         public const string COLA_REPLICACION_MASTER = "ColaReplicacionMaster";
         public const string COLA_REPLICACION_MASTER_HOME = "ColaReplicacionMasterHome";
         private const int NUM_MAX_TRIPLES_CONSULTA = 600;
-        
+
         private string mFicheroConfiguracionMaster;
         public string FicheroConfiguracion = "";
         public bool UsarClienteTradicional { get; set; }
@@ -44,10 +47,12 @@ namespace Es.Riam.AbstractsOpen
         private bool noConfirmarTransacciones;
         private Dictionary<string, DbTransaction> transaccionesPendientes;
         public Dictionary<string, DbTransaction> TransaccionesPendientes { get { return transaccionesPendientes; } }
-        public virtual string CadenaConexion { get; set; }
+        public virtual VirtuosoConnectionData VirtuosoConnectionData { get; set; }
         public DateTime? InicioPeticionVirtuoso { get; set; }
-        public virtual string ConexionAfinidadVirtuoso { get;  }
+        public virtual string ConexionAfinidadVirtuoso { get; }
         public DateTime FechaFinAfinidad { get; set; }
+        private ILogger mlogger;
+        private ILoggerFactory mLoggerFactory;
         public bool NoConfirmarTransacciones
         {
             get
@@ -66,11 +71,13 @@ namespace Es.Riam.AbstractsOpen
         }
 
 
-        public IServicesUtilVirtuosoAndReplication(ConfigService configService, LoggingService loggingService)
+        public IServicesUtilVirtuosoAndReplication(ConfigService configService, LoggingService loggingService, ILogger<IServicesUtilVirtuosoAndReplication> logger, ILoggerFactory loggerFactory)
         {
             mConfigService = configService;
             mLoggingService = loggingService;
             transaccionesPendientes = new Dictionary<string, DbTransaction>();
+            mlogger = logger;
+            mLoggerFactory = loggerFactory;
         }
         protected Dictionary<string, List<KeyValuePair<string, short>>> mListaConsultasEjecutarEnReplicas { get; set; }
         protected long XCorrelationID { get; set; }
@@ -116,7 +123,7 @@ namespace Es.Riam.AbstractsOpen
 
 
         // Abstract 
-        public abstract void InsertarEnReplicacionBidireccional(string pQuery, string pGrafo, short pPrioridad, string pNombreConexionAfinidad, string pCadenaConexion, VirtuosoConnection pConexion);
+        public abstract void InsertarEnReplicacionBidireccional(string pQuery, string pGrafo, short pPrioridad, string pNombreConexionAfinidad, VirtuosoConnectionData pVirtuosoConnectionData, VirtuosoConnection pConexion);
 
         public string FicheroConfiguracionMaster
         {
@@ -137,7 +144,7 @@ namespace Es.Riam.AbstractsOpen
                 return mFicheroConfiguracionMaster;
             }
         }
-        public virtual string ConexionAfinidad { get;}
+        public virtual string ConexionAfinidad { get; }
 
         public Dictionary<string, List<KeyValuePair<string, short>>> GetListaConsultasEjecutarEnReplicas()
         {
@@ -157,46 +164,48 @@ namespace Es.Riam.AbstractsOpen
             ListaConsultasEjecutarEnReplicas.Clear();
         }
 
-        public bool EsConexionHAPROXY(string pCadenaConexion)
+        public bool EsConexionHAPROXY(VirtuosoConnectionData pVirtuosoConnectionData)
         {
-            return (mConfigService.CheckBidirectionalReplicationIsActive() && mConfigService.ObtenerVirtuosoConnectionString().Equals(pCadenaConexion));
+            return (mConfigService.CheckBidirectionalReplicationIsActive() && mConfigService.ObtenerVirtuosoConnectionString().Equals(pVirtuosoConnectionData));
         }
 
-        public int ActualizarVirtuoso(string pQuery, string pGrafo, bool pReplicar, short pPrioridad, VirtuosoConnection pConexion, bool pLanzarExcepcionSiFallaReplicacion = true, string pCadenaConexion = null, int pNumReintentos = 0)
+        public int ActualizarVirtuoso(string pQuery, string pGrafo, bool pReplicar, short pPrioridad, VirtuosoConnection pConexion, bool pLanzarExcepcionSiFallaReplicacion = true, VirtuosoConnectionData pVirtuosoConnectionData = null, int pNumReintentos = 0)
         {
             int resultado = 0;
-            string cadenaConexion = pCadenaConexion;
-            if (string.IsNullOrEmpty(cadenaConexion))
+            VirtuosoConnectionData virtuosoConnectionData = pVirtuosoConnectionData;
+            string nombreConexionAfinidad = string.Empty;
+            if (virtuosoConnectionData == null)
             {
                 if (FicheroConfiguracionMaster.ToLower().Contains("home"))
                 {
-                    cadenaConexion = mConfigService.ObtenerVirtuosoEscrituraHome();
+                    virtuosoConnectionData = mConfigService.ObtenerVirtuosoEscrituraHome();
                 }
-                if (string.IsNullOrEmpty(cadenaConexion))
+                if (virtuosoConnectionData == null)
                 {
                     if (mConfigService.CheckBidirectionalReplicationIsActive())
                     {
-                        cadenaConexion = mConfigService.ObtenerVirutosoEscritura(ConexionAfinidad);
+                        nombreConexionAfinidad = ConexionAfinidad;
+                        virtuosoConnectionData = mConfigService.ObtenerVirutosoEscritura(nombreConexionAfinidad);
                     }
                     else
                     {
-                        cadenaConexion = mConfigService.ObtenerVirtuosoEscritura().Value;
+                        virtuosoConnectionData = mConfigService.ObtenerVirtuosoEscritura().Value;
                     }
                 }
             }
 
             int inicioConsulta = pQuery.IndexOf('{') + 1;
             int posicionTriples = -1;
-            
+
             string instruccion = pQuery.Substring(0, inicioConsulta);
             if (instruccion.Contains(" INSERT INTO "))
             {
                 string triples = pQuery.Substring(inicioConsulta, pQuery.LastIndexOf('}') - inicioConsulta);
                 posicionTriples = ObtenerPosicionTriple(triples);
             }
-            
-            if (posicionTriples != -1)          
-            {                
+
+            if (posicionTriples != -1)
+            {
                 //Es un insert de más de 600 líneas, la parto para que no falle
                 EjecutarInsertPorTrozos(pQuery, pGrafo, pReplicar, pPrioridad, posicionTriples, pConexion);
             }
@@ -204,19 +213,14 @@ namespace Es.Riam.AbstractsOpen
             {
                 string conexionAfinidadVirtuoso = "conexionAfinidadVirtuoso" + (FicheroConfiguracionMaster.ToLower().Contains("home") ? "Home" : "");
 
-                KeyValuePair<string, string> ip_puerto = ObtenerIpVirtuosoDeCadenaConexion(cadenaConexion);
-                string ipVirtuoso = ip_puerto.Key;
-                string puertoVirtuoso = ip_puerto.Value;
-                string url = "http://" + ipVirtuoso + ":" + puertoVirtuoso + "/sparql";
-
-                mLoggingService.AgregarEntrada("Escribo en virtuoso " + ipVirtuoso + ". " + pQuery);
+                mLoggingService.AgregarEntrada("Escribo en virtuoso " + virtuosoConnectionData.Ip + ". " + pQuery);
 
                 try
                 {
                     if (UsarClienteTradicional)
                     {
                         pQuery = UtilCadenas.PasarAUtf8(pQuery);
-                        resultado = ActualizarVirtuosoClienteTradicional(pQuery, pGrafo, pReplicar, pPrioridad, pConexion, pCadenaConexion);
+                        resultado = ActualizarVirtuosoClienteTradicional(pQuery, pGrafo, pReplicar, pPrioridad, pConexion, virtuosoConnectionData);
                     }
                     else
                     {
@@ -228,7 +232,7 @@ namespace Es.Riam.AbstractsOpen
                         NameValueCollection parametros = new NameValueCollection();
                         parametros.Add("query", pQuery);
 
-                        resultado = ActualizarVirtuoso_WebClient(url, pQuery, parametros);
+                        resultado = ActualizarVirtuoso_WebClient(virtuosoConnectionData, pQuery, parametros);
                     }
                 }
                 catch (ExcepcionDeBaseDeDatos)
@@ -238,13 +242,13 @@ namespace Es.Riam.AbstractsOpen
                 catch (Exception ex)
                 {
                     mLoggingService.AgregarEntrada("Reintentar Actualizar virtuoso. Descripcion error: " + ex.Message);
-                    mLoggingService.GuardarLogError(ex);
+                    mLoggingService.GuardarLogError(ex,mlogger);
 
                     Thread.Sleep(1000);
 
-                    if (ControlarErrorVirtuosoConection(cadenaConexion, conexionAfinidadVirtuoso) && pNumReintentos < 10)
+                    if (virtuosoConnectionData == null && pNumReintentos < 10)
                     {
-                        resultado = ActualizarVirtuoso(pQuery, pGrafo, pReplicar, pPrioridad, pConexion, pLanzarExcepcionSiFallaReplicacion, pCadenaConexion, pNumReintentos + 1);
+                        resultado = ActualizarVirtuoso(pQuery, pGrafo, pReplicar, pPrioridad, pConexion, pLanzarExcepcionSiFallaReplicacion, pVirtuosoConnectionData, pNumReintentos + 1);
                         return resultado;
                     }
                     else
@@ -258,15 +262,14 @@ namespace Es.Riam.AbstractsOpen
 
                 if (pReplicar || mConfigService.CheckBidirectionalReplicationIsActive())
                 {
-                    bool configuradaCadenaConexionVirtuosoHome = !string.IsNullOrEmpty(mConfigService.ObtenerVirtuosoConnectionStringHome());
-                    string nombreConexionAfinidad = ConexionAfinidad;
-
+                    bool configuradaCadenaConexionVirtuosoHome = mConfigService.ObtenerVirtuosoConnectionStringHome(false) != null;
+                    
                     try
                     {
                         if ((string.IsNullOrEmpty(FicheroConfiguracion) || !FicheroConfiguracion.ToLower().Contains("home") || !configuradaCadenaConexionVirtuosoHome) && !string.IsNullOrEmpty(nombreConexionAfinidad))
                         {
                             //Para la replicaciónBidireccional
-                            InsertarEnReplicacionBidireccional(pQuery, pGrafo, pPrioridad, nombreConexionAfinidad, pCadenaConexion, pConexion);
+                            InsertarEnReplicacionBidireccional(pQuery, pGrafo, pPrioridad, nombreConexionAfinidad, pVirtuosoConnectionData, pConexion);
                         }
 
                         //Para la Replicación Normal.
@@ -319,7 +322,7 @@ namespace Es.Riam.AbstractsOpen
                         }
                         else
                         {
-                            mLoggingService.GuardarLogError(ex);
+                            mLoggingService.GuardarLogError(ex, mlogger);
                         }
                     }
 
@@ -358,26 +361,49 @@ namespace Es.Riam.AbstractsOpen
             }
             return true;
         }
+
         public int ContarReplicacionesPendientesEnReplica(string pNombreConexion)
         {
+            mLoggingService.GuardarTraza($"Entrado en ContarReplicacionesPendientesEnReplica - Contando elementos en {pNombreConexion}");
             string NombreTablaReplica = $"TablaReplicacion_{pNombreConexion.Replace("_Master", "")}";
 
             int numReplicacionesPendientes = -1;
 
-            using (RabbitMQClient rMQ = new RabbitMQClient("colaReplicacion", NombreTablaReplica, mLoggingService, mConfigService))
+            using (RabbitMQClient rMQ = new RabbitMQClient("colaReplicacion", NombreTablaReplica, mLoggingService, mConfigService, mLoggerFactory.CreateLogger<RabbitMQClient>(), mLoggerFactory))
             {
                 numReplicacionesPendientes = rMQ.ContarElementosEnCola();
             }
 
+            mLoggingService.GuardarTraza($"Saliendo de ContarReplicacionesPendientesEnReplica - Hay {numReplicacionesPendientes} en {pNombreConexion}");
             return numReplicacionesPendientes;
         }
 
-        public abstract bool ControlarErrorVirtuosoConection(string cadenaConexion, string conexionAfinidadVirtuoso);
-        public int ActualizarVirtuoso_WebClient(string pUrl, string pQuery, NameValueCollection pParametros)
+        public abstract bool ControlarErrorVirtuosoConection();
+        public int ActualizarVirtuoso_WebClient(VirtuosoConnectionData pVirtuosoConnectionData, string pQuery, NameValueCollection pParametros)
         {
             mLoggingService.AgregarEntrada("EscrituraWebClient: Inicio");
             RiamWebClient webClient = new RiamWebClient(TimeOutVirtuoso);
             webClient.Encoding = Encoding.UTF8;
+
+            string url = pVirtuosoConnectionData.SparqlEndpoint;
+
+            if (string.IsNullOrEmpty(pVirtuosoConnectionData.WriteUser))
+            {
+                throw new Exception($"La conexión {pVirtuosoConnectionData.Name} con IP {pVirtuosoConnectionData.Ip} NO es de escritura {pVirtuosoConnectionData.VirtuosoConnectionType} y no puede ejecutar la consulta: {Environment.NewLine}{pQuery}");
+            }
+
+            if (!pVirtuosoConnectionData.WriteUser.Equals("dba"))
+            {
+                url = pVirtuosoConnectionData.AuthSparqlEndpoint;
+                var credentialCache = new CredentialCache();
+                credentialCache.Add(
+                new Uri(url), // request url
+                  "Digest", // authentication type
+                  new NetworkCredential(pVirtuosoConnectionData.WriteUser, pVirtuosoConnectionData.WriteUserPassword) // credentials
+                );
+
+                webClient.Credentials = credentialCache;
+            }
 
             //no se necesita la cabecera
             //webClient.Headers.Add(HttpRequestHeader.ContentType, "application/sparql-query"); //"application/x-www-form-urlencoded"
@@ -389,7 +415,7 @@ namespace Es.Riam.AbstractsOpen
 
             try
             {
-                byte[] responseArray = webClient.UploadValues(pUrl, "POST", pParametros);
+                byte[] responseArray = webClient.UploadValues(url, "POST", pParametros);
                 milisegundos = (int)DateTime.Now.Subtract(horaInicio).TotalMilliseconds;
                 string respuesta = Encoding.UTF8.GetString(responseArray);
 
@@ -406,14 +432,14 @@ namespace Es.Riam.AbstractsOpen
                     //Intento recuperar información del error
                     StreamReader dataStream = new StreamReader(webException.Response.GetResponseStream());
                     respuesta = dataStream.ReadToEnd();
-                    
+
                 }
                 catch { }
 
                 respuesta += "\n\nQuery: " + pQuery;
-                respuesta += "\n\nUrl: " + pUrl;
+                respuesta += "\n\nUrl: " + url;
                 error = respuesta;
-                mLoggingService.GuardarLogError(webException, respuesta);
+                mLoggingService.GuardarLogError(webException, respuesta, mlogger);
 
 
                 if (webException.Message.Contains("(503)") || webException.Message.Contains("(404)") || (webException.Response != null && ((!((HttpWebResponse)webException.Response).StatusCode.Equals(HttpStatusCode.BadRequest) && !((HttpWebResponse)webException.Response).StatusCode.Equals(HttpStatusCode.InternalServerError) && webException.Status.Equals(WebExceptionStatus.ProtocolError)) || ((HttpWebResponse)webException.Response).StatusCode.Equals(HttpStatusCode.NotFound))))
@@ -437,7 +463,7 @@ namespace Es.Riam.AbstractsOpen
             catch (Exception ex)
             {
                 error = ex.Message;
-                mLoggingService.GuardarLogError(ex, "\n\nQuery: " + pQuery + "\n\nUrl: " + pUrl);
+                mLoggingService.GuardarLogError(ex, "\n\nQuery: " + pQuery + "\n\nUrl: " + url, mlogger);
                 throw new ExcepcionDeBaseDeDatos(pQuery, ex);
             }
             finally
@@ -446,7 +472,7 @@ namespace Es.Riam.AbstractsOpen
 
                 if (milisegundos > 700)
                 {
-                    mLoggingService.GuardarLogConsultaCostosa(string.Format("Consulta: {0} \r\nTiempo transcurrido:\r\n{1} \r\nUrl:\r\n{2} \r\nError:\r\n{3}", pQuery, milisegundos, pUrl, error));
+                    //mLoggingService.GuardarLogConsultaCostosa(string.Format("Consulta: {0} \r\nTiempo transcurrido:\r\n{1} \r\nUrl:\r\n{2} \r\nError:\r\n{3}", pQuery, milisegundos, url, error));
                 }
             }
 
@@ -508,7 +534,7 @@ namespace Es.Riam.AbstractsOpen
                 }
                 catch (Exception ex)
                 {
-                    mLoggingService.GuardarLogError(ex);
+                    mLoggingService.GuardarLogError(ex, mlogger);
                 }
             }
 
@@ -534,7 +560,7 @@ namespace Es.Riam.AbstractsOpen
                 string instruccion = pQuery.Substring(0, indiceInicioTriples);
                 string triples = pQuery.Substring(indiceInicioTriples, finTriples - indiceInicioTriples);
 
-                while(pIndiceTriplePartir != -1)
+                while (pIndiceTriplePartir != -1)
                 {
                     string conjuntoTriples = triples.Substring(0, pIndiceTriplePartir);
                     triples = triples.Substring(pIndiceTriplePartir);
@@ -584,11 +610,8 @@ namespace Es.Riam.AbstractsOpen
                     DbTransaction transaccion = TransaccionVirtuoso;
                     if (pExito)
                     {
-                        Console.WriteLine($"\t1.4 Comienzo a terminar transacción virtuoso - CARGA MASIVA");
                         transaccion.Commit();
-                        Console.WriteLine($"\t1.5 Terminada transacción en virtuoso / Comienza insertar instrucciones en réplica - CARGA MASIVA");
                         InsertarInstruccionesEnReplica();
-                        Console.WriteLine($"\t1.6 Terminada inserciones en réplica - CARGA MASIVA");
                     }
                     else if (transaccion.Connection != null)
                     {
@@ -598,7 +621,7 @@ namespace Es.Riam.AbstractsOpen
                         }
                         catch (Exception ex)
                         {
-                            mLoggingService.GuardarLogError(ex);
+                            mLoggingService.GuardarLogError(ex, mlogger);
                         }
 
                     }
@@ -609,11 +632,11 @@ namespace Es.Riam.AbstractsOpen
             }
         }
 
-        internal void InsertarInstruccionesEnReplica()
+        public void InsertarInstruccionesEnReplica()
         {
             if (ListaConsultasEjecutarEnReplicas != null && ListaConsultasEjecutarEnReplicas.Count > 0)
             {
-                foreach (string tablaReplicacion in GetListaConsultasEjecutarEnReplicas().Keys)
+                foreach (string tablaReplicacion in ListaConsultasEjecutarEnReplicas.Keys)
                 {
                     List<string> listaConsultas = new List<string>();
 
@@ -670,7 +693,7 @@ namespace Es.Riam.AbstractsOpen
             }
             catch (Exception ex)
             {
-                mLoggingService.GuardarLogError(ex, $"Conexion del error: {pConexion.ConnectionString}", true);
+                mLoggingService.GuardarLogError(ex,$"Conexion del error: {pConexion.ConnectionString}", mlogger,true);
                 throw;
             }
 
@@ -687,11 +710,6 @@ namespace Es.Riam.AbstractsOpen
             short connectSuccess = 0;
             Type tipo = pConexion.GetType();
             string connectionString = pConexion.ConnectionString;
-            //Cambiamos el puerto por el 1111
-            KeyValuePair<string, string> ip_puerto = ObtenerIpVirtuosoDeCadenaConexion(connectionString);
-            string ipVirtuoso = ip_puerto.Key;
-            string puertoVirtuoso = ip_puerto.Value;
-            connectionString = connectionString.Replace(ipVirtuoso + ":" + puertoVirtuoso, ipVirtuoso + $":{mConfigService.ObtenerPuertoVirtuosoAux()}");
 
             Stopwatch sw = LoggingService.IniciarRelojTelemetria();
 
@@ -716,7 +734,7 @@ namespace Es.Riam.AbstractsOpen
                         //Error de conexión relacionado con el checkpoint de virtuoso
                         connectSuccess = 2;
                     }
-                    mLoggingService.GuardarLogError(ex);
+                    mLoggingService.GuardarLogError(ex, mlogger);
                 }
                 finally
                 {
@@ -769,7 +787,7 @@ namespace Es.Riam.AbstractsOpen
                 }
                 catch (Exception e)
                 {
-                    mLoggingService.GuardarLogError(e);
+                    mLoggingService.GuardarLogError(e, mlogger);
                     //La cadena de conexión está mal formada
                     return false;
                 }
@@ -837,8 +855,8 @@ namespace Es.Riam.AbstractsOpen
         {
             get
             {
-                StringBuilder sb = new StringBuilder(); 
-                
+                StringBuilder sb = new StringBuilder();
+
                 int numIntentos = 0;
                 int numMaxIntentos = 9;
                 while ((ConexionMaster == null || !ConexionMaster.State.Equals(ConnectionState.Open)) && (numIntentos < numMaxIntentos))
@@ -874,21 +892,21 @@ namespace Es.Riam.AbstractsOpen
 
                                 if (!ComprobarConexionValida(ConexionMaster))
                                 {
-                                    string cadenaConexion = null;
+                                    VirtuosoConnectionData virtuosoConnectionData;
                                     sb.AppendLine($"ConexionMaster no es valida");
                                     try
                                     {
                                         if (FicheroConfiguracionMaster.ToLower().Contains("home"))
                                         {
                                             sb.AppendLine($"cadenaConexion = mConfigService.ObtenerVirtuosoEscrituraHome();");
-                                            cadenaConexion = mConfigService.ObtenerVirtuosoEscrituraHome();
+                                            virtuosoConnectionData = mConfigService.ObtenerVirtuosoEscrituraHome();
                                         }
                                         else
                                         {
                                             sb.AppendLine($"mConfigService.ObtenerVirtuosoEscritura().Value;");
-                                            cadenaConexion = mConfigService.ObtenerVirtuosoEscritura().Value;
+                                            virtuosoConnectionData = mConfigService.ObtenerVirtuosoEscritura().Value;
                                         }
-                                    //TODO SANTI
+                                        //TODO SANTI
                                         if (mConfigService.CheckBidirectionalReplicationIsActive())
                                         {
                                             sb.AppendLine($"Replicacion bidireccional activada");
@@ -899,11 +917,11 @@ namespace Es.Riam.AbstractsOpen
                                             }
 
                                             string nombreConexionReplica = obtenerNombreConexionReplicaHAProxy(FicheroConfiguracionMaster);
-                                            cadenaConexion = mConfigService.ObtenerVirutosoEscritura(nombreConexionReplica);
-                                            sb.AppendLine($"conexion: {nombreConexionReplica}:{cadenaConexion}");
+                                            virtuosoConnectionData = mConfigService.ObtenerVirutosoEscritura(nombreConexionReplica);
+                                            sb.AppendLine($"conexion: {nombreConexionReplica}:{virtuosoConnectionData.ConnectionString}");
                                         }
-                                        sb.AppendLine($"ConexionMaster: {cadenaConexion}");
-                                        ConexionMaster = new VirtuosoConnection(cadenaConexion);
+                                        sb.AppendLine($"ConexionMaster: {virtuosoConnectionData.ConnectionString}");
+                                        ConexionMaster = new VirtuosoConnection(virtuosoConnectionData.ConnectionString);
                                     }
                                     catch (Exception e)
                                     {
@@ -938,9 +956,10 @@ namespace Es.Riam.AbstractsOpen
                                 }
                             }
                         }
-                    }catch (Exception e)
+                    }
+                    catch (Exception e)
                     {
-                        mLoggingService.GuardarLogError(e, sb.ToString());
+                        mLoggingService.GuardarLogError(e, sb.ToString(), mlogger);
                     }
 
                 }
@@ -978,8 +997,8 @@ namespace Es.Riam.AbstractsOpen
 
                             if (!ComprobarConexionValida(Connection))
                             {
-                                sb.AppendLine($"La cadena de conexion en ParentConnectoin es {CadenaConexion}");
-                                Connection = new VirtuosoConnection(CadenaConexion);
+                                sb.AppendLine($"La cadena de conexion en ParentConnectoin es {VirtuosoConnectionData}");
+                                Connection = new VirtuosoConnection(VirtuosoConnectionData.ConnectionString);
                             }
                         }
 
@@ -994,7 +1013,7 @@ namespace Es.Riam.AbstractsOpen
                             }
                             catch (Exception ex)
                             {
-                                mLoggingService.GuardarLogError(ex);
+                                mLoggingService.GuardarLogError(ex, mlogger);
 
                                 if (numIntentos == numMaxIntentos)
                                 {
@@ -1012,15 +1031,16 @@ namespace Es.Riam.AbstractsOpen
                                     }
                                     catch (Exception e)
                                     {
-                                        mLoggingService.GuardarLogError(e);
+                                        mLoggingService.GuardarLogError(e, mlogger);
                                     }
                                 }
                             }
                         }
                     }
-                }catch (Exception ex)
+                }
+                catch (Exception ex)
                 {
-                    mLoggingService.GuardarLogError(ex, sb.ToString()); 
+                    mLoggingService.GuardarLogError(ex, sb.ToString(), mlogger);
                 }
                 return Connection;
             }
@@ -1078,15 +1098,15 @@ namespace Es.Riam.AbstractsOpen
                 {
                     KeyValuePair<List<string>, bool> datosReplicacion = new KeyValuePair<List<string>, bool>(pListaQuerys, pUsarHttpPost);
 
-                    using (RabbitMQClient rMQ = new RabbitMQClient(rabbitBD, pTablaReplicacion, mLoggingService, mConfigService, exchange))
+                    using (RabbitMQClient rMQ = new RabbitMQClient(rabbitBD, pTablaReplicacion, mLoggingService, mConfigService, mLoggerFactory.CreateLogger<RabbitMQClient>(), mLoggerFactory, exchange))
                     {
-                        rMQ.AgregarElementoACola(JsonConvert.SerializeObject(datosReplicacion));                     
+                        rMQ.AgregarElementoACola(JsonConvert.SerializeObject(datosReplicacion));
                     }
                 }
             }
             catch (Exception ex)
             {
-                mLoggingService.GuardarLogError(ex, "Error al intentar replicar");
+                mLoggingService.GuardarLogError(ex, "Error al intentar replicar", mlogger);
             }
         }
         /// <summary>
@@ -1118,33 +1138,8 @@ namespace Es.Riam.AbstractsOpen
             }
             return false;
         }
-        public KeyValuePair<string, string> ObtenerIpVirtuosoDeCadenaConexion(string pCadenaConexion)
-        {
-            string ip = null;
-            string puerto = mConfigService.ObtenerPuertoVirtuoso();//"8890";
 
-            pCadenaConexion = pCadenaConexion.ToLower();
-            char[] separadores = { ';' };
-            string[] parametros = pCadenaConexion.Split(separadores, StringSplitOptions.RemoveEmptyEntries);
-
-            var host = parametros.Where(item => item.Trim().StartsWith("host"));
-
-            if (host.Any())
-            {
-                ip = host.First().Substring(host.First().IndexOf('=') + 1).Trim();
-                if (ip.Contains(':'))
-                {
-                    string puertoAux = ip.Substring(ip.IndexOf(':') + 1);
-                    if (!puertoAux.Equals(mConfigService.ObtenerPuertoVirtuosoAux()))//"1111"
-                    {
-                        puerto = puertoAux;
-                    }
-                    ip = ip.Substring(0, ip.IndexOf(':'));
-                }
-            }
-
-            return new KeyValuePair<string, string>(ip, puerto);
-        }
+        
         /// <summary>
         /// Actualiza virtuoso (mediante un insert / update / delete)
         /// </summary>
@@ -1152,7 +1147,7 @@ namespace Es.Riam.AbstractsOpen
         /// <param name="pGrafo">Grafo que se va a actualiar</param>
         /// <param name="pReplicar">Verdad si esta consulta debe replicarse (por defecto TRUE)</param>
         /// <param name="pPrioridad">Prioridad que se le va a dar a la replicación de esta transacción</param>
-        public int ActualizarVirtuosoClienteTradicional(string pQuery, string pGrafo, bool pReplicar, short pPrioridad, VirtuosoConnection pConexion, string pCadenaConexion = null)
+        public int ActualizarVirtuosoClienteTradicional(string pQuery, string pGrafo, bool pReplicar, short pPrioridad, VirtuosoConnection pConexion, VirtuosoConnectionData pVirtuosoConnectionData = null)
         {
             int resultado = 0;
 
@@ -1184,7 +1179,7 @@ namespace Es.Riam.AbstractsOpen
             }
             catch (Exception ex)
             {
-                mLoggingService.GuardarLogError(ex, $"CONSULTA: {pQuery}");
+                mLoggingService.GuardarLogError(ex, $"CONSULTA: {pQuery}", mlogger);
 
                 if (TransaccionVirtuoso == null)
                 {
@@ -1211,7 +1206,7 @@ namespace Es.Riam.AbstractsOpen
                 }
                 catch (Exception e)
                 {
-                    mLoggingService.GuardarLogError(e);
+                    mLoggingService.GuardarLogError(e, mlogger);
                 }
             }
 
@@ -1235,22 +1230,44 @@ namespace Es.Riam.AbstractsOpen
             }
             catch (Exception ex)
             {
-                mLoggingService.GuardarLogError(ex);
+                mLoggingService.GuardarLogError(ex, mlogger);
             }
         }
 
         protected bool ServidorOperativo()
         {
-            string cadenaConexion = mConfigService.ObtenerVirtuosoEscritura().Value;
-            KeyValuePair<string, string> ip_puerto = ObtenerIpVirtuosoDeCadenaConexion(cadenaConexion);
-            string ipVirtuoso = ip_puerto.Key;
-            string puertoVirtuoso = ip_puerto.Value;
-            string url = "http://" + ipVirtuoso + ":" + puertoVirtuoso + "/sparql";
+            VirtuosoConnectionData virtuosoConnectionData = mConfigService.ObtenerVirtuosoEscritura().Value;
             try
             {
-                HttpClient client = new HttpClient();
-                client.DefaultRequestHeaders.Add("UserAgent", UtilWeb.GenerarUserAgent());
+                HttpClient client;
                 HttpResponseMessage response = null;
+                HttpClientHandler handler = new HttpClientHandler();
+                string url = virtuosoConnectionData.SparqlEndpoint;
+
+                if (string.IsNullOrEmpty(virtuosoConnectionData.ReadUser))
+                {
+                    throw new Exception($"La conexión {virtuosoConnectionData.Name} con IP {virtuosoConnectionData.Ip} NO es de lectura {virtuosoConnectionData.VirtuosoConnectionType} y no puede comprobar el servidor operativo");
+                }
+
+                if (!virtuosoConnectionData.ReadUser.Equals("dba"))
+                {
+                    url = virtuosoConnectionData.AuthSparqlEndpoint;
+                    var credentialCache = new CredentialCache();
+                    credentialCache.Add(
+                    new Uri(url), // request url
+                      "Digest", // authentication type
+                      new NetworkCredential(virtuosoConnectionData.ReadUser, virtuosoConnectionData.ReadUserPassword) // credentials
+                    );
+
+                    handler.Credentials = credentialCache;
+                    client = new HttpClient(handler);
+                }
+                else
+                {
+                    client = new HttpClient();
+                }
+
+                client.DefaultRequestHeaders.Add("UserAgent", UtilWeb.GenerarUserAgent());
                 response = client.GetAsync($"{url}").Result;
                 response.EnsureSuccessStatusCode();
                 HttpStatusCode code = response.StatusCode;
@@ -1278,9 +1295,11 @@ namespace Es.Riam.AbstractsOpen
             bool estoyEnUrl = false;
             int numTriples = 0;
 
+            int numCaracteres = pConjuntoTriples.Length;
+
             //Recorremos caracter a caracter el conjunto de triples
             for (int i = 0; i < pConjuntoTriples.Length; i++)
-            {                
+            {
                 if (pConjuntoTriples[i] == '"' && !estoyEnString)
                 {
                     //Si el caracter son comillas y no estoy dentro de un string entramos a un string
@@ -1289,7 +1308,7 @@ namespace Es.Riam.AbstractsOpen
                 else if (pConjuntoTriples[i] == '"')
                 {
                     //Si el caracter son comillas y estoy dentro de un string revisamos si están casteadas, en caso de no estarlo, estamos saliendo de un string
-                    if (pConjuntoTriples[i - 1] != '\\')
+                    if (!EstaComillaEscapada(pConjuntoTriples, i, numCaracteres))
                     {
                         estoyEnString = false;
                     }
@@ -1308,11 +1327,11 @@ namespace Es.Riam.AbstractsOpen
                 {
                     //Si el caracter es un punto, no estoy en un string ni en una URL y no hay un número después del punto, he llegado al final de un triple.
                     numTriples++;
-                    
+
                     if (numTriples == NUM_MAX_TRIPLES_CONSULTA)
                     {
                         //Al alcanzar el número de triples indicado, paso la posición del último caracter que incluye este triple
-                        return i + 1; 
+                        return i + 1;
                     }
                 }
             }
@@ -1325,10 +1344,31 @@ namespace Es.Riam.AbstractsOpen
         /// </summary>
         /// <param name="pCaracter">Caracter que queremos comprobar</param>
         /// <returns>True o False en función de si el carcter es o no un número</returns>
-        private bool CaracterEsNumero(char pCaracter)
+        private static bool CaracterEsNumero(char pCaracter)
         {
             //Comprobamos con la tabla ASCII si el caracter es o no un número
             return pCaracter >= 48 && pCaracter <= 57;
         }
+
+        /// <summary>
+        /// Comprueba si la comilla en la posición indicada, está escapada o no.
+        /// </summary>
+        /// <param name="pConjuntoTriples">Conjunto de triples de los que queremos obtener la posición del triple 600</param>
+        /// <param name="posicionCaracter">Posición del caracter " que queremos comprobar si está escapado</param>
+        /// <param name="pNumeroCaracteres">Número total de caracteres del conjunto de triples</param>
+        /// <returns></returns>
+        private static bool EstaComillaEscapada(string pConjuntoTriples, int posicionCaracter, int pNumeroCaracteres)
+        {
+            bool escapada = false;
+
+            for (int i = 1; posicionCaracter - i > pNumeroCaracteres || pConjuntoTriples[posicionCaracter - i] == '\\'; i++)
+            {
+                escapada = !escapada;
+            }
+
+            return escapada;
+        }
     }
+
+    
 }

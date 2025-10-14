@@ -7,6 +7,7 @@ using Es.Riam.Gnoss.AD.Virtuoso;
 using Es.Riam.Gnoss.CL;
 using Es.Riam.Gnoss.CL.Facetado;
 using Es.Riam.Gnoss.CL.ParametrosAplicacion;
+using Es.Riam.Gnoss.Elementos.Amigos;
 using Es.Riam.Gnoss.Logica.Facetado;
 using Es.Riam.Gnoss.Logica.ParametroAplicacion;
 using Es.Riam.Gnoss.Util.Configuracion;
@@ -14,6 +15,7 @@ using Es.Riam.Gnoss.Util.General;
 using Es.Riam.Gnoss.Web.Controles;
 using Es.Riam.Gnoss.Web.MVC.Models.Administracion;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -27,27 +29,30 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
         private ConfigService _configService;
         private RedisCacheWrapper _redisCacheWrapper;
         private GnossCache _gnossCache;
-
-        public ControladorMapasCharts(LoggingService loggingService, EntityContext entityContext, ConfigService configService, RedisCacheWrapper redisCacheWrapper, GnossCache gnossCache, VirtuosoAD virtuosoAD, IHttpContextAccessor httpContextAccessor, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication)
-            : base(loggingService, configService, entityContext, redisCacheWrapper, gnossCache, virtuosoAD, httpContextAccessor, servicesUtilVirtuosoAndReplication)
+        private ILogger mlogger;
+        private ILoggerFactory mLoggerFactory;
+        public ControladorMapasCharts(LoggingService loggingService, EntityContext entityContext, ConfigService configService, RedisCacheWrapper redisCacheWrapper, GnossCache gnossCache, VirtuosoAD virtuosoAD, IHttpContextAccessor httpContextAccessor, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication, ILogger<ControladorMapasCharts> logger, ILoggerFactory loggerFactory)
+            : base(loggingService, configService, entityContext, redisCacheWrapper, gnossCache, virtuosoAD, httpContextAccessor, servicesUtilVirtuosoAndReplication,logger,loggerFactory)
         {
             _loggingService = loggingService;
             _entityContext = entityContext;
             _configService = configService;
             _redisCacheWrapper = redisCacheWrapper;
             _gnossCache = gnossCache;
+            mlogger = logger;
+            mLoggerFactory = loggerFactory;
         }
 
         #region Metodos Charts
         public AdministrarChartsViewModel LoadChartsFromBBDD()
         {
             AdministrarChartsViewModel resultado = new AdministrarChartsViewModel();
-			ParametroAplicacionCL paramCL = new ParametroAplicacionCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mServicesUtilVirtuosoAndReplication);
+			ParametroAplicacionCL paramCL = new ParametroAplicacionCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<ParametroAplicacionCL>(), mLoggerFactory);
 			try
             {
                 resultado.Idiomas = paramCL.ObtenerListaIdiomas();
 
-                using (FacetaCN facetaCN = new FacetaCN(_entityContext, _loggingService, _configService, mServicesUtilVirtuosoAndReplication))
+                using (FacetaCN facetaCN = new FacetaCN(_entityContext, _loggingService, _configService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<FacetaCN>(), mLoggerFactory))
                 {
                     DataWrapperFacetas facetaDW = new DataWrapperFacetas();
                     facetaCN.CargarFacetaConfigProyChart(ProyectoAD.MyGnoss, ProyectoSeleccionado.Clave, facetaDW);
@@ -67,7 +72,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
             }
             catch (Exception ex)
             {
-                _loggingService.GuardarLogError(ex);
+                _loggingService.GuardarLogError(ex, mlogger);
             }
             return resultado;
         }
@@ -79,8 +84,8 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
         /// <param name="pChartViewModel">Vista con los datos a modificar o agregar del chart</param>
         public void SaveChart(ChartViewModel pChartViewModel, List<ChartViewInfoOrder> pChartViewInfoOrderList)
         {
-            using (FacetaCN facetaCN = new FacetaCN(_entityContext, _loggingService, _configService, mServicesUtilVirtuosoAndReplication))
-            using (FacetaCL facetadoCL = new FacetaCL(_entityContext, _loggingService, _redisCacheWrapper, _configService, mServicesUtilVirtuosoAndReplication))
+            using (FacetaCN facetaCN = new FacetaCN(_entityContext, _loggingService, _configService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<FacetaCN>(), mLoggerFactory))
+            using (FacetaCL facetadoCL = new FacetaCL(_entityContext, _loggingService, _redisCacheWrapper, _configService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<FacetaCL>(), mLoggerFactory))
             {
                 if (pChartViewInfoOrderList != null)
                 {
@@ -129,8 +134,8 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
 
         public void GuardarGraficos(List<ChartViewModel> pListaGraficos)
         {
-            FacetaCL facetadoCL = new FacetaCL(_entityContext, _loggingService, _redisCacheWrapper, _configService, mServicesUtilVirtuosoAndReplication);
-            FacetaCN facetaCN = new FacetaCN(_entityContext, _loggingService, _configService, mServicesUtilVirtuosoAndReplication);
+            FacetaCL facetadoCL = new FacetaCL(_entityContext, _loggingService, _redisCacheWrapper, _configService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<FacetaCL>(), mLoggerFactory);
+            FacetaCN facetaCN = new FacetaCN(_entityContext, _loggingService, _configService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<FacetaCN>(), mLoggerFactory);
 
             AdministrarChartsViewModel graficos = LoadChartsFromBBDD();
             foreach (ChartViewModel grafico in graficos.ListaCharts)
@@ -214,7 +219,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
             AdministrarMapaViewModel resultado = new AdministrarMapaViewModel();
             try
             {
-                using (FacetaCN facetaCN = new FacetaCN(_entityContext, _loggingService, _configService, mServicesUtilVirtuosoAndReplication))
+                using (FacetaCN facetaCN = new FacetaCN(_entityContext, _loggingService, _configService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<FacetaCN>(), mLoggerFactory))
                 {
                     DataWrapperFacetas facetaDS = new DataWrapperFacetas();
                     facetaCN.CargarFacetaConfigProyMapa(ProyectoAD.MyGnoss, ProyectoSeleccionado.Clave, facetaDS);
@@ -227,14 +232,14 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
             }
             catch (Exception ex)
             {
-                _loggingService.GuardarLogError(ex);
+                _loggingService.GuardarLogError(ex,mlogger);
             }
             return resultado;
         }
         public void SaveMap(AdministrarMapaViewModel pMapa)
         {
-            using (FacetaCN facetaCN = new FacetaCN(_entityContext, _loggingService, _configService, mServicesUtilVirtuosoAndReplication))
-            using (FacetaCL facetadoCL = new FacetaCL(_entityContext, _loggingService, _redisCacheWrapper, _configService, mServicesUtilVirtuosoAndReplication))
+            using (FacetaCN facetaCN = new FacetaCN(_entityContext, _loggingService, _configService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<FacetaCN>(), mLoggerFactory))
+            using (FacetaCL facetadoCL = new FacetaCL(_entityContext, _loggingService, _redisCacheWrapper, _configService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<FacetaCL>(), mLoggerFactory))
             {
                 DataWrapperFacetas facetaDS = new DataWrapperFacetas();
                 facetaCN.CargarFacetaConfigProyMapa(ProyectoAD.MyGnoss, ProyectoSeleccionado.Clave, facetaDS);

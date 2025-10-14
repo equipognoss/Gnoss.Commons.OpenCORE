@@ -1,5 +1,6 @@
 using Es.Riam.Gnoss.AD.Suscripcion;
 using Es.Riam.Gnoss.Util.General;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,8 +17,8 @@ namespace Es.Riam.Gnoss.Elementos.Suscripcion
         /// <summary>
         /// Constructor sin parámetros
         /// </summary>
-        public Suscripcion(LoggingService loggingService)
-            :base(loggingService)
+        public Suscripcion()
+            :base()
         {
         }
 
@@ -25,8 +26,8 @@ namespace Es.Riam.Gnoss.Elementos.Suscripcion
         /// Crea una suscripción a partir de la fila pasada como parámetro
         /// </summary>
         /// <param name="pFilaSuscripcion">Fila de la suscripción</param>
-        public Suscripcion(AD.EntityModel.Models.Suscripcion.Suscripcion pFilaSuscripcion, LoggingService loggingService)
-            : base(pFilaSuscripcion, loggingService)
+        public Suscripcion(AD.EntityModel.Models.Suscripcion.Suscripcion pFilaSuscripcion)
+            : base(pFilaSuscripcion)
         {
         }
 
@@ -35,8 +36,8 @@ namespace Es.Riam.Gnoss.Elementos.Suscripcion
         /// </summary>
         /// <param name="pFilaSuscripcion">Fila de la suscripción</param>
         /// <param name="pGestionSuscripcion">Gestor de suscripciones</param>
-        public Suscripcion(AD.EntityModel.Models.Suscripcion.Suscripcion pFilaSuscripcion, GestionSuscripcion pGestionSuscripcion, LoggingService loggingService)
-            : base(pFilaSuscripcion, pGestionSuscripcion, loggingService)
+        public Suscripcion(AD.EntityModel.Models.Suscripcion.Suscripcion pFilaSuscripcion, GestionSuscripcion pGestionSuscripcion)
+            : base(pFilaSuscripcion, pGestionSuscripcion)
         {
         }
 

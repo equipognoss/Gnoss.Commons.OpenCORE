@@ -1,11 +1,13 @@
 ﻿using Es.Riam.AbstractsOpen;
 using Es.Riam.Gnoss.AD.EntityModel;
 using Es.Riam.Gnoss.CL;
+using Es.Riam.Gnoss.Elementos.Amigos;
 using Es.Riam.Gnoss.OAuthAD;
 using Es.Riam.Gnoss.Util.Configuracion;
 using Es.Riam.Gnoss.Util.General;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Logging;
 using System;
 using System.IO;
 using System.Text;
@@ -32,7 +34,8 @@ namespace Es.Riam.Gnoss.Web.UtilOAuth
         private ConfigService mConfigService;
         private IServicesUtilVirtuosoAndReplication mServicesUtilVirtuosoAndReplication;
         private static object bloqueo = new object();
-
+        private ILogger mlogger;
+        private ILoggerFactory mLoggerFactory;
         #endregion
 
         #region Constructores
@@ -40,7 +43,7 @@ namespace Es.Riam.Gnoss.Web.UtilOAuth
         /// <summary>
         /// Constructor sin parámetros
         /// </summary>
-        public GnossOAuthAuthorizationManager(GnossCache gnossCache, IHostingEnvironment env, EntityContextOauth entityContextOauth, LoggingService loggingService, EntityContext entityContext, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication)
+        public GnossOAuthAuthorizationManager(GnossCache gnossCache, IHostingEnvironment env, EntityContextOauth entityContextOauth, LoggingService loggingService, EntityContext entityContext, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication, ILogger<GnossOAuthAuthorizationManager> logger, ILoggerFactory loggerFactory)
         {
             mGnossCache = gnossCache;
             mEnv = env;
@@ -49,6 +52,8 @@ namespace Es.Riam.Gnoss.Web.UtilOAuth
             mEntityContextOauth = entityContextOauth;
             mConfigService = configService;
             mServicesUtilVirtuosoAndReplication = servicesUtilVirtuosoAndReplication;
+            mlogger = logger;
+            mLoggerFactory = loggerFactory;
         }
 
         #endregion
@@ -165,7 +170,7 @@ namespace Es.Riam.Gnoss.Web.UtilOAuth
             pFirmaGnoss = "";
             pFirmaExterna = signature;
 
-            QueryOauth queryOauth = new QueryOauth(pRequest.Path.ToString(), token, consumerKey, nonce, method, timespan, signature, mEntityContextOauth, mLoggingService, mEntityContext, mConfigService, mServicesUtilVirtuosoAndReplication);
+            QueryOauth queryOauth = new QueryOauth(pRequest.Path.ToString(), token, consumerKey, nonce, method, timespan, signature, mEntityContextOauth, mLoggingService, mEntityContext, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<QueryOauth>(), mLoggerFactory);
             pConsumerSecret = queryOauth.ConsumerSecret;
             return ObtenerUsuarioDeParametrosPeticionOAuth(queryOauth, pRequest.Method).Login;
         }
@@ -177,14 +182,14 @@ namespace Es.Riam.Gnoss.Web.UtilOAuth
         /// <returns>ID del usuario</returns>
         public Guid ObtenerUsuarioIDDePeticionGet(string pUrl, string pMetodoHttp)
         {
-            QueryOauth queryOauth = OAuthBase.ObtenerParametrosUrl(pUrl, mEntityContextOauth, mLoggingService, mEntityContext, mConfigService, mServicesUtilVirtuosoAndReplication);
+            QueryOauth queryOauth = OAuthBase.ObtenerParametrosUrl(pUrl, mEntityContextOauth, mLoggingService, mEntityContext, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<QueryOauth>(), mLoggerFactory);
             try
             {
                 return ObtenerUsuarioDeParametrosPeticionOAuth(queryOauth, pMetodoHttp).UsuarioID;
             }
             catch(Exception ex)
             {
-                mLoggingService.GuardarLogError(ex);
+                mLoggingService.GuardarLogError(ex, mlogger);
             }
             return Guid.Empty;
         }

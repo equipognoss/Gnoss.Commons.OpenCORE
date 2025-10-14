@@ -28,7 +28,11 @@ using Es.Riam.Gnoss.Logica.Tesauro;
 using Es.Riam.Gnoss.Logica.Usuarios;
 using Es.Riam.Gnoss.Util.Configuracion;
 using Es.Riam.Gnoss.Util.General;
+using Es.Riam.Gnoss.UtilServiciosWeb;
+using Es.Riam.Gnoss.Web.Controles.ServiciosGenerales;
+using Es.Riam.Interfaces.InterfacesOpen;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -46,12 +50,14 @@ namespace Es.Riam.Gnoss.Web.Controles.Suscripcion
         private ConfigService mConfigService;
         private RedisCacheWrapper mRedisCacheWrapper;
         private IServicesUtilVirtuosoAndReplication mServicesUtilVirtuosoAndReplication;
+        private ILogger mlogger;
+        private ILoggerFactory mLoggerFactory;
         #region Constructor
 
         /// <summary>
         /// Constructor sin parámetros
         /// </summary>
-        public ControladorSuscripciones(LoggingService loggingService, EntityContext entityContext, ConfigService configService, RedisCacheWrapper redisCacheWrapper, VirtuosoAD virtuosoAD, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication)
+        public ControladorSuscripciones(LoggingService loggingService, EntityContext entityContext, ConfigService configService, RedisCacheWrapper redisCacheWrapper, VirtuosoAD virtuosoAD, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication, ILogger<ControladorSuscripciones> logger, ILoggerFactory loggerFactory)
         {
             mVirtuosoAD = virtuosoAD;
             mLoggingService = loggingService;
@@ -59,6 +65,8 @@ namespace Es.Riam.Gnoss.Web.Controles.Suscripcion
             mConfigService = configService;
             mRedisCacheWrapper = redisCacheWrapper;
             mServicesUtilVirtuosoAndReplication = servicesUtilVirtuosoAndReplication;
+            mlogger = logger;
+            mLoggerFactory = loggerFactory;
         }
 
         #endregion
@@ -71,7 +79,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Suscripcion
         /// <param name="pIdentidad">Identidad de la que se deben cargar las suscripciones</param>
         public void CargarIdentidadesSuscritas(Identidad pIdentidad)
         {
-            SuscripcionCN mSuscripcionCN = new SuscripcionCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+            SuscripcionCN mSuscripcionCN = new SuscripcionCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<SuscripcionCN>(), mLoggerFactory);
             DataWrapperSuscripcion mSuscripcionDW = mSuscripcionCN.ObtenerSuscripcionesDeIdentidad(pIdentidad.IdentidadMyGNOSS.Clave, false);
             mSuscripcionCN.Dispose();
 
@@ -94,7 +102,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Suscripcion
                 }
             }
 
-            UsuarioCN usuarioCN = new UsuarioCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+            UsuarioCN usuarioCN = new UsuarioCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<UsuarioCN>(), mLoggerFactory);
             List<AD.EntityModel.Models.UsuarioDS.Usuario> usuarios = usuarioCN.ObtenerUsuariosPorIdentidadesCargaLigera(listaIdentidades);
             usuarioCN.Dispose();
 
@@ -124,7 +132,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Suscripcion
         /// <param name="pProyecto">Id del proyecto</param>
         public void CargarIdentidadesSuscritasEnProyecto(Identidad pIdentidad, Guid pProyecto)
         {
-            SuscripcionCN mSuscripcionCN = new SuscripcionCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+            SuscripcionCN mSuscripcionCN = new SuscripcionCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<SuscripcionCN>(), mLoggerFactory);
             DataWrapperSuscripcion mSuscripcionDW = mSuscripcionCN.ObtenerSuscripcionesDeIdentidad(pIdentidad.IdentidadMyGNOSS.Clave, false);
             mSuscripcionCN.Dispose();
 
@@ -141,7 +149,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Suscripcion
                 }
             }
 
-            IdentidadCN identidadCN = new IdentidadCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+            IdentidadCN identidadCN = new IdentidadCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<IdentidadCN>(), mLoggerFactory);
             GestionIdentidades gestorIden = new GestionIdentidades(identidadCN.ObtenerIdentidadesPorID(listaIdentidades, true), mLoggingService, mEntityContext, mConfigService, mServicesUtilVirtuosoAndReplication);
 
 
@@ -192,9 +200,9 @@ namespace Es.Riam.Gnoss.Web.Controles.Suscripcion
         /// <param name="pIdentidadID">Identidad a la que me suscribo</param>
         /// <param name="pSuscribirmeComunidad">Indica si se suscribe a la comunidad</param>
         /// <param name="pSuscribirmeTodaActividad">Indica si se suscribe a toda sus actividad</param>
-        public void SuscribirmePerfil(Identidad pIdentidadActual, Proyecto pProyectoSeleccionado, string BaseURL, string UrlIntragnoss, Identidad pIdentidadSuscripcion, bool? pSuscribirmeComunidad, bool? pSuscribirmeTodaActividad, bool? pSuscribirmeTesauroUsusario, string pLanguageCode)
+        public void SuscribirmePerfil(Identidad pIdentidadActual, Proyecto pProyectoSeleccionado, string BaseURL, string UrlIntragnoss, Identidad pIdentidadSuscripcion, bool? pSuscribirmeComunidad, bool? pSuscribirmeTodaActividad, bool? pSuscribirmeTesauroUsusario, string pLanguageCode, IAvailableServices pAvailableServices)
         {
-            SuscribirmePerfil(pIdentidadActual, pProyectoSeleccionado, BaseURL, UrlIntragnoss, pIdentidadSuscripcion, pSuscribirmeComunidad, pSuscribirmeTodaActividad, pSuscribirmeTesauroUsusario, 0, pLanguageCode);
+            SuscribirmePerfil(pIdentidadActual, pProyectoSeleccionado, BaseURL, UrlIntragnoss, pIdentidadSuscripcion, pSuscribirmeComunidad, pSuscribirmeTodaActividad, pSuscribirmeTesauroUsusario, 0, pLanguageCode, pAvailableServices);
         }
 
 
@@ -207,7 +215,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Suscripcion
         /// <param name="pIdentidadID">Identidad a la que me suscribo</param>
         /// <param name="pSuscribirmeComunidad">Indica si se suscribe a la comunidad</param>
         /// <param name="pSuscribirmeTodaActividad">Indica si se suscribe a toda sus actividad</param>
-        public void SuscribirmePerfil(Identidad pIdentidadActual, Proyecto pProyectoSeleccionado, string BaseURL, string UrlIntragnoss, Identidad pIdentidadSuscripcion, bool? pSuscribirmeComunidad, bool? pSuscribirmeTodaActividad, bool? pSuscribirmeTesauroUsusario, int pPeriodicidad, string pLanguageCode)
+        public void SuscribirmePerfil(Identidad pIdentidadActual, Proyecto pProyectoSeleccionado, string BaseURL, string UrlIntragnoss, Identidad pIdentidadSuscripcion, bool? pSuscribirmeComunidad, bool? pSuscribirmeTodaActividad, bool? pSuscribirmeTesauroUsusario, int pPeriodicidad, string pLanguageCode, IAvailableServices pAvailableServices)
         {
             //Guid identidadID = pIdentidadID;
 
@@ -219,11 +227,11 @@ namespace Es.Riam.Gnoss.Web.Controles.Suscripcion
 
             bool incluirBRPersonal = pIdentidadSuscripcion.Tipo != TiposIdentidad.Organizacion;
 
-            SuscripcionCN suscripcionCN = new SuscripcionCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+            SuscripcionCN suscripcionCN = new SuscripcionCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<SuscripcionCN>(), mLoggerFactory);
             GestionSuscripcion gestorSuscripciones = new GestionSuscripcion(suscripcionCN.ObtenerSuscripcionDePerfilAPerfil(pIdentidadActual.PerfilID, pIdentidadSuscripcion.PerfilID, false, incluirBRPersonal), mLoggingService, mEntityContext);
 
             //Si tiene el parámetro SeguirEnTodaLaActividad=true solo se puede seguir en toda la actividad
-            ParametroAplicacionCL parametroAplicacionCL = new ParametroAplicacionCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mServicesUtilVirtuosoAndReplication);
+            ParametroAplicacionCL parametroAplicacionCL = new ParametroAplicacionCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<ParametroAplicacionCL>(), mLoggerFactory);
             //ParametroAplicacionDS parametroAplicacionDS = parametroAplicacionCL.ObtenerParametrosAplicacion();
             List<AD.EntityModel.ParametroAplicacion> parametroAplicacionDS = parametroAplicacionCL.ObtenerParametrosAplicacionPorContext();
             List<AD.EntityModel.ParametroAplicacion> busqueda = parametroAplicacionDS.Where(parametro => parametro.Parametro.Equals(TiposParametrosAplicacion.SeguirEnTodaLaActividad)).ToList();
@@ -257,18 +265,18 @@ namespace Es.Riam.Gnoss.Web.Controles.Suscripcion
                     suscripcionID = gestorSuscripciones.AgregarNuevaSuscripcion(pIdentidadActual, 1);
 
                     DataWrapperNotificacion notificacionDS = new DataWrapperNotificacion();
-                    GestionNotificaciones mGestionNotificaciones = new GestionNotificaciones(notificacionDS, mLoggingService, mEntityContext, mConfigService, mServicesUtilVirtuosoAndReplication);
+                    GestionNotificaciones mGestionNotificaciones = new GestionNotificaciones(notificacionDS, mLoggingService, mEntityContext, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<GestionNotificaciones>(), mLoggerFactory);
 					//bool noEnviarNotificacion = mConfigService.ObtenerNoEnviarCorreoSuscripcion();
 					bool noEnviarNotificacion = false;
-					ParametroAplicacionCN paramCN = new ParametroAplicacionCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+					ParametroAplicacionCN paramCN = new ParametroAplicacionCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<ParametroAplicacionCN>(), mLoggerFactory);
 					string noEnviar = paramCN.ObtenerParametroAplicacion(TiposParametrosAplicacion.NoEnviarCorreoSeguirPerfil);
                     bool.TryParse(paramCN.ObtenerParametroAplicacion(TiposParametrosAplicacion.NoEnviarCorreoSeguirPerfil), out noEnviarNotificacion);
 					
                     if (!noEnviarNotificacion)
                     {
                         mGestionNotificaciones.AgregarNotificacionCorreo(pIdentidadActual, pIdentidadSuscripcion.IdentidadMyGNOSS, TiposNotificacion.SeguirPerfil, BaseURL, pProyectoSeleccionado, pLanguageCode);
-                        NotificacionCN notificacionCN = new NotificacionCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
-                        notificacionCN.ActualizarNotificacion();
+                        NotificacionCN notificacionCN = new NotificacionCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<NotificacionCN>(), mLoggerFactory);
+                        notificacionCN.ActualizarNotificacion(pAvailableServices);
                     }
                     
                 }
@@ -278,13 +286,13 @@ namespace Es.Riam.Gnoss.Web.Controles.Suscripcion
                 }
 
                 #region obtenemos el usuario del Perfil
-                UsuarioCN usuarioCN = new UsuarioCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+                UsuarioCN usuarioCN = new UsuarioCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<UsuarioCN>(), mLoggerFactory);
                 Guid idUsuarioPerfil = usuarioCN.ObtenerUsuarioIDPorIDPerfil(pIdentidadSuscripcion.PerfilID).Value;
                 usuarioCN.Dispose();
                 #endregion
 
                 #region obtenemos el tesauro del perfil al que nos suscribimos
-                TesauroCN tesauroCN = new TesauroCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+                TesauroCN tesauroCN = new TesauroCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<TesauroCN>(), mLoggerFactory);
                 Guid idTesauroPerfil = tesauroCN.ObtenerIDTesauroDeUsuario(idUsuarioPerfil);
                 tesauroCN.Dispose();
                 #endregion
@@ -326,7 +334,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Suscripcion
                     gestorSuscripciones.AgregarSuscripcionAUsuarioEnProyecto(pIdentidadSuscripcion.IdentidadMyGNOSS.Clave, ProyectoAD.MetaProyecto, ProyectoAD.MetaOrganizacion, pPeriodicidad, suscripcionID);
 
                     //insertamos en virtuoso
-                    FacetadoCN facetadoCN = new FacetadoCN(UrlIntragnoss, false, mEntityContext, mLoggingService, mConfigService, mVirtuosoAD, mServicesUtilVirtuosoAndReplication);
+                    FacetadoCN facetadoCN = new FacetadoCN(UrlIntragnoss, false, mEntityContext, mLoggingService, mConfigService, mVirtuosoAD, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<FacetadoCN>(), mLoggerFactory);
                     facetadoCN.InsertarNuevoSeguidor(pIdentidadActual.PerfilID.ToString(), pIdentidadSuscripcion.PerfilID.ToString(), ProyectoAD.MetaProyecto.ToString());
                     facetadoCN.InsertarNuevoSeguidorProyecto(pIdentidadActual.Clave.ToString(), pIdentidadSuscripcion.Clave.ToString(), pProyectoSeleccionado.Clave.ToString());
                     facetadoCN.Dispose();
@@ -364,17 +372,17 @@ namespace Es.Riam.Gnoss.Web.Controles.Suscripcion
                     suscripcionID = gestorSuscripciones.AgregarNuevaSuscripcion(pIdentidadActual, 1);
 
                     DataWrapperNotificacion notificacionDS = new DataWrapperNotificacion();
-                    GestionNotificaciones mGestionNotificaciones = new GestionNotificaciones(notificacionDS, mLoggingService, mEntityContext, mConfigService, mServicesUtilVirtuosoAndReplication);
+                    GestionNotificaciones mGestionNotificaciones = new GestionNotificaciones(notificacionDS, mLoggingService, mEntityContext, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<GestionNotificaciones>(), mLoggerFactory);
 					//bool noEnviarNotificacion = mConfigService.ObtenerNoEnviarCorreoSuscripcion();
 					bool noEnviarNotificacion = false;
-					ParametroAplicacionCN paramCN = new ParametroAplicacionCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+					ParametroAplicacionCN paramCN = new ParametroAplicacionCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<ParametroAplicacionCN>(), mLoggerFactory);
 					string noEnviar = paramCN.ObtenerParametroAplicacion(TiposParametrosAplicacion.NoEnviarCorreoSeguirPerfil);
 					bool.TryParse(paramCN.ObtenerParametroAplicacion(TiposParametrosAplicacion.NoEnviarCorreoSeguirPerfil), out noEnviarNotificacion);
 					if (!noEnviarNotificacion)
                     {
                         mGestionNotificaciones.AgregarNotificacionCorreo(pIdentidadActual, pIdentidadSuscripcion.IdentidadMyGNOSS, TiposNotificacion.SeguirPerfilComunidad, BaseURL, pProyectoSeleccionado, pLanguageCode);
-                        NotificacionCN notificacionCN = new NotificacionCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
-                        notificacionCN.ActualizarNotificacion();
+                        NotificacionCN notificacionCN = new NotificacionCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<NotificacionCN>(), mLoggerFactory);
+                        notificacionCN.ActualizarNotificacion(pAvailableServices);
                     }                  
                 }
                 else
@@ -383,13 +391,13 @@ namespace Es.Riam.Gnoss.Web.Controles.Suscripcion
                 }
 
                 #region obtenemos el usuario del Perfil
-                UsuarioCN usuarioCN = new UsuarioCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+                UsuarioCN usuarioCN = new UsuarioCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<UsuarioCN>(), mLoggerFactory);
                 Guid idUsuarioPerfil = usuarioCN.ObtenerUsuarioIDPorIDPerfil(pIdentidadSuscripcion.PerfilID).Value;
                 usuarioCN.Dispose();
                 #endregion
 
                 #region obtenemos el tesauro del perfil al que nos suscribimos
-                TesauroCN tesauroCN = new TesauroCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+                TesauroCN tesauroCN = new TesauroCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<TesauroCN>(), mLoggerFactory);
                 Guid idTesauroPerfil = tesauroCN.ObtenerIDTesauroDeUsuario(idUsuarioPerfil);
                 tesauroCN.Dispose();
                 #endregion
@@ -429,7 +437,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Suscripcion
                         gestorSuscripciones.AgregarSuscripcionAUsuarioEnProyecto(pIdentidadSuscripcion.Clave, pProyectoSeleccionado.Clave, pProyectoSeleccionado.FilaProyecto.OrganizacionID, pPeriodicidad, suscripcionID);
 
                         //insertamos en virtuoso
-                        FacetadoCN facetadoCN = new FacetadoCN(UrlIntragnoss, false, mEntityContext, mLoggingService, mConfigService, mVirtuosoAD, mServicesUtilVirtuosoAndReplication);
+                        FacetadoCN facetadoCN = new FacetadoCN(UrlIntragnoss, false, mEntityContext, mLoggingService, mConfigService, mVirtuosoAD, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<FacetadoCN>(), mLoggerFactory);
                         facetadoCN.InsertarNuevoSeguidor(pIdentidadActual.PerfilID.ToString(), pIdentidadSuscripcion.PerfilID.ToString(), pProyectoSeleccionado.Clave.ToString());
                         facetadoCN.InsertarNuevoSeguidorProyecto(pIdentidadActual.Clave.ToString(), pIdentidadSuscripcion.Clave.ToString(), pProyectoSeleccionado.Clave.ToString());
                         facetadoCN.Dispose();
@@ -438,7 +446,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Suscripcion
                 else
                 {
                     //borramos las tripletas de virtuoso
-                    FacetadoCN facetadoCN = new FacetadoCN(UrlIntragnoss, false, mEntityContext, mLoggingService, mConfigService, mVirtuosoAD, mServicesUtilVirtuosoAndReplication);
+                    FacetadoCN facetadoCN = new FacetadoCN(UrlIntragnoss, false, mEntityContext, mLoggingService, mConfigService, mVirtuosoAD, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<FacetadoCN>(), mLoggerFactory);
                     facetadoCN.BorrarSeguidor(pIdentidadActual.PerfilID.ToString(), pIdentidadSuscripcion.PerfilID.ToString(), ProyectoAD.MetaProyecto.ToString());
                     facetadoCN.BorrarSeguidorProyecto(pIdentidadActual.Clave.ToString(), pIdentidadSuscripcion.Clave.ToString(), ProyectoAD.MetaProyecto.ToString());
 
@@ -449,18 +457,18 @@ namespace Es.Riam.Gnoss.Web.Controles.Suscripcion
 
                         //Cargamos los proyecto comunes
                         GestionProyecto gestorProyectosComunes;
-                        ProyectoCN proyectoCN = new ProyectoCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+                        ProyectoCN proyectoCN = new ProyectoCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<ProyectoCN>(), mLoggerFactory);
                         if (pIdentidadSuscripcion.Tipo == TiposIdentidad.Personal)
                         {
-                            gestorProyectosComunes = new GestionProyecto(proyectoCN.ObtenerListaProyectosComunesParticipanPerfilesUsuarios(pIdentidadActual.PerfilID, pIdentidadActual.Tipo, pIdentidadSuscripcion.PerfilID, pIdentidadSuscripcion.Tipo, true), mLoggingService, mEntityContext);
+                            gestorProyectosComunes = new GestionProyecto(proyectoCN.ObtenerListaProyectosComunesParticipanPerfilesUsuarios(pIdentidadActual.PerfilID, pIdentidadActual.Tipo, pIdentidadSuscripcion.PerfilID, pIdentidadSuscripcion.Tipo, true), mLoggingService, mEntityContext, mLoggerFactory.CreateLogger<GestionProyecto>(), mLoggerFactory);
                         }
                         else
                         {
-                            gestorProyectosComunes = new GestionProyecto(proyectoCN.ObtenerListaProyectosComunesParticipanPerfilesUsuarios(pIdentidadActual.PerfilID, pIdentidadActual.Tipo, pIdentidadSuscripcion.PerfilID, pIdentidadSuscripcion.Tipo, false), mLoggingService, mEntityContext);
+                            gestorProyectosComunes = new GestionProyecto(proyectoCN.ObtenerListaProyectosComunesParticipanPerfilesUsuarios(pIdentidadActual.PerfilID, pIdentidadActual.Tipo, pIdentidadSuscripcion.PerfilID, pIdentidadSuscripcion.Tipo, false), mLoggingService, mEntityContext, mLoggerFactory.CreateLogger<GestionProyecto>(), mLoggerFactory);
                         }
                         proyectoCN.Dispose();
 
-                        IdentidadCN identidadCN = new IdentidadCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+                        IdentidadCN identidadCN = new IdentidadCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<IdentidadCN>(), mLoggerFactory);
 
                         //Cargamos las identidades del perfil                        
                         GestionIdentidades gestorIdentidadesInvitado = new GestionIdentidades(identidadCN.ObtenerIdentidadesDePerfil(pIdentidadSuscripcion.PerfilID), mLoggingService, mEntityContext, mConfigService, mServicesUtilVirtuosoAndReplication);
@@ -519,13 +527,13 @@ namespace Es.Riam.Gnoss.Web.Controles.Suscripcion
                 }
 
                 #region obtenemos el usuario del Perfil
-                UsuarioCN usuarioCN = new UsuarioCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+                UsuarioCN usuarioCN = new UsuarioCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<UsuarioCN>(), mLoggerFactory);
                 Guid idUsuarioPerfil = usuarioCN.ObtenerUsuarioIDPorIDPerfil(pIdentidadSuscripcion.PerfilID).Value;
                 usuarioCN.Dispose();
                 #endregion
 
                 #region obtenemos el tesauro del perfil al que nos suscribimos
-                TesauroCN tesauroCN = new TesauroCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+                TesauroCN tesauroCN = new TesauroCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<TesauroCN>(), mLoggerFactory);
                 Guid idTesauroPerfil = tesauroCN.ObtenerIDTesauroDeUsuario(idUsuarioPerfil);
                 tesauroCN.Dispose();
                 #endregion
@@ -552,8 +560,8 @@ namespace Es.Riam.Gnoss.Web.Controles.Suscripcion
             suscripcionCN.ActualizarSuscripcion();
             suscripcionCN.Dispose();
 
-            LiveUsuariosCN liveUsuariosCN = new LiveUsuariosCN("base", mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
-            liveUsuariosCN.InsertarFilaEnColaUsuarios(pProyectoSeleccionado.Clave, pIdentidadActual.PerfilID, (int)AccionLive.SuscribirseUsuario, (int)TipoLive.Miembro, pIdentidadSuscripcion.PerfilID.ToString());
+            LiveUsuariosCN liveUsuariosCN = new LiveUsuariosCN("base", mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<LiveUsuariosCN>(), mLoggerFactory);
+            liveUsuariosCN.InsertarFilaEnColaUsuarios(pProyectoSeleccionado.Clave, pIdentidadActual.PerfilID, (int)AccionLive.SuscribirseUsuario, (int)TipoLive.Miembro, pIdentidadSuscripcion.PerfilID.ToString(), pAvailableServices);
         }
 
         /// <summary>
@@ -565,11 +573,11 @@ namespace Es.Riam.Gnoss.Web.Controles.Suscripcion
         /// <param name="pIdentidadID">Identidad a la que me suscribo</param>
         /// <param name="pSuscribirme">Indica si se suscribe</param>
         /// <param name="pPeriodicidad"></param>
-        public void SuscribirmeOrganizacion(Identidad pIdentidadActual, Proyecto pProyectoSeleccionado, string UrlIntragnoss, Identidad pIdentidadSuscripcion, bool pSuscribirme, int pPeriodicidad)
+        public void SuscribirmeOrganizacion(Identidad pIdentidadActual, Proyecto pProyectoSeleccionado, string UrlIntragnoss, Identidad pIdentidadSuscripcion, bool pSuscribirme, int pPeriodicidad, IAvailableServices pAvailableServices)
         {
             if (pIdentidadSuscripcion.OrganizacionID.HasValue)
             {
-                SuscripcionCN suscripcionCN = new SuscripcionCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+                SuscripcionCN suscripcionCN = new SuscripcionCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<SuscripcionCN>(), mLoggerFactory);
                 GestionSuscripcion GestorSuscripciones = new GestionSuscripcion(suscripcionCN.ObtenerSuscripcionDePerfilAOrganizacion(pIdentidadActual.PerfilID, pIdentidadSuscripcion.OrganizacionID.Value, false), mLoggingService, mEntityContext);
 
                 //ID de la suscripción
@@ -587,7 +595,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Suscripcion
 
                 #region obtenemos el tesauro de la organizacion a la que nos suscribimos
 
-                TesauroCN tesauroCN = new TesauroCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+                TesauroCN tesauroCN = new TesauroCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<TesauroCN>(), mLoggerFactory);
                 Guid idTesauroOrganizacion = tesauroCN.ObtenerIDTesauroDeOrganizacion(pIdentidadSuscripcion.OrganizacionID.Value);
                 tesauroCN.Dispose();
 
@@ -615,8 +623,8 @@ namespace Es.Riam.Gnoss.Web.Controles.Suscripcion
 
                 if (pSuscribirme)
                 {
-                    LiveUsuariosCN liveUsuariosCN = new LiveUsuariosCN("base", mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
-                    liveUsuariosCN.InsertarFilaEnColaUsuarios(pProyectoSeleccionado.Clave, pIdentidadActual.PerfilID, (int)AccionLive.SuscribirseUsuario, (int)TipoLive.Miembro, pIdentidadSuscripcion.PerfilID.ToString());
+                    LiveUsuariosCN liveUsuariosCN = new LiveUsuariosCN("base", mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<LiveUsuariosCN>(), mLoggerFactory);
+                    liveUsuariosCN.InsertarFilaEnColaUsuarios(pProyectoSeleccionado.Clave, pIdentidadActual.PerfilID, (int)AccionLive.SuscribirseUsuario, (int)TipoLive.Miembro, pIdentidadSuscripcion.PerfilID.ToString(), pAvailableServices);
                 }
             }
         }
@@ -634,13 +642,13 @@ namespace Es.Riam.Gnoss.Web.Controles.Suscripcion
         {
             Guid identidadID = pIdentidadID;
 
-            IdentidadCN identidadCN = new IdentidadCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+            IdentidadCN identidadCN = new IdentidadCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<IdentidadCN>(), mLoggerFactory);
             GestionIdentidades gestorIdentidades = new GestionIdentidades(identidadCN.ObtenerIdentidadPorID(identidadID, false), mLoggingService, mEntityContext, mConfigService, mServicesUtilVirtuosoAndReplication);
             identidadCN.Dispose();
 
             Identidad identidadInvitado = gestorIdentidades.ListaIdentidades[identidadID];
 
-            SuscripcionCN suscripcionCN = new SuscripcionCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+            SuscripcionCN suscripcionCN = new SuscripcionCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<SuscripcionCN>(), mLoggerFactory);
             GestionSuscripcion GestorSuscripciones = new GestionSuscripcion(suscripcionCN.ObtenerSuscripcionDePerfilAPerfil(pIdentidadActual.PerfilID, identidadInvitado.PerfilID, false, identidadInvitado.Tipo == TiposIdentidad.Personal), mLoggingService, mEntityContext);
 
             //Comprobamos si esta suscrito a toda la actividad
@@ -685,7 +693,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Suscripcion
         /// <param name="pPerfilID">ID del perfil actual</param>
         public void ResetearContadorNuevasSucripciones(Guid pPerfilID)
         {
-            LiveCN liveCN = new LiveCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+            LiveCN liveCN = new LiveCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<LiveCN>(), mLoggerFactory);
             liveCN.ResetearContadorNuevasSuscripciones(pPerfilID);
             liveCN.Dispose();
         }
@@ -704,7 +712,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Suscripcion
         {
             if (pGestorSuscripcion == null)
             {
-                SuscripcionCN suscCN = new SuscripcionCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+                SuscripcionCN suscCN = new SuscripcionCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<SuscripcionCN>(), mLoggerFactory);
                 DataWrapperSuscripcion suscDW = suscCN.ObtenerSuscripcionesDeIdentidad(pIdentidadID, false);
                 suscCN.Dispose();
                 pGestorSuscripcion = new GestionSuscripcion(suscDW, mLoggingService, mEntityContext);
@@ -725,12 +733,12 @@ namespace Es.Riam.Gnoss.Web.Controles.Suscripcion
         /// <param name="pProyectoID">Identificador de la comunidad</param>
         public void SuscribirIdentidadATesauroProyecto(GestionSuscripcion pGestorSuscripcion, Guid pIdentidadID, Guid pProyectoID)
         {
-            ProyectoCL proyectoCL = new ProyectoCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mVirtuosoAD, mServicesUtilVirtuosoAndReplication);
+            ProyectoCL proyectoCL = new ProyectoCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mVirtuosoAD, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<ProyectoCL>(), mLoggerFactory);
             Dictionary<string, string> parametroProyecto = proyectoCL.ObtenerParametrosProyecto(pProyectoID);
             proyectoCL.Dispose();
 
             //cargamos las suscripciones de la identidad
-            SuscripcionCN suscCN = new SuscripcionCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+            SuscripcionCN suscCN = new SuscripcionCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<SuscripcionCN>(), mLoggerFactory);
             if (pGestorSuscripcion == null)
             {
                 DataWrapperSuscripcion suscDW = suscCN.ObtenerSuscripcionesDeIdentidad(pIdentidadID, false);
@@ -747,9 +755,9 @@ namespace Es.Riam.Gnoss.Web.Controles.Suscripcion
                 //obtenemos las suscripciones de la identidad en el proyecto
                 Elementos.Suscripcion.Suscripcion suscripcionProyecto = pGestorSuscripcion.ObtenerSuscripcionAProyecto(pProyectoID);
 
-                TesauroCN tesauroCN = new TesauroCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+                TesauroCN tesauroCN = new TesauroCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<TesauroCN>(), mLoggerFactory);
                 Guid tesauroID = tesauroCN.ObtenerIDTesauroDeProyecto(pProyectoID);
-                GestionTesauro gestorTesauro = new GestionTesauro(tesauroCN.ObtenerTesauroCompletoPorID(tesauroID), mLoggingService, mEntityContext);
+                GestionTesauro gestorTesauro = new GestionTesauro(tesauroCN.ObtenerTesauroCompletoPorID(tesauroID), mLoggingService, mEntityContext, mLoggerFactory.CreateLogger<GestionTesauro>(), mLoggerFactory);
                 tesauroCN.Dispose();
 
                 if (suscripcionProyecto == null)

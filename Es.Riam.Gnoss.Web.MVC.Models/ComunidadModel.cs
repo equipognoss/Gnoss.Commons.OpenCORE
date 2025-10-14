@@ -4,6 +4,7 @@ using Es.Riam.Gnoss.Web.MVC.Models.ViewModels;
 using Es.Riam.Util;
 using System;
 using System.Collections.Generic;
+using static Es.Riam.Gnoss.Web.MVC.Models.Administracion.TabModel;
 
 namespace Es.Riam.Gnoss.Web.MVC.Models
 {
@@ -220,6 +221,16 @@ namespace Es.Riam.Gnoss.Web.MVC.Models
         /// Versión del fichero javascript de la comunidad
         /// </summary>
         public int? VersionJS { get; set; }
+
+        /// <summary>
+        /// Versión de la hoja de estilos del ecosistema
+        /// </summary>
+        public int? VersionCSSEcosistema { get; set; }
+        
+        /// <summary>
+        /// Versión del fichero JavaScript del ecosistema
+        /// </summary>
+        public int? VersionJSEcosistema { get; set; }
 
         /// <summary>
         /// Versión del fichero javascript de la administración de la comunidad
@@ -622,6 +633,18 @@ namespace Es.Riam.Gnoss.Web.MVC.Models
         public List<HtlmExtraElements> ProjectExtraHTMLList { get; set; }
     }
 
+    [Serializable]
+    public partial class ImagenCategoria
+    {
+        public Guid CategoriaID { get; set; }
+        public string SizeXS { get; set; }
+        public string SizeS { get; set; }
+        public string SizeM { get; set; }
+        public string SizeL { get; set; }
+        public string SizeXL { get; set; }
+        public string Original { get; set; }
+    }
+
     /// <summary>
     /// Modelo de categorias
     /// </summary>
@@ -632,6 +655,10 @@ namespace Es.Riam.Gnoss.Web.MVC.Models
         private string mLanguageName = null;
         private string mIdioma = null;
 
+        public short Obligatoria { get; set; }
+
+        public short Estructurante { get; set; }
+
         /// <summary>
         /// Idioma del usuario
         /// </summary>
@@ -640,6 +667,10 @@ namespace Es.Riam.Gnoss.Web.MVC.Models
         /// Identificador de la categoria
         /// </summary>
         public Guid Key { get; set; }
+
+        public string Image { get; set; }
+
+        public ImagenCategoria Imagen { get; set; }
 
         /// <summary>
         /// Nombre de la categoria con todos los idiomas
@@ -837,9 +868,8 @@ namespace Es.Riam.Gnoss.Web.MVC.Models
     {
         public TabModel pestanya { get; set; }
         public List<TabModel> ListaPestanyas { get; set; }
-
+        public List<ProyectoPestanyaMenuVersionPaginaModel> versionPaginas { get; set; }
     }
-
     [Serializable]
     public class PintarModalCrearSubCategoria
     {

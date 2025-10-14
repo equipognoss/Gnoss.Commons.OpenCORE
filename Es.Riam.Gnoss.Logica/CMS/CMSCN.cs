@@ -3,13 +3,18 @@ using Es.Riam.Gnoss.AD.CMS;
 using Es.Riam.Gnoss.AD.EncapsuladoDatos;
 using Es.Riam.Gnoss.AD.EntityModel;
 using Es.Riam.Gnoss.AD.EntityModel.Models.CMS;
+using Es.Riam.Gnoss.AD.EntityModel.Models.ProyectoDS;
+using Es.Riam.Gnoss.AD.ParametroAplicacion;
 using Es.Riam.Gnoss.Util.Configuracion;
 using Es.Riam.Gnoss.Util.General;
 using Es.Riam.Gnoss.Web.MVC.Models.Administracion;
+using Microsoft.Extensions.Logging;
+using Serilog.Core;
 using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
+using System.Linq;
 
 namespace Es.Riam.Gnoss.Logica.CMS
 {
@@ -19,17 +24,20 @@ namespace Es.Riam.Gnoss.Logica.CMS
     public class CMSCN : BaseCN, IDisposable
     {
         private LoggingService mLoggingService;
-
+        private ILogger mlogger;
+        private ILoggerFactory mLoggerFactory;
         #region Constructores
 
         /// <summary>
         /// Constructor sin parámetros
         /// </summary>
-        public CMSCN(EntityContext entityContext, LoggingService loggingService, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication)
-            : base(entityContext, loggingService, configService, servicesUtilVirtuosoAndReplication)
+        public CMSCN(EntityContext entityContext, LoggingService loggingService, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication, ILogger<CMSCN> logger, ILoggerFactory loggerFactory)
+            : base(entityContext, loggingService, configService, servicesUtilVirtuosoAndReplication, logger, loggerFactory)
         {
             mLoggingService = loggingService;
-            CMSAD = new CMSAD(loggingService, entityContext, configService, servicesUtilVirtuosoAndReplication);
+            mlogger = logger;
+            mLoggerFactory = loggerFactory;
+            CMSAD = new CMSAD(loggingService, entityContext, configService, servicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<CMSAD>(), mLoggerFactory);
         }
 
         /// <summary>
@@ -37,11 +45,13 @@ namespace Es.Riam.Gnoss.Logica.CMS
         /// </summary>
         /// <param name="pFicheroConfiguracionBD">Ruta del fichero de configuración de base de datos</param>
         /// <param name="pUsarVariableEstatica">Si se están usando hilos con diferentes conexiones: FALSE. En caso contrario TRUE</param>
-        public CMSCN(string pFicheroConfiguracionBD, EntityContext entityContext, LoggingService loggingService, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication)
-            : base(entityContext, loggingService, configService, servicesUtilVirtuosoAndReplication)
+        public CMSCN(string pFicheroConfiguracionBD, EntityContext entityContext, LoggingService loggingService, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication, ILogger<CMSCN> logger, ILoggerFactory loggerFactory)
+            : base(entityContext, loggingService, configService, servicesUtilVirtuosoAndReplication, logger, loggerFactory)
         {
+            mlogger = logger;
+            mLoggerFactory = loggerFactory;
             mLoggingService = loggingService;
-            CMSAD = new CMSAD(pFicheroConfiguracionBD, loggingService, entityContext, configService, servicesUtilVirtuosoAndReplication);
+            CMSAD = new CMSAD(pFicheroConfiguracionBD, loggingService, entityContext, configService, servicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<CMSAD>(), mLoggerFactory);
         }
 
         #endregion
@@ -207,6 +217,10 @@ namespace Es.Riam.Gnoss.Logica.CMS
         {
             return CMSAD.ObtenerNombreCortoComponentePorIDComponenteEnProyecto(pComponenteID, pProyectoID);
         }
+        public Dictionary<Guid, string> ObtenerNombreComponentesPorIDComponente(List<Guid> pIdsComponentes)
+        {
+            return CMSAD.ObtenerNombreComponentesPorIDComponente(pIdsComponentes);
+        }
 
         /// <summary>
         /// Elimina los bloques de una pagina en un proyecto
@@ -225,6 +239,29 @@ namespace Es.Riam.Gnoss.Logica.CMS
         public void ActualizarCaducidadComponente(Guid pComponenteID, DateTime pFechaProximaActualizacion)
         {
             CMSAD.ActualizarCaducidadComponente(pComponenteID, pFechaProximaActualizacion);
+        }
+
+        public List<ProyectoPestanyaVersionCMS> ObtenerVersionesEstructuraPaginaCMS(Guid pPestanyaID)
+        {
+            return CMSAD.ObtenerVersionesEstructuraPaginaCMS(pPestanyaID);
+        }
+
+        /// <summary>
+        /// Obtiene las versiones de la estructura de una pagina del CMS pero evitando cargar todo el modelo de la estructura.
+        /// </summary>
+        /// <param name="pPestanyaID">Id de la pagina a consultar</param>
+        /// <returns></returns>
+        public List<ProyectoPestanyaVersionCMS> ObtenerVersionesEstructuraPaginaCMSSinEstructura(Guid pPestanyaID)
+        {
+            return CMSAD.ObtenerVersionesEstructuraPaginaCMSSinEstructura(pPestanyaID);
+        }
+        public List<Guid> ObtenerIdVersionesEstructuraPaginaCMS(Guid pPestanyaID)
+        {
+            return CMSAD.ObtenerIdVersionesEstructuraPaginaCMS(pPestanyaID);
+        }
+        public ProyectoPestanyaVersionCMS ObtenerVersionEstructuraPaginaCMS(Guid pVersionID)
+        {
+            return CMSAD.ObtenerVersionEstructuraPaginaCMS(pVersionID);
         }
 
         /// <summary>
@@ -255,14 +292,14 @@ namespace Es.Riam.Gnoss.Logica.CMS
             {
                 TerminarTransaccion(false);
                 // Error de concurrencia
-                mLoggingService.GuardarLogError(ex);
+                mLoggingService.GuardarLogError(ex, mlogger);
                 throw new ErrorConcurrencia();
             }
             catch (DataException ex)
             {
                 TerminarTransaccion(false);
                 //Error interno de la aplicación				
-                mLoggingService.GuardarLogError(ex);
+                mLoggingService.GuardarLogError(ex, mlogger);
                 throw new ErrorInterno();
             }
             catch (SqlException ex)
@@ -307,14 +344,14 @@ namespace Es.Riam.Gnoss.Logica.CMS
             {
                 TerminarTransaccion(false);
                 // Error de concurrencia
-                mLoggingService.GuardarLogError(ex);
+                mLoggingService.GuardarLogError(ex, mlogger);
                 throw new ErrorConcurrencia();
             }
             catch (DataException ex)
             {
                 TerminarTransaccion(false);
                 //Error interno de la aplicación				
-                mLoggingService.GuardarLogError(ex);
+                mLoggingService.GuardarLogError(ex, mlogger);
                 throw new ErrorInterno();
             }
             catch (SqlException ex)
@@ -358,14 +395,14 @@ namespace Es.Riam.Gnoss.Logica.CMS
             {
                 TerminarTransaccion(false);
                 // Error de concurrencia
-                mLoggingService.GuardarLogError(ex);
+                mLoggingService.GuardarLogError(ex, mlogger);
                 throw new ErrorConcurrencia();
             }
             catch (DataException ex)
             {
                 TerminarTransaccion(false);
                 //Error interno de la aplicación				
-                mLoggingService.GuardarLogError(ex);
+                mLoggingService.GuardarLogError(ex, mlogger);
                 throw new ErrorInterno();
             }
             catch
@@ -401,14 +438,14 @@ namespace Es.Riam.Gnoss.Logica.CMS
             {
                 TerminarTransaccion(false);
                 // Error de concurrencia
-                mLoggingService.GuardarLogError(ex);
+                mLoggingService.GuardarLogError(ex, mlogger);
                 throw new ErrorConcurrencia();
             }
             catch (DataException ex)
             {
                 TerminarTransaccion(false);
                 //Error interno de la aplicación				
-                mLoggingService.GuardarLogError(ex);
+                mLoggingService.GuardarLogError(ex, mlogger);
                 throw new ErrorInterno();
             }
             catch
@@ -431,6 +468,26 @@ namespace Es.Riam.Gnoss.Logica.CMS
         public DataWrapperCMS ObtenerCMSBloqueComponentePropiedadComponente(Guid pProyectoID, Guid pComponenteID)
         {
             return CMSAD.ObtenerCMSBloqueComponentePropiedadComponente(pProyectoID, pComponenteID);
+        }
+
+        public List<CMSComponenteVersion> ObtenerVersionesComponenteCMS(Guid pComponenteID)
+        {
+            return CMSAD.ObtenerVersionesComponenteCMS(pComponenteID);
+        }
+
+        /// <summary>
+        /// Carga las versiones de un componente, evitando cargar el modelo del componente en cada versión
+        /// </summary>
+        /// <param name="pComponenteID"></param>
+        /// <returns></returns>
+        public List<CMSComponenteVersion> ObtenerVersionesComponenteCMSSinModelo(Guid pComponenteID)
+        {
+            return CMSAD.ObtenerVersionesComponenteCMSSinModelo(pComponenteID);
+        }
+
+        public CMSComponenteVersion ObtenerVersionComponenteCMS(Guid pComponenteID, Guid pVersionID)
+        {
+            return CMSAD.ObtenerVersionComponenteCMS(pComponenteID, pVersionID);
         }
 
         #endregion
@@ -508,6 +565,15 @@ namespace Es.Riam.Gnoss.Logica.CMS
         public void BorrarPaginaCMS(Guid pMyGnoss, Guid pClave, short pTipoUbicacion)
         {
             CMSAD.BorrarPaginaCMS(pMyGnoss, pClave, pTipoUbicacion);
+        }
+        /// <summary>
+        /// Comprueba si un componete CMS pertenece a un grupo de componentes (TipoPropiedadComponente = 6)
+        /// </summary>
+        /// <param name="componenteID">Id del componete a verificar</param>
+        /// <returns>true si pertenece a un grupo de componentes, falso en caso contrario</returns>
+        public bool ComponenteCMSPerteneceGrupo(Guid componenteID)
+        {
+            return CMSAD.ComponenteCMSPerteneceGrupo(componenteID);
         }
 
         #endregion

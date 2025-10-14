@@ -2,6 +2,7 @@
 using Es.Riam.Util;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -23,14 +24,17 @@ namespace Es.Riam.Gnoss.Util.General
         private readonly UtilPeticion _utilPeticion;
         private readonly LoggingService _loggingService;
         private readonly Usuario _usuario;
-
-        public Conexion(IHttpContextAccessor httpContextAccessor, IHostEnvironment env, UtilPeticion utilPeticion, LoggingService loggingService, Usuario usuario)
+        private ILogger mlogger;
+        private ILoggerFactory mLoggerFactory;
+        public Conexion(IHttpContextAccessor httpContextAccessor, IHostEnvironment env, UtilPeticion utilPeticion, LoggingService loggingService, Usuario usuario, ILogger<Conexion> logger, ILoggerFactory loggerFactory)
         {
             _httpContextAccessor = httpContextAccessor;
             _env = env;
             _utilPeticion = utilPeticion;
             _loggingService = loggingService;
             _usuario = usuario;
+            mlogger = logger;
+            mLoggerFactory = loggerFactory;
         }
         #region Miembros estáticos
 
@@ -266,7 +270,7 @@ namespace Es.Riam.Gnoss.Util.General
             }
             catch (Exception ex)
             {
-                _loggingService.GuardarLogError(ex);
+                _loggingService.GuardarLogError(ex, mlogger);
             }
 
             if (string.IsNullOrEmpty(resultado) && listaResultados != null && listaResultados.Count > 0)
@@ -323,7 +327,7 @@ namespace Es.Riam.Gnoss.Util.General
                     }
                     catch (Exception e)
                     {
-                        _loggingService.GuardarLogError(e);
+                        _loggingService.GuardarLogError(e, mlogger);
                     }
                 }
                 else
@@ -337,7 +341,7 @@ namespace Es.Riam.Gnoss.Util.General
             }
             catch (Exception ex)
             {
-                _loggingService.GuardarLogError(ex, string.Format("Error al obtener parametro compuesto. pFicheroConfiguracionBD {0}, pNombreParametro {1}, pNombreParametroInterno {2}, pObtenerDeListaEstatica {3}", pFicheroConfiguracionBD, pNombreParametro, pNombreParametroInterno, pObtenerDeListaEstatica));
+                _loggingService.GuardarLogError(ex,string.Format("Error al obtener parametro compuesto. pFicheroConfiguracionBD {0}, pNombreParametro {1}, pNombreParametroInterno {2}, pObtenerDeListaEstatica {3}", pFicheroConfiguracionBD, pNombreParametro, pNombreParametroInterno, pObtenerDeListaEstatica),mlogger);
                 throw;
             }
             return resultado;
@@ -411,7 +415,7 @@ namespace Es.Riam.Gnoss.Util.General
                 }
                 catch (Exception e)
                 {
-                    _loggingService.GuardarLogError(e);
+                    _loggingService.GuardarLogError(e, mlogger);
                 }
             }
             else
@@ -439,7 +443,7 @@ namespace Es.Riam.Gnoss.Util.General
             }
             catch (Exception e)
             {
-                _loggingService.GuardarLogError(e);
+                _loggingService.GuardarLogError(e, mlogger);
             }
         }
 
@@ -479,7 +483,7 @@ namespace Es.Riam.Gnoss.Util.General
                     }
                     catch (Exception ex)
                     {
-                        _loggingService.GuardarLogError(ex);
+                        _loggingService.GuardarLogError(ex, mlogger);
                         if (!mContenidoFicheros.ContainsKey(pUrl) && pNumeroReintentos < 10)
                         {
                             Thread.Sleep(500);
@@ -492,7 +496,7 @@ namespace Es.Riam.Gnoss.Util.General
                 }
                 catch (Exception e)
                 {
-                    _loggingService.GuardarLogError(e);
+                    _loggingService.GuardarLogError(e, mlogger);
                 }
                 finally
                 {

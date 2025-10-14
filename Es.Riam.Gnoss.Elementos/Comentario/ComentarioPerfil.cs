@@ -1,4 +1,5 @@
 using Es.Riam.Gnoss.Util.General;
+using Microsoft.Extensions.Logging;
 
 namespace Es.Riam.Gnoss.Elementos.Comentario
 {
@@ -21,8 +22,8 @@ namespace Es.Riam.Gnoss.Elementos.Comentario
 
         //}
 
-        public ComentarioPerfil(LoggingService loggingService)
-            : base(loggingService)
+        public ComentarioPerfil()
+            : base()
         {
         }
 

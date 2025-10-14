@@ -3,12 +3,15 @@ using Es.Riam.Gnoss.AD.CMS;
 using Es.Riam.Gnoss.AD.EncapsuladoDatos;
 using Es.Riam.Gnoss.AD.EntityModel;
 using Es.Riam.Gnoss.AD.EntityModel.Models.IdentidadDS;
+using Es.Riam.Gnoss.AD.EntityModel.Models.Roles;
 using Es.Riam.Gnoss.AD.Identidad;
+using Es.Riam.Gnoss.AD.ParametroAplicacion;
 using Es.Riam.Gnoss.AD.ServiciosGenerales;
 using Es.Riam.Gnoss.AD.Usuarios;
 using Es.Riam.Gnoss.Util.Configuracion;
 using Es.Riam.Gnoss.Util.General;
 using Es.Riam.Gnoss.Web.MVC.Models;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -23,18 +26,27 @@ namespace Es.Riam.Gnoss.Logica.Identidad
     {
 
         private LoggingService mLoggingService;
-
+        private ILogger mlogger;
+        private ILoggerFactory mLoggerFactory;
         #region Constructor
 
         /// <summary>
         /// Constructor sin parámetros
         /// </summary>
-        public IdentidadCN(EntityContext entityContext, LoggingService loggingService, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication)
-            : base(entityContext, loggingService, configService, servicesUtilVirtuosoAndReplication)
+        public IdentidadCN(EntityContext entityContext, LoggingService loggingService, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication, ILogger<IdentidadCN> logger, ILoggerFactory loggerFactory)
+            : base(entityContext, loggingService, configService, servicesUtilVirtuosoAndReplication, logger, loggerFactory)
         {
             mLoggingService = loggingService;
-
-            IdentidadAD = new IdentidadAD(loggingService, entityContext, configService, servicesUtilVirtuosoAndReplication);
+            mlogger = logger;
+            mLoggerFactory = loggerFactory;
+            if(loggerFactory == null)
+            {
+                IdentidadAD = new IdentidadAD(loggingService, entityContext, configService, servicesUtilVirtuosoAndReplication, null, null);
+            }
+            else
+            {
+                IdentidadAD = new IdentidadAD(loggingService, entityContext, configService, servicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<IdentidadAD>(), mLoggerFactory);
+            }     
         }
 
         #endregion
@@ -102,14 +114,14 @@ namespace Es.Riam.Gnoss.Logica.Identidad
             {
                 TerminarTransaccion(false);
                 // Error de concurrencia
-                mLoggingService.GuardarLogError(ex);
+                mLoggingService.GuardarLogError(ex,mlogger);
                 throw new ErrorConcurrencia();
             }
             catch (DataException ex)
             {
                 TerminarTransaccion(false);
                 //Error interno de la aplicación				
-                mLoggingService.GuardarLogError(ex);
+                mLoggingService.GuardarLogError(ex, mlogger);
                 throw new ErrorInterno();
             }
             catch
@@ -142,7 +154,7 @@ namespace Es.Riam.Gnoss.Logica.Identidad
 
         public string[] ObtenerNombresIdentidadesAmigosPorPrefijo(Guid pIdentidadID, string pPrefijo, int pNumeroResultados, bool pAmigosConPermiso, Guid pIdentidadOrganizacion, List<string> pListaAnteriores)
         {
-            return IdentidadAD.ObtenerNombresIdentidadesAmigosPorPrefijo(pIdentidadID, pPrefijo, pNumeroResultados, pAmigosConPermiso, pIdentidadID, pListaAnteriores);
+            return IdentidadAD.ObtenerNombresIdentidadesAmigosPorPrefijo(pIdentidadID, pPrefijo, pNumeroResultados, pAmigosConPermiso, pIdentidadOrganizacion, pListaAnteriores);
         }
         /// <summary>
         /// Obtiene el nombre al que pertenece ese identificador de perfil
@@ -685,7 +697,7 @@ namespace Es.Riam.Gnoss.Logica.Identidad
         /// </summary>
         /// <param name="pIdentidadID">Identificador de la identidad</param>
         /// <returns></returns>
-        public Guid? ObtenerPerfilIDDeIdentidadID(Guid pIdentidadID)
+        public Guid ObtenerPerfilIDDeIdentidadID(Guid pIdentidadID)
         {
             return IdentidadAD.ObtenerPerfilIDDeIdentidadID(pIdentidadID);
         }
@@ -2082,7 +2094,7 @@ namespace Es.Riam.Gnoss.Logica.Identidad
             }
             catch (Exception ex)
             {
-                mLoggingService.GuardarLogError(ex, string.Format("Error al actualizar el contador {0} de la identidad {1}", pContador, pIdentidadID));
+                mLoggingService.GuardarLogError(ex, string.Format("Error al actualizar el contador {0} de la identidad {1}", pContador, pIdentidadID),mlogger);
             }
         }
 
@@ -2899,14 +2911,19 @@ namespace Es.Riam.Gnoss.Logica.Identidad
             return IdentidadAD.ObtenerIdentidadDatoExtraRegistroDeProyecto(pProyectoID, pIdentidadID);
         }
 
-        #endregion
+		public List<Rol> ObtenerRolesDeIdentidad(Guid pIdentidadID)
+		{
+			return IdentidadAD.ObtenerRolesDeIdentidad(pIdentidadID);
+		}
 
-        #region Dispose
+		#endregion
 
-        /// <summary>
-        /// Determina si está disposed
-        /// </summary>
-        private bool mDisposed = false;
+		#region Dispose
+
+		/// <summary>
+		/// Determina si está disposed
+		/// </summary>
+		private bool mDisposed = false;
 
         /// <summary>
         /// Destructor

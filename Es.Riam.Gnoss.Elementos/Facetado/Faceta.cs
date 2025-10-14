@@ -2,6 +2,7 @@
 using Es.Riam.Gnoss.AD.Facetado;
 using Es.Riam.Gnoss.Util.General;
 using Es.Riam.Util;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Data;
 
@@ -16,8 +17,8 @@ namespace Es.Riam.Gnoss.Elementos.Facetado
         /// Constructor a partir de los datos pasados como parámetros
         /// </summary>
         /// <param name="pFilaFaceta">Fila de la faceta de la tabla faceta, FacetaObjetoConociemto o FacetaObjetoConociemtoProyecto</param>
-        public Faceta(object pFilaFaceta, GestionFacetas pGestor, LoggingService loggingService)
-            : base(pFilaFaceta, pGestor, loggingService)
+        public Faceta(object pFilaFaceta, GestionFacetas pGestor)
+            : base(pFilaFaceta, pGestor)
         {
             if (!(pFilaFaceta is FacetaObjetoConocimiento)
             && !(pFilaFaceta is FacetaObjetoConocimientoProyecto)
@@ -438,6 +439,32 @@ namespace Es.Riam.Gnoss.Elementos.Facetado
                 }
 
                 return false;
+            }
+        }
+
+        public bool MostrarContador
+        {
+            get
+            {
+                DataRow fila = FilaElemento;
+                if(FilaElementoEntity is FacetaFiltroProyecto)
+                {
+                    return ((FacetaFiltroProyecto)FilaElementoEntity).FacetaObjetoConocimientoProyecto.MostrarContador;
+                }
+                if (FilaElementoEntity is FacetaObjetoConocimientoProyecto)
+                {
+                    return ((FacetaObjetoConocimientoProyecto)FilaElementoEntity).MostrarContador;
+                }
+                if (FilaElementoEntity is FacetaFiltroHome)
+                {
+                    return ((FacetaFiltroHome)FilaElementoEntity).FacetaHome.FacetaObjetoConocimientoProyecto.MostrarContador;
+                }
+                if(FilaElementoEntity is FacetaHome)
+                {
+                    return ((FacetaHome)FilaElementoEntity).FacetaObjetoConocimientoProyecto.MostrarContador;
+                }
+
+                return true;
             }
         }
 

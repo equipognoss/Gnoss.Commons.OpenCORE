@@ -5,6 +5,8 @@ using Es.Riam.Gnoss.Util.General;
 using Es.Riam.Gnoss.Web.MVC.Models;
 using Es.Riam.Gnoss.Web.MVC.Models.Administracion;
 using Es.Riam.Util;
+using Microsoft.Extensions.Logging;
+using Serilog.Core;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -553,7 +555,6 @@ namespace Es.Riam.Gnoss.Elementos.CMS
         private LoggingService mLoggingService;
 
         private EntityContext mEntityContext;
-
         #endregion
 
         #region Constructor
@@ -564,7 +565,7 @@ namespace Es.Riam.Gnoss.Elementos.CMS
         /// <param name="pFilaComponente">Fila de componente</param>
         /// <param name="pGestorCMS">Gestor de CMS</param>
         protected CMSComponente(AD.EntityModel.Models.CMS.CMSComponente pFilaComponente, List<AD.EntityModel.Models.CMS.CMSPropiedadComponente> pListaPropiedades, GestionCMS pGestorCMS, LoggingService loggingService, EntityContext entityContext)
-            : base(pFilaComponente, pGestorCMS, loggingService)
+            : base(pFilaComponente, pGestorCMS)
         {
             mFilasPropiedadesComponente = pListaPropiedades;
             mLoggingService = loggingService;
@@ -651,7 +652,7 @@ namespace Es.Riam.Gnoss.Elementos.CMS
                 {
                     if (!mListaRolGrupoIdentidades.ContainsKey(filaRolGrupoIdentidades.GrupoID))
                     {
-                        mListaRolGrupoIdentidades.Add(filaRolGrupoIdentidades.GrupoID, new CMSComponenteRolGrupoIdentidades(filaRolGrupoIdentidades, GestorCMS, mLoggingService));
+                        mListaRolGrupoIdentidades.Add(filaRolGrupoIdentidades.GrupoID, new CMSComponenteRolGrupoIdentidades(filaRolGrupoIdentidades, GestorCMS));
                     }
                 }
             }
@@ -670,7 +671,7 @@ namespace Es.Riam.Gnoss.Elementos.CMS
                 {
                     if (!mListaRolIdentidad.ContainsKey(filaRolIdentidad.PerfilID))
                     {
-                        mListaRolIdentidad.Add(filaRolIdentidad.PerfilID, new CMSComponenteRolIdentidad(filaRolIdentidad, GestorCMS, mLoggingService));
+                        mListaRolIdentidad.Add(filaRolIdentidad.PerfilID, new CMSComponenteRolIdentidad(filaRolIdentidad, GestorCMS));
                     }
                 }
             }
@@ -943,7 +944,7 @@ namespace Es.Riam.Gnoss.Elementos.CMS
             GestorCMS.CMSDW.ListaCMSComponenteRolGrupoIdentidades.Add(filaGrupoIdentidades);
             mEntityContext.CMSComponenteRolGrupoIdentidades.Add(filaGrupoIdentidades);
 
-            CMSComponenteRolGrupoIdentidades RolGrupoIdentidades = new CMSComponenteRolGrupoIdentidades(filaGrupoIdentidades, GestorCMS, mLoggingService);
+            CMSComponenteRolGrupoIdentidades RolGrupoIdentidades = new CMSComponenteRolGrupoIdentidades(filaGrupoIdentidades, GestorCMS);
 
             ListaRolGrupoIdentidades.Add(pGrupoID, RolGrupoIdentidades);
 
@@ -964,7 +965,7 @@ namespace Es.Riam.Gnoss.Elementos.CMS
             GestorCMS.CMSDW.ListaCMSComponenteRolIdentidad.Add(filaIdentidad);
             mEntityContext.CMSComponenteRolIdentidad.Add(filaIdentidad);
 
-            CMSComponenteRolIdentidad RolIdentidad = new CMSComponenteRolIdentidad(filaIdentidad, GestorCMS, mLoggingService);
+            CMSComponenteRolIdentidad RolIdentidad = new CMSComponenteRolIdentidad(filaIdentidad, GestorCMS);
 
             ListaRolIdentidad.Add(pPerfilID, RolIdentidad);
             return RolIdentidad;
@@ -1572,7 +1573,6 @@ namespace Es.Riam.Gnoss.Elementos.CMS
         /// Obtiene ls lita de componentes
         /// </summary>
         public List<CMSComponente> mComponentes = null;
-
 
         #endregion
 
@@ -3322,8 +3322,8 @@ namespace Es.Riam.Gnoss.Elementos.CMS
         /// </summary>
         /// <param name="pFilaCMSRolGrupoIdentidades">Fila de CMSRolGrupoIdentidades</param>
         /// <param name="pGestorCMS">Gestor de CMS</param>
-        public CMSComponenteRolGrupoIdentidades(AD.EntityModel.Models.CMS.CMSComponenteRolGrupoIdentidades pFilaCMSComponenteRolGrupoIdentidades, GestionCMS pGestorCMS, LoggingService loggingService)
-            : base(pFilaCMSComponenteRolGrupoIdentidades, pGestorCMS, loggingService)
+        public CMSComponenteRolGrupoIdentidades(AD.EntityModel.Models.CMS.CMSComponenteRolGrupoIdentidades pFilaCMSComponenteRolGrupoIdentidades, GestionCMS pGestorCMS)
+            : base(pFilaCMSComponenteRolGrupoIdentidades, pGestorCMS)
         {
         }
 
@@ -3383,8 +3383,8 @@ namespace Es.Riam.Gnoss.Elementos.CMS
         /// </summary>
         /// <param name="pFilaCMSComponente">Fila de CMSComponente</param>
         /// <param name="pGestorCMS">Gestor de CMS</param>
-        public CMSComponenteRolIdentidad(AD.EntityModel.Models.CMS.CMSComponenteRolIdentidad pFilaCMSComponenteRolIdentidad, GestionCMS pGestorCMS, LoggingService loggingService)
-            : base(pFilaCMSComponenteRolIdentidad, pGestorCMS, loggingService)
+        public CMSComponenteRolIdentidad(AD.EntityModel.Models.CMS.CMSComponenteRolIdentidad pFilaCMSComponenteRolIdentidad, GestionCMS pGestorCMS)
+            : base(pFilaCMSComponenteRolIdentidad, pGestorCMS)
         {
         }
 

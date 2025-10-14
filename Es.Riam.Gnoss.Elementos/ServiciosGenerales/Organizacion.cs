@@ -3,6 +3,7 @@ using Es.Riam.Gnoss.AD.EntityModel.Models.UsuarioDS;
 using Es.Riam.Gnoss.Util.General;
 using Es.Riam.Interfaces;
 using Es.Riam.Util;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -82,8 +83,6 @@ namespace Es.Riam.Gnoss.Elementos.ServiciosGenerales
         /// </summary>
         private bool mPerfilCargado;
 
-        private LoggingService mLoggingService;
-
         #endregion
 
         #region Constructores
@@ -91,10 +90,10 @@ namespace Es.Riam.Gnoss.Elementos.ServiciosGenerales
         /// <summary>
         /// Constructor sin parámetros
         /// </summary>
-        public Organizacion(LoggingService loggingService)
-            : base(loggingService)
+        public Organizacion()
+            : base()
         {
-            mLoggingService = loggingService;
+
         }
 
         /// <summary>
@@ -102,10 +101,9 @@ namespace Es.Riam.Gnoss.Elementos.ServiciosGenerales
         /// </summary>
         /// <param name="pOrganizacion">Fila de organización</param>
         /// <param name="pGestorOrganizaciones">Gestor de organizaciones</param>
-        public Organizacion(AD.EntityModel.Models.OrganizacionDS.Organizacion pOrganizacion, GestionOrganizaciones pGestorOrganizaciones, LoggingService loggingService)
-            : base(pOrganizacion, pGestorOrganizaciones, loggingService)
+        public Organizacion(AD.EntityModel.Models.OrganizacionDS.Organizacion pOrganizacion, GestionOrganizaciones pGestorOrganizaciones)
+            : base(pOrganizacion, pGestorOrganizaciones)
         {
-            mLoggingService = loggingService;
         }
 
         #endregion
@@ -386,7 +384,7 @@ namespace Es.Riam.Gnoss.Elementos.ServiciosGenerales
                         }
                         else
                         {
-                            org = new Organizacion(organizacionRow, GestorOrganizaciones, mLoggingService);
+                            org = new Organizacion(organizacionRow, GestorOrganizaciones);
 
                             GestorOrganizaciones.ListaOrganizaciones.Add(organizacionRow.OrganizacionID, org);
                         }

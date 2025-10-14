@@ -5,6 +5,7 @@ using Es.Riam.Gnoss.AD.EntityModel.Models.Peticion;
 using Es.Riam.Gnoss.AD.EntityModel.Models.Solicitud;
 using Es.Riam.Gnoss.AD.EntityModelBASE;
 using Es.Riam.Gnoss.AD.Facetado;
+using Es.Riam.Gnoss.AD.ParametroAplicacion;
 using Es.Riam.Gnoss.AD.ServiciosGenerales;
 using Es.Riam.Gnoss.AD.Virtuoso;
 using Es.Riam.Gnoss.CL;
@@ -23,11 +24,14 @@ using Es.Riam.Gnoss.Recursos;
 using Es.Riam.Gnoss.Util.Configuracion;
 using Es.Riam.Gnoss.Util.General;
 using Es.Riam.Gnoss.Util.Seguridad;
+using Es.Riam.Gnoss.UtilServiciosWeb;
 using Es.Riam.Gnoss.Web.Controles.ServiciosGenerales;
 using Es.Riam.Gnoss.Web.MVC.Models;
 using Es.Riam.Metagnoss.ExportarImportar;
 using Es.Riam.Util;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -72,7 +76,8 @@ public class GnossUrlsSemanticas
     private EntityContext mEntityContext;
     private ConfigService mConfigService;
     private IServicesUtilVirtuosoAndReplication mServicesUtilVirtuosoAndReplication;
-
+    private ILogger mlogger;
+    private ILoggerFactory mLoggerFactory;
     #endregion
 
     #region Constructor
@@ -80,12 +85,14 @@ public class GnossUrlsSemanticas
     /// <summary>
     /// Constructor
     /// </summary>
-    public GnossUrlsSemanticas(LoggingService loggingService, EntityContext entityContext, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication)
+    public GnossUrlsSemanticas(LoggingService loggingService, EntityContext entityContext, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication, ILogger<GnossUrlsSemanticas> logger, ILoggerFactory loggerFactory)
     {
         mLoggingService = loggingService;
         mEntityContext = entityContext;
         mConfigService = configService;
         mServicesUtilVirtuosoAndReplication = servicesUtilVirtuosoAndReplication;
+        mlogger = logger;
+        mLoggerFactory = loggerFactory;
     }
 
     #endregion
@@ -849,7 +856,7 @@ public class GnossUrlsSemanticas
         if (string.IsNullOrEmpty(pNombreDocumento))
         {
             //Obtengo el nombre del documento
-            DocumentacionCN docCN = new DocumentacionCN(mEntityContext, mLoggingService, mConfigService, null);
+            DocumentacionCN docCN = new DocumentacionCN(mEntityContext, mLoggingService, mConfigService, null, mLoggerFactory.CreateLogger<DocumentacionCN>(), mLoggerFactory);
             pNombreDocumento = docCN.ObtenerTituloDocumentoPorID(pDocumentoID);
             docCN.Dispose();
         }
@@ -883,7 +890,7 @@ public class GnossUrlsSemanticas
     {
         if (!mListaIDsOntologiasPorProyecto.ContainsKey(pNombreCortoProy))
         {
-            ProyectoCN proyCN = new ProyectoCN(mEntityContext, mLoggingService, mConfigService, null);
+            ProyectoCN proyCN = new ProyectoCN(mEntityContext, mLoggingService, mConfigService, null, mLoggerFactory.CreateLogger<ProyectoCN>(), mLoggerFactory);
             Dictionary<string, Guid> idOntologiasDeProyecto = proyCN.ObtenerOntologiasConIDPorNombreCortoProy(pNombreCortoProy);
             proyCN.Dispose();
 
@@ -907,7 +914,7 @@ public class GnossUrlsSemanticas
     {
         if (!mListaURLOntologiasPorProyecto.ContainsKey(pNombreCortoProy))
         {
-            ProyectoCN proyCN = new ProyectoCN(mEntityContext, mLoggingService, mConfigService, null);
+            ProyectoCN proyCN = new ProyectoCN(mEntityContext, mLoggingService, mConfigService, null, mLoggerFactory.CreateLogger<ProyectoCN>(), mLoggerFactory);
             Dictionary<string, Dictionary<Guid, string>> urlOntologiasDeProyecto = proyCN.ObtenerNombresCortosProyectosConNombresCortosOntologias(pNombreCortoProy);
             proyCN.Dispose();
 
@@ -1113,7 +1120,7 @@ public class GnossUrlsSemanticas
         if (string.IsNullOrEmpty(pNombreDocumento))
         {
             //Obtengo el nombre del documento
-            DocumentacionCN docCN = new DocumentacionCN(mEntityContext, mLoggingService, mConfigService, null);
+            DocumentacionCN docCN = new DocumentacionCN(mEntityContext, mLoggingService, mConfigService, null, mLoggerFactory.CreateLogger<DocumentacionCN>(), mLoggerFactory);
             pNombreDocumento = docCN.ObtenerTituloDocumentoPorID(pDocumentoID);
 
             pNombreDocumento = UtilCadenas.EliminarCaracteresUrlSem(pNombreDocumento);
@@ -2432,12 +2439,17 @@ public class GnossUrlsSemanticas
             if (Uri.TryCreate(pBaseURLIdioma, UriKind.Absolute, out urlValida))
             {
                 pBaseURLIdioma = UtilDominios.ObtenerDominioUrl(urlValida, true);
+                string rutaEjecucionWeb = mConfigService.ObtenerRutaEjecucionWeb();
+                if (!string.IsNullOrEmpty(rutaEjecucionWeb))
+                {
+                    pBaseURLIdioma = $"{pBaseURLIdioma}/{rutaEjecucionWeb.Trim('/')}";
+                }
             }
 
             url = ObtenerURLDominioComunidad(pUtilIdiomas, pBaseURLIdioma, pNombreCorto, pFicheroConfiguracion);
 
-            ParametroAplicacionCN paramCN = new ParametroAplicacionCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
-            ProyectoCN proyectoCN = new ProyectoCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+            ParametroAplicacionCN paramCN = new ParametroAplicacionCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<ParametroAplicacionCN>(), mLoggerFactory);
+            ProyectoCN proyectoCN = new ProyectoCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<ProyectoCN>(), mLoggerFactory);
 
             Guid? proyectoID = mConfigService.ObtenerProyectoConexion();
             if (proyectoID == null || proyectoID.Equals(Guid.Empty))
@@ -2454,6 +2466,8 @@ public class GnossUrlsSemanticas
 
             if ((url.EndsWith("depuracion.net") || url.Contains("localhost")) && !proyectoID.HasValue)
             {
+                ////Fernando : Si estoy depurando y no tengo un dominio configurado, que me funcionen las urls de la comunidad
+
                 mListaNombreCortoComunidadesSinNombreCortoEnURL = new List<string>();
             }
             else
@@ -2464,15 +2478,24 @@ public class GnossUrlsSemanticas
                     {
                         if (mListaNombreCortoComunidadesSinNombreCortoEnURL == null)
                         {
-                            ParametroCN parametroCN = new ParametroCN(mEntityContext, mLoggingService, mConfigService, null);
+                            ParametroCN parametroCN = new ParametroCN(mEntityContext, mLoggingService, mConfigService, null, mLoggerFactory.CreateLogger<ParametroCN>(), mLoggerFactory);
                             mListaNombreCortoComunidadesSinNombreCortoEnURL = parametroCN.ObtenerNombresDeProyectosSinNombreCortoEnURL();
                             paramCN.Dispose();
                         }
                     }
                 }
             }
-
-            url += ConstruirURLComunidad(pUtilIdiomas, pNombreCorto);
+            ParametroAplicacionCN parametroAplicacionCN = new ParametroAplicacionCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<ParametroAplicacionCN>(), mLoggerFactory);
+            string dominioPaginasAdministracion = parametroAplicacionCN.ObtenerParametroAplicacion(TiposParametrosAplicacion.DominioPaginasAdministracion);
+            if (!string.IsNullOrEmpty(dominioPaginasAdministracion))
+            {
+                url = $"{pBaseURLIdioma}{ConstruirURLComunidad(pUtilIdiomas, pNombreCorto)}";
+                mLoggingService.AgregarEntrada($"Url de comunidad: {url}");
+            }
+            else
+            {
+                url += ConstruirURLComunidad(pUtilIdiomas, pNombreCorto);
+            }            
         }
         return url;
     }
@@ -2523,11 +2546,11 @@ public class GnossUrlsSemanticas
 
                 if (pFicheroConfiguracion == null || pFicheroConfiguracion == string.Empty)
                 {
-                    proyCN = new ProyectoCN(mEntityContext, mLoggingService, mConfigService, null);
+                    proyCN = new ProyectoCN(mEntityContext, mLoggingService, mConfigService, null, mLoggerFactory.CreateLogger<ProyectoCN>(), mLoggerFactory);
                 }
                 else
                 {
-                    proyCN = new ProyectoCN(pFicheroConfiguracion, mEntityContext, mLoggingService, mConfigService, null);
+                    proyCN = new ProyectoCN(pFicheroConfiguracion, mEntityContext, mLoggingService, mConfigService, null, mLoggerFactory.CreateLogger<ProyectoCN>(), mLoggerFactory);
                 }
                 string url = proyCN.ObtenerURLPropiaProyectoPorNombreCorto(pNombreCorto);
                 proyCN.Dispose();
@@ -2575,7 +2598,7 @@ public class GnossUrlsSemanticas
             }
             catch (Exception ex)
             {
-                mLoggingService.GuardarLogError(ex);
+                mLoggingService.GuardarLogError(ex, mlogger);
             }
         }
     }
@@ -2624,16 +2647,17 @@ public class GnossUrlsSemanticas
                 CargarUrlComunidad(pNombreCorto, pFicheroConfiguracion);
             }
 
-            if (!pBaseURL.Contains("depuracion.net") && !pBaseURL.Contains("localhost"))
+            if (!pBaseURL.Contains("depuracion") && !pBaseURL.Contains("localhost"))
             {
+                string rutaEjecucionWeb = mConfigService.ObtenerRutaEjecucionWeb();
                 //Cojo la URL de la lista de comunidades
                 if (mListaURLComunidades[pNombreCorto].ContainsKey(pUtilIdiomas.LanguageCode))
                 {
-                    url = mListaURLComunidades[pNombreCorto][pUtilIdiomas.LanguageCode];
+                    url = $"{mListaURLComunidades[pNombreCorto][pUtilIdiomas.LanguageCode]}/{rutaEjecucionWeb}".TrimEnd('/');
                 }
                 else
                 {
-                    url = mListaURLComunidades[pNombreCorto].First().Value;
+                    url = $"{mListaURLComunidades[pNombreCorto].First().Value}/{rutaEjecucionWeb}".TrimEnd('/');
                 }
             }
             else
@@ -2674,11 +2698,11 @@ public class GnossUrlsSemanticas
 
             if (pFicheroConfiguracion == null || pFicheroConfiguracion == string.Empty)
             {
-                proyCN = new ProyectoCN(mEntityContext, mLoggingService, mConfigService, null);
+                proyCN = new ProyectoCN(mEntityContext, mLoggingService, mConfigService, null, mLoggerFactory.CreateLogger<ProyectoCN>(), mLoggerFactory);
             }
             else
             {
-                proyCN = new ProyectoCN(pFicheroConfiguracion, mEntityContext, mLoggingService, mConfigService, null);
+                proyCN = new ProyectoCN(pFicheroConfiguracion, mEntityContext, mLoggingService, mConfigService, null, mLoggerFactory.CreateLogger<ProyectoCN>(), mLoggerFactory);
             }
 
             Dictionary<string, string> urlComunidadesAModificar = new Dictionary<string, string>();
@@ -2704,7 +2728,7 @@ public class GnossUrlsSemanticas
 
                             foreach (string urlPropia in urls)
                             {
-                                string idioma = "es";
+                                string idioma = IdiomaPrincipalDominio;
                                 string[] urlIdioma = urlPropia.Split(new string[] { "@" }, StringSplitOptions.RemoveEmptyEntries);
                                 url = UtilDominios.DomainToPunyCode(urlIdioma[0]);
                                 if (urlIdioma.Length > 1) { idioma = urlIdioma[1]; }
@@ -2721,12 +2745,12 @@ public class GnossUrlsSemanticas
         }
         catch (Exception ex)
         {
-            mLoggingService.GuardarLogError(ex);
+            mLoggingService.GuardarLogError(ex, mlogger );
         }
 
         if (mListaNombreCortoComunidadesSinNombreCortoEnURL == null)
         {
-            ParametroCN paramCN = new ParametroCN(mEntityContext, mLoggingService, mConfigService, null);
+            ParametroCN paramCN = new ParametroCN(mEntityContext, mLoggingService, mConfigService, null, mLoggerFactory.CreateLogger<ParametroCN>(), mLoggerFactory);
             mListaNombreCortoComunidadesSinNombreCortoEnURL = paramCN.ObtenerNombresDeProyectosSinNombreCortoEnURL();
             paramCN.Dispose();
         }
@@ -3442,7 +3466,8 @@ public class GnossGeneradorUrlsRDF : IGeneradorURL
     private IHttpContextAccessor mHttpContextAccessor;
     private ConfigService mConfigService;
     private IServicesUtilVirtuosoAndReplication mServicesUtilVirtuosoAndReplication;
-
+    private ILogger mlogger;
+    private ILoggerFactory mLoggerFactory;
     #endregion
 
     #region Constructores
@@ -3454,7 +3479,7 @@ public class GnossGeneradorUrlsRDF : IGeneradorURL
     /// <param name="pBaseURLIdioma">URL base (con http:...)</param>
     /// <param name="pUrlPerfil">Url del perfil de la persona actual</param>
     /// <param name="pUrlComunidad">Url de la comunidad a la que el usuario está conectado</param>
-    public GnossGeneradorUrlsRDF(UtilIdiomas pUtilIdiomas, string pBaseURL, string pBaseURLContent, string pUrlPerfil, string pUrlComunidad, string pUrlActual, string pUrlActualSinQuery, string pPestanya, GnossUrlsSemanticas gnossUrlsSemanticas, LoggingService loggingService, EntityContext entityContext, ConfigService configService, IHttpContextAccessor httpContextAccessor)
+    public GnossGeneradorUrlsRDF(UtilIdiomas pUtilIdiomas, string pBaseURL, string pBaseURLContent, string pUrlPerfil, string pUrlComunidad, string pUrlActual, string pUrlActualSinQuery, string pPestanya, GnossUrlsSemanticas gnossUrlsSemanticas, LoggingService loggingService, EntityContext entityContext, ConfigService configService, IHttpContextAccessor httpContextAccessor, ILogger<GnossGeneradorUrlsRDF> logger, ILoggerFactory loggerFactory)
     {
         mUrlBase = pBaseURL;
         mUrlBaseContent = pBaseURLContent;
@@ -3465,7 +3490,8 @@ public class GnossGeneradorUrlsRDF : IGeneradorURL
         mUrlActualSinQuery = pUrlActualSinQuery;
 
         mPestanya = pPestanya;
-
+        mlogger = logger;
+        mLoggerFactory = loggerFactory;
         mListaUrlsElementosSinPagina = new Dictionary<Guid, string>();
 
         mGnossUrlsSemanticas = gnossUrlsSemanticas;
@@ -3513,7 +3539,7 @@ public class GnossGeneradorUrlsRDF : IGeneradorURL
 
             if ((filas != null) && (filas.Count > 0))
             {
-                IdentidadCN identCN = new IdentidadCN(mEntityContext, mLoggingService, mConfigService, null);
+                IdentidadCN identCN = new IdentidadCN(mEntityContext, mLoggingService, mConfigService, null, mLoggerFactory.CreateLogger<IdentidadCN>(), mLoggerFactory);
                 idPersonaOOrg = identCN.ObtenerPersonaOOrganizacionIDDeIdentidad(pDocumento.FilaDocumento.CreadorID).ToString();
                 identCN.Dispose();
 
@@ -3553,7 +3579,7 @@ public class GnossGeneradorUrlsRDF : IGeneradorURL
                 {
                     carpetaPersonaOOrg = "&org=" + pDocumento.FilaDocumento.OrganizacionID + "&proy=" + pDocumento.FilaDocumento.ProyectoID;
                 }
-                mConfigService.ObtenerDominio();
+
                 url = "//" + mHttpContextAccessor.HttpContext.Request.Host + "/download-file?tipo=" + TipoEntidadVinculadaDocumentoTexto.BASE_RECURSOS + "&doc=" + pDocumento.Clave + "&nombre=" + HttpUtility.UrlEncode(pDocumento.NombreDocumento) + "&ext=" + pDocumento.Extension + carpetaPersonaOOrg + "&dscr=true";
             }
         }
@@ -3667,7 +3693,7 @@ public class GnossGeneradorUrlsRDF : IGeneradorURL
 
         if (pPersona.FilaPersona.UsuarioID.HasValue)
         {
-            UsuarioCN usuCN = new UsuarioCN(mEntityContext, mLoggingService, mConfigService, null);
+            UsuarioCN usuCN = new UsuarioCN(mEntityContext, mLoggingService, mConfigService, null, mLoggerFactory.CreateLogger<UsuarioCN>(), mLoggerFactory);
             nombreCortoPersona = usuCN.ObtenerNombreCortoUsuarioPorID(pPersona.FilaPersona.UsuarioID.Value);
             usuCN.Dispose();
         }
@@ -3689,7 +3715,7 @@ public class GnossGeneradorUrlsRDF : IGeneradorURL
 
     public string ObtenerUrlIdentidad(Identidad pIdentidad)
     {
-        ProyectoCN proyCN = new ProyectoCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+        ProyectoCN proyCN = new ProyectoCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<ProyectoCN>(), mLoggerFactory);
         string nombreCortoProy = proyCN.ObtenerNombreCortoProyecto(pIdentidad.FilaIdentidad.ProyectoID);
         proyCN.Dispose();
 

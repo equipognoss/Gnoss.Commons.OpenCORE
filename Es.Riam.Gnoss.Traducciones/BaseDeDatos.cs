@@ -22,6 +22,9 @@ using Es.Riam.Gnoss.AD.EntityModelBASE;
 using Es.Riam.AbstractsOpen;
 using ClosedXML.Excel;
 using Es.Riam.Semantica.OWL;
+using Es.Riam.Interfaces.InterfacesOpen;
+using Microsoft.Extensions.Logging;
+using Es.Riam.Gnoss.Elementos.Amigos;
 
 namespace Es.Riam.Gnoss.Traducciones
 {
@@ -42,8 +45,9 @@ namespace Es.Riam.Gnoss.Traducciones
         private GnossCache mGnossCache;
         private EntityContextBASE mEntityContextBASE;
         private IServicesUtilVirtuosoAndReplication mServicesUtilVirtuosoAndReplication;
-
-        public BaseDeDatos(Elementos.ServiciosGenerales.Proyecto pProyectoSeleccionado, EntityContext entityContext, LoggingService loggingService, ConfigService configService, VirtuosoAD virtuosoAD, RedisCacheWrapper redisCacheWrapper, IHttpContextAccessor httpContextAccessor, GnossCache gnossCache, EntityContextBASE entityContextBASE, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication)
+        private ILogger mlogger;
+        private ILoggerFactory mloggerFactory;
+        public BaseDeDatos(Elementos.ServiciosGenerales.Proyecto pProyectoSeleccionado, EntityContext entityContext, LoggingService loggingService, ConfigService configService, VirtuosoAD virtuosoAD, RedisCacheWrapper redisCacheWrapper, IHttpContextAccessor httpContextAccessor, GnossCache gnossCache, EntityContextBASE entityContextBASE, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication, ILogger<BaseDeDatos> logger, ILoggerFactory loggerFactory)
         {
             mGnossCache = gnossCache;
             mEntityContextBASE = entityContextBASE;
@@ -55,6 +59,8 @@ namespace Es.Riam.Gnoss.Traducciones
             mVirtuosoAD = virtuosoAD;
             mProyectoSeleccionado = pProyectoSeleccionado;
             mServicesUtilVirtuosoAndReplication = servicesUtilVirtuosoAndReplication;
+            mlogger = logger;
+            mloggerFactory = loggerFactory;
         }
 
         /// <summary>
@@ -699,7 +705,7 @@ namespace Es.Riam.Gnoss.Traducciones
             {
                 string consultaIdiomas = $"select distinct lang(?o) as ?lang from <{grafo}> where {{ ?s ?p ?o. filter(lang(?o) != '') }} order by ?s ?p ?o lang(?o) ";
 
-                using (FacetadoAD facetado = new FacetadoAD(urlIntragnoss, mLoggingService, mEntityContext, mConfigService, mVirtuosoAD, mServicesUtilVirtuosoAndReplication))
+                using (FacetadoAD facetado = new FacetadoAD(urlIntragnoss, mLoggingService, mEntityContext, mConfigService, mVirtuosoAD, mServicesUtilVirtuosoAndReplication, mloggerFactory.CreateLogger<FacetadoAD>(), mloggerFactory))
                 {
                     facetado.LeerDeVirtuoso(consultaIdiomas, "Idiomas", dataSet, pOntologia);
                 }
@@ -735,7 +741,7 @@ namespace Es.Riam.Gnoss.Traducciones
             {
                 string consultaIdiomas = $"select distinct lang(?o) as ?lang from <{grafo}> where {{  ?s ?p ?o. }} order by ?s ?p ?o lang(?o) ";
 
-                using (FacetadoAD facetado = new FacetadoAD(urlIntragnoss, mLoggingService, mEntityContext, mConfigService, mVirtuosoAD, mServicesUtilVirtuosoAndReplication))
+                using (FacetadoAD facetado = new FacetadoAD(urlIntragnoss, mLoggingService, mEntityContext, mConfigService, mVirtuosoAD, mServicesUtilVirtuosoAndReplication, mloggerFactory.CreateLogger<FacetadoAD>(), mloggerFactory))
                 {
                     facetado.LeerDeVirtuoso(consultaIdiomas, "Idiomas", dataSet, pOntologia);
                 }
@@ -797,7 +803,7 @@ namespace Es.Riam.Gnoss.Traducciones
 
             FacetadoDS dataSet = new FacetadoDS();
 
-            using (FacetadoAD facetado = new FacetadoAD(urlIntragnoss, mLoggingService, mEntityContext, mConfigService, mVirtuosoAD, mServicesUtilVirtuosoAndReplication))
+            using (FacetadoAD facetado = new FacetadoAD(urlIntragnoss, mLoggingService, mEntityContext, mConfigService, mVirtuosoAD, mServicesUtilVirtuosoAndReplication, mloggerFactory.CreateLogger<FacetadoAD>(), mloggerFactory))
             {
                 facetado.LeerDeVirtuoso(consultaCount, "NumeroResultados", dataSet, pOntologia);
             }
@@ -834,7 +840,7 @@ namespace Es.Riam.Gnoss.Traducciones
 
                 FacetadoDS dataSet = new FacetadoDS();
 
-                using (FacetadoAD facetado = new FacetadoAD(urlIntragnoss, mLoggingService, mEntityContext, mConfigService, mVirtuosoAD, mServicesUtilVirtuosoAndReplication))
+                using (FacetadoAD facetado = new FacetadoAD(urlIntragnoss, mLoggingService, mEntityContext, mConfigService, mVirtuosoAD, mServicesUtilVirtuosoAndReplication, mloggerFactory.CreateLogger<FacetadoAD>(), mloggerFactory))
                 {
                     facetado.LeerDeVirtuoso(consultaCount, "NumeroResultados", dataSet, grafo);
                 }
@@ -851,7 +857,7 @@ namespace Es.Riam.Gnoss.Traducciones
         }
 
         //help
-        public void ExcelToVirtuoso(DataTable tabla, string urlIntragnoss, Dictionary<string, MemoryStream> listMStream, Guid mProyectoID)
+        public void ExcelToVirtuoso(DataTable tabla, string urlIntragnoss, Dictionary<string, MemoryStream> listMStream, Guid mProyectoID, IAvailableServices pAvailableServices)
         {
             string ontologia = tabla.TableName.Substring(tabla.TableName.IndexOf("_") + 1).Trim('.').Trim() + ".owl";
             string grafo = urlIntragnoss + ontologia;
@@ -909,9 +915,9 @@ namespace Es.Riam.Gnoss.Traducciones
             MemoryStream ms = new MemoryStream();
             StreamWriter sw = new StreamWriter(ms);
 
-            FacetadoCN facetadoCN = new FacetadoCN(urlIntragnoss, mEntityContext, mLoggingService, mConfigService, mVirtuosoAD, mServicesUtilVirtuosoAndReplication);
+            FacetadoCN facetadoCN = new FacetadoCN(urlIntragnoss, mEntityContext, mLoggingService, mConfigService, mVirtuosoAD, mServicesUtilVirtuosoAndReplication, mloggerFactory.CreateLogger<FacetadoCN>(), mloggerFactory);
 
-            ControladorDocumentacion controladorDocumentacion = new ControladorDocumentacion(mLoggingService, mEntityContext, mConfigService, mRedisCacheWrapper, mGnossCache, mEntityContextBASE, mVirtuosoAD, mHttpContextAccessor, mServicesUtilVirtuosoAndReplication);
+            ControladorDocumentacion controladorDocumentacion = new ControladorDocumentacion(mLoggingService, mEntityContext, mConfigService, mRedisCacheWrapper, mGnossCache, mEntityContextBASE, mVirtuosoAD, mHttpContextAccessor, mServicesUtilVirtuosoAndReplication, mloggerFactory.CreateLogger<ControladorDocumentacion>(), mloggerFactory);
 
             foreach (Guid recursoID in triples.Keys)
             {
@@ -947,10 +953,10 @@ namespace Es.Riam.Gnoss.Traducciones
                 }
                 catch(Exception ex)
                 {
-                    mLoggingService.GuardarLogError(ex);
+                    mLoggingService.GuardarLogError(ex, mlogger);
                 }
                 //Procesamos el recurso por el base
-                controladorDocumentacion.AgregarRecursoModeloBaseSimple(recursoID, mProyectoSeleccionado.Clave, 5, AD.BASE_BD.PrioridadBase.Alta);
+                controladorDocumentacion.AgregarRecursoModeloBaseSimple(recursoID, mProyectoSeleccionado.Clave, 5, AD.BASE_BD.PrioridadBase.Alta, pAvailableServices);
             }
 
             sw.Flush();
@@ -980,7 +986,7 @@ namespace Es.Riam.Gnoss.Traducciones
         {
             DataTable tablaVirtuoso;
 
-            using (FacetadoAD facetado = new FacetadoAD(urlIntragnoss, mLoggingService, mEntityContext, mConfigService, mVirtuosoAD, mServicesUtilVirtuosoAndReplication))
+            using (FacetadoAD facetado = new FacetadoAD(urlIntragnoss, mLoggingService, mEntityContext, mConfigService, mVirtuosoAD, mServicesUtilVirtuosoAndReplication, mloggerFactory.CreateLogger<FacetadoAD>(), mloggerFactory))
             {
                 FacetadoDS dataSet = new FacetadoDS();
                 string fullConsulta = ObtenerConsultasVirtuosoPorFecha(ontologia, dataSet, documentosID, urlIntragnoss, false);
@@ -1167,7 +1173,7 @@ namespace Es.Riam.Gnoss.Traducciones
                 {
                     string fullConsulta = ObtenerConsultasVirtuoso(pOntologia, dataSet, urlIntragnoss);
 
-                    using (FacetadoAD facetado = new FacetadoAD(urlIntragnoss, mLoggingService, mEntityContext, mConfigService, mVirtuosoAD, mServicesUtilVirtuosoAndReplication))
+                    using (FacetadoAD facetado = new FacetadoAD(urlIntragnoss, mLoggingService, mEntityContext, mConfigService, mVirtuosoAD, mServicesUtilVirtuosoAndReplication, mloggerFactory.CreateLogger<FacetadoAD>(), mloggerFactory))
                     {
                         facetado.LeerDeVirtuoso(fullConsulta, grafo, dataSet, pOntologia);
                     }
@@ -1178,7 +1184,7 @@ namespace Es.Riam.Gnoss.Traducciones
                     {
                         string fullConsulta = string.Concat("select * where { ", ObtenerConsultasVirtuoso(pOntologia, dataSet, urlIntragnoss), $" }} limit {LIMITE_VIRTUOSO}  offset {i * 10000}");
 
-                        using (FacetadoAD facetado = new FacetadoAD(urlIntragnoss, mLoggingService, mEntityContext, mConfigService, mVirtuosoAD, mServicesUtilVirtuosoAndReplication))
+                        using (FacetadoAD facetado = new FacetadoAD(urlIntragnoss, mLoggingService, mEntityContext, mConfigService, mVirtuosoAD, mServicesUtilVirtuosoAndReplication, mloggerFactory.CreateLogger<FacetadoAD>(), mloggerFactory))
                         {
                             facetado.LeerDeVirtuoso(fullConsulta, grafo, dataSet, pOntologia);
                         }
@@ -1233,7 +1239,7 @@ namespace Es.Riam.Gnoss.Traducciones
 
 
                         FacetadoDS dataSetAux = new FacetadoDS();
-                        using (FacetadoAD facetado = new FacetadoAD(urlIntragnoss, mLoggingService, mEntityContext, mConfigService, mVirtuosoAD, mServicesUtilVirtuosoAndReplication))
+                        using (FacetadoAD facetado = new FacetadoAD(urlIntragnoss, mLoggingService, mEntityContext, mConfigService, mVirtuosoAD, mServicesUtilVirtuosoAndReplication, mloggerFactory.CreateLogger<FacetadoAD>(), mloggerFactory))
                         {
                             facetado.LeerDeVirtuoso(fullConsulta, pOntologia, dataSetAux, pOntologia);
                         }
@@ -1246,7 +1252,7 @@ namespace Es.Riam.Gnoss.Traducciones
                         {
                             string fullConsulta = string.Concat("select * where { ", ObtenerConsultasVirtuosoPorFecha(pOntologia, dataSet, documentosID, urlIntragnoss), $" }} limit {LIMITE_VIRTUOSO}  offset {j * 10000}");
 
-                            using (FacetadoAD facetado = new FacetadoAD(urlIntragnoss, mLoggingService, mEntityContext, mConfigService, mVirtuosoAD, mServicesUtilVirtuosoAndReplication))
+                            using (FacetadoAD facetado = new FacetadoAD(urlIntragnoss, mLoggingService, mEntityContext, mConfigService, mVirtuosoAD, mServicesUtilVirtuosoAndReplication, mloggerFactory.CreateLogger<FacetadoAD>(), mloggerFactory))
                             {
                                 facetado.LeerDeVirtuoso(fullConsulta, pOntologia, dataSet, pOntologia);
                             }

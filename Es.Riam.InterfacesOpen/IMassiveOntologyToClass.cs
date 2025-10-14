@@ -209,7 +209,7 @@ namespace Es.Riam.InterfacesOpen
                 }
             }
 
-            PintarPropiedades(pElem, pEsOntologia, sujetoEntidadAuxiliar, Clase, dicPref, propListiedadesMultidioma, listaObjetosPropiedad, pEsPrincipal, pPropiedadPadre.NombreConNamespace, item, pListaPropiedadesSearch, pListaPadrePropiedadesAnidadas);
+            PintarPropiedades(pElem, pEsOntologia, sujetoEntidadAuxiliar, Clase, dicPref, propListiedadesMultidioma, listaObjetosPropiedad, pEsPrincipal, pPropiedadPadre.NombreConNamespace, item, pListaPropiedadesSearch, pListaPadrePropiedadesAnidadas, ++numIteraciones);
 
             Clase.AppendLine($"{UtilCadenasOntology.Tabs(3)}}}");
 
@@ -225,7 +225,7 @@ namespace Es.Riam.InterfacesOpen
         /// <param name="pElem">Ontología de la cual se van a pintar las propiedades</param>
         /// <param name="pEsOntologia">Nos indica si las propiedades a pintar son para el grafo de ontología o para el grafo de búsqueda</param>
         /// <param name="pNombrePadres">Nombre de la jerarquía de entidades y propiedades hasta llegar al nivel actual</param>
-        protected void PintarPropiedades(ElementoOntologia pElem, bool pEsOntologia, string pSujetoEntidadSuperior, StringBuilder Clase, Dictionary<string, string> dicPref, Dictionary<string, bool> propListiedadesMultidioma, List<ObjetoPropiedad> listaObjetosPropiedad, bool pEsPrincipal, string pRutaPadreSearch = null, string pNombrePadres = "this", List<string> pListaPropiedadesSearch = null, List<string> pListaPadrePropiedadesAnidadas = null)
+        protected void PintarPropiedades(ElementoOntologia pElem, bool pEsOntologia, string pSujetoEntidadSuperior, StringBuilder Clase, Dictionary<string, string> dicPref, Dictionary<string, bool> propListiedadesMultidioma, List<ObjetoPropiedad> listaObjetosPropiedad, bool pEsPrincipal, string pRutaPadreSearch = null, string pNombrePadres = "this", List<string> pListaPropiedadesSearch = null, List<string> pListaPadrePropiedadesAnidadas = null, int pNumeroIteraciones = 0)
         {
             foreach (Propiedad prop in pElem.Propiedades)
             {
@@ -305,8 +305,8 @@ namespace Es.Riam.InterfacesOpen
                             }
                             else
                             {
-                                string valorTriple = "item2";
-                                Clase.AppendLine($"{UtilCadenasOntology.Tabs(5)}foreach(var item2 in {pNombrePadres}.{identificadorValor})");
+                                string valorTriple = $"item{pNumeroIteraciones}";
+                                Clase.AppendLine($"{UtilCadenasOntology.Tabs(5)}foreach(var {valorTriple} in {pNombrePadres}.{identificadorValor})");
                                 Clase.AppendLine($"{UtilCadenasOntology.Tabs(5)}{{");
                                 if (!pEsOntologia)
                                 {
@@ -364,7 +364,7 @@ namespace Es.Riam.InterfacesOpen
                     }
                     else if (!prop.ValorUnico)
                     {
-                        Clase.AppendLine($"{UtilCadenasOntology.Tabs(5)}foreach(var item2 in {pNombrePadres}.{identificadorValor})");
+                        Clase.AppendLine($"{UtilCadenasOntology.Tabs(5)}foreach(var item{pNumeroIteraciones} in {pNombrePadres}.{identificadorValor})");
 
                         Clase.AppendLine($"{UtilCadenasOntology.Tabs(5)}{{");
 
@@ -374,7 +374,7 @@ namespace Es.Riam.InterfacesOpen
                         }
                         else
                         {
-                            string valorTriple = $"item2";
+                            string valorTriple = $"item{pNumeroIteraciones}";
                             if (!pEsOntologia)
                             {
                                 valorTriple = ModificarAIDCorto(valorTriple, configuracionObjeto.EsObject, pEsOntologia, Clase);

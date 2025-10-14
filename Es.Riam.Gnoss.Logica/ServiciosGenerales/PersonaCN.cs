@@ -2,10 +2,13 @@ using Es.Riam.AbstractsOpen;
 using Es.Riam.Gnoss.AD.EncapsuladoDatos;
 using Es.Riam.Gnoss.AD.EntityModel;
 using Es.Riam.Gnoss.AD.EntityModel.Models.PersonaDS;
+using Es.Riam.Gnoss.AD.ParametroAplicacion;
 using Es.Riam.Gnoss.AD.ServiciosGenerales;
 using Es.Riam.Gnoss.AD.Usuarios;
 using Es.Riam.Gnoss.Util.Configuracion;
 using Es.Riam.Gnoss.Util.General;
+using Microsoft.Extensions.Logging;
+using Serilog.Core;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -62,7 +65,8 @@ namespace Es.Riam.Gnoss.Logica.ServiciosGenerales
         #region Miembros
 
         private LoggingService mLoggingService;
-
+        private ILogger mlogger;
+        private ILoggerFactory mLoggerFactory;
         #endregion
 
         #region Constructores
@@ -70,11 +74,21 @@ namespace Es.Riam.Gnoss.Logica.ServiciosGenerales
         /// <summary>
         /// Constructor sin parámetros
         /// </summary>
-        public PersonaCN(EntityContext entityContext, LoggingService loggingService, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication)
-            : base(entityContext, loggingService, configService, servicesUtilVirtuosoAndReplication)
+        public PersonaCN(EntityContext entityContext, LoggingService loggingService, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication, ILogger<PersonaCN> logger, ILoggerFactory loggerFactory)
+            : base(entityContext, loggingService, configService, servicesUtilVirtuosoAndReplication,logger,loggerFactory)
         {
             mLoggingService = loggingService;
-            this.PersonaAD = new PersonaAD(loggingService, entityContext, configService, servicesUtilVirtuosoAndReplication);
+            mlogger = logger;
+            mLoggerFactory = loggerFactory;
+            if(loggerFactory == null)
+            {
+                this.PersonaAD = new PersonaAD(loggingService, entityContext, configService, servicesUtilVirtuosoAndReplication, null, null);
+            }
+            else
+            {
+                this.PersonaAD = new PersonaAD(loggingService, entityContext, configService, servicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<PersonaAD>(), mLoggerFactory);
+            }
+                
         }
 
         /// <summary>
@@ -82,11 +96,13 @@ namespace Es.Riam.Gnoss.Logica.ServiciosGenerales
         /// </summary>
         /// <param name="pFicheroConfiguracionBD">Ruta del fichero de configuración</param>
         /// <param name="pUsarVariableEstatica">Si se están usando hilos con diferentes conexiones: FALSE. En caso contrario TRUE</param>
-        public PersonaCN(string pFicheroConfiguracionBD, EntityContext entityContext, LoggingService loggingService, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication)
-            : base(entityContext, loggingService, configService, servicesUtilVirtuosoAndReplication)
+        public PersonaCN(string pFicheroConfiguracionBD, EntityContext entityContext, LoggingService loggingService, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication, ILogger<PersonaCN> logger, ILoggerFactory loggerFactory)
+            : base(entityContext, loggingService, configService, servicesUtilVirtuosoAndReplication,logger,loggerFactory)
         {
             mLoggingService = loggingService;
-            this.PersonaAD = new PersonaAD(pFicheroConfiguracionBD, loggingService, entityContext, configService, servicesUtilVirtuosoAndReplication);
+            mlogger = logger;
+            mLoggerFactory = loggerFactory;
+            this.PersonaAD = new PersonaAD(pFicheroConfiguracionBD, loggingService, entityContext, configService, servicesUtilVirtuosoAndReplication,mLoggerFactory.CreateLogger<PersonaAD>(),mLoggerFactory);
         }
 
         #endregion
@@ -650,14 +666,14 @@ namespace Es.Riam.Gnoss.Logica.ServiciosGenerales
             {
                 TerminarTransaccion(false);
                 // Error de concurrencia
-                mLoggingService.GuardarLogError(ex);
+                mLoggingService.GuardarLogError(ex, mlogger);
                 throw new ErrorConcurrencia();
             }
             catch (DataException ex)
             {
                 TerminarTransaccion(false);
                 //Error interno de la aplicación	
-                mLoggingService.GuardarLogError(ex);
+                mLoggingService.GuardarLogError(ex, mlogger);
                 throw new ErrorInterno();
             }
             catch
@@ -692,14 +708,14 @@ namespace Es.Riam.Gnoss.Logica.ServiciosGenerales
             {
                 TerminarTransaccion(false);
                 // Error de concurrencia
-                mLoggingService.GuardarLogError(ex);
+                mLoggingService.GuardarLogError(ex, mlogger);
                 throw new ErrorConcurrencia();
             }
             catch (DataException ex)
             {
                 TerminarTransaccion(false);
                 //Error interno de la aplicación	
-                mLoggingService.GuardarLogError(ex);
+                mLoggingService.GuardarLogError(ex, mlogger);
                 throw new ErrorInterno();
             }
             catch
@@ -774,6 +790,16 @@ namespace Es.Riam.Gnoss.Logica.ServiciosGenerales
         public Dictionary<string, string> ObtenerNombreCortoYNombresPersonasDeUsuariosID(List<Guid> pListaUsuariosID)
         {
             return PersonaAD.ObtenerNombreCortoYNombresPersonasDeUsuariosID(pListaUsuariosID);
+        }
+
+        /// <summary>
+        /// Obtiene el nombre de las personas de unos usuarios.
+        /// </summary>
+        /// <param name="pListaUsuariosID">Lista de identificadores de usuario</param>
+        /// <returns>Lista con el nombrecorto del usuario y el nombre de la persona</returns>
+        public Dictionary<string, string[]> ObtenerNombreCortoYNombresPerfilPorUsuariosID(List<Guid> pListaUsuariosID)
+        {
+            return PersonaAD.ObtenerNombreCortoYNombrePerfilPorUsuariosID(pListaUsuariosID);
         }
 
         /// <summary>

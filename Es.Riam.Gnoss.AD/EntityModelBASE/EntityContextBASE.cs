@@ -9,6 +9,8 @@ using System;
 using System.Data.Common;
 using System.Data.SqlClient;
 using Npgsql;
+using Microsoft.Extensions.Logging;
+using Es.Riam.Gnoss.AD.ParametroAplicacion;
 
 namespace Es.Riam.Gnoss.AD.EntityModelBASE
 {
@@ -20,8 +22,9 @@ namespace Es.Riam.Gnoss.AD.EntityModelBASE
         private UtilPeticion mUtilPeticion;
         private LoggingService mLoggingService;
         private ConfigService mConfigService;
-
-        public EntityContextBASE(UtilPeticion utilPeticion, LoggingService loggingService, ConfigService configService, DbContextOptions<EntityContextBASE> dbContextOptions, bool pCache = false)
+        private ILogger mlogger;
+        private ILoggerFactory mLoggerFactory;
+        public EntityContextBASE(UtilPeticion utilPeticion, LoggingService loggingService, ConfigService configService, DbContextOptions<EntityContextBASE> dbContextOptions, ILogger<EntityContextBASE> logger, ILoggerFactory loggerFactory, bool pCache = false)
             : base(dbContextOptions)
         {
             mCache = pCache;
@@ -29,9 +32,11 @@ namespace Es.Riam.Gnoss.AD.EntityModelBASE
             mLoggingService = loggingService;
             mConfigService = configService;
             mDbContextOptions = dbContextOptions;
+            mlogger = logger;
+            mLoggerFactory = loggerFactory;
         }
 
-        internal EntityContextBASE(UtilPeticion utilPeticion, LoggingService loggingService, ConfigService configService, DbContextOptions<EntityContextBASE> dbContextOptions, string pDefaultSchema = null, bool pCache = false)
+        internal EntityContextBASE(UtilPeticion utilPeticion, LoggingService loggingService, ConfigService configService, DbContextOptions<EntityContextBASE> dbContextOptions, ILogger<EntityContextBASE> logger, ILoggerFactory loggerFactory, string pDefaultSchema = null, bool pCache = false)
            : base(dbContextOptions)
         {
             mDefaultSchema = pDefaultSchema;
@@ -40,6 +45,8 @@ namespace Es.Riam.Gnoss.AD.EntityModelBASE
             mLoggingService = loggingService;
             mConfigService = configService;
             mDbContextOptions = dbContextOptions;
+            mlogger = logger;
+            mLoggerFactory = loggerFactory;
         }
         public void Migrate()
         {
@@ -82,7 +89,7 @@ namespace Es.Riam.Gnoss.AD.EntityModelBASE
             //UtilPeticion.AgregarObjetoAPeticionActual("EntityContextSinProxy", new EntityContext(conexion, schemaDefecto));
             //UsarEntityCache = true;
 
-            mUtilPeticion.AgregarObjetoAPeticionActual("EntityContextSinProxy", new EntityContextBASE(mUtilPeticion, mLoggingService, mConfigService, mDbContextOptions, schemaDefecto));
+            mUtilPeticion.AgregarObjetoAPeticionActual("EntityContextSinProxy", new EntityContextBASE(mUtilPeticion, mLoggingService, mConfigService, mDbContextOptions, mLoggerFactory.CreateLogger<EntityContextBASE>(),mLoggerFactory,schemaDefecto));
 
         }
 
@@ -126,7 +133,7 @@ namespace Es.Riam.Gnoss.AD.EntityModelBASE
                 }
                 catch (Exception ex)
                 {
-                    mLoggingService.GuardarLogError(ex, "Error al obtener el contexto por defecto de la base de datos: " + pConexionMaster.ConnectionString);
+                    mLoggingService.GuardarLogError(ex, "Error al obtener el contexto por defecto de la base de datos: " + pConexionMaster.ConnectionString,mlogger);
                 }
                 BaseAD.ListaDefaultSchemaPorConexion.TryAdd(pConexionMaster.ConnectionString, schemaDefecto);
             }
@@ -139,7 +146,7 @@ namespace Es.Riam.Gnoss.AD.EntityModelBASE
                 }
                 catch (Exception ex)
                 {
-                    mLoggingService.GuardarLogError(ex, "Error al obtener el contexto por defecto de la base de datos: " + pConexionMaster.ConnectionString);
+                    mLoggingService.GuardarLogError(ex,"Error al obtener el contexto por defecto de la base de datos: " + pConexionMaster.ConnectionString,mlogger);
                 }
                 BaseAD.ListaDefaultSchemaPorConexion.TryAdd(pConexionMaster.ConnectionString, schemaDefecto);
 
@@ -215,7 +222,7 @@ namespace Es.Riam.Gnoss.AD.EntityModelBASE
             //UtilPeticion.AgregarObjetoAPeticionActual("EntityContextSinProxy", new EntityContext(conexion, schemaDefecto));
             //UsarEntityCache = true;
 
-            mUtilPeticion.AgregarObjetoAPeticionActual("EntityContextBase", new EntityContextBASE(mUtilPeticion, mLoggingService, mConfigService, mDbContextOptions, schemaDefecto));
+            mUtilPeticion.AgregarObjetoAPeticionActual("EntityContextBase", new EntityContextBASE(mUtilPeticion, mLoggingService, mConfigService, mDbContextOptions,mLoggerFactory.CreateLogger<EntityContextBASE>() ,mLoggerFactory,schemaDefecto));
             //UsarEntityCache = false;
             ContextoInicializado = true;
         }

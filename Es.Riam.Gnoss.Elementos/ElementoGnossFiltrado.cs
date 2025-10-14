@@ -1,5 +1,6 @@
 using Es.Riam.Gnoss.Util.General;
 using Es.Riam.Interfaces;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -28,8 +29,6 @@ namespace Es.Riam.Gnoss.Elementos
         /// </summary>
         private IElementoFiltrado mPadreFiltrado;
 
-        private LoggingService mLoggingService;
-
         #endregion
 
         #region Constructor
@@ -38,10 +37,9 @@ namespace Es.Riam.Gnoss.Elementos
         /// Constructor
         /// </summary>
         /// <param name="pElemento">Elemento al que representa</param>
-        public ElementoGnossFiltrado(IElementoGnoss pElemento, LoggingService loggingService)
-            : base(pElemento, loggingService)
+        public ElementoGnossFiltrado(IElementoGnoss pElemento)
+            : base(pElemento)
         {
-            mLoggingService = loggingService;
             mElemento = pElemento;
         }
 
@@ -71,7 +69,7 @@ namespace Es.Riam.Gnoss.Elementos
                     ElementoGnossFiltrado elem = null;
                     if (!pListaElementosFiltrados.ContainsKey(aux))
                     {
-                        elem = new ElementoGnossFiltrado(aux, mLoggingService);
+                        elem = new ElementoGnossFiltrado(aux);
                         pListaElementosFiltrados.Add(aux, elem);
                     }
                     else
@@ -88,7 +86,7 @@ namespace Es.Riam.Gnoss.Elementos
                     }
                     else if (aux.Padre != null)
                     {
-                        ElementoGnossFiltrado elemPadre = new ElementoGnossFiltrado(aux.Padre, mLoggingService);
+                        ElementoGnossFiltrado elemPadre = new ElementoGnossFiltrado(aux.Padre);
                         pListaElementosFiltrados.Add(aux.Padre, elemPadre);
                         elem.PadreFiltrado = elemPadre;
                         elemPadre.HijosFiltrados.Add(aux, elem);

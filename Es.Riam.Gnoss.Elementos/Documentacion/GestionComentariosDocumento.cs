@@ -1,16 +1,21 @@
 using Es.Riam.AbstractsOpen;
 using Es.Riam.Gnoss.AD.EncapsuladoDatos;
 using Es.Riam.Gnoss.AD.EntityModel;
+using Es.Riam.Gnoss.AD.ParametroAplicacion;
 using Es.Riam.Gnoss.AD.Virtuoso;
 using Es.Riam.Gnoss.Elementos.Comentario;
 using Es.Riam.Gnoss.Elementos.Notificacion;
 using Es.Riam.Gnoss.Logica.Notificacion;
+using Es.Riam.Gnoss.Logica.ServiciosGenerales;
 using Es.Riam.Gnoss.Util.Configuracion;
 using Es.Riam.Gnoss.Util.General;
 using Es.Riam.Gnoss.Web.MVC.Models;
+using Es.Riam.Interfaces.InterfacesOpen;
 using Es.Riam.Util;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Logging;
+using Serilog.Core;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -35,23 +40,27 @@ namespace Es.Riam.Gnoss.Elementos.Documentacion
         private LoggingService mLoggingService;
         private EntityContext mEntityContext;
         private ConfigService mConfigService;
-
+        private ILogger mlogger;
+        private ILoggerFactory mLoggerFactory;
         #endregion
 
         #region Constructores
+
+        public GestionComentariosDocumento() { }
 
         /// <summary>
         /// Constructor
         /// </summary>
         /// <param name="pComentarioDW">DataSet de comentarios</param>
         /// <param name="pGestorDocumental">Gestor de documentos</param>
-        public GestionComentariosDocumento(DataWrapperComentario pComentarioDW, GestorDocumental pGestorDocumental,  LoggingService loggingService, EntityContext entityContext, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication)
-            : base(pComentarioDW, loggingService, entityContext, configService, servicesUtilVirtuosoAndReplication)
+        public GestionComentariosDocumento(DataWrapperComentario pComentarioDW, GestorDocumental pGestorDocumental,  LoggingService loggingService, EntityContext entityContext, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication, ILogger<GestionComentariosDocumento> logger, ILoggerFactory loggerFactory)
+            : base(pComentarioDW, loggingService, entityContext, configService, servicesUtilVirtuosoAndReplication,logger,loggerFactory)
         {
             mLoggingService = loggingService;
             mEntityContext = entityContext;
             mConfigService = configService;
-
+            mlogger = logger;
+            mLoggerFactory = loggerFactory;
             mGestorDocumental = pGestorDocumental;
         }
 
@@ -63,10 +72,6 @@ namespace Es.Riam.Gnoss.Elementos.Documentacion
         protected GestionComentariosDocumento(SerializationInfo info, StreamingContext context)
             : base(info, context)
         {
-            //mLoggingService = loggingService;
-            //mEntityContext = entityContext;
-            //mConfigService = configService;
-
             mGestorDocumental = (GestorDocumental)info.GetValue("GestorDocumental", typeof(GestorDocumental));
         }
 
@@ -84,7 +89,7 @@ namespace Es.Riam.Gnoss.Elementos.Documentacion
         /// <param name="pEnlace">Enlace del comentario</param>
         /// <param name="pUrlIntragnoss">Enlace del comentario</param>
         /// <returns>Comentario realizado</returns>
-        public Comentario.Comentario AgregarComentarioDocumento(string pTexto, Identidad.Identidad pIdentidad, Documento pDocumento, Guid pProyectoID, string pEnlace, string pUrlIntragnoss, ServiciosGenerales.Proyecto pProyecto,string pLanguageCode, bool pEsEcosistemaSinMetaProyecto = false)
+        public Comentario.Comentario AgregarComentarioDocumento(string pTexto, Identidad.Identidad pIdentidad, Documento pDocumento, Guid pProyectoID, string pEnlace, string pUrlIntragnoss, ServiciosGenerales.Proyecto pProyecto, string pLanguageCode, IAvailableServices pServicesAvailable, bool pEsEcosistemaSinMetaProyecto = false)
         {
             Comentario.Comentario nuevoComentario = base.AgregarComentario(pTexto, pIdentidad.Clave);
             AD.EntityModel.Models.Documentacion.DocumentoComentario filaComentarioDoc = new AD.EntityModel.Models.Documentacion.DocumentoComentario();
@@ -95,11 +100,11 @@ namespace Es.Riam.Gnoss.Elementos.Documentacion
 
             if (!pDocumento.TipoDocumentacion.Equals(TiposDocumentacion.Wiki))
             {
-                NotificacionCN notificacionCN = new NotificacionCN( mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+                NotificacionCN notificacionCN = new NotificacionCN( mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<NotificacionCN>(), mLoggerFactory);
                 DataWrapperNotificacion notificacionDW = new DataWrapperNotificacion();
-                GestionNotificaciones gestorNotificaciones = new GestionNotificaciones(notificacionDW,  mLoggingService, mEntityContext, mConfigService, mServicesUtilVirtuosoAndReplication);
+                GestionNotificaciones gestorNotificaciones = new GestionNotificaciones(notificacionDW,  mLoggingService, mEntityContext, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<GestionNotificaciones>(), mLoggerFactory);
                 gestorNotificaciones.AgregarNotificacionComentarioDocumento(pDocumento, pIdentidad, pUrlIntragnoss, pEnlace, pProyecto, pLanguageCode, pEsEcosistemaSinMetaProyecto);
-                notificacionCN.ActualizarNotificacion();
+                notificacionCN.ActualizarNotificacion(pServicesAvailable);
                 gestorNotificaciones.Dispose();
                 notificacionCN.Dispose();
             }
@@ -152,7 +157,7 @@ namespace Es.Riam.Gnoss.Elementos.Documentacion
             {
                 if (!mListaComentarios.ContainsKey(filaComentario.ComentarioID))
                 {
-                    Comentario.Comentario comentario = new Comentario.Comentario(filaComentario, this,  mLoggingService, mEntityContext, mConfigService, mServicesUtilVirtuosoAndReplication);
+                    Comentario.Comentario comentario = new Comentario.Comentario(filaComentario, this,  mLoggingService, mEntityContext, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<Comentario.Comentario>(), mLoggerFactory);
                     mListaComentarios.Add(comentario.Clave, comentario);
                 }
             }

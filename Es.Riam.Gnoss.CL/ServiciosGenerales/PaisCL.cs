@@ -1,10 +1,12 @@
 using Es.Riam.AbstractsOpen;
 using Es.Riam.Gnoss.AD.EncapsuladoDatos;
 using Es.Riam.Gnoss.AD.EntityModel;
+using Es.Riam.Gnoss.AD.ParametroAplicacion;
 using Es.Riam.Gnoss.AD.ServiciosGenerales;
 using Es.Riam.Gnoss.Logica.ServiciosGenerales;
 using Es.Riam.Gnoss.Util.Configuracion;
 using Es.Riam.Gnoss.Util.General;
+using Microsoft.Extensions.Logging;
 
 namespace Es.Riam.Gnoss.CL.ServiciosGenerales
 {
@@ -27,15 +29,18 @@ namespace Es.Riam.Gnoss.CL.ServiciosGenerales
         private ConfigService mConfigService;
         private EntityContext mEntityContext;
         private LoggingService mLoggingService;
-
+        private ILogger mlogger;
+        private ILoggerFactory mLoggerFactory;
         #endregion
 
-        public PaisCL(EntityContext entityContext, LoggingService loggingService, RedisCacheWrapper redisCacheWrapper, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication)
-            : base(entityContext, loggingService, redisCacheWrapper, configService, servicesUtilVirtuosoAndReplication)
+        public PaisCL(EntityContext entityContext, LoggingService loggingService, RedisCacheWrapper redisCacheWrapper, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication, ILogger<PaisCL> logger, ILoggerFactory loggerFactory)
+            : base(entityContext, loggingService, redisCacheWrapper, configService, servicesUtilVirtuosoAndReplication, logger, loggerFactory)
         {
             mConfigService = configService;
             mEntityContext = entityContext;
             mLoggingService = loggingService;
+            mlogger = logger;
+            mLoggerFactory = loggerFactory;
         }
 
         #region Métodos
@@ -50,7 +55,7 @@ namespace Es.Riam.Gnoss.CL.ServiciosGenerales
             // Compruebo si está en la caché
             if (mPaisDW == null)
             {
-                mPaisDW = ObtenerObjetoDeCache(null) as DataWrapperPais;
+                mPaisDW = ObtenerObjetoDeCache(null, typeof(DataWrapperPais)) as DataWrapperPais;
                 if (mPaisDW == null)
                 {
                     // Si no está, lo cargo y lo almaceno en la caché
@@ -68,7 +73,7 @@ namespace Es.Riam.Gnoss.CL.ServiciosGenerales
         /// <param name="pPaisDS">Lista de Paises</param>
         public void ActualizarPaises()
         {
-            PaisAD paisAd = new PaisAD(mLoggingService, mEntityContext, mConfigService, mServicesUtilVirtuosoAndReplication);
+            PaisAD paisAd = new PaisAD(mLoggingService, mEntityContext, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<PaisAD>(), mLoggerFactory);
 
             paisAd.ActualizarPaises();
         }
@@ -86,7 +91,7 @@ namespace Es.Riam.Gnoss.CL.ServiciosGenerales
             {
                 if (mPaisCN == null)
                 {
-                    mPaisCN = new PaisCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+                    mPaisCN = new PaisCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<PaisCN>(), mLoggerFactory);
                 }
 
                 return mPaisCN;

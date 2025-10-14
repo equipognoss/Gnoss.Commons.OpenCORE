@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -53,10 +54,24 @@ namespace Es.Riam.Gnoss.AD.EntityModel.Models.ProyectoDS
         
         public string RelacionMandatory { get; set; }
 
+        public string SearchPersonalizado {  get; set; }
+
+        [DefaultValue(TipoAutocompletar.Basico)]
+        public TipoAutocompletar TipoAutocompletar { get; set; }
+
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ProyectoPestanyaMenu ProyectoPestanyaMenu { get; set; }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<ProyectoPestanyaBusquedaExportacion> ProyectoPestanyaBusquedaExportacion { get; set; }
+
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<ProyectoPestanyaBusquedaPesoOC> ProyectoPestanyaBusquedaPesoOC { get; set; }
+    }
+
+    public enum TipoAutocompletar
+    {
+        Basico,
+        Enriquecido,
     }
 }

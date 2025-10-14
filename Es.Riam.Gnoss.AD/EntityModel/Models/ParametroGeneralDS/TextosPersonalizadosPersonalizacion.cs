@@ -29,6 +29,10 @@ namespace Es.Riam.Gnoss.AD.EntityModel.Models.ParametroGeneralDS
 
         public string Texto { get; set; }
 
+        public DateTime FechaCreacion { get; set; }
+
+        public DateTime FechaActualizacion { get; set; }
+
         public override bool Equals(object objeto)
         {
             TextosPersonalizadosPersonalizacion comparado = (TextosPersonalizadosPersonalizacion) objeto;

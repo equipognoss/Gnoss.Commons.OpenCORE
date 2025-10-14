@@ -8,6 +8,8 @@ using Es.Riam.Gnoss.Util.General;
 using Es.Riam.Gnoss.Util.Seguridad;
 using Es.Riam.Gnoss.Web.MVC.Models;
 using Es.Riam.Util;
+using Microsoft.Extensions.Logging;
+using Serilog.Core;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -156,8 +158,6 @@ namespace Es.Riam.Gnoss.Elementos.Documentacion
         /// </summary>
         private List<string> mUrlRecursosRelacionadosRDF;
 
-        private LoggingService mLoggingService;
-
         #endregion
 
         #region Constructor
@@ -167,10 +167,9 @@ namespace Es.Riam.Gnoss.Elementos.Documentacion
         /// </summary>
         /// <param name="pDocumento">Fila del documento</param>
         /// <param name="pGestor">Gestor</param>
-        public Documento(AD.EntityModel.Models.Documentacion.Documento pDocumento, GestionGnoss pGestor, LoggingService loggingService)
-            : base(pDocumento, pGestor, loggingService)
+        public Documento(AD.EntityModel.Models.Documentacion.Documento pDocumento, GestionGnoss pGestor)
+            : base(pDocumento, pGestor)
         {
-            mLoggingService = loggingService;
         }
 
         #endregion
@@ -190,7 +189,7 @@ namespace Es.Riam.Gnoss.Elementos.Documentacion
 
                     foreach (AD.EntityModel.Models.Documentacion.DocumentoRolIdentidad filaEditor in GestorDocumental.DataWrapperDocumentacion.ListaDocumentoRolIdentidad.Where(doc => doc.DocumentoID.Equals(this.Clave)))
                     {
-                        mListaPerfilesEditores.Add(filaEditor.PerfilID, new EditorRecurso(filaEditor, this.GestorDocumental, mLoggingService));
+                        mListaPerfilesEditores.Add(filaEditor.PerfilID, new EditorRecurso(filaEditor, this.GestorDocumental));
                     }
                 }
                 return mListaPerfilesEditores;
@@ -209,7 +208,7 @@ namespace Es.Riam.Gnoss.Elementos.Documentacion
                     mListaPerfilesLectores = new Dictionary<Guid, LectorRecurso>();
                     foreach (AD.EntityModel.Models.Documentacion.DocumentoRolIdentidad filaLector in GestorDocumental.DataWrapperDocumentacion.ListaDocumentoRolIdentidad.Where(doc => doc.DocumentoID.Equals(this.Clave) && !doc.Editor))
                     {
-                        mListaPerfilesLectores.Add(filaLector.PerfilID, new LectorRecurso(filaLector, this.GestorDocumental, mLoggingService));
+                        mListaPerfilesLectores.Add(filaLector.PerfilID, new LectorRecurso(filaLector, this.GestorDocumental));
                     }
                 }
                 return mListaPerfilesLectores;
@@ -229,7 +228,7 @@ namespace Es.Riam.Gnoss.Elementos.Documentacion
                     //Select("DocumentoID = '" + this.Clave + "' AND Editor=true")
                     foreach (AD.EntityModel.Models.Documentacion.DocumentoRolIdentidad filaEditor in GestorDocumental.DataWrapperDocumentacion.ListaDocumentoRolIdentidad.Where(doc => doc.DocumentoID.Equals(this.Clave) && doc.Editor))
                     {
-                        mListaPerfilesEditoresSinLectores.Add(filaEditor.PerfilID, new EditorRecurso(filaEditor, this.GestorDocumental, mLoggingService));
+                        mListaPerfilesEditoresSinLectores.Add(filaEditor.PerfilID, new EditorRecurso(filaEditor, this.GestorDocumental));
                     }
                 }
                 return mListaPerfilesEditoresSinLectores;
@@ -249,7 +248,7 @@ namespace Es.Riam.Gnoss.Elementos.Documentacion
 
                     foreach (AD.EntityModel.Models.Documentacion.DocumentoRolGrupoIdentidades filaGrupoEditor in GestorDocumental.DataWrapperDocumentacion.ListaDocumentoRolGrupoIdentidades.Where(doc => doc.DocumentoID.Equals(this.Clave)).ToList())
                     {
-                        mListaGruposEditores.Add(filaGrupoEditor.GrupoID, new GrupoEditorRecurso(filaGrupoEditor, this.GestorDocumental, mLoggingService));
+                        mListaGruposEditores.Add(filaGrupoEditor.GrupoID, new GrupoEditorRecurso(filaGrupoEditor, this.GestorDocumental));
                     }
                 }
                 return mListaGruposEditores;
@@ -274,7 +273,7 @@ namespace Es.Riam.Gnoss.Elementos.Documentacion
 
                     foreach (AD.EntityModel.Models.Documentacion.DocumentoRolGrupoIdentidades filaGrupoLector in GestorDocumental.DataWrapperDocumentacion.ListaDocumentoRolGrupoIdentidades.Where(doc => doc.DocumentoID.Equals(this.Clave) && doc.Editor == false))
                     {
-                        mListaGruposLectores.Add(filaGrupoLector.GrupoID, new GrupoLectorRecurso(filaGrupoLector, this.GestorDocumental, mLoggingService));
+                        mListaGruposLectores.Add(filaGrupoLector.GrupoID, new GrupoLectorRecurso(filaGrupoLector, this.GestorDocumental));
                     }
                 }
                 return mListaGruposLectores;
@@ -299,7 +298,7 @@ namespace Es.Riam.Gnoss.Elementos.Documentacion
 
                     foreach (AD.EntityModel.Models.Documentacion.DocumentoRolGrupoIdentidades filaGrupoEditor in GestorDocumental.DataWrapperDocumentacion.ListaDocumentoRolGrupoIdentidades.Where(doc => doc.DocumentoID.Equals(this.Clave) && doc.Editor))
                     {
-                        mListaGruposEditoresSinLectores.Add(filaGrupoEditor.GrupoID, new GrupoEditorRecurso(filaGrupoEditor, this.GestorDocumental, mLoggingService));
+                        mListaGruposEditoresSinLectores.Add(filaGrupoEditor.GrupoID, new GrupoEditorRecurso(filaGrupoEditor, this.GestorDocumental));
                     }
                 }
                 return mListaGruposEditoresSinLectores;
@@ -320,7 +319,7 @@ namespace Es.Riam.Gnoss.Elementos.Documentacion
                     {
                         foreach (AD.EntityModel.Models.Documentacion.DocumentoRespuesta filaRespuesta in GestorDocumental.DataWrapperDocumentacion.ListaDocumentoRespuesta.Where(item => item.DocumentoID.Equals(this.Clave)).OrderBy(item => item.Orden))
                         {
-                            mListaRespuestas.Add(filaRespuesta.RespuestaID, new RespuestaRecurso(filaRespuesta, this.GestorDocumental, mLoggingService));
+                            mListaRespuestas.Add(filaRespuesta.RespuestaID, new RespuestaRecurso(filaRespuesta, this.GestorDocumental));
                         }
                     }
 
@@ -336,7 +335,7 @@ namespace Es.Riam.Gnoss.Elementos.Documentacion
         {
             get
             {
-                return TipoDocumentacion != TiposDocumentacion.Ontologia && !EsBorrador && !EsVideoIncrustado;
+                return !EsBorrador;
             }
         }
 
@@ -736,7 +735,7 @@ namespace Es.Riam.Gnoss.Elementos.Documentacion
                     if (filasDocumentoAtributo.Count > 0)
                     {
                         //Tiene ficha bibliografica:
-                        fichaBiblio = new FichaBibliografica(filasDocumentoAtributo[0].FichaBibliograficaID, mLoggingService);
+                        fichaBiblio = new FichaBibliografica(filasDocumentoAtributo[0].FichaBibliograficaID);
 
                         foreach (AD.EntityModel.Models.Documentacion.DocumentoAtributoBiblio filaDocAtributo in filasDocumentoAtributo)
                         {
@@ -746,7 +745,7 @@ namespace Es.Riam.Gnoss.Elementos.Documentacion
                             //{
                             //    valorAtributo = Titulo;
                             //}
-                            fichaBiblio.Atributos.Add(filaAtributoBiblio.Orden, new AtributoBibliografico(filaAtributoBiblio.FichaBibliograficaID, filaAtributoBiblio.AtributoID, filaAtributoBiblio.Nombre, filaAtributoBiblio.Descripcion, filaAtributoBiblio.Tipo, filaAtributoBiblio.Orden, filaDocAtributo.Valor, mLoggingService));
+                            fichaBiblio.Atributos.Add(filaAtributoBiblio.Orden, new AtributoBibliografico(filaAtributoBiblio.FichaBibliograficaID, filaAtributoBiblio.AtributoID, filaAtributoBiblio.Nombre, filaAtributoBiblio.Descripcion, filaAtributoBiblio.Tipo, filaAtributoBiblio.Orden, filaDocAtributo.Valor));
                         }
                     }
                     mFichaBibliografica = fichaBiblio;
@@ -1218,7 +1217,7 @@ namespace Es.Riam.Gnoss.Elementos.Documentacion
 
                         if (fila != null)
                         {
-                            mUltimaVersion = new Documento(fila.Documento, this.GestorDocumental, mLoggingService);
+                            mUltimaVersion = new Documento(fila.Documento, this.GestorDocumental);
                         }
                     }
                 }

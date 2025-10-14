@@ -1,11 +1,15 @@
 using Es.Riam.Gnoss.AD.EntityModel;
 using Es.Riam.Gnoss.AD.EntityModel.Models.ParametroGeneralDS;
 using Es.Riam.Gnoss.AD.EntityModel.Models.ProyectoDS;
+using Es.Riam.Gnoss.AD.EntityModel.Models.Roles;
 using Es.Riam.Gnoss.AD.ServiciosGenerales;
+using Es.Riam.Gnoss.Elementos.Proyecto;
 using Es.Riam.Gnoss.Elementos.Tesauro;
+using Es.Riam.Gnoss.Logica.Identidad;
 using Es.Riam.Gnoss.Util.General;
 using Es.Riam.Interfaces;
 using Es.Riam.Util;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -69,7 +73,7 @@ namespace Es.Riam.Gnoss.Elementos.ServiciosGenerales
         /// <param name="pProyecto">Fila de proyecto</param>
         /// <param name="pGestionProyecto">Gestor de proyectos</param>
         public Proyecto(AD.EntityModel.Models.ProyectoDS.Proyecto pProyecto, GestionProyecto pGestionProyecto, LoggingService loggingService, EntityContext entityContext)
-            : base(pGestionProyecto, loggingService)
+            : base(pGestionProyecto)
         {
             mEntityContext = entityContext;
             mLoggingService = loggingService;
@@ -80,7 +84,7 @@ namespace Es.Riam.Gnoss.Elementos.ServiciosGenerales
         /// Constructor de proyecto sin parámetros
         /// </summary>
         public Proyecto(LoggingService loggingService, EntityContext entityContext)
-            : base(loggingService)
+            : base()
         {
             mEntityContext = entityContext;
             mLoggingService = loggingService;
@@ -693,11 +697,37 @@ namespace Es.Riam.Gnoss.Elementos.ServiciosGenerales
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="pusuarioID"></param>
+        /// <param name="pUsuarioID"></param>
         /// <returns></returns>
-        public bool EsAdministradorUsuario(Guid pusuarioID)
+        public bool EsAdministradorUsuario(Guid pUsuarioID)
         {
-            List<AdministradorProyecto> filasAdministrador = GestorProyectos.DataWrapperProyectos.ListaAdministradorProyecto.Where(adminProy => adminProy.UsuarioID.Equals(pusuarioID) && adminProy.ProyectoID.Equals(Clave)).ToList();//("UsuarioID='" + pusuarioID + "' AND ProyectoID='" + Clave + "'");
+            bool esAdministrador = false;
+
+            if (Clave.Equals(ProyectoAD.MetaProyecto))
+            {
+                RolEcosistemaUsuario rolEcosistema = mEntityContext.RolEcosistemaUsuario.Where(x => x.UsuarioID.Equals(pUsuarioID) && x.RolID.Equals(ProyectoAD.RolAdministradorEcosistema)).FirstOrDefault();
+                if (rolEcosistema != null)
+                {
+                    esAdministrador = true;
+                }
+			}
+			else
+            {				
+				Es.Riam.Gnoss.AD.EntityModel.Models.PersonaDS.Persona persona = mEntityContext.Persona.Where(x => x.UsuarioID.Equals(pUsuarioID)).FirstOrDefault();
+                if (persona != null)
+                {
+                    Guid perfilID = mEntityContext.PerfilPersona.Where(x => x.PersonaID.Equals(persona.PersonaID)).Select(x => x.PerfilID).FirstOrDefault();
+                    Guid identidadID = mEntityContext.Identidad.Where(x => x.PerfilID.Equals(perfilID) && x.ProyectoID.Equals(Clave)).Select(x => x.IdentidadID).FirstOrDefault();
+                    RolIdentidad rolIdentidad = mEntityContext.RolIdentidad.Where(x => x.IdentidadID.Equals(identidadID) && x.RolID.Equals(ProyectoAD.RolAdministrador)).FirstOrDefault();
+                    if (rolIdentidad != null)
+                    {
+                        esAdministrador = true;
+                    }
+				}
+			}
+
+            return esAdministrador;
+            /*List<AdministradorProyecto> filasAdministrador = GestorProyectos.DataWrapperProyectos.ListaAdministradorProyecto.Where(adminProy => adminProy.UsuarioID.Equals(pusuarioID) && adminProy.ProyectoID.Equals(Clave)).ToList();
 
             if (filasAdministrador.Count > 0 && filasAdministrador[0].Tipo == (short)TipoRolUsuario.Administrador)
             {
@@ -706,7 +736,7 @@ namespace Es.Riam.Gnoss.Elementos.ServiciosGenerales
             else
             {
                 return false;
-            }
+            }*/
         }
 
         /// <summary>

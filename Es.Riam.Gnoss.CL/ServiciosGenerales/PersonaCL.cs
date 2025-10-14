@@ -1,10 +1,12 @@
 using Es.Riam.AbstractsOpen;
 using Es.Riam.Gnoss.AD.EncapsuladoDatos;
 using Es.Riam.Gnoss.AD.EntityModel;
+using Es.Riam.Gnoss.AD.ParametroAplicacion;
 using Es.Riam.Gnoss.Logica.Notificacion;
 using Es.Riam.Gnoss.Logica.ServiciosGenerales;
 using Es.Riam.Gnoss.Util.Configuracion;
 using Es.Riam.Gnoss.Util.General;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Data;
 
@@ -22,15 +24,18 @@ namespace Es.Riam.Gnoss.CL.ServiciosGenerales
         private EntityContext mEntityContext;
         private LoggingService mLoggingService;
         private ConfigService mConfigService;
-
+        private ILogger mlogger;
+        private ILoggerFactory mLoggerFactory;
         #endregion
 
-        public PersonaCL(EntityContext entityContext, LoggingService loggingService, RedisCacheWrapper redisCacheWrapper, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication)
-            : base(entityContext, loggingService, redisCacheWrapper, configService, servicesUtilVirtuosoAndReplication)
+        public PersonaCL(EntityContext entityContext, LoggingService loggingService, RedisCacheWrapper redisCacheWrapper, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication, ILogger<PersonaCL> logger, ILoggerFactory loggerFactory)
+            : base(entityContext, loggingService, redisCacheWrapper, configService, servicesUtilVirtuosoAndReplication,logger, loggerFactory)
         {
             mConfigService = configService;
             mEntityContext = entityContext;
             mLoggingService = loggingService;
+            mlogger = logger;
+            mLoggerFactory = loggerFactory;
         }
 
         #region Métodos
@@ -46,10 +51,10 @@ namespace Es.Riam.Gnoss.CL.ServiciosGenerales
             string rawKey = pOrganizacionID.ToString();
 
             // Compruebo si está en la caché
-            DataWrapperPersona dataWrapperPersona = ObtenerObjetoDeCache(rawKey) as DataWrapperPersona;
+            DataWrapperPersona dataWrapperPersona = ObtenerObjetoDeCache(rawKey, typeof(DataWrapperPersona)) as DataWrapperPersona;
             if (dataWrapperPersona == null)
             {
-                PersonaCN PersonaCN = new PersonaCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+                PersonaCN PersonaCN = new PersonaCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<PersonaCN>(), mLoggerFactory);
 
                 // Si no está, lo cargo y lo almaceno en la caché
                 dataWrapperPersona = PersonaCN.ObtenerPersonasDeOrganizacionCargaLigera(pOrganizacionID);
@@ -76,10 +81,10 @@ namespace Es.Riam.Gnoss.CL.ServiciosGenerales
             string rawKey = string.Concat(NombresCL.NOTIFICACIONPENDIENTE, "_", pPersonaID.ToString(), "_", pCodigo);
 
             // Compruebo si está en la caché
-            bool? tiene = ObtenerObjetoDeCache(rawKey) as bool?;
+            bool? tiene = ObtenerObjetoDeCache(rawKey, typeof(bool)) as bool?;
             if (!tiene.HasValue)
             {
-                NotificacionCN notificacionNC = new NotificacionCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+                NotificacionCN notificacionNC = new NotificacionCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<NotificacionCN>(), mLoggerFactory);
                 tiene = notificacionNC.TieneNotificacionSinLeer(pPersonaID, pCodigo);
                 AgregarObjetoCache(rawKey, tiene);
 
@@ -110,7 +115,7 @@ namespace Es.Riam.Gnoss.CL.ServiciosGenerales
             //Si hay cambios los guardo e invalido la caché
             if (pPersonaDS.HasChanges())
             {
-                PersonaCN PersonaCN = new PersonaCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+                PersonaCN PersonaCN = new PersonaCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<PersonaCN>(), mLoggerFactory);
 
                 //Actualizar los cambios
                 PersonaCN.ActualizarPersonas();
@@ -139,7 +144,7 @@ namespace Es.Riam.Gnoss.CL.ServiciosGenerales
         /// <returns></returns>
         public string ObtenerVistaMenuMensajes(Guid pPersonaID)
         {
-            return (string)ObtenerObjetoDeCache(string.Concat(NombresCL.PERSONAS, "_" + pPersonaID + "_VistaMensajes"));
+            return (string)ObtenerObjetoDeCache(string.Concat(NombresCL.PERSONAS, "_" + pPersonaID + "_VistaMensajes"),typeof(string));
         }
 
         #endregion        

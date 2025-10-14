@@ -4,11 +4,11 @@ using Es.Riam.Gnoss.AD.EntityModel;
 using Es.Riam.Gnoss.AD.EntityModel.Models.Documentacion;
 using Es.Riam.Gnoss.AD.EntityModel.Models.IdentidadDS;
 using Es.Riam.Gnoss.AD.EntityModel.Models.OrganizacionDS;
-using Es.Riam.Gnoss.AD.EntityModel.Models.PersonaDS;
 using Es.Riam.Gnoss.AD.EntityModel.Models.Suscripcion;
 using Es.Riam.Gnoss.AD.EntityModel.Models.Tesauro;
 using Es.Riam.Gnoss.AD.EntityModel.Models.UsuarioDS;
 using Es.Riam.Gnoss.AD.Identidad;
+using Es.Riam.Gnoss.AD.ParametroAplicacion;
 using Es.Riam.Gnoss.AD.ServiciosGenerales;
 using Es.Riam.Gnoss.AD.Usuarios.Model;
 using Es.Riam.Gnoss.Util.Configuracion;
@@ -16,13 +16,13 @@ using Es.Riam.Gnoss.Util.General;
 using Es.Riam.Gnoss.Web.MVC.Models;
 using Es.Riam.Util;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Exchange.WebServices.Data;
+using Microsoft.Extensions.Logging;
+using Serilog.Core;
 using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
 using System.Linq;
-using VDS.RDF.Query.Expressions.Functions.Sparql.Boolean;
 using Persona = Es.Riam.Gnoss.AD.EntityModel.Models.PersonaDS.Persona;
 
 namespace Es.Riam.Gnoss.AD.Usuarios
@@ -424,6 +424,15 @@ namespace Es.Riam.Gnoss.AD.Usuarios
         public Perfil Perfil { get; set; }
     }
 
+    public class JoinSuscripcionIdentidadProyectoSuscripcionIdentidadPerfilUsuario
+    {
+        public SuscripcionIdentidadProyecto SuscripcionIdentidadProyecto { get; set; }
+        public EntityModel.Models.Suscripcion.Suscripcion Suscripcion { get; set; }
+        public EntityModel.Models.IdentidadDS.Identidad Identidad { get; set; }
+        public Perfil Perfil { get; set; }
+        public Usuario Usuario { get; set; }
+    }
+
     public class JoinSuscripcionIdentidadProyectoSuscripcionIdentidadPerfilPersona
     {
         public SuscripcionIdentidadProyecto SuscripcionIdentidadProyecto { get; set; }
@@ -442,8 +451,6 @@ namespace Es.Riam.Gnoss.AD.Usuarios
         public Persona Persona { get; set; }
         public EntityModel.Models.IdentidadDS.Identidad IdentidadAutor { get; set; }
     }
-
-    //Identidad identidadAutor ON identidadAutor.IdentidadID = SuscripcionIdentidadProyecto.IdentidadID  
 
     public static class JoinsUsuario
     {
@@ -480,6 +487,18 @@ namespace Es.Riam.Gnoss.AD.Usuarios
             return pQuery.Join(entityContext.Perfil, item => item.Identidad.PerfilID, perfil => perfil.PerfilID, (item, perfil) => new JoinSuscripcionIdentidadProyectoSuscripcionIdentidadPerfil
             {
                 Perfil = perfil,
+                Identidad = item.Identidad,
+                Suscripcion = item.Suscripcion,
+                SuscripcionIdentidadProyecto = item.SuscripcionIdentidadProyecto
+            });
+        }
+        public static IQueryable<JoinSuscripcionIdentidadProyectoSuscripcionIdentidadPerfilUsuario> JoinUsuario(this IQueryable<JoinSuscripcionIdentidadProyectoSuscripcionIdentidadPerfil> pQuery)
+        {
+            EntityContext entityContext = (EntityContext)QueryContextAccess.GetDbContext(pQuery);
+            return pQuery.Join(entityContext.Usuario, item => item.Perfil.NombreCortoUsu, usuario => usuario.NombreCorto, (item, usuario) => new JoinSuscripcionIdentidadProyectoSuscripcionIdentidadPerfilUsuario
+            {
+                Usuario = usuario,
+                Perfil = item.Perfil,
                 Identidad = item.Identidad,
                 Suscripcion = item.Suscripcion,
                 SuscripcionIdentidadProyecto = item.SuscripcionIdentidadProyecto
@@ -926,24 +945,25 @@ namespace Es.Riam.Gnoss.AD.Usuarios
         #endregion
 
         private EntityContext mEntityContext;
-                
+
         private LoggingService mLoggingService;
 
         private ConfigService mConfigService;
-
+        private ILogger mlogger;
+        private ILoggerFactory mLoggerFactory;
         #region Constructores
 
         /// <summary>
         /// El por defecto, utilizado cuando se requiere el GnossConfig.xml por defecto
         /// </summary>
-        public UsuarioAD(LoggingService loggingService, EntityContext entityContext, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication)
-            : base(loggingService, entityContext, configService, servicesUtilVirtuosoAndReplication)
+        public UsuarioAD(LoggingService loggingService, EntityContext entityContext, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication, ILogger<UsuarioAD> logger, ILoggerFactory loggerFactory)
+            : base(loggingService, entityContext, configService, servicesUtilVirtuosoAndReplication,logger, loggerFactory)
         {
             mEntityContext = entityContext;
             mLoggingService = loggingService;
             mConfigService = configService;
-
-            this.CargarConsultasYDataAdapters();
+            mlogger = logger;
+            mLoggerFactory = loggerFactory;
         }
 
         /// <summary>
@@ -951,14 +971,14 @@ namespace Es.Riam.Gnoss.AD.Usuarios
         /// </summary>
         /// <param name="pFicheroConfiguracionBD"></param>
         /// <param name="pUsarVariableEstatica">Si se están usando hilos con diferentes conexiones: FALSE. En caso contrario TRUE</param>
-        public UsuarioAD(string pFicheroConfiguracionBD, LoggingService loggingService, EntityContext entityContext, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication)
-            : base(pFicheroConfiguracionBD, loggingService, entityContext, configService, servicesUtilVirtuosoAndReplication)
+        public UsuarioAD(string pFicheroConfiguracionBD, LoggingService loggingService, EntityContext entityContext, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication, ILogger<UsuarioAD> logger, ILoggerFactory loggerFactory)
+            : base(pFicheroConfiguracionBD, loggingService, entityContext, configService, servicesUtilVirtuosoAndReplication,logger,loggerFactory)
         {
             mEntityContext = entityContext;
             mLoggingService = loggingService;
             mConfigService = configService;
-
-            this.CargarConsultasYDataAdapters(IBD);
+            mlogger = logger;
+            mLoggerFactory = loggerFactory;
         }
 
         #endregion
@@ -1011,220 +1031,6 @@ namespace Es.Riam.Gnoss.AD.Usuarios
 
         #endregion
 
-        #region Consultas
-
-        //Parte Select de Consultas
-        string SelectUsuario;
-        string SelectGrupoUsuario;
-        string SelectInicioSesion;
-        string SelectGrupoUsuarioUsuario;
-        string SelectAdministradorGeneral;
-        string SelectProyectoRolGrupoUsuario;
-        string SelectGeneralRolGrupoUsuario;
-        string SelectOrganizacionRolUsuario;
-        string SelectGeneralRolUsuario;
-        string SelectProyectoRolUsuario;
-        string SelectProyectoUsuarioIdentidad;
-        string SelectHistoricoProyectoUsuario;
-        string SelectUsuarioVinculadoLoginRedesSociales;
-        private string sqlSelectClausulaRegistro;
-        private string sqlSelectProyRolUsuClausulaReg;
-        private string sqlSelectProyRolUsuClausulaRegListaIDs;
-
-        //Consultas 
-        string sqlSelectProyectoUsuarioIdentidadDeMyGnossPorLogin;
-        string sqlSelectProyectoUsuarioIdentidadDeMyGnossPorEmail;
-        string sqlSelectUsuarioPorLogin;
-        string sqlSelectUsuarioPorEmail;
-        string sqlSelectUsuarioPorID;
-        string sqlSelectUsuariosPorListaIDs;
-        string sqlSelectProyectoRolUsuarioPorID;
-        string sqlSelectProyectoRolUsuarioPorListaIDs;
-        string sqlSelectProyectoUsuarioIdentidadPorID;
-        string sqlSelectProyectoUsuarioIdentidadPorListaIDs;
-        string sqlSelectInicioSesionPorID;
-        string sqlSelectInicioSesionPorListaIDs;
-        string sqlSelectGrupoUsuarioUsuarioPorID;
-        string sqlSelectGrupoUsuarioUsuarioPorListaIDs;
-        string sqlSelectHistoricoProyectoUsuarioPorID;
-        string sqlSelectHistoricoProyectoUsuarioPorListaIDs;
-        string sqlSelectPasswordPorLogin;
-        string sqlSetPasswordPorLogin;
-        string sqlSelectEstaBloqueadoUsuario;
-        string sqlSetBloquearUsuario;
-        string sqlSetDesbloquearUsuario;
-        string sqlSelectUsuarioEnPersona;
-        string sqlSetAsignarUsuarioAPersona;
-        string sqlSetDesasignarUsuarioDePersona;
-        string sqlSelectExisteUsuarioEnAD;
-        string sqlSelectExisteNombreUsuarioEnAD;
-        string sqlSelectGeneralRolUsuarioPorID;
-        string sqlSelectGeneralRolGrupoUsuarioPorID;
-        string sqlSelectTodosGeneralRolUsuario;
-        string sqlSelectRolUsuarioEnProyectosOrganizacion;
-        string sqlSelectRolesUsuariosEnProyecto;
-        string sqlSelectRolUsuarioEnProyecto;
-        string sqlSelectRolListaUsuariosEnProyecto;
-        string sqlSelectRolGrupoUsuarioEnProyecto;
-        string sqlSelectRolesGruposUsuariosEnProyecto;
-        string sqlSelectRolesGruposDeUsuarioEnProyecto;
-        string sqlSelectProyectoUsuarioDeInicioSesion;
-        string sqlSelectProyectoGrupoUsuarioDeInicioSesion;
-        string sqlSelectInicioSesionDeUsuario;
-        string sqlSelectPersonaDeInicioDeSesion;
-        string sqlSelectGruposUsuariosUsuariosPerteneceUsuario;
-        string sqlSelectGruposUsuariosPerteneceUsuario;
-        string sqlSelectExisteGrupoUsuariosEnAD;
-        string sqlSelectTodosGruposUsuariosUsuarios;
-        string sqlSelectTodosUsuariosNombreApellidos;
-        string sqlSelectGeneralRolUsuarioDeUsuario;
-        string sqlSelectGeneralRolGrupoUsuarioDeGrupoUsuario;
-        string sqlSelectTodosGruposUsuarios;
-        string sqlSelectUsuariosEnProyecto;
-        string sqlSelectGrupoUsuarioEnProyecto;
-        string sqlSelectProyectoRolusuarioEnProyecto;
-        string sqlSelectProyectoUsuarioIdentidadEnProyecto;
-        string sqlSelectHistoricoProyectoUsuarioEnProyecto;
-        string sqlSelectGrupoUsuarioUsuarioEnProyecto;
-        string sqlSelectProyectoRolGrupoUsuarioEnProyecto;
-        string sqlSelectTodosGrupoUsuarioGeneral;
-        string sqlSelectTodosGrupoUsuarioUsuarioGeneral;
-        string sqlSelectTodosGeneralRolGrupoUsuario;
-        string sqlSelectTodosAdministradorGeneral;
-        string sqlSelectInicioSesionPorLogin;
-        string sqlSelectInicioSesionPorEmail;
-        string sqlSelectProyectoUsuarioIdentidadDeInicioSesionPorLogin;
-        string sqlSelectProyectoUsuarioIdentidadDeInicioSesionPorEmail;
-        string sqlSelectEstaBloqueadoUsuarioEnProyecto;
-        string sqlSelectInicioSesionEnProyecto;
-        string sqlSelectInicioSesionEnproyectoPorLogin;
-        string sqlSelectUsuarioEnProyecto;
-        string sqlSelectOrganizacionRolUsuarioDeUsuario;
-        string sqlSelectOrganizacionRolUsuarioDeUsuarioYOrganizacion;
-        string sqlSelectUsuariosDeOrganizacion;
-        string sqlSelectUsuariosDeOrganizacionYAdministradorOrganizacion;
-        string sqlSelectOrganizacionRolUsuarioDeOrganizacion;
-        string sqlSelectUsuariosAdministradoresDeOrganizacion;
-        string sqlSelectOrganizacionRolUsuarioDeAdministradoresDeOrganizacion;
-        string sqlSelectProyectoUsuarioIdentidadDeOrganizacion;
-        string sqlSelectProyectoRolUsuarioDeUsuariosOrganizacion;
-        string sqlSelectInicioSesionDeUsuariosDeOrganizacion;
-        string sqlSelectHistoricoProyectoUsuarioDeOrganizacion;
-        string sqlSelectGrupoUsuarioDeOrganizacion;
-        string sqlSelectGrupoUsuarioUsuarioDeOrganizacion;
-        string sqlSelectProyectoRolGrupoUsuarioDeOrganizacion;
-        string sqlSelectGeneralRolGrupoUsuarioDeUsuarioID;
-        string sqlSelectExisteNombreCortoEnBD;
-        string sqlSelectEstaUsuarioBloqueadoEnProyecto;
-        string sqlSelectUsuarioIDPorNombreCorto;
-        string sqlSelectUsuarioIDPorNombreCortoParaProfesores;
-        string sqlSelectUsuarioVinculadoLoginRedesSocialesEnProyecto;
-
-        #endregion
-
-        #region DataAdapter
-
-        #region Usuario
-        string sqlUsuarioInsert;
-        string sqlUsuarioDelete;
-        string sqlUsuarioModify;
-        #endregion
-
-        #region GrupoUsuario
-        string sqlGrupoUsuarioInsert;
-        string sqlGrupoUsuarioDelete;
-        string sqlGrupoUsuarioModify;
-        #endregion
-
-        #region InicioSesion
-        string sqlInicioSesionInsert;
-        string sqlInicioSesionDelete;
-        string sqlInicioSesionModify;
-        #endregion
-
-        #region GrupoUsuarioUsuario
-        string sqlGrupoUsuarioUsuarioInsert;
-        string sqlGrupoUsuarioUsuarioDelete;
-        string sqlGrupoUsuarioUsuarioModify;
-        #endregion
-
-        #region AdministradorGeneral
-        string sqlAdministradorGeneralInsert;
-        string sqlAdministradorGeneralDelete;
-        string sqlAdministradorGeneralModify;
-        #endregion
-
-        #region ProyectoRolGrupoUsuario
-        string sqlProyectoRolGrupoUsuarioInsert;
-        string sqlProyectoRolGrupoUsuarioDelete;
-        string sqlProyectoRolGrupoUsuarioModify;
-        #endregion
-
-        #region GeneralRolGrupoUsuario
-        string sqlGeneralRolGrupoUsuarioInsert;
-        string sqlGeneralRolGrupoUsuarioDelete;
-        string sqlGeneralRolGrupoUsuarioModify;
-        #endregion
-
-        #region OrganizacionRolUsuario
-        string sqlOrganizacionRolUsuarioInsert;
-        string sqlOrganizacionRolUsuarioDelete;
-        string sqlOrganizacionRolUsuarioModify;
-        #endregion
-
-        #region GeneralRolUsuario
-        string sqlGeneralRolUsuarioInsert;
-        string sqlGeneralRolUsuarioDelete;
-        string sqlGeneralRolUsuarioModify;
-        #endregion
-
-        #region UsuarioContadores
-        string sqlUsuarioContadoresInsert;
-        string sqlUsuarioContadoresDelete;
-        string sqlUsuarioContadoresModify;
-        #endregion
-
-        #region ProyectoRolUsuario
-        string sqlProyectoRolUsuarioInsert;
-        string sqlProyectoRolUsuarioDelete;
-        string sqlProyectoRolUsuarioModify;
-        #endregion
-
-        #region ProyectoUsuarioIdentidad
-        string sqlProyectoUsuarioIdentidadInsert;
-        string sqlProyectoUsuarioIdentidadDelete;
-        string sqlProyectoUsuarioIdentidadModify;
-        #endregion
-
-        #region HistoricoProyectoUsuario
-        string sqlHistoricoProyectoUsuarioInsert;
-        string sqlHistoricoProyectoUsuarioDelete;
-        string sqlHistoricoProyectoUsuarioModify;
-        #endregion
-
-        #region UsuarioVinculadoLoginRedesSociales
-        string sqlUsuarioVinculadoLoginRedesSocialesInsert;
-        string sqlUsuarioVinculadoLoginRedesSocialesDelete;
-        string sqlUsuarioVinculadoLoginRedesSocialesModify;
-        #endregion
-
-        #region WikiUsuario
-        string sqlWikiUsuarioInsert;
-        string sqlWikiUsuarioDelete;
-        string sqlWikiUsuarioModify;
-        #endregion
-
-        #region ClausulaRegistro
-        private string sqlClausulaRegistroInsert;
-        private string sqlClausulaRegistroDelete;
-        private string sqlClausulaRegistroModify;
-        #endregion
-
-        #region ProyRolUsuClausulaReg
-        private string sqlProyRolUsuClausulaRegInsert;
-        private string sqlProyRolUsuClausulaRegDelete;
-        private string sqlProyRolUsuClausulaRegModify;
-
         public List<UsuarioIdentidadPersona> ObtenerAdministradoresNombreApellidosPorOrganizacion(Guid pOrganizacionID)
         {
             return mEntityContext.Usuario.Join(mEntityContext.Persona, usuario => usuario.UsuarioID, persona => persona.UsuarioID, (usuario, persona) => new
@@ -1244,9 +1050,8 @@ namespace Es.Riam.Gnoss.AD.Usuarios
                 Apellidos = objeto.Persona.Apellidos
             }).ToList();
         }
-        #endregion
+        
 
-        #endregion
 
         #region Métodos generales
 
@@ -1607,13 +1412,13 @@ namespace Es.Riam.Gnoss.AD.Usuarios
             return foto;
         }
 
-            /// <summary>
-            /// Obtiene los roles (Usuario y OrganizacionRolUsuario) en una organización de un usuario
-            /// </summary>
-            /// <param name="pUsuarioID">Identificador del usuario</param>
-            /// <param name="pOrganizacionID">Identificador de la organización</param>
-            /// <returns>Dataset de usuarios</returns>
-            public DataWrapperUsuario ObtenerOrganizacionRolUsuario(Guid pUsuarioID, Guid pOrganizacionID)
+        /// <summary>
+        /// Obtiene los roles (Usuario y OrganizacionRolUsuario) en una organización de un usuario
+        /// </summary>
+        /// <param name="pUsuarioID">Identificador del usuario</param>
+        /// <param name="pOrganizacionID">Identificador de la organización</param>
+        /// <returns>Dataset de usuarios</returns>
+        public DataWrapperUsuario ObtenerOrganizacionRolUsuario(Guid pUsuarioID, Guid pOrganizacionID)
         {
             DataWrapperUsuario dataWrapper = new DataWrapperUsuario();
 
@@ -1929,7 +1734,7 @@ namespace Es.Riam.Gnoss.AD.Usuarios
                 Foto = item.Key.Foto,
                 TwoFactorAuthentication = item.Key.TwoFactorAuthentication
             }).ToList();
-            
+
             var segundaconsulta = mEntityContext.Usuario.Join(mEntityContext.Persona, usu => usu.UsuarioID, pers => pers.UsuarioID.Value, (usu, pers) => new
             {
                 Usuario = usu,
@@ -2066,13 +1871,13 @@ namespace Es.Riam.Gnoss.AD.Usuarios
         {
 
             mEntityContext.SaveChanges();
-            
+
 
         }
         private void AumentarNumeroMiembrosDelProyecto(Guid pProyectoID)
         {
             //Actualizar en ProyectoDS / Proyecto / "NumeroMiembros"
-            ProyectoAD proyectoAD = new ProyectoAD(mLoggingService, mEntityContext, mConfigService, mServicesUtilVirtuosoAndReplication);
+            ProyectoAD proyectoAD = new ProyectoAD(mLoggingService, mEntityContext, mConfigService, mServicesUtilVirtuosoAndReplication,mLoggerFactory.CreateLogger<ProyectoAD>(),mLoggerFactory);
             proyectoAD.AumentarNumeroMiembrosDelProyecto(pProyectoID);
             proyectoAD.Dispose();
         }
@@ -2080,7 +1885,7 @@ namespace Es.Riam.Gnoss.AD.Usuarios
         private void DisminuirNumeroMiembrosDelProyecto(Guid pProyectoID)
         {
             //Actualizar en ProyectoDS / Proyecto / "NumeroMiembros"
-            ProyectoAD proyectoAD = new ProyectoAD(mLoggingService, mEntityContext, mConfigService, mServicesUtilVirtuosoAndReplication);
+            ProyectoAD proyectoAD = new ProyectoAD(mLoggingService, mEntityContext, mConfigService, mServicesUtilVirtuosoAndReplication,mLoggerFactory.CreateLogger<ProyectoAD>(),mLoggerFactory);
             proyectoAD.DisminuirNumeroMiembrosDelProyecto(pProyectoID);
             proyectoAD.Dispose();
         }
@@ -2410,7 +2215,7 @@ namespace Es.Riam.Gnoss.AD.Usuarios
             {
                 Usuario = usuario,
                 Persona = persona
-            }).Where(item => item.Persona.Email.Equals(pLoginOEmail) && item.Usuario.EstaBloqueado.HasValue && !item.Usuario.EstaBloqueado.Value && !item.Persona.Eliminado).Select(item => item.Usuario.UsuarioID).FirstOrDefault();
+            }).Where(item => item.Persona.Email.Equals(pLoginOEmail.ToLower()) && item.Usuario.EstaBloqueado.HasValue && !item.Usuario.EstaBloqueado.Value && !item.Persona.Eliminado).Select(item => item.Usuario.UsuarioID).FirstOrDefault();
             }
             else
             {
@@ -2484,6 +2289,37 @@ namespace Es.Riam.Gnoss.AD.Usuarios
                 return null;
             }
 
+        }
+        public Dictionary<Guid, String> ObtenerUsuariosIdParaAutocompletar(string pNombrePerfil, int pNumero)
+        {
+            return ObtenerUsuariosIDParaAutocompletarDeNombrePerfil(pNombrePerfil, pNumero);
+        }
+
+        /// <summary>
+        /// Devuelve los usuarioID de una comunidad a partir del nombre de perfil para el autocompletar
+        /// </summary>
+        /// <param name="pNombrePerfil">Texto a buscar</param>
+        /// <param name="pNumero">Numero de resultados</param>
+        /// <returns>
+        /// Diccionario con:
+        /// Clave: UsuarioID
+        /// Valor: Nombre de perfil
+        /// </returns>
+        public Dictionary<Guid, string> ObtenerUsuariosIDParaAutocompletarDeNombrePerfil(string pNombrePerfil, int pNumero)
+        {
+            Dictionary<Guid, string> listaUsuariosIDPorNombrePerfil = new Dictionary<Guid, string>();
+
+            var consultaSQL = mEntityContext.Perfil.JoinPersona().Where(item => item.Perfil.NombrePerfil.ToLower().Contains(pNombrePerfil.ToLower()) || item.Perfil.NombrePerfil.ToLower().StartsWith(pNombrePerfil.ToLower())).Select(item => new { item.Perfil.NombrePerfil, item.Persona.UsuarioID }).Take(pNumero).OrderByDescending(item => item.NombrePerfil);
+
+            var resultado = consultaSQL.ToList();
+            foreach (var item in resultado)
+            {
+                if (item.UsuarioID != null && !listaUsuariosIDPorNombrePerfil.ContainsKey((Guid)item.UsuarioID))
+                {
+                    listaUsuariosIDPorNombrePerfil.Add((Guid)item.UsuarioID, item.NombrePerfil);
+                }
+            }
+            return listaUsuariosIDPorNombrePerfil;
         }
 
         public Dictionary<Guid, Guid> ObtenerUsuariosIDPorIDPerfil(List<Guid> pListaPerfilID)
@@ -2808,7 +2644,7 @@ namespace Es.Riam.Gnoss.AD.Usuarios
                  {
                      Usuario = usu,
                      Persona = pers
-                 }).Where(item => item.Persona.Email.Equals(pLogin) && item.Usuario.EstaBloqueado.HasValue && !item.Usuario.EstaBloqueado.Value && !item.Persona.Eliminado).Select(item => item.Usuario)
+                 }).Where(item => item.Persona.Email.Equals(pLogin.ToLower()) && item.Usuario.EstaBloqueado.HasValue && !item.Usuario.EstaBloqueado.Value && !item.Persona.Eliminado).Select(item => item.Usuario)
                  .Concat(mEntityContext.Usuario.Join(mEntityContext.SolicitudNuevoUsuario, usu => usu.UsuarioID, solNuevo => solNuevo.UsuarioID, (usu, solNuevo) =>
                  new
                  {
@@ -2888,7 +2724,7 @@ namespace Es.Riam.Gnoss.AD.Usuarios
                        Identidad = proUsuIdPfps.Identidad,
                        PerfilPersona = proUsuIdPfps.PerfilPersona,
                        Persona = persona
-                   }).Where(item => item.Persona.Email.Equals(pLogin) && item.ProyectoUsuarioIdentidad.ProyectoID.Equals(ProyectoAD.MetaProyecto) && item.Identidad.Tipo.Equals((short)TiposIdentidad.Personal)).Select(item => item.ProyectoUsuarioIdentidad).ToList();
+                   }).Where(item => item.Persona.Email.Equals(pLogin.ToLower()) && item.ProyectoUsuarioIdentidad.ProyectoID.Equals(ProyectoAD.MetaProyecto) && item.Identidad.Tipo.Equals((short)TiposIdentidad.Personal)).Select(item => item.ProyectoUsuarioIdentidad).ToList();
                 }
 
 
@@ -2915,7 +2751,7 @@ namespace Es.Riam.Gnoss.AD.Usuarios
                       {
                           Usuario = usu,
                           Persona = pers
-                      }).Where(item => item.Persona.Email.Equals(pLogin) && (!item.Usuario.EstaBloqueado.HasValue || !item.Usuario.EstaBloqueado.Value) && !item.Persona.Eliminado).Select(item => item.Usuario)
+                      }).Where(item => item.Persona.Email.Equals(pLogin.ToLower()) && (!item.Usuario.EstaBloqueado.HasValue || !item.Usuario.EstaBloqueado.Value) && !item.Persona.Eliminado).Select(item => item.Usuario)
                       .Concat(mEntityContext.Usuario.Join(mEntityContext.SolicitudNuevoUsuario, usu => usu.UsuarioID, solic => solic.UsuarioID, (usu, solic) =>
                       new
                       {
@@ -2928,6 +2764,33 @@ namespace Es.Riam.Gnoss.AD.Usuarios
                           SolicitudNuevoUsuario = usuSol.SolicitudNuevoUsuario,
                           Solicitud = solicitud
                       }).Where(item => item.SolicitudNuevoUsuario.Email.Equals(pLogin) && (!item.Usuario.EstaBloqueado.HasValue || !item.Usuario.EstaBloqueado.Value) && item.Solicitud.Estado == 0).Select(item => item.Usuario)).ToList().FirstOrDefault();
+                }
+                else
+                {
+                    return mEntityContext.Usuario.FirstOrDefault(usuario => usuario.Login.Equals(pLogin));
+                }
+            }
+            return null;
+        }
+
+        /// <summary>
+        /// Obtiene la fila de un usuario por login o email
+        /// </summary>
+        /// <param name="pLogin"></param>
+        /// <returns></returns>
+        public EntityModel.Models.UsuarioDS.Usuario ObtenerFilaUsuarioBloqueadoPorLoginOEmail(string pLogin)
+        {
+            if (pLogin != "")
+            {
+                if (pLogin.Contains("@"))
+                {
+
+                    return mEntityContext.Usuario.Join(mEntityContext.Persona, usu => usu.UsuarioID, pers => pers.UsuarioID, (usu, pers) =>
+                      new
+                      {
+                          Usuario = usu,
+                          Persona = pers
+                      }).Where(item => item.Persona.Email.Equals(pLogin.ToLower()) && (item.Usuario.EstaBloqueado.HasValue && !item.Usuario.EstaBloqueado.Value) && !item.Persona.Eliminado).Select(item => item.Usuario).ToList().FirstOrDefault();
                 }
                 else
                 {
@@ -2996,22 +2859,22 @@ namespace Es.Riam.Gnoss.AD.Usuarios
             }).Any(item => item.Usuario.UsuarioID.Equals(pUsuarioID));
         }
 
-		/// <summary>
-		/// Comprueba si un usuario tiene actiavada la doble autenticación
-		/// </summary>
-		/// <param name="pLogin">Login del usuario</param>
-		/// <returns></returns>
-		public bool ComprobarDobleAutenticacionUsuario(Guid pUsuarioId)
-		{
-			return mEntityContext.Usuario.Where(usuario => usuario.UsuarioID.Equals(pUsuarioId)).Select(usuario => usuario.TwoFactorAuthentication).FirstOrDefault();
-		}
+        /// <summary>
+        /// Comprueba si un usuario tiene actiavada la doble autenticación
+        /// </summary>
+        /// <param name="pLogin">Login del usuario</param>
+        /// <returns></returns>
+        public bool ComprobarDobleAutenticacionUsuario(Guid pUsuarioId)
+        {
+            return mEntityContext.Usuario.Where(usuario => usuario.UsuarioID.Equals(pUsuarioId)).Select(usuario => usuario.TwoFactorAuthentication).FirstOrDefault();
+        }
 
-		/// <summary>
-		/// Obtiene la contraseña de un usuario
-		/// </summary>
-		/// <param name="pUsuario">Fila de usuario</param>
-		/// <returns>Devuelve el password o NULL en caso de no encontrarse</returns>
-		public string ObtenerPasswordUsuario(EntityModel.Models.UsuarioDS.Usuario pUsuario)
+        /// <summary>
+        /// Obtiene la contraseña de un usuario
+        /// </summary>
+        /// <param name="pUsuario">Fila de usuario</param>
+        /// <returns>Devuelve el password o NULL en caso de no encontrarse</returns>
+        public string ObtenerPasswordUsuario(EntityModel.Models.UsuarioDS.Usuario pUsuario)
         {
             string password = mEntityContext.Usuario.Where(usuario => usuario.Login.Equals(pUsuario.Login)).Select(item => item.Password).FirstOrDefault();
             if (password == null)
@@ -3282,7 +3145,7 @@ namespace Es.Riam.Gnoss.AD.Usuarios
         /// <param name="pNombreUsuario">Nombre del usuario</param>
         /// <returns>TRUE si existe, FALSE en caso contrario</returns>
         public string ObtenerLoginLibre(string pNombreUsuario)
-       {
+        {
             string nombreUsuarioCortado = pNombreUsuario;
             int numeroInicioContador = pNombreUsuario.Length;
             int numeroDigitos = 0;
@@ -3319,10 +3182,10 @@ namespace Es.Riam.Gnoss.AD.Usuarios
 
                 var query = mEntityContext.Usuario.Where(item => item.Login.StartsWith(nombreUsuarioCortado)).Select(item => item.Login.Substring(numeroInicioContador - 1, numeroDigitos));
                 List<string> listaNumeros = null;
-                if (EsPostgres() || EsOracle()) 
+                if (EsPostgres() || EsOracle())
                 {
                     listaNumeros = query.ToList();
-                    foreach(string numerolist in listaNumeros.ToList())
+                    foreach (string numerolist in listaNumeros.ToList())
                     {
                         if (!mEntityContext.IsNumeric(numerolist))
                         {
@@ -3484,376 +3347,11 @@ namespace Es.Riam.Gnoss.AD.Usuarios
         /// <returns>Lista de identificadores de usuario</returns>
         public List<Guid> ObtenerUsuariosActivosEnFecha(Guid pProyectoID, DateTime pFechaBusqueda)
         {
-            //TODO: Migrar a EF
             List<Guid> listaIDs = new List<Guid>();
 
-            string sql = "select u.UsuarioID from SuscripcionTesauroProyecto stp inner join Suscripcion s on stp.SuscripcionID = s.SuscripcionID inner join CategoriaTesVinSuscrip ctvs on stp.SuscripcionID = ctvs.SuscripcionID inner join Identidad i on i.IdentidadID = s.IdentidadID inner join Perfil p on i.PerfilID = p.PerfilID inner join Usuario u on u.NombreCorto = p.NombreCortoUsu where s.FechaSuscripcion >= " + IBD.ToParam("FechaBusqueda") + " and stp.ProyectoID = " + IBD.GuidValor(pProyectoID) + " union select u.UsuarioID from SuscripcionIdentidadProyecto sip inner join Suscripcion s on sip.SuscripcionID = s.SuscripcionID inner join Identidad i on i.IdentidadID = s.IdentidadID inner join Perfil p on i.PerfilID = p.PerfilID inner join Usuario u on u.NombreCorto = p.NombreCortoUsu where s.FechaSuscripcion >= " + IBD.ToParam("FechaBusqueda") + " and sip.ProyectoID = " + IBD.GuidValor(pProyectoID) + " union select u.UsuarioID from Identidad i inner join Perfil p on i.PerfilID = p.PerfilID inner join Usuario u on u.NombreCorto = p.NombreCortoUsu where FechaAlta >= " + IBD.ToParam("FechaBusqueda") + " and ProyectoID = " + IBD.GuidValor(pProyectoID);
+            listaIDs = mEntityContext.Suscripcion.JoinSuscripcionTesauroProyecto().JoinCategoriaTesVinSuscrip().JoinIdentidad().JoinPerfil().JoinUsuario().Where(item => item.Suscripcion.FechaSuscripcion >= pFechaBusqueda && item.SuscripcionTesauroProyecto.ProyectoID == pProyectoID).Select(item => item.Usuario.UsuarioID).Union(mEntityContext.SuscripcionIdentidadProyecto.JoinSuscripcion().JoinIdentidad().JoinPerfil().JoinUsuario().Where(item => item.Suscripcion.FechaSuscripcion >= pFechaBusqueda && item.SuscripcionIdentidadProyecto.ProyectoID == pProyectoID).Select(item => item.Usuario.UsuarioID)).Union(mEntityContext.Identidad.JoinPerfil().JoinUsuario().Where(item => item.Identidad.FechaAlta >= pFechaBusqueda && item.Identidad.ProyectoID == pProyectoID).Select(item => item.Usuario.UsuarioID)).ToList();
 
-            DbCommand commandsqlconsulta = ObtenerComando(sql);
-            AgregarParametro(commandsqlconsulta, IBD.ToParam("FechaBusqueda"), DbType.DateTime, pFechaBusqueda);
-
-            IDataReader reader = EjecutarReader(commandsqlconsulta);
-            while (reader.Read())
-            {
-                Guid usuarioID = IBD.ReaderGetGuid(reader, 0);
-                listaIDs.Add(usuarioID);
-            }
-
-            reader.Close();
-            reader.Dispose();
             return listaIDs;
-        }
-
-        #endregion
-
-        #region Privados
-
-        /// <summary>
-        /// En caso de que se utilice el GnossConfig.xml por defecto se sigue utilizando el IBD estático
-        /// </summary>
-        private void CargarConsultasYDataAdapters()
-        {
-            this.CargarConsultasYDataAdapters(IBD);
-        }
-
-        /// <summary>
-        /// En caso de que se utilice un GnossConfig.xml que no es el de por defecto se pasa un objeto IBaseDatos creado con respecto
-        /// al fichero de configuracion que se ha apsado como parámetro
-        /// </summary>
-        /// <param name="IBD">Objecto IBaseDatos para el archivo pasado al constructor del AD</param>
-        private void CargarConsultasYDataAdapters(IBaseDatos IBD)
-        {
-            #region Consultas
-
-            #region Sólo Select
-
-            //Solo parte SELECT
-            SelectUsuario = "SELECT " + IBD.CargarGuid("Usuario.UsuarioID") + ", Usuario.Login, Usuario.Password, Usuario.EstaBloqueado, Usuario.NombreCorto, Usuario.Version, Usuario.FechaCambioPassword, Usuario.Validado ";
-
-            SelectGrupoUsuario = "SELECT " + IBD.CargarGuid("GrupoUsuario.GrupoUsuarioID") + ", GrupoUsuario.Nombre, GrupoUsuario.Descripcion ";
-
-            SelectInicioSesion = "SELECT " + IBD.CargarGuid("InicioSesion.UsuarioID") + ", " + IBD.CargarGuid("InicioSesion.OrganizacionGnossID") + ", " + IBD.CargarGuid("InicioSesion.PersonaID") + ", " + IBD.CargarGuid("InicioSesion.ProyectoID") + " ";
-
-            SelectGrupoUsuarioUsuario = "SELECT " + IBD.CargarGuid("GrupoUsuarioUsuario.UsuarioID") + ", " + IBD.CargarGuid("GrupoUsuarioUsuario.GrupoUsuarioID") + " ";
-
-            SelectAdministradorGeneral = "SELECT " + IBD.CargarGuid("AdministradorGeneral.UsuarioID") + " ";
-
-            SelectProyectoRolGrupoUsuario = "SELECT " + IBD.CargarGuid("ProyectoRolGrupoUsuario.OrganizacionGnossID") + ", " + IBD.CargarGuid("ProyectoRolGrupoUsuario.ProyectoID") + ", " + IBD.CargarGuid("ProyectoRolGrupoUsuario.GrupoUsuarioID") + ", ProyectoRolGrupoUsuario.RolPermitido, ProyectoRolGrupoUsuario.RolDenegado ";
-
-            SelectGeneralRolGrupoUsuario = "SELECT " + IBD.CargarGuid("GeneralRolGrupoUsuario.GrupoUsuarioID") + ", GeneralRolGrupoUsuario.RolPermitido, GeneralRolGrupoUsuario.RolDenegado ";
-
-            SelectOrganizacionRolUsuario = "SELECT " + IBD.CargarGuid("OrganizacionRolUsuario.UsuarioID") + ", " + IBD.CargarGuid("OrganizacionRolUsuario.OrganizacionID") + ", OrganizacionRolUsuario.RolPermitido, OrganizacionRolUsuario.RolDenegado ";
-
-            SelectGeneralRolUsuario = "SELECT " + IBD.CargarGuid("GeneralRolUsuario.UsuarioID") + ", GeneralRolUsuario.RolPermitido, GeneralRolUsuario.RolDenegado ";
-
-            SelectProyectoRolUsuario = "SELECT " + IBD.CargarGuid("ProyectoRolUsuario.OrganizacionGnossID") + ", " + IBD.CargarGuid("ProyectoRolUsuario.ProyectoID") + ", " + IBD.CargarGuid("ProyectoRolUsuario.UsuarioID") + ", ProyectoRolUsuario.RolPermitido, ProyectoRolUsuario.RolDenegado, ProyectoRolUsuario.EstaBloqueado";
-
-            SelectProyectoUsuarioIdentidad = "SELECT " + IBD.CargarGuid("ProyectoUsuarioIdentidad.IdentidadID") + ", " + IBD.CargarGuid("ProyectoUsuarioIdentidad.UsuarioID") + ", " + IBD.CargarGuid("ProyectoUsuarioIdentidad.OrganizacionGnossID") + ", " + IBD.CargarGuid("ProyectoUsuarioIdentidad.ProyectoID") + ", ProyectoUsuarioIdentidad.FechaEntrada, ProyectoUsuarioIdentidad.Reputacion ";
-
-            SelectHistoricoProyectoUsuario = "SELECT " + IBD.CargarGuid("HistoricoProyectoUsuario.UsuarioID") + ", " + IBD.CargarGuid("HistoricoProyectoUsuario.OrganizacionGnossID") + ", " + IBD.CargarGuid("HistoricoProyectoUsuario.ProyectoID") + ", " + IBD.CargarGuid("HistoricoProyectoUsuario.IdentidadID") + ", HistoricoProyectoUsuario.FechaSalida, HistoricoProyectoUsuario.FechaEntrada ";
-
-            SelectUsuarioVinculadoLoginRedesSociales = "SELECT " + IBD.CargarGuid("UsuarioVinculadoLoginRedesSociales.UsuarioID") + ", UsuarioVinculadoLoginRedesSociales.TipoRedSocial, UsuarioVinculadoLoginRedesSociales.IDenRedSocial ";
-
-            #endregion
-
-            sqlSelectUsuarioPorLogin = IBD.ReplaceParam(SelectUsuario + " FROM Usuario WHERE UPPER(Login) = UPPER(@login) and establoqueado=0");
-
-            sqlSelectUsuarioPorEmail = IBD.ReplaceParam(SelectUsuario + " FROM Usuario INNER JOIN Persona ON Usuario.UsuarioID = Persona.UsuarioID WHERE UPPER(Persona.Email) = UPPER(@login) and establoqueado=0 and persona.eliminado=0 UNION ALL " + SelectUsuario + " FROM Usuario INNER JOIN SolicitudNuevoUsuario ON Usuario.UsuarioID = SolicitudNuevoUsuario.UsuarioID inner join Solicitud on Solicitud.SolicitudID = SolicitudNuevoUsuario.SolicitudID WHERE UPPER(SolicitudNuevoUsuario.Email) = UPPER(@login) and Solicitud.Estado = 0 and establoqueado=0 UNION ALL " + SelectUsuario + " FROM Usuario INNER JOIN Persona ON Usuario.UsuarioID = Persona.UsuarioID INNER JOIN personavinculoorganizacion on personavinculoorganizacion.PersonaID = Persona.PersonaID WHERE UPPER(personavinculoorganizacion.EmailTrabajo) = UPPER(@login) and establoqueado=0 and persona.eliminado=0");
-
-            sqlSelectInicioSesionPorLogin = IBD.ReplaceParam(SelectInicioSesion + " FROM InicioSesion INNER JOIN Usuario ON Usuario.UsuarioID = InicioSesion.UsuarioID WHERE UPPER(Usuario.Login) = UPPER(@login)");
-
-            sqlSelectInicioSesionPorEmail = IBD.ReplaceParam(SelectInicioSesion + " FROM InicioSesion INNER JOIN Usuario ON Usuario.UsuarioID = InicioSesion.UsuarioID INNER JOIN Persona ON Usuario.UsuarioID = Persona.UsuarioID WHERE UPPER(Persona.Email) = UPPER(@login)");
-
-            sqlSelectProyectoUsuarioIdentidadDeInicioSesionPorLogin = IBD.ReplaceParam(SelectProyectoUsuarioIdentidad + " FROM ProyectoUsuarioIdentidad INNER JOIN InicioSesion ON InicioSesion.UsuarioID = ProyectoUsuarioIdentidad.UsuarioID INNER JOIN Usuario ON Usuario.UsuarioID = InicioSesion.UsuarioID WHERE (UPPER(Usuario.Login) = UPPER(@login))  AND ProyectoUsuarioIdentidad.ProyectoID = InicioSesion.ProyectoID");
-
-            sqlSelectProyectoUsuarioIdentidadDeMyGnossPorLogin = IBD.ReplaceParam(SelectProyectoUsuarioIdentidad + " FROM ProyectoUsuarioIdentidad INNER JOIN Usuario ON Usuario.UsuarioID = ProyectoUsuarioIdentidad.UsuarioID INNER JOIN Identidad ON ProyectoUsuarioIdentidad.IdentidadID = Identidad.IdentidadID INNER JOIN PerfilPersona ON PerfilPersona.PerfilID = Identidad.PerfilID WHERE UPPER(Usuario.Login) = UPPER(@login) AND ProyectoUsuarioIdentidad.ProyectoID = " + IBD.GuidValor(ProyectoAD.MetaProyecto) + " AND Identidad.Tipo = " + (short)TiposIdentidad.Personal + " ");
-
-            sqlSelectProyectoUsuarioIdentidadDeInicioSesionPorEmail = IBD.ReplaceParam(SelectProyectoUsuarioIdentidad + " FROM ProyectoUsuarioIdentidad INNER JOIN InicioSesion ON InicioSesion.UsuarioID = ProyectoUsuarioIdentidad.UsuarioID INNER JOIN Usuario ON Usuario.UsuarioID = InicioSesion.UsuarioID INNER JOIN Persona ON Usuario.UsuarioID = Persona.UsuarioID WHERE UPPER(Persona.Email) = UPPER(@login) AND ProyectoUsuarioIdentidad.ProyectoID = InicioSesion.ProyectoID");
-
-            sqlSelectProyectoUsuarioIdentidadDeMyGnossPorEmail = IBD.ReplaceParam(SelectProyectoUsuarioIdentidad + " FROM ProyectoUsuarioIdentidad INNER JOIN Usuario ON Usuario.UsuarioID = ProyectoUsuarioIdentidad.UsuarioID INNER JOIN Identidad ON ProyectoUsuarioIdentidad.IdentidadID = Identidad.IdentidadID INNER JOIN PerfilPersona ON PerfilPersona.PerfilID = Identidad.PerfilID INNER JOIN Persona ON Usuario.UsuarioID = Persona.UsuarioID WHERE UPPER(Persona.Email) = UPPER(@login) AND ProyectoUsuarioIdentidad.ProyectoID = " + IBD.GuidValor(ProyectoAD.MetaProyecto) + " AND Identidad.Tipo = " + (short)TiposIdentidad.Personal + " ");
-
-            sqlSelectUsuarioPorID = IBD.ReplaceParam(SelectUsuario + " FROM Usuario WHERE (UsuarioID = " + IBD.GuidParamValor("usuarioID") + ")");
-
-            sqlSelectUsuariosPorListaIDs = IBD.ReplaceParam(SelectUsuario + " FROM Usuario WHERE UsuarioID IN ");
-
-            sqlSelectProyectoRolUsuarioPorID = IBD.ReplaceParam(SelectProyectoRolUsuario + " FROM ProyectoRolUsuario WHERE (UsuarioID = " + IBD.GuidParamValor("usuarioID") + ")");
-
-            sqlSelectProyectoRolUsuarioPorListaIDs = IBD.ReplaceParam(SelectProyectoRolUsuario + " FROM ProyectoRolUsuario WHERE UsuarioID IN ");
-
-            sqlSelectProyectoUsuarioIdentidadPorID = IBD.ReplaceParam(SelectProyectoUsuarioIdentidad + " FROM ProyectoUsuarioIdentidad WHERE (UsuarioID = " + IBD.GuidParamValor("usuarioID") + ")");
-
-            sqlSelectProyectoUsuarioIdentidadPorListaIDs = IBD.ReplaceParam(SelectProyectoUsuarioIdentidad + " FROM ProyectoUsuarioIdentidad WHERE UsuarioID IN ");
-
-            sqlSelectInicioSesionPorID = IBD.ReplaceParam(SelectInicioSesion + " FROM InicioSesion WHERE (UsuarioID = " + IBD.GuidParamValor("usuarioID") + ")");
-
-            sqlSelectInicioSesionPorListaIDs = IBD.ReplaceParam(SelectInicioSesion + " FROM InicioSesion WHERE UsuarioID IN ");
-
-            sqlSelectGrupoUsuarioUsuarioPorID = IBD.ReplaceParam(SelectGrupoUsuarioUsuario + " FROM GrupoUsuarioUsuario WHERE (UsuarioID = " + IBD.GuidParamValor("usuarioID") + ")");
-
-            sqlSelectGrupoUsuarioUsuarioPorListaIDs = IBD.ReplaceParam(SelectGrupoUsuarioUsuario + " FROM GrupoUsuarioUsuario WHERE UsuarioID IN ");
-
-            sqlSelectHistoricoProyectoUsuarioPorID = IBD.ReplaceParam(SelectHistoricoProyectoUsuario + " FROM HistoricoProyectoUsuario WHERE (UsuarioID = " + IBD.GuidParamValor("usuarioID") + ")");
-
-            sqlSelectHistoricoProyectoUsuarioPorListaIDs = IBD.ReplaceParam(SelectHistoricoProyectoUsuario + " FROM HistoricoProyectoUsuario WHERE UsuarioID IN ");
-
-            sqlSelectPasswordPorLogin = IBD.ReplaceParam("SELECT Password FROM Usuario WHERE (Login = @login)");
-
-            sqlSetPasswordPorLogin = IBD.ReplaceParam("UPDATE Usuario SET Password = @password, Version = 1, FechaCambioPassword = getdate() WHERE (UPPER(Login) = UPPER(@login))");
-
-            sqlSelectEstaBloqueadoUsuario = "SELECT EstaBloqueado FROM Usuario WHERE (UsuarioID = " + IBD.GuidParamValor("usuarioID") + ")";
-
-            sqlSelectEstaBloqueadoUsuarioEnProyecto = "SELECT EstaBloqueado FROM ProyectoRolUsuario WHERE (UsuarioID = " + IBD.GuidParamValor("usuarioID") + ") AND (ProyectoID = " + IBD.GuidParamValor("proyectoID") + ")";
-
-            sqlSetBloquearUsuario = "UPDATE Usuario SET EstaBloqueado = 1 WHERE (UsuarioID = " + IBD.GuidParamValor("usuarioID") + ")";
-
-            sqlSetDesbloquearUsuario = "UPDATE Usuario SET EstaBloqueado = 0 WHERE (UsuarioID = " + IBD.GuidParamValor("usuarioID") + ")";
-
-            sqlSelectUsuarioEnPersona = "SELECT " + IBD.CargarGuid("Usuario.UsuarioID") + " FROM Usuario INNER JOIN Persona ON Usuario.UsuarioID = Persona.UsuarioID WHERE (Usuario.UsuarioID = " + IBD.GuidParamValor("usuarioID") + ")";
-
-            sqlSetAsignarUsuarioAPersona = "UPDATE Persona SET UsuarioID = " + IBD.GuidParamColumnaTabla("usuarioID") + " WHERE (PersonaID = " + IBD.GuidParamValor("personaID") + ")";
-
-            sqlSetDesasignarUsuarioDePersona = "UPDATE Persona SET UsuarioID = NULL WHERE (PersonaID = " + IBD.GuidParamValor("personaID") + ")";
-
-            sqlSelectExisteUsuarioEnAD = "SELECT " + IBD.CargarGuid("UsuarioID") + " FROM Usuario WHERE (UsuarioID = " + IBD.GuidParamValor("usuarioID") + ")";
-
-            sqlSelectExisteNombreUsuarioEnAD = "SELECT " + IBD.CargarGuid("UsuarioID") + " FROM Usuario WHERE (UPPER(Login) = UPPER(" + IBD.ToParam("nombreUsuario") + "))";
-
-            sqlSelectGeneralRolUsuarioPorID = SelectGeneralRolUsuario + " FROM GeneralRolUsuario WHERE (UsuarioID = " + IBD.GuidParamValor("usuarioID") + ")";
-
-            sqlSelectGeneralRolGrupoUsuarioPorID = SelectGeneralRolGrupoUsuario + " FROM RolGrupoUsuario WHERE (GrupoUsuarioID = " + IBD.GuidParamValor("grupoUsuarioID") + ")";
-
-            sqlSelectRolUsuarioEnProyectosOrganizacion = SelectProyectoRolUsuario + " WHERE (OrganizacionID = " + IBD.GuidParamValor("organizacionID") + ") AND (UsuarioID = " + IBD.GuidParamValor("usuarioID") + ")";
-
-            sqlSelectRolesUsuariosEnProyecto = SelectProyectoRolUsuario + " FROM ProyectoRolUsuario WHERE (OrganizacionGnossID = " + IBD.GuidParamValor("organizacionID") + ") AND (ProyectoID = " + IBD.GuidParamValor("proyectoID") + ")";
-
-            sqlSelectRolUsuarioEnProyecto = SelectProyectoRolUsuario + " FROM ProyectoRolUsuario WHERE (UsuarioID = " + IBD.GuidParamValor("usuarioID") + ") AND (ProyectoID = " + IBD.GuidParamValor("proyectoID") + ")";
-
-            sqlSelectRolListaUsuariosEnProyecto = SelectProyectoRolUsuario + " FROM ProyectoRolUsuario WHERE (ProyectoID = " + IBD.GuidParamValor("proyectoID") + ") AND UsuarioID IN ";
-
-            sqlSelectRolGrupoUsuarioEnProyecto = SelectProyectoRolGrupoUsuario + " FROM ProyectoRolGrupoUsuario WHERE (OrganizacionID = " + IBD.GuidParamValor("organizacionID") + ") AND (GrupoUsuarioID = " + IBD.GuidParamValor("grupoUsuarioID") + ") AND (ProyectoID = " + IBD.GuidParamValor("proyectoID") + ")";
-
-            sqlSelectRolesGruposUsuariosEnProyecto = SelectProyectoRolGrupoUsuario + " FROM ProyectoRolGrupoUsuario WHERE (OrganizacionID = " + IBD.GuidParamValor("organizacionID") + ") AND (ProyectoID = " + IBD.GuidParamValor("proyectoID") + ")";
-
-            sqlSelectRolesGruposDeUsuarioEnProyecto = SelectProyectoRolGrupoUsuario + " FROM ProyectoRolGrupoUsuario INNER JOIN GrupoUsuario ON ProyectoRolGrupoUsuario.GrupoUsuarioID = GrupoUsuario.GrupoUsuarioID INNER JOIN GrupoUsuarioUsuario ON GrupoUsuario.GrupoUsuarioID = GrupoUsuarioUsuario.GrupoUsuarioID WHERE (ProyectoRolGrupoUsuario.ProyectoID = " + IBD.GuidParamValor("proyectoID") + ") AND (GrupoUsuarioUsuario.UsuarioID = " + IBD.GuidParamValor("usuarioID") + ")";
-
-            sqlSelectProyectoUsuarioDeInicioSesion = "SELECT COUNT(*) AS Expr1 FROM Proyecto INNER JOIN ProyectoRolUsuario ON Proyecto.OrganizacionID = ProyectoRolUsuario.OrganizacionGnossID AND Proyecto.ProyectoID = ProyectoRolUsuario.ProyectoID WHERE (Proyecto.OrganizacionID = " + IBD.GuidParamValor("organizacionID") + ") AND (Proyecto.ProyectoID = " + IBD.GuidParamValor("proyectoID") + ") AND (ProyectoRolUsuario.UsuarioID = " + IBD.GuidParamValor("usuarioID") + ")";
-
-            sqlSelectProyectoGrupoUsuarioDeInicioSesion = "SELECT COUNT(*) AS Expr1 FROM Proyecto INNER JOIN ProyectoRolGrupoUsuario ON Proyecto.OrganizacionID = ProyectoRolGrupousuario.OrganizacionGnossID AND Proyecto.ProyectoID = ProyectoRolGrupoUsuario.ProyectoID INNER JOIN GrupoUsuario ON ProyectoRolGrupoUsuario.GrupoUsuarioID = GrupoUsuario.GrupoUsuarioID INNER JOIN GrupoUsuarioUsuario ON GrupoUsuario.GrupoUsuarioID = GrupoUsuarioUsuario.GrupoUsuarioID WHERE (Proyecto.OrganizacionID = " + IBD.GuidParamValor("organizacionID") + ") AND (Proyecto.ProyectoID = " + IBD.GuidParamValor("proyectoID") + ") AND (GrupoUsuarioUsuario.UsuarioID = " + IBD.GuidParamValor("usuarioID") + ")";
-
-            sqlSelectInicioSesionDeUsuario = SelectInicioSesion + " FROM InicioSesion WHERE (UsuarioID = " + IBD.GuidParamValor("usuarioID") + ")";
-
-            sqlSelectPersonaDeInicioDeSesion = "SELECT COUNT(*) AS Expr1 FROM Persona WHERE (Persona.PersonaID = " + IBD.GuidParamValor("personaID") + ") AND (Persona.UsuarioID = " + IBD.GuidParamValor("usuarioID") + ")";
-
-            sqlSelectGruposUsuariosUsuariosPerteneceUsuario = SelectGrupoUsuarioUsuario + " FROM GrupoUsuarioUsuario INNER JOIN GrupoUsuario ON GrupoUsuarioUsuario.GrupoUsuarioID = GrupoUsuario.GrupoUsuarioID WHERE (GrupoUsuarioUsuario.UsuarioID = " + IBD.GuidParamValor("usuarioID") + ")";
-
-            sqlSelectGruposUsuariosPerteneceUsuario = SelectGrupoUsuario + " FROM GrupoUsuario INNER JOIN GrupoUsuarioUsuario ON GrupoUsuario.GrupoUsuarioID = GrupoUsuarioUsuario.GrupoUsuarioID WHERE (GrupoUsuarioUsuario.UsuarioID = " + IBD.GuidParamValor("usuarioID") + ")";
-
-            sqlSelectExisteGrupoUsuariosEnAD = "SELECT " + IBD.CargarGuid("GrupoUsuarioID") + " FROM GrupoUsuario WHERE (GrupoUsuarioID = " + IBD.GuidParamValor("grupoUsuarioID") + ")";
-
-            sqlSelectTodosGruposUsuariosUsuarios = SelectGrupoUsuarioUsuario + " FROM GrupoUsuarioUsuario";
-
-            sqlSelectTodosUsuariosNombreApellidos = SelectUsuario + " , Nombre, Apellidos FROM Usuario INNER JOIN Persona On Persona.UsuarioID = Usuario.UsuarioID";
-
-            sqlSelectGeneralRolUsuarioDeUsuario = SelectGeneralRolUsuario + " FROM GeneralRolUsuario WHERE (UsuarioID = " + IBD.GuidParamValor("usuarioID") + ")";
-
-            sqlSelectGeneralRolGrupoUsuarioDeGrupoUsuario = SelectGeneralRolGrupoUsuario + " FROM GeneralRolGrupoUsuario WHERE (GrupoUsuarioID = " + IBD.GuidParamValor("grupoUsuarioID") + ")";
-
-            sqlSelectTodosGruposUsuarios = SelectGrupoUsuario + " FROM GrupoUsuario";
-
-            sqlSelectUsuariosEnProyecto = SelectUsuario + " FROM Usuario INNER JOIN ProyectoRolUsuario ON Usuario.UsuarioID = ProyectoRolUsuario.UsuarioID WHERE (ProyectoRolUsuario.ProyectoID = " + IBD.GuidParamValor("proyectoID") + ")";
-
-            sqlSelectGrupoUsuarioEnProyecto = SelectGrupoUsuario + " FROM GrupoUsuario INNER JOIN ProyectoRolGrupoUsuario ON GrupoUsuario.GrupoUsuarioID = ProyectoRolGrupoUsuario.GrupoUsuarioID WHERE (ProyectoRolGrupoUsuario.ProyectoID = " + IBD.GuidParamValor("proyectoID") + ")";
-
-            sqlSelectProyectoRolusuarioEnProyecto = SelectProyectoRolUsuario + " FROM ProyectoRolUsuario WHERE (ProyectoID = " + IBD.GuidParamValor("proyectoID") + ")";
-
-            sqlSelectProyectoUsuarioIdentidadEnProyecto = SelectProyectoUsuarioIdentidad + " FROM ProyectoUsuarioIdentidad WHERE (ProyectoID = " + IBD.GuidParamValor("proyectoID") + ")";
-
-            sqlSelectHistoricoProyectoUsuarioEnProyecto = SelectHistoricoProyectoUsuario + " FROM HistoricoProyectoUsuario WHERE (ProyectoID = " + IBD.GuidParamValor("proyectoID") + ")";
-
-            sqlSelectGrupoUsuarioUsuarioEnProyecto = SelectGrupoUsuarioUsuario + " FROM GrupoUsuarioUsuario INNER JOIN GrupoUsuario ON GrupoUsuarioUsuario.GrupoUsuarioID = GrupoUsuario.GrupoUsuarioID INNER JOIN ProyectoRolGrupoUsuario ON ProyectoRolGrupoUsuario.GrupoUsuarioID = GrupoUsuario.GrupoUsuarioID WHERE (ProyectoRolGrupoUsuario.ProyectoID = " + IBD.GuidParamValor("proyectoID") + ")";
-
-            sqlSelectProyectoRolGrupoUsuarioEnProyecto = SelectProyectoRolGrupoUsuario + " FROM ProyectoRolGrupoUsuario WHERE (ProyectoID = " + IBD.GuidParamValor("proyectoID") + ")";
-
-            sqlSelectTodosGeneralRolUsuario = SelectGeneralRolUsuario + "FROM GeneralRolUsuario";
-
-            sqlSelectTodosGrupoUsuarioGeneral = SelectGrupoUsuario + "FROM GrupoUsuario INNER JOIN GeneralRolGrupoUsuario ON GrupoUsuario.GrupoUsuarioID = GeneralRolGrupoUsuario.GrupoUsuarioID";
-
-            sqlSelectTodosGrupoUsuarioUsuarioGeneral = SelectGrupoUsuarioUsuario + "FROM GrupoUsuarioUsuario INNER JOIN GeneralRolGrupoUsuario ON GrupoUsuarioUsuario.GrupoUsuarioID = GeneralRolGrupoUsuario.GrupoUsuarioID";
-
-            sqlSelectTodosGeneralRolGrupoUsuario = SelectGeneralRolGrupoUsuario + "FROM GeneralRolGrupoUsuario";
-
-            sqlSelectTodosAdministradorGeneral = SelectAdministradorGeneral + "FROM AdministradorGeneral INNER JOIN Persona ON Persona.UsuarioID = AdministradorGeneral.UsuarioID";
-
-            sqlSelectInicioSesionEnProyecto = SelectInicioSesion + " FROM InicioSesion WHERE (ProyectoID = " + IBD.GuidParamValor("proyectoID") + ")";
-            sqlSelectInicioSesionEnproyectoPorLogin = IBD.ReplaceParam(SelectInicioSesion + " FROM InicioSesion INNER JOIN Usuario ON InicioSesion.UsuarioID = Usuario.UsuarioID WHERE (ProyectoID = " + IBD.GuidParamValor("proyectoID") + ") AND (UPPER(Usuario.Login) = UPPER(@login))");
-
-            sqlSelectUsuarioEnProyecto = SelectUsuario + " FROM Usuario INNER JOIN ProyectoRolUsuario ON ProyectoRolUsuario.UsuarioID = Usuario.UsuarioID INNER JOIN ProyectoUsuarioIdentidad ON ProyectoUsuarioIdentidad.UsuarioID = ProyectoRolUsuario.UsuarioID AND ProyectoUsuarioIdentidad.ProyectoID = ProyectoRolUsuario.ProyectoID INNER JOIN Identidad ON Identidad.IdentidadID = ProyectoUsuarioIdentidad.IdentidadID WHERE (ProyectoRolUsuario.ProyectoID = " + IBD.GuidParamValor("proyectoID") + ") AND (ProyectoRolUsuario.UsuarioID = " + IBD.GuidParamValor("usuarioID") + ") AND Identidad.FechaBaja IS NULL AND Identidad.FechaExpulsion IS NULL";
-
-            sqlSelectOrganizacionRolUsuarioDeUsuario = SelectOrganizacionRolUsuario + " FROM OrganizacionRolUsuario WHERE UsuarioID = " + IBD.GuidParamValor("usuarioID");
-
-            sqlSelectOrganizacionRolUsuarioDeUsuarioYOrganizacion = SelectOrganizacionRolUsuario + " FROM OrganizacionRolUsuario WHERE UsuarioID = " + IBD.GuidParamValor("usuarioID") + " AND OrganizacionID = " + IBD.GuidParamValor("organizacionID");
-
-            sqlSelectUsuariosDeOrganizacion = SelectUsuario + " FROM Usuario INNER JOIN Persona ON Persona.UsuarioID = Usuario.UsuarioID INNER JOIN PersonaVinculoOrganizacion ON Persona.PersonaID = PersonaVinculoOrganizacion.PersonaID WHERE PersonaVinculoOrganizacion.OrganizacionID = " + IBD.GuidParamValor("organizacionID");
-
-            sqlSelectUsuariosDeOrganizacionYAdministradorOrganizacion = SelectUsuario + ", AdministradorOrganizacion.Tipo, Persona.Nombre + ' ' + Persona.Apellidos AS Nombre FROM Usuario INNER JOIN Persona ON Persona.UsuarioID = Usuario.UsuarioID INNER JOIN PersonaVinculoOrganizacion ON Persona.PersonaID = PersonaVinculoOrganizacion.PersonaID INNER JOIN AdministradorOrganizacion ON AdministradorOrganizacion.UsuarioID = Usuario.UsuarioID AND AdministradorOrganizacion.OrganizacionID = PersonaVinculoOrganizacion.OrganizacionID INNER JOIN Perfil ON Perfil.PersonaID = Persona.PersonaID AND Perfil.OrganizacionID = PersonaVinculoOrganizacion.OrganizacionID INNER JOIN Identidad ON Identidad.PerfilID = Perfil.PerfilID WHERE PersonaVinculoOrganizacion.OrganizacionID = " + IBD.GuidParamValor("organizacionID") + " AND Identidad.FechaBaja IS NULL UNION " + SelectUsuario + ", 2 Tipo, Persona.Nombre + ' ' + Persona.Apellidos AS Nombre FROM Usuario INNER JOIN Persona ON Persona.UsuarioID = Usuario.UsuarioID INNER JOIN PersonaVinculoOrganizacion ON Persona.PersonaID = PersonaVinculoOrganizacion.PersonaID WHERE PersonaVinculoOrganizacion.OrganizacionID = " + IBD.GuidParamValor("organizacionID") + " AND Persona.UsuarioID NOT IN (SELECT UsuarioID FROM AdministradorOrganizacion WHERE OrganizacionID = " + IBD.GuidParamValor("organizacionID") + ")";
-
-            sqlSelectOrganizacionRolUsuarioDeOrganizacion = SelectOrganizacionRolUsuario + " FROM OrganizacionRolUsuario WHERE OrganizacionID = " + IBD.GuidParamValor("organizacionID");
-
-            sqlSelectUsuariosAdministradoresDeOrganizacion = SelectUsuario.Replace("SELECT", "SELECT DISTINCT ") + "FROM Usuario INNER JOIN AdministradorOrganizacion ON  AdministradorOrganizacion.UsuarioID = Usuario.UsuarioID WHERE AdministradorOrganizacion.OrganizacionID = " + IBD.GuidParamValor("organizacionID");
-
-            sqlSelectOrganizacionRolUsuarioDeAdministradoresDeOrganizacion = SelectOrganizacionRolUsuario + " FROM OrganizacionRolUsuario INNER JOIN AdministradorOrganizacion ON AdministradorOrganizacion.UsuarioID = OrganizacionRolUsuario.UsuarioID WHERE AdministradorOrganizacion.OrganizacionID = " + IBD.GuidParamValor("organizacionID");
-
-            sqlSelectProyectoUsuarioIdentidadDeOrganizacion = SelectProyectoUsuarioIdentidad + " FROM ProyectoUsuarioIdentidad INNER JOIN identidad ON ProyectoUsuarioIdentidad.IdentidadID = Identidad.IdentidadID INNER JOIN PerfilPersonaOrg ON Identidad.PerfilID = PerfilPersonaOrg.PerfilID WHERE PerfilPersonaOrg.OrganizacionID = " + IBD.GuidParamValor("organizacionID");
-
-            sqlSelectProyectoRolUsuarioDeUsuariosOrganizacion = SelectProyectoRolUsuario + " FROM ProyectoRolUsuario INNER JOIN ProyectoUsuarioIdentidad ON ProyectoRolUsuario.OrganizacionGnossID = ProyectoUsuarioIdentidad.OrganizacionGnossID AND ProyectoRolUsuario.ProyectoID = ProyectoUsuarioIdentidad.ProyectoID AND ProyectoRolUsuario.UsuarioID = ProyectoUsuarioIdentidad.UsuarioID INNER JOIN Identidad ON Identidad.IdentidadID = ProyectoUsuarioIdentidad.IdentidadID INNER JOIN PerfilPersonaOrg ON Identidad.PerfilID = PerfilPersonaOrg.PerfilID WHERE PerfilPersonaOrg.OrganizacionID = " + IBD.GuidParamValor("organizacionID");
-
-            sqlSelectInicioSesionDeUsuariosDeOrganizacion = SelectInicioSesion + " FROM InicioSesion INNER JOIN OrganizacionRolUsuario ON OrganizacionRolUsuario.UsuarioID = InicioSesion.UsuarioID WHERE OrganizacionRolUsuario.OrganizacionID = " + IBD.GuidParamValor("organizacionID");
-
-            sqlSelectHistoricoProyectoUsuarioDeOrganizacion = SelectHistoricoProyectoUsuario + " FROM HistoricoProyectoUsuario INNER JOIN OrganizacionRolUsuario ON OrganizacionRolUsuario.UsuarioID = HistoricoProyectoUsuario.UsuarioID WHERE OrganizacionRolUsuario.OrganizacionID = " + IBD.GuidParamValor("organizacionID");
-
-            sqlSelectGrupoUsuarioDeOrganizacion = SelectGrupoUsuario.Replace("SELECT", " SELECT DISTINCT ") + " FROM GrupoUsuario INNER JOIN GrupoUsuarioUsuario ON GrupoUsuarioUsuario.GrupoUsuarioID = GrupoUsuario.GrupoUsuarioID INNER JOIN OrganizacionRolUsuario ON OrganizacionRolUsuario.UsuarioID = GrupoUsuarioUsuario.UsuarioID WHERE OrganizacionRolUsuario.OrganizacionID = " + IBD.GuidParamValor("organizacionID");
-
-            sqlSelectGrupoUsuarioUsuarioDeOrganizacion = SelectGrupoUsuarioUsuario.Replace("SELECT", " SELECT DISTINCT ") + " FROM GrupoUsuarioUsuario INNER JOIN OrganizacionRolUsuario ON OrganizacionRolUsuario.UsuarioID = GrupoUsuarioUsuario.UsuarioID WHERE OrganizacionRolUsuario.OrganizacionID = " + IBD.GuidParamValor("organizacionID");
-
-            sqlSelectProyectoRolGrupoUsuarioDeOrganizacion = SelectProyectoRolGrupoUsuario.Replace("SELECT", " SELECT DISTINCT ") + " FROM ProyectoRolGrupoUsuario INNER JOIN GrupoUsuarioUsuario ON GrupoUsuarioUsuario.GrupoUsuarioID = ProyectoRolGrupoUsuario.GrupoUsuarioID INNER JOIN OrganizacionRolUsuario ON OrganizacionRolUsuario.UsuarioID = GrupoUsuarioUsuario.UsuarioID WHERE OrganizacionRolUsuario.OrganizacionID = " + IBD.GuidParamValor("organizacionID");
-
-            sqlSelectGeneralRolGrupoUsuarioDeUsuarioID = SelectGeneralRolGrupoUsuario + " FROM GeneralRolGrupoUsuario INNER JOIN GrupoUsuarioUsuario ON GeneralRolGrupoUsuario.GrupoUsuarioID = GrupoUsuarioUsuario.GrupoUsuarioID WHERE GrupoUsuarioUsuario.UsuarioID = " + IBD.GuidParamValor("usuarioID");
-
-            sqlSelectExisteNombreCortoEnBD = "SELECT " + IBD.CargarGuid("UsuarioID") + " FROM Usuario WHERE (UPPER(NombreCorto) = UPPER(" + IBD.ToParam("nombreCorto") + "))";
-
-            sqlSelectEstaUsuarioBloqueadoEnProyecto = "SELECT ProyectoRolUsuario.EstaBloqueado FROM ProyectoRolUsuario WHERE ProyectoRolUsuario.OrganizacionGnossID = " + IBD.GuidParamValor("organizacionID") + " AND ProyectoRolUsuario.ProyectoID = " + IBD.GuidParamValor("proyectoID") + " AND ProyectoRolUsuario.UsuarioID = " + IBD.GuidParamValor("usuarioID");
-
-            // sqlSelectUsuarioIDPorNombreCorto = "SELECT Usuario.UsuarioID FROM Usuario WHERE Usuario.NombreCorto = " + IBD.ToParam("nombrecorto");
-            sqlSelectUsuarioIDPorNombreCorto = "select Usuario.UsuarioID FROM Usuario inner join Persona on Persona.UsuarioID=Usuario.UsuarioID inner join  perfil on Perfil.personaid=Persona.PersonaID  where Perfil.NombreCortoUsu= " + IBD.ToParam("nombrecorto");
-            sqlSelectUsuarioIDPorNombreCortoParaProfesores = "select Usuario.UsuarioID from usuario inner join Persona on Persona.UsuarioID=Usuario.UsuarioID inner join  perfil on Perfil.personaid=Persona.PersonaID  where Perfil.NombreCortoUsu= " + IBD.ToParam("nombrecorto");
-
-
-            this.sqlSelectClausulaRegistro = "SELECT " + IBD.CargarGuid("ClausulaRegistro.ClausulaID") + ", " + IBD.CargarGuid("ClausulaRegistro.OrganizacionID") + ", " + IBD.CargarGuid("ClausulaRegistro.ProyectoID") + ", ClausulaRegistro.Texto, ClausulaRegistro.Tipo, ClausulaRegistro.Orden FROM ClausulaRegistro";
-            this.sqlSelectProyRolUsuClausulaReg = "SELECT " + IBD.CargarGuid("ProyRolUsuClausulaReg.ClausulaID") + ", " + IBD.CargarGuid("ProyRolUsuClausulaReg.OrganizacionID") + ", " + IBD.CargarGuid("ProyRolUsuClausulaReg.ProyectoID") + ", " + IBD.CargarGuid("ProyRolUsuClausulaReg.OrganizacionGnossID") + ", " + IBD.CargarGuid("ProyRolUsuClausulaReg.UsuarioID") + ", ProyRolUsuClausulaReg.Valor FROM ProyRolUsuClausulaReg";
-
-            sqlSelectProyRolUsuClausulaRegListaIDs = "SELECT " + IBD.CargarGuid("ProyRolUsuClausulaReg.ClausulaID") + ", " + IBD.CargarGuid("ProyRolUsuClausulaReg.OrganizacionID") + ", " + IBD.CargarGuid("ProyRolUsuClausulaReg.ProyectoID") + ", " + IBD.CargarGuid("ProyRolUsuClausulaReg.OrganizacionGnossID") + ", " + IBD.CargarGuid("ProyRolUsuClausulaReg.UsuarioID") + ", ProyRolUsuClausulaReg.Valor FROM ProyRolUsuClausulaReg WHERE UsuarioID IN ";
-
-            sqlSelectUsuarioVinculadoLoginRedesSocialesEnProyecto = SelectUsuarioVinculadoLoginRedesSociales + " FROM UsuarioVinculadoLoginRedesSociales INNER JOIN ProyectoRolUsuario ON UsuarioVinculadoLoginRedesSociales.UsuarioID = ProyectoRolUsuario.UsuarioID WHERE (ProyectoRolUsuario.ProyectoID = " + IBD.GuidParamValor("proyectoID") + ")";
-
-            #endregion
-
-            #region DataAdapter
-
-            #region Usuario
-
-            sqlUsuarioInsert = IBD.ReplaceParam("INSERT INTO Usuario (UsuarioID, Login, Password, EstaBloqueado, NombreCorto, Version, FechaCambioPassword, Validado) VALUES (" + IBD.GuidParamColumnaTabla("UsuarioID") + ", @Login, @Password, @EstaBloqueado, @NombreCorto, @Version, @FechaCambioPassword, @Validado)");
-
-            sqlUsuarioDelete = IBD.ReplaceParam("DELETE FROM Usuario WHERE (UsuarioID = " + IBD.GuidParamColumnaTabla("O_UsuarioID") + ")");
-
-            sqlUsuarioModify = IBD.ReplaceParam("UPDATE Usuario SET Login = @Login, Password = @Password, EstaBloqueado = @EstaBloqueado, NombreCorto = @NombreCorto, Version = @Version, FechaCambioPassword = @FechaCambioPassword, Validado = @Validado WHERE (UsuarioID = " + IBD.GuidParamColumnaTabla("O_UsuarioID") + ")");
-
-            #endregion
-
-            #region GrupoUsuario
-
-            sqlGrupoUsuarioInsert = IBD.ReplaceParam("INSERT INTO GrupoUsuario (GrupoUsuarioID, Nombre, Descripcion) VALUES (" + IBD.GuidParamColumnaTabla("GrupoUsuarioID") + ", @Nombre, @Descripcion)");
-
-            sqlGrupoUsuarioDelete = IBD.ReplaceParam("DELETE FROM GrupoUsuario WHERE (GrupoUsuarioID = " + IBD.GuidParamColumnaTabla("O_GrupoUsuarioID") + ") AND (Nombre = @O_Nombre) AND (Descripcion = @O_Descripcion OR @O_Descripcion IS NULL AND Descripcion IS NULL)");
-
-            sqlGrupoUsuarioModify = IBD.ReplaceParam("UPDATE GrupoUsuario SET GrupoUsuarioID = " + IBD.GuidParamColumnaTabla("GrupoUsuarioID") + ", Nombre = @Nombre, Descripcion = @Descripcion WHERE (GrupoUsuarioID = " + IBD.GuidParamColumnaTabla("O_GrupoUsuarioID") + ") AND (Nombre = @O_Nombre) AND (Descripcion = @O_Descripcion OR @O_Descripcion IS NULL AND Descripcion IS NULL)");
-
-            #endregion
-
-            #region InicioSesion
-
-            sqlInicioSesionInsert = IBD.ReplaceParam("INSERT INTO InicioSesion (UsuarioID, OrganizacionGnossID, PersonaID, ProyectoID) VALUES (" + IBD.GuidParamColumnaTabla("UsuarioID") + ", " + IBD.GuidParamColumnaTabla("OrganizacionGnossID") + ", " + IBD.GuidParamColumnaTabla("PersonaID") + ", " + IBD.GuidParamColumnaTabla("ProyectoID") + ")");
-
-            sqlInicioSesionDelete = IBD.ReplaceParam("DELETE FROM InicioSesion WHERE (UsuarioID = " + IBD.GuidParamColumnaTabla("O_UsuarioID") + ") AND (OrganizacionGnossID = " + IBD.GuidParamColumnaTabla("O_OrganizacionGnossID") + " OR " + IBD.GuidParamColumnaTabla("O_OrganizacionGnossID") + " IS NULL AND OrganizacionGnossID IS NULL) AND (PersonaID = " + IBD.GuidParamColumnaTabla("O_PersonaID") + " OR " + IBD.GuidParamColumnaTabla("O_PersonaID") + " IS NULL AND PersonaID IS NULL) AND (ProyectoID = " + IBD.GuidParamColumnaTabla("O_ProyectoID") + " OR " + IBD.GuidParamColumnaTabla("O_ProyectoID") + " IS NULL AND ProyectoID IS NULL)");
-
-            sqlInicioSesionModify = IBD.ReplaceParam("UPDATE InicioSesion SET UsuarioID = " + IBD.GuidParamColumnaTabla("UsuarioID") + ", OrganizacionGnossID = " + IBD.GuidParamColumnaTabla("OrganizacionGnossID") + ", PersonaID = " + IBD.GuidParamColumnaTabla("PersonaID") + ", ProyectoID = " + IBD.GuidParamColumnaTabla("ProyectoID") + " WHERE (UsuarioID = " + IBD.GuidParamColumnaTabla("O_UsuarioID") + ") AND (OrganizacionGnossID = " + IBD.GuidParamColumnaTabla("O_OrganizacionGnossID") + " OR " + IBD.GuidParamColumnaTabla("O_OrganizacionGnossID") + " IS NULL AND OrganizacionGnossID IS NULL) AND (PersonaID = " + IBD.GuidParamColumnaTabla("O_PersonaID") + " OR " + IBD.GuidParamColumnaTabla("O_PersonaID") + " IS NULL AND PersonaID IS NULL) AND (ProyectoID = " + IBD.GuidParamColumnaTabla("O_ProyectoID") + " OR " + IBD.GuidParamColumnaTabla("O_ProyectoID") + " IS NULL AND ProyectoID IS NULL)");
-
-            #endregion
-
-            #region GrupoUsuarioUsuario
-            sqlGrupoUsuarioUsuarioInsert = IBD.ReplaceParam("INSERT INTO GrupoUsuarioUsuario (UsuarioID, GrupoUsuarioID) VALUES (" + IBD.GuidParamColumnaTabla("UsuarioID") + ", " + IBD.GuidParamColumnaTabla("GrupoUsuarioID") + ")");
-            sqlGrupoUsuarioUsuarioDelete = IBD.ReplaceParam("DELETE FROM GrupoUsuarioUsuario WHERE (UsuarioID = " + IBD.GuidParamColumnaTabla("O_UsuarioID") + ") AND (GrupoUsuarioID = " + IBD.GuidParamColumnaTabla("O_GrupoUsuarioID") + ")");
-            sqlGrupoUsuarioUsuarioModify = IBD.ReplaceParam("UPDATE GrupoUsuarioUsuario SET UsuarioID = " + IBD.GuidParamColumnaTabla("UsuarioID") + ", GrupoUsuarioID = " + IBD.GuidParamColumnaTabla("GrupoUsuarioID") + " WHERE (UsuarioID = " + IBD.GuidParamColumnaTabla("O_UsuarioID") + ") AND (GrupoUsuarioID = " + IBD.GuidParamColumnaTabla("O_GrupoUsuarioID") + ")");
-            #endregion
-
-            #region AdministradorGeneral
-            sqlAdministradorGeneralInsert = IBD.ReplaceParam("INSERT INTO AdministradorGeneral (UsuarioID) VALUES (" + IBD.GuidParamColumnaTabla("UsuarioID") + ")");
-            sqlAdministradorGeneralDelete = IBD.ReplaceParam("DELETE FROM AdministradorGeneral WHERE (UsuarioID = " + IBD.GuidParamColumnaTabla("O_UsuarioID") + ")");
-            sqlAdministradorGeneralModify = IBD.ReplaceParam("UPDATE AdministradorGeneral SET UsuarioID = " + IBD.GuidParamColumnaTabla("UsuarioID") + " WHERE (UsuarioID = " + IBD.GuidParamColumnaTabla("O_UsuarioID") + ")");
-            #endregion
-
-            #region ProyectoRolGrupoUsuario
-            sqlProyectoRolGrupoUsuarioInsert = IBD.ReplaceParam("INSERT INTO ProyectoRolGrupoUsuario (OrganizacionGnossID, ProyectoID, GrupoUsuarioID, RolPermitido, RolDenegado) VALUES (" + IBD.GuidParamColumnaTabla("OrganizacionGnossID") + ", " + IBD.GuidParamColumnaTabla("ProyectoID") + ", " + IBD.GuidParamColumnaTabla("GrupoUsuarioID") + ", @RolPermitido, @RolDenegado)");
-            sqlProyectoRolGrupoUsuarioDelete = IBD.ReplaceParam("DELETE FROM ProyectoRolGrupoUsuario WHERE (OrganizacionGnossID = " + IBD.GuidParamColumnaTabla("O_OrganizacionGnossID") + ") AND (ProyectoID = " + IBD.GuidParamColumnaTabla("O_ProyectoID") + ") AND (GrupoUsuarioID = " + IBD.GuidParamColumnaTabla("O_GrupoUsuarioID") + ") AND (RolPermitido = @O_RolPermitido) AND (RolDenegado = @O_RolDenegado OR @O_RolDenegado IS NULL AND RolDenegado IS NULL)");
-            sqlProyectoRolGrupoUsuarioModify = IBD.ReplaceParam("UPDATE ProyectoRolGrupoUsuario SET OrganizacionGnossID = " + IBD.GuidParamColumnaTabla("OrganizacionGnossID") + ", ProyectoID = " + IBD.GuidParamColumnaTabla("ProyectoID") + ", GrupoUsuarioID = " + IBD.GuidParamColumnaTabla("GrupoUsuarioID") + ", RolPermitido = @RolPermitido, RolDenegado = @RolDenegado WHERE (OrganizacionGnossID = " + IBD.GuidParamColumnaTabla("O_OrganizacionGnossID") + ") AND (ProyectoID = " + IBD.GuidParamColumnaTabla("O_ProyectoID") + ") AND (GrupoUsuarioID = " + IBD.GuidParamColumnaTabla("O_GrupoUsuarioID") + ") AND (RolPermitido = @O_RolPermitido) AND (RolDenegado = @O_RolDenegado OR @O_RolDenegado IS NULL AND RolDenegado IS NULL)");
-            #endregion
-
-            #region GeneralRolGrupoUsuario
-            sqlGeneralRolGrupoUsuarioInsert = IBD.ReplaceParam("INSERT INTO GeneralRolGrupoUsuario (GrupoUsuarioID, RolPermitido, RolDenegado) VALUES (" + IBD.GuidParamColumnaTabla("GrupoUsuarioID") + ", @RolPermitido, @RolDenegado)");
-            sqlGeneralRolGrupoUsuarioDelete = IBD.ReplaceParam("DELETE FROM GeneralRolGrupoUsuario WHERE (GrupoUsuarioID = " + IBD.GuidParamColumnaTabla("O_GrupoUsuarioID") + ") AND (RolPermitido = @O_RolPermitido) AND (RolDenegado = @O_RolDenegado OR @O_RolDenegado IS NULL AND RolDenegado IS NULL)");
-            sqlGeneralRolGrupoUsuarioModify = IBD.ReplaceParam("UPDATE GeneralRolGrupoUsuario SET GrupoUsuarioID = " + IBD.GuidParamColumnaTabla("GrupoUsuarioID") + ", RolPermitido = @RolPermitido, RolDenegado = @RolDenegado WHERE (GrupoUsuarioID = " + IBD.GuidParamColumnaTabla("O_GrupoUsuarioID") + ") AND (RolPermitido = @O_RolPermitido) AND (RolDenegado = @O_RolDenegado OR @O_RolDenegado IS NULL AND RolDenegado IS NULL)");
-            #endregion
-
-            #region OrganizacionRolUsuario
-            sqlOrganizacionRolUsuarioInsert = IBD.ReplaceParam("INSERT INTO OrganizacionRolUsuario (UsuarioID, OrganizacionID, RolPermitido, RolDenegado) VALUES (" + IBD.GuidParamColumnaTabla("UsuarioID") + ", " + IBD.GuidParamColumnaTabla("OrganizacionID") + ", @RolPermitido, @RolDenegado)");
-            sqlOrganizacionRolUsuarioDelete = IBD.ReplaceParam("DELETE FROM OrganizacionRolUsuario WHERE (UsuarioID = " + IBD.GuidParamColumnaTabla("O_UsuarioID") + ") AND (OrganizacionID = " + IBD.GuidParamColumnaTabla("O_OrganizacionID") + ") AND (RolPermitido = @O_RolPermitido) AND (RolDenegado = @O_RolDenegado OR @O_RolDenegado IS NULL AND RolDenegado IS NULL)");
-            sqlOrganizacionRolUsuarioModify = IBD.ReplaceParam("UPDATE OrganizacionRolUsuario SET UsuarioID = " + IBD.GuidParamColumnaTabla("UsuarioID") + ", OrganizacionID = " + IBD.GuidParamColumnaTabla("OrganizacionID") + ", RolPermitido = @RolPermitido, RolDenegado = @RolDenegado WHERE (UsuarioID = " + IBD.GuidParamColumnaTabla("O_UsuarioID") + ") AND (OrganizacionID = " + IBD.GuidParamColumnaTabla("O_OrganizacionID") + ") AND (RolPermitido = @O_RolPermitido) AND (RolDenegado = @O_RolDenegado OR @O_RolDenegado IS NULL AND RolDenegado IS NULL)");
-            #endregion
-
-            #region GeneralRolUsuario
-            sqlGeneralRolUsuarioInsert = IBD.ReplaceParam("INSERT INTO GeneralRolUsuario (UsuarioID, RolPermitido, RolDenegado) VALUES (" + IBD.GuidParamColumnaTabla("UsuarioID") + ", @RolPermitido, @RolDenegado)");
-            sqlGeneralRolUsuarioDelete = IBD.ReplaceParam("DELETE FROM GeneralRolUsuario WHERE (UsuarioID = " + IBD.GuidParamColumnaTabla("O_UsuarioID") + ") AND (RolPermitido = @O_RolPermitido) AND (RolDenegado = @O_RolDenegado OR @O_RolDenegado IS NULL AND RolDenegado IS NULL)");
-            sqlGeneralRolUsuarioModify = IBD.ReplaceParam("UPDATE GeneralRolUsuario SET UsuarioID = " + IBD.GuidParamColumnaTabla("UsuarioID") + ", RolPermitido = @RolPermitido, RolDenegado = @RolDenegado WHERE (UsuarioID = " + IBD.GuidParamColumnaTabla("O_UsuarioID") + ") AND (RolPermitido = @O_RolPermitido) AND (RolDenegado = @O_RolDenegado OR @O_RolDenegado IS NULL AND RolDenegado IS NULL)");
-            #endregion
-
-            #region UsuarioContadores
-            sqlUsuarioContadoresInsert = IBD.ReplaceParam("INSERT INTO UsuarioContadores (UsuarioID, NumeroAccesos, FechaUltimaVisita) VALUES (" + IBD.GuidParamColumnaTabla("UsuarioID") + ", @NumeroAccesos, @FechaUltimaVisita)");
-            sqlUsuarioContadoresDelete = IBD.ReplaceParam("DELETE FROM UsuarioContadores WHERE (UsuarioID = " + IBD.GuidParamColumnaTabla("O_UsuarioID") + ")");
-            sqlUsuarioContadoresModify = IBD.ReplaceParam("UPDATE UsuarioContadores SET UsuarioID = " + IBD.GuidParamColumnaTabla("UsuarioID") + ", NumeroAccesos = @NumeroAccesos, FechaUltimaVisita = @FechaUltimaVisita WHERE (UsuarioID = " + IBD.GuidParamColumnaTabla("O_UsuarioID") + ")");
-            #endregion
-
-            #region ProyectoRolUsuario
-            sqlProyectoRolUsuarioInsert = IBD.ReplaceParam("INSERT INTO ProyectoRolUsuario (OrganizacionGnossID, ProyectoID, UsuarioID, RolPermitido, RolDenegado, EstaBloqueado) VALUES (" + IBD.GuidParamColumnaTabla("OrganizacionGnossID") + ", " + IBD.GuidParamColumnaTabla("ProyectoID") + ", " + IBD.GuidParamColumnaTabla("UsuarioID") + ", @RolPermitido, @RolDenegado, @EstaBloqueado)");
-            sqlProyectoRolUsuarioDelete = IBD.ReplaceParam("DELETE FROM ProyectoRolUsuario WHERE (OrganizacionGnossID = " + IBD.GuidParamColumnaTabla("O_OrganizacionGnossID") + ") AND (ProyectoID = " + IBD.GuidParamColumnaTabla("O_ProyectoID") + ") AND (UsuarioID = " + IBD.GuidParamColumnaTabla("O_UsuarioID") + ") AND (RolPermitido = @O_RolPermitido) AND (RolDenegado = @O_RolDenegado OR @O_RolDenegado IS NULL AND RolDenegado IS NULL) AND (EstaBloqueado = @O_EstaBloqueado)");
-            sqlProyectoRolUsuarioModify = IBD.ReplaceParam("UPDATE ProyectoRolUsuario SET OrganizacionGnossID = " + IBD.GuidParamColumnaTabla("OrganizacionGnossID") + ", ProyectoID = " + IBD.GuidParamColumnaTabla("ProyectoID") + ", UsuarioID = " + IBD.GuidParamColumnaTabla("UsuarioID") + ", RolPermitido = @RolPermitido, RolDenegado = @RolDenegado, EstaBloqueado = @EstaBloqueado WHERE (OrganizacionGnossID = " + IBD.GuidParamColumnaTabla("O_OrganizacionGnossID") + ") AND (ProyectoID = " + IBD.GuidParamColumnaTabla("O_ProyectoID") + ") AND (UsuarioID = " + IBD.GuidParamColumnaTabla("O_UsuarioID") + ") AND (RolPermitido = @O_RolPermitido) AND (RolDenegado = @O_RolDenegado OR @O_RolDenegado IS NULL AND RolDenegado IS NULL) AND (EstaBloqueado = @O_EstaBloqueado)");
-            #endregion
-
-            #region ProyectoUsuarioIdentidad
-            sqlProyectoUsuarioIdentidadInsert = IBD.ReplaceParam("INSERT INTO ProyectoUsuarioIdentidad (IdentidadID, UsuarioID, OrganizacionGnossID, ProyectoID, FechaEntrada, Reputacion) VALUES (" + IBD.GuidParamColumnaTabla("IdentidadID") + ", " + IBD.GuidParamColumnaTabla("UsuarioID") + ", " + IBD.GuidParamColumnaTabla("OrganizacionGnossID") + ", " + IBD.GuidParamColumnaTabla("ProyectoID") + ", @FechaEntrada, @Reputacion)");
-            sqlProyectoUsuarioIdentidadDelete = IBD.ReplaceParam("DELETE FROM ProyectoUsuarioIdentidad WHERE (IdentidadID = " + IBD.GuidParamColumnaTabla("O_IdentidadID") + ") AND (UsuarioID = " + IBD.GuidParamColumnaTabla("O_UsuarioID") + ") AND (OrganizacionGnossID = " + IBD.GuidParamColumnaTabla("O_OrganizacionGnossID") + ") AND (ProyectoID = " + IBD.GuidParamColumnaTabla("O_ProyectoID") + ") AND (FechaEntrada = @O_FechaEntrada OR @O_FechaEntrada IS NULL AND FechaEntrada IS NULL) AND (Reputacion = @O_Reputacion OR @O_Reputacion IS NULL AND Reputacion IS NULL)");
-            sqlProyectoUsuarioIdentidadModify = IBD.ReplaceParam("UPDATE ProyectoUsuarioIdentidad SET IdentidadID = " + IBD.GuidParamColumnaTabla("IdentidadID") + ", UsuarioID = " + IBD.GuidParamColumnaTabla("UsuarioID") + ", OrganizacionGnossID = " + IBD.GuidParamColumnaTabla("OrganizacionGnossID") + ", ProyectoID = " + IBD.GuidParamColumnaTabla("ProyectoID") + ", FechaEntrada = @FechaEntrada, Reputacion = @Reputacion WHERE (IdentidadID = " + IBD.GuidParamColumnaTabla("O_IdentidadID") + ") AND (UsuarioID = " + IBD.GuidParamColumnaTabla("O_UsuarioID") + ") AND (OrganizacionGnossID = " + IBD.GuidParamColumnaTabla("O_OrganizacionGnossID") + ") AND (ProyectoID = " + IBD.GuidParamColumnaTabla("O_ProyectoID") + ") AND (FechaEntrada = @O_FechaEntrada OR @O_FechaEntrada IS NULL AND FechaEntrada IS NULL) AND (Reputacion = @O_Reputacion OR @O_Reputacion IS NULL AND Reputacion IS NULL)");
-            #endregion
-
-            #region HistoricoProyectoUsuario
-            sqlHistoricoProyectoUsuarioInsert = IBD.ReplaceParam("INSERT INTO HistoricoProyectoUsuario (UsuarioID, OrganizacionGnossID, ProyectoID, IdentidadID, FechaSalida, FechaEntrada) VALUES (" + IBD.GuidParamColumnaTabla("UsuarioID") + ", " + IBD.GuidParamColumnaTabla("OrganizacionGnossID") + ", " + IBD.GuidParamColumnaTabla("ProyectoID") + ", " + IBD.GuidParamColumnaTabla("IdentidadID") + ", @FechaSalida, @FechaEntrada)");
-            sqlHistoricoProyectoUsuarioDelete = IBD.ReplaceParam("DELETE FROM HistoricoProyectoUsuario WHERE (UsuarioID = " + IBD.GuidParamColumnaTabla("O_UsuarioID") + ") AND (OrganizacionGnossID = " + IBD.GuidParamColumnaTabla("O_OrganizacionGnossID") + ") AND (ProyectoID = " + IBD.GuidParamColumnaTabla("O_ProyectoID") + ") AND (IdentidadID = " + IBD.GuidParamColumnaTabla("O_IdentidadID") + ") AND (FechaSalida = @O_FechaSalida OR @O_FechaSalida IS NULL AND FechaSalida IS NULL) AND (FechaEntrada = @O_FechaEntrada OR @O_FechaEntrada IS NULL AND FechaEntrada IS NULL)");
-            sqlHistoricoProyectoUsuarioModify = IBD.ReplaceParam("UPDATE HistoricoProyectoUsuario SET UsuarioID = " + IBD.GuidParamColumnaTabla("UsuarioID") + ", OrganizacionGnossID = " + IBD.GuidParamColumnaTabla("OrganizacionGnossID") + ", ProyectoID = " + IBD.GuidParamColumnaTabla("ProyectoID") + ", IdentidadID = " + IBD.GuidParamColumnaTabla("IdentidadID") + ", FechaSalida = @FechaSalida, FechaEntrada = @FechaEntrada WHERE (UsuarioID = " + IBD.GuidParamColumnaTabla("O_UsuarioID") + ") AND (OrganizacionGnossID = " + IBD.GuidParamColumnaTabla("O_OrganizacionGnossID") + ") AND (ProyectoID = " + IBD.GuidParamColumnaTabla("O_ProyectoID") + ") AND (IdentidadID = " + IBD.GuidParamColumnaTabla("O_IdentidadID") + ") AND (FechaSalida = @O_FechaSalida OR @O_FechaSalida IS NULL AND FechaSalida IS NULL) AND (FechaEntrada = @O_FechaEntrada OR @O_FechaEntrada IS NULL AND FechaEntrada IS NULL)");
-            #endregion
-
-            #region UsuarioVinculadoLoginRedesSociales
-            sqlUsuarioVinculadoLoginRedesSocialesInsert = IBD.ReplaceParam("INSERT INTO UsuarioVinculadoLoginRedesSociales (UsuarioID, TipoRedSocial, IDenRedSocial) VALUES (" + IBD.GuidParamColumnaTabla("UsuarioID") + ", @TipoRedSocial, @IDenRedSocial)");
-            sqlUsuarioVinculadoLoginRedesSocialesDelete = IBD.ReplaceParam("DELETE FROM UsuarioVinculadoLoginRedesSociales WHERE (UsuarioID = " + IBD.GuidParamColumnaTabla("O_UsuarioID") + ") AND (TipoRedSocial = @O_TipoRedSocial) AND (IDenRedSocial = @O_IDenRedSocial)");
-            sqlUsuarioVinculadoLoginRedesSocialesModify = IBD.ReplaceParam("UPDATE UsuarioVinculadoLoginRedesSociales SET UsuarioID = " + IBD.GuidParamColumnaTabla("UsuarioID") + ", TipoRedSocial = @TipoRedSocial, IDenRedSocial = @IDenRedSocial WHERE (UsuarioID = " + IBD.GuidParamColumnaTabla("O_UsuarioID") + ")  AND (TipoRedSocial = @O_TipoRedSocial) AND (IDenRedSocial = @O_IDenRedSocial)");
-            #endregion
-
-            #region WikiUsuario
-            sqlWikiUsuarioInsert = IBD.ReplaceParam("INSERT INTO WikiUsuario (WikiGnossID, UsuarioID) VALUES (" + IBD.GuidParamColumnaTabla("WikiGnossID") + ", " + IBD.GuidParamColumnaTabla("UsuarioID") + ")");
-            sqlWikiUsuarioDelete = IBD.ReplaceParam("DELETE FROM WikiUsuario WHERE (WikiGnossID = " + IBD.GuidParamColumnaTabla("O_WikiGnossID") + ") AND (UsuarioID = " + IBD.GuidParamColumnaTabla("O_UsuarioID") + ")");
-            sqlWikiUsuarioModify = IBD.ReplaceParam("UPDATE WikiUsuario SET WikiGnossID = " + IBD.GuidParamColumnaTabla("WikiGnossID") + ", UsuarioID = " + IBD.GuidParamColumnaTabla("UsuarioID") + " WHERE (WikiGnossID = " + IBD.GuidParamColumnaTabla("O_WikiGnossID") + ") AND (UsuarioID = " + IBD.GuidParamColumnaTabla("O_UsuarioID") + ")");
-            #endregion
-
-            #region ClausulaRegistro
-            this.sqlClausulaRegistroInsert = IBD.ReplaceParam("INSERT INTO ClausulaRegistro (ClausulaID, OrganizacionID, ProyectoID, Texto, Tipo, Orden) VALUES (" + IBD.GuidParamColumnaTabla("ClausulaID") + ", " + IBD.GuidParamColumnaTabla("OrganizacionID") + ", " + IBD.GuidParamColumnaTabla("ProyectoID") + ", @Texto, @Tipo, @Orden)");
-            this.sqlClausulaRegistroDelete = IBD.ReplaceParam("DELETE FROM ClausulaRegistro WHERE (ClausulaID = " + IBD.GuidParamColumnaTabla("Original_ClausulaID") + ") AND (OrganizacionID = " + IBD.GuidParamColumnaTabla("Original_OrganizacionID") + ") AND (ProyectoID = " + IBD.GuidParamColumnaTabla("Original_ProyectoID") + ") AND (Texto = @Original_Texto) AND (Tipo = @Original_Tipo) AND (Orden = @Original_Orden)");
-            this.sqlClausulaRegistroModify = IBD.ReplaceParam("UPDATE ClausulaRegistro SET ClausulaID = " + IBD.GuidParamColumnaTabla("ClausulaID") + ", OrganizacionID = " + IBD.GuidParamColumnaTabla("OrganizacionID") + ", ProyectoID = " + IBD.GuidParamColumnaTabla("ProyectoID") + ", Texto = @Texto, Tipo = @Tipo, Orden = @Orden WHERE (ClausulaID = " + IBD.GuidParamColumnaTabla("Original_ClausulaID") + ") AND (OrganizacionID = " + IBD.GuidParamColumnaTabla("Original_OrganizacionID") + ") AND (ProyectoID = " + IBD.GuidParamColumnaTabla("Original_ProyectoID") + ") AND (Texto = @Original_Texto) AND (Tipo = @Original_Tipo) AND (Orden = @Original_Orden)");
-            #endregion
-
-            #region ProyRolUsuClausulaReg
-            this.sqlProyRolUsuClausulaRegInsert = IBD.ReplaceParam("INSERT INTO ProyRolUsuClausulaReg (ClausulaID, OrganizacionID, ProyectoID, OrganizacionGnossID, UsuarioID, Valor) VALUES (" + IBD.GuidParamColumnaTabla("ClausulaID") + ", " + IBD.GuidParamColumnaTabla("OrganizacionID") + ", " + IBD.GuidParamColumnaTabla("ProyectoID") + ", " + IBD.GuidParamColumnaTabla("OrganizacionGnossID") + ", " + IBD.GuidParamColumnaTabla("UsuarioID") + ", @Valor)");
-            this.sqlProyRolUsuClausulaRegDelete = IBD.ReplaceParam("DELETE FROM ProyRolUsuClausulaReg WHERE (ClausulaID = " + IBD.GuidParamColumnaTabla("Original_ClausulaID") + ") AND (OrganizacionID = " + IBD.GuidParamColumnaTabla("Original_OrganizacionID") + ") AND (ProyectoID = " + IBD.GuidParamColumnaTabla("Original_ProyectoID") + ") AND (OrganizacionGnossID = " + IBD.GuidParamColumnaTabla("Original_OrganizacionGnossID") + ") AND (UsuarioID = " + IBD.GuidParamColumnaTabla("Original_UsuarioID") + ") AND (Valor = @Original_Valor)");
-            this.sqlProyRolUsuClausulaRegModify = IBD.ReplaceParam("UPDATE ProyRolUsuClausulaReg SET ClausulaID = " + IBD.GuidParamColumnaTabla("ClausulaID") + ", OrganizacionID = " + IBD.GuidParamColumnaTabla("OrganizacionID") + ", ProyectoID = " + IBD.GuidParamColumnaTabla("ProyectoID") + ", OrganizacionGnossID = " + IBD.GuidParamColumnaTabla("OrganizacionGnossID") + ", UsuarioID = " + IBD.GuidParamColumnaTabla("UsuarioID") + ", Valor = @Valor WHERE (ClausulaID = " + IBD.GuidParamColumnaTabla("Original_ClausulaID") + ") AND (OrganizacionID = " + IBD.GuidParamColumnaTabla("Original_OrganizacionID") + ") AND (ProyectoID = " + IBD.GuidParamColumnaTabla("Original_ProyectoID") + ") AND (OrganizacionGnossID = " + IBD.GuidParamColumnaTabla("Original_OrganizacionGnossID") + ") AND (UsuarioID = " + IBD.GuidParamColumnaTabla("Original_UsuarioID") + ") AND (Valor = @Original_Valor)");
-            #endregion
-
-            #endregion
         }
 
         #endregion

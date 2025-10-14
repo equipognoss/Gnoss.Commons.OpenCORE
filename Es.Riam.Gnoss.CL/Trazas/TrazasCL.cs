@@ -1,7 +1,9 @@
 ﻿using Es.Riam.AbstractsOpen;
 using Es.Riam.Gnoss.AD.EntityModel;
+using Es.Riam.Gnoss.AD.ParametroAplicacion;
 using Es.Riam.Gnoss.Util.Configuracion;
 using Es.Riam.Gnoss.Util.General;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,14 +19,14 @@ namespace Es.Riam.Gnoss.CL.Trazas
         /// Clave MAESTRA de la caché
         /// </summary>
         private readonly string[] mMasterCacheKeyArray = { NombresCL.TRAZAS };
-        public TrazasCL(EntityContext entityContext, LoggingService loggingService, RedisCacheWrapper redisCacheWrapper, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication) : base(entityContext, loggingService, redisCacheWrapper, configService, servicesUtilVirtuosoAndReplication)
+        public TrazasCL(EntityContext entityContext, LoggingService loggingService, RedisCacheWrapper redisCacheWrapper, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication, ILogger<TrazasCL> logger, ILoggerFactory loggerFactory) : base(entityContext, loggingService, redisCacheWrapper, configService, servicesUtilVirtuosoAndReplication, logger, loggerFactory)
         {
         }
 
         public bool ExisteTrazaEnCache(string pNombreTraza)
         {
             string key = pNombreTraza + KEY_TRAZA;
-            var objeto = ObtenerObjetoDeCache(key, true);
+            var objeto = ObtenerObjetoDeCache(key, true, typeof(string));
             string trazaName = objeto as string;
             return !string.IsNullOrEmpty(trazaName);
         }
@@ -44,7 +46,7 @@ namespace Es.Riam.Gnoss.CL.Trazas
         public string ObtenerTrazaEnCache(string pNombreTraza)
         {
             string key = pNombreTraza + KEY_TRAZA;
-            var objeto = ObtenerObjetoDeCache(key, true);
+            var objeto = ObtenerObjetoDeCache(key, true,typeof(string));
             string trazaName = objeto as string;
             return trazaName;
         }

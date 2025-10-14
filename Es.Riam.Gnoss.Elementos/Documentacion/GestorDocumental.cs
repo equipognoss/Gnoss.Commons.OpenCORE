@@ -14,6 +14,8 @@ using Es.Riam.Interfaces;
 using Es.Riam.Interfaces.Observador;
 using Es.Riam.Util;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
+using Serilog.Core;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -113,7 +115,8 @@ namespace Es.Riam.Gnoss.Elementos.Documentacion
 
         private LoggingService mLoggingService;
         private EntityContext mEntityContext;
-
+        private ILogger mlogger;
+        private ILoggerFactory mLoggerFactory;
         #endregion
 
         #region Constructores
@@ -122,12 +125,13 @@ namespace Es.Riam.Gnoss.Elementos.Documentacion
         /// Constructor a partir de un dataset de documentación
         /// </summary>
         /// <param name="pDocumentacionDW">Dataset de la documentación</param>
-        public GestorDocumental(DataWrapperDocumentacion pDocumentacionDW, LoggingService loggingService, EntityContext entityContext)
-            : base(pDocumentacionDW, loggingService)
+        public GestorDocumental(DataWrapperDocumentacion pDocumentacionDW, LoggingService loggingService, EntityContext entityContext, ILogger<GestorDocumental> logger, ILoggerFactory loggerFactory)
+            : base(pDocumentacionDW)
         {
             mLoggingService = loggingService;
             mEntityContext = entityContext;
-
+            mlogger = logger;
+            mLoggerFactory = loggerFactory;
             CargarGestor();
         }
 
@@ -141,7 +145,6 @@ namespace Es.Riam.Gnoss.Elementos.Documentacion
         {
             //mLoggingService = loggingService;
             //mEntityContext = entityContext;
-
             mGestionComentariosDocumento = (GestionComentariosDocumento)pInfo.GetValue("GestionComentarios", typeof(GestionComentariosDocumento));
             mGestorTesauro = (GestionTesauro)pInfo.GetValue("GestorTesauro", typeof(GestionTesauro));
             mGestorVotos = (GestionVotosDocumento)pInfo.GetValue("GestorVotos", typeof(GestionVotosDocumento));
@@ -377,7 +380,7 @@ namespace Es.Riam.Gnoss.Elementos.Documentacion
             documento.UltimaVersion = true;
             documento.Eliminado = false;
 
-            Documento doc = new Documento(documento, this, mLoggingService);
+            Documento doc = new Documento(documento, this);
             doc.Tags = pListaTags;
 
             if (!ListaDocumentos.ContainsKey(doc.Clave))
@@ -728,9 +731,9 @@ namespace Es.Riam.Gnoss.Elementos.Documentacion
         /// <param name="pDocumento">Documento del que se va a hacer versión</param>
         /// <param name="pIdentidadActual">Identidad actual</param>
         /// <returns>Version creada</returns>
-        public Documento CrearNuevaVersionDocumento(Documento pDocumento, Identidad.Identidad pIdentidadActual)
+        public Documento CrearNuevaVersionDocumento(Documento pDocumento, Identidad.Identidad pIdentidadActual, Guid? pDocNuevaVersionID = null, bool pRestaurando = false)
         {
-            return CrearNuevaVersionDocumento(pDocumento, true, pIdentidadActual);
+            return CrearNuevaVersionDocumento(pDocumento, true, pIdentidadActual, pDocNuevaVersionID, pRestaurando);
         }
 
         /// <summary>
@@ -740,9 +743,14 @@ namespace Es.Riam.Gnoss.Elementos.Documentacion
         /// <param name="pEstablecerRelacionVersion">Indica si se debe establecer la relación de versión entre el documento antiguo y el nuevo, es decir, marcar uno como "NO última version" y el otro como sí" </param>
         /// <param name="pIdentidadActual">Identidad actual</param>
         /// <returns>Version creada</returns>
-        public Documento CrearNuevaVersionDocumento(Documento pDocumento, bool pEstablecerRelacionVersion, Identidad.Identidad pIdentidadActual)
+        public Documento CrearNuevaVersionDocumento(Documento pDocumento, bool pEstablecerRelacionVersion, Identidad.Identidad pIdentidadActual, Guid? pDocNuevaVersionID = null, bool pRestaurando = false)
         {
             Guid nuevoDocumentoID = Guid.NewGuid();
+
+            if (pDocNuevaVersionID.HasValue && pDocNuevaVersionID != Guid.Empty)
+            {
+                nuevoDocumentoID = pDocNuevaVersionID.Value;
+            }
             Guid antiguoDocumentoID = pDocumento.Clave;
 
             //Versiono tabla Documento:
@@ -807,7 +815,7 @@ namespace Es.Riam.Gnoss.Elementos.Documentacion
             mEntityContext.Documento.Add(filaDocumento);
 
 
-            Documento nuevoDocumento = new Documento(filaDocumento, this, mLoggingService);
+            Documento nuevoDocumento = new Documento(filaDocumento, this);
             List<AD.EntityModel.Models.Documentacion.DocumentoWebVinBaseRecursos> listaDocumentoWebVinBaseRecursos = DataWrapperDocumentacion.ListaDocumentoWebVinBaseRecursos.Where(doc => doc.DocumentoID.Equals(antiguoDocumentoID)).ToList();
             foreach (AD.EntityModel.Models.Documentacion.DocumentoWebVinBaseRecursos filaAuxBaseRecursos in listaDocumentoWebVinBaseRecursos)
             {
@@ -994,10 +1002,18 @@ namespace Es.Riam.Gnoss.Elementos.Documentacion
             //Versiono tabla HistorialDocumento:
             AD.EntityModel.Models.Documentacion.HistorialDocumento filaHistorialDoc = new AD.EntityModel.Models.Documentacion.HistorialDocumento();
             filaHistorialDoc.HistorialDocumentoID = Guid.NewGuid();
-            filaHistorialDoc.DocumentoID = antiguoDocumentoID;
             filaHistorialDoc.IdentidadID = pIdentidadActual.Clave;
             filaHistorialDoc.Fecha = DateTime.Now;
-            filaHistorialDoc.Accion = (short)AccionHistorialDocumento.CrearVersion;
+            if (pRestaurando)
+            {
+                filaHistorialDoc.DocumentoID = nuevoDocumentoID;
+                filaHistorialDoc.Accion = (short)AccionHistorialDocumento.RestaurarVersion;
+            }
+            else
+            {
+                filaHistorialDoc.DocumentoID = antiguoDocumentoID;
+                filaHistorialDoc.Accion = (short)AccionHistorialDocumento.CrearVersion;
+            }
             filaHistorialDoc.ProyectoID = pIdentidadActual.FilaIdentidad.ProyectoID;
             mEntityContext.HistorialDocumento.Add(filaHistorialDoc);
             DataWrapperDocumentacion.ListaHistorialDocumento.Add(filaHistorialDoc);
@@ -1114,122 +1130,15 @@ namespace Es.Riam.Gnoss.Elementos.Documentacion
         /// <param name="pEntidadVinculadaDoc">Entidad vinculada al documento si la tiene</param>
         /// <param name="pIdentidadActual">Identidad actual</param>
         /// <returns>Documento creado con los valores de VersionDestino</returns>
-        public Documento RestaurarVersion(Documento pVersionOrigen, Documento pVersionDestino, Identidad.Identidad pIdentidadActual)
+        public Documento RestaurarVersion(Documento pVersionDestino, Documento pUltimaVersionActual, Identidad.Identidad pIdentidadActual)
         {
-            // Crear la nueva versión a partir del documento original
-            Documento nuevaVersion = CrearNuevaVersionDocumento(pVersionOrigen, pIdentidadActual);
+            // Crear la nueva versión a partir del documento de origen
+            Documento nuevaVersion = CrearNuevaVersionDocumento(pVersionDestino, pIdentidadActual, pRestaurando: true);
 
-            // Asignar los valores de la filadocumento de la versión de destino
-            Guid nuevaVersionID = nuevaVersion.Clave;
+            // Establecemos la ultima version anterior a false
+            pUltimaVersionActual.FilaDocumento.UltimaVersion = false;
 
-            nuevaVersion.FilaDocumento.Autor = pVersionDestino.FilaDocumento.Autor;
-            nuevaVersion.FilaDocumento.Borrador = pVersionDestino.FilaDocumento.Borrador;
-            nuevaVersion.FilaDocumento.CompartirPermitido = pVersionDestino.FilaDocumento.CompartirPermitido;
-            nuevaVersion.FilaDocumento.CreadorEsAutor = pVersionDestino.FilaDocumento.CreadorEsAutor;
-            nuevaVersion.FilaDocumento.CreadorID = pVersionDestino.FilaDocumento.CreadorID;
-            nuevaVersion.FilaDocumento.Descripcion = pVersionDestino.FilaDocumento.Descripcion;
-            nuevaVersion.FilaDocumento.ElementoVinculadoID = pVersionDestino.FilaDocumento.ElementoVinculadoID;
-            nuevaVersion.FilaDocumento.Enlace = pVersionDestino.FilaDocumento.Enlace;
-            nuevaVersion.FilaDocumento.FichaBibliograficaID = pVersionDestino.FilaDocumento.FichaBibliograficaID;
-            nuevaVersion.FilaDocumento.Licencia = pVersionDestino.FilaDocumento.Licencia;
-            nuevaVersion.FilaDocumento.NombreCategoriaDoc = pVersionDestino.FilaDocumento.NombreCategoriaDoc;
-            nuevaVersion.FilaDocumento.NombreElementoVinculado = pVersionDestino.FilaDocumento.NombreElementoVinculado;
-            nuevaVersion.FilaDocumento.NumeroComentariosPublicos = pVersionDestino.FilaDocumento.NumeroComentariosPublicos;
-            nuevaVersion.FilaDocumento.OrganizacionID = pVersionDestino.FilaDocumento.OrganizacionID;
-            nuevaVersion.FilaDocumento.PrivadoEditores = pVersionDestino.FilaDocumento.PrivadoEditores;
-            nuevaVersion.FilaDocumento.ProyectoID = pVersionDestino.FilaDocumento.ProyectoID;
-            nuevaVersion.FilaDocumento.Publico = pVersionDestino.FilaDocumento.Publico;
-            nuevaVersion.FilaDocumento.Rank = pVersionDestino.FilaDocumento.Rank;
-            nuevaVersion.FilaDocumento.Rank_Tiempo = pVersionDestino.FilaDocumento.Rank_Tiempo;
-            nuevaVersion.FilaDocumento.Tags = pVersionDestino.FilaDocumento.Tags;
-            nuevaVersion.FilaDocumento.Tipo = pVersionDestino.FilaDocumento.Tipo;
-            nuevaVersion.FilaDocumento.TipoEntidad = pVersionDestino.FilaDocumento.TipoEntidad;
-            nuevaVersion.FilaDocumento.Titulo = pVersionDestino.FilaDocumento.Titulo;
-            nuevaVersion.FilaDocumento.Valoracion = pVersionDestino.FilaDocumento.Valoracion;
-            nuevaVersion.FilaDocumento.VersionFotoDocumento = pVersionDestino.FilaDocumento.VersionFotoDocumento;
-            nuevaVersion.FilaDocumento.Visibilidad = pVersionDestino.FilaDocumento.Visibilidad;
-
-            // Modificar los campos que tengan que coger el valor de la ultima versión que estaba activa
-            nuevaVersion.FilaDocumento.FechaModificacion = DateTime.Now;
-            nuevaVersion.FilaDocumento.FechaCreacion = DateTime.Now;
-            nuevaVersion.FilaDocumento.UltimaVersion = true;
-            nuevaVersion.FilaDocumento.Eliminado = false;
-            nuevaVersion.FilaDocumento.Protegido = false;
-            nuevaVersion.FilaDocumento.IdentidadProteccionID = null;
-            nuevaVersion.FilaDocumento.FechaProteccion = null;
-            nuevaVersion.FilaDocumento.NumeroTotalDescargas = pVersionOrigen.FilaDocumento.NumeroTotalDescargas;
-            nuevaVersion.FilaDocumento.NumeroTotalConsultas = pVersionOrigen.FilaDocumento.NumeroTotalConsultas;
-            nuevaVersion.FilaDocumento.NumeroTotalVotos = pVersionOrigen.FilaDocumento.NumeroTotalVotos;
-
-            nuevaVersion.FilaDocumentoWebVinBRExtra.NumeroDescargas = pVersionOrigen.FilaDocumentoWebVinBRExtra.NumeroDescargas;
-            nuevaVersion.FilaDocumentoWebVinBRExtra.NumeroConsultas = pVersionOrigen.FilaDocumentoWebVinBRExtra.NumeroConsultas;
-
-            if (GestorVotos != null)
-            {
-                nuevaVersion.FilaDocumento.Valoracion = GestorVotos.ObtenerMedia(nuevaVersion);
-            }
-
-            // Borrar los valores de atributos bibliográficos que se han copiado de la versión de origen y asignarle los de la versión
-            // de destino
-            List<AD.EntityModel.Models.Documentacion.DocumentoAtributoBiblio> listaDocumentoAtributoBiblio = DataWrapperDocumentacion.ListaDocumentoAtributoBiblio.Where(item => item.DocumentoID.Equals(nuevaVersionID)).ToList();
-            foreach (AD.EntityModel.Models.Documentacion.DocumentoAtributoBiblio filaAux in listaDocumentoAtributoBiblio)
-            {
-                DataWrapperDocumentacion.ListaDocumentoAtributoBiblio.Remove(filaAux);
-                mEntityContext.EliminarElemento(filaAux);
-            }
-
-
-            List<AD.EntityModel.Models.Documentacion.DocumentoAtributoBiblio> listaDocAtBib = DataWrapperDocumentacion.ListaDocumentoAtributoBiblio.Where(item => item.DocumentoID.Equals(pVersionDestino.Clave)).ToList();
-            foreach (AD.EntityModel.Models.Documentacion.DocumentoAtributoBiblio filaAux in listaDocAtBib)
-            {
-                AD.EntityModel.Models.Documentacion.DocumentoAtributoBiblio filaDocAtribuBiblio = new AD.EntityModel.Models.Documentacion.DocumentoAtributoBiblio();
-                filaDocAtribuBiblio.DocumentoID = nuevaVersionID;
-                filaDocAtribuBiblio.AtributoID = filaAux.AtributoID;
-                filaDocAtribuBiblio.Valor = filaAux.Valor;
-                filaDocAtribuBiblio.FichaBibliograficaID = filaAux.FichaBibliograficaID;
-                DataWrapperDocumentacion.ListaDocumentoAtributoBiblio.Add(filaDocAtribuBiblio);
-                mEntityContext.DocumentoAtributoBiblio.Add(filaDocAtribuBiblio);
-            }
-
-            // Borrar los valores de tipología que se han copiado de la versión de origen y asignarle los de la versión
-            // de destino
-            List<AD.EntityModel.Models.Documentacion.DocumentoTipologia> listaDocTip = DataWrapperDocumentacion.ListaDocumentoTipologia.Where(item => item.DocumentoID.Equals(nuevaVersionID)).ToList();
-            foreach (AD.EntityModel.Models.Documentacion.DocumentoTipologia filaAux in listaDocTip)
-            {
-                mEntityContext.EliminarElemento(filaAux);
-                DataWrapperDocumentacion.ListaDocumentoTipologia.Remove(filaAux);
-            }
-
-            List<AD.EntityModel.Models.Documentacion.DocumentoTipologia> listaDocumentoTipologia = DataWrapperDocumentacion.ListaDocumentoTipologia.Where(item => item.DocumentoID.Equals(pVersionDestino.Clave)).ToList();
-            foreach (AD.EntityModel.Models.Documentacion.DocumentoTipologia filaAux in listaDocumentoTipologia)
-            {
-                AD.EntityModel.Models.Documentacion.DocumentoTipologia filaDocTipologia = new AD.EntityModel.Models.Documentacion.DocumentoTipologia();
-                filaDocTipologia.DocumentoID = nuevaVersionID;
-                filaDocTipologia.TipologiaID = filaAux.TipologiaID;
-                filaDocTipologia.AtributoID = filaAux.AtributoID;
-                filaDocTipologia.Valor = filaAux.Valor;
-                DataWrapperDocumentacion.ListaDocumentoTipologia.Add(filaDocTipologia);
-                mEntityContext.DocumentoTipologia.Add(filaDocTipologia);
-            }
-
-            //se ha quitado porque nuevaVersionID es el nuevo DocumentoID resultante de restaurar versión y no existe en la tabla HistorialDocumento
-            //además, suponiendo que existiese, cambia la acción a todas las filas que hubiese de ese documento en la tabla
-            //// Modificar el historial de versión que se ha creado con el valor "CrearVersion" por el valor "RestaurarVersion"
-            //foreach (DocumentacionDS.HistorialDocumentoRow filaAux in (DocumentacionDS.HistorialDocumentoRow[])DocumentacionDS.HistorialDocumento.Select("DocumentoID='" + nuevaVersionID + "'"))
-            //{
-            //    filaAux.Accion = (short)AccionHistorialDocumento.RestaurarVersion;
-            //}
-
-            //Restauro documento en tabla HistorialDocumento:
-            AD.EntityModel.Models.Documentacion.HistorialDocumento filaHistorialDoc = new AD.EntityModel.Models.Documentacion.HistorialDocumento();
-            filaHistorialDoc.HistorialDocumentoID = Guid.NewGuid();
-            filaHistorialDoc.DocumentoID = nuevaVersionID;
-            filaHistorialDoc.IdentidadID = pIdentidadActual.Clave;
-            filaHistorialDoc.ProyectoID = pIdentidadActual.FilaIdentidad.ProyectoID;
-            filaHistorialDoc.Fecha = DateTime.Now;
-            filaHistorialDoc.Accion = (short)AccionHistorialDocumento.RestaurarVersion;
-            mEntityContext.HistorialDocumento.Add(filaHistorialDoc);
-            DataWrapperDocumentacion.ListaHistorialDocumento.Add(filaHistorialDoc);
+            mEntityContext.SaveChanges();
 
             return nuevaVersion;
         }
@@ -1374,7 +1283,7 @@ namespace Es.Riam.Gnoss.Elementos.Documentacion
                 {
                     foreach (AD.EntityModel.Models.Documentacion.Documento filaDocumento in DataWrapperDocumentacion.ListaDocumento.OrderByDescending(doc => doc.FechaCreacion.Value))
                     {
-                        Documento documento = new Documento(filaDocumento, this, mLoggingService);
+                        Documento documento = new Documento(filaDocumento, this);
 
                         if (!mHijos.Contains(documento))
                         {
@@ -1392,7 +1301,7 @@ namespace Es.Riam.Gnoss.Elementos.Documentacion
             {
                 foreach (AD.EntityModel.Models.Documentacion.Documento filaDocumento in DataWrapperDocumentacion.ListaDocumento)
                 {
-                    Documento documento = new Documento(filaDocumento, this, mLoggingService);
+                    Documento documento = new Documento(filaDocumento, this);
 
                     if (!mHijos.Contains(documento))
                     {
@@ -1420,7 +1329,7 @@ namespace Es.Riam.Gnoss.Elementos.Documentacion
 
             foreach (Documento doc in listaDocAux)
             {
-                DocumentoWeb documentoWeb = new DocumentoWeb(doc.FilaDocumento, this, mLoggingService);
+                DocumentoWeb documentoWeb = new DocumentoWeb(doc.FilaDocumento, this);
 
                 if (!mListaDocumentosWeb.ContainsKey(documentoWeb.Clave))
                 {
@@ -1438,7 +1347,7 @@ namespace Es.Riam.Gnoss.Elementos.Documentacion
             {//(filaDocumento.RowState != DataRowState.Deleted && filaDocumento.RowState != DataRowState.Detached)
                 if (!mListaDocumentos.ContainsKey(filaDocumento.DocumentoID))
                 {
-                    Documento documento = new Documento(filaDocumento, this, mLoggingService);
+                    Documento documento = new Documento(filaDocumento, this);
                     mHijos.Add(documento);
                     mListaDocumentos.Add(documento.Clave, documento);
                 }
@@ -1815,7 +1724,7 @@ namespace Es.Riam.Gnoss.Elementos.Documentacion
             {
                 this.ListaDocumentos.Add(pDocumento.Clave, pDocumento);
             }
-            DocumentoWeb documentoWeb = new DocumentoWeb(pDocumento.FilaDocumento, this, mLoggingService);
+            DocumentoWeb documentoWeb = new DocumentoWeb(pDocumento.FilaDocumento, this);
 
             VincularDocumentoABaseRecursos(documentoWeb, pBaseRecursosID, TipoPublicacion.Publicado, pIdentidadAgregadora, pPrivado);
             VincularDocumentoACategorias(pCategoriaTesauro, documentoWeb, pBaseRecursosID, pIdentidadAgregadora, pProyectoID);
@@ -1838,7 +1747,7 @@ namespace Es.Riam.Gnoss.Elementos.Documentacion
             {
                 this.ListaDocumentos.Add(pDocumento.Clave, pDocumento);
             }
-            DocumentoWeb documentoWeb = new DocumentoWeb(pDocumento.FilaDocumento, this, mLoggingService);
+            DocumentoWeb documentoWeb = new DocumentoWeb(pDocumento.FilaDocumento, this);
 
             VincularDocumentoABaseRecursos(documentoWeb, pBaseRecursosID, TipoPublicacion.Publicado, pIdentidadAgregadora, pPrivado);
             VincularDocumentoACategorias(pCategoriaTesauro, documentoWeb, pBaseRecursosID, pIdentidadAgregadora, pProyectoID);
@@ -2206,7 +2115,7 @@ namespace Es.Riam.Gnoss.Elementos.Documentacion
 
                 if (!(pDocumento is DocumentoWeb))
                 {
-                    pDocumento = new DocumentoWeb(pDocumento.FilaDocumento, pDocumento.GestorDocumental, mLoggingService);
+                    pDocumento = new DocumentoWeb(pDocumento.FilaDocumento, pDocumento.GestorDocumental);
                 }
 
                 if (pDocumento.TipoDocumentacion.Equals(TiposDocumentacion.Wiki))
@@ -2241,7 +2150,7 @@ namespace Es.Riam.Gnoss.Elementos.Documentacion
                     DataWrapperDocumentacion.ListaDocumento.Add(filaDoc);
                     mEntityContext.Documento.Add(filaDoc);
 
-                    pDocumento = new Documento(filaDoc, pDocumento.GestorDocumental, mLoggingService);
+                    pDocumento = new Documento(filaDoc, pDocumento.GestorDocumental);
 
                     AD.EntityModel.Models.Documentacion.DocumentoWebVinBaseRecursos filaDocVinBR = new AD.EntityModel.Models.Documentacion.DocumentoWebVinBaseRecursos();
 
@@ -2359,7 +2268,7 @@ namespace Es.Riam.Gnoss.Elementos.Documentacion
                 }
                 else
                 {
-                    documentoWeb = new DocumentoWeb(pDocumento.FilaDocumento, this, mLoggingService);
+                    documentoWeb = new DocumentoWeb(pDocumento.FilaDocumento, this);
                     this.ListaDocumentos.Remove(pDocumento.Clave);
                     this.ListaDocumentos.Add(documentoWeb.Clave, documentoWeb);
                 }
@@ -2833,7 +2742,7 @@ namespace Es.Riam.Gnoss.Elementos.Documentacion
                 filaEditor.Editor = pEsEditor;
 
                 //Creo el objeto editor y lo agrego a la lista de editores del documento
-                editor = new EditorRecurso(filaEditor, this, mLoggingService);
+                editor = new EditorRecurso(filaEditor, this);
                 if (ListaDocumentos.ContainsKey(pDocumentoID))
                 {
                     ListaDocumentos[pDocumentoID].ListaPerfilesEditores.Add(filaEditor.PerfilID, editor);
@@ -2844,7 +2753,7 @@ namespace Es.Riam.Gnoss.Elementos.Documentacion
                     }
                     else if (!pEsEditor && !ListaDocumentos[pDocumentoID].ListaPerfilesLectores.ContainsKey(filaEditor.PerfilID))
                     {
-                        LectorRecurso lector = new LectorRecurso(filaEditor, this, mLoggingService);
+                        LectorRecurso lector = new LectorRecurso(filaEditor, this);
                         ListaDocumentos[pDocumentoID].ListaPerfilesLectores.Add(filaEditor.PerfilID, lector);
                     }
                 }
@@ -2872,7 +2781,7 @@ namespace Es.Riam.Gnoss.Elementos.Documentacion
                     {
                         // Era editor, le hago lector
                         doc.ListaPerfilesEditoresSinLectores.Remove(pPerfilEditorID);
-                        doc.ListaPerfilesLectores.Add(pPerfilEditorID, new LectorRecurso(filaEditor, this, mLoggingService));
+                        doc.ListaPerfilesLectores.Add(pPerfilEditorID, new LectorRecurso(filaEditor, this));
                     }
                 }
             }
@@ -2900,7 +2809,7 @@ namespace Es.Riam.Gnoss.Elementos.Documentacion
                 filaGrupoEditor.Editor = pEsEditor;
 
                 //Creo el objeto grupo editor y lo agrego a la lista de grupos de editores del documento
-                grupoEditor = new GrupoEditorRecurso(filaGrupoEditor, this, mLoggingService);
+                grupoEditor = new GrupoEditorRecurso(filaGrupoEditor, this);
                 if (ListaDocumentos.ContainsKey(pDocumentoID) && !ListaDocumentos[pDocumentoID].ListaGruposEditores.ContainsKey(filaGrupoEditor.GrupoID))
                 {
                     ListaDocumentos[pDocumentoID].ListaGruposEditores.Add(filaGrupoEditor.GrupoID, grupoEditor);
@@ -2911,7 +2820,7 @@ namespace Es.Riam.Gnoss.Elementos.Documentacion
                     }
                     else if (!pEsEditor && !ListaDocumentos[pDocumentoID].ListaGruposLectores.ContainsKey(filaGrupoEditor.GrupoID))
                     {
-                        GrupoLectorRecurso grupoLector = new GrupoLectorRecurso(filaGrupoEditor, this, mLoggingService);
+                        GrupoLectorRecurso grupoLector = new GrupoLectorRecurso(filaGrupoEditor, this);
                         ListaDocumentos[pDocumentoID].ListaGruposLectores.Add(filaGrupoEditor.GrupoID, grupoLector);
                     }
                 }
@@ -3009,7 +2918,7 @@ namespace Es.Riam.Gnoss.Elementos.Documentacion
                 filaRespuesta.Orden = pOrden;
 
                 //Creo el objeto respuesta y lo agrego a la lista de respuestas del documento
-                respuesta = new RespuestaRecurso(filaRespuesta, this, mLoggingService);
+                respuesta = new RespuestaRecurso(filaRespuesta, this);
                 if (ListaDocumentos.ContainsKey(pDocumentoID))
                 {
                     ListaDocumentos[pDocumentoID].ListaRespuestas.Add(filaRespuesta.RespuestaID, respuesta);

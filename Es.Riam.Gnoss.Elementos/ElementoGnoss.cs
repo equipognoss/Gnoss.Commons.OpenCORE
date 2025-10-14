@@ -2,6 +2,7 @@ using Es.Riam.Gnoss.Util.General;
 using Es.Riam.Interfaces;
 using Es.Riam.Interfaces.Observador;
 using Es.Riam.Util;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -89,33 +90,23 @@ namespace Es.Riam.Gnoss.Elementos
         /// </summary>
         private List<string> mListaTags;
 
-        private LoggingService mLoggingService;
-
         #endregion
 
         #region Constructores
 
-        /// <summary>
-        /// Constructor sin parámetros
-        /// </summary>
-        public ElementoGnoss(LoggingService loggingService)
-        {
-            mLoggingService = loggingService;
-        }
+        public ElementoGnoss() { }
 
-        public ElementoGnoss(GestionGnoss pGestionGnoss, LoggingService loggingService)
+        public ElementoGnoss(GestionGnoss pGestionGnoss)
         {
             mGestionGnoss = pGestionGnoss;
-            mLoggingService = loggingService;
         }
         /// <summary>
         /// Constructor a partir de la fila del elemento
         /// </summary>
         /// <param name="pFilaElementoEntity">Fila del elemento</param>
-        public ElementoGnoss(object pFilaElementoEntity, LoggingService loggingService)
+        public ElementoGnoss(object pFilaElementoEntity)
         {
             mFilaElementoEntity = pFilaElementoEntity;
-            mLoggingService = loggingService;
         }
 
         /// <summary>
@@ -142,9 +133,8 @@ namespace Es.Riam.Gnoss.Elementos
         /// </summary>
         /// <param name="pFilaElemento">Fila del elemento</param>
         /// <param name="pGestionGnoss">Gestor GNOSS</param>
-        public ElementoGnoss(DataRow pFilaElemento, GestionGnoss pGestionGnoss, LoggingService loggingService)
+        public ElementoGnoss(DataRow pFilaElemento, GestionGnoss pGestionGnoss)
         {
-            mLoggingService = loggingService;
             mFilaElemento = pFilaElemento;
             mGestionGnoss = pGestionGnoss;
         }
@@ -154,9 +144,8 @@ namespace Es.Riam.Gnoss.Elementos
         /// </summary>
         /// <param name="pFilaElemento">Fila del elemento</param>
         /// <param name="pGestionGnoss">Gestor GNOSS</param>
-        public ElementoGnoss(object pFilaElemento, GestionGnoss pGestionGnoss, LoggingService loggingService)
+        public ElementoGnoss(object pFilaElemento, GestionGnoss pGestionGnoss)
         {
-            mLoggingService = loggingService;
             mFilaElementoEntity = pFilaElemento;
             mGestionGnoss = pGestionGnoss;
         }
@@ -964,7 +953,7 @@ namespace Es.Riam.Gnoss.Elementos
                 }
                 catch (Exception e)
                 {
-                    mLoggingService.GuardarLogError(e);
+
                 }
             }
         }

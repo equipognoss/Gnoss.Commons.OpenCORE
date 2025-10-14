@@ -3,9 +3,15 @@ using Es.Riam.Gnoss.AD.EntityModel;
 using Es.Riam.Gnoss.AD.EntityModel.Models;
 using Es.Riam.Gnoss.AD.EntityModel.Models.ParametroGeneralDS;
 using Es.Riam.Gnoss.AD.Parametro;
+using Es.Riam.Gnoss.AD.ParametroAplicacion;
+using Es.Riam.Gnoss.Logica.Parametro.Model;
+using Es.Riam.Gnoss.Logica.ServiciosGenerales;
 using Es.Riam.Gnoss.Util.Configuracion;
 using Es.Riam.Gnoss.Util.General;
 using Es.Riam.Gnoss.Web.MVC.Models;
+using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
+using Serilog.Core;
 using System;
 using System.Collections.Generic;
 
@@ -16,15 +22,19 @@ namespace Es.Riam.Gnoss.Logica.Parametro
     /// </summary>
     public class ParametroCN : BaseCN, IDisposable
     {
+        private ILogger mlogger;
+        private ILoggerFactory mLoggerFactory;
         #region Constructor
 
         /// <summary>
         /// Constructor sin parámetros
         /// </summary>
-        public ParametroCN(EntityContext entityContext, LoggingService loggingService, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication)
-            : base(entityContext, loggingService, configService, servicesUtilVirtuosoAndReplication)
+        public ParametroCN(EntityContext entityContext, LoggingService loggingService, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication, ILogger<ParametroCN> logger, ILoggerFactory loggerFactory)
+            : base(entityContext, loggingService, configService, servicesUtilVirtuosoAndReplication, logger, loggerFactory)
         {
-            this.ParametroAD = new ParametroAD(loggingService, entityContext, configService, servicesUtilVirtuosoAndReplication);
+            mlogger = logger;
+            mLoggerFactory = loggerFactory;
+            this.ParametroAD = new ParametroAD(loggingService, entityContext, configService, servicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<ParametroAD>(), mLoggerFactory);
         }
 
         /// <summary>
@@ -32,10 +42,12 @@ namespace Es.Riam.Gnoss.Logica.Parametro
         /// </summary>
         /// <param name="pFicheroConfiguracionBD">Ruta del fichero de configuración de base de datos</param>
         /// <param name="pUsarVariableEstatica">Si se están usando hilos con diferentes conexiones: FALSE. En caso contrario TRUE</param>
-        public ParametroCN(string pFicheroConfiguracionBD, EntityContext entityContext, LoggingService loggingService, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication)
-            : base(entityContext, loggingService, configService, servicesUtilVirtuosoAndReplication)
+        public ParametroCN(string pFicheroConfiguracionBD, EntityContext entityContext, LoggingService loggingService, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication, ILogger<ParametroCN> logger, ILoggerFactory loggerFactory)
+            : base(entityContext, loggingService, configService, servicesUtilVirtuosoAndReplication,logger,loggerFactory)
         {
-            ParametroAD = new ParametroAD(pFicheroConfiguracionBD, loggingService, entityContext, configService, servicesUtilVirtuosoAndReplication);
+            mlogger = logger;
+            mLoggerFactory = loggerFactory;
+            ParametroAD = new ParametroAD(pFicheroConfiguracionBD, loggingService, entityContext, configService, servicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<ParametroAD>(), mLoggerFactory);
             mFicheroConfiguracionBD = pFicheroConfiguracionBD;
         }
 
@@ -79,14 +91,29 @@ namespace Es.Riam.Gnoss.Logica.Parametro
             ParametroAD.GuardarFilasProyectoServicioWeb(pListaServicios, pParametro);
         }
 
-
-
         /// <summary>
-        /// Obtiene un parámetro concreto de todos los proyectos.
+        /// Obtiene los eventos configurados para la publicación de eventos externos
         /// </summary>
-        /// <param name="pParametro">ID de proyecto</param>
-        /// <returns>Lista con los parámetros de la tabla ParametroProyecto de todos los proyectos proyecto</returns>
-        public Dictionary<Guid, string> ObtenerParametroDeProyectos(string pParametro)
+        /// <param name="pProyectoID">ID del proyecto</param>
+        /// <returns></returns>
+		public EventosConfiguradosModel ObtenerEventosConfigurados(Guid pProyectoID, bool pEsEcosistema)
+		{
+			string valor = this.ParametroAD.ObtenerEventosConfigurados(pProyectoID, pEsEcosistema);
+			EventosConfiguradosModel eventosConfigurados = null;
+			if (!string.IsNullOrEmpty(valor))
+			{
+				eventosConfigurados = JsonConvert.DeserializeObject<EventosConfiguradosModel>(valor);
+			}
+
+			return eventosConfigurados;
+		}
+
+		/// <summary>
+		/// Obtiene un parámetro concreto de todos los proyectos.
+		/// </summary>
+		/// <param name="pParametro">ID de proyecto</param>
+		/// <returns>Lista con los parámetros de la tabla ParametroProyecto de todos los proyectos proyecto</returns>
+		public Dictionary<Guid, string> ObtenerParametroDeProyectos(string pParametro)
         {
             return ParametroAD.ObtenerParametroDeProyectos(pParametro);
         }
@@ -212,7 +239,7 @@ namespace Es.Riam.Gnoss.Logica.Parametro
         {
             return ParametroAD.ObtenerIdiomasPorDominio(pDominio);
         }
-
+        [Obsolete("En proceso de limpieza", true)]
         /// <summary>
         /// Obtiene los idiomas configurados para todos los dominios de la plataforma
         /// </summary>

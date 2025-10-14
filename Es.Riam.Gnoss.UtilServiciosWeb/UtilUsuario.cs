@@ -1,6 +1,7 @@
 ﻿using Es.Riam.Gnoss.AD.EncapsuladoDatos;
 using Es.Riam.Gnoss.AD.EntityModel;
 using Es.Riam.Gnoss.AD.EntityModel.Models.ParametroGeneralDS;
+using Es.Riam.Gnoss.AD.ParametroAplicacion;
 using Es.Riam.Gnoss.AD.ServiciosGenerales;
 using Es.Riam.Gnoss.AD.Usuarios;
 using Es.Riam.Gnoss.CL;
@@ -12,6 +13,7 @@ using Es.Riam.Gnoss.Logica.Usuarios;
 using Es.Riam.Gnoss.Util.Configuracion;
 using Es.Riam.Gnoss.Util.General;
 using Es.Riam.Gnoss.Util.Seguridad;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Linq;
 using System.Security.Principal;
@@ -24,13 +26,16 @@ namespace Es.Riam.Gnoss.UtilServiciosWeb
         private EntityContext mEntityContext;
         private ConfigService mConfigService;
         private RedisCacheWrapper mRedisCacheWrapper;
-
-        public UtilUsuario(LoggingService loggingService, EntityContext entityContext, ConfigService configService, RedisCacheWrapper redisCacheWrapper)
+        private ILogger mlogger;
+        private ILoggerFactory mLoggerFactory;
+        public UtilUsuario(LoggingService loggingService, EntityContext entityContext, ConfigService configService, RedisCacheWrapper redisCacheWrapper, ILogger<UtilUsuario> logger, ILoggerFactory loggerFactory)
         {
             mLoggingService = loggingService;
             mEntityContext = entityContext;
             mConfigService = configService;
             mRedisCacheWrapper = redisCacheWrapper;
+            mlogger = logger;
+            mLoggerFactory = loggerFactory;
         }
         /// <summary>
         /// Valida nombre y contraseña del usuario
@@ -47,7 +52,7 @@ namespace Es.Riam.Gnoss.UtilServiciosWeb
             try
             {
                 // Autenticamos el login para la organización (autenticación parcial)
-                UsuarioCN usuarioCN = new UsuarioCN(mEntityContext, mLoggingService, mConfigService, null);
+                UsuarioCN usuarioCN = new UsuarioCN(mEntityContext, mLoggingService, mConfigService, null, mLoggerFactory.CreateLogger<UsuarioCN>(), mLoggerFactory);
                 DataWrapperUsuario dataWrapperUsuario = new DataWrapperUsuario();
                 Es.Riam.Gnoss.AD.EntityModel.Models.UsuarioDS.Usuario filaUsuario = null;
 
@@ -94,7 +99,7 @@ namespace Es.Riam.Gnoss.UtilServiciosWeb
         public GnossIdentity ValidarUsuario(string pLogin, Guid pOrganizacionID, Guid pProyectoID)
         {
             // Autenticamos el login para la organización (autenticación parcial)
-            UsuarioCN usuarioCN = new UsuarioCN(mEntityContext, mLoggingService, mConfigService, null);
+            UsuarioCN usuarioCN = new UsuarioCN(mEntityContext, mLoggingService, mConfigService, null, mLoggerFactory.CreateLogger<UsuarioCN>(), mLoggerFactory);
             DataWrapperUsuario dataWrapperUsuario = new DataWrapperUsuario();
 
             if (!string.IsNullOrEmpty(pLogin))
@@ -110,13 +115,13 @@ namespace Es.Riam.Gnoss.UtilServiciosWeb
             Guid identidadID = Guid.Empty;
             Guid? profesorID = null;
 
-            IdentidadCN identidadCN = new IdentidadCN(mEntityContext, mLoggingService, mConfigService, null);
+            IdentidadCN identidadCN = new IdentidadCN(mEntityContext, mLoggingService, mConfigService, null, mLoggerFactory.CreateLogger<IdentidadCN>(), mLoggerFactory);
 
             if (dataWrapperUsuario.ListaUsuario.Count > 0)
             {
                 filaUsuario = dataWrapperUsuario.ListaUsuario.First();
 
-                DataWrapperPersona dataWrapperPersona = new PersonaCN(mEntityContext, mLoggingService, mConfigService, null).ObtenerPersonaPorUsuario(filaUsuario.UsuarioID);
+                DataWrapperPersona dataWrapperPersona = new PersonaCN(mEntityContext, mLoggingService, mConfigService, null, mLoggerFactory.CreateLogger<PersonaCN>(), mLoggerFactory).ObtenerPersonaPorUsuario(filaUsuario.UsuarioID);
 
                 if (dataWrapperPersona.ListaPersona.Count > 0)
                 {
@@ -209,7 +214,7 @@ namespace Es.Riam.Gnoss.UtilServiciosWeb
 
                 if (!identidadID.Equals(UsuarioAD.Invitado))
                 {
-                    ProyectoCN proyCN = new ProyectoCN(mEntityContext, mLoggingService, mConfigService, null);
+                    ProyectoCN proyCN = new ProyectoCN(mEntityContext, mLoggingService, mConfigService, null, mLoggerFactory.CreateLogger<ProyectoCN>(), mLoggerFactory);
                     identity.RolPermitidoProyecto = proyCN.CalcularRolFinalUsuarioEnProyecto(filaUsuario.UsuarioID, pLogin, pOrganizacionID, pProyectoID);
                     proyCN.Dispose();
                     usuarioCN.Dispose();
@@ -269,7 +274,7 @@ namespace Es.Riam.Gnoss.UtilServiciosWeb
         {
             ParametroGeneral filaParametroGeneral = null;
 
-            ParametroGeneralCL paramCL = new ParametroGeneralCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, null);
+            ParametroGeneralCL paramCL = new ParametroGeneralCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, null, mLoggerFactory.CreateLogger<ParametroGeneralCL>(), mLoggerFactory);
             GestorParametroGeneral gestorParametroGeneral;
             gestorParametroGeneral = paramCL.ObtenerParametrosGeneralesDeProyecto(pProyectoID);
             paramCL.Dispose();

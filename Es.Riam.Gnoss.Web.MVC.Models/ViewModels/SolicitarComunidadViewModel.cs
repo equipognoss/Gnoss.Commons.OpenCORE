@@ -15,5 +15,8 @@ namespace Es.Riam.Gnoss.Web.MVC.Models.ViewModels
 
         public bool AceptacionAutomaticaDeComunidad { get; set; }
 
+        public Dictionary<string, string> ListaIdiomasPlataforma { get; set; }
+
+        public string IdiomaPorDefecto { get; set; }
     }
 }

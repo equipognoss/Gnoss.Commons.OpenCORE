@@ -1,5 +1,8 @@
-﻿using Es.Riam.Gnoss.AD.EntityModel.Models.Cookies;
+﻿using Es.Riam.Gnoss.AD.EntityModel.Models.Cache;
+using Es.Riam.Gnoss.AD.EntityModel.Models.Cookies;
+using Es.Riam.Gnoss.AD.EntityModel.Models.Documentacion;
 using Es.Riam.Gnoss.AD.EntityModel.Models.Faceta;
+using Es.Riam.Gnoss.AD.EntityModel.Models.Roles;
 using Es.Riam.Gnoss.AD.EntityModel.Models.UsuarioDS;
 using System;
 using System.Collections.Generic;
@@ -38,7 +41,8 @@ namespace Es.Riam.Gnoss.AD.EntityModel.Models.ProyectoDS
             ProyectoUsuarioIdentidad = new HashSet<ProyectoUsuarioIdentidad>();
             CategoriaProyectoCookie = new HashSet<CategoriaProyectoCookie>();
             FacetaObjetoConocimientoProyectoPestanya = new HashSet<FacetaObjetoConocimientoProyectoPestanya>();
-        }
+			TareasSegundoPlano = new HashSet<TareasSegundoPlano.TareasSegundoPlano>();
+		}
 
         [Column(Order = 0)]
         public Guid OrganizacionID { get; set; }
@@ -79,6 +83,7 @@ namespace Es.Riam.Gnoss.AD.EntityModel.Models.ProyectoDS
         public Guid? ProyectoSuperiorID { get; set; }
 
         public bool EsProyectoDestacado { get; set; }
+
 
         [StringLength(250)]
         public string URLPropia { get; set; }
@@ -163,8 +168,10 @@ namespace Es.Riam.Gnoss.AD.EntityModel.Models.ProyectoDS
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<ProyectoAgCatTesauro> ProyectoAgCatTesauro { get; set; }
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+		public virtual ICollection<TareasSegundoPlano.TareasSegundoPlano> TareasSegundoPlano { get; set; }
 
-        public virtual ProyectoCerradoTmp ProyectoCerradoTmp { get; set; }
+		public virtual ProyectoCerradoTmp ProyectoCerradoTmp { get; set; }
 
         public virtual ProyectoCerrandose ProyectoCerrandose { get; set; }
 
@@ -204,5 +211,10 @@ namespace Es.Riam.Gnoss.AD.EntityModel.Models.ProyectoDS
         
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<FacetaObjetoConocimientoProyectoPestanya> FacetaObjetoConocimientoProyectoPestanya { get; set; }
+
+		public virtual ConfiguracionCachesCostosas ConfiguracionCachesCostosas { get; set; }
+
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+		public virtual ICollection<Rol> Rol { get; set; }
     }
 }

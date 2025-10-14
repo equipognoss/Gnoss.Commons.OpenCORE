@@ -203,7 +203,17 @@ namespace Es.Riam.Semantica.OWL
         /// <param name="context">Contexto de serialización</param>
         protected Ontologia(SerializationInfo info, StreamingContext context)
         {
-            mEntidades = (List<ElementoOntologia>)info.GetValue("Entidades", typeof(List<ElementoOntologia>));
+            try
+            {
+                mEntidades = (List<ElementoOntologia>)info.GetValue("Entidades", typeof(List<ElementoOntologia>));
+            }
+            catch { }
+
+            if(mEntidades == null)
+            {
+                mEntidades = new List<ElementoOntologia>();
+            }
+
             mTiposEntidades = (List<string>)info.GetValue("TiposEntidades", typeof(List<string>));
             mNamespacesDefinidos = (Dictionary<string, string>)info.GetValue("NamespacesDefinidos", typeof(Dictionary<string, string>));
             mRDFCVSemIncluido = (string)info.GetValue("RDFCVSemIncluido", typeof(string));

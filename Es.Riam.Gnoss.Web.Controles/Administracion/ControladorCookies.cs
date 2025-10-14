@@ -1,6 +1,7 @@
 ﻿using Es.Riam.AbstractsOpen;
 using Es.Riam.Gnoss.AD.EntityModel;
 using Es.Riam.Gnoss.AD.EntityModel.Models.Cookies;
+using Es.Riam.Gnoss.AD.ParametroAplicacion;
 using Es.Riam.Gnoss.AD.Virtuoso;
 using Es.Riam.Gnoss.CL;
 using Es.Riam.Gnoss.CL.Cookie;
@@ -8,8 +9,10 @@ using Es.Riam.Gnoss.Logica.Cookie;
 using Es.Riam.Gnoss.Logica.ServiciosGenerales;
 using Es.Riam.Gnoss.Util.Configuracion;
 using Es.Riam.Gnoss.Util.General;
+using Es.Riam.Gnoss.UtilServiciosWeb;
 using Es.Riam.Gnoss.Web.MVC.Models.Administracion;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -19,8 +22,10 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
     public class ControladorCookies : ControladorBase
     {
         private Elementos.ServiciosGenerales.Proyecto proyecto = null;
-        public ControladorCookies(Elementos.ServiciosGenerales.Proyecto pProyecto, LoggingService loggingService, EntityContext entityContext, ConfigService configService, RedisCacheWrapper redisCacheWrapper, GnossCache gnossCache, VirtuosoAD virtuosoAD, IHttpContextAccessor httpContextAccessor, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication)
-            :base(loggingService, configService, entityContext, redisCacheWrapper, gnossCache, virtuosoAD, httpContextAccessor, servicesUtilVirtuosoAndReplication)
+        private ILogger mlogger;
+        private ILoggerFactory mLoggerFactory;
+        public ControladorCookies(Elementos.ServiciosGenerales.Proyecto pProyecto, LoggingService loggingService, EntityContext entityContext, ConfigService configService, RedisCacheWrapper redisCacheWrapper, GnossCache gnossCache, VirtuosoAD virtuosoAD, IHttpContextAccessor httpContextAccessor, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication, ILogger<ControladorCookies> logger, ILoggerFactory loggerFactory)
+            :base(loggingService, configService, entityContext, redisCacheWrapper, gnossCache, virtuosoAD, httpContextAccessor, servicesUtilVirtuosoAndReplication,logger,loggerFactory)
         {
             proyecto = pProyecto;
             mVirtuosoAD = virtuosoAD;
@@ -29,6 +34,8 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
             mConfigService = configService;
             mRedisCacheWrapper = redisCacheWrapper;
             mGnossCache = gnossCache;
+            mlogger = logger;
+            mLoggerFactory = loggerFactory;
         }
 
         public void GuardarCookie(CookiesModel pCookie)
@@ -37,7 +44,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
             AnadirNuevaCookie(listaCookiesNuevas, pCookie);
             ModificarCookieExistente(listaCookiesNuevas, pCookie);
             EliminarCookie(listaCookiesNuevas, pCookie);
-            using (ProyectoCN proyCN = new ProyectoCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication))
+            using (ProyectoCN proyCN = new ProyectoCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<ProyectoCN>(), mLoggerFactory))
             {
                 proyCN.ActualizarProyectos();
             }
@@ -80,14 +87,14 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
             }
             mEntityContext.SaveChanges();
 
-            CookieCL cookieCL = new CookieCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mServicesUtilVirtuosoAndReplication);
+            CookieCL cookieCL = new CookieCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<CookieCL>(), mLoggerFactory);
             cookieCL.InvalidarCategoriaProyectoCookie(proyecto.Clave);
         }
 
 
         public void EliminarCategoriasYCookies()
         {
-            CookieCN cookieCN = new CookieCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+            CookieCN cookieCN = new CookieCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<CookieCN>(), mLoggerFactory);
 
             List<ProyectoCookie> cookiesBD = cookieCN.ObtenerCookiesDeProyecto(proyecto.Clave);
             foreach (ProyectoCookie cookie in cookiesBD)
@@ -106,7 +113,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
                 else
                 {
                     string mensajeError = $"No se puede eliminar una categoría que tiene cookies vinculadas\n\tCategoriaID:{categoria.CategoriaID}";
-                    mLoggingService.GuardarLogError(mensajeError);
+                    mLoggingService.GuardarLogError(mensajeError, mlogger);
                     throw new Exception(mensajeError);
                 }
             }
@@ -131,7 +138,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
             {
                 EliminarCookie(listaCookiesNuevas, cookie);
             }
-            using (ProyectoCN proyCN = new ProyectoCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication))
+            using (ProyectoCN proyCN = new ProyectoCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<ProyectoCN>(), mLoggerFactory))
             {
                 proyCN.ActualizarProyectos();
             }
@@ -141,7 +148,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
         {
             if (cookie.Deleted && !listaCookiesNuevas.Contains(cookie.CookieID))
             {
-                CookieCN cookieCN = new CookieCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+                CookieCN cookieCN = new CookieCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<CookieCN>(), mLoggerFactory);
                 ProyectoCookie proyectoCookie = cookieCN.ObtenerCookiesDeProyecto(proyecto.Clave).Where(cookieProy => cookieProy.CookieID.Equals(cookie.CookieID)).FirstOrDefault();
                 if (proyectoCookie != null)
                 {
@@ -155,7 +162,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
         {
             if (!pCookie.Deleted && !listaCookiesNuevas.Contains(pCookie.CookieID))
             {
-                CookieCN cookieCN = new CookieCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+                CookieCN cookieCN = new CookieCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<CookieCN>(), mLoggerFactory);
                 List<ProyectoCookie> filasCookies = cookieCN.ObtenerCookiesDeProyecto(proyecto.Clave).Where(cookieProy => cookieProy.CookieID.Equals(pCookie.CookieID)).ToList();
                 if (filasCookies.Count > 0)
                 {
@@ -179,7 +186,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
         {
             if (!cookie.Deleted)
             {
-                CookieCN cookieCN = new CookieCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+                CookieCN cookieCN = new CookieCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<CookieCN>(), mLoggerFactory);
                 List<ProyectoCookie> filasCookies = cookieCN.ObtenerCookiesDeProyecto(proyecto.Clave).Where(cookieProy => cookieProy.CookieID.Equals(cookie.CookieID)).ToList();
                 if (filasCookies.Count == 0)
                 {
@@ -202,7 +209,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
             cookie.Descripcion = pCookie.Descripcion;
             cookie.ProyectoID = proyecto.Clave;
 
-            CookieCN cookieCN = new CookieCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+            CookieCN cookieCN = new CookieCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<CookieCN>(), mLoggerFactory);
             cookieCN.AnyadirProyectoCookie(cookie);
             cookieCN.Actualizar();
         }
@@ -216,7 +223,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
 
         public Guid ComprobarExisteCategoria(CookiesModel pCookie)
         {
-            CookieCN cookieCN = new CookieCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+            CookieCN cookieCN = new CookieCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<CookieCN>(), mLoggerFactory);
 
             CategoriaProyectoCookie categoria = cookieCN.ObtenerCategoriaPorNombreCorto(pCookie.Categoria.NombreCorto, proyecto.Clave);
             Guid categoriaID = new Guid();

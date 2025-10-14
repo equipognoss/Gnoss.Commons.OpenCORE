@@ -753,10 +753,20 @@ namespace Es.Riam.Util.Test
 			Assert.That(result, Is.EqualTo(expected));
 		}
 
-		#endregion
+        [Test]
+        public void LimpiarInyeccionCodigo_MultipleUrlEncodedTextWithPlus()
+        {
+            //Codificado 3 veces con codificación de url
+            string test = "esto%2520es%2520una%2520prueba%2520de%2520limpieza%2520de%2520codigo%2520con%2520%252B%2520estando%2520varias%2520veces%2520codificado";
+            string expected = "esto es una prueba de limpieza de codigo con + estando varias veces codificado";
+            string result = UtilCadenas.LimpiarInyeccionCodigo(test);
+            Assert.That(result, Is.EqualTo(expected));
+        }
 
-		#region Decodificar texto codificado multiples veces
-		[Test]
+        #endregion
+
+        #region Decodificar texto codificado multiples veces
+        [Test]
 		public void DecodificarTextoCodificadoMultiplesVeces_UnaCodificacion()
 		{
 			string test = "Esto%20es%20un%20formulario%20%3Cform%20action%3D%5C%22change-password%5C%22%3E%3Cinput%20type%3D%5C%22text%5C%22%2F%3E%3Cinput%20type%3D%5C%22submit%5C%22%20value%3D%5C%22Enviar%5C%22%2F%3E%3C%2Fform%3E";

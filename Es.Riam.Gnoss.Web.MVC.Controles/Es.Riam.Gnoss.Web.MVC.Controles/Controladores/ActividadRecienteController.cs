@@ -10,6 +10,7 @@ using Es.Riam.Gnoss.CL.Facetado;
 using Es.Riam.Gnoss.CL.Live;
 using Es.Riam.Gnoss.CL.ParametrosProyecto;
 using Es.Riam.Gnoss.CL.ServiciosGenerales;
+using Es.Riam.Gnoss.Elementos.Amigos;
 using Es.Riam.Gnoss.Elementos.Identidad;
 using Es.Riam.Gnoss.Elementos.ServiciosGenerales;
 using Es.Riam.Gnoss.Logica.Documentacion;
@@ -21,6 +22,7 @@ using Es.Riam.Interfaces.InterfacesOpen;
 using Es.Riam.Util;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.ViewEngines;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -29,33 +31,28 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
 {
     public class ActividadReciente : ControllerBaseGnoss
     {
-        private bool mEsPaginaSuscripciones = false;
-
-        private LoggingService mLoggingService;
-        private VirtuosoAD mVirtuosoAD;
-        private EntityContext mEntityContext;
-        private IHttpContextAccessor mHttpContextAccessor;
-        private ConfigService mConfigService;
-        private RedisCacheWrapper mRedisCacheWrapper;
-        private GnossCache mGnossCache;
-        private EntityContextBASE mEntityContextBASE;
+        private readonly bool mEsPaginaSuscripciones = false;        
+        private ILogger mlogger;
+        private ILoggerFactory mloggerFactory;
 
         /// <summary>
         /// Constructor a partir de la página que contiene al controlador
         /// </summary>
         /// <param name="pController">Controller</param>
-        public ActividadReciente(bool pEsPaginaSuscripciones, LoggingService loggingService, EntityContext entityContext, ConfigService configService, IHttpContextAccessor httpContextAccessor, RedisCacheWrapper redisCacheWrapper, VirtuosoAD virtuosoAD, GnossCache gnossCache, EntityContextBASE entityContextBASE, ICompositeViewEngine viewEngine, IUtilServicioIntegracionContinua utilServicioIntegracionContinua, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication, Microsoft.AspNetCore.Hosting.IHostingEnvironment env)
-               : this(loggingService, entityContext, configService, httpContextAccessor, redisCacheWrapper, virtuosoAD, gnossCache, entityContextBASE, viewEngine, utilServicioIntegracionContinua, servicesUtilVirtuosoAndReplication, env)
+        public ActividadReciente(bool pEsPaginaSuscripciones, LoggingService loggingService, EntityContext entityContext, ConfigService configService, IHttpContextAccessor httpContextAccessor, RedisCacheWrapper redisCacheWrapper, VirtuosoAD virtuosoAD, GnossCache gnossCache, EntityContextBASE entityContextBASE, ICompositeViewEngine viewEngine, IUtilServicioIntegracionContinua utilServicioIntegracionContinua, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication, Microsoft.AspNetCore.Hosting.IHostingEnvironment env, IAvailableServices availableServices, ILogger<ActividadReciente> logger, ILoggerFactory loggerFactory)
+               : this(loggingService, entityContext, configService, httpContextAccessor, redisCacheWrapper, virtuosoAD, gnossCache, entityContextBASE, viewEngine, utilServicioIntegracionContinua, servicesUtilVirtuosoAndReplication, env, availableServices,logger,loggerFactory)
         {
             mEsPaginaSuscripciones = pEsPaginaSuscripciones;
+            mlogger = logger;
+            mloggerFactory = loggerFactory;
         }
 
         /// <summary>
         /// Constructor a partir de la página que contiene al controlador
         /// </summary>
         /// <param name="pController">Controller</param>
-        public ActividadReciente(LoggingService loggingService, EntityContext entityContext, ConfigService configService, IHttpContextAccessor httpContextAccessor, RedisCacheWrapper redisCacheWrapper, VirtuosoAD virtuosoAD, GnossCache gnossCache, EntityContextBASE entityContextBASE, ICompositeViewEngine viewEngine, IUtilServicioIntegracionContinua utilServicioIntegracionContinua, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication, Microsoft.AspNetCore.Hosting.IHostingEnvironment env)
-            : base(httpContextAccessor, entityContext, loggingService, configService, redisCacheWrapper, virtuosoAD, gnossCache, viewEngine, utilServicioIntegracionContinua, servicesUtilVirtuosoAndReplication, env, entityContextBASE)
+        public ActividadReciente(LoggingService loggingService, EntityContext entityContext, ConfigService configService, IHttpContextAccessor httpContextAccessor, RedisCacheWrapper redisCacheWrapper, VirtuosoAD virtuosoAD, GnossCache gnossCache, EntityContextBASE entityContextBASE, ICompositeViewEngine viewEngine, IUtilServicioIntegracionContinua utilServicioIntegracionContinua, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication, Microsoft.AspNetCore.Hosting.IHostingEnvironment env, IAvailableServices availableServices, ILogger<ActividadReciente> logger, ILoggerFactory loggerFactory)
+            : base(httpContextAccessor, entityContext, loggingService, configService, redisCacheWrapper, virtuosoAD, gnossCache, viewEngine, utilServicioIntegracionContinua, servicesUtilVirtuosoAndReplication, env, entityContextBASE, availableServices,logger,loggerFactory)
         {
             mVirtuosoAD = virtuosoAD;
             mLoggingService = loggingService;
@@ -65,6 +62,8 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
             mRedisCacheWrapper = redisCacheWrapper;
             mGnossCache = gnossCache;
             mEntityContextBASE = entityContextBASE;
+            mlogger = logger;
+            mloggerFactory = loggerFactory;
         }
 
         public RecentActivity ObtenerActividadReciente(int pNumPagina, int pNumElementos, TipoActividadReciente pTipo, Guid? pPerfilIDPagina, bool pEsOrganizacion)
@@ -76,7 +75,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
         {
             List<string> ActividadRecienteItems = new List<string>();
 
-            LiveUsuariosCL liveUsuariosCL = new LiveUsuariosCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mServicesUtilVirtuosoAndReplication);
+            LiveUsuariosCL liveUsuariosCL = new LiveUsuariosCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mServicesUtilVirtuosoAndReplication, mloggerFactory.CreateLogger<LiveUsuariosCL>(), mloggerFactory);
             List<object> listaElementosLive = new List<object>();
 
             Guid proyectoID = ProyectoVirtual.Clave;
@@ -87,7 +86,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
                 bool tienePrivados = false;
                 if (!pPerfilIDPagina.HasValue)
                 {
-                    FacetadoCL facetadoCL = new FacetadoCL(ParametrosAplicacionDS.Find(parametro => parametro.Parametro.Equals("UrlIntragnoss")).Valor, mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mVirtuosoAD, mServicesUtilVirtuosoAndReplication);
+                    FacetadoCL facetadoCL = new FacetadoCL(ParametrosAplicacionDS.Find(parametro => parametro.Parametro.Equals("UrlIntragnoss")).Valor, mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mVirtuosoAD, mServicesUtilVirtuosoAndReplication, mloggerFactory.CreateLogger<FacetadoCL>(), mloggerFactory);
                     tienePrivados = facetadoCL.TienePrivados(proyectoID, IdentidadActual.PerfilID);
                     facetadoCL.Dispose();
                 }
@@ -142,7 +141,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
                         }
                         if (!listaElementosLive.Any())
                         {
-                            DocumentacionCN docCN = new DocumentacionCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+                            DocumentacionCN docCN = new DocumentacionCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mloggerFactory.CreateLogger<DocumentacionCN>(), mloggerFactory);
                             List<Guid> listaDocumentos = docCN.ObtenerDocumentosIDActividadRecienteEnProyecto(proyectoID);
                             if (listaDocumentos.Count > 100)
                             {
@@ -186,7 +185,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
 
                 if (!listaElementosLive.Any())
                 {
-                    DocumentacionCN docCN = new DocumentacionCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+                    DocumentacionCN docCN = new DocumentacionCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mloggerFactory.CreateLogger<DocumentacionCN>(), mloggerFactory);
                     List<Guid> listaDocumentos = docCN.ObtenerDocumentosIDSuscripcionPerfilEnProyecto(IdentidadActual.PerfilID, proyectoID, 100);
                     docCN.Dispose();
 
@@ -256,12 +255,12 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
 
         private void ClonarActividadRecienteUsuarioGrupo(Guid pUsuarioID, Guid pProyectoID)
         {
-            IdentidadCN identidadCN = new IdentidadCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+            IdentidadCN identidadCN = new IdentidadCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mloggerFactory.CreateLogger<IdentidadCN>(), mloggerFactory);
 
             Dictionary<Guid, string> grupos = identidadCN.ObtenerGruposIDParticipaPerfil(IdentidadActual.Clave, IdentidadActual.IdentidadMyGNOSS.Clave);
             if (grupos.Count > 0)
             {
-                LiveUsuariosCL liveUsuariosCL = new LiveUsuariosCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mServicesUtilVirtuosoAndReplication);
+                LiveUsuariosCL liveUsuariosCL = new LiveUsuariosCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mServicesUtilVirtuosoAndReplication, mloggerFactory.CreateLogger<LiveUsuariosCL>(), mloggerFactory);
 
                 Guid grupoID = grupos.Keys.First();
                 int score = liveUsuariosCL.ClonarLiveGrupoProyectoAUsu(pUsuarioID, pProyectoID, grupoID);
@@ -286,12 +285,12 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
             bool tieneGruposConRecursosPrivadosComunesAlPerfilPagina = false;
 
             //Comprobar si se ese grupo edita o es lector de algún documento del perfil de la página.
-            IdentidadCN identidadCN = new IdentidadCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+            IdentidadCN identidadCN = new IdentidadCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mloggerFactory.CreateLogger<IdentidadCN>(), mloggerFactory);
             tieneGruposConRecursosPrivadosComunesAlPerfilPagina = identidadCN.TienePerfilGruposConRecursosPrivadosEnComunConElPerfilPagina(pProyectoID, pPerfilActualID, pPerfilPaginaID);
             identidadCN.Dispose();
 
             //Comprobar que el usuario no es lector de algún documento del perfil de la página.
-            DocumentacionCN documentacionCN = new DocumentacionCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+            DocumentacionCN documentacionCN = new DocumentacionCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mloggerFactory.CreateLogger<DocumentacionCN>(), mloggerFactory);
             tieneRecursosPrivadosComunesAlPerfilPagina = documentacionCN.TienePerfilRecursosPrivadosEnComunConElPerfilPagina(pProyectoID, pPerfilActualID, pPerfilPaginaID);
             documentacionCN.Dispose();
 
@@ -381,15 +380,15 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
                             }
                             else
                             {
-                                ProyectoCL proyCL = new ProyectoCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mVirtuosoAD, mServicesUtilVirtuosoAndReplication);
-                                GestionProyecto gestProy = new GestionProyecto(proyCL.ObtenerProyectoPorID(proyID), mLoggingService, mEntityContext);
+                                ProyectoCL proyCL = new ProyectoCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mVirtuosoAD, mServicesUtilVirtuosoAndReplication, mloggerFactory.CreateLogger<ProyectoCL>(), mloggerFactory);
+                                GestionProyecto gestProy = new GestionProyecto(proyCL.ObtenerProyectoPorID(proyID), mLoggingService, mEntityContext, mloggerFactory.CreateLogger<GestionProyecto>(), mloggerFactory);
                                 if (gestProy.ListaProyectos.ContainsKey(proyID))
                                 {
                                     proy = gestProy.ListaProyectos[proyID];
                                     listaProyectos.Add(proyID, proy);
                                 }
 
-                                ParametroGeneralCL paramCL = new ParametroGeneralCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mServicesUtilVirtuosoAndReplication);
+                                ParametroGeneralCL paramCL = new ParametroGeneralCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mServicesUtilVirtuosoAndReplication, mloggerFactory.CreateLogger<ParametroGeneralCL>(), mloggerFactory);
                                 parametrosGenerales = paramCL.ObtenerParametrosGeneralesDeProyecto(proyID).ListaParametroGeneral.FirstOrDefault();
                                 if (parametrosGenerales != null)
                                 {
@@ -430,7 +429,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
                         {
                             identidadEnProy = IdentidadActual.GestorIdentidades.ListaIdentidades[IdentidadActual.ObtenerIdentidadEnProyectoDeIdentidad(proyectoID)];
                         }
-                        ControladorProyectoMVC controladorMVC = new ControladorProyectoMVC(UtilIdiomas, BaseURL, BaseURLContent, BaseURLStatic, proy, parametrosGenerales, identidadEnProy, EsBot, mLoggingService, mEntityContext, mConfigService, mHttpContextAccessor, mRedisCacheWrapper, mVirtuosoAD, mGnossCache, mEntityContextBASE, mServicesUtilVirtuosoAndReplication);
+                        ControladorProyectoMVC controladorMVC = new ControladorProyectoMVC(UtilIdiomas, BaseURL, BaseURLContent, BaseURLStatic, proy, parametrosGenerales, identidadEnProy, EsBot, mLoggingService, mEntityContext, mConfigService, mHttpContextAccessor, mRedisCacheWrapper, mVirtuosoAD, mGnossCache, mEntityContextBASE, mServicesUtilVirtuosoAndReplication, mloggerFactory.CreateLogger<ControladorProyectoMVC>(), mloggerFactory);
 
                         string urlBusqueda = "";
 
@@ -502,11 +501,11 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
                             identidadEnProy = IdentidadActual.GestorIdentidades.ListaIdentidades[IdentidadActual.ObtenerIdentidadEnProyectoDeIdentidad(proyectoID)];
                         }
 
-                        ControladorProyectoMVC controladorMVC = new ControladorProyectoMVC(UtilIdiomas, BaseURL, BaseURLContent, BaseURLStatic, proy, parametrosGenerales, identidadEnProy, EsBot, mLoggingService, mEntityContext, mConfigService, mHttpContextAccessor, mRedisCacheWrapper, mVirtuosoAD, mGnossCache, mEntityContextBASE, mServicesUtilVirtuosoAndReplication);
+                        ControladorProyectoMVC controladorMVC = new ControladorProyectoMVC(UtilIdiomas, BaseURL, BaseURLContent, BaseURLStatic, proy, parametrosGenerales, identidadEnProy, EsBot, mLoggingService, mEntityContext, mConfigService, mHttpContextAccessor, mRedisCacheWrapper, mVirtuosoAD, mGnossCache, mEntityContextBASE, mServicesUtilVirtuosoAndReplication, mloggerFactory.CreateLogger<ControladorProyectoMVC>(), mloggerFactory);
 
                         string urlBusqueda = UrlsSemanticas.ObtenerURLComunidad(UtilIdiomas, BaseURLIdioma, proy.NombreCorto) + "/" + UtilIdiomas.GetText("URLSEM", "BUSQUEDAAVANZADA");
 
-                        IdentidadCN identidadCN = new IdentidadCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+                        IdentidadCN identidadCN = new IdentidadCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mloggerFactory.CreateLogger<IdentidadCN>(), mloggerFactory);
                         Dictionary<Guid, Guid> listaIdentidadesPerfil = identidadCN.ObtenerIdentidadesIDyPerfilEnProyecto(proyectoID, listaClavesPerfilesProyecto[proyectoID]);
 
                         List<Guid> listaIdentidades = new List<Guid>();

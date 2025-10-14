@@ -2,18 +2,24 @@
 using Es.Riam.Gnoss.Util.Configuracion;
 using Es.Riam.Gnoss.Util.General;
 using Es.Riam.InterfacesOpenArchivos;
-using Microsoft.Azure.ServiceBus;
+using Azure.Messaging.ServiceBus;
 using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 
 namespace Es.Riam.Gnoss.RabbitMQ
 {
     public class AzureServiceBusAMQP : IAMQPClient
     {
-        private IQueueClient mQueueClient;
+        private ServiceBusClient mQueueClient;
+        private ServiceBusSender mSender;
+        private ServiceBusProcessor mProcessor;
         private RabbitMQClient mGestorRabbit;
         private LoggingService mLoggingService;
         private RabbitMQClient.ReceivedDelegate mReceivedDelegate;
@@ -21,6 +27,8 @@ namespace Es.Riam.Gnoss.RabbitMQ
         private string mAzureStorageConnectionString;
         private readonly ConfigService mConfigService;
         private static string mComienzoFichero;
+        private ILogger mlogger;
+        private ILoggerFactory mLoggerFactory;
 
         /// <summary>
         /// Numero de Reintentos para obtener el fichero.
@@ -36,12 +44,13 @@ namespace Es.Riam.Gnoss.RabbitMQ
         /// </summary>
         private static string mRutaFicheros = null;
 
-        public AzureServiceBusAMQP(RabbitMQClient pGestorRabbit, LoggingService pLoggingService , ConfigService configService)
+        public AzureServiceBusAMQP(RabbitMQClient pGestorRabbit, LoggingService pLoggingService , ConfigService configService, ILogger<AzureServiceBusAMQP> logger, ILoggerFactory loggerFactory)
         {
             mGestorRabbit = pGestorRabbit;
             mLoggingService = pLoggingService;
             mConfigService = configService;
-            
+            mlogger = logger;
+            mLoggerFactory = loggerFactory;
             mAzureStorageConnectionString = mConfigService.ObtenerAzureStorageConnectionString();
 
             //mRutaFicheros = System.Web.Hosting.HostingEnvironment.MapPath("~/" + "serviceBUS");
@@ -52,12 +61,14 @@ namespace Es.Riam.Gnoss.RabbitMQ
             if (!string.IsNullOrEmpty(mAzureStorageConnectionString))
             {
                 mAzureStorageConnectionString += "/" + "serviceBUS";
-                mGestorArchivos = new GestionArchivos(mLoggingService, null, pRutaArchivos: mRutaFicheros, pAzureStorageConnectionString: mAzureStorageConnectionString);
+                mGestorArchivos = new GestionArchivos(mLoggingService, null,mLoggerFactory.CreateLogger<GestionArchivos>(),mLoggerFactory, pRutaArchivos: mRutaFicheros,pAzureStorageConnectionString: mAzureStorageConnectionString);
             }
             var conexiones = mConfigService.ObtenerRabbitMQClient(mGestorRabbit.TipoCola);
 
-            mQueueClient = new QueueClient(conexiones, mGestorRabbit.QueueName);
-            
+            mQueueClient = new ServiceBusClient(conexiones);
+            mLoggingService.AgregarEntrada($"Se ha creado el cliente");
+            mSender = mQueueClient.CreateSender(mGestorRabbit.QueueName);
+            mLoggingService.AgregarEntrada($"Se ha creado el sender correctamente hacia la cola {mGestorRabbit.QueueName}");
         }
 
         public void AgregarElementoACola(string message)
@@ -67,36 +78,67 @@ namespace Es.Riam.Gnoss.RabbitMQ
             {
                 //AgregarElementoAColaAsync(message).GetAwaiter().GetResult();
                 //Desarrollo del Service BUS de AZURE.
-                byte[] mensajeBytes = Encoding.UTF8.GetBytes(message);
-                mLoggingService.AgregarEntrada($"Convertido mensaje a bytes: {mensajeBytes.Length} bytes");
-                Message mensaje = null;
-                //Modificacion para que sea un byte
-                if (mensajeBytes.Length > 256 * 1024)
-                {
-                    mLoggingService.AgregarEntrada("Mensaje superior a 256 Kb");
-                    Guid guidFichero = Guid.NewGuid();
-                    string nombreFichero = $"{guidFichero}_{DateTime.Now.ToString("yyyy-MM-dd")}";
-                    mGestorArchivos.CrearFicheroFisicoSinEncriptar("", $"{nombreFichero}.txt", mensajeBytes);
-                    mLoggingService.AgregarEntrada("Fichero creado");
-                    mensaje = new Message(Encoding.UTF8.GetBytes($"{mComienzoFichero}{nombreFichero}"));
-                    mLoggingService.AgregarEntrada("Mensaje creado");
-                }
-                else
-                {
-                    // Creamos un mensaje a enviar a la cola
-                    mensaje = new Message(Encoding.UTF8.GetBytes(message));
-                    mLoggingService.AgregarEntrada("Mensaje creado");
-                }
-
+                ServiceBusMessage mensaje = new ServiceBusMessage(message);
+                mLoggingService.AgregarEntrada("Mensaje creado");
                 mLoggingService.AgregarEntrada("Envio a Azure Service Bus");
                 // Enviamos mensaje a la cola
-                mQueueClient.SendAsync(mensaje).GetAwaiter().GetResult();
+                mSender.SendMessageAsync(mensaje).GetAwaiter().GetResult();
                 mLoggingService.AgregarEntrada("Enviado a Azure Service Bus");
-
             }
             catch (Exception exception)
             {
-                mLoggingService.GuardarLogError(exception, $"No se pudo replicar en {mQueueClient?.QueueName}: {message}");
+                mLoggingService.GuardarLogError(exception, $"No se pudo replicar en {mGestorRabbit?.QueueName}: {message}",mlogger);
+            }
+        }
+
+        public IList<string> AgregarElementosACola(IEnumerable<string> messages)
+        {            
+            try
+            {
+                //Desarrollo del Service BUS de AZURE.
+                List<string> mensajesFallidos = new List<string>();
+
+                foreach(string message in messages)
+                {
+                    byte[] mensajeBytes = Encoding.UTF8.GetBytes(message);
+                    mLoggingService.AgregarEntrada($"Convertido mensaje a bytes: {mensajeBytes.Length} bytes");
+					ServiceBusMessage mensaje = null;
+                    //Modificacion para que sea un byte
+                    if (mensajeBytes.Length > 256 * 1024)
+                    {
+                        mLoggingService.AgregarEntrada("Mensaje superior a 256 Kb");
+                        Guid guidFichero = Guid.NewGuid();
+                        string nombreFichero = $"{guidFichero}_{DateTime.Now.ToString("yyyy-MM-dd")}";
+                        mGestorArchivos.CrearFicheroFisicoSinEncriptar("", $"{nombreFichero}.txt", mensajeBytes);
+                        mLoggingService.AgregarEntrada("Fichero creado");
+                        mensaje = new ServiceBusMessage(Encoding.UTF8.GetBytes($"{mComienzoFichero}{nombreFichero}"));
+                        mLoggingService.AgregarEntrada("Mensaje creado");
+                    }
+                    else
+                    {
+                        // Creamos un mensaje a enviar a la cola
+                        mensaje = new ServiceBusMessage(Encoding.UTF8.GetBytes(message));
+                        mLoggingService.AgregarEntrada("Mensaje creado");
+                    }
+                    try
+                    {
+                        mLoggingService.AgregarEntrada("Envio a Azure Service Bus");
+                        // Enviamos mensaje a la cola
+                        mSender.SendMessageAsync(mensaje).GetAwaiter().GetResult();
+                        mLoggingService.AgregarEntrada("Enviado a Azure Service Bus");
+                    }
+                    catch
+                    {
+                        mLoggingService.GuardarLogError($"Error al enviar el mensaje hacia Azure\n Mensaje: {mensaje}",mlogger);
+                        mensajesFallidos.Add(message);
+                    }
+                }
+                return mensajesFallidos;
+            }
+            catch (Exception exception)
+            {
+                mLoggingService.GuardarLogError(exception, $"No se pudo replicar en {mGestorRabbit?.QueueName}",mlogger);
+                return messages.ToList();
             }
         }
 
@@ -107,23 +149,24 @@ namespace Es.Riam.Gnoss.RabbitMQ
 
         public void ObtenerElementosDeCola(RabbitMQClient.ReceivedDelegate receivedFunction, RabbitMQClient.ShutDownDelegate shutdownFunction)
         {
-            var messageHandlerOptions = new MessageHandlerOptions(ExceptionReceivedHandler)
+            ServiceBusProcessorOptions options = new ServiceBusProcessorOptions()
             {
                 MaxConcurrentCalls = 1,
-                AutoComplete = false
+                AutoCompleteMessages = false
             };
             mReceivedDelegate = receivedFunction;
-            mQueueClient.RegisterMessageHandler(ProcessMessageAsync, messageHandlerOptions);
-
+            ServiceBusProcessor processor = mQueueClient.CreateProcessor(queueName: mGestorRabbit.QueueName, options);
+            processor.ProcessMessageAsync += ProcessMessageAsync;
+            processor.ProcessErrorAsync += ExceptionReceivedHandler;
+            processor.StartProcessingAsync();
         }
 
-        async Task ProcessMessageAsync(Message message, CancellationToken token)
+        async Task ProcessMessageAsync(ProcessMessageEventArgs args)
         {
             try
             {
                 //Desarrollo del Service BUS de AZURE.
-                string mensaje = Encoding.UTF8.GetString(message.Body);
-                byte[] mensajeByte = message.Body;
+                string mensaje = Encoding.UTF8.GetString(args.Message.Body);
                 //bool esFichero = false;
                 string nombreFichero = "";
                 if (mensaje.StartsWith(mComienzoFichero))
@@ -138,17 +181,18 @@ namespace Es.Riam.Gnoss.RabbitMQ
                 {
                     //Eliminacion Fichero.
                     //if (esFichero) { BorrarFichero(nombreFichero); }
-                    await mQueueClient.CompleteAsync(message.SystemProperties.LockToken);
+
+                    await args.CompleteMessageAsync(args.Message);
                 }
                 else
                 {
-                    await mQueueClient.AbandonAsync(message.SystemProperties.LockToken);
+                    await args.AbandonMessageAsync(args.Message);
                 }
             }
             catch (Exception ex)
             {
-                mLoggingService.GuardarLogError(ex);
-                await mQueueClient.AbandonAsync(message.SystemProperties.LockToken);
+                mLoggingService.GuardarLogError(ex, mlogger);
+                await args.AbandonMessageAsync(args.Message);
                 throw;
             }
         }
@@ -183,22 +227,21 @@ namespace Es.Riam.Gnoss.RabbitMQ
             return textoMensaje;
         }
 
-        static Task ExceptionReceivedHandler(ExceptionReceivedEventArgs exceptionReceivedEventArgs)
+        static Task ExceptionReceivedHandler(ProcessErrorEventArgs exceptionReceivedEventArgs)
         {
-
             Console.WriteLine($"El manejador encontro una excepcion {exceptionReceivedEventArgs.Exception}.");
-            var context = exceptionReceivedEventArgs.ExceptionReceivedContext;
-            Console.WriteLine($"- Endpoint: {context.Endpoint}");
-            Console.WriteLine($"- Entity Path: {context.EntityPath}");
-            Console.WriteLine($"- Exceuting Action: {context.Action}");
+            //var context = exceptionReceivedEventArgs.ExceptionReceivedContext;
+            Console.WriteLine($"- Endpoint: {exceptionReceivedEventArgs.FullyQualifiedNamespace}");
+            Console.WriteLine($"- Entity Path: {exceptionReceivedEventArgs.EntityPath}");
+            Console.WriteLine($"- Exceuting Action: {exceptionReceivedEventArgs.ErrorSource}");
             return Task.CompletedTask;
         }
 
         public static void CerrarConexion(object pConnection)
         {
-            if (pConnection is IQueueClient)
+            if (pConnection is ServiceBusClient)
             {
-                ((IQueueClient)pConnection).CloseAsync().GetAwaiter().GetResult();
+                ((ServiceBusClient)pConnection).DisposeAsync().GetAwaiter().GetResult();
             }
         }
 
@@ -206,7 +249,7 @@ namespace Es.Riam.Gnoss.RabbitMQ
         {
             if (mQueueClient != null)
             {
-                mQueueClient.CloseAsync().GetAwaiter().GetResult();
+                mQueueClient.DisposeAsync().GetAwaiter().GetResult();
             }
         }
 
@@ -214,7 +257,7 @@ namespace Es.Riam.Gnoss.RabbitMQ
         {
             if (mQueueClient != null)
             {
-                mQueueClient.CloseAsync().GetAwaiter().GetResult();
+                mQueueClient.DisposeAsync().GetAwaiter().GetResult();
             }
         }
 

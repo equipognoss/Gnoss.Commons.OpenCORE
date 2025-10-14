@@ -43,6 +43,8 @@ namespace Es.Riam.Interfaces.InterfacesOpen
         public bool VersionHotfixSinDesplegar(Guid pClaveProyectoSeleccionado, Guid pUsuarioID, string pEntornoIntegracionContinua, string UrlApiIntegracionContinua);
         public string ReemplazarMascaraPropiedad(string pTexto, List<IntegracionContinuaPropiedad> pPropiedades);
         public string ObtenerMascaraPropiedad(IntegracionContinuaPropiedad pPropiedad);
+        public void CompilarVersion(Guid pClaveProyectoSeleccionado, Guid pUsuarioID, string pEntornoIntegracionContinua, string pUrlApiIntegracionContinua, string pVersion, string pNombreRepositorio, string pTokenRepositorio, string pNombreCortoComunidad);
+        public void DesplegarVersion(Guid pClaveProyectoSeleccionado, Guid pUsuarioID, string pEntornoIntegracionContinua, string pUrlApiIntegracionContinua,string versionWebActualizada, string pNombreCortoComunidad);
         public HttpStatusCode MergeVersion(Guid pClaveProyectoSeleccionado, Guid pUsuarioID, string pEntornoIntegracionContinua, string UrlApiIntegracionContinua);
         public HttpStatusCode DeployVersion(Guid pClaveProyectoSeleccionado, Guid pUsuarioID, string pEntornoIntegracionContinua, string UrlApiIntegracionContinua, string pTagName, string pUrlApiDespliegue);
         public HttpStatusCode EstabilizarVersion(Guid pClaveProyectoSeleccionado, Guid pUsuarioID, string pEntornoIntegracionContinua, string UrlApiIntegracionContinua, string pTagName, string pUrlApiDespliegue);
@@ -64,6 +66,12 @@ namespace Es.Riam.Interfaces.InterfacesOpen
         public string ObtenerUrlApiDesplieguesEntornoAnterior(Guid pProyectoSeleccionado, string pEntornoIntegracionContinua, string pUrlApiIntegracionContinua, Guid pUsuarioID);
         public string ObtenerUrlApiDesplieguesEntornoParametro(Guid pProyectoSeleccionado, string pEntornoIntegracionContinua, string pUrlApiIntegracionContinua, Guid pUsuarioID, string pEntorno);
         public string ObtenerUrlApiDesplieguesEntornoActual(Guid pProyectoSeleccionado, string pEntornoIntegracionContinua, string pUrlApiIntegracionContinua, Guid pUsuarioID);
+        public string ObtenerVersionWeb(string pNombreCorto, string pUrlApiIntegracionContinua);
+        public int ObtenerEstadoWeb(string pNombreCorto, string pUrlApiIntegracionContinua);
+        public List<string> ObtenerListaVersionesDesplegadas(string pNombreCorto, string pUrlApiIntegracionContinua);
+        public string ObtenerIdFrontAnsible(string pNombreCorto, string pUrlApiIntegracionContinua);
+        public string ObtenerIdBackAnsible(string pNombreCorto, string pUrlApiIntegracionContinua);
         public HttpStatusCode CompilarDll(Guid pClaveProyectoSeleccionado, Guid pUsuarioID, string pEntornoIntegracionContinua, string pUrlApiIntegracionContinua, string pTagName, string pUrlApiDespliegue);
+    
     }
 }

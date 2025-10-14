@@ -30,5 +30,7 @@ namespace Es.Riam.Gnoss.AD.EntityModel.Models.ProyectoDS
         public string PrefijoTesSem { get; set; }
 
         public bool Editable { get; set; }
+
+        public DateTime FechaCreacion { get; set; }
     }
 }

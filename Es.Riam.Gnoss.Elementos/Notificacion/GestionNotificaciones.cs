@@ -8,10 +8,13 @@ using Es.Riam.Gnoss.Elementos.Identidad;
 using Es.Riam.Gnoss.Elementos.Peticiones;
 using Es.Riam.Gnoss.Elementos.ServiciosGenerales;
 using Es.Riam.Gnoss.Logica.Identidad;
+using Es.Riam.Gnoss.Logica.ServiciosGenerales;
+using Es.Riam.Gnoss.Logica.Usuarios;
 using Es.Riam.Gnoss.RabbitMQ;
 using Es.Riam.Gnoss.Util.Configuracion;
 using Es.Riam.Gnoss.Util.General;
 using Es.Riam.Util;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -292,6 +295,8 @@ namespace Es.Riam.Gnoss.Elementos.Notificacion
         private EntityContext mEntityContext;
         private ConfigService mConfigService;
         private IServicesUtilVirtuosoAndReplication mServicesUtilVirtuosoAndReplication;
+        private ILogger mlogger;
+        private ILoggerFactory mLoggerFactory;
 
         #region  Miembros estáticos
 
@@ -310,6 +315,8 @@ namespace Es.Riam.Gnoss.Elementos.Notificacion
 
         #region Constructores
 
+        public GestionNotificaciones() { }
+
         /// <summary>
         /// Constructor para la deseralización
         /// </summary>
@@ -318,10 +325,6 @@ namespace Es.Riam.Gnoss.Elementos.Notificacion
         protected GestionNotificaciones(SerializationInfo pInfo, StreamingContext pContext)
             : base(pInfo, pContext)
         {
-            //mLoggingService = loggingService;
-            //mEntityContext = entityContext;
-            //mConfigService = configService;
-
             mGestorPeticiones = (GestionPeticiones)pInfo.GetValue("GestorPeticiones", typeof(GestionPeticiones));
             mGestorIdentidades = (GestionIdentidades)pInfo.GetValue("GestorIdentidades", typeof(GestionIdentidades));
         }
@@ -330,13 +333,15 @@ namespace Es.Riam.Gnoss.Elementos.Notificacion
         /// Crea el gestor de notificaciones SIN gestor de correo y SIN gestor de identidades (para las invitaciones)
         /// </summary>
         /// <param name="pNotificacionDW">Dataset de notificaciones</param>
-        public GestionNotificaciones(DataWrapperNotificacion pNotificacionDW, LoggingService loggingService, EntityContext entityContext, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication)
-            : base(pNotificacionDW, loggingService)
+        public GestionNotificaciones(DataWrapperNotificacion pNotificacionDW, LoggingService loggingService, EntityContext entityContext, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication, ILogger<GestionNotificaciones> logger,ILoggerFactory loggerFactory)
+            : base(pNotificacionDW)
         {
             mLoggingService = loggingService;
             mEntityContext = entityContext;
             mConfigService = configService;
             mServicesUtilVirtuosoAndReplication = servicesUtilVirtuosoAndReplication;
+            mlogger = logger;
+            mLoggerFactory = loggerFactory;
         }
 
         /// <summary>
@@ -344,13 +349,14 @@ namespace Es.Riam.Gnoss.Elementos.Notificacion
         /// </summary>
         /// <param name="pNotificacionDW">Dataset de notificaciones</param>
         /// <param name="pGestorIdentidades">Gestor de identidades</param>
-        public GestionNotificaciones(DataWrapperNotificacion pNotificacionDW, GestionIdentidades pGestorIdentidades, LoggingService loggingService, EntityContext entityContext, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication)
-            : base(pNotificacionDW, loggingService)
+        public GestionNotificaciones(DataWrapperNotificacion pNotificacionDW, GestionIdentidades pGestorIdentidades, LoggingService loggingService, EntityContext entityContext, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication, ILogger<GestionNotificaciones> logger,ILoggerFactory loggerFactory)
+            : base(pNotificacionDW)
         {
             mLoggingService = loggingService;
             mEntityContext = entityContext;
             mConfigService = configService;
-
+            mlogger = logger;
+            mLoggerFactory = loggerFactory;
             mGestorIdentidades = pGestorIdentidades;
             mServicesUtilVirtuosoAndReplication = servicesUtilVirtuosoAndReplication;
         }
@@ -578,7 +584,7 @@ namespace Es.Riam.Gnoss.Elementos.Notificacion
 
                 if (!string.IsNullOrEmpty(persona.FilaPersona.Email))
                 {
-                    correo = persona.FilaPersona.Email;
+                    correo = persona.FilaPersona.Email.ToLower();
                 }
                 if (!correo.Equals(string.Empty))
                 {
@@ -1429,7 +1435,7 @@ namespace Es.Riam.Gnoss.Elementos.Notificacion
             if (GestorPeticiones == null)
             {
                 DataWrapperPeticion petDW = new DataWrapperPeticion();
-                GestorPeticiones = new GestionPeticiones(petDW, mLoggingService, mEntityContext);
+                GestorPeticiones = new GestionPeticiones(petDW, mLoggingService, mEntityContext, mLoggerFactory.CreateLogger<GestionPeticiones>(), mLoggerFactory);
                 GestorPeticiones.CargarPeticiones();
             }
 
@@ -1479,7 +1485,7 @@ namespace Es.Riam.Gnoss.Elementos.Notificacion
             if (GestorPeticiones == null)
             {
                 DataWrapperPeticion petDW = new DataWrapperPeticion();
-                GestorPeticiones = new GestionPeticiones(petDW, mLoggingService, mEntityContext);
+                GestorPeticiones = new GestionPeticiones(petDW, mLoggingService, mEntityContext, mLoggerFactory.CreateLogger<GestionPeticiones>(), mLoggerFactory);
                 GestorPeticiones.CargarPeticiones();
             }
             string nombreAsignatura = "";
@@ -1532,11 +1538,11 @@ namespace Es.Riam.Gnoss.Elementos.Notificacion
             if (GestorPeticiones == null)
             {
                 DataWrapperPeticion petDW = new DataWrapperPeticion();
-                GestorPeticiones = new GestionPeticiones(petDW, mLoggingService, mEntityContext);
+                GestorPeticiones = new GestionPeticiones(petDW, mLoggingService, mEntityContext, mLoggerFactory.CreateLogger<GestionPeticiones>(), mLoggerFactory);
                 GestorPeticiones.CargarPeticiones();
             }
 
-            IdentidadCN identidadCN = new IdentidadCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+            IdentidadCN identidadCN = new IdentidadCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<IdentidadCN>(), mLoggerFactory);
             string coma = "";
             string nombresGrupos = "";
             foreach (AD.EntityModel.Models.IdentidadDS.GrupoIdentidades filaGrupo in identidadCN.ObtenerGruposPorIDGrupo(pListaGrupos, false).ListaGrupoIdentidades)
@@ -1647,11 +1653,11 @@ namespace Es.Riam.Gnoss.Elementos.Notificacion
             if (GestorPeticiones == null)
             {
                 DataWrapperPeticion petDW = new DataWrapperPeticion();
-                GestorPeticiones = new GestionPeticiones(petDW, mLoggingService, mEntityContext);
+                GestorPeticiones = new GestionPeticiones(petDW, mLoggingService, mEntityContext, mLoggerFactory.CreateLogger<GestionPeticiones>(), mLoggerFactory);
                 GestorPeticiones.CargarPeticiones();
             }
 
-            IdentidadCN identidadCN = new IdentidadCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+            IdentidadCN identidadCN = new IdentidadCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<IdentidadCN>(), mLoggerFactory);
             string coma = "";
             string nombresGrupos = "";
             foreach (AD.EntityModel.Models.IdentidadDS.GrupoIdentidades filaGrupo in identidadCN.ObtenerGruposPorIDGrupo(pListaGrupos, false).ListaGrupoIdentidades)
@@ -1729,7 +1735,7 @@ namespace Es.Riam.Gnoss.Elementos.Notificacion
             if (GestorPeticiones == null)
             {
                 DataWrapperPeticion petDW = new DataWrapperPeticion();
-                GestorPeticiones = new GestionPeticiones(petDW, mLoggingService, mEntityContext);
+                GestorPeticiones = new GestionPeticiones(petDW, mLoggingService, mEntityContext, mLoggerFactory.CreateLogger<GestionPeticiones>(), mLoggerFactory);
                 GestorPeticiones.CargarPeticiones();
             }
 
@@ -1773,7 +1779,7 @@ namespace Es.Riam.Gnoss.Elementos.Notificacion
             if (GestorPeticiones == null)
             {
                 DataWrapperPeticion petDW = new DataWrapperPeticion();
-                GestorPeticiones = new GestionPeticiones(petDW, mLoggingService, mEntityContext);
+                GestorPeticiones = new GestionPeticiones(petDW, mLoggingService, mEntityContext, mLoggerFactory.CreateLogger<GestionPeticiones>(), mLoggerFactory);
                 GestorPeticiones.CargarPeticiones();
             }
 
@@ -1818,7 +1824,7 @@ namespace Es.Riam.Gnoss.Elementos.Notificacion
             if (GestorPeticiones == null)
             {
                 DataWrapperPeticion petDW = new DataWrapperPeticion();
-                GestorPeticiones = new GestionPeticiones(petDW, mLoggingService, mEntityContext);
+                GestorPeticiones = new GestionPeticiones(petDW, mLoggingService, mEntityContext, mLoggerFactory.CreateLogger<GestionPeticiones>(), mLoggerFactory);
                 GestorPeticiones.CargarPeticiones();
             }
 
@@ -2345,8 +2351,8 @@ namespace Es.Riam.Gnoss.Elementos.Notificacion
                         identidad = Editor.ObtenerIdentidadEditorEnProyecto(pIdentidad.FilaIdentidad.ProyectoID);
 
                         //Obtenemos la configuración del creador del recurso
-                        IdentidadCN identidadCN = new IdentidadCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
-                        Logica.ServiciosGenerales.PersonaCN personaCN = new Logica.ServiciosGenerales.PersonaCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication);
+                        IdentidadCN identidadCN = new IdentidadCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<IdentidadCN>(), mLoggerFactory);
+                        Logica.ServiciosGenerales.PersonaCN personaCN = new Logica.ServiciosGenerales.PersonaCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<PersonaCN>(), mLoggerFactory);
                         DataWrapperIdentidad dataWrapper = identidadCN.ObtenerIdentidadesPorID(new List<Guid> { pDocumento.CreadorID }, false);
                         Guid perfilIDCreador = dataWrapper.ListaPerfil.First().PerfilID;
                         Guid personaIDCreadorRecurso = personaCN.ObtenerPersonaIDPorPerfil(perfilIDCreador);
@@ -2363,7 +2369,7 @@ namespace Es.Riam.Gnoss.Elementos.Notificacion
                     }
                     catch(Exception ex)
                     {
-                        mLoggingService.GuardarLogError(ex, $"No se pudo enviar la notificación del documento {pDocumento.Clave} al editor {identidad?.Clave}");
+                        mLoggingService.GuardarLogError(ex, $"No se pudo enviar la notificación del documento {pDocumento.Clave} al editor {identidad?.Clave}",mlogger);
                     }
                 }
             }
@@ -3026,7 +3032,7 @@ namespace Es.Riam.Gnoss.Elementos.Notificacion
         /// <param name="pPersonaNotificacionID">Clave de la persona a la que se notifica</param>
         private void AgregarCorreoPersonaRow(AD.EntityModel.Models.Notificacion.Notificacion pNotificacionRow, string pCorreoPersonaNotificacion, Guid pPersonaNotificacionID)
         {
-            if (this.NotificacionDW.ListaNotificacionCorreoPersona.Where(item => item.NotificacionID.Equals(pNotificacionRow.NotificacionID) && item.EmailEnvio.Equals(pCorreoPersonaNotificacion)).Count() == 0)
+            if (!NotificacionDW.ListaNotificacionCorreoPersona.Any(item => item.NotificacionID.Equals(pNotificacionRow.NotificacionID) && item.EmailEnvio.Equals(pCorreoPersonaNotificacion)))
             {
                 AD.EntityModel.Models.Notificacion.NotificacionCorreoPersona filaPersona = new AD.EntityModel.Models.Notificacion.NotificacionCorreoPersona();
 
@@ -3099,7 +3105,7 @@ namespace Es.Riam.Gnoss.Elementos.Notificacion
             NotificacionDW.ListaNotificacion.Add(filaNotificacion);
             mEntityContext.Notificacion.Add(filaNotificacion);
 
-            Notificacion notificacion = new Notificacion(filaNotificacion, this, mLoggingService);
+            Notificacion notificacion = new Notificacion(filaNotificacion, this);
 
             if (!this.ListaNotificaciones.ContainsKey(notificacion.FilaNotificacion.NotificacionID))
             {
@@ -3141,7 +3147,7 @@ namespace Es.Riam.Gnoss.Elementos.Notificacion
             NotificacionDW.ListaNotificacion.Add(filaNotificacion);
             mEntityContext.Notificacion.Add(filaNotificacion);
 
-            Notificacion notificacion = new Notificacion(filaNotificacion, this, mLoggingService);
+            Notificacion notificacion = new Notificacion(filaNotificacion, this);
 
             if (!this.ListaNotificaciones.ContainsKey(notificacion.FilaNotificacion.NotificacionID))
             {
@@ -3199,7 +3205,7 @@ namespace Es.Riam.Gnoss.Elementos.Notificacion
 
                     foreach (AD.EntityModel.Models.Notificacion.Notificacion notificacion in NotificacionDW.ListaNotificacion)
                     {
-                        mListaNotificaciones.Add(notificacion.NotificacionID, new Notificacion(notificacion, this, mLoggingService));
+                        mListaNotificaciones.Add(notificacion.NotificacionID, new Notificacion(notificacion, this));
                     }
                 }
                 return mListaNotificaciones;
@@ -3221,7 +3227,7 @@ namespace Es.Riam.Gnoss.Elementos.Notificacion
                     {
                         if ((mGestorIdentidades != null) && (mGestorIdentidades.ListaIdentidades.ContainsKey(invitacion.IdentidadOrigenID)) && (ListaNotificaciones.ContainsKey(invitacion.NotificacionID)))
                         {
-                            mListaInvitaciones.Add(invitacion.InvitacionID, new Invitacion.Invitacion(invitacion, ListaNotificaciones[invitacion.NotificacionID], mGestorIdentidades.ListaIdentidades[invitacion.IdentidadOrigenID], mLoggingService));
+                            mListaInvitaciones.Add(invitacion.InvitacionID, new Invitacion.Invitacion(invitacion, ListaNotificaciones[invitacion.NotificacionID], mGestorIdentidades.ListaIdentidades[invitacion.IdentidadOrigenID]));
                         }
                     }
                 }
