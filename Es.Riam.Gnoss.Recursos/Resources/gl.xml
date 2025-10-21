@@ -5868,5 +5868,16 @@
     <Resource tag="REPLICACIONBIDIRECCIONALNOCONFIGURADA">Replicacion bidireccional no configurada.</Resource>
     <Resource tag="IDENTITYSERVERNOFUNCIONA">Identity Server no funciona.</Resource>
     <Resource tag="SIMODIFICASLARUTARELATIVAELCAMBIONOSURTIRAEFECTOHASTAQUESERE">Si modificas la ruta relativa el cambio no surtirá efecto hasta que se reinicie la plataforma. Ponte en contacto con el administrador de sistemas para ello.</Resource>
+	<Resource tag="ADQUIRIRVERSIONENTERPRISE">Para acceder á funcionalidade de [SERVICIO] debe adquirir a versión enterprise de GNOSS</Resource>
+	<Resource tag="SERVICIOADMINISTRARPESOS">a administración dos pesos do autocompletado de Lucene</Resource>
+	<Resource tag="SERVICIOESTADOSISTEMAS">a monitorización dos servizos</Resource>
+	<Resource tag="SERVICIOEVENTOSEXTERNOS">a creación de eventos personalizados na plataforma</Resource>
+	<Resource tag="SERVICIOESTADISITICASCOMUNIDAD">as estatísticas da comunidade</Resource>
+	<Resource tag="SERVICIOCARGAMASIVA">carga masiva</Resource>
+	<Resource tag="SERVICIOINEGRACIONCONTINUA">integración continua</Resource>
+	<Resource tag="SERVICIODIAGNOSTICODEPROBLEMAS">diagnóstico de problemas</Resource>
+	<Resource tag="SERVICIOREPROCESADORECURSOS">reprocesado de recursos</Resource>
+	<Resource tag="SERVICIOMONITORIZACIONDETAREAS">monitorización de tarefas</Resource>
+	<Resource tag="SERVICIOAPLICACIONESESPECIFICAS">despregamento e compilación de aplicacións específicas</Resource>
   </page>
 </Resources>

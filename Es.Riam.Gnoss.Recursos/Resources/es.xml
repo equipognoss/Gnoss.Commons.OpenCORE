@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Resources language="Spanish" code="es">		
+<Resources language="Spanish" code="es"> 		
 	<page name="COMMON">
 		<Resource tag="TEXTOAUTOCOMPLETAROPCIONDEFECTO">Ver los resultados de: </Resource>
 		<Resource tag="FECHACREACION">Fecha de creación</Resource>
@@ -6600,6 +6600,17 @@
 		<Resource tag="VISUALIZACIONDELOSRESULTADOSDELABUSQUEDAENMODOMOSAICO">Visualización de los resultados de la búsqueda en modo mosaico.</Resource>
 		<Resource tag="VISUALIZACIONDELOSRESULTADOSDELABUSQUEDAENMODOMAPA">Visualización de los resultados de la búsqueda en modo mapa.</Resource>
 		<Resource tag="VISUALIZACIONDELOSRESULTADOSDELABUSQUEDAENMODOGRAFICO">Visualización de los resultados de la búsqueda en modo gráfico.</Resource>
+		<Resource tag="ADQUIRIRVERSIONENTERPRISE">Para acceder a la funcionalidad de [SERVICIO] debe adquirir la versión enterprise de GNOSS</Resource>
+		<Resource tag="SERVICIOADMINISTRARPESOS">la administración de pesos del autocompletado de lucene</Resource>
+		<Resource tag="SERVICIOESTADOSISTEMAS">la monitorización de los servicios</Resource>
+		<Resource tag="SERVICIOEVENTOSEXTERNOS">la creación de eventos personalizados en la plataforma</Resource>
+		<Resource tag="SERVICIOESTADISITICASCOMUNIDAD">las estadísticas de la comunidad</Resource>
+		<Resource tag="SERVICIOCARGAMASIVA">carga masiva</Resource>
+		<Resource tag="SERVICIOINEGRACIONCONTINUA">integración continua</Resource>
+		<Resource tag="SERVICIODIAGNOSTICODEPROBLEMAS">diagnostico de problemas</Resource>
+		<Resource tag="SERVICIOREPROCESADORECURSOS">reprocesado de recursos</Resource>
+		<Resource tag="SERVICIOMONITORIZACIONDETAREAS">monitorización de tareas</Resource>
+		<Resource tag="SERVICIOAPLICACIONESESPECIFICAS">despliegue y compilación de aplicaciones específicas</Resource>
 	</page>
 	
 	

@@ -5976,6 +5976,17 @@
 		<Resource tag="VISUALIZACIONDELOSRESULTADOSDELABUSQUEDAENMODOMOSAICO">Visualization of search results in mosaic mode.</Resource>
 		<Resource tag="VISUALIZACIONDELOSRESULTADOSDELABUSQUEDAENMODOMAPA">Visualization of search results in map mode.</Resource>
 		<Resource tag="VISUALIZACIONDELOSRESULTADOSDELABUSQUEDAENMODOGRAFICO">Visualization of search results in graphic mode.</Resource>
+		<Resource tag="ADQUIRIRVERSIONENTERPRISE">To access the functionality of [SERVICIO], you must purchase the enterprise version of GNOSS</Resource>
+		<Resource tag="SERVICIOADMINISTRARPESOS">management of Lucene autocomplete weights</Resource>
+		<Resource tag="SERVICIOESTADOSISTEMAS">monitoring of services</Resource>
+		<Resource tag="SERVICIOEVENTOSEXTERNOS">creation of custom events on the platform</Resource>
+		<Resource tag="SERVICIOESTADISITICASCOMUNIDAD">community statistics</Resource>
+		<Resource tag="SERVICIOCARGAMASIVA">bulk upload</Resource>
+		<Resource tag="SERVICIOINEGRACIONCONTINUA">continuous integration</Resource>
+		<Resource tag="SERVICIODIAGNOSTICODEPROBLEMAS">problem diagnosis</Resource>
+		<Resource tag="SERVICIOREPROCESADORECURSOS">resource reprocessing</Resource>
+		<Resource tag="SERVICIOMONITORIZACIONDETAREAS">task monitoring</Resource>
+		<Resource tag="SERVICIOAPLICACIONESESPECIFICAS">deployment and compilation of specific applications</Resource>
 	</page>
 	
 	<page name="MENSAJECOOKIES">

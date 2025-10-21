@@ -5790,6 +5790,17 @@ s		<Resource tag="BUSCARPALABRASCLAVE">Schlüsselwörter suchen …</Resource>
     <Resource tag="REPLICACIONBIDIRECCIONALNOCONFIGURADA">Replicacion bidireccional no configurada.</Resource>
     <Resource tag="IDENTITYSERVERNOFUNCIONA">Identity Server no funciona.</Resource>
     <Resource tag="SIMODIFICASLARUTARELATIVAELCAMBIONOSURTIRAEFECTOHASTAQUESERE">Si modificas la ruta relativa el cambio no surtirá efecto hasta que se reinicie la plataforma. Ponte en contacto con el administrador de sistemas para ello.</Resource>
+	<Resource tag="ADQUIRIRVERSIONENTERPRISE">Um auf die Funktionalität von [SERVICIO] zuzugreifen, müssen Sie die Enterprise-Version von GNOSS erwerben</Resource>
+	<Resource tag="SERVICIOADMINISTRARPESOS">Verwaltung der Lucene-Autovervollständigungsgewichte</Resource>
+	<Resource tag="SERVICIOESTADOSISTEMAS">Überwachung der Dienste</Resource>
+	<Resource tag="SERVICIOEVENTOSEXTERNOS">Erstellung benutzerdefinierter Ereignisse auf der Plattform</Resource>
+	<Resource tag="SERVICIOESTADISITICASCOMUNIDAD">Community-Statistiken</Resource>
+	<Resource tag="SERVICIOCARGAMASIVA">Massenupload</Resource>
+	<Resource tag="SERVICIOINEGRACIONCONTINUA">kontinuierliche Integration</Resource>
+	<Resource tag="SERVICIODIAGNOSTICODEPROBLEMAS">Problemdiagnose</Resource>
+	<Resource tag="SERVICIOREPROCESADORECURSOS">Ressourcen-Neuverarbeitung</Resource>
+	<Resource tag="SERVICIOMONITORIZACIONDETAREAS">Aufgabenüberwachung</Resource>
+	<Resource tag="SERVICIOAPLICACIONESESPECIFICAS">Bereitstellung und Kompilierung spezifischer Anwendungen</Resource>
   </page>
 
 </Resources>

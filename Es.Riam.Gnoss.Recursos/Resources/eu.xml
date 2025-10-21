@@ -5787,5 +5787,16 @@
     <Resource tag="REPLICACIONBIDIRECCIONALNOCONFIGURADA">Replicacion bidireccional no configurada.</Resource>
     <Resource tag="IDENTITYSERVERNOFUNCIONA">Identity Server no funciona.</Resource>
     <Resource tag="SIMODIFICASLARUTARELATIVAELCAMBIONOSURTIRAEFECTOHASTAQUESERE">Si modificas la ruta relativa el cambio no surtirá efecto hasta que se reinicie la plataforma. Ponte en contacto con el administrador de sistemas para ello.</Resource>
+	  <Resource tag="ADQUIRIRVERSIONENTERPRISE">[SERVICIO] funtzionalitatera sartzeko, GNOSSen enterprise bertsioa erosi behar duzu</Resource>
+	  <Resource tag="SERVICIOADMINISTRARPESOS">Lucene autobetetzearen pisuen kudeaketa</Resource>
+	  <Resource tag="SERVICIOESTADOSISTEMAS">zerbitzuen monitorizazioa</Resource>
+	  <Resource tag="SERVICIOEVENTOSEXTERNOS">plataforman gertaera pertsonalizatuak sortzea</Resource>
+	  <Resource tag="SERVICIOESTADISITICASCOMUNIDAD">komunitatearen estatistikak</Resource>
+	  <Resource tag="SERVICIOCARGAMASIVA">karga masiboa</Resource>
+	  <Resource tag="SERVICIOINEGRACIONCONTINUA">integrazio jarraitua</Resource>
+	  <Resource tag="SERVICIODIAGNOSTICODEPROBLEMAS">arazoen diagnostikoa</Resource>
+	  <Resource tag="SERVICIOREPROCESADORECURSOS">baliabideen birprozesatzea</Resource>
+	  <Resource tag="SERVICIOMONITORIZACIONDETAREAS">atzekoen monitorizazioa</Resource>
+	  <Resource tag="SERVICIOAPLICACIONESESPECIFICAS">aplikazio espezifikoen inplementazioa eta konpilazioa</Resource>
   </page>
 </Resources>
