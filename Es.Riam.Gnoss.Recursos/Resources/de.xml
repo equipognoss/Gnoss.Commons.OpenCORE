@@ -5801,6 +5801,11 @@ s		<Resource tag="BUSCARPALABRASCLAVE">Schlüsselwörter suchen …</Resource>
 	<Resource tag="SERVICIOREPROCESADORECURSOS">Ressourcen-Neuverarbeitung</Resource>
 	<Resource tag="SERVICIOMONITORIZACIONDETAREAS">Aufgabenüberwachung</Resource>
 	<Resource tag="SERVICIOAPLICACIONESESPECIFICAS">Bereitstellung und Kompilierung spezifischer Anwendungen</Resource>
+	  <Resource tag="SERVICIOCONSULTASSPARQL">SPARQL-Abfragen über einen Endpunkt auf der Plattform</Resource>
+	  <Resource tag="SERVICIOFTP">ein optimierter FTP-Dienst</Resource>
+	  <Resource tag="SERVICIOCACHE">Cache-Verwaltung</Resource>
+	  <Resource tag="SERVICIODESCARGACONFIGURACIONES">Herunterladen von Plattformkonfigurationen</Resource>
+	  <Resource tag="SERVICIOTRAZAS">Verwaltung von Plattformprotokollen</Resource>
   </page>
 
 </Resources>

@@ -5798,5 +5798,10 @@
 	  <Resource tag="SERVICIOREPROCESADORECURSOS">baliabideen birprozesatzea</Resource>
 	  <Resource tag="SERVICIOMONITORIZACIONDETAREAS">atzekoen monitorizazioa</Resource>
 	  <Resource tag="SERVICIOAPLICACIONESESPECIFICAS">aplikazio espezifikoen inplementazioa eta konpilazioa</Resource>
+	  <Resource tag="SERVICIOCONSULTASSPARQL">SPARQL kontsultak plataformako endpoint baten bidez</Resource>
+	  <Resource tag="SERVICIOFTP">optimizatutako FTP zerbitzua</Resource>
+	  <Resource tag="SERVICIOCACHE">cacheen kudeaketa</Resource>
+	  <Resource tag="SERVICIODESCARGACONFIGURACIONES">plataformaren konfigurazioen deskarga</Resource>
+	  <Resource tag="SERVICIOTRAZAS">plataformaren trazen kudeaketa</Resource>
   </page>
 </Resources>

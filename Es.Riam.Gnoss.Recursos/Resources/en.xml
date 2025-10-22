@@ -5987,6 +5987,11 @@
 		<Resource tag="SERVICIOREPROCESADORECURSOS">resource reprocessing</Resource>
 		<Resource tag="SERVICIOMONITORIZACIONDETAREAS">task monitoring</Resource>
 		<Resource tag="SERVICIOAPLICACIONESESPECIFICAS">deployment and compilation of specific applications</Resource>
+		<Resource tag="SERVICIOCONSULTASSPARQL">SPARQL queries through an endpoint on the platform</Resource>
+		<Resource tag="SERVICIOFTP">an optimized FTP service</Resource>
+		<Resource tag="SERVICIOCACHE">cache management</Resource>
+		<Resource tag="SERVICIODESCARGACONFIGURACIONES">download of platform configurations</Resource>
+		<Resource tag="SERVICIOTRAZAS">management of platform traces</Resource>
 	</page>
 	
 	<page name="MENSAJECOOKIES">

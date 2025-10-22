@@ -5801,5 +5801,10 @@
 	  <Resource tag="SERVICIOREPROCESADORECURSOS">retraitement des ressources</Resource>
 	  <Resource tag="SERVICIOMONITORIZACIONDETAREAS">surveillance des tâches</Resource>
 	  <Resource tag="SERVICIOAPLICACIONESESPECIFICAS">déploiement et compilation d’applications spécifiques</Resource>
+	  <Resource tag="SERVICIOCONSULTASSPARQL">requêtes SPARQL via un endpoint sur la plateforme</Resource>
+	  <Resource tag="SERVICIOFTP">un service FTP optimisé</Resource>
+	  <Resource tag="SERVICIOCACHE">gestion des caches</Resource>
+	  <Resource tag="SERVICIODESCARGACONFIGURACIONES">téléchargement des configurations de la plateforme</Resource>
+	  <Resource tag="SERVICIOTRAZAS">gestion des traces de la plateforme</Resource>
   </page>
 </Resources>

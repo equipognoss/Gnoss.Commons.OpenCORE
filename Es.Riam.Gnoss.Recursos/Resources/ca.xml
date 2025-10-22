@@ -5770,5 +5770,23 @@
     <Resource tag="REPLICACIONBIDIRECCIONALNOCONFIGURADA">Replicacion bidireccional no configurada.</Resource>
     <Resource tag="IDENTITYSERVERNOFUNCIONA">Identity Server no funciona.</Resource>
     <Resource tag="SIMODIFICASLARUTARELATIVAELCAMBIONOSURTIRAEFECTOHASTAQUESERE">Si modificas la ruta relativa el cambio no surtirá efecto hasta que se reinicie la plataforma. Ponte en contacto con el administrador de sistemas para ello.</Resource>
+
+	  <Resource tag="ADQUIRIRVERSIONENTERPRISE">Per accedir a la funcionalitat de [SERVICIO] cal adquirir la versió enterprise de GNOSS</Resource>
+	  <Resource tag="SERVICIOADMINISTRARPESOS">l'administració dels pesos de l'autocompleció de Lucene</Resource>
+	  <Resource tag="SERVICIOESTADOSISTEMAS">la monitorització dels serveis</Resource>
+	  <Resource tag="SERVICIOEVENTOSEXTERNOS">la creació d'esdeveniments personalitzats a la plataforma</Resource>
+	  <Resource tag="SERVICIOESTADISITICASCOMUNIDAD">les estadístiques de la comunitat</Resource>
+	  <Resource tag="SERVICIOCARGAMASIVA">càrrega massiva</Resource>
+	  <Resource tag="SERVICIOINEGRACIONCONTINUA">integració contínua</Resource>
+	  <Resource tag="SERVICIODIAGNOSTICODEPROBLEMAS">diagnòstic de problemes</Resource>
+	  <Resource tag="SERVICIOREPROCESADORECURSOS">reprocessament de recursos</Resource>
+	  <Resource tag="SERVICIOMONITORIZACIONDETAREAS">monitorització de tasques</Resource>
+	  <Resource tag="SERVICIOAPLICACIONESESPECIFICAS">desplegament i compilació d'aplicacions específiques</Resource>
+
+	  <Resource tag="SERVICIOCONSULTASSPARQL">consultes SPARQL mitjançant un endpoint a la plataforma</Resource>
+	  <Resource tag="SERVICIOFTP">un servei FTP optimitzat</Resource>
+	  <Resource tag="SERVICIOCACHE">gestió de memòries cau</Resource>
+	  <Resource tag="SERVICIODESCARGACONFIGURACIONES">descarrega de les configuracions de la plataforma</Resource>
+	  <Resource tag="SERVICIOTRAZAS">gestió de les traces de la plataforma</Resource> 
   </page>
 </Resources>

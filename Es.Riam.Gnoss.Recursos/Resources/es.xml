@@ -6611,6 +6611,11 @@
 		<Resource tag="SERVICIOREPROCESADORECURSOS">reprocesado de recursos</Resource>
 		<Resource tag="SERVICIOMONITORIZACIONDETAREAS">monitorización de tareas</Resource>
 		<Resource tag="SERVICIOAPLICACIONESESPECIFICAS">despliegue y compilación de aplicaciones específicas</Resource>
+		<Resource tag="SERVICIOCONSULTASSPARQL">consultas de sparql mediante un endpoint en la plataforma</Resource>
+		<Resource tag="SERVICIOFTP">un servicio ftp optimizado</Resource>
+		<Resource tag="SERVICIOCACHE">administración de caches</Resource>
+		<Resource tag="SERVICIODESCARGACONFIGURACIONES">descarga de configuraciones de la plataforma</Resource>
+		<Resource tag="SERVICIOTRAZAS">administración de trazas de la plataforma</Resource>
 	</page>
 	
 	

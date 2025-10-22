@@ -5879,5 +5879,10 @@
 	<Resource tag="SERVICIOREPROCESADORECURSOS">reprocesado de recursos</Resource>
 	<Resource tag="SERVICIOMONITORIZACIONDETAREAS">monitorización de tarefas</Resource>
 	<Resource tag="SERVICIOAPLICACIONESESPECIFICAS">despregamento e compilación de aplicacións específicas</Resource>
+	  <Resource tag="SERVICIOCONSULTASSPARQL">consultas SPARQL mediante un endpoint na plataforma</Resource>
+	  <Resource tag="SERVICIOFTP">un servizo FTP optimizado</Resource>
+	  <Resource tag="SERVICIOCACHE">administración das cachés</Resource>
+	  <Resource tag="SERVICIODESCARGACONFIGURACIONES">descarga das configuracións da plataforma</Resource>
+	  <Resource tag="SERVICIOTRAZAS">administración das trazas da plataforma</Resource>
   </page>
 </Resources>
