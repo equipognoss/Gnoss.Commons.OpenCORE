@@ -1,14 +1,19 @@
-using System;
-using System.Data;
-using System.Collections.Generic;
+using Es.Riam.AbstractsOpen;
 using Es.Riam.Gnoss.AD.CMS;
-using Es.Riam.Gnoss.Web.MVC.Models.Administracion;
 using Es.Riam.Gnoss.AD.EncapsuladoDatos;
 using Es.Riam.Gnoss.AD.EntityModel;
-using System.Linq;
+using Es.Riam.Gnoss.AD.Virtuoso;
+using Es.Riam.Gnoss.Logica.Facetado;
+using Es.Riam.Gnoss.Logica.Flujos;
+using Es.Riam.Gnoss.Util.Configuracion;
 using Es.Riam.Gnoss.Util.General;
 using Es.Riam.Gnoss.Web.MVC.Models;
+using Es.Riam.Gnoss.Web.MVC.Models.Administracion;
 using Microsoft.Extensions.Logging;
+using System;
+using System.Collections.Generic;
+using System.Data;
+using System.Linq;
 
 namespace Es.Riam.Gnoss.Elementos.CMS
 {
@@ -41,7 +46,7 @@ namespace Es.Riam.Gnoss.Elementos.CMS
         public List<TipoComponenteCMS> mListaComponentesPrivadosProyecto;
 
         private LoggingService mLoggingService;
-        private EntityContext mEntityContext;
+        private EntityContext mEntityContext;       
 
         #endregion
 
@@ -60,14 +65,14 @@ namespace Es.Riam.Gnoss.Elementos.CMS
             mEntityContext = entityContext;
         }
 
-        #endregion
+		#endregion
 
-        #region Propiedades
+		#region Propiedades
 
-        /// <summary>
-        /// Obtiene el dataset de CMS
-        /// </summary>
-        public DataWrapperCMS CMSDW
+		/// <summary>
+		/// Obtiene el dataset de CMS
+		/// </summary>
+		public DataWrapperCMS CMSDW
         {
             get
             {
@@ -974,7 +979,7 @@ namespace Es.Riam.Gnoss.Elementos.CMS
             filaComponente.TipoCaducidadComponente = pTipoCaducidadComponente;
             filaComponente.FechaUltimaActualizacion = DateTime.Now;
 
-            CMSDW.ListaCMSComponente.Add(filaComponente);
+			CMSDW.ListaCMSComponente.Add(filaComponente);
             mEntityContext.CMSComponente.Add(filaComponente);
 
             List<AD.EntityModel.Models.CMS.CMSPropiedadComponente> listaPropiedades = new List<AD.EntityModel.Models.CMS.CMSPropiedadComponente>();
@@ -1140,7 +1145,7 @@ namespace Es.Riam.Gnoss.Elementos.CMS
             AD.EntityModel.Models.CMS.CMSComponente cmsComponente = ListaComponentes[pComponenteID].FilaComponente;
             CMSDW.ListaCMSComponente.Remove(cmsComponente);
             mEntityContext.EliminarElemento(cmsComponente);
-        }
+		}
 
         #endregion
 

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Es.Riam.Gnoss.Web.MVC.Models.Flujos;
+using System;
 using System.Collections.Generic;
 
 namespace Es.Riam.Gnoss.Web.MVC.Models
@@ -258,6 +259,10 @@ namespace Es.Riam.Gnoss.Web.MVC.Models
         /// (Este dato deberia obtenerse en la vista)
         /// </summary>
         public string NameImage { get; set; }
+        /// <summary>
+        /// Enlace del documento
+        /// </summary>
+        public string Link { get; set; }
 
         /// <summary>
         /// Lista de redes sociales
@@ -329,6 +334,10 @@ namespace Es.Riam.Gnoss.Web.MVC.Models
         /// Indica si el recurso de tipo enlace SharePoint coincide con el fichero al que apunta en SharePoint
         /// </summary>
         public bool EstaAlineadoConSharepoint { get; set; }
+
+        public EstadoModel Estado { get; set; }
+
+        public List<HistorialTransicionModel> HistorialTransiciones { get; set; }
 
         /// <summary>
         /// Modelo de una Base de Recursos. Puede ser una comunidad, un perfil o una organización
@@ -509,9 +518,13 @@ namespace Es.Riam.Gnoss.Web.MVC.Models
             public string UrlUnlockComments { get; set; }
 
             /// <summary>
-            /// 
+            /// Url para restaurar la version de un recurso
             /// </summary>
             public string UrlRestoreVersion { get; set; }
+            /// <summary>
+            /// Url para eliminar la version de un recurso
+            /// </summary>
+            public string UrlDeleteVersion { get; set; }
 
             /// <summary>
             /// Url para reportar contenido inadecuado
@@ -579,9 +592,13 @@ namespace Es.Riam.Gnoss.Web.MVC.Models
             public string UrlLoadActionAddCategories { get; set; }
 
             /// <summary>
-            /// 
+            /// Indica la url para cargar la accion de restaurar una version de un recurso
             /// </summary>
             public string UrlLoadActionRestoreVersion { get; set; }
+            /// <summary>
+            /// Indica la url para cargar la accion de eliminar una version de un recurso
+            /// </summary>
+            public string UrlLoadActionDeleteVersion { get; set; }
 
             /// <summary>
             /// Url para mostrar el panel de reportar contenido inadecuado
@@ -644,6 +661,9 @@ namespace Es.Riam.Gnoss.Web.MVC.Models
             public string UrlLoadActionSendLink { get; set; }
             public string UrlLoadActionAddMetaTitle { get; set; }
             public string UrlLoadActionAddMetaDescripcion { get; set; }
+            public string UrlTransition { get; set; }
+            public string UrlTransitionModal { get; set; }
+            public string UrlTransitionHistory { get; set; }
         }
 
         /// <summary>
@@ -780,10 +800,14 @@ namespace Es.Riam.Gnoss.Web.MVC.Models
             /// Indica si el usuario puede eliminar el recurso
             /// </summary>
             public bool Delete { get; set; }
+            /// <summary>
+            /// Indica si el usuario puede realizar una transición concreta
+            /// </summary>
+            public bool Transition { get; set; }
         }
 
         /// <summary>
-        /// Tipo de publicación
+        /// Tipo de publicaciónejecutar una transicion
         /// </summary>
         public PublicationType TypePublication { get; set; }
 
@@ -942,6 +966,8 @@ namespace Es.Riam.Gnoss.Web.MVC.Models
         /// Identificador del proyecto origen del recurso
         /// </summary>
         public Guid ProjectID { get; set; }
+
+        public Dictionary<string, bool> PropertiesDifferences { get; set; }
     }
 
     /// <summary>

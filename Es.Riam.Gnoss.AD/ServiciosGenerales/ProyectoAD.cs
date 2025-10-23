@@ -204,10 +204,10 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
 		[Description("DESCPERMISOINFOGENERAL")]
         [Section("COMUNIDAD")]
 		GestionarInformacionGeneral = 1,
-		[Description("DESCPERMISOTIPOCONTENIDO")]
-		[Section("COMUNIDAD")]
-		GestionarTiposDeContenidosYPermisos = 2,
-		[Description("DESCPERMISOINTERACCIONESSOCIALES")]
+        [Description("DESCPERMISOFLUJOS")]
+        [Section("COMUNIDAD")]
+        GestionarFlujos = 2,
+        [Description("DESCPERMISOINTERACCIONESSOCIALES")]
 		[Section("COMUNIDAD")]
 		GestionarInteraccionesSociales = 4,
 		[Description("DESCPERMISOMIEMBROS")]
@@ -312,7 +312,7 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
 		[Description("DESCPERMISOROLES")]
 		[Section("COMUNIDAD")]
 		GestionarRolesYPermisos = 68719476736
-	}
+    }
 
 	public enum PermisoContenidos : ulong
 	{
@@ -584,10 +584,14 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
 		RestaurarVersionDebate = 68719476736,
 		[Description("DESCPERMISOELIMINARVERSIONDEBATE")]
 		[Section("RECURSOS")]
-		EliminarVersionDebate = 137438953472
+		EliminarVersionDebate = 137438953472,
+
+		[Description("DESCPERMISOCERTIFICARRECURSO")]
+		[Section("RECURSOS")]
+		CertificarRecurso = 274877906944
 	}
 
-    public enum TipoPermisoRecursosSemanticos : ulong
+	public enum TipoPermisoRecursosSemanticos : ulong
     {
         Crear = 1,
         Modificar = 2,

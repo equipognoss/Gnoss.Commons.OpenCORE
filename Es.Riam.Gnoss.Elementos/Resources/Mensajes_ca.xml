@@ -227,6 +227,10 @@
       <asunto>{#Asunto#}</asunto>
       <texto>{p}{#NombreRemitente#} t'ha enviat un missatge a través de {#NombreProyecto#}{/p}{div style="margin:30px"}{#Texto#}{/div}{p}Per respondre a {#NombreRemitente#} fes clic en aquest enllaç: {a href="{@UrlIntragnoss@}{$identidad$}/mensajes#mensaje={#CorreoID#}"}respondre al missatge{/a}{/p}</texto>
     </mensaje>
+	  <mensaje id="132">
+		  <asunto>{#NombrePersona#} ha modificat l’estat del recurs</asunto>
+		  <texto>{p}{#NombrePersona#} ha modificat l’estat del recurs {a href="{#UrlEnlace#}"}{#NombreDoc#}{/a} i ha passat de l’estat {#NombreEstadoOrigen#} a {#NombreEstadoDestino#}{/p}{p}Comentari de l’editor: {i}'{#Comentario#}'{/i}{/p}</texto>
+	  </mensaje>
     <mensaje id="140">
       <asunto>Tenes un enllaç: {#NombreDoc#}</asunto>
       <texto>{p}{#NombreRemitente#} t'ha enviat un enllaç de {#NombreProyecto#}.{/p}{p}{#Notas#}{/p}{p} {#UrlEnlace#}{/p}</texto>

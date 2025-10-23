@@ -301,6 +301,10 @@ namespace Es.Riam.Gnoss.AD.Facetado
         /// Identificador de las páginas del CMS
         /// </summary>
         public const string PAGINA_CMS = "PaginaCMS";
+        /// <summary>
+        /// Identificador de los componentes CMS
+        /// </summary>
+        public const string COMPONENTE_CMS = "ComponenteCMS";
 
         /// <summary>
         /// Profesores
@@ -15373,17 +15377,64 @@ namespace Es.Riam.Gnoss.AD.Facetado
             return prefix + subQuery + principalQuery + queryLimitOffset;
         }
 
-        #endregion
+        public void ModificarEstadoDeContenido(Guid pProyectoID, Guid pEstadoOrigen, Guid pEstadoDestino, Guid pContenidoID)
+        {
+			string grafo = ObtenerUrlGrafo(pProyectoID.ToString());
+			string tripleEliminar = $"<http://gnoss/{pContenidoID.ToString().ToUpper()}> <http://gnoss/hasWorkflowState> <http://gnoss/{pEstadoOrigen.ToString().ToUpper()}>";
+            string tripleInsertar = $"<http://gnoss/{pContenidoID.ToString().ToUpper()}> <http://gnoss/hasWorkflowState> <http://gnoss/{pEstadoDestino.ToString().ToUpper()}>";            
+			string query = $"{NamespacesVrituosoEscritura} MODIFY GRAPH {grafo} DELETE {{ {tripleEliminar} . }} INSERT {{ {tripleInsertar} . }}";
 
-        #region Tesauro Semántico
+            ActualizarVirtuoso(query, pProyectoID.ToString());
+		}
 
-        /// <summary>
-        /// Obtiene las tripletas de un sujeto que tiene como objeto uno específico.
-        /// </summary>
-        /// <param name="pGrafo">Grafo del Tesauro Semántico</param>
-        /// <param name="pObjeto">Objeto</param>
-        /// <returns>Tripletas de un sujeto que tiene como objeto uno específico</returns>
-        public FacetadoDS ObtenerTripletasDeSujetoConObjeto(string pGrafo, string pObjeto)
+		public void EliminarEstadoDeContenido(Guid pProyectoID, Guid pEstadoID, Guid pContenidoID)
+		{
+			string grafo = ObtenerUrlGrafo(pProyectoID.ToString());
+			string tripleEliminar = $"<http://gnoss/{pContenidoID.ToString().ToUpper()}> <http://gnoss/hasWorkflowState> <http://gnoss/{pEstadoID.ToString().ToUpper()}>";
+
+			string query = $"{NamespacesVrituosoEscritura} DELETE FROM GRAPH {grafo} {{ {tripleEliminar} . }}";
+
+			ActualizarVirtuoso(query, pProyectoID.ToString());
+		}
+
+        public void AnyadirEstadoDeContenido(Guid pProyectoID, Guid pEstadoID, Guid pContenidoID)
+        {
+			string grafo = ObtenerUrlGrafo(pProyectoID.ToString());
+			string tripleInsertar = $"<http://gnoss/{pContenidoID.ToString().ToUpper()}> <http://gnoss/hasWorkflowState> <http://gnoss/{pEstadoID.ToString().ToUpper()}> .";
+			string query = $"SPARQL INSERT INTO {grafo} {{ {tripleInsertar} }}";
+
+			ActualizarVirtuoso(query, pProyectoID.ToString());
+		}
+
+		public void InsertarTripleRdfTypeDeContenido(Guid pProyectoID, Guid pContenidoID, string pRdfType)
+        {
+			string grafo = ObtenerUrlGrafo(pProyectoID.ToString());
+            string tripleInsertar = $"<http://gnoss/{pContenidoID.ToString().ToUpper()}> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> \"{pRdfType}\" .";
+            string query = $"SPARQL INSERT INTO {grafo} {{ {tripleInsertar} }}";
+
+            ActualizarVirtuoso(query, pProyectoID.ToString());
+		}
+
+        public void EliminarTripleRdfTypeDeContenido(Guid pProyectoID, Guid pContenidoID, string pRdfType)
+        {
+			string grafo = ObtenerUrlGrafo(pProyectoID.ToString());
+			string tripleEliminar = $"<http://gnoss/{pContenidoID.ToString().ToUpper()}> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> \"{pRdfType}\" .";
+			string query = $"{NamespacesVrituosoEscritura} DELETE FROM GRAPH {grafo} {{ {tripleEliminar} }}";
+
+			ActualizarVirtuoso(query, pProyectoID.ToString());
+		}
+
+		#endregion
+
+		#region Tesauro Semántico
+
+		/// <summary>
+		/// Obtiene las tripletas de un sujeto que tiene como objeto uno específico.
+		/// </summary>
+		/// <param name="pGrafo">Grafo del Tesauro Semántico</param>
+		/// <param name="pObjeto">Objeto</param>
+		/// <returns>Tripletas de un sujeto que tiene como objeto uno específico</returns>
+		public FacetadoDS ObtenerTripletasDeSujetoConObjeto(string pGrafo, string pObjeto)
         {
             FacetadoDS dataSet = new FacetadoDS();
 

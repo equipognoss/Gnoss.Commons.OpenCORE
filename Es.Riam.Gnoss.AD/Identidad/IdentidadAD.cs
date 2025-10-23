@@ -9261,6 +9261,36 @@ namespace Es.Riam.Gnoss.AD.Identidad
             return listaGrupos;
         }
 
+        public string ObtenerNombreDeGrupo(Guid pGrupoID)
+        {
+            var resultado = mEntityContext.GrupoIdentidades.GroupJoin(mEntityContext.GrupoIdentidadesOrganizacion, grupoIdent => grupoIdent.GrupoID, grupoIdentOrg => grupoIdentOrg.GrupoID, (grupoIdent, grupoIdentOrg) =>
+            new
+            {
+                GrupoIdentidades = grupoIdent,
+                GrupoIdentidadesOrganizacion = grupoIdentOrg
+            }).SelectMany(grupoIdentOrg => grupoIdentOrg.GrupoIdentidadesOrganizacion.DefaultIfEmpty(), (item, grupoIdentOrg) =>
+            new
+            {
+                GrupoIdentidades = item.GrupoIdentidades,
+                GrupoIdentidadesOrganizacion = grupoIdentOrg
+            }).GroupJoin(mEntityContext.Organizacion, join => join.GrupoIdentidadesOrganizacion.OrganizacionID, organizacion => organizacion.OrganizacionID, (join, organizacion) =>
+            new
+            {
+                GrupoIdentidades = join.GrupoIdentidades,
+                GrupoIdentidadesOrganizacion = join.GrupoIdentidadesOrganizacion,
+                Organizacion = organizacion
+            }).SelectMany(org => org.Organizacion.DefaultIfEmpty(), (join, org) =>
+            new
+            {
+                GrupoIdentidades = join.GrupoIdentidades,
+                GrupoIdentidadesOrganizacion = join.GrupoIdentidadesOrganizacion,
+                Organizacion = org
+            }).Where(item => item.GrupoIdentidades.GrupoID.Equals(pGrupoID))
+            .Select(item => item.GrupoIdentidades.Nombre).FirstOrDefault();
+
+            return resultado;
+        }
+
         private class IdentidadIDFotoTipoFechaBaja
         {
             public Guid IdentidadID { get; set; }

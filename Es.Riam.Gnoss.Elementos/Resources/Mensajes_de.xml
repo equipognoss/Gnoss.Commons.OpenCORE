@@ -227,6 +227,10 @@
       <asunto>{#Asunto#}</asunto>
       <texto>{p}{#NombreRemitente#} schickt dir eine Nachricht über {#NombreProyecto#}{/p}{div style="margin:30px"}{#Texto#}{/div}{schreibe eine Antwort an {#NombreRemitente#} indem du hier klickst: {a href="{@UrlIntragnoss@}{$identidad$}/mensajes?mensaje={#CorreoID#}"}responder al mensaje{/a}{/p}</texto>
     </mensaje>
+	  <mensaje id="132">
+		  <asunto>{#NombrePersona#} hat den Status der Ressource</asunto>
+		  <texto>{p}{#NombrePersona#} hat den Status der Ressource {a href="{#UrlEnlace#}"}{#NombreDoc#}{/a} geändert und den Status von {#NombreEstadoOrigen#} zu {#NombreEstadoDestino#} gewechselt{/p}{p}Kommentar des Herausgebers: {i}'{#Comentario#}'{/i}{/p}</texto>
+	  </mensaje>
     <mensaje id="140">
       <asunto>Hier der Link: {#NombreDoc#}</asunto>
       <texto>{p}{#NombreRemitente#} schickt dir einen Link zu {#NombreProyecto#}.{/p}{p}{#Notas#}{/p}{p} {#UrlEnlace#}{/p}</texto>

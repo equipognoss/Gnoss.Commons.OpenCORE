@@ -11,6 +11,7 @@ using Es.Riam.Gnoss.CL.ServiciosGenerales;
 using Es.Riam.Gnoss.Elementos.CMS;
 using Es.Riam.Gnoss.Elementos.ServiciosGenerales;
 using Es.Riam.Gnoss.Logica.CMS;
+using Es.Riam.Gnoss.Logica.ServiciosGenerales;
 using Es.Riam.Gnoss.Recursos;
 using Es.Riam.Gnoss.Util.Configuracion;
 using Es.Riam.Gnoss.Util.General;
@@ -445,6 +446,40 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
             GuardarVersionWeb(modeloARestaurar, pIdentidadActual,pVersionID, pComentario);
             return modeloARestaurar;
         }
+
+        public void EliminarVersionPaginaCMS(Guid pPestanyaID, Guid pVersionID)
+        {
+            AD.EntityModel.Models.ProyectoDS.ProyectoPestanyaVersionCMS filaVersionPaginaCMSEliminar = mEntityContext.ProyectoPestanyaVersionCMS.FirstOrDefault(p => p.PestanyaID.Equals(pPestanyaID) && p.VersionID.Equals(pVersionID));
+
+            if (filaVersionPaginaCMSEliminar != null)
+            {
+                // Version que va despues de la  que quiero eliminar
+                AD.EntityModel.Models.ProyectoDS.ProyectoPestanyaVersionCMS filaVersionPaginaCMSPosterior = mEntityContext.ProyectoPestanyaVersionCMS.FirstOrDefault(p => p.PestanyaID.Equals(pPestanyaID) && p.VersionAnterior.Equals(pVersionID));
+
+                if (filaVersionPaginaCMSPosterior != null)
+                {
+                    // Version que va antes de la que quiero eliminar
+                    AD.EntityModel.Models.ProyectoDS.ProyectoPestanyaVersionCMS filaVersionPaginaCMSAnterior = null;
+                    if (!filaVersionPaginaCMSEliminar.VersionID.Equals(filaVersionPaginaCMSEliminar.VersionAnterior))
+                    {
+                        filaVersionPaginaCMSAnterior = mEntityContext.ProyectoPestanyaVersionCMS.FirstOrDefault(p => p.VersionID.Equals(filaVersionPaginaCMSEliminar.VersionAnterior));
+                    }
+
+                    if (filaVersionPaginaCMSAnterior != null)
+                    {
+                        filaVersionPaginaCMSPosterior.VersionAnterior = filaVersionPaginaCMSAnterior.VersionID;
+                    }
+                    else
+                    {
+                        filaVersionPaginaCMSPosterior.VersionAnterior = filaVersionPaginaCMSPosterior.VersionID;
+                    }
+                }
+
+                mEntityContext.EliminarElemento(filaVersionPaginaCMSEliminar);
+            }
+            mEntityContext.SaveChanges();
+        }
+
         #endregion
 
         #region Métodos de Guardado Web

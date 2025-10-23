@@ -222,11 +222,21 @@ namespace Es.Riam.Gnoss.Logica.CMS
             return CMSAD.ObtenerNombreComponentesPorIDComponente(pIdsComponentes);
         }
 
-        /// <summary>
-        /// Elimina los bloques de una pagina en un proyecto
-        /// </summary>
-        /// <param name="pCMSDS">Dataset de CMS</param>
-        public void EliminarBloquesDePaginaDeProyecto(Guid pProyectoID, short pTipoUbicacionCMS, bool pSoloLosBorradores)
+		public string ObtenerNombreComponentePorIDComponenteEnProyecto(Guid pComponenteID, Guid pProyectoID)
+		{
+			return CMSAD.ObtenerNombreComponentePorIDComponenteEnProyecto(pComponenteID, pProyectoID);
+		}
+
+		public DateTime? ObtenerFechaModificacionDeComponenteEnProyecto(Guid pComponenteID, Guid pProyectoID)
+		{
+			return CMSAD.ObtenerFechaModificacionDeComponenteEnProyecto(pComponenteID, pProyectoID);
+		}
+
+		/// <summary>
+		/// Elimina los bloques de una pagina en un proyecto
+		/// </summary>
+		/// <param name="pCMSDS">Dataset de CMS</param>
+		public void EliminarBloquesDePaginaDeProyecto(Guid pProyectoID, short pTipoUbicacionCMS, bool pSoloLosBorradores)
         {
             CMSAD.EliminarBloquesDePaginaDeProyecto(pProyectoID, pTipoUbicacionCMS, pSoloLosBorradores);
         }
@@ -488,6 +498,11 @@ namespace Es.Riam.Gnoss.Logica.CMS
         public CMSComponenteVersion ObtenerVersionComponenteCMS(Guid pComponenteID, Guid pVersionID)
         {
             return CMSAD.ObtenerVersionComponenteCMS(pComponenteID, pVersionID);
+        }
+
+        public CMSComponenteVersion ObtenerVersionComponenteCMSPorVersionAnterior(Guid pComponenteID, Guid pVersionID)
+        {
+            return CMSAD.ObtenerVersionComponenteCMSPorVersionAnterior(pComponenteID, pVersionID);
         }
 
         #endregion

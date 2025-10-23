@@ -898,12 +898,12 @@ namespace Es.Riam.AbstractsOpen
                                     {
                                         if (FicheroConfiguracionMaster.ToLower().Contains("home"))
                                         {
-                                            sb.AppendLine($"cadenaConexion = mConfigService.ObtenerVirtuosoEscrituraHome();");
+                                            sb.AppendLine($"cadenaConexion = {mConfigService.ObtenerVirtuosoEscrituraHome()}");
                                             virtuosoConnectionData = mConfigService.ObtenerVirtuosoEscrituraHome();
                                         }
                                         else
                                         {
-                                            sb.AppendLine($"mConfigService.ObtenerVirtuosoEscritura().Value;");
+                                            sb.AppendLine($"{mConfigService.ObtenerVirtuosoEscritura().Value}");
                                             virtuosoConnectionData = mConfigService.ObtenerVirtuosoEscritura().Value;
                                         }
                                         //TODO SANTI

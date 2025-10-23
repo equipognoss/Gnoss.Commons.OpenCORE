@@ -1249,6 +1249,7 @@
 		<Resource tag="NOSELECCIONADO">não selecionou nenhum recurso</Resource>
 		<Resource tag="SELECCIONACAT">Seleciona uma categoria</Resource>
 		<Resource tag="DESEARESTAURAR">gostaria de restaurar esta versão do recurso</Resource>
+		<Resource tag="DESEAELIMINARVERSION">Você deseja excluir esta versão do recurso?</Resource>
 		<Resource tag="ABREVENTANANUEVA">abre uma nova janela </Resource>
 		<Resource tag="LECCCIONESDE">Aulas de:</Resource>
 		<Resource tag="FORMATONOVALIDO">El formato de la imagen que intenta importar no es válido (.jpg, .png, .jpeg, .gif)</Resource>
@@ -4044,6 +4045,7 @@
 		<Resource tag="ACTUALIZARADDTOGNOSSNAVG">atualizar-anyadirgnoss-navegador</Resource>
 		<Resource tag="ADMINISTRARVISTAS">gerenciar-visualizacoes</Resource>
 		<Resource tag="NOTIFICACIONESPERSO">Notificações personalizadas</Resource>
+		<Resource tag="ADMINISTRARFLUJOS">administrar-fluxos</Resource>
 	</page>
 	<page name="NOTIFICACIONESPERSONALIZADAS">
 		<Resource tag="TITULO">Listar notificações</Resource>
@@ -4077,7 +4079,7 @@
 		<Resource tag="ADMINISTRARLISTACAMBIO">Mesclar</Resource>
 		<Resource tag="ADMINISTRARDESPLIEGUES">Implantações</Resource>
 		<Resource tag="ADMINISTRAINTEGRACIONCONTINUA">Subir Alterações</Resource>
-
+		<Resource tag="ADMINISTRARFLUJOS">Fluxos de trabalho</Resource>
 	</page>
 	<page name="DEVTOOLS">
 		<Resource tag="FECHAULTIMOACCESO">Último acesso</Resource>
@@ -4173,6 +4175,45 @@
 	</page>
   <page name="DEVTOOLS">
     <!-- Textos que ya existían en Vistas de Administración person sin traducir -> DevTools -->
+	<Resource tag="COLOR">Cor</Resource>
+	<Resource tag="DESEAELIMINARFLUJO">Você deseja excluir o fluxo?</Resource>
+	<Resource tag="TIPOESTADO">Tipo de estado</Resource>
+	<Resource tag="ESTADOINICIAL">Inicial</Resource>
+	<Resource tag="ESTADOINTERMEDIO">Intermédio</Resource>
+	<Resource tag="ESTADOFINAL">Final</Resource>
+	<Resource tag="AGREGAREDITOR">Adicionar editor</Resource>
+	<Resource tag="AGREGARLECTOR">Adicionar leitor</Resource>
+	<Resource tag="AGREGARUSUARIOYGRUPO">Adicionar utilizadores ou grupos</Resource>
+	<Resource tag="ACEPTAR">Aceitar</Resource>
+	<Resource tag="CANCELAR">Cancelar</Resource>
+	<Resource tag="ERRORCARGARFORMULARIO">Ocorreu um problema ao carregar o formulário</Resource>
+	<Resource tag="AÑADIRRESPONSABLE">Adicionar responsáveis</Resource>
+	<Resource tag="RESPONSABLES">Responsáveis</Resource>
+	<Resource tag="TIPOS">Tipos</Resource>
+	<Resource tag="AÑADIRESTADO">Adicionar um estado</Resource>
+	<Resource tag="AÑADIRTRANSICION">Adicionar uma transição</Resource>
+	<Resource tag="SELECCIONCONTENIDO">Selecione um tipo de conteúdo</Resource>
+	<Resource tag="TIPOSDECONTENIDO">Tipos de conteúdo</Resource>
+	<Resource tag="TRANSICIONES">Transições</Resource>
+	<Resource tag="ESTADOS">Estados</Resource>
+	<Resource tag="NUEVOFLUJO">Novo fluxo de trabalho</Resource>
+	<Resource tag="SELECCIONPERFILESFLUJO">Selecione os perfis e/ou grupos para os quais o estado estará disponível (Seja para visibilidade ou a possibilidade de editar o estado; se nenhum for selecionado, não estará disponível para ninguém)</Resource>
+	<Resource tag="SELECCIONESTADOINICIO">Selecione um estado de início</Resource>
+	<Resource tag="SELECCIONESTADODESTINO">Selecione um estado de destino</Resource>
+	<Resource tag="ESTADOORIGEN">Estado de origem</Resource>
+	<Resource tag="ESTADODESTINO">Estado de destino</Resource>
+	<Resource tag="FLUJODETRABAJO">Fluxo de trabalho</Resource>
+	<Resource tag="ERRORTRANSICIONESINCOMPLETAS">Você deve escolher um estado de origem e um estado de destino em todas as transições</Resource>
+	<Resource tag="ERRORTRANSICIONESSINESTADOFINAL">As transições do fluxo não têm pelo menos um estado final definido</Resource>
+	<Resource tag="ERRORTRANSICIONESSINESTADOINICIAL">As transições do fluxo não têm pelo menos um estado inicial definido</Resource>
+	<Resource tag="ERRORTRANSICIONESESTADOSIGUALES">Você não pode escolher o mesmo estado como estado de origem e estado de destino</Resource>
+	<Resource tag="ERRORTRANSICIONESIGUALES">Não pode haver mais de uma transição com a mesma origem e destino</Resource>
+	<Resource tag="NOMBREESTADOREPETIDO">Você não pode salvar um fluxo com estados com o mesmo nome</Resource>
+	<Resource tag="NOMBRETRANSICIONREPETIDO">Você não pode salvar um fluxo com transições com o mesmo nome</Resource>
+	<Resource tag="ERRORFLUJOEXISTENTESOBRETIPO">Você não pode salvar um fluxo de trabalho que afete um tipo de conteúdo de outro fluxo de trabalho existente: @1@</Resource>
+	<Resource tag="ERRORESTADOPERTENECETRANSICION">Não é possível excluir o estado. Ele pertence a uma transição</Resource>
+	<Resource tag="ERRORESTADOAFECTACONTENIDO">Não é possível excluir o estado porque está atribuído a um conteúdo do tipo: @1@</Resource>
+	<Resource tag="ERRORTRANSICIONAFECTACONTENIDO">Não é possível excluir a transição porque ela afeta conteúdos do tipo: @1@</Resource>
 	<Resource tag="INSERTADOSEARCH">A propriedade foi inserida.</Resource>
 	<Resource tag="ALERTAUSUARIO">Aviso!</Resource>
 	<Resource tag="PROPIEDADNOEXISTE">A propriedade introduzida: @1@ não existe.</Resource>
@@ -4242,8 +4283,16 @@
     <Resource tag="CUALQUIERTIPO">Cualquier tipo</Resource>
     <Resource tag="REFERENCIAADOCUMENTOFISICO">Referencia a documento físico</Resource>
     <Resource tag="DIRECCIONDEINTERNET">Dirección de internet</Resource>
-    <Resource tag="NOTA">Nota</Resource>
-    <Resource tag="ARTICULOWIKI">Artículo wiki</Resource>
+	<Resource tag="NOTA">Nota</Resource>
+	<Resource tag="ADJUNTO">Anexo</Resource>
+	<Resource tag="VIDEO">Vídeo</Resource>
+	<Resource tag="LINK">Link</Resource>
+	<Resource tag="ENCUESTA">Pesquisa</Resource>
+	<Resource tag="DEBATE">Debate</Resource>
+	<Resource tag="PAGINACMS">Página CMS</Resource>
+	<Resource tag="COMPONENTECMS">Componente CMS</Resource>
+	<Resource tag="RECURSOSEMANTICO">Recurso semântico</Resource>
+	<Resource tag="ARTICULOWIKI">Artículo wiki</Resource>
     <Resource tag="PREGUNTA">Pregunta</Resource>
     <Resource tag="ENCUESTA">Encuesta</Resource>
     <Resource tag="DEBATE">Debate</Resource>
@@ -4262,7 +4311,6 @@
     <Resource tag="ENESTOSMOMENTOSESTAMOSELABORANDOLAPOLITICADECERTIFICACIONDEL">En estos momentos estamos elaborando la política de certificación de los recursos de la comunidad. Si tienes alguna duda sobre los niveles de certificación que hemos establecido te sugerimos que te pongas en contacto con nosotros. María Ortega, administrador de la comunidad.</Resource>
     <Resource tag="FUENTESRSS/ATOM">Fuentes RSS/ATOM</Resource>
     <Resource tag="NUEVAFUENTE">Nueva fuente</Resource>
-    <Resource tag="TITULO">Título</Resource>
     <Resource tag="URL">Url</Resource>
     <Resource tag="ACCIONES">Ações</Resource>
     <Resource tag="MIEMBROS">Miembros</Resource>
@@ -4287,8 +4335,8 @@
     <Resource tag="FRANÇAIS">Français</Resource>
     <Resource tag="DEUTSCH">Deutsch</Resource>
     <Resource tag="ITALIANO">Italiano</Resource>
-    <Resource tag="TITULO">Título</Resource>
-    <Resource tag="NOMBREDELACOOKIE">Nombre de la cookie</Resource>
+	<Resource tag="TITULO">Título</Resource>
+	<Resource tag="NOMBREDELACOOKIE">Nombre de la cookie</Resource>
     <Resource tag="TEXTODECABECERA">Texto de cabecera</Resource>
     <Resource tag="TEXTODEPAGINA">Texto de página</Resource>
     <Resource tag="CONFIGURALOSCOMPONENTESQUEAPARECENENLASFICHASDEUNRECURSO">Configura los componentes que aparecen en las fichas de un recurso</Resource>
@@ -4870,7 +4918,8 @@
     <Resource tag="ADMINISTRACIONVISTAS">Administración vistas</Resource>
     <Resource tag="VISTAS">Vistas</Resource>
     <Resource tag="TRADUCCIONES">Traducciones</Resource>
-    <Resource tag="INVALIDARTODASLASVISTAS">Invalidar todas las vistas</Resource>
+	<Resource tag="AVISOTRADUCCIONESDESACTIVADAS">Para poder adicionar traduções personalizadas, é necessário que a opção "Vistas personalizadas" esteja ativada nas Configurações gerais do meta administrador. Se não tiver as permissões necessárias, entre em contacto com o meta administrador da plataforma.</Resource>
+	<Resource tag="INVALIDARTODASLASVISTAS">Invalidar todas las vistas</Resource>
     <Resource tag="PLANTILLASDELAWEB">Plantillas de la web</Resource>
     <Resource tag="PLANTILLASDELSERVICIODERESULTADOS">Plantillas del servicio de Resultados</Resource>
     <Resource tag="PLANTILLASDELSERVICIODEFACETAS">Plantillas del servicio de Facetas</Resource>
@@ -5220,8 +5269,22 @@
     <Resource tag="INDICASIELCOMPONENTEESTADISPONIBLEENLASPAGINASDONDESEHAAÑADI">Indica si el componente está disponible en las páginas donde se ha añadido.</Resource>
     <Resource tag="SELECCIONALACADUCIDADQUETENDRAELCOMPONENTEPARASERUSADAENCACH">Selecciona la caducidad que tendrá el componente para ser usada en Cache</Resource>
     <Resource tag="INTRODUCEELESTILOCSSQUETENDRAELCOMPONENTEPARASUPERSONALIZACI">Introduce el estilo CSS que tendrá el componente para su personalización vía CSS</Resource>
-    <Resource tag="DESEAELIMINARELCOMPONENTE">¿Desea eliminar el componente?</Resource>
-    <Resource tag="SELECCIONAUNAIMAGENPARAADJUNTAR">Selecciona una imagen para adjuntar</Resource>
+	<Resource tag="ERRORCARGAFORMULARIO">Ocorreu um erro ao carregar o formulário</Resource>
+	<Resource tag="RESTAURARVERSIONCONFIGPAGINA">A versão de configuração da página foi restaurada corretamente</Resource>
+	<Resource tag="ERRORRESTAURARVERSIONCONFIGPAGINA">Ocorreu um problema ao restaurar a versão de configuração da página</Resource>
+	<Resource tag="DESEAELIMINARVERSIONCONFIGPAGINA">Deseja excluir a versão de configuração da página?</Resource>
+	<Resource tag="ERRORELIMINARVERSIONCONFIGPAGINA">Ocorreu um problema ao excluir a versão de configuração da página</Resource>
+	<Resource tag="VERSIONCONFIGPAGINAELIMINADO">A versão de configuração da página foi excluída com sucesso</Resource>
+	<Resource tag="DESEAELIMINARVERSIONESTRUCTURAPAGINA">Deseja excluir a versão da estrutura da página CMS?</Resource>
+	<Resource tag="RESTAURARVERSIONESTRUCTURAPAGINA">A versão da estrutura da página CMS foi restaurada com sucesso</Resource>
+	<Resource tag="ERRORRESTAURARVERSIONESTRUCTURAPAGINA">Ocorreu um problema ao restaurar a versão da estrutura da página CMS</Resource>
+	<Resource tag="ERRORELIMINARVERSIONESTRUCTURAPAGINA">Ocorreu um problema ao excluir a versão da estrutura da página CMS</Resource>
+	<Resource tag="VERSIONESTRUCTURAPAGINAELIMINADO">A versão da estrutura da página CMS foi excluída com sucesso</Resource>
+	<Resource tag="DESEAELIMINARELCOMPONENTE">¿Desea eliminar el componente?</Resource>
+	<Resource tag="DESEAELIMINARVERSIONCOMPONENTECMS">Deseja excluir esta versão do componente CMS?</Resource>
+	<Resource tag="ERRORELIMINARVERSIONCMS">Ocorreu um problema durante a exclusão da versão do componente CMS</Resource>
+	<Resource tag="VERSIONCMSELIMINADO">A versão do componente CMS foi excluída com sucesso</Resource>
+	<Resource tag="SELECCIONAUNAIMAGENPARAADJUNTAR">Selecciona una imagen para adjuntar</Resource>
     <Resource tag="NUEVOCAMPO">Nuevo campo</Resource>
     <Resource tag="NOMBREDELCAMPODELFORMULARIO">Nombre del campo del formulario.</Resource>
     <Resource tag="CAMPOOBLIGATORIO">Campo obligatorio</Resource>
@@ -5928,10 +5991,22 @@
 	  <Resource tag="SERVICIOREPROCESADORECURSOS">reprocessamento de recursos</Resource>
 	  <Resource tag="SERVICIOMONITORIZACIONDETAREAS">monitorização de tarefas</Resource>
 	  <Resource tag="SERVICIOAPLICACIONESESPECIFICAS">implementação e compilação de aplicações específicas</Resource>
+
 	  <Resource tag="SERVICIOCONSULTASSPARQL">consultas SPARQL através de um endpoint na plataforma</Resource>
 	  <Resource tag="SERVICIOFTP">um serviço FTP otimizado</Resource>
 	  <Resource tag="SERVICIOCACHE">gestão de caches</Resource>
 	  <Resource tag="SERVICIODESCARGACONFIGURACIONES">transferência das configurações da plataforma</Resource>
 	  <Resource tag="SERVICIOTRAZAS">gestão das rastreias da plataforma</Resource>
+
   </page>
+	<page name="FLUJOS">
+		<Resource tag="TRANSICIONREALIZADA">A alteração de estado foi realizada com sucesso</Resource>
+		<Resource tag="TRANSICIONERROR">Ocorreu um erro ao alterar o estado do recurso</Resource>
+		<Resource tag="COMENTARIO">Comentário adicional para a alteração de estado</Resource>
+		<Resource tag="VERHISTORIAL">Histórico de alterações de estado</Resource>
+		<Resource tag="REVISOR">Revisor</Resource>
+		<Resource tag="COMENTARIOREVISOR">Comentário do revisor</Resource>
+		<Resource tag="CAMBIO">Alteração</Resource>
+		<Resource tag="HISTORIALERROR">Ocorreu um erro ao carregar o histórico de alterações</Resource>
+	</page>
 </Resources>

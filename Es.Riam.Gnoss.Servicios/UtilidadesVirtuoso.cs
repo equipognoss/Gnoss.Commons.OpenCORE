@@ -1681,6 +1681,10 @@ namespace Es.Riam.Gnoss.Servicios
                 tripletas.Append(GenerarTripletasInformacionComunRecurso(pDocumento, pProyecto.TipoAcceso, pProyecto.Clave));
                 tripletas.Append(GenerarTripletasInformacionExtraRecurso(pDocumento, pProyecto));
                 tripletas.Append(GenerarTripletasRecursoPorTipoDocumento(pFicheroConfiguracionBD, pFicheroConfiguracionBDBase, pUrlIntragnoss, pDocumento, pProyecto.Clave, pRdfConfiguradoRecursoNoSemantico, pListaTriplesRecurso, pOntologia));
+                if (pDocumento.FilaDocumento.EstadoID.HasValue)
+                {
+					tripletas.Append(GenerarTripletaEstadoRecurso(pDocumento));
+				}                
 
                 GenerarTriplesTituloRecurso(tripletas, pDocumento.Clave, pDocumento.Titulo, ref valorSearch);
 
@@ -2512,6 +2516,11 @@ namespace Es.Riam.Gnoss.Servicios
                 }
             }
             return tripletas.ToString();
+        }
+
+        private string GenerarTripletaEstadoRecurso(Documento pDocumento)
+        {
+            return $"<http://gnoss/{pDocumento.Clave.ToString().ToUpper()}> <http://gnoss/hasWorkflowState> <http://gnoss/{pDocumento.FilaDocumento.EstadoID.ToString().ToUpper()}> .";
         }
 
         /// <summary>

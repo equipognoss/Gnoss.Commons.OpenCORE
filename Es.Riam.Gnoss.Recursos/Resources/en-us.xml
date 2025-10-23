@@ -1234,7 +1234,8 @@
     <Resource tag="NOSELECCIONADO">You have not selected any resource</Resource>
     <Resource tag="SELECCIONACAT">Select one category</Resource>
     <Resource tag="DESEARESTAURAR">Would you like to restore this version of the resource?</Resource>
-    <Resource tag="ABREVENTANANUEVA">It is opened in a new window</Resource>
+	<Resource tag="DESEAELIMINARVERSION">Do you want to delete this version of the resource?</Resource>
+	<Resource tag="ABREVENTANANUEVA">It is opened in a new window</Resource>
     <Resource tag="LECCCIONESDE">Lessons of:</Resource>
     <Resource tag="FORMATONOVALIDO">El formato de la imagen que intenta importar no es válido (.jpg, .png, .jpeg, .gif)</Resource>
   </page>

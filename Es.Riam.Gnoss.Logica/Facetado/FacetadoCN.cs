@@ -2717,7 +2717,32 @@ namespace Es.Riam.Gnoss.Logica.Facetado
             return FacetadoAD.ObtenerInformacionOntologias(organizacionID, proyectoID);
         }
 
-        #endregion
-    }
+        public void ModificarEstadoDeContenido(Guid pProyectoID, Guid pEstadoOrigen, Guid pEstadoDestino, Guid pContenidoID)
+        {
+            FacetadoAD.ModificarEstadoDeContenido(pProyectoID, pEstadoOrigen, pEstadoDestino, pContenidoID);
+        }
+
+		public void AnyadirEstadoDeContenido(Guid pProyectoID, Guid pEstadoID, Guid pContenidoID)
+        {
+            FacetadoAD.AnyadirEstadoDeContenido(pProyectoID, pEstadoID, pContenidoID);
+        }
+
+		public void EliminarEstadoDeContenido(Guid pProyectoID, Guid pEstadoID, Guid pContenidoID)
+        {
+            FacetadoAD.EliminarEstadoDeContenido(pProyectoID, pEstadoID, pContenidoID);
+        }
+
+		public void InsertarTripleRdfTypeDeContenido(Guid pProyectoID, Guid pContenidoID, string pRdfType)
+        {
+            FacetadoAD.InsertarTripleRdfTypeDeContenido(pProyectoID, pContenidoID, pRdfType);
+        }
+
+		public void EliminarTripleRdfTypeDeContenido(Guid pProyectoID, Guid pContenidoID, string pRdfType)
+        {
+            FacetadoAD.EliminarTripleRdfTypeDeContenido(pProyectoID, pContenidoID, pRdfType);
+        }
+
+		#endregion
+	}
 }
 

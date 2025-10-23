@@ -24,6 +24,8 @@ using Es.Riam.Gnoss.Elementos.ServiciosGenerales;
 using Es.Riam.Gnoss.Logica.CMS;
 using Es.Riam.Gnoss.Logica.Documentacion;
 using Es.Riam.Gnoss.Logica.ExportacionBusqueda;
+using Es.Riam.Gnoss.Logica.Facetado;
+using Es.Riam.Gnoss.Logica.Flujos;
 using Es.Riam.Gnoss.Logica.Identidad;
 using Es.Riam.Gnoss.Logica.ParametroAplicacion;
 using Es.Riam.Gnoss.Logica.ServiciosGenerales;
@@ -55,6 +57,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Web;
 using VDS.Common.Tries;
+using static Es.Riam.Gnoss.Util.Seguridad.Capacidad;
 using static Es.Riam.Gnoss.Web.MVC.Models.Administracion.TabModel.SearchTabModel;
 
 namespace Es.Riam.Gnoss.Web.Controles.Administracion
@@ -1254,11 +1257,6 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
 
 		public void GuardarVersionPagina(TabModel pestanya, string pComentario = null)
 		{
-			if (pestanya.Type.Equals(TipoPestanyaMenu.CMS))
-			{
-
-			}
-			
 			ProyectoPestanyaMenuVersionPagina proyectoPestanyaMenuVersionPaginaNueva = new ProyectoPestanyaMenuVersionPagina();
             ProyectoPestanyaMenuVersionPagina proyectoPestanyaMenuVersionPaginaVieja =
 			mEntityContext.ProyectoPestanyaMenuVersionPaginas.Where(x => x.PestanyaID == pestanya.Key).OrderByDescending(x => x.Fecha).FirstOrDefault();
@@ -1372,6 +1370,39 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
 			return pestanyaRestaurar;
 		}
 
+        public void EliminarVersionPagina(Guid pPestanyaID, Guid pVersionID)
+        {
+            ProyectoPestanyaMenuVersionPagina filaVersionPaginaEliminar = mEntityContext.ProyectoPestanyaMenuVersionPaginas.FirstOrDefault(p => p.PestanyaID.Equals(pPestanyaID) && p.VersionID.Equals(pVersionID));
+
+            if (filaVersionPaginaEliminar != null)
+            {
+                // Version que va despues de la  que quiero eliminar
+                ProyectoPestanyaMenuVersionPagina filaVersionPaginaPosterior = mEntityContext.ProyectoPestanyaMenuVersionPaginas.FirstOrDefault(p => p.PestanyaID.Equals(pPestanyaID) && p.VersionAnterior.Equals(pVersionID));
+
+                if (filaVersionPaginaPosterior != null)
+                {
+					// Version que va antes de la que quiero eliminar
+					ProyectoPestanyaMenuVersionPagina filaVersionPaginaAnterior = null;
+					if (!filaVersionPaginaEliminar.VersionID.Equals(filaVersionPaginaEliminar.VersionAnterior))
+					{
+                        filaVersionPaginaAnterior = mEntityContext.ProyectoPestanyaMenuVersionPaginas.FirstOrDefault(p => p.VersionID.Equals(filaVersionPaginaEliminar.VersionAnterior) && p.PestanyaID.Equals(pPestanyaID));
+                    }
+
+                    if (filaVersionPaginaAnterior != null)
+                    {
+                        filaVersionPaginaPosterior.VersionAnterior = filaVersionPaginaAnterior.VersionID;
+                    }
+                    else
+                    {
+                        filaVersionPaginaPosterior.VersionAnterior = filaVersionPaginaPosterior.VersionID;
+                    }
+                }
+
+                mEntityContext.EliminarElemento(filaVersionPaginaEliminar);
+            }
+            mEntityContext.SaveChanges();
+        }
+
         private void ComprobarInconsistencias()
 		{
 			var nombreCortosRepetidos = GestionProyectos.DataWrapperProyectos.ListaProyectoPestanyaMenu.GroupBy(item => item.NombreCortoPestanya).Where(item => item.Count() > 1).Select(item => item.Key);
@@ -1483,6 +1514,26 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
 					filaPestanyaCMS = new ProyectoPestanyaCMS();
 					filaPestanyaCMS.PestanyaID = pPestanya.Key;
 					filaPestanyaCMS.Ubicacion = tipoPagina;
+
+					Guid? estadoInicial = null;
+					using (FlujosCN flujosCN = new FlujosCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<FlujosCN>(), mLoggerFactory))
+					{
+						estadoInicial = flujosCN.ObtenerEstadoInicialDeTipoContenido(ProyectoSeleccionado.Clave, TiposContenidos.PaginaCMS);
+						if (estadoInicial.HasValue)
+						{
+							filaPestanyaCMS.EstadoID = estadoInicial.Value;
+						}
+					}
+
+					using (FacetadoCN facetadoCN = new FacetadoCN(UrlIntragnoss, mEntityContext, mLoggingService, mConfigService, mVirtuosoAD, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<FacetadoCN>(), mLoggerFactory))
+					{
+						if (estadoInicial.HasValue)
+						{
+							facetadoCN.AnyadirEstadoDeContenido(ProyectoSeleccionado.Clave, estadoInicial.Value, pPestanya.Key);							
+						}
+						facetadoCN.InsertarTripleRdfTypeDeContenido(ProyectoSeleccionado.Clave, pPestanya.Key, "PaginaCMS");
+					}
+
 					GestionProyectos.DataWrapperProyectos.ListaProyectoPestanyaCMS.Add(filaPestanyaCMS);
 
 					if (!mEntityContext.ProyectoPestanyaCMS.Any(pestanya => pestanya.PestanyaID.Equals(pPestanya.Key)))
@@ -2330,9 +2381,21 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
 					EliminarFilaCMSPagina(filasCMS[0].Ubicacion);
 					filaPestanya.ProyectoPestanyaCMS.Remove(filasCMS[0]);
 					mEntityContext.EliminarElemento(filasCMS[0]);
+					if (filasCMS[0].EstadoID.HasValue)
+					{
+						using (FacetadoCN facetadoCN = new FacetadoCN("", mEntityContext, mLoggingService, mConfigService, mVirtuosoAD, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<FacetadoCN>(), mLoggerFactory))
+						{
+							facetadoCN.EliminarEstadoDeContenido(ProyectoSeleccionado.Clave, filasCMS[0].EstadoID.Value, filasCMS[0].PestanyaID);
+						}
+					}
 				}
 
-                ControladorCMS controlador = new ControladorCMS(mLoggingService, mEntityContext, mConfigService, mRedisCacheWrapper, mEntityContextBASE, mVirtuosoAD, mAvailableServices, mLoggerFactory.CreateLogger<ControladorCMS>(), mLoggerFactory);
+				using (FacetadoCN facetadoCN = new FacetadoCN("", mEntityContext, mLoggingService, mConfigService, mVirtuosoAD, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<FacetadoCN>(), mLoggerFactory))
+				{					
+					facetadoCN.EliminarTripleRdfTypeDeContenido(ProyectoSeleccionado.Clave, filaPestanya.PestanyaID, "PaginaCMS");
+				}
+
+				ControladorCMS controlador = new ControladorCMS(mLoggingService, mEntityContext, mConfigService, mRedisCacheWrapper, mEntityContextBASE, mVirtuosoAD, mAvailableServices, mLoggerFactory.CreateLogger<ControladorCMS>(), mLoggerFactory);
                 controlador.ActualizarModeloBaseSimple(filaPestanya.PestanyaID, ProyectoSeleccionado.Clave, AD.BASE_BD.PrioridadBase.Alta, true);
             }
 

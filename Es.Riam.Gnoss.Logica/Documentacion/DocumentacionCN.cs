@@ -2260,6 +2260,11 @@ namespace Es.Riam.Gnoss.Logica.Documentacion
             return DocumentacionAD.ObtenerVersionesDocumentoIDPorID(pDocumentoID);
         }
 
+        public Guid ObtenerDocumentoOriginalIDPorID(Guid pDocumentoID)
+        {
+            return DocumentacionAD.ObtenerDocumentoOriginalIDPorID(pDocumentoID);
+        }
+
 
         /// <summary>
         /// Carga todas las versiones de una página de forma ordenada.
@@ -2836,15 +2841,29 @@ namespace Es.Riam.Gnoss.Logica.Documentacion
         {
             DocumentacionAD.DescompartirDocumentosCompartidos(pListaDocumentosExcluidos, pProyectoOrigenID, pProyectoDestinoID);
         }
-        #endregion
 
-        #region Privados
+		#region Estados
+        public Guid? ObtenerEstadoIDDeDocumento(Guid pDocumentoID)
+        {
+            return DocumentacionAD.ObtenerEstadoIDDeDocumento(pDocumentoID);
+		}
 
-        /// <summary>
-        /// Valida los documentos
-        /// </summary>
-        /// <param name="pDocumentos">Lista de documentos para validar</param>
-        private void ValidarDocumentos(List<Documento> pDocumentos)
+		public void CambiarEstadoDocumento(Guid pDocumentoID, Guid pEstadoID)
+        {
+            DocumentacionAD.CambiarEstadoDocumento(pDocumentoID, pEstadoID);
+        }
+
+		#endregion
+
+		#endregion
+
+		#region Privados
+
+		/// <summary>
+		/// Valida los documentos
+		/// </summary>
+		/// <param name="pDocumentos">Lista de documentos para validar</param>
+		private void ValidarDocumentos(List<Documento> pDocumentos)
         {
             if (pDocumentos != null)
             {

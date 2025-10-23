@@ -1,4 +1,5 @@
-﻿using Es.Riam.Gnoss.AD.EntityModel.Models.Roles;
+﻿using Es.Riam.Gnoss.AD.EntityModel.Models.Flujos;
+using Es.Riam.Gnoss.AD.EntityModel.Models.Roles;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -22,6 +23,7 @@ namespace Es.Riam.Gnoss.AD.EntityModel.Models.Documentacion
             DocumentoRespuestaVoto = new HashSet<DocumentoRespuestaVoto>();
             VotoDocumento = new HashSet<VotoDocumento>();
             RolOntologiaPermiso = new HashSet<RolOntologiaPermiso>();
+			HistorialTransicionDocumento = new HashSet<HistorialTransicionDocumento>();
         }
 
         public Guid DocumentoID { get; set; }
@@ -103,6 +105,8 @@ namespace Es.Riam.Gnoss.AD.EntityModel.Models.Documentacion
 
         public string Tags { get; set; }
 
+        public Guid? EstadoID { get; set; }
+
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<DocumentoRolIdentidad> DocumentoRolIdentidad { get; set; }
 
@@ -134,8 +138,13 @@ namespace Es.Riam.Gnoss.AD.EntityModel.Models.Documentacion
         
         public virtual IdentidadDS.Identidad Creador { get; set; }
 
+        public virtual Estado Estado { get; set; }
+
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
 		public virtual ICollection<RolOntologiaPermiso> RolOntologiaPermiso { get; set; }
+
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+		public virtual ICollection<HistorialTransicionDocumento> HistorialTransicionDocumento { get; set; }
 
 		public int CompareTo(object obj)
         {

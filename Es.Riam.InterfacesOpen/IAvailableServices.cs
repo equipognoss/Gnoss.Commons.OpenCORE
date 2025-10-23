@@ -69,6 +69,7 @@ namespace Es.Riam.Interfaces.InterfacesOpen
 		Thumbnail,
 		UserWall,
 		VisitCluster,
-		VisitRegistry
+		VisitRegistry,
+		Workflows
 	}
 }

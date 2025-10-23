@@ -381,6 +381,17 @@ namespace Es.Riam.Gnoss.AD.ParametrosProyecto
         }
 
         /// <summary>
+        /// Comprueba si el proyecto tiene vistas personalizadas
+        /// </summary>
+        /// <param name="pProyectoID"></param>
+        /// <returns></returns>
+        public bool VistasPersonalizadasActivadoPorProyectoID(Guid pProyectoID)
+        {
+            return mEntityContext.VistaVirtualProyecto.FirstOrDefault(v => v.ProyectoID.Equals(pProyectoID)) != null;
+        }
+
+
+        /// <summary>
         /// Obtiene las tablas de VistaVirtual de una personaalizacion
         /// </summary>
         /// <param name="pProyectoID">Identificador del proyecto</param>

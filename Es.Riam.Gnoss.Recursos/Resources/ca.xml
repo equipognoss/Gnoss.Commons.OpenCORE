@@ -1313,6 +1313,7 @@
 		<Resource tag="NOSELECCIONADO">No has seleccionat cap recurs</Resource>
 		<Resource tag="SELECCIONACAT">Selecciona una categoria</Resource>
 		<Resource tag="DESEARESTAURAR">Desitges restaurar aquesta versió del recurs?</Resource>
+		<Resource tag="DESEAELIMINARVERSION">Vols eliminar aquesta versió del recurs?</Resource>
 		<Resource tag="ABREVENTANANUEVA">S'obre en una finestra nova</Resource>
 		<Resource tag="LECCCIONESDE">Lliçons de:</Resource>
 		<Resource tag="FORMATONOVALIDO">El format de la imatge que intenta importar no és vàlid (.jpg, .png, .jpeg, .gif)</Resource>
@@ -3895,6 +3896,7 @@
 		<Resource tag="ADMINISTRARSOLICITUDESUSUARIOS">administrar-solicitudes-usuarios</Resource>
 		<Resource tag="ADMINISTRARCONFIGURACIONPESOBUSQUEDAS">administrar-peso-busqueda</Resource>
 		<Resource tag="NOTIFICACIONESPERSO">Notificacions personalitzades</Resource>
+		<Resource tag="ADMINISTRARFLUJOS">administrar-fluxos</Resource>
 	</page>
 	<page name="NOTIFICACIONESPERSONALIZADAS">
 		<Resource tag="TITULO">Llistat Notificacions</Resource>
@@ -3985,7 +3987,7 @@
 		<Resource tag="ADMINISTRARLISTACAMBIO">Fusionar</Resource>
 		<Resource tag="ADMINISTRARDESPLIEGUES">Desplegaments</Resource>
 		<Resource tag="ADMINISTRAINTEGRACIONCONTINUA">Pujar canvis</Resource>
-
+		<Resource tag="ADMINISTRARFLUJOS">Fluxos de treball</Resource>
 	</page>	
 	<page name="COMADMINDISENIO">
 		<Resource tag="XMLSUBIDO">Archivo subido correctamente</Resource>
@@ -4026,6 +4028,45 @@
   <!-- Traducciones para DevTools -->
   <page name="DEVTOOLS">
     <!-- Textos que ya existían en Vistas de Administración person sin traducir -> DevTools -->
+	<Resource tag="COLOR">Color</Resource>
+	<Resource tag="DESEAELIMINARFLUJO">Vols eliminar el flux?</Resource>
+	<Resource tag="TIPOESTADO">Tipus d'estat</Resource>
+	<Resource tag="ESTADOINICIAL">Inicial</Resource>
+	<Resource tag="ESTADOINTERMEDIO">Intermedi</Resource>
+	<Resource tag="ESTADOFINAL">Final</Resource>
+	<Resource tag="AGREGAREDITOR">Afegir editor</Resource>
+	<Resource tag="AGREGARLECTOR">Afegir lector</Resource>
+	<Resource tag="AGREGARUSUARIOYGRUPO">Afegir usuaris o grups</Resource>
+	<Resource tag="ACEPTAR">Acceptar</Resource>
+	<Resource tag="CANCELAR">Cancel·lar</Resource>
+	<Resource tag="ERRORCARGARFORMULARIO">Ha sorgit un problema en carregar el formulari</Resource>
+	<Resource tag="AÑADIRRESPONSABLE">Afegir responsables</Resource>
+	<Resource tag="RESPONSABLES">Responsables</Resource>
+	<Resource tag="TIPOS">Tipus</Resource>
+	<Resource tag="AÑADIRESTADO">Afegir un estat</Resource>
+	<Resource tag="AÑADIRTRANSICION">Afegir una transició</Resource>
+	<Resource tag="SELECCIONCONTENIDO">Selecciona un tipus de contingut</Resource>
+	<Resource tag="TIPOSDECONTENIDO">Tipus de contingut</Resource>
+	<Resource tag="TRANSICIONES">Transicions</Resource>
+	<Resource tag="ESTADOS">Estats</Resource>
+	<Resource tag="NUEVOFLUJO">Nou flux de treball</Resource>
+	<Resource tag="SELECCIONPERFILESFLUJO">Selecciona els perfils i/o grups per als quals estarà disponible l'estat (Ja sigui la seva visibilitat o la possibilitat d'editar l'estat; si no es selecciona cap, no estarà disponible per a ningú)</Resource>
+	<Resource tag="SELECCIONESTADOINICIO">Selecciona un estat d'inici</Resource>
+	<Resource tag="SELECCIONESTADODESTINO">Selecciona un estat de destí</Resource>
+	<Resource tag="ESTADOORIGEN">Estat origen</Resource>
+	<Resource tag="ESTADODESTINO">Estat destí</Resource>
+	<Resource tag="FLUJODETRABAJO">Flux de treball</Resource>
+	<Resource tag="ERRORTRANSICIONESINCOMPLETAS">Has de triar un estat d'origen i un estat de destinació en totes les transicions</Resource>
+	<Resource tag="ERRORTRANSICIONESSINESTADOFINAL">Les transicions del flux no tenen almenys un estat final definit</Resource>
+	<Resource tag="ERRORTRANSICIONESSINESTADOINICIAL">Les transicions del flux no tenen almenys un estat inicial definit</Resource>
+	<Resource tag="ERRORTRANSICIONESESTADOSIGUALES">No pots triar el mateix estat com a estat d'origen i estat de destinació</Resource>
+	<Resource tag="ERRORTRANSICIONESIGUALES">No pot haver-hi més d'una transició amb el mateix origen i destí</Resource>
+	<Resource tag="NOMBREESTADOREPETIDO">No pots guardar un flux amb estats que es diguin igual</Resource>
+	<Resource tag="NOMBRETRANSICIONREPETIDO">No pots guardar un flux amb transicions que es diguin igual</Resource>
+	<Resource tag="ERRORFLUJOEXISTENTESOBRETIPO">No pots guardar un flux de treball que afecti un tipus de contingut d'un altre flux de treball existent: @1@</Resource>
+	<Resource tag="ERRORESTADOPERTENECETRANSICION">No es pot eliminar l'estat. Pertany a una transició</Resource>
+	<Resource tag="ERRORESTADOAFECTACONTENIDO">No es pot eliminar l'estat perquè està assignat al contingut de tipus: @1@</Resource>
+	<Resource tag="ERRORTRANSICIONAFECTACONTENIDO">No es pot eliminar la transició perquè afecta els continguts de tipus: @1@</Resource>
 	<Resource tag="INSERTADOSEARCH">S'ha inserit la propietat.</Resource>
 	<Resource tag="ALERTAUSUARIO">Advertència!</Resource>
 	<Resource tag="PROPIEDADNOEXISTE">La propietat introduïda: @1@ no existeix.</Resource>
@@ -4095,8 +4136,16 @@
     <Resource tag="CUALQUIERTIPO">Cualquier tipo</Resource>
     <Resource tag="REFERENCIAADOCUMENTOFISICO">Referencia a documento físico</Resource>
     <Resource tag="DIRECCIONDEINTERNET">Dirección de internet</Resource>
-    <Resource tag="NOTA">Nota</Resource>
-    <Resource tag="ARTICULOWIKI">Artículo wiki</Resource>
+	<Resource tag="NOTA">Nota</Resource>
+	<Resource tag="ADJUNTO">Adjunt</Resource>
+	<Resource tag="VIDEO">Vídeo</Resource>
+	<Resource tag="LINK">Enllaç</Resource>
+	<Resource tag="ENCUESTA">Enquesta</Resource>
+	<Resource tag="DEBATE">Debat</Resource>
+	<Resource tag="PAGINACMS">Pàgina CMS</Resource>
+	<Resource tag="COMPONENTECMS">Component CMS</Resource>
+	<Resource tag="RECURSOSEMANTICO">Recurs semàntic</Resource>
+	  <Resource tag="ARTICULOWIKI">Artículo wiki</Resource>
     <Resource tag="PREGUNTA">Pregunta</Resource>
     <Resource tag="ENCUESTA">Encuesta</Resource>
     <Resource tag="DEBATE">Debate</Resource>
@@ -4115,8 +4164,8 @@
     <Resource tag="ENESTOSMOMENTOSESTAMOSELABORANDOLAPOLITICADECERTIFICACIONDEL">En estos momentos estamos elaborando la política de certificación de los recursos de la comunidad. Si tienes alguna duda sobre los niveles de certificación que hemos establecido te sugerimos que te pongas en contacto con nosotros. María Ortega, administrador de la comunidad.</Resource>
     <Resource tag="FUENTESRSS/ATOM">Fuentes RSS/ATOM</Resource>
     <Resource tag="NUEVAFUENTE">Nueva fuente</Resource>
-    <Resource tag="TITULO">Título</Resource>
-    <Resource tag="URL">Url</Resource>
+	<Resource tag="TITULO">Títol</Resource>
+	<Resource tag="URL">Url</Resource>
     <Resource tag="ACCIONES">Accions</Resource>
     <Resource tag="MIEMBROS">Miembros</Resource>
    <Resource tag="CLAUSULASREGISTRO">Clàusules de registre</Resource>
@@ -4723,7 +4772,8 @@
     <Resource tag="ADMINISTRACIONVISTAS">Administración vistas</Resource>
     <Resource tag="VISTAS">Vistas</Resource>
     <Resource tag="TRADUCCIONES">Traducciones</Resource>
-    <Resource tag="INVALIDARTODASLASVISTAS">Invalidar todas las vistas</Resource>
+	<Resource tag="AVISOTRADUCCIONESDESACTIVADAS">Per poder afegir traduccions personalitzades, és necessari que l'opció "Vistes personalitzades" estigui activada a la Configuració general del meta administrador. Si no disposes dels permisos necessaris, si us plau contacta amb el meta administrador de la plataforma.</Resource>
+	<Resource tag="INVALIDARTODASLASVISTAS">Invalidar todas las vistas</Resource>
     <Resource tag="PLANTILLASDELAWEB">Plantillas de la web</Resource>
     <Resource tag="PLANTILLASDELSERVICIODERESULTADOS">Plantillas del servicio de Resultados</Resource>
     <Resource tag="PLANTILLASDELSERVICIODEFACETAS">Plantillas del servicio de Facetas</Resource>
@@ -5073,8 +5123,22 @@
     <Resource tag="INDICASIELCOMPONENTEESTADISPONIBLEENLASPAGINASDONDESEHAAÑADI">Indica si el componente está disponible en las páginas donde se ha añadido.</Resource>
     <Resource tag="SELECCIONALACADUCIDADQUETENDRAELCOMPONENTEPARASERUSADAENCACH">Selecciona la caducidad que tendrá el componente para ser usada en Cache</Resource>
     <Resource tag="INTRODUCEELESTILOCSSQUETENDRAELCOMPONENTEPARASUPERSONALIZACI">Introduce el estilo CSS que tendrá el componente para su personalización vía CSS</Resource>
-    <Resource tag="DESEAELIMINARELCOMPONENTE">¿Desea eliminar el componente?</Resource>
-    <Resource tag="SELECCIONAUNAIMAGENPARAADJUNTAR">Selecciona una imagen para adjuntar</Resource>
+	<Resource tag="ERRORCARGAFORMULARIO">Ha sorgit un error durant la càrrega del formulari</Resource>
+	<Resource tag="RESTAURARVERSIONCONFIGPAGINA">S'ha restaurat correctament la versió de configuració de la pàgina</Resource>
+	<Resource tag="ERRORRESTAURARVERSIONCONFIGPAGINA">Ha sorgit un problema durant la restauració de la versió de la configuració de la pàgina</Resource>
+	<Resource tag="DESEAELIMINARVERSIONCONFIGPAGINA">Vols eliminar la versió de configuració de la pàgina?</Resource>
+	<Resource tag="ERRORELIMINARVERSIONCONFIGPAGINA">Hi ha hagut un problema en eliminar la versió de configuració de la pàgina</Resource>
+	<Resource tag="VERSIONCONFIGPAGINAELIMINADO">S'ha eliminat correctament la versió de configuració de la pàgina</Resource>
+	<Resource tag="DESEAELIMINARVERSIONESTRUCTURAPAGINA">Vols eliminar la versió de l'estructura de la pàgina CMS?</Resource>
+	<Resource tag="RESTAURARVERSIONESTRUCTURAPAGINA">S'ha restaurat correctament la versió de l'estructura de la pàgina CMS</Resource>
+	<Resource tag="ERRORRESTAURARVERSIONESTRUCTURAPAGINA">S'ha produït un problema durant la restauració de la versió de l'estructura de la pàgina CMS</Resource>
+	<Resource tag="ERRORELIMINARVERSIONESTRUCTURAPAGINA">S'ha produït un problema durant l'eliminació de la versió de l'estructura de la pàgina CMS</Resource>
+	<Resource tag="VERSIONESTRUCTURAPAGINAELIMINADO">S'ha eliminat correctament la versió de l'estructura de la pàgina CMS</Resource>
+	<Resource tag="DESEAELIMINARELCOMPONENTE">¿Desea eliminar el componente?</Resource>
+	<Resource tag="DESEAELIMINARVERSIONCOMPONENTECMS">Vols eliminar aquesta versió del component CMS?</Resource>
+	<Resource tag="ERRORELIMINARVERSIONCMS">Ha sorgit un problema durant l'eliminació de la versió del component CMS</Resource>
+	<Resource tag="VERSIONCMSELIMINADO">S'ha eliminat correctament la versió del component CMS</Resource>
+	<Resource tag="SELECCIONAUNAIMAGENPARAADJUNTAR">Selecciona una imagen para adjuntar</Resource>
     <Resource tag="NUEVOCAMPO">Nuevo campo</Resource>
     <Resource tag="NOMBREDELCAMPODELFORMULARIO">Nombre del campo del formulario.</Resource>
     <Resource tag="CAMPOOBLIGATORIO">Campo obligatorio</Resource>
@@ -5787,6 +5851,16 @@
 	  <Resource tag="SERVICIOFTP">un servei FTP optimitzat</Resource>
 	  <Resource tag="SERVICIOCACHE">gestió de memòries cau</Resource>
 	  <Resource tag="SERVICIODESCARGACONFIGURACIONES">descarrega de les configuracions de la plataforma</Resource>
-	  <Resource tag="SERVICIOTRAZAS">gestió de les traces de la plataforma</Resource> 
+	  <Resource tag="SERVICIOTRAZAS">gestió de les traces de la plataforma</Resource>
   </page>
+	<page name="FLUJOS">
+		<Resource tag="TRANSICIONREALIZADA">El canvi d'estat s'ha realitzat correctament</Resource>
+		<Resource tag="TRANSICIONERROR">Hi ha hagut un error en canviar l'estat del recurs</Resource>
+		<Resource tag="COMENTARIO">Comentari addicional per al canvi d'estat</Resource>
+		<Resource tag="VERHISTORIAL">Historial de canvis d'estat</Resource>
+		<Resource tag="REVISOR">Revisor</Resource>
+		<Resource tag="COMENTARIOREVISOR">Comentari del revisor</Resource>
+		<Resource tag="CAMBIO">Canvi</Resource>
+		<Resource tag="HISTORIALERROR">Hi ha hagut un error en carregar l'historial de canvis</Resource>
+	</page>
 </Resources>

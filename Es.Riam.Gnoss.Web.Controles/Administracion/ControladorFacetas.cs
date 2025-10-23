@@ -150,7 +150,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
                 }
                 else
                 {
-                    faceta.ObjetosConocimiento.Add(filaFacetaOCProyecto.ObjetoConocimiento.ToLower());
+                    faceta.ObjetosConocimiento.Add(filaFacetaOCProyecto.ObjetoConocimiento);
                 }
             }
 

@@ -859,7 +859,7 @@ namespace Es.Riam.Gnoss.CL.ServiciosGenerales
 		public int ObtenerContadorTarea(Guid pTareaID)
         {
             string rawkey = string.Concat(NombresCL.CONTADORTAREA, "_", pTareaID);
-            return Convert.ToInt32(ObtenerObjetoDeCache(rawkey, typeof(string)));
+            return Convert.ToInt32(ObtenerObjetoDeCache(rawkey, typeof(int)));
         }
 
 		/// <summary>

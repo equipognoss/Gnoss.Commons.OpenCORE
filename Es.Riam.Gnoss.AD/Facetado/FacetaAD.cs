@@ -7,10 +7,10 @@ using Es.Riam.Gnoss.AD.ParametroAplicacion;
 using Es.Riam.Gnoss.Util.Configuracion;
 using Es.Riam.Gnoss.Util.General;
 using Microsoft.Extensions.Logging;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Data.Common;
 using System.Linq;
 
 namespace Es.Riam.Gnoss.AD.Facetado
@@ -220,8 +220,6 @@ namespace Es.Riam.Gnoss.AD.Facetado
         MayusculasTodasLetras = 4
     }
 
-
-
     public class FacetaAD : BaseAD
     {
         #region Miembros
@@ -239,10 +237,9 @@ namespace Es.Riam.Gnoss.AD.Facetado
 
         public FacetaAD(LoggingService loggingService, EntityContext entityContext, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication, ILogger<FacetaAD> logger, ILoggerFactory loggerFactory)
             : base(loggingService, entityContext, configService, servicesUtilVirtuosoAndReplication, logger, loggerFactory)
-        {
+        { 
             mlogger = logger;
             mLoggerFactory = loggerFactory;
-            this.CargarConsultasYDataAdapters();
         }
 
         /// <summary>
@@ -251,839 +248,10 @@ namespace Es.Riam.Gnoss.AD.Facetado
         /// <param name="pFicheroConfiguracionBD">Fichero de configuración</param>
         /// <param name="pUsarVariableEstatica">Si se están usando hilos con diferentes conexiones: FALSE. En caso contrario TRUE</param>
         public FacetaAD(string pFicheroConfiguracionBD, LoggingService loggingService, EntityContext entityContext, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication, ILogger<FacetaAD> logger, ILoggerFactory loggerFactory)
-            : base(pFicheroConfiguracionBD, loggingService, entityContext, configService, servicesUtilVirtuosoAndReplication,logger,loggerFactory)
-        {
-            mEntityContext = entityContext;
+            : base(pFicheroConfiguracionBD, loggingService, entityContext, configService, servicesUtilVirtuosoAndReplication, logger, loggerFactory)
+        { 
             mlogger = logger;
             mLoggerFactory = loggerFactory;
-            this.CargarConsultasYDataAdapters(IBD);
-        }
-
-        #endregion Constructores
-
-        #region Consultas
-
-        private string sqlSelectFacetaHome;
-        private string sqlSelectFacetaFiltroHome;
-        private string sqlSelectFacetaExcluida;
-        private string sqlSelectOntologiaProyecto;
-        private string sqlSelectFacetaObjetoConocimiento;
-        private string sqlSelectFacetaObjetoConocimientoProyecto;
-        private string sqlSelectFacetaObjetoConocimientoProyectoPestanya;
-        private string sqlSelectFacetaFiltroProyecto;
-        private string sqlSelectFacetaMultiple;
-        private string sqlSelectFacetaEntidadesExternas;
-        private string sqlSelectFacetaConfigProyChart;
-        private string sqlSelectFacetaConfigProyMapa;
-        private string sqlSelectFacetaRedireccion;
-        private string sqlSelectConfiguracionConexionGrafo;
-        private string sqlSelectFacetaConfigProyRangoFecha;
-
-        #endregion
-
-        #region DataAdapter
-
-        #region FacetaHome
-        private string sqlFacetaHomeInsert;
-        private string sqlFacetaHomeDelete;
-        private string sqlFacetaHomeModify;
-        #endregion
-
-        #region FacetaFiltroHome
-        private string sqlFacetaFiltroHomeInsert;
-        private string sqlFacetaFiltroHomeDelete;
-        private string sqlFacetaFiltroHomeModify;
-        #endregion
-
-        #region FacetaExcluida
-        private string sqlFacetaExcluidaInsert;
-        private string sqlFacetaExcluidaDelete;
-        private string sqlFacetaExcluidaModify;
-        #endregion
-
-        #region OntologiaProyecto
-        private string sqlOntologiaProyectoInsert;
-        private string sqlOntologiaProyectoDelete;
-        private string sqlOntologiaProyectoModify;
-        #endregion
-
-        #region FacetaObjetoConocimiento
-        private string sqlFacetaObjetoConocimientoInsert;
-        private string sqlFacetaObjetoConocimientoDelete;
-        private string sqlFacetaObjetoConocimientoModify;
-        #endregion
-
-        #region FacetaObjetoConocimientoProyecto
-        private string sqlFacetaObjetoConocimientoProyectoInsert;
-        private string sqlFacetaObjetoConocimientoProyectoDelete;
-        private string sqlFacetaObjetoConocimientoProyectoModify;
-        #endregion
-
-        #region FacetaObjetoConocimientoProyectoPestanya
-        private string sqlFacetaObjetoConocimientoProyectoPestanyaInsert;
-        private string sqlFacetaObjetoConocimientoProyectoPestanyaDelete;
-        private string sqlFacetaObjetoConocimientoProyectoPestanyaModify;
-        #endregion
-
-
-        #region FacetaFiltroProyecto
-        private string sqlFacetaFiltroProyectoInsert;
-        private string sqlFacetaFiltroProyectoDelete;
-        private string sqlFacetaFiltroProyectoModify;
-        #endregion
-
-        #region FacetaEntidadesExternas
-        private string sqlFacetaEntidadesExternasInsert;
-        private string sqlFacetaEntidadesExternasDelete;
-        private string sqlFacetaEntidadesExternasModify;
-        #endregion
-
-        #region FacetaConfigProyChart
-        private string sqlFacetaConfigProyChartInsert;
-        private string sqlFacetaConfigProyChartDelete;
-        private string sqlFacetaConfigProyChartModify;
-        #endregion
-
-        #region FacetaConfigProyMapa
-        private string sqlFacetaConfigProyMapaInsert;
-        private string sqlFacetaConfigProyMapaDelete;
-        private string sqlFacetaConfigProyMapaModify;
-        #endregion
-
-        #region FacetaRedireccion
-        private string sqlFacetaRedireccionInsert;
-        private string sqlFacetaRedireccionDelete;
-        private string sqlFacetaRedireccionModify;
-        #endregion
-
-        #region ConfiguracionConexionGrafo
-        private string sqlConfiguracionConexionGrafoInsert;
-        private string sqlConfiguracionConexionGrafoDelete;
-        private string sqlConfiguracionConexionGrafoModify;
-        #endregion
-
-        #endregion
-
-        #region Métodos AD
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="pDataSet"></param>
-        public void ActualizarBD(DataSet pDataSet)
-        {
-            mEntityContext.SaveChanges();
-            EliminarBorrados(pDataSet);
-            GuardarActualizaciones(pDataSet);
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="pDataSet"></param>
-        public void EliminarBorrados(DataSet pDataSet)
-        {
-            try
-            {
-                DataSet deletedDataSet;
-                deletedDataSet = pDataSet.GetChanges(DataRowState.Deleted);
-                if (deletedDataSet != null)
-                {
-                    #region Deleted
-                    #region Eliminar tabla ConfiguracionConexionGrafo
-                    DbCommand DeleteConfiguracionConexionGrafoCommand = ObtenerComando(sqlConfiguracionConexionGrafoDelete);
-                    AgregarParametro(DeleteConfiguracionConexionGrafoCommand, IBD.ToParam("Original_Grafo"), DbType.String, "Grafo", DataRowVersion.Original);
-                    AgregarParametro(DeleteConfiguracionConexionGrafoCommand, IBD.ToParam("Original_CadenaConexion"), DbType.String, "CadenaConexion", DataRowVersion.Original);
-                    ActualizarBaseDeDatos(deletedDataSet, "ConfiguracionConexionGrafo", null, null, DeleteConfiguracionConexionGrafoCommand, Microsoft.Practices.EnterpriseLibrary.Data.UpdateBehavior.Transactional);
-
-                    #endregion
-
-                    #region Eliminar tabla FacetaRedireccion
-                    DbCommand DeleteFacetaRedireccionCommand = ObtenerComando(sqlFacetaRedireccionDelete);
-                    AgregarParametro(DeleteFacetaRedireccionCommand, IBD.ToParam("Original_Faceta"), DbType.String, "Faceta", DataRowVersion.Original);
-                    AgregarParametro(DeleteFacetaRedireccionCommand, IBD.ToParam("Original_Nombre"), DbType.String, "Nombre", DataRowVersion.Original);
-                    ActualizarBaseDeDatos(deletedDataSet, "FacetaRedireccion", null, null, DeleteFacetaRedireccionCommand, Microsoft.Practices.EnterpriseLibrary.Data.UpdateBehavior.Transactional);
-
-                    #endregion
-
-                    #region Eliminar tabla FacetaConfigProyMapa
-                    DbCommand DeleteFacetaConfigProyMapaCommand = ObtenerComando(sqlFacetaConfigProyMapaDelete);
-                    AgregarParametro(DeleteFacetaConfigProyMapaCommand, IBD.ToParam("Original_OrganizacionID"), IBD.TipoGuidToObject(DbType.Guid), "OrganizacionID", DataRowVersion.Original);
-                    AgregarParametro(DeleteFacetaConfigProyMapaCommand, IBD.ToParam("Original_ProyectoID"), IBD.TipoGuidToObject(DbType.Guid), "ProyectoID", DataRowVersion.Original);
-                    AgregarParametro(DeleteFacetaConfigProyMapaCommand, IBD.ToParam("Original_PropLatitud"), DbType.String, "PropLatitud", DataRowVersion.Original);
-                    AgregarParametro(DeleteFacetaConfigProyMapaCommand, IBD.ToParam("Original_PropLongitud"), DbType.String, "PropLongitud", DataRowVersion.Original);
-                    ActualizarBaseDeDatos(deletedDataSet, "FacetaConfigProyMapa", null, null, DeleteFacetaConfigProyMapaCommand, Microsoft.Practices.EnterpriseLibrary.Data.UpdateBehavior.Transactional);
-
-                    #endregion
-
-                    #region Eliminar tabla FacetaConfigProyChart
-                    DbCommand DeleteFacetaConfigProyChartCommand = ObtenerComando(sqlFacetaConfigProyChartDelete);
-                    AgregarParametro(DeleteFacetaConfigProyChartCommand, IBD.ToParam("Original_OrganizacionID"), IBD.TipoGuidToObject(DbType.Guid), "OrganizacionID", DataRowVersion.Original);
-                    AgregarParametro(DeleteFacetaConfigProyChartCommand, IBD.ToParam("Original_ProyectoID"), IBD.TipoGuidToObject(DbType.Guid), "ProyectoID", DataRowVersion.Original);
-                    AgregarParametro(DeleteFacetaConfigProyChartCommand, IBD.ToParam("Original_ChartID"), IBD.TipoGuidToObject(DbType.Guid), "ChartID", DataRowVersion.Original);
-
-                    ActualizarBaseDeDatos(deletedDataSet, "FacetaConfigProyChart", null, null, DeleteFacetaConfigProyChartCommand, Microsoft.Practices.EnterpriseLibrary.Data.UpdateBehavior.Transactional);
-
-                    #endregion
-
-                    #region Eliminar tabla FacetaEntidadesExternas
-                    DbCommand DeleteFacetaEntidadesExternasCommand = ObtenerComando(sqlFacetaEntidadesExternasDelete);
-                    AgregarParametro(DeleteFacetaEntidadesExternasCommand, IBD.ToParam("Original_OrganizacionID"), IBD.TipoGuidToObject(DbType.Guid), "OrganizacionID", DataRowVersion.Original);
-                    AgregarParametro(DeleteFacetaEntidadesExternasCommand, IBD.ToParam("Original_ProyectoID"), IBD.TipoGuidToObject(DbType.Guid), "ProyectoID", DataRowVersion.Original);
-                    AgregarParametro(DeleteFacetaEntidadesExternasCommand, IBD.ToParam("Original_EntidadID"), DbType.String, "EntidadID", DataRowVersion.Original);
-                    AgregarParametro(DeleteFacetaEntidadesExternasCommand, IBD.ToParam("Original_Grafo"), DbType.String, "Grafo", DataRowVersion.Original);
-                    AgregarParametro(DeleteFacetaEntidadesExternasCommand, IBD.ToParam("Original_EsEntidadSecundaria"), DbType.Boolean, "EsEntidadSecundaria", DataRowVersion.Original);
-                    AgregarParametro(DeleteFacetaEntidadesExternasCommand, IBD.ToParam("Original_BuscarConRecursividad"), DbType.Boolean, "BuscarConRecursividad", DataRowVersion.Original);
-                    ActualizarBaseDeDatos(deletedDataSet, "FacetaEntidadesExternas", null, null, DeleteFacetaEntidadesExternasCommand, Microsoft.Practices.EnterpriseLibrary.Data.UpdateBehavior.Transactional);
-
-                    #endregion
-
-                    #region Eliminar tabla FacetaFiltroProyecto
-                    DbCommand DeleteFacetaFiltroProyectoCommand = ObtenerComando(sqlFacetaFiltroProyectoDelete);
-                    AgregarParametro(DeleteFacetaFiltroProyectoCommand, IBD.ToParam("Original_OrganizacionID"), IBD.TipoGuidToObject(DbType.Guid), "OrganizacionID", DataRowVersion.Original);
-                    AgregarParametro(DeleteFacetaFiltroProyectoCommand, IBD.ToParam("Original_ProyectoID"), IBD.TipoGuidToObject(DbType.Guid), "ProyectoID", DataRowVersion.Original);
-                    AgregarParametro(DeleteFacetaFiltroProyectoCommand, IBD.ToParam("Original_ObjetoConocimiento"), DbType.String, "ObjetoConocimiento", DataRowVersion.Original);
-                    AgregarParametro(DeleteFacetaFiltroProyectoCommand, IBD.ToParam("Original_Faceta"), DbType.String, "Faceta", DataRowVersion.Original);
-                    AgregarParametro(DeleteFacetaFiltroProyectoCommand, IBD.ToParam("Original_Filtro"), DbType.String, "Filtro", DataRowVersion.Original);
-                    AgregarParametro(DeleteFacetaFiltroProyectoCommand, IBD.ToParam("Original_Orden"), DbType.Int16, "Orden", DataRowVersion.Original);
-                    ActualizarBaseDeDatos(deletedDataSet, "FacetaFiltroProyecto", null, null, DeleteFacetaFiltroProyectoCommand, Microsoft.Practices.EnterpriseLibrary.Data.UpdateBehavior.Transactional);
-
-                    #endregion
-
-                    #region Eliminar tabla FacetaFiltroHome
-                    DbCommand DeleteFacetaFiltroHomeCommand = ObtenerComando(sqlFacetaFiltroHomeDelete);
-                    AgregarParametro(DeleteFacetaFiltroHomeCommand, IBD.ToParam("Original_OrganizacionID"), IBD.TipoGuidToObject(DbType.Guid), "OrganizacionID", DataRowVersion.Original);
-                    AgregarParametro(DeleteFacetaFiltroHomeCommand, IBD.ToParam("Original_ProyectoID"), IBD.TipoGuidToObject(DbType.Guid), "ProyectoID", DataRowVersion.Original);
-                    AgregarParametro(DeleteFacetaFiltroHomeCommand, IBD.ToParam("Original_ObjetoConocimiento"), DbType.String, "ObjetoConocimiento", DataRowVersion.Original);
-                    AgregarParametro(DeleteFacetaFiltroHomeCommand, IBD.ToParam("Original_Faceta"), DbType.String, "Faceta", DataRowVersion.Original);
-                    AgregarParametro(DeleteFacetaFiltroHomeCommand, IBD.ToParam("Original_Filtro"), DbType.String, "Filtro", DataRowVersion.Original);
-                    AgregarParametro(DeleteFacetaFiltroHomeCommand, IBD.ToParam("Original_Orden"), DbType.Int16, "Orden", DataRowVersion.Original);
-                    ActualizarBaseDeDatos(deletedDataSet, "FacetaFiltroHome", null, null, DeleteFacetaFiltroHomeCommand, Microsoft.Practices.EnterpriseLibrary.Data.UpdateBehavior.Transactional);
-
-                    #endregion
-
-                    #region Eliminar tabla FacetaHome
-                    DbCommand DeleteFacetaHomeCommand = ObtenerComando(sqlFacetaHomeDelete);
-                    AgregarParametro(DeleteFacetaHomeCommand, IBD.ToParam("Original_OrganizacionID"), IBD.TipoGuidToObject(DbType.Guid), "OrganizacionID", DataRowVersion.Original);
-                    AgregarParametro(DeleteFacetaHomeCommand, IBD.ToParam("Original_ProyectoID"), IBD.TipoGuidToObject(DbType.Guid), "ProyectoID", DataRowVersion.Original);
-                    AgregarParametro(DeleteFacetaHomeCommand, IBD.ToParam("Original_ObjetoConocimiento"), DbType.String, "ObjetoConocimiento", DataRowVersion.Original);
-                    AgregarParametro(DeleteFacetaHomeCommand, IBD.ToParam("Original_Faceta"), DbType.String, "Faceta", DataRowVersion.Original);
-                    AgregarParametro(DeleteFacetaHomeCommand, IBD.ToParam("Original_PestanyaFaceta"), DbType.String, "PestanyaFaceta", DataRowVersion.Original);
-                    AgregarParametro(DeleteFacetaHomeCommand, IBD.ToParam("Original_Orden"), DbType.Int16, "Orden", DataRowVersion.Original);
-                    AgregarParametro(DeleteFacetaHomeCommand, IBD.ToParam("Original_MostrarVerMas"), DbType.Boolean, "MostrarVerMas", DataRowVersion.Original);
-                    ActualizarBaseDeDatos(deletedDataSet, "FacetaHome", null, null, DeleteFacetaHomeCommand, Microsoft.Practices.EnterpriseLibrary.Data.UpdateBehavior.Transactional);
-
-                    #endregion
-
-                    #region Eliminar tabla FacetaObjetoConocimientoProyecto
-                    DbCommand DeleteFacetaObjetoConocimientoProyectoCommand = ObtenerComando(sqlFacetaObjetoConocimientoProyectoDelete);
-                    AgregarParametro(DeleteFacetaObjetoConocimientoProyectoCommand, IBD.ToParam("Original_OrganizacionID"), IBD.TipoGuidToObject(DbType.Guid), "OrganizacionID", DataRowVersion.Original);
-                    AgregarParametro(DeleteFacetaObjetoConocimientoProyectoCommand, IBD.ToParam("Original_ProyectoID"), IBD.TipoGuidToObject(DbType.Guid), "ProyectoID", DataRowVersion.Original);
-                    AgregarParametro(DeleteFacetaObjetoConocimientoProyectoCommand, IBD.ToParam("Original_ObjetoConocimiento"), DbType.String, "ObjetoConocimiento", DataRowVersion.Original);
-                    AgregarParametro(DeleteFacetaObjetoConocimientoProyectoCommand, IBD.ToParam("Original_Faceta"), DbType.String, "Faceta", DataRowVersion.Original);
-
-                    ActualizarBaseDeDatos(deletedDataSet, "FacetaObjetoConocimientoProyecto", null, null, DeleteFacetaObjetoConocimientoProyectoCommand, Microsoft.Practices.EnterpriseLibrary.Data.UpdateBehavior.Transactional);
-
-                    #endregion
-
-                    #region Eliminar tabla FacetaObjetoConocimientoProyectoPestanya
-                    DbCommand DeleteFacetaObjetoConocimientoProyectoPestanyaCommand = ObtenerComando(sqlFacetaObjetoConocimientoProyectoPestanyaDelete);
-                    AgregarParametro(DeleteFacetaObjetoConocimientoProyectoPestanyaCommand, IBD.ToParam("Original_OrganizacionID"), IBD.TipoGuidToObject(DbType.Guid), "OrganizacionID", DataRowVersion.Original);
-                    AgregarParametro(DeleteFacetaObjetoConocimientoProyectoPestanyaCommand, IBD.ToParam("Original_ProyectoID"), IBD.TipoGuidToObject(DbType.Guid), "ProyectoID", DataRowVersion.Original);
-                    AgregarParametro(DeleteFacetaObjetoConocimientoProyectoPestanyaCommand, IBD.ToParam("Original_ObjetoConocimiento"), DbType.String, "ObjetoConocimiento", DataRowVersion.Original);
-                    AgregarParametro(DeleteFacetaObjetoConocimientoProyectoPestanyaCommand, IBD.ToParam("Original_Faceta"), DbType.String, "Faceta", DataRowVersion.Original);
-                    AgregarParametro(DeleteFacetaObjetoConocimientoProyectoPestanyaCommand, IBD.ToParam("Original_PestanyaID"), IBD.TipoGuidToObject(DbType.Guid), "PestanyaID", DataRowVersion.Original);
-
-                    ActualizarBaseDeDatos(deletedDataSet, "FacetaObjetoConocimientoProyectoPestanya", null, null, DeleteFacetaObjetoConocimientoProyectoPestanyaCommand, Microsoft.Practices.EnterpriseLibrary.Data.UpdateBehavior.Transactional);
-
-                    #endregion
-
-                    #region Eliminar tabla FacetaObjetoConocimiento
-                    DbCommand DeleteFacetaObjetoConocimientoCommand = ObtenerComando(sqlFacetaObjetoConocimientoDelete);
-                    AgregarParametro(DeleteFacetaObjetoConocimientoCommand, IBD.ToParam("Original_ObjetoConocimiento"), DbType.String, "ObjetoConocimiento", DataRowVersion.Original);
-                    AgregarParametro(DeleteFacetaObjetoConocimientoCommand, IBD.ToParam("Original_Faceta"), DbType.String, "Faceta", DataRowVersion.Original);
-                    AgregarParametro(DeleteFacetaObjetoConocimientoCommand, IBD.ToParam("Original_NombreFaceta"), DbType.String, "NombreFaceta", DataRowVersion.Original);
-                    AgregarParametro(DeleteFacetaObjetoConocimientoCommand, IBD.ToParam("Original_Orden"), DbType.Int16, "Orden", DataRowVersion.Original);
-                    AgregarParametro(DeleteFacetaObjetoConocimientoCommand, IBD.ToParam("Original_Autocompletar"), DbType.Boolean, "Autocompletar", DataRowVersion.Original);
-                    AgregarParametro(DeleteFacetaObjetoConocimientoCommand, IBD.ToParam("Original_TipoPropiedad"), DbType.Int16, "TipoPropiedad", DataRowVersion.Original);
-                    AgregarParametro(DeleteFacetaObjetoConocimientoCommand, IBD.ToParam("Original_TipoDisenio"), DbType.Int16, "TipoDisenio", DataRowVersion.Original);
-                    AgregarParametro(DeleteFacetaObjetoConocimientoCommand, IBD.ToParam("Original_ElementosVisibles"), DbType.Int16, "ElementosVisibles", DataRowVersion.Original);
-                    AgregarParametro(DeleteFacetaObjetoConocimientoCommand, IBD.ToParam("Original_AlgoritmoTransformacion"), DbType.Int16, "AlgoritmoTransformacion", DataRowVersion.Original);
-                    AgregarParametro(DeleteFacetaObjetoConocimientoCommand, IBD.ToParam("Original_EsSemantica"), DbType.Boolean, "EsSemantica", DataRowVersion.Original);
-                    AgregarParametro(DeleteFacetaObjetoConocimientoCommand, IBD.ToParam("Original_Mayusculas"), DbType.Int16, "Mayusculas", DataRowVersion.Original);
-                    AgregarParametro(DeleteFacetaObjetoConocimientoCommand, IBD.ToParam("Original_EsPorDefecto"), DbType.Boolean, "Mayusculas", DataRowVersion.Original);
-                    AgregarParametro(DeleteFacetaObjetoConocimientoCommand, IBD.ToParam("Original_ComportamientoOr"), DbType.Boolean, "ComportamientoOr", DataRowVersion.Original);
-
-                    ActualizarBaseDeDatos(deletedDataSet, "FacetaObjetoConocimiento", null, null, DeleteFacetaObjetoConocimientoCommand, Microsoft.Practices.EnterpriseLibrary.Data.UpdateBehavior.Transactional);
-
-                    #endregion
-
-                    #region Eliminar tabla OntologiaProyecto
-                    DbCommand DeleteOntologiaProyectoCommand = ObtenerComando(sqlOntologiaProyectoDelete);
-                    AgregarParametro(DeleteOntologiaProyectoCommand, IBD.ToParam("Original_OrganizacionID"), IBD.TipoGuidToObject(DbType.Guid), "OrganizacionID", DataRowVersion.Original);
-                    AgregarParametro(DeleteOntologiaProyectoCommand, IBD.ToParam("Original_ProyectoID"), IBD.TipoGuidToObject(DbType.Guid), "ProyectoID", DataRowVersion.Original);
-                    AgregarParametro(DeleteOntologiaProyectoCommand, IBD.ToParam("Original_OntologiaProyecto"), DbType.String, "OntologiaProyecto", DataRowVersion.Original);
-
-                    ActualizarBaseDeDatos(deletedDataSet, "OntologiaProyecto", null, null, DeleteOntologiaProyectoCommand, Microsoft.Practices.EnterpriseLibrary.Data.UpdateBehavior.Transactional);
-
-                    #endregion
-
-                    #region Eliminar tabla FacetaExcluida
-                    DbCommand DeleteFacetaExcluidaCommand = ObtenerComando(sqlFacetaExcluidaDelete);
-                    AgregarParametro(DeleteFacetaExcluidaCommand, IBD.ToParam("Original_OrganizacionID"), IBD.TipoGuidToObject(DbType.Guid), "OrganizacionID", DataRowVersion.Original);
-                    AgregarParametro(DeleteFacetaExcluidaCommand, IBD.ToParam("Original_ProyectoID"), IBD.TipoGuidToObject(DbType.Guid), "ProyectoID", DataRowVersion.Original);
-                    AgregarParametro(DeleteFacetaExcluidaCommand, IBD.ToParam("Original_Faceta"), DbType.String, "Faceta", DataRowVersion.Original);
-                    ActualizarBaseDeDatos(deletedDataSet, "FacetaExcluida", null, null, DeleteFacetaExcluidaCommand, Microsoft.Practices.EnterpriseLibrary.Data.UpdateBehavior.Transactional);
-
-                    #endregion
-
-                    #endregion
-
-                    deletedDataSet.Dispose();
-                }
-            }
-            catch (Exception)
-            {
-                throw;
-            }
-        }
-        /// <summary>
-        /// Guarda en la tabla FacetaEntidadesExterna los datos al subir la ontología
-        /// </summary>
-        public void GuardarFacetasEntidadesExternas(FacetaEntidadesExternas facetaEntidadExterna)
-        {
-            mEntityContext.FacetaEntidadesExternas.Add(facetaEntidadExterna);
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="pDataSet"></param>
-        public void GuardarActualizaciones(DataSet pDataSet)
-        {
-            try
-            {
-                DataSet addedAndModifiedDataSet;
-                addedAndModifiedDataSet = pDataSet.GetChanges(DataRowState.Added | DataRowState.Modified);
-                if (addedAndModifiedDataSet != null)
-                {
-                    #region AddedAndModified
-
-                    #region Actualizar tabla FacetaExcluida
-                    DbCommand InsertFacetaExcluidaCommand = ObtenerComando(sqlFacetaExcluidaInsert);
-                    AgregarParametro(InsertFacetaExcluidaCommand, IBD.ToParam("OrganizacionID"), IBD.TipoGuidToObject(DbType.Guid), "OrganizacionID", DataRowVersion.Current);
-                    AgregarParametro(InsertFacetaExcluidaCommand, IBD.ToParam("ProyectoID"), IBD.TipoGuidToObject(DbType.Guid), "ProyectoID", DataRowVersion.Current);
-                    AgregarParametro(InsertFacetaExcluidaCommand, IBD.ToParam("Faceta"), DbType.String, "Faceta", DataRowVersion.Current);
-
-                    DbCommand ModifyFacetaExcluidaCommand = ObtenerComando(sqlFacetaExcluidaModify);
-                    AgregarParametro(ModifyFacetaExcluidaCommand, IBD.ToParam("Original_OrganizacionID"), IBD.TipoGuidToObject(DbType.Guid), "OrganizacionID", DataRowVersion.Original);
-                    AgregarParametro(ModifyFacetaExcluidaCommand, IBD.ToParam("Original_ProyectoID"), IBD.TipoGuidToObject(DbType.Guid), "ProyectoID", DataRowVersion.Original);
-                    AgregarParametro(ModifyFacetaExcluidaCommand, IBD.ToParam("Original_Faceta"), DbType.String, "Faceta", DataRowVersion.Original);
-
-                    AgregarParametro(ModifyFacetaExcluidaCommand, IBD.ToParam("OrganizacionID"), IBD.TipoGuidToObject(DbType.Guid), "OrganizacionID", DataRowVersion.Current);
-                    AgregarParametro(ModifyFacetaExcluidaCommand, IBD.ToParam("ProyectoID"), IBD.TipoGuidToObject(DbType.Guid), "ProyectoID", DataRowVersion.Current);
-                    AgregarParametro(ModifyFacetaExcluidaCommand, IBD.ToParam("Faceta"), DbType.String, "Faceta", DataRowVersion.Current);
-                    ActualizarBaseDeDatos(addedAndModifiedDataSet, "FacetaExcluida", InsertFacetaExcluidaCommand, ModifyFacetaExcluidaCommand, null, Microsoft.Practices.EnterpriseLibrary.Data.UpdateBehavior.Transactional);
-
-                    #endregion
-
-                    #region Actualizar tabla OntologiaProyecto
-                    DbCommand InsertOntologiaProyectoCommand = ObtenerComando(sqlOntologiaProyectoInsert);
-                    AgregarParametro(InsertOntologiaProyectoCommand, IBD.ToParam("OrganizacionID"), IBD.TipoGuidToObject(DbType.Guid), "OrganizacionID", DataRowVersion.Current);
-                    AgregarParametro(InsertOntologiaProyectoCommand, IBD.ToParam("ProyectoID"), IBD.TipoGuidToObject(DbType.Guid), "ProyectoID", DataRowVersion.Current);
-                    AgregarParametro(InsertOntologiaProyectoCommand, IBD.ToParam("OntologiaProyecto"), DbType.String, "OntologiaProyecto", DataRowVersion.Current);
-                    AgregarParametro(InsertOntologiaProyectoCommand, IBD.ToParam("NombreOnt"), DbType.String, "NombreOnt", DataRowVersion.Current);
-                    AgregarParametro(InsertOntologiaProyectoCommand, IBD.ToParam("Namespace"), DbType.String, "Namespace", DataRowVersion.Current);
-                    AgregarParametro(InsertOntologiaProyectoCommand, IBD.ToParam("NamespacesExtra"), DbType.String, "NamespacesExtra", DataRowVersion.Current);
-                    AgregarParametro(InsertOntologiaProyectoCommand, IBD.ToParam("SubTipos"), DbType.String, "SubTipos", DataRowVersion.Current);
-                    AgregarParametro(InsertOntologiaProyectoCommand, IBD.ToParam("NombreCortoOnt"), DbType.String, "NombreCortoOnt", DataRowVersion.Current);
-                    AgregarParametro(InsertOntologiaProyectoCommand, IBD.ToParam("CachearDatosSemanticos"), DbType.Boolean, "CachearDatosSemanticos", DataRowVersion.Current);
-                    AgregarParametro(InsertOntologiaProyectoCommand, IBD.ToParam("EsBuscable"), DbType.Boolean, "EsBuscable", DataRowVersion.Current);
-
-                    DbCommand ModifyOntologiaProyectoCommand = ObtenerComando(sqlOntologiaProyectoModify);
-                    AgregarParametro(ModifyOntologiaProyectoCommand, IBD.ToParam("Original_OrganizacionID"), IBD.TipoGuidToObject(DbType.Guid), "OrganizacionID", DataRowVersion.Original);
-                    AgregarParametro(ModifyOntologiaProyectoCommand, IBD.ToParam("Original_ProyectoID"), IBD.TipoGuidToObject(DbType.Guid), "ProyectoID", DataRowVersion.Original);
-                    AgregarParametro(ModifyOntologiaProyectoCommand, IBD.ToParam("Original_OntologiaProyecto"), DbType.String, "OntologiaProyecto", DataRowVersion.Original);
-
-                    AgregarParametro(ModifyOntologiaProyectoCommand, IBD.ToParam("OrganizacionID"), IBD.TipoGuidToObject(DbType.Guid), "OrganizacionID", DataRowVersion.Current);
-                    AgregarParametro(ModifyOntologiaProyectoCommand, IBD.ToParam("ProyectoID"), IBD.TipoGuidToObject(DbType.Guid), "ProyectoID", DataRowVersion.Current);
-                    AgregarParametro(ModifyOntologiaProyectoCommand, IBD.ToParam("OntologiaProyecto"), DbType.String, "OntologiaProyecto", DataRowVersion.Current);
-                    AgregarParametro(ModifyOntologiaProyectoCommand, IBD.ToParam("NombreOnt"), DbType.String, "NombreOnt", DataRowVersion.Current);
-                    AgregarParametro(ModifyOntologiaProyectoCommand, IBD.ToParam("Namespace"), DbType.String, "Namespace", DataRowVersion.Current);
-                    AgregarParametro(ModifyOntologiaProyectoCommand, IBD.ToParam("NamespacesExtra"), DbType.String, "NamespacesExtra", DataRowVersion.Current);
-                    AgregarParametro(ModifyOntologiaProyectoCommand, IBD.ToParam("SubTipos"), DbType.String, "SubTipos", DataRowVersion.Current);
-                    AgregarParametro(ModifyOntologiaProyectoCommand, IBD.ToParam("NombreCortoOnt"), DbType.String, "NombreCortoOnt", DataRowVersion.Current);
-                    AgregarParametro(ModifyOntologiaProyectoCommand, IBD.ToParam("CachearDatosSemanticos"), DbType.Boolean, "CachearDatosSemanticos", DataRowVersion.Current);
-                    AgregarParametro(ModifyOntologiaProyectoCommand, IBD.ToParam("EsBuscable"), DbType.Boolean, "EsBuscable", DataRowVersion.Current);
-
-                    //ActualizarBaseDeDatos(addedAndModifiedDataSet, "OntologiaProyecto", InsertOntologiaProyectoCommand, ModifyOntologiaProyectoCommand, null, Microsoft.Practices.EnterpriseLibrary.Data.UpdateBehavior.Transactional);
-
-                    #endregion
-
-                    #region Actualizar tabla FacetaObjetoConocimiento
-                    DbCommand InsertFacetaObjetoConocimientoCommand = ObtenerComando(sqlFacetaObjetoConocimientoInsert);
-                    AgregarParametro(InsertFacetaObjetoConocimientoCommand, IBD.ToParam("ObjetoConocimiento"), DbType.String, "ObjetoConocimiento", DataRowVersion.Current);
-                    AgregarParametro(InsertFacetaObjetoConocimientoCommand, IBD.ToParam("Faceta"), DbType.String, "Faceta", DataRowVersion.Current);
-                    AgregarParametro(InsertFacetaObjetoConocimientoCommand, IBD.ToParam("NombreFaceta"), DbType.String, "NombreFaceta", DataRowVersion.Current);
-                    AgregarParametro(InsertFacetaObjetoConocimientoCommand, IBD.ToParam("Orden"), DbType.Int16, "Orden", DataRowVersion.Current);
-                    AgregarParametro(InsertFacetaObjetoConocimientoCommand, IBD.ToParam("Autocompletar"), DbType.Boolean, "Autocompletar", DataRowVersion.Current);
-                    AgregarParametro(InsertFacetaObjetoConocimientoCommand, IBD.ToParam("TipoPropiedad"), DbType.Int16, "TipoPropiedad", DataRowVersion.Current);
-                    AgregarParametro(InsertFacetaObjetoConocimientoCommand, IBD.ToParam("TipoDisenio"), DbType.Int16, "TipoDisenio", DataRowVersion.Current);
-                    AgregarParametro(InsertFacetaObjetoConocimientoCommand, IBD.ToParam("ElementosVisibles"), DbType.Int16, "ElementosVisibles", DataRowVersion.Current);
-                    AgregarParametro(InsertFacetaObjetoConocimientoCommand, IBD.ToParam("AlgoritmoTransformacion"), DbType.Int16, "AlgoritmoTransformacion", DataRowVersion.Current);
-                    AgregarParametro(InsertFacetaObjetoConocimientoCommand, IBD.ToParam("EsSemantica"), DbType.Boolean, "EsSemantica", DataRowVersion.Current);
-                    AgregarParametro(InsertFacetaObjetoConocimientoCommand, IBD.ToParam("Mayusculas"), DbType.Int16, "Mayusculas", DataRowVersion.Current);
-                    AgregarParametro(InsertFacetaObjetoConocimientoCommand, IBD.ToParam("EsPorDefecto"), DbType.Boolean, "EsPorDefecto", DataRowVersion.Current);
-                    AgregarParametro(InsertFacetaObjetoConocimientoCommand, IBD.ToParam("ComportamientoOr"), DbType.Boolean, "ComportamientoOr", DataRowVersion.Current);
-
-                    DbCommand ModifyFacetaObjetoConocimientoCommand = ObtenerComando(sqlFacetaObjetoConocimientoModify);
-                    AgregarParametro(ModifyFacetaObjetoConocimientoCommand, IBD.ToParam("Original_ObjetoConocimiento"), DbType.String, "ObjetoConocimiento", DataRowVersion.Original);
-                    AgregarParametro(ModifyFacetaObjetoConocimientoCommand, IBD.ToParam("Original_Faceta"), DbType.String, "Faceta", DataRowVersion.Original);
-                    AgregarParametro(ModifyFacetaObjetoConocimientoCommand, IBD.ToParam("Original_NombreFaceta"), DbType.String, "NombreFaceta", DataRowVersion.Original);
-                    AgregarParametro(ModifyFacetaObjetoConocimientoCommand, IBD.ToParam("Original_Orden"), DbType.Int16, "Orden", DataRowVersion.Original);
-                    AgregarParametro(ModifyFacetaObjetoConocimientoCommand, IBD.ToParam("Original_Autocompletar"), DbType.Boolean, "Autocompletar", DataRowVersion.Original);
-                    AgregarParametro(ModifyFacetaObjetoConocimientoCommand, IBD.ToParam("Original_TipoPropiedad"), DbType.Int16, "TipoPropiedad", DataRowVersion.Original);
-                    AgregarParametro(ModifyFacetaObjetoConocimientoCommand, IBD.ToParam("Original_TipoDisenio"), DbType.Int16, "TipoDisenio", DataRowVersion.Original);
-                    AgregarParametro(ModifyFacetaObjetoConocimientoCommand, IBD.ToParam("Original_ElementosVisibles"), DbType.Int16, "ElementosVisibles", DataRowVersion.Original);
-                    AgregarParametro(ModifyFacetaObjetoConocimientoCommand, IBD.ToParam("Original_AlgoritmoTransformacion"), DbType.Int16, "AlgoritmoTransformacion", DataRowVersion.Original);
-                    AgregarParametro(ModifyFacetaObjetoConocimientoCommand, IBD.ToParam("Original_EsSemantica"), DbType.Boolean, "EsSemantica", DataRowVersion.Original);
-                    AgregarParametro(ModifyFacetaObjetoConocimientoCommand, IBD.ToParam("Original_Mayusculas"), DbType.Int16, "Mayusculas", DataRowVersion.Original);
-                    AgregarParametro(ModifyFacetaObjetoConocimientoCommand, IBD.ToParam("Original_EsPorDefecto"), DbType.Boolean, "EsPorDefecto", DataRowVersion.Original);
-                    AgregarParametro(ModifyFacetaObjetoConocimientoCommand, IBD.ToParam("Original_ComportamientoOr"), DbType.Boolean, "ComportamientoOr", DataRowVersion.Original);
-
-                    AgregarParametro(ModifyFacetaObjetoConocimientoCommand, IBD.ToParam("ObjetoConocimiento"), DbType.String, "ObjetoConocimiento", DataRowVersion.Current);
-                    AgregarParametro(ModifyFacetaObjetoConocimientoCommand, IBD.ToParam("Faceta"), DbType.String, "Faceta", DataRowVersion.Current);
-                    AgregarParametro(ModifyFacetaObjetoConocimientoCommand, IBD.ToParam("NombreFaceta"), DbType.String, "NombreFaceta", DataRowVersion.Current);
-                    AgregarParametro(ModifyFacetaObjetoConocimientoCommand, IBD.ToParam("Orden"), DbType.Int16, "Orden", DataRowVersion.Current);
-                    AgregarParametro(ModifyFacetaObjetoConocimientoCommand, IBD.ToParam("Autocompletar"), DbType.Boolean, "Autocompletar", DataRowVersion.Current);
-                    AgregarParametro(ModifyFacetaObjetoConocimientoCommand, IBD.ToParam("TipoPropiedad"), DbType.Int16, "TipoPropiedad", DataRowVersion.Current);
-                    AgregarParametro(ModifyFacetaObjetoConocimientoCommand, IBD.ToParam("TipoDisenio"), DbType.Int16, "TipoDisenio", DataRowVersion.Current);
-                    AgregarParametro(ModifyFacetaObjetoConocimientoCommand, IBD.ToParam("ElementosVisibles"), DbType.Int16, "ElementosVisibles", DataRowVersion.Current);
-                    AgregarParametro(ModifyFacetaObjetoConocimientoCommand, IBD.ToParam("AlgoritmoTransformacion"), DbType.Int16, "AlgoritmoTransformacion", DataRowVersion.Current);
-                    AgregarParametro(ModifyFacetaObjetoConocimientoCommand, IBD.ToParam("EsSemantica"), DbType.Boolean, "EsSemantica", DataRowVersion.Current);
-                    AgregarParametro(ModifyFacetaObjetoConocimientoCommand, IBD.ToParam("Mayusculas"), DbType.Int16, "Mayusculas", DataRowVersion.Current);
-                    AgregarParametro(ModifyFacetaObjetoConocimientoCommand, IBD.ToParam("EsPorDefecto"), DbType.Boolean, "EsPorDefecto", DataRowVersion.Current);
-                    AgregarParametro(ModifyFacetaObjetoConocimientoCommand, IBD.ToParam("ComportamientoOr"), DbType.Boolean, "ComportamientoOr", DataRowVersion.Current);
-                    //ActualizarBaseDeDatos(addedAndModifiedDataSet, "FacetaObjetoConocimiento", InsertFacetaObjetoConocimientoCommand, ModifyFacetaObjetoConocimientoCommand, null, Microsoft.Practices.EnterpriseLibrary.Data.UpdateBehavior.Transactional);
-
-
-
-                    #endregion
-
-                    #region Actualizar tabla FacetaObjetoConocimientoProyecto
-                    DbCommand InsertFacetaObjetoConocimientoProyectoCommand = ObtenerComando(sqlFacetaObjetoConocimientoProyectoInsert);
-                    AgregarParametro(InsertFacetaObjetoConocimientoProyectoCommand, IBD.ToParam("OrganizacionID"), IBD.TipoGuidToObject(DbType.Guid), "OrganizacionID", DataRowVersion.Current);
-                    AgregarParametro(InsertFacetaObjetoConocimientoProyectoCommand, IBD.ToParam("ProyectoID"), IBD.TipoGuidToObject(DbType.Guid), "ProyectoID", DataRowVersion.Current);
-                    AgregarParametro(InsertFacetaObjetoConocimientoProyectoCommand, IBD.ToParam("ObjetoConocimiento"), DbType.String, "ObjetoConocimiento", DataRowVersion.Current);
-                    AgregarParametro(InsertFacetaObjetoConocimientoProyectoCommand, IBD.ToParam("Faceta"), DbType.String, "Faceta", DataRowVersion.Current);
-                    AgregarParametro(InsertFacetaObjetoConocimientoProyectoCommand, IBD.ToParam("Orden"), DbType.Int16, "Orden", DataRowVersion.Current);
-                    AgregarParametro(InsertFacetaObjetoConocimientoProyectoCommand, IBD.ToParam("Autocompletar"), DbType.Boolean, "Autocompletar", DataRowVersion.Current);
-                    AgregarParametro(InsertFacetaObjetoConocimientoProyectoCommand, IBD.ToParam("TipoPropiedad"), DbType.Int16, "TipoPropiedad", DataRowVersion.Current);
-                    AgregarParametro(InsertFacetaObjetoConocimientoProyectoCommand, IBD.ToParam("Comportamiento"), DbType.Int16, "Comportamiento", DataRowVersion.Current);
-                    AgregarParametro(InsertFacetaObjetoConocimientoProyectoCommand, IBD.ToParam("Excluyente"), DbType.Boolean, "Excluyente", DataRowVersion.Current);
-                    AgregarParametro(InsertFacetaObjetoConocimientoProyectoCommand, IBD.ToParam("NombreFaceta"), DbType.String, "NombreFaceta", DataRowVersion.Current);
-                    AgregarParametro(InsertFacetaObjetoConocimientoProyectoCommand, IBD.ToParam("TipoDisenio"), DbType.Int16, "TipoDisenio", DataRowVersion.Current);
-                    AgregarParametro(InsertFacetaObjetoConocimientoProyectoCommand, IBD.ToParam("ElementosVisibles"), DbType.Int16, "ElementosVisibles", DataRowVersion.Current);
-                    AgregarParametro(InsertFacetaObjetoConocimientoProyectoCommand, IBD.ToParam("AlgoritmoTransformacion"), DbType.Int16, "AlgoritmoTransformacion", DataRowVersion.Current);
-                    AgregarParametro(InsertFacetaObjetoConocimientoProyectoCommand, IBD.ToParam("EsSemantica"), DbType.Boolean, "EsSemantica", DataRowVersion.Current);
-                    AgregarParametro(InsertFacetaObjetoConocimientoProyectoCommand, IBD.ToParam("Mayusculas"), DbType.Int16, "Mayusculas", DataRowVersion.Current);
-                    AgregarParametro(InsertFacetaObjetoConocimientoProyectoCommand, IBD.ToParam("NivelSemantico"), DbType.String, "NivelSemantico", DataRowVersion.Current);
-                    AgregarParametro(InsertFacetaObjetoConocimientoProyectoCommand, IBD.ToParam("Condicion"), DbType.String, "Condicion", DataRowVersion.Current);
-                    AgregarParametro(InsertFacetaObjetoConocimientoProyectoCommand, IBD.ToParam("FacetaPrivadaParaGrupoEditores"), DbType.String, "FacetaPrivadaParaGrupoEditores", DataRowVersion.Current);
-                    AgregarParametro(InsertFacetaObjetoConocimientoProyectoCommand, IBD.ToParam("Reciproca"), DbType.Int16, "Reciproca", DataRowVersion.Current);
-                    AgregarParametro(InsertFacetaObjetoConocimientoProyectoCommand, IBD.ToParam("ComportamientoOr"), DbType.Boolean, "ComportamientoOr", DataRowVersion.Current);
-                    AgregarParametro(InsertFacetaObjetoConocimientoProyectoCommand, IBD.ToParam("OcultaEnFacetas"), DbType.Boolean, "OcultaEnFacetas", DataRowVersion.Current);
-                    AgregarParametro(InsertFacetaObjetoConocimientoProyectoCommand, IBD.ToParam("OcultaEnFiltros"), DbType.Boolean, "OcultaEnFiltros", DataRowVersion.Current);
-                    AgregarParametro(InsertFacetaObjetoConocimientoProyectoCommand, IBD.ToParam("PriorizarOrdenResultados"), DbType.Boolean, "PriorizarOrdenResultados", DataRowVersion.Current);
-                    AgregarParametro(InsertFacetaObjetoConocimientoProyectoCommand, IBD.ToParam("Inmutable"), DbType.Boolean, "Inmutable", DataRowVersion.Current);
-                    AgregarParametro(InsertFacetaObjetoConocimientoProyectoCommand, IBD.ToParam("AgrupacionID"), IBD.TipoGuidToObject(DbType.Guid), "AgrupacionID", DataRowVersion.Current);
-
-                    DbCommand ModifyFacetaObjetoConocimientoProyectoCommand = ObtenerComando(sqlFacetaObjetoConocimientoProyectoModify);
-                    AgregarParametro(ModifyFacetaObjetoConocimientoProyectoCommand, IBD.ToParam("Original_OrganizacionID"), IBD.TipoGuidToObject(DbType.Guid), "OrganizacionID", DataRowVersion.Original);
-                    AgregarParametro(ModifyFacetaObjetoConocimientoProyectoCommand, IBD.ToParam("Original_ProyectoID"), IBD.TipoGuidToObject(DbType.Guid), "ProyectoID", DataRowVersion.Original);
-                    AgregarParametro(ModifyFacetaObjetoConocimientoProyectoCommand, IBD.ToParam("Original_ObjetoConocimiento"), DbType.String, "ObjetoConocimiento", DataRowVersion.Original);
-                    AgregarParametro(ModifyFacetaObjetoConocimientoProyectoCommand, IBD.ToParam("Original_Faceta"), DbType.String, "Faceta", DataRowVersion.Original);
-
-                    AgregarParametro(ModifyFacetaObjetoConocimientoProyectoCommand, IBD.ToParam("OrganizacionID"), IBD.TipoGuidToObject(DbType.Guid), "OrganizacionID", DataRowVersion.Current);
-                    AgregarParametro(ModifyFacetaObjetoConocimientoProyectoCommand, IBD.ToParam("ProyectoID"), IBD.TipoGuidToObject(DbType.Guid), "ProyectoID", DataRowVersion.Current);
-                    AgregarParametro(ModifyFacetaObjetoConocimientoProyectoCommand, IBD.ToParam("ObjetoConocimiento"), DbType.String, "ObjetoConocimiento", DataRowVersion.Current);
-                    AgregarParametro(ModifyFacetaObjetoConocimientoProyectoCommand, IBD.ToParam("Faceta"), DbType.String, "Faceta", DataRowVersion.Current);
-                    AgregarParametro(ModifyFacetaObjetoConocimientoProyectoCommand, IBD.ToParam("Orden"), DbType.Int16, "Orden", DataRowVersion.Current);
-                    AgregarParametro(ModifyFacetaObjetoConocimientoProyectoCommand, IBD.ToParam("Autocompletar"), DbType.Boolean, "Autocompletar", DataRowVersion.Current);
-                    AgregarParametro(ModifyFacetaObjetoConocimientoProyectoCommand, IBD.ToParam("TipoPropiedad"), DbType.Int16, "TipoPropiedad", DataRowVersion.Current);
-                    AgregarParametro(ModifyFacetaObjetoConocimientoProyectoCommand, IBD.ToParam("Comportamiento"), DbType.Int16, "Comportamiento", DataRowVersion.Current);
-                    AgregarParametro(ModifyFacetaObjetoConocimientoProyectoCommand, IBD.ToParam("Excluyente"), DbType.Boolean, "Excluyente", DataRowVersion.Current);
-                    AgregarParametro(ModifyFacetaObjetoConocimientoProyectoCommand, IBD.ToParam("NombreFaceta"), DbType.String, "NombreFaceta", DataRowVersion.Current);
-                    AgregarParametro(ModifyFacetaObjetoConocimientoProyectoCommand, IBD.ToParam("TipoDisenio"), DbType.Int16, "TipoDisenio", DataRowVersion.Current);
-                    AgregarParametro(ModifyFacetaObjetoConocimientoProyectoCommand, IBD.ToParam("ElementosVisibles"), DbType.Int16, "ElementosVisibles", DataRowVersion.Current);
-                    AgregarParametro(ModifyFacetaObjetoConocimientoProyectoCommand, IBD.ToParam("AlgoritmoTransformacion"), DbType.Int16, "AlgoritmoTransformacion", DataRowVersion.Current);
-                    AgregarParametro(ModifyFacetaObjetoConocimientoProyectoCommand, IBD.ToParam("EsSemantica"), DbType.Boolean, "EsSemantica", DataRowVersion.Current);
-                    AgregarParametro(ModifyFacetaObjetoConocimientoProyectoCommand, IBD.ToParam("Mayusculas"), DbType.Int16, "Mayusculas", DataRowVersion.Current);
-                    AgregarParametro(ModifyFacetaObjetoConocimientoProyectoCommand, IBD.ToParam("NivelSemantico"), DbType.String, "NivelSemantico", DataRowVersion.Current);
-                    AgregarParametro(ModifyFacetaObjetoConocimientoProyectoCommand, IBD.ToParam("Condicion"), DbType.String, "Condicion", DataRowVersion.Current);
-                    AgregarParametro(ModifyFacetaObjetoConocimientoProyectoCommand, IBD.ToParam("FacetaPrivadaParaGrupoEditores"), DbType.String, "FacetaPrivadaParaGrupoEditores", DataRowVersion.Current);
-                    AgregarParametro(ModifyFacetaObjetoConocimientoProyectoCommand, IBD.ToParam("Reciproca"), DbType.Int16, "Reciproca", DataRowVersion.Current);
-                    AgregarParametro(ModifyFacetaObjetoConocimientoProyectoCommand, IBD.ToParam("ComportamientoOr"), DbType.Boolean, "ComportamientoOr", DataRowVersion.Current);
-                    AgregarParametro(ModifyFacetaObjetoConocimientoProyectoCommand, IBD.ToParam("OcultaEnFacetas"), DbType.Boolean, "OcultaEnFacetas", DataRowVersion.Current);
-                    AgregarParametro(ModifyFacetaObjetoConocimientoProyectoCommand, IBD.ToParam("OcultaEnFiltros"), DbType.Boolean, "OcultaEnFiltros", DataRowVersion.Current);
-                    AgregarParametro(ModifyFacetaObjetoConocimientoProyectoCommand, IBD.ToParam("PriorizarOrdenResultados"), DbType.Boolean, "PriorizarOrdenResultados", DataRowVersion.Current);
-                    AgregarParametro(ModifyFacetaObjetoConocimientoProyectoCommand, IBD.ToParam("Inmutable"), DbType.Boolean, "Inmutable", DataRowVersion.Current);
-                    AgregarParametro(ModifyFacetaObjetoConocimientoProyectoCommand, IBD.ToParam("AgrupacionID"), IBD.TipoGuidToObject(DbType.Guid), "AgrupacionID", DataRowVersion.Current);
-
-                    //ActualizarBaseDeDatos(addedAndModifiedDataSet, "FacetaObjetoConocimientoProyecto", InsertFacetaObjetoConocimientoProyectoCommand, ModifyFacetaObjetoConocimientoProyectoCommand, null, Microsoft.Practices.EnterpriseLibrary.Data.UpdateBehavior.Transactional);
-
-                    #endregion
-
-                    #region Actualizar tabla FacetaObjetoConocimientoProyectoPestanya
-                    DbCommand InsertFacetaObjetoConocimientoProyectoPestanyaCommand = ObtenerComando(sqlFacetaObjetoConocimientoProyectoPestanyaInsert);
-                    AgregarParametro(InsertFacetaObjetoConocimientoProyectoPestanyaCommand, IBD.ToParam("OrganizacionID"), IBD.TipoGuidToObject(DbType.Guid), "OrganizacionID", DataRowVersion.Current);
-                    AgregarParametro(InsertFacetaObjetoConocimientoProyectoPestanyaCommand, IBD.ToParam("ProyectoID"), IBD.TipoGuidToObject(DbType.Guid), "ProyectoID", DataRowVersion.Current);
-                    AgregarParametro(InsertFacetaObjetoConocimientoProyectoPestanyaCommand, IBD.ToParam("ObjetoConocimiento"), DbType.String, "ObjetoConocimiento", DataRowVersion.Current);
-                    AgregarParametro(InsertFacetaObjetoConocimientoProyectoPestanyaCommand, IBD.ToParam("Faceta"), DbType.String, "Faceta", DataRowVersion.Current);
-                    AgregarParametro(InsertFacetaObjetoConocimientoProyectoPestanyaCommand, IBD.ToParam("PestanyaID"), IBD.TipoGuidToObject(DbType.Guid), "PestanyaID", DataRowVersion.Current);
-
-                    DbCommand ModifyFacetaObjetoConocimientoProyectoPestanyaCommand = ObtenerComando(sqlFacetaObjetoConocimientoProyectoPestanyaModify);
-                    AgregarParametro(ModifyFacetaObjetoConocimientoProyectoPestanyaCommand, IBD.ToParam("Original_OrganizacionID"), IBD.TipoGuidToObject(DbType.Guid), "OrganizacionID", DataRowVersion.Original);
-                    AgregarParametro(ModifyFacetaObjetoConocimientoProyectoPestanyaCommand, IBD.ToParam("Original_ProyectoID"), IBD.TipoGuidToObject(DbType.Guid), "ProyectoID", DataRowVersion.Original);
-                    AgregarParametro(ModifyFacetaObjetoConocimientoProyectoPestanyaCommand, IBD.ToParam("Original_ObjetoConocimiento"), DbType.String, "ObjetoConocimiento", DataRowVersion.Original);
-                    AgregarParametro(ModifyFacetaObjetoConocimientoProyectoPestanyaCommand, IBD.ToParam("Original_Faceta"), DbType.String, "Faceta", DataRowVersion.Original);
-                    AgregarParametro(ModifyFacetaObjetoConocimientoProyectoPestanyaCommand, IBD.ToParam("Original_PestanyaID"), IBD.TipoGuidToObject(DbType.Guid), "Original_PestanyaID", DataRowVersion.Original);
-
-                    AgregarParametro(ModifyFacetaObjetoConocimientoProyectoPestanyaCommand, IBD.ToParam("OrganizacionID"), IBD.TipoGuidToObject(DbType.Guid), "OrganizacionID", DataRowVersion.Current);
-                    AgregarParametro(ModifyFacetaObjetoConocimientoProyectoPestanyaCommand, IBD.ToParam("ProyectoID"), IBD.TipoGuidToObject(DbType.Guid), "ProyectoID", DataRowVersion.Current);
-                    AgregarParametro(ModifyFacetaObjetoConocimientoProyectoPestanyaCommand, IBD.ToParam("ObjetoConocimiento"), DbType.String, "ObjetoConocimiento", DataRowVersion.Current);
-                    AgregarParametro(ModifyFacetaObjetoConocimientoProyectoPestanyaCommand, IBD.ToParam("Faceta"), DbType.String, "Faceta", DataRowVersion.Current);
-                    AgregarParametro(ModifyFacetaObjetoConocimientoProyectoPestanyaCommand, IBD.ToParam("PestanyaID"), IBD.TipoGuidToObject(DbType.Guid), "PestanyaID", DataRowVersion.Current);
-
-                    ActualizarBaseDeDatos(addedAndModifiedDataSet, "FacetaObjetoConocimientoProyectoPestanya", InsertFacetaObjetoConocimientoProyectoPestanyaCommand, ModifyFacetaObjetoConocimientoProyectoPestanyaCommand, null, Microsoft.Practices.EnterpriseLibrary.Data.UpdateBehavior.Transactional);
-
-                    #endregion
-
-
-                    #region Actualizar tabla FacetaHome
-                    DbCommand InsertFacetaHomeCommand = ObtenerComando(sqlFacetaHomeInsert);
-                    AgregarParametro(InsertFacetaHomeCommand, IBD.ToParam("OrganizacionID"), IBD.TipoGuidToObject(DbType.Guid), "OrganizacionID", DataRowVersion.Current);
-                    AgregarParametro(InsertFacetaHomeCommand, IBD.ToParam("ProyectoID"), IBD.TipoGuidToObject(DbType.Guid), "ProyectoID", DataRowVersion.Current);
-                    AgregarParametro(InsertFacetaHomeCommand, IBD.ToParam("ObjetoConocimiento"), DbType.String, "ObjetoConocimiento", DataRowVersion.Current);
-                    AgregarParametro(InsertFacetaHomeCommand, IBD.ToParam("Faceta"), DbType.String, "Faceta", DataRowVersion.Current);
-                    AgregarParametro(InsertFacetaHomeCommand, IBD.ToParam("PestanyaFaceta"), DbType.String, "PestanyaFaceta", DataRowVersion.Current);
-                    AgregarParametro(InsertFacetaHomeCommand, IBD.ToParam("Orden"), DbType.Int16, "Orden", DataRowVersion.Current);
-                    AgregarParametro(InsertFacetaHomeCommand, IBD.ToParam("MostrarVerMas"), DbType.Boolean, "MostrarVerMas", DataRowVersion.Current);
-
-                    DbCommand ModifyFacetaHomeCommand = ObtenerComando(sqlFacetaHomeModify);
-                    AgregarParametro(ModifyFacetaHomeCommand, IBD.ToParam("Original_OrganizacionID"), IBD.TipoGuidToObject(DbType.Guid), "OrganizacionID", DataRowVersion.Original);
-                    AgregarParametro(ModifyFacetaHomeCommand, IBD.ToParam("Original_ProyectoID"), IBD.TipoGuidToObject(DbType.Guid), "ProyectoID", DataRowVersion.Original);
-                    AgregarParametro(ModifyFacetaHomeCommand, IBD.ToParam("Original_ObjetoConocimiento"), DbType.String, "ObjetoConocimiento", DataRowVersion.Original);
-                    AgregarParametro(ModifyFacetaHomeCommand, IBD.ToParam("Original_Faceta"), DbType.String, "Faceta", DataRowVersion.Original);
-                    AgregarParametro(ModifyFacetaHomeCommand, IBD.ToParam("Original_PestanyaFaceta"), DbType.String, "PestanyaFaceta", DataRowVersion.Original);
-                    AgregarParametro(ModifyFacetaHomeCommand, IBD.ToParam("Original_Orden"), DbType.Int16, "Orden", DataRowVersion.Original);
-                    AgregarParametro(ModifyFacetaHomeCommand, IBD.ToParam("Original_MostrarVerMas"), DbType.Boolean, "MostrarVerMas", DataRowVersion.Current);
-
-                    AgregarParametro(ModifyFacetaHomeCommand, IBD.ToParam("OrganizacionID"), IBD.TipoGuidToObject(DbType.Guid), "OrganizacionID", DataRowVersion.Current);
-                    AgregarParametro(ModifyFacetaHomeCommand, IBD.ToParam("ProyectoID"), IBD.TipoGuidToObject(DbType.Guid), "ProyectoID", DataRowVersion.Current);
-                    AgregarParametro(ModifyFacetaHomeCommand, IBD.ToParam("ObjetoConocimiento"), DbType.String, "ObjetoConocimiento", DataRowVersion.Current);
-                    AgregarParametro(ModifyFacetaHomeCommand, IBD.ToParam("Faceta"), DbType.String, "Faceta", DataRowVersion.Current);
-                    AgregarParametro(ModifyFacetaHomeCommand, IBD.ToParam("PestanyaFaceta"), DbType.String, "PestanyaFaceta", DataRowVersion.Current);
-                    AgregarParametro(ModifyFacetaHomeCommand, IBD.ToParam("Orden"), DbType.Int16, "Orden", DataRowVersion.Current);
-                    AgregarParametro(ModifyFacetaHomeCommand, IBD.ToParam("MostrarVerMas"), DbType.Boolean, "MostrarVerMas", DataRowVersion.Current);
-                    ActualizarBaseDeDatos(addedAndModifiedDataSet, "FacetaHome", InsertFacetaHomeCommand, ModifyFacetaHomeCommand, null, Microsoft.Practices.EnterpriseLibrary.Data.UpdateBehavior.Transactional);
-
-                    #endregion
-
-                    #region Actualizar tabla FacetaFiltroHome
-                    DbCommand InsertFacetaFiltroHomeCommand = ObtenerComando(sqlFacetaFiltroHomeInsert);
-                    AgregarParametro(InsertFacetaFiltroHomeCommand, IBD.ToParam("OrganizacionID"), IBD.TipoGuidToObject(DbType.Guid), "OrganizacionID", DataRowVersion.Current);
-                    AgregarParametro(InsertFacetaFiltroHomeCommand, IBD.ToParam("ProyectoID"), IBD.TipoGuidToObject(DbType.Guid), "ProyectoID", DataRowVersion.Current);
-                    AgregarParametro(InsertFacetaFiltroHomeCommand, IBD.ToParam("ObjetoConocimiento"), DbType.String, "ObjetoConocimiento", DataRowVersion.Current);
-                    AgregarParametro(InsertFacetaFiltroHomeCommand, IBD.ToParam("Faceta"), DbType.String, "Faceta", DataRowVersion.Current);
-                    AgregarParametro(InsertFacetaFiltroHomeCommand, IBD.ToParam("Filtro"), DbType.String, "Filtro", DataRowVersion.Current);
-                    AgregarParametro(InsertFacetaFiltroHomeCommand, IBD.ToParam("Orden"), DbType.Int16, "Orden", DataRowVersion.Current);
-
-                    DbCommand ModifyFacetaFiltroHomeCommand = ObtenerComando(sqlFacetaFiltroHomeModify);
-                    AgregarParametro(ModifyFacetaFiltroHomeCommand, IBD.ToParam("Original_OrganizacionID"), IBD.TipoGuidToObject(DbType.Guid), "OrganizacionID", DataRowVersion.Original);
-                    AgregarParametro(ModifyFacetaFiltroHomeCommand, IBD.ToParam("Original_ProyectoID"), IBD.TipoGuidToObject(DbType.Guid), "ProyectoID", DataRowVersion.Original);
-                    AgregarParametro(ModifyFacetaFiltroHomeCommand, IBD.ToParam("Original_ObjetoConocimiento"), DbType.String, "ObjetoConocimiento", DataRowVersion.Original);
-                    AgregarParametro(ModifyFacetaFiltroHomeCommand, IBD.ToParam("Original_Faceta"), DbType.String, "Faceta", DataRowVersion.Original);
-                    AgregarParametro(ModifyFacetaFiltroHomeCommand, IBD.ToParam("Original_Filtro"), DbType.String, "Filtro", DataRowVersion.Original);
-                    AgregarParametro(ModifyFacetaFiltroHomeCommand, IBD.ToParam("Original_Orden"), DbType.Int16, "Orden", DataRowVersion.Original);
-
-                    AgregarParametro(ModifyFacetaFiltroHomeCommand, IBD.ToParam("OrganizacionID"), IBD.TipoGuidToObject(DbType.Guid), "OrganizacionID", DataRowVersion.Current);
-                    AgregarParametro(ModifyFacetaFiltroHomeCommand, IBD.ToParam("ProyectoID"), IBD.TipoGuidToObject(DbType.Guid), "ProyectoID", DataRowVersion.Current);
-                    AgregarParametro(ModifyFacetaFiltroHomeCommand, IBD.ToParam("ObjetoConocimiento"), DbType.String, "ObjetoConocimiento", DataRowVersion.Current);
-                    AgregarParametro(ModifyFacetaFiltroHomeCommand, IBD.ToParam("Faceta"), DbType.String, "Faceta", DataRowVersion.Current);
-                    AgregarParametro(ModifyFacetaFiltroHomeCommand, IBD.ToParam("Filtro"), DbType.String, "Filtro", DataRowVersion.Current);
-                    AgregarParametro(ModifyFacetaFiltroHomeCommand, IBD.ToParam("Orden"), DbType.Int16, "Orden", DataRowVersion.Current);
-                    ActualizarBaseDeDatos(addedAndModifiedDataSet, "FacetaFiltroHome", InsertFacetaFiltroHomeCommand, ModifyFacetaFiltroHomeCommand, null, Microsoft.Practices.EnterpriseLibrary.Data.UpdateBehavior.Transactional);
-
-                    #endregion
-
-                    #region Actualizar tabla FacetaFiltroProyecto
-                    DbCommand InsertFacetaFiltroProyectoCommand = ObtenerComando(sqlFacetaFiltroProyectoInsert);
-                    AgregarParametro(InsertFacetaFiltroProyectoCommand, IBD.ToParam("OrganizacionID"), IBD.TipoGuidToObject(DbType.Guid), "OrganizacionID", DataRowVersion.Current);
-                    AgregarParametro(InsertFacetaFiltroProyectoCommand, IBD.ToParam("ProyectoID"), IBD.TipoGuidToObject(DbType.Guid), "ProyectoID", DataRowVersion.Current);
-                    AgregarParametro(InsertFacetaFiltroProyectoCommand, IBD.ToParam("ObjetoConocimiento"), DbType.String, "ObjetoConocimiento", DataRowVersion.Current);
-                    AgregarParametro(InsertFacetaFiltroProyectoCommand, IBD.ToParam("Faceta"), DbType.String, "Faceta", DataRowVersion.Current);
-                    AgregarParametro(InsertFacetaFiltroProyectoCommand, IBD.ToParam("Filtro"), DbType.String, "Filtro", DataRowVersion.Current);
-                    AgregarParametro(InsertFacetaFiltroProyectoCommand, IBD.ToParam("Orden"), DbType.Int16, "Orden", DataRowVersion.Current);
-                    AgregarParametro(InsertFacetaFiltroProyectoCommand, IBD.ToParam("Condicion"), DbType.String, "Condicion", DataRowVersion.Current);
-
-                    DbCommand ModifyFacetaFiltroProyectoCommand = ObtenerComando(sqlFacetaFiltroProyectoModify);
-                    AgregarParametro(ModifyFacetaFiltroProyectoCommand, IBD.ToParam("Original_OrganizacionID"), IBD.TipoGuidToObject(DbType.Guid), "OrganizacionID", DataRowVersion.Original);
-                    AgregarParametro(ModifyFacetaFiltroProyectoCommand, IBD.ToParam("Original_ProyectoID"), IBD.TipoGuidToObject(DbType.Guid), "ProyectoID", DataRowVersion.Original);
-                    AgregarParametro(ModifyFacetaFiltroProyectoCommand, IBD.ToParam("Original_ObjetoConocimiento"), DbType.String, "ObjetoConocimiento", DataRowVersion.Original);
-                    AgregarParametro(ModifyFacetaFiltroProyectoCommand, IBD.ToParam("Original_Faceta"), DbType.String, "Faceta", DataRowVersion.Original);
-                    AgregarParametro(ModifyFacetaFiltroProyectoCommand, IBD.ToParam("Original_Filtro"), DbType.String, "Filtro", DataRowVersion.Original);
-                    AgregarParametro(ModifyFacetaFiltroProyectoCommand, IBD.ToParam("Original_Orden"), DbType.Int16, "Orden", DataRowVersion.Original);
-
-                    AgregarParametro(ModifyFacetaFiltroProyectoCommand, IBD.ToParam("OrganizacionID"), IBD.TipoGuidToObject(DbType.Guid), "OrganizacionID", DataRowVersion.Current);
-                    AgregarParametro(ModifyFacetaFiltroProyectoCommand, IBD.ToParam("ProyectoID"), IBD.TipoGuidToObject(DbType.Guid), "ProyectoID", DataRowVersion.Current);
-                    AgregarParametro(ModifyFacetaFiltroProyectoCommand, IBD.ToParam("ObjetoConocimiento"), DbType.String, "ObjetoConocimiento", DataRowVersion.Current);
-                    AgregarParametro(ModifyFacetaFiltroProyectoCommand, IBD.ToParam("Faceta"), DbType.String, "Faceta", DataRowVersion.Current);
-                    AgregarParametro(ModifyFacetaFiltroProyectoCommand, IBD.ToParam("Filtro"), DbType.String, "Filtro", DataRowVersion.Current);
-                    AgregarParametro(ModifyFacetaFiltroProyectoCommand, IBD.ToParam("Orden"), DbType.Int16, "Orden", DataRowVersion.Current);
-                    AgregarParametro(ModifyFacetaFiltroProyectoCommand, IBD.ToParam("Condicion"), DbType.String, "Condicion", DataRowVersion.Current);
-                    //ActualizarBaseDeDatos(addedAndModifiedDataSet, "FacetaFiltroProyecto", InsertFacetaFiltroProyectoCommand, ModifyFacetaFiltroProyectoCommand, null, Microsoft.Practices.EnterpriseLibrary.Data.UpdateBehavior.Transactional);
-
-                    #endregion
-
-                    #region Actualizar tabla FacetaEntidadesExternas
-                    DbCommand InsertFacetaEntidadesExternasCommand = ObtenerComando(sqlFacetaEntidadesExternasInsert);
-                    AgregarParametro(InsertFacetaEntidadesExternasCommand, IBD.ToParam("OrganizacionID"), IBD.TipoGuidToObject(DbType.Guid), "OrganizacionID", DataRowVersion.Current);
-                    AgregarParametro(InsertFacetaEntidadesExternasCommand, IBD.ToParam("ProyectoID"), IBD.TipoGuidToObject(DbType.Guid), "ProyectoID", DataRowVersion.Current);
-                    AgregarParametro(InsertFacetaEntidadesExternasCommand, IBD.ToParam("EntidadID"), DbType.String, "EntidadID", DataRowVersion.Current);
-                    AgregarParametro(InsertFacetaEntidadesExternasCommand, IBD.ToParam("Grafo"), DbType.String, "Grafo", DataRowVersion.Current);
-                    AgregarParametro(InsertFacetaEntidadesExternasCommand, IBD.ToParam("EsEntidadSecundaria"), DbType.Boolean, "EsEntidadSecundaria", DataRowVersion.Current);
-                    AgregarParametro(InsertFacetaEntidadesExternasCommand, IBD.ToParam("BuscarConRecursividad"), DbType.Boolean, "BuscarConRecursividad", DataRowVersion.Current);
-
-                    DbCommand ModifyFacetaEntidadesExternasCommand = ObtenerComando(sqlFacetaEntidadesExternasModify);
-                    AgregarParametro(ModifyFacetaEntidadesExternasCommand, IBD.ToParam("Original_OrganizacionID"), IBD.TipoGuidToObject(DbType.Guid), "OrganizacionID", DataRowVersion.Original);
-                    AgregarParametro(ModifyFacetaEntidadesExternasCommand, IBD.ToParam("Original_ProyectoID"), IBD.TipoGuidToObject(DbType.Guid), "ProyectoID", DataRowVersion.Original);
-                    AgregarParametro(ModifyFacetaEntidadesExternasCommand, IBD.ToParam("Original_EntidadID"), DbType.String, "EntidadID", DataRowVersion.Original);
-                    AgregarParametro(ModifyFacetaEntidadesExternasCommand, IBD.ToParam("Original_Grafo"), DbType.String, "Grafo", DataRowVersion.Original);
-                    AgregarParametro(ModifyFacetaEntidadesExternasCommand, IBD.ToParam("Original_EsEntidadSecundaria"), DbType.Boolean, "EsEntidadSecundaria", DataRowVersion.Original);
-                    AgregarParametro(ModifyFacetaEntidadesExternasCommand, IBD.ToParam("Original_BuscarConRecursividad"), DbType.Boolean, "BuscarConRecursividad", DataRowVersion.Original);
-
-                    AgregarParametro(ModifyFacetaEntidadesExternasCommand, IBD.ToParam("OrganizacionID"), IBD.TipoGuidToObject(DbType.Guid), "OrganizacionID", DataRowVersion.Current);
-                    AgregarParametro(ModifyFacetaEntidadesExternasCommand, IBD.ToParam("ProyectoID"), IBD.TipoGuidToObject(DbType.Guid), "ProyectoID", DataRowVersion.Current);
-                    AgregarParametro(ModifyFacetaEntidadesExternasCommand, IBD.ToParam("EntidadID"), DbType.String, "EntidadID", DataRowVersion.Current);
-                    AgregarParametro(ModifyFacetaEntidadesExternasCommand, IBD.ToParam("Grafo"), DbType.String, "Grafo", DataRowVersion.Current);
-                    AgregarParametro(ModifyFacetaEntidadesExternasCommand, IBD.ToParam("EsEntidadSecundaria"), DbType.Boolean, "EsEntidadSecundaria", DataRowVersion.Current);
-                    AgregarParametro(ModifyFacetaEntidadesExternasCommand, IBD.ToParam("BuscarConRecursividad"), DbType.Boolean, "BuscarConRecursividad", DataRowVersion.Current);
-                    //ActualizarBaseDeDatos(addedAndModifiedDataSet, "FacetaEntidadesExternas", InsertFacetaEntidadesExternasCommand, ModifyFacetaEntidadesExternasCommand, null, Microsoft.Practices.EnterpriseLibrary.Data.UpdateBehavior.Transactional);
-
-                    #endregion
-
-                    #region Actualizar tabla FacetaConfigProyChart
-                    DbCommand InsertFacetaConfigProyChartCommand = ObtenerComando(sqlFacetaConfigProyChartInsert);
-                    AgregarParametro(InsertFacetaConfigProyChartCommand, IBD.ToParam("OrganizacionID"), IBD.TipoGuidToObject(DbType.Guid), "OrganizacionID", DataRowVersion.Current);
-                    AgregarParametro(InsertFacetaConfigProyChartCommand, IBD.ToParam("ProyectoID"), IBD.TipoGuidToObject(DbType.Guid), "ProyectoID", DataRowVersion.Current);
-                    AgregarParametro(InsertFacetaConfigProyChartCommand, IBD.ToParam("ChartID"), IBD.TipoGuidToObject(DbType.Guid), "ChartID", DataRowVersion.Current);
-                    AgregarParametro(InsertFacetaConfigProyChartCommand, IBD.ToParam("Nombre"), DbType.String, "Nombre", DataRowVersion.Current);
-                    AgregarParametro(InsertFacetaConfigProyChartCommand, IBD.ToParam("Orden"), DbType.Int16, "Orden", DataRowVersion.Current);
-                    AgregarParametro(InsertFacetaConfigProyChartCommand, IBD.ToParam("SelectConsultaVirtuoso"), DbType.String, "SelectConsultaVirtuoso", DataRowVersion.Current);
-                    AgregarParametro(InsertFacetaConfigProyChartCommand, IBD.ToParam("FiltrosConsultaVirtuoso"), DbType.String, "FiltrosConsultaVirtuoso", DataRowVersion.Current);
-                    AgregarParametro(InsertFacetaConfigProyChartCommand, IBD.ToParam("JSBase"), DbType.String, "JSBase", DataRowVersion.Current);
-                    AgregarParametro(InsertFacetaConfigProyChartCommand, IBD.ToParam("JSBusqueda"), DbType.String, "JSBusqueda", DataRowVersion.Current);
-                    AgregarParametro(InsertFacetaConfigProyChartCommand, IBD.ToParam("Ontologias"), DbType.String, "Ontologias", DataRowVersion.Current);
-
-                    DbCommand ModifyFacetaConfigProyChartCommand = ObtenerComando(sqlFacetaConfigProyChartModify);
-                    AgregarParametro(ModifyFacetaConfigProyChartCommand, IBD.ToParam("Original_OrganizacionID"), IBD.TipoGuidToObject(DbType.Guid), "OrganizacionID", DataRowVersion.Original);
-                    AgregarParametro(ModifyFacetaConfigProyChartCommand, IBD.ToParam("Original_ProyectoID"), IBD.TipoGuidToObject(DbType.Guid), "ProyectoID", DataRowVersion.Original);
-                    AgregarParametro(ModifyFacetaConfigProyChartCommand, IBD.ToParam("Original_ChartID"), IBD.TipoGuidToObject(DbType.Guid), "ChartID", DataRowVersion.Original);
-
-                    AgregarParametro(ModifyFacetaConfigProyChartCommand, IBD.ToParam("OrganizacionID"), IBD.TipoGuidToObject(DbType.Guid), "OrganizacionID", DataRowVersion.Current);
-                    AgregarParametro(ModifyFacetaConfigProyChartCommand, IBD.ToParam("ProyectoID"), IBD.TipoGuidToObject(DbType.Guid), "ProyectoID", DataRowVersion.Current);
-                    AgregarParametro(ModifyFacetaConfigProyChartCommand, IBD.ToParam("ChartID"), IBD.TipoGuidToObject(DbType.Guid), "ChartID", DataRowVersion.Current);
-                    AgregarParametro(ModifyFacetaConfigProyChartCommand, IBD.ToParam("Nombre"), DbType.String, "Nombre", DataRowVersion.Current);
-                    AgregarParametro(ModifyFacetaConfigProyChartCommand, IBD.ToParam("Orden"), DbType.Int16, "Orden", DataRowVersion.Current);
-                    AgregarParametro(ModifyFacetaConfigProyChartCommand, IBD.ToParam("SelectConsultaVirtuoso"), DbType.String, "SelectConsultaVirtuoso", DataRowVersion.Current);
-                    AgregarParametro(ModifyFacetaConfigProyChartCommand, IBD.ToParam("FiltrosConsultaVirtuoso"), DbType.String, "FiltrosConsultaVirtuoso", DataRowVersion.Current);
-                    AgregarParametro(ModifyFacetaConfigProyChartCommand, IBD.ToParam("JSBase"), DbType.String, "JSBase", DataRowVersion.Current);
-                    AgregarParametro(ModifyFacetaConfigProyChartCommand, IBD.ToParam("JSBusqueda"), DbType.String, "JSBusqueda", DataRowVersion.Current);
-                    AgregarParametro(ModifyFacetaConfigProyChartCommand, IBD.ToParam("Ontologias"), DbType.String, "Ontologias", DataRowVersion.Current);
-                    ActualizarBaseDeDatos(addedAndModifiedDataSet, "FacetaConfigProyChart", InsertFacetaConfigProyChartCommand, ModifyFacetaConfigProyChartCommand, null, Microsoft.Practices.EnterpriseLibrary.Data.UpdateBehavior.Transactional);
-
-                    #endregion
-
-                    #region Actualizar tabla FacetaConfigProyMapa
-                    DbCommand InsertFacetaConfigProyMapaCommand = ObtenerComando(sqlFacetaConfigProyMapaInsert);
-                    AgregarParametro(InsertFacetaConfigProyMapaCommand, IBD.ToParam("OrganizacionID"), IBD.TipoGuidToObject(DbType.Guid), "OrganizacionID", DataRowVersion.Current);
-                    AgregarParametro(InsertFacetaConfigProyMapaCommand, IBD.ToParam("ProyectoID"), IBD.TipoGuidToObject(DbType.Guid), "ProyectoID", DataRowVersion.Current);
-                    AgregarParametro(InsertFacetaConfigProyMapaCommand, IBD.ToParam("PropLatitud"), DbType.String, "PropLatitud", DataRowVersion.Current);
-                    AgregarParametro(InsertFacetaConfigProyMapaCommand, IBD.ToParam("PropLongitud"), DbType.String, "PropLongitud", DataRowVersion.Current);
-                    AgregarParametro(InsertFacetaConfigProyMapaCommand, IBD.ToParam("PropRuta"), DbType.String, "PropRuta", DataRowVersion.Current);
-                    AgregarParametro(InsertFacetaConfigProyMapaCommand, IBD.ToParam("ColorRuta"), DbType.String, "ColorRuta", DataRowVersion.Current);
-
-                    DbCommand ModifyFacetaConfigProyMapaCommand = ObtenerComando(sqlFacetaConfigProyMapaModify);
-                    AgregarParametro(ModifyFacetaConfigProyMapaCommand, IBD.ToParam("Original_OrganizacionID"), IBD.TipoGuidToObject(DbType.Guid), "OrganizacionID", DataRowVersion.Original);
-                    AgregarParametro(ModifyFacetaConfigProyMapaCommand, IBD.ToParam("Original_ProyectoID"), IBD.TipoGuidToObject(DbType.Guid), "ProyectoID", DataRowVersion.Original);
-                    AgregarParametro(ModifyFacetaConfigProyMapaCommand, IBD.ToParam("Original_PropLatitud"), DbType.String, "PropLatitud", DataRowVersion.Original);
-                    AgregarParametro(ModifyFacetaConfigProyMapaCommand, IBD.ToParam("Original_PropLongitud"), DbType.String, "PropLongitud", DataRowVersion.Original);
-
-                    AgregarParametro(ModifyFacetaConfigProyMapaCommand, IBD.ToParam("OrganizacionID"), IBD.TipoGuidToObject(DbType.Guid), "OrganizacionID", DataRowVersion.Current);
-                    AgregarParametro(ModifyFacetaConfigProyMapaCommand, IBD.ToParam("ProyectoID"), IBD.TipoGuidToObject(DbType.Guid), "ProyectoID", DataRowVersion.Current);
-                    AgregarParametro(ModifyFacetaConfigProyMapaCommand, IBD.ToParam("PropLatitud"), DbType.String, "PropLatitud", DataRowVersion.Current);
-                    AgregarParametro(ModifyFacetaConfigProyMapaCommand, IBD.ToParam("PropLongitud"), DbType.String, "PropLongitud", DataRowVersion.Current);
-                    AgregarParametro(ModifyFacetaConfigProyMapaCommand, IBD.ToParam("PropRuta"), DbType.String, "PropRuta", DataRowVersion.Current);
-                    AgregarParametro(ModifyFacetaConfigProyMapaCommand, IBD.ToParam("ColorRuta"), DbType.String, "ColorRuta", DataRowVersion.Current);
-
-                    ActualizarBaseDeDatos(addedAndModifiedDataSet, "FacetaConfigProyMapa", InsertFacetaConfigProyMapaCommand, ModifyFacetaConfigProyMapaCommand, null, Microsoft.Practices.EnterpriseLibrary.Data.UpdateBehavior.Transactional);
-
-                    #endregion
-
-                    #region Actualizar tabla FacetaRedireccion
-                    DbCommand InsertFacetaRedireccionCommand = ObtenerComando(sqlFacetaRedireccionInsert);
-                    AgregarParametro(InsertFacetaRedireccionCommand, IBD.ToParam("Faceta"), DbType.String, "Faceta", DataRowVersion.Current);
-                    AgregarParametro(InsertFacetaRedireccionCommand, IBD.ToParam("Nombre"), DbType.String, "Nombre", DataRowVersion.Current);
-
-                    DbCommand ModifyFacetaRedireccionCommand = ObtenerComando(sqlFacetaRedireccionModify);
-                    AgregarParametro(ModifyFacetaRedireccionCommand, IBD.ToParam("Original_Faceta"), DbType.String, "Faceta", DataRowVersion.Original);
-                    AgregarParametro(ModifyFacetaRedireccionCommand, IBD.ToParam("Original_Nombre"), DbType.String, "Nombre", DataRowVersion.Original);
-
-                    AgregarParametro(ModifyFacetaRedireccionCommand, IBD.ToParam("Faceta"), DbType.String, "Faceta", DataRowVersion.Current);
-                    AgregarParametro(ModifyFacetaRedireccionCommand, IBD.ToParam("Nombre"), DbType.String, "Nombre", DataRowVersion.Current);
-                    ActualizarBaseDeDatos(addedAndModifiedDataSet, "FacetaRedireccion", InsertFacetaRedireccionCommand, ModifyFacetaRedireccionCommand, null, Microsoft.Practices.EnterpriseLibrary.Data.UpdateBehavior.Transactional);
-
-                    #endregion
-
-                    #region Actualizar tabla ConfiguracionConexionGrafo
-                    DbCommand InsertConfiguracionConexionGrafoCommand = ObtenerComando(sqlConfiguracionConexionGrafoInsert);
-                    AgregarParametro(InsertConfiguracionConexionGrafoCommand, IBD.ToParam("Grafo"), DbType.String, "Grafo", DataRowVersion.Current);
-                    AgregarParametro(InsertConfiguracionConexionGrafoCommand, IBD.ToParam("CadenaConexion"), DbType.String, "CadenaConexion", DataRowVersion.Current);
-
-                    DbCommand ModifyConfiguracionConexionGrafoCommand = ObtenerComando(sqlConfiguracionConexionGrafoModify);
-                    AgregarParametro(ModifyConfiguracionConexionGrafoCommand, IBD.ToParam("Original_Grafo"), DbType.String, "Grafo", DataRowVersion.Original);
-                    AgregarParametro(ModifyConfiguracionConexionGrafoCommand, IBD.ToParam("Original_CadenaConexion"), DbType.String, "CadenaConexion", DataRowVersion.Original);
-
-                    AgregarParametro(ModifyConfiguracionConexionGrafoCommand, IBD.ToParam("Grafo"), DbType.String, "Grafo", DataRowVersion.Current);
-                    AgregarParametro(ModifyConfiguracionConexionGrafoCommand, IBD.ToParam("CadenaConexion"), DbType.String, "CadenaConexion", DataRowVersion.Current);
-                    ActualizarBaseDeDatos(addedAndModifiedDataSet, "ConfiguracionConexionGrafo", InsertConfiguracionConexionGrafoCommand, ModifyConfiguracionConexionGrafoCommand, null, Microsoft.Practices.EnterpriseLibrary.Data.UpdateBehavior.Transactional);
-
-                    #endregion
-
-                    #endregion
-
-                    addedAndModifiedDataSet.Dispose();
-                }
-            }
-            catch (Exception)
-            {
-                throw;
-            }
-        }
-
-        /// <summary>
-        /// En caso de que se utilice un GnossConfig.xml que no es el de por defecto se pasa un objeto IBaseDatos creado con respecto
-        /// al fichero de configuracion que se ha apsado como parámetro
-        /// </summary>
-        /// <param name="IBD">Objecto IBaseDatos para el archivo pasado al constructor del AD</param>
-        private void CargarConsultasYDataAdapters(IBaseDatos IBD)
-        {
-
-            #region Consultas
-
-            this.sqlSelectFacetaHome = "SELECT " + IBD.CargarGuid("FacetaHome.OrganizacionID") + ", " + IBD.CargarGuid("FacetaHome.ProyectoID") + ", FacetaHome.ObjetoConocimiento, FacetaHome.Faceta, FacetaHome.PestanyaFaceta, FacetaHome.Orden, FacetaHome.MostrarVerMas FROM FacetaHome";
-            this.sqlSelectFacetaFiltroHome = "SELECT " + IBD.CargarGuid("FacetaFiltroHome.OrganizacionID") + ", " + IBD.CargarGuid("FacetaFiltroHome.ProyectoID") + ", FacetaFiltroHome.ObjetoConocimiento, FacetaFiltroHome.Faceta, FacetaFiltroHome.Filtro, FacetaFiltroHome.Orden FROM FacetaFiltroHome";
-            this.sqlSelectFacetaExcluida = "SELECT " + IBD.CargarGuid("FacetaExcluida.OrganizacionID") + ", " + IBD.CargarGuid("FacetaExcluida.ProyectoID") + ", FacetaExcluida.Faceta FROM FacetaExcluida";
-            this.sqlSelectOntologiaProyecto = "SELECT " + IBD.CargarGuid("OntologiaProyecto.OrganizacionID") + ", " + IBD.CargarGuid("OntologiaProyecto.ProyectoID") + ", OntologiaProyecto.OntologiaProyecto, OntologiaProyecto.NombreOnt, OntologiaProyecto.Namespace, OntologiaProyecto.NamespacesExtra, OntologiaProyecto.SubTipos, OntologiaProyecto.NombreCortoOnt, OntologiaProyecto.CachearDatosSemanticos, OntologiaProyecto.EsBuscable FROM OntologiaProyecto";
-            this.sqlSelectFacetaObjetoConocimiento = "SELECT FacetaObjetoConocimiento.ObjetoConocimiento, FacetaObjetoConocimiento.Faceta, FacetaObjetoConocimiento.NombreFaceta, FacetaObjetoConocimiento.Orden, FacetaObjetoConocimiento.Autocompletar, FacetaObjetoConocimiento.TipoPropiedad,FacetaObjetoConocimiento.TipoDisenio, FacetaObjetoConocimiento.ElementosVisibles, FacetaObjetoConocimiento.AlgoritmoTransformacion, FacetaObjetoConocimiento.EsSemantica, FacetaObjetoConocimiento.Mayusculas, FacetaObjetoConocimiento.EsPorDefecto, FacetaObjetoConocimiento.ComportamientoOr FROM FacetaObjetoConocimiento";
-            this.sqlSelectFacetaObjetoConocimientoProyecto = "SELECT " + IBD.CargarGuid("FacetaObjetoConocimientoProyecto.OrganizacionID") + ", " + IBD.CargarGuid("FacetaObjetoConocimientoProyecto.ProyectoID") + ", FacetaObjetoConocimientoProyecto.ObjetoConocimiento, FacetaObjetoConocimientoProyecto.Faceta, FacetaObjetoConocimientoProyecto.Orden, FacetaObjetoConocimientoProyecto.Autocompletar, FacetaObjetoConocimientoProyecto.TipoPropiedad, FacetaObjetoConocimientoProyecto.Comportamiento, FacetaObjetoConocimientoProyecto.Excluyente, FacetaObjetoConocimientoProyecto.NombreFaceta, FacetaObjetoConocimientoProyecto.TipoDisenio, FacetaObjetoConocimientoProyecto.ElementosVisibles, FacetaObjetoConocimientoProyecto.AlgoritmoTransformacion, FacetaObjetoConocimientoProyecto.EsSemantica, FacetaObjetoConocimientoProyecto.Mayusculas, FacetaObjetoConocimientoProyecto.NivelSemantico, FacetaObjetoConocimientoProyecto.Condicion, FacetaObjetoConocimientoProyecto.FacetaPrivadaParaGrupoEditores, FacetaObjetoConocimientoProyecto.Reciproca, FacetaObjetoConocimientoProyecto.ComportamientoOr, FacetaObjetoConocimientoProyecto.OcultaEnFacetas, FacetaObjetoConocimientoProyecto.OcultaEnFiltros, FacetaObjetoConocimientoProyecto.PriorizarOrdenResultados, FacetaObjetoConocimientoProyecto.Inmutable FROM FacetaObjetoConocimientoProyecto";
-            this.sqlSelectFacetaObjetoConocimientoProyectoPestanya = "SELECT " + IBD.CargarGuid("FacetaObjetoConocimientoProyectoPestanya.OrganizacionID") + ", " + IBD.CargarGuid("FacetaObjetoConocimientoProyectoPestanya.ProyectoID") + ", FacetaObjetoConocimientoProyectoPestanya.ObjetoConocimiento, FacetaObjetoConocimientoProyectoPestanya.Faceta, " + IBD.CargarGuid("FacetaObjetoConocimientoProyectoPestanya.PestanyaID") + " FROM FacetaObjetoConocimientoProyectoPestanya";
-            this.sqlSelectFacetaFiltroProyecto = "SELECT " + IBD.CargarGuid("FacetaFiltroProyecto.OrganizacionID") + ", " + IBD.CargarGuid("FacetaFiltroProyecto.ProyectoID") + ", FacetaFiltroProyecto.ObjetoConocimiento, FacetaFiltroProyecto.Faceta, FacetaFiltroProyecto.Filtro, FacetaFiltroProyecto.Orden, FacetaFiltroProyecto.Condicion FROM FacetaFiltroProyecto";
-            sqlSelectFacetaMultiple = "SELECT " + IBD.CargarGuid("FacetaMultiple.OrganizacionID") + ", " + IBD.CargarGuid("FacetaMultiple.ProyectoID") + ", FacetaMultiple.ObjetoConocimiento, FacetaMultiple.Faceta, FacetaMultiple.Consulta, FacetaMultiple.Filtro, FacetaMultiple.NumeroFacetasObtener, FacetaMultiple.NumeroFacetasDesplegar FROM FacetaMultiple";
-
-            this.sqlSelectFacetaEntidadesExternas = "SELECT " + IBD.CargarGuid("FacetaEntidadesExternas.OrganizacionID") + ", " + IBD.CargarGuid("FacetaEntidadesExternas.ProyectoID") + ", FacetaEntidadesExternas.EntidadID, FacetaEntidadesExternas.Grafo, FacetaEntidadesExternas.EsEntidadSecundaria, FacetaEntidadesExternas.BuscarConRecursividad FROM FacetaEntidadesExternas";
-            this.sqlSelectFacetaConfigProyChart = "SELECT " + IBD.CargarGuid("FacetaConfigProyChart.OrganizacionID") + ", " + IBD.CargarGuid("FacetaConfigProyChart.ProyectoID") + ", " + IBD.CargarGuid("FacetaConfigProyChart.ChartID") + ", FacetaConfigProyChart.Nombre, FacetaConfigProyChart.Orden, FacetaConfigProyChart.SelectConsultaVirtuoso, FacetaConfigProyChart.FiltrosConsultaVirtuoso, FacetaConfigProyChart.JSBase, FacetaConfigProyChart.JSBusqueda, FacetaConfigProyChart.Ontologias FROM FacetaConfigProyChart";
-            this.sqlSelectFacetaConfigProyMapa = "SELECT " + IBD.CargarGuid("FacetaConfigProyMapa.OrganizacionID") + ", " + IBD.CargarGuid("FacetaConfigProyMapa.ProyectoID") + ", FacetaConfigProyMapa.PropLatitud, FacetaConfigProyMapa.PropLongitud, FacetaConfigProyMapa.PropRuta, FacetaConfigProyMapa.ColorRuta FROM FacetaConfigProyMapa";
-            this.sqlSelectFacetaRedireccion = "SELECT FacetaRedireccion.Faceta, FacetaRedireccion.Nombre FROM FacetaRedireccion";
-            this.sqlSelectConfiguracionConexionGrafo = "SELECT ConfiguracionConexionGrafo.Grafo, ConfiguracionConexionGrafo.CadenaConexion FROM ConfiguracionConexionGrafo";
-            this.sqlSelectFacetaConfigProyRangoFecha = "SELECT " + IBD.CargarGuid("FacetaConfigProyRangoFecha.OrganizacionID") + ", " + IBD.CargarGuid("FacetaConfigProyRangoFecha.ProyectoID") + ", FacetaConfigProyRangoFecha.PropiedadNueva, FacetaConfigProyRangoFecha.PropiedadInicio, FacetaConfigProyRangoFecha.PropiedadFin FROM FacetaConfigProyRangoFecha";
-
-            #endregion
-
-            #region DataAdapter
-
-            #region FacetaHome
-            this.sqlFacetaHomeInsert = IBD.ReplaceParam("INSERT INTO FacetaHome (OrganizacionID, ProyectoID, ObjetoConocimiento, Faceta, PestanyaFaceta, Orden, MostrarVerMas) VALUES (" + IBD.GuidParamColumnaTabla("OrganizacionID") + ", " + IBD.GuidParamColumnaTabla("ProyectoID") + ", @ObjetoConocimiento, @Faceta, @PestanyaFaceta, @Orden, @MostrarVerMas)");
-            this.sqlFacetaHomeDelete = IBD.ReplaceParam("DELETE FROM FacetaHome WHERE (OrganizacionID = " + IBD.GuidParamColumnaTabla("Original_OrganizacionID") + ") AND (ProyectoID = " + IBD.GuidParamColumnaTabla("Original_ProyectoID") + ") AND (ObjetoConocimiento = @Original_ObjetoConocimiento) AND (Faceta = @Original_Faceta)");
-            this.sqlFacetaHomeModify = IBD.ReplaceParam("UPDATE FacetaHome SET OrganizacionID = " + IBD.GuidParamColumnaTabla("OrganizacionID") + ", ProyectoID = " + IBD.GuidParamColumnaTabla("ProyectoID") + ", ObjetoConocimiento = @ObjetoConocimiento, Faceta = @Faceta, PestanyaFaceta = @PestanyaFaceta, Orden = @Orden, MostrarVerMas = @MostrarVerMas WHERE (OrganizacionID = " + IBD.GuidParamColumnaTabla("Original_OrganizacionID") + ") AND (ProyectoID = " + IBD.GuidParamColumnaTabla("Original_ProyectoID") + ")  AND (ObjetoConocimiento = @Original_ObjetoConocimiento)  AND (Faceta = @Original_Faceta)");
-            #endregion
-
-            #region FacetaFiltroHome
-            this.sqlFacetaFiltroHomeInsert = IBD.ReplaceParam("INSERT INTO FacetaFiltroHome (OrganizacionID, ProyectoID, ObjetoConocimiento, Faceta, Filtro, Orden) VALUES (" + IBD.GuidParamColumnaTabla("OrganizacionID") + ", " + IBD.GuidParamColumnaTabla("ProyectoID") + ", @ObjetoConocimiento, @Faceta, @Filtro, @Orden)");
-            this.sqlFacetaFiltroHomeDelete = IBD.ReplaceParam("DELETE FROM FacetaFiltroHome WHERE (OrganizacionID = " + IBD.GuidParamColumnaTabla("Original_OrganizacionID") + ") AND (ProyectoID = " + IBD.GuidParamColumnaTabla("Original_ProyectoID") + ") AND (ObjetoConocimiento = @Original_ObjetoConocimiento) AND (Faceta = @Original_Faceta) AND (Filtro = @Original_Filtro) AND (Orden = @Original_Orden)");
-            this.sqlFacetaFiltroHomeModify = IBD.ReplaceParam("UPDATE FacetaFiltroHome SET OrganizacionID = " + IBD.GuidParamColumnaTabla("OrganizacionID") + ", ProyectoID = " + IBD.GuidParamColumnaTabla("ProyectoID") + ", ObjetoConocimiento = @ObjetoConocimiento, Faceta = @Faceta, Filtro = @Filtro, Orden = @Orden WHERE (OrganizacionID = " + IBD.GuidParamColumnaTabla("Original_OrganizacionID") + ") AND (ProyectoID = " + IBD.GuidParamColumnaTabla("Original_ProyectoID") + ")  AND (ObjetoConocimiento = @Original_ObjetoConocimiento) AND (Faceta = @Original_Faceta) AND (Filtro = @Original_Filtro) AND (Orden = @Original_Orden)");
-            #endregion
-
-            #region FacetaExcluida
-            this.sqlFacetaExcluidaInsert = IBD.ReplaceParam("INSERT INTO FacetaExcluida (OrganizacionID, ProyectoID, Faceta) VALUES (" + IBD.GuidParamColumnaTabla("OrganizacionID") + ", " + IBD.GuidParamColumnaTabla("ProyectoID") + ", @Faceta)");
-            this.sqlFacetaExcluidaDelete = IBD.ReplaceParam("DELETE FROM FacetaExcluida WHERE (OrganizacionID = " + IBD.GuidParamColumnaTabla("Original_OrganizacionID") + ") AND (ProyectoID = " + IBD.GuidParamColumnaTabla("Original_ProyectoID") + ") AND (Faceta = @Original_Faceta)");
-            this.sqlFacetaExcluidaModify = IBD.ReplaceParam("UPDATE FacetaExcluida SET OrganizacionID = " + IBD.GuidParamColumnaTabla("OrganizacionID") + ", ProyectoID = " + IBD.GuidParamColumnaTabla("ProyectoID") + ", Faceta = @Faceta WHERE (OrganizacionID = " + IBD.GuidParamColumnaTabla("Original_OrganizacionID") + ") AND (ProyectoID = " + IBD.GuidParamColumnaTabla("Original_ProyectoID") + ") AND (Faceta = @Original_Faceta)");
-            #endregion
-
-            #region OntologiaProyecto
-            this.sqlOntologiaProyectoInsert = IBD.ReplaceParam("INSERT INTO OntologiaProyecto (OrganizacionID, ProyectoID, OntologiaProyecto, NombreOnt, Namespace, NamespacesExtra, SubTipos, NombreCortoOnt, CachearDatosSemanticos, EsBuscable) VALUES (" + IBD.GuidParamColumnaTabla("OrganizacionID") + ", " + IBD.GuidParamColumnaTabla("ProyectoID") + ", @OntologiaProyecto, @NombreOnt, @Namespace, @NamespacesExtra, @SubTipos, @NombreCortoOnt, @CachearDatosSemanticos, @EsBuscable)");
-            this.sqlOntologiaProyectoDelete = IBD.ReplaceParam("DELETE FROM OntologiaProyecto WHERE (OrganizacionID = " + IBD.GuidParamColumnaTabla("Original_OrganizacionID") + ") AND (ProyectoID = " + IBD.GuidParamColumnaTabla("Original_ProyectoID") + ") AND (OntologiaProyecto = @Original_OntologiaProyecto)");
-            this.sqlOntologiaProyectoModify = IBD.ReplaceParam("UPDATE OntologiaProyecto SET OrganizacionID = " + IBD.GuidParamColumnaTabla("OrganizacionID") + ", ProyectoID = " + IBD.GuidParamColumnaTabla("ProyectoID") + ", OntologiaProyecto = @OntologiaProyecto, NombreOnt = @NombreOnt, Namespace = @Namespace, NamespacesExtra = @NamespacesExtra, SubTipos = @SubTipos, NombreCortoOnt = @NombreCortoOnt, CachearDatosSemanticos = @CachearDatosSemanticos, EsBuscable = @EsBuscable WHERE (OrganizacionID = " + IBD.GuidParamColumnaTabla("Original_OrganizacionID") + ") AND (ProyectoID = " + IBD.GuidParamColumnaTabla("Original_ProyectoID") + ") AND (OntologiaProyecto = @Original_OntologiaProyecto)");
-            #endregion
-
-            #region FacetaObjetoConocimiento
-
-            this.sqlFacetaObjetoConocimientoInsert = IBD.ReplaceParam("INSERT INTO FacetaObjetoConocimiento (ObjetoConocimiento, Faceta, NombreFaceta, Orden, Autocompletar, TipoPropiedad,TipoDisenio,ElementosVisibles,AlgoritmoTransformacion,EsSemantica,Mayusculas,EsPorDefecto,ComportamientoOr) VALUES (@ObjetoConocimiento, @Faceta, @NombreFaceta, @Orden, @Autocompletar, @TipoPropiedad,@TipoDisenio,@ElementosVisibles,@AlgoritmoTransformacion,@EsSemantica,@Mayusculas,@EsPorDefecto,@ComportamientoOr)");
-            this.sqlFacetaObjetoConocimientoDelete = IBD.ReplaceParam("DELETE FROM FacetaObjetoConocimiento WHERE (ObjetoConocimiento = @Original_ObjetoConocimiento) AND (Faceta = @Original_Faceta) ");
-            this.sqlFacetaObjetoConocimientoModify = IBD.ReplaceParam("UPDATE FacetaObjetoConocimiento SET ObjetoConocimiento = @ObjetoConocimiento, Faceta = @Faceta, NombreFaceta = @NombreFaceta, Orden = @Orden, Autocompletar = @Autocompletar, TipoPropiedad = @TipoPropiedad, TipoDisenio = @TipoDisenio, ElementosVisibles = @ElementosVisibles, AlgoritmoTransformacion = @AlgoritmoTransformacion, EsSemantica = @EsSemantica, Mayusculas = @Mayusculas, EsPorDefecto = @EsPorDefecto, ComportamientoOr = @ComportamientoOr WHERE (ObjetoConocimiento = @Original_ObjetoConocimiento) AND (Faceta = @Original_Faceta) ");
-            #endregion
-
-            #region FacetaObjetoConocimientoProyecto
-            this.sqlFacetaObjetoConocimientoProyectoInsert = IBD.ReplaceParam("INSERT INTO FacetaObjetoConocimientoProyecto (OrganizacionID, ProyectoID, ObjetoConocimiento, Faceta, Orden, Autocompletar, TipoPropiedad, Comportamiento, Excluyente, NombreFaceta, TipoDisenio, ElementosVisibles, AlgoritmoTransformacion, EsSemantica, Mayusculas, NivelSemantico, Condicion, FacetaPrivadaParaGrupoEditores, Reciproca,ComportamientoOr,OcultaEnFacetas,OcultaEnFiltros,PriorizarOrdenResultados,Inmutable,AgrupacionID) VALUES (" + IBD.GuidParamColumnaTabla("OrganizacionID") + ", " + IBD.GuidParamColumnaTabla("ProyectoID") + ", @ObjetoConocimiento, @Faceta, @Orden, @Autocompletar, @TipoPropiedad, @Comportamiento, @Excluyente, @NombreFaceta, @TipoDisenio, @ElementosVisibles, @AlgoritmoTransformacion, @EsSemantica, @Mayusculas, @NivelSemantico, @Condicion, @FacetaPrivadaParaGrupoEditores, @Reciproca, @ComportamientoOr, @OcultaEnFacetas, @OcultaEnFiltros, @PriorizarOrdenResultados, @Inmutable,@AgrupacionID)");
-            this.sqlFacetaObjetoConocimientoProyectoDelete = IBD.ReplaceParam("DELETE FROM FacetaObjetoConocimientoProyecto WHERE (OrganizacionID = " + IBD.GuidParamColumnaTabla("Original_OrganizacionID") + ") AND (ProyectoID = " + IBD.GuidParamColumnaTabla("Original_ProyectoID") + ") AND (ObjetoConocimiento = @Original_ObjetoConocimiento) AND (Faceta = @Original_Faceta)");
-            this.sqlFacetaObjetoConocimientoProyectoModify = IBD.ReplaceParam("UPDATE FacetaObjetoConocimientoProyecto SET OrganizacionID = " + IBD.GuidParamColumnaTabla("OrganizacionID") + ", ProyectoID = " + IBD.GuidParamColumnaTabla("ProyectoID") + ", ObjetoConocimiento = @ObjetoConocimiento, Faceta = @Faceta, Orden = @Orden, Autocompletar = @Autocompletar, TipoPropiedad = @TipoPropiedad, Comportamiento = @Comportamiento, Excluyente = @Excluyente, NombreFaceta = @NombreFaceta, TipoDisenio = @TipoDisenio, ElementosVisibles = @ElementosVisibles, AlgoritmoTransformacion = @AlgoritmoTransformacion, EsSemantica = @EsSemantica, Mayusculas = @Mayusculas, NivelSemantico = @NivelSemantico, Condicion = @Condicion, FacetaPrivadaParaGrupoEditores = @FacetaPrivadaParaGrupoEditores, Reciproca = @Reciproca, ComportamientoOr = @ComportamientoOr, OcultaEnFacetas = @OcultaEnFacetas, OcultaEnFiltros = @OcultaEnFiltros, PriorizarOrdenResultados=@PriorizarOrdenResultados , Inmutable=@Inmutable, AgrupacionID=@AgrupacionID WHERE (OrganizacionID = " + IBD.GuidParamColumnaTabla("Original_OrganizacionID") + ") AND (ProyectoID = " + IBD.GuidParamColumnaTabla("Original_ProyectoID") + ") AND (ObjetoConocimiento = @Original_ObjetoConocimiento) AND (Faceta = @Original_Faceta)");
-            #endregion
-
-            #region FacetaObjetoConocimientoProyectoPestanya
-            this.sqlFacetaObjetoConocimientoProyectoPestanyaInsert = IBD.ReplaceParam("INSERT INTO FacetaObjetoConocimientoProyectoPestanya (OrganizacionID, ProyectoID, ObjetoConocimiento, Faceta, PestanyaID) VALUES (" + IBD.GuidParamColumnaTabla("OrganizacionID") + ", " + IBD.GuidParamColumnaTabla("ProyectoID") + ", @ObjetoConocimiento, @Faceta, " + IBD.GuidParamColumnaTabla("PestanyaID") + ")");
-            this.sqlFacetaObjetoConocimientoProyectoPestanyaDelete = IBD.ReplaceParam("DELETE FROM FacetaObjetoConocimientoProyectoPestanya WHERE (OrganizacionID = " + IBD.GuidParamColumnaTabla("Original_OrganizacionID") + ") AND (ProyectoID = " + IBD.GuidParamColumnaTabla("Original_ProyectoID") + ") AND (ObjetoConocimiento = @Original_ObjetoConocimiento) AND (Faceta = @Original_Faceta) AND (PestanyaID = " + IBD.GuidParamColumnaTabla("Original_PestanyaID") + ")");
-            this.sqlFacetaObjetoConocimientoProyectoPestanyaModify = IBD.ReplaceParam("UPDATE FacetaObjetoConocimientoProyectoPestanya SET OrganizacionID = " + IBD.GuidParamColumnaTabla("OrganizacionID") + ", ProyectoID = " + IBD.GuidParamColumnaTabla("ProyectoID") + ", ObjetoConocimiento = @ObjetoConocimiento, Faceta = @Faceta, PestanyaID = " + IBD.GuidParamColumnaTabla("PestanyaID") + " WHERE (OrganizacionID = " + IBD.GuidParamColumnaTabla("Original_OrganizacionID") + ") AND (ProyectoID = " + IBD.GuidParamColumnaTabla("Original_ProyectoID") + ") AND (ObjetoConocimiento = @Original_ObjetoConocimiento) AND (Faceta = @Original_Faceta) AND (PestanyaID = " + IBD.GuidParamColumnaTabla("Original_PestanyaID") + ")");
-            #endregion
-
-            #region FacetaFiltroProyecto
-            this.sqlFacetaFiltroProyectoInsert = IBD.ReplaceParam("INSERT INTO FacetaFiltroProyecto (OrganizacionID, ProyectoID, ObjetoConocimiento, Faceta, Filtro, Orden, Condicion) VALUES (" + IBD.GuidParamColumnaTabla("OrganizacionID") + ", " + IBD.GuidParamColumnaTabla("ProyectoID") + ", @ObjetoConocimiento, @Faceta, @Filtro, @Orden, @Condicion)");
-            this.sqlFacetaFiltroProyectoDelete = IBD.ReplaceParam("DELETE FROM FacetaFiltroProyecto WHERE (OrganizacionID = " + IBD.GuidParamColumnaTabla("Original_OrganizacionID") + ") AND (ProyectoID = " + IBD.GuidParamColumnaTabla("Original_ProyectoID") + ") AND (ObjetoConocimiento = @Original_ObjetoConocimiento) AND (Faceta = @Original_Faceta) AND (Filtro = @Original_Filtro) AND (Orden = @Original_Orden)");
-            this.sqlFacetaFiltroProyectoModify = IBD.ReplaceParam("UPDATE FacetaFiltroProyecto SET OrganizacionID = " + IBD.GuidParamColumnaTabla("OrganizacionID") + ", ProyectoID = " + IBD.GuidParamColumnaTabla("ProyectoID") + ", ObjetoConocimiento = @ObjetoConocimiento, Faceta = @Faceta, Filtro = @Filtro, Orden = @Orden, Condicion = @Condicion WHERE (OrganizacionID = " + IBD.GuidParamColumnaTabla("Original_OrganizacionID") + ") AND (ProyectoID = " + IBD.GuidParamColumnaTabla("Original_ProyectoID") + ") AND (ObjetoConocimiento = @Original_ObjetoConocimiento) AND (Faceta = @Original_Faceta) AND (Filtro = @Original_Filtro) AND (Orden = @Original_Orden)");
-            #endregion
-
-            #region FacetaEntidadesExternas
-            this.sqlFacetaEntidadesExternasInsert = IBD.ReplaceParam("INSERT INTO FacetaEntidadesExternas (OrganizacionID, ProyectoID, EntidadID, Grafo, EsEntidadSecundaria, BuscarConRecursividad) VALUES (" + IBD.GuidParamColumnaTabla("OrganizacionID") + ", " + IBD.GuidParamColumnaTabla("ProyectoID") + ", @EntidadID, @Grafo, @EsEntidadSecundaria, @BuscarConRecursividad)");
-            this.sqlFacetaEntidadesExternasDelete = IBD.ReplaceParam("DELETE FROM FacetaEntidadesExternas WHERE (OrganizacionID = " + IBD.GuidParamColumnaTabla("Original_OrganizacionID") + ") AND (ProyectoID = " + IBD.GuidParamColumnaTabla("Original_ProyectoID") + ") AND (EntidadID = @Original_EntidadID) AND (Grafo = @Original_Grafo)");
-            this.sqlFacetaEntidadesExternasModify = IBD.ReplaceParam("UPDATE FacetaEntidadesExternas SET OrganizacionID = " + IBD.GuidParamColumnaTabla("OrganizacionID") + ", ProyectoID = " + IBD.GuidParamColumnaTabla("ProyectoID") + ", EntidadID = @EntidadID, Grafo = @Grafo, EsEntidadSecundaria = @EsEntidadSecundaria, BuscarConRecursividad = @BuscarConRecursividad WHERE (OrganizacionID = " + IBD.GuidParamColumnaTabla("Original_OrganizacionID") + ") AND (ProyectoID = " + IBD.GuidParamColumnaTabla("Original_ProyectoID") + ") AND (EntidadID = @Original_EntidadID) AND (Grafo = @Original_Grafo)");
-            #endregion
-
-            #region FacetaConfigProyChart
-            this.sqlFacetaConfigProyChartInsert = IBD.ReplaceParam("INSERT INTO FacetaConfigProyChart (OrganizacionID, ProyectoID, ChartID, Nombre, Orden, SelectConsultaVirtuoso, FiltrosConsultaVirtuoso, JSBase, JSBusqueda, Ontologias) VALUES (" + IBD.GuidParamColumnaTabla("OrganizacionID") + ", " + IBD.GuidParamColumnaTabla("ProyectoID") + ", " + IBD.GuidParamColumnaTabla("ChartID") + ", @Nombre, @Orden, @SelectConsultaVirtuoso, @FiltrosConsultaVirtuoso, @JSBase, @JSBusqueda, @Ontologias)");
-            this.sqlFacetaConfigProyChartDelete = IBD.ReplaceParam("DELETE FROM FacetaConfigProyChart WHERE (OrganizacionID = " + IBD.GuidParamColumnaTabla("Original_OrganizacionID") + ") AND (ProyectoID = " + IBD.GuidParamColumnaTabla("Original_ProyectoID") + ") AND (ChartID = " + IBD.GuidParamColumnaTabla("Original_ChartID") + ")");
-            this.sqlFacetaConfigProyChartModify = IBD.ReplaceParam("UPDATE FacetaConfigProyChart SET OrganizacionID = " + IBD.GuidParamColumnaTabla("OrganizacionID") + ", ProyectoID = " + IBD.GuidParamColumnaTabla("ProyectoID") + ", ChartID = " + IBD.GuidParamColumnaTabla("ChartID") + ", Nombre = @Nombre, Orden = @Orden, SelectConsultaVirtuoso = @SelectConsultaVirtuoso, FiltrosConsultaVirtuoso = @FiltrosConsultaVirtuoso, JSBase = @JSBase, JSBusqueda = @JSBusqueda, Ontologias = @Ontologias WHERE (OrganizacionID = " + IBD.GuidParamColumnaTabla("Original_OrganizacionID") + ") AND (ProyectoID = " + IBD.GuidParamColumnaTabla("Original_ProyectoID") + ") AND (ChartID = " + IBD.GuidParamColumnaTabla("Original_ChartID") + ")");
-            #endregion
-
-            #region FacetaConfigProyMapa
-            this.sqlFacetaConfigProyMapaInsert = IBD.ReplaceParam("INSERT INTO FacetaConfigProyMapa (OrganizacionID, ProyectoID, PropLatitud, PropLongitud, PropRuta, ColorRuta) VALUES (" + IBD.GuidParamColumnaTabla("OrganizacionID") + ", " + IBD.GuidParamColumnaTabla("ProyectoID") + ", @PropLatitud, @PropLongitud, @PropRuta, @ColorRuta)");
-            this.sqlFacetaConfigProyMapaDelete = IBD.ReplaceParam("DELETE FROM FacetaConfigProyMapa WHERE (OrganizacionID = " + IBD.GuidParamColumnaTabla("Original_OrganizacionID") + ") AND (ProyectoID = " + IBD.GuidParamColumnaTabla("Original_ProyectoID") + ") AND (PropLatitud = @Original_PropLatitud) AND (PropLongitud = @Original_PropLongitud)");
-            this.sqlFacetaConfigProyMapaModify = IBD.ReplaceParam("UPDATE FacetaConfigProyMapa SET OrganizacionID = " + IBD.GuidParamColumnaTabla("OrganizacionID") + ", ProyectoID = " + IBD.GuidParamColumnaTabla("ProyectoID") + ", PropLatitud = @PropLatitud, PropLongitud = @PropLongitud, PropRuta = @PropRuta, ColorRuta = @ColorRuta WHERE (OrganizacionID = " + IBD.GuidParamColumnaTabla("Original_OrganizacionID") + ") AND (ProyectoID = " + IBD.GuidParamColumnaTabla("Original_ProyectoID") + ") AND (PropLatitud = @Original_PropLatitud) AND (PropLongitud = @Original_PropLongitud)");
-            #endregion
-
-            #region FacetaRedireccion
-            this.sqlFacetaRedireccionInsert = IBD.ReplaceParam("INSERT INTO FacetaRedireccion (Faceta, Nombre) VALUES (@Faceta, @Nombre)");
-            this.sqlFacetaRedireccionDelete = IBD.ReplaceParam("DELETE FROM FacetaRedireccion WHERE (Faceta = @Original_Faceta) AND (Nombre = @Original_Nombre)");
-            this.sqlFacetaRedireccionModify = IBD.ReplaceParam("UPDATE FacetaRedireccion SET Faceta = @Faceta, Nombre = @Nombre WHERE (Faceta = @Original_Faceta) AND (Nombre = @Original_Nombre)");
-            #endregion
-
-            #region ConfiguracionConexionGrafo
-            this.sqlConfiguracionConexionGrafoInsert = IBD.ReplaceParam("INSERT INTO ConfiguracionConexionGrafo (Grafo, CadenaConexion) VALUES (@Grafo, @CadenaConexion)");
-            this.sqlConfiguracionConexionGrafoDelete = IBD.ReplaceParam("DELETE FROM ConfiguracionConexionGrafo WHERE (Grafo = @Original_Grafo) AND (CadenaConexion = @Original_CadenaConexion)");
-            this.sqlConfiguracionConexionGrafoModify = IBD.ReplaceParam("UPDATE ConfiguracionConexionGrafo SET Grafo = @Grafo, CadenaConexion = @CadenaConexion WHERE (Grafo = @Original_Grafo) AND (CadenaConexion = @Original_CadenaConexion)");
-            #endregion
-
-            #endregion
-
         }
 
         #endregion
@@ -1091,11 +259,11 @@ namespace Es.Riam.Gnoss.AD.Facetado
         #region Métodos generales
 
         /// <summary>
-        /// En caso de que se utilice el GnossConfig.xml por defecto se sigue utilizando el IBD estático
+        /// Guarda en la tabla FacetaEntidadesExterna los datos al subir la ontología
         /// </summary>
-        private void CargarConsultasYDataAdapters()
+        public void GuardarFacetasEntidadesExternas(FacetaEntidadesExternas facetaEntidadExterna)
         {
-            this.CargarConsultasYDataAdapters(IBD);
+            mEntityContext.FacetaEntidadesExternas.Add(facetaEntidadExterna);
         }
 
         /// <summary>
@@ -1189,7 +357,6 @@ namespace Es.Riam.Gnoss.AD.Facetado
 
         private void CargaFacetaMultipleDeProyecto(DataWrapperFacetas pFacetaDW, List<string> pListaItems, Guid? pOrganizacionID, Guid pProyectoID)
         {
-
             var select = mEntityContext.FacetaMultiple.Where(item => item.ProyectoID.Equals(pProyectoID));
 
             if (pOrganizacionID.HasValue)
@@ -1416,7 +583,6 @@ namespace Es.Riam.Gnoss.AD.Facetado
             return dataWrapperFacetas;
         }
 
-
         public DataWrapperFacetas ObtenerFacetaObjetoConocimiento(string pObjetoConocimiento)
         {
             DataWrapperFacetas dataWrapperFacetas = new DataWrapperFacetas();
@@ -1497,12 +663,9 @@ namespace Es.Riam.Gnoss.AD.Facetado
             {
                 query = query.Where(item => item.OrganizacionID.Equals(pOrganizacionID));
             }
-            if (pSoloBuscables)
+            if (pSoloBuscables && !pOrganizacionID.Equals(Guid.Empty))
             {
-                if (!pOrganizacionID.Equals(Guid.Empty))
-                {
-                    query = query.Where(item => item.EsBuscable.Equals(true));
-                }
+                query = query.Where(item => item.EsBuscable.Equals(true));
             }
 
             List<OntologiaProyecto> listaOntologias = query.ToList();
@@ -1534,28 +697,25 @@ namespace Es.Riam.Gnoss.AD.Facetado
         /// <param name="pProyectoID"></param>
         public void ObtenerOntologiasProyecto(DataWrapperFacetas pDataWrapperFacetas, Guid pOrganizacionID, Guid pProyectoID, bool pAgregarNamespacesComoOntologias, bool pSoloBuscables)
         {
-            List<OntologiaProyecto> listaOntologiaProyecto = new List<OntologiaProyecto>();
             var consulta = mEntityContext.OntologiaProyecto.Where(item => item.ProyectoID.Equals(pProyectoID));
             if (!pOrganizacionID.Equals(Guid.Empty))
             {
                 consulta = consulta.Where(item => item.OrganizacionID.Equals(pOrganizacionID));
 
             }
-            if (pSoloBuscables)
+            if (pSoloBuscables && !pOrganizacionID.Equals(Guid.Empty))
             {
-                if (!pOrganizacionID.Equals(Guid.Empty))
-                {
-                    consulta = consulta.Where(item => item.EsBuscable == true);
-                }
+                consulta = consulta.Where(item => item.EsBuscable);
             }
 
-            listaOntologiaProyecto = consulta.ToList();
+            List<OntologiaProyecto> listaOntologiaProyecto = consulta.ToList();
             if (pAgregarNamespacesComoOntologias)
             {
                 AgregarNamespacesComoOntologias(listaOntologiaProyecto);
             }
             pDataWrapperFacetas.ListaOntologiaProyecto = pDataWrapperFacetas.ListaOntologiaProyecto.Union(listaOntologiaProyecto).ToList();
         }
+
         /// <summary>
         /// 
         /// </summary>
@@ -1566,6 +726,7 @@ namespace Es.Riam.Gnoss.AD.Facetado
         {
             ObtenerOntologiasProyecto(pDataWrapperFacetas, pOrganizacionID, pProyectoID, pAgregarNamespacesComoOntologias, false);
         }
+        
         /// <summary>
         /// Obtiene los namespaces de una ontología
         /// </summary>
@@ -1611,7 +772,7 @@ namespace Es.Riam.Gnoss.AD.Facetado
             return mEntityContext.FacetaObjetoConocimientoProyecto.Where(item => item.Faceta.Equals(pFaceta) && item.ProyectoID.Equals(pProyectoID)).ToList();
         }
 
-        private void AgregarNamespacesComoOntologias(List<OntologiaProyecto> pListaFaceta)
+        private static void AgregarNamespacesComoOntologias(List<OntologiaProyecto> pListaFaceta)
         {
             List<OntologiaProyecto> filasExtra = new List<OntologiaProyecto>();
 
@@ -1628,9 +789,7 @@ namespace Es.Riam.Gnoss.AD.Facetado
                         string value = names.Substring(names.IndexOf(":") + 1);
                         string ontologiaProyecto = "@" + value;
 
-                        // FacetaDS.OntologiaProyectoRow filaNueva = pListaFaceta.OntologiaProyecto.NewOntologiaProyectoRow();
                         OntologiaProyecto filaNueva = new OntologiaProyecto();
-
                         filaNueva.OrganizacionID = fila.OrganizacionID;
                         filaNueva.ProyectoID = fila.ProyectoID;
                         filaNueva.OntologiaProyecto1 = ontologiaProyecto;
@@ -1639,8 +798,6 @@ namespace Es.Riam.Gnoss.AD.Facetado
                         filaNueva.NamespacesExtra = "";
                         filaNueva.EsBuscable = true;
                         filaNueva.CachearDatosSemanticos = true;
-
-                        //EntityContext.OntologiaProyecto.Add(filaNueva);
 
                         if (pListaFaceta.Any(ontologia => ontologia.OrganizacionID.Equals(fila.OrganizacionID) && ontologia.ProyectoID.Equals(fila.ProyectoID) && ontologia.OntologiaProyecto1.Equals(ontologiaProyecto)) || filasExtra.Any(filaExtra => (filaExtra.OntologiaProyecto1.Equals(ontologiaProyecto) || filaExtra.OntologiaProyecto1.StartsWith(ontologiaProyecto + "##REP")) && !filaExtra.Namespace.Equals(key)))
                         {
@@ -1666,10 +823,8 @@ namespace Es.Riam.Gnoss.AD.Facetado
                 if (!pListaFaceta.Any(ontologia => ontologia.OrganizacionID.Equals(filaExtra.OrganizacionID) && ontologia.ProyectoID.Equals(filaExtra.ProyectoID) && ontologia.OntologiaProyecto1.Equals(filaExtra.OntologiaProyecto1)))
                 {
                     pListaFaceta.Add(filaExtra);
-                    //EntityContext.OntologiaProyecto.Add(filaExtra);
                 }
             }
-
         }
 
         /// <summary>
@@ -1757,11 +912,7 @@ namespace Es.Riam.Gnoss.AD.Facetado
 
         public List<string> ObtenerPredicadosSemanticos(Guid pOrganizacionID, Guid pProyectoID)
         {
-            List<string> listaPredicados = new List<string>();
-
-            listaPredicados = mEntityContext.FacetaObjetoConocimientoProyecto.Where(item => item.Autocompletar.Equals(true) && item.OrganizacionID.Equals(pOrganizacionID) && item.ProyectoID.Equals(pProyectoID)).Select(item => item.Faceta).Distinct().ToList();
-
-            return listaPredicados;
+            return mEntityContext.FacetaObjetoConocimientoProyecto.Where(item => item.Autocompletar.Equals(true) && item.OrganizacionID.Equals(pOrganizacionID) && item.ProyectoID.Equals(pProyectoID)).Select(item => item.Faceta).Distinct().ToList();
         }
 
         /// <summary>
@@ -1774,15 +925,15 @@ namespace Es.Riam.Gnoss.AD.Facetado
         {
             foreach (OntologiaProyecto filaOnto in pListaFaceta.Where(item => !string.IsNullOrEmpty(item.SubTipos)))
             {
-                string valorNamespaceado = FacetaAD.ObtenerValorAplicandoNamespaces(pValor, filaOnto, pUsarNamespaceSiempre);
+                string valorNamespaceado = ObtenerValorAplicandoNamespaces(pValor, filaOnto, pUsarNamespaceSiempre);
                 if (!string.IsNullOrEmpty(filaOnto.SubTipos) && filaOnto.SubTipos.Contains(valorNamespaceado + "|||"))
                 {
                     pValor = valorNamespaceado;
                     break;
                 }
             }
-            return pValor;
 
+            return pValor;
         }
 
         /// <summary>
@@ -1802,7 +953,7 @@ namespace Es.Riam.Gnoss.AD.Facetado
                     string url = namespaceUrl.Substring(namespaceUrl.IndexOf(":") + 1);
                     if (pValor.Contains(url))
                     {
-                        return names + ":" + pValor.Replace(url, "");
+                        return $"{names}:{pValor.Replace(url, "")}";
                     }
                 }
             }
@@ -1812,11 +963,10 @@ namespace Es.Riam.Gnoss.AD.Facetado
             }
             else if (pUsarNamespaceSiempre)
             {
-                return pFilaOntoNamespaces.OntologiaProyecto1 + ":" + pValor;
+                return $"{pFilaOntoNamespaces.OntologiaProyecto1}:{pValor}";
             }
 
             return pValor;
-
         }
 
         /// <summary>
@@ -1830,7 +980,7 @@ namespace Es.Riam.Gnoss.AD.Facetado
             string nombre = pSubTipo;
             foreach (OntologiaProyecto filaOnto in pListaFaceta.Where(item => !string.IsNullOrEmpty(item.SubTipos)))
             {
-                string valorNamespaceado = FacetaAD.ObtenerValorAplicandoNamespaces(nombre, filaOnto, true);
+                string valorNamespaceado = ObtenerValorAplicandoNamespaces(nombre, filaOnto, true);
                 if (!string.IsNullOrEmpty(filaOnto.SubTipos) && filaOnto.SubTipos.Contains(valorNamespaceado + "|||"))
                 {
                     string subTipo = filaOnto.SubTipos.Substring(filaOnto.SubTipos.IndexOf(valorNamespaceado + "|||") + valorNamespaceado.Length + 3);
@@ -1861,25 +1011,40 @@ namespace Es.Riam.Gnoss.AD.Facetado
                     break;
                 }
             }
-            return nombre;
 
+            return nombre;
         }
 
         public static bool PriorizarFacetasEnOrden(DataWrapperFacetas pFacetaDW, Dictionary<string, List<string>> pListaFiltros)
         {
-            List<string> facetasAfectanOrden = pFacetaDW.ListaFacetaObjetoConocimientoProyecto.Where(f => f.PriorizarOrdenResultados).Select(f => f.Faceta).ToList();
+            return pFacetaDW.ListaFacetaObjetoConocimientoProyecto.Where(f => f.PriorizarOrdenResultados).Any(item => pListaFiltros.ContainsKey(item.Faceta));
+        }
 
-            foreach (string facetaAfectaOrden in facetasAfectanOrden)
+        /// <summary>
+        /// Elimina las facetas pasadas por parámetro de su tabla y de las tablas relacionadas
+        /// </summary>
+        /// <param name="pFacetas"></param>
+        public void EliminarFacetas(List<FacetaObjetoConocimientoProyecto> pFacetas)
+        {
+            foreach (FacetaObjetoConocimientoProyecto faceta in pFacetas)
             {
-                if (pListaFiltros.ContainsKey(facetaAfectaOrden))
-                {
-                    return true;
-                }
-            }
+                mEntityContext.FacetaObjetoConocimientoProyectoPestanya.RemoveRange(mEntityContext.FacetaObjetoConocimientoProyectoPestanya.Where(item => item.ObjetoConocimiento == faceta.ObjetoConocimiento && item.Faceta == faceta.Faceta && item.ProyectoID.Equals(faceta.ProyectoID)));
 
-            return false;
+                mEntityContext.FacetaFiltroProyecto.RemoveRange(mEntityContext.FacetaFiltroProyecto.Where(item => item.ObjetoConocimiento == faceta.ObjetoConocimiento && item.Faceta == faceta.Faceta && item.ProyectoID.Equals(faceta.ProyectoID)));
+
+                mEntityContext.FacetaObjetoConocimientoProyecto.Remove(faceta);
+            }
+        }
+
+        /// <summary>
+        /// Guarda los cambios pendientes de confirmar en la base de datos
+        /// </summary>
+        public void GuardarCambios()
+        {
+            mEntityContext.SaveChanges();
         }
 
         #endregion Métodos generales
+
     }
 }

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Es.Riam.Gnoss.Web.MVC.Models.Flujos;
+using System;
 using System.Collections.Generic;
 
 namespace Es.Riam.Gnoss.Web.MVC.Models.Administracion
@@ -13,10 +14,26 @@ namespace Es.Riam.Gnoss.Web.MVC.Models.Administracion
         Nivel = 2
     }
 
-    /// <summary>
-    /// ViewModel de la página de administrar pestañas
-    /// </summary>
-    [Serializable]
+    public class CambiarEstadoPaginasCMSViewModel
+    {
+		public Guid PestanyaID { get; set; }
+		public Guid TransicionID { get; set; }
+		public string Nombre { get; set; }
+	}
+
+	public class HistorialTransicionesPaginasCMSViewModel
+	{
+		public Guid PestanyaID { get; set; }
+		public List<HistorialTransicionModel> ListaTransiciones { get; set; }
+		public string NombrePagina { get; set; }
+		public DateTime Fecha { get; set; }
+		public string NombreEditor { get; set; }
+	}
+
+	/// <summary>
+	/// ViewModel de la página de administrar pestañas
+	/// </summary>
+	[Serializable]
     public class AdministrarPaginasCMSViewModel
     {
         /// <summary>
@@ -45,10 +62,15 @@ namespace Es.Riam.Gnoss.Web.MVC.Models.Administracion
         public bool ContieneMultiplesComponentes { get; set; }
 
         public DateTime FechaModificacion { get; set; }
-        /// <summary>
-        /// Modelo de bloque de una página
-        /// </summary>
-        [Serializable]
+
+		public EstadoModel Estado { get; set; }
+
+		public List<HistorialTransicionModel> HistorialTransiciones { get; set; }
+
+		/// <summary>
+		/// Modelo de bloque de una página
+		/// </summary>
+		[Serializable]
         public partial class RowCMSModel
         {
             /// <summary>

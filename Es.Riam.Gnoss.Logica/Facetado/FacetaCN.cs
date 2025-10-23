@@ -6,15 +6,13 @@ using Es.Riam.Gnoss.AD.Facetado;
 using Es.Riam.Gnoss.AD.ParametroAplicacion;
 using Es.Riam.Gnoss.AD.Usuarios;
 using Es.Riam.Gnoss.Logica.ServiciosGenerales;
-using Es.Riam.Gnoss.Util.Configuracion;
-using Es.Riam.Gnoss.Util.General;
 using Es.Riam.Semantica.OWL;
 using Microsoft.Extensions.Logging;
 using Serilog.Core;
+using Es.Riam.Gnoss.Util.Configuracion;
+using Es.Riam.Gnoss.Util.General;
 using System;
 using System.Collections.Generic;
-using System.Data;
-using System.Linq;
 
 namespace Es.Riam.Gnoss.Logica.Facetado
 {
@@ -32,7 +30,7 @@ namespace Es.Riam.Gnoss.Logica.Facetado
         {
             mlogger = logger;
             mLoggerFactory = loggerFactory;
-            this.FacetaAD = new FacetaAD(loggingService, entityContext, configService, servicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<FacetaAD>(), mLoggerFactory);
+            FacetaAD = new FacetaAD(loggingService, entityContext, configService, servicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<FacetaAD>(), mLoggerFactory);
         }
 
         /// <summary>
@@ -45,13 +43,12 @@ namespace Es.Riam.Gnoss.Logica.Facetado
         {
             mlogger = logger;
             mLoggerFactory = loggerFactory;
-            this.FacetaAD = new FacetaAD(pFicheroConfiguracionBD, loggingService, entityContext, configService, servicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<FacetaAD>(), mLoggerFactory);
+            FacetaAD = new FacetaAD(pFicheroConfiguracionBD, loggingService, entityContext, configService, servicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<FacetaAD>(), mLoggerFactory);
         }
 
         #endregion
 
         #region Metodos generales
-
 
         /// <summary>
         /// Obtiene el número de filtros de categoría que tiene configurados un proyecto
@@ -143,18 +140,18 @@ namespace Es.Riam.Gnoss.Logica.Facetado
         /// <param name="pProyectoID">Identificador de proyecto</param>
         /// <param name="pEnlace">Enlace de la ontología</param>
         /// <returns>La fila de la ontología en el proyecto</returns>
-        public AD.EntityModel.Models.Faceta.OntologiaProyecto ObtenerOntologiaProyectoPorEnlace(Guid pProyectoID, string pEnlace)
+        public OntologiaProyecto ObtenerOntologiaProyectoPorEnlace(Guid pProyectoID, string pEnlace)
         {
             return FacetaAD.ObtenerOntologiaProyectoPorEnlace(pProyectoID, pEnlace);
         }
 
-        public List<AD.EntityModel.Models.Faceta.OntologiaProyecto> ObtenerOntologias(Guid pProyectoID, bool pAgregarNamespacesComoOntologias)
+        public List<OntologiaProyecto> ObtenerOntologias(Guid pProyectoID, bool pAgregarNamespacesComoOntologias)
         {
-            List<AD.EntityModel.Models.Faceta.OntologiaProyecto> listaOntologiaProyecto = FacetaAD.ObtenerOntologiasProyecto(Guid.Empty, pProyectoID, pAgregarNamespacesComoOntologias);
+            List<OntologiaProyecto> listaOntologiaProyecto = FacetaAD.ObtenerOntologiasProyecto(Guid.Empty, pProyectoID, pAgregarNamespacesComoOntologias);
             return listaOntologiaProyecto;
         }
 
-        public List<AD.EntityModel.Models.Faceta.OntologiaProyecto> ObtenerOntologias(Guid pProyectoID)
+        public List<OntologiaProyecto> ObtenerOntologias(Guid pProyectoID)
         {
             return FacetaAD.ObtenerOntologiasProyecto(Guid.Empty, pProyectoID);
         }
@@ -170,7 +167,7 @@ namespace Es.Riam.Gnoss.Logica.Facetado
         /// <param name="pFacetaDS"></param>
         /// <param name="pOrganizacionID"></param>
         /// <param name="pProyectoID"></param>
-        public List<AD.EntityModel.Models.Faceta.OntologiaProyecto> ObtenerOntologiasProyecto(Guid pOrganizacionID, Guid pProyectoID, bool pAgregarNamespacesComoOntologias, bool pSoloBuscables)
+        public List<OntologiaProyecto> ObtenerOntologiasProyecto(Guid pOrganizacionID, Guid pProyectoID, bool pAgregarNamespacesComoOntologias, bool pSoloBuscables)
         {
             return FacetaAD.ObtenerOntologiasProyecto(pOrganizacionID, pProyectoID, pAgregarNamespacesComoOntologias, pSoloBuscables);
         }
@@ -181,12 +178,12 @@ namespace Es.Riam.Gnoss.Logica.Facetado
         /// <param name="pFacetaDS"></param>
         /// <param name="pOrganizacionID"></param>
         /// <param name="pProyectoID"></param>
-        public List<AD.EntityModel.Models.Faceta.OntologiaProyecto> ObtenerOntologiasProyecto(Guid pOrganizacionID, Guid pProyectoID, bool pAgregarNamespacesComoOntologias)
+        public List<OntologiaProyecto> ObtenerOntologiasProyecto(Guid pOrganizacionID, Guid pProyectoID, bool pAgregarNamespacesComoOntologias)
         {
             return FacetaAD.ObtenerOntologiasProyecto(pOrganizacionID, pProyectoID, pAgregarNamespacesComoOntologias);
         }
 
-        public List<AD.EntityModel.Models.Faceta.OntologiaProyecto> ObtenerOntologiasProyecto(Guid pOrganizacionID, Guid pProyectoID)
+        public List<OntologiaProyecto> ObtenerOntologiasProyecto(Guid pOrganizacionID, Guid pProyectoID)
         {
             return FacetaAD.ObtenerOntologiasProyecto(pOrganizacionID, pProyectoID);
         }
@@ -347,30 +344,12 @@ namespace Es.Riam.Gnoss.Logica.Facetado
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="pDataSet"></param>
-        public void ActualizarBD(DataSet pDataSet)
-        {
-            FacetaAD.ActualizarBD(pDataSet);
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
         /// <param name="pFaceta">Faceta</param>
         /// <returns></returns>
         public string ObtenerNombreFacetaRedireccion(string pNombre)
         {
             return FacetaAD.ObtenerNombreFacetaRedireccion(pNombre);
         }
-
-        ///// <summary>
-        ///// Carg en el dataset pasado como parámetro la tabla CatTesauroPermiteTipoRec
-        ///// </summary>
-        ///// <param name="pFacetaDS">Dataset de facetas</param>
-        //public void CargarCatTesauroPermiteTipoRec(FacetaDS pFacetaDS)
-        //{
-        //    FacetaAD.CargarCatTesauroPermiteTipoRec(pFacetaDS);
-        //}
 
         /// <summary>
         /// Obtiene el número de proyectos afetados por esa faceta
@@ -390,6 +369,16 @@ namespace Es.Riam.Gnoss.Logica.Facetado
         public DataWrapperFacetas ObtenerFacetasConPersonalizacionDeProyecto(Guid pProyectoID)
         {
             return FacetaAD.ObtenerFacetasConPersonalizacionDeProyecto(pProyectoID);
+        }
+
+        public void EliminarFacetas(List<FacetaObjetoConocimientoProyecto> pFacetas)
+        {
+            FacetaAD.EliminarFacetas(pFacetas);
+        }
+
+        public void GuardarCambios()
+        {
+            FacetaAD.GuardarCambios();
         }
 
         #endregion Metodos generales
@@ -430,13 +419,10 @@ namespace Es.Riam.Gnoss.Logica.Facetado
             if (!disposed)
             {
                 disposed = true;
-                if (disposing)
+                if (disposing && FacetaAD != null)
                 {
-                    //Libero todos los recursos administrados que he añadido a esta clase
-                    if (FacetaAD != null)
-                    {
-                        FacetaAD.Dispose();
-                    }
+                    //Libero todos los recursos administrados que he añadido a esta clase                    
+                    FacetaAD.Dispose();
                 }
 
                 FacetaAD = null;
@@ -458,10 +444,9 @@ namespace Es.Riam.Gnoss.Logica.Facetado
             }
             set
             {
-                this.AD = value;
+                AD = value;
             }
         }
-
 
         #endregion
     }

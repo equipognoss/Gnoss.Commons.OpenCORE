@@ -41,6 +41,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Models.Administracion
             Comunidad_Solicitudes_Grupos,
             Comunidad_Roles,
             Comunidad_Permisos,
+            Comunidad_Flujos,
 
             // Subsecciones de la sección Estructura
             Estructura_Home,

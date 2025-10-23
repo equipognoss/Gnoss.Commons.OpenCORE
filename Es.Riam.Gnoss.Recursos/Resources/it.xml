@@ -1328,6 +1328,7 @@
 		<Resource tag="NOSELECCIONADO">Non hai selezionato nessuna risorsa</Resource>
 		<Resource tag="SELECCIONACAT">Seleziona una categoria</Resource>
 		<Resource tag="DESEARESTAURAR">Vuoi ripristinare questa versione della risorsa?</Resource>
+		<Resource tag="DESEAELIMINARVERSION">Vuoi eliminare questa versione della risorsa?</Resource>
 		<Resource tag="ABREVENTANANUEVA">Si apre in una finestra nuova</Resource>
 		<Resource tag="LECCCIONESDE">Lezioni di:</Resource>
 		<Resource tag="CONFIRMACIONELIMINAR"></Resource>
@@ -3913,6 +3914,7 @@
 		<Resource tag="ACTUALIZARADDTOGNOSSNAVG">actualizar-anyadirgnoss-navegador</Resource>
 		<Resource tag="ADMINISTRARVISTAS">amministrare-visualizzazioni</Resource>
 		<Resource tag="NOTIFICACIONESPERSO">Notifiche personalizzate</Resource>
+		<Resource tag="ADMINISTRARFLUJOS">gestire-flussi</Resource>
 	</page>
 	<page name="NOTIFICACIONESPERSONALIZADAS">
 		<Resource tag="TITULO">Notifiche elenco</Resource>
@@ -3947,6 +3949,7 @@
 		<Resource tag="ADMINISTRARLISTACAMBIO">Fondere</Resource>
 		<Resource tag="ADMINISTRARDESPLIEGUES">Distribuzioni</Resource>
 		<Resource tag="ADMINISTRAINTEGRACIONCONTINUA">Carica modifiche</Resource>
+		<Resource tag="ADMINISTRARFLUJOS">Flussi di lavoro</Resource>
 
 	</page>
 	<page name="DEVTOOLS">
@@ -4004,6 +4007,24 @@
 		<Resource tag="REPROCESADORECURSOS">Rielaborazione delle risorse</Resource>
 		<Resource tag="TAREASSEGUNDOPLANO">Compiti in background</Resource>
 		<Resource tag="INTEGRACIONCONTINUA">Integrazione continua</Resource>
+		<Resource tag="ADQUIRIRVERSIONENTERPRISE">Per accedere alla funzionalità di [SERVICIO] è necessario acquistare la versione enterprise di GNOSS</Resource>
+		<Resource tag="SERVICIOADMINISTRARPESOS">gestione dei pesi dell'autocompletamento di Lucene</Resource>
+		<Resource tag="SERVICIOESTADOSISTEMAS">monitoraggio dei servizi</Resource>
+		<Resource tag="SERVICIOEVENTOSEXTERNOS">creazione di eventi personalizzati sulla piattaforma</Resource>
+		<Resource tag="SERVICIOESTADISITICASCOMUNIDAD">statistiche della comunità</Resource>
+		<Resource tag="SERVICIOCARGAMASIVA">caricamento massivo</Resource>
+		<Resource tag="SERVICIOINEGRACIONCONTINUA">integrazione continua</Resource>
+		<Resource tag="SERVICIODIAGNOSTICODEPROBLEMAS">diagnosi dei problemi</Resource>
+		<Resource tag="SERVICIOREPROCESADORECURSOS">riprocessamento delle risorse</Resource>
+		<Resource tag="SERVICIOMONITORIZACIONDETAREAS">monitoraggio dei compiti</Resource>
+		<Resource tag="SERVICIOAPLICACIONESESPECIFICAS">distribuzione e compilazione di applicazioni specifiche</Resource>
+
+		<Resource tag="SERVICIOCONSULTASSPARQL">query SPARQL tramite un endpoint sulla piattaforma</Resource>
+		<Resource tag="SERVICIOFTP">un servizio FTP ottimizzato</Resource>
+		<Resource tag="SERVICIOCACHE">gestione delle cache</Resource>
+		<Resource tag="SERVICIODESCARGACONFIGURACIONES">download delle configurazioni della piattaforma</Resource>
+		<Resource tag="SERVICIOTRAZAS">gestione delle tracce della piattaforma</Resource>
+
 	</page>
 	<page name="COMADMINDISENIO">
 		<Resource tag="XMLSUBIDO">Archivo subido correctamente</Resource>
@@ -4043,6 +4064,45 @@
 	</page>
   <page name="DEVTOOLS">
     <!-- Textos que ya existían en Vistas de Administración person sin traducir -> DevTools -->
+	<Resource tag="COLOR">Colore</Resource>
+	<Resource tag="DESEAELIMINARFLUJO">Vuoi eliminare il flusso?</Resource>
+	<Resource tag="TIPOESTADO">Tipo di stato</Resource>
+	<Resource tag="ESTADOINICIAL">Iniziale</Resource>
+	<Resource tag="ESTADOINTERMEDIO">Intermedio</Resource>
+	<Resource tag="ESTADOFINAL">Finale</Resource>
+	<Resource tag="AGREGAREDITOR">Aggiungi editor</Resource>
+	<Resource tag="AGREGARLECTOR">Aggiungi lettore</Resource>
+	<Resource tag="AGREGARUSUARIOYGRUPO">Aggiungi utenti o gruppi</Resource>
+	<Resource tag="ACEPTAR">Accetta</Resource>
+	<Resource tag="CANCELAR">Annulla</Resource>
+	<Resource tag="ERRORCARGARFORMULARIO">Si è verificato un problema nel caricare il modulo</Resource>
+	<Resource tag="AÑADIRRESPONSABLE">Aggiungi responsabili</Resource>
+	<Resource tag="RESPONSABLES">Responsabili</Resource>
+	<Resource tag="TIPOS">Tipi</Resource>
+	<Resource tag="AÑADIRESTADO">Aggiungi uno stato</Resource>
+	<Resource tag="AÑADIRTRANSICION">Aggiungi una transizione</Resource>
+	<Resource tag="SELECCIONCONTENIDO">Seleziona un tipo di contenuto</Resource>
+	<Resource tag="TIPOSDECONTENIDO">Tipi di contenuto</Resource>
+	<Resource tag="TRANSICIONES">Transizioni</Resource>
+	<Resource tag="ESTADOS">Stati</Resource>
+	<Resource tag="NUEVOFLUJO">Nuovo flusso di lavoro</Resource>
+	<Resource tag="SELECCIONPERFILESFLUJO">Seleziona i profili e/o i gruppi per cui lo stato sarà disponibile (Sia per visibilità che per la possibilità di modificare lo stato; se nessuno viene selezionato, non sarà disponibile per nessuno)</Resource>
+	<Resource tag="SELECCIONESTADOINICIO">Seleziona uno stato iniziale</Resource>
+	<Resource tag="SELECCIONESTADODESTINO">Seleziona uno stato di destinazione</Resource>
+	<Resource tag="ESTADOORIGEN">Stato di origine</Resource>
+	<Resource tag="ESTADODESTINO">Stato di destinazione</Resource>
+	<Resource tag="FLUJODETRABAJO">Flusso di lavoro</Resource>
+	<Resource tag="ERRORTRANSICIONESINCOMPLETAS">Devi scegliere uno stato di origine e uno stato di destinazione in tutte le transizioni</Resource>
+	<Resource tag="ERRORTRANSICIONESSINESTADOFINAL">Le transizioni del flusso non hanno almeno uno stato finale definito</Resource>
+	<Resource tag="ERRORTRANSICIONESSINESTADOINICIAL">Le transizioni del flusso non hanno almeno uno stato iniziale definito</Resource>
+	<Resource tag="ERRORTRANSICIONESESTADOSIGUALES">Non puoi scegliere lo stesso stato come stato di origine e stato di destinazione</Resource>
+	<Resource tag="ERRORTRANSICIONESIGUALES">Non può esserci più di una transizione con la stessa origine e destinazione</Resource>
+	<Resource tag="NOMBREESTADOREPETIDO">Non puoi salvare un flusso con stati che hanno lo stesso nome</Resource>
+	<Resource tag="NOMBRETRANSICIONREPETIDO">Non puoi salvare un flusso con transizioni che hanno lo stesso nome</Resource>
+	<Resource tag="ERRORFLUJOEXISTENTESOBRETIPO">Non puoi salvare un flusso di lavoro che influenzi un tipo di contenuto di un altro flusso di lavoro esistente: @1@</Resource>
+	<Resource tag="ERRORESTADOPERTENECETRANSICION">Impossibile eliminare lo stato. Appartiene a una transizione</Resource>
+	<Resource tag="ERRORESTADOAFECTACONTENIDO">Impossibile eliminare lo stato perché è assegnato a contenuti di tipo: @1@</Resource>
+	<Resource tag="ERRORTRANSICIONAFECTACONTENIDO">Impossibile eliminare la transizione perché influisce su contenuti di tipo: @1@</Resource>
 	<Resource tag="INSERTADOSEARCH">La proprietà è stata inserita.</Resource>
 	<Resource tag="ALERTAUSUARIO">Attenzione!</Resource>
 	<Resource tag="PROPIEDADNOEXISTE">La proprietà inserita: @1@ non esiste.</Resource>
@@ -4112,8 +4172,16 @@
     <Resource tag="CUALQUIERTIPO">Cualquier tipo</Resource>
     <Resource tag="REFERENCIAADOCUMENTOFISICO">Referencia a documento físico</Resource>
     <Resource tag="DIRECCIONDEINTERNET">Dirección de internet</Resource>
-    <Resource tag="NOTA">Nota</Resource>
-    <Resource tag="ARTICULOWIKI">Artículo wiki</Resource>
+	<Resource tag="NOTA">Nota</Resource>
+	<Resource tag="ADJUNTO">Allegato</Resource>
+	<Resource tag="VIDEO">Video</Resource>
+	<Resource tag="LINK">Link</Resource>
+	<Resource tag="ENCUESTA">Sondaggio</Resource>
+	<Resource tag="DEBATE">Discussione</Resource>
+	<Resource tag="PAGINACMS">Pagina CMS</Resource>
+	<Resource tag="COMPONENTECMS">Componente CMS</Resource>
+	<Resource tag="RECURSOSEMANTICO">Risorsa semantica</Resource>
+	  <Resource tag="ARTICULOWIKI">Artículo wiki</Resource>
     <Resource tag="PREGUNTA">Pregunta</Resource>
     <Resource tag="ENCUESTA">Encuesta</Resource>
     <Resource tag="DEBATE">Debate</Resource>
@@ -4132,8 +4200,8 @@
     <Resource tag="ENESTOSMOMENTOSESTAMOSELABORANDOLAPOLITICADECERTIFICACIONDEL">En estos momentos estamos elaborando la política de certificación de los recursos de la comunidad. Si tienes alguna duda sobre los niveles de certificación que hemos establecido te sugerimos que te pongas en contacto con nosotros. María Ortega, administrador de la comunidad.</Resource>
     <Resource tag="FUENTESRSS/ATOM">Fuentes RSS/ATOM</Resource>
     <Resource tag="NUEVAFUENTE">Nueva fuente</Resource>
-    <Resource tag="TITULO">Título</Resource>
-    <Resource tag="URL">Url</Resource>
+	<Resource tag="TITULO">Titolo</Resource>
+	<Resource tag="URL">Url</Resource>
     <Resource tag="ACCIONES">Azioni</Resource>
     <Resource tag="MIEMBROS">Miembros</Resource>
     <Resource tag="CLAUSULASREGISTRO">Clausole di registrazione</Resource>
@@ -4157,7 +4225,6 @@
     <Resource tag="FRANÇAIS">Français</Resource>
     <Resource tag="DEUTSCH">Deutsch</Resource>
     <Resource tag="ITALIANO">Italiano</Resource>
-    <Resource tag="TITULO">Título</Resource>
     <Resource tag="NOMBREDELACOOKIE">Nombre de la cookie</Resource>
     <Resource tag="TEXTODECABECERA">Texto de cabecera</Resource>
     <Resource tag="TEXTODEPAGINA">Texto de página</Resource>
@@ -4740,7 +4807,8 @@
     <Resource tag="ADMINISTRACIONVISTAS">Administración vistas</Resource>
     <Resource tag="VISTAS">Vistas</Resource>
     <Resource tag="TRADUCCIONES">Traducciones</Resource>
-    <Resource tag="INVALIDARTODASLASVISTAS">Invalidar todas las vistas</Resource>
+	<Resource tag="AVISOTRADUCCIONESDESACTIVADAS">Per poter aggiungere traduzioni personalizzate, è necessario che l’opzione "Viste personalizzate" sia attivatanelle Impostazioni generali del meta amministratore. Se non disponi delle autorizzazioni necessarie, contatta l’amministratore meta della piattaforma.</Resource>
+	<Resource tag="INVALIDARTODASLASVISTAS">Invalidar todas las vistas</Resource>
     <Resource tag="PLANTILLASDELAWEB">Plantillas de la web</Resource>
     <Resource tag="PLANTILLASDELSERVICIODERESULTADOS">Plantillas del servicio de Resultados</Resource>
     <Resource tag="PLANTILLASDELSERVICIODEFACETAS">Plantillas del servicio de Facetas</Resource>
@@ -5090,8 +5158,22 @@
     <Resource tag="INDICASIELCOMPONENTEESTADISPONIBLEENLASPAGINASDONDESEHAAÑADI">Indica si el componente está disponible en las páginas donde se ha añadido.</Resource>
     <Resource tag="SELECCIONALACADUCIDADQUETENDRAELCOMPONENTEPARASERUSADAENCACH">Selecciona la caducidad que tendrá el componente para ser usada en Cache</Resource>
     <Resource tag="INTRODUCEELESTILOCSSQUETENDRAELCOMPONENTEPARASUPERSONALIZACI">Introduce el estilo CSS que tendrá el componente para su personalización vía CSS</Resource>
-    <Resource tag="DESEAELIMINARELCOMPONENTE">¿Desea eliminar el componente?</Resource>
-    <Resource tag="SELECCIONAUNAIMAGENPARAADJUNTAR">Selecciona una imagen para adjuntar</Resource>
+	<Resource tag="ERRORCARGAFORMULARIO">Si è verificato un errore durante il caricamento del modulo</Resource>
+	<Resource tag="RESTAURARVERSIONCONFIGPAGINA">La versione di configurazione della pagina è stata ripristinata correttamente</Resource>
+	<Resource tag="ERRORRESTAURARVERSIONCONFIGPAGINA">Si è verificato un problema durante il ripristino della versione di configurazione della pagina</Resource>
+	<Resource tag="DESEAELIMINARVERSIONCONFIGPAGINA">Vuoi eliminare la versione della configurazione della pagina?</Resource>
+	<Resource tag="ERRORELIMINARVERSIONCONFIGPAGINA">Si è verificato un problema durante l'eliminazione della versione della configurazione della pagina</Resource>
+	<Resource tag="VERSIONCONFIGPAGINAELIMINADO">La versione della configurazione della pagina è stata eliminata correttamente</Resource>
+	<Resource tag="DESEAELIMINARVERSIONESTRUCTURAPAGINA">Vuoi eliminare la versione della struttura della pagina CMS?</Resource>
+	<Resource tag="RESTAURARVERSIONESTRUCTURAPAGINA">La versione della struttura della pagina CMS è stata ripristinata correttamente</Resource>
+	<Resource tag="ERRORRESTAURARVERSIONESTRUCTURAPAGINA">Si è verificato un problema durante il ripristino della versione della struttura della pagina CMS</Resource>
+	<Resource tag="ERRORELIMINARVERSIONESTRUCTURAPAGINA">Si è verificato un problema durante l'eliminazione della versione della struttura della pagina CMS</Resource>
+	<Resource tag="VERSIONESTRUCTURAPAGINAELIMINADO">La versione della struttura della pagina CMS è stata eliminata correttamente</Resource>
+	<Resource tag="DESEAELIMINARELCOMPONENTE">¿Desea eliminar el componente?</Resource>
+	<Resource tag="DESEAELIMINARVERSIONCOMPONENTECMS">Vuoi eliminare questa versione del componente CMS?</Resource>
+	<Resource tag="ERRORELIMINARVERSIONCMS">Si è verificato un problema durante l'eliminazione della versione del componente CMS</Resource>
+	<Resource tag="VERSIONCMSELIMINADO">La versione del componente CMS è stata eliminata correttamente</Resource>
+	<Resource tag="SELECCIONAUNAIMAGENPARAADJUNTAR">Selecciona una imagen para adjuntar</Resource>
     <Resource tag="NUEVOCAMPO">Nuevo campo</Resource>
     <Resource tag="NOMBREDELCAMPODELFORMULARIO">Nombre del campo del formulario.</Resource>
     <Resource tag="CAMPOOBLIGATORIO">Campo obligatorio</Resource>
@@ -5787,21 +5869,15 @@
     <Resource tag="REPLICACIONBIDIRECCIONALNOCONFIGURADA">Replicacion bidireccional no configurada.</Resource>
     <Resource tag="IDENTITYSERVERNOFUNCIONA">Identity Server no funciona.</Resource>
     <Resource tag="SIMODIFICASLARUTARELATIVAELCAMBIONOSURTIRAEFECTOHASTAQUESERE">Si modificas la ruta relativa el cambio no surtirá efecto hasta que se reinicie la plataforma. Ponte en contacto con el administrador de sistemas para ello.</Resource>
-  		<Resource tag="ADQUIRIRVERSIONENTERPRISE">Per accedere alla funzionalità di [SERVICIO] è necessario acquistare la versione enterprise di GNOSS</Resource>
-		<Resource tag="SERVICIOADMINISTRARPESOS">gestione dei pesi dell'autocompletamento di Lucene</Resource>
-		<Resource tag="SERVICIOESTADOSISTEMAS">monitoraggio dei servizi</Resource>
-		<Resource tag="SERVICIOEVENTOSEXTERNOS">creazione di eventi personalizzati sulla piattaforma</Resource>
-		<Resource tag="SERVICIOESTADISITICASCOMUNIDAD">statistiche della comunità</Resource>
-		<Resource tag="SERVICIOCARGAMASIVA">caricamento massivo</Resource>
-		<Resource tag="SERVICIOINEGRACIONCONTINUA">integrazione continua</Resource>
-		<Resource tag="SERVICIODIAGNOSTICODEPROBLEMAS">diagnosi dei problemi</Resource>
-		<Resource tag="SERVICIOREPROCESADORECURSOS">riprocessamento delle risorse</Resource>
-		<Resource tag="SERVICIOMONITORIZACIONDETAREAS">monitoraggio dei compiti</Resource>
-		<Resource tag="SERVICIOAPLICACIONESESPECIFICAS">distribuzione e compilazione di applicazioni specifiche</Resource>
-	  <Resource tag="SERVICIOCONSULTASSPARQL">query SPARQL tramite un endpoint sulla piattaforma</Resource>
-	  <Resource tag="SERVICIOFTP">un servizio FTP ottimizzato</Resource>
-	  <Resource tag="SERVICIOCACHE">gestione delle cache</Resource>
-	  <Resource tag="SERVICIODESCARGACONFIGURACIONES">download delle configurazioni della piattaforma</Resource>
-	  <Resource tag="SERVICIOTRAZAS">gestione delle tracce della piattaforma</Resource>
   </page>
+	<page name="FLUJOS">
+		<Resource tag="TRANSICIONREALIZADA">Il cambio di stato è stato effettuato correttamente</Resource>
+		<Resource tag="TRANSICIONERROR">Si è verificato un errore durante il cambio di stato della risorsa</Resource>
+		<Resource tag="COMENTARIO">Commento aggiuntivo per il cambio di stato</Resource>
+		<Resource tag="VERHISTORIAL">Storico dei cambi di stato</Resource>
+		<Resource tag="REVISOR">Revisore</Resource>
+		<Resource tag="COMENTARIOREVISOR">Commento del revisore</Resource>
+		<Resource tag="CAMBIO">Cambio</Resource>
+		<Resource tag="HISTORIALERROR">Si è verificato un errore durante il caricamento dello storico dei cambi</Resource>
+	</page>
 </Resources>

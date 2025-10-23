@@ -1339,6 +1339,16 @@ namespace Es.Riam.Gnoss.Logica.Identidad
         }
 
         /// <summary>
+        /// Obtiene el nombre del grupoID pasado por parametro
+        /// </summary>
+        /// <param name="pGrupoID"></param>
+        /// <returns></returns>
+        public string ObtenerNombreDeGrupo(Guid pGrupoID)
+        {
+            return IdentidadAD.ObtenerNombreDeGrupo(pGrupoID);
+        }
+
+        /// <summary>
         /// Obtiene una lista con las identidades que tienen foto y las que no
         /// </summary>
         /// <param name="pListaIdentidades">Lista de identidades</param>

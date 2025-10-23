@@ -431,7 +431,7 @@ namespace Es.Riam.Gnoss.AD.RDF
                 nombreBaseDeDatos = BaseAD.ListaDefaultSchemaPorConexion[Conexion.ConnectionString];
             }
 
-            string numTabla = pDocumentoID.ToString().Substring(0, 3);
+            string numTabla = pDocumentoID.ToString().Substring(0, 2);
             string sql = "";
             if (string.IsNullOrEmpty(nombreBaseDeDatos))
             {
@@ -451,7 +451,7 @@ namespace Es.Riam.Gnoss.AD.RDF
         /// <param name="pDocumentoID">Identificador del documento</param>
         public void EliminarDocumentoDeRDFSinTransaccion(Guid pDocumentoID)
         {
-            string numTabla = pDocumentoID.ToString().Substring(0, 3);
+            string numTabla = pDocumentoID.ToString().Substring(0, 2);
             string sql = "Delete from RdfHistorico_" + numTabla + " where DocumentoID = " + IBD.GuidValor(pDocumentoID);
             DbCommand comandoDelete = ObtenerComando(sql);
             ActualizarBaseDeDatos(comandoDelete, false);

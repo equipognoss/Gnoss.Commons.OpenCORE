@@ -1323,6 +1323,7 @@
 		<Resource tag="NOSELECCIONADO">You have not selected any resource</Resource>
 		<Resource tag="SELECCIONACAT">Select one category</Resource>
 		<Resource tag="DESEARESTAURAR">Would you like to restore this version of the resource?</Resource>
+		<Resource tag="DESEAELIMINARVERSION">Do you want to delete this version of the resource?</Resource>
 		<Resource tag="ABREVENTANANUEVA">It is opened in a new window</Resource>
 		<Resource tag="LECCCIONESDE">Lessons of:</Resource>
 		<Resource tag="FORMATONOVALIDO">El formato de la imagen que intenta importar no es válido (.jpg, .png, .jpeg, .gif)</Resource>
@@ -1682,6 +1683,7 @@
 		<Resource tag="COMPARTIRERRORDISTLICENCIAENPROY">To share the resource in the community @2@, it has to be licensed under a @1@ license.</Resource>
 		<Resource tag="LICENCIANOEDITABLE">The resource license cannot be edited as the resource is shared with at least one community with license restriction.</Resource>
 		<Resource tag="DESCARGARFICH">Download file</Resource>
+		<Resource tag="TRANSICION">Change state</Resource>
 	</page>
 	<page name="DOCUMENTACIONENTIDADES">
 		<Resource tag="CREARCATDOC">Create document category</Resource>
@@ -4055,6 +4057,7 @@
 		<Resource tag="ACTUALIZARADDTOGNOSSNAVG">update-addtognoss-browser</Resource>
 		<Resource tag="ADMINISTRARVISTAS">admin-views</Resource>
 		<Resource tag="ADMINISTRARCONFIGURACIONPESOBUSQUEDAS">admin-search-weight</Resource>
+		<Resource tag="ADMINISTRARFLUJOS">manage-workflows</Resource>
 	</page>
 	<page name="NOTIFICACIONESPERSONALIZADAS">
 		<Resource tag="TITULO">Notifications List</Resource>
@@ -4090,7 +4093,7 @@
 		<Resource tag="ADMINISTRARLISTACAMBIO">Merge</Resource>
 		<Resource tag="ADMINISTRARDESPLIEGUES">Deployments</Resource>
 		<Resource tag="ADMINISTRAINTEGRACIONCONTINUA">Upload Changes</Resource>
-
+		<Resource tag="ADMINISTRARFLUJOS">Workflows</Resource>
 	</page>
 	<page name="COMADMINPESOBUSQUEDA">
 		<Resource tag="TITULO">Setting search weights</Resource>
@@ -4128,6 +4131,55 @@
 		<!-- Textos que ya existían en Vistas de Administración person sin traducir -> DevTools -->
 		<Resource tag="APLICACIONESESPECIFICASBETA">Specific applications (BETA)</Resource>
 		<Resource tag="APLICACIONESESPECIFICAS">Specific applications</Resource>
+		<Resource tag="COLOR">Color</Resource>
+		<Resource tag="DESEAELIMINARFLUJO">Do you want to delete the flow?</Resource>
+		<Resource tag="TIPOESTADO">State Type</Resource>
+		<Resource tag="ESTADOINICIAL">Initial</Resource>
+		<Resource tag="ESTADOINTERMEDIO">Intermediate</Resource>
+		<Resource tag="ESTADOFINAL">Final</Resource>
+		<Resource tag="AGREGAREDITOR">Add editor</Resource>
+		<Resource tag="AGREGARLECTOR">Add reader</Resource>
+		<Resource tag="AGREGARUSUARIOYGRUPO">Add users or groups</Resource>
+		<Resource tag="ACEPTAR">Accept</Resource>
+		<Resource tag="CANCELAR">Cancel</Resource>
+		<Resource tag="ERRORCARGARFORMULARIO">There was a problem loading the form</Resource>
+		<Resource tag="AÑADIRRESPONSABLE">Add responsible persons</Resource>
+		<Resource tag="RESPONSABLES">Responsible persons</Resource>
+		<Resource tag="TIPOS">Types</Resource>
+		<Resource tag="TITULO">Title</Resource>
+		<Resource tag="AÑADIRESTADO">Add a state</Resource>
+		<Resource tag="AÑADIRTRANSICION">Add a transition</Resource>
+		<Resource tag="SELECCIONCONTENIDO">Select a content type</Resource>
+		<Resource tag="TIPOSDECONTENIDO">Content types</Resource>
+		<Resource tag="TRANSICIONES">Transitions</Resource>
+		<Resource tag="ESTADOS">States</Resource>
+		<Resource tag="NUEVOFLUJO">New workflow</Resource>
+		<Resource tag="SELECCIONPERFILESFLUJO">Select the profiles and/or groups for which the state will be available (Either its visibility or the ability to edit the state; if none are selected, it will not be available for anyone)</Resource>
+		<Resource tag="SELECCIONESTADOINICIO">Select a starting state</Resource>
+		<Resource tag="SELECCIONESTADODESTINO">Select a destination state</Resource>
+		<Resource tag="ESTADOORIGEN">Source state</Resource>
+		<Resource tag="ESTADODESTINO">Destination state</Resource>
+		<Resource tag="FLUJODETRABAJO">Workflow</Resource>
+		<Resource tag="ERRORTRANSICIONESINCOMPLETAS">You must choose a source state and a destination state in all transitions</Resource>
+		<Resource tag="ERRORTRANSICIONESSINESTADOFINAL">The flow transitions do not have at least one defined final state</Resource>
+		<Resource tag="ERRORTRANSICIONESSINESTADOINICIAL">The flow transitions do not have at least one defined initial state</Resource>
+		<Resource tag="ERRORTRANSICIONESESTADOSIGUALES">You cannot choose the same state as both the source and destination state</Resource>
+		<Resource tag="ERRORTRANSICIONESIGUALES">There cannot be more than one transition with the same origin and destination</Resource>
+		<Resource tag="NOMBREESTADOREPETIDO">You cannot save a flow with states that have the same name</Resource>
+		<Resource tag="NOMBRETRANSICIONREPETIDO">You cannot save a flow with transitions that have the same name</Resource>
+		<Resource tag="ERRORFLUJOEXISTENTESOBRETIPO">You cannot save a workflow that affects a content type of another existing workflow: @1@</Resource>
+		<Resource tag="ERRORESTADOPERTENECETRANSICION">The state cannot be deleted. It belongs to a transition</Resource>
+		<Resource tag="ERRORESTADOAFECTACONTENIDO">The state cannot be deleted because it is assigned to content of type: @1@</Resource>
+		<Resource tag="ERRORTRANSICIONAFECTACONTENIDO">The transition cannot be deleted because it affects content of type: @1@</Resource>
+		<Resource tag="NOTA">Note</Resource>
+		<Resource tag="ADJUNTO">Attachment</Resource>
+		<Resource tag="VIDEO">Video</Resource>
+		<Resource tag="LINK">Link</Resource>
+		<Resource tag="ENCUESTA">Survey</Resource>
+		<Resource tag="DEBATE">Debate</Resource>
+		<Resource tag="PAGINACMS">CMS Page</Resource>
+		<Resource tag="COMPONENTECMS">CMS Component</Resource>
+		<Resource tag="RECURSOSEMANTICO">Semantic Resource</Resource>
 		<Resource tag="INSERTADOSEARCH">The property has been inserted.</Resource>
 		<Resource tag="ALERTAUSUARIO">Warning!</Resource>
 		<Resource tag="PROPIEDADNOEXISTE">The introduced property: @1@ does not exist.</Resource>
@@ -4841,6 +4893,7 @@
 		<Resource tag="ADMINISTRACIONVISTAS">Administration views</Resource>
 		<Resource tag="VISTAS">Views</Resource>
 		<Resource tag="TRADUCCIONES">Translations</Resource>
+		<Resource tag="AVISOTRADUCCIONESDESACTIVADAS">To add custom translations, the "Custom Views" option must be enabled in the General Settings of the meta administrator. If you do not have the necessary permissions, please contact the platform’s meta administrator.</Resource>
 		<Resource tag="INVALIDARTODASLASVISTAS">Invalidate all views</Resource>
 		<Resource tag="PLANTILLASDELAWEB">Web templates</Resource>
 		<Resource tag="PLANTILLASDELSERVICIODERESULTADOS">Results Service Templates</Resource>
@@ -5236,7 +5289,21 @@
 		<Resource tag="INDICASIELCOMPONENTEESTADISPONIBLEENLASPAGINASDONDESEHAAÑADI">Indicate if the component is available in the pages where it has been added.</Resource>
 		<Resource tag="SELECCIONALACADUCIDADQUETENDRAELCOMPONENTEPARASERUSADAENCACH">Select the expiration that the component will have to be used in cache</Resource>
 		<Resource tag="INTRODUCEELESTILOCSSQUETENDRAELCOMPONENTEPARASUPERSONALIZACI">Enter the CSS style that the component will have for your customization via CSS</Resource>
+		<Resource tag="ERRORCARGAFORMULARIO">An error occurred while loading the form</Resource>
+		<Resource tag="RESTAURARVERSIONCONFIGPAGINA">The configuration version of the page has been successfully restored</Resource>
+		<Resource tag="ERRORRESTAURARVERSIONCONFIGPAGINA">An issue occurred while restoring the configuration version of the page</Resource>
+		<Resource tag="DESEAELIMINARVERSIONCONFIGPAGINA">Do you want to delete the page configuration version?</Resource>
+		<Resource tag="ERRORELIMINARVERSIONCONFIGPAGINA">There was a problem while deleting the page configuration version</Resource>
+		<Resource tag="VERSIONCONFIGPAGINAELIMINADO">The page configuration version has been successfully deleted</Resource>
+		<Resource tag="DESEAELIMINARVERSIONESTRUCTURAPAGINA">Do you want to delete the version of the CMS page structure?</Resource>
+		<Resource tag="RESTAURARVERSIONESTRUCTURAPAGINA">The version of the CMS page structure has been successfully restored</Resource>
+		<Resource tag="ERRORRESTAURARVERSIONESTRUCTURAPAGINA">There was an issue restoring the version of the CMS page structure</Resource>
+		<Resource tag="ERRORELIMINARVERSIONESTRUCTURAPAGINA">There was an issue deleting the version of the CMS page structure</Resource>
+		<Resource tag="VERSIONESTRUCTURAPAGINAELIMINADO">The version of the CMS page structure has been successfully deleted</Resource>
 		<Resource tag="DESEAELIMINARELCOMPONENTE">Do you want to remove the component?</Resource>
+		<Resource tag="DESEAELIMINARVERSIONCOMPONENTECMS">Do you want to delete this version of the CMS component?</Resource>
+		<Resource tag="ERRORELIMINARVERSIONCMS">An issue occurred while deleting the CMS component version</Resource>
+		<Resource tag="VERSIONCMSELIMINADO">The CMS component version has been successfully deleted</Resource>
 		<Resource tag="SELECCIONAUNAIMAGENPARAADJUNTAR">Select an image to attach</Resource>
 		<Resource tag="NUEVOCAMPO">New field</Resource>
 		<Resource tag="NOMBREDELCAMPODELFORMULARIO">Name of the form of the form.</Resource>
@@ -5987,11 +6054,13 @@
 		<Resource tag="SERVICIOREPROCESADORECURSOS">resource reprocessing</Resource>
 		<Resource tag="SERVICIOMONITORIZACIONDETAREAS">task monitoring</Resource>
 		<Resource tag="SERVICIOAPLICACIONESESPECIFICAS">deployment and compilation of specific applications</Resource>
+
 		<Resource tag="SERVICIOCONSULTASSPARQL">SPARQL queries through an endpoint on the platform</Resource>
 		<Resource tag="SERVICIOFTP">an optimized FTP service</Resource>
 		<Resource tag="SERVICIOCACHE">cache management</Resource>
 		<Resource tag="SERVICIODESCARGACONFIGURACIONES">download of platform configurations</Resource>
 		<Resource tag="SERVICIOTRAZAS">management of platform traces</Resource>
+
 	</page>
 	
 	<page name="MENSAJECOOKIES">
@@ -6116,6 +6185,7 @@
 		<Resource tag="ELIMINARRECURSOSEMANTICO">Delete semantic resource</Resource>
 
 		<Resource tag="GESTIONARROLESYPERMISOS">Manage roles and permissions</Resource>
+		<Resource tag="GESTIONARFLUJOS">Manage workflows</Resource>
 		<Resource tag="ADMINISTRARSOLICITUDESCOMUNIDAD">Manage community requests</Resource>
 		<Resource tag="VERCATEGORIAS">View category</Resource>
 		<Resource tag="MODIFICARCATEGORIA">Modify category</Resource>
@@ -6174,6 +6244,8 @@
 		<Resource tag="RESTAURARVERSIONSEMANTICO">Restore semantic resource version</Resource>
 		<Resource tag="ELIMINARVERSIONSEMANTICO">Delete semantic resource version</Resource>
 
+		<Resource tag="CERTIFICARRECURSO">Certify resources</Resource>
+
 		<Resource tag="DESCPERMISOINFOGENERAL">Configure the basic aspects of a community</Resource>
 		<Resource tag="DESCPERMISOTIPOCONTENIDO">Control permissions for actions on resources in a public community</Resource>
 		<Resource tag="DESCPERMISOINTERACCIONESSOCIALES">Configure aspects related to the allowed or restricted actions of users within a community</Resource>
@@ -6211,6 +6283,7 @@
 		<Resource tag="DESCPERMISOREPROCESAR">Reprocess resources that have errors</Resource>
 		<Resource tag="DESCPERMISOAPLICACIONES"></Resource>
 		<Resource tag="DESCPERMISOROLES">Manage different roles and permissions for performing actions in community administration or on resources</Resource>
+		<Resource tag="DESCPERMISOFLUJOS">Manage the workflows of a community</Resource>
 		<Resource tag="DESCPERMISOVERCATEGORIA">Access category administration and view a specific category record</Resource>
 		<Resource tag="DESCPERMISOANYADIRCATEGORIA">Create a new category</Resource>
 		<Resource tag="DESCPERMISOEDITARCATEGORIA">Modify an existing category</Resource>
@@ -6293,6 +6366,7 @@
 		<Resource tag="DESCPERMISOELIMINARVERSIONDEBATE">Delete a debate-type resource version</Resource>
 		<Resource tag="DESCPERMISORESTAURARVERSIONSEMANTICO">Restore an old version of a semantic resource. There will be one permission per ontology</Resource>
 		<Resource tag="DESCPERMISOELIMINARVERSIONSEMANTICO">Delete a semantic resource version. There will be one permission per ontology</Resource>
+		<Resource tag="DESCPERMISOCERTIFICARRECURSO">Modify the certification of resources</Resource>
 
 
 		<Resource tag="SECCIONCOMUNIDAD">Community</Resource>
@@ -6326,5 +6400,15 @@
 		<Resource tag="ACCIONRESTAURAR">Restore version</Resource>
 		<Resource tag="ACCIONELIMINARVERSION">Delete version</Resource>
 
+	</page>
+	<page name="FLUJOS">
+		<Resource tag="TRANSICIONREALIZADA">The state change has been completed successfully</Resource>
+		<Resource tag="TRANSICIONERROR">There was an error while changing the resource state</Resource>
+		<Resource tag="COMENTARIO">Additional comment for state change</Resource>
+		<Resource tag="VERHISTORIAL">States history</Resource>
+		<Resource tag="REVISOR">Editor</Resource>
+		<Resource tag="COMENTARIOREVISOR">Comment</Resource>
+		<Resource tag="CAMBIO">State change</Resource>
+		<Resource tag="HISTORIALERROR">There was an error loading the change history</Resource>
 	</page>
 </Resources>

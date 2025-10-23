@@ -3,9 +3,11 @@ using Es.Riam.Gnoss.AD.CMS;
 using Es.Riam.Gnoss.AD.EncapsuladoDatos;
 using Es.Riam.Gnoss.AD.EntityModel;
 using Es.Riam.Gnoss.AD.EntityModel.Models;
+using Es.Riam.Gnoss.AD.EntityModel.Models.Flujos;
 using Es.Riam.Gnoss.AD.EntityModel.Models.ProyectoDS;
 using Es.Riam.Gnoss.AD.EntityModel.Models.VistaVirtualDS;
 using Es.Riam.Gnoss.AD.EntityModelBASE;
+using Es.Riam.Gnoss.AD.Flujos;
 using Es.Riam.Gnoss.AD.Parametro;
 using Es.Riam.Gnoss.AD.ParametroAplicacion;
 using Es.Riam.Gnoss.AD.ServiciosGenerales;
@@ -18,6 +20,8 @@ using Es.Riam.Gnoss.Elementos.CMS;
 using Es.Riam.Gnoss.Elementos.Documentacion;
 using Es.Riam.Gnoss.Logica.CMS;
 using Es.Riam.Gnoss.Logica.Documentacion;
+using Es.Riam.Gnoss.Logica.Facetado;
+using Es.Riam.Gnoss.Logica.Flujos;
 using Es.Riam.Gnoss.Logica.Identidad;
 using Es.Riam.Gnoss.Logica.ServiciosGenerales;
 using Es.Riam.Gnoss.Recursos;
@@ -28,12 +32,13 @@ using Es.Riam.Gnoss.Web.Controles.ServicioImagenesWrapper;
 using Es.Riam.Gnoss.Web.Controles.ServiciosGenerales;
 using Es.Riam.Gnoss.Web.MVC.Models;
 using Es.Riam.Gnoss.Web.MVC.Models.Administracion;
+using Es.Riam.Gnoss.Web.MVC.Models.Flujos;
 using Es.Riam.Interfaces.InterfacesOpen;
 using Es.Riam.Util;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
-using Newtonsoft.Json;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -72,7 +77,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
         /// 
         /// </summary>
         public ControladorComponenteCMS(Elementos.ServiciosGenerales.Proyecto pProyecto, Dictionary<string, string> pParametroProyecto, LoggingService loggingService, EntityContext entityContext, ConfigService configService, RedisCacheWrapper redisCacheWrapper, EntityContextBASE entityContextBASE, VirtuosoAD virtuosoAD, GnossCache gnossCache, IHttpContextAccessor httpContextAccessor, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication, IAvailableServices availableServices, ILogger<ControladorComponenteCMS> logger, ILoggerFactory loggerFactory, bool pCrearFilasPropiedadesExportacion = false)
-        : base(loggingService, configService, entityContext, redisCacheWrapper, gnossCache, virtuosoAD, httpContextAccessor, servicesUtilVirtuosoAndReplication,logger,loggerFactory)
+        : base(loggingService, configService, entityContext, redisCacheWrapper, gnossCache, virtuosoAD, httpContextAccessor, servicesUtilVirtuosoAndReplication, logger, loggerFactory)
         {
             mVirtuosoAD = virtuosoAD;
             mLoggingService = loggingService;
@@ -151,6 +156,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
                 paginaModel.Active = CMSComponente.Activo;
                 paginaModel.AccesoPublicoComponente = CMSComponente.AccesoPublico;
                 paginaModel.Styles = CMSComponente.Estilos;
+                paginaModel.ComponenteID = CMSComponente.Clave;
 
                 ParametroAplicacionCL paramCL = new ParametroAplicacionCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<ParametroAplicacionCL>(), mLoggerFactory);
                 List<string> listaIdiomasDisponibles = new List<string>();
@@ -215,6 +221,13 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
                 }
             }
 
+            if (pCMSComponente != null && pCMSComponente.Estado.HasValue)
+            {
+				UtilFlujos utilFlujos = new UtilFlujos(mEntityContext, mLoggingService, mConfigService, mLoggerFactory.CreateLogger<UtilFlujos>(), mLoggerFactory);
+				paginaModel.Estado = utilFlujos.ObtenerEstadoDeContenido(pCMSComponente.Estado.Value, IdentidadActual.Clave, UtilIdiomas.LanguageCode, ParametrosGeneralesRow.IdiomaDefecto);
+                paginaModel.HistorialTransiciones = utilFlujos.ObtenerHistorialDeTransiciones(pCMSComponente.Clave, TipoContenidoFlujo.ComponenteCMS, UtilIdiomas.LanguageCode, ParametrosGeneralesRow.IdiomaDefecto);
+            }
+
             if (CrearFilasPropiedadesExportacion)
             {
                 ProyectoCN proyCN = new ProyectoCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<ProyectoCN>(), mLoggerFactory);
@@ -223,7 +236,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
             }
 
             return paginaModel;
-        }
+        }        
 
         public void CargarPropiedadIC(CMSAdminComponenteEditarViewModel pComponente)
         {
@@ -1174,7 +1187,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
 
                             string primeroDisponible = servicioImagenes.ObtenerNombreDisponible(ruta + nombreFichero);
                             string nombrePrimeroDisponible = primeroDisponible.Substring(0, primeroDisponible.LastIndexOf("."));
-                           
+
                             servicioImagenes.AgregarImagen(byteImage, ruta + nombrePrimeroDisponible, extensionFichero);
 
                             string nombreDefinitivo = ruta + nombrePrimeroDisponible + extensionFichero;
@@ -1344,6 +1357,41 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
             }
         }
 
+        public void EliminarVersionComponente(Guid pComponenteID, Guid pVersionID)
+        {
+            using(CMSCN CMSCN = new CMSCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<CMSCN>(), mLoggerFactory))
+            {
+                AD.EntityModel.Models.CMS.CMSComponenteVersion filaCMSComponenteVersionEliminar = CMSCN.ObtenerVersionComponenteCMS(pComponenteID, pVersionID);
+                if(filaCMSComponenteVersionEliminar != null)
+                {
+                    // Version que va despues de la  que quiero eliminar
+                    AD.EntityModel.Models.CMS.CMSComponenteVersion filaCMSComponenteVersionPosterior = CMSCN.ObtenerVersionComponenteCMSPorVersionAnterior(pComponenteID, pVersionID);
+
+                    if (filaCMSComponenteVersionPosterior != null)
+                    {
+                        // Version que va antes de la que quiero eliminar
+                        AD.EntityModel.Models.CMS.CMSComponenteVersion filaCMSComponenteVersionAnterior = null;
+                        // Si no estamos borrando la primera version obtenemos su version anterior
+                        if (!filaCMSComponenteVersionEliminar.VersionID.Equals(filaCMSComponenteVersionEliminar.VersionAnterior))
+                        {
+                            filaCMSComponenteVersionAnterior = CMSCN.ObtenerVersionComponenteCMS(pComponenteID, filaCMSComponenteVersionEliminar.VersionAnterior);
+                        }
+
+                        if (filaCMSComponenteVersionAnterior != null)
+                        {
+                            filaCMSComponenteVersionPosterior.VersionAnterior = filaCMSComponenteVersionAnterior.VersionID;
+                        }
+                        else
+                        {
+                            filaCMSComponenteVersionPosterior.VersionAnterior = filaCMSComponenteVersionPosterior.VersionID;
+                        }
+                    }
+                    mEntityContext.EliminarElemento(filaCMSComponenteVersionEliminar);
+                }
+                mEntityContext.SaveChanges();
+            }
+        }
+
         #endregion
 
         #region IntegracionContinua
@@ -1423,7 +1471,8 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
                     //propiedad.Value = UtilIntegracionContinua.ObtenerMascaraPropiedad(propiedadCMS);
                 }
                 propiedadesIntegracionContinua.Add(propiedadCMS);
-            }else if(pComponente.Type.Equals(TipoComponenteCMS.Destacado) && propiedad.TipoPropiedadCMS.Equals(TipoPropiedadCMS.Enlace))
+            }
+            else if (pComponente.Type.Equals(TipoComponenteCMS.Destacado) && propiedad.TipoPropiedadCMS.Equals(TipoPropiedadCMS.Enlace))
             {
                 IntegracionContinuaPropiedad propiedadCMS = new IntegracionContinuaPropiedad();
                 propiedadCMS.ProyectoID = ProyectoSeleccionado.Clave;
@@ -1491,7 +1540,17 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
                 }
 
                 pGestorCMS.EliminarComponente(pComponenteID);
-                pCmsCN.ActualizarCMS(pGestorCMS.CMSDW);
+				using (FacetadoCN facetadoCN = new FacetadoCN(UrlIntragnoss, mEntityContext, mLoggingService, mConfigService, mVirtuosoAD, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<FacetadoCN>(), mLoggerFactory))
+				{
+                    FlujosCN flujosCN = new FlujosCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<FlujosCN>(), mLoggerFactory);
+                    Guid estadoID = flujosCN.ObtenerEstadoIDDeContenido(pComponenteID, TipoContenidoFlujo.ComponenteCMS);
+					if (!estadoID.Equals(Guid.Empty))
+					{
+						facetadoCN.EliminarEstadoDeContenido(ProyectoSeleccionado.Clave, estadoID, pComponenteID);
+					}
+					facetadoCN.EliminarTripleRdfTypeDeContenido(ProyectoSeleccionado.Clave, pComponenteID, "ComponenteCMS");
+				}
+				pCmsCN.ActualizarCMS(pGestorCMS.CMSDW);
                 try
                 {
                     ProyectoCN proyCN = new ProyectoCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<ProyectoCN>(), mLoggerFactory);

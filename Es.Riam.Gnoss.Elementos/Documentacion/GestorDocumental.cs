@@ -1,15 +1,21 @@
+using Es.Riam.AbstractsOpen;
 using Es.Riam.Gnoss.AD.Documentacion;
 using Es.Riam.Gnoss.AD.EncapsuladoDatos;
 using Es.Riam.Gnoss.AD.EntityModel;
+using Es.Riam.Gnoss.AD.EntityModel.Models.Documentacion;
+using Es.Riam.Gnoss.AD.EntityModel.Models.Faceta;
 using Es.Riam.Gnoss.AD.RDF.Model;
 using Es.Riam.Gnoss.AD.ServiciosGenerales;
 using Es.Riam.Gnoss.Elementos.Documentacion.AddToGnoss;
 using Es.Riam.Gnoss.Elementos.Documentacion.FichaDocumento;
 using Es.Riam.Gnoss.Elementos.Identidad;
 using Es.Riam.Gnoss.Elementos.Tesauro;
+using Es.Riam.Gnoss.Logica.Flujos;
+using Es.Riam.Gnoss.Util.Configuracion;
 using Es.Riam.Gnoss.Util.General;
 using Es.Riam.Gnoss.Util.Seguridad;
 using Es.Riam.Gnoss.Web.MVC.Models;
+using Es.Riam.Gnoss.Web.MVC.Models.Administracion;
 using Es.Riam.Interfaces;
 using Es.Riam.Interfaces.Observador;
 using Es.Riam.Util;
@@ -1220,6 +1226,25 @@ namespace Es.Riam.Gnoss.Elementos.Documentacion
 
             // Eliminar la version
             EliminarDocumento(pDocumento);
+        }
+        public void EliminarVersionDocumento(Documento pDocumento)
+        {
+            EliminarDocumentoLogicamente(pDocumento);
+            VersionDocumento filaVersionDocumento = mEntityContext.VersionDocumento.FirstOrDefault(v => v.DocumentoID.Equals(pDocumento.Clave));
+            if(filaVersionDocumento != null)
+            {
+                mEntityContext.EliminarElemento(filaVersionDocumento);
+            }
+            mEntityContext.SaveChanges();
+
+            // Reordenar el resto de versiones
+            int version = 1;
+            foreach(VersionDocumento versionDocumento in mEntityContext.VersionDocumento.Where(v => v.DocumentoOriginalID.Equals(pDocumento.VersionOriginalID)).OrderBy(v => v.Version))
+            {
+                versionDocumento.Version = version;
+                version++;
+            }
+            mEntityContext.SaveChanges();
         }
 
         #endregion

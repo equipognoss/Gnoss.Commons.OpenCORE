@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Es.Riam.Gnoss.Web.MVC.Models.Flujos;
+using System;
 using System.Collections.Generic;
 
 namespace Es.Riam.Gnoss.Web.MVC.Models.Administracion
@@ -444,7 +445,17 @@ namespace Es.Riam.Gnoss.Web.MVC.Models.Administracion
         /// <summary>
         /// 
         /// </summary>
-        [Serializable]
+        public EstadoModel Estado { get; set; }
+        /// <summary>
+        /// 
+        /// </summary>
+        public List<HistorialTransicionModel> HistorialTransiciones { get; set; }
+        /// <summary>
+        ///
+        /// </summary>
+        public Guid ComponenteID { get; set; }
+
+		[Serializable]
         public class PropiedadComponente
         {
             /// <summary>
@@ -520,4 +531,18 @@ namespace Es.Riam.Gnoss.Web.MVC.Models.Administracion
         public Dictionary<string, bool> DiferenciasPropiedadesCMS { get; set; }
     }
 
+    public class CMSAdminCambiarEstadoViewModel
+    {
+        public Guid ComponenteID { get; set; }
+        public Guid TransicionID { get; set; }
+        public string Nombre { get; set; }
+    }
+
+    public class CMSAdminHistorialTransicionesViewModel
+    {
+        public Guid ComponenteID { get; set; }
+        public List<HistorialTransicionModel> ListaTransiciones { get; set; }
+        public string NombreComponente { get; set; }
+        public DateTime? Fecha { get; set; }
+    }
 }

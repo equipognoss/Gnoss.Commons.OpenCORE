@@ -2,6 +2,7 @@
 using Es.Riam.Gnoss.AD.EntityModel.Models.Cookies;
 using Es.Riam.Gnoss.AD.EntityModel.Models.Documentacion;
 using Es.Riam.Gnoss.AD.EntityModel.Models.Faceta;
+using Es.Riam.Gnoss.AD.EntityModel.Models.Flujos;
 using Es.Riam.Gnoss.AD.EntityModel.Models.Roles;
 using Es.Riam.Gnoss.AD.EntityModel.Models.UsuarioDS;
 using System;
@@ -216,5 +217,8 @@ namespace Es.Riam.Gnoss.AD.EntityModel.Models.ProyectoDS
 
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
 		public virtual ICollection<Rol> Rol { get; set; }
-    }
+
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+		public virtual ICollection<Flujo> Flujo { get; set; }
+	}
 }

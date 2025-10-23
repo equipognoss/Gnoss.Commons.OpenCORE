@@ -1,4 +1,5 @@
-﻿using Es.Riam.Gnoss.AD.EntityModel.Models.Roles;
+﻿using Es.Riam.Gnoss.AD.EntityModel.Models.Flujos;
+using Es.Riam.Gnoss.AD.EntityModel.Models.Roles;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -52,5 +53,11 @@ namespace Es.Riam.Gnoss.AD.EntityModel.Models.IdentidadDS
 
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
 		public virtual ICollection<RolGrupoIdentidades> RolGrupoIdentidades { get; set; }
+
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+		public virtual ICollection<EstadoGrupo> EstadoGrupo { get; set; }
+
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+		public virtual ICollection<TransicionGrupo> TransicionGrupo { get; set; }		
 	}
 }

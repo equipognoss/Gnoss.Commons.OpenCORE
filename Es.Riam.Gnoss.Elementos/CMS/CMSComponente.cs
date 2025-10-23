@@ -4,6 +4,7 @@ using Es.Riam.Gnoss.Util.Configuracion;
 using Es.Riam.Gnoss.Util.General;
 using Es.Riam.Gnoss.Web.MVC.Models;
 using Es.Riam.Gnoss.Web.MVC.Models.Administracion;
+using Es.Riam.Gnoss.Web.MVC.Models.Flujos;
 using Es.Riam.Util;
 using Microsoft.Extensions.Logging;
 using Serilog.Core;
@@ -734,6 +735,18 @@ namespace Es.Riam.Gnoss.Elementos.CMS
             set
             {
                 FilaComponente.NombreCortoComponente = value;
+            }
+        }
+
+        public Guid? Estado
+        {
+            get
+            {
+                return FilaComponente.EstadoID;
+            }
+            set
+            {
+                FilaComponente.EstadoID = value;
             }
         }
 

@@ -30,6 +30,14 @@ namespace Es.Riam.Gnoss.Web.MVC.Models.ViewModels
         /// </summary>
         public string UrlHistorial { get; set; }
         /// <summary>
+        /// Url para realizar una transición entre dos estados del recurso
+        /// </summary>
+        public string UrlTransition { get; set; }
+        /// <summary>
+        /// Transicion que se va a realizar
+        /// </summary>
+        public Guid Transition { get; set; }
+        /// <summary>
         /// Indica si el usuario que ve el recurso es editor del documento
         /// </summary>
         public bool IsDocumentEditor { get; set; }

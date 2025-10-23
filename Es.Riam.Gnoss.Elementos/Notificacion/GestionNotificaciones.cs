@@ -7,12 +7,15 @@ using Es.Riam.Gnoss.Elementos.Documentacion;
 using Es.Riam.Gnoss.Elementos.Identidad;
 using Es.Riam.Gnoss.Elementos.Peticiones;
 using Es.Riam.Gnoss.Elementos.ServiciosGenerales;
+using Es.Riam.Gnoss.Logica.Flujos;
 using Es.Riam.Gnoss.Logica.Identidad;
+using Es.Riam.Gnoss.Logica.Notificacion;
 using Es.Riam.Gnoss.Logica.ServiciosGenerales;
 using Es.Riam.Gnoss.Logica.Usuarios;
 using Es.Riam.Gnoss.RabbitMQ;
 using Es.Riam.Gnoss.Util.Configuracion;
 using Es.Riam.Gnoss.Util.General;
+using Es.Riam.Interfaces.InterfacesOpen;
 using Es.Riam.Util;
 using Microsoft.Extensions.Logging;
 using System;
@@ -23,6 +26,7 @@ using System.Reflection;
 using System.Resources;
 using System.Runtime.Serialization;
 using System.Security.Permissions;
+using System.Web;
 using System.Xml;
 
 namespace Es.Riam.Gnoss.Elementos.Notificacion
@@ -189,6 +193,11 @@ namespace Es.Riam.Gnoss.Elementos.Notificacion
         /// </summary>
         TokenSeguridad = 38,
 
+        Comentario = 39,
+
+        NombreEstadoOrigen = 40,
+
+        NombreEstadoDestino = 41,
         #endregion
 
         #region Parámetros no parametrizables (Entre los valores 20000 y 21000)
@@ -1635,20 +1644,51 @@ namespace Es.Riam.Gnoss.Elementos.Notificacion
             return listaInvitacionesPorIdentidad;
         }
 
-        /// <summary>
-        /// Crea una nueva notificación de invitación de usuario externo a comunidad
-        /// </summary>
-        /// <param name="pOrganizacionID">Identificador de la organización</param>
-        /// <param name="pProyecto">Identificador de proyecto</param>
-        /// <param name="pNombreProyecto">Nombre de proyecto</param>
-        /// <param name="pDescripcionProyecto">Descripción de proyecto</param>
-        /// <param name="pNotas">Notas</param>
-        /// <param name="pNombreRemitente">Nombre del remitente del mensaje</param>
-        /// <param name="pFechaComienzo">Fecha de comienzo de la notificación</param>
-        /// <param name="pListaCorreos">Lista de direcciones de correo</param>
-        /// <param name="pUrlInvitacion">URL de la invitación</param>
-        /// <param name="pIdioma">Idioma para la notificación</param>
-        public void AgregarNotificacionInvitacionExternoACom(ServiciosGenerales.Proyecto pProyecto, string pDescripcionProyecto, string pNotas, string pNombreRemitente, DateTime pFechaComienzo, List<string> pListaCorreos, string pUrlInvitacion, string pIdioma, List<Guid> pListaGrupos)
+		public void EnviarCorreoAvisoCambioDeEstado(Guid pTransicion, Guid pProyectoID, string pComentario, string pEnlace, string pTitulo, string pPersonaRealizaCambio)
+		{
+            FlujosCN flujosCN = new FlujosCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<FlujosCN>(), mLoggerFactory);            
+            Guid estadoOrigen = flujosCN.ObtenerEstadoOrigenTransicion(pTransicion);
+            Guid estadoDestino = flujosCN.ObtenerEstadoDestinoTransicion(pTransicion);
+            string nombreEstadoOrigen = flujosCN.ObtenerNombreDeEstado(estadoOrigen);
+            string nombreEstadoDestino = flujosCN.ObtenerNombreDeEstado(estadoDestino);
+            List<Guid> editoresOrigen = flujosCN.ObtenerLectoresYEditoresDeEstado(estadoOrigen);
+            List<Guid> editoresDestino = flujosCN.ObtenerLectoresYEditoresDeEstado(estadoDestino);
+			PersonaCN personaCN = new PersonaCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<PersonaCN>(), mLoggerFactory);
+            DataWrapperPersona dwPersonaOrigen = personaCN.ObtenerPersonasPorIdentidadesCargaLigera(editoresOrigen);
+            DataWrapperPersona dwPersonaDestino = personaCN.ObtenerPersonasPorIdentidadesCargaLigera(editoresDestino);
+            List<AD.EntityModel.Models.PersonaDS.Persona> personas = dwPersonaOrigen.ListaPersona.Union(dwPersonaDestino.ListaPersona).ToList();
+
+			foreach (AD.EntityModel.Models.PersonaDS.Persona persona in personas)
+            {
+				Notificacion notificacionCorreo = AgregarNotificacion(TiposNotificacion.AvisoCambioEstadoRecurso, DateTime.Now, DateTime.Now.AddDays(1), null, pProyectoID);
+
+				Dictionary<short, string> listaParametrosCorreo = new Dictionary<short, string>();
+				listaParametrosCorreo.Add((short)ClavesParametro.NombrePersona, pPersonaRealizaCambio);
+				listaParametrosCorreo.Add((short)ClavesParametro.Comentario, HttpUtility.UrlDecode(pComentario));
+				listaParametrosCorreo.Add((short)ClavesParametro.UrlEnlace, pEnlace);
+				listaParametrosCorreo.Add((short)ClavesParametro.NombreEstadoOrigen, nombreEstadoOrigen);
+				listaParametrosCorreo.Add((short)ClavesParametro.NombreEstadoDestino, nombreEstadoDestino);
+				listaParametrosCorreo.Add((short)ClavesParametro.NombreDoc, pTitulo);
+
+				AgregarParametrosNotificacion(notificacionCorreo, listaParametrosCorreo, persona.Idioma);
+				AgregarCorreoPersonaRow(notificacionCorreo.FilaNotificacion, persona.Email, persona.PersonaID);
+			}			
+		}
+
+		/// <summary>
+		/// Crea una nueva notificación de invitación de usuario externo a comunidad
+		/// </summary>
+		/// <param name="pOrganizacionID">Identificador de la organización</param>
+		/// <param name="pProyecto">Identificador de proyecto</param>
+		/// <param name="pNombreProyecto">Nombre de proyecto</param>
+		/// <param name="pDescripcionProyecto">Descripción de proyecto</param>
+		/// <param name="pNotas">Notas</param>
+		/// <param name="pNombreRemitente">Nombre del remitente del mensaje</param>
+		/// <param name="pFechaComienzo">Fecha de comienzo de la notificación</param>
+		/// <param name="pListaCorreos">Lista de direcciones de correo</param>
+		/// <param name="pUrlInvitacion">URL de la invitación</param>
+		/// <param name="pIdioma">Idioma para la notificación</param>
+		public void AgregarNotificacionInvitacionExternoACom(ServiciosGenerales.Proyecto pProyecto, string pDescripcionProyecto, string pNotas, string pNombreRemitente, DateTime pFechaComienzo, List<string> pListaCorreos, string pUrlInvitacion, string pIdioma, List<Guid> pListaGrupos)
         {
             if (GestorPeticiones == null)
             {
@@ -2740,7 +2780,7 @@ namespace Es.Riam.Gnoss.Elementos.Notificacion
                     mEntityContext.EliminarElemento(notificacion);
                 }
             }
-        }
+        }        
 
         #region Métodos de comparaciones
 

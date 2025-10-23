@@ -244,6 +244,8 @@ namespace Es.Riam.Gnoss.AD.Notificacion
         /// </summary>
         AvisoCorreoBienvenidaProyecto = 131,
 
+        AvisoCambioEstadoRecurso = 132,
+
         #endregion
 
         #region Envio Enlace 140..149

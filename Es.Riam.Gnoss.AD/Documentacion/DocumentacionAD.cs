@@ -1603,7 +1603,7 @@ namespace Es.Riam.Gnoss.AD.Documentacion
         /// El por defecto, utilizado cuando se requiere el GnossConfig.xml por defecto
         /// </summary>
         public DocumentacionAD(LoggingService loggingService, EntityContext entityContext, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication, ILogger<DocumentacionAD> logger, ILoggerFactory loggerFactory)
-            : base(loggingService, entityContext, configService, servicesUtilVirtuosoAndReplication,logger,loggerFactory)
+            : base(loggingService, entityContext, configService, servicesUtilVirtuosoAndReplication, logger, loggerFactory)
         {
             mlogger = logger;
             mLoggerFactory = loggerFactory;
@@ -1616,7 +1616,7 @@ namespace Es.Riam.Gnoss.AD.Documentacion
         /// <param name="pFicheroConfiguracionBD">Ruta del fichero de configuración de conexión a la base de datos</param>
         /// <param name="pUsarVariableEstatica">Si se están usando hilos con diferentes conexiones: FALSE. En caso contrario TRUE</param>
         public DocumentacionAD(string pFicheroConfiguracionBD, LoggingService loggingService, EntityContext entityContext, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication, ILogger<DocumentacionAD> logger, ILoggerFactory loggerFactory)
-            : base(pFicheroConfiguracionBD, loggingService, entityContext, configService, servicesUtilVirtuosoAndReplication,logger,loggerFactory)
+            : base(pFicheroConfiguracionBD, loggingService, entityContext, configService, servicesUtilVirtuosoAndReplication, logger, loggerFactory)
         {
             mlogger = logger;
             mLoggerFactory = loggerFactory;
@@ -2972,7 +2972,7 @@ namespace Es.Riam.Gnoss.AD.Documentacion
             {
                 timer.Stop();
                 errorMessage.AppendLine($"{timer.ElapsedMilliseconds} -> Error al actualizar la tabla. ");
-                mLoggingService.GuardarLogError(ex, errorMessage.ToString(),mlogger);
+                mLoggingService.GuardarLogError(ex, errorMessage.ToString(), mlogger);
 
                 throw;
             }
@@ -4885,7 +4885,7 @@ namespace Es.Riam.Gnoss.AD.Documentacion
             }
             catch (Exception e)
             {
-                mLoggingService.GuardarLogError(e,mlogger);
+                mLoggingService.GuardarLogError(e, mlogger);
                 return false;
             }
         }
@@ -5628,17 +5628,17 @@ namespace Es.Riam.Gnoss.AD.Documentacion
             }
         }
 
-		public void ObtenerOntologiasPlataforma(DataWrapperDocumentacion pDataWrapperDocumentacion)
-		{
-			pDataWrapperDocumentacion.ListaDocumento = mEntityContext.Documento.Where(documento => (documento.Tipo.Equals((short)TiposDocumentacion.Ontologia) || documento.Tipo.Equals((short)TiposDocumentacion.OntologiaSecundaria)) && !documento.Eliminado && !documento.Protegido).ToList();
+        public void ObtenerOntologiasPlataforma(DataWrapperDocumentacion pDataWrapperDocumentacion)
+        {
+            pDataWrapperDocumentacion.ListaDocumento = mEntityContext.Documento.Where(documento => (documento.Tipo.Equals((short)TiposDocumentacion.Ontologia) || documento.Tipo.Equals((short)TiposDocumentacion.OntologiaSecundaria)) && !documento.Eliminado && !documento.Protegido).ToList();
 
-		}
+        }
 
-		/// <summary>
-		/// Obtiene las ontologías de un entorno
-		/// </summary>
-		/// <param name="pDocumentacionDS">Dataset de documentación ya inicializado</param>
-		public DataWrapperDocumentacion ObtenerOntologiasEntorno()
+        /// <summary>
+        /// Obtiene las ontologías de un entorno
+        /// </summary>
+        /// <param name="pDocumentacionDS">Dataset de documentación ya inicializado</param>
+        public DataWrapperDocumentacion ObtenerOntologiasEntorno()
         {
             DataWrapperDocumentacion dataWrapperDocumentacion = new DataWrapperDocumentacion();
 
@@ -5823,7 +5823,7 @@ namespace Es.Riam.Gnoss.AD.Documentacion
         {
             return mEntityContext.Documento.Where(documento => documento.ElementoVinculadoID.Value.Equals(pOntologiaID) && !documento.Eliminado && !documento.Borrador && documento.UltimaVersion && documento.Tipo == 5).OrderByDescending(doc => doc.FechaCreacion.Value).Select(doc => doc.DocumentoID).ToList();
         }
-        
+
 
         /// <summary>
         /// Obtiene la cantidad recursos de una determinada ontología.
@@ -6399,19 +6399,19 @@ namespace Es.Riam.Gnoss.AD.Documentacion
 
         public long ObtenerFechaModificacionDocumento(Guid pDocumentoID)
         {
-			DateTime? fechaModificacion = mEntityContext.Documento.Where(doc => doc.DocumentoID.Equals(pDocumentoID)).Select(doc => doc.FechaModificacion).ToList().FirstOrDefault();
-			if (fechaModificacion.HasValue)
-			{
-				return fechaModificacion.Value.Ticks;
-			}
-			return 0;
-		}
+            DateTime? fechaModificacion = mEntityContext.Documento.Where(doc => doc.DocumentoID.Equals(pDocumentoID)).Select(doc => doc.FechaModificacion).ToList().FirstOrDefault();
+            if (fechaModificacion.HasValue)
+            {
+                return fechaModificacion.Value.Ticks;
+            }
+            return 0;
+        }
 
-		/// <summary>
-		/// Obtiene registros de la tabla Documento de la base de recursos de un proyecto
-		/// </summary>
-		/// <param name="pProyectoID">ID del proyecto</param>
-		public List<Documento> ObtenerDocumentosDeBaseRecursosProyecto(Guid pProyectoID)
+        /// <summary>
+        /// Obtiene registros de la tabla Documento de la base de recursos de un proyecto
+        /// </summary>
+        /// <param name="pProyectoID">ID del proyecto</param>
+        public List<Documento> ObtenerDocumentosDeBaseRecursosProyecto(Guid pProyectoID)
         {
             var variable = mEntityContext.Documento.Join(mEntityContext.DocumentoWebVinBaseRecursos, documento => documento.DocumentoID, documentoWebVinBaseRecursos => documentoWebVinBaseRecursos.DocumentoID, (documento, documentoWebVinBaseRecursos) => new
             {
@@ -6427,7 +6427,7 @@ namespace Es.Riam.Gnoss.AD.Documentacion
 
             return null;
         }
-       
+
         /// <summary>
         /// Obtiene los documentos web de una base de recursos pasada como parámetro
         /// </summary>
@@ -7388,7 +7388,7 @@ namespace Es.Riam.Gnoss.AD.Documentacion
                 OntologiaProyecto = ontologiaProyecto
             }).Where(item => item.Documento.Tipo.Equals(7) && item.OntologiaProyecto.EsBuscable && item.Documento.ProyectoID.Value.Equals(pProyectoID)).Select(item => item.Documento.DocumentoID);
 
-            var query = temp.Where(item => (!item.ElementoVinculadoID.HasValue || item.ElementoVinculadoID.Equals(Guid.Empty) || subconsulta.Contains(item.ElementoVinculadoID.Value)) && !mEntityContext.VersionDocumento.Select(item=>item.DocumentoID).Contains(item.DocumentoID)).OrderByDescending(item => item.Fecha).GroupBy(item => item.DocumentoID).Select(item => item.Key);
+            var query = temp.Where(item => (!item.ElementoVinculadoID.HasValue || item.ElementoVinculadoID.Equals(Guid.Empty) || subconsulta.Contains(item.ElementoVinculadoID.Value)) && !mEntityContext.VersionDocumento.Select(item => item.DocumentoID).Contains(item.DocumentoID)).OrderByDescending(item => item.Fecha).GroupBy(item => item.DocumentoID).Select(item => item.Key);
 
             listaDocumentos = query.Distinct().ToList();
 
@@ -7779,7 +7779,7 @@ namespace Es.Riam.Gnoss.AD.Documentacion
                     }
                     catch (Exception e)
                     {
-                        mLoggingService.GuardarLogError(e,mlogger);
+                        mLoggingService.GuardarLogError(e, mlogger);
                     }
 
                     if (pNumeroIntentos > 3)
@@ -7894,14 +7894,29 @@ namespace Es.Riam.Gnoss.AD.Documentacion
         public Dictionary<Guid, int> ObtenerVersionesDocumentoIDPorID(Guid pDocumentoID)
         {
             Dictionary<Guid, int> listaDocumentosID = new Dictionary<Guid, int>();
+            bool versionOriginalEliminada = mEntityContext.Documento.FirstOrDefault(doc => doc.DocumentoID.Equals(pDocumentoID)).Eliminado;
             var resultado = mEntityContext.VersionDocumento.Where(doc => doc.DocumentoOriginalID.Equals(pDocumentoID)).OrderBy(doc => doc.Version).ToList();
-            listaDocumentosID.Add(pDocumentoID, 0);
+            if (!versionOriginalEliminada)
+            {
+                listaDocumentosID.Add(pDocumentoID, 0);
+            }
 
             foreach (var fila in resultado)
             {
                 listaDocumentosID.Add(fila.DocumentoID, fila.Version);
             }
             return listaDocumentosID;
+        }
+        public Guid ObtenerDocumentoOriginalIDPorID(Guid pDocumentoID)
+        {
+            // Comprobar si el documento pasado es una version de otro sino es un documento original
+            var version = mEntityContext.VersionDocumento.FirstOrDefault(doc => doc.DocumentoID.Equals(pDocumentoID));
+            if(version != null)
+            {
+                return version.DocumentoOriginalID;
+            }
+
+            return pDocumentoID;
         }
 
         /// <summary>
@@ -7918,7 +7933,7 @@ namespace Es.Riam.Gnoss.AD.Documentacion
 
             List<ProyectoPestanyaMenuVersionPagina> proyectoPestanyaMenuVersionPaginasCorrectas = new List<ProyectoPestanyaMenuVersionPagina>();
 
-            int index = 0; 
+            int index = 0;
             foreach (ProyectoPestanyaMenuVersionPagina p in proyectoPestanyaMenuVersionPaginas)
             {
                 if (p.VersionAnterior == null)
@@ -8450,7 +8465,7 @@ namespace Es.Riam.Gnoss.AD.Documentacion
                     }
                 }
 
-                IdentidadAD identidadAd = new IdentidadAD(mLoggingService, mEntityContext, mConfigService, mServicesUtilVirtuosoAndReplication,mLoggerFactory.CreateLogger<IdentidadAD>(),mLoggerFactory);
+                IdentidadAD identidadAd = new IdentidadAD(mLoggingService, mEntityContext, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<IdentidadAD>(), mLoggerFactory);
                 DataWrapperIdentidad dataWrapperIdentidad = identidadAd.ObtenerIdentidadesDePerfilesEnProyecto(listaPerfiles, pProyectoID);
 
                 Dictionary<Guid, Guid> listaPerfilIdentidad = new Dictionary<Guid, Guid>();
@@ -8799,9 +8814,9 @@ namespace Es.Riam.Gnoss.AD.Documentacion
                 using (RabbitMQClient rabbitMQ = new RabbitMQClient(RabbitMQClient.BD_SERVICIOS_WIN, COLA_MINIATURA, mLoggingService, mConfigService, mLoggerFactory.CreateLogger<RabbitMQClient>(), mLoggerFactory, EXCHANGE, COLA_MINIATURA))
                 {
                     List<string> mensajesFallidos = (List<string>)rabbitMQ.AgregarElementosACola(pFilasDocumento);
-                    if(mensajesFallidos.Count > 0)
+                    if (mensajesFallidos.Count > 0)
                     {
-                        foreach(string mensajeFallido in mensajesFallidos)
+                        foreach (string mensajeFallido in mensajesFallidos)
                         {
                             ColaDocumento colaDocumento = JsonConvert.DeserializeObject<ColaDocumento>(mensajeFallido);
                             mLoggingService.GuardarLogError($"Fallo al insertar en Rabbit:\n Cola Documento ID {colaDocumento.ID}, Documento ID {colaDocumento.DocumentoID}\n insertamos en la base de datos, tabla ColaDocumento", mlogger);
@@ -9091,17 +9106,34 @@ namespace Es.Riam.Gnoss.AD.Documentacion
             return mEntityContext.DocumentoUrlCanonica.Where(item => item.DocumentoID.Equals(pDocumentoID)).Select(item => item.UrlCanonica).FirstOrDefault();
         }
 
-        #endregion
+		#region Estados
 
-        #region Privados
+        public Guid? ObtenerEstadoIDDeDocumento(Guid pDocumentoID)
+        {
+            return mEntityContext.Documento.Where(x => x.DocumentoID.Equals(pDocumentoID)).Select(x => x.EstadoID).FirstOrDefault();
+        }        
+
+        public void CambiarEstadoDocumento(Guid pDocumentoID, Guid pEstadoID)
+        {
+            Documento filaDoc = ObtenerDocumentoPorIdentificador(pDocumentoID);
+            filaDoc.EstadoID = pEstadoID;
+
+            mEntityContext.SaveChanges();
+        }
+
+		#endregion
+
+		#endregion
+
+		#region Privados
 
 
-        /// <summary>
-        /// Obtiene los datos de las tablas DocumentoWebVinBaseRecursos y DocumentoWebAgCatTesauro de los documentos ya cargados en la
-        /// tabla Documento.
-        /// </summary>
-        /// <param name="pDocumentacionDS">DataSet con los documentos cargados y donde hay que cargar las tablas</param>
-        private void CargarDocumentoWebVinBRYDocumentoWebAgCatTesDeDocumentosCargados(DataWrapperDocumentacion pDocumentacionDS)
+		/// <summary>
+		/// Obtiene los datos de las tablas DocumentoWebVinBaseRecursos y DocumentoWebAgCatTesauro de los documentos ya cargados en la
+		/// tabla Documento.
+		/// </summary>
+		/// <param name="pDocumentacionDS">DataSet con los documentos cargados y donde hay que cargar las tablas</param>
+		private void CargarDocumentoWebVinBRYDocumentoWebAgCatTesDeDocumentosCargados(DataWrapperDocumentacion pDocumentacionDS)
         {
             //Cargo los Tag de los documentos antes cargados
             if (pDocumentacionDS.ListaDocumento.Count > 0)
@@ -9684,10 +9716,10 @@ namespace Es.Riam.Gnoss.AD.Documentacion
             #endregion
         }
 
-		
 
-		#endregion
-	}
+
+        #endregion
+    }
 
     /// <summary>
     /// Clase que contiene constantes con los texto de las entidades vinculadas.

@@ -227,6 +227,10 @@
       <asunto>{#Asunto#}</asunto>
       <texto>{p}{#NombreRemitente#}(e)k mezu bat bidali dizu {#NombreProyecto#}(a)ren bitartez{/p}{div style="margin:30px"}{#Texto#}{/div}{p}{#NombreRemitente#}(e)ri erantzuteko sakatu lotura honetan: {a href="{@UrlIntragnoss@}{$identidad$}/mensajes#mensaje={#CorreoID#}"}erantzun mezuari{/a}{/p}</texto>
     </mensaje>
+	  <mensaje id="132">
+		  <asunto>{#NombrePersona#}k baliabidearen egoera aldatu du</asunto>
+		  <texto>{p}{#NombrePersona#}k baliabidearen egoera aldatu du {a href="{#UrlEnlace#}"}{#NombreDoc#}{/a} eta egoeratik pasa da: {#NombreEstadoOrigen#} -> {#NombreEstadoDestino#}{/p}{p}Editorearen iruzkina: {i}'{#Comentario#}'{/i}{/p}</texto>
+	  </mensaje>
     <mensaje id="140">
       <asunto>Lotura bat duzu: {#NombreDoc#}</asunto>
       <texto>{p}{#NombreRemitente#} {#NombreProyecto#}(r)en lotura bat bidali dizu.{/p}{p}{#Notas#}{/p}{p} {#UrlEnlace#}{/p}</texto>

@@ -1,4 +1,6 @@
-﻿using Es.Riam.Gnoss.AD.EntityModel.Models.ProyectoDS;
+﻿using Es.Riam.Gnoss.AD.EntityModel.Models.CMS;
+using Es.Riam.Gnoss.AD.EntityModel.Models.Flujos;
+using Es.Riam.Gnoss.AD.EntityModel.Models.ProyectoDS;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -37,5 +39,7 @@ namespace Es.Riam.Gnoss.AD.EntityModel.Models.Faceta
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public List<ProyectoPestanyaBusquedaPesoOC> ProyectoPestanyaBusquedaPesoOC { get; set; }
-    }
+
+		public virtual FlujoObjetoConocimientoProyecto FlujoObjetoConocimientoProyecto { get; set; }
+	}
 }

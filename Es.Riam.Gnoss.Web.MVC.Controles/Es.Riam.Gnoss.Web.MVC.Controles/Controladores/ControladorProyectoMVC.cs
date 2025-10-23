@@ -1917,6 +1917,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
                         recurso.NumVisits = numeroVisitas;
                         recurso.NumVotes = numeroVotos;
                         recurso.NumDownloads = numeroDescargas;
+                        recurso.Link = Enlace;
 
                         recurso.AllowShare = compartirPermitido;
                         recurso.IsDraft = borrador;
@@ -2480,6 +2481,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
             pRecurso.ListActions.UrlLockComments = pRecurso.CompletCardLink + "/lock-comments";
             pRecurso.ListActions.UrlUnlockComments = pRecurso.CompletCardLink + "/unlock-comments";
             pRecurso.ListActions.UrlRestoreVersion = pRecurso.VersionCardLink + "/restore-version";
+            pRecurso.ListActions.UrlDeleteVersion = pRecurso.VersionCardLink + "/delete-version";
             pRecurso.ListActions.UrlReportPage = pRecurso.CompletCardLink + "/report-page";
             pRecurso.ListActions.UrlShare = pRecurso.CompletCardLink + "/share";
             pRecurso.ListActions.UrlDuplicate = "/" + "duplicate-resource" + "/" + pRecurso.Key;
@@ -2498,6 +2500,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
             pRecurso.ListActions.UrlLoadActionHistory = pRecurso.CompletCardLink + "/load-action/history";
             pRecurso.ListActions.UrlLoadActionAddCategories = pRecurso.CompletCardLink + "/load-action/add-categories";
             pRecurso.ListActions.UrlLoadActionRestoreVersion = pRecurso.CompletCardLink + "/load-action/restore-version";
+            pRecurso.ListActions.UrlLoadActionDeleteVersion = pRecurso.CompletCardLink + "/load-action/delete-version";
             pRecurso.ListActions.UrlLoadActionReportPage = pRecurso.CompletCardLink + "/load-action/report-page";
             pRecurso.ListActions.UrlLoadActionDelete = pRecurso.CompletCardLink + "/load-action/delete";
             pRecurso.ListActions.UrlLoadActionDeleteSelective = pRecurso.CompletCardLink + "/load-action/delete-selective";
@@ -2511,6 +2514,9 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
             pRecurso.ListActions.UrlLoadActionSendLink = pRecurso.CompletCardLink + "/load-action/send-link";
             pRecurso.ListActions.UrlLoadActionAddMetaTitle = pRecurso.CompletCardLink + "/load-action/add-metatitle";
             pRecurso.ListActions.UrlLoadActionAddMetaDescripcion = pRecurso.CompletCardLink + "/load-action/add-metadescription";
+            pRecurso.ListActions.UrlTransitionModal = pRecurso.CompletCardLink + "/load-action/transition";
+            pRecurso.ListActions.UrlTransition = pRecurso.CompletCardLink + "/transition-state";
+            pRecurso.ListActions.UrlTransitionHistory = pRecurso.CompletCardLink + "/load-action/transition-history";
         }
 
         public Dictionary<Guid, List<ResourceEventModel>> ObtenerEventosDeRecursosPorID(List<Guid> pListaRecursosID)

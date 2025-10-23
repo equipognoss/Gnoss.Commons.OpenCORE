@@ -115,8 +115,9 @@ namespace Es.Riam.Open
 				{ BackgroundService.AutocompleteGenerator, 1048576 },
 				{ BackgroundService.ProcessFilesModifiedOrDeletedResources, 2097152 },
 				{ BackgroundService.EventSwitcher, 4194304 },
-				{ BackgroundService.SocialCacheRefresh, 8388608 }
-			};
+				{ BackgroundService.SocialCacheRefresh, 8388608 },
+                { BackgroundService.Workflows, 16777216 }
+            };
 
 			return backServices[pBackService];
 		}

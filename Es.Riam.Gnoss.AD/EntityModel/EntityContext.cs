@@ -50,6 +50,7 @@ namespace Es.Riam.Gnoss.AD.EntityModel
 	using Es.Riam.Gnoss.AD.EntityModel.Models.Cache;
 	using Es.Riam.Gnoss.AD.EntityModel.Models.Roles;
     using Es.Riam.Gnoss.AD.ParametroAplicacion;
+	using Es.Riam.Gnoss.AD.EntityModel.Models.Flujos;
 
 	public partial class EntityContext : DbContext
     {
@@ -307,6 +308,19 @@ namespace Es.Riam.Gnoss.AD.EntityModel
         public virtual DbSet<RolIdentidad> RolIdentidad { get; set; }
         public virtual DbSet<RolGrupoIdentidades> RolGrupoIdentidades { get; set; }
         public virtual DbSet<RolOntologiaPermiso> RolOntologiaPermiso { get; set; }
+
+        // Flujos
+        public virtual DbSet<Flujo> Flujo { get; set; }
+        public virtual DbSet<Estado> Estado { get; set; }
+        public virtual DbSet<EstadoIdentidad> EstadoIdentidad { get; set; }
+        public virtual DbSet<EstadoGrupo> EstadoGrupo { get; set; }
+        public virtual DbSet<Transicion> Transicion { get; set; }
+        public virtual DbSet<TransicionIdentidad> TransicionIdentidad { get; set; }
+        public virtual DbSet<TransicionGrupo> TransicionGrupo { get; set; }
+        public virtual DbSet<FlujoObjetoConocimientoProyecto> FlujoObjetoConocimientoProyecto { get; set; }
+        public virtual DbSet<HistorialTransicionDocumento> HistorialTransicionDocumento { get; set; }
+        public virtual DbSet<HistorialTransicionCMSComponente> HistorialTransicionCMSComponente { get; set; }
+        public virtual DbSet<HistorialTransicionPestanyaCMS> HistorialTransicionPestanyaCMS { get; set; }
 
         //Voto
         public virtual DbSet<VotoEntradaBlog> VotoEntradaBlog { get; set; }
@@ -1036,6 +1050,19 @@ namespace Es.Riam.Gnoss.AD.EntityModel
      .HasKey(c => new { c.RolID, c.GrupoID });
             modelBuilder.Entity<RolOntologiaPermiso>()
      .HasKey(c => new { c.DocumentoID, c.RolID });
+
+            // Flujos
+            modelBuilder.Entity<Flujo>().HasKey(c => new { c.FlujoID });
+            modelBuilder.Entity<FlujoObjetoConocimientoProyecto>().HasKey(c => new { c.FlujoID, c.Ontologia, c.OrganizacionID, c.ProyectoID });
+            modelBuilder.Entity<Estado>().HasKey(c => new { c.EstadoID });
+            modelBuilder.Entity<EstadoIdentidad>().HasKey(c => new { c.EstadoID, c.IdentidadID });
+            modelBuilder.Entity<EstadoGrupo>().HasKey(c => new { c.EstadoID, c.GrupoID });
+            modelBuilder.Entity<Transicion>().HasKey(c => new { c.TransicionID });
+            modelBuilder.Entity<TransicionIdentidad>().HasKey(c => new { c.TransicionID, c.IdentidadID });
+            modelBuilder.Entity<TransicionGrupo>().HasKey(c => new { c.TransicionID, c.GrupoID });
+            modelBuilder.Entity<HistorialTransicionDocumento>().HasKey(c => new { c.HistorialTransicionID });
+            modelBuilder.Entity<HistorialTransicionCMSComponente>().HasKey(c => new { c.HistorialTransicionID });
+            modelBuilder.Entity<HistorialTransicionPestanyaCMS>().HasKey(c => new { c.HistorialTransicionID });
 
 			modelBuilder.Entity<DocumentoWebVinBaseRecursos>()
        .HasOne(a => a.DocumentoWebVinBaseRecursosExtra)
@@ -2581,6 +2608,194 @@ namespace Es.Riam.Gnoss.AD.EntityModel
 				.WithOne(e => e.Rol)
 				.IsRequired()
 				.HasForeignKey(e => e.RolID)
+				.OnDelete(DeleteBehavior.Cascade);
+
+
+			// Flujos
+
+			modelBuilder.Entity<Transicion>(builder =>
+			{
+				builder
+					.HasIndex(e => new { e.EstadoOrigenID, e.EstadoDestinoID })
+					.IsUnique();
+			});
+
+			modelBuilder.Entity<Proyecto>()
+				.HasMany(e => e.Flujo)
+				.WithOne(e => e.Proyecto)
+				.IsRequired()
+				.HasForeignKey(e => new { e.OrganizacionID, e.ProyectoID })
+				.OnDelete(DeleteBehavior.Cascade);
+
+			modelBuilder.Entity<Flujo>()
+				.HasMany(e => e.FlujoObjetoConocimientoProyecto)
+				.WithOne(e => e.Flujo)
+				.IsRequired()
+				.HasForeignKey(e => e.FlujoID)
+				.OnDelete(DeleteBehavior.Cascade);
+
+			modelBuilder.Entity<Flujo>()
+				.HasMany(e => e.Estado)
+				.WithOne(e => e.Flujo)
+				.IsRequired()
+				.HasForeignKey(e => e.FlujoID)
+				.OnDelete(DeleteBehavior.Cascade);
+
+			modelBuilder.Entity<OntologiaProyecto>()
+				.HasOne(e => e.FlujoObjetoConocimientoProyecto)
+				.WithOne(e => e.OntologiaProyecto)
+				.HasForeignKey<FlujoObjetoConocimientoProyecto>(e => new { e.OrganizacionID, e.ProyectoID, e.Ontologia })
+				.OnDelete(DeleteBehavior.Cascade);
+
+			modelBuilder.Entity<Documento>()
+                .HasMany(e => e.HistorialTransicionDocumento)
+                .WithOne(e => e.Documento)
+                .IsRequired()
+                .HasForeignKey(e => e.DocumentoID)
+                .OnDelete(DeleteBehavior.Cascade);
+
+			modelBuilder.Entity<CMSComponente>()
+				.HasMany(e => e.HistorialTransicionCMSComponente)
+				.WithOne(e => e.CMSComponente)
+				.IsRequired()
+				.HasForeignKey(e => e.ComponenteID)
+				.OnDelete(DeleteBehavior.Cascade);
+
+			modelBuilder.Entity<ProyectoPestanyaCMS>()
+				.HasMany(e => e.HistorialTransicionPestanyaCMS)
+				.WithOne(e => e.ProyectoPestanyaCMS)
+				.IsRequired()
+				.HasForeignKey(e => new { e.PestanyaID, e.Ubicacion })
+				.OnDelete(DeleteBehavior.Cascade);
+
+			modelBuilder.Entity<Estado>()
+				.HasMany(e => e.Documento)
+				.WithOne(e => e.Estado)
+				.HasForeignKey(e => e.EstadoID)
+				.OnDelete(DeleteBehavior.Cascade);
+
+			modelBuilder.Entity<Estado>()
+				.HasMany(e => e.CMSComponente)
+				.WithOne(e => e.Estado)
+				.HasForeignKey(e => e.EstadoID)
+				.OnDelete(DeleteBehavior.Cascade);
+
+			modelBuilder.Entity<Estado>()
+				.HasMany(e => e.ProyectoPestanyaCMS)
+				.WithOne(e => e.Estado)
+				.HasForeignKey(e => e.EstadoID)
+				.OnDelete(DeleteBehavior.Cascade);
+
+			modelBuilder.Entity<Estado>()
+				.HasMany(e => e.EstadoIdentidad)
+				.WithOne(e => e.Estado)
+				.IsRequired()
+				.HasForeignKey(e => e.EstadoID)
+				.OnDelete(DeleteBehavior.Cascade);
+
+			modelBuilder.Entity<Estado>()
+				.HasMany(e => e.EstadoGrupo)
+				.WithOne(e => e.Estado)
+				.IsRequired()
+				.HasForeignKey(e => e.EstadoID)
+				.OnDelete(DeleteBehavior.Cascade);
+
+			modelBuilder.Entity<Identidad>()
+				.HasMany(e => e.EstadoIdentidad)
+				.WithOne(e => e.Identidad)
+				.IsRequired()
+				.HasForeignKey(e => e.IdentidadID)
+				.OnDelete(DeleteBehavior.Cascade);
+
+			modelBuilder.Entity<Identidad>()
+				.HasMany(e => e.TransicionIdentidad)
+				.WithOne(e => e.Identidad)
+				.IsRequired()
+				.HasForeignKey(e => e.IdentidadID)
+				.OnDelete(DeleteBehavior.Cascade);
+
+			modelBuilder.Entity<Identidad>()
+				.HasMany(e => e.HistorialTransicionDocumento)
+				.WithOne(e => e.Identidad)
+				.IsRequired()
+				.HasForeignKey(e => e.IdentidadID)
+				.OnDelete(DeleteBehavior.Cascade);
+
+			modelBuilder.Entity<Identidad>()
+				.HasMany(e => e.HistorialTransicionCMSComponente)
+				.WithOne(e => e.Identidad)
+				.IsRequired()
+				.HasForeignKey(e => e.IdentidadID)
+				.OnDelete(DeleteBehavior.Cascade);
+
+			modelBuilder.Entity<Identidad>()
+				.HasMany(e => e.HistorialTransicionPestanyaCMS)
+				.WithOne(e => e.Identidad)
+				.IsRequired()
+				.HasForeignKey(e => e.IdentidadID)
+				.OnDelete(DeleteBehavior.Cascade);
+
+			modelBuilder.Entity<Transicion>()
+				.HasMany(e => e.HistorialTransicionDocumento)
+				.WithOne(e => e.Transicion)
+				.IsRequired()
+				.HasForeignKey(e => e.TransicionID)
+				.OnDelete(DeleteBehavior.Cascade);
+
+			modelBuilder.Entity<Transicion>()
+				.HasMany(e => e.HistorialTransicionCMSComponente)
+				.WithOne(e => e.Transicion)
+				.IsRequired()
+				.HasForeignKey(e => e.TransicionID)
+				.OnDelete(DeleteBehavior.Cascade);
+
+			modelBuilder.Entity<Transicion>()
+				.HasMany(e => e.HistorialTransicionPestanyaCMS)
+				.WithOne(e => e.Transicion)
+				.IsRequired()
+				.HasForeignKey(e => e.TransicionID)
+				.OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<Transicion>()
+                .HasOne(e => e.EstadoOrigen)
+                .WithMany(e => e.TransicionesOrigen)
+                .IsRequired()
+                .HasForeignKey(e => e.EstadoOrigenID)
+                .OnDelete(DeleteBehavior.Restrict);
+
+			modelBuilder.Entity<Transicion>()
+				.HasOne(e => e.EstadoDestino)
+				.WithMany(e => e.TransicionesDestino)
+				.IsRequired()
+				.HasForeignKey(e => e.EstadoDestinoID)
+				.OnDelete(DeleteBehavior.Restrict);
+
+			modelBuilder.Entity<Transicion>()
+				.HasMany(e => e.TransicionIdentidad)
+				.WithOne(e => e.Transicion)
+				.IsRequired()
+				.HasForeignKey(e => e.TransicionID)
+				.OnDelete(DeleteBehavior.Cascade);
+
+			modelBuilder.Entity<Transicion>()
+				.HasMany(e => e.TransicionGrupo)
+				.WithOne(e => e.Transicion)
+				.IsRequired()
+				.HasForeignKey(e => e.TransicionID)
+				.OnDelete(DeleteBehavior.Cascade);
+
+			modelBuilder.Entity<GrupoIdentidades>()
+				.HasMany(e => e.TransicionGrupo)
+				.WithOne(e => e.GrupoIdentidades)
+				.IsRequired()
+				.HasForeignKey(e => e.GrupoID)
+				.OnDelete(DeleteBehavior.Cascade);
+
+			modelBuilder.Entity<GrupoIdentidades>()
+				.HasMany(e => e.EstadoGrupo)
+				.WithOne(e => e.GrupoIdentidades)
+				.IsRequired()
+				.HasForeignKey(e => e.GrupoID)
 				.OnDelete(DeleteBehavior.Cascade);
 
 			if (mDefaultSchema != null && mDefaultSchema.Equals("dbo"))

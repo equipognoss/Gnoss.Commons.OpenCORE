@@ -515,11 +515,11 @@ namespace Es.Riam.Gnoss.AD.CMS
         /// <returns>true si pertenece a un grupo de componentes, falso en caso contrario</returns>
         public bool ComponenteCMSPerteneceGrupo(Guid componenteID)
         {
-            List<string> valoresPropiedades= mEntityContext.CMSPropiedadComponente.Where(item => item.TipoPropiedadComponente == 6).Select(item=>item.ValorPropiedad).ToList();
+            List<string> valoresPropiedades = mEntityContext.CMSPropiedadComponente.Where(item => item.TipoPropiedadComponente == 6).Select(item => item.ValorPropiedad).ToList();
             List<string> pertenecenAunGrupo = new List<string>();
-            foreach(string valor in valoresPropiedades)
+            foreach (string valor in valoresPropiedades)
             {
-                string[] listadoGrupo= valor.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
+                string[] listadoGrupo = valor.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
                 foreach (string id in listadoGrupo)
                 {
                     pertenecenAunGrupo.Add(id);
@@ -889,13 +889,25 @@ namespace Es.Riam.Gnoss.AD.CMS
             return query.ToDictionary(k => k.ComponenteID, v => v.Nombre);
         }
 
-        /// <summary>
-        /// Elimina los bloques de una p�gina de un proyecto
-        /// </summary>
-        /// <param name="pProyectoID">ID del proyecto</param>
-        /// <param name="pTipoUbicacionCMS">Tipo de ubicacion</param>
-        /// <param name="pSoloLosBorradores">Eliminar solo los borradores</param>
-        public void EliminarBloquesDePaginaDeProyecto(Guid pProyectoID, short pTipoUbicacionCMS, bool pSoloLosBorradores)
+		public string ObtenerNombreComponentePorIDComponenteEnProyecto(Guid pComponenteID, Guid pProyectoID)
+		{
+			var query = mEntityContext.CMSComponente.Where(item => item.ComponenteID.Equals(pComponenteID) && item.ProyectoID.Equals(pProyectoID)).Select(item => item.Nombre);
+			return query.FirstOrDefault();
+		}
+
+		public DateTime? ObtenerFechaModificacionDeComponenteEnProyecto(Guid pComponenteID, Guid pProyectoID)
+        {
+			var query = mEntityContext.CMSComponente.Where(item => item.ComponenteID.Equals(pComponenteID) && item.ProyectoID.Equals(pProyectoID)).Select(item => item.FechaUltimaActualizacion);
+			return query.FirstOrDefault();
+		}
+
+		/// <summary>
+		/// Elimina los bloques de una p�gina de un proyecto
+		/// </summary>
+		/// <param name="pProyectoID">ID del proyecto</param>
+		/// <param name="pTipoUbicacionCMS">Tipo de ubicacion</param>
+		/// <param name="pSoloLosBorradores">Eliminar solo los borradores</param>
+		public void EliminarBloquesDePaginaDeProyecto(Guid pProyectoID, short pTipoUbicacionCMS, bool pSoloLosBorradores)
         {
             //Revisar
             var querySubconsulta = mEntityContext.CMSBloque.Where(item => item.ProyectoID.Equals(pProyectoID) && item.Ubicacion.Equals(pTipoUbicacionCMS));
@@ -995,6 +1007,11 @@ namespace Es.Riam.Gnoss.AD.CMS
         public CMSComponenteVersion ObtenerVersionComponenteCMS(Guid pComponenteID, Guid pVersionID)
         {
             return mEntityContext.CMSComponenteVersion.Where(item => item.ComponenteID.Equals(pComponenteID) && item.VersionID.Equals(pVersionID)).FirstOrDefault();
+        }
+
+        public CMSComponenteVersion ObtenerVersionComponenteCMSPorVersionAnterior(Guid pComponenteID, Guid pVersionID)
+        {
+            return mEntityContext.CMSComponenteVersion.FirstOrDefault(item => item.ComponenteID.Equals(pComponenteID) && item.VersionAnterior.Equals(pVersionID));
         }
 
         public List<ProyectoPestanyaVersionCMS> ObtenerVersionesEstructuraPaginaCMS(Guid pPestanyaID)

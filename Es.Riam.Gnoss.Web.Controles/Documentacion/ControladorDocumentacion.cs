@@ -51,6 +51,7 @@ using Es.Riam.Gnoss.Web.Controles.GeneradorPlantillasOWL;
 using Es.Riam.Gnoss.Web.Controles.Organizador.Correo;
 using Es.Riam.Gnoss.Web.Controles.ServicioImagenesWrapper;
 using Es.Riam.Gnoss.Web.MVC.Models;
+using Es.Riam.Gnoss.Web.MVC.Models.Administracion;
 using Es.Riam.Gnoss.Web.MVC.Models.FicherosRecursos;
 using Es.Riam.Interfaces.InterfacesOpen;
 using Es.Riam.Semantica.OWL;
@@ -664,6 +665,12 @@ namespace Es.Riam.Gnoss.Web.Controles.Documentacion
             #endregion
 
             return true;
+        }
+
+        public void EliminarVersionDocumentoRDF(Guid pDocumentoID)
+        {
+            BorrarRDFDeBDRdfHistorico(pDocumentoID);
+            BorrarRDFDeBDRDF(pDocumentoID);
         }
 
         /// <summary>
@@ -2058,7 +2065,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Documentacion
         /// </summary>
         /// <param name="pDocumentoID">DataSet para RDF</param>
         /// <param name="pProyectoID">ID del proyecto actual</param>
-        public void BorrarRDFDeBDRdfHIstorico(Guid pDocumentoID)
+        public void BorrarRDFDeBDRdfHistorico(Guid pDocumentoID)
         {
             RdfHistoricoCN rdfHistoricoCN = new RdfHistoricoCN("rdf", pDocumentoID.ToString().Substring(0, 2), mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<RdfHistoricoCN>(), mLoggerFactory);
             rdfHistoricoCN.EliminarDocumentoDeRDF(pDocumentoID);

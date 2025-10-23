@@ -1,3 +1,4 @@
+using Es.Riam.Gnoss.AD.EntityModel.Models.Flujos;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -46,6 +47,8 @@ namespace Es.Riam.Gnoss.AD.EntityModel.Models.CMS
 
         public bool AccesoPublico { get; set; }
 
+        public Guid? EstadoID { get; set; }
+
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<CMSBloqueComponente> CMSBloqueComponente { get; set; }
 
@@ -60,5 +63,10 @@ namespace Es.Riam.Gnoss.AD.EntityModel.Models.CMS
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<CMSComponenteVersion> CMSComponenteVersion { get; set; }
-    }
+
+		public virtual Estado Estado { get; set; }
+
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+		public virtual ICollection<HistorialTransicionCMSComponente> HistorialTransicionCMSComponente { get; set; }
+	}
 }

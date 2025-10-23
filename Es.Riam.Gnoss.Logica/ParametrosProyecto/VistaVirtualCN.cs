@@ -88,6 +88,16 @@ namespace Es.Riam.Gnoss.Logica.ParametrosProyecto
         }
 
         /// <summary>
+        /// Comprueba si el proyecto tiene vistas personalizadas
+        /// </summary>
+        /// <param name="pProyectoID"></param>
+        /// <returns></returns>
+        public bool VistasPersonalizadasActivadoPorProyectoID(Guid pProyectoID)
+        {
+            return this.VistaVirtualAD.VistasPersonalizadasActivadoPorProyectoID(pProyectoID);
+        }
+
+        /// <summary>
         /// Obtiene la personalización.
         /// </summary>
         /// <param name="pPersonalizacionID">Id de la personalizacion</param>

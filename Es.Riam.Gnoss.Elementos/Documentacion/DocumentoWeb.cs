@@ -64,6 +64,14 @@ namespace Es.Riam.Gnoss.Elementos
             }
         }
 
+        public Guid? Estado
+        {
+            get
+            {
+                return GestorDocumental.DataWrapperDocumentacion.ListaDocumento.Where(doc => doc.DocumentoID.Equals(Clave)).Select(x => x.EstadoID).FirstOrDefault();
+            }
+        }
+
         /// <summary>
         /// Devuelve si el documento está compartido o no.
         /// </summary>

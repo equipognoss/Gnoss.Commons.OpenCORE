@@ -1320,6 +1320,7 @@
 		<Resource tag="NOSELECCIONADO">Ez duzu baliabiderik aukeratu</Resource>
 		<Resource tag="SELECCIONACAT">Aukeratu kategoria bat</Resource>
 		<Resource tag="DESEARESTAURAR">Baliabidearen bertsio hau berrezarri nahi al duzu?</Resource>
+		<Resource tag="DESEAELIMINARVERSION">Resursuaren bertsio hau ezabatu nahi duzu?</Resource>
 		<Resource tag="ABREVENTANANUEVA">Leiho berri batean irekitzen da</Resource>
 		<Resource tag="LECCCIONESDE">Honen ikasgaiak:</Resource>
 		<Resource tag="FORMATONOVALIDO">Inportatu nahi duzun irudiaren formatuak ez du balio (.jpg, .png, .jpeg, .gif)</Resource>
@@ -3913,6 +3914,7 @@
 		<Resource tag="ADMINISTRARSOLICITUDESUSUARIOS">administrar-solicitudes-usuarios</Resource>
 		<Resource tag="ADMINISTRARCONFIGURACIONPESOBUSQUEDAS">administrar-peso-busqueda</Resource>
 		<Resource tag="NOTIFICACIONESPERSO">Ohiko-jakinarazpenak</Resource>
+		<Resource tag="ADMINISTRARFLUJOS">kudeatu-lan-fluxuak</Resource>
 	</page>
 	<page name="NOTIFICACIONESPERSONALIZADAS">
 		<Resource tag="TITULO">Jakinarazpenen zerrenda</Resource>
@@ -3947,6 +3949,7 @@
 		<Resource tag="ADMINISTRARLISTACAMBIO">Batu</Resource>
 		<Resource tag="ADMINISTRARDESPLIEGUES">Zabalpenak</Resource>
 		<Resource tag="ADMINISTRAINTEGRACIONCONTINUA">Aldaketak igo</Resource>
+		<Resource tag="ADMINISTRARFLUJOS">Lan-fluxuak</Resource>
 	</page>
 	<page name="DEVTOOLS">
 		<Resource tag="FECHA">Data</Resource>
@@ -4004,6 +4007,24 @@
 		<Resource tag="REPROCESADORECURSOS">Itzuli baliabideak</Resource>
 		<Resource tag="TAREASSEGUNDOPLANO">Bigarren planoan egon</Resource>
 		<Resource tag="INTEGRACIONCONTINUA">Integrazio jarraikoa</Resource>
+		<Resource tag="ADQUIRIRVERSIONENTERPRISE">[SERVICIO] funtzionalitatera sartzeko, GNOSSen enterprise bertsioa erosi behar duzu</Resource>
+		<Resource tag="SERVICIOADMINISTRARPESOS">Lucene autobetetzearen pisuen kudeaketa</Resource>
+		<Resource tag="SERVICIOESTADOSISTEMAS">zerbitzuen monitorizazioa</Resource>
+		<Resource tag="SERVICIOEVENTOSEXTERNOS">plataforman gertaera pertsonalizatuak sortzea</Resource>
+		<Resource tag="SERVICIOESTADISITICASCOMUNIDAD">komunitatearen estatistikak</Resource>
+		<Resource tag="SERVICIOCARGAMASIVA">karga masiboa</Resource>
+		<Resource tag="SERVICIOINEGRACIONCONTINUA">integrazio jarraitua</Resource>
+		<Resource tag="SERVICIODIAGNOSTICODEPROBLEMAS">arazoen diagnostikoa</Resource>
+		<Resource tag="SERVICIOREPROCESADORECURSOS">baliabideen birprozesatzea</Resource>
+		<Resource tag="SERVICIOMONITORIZACIONDETAREAS">atzekoen monitorizazioa</Resource>
+		<Resource tag="SERVICIOAPLICACIONESESPECIFICAS">aplikazio espezifikoen inplementazioa eta konpilazioa</Resource>
+
+		<Resource tag="SERVICIOCONSULTASSPARQL">SPARQL kontsultak plataformako endpoint baten bidez</Resource>
+		<Resource tag="SERVICIOFTP">optimizatutako FTP zerbitzua</Resource>
+		<Resource tag="SERVICIOCACHE">cacheen kudeaketa</Resource>
+		<Resource tag="SERVICIODESCARGACONFIGURACIONES">plataformaren konfigurazioen deskarga</Resource>
+		<Resource tag="SERVICIOTRAZAS">plataformaren trazen kudeaketa</Resource>
+
 	</page>
 	<page name="COMADMINDISENIO">
 		<Resource tag="XMLSUBIDO">Archivo subido correctamente</Resource>
@@ -4043,6 +4064,45 @@
 	</page>
   <page name="DEVTOOLS">
     <!-- Textos que ya existían en Vistas de Administración person sin traducir -> DevTools -->
+	<Resource tag="COLOR">Kolorea</Resource>
+	<Resource tag="DESEAELIMINARFLUJO">Fluxua ezabatu nahi al duzu?</Resource>
+	<Resource tag="TIPOESTADO">Estatu mota</Resource>
+	<Resource tag="ESTADOINICIAL">Hasiera</Resource>
+	<Resource tag="ESTADOINTERMEDIO">Intermedia</Resource>
+	<Resource tag="ESTADOFINAL">Amaiera</Resource>
+	<Resource tag="AGREGAREDITOR">Editorea gehitu</Resource>
+	<Resource tag="AGREGARLECTOR">Irakurlea gehitu</Resource>
+	<Resource tag="AGREGARUSUARIOYGRUPO">Erabiltzaileak edo taldeak gehitu</Resource>
+	<Resource tag="ACEPTAR">Onartu</Resource>
+	<Resource tag="CANCELAR">Ezeztatu</Resource>
+	<Resource tag="ERRORCARGARFORMULARIO">Arazo bat sortu da inprimakia kargatzean</Resource>
+	<Resource tag="AÑADIRRESPONSABLE">Erantzuleak gehitu</Resource>
+	<Resource tag="RESPONSABLES">Erantzuleak</Resource>
+	<Resource tag="TIPOS">Motak</Resource>
+	<Resource tag="AÑADIRESTADO">Estatu bat gehitu</Resource>
+	<Resource tag="AÑADIRTRANSICION">Trantsizio bat gehitu</Resource>
+	<Resource tag="SELECCIONCONTENIDO">Hautatu eduki mota bat</Resource>
+	<Resource tag="TIPOSDECONTENIDO">Edukien motak</Resource>
+	<Resource tag="TRANSICIONES">Trantsizioak</Resource>
+	<Resource tag="ESTADOS">Estatuak</Resource>
+	<Resource tag="NUEVOFLUJO">Lan-fluxo berria</Resource>
+	<Resource tag="SELECCIONPERFILESFLUJO">Hautatu egoera eskuragarri egongo den perfilak eta/edo taldeak (Egoeraren ikusteko aukera edo editatzeko aukera, ez badago ezer hautatuta, ez da inorentzat eskuragarri egongo)</Resource>
+	<Resource tag="SELECCIONESTADOINICIO">Hautatu hasierako egoera bat</Resource>
+	<Resource tag="SELECCIONESTADODESTINO">Hautatu helmugako egoera bat</Resource>
+	<Resource tag="ESTADOORIGEN">Egoera jatorria</Resource>
+	<Resource tag="ESTADODESTINO">Egoera helmuga</Resource>
+	<Resource tag="FLUJODETRABAJO">Lan-fluxoa</Resource>
+	<Resource tag="ERRORTRANSICIONESINCOMPLETAS">Hasi eta helmuga egoera hautatu behar dituzu transtitzio guztietan</Resource>
+	<Resource tag="ERRORTRANSICIONESSINESTADOFINAL">Fluxuaren trantsizioek ez dute gutxienez amaiera-egoera definitu bat</Resource>
+	<Resource tag="ERRORTRANSICIONESSINESTADOINICIAL">Fluxuaren trantsizioek ez dute gutxienez hasierako egoera definitu bat</Resource>
+	<Resource tag="ERRORTRANSICIONESESTADOSIGUALES">Ezin duzu egoera bera hautatu hasi eta helmuga egoera gisa</Resource>
+	<Resource tag="ERRORTRANSICIONESIGUALES">Ezingo da jatorri eta helmuga berberarekin trantrantzirik egon</Resource>
+	<Resource tag="NOMBREESTADOREPETIDO">Ez duzu fluxurik gorde egoera berdinak dituztenekin</Resource>
+	<Resource tag="NOMBRETRANSICIONREPETIDO">Ez duzu fluxurik gorde trantsizio berdinak dituztenekin</Resource>
+	<Resource tag="ERRORFLUJOEXISTENTESOBRETIPO">Ez duzu lan-fluxurik gorde beste lan-fluxu baten edukien mota eragiten duenik: @1@</Resource>
+	<Resource tag="ERRORESTADOPERTENECETRANSICION">Ezin da egoera ezabatu. Trantsizio batekoa da</Resource>
+	<Resource tag="ERRORESTADOAFECTACONTENIDO">Ezin da egoera ezabatu, edukia honako motari esleituta dagoelako: @1@</Resource>
+	<Resource tag="ERRORTRANSICIONAFECTACONTENIDO">Ezin da trantsizioa ezabatu, honako motako edukiei eragiten dielako: @1@</Resource>
 	<Resource tag="INSERTADOSEARCH">Proprietatea txertatu da.</Resource>
 	<Resource tag="ALERTAUSUARIO">Abisua!</Resource>
 	<Resource tag="PROPIEDADNOEXISTE">Ez dago sartutako propietatea: @1@.</Resource>
@@ -4112,8 +4172,16 @@
     <Resource tag="CUALQUIERTIPO">Cualquier tipo</Resource>
     <Resource tag="REFERENCIAADOCUMENTOFISICO">Referencia a documento físico</Resource>
     <Resource tag="DIRECCIONDEINTERNET">Dirección de internet</Resource>
-    <Resource tag="NOTA">Nota</Resource>
-    <Resource tag="ARTICULOWIKI">Artículo wiki</Resource>
+	<Resource tag="NOTA">Oharra</Resource>
+	<Resource tag="ADJUNTO">Atxikitzea</Resource>
+	<Resource tag="VIDEO">Bideoa</Resource>
+	<Resource tag="LINK">Esteka</Resource>
+	<Resource tag="ENCUESTA">Inkesta</Resource>
+	<Resource tag="DEBATE">Eztabaida</Resource>
+	<Resource tag="PAGINACMS">CMS Orria</Resource>
+	<Resource tag="COMPONENTECMS">CMS Osagaia</Resource>
+	<Resource tag="RECURSOSEMANTICO">Erreferentzia semantikoa</Resource>
+	  <Resource tag="ARTICULOWIKI">Artículo wiki</Resource>
     <Resource tag="PREGUNTA">Pregunta</Resource>
     <Resource tag="ENCUESTA">Encuesta</Resource>
     <Resource tag="DEBATE">Debate</Resource>
@@ -4132,8 +4200,8 @@
     <Resource tag="ENESTOSMOMENTOSESTAMOSELABORANDOLAPOLITICADECERTIFICACIONDEL">En estos momentos estamos elaborando la política de certificación de los recursos de la comunidad. Si tienes alguna duda sobre los niveles de certificación que hemos establecido te sugerimos que te pongas en contacto con nosotros. María Ortega, administrador de la comunidad.</Resource>
     <Resource tag="FUENTESRSS/ATOM">Fuentes RSS/ATOM</Resource>
     <Resource tag="NUEVAFUENTE">Nueva fuente</Resource>
-    <Resource tag="TITULO">Título</Resource>
-    <Resource tag="URL">Url</Resource>
+	<Resource tag="TITULO">Izenburua</Resource>
+	<Resource tag="URL">Url</Resource>
     <Resource tag="ACCIONES">Ekintzak</Resource>
     <Resource tag="MIEMBROS">Miembros</Resource>
     <Resource tag="CLAUSULASREGISTRO">Erregistro klausulak</Resource>
@@ -4740,7 +4808,8 @@
     <Resource tag="ADMINISTRACIONVISTAS">Administración vistas</Resource>
     <Resource tag="VISTAS">Vistas</Resource>
     <Resource tag="TRADUCCIONES">Traducciones</Resource>
-    <Resource tag="INVALIDARTODASLASVISTAS">Invalidar todas las vistas</Resource>
+	<Resource tag="AVISOTRADUCCIONESDESACTIVADAS">Itzulpen pertsonalizatuak gehitzeko, "Ikuspegi pertsonalizatuak" aukera aktibatuta egon behar du meta administratzailearen konfigurazio orokorrean. Beharrezko baimenak ez badituzu, jarri harremanetan plataformako meta administratzailearekin.</Resource>
+	<Resource tag="INVALIDARTODASLASVISTAS">Invalidar todas las vistas</Resource>
     <Resource tag="PLANTILLASDELAWEB">Plantillas de la web</Resource>
     <Resource tag="PLANTILLASDELSERVICIODERESULTADOS">Plantillas del servicio de Resultados</Resource>
     <Resource tag="PLANTILLASDELSERVICIODEFACETAS">Plantillas del servicio de Facetas</Resource>
@@ -5090,8 +5159,22 @@
     <Resource tag="INDICASIELCOMPONENTEESTADISPONIBLEENLASPAGINASDONDESEHAAÑADI">Indica si el componente está disponible en las páginas donde se ha añadido.</Resource>
     <Resource tag="SELECCIONALACADUCIDADQUETENDRAELCOMPONENTEPARASERUSADAENCACH">Selecciona la caducidad que tendrá el componente para ser usada en Cache</Resource>
     <Resource tag="INTRODUCEELESTILOCSSQUETENDRAELCOMPONENTEPARASUPERSONALIZACI">Introduce el estilo CSS que tendrá el componente para su personalización vía CSS</Resource>
-    <Resource tag="DESEAELIMINARELCOMPONENTE">¿Desea eliminar el componente?</Resource>
-    <Resource tag="SELECCIONAUNAIMAGENPARAADJUNTAR">Selecciona una imagen para adjuntar</Resource>
+	<Resource tag="ERRORCARGAFORMULARIO">Errore bat gertatu da inprimakia kargatzean</Resource>
+	<Resource tag="RESTAURARVERSIONCONFIGPAGINA">Orrialdearen konfigurazioaren bertsioa behar bezala berreskuratu da</Resource>
+	<Resource tag="ERRORRESTAURARVERSIONCONFIGPAGINA">Arazo bat sortu da orrialdearen konfigurazioaren bertsioa berreskuratzerakoan</Resource>
+	<Resource tag="DESEAELIMINARVERSIONCONFIGPAGINA">Desegon al duzu orriaren konfigurazio bertsioa ezabatu?</Resource>
+	<Resource tag="ERRORELIMINARVERSIONCONFIGPAGINA">Arazo bat egon da orriaren konfigurazio bertsioa ezabatzean</Resource>
+	<Resource tag="VERSIONCONFIGPAGINAELIMINADO">Orriaren konfigurazio bertsioa arrakastaz ezabatu da</Resource>
+	<Resource tag="DESEAELIMINARVERSIONESTRUCTURAPAGINA">CMS orriko egituraren bertsioa ezabatu nahi al duzu?</Resource>
+	<Resource tag="RESTAURARVERSIONESTRUCTURAPAGINA">CMS orriko egituraren bertsioa behar bezala leheneratu da</Resource>
+	<Resource tag="ERRORRESTAURARVERSIONESTRUCTURAPAGINA">Arazo bat egon da CMS orriko egituraren bertsioa leheneratzerakoan</Resource>
+	<Resource tag="ERRORELIMINARVERSIONESTRUCTURAPAGINA">Arazo bat egon da CMS orriko egituraren bertsioa ezabatzerakoan</Resource>
+	<Resource tag="VERSIONESTRUCTURAPAGINAELIMINADO">CMS orriko egituraren bertsioa behar bezala ezabatu da</Resource>
+	<Resource tag="DESEAELIMINARELCOMPONENTE">¿Desea eliminar el componente?</Resource>
+	<Resource tag="DESEAELIMINARVERSIONCOMPONENTECMS">CMS osagaien bertsio hau ezabatu nahi al duzu?</Resource>
+	<Resource tag="ERRORELIMINARVERSIONCMS">Arazo bat egon da CMS osagaiaren bertsioa ezabatzean</Resource>
+	<Resource tag="VERSIONCMSELIMINADO">CMS osagaiaren bertsioa behar bezala ezabatu da</Resource>
+	<Resource tag="SELECCIONAUNAIMAGENPARAADJUNTAR">Selecciona una imagen para adjuntar</Resource>
     <Resource tag="NUEVOCAMPO">Nuevo campo</Resource>
     <Resource tag="NOMBREDELCAMPODELFORMULARIO">Nombre del campo del formulario.</Resource>
     <Resource tag="CAMPOOBLIGATORIO">Campo obligatorio</Resource>
@@ -5787,21 +5870,15 @@
     <Resource tag="REPLICACIONBIDIRECCIONALNOCONFIGURADA">Replicacion bidireccional no configurada.</Resource>
     <Resource tag="IDENTITYSERVERNOFUNCIONA">Identity Server no funciona.</Resource>
     <Resource tag="SIMODIFICASLARUTARELATIVAELCAMBIONOSURTIRAEFECTOHASTAQUESERE">Si modificas la ruta relativa el cambio no surtirá efecto hasta que se reinicie la plataforma. Ponte en contacto con el administrador de sistemas para ello.</Resource>
-	  <Resource tag="ADQUIRIRVERSIONENTERPRISE">[SERVICIO] funtzionalitatera sartzeko, GNOSSen enterprise bertsioa erosi behar duzu</Resource>
-	  <Resource tag="SERVICIOADMINISTRARPESOS">Lucene autobetetzearen pisuen kudeaketa</Resource>
-	  <Resource tag="SERVICIOESTADOSISTEMAS">zerbitzuen monitorizazioa</Resource>
-	  <Resource tag="SERVICIOEVENTOSEXTERNOS">plataforman gertaera pertsonalizatuak sortzea</Resource>
-	  <Resource tag="SERVICIOESTADISITICASCOMUNIDAD">komunitatearen estatistikak</Resource>
-	  <Resource tag="SERVICIOCARGAMASIVA">karga masiboa</Resource>
-	  <Resource tag="SERVICIOINEGRACIONCONTINUA">integrazio jarraitua</Resource>
-	  <Resource tag="SERVICIODIAGNOSTICODEPROBLEMAS">arazoen diagnostikoa</Resource>
-	  <Resource tag="SERVICIOREPROCESADORECURSOS">baliabideen birprozesatzea</Resource>
-	  <Resource tag="SERVICIOMONITORIZACIONDETAREAS">atzekoen monitorizazioa</Resource>
-	  <Resource tag="SERVICIOAPLICACIONESESPECIFICAS">aplikazio espezifikoen inplementazioa eta konpilazioa</Resource>
-	  <Resource tag="SERVICIOCONSULTASSPARQL">SPARQL kontsultak plataformako endpoint baten bidez</Resource>
-	  <Resource tag="SERVICIOFTP">optimizatutako FTP zerbitzua</Resource>
-	  <Resource tag="SERVICIOCACHE">cacheen kudeaketa</Resource>
-	  <Resource tag="SERVICIODESCARGACONFIGURACIONES">plataformaren konfigurazioen deskarga</Resource>
-	  <Resource tag="SERVICIOTRAZAS">plataformaren trazen kudeaketa</Resource>
   </page>
+	<page name="FLUJOS">
+		<Resource tag="TRANSICIONREALIZADA">Egoera aldaketa behar bezala burutu da</Resource>
+		<Resource tag="TRANSICIONERROR">Errore bat gertatu da baliabidearen egoera aldatzean</Resource>
+		<Resource tag="COMENTARIO">Egoera aldaketarako iruzkin gehigarria</Resource>
+		<Resource tag="VERHISTORIAL">Egoera aldaketen historia</Resource>
+		<Resource tag="REVISOR">Berrikuslea</Resource>
+		<Resource tag="COMENTARIOREVISOR">Berrikuslearen iruzkina</Resource>
+		<Resource tag="CAMBIO">Aldaketa</Resource>
+		<Resource tag="HISTORIALERROR">Errore bat gertatu da aldaketen historia kargatzean</Resource>
+	</page>
 </Resources>

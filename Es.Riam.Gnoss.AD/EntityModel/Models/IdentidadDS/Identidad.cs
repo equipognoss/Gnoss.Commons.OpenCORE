@@ -9,6 +9,7 @@ using Es.Riam.Gnoss.AD.EntityModel.Models.ProyectoDS;
 using Es.Riam.Gnoss.AD.EntityModel.Models.OrganizacionDS;
 using Es.Riam.Gnoss.AD.EntityModel.Models.UsuarioDS;
 using Es.Riam.Gnoss.AD.EntityModel.Models.Roles;
+using Es.Riam.Gnoss.AD.EntityModel.Models.Flujos;
 
 namespace Es.Riam.Gnoss.AD.EntityModel.Models.IdentidadDS
 {
@@ -88,5 +89,20 @@ namespace Es.Riam.Gnoss.AD.EntityModel.Models.IdentidadDS
 
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
 		public virtual ICollection<RolIdentidad> RolIdentidad { get; set; }
+
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+		public virtual ICollection<EstadoIdentidad> EstadoIdentidad { get; set; }
+
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+		public virtual ICollection<TransicionIdentidad> TransicionIdentidad { get; set; }
+
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+		public virtual ICollection<HistorialTransicionDocumento> HistorialTransicionDocumento { get; set; }
+
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+		public virtual ICollection<HistorialTransicionCMSComponente> HistorialTransicionCMSComponente { get; set; }
+
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+		public virtual ICollection<HistorialTransicionPestanyaCMS> HistorialTransicionPestanyaCMS { get; set; }
 	}
 }

@@ -23,6 +23,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Models.ViewModels
 
         public string URLActionEliminarEntradas { get; set; }
 
+        public bool traduccionesActivas { get; set; }
 
     }
 }

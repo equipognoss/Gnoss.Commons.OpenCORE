@@ -227,6 +227,10 @@
       <asunto>{#Asunto#}</asunto>
       <texto>{p}{#NombreRemitente#} ti ha inviato un messaggio tramite {#NombreProyecto#}{/p}{div style="margin:30px"}{#Texto#}{/div}{p}Per rispondere a {#NombreRemitente#} clicca su questo link: {a href="{@UrlIntragnoss@}{$identidad$}/mensajes?mensaje={#CorreoID#}"}rispondi al messaggio{/a}{/p}</texto>
     </mensaje>
+	  <mensaje id="132">
+		  <asunto>{#NombrePersona#} ha modificato lo stato della risorsa</asunto>
+		  <texto>{p}{#NombrePersona#} ha modificato lo stato della risorsa {a href="{#UrlEnlace#}"}{#NombreDoc#}{/a} ed è passato dallo stato {#NombreEstadoOrigen#} a {#NombreEstadoDestino#}{/p}{p}Commento dell’editore: {i}'{#Comentario#}'{/i}{/p}</texto>
+	  </mensaje>
     <mensaje id="140">
       <asunto>Hai un link: {#NombreDoc#}</asunto>
       <texto>{p}{#NombreRemitente#} ti ha inviato un link di {#NombreProyecto#}.{/p}{p}{#Notas#}{/p}{p} {#UrlEnlace#}{/p}</texto>
