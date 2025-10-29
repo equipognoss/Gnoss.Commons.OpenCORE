@@ -561,7 +561,7 @@ namespace Es.Riam.Gnoss.CL.Facetado
 		public void ObtenerFacetaEspecialDBLPJournalPartOF(string pProyectoID, FacetadoDS pFacetadoDS, string pNombreFaceta, Dictionary<string, List<string>> pListaFiltros, List<string> pListaFiltrosExtra, bool pEstaEnMyGnoss, bool pEsMiembroComunidad, bool pEsInvitado, string pIdentidadID, string pOrden, int pInicio, int pLimite, List<string> pSemanticos, string pFiltroContextoWhere, IAvailableServices pAvailableServices)
 		{
 
-			if (HayCacheSparql && EstanCachesBusquedaActivas(new Guid(pProyectoID)))
+			if (HayCacheSparql && EstanCachesBusquedaActivas(pProyectoID))
 			{
 				CacheConsultasCostosas cacheModel = new CacheConsultasCostosas();
 				cacheModel.TipoDeCache = TipoCacheCostosa.FacetaEspecialDBLPJournalPartOF;
@@ -626,7 +626,7 @@ namespace Es.Riam.Gnoss.CL.Facetado
 		/// <param name="pSemanticos">Lista de formularios semánticos</param>
 		public void ObtenerFacetaEspecialDBLP(string pProyectoID, FacetadoDS pFacetadoDS, string pNombreFaceta, Dictionary<string, List<string>> pListaFiltros, List<string> pListaFiltrosExtra, bool pEstaEnMyGnoss, bool pEsMiembroComunidad, bool pEsInvitado, string pIdentidadID, int pInicio, int pLimite, List<string> pSemanticos, string pFiltroContextoWhere, IAvailableServices pAvailableServices)
 		{
-			if (HayCacheSparql && EstanCachesBusquedaActivas(new Guid(pProyectoID)))
+			if (HayCacheSparql && EstanCachesBusquedaActivas(pProyectoID))
 			{
 				CacheConsultasCostosas cacheModel = new CacheConsultasCostosas();
 				cacheModel.TipoDeCache = TipoCacheCostosa.FacetaEspecialDBLP;
@@ -819,7 +819,7 @@ namespace Es.Riam.Gnoss.CL.Facetado
 		public bool ExisteFacetaEnCache(string pProyectoID, FacetadoDS pFacetadoDS, string pClaveFaceta, Dictionary<string, List<string>> pListaFiltros, List<string> pListaFiltrosExtra, bool pEstaEnMyGnoss, bool pEsMiembroComunidad, bool pEsInvitado, string pIdentidadID, TipoDisenio pTipoDisenio, int pInicio, int pLimite, List<string> pSemanticos, string pFiltroContextoWhere, TipoProyecto pTipoProyecto, bool pEsRango, List<int> pListaRangos, bool pExcluida, bool pUsarHilos, bool pExcluirPersonas, bool pPermitirRecursosPrivados, bool pOmitirPalabrasNoRelevantesSearch, int pReciproca, TipoPropiedadFaceta pTipoPropiedadesFaceta, Dictionary<string, Tuple<string, string, string, bool>> pFiltrosSearchPersonalizados, bool pInmutable, bool pEsMovil)
 		{
 			bool exist = false;
-			if (HayCacheSparql && EstanCachesBusquedaActivas(new Guid(pProyectoID)))
+			if (HayCacheSparql && EstanCachesBusquedaActivas(pProyectoID))
 			{
 				CacheConsultasCostosas cacheModel = new CacheConsultasCostosas();
 				cacheModel.TipoDeCache = TipoCacheCostosa.Facetas;
@@ -869,7 +869,7 @@ namespace Es.Riam.Gnoss.CL.Facetado
 		/// <param name="pSemanticos">Lista de formularios semánticos</param>
 		public void ObtenerFaceta(string pProyectoID, FacetadoDS pFacetadoDS, string pClaveFaceta, Dictionary<string, List<string>> pListaFiltros, List<string> pListaFiltrosExtra, bool pEstaEnMyGnoss, bool pEsMiembroComunidad, bool pEsInvitado, string pIdentidadID, TipoDisenio pTipoDisenio, int pInicio, int pLimite, List<string> pSemanticos, string pFiltroContextoWhere, TipoProyecto pTipoProyecto, bool pEsRango, List<int> pListaRangos, bool pExcluida, bool pUsarHilos, bool pExcluirPersonas, bool pPermitirRecursosPrivados, bool pOmitirPalabrasNoRelevantesSearch, int pReciproca, TipoPropiedadFaceta pTipoPropiedadesFaceta, Dictionary<string, Tuple<string, string, string, bool>> pFiltrosSearchPersonalizados, bool pInmutable, bool pEsMovil, List<Guid> pListaExcluidos, IAvailableServices pAvailableServices)
 		{
-			if (HayCacheSparql && EstanCachesBusquedaActivas(new Guid(pProyectoID)))
+			if (HayCacheSparql && EstanCachesBusquedaActivas(pProyectoID))
 			{
 				CacheConsultasCostosas cacheModel = new CacheConsultasCostosas();
 				cacheModel.TipoDeCache = TipoCacheCostosa.Facetas;
@@ -948,7 +948,7 @@ namespace Es.Riam.Gnoss.CL.Facetado
 		/// <param name="pSemanticos">Lista de formularios semánticos</param>
 		public void ObtenerFacetaSinOrdenDBLP(string pProyectoID, FacetadoDS pFacetadoDS, string pClaveFaceta, Dictionary<string, List<string>> pListaFiltros, List<string> pListaFiltrosExtra, bool pEstaEnMyGnoss, bool pEsMiembroComunidad, bool pEsInvitado, string pIdentidadID, TipoDisenio pTipoDisenio, int pInicio, int pLimite, List<string> pSemanticos, string pFiltroContextoWhere, TipoProyecto pTipoProyecto, bool pEsRango, List<int> pListaRangos, bool pExcluida, bool pUsarHilos, IAvailableServices pAvailableServices)
 		{
-			if (HayCacheSparql && EstanCachesBusquedaActivas(new Guid(pProyectoID)))
+			if (HayCacheSparql && EstanCachesBusquedaActivas(pProyectoID))
 			{
 				CacheConsultasCostosas cacheModel = new CacheConsultasCostosas();
 				cacheModel.TipoDeCache = TipoCacheCostosa.FacetaSinOrdenDBLP;
@@ -1001,7 +1001,7 @@ namespace Es.Riam.Gnoss.CL.Facetado
 
 		public void ObtenerFacetaRenombrarSiContieneSufijo(string pProyectoID, FacetadoDS pFacetadoDS, string pNombreFaceta, Dictionary<string, List<string>> pListaFiltros, List<string> pListaFiltrosExtra, bool pEstaEnMyGnoss, bool pEsMiembroComunidad, bool pEsInvitado, string pIdentidadID, TipoDisenio pTipoDisenio, int pInicio, int pLimite, List<string> pSemanticos, string pFiltroContextoWhere, TipoProyecto pTipoProyecto, bool pEsRango, List<int> pListaRangos, string pSufijo, bool pExcluida, bool pInmutable, IAvailableServices pAvailableServices)
 		{
-			if (HayCacheSparql && EstanCachesBusquedaActivas(new Guid(pProyectoID)))
+			if (HayCacheSparql && EstanCachesBusquedaActivas(pProyectoID))
 			{
 				CacheConsultasCostosas cacheModel = new CacheConsultasCostosas();
 				cacheModel.TipoDeCache = TipoCacheCostosa.Facetas;
@@ -1675,7 +1675,7 @@ namespace Es.Riam.Gnoss.CL.Facetado
 
 		public void ObtenerAutocompletar(string proyectoID, FacetadoDS pFacetadoDS, Dictionary<string, List<string>> pListaFiltros, List<string> pListaFiltrosExtra, bool pEstaMyGnoss, bool pEsMiembroComunidad, bool pEsInvitado, string pIdentidadID, int pInicio, int pLimite, List<string> pSemanticos, string pFiltrosContexto, IAvailableServices pAvailableServices)
 		{
-			if (HayCacheSparql && EstanCachesBusquedaActivas(new Guid(proyectoID)))
+			if (HayCacheSparql && EstanCachesBusquedaActivas(proyectoID))
 			{
 				CacheConsultasCostosas cacheModel = new CacheConsultasCostosas();
 				cacheModel.TipoDeCache = TipoCacheCostosa.Autocompletar;
@@ -2320,6 +2320,19 @@ namespace Es.Riam.Gnoss.CL.Facetado
 				{
 					rabbitMQ.AgregarElementoACola(JsonConvert.SerializeObject(pCacheConsultasCostosas));
 				}
+			}
+		}
+
+		private bool EstanCachesBusquedaActivas(string pProyectoID)
+		{
+			bool guidCorrecto = Guid.TryParse(pProyectoID, out Guid proyectoID);
+			if (guidCorrecto)
+			{
+				return EstanCachesBusquedaActivas(proyectoID);
+			}
+			else
+			{
+				return false;
 			}
 		}
 

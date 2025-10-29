@@ -159,6 +159,7 @@ namespace Es.Riam.Gnoss.OAuthAD
             modelBuilder.Entity<ConsumerData>(entity =>
             {
                 entity.Property(e => e.ConsumerId).ValueGeneratedNever();
+                entity.Property(e => e.FechaAlta).HasColumnType("timestamp without time zone");
 
                 entity.HasOne(d => d.OAuthConsumer)
                     .WithOne(p => p.ConsumerData)

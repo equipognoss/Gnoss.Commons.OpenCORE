@@ -34,21 +34,21 @@ namespace Es.Riam.Gnoss.Elementos.Tesauro
         #region Constantes
 
         /// <summary>
-        /// Nombre para la categoría nueva
+        /// Nombre para la categorï¿½a nueva
         /// </summary>
-        public const string NOMBRE_CATEGORIA_NUEVA = "<Nueva categoría de tesauro>";
+        public const string NOMBRE_CATEGORIA_NUEVA = "<Nueva categorï¿½a de tesauro>";
 
         /// <summary>
-        /// Nombre de la categoría de tesauro pública
+        /// Nombre de la categorï¿½a de tesauro pï¿½blica
         /// </summary>
-        public const string NOMBRE_CATEGORIA_PUBLICA = "Recursos públicos";
+        public const string NOMBRE_CATEGORIA_PUBLICA = "Recursos pï¿½blicos";
 
         /// <summary>
-        /// Nombre de la categoría de tesauro privada
+        /// Nombre de la categorï¿½a de tesauro privada
         /// </summary>
         public const string NOMBRE_CATEGORIA_PRIVADA = "Recursos privados";
         /// <summary>
-        /// Nombre de la cola que genera las imágenes de la categoría
+        /// Nombre de la cola que genera las imï¿½genes de la categorï¿½a
         /// </summary>
         private const string COLA_MINIATURA_CATEGORIA = "ColaMiniaturaCategoria";
 
@@ -62,29 +62,29 @@ namespace Es.Riam.Gnoss.Elementos.Tesauro
         public GestorDocumental mGestorDocumental;
 
         /// <summary>
-        /// Lista de categorías de tesauro
+        /// Lista de categorï¿½as de tesauro
         /// </summary>
         private SortedList<Guid, CategoriaTesauro> mListaCategoriasTesauro;
 
-        private Dictionary<Guid, AD.EntityModel.Models.Tesauro.CategoriaTesauroPropiedades> mFilasPropiedadesPorCategoria = null;
+        private Dictionary<Guid, CategoriaTesauroPropiedades> mFilasPropiedadesPorCategoria = null;
 
         /// <summary>
-        /// Lista de categorías de tesauro ordenas por nombre en funcion del idioma.
+        /// Lista de categorï¿½as de tesauro ordenas por nombre en funcion del idioma.
         /// </summary>
         private Dictionary<string, List<CategoriaTesauro>> mListaCategoriasTesauroOrdenadasPorNombre;
 
         /// <summary>
-        /// Lista de categorías de tesauro de primer nivel
+        /// Lista de categorï¿½as de tesauro de primer nivel
         /// </summary>
         private Dictionary<Guid, CategoriaTesauro> mListaCategoriasTesauroPrimerNivel = new Dictionary<Guid, CategoriaTesauro>();
 
         /// <summary>
-        /// Lista de categorías de tesauro sugeridas (identificador, categoría) de primer nivel.
+        /// Lista de categorï¿½as de tesauro sugeridas (identificador, categorï¿½a) de primer nivel.
         /// </summary>
         public Dictionary<Guid, CategoriaTesauroSugerencia> mListaCategoriasSugeridasPrimerNivel;
 
         /// <summary>
-        /// Lista de categorías de tesauro sugeridas (identificador, categoría) de primer nivel.
+        /// Lista de categorï¿½as de tesauro sugeridas (identificador, categorï¿½a) de primer nivel.
         /// </summary>
         public List<ElementoGnoss> mListaCategoriasTesauroYCategoriasSugeridasPrimerNivel;
 
@@ -94,12 +94,12 @@ namespace Es.Riam.Gnoss.Elementos.Tesauro
         private AD.EntityModel.Models.Tesauro.Tesauro mFilaTesauroActual;
 
         /// <summary>
-        /// Lista de los elementos hijos del gestor de tesauro más las sugerencias.
+        /// Lista de los elementos hijos del gestor de tesauro mï¿½s las sugerencias.
         /// </summary>
         private List<IElementoGnoss> mHijosConSugerencias;
 
         /// <summary>
-        /// Número de elementos de la categoría.
+        /// Nï¿½mero de elementos de la categorï¿½a.
         /// </summary>
         private Dictionary<Guid, int> mNumElementosCategoria;
 
@@ -126,26 +126,23 @@ namespace Es.Riam.Gnoss.Elementos.Tesauro
             mlogger = logger;
             mLoggerFactory = loggerFactory;
             mListaCategoriasTesauro = new SortedList<Guid, CategoriaTesauro>();
-            if (listaCacheCaducidad==null)
+            if (listaCacheCaducidad == null)
             {
                 listaCacheCaducidad = new SortedList<Guid, CategoriaTesauro>();
             }
-           
+
             CargarCategorias(listaCacheCaducidad);
             mListaCategoriasCache = listaCacheCaducidad;
         }
 
         /// <summary>
-        /// Constructor para la deseralización
+        /// Constructor para la deseralizaciï¿½n
         /// </summary>
         /// <param name="info">Datos serializados</param>
-        /// <param name="context">Contexto de serialización</param>
+        /// <param name="context">Contexto de serializaciï¿½n</param>
         protected GestionTesauro(SerializationInfo info, StreamingContext context)
             : base(info, context)
         {
-            //mLoggingService = loggingService;
-            //mEntityContext = entityContext;
-            
             mGestorDocumental = (GestorDocumental)info.GetValue("GestorDocumental", typeof(GestorDocumental));
             this.mListaCategoriasTesauro = new SortedList<Guid, CategoriaTesauro>();
             CargarCategorias();
@@ -174,8 +171,6 @@ namespace Es.Riam.Gnoss.Elementos.Tesauro
                     if (((DataWrapperTesauro)DataWrapper).ListaTesauro.Count == 0)
                     {
                         AD.EntityModel.Models.Tesauro.Tesauro filaNueva = new AD.EntityModel.Models.Tesauro.Tesauro();
-
-                        //filaNueva.WikiGnossID = (Guid)this.WikiGnossDS.WikiGnoss.Rows[0]["WikiGnossID"];
                         filaNueva.TesauroID = Guid.NewGuid();
 
                         ((DataWrapperTesauro)DataWrapper).ListaTesauro.Add(filaNueva);
@@ -195,7 +190,7 @@ namespace Es.Riam.Gnoss.Elementos.Tesauro
         }
 
         /// <summary>
-        /// Obtiene la lista de categorías (identificador, categoría) que contiene el tesauro
+        /// Obtiene la lista de categorï¿½as (identificador, categorï¿½a) que contiene el tesauro
         /// </summary>
         public SortedList<Guid, CategoriaTesauro> ListaCategoriasTesauro
         {
@@ -206,7 +201,7 @@ namespace Es.Riam.Gnoss.Elementos.Tesauro
         }
 
         /// <summary>
-        /// Obtiene la lista de categorías ordenadas por nombre que contiene el tesauro en funcion del idioma
+        /// Obtiene la lista de categorï¿½as ordenadas por nombre que contiene el tesauro en funcion del idioma
         /// </summary>
         public Dictionary<string, List<CategoriaTesauro>> ListaCategoriasTesauroOrdenadasPorNombre
         {
@@ -251,7 +246,7 @@ namespace Es.Riam.Gnoss.Elementos.Tesauro
         }
 
         /// <summary>
-        /// Obtiene la lista de categorías de tesauro (identificador, categoría) de primer nivel
+        /// Obtiene la lista de categorï¿½as de tesauro (identificador, categorï¿½a) de primer nivel
         /// </summary>
         public Dictionary<Guid, CategoriaTesauro> ListaCategoriasTesauroPrimerNivel
         {
@@ -262,7 +257,7 @@ namespace Es.Riam.Gnoss.Elementos.Tesauro
         }
 
         /// <summary>
-        /// Obtiene la lista de categorías de tesauro sugeridas (identificador, categoría) de primer nivel.
+        /// Obtiene la lista de categorï¿½as de tesauro sugeridas (identificador, categorï¿½a) de primer nivel.
         /// </summary>
         public Dictionary<Guid, CategoriaTesauroSugerencia> ListaCategoriasSugeridasPrimerNivel
         {
@@ -273,7 +268,7 @@ namespace Es.Riam.Gnoss.Elementos.Tesauro
         }
 
         /// <summary>
-        /// Obtiene la lista de categorías de tesauro sugeridas (identificador, categoría) de primer nivel.
+        /// Obtiene la lista de categorï¿½as de tesauro sugeridas (identificador, categorï¿½a) de primer nivel.
         /// </summary>
         public List<ElementoGnoss> ListaCategoriasTesauroYCategoriasSugeridasPrimerNivel
         {
@@ -318,7 +313,7 @@ namespace Es.Riam.Gnoss.Elementos.Tesauro
                         mEntityContext.Tesauro.Add(filaNueva);
                     }
 
-                    mFilaTesauroActual = (AD.EntityModel.Models.Tesauro.Tesauro)TesauroDW.ListaTesauro.FirstOrDefault();
+                    mFilaTesauroActual = TesauroDW.ListaTesauro.FirstOrDefault();
                 }
                 return this.mFilaTesauroActual;
             }
@@ -411,7 +406,7 @@ namespace Es.Riam.Gnoss.Elementos.Tesauro
         }
 
         /// <summary>
-        /// Número de elementos de la categoría.
+        /// Nï¿½mero de elementos de la categorï¿½a.
         /// </summary>
         public Dictionary<Guid, int> NumElementosCategoria
         {
@@ -426,10 +421,10 @@ namespace Es.Riam.Gnoss.Elementos.Tesauro
             }
         }
 
-        #region Tesauro Usuario y Organización
+        #region Tesauro Usuario y Organizaciï¿½n
 
         /// <summary>
-        /// Devuelve el identificador de la categoría publica del tesauro actual.
+        /// Devuelve el identificador de la categorï¿½a publica del tesauro actual.
         /// </summary>
         public Guid CategoriaPublicaID
         {
@@ -449,7 +444,7 @@ namespace Es.Riam.Gnoss.Elementos.Tesauro
         }
 
         /// <summary>
-        /// Devuelve el identificador de la categoría privada del tesauro actual.
+        /// Devuelve el identificador de la categorï¿½a privada del tesauro actual.
         /// </summary>
         public Guid CategoriaPrivadaID
         {
@@ -469,7 +464,7 @@ namespace Es.Riam.Gnoss.Elementos.Tesauro
         }
 
         /// <summary>
-        /// Devuelve el identificador de la categoría privada del tesauro actual.
+        /// Devuelve el identificador de la categorï¿½a privada del tesauro actual.
         /// </summary>
         public Guid CategoriaImagenesID
         {
@@ -480,16 +475,13 @@ namespace Es.Riam.Gnoss.Elementos.Tesauro
                 {
                     claveImagenes = (TesauroDW.ListaTesauroUsuario.FirstOrDefault()).CategoriaTesauroMisImagenesID.Value;
                 }
-                //else if (TesauroDS.TesauroOrganizacion.Rows.Count > 0)
-                //{
-                //    claveImagenes = ((TesauroDS.TesauroOrganizacionRow)TesauroDS.TesauroOrganizacion.Rows[0]).CategoriaTesauroMisImagenesID;
-                //}
+                
                 return claveImagenes;
             }
         }
 
         /// <summary>
-        /// Devuelve el identificador de la categoría privada del tesauro actual.
+        /// Devuelve el identificador de la categorï¿½a privada del tesauro actual.
         /// </summary>
         public Guid CategoriaVideosID
         {
@@ -500,10 +492,7 @@ namespace Es.Riam.Gnoss.Elementos.Tesauro
                 {
                     claveVideos = (TesauroDW.ListaTesauroUsuario.FirstOrDefault()).CategoriaTesauroMisVideosID.Value;
                 }
-                //else if (TesauroDS.TesauroOrganizacion.Rows.Count > 0)
-                //{
-                //    claveVideos = ((TesauroDS.TesauroOrganizacionRow)TesauroDS.TesauroOrganizacion.Rows[0])..CategoriaTesauroMisVideosID;
-                //}
+                
                 return claveVideos;
             }
         }
@@ -515,7 +504,7 @@ namespace Es.Riam.Gnoss.Elementos.Tesauro
         {
             get
             {
-                return (TesauroDW.ListaTesauroUsuario.Where(item => item.TesauroID.Equals(TesauroActualID)).Count() > 0);
+                return TesauroDW.ListaTesauroUsuario.Any(item => item.TesauroID.Equals(TesauroActualID));
             }
         }
 
@@ -523,21 +512,20 @@ namespace Es.Riam.Gnoss.Elementos.Tesauro
 
         #endregion
 
-        #region Métodos generales
+        #region Mï¿½todos generales
 
-
-        public void RecargarGestor(SortedList<Guid, CategoriaTesauro> listaCacheCaducidad=null)
+        public void RecargarGestor(SortedList<Guid, CategoriaTesauro> listaCacheCaducidad = null)
         {
             this.mListaCategoriasTesauro = new SortedList<Guid, CategoriaTesauro>();
             CargarCategorias(listaCacheCaducidad);
         }
 
         /// <summary>
-        /// Crea un nuevo tesauro para el usuario pasado por parámetro
+        /// Crea un nuevo tesauro para el usuario pasado por parï¿½metro
         /// </summary>
         /// <param name="pUsuarioID">Identificador del usuario</param>
-        /// <param name="pNombreCategoriaPublica">Nombre de la categoría de tesauro pública</param>
-        /// <param name="pNombreCategoriaPrivada">Nombre de la categoría de tesauro privada</param>
+        /// <param name="pNombreCategoriaPublica">Nombre de la categorï¿½a de tesauro pï¿½blica</param>
+        /// <param name="pNombreCategoriaPrivada">Nombre de la categorï¿½a de tesauro privada</param>
         /// <returns>Nueva fila de tesauro</returns>
         public AD.EntityModel.Models.Tesauro.Tesauro AgregarTesauroUsuario(Guid pUsuarioID, string pNombreCategoriaPublica, string pNombreCategoriaPrivada)
         {
@@ -560,7 +548,7 @@ namespace Es.Riam.Gnoss.Elementos.Tesauro
             TesauroDW.ListaTesauroUsuario.Add(filaTesauroUsuario);
             mEntityContext.TesauroUsuario.Add(filaTesauroUsuario);
 
-            //Categoría del tesauro de usuario
+            //Categorï¿½a del tesauro de usuario
             AD.EntityModel.Models.Tesauro.CategoriaTesauro filaCatTesPub = new AD.EntityModel.Models.Tesauro.CategoriaTesauro();
             filaCatTesPub.CategoriaTesauroID = categoriaPublica;
             filaCatTesPub.Nombre = pNombreCategoriaPublica;
@@ -596,11 +584,11 @@ namespace Es.Riam.Gnoss.Elementos.Tesauro
         }
 
         /// <summary>
-        /// Crea un nuevo tesauro para la organización pasada por parámetro
+        /// Crea un nuevo tesauro para la organizaciï¿½n pasada por parï¿½metro
         /// </summary>
-        /// <param name="pOrganizacionID">Identificador de la organización</param>
-        /// <param name="pNombreCategoriaPublica">Nombre de la categoría de tesauro pública</param>
-        /// <param name="pNombreCategoriaPrivada">Nombre de la categoría de tesauro privada</param>
+        /// <param name="pOrganizacionID">Identificador de la organizaciï¿½n</param>
+        /// <param name="pNombreCategoriaPublica">Nombre de la categorï¿½a de tesauro pï¿½blica</param>
+        /// <param name="pNombreCategoriaPrivada">Nombre de la categorï¿½a de tesauro privada</param>
         /// <returns>Nueva fila de tesauro</returns>
         public AD.EntityModel.Models.Tesauro.Tesauro AgregarTesauroOrganizacion(Guid pOrganizacionID, string pNombreCategoriaPublica, string pNombreCategoriaPrivada)
         {
@@ -614,7 +602,7 @@ namespace Es.Riam.Gnoss.Elementos.Tesauro
             //TesauroOrganizacion
             Guid categoriaPublica = Guid.NewGuid();
             Guid categoriaPrivada = Guid.NewGuid();
-            AD.EntityModel.Models.Tesauro.TesauroOrganizacion filaTesauroOrganizacion = new AD.EntityModel.Models.Tesauro.TesauroOrganizacion();
+            TesauroOrganizacion filaTesauroOrganizacion = new TesauroOrganizacion();
             filaTesauroOrganizacion.Tesauro = filaTesauro;
             filaTesauroOrganizacion.OrganizacionID = pOrganizacionID;
             filaTesauroOrganizacion.CategoriaTesauroPublicoID = categoriaPublica;
@@ -623,7 +611,7 @@ namespace Es.Riam.Gnoss.Elementos.Tesauro
             TesauroDW.ListaTesauroOrganizacion.Add(filaTesauroOrganizacion);
             mEntityContext.TesauroOrganizacion.Add(filaTesauroOrganizacion);
 
-            //Categoría del tesauro de usuario
+            //Categorï¿½a del tesauro de usuario
             AD.EntityModel.Models.Tesauro.CategoriaTesauro filaCatTesPub = new AD.EntityModel.Models.Tesauro.CategoriaTesauro();
             filaCatTesPub.CategoriaTesauroID = categoriaPublica;
             filaCatTesPub.Nombre = pNombreCategoriaPublica;
@@ -660,7 +648,7 @@ namespace Es.Riam.Gnoss.Elementos.Tesauro
         }
 
         /// <summary>
-        /// Eliminar el tesauro cuyo identificador se pasa como parámetro
+        /// Eliminar el tesauro cuyo identificador se pasa como parï¿½metro
         /// </summary>
         /// <param name="pTesauroID">Identificador del tesauro</param>
         public void EliminarTesauro(Guid pTesauroID)
@@ -679,7 +667,7 @@ namespace Es.Riam.Gnoss.Elementos.Tesauro
                 mEntityContext.EliminarElemento(fila);
             }
 
-            // Eliminar tesauro de organización
+            // Eliminar tesauro de organizaciï¿½n
             foreach (TesauroOrganizacion fila in TesauroDW.ListaTesauroOrganizacion.Where(item => item.TesauroID.Equals(pTesauroID)).ToList())
             {
                 TesauroDW.ListaTesauroOrganizacion.Remove(fila);
@@ -713,19 +701,16 @@ namespace Es.Riam.Gnoss.Elementos.Tesauro
             AD.EntityModel.Models.Tesauro.Tesauro tesauro = TesauroDW.ListaTesauro.FirstOrDefault(item => item.TesauroID.Equals(pTesauroID));
             TesauroDW.ListaTesauro.Remove(tesauro);
             mEntityContext.EliminarElemento(tesauro);
-
         }
 
-
-
         /// <summary>
-        /// Determina si el gestor de tesauro admite como hijo al elemento pasado por parámetro
+        /// Determina si el gestor de tesauro admite como hijo al elemento pasado por parï¿½metro
         /// </summary>
         /// <param name="pHijoCandidato">Elemento candidato a ser hijo</param>
         /// <returns>TRUE si el gestor de tesauro admite como hijo al elemento</returns>
         public override bool AdmiteHijo(IElementoGnoss pHijoCandidato)
         {
-            if ((pHijoCandidato != null) && (pHijoCandidato is CategoriaTesauro))
+            if (pHijoCandidato is CategoriaTesauro)
                 return true;
             else
                 return false;
@@ -734,13 +719,13 @@ namespace Es.Riam.Gnoss.Elementos.Tesauro
         internal Dictionary<Guid, List<object>> ListaCategoriasInferioresPorCategoriaID = new Dictionary<Guid, List<object>>();
 
         /// <summary>
-        /// Carga las categorías de tesauro
+        /// Carga las categorï¿½as de tesauro
         /// </summary>
-        public void CargarCategorias(SortedList<Guid, CategoriaTesauro> listaCacheCaducidad=null)
+        public void CargarCategorias(SortedList<Guid, CategoriaTesauro> listaCacheCaducidad = null)
         {
             mListaCategoriasTesauro.Clear();
             mListaCategoriasTesauroPrimerNivel.Clear();
-			ListaCategoriasInferioresPorCategoriaID.Clear();
+            ListaCategoriasInferioresPorCategoriaID.Clear();
             mNumElementosCategoria = new Dictionary<Guid, int>();
             mHijos = new List<IElementoGnoss>();
             listaCacheCaducidad = listaCacheCaducidad ?? new SortedList<Guid, CategoriaTesauro>();
@@ -769,7 +754,7 @@ namespace Es.Riam.Gnoss.Elementos.Tesauro
 
                 if (catTesauroAgCatTesauro == null && catTesauroCompartida == null)
                 {
-                    //Es categoría de primer nivel
+                    //Es categorï¿½a de primer nivel
                     CategoriaTesauro categoria = new CategoriaTesauro(filaCategoria, this);
                     this.mListaCategoriasTesauroPrimerNivel.Add(filaCategoria.CategoriaTesauroID, categoria);
                     this.mListaCategoriasTesauro.Add(filaCategoria.CategoriaTesauroID, categoria);
@@ -810,7 +795,6 @@ namespace Es.Riam.Gnoss.Elementos.Tesauro
                         ListaCategoriasInferioresPorCategoriaID[catTesauroCompartida.CategoriaSupDestinoID.Value].Add(catTesauroCompartida);
                     }
 
-
                     CategoriaTesauro catPrueba2 = null;
                     if (this.mListaCategoriasTesauro != null)
                     {
@@ -834,12 +818,11 @@ namespace Es.Riam.Gnoss.Elementos.Tesauro
 
             foreach (Guid categoriaID in ListaCategoriasInferioresPorCategoriaID.Keys)
             {
-
-                if (listaCacheCaducidad.ContainsKey(categoriaID))
+                if (mListaCategoriasTesauro.ContainsKey(categoriaID))
                 {
                     mListaCategoriasTesauro[categoriaID].CargarSubcategorias();
                 }
-            }        
+            }
         }
 
         /// <summary>
@@ -874,15 +857,15 @@ namespace Es.Riam.Gnoss.Elementos.Tesauro
         }
 
         /// <summary>
-        /// Agrega una categoría al tesauro
+        /// Agrega una categorï¿½a al tesauro
         /// </summary>
-        /// <param name="pNombre">Nombre de la nueva categoría</param>
-        /// <returns>Nueva categoría de tesauro</returns>
+        /// <param name="pNombre">Nombre de la nueva categorï¿½a</param>
+        /// <returns>Nueva categorï¿½a de tesauro</returns>
         public CategoriaTesauro AgregarCategoria(string pNombre, short pOrden, bool pTieneFoto = false)
         {
             CategoriaTesauro nuevaCategoria = null;
 
-            //Creo la fila nueva de categoría
+            //Creo la fila nueva de categorï¿½a
             AD.EntityModel.Models.Tesauro.CategoriaTesauro filaNuevaCategoria = new AD.EntityModel.Models.Tesauro.CategoriaTesauro();
 
             filaNuevaCategoria.CategoriaTesauroID = Guid.NewGuid();
@@ -907,21 +890,21 @@ namespace Es.Riam.Gnoss.Elementos.Tesauro
         }
 
         /// <summary>
-        /// Agrega una subcategoría a una categoría existente
+        /// Agrega una subcategorï¿½a a una categorï¿½a existente
         /// </summary>
-        /// <param name="pCategoriaSuperior">Categoría de tesauro superior</param>
-        /// <param name="pNombre">Nombre de la nueva categoría</param>
-        /// <returns>Nueva categoría de tesauro</returns>
+        /// <param name="pCategoriaSuperior">Categorï¿½a de tesauro superior</param>
+        /// <param name="pNombre">Nombre de la nueva categorï¿½a</param>
+        /// <returns>Nueva categorï¿½a de tesauro</returns>
         public CategoriaTesauro AgregarSubcategoria(CategoriaTesauro pCategoriaSuperior, string pNombre, bool pTieneFoto = false)
         {
-            //Creo la nueva categoría
+            //Creo la nueva categorï¿½a
             CategoriaTesauro nuevaCategoria = AgregarCategoria(pNombre, (short)pCategoriaSuperior.Hijos.Count, pTieneFoto);
 
-            // David: Pongo esta linea porque desde el cliente en las pantallas con documentación, es posible tener varios tesauros creados
+            // David: Pongo esta linea porque desde el cliente en las pantallas con documentaciï¿½n, es posible tener varios tesauros creados
             //        y surgia el error de que las categorias se asignaban a tesauros diferentes
             nuevaCategoria.FilaCategoria.Tesauro = pCategoriaSuperior.FilaCategoria.Tesauro;
 
-            //La agrego a su categoría superior
+            //La agrego a su categorï¿½a superior
             AgregarSubcategoriaACategoria(nuevaCategoria, pCategoriaSuperior);
 
 
@@ -932,15 +915,15 @@ namespace Es.Riam.Gnoss.Elementos.Tesauro
 
         public void ActualizarTieneFoto(Guid pCategoriaID, bool pTieneFoto)
         {
-			AD.EntityModel.Models.Tesauro.CategoriaTesauro categoria = mEntityContext.CategoriaTesauro.Where(cat => cat.CategoriaTesauroID.Equals(pCategoriaID)).FirstOrDefault();
+            AD.EntityModel.Models.Tesauro.CategoriaTesauro categoria = mEntityContext.CategoriaTesauro.Where(cat => cat.CategoriaTesauroID.Equals(pCategoriaID)).FirstOrDefault();
             if (categoria != null)
             {
                 categoria.TieneFoto = pTieneFoto;
                 mEntityContext.SaveChanges();
-                this.TesauroDW.ListaCategoriaTesauro.Where(cat => cat.CategoriaTesauroID.Equals(pCategoriaID)).FirstOrDefault().TieneFoto = pTieneFoto;
-                this.ListaCategoriasTesauro.Where(cat => cat.Key.Equals(pCategoriaID)).FirstOrDefault().Value.FilaCategoria.TieneFoto = pTieneFoto;
-            }         
-		}
+                this.TesauroDW.ListaCategoriaTesauro.Find(cat => cat.CategoriaTesauroID.Equals(pCategoriaID)).TieneFoto = pTieneFoto;
+                this.ListaCategoriasTesauro.FirstOrDefault(cat => cat.Key.Equals(pCategoriaID)).Value.FilaCategoria.TieneFoto = pTieneFoto;
+            }
+        }
 
         public void IncrementarVersionFoto(Guid pCategoriaID)
         {
@@ -950,14 +933,14 @@ namespace Es.Riam.Gnoss.Elementos.Tesauro
                 categoria.TieneFoto = true;
                 categoria.VersionFoto++;
                 mEntityContext.SaveChanges();
-            }         
+            }
         }
 
         /// <summary>
-        /// Crea una nueva categoría de tesauro de primer nivel
+        /// Crea una nueva categorï¿½a de tesauro de primer nivel
         /// </summary>
-        /// <param name="pNombre">Nombre para la nueva categoría de tesauro</param>
-        /// <returns>Nueva categoría de tesauro</returns>
+        /// <param name="pNombre">Nombre para la nueva categorï¿½a de tesauro</param>
+        /// <returns>Nueva categorï¿½a de tesauro</returns>
         public CategoriaTesauro AgregarCategoriaPrimerNivel(string pNombre, bool pTieneFoto = false)
         {
             CategoriaTesauro categoriaNueva = AgregarCategoria(pNombre, 0, pTieneFoto);
@@ -973,24 +956,24 @@ namespace Es.Riam.Gnoss.Elementos.Tesauro
         }
 
         /// <summary>
-        /// Agrega una subcategoría a la categoria superior
+        /// Agrega una subcategorï¿½a a la categoria superior
         /// </summary>
-        /// <param name="pSubCategoria">Subcategoría de tesauro</param>
-        /// <param name="pCategoriaSuperior">Categoría de tesauro superior</param>
-        /// <returns>El DataRow de agregación creado</returns>
+        /// <param name="pSubCategoria">Subcategorï¿½a de tesauro</param>
+        /// <param name="pCategoriaSuperior">Categorï¿½a de tesauro superior</param>
+        /// <returns>El DataRow de agregaciï¿½n creado</returns>
         public CatTesauroAgCatTesauro AgregarSubcategoriaACategoria(CategoriaTesauro pSubCategoria, CategoriaTesauro pCategoriaSuperior, int? orden = null)
         {
             CatTesauroAgCatTesauro filaNuevaAgregacion = this.TesauroDW.ListaCatTesauroAgCatTesauro.FirstOrDefault(cat => cat.TesauroID.Equals(pSubCategoria.FilaCategoria.TesauroID) && cat.CategoriaSuperiorID.Equals(pCategoriaSuperior.FilaCategoria.CategoriaTesauroID) && cat.CategoriaInferiorID.Equals(pSubCategoria.FilaCategoria.CategoriaTesauroID));
 
             if (filaNuevaAgregacion == null)
             {
-                //Creo la relación entre la categoría superior y la subcategoría
+                //Creo la relaciï¿½n entre la categorï¿½a superior y la subcategorï¿½a
                 filaNuevaAgregacion = new CatTesauroAgCatTesauro();
 
                 filaNuevaAgregacion.CategoriaSuperiorID = pCategoriaSuperior.FilaCategoria.CategoriaTesauroID;
                 filaNuevaAgregacion.CategoriaInferiorID = pSubCategoria.FilaCategoria.CategoriaTesauroID;
 
-                if (orden!=null)
+                if (orden != null)
                 {
                     filaNuevaAgregacion.Orden = (short)orden;
                 }
@@ -1037,12 +1020,12 @@ namespace Es.Riam.Gnoss.Elementos.Tesauro
         }
 
         /// <summary>
-        /// Agrega una sugerencia de categoría debajo de una ya existente.
+        /// Agrega una sugerencia de categorï¿½a debajo de una ya existente.
         /// </summary>
-        /// <param name="pCategoriaPadreID">Categoría padre bajo la que se sugire como hija una nueva o Guid.Empty si está en la raiz</param>
+        /// <param name="pCategoriaPadreID">Categorï¿½a padre bajo la que se sugire como hija una nueva o Guid.Empty si estï¿½ en la raiz</param>
         /// <param name="pTesauroID">Tesauro en el que se sugiere</param>
-        /// <param name="pNombre">Nombre de la categoría sugerida</param>
-        /// <param name="pIdentidadSugiere">Identidad que sugiere la categoría</param>
+        /// <param name="pNombre">Nombre de la categorï¿½a sugerida</param>
+        /// <param name="pIdentidadSugiere">Identidad que sugiere la categorï¿½a</param>
         public void AgregarSugerenciaCategoria(Guid pCategoriaPadreID, Guid pTesauroID, string pNombre, Guid pIdentidadSugiere)
         {
             AD.EntityModel.Models.Tesauro.CategoriaTesauroSugerencia filaNuevaCatSug = new AD.EntityModel.Models.Tesauro.CategoriaTesauroSugerencia();
@@ -1062,10 +1045,10 @@ namespace Es.Riam.Gnoss.Elementos.Tesauro
         }
 
         /// <summary>
-        /// Quita de la lista de subcategorías de la categoría superior una categoría
+        /// Quita de la lista de subcategorï¿½as de la categorï¿½a superior una categorï¿½a
         /// </summary>
-        /// <param name="pSubCategoria">Subcategoría a quitar</param>
-        /// <param name="pCategoriaSuperior">Categoría superior que contiene la subcategoría</param>
+        /// <param name="pSubCategoria">Subcategorï¿½a a quitar</param>
+        /// <param name="pCategoriaSuperior">Categorï¿½a superior que contiene la subcategorï¿½a</param>
         public void DesasignarSubcategoriaDeCategoria(CategoriaTesauro pSubCategoria, CategoriaTesauro pCategoriaSuperior)
         {
             CatTesauroAgCatTesauro catTesauroAgCatTesauro = this.TesauroDW.ListaCatTesauroAgCatTesauro.Where(item => item.CategoriaSuperiorID.Equals(pCategoriaSuperior.FilaCategoria.CategoriaTesauroID) && item.CategoriaInferiorID.Equals(pSubCategoria.FilaCategoria.CategoriaTesauroID)).FirstOrDefault();
@@ -1079,9 +1062,9 @@ namespace Es.Riam.Gnoss.Elementos.Tesauro
         }
 
         /// <summary>
-        /// Elimina la categoría del tesauro y sus hijos
+        /// Elimina la categorï¿½a del tesauro y sus hijos
         /// </summary>
-        /// <param name="pCategoria">Categoría de tesauro a eliminar</param>
+        /// <param name="pCategoria">Categorï¿½a de tesauro a eliminar</param>
         public void EliminarCategoriaEHijos(CategoriaTesauro pCategoria, SortedList<Guid, CategoriaTesauro> listaCacheCaducidad = null)
         {
             List<IElementoGnoss> listaHijos = new List<IElementoGnoss>();
@@ -1095,9 +1078,9 @@ namespace Es.Riam.Gnoss.Elementos.Tesauro
         }
 
         /// <summary>
-        /// Elimina la categoría del tesauro
+        /// Elimina la categorï¿½a del tesauro
         /// </summary>
-        /// <param name="pCategoria">Categoría a eliminar</param>
+        /// <param name="pCategoria">Categorï¿½a a eliminar</param>
         public void EliminarCategoria(CategoriaTesauro pCategoria, SortedList<Guid, CategoriaTesauro> listaCacheCaducidad)
         {
             pCategoria.Notificar(new MensajeObservador(AccionesObservador.Eliminar, pCategoria));
@@ -1119,7 +1102,7 @@ namespace Es.Riam.Gnoss.Elementos.Tesauro
                 mEntityContext.EliminarElemento(elemento);
             }
 
-            //Borra las sugerencias que cuelgan de la categoría (aceptadas o sin aceptar)
+            //Borra las sugerencias que cuelgan de la categorï¿½a (aceptadas o sin aceptar)
             foreach (AD.EntityModel.Models.Tesauro.CategoriaTesauroSugerencia filaSugerencia in TesauroDW.ListaCategoriaTesauroSugerencia.ToList())
             {
                 if (filaSugerencia.CategoriaTesauroPadreID != null && filaSugerencia.CategoriaTesauroPadreID == pCategoria.Clave)
@@ -1138,13 +1121,13 @@ namespace Es.Riam.Gnoss.Elementos.Tesauro
                 }
             }
 
-            //Eliminamos las suscripciones de usuarios a la categoría que vamos a eliminar
-            foreach(CategoriaTesVinSuscrip categoriaTesVinSuscrip in mEntityContext.CategoriaTesVinSuscrip.Where(item => item.CategoriaTesauroID.Equals(pCategoria.Clave)))
+            //Eliminamos las suscripciones de usuarios a la categorï¿½a que vamos a eliminar
+            foreach (CategoriaTesVinSuscrip categoriaTesVinSuscrip in mEntityContext.CategoriaTesVinSuscrip.Where(item => item.CategoriaTesauroID.Equals(pCategoria.Clave)))
             {
                 mEntityContext.CategoriaTesVinSuscrip.Remove(categoriaTesVinSuscrip);
             }
 
-            //Eliminamos finalmente la categoría
+            //Eliminamos finalmente la categorï¿½a
             mListaCategoriasTesauro.Remove(pCategoria.Clave);
 
             CategoriaTesauro catPrueba = null;
@@ -1162,10 +1145,10 @@ namespace Es.Riam.Gnoss.Elementos.Tesauro
         }
 
         /// <summary>
-        /// Comprueba si al categoría está vinculada
+        /// Comprueba si al categorï¿½a estï¿½ vinculada
         /// </summary>
-        /// <param name="pCategoria">Categoría a comprobar</param>
-        /// <returns>TRUE si la categoría está vinculada, FALSE en caso contrario</returns>
+        /// <param name="pCategoria">Categorï¿½a a comprobar</param>
+        /// <returns>TRUE si la categorï¿½a estï¿½ vinculada, FALSE en caso contrario</returns>
         public bool CategoriaEHijasVinculada(CategoriaTesauro pCategoria)
         {
             bool vinculadosHijos = false;
@@ -1174,11 +1157,11 @@ namespace Es.Riam.Gnoss.Elementos.Tesauro
             {
                 vinculadosHijos = (vinculadosHijos || CategoriaEHijasVinculada(hijo));
             }
-            return (pCategoria.Documentos.Count > 0 || vinculadosHijos);
+            return pCategoria.Documentos.Count > 0 || vinculadosHijos;
         }
 
         /// <summary>
-        /// Carga el nº de elementos de cada categoría.
+        /// Carga el nï¿½ de elementos de cada categorï¿½a.
         /// </summary>
         /// <param name="pFacetadoDS">DataSet de facetado</param>
         public void CargarNumElementosCategorias(FacetadoDS pFacetadoDS)
@@ -1201,17 +1184,17 @@ namespace Es.Riam.Gnoss.Elementos.Tesauro
         }
 
         /// <summary>
-        /// Elimina las categorías que no están permitidas por un tipo de documento y su ontología si la tiene.
+        /// Elimina las categorï¿½as que no estï¿½n permitidas por un tipo de documento y su ontologï¿½a si la tiene.
         /// </summary>
         /// <param name="pTipoDoc">Tipo de documento para revisar</param>
-        /// <param name="pOntologiaID">ID de la ontología a revisar o NULL si no hay ontología</param>
+        /// <param name="pOntologiaID">ID de la ontologï¿½a a revisar o NULL si no hay ontologï¿½a</param>
         public void EliminarCategoriasNoPermitidasPorTipoDoc(short pTipoDoc, Guid? pOntologiaID)
         {
-            if (TesauroDW.ListaCatTesauroPermiteTipoRec.Where(item => item.TipoRecurso.Equals((short)pTipoDoc)).Count() > 0)
+            if (TesauroDW.ListaCatTesauroPermiteTipoRec.Any(item => item.TipoRecurso.Equals(pTipoDoc)))
             {
                 List<Guid> catMantener = new List<Guid>();
 
-                List<CatTesauroPermiteTipoRec> listaProvisional = TesauroDW.ListaCatTesauroPermiteTipoRec.Where(item => item.TipoRecurso.Equals((short)pTipoDoc)).ToList();
+                List<CatTesauroPermiteTipoRec> listaProvisional = TesauroDW.ListaCatTesauroPermiteTipoRec.Where(item => item.TipoRecurso.Equals(pTipoDoc)).ToList();
 
                 foreach (CatTesauroPermiteTipoRec fila in listaProvisional)
                 {
@@ -1223,7 +1206,7 @@ namespace Es.Riam.Gnoss.Elementos.Tesauro
 
                 if (catMantener.Count > 0)
                 {
-                    List<IElementoGnoss> hijosAux = new List<IElementoGnoss>(Hijos);
+                    List<IElementoGnoss> hijosAux = Hijos;
 
                     foreach (CategoriaTesauro cat in hijosAux)
                     {
@@ -1237,7 +1220,7 @@ namespace Es.Riam.Gnoss.Elementos.Tesauro
         }
 
         /// <summary>
-        /// Elimina las categorías que son públicas cuando el metaEspacio es GNOSS.
+        /// Elimina las categorï¿½as que son pï¿½blicas cuando el metaEspacio es GNOSS.
         /// </summary>
         public void EliminarCategoriasPublicasSiEsMetaEspacioGNOSS(string pLanguageCode)
         {
@@ -1245,7 +1228,7 @@ namespace Es.Riam.Gnoss.Elementos.Tesauro
             //1 borramos todas las categorias tesauro de los Hijos
             List<CategoriaTesauro> catsRemovidas = new List<CategoriaTesauro>();
 
-            List<IElementoGnoss> hijosAux = new List<IElementoGnoss>(Hijos);
+            List<IElementoGnoss> hijosAux = Hijos;
             foreach (CategoriaTesauro cat in hijosAux)
             {
                 if (cat.GestorTesauro.CategoriaPublicaID.Equals(cat.PadreNivelRaiz.Clave))
@@ -1259,7 +1242,7 @@ namespace Es.Riam.Gnoss.Elementos.Tesauro
                 }
             }
 
-            //2 borramos las categorías tesauro del resto de listas del gestor tesauro
+            //2 borramos las categorï¿½as tesauro del resto de listas del gestor tesauro
             foreach (CategoriaTesauro catTesauro in catsRemovidas)
             {
                 if (ListaCategoriasTesauro != null)
@@ -1288,7 +1271,7 @@ namespace Es.Riam.Gnoss.Elementos.Tesauro
 
                 if (ListaCategoriasTesauroYCategoriasSugeridasPrimerNivel != null)
                 {
-                    foreach (ElementoGnoss eg in ListaCategoriasTesauroYCategoriasSugeridasPrimerNivel)
+                    foreach (ElementoGnoss eg in ListaCategoriasTesauroYCategoriasSugeridasPrimerNivel.Where(item => item.Clave.Equals(catTesauro.Clave)))
                     {
                         if (eg.Clave.Equals(catTesauro.Clave))
                         {
@@ -1297,7 +1280,7 @@ namespace Es.Riam.Gnoss.Elementos.Tesauro
                     }
                 }
 
-                TesauroDW.ListaCategoriaTesauro.Remove(TesauroDW.ListaCategoriaTesauro.Where(item => item.CategoriaTesauroID.Equals(catTesauro.Clave)).FirstOrDefault());
+                TesauroDW.ListaCategoriaTesauro.Remove(TesauroDW.ListaCategoriaTesauro.Find(item => item.CategoriaTesauroID.Equals(catTesauro.Clave)));
             }
         }
 
@@ -1305,7 +1288,7 @@ namespace Es.Riam.Gnoss.Elementos.Tesauro
         {
             List<CategoriaTesauro> catsRemovidas = new List<CategoriaTesauro>();
 
-            List<IElementoGnoss> hijosAux = new List<IElementoGnoss>(pPadre.Hijos);
+            List<IElementoGnoss> hijosAux = pPadre.Hijos;
             foreach (CategoriaTesauro hijo in hijosAux)
             {
                 catsRemovidas.AddRange(EliminarCategoriasHijas(hijo));
@@ -1316,10 +1299,10 @@ namespace Es.Riam.Gnoss.Elementos.Tesauro
         }
 
         /// <summary>
-        /// Obtiene las categorías que tengan un determinado nombre.
+        /// Obtiene las categorï¿½as que tengan un determinado nombre.
         /// </summary>
-        /// <param name="pNombre">Nombre de categoría</param>
-        /// <returns>Categorías que tengan un determinado nombre</returns>
+        /// <param name="pNombre">Nombre de categorï¿½a</param>
+        /// <returns>Categorï¿½as que tengan un determinado nombre</returns>
         public List<Guid> ObtenerCategoriasIDPorNombre(string pNombre)
         {
             List<Guid> listaCat = new List<Guid>();
@@ -1384,7 +1367,6 @@ namespace Es.Riam.Gnoss.Elementos.Tesauro
                 return mFilasPropiedadesPorCategoria;
             }
         }
-
 
         public List<CategoriaTesauro> ComprobarCategoriasObligatoriasMarcadas(List<Guid> pListaCategorias)
         {
@@ -1460,7 +1442,7 @@ namespace Es.Riam.Gnoss.Elementos.Tesauro
         #region Dispose
 
         /// <summary>
-        /// Determina si está disposed
+        /// Determina si estï¿½ disposed
         /// </summary>
         private bool mDisposed = false;
 
@@ -1476,7 +1458,7 @@ namespace Es.Riam.Gnoss.Elementos.Tesauro
         /// <summary>
         /// Libera los recursos
         /// </summary>
-        /// <param name="pDisposing">Determina si se está llamando desde el Dispose()</param>
+        /// <param name="pDisposing">Determina si se estï¿½ llamando desde el Dispose()</param>
         protected override void Dispose(bool pDisposing)
         {
             if (!this.mDisposed)
@@ -1487,7 +1469,7 @@ namespace Es.Riam.Gnoss.Elementos.Tesauro
                 {
                     if (pDisposing)
                     {
-                        //Libero todos los recursos administrados que he añadido a esta clase
+                        //Libero todos los recursos administrados que he aï¿½adido a esta clase
                         foreach (ElementoGnoss elemento in this.mListaCategoriasTesauro.Values)
                         {
                             elemento.Dispose();
@@ -1518,7 +1500,7 @@ namespace Es.Riam.Gnoss.Elementos.Tesauro
         /// Metodo para serializar el objeto
         /// </summary>
         /// <param name="info">Datos serializados</param>
-        /// <param name="context">Contexto de serialización</param>
+        /// <param name="context">Contexto de serializaciï¿½n</param>
         [SecurityPermissionAttribute(SecurityAction.Demand, SerializationFormatter = true)]
         public override void GetObjectData(SerializationInfo info, StreamingContext context)
         {

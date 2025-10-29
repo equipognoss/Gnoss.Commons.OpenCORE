@@ -67,9 +67,16 @@ namespace Es.Riam.Gnoss.AD.Cookie
             ProyectoCookie cookieSesionUsuarioAvtiva = new ProyectoCookie() { CategoriaID = categoriaTecnica.CategoriaID, CookieID = Guid.NewGuid(), Nombre = "SesionUsuarioActiva", NombreCorto = "sesionUsuarioActiva", Descripcion = "Almacena la duración de la sesión del usuario", Tipo = (short)TipoCookies.Session, OrganizacionID = pOrganizacionID, ProyectoID = pProyectoID, EsEditable = false };
         }
 
-        public List<CategoriaProyectoCookie> ObtenerCategoriasProyectoCookie(Guid pProyectoID)
+        public List<CategoriaProyectoCookie> ObtenerCategoriasProyectoCookie(Guid pProyectoID, bool pTraerCategoriasEcosistema = true)
         {
-            return mEntityContext.CategoriaProyectoCookie.Where(item => item.ProyectoID.Equals(pProyectoID)).Union(mEntityContext.CategoriaProyectoCookie.Where(item => item.ProyectoID.Equals(ProyectoAD.MetaProyecto))).ToList();
+            if (pTraerCategoriasEcosistema)
+            {
+				return mEntityContext.CategoriaProyectoCookie.Where(item => item.ProyectoID.Equals(pProyectoID)).Union(mEntityContext.CategoriaProyectoCookie.Where(item => item.ProyectoID.Equals(ProyectoAD.MetaProyecto))).ToList();
+			}
+            else
+            {
+				return mEntityContext.CategoriaProyectoCookie.Where(item => item.ProyectoID.Equals(pProyectoID)).ToList();
+			}                
         }
 
         public bool TieneCategoriaCookiesVinculadas(Guid pCategoriaID)

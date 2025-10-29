@@ -1786,14 +1786,20 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
                 {
                     DataWrapperDocumentacion dwDoc = mDocumentacionCN.ObtenerVersionesDocumentoPorID(recursoID);
                     Guid ultimaVersionID = dwDoc.ListaVersionDocumento.OrderByDescending(doc => doc.Version).FirstOrDefault()?.DocumentoID ?? recursoID;
-                    listaRecursosABuscar.Add(ultimaVersionID, recursoID);
+                    if (!listaRecursosABuscar.ContainsKey(ultimaVersionID))
+                    {
+                        listaRecursosABuscar.Add(ultimaVersionID, recursoID);
+                    }
                 }
             }
             else
             {
                 foreach (Guid recursoID in pListaRecursosID)
                 {
-                    listaRecursosABuscar.Add(recursoID, recursoID);
+                    if (!listaRecursosABuscar.ContainsKey(recursoID))
+                    {
+                        listaRecursosABuscar.Add(recursoID, recursoID);
+                    }
                 }
             }
 

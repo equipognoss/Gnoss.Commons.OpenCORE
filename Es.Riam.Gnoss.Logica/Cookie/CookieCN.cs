@@ -64,9 +64,9 @@ namespace Es.Riam.Gnoss.Logica.Cookie
             return CookieAD.ExistenCookiesYoutube();
         }
 
-        public List<CategoriaProyectoCookie> ObtenerCategoriasProyectoCookie(Guid pProyectoID)
+        public List<CategoriaProyectoCookie> ObtenerCategoriasProyectoCookie(Guid pProyectoID, bool pTraerCategoriasEcosistema = true)
         {
-            return CookieAD.ObtenerCategoriasProyectoCookie(pProyectoID);
+            return CookieAD.ObtenerCategoriasProyectoCookie(pProyectoID, pTraerCategoriasEcosistema);
         }
 
         public bool TieneCategoriaCookiesVinculadas(Guid pCategoriaID)

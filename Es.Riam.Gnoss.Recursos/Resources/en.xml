@@ -241,7 +241,7 @@
 		<Resource tag="FECHAPUNTOS">@1@.@2@.@3@</Resource>
 		<Resource tag="PARAENLAZARTWITTER">You have to tweet something to complete the link with your Twitter account.</Resource>
 		<Resource tag="QUIEROTWITTEAR">Tweet</Resource>
-		<Resource tag="ERRORCONREDIRECCION">{p}Ooops, parece que la página no se ha cargado.{/p}{p}{a href="@1@"}Por favor, haz clic aquí para acceder al contenido solicitado.{/a}{/p}{p}Mil disculpas.{/p}</Resource>
+		<Resource tag="ERRORCONREDIRECCION">{p}Ooops, it looks like the page hasn't loaded.{/p}{p}{a href="@1@"}Please click here to access the requested content.{/a}{/p}{p}A thousand apologies.{/p}</Resource>
 		<Resource tag="PROCESANDO">Working...</Resource>
 		<Resource tag="MUCHASGRACIAS">Thank you very much</Resource>
 		<Resource tag="NEWSLETTERSINGULAR">Newsletter</Resource>
@@ -457,7 +457,7 @@
 		<Resource tag="SEHAHECHOMIEMBRO">has joined</Resource>
 		<Resource tag="SEHAHECHOCONTACTO">has made ​​contact</Resource>
 		<Resource tag="SEHAHECHOSEGUIDOR"></Resource>
-		<Resource tag="NUEVOSUSUARIOSAGRUPADOS"> se han dado de alta en </Resource>
+		<Resource tag="NUEVOSUSUARIOSAGRUPADOS">have been registered in </Resource>
 	</page>
 	<page name="COMUNIDADES">
 		<Resource tag="ABANDONARCOMUNIDADERROR">An error has occurred, check that you are not the community administrator</Resource>
@@ -482,8 +482,8 @@
 		<Resource tag="CONFIRMACIONORGANIZACIONABANDONARCOMUNIDAD">Do you want @2@ to leave the community @1@ ?{br}{br}If you go on, all the users of @2@ will be removed from that community.</Resource>
 		<Resource tag="CONFIRMACIONORGANIZACIONBLOQUEARENCOMUNIDAD">Do you want to block @2@ in the community @1@ ?{br}If you go on, all users of that organization taking part in the community will be blocked.</Resource>
 		<Resource tag="CONFIRMACIONORGANIZACIONDESBLOQUEARENCOMUNIDAD">Do you want to unblock @2@ in the community @1@ ?{br}If you go on, all users of that organization who were taking part in the community will be unblocked.</Resource>
-		<Resource tag="ABANDONARCOMUNIDADPUBLICAUSUARIO">¿Estás seguro de que quieres abandonar esta comunidad? Si lo haces dejarás de ser miembro de la comunidad y no podrás participar en ella.</Resource>
-		<Resource tag="ABANDONARCOMUNIDADPRIVADAUSUARIO">¿Estás seguro de que quieres abandonar esta comunidad? Si lo haces dejarás de ser miembro de la comunidad y no podrás acceder a su contenido.</Resource>
+		<Resource tag="ABANDONARCOMUNIDADPUBLICAUSUARIO">Are you sure you want to leave this community? If you do so, you will no longer be a member of the community and will not be able to participate in it.</Resource>
+		<Resource tag="ABANDONARCOMUNIDADPRIVADAUSUARIO">Are you sure you want to leave this community? If you do so, you will no longer be a member of the community and will not be able to access its content.</Resource>
 		<Resource tag="SUBCOMUNIDADDE">of the community </Resource>
 		<Resource tag="CONTENIDOSCERTIFICADOS">certified contents</Resource>
 		<Resource tag="POLITICACERTIFICADOS">Certification policy</Resource>
@@ -504,7 +504,7 @@
 		<Resource tag="TITULOPAGINA">Complete registration</Resource>
 		<Resource tag="CONTRASEÑA">Password</Resource>
 		<Resource tag="CONFIRMARCONTRASEÑA">Confirm password</Resource>
-		<Resource tag="INTRODUCIRPASSWORD">Introducir contraseña</Resource>
+		<Resource tag="INTRODUCIRPASSWORD">Enter password</Resource>
 	</page>
 	<page name="REGISTRO">
 		<Resource tag="PROVINCIASIMPLE">Province</Resource>
@@ -552,8 +552,8 @@
 		<Resource tag="MUJER">Female</Resource>
 		<Resource tag="FECHANACIMIENTO">Date of birth *</Resource>
 		<Resource tag="FECHANACIMIENTOSIN*">Date of birth</Resource>
-		<Resource tag="SELECTORPERFILACEPTARINVITACION">Selecciona el perfil con el que quieres aceptar la invitación</Resource>
-		<Resource tag="BOTONACEPTARINVITACIONPERFIL">Aceptar</Resource>
+		<Resource tag="SELECTORPERFILACEPTARINVITACION">Select the profile with which you want to accept the invitation</Resource>
+		<Resource tag="BOTONACEPTARINVITACIONPERFIL">Accept</Resource>
 		<Resource tag="DNI">ID Number</Resource>
 		<Resource tag="NIF">NIF</Resource>
 		<Resource tag="DNINIE">DNI / NIE</Resource>
@@ -619,7 +619,7 @@
 		<Resource tag="ERRORCAMPOSVACIOS">You must fill in all fields marked with *</Resource>
 		<Resource tag="ERRORFORMATONOMBRE">The username cannot contain special characters</Resource>
 		<Resource tag="ERRORFORMATOAPELLIDOS">The user's last names cannot contain special characters.</Resource>
-		<Resource tag="ERRORFORMATOEMAIL">El email introducido no tiene un formato válido</Resource>
+		<Resource tag="ERRORFORMATOEMAIL">The email entered does not have a valid format</Resource>
 		<Resource tag="ERRORFORMATODNI">The entered dni does not have a valid format.</Resource>
 		<Resource tag="ERRORFORMATONIF">The DNI / NIE does not meet the correct format, please check the instructions again.</Resource>
 		<Resource tag="ERRORFORMATOPASS">The password must be between 6 and 12 characters long, include at least one letter and one number, and cannot contain special characters except: # _ $ *</Resource>
@@ -746,9 +746,9 @@
 		<Resource tag="NUEVAENCUESTA">Make a poll</Resource>
 		<Resource tag="NUEVODAFO">Create SWOT</Resource>
 		<Resource tag="SOLICITUDPENDIENTEPERSONAS">As soon as you join the community, you can meet them</Resource>
-		<Resource tag="ACTUARCOMOADMIN">Actuar como administrador</Resource>
-		<Resource tag="DEJARACTUARCOMOADMIN">Dejar de actuar como administrador</Resource>
-		<Resource tag="PERFILNOENCONTRADO">No se ha encontrado el perfil que está buscando</Resource>
+		<Resource tag="ACTUARCOMOADMIN">Act as administrator</Resource>
+		<Resource tag="DEJARACTUARCOMOADMIN">Stop acting as administrator</Resource>
+		<Resource tag="PERFILNOENCONTRADO">The profile you are looking for has not been found</Resource>
 	</page>
 	<page name="EDITARIMAGENPERFIL">
 		<Resource tag="VISTAPREVIA">Preview </Resource>
@@ -1434,8 +1434,9 @@
 		<Resource tag="GUARDARVERSION">Save version</Resource>
 		<Resource tag="MEN_COMPARTIR">Share</Resource>
 		<Resource tag="MEN_COMPARTIR2">. This resource may be shared by different communities.</Resource>
-		<Resource tag="MEN_COMPARTIR_PRIVADO">Compartir en otras comunidades.</Resource>
-		<Resource tag="MEN_COMPARTIR2_PRIVADO"> Este recurso podrá ser compartido por otros editores del recurso.</Resource>
+		<Resource tag="MEN_COMPARTIR_PRIVADO">Share in other communities.</Resource>
+		<Resource tag="MEN_COMPARTIR2_PRIVADO"> This resource may be shared by other editors of the resource.
+		</Resource>
 		<Resource tag="AUTOR">Authors (Separated by commas)</Resource>
 		<Resource tag="PROPIEDADESRECURSO">Properties of the resource</Resource>
 		<Resource tag="DOCPROTEGER">{strong}Protect version{/strong}. This version cannot be deleted by other editors.</Resource>
@@ -1845,8 +1846,8 @@
 		<Resource tag="CONFIRMACIONELIMINARDEGRUPO">Do you want to remove this person from this group?</Resource>
 		<Resource tag="CAMBIARNOMBRE">Change name</Resource>
 		<Resource tag="DARACCESOCONTACTO">Assign organization members to see this contact</Resource>
-		<Resource tag="DARACCESOGRUPO">Asignar miembros para ver/editar este grupo de contactos</Resource>
-		<Resource tag="DARACCESOGRUPOOK">Miembros asignados correctamente</Resource>
+		<Resource tag="DARACCESOGRUPO">Assign members to view/edit this contact group</Resource>
+		<Resource tag="DARACCESOGRUPOOK">Members assigned correctly</Resource>
 		<Resource tag="DARACCESOGRUPO">Assign organization members to see/edit this contact group</Resource>
 		<Resource tag="INFODARACCESOCONTACTO">Select the organization members that will have permission on the contact @1@</Resource>
 		<Resource tag="INFODARACCESOGRUPO_PERMISOS">Editing permission</Resource>
@@ -1856,8 +1857,8 @@
 		<Resource tag="GRUPOMIEMBROSCLASE">Students of @1@</Resource>
 		<Resource tag="CREARGRUPOOK">The group has been created successfully</Resource>
 		<Resource tag="CREARGRUPOERR">There is already a group with that name</Resource>
-		<Resource tag="ENVIARCORREOGRUPOOK">El correo se ha enviado correctamente</Resource>
-		<Resource tag="ENVIARCORREOGRUPOERR">Se ha producido un error a la hora de enviar el correo</Resource>
+		<Resource tag="ENVIARCORREOGRUPOOK">The email has been sent successfully</Resource>
+		<Resource tag="ENVIARCORREOGRUPOERR">An error occurred while sending the email</Resource>
 		<Resource tag="GESTIONCONTACTOS">Contact management</Resource>
 		<Resource tag="ENCONTRAR">Find</Resource>
 		<Resource tag="NOMBREGRUPOEDITADO">Edited group's name</Resource>
@@ -2562,9 +2563,9 @@
 		<Resource tag="FOTOORIGINAL">Original image</Resource>
 		<Resource tag="FOTOCATEGORIA">Category picture</Resource>
 		<Resource tag="FOTOERROR">The selected file is not a valid image file</Resource>
-		<Resource tag="VERESPAÑOL">Ver en español</Resource>
-		<Resource tag="VERINGLES">Ver en inglés</Resource>
-		<Resource tag="VERPORTUGUES">Ver en portugués</Resource>
+		<Resource tag="VERESPAÑOL">Show in Spanish</Resource>
+		<Resource tag="VERINGLES">Show in English</Resource>
+		<Resource tag="VERPORTUGUES">Show in Portuguese</Resource>
 		<Resource tag="ACTIVAREDICIONMULTIIDIOMA">Activate category editing in other languages</Resource>
 		<Resource tag="DESACTIVAREDICIONMULTIIDIOMA">Deactivate multilingual editing</Resource>
 	</page>
@@ -3636,28 +3637,28 @@
 		<Resource tag="EDITARGRUPOORGANIZACION">
 		</Resource>
 		<Resource tag="CREARGRUPO">Create group</Resource>
-		<Resource tag="EDITARGRUPO">Editar grupo</Resource>
-		<Resource tag="MIEMBROS">Miembros</Resource>
-		<Resource tag="MIEMBROSCONPERMISO">Miembros con permiso sobre el grupo</Resource>
+		<Resource tag="EDITARGRUPO">Edit group</Resource>
+		<Resource tag="MIEMBROS">Members</Resource>
+		<Resource tag="MIEMBROSCONPERMISO">Members with permission on the group</Resource>
 		<Resource tag="INFOMIEMBROSCOMUNIDAD">Select from the community members those you want to participate in this group</Resource>
 		<Resource tag="INFOMIEMBROSORGANIZACION">
 		</Resource>
-		<Resource tag="GRUPO">Grupo</Resource>
-		<Resource tag="GRUPOS">Grupos</Resource>
+		<Resource tag="GRUPO">Group</Resource>
+		<Resource tag="GRUPOS">Groups</Resource>
 		<Resource tag="AÑADIRGRUPOS">Add groups</Resource>
-		<Resource tag="ASIGNARMIEMBRO">Asignar miembro al grupo</Resource>
-		<Resource tag="ABANDONARGRUPO">Abandonar el grupo</Resource>
-		<Resource tag="PERTENECERGRUPO">Quiero pertenecer al grupo</Resource>
-		<Resource tag="ENVIARMENSAJE">Enviar mensaje al grupo</Resource>
-		<Resource tag="EDITAR">Editar</Resource>
-		<Resource tag="ELIMINAR">Eliminar</Resource>
-		<Resource tag="ACEPTAR">Aceptar</Resource>
-		<Resource tag="ASUNTOASIGNACIONGRUPO">Has sido asignado al grupo @1@</Resource>
+		<Resource tag="ASIGNARMIEMBRO">Assign member to group</Resource>
+		<Resource tag="ABANDONARGRUPO">Leave the group</Resource>
+		<Resource tag="PERTENECERGRUPO">I want to belong to the group</Resource>
+		<Resource tag="ENVIARMENSAJE">Send message to group</Resource>
+		<Resource tag="EDITAR">Edit</Resource>
+		<Resource tag="ELIMINAR">Delete</Resource>
+		<Resource tag="ACEPTAR">Accept</Resource>
+		<Resource tag="ASUNTOASIGNACIONGRUPO">You have been assigned to the group @1@</Resource>
 		<Resource tag="MENSAJEASIGNACIONGRUPOCOMUNIDAD">
 		</Resource>
 		<Resource tag="MENSAJEASIGNACIONGRUPOORGANIZACION">
 		</Resource>
-		<Resource tag="ASUNTOELIMINACIONGRUPO">Has sido eliminado del grupo @1@</Resource>
+		<Resource tag="ASUNTOELIMINACIONGRUPO">You have been removed from the group @1@</Resource>
 		<Resource tag="MENSAJEELIMINACIONGRUPOCOMUNIDAD">
 		</Resource>
 		<Resource tag="MENSAJEELIMINACIONGRUPOORGANIZACION">
@@ -3838,7 +3839,7 @@
 		<Resource tag="REGISTROCLASECOMPLETO">register-class-complete</Resource>
 		<Resource tag="REGISTROORGANIZACIONCOMPLETO">register-organization-complete</Resource>
 		<Resource tag="COMPLETARREGISTRO">complete-register</Resource>
-		<Resource tag="SEGUIDORES">followers</Resource>
+		<Resource tag="SEGUIDORES">Followers</Resource>
 		<Resource tag="SUSCRIPCIONES">subscriptions</Resource>
 		<Resource tag="SOLICITARCOMUNIDAD">request-community</Resource>
 		<Resource tag="SOLICITUDCOMUNIDADGENERADA">request-access-community-created</Resource>
@@ -4102,7 +4103,7 @@
 		<Resource tag="CONFIGPESOAUTOCOMPLETAR">Setting autocomplete weights</Resource>
 	</page>
 	<page name="COMADMINDISENIO">
-		<Resource tag="XMLSUBIDO">Archivo subido correctamente</Resource>
+		<Resource tag="XMLSUBIDO">File uploaded successfully</Resource>
 		<Resource tag="XMLVACIO">
 		</Resource>
 		<Resource tag="XMLPESTANYAMISMONOMBRE">No se pueden configurar 2 o más pestanyas con el mismo nombre</Resource>
