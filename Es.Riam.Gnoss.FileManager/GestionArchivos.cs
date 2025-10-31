@@ -476,20 +476,24 @@ namespace Es.Riam.Gnoss.FileManager
                     }
 
                     FileInfo infoFichero = new FileInfo(Path.Combine(pRuta, pNombreArchivo));
+                    _loggingService.AgregarEntrada($"Entra en GestionArchivos.CrearFicheroFisico con la imagen: \n\t -Nombre: {pNombreArchivo} \n\t -Ruta: {pRuta} \n\t -Tamaño fichero: {pBytes.Length}");
 
                     if (!infoFichero.Directory.Exists)
                     {
+                        _loggingService.AgregarEntrada($"El directorio {infoFichero.Directory.FullName} no existe, se procede a crearse");
                         infoFichero.Directory.Create();
                     }
 
                     if (pEncriptarFichero)
                     {
+                        _loggingService.AgregarEntrada($"Se encripta el fichero {infoFichero.Name}");
                         pBytes = _utilArchivos.EncriptarArchivo(pBytes);
                     }
                     FileStream fileStream = new FileStream(infoFichero.FullName, FileMode.Create, FileAccess.Write);
                     fileStream.Write(pBytes, 0, pBytes.Length);
                     fileStream.Flush();
                     fileStream.Close();
+                    _loggingService.AgregarEntrada($"Se escribe correctamente el fichero {infoFichero.Name}");
                 }
                 else
                 {

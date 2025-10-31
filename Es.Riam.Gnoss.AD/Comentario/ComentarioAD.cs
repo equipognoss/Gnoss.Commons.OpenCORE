@@ -1429,10 +1429,23 @@ namespace Es.Riam.Gnoss.AD.Comentario
         {
             DataWrapperComentario comentarioDW = new DataWrapperComentario();
 
-            if (pSoloProyectoSinPrivadosID == Guid.Empty)
+			List<Guid> listaDocumentosID = new List<Guid>();
+			bool versionOriginalEliminada = mEntityContext.Documento.FirstOrDefault(doc => doc.DocumentoID.Equals(pDocumentoID)).Eliminado;
+			var resultado = mEntityContext.VersionDocumento.Where(doc => doc.DocumentoOriginalID.Equals(pDocumentoID)).OrderBy(doc => doc.Version).ToList();
+			if (!versionOriginalEliminada)
+			{
+				listaDocumentosID.Add(pDocumentoID);
+			}
+
+			foreach (var fila in resultado)
+			{
+				listaDocumentosID.Add(fila.DocumentoID);
+			}
+
+			if (pSoloProyectoSinPrivadosID == Guid.Empty)
             {
                 //Comentario
-                comentarioDW.ListaComentario = mEntityContext.Comentario.JoinIdentidad().JoinPerfil().JoinDocumentoComentario().Where(item => item.Comentario.Eliminado.Equals(false) && item.DocumentoComentario.DocumentoID.Equals(pDocumentoID)).ToList().Select(item => new EntityModel.Models.Comentario.Comentario
+                comentarioDW.ListaComentario = mEntityContext.Comentario.JoinIdentidad().JoinPerfil().JoinDocumentoComentario().Where(item => !item.Comentario.Eliminado && listaDocumentosID.Contains(item.DocumentoComentario.DocumentoID)).ToList().Select(item => new EntityModel.Models.Comentario.Comentario
                 {
                     ComentarioID = item.Comentario.ComentarioID,
                     IdentidadID = item.Comentario.IdentidadID,
@@ -1448,12 +1461,12 @@ namespace Es.Riam.Gnoss.AD.Comentario
                 }).ToList();
 
                 //VotoComentario
-                comentarioDW.ListaVotoComentario = mEntityContext.VotoComentario.JoinDocumentoComentario().JoinComentario().Where(item => item.Comentario.Eliminado.Equals(false) && item.DocumentoComentario.DocumentoID.Equals(pDocumentoID)).Select(item => item.VotoComentario).ToList();
+                comentarioDW.ListaVotoComentario = mEntityContext.VotoComentario.JoinDocumentoComentario().JoinComentario().Where(item => !item.Comentario.Eliminado && listaDocumentosID.Contains(item.DocumentoComentario.DocumentoID)).Select(item => item.VotoComentario).ToList();
             }
             else
             {
                 //Comentario
-                comentarioDW.ListaComentario = mEntityContext.Comentario.JoinIdentidad().JoinPerfil().JoinDocumentoComentario().JoinProyecto().Where(item => item.Comentario.Eliminado.Equals(false) && item.DocumentoComentario.DocumentoID.Equals(pDocumentoID) && (!item.Proyecto.TipoAcceso.Equals((short)TipoAcceso.Privado) && !item.Proyecto.TipoAcceso.Equals((short)TipoAcceso.Reservado) || item.Proyecto.ProyectoID.Equals(pSoloProyectoSinPrivadosID))).ToList().Select(item => new EntityModel.Models.Comentario.Comentario
+                comentarioDW.ListaComentario = mEntityContext.Comentario.JoinIdentidad().JoinPerfil().JoinDocumentoComentario().JoinProyecto().Where(item => !item.Comentario.Eliminado && listaDocumentosID.Contains(item.DocumentoComentario.DocumentoID) && (!item.Proyecto.TipoAcceso.Equals((short)TipoAcceso.Privado) && !item.Proyecto.TipoAcceso.Equals((short)TipoAcceso.Reservado) || item.Proyecto.ProyectoID.Equals(pSoloProyectoSinPrivadosID))).ToList().Select(item => new EntityModel.Models.Comentario.Comentario
                 {
                     ComentarioID = item.Comentario.ComentarioID,
                     IdentidadID = item.Comentario.IdentidadID,
@@ -1469,7 +1482,7 @@ namespace Es.Riam.Gnoss.AD.Comentario
                 }).ToList();
 
                 //VotoComentario
-                comentarioDW.ListaVotoComentario = mEntityContext.VotoComentario.JoinDocumentoComentario().JoinComentario().JoinProyecto().Where(item => item.Comentario.Eliminado.Equals(false) && item.DocumentoComentario.DocumentoID.Equals(pDocumentoID) && (!item.Proyecto.TipoAcceso.Equals((short)TipoAcceso.Privado) && !item.Proyecto.TipoAcceso.Equals((short)TipoAcceso.Reservado)) || item.Proyecto.ProyectoID.Equals(pSoloProyectoSinPrivadosID)).Select(item => item.VotoComentario).ToList();
+                comentarioDW.ListaVotoComentario = mEntityContext.VotoComentario.JoinDocumentoComentario().JoinComentario().JoinProyecto().Where(item => !item.Comentario.Eliminado && listaDocumentosID.Contains(item.DocumentoComentario.DocumentoID) && (!item.Proyecto.TipoAcceso.Equals((short)TipoAcceso.Privado) && !item.Proyecto.TipoAcceso.Equals((short)TipoAcceso.Reservado)) || item.Proyecto.ProyectoID.Equals(pSoloProyectoSinPrivadosID)).Select(item => item.VotoComentario).ToList();
             }
 
             return comentarioDW;

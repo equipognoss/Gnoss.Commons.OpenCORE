@@ -7272,12 +7272,12 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
             return mEntityContext.ProyectoPestanyaBusqueda.Where(item => item.PestanyaID.Equals(pPestanyaID)).FirstOrDefault();
         }
 
-        public List<Guid> ObtenerPestanyasBusquedaProyectoSinAutocompletarFaceta(Guid pProyectoID, string pFaceta, string pObjetoConocimiento)
+        public List<Guid> ObtenerPestanyasBusquedaProyectoSinAutocompletarFaceta(Guid pProyectoID, string pFaceta, string pObjetoConocimiento, Guid pPestanyaID)
         {
             List<Guid> listaPestanyasBusquedaSinAutocompletar = new List<Guid>();
-            var consultaPestanyasSinAutocompletar = mEntityContext.ProyectoPestanyaMenu.Where(item => item.ProyectoID.Equals(pProyectoID)).Select(item => item.PestanyaID)
+            var consultaPestanyasSinAutocompletar = mEntityContext.ProyectoPestanyaMenu.Where(item => item.ProyectoID.Equals(pProyectoID) && item.PestanyaID.Equals(pPestanyaID)).Select(item => item.PestanyaID)
                 .Except(mEntityContext.FacetaObjetoConocimientoProyectoPestanya.Where(item => item.ProyectoID.Equals(pProyectoID) && item.Faceta.Equals(pFaceta) && item.ObjetoConocimiento.Equals(pObjetoConocimiento) && item.AutocompletarEnriquecido).Select(item => item.PestanyaID));
-            listaPestanyasBusquedaSinAutocompletar = mEntityContext.ProyectoPestanyaBusqueda.Where(item => consultaPestanyasSinAutocompletar.Contains(item.PestanyaID)).Select(item => item.PestanyaID).ToList();
+            listaPestanyasBusquedaSinAutocompletar = consultaPestanyasSinAutocompletar.ToList();
             return listaPestanyasBusquedaSinAutocompletar;
         }
 
@@ -7285,6 +7285,10 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
 		{            
             return mEntityContext.Rol.FirstOrDefault(x => x.ProyectoID.Equals(pProyectoID) && x.EsRolUsuario);
 		}
+        public List<Guid> ObtenerPestanyasConAutocompletarEnriquecidoPorProyectoFacetaObjetoConocimiento(Guid pProyectoID, string pFaceta, string pObjetoConocimiento)
+        {
+            return mEntityContext.FacetaObjetoConocimientoProyectoPestanya.Where(item => item.AutocompletarEnriquecido && item.Faceta.Equals(pFaceta) && item.ObjetoConocimiento.Equals(pObjetoConocimiento)).Select(item => item.PestanyaID).Distinct().ToList();
+        }
 
 
 		#endregion

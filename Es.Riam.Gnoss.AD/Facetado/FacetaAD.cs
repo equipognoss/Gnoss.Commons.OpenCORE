@@ -4,10 +4,11 @@ using Es.Riam.Gnoss.AD.EncapsuladoDatos;
 using Es.Riam.Gnoss.AD.EntityModel;
 using Es.Riam.Gnoss.AD.EntityModel.Models.Faceta;
 using Es.Riam.Gnoss.AD.ParametroAplicacion;
+using Es.Riam.Gnoss.AD.ServiciosGenerales;
 using Es.Riam.Gnoss.Util.Configuracion;
 using Es.Riam.Gnoss.Util.General;
-using Microsoft.Extensions.Logging;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -1034,6 +1035,19 @@ namespace Es.Riam.Gnoss.AD.Facetado
 
                 mEntityContext.FacetaObjetoConocimientoProyecto.Remove(faceta);
             }
+        }
+        /// <summary>
+        /// Obtiene una lista de FacetaObjetoConocimientoProyecto de las cuales son dependientes de la faceta pasada por parámetro, siendo de diferente objeto de conocimiento
+        /// </summary>
+        /// <param name="pClaveFaceta"></param>
+        /// <param name="pObjetoConocimiento"></param>
+        /// <returns>FacetaObjetoConocimientoProyecto</returns>
+        public List<FacetaObjetoConocimientoProyecto> ObtenerFacetasDependientesDeFaceta(string pClaveFaceta, string pObjetoConocimiento, Guid pProyectoID)
+        {
+            string textoInicio = $"{pClaveFaceta}@@@";
+            string textoEnMedio = $"@@@{pClaveFaceta}@@@";
+            string textoFinal = $"@@@{pClaveFaceta}";
+            return mEntityContext.FacetaObjetoConocimientoProyecto.Where(item => (item.Faceta.StartsWith(textoInicio) || item.Faceta.Contains(textoEnMedio) || item.Faceta.EndsWith(textoFinal)) && !item.ObjetoConocimiento.Equals(pObjetoConocimiento) && item.ProyectoID.Equals(pProyectoID)).ToList();
         }
 
         /// <summary>

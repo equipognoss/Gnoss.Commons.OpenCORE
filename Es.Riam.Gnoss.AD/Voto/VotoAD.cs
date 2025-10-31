@@ -414,9 +414,23 @@ namespace Es.Riam.Gnoss.AD.Voto
         public DataWrapperVoto ObtenerVotosComentariosDocumentoPorID(Guid pDocumentoID)
         {
             DataWrapperVoto votoDW = new DataWrapperVoto();
+			DataWrapperComentario comentarioDW = new DataWrapperComentario();
 
-            //Voto
-            votoDW.ListaVotos = mEntityContext.Voto.JoinVotoComentario().JoinDocumentoComentario().Where(item => item.DocumentoComentario.DocumentoID.Equals(pDocumentoID)).Select(item => item.Voto).ToList();
+			List<Guid> listaDocumentosID = new List<Guid>();
+			bool versionOriginalEliminada = mEntityContext.Documento.FirstOrDefault(doc => doc.DocumentoID.Equals(pDocumentoID)).Eliminado;
+			var resultado = mEntityContext.VersionDocumento.Where(doc => doc.DocumentoOriginalID.Equals(pDocumentoID)).OrderBy(doc => doc.Version).ToList();
+			if (!versionOriginalEliminada)
+			{
+				listaDocumentosID.Add(pDocumentoID);
+			}
+
+			foreach (var fila in resultado)
+			{
+				listaDocumentosID.Add(fila.DocumentoID);
+			}
+
+			//Voto
+			votoDW.ListaVotos = mEntityContext.Voto.JoinVotoComentario().JoinDocumentoComentario().Where(item => listaDocumentosID.Contains(item.DocumentoComentario.DocumentoID)).Select(item => item.Voto).ToList();
 
             return votoDW;
         }

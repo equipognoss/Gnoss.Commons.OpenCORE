@@ -3,14 +3,15 @@ using Es.Riam.Gnoss.AD.EncapsuladoDatos;
 using Es.Riam.Gnoss.AD.EntityModel;
 using Es.Riam.Gnoss.AD.EntityModel.Models.Faceta;
 using Es.Riam.Gnoss.AD.Facetado;
+using Es.Riam.Gnoss.AD.Facetado.Model;
 using Es.Riam.Gnoss.AD.ParametroAplicacion;
 using Es.Riam.Gnoss.AD.Usuarios;
 using Es.Riam.Gnoss.Logica.ServiciosGenerales;
+using Es.Riam.Gnoss.Util.Configuracion;
+using Es.Riam.Gnoss.Util.General;
 using Es.Riam.Semantica.OWL;
 using Microsoft.Extensions.Logging;
 using Serilog.Core;
-using Es.Riam.Gnoss.Util.Configuracion;
-using Es.Riam.Gnoss.Util.General;
 using System;
 using System.Collections.Generic;
 
@@ -374,6 +375,16 @@ namespace Es.Riam.Gnoss.Logica.Facetado
         public void EliminarFacetas(List<FacetaObjetoConocimientoProyecto> pFacetas)
         {
             FacetaAD.EliminarFacetas(pFacetas);
+        }
+
+        /// <summary>
+        /// Obtiene una lista de FacetaObjetoConocimientoProyecto de las cuales son dependientes de la faceta pasada por parámetro
+        /// </summary>
+        /// <param name="pClaveFaceta"></param>
+        /// <returns>FacetaObjetoConocimientoProyecto</returns>
+        public List<FacetaObjetoConocimientoProyecto> ObtenerFacetasDependientesDeFaceta(string pClaveFaceta, string pObjetoConocimiento, Guid pProyectoID)
+        {
+            return FacetaAD.ObtenerFacetasDependientesDeFaceta(pClaveFaceta, pObjetoConocimiento, pProyectoID);
         }
 
         public void GuardarCambios()

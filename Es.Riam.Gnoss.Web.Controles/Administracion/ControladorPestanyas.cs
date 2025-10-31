@@ -1890,7 +1890,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
 						if (aux != null)
 						{
 							mEntityContext.EliminarElemento(aux);
-							listaFacetasProcesarAutocompletado.Add(ObtenerFilaFaceta(ProyectoSeleccionado.FilaProyecto.TablaBaseProyectoID, aux.Faceta, aux.ObjetoConocimiento, false));
+							listaFacetasProcesarAutocompletado.Add(ObtenerFilaFaceta(ProyectoSeleccionado.FilaProyecto.TablaBaseProyectoID, aux.Faceta, aux.ObjetoConocimiento, false, aux.PestanyaID));
 						}
 					}
 				}
@@ -1952,7 +1952,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
 					if (aux != null)
 					{
 						mEntityContext.EliminarElemento(aux);
-						listaFacetasAutocompletar.Add(ObtenerFilaFaceta(ProyectoSeleccionado.FilaProyecto.TablaBaseProyectoID, aux.Faceta, aux.ObjetoConocimiento, false));
+						listaFacetasAutocompletar.Add(ObtenerFilaFaceta(ProyectoSeleccionado.FilaProyecto.TablaBaseProyectoID, aux.Faceta, aux.ObjetoConocimiento, false, aux.PestanyaID));
 					}
 
 				}
@@ -2462,14 +2462,19 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
             }
         }
 
-        public string ObtenerFilaFaceta(int pTablaBaseProyectoID, string pfaceta, string pObjetoConocimiento, bool pAgregar)
+        public string ObtenerFilaFaceta(int pTablaBaseProyectoID, string pfaceta, string pObjetoConocimiento, bool pAgregar, Guid? pPestanyaEliminar = null)
         {
             int tipo = 0;
             if (!pAgregar)
             {
                 tipo = 1;
             }
-            string fila = $"[{pTablaBaseProyectoID},'{Constantes.FACETA}{pfaceta}{Constantes.FACETA},{Constantes.OBJETO_CONOCIMIENTO}{pObjetoConocimiento}{Constantes.OBJETO_CONOCIMIENTO}',{tipo},\"2022-01-26T10:43:12.3492277\", null]";
+			string pestanyaEliminar = "";
+			if (pPestanyaEliminar.HasValue)
+			{
+				pestanyaEliminar = $",{Constantes.PESTANYA_ELIMINAR}{pPestanyaEliminar.Value}{Constantes.PESTANYA_ELIMINAR}";
+			}
+            string fila = $"[{pTablaBaseProyectoID},'{Constantes.FACETA}{pfaceta}{Constantes.FACETA},{Constantes.OBJETO_CONOCIMIENTO}{pObjetoConocimiento}{Constantes.OBJETO_CONOCIMIENTO}{pestanyaEliminar}',{tipo},\"2022-01-26T10:43:12.3492277\", null]";
             return fila;
         }
         public void AgregarFilasColaFacetasAutocompletar(List<string> pFilasFacetas)

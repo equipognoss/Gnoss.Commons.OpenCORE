@@ -99,6 +99,10 @@ namespace Es.Riam.Gnoss.AD.BASE_BD
         ///Constante para identificar el objeto de conocimiento en los tags de una fila de la ColaFacetas.
         /// </summary>
         public const string OBJETO_CONOCIMIENTO = "##OBJETO_CONOCIMIENTO##";
+        /// <summary>
+        ///Constante para indicar si hay que eliminar la faceta de alguna pestaña en concreto
+        /// </summary>
+        public const string PESTANYA_ELIMINAR = "##PESTANYA_ELIMINAR##";
 
         /// <summary>
         /// Constante para codificar la cadena de afinidad de virtuoso

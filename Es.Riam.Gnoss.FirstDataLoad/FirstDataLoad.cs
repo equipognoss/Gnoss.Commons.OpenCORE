@@ -767,23 +767,26 @@ namespace Es.Riam.Gnoss.FirstDataLoad
 
             foreach (KeyValuePair<Guid,Guid> proyecto in listaProyectos)
             {
-				ulong permisos = (ulong)PermisoRecursos.CrearDebate + (ulong)PermisoRecursos.CrearPregunta + (ulong)PermisoRecursos.CrearNota + (ulong)PermisoRecursos.CrearRecursoTipoAdjunto + (ulong)PermisoRecursos.CrearRecursoTipoEnlace + (ulong)PermisoRecursos.CrearRecursoTipoReferenciaADocumentoFisico + (ulong)PermisoRecursos.CrearEncuesta;
-				Rol rolUsuario = new Rol()
-				{
-					RolID = Guid.NewGuid(),
-					ProyectoID = proyecto.Key,
-					OrganizacionID = proyecto.Value,
-					Descripcion = "Usuario general de la comunidad@es|||General user of the community@en",
-					Nombre = "Usuario@es|||User@en",
-					Tipo = (short)AmbitoRol.Comunidad,
-					FechaModificacion = DateTime.Now,
-					PermisosAdministracion = 0,
-					PermisosContenidos = 0,
-					PermisosRecursos = permisos,
-					EsRolUsuario = true
-				};
+                if (!proyecto.Key.Equals(ProyectoAD.MetaProyecto))
+                {
+					ulong permisos = (ulong)PermisoRecursos.CrearDebate + (ulong)PermisoRecursos.CrearPregunta + (ulong)PermisoRecursos.CrearNota + (ulong)PermisoRecursos.CrearRecursoTipoAdjunto + (ulong)PermisoRecursos.CrearRecursoTipoEnlace + (ulong)PermisoRecursos.CrearRecursoTipoReferenciaADocumentoFisico + (ulong)PermisoRecursos.CrearEncuesta;
+					Rol rolUsuario = new Rol()
+					{
+						RolID = Guid.NewGuid(),
+						ProyectoID = proyecto.Key,
+						OrganizacionID = proyecto.Value,
+						Descripcion = "Usuario general de la comunidad@es|||General user of the community@en",
+						Nombre = "Usuario@es|||User@en",
+						Tipo = (short)AmbitoRol.Comunidad,
+						FechaModificacion = DateTime.Now,
+						PermisosAdministracion = 0,
+						PermisosContenidos = 0,
+						PermisosRecursos = permisos,
+						EsRolUsuario = true
+					};
 
-				mEntityContext.Rol.Add(rolUsuario);				
+					mEntityContext.Rol.Add(rolUsuario);
+				}							
 			}
 
 			mEntityContext.SaveChanges();

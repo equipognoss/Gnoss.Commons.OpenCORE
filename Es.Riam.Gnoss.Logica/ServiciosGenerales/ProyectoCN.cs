@@ -3114,9 +3114,14 @@ namespace Es.Riam.Gnoss.Logica.ServiciosGenerales
             }
         }
 
-        public List<Guid> ObtenerPestanyasBusquedaProyectoSinAutocompletarFaceta(Guid pProyectoID, string pFaceta, string pObjetoConocimiento)
+        public List<Guid> ObtenerPestanyasBusquedaProyectoSinAutocompletarFaceta(Guid pProyectoID, string pFaceta, string pObjetoConocimiento, Guid pPestanyaID)
         {
-            return ProyectoAD.ObtenerPestanyasBusquedaProyectoSinAutocompletarFaceta(pProyectoID, pFaceta, pObjetoConocimiento);
+            return ProyectoAD.ObtenerPestanyasBusquedaProyectoSinAutocompletarFaceta(pProyectoID, pFaceta, pObjetoConocimiento, pPestanyaID);
+        }
+
+        public List<Guid> ObtenerPestanyasConAutocompletarEnriquecidoPorProyectoFacetaObjetoConocimiento(Guid pProyectoID, string pFaceta, string pObjetoConocimiento)
+        {
+            return ProyectoAD.ObtenerPestanyasConAutocompletarEnriquecidoPorProyectoFacetaObjetoConocimiento(pProyectoID, pFaceta, pObjetoConocimiento);
         }
 
         #endregion

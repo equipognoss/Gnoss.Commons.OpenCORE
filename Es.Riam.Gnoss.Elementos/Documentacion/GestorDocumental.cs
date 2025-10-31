@@ -1880,6 +1880,7 @@ namespace Es.Riam.Gnoss.Elementos.Documentacion
         public void EliminarDocumentoLogicamente(Documento pDocumento)
         {
             pDocumento.FilaDocumento.Eliminado = true;
+            pDocumento.FilaDocumento.EstadoID = null;
         }
 
         /// <summary>

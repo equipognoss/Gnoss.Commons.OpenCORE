@@ -3620,7 +3620,12 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
             foreach (CommentSearchModel fichaComentario in listaComentarios.Values)
             {
                 Guid documentoID = listaComentarioDocumentoProy[fichaComentario.Key].Item1;
-                Guid documentoVersionOriginalID = mDocumentacionCN.ObtenerVersionesDocumentoPorID(documentoID).ListaVersionDocumento.FirstOrDefault().DocumentoOriginalID;
+                Guid documentoVersionOriginalID = Guid.Empty;
+                VersionDocumento versionDocumento = mDocumentacionCN.ObtenerVersionesDocumentoPorID(documentoID).ListaVersionDocumento.FirstOrDefault();
+                if (versionDocumento != null)
+                {
+                    documentoVersionOriginalID = versionDocumento.DocumentoOriginalID;
+                }
                 documentoVersionOriginalID = documentoVersionOriginalID == Guid.Empty ? documentoID : documentoVersionOriginalID;
                 string nombreCortoProy = listaComentarioDocumentoProy[fichaComentario.Key].Item2;
                 int versionFoto = listaComentarioDocumentoProy[fichaComentario.Key].Item3;
