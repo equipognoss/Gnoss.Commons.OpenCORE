@@ -4067,6 +4067,8 @@ s		<Resource tag="BUSCARPALABRASCLAVE">Schlüsselwörter suchen …</Resource>
 	</page>
   <page name="DEVTOOLS">
     <!-- Textos que ya existían en Vistas de Administración person sin traducir -> DevTools -->
+	<Resource tag="AVISOPRIVACIDADCOMPONENTECMS">Die CMS-Komponente befindet sich in einem privaten Status, daher müssen ihre Profile und/oder Gruppen auf der Verwaltungsseite für Workflows konfiguriert werden</Resource>
+	<Resource tag="SELECCIONPERFILESGRUPOSCOMPONENTECMS">Wähle die Personen und/oder Gruppen aus, die die Komponente sehen können</Resource>
 	<Resource tag="COLOR">Farbe</Resource>
 	<Resource tag="DESEAELIMINARFLUJO">Möchten Sie den Flow löschen?</Resource>
 	<Resource tag="TIPOESTADO">Statusart</Resource>

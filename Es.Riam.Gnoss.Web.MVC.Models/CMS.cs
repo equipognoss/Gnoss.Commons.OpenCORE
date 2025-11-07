@@ -755,5 +755,9 @@ namespace Es.Riam.Gnoss.Web.MVC.Models
         /// Indica si se ha versionado por lo menos una vez el componente
         /// </summary>
         public bool Versionado { get; set; }
+        /// <summary>
+        /// Indica si se puede visualizar el modal de edicion de un componente
+        /// </summary>
+        public bool PermisoLectura { get; set; }
     }
 }

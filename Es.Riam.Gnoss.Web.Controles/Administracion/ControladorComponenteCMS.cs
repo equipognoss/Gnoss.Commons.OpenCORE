@@ -114,6 +114,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
         }
         public CMSAdminComponenteEditarViewModel CargarComponente(TipoComponenteCMS pTipoComponenteCMSActual, CMSComponente pCMSComponente)
         {
+            FlujosCN flujosCN = new FlujosCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<FlujosCN>(), mLoggerFactory);
             Guid? PersonalizacionID = null;
 
             CMSComponente = pCMSComponente;
@@ -131,19 +132,33 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
             {
                 PersonalizacionID = pCMSComponente.Personalizacion;
 
-                paginaModel.Private = CMSComponente.Privado;
-                if (CMSComponente.Privado)
+                bool componentePrivado = CMSComponente.Privado;
+
+                if (CMSComponente.Estado.HasValue)
+                {
+                    componentePrivado = !flujosCN.ComprobarEstadoEsPublico(CMSComponente.Estado.Value);
+                }
+
+                if (componentePrivado)
                 {
                     List<Guid> listaGrupos = new List<Guid>();
                     List<Guid> listaPerfiles = new List<Guid>();
 
-                    foreach (CMSComponenteRolGrupoIdentidades grupo in CMSComponente.ListaRolGrupoIdentidades.Values)
+                    if (CMSComponente.Estado.HasValue)
                     {
-                        listaGrupos.Add(grupo.GrupoID);
+                        listaPerfiles = ObtenerListaPerfilesEstadoIdentidad(CMSComponente.Estado.Value);
+                        listaGrupos = flujosCN.ObtenerGruposIDPorEstadoID(CMSComponente.Estado.Value);
                     }
-                    foreach (CMSComponenteRolIdentidad identidad in CMSComponente.ListaRolIdentidad.Values)
+                    else
                     {
-                        listaPerfiles.Add(identidad.PerfilID);
+                        foreach (CMSComponenteRolGrupoIdentidades grupo in CMSComponente.ListaRolGrupoIdentidades.Values)
+                        {
+                            listaGrupos.Add(grupo.GrupoID);
+                        }
+                        foreach (CMSComponenteRolIdentidad identidad in CMSComponente.ListaRolIdentidad.Values)
+                        {
+                            listaPerfiles.Add(identidad.PerfilID);
+                        }
                     }
 
                     IdentidadCN identidadCN = new IdentidadCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<IdentidadCN>(), mLoggerFactory);
@@ -151,6 +166,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
                     paginaModel.PerfilesPrivacidad = identidadCN.ObtenerNombresDePerfiles(listaPerfiles);
                     identidadCN.Dispose();
                 }
+                paginaModel.Private = componentePrivado;
                 paginaModel.Name = CMSComponente.Nombre;
                 paginaModel.ShortName = CMSComponente.NombreCortoComponente;
                 paginaModel.Active = CMSComponente.Activo;
@@ -236,7 +252,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
             }
 
             return paginaModel;
-        }        
+        }   
 
         public void CargarPropiedadIC(CMSAdminComponenteEditarViewModel pComponente)
         {
@@ -728,6 +744,22 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
         private bool EsPropiedadMultiIdioma(TipoPropiedadCMS pTipoPropiedad)
         {
             return UtilComponentes.ListaPropiedadesMultiIdioma.Contains(pTipoPropiedad);
+        }
+
+        private List<Guid> ObtenerListaPerfilesEstadoIdentidad(Guid pEstadoID)
+        {
+            FlujosCN flujosCN = new FlujosCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<FlujosCN>(), mLoggerFactory);
+
+            IdentidadCN identidadCN = new IdentidadCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<IdentidadCN>(), mLoggerFactory);
+
+            List<Guid> listaIdentidades = flujosCN.ObtenerIdentidadesDeEstadoPorID(pEstadoID);
+
+            List<Guid> listaPerfiles = identidadCN.ObtenerPerfilesDeIdentidades(listaIdentidades);
+
+            flujosCN.Dispose();
+            identidadCN.Dispose();
+            
+            return listaPerfiles;
         }
 
         #endregion

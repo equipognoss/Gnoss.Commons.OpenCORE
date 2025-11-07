@@ -4064,6 +4064,8 @@
 	</page>
   <page name="DEVTOOLS">
     <!-- Textos que ya existían en Vistas de Administración person sin traducir -> DevTools -->
+	<Resource tag="AVISOPRIVACIDADCOMPONENTECMS">Il componente CMS si trova in uno stato privato, quindi i suoi profili e/o gruppi devono essere configurati dalla pagina di amministrazione dei flussi</Resource>
+	<Resource tag="SELECCIONPERFILESGRUPOSCOMPONENTECMS">Seleziona le persone e/o i gruppi che possono visualizzare il componente</Resource>
 	<Resource tag="COLOR">Colore</Resource>
 	<Resource tag="DESEAELIMINARFLUJO">Vuoi eliminare il flusso?</Resource>
 	<Resource tag="TIPOESTADO">Tipo di stato</Resource>

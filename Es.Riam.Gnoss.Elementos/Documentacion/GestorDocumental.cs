@@ -816,6 +816,7 @@ namespace Es.Riam.Gnoss.Elementos.Documentacion
             filaDocumento.UltimaVersion = true;
             filaDocumento.Eliminado = false;
             filaDocumento.Visibilidad = 0;
+            filaDocumento.EstadoID = pDocumento.FilaDocumento.EstadoID;
 
             DataWrapperDocumentacion.ListaDocumento.Add(filaDocumento);
             mEntityContext.Documento.Add(filaDocumento);
@@ -1143,6 +1144,8 @@ namespace Es.Riam.Gnoss.Elementos.Documentacion
 
             // Establecemos la ultima version anterior a false
             pUltimaVersionActual.FilaDocumento.UltimaVersion = false;
+            // Mantenemos el estado id que tenia asignado la ultima version actual
+            nuevaVersion.FilaDocumento.EstadoID = pUltimaVersionActual.FilaDocumento.EstadoID;
 
             mEntityContext.SaveChanges();
 

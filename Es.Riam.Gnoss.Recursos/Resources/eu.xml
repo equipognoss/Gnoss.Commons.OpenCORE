@@ -4064,6 +4064,8 @@
 	</page>
   <page name="DEVTOOLS">
     <!-- Textos que ya existían en Vistas de Administración person sin traducir -> DevTools -->
+	<Resource tag="AVISOPRIVACIDADCOMPONENTECMS">CMS osagaia egoera pribatuan dago; beraz, bere profilak eta/edo taldeak fluxuen administrazio orritik konfiguratu behar dira</Resource>
+	<Resource tag="SELECCIONPERFILESGRUPOSCOMPONENTECMS">Osatu konponentearen ikusle izan daitezkeen pertsonak eta/edo taldeak hautatu</Resource>
 	<Resource tag="COLOR">Kolorea</Resource>
 	<Resource tag="DESEAELIMINARFLUJO">Fluxua ezabatu nahi al duzu?</Resource>
 	<Resource tag="TIPOESTADO">Estatu mota</Resource>

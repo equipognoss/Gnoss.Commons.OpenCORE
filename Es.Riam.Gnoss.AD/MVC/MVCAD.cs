@@ -1024,7 +1024,8 @@ namespace Es.Riam.Gnoss.AD.MVC
                         UltimaVersion = item.Documento.UltimaVersion,
                         ProyectoID = item.Documento.ProyectoID,
                         NumeroDescargas = item.DocumentoWebVinBaseRecursosExtra.NumeroDescargas,
-                        NombreElementoVinculado = item.Documento.NombreElementoVinculado
+                        NombreElementoVinculado = item.Documento.NombreElementoVinculado,
+                        EstadoID = item.Documento.EstadoID
                     });
                     return consultaNoMeta.ToList();
                 }

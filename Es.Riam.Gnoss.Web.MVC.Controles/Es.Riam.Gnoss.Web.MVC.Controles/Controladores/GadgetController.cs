@@ -85,6 +85,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
             mLoggerFactory = loggerFactory;
             mEnv = env;
             mAvailableServices = availableServices;
+            mIdentidadUsuarioActual = IdentidadActual;
         }
 
         /// <summary>
@@ -171,7 +172,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
 
                                 List<string> listaBaseURLContent = new List<string>();
                                 listaBaseURLContent.Add(ControllerBase.BaseURLContent);
-                                ControladorProyectoMVC controladorProyectoMVC = new ControladorProyectoMVC(ControllerBase.UtilIdiomas, ControllerBase.BaseURL, listaBaseURLContent, ControllerBase.BaseURLStatic, ControllerBase.ProyectoSeleccionado, Guid.Empty, ControllerBase.ParametrosGeneralesRow, null, EsBot, mLoggingService, mEntityContext, mConfigService, mHttpContextAccessor, mRedisCacheWrapper, mVirtuosoAD, mGnossCache, mEntityContextBASE, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<ControladorProyectoMVC>(), mLoggerFactory);
+                                ControladorProyectoMVC controladorProyectoMVC = new ControladorProyectoMVC(ControllerBase.UtilIdiomas, ControllerBase.BaseURL, listaBaseURLContent, ControllerBase.BaseURLStatic, ControllerBase.ProyectoSeleccionado, Guid.Empty, ControllerBase.ParametrosGeneralesRow, mIdentidadUsuarioActual, EsBot, mLoggingService, mEntityContext, mConfigService, mHttpContextAccessor, mRedisCacheWrapper, mVirtuosoAD, mGnossCache, mEntityContextBASE, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<ControladorProyectoMVC>(), mLoggerFactory);
 
                                 Dictionary<Guid, ResourceModel> listaFichasRecursos = controladorProyectoMVC.ObtenerRecursosPorID(listaRecursosID, baseUrlBusqueda, null, false, pObtenerUltimaVersion: true);
 
@@ -747,7 +748,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
                     List<string> listaBaseURLContent = new List<string>();
                     listaBaseURLContent.Add(ControllerBase.BaseURLContent);
 
-                    ControladorProyectoMVC controladorProyectoMVC = new ControladorProyectoMVC(ControllerBase.UtilIdiomas, ControllerBase.BaseURL, listaBaseURLContent, ControllerBase.BaseURLStatic, ControllerBase.ProyectoSeleccionado, Guid.Empty, ControllerBase.ParametrosGeneralesRow, null, EsBot, mLoggingService, mEntityContext, mConfigService, mHttpContextAccessor, mRedisCacheWrapper, mVirtuosoAD, mGnossCache, mEntityContextBASE, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<ControladorProyectoMVC>(), mLoggerFactory);
+                    ControladorProyectoMVC controladorProyectoMVC = new ControladorProyectoMVC(ControllerBase.UtilIdiomas, ControllerBase.BaseURL, listaBaseURLContent, ControllerBase.BaseURLStatic, ControllerBase.ProyectoSeleccionado, Guid.Empty, ControllerBase.ParametrosGeneralesRow, mIdentidadUsuarioActual, EsBot, mLoggingService, mEntityContext, mConfigService, mHttpContextAccessor, mRedisCacheWrapper, mVirtuosoAD, mGnossCache, mEntityContextBASE, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<ControladorProyectoMVC>(), mLoggerFactory);
 
                     Dictionary<Guid, ResourceModel> listaFichasRecursos = controladorProyectoMVC.ObtenerRecursosPorID(ListaRecursosID, baseUrlBusqueda, null, false);
 
@@ -1196,7 +1197,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
                                     filaParametrosGenerales = paramGeneralDS.ListaParametroGeneral.Find(parametroG => parametroG.OrganizacionID.Equals(proyectoContexto.FilaProyecto.OrganizacionID) && parametroG.ProyectoID.Equals(proyectoContexto.Clave));
                                     mLoggingService.AgregarEntrada("Proyecto diferente");
                                 }
-                                ControladorProyectoMVC controladorProyectoMVC = new ControladorProyectoMVC(ControllerBase.UtilIdiomas, ControllerBase.BaseURL, ControllerBase.BaseURLContent, ControllerBase.BaseURLStatic, proyectoContexto, filaParametrosGenerales, null, EsBot, mLoggingService, mEntityContext, mConfigService, mHttpContextAccessor, mRedisCacheWrapper, mVirtuosoAD, mGnossCache, mEntityContextBASE, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<ControladorProyectoMVC>(), mLoggerFactory);
+                                ControladorProyectoMVC controladorProyectoMVC = new ControladorProyectoMVC(ControllerBase.UtilIdiomas, ControllerBase.BaseURL, ControllerBase.BaseURLContent, ControllerBase.BaseURLStatic, proyectoContexto, filaParametrosGenerales, mIdentidadUsuarioActual, EsBot, mLoggingService, mEntityContext, mConfigService, mHttpContextAccessor, mRedisCacheWrapper, mVirtuosoAD, mGnossCache, mEntityContextBASE, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<ControladorProyectoMVC>(), mLoggerFactory);
                                 listaRecursosContextos = controladorProyectoMVC.ObtenerRecursosPorID(listaRecursos, pFilaProyGadget.ComunidadOrigen, null, true).Values.ToList();
                             }
                             mLoggingService.AgregarEntrada("Fin carga contextos");
@@ -1530,7 +1531,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
 
                     #region ObtenemosModelos  
 
-                    ControladorProyectoMVC controladorProyecto = new ControladorProyectoMVC(ControllerBase.UtilIdiomas, ControllerBase.BaseURL, ControllerBase.BaseURLContent, ControllerBase.BaseURLStatic, ControllerBase.ProyectoSeleccionado, ControllerBase.ParametrosGeneralesRow, null, EsBot, mLoggingService, mEntityContext, mConfigService, mHttpContextAccessor, mRedisCacheWrapper, mVirtuosoAD, mGnossCache, mEntityContextBASE, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<ControladorProyectoMVC>(), mLoggerFactory);
+                    ControladorProyectoMVC controladorProyecto = new ControladorProyectoMVC(ControllerBase.UtilIdiomas, ControllerBase.BaseURL, ControllerBase.BaseURLContent, ControllerBase.BaseURLStatic, ControllerBase.ProyectoSeleccionado, ControllerBase.ParametrosGeneralesRow, mIdentidadUsuarioActual, EsBot, mLoggingService, mEntityContext, mConfigService, mHttpContextAccessor, mRedisCacheWrapper, mVirtuosoAD, mGnossCache, mEntityContextBASE, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<ControladorProyectoMVC>(), mLoggerFactory);
 
                     Dictionary<Guid, ResourceModel> listaRecursos = controladorProyecto.ObtenerRecursosPorID(listaIdsRecursos, null, null, false);
 

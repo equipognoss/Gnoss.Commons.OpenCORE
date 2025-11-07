@@ -4130,6 +4130,8 @@
 	
 	<page name="DEVTOOLS">
 		<!-- Textos que ya existían en Vistas de Administración person sin traducir -> DevTools -->
+		<Resource tag="AVISOPRIVACIDADCOMPONENTECMS">The CMS component is in a private state, so its profiles and/or groups must be configured from the workflow administration page</Resource>
+		<Resource tag="SELECCIONPERFILESGRUPOSCOMPONENTECMS">Select the people and/or groups who can view the component</Resource>
 		<Resource tag="APLICACIONESESPECIFICASBETA">Specific applications (BETA)</Resource>
 		<Resource tag="APLICACIONESESPECIFICAS">Specific applications</Resource>
 		<Resource tag="COLOR">Color</Resource>

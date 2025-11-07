@@ -168,7 +168,7 @@ namespace Es.Riam.Gnoss.Logica.Flujos
             return FlujosAD.ObtenerEstadoPorEstadoID(pEstadoID);
         }
 
-		public List<Guid> ObtenerIdentidadesLectorasEstado(Guid pEstadoID)
+        public List<Guid> ObtenerIdentidadesLectorasEstado(Guid pEstadoID)
         {
             return FlujosAD.ObtenerIdentidadesLectorasEstado(pEstadoID);
         }
@@ -394,7 +394,7 @@ namespace Es.Riam.Gnoss.Logica.Flujos
 
         #region Cola Rabbit
 
-        public void InsertarEnColaFlujosCreadosOEliminados(Guid pFlujoID, Guid? pEstadoID, Guid pProyectoID, List<Guid> pOntologiasAfectadas, TiposContenidos pTipoContenido, bool pEliminarFlujo, bool pEliminarEstado, IAvailableServices pAvailableServices)
+        public void InsertarEnColaFlujosCreadosOEliminados(Guid pFlujoID, Guid? pEstadoID, Guid pProyectoID, List<Guid> pOntologiasAfectadas, TiposContenidos pTipoContenido, bool pEliminarFlujo, bool pEliminarEstado, Guid pUsuarioID, IAvailableServices pAvailableServices)
         {
             if (mConfigService.ExistRabbitConnection(RabbitMQClient.BD_SERVICIOS_WIN) && pAvailableServices.CheckIfServiceIsAvailable(pAvailableServices.GetBackServiceCode(BackgroundService.Workflows), ServiceType.Background))
             {
@@ -408,6 +408,7 @@ namespace Es.Riam.Gnoss.Logica.Flujos
                     filaCola.TipoAfectado = pTipoContenido;
                     filaCola.EliminarFlujo = pEliminarFlujo;
                     filaCola.EliminarEstado = pEliminarEstado;
+                    filaCola.UsuarioID = pUsuarioID;
 
                     rabbitMQ.AgregarElementoACola(JsonConvert.SerializeObject(filaCola));
                 }

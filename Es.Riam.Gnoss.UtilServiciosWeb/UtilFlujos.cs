@@ -76,7 +76,7 @@ namespace Es.Riam.Gnoss.UtilServiciosWeb
 						modeloHistorial.Comentario = HttpUtility.UrlDecode(fila.Comentario);
 						modeloHistorial.Revisor = identidadCN.ObtenerNombreDeIdentidad(fila.IdentidadID);
 						modeloHistorial.Fecha = fila.Fecha;
-						modeloHistorial.DocumentoID = pContenidoID;
+						modeloHistorial.ContenidoID = pContenidoID;
 
 						historial.Add(modeloHistorial);
 					}
@@ -91,7 +91,7 @@ namespace Es.Riam.Gnoss.UtilServiciosWeb
 						modeloHistorial.Comentario = HttpUtility.UrlDecode(fila.Comentario);
 						modeloHistorial.Revisor = identidadCN.ObtenerNombreDeIdentidad(fila.IdentidadID);
 						modeloHistorial.Fecha = fila.Fecha;
-						modeloHistorial.DocumentoID = pContenidoID;
+						modeloHistorial.ContenidoID = pContenidoID;
 
 						historial.Add(modeloHistorial);
 					}
@@ -106,7 +106,7 @@ namespace Es.Riam.Gnoss.UtilServiciosWeb
 						modeloHistorial.Comentario = HttpUtility.UrlDecode(fila.Comentario);
 						modeloHistorial.Revisor = identidadCN.ObtenerNombreDeIdentidad(fila.IdentidadID);
 						modeloHistorial.Fecha = fila.Fecha;
-						modeloHistorial.DocumentoID = pContenidoID;
+						modeloHistorial.ContenidoID = pContenidoID;
 
 						historial.Add(modeloHistorial);
 					}
@@ -160,6 +160,19 @@ namespace Es.Riam.Gnoss.UtilServiciosWeb
 			}
 
 			return listaTransiciones;
+		}
+
+		public bool IdentidadTienePermisoLecturaEnEstado(Guid pEstadoID, Guid pIdentidadID)
+		{
+            FlujosCN flujosCN = new FlujosCN(_entityContext, _loggingService, _configService, null, _loggerFactory.CreateLogger<FlujosCN>(), _loggerFactory);
+            bool tienePermiso = true;
+
+			if (!flujosCN.ComprobarEstadoEsPublico(pEstadoID))
+			{
+				tienePermiso = flujosCN.ComprobarIdentidadTienePermisoEdicionEnEstado(pEstadoID, pIdentidadID) || flujosCN.ComprobarIdentidadTienePermisoLecturaEnEstado(pEstadoID, pIdentidadID);
+			}
+
+			return tienePermiso;
 		}
 	}
 }

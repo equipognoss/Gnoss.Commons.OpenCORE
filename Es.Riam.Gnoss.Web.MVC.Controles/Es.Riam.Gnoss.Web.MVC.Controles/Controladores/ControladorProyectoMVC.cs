@@ -36,6 +36,7 @@ using Es.Riam.Gnoss.Elementos.ServiciosGenerales;
 using Es.Riam.Gnoss.Elementos.Tesauro;
 using Es.Riam.Gnoss.Logica.Documentacion;
 using Es.Riam.Gnoss.Logica.Facetado;
+using Es.Riam.Gnoss.Logica.Flujos;
 using Es.Riam.Gnoss.Logica.Identidad;
 using Es.Riam.Gnoss.Logica.MVC;
 using Es.Riam.Gnoss.Logica.Notificacion;
@@ -109,7 +110,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
         /// <param name="pIdentidadActual">Identidad Actual</param>
         /// <param name="pEsBot"></param>
         public ControladorProyectoMVC(UtilIdiomas pUtilIdiomas, string pBaseURL, string pBaseURLContent, string pBaseURLStatic, Elementos.ServiciosGenerales.Proyecto pProyecto, ParametroGeneral pParametrosGenerales, Identidad pIdentidadActual, bool pEsBot, LoggingService loggingService, EntityContext entityContext, ConfigService configService, IHttpContextAccessor httpContextAccessor, RedisCacheWrapper redisCacheWrapper, VirtuosoAD virtuosoAD, GnossCache gnossCache, EntityContextBASE entityContextBASE, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication, ILogger<ControladorProyectoMVC> logger, ILoggerFactory loggerFactory)
-            : this(pUtilIdiomas, pBaseURL, new List<string>(), pBaseURLStatic, pProyecto, Guid.Empty, pParametrosGenerales, pIdentidadActual, pEsBot, loggingService, entityContext, configService, httpContextAccessor, redisCacheWrapper, virtuosoAD, gnossCache, entityContextBASE, servicesUtilVirtuosoAndReplication,logger,loggerFactory)
+            : this(pUtilIdiomas, pBaseURL, new List<string>(), pBaseURLStatic, pProyecto, Guid.Empty, pParametrosGenerales, pIdentidadActual, pEsBot, loggingService, entityContext, configService, httpContextAccessor, redisCacheWrapper, virtuosoAD, gnossCache, entityContextBASE, servicesUtilVirtuosoAndReplication, logger, loggerFactory)
         {
             mlogger = logger;
             mLoggerFactory = loggerFactory;
@@ -129,7 +130,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
         /// <param name="pIdentidadActual">Identidad Actual</param>
         /// <param name="pEsBot"></param>
         public ControladorProyectoMVC(UtilIdiomas pUtilIdiomas, string pBaseURL, List<string> pBaseURLsContent, string pBaseURLStatic, Elementos.ServiciosGenerales.Proyecto pProyecto, Guid pProyectoOrigenID, ParametroGeneral pParametrosGeneralesRow, Identidad pIdentidadActual, bool pEsBot, LoggingService loggingService, EntityContext entityContext, ConfigService configService, IHttpContextAccessor httpContextAccessor, RedisCacheWrapper redisCacheWrapper, VirtuosoAD virtuosoAD, GnossCache gnossCache, EntityContextBASE entityContextBASE, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication, ILogger<ControladorProyectoMVC> logger, ILoggerFactory loggerFactory)
-            : base(loggingService, configService, entityContext, redisCacheWrapper, gnossCache, virtuosoAD, httpContextAccessor, servicesUtilVirtuosoAndReplication,logger,loggerFactory)
+            : base(loggingService, configService, entityContext, redisCacheWrapper, gnossCache, virtuosoAD, httpContextAccessor, servicesUtilVirtuosoAndReplication, logger, loggerFactory)
         {
             mVirtuosoAD = virtuosoAD;
             mLoggingService = loggingService;
@@ -1924,6 +1925,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
                         recurso.NumVotes = numeroVotos;
                         recurso.NumDownloads = numeroDescargas;
                         recurso.Link = Enlace;
+                        recurso.EstadoID = recursoMVC.EstadoID;
 
                         recurso.AllowShare = compartirPermitido;
                         recurso.IsDraft = borrador;
@@ -2126,12 +2128,40 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
 
             #endregion
 
+            // Comprobamos si hay recursos vacios o si el usuario actual no tiene permisos para visualizar 
+            // el recurso en caso de que su estado sea privado
             List<Guid> recursosVacios = new List<Guid>();
             foreach (Guid idRecurso in listaRecursos.Keys)
             {
                 if (listaRecursos[idRecurso] == null)
                 {
                     recursosVacios.Add(idRecurso);
+                }
+                else
+                {
+                    ResourceModel recursoModel = listaRecursos[idRecurso];
+                    if (recursoModel.EstadoID.HasValue)
+                    {
+                        Guid estadoID = (Guid)recursoModel.EstadoID;
+                        bool tienePermisos = true;
+
+                        FlujosCN flujosCN = new FlujosCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<FlujosCN>(), mLoggerFactory);
+
+                        // Se comprueba si la identidad actual tiene permisos de lectura
+                        if (!flujosCN.ComprobarEstadoEsPublico((Guid)recursoModel.EstadoID))
+                        {
+                            recursoModel.Private = true;
+                            // Comprobar si la identidad actual tiene permisos de lectura / edicion
+                            tienePermisos = flujosCN.ComprobarIdentidadTienePermisoLecturaEnEstado(estadoID, mIdentidadActual.Clave) || flujosCN.ComprobarIdentidadTienePermisoEdicionEnEstado(estadoID, mIdentidadActual.Clave);
+                        }
+                        else
+                        {
+                            recursoModel.Private = false;
+                        }
+
+                        // Si el estado es privado y el usuario no tiene permisos se omite el resultado
+                        if (!tienePermisos) recursosVacios.Add(idRecurso);
+                    }
                 }
             }
 
@@ -2958,47 +2988,47 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
                     }
                 }
 
-				ficha.Roles = new List<string>();
-				if (mProyecto != null && mProyecto.Clave.Equals(ProyectoAD.MetaProyecto))
+                ficha.Roles = new List<string>();
+                if (mProyecto != null && mProyecto.Clave.Equals(ProyectoAD.MetaProyecto))
                 {
                     ProyectoCN proyCN = new ProyectoCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<ProyectoCN>(), mLoggerFactory);
                     UsuarioCN usuCN = new UsuarioCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<UsuarioCN>(), mLoggerFactory);
                     Guid usuarioID = usuCN.ObtenerGuidUsuarioIDporIdentidadID(id);
                     List<RolEcosistema> rolesUsuario = proyCN.ObtenerRolesAdministracionEcosistemaDeUsuario(usuarioID);
-					if (rolesUsuario != null && rolesUsuario.Count > 0)
-					{
-						foreach (RolEcosistema rol in rolesUsuario)
-						{
-							ficha.Roles.Add(UtilCadenas.ObtenerTextoDeIdioma(rol.Nombre, mUtilIdiomas.LanguageCode, null));
-						}
+                    if (rolesUsuario != null && rolesUsuario.Count > 0)
+                    {
+                        foreach (RolEcosistema rol in rolesUsuario)
+                        {
+                            ficha.Roles.Add(UtilCadenas.ObtenerTextoDeIdioma(rol.Nombre, mUtilIdiomas.LanguageCode, null));
+                        }
                         ficha.Roles = ficha.Roles.Order().ToList();
-					}
+                    }
 
                     proyCN.Dispose();
                     usuCN.Dispose();
-				}
+                }
                 else
                 {
                     //IdentidadCN identidadCN = new IdentidadCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<IdentidadCN>(), mLoggerFactory);					
                     //List<Rol> rolesIdentidad = identidadCN.ObtenerRolesDeIdentidad(id);
                     UtilPermisos utilPermisos = new UtilPermisos(mEntityContext, mLoggingService, mConfigService, mLoggerFactory.CreateLogger<UtilPermisos>(), mLoggerFactory);
-					List<Rol> rolesIdentidad = utilPermisos.ObtenerRolesIdentidad(id, id);
+                    List<Rol> rolesIdentidad = utilPermisos.ObtenerRolesIdentidad(id, id);
 
-					if (rolesIdentidad != null && rolesIdentidad.Count > 0)
-					{
-						foreach (Rol rol in rolesIdentidad)
-						{
-							ficha.Roles.Add(UtilCadenas.ObtenerTextoDeIdioma(rol.Nombre, mUtilIdiomas.LanguageCode, null));
-						}
-						ficha.Roles = ficha.Roles.Order().ToList();
-					}
-					//identidadCN.Dispose();
-				}
-                    
-                
-                
+                    if (rolesIdentidad != null && rolesIdentidad.Count > 0)
+                    {
+                        foreach (Rol rol in rolesIdentidad)
+                        {
+                            ficha.Roles.Add(UtilCadenas.ObtenerTextoDeIdioma(rol.Nombre, mUtilIdiomas.LanguageCode, null));
+                        }
+                        ficha.Roles = ficha.Roles.Order().ToList();
+                    }
+                    //identidadCN.Dispose();
+                }
 
-				listaIdentidadesDevolver.Add(id, ficha);
+
+
+
+                listaIdentidadesDevolver.Add(id, ficha);
             }
 
             if (pObtenerDatosExtraIdentidades)
@@ -3048,7 +3078,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
                 }
                 catch (Exception ex)
                 {
-                    mLoggingService.GuardarLogError(ex, " 20160209 Error mal controlado Identidades.",mlogger);
+                    mLoggingService.GuardarLogError(ex, " 20160209 Error mal controlado Identidades.", mlogger);
                 }
 
                 if (listaDatosExtra != null)
@@ -3319,14 +3349,14 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
                 List<Rol> rolesGrupo = proyectoCN.ObtenerRolesDeGrupo(idGrupo);
                 listaGrupos[idGrupo].Roles = new List<string>();
 
-				if (rolesGrupo != null && rolesGrupo.Count > 0)
+                if (rolesGrupo != null && rolesGrupo.Count > 0)
                 {
-					foreach (Rol rol in rolesGrupo)
-					{
-						listaGrupos[idGrupo].Roles.Add(UtilCadenas.ObtenerTextoDeIdioma(rol.Nombre, mUtilIdiomas.LanguageCode, null));
-					}
-					listaGrupos[idGrupo].Roles = listaGrupos[idGrupo].Roles.Order().ToList();
-				}
+                    foreach (Rol rol in rolesGrupo)
+                    {
+                        listaGrupos[idGrupo].Roles.Add(UtilCadenas.ObtenerTextoDeIdioma(rol.Nombre, mUtilIdiomas.LanguageCode, null));
+                    }
+                    listaGrupos[idGrupo].Roles = listaGrupos[idGrupo].Roles.Order().ToList();
+                }
                 proyectoCN.Dispose();
             }
 

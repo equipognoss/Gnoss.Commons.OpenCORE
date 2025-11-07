@@ -305,6 +305,11 @@ namespace Es.Riam.Gnoss.Logica.Usuarios
             return UsuarioAD.ObtenerDiccionarioGruposYPerfilesPorProyectoYDocPrivado(pProyectoID, pDocumentoID);
         }
 
+        public Dictionary<Guid, List<Guid>> ObtenerDiccionarioGruposYPerfilesPorProyectoYEstado(Guid pEstadoID, Guid pProyectoID)
+        {
+            return UsuarioAD.ObtenerDiccionarioGruposYPerfilesPorProyectoYEstado(pEstadoID,pProyectoID);
+        }
+
         /// <summary>
         /// 
         /// </summary>
@@ -1397,6 +1402,11 @@ namespace Es.Riam.Gnoss.Logica.Usuarios
         public void ObtenerUsuarioIDEditoresLectoresRecurso(Guid pDocumentoID, Dictionary<Guid, List<Guid>> pListaUsuarios)
         {
             UsuarioAD.ObtenerUsuarioIDEditoresLectoresRecurso(pDocumentoID, pListaUsuarios);
+        }
+
+        public void ObtenerUsuarioIDEditoresLectoresRecursoPorEstado(Guid pEstadoID, Dictionary<Guid, List<Guid>> pListaUsuarios)
+        {
+            UsuarioAD.ObtenerUsuarioIDEditoresLectoresRecursoPorEstado(pEstadoID, pListaUsuarios);
         }
 
         /// <summary>

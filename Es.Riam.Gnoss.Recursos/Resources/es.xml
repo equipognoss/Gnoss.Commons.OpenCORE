@@ -4758,6 +4758,8 @@
 	<!-- Traducciones para DevTools -->	
 	<page name="DEVTOOLS">
 		<!-- Textos que ya existían en Vistas de Administración person sin traducir -> DevTools -->
+		<Resource tag="AVISOPRIVACIDADCOMPONENTECMS">El componente CMS se encuentra en un estado privado, por lo que sus perfiles y/o grupos deben configurarse desde la página de administración de flujos</Resource>
+		<Resource tag="SELECCIONPERFILESGRUPOSCOMPONENTECMS">Selecciona las personas y/o grupos que pueden ver el componente</Resource>
 		<Resource tag="DESEAELIMINARFLUJO">¿Desea eliminar el flujo?</Resource>
 		<Resource tag="COLOR">Color</Resource>
 		<Resource tag="TIPOESTADO">Tipo de estado</Resource>

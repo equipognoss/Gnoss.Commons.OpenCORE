@@ -35,6 +35,7 @@ namespace Es.Riam.Gnoss.AD.EntityModel.Models.Documentacion
         public int NumeroDescargas { get; set; }
         public int NumeroConsultas { get; set; }
         public string DocOntolologiaEnlace { get; set; }
+        public Guid? EstadoID { get; set; }
 
         public override bool Equals(object obj)
         {

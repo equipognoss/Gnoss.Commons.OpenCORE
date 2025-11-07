@@ -31,6 +31,7 @@ using Es.Riam.Gnoss.Logica.BASE_BD;
 using Es.Riam.Gnoss.Logica.CMS;
 using Es.Riam.Gnoss.Logica.Documentacion;
 using Es.Riam.Gnoss.Logica.Facetado;
+using Es.Riam.Gnoss.Logica.Flujos;
 using Es.Riam.Gnoss.Logica.Identidad;
 using Es.Riam.Gnoss.Logica.ParametroAplicacion;
 using Es.Riam.Gnoss.Logica.ServiciosGenerales;
@@ -40,6 +41,7 @@ using Es.Riam.Gnoss.Servicios.ControladoresServiciosWeb;
 using Es.Riam.Gnoss.Util.Configuracion;
 using Es.Riam.Gnoss.Util.General;
 using Es.Riam.Gnoss.Util.Seguridad;
+using Es.Riam.Gnoss.UtilServiciosWeb;
 using Es.Riam.Gnoss.Web.Controles.Proyectos;
 using Es.Riam.Gnoss.Web.Controles.ServicioImagenesWrapper;
 using Es.Riam.Gnoss.Web.MVC.Models;
@@ -358,33 +360,18 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
 
             //Comprobamos si cumple la privacidad
             bool cumplePrivacidad = true;
+            bool componentePrivado = pComponente.Privado;
 
-            if (pComponente.Privado)
+            // Si el componente tiene un estado, la privacidad del estado es mas importante
+            if (pComponente.Estado.HasValue)
             {
-                cumplePrivacidad = false;
-                if (!EsIdentidadInvitada && !PerfilID.Equals(UsuarioAD.Invitado))
-                {
-                    foreach (Guid perfilID in pComponente.ListaRolIdentidad.Keys)
-                    {
-                        if (PerfilID == perfilID)
-                        {
-                            cumplePrivacidad = true;
-                            break;
-                        }
-                    }
+                FlujosCN flujosCN = new FlujosCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<FlujosCN>(), mLoggerFactory);
+                componentePrivado = !flujosCN.ComprobarEstadoEsPublico(pComponente.Estado.Value);
+            }
 
-                    if (!cumplePrivacidad)
-                    {
-                        foreach (Guid grupoID in pComponente.ListaRolGrupoIdentidades.Keys)
-                        {
-                            if (ListaGruposIdentidadActual.Contains(grupoID))
-                            {
-                                cumplePrivacidad = true;
-                                break;
-                            }
-                        }
-                    }
-                }
+            if (componentePrivado)
+            {
+                cumplePrivacidad = ComprobarPrivacidadComponente(pComponente);
             }
 
             if (cumpleIdioma && cumplePrivacidad)
@@ -537,6 +524,41 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
                 }
             }
             return fichaComponente;
+        }
+
+        /// <summary>
+        /// Comprueba si un componente privado es visible al usuario actual.
+        /// La comprobacion depende si el componente esta afectado por un flujo.
+        /// </summary>
+        /// <param name="pComponente"></param>
+        /// <returns></returns>
+        private bool ComprobarPrivacidadComponente(CMSComponente pComponente)
+        {
+            if (pComponente.Estado.HasValue) 
+            {
+                UtilFlujos utilFlujos = new UtilFlujos(mEntityContext, mLoggingService, mConfigService, mloggerFactory.CreateLogger<UtilFlujos>(), mloggerFactory);
+                return utilFlujos.IdentidadTienePermisoLecturaEnEstado(pComponente.Estado.Value, IdentidadActual.Clave);
+            }
+
+            if (!EsIdentidadInvitada && !PerfilID.Equals(UsuarioAD.Invitado))
+            {
+                foreach (Guid perfilID in pComponente.ListaRolIdentidad.Keys)
+                {
+                    if (PerfilID == perfilID)
+                    {
+                        return true;
+                    }
+                }
+ 
+                foreach (Guid grupoID in pComponente.ListaRolGrupoIdentidades.Keys)
+                {
+                    if (ListaGruposIdentidadActual.Contains(grupoID))
+                    {
+                        return true;
+                    }
+                }
+            }
+            return false;
         }
 
         private void CargarJSGraficasGoogle()

@@ -214,7 +214,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
                         {
                             ontologiasAfectadas = ontologiasAfectadasAnteriormente.Keys.ToList();
                         }
-                        AplicarEstadoAContenido(tipo, pModelo.FlujoID, null, ProyectoSeleccionado.Clave, ontologiasAfectadas, false, true, flujosCN);
+                        AplicarEstadoAContenido(tipo, pModelo.FlujoID, null, ProyectoSeleccionado.Clave, ontologiasAfectadas, false, true, UsuarioActual.UsuarioID, flujosCN);
                     }
                 }
 
@@ -223,7 +223,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
                 Dictionary<Guid, string> ontologiasABorrar = ontologiasAfectadasAnteriormente.Where(kvp => !pModelo.OntologiasProyecto.ContainsKey(kvp.Key)).ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
                 if (ontologiasABorrar.Count > 0)
                 {
-                    AplicarEstadoAContenido(TiposContenidos.RecursoSemantico, pModelo.FlujoID, null, ProyectoSeleccionado.Clave, ontologiasABorrar.Keys.ToList(), false, true, flujosCN);
+                    AplicarEstadoAContenido(TiposContenidos.RecursoSemantico, pModelo.FlujoID, null, ProyectoSeleccionado.Clave, ontologiasABorrar.Keys.ToList(), false, true, UsuarioActual.UsuarioID, flujosCN);
                     foreach (string ontologiaABorrar in ontologiasABorrar.Values)
                     {
                         flujosCN.EliminarFlujoObjetoConocimientoProyectoPorNombreOntologia(pModelo.FlujoID, ontologiaABorrar);
@@ -247,7 +247,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
                 // Seccion de transiciones
                 GuardarTransiciones(pModelo.Transiciones, flujosCN, identidadCN);
                 // Seccion de aplicar el estadoID
-                AplicarEstadosAContenidos(pModelo.TiposRecursos, pModelo.FlujoID, EstadoFinalDeFlujo(pModelo.Transiciones), ProyectoSeleccionado.Clave, pModelo.OntologiasProyecto.Keys.ToList(), false, false, flujosCN);
+                AplicarEstadosAContenidos(pModelo.TiposRecursos, pModelo.FlujoID, EstadoFinalDeFlujo(pModelo.Transiciones), ProyectoSeleccionado.Clave, pModelo.OntologiasProyecto.Keys.ToList(), false, false, UsuarioActual.UsuarioID, flujosCN);
 
                 identidadCN.Dispose();
             }
@@ -264,8 +264,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
                 docCN.Dispose();
 
                 List<Guid> ontologiasFlujo = flujosCN.ObtenerOntologiasFlujo(pFlujoID, dwDocumentacion.ListaDocumento.ToDictionary(k => k.DocumentoID, k => k.Enlace.Replace(".owl", ""))).Keys.ToList();
-                AplicarEstadosAContenidos(flujosCN.ObtenerTiposContenidosPorFlujoID(pFlujoID), pFlujoID, null, ProyectoSeleccionado.Clave, ontologiasFlujo, true, true,
-                    flujosCN);
+                AplicarEstadosAContenidos(flujosCN.ObtenerTiposContenidosPorFlujoID(pFlujoID), pFlujoID, null, ProyectoSeleccionado.Clave, ontologiasFlujo, true, true, UsuarioActual.UsuarioID, flujosCN);
             }
         }
 
@@ -470,16 +469,16 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
                 pFlujosCN.GuardarFlujoObjetoConocimientoProyecto(filaFlujoOCProyecto);
             }
         }
-        private void AplicarEstadosAContenidos(Dictionary<TiposContenidos, bool> pTiposContenidos, Guid pFlujoID, Guid? pEstadoInicialID, Guid pProyectoID, List<Guid> pListaOntologias, bool pEliminarFlujo, bool pEliminarEstado, FlujosCN pFlujosCN)
+        private void AplicarEstadosAContenidos(Dictionary<TiposContenidos, bool> pTiposContenidos, Guid pFlujoID, Guid? pEstadoInicialID, Guid pProyectoID, List<Guid> pListaOntologias, bool pEliminarFlujo, bool pEliminarEstado, Guid pUsuarioID, FlujosCN pFlujosCN)
         {
             foreach (var tipoRecurso in pTiposContenidos.Where(item => item.Value).Select(item => item.Key).ToList())
             {
-                pFlujosCN.InsertarEnColaFlujosCreadosOEliminados(pFlujoID, pEstadoInicialID, pProyectoID, pListaOntologias, tipoRecurso, pEliminarFlujo, pEliminarEstado, mAvailableServices);
+                pFlujosCN.InsertarEnColaFlujosCreadosOEliminados(pFlujoID, pEstadoInicialID, pProyectoID, pListaOntologias, tipoRecurso, pEliminarFlujo, pEliminarEstado, pUsuarioID, mAvailableServices);
             }
         }
-        private void AplicarEstadoAContenido(TiposContenidos pTipoContenido, Guid pFlujoID, Guid? pEstadoInicialID, Guid pProyectoID, List<Guid> pListaOntologias, bool pEliminarFlujo, bool pEliminarEstado, FlujosCN pFlujosCN)
+        private void AplicarEstadoAContenido(TiposContenidos pTipoContenido, Guid pFlujoID, Guid? pEstadoInicialID, Guid pProyectoID, List<Guid> pListaOntologias, bool pEliminarFlujo, bool pEliminarEstado, Guid pUsuarioID, FlujosCN pFlujosCN)
         {
-            pFlujosCN.InsertarEnColaFlujosCreadosOEliminados(pFlujoID, pEstadoInicialID, pProyectoID, pListaOntologias, pTipoContenido, pEliminarFlujo, pEliminarEstado, mAvailableServices);
+            pFlujosCN.InsertarEnColaFlujosCreadosOEliminados(pFlujoID, pEstadoInicialID, pProyectoID, pListaOntologias, pTipoContenido, pEliminarFlujo, pEliminarEstado, pUsuarioID, mAvailableServices);
         }
         private Guid EstadoFinalDeFlujo(List<TransicionViewModel> pTransiciones)
         {

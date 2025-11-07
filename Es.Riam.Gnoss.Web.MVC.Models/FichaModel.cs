@@ -337,6 +337,11 @@ namespace Es.Riam.Gnoss.Web.MVC.Models
 
         public EstadoModel Estado { get; set; }
 
+        /// <summary>
+        /// Identificador del estado en el que esta el recurso
+        /// </summary>
+        public Guid? EstadoID { get; set; }
+
         public List<HistorialTransicionModel> HistorialTransiciones { get; set; }
 
         /// <summary>

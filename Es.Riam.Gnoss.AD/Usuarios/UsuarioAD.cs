@@ -957,7 +957,7 @@ namespace Es.Riam.Gnoss.AD.Usuarios
         /// El por defecto, utilizado cuando se requiere el GnossConfig.xml por defecto
         /// </summary>
         public UsuarioAD(LoggingService loggingService, EntityContext entityContext, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication, ILogger<UsuarioAD> logger, ILoggerFactory loggerFactory)
-            : base(loggingService, entityContext, configService, servicesUtilVirtuosoAndReplication,logger, loggerFactory)
+            : base(loggingService, entityContext, configService, servicesUtilVirtuosoAndReplication, logger, loggerFactory)
         {
             mEntityContext = entityContext;
             mLoggingService = loggingService;
@@ -972,7 +972,7 @@ namespace Es.Riam.Gnoss.AD.Usuarios
         /// <param name="pFicheroConfiguracionBD"></param>
         /// <param name="pUsarVariableEstatica">Si se están usando hilos con diferentes conexiones: FALSE. En caso contrario TRUE</param>
         public UsuarioAD(string pFicheroConfiguracionBD, LoggingService loggingService, EntityContext entityContext, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication, ILogger<UsuarioAD> logger, ILoggerFactory loggerFactory)
-            : base(pFicheroConfiguracionBD, loggingService, entityContext, configService, servicesUtilVirtuosoAndReplication,logger,loggerFactory)
+            : base(pFicheroConfiguracionBD, loggingService, entityContext, configService, servicesUtilVirtuosoAndReplication, logger, loggerFactory)
         {
             mEntityContext = entityContext;
             mLoggingService = loggingService;
@@ -1050,7 +1050,7 @@ namespace Es.Riam.Gnoss.AD.Usuarios
                 Apellidos = objeto.Persona.Apellidos
             }).ToList();
         }
-        
+
 
 
         #region Métodos generales
@@ -1877,7 +1877,7 @@ namespace Es.Riam.Gnoss.AD.Usuarios
         private void AumentarNumeroMiembrosDelProyecto(Guid pProyectoID)
         {
             //Actualizar en ProyectoDS / Proyecto / "NumeroMiembros"
-            ProyectoAD proyectoAD = new ProyectoAD(mLoggingService, mEntityContext, mConfigService, mServicesUtilVirtuosoAndReplication,mLoggerFactory.CreateLogger<ProyectoAD>(),mLoggerFactory);
+            ProyectoAD proyectoAD = new ProyectoAD(mLoggingService, mEntityContext, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<ProyectoAD>(), mLoggerFactory);
             proyectoAD.AumentarNumeroMiembrosDelProyecto(pProyectoID);
             proyectoAD.Dispose();
         }
@@ -1885,7 +1885,7 @@ namespace Es.Riam.Gnoss.AD.Usuarios
         private void DisminuirNumeroMiembrosDelProyecto(Guid pProyectoID)
         {
             //Actualizar en ProyectoDS / Proyecto / "NumeroMiembros"
-            ProyectoAD proyectoAD = new ProyectoAD(mLoggingService, mEntityContext, mConfigService, mServicesUtilVirtuosoAndReplication,mLoggerFactory.CreateLogger<ProyectoAD>(),mLoggerFactory);
+            ProyectoAD proyectoAD = new ProyectoAD(mLoggingService, mEntityContext, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<ProyectoAD>(), mLoggerFactory);
             proyectoAD.DisminuirNumeroMiembrosDelProyecto(pProyectoID);
             proyectoAD.Dispose();
         }
@@ -2104,6 +2104,41 @@ namespace Es.Riam.Gnoss.AD.Usuarios
                 Perfil = docPerfil.Perfil,
                 Persona = persona
             }).Where(item => item.DocumentoRolIdentidad.DocumentoID.Equals(pDocumentoID) && !item.Perfil.Eliminado && item.Persona.UsuarioID.HasValue).Select(item => new { UsuarioID = item.Persona.UsuarioID.Value, item.DocumentoRolIdentidad.PerfilID });
+
+            foreach (var item in resultado)
+            {
+                if (!pListaUsuarios.ContainsKey(item.UsuarioID))
+                {
+                    pListaUsuarios.Add(item.UsuarioID, new List<Guid>());
+                }
+                if (!pListaUsuarios[item.UsuarioID].Contains(item.PerfilID))
+                {
+                    pListaUsuarios[item.UsuarioID].Add(item.PerfilID);
+                }
+            }
+        }
+
+        public void ObtenerUsuarioIDEditoresLectoresRecursoPorEstado(Guid pEstadoID, Dictionary<Guid, List<Guid>> pListaUsuarios)
+        {
+            var resultado = mEntityContext.EstadoIdentidad.Join(mEntityContext.Identidad, estadoIdentidad => estadoIdentidad.IdentidadID, identidad => identidad.IdentidadID, (estadoIdentidad, identidad) =>
+            new
+            {
+                EstadoIdentidad = estadoIdentidad,
+                Identidad = identidad
+            }).Join(mEntityContext.Perfil, estadoIdentidadJoin => estadoIdentidadJoin.Identidad.PerfilID, perfil => perfil.PerfilID, (estadoIdentidadJoin, perfil) =>
+            new
+            {
+                EstadoIdentidad = estadoIdentidadJoin.EstadoIdentidad,
+                Identidad = estadoIdentidadJoin.Identidad,
+                Perfil = perfil
+            }).Join(mEntityContext.Persona, estadoIdentidadPerfil => estadoIdentidadPerfil.Perfil.PersonaID, persona => persona.PersonaID, (estadoIdentidadPerfil, persona) =>
+            new
+            {
+                EstadoIdentidad = estadoIdentidadPerfil.EstadoIdentidad,
+                Identidad = estadoIdentidadPerfil.Identidad,
+                Perfil = estadoIdentidadPerfil.Perfil,
+                Persona = persona
+            }).Where(item => item.EstadoIdentidad.EstadoID.Equals(pEstadoID) && !item.Perfil.Eliminado && item.Persona.UsuarioID.HasValue).Select(item => new { UsuarioID = item.Persona.UsuarioID.Value, item.Perfil.PerfilID }); ;
 
             foreach (var item in resultado)
             {
@@ -2571,7 +2606,46 @@ namespace Es.Riam.Gnoss.AD.Usuarios
             return lista;
         }
 
+        public Dictionary<Guid, List<Guid>> ObtenerDiccionarioGruposYPerfilesPorProyectoYEstado(Guid pEstadoID, Guid pProyectoID)
+        {
+            Dictionary<Guid, List<Guid>> lista = new Dictionary<Guid, List<Guid>>();
 
+            var resultado = mEntityContext.ProyectoUsuarioIdentidad.Join(mEntityContext.Identidad, proyecto => proyecto.IdentidadID, id => id.IdentidadID, (proyecto, id) =>
+            new
+            {
+                ProyectoUsuarioIdentidad = proyecto,
+                Identidad = id
+            }).Join(mEntityContext.GrupoIdentidadesParticipacion, proyIden => proyIden.Identidad.IdentidadID, grupo => grupo.IdentidadID, (proyIden, grupo) =>
+                new
+                {
+                    ProyectoUsuarioIdentidad = proyIden.ProyectoUsuarioIdentidad,
+                    Identidad = proyIden.Identidad,
+                    GrupoIdentidadesParticipacion = grupo
+                }).Join(mEntityContext.EstadoGrupo, proyIdenGrupo => proyIdenGrupo.GrupoIdentidadesParticipacion.GrupoID, estadoGrupo => estadoGrupo.GrupoID, (proyIdenGrupo, estadoGrupo) => new
+                {
+                    ProyectoUsuarioIdentidad = proyIdenGrupo.ProyectoUsuarioIdentidad,
+                    Identidad = proyIdenGrupo.Identidad,
+                    GrupoIdentidadesParticipacion = proyIdenGrupo.GrupoIdentidadesParticipacion,
+                    EstadoGrupo = estadoGrupo
+                })
+            .Where(item => item.ProyectoUsuarioIdentidad.ProyectoID.Equals(pProyectoID) && !item.Identidad.FechaBaja.HasValue
+            && !item.Identidad.FechaExpulsion.HasValue && item.EstadoGrupo.EstadoID.Equals(pEstadoID)).Select(item => new { item.ProyectoUsuarioIdentidad.UsuarioID, item.Identidad.PerfilID }).ToList();
+
+            foreach (var fila in resultado)
+            {
+                if (!lista.ContainsKey(fila.UsuarioID))
+                {
+                    lista.Add(fila.UsuarioID, new List<Guid>());
+                }
+
+                if (!lista[fila.UsuarioID].Contains(fila.PerfilID))
+                {
+                    lista[fila.UsuarioID].Add(fila.PerfilID);
+                }
+            }
+
+            return lista;
+        }
 
         public Dictionary<Guid, List<Guid>> ObtenerDiccionarioGruposYPerfilesPorListaGruposID(List<Guid> pListaGruposEditoresEliminadosEdiccionRecursoPrivado)
         {

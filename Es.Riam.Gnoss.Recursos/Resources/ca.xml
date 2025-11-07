@@ -4028,6 +4028,8 @@
   <!-- Traducciones para DevTools -->
   <page name="DEVTOOLS">
     <!-- Textos que ya existían en Vistas de Administración person sin traducir -> DevTools -->
+	<Resource tag="AVISOPRIVACIDADCOMPONENTECMS">El component CMS es troba en un estat privat, per la qual cosa els seus perfils i/o grups s’han de configurar des de la pàgina d’administració de fluxos</Resource>
+	<Resource tag="SELECCIONPERFILESGRUPOSCOMPONENTECMS">Selecciona les persones i/o grups que poden veure el component</Resource>
 	<Resource tag="COLOR">Color</Resource>
 	<Resource tag="DESEAELIMINARFLUJO">Vols eliminar el flux?</Resource>
 	<Resource tag="TIPOESTADO">Tipus d'estat</Resource>

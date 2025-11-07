@@ -348,7 +348,6 @@ namespace Es.Riam.Gnoss.AD.Flujos
         public List<Estado> ObtenerEstadosPorFlujoID(Guid pFlujoID)
         {
             return mEntityContext.Estado.Where(e => e.FlujoID.Equals(pFlujoID)).Include(e => e.EstadoIdentidad).Include(e => e.EstadoGrupo).ToList();
-            //return mEntityContext.Estado.Where(e => e.FlujoID.Equals(pFlujoID)).ToList();
         }
         /// <summary>
         /// Aplica el estado a los recursos seleccionados, en caso de estar eliminando el estado se devuelve un diccionario

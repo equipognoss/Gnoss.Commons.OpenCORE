@@ -11,7 +11,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Models.Flujos
 		public HistorialTransicionModel() { }
 
 		public Guid HistorialID { get; set; }
-		public Guid DocumentoID { get; set; }
+		public Guid ContenidoID { get; set; }
 		public string NombreTransicion { get; set; }
 		public string Revisor { get; set; }
 		public DateTime Fecha { get; set; }

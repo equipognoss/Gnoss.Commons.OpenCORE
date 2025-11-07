@@ -4143,6 +4143,8 @@
 	</page>
   <page name="DEVTOOLS">
     <!-- Textos que ya existían en Vistas de Administración person sin traducir -> DevTools -->
+	<Resource tag="AVISOPRIVACIDADCOMPONENTECMS">O compoñente CMS atópase nun estado privado, polo que os seus perfís e/ou grupos deben configurarse desde a páxina de administración de fluxos</Resource>
+	<Resource tag="SELECCIONPERFILESGRUPOSCOMPONENTECMS">Selecciona as persoas e/ou grupos que poden ver o compoñente</Resource>
 	<Resource tag="COLOR">Cor</Resource>
 	<Resource tag="DESEAELIMINARFLUJO">Queres eliminar o fluxo?</Resource>
 	<Resource tag="TIPOESTADO">Tipo de estado</Resource>
