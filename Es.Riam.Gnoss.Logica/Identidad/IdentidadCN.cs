@@ -2926,14 +2926,34 @@ namespace Es.Riam.Gnoss.Logica.Identidad
 			return IdentidadAD.ObtenerRolesDeIdentidad(pIdentidadID);
 		}
 
-		#endregion
+        /// <summary>
+        /// Asigna un nuevo rol con id pRolId a la identidad pIdentidadID
+        /// </summary>
+        /// <param name="pIdentidadID">ID de la identidad a la que se va a asignar el rol</param>
+        /// <param name="pRolId">ID del rol a asignar</param>
+        public void AsignarRolAIdentidad(Guid pIdentidadID, Guid pRolId)
+        {
+            IdentidadAD.AsignarRolAIdentidad(pIdentidadID,pRolId);
+        }
 
-		#region Dispose
+        /// <summary>
+        /// Elimina el rol con id pRolId a la identidad pIdentidadID
+        /// </summary>
+        /// <param name="pIdentidadID">ID de la identidad a la que se va a asignar el rol</param>
+        /// <param name="pRolId">ID del rol a asignar</param>
+        public void EliminarRolAIdentidad(Guid pIdentidadID, Guid pRolId)
+        {
+            IdentidadAD.EliminarRolAIdentidad(pIdentidadID, pRolId);
+        }
 
-		/// <summary>
-		/// Determina si está disposed
-		/// </summary>
-		private bool mDisposed = false;
+        #endregion
+
+        #region Dispose
+
+        /// <summary>
+        /// Determina si está disposed
+        /// </summary>
+        private bool mDisposed = false;
 
         /// <summary>
         /// Destructor

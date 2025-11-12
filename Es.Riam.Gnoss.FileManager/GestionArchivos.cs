@@ -831,7 +831,7 @@ namespace Es.Riam.Gnoss.FileManager
             }
         }
 
-        public void CopiarArchivo(string pRutaOrigen, string pRutaDestino, string pNombreArchivoOrigen, bool pCopiar, string pExtension = null, string pNombreArchivoDestino = null)
+        public void CopiarArchivo(string pRutaOrigen, string pRutaDestino, string pNombreArchivoOrigen, bool pCopiar, string pExtension = null, string pNombreArchivoDestino = null, bool pSobreEscribir = false)
         {
             if (string.IsNullOrEmpty(pNombreArchivoDestino))
             {
@@ -858,11 +858,11 @@ namespace Es.Riam.Gnoss.FileManager
                 FileInfo fichOrigen = new FileInfo(pRutaOrigen);
                 if (pCopiar)
                 {//Copiar:
-                    fichOrigen.CopyTo(pRutaDestino);
+                    fichOrigen.CopyTo(pRutaDestino, pSobreEscribir);
                 }
                 else
                 {//Cortar:
-                    fichOrigen.MoveTo(pRutaDestino);
+                    fichOrigen.MoveTo(pRutaDestino, pSobreEscribir);
                 }
             }
             else
@@ -969,7 +969,7 @@ namespace Es.Riam.Gnoss.FileManager
             return false;
         }
 
-        public async void CopiarArchivosDeDirectorio(string pRutaOrigen, string pRutaDestino, bool pCopiarSubdirectorios = false)
+        public async void CopiarArchivosDeDirectorio(string pRutaOrigen, string pRutaDestino, bool pCopiarSubdirectorios = false, bool pSobreEsribir = false)
         {
             bool existeRutaOrigen = await ComprobarExisteDirectorio(pRutaOrigen);
             if (existeRutaOrigen)
@@ -986,7 +986,7 @@ namespace Es.Riam.Gnoss.FileManager
 
                     foreach (string fichero in ficheros)
                     {
-                        CopiarArchivo(pRutaOrigen, pRutaDestino, fichero, true);
+                        CopiarArchivo(pRutaOrigen, pRutaDestino, fichero, true, pSobreEscribir: pSobreEsribir);
                     }
                 }
 
@@ -997,7 +997,7 @@ namespace Es.Riam.Gnoss.FileManager
                     {
                         if (!directorio.Equals("historial"))
                         {
-                            CopiarArchivosDeDirectorio(Path.Combine(pRutaOrigen, directorio), Path.Combine(pRutaDestino, directorio), true);
+                            CopiarArchivosDeDirectorio(Path.Combine(pRutaOrigen, directorio), Path.Combine(pRutaDestino, directorio), true, pSobreEsribir);
                         }
                     }
                 }

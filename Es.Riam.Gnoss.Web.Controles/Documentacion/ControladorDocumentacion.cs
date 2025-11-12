@@ -600,6 +600,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Documentacion
             bool correcto = false;
             Regex regex = new Regex($@"<!\[CDATA\[([^]]*({UtilArchivos.ContentImagenesSemanticas}|{UtilArchivos.ContentDocumentosSem}|{UtilArchivos.ContentDocLinks}|{UtilArchivos.ContentVideosSemanticos})[^]]*)\]\]>");
             MatchCollection resultados = regex.Matches(rdfDocumentoOriginal);
+            HashSet<string> rutasAdjuntos = new HashSet<string>();
 
             foreach (Match resultado in resultados)
             {
@@ -607,14 +608,18 @@ namespace Es.Riam.Gnoss.Web.Controles.Documentacion
 
                 string nuevaRuta = ReemplazarRutaAdjuntoSemantico(triple, pDocumentoOriginal.Clave, pDocumentoNuevo.Clave);
 
-                correcto = CopiarAdjuntoDocumentoSemantico(triple, pDocumentoOriginal.Clave, pDocumentoNuevo.Clave);
+                rutasAdjuntos.Add(Path.GetDirectoryName(triple));
+
+                rdfDocumentoOriginal = rdfDocumentoOriginal.Replace(triple, nuevaRuta);
+            }
+            foreach(string rutaAdjunto in rutasAdjuntos) 
+            { 
+                correcto = CopiarAdjuntoDocumentoSemantico(rutaAdjunto, pDocumentoOriginal.Clave, pDocumentoNuevo.Clave);
 
                 if (!correcto)
                 {
                     throw new Exception("No se han podido duplicar los archivos para el nuevo documento");
                 }
-
-                rdfDocumentoOriginal = rdfDocumentoOriginal.Replace(triple, nuevaRuta);
             }
 
             //Actualizo la foto desnormalizada para los listados de recursos:

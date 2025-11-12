@@ -948,6 +948,21 @@ namespace Es.Riam.Gnoss.Util.General
 
         }
 
+        /// <summary>
+        /// Guarda la traza en un archivo de texto
+        /// </summary>
+        /// <param name="pRutaFicheroTraza">Ruta del archivo de la traza</param>
+        public void GuardarTraza()
+        {
+            try
+            {
+                TrazaActual.GuardarTraza(ObtenerRutaTraza());
+                _utilPeticion.EliminarObjetoDePeticion("traza");
+            }
+            catch (Exception) { }
+
+        }
+
         private Traza CrearTraza(string pIP, int pPuerto)
         {
             return CrearTraza(pIP, pPuerto, _httpContextAccessor != null && _httpContextAccessor.HttpContext.Request != null);
@@ -1016,6 +1031,19 @@ namespace Es.Riam.Gnoss.Util.General
             return producto;
         }
 
+        protected string ObtenerRutaTraza()
+        {
+            string ruta = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "logs", "trazas");
+
+            if (!Directory.Exists(ruta))
+            {
+                Directory.CreateDirectory(ruta);
+            }
+
+            ruta = Path.Combine(ruta, $"traza_{DateTime.Now.ToString("yyyy-MM-dd")}.txt");
+
+            return ruta;
+        }
         #endregion
 
         #region Propiedades

@@ -13142,17 +13142,62 @@ namespace Es.Riam.Gnoss.AD.Identidad
 			}).Where(objeto => objeto.RolIdentidad.IdentidadID.Equals(pIdentidadID)).Select(objeto => objeto.Rol).ToList();
 		}
 
-		#endregion
+        /// <summary>
+        /// Asigna un nuevo rol con id pRolId a la identidad pIdentidadID
+        /// </summary>
+        /// <param name="pIdentidadID">ID de la identidad a la que se va a asignar el rol</param>
+        /// <param name="pRolId">ID del rol a asignar</param>
+        public void AsignarRolAIdentidad(Guid pIdentidadID, Guid pRolId)
+        {
+            // Verificar si ya existe la asignación de este rol a la identidad
+            RolIdentidad rolIdentidadExistente = mEntityContext.RolIdentidad
+                .FirstOrDefault(ri => ri.IdentidadID.Equals(pIdentidadID) && ri.RolID.Equals(pRolId));
+
+            if (rolIdentidadExistente == null)
+            {
+                // Crear la nueva relación entre rol e identidad
+                RolIdentidad nuevoRolIdentidad = new RolIdentidad
+                {
+                    RolID = pRolId,
+                    IdentidadID = pIdentidadID
+                };
+
+                mEntityContext.RolIdentidad.Add(nuevoRolIdentidad);
+                ActualizarBaseDeDatosEntityContext();
+            }
+        }
+
+        /// <summary>
+        /// Elimina el rol con id pRolId de la identidad pIdentidadID
+        /// </summary>
+        /// <param name="pIdentidadID">ID de la identidad a la que se va a asignar el rol</param>
+        /// <param name="pRolId">ID del rol a asignar</param>
+        public void EliminarRolAIdentidad(Guid pIdentidadID, Guid pRolId)
+        {
+            // Verificamos que existe el rol en la identidad
+            RolIdentidad rolIdentidadExistente = mEntityContext.RolIdentidad
+                .FirstOrDefault(ri => ri.IdentidadID.Equals(pIdentidadID) && ri.RolID.Equals(pRolId));
+
+            if (rolIdentidadExistente != null)
+            {
+                mEntityContext.RolIdentidad.Remove(rolIdentidadExistente);
+                ActualizarBaseDeDatosEntityContext();
+            }
+        }
 
 
-		#region Privados
 
-		/// <summary>
-		/// En caso de que se utilice un GnossConfig.xml que no es el de por defecto se pasa un objeto IBaseDatos creado con respecto
-		/// al fichero de configuracion que se ha pasado como parámetro
-		/// </summary>
-		/// <param name="IBD">Objecto IBaseDatos para el archivo pasado al constructor del AD</param>
-		private void CargarConsultasYDataAdapters()
+        #endregion
+
+
+        #region Privados
+
+        /// <summary>
+        /// En caso de que se utilice un GnossConfig.xml que no es el de por defecto se pasa un objeto IBaseDatos creado con respecto
+        /// al fichero de configuracion que se ha pasado como parámetro
+        /// </summary>
+        /// <param name="IBD">Objecto IBaseDatos para el archivo pasado al constructor del AD</param>
+        private void CargarConsultasYDataAdapters()
         {
             #region Consultas
 

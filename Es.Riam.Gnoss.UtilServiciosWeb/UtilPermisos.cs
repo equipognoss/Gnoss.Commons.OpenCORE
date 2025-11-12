@@ -1,4 +1,5 @@
-﻿using Es.Riam.Gnoss.AD.EntityModel;
+﻿using Es.Riam.AbstractsOpen;
+using Es.Riam.Gnoss.AD.EntityModel;
 using Es.Riam.Gnoss.AD.EntityModel.Models.Roles;
 using Es.Riam.Gnoss.AD.RDF;
 using Es.Riam.Gnoss.AD.ServiciosGenerales;
@@ -8,6 +9,9 @@ using Es.Riam.Gnoss.Logica.ServiciosGenerales;
 using Es.Riam.Gnoss.Util.Configuracion;
 using Es.Riam.Gnoss.Util.General;
 using Es.Riam.Gnoss.Web.MVC.Models;
+using Es.Riam.Gnoss.Web.MVC.Models.Administracion;
+using Es.Riam.Util;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
@@ -17,7 +21,15 @@ using System.Threading.Tasks;
 
 namespace Es.Riam.Gnoss.UtilServiciosWeb
 {
-	public class UtilPermisos
+    public class DiccionarioDePermisos
+    {
+        public bool CrearRecursoSemantico { get; set; }
+        public bool EditarRecursoSemantico { get; set; }
+        public bool EliminarRecursoSemantico { get; set; }
+        public bool RestaurarVersionRecursoSemantico { get; set; }
+        public bool EliminarVersionRecursoSemantico { get; set; }
+    }
+    public class UtilPermisos
 	{
 		private EntityContext _entityContext;
 		private LoggingService _loggingService;
@@ -228,11 +240,244 @@ namespace Es.Riam.Gnoss.UtilServiciosWeb
 			return tienePermiso;
 		}
 
-		#endregion
 
-		#region Métodos estáticos
+        /// <summary>
+        /// Carga la lista de permisos de un rol de ecosistema
+        /// </summary>
+        /// <param name="pRolID">ID del rol</param>
+        /// <param name="pEntityContext">Contexto de entidad</param>
+        /// <returns>Lista de permisos con su estado</returns>
+        public static List<PermisoModelRolController> CargarListaDePermisosDeRolEcosistema(Guid pRolID, EntityContext pEntityContext)
+        {
+            List<PermisoModelRolController> listaPermisos = new List<PermisoModelRolController>();
 
-		public static bool TienePermiso(ulong pRoles, ulong pPermiso)
+            RolEcosistema rol = pEntityContext.RolEcosistema.FirstOrDefault(x => x.RolID.Equals(pRolID));
+            if (rol != null || pRolID.Equals(Guid.Empty))
+            {
+                foreach (PermisoEcosistema permisoEcosistema in Enum.GetValues(typeof(PermisoEcosistema)))
+                {
+                    PermisoModelRolController permiso = new PermisoModelRolController();
+                    permiso.Nombre = permisoEcosistema.ToString();
+
+                    if (!pRolID.Equals(Guid.Empty) && rol != null)
+                    {
+                        permiso.Concedido = TienePermiso(rol.Permisos, (ulong)permisoEcosistema);
+                    }
+
+                    permiso.Seccion = UtilCadenas.ObtenerAtributoEnum<SectionAttribute>(permisoEcosistema).Nombre;
+
+                    listaPermisos.Add(permiso);
+                }
+            }
+
+            return listaPermisos;
+        }
+
+        /// <summary>
+        /// Carga la lista de permisos de un rol de comunidad
+        /// </summary>
+        /// <param name="pRolID">ID del rol</param>
+        /// <param name="pEntityContext">Contexto de entidad</param>
+        /// <returns>Lista de permisos con su estado</returns>
+        public static List<PermisoModelRolController> CargarListaDePermisosDeRolComunidad(Guid pRolID, EntityContext pEntityContext)
+        {
+            List<PermisoModelRolController> listaPermisos = new List<PermisoModelRolController>();
+
+            Rol rol = pEntityContext.Rol.FirstOrDefault(x => x.RolID.Equals(pRolID));
+            if (rol != null || pRolID.Equals(Guid.Empty))
+            {
+                // Permisos de Administración
+                foreach (PermisoComunidad permisoComunidad in Enum.GetValues(typeof(PermisoComunidad)))
+                {
+                    PermisoModelRolController permiso = new PermisoModelRolController();
+                    permiso.Nombre = permisoComunidad.ToString();
+
+                    if (!pRolID.Equals(Guid.Empty) && rol != null)
+                    {
+                        permiso.Concedido = TienePermiso(rol.PermisosAdministracion, (ulong)permisoComunidad);
+                    }
+
+                    permiso.Seccion = UtilCadenas.ObtenerAtributoEnum<SectionAttribute>(permisoComunidad).Nombre;
+
+                    listaPermisos.Add(permiso);
+                }
+
+                // Permisos de Contenidos
+                foreach (PermisoContenidos permisoContenidos in Enum.GetValues(typeof(PermisoContenidos)))
+                {
+                    PermisoModelRolController permiso = new PermisoModelRolController();
+                    permiso.Nombre = permisoContenidos.ToString();
+
+                    if (!pRolID.Equals(Guid.Empty) && rol != null)
+                    {
+                        permiso.Concedido = TienePermiso(rol.PermisosContenidos, (ulong)permisoContenidos);
+                    }
+
+                    permiso.Seccion = UtilCadenas.ObtenerAtributoEnum<SectionAttribute>(permisoContenidos).Nombre;
+
+                    listaPermisos.Add(permiso);
+                }
+
+                // Permisos de Recursos
+                foreach (PermisoRecursos permisoRecurso in Enum.GetValues(typeof(PermisoRecursos)))
+                {
+                    PermisoModelRolController permiso = new PermisoModelRolController();
+                    permiso.Nombre = permisoRecurso.ToString();
+
+                    if (!pRolID.Equals(Guid.Empty) && rol != null)
+                    {
+                        permiso.Concedido = TienePermiso(rol.PermisosRecursos, (ulong)permisoRecurso);
+                    }
+
+                    permiso.Seccion = UtilCadenas.ObtenerAtributoEnum<SectionAttribute>(permisoRecurso).Nombre;
+
+                    listaPermisos.Add(permiso);
+                }
+            }
+
+            return listaPermisos;
+        }
+
+        public static ulong ObtenerSumaRolesDeBinario(string pCadenaBinaria, TipoDePermiso pTipoPermiso)
+        {
+            ulong resultado = 0;
+            ulong[] valoresPermisos = null;
+            switch (pTipoPermiso)
+            {
+                case TipoDePermiso.Comunidad:
+                    valoresPermisos = (ulong[])Enum.GetValues(typeof(PermisoComunidad));
+                    break;
+                case TipoDePermiso.Contenidos:
+                    valoresPermisos = (ulong[])Enum.GetValues(typeof(PermisoContenidos));
+                    break;
+                case TipoDePermiso.Recursos:
+                    valoresPermisos = (ulong[])Enum.GetValues(typeof(PermisoRecursos));
+                    break;
+                case TipoDePermiso.Ecosistema:
+                    valoresPermisos = (ulong[])Enum.GetValues(typeof(PermisoEcosistema));
+                    break;
+            }
+
+            for (int i = 0; i < pCadenaBinaria.Length; i++)
+            {
+                if (pCadenaBinaria[i].Equals('1'))
+                {
+                    resultado += valoresPermisos[i];
+                }
+            }
+
+            return resultado;
+        }
+
+		/// <summary>
+		/// Procesa los permisos de recursos semánticos para un rol específico
+		/// </summary>
+		/// <param name="pPermisosRecursosSemanticos">Diccionario con los permisos por ontología</param>
+		/// <param name="pRolID">ID del rol</param>
+		/// <param name="pAmbito">Ámbito del rol</param>
+		/// <exception cref="GnossException">Se lanza si el ámbito es Ecosistema y hay permisos asignados</exception>
+		public static ulong ProcesarPermisosRecursosSemanticos(
+			Dictionary<Guid, DiccionarioDePermisos> pPermisosRecursosSemanticos,
+			Guid pRolID,
+			short pAmbito, EntityContext pEntityContext)
+		{
+			ulong permisos = 0;
+			// Validación temprana
+			if (pPermisosRecursosSemanticos == null || pPermisosRecursosSemanticos.Count == 0)
+			{
+				return permisos;
+			}
+
+			foreach (var kvp in pPermisosRecursosSemanticos)
+			{
+				Guid ontologiaID = kvp.Key;
+				DiccionarioDePermisos dicPermisos = kvp.Value;
+
+				// Calcular permisos agregados
+				permisos = CalcularPermisos(dicPermisos);
+
+				// Guardar o actualizar permisos
+				ActualizarPermisoRolOntologia(ontologiaID, pRolID, permisos,pEntityContext);
+				
+			}
+			return permisos;
+		}
+
+        /// <summary>
+        /// Calcula el valor agregado de permisos basándose en los flags del diccionario
+        /// </summary>
+        public static ulong CalcularPermisos(DiccionarioDePermisos dicPermisos)
+		{
+			ulong permisos = 0;
+
+			if (dicPermisos.CrearRecursoSemantico)
+			{
+				permisos += (ulong)TipoPermisoRecursosSemanticos.Crear;
+			}
+			if (dicPermisos.EditarRecursoSemantico)
+			{
+				permisos += (ulong)TipoPermisoRecursosSemanticos.Modificar;
+			}
+			if (dicPermisos.EliminarRecursoSemantico)
+			{
+				permisos += (ulong)TipoPermisoRecursosSemanticos.Eliminar;
+			}
+			if (dicPermisos.RestaurarVersionRecursoSemantico)
+			{
+				permisos += (ulong)TipoPermisoRecursosSemanticos.RestaurarVersion;
+			}
+			if (dicPermisos.EliminarVersionRecursoSemantico)
+			{
+				permisos += (ulong)TipoPermisoRecursosSemanticos.EliminarVersion;
+			}
+
+			return permisos;
+		}
+
+        /// <summary>
+        /// Valida que un rol con ámbito Ecosistema no tenga permisos de recursos semánticos
+        /// </summary>
+        public static bool EcosistemaConPermisosSemanticos(short pAmbito, ulong permisos)
+		{
+			bool result = false;
+
+			if (pAmbito.Equals((short)AmbitoRol.Ecosistema) && permisos > 0)
+			{
+				result = true;
+			}
+			return result;
+		}
+
+        /// <summary>
+        /// Actualiza o crea el registro de permisos para una ontología y rol
+        /// </summary>
+        public static void ActualizarPermisoRolOntologia(Guid ontologiaID, Guid pRolID, ulong permisos, EntityContext pEntityContext)
+		{
+			var permisoRolOntologia = pEntityContext.RolOntologiaPermiso
+				.FirstOrDefault(x => x.DocumentoID.Equals(ontologiaID) && x.RolID.Equals(pRolID));
+
+			if (permisoRolOntologia != null)
+			{
+				permisoRolOntologia.Permisos = permisos;
+			}
+			else
+			{
+				permisoRolOntologia = new RolOntologiaPermiso
+				{
+					DocumentoID = ontologiaID,
+					RolID = pRolID,
+					Permisos = permisos
+				};
+				pEntityContext.RolOntologiaPermiso.Add(permisoRolOntologia);
+			}
+		}
+        
+
+        #endregion
+
+        #region Métodos estáticos
+
+        public static bool TienePermiso(ulong pRoles, ulong pPermiso)
 		{
 			ulong auxPermiso = pRoles & pPermiso;
 			bool tienePermiso = auxPermiso == pPermiso;
