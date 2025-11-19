@@ -47,12 +47,12 @@ namespace Es.Riam.Gnoss.AD.EntityModel
     using Es.Riam.Gnoss.AD.TareasSegundoPlano;
     using Microsoft.Extensions.Options;
     using Microsoft.EntityFrameworkCore.Metadata.Builders;
-	using Es.Riam.Gnoss.AD.EntityModel.Models.Cache;
+    using Es.Riam.Gnoss.AD.EntityModel.Models.Cache;
 	using Es.Riam.Gnoss.AD.EntityModel.Models.Roles;
     using Es.Riam.Gnoss.AD.ParametroAplicacion;
 	using Es.Riam.Gnoss.AD.EntityModel.Models.Flujos;
 
-	public partial class EntityContext : DbContext
+    public partial class EntityContext : DbContext
     {
         private string mDefaultSchema;
         private bool mCache;
@@ -598,10 +598,10 @@ namespace Es.Riam.Gnoss.AD.EntityModel
                         if (pExito)
                         {
                             transaccion.Commit();
-                            if(nombreTransaccion == "VirtuosoTransaccion")
+                            if (nombreTransaccion == "VirtuosoTransaccion")
                             {
                                 mServicesUtilVirtuosoAndReplication.InsertarInstruccionesEnReplica();
-                        }
+                            }
                         }
                         else
                         {
@@ -1892,7 +1892,7 @@ namespace Es.Riam.Gnoss.AD.EntityModel
                 .WithOne(e => e.Documento)
                 .IsRequired()
                 .OnDelete(DeleteBehavior.Restrict);
-            
+
             if (_configService.ObtenerTipoBD().Equals("0"))
             {
                 SqlServerIndexBuilderExtensions.IncludeProperties(modelBuilder.Entity<Documento>()
@@ -2036,7 +2036,7 @@ namespace Es.Riam.Gnoss.AD.EntityModel
              .HasMany(e => e.ProyectoPestanyaBusquedaPesoOC)
              .WithOne(e => e.OntologiaProyecto)
              .IsRequired()
-             .HasForeignKey(e => new { e.OrganizacionID, e.ProyectoID, e.OntologiaProyecto1})
+             .HasForeignKey(e => new { e.OrganizacionID, e.ProyectoID, e.OntologiaProyecto1 })
              .OnDelete(DeleteBehavior.Restrict);
 
             //FACETA
@@ -2058,6 +2058,10 @@ namespace Es.Riam.Gnoss.AD.EntityModel
                 .IsRequired()
                 .HasForeignKey(e => new { e.OrganizacionID, e.ProyectoID, e.ObjetoConocimiento, e.Faceta })
                 .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<FacetaObjetoConocimientoProyecto>()
+                .Property(b => b.MostrarContador)
+                .HasDefaultValue(true);
 
             modelBuilder.Entity<FacetaObjetoConocimientoProyecto>()
                 .HasMany(e => e.FacetaObjetoConocimientoProyectoPestanya)
@@ -2543,7 +2547,7 @@ namespace Es.Riam.Gnoss.AD.EntityModel
             modelBuilder.Entity<Proyecto>()
                 .HasOne(e => e.ConfiguracionCachesCostosas)
                 .WithOne(e => e.Proyecto)
-                .HasForeignKey<ConfiguracionCachesCostosas>(e => new { e.OrganizacionID, e.ProyectoID})
+                .HasForeignKey<ConfiguracionCachesCostosas>(e => new { e.OrganizacionID, e.ProyectoID })
                 .OnDelete(DeleteBehavior.Cascade);
 
             // Roles
@@ -2873,7 +2877,7 @@ namespace Es.Riam.Gnoss.AD.EntityModel
                 }
                 catch (Exception ex)
                 {
-                    mLoggingService.GuardarLogError(ex, "Error al obtener el contexto por defecto de la base de datos: " + pConexionMaster.ConnectionString,mlogger);
+                    mLoggingService.GuardarLogError(ex, "Error al obtener el contexto por defecto de la base de datos: " + pConexionMaster.ConnectionString, mlogger);
                 }
                 BaseAD.ListaDefaultSchemaPorConexion.TryAdd(pConexionMaster.ConnectionString, schemaDefecto);
             }
@@ -2886,7 +2890,7 @@ namespace Es.Riam.Gnoss.AD.EntityModel
                 }
                 catch (Exception ex)
                 {
-                    mLoggingService.GuardarLogError(ex, "Error al obtener el contexto por defecto de la base de datos: " + pConexionMaster.ConnectionString,mlogger);
+                    mLoggingService.GuardarLogError(ex, "Error al obtener el contexto por defecto de la base de datos: " + pConexionMaster.ConnectionString, mlogger);
                 }
                 BaseAD.ListaDefaultSchemaPorConexion.TryAdd(pConexionMaster.ConnectionString, schemaDefecto);
 

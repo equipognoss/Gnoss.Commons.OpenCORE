@@ -604,10 +604,20 @@ namespace Es.Riam.Gnoss.AD.Flujos
             return null;
 		}
 
-        #endregion
+        public bool EsEstadoInicial(Guid pEstadoID)
+        {
+            return mEntityContext.Estado.Where(x => x.EstadoID.Equals(pEstadoID)).FirstOrDefault().Tipo.Equals((short)TipoEstado.Inicial);
+        }
 
-        #region EstadoIdentidad
-        public List<Guid> ObtenerIdentidadesDeEstadoPorID(Guid pEstadoID)
+		public bool EsEstadoFinal(Guid pEstadoID)
+		{
+			return mEntityContext.Estado.Where(x => x.EstadoID.Equals(pEstadoID)).FirstOrDefault().Tipo.Equals((short)TipoEstado.Final);
+		}
+
+		#endregion
+
+		#region EstadoIdentidad
+		public List<Guid> ObtenerIdentidadesDeEstadoPorID(Guid pEstadoID)
         {
             return mEntityContext.EstadoIdentidad.Where(item => item.EstadoID.Equals(pEstadoID)).Select(item => item.IdentidadID).ToList();
         }
@@ -643,11 +653,14 @@ namespace Es.Riam.Gnoss.AD.Flujos
             mEntityContext.SaveChanges();
         }
 
-        public bool ComprobarIdentidadTienePermisoLecturaEnEstado(Guid pEstadoID, Guid pIdentidadID)
-        {            
-            // TODO FRAN: Comprobar si es el creador
-			EstadoIdentidad estadoIdentidad = mEntityContext.EstadoIdentidad.Where(x => x.EstadoID.Equals(pEstadoID) && x.IdentidadID.Equals(pIdentidadID)).FirstOrDefault();
+        public bool ComprobarIdentidadTienePermisoLecturaEnEstado(Guid pEstadoID, Guid pIdentidadID, Guid pDocumentoID)
+        {
+			if (ComprobarSiEsCreadorYEstadoInicial(pIdentidadID, pDocumentoID, pEstadoID))
+			{
+				return true;
+			}
 
+			EstadoIdentidad estadoIdentidad = mEntityContext.EstadoIdentidad.Where(x => x.EstadoID.Equals(pEstadoID) && x.IdentidadID.Equals(pIdentidadID)).FirstOrDefault();
             if (estadoIdentidad == null)
             {
 				List<Guid> listaGruposIdentidad = mEntityContext.GrupoIdentidadesParticipacion.Where(x => x.IdentidadID.Equals(pIdentidadID)).Distinct().Select(x => x.GrupoID).ToList();
@@ -662,10 +675,14 @@ namespace Es.Riam.Gnoss.AD.Flujos
             }
         }
 
-		public bool ComprobarIdentidadTienePermisoEdicionEnEstado(Guid pEstadoID, Guid pIdentidadID)
+		public bool ComprobarIdentidadTienePermisoEdicionEnEstado(Guid pEstadoID, Guid pIdentidadID, Guid pDocumentoID)
 		{
-			EstadoIdentidad estadoIdentidad = mEntityContext.EstadoIdentidad.Where(x => x.EstadoID.Equals(pEstadoID) && x.IdentidadID.Equals(pIdentidadID) && x.Editor).FirstOrDefault();
+			if (ComprobarSiEsCreadorYEstadoInicial(pIdentidadID, pDocumentoID, pEstadoID))
+			{
+                return true;
+			}
 
+			EstadoIdentidad estadoIdentidad = mEntityContext.EstadoIdentidad.Where(x => x.EstadoID.Equals(pEstadoID) && x.IdentidadID.Equals(pIdentidadID) && x.Editor).FirstOrDefault();
             if (estadoIdentidad == null)
             {
 				List<Guid> listaGruposIdentidad = mEntityContext.GrupoIdentidadesParticipacion.Where(x => x.IdentidadID.Equals(pIdentidadID)).Distinct().Select(x => x.GrupoID).ToList();
@@ -680,6 +697,21 @@ namespace Es.Riam.Gnoss.AD.Flujos
                 return true;
             }
 		}
+
+        public bool ComprobarSiEsCreadorYEstadoInicial(Guid pIdentidadID, Guid pDocumentoID, Guid pEstadoID)
+        {
+			if (!pDocumentoID.Equals(Guid.Empty) && EsEstadoInicial(pEstadoID))
+			{
+				Guid creador = mEntityContext.Documento.Where(x => x.DocumentoID.Equals(pDocumentoID)).Select(x => x.CreadorID).FirstOrDefault();
+				if (creador.Equals(pIdentidadID))
+				{
+					return true;
+				}
+			}
+
+            return false;
+		}
+
         #endregion
 
         #region EstadoGrupo

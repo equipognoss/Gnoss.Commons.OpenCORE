@@ -855,6 +855,10 @@ namespace Es.Riam.Metagnoss.ExportarImportar
 
             foreach (string prop in pPropsEdicion)
             {
+                if(pPropsEdicion.Count > 1 && prop.Equals("http://www.w3.org/1999/02/22-rdf-syntax-ns#type"))
+                {
+                    continue;
+                }
                 List<string> valoresExtra = FacetadoCN.ObtenerObjetosDataSetSegunPropiedad(pFacetadoDS, pValor, prop, pIdioma);
 
                 foreach (string valorExtra in valoresExtra)

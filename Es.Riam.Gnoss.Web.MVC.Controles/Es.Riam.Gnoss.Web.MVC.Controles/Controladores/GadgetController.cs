@@ -857,7 +857,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
                 {
                     listaIDs = (List<Guid>)docCL.ObtenerRelacionadosRecursoMVC(Documento.Clave, ControllerBase.ProyectoSeleccionado.Clave);
                 }
-                if ((listaIDs == null && (pPagina > 0 || !pPrimeraPeticion)) || mSoloGenerarRelacionados)
+                if (listaIDs == null || mSoloGenerarRelacionados)
                 {
                     listaIDs = new List<Guid>();
 

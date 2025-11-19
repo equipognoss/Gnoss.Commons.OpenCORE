@@ -2277,7 +2277,6 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
                         .HasColumnType("text");
 
                     b.Property<string>("PropLongitud")
-                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<string>("PropRuta")
@@ -2643,7 +2642,9 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
                         .HasColumnType("smallint");
 
                     b.Property<bool>("MostrarContador")
-                        .HasColumnType("boolean");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(true);
 
                     b.Property<bool?>("MostrarSoloCaja")
                         .HasColumnType("boolean");
@@ -2766,8 +2767,7 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
                         .HasColumnType("character varying(100)");
 
                     b.Property<string>("NamespacesExtra")
-                        .HasMaxLength(1000)
-                        .HasColumnType("character varying(1000)");
+                        .HasColumnType("text");
 
                     b.Property<string>("NombreCortoOnt")
                         .IsUnicode(false)

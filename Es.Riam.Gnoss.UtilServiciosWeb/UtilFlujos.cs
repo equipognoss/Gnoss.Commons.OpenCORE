@@ -162,14 +162,14 @@ namespace Es.Riam.Gnoss.UtilServiciosWeb
 			return listaTransiciones;
 		}
 
-		public bool IdentidadTienePermisoLecturaEnEstado(Guid pEstadoID, Guid pIdentidadID)
+		public bool IdentidadTienePermisoLecturaEnEstado(Guid pEstadoID, Guid pIdentidadID, Guid pDocumentoID)
 		{
             FlujosCN flujosCN = new FlujosCN(_entityContext, _loggingService, _configService, null, _loggerFactory.CreateLogger<FlujosCN>(), _loggerFactory);
             bool tienePermiso = true;
 
 			if (!flujosCN.ComprobarEstadoEsPublico(pEstadoID))
 			{
-				tienePermiso = flujosCN.ComprobarIdentidadTienePermisoEdicionEnEstado(pEstadoID, pIdentidadID) || flujosCN.ComprobarIdentidadTienePermisoLecturaEnEstado(pEstadoID, pIdentidadID);
+				tienePermiso = flujosCN.ComprobarIdentidadTienePermisoEdicionEnEstado(pEstadoID, pIdentidadID, pDocumentoID) || flujosCN.ComprobarIdentidadTienePermisoLecturaEnEstado(pEstadoID, pIdentidadID, pDocumentoID);
 			}
 
 			return tienePermiso;

@@ -364,6 +364,7 @@ namespace Es.Riam.Gnoss.AD.RDF
             if (pDocumentosID.Count > 0)
             {
                 bool esOracle = (ConexionMaster is OracleConnection);
+                bool esPostgres = (ConexionMaster is NpgsqlConnection);
 
                 StringBuilder sql = new StringBuilder();
                 int contador = 0;
@@ -395,7 +396,7 @@ namespace Es.Riam.Gnoss.AD.RDF
                     }
                     else
                     {
-                        ActualizarBaseDeDatos(ObtenerComando(sql.ToString()), true, esOracle);
+                        ActualizarBaseDeDatos(ObtenerComando(sql.ToString()), true, esOracle, esPostgres, mEntityContextBASE);
 
                         //hay que seguir añadiendo del 10 en adelante
                         contador = 0;
@@ -405,7 +406,7 @@ namespace Es.Riam.Gnoss.AD.RDF
 
                 if (contador > 0)
                 {
-                    ActualizarBaseDeDatos(ObtenerComando(sql.ToString()), true, esOracle);
+                    ActualizarBaseDeDatos(ObtenerComando(sql.ToString()), true, esOracle, esPostgres, mEntityContextBASE);
                 }
             }
         }

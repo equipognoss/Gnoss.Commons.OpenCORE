@@ -238,20 +238,35 @@ namespace Es.Riam.Gnoss.Logica.Flujos
             FlujosAD.EliminarEstadoIdentidad(pListaIdentidadID, pEstadoID);
         }
 
-		public bool ComprobarIdentidadTienePermisoLecturaEnEstado(Guid pEstadoID, Guid pIdentidadID)
+		public bool ComprobarIdentidadTienePermisoLecturaEnEstado(Guid pEstadoID, Guid pIdentidadID, Guid pDocumentoID)
 		{
-			return FlujosAD.ComprobarIdentidadTienePermisoLecturaEnEstado(pEstadoID, pIdentidadID);
+			return FlujosAD.ComprobarIdentidadTienePermisoLecturaEnEstado(pEstadoID, pIdentidadID, pDocumentoID);
 		}
 
-		public bool ComprobarIdentidadTienePermisoEdicionEnEstado(Guid pEstadoID, Guid pIdentidadID)
+		public bool ComprobarIdentidadTienePermisoEdicionEnEstado(Guid pEstadoID, Guid pIdentidadID, Guid pDocumentoID)
         {
-            return FlujosAD.ComprobarIdentidadTienePermisoEdicionEnEstado(pEstadoID, pIdentidadID);
+            return FlujosAD.ComprobarIdentidadTienePermisoEdicionEnEstado(pEstadoID, pIdentidadID, pDocumentoID);
 		}
 
-        #endregion
+        public bool EsEstadoInicial(Guid pEstadoID)
+        {
+            return FlujosAD.EsEstadoInicial(pEstadoID);
+        }
 
-        #region EstadoGrupo
-        public List<Guid> ObtenerGruposIDPorEstadoID(Guid pEstadoID)
+        public bool EsEstadoFinal(Guid pEstadoID)
+        {
+            return FlujosAD.EsEstadoFinal(pEstadoID);
+        }
+
+		public bool ComprobarSiEsCreadorYEstadoInicial(Guid pIdentidadID, Guid pDocumentoID, Guid pEstadoID)
+		{
+            return FlujosAD.ComprobarSiEsCreadorYEstadoInicial(pIdentidadID, pDocumentoID, pEstadoID);
+        }
+
+		#endregion
+
+		#region EstadoGrupo
+		public List<Guid> ObtenerGruposIDPorEstadoID(Guid pEstadoID)
         {
             return FlujosAD.ObtenerGruposIDPorEstadoID(pEstadoID);
         }

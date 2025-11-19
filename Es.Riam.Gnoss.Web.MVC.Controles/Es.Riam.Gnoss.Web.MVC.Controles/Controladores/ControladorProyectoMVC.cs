@@ -2152,7 +2152,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
                         {
                             recursoModel.Private = true;
                             // Comprobar si la identidad actual tiene permisos de lectura / edicion
-                            tienePermisos = flujosCN.ComprobarIdentidadTienePermisoLecturaEnEstado(estadoID, mIdentidadActual.Clave) || flujosCN.ComprobarIdentidadTienePermisoEdicionEnEstado(estadoID, mIdentidadActual.Clave);
+                            tienePermisos = flujosCN.ComprobarIdentidadTienePermisoLecturaEnEstado(estadoID, mIdentidadActual.Clave, recursoModel.OriginalKey) || flujosCN.ComprobarIdentidadTienePermisoEdicionEnEstado(estadoID, mIdentidadActual.Clave, recursoModel.OriginalKey);
                         }
                         else
                         {

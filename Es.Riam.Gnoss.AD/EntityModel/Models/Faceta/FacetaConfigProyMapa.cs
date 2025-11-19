@@ -22,7 +22,6 @@ namespace Es.Riam.Gnoss.AD.EntityModel.Models.Faceta
 
         public string PropLatitud { get; set; }
 
-        [Required]
         public string PropLongitud { get; set; }
 
         public string PropRuta { get; set; }

@@ -2275,7 +2275,6 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextOracleMigrations
                         .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<string>("PropLongitud")
-                        .IsRequired()
                         .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<string>("PropRuta")
@@ -2641,7 +2640,9 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextOracleMigrations
                         .HasColumnType("NUMBER(5)");
 
                     b.Property<bool>("MostrarContador")
-                        .HasColumnType("NUMBER(1)");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("NUMBER(1)")
+                        .HasDefaultValue(true);
 
                     b.Property<bool?>("MostrarSoloCaja")
                         .HasColumnType("NUMBER(1)");
@@ -2764,8 +2765,7 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextOracleMigrations
                         .HasColumnType("NVARCHAR2(100)");
 
                     b.Property<string>("NamespacesExtra")
-                        .HasMaxLength(1000)
-                        .HasColumnType("NVARCHAR2(1000)");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<string>("NombreCortoOnt")
                         .IsUnicode(false)

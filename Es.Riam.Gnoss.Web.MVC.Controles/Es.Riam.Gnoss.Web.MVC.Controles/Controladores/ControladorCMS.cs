@@ -537,7 +537,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
             if (pComponente.Estado.HasValue) 
             {
                 UtilFlujos utilFlujos = new UtilFlujos(mEntityContext, mLoggingService, mConfigService, mloggerFactory.CreateLogger<UtilFlujos>(), mloggerFactory);
-                return utilFlujos.IdentidadTienePermisoLecturaEnEstado(pComponente.Estado.Value, IdentidadActual.Clave);
+                return utilFlujos.IdentidadTienePermisoLecturaEnEstado(pComponente.Estado.Value, IdentidadActual.Clave, Guid.Empty);
             }
 
             if (!EsIdentidadInvitada && !PerfilID.Equals(UsuarioAD.Invitado))
