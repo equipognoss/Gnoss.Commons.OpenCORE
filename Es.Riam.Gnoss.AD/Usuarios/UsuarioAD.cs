@@ -3406,6 +3406,39 @@ namespace Es.Riam.Gnoss.AD.Usuarios
             return query.Distinct().ToList();
         }
 
+        /// <summary>
+        /// Obtiene los grupos a los que pertenece una identidad concreta.
+        /// </summary>
+        /// <param name="identidadID">Identificador de la identidad</param>
+        /// <returns>Lista de GrupoUsuarioConRoles que contine el nombre del grupo y los roles</returns>
+        public List<GrupoUsuarioConRoles> ObtenerGruposDeUsuario(Guid identidadID)
+        {
+            var query = mEntityContext.GrupoIdentidadesParticipacion
+                .Where(gip => gip.IdentidadID == identidadID)
+                .Join(mEntityContext.GrupoIdentidades,
+                      gip => gip.GrupoID,
+                      gi => gi.GrupoID,
+                      (gip, gi) => new { GrupoParticipacion = gip, Grupo = gi })
+                .Join(mEntityContext.RolGrupoIdentidades,
+                      g => g.Grupo.GrupoID,
+                      rgi => rgi.GrupoID,
+                      (g, rgi) => new { g.Grupo, rgi.RolID })
+                .Join(mEntityContext.Rol,
+                      gr => gr.RolID,
+                      rol => rol.RolID,
+                      (gr, rol) => new { gr.Grupo, Rol = rol })
+                .GroupBy(gr => new { gr.Grupo.GrupoID, gr.Grupo.Nombre })
+                .Select(g => new GrupoUsuarioConRoles
+                {
+                    NombreGrupo = g.Key.Nombre,
+                    RolesGrupo = g.Select(x => x.Rol).ToList()
+                });
+
+            return query.ToList();
+        }
+
+
+
         public void ValidarUsuario(Guid pUsuarioID)
         {
             EntityModel.Models.UsuarioDS.Usuario usuario = mEntityContext.Usuario.Where(item => item.UsuarioID.Equals(pUsuarioID)).FirstOrDefault();

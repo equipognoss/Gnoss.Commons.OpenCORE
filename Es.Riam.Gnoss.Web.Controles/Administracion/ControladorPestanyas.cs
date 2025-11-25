@@ -2338,15 +2338,10 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
 				mEntityContext.EliminarElemento(filaExportacion);
 			}
 
-			ProyectoPestanyaBusqueda filasBusqueda = filaPestanya.ProyectoPestanyaBusqueda;
-			if (filasBusqueda != null)
-			{
-				filaPestanya.ProyectoPestanyaBusqueda = null;
-				mEntityContext.EliminarElemento(filasBusqueda);
+			EliminarPestanyaBusqueda(filaPestanya);
 
-			}
 
-			List<ConfigAutocompletarProy> filasConfigAutocompletarProy = filaPestanya.ConfigAutocompletarProy.ToList();
+            List<ConfigAutocompletarProy> filasConfigAutocompletarProy = filaPestanya.ConfigAutocompletarProy.ToList();
 			foreach (ConfigAutocompletarProy filaConfigAutocompletarProy in filasConfigAutocompletarProy)
 			{
 				filaPestanya.ConfigAutocompletarProy.Remove(filaConfigAutocompletarProy);
@@ -2840,6 +2835,37 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
         public bool ExistePestanyaDelMismoTipo(short TipoPestanya)
         {
             return GestionProyectos.DataWrapperProyectos.ListaProyectoPestanyaMenu.Any(p => p.TipoPestanya == TipoPestanya);
+        }
+
+        /// <summary>
+        /// Se encarga de eliminar la pestanya de búsqueda asociada a la pestanya de menú que se le pasa y 
+		/// sus dependencias
+        /// </summary>
+        /// <param name="pFilaPestanya">ProyectoPestanyaMenu a la que está asociada la página de búsqueda</param>
+        private void EliminarPestanyaBusqueda(AD.EntityModel.Models.ProyectoDS.ProyectoPestanyaMenu pFilaPestanya)
+		{
+            ProyectoPestanyaBusqueda filasBusqueda = pFilaPestanya.ProyectoPestanyaBusqueda;
+            if (filasBusqueda != null)
+            {
+                List<ProyectoPestanyaBusquedaPesoOC> listaProyectoPestanyaBusquedaPesoOCs = pFilaPestanya.ProyectoPestanyaBusqueda.ProyectoPestanyaBusquedaPesoOC.ToList();
+
+                foreach (ProyectoPestanyaBusquedaPesoOC filaPesoOC in listaProyectoPestanyaBusquedaPesoOCs)
+                {
+                    pFilaPestanya.ProyectoPestanyaBusqueda.ProyectoPestanyaBusquedaPesoOC.Remove(filaPesoOC);
+                    mEntityContext.EliminarElemento(filaPesoOC);
+                }
+
+				List<FacetaObjetoConocimientoProyectoPestanya> listaFacetaObjetoConocimientoProyectoPestanyas = pFilaPestanya.FacetaObjetoConocimientoProyectoPestanya.Where(item => item.PestanyaID.Equals(pFilaPestanya.PestanyaID)).ToList();
+
+				foreach(FacetaObjetoConocimientoProyectoPestanya filaFacetaObjetoConocimientoProyPest in listaFacetaObjetoConocimientoProyectoPestanyas)
+				{
+					pFilaPestanya.FacetaObjetoConocimientoProyectoPestanya.Remove(filaFacetaObjetoConocimientoProyPest);
+					mEntityContext.EliminarElemento(filaFacetaObjetoConocimientoProyPest);
+                }
+
+                pFilaPestanya.ProyectoPestanyaBusqueda = null;
+                mEntityContext.EliminarElemento(filasBusqueda);
+            }
         }
 
         private static bool CompararObjetos(object obj1, object obj2)

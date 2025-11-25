@@ -7006,13 +7006,13 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
         }
 
         /// <summary>
-        /// Obtiene el peso de una ontologia para una pesta?a concreta para poder crear el autocompletar con dicho peso
+        /// Obtiene el peso de una ontología para una pestaña concreta para poder crear el autocompletar con dicho peso
         /// </summary>
-        /// <param name="proyectoID">identificador del proyecto donde se encuentra la pesta?a</param>
-        /// <param name="organizacionID">Identificador de la organizaci?n</param>
-        /// <param name="valorOnto">Ontologia del proyecto</param>
-        /// <param name="pestanyaID">Identificador de la pesta?a</param>
-        /// <param name="subtipo">subtipo de la ontologia</param>
+        /// <param name="pProyectoID">Identificador del proyecto donde se encuentra la pesta�a</param>
+        /// <param name="pOrganizacionID">Identificador de la organización</param>
+        /// <param name="pValorOnto">Ontología del proyecto</param>
+        /// <param name="pPestanyaID">Identificador de la pestaña</param>
+        /// <param name="pSubtipo">subtipo de la ontologia</param>
         /// <returns>peso del subtipo para ese OC</returns>
         public int ObtenerPesoPestanyaBusquedaOC(Guid pProyectoID, Guid pOrganizacionID, string pValorOnto, Guid pPestanyaID, string pSubtipo)
         {

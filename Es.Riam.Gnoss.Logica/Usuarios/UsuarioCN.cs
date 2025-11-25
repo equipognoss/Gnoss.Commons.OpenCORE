@@ -1427,6 +1427,16 @@ namespace Es.Riam.Gnoss.Logica.Usuarios
         }
 
         /// <summary>
+        /// Obtiene los grupos a los que pertenece una identidad concreta.
+        /// </summary>
+        /// <param name="identidadID">Identificador de la identidad</param>
+        /// <returns>Lista de GrupoUsuarioConRoles que contine el nombre del grupo y los roles</returns>
+        public List<GrupoUsuarioConRoles> ObtenerGruposDeUsuario(Guid identidadID)
+        {
+            return UsuarioAD.ObtenerGruposDeUsuario(identidadID);
+        }
+
+        /// <summary>
         /// Obtiene una lista de identificadores de los usuarios que se han suscrito a alguna categoría del tesauro o a otros usuarios o se han hecho miembros de la comunidad
         /// </summary>
         /// <param name="pProyectoID">Identificador de la comunidad</param>

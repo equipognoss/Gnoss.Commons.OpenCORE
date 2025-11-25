@@ -727,8 +727,7 @@ namespace Es.Riam.Gnoss.AD.AutoCompetarEtiquetas
 
                     AgregarParametro(comandoUpdateTag, IBD.ToParam("Tag"), DbType.String, filaVariar.Etiqueta);
                     AgregarParametro(comandoUpdateTag, IBD.ToParam("Tipo"), DbType.String, filaVariar.Tipo);
-                    AgregarParametro(comandoUpdateTag, IBD.ToParam("Faceta"), DbType.String, filaVariar.Faceta);
-                    AgregarParametro(comandoUpdateTag, IBD.ToParam("MetaBusqueda"), DbType.Boolean, filaVariar.MetaBusqueda);
+                    AgregarParametro(comandoUpdateTag, IBD.ToParam("Faceta"), DbType.String, filaVariar.Faceta);                    
                     filasAfectadas = ActualizarBaseDeDatos(comandoUpdateTag);
 
                     if (filasAfectadas == 0) //Hay que hacer un INSERT
@@ -765,7 +764,6 @@ namespace Es.Riam.Gnoss.AD.AutoCompetarEtiquetas
                         AgregarParametro(comandoUpdateTag, IBD.ToParam("Tag"), DbType.String, filaVariar.Etiqueta);
                         AgregarParametro(comandoUpdateTag, IBD.ToParam("Tipo"), DbType.String, filaVariar.Tipo);
                         AgregarParametro(comandoUpdateTag, IBD.ToParam("Faceta"), DbType.String, filaVariar.Faceta);
-                        AgregarParametro(comandoUpdateTag, IBD.ToParam("MetaBusqueda"), DbType.Boolean, filaVariar.MetaBusqueda);
 
                         filasAfectadas = ActualizarBaseDeDatos(comandoUpdateTag);
                     }
@@ -1563,7 +1561,7 @@ namespace Es.Riam.Gnoss.AD.AutoCompetarEtiquetas
                 foreach (TagsAutoDS.TagsVariarRow fila in filas)
                 {
                     numFila++;
-                    sb.AppendLine($"{coma}('{fila.ProyectoID}', {IBD.ToParam($"Etiqueta{numFila}")}, {IBD.ToParam($"Tipo{numFila}")}, {IBD.ToParam($"Faceta{numFila}")}, {fila.Cantidad}, {IBD.ToParam($"IdentidadID{numFila}")}, {IBD.ToParam($"Extra{numFila}")}, {Convert.ToInt16(fila.MetaBusqueda)}, {IBD.ToParam($"Idioma{numFila}")}, {IBD.ToParam($"GrupoID{numFila}")})");
+                    sb.AppendLine($"{coma}('{fila.ProyectoID}', {IBD.ToParam($"Etiqueta{numFila}")}, {IBD.ToParam($"Tipo{numFila}")}, {IBD.ToParam($"Faceta{numFila}")}, {fila.Cantidad}, {IBD.ToParam($"IdentidadID{numFila}")}, {IBD.ToParam($"Extra{numFila}")}, {IBD.ToParam($"Idioma{numFila}")}, {IBD.ToParam($"GrupoID{numFila}")})");
 
                     AgregarParametro(comando, IBD.ToParam($"Etiqueta{numFila}"), DbType.String, fila.Etiqueta);
                     AgregarParametro(comando, IBD.ToParam($"Tipo{numFila}"), DbType.String, fila.Tipo);

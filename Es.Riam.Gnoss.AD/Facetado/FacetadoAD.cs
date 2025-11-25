@@ -4302,7 +4302,7 @@ namespace Es.Riam.Gnoss.AD.Facetado
                 string nombreOntologia = null;
                 if (pListaFiltros.ContainsKey("rdf:type"))
                 {
-                    foreach (string ontologia in pListaFiltros["rdf:type"])
+                    foreach (string ontologia in pListaFiltros["rdf:type"].Where(item => !item.Equals("Recurso")))
                     {
                         nombreOntologia = $"{ontologia}.owl";
                         bool propiedadEncontrada = CargarDatosPropiedadOntologia(nombreOntologia, tipoFiltro, pDatosPropiedadesOntologias);

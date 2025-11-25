@@ -84,6 +84,18 @@ namespace Es.Riam.Gnoss.Web.MVC.Models.Administracion
         public List<RolModel> Roles { get; set; }
 
         public List<Guid> RolesYaTiene { get; set; }
+        public List<RolHeredado> RolesHeredados { get;set; }
+    }
+
+    public partial class RolHeredado
+    {
+        public RolHeredado()
+        {
+
+        }
+        public string Nombre { get; set; }
+        public string Descripcion { get; set; }
+        public string GrupoOrigen { get;set; }
     }
 
     public partial class CambiarRolGrupoViewModel

@@ -2835,20 +2835,6 @@ namespace Es.Riam.Gnoss.AD.AutoCompetarEtiquetas.Model
 
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
-            public bool MetaBusqueda
-            {
-                get
-                {
-                    return ((bool)(this[this.tableTagsVariar.MetaBusquedaColumn]));
-                }
-                set
-                {
-                    this[this.tableTagsVariar.MetaBusquedaColumn] = value;
-                }
-            }
-
-            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
             public string Idioma
             {
                 get
