@@ -2645,7 +2645,7 @@ namespace Es.Riam.Gnoss.AD.EntityModel
 				.HasForeignKey(e => e.FlujoID)
 				.OnDelete(DeleteBehavior.Cascade);
 
-			modelBuilder.Entity<OntologiaProyecto>()
+            modelBuilder.Entity<OntologiaProyecto>()
 				.HasOne(e => e.FlujoObjetoConocimientoProyecto)
 				.WithOne(e => e.OntologiaProyecto)
 				.HasForeignKey<FlujoObjetoConocimientoProyecto>(e => new { e.OrganizacionID, e.ProyectoID, e.Ontologia })
@@ -2802,7 +2802,18 @@ namespace Es.Riam.Gnoss.AD.EntityModel
 				.HasForeignKey(e => e.GrupoID)
 				.OnDelete(DeleteBehavior.Cascade);
 
-			if (mDefaultSchema != null && mDefaultSchema.Equals("dbo"))
+            modelBuilder.Entity<VersionDocumento>()
+               .HasOne(e => e.Estado)
+               .WithMany(e => e.VersionesDocumentos)
+               .HasForeignKey(e => e.EstadoID)
+               .IsRequired(false)
+               .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<VersionDocumento>()
+               .Property(b => b.EstadoVersion)
+               .HasDefaultValue(2);
+
+            if (mDefaultSchema != null && mDefaultSchema.Equals("dbo"))
             {
                 if (_configService.ObtenerTipoBD().Equals("2"))
                 {

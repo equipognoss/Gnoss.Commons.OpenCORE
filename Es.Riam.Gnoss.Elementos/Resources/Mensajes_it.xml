@@ -231,7 +231,16 @@
 		  <asunto>{#NombrePersona#} ha modificato lo stato della risorsa</asunto>
 		  <texto>{p}{#NombrePersona#} ha modificato lo stato della risorsa {a href="{#UrlEnlace#}"}{#NombreDoc#}{/a} ed è passato dallo stato {#NombreEstadoOrigen#} a {#NombreEstadoDestino#}{/p}{p}Commento dell’editore: {i}'{#Comentario#}'{/i}{/p}</texto>
 	  </mensaje>
-    <mensaje id="140">
+	  <mensaje id="133">
+		  <asunto>{#NombrePersona#} ha accettato il miglioramento della risorsa {#NombreDoc#}</asunto>
+		  <texto>{p}{#NombrePersona#} ha accettato il miglioramento della risorsa {a href="{#UrlEnlace#}"}{#NombreDoc#}{/a} {/p}</texto>
+	  </mensaje>
+	  <mensaje id="134">
+		  <asunto>{#NombrePersona#} ha annullato il miglioramento della risorsa {#NombreDoc#}</asunto>
+		  <texto>{p}{#NombrePersona#} ha annullato il miglioramento della risorsa {a href="{#UrlEnlace#}"}{#NombreDoc#}{/a} {/p}</texto>
+	  </mensaje>
+
+	  <mensaje id="140">
       <asunto>Hai un link: {#NombreDoc#}</asunto>
       <texto>{p}{#NombreRemitente#} ti ha inviato un link di {#NombreProyecto#}.{/p}{p}{#Notas#}{/p}{p} {#UrlEnlace#}{/p}</texto>
     </mensaje>

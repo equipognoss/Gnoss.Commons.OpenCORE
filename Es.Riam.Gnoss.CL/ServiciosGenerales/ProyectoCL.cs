@@ -2560,6 +2560,79 @@ namespace Es.Riam.Gnoss.CL.ServiciosGenerales
             InvalidarCache(rawKey, true);
         }
 
+        /// <summary>
+        /// Obtiene un n�mero espec�fico de proyectos en los que participa el usuario
+        /// </summary>
+        /// <param name="pUsuarioID">Id del usuario</param>
+        /// <param name="numeroResultados">Numero de proyectos que se van a devolver</param>
+        /// <returns>Devuelve lista con los Id de los proyectos que participa el usuario</returns>
+        public List<Guid> ObtenerProyectosIDParticipaUsuario(Guid pUsuarioID, int numeroResultados)
+        {
+            string rawKey = $"ListaProyectosUsuario_{pUsuarioID}";
+
+            List<Guid> listaProyectosUsuario = ObtenerObjetoDeCache(rawKey, typeof(List<Guid>)) as List<Guid>;
+
+            if (listaProyectosUsuario == null)
+            {
+                using (ProyectoCN proyectoCN = new ProyectoCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<ProyectoCN>(), mLoggerFactory) )
+                {
+                    listaProyectosUsuario = proyectoCN.ObtenerProyectosIDParticipaUsuario(pUsuarioID, numeroResultados);
+                }
+
+                AgregarObjetoCache(rawKey, listaProyectosUsuario, DURACION_CACHE_UNA_HORA);
+            }
+
+            return listaProyectosUsuario;            
+        }
+
+        /// <summary>
+        /// Obtenemos el número de recursos por proyecto en un diccionario donde la clave 
+        /// es el proyectoID y el valor el número de recursos que hay en el proyecto
+        /// </summary>
+        /// <returns>Un diccionario donde la clave es el identificador del proyecto y el valor es el número de recursos</returns>
+        public Dictionary<Guid, int> ObtenerContadoresRecursoProyecto()
+        {
+            string rawKey = "ContadoresRecursoProyectos";
+
+            Dictionary<Guid, int> contadoresPorProyecto = ObtenerObjetoDeCache(rawKey, typeof(Dictionary<Guid, int>)) as Dictionary<Guid, int>;
+            
+            if(contadoresPorProyecto == null)
+            {
+                using(ProyectoCN proyectoCN = new ProyectoCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<ProyectoCN>(), mLoggerFactory))
+                {
+                    contadoresPorProyecto = proyectoCN.ObtenerContadoresRecursoProyecto();
+                }
+                
+                AgregarObjetoCache(rawKey, contadoresPorProyecto, DURACION_CACHE_UNA_HORA);
+            }
+
+            return contadoresPorProyecto;
+        }
+
+        /// <summary>
+        /// Obtenemos el número de miembros por proyecto en un diccionario donde la clave 
+        /// es el proyectoID y el valor el número de usuarios dados de alta en el proyecto
+        /// </summary>
+        /// <returns>Un diccionario donde la clave es el identificador del proyecto y el valor es el número de usuarios dados de alta en el proyecto</returns>
+        public Dictionary<Guid, int> ObtenerContadoresMiembrosProyecto()
+        {
+            string rawKey = "ContadoresMiembrosProyectos";
+
+            Dictionary<Guid, int> contadoresPorProyecto = ObtenerObjetoDeCache(rawKey, typeof(Dictionary<Guid, int>)) as Dictionary<Guid, int>;
+
+            if (contadoresPorProyecto == null)
+            {
+                using (ProyectoCN proyectoCN = new ProyectoCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<ProyectoCN>(), mLoggerFactory))
+                {
+                    contadoresPorProyecto = proyectoCN.ObtenerContadoresMiembrosProyecto();
+                }
+
+                AgregarObjetoCache(rawKey, contadoresPorProyecto, DURACION_CACHE_UNA_HORA);
+            }
+
+            return contadoresPorProyecto;
+        }
+
         #endregion
 
         #region Propiedades

@@ -622,6 +622,7 @@ namespace Es.Riam.Gnoss.CL
         public const double DURACION_CACHE_UN_MES = 60 * 60 * 24 * 30;
         public const double DURACION_CACHE_TRES_DIAS = 60 * 60 * 72;
         public const double DURACION_CACHE_UN_DIA = 60 * 60 * 24;
+        public const double DURACION_CACHE_UNA_HORA = 60 * 60;
         public const double DURACION_CACHE_CUATRO_HORAS = 60 * 60 * 4;
 
 
@@ -965,7 +966,7 @@ namespace Es.Riam.Gnoss.CL
         }
 
         /// <summary>
-        /// Obtiene un objeto de la cach�
+        /// Obtiene un objeto de la caché
         /// </summary>
         /// <param name="pRawKey">Clave del objeto</param>
         /// <param name="pTipo">Especifica el tipo con el que se deserializar�</param>
@@ -976,7 +977,7 @@ namespace Es.Riam.Gnoss.CL
         }
 
         /// <summary>
-        /// Obtiene un objeto de la cach�
+        /// Obtiene un objeto de la caché
         /// </summary>
         /// <param name="pRawKey">Clave del objeto</param>
         /// <param name="pGenerarClave">Indica si se debe generar la clave, o coger la pasada como parametro</param>

@@ -1398,6 +1398,17 @@ namespace Es.Riam.Gnoss.Logica.Documentacion
         {
             return DocumentacionAD.ObtenerRecursosDeOntologia(pOntologiaID);
         }
+        /// <summary>
+        /// Obtiene los ID de todos los recursos afectados por un flujo que son una mejora activa
+        /// </summary>
+        /// <param name="pProyectoID"></param>
+        /// <param name="pTipos"></param>
+        /// <param name="pOntologias"></param>
+        /// <returns></returns>
+        public List<Guid> ObtenerRecursosConMejorasActivas(Guid pProyectoID, List<int> pTipos, List<Guid?> pOntologias)
+        {
+            return DocumentacionAD.ObtenerRecursosConMejorasActivas(pProyectoID, pTipos, pOntologias);
+        }
 
 
         /// <summary>
@@ -1813,45 +1824,13 @@ namespace Es.Riam.Gnoss.Logica.Documentacion
         }
 
         /// <summary>
-        /// Actualiza el campo UltimaVersion de un documento que ha dejado de ser la última versión
+        /// Obtiene la última versión de un documento en base de datos
         /// </summary>
-        /// <param name="pDocumentoID">Identificador del documento</param>
-        public void ActualizarUltimaVersionDocumento(Guid pDocumentoID)
+        /// <param name="pDocumentoID">Documento original</param>
+        /// <returns></returns>
+        public Documento ObtenerUltimaVersionDocumento(Guid pDocumentoID)
         {
-            try
-            {
-                if (Transaccion != null)
-                {
-                    DocumentacionAD.ActualizarUltimaVersionDocumento(pDocumentoID);
-                }
-                else
-                {
-                    IniciarTransaccion();
-                    {
-                        DocumentacionAD.ActualizarUltimaVersionDocumento(pDocumentoID);
-                        TerminarTransaccion(true);
-                    }
-                }
-            }
-            catch (DBConcurrencyException ex)
-            {
-                TerminarTransaccion(false);
-                // Error de concurrencia
-                mLoggingService.GuardarLogError(ex,mlogger);
-                throw new ErrorConcurrencia();
-            }
-            catch (DataException ex)
-            {
-                TerminarTransaccion(false);
-                //Error interno de la aplicación				
-                mLoggingService.GuardarLogError(ex,mlogger);
-                throw new ErrorInterno();
-            }
-            catch
-            {
-                TerminarTransaccion(false);
-                throw;
-            }
+            return DocumentacionAD.ObtenerUltimaVersionDocumento(pDocumentoID);
         }
 
         /// <summary>
@@ -2250,12 +2229,17 @@ namespace Es.Riam.Gnoss.Logica.Documentacion
             DocumentacionAD.ObtenerVersionDocumentosPorIDs(pDataWrapperDocumentacion, pListaDocumentosID, pRelaciones);
         }
 
-        /// <summary>
-        /// Carga todas las versiones de un documento.
-        /// </summary>
-        /// <param name="pDocumentoID">Identificador del documento del que se quieren obtener las versiones</param>
-        /// <returns>Identificadores de los documentos</returns>
-        public Dictionary<Guid, int> ObtenerVersionesDocumentoIDPorID(Guid pDocumentoID)
+        public Guid ObtenerUltimaVersionDeDocumento(Guid pDocumentoID)
+        {
+            return DocumentacionAD.ObtenerUltimaVersionDeDocumento(pDocumentoID);
+        }
+
+		/// <summary>
+		/// Carga todas las versiones de un documento.
+		/// </summary>
+		/// <param name="pDocumentoID">Identificador del documento del que se quieren obtener las versiones</param>
+		/// <returns>Identificadores de los documentos</returns>
+		public Dictionary<Guid, int> ObtenerVersionesDocumentoIDPorID(Guid pDocumentoID)
         {
             return DocumentacionAD.ObtenerVersionesDocumentoIDPorID(pDocumentoID);
         }
@@ -2265,13 +2249,17 @@ namespace Es.Riam.Gnoss.Logica.Documentacion
             return DocumentacionAD.ObtenerDocumentoOriginalIDPorID(pDocumentoID);
         }
 
+        public bool ComprobarSiDocumentoEsUnaMejora(Guid pDocumentoID)
+        {
+            return DocumentacionAD.ComprobarSiDocumentoEsUnaMejora(pDocumentoID);
+		}
 
-        /// <summary>
-        /// Carga todas las versiones de una página de forma ordenada.
-        /// </summary>
-        /// <param name="pPestanyaID">Identificador de la página de la que se quieren obtener las versiones</param>
-        /// <returns>Listado ordenano por versiones de las páginas </returns>
-        public List<ProyectoPestanyaMenuVersionPagina> ObtenerListaVersionesPaginaPorID(Guid pPestanyaID)
+		/// <summary>
+		/// Carga todas las versiones de una página de forma ordenada.
+		/// </summary>
+		/// <param name="pPestanyaID">Identificador de la página de la que se quieren obtener las versiones</param>
+		/// <returns>Listado ordenano por versiones de las páginas </returns>
+		public List<ProyectoPestanyaMenuVersionPagina> ObtenerListaVersionesPaginaPorID(Guid pPestanyaID)
         {
             return DocumentacionAD.ObtenerListaVersionesPaginaPorID(pPestanyaID);
         }
@@ -2853,17 +2841,40 @@ namespace Es.Riam.Gnoss.Logica.Documentacion
             DocumentacionAD.CambiarEstadoDocumento(pDocumentoID, pEstadoID);
         }
 
-		#endregion
+        #endregion
+        #region mejoras en flujos
+        public VersionDocumento ObtenerVersionPorVersionID(Guid pDocumentoID)
+        {
+            return DocumentacionAD.ObtenerVersionPorVersionID(pDocumentoID);
+        }
+        public List<VersionDocumento> ObtenerVersionesPorDocumentoOriginalID(Guid pDocumentoID)
+        {
+            return DocumentacionAD.ObtenerVersionesPorDocumentoOriginalID(pDocumentoID);
+        }
 
-		#endregion
+        /// <summary>
+        /// Cambia la mejora a Activa y el resto de versiones asociadas a la versión pero que no es la aceptada a historico
+        /// </summary>
+        /// <param name="pVersionDocumento"></param>
+        public void CambiarEstadoVersionesDeMejoraAprobada(VersionDocumento pVersionDocumento)
+        {
+            DocumentacionAD.CambiarEstadoVersionesDeMejoraAprobada(pVersionDocumento);
+        }
 
-		#region Privados
+        public void EliminarVersionesDeMejora(Guid pMejoraID)
+        {
+            DocumentacionAD.EliminarVersionesDeMejora(pMejoraID);
+        }
+        #endregion
+        #endregion
 
-		/// <summary>
-		/// Valida los documentos
-		/// </summary>
-		/// <param name="pDocumentos">Lista de documentos para validar</param>
-		private void ValidarDocumentos(List<Documento> pDocumentos)
+        #region Privados
+
+        /// <summary>
+        /// Valida los documentos
+        /// </summary>
+        /// <param name="pDocumentos">Lista de documentos para validar</param>
+        private void ValidarDocumentos(List<Documento> pDocumentos)
         {
             if (pDocumentos != null)
             {
@@ -2933,12 +2944,16 @@ namespace Es.Riam.Gnoss.Logica.Documentacion
             }
         }
 
-		
-		#endregion
+       
 
-		#region Propiedades
 
-		private DocumentacionAD DocumentacionAD
+
+
+        #endregion
+
+        #region Propiedades
+
+        private DocumentacionAD DocumentacionAD
         {
             get
             {

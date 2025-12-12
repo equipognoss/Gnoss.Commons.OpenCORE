@@ -13,9 +13,9 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextOracleMigrations
             migrationBuilder.AddColumn<bool>(
                 name: "AutocompletarEnriquecido",
                 table: "FacetaObjetoConocimientoProyectoPestanya",
-                type: "BOOLEAN",
+                type: "NUMBER(1)",
                 nullable: false,
-                defaultValue: false)
+                defaultValue: 0)
                 .Annotation("Relational:ColumnOrder", 5);
         }
 

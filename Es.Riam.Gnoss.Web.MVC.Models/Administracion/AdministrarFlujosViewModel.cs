@@ -63,6 +63,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Models.Administracion
         public List<EstadoIdentidadViewModel> ListaEstadoIdentidad { get; set; } = new List<EstadoIdentidadViewModel>();
         public List<EstadoGrupoViewModel> ListaEstadoGrupo{ get; set; } = new List<EstadoGrupoViewModel>();
         public bool Eliminado { get; set; } = false;
+        public bool PermiteMejora { get; set; } = false;
         public TipoEstado TipoEstado { get; set; }
         public string Color { get; set; }
     }

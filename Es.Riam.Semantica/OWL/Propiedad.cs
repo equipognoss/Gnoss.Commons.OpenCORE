@@ -742,6 +742,17 @@ namespace Es.Riam.Semantica.OWL
         }
 
         /// <summary>
+        /// Indica si esta propiedad tiene un selector de entidad definido
+        /// </summary>
+        public bool TieneSelectorEntidad
+        {
+            get
+            {
+                return string.IsNullOrEmpty(mRango);
+            }
+        }
+
+        /// <summary>
         /// Obtiene o establece el tipo RELATIVO (Sin #) de dato al que pertenecerá el valor de la propiedad.
         /// </summary>
         public string RangoRelativo

@@ -286,6 +286,7 @@ namespace Es.Riam.Gnoss.AD.Flujos
                 estado.Tipo = pEstado.Tipo;
                 estado.Color = pEstado.Color;
                 estado.Publico = pEstado.Publico;
+                estado.PermiteMejora = pEstado.PermiteMejora;
             }
             else
             {
@@ -389,6 +390,24 @@ namespace Es.Riam.Gnoss.AD.Flujos
             }
             mEntityContext.SaveChanges();
             return resultado;
+        }
+        public void ActualizarEstadosVersionRecursos(List<Guid> pListaDocumentosID, Guid? pEstadoID, bool pEliminado = false)
+        {
+            var query = mEntityContext.VersionDocumento.Where(version => pListaDocumentosID.Contains(version.DocumentoID));
+
+            if (!pEliminado)
+            {
+                query = query.Where(version => !version.EstadoID.HasValue || version.EstadoID.Equals(Guid.Empty));
+            }
+
+            var versionesAfectadas = query.ToList();
+
+            foreach (VersionDocumento version in versionesAfectadas)
+            {
+                version.EstadoID = pEstadoID;
+            }
+
+            mEntityContext.SaveChanges();
         }
         public Dictionary<Guid, Guid> ActualizarEstadoPaginasCMS(Guid? pEstadoID, Guid pProyectoID, bool pEliminado = false)
         {
@@ -533,6 +552,11 @@ namespace Es.Riam.Gnoss.AD.Flujos
 			return identidadesTotales;
 		}
 
+        public List<Guid> ObtenerEditoresDeUnaMejora(Guid pMejoraID)
+        {
+            return mEntityContext.VersionDocumento.Where(item => item.MejoraID.HasValue && item.MejoraID.Value.Equals(pMejoraID)).Select(item => item.IdentidadID).ToList();
+        }
+
         public string ObtenerNombreDeEstado(Guid pEstadoID)
         {
             return mEntityContext.Estado.Where(x => x.EstadoID.Equals(pEstadoID)).Select(x => x.Nombre).FirstOrDefault();
@@ -555,6 +579,11 @@ namespace Es.Riam.Gnoss.AD.Flujos
 				TransicionGrupo = transicionGrupo
 			}).Where(objeto => objeto.TransicionGrupo.GrupoID.Equals(pGrupoID) && objeto.Transicion.EstadoOrigenID.Equals(pEstadoID)).Select(x => x.Transicion).ToList();
 		}
+
+        public Guid ObtenerEstadoInicialDeFlujo(Guid pFlujoID)
+        {
+            return mEntityContext.Estado.Where(x => x.FlujoID.Equals(pFlujoID) && x.Tipo.Equals((short)TipoEstado.Inicial)).Select(x => x.EstadoID).FirstOrDefault();
+        }
 
         public Guid? ObtenerEstadoInicialDeTipoContenido(Guid pProyectoID, TiposContenidos pTipo, Guid? pFlujoID = null)
         {
@@ -614,10 +643,20 @@ namespace Es.Riam.Gnoss.AD.Flujos
 			return mEntityContext.Estado.Where(x => x.EstadoID.Equals(pEstadoID)).FirstOrDefault().Tipo.Equals((short)TipoEstado.Final);
 		}
 
-		#endregion
+        public Guid ObtenerFlujoIDDeEstadoID(Guid pEstadoID)
+        {
+            return mEntityContext.Estado.Where(e => e.EstadoID.Equals(pEstadoID)).Select(e => e.FlujoID).FirstOrDefault();
+        }
 
-		#region EstadoIdentidad
-		public List<Guid> ObtenerIdentidadesDeEstadoPorID(Guid pEstadoID)
+        public bool ObtenerPermiteMejoraPorEstadoID(Guid pEstadoID)
+        {
+            return mEntityContext.Estado.Where(e => e.EstadoID.Equals(pEstadoID)).Select(e => e.PermiteMejora).FirstOrDefault();
+        }
+
+        #endregion
+
+        #region EstadoIdentidad
+        public List<Guid> ObtenerIdentidadesDeEstadoPorID(Guid pEstadoID)
         {
             return mEntityContext.EstadoIdentidad.Where(item => item.EstadoID.Equals(pEstadoID)).Select(item => item.IdentidadID).ToList();
         }

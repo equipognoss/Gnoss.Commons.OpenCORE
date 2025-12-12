@@ -18,7 +18,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Models.Flujos
         public Guid? EstadoID { get; set; }
         public Guid UsuarioID { get; set; }
         public List<Guid> OntologiasAfectadas { get; set; }
-        public TiposContenidos TipoAfectado { get; set; }
+        public List<TiposContenidos> TiposAfectados { get; set; }
         public bool EliminarEstado { get; set; }
         public bool EliminarFlujo { get; set; }
     }

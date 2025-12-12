@@ -231,7 +231,16 @@
 		  <asunto>{#NombrePersona#} ha modificat l’estat del recurs</asunto>
 		  <texto>{p}{#NombrePersona#} ha modificat l’estat del recurs {a href="{#UrlEnlace#}"}{#NombreDoc#}{/a} i ha passat de l’estat {#NombreEstadoOrigen#} a {#NombreEstadoDestino#}{/p}{p}Comentari de l’editor: {i}'{#Comentario#}'{/i}{/p}</texto>
 	  </mensaje>
-    <mensaje id="140">
+	  <mensaje id="133">
+		  <asunto>{#NombrePersona#} ha acceptat la millora del recurs {#NombreDoc#}</asunto>
+		  <texto>{p}{#NombrePersona#} ha acceptat la millora del recurs {a href="{#UrlEnlace#}"}{#NombreDoc#}{/a} {/p}</texto>
+	  </mensaje>
+	  <mensaje id="134">
+		  <asunto>{#NombrePersona#} ha cancel·lat la millora del recurs {#NombreDoc#}</asunto>
+		  <texto>{p}{#NombrePersona#} ha cancel·lat la millora del recurs {a href="{#UrlEnlace#}"}{#NombreDoc#}{/a} {/p}</texto>
+	  </mensaje>
+
+	  <mensaje id="140">
       <asunto>Tenes un enllaç: {#NombreDoc#}</asunto>
       <texto>{p}{#NombreRemitente#} t'ha enviat un enllaç de {#NombreProyecto#}.{/p}{p}{#Notas#}{/p}{p} {#UrlEnlace#}{/p}</texto>
     </mensaje>

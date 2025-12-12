@@ -2574,6 +2574,11 @@
 		<Resource tag="GUARDARHISTORIAL">Guardar historial</Resource>
 		<Resource tag="RESTAURARVERSION">Restaurar a versión</Resource>
 		<Resource tag="AVISOCOMPONENTESBORRADOS">Los siguientes componentes no se restaurarán al estar borrados</Resource>
+		<Resource tag="MEJORAENCURSO">Mejora en curso</Resource>
+		<Resource tag="HISTORICO">Historico</Resource>
+		<Resource tag="HISTORICOMEJORA">Historico mejora</Resource>
+		<Resource tag="AVISOVERSIONESFLUJO">Al estar dentro de un recurso afectado por un flujo solo se muestran las versiones que ha sufrido el recurso en el estado actual</Resource>
+		<Resource tag="AVISOVERSIONESFLUJOMEJORA">Al estar dentro de una mejora solo se muestran las versiones que ha sufrido la mejora en el estado actual</Resource>
 	</page>
 	<page name="COMADMINCATEGORIAS">
 		<Resource tag="TEXTOSUPDISEÑO">Si quieres, puedes agregar texto, HTML, imágenes, cualquier widget de terceros o búsquedas en @2@ para que se muestre en el inicio de tu comunidad. {a href="@1@"}¿Cómo puedes hacerlo?{/a}</Resource>
@@ -4757,48 +4762,14 @@
 	</page>
 	<!-- Traducciones para DevTools -->	
 	<page name="DEVTOOLS">
-		<!-- Textos que ya existían en Vistas de Administración person sin traducir -> DevTools -->
+		<!-- Textos que ya existían en Vistas de Administración person sin traducir -> DevTools -->		
 		<Resource tag="AVISOPRIVACIDADCOMPONENTECMS">El componente CMS se encuentra en un estado privado, por lo que sus perfiles y/o grupos deben configurarse desde la página de administración de flujos</Resource>
 		<Resource tag="SELECCIONPERFILESGRUPOSCOMPONENTECMS">Selecciona las personas y/o grupos que pueden ver el componente</Resource>
-		<Resource tag="DESEAELIMINARFLUJO">¿Desea eliminar el flujo?</Resource>
 		<Resource tag="COLOR">Color</Resource>
-		<Resource tag="TIPOESTADO">Tipo de estado</Resource>
-		<Resource tag="ESTADOINICIAL">Inicial</Resource>
-		<Resource tag="ESTADOINTERMEDIO">Intermedio</Resource>
-		<Resource tag="ESTADOFINAL">Final</Resource>
-		<Resource tag="AGREGAREDITOR">Añadir editor</Resource>
-		<Resource tag="AGREGARLECTOR">Añadir lector</Resource>
-		<Resource tag="AGREGARUSUARIOYGRUPO">Añadir usuarios o grupos</Resource>
 		<Resource tag="ACEPTAR">Aceptar</Resource>
 		<Resource tag="CANCELAR">Cancelar</Resource>
 		<Resource tag="ERRORCARGARFORMULARIO">Ha surgido un problema al cargar el formulario</Resource>
-		<Resource tag="AÑADIRRESPONSABLE">Añadir responsables</Resource>
-		<Resource tag="RESPONSABLES">Responsables</Resource>
 		<Resource tag="TIPOS">Tipos</Resource>
-		<Resource tag="AÑADIRESTADO">Añadir un estado</Resource>
-		<Resource tag="AÑADIRTRANSICION">Añadir una transición</Resource>
-		<Resource tag="SELECCIONCONTENIDO">Selecciona un tipo de contenido</Resource>
-		<Resource tag="TIPOSDECONTENIDO">Tipos de contenido</Resource>
-		<Resource tag="TRANSICIONES">Transiciones</Resource>
-		<Resource tag="ESTADOS">Estados</Resource>
-		<Resource tag="NUEVOFLUJO">Nuevo flujo de trabajo</Resource>
-		<Resource tag="SELECCIONPERFILESFLUJO">Selecciona los perfiles y/o grupos para los que va a estar disponible el estado (Ya sea su visibilidad como la posibilidad de poder editar el estado, sino se selecciona ninguno, no estará disponible para nadie)</Resource>
-		<Resource tag="SELECCIONESTADOINICIO">Selecciona un estado de inicio</Resource>
-		<Resource tag="SELECCIONESTADODESTINO">Selecciona un estado de destino</Resource>
-		<Resource tag="ESTADOORIGEN">Estado origen</Resource>
-		<Resource tag="ESTADODESTINO">Estado destino</Resource>
-		<Resource tag="FLUJODETRABAJO">Flujo de trabajo</Resource>
-		<Resource tag="ERRORTRANSICIONESINCOMPLETAS">Debes elegir un estado origen y un estado destino en todas las transiciones</Resource>
-		<Resource tag="ERRORTRANSICIONESSINESTADOFINAL">Las transiciones del flujo no tienen por lo menos un estado final definido</Resource>
-		<Resource tag="ERRORTRANSICIONESSINESTADOINICIAL">Las transiciones del flujo no tienen por lo menos un estado inicial definido</Resource>
-		<Resource tag="ERRORTRANSICIONESESTADOSIGUALES">No puedes elegir el mismo estado como estado origen y estado destino</Resource>
-		<Resource tag="ERRORTRANSICIONESIGUALES">No puede haber mas de una transicion con el mismo origen y destino</Resource>
-		<Resource tag="NOMBREESTADOREPETIDO">No puedes guardar un flujo con estados que se llamen igual</Resource>
-		<Resource tag="NOMBRETRANSICIONREPETIDO">No puedes guardar un flujo con transiciones que se llamen igual</Resource>
-		<Resource tag="ERRORFLUJOEXISTENTESOBRETIPO">No puedes guardar un flujo de trabajo que afecte un tipo de contenido de otro flujo de trabajo existente: @1@</Resource>
-		<Resource tag="ERRORESTADOPERTENECETRANSICION">No se puede eliminar el estado. Pertenece a una transicion</Resource>
-		<Resource tag="ERRORESTADOAFECTACONTENIDO">No se puede eliminar el estado porque esta asignado al contenido de tipo: @1@</Resource>
-		<Resource tag="ERRORTRANSICIONAFECTACONTENIDO">No se puede eliminar la transicion porque afecta a los contenidos de tipo: @1@</Resource>
 		<Resource tag="APLICACIONESESPECIFICASBETA">Aplicaciones especificas (BETA)</Resource>
 		<Resource tag="APLICACIONESESPECIFICAS">Aplicaciones especificas</Resource>
 		<Resource tag="INSERTADOSEARCH">Se ha insertado la propiedad.</Resource>
@@ -7028,6 +6999,33 @@
 		<Resource tag="DESCARGAONTOLOGIAUNIFICADA">Descarga de la Ontologia</Resource>
 	</page>
 	<page name="FLUJOS">
+		<Resource tag="NUEVOFLUJO">Nuevo flujo de trabajo</Resource>
+		<Resource tag="DESEAELIMINARFLUJO">¿Desea eliminar el flujo?</Resource>
+		<Resource tag="DESHABILITARMEJORAESTADO">Deshabilitar mejora</Resource>
+		<Resource tag="DESEADESHABILITARMEJORAESTADO">¿Quieres deshabilitar la opción de mejorar un recurso?.{br}Si está desactivada no se podrá iniciar nuevas mejoras. Las mejoras existentes podrán continuar su flujo normal.</Resource>
+		<Resource tag="INFOMEJORASACTIVASAFECTADAS">Las siguentes mejoras se verán afectadas:</Resource>
+		<Resource tag="FLUJODETRABAJO">Flujo de trabajo</Resource>
+		<Resource tag="ESTADOS">Estados</Resource>
+		<Resource tag="AÑADIRESTADO">Añadir un estado</Resource>
+		<Resource tag="TIPOESTADO">Tipo de estado</Resource>
+		<Resource tag="ESTADOINICIAL">Inicial</Resource>
+		<Resource tag="ESTADOINTERMEDIO">Intermedio</Resource>
+		<Resource tag="ESTADOFINAL">Final</Resource>
+		<Resource tag="PERMITEMEJORAESTADO">Permite mejora</Resource>
+		<Resource tag="TRANSICIONES">Transiciones</Resource>
+		<Resource tag="AÑADIRTRANSICION">Añadir una transición</Resource>
+		<Resource tag="SELECCIONESTADOINICIO">Selecciona un estado de inicio</Resource>
+		<Resource tag="SELECCIONESTADODESTINO">Selecciona un estado de destino</Resource>
+		<Resource tag="ESTADOORIGEN">Estado origen</Resource>
+		<Resource tag="ESTADODESTINO">Estado destino</Resource>
+		<Resource tag="AGREGAREDITOR">Añadir editor</Resource>
+		<Resource tag="AGREGARLECTOR">Añadir lector</Resource>
+		<Resource tag="AGREGARUSUARIOYGRUPO">Añadir usuarios o grupos</Resource>
+		<Resource tag="AÑADIRRESPONSABLE">Añadir responsables</Resource>
+		<Resource tag="SELECCIONCONTENIDO">Selecciona un tipo de contenido</Resource>
+		<Resource tag="TIPOSDECONTENIDO">Tipos de contenido</Resource>
+		<Resource tag="RESPONSABLES">Responsables</Resource>
+		<Resource tag="SELECCIONPERFILESFLUJO">Selecciona los perfiles y/o grupos para los que va a estar disponible el estado (Ya sea su visibilidad como la posibilidad de poder editar el estado, sino se selecciona ninguno, no estará disponible para nadie)</Resource>
 		<Resource tag="TRANSICIONREALIZADA">El cambio de estado se ha realizado correctamente</Resource>
 		<Resource tag="TRANSICIONERROR">Ha habido un error al cambiar el estado del recurso</Resource>
 		<Resource tag="COMENTARIO">Comentario adicional para el cambio de estado</Resource>
@@ -7036,5 +7034,34 @@
 		<Resource tag="COMENTARIOREVISOR">Comentario del revisor</Resource>
 		<Resource tag="CAMBIO">Cambio</Resource>
 		<Resource tag="HISTORIALERROR">Ha habido un error al cargar el historial de cambios</Resource>
+		<Resource tag="INICIARPROCESOMEJORA">Iniciar proceso de mejora</Resource>
+		<Resource tag="INICIAR">Iniciar mejora</Resource>
+		<Resource tag="INFOMEJORA">Se va a crear un proceso de mejora para modificar el recurso actual. Esto generará una copia bloqueando el recurso original, por lo que solo se podrá modicarse dicha copia siguiendo el flujo de trabajo completo.</Resource>
+		<Resource tag="RECURSOENPROCESODEMEJORA">Este recurso se encuentra en proceso de mejora. Haga click para ir.</Resource>
+		<Resource tag="AVISOESTASENMEJORA">Este recurso se encuentra en un proceso de mejora. {a href="@1@"}Ver recurso original{/a}.</Resource>
+		<Resource tag="ACCIONESMEJORA">Acciones mejora</Resource>
+		<Resource tag="APLICARMEJORA">Aplicar mejora</Resource>
+		<Resource tag="CANCELARMEJORA">Cancelar mejora</Resource>
+		<Resource tag="HISTORIAL">Historial</Resource>
+		<Resource tag="AVISOAPLICARMEJORA">Se va a aplicar esta mejora la cual sustituirá al recurso vigente ¿Esta seguro?</Resource>
+		<Resource tag="AVISOCANCELARMEJORA">Se va a cancelar la mejora esto la eliminará permanentemente ¿Esta seguro?</Resource>
+		<Resource tag="ERRORRESACEPTARMEJORA">Se ha producido un error al aplicar la mejora</Resource>
+		<Resource tag="ERRORPERMISOACEPTARMEJORA">No tiene permisos para aplicar la mejora en el estado actual</Resource>
+		<Resource tag="ERRORPERMISOCANCELARMEJORA">No tiene permisos para cancelar la mejora en el estado actual</Resource>
+		<Resource tag="ERRORRESCANCELARMEJORA">Ha ocurrido un error al cancelar la mejora</Resource>
+		<Resource tag="ERRORTRANSICIONESINCOMPLETAS">Debes elegir un estado origen y un estado destino en todas las transiciones</Resource>
+		<Resource tag="ERRORTRANSICIONESSINESTADOFINAL">Las transiciones del flujo no tienen por lo menos un estado final definido</Resource>
+		<Resource tag="ERRORTRANSICIONESSINESTADOINICIAL">Las transiciones del flujo no tienen por lo menos un estado inicial definido</Resource>
+		<Resource tag="ERRORTRANSICIONESESTADOSIGUALES">No puedes elegir el mismo estado como estado origen y estado destino</Resource>
+		<Resource tag="ERRORTRANSICIONESIGUALES">No puede haber mas de una transicion con el mismo origen y destino</Resource>
+		<Resource tag="NOMBREESTADOREPETIDO">No puedes guardar un flujo con estados que se llamen igual</Resource>
+		<Resource tag="NOMBRETRANSICIONREPETIDO">No puedes guardar un flujo con transiciones que se llamen igual</Resource>
+		<Resource tag="ERRORFLUJOEXISTENTESOBRETIPO">No puedes guardar un flujo de trabajo que afecte un tipo de contenido de otro flujo de trabajo existente: @1@</Resource>
+		<Resource tag="ERRORESTADOPERTENECETRANSICION">No se puede eliminar el estado. Pertenece a una transicion</Resource>
+		<Resource tag="ERRORESTADOAFECTACONTENIDO">No se puede eliminar el estado porque esta asignado al contenido de tipo: @1@</Resource>
+		<Resource tag="ERRORTRANSICIONAFECTACONTENIDO">No se puede eliminar la transicion porque afecta a los contenidos de tipo: @1@</Resource>
+		<Resource tag="ERRORESTADOINVALIDOPERMITEMEJORA">No se puede habilitar las mejoras en estados que no sean de tipo final</Resource>
+		<Resource tag="ERRORINICIARMEJORA">Ha ocurrido un error al iniciar la mejora</Resource>
+		<Resource tag="ERRORPERMISOINICIARMEJORA">No tiene permisos para iniciar una mejora</Resource>
 	</page>
 </Resources>

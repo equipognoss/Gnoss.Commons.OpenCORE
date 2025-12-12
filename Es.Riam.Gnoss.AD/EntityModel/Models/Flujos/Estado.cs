@@ -1,4 +1,5 @@
 ﻿using Es.Riam.Gnoss.AD.EntityModel.Models.CMS;
+using Es.Riam.Gnoss.AD.EntityModel.Models.Documentacion;
 using Es.Riam.Gnoss.AD.EntityModel.Models.ProyectoDS;
 using System;
 using System.Collections.Generic;
@@ -29,6 +30,8 @@ namespace Es.Riam.Gnoss.AD.EntityModel.Models.Flujos
 
 		public string Color {  get; set; }
 
+		public bool PermiteMejora {  get; set; }
+
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
 		public virtual ICollection<CMSComponente> CMSComponente { get; set; }
 
@@ -48,5 +51,6 @@ namespace Es.Riam.Gnoss.AD.EntityModel.Models.Flujos
 
 		public virtual ICollection<Transicion> TransicionesOrigen { get; set; }
 		public virtual ICollection<Transicion> TransicionesDestino {  get; set; }
+		public virtual ICollection<VersionDocumento> VersionesDocumentos { get; set; }
 	}
 }

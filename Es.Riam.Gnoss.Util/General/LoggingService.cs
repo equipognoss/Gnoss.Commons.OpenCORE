@@ -254,7 +254,7 @@ namespace Es.Riam.Gnoss.Util.General
         [Obsolete("Este metodo dejara de estar disponible en futuras versiones, use el metodo con ILogger")]
         public void GuardarLogError(Exception pExcepcion)
         {
-            GuardarLogError(pExcepcion, null);
+            GuardarLogError(pExcepcion, mlogger);
         }
 
         /// <summary>

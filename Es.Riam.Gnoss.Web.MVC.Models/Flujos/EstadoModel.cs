@@ -19,6 +19,9 @@ namespace Es.Riam.Gnoss.Web.MVC.Models.Flujos
 		public List<Guid> GruposEditores { get; set; }
 		public List<Guid> IdentidadesLectoras { get; set; }
 		public List<Guid> GruposLectores { get; set; }		
-		public List<TransicionModel> Transiciones { get; set; }		
+		public List<TransicionModel> Transiciones { get; set; }
+		public string Color { get; set; }
+		public bool EsFinal { get; set; }
+		public bool PermiteMejora { get; set; }		
 	}
 }

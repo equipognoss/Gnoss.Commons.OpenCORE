@@ -737,9 +737,9 @@ namespace Es.Riam.Gnoss.Elementos.Documentacion
         /// <param name="pDocumento">Documento del que se va a hacer versión</param>
         /// <param name="pIdentidadActual">Identidad actual</param>
         /// <returns>Version creada</returns>
-        public Documento CrearNuevaVersionDocumento(Documento pDocumento, Identidad.Identidad pIdentidadActual, Guid? pDocNuevaVersionID = null, bool pRestaurando = false)
+        public Documento CrearNuevaVersionDocumento(Documento pDocumento, Identidad.Identidad pIdentidadActual, Guid? pDocNuevaVersionID = null, bool pRestaurando = false, bool pEsMejora = false)
         {
-            return CrearNuevaVersionDocumento(pDocumento, true, pIdentidadActual, pDocNuevaVersionID, pRestaurando);
+            return CrearNuevaVersionDocumento(pDocumento, true, pIdentidadActual, pDocNuevaVersionID, pRestaurando, pEsMejora);
         }
 
         /// <summary>
@@ -749,7 +749,7 @@ namespace Es.Riam.Gnoss.Elementos.Documentacion
         /// <param name="pEstablecerRelacionVersion">Indica si se debe establecer la relación de versión entre el documento antiguo y el nuevo, es decir, marcar uno como "NO última version" y el otro como sí" </param>
         /// <param name="pIdentidadActual">Identidad actual</param>
         /// <returns>Version creada</returns>
-        public Documento CrearNuevaVersionDocumento(Documento pDocumento, bool pEstablecerRelacionVersion, Identidad.Identidad pIdentidadActual, Guid? pDocNuevaVersionID = null, bool pRestaurando = false)
+        public Documento CrearNuevaVersionDocumento(Documento pDocumento, bool pEstablecerRelacionVersion, Identidad.Identidad pIdentidadActual, Guid? pDocNuevaVersionID = null, bool pRestaurando = false, bool pEsMejora = false)
         {
             Guid nuevoDocumentoID = Guid.NewGuid();
 
@@ -1028,7 +1028,7 @@ namespace Es.Riam.Gnoss.Elementos.Documentacion
             {
                 Guid identidadActualID = pIdentidadActual.Clave;
 
-                EstablecerVersionDocumento(pDocumento, nuevoDocumento, identidadActualID);
+                EstablecerVersionDocumento(pDocumento, nuevoDocumento, identidadActualID, pEsMejora);
             }
             //TagDocumento
             nuevoDocumento.Tags = pDocumento.Tags;
@@ -1086,7 +1086,7 @@ namespace Es.Riam.Gnoss.Elementos.Documentacion
         /// <param name="pDocumentoOriginal">Documento original del que se a hecho la versión</param>
         /// <param name="pNuevoDocumento">Nueva versión del documento</param>
         /// <param name="pIdentidadActualID"></param>
-        public void EstablecerVersionDocumento(Documento pDocumentoOriginal, Documento pNuevoDocumento, Guid pIdentidadActualID)
+        public void EstablecerVersionDocumento(Documento pDocumentoOriginal, Documento pNuevoDocumento, Guid pIdentidadActualID, bool pEsMejora = false)
         {
             Guid nuevoDocumentoID = pNuevoDocumento.Clave;
             Guid antiguoDocumentoID = pDocumentoOriginal.Clave;
@@ -1124,6 +1124,55 @@ namespace Es.Riam.Gnoss.Elementos.Documentacion
                 filaVersionDoc.DocumentoOriginalID = antiguoDocumentoID;
             }
             filaVersionDoc.Version = numeroVersion;
+
+            filaVersionDoc.EstadoVersion = (short)EstadoVersion.Vigente;
+            filaVersionDoc.EsMejora = false;
+            if (pDocumentoOriginal.FilaDocumento.EstadoID.HasValue)
+            {
+                filaVersionDoc.EstadoID = pDocumentoOriginal.FilaDocumento.EstadoID.Value;
+			}
+            
+            if (pEsMejora)
+            {
+                filaVersionDoc.EstadoVersion = (short)EstadoVersion.Pendiente;
+                filaVersionDoc.EsMejora = true; 
+				if (pDocumentoOriginal.FilaDocumento.EstadoID != null)
+                {
+                    bool estaEnEstadoFinal = mEntityContext.Estado.Where(x => x.EstadoID.Equals(pDocumentoOriginal.FilaDocumento.EstadoID)).Select(x => x.Tipo).FirstOrDefault() == (short) TipoEstado.Final;
+                    // Si esta en estado final, se esta iniciando la mejora
+                    if (estaEnEstadoFinal)
+                    {
+						// le ponemos el estado inicial para que comience de nuevo todo el flujo de trabajo
+						Guid flujoID = mEntityContext.Estado.Where(x => x.EstadoID.Equals(pNuevoDocumento.FilaDocumento.EstadoID)).Select(x => x.FlujoID).FirstOrDefault();
+						Guid estadoInicial = mEntityContext.Estado.Where(x => x.FlujoID.Equals(flujoID) && x.Tipo.Equals((short)TipoEstado.Inicial)).Select(x => x.EstadoID).FirstOrDefault();
+						filaVersionDoc.EstadoID = estadoInicial;
+                        filaVersionDoc.MejoraID = Guid.NewGuid();
+                        pNuevoDocumento.FilaDocumento.EstadoID = estadoInicial;
+
+                        // marcamos la ultima version a true porque el anterior es el recurso original
+						pDocumentoOriginal.FilaDocumento.UltimaVersion = true;                        
+					}
+                    else
+                    {
+                        // Le ponemos el mismo estado que tenia y la ultima version a false, ya que sigue siendo una mejora y no el recurso original                        
+                        filaVersionDoc.EstadoID = pDocumentoOriginal.FilaDocumento.EstadoID;
+						Guid? mejoraID = mEntityContext.VersionDocumento.Where(x => x.DocumentoID.Equals(pDocumentoOriginal.Clave)).Select(x => x.MejoraID).FirstOrDefault();
+						if (mejoraID.HasValue && mejoraID != Guid.Empty)
+                        {
+                            filaVersionDoc.MejoraID = mejoraID;
+						}
+                        
+                        pNuevoDocumento.FilaDocumento.EstadoID = filaVersionDoc.EstadoID;
+						pDocumentoOriginal.FilaDocumento.UltimaVersion = false;
+                        pDocumentoOriginal.FilaDocumento.VersionDocumento.EstadoVersion = (short)EstadoVersion.Historico;
+                    }
+					pNuevoDocumento.FilaDocumento.UltimaVersion = false;
+				}
+            }
+            else if(pDocumentoOriginal.FilaDocumento.VersionDocumento != null)
+            {
+                pDocumentoOriginal.FilaDocumento.VersionDocumento.EstadoVersion = (short)EstadoVersion.Historico;
+            }
 
             mEntityContext.VersionDocumento.Add(filaVersionDoc);
             DataWrapperDocumentacion.ListaVersionDocumento.Add(filaVersionDoc);

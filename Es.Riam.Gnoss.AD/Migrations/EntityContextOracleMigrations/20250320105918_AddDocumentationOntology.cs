@@ -24,7 +24,7 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextOracleMigrations
                     Licencia = table.Column<string>(type: "NVARCHAR2(2000)", nullable: true),
                     UrlLicencia = table.Column<string>(type: "NVARCHAR2(2000)", nullable: true),
                     Descripcion = table.Column<string>(type: "NVARCHAR2(2000)", nullable: true),
-                    Privado = table.Column<bool>(type: "BOOLEAN", nullable: false)
+                    Privado = table.Column<bool>(type: "NUMBER(1)", nullable: false)
                 },
                 constraints: table =>
                 {

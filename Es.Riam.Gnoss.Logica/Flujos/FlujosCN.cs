@@ -4,6 +4,7 @@ using Es.Riam.Gnoss.AD.EntityModel.Models.Flujos;
 using Es.Riam.Gnoss.AD.Facetado;
 using Es.Riam.Gnoss.AD.Flujos;
 using Es.Riam.Gnoss.AD.Identidad;
+using Es.Riam.Gnoss.AD.ServiciosGenerales;
 using Es.Riam.Gnoss.RabbitMQ;
 using Es.Riam.Gnoss.Util.Configuracion;
 using Es.Riam.Gnoss.Util.General;
@@ -14,6 +15,7 @@ using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.IO.Pipelines;
 using System.Linq;
 
 namespace Es.Riam.Gnoss.Logica.Flujos
@@ -149,6 +151,10 @@ namespace Es.Riam.Gnoss.Logica.Flujos
         {
             return FlujosAD.ActualizarEstadosRecursos(pEstadoID, pProyectoID, pOntologiaID, pTipoContenido, pEliminado);
         }
+        public void ActualizarEstadosVersionRecursos(List<Guid> pListaDocumentosID, Guid? pEstadoID, bool pEliminado = false)
+        {
+            FlujosAD.ActualizarEstadosVersionRecursos(pListaDocumentosID, pEstadoID, pEliminado);
+        }
         public Dictionary<Guid, Guid> ActualizarEstadoPaginasCMS(Guid? pEstadoID, Guid pProyectoID, bool pEliminado = false)
         {
             return FlujosAD.ActualizarEstadoPaginasCMS(pEstadoID, pProyectoID, pEliminado);
@@ -192,8 +198,12 @@ namespace Es.Riam.Gnoss.Logica.Flujos
         {
             return FlujosAD.ObtenerLectoresYEditoresDeEstado(pEstadoID);
         }
+        public List<Guid> ObtenerEditoresDeUnaMejora(Guid pMejoraID)
+        {
+            return FlujosAD.ObtenerEditoresDeUnaMejora(pMejoraID);
+        }
 
-		public string ObtenerNombreDeEstado(Guid pEstadoID)
+        public string ObtenerNombreDeEstado(Guid pEstadoID)
         {
             return FlujosAD.ObtenerNombreDeEstado(pEstadoID);
         }
@@ -218,10 +228,25 @@ namespace Es.Riam.Gnoss.Logica.Flujos
             return FlujosAD.ObtenerEstadoInicialDeTipoContenido(pProyectoID, pTipo, pFlujoID);
         }
 
-		#endregion
+		public Guid ObtenerEstadoInicialDeFlujo(Guid pFlujoID)
+		{
+			return FlujosAD.ObtenerEstadoInicialDeFlujo(pFlujoID);
+		}
 
-		#region EstadoIdentidad
-		public List<Guid> ObtenerIdentidadesDeEstadoPorID(Guid pEstadoID)
+		public Guid ObtenerFlujoIDDeEstadoID(Guid pEstadoID)
+        {
+            return FlujosAD.ObtenerFlujoIDDeEstadoID(pEstadoID);
+        }
+
+        public bool ObtenerPermiteMejoraPorEstadoID(Guid pEstadoID)
+        {
+            return FlujosAD.ObtenerPermiteMejoraPorEstadoID(pEstadoID);
+        }
+
+        #endregion
+
+        #region EstadoIdentidad
+        public List<Guid> ObtenerIdentidadesDeEstadoPorID(Guid pEstadoID)
         {
             return FlujosAD.ObtenerIdentidadesDeEstadoPorID(pEstadoID);
         }
@@ -409,7 +434,7 @@ namespace Es.Riam.Gnoss.Logica.Flujos
 
         #region Cola Rabbit
 
-        public void InsertarEnColaFlujosCreadosOEliminados(Guid pFlujoID, Guid? pEstadoID, Guid pProyectoID, List<Guid> pOntologiasAfectadas, TiposContenidos pTipoContenido, bool pEliminarFlujo, bool pEliminarEstado, Guid pUsuarioID, IAvailableServices pAvailableServices)
+        public void InsertarEnColaFlujosCreadosOEliminados(Guid pFlujoID, Guid? pEstadoID, Guid pProyectoID, List<Guid> pOntologiasAfectadas, List<TiposContenidos> pTiposContenidos, bool pEliminarFlujo, bool pEliminarEstado, Guid pUsuarioID, IAvailableServices pAvailableServices)
         {
             if (mConfigService.ExistRabbitConnection(RabbitMQClient.BD_SERVICIOS_WIN) && pAvailableServices.CheckIfServiceIsAvailable(pAvailableServices.GetBackServiceCode(BackgroundService.Workflows), ServiceType.Background))
             {
@@ -420,7 +445,7 @@ namespace Es.Riam.Gnoss.Logica.Flujos
                     filaCola.EstadoID = pEstadoID;
                     filaCola.ProyectoID = pProyectoID;
                     filaCola.OntologiasAfectadas = pOntologiasAfectadas;
-                    filaCola.TipoAfectado = pTipoContenido;
+                    filaCola.TiposAfectados = pTiposContenidos;
                     filaCola.EliminarFlujo = pEliminarFlujo;
                     filaCola.EliminarEstado = pEliminarEstado;
                     filaCola.UsuarioID = pUsuarioID;

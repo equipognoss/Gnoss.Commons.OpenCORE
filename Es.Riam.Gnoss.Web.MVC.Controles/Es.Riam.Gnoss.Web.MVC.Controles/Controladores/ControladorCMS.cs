@@ -214,17 +214,17 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
 
             //Hay que generar el HTML (bool refrescar)
             bool.TryParse(RequestParams("refrescar"), out mRefrescar);
-            
-            string componentName = RequestParams("ComponentName");
-			string componenteid = RequestParams("componenteid");
 
-			if (!string.IsNullOrEmpty(componentName) || !string.IsNullOrEmpty(componenteid))
+            string componentName = RequestParams("ComponentName");
+            string componenteid = RequestParams("componenteid");
+
+            if (!string.IsNullOrEmpty(componentName) || !string.IsNullOrEmpty(componenteid))
             {
                 idiomaPedido = UtilIdiomas.LanguageCode;
                 PintarComponente = true;
             }
 
-			return CargarComponente(PintarComponente, mRefrescar, idiomaPedido);
+            return CargarComponente(PintarComponente, mRefrescar, idiomaPedido);
         }
 
         public CMSComponent CargarComponente(bool pPintar, bool pRefrescar, string pIdioma)
@@ -355,8 +355,8 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
             CMSComponent fichaComponente = null;
 			ParametroAplicacionCL paramCL = new ParametroAplicacionCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<ParametroAplicacionCL>(), mLoggerFactory);
 
-			//Comprobamos su cumple el idioma
-			bool cumpleIdioma = !mControlador.ParametroProyecto.ContainsKey(ParametroAD.PropiedadContenidoMultiIdioma) && (!mControlador.ParametroProyecto.ContainsKey(ParametroAD.PropiedadCMSMultiIdioma) || mControlador.ParametroProyecto[ParametroAD.PropiedadCMSMultiIdioma] == "0") || pComponente.ListaIdiomasDisponibles(paramCL.ObtenerListaIdiomas()).Contains(IdiomaUsuario);
+            //Comprobamos su cumple el idioma
+            bool cumpleIdioma = !mControlador.ParametroProyecto.ContainsKey(ParametroAD.PropiedadContenidoMultiIdioma) && (!mControlador.ParametroProyecto.ContainsKey(ParametroAD.PropiedadCMSMultiIdioma) || mControlador.ParametroProyecto[ParametroAD.PropiedadCMSMultiIdioma] == "0") || pComponente.ListaIdiomasDisponibles(paramCL.ObtenerListaIdiomas()).Contains(IdiomaUsuario);
 
             //Comprobamos si cumple la privacidad
             bool cumplePrivacidad = true;
@@ -638,7 +638,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
                     }
                 }
             }
-            
+
             return pNombreVista;
         }
 
@@ -1822,12 +1822,12 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
         /// <param name="pComponente"></param>
         /// <returns></returns>
         public CMSComponentSearchBox ObtenerFichaCajaBuscador(CMSComponenteCajaBuscador pComponente, string pIdioma)
-        {            
+        {
             CMSComponentSearchBox fichaComponenteCajaBuscador = new CMSComponentSearchBox();
             fichaComponenteCajaBuscador.Title = UtilCadenas.ObtenerTextoDeIdioma(pComponente.Titulo, pIdioma, mControlador.ParametrosGeneralesRow.IdiomaDefecto);
             fichaComponenteCajaBuscador.Key = pComponente.Clave;
             fichaComponenteCajaBuscador.Styles = pComponente.Estilos;
-            fichaComponenteCajaBuscador.DefaultText = UtilCadenas.ObtenerTextoDeIdioma(pComponente.TextoDefecto, pIdioma, mControlador.ParametrosGeneralesRow.IdiomaDefecto);            
+            fichaComponenteCajaBuscador.DefaultText = UtilCadenas.ObtenerTextoDeIdioma(pComponente.TextoDefecto, pIdioma, mControlador.ParametrosGeneralesRow.IdiomaDefecto);
             fichaComponenteCajaBuscador.AutocompleteID = Guid.Empty;
             // Pasar la URL de búsqueda para construir la action del formulario
             fichaComponenteCajaBuscador.UrlBusqueda = pComponente.URLBusqueda;
@@ -1878,7 +1878,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
                 bool obtenerDatosExtraIdentidades = false;
                 ObtenerDatoExtraRecursosComponente(pComponente, ref obtenerDatosExtraRecursos, ref obtenerIdentidades, ref obtenerDatosExtraIdentidades);
                 sw = LoggingService.IniciarRelojTelemetria();
-                fichaComponenteListadoRecursos.Resultado = cargadorResultados.CargarResultadosGadgetSPARQL(System.Uri.EscapeDataString(querySPARQL), IdentidadActual.Clave , mControlador.ProyectoSeleccionado.Clave, pComponente.NumeroItems, pPagina, pIdioma, obtenerDatosExtraRecursos, obtenerIdentidades, obtenerDatosExtraIdentidades);
+                fichaComponenteListadoRecursos.Resultado = cargadorResultados.CargarResultadosGadgetSPARQL(System.Uri.EscapeDataString(querySPARQL), IdentidadActual.Clave, mControlador.ProyectoSeleccionado.Clave, pComponente.NumeroItems, pPagina, pIdioma, obtenerDatosExtraRecursos, obtenerIdentidades, obtenerDatosExtraIdentidades);
                 mLoggingService.AgregarEntradaDependencia("Llamar al servicio de resultado", false, "ObtenerFichaBuscadorSPARQL", sw, true);
             }
             catch (Exception ex)
@@ -1888,7 +1888,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
             }
             finally
             {
-                if(fichaComponenteListadoRecursos.Resultado == null)
+                if (fichaComponenteListadoRecursos.Resultado == null)
                 {
                     fichaComponenteListadoRecursos.Resultado = new ResultadoModel();
                     fichaComponenteListadoRecursos.Resultado.ListaResultados = new List<ObjetoBuscadorModel>();
@@ -2083,7 +2083,10 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
         public CMSComponentCommunityList ObtenerFichaListadoProyectos(CMSComponenteListadoProyectos pComponente, string pIdioma)
         {
             List<Proyecto> mListaProyectos = new List<Proyecto>();
+
             ProyectoCN proyCN = new ProyectoCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<ProyectoCN>(), mLoggerFactory);
+            ProyectoCL proyectoCL = new ProyectoCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mVirtuosoAD, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<ProyectoCL>(), mLoggerFactory);
+
             switch (pComponente.TipoListadoProyectos)
             {
                 case TipoListadoProyectosCMS.RecomendadosProyecto:
@@ -2146,11 +2149,15 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
             }
             proyCN.Dispose();
 
+            
+            Dictionary<Guid, int> numeroRecursosPorProyecto = proyectoCL.ObtenerContadoresRecursoProyecto();
+            Dictionary<Guid, int> numeroMiembrosPorProyecto = proyectoCL.ObtenerContadoresMiembrosProyecto();
+            proyectoCL.Dispose();
+
             CMSComponentCommunityList fichaComponenteListaProyectos = new CMSComponentCommunityList();
             fichaComponenteListaProyectos.Key = pComponente.Clave;
             fichaComponenteListaProyectos.Title = UtilCadenas.ObtenerTextoDeIdioma(pComponente.Titulo, pIdioma, mControlador.ParametrosGeneralesRow.IdiomaDefecto);
             fichaComponenteListaProyectos.Styles = pComponente.Estilos;
-
             fichaComponenteListaProyectos.Communities = new List<CommunityModel>();
 
             foreach (Proyecto proy in mListaProyectos)
@@ -2161,8 +2168,8 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
                 comunidad.ShortName = proy.NombreCorto;
                 comunidad.Url = UrlsSemanticas.ObtenerURLComunidad(mControlador.UtilIdiomas, mControlador.BaseURLIdioma, proy.NombreCorto);
 
-                string nombreImagenePeque = new ControladorProyecto(mLoggingService, mEntityContext, mConfigService, mRedisCacheWrapper, mGnossCache, mEntityContextBASE, mVirtuosoAD, mHttpContextAccessor, mServicesUtilVirtuosoAndReplication,mLoggerFactory.CreateLogger<ControladorProyecto>(), mloggerFactory).ObtenerFilaParametrosGeneralesDeProyecto(proy.Clave).NombreImagenPeque;
-                string urlFoto = mControlador.BaseURLContent + "/" + UtilArchivos.ContentImagenes + "/" + UtilArchivos.ContentImagenesProyectos + "/" + nombreImagenePeque;
+                string nombreImagenePeque = new ControladorProyecto(mLoggingService, mEntityContext, mConfigService, mRedisCacheWrapper, mGnossCache, mEntityContextBASE, mVirtuosoAD, mHttpContextAccessor, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<ControladorProyecto>(), mloggerFactory).ObtenerFilaParametrosGeneralesDeProyecto(proy.Clave).NombreImagenPeque;
+                string urlFoto = $"{mControlador.BaseURLContent}/{UtilArchivos.ContentImagenes}/{UtilArchivos.ContentImagenesProyectos}/{nombreImagenePeque}";
                 comunidad.Logo = urlFoto;
                 if (nombreImagenePeque == "peque")
                 {
@@ -2173,12 +2180,11 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
                         comunidad.Logo = urlFoto;
                     }
                 }
-                
-                
-                comunidad.AccessType = (CommunityModel.TypeAccessProject) proy.TipoAcceso;
-                NumeroRecursosYPersonasYOrganizacionesComunidad(comunidad, true, proy.Clave, proy.TipoProyecto, proy.FilaProyecto.OrganizacionID);
-                //comunidad.NumberOfResources = proy.NumRecusosTotales;
-                comunidad.ProyectType = (CommunityModel.TypeProyect) proy.TipoProyecto;
+
+                comunidad.AccessType = (CommunityModel.TypeAccessProject)proy.TipoAcceso;
+                comunidad.NumberOfResources = numeroRecursosPorProyecto.ContainsKey(proy.Clave) ? numeroRecursosPorProyecto[proy.Clave] : 0;
+                comunidad.NumberOfPerson = numeroMiembrosPorProyecto.ContainsKey(proy.Clave) ? numeroMiembrosPorProyecto[proy.Clave] : 0;
+                comunidad.ProyectType = (CommunityModel.TypeProyect)proy.TipoProyecto;
                 fichaComponenteListaProyectos.Communities.Add(comunidad);
             }
 
@@ -2535,8 +2541,8 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
             {
                 int inicioTimezone = pQuerySPARQL.IndexOf("{GETDATE,") + "{GETDATE,".Length;
                 int finTimeZone = pQuerySPARQL.IndexOf('}', inicioTimezone);
-                string timeZoneID = pQuerySPARQL.Substring(inicioTimezone, finTimeZone - inicioTimezone);                
-                pQuerySPARQL = pQuerySPARQL.Replace("{GETDATE,"+timeZoneID+"}", FechaZonaHoraria(timeZoneID));
+                string timeZoneID = pQuerySPARQL.Substring(inicioTimezone, finTimeZone - inicioTimezone);
+                pQuerySPARQL = pQuerySPARQL.Replace("{GETDATE," + timeZoneID + "}", FechaZonaHoraria(timeZoneID));
             }
             pQuerySPARQL = pQuerySPARQL.Replace("{GETDATE}", DateTime.Now.ToString("yyyyMMddHHmmss"));
             //{GETLANG}

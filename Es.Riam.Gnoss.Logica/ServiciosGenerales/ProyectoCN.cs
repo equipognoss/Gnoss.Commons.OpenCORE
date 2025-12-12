@@ -2963,6 +2963,15 @@ namespace Es.Riam.Gnoss.Logica.ServiciosGenerales
             return ProyectoAD.ObtenerNombresDeProyectoPorBusquedaAutocompletar(pQuery);
         }
 
+        /// <summary>
+        /// Obtenemos el número de recursos por proyecto en un diccionario donde la clave 
+        /// es el proyectoID y el valor el número de recursos que hay en el proyecto
+        /// </summary>
+        /// <returns>Un diccionario donde la clave es el identificador del proyecto y el valor es el número de recursos</returns>
+        public Dictionary<Guid, int> ObtenerContadoresRecursoProyecto()
+        {
+            return ProyectoAD.ObtenerContadoresRecursoProyecto();
+        }
         // Roles
 
         public List<Rol> ObtenerRolesDeProyecto(Guid pProyectoID)
@@ -3026,7 +3035,16 @@ namespace Es.Riam.Gnoss.Logica.ServiciosGenerales
 
 		#endregion
 
-		#region Privados
+        /// <summary>
+        /// Obtenemos el número de miembros por proyecto en un diccionario donde la clave 
+        /// es el proyectoID y el valor el número de usuarios dados de alta en el proyecto
+        /// </summary>
+        /// <returns>Un diccionario donde la clave es el identificador del proyecto y el valor es el número de usuarios dados de alta en el proyecto</returns>
+        public Dictionary<Guid, int> ObtenerContadoresMiembrosProyecto()
+        {
+            return ProyectoAD.ObtenerContadoresMiembrosProyecto();
+        }
+        
 
 		/// <summary>
 		/// Valida la lista de proyectos pasada como parámetro
@@ -3062,7 +3080,6 @@ namespace Es.Riam.Gnoss.Logica.ServiciosGenerales
 
         #endregion
 
-        #endregion
 
 
         #region Dispose

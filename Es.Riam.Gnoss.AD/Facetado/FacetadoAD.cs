@@ -13728,14 +13728,15 @@ namespace Es.Riam.Gnoss.AD.Facetado
         public void EliminarConceptEHijos(string pGrafo, string pSujetoConcept, bool pEliminarHijos)
         {
             string subconsultaHijos = string.Empty;
+            string grafo = ObtenerFromGraph(pGrafo);
+
+            string consulta = $"prefix skos:<http://www.w3.org/2008/05/skos#> delete from graph {grafo.ToLower().Replace("from", string.Empty)} {{ ?s ?p ?o }} {grafo} where {{ {{ ?s ?p ?o . filter((?s = <{pSujetoConcept}> and ?p != skos:narrower) or (?o = <{pSujetoConcept}> and ?p != skos:broader)) }} }}";
+
             if (pEliminarHijos)
             {
                 subconsultaHijos = $"UNION {{ ?s ?p ?o. <{pSujetoConcept}> skos:narrower+ ?s .}}";
+                consulta = $"prefix skos:<http://www.w3.org/2008/05/skos#> delete from graph {grafo.ToLower().Replace("from", string.Empty)} {{ ?s ?p ?o }} {grafo} where {{ {{ ?s ?p ?o . filter(?s = <{pSujetoConcept}> or ?o = <{pSujetoConcept}>) }} {subconsultaHijos} }}";
             }
-
-            string grafo = ObtenerFromGraph(pGrafo);
-
-            string consulta = $"prefix skos:<http://www.w3.org/2008/05/skos#> delete from graph {grafo.ToLower().Replace("from", string.Empty)} {{ ?s ?p ?o }} {grafo} where {{ {{ ?s ?p ?o . filter(?s = <{pSujetoConcept}> or ?o = <{pSujetoConcept}>) }} {subconsultaHijos} }}";
 
             ActualizarVirtuoso(consulta, pGrafo);
         }

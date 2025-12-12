@@ -1304,11 +1304,11 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextOracleMigrations
                     b.Property<string>("OntologiasImportadas")
                         .HasColumnType("NVARCHAR2(2000)");
 
-                    b.Property<string>("PathImagen")
-                        .HasColumnType("NVARCHAR2(2000)");
-
                     b.Property<bool>("Privado")
                         .HasColumnType("NUMBER(1)");
+
+                    b.Property<string>("PathImagen")
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<string>("Titulo")
                         .HasColumnType("NVARCHAR2(2000)");
@@ -2166,13 +2166,30 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextOracleMigrations
                     b.Property<Guid>("DocumentoOriginalID")
                         .HasColumnType("RAW(16)");
 
+                    b.Property<bool>("EsMejora")
+                        .HasPrecision(1)
+                        .HasColumnType("NUMBER(1)");
+
+                    b.Property<Guid?>("EstadoID")
+                        .HasColumnType("RAW(16)");
+
+                    b.Property<short>("EstadoVersion")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("NUMBER(5)")
+                        .HasDefaultValue((short)2);
+
                     b.Property<Guid>("IdentidadID")
                         .HasColumnType("RAW(16)");
 
                     b.Property<int>("Version")
                         .HasColumnType("NUMBER(10)");
 
+                    b.Property<Guid?>("MejoraID")
+                        .HasColumnType("RAW(16)");
+
                     b.HasKey("DocumentoID");
+
+                    b.HasIndex("EstadoID");
 
                     b.ToTable("VersionDocumento");
                 });
@@ -2642,7 +2659,7 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextOracleMigrations
                     b.Property<bool>("MostrarContador")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("NUMBER(1)")
-                        .HasDefaultValue(true);
+                        .HasDefaultValue(1);
 
                     b.Property<bool?>("MostrarSoloCaja")
                         .HasColumnType("NUMBER(1)");
@@ -2796,6 +2813,9 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextOracleMigrations
 
                     b.Property<string>("Nombre")
                         .HasColumnType("NVARCHAR2(2000)");
+
+                    b.Property<bool>("PermiteMejora")
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<bool>("Publico")
                         .HasColumnType("NUMBER(1)");
@@ -10428,15 +10448,22 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextOracleMigrations
                 });
 
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Documentacion.VersionDocumento", b =>
-                {
-                    b.HasOne("Es.Riam.Gnoss.AD.EntityModel.Models.Documentacion.Documento", "Documento")
-                        .WithOne("VersionDocumento")
-                        .HasForeignKey("Es.Riam.Gnoss.AD.EntityModel.Models.Documentacion.VersionDocumento", "DocumentoID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+            {
+                b.HasOne("Es.Riam.Gnoss.AD.EntityModel.Models.Documentacion.Documento", "Documento")
+                    .WithOne("VersionDocumento")
+                    .HasForeignKey("Es.Riam.Gnoss.AD.EntityModel.Models.Documentacion.VersionDocumento", "DocumentoID")
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .IsRequired();
 
-                    b.Navigation("Documento");
-                });
+                b.HasOne("Es.Riam.Gnoss.AD.EntityModel.Models.Flujos.Estado", "Estado")
+                    .WithMany("VersionesDocumentos")
+                    .HasForeignKey("EstadoID")
+                    .OnDelete(DeleteBehavior.Restrict);
+
+                b.Navigation("Documento");
+
+                b.Navigation("Estado");
+            });
 
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Documentacion.VotoDocumento", b =>
                 {

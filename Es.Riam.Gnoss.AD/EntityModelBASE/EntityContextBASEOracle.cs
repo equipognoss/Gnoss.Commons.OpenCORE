@@ -1,4 +1,5 @@
-﻿using Es.Riam.Gnoss.AD.ParametroAplicacion;
+﻿using Es.Riam.Gnoss.AD.EntityModelBASE.Models;
+using Es.Riam.Gnoss.AD.ParametroAplicacion;
 using Es.Riam.Gnoss.Util.Configuracion;
 using Es.Riam.Gnoss.Util.General;
 using Es.Riam.Util;
@@ -20,6 +21,26 @@ namespace Es.Riam.Gnoss.AD.EntityModelBASE
            : base(utilPeticion, loggingService, configService, dbContextOptions,logger,loggerFactory ,pDefaultSchema, pCache)
         {
 
+        }
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            base.OnModelCreating(modelBuilder);
+
+            modelBuilder.Entity<ColaCorreo>()
+               .Property(e => e.EsHtml)
+               .HasPrecision(1)
+               .HasColumnType("NUMBER(1)");
+
+            modelBuilder.Entity<ColaCorreo>()
+                .Property(e => e.EsSeguro)
+                .HasPrecision(1)
+                .HasColumnType("NUMBER(1)");
+
+            modelBuilder.Entity<ColaCorreo>()
+                .Property(e => e.EnviadoRabbit)
+                .HasPrecision(1)
+                .HasColumnType("NUMBER(1)");
         }
     }
 }

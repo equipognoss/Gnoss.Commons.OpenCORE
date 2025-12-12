@@ -5,6 +5,8 @@ using Es.Riam.Gnoss.AD.EntityModel.Models.Flujos;
 using Es.Riam.Gnoss.AD.Virtuoso;
 using Es.Riam.Gnoss.CL;
 using Es.Riam.Gnoss.CL.ParametrosAplicacion;
+using Es.Riam.Gnoss.Elementos;
+using Es.Riam.Gnoss.Elementos.Documentacion;
 using Es.Riam.Gnoss.Logica.Documentacion;
 using Es.Riam.Gnoss.Logica.Flujos;
 using Es.Riam.Gnoss.Logica.Identidad;
@@ -18,6 +20,7 @@ using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 
 namespace Es.Riam.Gnoss.Web.Controles.Administracion
 {
@@ -94,6 +97,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
                     Publico = e.Publico,
                     TipoEstado = (TipoEstado)e.Tipo,
                     Color = e.Color,
+                    PermiteMejora = e.PermiteMejora,
                     ListaEstadoIdentidad = e.EstadoIdentidad.Select(ei => new EstadoIdentidadViewModel
                     {
                         EstadoID = ei.EstadoID,
@@ -152,11 +156,9 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
             return flujoViewModel;
         }
 
-        public string ComprobarErrores(FlujoViewModel pModelo)
+        public string ComprobarErrores(FlujoViewModel pModelo, bool pConfirmado)
         {
-            string error = "";
-
-            error = ComprobarErrorNombresRepetidos(pModelo);
+            string error = ComprobarErrorNombresRepetidos(pModelo);
 
             if (string.IsNullOrEmpty(error))
             {
@@ -168,18 +170,26 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
                 error = ComprobarTiposContenidos(pModelo);
             }
 
+            if (string.IsNullOrEmpty(error))
+            {
+                error = ComprobarPermiteMejoraCorrecto(pModelo.Estados);
+            }
+
+            if (string.IsNullOrEmpty(error))
+            {
+                error = ComprobarMejorasActivas(pModelo);
+                error = !string.IsNullOrEmpty(error) && pConfirmado ? "" : error;
+            }
             return error;
         }
 
         public void GuardarFlujo(FlujoViewModel pModelo)
         {
-            using (FlujosCN flujosCN = new FlujosCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<FlujosCN>(), mLoggerFactory))
+            FlujosCN flujosCN = new FlujosCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<FlujosCN>(), mLoggerFactory);
+
+            try
             {
-                IdentidadCN identidadCN = new IdentidadCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<IdentidadCN>(), mLoggerFactory);
-                DataWrapperDocumentacion dwDocumentacion = new DataWrapperDocumentacion();
-                DocumentacionCN docCN = new DocumentacionCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<DocumentacionCN>(), mLoggerFactory);
-                docCN.ObtenerOntologiasProyecto(ProyectoSeleccionado.Clave, dwDocumentacion, true, false, false);
-                Dictionary<Guid, string> ontologiasProyecto = dwDocumentacion.ListaDocumento.ToDictionary(k => k.DocumentoID, k => k.Enlace.Replace(".owl", ""));
+                flujosCN.IniciarTransaccion();
 
                 Flujo filaFlujo = new Flujo
                 {
@@ -201,38 +211,13 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
                 };
 
                 // Comprobamos si ha actualizado los recursos afectados del flujo
-                Dictionary<TiposContenidos, bool> contenidosAfectadosAnteriores = flujosCN.ObtenerTiposContenidosPorFlujoID(pModelo.FlujoID);
-                Dictionary<Guid, string> ontologiasAfectadasAnteriormente = flujosCN.ObtenerOntologiasFlujo(pModelo.FlujoID, ontologiasProyecto);
-
-                foreach (var tipo in contenidosAfectadosAnteriores.Keys)
-                {
-                    if (contenidosAfectadosAnteriores[tipo] != pModelo.TiposRecursos[tipo] && contenidosAfectadosAnteriores[tipo])
-                    {
-                        List<Guid> ontologiasAfectadas = new List<Guid>();
-                        // Ya no afecta a recursos semanticos
-                        if (tipo.Equals(TiposContenidos.RecursoSemantico))
-                        {
-                            ontologiasAfectadas = ontologiasAfectadasAnteriormente.Keys.ToList();
-                        }
-                        AplicarEstadoAContenido(tipo, pModelo.FlujoID, null, ProyectoSeleccionado.Clave, ontologiasAfectadas, false, true, UsuarioActual.UsuarioID, flujosCN);
-                    }
-                }
-
-                // Mirar si hay un numero distinto de ontologias afectadas
-                // Si es asi habrá que quitar el estado a los recursos que ya no son afectados por el flujo
-                Dictionary<Guid, string> ontologiasABorrar = ontologiasAfectadasAnteriormente.Where(kvp => !pModelo.OntologiasProyecto.ContainsKey(kvp.Key)).ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
-                if (ontologiasABorrar.Count > 0)
-                {
-                    AplicarEstadoAContenido(TiposContenidos.RecursoSemantico, pModelo.FlujoID, null, ProyectoSeleccionado.Clave, ontologiasABorrar.Keys.ToList(), false, true, UsuarioActual.UsuarioID, flujosCN);
-                    foreach (string ontologiaABorrar in ontologiasABorrar.Values)
-                    {
-                        flujosCN.EliminarFlujoObjetoConocimientoProyectoPorNombreOntologia(pModelo.FlujoID, ontologiaABorrar);
-                    }
-                }
+                EliminarEstadosDeTiposEliminados(pModelo, flujosCN);
 
                 // Guardamos los datos del flujo en BD
                 flujosCN.GuardarFlujo(filaFlujo);
 
+                // Si se ha seleccionado recursos semanticos asegurarse de que las ontologias
+                // estan en la tabla FlujoObjetoConocimientoProyecto
                 if (filaFlujo.RecursoSemantico)
                 {
                     GuardarFlujoObjetoConocimientoProyecto(filaFlujo.FlujoID, pModelo.OntologiasProyecto.Values.ToList(), flujosCN);
@@ -242,14 +227,26 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
                 flujosCN.EliminarTransiciones(pModelo.Transiciones.Where(i => i.Eliminado).Select(i => i.TransicionID).ToList());
                 flujosCN.EliminarEstados(pModelo.Estados.Where(i => i.Eliminado).Select(i => i.EstadoID).ToList(), filaFlujo.FlujoID);
 
+                IdentidadCN identidadCN = new IdentidadCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<IdentidadCN>(), mLoggerFactory);
+
                 // Seccion de estados
                 GuardarEstados(pModelo.Estados, filaFlujo.FlujoID, flujosCN, identidadCN);
                 // Seccion de transiciones
                 GuardarTransiciones(pModelo.Transiciones, flujosCN, identidadCN);
                 // Seccion de aplicar el estadoID
-                AplicarEstadosAContenidos(pModelo.TiposRecursos, pModelo.FlujoID, EstadoFinalDeFlujo(pModelo.Transiciones), ProyectoSeleccionado.Clave, pModelo.OntologiasProyecto.Keys.ToList(), false, false, UsuarioActual.UsuarioID, flujosCN);
+                AplicarEstadosAContenidos(pModelo.TiposRecursos.Where(kvp => kvp.Value).Select(kvp => kvp.Key).ToList(), pModelo.FlujoID, EstadoFinalDeFlujo(pModelo.Transiciones), ProyectoSeleccionado.Clave, pModelo.OntologiasProyecto.Keys.ToList(), false, false, UsuarioActual.UsuarioID, flujosCN);
 
                 identidadCN.Dispose();
+                flujosCN.TerminarTransaccion(true);
+            }
+            catch
+            {
+                flujosCN.TerminarTransaccion(false);
+                throw;
+            }
+            finally
+            {
+                flujosCN.Dispose();
             }
         }
 
@@ -264,13 +261,57 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
                 docCN.Dispose();
 
                 List<Guid> ontologiasFlujo = flujosCN.ObtenerOntologiasFlujo(pFlujoID, dwDocumentacion.ListaDocumento.ToDictionary(k => k.DocumentoID, k => k.Enlace.Replace(".owl", ""))).Keys.ToList();
-                AplicarEstadosAContenidos(flujosCN.ObtenerTiposContenidosPorFlujoID(pFlujoID), pFlujoID, null, ProyectoSeleccionado.Clave, ontologiasFlujo, true, true, UsuarioActual.UsuarioID, flujosCN);
+                AplicarEstadosAContenidos(flujosCN.ObtenerTiposContenidosPorFlujoID(pFlujoID).Where(kvp => kvp.Value).Select(kvp => kvp.Key).ToList(), pFlujoID, null, ProyectoSeleccionado.Clave, ontologiasFlujo, true, true, UsuarioActual.UsuarioID, flujosCN);
             }
         }
 
         #endregion
 
         #region Metodos privados
+        private void EliminarEstadosDeTiposEliminados(FlujoViewModel pModelo, FlujosCN pFlujosCN)
+        {
+            DataWrapperDocumentacion dwDocumentacion = new DataWrapperDocumentacion();
+            DocumentacionCN docCN = new DocumentacionCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<DocumentacionCN>(), mLoggerFactory);
+            docCN.ObtenerOntologiasProyecto(ProyectoSeleccionado.Clave, dwDocumentacion, true, false, false);
+
+            
+            Dictionary<Guid, string> ontologiasProyecto = dwDocumentacion.ListaDocumento.ToDictionary(k => k.DocumentoID, k => k.Enlace.Replace(".owl", ""));
+            Dictionary<Guid, string> ontologiasAfectadasAnteriormente = pFlujosCN.ObtenerOntologiasFlujo(pModelo.FlujoID, ontologiasProyecto);
+            Dictionary<TiposContenidos, bool> contenidosAfectadosAnteriores = pFlujosCN.ObtenerTiposContenidosPorFlujoID(pModelo.FlujoID);
+
+            List<TiposContenidos> listaTiposAfectados = new List<TiposContenidos>();
+            List<Guid> ontologiasAfectadas = new List<Guid>();
+
+            foreach (var tipo in contenidosAfectadosAnteriores.Keys)
+            {
+                if (contenidosAfectadosAnteriores[tipo] && !pModelo.TiposRecursos[tipo])
+                {
+                    // Ya no afecta a recursos semanticos, se recoge 
+                    if (tipo.Equals(TiposContenidos.RecursoSemantico))
+                    {
+                        ontologiasAfectadas = ontologiasAfectadasAnteriormente.Keys.ToList();
+                    }
+                    listaTiposAfectados.Add(tipo);
+                }
+            }
+
+            if (listaTiposAfectados.Count > 0)
+            {
+                AplicarEstadosAContenidos(listaTiposAfectados, pModelo.FlujoID, null, ProyectoSeleccionado.Clave, ontologiasAfectadas, false, true, UsuarioActual.UsuarioID, pFlujosCN);
+            }
+
+            // Mirar si hay un numero distinto de ontologias afectadas
+            // Si es asi habrá que quitar el estado a los recursos que ya no son afectados por el flujo
+            Dictionary<Guid, string> ontologiasABorrar = ontologiasAfectadasAnteriormente.Where(kvp => !pModelo.OntologiasProyecto.ContainsKey(kvp.Key)).ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
+            if (ontologiasABorrar.Count > 0)
+            {
+                AplicarEstadosAContenidos(new List<TiposContenidos> { TiposContenidos.RecursoSemantico}, pModelo.FlujoID, null, ProyectoSeleccionado.Clave, ontologiasABorrar.Keys.ToList(), false, true, UsuarioActual.UsuarioID, pFlujosCN);
+                foreach (string ontologiaABorrar in ontologiasABorrar.Values)
+                {
+                    pFlujosCN.EliminarFlujoObjetoConocimientoProyectoPorNombreOntologia(pModelo.FlujoID, ontologiaABorrar);
+                }
+            }
+        }
 
         private void GuardarEstados(List<EstadoViewModel> pListaEstados, Guid pFlujoID, FlujosCN pFlujosCN, IdentidadCN pIdentidadCN)
         {
@@ -284,6 +325,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
                 estadoFila.Publico = estado.Publico;
                 estadoFila.Tipo = (short)estado.TipoEstado;
                 estadoFila.Color = estado.Color;
+                estadoFila.PermiteMejora = estado.PermiteMejora;
                 pFlujosCN.GuardarEstado(estadoFila);
 
                 EliminarEstadoIdentidadAntiguo(estado.EstadoID, estado.ListaEstadoIdentidad, pFlujosCN, pIdentidadCN);
@@ -297,7 +339,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
         {
             foreach (EstadoIdentidadViewModel perfil in pListaEstadoIdentidadViewModel)
             {
-                
+
                 EstadoIdentidad estadoIdentidadFila = new EstadoIdentidad();
                 Guid identidadID = (Guid)pIdentidadCN.ObtenerIdentidadIDDePerfilEnProyecto(ProyectoSeleccionado.Clave, perfil.PerfilID);
                 estadoIdentidadFila.IdentidadID = identidadID;
@@ -344,8 +386,6 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
 
         private void GuardarTransiciones(List<TransicionViewModel> pListaTransiciones, FlujosCN pFlujosCN, IdentidadCN pIdentidadCN)
         {
-            Guid identidadID = Guid.Empty;
-
             foreach (TransicionViewModel transicion in pListaTransiciones.Where(i => !i.Eliminado).ToList())
             {
                 Transicion transicionFila = new Transicion();
@@ -364,7 +404,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
             }
         }
 
-        public void GuardarTransicionIdentidades(Guid pTransicionID, EstadoViewModel pEstadoOrigen, EstadoViewModel pEstadoDestino, List<Guid> pListaPerfiles, FlujosCN pFlujosCN, IdentidadCN pIdentidadCN)
+        private void GuardarTransicionIdentidades(Guid pTransicionID, EstadoViewModel pEstadoOrigen, EstadoViewModel pEstadoDestino, List<Guid> pListaPerfiles, FlujosCN pFlujosCN, IdentidadCN pIdentidadCN)
         {
             foreach (Guid perfilID in pListaPerfiles)
             {
@@ -399,7 +439,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
             }
         }
 
-        public void GuardarTransicionGrupos(Guid pTransicionID, EstadoViewModel pEstadoOrigen, EstadoViewModel pEstadoDestino, List<Guid> pListaGrupos, FlujosCN pFlujosCN)
+        private void GuardarTransicionGrupos(Guid pTransicionID, EstadoViewModel pEstadoOrigen, EstadoViewModel pEstadoDestino, List<Guid> pListaGrupos, FlujosCN pFlujosCN)
         {
             foreach (Guid grupoID in pListaGrupos)
             {
@@ -432,7 +472,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
             }
         }
 
-        public void EliminarTransicionIdentidadAntiguo(Guid pTransicionID, List<Guid> pListaTransicionIdentidadPerfiles, FlujosCN pFlujosCN, IdentidadCN pIdentidadCN)
+        private void EliminarTransicionIdentidadAntiguo(Guid pTransicionID, List<Guid> pListaTransicionIdentidadPerfiles, FlujosCN pFlujosCN, IdentidadCN pIdentidadCN)
         {
             // Eliminamos los elementos TransicionIdentidad que no estén en el nuevo modelo
             List<Guid> listaTransicionIdentidad = pFlujosCN.ObtenerIdentidadesIDPorTransicionID(pTransicionID);
@@ -446,7 +486,8 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
                 pFlujosCN.EliminarTranscionesIdentidad(listaTransicionIdentidadEliminados, pTransicionID);
             }
         }
-        public void EliminarTransicionGrupoAntiguo(Guid pTransicionID, List<Guid> pListaTransicionGrupo, FlujosCN pFlujosCN)
+
+        private void EliminarTransicionGrupoAntiguo(Guid pTransicionID, List<Guid> pListaTransicionGrupo, FlujosCN pFlujosCN)
         {
             List<Guid> listaTransicionGrupo = pFlujosCN.ObtenerGruposIDPorTransicionID(pTransicionID);
 
@@ -469,17 +510,12 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
                 pFlujosCN.GuardarFlujoObjetoConocimientoProyecto(filaFlujoOCProyecto);
             }
         }
-        private void AplicarEstadosAContenidos(Dictionary<TiposContenidos, bool> pTiposContenidos, Guid pFlujoID, Guid? pEstadoInicialID, Guid pProyectoID, List<Guid> pListaOntologias, bool pEliminarFlujo, bool pEliminarEstado, Guid pUsuarioID, FlujosCN pFlujosCN)
+
+        private void AplicarEstadosAContenidos(List<TiposContenidos> pTiposContenidos, Guid pFlujoID, Guid? pEstadoInicialID, Guid pProyectoID, List<Guid> pListaOntologias, bool pEliminarFlujo, bool pEliminarEstado, Guid pUsuarioID, FlujosCN pFlujosCN)
         {
-            foreach (var tipoRecurso in pTiposContenidos.Where(item => item.Value).Select(item => item.Key).ToList())
-            {
-                pFlujosCN.InsertarEnColaFlujosCreadosOEliminados(pFlujoID, pEstadoInicialID, pProyectoID, pListaOntologias, tipoRecurso, pEliminarFlujo, pEliminarEstado, pUsuarioID, mAvailableServices);
-            }
+            pFlujosCN.InsertarEnColaFlujosCreadosOEliminados(pFlujoID, pEstadoInicialID, pProyectoID, pListaOntologias, pTiposContenidos, pEliminarFlujo, pEliminarEstado, pUsuarioID, mAvailableServices);
         }
-        private void AplicarEstadoAContenido(TiposContenidos pTipoContenido, Guid pFlujoID, Guid? pEstadoInicialID, Guid pProyectoID, List<Guid> pListaOntologias, bool pEliminarFlujo, bool pEliminarEstado, Guid pUsuarioID, FlujosCN pFlujosCN)
-        {
-            pFlujosCN.InsertarEnColaFlujosCreadosOEliminados(pFlujoID, pEstadoInicialID, pProyectoID, pListaOntologias, pTipoContenido, pEliminarFlujo, pEliminarEstado, pUsuarioID, mAvailableServices);
-        }
+
         private Guid EstadoFinalDeFlujo(List<TransicionViewModel> pTransiciones)
         {
             Guid estadoID = pTransiciones.FirstOrDefault(t => t.EstadoDestino.TipoEstado.Equals(TipoEstado.Final) && t.EstadoDestino.Publico).EstadoDestino.EstadoID;
@@ -490,43 +526,62 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
             }
             return estadoID;
         }
+
+        #region Comprobaciones de transiciones
+
         private string ComprobarTransiciones(List<TransicionViewModel> pListaTransiciones)
         {
-            string error = "";
-            // Comprobar que cada transicion tiene 2 estados asignados
-            error = pListaTransiciones.Where(item => (item.EstadoDestino.EstadoID == Guid.Empty || item.EstadoOrigen.EstadoID == Guid.Empty) && !item.Eliminado).Any() ? "ERRORTRANSICIONESINCOMPLETAS" : "";
+            string error = ComprobarTransicionesTienenEstadosAsigandos(pListaTransiciones);
 
             if (string.IsNullOrEmpty(error))
             {
-                var result = pListaTransiciones.Where(t => !t.Eliminado).FirstOrDefault(t => t.EstadoOrigen.EstadoID.Equals(t.EstadoDestino.EstadoID));
-                if (result != null)
-                {
-                    error = "ERRORTRANSICIONESESTADOSIGUALES";
-
-                }
+                error = ComprobarTransicionTieneEstadoOrigenYDestinoIgual(pListaTransiciones);
             }
             if (string.IsNullOrEmpty(error))
             {
-                var result = pListaTransiciones.Where(t => !t.Eliminado).GroupBy(t => new { EstadoOrigenID = t.EstadoOrigen.EstadoID, EstadoDestinoID = t.EstadoDestino.EstadoID }).Any(g => g.Count() > 1);
-
-                if (result)
-                {
-                    error = "ERRORTRANSICIONESIGUALES";
-                }
+                error = ComprobarTransicionesIguales(pListaTransiciones);
             }
 
             if (string.IsNullOrEmpty(error))
             {
-                error = !pListaTransiciones.Any(i => i.EstadoOrigen.TipoEstado.Equals(TipoEstado.Inicial) && !i.EstadoOrigen.Eliminado) ? "ERRORTRANSICIONESSINESTADOINICIAL" : "";
+                error = ComprobarTransicionTieneEstadoInicialAsignado(pListaTransiciones);
             }
 
             if (string.IsNullOrEmpty(error))
             {
-                error = !pListaTransiciones.Any(i => i.EstadoDestino.TipoEstado.Equals(TipoEstado.Final) && !i.EstadoOrigen.Eliminado) ? "ERRORTRANSICIONESSINESTADOFINAL" : "";
+                error = ComprobarTransicionTieneEstadoFinalAsignado(pListaTransiciones);
             }
 
             return error;
         }
+
+        private string ComprobarTransicionesTienenEstadosAsigandos(List<TransicionViewModel> pListaTransiciones)
+        {
+            return pListaTransiciones.Any(item => (item.EstadoDestino.EstadoID == Guid.Empty || item.EstadoOrigen.EstadoID == Guid.Empty) && !item.Eliminado) ? "ERRORTRANSICIONESINCOMPLETAS" : "";
+        }
+
+        private string ComprobarTransicionTieneEstadoOrigenYDestinoIgual(List<TransicionViewModel> pListaTransiciones)
+        {
+            return pListaTransiciones.Where(t => !t.Eliminado).Any(t => t.EstadoOrigen.EstadoID.Equals(t.EstadoDestino.EstadoID)) ? "ERRORTRANSICIONESESTADOSIGUALES" : "";
+        }
+
+        private string ComprobarTransicionesIguales(List<TransicionViewModel> pListaTransiciones)
+        {
+            return pListaTransiciones.Where(t => !t.Eliminado).GroupBy(t => new { EstadoOrigenID = t.EstadoOrigen.EstadoID, EstadoDestinoID = t.EstadoDestino.EstadoID }).Any(g => g.Count() > 1) ? "ERRORTRANSICIONESIGUALES" : "";
+        }
+
+        private string ComprobarTransicionTieneEstadoInicialAsignado(List<TransicionViewModel> pListaTransiciones)
+        {
+            return !pListaTransiciones.Any(i => i.EstadoOrigen.TipoEstado.Equals(TipoEstado.Inicial) && !i.EstadoOrigen.Eliminado) ? "ERRORTRANSICIONESSINESTADOINICIAL" : "";
+        }
+
+        private string ComprobarTransicionTieneEstadoFinalAsignado(List<TransicionViewModel> pListaTransiciones)
+        {
+            return !pListaTransiciones.Any(i => i.EstadoDestino.TipoEstado.Equals(TipoEstado.Final) && !i.EstadoOrigen.Eliminado) ? "ERRORTRANSICIONESSINESTADOFINAL" : "";
+        }
+
+        #endregion
+
         private string ComprobarErrorNombresRepetidos(FlujoViewModel pModelo)
         {
             string error = "";
@@ -537,6 +592,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
 
             return error;
         }
+
         private string ComprobarTiposContenidos(FlujoViewModel pModelo)
         {
             string error = "";
@@ -547,6 +603,77 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
             }
 
             return error;
+        }
+
+        private string ComprobarPermiteMejoraCorrecto(List<EstadoViewModel> pListaEstados)
+        {
+            return pListaEstados.Any(e => e.TipoEstado != TipoEstado.Final && e.PermiteMejora) ? "ERRORESTADOINVALIDOPERMITEMEJORA" : "";
+        }
+
+        private string ComprobarMejorasActivas(FlujoViewModel pModelo)
+        {
+            StringBuilder sbError = new StringBuilder();
+            using (FlujosCN flujosCN = new FlujosCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<FlujosCN>(), mLoggerFactory))
+            {
+                foreach (EstadoViewModel estado in pModelo.Estados.Where(e => e.TipoEstado == TipoEstado.Final).ToList())
+                {
+                    if (ComprobarPermiteMejoraSeHaDesactivado(estado.EstadoID, estado.PermiteMejora, flujosCN))
+                    {
+                        DocumentacionCN docCN = new DocumentacionCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<DocumentacionCN>(), mLoggerFactory);
+
+                        List<int> listaTiposAfectados = flujosCN.ObtenerTiposContenidosPorFlujoID(pModelo.FlujoID).Where(dicc => dicc.Value && dicc.Key != TiposContenidos.ComponenteCMS && dicc.Key != TiposContenidos.PaginaCMS).Select(dicc => (int)dicc.Key).ToList();
+
+                        // El flujo no afecta a recursos 
+                        if (listaTiposAfectados.Count == 0)
+                        {
+                            return sbError.ToString();
+                        }
+
+                        List<string> listaOntologiasNombre = flujosCN.ObtenerOntologiasNombreFlujo(pModelo.FlujoID);
+                        List<Guid?> listaOntologiasID = ObtenerListaOntologiasIDPorNombre(listaOntologiasNombre, docCN);
+                        listaOntologiasID.Add(null); // Recursos no semánticos
+
+                        List<Guid> documentosIDAfectados = docCN.ObtenerRecursosConMejorasActivas(ProyectoSeleccionado.Clave, listaTiposAfectados, listaOntologiasID);
+
+                        if (documentosIDAfectados.Count > 0)
+                        {
+                            sbError.Append("ERRORHAYMEJORASACTIVAS|||");
+                            foreach (Guid documentoID in documentosIDAfectados)
+                            {
+                                string nombreDocumento = docCN.ObtenerTituloDocumentoPorID(documentoID);
+                                GnossUrlsSemanticas gnossUrlsSemanticas = new GnossUrlsSemanticas(mLoggingService, mEntityContext, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<GnossUrlsSemanticas>(), mLoggerFactory);
+                                DataWrapperDocumentacion dwDocumentacion = docCN.ObtenerDocumentoPorID(documentoID);
+                                DocumentoWeb documentoWeb = new DocumentoWeb(dwDocumentacion.ListaDocumento.FirstOrDefault(), new GestorDocumental(dwDocumentacion, mLoggingService, mEntityContext, mLoggerFactory.CreateLogger<GestorDocumental>(), mLoggerFactory));
+                                string url = gnossUrlsSemanticas.GetURLBaseRecursosFicha(BaseURLIdioma, UtilIdiomas, ProyectoSeleccionado.NombreCorto, UrlPerfil, documentoWeb, false).Replace(documentoID.ToString(), $"{docCN.ObtenerDocumentoOriginalIDPorID(documentoID).ToString()}/{documentoID}");
+                                sbError.Append($"<li><a target='_blank' href='{url}'>{UtilCadenas.ObtenerTextoDeIdioma(nombreDocumento, IdiomaUsuario, IdiomaPorDefecto)}</a></li>");
+                            }
+                        }
+                        break;
+                    }
+                }
+            }
+            return sbError.ToString();
+        }
+
+        private bool ComprobarPermiteMejoraSeHaDesactivado(Guid pEstadoID, bool pPermiteMejoraPeticion, FlujosCN pFlujosCN)
+        { 
+            bool permiteMejoraBBDD = pFlujosCN.ObtenerPermiteMejoraPorEstadoID(pEstadoID);
+            return permiteMejoraBBDD && !pPermiteMejoraPeticion;
+        }
+
+        private List<Guid?> ObtenerListaOntologiasIDPorNombre(List<string> pListaNombreOntologias, DocumentacionCN pDocumentacionCN)
+        {
+            List<Guid?> listaOntologiasID = new List<Guid?>();
+            foreach (string nombre in pListaNombreOntologias)
+            {
+                string ontologia = nombre.Contains(".owl") ? nombre : $"{nombre}.owl";
+                Guid ontologiaID = pDocumentacionCN.ObtenerOntologiaAPartirNombre(ProyectoSeleccionado.Clave, ontologia);
+                if (!listaOntologiasID.Contains(ontologiaID))
+                {
+                    listaOntologiasID.Add(ontologiaID);
+                }
+            }
+            return listaOntologiasID;
         }
         #endregion
     }

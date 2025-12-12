@@ -87,10 +87,13 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
             DataWrapperDocumentacion dataWrapperDocumentacion = new DataWrapperDocumentacion();
             using (DocumentacionCN documentacionCN = new DocumentacionCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<DocumentacionCN>(), mLoggerFactory))
             {
+                mLoggingService.AgregarEntrada($"EliminarObjetoConocimiento - Buscando Objeto conocimiento en BD");
                 documentacionCN.ObtenerDatasetConOntologiaAPartirNombre(ProyectoSeleccionado.Clave, pNombreOntologia, dataWrapperDocumentacion);
                 if (dataWrapperDocumentacion.ListaDocumento.Count != 0)
                 {
+                    mLoggingService.AgregarEntrada($"EliminarObjetoConocimiento - Se ha encontrado un objeto de conocimiento");
                     resultado = CargarObjetoConocimiento(dataWrapperDocumentacion.ListaDocumento.FirstOrDefault());
+                    mLoggingService.AgregarEntrada($"EliminarObjetoConocimiento - Se ha cargado el objeto de conocimiento {resultado.Name}");
                 }
             }
             return resultado;
@@ -1110,6 +1113,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
             DocumentacionCN documentacionCN = new DocumentacionCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<DocumentacionCN>(), mLoggerFactory);
             if (!documentacionCN.OntologiaTieneRecursos(pOntologiaID))
             {
+                mLoggingService.AgregarEntrada($"EliminarObjetoConocimiento - El objeto de conocimiento no tiene recursos asociados");
                 ProyectoAD proyAD = new ProyectoAD(mLoggingService, mEntityContext, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<ProyectoAD>(), mLoggerFactory);
                 bool transaccionIniciada = proyAD.IniciarTransaccion(true);
 
@@ -1119,16 +1123,22 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
                     {
                         mEntityContext.NoConfirmarTransacciones = false;
                     }
-
+                    
                     if (pEsPrincipal)
                     {
+                        mLoggingService.AgregarEntrada($"EliminarObjetoConocimiento - Preparado para obtener ontología de BD --> ObjetoConocimientoID: {pObjetoConocimientoID} -- ProyectoID: {ProyectoSeleccionado.Clave}");
                         OntologiaProyecto ontologiaProyecto = documentacionCN.ObtenerOntologiaProyectoPorOntologia(pObjetoConocimientoID, ProyectoSeleccionado.Clave);
+                        mLoggingService.AgregarEntrada($"EliminarObjetoConocimiento - Obtenida ontología {ontologiaProyecto.NombreOnt} correctamente");
                         EliminarObjetoConocimiento(pOntologiaID, ontologiaProyecto);
+                        mLoggingService.AgregarEntrada($"EliminarObjetoConocimiento - Eliminado objeto conocimiento correctamente");
                     }
 
+                    mLoggingService.AgregarEntrada($"EliminarObjetoConocimiento - Entrando a eliminar Documento y dependencias {pOntologiaID}");
                     EditOntologyViewModel modeloEdicionOntologia = EliminarOntologia(pOntologiaID);
+                    mLoggingService.AgregarEntrada($"EliminarObjetoConocimiento - Documento y dependencias eliminadas correctamente");
 
                     GuardarCambios();
+                    mLoggingService.AgregarEntrada($"EliminarObjetoConocimiento - Cambios guardados correctamente");
 
                     if (transaccionIniciada)
                     {
@@ -1138,13 +1148,16 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
                 }
                 catch (Exception ex)
                 {
+                    mLoggingService.GuardarLogError(ex);
                     proyAD.TerminarTransaccion(false);
                     throw new Exception("Ha ocurrido un error al eliminar la ontología", ex);
                 }
             }
             else
             {
-                throw new Exception("No se puede eliminar la ontología porque tiene recursos asociados");
+                string mensajeError = "No se puede eliminar la ontología porque tiene recursos asociados.";
+                mLoggingService.GuardarLogError(mensajeError);
+                throw new Exception(mensajeError);
             }
         }
 

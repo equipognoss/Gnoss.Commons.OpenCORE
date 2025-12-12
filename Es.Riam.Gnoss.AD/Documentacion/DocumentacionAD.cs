@@ -5824,6 +5824,33 @@ namespace Es.Riam.Gnoss.AD.Documentacion
             return mEntityContext.Documento.Where(documento => documento.ElementoVinculadoID.Value.Equals(pOntologiaID) && !documento.Eliminado && !documento.Borrador && documento.UltimaVersion && documento.Tipo == 5).OrderByDescending(doc => doc.FechaCreacion.Value).Select(doc => doc.DocumentoID).ToList();
         }
 
+        /// <summary>
+        /// Obtiene los identificadores de los recursos que pertenezcan al proyecto indicado y sean de los tipos que se pasan por parametro
+        /// </summary>
+        /// <param name="pProyectoID"></param>
+        /// <param name="pTipos"></param>
+        /// <param name="pOntologias"></param>
+        /// <returns></returns>
+        public List<Guid> ObtenerRecursosConMejorasActivas(Guid pProyectoID, List<int> pTipos, List<Guid?> pOntologias)
+        {
+            var ultimasPendientes = mEntityContext.VersionDocumento.JoinDocumento().Where(
+                versionDoc => pTipos.Contains(versionDoc.Documento.Tipo) && versionDoc.Documento.ProyectoID.Equals(pProyectoID) &&
+                 !versionDoc.Documento.Eliminado && !versionDoc.Documento.Borrador && (pOntologias.Contains(versionDoc.Documento.ElementoVinculadoID)) && versionDoc.VersionDocumento.EsMejora && versionDoc.VersionDocumento.EstadoVersion == (short)EstadoVersion.Pendiente);
+
+            var buscarMaximaVersionPorMejora = ultimasPendientes.GroupBy(x => x.VersionDocumento.MejoraID).Select(g => new
+            {
+                MejoraID = g.Key,
+                MaxVersion = g.Max(doc => doc.VersionDocumento.Version)
+            });
+
+            var resultado = ultimasPendientes.Join(
+                buscarMaximaVersionPorMejora,
+                ultimasPendientes => new { ultimasPendientes.VersionDocumento.MejoraID, ultimasPendientes.VersionDocumento.Version },
+                maxVersionPorMejora => new { maxVersionPorMejora.MejoraID, Version = maxVersionPorMejora.MaxVersion },
+                (ultimasPendientes, maxVersionPorMejora) => ultimasPendientes.VersionDocumento.DocumentoID);
+
+            return resultado.ToList();
+        }
 
         /// <summary>
         /// Obtiene la cantidad recursos de una determinada ontología.
@@ -6613,21 +6640,6 @@ namespace Es.Riam.Gnoss.AD.Documentacion
             if (pListaDocumentos.Count > 0)
             {
                 pDataWrapperDocumentacion.ListaDocumentoWebAgCatTesauro = pDataWrapperDocumentacion.ListaDocumentoWebAgCatTesauro.Union(mEntityContext.DocumentoWebAgCatTesauro.Where(docWebAg => pListaDocumentos.Contains(docWebAg.DocumentoID)).Distinct().ToList()).ToList();
-            }
-        }
-
-        /// <summary>
-        /// Actualiza el campo UltimaVersion de un documento que ha dejado de ser la última versión
-        /// </summary>
-        /// <param name="pDocumentoID">Identificador del documento</param>
-        public void ActualizarUltimaVersionDocumento(Guid pDocumentoID)
-        {
-            Documento documento = mEntityContext.Documento.Where(doc => doc.DocumentoID.Equals(pDocumentoID)).ToList().FirstOrDefault();
-            if (documento != null)
-            {
-                documento.UltimaVersion = false;
-                documento.FechaModificacion = DateTime.Now;
-                mEntityContext.SaveChanges();
             }
         }
 
@@ -7678,6 +7690,20 @@ namespace Es.Riam.Gnoss.AD.Documentacion
         #region VersionDocumento
 
         /// <summary>
+        /// Obtiene la última versión de un documento en base de datos
+        /// </summary>
+        /// <param name="pDocumentoID">Documento original</param>
+        /// <returns></returns>
+        public Documento ObtenerUltimaVersionDocumento(Guid pDocumentoID)
+        {
+           return mEntityContext.Documento.Join(mEntityContext.VersionDocumento, doc => doc.DocumentoID, version => version.DocumentoID, (doc, version) => new
+            {
+                Documento = doc,
+                VersionDocumento = version
+            }).Where(item => item.Documento.UltimaVersion && item.VersionDocumento.DocumentoOriginalID.Equals(pDocumentoID)).Select(item => item.Documento).FirstOrDefault();      
+        }
+
+        /// <summary>
         /// Obtiene la fecha de edición de un recurso, si está bloqueado
         /// </summary>
         /// <param name="pDocumentoID">Identificador del recurso</param>
@@ -7853,13 +7879,27 @@ namespace Es.Riam.Gnoss.AD.Documentacion
             }
         }
 
-        /// <summary>
-        /// Carga la tabla VersionDocumento para los documentos pasados en la lista.
-        /// </summary>
-        /// <param name="pDataWrapperDocumentacion">DataSet de documentación</param>
-        /// <param name="pListaDocumentosID">Lista de identificadores de los documentos para traer la información</param>
-        /// <param name="pRelaciones">Especifica si deben traerse todas la versiones de los documentos originales o no</param>
-        public void ObtenerVersionDocumentosPorIDs(DataWrapperDocumentacion pDataWrapperDocumentacion, List<Guid> pListaDocumentosID, bool pRelaciones)
+		public bool ComprobarSiDocumentoEsUnaMejora(Guid pDocumentoID)
+        {
+            VersionDocumento versionMejora = mEntityContext.VersionDocumento.Where(x => x.DocumentoID.Equals(pDocumentoID) && x.EsMejora && x.EstadoVersion == (short)EstadoVersion.Pendiente).FirstOrDefault();
+
+            if (versionMejora == null)
+            {
+                return false;
+            }
+            else
+            {
+                return true;
+            }
+        }
+
+		/// <summary>
+		/// Carga la tabla VersionDocumento para los documentos pasados en la lista.
+		/// </summary>
+		/// <param name="pDataWrapperDocumentacion">DataSet de documentación</param>
+		/// <param name="pListaDocumentosID">Lista de identificadores de los documentos para traer la información</param>
+		/// <param name="pRelaciones">Especifica si deben traerse todas la versiones de los documentos originales o no</param>
+		public void ObtenerVersionDocumentosPorIDs(DataWrapperDocumentacion pDataWrapperDocumentacion, List<Guid> pListaDocumentosID, bool pRelaciones)
         {
             if (pListaDocumentosID.Count > 0)
             {
@@ -7907,6 +7947,12 @@ namespace Es.Riam.Gnoss.AD.Documentacion
             }
             return listaDocumentosID;
         }
+
+        public Guid ObtenerUltimaVersionDeDocumento(Guid pDocumentoID)
+        {
+            return mEntityContext.VersionDocumento.Join(mEntityContext.Documento, vd => vd.DocumentoID, d => d.DocumentoID, (vd, d) => new { vd, d }).Where(x => x.vd.DocumentoOriginalID == pDocumentoID && x.d.UltimaVersion).Select(x => x.d.DocumentoID).FirstOrDefault();
+		}
+
         public Guid ObtenerDocumentoOriginalIDPorID(Guid pDocumentoID)
         {
             // Comprobar si el documento pasado es una version de otro sino es un documento original
@@ -8963,7 +9009,44 @@ namespace Es.Riam.Gnoss.AD.Documentacion
         }
 
         #endregion
+        #region mejoras en flujos
+        public VersionDocumento ObtenerVersionPorVersionID(Guid pDocumentoID)
+        {
+            return mEntityContext.VersionDocumento.FirstOrDefault(item => item.DocumentoID.Equals(pDocumentoID));
+        }
 
+        public List<VersionDocumento> ObtenerVersionesPorDocumentoOriginalID(Guid pDocumentoID)
+        {
+            return mEntityContext.VersionDocumento.Where(item => item.DocumentoOriginalID.Equals(pDocumentoID)).ToList();
+        }
+        /// <summary>
+        /// Cambia la mejora a Activa y el resto de versiones asociadas a la versión pero que no es la aceptada a historico
+        /// </summary>
+        /// <param name="pVersionDocumento"></param>
+        public void CambiarEstadoVersionesDeMejoraAprobada(VersionDocumento pVersionDocumento)
+        {
+            if (pVersionDocumento.MejoraID.HasValue)
+            {
+                List<VersionDocumento> listaVersiones = mEntityContext.VersionDocumento.Where(item => (item.MejoraID.HasValue && item.MejoraID.Value.Equals(pVersionDocumento.MejoraID.Value)) && !item.DocumentoID.Equals(pVersionDocumento.DocumentoID)).ToList();
+                foreach (VersionDocumento versionDocumento in listaVersiones)
+                {
+                    versionDocumento.EstadoVersion = (short)EstadoVersion.Historico;
+                }
+            }
+            pVersionDocumento.EstadoVersion = (short)EstadoVersion.Vigente;
+
+        }
+        public void EliminarVersionesDeMejora(Guid pMejoraID)
+        {
+            List<VersionDocumento> listaVersionesDocumento = mEntityContext.VersionDocumento.Where(item => item.MejoraID.HasValue && item.MejoraID.Value.Equals(pMejoraID)).ToList();
+            foreach (VersionDocumento versionDocumento in listaVersionesDocumento)
+            {
+                mEntityContext.EliminarElemento(versionDocumento);
+            }
+            List<Guid> listaVersiones = listaVersionesDocumento.Select(item => item.DocumentoID).ToList();
+            EliminarDocumentos(listaVersiones);
+        }
+        #endregion
         /// <summary>
         /// Obtiene los editores de una lista de documentos.
         /// </summary>
@@ -9117,6 +9200,11 @@ namespace Es.Riam.Gnoss.AD.Documentacion
         {
             Documento filaDoc = ObtenerDocumentoPorIdentificador(pDocumentoID);
             filaDoc.EstadoID = pEstadoID;
+            VersionDocumento versionDocumento = ObtenerVersionPorVersionID(pDocumentoID);
+            if(versionDocumento != null)
+            {
+                versionDocumento.EstadoID = pEstadoID;
+            }
 
             mEntityContext.SaveChanges();
         }

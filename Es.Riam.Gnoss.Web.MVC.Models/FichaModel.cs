@@ -115,6 +115,14 @@ namespace Es.Riam.Gnoss.Web.MVC.Models
         AudioTOP = 25
     }
 
+    public enum EstadoVersion
+    {
+        Pendiente = 1,
+        Vigente = 2,
+        Cancelada = 3,
+        Historico = 4
+    }
+
     /// <summary>
     /// Modelo de un recurso
     /// </summary>
@@ -229,10 +237,10 @@ namespace Es.Riam.Gnoss.Web.MVC.Models
         /// </summary>
         public string UrlNewVersion { get; set; }
 
-        /// <summary>
-        /// Url de descarga del recurso / url del video / url imagen / url del hipervinculo
-        /// </summary>
-        public string UrlDocument { get; set; }
+		/// <summary>
+		/// Url de descarga del recurso / url del video / url imagen / url del hipervinculo
+		/// </summary>
+		public string UrlDocument { get; set; }
 
         /// <summary>
         /// Url de la previsualizacion / url de la imagen reducida / url de la captura de un web site / url de un video
@@ -530,6 +538,18 @@ namespace Es.Riam.Gnoss.Web.MVC.Models
             /// Url para eliminar la version de un recurso
             /// </summary>
             public string UrlDeleteVersion { get; set; }
+            /// <summary>
+            /// Url para iniciar una mejora
+            /// </summary>
+            public string UrlStartImprovement { get; set; }
+			/// <summary>
+			/// Url para aprobar una mejora de un recurso con versión
+			/// </summary>
+			public string UrlApplyImprovement { get; set; }
+            /// <summary>
+            /// Url para cancelar una mejora de un recurso con versión
+            /// </summary>
+            public string UrlCancelImprovement { get; set; }
 
             /// <summary>
             /// Url para reportar contenido inadecuado
@@ -669,6 +689,10 @@ namespace Es.Riam.Gnoss.Web.MVC.Models
             public string UrlTransition { get; set; }
             public string UrlTransitionModal { get; set; }
             public string UrlTransitionHistory { get; set; }
+			public string UrlLoadActionStartImprovement { get; set; }
+            public string UrlLoadActionApplyImprovement { get; set; }
+            public string UrlLoadActionCancelImprovement { get; set; }
+            public string UrlImprovement { get; set; }
         }
 
         /// <summary>
@@ -762,6 +786,8 @@ namespace Es.Riam.Gnoss.Web.MVC.Models
             /// Indica si el usuario puede editar el recurso
             /// </summary>
             public bool Edit { get; set; }
+
+            public bool EditImprovement { get; set; }
 
             /// <summary>
             /// Indica si el usuario puede crear una versión del recurso
@@ -973,6 +999,11 @@ namespace Es.Riam.Gnoss.Web.MVC.Models
         public Guid ProjectID { get; set; }
 
         public Dictionary<string, bool> PropertiesDifferences { get; set; }
+
+        public bool IsImprovement { get; set; }
+
+        public EstadoVersion VersionState { get; set; }
+        public bool IsInProcessOfImprovement { get; set; }
     }
 
     /// <summary>

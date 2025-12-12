@@ -223,8 +223,8 @@ namespace Es.Riam.Gnoss.Web.Controles.Documentacion
         /// Constructor a partir de la página que contiene al controlador
         /// </summary>
         /// <param name="pPage">Página</param>
-        public ControladorDocumentacion(LoggingService loggingService, EntityContext entityContext, ConfigService configService, RedisCacheWrapper redisCacheWrapper, GnossCache gnossCache, EntityContextBASE entityContextBASE, VirtuosoAD virtuosoAD, IHttpContextAccessor httpContextAccessor, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication, ILogger<ControladorDocumentacion> logger,ILoggerFactory loggerFactory)
-            : base(loggingService, configService, entityContext, redisCacheWrapper, gnossCache, virtuosoAD, httpContextAccessor, servicesUtilVirtuosoAndReplication,logger,loggerFactory)
+        public ControladorDocumentacion(LoggingService loggingService, EntityContext entityContext, ConfigService configService, RedisCacheWrapper redisCacheWrapper, GnossCache gnossCache, EntityContextBASE entityContextBASE, VirtuosoAD virtuosoAD, IHttpContextAccessor httpContextAccessor, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication, ILogger<ControladorDocumentacion> logger, ILoggerFactory loggerFactory)
+            : base(loggingService, configService, entityContext, redisCacheWrapper, gnossCache, virtuosoAD, httpContextAccessor, servicesUtilVirtuosoAndReplication, logger, loggerFactory)
         {
             mEntityContextBASE = entityContextBASE;
         }
@@ -234,8 +234,8 @@ namespace Es.Riam.Gnoss.Web.Controles.Documentacion
         /// </summary>
         /// <param name="pGestionDocumentacion">Gestor documental</param>
         /// <param name="pPage">Página</param>
-        public ControladorDocumentacion(GestorDocumental pGestionDocumentacion, LoggingService loggingService, EntityContext entityContext, ConfigService configService, RedisCacheWrapper redisCacheWrapper, GnossCache gnossCache, EntityContextBASE entityContextBASE, VirtuosoAD virtuosoAD, IHttpContextAccessor httpContextAccessor, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication, ILogger<ControladorDocumentacion> logger,ILoggerFactory loggerFactory)
-            : this(loggingService, entityContext, configService, redisCacheWrapper, gnossCache, entityContextBASE, virtuosoAD, httpContextAccessor, servicesUtilVirtuosoAndReplication,logger, loggerFactory)
+        public ControladorDocumentacion(GestorDocumental pGestionDocumentacion, LoggingService loggingService, EntityContext entityContext, ConfigService configService, RedisCacheWrapper redisCacheWrapper, GnossCache gnossCache, EntityContextBASE entityContextBASE, VirtuosoAD virtuosoAD, IHttpContextAccessor httpContextAccessor, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication, ILogger<ControladorDocumentacion> logger, ILoggerFactory loggerFactory)
+            : this(loggingService, entityContext, configService, redisCacheWrapper, gnossCache, entityContextBASE, virtuosoAD, httpContextAccessor, servicesUtilVirtuosoAndReplication, logger, loggerFactory)
         {
             mGestorDocumental = pGestionDocumentacion;
             mServicesUtilVirtuosoAndReplication = servicesUtilVirtuosoAndReplication;
@@ -246,7 +246,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Documentacion
         /// </summary>
         /// <param name="pFicheroConfiguracionBD">Fichero config</param>
         public ControladorDocumentacion(string pFicheroConfiguracionBD, string pFicheroConfiguracionBDBase, LoggingService loggingService, EntityContext entityContext, ConfigService configService, RedisCacheWrapper redisCacheWrapper, GnossCache gnossCache, EntityContextBASE entityContextBASE, VirtuosoAD virtuosoAD, IHttpContextAccessor httpContextAccessor, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication, ILogger<ControladorDocumentacion> logger, ILoggerFactory loggerFactory)
-            : this(loggingService, entityContext, configService, redisCacheWrapper, gnossCache, entityContextBASE, virtuosoAD, httpContextAccessor, servicesUtilVirtuosoAndReplication,logger,loggerFactory)
+            : this(loggingService, entityContext, configService, redisCacheWrapper, gnossCache, entityContextBASE, virtuosoAD, httpContextAccessor, servicesUtilVirtuosoAndReplication, logger, loggerFactory)
         {
             mFicheroConfiguracionBDBase = pFicheroConfiguracionBDBase;
             mServicesUtilVirtuosoAndReplication = servicesUtilVirtuosoAndReplication;
@@ -452,7 +452,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Documentacion
         /// <param name="pParametrosAplicacionDS">Dataset de parametros de aplicación usado desde la pantalla</param>
         /// <returns>TRUE si la copia se ha hecho bien</returns>
         // public bool DuplicarDocumentoFisicamente(Elementos.Documentacion.Documento pOrigen, Elementos.Documentacion.Documento pDestino, Elementos.Identidad.Identidad pIdentidadOrganizacion, bool pMasterComunidad, ParametroAplicacionDS pParametrosAplicacionDS)
-        public bool DuplicarDocumentoFisicamente(Documento pOrigen, Documento pDestino, Identidad pIdentidadOrganizacion, bool pMasterComunidad, GnossIdentity pUsuario, IAvailableServices pAvailableServices)
+        public bool DuplicarDocumentoFisicamente(Documento pOrigen, Documento pDestino, Identidad pIdentidadOrganizacion, bool pMasterComunidad, GnossIdentity pUsuario)
         {
             GestionDocumental servicioArchivos = null;
             ServicioVideos servicioVideos = null;
@@ -519,7 +519,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Documentacion
                 }
                 else if (pOrigen.TipoDocumentacion == TiposDocumentacion.Video)
                 {
-                    servicioVideos = new ServicioVideos(mConfigService, mLoggingService,mLoggerFactory.CreateLogger<ServicioVideos>(),mLoggerFactory);
+                    servicioVideos = new ServicioVideos(mConfigService, mLoggingService, mLoggerFactory.CreateLogger<ServicioVideos>(), mLoggerFactory);
                     sw = LoggingService.IniciarRelojTelemetria();
 
                     if (!pMasterComunidad && pOrigen.TipoEntidadVinculada == TipoEntidadVinculadaDocumento.Web)
@@ -540,14 +540,6 @@ namespace Es.Riam.Gnoss.Web.Controles.Documentacion
 
                     mLoggingService.AgregarEntradaDependencia("Copiada video en el servicio de videos", false, "DuplicarDocumentoFisicamente", sw, true);
                 }
-                else if (pOrigen.TipoDocumentacion == TiposDocumentacion.Semantico)
-                {
-                    string urlServicioDocs = null;
-
-                    urlServicioDocs = mConfigService.ObtenerUrlServicioDocumental();
-
-                    CrearNuevaVersionDocumentoRDF(pOrigen, pDestino, pOrigen.Clave, UrlIntragnossServicios, urlServicioDocs, pAvailableServices);
-                }
             }
             catch
             {
@@ -558,25 +550,136 @@ namespace Es.Riam.Gnoss.Web.Controles.Documentacion
             return correcto;
         }
 
+        public void IniciarMejoraSobreDocumento(Documento pDocumentoOriginal, Documento pDocumentoNuevo, GnossIdentity pUsuario, Identidad pIdentidadOrg, bool pMasterComunidad)
+        {
+            try
+            {
+				if (pDocumentoOriginal.TipoDocumentacion.Equals(TiposDocumentacion.Semantico))
+				{
+					GenerarNuevoRdfYFicheros(pDocumentoOriginal, pDocumentoNuevo);
+				}
+				else
+				{
+					DuplicarDocumentoFisicamente(pDocumentoOriginal, pDocumentoNuevo, pIdentidadOrg, pMasterComunidad, pUsuario);
+				}
+			}
+            catch (Exception ex)
+            {
+                mLoggingService.GuardarLogError(ex, mlogger);
+            }            
+        }
+
+        public string GenerarNuevoRdfYFicheros(Documento pDocumentoOriginal, Documento pDocumentoNuevo)
+        {
+			try
+			{
+				string rdf = ObtenerTextoRDFDeBDRdfHistorico(pDocumentoOriginal.Clave, GestionOWL.NAMESPACE_ONTO_GNOSS);
+				if (!pDocumentoOriginal.GestorDocumental.ListaDocumentos.ContainsKey(pDocumentoOriginal.ElementoVinculadoID))
+				{
+					DocumentacionCN docCN = new DocumentacionCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<DocumentacionCN>(), mLoggerFactory);
+					pDocumentoOriginal.GestorDocumental.DataWrapperDocumentacion.Merge(docCN.ObtenerDocumentoPorID(pDocumentoOriginal.ElementoVinculadoID));
+
+					pDocumentoOriginal.GestorDocumental.CargarDocumentos(false);
+				}
+
+				bool correcto = false;
+				Regex regex = new Regex($@"<!\[CDATA\[([^]]*({UtilArchivos.ContentImagenesSemanticas}|{UtilArchivos.ContentDocumentosSem}|{UtilArchivos.ContentDocLinks}|{UtilArchivos.ContentVideosSemanticos})[^]]*)\]\]>");
+				MatchCollection resultados = regex.Matches(rdf);
+				HashSet<string> rutasAdjuntos = new HashSet<string>();
+
+				foreach (Match resultado in resultados)
+				{
+					string triple = resultado.Groups[1].Value;
+
+					string nuevaRuta = ReemplazarRutaAdjuntoSemantico(triple, pDocumentoOriginal.Clave, pDocumentoNuevo.Clave);
+
+					rutasAdjuntos.Add(Path.GetDirectoryName(triple));
+
+					rdf = rdf.Replace(triple, nuevaRuta);
+				}
+				foreach (string rutaAdjunto in rutasAdjuntos)
+				{
+					correcto = CopiarAdjuntoDocumentoSemantico(rutaAdjunto, pDocumentoOriginal.Clave, pDocumentoNuevo.Clave);
+
+					if (!correcto)
+					{
+						throw new Exception("No se han podido duplicar los archivos para el nuevo documento");
+					}
+				}
+
+				//Actualizo la foto desnormalizada para los listados de recursos:
+				if (!string.IsNullOrEmpty(pDocumentoNuevo.FilaDocumento.NombreCategoriaDoc))
+				{
+					if (pDocumentoNuevo.FilaDocumento.NombreCategoriaDoc.Contains(UtilArchivos.DirectorioDocumento(pDocumentoOriginal.Clave)))
+					{
+						pDocumentoNuevo.FilaDocumento.NombreCategoriaDoc = pDocumentoNuevo.FilaDocumento.NombreCategoriaDoc.Replace(UtilArchivos.DirectorioDocumento(pDocumentoOriginal.Clave), UtilArchivos.DirectorioDocumento(pDocumentoNuevo.Clave));
+					}
+					else if (pDocumentoNuevo.FilaDocumento.NombreCategoriaDoc.Contains(pDocumentoOriginal.Clave.ToString().ToLower()))
+					{
+						pDocumentoNuevo.FilaDocumento.NombreCategoriaDoc = pDocumentoNuevo.FilaDocumento.NombreCategoriaDoc.Replace(pDocumentoOriginal.Clave.ToString().ToLower(), pDocumentoNuevo.Clave.ToString().ToLower());
+					}
+				}
+
+				// Guardamos en base de datos el rdf del documento que queremos restaurar
+				// Lo hacemos tanto en la cache como en el historico
+				GuardarRDFEnBDRDF(rdf, pDocumentoNuevo.Clave, pDocumentoNuevo.FilaDocumento.ProyectoID.Value);
+				GuardarRDFEnBDRdfHistorico(rdf, pDocumentoNuevo.Clave, IdentidadActual.Clave);
+
+				return rdf;
+			}
+			catch (Exception ex)
+			{
+				mLoggingService.GuardarLogError(ex, mlogger);
+				throw;
+			}            
+		}
+
         /// <summary>
         /// Crea una nueva versión del documento rdf.
         /// </summary>
         /// <param name="pDocumentoOriginal">Documento semántico original</param>
         /// <param name="pDocumentoNuevo">Documento semántico nuevo</param>
-        /// <param name="pUrlIntragnossServicios">Url intragnoss para los servicios web</param>
-        /// <param name="pUrlServicioDocs">Url para el servicio de documentación</param>
-        public bool CrearNuevaVersionDocumentoRDF(Documento pDocumentoOriginal, Documento pDocumentoNuevo, Guid pDocumentoIDVersionAnterior, string pUrlIntragnossServicios, string pUrlServicioDocs, IAvailableServices pAvailableServices)
+        public bool CrearNuevaVersionDocumentoRDF(Documento pDocumentoOriginal, Documento pDocumentoNuevo, IAvailableServices pAvailableServices)
         {
-            if (!pDocumentoOriginal.GestorDocumental.ListaDocumentos.ContainsKey(pDocumentoOriginal.ElementoVinculadoID))
+            try
             {
-                DocumentacionCN docCN = new DocumentacionCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<DocumentacionCN>(), mLoggerFactory);
-                pDocumentoOriginal.GestorDocumental.DataWrapperDocumentacion.Merge(docCN.ObtenerDocumentoPorID(pDocumentoOriginal.ElementoVinculadoID));
+				string rdf = GenerarNuevoRdfYFicheros(pDocumentoOriginal, pDocumentoNuevo);		
+                ActualizarDatosVirtuoso(pDocumentoOriginal, pDocumentoNuevo, rdf, pAvailableServices);
+                return true;
+			}
+            catch (Exception ex)
+            {
+                mLoggingService.GuardarLogError(ex, mlogger);
+                return false;
+            }            			
+        }
 
-                pDocumentoOriginal.GestorDocumental.CargarDocumentos(false);
-            }
+        public void EliminarVersionDocumentoRDF(Guid pDocumentoID)
+        {
+            BorrarRDFDeBDRdfHistorico(pDocumentoID);
+            BorrarRDFDeBDRDF(pDocumentoID);
+        }
 
-            string rdfDocumentoOriginal = ObtenerTextoRDFDeBDRdfHistorico(pDocumentoOriginal.Clave, GestionOWL.NAMESPACE_ONTO_GNOSS);
+        /// <summary>
+        /// Aplica la mejora introduciondo los datos del rdf en Virtuoso (ontologia y busqueda)
+        /// </summary>
+        /// <param name="pDocumentoOriginal">Documentor original de la mejora</param>
+        /// <param name="pDocumentoMejora">Documento de la mejora aceptada</param>
+        /// <param name="pAvailableServices">Lista de servicios disponibles</param>
+        public void AplicarMejoraDocumentoRDF(Documento pDocumentoOriginal, Documento pDocumentoMejora, IAvailableServices pAvailableServices)
+        {
+            string rdfDocumentoMejora = ObtenerTextoRDFDeBDRdfHistorico(pDocumentoMejora.Clave, GestionOWL.NAMESPACE_ONTO_GNOSS);
+            ActualizarDatosVirtuoso(pDocumentoOriginal, pDocumentoMejora, rdfDocumentoMejora, pAvailableServices);
+        }
 
+        /// <summary>
+        /// Actualiza los datos del recurso en Virtoso de forma que se quedan los de la nueva versión
+        /// </summary>
+        /// <param name="pDocumentoOriginal">La versión actual deldocumento</param>
+        /// <param name="pDocumentoNuevo">La versión que se desea aplicar/restaurar</param>
+        /// <param name="rdfDocumentoNuevo">El rdf a guardar en Virtuoso</param>
+        private void ActualizarDatosVirtuoso(Documento pDocumentoOriginal, Documento pDocumentoNuevo, string rdfDocumentoNuevo, IAvailableServices pAvailableServices)
+        {
             Guid ontologiaID = pDocumentoOriginal.ElementoVinculadoID;
 
             //Agrego namespaces y urls:
@@ -591,65 +694,11 @@ namespace Es.Riam.Gnoss.Web.Controles.Documentacion
             ontologia.LeerOntologia();
             ontologia.IdiomaUsuario = IdiomaUsuario;
 
-            GestionOWL gestorOWL = new GestionOWL();
-            gestorOWL.UrlOntologia = urlOntologia;
-            gestorOWL.NamespaceOntologia = "tessem";
-
-            #region Comprobamos si el recurso tiene ficheros almacenados en el servidor y los copiamos si es el caso
-
-            bool correcto = false;
-            Regex regex = new Regex($@"<!\[CDATA\[([^]]*({UtilArchivos.ContentImagenesSemanticas}|{UtilArchivos.ContentDocumentosSem}|{UtilArchivos.ContentDocLinks}|{UtilArchivos.ContentVideosSemanticos})[^]]*)\]\]>");
-            MatchCollection resultados = regex.Matches(rdfDocumentoOriginal);
-            HashSet<string> rutasAdjuntos = new HashSet<string>();
-
-            foreach (Match resultado in resultados)
+            GestionOWL gestorOWL = new GestionOWL
             {
-                string triple = resultado.Groups[1].Value;
-
-                string nuevaRuta = ReemplazarRutaAdjuntoSemantico(triple, pDocumentoOriginal.Clave, pDocumentoNuevo.Clave);
-
-                rutasAdjuntos.Add(Path.GetDirectoryName(triple));
-
-                rdfDocumentoOriginal = rdfDocumentoOriginal.Replace(triple, nuevaRuta);
-            }
-            foreach(string rutaAdjunto in rutasAdjuntos) 
-            { 
-                correcto = CopiarAdjuntoDocumentoSemantico(rutaAdjunto, pDocumentoOriginal.Clave, pDocumentoNuevo.Clave);
-
-                if (!correcto)
-                {
-                    throw new Exception("No se han podido duplicar los archivos para el nuevo documento");
-                }
-            }
-
-            //Actualizo la foto desnormalizada para los listados de recursos:
-            if (!string.IsNullOrEmpty(pDocumentoNuevo.FilaDocumento.NombreCategoriaDoc))
-            {
-                if (pDocumentoNuevo.FilaDocumento.NombreCategoriaDoc.Contains(UtilArchivos.DirectorioDocumento(pDocumentoOriginal.Clave)))
-                {
-                    pDocumentoNuevo.FilaDocumento.NombreCategoriaDoc = pDocumentoNuevo.FilaDocumento.NombreCategoriaDoc.Replace(UtilArchivos.DirectorioDocumento(pDocumentoOriginal.Clave), UtilArchivos.DirectorioDocumento(pDocumentoNuevo.Clave));
-                }
-                else if (pDocumentoNuevo.FilaDocumento.NombreCategoriaDoc.Contains(pDocumentoOriginal.Clave.ToString().ToLower()))
-                {
-                    pDocumentoNuevo.FilaDocumento.NombreCategoriaDoc = pDocumentoNuevo.FilaDocumento.NombreCategoriaDoc.Replace(pDocumentoOriginal.Clave.ToString().ToLower(), pDocumentoNuevo.Clave.ToString().ToLower());
-                }
-            }
-
-            #endregion
-
-            #region Guardado rdf y triples 
-            // Guardamos en base de datos el rdf del documento que queremos restaurar
-            // Lo hacemos tanto en la cache como en el historico
-            try
-            {
-                GuardarRDFEnBDRDF(rdfDocumentoOriginal, pDocumentoNuevo.Clave, pDocumentoNuevo.FilaDocumento.ProyectoID.Value);
-                GuardarRDFEnBDRdfHistorico(rdfDocumentoOriginal, pDocumentoNuevo.Clave, IdentidadActual.Clave);
-            }
-            catch (Exception ex)
-            {
-                mLoggingService.GuardarLogErrorAJAX("Error al guardar el RDF en SqlServer: " + ex.ToString());
-                throw;
-            }
+                UrlOntologia = urlOntologia,
+                NamespaceOntologia = "tessem"
+            };
 
             string nombreGrafo = pDocumentoOriginal.GestorDocumental.ListaDocumentos[pDocumentoOriginal.ElementoVinculadoID].Enlace;
 
@@ -657,7 +706,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Documentacion
             BorrarRDFDeVirtuoso(pDocumentoNuevo.VersionOriginalID, nombreGrafo, UrlIntragnoss, false, ProyectoSeleccionado.Clave);
 
             // Generamos las instancias con las nuevas rutas de los adjuntos si se ha dado el caso
-            List<ElementoOntologia> instanciasPrincipales = gestorOWL.LeerFicheroRDF(ontologia, rdfDocumentoOriginal, true);
+            List<ElementoOntologia> instanciasPrincipales = gestorOWL.LeerFicheroRDF(ontologia, rdfDocumentoNuevo, true);
 
             List<TripleWrapper> listaTriplesSemanticos = GuardarRDFEnVirtuoso(instanciasPrincipales, nombreGrafo, UrlIntragnoss, "", ProyectoSeleccionado.Clave, pDocumentoNuevo.VersionOriginalID.ToString(), false, null, false, false, (short)PrioridadBase.Alta);
 
@@ -666,16 +715,6 @@ namespace Es.Riam.Gnoss.Web.Controles.Documentacion
 
             // Aqui guarda los triples en el grafo de busqueda y luego manda una peticion al servicio de BACK para rellenar los grafos restantes (Contribuciones)
             utilidadesVirtuoso.GuardarRecursoEnGrafoBusqueda(pDocumentoNuevo, true, new List<Documento>(), ProyectoSeleccionado, listaTriplesSemanticos, ontologia, GestorDocumental.GestorTesauro, "", true, pDocumentoNuevo.VersionOriginalID, UrlIntragnoss, "", PrioridadBase.Alta, pAvailableServices);
-
-            #endregion
-
-            return true;
-        }
-
-        public void EliminarVersionDocumentoRDF(Guid pDocumentoID)
-        {
-            BorrarRDFDeBDRdfHistorico(pDocumentoID);
-            BorrarRDFDeBDRDF(pDocumentoID);
         }
 
         /// <summary>
@@ -767,11 +806,11 @@ namespace Es.Riam.Gnoss.Web.Controles.Documentacion
         {
             if (pAvailableServices.CheckIfServiceIsAvailable(pAvailableServices.GetBackServiceCode(BackgroundService.Newsletter), ServiceType.Background))
             {
-				using (RabbitMQClient rabbitMQ = new RabbitMQClient(RabbitMQClient.BD_SERVICIOS_WIN, COLA_NEWSLETTER, mLoggingService, mConfigService, mLoggerFactory.CreateLogger<RabbitMQClient>(), mLoggerFactory, EXCHANGE, COLA_NEWSLETTER))
-				{
-					rabbitMQ.AgregarElementoACola(JsonConvert.SerializeObject(pDocumentoEnvioNewsletter));
-				}
-			}           
+                using (RabbitMQClient rabbitMQ = new RabbitMQClient(RabbitMQClient.BD_SERVICIOS_WIN, COLA_NEWSLETTER, mLoggingService, mConfigService, mLoggerFactory.CreateLogger<RabbitMQClient>(), mLoggerFactory, EXCHANGE, COLA_NEWSLETTER))
+                {
+                    rabbitMQ.AgregarElementoACola(JsonConvert.SerializeObject(pDocumentoEnvioNewsletter));
+                }
+            }
         }
 
         #endregion
@@ -1118,53 +1157,53 @@ namespace Es.Riam.Gnoss.Web.Controles.Documentacion
         {
             if (pAvailableServices.CheckIfServiceIsAvailable(pAvailableServices.GetBackServiceCode(BackgroundService.LinkedData), ServiceType.Background))
             {
-				ProyectoCL proyCL = new ProyectoCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mVirtuosoAD, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<ProyectoCL>(), mLoggerFactory);
-				int id = proyCL.ObtenerTablaBaseProyectoIDProyectoPorID(pProyectoId);
-				BaseRecursosComunidadDS baseRecursosComDS = new BaseRecursosComunidadDS();
+                ProyectoCL proyCL = new ProyectoCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mVirtuosoAD, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<ProyectoCL>(), mLoggerFactory);
+                int id = proyCL.ObtenerTablaBaseProyectoIDProyectoPorID(pProyectoId);
+                BaseRecursosComunidadDS baseRecursosComDS = new BaseRecursosComunidadDS();
 
-				BaseRecursosComunidadDS.ColaTagsComunidadesRow filaColaTagsDocs = baseRecursosComDS.ColaTagsComunidades.NewColaTagsComunidadesRow();
+                BaseRecursosComunidadDS.ColaTagsComunidadesRow filaColaTagsDocs = baseRecursosComDS.ColaTagsComunidades.NewColaTagsComunidadesRow();
 
-				filaColaTagsDocs.Estado = (short)EstadosColaTags.Procesado;
-				filaColaTagsDocs.FechaPuestaEnCola = DateTime.Now;
-				filaColaTagsDocs.TablaBaseProyectoID = id;
-				filaColaTagsDocs.Tags = Constantes.ID_TAG_DOCUMENTO + pLecturaAumentada.DocumentoID.ToString() + Constantes.ID_TAG_DOCUMENTO + "," + Constantes.TIPO_DOC + pTipodocumentacion + Constantes.TIPO_DOC + "" + "," + new UtilidadesVirtuoso(mLoggingService, mEntityContext, mConfigService, mRedisCacheWrapper, mEntityContextBASE, mVirtuosoAD, mServicesUtilVirtuosoAndReplication,mLoggerFactory.CreateLogger<UtilidadesVirtuoso>(),mLoggerFactory).TagBaseAfinidadVirtuoso;
-
-
-				filaColaTagsDocs.Tipo = 0;
-
-				filaColaTagsDocs.Prioridad = 0;
+                filaColaTagsDocs.Estado = (short)EstadosColaTags.Procesado;
+                filaColaTagsDocs.FechaPuestaEnCola = DateTime.Now;
+                filaColaTagsDocs.TablaBaseProyectoID = id;
+                filaColaTagsDocs.Tags = Constantes.ID_TAG_DOCUMENTO + pLecturaAumentada.DocumentoID.ToString() + Constantes.ID_TAG_DOCUMENTO + "," + Constantes.TIPO_DOC + pTipodocumentacion + Constantes.TIPO_DOC + "" + "," + new UtilidadesVirtuoso(mLoggingService, mEntityContext, mConfigService, mRedisCacheWrapper, mEntityContextBASE, mVirtuosoAD, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<UtilidadesVirtuoso>(), mLoggerFactory).TagBaseAfinidadVirtuoso;
 
 
-				baseRecursosComDS.ColaTagsComunidades.AddColaTagsComunidadesRow(filaColaTagsDocs);
-				BaseComunidadCN baseRecursosComunidadCN = new BaseComunidadCN("base", id, mEntityContext, mLoggingService, mEntityContextBASE, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<BaseComunidadCN>(), mLoggerFactory);
+                filaColaTagsDocs.Tipo = 0;
 
-				baseRecursosComunidadCN.InsertarFilasEnRabbit("ColaTagsComunidadesLinkedData", baseRecursosComDS);
-			}           
+                filaColaTagsDocs.Prioridad = 0;
+
+
+                baseRecursosComDS.ColaTagsComunidades.AddColaTagsComunidadesRow(filaColaTagsDocs);
+                BaseComunidadCN baseRecursosComunidadCN = new BaseComunidadCN("base", id, mEntityContext, mLoggingService, mEntityContextBASE, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<BaseComunidadCN>(), mLoggerFactory);
+
+                baseRecursosComunidadCN.InsertarFilasEnRabbit("ColaTagsComunidadesLinkedData", baseRecursosComDS);
+            }
         }
 
         public void InsertLinkedDataRabbit(Guid pProyectoId, string pTags, IAvailableServices pAvailableServices)
         {
             if (pAvailableServices.CheckIfServiceIsAvailable(pAvailableServices.GetBackServiceCode(BackgroundService.LinkedData), ServiceType.Background))
             {
-				ProyectoCL proyCL = new ProyectoCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mVirtuosoAD, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<ProyectoCL>(), mLoggerFactory);
-				int id = proyCL.ObtenerTablaBaseProyectoIDProyectoPorID(pProyectoId);
-				BaseRecursosComunidadDS baseRecursosComDS = new BaseRecursosComunidadDS();
+                ProyectoCL proyCL = new ProyectoCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mVirtuosoAD, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<ProyectoCL>(), mLoggerFactory);
+                int id = proyCL.ObtenerTablaBaseProyectoIDProyectoPorID(pProyectoId);
+                BaseRecursosComunidadDS baseRecursosComDS = new BaseRecursosComunidadDS();
 
-				BaseRecursosComunidadDS.ColaTagsComunidadesRow filaColaTagsDocs = baseRecursosComDS.ColaTagsComunidades.NewColaTagsComunidadesRow();
+                BaseRecursosComunidadDS.ColaTagsComunidadesRow filaColaTagsDocs = baseRecursosComDS.ColaTagsComunidades.NewColaTagsComunidadesRow();
 
-				filaColaTagsDocs.Estado = (short)EstadosColaTags.Procesado;
-				filaColaTagsDocs.FechaPuestaEnCola = DateTime.Now;
-				filaColaTagsDocs.TablaBaseProyectoID = id;
-				filaColaTagsDocs.Tags = pTags;
-				filaColaTagsDocs.Tipo = 0;
-				filaColaTagsDocs.Prioridad = 0;
+                filaColaTagsDocs.Estado = (short)EstadosColaTags.Procesado;
+                filaColaTagsDocs.FechaPuestaEnCola = DateTime.Now;
+                filaColaTagsDocs.TablaBaseProyectoID = id;
+                filaColaTagsDocs.Tags = pTags;
+                filaColaTagsDocs.Tipo = 0;
+                filaColaTagsDocs.Prioridad = 0;
 
 
-				baseRecursosComDS.ColaTagsComunidades.AddColaTagsComunidadesRow(filaColaTagsDocs);
-				BaseComunidadCN baseRecursosComunidadCN = new BaseComunidadCN("base", id, mEntityContext, mLoggingService, mEntityContextBASE, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<BaseComunidadCN>(), mLoggerFactory);
+                baseRecursosComDS.ColaTagsComunidades.AddColaTagsComunidadesRow(filaColaTagsDocs);
+                BaseComunidadCN baseRecursosComunidadCN = new BaseComunidadCN("base", id, mEntityContext, mLoggingService, mEntityContextBASE, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<BaseComunidadCN>(), mLoggerFactory);
 
-				baseRecursosComunidadCN.InsertarFilasEnRabbit("ColaTagsComunidadesLinkedData", baseRecursosComDS, "ColaTagsComunidades");
-			}	    
+                baseRecursosComunidadCN.InsertarFilasEnRabbit("ColaTagsComunidadesLinkedData", baseRecursosComDS, "ColaTagsComunidades");
+            }
         }
 
         public void InsertarEnColaProcesarFicherosRecursosModificadosOEliminados(Guid pDocumentoID, TipoEventoProcesarFicherosRecursos pTipoEvento, IAvailableServices pAvailableServices)
@@ -2724,7 +2763,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Documentacion
                     rdfConfiguradoRecursoNoSemantico = ObtenerRdfRecursoNoSemantico(pProyecto.Clave, (short)pDocumento.TipoDocumentacion);
                 }
 
-                new UtilidadesVirtuoso(mLoggingService, mEntityContext, mConfigService, mRedisCacheWrapper, mEntityContextBASE, mVirtuosoAD, mServicesUtilVirtuosoAndReplication,mLoggerFactory.CreateLogger<UtilidadesVirtuoso>(),mLoggerFactory).GuardarRecursoEnGrafoBusqueda(pDocumento, true, null, pProyecto, pListaTriplesSemanticos, pOntologia, pGestorTesauro, rdfConfiguradoRecursoNoSemantico, pCrearVersion, pDocumentoOriginaldId, pUrlIntragnoss, "", pPrioridadBase, pAvailableServices, pSbVirtuoso);
+                new UtilidadesVirtuoso(mLoggingService, mEntityContext, mConfigService, mRedisCacheWrapper, mEntityContextBASE, mVirtuosoAD, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<UtilidadesVirtuoso>(), mLoggerFactory).GuardarRecursoEnGrafoBusqueda(pDocumento, true, null, pProyecto, pListaTriplesSemanticos, pOntologia, pGestorTesauro, rdfConfiguradoRecursoNoSemantico, pCrearVersion, pDocumentoOriginaldId, pUrlIntragnoss, "", pPrioridadBase, pAvailableServices, pSbVirtuoso);
             }
             catch (Exception ex)
             {
@@ -3286,7 +3325,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Documentacion
                     {
                         //Hago un controlador diferente, porque el hilo asicrono utiliza miembros de la clase, que no se pueden compartir
                         // entre proyectos:
-                        ControladorDocumentacion controDocAuxiliar = new ControladorDocumentacion(mLoggingService, mEntityContext, mConfigService, mRedisCacheWrapper, mGnossCache, mEntityContextBASE, mVirtuosoAD, mHttpContextAccessor, mServicesUtilVirtuosoAndReplication,mLoggerFactory.CreateLogger<ControladorDocumentacion>(),mLoggerFactory);
+                        ControladorDocumentacion controDocAuxiliar = new ControladorDocumentacion(mLoggingService, mEntityContext, mConfigService, mRedisCacheWrapper, mGnossCache, mEntityContextBASE, mVirtuosoAD, mHttpContextAccessor, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<ControladorDocumentacion>(), mLoggerFactory);
                         // En los grafos está guardado con el ID original
                         Guid docID = pDocumento.VersionOriginalID != Guid.Empty ? pDocumento.VersionOriginalID : pDocumento.Clave;
                         controDocAuxiliar.ActualizarNumRecCatTesDeTesauro(true, Guid.Empty, organizacionActualizarID, proyectoActualizarID, docID, pAvailableServices, true);
@@ -3352,7 +3391,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Documentacion
 
                         if (pEliminarCacheResultadosYFacetas)
                         {
-                            FacetadoCL facetadoCL = new FacetadoCL(UrlIntragnoss, mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mVirtuosoAD, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<FacetadoCL>(),mLoggerFactory);
+                            FacetadoCL facetadoCL = new FacetadoCL(UrlIntragnoss, mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mVirtuosoAD, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<FacetadoCL>(), mLoggerFactory);
                             facetadoCL.InvalidarResultadosYFacetasDeBusquedaEnProyecto(mProyectoActuAsincID, FacetadoAD.TipoBusquedaToString(tipo));
 
                             mGnossCache.VersionarCacheLocal(ProyectoSeleccionado.Clave);
@@ -3575,7 +3614,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Documentacion
             {
                 if (proyectoID.Equals(pDocumento.ProyectoID))
                 {
-                    new UtilidadesVirtuoso(mLoggingService,mEntityContext,mConfigService,mRedisCacheWrapper,mEntityContextBASE,mVirtuosoAD,mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<UtilidadesVirtuoso>(), mLoggerFactory).GuardarEdicionTagsRecursoEnGrafoBusqueda(pDocumento, proyectoID, UrlIntragnoss, pPrioridadBase, pEliminandoTags, pAvailableServices);
+                    new UtilidadesVirtuoso(mLoggingService, mEntityContext, mConfigService, mRedisCacheWrapper, mEntityContextBASE, mVirtuosoAD, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<UtilidadesVirtuoso>(), mLoggerFactory).GuardarEdicionTagsRecursoEnGrafoBusqueda(pDocumento, proyectoID, UrlIntragnoss, pPrioridadBase, pEliminandoTags, pAvailableServices);
                 }
                 else
                 {
@@ -3673,7 +3712,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Documentacion
                     }
                     catch (Exception ex)
                     {
-                        mLoggingService.GuardarLogError(ex, "Error en servicio externo: " + url,mlogger);
+                        mLoggingService.GuardarLogError(ex, "Error en servicio externo: " + url, mlogger);
                     }
 
                     JsonEstado jsonEstado = new JsonEstado();
@@ -3911,7 +3950,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Documentacion
             filaColaTagsDocs.Estado = (short)EstadosColaTags.EnEspera;
             filaColaTagsDocs.FechaPuestaEnCola = DateTime.Now;
             filaColaTagsDocs.TablaBaseProyectoID = id;
-            filaColaTagsDocs.Tags = Constantes.ID_TAG_DOCUMENTO + pDocumentoID.ToString() + Constantes.ID_TAG_DOCUMENTO + "," + Constantes.TIPO_DOC + pTipo.ToString() + Constantes.TIPO_DOC + pOtrosArgumentos + "," + new UtilidadesVirtuoso(mLoggingService, mEntityContext, mConfigService, mRedisCacheWrapper, mEntityContextBASE, mVirtuosoAD, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<UtilidadesVirtuoso>(),mLoggerFactory).TagBaseAfinidadVirtuoso;
+            filaColaTagsDocs.Tags = Constantes.ID_TAG_DOCUMENTO + pDocumentoID.ToString() + Constantes.ID_TAG_DOCUMENTO + "," + Constantes.TIPO_DOC + pTipo.ToString() + Constantes.TIPO_DOC + pOtrosArgumentos + "," + new UtilidadesVirtuoso(mLoggingService, mEntityContext, mConfigService, mRedisCacheWrapper, mEntityContextBASE, mVirtuosoAD, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<UtilidadesVirtuoso>(), mLoggerFactory).TagBaseAfinidadVirtuoso;
 
             if (pEstadoCargaID != -1)
             {
@@ -4041,9 +4080,9 @@ namespace Es.Riam.Gnoss.Web.Controles.Documentacion
 
             if (pAvailableServices.CheckIfServiceIsAvailable(pAvailableServices.GetBackServiceCode(BackgroundService.SocialSearchGraphGeneration), ServiceType.Background))
             {
-				BaseComunidadCN brComCN = new BaseComunidadCN(mEntityContext, mLoggingService, mEntityContextBASE, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<BaseComunidadCN>(), mLoggerFactory);//, -1
-				brComCN.InsertarFilasEnRabbit("ColaTagsSuscripciones", baseSuscripcionesDS);
-			}           
+                BaseComunidadCN brComCN = new BaseComunidadCN(mEntityContext, mLoggingService, mEntityContextBASE, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<BaseComunidadCN>(), mLoggerFactory);//, -1
+                brComCN.InsertarFilasEnRabbit("ColaTagsSuscripciones", baseSuscripcionesDS);
+            }
 
             pBaseSuscripcionesDS.Dispose();
         }
@@ -4191,7 +4230,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Documentacion
                         filaColaTagsDocs.Tags = Constantes.CAT_DOC + claveCatBorrada.ToString() + Constantes.CAT_DOC + "," + Constantes.CAT_DOC + claveCatDestino.ToString() + Constantes.CAT_DOC;
                     }
 
-                    filaColaTagsDocs.Tags += "," + new UtilidadesVirtuoso(mLoggingService, mEntityContext, mConfigService, mRedisCacheWrapper, mEntityContextBASE, mVirtuosoAD, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<UtilidadesVirtuoso>(),mLoggerFactory).TagBaseAfinidadVirtuoso;
+                    filaColaTagsDocs.Tags += "," + new UtilidadesVirtuoso(mLoggingService, mEntityContext, mConfigService, mRedisCacheWrapper, mEntityContextBASE, mVirtuosoAD, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<UtilidadesVirtuoso>(), mLoggerFactory).TagBaseAfinidadVirtuoso;
                     baseRecursosComDS.ColaTagsComunidades.AddColaTagsComunidadesRow(filaColaTagsDocs);
                 }
             }
@@ -4298,11 +4337,11 @@ namespace Es.Riam.Gnoss.Web.Controles.Documentacion
 
         }
 
-		public void AgregarRenombrarCategoriasModeloBase(List<Guid> pCategorias, Guid pProyectoID, PrioridadBase pPrioridadBase, IAvailableServices pAvailableServices)
-		{
-			ProyectoCL proyCL = new ProyectoCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mVirtuosoAD, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<ProyectoCL>(), mLoggerFactory);
-			int id = proyCL.ObtenerTablaBaseProyectoIDProyectoPorID(pProyectoID);
-			proyCL.Dispose();
+        public void AgregarRenombrarCategoriasModeloBase(List<Guid> pCategorias, Guid pProyectoID, PrioridadBase pPrioridadBase, IAvailableServices pAvailableServices)
+        {
+            ProyectoCL proyCL = new ProyectoCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mVirtuosoAD, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<ProyectoCL>(), mLoggerFactory);
+            int id = proyCL.ObtenerTablaBaseProyectoIDProyectoPorID(pProyectoID);
+            proyCL.Dispose();
 
             BaseRecursosComunidadDS baseRecursosComDS = new BaseRecursosComunidadDS();
 
@@ -4310,28 +4349,28 @@ namespace Es.Riam.Gnoss.Web.Controles.Documentacion
             {
                 BaseRecursosComunidadDS.ColaTagsComunidadesRow filaColaTagsDocs = baseRecursosComDS.ColaTagsComunidades.NewColaTagsComunidadesRow();
 
-				filaColaTagsDocs.Estado = (short)EstadosColaTags.EnEspera;
-				filaColaTagsDocs.FechaPuestaEnCola = DateTime.Now;
-				filaColaTagsDocs.TablaBaseProyectoID = id;
-				filaColaTagsDocs.Tipo = (short)TiposElementosEnCola.RenombrarCategoria;
-				filaColaTagsDocs.Tags = Constantes.CAT_DOC + catID.ToString() + Constantes.CAT_DOC + "," + new UtilidadesVirtuoso(mLoggingService, mEntityContext, mConfigService, mRedisCacheWrapper, mEntityContextBASE, mVirtuosoAD, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<UtilidadesVirtuoso>(), mLoggerFactory).TagBaseAfinidadVirtuoso;
-				filaColaTagsDocs.Prioridad = (short)pPrioridadBase;
+                filaColaTagsDocs.Estado = (short)EstadosColaTags.EnEspera;
+                filaColaTagsDocs.FechaPuestaEnCola = DateTime.Now;
+                filaColaTagsDocs.TablaBaseProyectoID = id;
+                filaColaTagsDocs.Tipo = (short)TiposElementosEnCola.RenombrarCategoria;
+                filaColaTagsDocs.Tags = Constantes.CAT_DOC + catID.ToString() + Constantes.CAT_DOC + "," + new UtilidadesVirtuoso(mLoggingService, mEntityContext, mConfigService, mRedisCacheWrapper, mEntityContextBASE, mVirtuosoAD, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<UtilidadesVirtuoso>(), mLoggerFactory).TagBaseAfinidadVirtuoso;
+                filaColaTagsDocs.Prioridad = (short)pPrioridadBase;
 
                 baseRecursosComDS.ColaTagsComunidades.AddColaTagsComunidadesRow(filaColaTagsDocs);
             }
 
-			BaseComunidadCN brComCN = new BaseComunidadCN("base", -1, mEntityContext, mLoggingService, mEntityContextBASE, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<BaseComunidadCN>(), mLoggerFactory);
-			brComCN.InsertarFilasEnColaTagsComunidades(baseRecursosComDS, pAvailableServices);
+            BaseComunidadCN brComCN = new BaseComunidadCN("base", -1, mEntityContext, mLoggingService, mEntityContextBASE, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<BaseComunidadCN>(), mLoggerFactory);
+            brComCN.InsertarFilasEnColaTagsComunidades(baseRecursosComDS, pAvailableServices);
 
             baseRecursosComDS.Dispose();
         }
 
-		/// <summary>
-		/// Notifica al modelo base que se ha cambiado la política de certificación
-		/// </summary>
-		/// <param name="pProyecto">Proyecto al que le afecta</param>
-		/// <param name="pPrioridadBase">Prioridad de las filas introducidas en el modelo base</param>
-		public void EditarPoliticaCertificacionModeloBase(Guid pProyectoID, PrioridadBase pPrioridadBase, IAvailableServices pAvailableServices)
+        /// <summary>
+        /// Notifica al modelo base que se ha cambiado la política de certificación
+        /// </summary>
+        /// <param name="pProyecto">Proyecto al que le afecta</param>
+        /// <param name="pPrioridadBase">Prioridad de las filas introducidas en el modelo base</param>
+        public void EditarPoliticaCertificacionModeloBase(Guid pProyectoID, PrioridadBase pPrioridadBase, IAvailableServices pAvailableServices)
         {
             ProyectoCL proyCL = new ProyectoCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mVirtuosoAD, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<ProyectoCL>(), mLoggerFactory);
             int id = proyCL.ObtenerTablaBaseProyectoIDProyectoPorID(pProyectoID);
@@ -4634,7 +4673,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Documentacion
         {
             ActualizarGnossLive(pProyectoID, pElementoIDTipoElemento, pAccion, pSoloPersonal, rutaBase, pPrioridad, null, pAvailableServices);
         }
-        
+
         /// <summary>
         /// Añade a la cola de GnossLive un elemento para su procesamiento.
         /// </summary>
@@ -5186,17 +5225,17 @@ namespace Es.Riam.Gnoss.Web.Controles.Documentacion
         {
             if (pAvailableServices.CheckIfServiceIsAvailable(pAvailableServices.GetBackServiceCode(BackgroundService.Thumbnail), ServiceType.Background))
             {
-				DocumentacionCN docCN = null;
-				if (pFicheroConfiguracion == "")
-				{
-					docCN = new DocumentacionCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<DocumentacionCN>(), mLoggerFactory);
-				}
-				else
-				{
-					docCN = new DocumentacionCN(pFicheroConfiguracion, mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<DocumentacionCN>(), mLoggerFactory);
-				}
-				docCN.AgregarDocumentoAColaTareas(pDocumento, pDocAgregado, pPrioridadColaDocumento, pEstadoCargaID);
-			}            
+                DocumentacionCN docCN = null;
+                if (pFicheroConfiguracion == "")
+                {
+                    docCN = new DocumentacionCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<DocumentacionCN>(), mLoggerFactory);
+                }
+                else
+                {
+                    docCN = new DocumentacionCN(pFicheroConfiguracion, mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<DocumentacionCN>(), mLoggerFactory);
+                }
+                docCN.AgregarDocumentoAColaTareas(pDocumento, pDocAgregado, pPrioridadColaDocumento, pEstadoCargaID);
+            }
         }
 
         #endregion
@@ -5305,7 +5344,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Documentacion
                     else//Comprobanmos si pertenece a un grupo editor
                     {
                         IdentidadCN identidadCN = new IdentidadCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<IdentidadCN>(), mLoggerFactory);
-                        UsuarioCN usuarioCN = new UsuarioCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication,mLoggerFactory.CreateLogger<UsuarioCN>(), mLoggerFactory);
+                        UsuarioCN usuarioCN = new UsuarioCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<UsuarioCN>(), mLoggerFactory);
                         GestionIdentidades gestoridentidades = new GestionIdentidades(identidadCN.ObtenerIdentidadesDePerfil(pPerfilID), mLoggingService, mEntityContext, mConfigService, mServicesUtilVirtuosoAndReplication);
 
                         foreach (GrupoEditorRecurso grupoEditor in pDocumento.ListaGruposEditores.Values)
@@ -7310,6 +7349,55 @@ namespace Es.Riam.Gnoss.Web.Controles.Documentacion
             #endregion
         }
 
+        /// <summary>
+        /// Delete current data of the Thesaurus indicated in the Ontology param from ontology and searhc graph
+        /// </summary>
+        /// <param name="pOntologia">Ontology of the thesaurus to remove</param>
+        /// <param name="pSource">Source of the thesaurus to romve</param>
+        /// <param name="pProyectoID">Identifier of the project</param>
+        /// <param name="pFacetadoCN">FacetadoCN initialized</param>
+
+        public void EliminarTesauroOntologiaBusqueda(string pOntologia, string pSource, Guid pProyectoID, FacetadoCN pFacetadoCN)
+        {
+            List<string> listaSujetos = pFacetadoCN.ObtenerListaSujetosTesauroDeGrafoPorSource(pOntologia, pSource);
+
+            //Eliminamos los triples del grafo de búsqueda
+            EliminarTriplesDeSujeto(pProyectoID.ToString(), listaSujetos, pFacetadoCN);
+
+            //Eliminamos los triples del grafo de ontología
+            EliminarTriplesDeSujeto(pOntologia, listaSujetos, pFacetadoCN);
+        }
+
+        /// <summary>
+        /// Delete the triples with the given Subjects in the graph of the parameters
+        /// </summary>
+        /// <param name="pGrafo">Graph where the triples will be deleted</param>
+        /// <param name="pListaSujetos">List with the Subject of the triples to delete</param>
+        /// <param name="pFacetadoCN">FacetadoCN initialized</param>
+        /// <exception cref="Exception"></exception>
+        private void EliminarTriplesDeSujeto(string pGrafo, List<string> pListaSujetos, FacetadoCN pFacetadoCN)
+        {
+            int numCiclos = pListaSujetos.Count / 500;
+            if (pListaSujetos.Count % 500 != 0)
+            {
+                numCiclos++;
+            }
+
+            try
+            {
+                for (int i = 0; i < numCiclos; i++)
+                {
+                    List<string> listaSujetosAuxiliar = pListaSujetos.Skip(500 * i).Take(500).ToList();
+
+                    pFacetadoCN.BorrarListaTriplesDeSujeto(pGrafo, listaSujetosAuxiliar);
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"An error has ocurred while deleting the triples in the graph <{UrlIntragnoss}{pGrafo}>", ex);
+            }
+        }
+
         #endregion
 
         #region Entidades Secundarias
@@ -7392,7 +7480,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Documentacion
                 Numero.Add(propSymbol);
             }
 
-            FacetadoAD facetadoAD = new FacetadoAD("acid", pUrlIntragnoss, mLoggingService, mEntityContext, mConfigService, mVirtuosoAD, mServicesUtilVirtuosoAndReplication,mLoggerFactory.CreateLogger<FacetadoAD>(),mLoggerFactory);
+            FacetadoAD facetadoAD = new FacetadoAD("acid", pUrlIntragnoss, mLoggingService, mEntityContext, mConfigService, mVirtuosoAD, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<FacetadoAD>(), mLoggerFactory);
 
             List<FacetaEntidadesExternas> entExt = dataWrapperFacetas.ListaFacetaEntidadesExternas.Where(item => item.ProyectoID.Equals(pProyectoID)).ToList();
             StringBuilder tripletasComunidad = new StringBuilder();
@@ -7647,7 +7735,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Documentacion
             }
 
             //Agregamos peticiones a la cola
-            new ControladorCorreo(mLoggingService, mEntityContext, mConfigService, mRedisCacheWrapper, mGnossCache, mEntityContextBASE, mVirtuosoAD, mHttpContextAccessor, mServicesUtilVirtuosoAndReplication,mLoggerFactory.CreateLogger<ControladorCorreo>(), mLoggerFactory).AgregarElementoARabbitMQ(id, pMensajeID, pMensajeTo, pMensajeFrom, pPrioridadBase, pAvailableServices, mensajeOrigenID);
+            new ControladorCorreo(mLoggingService, mEntityContext, mConfigService, mRedisCacheWrapper, mGnossCache, mEntityContextBASE, mVirtuosoAD, mHttpContextAccessor, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<ControladorCorreo>(), mLoggerFactory).AgregarElementoARabbitMQ(id, pMensajeID, pMensajeTo, pMensajeFrom, pPrioridadBase, pAvailableServices, mensajeOrigenID);
         }
 
         /// <summary>
@@ -7710,7 +7798,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Documentacion
                 filaColaTagsDocs.Estado = 0;
                 filaColaTagsDocs.FechaPuestaEnCola = DateTime.Now;
                 filaColaTagsDocs.TablaBaseProyectoID = tablaBaseProyectoID;
-                filaColaTagsDocs.Tags = $"{Constantes.ID_TAG_DOCUMENTO}{row.DocumentoID}{Constantes.ID_TAG_DOCUMENTO},{Constantes.TIPO_DOC}{row.Documento.Tipo}{Constantes.TIPO_DOC},{new UtilidadesVirtuoso(mLoggingService, mEntityContext, mConfigService, mRedisCacheWrapper, mEntityContextBASE, mVirtuosoAD, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<UtilidadesVirtuoso>(),mLoggerFactory).TagBaseAfinidadVirtuoso}";
+                filaColaTagsDocs.Tags = $"{Constantes.ID_TAG_DOCUMENTO}{row.DocumentoID}{Constantes.ID_TAG_DOCUMENTO},{Constantes.TIPO_DOC}{row.Documento.Tipo}{Constantes.TIPO_DOC},{new UtilidadesVirtuoso(mLoggingService, mEntityContext, mConfigService, mRedisCacheWrapper, mEntityContextBASE, mVirtuosoAD, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<UtilidadesVirtuoso>(), mLoggerFactory).TagBaseAfinidadVirtuoso}";
                 filaColaTagsDocs.Tipo = 0;
                 filaColaTagsDocs.Prioridad = 1;
 

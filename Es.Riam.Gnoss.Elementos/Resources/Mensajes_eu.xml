@@ -231,7 +231,16 @@
 		  <asunto>{#NombrePersona#}k baliabidearen egoera aldatu du</asunto>
 		  <texto>{p}{#NombrePersona#}k baliabidearen egoera aldatu du {a href="{#UrlEnlace#}"}{#NombreDoc#}{/a} eta egoeratik pasa da: {#NombreEstadoOrigen#} -> {#NombreEstadoDestino#}{/p}{p}Editorearen iruzkina: {i}'{#Comentario#}'{/i}{/p}</texto>
 	  </mensaje>
-    <mensaje id="140">
+	  <mensaje id="133">
+		  <asunto>{#NombrePersona#}k {#NombreDoc#} baliabidearen hobekuntza onartu du</asunto>
+		  <texto>{p}{#NombrePersona#}k {a href="{#UrlEnlace#}"}{#NombreDoc#}{/a} baliabidearen hobekuntza onartu du {/p}</texto>
+	  </mensaje>
+	  <mensaje id="134">
+		  <asunto>{#NombrePersona#}k {#NombreDoc#} baliabidearen hobekuntza bertan behera utzi du</asunto>
+		  <texto>{p}{#NombrePersona#}k {a href="{#UrlEnlace#}"}{#NombreDoc#}{/a} baliabidearen hobekuntza bertan behera utzi du {/p}</texto>
+	  </mensaje>
+
+	  <mensaje id="140">
       <asunto>Lotura bat duzu: {#NombreDoc#}</asunto>
       <texto>{p}{#NombreRemitente#} {#NombreProyecto#}(r)en lotura bat bidali dizu.{/p}{p}{#Notas#}{/p}{p} {#UrlEnlace#}{/p}</texto>
     </mensaje>

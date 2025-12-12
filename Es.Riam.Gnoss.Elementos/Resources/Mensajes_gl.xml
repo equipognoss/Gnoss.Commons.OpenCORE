@@ -231,7 +231,16 @@
 		  <asunto>{#NombrePersona#} modificou o estado do recurso</asunto>
 		  <texto>{p}{#NombrePersona#} modificou o estado do recurso {a href="{#UrlEnlace#}"}{#NombreDoc#}{/a} e pasou do estado {#NombreEstadoOrigen#} ao {#NombreEstadoDestino#}{/p}{p}Comentario do editor: {i}'{#Comentario#}'{/i}{/p}</texto>
 	  </mensaje>
-    <mensaje id="140">
+	  <mensaje id="133">
+		  <asunto>{#NombrePersona#} aceptou a mellora do recurso {#NombreDoc#}</asunto>
+		  <texto>{p}{#NombrePersona#} aceptou a mellora do recurso {a href="{#UrlEnlace#}"}{#NombreDoc#}{/a} {/p}</texto>
+	  </mensaje>
+	  <mensaje id="134">
+		  <asunto>{#NombrePersona#} cancelou a mellora do recurso {#NombreDoc#}</asunto>
+		  <texto>{p}{#NombrePersona#} cancelou a mellora do recurso {a href="{#UrlEnlace#}"}{#NombreDoc#}{/a} {/p}</texto>
+	  </mensaje>
+
+	  <mensaje id="140">
       <asunto>Tes un enlace: {#NombreDoc#}</asunto>
       <texto>{p}{#NombreRemitente#} enviouche un enlace de {#NombreProyecto#}.{/p}{p}{#Notas#}{/p}{p} {#UrlEnlace#}{/p}</texto>
     </mensaje>

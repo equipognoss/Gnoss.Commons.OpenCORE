@@ -231,7 +231,16 @@
 		  <asunto>{#NombrePersona#} a modifié l’état de la ressource</asunto>
 		  <texto>{p}{#NombrePersona#} a modifié l’état de la ressource {a href="{#UrlEnlace#}"}{#NombreDoc#}{/a} et est passé de l’état {#NombreEstadoOrigen#} à {#NombreEstadoDestino#}{/p}{p}Commentaire de l’éditeur : {i}'{#Comentario#}'{/i}{/p}</texto>
 	  </mensaje>
-    <mensaje id="140">
+	  <mensaje id="133">
+		  <asunto>{#NombrePersona#} a accepté l’amélioration de la ressource {#NombreDoc#}</asunto>
+		  <texto>{p}{#NombrePersona#} a accepté l’amélioration de la ressource {a href="{#UrlEnlace#}"}{#NombreDoc#}{/a} {/p}</texto>
+	  </mensaje>
+	  <mensaje id="134">
+		  <asunto>{#NombrePersona#} a annulé l’amélioration de la ressource {#NombreDoc#}</asunto>
+		  <texto>{p}{#NombrePersona#} a annulé l’amélioration de la ressource {a href="{#UrlEnlace#}"}{#NombreDoc#}{/a} {/p}</texto>
+	  </mensaje>
+
+	  <mensaje id="140">
       <asunto>Vous disposez d’un lien : {#NombreDoc#}</asunto>
       <texto>{p}{#NombreRemitente#} vous a envoyé un lien de {#NombreProyecto#}.{/p}{p}{#Notas#}{/p}{p} {#UrlEnlace#}{/p}</texto>
     </mensaje>

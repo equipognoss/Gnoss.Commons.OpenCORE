@@ -2,10 +2,12 @@
 using Es.Riam.Gnoss.AD.EntityModel;
 using Es.Riam.Gnoss.AD.EntityModel.Models.Flujos;
 using Es.Riam.Gnoss.AD.Flujos;
+using Es.Riam.Gnoss.Logica.Documentacion;
 using Es.Riam.Gnoss.Logica.Flujos;
 using Es.Riam.Gnoss.Logica.Identidad;
 using Es.Riam.Gnoss.Util.Configuracion;
 using Es.Riam.Gnoss.Util.General;
+using Es.Riam.Gnoss.Web.MVC.Models.Administracion;
 using Es.Riam.Gnoss.Web.MVC.Models.Flujos;
 using Es.Riam.Util;
 using Microsoft.Extensions.Logging;
@@ -51,6 +53,9 @@ namespace Es.Riam.Gnoss.UtilServiciosWeb
 				estado.IdentidadesLectoras = flujosCN.ObtenerIdentidadesLectorasEstado(pEstadoID);
 				estado.IdentidadesEditoras = flujosCN.ObtenerIdentidadesEditorasEstado(pEstadoID);
 				estado.Transiciones = CargarTransicionesDeEstado(pEstadoID, pIdentidadID, pIdioma, pIdiomaDefecto);
+				estado.Color = filaEstado.Color;
+				estado.EsFinal = filaEstado.Tipo.Equals((short)TipoEstado.Final);
+				estado.PermiteMejora = filaEstado.PermiteMejora;
 
 				return estado;
 			}

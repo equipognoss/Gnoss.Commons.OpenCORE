@@ -7,6 +7,7 @@ using Es.Riam.Gnoss.Elementos.Documentacion;
 using Es.Riam.Gnoss.Elementos.Identidad;
 using Es.Riam.Gnoss.Elementos.Peticiones;
 using Es.Riam.Gnoss.Elementos.ServiciosGenerales;
+using Es.Riam.Gnoss.Logica.Documentacion;
 using Es.Riam.Gnoss.Logica.Flujos;
 using Es.Riam.Gnoss.Logica.Identidad;
 using Es.Riam.Gnoss.Logica.Notificacion;
@@ -1675,20 +1676,76 @@ namespace Es.Riam.Gnoss.Elementos.Notificacion
 			}			
 		}
 
-		/// <summary>
-		/// Crea una nueva notificación de invitación de usuario externo a comunidad
-		/// </summary>
-		/// <param name="pOrganizacionID">Identificador de la organización</param>
-		/// <param name="pProyecto">Identificador de proyecto</param>
-		/// <param name="pNombreProyecto">Nombre de proyecto</param>
-		/// <param name="pDescripcionProyecto">Descripción de proyecto</param>
-		/// <param name="pNotas">Notas</param>
-		/// <param name="pNombreRemitente">Nombre del remitente del mensaje</param>
-		/// <param name="pFechaComienzo">Fecha de comienzo de la notificación</param>
-		/// <param name="pListaCorreos">Lista de direcciones de correo</param>
-		/// <param name="pUrlInvitacion">URL de la invitación</param>
-		/// <param name="pIdioma">Idioma para la notificación</param>
-		public void AgregarNotificacionInvitacionExternoACom(ServiciosGenerales.Proyecto pProyecto, string pDescripcionProyecto, string pNotas, string pNombreRemitente, DateTime pFechaComienzo, List<string> pListaCorreos, string pUrlInvitacion, string pIdioma, List<Guid> pListaGrupos)
+
+        public void EnviarCorreoAvisoAplicarMejora(Guid pMejoraID, Guid pDocumentoVersionAnteriorID, Guid pProyectoID, string pEnlace, string pTitulo, string pPersonaRealizaCambio)
+        {
+            FlujosCN flujosCN = new FlujosCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<FlujosCN>(), mLoggerFactory);
+            DocumentacionCN documentacionCN = new DocumentacionCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<DocumentacionCN>(), mLoggerFactory);
+            Guid? estadoDocumentoAnterior = documentacionCN.ObtenerEstadoIDDeDocumento(pDocumentoVersionAnteriorID);
+
+            List<Guid> editoresDestino = flujosCN.ObtenerLectoresYEditoresDeEstado(estadoDocumentoAnterior.Value);
+            List<Guid> editoresMejora = flujosCN.ObtenerEditoresDeUnaMejora(pMejoraID);
+
+            PersonaCN personaCN = new PersonaCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<PersonaCN>(), mLoggerFactory);
+            DataWrapperPersona dwPersonaMejora = personaCN.ObtenerPersonasPorIdentidadesCargaLigera(editoresMejora);
+            DataWrapperPersona dwPersonaDestino = personaCN.ObtenerPersonasPorIdentidadesCargaLigera(editoresDestino);
+            List<AD.EntityModel.Models.PersonaDS.Persona> personas = dwPersonaMejora.ListaPersona.Union(dwPersonaDestino.ListaPersona).ToList();
+
+            foreach (AD.EntityModel.Models.PersonaDS.Persona persona in personas)
+            {
+                Notificacion notificacionCorreo = AgregarNotificacion(TiposNotificacion.AvisoMejoraAplicada, DateTime.Now, DateTime.Now.AddDays(1), null, pProyectoID);
+
+                Dictionary<short, string> listaParametrosCorreo = new Dictionary<short, string>();
+                listaParametrosCorreo.Add((short)ClavesParametro.NombrePersona, pPersonaRealizaCambio);
+                listaParametrosCorreo.Add((short)ClavesParametro.UrlEnlace, pEnlace);
+                listaParametrosCorreo.Add((short)ClavesParametro.NombreDoc, pTitulo);
+
+                AgregarParametrosNotificacion(notificacionCorreo, listaParametrosCorreo, persona.Idioma);
+                AgregarCorreoPersonaRow(notificacionCorreo.FilaNotificacion, persona.Email, persona.PersonaID);
+            }
+        }
+
+        public void EnviarCorreoAvisoCancelarMejora(Guid pMejoraID, Guid pDocumentoVersionAnteriorID, Guid pProyectoID, string pEnlace, string pTitulo, string pPersonaRealizaCambio)
+        {
+            FlujosCN flujosCN = new FlujosCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<FlujosCN>(), mLoggerFactory);
+            DocumentacionCN documentacionCN = new DocumentacionCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<DocumentacionCN>(), mLoggerFactory);
+            Guid? estadoDocumentoAnterior = documentacionCN.ObtenerEstadoIDDeDocumento(pDocumentoVersionAnteriorID);
+
+            List<Guid> editoresDestino = flujosCN.ObtenerLectoresYEditoresDeEstado(estadoDocumentoAnterior.Value);
+            List<Guid> editoresMejora = flujosCN.ObtenerEditoresDeUnaMejora(pMejoraID);
+
+            PersonaCN personaCN = new PersonaCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<PersonaCN>(), mLoggerFactory);
+            DataWrapperPersona dwPersonaMejora = personaCN.ObtenerPersonasPorIdentidadesCargaLigera(editoresMejora);
+            DataWrapperPersona dwPersonaDestino = personaCN.ObtenerPersonasPorIdentidadesCargaLigera(editoresDestino);
+            List<AD.EntityModel.Models.PersonaDS.Persona> personas = dwPersonaMejora.ListaPersona.Union(dwPersonaDestino.ListaPersona).ToList();
+
+            foreach (AD.EntityModel.Models.PersonaDS.Persona persona in personas)
+            {
+                Notificacion notificacionCorreo = AgregarNotificacion(TiposNotificacion.AvisoMejoraCancelada, DateTime.Now, DateTime.Now.AddDays(1), null, pProyectoID);
+
+                Dictionary<short, string> listaParametrosCorreo = new Dictionary<short, string>();
+                listaParametrosCorreo.Add((short)ClavesParametro.NombrePersona, pPersonaRealizaCambio);
+                listaParametrosCorreo.Add((short)ClavesParametro.UrlEnlace, pEnlace);
+                listaParametrosCorreo.Add((short)ClavesParametro.NombreDoc, pTitulo);
+
+                AgregarParametrosNotificacion(notificacionCorreo, listaParametrosCorreo, persona.Idioma);
+                AgregarCorreoPersonaRow(notificacionCorreo.FilaNotificacion, persona.Email, persona.PersonaID);
+            }
+        }
+        /// <summary>
+        /// Crea una nueva notificación de invitación de usuario externo a comunidad
+        /// </summary>
+        /// <param name="pOrganizacionID">Identificador de la organización</param>
+        /// <param name="pProyecto">Identificador de proyecto</param>
+        /// <param name="pNombreProyecto">Nombre de proyecto</param>
+        /// <param name="pDescripcionProyecto">Descripción de proyecto</param>
+        /// <param name="pNotas">Notas</param>
+        /// <param name="pNombreRemitente">Nombre del remitente del mensaje</param>
+        /// <param name="pFechaComienzo">Fecha de comienzo de la notificación</param>
+        /// <param name="pListaCorreos">Lista de direcciones de correo</param>
+        /// <param name="pUrlInvitacion">URL de la invitación</param>
+        /// <param name="pIdioma">Idioma para la notificación</param>
+        public void AgregarNotificacionInvitacionExternoACom(ServiciosGenerales.Proyecto pProyecto, string pDescripcionProyecto, string pNotas, string pNombreRemitente, DateTime pFechaComienzo, List<string> pListaCorreos, string pUrlInvitacion, string pIdioma, List<Guid> pListaGrupos)
         {
             if (GestorPeticiones == null)
             {

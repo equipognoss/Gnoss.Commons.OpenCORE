@@ -19,7 +19,7 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextOracleMigrations
                 table: "DatoExtraProyecto",
                 type: "NUMBER(1)",
                 nullable: false,
-                defaultValue: false);
+                defaultValue: 0);
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)

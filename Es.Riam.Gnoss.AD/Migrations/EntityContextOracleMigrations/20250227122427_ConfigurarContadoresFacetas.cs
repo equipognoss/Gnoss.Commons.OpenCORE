@@ -15,7 +15,7 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextOracleMigrations
                 table: "FacetaObjetoConocimientoProyecto",
                 type: "NUMBER(1)",
                 nullable: false,
-                defaultValue: true);
+                defaultValue: 1);
         }
 
         /// <inheritdoc />

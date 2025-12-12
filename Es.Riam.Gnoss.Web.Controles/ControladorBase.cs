@@ -4597,6 +4597,7 @@ namespace Es.Riam.Gnoss.Web.Controles
             }
             catch (Exception)
             {
+                identity = null;
                 if (pLanzarExcepciones)
                 {
                     throw;

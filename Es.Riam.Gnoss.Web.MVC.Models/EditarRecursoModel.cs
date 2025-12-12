@@ -364,6 +364,11 @@ namespace Es.Riam.Gnoss.Web.MVC.Models
         public bool CreatingVersion { get; set; }
 
         /// <summary>
+        /// Indica si es una mejora
+        /// </summary>
+        public bool IsImprovement { get; set; }
+
+        /// <summary>
         /// Indica si hay multiples usuarios editando el recurso. En caso de ser TRUE se le debe presentar al usuario un mensaje advirtiendole de ello en el caso de que el recurso tenga un adjunto y se reemplece éste.
         /// </summary>
         public bool MultipleEditors { get; set; }
@@ -1604,7 +1609,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Models
             {
                 if (propModel.OntologyPropInfo != null)
                 {
-                    if (propModel.Element.Propiedad.Nombre == pName || propModel.Element.Propiedad.NombreFormatoUri == pName)
+                    if (propModel.Element.Propiedad != null && (propModel.Element.Propiedad.Nombre == pName || propModel.Element.Propiedad.NombreFormatoUri == pName))
                     {
                         return propModel;
                     }

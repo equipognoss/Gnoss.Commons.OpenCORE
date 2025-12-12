@@ -1750,10 +1750,10 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
         /// <param name="pIdentidadActual">IdentidadActual (null = usuario invitado)</param>
         /// <param name="pBaseRecursosPersonalID">ID de la base de recurso personal en caso de que estemos en uno, NULL para comunidades o MyGnoss y un booleano que indica si la BR es de organización o no</param>
         /// <returns></returns>
-        public Dictionary<Guid, ResourceModel> ObtenerRecursosPorIDSinProcesarIdioma(List<Guid> pListaRecursosID, string pUrlBaseUrlBusqueda, KeyValuePair<Guid?, bool> pBaseRecursosPersonalID, Guid? pProyectoID = null)
+        public Dictionary<Guid, ResourceModel> ObtenerRecursosPorIDSinProcesarIdioma(List<Guid> pListaRecursosID, string pUrlBaseUrlBusqueda, KeyValuePair<Guid?, bool> pBaseRecursosPersonalID, Guid? pProyectoID = null, bool pEsFichaRecurso = false)
         {
             //Procesamos los modelos para su presentación
-            Dictionary<Guid, ResourceModel> listaRecursos = ObtenerRecursosPorIDInt(pListaRecursosID, pUrlBaseUrlBusqueda, pBaseRecursosPersonalID, true, false, pProyectoID);
+            Dictionary<Guid, ResourceModel> listaRecursos = ObtenerRecursosPorIDInt(pListaRecursosID, pUrlBaseUrlBusqueda, pBaseRecursosPersonalID, true, false, pProyectoID, pEsFichaRecurso: pEsFichaRecurso);
             Dictionary<Guid, ResourceModel> listaRecursosDevolver = new Dictionary<Guid, ResourceModel>();
             foreach (Guid id in listaRecursos.Keys)
             {
@@ -1777,7 +1777,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
         /// <param name="pIdentidadActual">IdentidadActual (null = usuario invitado)</param>
         /// <param name="pBaseRecursosPersonalID">ID de la base de recurso personal en caso de que estemos en uno, NULL para comunidades o MyGnoss y un booleano que indica si la BR es de organización o no</param>
         /// <returns></returns>
-        private Dictionary<Guid, ResourceModel> ObtenerRecursosPorIDInt(List<Guid> pListaRecursosID, string pUrlBaseUrlBusqueda, KeyValuePair<Guid?, bool> pBaseRecursosPersonalID, bool pObtenerIdentidades = true, bool pObtenerDatosExtraIdentidades = false, Guid? pProyectoID = null, bool pObtenerUltimaVersion = false)
+        private Dictionary<Guid, ResourceModel> ObtenerRecursosPorIDInt(List<Guid> pListaRecursosID, string pUrlBaseUrlBusqueda, KeyValuePair<Guid?, bool> pBaseRecursosPersonalID, bool pObtenerIdentidades = true, bool pObtenerDatosExtraIdentidades = false, Guid? pProyectoID = null, bool pObtenerUltimaVersion = false, bool pEsFichaRecurso = false)
         {
             Dictionary<Guid, Guid> listaRecursosABuscar = new Dictionary<Guid, Guid>();
 
@@ -2267,13 +2267,32 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
                 bool sinVersiones = dwDocumentacion.ListaVersionDocumento.Where(doc => doc.DocumentoID.Equals(idRecurso) || doc.DocumentoOriginalID.Equals(idRecurso)).Count() == 0;
                 listaRecursos[idRecurso].OriginalKey = !sinVersiones ? dwDocumentacion.ListaVersionDocumento.Where(doc => doc.DocumentoID.Equals(idRecurso) || doc.DocumentoOriginalID.Equals(idRecurso)).FirstOrDefault().DocumentoOriginalID : idRecurso;
 
-                string nombreCortoProy = "";
+				using (DocumentacionCN documentacionCN = new DocumentacionCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<DocumentacionCN>(), mLoggerFactory))
+				{
+					bool esMejora = documentacionCN.ComprobarSiDocumentoEsUnaMejora(idRecurso);
+					if (esMejora && !pEsFichaRecurso)
+					{
+                        Guid ultimaVersion = documentacionCN.ObtenerUltimaVersionDeDocumento(listaRecursos[idRecurso].OriginalKey);
+                        if (ultimaVersion.Equals(Guid.Empty))
+                        {
+                            ultimaVersion = listaRecursos[idRecurso].OriginalKey;
+                        }
+                        if (ultimaVersion != Guid.Empty)
+                        {
+							AD.EntityModel.Models.Documentacion.Documento doc = documentacionCN.ObtenerDocumentoPorIdentificador(ultimaVersion);
+							listaRecursos[idRecurso].Title = doc.Titulo;
+							listaRecursos[idRecurso].Description = doc.Descripcion;
+						}                        
+					}
+				}
+                
+				string nombreCortoProy = "";
                 if (!mProyecto.Clave.Equals(ProyectoAD.MetaProyecto))
                 {
                     nombreCortoProy = mProyecto.NombreCorto;
                 }
 
-                if (mProyecto.Clave.Equals(ProyectoAD.MetaProyecto) && !listaRecursos[idRecurso].ProjectID.Equals(ProyectoAD.MetaProyecto))//&& !pBaseRecursosPersonalID.Key.HasValue
+				if (mProyecto.Clave.Equals(ProyectoAD.MetaProyecto) && !listaRecursos[idRecurso].ProjectID.Equals(ProyectoAD.MetaProyecto))//&& !pBaseRecursosPersonalID.Key.HasValue
                 {
                     listaRecursos[idRecurso].CompletCardLink = GnossUrlsSemanticas.GetURLBaseRecursosRecursoInvitadoConIDS(mBaseURLIdioma, UrlPerfil(mIdentidadActual), mUtilIdiomas, ObtenerNombreSemantico(listaRecursos[idRecurso].Title, mUtilIdiomas.LanguageCode), listaRecursos[idRecurso].Key);
                     listaRecursos[idRecurso].CompleteOriginalCardLink = GnossUrlsSemanticas.GetURLBaseRecursosRecursoInvitadoConIDS(mBaseURLIdioma, UrlPerfil(mIdentidadActual), mUtilIdiomas, ObtenerNombreSemantico(listaRecursos[idRecurso].Title, mUtilIdiomas.LanguageCode), listaRecursos[idRecurso].OriginalKey);
@@ -2518,6 +2537,9 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
             pRecurso.ListActions.UrlUnlockComments = pRecurso.CompletCardLink + "/unlock-comments";
             pRecurso.ListActions.UrlRestoreVersion = pRecurso.VersionCardLink + "/restore-version";
             pRecurso.ListActions.UrlDeleteVersion = pRecurso.VersionCardLink + "/delete-version";
+            pRecurso.ListActions.UrlStartImprovement = pRecurso.CompletCardLink + "/start-improvement";
+            pRecurso.ListActions.UrlApplyImprovement = pRecurso.VersionCardLink + "/apply-improvement";
+            pRecurso.ListActions.UrlCancelImprovement = pRecurso.VersionCardLink + "/cancel-improvement";
             pRecurso.ListActions.UrlReportPage = pRecurso.CompletCardLink + "/report-page";
             pRecurso.ListActions.UrlShare = pRecurso.CompletCardLink + "/share";
             pRecurso.ListActions.UrlDuplicate = "/" + "duplicate-resource" + "/" + pRecurso.Key;
@@ -2533,7 +2555,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
             pRecurso.ListActions.UrlLoadActionUnlinkResourceSP = pRecurso.CompletCardLink + "/load-action/unlink-resourceSP";
             pRecurso.ListActions.UrlLoadActionAddToPersonalSpace = pRecurso.CompletCardLink + "/load-action/add-personal-space";
             pRecurso.ListActions.UrlLoadActionAddTags = pRecurso.CompletCardLink + "/load-action/add-tags";
-            pRecurso.ListActions.UrlLoadActionHistory = pRecurso.CompletCardLink + "/load-action/history";
+            pRecurso.ListActions.UrlLoadActionHistory = pRecurso.VersionCardLink + "/load-action/history";
             pRecurso.ListActions.UrlLoadActionAddCategories = pRecurso.CompletCardLink + "/load-action/add-categories";
             pRecurso.ListActions.UrlLoadActionRestoreVersion = pRecurso.CompletCardLink + "/load-action/restore-version";
             pRecurso.ListActions.UrlLoadActionDeleteVersion = pRecurso.CompletCardLink + "/load-action/delete-version";
@@ -2553,6 +2575,10 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
             pRecurso.ListActions.UrlTransitionModal = pRecurso.CompletCardLink + "/load-action/transition";
             pRecurso.ListActions.UrlTransition = pRecurso.CompletCardLink + "/transition-state";
             pRecurso.ListActions.UrlTransitionHistory = pRecurso.CompletCardLink + "/load-action/transition-history";
+			pRecurso.ListActions.UrlLoadActionStartImprovement = pRecurso.CompletCardLink + "/load-action/load-modal-start-improvement";
+            pRecurso.ListActions.UrlLoadActionApplyImprovement = pRecurso.CompletCardLink + "/load-action/load-modal-apply-improvement";
+            pRecurso.ListActions.UrlLoadActionCancelImprovement = pRecurso.CompletCardLink + "/load-action/load-modal-cancel-improvement";
+			pRecurso.ListActions.UrlImprovement = pRecurso.VersionCardLink;
         }
 
         public Dictionary<Guid, List<ResourceEventModel>> ObtenerEventosDeRecursosPorID(List<Guid> pListaRecursosID)

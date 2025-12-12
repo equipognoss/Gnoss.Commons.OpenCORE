@@ -2168,13 +2168,29 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
                     b.Property<Guid>("DocumentoOriginalID")
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<bool>("EsMejora")
+                        .HasColumnType("bit");
+
+                    b.Property<Guid?>("EstadoID")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<short>("EstadoVersion")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("smallint")
+                        .HasDefaultValue((short)2);
+
                     b.Property<Guid>("IdentidadID")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid?>("MejoraID")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<int>("Version")
                         .HasColumnType("int");
 
                     b.HasKey("DocumentoID");
+
+                    b.HasIndex("EstadoID");
 
                     b.ToTable("VersionDocumento");
                 });
@@ -2798,6 +2814,9 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
 
                     b.Property<string>("Nombre")
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("PermiteMejora")
+                        .HasColumnType("bit");
 
                     b.Property<bool>("Publico")
                         .HasColumnType("bit");
@@ -10437,7 +10456,14 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("Es.Riam.Gnoss.AD.EntityModel.Models.Flujos.Estado", "Estado")
+                        .WithMany("VersionesDocumentos")
+                        .HasForeignKey("EstadoID")
+                        .OnDelete(DeleteBehavior.Restrict);
+
                     b.Navigation("Documento");
+
+                    b.Navigation("Estado");
                 });
 
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Documentacion.VotoDocumento", b =>
@@ -12543,6 +12569,8 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
                     b.Navigation("TransicionesDestino");
 
                     b.Navigation("TransicionesOrigen");
+
+                    b.Navigation("VersionesDocumentos");
                 });
 
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Flujos.Flujo", b =>

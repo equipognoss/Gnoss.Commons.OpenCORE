@@ -246,6 +246,9 @@ namespace Es.Riam.Gnoss.AD.Notificacion
 
         AvisoCambioEstadoRecurso = 132,
 
+        AvisoMejoraAplicada = 133,
+        AvisoMejoraCancelada = 134,
+
         #endregion
 
         #region Envio Enlace 140..149

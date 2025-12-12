@@ -231,7 +231,16 @@
         <asunto>{#NombrePersona#} has changed the status of the resource</asunto>
 		<texto>{p}{#NombrePersona#} has changed the status of the resource {a href="{#UrlEnlace#}"}{#NombreDoc#}{/a} from {#NombreEstadoOrigen#} to {#NombreEstadoDestino#}{/p}{p}Editor's comment: {i}'{#Comentario#}'{/i}{/p}</texto>
 	</mensaje>
-    <mensaje id="140">
+	  <mensaje id="133">
+		  <asunto>{#NombrePersona#} has accepted the improvement of the resource {#NombreDoc#}</asunto>
+		  <texto>{p}{#NombrePersona#} has accepted the improvement of the resource {a href="{#UrlEnlace#}"}{#NombreDoc#}{/a} {/p}</texto>
+	  </mensaje>
+	  <mensaje id="134">
+		  <asunto>{#NombrePersona#} has cancelled the improvement of the resource {#NombreDoc#}</asunto>
+		  <texto>{p}{#NombrePersona#} has cancelled the improvement of the resource {a href="{#UrlEnlace#}"}{#NombreDoc#}{/a} {/p}</texto>
+	  </mensaje>
+
+	  <mensaje id="140">
     <asunto>You have a link: {#NombreDoc#}</asunto>
     <texto>{p}{#NombreRemitente#} has sent you a link from {#NombreProyecto#}.{/p}{p}{#Notas#}{/p}{p} {#UrlEnlace#}{/p}</texto>
   </mensaje>

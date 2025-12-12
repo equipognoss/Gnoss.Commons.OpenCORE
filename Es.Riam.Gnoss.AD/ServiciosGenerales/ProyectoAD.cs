@@ -2406,77 +2406,7 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
         public DataWrapperProyecto ObtenerProyectosPorIDsCargaLigera(List<Guid> pListaProyectoID)
         {
             DataWrapperProyecto dataWrapperProyecto = new DataWrapperProyecto();
-
-            var listaProyectosLigero = mEntityContext.Proyecto.Where(proyecto => pListaProyectoID.Contains(proyecto.ProyectoID)).Select(proyecto => new
-            {
-                OrganizacionID = proyecto.OrganizacionID,
-                ProyectoID = proyecto.ProyectoID,
-                Nombre = proyecto.Nombre,
-                TipoProyecto = proyecto.TipoProyecto,
-                TipoAcceso = proyecto.TipoAcceso,
-                NumeroRecursos = proyecto.NumeroRecursos,
-                NumeroPreguntas = proyecto.NumeroPreguntas,
-                NumeroDebates = proyecto.NumeroDebates,
-                NumeroMiembros = proyecto.NumeroMiembros,
-                NumeroOrgRegistradas = proyecto.NumeroOrgRegistradas,
-                EsProyectoDestacado = proyecto.EsProyectoDestacado,
-                Estado = proyecto.Estado,
-                URLPropia = proyecto.URLPropia,
-                NombreCorto = proyecto.NombreCorto,
-                Descripcion = proyecto.Descripcion,
-                ProyectoSuperiorID = proyecto.ProyectoSuperiorID,
-                TieneTwitter = proyecto.TieneTwitter,
-                TagTwitter = proyecto.TagTwitter,
-                UsuarioTwitter = proyecto.UsuarioTwitter,
-                TokenTwitter = proyecto.TokenTwitter,
-                TokenSecretoTwitter = proyecto.TokenSecretoTwitter,
-                EnviarTwitterComentario = proyecto.EnviarTwitterComentario,
-                EnviarTwitterNuevaCat = proyecto.EnviarTwitterNuevaCat,
-                EnviarTwitterNuevoAdmin = proyecto.EnviarTwitterNuevoAdmin,
-                EnviarTwitterNuevaPolitCert = proyecto.EnviarTwitterNuevaPolitCert,
-                EnviarTwitterNuevoTipoDoc = proyecto.EnviarTwitterNuevoTipoDoc,
-                TablaBaseProyectoID = proyecto.TablaBaseProyectoID,
-                ProcesoVinculadoID = proyecto.ProcesoVinculadoID,
-                Tags = proyecto.Tags,
-                TagTwitterGnoss = proyecto.TagTwitterGnoss,
-                NombrePresentacion = proyecto.NombrePresentacion
-            });
-            foreach (var proyecto in listaProyectosLigero.ToList())
-            {
-                Proyecto proyectoObj = new Proyecto();
-                proyectoObj.OrganizacionID = proyecto.OrganizacionID;
-                proyectoObj.ProyectoID = proyecto.ProyectoID;
-                proyectoObj.Nombre = proyecto.Nombre;
-                proyectoObj.TipoProyecto = proyecto.TipoProyecto;
-                proyectoObj.TipoAcceso = proyecto.TipoAcceso;
-                proyectoObj.NumeroRecursos = proyecto.NumeroRecursos;
-                proyectoObj.NumeroPreguntas = proyecto.NumeroPreguntas;
-                proyectoObj.NumeroDebates = proyecto.NumeroDebates;
-                proyectoObj.NumeroMiembros = proyecto.NumeroMiembros;
-                proyectoObj.NumeroOrgRegistradas = proyecto.NumeroOrgRegistradas;
-                proyectoObj.EsProyectoDestacado = proyecto.EsProyectoDestacado;
-                proyectoObj.Estado = proyecto.Estado;
-                proyectoObj.URLPropia = proyecto.URLPropia;
-                proyectoObj.NombreCorto = proyecto.NombreCorto;
-                proyectoObj.Descripcion = proyecto.Descripcion;
-                proyectoObj.ProyectoSuperiorID = proyecto.ProyectoSuperiorID;
-                proyectoObj.TieneTwitter = proyecto.TieneTwitter;
-                proyectoObj.TagTwitter = proyecto.TagTwitter;
-                proyectoObj.UsuarioTwitter = proyecto.UsuarioTwitter;
-                proyectoObj.TokenTwitter = proyecto.TokenTwitter;
-                proyectoObj.TokenSecretoTwitter = proyecto.TokenSecretoTwitter;
-                proyectoObj.EnviarTwitterComentario = proyecto.EnviarTwitterComentario;
-                proyectoObj.EnviarTwitterNuevaCat = proyecto.EnviarTwitterNuevaCat;
-                proyectoObj.EnviarTwitterNuevoAdmin = proyecto.EnviarTwitterNuevoAdmin;
-                proyectoObj.EnviarTwitterNuevaPolitCert = proyecto.EnviarTwitterNuevaPolitCert;
-                proyectoObj.EnviarTwitterNuevoTipoDoc = proyecto.EnviarTwitterNuevoTipoDoc;
-                proyectoObj.TablaBaseProyectoID = proyecto.TablaBaseProyectoID;
-                proyectoObj.ProcesoVinculadoID = proyecto.ProcesoVinculadoID;
-                proyectoObj.Tags = proyecto.Tags;
-                proyectoObj.TagTwitterGnoss = proyecto.TagTwitterGnoss;
-                proyectoObj.NombrePresentacion = proyecto.NombrePresentacion;
-                dataWrapperProyecto.ListaProyecto.Add(proyectoObj);
-            }
+            dataWrapperProyecto.ListaProyecto = mEntityContext.Proyecto.Where(proyecto => pListaProyectoID.Contains(proyecto.ProyectoID)).ToList();
             return dataWrapperProyecto;
         }
 
@@ -7212,6 +7142,34 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
         public Dictionary<String, String> ObtenerTitulosOntologias(Guid proyectoID)
         {
             return mEntityContext.Documento.Where(x => x.ProyectoID.Equals(proyectoID) && x.Tipo.Equals(7)).GroupBy(d => d.Titulo).ToDictionary(g => g.Key, g => g.First().Enlace);
+        }
+
+        /// <summary>
+        /// Obtenemos el número de recursos por proyecto en un diccionario donde la clave 
+        /// es el proyectoID y el valor el número de recursos que hay en el proyecto
+        /// </summary>
+        /// <returns>Un diccionario donde la clave es el identificador del proyecto y el valor es el número de recursos</returns>
+        public Dictionary<Guid, int> ObtenerContadoresRecursoProyecto()
+        {            
+            return mEntityContext.Documento.JoinDocumentoWebVinBaseRecursos().JoinBaseRecursosProyecto().Where(item => !item.Documento.Eliminado && !item.Documento.Borrador && item.Documento.UltimaVersion && !item.DocumentoWebVinBaseRecursos.Eliminado && item.Documento.ProyectoID.HasValue).GroupBy(item => item.Documento.ProyectoID.Value).Select(group => new
+            {
+                ProyectoID = group.Key,
+                NumeroRecursos = group.Count()
+            }).ToDictionary(item => item.ProyectoID, item => item.NumeroRecursos);
+        }
+
+        /// <summary>
+        /// Obtenemos el número de miembros por proyecto en un diccionario donde la clave 
+        /// es el proyectoID y el valor el número de usuarios dados de alta en el proyecto
+        /// </summary>
+        /// <returns>Un diccionario donde la clave es el identificador del proyecto y el valor es el número de usuarios dados de alta en el proyecto</returns>
+        public Dictionary<Guid, int> ObtenerContadoresMiembrosProyecto()
+        {
+            return mEntityContext.Identidad.Where(item => !item.FechaBaja.HasValue && !item.FechaExpulsion.HasValue).GroupBy(item => item.ProyectoID).Select(group => new
+            {
+                ProyectoID = group.Key,
+                NumeroMiembros = group.Count()
+            }).ToDictionary(item => item.ProyectoID, item => item.NumeroMiembros);
         }
 
 
