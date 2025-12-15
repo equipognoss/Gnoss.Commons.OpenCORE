@@ -7936,7 +7936,8 @@ namespace Es.Riam.Gnoss.AD.Documentacion
             Dictionary<Guid, int> listaDocumentosID = new Dictionary<Guid, int>();
             bool versionOriginalEliminada = mEntityContext.Documento.FirstOrDefault(doc => doc.DocumentoID.Equals(pDocumentoID)).Eliminado;
             var resultado = mEntityContext.VersionDocumento.Where(doc => doc.DocumentoOriginalID.Equals(pDocumentoID)).OrderBy(doc => doc.Version).ToList();
-            if (!versionOriginalEliminada)
+            VersionDocumento primeraVersion = resultado.FirstOrDefault(verDoc => verDoc.DocumentoID == verDoc.DocumentoOriginalID);
+            if (!versionOriginalEliminada && primeraVersion == null)
             {
                 listaDocumentosID.Add(pDocumentoID, 0);
             }

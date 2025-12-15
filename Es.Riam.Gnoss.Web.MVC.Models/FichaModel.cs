@@ -228,6 +228,11 @@ namespace Es.Riam.Gnoss.Web.MVC.Models
         public string VersionCardLink { get; set; }
 
         /// <summary>
+        /// Url a la version de la ficha de mejora del recurso
+        /// </summary>
+        public string ImprovementCardLink { get; set; }
+
+        /// <summary>
         /// Url a la edicion del recrso
         /// </summary>
         public string EditCardLink { get; set; }

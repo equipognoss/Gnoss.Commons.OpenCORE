@@ -2309,12 +2309,18 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
                 listaRecursos[idRecurso].UrlPreview = listaRecursos[idRecurso].UrlPreview.Replace("BASEURLCONTENTREPLACE", BaseURLContent);
 
                 listaRecursos[idRecurso].VersionCardLink = !sinVersiones ? $"{listaRecursos[idRecurso].CompleteOriginalCardLink}/{listaRecursos[idRecurso].Key}" : listaRecursos[idRecurso].CompletCardLink;
+                
+
+                Guid? versionIDMejoraActiva = dwDocumentacion.ListaVersionDocumento.First(doc => doc.EsMejora && doc.EstadoVersion == (short)EstadoVersion.Pendiente && doc.DocumentoOriginalID.Equals(listaRecursos[idRecurso].OriginalKey)).DocumentoID;
+
+                listaRecursos[idRecurso].ImprovementCardLink = versionIDMejoraActiva.HasValue? $"{listaRecursos[idRecurso].CompleteOriginalCardLink}/{versionIDMejoraActiva}" : listaRecursos[idRecurso].CompletCardLink;
 
                 listaRecursos[idRecurso].ListActions = new ResourceModel.UrlActions();
                 EstablecerUrlAccionesReecurso(listaRecursos[idRecurso], mProyecto.NombreCorto);
 
                 listaRecursos[idRecurso].Actions = new ResourceModel.ActionsModel();
             }
+            
 
             if (mIdentidadActual != null && !mIdentidadActual.Clave.Equals(UsuarioAD.Invitado))
             {
@@ -2578,7 +2584,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
 			pRecurso.ListActions.UrlLoadActionStartImprovement = pRecurso.CompletCardLink + "/load-action/load-modal-start-improvement";
             pRecurso.ListActions.UrlLoadActionApplyImprovement = pRecurso.CompletCardLink + "/load-action/load-modal-apply-improvement";
             pRecurso.ListActions.UrlLoadActionCancelImprovement = pRecurso.CompletCardLink + "/load-action/load-modal-cancel-improvement";
-			pRecurso.ListActions.UrlImprovement = pRecurso.VersionCardLink;
+			pRecurso.ListActions.UrlImprovement = pRecurso.ImprovementCardLink;
         }
 
         public Dictionary<Guid, List<ResourceEventModel>> ObtenerEventosDeRecursosPorID(List<Guid> pListaRecursosID)

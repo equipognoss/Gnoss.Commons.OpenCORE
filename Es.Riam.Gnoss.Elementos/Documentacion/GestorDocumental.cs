@@ -1290,7 +1290,7 @@ namespace Es.Riam.Gnoss.Elementos.Documentacion
             mEntityContext.SaveChanges();
 
             // Reordenar el resto de versiones
-            int version = 1;
+            int version = 0;
             foreach(VersionDocumento versionDocumento in mEntityContext.VersionDocumento.Where(v => v.DocumentoOriginalID.Equals(pDocumento.VersionOriginalID)).OrderBy(v => v.Version))
             {
                 versionDocumento.Version = version;
@@ -2355,6 +2355,19 @@ namespace Es.Riam.Gnoss.Elementos.Documentacion
         }
 
         #region VersionDocumento
+
+        public void CrearPrimeraVersionDocumento(Documento pDocumento)
+        {
+            VersionDocumento filaVersionDocumento = new VersionDocumento();
+            filaVersionDocumento.DocumentoID = pDocumento.Clave;
+            filaVersionDocumento.Version = 0;
+            filaVersionDocumento.EstadoVersion = (short)EstadoVersion.Vigente;
+            filaVersionDocumento.EstadoID = pDocumento.FilaDocumento.EstadoID;
+            filaVersionDocumento.IdentidadID = pDocumento.CreadorID;
+            filaVersionDocumento.EsMejora = false;
+            filaVersionDocumento.DocumentoOriginalID = pDocumento.Clave;
+            mEntityContext.VersionDocumento.Add(filaVersionDocumento);
+        }
 
         /// <summary>
         /// Elimina todos los documentos de la versiones anteriores a la actual.
