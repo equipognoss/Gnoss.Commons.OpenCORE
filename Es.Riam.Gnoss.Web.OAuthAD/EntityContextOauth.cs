@@ -52,15 +52,57 @@ namespace Es.Riam.Gnoss.OAuthAD
         }
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            if (mConfigService.ObtenerTipoBD().Equals("2"))
+            string tipoBD = mConfigService.ObtenerTipoBD();
+            string acid = mConfigService.ObtenerSqlConnectionString();
+
+            optionsBuilder.LogTo(mLoggingService.AgregarEntradaTrazaEntity);
+            switch (tipoBD)
             {
-                optionsBuilder.UseNpgsql(mConfigService.ObtenerBaseConnectionString());
+                case "0":
+                    optionsBuilder.UseSqlServer(mConfigService.ObtenerSqlConnectionString(), o => o.UseCompatibilityLevel(110));
+                    break;
+
+                case "1":
+                    optionsBuilder.UseOracle(mConfigService.ObtenerSqlConnectionString(), o => o.UseOracleSQLCompatibility(ObtenerNivelCompatibilidadOracle()));
+                    break;
+
+                case "2":
+                    optionsBuilder.UseNpgsql(mConfigService.ObtenerSqlConnectionString(), o => o.SetPostgresVersion(new Version(9, 6)));
+                    break;
             }
-            else if (mConfigService.ObtenerTipoBD().Equals("1"))
-            {
-                optionsBuilder.UseOracle(mConfigService.ObtenerSqlConnectionString());
-            }
+
+            optionsBuilder.UseLoggerFactory(mLoggerFactory);
         }
+
+        /// <summary>
+        /// Obtiene el nivel de compatibilidad de Oracle configurado en las variables de entorno. 
+        /// En caso de no haber nada configurado utilizará el nivel de compatibilidad de la última versión.
+        /// </summary>        
+        /// <returns>Devuelve el valor del nivel de compatibilidad necesario para el provider de oracle</returns>
+        private OracleSQLCompatibility ObtenerNivelCompatibilidadOracle()
+        {
+            OracleSQLCompatibility nivelCompatibilidad;
+            string nivelConfigurado = mConfigService.ObtenerNivelCompatibiliadBaseDatos();
+
+            switch (nivelConfigurado)
+            {
+                case "19":
+                    nivelCompatibilidad = OracleSQLCompatibility.DatabaseVersion19;
+                    break;
+                case "21":
+                    nivelCompatibilidad = OracleSQLCompatibility.DatabaseVersion21;
+                    break;
+                case "23":
+                    nivelCompatibilidad = OracleSQLCompatibility.DatabaseVersion23;
+                    break;
+                default:
+                    nivelCompatibilidad = OracleSQLCompatibility.DatabaseVersion23;
+                    break;
+            }
+
+            return nivelCompatibilidad;
+        }
+
         private string GetDafaultSchema(DbConnection pConexionMaster)
         {
             string schemaDefecto = null;

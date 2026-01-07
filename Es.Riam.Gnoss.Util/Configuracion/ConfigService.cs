@@ -25,6 +25,7 @@ namespace Es.Riam.Gnoss.Util.Configuracion
         private string virtuosoConnectionStringHome;
         private VirtuosoConnectionData virtuosoConnectionDataHome;
         private string tipoBD;
+        private string nivelCompatibilidadBD;
         private string timeoutVirtuoso;
         private string azure;
         private string baseConnectionString;
@@ -1521,6 +1522,22 @@ namespace Es.Riam.Gnoss.Util.Configuracion
                 }
             }
             return tipoBD;
+        }
+
+        public string ObtenerNivelCompatibiliadBaseDatos() 
+        {
+            if (string.IsNullOrEmpty(nivelCompatibilidadBD))
+            {
+                if (EnvironmentVariables.Contains("dataBaseCompatibilityLevel"))
+                {
+                    nivelCompatibilidadBD = EnvironmentVariables["dataBaseCompatibilityLevel"] as string;
+                }
+                else
+                {
+                    nivelCompatibilidadBD = Configuration.GetConnectionString("dataBaseCompatibilityLevel");
+                }
+            }
+            return nivelCompatibilidadBD;
         }
 
         public string ObtenerAzureStorageConnectionString()

@@ -1181,22 +1181,26 @@ namespace Es.Riam.Gnoss.Elementos.Documentacion
         /// <summary>
         /// Crea una nueva versión del documento asignandole los valores
         /// </summary>
-        /// <param name="pVersionOrigen">Documento de origen (la última versión activa)</param>
-        /// <param name="pVersionDestino">Documento de destino (los valores qeu se asignarán a las versiones nuevas)</param>
-        /// <param name="pEntidadVinculadaDoc">Entidad vinculada al documento si la tiene</param>
-        /// <param name="pIdentidadActual">Identidad actual</param>
-        /// <returns>Documento creado con los valores de VersionDestino</returns>
-        public Documento RestaurarVersion(Documento pVersionDestino, Documento pUltimaVersionActual, Identidad.Identidad pIdentidadActual)
+        /// <param name="pVersionDestino">Documento que se va ha versionar</param>
+        /// <param name="pUltimaVersionActual">Version del documento actual</param>
+        /// <param name="pIdentidadActual"></param>
+        /// <param name="pEsMejora">True si estamos restaurando una version que sea una mejora</param>
+        /// <returns></returns>
+        public Documento RestaurarVersion(Documento pVersionDestino, Documento pUltimaVersionActual, Identidad.Identidad pIdentidadActual, bool pEsMejora = false)
         {
             // Crear la nueva versión a partir del documento de origen
-            Documento nuevaVersion = CrearNuevaVersionDocumento(pVersionDestino, pIdentidadActual, pRestaurando: true);
+            Documento nuevaVersion = CrearNuevaVersionDocumento(pVersionDestino, pIdentidadActual, pRestaurando: true, pEsMejora: pEsMejora);
 
-            // Establecemos la ultima version anterior a false
-            pUltimaVersionActual.FilaDocumento.UltimaVersion = false;
-            // Mantenemos el estado id que tenia asignado la ultima version actual
-            nuevaVersion.FilaDocumento.EstadoID = pUltimaVersionActual.FilaDocumento.EstadoID;
-
-            mEntityContext.SaveChanges();
+            // Si estamos restaurando una mejora hay que actualizar el estado de la version anterior a historico
+            // Sino seguimos el flujo de una restauracion normal.
+            if (pEsMejora)
+            {
+                pUltimaVersionActual.FilaDocumento.VersionDocumento.EstadoVersion = (short)EstadoVersion.Historico;
+            }
+            else
+            {
+                pUltimaVersionActual.FilaDocumento.UltimaVersion = false;
+            }
 
             return nuevaVersion;
         }

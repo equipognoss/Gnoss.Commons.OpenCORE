@@ -383,9 +383,9 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
         /// <param name="pObtenerIdentidades">Indica si debe obtener las identidades de los publicadores</param>
         /// <param name="pObtenerDatosExtraIdentidades">Indica si debe obtener los datos extra de las identidades de los publicadores</param>
         /// <returns></returns>
-        public Dictionary<Guid, ResourceModel> ObtenerRecursosPorID(List<Guid> pListaRecursosID, string pUrlBaseUrlBusqueda, Guid? pPestanyaID, bool pObtenerValoresPropiedadesSemanticas, bool pObtenerIdentidades = true, bool pObtenerDatosExtraIdentidades = false, bool pObtenerUltimaVersion = false)
+        public Dictionary<Guid, ResourceModel> ObtenerRecursosPorID(List<Guid> pListaRecursosID, string pUrlBaseUrlBusqueda, Guid? pPestanyaID, bool pObtenerValoresPropiedadesSemanticas, bool pObtenerIdentidades = true, bool pObtenerDatosExtraIdentidades = false, bool pObtenerUltimaVersion = false, bool pEsFichaRecurso = false)
         {
-            return ObtenerRecursosPorID(pListaRecursosID, pUrlBaseUrlBusqueda, Controladores.EspacioPersonal.No, pPestanyaID, pObtenerValoresPropiedadesSemanticas, pObtenerIdentidades, pObtenerDatosExtraIdentidades, pObtenerUltimaVersion);
+            return ObtenerRecursosPorID(pListaRecursosID, pUrlBaseUrlBusqueda, Controladores.EspacioPersonal.No, pPestanyaID, pObtenerValoresPropiedadesSemanticas, pObtenerIdentidades, pObtenerDatosExtraIdentidades, pObtenerUltimaVersion, pEsFichaRecurso);
         }
 
         /// <summary>
@@ -399,7 +399,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
         /// <param name="pObtenerIdentidades">Indica si debe obtener las identidades de los publicadores</param>
         /// <param name="pObtenerDatosExtraIdentidades">Indica si debe obtener los datos extra de las identidades de los publicadores</param>
         /// <returns></returns>
-        public Dictionary<Guid, ResourceModel> ObtenerRecursosPorID(List<Guid> pListaRecursosID, string pUrlBaseUrlBusqueda, EspacioPersonal pEspacioPersonal, Guid? pPestanyaID, bool pObtenerValoresPropiedadesSemanticas, bool pObtenerIdentidades = true, bool pObtenerDatosExtraIdentidades = false, bool pObtenerUltimaVersion = false)
+        public Dictionary<Guid, ResourceModel> ObtenerRecursosPorID(List<Guid> pListaRecursosID, string pUrlBaseUrlBusqueda, EspacioPersonal pEspacioPersonal, Guid? pPestanyaID, bool pObtenerValoresPropiedadesSemanticas, bool pObtenerIdentidades = true, bool pObtenerDatosExtraIdentidades = false, bool pObtenerUltimaVersion = false, bool pEsFichaRecurso = false)
         {
             KeyValuePair<Guid?, bool> baseRecursosPersonal = new KeyValuePair<Guid?, bool>(null, false);
 
@@ -409,12 +409,12 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
             }
 
             //Procesamos los modelos para su presentación
-            Dictionary<Guid, ResourceModel> listaRecursos = ObtenerRecursosPorIDInt(pListaRecursosID, pUrlBaseUrlBusqueda, baseRecursosPersonal, pObtenerIdentidades, pObtenerDatosExtraIdentidades, pObtenerUltimaVersion: pObtenerUltimaVersion);
+            Dictionary<Guid, ResourceModel> listaRecursos = ObtenerRecursosPorIDInt(pListaRecursosID, pUrlBaseUrlBusqueda, baseRecursosPersonal, pObtenerIdentidades, pObtenerDatosExtraIdentidades, pObtenerUltimaVersion: pObtenerUltimaVersion, pEsFichaRecurso: pEsFichaRecurso);
             Dictionary<Guid, ResourceModel> listaRecursosTemp = new Dictionary<Guid, ResourceModel>();
             Dictionary<Guid, ResourceModel> listaRecursosDevolver = new Dictionary<Guid, ResourceModel>();
             foreach (Guid id in listaRecursos.Keys)
             {
-                ResourceModel ficha = listaRecursos[id];
+                ResourceModel ficha = (ResourceModel)listaRecursos[id].Clone();
                 ficha.Title = UtilCadenas.ObtenerTextoDeIdioma(ficha.Title, mUtilIdiomas.LanguageCode, null);
                 ficha.Description = UtilCadenas.ObtenerTextoDeIdioma(ficha.Description, mUtilIdiomas.LanguageCode, null);
                 ficha.UrlSearch = pUrlBaseUrlBusqueda;
@@ -2309,9 +2309,8 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
                 listaRecursos[idRecurso].UrlPreview = listaRecursos[idRecurso].UrlPreview.Replace("BASEURLCONTENTREPLACE", BaseURLContent);
 
                 listaRecursos[idRecurso].VersionCardLink = !sinVersiones ? $"{listaRecursos[idRecurso].CompleteOriginalCardLink}/{listaRecursos[idRecurso].Key}" : listaRecursos[idRecurso].CompletCardLink;
-                
 
-                Guid? versionIDMejoraActiva = dwDocumentacion.ListaVersionDocumento.First(doc => doc.EsMejora && doc.EstadoVersion == (short)EstadoVersion.Pendiente && doc.DocumentoOriginalID.Equals(listaRecursos[idRecurso].OriginalKey)).DocumentoID;
+                Guid? versionIDMejoraActiva = dwDocumentacion.ListaVersionDocumento.FirstOrDefault(doc => doc.EsMejora && doc.EstadoVersion == (short)EstadoVersion.Pendiente && doc.DocumentoOriginalID.Equals(listaRecursos[idRecurso].OriginalKey))?.DocumentoID;
 
                 listaRecursos[idRecurso].ImprovementCardLink = versionIDMejoraActiva.HasValue? $"{listaRecursos[idRecurso].CompleteOriginalCardLink}/{versionIDMejoraActiva}" : listaRecursos[idRecurso].CompletCardLink;
 

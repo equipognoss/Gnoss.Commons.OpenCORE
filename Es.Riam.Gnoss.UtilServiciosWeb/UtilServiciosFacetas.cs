@@ -415,7 +415,7 @@ namespace Es.Riam.Gnoss.UtilServiciosWeb
                 pListaFiltrosUsuario.Add(pKey, new List<string>());
             }
 
-            if (!pListaFiltrosUsuario[pKey].Contains(pValor) && pValor != "GETDATE()")
+            if (!pListaFiltrosUsuario[pKey].Contains(pValor) && pValor != "GETDATE()" && pValor != "GETDATE()-")
             {
                 pListaFiltrosUsuario[pKey].Add(pValor);
             }

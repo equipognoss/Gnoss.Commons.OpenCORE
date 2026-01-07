@@ -5983,6 +5983,8 @@
 		<Resource tag="INICIARPROCESOMEJORA">Iniciar proceso de mellora</Resource>
 		<Resource tag="INFOMEJORA">Vaise crear un proceso de mellora para modificar o recurso actual. Isto xerará unha copia bloqueando o recurso orixinal, polo que só se poderá modificar dita copia seguindo o fluxo de traballo completo.</Resource>
 		<Resource tag="RECURSOENPROCESODEMEJORA">Este recurso atópase en proceso de mellora. Faga clic para ir.</Resource>
+		<Resource tag="AVISOESTASENHISTORICOMEJORA">Este recurso non é a última versión do proceso de mellora. {a href="@1@"}Ver recurso en proceso de mellora{/a}.</Resource>
+		<Resource tag="AVISOESTASENPROCESOMEJORA">Este recurso atópase nun proceso de mellora. {a href="@1@"}Ver recurso en mellora{/a}.</Resource>
 		<Resource tag="AVISOESTASENMEJORA">Este recurso atópase nun proceso de mellora. {a href="@1@"}Ver recurso orixinal{/a}.</Resource>
 		<Resource tag="ERRORINICIARMEJORA">Ocorreu un erro ao iniciar a mellora</Resource>
 		<Resource tag="ERRORPERMISOINICIARMEJORA">Non ten permisos para iniciar unha mellora</Resource>

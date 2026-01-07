@@ -6435,6 +6435,8 @@
 		<Resource tag="INICIARPROCESOMEJORA">Start improvement process</Resource>
 		<Resource tag="INFOMEJORA">An improvement process will be created to modify the current resource. This will generate a copy locking the original resource, so only this copy can be modified following the complete workflow.</Resource>
 		<Resource tag="RECURSOENPROCESODEMEJORA">This resource is undergoing an improvement process. Click to go.</Resource>
+		<Resource tag="AVISOESTASENHISTORICOMEJORA">This resource is not the latest version of the improvement process. {a href="@1@"}View resource in improvement process{/a}.</Resource>
+		<Resource tag="AVISOESTASENPROCESOMEJORA">This resource is in an improvement process. {a href="@1@"}View resource in improvement{/a}.</Resource>
 		<Resource tag="AVISOESTASENMEJORA">This resource is in an improvement process. {a href="@1@"}View original resource{/a}.</Resource>
 		<Resource tag="ERRORINICIARMEJORA">An error occurred while starting the improvement</Resource>
 		<Resource tag="ERRORPERMISOINICIARMEJORA">You do not have permission to start an improvement</Resource>

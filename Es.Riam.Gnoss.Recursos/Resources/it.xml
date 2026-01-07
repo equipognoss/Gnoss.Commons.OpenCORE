@@ -5904,6 +5904,8 @@
 		<Resource tag="INICIARPROCESOMEJORA">Avviare processo di miglioramento</Resource>
 		<Resource tag="INFOMEJORA">Verrà creato un processo di miglioramento per modificare la risorsa attuale. Questo genererà una copia bloccando la risorsa originale, pertanto potrà essere modificata solo tale copia seguendo il flusso di lavoro completo.</Resource>
 		<Resource tag="RECURSOENPROCESODEMEJORA">Questa risorsa è in un processo di miglioramento. Clicca per andare.</Resource>
+		<Resource tag="AVISOESTASENHISTORICOMEJORA">Questa risorsa non è l'ultima versione del processo di miglioramento. {a href="@1@"}Visualizza risorsa in processo di miglioramento{/a}.</Resource>
+		<Resource tag="AVISOESTASENPROCESOMEJORA">Questa risorsa si trova in un processo di miglioramento. {a href="@1@"}Visualizza risorsa in miglioramento{/a}.</Resource>
 		<Resource tag="AVISOESTASENMEJORA">Questa risorsa si trova in un processo di miglioramento. {a href="@1@"}Visualizza risorsa originale{/a}.</Resource>
 		<Resource tag="ERRORINICIARMEJORA">Si è verificato un errore durante l'avvio del miglioramento</Resource>
 		<Resource tag="ERRORPERMISOINICIARMEJORA">Non si dispone dei permessi per avviare un miglioramento</Resource>

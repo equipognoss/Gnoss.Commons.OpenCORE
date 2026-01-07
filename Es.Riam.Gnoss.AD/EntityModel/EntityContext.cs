@@ -1,10 +1,17 @@
 namespace Es.Riam.Gnoss.AD.EntityModel
 {
     using Elementos.ParametroGeneralDSName;
+    using Es.Riam.AbstractsOpen;
+    using Es.Riam.Gnoss.AD.EntityModel.Models.Cache;
+    using Es.Riam.Gnoss.AD.EntityModel.Models.Cookies;
+    using Es.Riam.Gnoss.AD.ParametroAplicacion;
+    using Es.Riam.Gnoss.AD.TareasSegundoPlano;
     using Es.Riam.Gnoss.Util.Configuracion;
     using Es.Riam.Gnoss.Web.MVC.Models;
     using Microsoft.EntityFrameworkCore;
+    using Microsoft.EntityFrameworkCore.Metadata.Builders;
     using Microsoft.Extensions.Logging;
+    using Microsoft.Extensions.Options;
     using Microsoft.Practices.EnterpriseLibrary.Data.Sql;
     using Models;
     using Models.Blog;
@@ -23,21 +30,25 @@ namespace Es.Riam.Gnoss.AD.EntityModel
     using Models.PersonaDS;
     using Models.Peticion;
     using Models.ProyectoDS;
+    using Models.Sitemaps;
     using Models.Solicitud;
     using Models.Suscripcion;
     using Models.Tesauro;
     using Models.UsuarioDS;
     using Models.VistaVirtualDS;
     using Models.Voto;
+    using Npgsql;
     using Oracle.ManagedDataAccess.Client;
     using Riam.Util;
     using System;
+    using System.Collections;
     using System.Collections.Generic;
     using System.ComponentModel.DataAnnotations;
     using System.ComponentModel.DataAnnotations.Schema;
     using System.Data.Common;
     using System.Data.SqlClient;
     using System.Linq;
+    using System.Reflection;
     using Util.General;
     using Models.Sitemaps;
     using Npgsql;
@@ -50,6 +61,7 @@ namespace Es.Riam.Gnoss.AD.EntityModel
     using Es.Riam.Gnoss.AD.EntityModel.Models.Cache;
 	using Es.Riam.Gnoss.AD.EntityModel.Models.Roles;
     using Es.Riam.Gnoss.AD.ParametroAplicacion;
+    using VDS.RDF;
 	using Es.Riam.Gnoss.AD.EntityModel.Models.Flujos;
 
     public partial class EntityContext : DbContext
@@ -127,16 +139,55 @@ namespace Es.Riam.Gnoss.AD.EntityModel
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
+            string tipoBD = _configService.ObtenerTipoBD();
+            string acid = _configService.ObtenerSqlConnectionString();
+
             optionsBuilder.LogTo(mLoggingService.AgregarEntradaTrazaEntity);
-            if (_configService.ObtenerTipoBD().Equals("2"))
+            switch (tipoBD)
             {
-                optionsBuilder.UseNpgsql(_configService.ObtenerSqlConnectionString());
+                case "0":
+                    optionsBuilder.UseSqlServer(_configService.ObtenerSqlConnectionString(), o => o.UseCompatibilityLevel(110));
+                    break;
+
+                case "1":
+                    optionsBuilder.UseOracle(_configService.ObtenerSqlConnectionString(), o => o.UseOracleSQLCompatibility(ObtenerNivelCompatibilidadOracle()));
+                    break;
+
+                case "2":
+                    optionsBuilder.UseNpgsql(_configService.ObtenerSqlConnectionString(), o => o.SetPostgresVersion(new Version(9, 6)));
+                    break;
             }
-            else if (_configService.ObtenerTipoBD().Equals("1"))
-            {
-                optionsBuilder.UseOracle(_configService.ObtenerSqlConnectionString());
-            }
+            
             optionsBuilder.UseLoggerFactory(mLoggerFactory);
+        }
+
+        /// <summary>
+        /// Obtiene el nivel de compatibilidad de Oracle configurado en las variables de entorno. 
+        /// En caso de no haber nada configurado utilizará el nivel de compatibilidad de la última versión.
+        /// </summary>        
+        /// <returns>Devuelve el valor del nivel de compatibilidad necesario para el provider de oracle</returns>
+        private OracleSQLCompatibility ObtenerNivelCompatibilidadOracle()
+        {  
+            OracleSQLCompatibility nivelCompatibilidad;
+            string nivelConfigurado = _configService.ObtenerNivelCompatibiliadBaseDatos();
+           
+            switch (nivelConfigurado)
+            {
+                case "19":
+                    nivelCompatibilidad = OracleSQLCompatibility.DatabaseVersion19;
+                    break;
+                case "21":
+                    nivelCompatibilidad = OracleSQLCompatibility.DatabaseVersion21;
+                    break;
+                case "23":
+                    nivelCompatibilidad = OracleSQLCompatibility.DatabaseVersion23;
+                    break;
+                default:
+                    nivelCompatibilidad = OracleSQLCompatibility.DatabaseVersion23;
+                    break;
+            }
+
+            return nivelCompatibilidad;
         }
 
         public void EliminarInstance()

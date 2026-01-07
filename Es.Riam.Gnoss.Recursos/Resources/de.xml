@@ -5908,6 +5908,8 @@ s		<Resource tag="BUSCARPALABRASCLAVE">Schlüsselwörter suchen …</Resource>
 		<Resource tag="INICIARPROCESOMEJORA">Verbesserungsprozess starten</Resource>
 		<Resource tag="INFOMEJORA">Es wird ein Verbesserungsprozess erstellt, um die aktuelle Ressource zu ändern. Dadurch wird eine Kopie erstellt und die ursprüngliche Ressource gesperrt, sodass nur diese Kopie gemäß dem vollständigen Workflow geändert werden kann.</Resource>
 		<Resource tag="RECURSOENPROCESODEMEJORA">Diese Ressource befindet sich in einem Verbesserungsprozess. Klicken Sie hier, um dorthin zu gelangen.</Resource>
+		<Resource tag="AVISOESTASENHISTORICOMEJORA">Diese Ressource ist nicht die neueste Version des Verbesserungsprozesses. {a href="@1@"}Ressource im Verbesserungsprozess anzeigen{/a}.</Resource>
+		<Resource tag="AVISOESTASENPROCESOMEJORA">Diese Ressource befindet sich in einem Verbesserungsprozess. {a href="@1@"}Ressource in Verbesserung anzeigen{/a}.</Resource>
 		<Resource tag="AVISOESTASENMEJORA">Diese Ressource befindet sich in einem Verbesserungsprozess. {a href="@1@"}Ursprüngliche Ressource anzeigen{/a}.</Resource>
 		<Resource tag="ERRORINICIARMEJORA">Beim Starten der Verbesserung ist ein Fehler aufgetreten</Resource>
 		<Resource tag="ERRORPERMISOINICIARMEJORA">Sie haben keine Berechtigung, eine Verbesserung zu starten</Resource>

@@ -5907,6 +5907,8 @@
 		<Resource tag="INICIARPROCESOMEJORA">Démarrer le processus d'amélioration</Resource>
 		<Resource tag="INFOMEJORA">Un processus d'amélioration va être créé pour modifier la ressource actuelle. Cela générera une copie en verrouillant la ressource d'origine, de sorte que seule cette copie pourra être modifiée en suivant le flux de travail complet.</Resource>
 		<Resource tag="RECURSOENPROCESODEMEJORA">Cette ressource est en cours d'amélioration. Cliquez pour y accéder.</Resource>
+		<Resource tag="AVISOESTASENHISTORICOMEJORA">Cette ressource n'est pas la dernière version du processus d'amélioration. {a href="@1@"}Voir la ressource en processus d'amélioration{/a}.</Resource>
+		<Resource tag="AVISOESTASENPROCESOMEJORA">Cette ressource est dans un processus d'amélioration. {a href="@1@"}Voir la ressource en amélioration{/a}.</Resource>
 		<Resource tag="AVISOESTASENMEJORA">Cette ressource est dans un processus d'amélioration. {a href="@1@"}Voir la ressource d'origine{/a}.</Resource>
 		<Resource tag="ERRORINICIARMEJORA">Une erreur s'est produite lors du démarrage de l'amélioration</Resource>
 		<Resource tag="ERRORPERMISOINICIARMEJORA">Vous n'avez pas les autorisations pour démarrer une amélioration</Resource>

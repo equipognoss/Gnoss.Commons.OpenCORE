@@ -639,19 +639,22 @@ namespace Es.Riam.Gnoss.Web.Controles.Documentacion
         /// </summary>
         /// <param name="pDocumentoOriginal">Documento semántico original</param>
         /// <param name="pDocumentoNuevo">Documento semántico nuevo</param>
-        public bool CrearNuevaVersionDocumentoRDF(Documento pDocumentoOriginal, Documento pDocumentoNuevo, IAvailableServices pAvailableServices)
+        public bool CrearNuevaVersionDocumentoRDF(Documento pDocumentoOriginal, Documento pDocumentoNuevo, IAvailableServices pAvailableServices, bool pEsMejora = false)
         {
             try
             {
-				string rdf = GenerarNuevoRdfYFicheros(pDocumentoOriginal, pDocumentoNuevo);		
-                ActualizarDatosVirtuoso(pDocumentoOriginal, pDocumentoNuevo, rdf, pAvailableServices);
+                string rdf = GenerarNuevoRdfYFicheros(pDocumentoOriginal, pDocumentoNuevo);
+                if (!pEsMejora)
+                {
+                    ActualizarDatosVirtuoso(pDocumentoOriginal, pDocumentoNuevo, rdf, pAvailableServices);
+                }
                 return true;
-			}
+            }   
             catch (Exception ex)
             {
                 mLoggingService.GuardarLogError(ex, mlogger);
                 return false;
-            }            			
+            }
         }
 
         public void EliminarVersionDocumentoRDF(Guid pDocumentoID)

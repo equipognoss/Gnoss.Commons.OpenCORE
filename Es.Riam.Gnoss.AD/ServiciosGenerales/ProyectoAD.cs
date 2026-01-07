@@ -20,8 +20,10 @@ using Es.Riam.Gnoss.Web.MVC.Models;
 using Es.Riam.Gnoss.Web.MVC.Models.Administracion;
 using Es.Riam.Gnoss.Web.MVC.Models.ViewModels;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
+using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.Exchange.WebServices.Data;
+using Microsoft.Extensions.Logging;
+using Oracle.EntityFrameworkCore.Infrastructure.Internal;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -1921,16 +1923,16 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
                 Proyecto = objeto.Proyecto,
                 OntologiaProyecto = objeto.OntologiaProyecto,
                 Documento = documento
-            }).Where(x => !string.IsNullOrEmpty(x.OntologiaProyecto.NombreCortoOnt) && x.Documento.Eliminado.Equals(false) && x.Documento.Tipo == 7).ToList();
+            }).Where(x => !string.IsNullOrEmpty(x.OntologiaProyecto.NombreCortoOnt) && !x.Documento.Eliminado && x.Documento.Tipo == 7);            
 
             if (pProyectoID.HasValue)
             {
-                resultadoConsulta = resultadoConsulta.Where(objeto => objeto.Proyecto.ProyectoID.Equals(pProyectoID.Value)).ToList();
+                resultadoConsulta = resultadoConsulta.Where(objeto => objeto.Proyecto.ProyectoID.Equals(pProyectoID.Value));
 
             }
             else if (!string.IsNullOrEmpty(pNombreCortoProyecto))
             {
-                resultadoConsulta = resultadoConsulta.Where(objeto => objeto.Proyecto.NombreCorto.Equals(pNombreCortoProyecto)).ToList();
+                resultadoConsulta = resultadoConsulta.Where(objeto => objeto.Proyecto.NombreCorto.Equals(pNombreCortoProyecto));
             }
 
             var resultadoConsulta2 = resultadoConsulta.Select(objeto => new { objeto.Proyecto.NombreCorto, objeto.Documento.DocumentoID, objeto.OntologiaProyecto.NombreCortoOnt }).ToList();

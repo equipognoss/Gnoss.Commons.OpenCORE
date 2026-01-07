@@ -5905,6 +5905,8 @@
 		<Resource tag="INICIARPROCESOMEJORA">Hobekuntza prozesua hasi</Resource>
 		<Resource tag="INFOMEJORA">Hobekuntza prozesu bat sortuko da uneko baliabidea aldatzeko. Honek kopia bat sortuko du jatorrizko baliabidea blokeatuz, beraz kopia hori soilik alda daiteke lan-fluxu osoa jarraitu ondoren.</Resource>
 		<Resource tag="RECURSOENPROCESODEMEJORA">Baliabide hau hobekuntza prozesuan dago. Egin klik joateko.</Resource>
+		<Resource tag="AVISOESTASENHISTORICOMEJORA">Baliabide hau ez da hobekuntza prozesuaren azken bertsioa. {a href="@1@"}Ikusi hobekuntza prozesuko baliabidea{/a}.</Resource>
+		<Resource tag="AVISOESTASENPROCESOMEJORA">Baliabide hau hobekuntza prozesu batean dago. {a href="@1@"}Ikusi hobekuntzan dagoen baliabidea{/a}.</Resource>
 		<Resource tag="AVISOESTASENMEJORA">Baliabide hau hobekuntza prozesu batean dago. {a href="@1@"}Ikusi jatorrizko baliabidea{/a}.</Resource>
 		<Resource tag="ERRORINICIARMEJORA">Errore bat gertatu da hobekuntza hastean</Resource>
 		<Resource tag="ERRORPERMISOINICIARMEJORA">Ez duzu baimenik hobekuntza bat hasteko</Resource>

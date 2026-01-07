@@ -127,7 +127,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Models
     /// Modelo de un recurso
     /// </summary>
     [Serializable]
-    public partial class ResourceModel : ObjetoBuscadorModel
+    public partial class ResourceModel : ObjetoBuscadorModel, ICloneable
     {
         public const int LastCacheVersion = 1;
 
@@ -1009,6 +1009,11 @@ namespace Es.Riam.Gnoss.Web.MVC.Models
 
         public EstadoVersion VersionState { get; set; }
         public bool IsInProcessOfImprovement { get; set; }
+
+        public object Clone()
+        {
+            return MemberwiseClone();
+        }
     }
 
     /// <summary>

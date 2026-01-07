@@ -1530,7 +1530,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
                     {
                         caracteristica.Append("FO,");
                     }
-                    else if (pPropiedad.CardinalidadMenorOIgualUno)
+                    else if (pPropiedad.CardinalidadMaxima == 1 && pPropiedad.CardinalidadMinima == 1)
                     {
                         caracteristica.Append("CO,");
                     }

@@ -1832,6 +1832,31 @@ namespace Es.Riam.Gnoss.Logica.Documentacion
         {
             return DocumentacionAD.ObtenerUltimaVersionDocumento(pDocumentoID);
         }
+        /// <summary>
+        /// Obtiene la version pendiente de un documento id dado una mejora
+        /// </summary>
+        /// <param name="pDocumentoID">Documento ID original</param>
+        /// <param name="pMejoraID">Mejora ID activa</param>
+        /// <returns></returns>
+        public Documento ObtenerUltimaVersionDocumentoMejora(Guid pDocumentoID, Guid pMejoraID)
+        {
+            return DocumentacionAD.ObtenerUltimaVersionDocumentoMejora(pDocumentoID, pMejoraID);
+        }
+
+        public bool ComprobarDocumentoTieneMejoraPendiente(Guid pDocumentoID, Guid pMejoraID)
+        {
+            return DocumentacionAD.ComprobarDocumentoTieneMejoraPendiente(pDocumentoID, pMejoraID);
+        }
+
+        public bool ComprobarDocumentoTieneMejoraActiva(Guid pDocumentoID)
+        {
+            return DocumentacionAD.ComprobarDocumentoTieneMejoraActiva(pDocumentoID);
+        }
+
+        public bool ComprobarDocumentoTieneVersiones(Guid pDocumentoID)
+        {
+            return DocumentacionAD.ComprobarDocumentoTieneVersiones(pDocumentoID);
+        }
 
         /// <summary>
         /// Actualiza el número de descargas y consultas de un documento.

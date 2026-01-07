@@ -7038,6 +7038,8 @@
 		<Resource tag="INICIAR">Iniciar mejora</Resource>
 		<Resource tag="INFOMEJORA">Se va a crear un proceso de mejora para modificar el recurso actual. Esto generará una copia bloqueando el recurso original, por lo que solo se podrá modicarse dicha copia siguiendo el flujo de trabajo completo.</Resource>
 		<Resource tag="RECURSOENPROCESODEMEJORA">Este recurso se encuentra en proceso de mejora. Haga click para ir.</Resource>
+		<Resource tag="AVISOESTASENHISTORICOMEJORA">Este recurso no es la última version del proceso de mejora. {a href="@1@"}Ver recurso en proceso de mejora{/a}.</Resource>
+		<Resource tag="AVISOESTASENPROCESOMEJORA">Este recurso se encuentra en un proceso de mejora. {a href="@1@"}Ver recurso en mejora{/a}.</Resource>
 		<Resource tag="AVISOESTASENMEJORA">Este recurso se encuentra en un proceso de mejora. {a href="@1@"}Ver recurso original{/a}.</Resource>
 		<Resource tag="ACCIONESMEJORA">Acciones mejora</Resource>
 		<Resource tag="APLICARMEJORA">Aplicar mejora</Resource>

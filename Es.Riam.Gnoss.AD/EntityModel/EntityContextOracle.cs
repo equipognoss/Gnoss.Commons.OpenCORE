@@ -24,11 +24,6 @@ using Es.Riam.Gnoss.Util.General;
 using Es.Riam.Util;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Es.Riam.Gnoss.AD.EntityModel
 {
@@ -42,8 +37,8 @@ namespace Es.Riam.Gnoss.AD.EntityModel
 
         public EntityContextOracle(UtilPeticion utilPeticion, LoggingService loggingService, ILogger<EntityContextOracle> logger, ILoggerFactory loggerFactory, DbContextOptions<EntityContext> dbContextOptions, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication, string pDefaultSchema = null, bool pCache = false)
             : base(utilPeticion, loggingService, loggerFactory, dbContextOptions, configService, servicesUtilVirtuosoAndReplication, pDefaultSchema, pCache)
-        {
-
+        {            
+            
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)

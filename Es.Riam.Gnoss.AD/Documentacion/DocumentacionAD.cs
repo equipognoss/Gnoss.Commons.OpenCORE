@@ -7702,6 +7702,31 @@ namespace Es.Riam.Gnoss.AD.Documentacion
                 VersionDocumento = version
             }).Where(item => item.Documento.UltimaVersion && item.VersionDocumento.DocumentoOriginalID.Equals(pDocumentoID)).Select(item => item.Documento).FirstOrDefault();      
         }
+        /// <summary>
+        /// Devuelve la version mas alta de una mejora activa dado un documento id original
+        /// </summary>
+        /// <param name="pDocumentoID"></param>
+        /// <param name="pMejoraID"></param>
+        /// <returns></returns>
+        public Documento ObtenerUltimaVersionDocumentoMejora(Guid pDocumentoID, Guid pMejoraID)
+        {
+            return mEntityContext.VersionDocumento.JoinDocumento().Where(item => item.VersionDocumento.DocumentoOriginalID.Equals(pDocumentoID) && item.VersionDocumento.EsMejora && item.VersionDocumento.MejoraID.Equals(pMejoraID) && item.VersionDocumento.EstadoVersion == (short)EstadoVersion.Pendiente).Select(item => item.Documento).FirstOrDefault();
+        }
+
+        public bool ComprobarDocumentoTieneMejoraPendiente(Guid pDocumentoID, Guid pMejoraID)
+        {
+            return mEntityContext.VersionDocumento.JoinDocumento().Any(item => item.VersionDocumento.DocumentoOriginalID.Equals(pDocumentoID) && item.VersionDocumento.EsMejora && item.VersionDocumento.MejoraID.Equals(pMejoraID) && item.VersionDocumento.EstadoVersion == (short)EstadoVersion.Pendiente);
+        }
+
+        public bool ComprobarDocumentoTieneMejoraActiva(Guid pDocumentoID)
+        {
+            return mEntityContext.VersionDocumento.JoinDocumento().Any(item => item.VersionDocumento.DocumentoOriginalID.Equals(pDocumentoID) && item.VersionDocumento.EsMejora &&  item.VersionDocumento.EstadoVersion == (short)EstadoVersion.Pendiente);
+        }
+
+        public bool ComprobarDocumentoTieneVersiones(Guid pDocumentoID)
+        {
+            return mEntityContext.VersionDocumento.Any(item => item.DocumentoOriginalID.Equals(pDocumentoID));
+        }
 
         /// <summary>
         /// Obtiene la fecha de edición de un recurso, si está bloqueado

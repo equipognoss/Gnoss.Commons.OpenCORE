@@ -5886,6 +5886,8 @@
 		<Resource tag="INICIARPROCESOMEJORA">Iniciar procés de millora</Resource>
 		<Resource tag="INFOMEJORA">Es crearà un procés de millora per modificar el recurs actual. Això generarà una còpia bloquejant el recurs original, de manera que només es podrà modificar aquesta còpia seguint el flux de treball complet.</Resource>
 		<Resource tag="RECURSOENPROCESODEMEJORA">Aquest recurs es troba en procés de millora. Feu clic per anar-hi.</Resource>
+		<Resource tag="AVISOESTASENHISTORICOMEJORA">Aquest recurs no és l'última versió del procés de millora. {a href="@1@"}Veure recurs en procés de millora{/a}.</Resource>
+		<Resource tag="AVISOESTASENPROCESOMEJORA">Aquest recurs es troba en un procés de millora. {a href="@1@"}Veure recurs en millora{/a}.</Resource>
 		<Resource tag="AVISOESTASENMEJORA">Aquest recurs es troba en un procés de millora. {a href="@1@"}Veure recurs original{/a}.</Resource>
 		<Resource tag="ERRORINICIARMEJORA">S'ha produït un error en iniciar la millora</Resource>
 		<Resource tag="ERRORPERMISOINICIARMEJORA">No teniu permisos per iniciar una millora</Resource>
