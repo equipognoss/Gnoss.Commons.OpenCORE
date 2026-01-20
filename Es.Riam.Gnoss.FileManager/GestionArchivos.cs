@@ -72,12 +72,12 @@ namespace Es.Riam.Gnoss.FileManager
 
                         if (pArchivoEncriptado)
                         {
-                            contenido = _utilArchivos.DesencriptarArchivo(contenido);                            
+                            contenido = _utilArchivos.DesencriptarArchivo(contenido);
                         }
                     }
                     catch (Exception ex)
                     {
-                        _loggingService.GuardarLogError(ex, $"Error al descargar el fichero {pNombreArchivo} en {pRuta}. Ruta ficheros: {RutaFicheros}. Ruta completa: {ruta}",mlogger);
+                        _loggingService.GuardarLogError(ex, $"Error al descargar el fichero {pNombreArchivo} en {pRuta}. Ruta ficheros: {RutaFicheros}. Ruta completa: {ruta}", mlogger);
                         throw;
                     }
                     finally
@@ -106,7 +106,7 @@ namespace Es.Riam.Gnoss.FileManager
 
             if (contenido == null || contenido.Length == 0)
             {
-                _loggingService.GuardarLogError($"DescargarFichero: No se ha encontrado el fichero {pNombreArchivo} en {pRuta}. Ruta ficheros: {RutaFicheros}. Ruta completa: {ruta}",mlogger);
+                _loggingService.GuardarLogError($"DescargarFichero: No se ha encontrado el fichero {pNombreArchivo} en {pRuta}. Ruta ficheros: {RutaFicheros}. Ruta completa: {ruta}", mlogger);
             }
 
             //Envío el contenido.
@@ -159,7 +159,7 @@ namespace Es.Riam.Gnoss.FileManager
                             }
                             catch (Exception ex)
                             {
-                                _loggingService.GuardarLogError($"Ha ocurrido un error en el intento de desencriptado: {ex.Message}",mlogger);
+                                _loggingService.GuardarLogError($"Ha ocurrido un error en el intento de desencriptado: {ex.Message}", mlogger);
                                 throw;
                             }
                         }
@@ -176,7 +176,7 @@ namespace Es.Riam.Gnoss.FileManager
                             fileStreamAux.Close();
                         }
                         fileStream = new FileStream(ruta, FileMode.Open, FileAccess.Read);
-                        
+
                     }
 
                     if (!pArchivoEncriptado)
@@ -307,7 +307,7 @@ namespace Es.Riam.Gnoss.FileManager
 
             if (contenido == null || contenido.Length == 0)
             {
-                _loggingService.GuardarLogError($"DescargarFicheroSinEncriptar: No se ha encontrado el fichero {pNombreArchivo} en {pRuta}",mlogger);
+                _loggingService.GuardarLogError($"DescargarFicheroSinEncriptar: No se ha encontrado el fichero {pNombreArchivo} en {pRuta}", mlogger);
             }
 
             //Envío el contenido.
@@ -737,7 +737,7 @@ namespace Es.Riam.Gnoss.FileManager
                 fileInfoModel.create_date = fichero.CreationTime;
                 fileInfoModel.file_name = fichero.Name;
                 fileInfoModel.size = fichero.Length;
-                if(fichero.Extension == ".png" || fichero.Extension == ".jpg" || fichero.Extension == ".gif")
+                if (fichero.Extension == ".png" || fichero.Extension == ".jpg" || fichero.Extension == ".gif")
                 {
                     byte[] imageBytes = File.ReadAllBytes(fichero.FullName);
                     SixLabors.ImageSharp.Image image = UtilImages.ConvertirArrayBytesEnImagen(imageBytes);
@@ -831,6 +831,17 @@ namespace Es.Riam.Gnoss.FileManager
             }
         }
 
+        /// <summary>
+        /// Se encarga de copiar o mover un archivo de la ruta origen indicada a la ruta destino indicada.
+        /// En caso de que el fichero se pase sin extensión, se copiarán todos los ficheros del directorio origen al directorio destino.
+        /// </summary>
+        /// <param name="pRutaOrigen">Ruta donde se ubica el fichero a copiar</param>
+        /// <param name="pRutaDestino">Ruta donde queremos copiar el fichero</param>
+        /// <param name="pNombreArchivoOrigen">Nombre del archivo, puede llevar la extensión</param>
+        /// <param name="pCopiar">Si queremos copiarlo, en caso de ser false, se moverá</param>
+        /// <param name="pExtension">Extensión del archivo. Puede no tener porque está en el nombre o porque se quieren copiar todos los archivos que comiencen por ese texto</param>
+        /// <param name="pNombreArchivoDestino">Nombre que se le quiere dar al archivo en el destino, si no se indica se le pondrá el nombre del origen</param>
+        /// <param name="pSobreEscribir">Si se quiere sobreescribir los archivos en caso de haberlos en el destino</param>
         public void CopiarArchivo(string pRutaOrigen, string pRutaDestino, string pNombreArchivoOrigen, bool pCopiar, string pExtension = null, string pNombreArchivoDestino = null, bool pSobreEscribir = false)
         {
             if (string.IsNullOrEmpty(pNombreArchivoDestino))
@@ -852,22 +863,53 @@ namespace Es.Riam.Gnoss.FileManager
 
             if (string.IsNullOrEmpty(AzureStorageConnectionString))
             {
-                pRutaOrigen = Path.Combine(RutaFicheros, pRutaOrigen, pNombreArchivoOrigen);
-                pRutaDestino = Path.Combine(RutaFicheros, pRutaDestino, pNombreArchivoDestino);
+                pRutaOrigen = Path.Combine(RutaFicheros, pRutaOrigen);
+                pRutaDestino = Path.Combine(RutaFicheros, pRutaDestino);
 
-                FileInfo fichOrigen = new FileInfo(pRutaOrigen);
-                if (pCopiar)
-                {//Copiar:
-                    fichOrigen.CopyTo(pRutaDestino, pSobreEscribir);
-                }
-                else
-                {//Cortar:
-                    fichOrigen.MoveTo(pRutaDestino, pSobreEscribir);
-                }
+                if (Directory.Exists(pRutaOrigen))
+                {
+                    if (!Directory.Exists(pRutaDestino))
+                    {
+                        Directory.CreateDirectory(pRutaDestino);
+                    }
+
+                    if (string.IsNullOrEmpty(Path.GetExtension(pNombreArchivoOrigen)))
+                    {
+                        string[] filesNames = Directory.GetFiles(pRutaOrigen).Where(item => Path.GetFileName(item).StartsWith(pNombreArchivoOrigen)).ToArray();
+
+                        foreach(string fileName in filesNames)
+                        {
+                            string rutaOrigen = Path.Combine(pRutaOrigen, Path.GetFileName(fileName));
+                            string rutaDestino = Path.Combine(pRutaDestino, Path.GetFileName(fileName));
+
+                            CopiarMoverArchivo(rutaOrigen, rutaDestino, pCopiar, pSobreEscribir);
+                        }
+                    }
+                    else
+                    {
+                        pRutaOrigen = Path.Combine(pRutaOrigen, pNombreArchivoOrigen);
+                        pRutaDestino = Path.Combine(pRutaDestino, pNombreArchivoDestino);
+
+                        CopiarMoverArchivo(pRutaOrigen, pRutaDestino, pCopiar, pSobreEscribir);
+                    }  
+                }               
             }
             else
             {
                 //AzureStorageClient.CopiarArchivo(pRutaOrigen, pRutaDestino, pNombreArchivoOrigen, pCopiar, pNombreArchivoDestino);
+            }
+        }
+
+        private void CopiarMoverArchivo(string pRutaArchivoOrigen, string pRutaArchivoDestino, bool pCopiar, bool pSobreEscribir = false)
+        {
+            FileInfo fichOrigen = new FileInfo(pRutaArchivoOrigen);
+            if (pCopiar)
+            {//Copiar:
+                fichOrigen.CopyTo(pRutaArchivoDestino, pSobreEscribir);
+            }
+            else
+            {//Cortar:
+                fichOrigen.MoveTo(pRutaArchivoDestino, pSobreEscribir);
             }
         }
 
@@ -884,7 +926,7 @@ namespace Es.Riam.Gnoss.FileManager
 
             FileInfo fichOrigen = new FileInfo(rutaOrigen);
             fichOrigen.MoveTo(rutaDestino, true);
-        }        
+        }
 
         public List<string> ObtenerFicherosDeDirectorioRecurso(string pPath)
         {
@@ -928,14 +970,14 @@ namespace Es.Riam.Gnoss.FileManager
         {
             string rutaOrigen = Path.Combine(pRutaBase, pDirectorioOrigen);
             string rutaDestino = Path.Combine(pRutaBaseTemporal, rutaOrigen);
-            
+
             Directory.Move(rutaOrigen, rutaDestino);
         }
 
         public bool EsFicheroValido(string file, List<string> validResourceFiles)
         {
             string ficheroServidor = file.Substring(0, file.LastIndexOf('.'));
-            foreach (string fich in validResourceFiles) 
+            foreach (string fich in validResourceFiles)
             {
                 string ficheroUsadoEnRecurso = fich.Substring(0, fich.LastIndexOf('.'));
                 if (ficheroServidor.Contains(ficheroUsadoEnRecurso))

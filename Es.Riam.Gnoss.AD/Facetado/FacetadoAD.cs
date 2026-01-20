@@ -2566,8 +2566,9 @@ namespace Es.Riam.Gnoss.AD.Facetado
                     {
                         queryAux = GetPaginatedQueryFromQuery(query, iterator, pProyectoID);
                     }
-
-                    LeerDeVirtuoso(queryAux, pClaveFaceta, pFacetadoDS, pProyectoID, pUsarHilos);
+                    FacetadoDS dataSetTemporal = new FacetadoDS();
+                    LeerDeVirtuoso(queryAux, pClaveFaceta, dataSetTemporal, pProyectoID, pUsarHilos);
+                    pFacetadoDS.Merge(dataSetTemporal);
                     iterator++;
                 }
                 while (pFacetadoDS.Tables[pClaveFaceta].Rows.Count > 0 && pFacetadoDS.Tables[pClaveFaceta].Rows.Count == 10000 * iterator);
@@ -10090,7 +10091,7 @@ namespace Es.Riam.Gnoss.AD.Facetado
                 facetadoDS.Merge(facetadoDSAux);
                 iteraciones++;
             }
-            while (facetadoDS.Tables["Recursos"].Rows.Count % limiteRecursos == 0);
+            while (facetadoDS.Tables["Recursos"].Rows.Count % limiteRecursos == 0 && facetadoDS.Tables["Recursos"].Rows.Count > 0);
             List<string> listaIDsRecursos = new List<string>();
             foreach(string fila in facetadoDS.Tables["Recursos"].Rows.OfType<DataRow>().Select((row) => row[0].ToString()).ToList())
             {
@@ -16147,14 +16148,43 @@ namespace Es.Riam.Gnoss.AD.Facetado
             return mensajesBandeja;
         }
 
-        /// <summary>
-        /// Obtiene los sujetos de una propriedad por su valor.
-        /// </summary>
-        /// <param name="pGrafo">Grafo</param>
-        /// <param name="pPropiedad">Propiedad</param>
-        /// <param name="pListaValores">Valores</param>
-        /// <returns>Lista con los sujetos de una propriedad por su valor</returns>
-        public List<string> ObjeterSujetosDePropiedadPorValor(string pGrafo, string pPropiedad, List<string> pListaValores)
+        public FacetadoDS ObtenerValoresPropiedadIdioma(string pDocumentoID, List<string> pPropiedades, string pIdioma)
+        {
+            FacetadoDS facetadoDS = new FacetadoDS();
+            if (pPropiedades.Count > 0)
+            {
+                string entidad = $"{mUrlIntranet}{pDocumentoID.ToLower()}";
+                string query = $"SPARQL SELECT ?s ?p ?o WHERE " +
+                    $"{{ ?entidad <http://gnoss/hasEntidad> ?s. " +
+                    $"?s ?p ?o " +
+                    $"filter(?p IN (<{string.Join(">,<", pPropiedades)}>) and " +
+                    $"lang(?o)='{pIdioma}' and " +
+                    $"?entidad = <{entidad}>)}}";
+                LeerDeVirtuoso(query, "propiedades", facetadoDS, "");
+            }
+            return facetadoDS;
+        }
+
+        public void EliminarTriplesIdiomaPropiedad(string pNombreGrafo, string pDocumentoID, List<string> pPropiedades, List<string> pIdioma)
+        {
+			string entidad = $"{mUrlIntranet}{pDocumentoID.ToLower()}";
+			string query = $"SPARQL delete from graph {ObtenerUrlGrafo(pNombreGrafo)} {{?s ?p ?o}} from {ObtenerUrlGrafo(pNombreGrafo)} WHERE " +
+					$"{{ ?entidad <http://gnoss/hasEntidad> ?s. " +
+					$"?s ?p ?o " +
+					$"filter(?p IN (<{string.Join(">,<", pPropiedades)}>) and " +
+					$"lang(?o) IN ('{string.Join("','", pIdioma)}') and " +
+					$"?entidad = <{entidad}>)}}";
+            ActualizarVirtuoso(query, pNombreGrafo);
+		}
+
+		/// <summary>
+		/// Obtiene los sujetos de una propriedad por su valor.
+		/// </summary>
+		/// <param name="pGrafo">Grafo</param>
+		/// <param name="pPropiedad">Propiedad</param>
+		/// <param name="pListaValores">Valores</param>
+		/// <returns>Lista con los sujetos de una propriedad por su valor</returns>
+		public List<string> ObjeterSujetosDePropiedadPorValor(string pGrafo, string pPropiedad, List<string> pListaValores)
         {
             FacetadoDS facetadoDS = new FacetadoDS();
             string query = NamespacesVirtuosoLectura;
@@ -16205,6 +16235,8 @@ namespace Es.Riam.Gnoss.AD.Facetado
 
             return sujetos;
         }
+
+        
 
         #endregion
 

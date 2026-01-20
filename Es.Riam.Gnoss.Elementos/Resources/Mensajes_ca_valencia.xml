@@ -1,0 +1,279 @@
+﻿<correos>
+	<mensajes>
+		<mensaje id="0">
+			<asunto>Modificacions al dafo '{#NombreDafo#}'</asunto>
+			<texto>{p}Hola {#NombrePersona#},{/p}{p}el dafo '{#NombreDafo#}' en el qual participes compta amb una novetat que pot ser del teu interés.{/p}{p}El factor:{/br} {#Texto#} {/br} s'ha modificat i el seu nou contingut és: {/br} {#Texto2#} {/br}.{/p}{p}Si ho desitges, pots accedir al {a href="{#UrlEnlace#}"}dafo{/a} i votar, comentar o afegir factors.{/p}{p}Gaudeix de {#NombreEcosistema#}; nosaltres innovem amb tu.{/p}{p}L'Equip de {#NombreEcosistema#}{/p}</texto>
+		</mensaje>
+		<mensaje id="1">
+			<asunto>Canvis al dafo '{#NombreDafo#}'</asunto>
+			<texto>{p}Hola {#NombrePersona#},{/p}{p}el dafo '{#NombreDafo#}' en el qual participes compta amb una novetat que pot ser del teu interés.{/p}{p}Els editors han determinat que el factor: {/br} {#Texto#} {/br} siga eliminat.{/p}{p}Si ho desitges, pots accedir a l'{a href="{#UrlEnlace#}"}dafo{/a} i votar, comentar o afegir factors.{/p}{p}Gaudeix de {#NombreEcosistema#}; nosaltres innovem amb tu.{/p}{p}L'Equip de {#NombreEcosistema#}{/p}</texto>
+		</mensaje>
+		<mensaje id="2">
+			<asunto>Invitació al dafo '{#NombreDafo#}' de {#NombreEcosistema#}</asunto>
+			<texto>{p}Hola {#NombrePersona#},{/p}{p}l'usuari {#NombreRemitente#} de {#NombreEcosistema#} t'ha invitat a participar al dafo '{#NombreDafo#}' de la comunitat '{#NombreProyecto#}'. Per a això, has de registrar-te a {#NombreEcosistema#} amb {a href="{#UrlEnlace#}"}aquesta invitació{/a}.{/p}{p}{#Texto#}{/p}{p}Gràcies.{/p}{p}Gaudeix de {#NombreEcosistema#}; nosaltres innovem amb tu.{/p}{p}L'Equip de {#NombreEcosistema#}{/p}</texto>
+		</mensaje>
+		<mensaje id="3">
+			<asunto>Invitació al dafo '{#NombreDafo#}' de {#NombreEcosistema#}</asunto>
+			<texto>{p}Hola {#NombrePersona#},{/p}{p}l'usuari {#NombreRemitente#} de {#NombreEcosistema#} t'ha invitat a participar al dafo '{#NombreDafo#}' de la comunitat '{#NombreProyecto#}'. Si vols votar, comentar i afegir factors en aquest dafo, {a href="{#UrlEnlace#}"}accepta aquesta invitació{/a}.{/p}{p}{#Texto#}{/p}{p}Gràcies.{/p}{p}Gaudeix de {#NombreEcosistema#}; nosaltres innovem amb tu.{/p}{p}L'Equip de {#NombreEcosistema#}{/p}</texto>
+		</mensaje>
+		<mensaje id="4">
+			<asunto>Invitació al dafo '{#NombreDafo#}' de {#NombreEcosistema#}</asunto>
+			<texto>{p}Hola {#NombrePersona#},{/p}{p}l'usuari {#NombreRemitente#} de {#NombreEcosistema#} t'ha invitat a participar al dafo '{a href="{#UrlEnlace#}"}{#NombreDafo#}{/a}' de la comunitat '{#NombreProyecto#}'. Si vols votar, comentar i afegir factors en aquest dafo, accepta aquesta invitació.{/p}{p}{#Texto#}{/p}{p}Gràcies.{/p}{p}Gaudeix de {#NombreEcosistema#}; nosaltres innovem amb tu.{/p}{p}L'Equip de {#NombreEcosistema#}{/p}</texto>
+		</mensaje>
+		<mensaje id="5">
+			<asunto>El dafo '{#NombreDafo#}' de {#NombreEcosistema#} té un nou factor</asunto>
+			<texto>{p}Hola {#NombrePersona#},{/p}{p}el dafo '{a href="{#UrlEnlace#}"}{#NombreDafo#}{/a}' en el qual participes compta amb un nou factor que pot ser del teu interés.{/p}{p}El seu contingut és el següent: '{#Texto#}'.{/p}{p}Si ho desitges, pots accedir al dafo i votar, comentar o afegir factors.{/p}{p}Gaudeix de {#NombreEcosistema#}; nosaltres innovem amb tu.{/p}{p}L'Equip de {#NombreEcosistema#}{/p}</texto>
+		</mensaje>
+		<mensaje id="6">
+			<asunto>La fase de votació del dafo '{#NombreDafo#}' de {#NombreEcosistema#} ha finalitzat</asunto>
+			<texto>{p}Hola {#NombrePersona#},{/p}{p}el període de votació del dafo '{a href="{#UrlEnlace#}"}{#NombreDafo#}{/a}' en el qual participes ha arribat a la seua fi. La fase en la qual es procedeix a la unificació dels factors acaba de començar. Quan els editors del dafo hagen conclós la seua anàlisi, rebràs la notificació amb els resultats de '{#NombreDafo#}'.{/p}{p}Gràcies per participar-hi.{/p}{p}Gaudeix de {#NombreEcosistema#}; nosaltres innovem amb tu.{/p}{p}L'Equip de {#NombreEcosistema#}{/p}</texto>
+		</mensaje>
+		<mensaje id="7">
+			<asunto>El dafo '{#NombreDafo#}' de {#NombreEcosistema#} en el qual participes ha finalitzat</asunto>
+			<texto>{p}Hola {#NombrePersona#},{/p}{p}el dafo '{#NombreDafo#}' de la comunitat '{#NombreProyecto#}' ha arribat a la seua fi.{/p}{p}Si ho desitges, pots {a href="{#UrlEnlace#}"}accedir a les seues conclusions{/a}.{/p}{p}Gràcies.{/p}{p}Gaudeix de {#NombreEcosistema#}; nosaltres innovem amb tu.{/p}{p}L'Equip de {#NombreEcosistema#}{/p}</texto>
+		</mensaje>
+		<mensaje id="8">
+			<asunto>Finalitza el termini per a participar al dafo '{#NombreDafo#}' de {#NombreEcosistema#}</asunto>
+			<texto>{p}Hola {#NombrePersona#},{/p}{p}el dafo '{a href="{#UrlEnlace#}"}{#NombreDafo#}{/a}' de la comunitat '{#NombreProyecto#}' tanca les seues votacions en deu dies. Si vols participar-hi, encara tens l'oportunitat de votar i realitzar els comentaris que consideres oportuns.{/p}{p}Gràcies per la teua col·laboració{/p}{p}L'Equip de {#NombreEcosistema#}{/p}</texto>
+		</mensaje>
+		<mensaje id="9">
+			<asunto>Finalitza el termini per a participar al dafo '{#NombreDafo#}' de {#NombreEcosistema#}</asunto>
+			<texto>{p}Hola {#NombrePersona#},{/p}{p}el dafo '{a href="{#UrlEnlace#}"}{#NombreDafo#}{/a}' de la comunitat '{#NombreProyecto#}' tanca les seues votacions demà. Si vols participar-hi, encara tens l'oportunitat de votar i realitzar els comentaris que consideres oportuns.{/p}{p}Gràcies per la teua col·laboració{/p}{p}L'Equip de {#NombreEcosistema#}{/p}</texto>
+		</mensaje>
+
+		<mensaje id="20">
+			<asunto>Sol·licitud d'accés a la comunitat "{#NombreProyecto#}"</asunto>
+			<texto>{p}La teua sol·licitud d'accés a la comunitat "{#NombreProyecto#}" ha estat enviada.{/p}{p}En breu, rebràs un altre correu electrònic indicant-te la resolució de la mateixa.{/p}</texto>
+		</mensaje>
+		<mensaje id="21">
+			<asunto>Sol·licitud per a l'accés a la comunitat {#NombreProyecto#} acceptada</asunto>
+			<texto>{p}Benvolgut {b}{#Login#}{/b},{/p}{p}Benvingut a la comunitat {#NombreProyecto#}! La teua sol·licitud per a l'ingrés a la comunitat ha estat ACCEPTADA.{/p}{p}T'agraïm el teu interés pels nostres servicis i voluntat de participar en aquesta comunitat en línia.{/p}</texto>
+		</mensaje>
+		<mensaje id="22">
+			<asunto>Sol·licitud per a l'accés al projecte "{#NombreProyecto#}" rebutjada</asunto>
+			<texto>{p}La teua sol·licitud per a l'accés al projecte "{#NombreProyecto#}" ha estat REBUTJADA.{/p}{p}{#Notas#}{/p}</texto>
+		</mensaje>
+		<mensaje id="23">
+			<asunto>Nova sol·licitud per a l'accés al projecte "{#NombreProyecto#}" enviada</asunto>
+			<texto>{p}L'usuari "{#Login#}" ha demanat permís per a l'accés al projecte "{#NombreProyecto#}".{/p}</texto>
+		</mensaje>
+		<mensaje id="24">
+			<asunto>Benvingut a {#NombreEcosistema#}. Necessitem verificar la teua adreça de correu electrònic</asunto>
+			<texto>{p}Hola, {#NombrePersona#}, t'hem enviat aquest correu per a verificar la teua adreça de correu electrònic. Si us plau, segueix aquest enllaç per a completar el teu registre. {a href="{#UrlEnlace#}" target="_blank"}Verificar correu electrònic{/a}.{/p}</texto>
+		</mensaje>
+		<mensaje id="26">
+			<asunto>Benvingut a {#NombreEcosistema#}. Necessitem verificar la teua adreça de correu electrònic</asunto>
+			<texto>{p}Hola, {#NombrePersona#}, t'hem enviat aquest correu per a verificar la teua adreça de correu electrònic. Si us plau, segueix aquest enllaç per a completar el teu registre. {a href="{#UrlEnlace#}" target="_blank"}Verificar correu electrònic{/a}.{/p}</texto>
+		</mensaje>
+		<mensaje id="27">
+			<asunto>Activació del compte de {#NombrePersona#} en {#NombreEcosistema#}</asunto>
+			<texto>{p}Hola,{/p}{p}{#NombrePersona#} ha estat invitat a una classe de {#NombreProyecto#} creada per {#IdentidadRemitente#}. Els alumnes menors de 14 anys necessiten que el seu pare, mare o tutor legal active el seu compte de Didactalia. Per favor, segueix el següent enllaç que et portarà a una pàgina amb instruccions per a {a href="{#UrlEnlace#}" target="_blank"}activar-lo{/a}.{/p}{p}Si tens cap dubte, contacta amb nosaltres a través de didactalia@didactalia.net{/p}{p}L'equip de Didactalia{/p}</texto>
+		</mensaje>
+		<mensaje id="30">
+			<asunto>{#NombreRemitente#} vol sol·licitar una comunitat en {#NombreEcosistema#}</asunto>
+			<texto>{p}{a href="{@UrlIntragnoss@}{#IdentidadRemitente#}"}{#NombreRemitente#}{/a} vol sol·licitar una comunitat en {#NombreEcosistema#}{#Texto#}</texto>
+		</mensaje>
+		<mensaje id="31">
+			<asunto>La teua sol·licitud de comunitat en {#NombreEcosistema#} ha estat acceptada</asunto>
+			<texto>{p}Hola {#NombrePersona#},{/p}{p}tenim bones notícies.{/p}{p}Hem donat d'alta a {#NombreEcosistema#} la comunitat {#NombreProyecto#} que ens vas sol·licitar. Ja pots accedir-hi a través de la url següent: {#UrlEnlace#}.{/p}{p}En aquests moments, la comunitat està 'En definició', ja que abans de publicar-la a {#NombreEcosistema#} és necessari que omplis una sèrie de dades: categories de l'índex de la comunitat, etiquetes i categories de la comunitat a l'índex general.{/p}{p}Una vegada omplida aquesta informació podràs 'obrir' la comunitat; aquesta es mostrarà al menú de comunitats de {#NombreEcosistema#} (excepte si és una comunitat reservada). En aquest moment, els usuaris de {#NombreEcosistema#} ja es podran fer membres de la comunitat i utilitzar les seues eines de creació de nous continguts.{/p}{p}Estàs preparat per a administrar la teua comunitat? N'estem segurs, però permet-nos un suggeriment: com a responsable del teu espai virtual ens agradaria que vetlares per la integritat i consistència dels seus continguts. En aquest sentit, els recursos tenen autor/es, data i lloc de publicació, etc. Creiem que és necessari que aquestes dades vagen tant en la descripció com a les etiquetes del recurs. Tu ho decideixes.{/p}{p}Potser en poc temps sigues la principal referència de les comunitats que promous. Això suposa una comunitat d'usuaris que et segueixen amb les teues idees i suggeriments. Sempre que tingues cap dubte, comentari o pregunta ens ho pots consultar. (mail: {a href="mailto:{#CorreoSugerencias#}"}{#CorreoSugerencias#}{/a}).{/p}{p}Gaudeix de {#NombreEcosistema#}; nosaltres innovem amb tu.{/p}{p}L'Equip de {#NombreEcosistema#}.{/p}</texto>
+		</mensaje>
+		<mensaje id="32">
+			<asunto>La teua sol·licitud de comunitat a {#NombreEcosistema#} ha estat rebutjada</asunto>
+			<texto>{p}Hola, {#NombrePersona#}!{/p}{p}La teua sol·licitud de la nova comunitat {#NombreProyecto#} en {#NombreEcosistema#} ha estat rebutjada.{/p}{p}L'equip de {#NombreEcosistema#}.{/p}</texto>
+		</mensaje>
+		<mensaje id="33">
+			<asunto>Benvingut a "{#NombreEcosistema#}". Necessitem verificar la teua adreça de correu electrònic</asunto>
+			<texto>{p}Hola, professor {#NombrePersona#}, t'hem enviat aquest correu per a verificar la teua adreça de correu electrònic. Si us plau, segueix aquest enllaç per a completar el teu registre. {a href="{#UrlEnlace#}" target="_blank"}Verificar correu electrònic{/a}.{/p}</texto>
+		</mensaje>
+		<mensaje id="40">
+			<asunto>{#NombrePersona#} vol invitar-te a {#NombreEcosistema#}</asunto>
+			<texto>{p}{#Notas#}{/p}{p}Per a acceptar aquesta invitació, registrar-te i obtindre el teu compte fes clic en aquest enllaç: {a href="{@UrlIntragnoss@}"}acceptar invitació{/a}{/p}</texto>
+		</mensaje>
+		<mensaje id="41">
+			<asunto>{#NombreRemitente#} vol afegir-te com a contacte</asunto>
+			<texto>{p}Hola, {#NombrePersona#}!{/p}{p}T'he trobat a {#NombreProyecto#} i he pensat que potser podríem beneficiar-nos de compartir informació.</texto>
+		</mensaje>
+		<mensaje id="42">
+			<asunto>Benvingut a la comunitat {#NombreProyecto#}</asunto>
+			<texto>{p}Hola {#NombrePersona#},{/p}{p}T'invitem a participar en {#NombreProyecto#}. Aquesta comunitat et permetrà accedir a través del teu usuari i contrasenya a nombrosos continguts que podràs comentar i compartir.{/p}{p}Per a completar el teu registre és necessari que verifiques el teu correu seguint aquest {a href="{#UrlEnlace#}" target="_blank"}enllaç{/a}.{/p}</texto>
+		</mensaje>
+		<mensaje id="43">
+			<asunto>{#NombreRemitente#} vol invitar-te a la comunitat {#NombreProyecto#}</asunto>
+			<texto>{p}{#Notas#}{/p}</texto>
+		</mensaje>
+		<mensaje id="44">
+			<asunto>{#NombreRemitente#} vol invitar-te a la comunitat {#NombreProyecto#}</asunto>
+			<texto>{p}{#Notas#}{/p}{p}Per a acceptar aquesta invitació fes clic en aquest enllaç: {a href="{#UrlEnlace#}"}acceptar invitació.{/a}{/p}</texto>
+		</mensaje>
+		<mensaje id="45">
+			<asunto>{#NombreOrganizacion#} t'ha invitat a formar part de la seua organització a {#NombreEcosistema#}</asunto>
+			<texto>{p}{#Notas#}{/p}{p}Per a acceptar aquesta invitació fes clic en aquest enllaç: {a href="{@UrlIntragnoss@}/invitaciones"}acceptar aquesta invitació{/a}.{/p}</texto>
+		</mensaje>
+		<mensaje id="46">
+			<asunto>{#NombreOrganizacion#} t'ha invitat a formar part de la seua organització a {#NombreEcosistema#}</asunto>
+			<texto>{p}{#Notas#}{/p}{p}Per a acceptar aquesta invitació fes clic en aquest enllaç: {a href="{@UrlIntragnoss@}/invitaciones"}acceptar aquesta invitació{/a}.{/p}</texto>
+		</mensaje>
+		<mensaje id="47">
+			<asunto>{#NombreOrganizacion#} t'ha invitat a formar part de la seua organització a {#NombreEcosistema#}</asunto>
+			<texto>{p}{#Notas#}{/p}{p}Per a acceptar aquesta invitació fes clic en aquest enllaç: {a href="{#UrlEnlace#}"}acceptar aquesta invitació{/a}.{/p}</texto>
+		</mensaje>
+		<mensaje id="48">
+			<asunto>{#NombreOrganizacion#} t'ha invitat a formar part de la seua organització a {#NombreEcosistema#}</asunto>
+			<texto>{p}{#Notas#}{/p}{p}Per a acceptar aquesta invitació fes clic en aquest enllaç: {a href="{#UrlEnlace#}"}acceptar aquesta invitació{/a}.{/p}</texto>
+		</mensaje>
+		<mensaje id="49">
+			<asunto>{#NombreRemitente#} vol invitar-te a la comunitat {#NombreProyecto#}</asunto>
+			<texto>{p}{#Notas#}{/p}{p}Per a acceptar aquesta invitació fes clic en aquest enllaç: {a href="{@UrlIntragnoss@}/invitaciones"}acceptar invitació{/a}.{/p}</texto>
+		</mensaje>
+		<mensaje id="50">
+			<asunto>{#NombreOrganizacion#} t'ha invitat a formar part de la seua organització en {#NombreEcosistema#}</asunto>
+			<texto>{p}{#Notas#}{/p}{p}Per a acceptar aquesta invitació fes clic en aquest enllaç: {a href="{@UrlIntragnoss@}/invitaciones"}acceptar aquesta invitació{/a}.{/p}</texto>
+		</mensaje>
+		<mensaje id="51">
+			<asunto>{#NombreOrganizacion#} t'ha invitat a formar part de la seua organització en {#NombreEcosistema#}</asunto>
+			<texto>{p}{#Notas#}{/p}{p}Per a acceptar aquesta invitació fes clic en aquest enllaç: {a href="{@UrlIntragnoss@}/invitaciones"}acceptar aquesta invitació{/a}.{/p}</texto>
+		</mensaje>
+		<mensaje id="52">
+			<asunto>{#NombreRemitente#} vol afegir-te com a contacte</asunto>
+			<texto>{p}Hola, {#NombrePersona#}!{/p}{p}T'he trobat a {#NombreProyecto#} i he pensat que potser podríem beneficiar-nos de compartir informació.{/p}{p}Si acceptes ser el meu contacte fes clic ací: {a href="{@UrlIntragnoss@}/{#IdentidadPersona#}invitaciones"}Afegir contacte{/a}.</texto>
+		</mensaje>
+		<mensaje id="54">
+			<asunto>{#NombreRemitente#} t'ha confirmat com a contacte</asunto>
+			<texto>{p}Hola, {#NombrePersona#}!{/p}{p}{#NombreRemitente#} t'ha confirmat com a contacte.{/p}{p}Per a veure el perfil de {#NombreRemitente#} o enviar-li un missatge, fes clic a: {a href="{@UrlIntragnoss@}/{#IdentidadPersona#}{#IdentidadRemitente#}"}veure perfil{/a}.{/p}{p}Gràcies.{/p}{p}L'equip de {#NombreEcosistema#}.{/p}</texto>
+		</mensaje>
+		<mensaje id="56">
+			<asunto>{#NombreRemitente#} t'ha eliminat com a contacte</asunto>
+			<texto>{p}Hola, {#NombrePersona#}!{/p}{p}{#NombreRemitente#} t'ha eliminat com a contacte.{/p}</texto>
+		</mensaje>
+		<mensaje id="58">
+			<asunto>L'organització {#NombreRemitente#} vol afegir-te com a contacte</asunto>
+			<texto>{p}Hola, {#NombrePersona#}!{/p}{p}T'he trobat a {#NombreProyecto#} i he pensat que potser poguéssem beneficiar-nos de compartir informació.</texto>
+		</mensaje>
+		<mensaje id="59">
+			<asunto>{#NombreRemitente#} de {#NombreOrganizacion#} t'ha eliminat com a contacte</asunto>
+			<texto>{p}Hola {#NombrePersona#}!{/p}{p}{#NombreRemitente#} de {#NombreOrganizacion#}, que era el teu contacte a {#NombreEcosistema#}, ja no és membre de l'organització i els seus contactes han passat a ser contactes de {#NombreOrganizacion#}{/p}{p}Gràcies.{/p}{p}L'equip de {#NombreEcosistema#}.{/p}</texto>
+		</mensaje>
+		<mensaje id="60">
+			<asunto>Butlletí de subscripcions de {#NombreProyecto#}</asunto>
+			<texto>{p}{span}Aquest butlletí conté els últims recursos publicats a les teues àrees d'interés{/span}{/p}{#UltimasPublicaciones#}</texto>
+		</mensaje>
+		<mensaje id="61">
+			<asunto>{#NombreRemitente#} et segueix</asunto>
+			<texto>{p}Hola, {#NombrePersona#}!{/p}{p}{a href="{@UrlIntragnoss@}/{#IdentidadRemitente#}"}{#NombreRemitente#}{/a} et segueix en {#NombreEcosistema#}.{/p}</texto>
+		</mensaje>
+		<mensaje id="62">
+			<asunto>{#NombreRemitente#} et segueix</asunto>
+			<texto>{p}Hola, {#NombrePersona#}!{/p}{p}{a href="{@UrlIntragnoss@}/{#IdentidadRemitente#}"}{#NombreRemitente#}{/a} et segueix ara en {#NombreProyecto#}.{/p}</texto>
+		</mensaje>
+		<mensaje id="80">
+			<asunto>Petició de canvi de contrasenya a {#NombreProyecto#}</asunto>
+			<texto>{p}Per a canviar la teua contrasenya, segueix l'enllaç que es mostra a continuació:{/p}{p}{a style="display: block; font-weight: 400; color: #006eff; padding-bottom: 40px;" href="{#UrlEnlace#}"}Canviar contrasenya{/a}{/p}</texto>
+		</mensaje>
+		<mensaje id="81">
+			<asunto>Token de seguretat {#NombreProyecto#}</asunto>
+			<texto>{p}El teu token de seguretat és: {b}{#TokenSeguridad#}{/b}{/p}</texto>
+		</mensaje>
+		<mensaje id="121">
+			<asunto>{#Asunto#}</asunto>
+			<texto>{p}{#NombreRemitente#} t'ha enviat un missatge a través de {#NombreProyecto#}{/p}{div style="margin:30px"}{#Texto#}{/div}{p}Per a respondre a {#NombreRemitente#} fes clic en aquest enllaç: {a href="{@UrlIntragnoss@}{$identidad$}/mensajes#mensaje={#CorreoID#}"}respondre al missatge{/a}{/p}</texto>
+		</mensaje>
+		<mensaje id="122">
+			<asunto>Tancament temporal de la comunitat {#NombreProyecto#}</asunto>
+			<texto>{p}Hola {#NombrePersona#}!{/p}{p}La comunitat {#NombreProyecto#} romandrà tancada temporalment fins al dia {#Fecha_dia#}/{#Fecha_mes#}/{#Fecha_año#} pels motius següents:{/p}{p}{#Texto#}{/p}{p}Gràcies.{/p}</texto>
+		</mensaje>
+		<mensaje id="123">
+			<asunto>Tancament de la comunitat {#NombreProyecto#}</asunto>
+			<texto>{p}Hola {#NombrePersona#}!{/p}{p}La comunitat {#NombreProyecto#} es tancarà el dia {#Fecha_dia#}/{#Fecha_mes#}/{#Fecha_año#}.{/p}{p}Fins a aquesta data hi podràs accedir amb total normalitat, descarregar recursos, llegir continguts de la comunitat i compartir-los amb altres espais {#NombreEcosistema#}.{/p}{p}No obstant això, no podràs pujar-hi nous recursos ni compartir-hi els d'altres comunitats com aquesta. Una vegada tancada la comunitat, no s'hi podrà accedir.{/p}{p}Gràcies.{/p}</texto>
+		</mensaje>
+		<mensaje id="124">
+			<asunto>Obertura de la comunitat {#NombreProyecto#}</asunto>
+			<texto>{p}Hola {#NombrePersona#}!{/p}{p}La comunitat {#NombreProyecto#} és oberta, ja pots participar-hi.{/p}{p}Gràcies.{/p}{p}L'equip de {#NombreEcosistema#}.{/p}</texto>
+		</mensaje>
+		<mensaje id="125">
+			<asunto>Temps de tancament temporal de la comunitat {#NombreProyecto#} esgotat</asunto>
+			<texto>{p}Hola,{/p}{p}al nostre registre, hi figura la teua decisió de tancar la comunitat {#NombreProyecto#} temporalment. Avui finalitza el termini que ens vas plantejar.{/p}{p}Durant aquest temps has pogut treballar a la teua comunitat i donar-li forma i el contingut desitjat.{/p}{p}Ara tens dues opcions: pots obrir la comunitat o, si així ho decideixes, prorrogar el termini de tancament temporal amb una nova data.{/p}{p}Recorda que els usuaris que estan subscrits a {#NombreProyecto#} estaran pendents de la teua decisió.{/p}{p}Si tens cap dubte, pots {a href="mailto:{#CorreoSugerencias#}"}contactar amb l'Equip de {#NombreEcosistema#}{/a}.{/p}{p}Una salutació.{/p}{p}L'equip de {#NombreEcosistema#}.{/p}</texto>
+		</mensaje>
+		<mensaje id="126">
+			<asunto>Expulsió de la comunitat {#NombreProyecto#}</asunto>
+			<texto>{p}Hola {#NombrePersona#}!{/p}{p}L'administrador de la comunitat {#NombreProyecto#} t'ha expulsat de la mateixa.{/p}{p}Motiu:{/p}{p}{#Notas#}{/p}{p}Gràcies.{/p}</texto>
+		</mensaje>
+		<mensaje id="127">
+			<asunto>Dades incorrectes al teu compte de {#NombreEcosistema#}</asunto>
+			<texto>{p}Benvolgut/-da {#NombrePersona#},{/p}{p}{#NombreEcosistema#} és una societat en Xarxa, els membres de la qual usen la seua identitat real, per la qual cosa has d'introduir el teu {strong}nom i els teus cognoms reals{/strong} per a poder seguir gaudint d'aquest espai de xarxes. Actualment, la teua identitat no compleix amb aquesta condició. Et recordem que pots triar tindre un perfil públic o privat.{/p}{p}T'invitem a què modifiques les teues dades i, si ho desitges, la teua privacitat des de {a href="{#UrlIntragnossBBDD#}editar-perfil"}El meu Perfil/Editar Perfil/Dades Personals{/a} a la teua identitat personal.{/p}{p}Si no realitzes aquesta modificació eliminarem el teu compte en el termini de tres dies des de la recepció d'aquest correu.{/p}{p}Moltes gràcies per la teua atenció{/p}{p}Una salutació{/p}{p}L'Equip de {#NombreEcosistema#}{/p}</texto>
+		</mensaje>
+		<mensaje id="128">
+			<asunto>Dades incorrectes al teu compte de {#NombreEcosistema#}</asunto>
+			<texto>{p}Benvolgut/-da {#NombrePersona#},{/p}{p}en comunicacions anteriors t'hem invitat a què inclogues les teues dades reals (Nom i Cognoms) al teu usuari de {#NombreEcosistema#}.{/p}{p}Et recordem que pots fer-ho des de {a href="{#UrlIntragnossBBDD#}editar-perfil"}El meu Perfil/Editar Perfil/Dades Personals{/a} a la teua identitat personal. No oblidis que pots triar tindre un {strong}perfil públic o privat{/strong}.{/p}{p}Moltes gràcies per la teua atenció{/p}{p}Una salutació{/p}{p}L'Equip de {#NombreEcosistema#}{/p}</texto>
+		</mensaje>
+		<mensaje id="129">
+			<asunto>Eliminació del teu compte a {#NombreEcosistema#}</asunto>
+			<texto>{p}Benvolgut/-da {#NombrePersona#},{/p}{p}Hem eliminat el teu compte a {#NombreEcosistema#} ja que com et vam informar prèviament no respon a una identitat real.{/p}{p}Una salutació{/p}{p}L'Equip de {#NombreEcosistema#}{/p}</texto>
+		</mensaje>
+		<mensaje id="130">
+			<asunto>Acabes d'enregistrar-te a: {#NombreEvento#}</asunto>
+			<texto>{p}{#CuerpoMensajeEvento#}{/p}</texto>
+		</mensaje>
+		<mensaje id="131">
+			<asunto>{#Asunto#}</asunto>
+			<texto>{p}{#NombreRemitente#} t'ha enviat un missatge a través de {#NombreProyecto#}{/p}{div style="margin:30px"}{#Texto#}{/div}{p}Per a respondre a {#NombreRemitente#} fes clic en aquest enllaç: {a href="{@UrlIntragnoss@}{$identidad$}/mensajes#mensaje={#CorreoID#}"}respondre al missatge{/a}{/p}</texto>
+		</mensaje>
+		<mensaje id="140">
+			<asunto>Tens un enllaç: {#NombreDoc#}</asunto>
+			<texto>{p}{#NombreRemitente#} t'ha enviat un enllaç de {#NombreProyecto#}.{/p}{p}{#Notas#}{/p}{p}{#UrlEnlace#}{/p}</texto>
+		</mensaje>
+		<mensaje id="141">
+			<asunto>Report de contingut: {#NombreDoc#}</asunto>
+			<texto>{p}{a href="{#IdentidadRemitente#}"}{#NombreRemitente#}{/a} reporta un problema al contingut {#NombreProyecto#}.{/p}{p}{#Notas#}{/p}{p}{a href="{#UrlEnlace#}"}{#NombreDoc#}{/a}{/p}</texto>
+		</mensaje>
+		<mensaje id="150">
+			<asunto>{#NombreRemitente#} de {#NombreOrganizacion#} t'ha eliminat com a contacte</asunto>
+			<texto>{p}Hola {#NombrePersona#}!{/p}{p}{#NombreRemitente#} de {#NombreOrganizacion#}, que era el teu contacte a {#NombreEcosistema#}, ja no és membre de l'organització i els seus contactes han estat eliminats.{/p}{p}Gràcies.{/p}{p}L'equip de {#NombreEcosistema#}.{/p}</texto>
+		</mensaje>
+		<mensaje id="151">
+			<asunto>{#NombreRemitente#} t'ha invitat a participar a la classe {#NombreOrganizacion#}</asunto>
+			<texto>{p}{#Notas#}{/p}{p}Per a acceptar aquesta invitació fes clic en aquest enllaç: {a href="{#UrlEnlace#}"}acceptar aquesta invitació{/a}.{/p}</texto>
+		</mensaje>
+		<mensaje id="152">
+			<asunto>{#NombreRemitente#} vol invitar-te a un grup a la comunitat {#NombreProyecto#}</asunto>
+			<texto>{p}{#Notas#}{/p}{p}T'han invitat al/als grups: {#NombresGrupos#}{/p}</texto>
+		</mensaje>
+		<mensaje id="153">
+			<asunto>{#NombreRemitente#} vol invitar-te a un grup a la comunitat {#NombreProyecto#}</asunto>
+			<texto>{p}{#Notas#}{/p}{p}Aquesta comunitat té grups. En acceptar aquesta invitació et farem membre dels grups següents: {#NombresGrupos#}{/p}{p}Per a acceptar aquesta invitació fes clic en aquest enllaç: {a href="{#UrlEnlace#}"}acceptar invitació.{/a}{/p}</texto>
+		</mensaje>
+		<mensaje id="154">
+			<asunto>{#NombreRemitente#} vol invitar-te a un grup de la classe {#NombreProyecto#}</asunto>
+			<texto>{p}{#Notas#}{/p}{p}En acceptar aquesta invitació passaràs a formar part del grup {#NombresGrupos#}{/p}{p}Per a acceptar aquesta invitació fes clic en aquest enllaç: {a href="{#UrlEnlace#}"}acceptar invitació.{/a}{/p}{p}L'equip de Didactalia{/p}</texto>
+		</mensaje>
+		<mensaje id="161">
+			<asunto>Tens un comentari a: {#NombreDoc#}</asunto>
+			<texto>{p}Hola, {#NombrePersona#}!{/p}{p}{#NombreRemitente#} ha comentat el recurs "{#NombreDoc#}". Per a veure el comentari segueix aquest enllaç: {a href="{@UrlIntragnoss@}{#IdentidadPersona#}/{#EnlaceComentarios#}"}Veure comentaris{/a}.{/p}</texto>
+		</mensaje>
+		<mensaje id="180">
+			<asunto>{#Asunto#}</asunto>
+			<texto>{#Texto#}</texto>
+		</mensaje>
+		<mensaje id="181">
+			<asunto>Un membre de la comunitat {#NombreProyecto#} et suggereix una nova categoria</asunto>
+			<texto>{p}Per a veure aquesta proposta d'un membre de la teua comunitat fes clic a: {a href="{#UrlEnlace#}"}Administrar categories de {#NombreProyecto#}{/a}.{/p}</texto>
+		</mensaje>
+		<mensaje id="182">
+			<asunto>{#Asunto#}</asunto>
+			<texto>{p}Hola,{/p}{p}{#NombreRemitente#} professor@ de la classe {#NombreProyecto#} a la qual pertany {#NombrePersona#} t'ha enviat un missatge:{/p}{p}{#Texto#}{/p}{p}L'equip de Didactalia{/p}</texto>
+		</mensaje>
+		<mensaje id="200">
+			<asunto>Error en missatge de Twitter compartit des de {#NombreEcosistema#}</asunto>
+			<texto>{p}Benvolgut administrador de {#NombreProyecto#},{/p}{p}la teua comunitat té associat un compte de Twitter que permet l'enviament d'un missatge ('tweet') cada vegada que es comparteix un recurs. Aquesta acció es realitza gràcies a una integració amb l'usuari de Twitter que ens has indicat com a administrador de la teua comunitat a {#NombreEcosistema#}. En aquesta ocasió, el teu compte a Twitter ha generat un error i no s'ha tramés el missatge ('tweet') corresponent al recurs compartit.{/p}{p}Lamentem que l'acció no s'haja pogut completar.{/p}{p}Gaudeix de {#NombreEcosistema#}; nosaltres innovem amb tu.{/p}{p}{a href="mailto:{#CorreoSugerencias#}"}L'Equip de {#NombreEcosistema#}{/a}{/p}</texto>
+		</mensaje>
+		<mensaje id="500">
+			<asunto>Benvingut a la Plataforma de Coneixement per a membres de Corporate Excellence</asunto>
+			<texto>{p}Hola {#NombrePersona#},{/p}{p}T'invitem a participar a la Plataforma de Coneixement per a membres de Corporate Excellence. Aquesta plataforma et permetrà accedir a través del teu usuari i contrasenya a nombrosos continguts (articles, casos, notícies, tesis, insights, etc.) al voltant de la gestió d'intangibles, així com comentar-los i compartir-los amb tota la comunitat de membres de Corporate Excellence.{/p}{p}Per a completar el teu registre és necessari que verifiques el teu correu en l'enllaç següent: {a href="{#UrlEnlace#}" target="_blank"}Verificar correu electrònic{/a}.{/p}</texto>
+		</mensaje>
+	</mensajes>
+	<formatoCorreo>
+		<cabecera>{table style="font-family: 'Roboto', sans-serif;" role="presentation" style="text-align: left; border: 0; border-spacing: 0; max-width: 970px"}{tbody}{tr}{td style="font-size: 15px; font-weight: 300; padding: 25px 60px"}{div style="margin-bottom: 50px;"}IMAGENPROYECTO{/div}</cabecera>
+		<pie>{/td}{/tr}{tr}{td style="padding: 10px; font-size: 10px; color: #555"}{p}Aquest compte de correu està habilitat exclusivament per a trametre missatges automàtics. No rep respostes. Si us plau, no respongueu a aquest correu.{/p}{p}En compliment amb la normativa vigent en matèria de servicis de la Societat de la Informació i de Comerç Electrònic i Protecció de Dades, us informem que en qualsevol moment podeu donar-vos de baixa de la recepció de comunicacions de {#URCONNOMBRECOMUNIDAD#} en la {#SECCIONNOTIFICACIONES#}. Gràcies per la vostra col·laboració.{/p}{/td}{/tr}{/tbody}{/table}</pie>
+		<pieNotificaciones>{/td}{/tr}{tr}{td style="padding: 10px; font-size: 10px; color: #555"}{p}Aquest compte de correu està habilitat exclusivament per a trametre missatges automàtics. No rep respostes. Si us plau, no respongueu a aquest correu.{/p}{p}En compliment amb la normativa vigent en matèria de servicis de la Societat de la Informació i de Comerç Electrònic i Protecció de Dades, us informem que en qualsevol moment podeu donar-vos de baixa de la recepció de comunicacions de {#URCONNOMBRECOMUNIDAD#} en la {#SECCIONNOTIFICACIONES#}. Gràcies per la vostra col·laboració.{/p}{/td}{/tr}{/tbody}{/table}</pieNotificaciones>
+		<pieNewsletter>{/td}{/tr}{tr}{td style="padding: 10px; font-size: 10px; color: #555"}{p}Aquest compte de correu està habilitat exclusivament per a trametre missatges automàtics. No rep respostes. Si us plau, no respongueu a aquest correu.{/p}{p}En compliment amb la normativa vigent en matèria de servicis de la Societat de la Informació i de Comerç Electrònic i Protecció de Dades, us informem que en qualsevol moment podeu donar-vos de baixa de la recepció de comunicacions de {#URCONNOMBRECOMUNIDAD#} en la {#SECCIONNOTIFICACIONES#}. Gràcies per la vostra col·laboració.{/p}{/td}{/tr}{/tbody}{/table}</pieNewsletter>
+	</formatoCorreo>
+</correos>

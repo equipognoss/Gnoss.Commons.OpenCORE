@@ -16,7 +16,6 @@ namespace Es.Riam.Gnoss.Web.MVC.Models.Lucene
         public string Idioma { get; set; }
         public string InfoExtra { get; set; }
         public string Faceta { get; set; }
-        public bool MetaBusqueda { get; set; }
         public bool Agregar { get; set; }
         public string Imagen {  get; set; }
         public string SubtipoOntologia {  get; set; }

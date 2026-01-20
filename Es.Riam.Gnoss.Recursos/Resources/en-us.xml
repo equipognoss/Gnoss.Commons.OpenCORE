@@ -1269,6 +1269,7 @@
     <Resource tag="ELIMINARSELECTIVO">Delete selectively</Resource>
     <Resource tag="ELIMINARTOTALMENTE">Delete completely</Resource>
     <Resource tag="NOULTIMAVERSION">This is not the latest version of the article. {a href="@1@"}View the latest version{/a}</Resource>
+	<Resource tag="TRADUCCIONGENERADAPORIA">AI-generated translation</Resource>
     <Resource tag="ENVIARCORREOTODOSUSUARIO">Send to the community members</Resource>
     <Resource tag="ENVIARCORREOGRUPO">
     </Resource>

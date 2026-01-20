@@ -43,7 +43,7 @@ namespace Es.Riam.Util
         private static Regex mRegexQuitarDosPuntosNombreArchivo = new Regex(@"[:]+", RegexOptions.Compiled);
 
         private static string mSimbolosExadecimalesInvalidos = "[\x00-\x08\x0B\x0C\x0E-\x1F]";
-        private static string[] mListaIdiomasPosibles = new string[] { "es", "en", "eu", "pt", "ca", "de", "fr", "gl", "it" };
+        private static string[] mListaIdiomasPosibles = new string[] { "es", "en", "eu", "pt", "ca", "ca-valencia", "de", "fr", "gl", "it" };
         public static bool LowerStringGraph { get; set; } = false;
         public static string[] FormatosFecha = {
 	        // Formato de GNOSS
@@ -113,6 +113,7 @@ namespace Es.Riam.Util
 
         public static Regex RegExConectoresIngles = new Regex(CONECTORES_INGLES, RegexOptions.Compiled);
         public static Regex RegExConectoresEspanol = new Regex(CONECTORES_ESPANOL, RegexOptions.Compiled);
+        public static Regex RegexPrefijoIdioma = new Regex("^[a-zA-z]{2}(-[a-zA-z]{2,10}){0,2}$");
 
         private static Dictionary<string, string> CONVERSOR_ACUTE = new Dictionary<string, string>()
         {
@@ -1482,7 +1483,7 @@ namespace Es.Riam.Util
                 {
                     string idioma = nombreFinal.Substring(nombreFinal.LastIndexOf('@') + 1);
                     //Comprobamos que el idioma tenga un formato decente (es, es-es)
-                    if (idioma.Length == 2 || (idioma.Contains("-") && idioma.Length == 5))
+                    if (RegexPrefijoIdioma.IsMatch(idioma))
                     {
                         if (!pSoloIdiomaIndicado)
                         {
@@ -1512,7 +1513,7 @@ namespace Es.Riam.Util
 
             foreach (string texto in pTexto.Split(new string[] { "|||" }, StringSplitOptions.RemoveEmptyEntries))
             {
-                if (texto.Length > 2 && texto.LastIndexOf("@") == texto.Length - 3)
+                if (texto.Length > 2 && texto.Contains("@") &&RegexPrefijoIdioma.IsMatch(texto.Split("@")[1]))
                 {
                     string idioma = texto.Substring(texto.LastIndexOf("@") + 1);
 

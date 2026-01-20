@@ -188,6 +188,7 @@
 		<Resource tag="IDIOMAPT">Portugués</Resource>
 		<Resource tag="IDIOMAEU">Euskera</Resource>
 		<Resource tag="IDIOMACA">Catalán</Resource>
+		<Resource tag="IDIOMACA-VALENCIA">Valenciano</Resource>
 		<Resource tag="IDIOMAGL">Gallego</Resource>
 		<Resource tag="IDIOMADE">Alemán</Resource>
 		<Resource tag="IDIOMAFR">Francés</Resource>
@@ -1408,6 +1409,7 @@
 		<Resource tag="ELIMINARSELECTIVO">Eliminar selectivamente</Resource>
 		<Resource tag="ELIMINARTOTALMENTE">Eliminar totalmente</Resource>
 		<Resource tag="NOULTIMAVERSION">Esta no es la última versión del artículo. {a href="@1@"}Ver última versión{/a}</Resource>
+		<Resource tag="TRADUCCIONGENERADAPORIA">Traducción generada por IA</Resource>
 		<Resource tag="ENVIARCORREOTODOSUSUARIO">Enviar a los participantes de la comunidad</Resource>
 		<Resource tag="ENVIARCORREOGRUPO">Enviar a los participantes de grupos de la comunidad</Resource>
 		<Resource tag="PEGUNTAENVIARCORREOTODOSUSUARIO">Los usuarios eligen un idioma en su perfil. Puedes enviar la newsletter a los participantes de la comunidad según el idioma que han elegido:</Resource>
@@ -3731,7 +3733,6 @@
 	<page name="URLSEM">
 		<Resource tag="ADMINISTRARDETALLESDOCUMENTACION">administrar-documentacion-detalles</Resource>
 		<Resource tag="DOCUMENTACIONONTOLOGIA">documentacion-ontology</Resource>
-		<Resource tag="SOLICITADOPOR">Solicitado por</Resource>
 		<Resource tag="ADMINISTRARHEADESTILOS">custom-stylesheet</Resource>		
 		<Resource tag="AMIGOS">amigos</Resource>
 		<Resource tag="BIO">bio</Resource>
@@ -3748,6 +3749,8 @@
 		<Resource tag="ADMINISTRARROLES">administrar-roles</Resource>
 		<Resource tag="ADMINISTRARROLESECOSISTEMA">administrar-roles-ecosistema</Resource>
 		<Resource tag="ADMINISTRARMIEMBROSECOSISTEMA">administrar-miembros-ecosistema</Resource>
+		<Resource tag="ADMINISTRARCOMUNIDADBUZONCORREO">administrar-buzon-correo</Resource>
+		<Resource tag="ADMINISTRARCOMUNIDADBUZONCORREOECOSISTEMA">administrar-buzon-ecosistema</Resource>
 		<Resource tag="ADMINISTRARSOLICITUDESUSUARIO">administrar-solicitudes-usuarios</Resource>
 		<Resource tag="ADMINISTRARSOLICITUDEORGANIZACION">administrar-solicitudes-org</Resource>
 		<Resource tag="ADMINISTRARSOLICITUACCESOPROYECTO">administrar-solicitudes-comunidad</Resource>
@@ -4772,6 +4775,14 @@
 		<Resource tag="TIPOS">Tipos</Resource>
 		<Resource tag="APLICACIONESESPECIFICASBETA">Aplicaciones especificas (BETA)</Resource>
 		<Resource tag="APLICACIONESESPECIFICAS">Aplicaciones especificas</Resource>
+		<!-- Textos que ya existían en Vistas de Administración person sin traducir -> DevTools -->ç
+		<Resource tag="LISTAIDIOMASPERSONALIZADOSECOSISTEMA">Lista de idiomas personalizados en la plataforma.</Resource>
+		<Resource tag="AÑADIRIDIOMAPERSONALIZADOECOSISTEMA">Añadir idioma</Resource>
+		<Resource tag="CLAVEIDIOMAPERSONALIZADOECOSISTEMA">Clave del idioma </Resource>
+		<Resource tag="CLAVEAYUDAIDIOMAPERSONALIZADOECOSISTEMA">Clave del idioama -> Ej: Para el idioma Finlandés correspondería: fi. Si quieres especificar un dialecto puedes hacerlo de esta manera en-UK. La segunda parte puede tener hasta 10 caracteres</Resource>
+		<Resource tag="NOMBREIDIOMAPERSONALIZADOECOSISTEMA">Nombre del idioma</Resource>
+		<Resource tag="NOMBREAYUDAIDIOMAPERSONALIZADOECOSISTEMA">Nombre del idioma que se desea añadir: Ejemplo: Finlandés</Resource>
+		<Resource tag="SOLICITADOPOR">Solicitado por</Resource>
 		<Resource tag="INSERTADOSEARCH">Se ha insertado la propiedad.</Resource>
 		<Resource tag="ALERTAUSUARIO">¡Advertencia!</Resource>
 		<Resource tag="PROPIEDADNOEXISTE">La propiedad introducida: @1@ no existe.</Resource>

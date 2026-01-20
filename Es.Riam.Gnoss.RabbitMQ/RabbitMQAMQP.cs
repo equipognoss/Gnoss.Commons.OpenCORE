@@ -140,6 +140,113 @@ namespace Es.Riam.Gnoss.RabbitMQ
             }
         }
 
+        public void ObtenerElementosDeColaReintentos(RabbitMQClient.ReceivedDelegateRetry receivedFunction, RabbitMQClient.ShutDownDelegate shutdownFunction, string pErrorExchange)
+        {
+            try
+            {
+                IModel channel = Channel;
+                channel.BasicQos(0, 1, false);
+
+                channel.QueueBind(queue: mGestorRabbit.QueueName,
+                                        exchange: mGestorRabbit.ExchangeName,
+                                        routingKey: mGestorRabbit.Routing);
+
+                EventingBasicConsumer eventingBasicConsumer = new EventingBasicConsumer(channel);
+
+
+                eventingBasicConsumer.Received += (sender, basicDeliveryEventArgs) =>
+                {
+                    try
+                    {
+                        // Por si existen cosas de otro hilo, las elimino
+                        //UtilPeticion.EliminarObjetosDeHilo(Thread.CurrentThread.ManagedThreadId);
+
+                        IBasicProperties basicProperties = basicDeliveryEventArgs.BasicProperties;
+
+                        string body = Encoding.UTF8.GetString(basicDeliveryEventArgs.Body.Span);
+                        int retryCount = GetRetryCount(basicDeliveryEventArgs);
+                        bool procesadoCorrecto = receivedFunction(body, retryCount);
+                        if(procesadoCorrecto)
+                        {
+                            channel.BasicAck(basicDeliveryEventArgs.DeliveryTag, false);
+                        }
+                        else if (!procesadoCorrecto && retryCount > 3)
+                        {
+                            if (!string.IsNullOrEmpty(pErrorExchange))
+                            {
+                                SendToErrorQueue(basicDeliveryEventArgs, body, pErrorExchange);
+                            }
+                            channel.BasicAck(basicDeliveryEventArgs.DeliveryTag, false);
+                        }
+                        else
+                        {
+                            channel.BasicNack(basicDeliveryEventArgs.DeliveryTag, false, false);
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        channel.BasicNack(basicDeliveryEventArgs.DeliveryTag, false, false);
+                        mLoggingService.GuardarLogError(ex, mlogger);
+                        throw;
+                    }
+                };
+
+                eventingBasicConsumer.Shutdown += (sender, shutdownEventArgs) =>
+                {
+                    mLoggingService.GuardarLogError(shutdownEventArgs.ReplyText, mlogger);
+                    shutdownFunction();
+                };
+
+                channel.BasicConsume(mGestorRabbit.QueueName, false, eventingBasicConsumer);
+            }
+            catch
+            {
+                throw;
+            }
+        }
+
+        private void SendToErrorQueue(BasicDeliverEventArgs ea, string message, string pErrorExchange)
+        {
+            IModel channel = Channel;
+            var properties = channel.CreateBasicProperties();
+            properties.Persistent = true;
+            properties.Headers = new Dictionary<string, object>
+            {
+                { "original-routing-key", ea.RoutingKey },
+                { "error-time", DateTime.UtcNow.ToString("O") },
+                { "retry-count", GetRetryCount(ea) }
+            };
+
+            channel.BasicPublish(
+                exchange: pErrorExchange,
+                routingKey: "",
+                basicProperties: properties,
+                body: ea.Body
+            );
+        }
+
+        private int GetRetryCount(BasicDeliverEventArgs pEa)
+        {
+            if (pEa.BasicProperties.Headers != null)
+            {
+                // Intentar obtener el contador de x-death
+                if (pEa.BasicProperties.Headers.TryGetValue("x-death", out var xDeathObj))
+                {
+                    if (xDeathObj is List<object> xDeathList && xDeathList.Count > 0)
+                    {
+                        if (xDeathList[0] is Dictionary<string, object> deathInfo)
+                        {
+                            if (deathInfo.TryGetValue("count", out var countObj))
+                            {
+                                return Convert.ToInt32(countObj);
+                            }
+                        }
+                    }
+                }
+            }
+            return 0;
+        }
+
         public void AgregarElementoACola(string message)
         {
 
@@ -179,7 +286,46 @@ namespace Es.Riam.Gnoss.RabbitMQ
             }
         }
 
-        public IList<string> AgregarElementosACola(IEnumerable<string> messages)
+		public void AgregarElementoAColaConReintentosExchange(string message)
+		{
+
+			byte[] messageBytes = Encoding.UTF8.GetBytes(message);
+			using (var channel = Conexion.CreateModel())
+			{
+				channel.ConfirmSelect();
+
+				var properties = channel.CreateBasicProperties();
+				properties.Persistent = true;
+
+
+				if (!string.IsNullOrEmpty(mGestorRabbit.ExchangeName))
+				{
+					string tipoExchange = "fanout";
+
+					if (!string.IsNullOrEmpty(mGestorRabbit.Routing))
+					{
+						tipoExchange = "topic";
+					}
+
+					channel.ExchangeDeclare(mGestorRabbit.ExchangeName, tipoExchange, true);
+				}
+				else
+				{
+					channel.QueueDeclare(queue: mGestorRabbit.QueueName,
+									 durable: true,
+									 exclusive: false,
+									 autoDelete: false,
+									 arguments: null);
+				}
+
+				channel.BasicPublish(exchange: mGestorRabbit.ExchangeName,
+									 routingKey: mGestorRabbit.QueueName,
+									 basicProperties: properties,
+									 body: messageBytes);
+			}
+		}
+
+		public IList<string> AgregarElementosACola(IEnumerable<string> messages)
         {
             List<string> failedMessages = new List<string>();
 

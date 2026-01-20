@@ -1552,9 +1552,7 @@ namespace Es.Riam.Gnoss.AD.AutoCompetarEtiquetas.Model
 
             private global::System.Data.DataColumn columnIdentidadID;
 
-            private global::System.Data.DataColumn columnExtra;
-
-            private global::System.Data.DataColumn columnMetaBusqueda;
+            private global::System.Data.DataColumn columnExtra;            
 
             private global::System.Data.DataColumn columnIdioma;
 
@@ -1692,16 +1690,6 @@ namespace Es.Riam.Gnoss.AD.AutoCompetarEtiquetas.Model
                 get
                 {
                     return this.columnExtra;
-                }
-            }
-
-            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
-            public global::System.Data.DataColumn MetaBusquedaColumn
-            {
-                get
-                {
-                    return this.columnMetaBusqueda;
                 }
             }
 
@@ -1846,7 +1834,7 @@ namespace Es.Riam.Gnoss.AD.AutoCompetarEtiquetas.Model
 
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
-            public TagsVariarRow AddTagsVariarRow(System.Guid ElementoID, System.Guid ProyectoID, string Tipo, string Faceta, string Etiqueta, int Cantidad, System.Guid IdentidadID, string Extra, bool MetaBusqueda, string Idioma, System.Guid GrupoID)
+            public TagsVariarRow AddTagsVariarRow(System.Guid ElementoID, System.Guid ProyectoID, string Tipo, string Faceta, string Etiqueta, int Cantidad, System.Guid IdentidadID, string Extra, string Idioma, System.Guid GrupoID)
             {
                 TagsVariarRow rowTagsVariarRow = ((TagsVariarRow)(this.NewRow()));
                 object[] columnValuesArray = new object[] {
@@ -1858,7 +1846,6 @@ namespace Es.Riam.Gnoss.AD.AutoCompetarEtiquetas.Model
                         Cantidad,
                         IdentidadID,
                         Extra,
-                        MetaBusqueda,
                         Idioma,
                         GrupoID};
                 rowTagsVariarRow.ItemArray = columnValuesArray;
@@ -1894,7 +1881,6 @@ namespace Es.Riam.Gnoss.AD.AutoCompetarEtiquetas.Model
                 this.columnCantidad = base.Columns["Cantidad"];
                 this.columnIdentidadID = base.Columns["IdentidadID"];
                 this.columnExtra = base.Columns["Extra"];
-                this.columnMetaBusqueda = base.Columns["MetaBusqueda"];
                 this.columnIdioma = base.Columns["Idioma"];
                 this.columnGrupoID = base.Columns["GrupoID"];
 
@@ -1928,8 +1914,6 @@ namespace Es.Riam.Gnoss.AD.AutoCompetarEtiquetas.Model
                 base.Columns.Add(this.columnIdentidadID);
                 this.columnExtra = new global::System.Data.DataColumn("Extra", typeof(string), null, global::System.Data.MappingType.Element);
                 base.Columns.Add(this.columnExtra);
-                this.columnMetaBusqueda = new global::System.Data.DataColumn("MetaBusqueda", typeof(bool), null, global::System.Data.MappingType.Element);
-                base.Columns.Add(this.columnMetaBusqueda);
                 this.columnIdioma = new global::System.Data.DataColumn("Idioma", typeof(string), null, global::System.Data.MappingType.Element);
                 base.Columns.Add(this.columnIdioma);
                 this.columnGrupoID = new global::System.Data.DataColumn("GrupoID", typeof(global::System.Guid), null, global::System.Data.MappingType.Element);
@@ -1943,7 +1927,6 @@ namespace Es.Riam.Gnoss.AD.AutoCompetarEtiquetas.Model
                 this.columnEtiqueta.AllowDBNull = false;
                 this.columnEtiqueta.MaxLength = 1000;
                 this.columnCantidad.AllowDBNull = false;
-                this.columnMetaBusqueda.AllowDBNull = false;
                 this.columnIdioma.MaxLength = 4;
                 this.urlImagen = new global::System.Data.DataColumn("UrlImagen", typeof(string), null, global::System.Data.MappingType.Element);
                 base.Columns.Add(this.urlImagen);

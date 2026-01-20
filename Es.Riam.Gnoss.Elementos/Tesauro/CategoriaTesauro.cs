@@ -20,6 +20,7 @@ namespace Es.Riam.Gnoss.Elementos.Tesauro
         en,
         pt,
         ca,
+        ca_valencia,
         eu,
         gl,
         de,
@@ -135,23 +136,26 @@ namespace Es.Riam.Gnoss.Elementos.Tesauro
                 foreach (IdiomasCategorias idioma in Enum.GetValues(typeof(IdiomasCategorias)))
                 {
                     //Añadimos los nombres con idiomas
+                    string idiomaAux = idioma.ToString();
+                    //Si es un idioma con dialecto nos aseguramos de que el idioma respete el formato XX-XX-XX
+                    idiomaAux = idiomaAux.Contains('_') ? idiomaAux.Replace("_", "-") : idiomaAux;
                     string nombreIdioma = "";
                     if (nombres.Length > 1 || (nombres.Length == 1 && nombres[0].Contains("@")))
                     {
                         foreach (string nombre in nombres)
                         {
-                            if (nombre.EndsWith("@" + idioma.ToString()))
+                            if (nombre.EndsWith("@" + idiomaAux.ToString()))
                             {
-                                nombreIdioma = nombre.Substring(0, nombre.Length - 3);
+                                nombreIdioma = nombre.Split("@")[0];
                                 break;
                             }
                             else if (!string.IsNullOrEmpty(idiomaDefecto) && nombre.EndsWith("@" + idiomaDefecto.ToString()))
                             {
-                                nombreIdioma = nombre.Substring(0, nombre.Length - 3);
+                                nombreIdioma = nombre.Split("@")[0];
                             }
                             else if (string.IsNullOrEmpty(nombreIdioma))
                             {
-                                nombreIdioma = nombre.Substring(0, nombre.Length - 3);
+                                nombreIdioma = nombre.Split("@")[0];
                             }
                         }
                     }
@@ -160,7 +164,7 @@ namespace Es.Riam.Gnoss.Elementos.Tesauro
                     {
                         nombreIdioma = FilaCategoria.Nombre;
                     }
-                    Nombres.Add(idioma.ToString(), nombreIdioma);
+                    Nombres.Add(idiomaAux, nombreIdioma);
                 }
                 return Nombres;
             }

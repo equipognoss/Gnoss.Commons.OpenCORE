@@ -179,6 +179,7 @@
 		<Resource tag="IDIOMAEN">Anglès</Resource>
 		<Resource tag="IDIOMAPT">Portuguès</Resource>
 		<Resource tag="IDIOMACA">Català</Resource>
+		<Resource tag="IDIOMACA-VALENCIA">Valencià</Resource>
 		<Resource tag="IDIOMAEU">Euskera</Resource>
 		<Resource tag="IDIOMAGL">Gallec</Resource>
 		<Resource tag="IDIOMADE">Alemany</Resource>
@@ -1347,6 +1348,7 @@
 		<Resource tag="ELIMINARSELECTIVO">Eliminar selectivament</Resource>
 		<Resource tag="ELIMINARTOTALMENTE">Eliminar totalment</Resource>
 		<Resource tag="NOULTIMAVERSION">Aquesta no és la darrera versió de l'article. {a href="@1@"}Veure la darrera versió{/a}</Resource>
+		<Resource tag="TRADUCCIONGENERADAPORIA">Traducció generada per IA</Resource>
 		<Resource tag="ENVIARCORREOTODOSUSUARIO">Enviar als participants de la comunitat</Resource>
 		<Resource tag="ENVIARCORREOGRUPO">Enviar als participants de grups de la comunitat</Resource>
 		<Resource tag="PEGUNTAENVIARCORREOTODOSUSUARIO">Els usuaris trien un idioma en el seu perfil. Pots enviar la newsletter als participants de la comunitat segons l'idioma que han triat:</Resource>
@@ -3550,7 +3552,7 @@
 		<Resource tag="FORTALEZAS">fortaleses</Resource>
 		<Resource tag="OPORTUNIDADES">oportunitats</Resource>
 		<Resource tag="DESCONECTAR">desconnectar</Resource>
-		<Resource tag="MISDAFOS">els meus-dafos</Resource>
+		<Resource tag="MISDAFOS">els-meus-dafos</Resource>
 		<Resource tag="DAFOS">dafos</Resource>
 		<Resource tag="DAFO">dafo</Resource>
 		<Resource tag="FACTOR">factor</Resource>
@@ -3760,7 +3762,7 @@
 		<Resource tag="ADMINISTRARSOLICITUDESCOMUNIDAD">administrar-soicituds-com</Resource>
 		<Resource tag="BORRADORES">esborranys</Resource>
 		<Resource tag="BORRADORESORG">esborranys-org</Resource>
-		<Resource tag="BUSQUEDAAVANZADA2">recerca avancada</Resource>
+		<Resource tag="BUSQUEDAAVANZADA2">recerca-avancada</Resource>
 		<Resource tag="CATEGORIAS">categories</Resource>
 		<Resource tag="COMADMINCOMMIEMBROS">administrar-membres</Resource>
 		<Resource tag="COMADMINCOMEVENTOS">administrar-esdeveniments</Resource>
@@ -3900,7 +3902,7 @@
 		<Resource tag="ADMINISTRARVISTAS">administrar-vistes</Resource>
 		<Resource tag="ADMINISTRARSOLICITUDESUSUARIOS">administrar-solicitudes-usuarios</Resource>
 		<Resource tag="ADMINISTRARCONFIGURACIONPESOBUSQUEDAS">administrar-peso-busqueda</Resource>
-		<Resource tag="NOTIFICACIONESPERSO">Notificacions personalitzades</Resource>
+		<Resource tag="NOTIFICACIONESPERSO">notificacions-personalitzades</Resource>
 		<Resource tag="ADMINISTRARFLUJOS">administrar-fluxos</Resource>
 	</page>
 	<page name="NOTIFICACIONESPERSONALIZADAS">
@@ -3911,6 +3913,12 @@
 		<Resource tag="MASINFO">Més informació</Resource>
 	</page>
 	<page name="DEVTOOLS">
+		<Resource tag="LISTAIDIOMASPERSONALIZADOSECOSISTEMA">Llista d’idiomes personalitzats a la plataforma.</Resource>
+		<Resource tag="AÑADIRIDIOMAPERSONALIZADOECOSISTEMA">Afegir idioma</Resource>
+		<Resource tag="CLAVEIDIOMAPERSONALIZADOECOSISTEMA">Clau de l’idioma</Resource>
+		<Resource tag="CLAVEAYUDAIDIOMAPERSONALIZADOECOSISTEMA">Clau de l’idioma -> Ex: Per a l’idioma finès correspondria: fi. Si vols especificar un dialecte ho pots fer d’aquesta manera en-UK. La segona part pot tenir fins a 10 caràcters</Resource>
+		<Resource tag="NOMBREIDIOMAPERSONALIZADOECOSISTEMA">Nom de l’idioma</Resource>
+		<Resource tag="NOMBREAYUDAIDIOMAPERSONALIZADOECOSISTEMA">Nom de l’idioma que es desitja afegir: Exemple: Finès</Resource>
 		<Resource tag="FECHAULTIMOACCESO">Últim accés</Resource>
 		<Resource tag="FECHAALTA">Data d'alta</Resource>
 		<Resource tag="BUSCARCATEGORIAS">Cercar categories</Resource>

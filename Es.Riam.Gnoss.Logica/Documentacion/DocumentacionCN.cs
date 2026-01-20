@@ -2894,12 +2894,25 @@ namespace Es.Riam.Gnoss.Logica.Documentacion
         #endregion
 
         #region Privados
+        public void GuardarTraduccionAutomatica(Guid resourceID, List<string> targetLanguages)
+        {
+            DocumentacionAD.GuardarTraduccionAutomatica(resourceID, targetLanguages);
+        }
 
-        /// <summary>
-        /// Valida los documentos
-        /// </summary>
-        /// <param name="pDocumentos">Lista de documentos para validar</param>
-        private void ValidarDocumentos(List<Documento> pDocumentos)
+        public bool ComprobarSiDocumentoEstaTraducidoConIAEnIdioma(Guid pDocumentoID, string pLanguageCode)
+        {
+            return DocumentacionAD.ComprobarSiDocumentoEstaTraducidoConIAEnIdioma(pDocumentoID, pLanguageCode);
+		}
+
+		#endregion
+
+		#region Privados
+
+		/// <summary>
+		/// Valida los documentos
+		/// </summary>
+		/// <param name="pDocumentos">Lista de documentos para validar</param>
+		private void ValidarDocumentos(List<Documento> pDocumentos)
         {
             if (pDocumentos != null)
             {

@@ -113,6 +113,7 @@
 		<Resource tag="IDIOMAPT">Português</Resource>
 		<Resource tag="IDIOMAEU"></Resource>
 		<Resource tag="IDIOMACA"></Resource>
+		<Resource tag="IDIOMACA-VALENCIA">Valenciano</Resource>
 		<Resource tag="IDIOMAGL"></Resource>
 		<Resource tag="IDIOMADE">Alemão</Resource>
 		<Resource tag="IDIOMAFR">Francês</Resource>
@@ -1283,6 +1284,7 @@
 		<Resource tag="ELIMINARSELECTIVO">Eliminar selectivamente</Resource>
 		<Resource tag="ELIMINARTOTALMENTE">Eliminar totalmente</Resource>
 		<Resource tag="NOULTIMAVERSION">Esta não é a ultima versão do artigo. {a href="@1@"}Ver última versión{/a}</Resource>
+		<Resource tag="TRADUCCIONGENERADAPORIA">Tradução gerada por IA</Resource>
 		<Resource tag="ENVIARCORREOTODOSUSUARIO">Enviar aos participantes da comunidade</Resource>
 		<Resource tag="ENVIARCORREOGRUPO">Enviar aos participantes de grupos da comunidade</Resource>
 		<Resource tag="PEGUNTAENVIARCORREOTODOSUSUARIO">Os usuarios exigem um idioma em seu perfil. Pode enviar um informativo aos participantes da comunidade segundo o idioma eleito:</Resource>
@@ -3737,7 +3739,7 @@
 		<Resource tag="CONTRIBUCIONESORG">contribuicoes-org</Resource>
 		<Resource tag="DEBILIDADES">fraquezas</Resource>
 		<Resource tag="AMENAZAS">ameacas</Resource>
-		<Resource tag="FORTALEZAS">pontos fortes</Resource>
+		<Resource tag="FORTALEZAS">pontos-fortes</Resource>
 		<Resource tag="OPORTUNIDADES">oportunidades</Resource>
 		<Resource tag="DESCONECTAR">desconectar</Resource>
 		<Resource tag="MISDAFOS">meus-dafos</Resource>
@@ -3850,8 +3852,8 @@
 		<Resource tag="USUARIO">usuario</Resource>
 		<Resource tag="VERBLOGS">ver-blogs</Resource>
 		<Resource tag="VERPDFCURRICULUM">ver-pdf-curriculum</Resource>
-		<Resource tag="VISTAPREVIABIO">vista previa-bio</Resource>
-		<Resource tag="VISTAPREVIATRAYECTORIA">vista previa-trajetoria</Resource>
+		<Resource tag="VISTAPREVIABIO">vista-previa-bio</Resource>
+		<Resource tag="VISTAPREVIATRAYECTORIA">vista-previa-trajetoria</Resource>
 		<Resource tag="HAYCAMBIOS">existe-troca</Resource>
 		<Resource tag="PETICION">solicitar</Resource>
 		<Resource tag="PETICIONCOMUNIDAD">convidar-comunidade</Resource>
@@ -3892,7 +3894,7 @@
 		<Resource tag="NUEVOUSUARIO">novos-usuario</Resource>
 		<Resource tag="ADMINISTRARCATEGORIASPERFIL">administrar-categorias-perfil</Resource>
 		<Resource tag="HAZTEMIEMBRO">tornar-se-membro</Resource>
-		<Resource tag="RECIBIRNEWSLETTER">receber-boletim informativo</Resource>
+		<Resource tag="RECIBIRNEWSLETTER">receber-boletim-informativo</Resource>
 		<Resource tag="ABANDONARCOMUNIDAD">abandonar-comunidade</Resource>
 		<Resource tag="ACERCADE">proximo-de</Resource>
 		<Resource tag="ESTABLECERPASSWORD">establecer-senha</Resource>
@@ -4010,8 +4012,8 @@
 		<Resource tag="SUBIRRECURSOTEMPORALORG">recuperar-recurso-autoguardado-org</Resource>
 		<Resource tag="NAVEGALIBREMENTE">navega-livremente</Resource>
 		<Resource tag="EDITARTRAYECTORIASEM">editar-trajetoria-sem</Resource>
-		<Resource tag="VISTAPREVIABIOSEM">vista previa-bio-sem</Resource>
-		<Resource tag="VISTAPREVIATRAYECTORIASEM">vista previa-trajetoria-sem</Resource>
+		<Resource tag="VISTAPREVIABIOSEM">vista-previa-bio-sem</Resource>
+		<Resource tag="VISTAPREVIATRAYECTORIASEM">vista-previa-trajetoria-sem</Resource>
 		<Resource tag="EDITARDOCUMENTOCREADO">editar-documento-criado</Resource>
 		<Resource tag="EDITARDOCUMENTOCREADOORG">editar-documento-criado-org</Resource>
 		<Resource tag="COMUNIDADESSUSCRIPCIONES">comunidades-inscritas</Resource>
@@ -4049,7 +4051,7 @@
 		<Resource tag="ANYADIRGNOSSCURRICULUMLINKEDIN">anyadir-gnoss-linkedin</Resource>
 		<Resource tag="ACTUALIZARADDTOGNOSSNAVG">atualizar-anyadirgnoss-navegador</Resource>
 		<Resource tag="ADMINISTRARVISTAS">gerenciar-visualizacoes</Resource>
-		<Resource tag="NOTIFICACIONESPERSO">Notificações personalizadas</Resource>
+		<Resource tag="NOTIFICACIONESPERSO">notificações-personalizadas</Resource>
 		<Resource tag="ADMINISTRARFLUJOS">administrar-fluxos</Resource>
 	</page>
 	<page name="NOTIFICACIONESPERSONALIZADAS">
@@ -4188,6 +4190,12 @@
 	<Resource tag="ERRORCARGARFORMULARIO">Ocorreu um problema ao carregar o formulário</Resource>	
 	<Resource tag="TIPOS">Tipos</Resource>
 	<Resource tag="AÑADIRTRANSICION">Adicionar uma transição</Resource>
+	<Resource tag="LISTAIDIOMASPERSONALIZADOSECOSISTEMA">Lista de idiomas personalizados na plataforma.</Resource>
+	<Resource tag="AÑADIRIDIOMAPERSONALIZADOECOSISTEMA">Adicionar idioma</Resource>
+	<Resource tag="CLAVEIDIOMAPERSONALIZADOECOSISTEMA">Chave do idioma</Resource>
+	<Resource tag="CLAVEAYUDAIDIOMAPERSONALIZADOECOSISTEMA">Chave do idioma -> Ex: Para o idioma finlandês corresponderia a: fi. Se quiser especificar um dialeto, pode fazê-lo desta forma: en-UK. A segunda parte pode ter até 10 caracteres</Resource>
+	<Resource tag="NOMBREIDIOMAPERSONALIZADOECOSISTEMA">Nome do idioma</Resource>
+	<Resource tag="NOMBREAYUDAIDIOMAPERSONALIZADOECOSISTEMA">Nome do idioma que se deseja adicionar: Exemplo: Finlandês</Resource>
 	<Resource tag="INSERTADOSEARCH">A propriedade foi inserida.</Resource>
 	<Resource tag="ALERTAUSUARIO">Aviso!</Resource>
 	<Resource tag="PROPIEDADNOEXISTE">A propriedade introduzida: @1@ não existe.</Resource>

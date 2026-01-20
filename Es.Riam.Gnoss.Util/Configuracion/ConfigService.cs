@@ -213,6 +213,14 @@ namespace Es.Riam.Gnoss.Util.Configuracion
         private string versionCacheMigrar;
         private bool? borrarCacheMigracion;
         private bool? luceneMisspelling;
+        private string colaTraducciones;
+        private string urlServicioTraduccion;
+        private string tokenServicioTraduccion;
+        private string modeloTraduccion;
+        private string instruccionesAdicionalesTraduccion;
+        private string colaPrincipalTraducciones;
+        private string colaReintentosTraducciones;
+        private string colaErroresTraducciones;
 
         public string GetCadenaConexion()
         {
@@ -4439,6 +4447,165 @@ namespace Es.Riam.Gnoss.Util.Configuracion
                 return false;
             }
             return luceneMisspelling.Value;
+        }
+
+		public string GetColaTraducciones()
+        {
+            if (string.IsNullOrEmpty(colaTraducciones))
+            {
+                IDictionary environmentVariables = Environment.GetEnvironmentVariables();
+                if (environmentVariables.Contains("colaTraducciones"))
+                {
+                    colaTraducciones = environmentVariables["colaTraducciones"] as string;
+                }
+
+
+                else
+                {
+                    colaTraducciones = Configuration["colaTraducciones"];
+                }
+
+            }
+            return colaTraducciones;
+        }
+
+        public string ObtenerUrlServicioTraducciones()
+        {
+			string cadena = "";
+			if (EnvironmentVariables.Contains($"Servicios__traducciones__urlTraducciones"))
+			{
+				cadena = EnvironmentVariables[$"Servicios__traducciones__urlTraducciones"] as string;
+			}
+			else
+			{
+				cadena = Configuration.GetSection("Servicios").GetSection("traducciones")["urlTraducciones"];
+			}
+            if (!string.IsNullOrEmpty(cadena) && cadena.EndsWith('/'))
+            {
+                cadena = cadena.TrimEnd('/');
+            }
+
+			return cadena;
+		}
+
+        public string ObtenerTokenUrlServicioTraducciones()
+        {
+			string cadena = "";
+			if (EnvironmentVariables.Contains($"Servicios__traducciones__token"))
+			{
+				cadena = EnvironmentVariables[$"Servicios__traducciones__token"] as string;
+			}
+			else
+			{
+				cadena = Configuration.GetSection("Servicios").GetSection("traducciones")["token"];
+			}
+
+			return cadena;
+		}
+
+        public string ObtenerModeloTraduccion()
+        {
+            if (string.IsNullOrEmpty(modeloTraduccion))
+            {
+                if (EnvironmentVariables.Contains("Servicios__traducciones__modeloTraduccion"))
+                {
+                    modeloTraduccion = EnvironmentVariables["Servicios__traducciones__modeloTraduccion"] as string;
+                }
+                else if (Configuration.GetSection("Servicios").GetSection("traducciones")["modeloTraduccion"] != null)
+                {
+                    modeloTraduccion = Configuration.GetSection("Servicios").GetSection("traducciones")["modeloTraduccion"];
+                }
+                else
+                {
+                    modeloTraduccion = "";
+                }
+            }
+
+            return modeloTraduccion;
+        }
+
+        public string ObtenerInstruccionesAdicionalesTraduccion()
+        {
+            if (string.IsNullOrEmpty(instruccionesAdicionalesTraduccion))
+            {
+                if (EnvironmentVariables.Contains("Servicios__traducciones__instruccionesAdicionalesTraduccion"))
+                {
+                    instruccionesAdicionalesTraduccion = EnvironmentVariables["Servicios__traducciones__instruccionesAdicionalesTraduccion"] as string;
+                }
+                else if (Configuration.GetSection("Servicios").GetSection("traducciones")["instruccionesAdicionalesTraduccion"] != null)
+                {
+                    instruccionesAdicionalesTraduccion = Configuration.GetSection("Servicios").GetSection("traducciones")["instruccionesAdicionalesTraduccion"];
+                }
+                else
+                {
+                    instruccionesAdicionalesTraduccion = "";
+                }
+            }
+
+            return instruccionesAdicionalesTraduccion;
+        }
+
+        public string ObtenerColaPrincipalTraducciones()
+        {
+            if (string.IsNullOrEmpty(colaPrincipalTraducciones))
+            {
+                if (EnvironmentVariables.Contains("colaPrincipalTraducciones"))
+                {
+                    colaPrincipalTraducciones = EnvironmentVariables["colaPrincipalTraducciones"] as string;
+                }
+                else if (Configuration["colaPrincipalTraducciones"] != null)
+                {
+                    colaPrincipalTraducciones = Configuration["colaPrincipalTraducciones"];
+                }
+                else
+                {
+                    colaPrincipalTraducciones = "";
+                }
+            }
+
+            return colaPrincipalTraducciones;
+        }
+
+        public string ObtenerColaReintentosTraducciones()
+        {
+            if (string.IsNullOrEmpty(colaReintentosTraducciones))
+            {
+                if (EnvironmentVariables.Contains("colaReintentosTraducciones"))
+                {
+                    colaReintentosTraducciones = EnvironmentVariables["colaReintentosTraducciones"] as string;
+                }
+                else if (Configuration["colaReintentosTraducciones"] != null)
+                {
+                    colaReintentosTraducciones = Configuration["colaReintentosTraducciones"];
+                }
+                else
+                {
+                    colaReintentosTraducciones = "";
+                }
+            }
+
+            return colaReintentosTraducciones;
+        }
+
+        public string ObtenerColaErroresTraducciones()
+        {
+            if (string.IsNullOrEmpty(colaErroresTraducciones))
+            {
+                if (EnvironmentVariables.Contains("colaErroresTraducciones"))
+                {
+                    colaErroresTraducciones = EnvironmentVariables["colaErroresTraducciones"] as string;
+                }
+                else if (Configuration["colaErroresTraducciones"] != null)
+                {
+                    colaErroresTraducciones = Configuration["colaErroresTraducciones"];
+                }
+                else
+                {
+                    colaErroresTraducciones = "";
+                }
+            }
+
+            return colaErroresTraducciones;
         }
     }
 }

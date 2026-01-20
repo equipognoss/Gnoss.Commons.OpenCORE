@@ -188,6 +188,7 @@
 		<Resource tag="IDIOMAPT">Portugiesisch</Resource>
 		<Resource tag="IDIOMAEU">Baskisch</Resource>
 		<Resource tag="IDIOMACA">Katalanisch</Resource>
+		<Resource tag="IDIOMACA-VALENCIA">Valencianisch</Resource>
 		<Resource tag="IDIOMAGL">Gallizisch</Resource>
 		<Resource tag="IDIOMADE">Deutsch</Resource>
 		<Resource tag="IDIOMAFR">Französisch</Resource>
@@ -1364,6 +1365,7 @@
 		<Resource tag="ELIMINARSELECTIVO">Selektiv entfernen</Resource>
 		<Resource tag="ELIMINARTOTALMENTE">Komplett entfernen</Resource>
 		<Resource tag="NOULTIMAVERSION">Das ist nicht die letzte Version des Artikels.{a href="@1@"}Neueste Version zeigen{/a}</Resource>
+		<Resource tag="TRADUCCIONGENERADAPORIA">KI-generierte Übersetzung</Resource>
 		<Resource tag="ENVIARCORREOTODOSUSUARIO">An die Mitglieder die Gemeinde senden</Resource>
 		<Resource tag="ENVIARCORREOGRUPO">An die Teilnehmer von Gruppen die Gemeinde senden</Resource>
 		<Resource tag="PEGUNTAENVIARCORREOTODOSUSUARIO">In ihrem Profil wählen die Benutzer eine Sprache. Den Newsletter kannst du an die Teilnehmer die Gemeinde in der Sprache senden, die sie ausgewählt haben:</Resource>
@@ -3602,7 +3604,7 @@
 		<Resource tag="COMUNIDAD">gemeinde</Resource>
 		<Resource tag="COMUNIDADES">gemeinden</Resource>
 		<Resource tag="CONDICIONESUSO">nutzungsbedingungen</Resource>
-		<Resource tag="POLITICACOOKIES">richtlinien cookies</Resource>
+		<Resource tag="POLITICACOOKIES">richtlinien-cookies</Resource>
 		<Resource tag="CONFIRMADO">bestatigt</Resource>
 		<Resource tag="CONTACTOS">kontakte</Resource>
 		<Resource tag="CONTACTOSORG">kontakte-org</Resource>
@@ -3634,8 +3636,8 @@
 		<Resource tag="ENVIARMENSAJES">senden-nachricht</Resource>
 		<Resource tag="ENVIARMENSAJESORG">senden-nachricht-org</Resource>
 		<Resource tag="RESPONDER">antworten</Resource>
-		<Resource tag="RESPONDERTODOS">allen antworten</Resource>
-		<Resource tag="REENVIAR">erneut senden</Resource>
+		<Resource tag="RESPONDERTODOS">allen-antworten</Resource>
+		<Resource tag="REENVIAR">erneut-senden</Resource>
 		<Resource tag="ESNUEVO">ist-neu</Resource>
 		<Resource tag="FILTRO">filter</Resource>
 		<Resource tag="GRUPO">gruppe</Resource>
@@ -3921,7 +3923,7 @@
 		<Resource tag="ANYADIRGNOSSCURRICULUMLINKEDIN">anyadir-gnoss-linkedin</Resource>
 		<Resource tag="ACTUALIZARADDTOGNOSSNAVG">actualizar-anyadirgnoss-navegador</Resource>
 		<Resource tag="ADMINISTRARVISTAS">admin-views</Resource>
-		<Resource tag="NOTIFICACIONESPERSO">Personalisierte Benachrichtigungen</Resource>
+		<Resource tag="NOTIFICACIONESPERSO">personalisierte-benachrichtigungen</Resource>
 		<Resource tag="ADMINISTRARFLUJOS">arbeitsabläufe-verwalten</Resource>
 	</page>
 	<page name="NOTIFICACIONESPERSONALIZADAS">
@@ -4072,6 +4074,12 @@ s		<Resource tag="BUSCARPALABRASCLAVE">Schlüsselwörter suchen …</Resource>
 	</page>
   <page name="DEVTOOLS">
     <!-- Textos que ya existían en Vistas de Administración person sin traducir -> DevTools -->
+	<Resource tag="LISTAIDIOMASPERSONALIZADOSECOSISTEMA">Liste der benutzerdefinierten Sprachen auf der Plattform.</Resource>
+	<Resource tag="AÑADIRIDIOMAPERSONALIZADOECOSISTEMA">Sprache hinzufügen</Resource>
+	<Resource tag="CLAVEIDIOMAPERSONALIZADOECOSISTEMA">Sprachschlüssel</Resource>
+	<Resource tag="CLAVEAYUDAIDIOMAPERSONALIZADOECOSISTEMA">Sprachschlüssel -> Bsp.: Für die finnische Sprache wäre dies: fi. Wenn du einen Dialekt angeben möchtest, kannst du dies so tun: en-UK. Der zweite Teil kann bis zu 10 Zeichen lang sein</Resource>
+	<Resource tag="NOMBREIDIOMAPERSONALIZADOECOSISTEMA">Name der Sprache</Resource>
+	<Resource tag="NOMBREAYUDAIDIOMAPERSONALIZADOECOSISTEMA">Name der Sprache, die hinzugefügt werden soll: Beispiel: Finnisch</Resource>
 	<Resource tag="AVISOPRIVACIDADCOMPONENTECMS">Die CMS-Komponente befindet sich in einem privaten Status, daher müssen ihre Profile und/oder Gruppen auf der Verwaltungsseite für Workflows konfiguriert werden</Resource>
 	<Resource tag="SELECCIONPERFILESGRUPOSCOMPONENTECMS">Wähle die Personen und/oder Gruppen aus, die die Komponente sehen können</Resource>
 	<Resource tag="COLOR">Farbe</Resource>

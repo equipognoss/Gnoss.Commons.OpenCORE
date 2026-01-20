@@ -19,7 +19,7 @@ namespace Es.Riam.Gnoss.Elementos.Properties {
     // a través de una herramienta como ResGen o Visual Studio.
     // Para agregar o quitar un miembro, edite el archivo .ResX y, a continuación, vuelva a ejecutar ResGen
     // con la opción /str o recompile su proyecto de VS.
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "16.0.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "17.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     internal class Resources {
@@ -75,6 +75,19 @@ namespace Es.Riam.Gnoss.Elementos.Properties {
         
         /// <summary>
         ///   Busca una cadena traducida similar a &lt;correos&gt;
+        ///	&lt;mensajes&gt;
+        ///		&lt;mensaje id=&quot;0&quot;&gt;
+        ///			&lt;asunto&gt;Modificacions al dafo &apos;{#NombreDafo#}&apos;&lt;/asunto&gt;
+        ///			&lt;texto&gt;{p}Hola {#NombrePersona#},{/p}{p}el dafo &apos;{#NombreDafo#}&apos; en el qual participes compta amb una novetat que pot ser del teu interés.{/p}{p}El factor:{/br} {#Texto#} {/br} s&apos;ha modificat i el seu nou contingut és: {/br} {#Texto2#} {/br}.{/p}{p}Si ho desitges, pots accedir al {a href=&quot;{#UrlEnlace#}&quot;}dafo{/a} i votar, comentar o afegir factors.{/p}{p}Gaudeix de {#NombreEcosistema#}; nosaltres innove [resto de la cadena truncado]&quot;;.
+        /// </summary>
+        internal static string Mensajes_ca_valencia {
+            get {
+                return ResourceManager.GetString("Mensajes_ca_valencia", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Busca una cadena traducida similar a &lt;correos&gt;
         ///  &lt;mensajes&gt;
         ///    &lt;mensaje id=&quot;0&quot;&gt;
         ///      &lt;asunto&gt;Änderungen in der SWOT ‘{#NombreDafo#}’&lt;/asunto&gt;
@@ -89,9 +102,9 @@ namespace Es.Riam.Gnoss.Elementos.Properties {
         /// <summary>
         ///   Busca una cadena traducida similar a &lt;correos&gt;
         ///  &lt;mensajes&gt;
-        ///    &lt;mensaje id=&quot;0&quot;&gt;
-        ///      &lt;asunto&gt;Modifications in the SWOT ‘{#NombreDafo#}’&lt;/asunto&gt;
-        ///      &lt;texto&gt;{p}Hello {#NombrePersona#},{/p}{p}the SWOT analysis ‘{#NombreDafo#}’ you&apos;re taking part in has some news that may interest you.{/p}{p}The factor:{/br} {#Texto#} {/br} was modified and its new content is: {/br} {#Texto2#} {/br}.{/p}{p}If you want, you can access the {a href=&quot;{#UrlEnlace#}&quot;}SWOT analysis{/a} and vote, comment or add factors.{/p}{p}Enjoy {#NombreEcosistema#}; we innova [resto de la cadena truncado]&quot;;.
+        ///  &lt;mensaje id=&quot;0&quot;&gt;
+        ///  &lt;asunto&gt;Modifications in the SWOT ‘{#NombreDafo#}’&lt;/asunto&gt;
+        ///    &lt;texto&gt;{p}Hello {#NombrePersona#},{/p}{p}the SWOT analysis ‘{#NombreDafo#}’ you&apos;re taking part in has some news that may interest you.{/p}{p}The factor:{/br} {#Texto#} {/br} was modified and its new content is: {/br} {#Texto2#} {/br}.{/p}{p}If you want, you can access the {a href=&quot;{#UrlEnlace#}&quot;}SWOT analysis{/a} and vote, comment or add factors.{/p}{p}Enjoy {#NombreEcosistema#}; we innovate with  [resto de la cadena truncado]&quot;;.
         /// </summary>
         internal static string Mensajes_en {
             get {

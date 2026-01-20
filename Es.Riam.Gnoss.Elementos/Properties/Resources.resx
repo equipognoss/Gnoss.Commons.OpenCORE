@@ -121,6 +121,9 @@
   <data name="Mensajes_ca" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\Mensajes_ca.xml;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
   </data>
+  <data name="Mensajes_ca_valencia" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Mensajes_ca_valencia.xml;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
+  </data>
   <data name="Mensajes_de" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\Mensajes_de.xml;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
   </data>

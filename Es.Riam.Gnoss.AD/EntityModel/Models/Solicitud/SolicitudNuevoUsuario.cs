@@ -51,7 +51,7 @@ namespace Es.Riam.Gnoss.AD.EntityModel.Models.Solicitud
         public string Email { get; set; }
 
         [Required]
-        [StringLength(5)]
+        [StringLength(20)]
         public string Idioma { get; set; }
 
         [Required]

@@ -80,7 +80,7 @@ namespace Es.Riam.Gnoss.AD.EntityModel.Models.PersonaDS
         public string CoordenadasFoto { get; set; }
 
         [Required]
-        [StringLength(5)]
+        [StringLength(20)]
         public string Idioma { get; set; }
 
         public int? VersionFoto { get; set; }

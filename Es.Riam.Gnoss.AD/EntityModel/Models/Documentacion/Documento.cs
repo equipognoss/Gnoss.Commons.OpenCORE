@@ -132,6 +132,9 @@ namespace Es.Riam.Gnoss.AD.EntityModel.Models.Documentacion
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<DocumentoRespuestaVoto> DocumentoRespuestaVoto { get; set; }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<IdiomaTraduccionAutomaticaDocumento> IdiomaTraduccionAutomaticaDocumento { get; set; }
+
         public virtual DocumentoLecturaAumentada DocumentoLecturaAumentada { get; set; }
 
         public virtual DocumentoMetaDatos DocumentoMetaDatos { get; set; }

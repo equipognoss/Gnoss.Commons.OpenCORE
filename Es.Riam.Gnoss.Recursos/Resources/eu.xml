@@ -179,6 +179,7 @@
 		<Resource tag="IDIOMAEN">Ingelera</Resource>
 		<Resource tag="IDIOMAPT">Portugalera</Resource>
 		<Resource tag="IDIOMACA">Katalanera</Resource>
+		<Resource tag="IDIOMACA-VALENCIA">Valentziera</Resource>
 		<Resource tag="IDIOMAEU">Euskera</Resource>
 		<Resource tag="IDIOMAGL">Galegoa</Resource>
 		<Resource tag="IDIOMADE">German</Resource>
@@ -1354,6 +1355,7 @@
 		<Resource tag="ELIMINARSELECTIVO">Hautatuta deuseztatu</Resource>
 		<Resource tag="ELIMINARTOTALMENTE">Guztiz deuseztatu</Resource>
 		<Resource tag="NOULTIMAVERSION">Hau ez da artikuluaren azken bertsioa. {a href="@1@"}Ikus azken bertsioa{/a}</Resource>
+		<Resource tag="TRADUCCIONGENERADAPORIA">AI bidez sortutako itzulpena</Resource>
 		<Resource tag="ENVIARCORREOTODOSUSUARIO">Bidali komunitateko parte-hartzaileei</Resource>
 		<Resource tag="ENVIARCORREOGRUPO">Bidali komunitateko taldeen parte-hartzaileei</Resource>
 		<Resource tag="PEGUNTAENVIARCORREOTODOSUSUARIO">Erabiltzaileek hizkuntza bat aukeratzen dute beren profilean. Komunitateko parte-hartzaileei newsletterra bidal diezaiekezu aukeratu duten hizkuntzaren arabera:</Resource>
@@ -3713,8 +3715,8 @@
 		<Resource tag="PRIVACIDAD">pribatutasuna</Resource>
 		<Resource tag="ADMINISTRADORES">administratzaileak</Resource>
 		<Resource tag="EDITORES">editoreak</Resource>
-		<Resource tag="ADMINISTRAMOS">administratzen dugu</Resource>
-		<Resource tag="PARTICIPAMOS">parte hartzen dugu</Resource>
+		<Resource tag="ADMINISTRAMOS">administratzen-dugu</Resource>
+		<Resource tag="PARTICIPAMOS">parte-hartzen-dugu</Resource>
 		<Resource tag="USUARIO">erabiltzailea</Resource>
 		<Resource tag="VERBLOGS">ikus-blogak</Resource>
 		<Resource tag="VERPDFCURRICULUM">ikus-curriculum-pdf</Resource>
@@ -3733,7 +3735,7 @@
 		<Resource tag="SOLICITDESACCESOUSU">erabiltzaileen-sarbide-eskariak</Resource>
 		<Resource tag="SOLICITDESACCESOCOM">com-sarbide-eskariak</Resource>
 		<Resource tag="SOLICITDESACCESOPROF">irakasleen-sarbide-eskariak</Resource>
-		<Resource tag="SUBIRRECURSO">baliabide-berria gehitu</Resource>
+		<Resource tag="SUBIRRECURSO">baliabide-berria-gehitu</Resource>
 		<Resource tag="CREARDOCUMENTOMULTIPLE">dokumentu-anitza-sortu</Resource>
 		<Resource tag="CREARDOCUMENTOVIRTUAL">dokumentu-birtuala-sortu</Resource>
 		<Resource tag="CREARDOCUMENTOORGMULTIPLE">org-dokumentu-anitza-sortu</Resource>
@@ -3918,7 +3920,7 @@
 		<Resource tag="ADMINISTRARVISTAS">ikuspegiak-kudeatu</Resource>
 		<Resource tag="ADMINISTRARSOLICITUDESUSUARIOS">administrar-solicitudes-usuarios</Resource>
 		<Resource tag="ADMINISTRARCONFIGURACIONPESOBUSQUEDAS">administrar-peso-busqueda</Resource>
-		<Resource tag="NOTIFICACIONESPERSO">Ohiko-jakinarazpenak</Resource>
+		<Resource tag="NOTIFICACIONESPERSO">ohiko-jakinarazpenak</Resource>
 		<Resource tag="ADMINISTRARFLUJOS">kudeatu-lan-fluxuak</Resource>
 	</page>
 	<page name="NOTIFICACIONESPERSONALIZADAS">
@@ -4076,6 +4078,12 @@
 	<Resource tag="CANCELAR">Ezeztatu</Resource>
 	<Resource tag="ERRORCARGARFORMULARIO">Arazo bat sortu da inprimakia kargatzean</Resource>
 	<Resource tag="TIPOS">Motak</Resource>
+	<Resource tag="LISTAIDIOMASPERSONALIZADOSECOSISTEMA">Plataformako hizkuntza pertsonalizatuen zerrenda.</Resource>
+	<Resource tag="AÑADIRIDIOMAPERSONALIZADOECOSISTEMA">Hizkuntza gehitu</Resource>
+	<Resource tag="CLAVEIDIOMAPERSONALIZADOECOSISTEMA">Hizkuntzaren gakoa</Resource>
+	<Resource tag="CLAVEAYUDAIDIOMAPERSONALIZADOECOSISTEMA">Hizkuntzaren gakoa -> Adib.: Finlandieraren hizkuntzarako honakoa litzateke: fi. Dialekto bat zehaztu nahi baduzu, honela egin dezakezu: en-UK. Bigarren zatiak gehienez 10 karaktere izan ditzake</Resource>
+	<Resource tag="NOMBREIDIOMAPERSONALIZADOECOSISTEMA">Hizkuntzaren izena</Resource>
+	<Resource tag="NOMBREAYUDAIDIOMAPERSONALIZADOECOSISTEMA">Gehitu nahi den hizkuntzaren izena: Adibidea: Finlandiera</Resource>
 	<Resource tag="INSERTADOSEARCH">Proprietatea txertatu da.</Resource>
 	<Resource tag="ALERTAUSUARIO">Abisua!</Resource>
 	<Resource tag="PROPIEDADNOEXISTE">Ez dago sartutako propietatea: @1@.</Resource>

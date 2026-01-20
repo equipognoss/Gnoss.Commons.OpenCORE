@@ -1423,15 +1423,11 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
 
                                 int indiceIdioma = -1;
 
-                                if (objetoTemp.Length > 3 && objetoTemp[objetoTemp.Length - 3] == '@')
-                                {
-                                    // Clave de idioma de dos caracteres. Ej: en
-                                    indiceIdioma = 3;
-                                }
-                                else if (objetoTemp.Length > 6 && objetoTemp[objetoTemp.Length - 6] == '@' && objetoTemp[objetoTemp.Length - 3] == '-')
-                                {
-                                    // Clave de idioma de cuatro caracteres (idioma + región). Ej: en-us
-                                    indiceIdioma = 6;
+                                // Clave de idioma de n caracteres (idioma + región).
+                                // Ej: XX(-XXXXXXXXXX) el bloque entre parentesis puede aparecer entre 0 y 2 veces.
+                                if (objetoTemp.Length > 3 && objetoTemp.Contains("@") && UtilCadenas.RegexPrefijoIdioma.IsMatch(objetoTemp.Split("@")[1]))
+                                {    
+                                    indiceIdioma = 1;
                                 }
 
                                 if (indiceIdioma > 0)
@@ -1750,10 +1746,10 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
         /// <param name="pIdentidadActual">IdentidadActual (null = usuario invitado)</param>
         /// <param name="pBaseRecursosPersonalID">ID de la base de recurso personal en caso de que estemos en uno, NULL para comunidades o MyGnoss y un booleano que indica si la BR es de organización o no</param>
         /// <returns></returns>
-        public Dictionary<Guid, ResourceModel> ObtenerRecursosPorIDSinProcesarIdioma(List<Guid> pListaRecursosID, string pUrlBaseUrlBusqueda, KeyValuePair<Guid?, bool> pBaseRecursosPersonalID, Guid? pProyectoID = null, bool pEsFichaRecurso = false)
+        public Dictionary<Guid, ResourceModel> ObtenerRecursosPorIDSinProcesarIdioma(List<Guid> pListaRecursosID, string pUrlBaseUrlBusqueda, KeyValuePair<Guid?, bool> pBaseRecursosPersonalID, Guid? pProyectoID = null, bool pEsFichaRecurso = false, bool pEsMejora = false)
         {
             //Procesamos los modelos para su presentación
-            Dictionary<Guid, ResourceModel> listaRecursos = ObtenerRecursosPorIDInt(pListaRecursosID, pUrlBaseUrlBusqueda, pBaseRecursosPersonalID, true, false, pProyectoID, pEsFichaRecurso: pEsFichaRecurso);
+            Dictionary<Guid, ResourceModel> listaRecursos = ObtenerRecursosPorIDInt(pListaRecursosID, pUrlBaseUrlBusqueda, pBaseRecursosPersonalID, true, false, pProyectoID, pEsFichaRecurso: pEsFichaRecurso, pEsMejora: pEsMejora);
             Dictionary<Guid, ResourceModel> listaRecursosDevolver = new Dictionary<Guid, ResourceModel>();
             foreach (Guid id in listaRecursos.Keys)
             {
@@ -1777,7 +1773,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
         /// <param name="pIdentidadActual">IdentidadActual (null = usuario invitado)</param>
         /// <param name="pBaseRecursosPersonalID">ID de la base de recurso personal en caso de que estemos en uno, NULL para comunidades o MyGnoss y un booleano que indica si la BR es de organización o no</param>
         /// <returns></returns>
-        private Dictionary<Guid, ResourceModel> ObtenerRecursosPorIDInt(List<Guid> pListaRecursosID, string pUrlBaseUrlBusqueda, KeyValuePair<Guid?, bool> pBaseRecursosPersonalID, bool pObtenerIdentidades = true, bool pObtenerDatosExtraIdentidades = false, Guid? pProyectoID = null, bool pObtenerUltimaVersion = false, bool pEsFichaRecurso = false)
+        private Dictionary<Guid, ResourceModel> ObtenerRecursosPorIDInt(List<Guid> pListaRecursosID, string pUrlBaseUrlBusqueda, KeyValuePair<Guid?, bool> pBaseRecursosPersonalID, bool pObtenerIdentidades = true, bool pObtenerDatosExtraIdentidades = false, Guid? pProyectoID = null, bool pObtenerUltimaVersion = false, bool pEsFichaRecurso = false, bool pEsMejora = false)
         {
             Dictionary<Guid, Guid> listaRecursosABuscar = new Dictionary<Guid, Guid>();
 
@@ -2152,7 +2148,12 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
                         {
                             recursoModel.Private = true;
                             // Comprobar si la identidad actual tiene permisos de lectura / edicion
-                            tienePermisos = flujosCN.ComprobarIdentidadTienePermisoLecturaEnEstado(estadoID, mIdentidadActual.Clave, recursoModel.OriginalKey) || flujosCN.ComprobarIdentidadTienePermisoEdicionEnEstado(estadoID, mIdentidadActual.Clave, recursoModel.OriginalKey);
+                            Guid documentoIDComprobar = recursoModel.OriginalKey;
+                            if (documentoIDComprobar.Equals(Guid.Empty) || pEsMejora)
+                            {
+                                documentoIDComprobar = recursoModel.Key;
+                            }
+                            tienePermisos = flujosCN.ComprobarIdentidadTienePermisoLecturaEnEstado(estadoID, mIdentidadActual.Clave, documentoIDComprobar) || flujosCN.ComprobarIdentidadTienePermisoEdicionEnEstado(estadoID, mIdentidadActual.Clave, documentoIDComprobar);
                         }
                         else
                         {

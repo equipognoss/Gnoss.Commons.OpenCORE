@@ -22,7 +22,7 @@ namespace Es.Riam.Gnoss.AD.EntityModel.Models.Documentacion
         public DateTime Fecha { get; set; }
 
         [Required]
-        [StringLength(5)]
+        [StringLength(20)]
         public string Idioma { get; set; }
 
         public bool EnvioSolicitado { get; set; }

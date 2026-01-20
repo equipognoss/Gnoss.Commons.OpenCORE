@@ -1657,7 +1657,7 @@ namespace Es.Riam.Gnoss.Elementos.Notificacion
 			PersonaCN personaCN = new PersonaCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<PersonaCN>(), mLoggerFactory);
             DataWrapperPersona dwPersonaOrigen = personaCN.ObtenerPersonasPorIdentidadesCargaLigera(editoresOrigen);
             DataWrapperPersona dwPersonaDestino = personaCN.ObtenerPersonasPorIdentidadesCargaLigera(editoresDestino);
-            List<AD.EntityModel.Models.PersonaDS.Persona> personas = dwPersonaOrigen.ListaPersona.Union(dwPersonaDestino.ListaPersona).ToList();
+            List<AD.EntityModel.Models.PersonaDS.Persona> personas = dwPersonaOrigen.ListaPersona.Concat(dwPersonaDestino.ListaPersona).DistinctBy(x => x.Email).ToList();
 
 			foreach (AD.EntityModel.Models.PersonaDS.Persona persona in personas)
             {
@@ -1689,9 +1689,9 @@ namespace Es.Riam.Gnoss.Elementos.Notificacion
             PersonaCN personaCN = new PersonaCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<PersonaCN>(), mLoggerFactory);
             DataWrapperPersona dwPersonaMejora = personaCN.ObtenerPersonasPorIdentidadesCargaLigera(editoresMejora);
             DataWrapperPersona dwPersonaDestino = personaCN.ObtenerPersonasPorIdentidadesCargaLigera(editoresDestino);
-            List<AD.EntityModel.Models.PersonaDS.Persona> personas = dwPersonaMejora.ListaPersona.Union(dwPersonaDestino.ListaPersona).ToList();
+            List<AD.EntityModel.Models.PersonaDS.Persona> personas = dwPersonaMejora.ListaPersona.Concat(dwPersonaDestino.ListaPersona).DistinctBy(x => x.Email).ToList();
 
-            foreach (AD.EntityModel.Models.PersonaDS.Persona persona in personas)
+			foreach (AD.EntityModel.Models.PersonaDS.Persona persona in personas)
             {
                 Notificacion notificacionCorreo = AgregarNotificacion(TiposNotificacion.AvisoMejoraAplicada, DateTime.Now, DateTime.Now.AddDays(1), null, pProyectoID);
 
@@ -1717,9 +1717,9 @@ namespace Es.Riam.Gnoss.Elementos.Notificacion
             PersonaCN personaCN = new PersonaCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<PersonaCN>(), mLoggerFactory);
             DataWrapperPersona dwPersonaMejora = personaCN.ObtenerPersonasPorIdentidadesCargaLigera(editoresMejora);
             DataWrapperPersona dwPersonaDestino = personaCN.ObtenerPersonasPorIdentidadesCargaLigera(editoresDestino);
-            List<AD.EntityModel.Models.PersonaDS.Persona> personas = dwPersonaMejora.ListaPersona.Union(dwPersonaDestino.ListaPersona).ToList();
+            List<AD.EntityModel.Models.PersonaDS.Persona> personas = dwPersonaMejora.ListaPersona.Concat(dwPersonaDestino.ListaPersona).DistinctBy(x => x.Email).ToList();
 
-            foreach (AD.EntityModel.Models.PersonaDS.Persona persona in personas)
+			foreach (AD.EntityModel.Models.PersonaDS.Persona persona in personas)
             {
                 Notificacion notificacionCorreo = AgregarNotificacion(TiposNotificacion.AvisoMejoraCancelada, DateTime.Now, DateTime.Now.AddDays(1), null, pProyectoID);
 
@@ -2607,7 +2607,7 @@ namespace Es.Riam.Gnoss.Elementos.Notificacion
 
             if (string.IsNullOrEmpty(ficheroIdioma) && !string.IsNullOrEmpty(pIdioma) && pIdioma.Length > 2)
             {
-                pIdioma = pIdioma.Substring(0, 2);
+                nombreFichero = "Mensajes_" + pIdioma.Replace("-", "_");
                 ficheroIdioma = rm.GetString(nombreFichero);
             }
             return ficheroIdioma;
@@ -2622,7 +2622,7 @@ namespace Es.Riam.Gnoss.Elementos.Notificacion
 
             if (string.IsNullOrEmpty(ficheroIdioma) && !string.IsNullOrEmpty(pIdioma) && pIdioma.Length > 2)
             {
-                pIdioma = pIdioma.Substring(0, 2);
+                nombreFichero = "Mensajes_" + pIdioma.Replace("-", "_") + "_personalizado";
                 ficheroIdioma = rm.GetString(nombreFichero);
             }
             return ficheroIdioma;

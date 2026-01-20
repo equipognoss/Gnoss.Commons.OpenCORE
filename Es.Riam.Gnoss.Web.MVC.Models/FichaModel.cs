@@ -399,6 +399,8 @@ namespace Es.Riam.Gnoss.Web.MVC.Models
         /// </summary>
         public string Licence { get; set; }
 
+        public bool AIGeneratedTranslation { get; set; }
+
         /// <summary>
         /// Certificacion del recurso. Clave de certificación y Nombre
         /// </summary>

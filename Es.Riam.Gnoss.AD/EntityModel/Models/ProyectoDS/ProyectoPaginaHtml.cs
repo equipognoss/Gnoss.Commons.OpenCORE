@@ -19,7 +19,7 @@ namespace Es.Riam.Gnoss.AD.EntityModel.Models.ProyectoDS
         [Required]
         public string Html { get; set; }
 
-        [StringLength(5)]
+        [StringLength(20)]
         public string Idioma { get; set; }
     }
 }

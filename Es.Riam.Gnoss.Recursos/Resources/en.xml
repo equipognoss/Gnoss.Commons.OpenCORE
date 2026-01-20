@@ -182,6 +182,7 @@
 		<Resource tag="IDIOMAPT">Portuguese</Resource>
 		<Resource tag="IDIOMAEU"></Resource>
 		<Resource tag="IDIOMACA"></Resource>
+		<Resource tag="IDIOMACA-VALENCIA">Valencian</Resource>
 		<Resource tag="IDIOMAGL"></Resource>
 		<Resource tag="IDIOMADE">German</Resource>
 		<Resource tag="IDIOMAFR">French</Resource>
@@ -1358,6 +1359,7 @@
 		<Resource tag="ELIMINARSELECTIVO">Delete selectively</Resource>
 		<Resource tag="ELIMINARTOTALMENTE">Delete completely</Resource>
 		<Resource tag="NOULTIMAVERSION">This is not the latest version of the article. {a href="@1@"}View the latest version{/a}</Resource>
+		<Resource tag="TRADUCCIONGENERADAPORIA">AI-generated translation</Resource>
 		<Resource tag="ENVIARCORREOTODOSUSUARIO">Send to the community members</Resource>
 		<Resource tag="ENVIARCORREOGRUPO">
 		</Resource>
@@ -3673,7 +3675,6 @@
 		<Resource tag="ADMINISTRARDETALLESDOCUMENTACION">manage-documentation-details</Resource>
 		<Resource tag="DOCUMENTACIONONTOLOGIA">documentation-ontology</Resource>
 		<Resource tag="ADMINISTRARCATEGORIASECOSISTEMA">manage-ecosystem-categories</Resource>
-		<Resource tag="SOLICITADOPOR">Requested by</Resource>
 		<Resource tag="AMIGOS">friends</Resource>
 		<Resource tag="BIO">bio</Resource>
 		<Resource tag="ADMINISTRARSOLICITUDESUSUARIO">manage-requests-users</Resource>
@@ -4154,6 +4155,13 @@
 		<Resource tag="PAGINACMS">CMS Page</Resource>
 		<Resource tag="COMPONENTECMS">CMS Component</Resource>
 		<Resource tag="RECURSOSEMANTICO">Semantic Resource</Resource>
+		<Resource tag="LISTAIDIOMASPERSONALIZADOSECOSISTEMA">List of custom languages on the platform.</Resource>
+		<Resource tag="AÑADIRIDIOMAPERSONALIZADOECOSISTEMA">Add language</Resource>
+		<Resource tag="CLAVEIDIOMAPERSONALIZADOECOSISTEMA">Language key</Resource>
+		<Resource tag="CLAVEAYUDAIDIOMAPERSONALIZADOECOSISTEMA">Language key -> Example: For the Finnish language it would be: fi. If you want to specify a dialect, you can do it this way: en-UK. The second part can have up to 10 characters</Resource>
+		<Resource tag="NOMBREIDIOMAPERSONALIZADOECOSISTEMA">Language name</Resource>
+		<Resource tag="NOMBREAYUDAIDIOMAPERSONALIZADOECOSISTEMA">Name of the language to be added: Example: Finnish</Resource>
+		<Resource tag="SOLICITADOPOR">Requested by</Resource>
 		<Resource tag="INSERTADOSEARCH">The property has been inserted.</Resource>
 		<Resource tag="ALERTAUSUARIO">Warning!</Resource>
 		<Resource tag="PROPIEDADNOEXISTE">The introduced property: @1@ does not exist.</Resource>

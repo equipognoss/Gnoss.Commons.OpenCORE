@@ -183,6 +183,7 @@
 		<Resource tag="IDIOMAPT">Portugais</Resource>
 		<Resource tag="IDIOMAEU">Basque</Resource>
 		<Resource tag="IDIOMACA">Catalan</Resource>
+		<Resource tag="IDIOMACA-VALENCIA">Valencien</Resource>
 		<Resource tag="IDIOMAGL">Galicien</Resource>
 		<Resource tag="IDIOMADE">Allemand</Resource>
 		<Resource tag="IDIOMAFR">Français</Resource>
@@ -1366,6 +1367,7 @@
 		<Resource tag="ELIMINARSELECTIVO">Éliminer sélectivement</Resource>
 		<Resource tag="ELIMINARTOTALMENTE">Éliminer totalement</Resource>
 		<Resource tag="NOULTIMAVERSION">Ce n’est pas la dernière version de l’article. {a href="@1@"}Voir dernière version{/a}</Resource>
+		<Resource tag="TRADUCCIONGENERADAPORIA">Traduction générée par l'IA</Resource>
 		<Resource tag="ENVIARCORREOTODOSUSUARIO">Envoyer aux participants de la communauté</Resource>
 		<Resource tag="ENVIARCORREOGRUPO">Envoyer aux participants de groupes de la communauté</Resource>
 		<Resource tag="PEGUNTAENVIARCORREOTODOSUSUARIO">Les utilisateurs choisissent une langue dans leur profil. Vous pouvez envoyer la newsletter aux participants de la communauté en fonction de la langue qu’ils ont choisi :</Resource>
@@ -3717,8 +3719,8 @@
 		<Resource tag="PRIVACIDAD">confidentialite</Resource>
 		<Resource tag="ADMINISTRADORES">administrateurs</Resource>
 		<Resource tag="EDITORES">editeurs</Resource>
-		<Resource tag="ADMINISTRAMOS">nous administrons</Resource>
-		<Resource tag="PARTICIPAMOS">nous participons</Resource>
+		<Resource tag="ADMINISTRAMOS">nous-administrons</Resource>
+		<Resource tag="PARTICIPAMOS">nous-participons</Resource>
 		<Resource tag="USUARIO">utilisateur</Resource>
 		<Resource tag="VERBLOGS">voir-blogs</Resource>
 		<Resource tag="VERPDFCURRICULUM">voir-pdf-curriculum</Resource>
@@ -3920,7 +3922,7 @@
 		<Resource tag="ANYADIRGNOSSCURRICULUMLINKEDIN">anyadir-gnoss-linkedin</Resource>
 		<Resource tag="ACTUALIZARADDTOGNOSSNAVG">actualizar-anyadirgnoss-navegador</Resource>
 		<Resource tag="ADMINISTRARVISTAS">admin-views</Resource>
-		<Resource tag="NOTIFICACIONESPERSO">Notifications personnalisées</Resource>
+		<Resource tag="NOTIFICACIONESPERSO">notifications-personnalisees</Resource>
 		<Resource tag="ADMINISTRARFLUJOS">gérer-flux-travail</Resource>
 	</page>
 	<page name="NOTIFICACIONESPERSONALIZADAS">
@@ -4060,6 +4062,12 @@
 	<Resource tag="CANCELAR">Annuler</Resource>
 	<Resource tag="ERRORCARGARFORMULARIO">Un problème est survenu lors du chargement du formulaire</Resource>
 	<Resource tag="TIPOS">Types</Resource>
+	<Resource tag="LISTAIDIOMASPERSONALIZADOSECOSISTEMA">Liste des langues personnalisées sur la plateforme.</Resource>
+	<Resource tag="AÑADIRIDIOMAPERSONALIZADOECOSISTEMA">Ajouter une langue</Resource>
+	<Resource tag="CLAVEIDIOMAPERSONALIZADOECOSISTEMA">Clé de la langue</Resource>
+	<Resource tag="CLAVEAYUDAIDIOMAPERSONALIZADOECOSISTEMA">Clé de la langue -> Ex : Pour la langue finnoise, ce serait : fi. Si vous souhaitez spécifier un dialecte, vous pouvez le faire de cette manière : en-UK. La seconde partie peut comporter jusqu’à 10 caractères</Resource>
+	<Resource tag="NOMBREIDIOMAPERSONALIZADOECOSISTEMA">Nom de la langue</Resource>
+	<Resource tag="NOMBREAYUDAIDIOMAPERSONALIZADOECOSISTEMA">Nom de la langue à ajouter : Exemple : Finnois</Resource>
 	<Resource tag="INSERTADOSEARCH">La propriété a été insérée.</Resource>
 	<Resource tag="ALERTAUSUARIO">Avertissement!</Resource>
 	<Resource tag="PROPIEDADNOEXISTE">La propriété saisie : @1@ n'existe pas.</Resource>

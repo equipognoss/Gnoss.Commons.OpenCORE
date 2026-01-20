@@ -1802,7 +1802,7 @@ namespace Es.Riam.Gnoss.Web.Controles
                     //Redirige al login de una comunidad en castellano
                     redirect = "/" + trozos[0] + "/" + trozos[1];
                 }
-                else if ((trozos.Length > 2) && (trozos[0].Length == 2) && (trozos[1].Trim().Equals(pUtilIdiomas.GetText("URLSEM", "COMUNIDAD"))))
+                else if ((trozos.Length > 2) && (UtilCadenas.RegexPrefijoIdioma.IsMatch(trozos[0])) && (trozos[1].Trim().Equals(pUtilIdiomas.GetText("URLSEM", "COMUNIDAD"))))
                 {
                     //Redririge al login de una comunidad en inglés
                     redirect = "/" + trozos[0] + "/" + trozos[1] + "/" + trozos[2];

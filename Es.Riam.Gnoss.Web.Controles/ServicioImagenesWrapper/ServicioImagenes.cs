@@ -389,6 +389,28 @@ namespace Es.Riam.Gnoss.Web.Controles.ServicioImagenesWrapper
             }
         }
 
+        /// <summary>
+        /// Llama al serviicio interno para copiar la imagen indicada de un documento a otro. Si la imagen no tiene
+        /// extensión se copia la imagen y todos sus recortes.
+        /// </summary>
+        /// <param name="pDocumentoIDOrigen">Identificador del documento original que contiene la imagen</param>
+        /// <param name="pDocumentoIDDestino">Identificador del documento al que se quiere copiar la imagen</param>
+        /// <param name="pNombreImagen">Nombre de la imagen a copiar. Si no se define la extensión se copiará la imagen y sus recortes</param>
+        /// <returns></returns>
+        public bool CopiarImagenSemantica(Guid pDocumentoIDOrigen, Guid pDocumentoIDDestino, string pNombreImagen)
+        {
+            try
+            {
+                PeticionWebRequest("POST", $"copy-semantic-image?origin_document_id={pDocumentoIDOrigen}&destination_document_id={pDocumentoIDDestino}&name_image={pNombreImagen}");
+                return true;
+            }
+            catch(Exception ex)
+            {
+                mLoggingService.GuardarLogError(ex, mlogger);
+                return false;
+            }
+        }
+
         public byte[] ObtenerImagenDeDirectorioOntologia(string pDirectorio, string pNombre, string pExtension)
         {
             string respuesta = PeticionWebRequest("GET", $"get-image-from-ontology-directory?relative_path={HttpUtility.UrlEncode(pDirectorio)}&name={HttpUtility.UrlEncode(pNombre)}&extension={pExtension}");

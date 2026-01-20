@@ -23,6 +23,7 @@ using Es.Riam.Gnoss.UtilServiciosWeb;
 using Es.Riam.Gnoss.Web.Controles.ParametroGeneralDSName;
 using Es.Riam.Gnoss.Web.Controles.Proyectos;
 using Es.Riam.Gnoss.Web.MVC.Models.Administracion;
+using Es.Riam.Util;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using System;
@@ -53,7 +54,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
         private IServicesUtilVirtuosoAndReplication mServicesUtilVirtuosoAndReplication;
         private List<ParametroAplicacion> mParametroAplicacion;
         private Dictionary<string, string> mListaParametrosAplicacion;
-        private static string[] LISTA_IDIOMAS = { "es", "en", "pt", "ca", "eu", "gl", "fr", "de", "it" };
+        private static string[] LISTA_IDIOMAS = { "es", "en", "pt", "ca", "ca-valencia", "eu", "gl", "fr", "de", "it" };
         private ILogger mlogger;
         private ILoggerFactory mLoggerFactory;
         #region Constructor
@@ -405,8 +406,8 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
             string[] idiomas = pIdiomas.Split("&&&");
             foreach (string idioma in idiomas)
             {
-                string clave = idioma.Substring(0, 2);
-                if (!LISTA_IDIOMAS.Contains(clave))
+                string clave = idioma.Split("|")[0];
+                if (!LISTA_IDIOMAS.Contains(clave) && UtilCadenas.RegexPrefijoIdioma.IsMatch(clave))
                 {
                     idiomasPersonalizados.Append($"{idioma}&&&");
                 }

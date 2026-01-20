@@ -3,6 +3,7 @@ using Es.Riam.Gnoss.RabbitMQ;
 using Es.Riam.Gnoss.Util.Configuracion;
 using Es.Riam.Gnoss.Util.General;
 using Es.Riam.InterfacesOpen;
+using Es.Riam.InterfacesOpen.Model;
 using Es.Riam.Open.Model;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -59,7 +60,7 @@ namespace Es.Riam.Open
         /// </summary>
         /// <param name="pModelo"></param>
         /// <param name="tipo">Modelo encargador de guardar los datos de los Recursos</param>
-        public void PublishResource(PublicarModificarEliminarRecurso pModelo, string tipo)
+        public void PublishResource(PublicarModificarEliminarRecurso pModelo, string pTipo)
         {
 
         }
@@ -69,6 +70,15 @@ namespace Es.Riam.Open
         /// </summary>
         /// <param name="pModelo">Modelo encargador de guardar los datos de los Usuarios</param>
         public void PublishUser(ModificarUsuarios pModelo)
+        {
+
+        }
+
+        /// <summary>
+        /// Metodo encargado de informar las traducciones
+        /// </summary>
+        /// <param name="pModelo"></param>
+        public void PublishTranslation(TranslationError pModelo)
         {
 
         }

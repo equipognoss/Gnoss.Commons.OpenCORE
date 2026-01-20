@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
+using System.Linq;
 using System.Text;
 
 namespace Es.Riam.Gnoss.Web.Controles.GeneradorPlantillasOWL
@@ -149,11 +150,11 @@ namespace Es.Riam.Gnoss.Web.Controles.GeneradorPlantillasOWL
         private Dictionary<string, string> ObtenerAtributosClase(string pAtributos)
         {
             string[] atributoValor = pAtributos.Split(';');
-            Dictionary<string, string> listaAtributos = new Dictionary<string,string>();
+            Dictionary<string, string> listaAtributos = new Dictionary<string, string>();
 
             string atributo;
             string valor;
-            for (int i=0;i<atributoValor.Length;i++)
+            for (int i = 0; i < atributoValor.Length; i++)
             {
                 if (atributoValor[i].Trim().Length > 0)
                 {
@@ -412,7 +413,7 @@ namespace Es.Riam.Gnoss.Web.Controles.GeneradorPlantillasOWL
         /// <param name="pTipoEntidad">Tipo de entidad de la que se recogerán las propiedades</param>
         /// <param name="pListaEstilos">Lista con la configuración leida</param>
         /// <returns>Lista de propiedades representantes ordenadas de la entidad y su codigo de representación en caso de tenerlo</returns>
-        public static Dictionary<Propiedad,string> ObtenerRepresentantesEntidad(ElementoOntologia pEntidad, string pTipoEntidad, Dictionary<string, ClaseCSS> pListaEstilos)
+        public static Dictionary<Propiedad, string> ObtenerRepresentantesEntidad(ElementoOntologia pEntidad, string pTipoEntidad, Dictionary<string, ClaseCSS> pListaEstilos)
         {
             return ObtenerRepresentantesEntidadesVinculadas(pEntidad, null, pTipoEntidad, pListaEstilos);
         }
@@ -436,7 +437,7 @@ namespace Es.Riam.Gnoss.Web.Controles.GeneradorPlantillasOWL
                     nombreVerdaderaPropiedad = pNombre.Substring(pNombre.IndexOf("/") + 1);
                 }
 
-                foreach (Propiedad propiedad in pEntidad.Propiedades)
+                foreach (Propiedad propiedad in pEntidad.Propiedades.Where(item => item.Tipo == TipoPropiedad.ObjectProperty && !item.TieneSelectorEntidad))
                 {
                     if (nombrePropiedadEncaminante == null)
                     {
@@ -445,21 +446,19 @@ namespace Es.Riam.Gnoss.Web.Controles.GeneradorPlantillasOWL
                             return propiedad;
                         }
 
-                        if (propiedad.Tipo == TipoPropiedad.ObjectProperty)
+
+                        if (propiedad.FunctionalProperty && propiedad.UnicoValor.Key != null)
                         {
-                            if (propiedad.FunctionalProperty && propiedad.UnicoValor.Key != null)
+                            Propiedad propAux = ObtenerPropiedadACualquierNivelPorNombre(pNombre, propiedad.UnicoValor.Value);
+                            if (propAux != null)
                             {
-                                Propiedad propAux = ObtenerPropiedadACualquierNivelPorNombre(pNombre, propiedad.UnicoValor.Value);
-                                if (propAux != null)
-                                {
-                                    return propAux;
-                                }
+                                return propAux;
                             }
                         }
                     }
                     else
                     {
-                        if (propiedad.Tipo == TipoPropiedad.ObjectProperty && propiedad.Nombre == nombrePropiedadEncaminante)
+                        if (propiedad.Nombre == nombrePropiedadEncaminante)
                         {
                             if (propiedad.FunctionalProperty && propiedad.UnicoValor.Key != null)
                             {
@@ -578,48 +577,6 @@ namespace Es.Riam.Gnoss.Web.Controles.GeneradorPlantillasOWL
         }
 
         #endregion
-
-        ///// <summary>
-        ///// Devuelve el nombre para un individual de la propiedad si lo hay.
-        ///// </summary>
-        ///// <param name="pNombrePropiedad">Nombre de la propiedad</param>
-        ///// <param name="pListaEstilos">Lista con el archivo de configuración</param>
-        ///// <param name="pParaLectura">Indica si es para lectura o no</param>
-        ///// <param name="pIdioma">Idioma del usuario</param>
-        ///// <returns>Nombre para un individual de la propiedad si lo hay</returns>
-        //public static string ObtenerNombrePropiedad(string pNombrePropiedad, Dictionary<string, ClaseCSS> pListaEstilos, bool pParaLectura, string pIdioma)
-        //{
-        //    string clase = ClasesLectorCSS.EspecificacionPropiedad + pNombrePropiedad;
-        //    string atributo = AtributosLectorCSS.NombrePropiedadEntidad;
-
-        //    if (pParaLectura)
-        //    {
-        //        atributo = AtributosLectorCSS.NombrePropiedadEntidadLectura;
-        //    }
-
-        //    return ObtenerValorAtributoSegunIdioma(pListaEstilos, clase, atributo, pIdioma);
-        //}
-
-        ///// <summary>
-        ///// Devuelve el nombre para un individual de la propiedad si lo hay.
-        ///// </summary>
-        ///// <param name="pEntidad">Entidad</param>
-        ///// <param name="pListaEstilos">Lista con el archivo de configuración</param>
-        ///// <param name="pParaLectura">Indica si es para lectura o no</param>
-        ///// <param name="pIdioma">Idioma del usuario</param>
-        ///// <returns>Nombre para un individual de la propiedad si lo hay</returns>
-        //public static string ObtenerNombreTipoEntidad(ElementoOntologia pEntidad, Dictionary<string, ClaseCSS> pListaEstilos, bool pParaLectura, string pIdioma)
-        //{
-        //    string clase = ClasesLectorCSS.EspecificacionEntidad + pEntidad.TipoEntidad;
-        //    string atributo = AtributosLectorCSS.NombrePropiedadEntidad;
-
-        //    if (pParaLectura)
-        //    {
-        //        atributo = AtributosLectorCSS.NombrePropiedadEntidadLectura;
-        //    }
-
-        //    return ObtenerValorAtributoSegunIdioma(pListaEstilos, clase, atributo, pIdioma);
-        //}
 
         /// <summary>
         /// Obtiene el valor del atributo según el idioma del usuario.
@@ -766,7 +723,7 @@ namespace Es.Riam.Gnoss.Web.Controles.GeneradorPlantillasOWL
         /// </summary>
         /// <param name="pListaEstilos">Lista con el archivo de configuración</param>
         /// <returns>Tamaño (ancho,alto) para la imagen sustituta del recurso</returns>
-        public static KeyValuePair<int,int> ObtenerTamanioImagenDoc(Dictionary<string, ClaseCSS> pListaEstilos)
+        public static KeyValuePair<int, int> ObtenerTamanioImagenDoc(Dictionary<string, ClaseCSS> pListaEstilos)
         {
             string claseCSS = ClasesLectorCSS.ConfiguracionGeneral;
 
@@ -776,11 +733,11 @@ namespace Es.Riam.Gnoss.Web.Controles.GeneradorPlantillasOWL
 
                 if (propiedad.Contains(","))
                 {
-                    return new KeyValuePair<int,int>(int.Parse(propiedad.Split(',')[1]), int.Parse(propiedad.Split(',')[2]));
+                    return new KeyValuePair<int, int>(int.Parse(propiedad.Split(',')[1]), int.Parse(propiedad.Split(',')[2]));
                 }
             }
 
-            return new KeyValuePair<int,int>(0,0);
+            return new KeyValuePair<int, int>(0, 0);
         }
 
         /// <summary>
@@ -807,7 +764,7 @@ namespace Es.Riam.Gnoss.Web.Controles.GeneradorPlantillasOWL
         /// <param name="pListaEstilos">Lista con el archivo de configuración</param>
         /// <param name="pNombrePropiedad">Nombre de la propiedad</param>
         /// <returns>Valor del tamaño de la imagen para la vista previa de una propiedad</returns>
-        public static Dictionary<int,int> ObtenerTamanioPropiedadImagenMini(Dictionary<string, ClaseCSS> pListaEstilos, string pNombrePropiedad)
+        public static Dictionary<int, int> ObtenerTamanioPropiedadImagenMini(Dictionary<string, ClaseCSS> pListaEstilos, string pNombrePropiedad)
         {
             Dictionary<int, int> tamanios = new Dictionary<int, int>();
             string claseCSS = ClasesLectorCSS.EspecificacionPropiedad + pNombrePropiedad;
@@ -848,7 +805,7 @@ namespace Es.Riam.Gnoss.Web.Controles.GeneradorPlantillasOWL
                 count++;
             }
 
-            return new KeyValuePair<int, int>(0,0);
+            return new KeyValuePair<int, int>(0, 0);
         }
 
         /// <summary>
@@ -1022,8 +979,8 @@ namespace Es.Riam.Gnoss.Web.Controles.GeneradorPlantillasOWL
 
             if (pListaEstilos.ContainsKey(claseCSS) && pListaEstilos[claseCSS].Atributos.ContainsKey(AtributosLectorCSS.GnossCampoFechaMesAnyo))
             {
-                char[] tuberia = {'|'};
-                char[] coma = {','};
+                char[] tuberia = { '|' };
+                char[] coma = { ',' };
 
                 string[] estilos = pListaEstilos[claseCSS].Atributos[AtributosLectorCSS.GnossCampoFechaMesAnyo].Split(tuberia, StringSplitOptions.RemoveEmptyEntries);
 

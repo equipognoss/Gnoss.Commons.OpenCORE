@@ -9060,7 +9060,7 @@ namespace Es.Riam.Gnoss.AD.Documentacion
                 }
             }
             pVersionDocumento.EstadoVersion = (short)EstadoVersion.Vigente;
-
+            pVersionDocumento.EsMejora = false;
         }
         public void EliminarVersionesDeMejora(Guid pMejoraID)
         {
@@ -9215,19 +9215,49 @@ namespace Es.Riam.Gnoss.AD.Documentacion
             return mEntityContext.DocumentoUrlCanonica.Where(item => item.DocumentoID.Equals(pDocumentoID)).Select(item => item.UrlCanonica).FirstOrDefault();
         }
 
-		#region Estados
+        /// <summary>
+        /// Guarda un recurso en la base de datos marcado com traducido por IA
+        /// </summary>
+        /// <param name="resourceID"></param>
+        /// <param name="targetLanguages"></param>
+        /// <exception cref="NotImplementedException"></exception>
+        public void GuardarTraduccionAutomatica(Guid resourceID, List<string> targetLanguages)
+        {
+            List<IdiomaTraduccionAutomaticaDocumento> listaTraduccionesAutomaticas = mEntityContext.IdiomaTraduccionAutomaticaDocumento.Where(item => item.DocumentoID.Equals(resourceID)).ToList();
+            foreach(IdiomaTraduccionAutomaticaDocumento idiomaTraduccionAutomaticaDocumento in listaTraduccionesAutomaticas)
+            {
+                mEntityContext.EliminarElemento(idiomaTraduccionAutomaticaDocumento);
+            }
+            mEntityContext.SaveChanges();
 
+            foreach (string idioma in targetLanguages)
+            {
+                IdiomaTraduccionAutomaticaDocumento idiomaTraduccionAutomaticaDocumento = new IdiomaTraduccionAutomaticaDocumento()
+                {
+                    DocumentoID = resourceID,
+                    Idioma = idioma
+                };
+                mEntityContext.IdiomaTraduccionAutomaticaDocumento.Add(idiomaTraduccionAutomaticaDocumento);
+            }
+            mEntityContext.SaveChanges();
+        }
         public Guid? ObtenerEstadoIDDeDocumento(Guid pDocumentoID)
         {
             return mEntityContext.Documento.Where(x => x.DocumentoID.Equals(pDocumentoID)).Select(x => x.EstadoID).FirstOrDefault();
         }        
 
+		public bool ComprobarSiDocumentoEstaTraducidoConIAEnIdioma(Guid pDocumentoID, string pLanguageCode)
+		{
+            IdiomaTraduccionAutomaticaDocumento idiomaTraduccionAutomaticaDocumento = mEntityContext.IdiomaTraduccionAutomaticaDocumento.FirstOrDefault(x => x.DocumentoID.Equals(pDocumentoID) && x.Idioma.Equals(pLanguageCode));
+            return idiomaTraduccionAutomaticaDocumento != null;
+		}
+        #region Estados        
         public void CambiarEstadoDocumento(Guid pDocumentoID, Guid pEstadoID)
         {
             Documento filaDoc = ObtenerDocumentoPorIdentificador(pDocumentoID);
             filaDoc.EstadoID = pEstadoID;
             VersionDocumento versionDocumento = ObtenerVersionPorVersionID(pDocumentoID);
-            if(versionDocumento != null)
+            if (versionDocumento != null)
             {
                 versionDocumento.EstadoID = pEstadoID;
             }
@@ -9829,6 +9859,8 @@ namespace Es.Riam.Gnoss.AD.Documentacion
 
             #endregion
         }
+
+        
 
 
 

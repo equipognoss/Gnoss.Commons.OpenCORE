@@ -23,7 +23,7 @@ namespace Es.Riam.Gnoss.AD.EntityModel.Models.Notificacion
 
         public Guid NotificacionID { get; set; }
 
-        [StringLength(5)]
+        [StringLength(20)]
         public string Idioma { get; set; }
 
         public short MensajeID { get; set; }

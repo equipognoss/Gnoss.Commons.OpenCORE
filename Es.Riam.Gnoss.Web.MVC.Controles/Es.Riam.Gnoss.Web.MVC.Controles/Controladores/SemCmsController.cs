@@ -6286,7 +6286,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
         /// Obtener el RDF del recurso
         /// </summary>
         /// <returns>Stream del fichero temporal</returns>
-        private static Stream ObtenerRDF(string mUrlOntologia, string mNamespaceOntologia, Ontologia mOntologia, List<ElementoOntologia> mEntidadesGuardar)
+        public static Stream ObtenerRDF(string mUrlOntologia, string mNamespaceOntologia, Ontologia mOntologia, List<ElementoOntologia> mEntidadesGuardar)
         {
             GestionOWL gestionOWL = new GestionOWL();
             gestionOWL.UrlOntologia = mUrlOntologia;
@@ -6473,7 +6473,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
         /// <param name="pRdfTexto">RDF del documento</param>
         /// <param name="pEdicion">Indica si estamos editando el recurso o no</param>
         /// <returns></returns>
-        private List<ElementoOntologia> ObtenerInstanciasPrincipalesDocumento(Guid pDocumentoID, string pNamespaceOnto, string pUrlOnto, Ontologia pOntologia, string pRdfTexto)
+        public List<ElementoOntologia> ObtenerInstanciasPrincipalesDocumento(Guid pDocumentoID, string pNamespaceOnto, string pUrlOnto, Ontologia pOntologia, string pRdfTexto)
         {
             List<ElementoOntologia> instanciasPrincipales = null;
 

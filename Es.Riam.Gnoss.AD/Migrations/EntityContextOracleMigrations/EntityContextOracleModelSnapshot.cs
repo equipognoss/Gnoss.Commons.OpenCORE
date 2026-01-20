@@ -1565,8 +1565,8 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextOracleMigrations
 
                     b.Property<string>("Idioma")
                         .IsRequired()
-                        .HasMaxLength(5)
-                        .HasColumnType("NVARCHAR2(5)");
+                        .HasMaxLength(20)
+                        .HasColumnType("NVARCHAR2(20)");
 
                     b.HasKey("DocumentoID", "IdentidadID", "Fecha");
 
@@ -2060,6 +2060,19 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextOracleMigrations
 
                     b.ToTable("HistorialDocumento");
                 });
+
+            modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Documentacion.IdiomaTraduccionAutomaticaDocumento", b =>
+            {
+                b.Property<Guid>("DocumentoID")
+                    .HasColumnType("RAW(16)");
+
+                b.Property<string>("Idioma")
+                    .HasColumnType("NVARCHAR2(450)");
+
+                b.HasKey("DocumentoID", "Idioma");
+
+                b.ToTable("IdiomaTraduccionAutomaticaDocumento");
+            });
 
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Documentacion.ResultadoSuscripcion", b =>
                 {
@@ -4020,8 +4033,8 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextOracleMigrations
                         .HasColumnType("TIMESTAMP(7)");
 
                     b.Property<string>("Idioma")
-                        .HasMaxLength(5)
-                        .HasColumnType("NVARCHAR2(5)");
+                        .HasMaxLength(20)
+                        .HasColumnType("NVARCHAR2(20)");
 
                     b.Property<short>("MensajeID")
                         .HasColumnType("NUMBER(5)");
@@ -5437,8 +5450,8 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextOracleMigrations
 
                     b.Property<string>("Idioma")
                         .IsRequired()
-                        .HasMaxLength(5)
-                        .HasColumnType("NVARCHAR2(5)");
+                        .HasMaxLength(20)
+                        .HasColumnType("NVARCHAR2(20)");
 
                     b.Property<string>("LocalidadPersonal")
                         .HasMaxLength(255)
@@ -7029,8 +7042,8 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextOracleMigrations
                         .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<string>("Idioma")
-                        .HasMaxLength(5)
-                        .HasColumnType("NVARCHAR2(5)");
+                        .HasMaxLength(20)
+                        .HasColumnType("NVARCHAR2(20)");
 
                     b.HasKey("ProyectoID", "Nombre");
 
@@ -8569,8 +8582,8 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextOracleMigrations
 
                     b.Property<string>("Idioma")
                         .IsRequired()
-                        .HasMaxLength(5)
-                        .HasColumnType("NVARCHAR2(5)");
+                        .HasMaxLength(20)
+                        .HasColumnType("NVARCHAR2(20)");
 
                     b.Property<string>("Nombre")
                         .IsRequired()

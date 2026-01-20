@@ -1,5 +1,4 @@
-﻿using Newtonsoft.Json;
-
+﻿
 namespace Es.Riam.Gnoss.Logica.Parametro.Model
 {
     public class EventosConfiguradosModel
@@ -13,5 +12,12 @@ namespace Es.Riam.Gnoss.Logica.Parametro.Model
         public bool ResourcesActive { get; set; }
         public bool CommentsActive { get; set; }
         public bool UsersActive { get; set; }
+    }
+
+    public enum TipoEventoExterno
+    {
+        Resource,
+        Comment,
+        User
     }
 }

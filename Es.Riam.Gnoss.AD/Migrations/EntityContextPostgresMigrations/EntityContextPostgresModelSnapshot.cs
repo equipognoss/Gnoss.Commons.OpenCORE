@@ -1567,8 +1567,8 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
 
                     b.Property<string>("Idioma")
                         .IsRequired()
-                        .HasMaxLength(5)
-                        .HasColumnType("character varying(5)");
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)");
 
                     b.HasKey("DocumentoID", "IdentidadID", "Fecha");
 
@@ -2061,6 +2061,19 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
                     b.HasIndex("DocumentoID");
 
                     b.ToTable("HistorialDocumento");
+                });
+
+            modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Documentacion.IdiomaTraduccionAutomaticaDocumento", b =>
+                {
+                    b.Property<Guid>("DocumentoID")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Idioma")
+                        .HasColumnType("text");
+
+                    b.HasKey("DocumentoID", "Idioma");
+
+                    b.ToTable("IdiomaTraduccionAutomaticaDocumento");
                 });
 
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Documentacion.ResultadoSuscripcion", b =>
@@ -4021,8 +4034,8 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
                         .HasColumnType("timestamp without time zone");
 
                     b.Property<string>("Idioma")
-                        .HasMaxLength(5)
-                        .HasColumnType("character varying(5)");
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)");
 
                     b.Property<short>("MensajeID")
                         .HasColumnType("smallint");
@@ -5438,8 +5451,8 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
 
                     b.Property<string>("Idioma")
                         .IsRequired()
-                        .HasMaxLength(5)
-                        .HasColumnType("character varying(5)");
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)");
 
                     b.Property<string>("LocalidadPersonal")
                         .HasMaxLength(255)
@@ -7030,8 +7043,8 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
                         .HasColumnType("text");
 
                     b.Property<string>("Idioma")
-                        .HasMaxLength(5)
-                        .HasColumnType("character varying(5)");
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)");
 
                     b.HasKey("ProyectoID", "Nombre");
 
@@ -8570,8 +8583,8 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
 
                     b.Property<string>("Idioma")
                         .IsRequired()
-                        .HasMaxLength(5)
-                        .HasColumnType("character varying(5)");
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)");
 
                     b.Property<string>("Nombre")
                         .IsRequired()
@@ -10443,6 +10456,17 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
                         .WithMany("HistorialDocumento")
                         .HasForeignKey("DocumentoID")
                         .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Documento");
+                });
+
+            modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Documentacion.IdiomaTraduccionAutomaticaDocumento", b =>
+                {
+                    b.HasOne("Es.Riam.Gnoss.AD.EntityModel.Models.Documentacion.Documento", "Documento")
+                        .WithMany("IdiomaTraduccionAutomaticaDocumento")
+                        .HasForeignKey("DocumentoID")
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Documento");
@@ -12510,6 +12534,8 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
                     b.Navigation("HistorialTransicionDocumento");
 
                     b.Navigation("RolOntologiaPermiso");
+
+                    b.Navigation("IdiomaTraduccionAutomaticaDocumento");
 
                     b.Navigation("VersionDocumento");
 

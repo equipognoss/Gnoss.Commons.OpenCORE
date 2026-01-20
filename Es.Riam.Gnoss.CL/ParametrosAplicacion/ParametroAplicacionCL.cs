@@ -212,7 +212,7 @@ namespace Es.Riam.Gnoss.CL.ParametrosAplicacion
 		public Dictionary<string, string> ObtenerListaIdiomasDictionary()
 		{
             Dictionary<string, string> listaIdiomasDictionary = (Dictionary<string, string>)ObtenerObjetoDeCacheLocal("listaIdiomasDictionary");
-			if (listaIdiomasDictionary == null || (listaIdiomasDictionary != null && !(listaIdiomasDictionary.Count > 0)))
+			if (listaIdiomasDictionary == null || listaIdiomasDictionary.Count == 0)
 			{
                 listaIdiomasDictionary = new Dictionary<string, string>();
 				string idiomas = ObtenerGestorParametros().ParametroAplicacion.Where(item => item.Parametro.Equals("Idiomas")).Select(item => item.Valor).FirstOrDefault();

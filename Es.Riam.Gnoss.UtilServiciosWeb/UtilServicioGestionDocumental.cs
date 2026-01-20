@@ -269,6 +269,30 @@ namespace Es.Riam.Gnoss.UtilServiciosWeb
             return JsonConvert.DeserializeObject<bool>(respuesta);
         }
 
+        /// <summary>
+        /// Se copia el archivo adjunto definido del directorio de origen al directorio de destino indicado
+        /// </summary>
+        /// <param name="pDirectorioOrigen">Directorio de origen del documento del cual proviene el archivo adjunto</param>
+        /// <param name="pDirectorioDestino">Directorio destino donde se quiere copiar el archivo adjunto definido</param>
+        /// <param name="pNombreElemento">Nombre del archivo adjunto que se quiere copiar</param>
+        /// <returns>True si el archivo se ha copiado correctamente, false si no</returns>
+        public bool CopiarDocumentoDeDirectorio(string pDirectorioOrigen, string pDirectorioDestino, string pNombreElemento)
+        {
+            if (pDirectorioOrigen[pDirectorioOrigen.Length - 1] != '/' || pDirectorioOrigen[pDirectorioOrigen.Length - 1] != '\\')
+            {
+                pDirectorioOrigen = pDirectorioOrigen.Substring(0, pDirectorioOrigen.Length - 1);
+            }
+            if (pDirectorioDestino[pDirectorioDestino.Length - 1] != '/' || pDirectorioDestino[pDirectorioDestino.Length - 1] != '\\')
+            {
+                pDirectorioDestino = pDirectorioDestino.Substring(0, pDirectorioDestino.Length - 1);
+            }
+            mLoggingService.AgregarEntrada("INICIO Peticion CopiarDocumentosDeDirectorio");
+            string peticion = $"{Url}/CopyElementoToDirectory?PathOrigin={pDirectorioOrigen}&PathDestination={pDirectorioDestino}&ElementName={pNombreElemento}";
+            string respuesta = WebRequest("POST", peticion, null, mToken);
+            mLoggingService.AgregarEntrada("FIN Peticion CopiarDocumentosDeDirectorio");
+            return JsonConvert.DeserializeObject<bool>(respuesta);
+        }
+
         public string[] ObtenerListadoDeDocumentosDeDirectorio(string pDirectorio)
         {
             mLoggingService.AgregarEntrada("INICIO Peticion BajarDocumento");

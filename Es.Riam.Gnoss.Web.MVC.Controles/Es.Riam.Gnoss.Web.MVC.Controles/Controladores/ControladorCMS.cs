@@ -2634,7 +2634,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
                 {
                     if (uri.Segments.Length > 0)
                     {
-                        string posibleIdioma = uri.Segments[0];
+                        string posibleIdioma = uri.Segments[1].Replace("/", "");
                         if (ListaIdiomas.Contains(posibleIdioma))
                         {
                             idiomaOriginal = posibleIdioma;
@@ -2659,7 +2659,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
                 }
                 else if (urlRelativa.Contains("/"))
                 {
-                    if (urlRelativa.Substring(0, urlRelativa.IndexOf("/")).Length == 2)
+                    if (UtilCadenas.RegexPrefijoIdioma.IsMatch(urlRelativa.Substring(0, urlRelativa.IndexOf("/"))))
                     {
                         idiomaOriginal = urlRelativa.Substring(0, urlRelativa.IndexOf("/"));
                         utilIdiomasUrlOriginal = new UtilIdiomas(idiomaOriginal, mLoggingService, mEntityContext, mConfigService,mRedisCacheWrapper, mLoggerFactory.CreateLogger<UtilIdiomas>(), mLoggerFactory);

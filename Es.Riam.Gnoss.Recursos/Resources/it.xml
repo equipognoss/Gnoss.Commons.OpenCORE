@@ -182,6 +182,7 @@
 		<Resource tag="IDIOMAPT">Portoghese</Resource>
 		<Resource tag="IDIOMAEU">Euskera</Resource>
 		<Resource tag="IDIOMACA">Catalano</Resource>
+		<Resource tag="IDIOMACA-VALENCIA">Valenzano</Resource>
 		<Resource tag="IDIOMAGL">Gallego</Resource>
 		<Resource tag="IDIOMADE">Tedesco</Resource>
 		<Resource tag="IDIOMAFR">Francese</Resource>
@@ -1363,6 +1364,7 @@
 		<Resource tag="ELIMINARSELECTIVO">Elimina selettivamente</Resource>
 		<Resource tag="ELIMINARTOTALMENTE">Elimina completamente</Resource>
 		<Resource tag="NOULTIMAVERSION">Questa non è l'ultima versione dell'articolo. {a href="@1@"}Vedi l'ultima versione{/a}</Resource>
+		<Resource tag="TRADUCCIONGENERADAPORIA">Traduzione generata dall'intelligenza artificiale</Resource>
 		<Resource tag="ENVIARCORREOTODOSUSUARIO">Invia ai partecipanti della comunità</Resource>
 		<Resource tag="ENVIARCORREOGRUPO">Invia ai partecipanti dei gruppi della comunità</Resource>
 		<Resource tag="PEGUNTAENVIARCORREOTODOSUSUARIO">Gli utenti scelgono una lingua sul proprio profilo. Puoi inviare la newsletter ai partecipanti della comunità sulla base della lingua che hanno scelto:</Resource>
@@ -3605,9 +3607,9 @@
 		<Resource tag="CONTACTOSORG">contatta-org</Resource>
 		<Resource tag="CONTRIBUCIONES">contributi</Resource>
 		<Resource tag="CONTRIBUCIONESORG">contributi-org</Resource>
-		<Resource tag="DEBILIDADES">punti deboli</Resource>
+		<Resource tag="DEBILIDADES">punti-deboli</Resource>
 		<Resource tag="AMENAZAS">minacce</Resource>
-		<Resource tag="FORTALEZAS">punti di forza</Resource>
+		<Resource tag="FORTALEZAS">punti-di-forza</Resource>
 		<Resource tag="OPORTUNIDADES">opportunita</Resource>
 		<Resource tag="DESCONECTAR">disconnetti</Resource>
 		<Resource tag="MISDAFOS">mie-SWOT</Resource>
@@ -3677,7 +3679,7 @@
 		<Resource tag="ORGANIZACIONES">organizzazioni</Resource>
 		<Resource tag="ORGANIZACIONREGISTRO">org</Resource>
 		<Resource tag="OBJETOGNOSS">crea-widget</Resource>
-		<Resource tag="OBJETOGNOSSBUSCADOR">crea-widget-motore di ricerca</Resource>
+		<Resource tag="OBJETOGNOSSBUSCADOR">crea-widget-motore-di-ricerca</Resource>
 		<Resource tag="PAGINA">pagina</Resource>
 		<Resource tag="PERFIL">profilo-org</Resource>
 		<Resource tag="PERFILBIO">profilo-org-bio</Resource>
@@ -3722,7 +3724,7 @@
 		<Resource tag="VERPDFCURRICULUM">vedi-pdf-curriculum</Resource>
 		<Resource tag="VISTAPREVIABIO">anteprima-bio</Resource>
 		<Resource tag="VISTAPREVIATRAYECTORIA">anteprima-evoluzione</Resource>
-		<Resource tag="HAYCAMBIOS">ci sono-modifiche</Resource>
+		<Resource tag="HAYCAMBIOS">ci-sono-modifiche</Resource>
 		<Resource tag="PETICION">richiesta</Resource>
 		<Resource tag="PETICIONCOMUNIDAD">invito-comunita</Resource>
 		<Resource tag="PETICIONORGANIZACION">invito-org</Resource>
@@ -3730,7 +3732,7 @@
 		<Resource tag="PUESTOTRABAJO">posto-lavoro</Resource>
 		<Resource tag="ESTADO">stato</Resource>
 		<Resource tag="CAMBIARPASSWORD">modifica-password</Resource>
-		<Resource tag="OLVIDEPASSWORD">ho dimenticato-password</Resource>
+		<Resource tag="OLVIDEPASSWORD">ho-dimenticato-password</Resource>
 		<Resource tag="SOLICITDESACCESOORG">richieste-accesso-org</Resource>
 		<Resource tag="SOLICITDESACCESOUSU">richieste-accesso-utenti</Resource>
 		<Resource tag="SOLICITDESACCESOCOM">richieste-accesso-com</Resource>
@@ -3876,8 +3878,8 @@
 		<Resource tag="ADMINISTRARPLANTILLASCOMEDICIONARCHIVOCONF">administrar-configuracion-plantillas</Resource>
 		<Resource tag="VERSIONARDOCUMENTOCREADO">crea-versione-documento-creato</Resource>
 		<Resource tag="VERSIONARDOCUMENTOCREADOORG">crea-versione-documento-creato-org</Resource>
-		<Resource tag="SUBIRRECURSOTEMPORAL">recupera-risorsa-salvataggio automatico</Resource>
-		<Resource tag="SUBIRRECURSOTEMPORALORG">recupera-risorsa-salvataggio automatico-org</Resource>
+		<Resource tag="SUBIRRECURSOTEMPORAL">recupera-risorsa-salvataggio-automatico</Resource>
+		<Resource tag="SUBIRRECURSOTEMPORALORG">recupera-risorsa-salvataggio-automatico-org</Resource>
 		<Resource tag="NAVEGALIBREMENTE">naviga-liberamente</Resource>
 		<Resource tag="EDITARTRAYECTORIASEM">modifica-evoluzione-editar-sem</Resource>
 		<Resource tag="VISTAPREVIABIOSEM">anteprima-bio-sem</Resource>
@@ -3894,7 +3896,7 @@
 		<Resource tag="CONTENIDO">contenuto</Resource>
 		<Resource tag="EVENTO">evento</Resource>
 		<Resource tag="ADMINISTRARCOMUNIDADCMSNUEVOCOMPONENTE">amministra-comunita-cms-nuovo-componente</Resource>
-		<Resource tag="ADMINISTRARCOMUNIDADCMSEDITARCOMPONENTE">amministra-comunita- cms-modifica-componente</Resource>
+		<Resource tag="ADMINISTRARCOMUNIDADCMSEDITARCOMPONENTE">amministra-comunita-cms-modifica-componente</Resource>
 		<Resource tag="ADMINISTRARCOMUNIDADCMSLISTADOCOMPONENTES">amministra-comunita-cms-elenco-componenti</Resource>
 		<Resource tag="ADMINISTRARCOMUNIDADCMSHISTORIALCOMPONENTE">gestire-comunità-cms-cronologia-componente</Resource>
 		<Resource tag="ADMINISTRARCOMUNIDADCMSEDITARPAGINA">amministra-comunita-cms-modifica-pagina</Resource>
@@ -3918,7 +3920,7 @@
 		<Resource tag="ANYADIRGNOSSCURRICULUMLINKEDIN">anyadir-gnoss-linkedin</Resource>
 		<Resource tag="ACTUALIZARADDTOGNOSSNAVG">actualizar-anyadirgnoss-navegador</Resource>
 		<Resource tag="ADMINISTRARVISTAS">amministrare-visualizzazioni</Resource>
-		<Resource tag="NOTIFICACIONESPERSO">Notifiche personalizzate</Resource>
+		<Resource tag="NOTIFICACIONESPERSO">notifiche-personalizzate</Resource>
 		<Resource tag="ADMINISTRARFLUJOS">gestire-flussi</Resource>
 	</page>
 	<page name="NOTIFICACIONESPERSONALIZADAS">
@@ -4076,6 +4078,12 @@
 	<Resource tag="CANCELAR">Annulla</Resource>
 	<Resource tag="ERRORCARGARFORMULARIO">Si è verificato un problema nel caricare il modulo</Resource>
 	<Resource tag="TIPOS">Tipi</Resource>
+	<Resource tag="LISTAIDIOMASPERSONALIZADOSECOSISTEMA">Elenco delle lingue personalizzate sulla piattaforma.</Resource>
+	<Resource tag="AÑADIRIDIOMAPERSONALIZADOECOSISTEMA">Aggiungi lingua</Resource>
+	<Resource tag="CLAVEIDIOMAPERSONALIZADOECOSISTEMA">Chiave della lingua</Resource>
+	<Resource tag="CLAVEAYUDAIDIOMAPERSONALIZADOECOSISTEMA">Chiave della lingua -> Es: Per la lingua finlandese corrisponderebbe a: fi. Se vuoi specificare un dialetto puoi farlo in questo modo: en-UK. La seconda parte può avere fino a 10 caratteri</Resource>
+	<Resource tag="NOMBREIDIOMAPERSONALIZADOECOSISTEMA">Nome della lingua</Resource>
+	<Resource tag="NOMBREAYUDAIDIOMAPERSONALIZADOECOSISTEMA">Nome della lingua che si desidera aggiungere: Esempio: Finlandese</Resource>
 	<Resource tag="INSERTADOSEARCH">La proprietà è stata inserita.</Resource>
 	<Resource tag="ALERTAUSUARIO">Attenzione!</Resource>
 	<Resource tag="PROPIEDADNOEXISTE">La proprietà inserita: @1@ non esiste.</Resource>

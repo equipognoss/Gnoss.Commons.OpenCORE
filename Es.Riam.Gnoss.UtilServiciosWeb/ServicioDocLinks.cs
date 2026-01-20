@@ -97,5 +97,26 @@ namespace Es.Riam.Gnoss.UtilServiciosWeb
                 return false;
             }
         }
+
+        /// <summary>
+        /// Copia un archivo link de un documento a otro
+        /// </summary>
+        /// <param name="pDocumentoIDOrigen">Documento de origen</param>
+        /// <param name="pDocumentoIDDestino">Documento donde se va a copiar el archivo link</param>
+        /// <param name="pNombreArchivoLink">Nombre del archivo link a copiar</param>
+        /// <returns></returns>
+        public bool CopiarDocLink(Guid pDocumentoIDOrigen, Guid pDocumentoIDDestino, string pNombreArchivoLink)
+        {
+            try
+            {
+                CallWebMethods.CallGetApiToken(mUrlInternService, $"DocumentosLink/CopiarArchivoLinkDocumento?pDocumentoIDOrigen={pDocumentoIDOrigen}&pDocumentoIDDestino={pDocumentoIDDestino}&pNombreArchivoLink={pNombreArchivoLink}", mToken);
+                return true;
+            }
+            catch (Exception ex)
+            {
+                mLoggingService.GuardarLogError(ex);
+                return false;
+            }
+        }       
     }
 }

@@ -12,6 +12,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
+using Microsoft.AspNetCore.Mvc.Formatters;
 
 namespace Es.Riam.Gnoss.RabbitMQ
 {
@@ -90,8 +91,12 @@ namespace Es.Riam.Gnoss.RabbitMQ
                 mLoggingService.GuardarLogError(exception, $"No se pudo replicar en {mGestorRabbit?.QueueName}: {message}",mlogger);
             }
         }
+        public void AgregarElementoAColaConReintentosExchange(string message)
+        {
+            AgregarElementoACola(message);
+		}
 
-        public IList<string> AgregarElementosACola(IEnumerable<string> messages)
+		public IList<string> AgregarElementosACola(IEnumerable<string> messages)
         {            
             try
             {
@@ -262,6 +267,11 @@ namespace Es.Riam.Gnoss.RabbitMQ
         }
 
         public bool ExisteColaRabbit(string pNombreCola)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void ObtenerElementosDeColaReintentos(RabbitMQClient.ReceivedDelegateRetry receivedFunction, RabbitMQClient.ShutDownDelegate shutdownFunction, string pErrorExchange)
         {
             throw new NotImplementedException();
         }

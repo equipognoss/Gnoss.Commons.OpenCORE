@@ -611,6 +611,8 @@ namespace Es.Riam.Gnoss.AD.EntityModel
         // Monitorización de tareas en segundo plano
         public virtual DbSet<TareasSegundoPlano> TareasSegundoPlano { get; set; }
 
+        // IdiomaTraduccionAutomaticaDocumento
+        public virtual DbSet<IdiomaTraduccionAutomaticaDocumento> IdiomaTraduccionAutomaticaDocumento { get; set; }
 
         public bool NoConfirmarTransacciones
         {
@@ -1080,7 +1082,9 @@ namespace Es.Riam.Gnoss.AD.EntityModel
      .HasKey(c => new { c.OrganizacionID, c.ProyectoID, c.AplicacionWeb });
             modelBuilder.Entity<DetallesDocumentacion>()
     .HasKey(c => new { c.ProyectoID });
-
+            // Traducciones automaticas documento
+            modelBuilder.Entity<IdiomaTraduccionAutomaticaDocumento>()
+     .HasKey(c => new { c.DocumentoID, c.Idioma });
             modelBuilder.Entity<PerfilPersonaOrg>()
      .HasKey(c => new { c.PersonaID, c.OrganizacionID, c.PerfilID });
             modelBuilder.Entity<Sitemaps>()
@@ -2599,6 +2603,13 @@ namespace Es.Riam.Gnoss.AD.EntityModel
                 .HasOne(e => e.ConfiguracionCachesCostosas)
                 .WithOne(e => e.Proyecto)
                 .HasForeignKey<ConfiguracionCachesCostosas>(e => new { e.OrganizacionID, e.ProyectoID })
+                .OnDelete(DeleteBehavior.Cascade);
+
+            // Traducciones automaticas
+            modelBuilder.Entity<IdiomaTraduccionAutomaticaDocumento>()
+                .HasOne(e => e.Documento)
+                .WithMany(e => e.IdiomaTraduccionAutomaticaDocumento)
+                .HasForeignKey(t => t.DocumentoID)
                 .OnDelete(DeleteBehavior.Cascade);
 
             // Roles

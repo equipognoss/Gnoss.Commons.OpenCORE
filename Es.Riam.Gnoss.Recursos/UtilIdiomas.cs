@@ -65,6 +65,7 @@ namespace Es.Riam.Gnoss.Recursos
         private static string mTextosIt = null;
 
         private static string mTextosCa = null;
+        private static string mTextosCaValencia = null;
         private static string mTextosEu = null;
         private static string mTextosGl = null;
 
@@ -276,8 +277,6 @@ namespace Es.Riam.Gnoss.Recursos
             }
             string idiomaFichero = mFileName;
 
-            if (idiomaFichero.Length > 2) { idiomaFichero = idiomaFichero.Substring(0, 2); }
-            
             contenido_personalizado = TextosPersonalizadosEs;
 
             switch (idiomaFichero)
@@ -305,6 +304,9 @@ namespace Es.Riam.Gnoss.Recursos
                     break;
                 case "ca":
                     contenido = TextosCa;
+                    break;
+                case "ca-valencia":
+                    contenido = TextosCaValencia;
                     break;
                 case "eu":
                     contenido = TextosEu;
@@ -1129,6 +1131,18 @@ namespace Es.Riam.Gnoss.Recursos
                     mTextosCa = Properties.Resources.ca;
                 }
                 return mTextosCa;
+            }
+        }
+
+        private static string TextosCaValencia
+        {
+            get
+            {
+                if (mTextosCaValencia == null)
+                {
+                    mTextosCaValencia = Properties.Resources.ca_valencia;
+                }
+                return mTextosCaValencia;
             }
         }
 

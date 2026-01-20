@@ -16,6 +16,8 @@ namespace Es.Riam.Gnoss.RabbitMQ
 
         public delegate bool ReceivedDelegate(string s);
 
+        public delegate bool ReceivedDelegateRetry(string s, int r);
+
         public delegate void ShutDownDelegate();
 
         [ThreadStatic]
@@ -59,7 +61,12 @@ namespace Es.Riam.Gnoss.RabbitMQ
             Cliente.AgregarElementoACola(message);
         }
 
-        public IList<string> AgregarElementosACola(IEnumerable<string> messages)
+		public void AgregarElementoAColaConReintentosExchange(string message)
+		{
+			Cliente.AgregarElementoAColaConReintentosExchange(message);
+		}
+
+		public IList<string> AgregarElementosACola(IEnumerable<string> messages)
         {
             return Cliente.AgregarElementosACola(messages);
         }
@@ -68,7 +75,13 @@ namespace Es.Riam.Gnoss.RabbitMQ
         {
             Cliente.ObtenerElementosDeCola(receivedFunction, shutdownFunction);
         }
-   
+
+        public void ObtenerElementosDeColaReintentos(RabbitMQClient.ReceivedDelegateRetry receivedFunction, RabbitMQClient.ShutDownDelegate shutdownFunction, string pErrorExchange)
+        {
+            Cliente.ObtenerElementosDeColaReintentos(receivedFunction, shutdownFunction, pErrorExchange);
+        }
+
+
         public static bool HayConexionRabbit(string pFicheroConexion, string pTipoCola)
         {
             return mListaCadenasConexiones != null && mListaCadenasConexiones.ContainsKey(pFicheroConexion) && mListaCadenasConexiones[pFicheroConexion] != null && mListaCadenasConexiones[pFicheroConexion].ContainsKey(pTipoCola);

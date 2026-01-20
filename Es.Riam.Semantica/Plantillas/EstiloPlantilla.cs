@@ -248,7 +248,7 @@ namespace Es.Riam.Semantica.Plantillas
                 }
                 else
                 {
-                    foreach (Propiedad propiedad in pEntidad.Propiedades.Where(item => item.Tipo == TipoPropiedad.ObjectProperty))
+                    foreach (Propiedad propiedad in pEntidad.Propiedades.Where(item => item.Tipo == TipoPropiedad.ObjectProperty && !item.TieneSelectorEntidad))
                     {
                         if (propiedad.FunctionalProperty && propiedad.UnicoValor.Key != null)
                         {

@@ -2,25 +2,26 @@ using Es.Riam.AbstractsOpen;
 using Es.Riam.Gnoss.AD.EncapsuladoDatos;
 using Es.Riam.Gnoss.AD.EntityModel;
 using Es.Riam.Gnoss.AD.EntityModel.Models.Faceta;
+using Es.Riam.Gnoss.AD.EntityModel.Models.ProyectoDS;
 using Es.Riam.Gnoss.AD.Facetado;
 using Es.Riam.Gnoss.AD.Facetado.Model;
+using Es.Riam.Gnoss.AD.ParametroAplicacion;
 using Es.Riam.Gnoss.AD.ServiciosGenerales;
 using Es.Riam.Gnoss.AD.Virtuoso;
+using Es.Riam.Gnoss.Logica.ServiciosGenerales;
 using Es.Riam.Gnoss.Util.Configuracion;
 using Es.Riam.Gnoss.Util.General;
+using Es.Riam.Gnoss.Web.MVC.Models.ConsultasSparql;
+using Es.Riam.Semantica.Plantillas;
 using Es.Riam.Util;
+using Microsoft.Extensions.Logging;
+using Serilog.Core;
 using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
-using Es.Riam.Gnoss.AD.EntityModel.Models.ProyectoDS;
 using System.Text;
 using static Es.Riam.Gnoss.Web.MVC.Models.Tesauro.TesauroModels;
-using Es.Riam.Semantica.Plantillas;
-using Microsoft.Extensions.Logging;
-using Es.Riam.Gnoss.AD.ParametroAplicacion;
-using Serilog.Core;
-using Es.Riam.Gnoss.Logica.ServiciosGenerales;
 
 namespace Es.Riam.Gnoss.Logica.Facetado
 {
@@ -907,6 +908,27 @@ namespace Es.Riam.Gnoss.Logica.Facetado
         {
             return FacetadoAD.ObtenerValorSegundosParametroAplicacion();
         }
+
+        public List<ValorPropiedadVirtuoso> ObtenerValoresPropiedadIdioma(string pDocumentoID, List<string> pPropiedades, string pIdioma)
+        {
+            List<ValorPropiedadVirtuoso> valoresPropiedadesVirtuoso = new List<ValorPropiedadVirtuoso>();
+            FacetadoDS facetadoDS = FacetadoAD.ObtenerValoresPropiedadIdioma(pDocumentoID, pPropiedades, pIdioma);
+            foreach (DataRow fila in facetadoDS.Tables["propiedades"].Rows)
+            {
+                ValorPropiedadVirtuoso valorPropiedadVirtuoso = new ValorPropiedadVirtuoso();
+                valorPropiedadVirtuoso.Sujetolargo = (string)fila["s"];
+                valorPropiedadVirtuoso.Propiedad = (string)fila["p"];
+                valorPropiedadVirtuoso.ValorConIdioma = (string)fila["o"];
+                valoresPropiedadesVirtuoso.Add(valorPropiedadVirtuoso);
+            }
+
+            return valoresPropiedadesVirtuoso;
+        }
+
+        public void EliminarTriplesIdiomaPropiedad(string pNombreGrafo, string pDocumentoID, List<string> pPropiedades, List<string> pIdioma)
+        {
+            FacetadoAD.EliminarTriplesIdiomaPropiedad(pNombreGrafo, pDocumentoID, pPropiedades, pIdioma);
+		}
 
         public void ObtieneNumeroResultados(FacetadoDS pFacetadoDS, string pNombreFaceta, Dictionary<string, List<string>> pListaFiltros, List<string> pListaFiltrosExtra, List<string> pSemanticos, TiposAlgoritmoTransformacion pTiposAlgoritmoTransformacion, Guid pProyectoID, bool pEsIdentidadInvitada, bool pEsUsuarioInvitado, Guid pIdentidadID, bool pEsMovil = false, List<Guid> pListaExcluidos = null)
         {

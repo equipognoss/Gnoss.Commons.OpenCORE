@@ -685,11 +685,13 @@ namespace Es.Riam.Gnoss.Web.Controles.Documentacion
         {
             Guid ontologiaID = pDocumentoOriginal.ElementoVinculadoID;
 
-            //Agrego namespaces y urls:
-            string nombreOntologia = pDocumentoOriginal.GestorDocumental.ListaDocumentos[ontologiaID].FilaDocumento.Enlace;
-            string urlOntologia = BaseURLFormulariosSem + "/Ontologia/" + nombreOntologia + "#";
+			//Agrego namespaces y urls:
+			DocumentacionCN docCN = new DocumentacionCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<DocumentacionCN>(), mLoggerFactory);            
+			string nombreGrafo = docCN.ObtenerEnlaceDocumentoPorDocumentoID(ontologiaID);
+            docCN.Dispose();
+            string urlOntologia = BaseURLFormulariosSem + "/Ontologia/" + nombreGrafo + "#";
 
-            //Obtengo la ontolog?a:
+            //Obtengo la ontologia:
             byte[] arrayOntologia = ObtenerOntologia(ontologiaID, pDocumentoOriginal.FilaDocumento.ProyectoID.Value);
 
             //Leo la ontologia:
@@ -702,8 +704,6 @@ namespace Es.Riam.Gnoss.Web.Controles.Documentacion
                 UrlOntologia = urlOntologia,
                 NamespaceOntologia = "tessem"
             };
-
-            string nombreGrafo = pDocumentoOriginal.GestorDocumental.ListaDocumentos[pDocumentoOriginal.ElementoVinculadoID].Enlace;
 
             // Hay que borrar de virtuoso el rdf del documento actual y guardar el que se va ha restaurar (Grafo de ontologia)
             BorrarRDFDeVirtuoso(pDocumentoNuevo.VersionOriginalID, nombreGrafo, UrlIntragnoss, false, ProyectoSeleccionado.Clave);
@@ -7875,17 +7875,21 @@ namespace Es.Riam.Gnoss.Web.Controles.Documentacion
         }
 
         /// <summary>
-        /// 
+        /// Copia el archivo adjunto (Imagen, Documento, DocLink o Vídeo) de un documento semántico a su nueva versión.
         /// </summary>
-        /// <param name="pTriple"></param>
+        /// <param name="pTriple">Objeto del triple con la ruta del archivo adjunto a copiar</param>
+        /// <param name="pDocIDOriginal">Identificador del documento semántico original</param>
+        /// <param name="pDocIDVersion">Identificador de la versión nueva del documento semántico</param>
         /// <returns></returns>
         public bool CopiarAdjuntoDocumentoSemantico(string pTriple, Guid pDocIDOriginal, Guid pDocIDVersion)
         {
             bool correcto = false;
 
+            string nombreElemento = pTriple.Substring(pTriple.LastIndexOf("/") + 1);
+
             if (pTriple.Contains(UtilArchivos.ContentImagenesSemanticas))
             {
-                correcto = CopiarImagenDocumentoSemantico(pDocIDOriginal, pDocIDVersion, UrlIntragnossServicios);
+                correcto = CopiarImagenDocumentoSemantico(pDocIDOriginal, pDocIDVersion, nombreElemento, UrlIntragnossServicios);
                 if (!correcto)
                 {
                     mLoggingService.GuardarLogError($"No se ha podido copiar la imagen del recurso semantico {pDocIDOriginal} con ruta {pTriple}");
@@ -7893,7 +7897,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Documentacion
             }
             else if (pTriple.Contains(UtilArchivos.ContentDocumentosSem))
             {
-                correcto = CopiarArchivosDocumentoSemantico(pDocIDOriginal, pDocIDVersion, UrlServicioWebDocumentacion);
+                correcto = CopiarArchivoDocumentoSemantico(pDocIDOriginal, pDocIDVersion, nombreElemento, UrlServicioWebDocumentacion);
                 if (!correcto)
                 {
                     mLoggingService.GuardarLogError($"No se ha podido copiar el documento del recurso semantico {pDocIDOriginal} con ruta {pTriple}");
@@ -7901,7 +7905,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Documentacion
             }
             else if (pTriple.Contains(UtilArchivos.ContentDocLinks))
             {
-                correcto = CopiarArchivosLinkDocumentoSemantico(pDocIDOriginal, pDocIDVersion);
+                correcto = CopiarArchivoLinkDocumentoSemantico(pDocIDOriginal, pDocIDVersion, nombreElemento);
                 if (!correcto)
                 {
                     mLoggingService.GuardarLogError($"No se ha podido copiar el doclink del recurso semantico {pDocIDOriginal} con ruta {pTriple}");
@@ -7910,7 +7914,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Documentacion
             else if (pTriple.Contains(UtilArchivos.ContentVideosSemanticos))
             {
                 string extension = Path.GetExtension(pTriple).ToLower();
-                CopiarVideosDocumentoSemantico(pDocIDOriginal, pDocIDVersion, IdentidadActual, (ProyectoSeleccionado.Clave != ProyectoAD.MyGnoss), extension);
+                CopiarVideosDocumentoSemantico(pDocIDOriginal, pDocIDVersion, IdentidadActual, ProyectoSeleccionado.Clave != ProyectoAD.MyGnoss, extension);
                 if (!correcto)
                 {
                     mLoggingService.GuardarLogError($"No se ha podido copiar el video del recurso semantico {pDocIDOriginal} con ruta {pTriple}");
@@ -7931,8 +7935,9 @@ namespace Es.Riam.Gnoss.Web.Controles.Documentacion
         /// <param name="pDocumentoOriginalID">Identificador del documento semántico original</param>
         /// <param name="pDocumentoNuevoID">Identificador del documento semántico nuevo</param>
         /// <param name="pUrlIntragnossServicios">Url intragnoss para los servicios web</param>
+        /// <param name="pNombreElemento">Nombre del elemento a copiar, tiene que incluir la extensión</param>
         /// <returns>TRUE si se han copiado los documento o no había nada que copiar. FALSE si algo ha fallado</returns>
-        private bool CopiarImagenDocumentoSemantico(Guid pDocumentoOriginalID, Guid pDocumentoNuevoID, string pUrlIntragnossServicios)
+        private bool CopiarImagenDocumentoSemantico(Guid pDocumentoOriginalID, Guid pDocumentoNuevoID, string pNombreElemento, string pUrlIntragnossServicios)
         {
             ServicioImagenes sImagenes = new ServicioImagenes(mLoggingService, mConfigService, mLoggerFactory.CreateLogger<ServicioImagenes>(), mLoggerFactory);
             Stopwatch sw = LoggingService.IniciarRelojTelemetria();
@@ -7940,7 +7945,8 @@ namespace Es.Riam.Gnoss.Web.Controles.Documentacion
             try
             {
                 sImagenes.Url = pUrlIntragnossServicios;
-                bool copiado = sImagenes.CopiarImagenesSemanticas(pDocumentoOriginalID, pDocumentoNuevoID);
+                pNombreElemento = Path.GetFileNameWithoutExtension(pNombreElemento);
+                bool copiado = sImagenes.CopiarImagenSemantica(pDocumentoOriginalID, pDocumentoNuevoID, pNombreElemento);
                 mLoggingService.AgregarEntradaDependencia("Copiar imagen desde servicio imagenes", false, "CopiarImagenDocumentoSemantico", sw, true);
                 return copiado;
             }
@@ -7958,17 +7964,16 @@ namespace Es.Riam.Gnoss.Web.Controles.Documentacion
         /// </summary>
         /// <param name="pDocumentoOriginalID">Identificador del documento semántico original</param>
         /// <param name="pDocumentoNuevoID">Identificador del documento semántico nuevo</param>
-        /// <param name="pUrlIntragnossServicios">Url intragnoss para los servicios web</param>
+        /// <param name="pNombreArchivoLink">Nombre del archivo link a copiar</param>
         /// <returns>TRUE si se han copiado los documento o no había nada que copiar. FALSE si algo ha fallado</returns>
-        private bool CopiarArchivosLinkDocumentoSemantico(Guid pDocumentoOriginalID, Guid pDocumentoNuevoID)
+        private bool CopiarArchivoLinkDocumentoSemantico(Guid pDocumentoOriginalID, Guid pDocumentoNuevoID, string pNombreArchivoLink)
         {
-            //TODO migrar a peticion rest
             ServicioDocLinks servicioDocsLink = new ServicioDocLinks(mConfigService, mLoggingService, mLoggerFactory.CreateLogger<ServicioDocLinks>(), mLoggerFactory);
             Stopwatch sw = LoggingService.IniciarRelojTelemetria();
 
             try
             {
-                bool copiado = servicioDocsLink.CopiarDocLinks(pDocumentoOriginalID, pDocumentoNuevoID);
+                bool copiado = servicioDocsLink.CopiarDocLink(pDocumentoOriginalID, pDocumentoNuevoID, pNombreArchivoLink);
                 mLoggingService.AgregarEntradaDependencia("Copiar archivo link desde servicio doc links", false, "CopiarArchivosLinkDocumentoSemantico", sw, true);
                 return copiado;
             }
@@ -7981,13 +7986,14 @@ namespace Es.Riam.Gnoss.Web.Controles.Documentacion
         }
 
         /// <summary>
-        /// Copia los archivos de un documento semántico.
+        /// Copia el archivo indicado de un documento semántico.
         /// </summary>
         /// <param name="pDocumentoOriginalID">Identificador del documento semántico original</param>
         /// <param name="pDocumentoNuevoID">Identificador del documento semántico nuevo</param>
         /// <param name="pUrlServicioDocs">Url para el servicio de documentación</param>
+        /// <param name="pNombreArchivo">Nombre del elemento a copiar, tiene que incluir la extensión</param>
         /// <returns>TRUE si se han copiado los documento o no había nada que copiar. FALSE si algo ha fallado</returns>
-        private bool CopiarArchivosDocumentoSemantico(Guid pDocumentoOriginalID, Guid pDocumentoNuevoID, string pUrlServicioDocs)
+        private bool CopiarArchivoDocumentoSemantico(Guid pDocumentoOriginalID, Guid pDocumentoNuevoID, string pNombreArchivo, string pUrlServicioDocs)
         {
             GestionDocumental gestionDoc = new GestionDocumental(mLoggingService, mConfigService, mLoggerFactory.CreateLogger<GestionDocumental>(), mLoggerFactory);
             Stopwatch sw = LoggingService.IniciarRelojTelemetria();
@@ -7995,7 +8001,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Documentacion
             try
             {
                 gestionDoc.Url = pUrlServicioDocs;
-                bool copiado = gestionDoc.CopiarDocumentosDeDirectorio(Path.Combine(UtilArchivos.ContentDocumentosSem, UtilArchivos.DirectorioDocumento(pDocumentoOriginalID)), $"{UtilArchivos.ContentDocumentosSem}\\{UtilArchivos.DirectorioDocumento(pDocumentoNuevoID)}");
+                bool copiado = gestionDoc.CopiarDocumentoDeDirectorio(Path.Combine(UtilArchivos.ContentDocumentosSem, UtilArchivos.DirectorioDocumento(pDocumentoOriginalID)), $"{UtilArchivos.ContentDocumentosSem}\\{UtilArchivos.DirectorioDocumento(pDocumentoNuevoID)}", pNombreArchivo);
                 mLoggingService.AgregarEntradaDependencia("Copiar archivo desde servicio docs", false, "CopiarImagenDocumentoSemantico", sw, true);
                 return copiado;
             }

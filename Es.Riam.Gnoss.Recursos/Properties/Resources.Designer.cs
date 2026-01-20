@@ -9,6 +9,8 @@
 //------------------------------------------------------------------------------
 
 namespace Es.Riam.Gnoss.Recursos.Properties {
+    using System;
+    
     
     /// <summary>
     ///   Clase de recurso fuertemente tipado, para buscar cadenas traducidas, etc.
@@ -17,7 +19,7 @@ namespace Es.Riam.Gnoss.Recursos.Properties {
     // a través de una herramienta como ResGen o Visual Studio.
     // Para agregar o quitar un miembro, edite el archivo .ResX y, a continuación, vuelva a ejecutar ResGen
     // con la opción /str o recompile su proyecto de VS.
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "4.0.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "17.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     public class Resources {
@@ -61,16 +63,36 @@ namespace Es.Riam.Gnoss.Recursos.Properties {
         /// <summary>
         ///   Busca una cadena traducida similar a &lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot;?&gt;
         ///&lt;Resources language=&quot;Catalan&quot; code=&quot;ca&quot;&gt;
-        ///  &lt;page name=&quot;COMMON&quot;&gt;
-        ///    &lt;Resource tag=&quot;BASERECURSOS&quot;&gt;Recursos&lt;/Resource&gt;
-        ///    &lt;Resource tag=&quot;SUBIRNEWSLETTER&quot;&gt;Añadir nueva newsletter&lt;/Resource&gt;
-        ///    &lt;Resource tag=&quot;MODULOCONTACTOS&quot;&gt;Invita els teus amics a la teva xarxa de contactes a @1@&lt;/Resource&gt;
-        ///    &lt;Resource tag=&quot;ADMINCOMTEXTOCATEGORIAS&quot;&gt;Digues-nos en quines categories de l&apos;índex global de @1@ vols que trobin la teva comunitat&lt;/Resource&gt;
-        ///    &lt;Resource tag=&quot;TEXTOAGRE [resto de la cadena truncado]&quot;;.
+        ///	&lt;page name=&quot;COMMON&quot;&gt;
+        ///		&lt;Resource tag=&quot;FECHACREACION&quot;&gt;Data de creació&lt;/Resource&gt;
+        ///		&lt;Resource tag=&quot;VERMASCOMENTARIOS&quot;&gt;Veure més comentaris&lt;/Resource&gt;
+        ///		&lt;Resource tag=&quot;DESPLEGAR&quot;&gt;Desplegar&lt;/Resource&gt;
+        ///		&lt;Resource tag=&quot;PLEGAR&quot;&gt;Plegar&lt;/Resource&gt;
+        ///		&lt;Resource tag=&quot;CARGANDO&quot;&gt;Carregant...&lt;/Resource&gt;
+        ///		&lt;Resource tag=&quot;VISUALIZAR&quot;&gt;Visualitzar&lt;/Resource&gt;
+        ///		&lt;Resource tag=&quot;SICONTINUASDESACTIVARASELREGISTROAUTOMATICOPARAESTACOMUNIDA&quot;&gt;S [resto de la cadena truncado]&quot;;.
         /// </summary>
         public static string ca {
             get {
                 return ResourceManager.GetString("ca", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Busca una cadena traducida similar a &lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot; ?&gt;
+        ///&lt;Resources language=&quot;Valencian&quot; code=&quot;ca-valencia&quot;&gt;
+        ///	&lt;page name=&quot;COMMON&quot;&gt;
+        ///		&lt;Resource tag=&quot;TEXTOAUTOCOMPLETAROPCIONDEFECTO&quot;&gt;Veure els resultats de: &lt;/Resource&gt;
+        ///		&lt;Resource tag=&quot;FECHACREACION&quot;&gt;Data de creació&lt;/Resource&gt;
+        ///		&lt;Resource tag=&quot;VERMASCOMENTARIOS&quot;&gt;Veure més comentaris&lt;/Resource&gt;
+        ///		&lt;Resource tag=&quot;DESPLEGAR&quot;&gt;Desplegar&lt;/Resource&gt;
+        ///		&lt;Resource tag=&quot;PLEGAR&quot;&gt;Plegar&lt;/Resource&gt;
+        ///		&lt;Resource tag=&quot;CARGANDO&quot;&gt;Carregant...&lt;/Resource&gt;
+        ///		&lt;Resource tag=&quot;VISUALIZAR&quot;&gt;Visu [resto de la cadena truncado]&quot;;.
+        /// </summary>
+        public static string ca_valencia {
+            get {
+                return ResourceManager.GetString("ca_valencia", resourceCulture);
             }
         }
         
@@ -111,12 +133,14 @@ namespace Es.Riam.Gnoss.Recursos.Properties {
         /// <summary>
         ///   Busca una cadena traducida similar a &lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot;?&gt;
         ///&lt;Resources language=&quot;German&quot; code=&quot;de&quot;&gt;
-        ///  &lt;page name=&quot;COMMON&quot;&gt;
-        ///    &lt;Resource tag=&quot;BASERECURSOS&quot;&gt;Ressourcen&lt;/Resource&gt;
-        ///    &lt;Resource tag=&quot;SUBIRNEWSLETTER&quot;&gt;Neuen Newsletter hinzufügen&lt;/Resource&gt;
-        ///    &lt;Resource tag=&quot;MODULOCONTACTOS&quot;&gt;Lade deine Freunde zu deinem Netzwerk aus Kontakten bei @1@ ein&lt;/Resource&gt;
-        ///    &lt;Resource tag=&quot;ADMINCOMTEXTOCATEGORIAS&quot;&gt;In welcher Kategorie des allgemeinen Verzeichnisses von @1@ soll deine Gemeinde erscheinen?&lt;/Resource&gt;
-        ///    &lt;Resource t [resto de la cadena truncado]&quot;;.
+        ///	&lt;page name=&quot;COMMON&quot;&gt;
+        ///		&lt;Resource tag=&quot;TEXTOAUTOCOMPLETAROPCIONDEFECTO&quot;&gt;Ergebnisse anzeigen für: &lt;/Resource&gt;
+        ///		&lt;Resource tag=&quot;FECHACREACION&quot;&gt;Datum der Erstellung&lt;/Resource&gt;
+        ///		&lt;Resource tag=&quot;VERMASCOMENTARIOS&quot;&gt;Weitere Kommentare anzeigen&lt;/Resource&gt;
+        ///		&lt;Resource tag=&quot;DESPLEGAR&quot;&gt;Entfalten&lt;/Resource&gt;
+        ///		&lt;Resource tag=&quot;PLEGAR&quot;&gt;Falten&lt;/Resource&gt;
+        ///		&lt;Resource tag=&quot;CARGANDO&quot;&gt;Laden...&lt;/Resource&gt;
+        ///		&lt;Resource tag=&quot;VISUALIZAR&quot;&gt;Visualis [resto de la cadena truncado]&quot;;.
         /// </summary>
         public static string de {
             get {
@@ -127,12 +151,15 @@ namespace Es.Riam.Gnoss.Recursos.Properties {
         /// <summary>
         ///   Busca una cadena traducida similar a &lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot;?&gt;
         ///&lt;Resources language=&quot;English&quot; code=&quot;en&quot;&gt;
-        ///  &lt;page name=&quot;COMMON&quot;&gt;
-        ///    &lt;Resource tag=&quot;BASERECURSOS&quot;&gt;Resources&lt;/Resource&gt;
-        ///    &lt;Resource tag=&quot;SUBIRNEWSLETTER&quot;&gt;Add a new newsletter&lt;/Resource&gt;
-        ///    &lt;Resource tag=&quot;MODULOCONTACTOS&quot;&gt;Invite your friends to your contact network on @1@&lt;/Resource&gt;
-        ///    &lt;Resource tag=&quot;ADMINCOMTEXTOCATEGORIAS&quot;&gt;Tell us in which categories of the @1@ global index you want your community to be found&lt;/Resource&gt;
-        ///    &lt;Resource tag=&quot;TEXTOAGREGARTWITTER&quot; [resto de la cadena truncado]&quot;;.
+        ///	&lt;page name=&quot;COMMON&quot;&gt;
+        ///		&lt;Resource tag=&quot;TEXTOAUTOCOMPLETAROPCIONDEFECTO&quot;&gt;See results for: &lt;/Resource&gt;
+        ///		&lt;Resource tag=&quot;FECHACREACION&quot;&gt;Date of creation&lt;/Resource&gt;
+        ///		&lt;Resource tag=&quot;VERMASCOMENTARIOS&quot;&gt;See more comments&lt;/Resource&gt;
+        ///		&lt;Resource tag=&quot;DESPLEGAR&quot;&gt;Unfold&lt;/Resource&gt;
+        ///		&lt;Resource tag=&quot;PLEGAR&quot;&gt;Fold&lt;/Resource&gt;
+        ///		&lt;Resource tag=&quot;CARGANDO&quot;&gt;Loading...&lt;/Resource&gt;
+        ///		&lt;Resource tag=&quot;VISUALIZAR&quot;&gt;Visualize&lt;/Resource&gt;
+        ///		&lt;Resourc [resto de la cadena truncado]&quot;;.
         /// </summary>
         public static string en {
             get {
@@ -160,13 +187,15 @@ namespace Es.Riam.Gnoss.Recursos.Properties {
         
         /// <summary>
         ///   Busca una cadena traducida similar a &lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot;?&gt;
-        ///&lt;Resources language=&quot;Spanish&quot; code=&quot;es&quot;&gt;
-        ///  &lt;page name=&quot;COMMON&quot;&gt;
-        ///    &lt;Resource tag=&quot;CRITERIOBUSQUEDA&quot;&gt;Criterio de busqueda&lt;/Resource&gt;
-        ///    &lt;Resource tag=&quot;BASERECURSOS&quot;&gt;Recursos&lt;/Resource&gt;
-        ///    &lt;Resource tag=&quot;SUBIRNEWSLETTER&quot;&gt;Añadir nueva newsletter&lt;/Resource&gt;
-        ///    &lt;Resource tag=&quot;MODULOCONTACTOS&quot;&gt;Invita a tus amigos a tu red de contactos en @1@&lt;/Resource&gt;
-        ///    &lt;Resource tag=&quot;ADMINCOMTEXTOCATEGORIAS&quot;&gt;Dinos en qué categorías del índice global de @1@ quieres que encuentr [resto de la cadena truncado]&quot;;.
+        ///&lt;Resources language=&quot;Spanish&quot; code=&quot;es&quot;&gt;		
+        ///	&lt;page name=&quot;COMMON&quot;&gt;
+        ///		&lt;Resource tag=&quot;TEXTOAUTOCOMPLETAROPCIONDEFECTO&quot;&gt;Ver los resultados de: &lt;/Resource&gt;
+        ///		&lt;Resource tag=&quot;FECHACREACION&quot;&gt;Fecha de creación&lt;/Resource&gt;
+        ///		&lt;Resource tag=&quot;VERMASCOMENTARIOS&quot;&gt;Ver más comentarios&lt;/Resource&gt;
+        ///		&lt;Resource tag=&quot;DESPLEGAR&quot;&gt;Desplegar&lt;/Resource&gt;
+        ///		&lt;Resource tag=&quot;PLEGAR&quot;&gt;Plegar&lt;/Resource&gt;
+        ///		&lt;Resource tag=&quot;CARGANDO&quot;&gt;Cargando...&lt;/Resource&gt;
+        ///		&lt;Resource tag=&quot;VISUALIZAR&quot;&gt;Visualizar&lt;/Res [resto de la cadena truncado]&quot;;.
         /// </summary>
         public static string es {
             get {
@@ -195,12 +224,15 @@ namespace Es.Riam.Gnoss.Recursos.Properties {
         /// <summary>
         ///   Busca una cadena traducida similar a &lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot;?&gt;
         ///&lt;Resources language=&quot;Basque&quot; code=&quot;eu&quot;&gt;
-        ///  &lt;page name=&quot;COMMON&quot;&gt;
-        ///    &lt;Resource tag=&quot;CRITERIOBUSQUEDA&quot;&gt;Bilaketa egiteko irizpidea&lt;/Resource&gt;
-        ///    &lt;Resource tag=&quot;BASERECURSOS&quot;&gt;Baliabideak&lt;/Resource&gt;
-        ///    &lt;Resource tag=&quot;SUBIRNEWSLETTER&quot;&gt;Añadir nueva newsletter&lt;/Resource&gt;
-        ///    &lt;Resource tag=&quot;MODULOCONTACTOS&quot;&gt;Gonbidatu zuren lagunak zure harremanen sarera @1@(e)n&lt;/Resource&gt;
-        ///    &lt;Resource tag=&quot;ADMINCOMTEXTOCATEGORIAS&quot;&gt;Esan iezaguzu @1@(a)ren aurkibide orokorraren zein kate [resto de la cadena truncado]&quot;;.
+        ///	&lt;page name=&quot;COMMON&quot;&gt;
+        ///		&lt;Resource tag=&quot;TEXTOAUTOCOMPLETAROPCIONDEFECTO&quot;&gt;Emaitzak ikusi honetarako: &lt;/Resource&gt;
+        ///		&lt;Resource tag=&quot;FECHACREACION&quot;&gt;Sortze data&lt;/Resource&gt;
+        ///		&lt;Resource tag=&quot;VERMASCOMENTARIOS&quot;&gt;Ikusi iruzkin gehiago&lt;/Resource&gt;
+        ///		&lt;Resource tag=&quot;DESPLEGAR&quot;&gt;Zabaldu&lt;/Resource&gt;
+        ///		&lt;Resource tag=&quot;PLEGAR&quot;&gt;Tolestu&lt;/Resource&gt;
+        ///		&lt;Resource tag=&quot;CARGANDO&quot;&gt;Kargatzen…&lt;/Resource&gt;
+        ///		&lt;Resource tag=&quot;VISUALIZAR&quot;&gt;Ikusi&lt;/Resource&gt;
+        ///		 [resto de la cadena truncado]&quot;;.
         /// </summary>
         public static string eu {
             get {
@@ -221,11 +253,14 @@ namespace Es.Riam.Gnoss.Recursos.Properties {
         /// <summary>
         ///   Busca una cadena traducida similar a &lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot;?&gt;
         ///&lt;Resources language=&quot;French&quot; code=&quot;fr&quot;&gt;
-        ///  &lt;page name=&quot;COMMON&quot;&gt;
-        ///    &lt;Resource tag=&quot;BASERECURSOS&quot;&gt;Ressources&lt;/Resource&gt;
-        ///    &lt;Resource tag=&quot;SUBIRNEWSLETTER&quot;&gt;Ajouter une nouvelle newsletter&lt;/Resource&gt;
-        ///    &lt;Resource tag=&quot;MODULOCONTACTOS&quot;&gt;Invitez vos amis à rejoindre votre réseau de contacts sur @1@&lt;/Resource&gt;
-        ///    &lt;Resource tag=&quot;ADMINCOMTEXTOCATEGORIAS&quot;&gt;Dites-nous dans quelle catégorie du sommaire global de @1@ souhaitez-vous que l’on trouve votre communauté&lt;/Resource&gt; [resto de la cadena truncado]&quot;;.
+        ///	&lt;page name=&quot;COMMON&quot;&gt;
+        ///		&lt;Resource tag=&quot;TEXTOAUTOCOMPLETAROPCIONDEFECTO&quot;&gt;Voir les résultats pour : &lt;/Resource&gt;
+        ///		&lt;Resource tag=&quot;FECHACREACION&quot;&gt;Date de création&lt;/Resource&gt;
+        ///		&lt;Resource tag=&quot;VERMASCOMENTARIOS&quot;&gt;Voir plus de commentaires&lt;/Resource&gt;
+        ///		&lt;Resource tag=&quot;DESPLEGAR&quot;&gt;Déplier&lt;/Resource&gt;
+        ///		&lt;Resource tag=&quot;PLEGAR&quot;&gt;Plier&lt;/Resource&gt;
+        ///		&lt;Resource tag=&quot;CARGANDO&quot;&gt;Chargement...&lt;/Resource&gt;
+        ///		&lt;Resource tag=&quot;VISUALIZAR&quot;&gt;Visualiser&lt; [resto de la cadena truncado]&quot;;.
         /// </summary>
         public static string fr {
             get {
@@ -236,12 +271,14 @@ namespace Es.Riam.Gnoss.Recursos.Properties {
         /// <summary>
         ///   Busca una cadena traducida similar a &lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot;?&gt;
         ///&lt;Resources language=&quot;Galician&quot; code=&quot;gl&quot;&gt;
-        ///  &lt;page name=&quot;COMMON&quot;&gt;
-        ///    &lt;Resource tag=&quot;BASERECURSOS&quot;&gt;Recursos&lt;/Resource&gt;
-        ///    &lt;Resource tag=&quot;SUBIRNEWSLETTER&quot;&gt;Añadir nueva newsletter&lt;/Resource&gt;
-        ///    &lt;Resource tag=&quot;MODULOCONTACTOS&quot;&gt;Invita os teus amigos á túa rede de contactos en @1@&lt;/Resource&gt;
-        ///    &lt;Resource tag=&quot;ADMINCOMTEXTOCATEGORIAS&quot;&gt;Dinos en que categorías do índice global de @1@ queres que atopen a túa comunidade&lt;/Resource&gt;
-        ///    &lt;Resource tag=&quot;TEXTOAGREGARTWITTER&quot; [resto de la cadena truncado]&quot;;.
+        ///	&lt;page name=&quot;COMMON&quot;&gt;
+        ///		&lt;Resource tag=&quot;TEXTOAUTOCOMPLETAROPCIONDEFECTO&quot;&gt;Ver os resultados de: &lt;/Resource&gt;
+        ///		&lt;Resource tag=&quot;FECHACREACION&quot;&gt;Data de creación&lt;/Resource&gt;
+        ///		&lt;Resource tag=&quot;VERMASCOMENTARIOS&quot;&gt;Ver máis comentarios&lt;/Resource&gt;
+        ///		&lt;Resource tag=&quot;DESPLEGAR&quot;&gt;Despregar&lt;/Resource&gt;
+        ///		&lt;Resource tag=&quot;PLEGAR&quot;&gt;Dobrar&lt;/Resource&gt;
+        ///		&lt;Resource tag=&quot;CARGANDO&quot;&gt;Cargando...&lt;/Resource&gt;
+        ///		&lt;Resource tag=&quot;VISUALIZAR&quot;&gt;Visualizar&lt;/Resou [resto de la cadena truncado]&quot;;.
         /// </summary>
         public static string gl {
             get {
@@ -252,12 +289,14 @@ namespace Es.Riam.Gnoss.Recursos.Properties {
         /// <summary>
         ///   Busca una cadena traducida similar a &lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot;?&gt;
         ///&lt;Resources language=&quot;Italian&quot; code=&quot;it&quot;&gt;
-        ///  &lt;page name=&quot;COMMON&quot;&gt;
-        ///    &lt;Resource tag=&quot;BASERECURSOS&quot;&gt;Risorse&lt;/Resource&gt;
-        ///    &lt;Resource tag=&quot;SUBIRNEWSLETTER&quot;&gt;Aggiungi nuova newsletter&lt;/Resource&gt;
-        ///    &lt;Resource tag=&quot;MODULOCONTACTOS&quot;&gt;Invita i tuoi amici alla tua rete di contatti su @1@&lt;/Resource&gt;
-        ///    &lt;Resource tag=&quot;ADMINCOMTEXTOCATEGORIAS&quot;&gt;Segnalaci quali categorie dell&apos;indice generale di @1@ vuoi trovare nella tua comunità&lt;/Resource&gt;
-        ///    &lt;Resource tag=&quot;TEXTOAGREGARTWITT [resto de la cadena truncado]&quot;;.
+        ///	&lt;page name=&quot;COMMON&quot;&gt;
+        ///		&lt;Resource tag=&quot;TEXTOAUTOCOMPLETAROPCIONDEFECTO&quot;&gt;Vedi i risultati per: &lt;/Resource&gt;
+        ///		&lt;Resource tag=&quot;FECHACREACION&quot;&gt;Data di creazione&lt;/Resource&gt;
+        ///		&lt;Resource tag=&quot;VERMASCOMENTARIOS&quot;&gt;Vedi altri commenti&lt;/Resource&gt;
+        ///		&lt;Resource tag=&quot;DESPLEGAR&quot;&gt;Spiegare&lt;/Resource&gt;
+        ///		&lt;Resource tag=&quot;PLEGAR&quot;&gt;Piegare&lt;/Resource&gt;
+        ///		&lt;Resource tag=&quot;CARGANDO&quot;&gt;Caricamento...&lt;/Resource&gt;
+        ///		&lt;Resource tag=&quot;VISUALIZAR&quot;&gt;Visualizzare&lt;/R [resto de la cadena truncado]&quot;;.
         /// </summary>
         public static string it {
             get {
@@ -288,12 +327,13 @@ namespace Es.Riam.Gnoss.Recursos.Properties {
         /// <summary>
         ///   Busca una cadena traducida similar a &lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot;?&gt;
         ///&lt;Resources language=&quot;Portuguese&quot; code=&quot;pt&quot;&gt;
-        ///  &lt;page name=&quot;COMMON&quot;&gt;
-        ///    &lt;Resource tag=&quot;BASERECURSOS&quot;&gt;Recursos&lt;/Resource&gt;
-        ///    &lt;Resource tag=&quot;SUBIRNEWSLETTER&quot;&gt;Adicionar um novo boletim&lt;/Resource&gt;
-        ///    &lt;Resource tag=&quot;MODULOCONTACTOS&quot;&gt;Convidar a um amigo para a rede de contatos de @1@&lt;/Resource&gt;
-        ///    &lt;Resource tag=&quot;ADMINCOMTEXTOCATEGORIAS&quot;&gt;Conte-nos em que categoria do indice Global de @1@ quer encontrar sua comunidade? &lt;/Resource&gt;
-        ///    &lt;Resource tag=&quot;TEXTOAGREGARTWITTE [resto de la cadena truncado]&quot;;.
+        ///	&lt;page name=&quot;COMMON&quot;&gt;
+        ///		&lt;Resource tag=&quot;TEXTOAUTOCOMPLETAROPCIONDEFECTO&quot;&gt;Ver os resultados de: &lt;/Resource&gt;
+        ///		&lt;Resource tag=&quot;FECHACREACION&quot;&gt;Data de criação&lt;/Resource&gt;
+        ///		&lt;Resource tag=&quot;DESPLEGAR&quot;&gt;Implantar&lt;/Resource&gt;
+        ///		&lt;Resource tag=&quot;PLEGAR&quot;&gt;Dobrar&lt;/Resource&gt;
+        ///		&lt;Resource tag=&quot;VERMASCOMENTARIOS&quot;&gt;Ver mais comentários&lt;/Resource&gt;
+        ///		&lt;Resource tag=&quot;DESEASELIMINARELMENSAJESELECCIONADO&quot;&gt;Queres eliminar a mensaxe seleccionada?&lt;/R [resto de la cadena truncado]&quot;;.
         /// </summary>
         public static string pt {
             get {

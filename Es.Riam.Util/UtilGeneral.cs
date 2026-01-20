@@ -173,7 +173,7 @@ namespace Es.Riam.Util
             return responseData;
         }
 
-        public static string WebRequest(string httpMethod, string url, string token, byte[] byteData)
+        public static string WebRequest(string httpMethod, string url, string token, byte[] byteData, string pContentType = "x-www-form-urlencoded")
         {
             HttpWebRequest webRequest = null;
             string responseData = "";
@@ -182,8 +182,8 @@ namespace Es.Riam.Util
             webRequest.Method = httpMethod;
             webRequest.ServicePoint.Expect100Continue = false;
             webRequest.Timeout = 600000;
-            webRequest.ContentType = "application/x-www-form-urlencoded";
-            webRequest.Headers.Add("Authorization", "Bearer " + token);
+            webRequest.ContentType = $"application/{pContentType}";
+			webRequest.Headers.Add("Authorization", "Bearer " + token);
             webRequest.UserAgent = UtilWeb.GenerarUserAgent();
             if (httpMethod == "POST")
             {

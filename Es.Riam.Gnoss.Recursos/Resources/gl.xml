@@ -180,6 +180,7 @@
 		<Resource tag="IDIOMAEN">Inglés</Resource>
 		<Resource tag="IDIOMAPT">Portugués</Resource>
 		<Resource tag="IDIOMACA">Catalán</Resource>
+		<Resource tag="IDIOMACA-VALENCIA">Valenciano</Resource>
 		<Resource tag="IDIOMAEU">Éuscaro</Resource>
 		<Resource tag="IDIOMAGL">Galego</Resource>
 		<Resource tag="IDIOMADE">Alemán</Resource>
@@ -1353,6 +1354,7 @@
 		<Resource tag="ELIMINARSELECTIVO">Eliminar selectivamente</Resource>
 		<Resource tag="ELIMINARTOTALMENTE">Eliminar totalmente</Resource>
 		<Resource tag="NOULTIMAVERSION">Esta non é a última versión do artigo. {a href="@1@"}Ver última versión{/a}</Resource>
+		<Resource tag="TRADUCCIONGENERADAPORIA">Tradución xerada por intelixencia artificial</Resource>
 		<Resource tag="ENVIARCORREOTODOSUSUARIO">Enviar aos participantes da comunidade</Resource>
 		<Resource tag="ENVIARCORREOGRUPO">Enviar aos participantes de grupos da comunidade</Resource>
 		<Resource tag="PEGUNTAENVIARCORREOTODOSUSUARIO">Os usuarios elixen un idioma no seu perfil. Podes enviarlles a newsletter aos participantes da comunidade segundo o idioma que elixiron:</Resource>
@@ -4155,6 +4157,12 @@
 	<Resource tag="CANCELAR">Cancelar</Resource>
 	<Resource tag="ERRORCARGARFORMULARIO">Xurdiu un problema ao cargar o formulario</Resource>
 	<Resource tag="TIPOS">Tipos</Resource>	
+	<Resource tag="LISTAIDIOMASPERSONALIZADOSECOSISTEMA">Lista de idiomas personalizados na plataforma.</Resource>
+	<Resource tag="AÑADIRIDIOMAPERSONALIZADOECOSISTEMA">Engadir idioma</Resource>
+	<Resource tag="CLAVEIDIOMAPERSONALIZADOECOSISTEMA">Clave do idioma</Resource>
+	<Resource tag="CLAVEAYUDAIDIOMAPERSONALIZADOECOSISTEMA">Clave do idioma -> Ex: Para o idioma finés correspondería: fi. Se queres especificar un dialecto podes facelo deste xeito: en-UK. A segunda parte pode ter ata 10 caracteres</Resource>
+	<Resource tag="NOMBREIDIOMAPERSONALIZADOECOSISTEMA">Nome do idioma</Resource>
+	<Resource tag="NOMBREAYUDAIDIOMAPERSONALIZADOECOSISTEMA">Nome do idioma que se desexa engadir: Exemplo: Finés</Resource>
 	<Resource tag="INSERTADOSEARCH">A propiedade foi inserida.</Resource>
 	<Resource tag="ALERTAUSUARIO">Advertencia!</Resource>
 	<Resource tag="PROPIEDADNOEXISTE">A propiedade introducida: @1@ non existe.</Resource>

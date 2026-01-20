@@ -6,7 +6,7 @@
     </mensaje>
     <mensaje id="1">
       <asunto>Canvis al dafo ‘{#NombreDafo#}’</asunto>
-      <texto>{p}Hola {#NombrePersona#},{/p}{p}el dafo ‘{#NombreDafo#}’ en el qual participes compta amb una novetat que pot ser del teu interès.{/p}{p}Els editors han determinat que el factor: {/br} {#Texto#} {/br} sigui eliminat.{/p}{p}Si ho desitges, pots accedir a l' {a href="{#UrlEnllaç#}"}dafo{/a} i votar, comentar o afegir factors.{/p}{p}Gaudeix de {#NombreEcosistema#}; nosaltress innovem amb tu.{/p}{p}L'Equip de {#NombreEcosistema#}{/p}</texto>
+      <texto>{p}Hola {#NombrePersona#},{/p}{p}el dafo ‘{#NombreDafo#}’ en el qual participes compta amb una novetat que pot ser del teu interès.{/p}{p}Els editors han determinat que el factor: {/br} {#Texto#} {/br} sigui eliminat.{/p}{p}Si ho desitges, pots accedir a l' {a href="{#UrlEnlace#}"}dafo{/a} i votar, comentar o afegir factors.{/p}{p}Gaudeix de {#NombreEcosistema#}; nosaltress innovem amb tu.{/p}{p}L'Equip de {#NombreEcosistema#}{/p}</texto>
     </mensaje>
     <mensaje id="2">
       <asunto>Invitació al dafo ‘{#NombreDafo#}’ de {#NombreEcosistema#}</asunto>

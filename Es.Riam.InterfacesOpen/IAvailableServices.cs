@@ -70,6 +70,7 @@ namespace Es.Riam.Interfaces.InterfacesOpen
 		UserWall,
 		VisitCluster,
 		VisitRegistry,
-		Workflows
+		Workflows,
+		TranslateService
 	}
 }
