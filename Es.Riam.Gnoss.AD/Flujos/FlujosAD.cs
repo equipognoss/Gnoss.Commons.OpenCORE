@@ -950,7 +950,12 @@ namespace Es.Riam.Gnoss.AD.Flujos
 			return mEntityContext.HistorialTransicionDocumento.Where(x => x.DocumentoID.Equals(pDocumentoID)).ToList();
 		}
 
-		public List<HistorialTransicionCMSComponente> ObtenerHistorialTransicionesComponenteCMS(Guid pComponenteID)
+        public List<HistorialTransicionDocumento> ObtenerHistorialTransicionesDocumento(List<Guid> pDocumentosID)
+        {
+            return mEntityContext.HistorialTransicionDocumento.Where(x => pDocumentosID.Contains(x.DocumentoID)).ToList();
+        }
+
+        public List<HistorialTransicionCMSComponente> ObtenerHistorialTransicionesComponenteCMS(Guid pComponenteID)
 		{
 			return mEntityContext.HistorialTransicionCMSComponente.Where(x => x.ComponenteID.Equals(pComponenteID)).ToList();
 		}

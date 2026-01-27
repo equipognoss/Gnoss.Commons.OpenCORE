@@ -2269,6 +2269,10 @@ namespace Es.Riam.Gnoss.Logica.Documentacion
             return DocumentacionAD.ObtenerVersionesDocumentoIDPorID(pDocumentoID);
         }
 
+        public List<Guid> ObtenerIdsVersionesAnteriores(Guid pDocumentoID)
+        {
+            return DocumentacionAD.ObtenerIdsVersionesAnteriores(pDocumentoID);
+        }
         public Guid ObtenerDocumentoOriginalIDPorID(Guid pDocumentoID)
         {
             return DocumentacionAD.ObtenerDocumentoOriginalIDPorID(pDocumentoID);

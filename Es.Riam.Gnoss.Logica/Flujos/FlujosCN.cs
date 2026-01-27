@@ -353,7 +353,12 @@ namespace Es.Riam.Gnoss.Logica.Flujos
             return FlujosAD.ObtenerHistorialTransicionesDocumento(pDocumentoID);
         }
 
-		public List<HistorialTransicionCMSComponente> ObtenerHistorialTransicionesComponenteCMS(Guid pComponenteID)
+        public List<HistorialTransicionDocumento> ObtenerHistorialTransicionesDocumento(List<Guid> pDocumentosID)
+        {
+            return FlujosAD.ObtenerHistorialTransicionesDocumento(pDocumentosID);
+        }
+
+        public List<HistorialTransicionCMSComponente> ObtenerHistorialTransicionesComponenteCMS(Guid pComponenteID)
         {
             return FlujosAD.ObtenerHistorialTransicionesComponenteCMS(pComponenteID);
         }

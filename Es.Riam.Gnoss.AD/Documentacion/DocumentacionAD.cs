@@ -7725,7 +7725,7 @@ namespace Es.Riam.Gnoss.AD.Documentacion
 
         public bool ComprobarDocumentoTieneVersiones(Guid pDocumentoID)
         {
-            return mEntityContext.VersionDocumento.Any(item => item.DocumentoOriginalID.Equals(pDocumentoID));
+            return mEntityContext.VersionDocumento.Any(item => item.DocumentoOriginalID.Equals(pDocumentoID)) || mEntityContext.VersionDocumento.Any(item => item.DocumentoID.Equals(pDocumentoID));
         }
 
         /// <summary>
@@ -7978,6 +7978,32 @@ namespace Es.Riam.Gnoss.AD.Documentacion
         {
             return mEntityContext.VersionDocumento.Join(mEntityContext.Documento, vd => vd.DocumentoID, d => d.DocumentoID, (vd, d) => new { vd, d }).Where(x => x.vd.DocumentoOriginalID == pDocumentoID && x.d.UltimaVersion).Select(x => x.d.DocumentoID).FirstOrDefault();
 		}
+
+        /// <summary>
+        /// Dado un documentoID que tiene que ser una version vigente o pendiente
+        /// devuelve los ids de las versiones anteriores.
+        /// Si se usa un documentoID de una version historica no funcionara.
+        /// </summary>
+        /// <param name="pDocumentoID"></param>
+        /// <returns></returns>
+        public List<Guid> ObtenerIdsVersionesAnteriores(Guid pDocumentoID)
+        {
+            List<Guid> listaVersionesID;
+            VersionDocumento versionActual = mEntityContext.VersionDocumento.FirstOrDefault(x => x.DocumentoID.Equals(pDocumentoID));
+            bool esVigente = versionActual.EstadoVersion == (short)EstadoVersion.Vigente;
+            if (esVigente)
+            {
+                listaVersionesID = mEntityContext.VersionDocumento.Where(x => x.DocumentoOriginalID.Equals(versionActual.DocumentoOriginalID) && x.Version <= versionActual.Version && x.MejoraID == null).Select(x => x.DocumentoID).ToList();
+                if (!listaVersionesID.Contains(versionActual.DocumentoOriginalID)) listaVersionesID.Add(versionActual.DocumentoOriginalID);
+            }
+            else
+            {
+                int versionVigente = mEntityContext.VersionDocumento.FirstOrDefault(x => x.DocumentoOriginalID.Equals(versionActual.DocumentoOriginalID) && x.EstadoVersion == (short)EstadoVersion.Vigente).Version;
+                listaVersionesID = mEntityContext.VersionDocumento.Where(x => x.DocumentoOriginalID.Equals(versionActual.DocumentoOriginalID) && x.Version > versionVigente && x.Version <= versionActual.Version).Select(x => x.DocumentoID).ToList();
+            }
+
+            return listaVersionesID;
+        }
 
         public Guid ObtenerDocumentoOriginalIDPorID(Guid pDocumentoID)
         {

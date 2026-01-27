@@ -498,6 +498,13 @@ namespace Es.Riam.Gnoss.CL.Identidad
                 gestorIdentidades = ObtenerGestorIdentidadActual(pOrganizacionID, pPersonaID, pIdentidadID);
                 AgregarObjetoCache(rawKey, gestorIdentidades, DURACION_CACHE_GESTOR_IDENTIDADES);
             }
+            else
+            {
+                foreach (Elementos.Identidad.Identidad identidad in gestorIdentidades.ListaIdentidades.Values)
+                {
+                    identidad.CargarDependencias(mLoggingService, mEntityContext, mConfigService, mServicesUtilVirtuosoAndReplication);
+                }
+            }                
 
             return gestorIdentidades;
         }

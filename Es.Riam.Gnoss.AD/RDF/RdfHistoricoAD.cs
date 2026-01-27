@@ -267,7 +267,7 @@ namespace Es.Riam.Gnoss.AD.RDF
 
                 DbCommand dbCommand = ObtenerComando(comando);
 
-                CargarDataSet(dbCommand, rdfHistoricoDS, "RdfHistorico", null, esOracle, EsPostgres(), mEntityContextBASE, true);
+                CargarDataSet(dbCommand, rdfHistoricoDS, "RdfHistorico", null, esOracle, EsPostgres(), mEntityContextBASE);
             }
             catch (Exception ex)
             {

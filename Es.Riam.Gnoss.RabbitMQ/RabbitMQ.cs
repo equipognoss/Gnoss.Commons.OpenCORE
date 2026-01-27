@@ -13,6 +13,7 @@ namespace Es.Riam.Gnoss.RabbitMQ
     {
         public const string BD_REPLICACION = "colaReplicacion";
         public const string BD_SERVICIOS_WIN = "colaServiciosWin";
+        public const string BD_ADMIN_SERVICIOS_WIN = "adminServiciosWin";
 
         public delegate bool ReceivedDelegate(string s);
 

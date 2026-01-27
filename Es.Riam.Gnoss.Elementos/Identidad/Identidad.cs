@@ -67,14 +67,14 @@ namespace Es.Riam.Gnoss.Elementos.Identidad
         private List<Guid> mListaBlogsSuscritos = null;
 
         /// <summary>
-        /// Identidad de organización
+        /// Identidad de organizaciï¿½n
         /// </summary>
         private Identidad mIdentidadOrganizacion;
 
         /// <summary>
         /// Lista con los proyectos en los que participa el perfil actual.
         /// </summary>
-        public Dictionary<Guid, Guid> mListaProyectosPerfilActual;
+        private Dictionary<Guid, Guid> mListaProyectosPerfilActual;
 
         private LoggingService mLoggingService;
         private EntityContext mEntityContext;
@@ -85,7 +85,7 @@ namespace Es.Riam.Gnoss.Elementos.Identidad
         #region Constructor
 
         /// <summary>
-        /// Constructor a partir de los datos pasados como parámetros
+        /// Constructor a partir de los datos pasados como parï¿½metros
         /// </summary>
         /// <param name="pPerfil">Perfil de la identidad</param>
         /// <param name="pFilaIdentidad">Fila de la identidad</param>
@@ -123,7 +123,7 @@ namespace Es.Riam.Gnoss.Elementos.Identidad
         }
 
         /// <summary>
-        /// Obtiene la organización de la identidad (NULL si es un perfil personal)
+        /// Obtiene la organizaciï¿½n de la identidad (NULL si es un perfil personal)
         /// </summary>
         public ServiciosGenerales.Organizacion OrganizacionPerfil
         {
@@ -134,7 +134,7 @@ namespace Es.Riam.Gnoss.Elementos.Identidad
         }
 
         /// <summary>
-        /// Obtiene el correo electrónico que corresponde a la identidad
+        /// Obtiene el correo electrï¿½nico que corresponde a la identidad
         /// </summary>
         public string Email
         {
@@ -339,7 +339,7 @@ namespace Es.Riam.Gnoss.Elementos.Identidad
         }
 
         /// <summary>
-        /// Verdad si la persona está trabajando por medio de una organización (Sea Tipo 1,2,3)
+        /// Verdad si la persona estï¿½ trabajando por medio de una organizaciï¿½n (Sea Tipo 1,2,3)
         /// </summary>
         public bool TrabajaConOrganizacion
         {
@@ -350,7 +350,7 @@ namespace Es.Riam.Gnoss.Elementos.Identidad
         }
 
         /// <summary>
-        /// Verdad si la persona está trabajando por medio de una organización (Solo Tipo 1,2)
+        /// Verdad si la persona estï¿½ trabajando por medio de una organizaciï¿½n (Solo Tipo 1,2)
         /// </summary>
         public bool TrabajaPersonaConOrganizacion
         {
@@ -361,13 +361,13 @@ namespace Es.Riam.Gnoss.Elementos.Identidad
         }
 
         /// <summary>
-        /// Devuelve el tipo (modo de participación) de una identidad
+        /// Devuelve el tipo (modo de participaciï¿½n) de una identidad
         /// </summary>
         public TiposIdentidad ModoParticipacion
         {
             get
             {
-                return (TiposIdentidad)Enum.ToObject(typeof(TiposIdentidad), (short)FilaIdentidad.Tipo);
+                return (TiposIdentidad)Enum.ToObject(typeof(TiposIdentidad), FilaIdentidad.Tipo);
             }
         }
 
@@ -394,7 +394,7 @@ namespace Es.Riam.Gnoss.Elementos.Identidad
         }
 
         /// <summary>
-        /// Obtiene la fila de relación de la identidad con la persona 
+        /// Obtiene la fila de relaciï¿½n de la identidad con la persona 
         /// o con la persona en una orgnizacion (puede ser una fila CVIdentidad o IdentidadPersonaOrg)
         /// </summary>
         public object FilaRelacionIdentidad
@@ -406,7 +406,7 @@ namespace Es.Riam.Gnoss.Elementos.Identidad
         }
 
         /// <summary>
-        /// Obtiene el elemento público de la identidad (Persona u Organizacion)
+        /// Obtiene el elemento pï¿½blico de la identidad (Persona u Organizacion)
         /// </summary>
         public ElementoGnoss ElementoPublico
         {
@@ -511,7 +511,7 @@ namespace Es.Riam.Gnoss.Elementos.Identidad
         }
 
         /// <summary>
-        /// Devuelve la lista de amigos de la persona para la presentación.
+        /// Devuelve la lista de amigos de la persona para la presentaciï¿½n.
         /// </summary>
         public Dictionary<Guid, Identidad> ListaAmigosPresentacion
         {
@@ -526,7 +526,7 @@ namespace Es.Riam.Gnoss.Elementos.Identidad
         }
 
         /// <summary>
-        /// Lista con los Ids de los grupos de participación de la identidad actual (se construye cada vez que la llamas)
+        /// Lista con los Ids de los grupos de participaciï¿½n de la identidad actual (se construye cada vez que la llamas)
         /// </summary>
         public List<Guid> ListaGruposIdentidadParticipacion
         {
@@ -562,7 +562,7 @@ namespace Es.Riam.Gnoss.Elementos.Identidad
         }
 
         /// <summary>
-        /// Obtiene o establece la lista de perfiles a los que estás suscrito "Dictionary(PerfilID, UsuarioID)
+        /// Obtiene o establece la lista de perfiles a los que estï¿½s suscrito "Dictionary(PerfilID, UsuarioID)
         /// </summary>
         public List<Guid> ListaPerfilesSuscritos
         {
@@ -584,7 +584,7 @@ namespace Es.Riam.Gnoss.Elementos.Identidad
         }
 
         /// <summary>
-        /// Obtiene o establece la lista de perfiles a los que estás suscrito "Dictionary(PerfilID, UsuarioID)
+        /// Obtiene o establece la lista de perfiles a los que estï¿½s suscrito "Dictionary(PerfilID, UsuarioID)
         /// </summary>
         public List<Guid> ListaBlogsSuscritos
         {
@@ -606,7 +606,7 @@ namespace Es.Riam.Gnoss.Elementos.Identidad
         }
 
         /// <summary>
-        /// Obtiene el nombre del elemento público
+        /// Obtiene el nombre del elemento pï¿½blico
         /// </summary>
         public string Nombre(Guid? pIdentidadUsuarioActualID = null)
         {
@@ -688,7 +688,7 @@ namespace Es.Riam.Gnoss.Elementos.Identidad
         }
 
         /// <summary>
-        /// Obtiene el nombre de la organización (en caso de que la identidad no sea personal)
+        /// Obtiene el nombre de la organizaciï¿½n (en caso de que la identidad no sea personal)
         /// </summary>
         public string NombreOrganizacion
         {
@@ -798,7 +798,7 @@ namespace Es.Riam.Gnoss.Elementos.Identidad
         }
 
         /// <summary>
-        /// Obtiene el identificador de la organización (en caso de que la identidad no sea personal)
+        /// Obtiene el identificador de la organizaciï¿½n (en caso de que la identidad no sea personal)
         /// </summary>
         public Guid? OrganizacionID
         {
@@ -809,7 +809,7 @@ namespace Es.Riam.Gnoss.Elementos.Identidad
         }
 
         /// <summary>
-        /// Devuelve si la identidad pertenece a una organización
+        /// Devuelve si la identidad pertenece a una organizaciï¿½n
         /// </summary>
         public bool EsOrganizacion
         {
@@ -820,7 +820,7 @@ namespace Es.Riam.Gnoss.Elementos.Identidad
         }
 
         /// <summary>
-        /// Obtiene o establece el número de recursos compartidos por la identidad
+        /// Obtiene o establece el nï¿½mero de recursos compartidos por la identidad
         /// </summary>
         public string NumeroRecursosCompartidos
         {
@@ -865,7 +865,7 @@ namespace Es.Riam.Gnoss.Elementos.Identidad
         }
 
         /// <summary>
-        /// Obtiene la identidad de la organización a la que pertenece el usuario (Modo Corporativo)
+        /// Obtiene la identidad de la organizaciï¿½n a la que pertenece el usuario (Modo Corporativo)
         /// </summary>
         public Identidad IdentidadOrganizacion
         {
@@ -886,7 +886,7 @@ namespace Es.Riam.Gnoss.Elementos.Identidad
                                 filasIdentidadesOrganizacion = GestorIdentidades.DataWrapperIdentidad.ListaIdentidad.Where(identidad => identidad.ProyectoID.Equals(ProyectoAD.MetaProyecto) && identidad.PerfilID.Equals(perfilOrganizacion.PerfilID)).ToList();
                             }
 
-                            //Si no encontramos identidades en MyGnoss, cogeremos lo que haya (debería estar sólo el proyecto en el que ha entrado el usuario)
+                            //Si no encontramos identidades en MyGnoss, cogeremos lo que haya (deberï¿½a estar sï¿½lo el proyecto en el que ha entrado el usuario)
                             if (filasIdentidadesOrganizacion.Count == 0)
                             {
                                 filasIdentidadesOrganizacion = GestorIdentidades.DataWrapperIdentidad.ListaIdentidad.Where(identidad => identidad.PerfilID.Equals(perfilOrganizacion.PerfilID)).ToList();
@@ -894,7 +894,7 @@ namespace Es.Riam.Gnoss.Elementos.Identidad
 
                             if (filasIdentidadesOrganizacion.Count > 0)
                             {
-                                AD.EntityModel.Models.IdentidadDS.Identidad filaIdentidadOrganizacion = filasIdentidadesOrganizacion.First();
+                                AD.EntityModel.Models.IdentidadDS.Identidad filaIdentidadOrganizacion = filasIdentidadesOrganizacion[0];
 
                                 if (!GestorIdentidades.ListaPerfiles.ContainsKey(perfilOrganizacion.PerfilID) || !GestorIdentidades.ListaIdentidades.ContainsKey(filaIdentidadOrganizacion.IdentidadID))
                                 {
@@ -983,7 +983,23 @@ namespace Es.Riam.Gnoss.Elementos.Identidad
 
         #endregion
 
-        #region Métodos
+        #region Mï¿½todos
+
+        /// <summary>
+        /// Se encarga de cargar las dependencias necesarias para el funcionamiento de la clase, en ocasiones se obtiene el 
+        /// objeto de cache y la deserializaciï¿½n no las carga en el constructor.
+        /// </summary>
+        /// <param name="pLoggingService">Dependencia para gestionar los logs</param>
+        /// <param name="pEntityContext">Dependencia para Entity Context</param>
+        /// <param name="pConfigService">Dependencia para acceder al Config Service</param>
+        /// <param name="pServicesUtilVirtuosoAndReplication">Dependencia para gestionar la replicaciï¿½n</param>
+        public void CargarDependencias(LoggingService pLoggingService, EntityContext pEntityContext, ConfigService pConfigService, IServicesUtilVirtuosoAndReplication pServicesUtilVirtuosoAndReplication)
+        {
+            mLoggingService = pLoggingService;
+            mEntityContext = pEntityContext;
+            mConfigService = pConfigService;
+            mServicesUtilVirtuosoAndReplication = pServicesUtilVirtuosoAndReplication;
+        }
 
         /// <summary>
         /// Devuelve el identificador de la identidad activa de la identidad en una determinada comunidad si la tiene, Guid.Empty si no.
@@ -1005,7 +1021,7 @@ namespace Es.Riam.Gnoss.Elementos.Identidad
         }
 
         /// <summary>
-        /// Devuelve la lista de amigos de la identidad actuales que son visibles por la identidad pasada por parámetro
+        /// Devuelve la lista de amigos de la identidad actuales que son visibles por la identidad pasada por parï¿½metro
         /// </summary>
         /// <param name="pIdentidad"></param>
         /// <param name="pProyectoID"></param>
@@ -1042,15 +1058,12 @@ namespace Es.Riam.Gnoss.Elementos.Identidad
                     PersonaCN perCN = new PersonaCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, null, null);
                     AD.EntityModel.Models.PersonaDS.ConfiguracionGnossPersona filaConf = perCN.ObtenerConfiguracionPersonaPorID(perCN.ObtenerPersonaPorIdentidadCargaLigera(Clave).PersonaID);
                     perCN.Dispose();
-                    if (filaConf != null)
+                    if (filaConf != null && filaConf.VerAmigos)
                     {
-                        if (filaConf.VerAmigos)
+                        visibilidad = TipoVisibilidadContactosOrganizacion.Contactos;
+                        if (filaConf.VerAmigosExterno)
                         {
-                            visibilidad = TipoVisibilidadContactosOrganizacion.Contactos;
-                            if (filaConf.VerAmigosExterno)
-                            {
-                                visibilidad = TipoVisibilidadContactosOrganizacion.ContactosDeContactos;
-                            }
+                            visibilidad = TipoVisibilidadContactosOrganizacion.ContactosDeContactos;
                         }
                     }
                 }
@@ -1062,22 +1075,18 @@ namespace Es.Riam.Gnoss.Elementos.Identidad
                     foreach (Guid idIdentidadContacto in ListaContactos.Keys)
                     {
                         Identidad IdentidadContacto = ListaContactos[idIdentidadContacto];
-                        //Si el usuario tiene la visibilidad para contactos
-                        if (visibilidad == TipoVisibilidadContactosOrganizacion.Contactos)
+                        //Si el usuario tiene la visibilidad para contactos y si el usuario es contacto
+                        if (visibilidad == TipoVisibilidadContactosOrganizacion.Contactos && ListaContactos.ContainsKey(identidadMyGnossDeIdentiad.Clave))
                         {
-                            //si el usuario es contacto
-                            if (ListaContactos.ContainsKey(identidadMyGnossDeIdentiad.Clave))
+                            //Comprobamos la visibilidad del contacto
+                            bool visibleMyGnoss = false;
+                            if (IdentidadContacto.Tipo == TiposIdentidad.Organizacion)
                             {
-                                //Comprobamos la visibilidad del contacto
-                                bool visibleMyGnoss = false;
-                                if (IdentidadContacto.Tipo == TiposIdentidad.Organizacion)
+                                OrganizacionCN orgContactoCN = new OrganizacionCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, null, null);
+                                DataWrapperOrganizacion orgContactoDW = orgContactoCN.ObtenerOrganizacionDeIdentidad(IdentidadContacto.Clave);
+                                if (orgContactoDW.ListaOrganizacion.Count > 0)
                                 {
-                                    OrganizacionCN orgContactoCN = new OrganizacionCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, null, null);
-                                    DataWrapperOrganizacion orgContactoDW = orgContactoCN.ObtenerOrganizacionDeIdentidad(IdentidadContacto.Clave);
-                                    if (orgContactoDW.ListaOrganizacion.Count > 0)
-                                    {
-                                        visibleMyGnoss = orgContactoDW.ListaOrganizacion.FirstOrDefault().EsBuscable || orgContactoDW.ListaOrganizacion.FirstOrDefault().EsBuscableExternos;
-                                    }
+                                    visibleMyGnoss = orgContactoDW.ListaOrganizacion.FirstOrDefault().EsBuscable || orgContactoDW.ListaOrganizacion.FirstOrDefault().EsBuscableExternos;                                    
                                 }
                                 else
                                 {
@@ -1090,12 +1099,12 @@ namespace Es.Riam.Gnoss.Elementos.Identidad
                                         visibleMyGnoss = true;
                                     }
                                 }
+                            }
 
-                                //si el contacto tiene el perfil público
-                                if (visibleMyGnoss)
-                                {
-                                    ListaIdentidades.Add(idIdentidadContacto, IdentidadContacto);
-                                }
+                            //si el contacto tiene el perfil pï¿½blico
+                            if (visibleMyGnoss)
+                            {
+                                ListaIdentidades.Add(idIdentidadContacto, IdentidadContacto);
                             }
                         }
 
@@ -1132,7 +1141,7 @@ namespace Es.Riam.Gnoss.Elementos.Identidad
 
                                 }
 
-                                //si el contacto tiene el perfil público
+                                //si el contacto tiene el perfil pï¿½blico
                                 if (visibleMyGnoss)
                                 {
                                     ListaIdentidades.Add(idIdentidadContacto, IdentidadContacto);
@@ -1175,12 +1184,12 @@ namespace Es.Riam.Gnoss.Elementos.Identidad
 
             if (filasIdentidad.Count == 0)
             {
-                //Juan Valer: No debe entrar nunca por aquí, lo pongo porque a habido incongruencias en datos de producción 
-                //y puede ser porque entra por aqui en alguna ocasión. Lanzo este mensaje para que se quede constancia en el log 
+                //Juan Valer: No debe entrar nunca por aquï¿½, lo pongo porque a habido incongruencias en datos de producciï¿½n 
+                //y puede ser porque entra por aqui en alguna ocasiï¿½n. Lanzo este mensaje para que se quede constancia en el log 
                 //y poder reproducir el error.
-                throw new Exception($"El perfil: '{pPerfilID}' de la identidad: '{Clave}' no tiene una identidad en el proyecto: '{pProyectoID}'");
+                throw new ExcepcionWeb($"El perfil: '{pPerfilID}' de la identidad: '{Clave}' no tiene una identidad en el proyecto: '{pProyectoID}'");
             }
-            return filasIdentidad.First().IdentidadID;
+            return filasIdentidad[0].IdentidadID;
         }
 
         #endregion

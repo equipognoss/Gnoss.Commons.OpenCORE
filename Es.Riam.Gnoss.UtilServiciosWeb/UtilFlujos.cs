@@ -67,12 +67,25 @@ namespace Es.Riam.Gnoss.UtilServiciosWeb
 		{
 			FlujosCN flujosCN = new FlujosCN(_entityContext, _loggingService, _configService, null, _loggerFactory.CreateLogger<FlujosCN>(), _loggerFactory);
 			IdentidadCN identidadCN = new IdentidadCN(_entityContext, _loggingService, _configService, null, _loggerFactory.CreateLogger<IdentidadCN>(), _loggerFactory);
-			List<HistorialTransicionModel> historial = new List<HistorialTransicionModel>();
+			DocumentacionCN docCN = new DocumentacionCN(_entityContext, _loggingService, _configService, null, _loggerFactory.CreateLogger<DocumentacionCN>(), _loggerFactory);
+
+            List<HistorialTransicionModel> historial = new List<HistorialTransicionModel>();
 
 			switch (pTipo)
 			{
 				case TipoContenidoFlujo.Recurso:
-					List<HistorialTransicionDocumento> filasHistorialDoc = flujosCN.ObtenerHistorialTransicionesDocumento(pContenidoID);
+					List<HistorialTransicionDocumento> filasHistorialDoc;
+
+                    if (docCN.ComprobarDocumentoTieneVersiones(pContenidoID))
+					{
+						List<Guid> listaVersiones = docCN.ObtenerIdsVersionesAnteriores(pContenidoID);
+						filasHistorialDoc = flujosCN.ObtenerHistorialTransicionesDocumento(listaVersiones);
+                    }
+					else
+					{
+                        filasHistorialDoc = flujosCN.ObtenerHistorialTransicionesDocumento(pContenidoID);
+                    }
+					
 					foreach (HistorialTransicionDocumento fila in filasHistorialDoc)
 					{
 						HistorialTransicionModel modeloHistorial = new HistorialTransicionModel();
