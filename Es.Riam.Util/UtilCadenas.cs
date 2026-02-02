@@ -1867,6 +1867,7 @@ namespace Es.Riam.Util
             pSanitizer.AllowedTags.Add("iframe");            
             pSanitizer.AllowedTags.Add("video");
             pSanitizer.AllowedTags.Add("audio");
+            pSanitizer.AllowedTags.Add("source");
             pSanitizer.AllowedTags.Remove("form");
             pTexto = DecodificarTextoCodificadoMultiplesVeces(pTexto);                       
             return pSanitizer.Sanitize(pTexto);

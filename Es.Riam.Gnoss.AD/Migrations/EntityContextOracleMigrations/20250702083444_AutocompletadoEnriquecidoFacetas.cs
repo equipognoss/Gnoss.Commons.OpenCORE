@@ -15,7 +15,7 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextOracleMigrations
                 table: "FacetaObjetoConocimientoProyectoPestanya",
                 type: "NUMBER(1)",
                 nullable: false,
-                defaultValue: 0)
+                defaultValue: false)
                 .Annotation("Relational:ColumnOrder", 5);
         }
 

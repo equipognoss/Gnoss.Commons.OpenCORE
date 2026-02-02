@@ -6525,6 +6525,8 @@
 		<Resource tag="REPLICACIONBIDIRECCIONALNOCONFIGURADA">Replicació bidireccional no configurada.</Resource>
 		<Resource tag="IDENTITYSERVERNOFUNCIONA">Identity Server no funciona.</Resource>
 		<Resource tag="SIMODIFICASLARUTARELATIVAELCAMBIONOSURTIRAEFECTOHASTAQUESERE">Si modifices la ruta relativa el canvi no tindrà efecte fins que es reinicie la plataforma. Posa't en contacte amb l'administrador de sistemes per a això.</Resource>
+		<Resource tag="HISTORIALCONFIGURACION">Historial de configuració</Resource>
+		<Resource tag="HISTORIALESTRUCTURA">Historial d'estructura</Resource>
 	</page>
 	<page name="MENSAJECOOKIES">
 		<Resource tag="AVISOPOLITICA">Utilitzem cookies pròpies i de tercers per a millorar la teua experiència de navegació. Més informació en {a href="@1@"}Política de cookies{/a}.</Resource>
@@ -6564,5 +6566,7 @@
 		<Resource tag="SEGUROELIMINARIMAGEN">Està segur que vol eliminar la imatge adjunta a l'ontologia?</Resource>
 		<Resource tag="EXPLICACIONPRIVADO">(En activar "Accés Privat" la documentació estarà disponible només per a Administradors)</Resource>
 		<Resource tag= "DESCARGAONTOLOGIAUNIFICADA">Descàrrega de l'Ontologia</Resource>
+		<Resource tag="ERRORRECURSOSSINFINALIZAR">No es pot eliminar el flux perquè encara queden continguts de tipus @1@ que no estan en l'estat final.</Resource>
+		<Resource tag="ERRORHAYMEJORASACTIVAS">No es pot eliminar el flux perquè encara queden recursos amb una millora activa.</Resource>
 	</page>
 </Resources>

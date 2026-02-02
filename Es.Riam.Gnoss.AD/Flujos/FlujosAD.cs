@@ -159,6 +159,10 @@ namespace Es.Riam.Gnoss.AD.Flujos
             }
             return resultado;
         }
+        public List<string> ObtenerOntologiaNombrePorPoryectoID(Guid pProyectoID)
+        {
+            return mEntityContext.FlujoObjetoConocimientoProyecto.Where(f => f.ProyectoID.Equals(pProyectoID)).Select(f => f.Ontologia).ToList();
+        }
         public List<string> ObtenerOntologiasNombreFlujo(Guid pFlujoID)
         {
             return mEntityContext.FlujoObjetoConocimientoProyecto.Where(f => f.FlujoID.Equals(pFlujoID)).Select(f => f.Ontologia).ToList();
@@ -186,6 +190,40 @@ namespace Es.Riam.Gnoss.AD.Flujos
             var flujo = mEntityContext.Flujo.Where(i => i.FlujoID.Equals(pFlujoID)).FirstOrDefault();
             return ObtenerTiposContenidosPorFlujo(flujo);
         }
+
+        public Dictionary<TiposContenidos, bool> ObtenerTiposContenidosEnProyecto(Guid pProyectoID)
+        {
+            var resultadoConsulta = mEntityContext.Flujo.Where(f => f.ProyectoID.Equals(pProyectoID)).GroupBy(_ => 1).Select(
+               g => new
+               {
+                   Nota = g.Any(x => x.Nota),
+                   Adjunto = g.Any(x => x.Adjunto),
+                   Link = g.Any(x => x.Link),
+                   Encuesta = g.Any(x => x.Encuesta),
+                   Debate = g.Any(x => x.Debate),
+                   PaginaCMS = g.Any(x => x.PaginaCMS),
+                   ComponenteCMS = g.Any(x => x.ComponenteCMS),
+                   Video = g.Any(x => x.Video),
+                   RecursoSemantico = g.Any(x => x.RecursoSemantico),
+
+               }
+            ).FirstOrDefault();
+            
+            Dictionary<TiposContenidos, bool> diccionarioTiposPorProyecto = new Dictionary<TiposContenidos, bool>
+            {
+                    { TiposContenidos.Nota, resultadoConsulta.Nota },
+                    { TiposContenidos.Adjunto, resultadoConsulta.Adjunto },
+                    { TiposContenidos.Link, resultadoConsulta.Link },
+                    { TiposContenidos.Encuesta, resultadoConsulta.Encuesta },
+                    { TiposContenidos.Debate, resultadoConsulta.Debate },
+                    { TiposContenidos.PaginaCMS, resultadoConsulta.PaginaCMS },
+                    { TiposContenidos.ComponenteCMS, resultadoConsulta.ComponenteCMS },
+                    { TiposContenidos.Video, resultadoConsulta.Video },
+                    { TiposContenidos.RecursoSemantico, resultadoConsulta.RecursoSemantico }
+            };
+            return diccionarioTiposPorProyecto;
+        }
+
         public Dictionary<TiposContenidos, bool> ObtenerTiposContenidosPorFlujo(Flujo pFlujo)
         {
             Dictionary<TiposContenidos, bool> resultado = new Dictionary<TiposContenidos, bool>();
@@ -306,37 +344,34 @@ namespace Es.Riam.Gnoss.AD.Flujos
         public string PuedoEliminarEstado(Guid pEstadoID, Guid pFlujoID)
         {
             string error = "";
-            if (string.IsNullOrEmpty(error))
-            {
-                var flujo = mEntityContext.Flujo.FirstOrDefault(i => i.FlujoID.Equals(pFlujoID));
-                var contenidosAfectados = ObtenerTiposContenidosPorFlujo(flujo);
+            var flujo = mEntityContext.Flujo.FirstOrDefault(i => i.FlujoID.Equals(pFlujoID));
+            var contenidosAfectados = ObtenerTiposContenidosPorFlujo(flujo);
 
-                foreach (var key in contenidosAfectados.Where(i => i.Value).ToDictionary().Keys)
+            foreach (var key in contenidosAfectados.Where(i => i.Value).ToDictionary().Keys)
+            {
+                if (!string.IsNullOrEmpty(error)) break;
+                switch (key)
                 {
-                    if (!string.IsNullOrEmpty(error)) break;
-                    switch (key)
-                    {
-                        case TiposContenidos.Nota:
-                        case TiposContenidos.Adjunto:
-                        case TiposContenidos.Link:
-                        case TiposContenidos.Video:
-                        case TiposContenidos.RecursoSemantico:
-                        case TiposContenidos.Debate:
-                        case TiposContenidos.Encuesta:
-                            List<Documento> documentos = mEntityContext.Documento.Where(d => d.Tipo.Equals((short)key) && !d.Eliminado && d.EstadoID.Equals(pEstadoID)).ToList();
-                            if (documentos.Count > 0) error = $"ERRORESTADOAFECTACONTENIDO:{Enum.GetName(typeof(TiposContenidos), key)}";
-                            break;
-                        case TiposContenidos.PaginaCMS:
-                            List<ProyectoPestanyaCMS> paginasCMS = mEntityContext.ProyectoPestanyaCMS.Where(i => i.EstadoID.Equals(pEstadoID)).ToList();
-                            if (paginasCMS.Count > 0) error = $"ERRORESTADOAFECTACONTENIDO:{Enum.GetName(typeof(TiposContenidos), key)}";
-                            break;
-                        case TiposContenidos.ComponenteCMS:
-                            List<CMSComponente> componentesCMS = mEntityContext.CMSComponente.Where(i => i.EstadoID.Equals(pEstadoID)).ToList();
-                            if (componentesCMS.Count > 0) error = $"ERRORESTADOAFECTACONTENIDO:{Enum.GetName(typeof(TiposContenidos), key)}";
-                            break;
-                        default:
-                            break;
-                    }
+                    case TiposContenidos.Nota:
+                    case TiposContenidos.Adjunto:
+                    case TiposContenidos.Link:
+                    case TiposContenidos.Video:
+                    case TiposContenidos.RecursoSemantico:
+                    case TiposContenidos.Debate:
+                    case TiposContenidos.Encuesta:
+                        List<Documento> documentos = mEntityContext.Documento.Where(d => d.Tipo.Equals((short)key) && !d.Eliminado && d.EstadoID.Equals(pEstadoID)).ToList();
+                        if (documentos.Count > 0) error = $"ERRORESTADOAFECTACONTENIDO:{Enum.GetName(typeof(TiposContenidos), key)}";
+                        break;
+                    case TiposContenidos.PaginaCMS:
+                        List<ProyectoPestanyaCMS> paginasCMS = mEntityContext.ProyectoPestanyaCMS.Where(i => i.EstadoID.Equals(pEstadoID)).ToList();
+                        if (paginasCMS.Count > 0) error = $"ERRORESTADOAFECTACONTENIDO:{Enum.GetName(typeof(TiposContenidos), key)}";
+                        break;
+                    case TiposContenidos.ComponenteCMS:
+                        List<CMSComponente> componentesCMS = mEntityContext.CMSComponente.Where(i => i.EstadoID.Equals(pEstadoID)).ToList();
+                        if (componentesCMS.Count > 0) error = $"ERRORESTADOAFECTACONTENIDO:{Enum.GetName(typeof(TiposContenidos), key)}";
+                        break;
+                    default:
+                        break;
                 }
             }
 
@@ -653,6 +688,39 @@ namespace Es.Riam.Gnoss.AD.Flujos
             return mEntityContext.Estado.Where(e => e.EstadoID.Equals(pEstadoID)).Select(e => e.PermiteMejora).FirstOrDefault();
         }
 
+        public string ComprobarSiPaginasCMSNoEstanEnEstadoFinal(List<Guid> pListaEstadosFinales, Guid pProyectoID)
+        {
+            bool hayRecursosSinFinalizar = mEntityContext.ProyectoPestanyaCMS.Join(mEntityContext.ProyectoPestanyaMenu, proyPestanyaCMS => proyPestanyaCMS.PestanyaID, proyPestanyaMenu => proyPestanyaMenu.PestanyaID, (proyPestanyaCMS, proyPestanyaMenu) => new
+            {
+                ProyectoPestanyaCMS = proyPestanyaCMS,
+                ProyectPestanyaMenuID = proyPestanyaMenu.ProyectoID
+            }).Any(proyPestanyaCMS => proyPestanyaCMS.ProyectPestanyaMenuID.Equals(pProyectoID) && !pListaEstadosFinales.Contains((Guid)proyPestanyaCMS.ProyectoPestanyaCMS.EstadoID));
+
+            return hayRecursosSinFinalizar ? $"ERRORRECURSOSSINFINALIZAR:{Enum.GetName(typeof(TiposContenidos), TiposContenidos.PaginaCMS)}" : "";
+        }
+
+        public string ComprobarSiComponenteCMSNoEstanEnEstadoFinal(List<Guid> pListaEstadosFinales, Guid pProyectoID)
+        {
+            return mEntityContext.CMSComponente.Any(c => c.ProyectoID.Equals(pProyectoID) && !pListaEstadosFinales.Contains((Guid)c.EstadoID)) ? $"ERRORRECURSOSSINFINALIZAR:{Enum.GetName(typeof(TiposContenidos), TiposContenidos.ComponenteCMS)}" : "";
+        }
+
+        public string ComprobarSiRecursosNoEstanEstadoFinal(List<Guid> pListaEstadosFinales, Guid pProyectoID, List<short> pTipoRecursos)
+        {
+            string contenidos = string.Join("|", pTipoRecursos.Select(x => Enum.GetName(typeof(TiposContenidos), (TiposContenidos)x)).ToList());
+            return mEntityContext.Documento.Any(d => d.ProyectoID.Equals(pProyectoID) && pTipoRecursos.Contains(d.Tipo) && !d.Eliminado && d.UltimaVersion && !pListaEstadosFinales.Contains((Guid)d.EstadoID)) ? $"ERRORRECURSOSSINFINALIZAR:{contenidos}" : "";
+        }
+
+        public string ComprobarSiRecursosSemNoEstanEstadoFinal(List<Guid> pListaEstadosFinales, Guid pProyectoID, Dictionary<Guid, string> pListaOntologias)
+        {
+            string contenidos = string.Join(", ", pListaOntologias.Select(x => x.Value).ToList());
+            return mEntityContext.Documento.Any(d => d.ProyectoID.Equals(pProyectoID) && d.Tipo == (short)TiposContenidos.RecursoSemantico && !d.Eliminado && d.UltimaVersion && !pListaEstadosFinales.Contains((Guid)d.EstadoID) && pListaOntologias.Keys.Contains((Guid)d.ElementoVinculadoID)) ? $"ERRORRECURSOSSINFINALIZAR:{contenidos}" : "";
+        }
+
+        public List<Guid> ObtenerEstadosFinalesPorFlujoID(Guid pFlujoID)
+        {
+            return mEntityContext.Estado.Where(e => e.FlujoID.Equals(pFlujoID) && e.Tipo == (short)TipoEstado.Final).Select(e => e.EstadoID).ToList();
+        }
+
         #endregion
 
         #region EstadoIdentidad
@@ -841,7 +909,6 @@ namespace Es.Riam.Gnoss.AD.Flujos
         public List<Transicion> ObtenerTransicionesPorEstadosID(List<Guid> pListaEstadosID)
         {
             return mEntityContext.Transicion.Where(t => pListaEstadosID.Contains(t.EstadoOrigenID) || pListaEstadosID.Contains(t.EstadoDestinoID)).Include(t => t.TransicionIdentidad).Include(t => t.TransicionGrupo).ToList();
-            //return mEntityContext.Transicion.Where(t => pListaEstadosID.Contains(t.EstadoOrigenID) || pListaEstadosID.Contains(t.EstadoDestinoID)).ToList();
         }
         public void GuardarTransicion(Transicion pTransicion)
         {

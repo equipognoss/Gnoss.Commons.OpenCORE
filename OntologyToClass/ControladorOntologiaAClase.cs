@@ -214,7 +214,7 @@ namespace OntologiaAClase
             Clase.AppendLine($"{UtilCadenasOntology.Tabs(2)}{{");
             foreach (string idiom in listaIdiomas)
             {
-                Clase.AppendLine($"{UtilCadenasOntology.Tabs(3)}{idiom},");
+                Clase.AppendLine($"{UtilCadenasOntology.Tabs(3)}{idiom.Replace("-","_")},");
             }
             Clase.AppendLine($"{UtilCadenasOntology.Tabs(2)}}}");
             Clase.AppendLine($"{UtilCadenasOntology.Tabs(2)}internal List<OntologyEntity> entList = new List<OntologyEntity>();");

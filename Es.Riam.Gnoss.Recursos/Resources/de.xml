@@ -5854,6 +5854,8 @@ s		<Resource tag="BUSCARPALABRASCLAVE">Schlüsselwörter suchen …</Resource>
     <Resource tag="REPLICACIONBIDIRECCIONALNOCONFIGURADA">Replicacion bidireccional no configurada.</Resource>
     <Resource tag="IDENTITYSERVERNOFUNCIONA">Identity Server no funciona.</Resource>
     <Resource tag="SIMODIFICASLARUTARELATIVAELCAMBIONOSURTIRAEFECTOHASTAQUESERE">Si modificas la ruta relativa el cambio no surtirá efecto hasta que se reinicie la plataforma. Ponte en contacto con el administrador de sistemas para ello.</Resource>
+	<Resource tag="HISTORIALCONFIGURACION">Konfigurationsverlauf</Resource>
+	<Resource tag="HISTORIALESTRUCTURA">Strukturverlauf</Resource>
   </page>
 	<page name="FLUJOS">
 		<Resource tag="NUEVOFLUJO">Neuer Arbeitsablauf</Resource>
@@ -5921,5 +5923,7 @@ s		<Resource tag="BUSCARPALABRASCLAVE">Schlüsselwörter suchen …</Resource>
 		<Resource tag="AVISOESTASENMEJORA">Diese Ressource befindet sich in einem Verbesserungsprozess. {a href="@1@"}Ursprüngliche Ressource anzeigen{/a}.</Resource>
 		<Resource tag="ERRORINICIARMEJORA">Beim Starten der Verbesserung ist ein Fehler aufgetreten</Resource>
 		<Resource tag="ERRORPERMISOINICIARMEJORA">Sie haben keine Berechtigung, eine Verbesserung zu starten</Resource>
+		<Resource tag="ERRORRECURSOSSINFINALIZAR">Der Ablauf kann nicht gelöscht werden, da noch Inhalte vom Typ @1@ vorhanden sind, die sich nicht im Endzustand befinden.</Resource>
+		<Resource tag="ERRORHAYMEJORASACTIVAS">Der Ablauf kann nicht gelöscht werden, da noch Ressourcen mit einer aktiven Verbesserung vorhanden sind.</Resource>
 	</page>
 </Resources>

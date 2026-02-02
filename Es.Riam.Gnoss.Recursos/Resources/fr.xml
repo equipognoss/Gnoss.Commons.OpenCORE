@@ -5835,6 +5835,8 @@
     <Resource tag="REPLICACIONBIDIRECCIONALNOCONFIGURADA">Replicacion bidireccional no configurada.</Resource>
     <Resource tag="IDENTITYSERVERNOFUNCIONA">Identity Server no funciona.</Resource>
     <Resource tag="SIMODIFICASLARUTARELATIVAELCAMBIONOSURTIRAEFECTOHASTAQUESERE">Si modificas la ruta relativa el cambio no surtirá efecto hasta que se reinicie la plataforma. Ponte en contacto con el administrador de sistemas para ello.</Resource>
+	  <Resource tag="HISTORIALCONFIGURACION">Historique de configuration</Resource>
+	  <Resource tag="HISTORIALESTRUCTURA">Historique de la structure</Resource>
 	  <Resource tag="ADQUIRIRVERSIONENTERPRISE">Pour accéder à la fonctionnalité de [SERVICIO], vous devez acquérir la version enterprise de GNOSS</Resource>
 	  <Resource tag="SERVICIOADMINISTRARPESOS">la gestion des poids de l’autocomplétion de Lucene</Resource>
 	  <Resource tag="SERVICIOESTADOSISTEMAS">la surveillance des services</Resource>
@@ -5920,5 +5922,7 @@
 		<Resource tag="AVISOESTASENMEJORA">Cette ressource est dans un processus d'amélioration. {a href="@1@"}Voir la ressource d'origine{/a}.</Resource>
 		<Resource tag="ERRORINICIARMEJORA">Une erreur s'est produite lors du démarrage de l'amélioration</Resource>
 		<Resource tag="ERRORPERMISOINICIARMEJORA">Vous n'avez pas les autorisations pour démarrer une amélioration</Resource>
+		<Resource tag="ERRORRECURSOSSINFINALIZAR">Le flux ne peut pas être supprimé car il reste encore des contenus de type @1@ qui ne sont pas dans l'état final.</Resource>
+		<Resource tag="ERRORHAYMEJORASACTIVAS">Le flux ne peut pas être supprimé car il reste encore des ressources avec une amélioration active.</Resource>
 	</page>
 </Resources>

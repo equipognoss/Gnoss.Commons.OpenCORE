@@ -140,7 +140,6 @@ namespace Es.Riam.Gnoss.AD.EntityModel
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             string tipoBD = _configService.ObtenerTipoBD();
-            string acid = _configService.ObtenerSqlConnectionString();
 
             optionsBuilder.LogTo(mLoggingService.AgregarEntradaTrazaEntity);
             switch (tipoBD)

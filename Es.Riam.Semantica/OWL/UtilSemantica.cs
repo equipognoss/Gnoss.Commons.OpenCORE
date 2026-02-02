@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Xml;
 
 namespace Es.Riam.Semantica.OWL
 {
@@ -100,8 +101,65 @@ namespace Es.Riam.Semantica.OWL
             return null;
         }
 
-        #endregion
+		public static bool ComprobarSiPropiedadEsMultiidioma(XmlDocument doc, Propiedad prop)
+		{
+			if (prop.Rango.Equals("http://www.w3.org/2001/XMLSchema#string"))
+			{
+				XmlNode multiidioma = doc.SelectSingleNode("config/ConfiguracionGeneral/MultiIdioma");
+				if (multiidioma != null)
+				{
+					if (multiidioma.InnerText.Equals("true") || multiidioma.InnerText.Equals(""))
+					{
+						XmlNode multiidiomaPropiedad = doc.SelectSingleNode($"config/EspefPropiedad/Propiedad[@ID =\"{prop.Nombre}\" and @EntidadID=\"{prop.ElementoOntologia.TipoEntidad}\"]/MultiIdioma");
+						XmlNode tipoObjeto = doc.SelectSingleNode($"config/EspefPropiedad/Propiedad[@ID =\"{prop.Nombre}\" and @EntidadID=\"{prop.ElementoOntologia.TipoEntidad}\"]/TipoCampo");
+						if (multiidiomaPropiedad == null)
+						{
+							if (tipoObjeto != null)
+							{
+								if (!tipoObjeto.InnerText.Equals("Link") && !tipoObjeto.InnerText.Equals("Imagen"))
+								{
+									return true;
+								}
+								else
+								{
+									return false;
+								}
+							}
+							else
+							{
+								return true;
+							}
+						}
+						else
+						{
+							if (multiidiomaPropiedad.InnerText.Equals("true") || multiidiomaPropiedad.InnerText.Equals(""))
+							{
+								return true;
+							}
+							else
+							{
+								return false;
+							}
+						}
+					}
+					else
+					{
+						return false;
+					}
+				}
+				else
+				{
+					return false;
+				}
+			}
+			else
+			{
+				return false;
+			}
+		}
 
-        #endregion
-    }
+		#endregion
+
+		#endregion
+	}
 }

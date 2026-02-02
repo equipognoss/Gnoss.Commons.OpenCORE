@@ -57,6 +57,10 @@ namespace Es.Riam.Gnoss.Logica.Flujos
         #region Metodos Publicos
 
         #region Flujo
+        public List<string> ObtenerOntologiaNombrePorPoryectoID(Guid pProyectoID)
+        {
+            return FlujosAD.ObtenerOntologiaNombrePorPoryectoID(pProyectoID);
+        }
         public List<string> ObtenerOntologiasNombreFlujo(Guid pFlujoID)
         {
             return FlujosAD.ObtenerOntologiasNombreFlujo(pFlujoID);
@@ -100,6 +104,11 @@ namespace Es.Riam.Gnoss.Logica.Flujos
         {
             return FlujosAD.ObtenerTiposContenidosPorFlujo(pFlujo);
         }
+        public Dictionary<TiposContenidos, bool> ObtenerTiposContenidosEnProyecto(Guid pProyectoID)
+        {
+            return FlujosAD.ObtenerTiposContenidosEnProyecto(pProyectoID);
+        }
+
         public void GuardarFlujo(Flujo pFlujo)
         {
             FlujosAD.GuardarFlujo(pFlujo);
@@ -164,7 +173,32 @@ namespace Es.Riam.Gnoss.Logica.Flujos
             return FlujosAD.ActualizarEstadoComponentesCMS(pEstadoID, pProyectoID, pEliminado);
         }
 
-		public bool ComprobarEstadoEsPublico(Guid pEstadoID)
+        public string ComprobarSiPaginasCMSNoEstanEnEstadoFinal(List<Guid> pListaEstadosFinales, Guid pProyectoID)
+        {
+            return FlujosAD.ComprobarSiPaginasCMSNoEstanEnEstadoFinal(pListaEstadosFinales, pProyectoID);
+        }
+
+        public string ComprobarSiComponenteCMSNoEstanEnEstadoFinal(List<Guid> pListaEstadosFinales, Guid pProyectoID)
+        {
+            return FlujosAD.ComprobarSiComponenteCMSNoEstanEnEstadoFinal(pListaEstadosFinales, pProyectoID);
+        }
+
+        public string ComprobarSiRecursosNoEstanEstadoFinal(List<Guid> pListaEstadosFinales, Guid pProyectoID, List<short> pTipoRecursos)
+        {
+            return FlujosAD.ComprobarSiRecursosNoEstanEstadoFinal(pListaEstadosFinales, pProyectoID, pTipoRecursos);
+        }
+
+        public string ComprobarSiRecursosSemNoEstanEstadoFinal(List<Guid> pListaEstadosFinales, Guid pProyectoID, Dictionary<Guid, string> pListaOntologias)
+        {
+            return FlujosAD.ComprobarSiRecursosSemNoEstanEstadoFinal(pListaEstadosFinales, pProyectoID, pListaOntologias);
+        }
+
+        public List<Guid> ObtenerEstadosFinalesPorFlujoID(Guid pFlujoID)
+        {
+            return FlujosAD.ObtenerEstadosFinalesPorFlujoID(pFlujoID);
+        }
+
+        public bool ComprobarEstadoEsPublico(Guid pEstadoID)
 		{
             return FlujosAD.ComprobarEstadoEsPublico(pEstadoID);
 		}

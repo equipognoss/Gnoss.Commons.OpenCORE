@@ -4340,9 +4340,11 @@ namespace Es.Riam.Gnoss.AD.Facetado
                 MemoryStream ms = new MemoryStream(bytesXmlOntologia);
                 doc.Load(ms);
 
+                List<ElementoOntologia> entidadPrincipal = new List<ElementoOntologia> { ontologia.ObtenerEntidadPrincipal() };
+
                 if (!pTipoFiltro.Contains("@@@"))
                 {
-                    Propiedad propiedad = ObtenerPropiedadDeEntidad(ontologia.Entidades, pTipoFiltro);
+                    Propiedad propiedad = ObtenerPropiedadDeEntidad(entidadPrincipal, pTipoFiltro);
                     if (propiedad != null)
                     {
                         pListaDatosPropiedadOntologia.Add(new DatosPropiedadOntologia() { NombrePropiedad = pTipoFiltro, Propiedad = propiedad, RdfType = pNombreOntologia, XmlOntologia = doc });
@@ -4362,7 +4364,8 @@ namespace Es.Riam.Gnoss.AD.Facetado
                     }
                     else
                     {
-                        propiedadEncontrada = ObtenerDatosPropiedadAuxiliar(propiedadFinal, ontologia.EntidadesAuxiliares, doc, pListaDatosPropiedadOntologia, pNombreOntologia);
+                        string entidadID = ObtenerEntidadIDDePropiedad(propiedadActual, entidadPrincipal);
+                        propiedadEncontrada = ObtenerDatosPropiedadAuxiliar(propiedadFinal, ontologia.EntidadesAuxiliares, doc, pListaDatosPropiedadOntologia, pNombreOntologia, entidadID);
                     }
                 }
             }
@@ -4481,6 +4484,16 @@ namespace Es.Riam.Gnoss.AD.Facetado
             return null;
         }
 
+        private static string ObtenerEntidadIDDePropiedad(string pPropiedad, List<ElementoOntologia> pEntidades)
+        {
+            Propiedad propiedad = ObtenerPropiedadDeEntidad(pEntidades, pPropiedad);
+            if (propiedad != null)
+            {
+                return propiedad.Rango;
+            }
+            return null;
+        }
+
         /// <summary>
         /// Analizamos la propiedad auxiliar de la ontología pasada por parametros para obtener los datos necesarios de la propiedad final
         /// Si la propiedad auxiliar tiene varios niveles concatenados con @@@ navegamos entre ellos hasta llegar a la propiedad final.
@@ -4490,12 +4503,17 @@ namespace Es.Riam.Gnoss.AD.Facetado
         /// <param name="doc">Xml de la ontología a la que pertenece la propiedad</param>
         /// <param name="pListaDatosPropiedadOntologia">Lista de DatosPropiedadOntologia (NombrePropiedad, RdfType, Propiedad, Xml) que queremos obtener a partir del análisis de la ontología</param>
         /// <param name="pNombreOntologia">Nombre de la ontología</param>
-        private bool ObtenerDatosPropiedadAuxiliar(string pNombrePropiedad, List<ElementoOntologia> pEntidades, XmlDocument doc, List<DatosPropiedadOntologia> pListaDatosPropiedadOntologia, string pNombreOntologia)
+        private bool ObtenerDatosPropiedadAuxiliar(string pNombrePropiedad, List<ElementoOntologia> pEntidades, XmlDocument doc, List<DatosPropiedadOntologia> pListaDatosPropiedadOntologia, string pNombreOntologia, string pEntidadID = null)
         {
             bool propiedadEncontrada = false;
+            List<ElementoOntologia> entidadesABuscar = pEntidades;
+            if (!string.IsNullOrEmpty(pEntidadID))
+            {
+                entidadesABuscar = pEntidades.Where(x => x.TipoEntidad.Equals(pEntidadID)).ToList();
+            }
             if (!pNombrePropiedad.Contains("@@@"))
             {
-                Propiedad propiedad = ObtenerPropiedadDeEntidad(pEntidades, pNombrePropiedad);
+                Propiedad propiedad = ObtenerPropiedadDeEntidad(entidadesABuscar, pNombrePropiedad);
                 if (propiedad != null)
                 {
                     pListaDatosPropiedadOntologia.Add(new DatosPropiedadOntologia() { NombrePropiedad = pNombrePropiedad, Propiedad = propiedad, RdfType = pNombreOntologia, XmlOntologia = doc });
@@ -4515,7 +4533,8 @@ namespace Es.Riam.Gnoss.AD.Facetado
                 }
                 else
                 {
-                    ObtenerDatosPropiedadAuxiliar(propiedadFinal, pEntidades, doc, pListaDatosPropiedadOntologia, pNombreOntologia);
+                    string entidadID = ObtenerEntidadIDDePropiedad(propiedadActual, entidadesABuscar);
+                    ObtenerDatosPropiedadAuxiliar(propiedadFinal, pEntidades, doc, pListaDatosPropiedadOntologia, pNombreOntologia, entidadID);
                 }
             }
 

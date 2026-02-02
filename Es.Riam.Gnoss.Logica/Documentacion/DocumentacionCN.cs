@@ -2898,9 +2898,9 @@ namespace Es.Riam.Gnoss.Logica.Documentacion
         #endregion
 
         #region Privados
-        public void GuardarTraduccionAutomatica(Guid resourceID, List<string> targetLanguages)
+        public void GuardarTraduccionAutomatica(Guid pDocumentoID, List<string> pTargetLanguages)
         {
-            DocumentacionAD.GuardarTraduccionAutomatica(resourceID, targetLanguages);
+            DocumentacionAD.GuardarTraduccionAutomatica(pDocumentoID, pTargetLanguages);
         }
 
         public bool ComprobarSiDocumentoEstaTraducidoConIAEnIdioma(Guid pDocumentoID, string pLanguageCode)

@@ -1,11 +1,9 @@
-﻿using Es.Riam.Util.Correo;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net;
-using System.Text;
-using Es.Riam.Interfaces;
+﻿using Es.Riam.Interfaces;
 using Microsoft.Exchange.WebServices.Data;
+using System;
+using System.Net;
+using System.Runtime.InteropServices;
+using System.Text;
 
 namespace Es.Riam.Util
 {
@@ -18,19 +16,25 @@ namespace Es.Riam.Util
         /// </summary>
         private ExchangeService mService;
         #endregion
+
         #region Constructores
 
         public UtilEws(string pUsuario, string pPasword, string pUrl)
         {
             ServicePointManager.ServerCertificateValidationCallback = CertificateValidationCallBack;
             TimeZoneInfo centralTZ = TimeZoneInfo.FindSystemTimeZoneById("Romance Standard Time");
-            mService = new ExchangeService(ExchangeVersion.Exchange2013_SP1,centralTZ);
-            mService.Credentials = new WebCredentials(pUsuario, pPasword);            
+            mService = new ExchangeService(ExchangeVersion.Exchange2013_SP1, centralTZ);
+            mService.Credentials = new WebCredentials(pUsuario, pPasword);
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
+            {
+                mService.HttpHeaders.Add("Authorization", "Basic " + Convert.ToBase64String(Encoding.UTF8.GetBytes($"{pUsuario}:{pPasword}")));
+            }
+            
             mService.Url = new Uri(pUrl);
-            //mService.UseDefaultCredentials = true;            
         }
 
         #endregion
+
         #region Estaticos
         private static bool CertificateValidationCallBack(object sender, System.Security.Cryptography.X509Certificates.X509Certificate certificate, System.Security.Cryptography.X509Certificates.X509Chain chain, System.Net.Security.SslPolicyErrors sslPolicyErrors)
         {

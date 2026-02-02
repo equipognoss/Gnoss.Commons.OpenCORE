@@ -86,6 +86,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
                 flujoViewModel.ProyectoID = filaFlujo.ProyectoID;
                 flujoViewModel.Fecha = filaFlujo.Fecha;
                 flujoViewModel.TiposRecursos = flujosCN.ObtenerTiposContenidosPorFlujo(filaFlujo);
+                flujoViewModel.TiposRecursosProyecto = flujosCN.ObtenerTiposContenidosEnProyecto(ProyectoSeleccionado.Clave);
                 flujoViewModel.OntologiasProyectoNombre = filaFlujo.FlujoObjetoConocimientoProyecto.Select(x => x.Ontologia).ToList();
 
                 List<Estado> listaEstados = flujosCN.ObtenerEstadosPorFlujoID(filaFlujo.FlujoID);
@@ -181,6 +182,58 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
                 error = !string.IsNullOrEmpty(error) && pConfirmado ? "" : error;
             }
             return error;
+        }
+
+        /// <summary>
+        /// Si hay un recurso afectado por el flujo que no está en un estado final, no se puede eliminar el flujo.
+        /// </summary>
+        /// <param name="pFlujoID"></param>
+        /// <returns></returns>
+        public string ComprobarEliminarFlujo(Guid pFlujoID)
+        {
+            StringBuilder sbError = new StringBuilder();
+            using (FlujosCN flujosCN = new FlujosCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<FlujosCN>(), mLoggerFactory))
+            {
+                List<TiposContenidos> tiposContenidosAfectados = flujosCN.ObtenerTiposContenidosPorFlujoID(pFlujoID).Where(x => x.Value).Select(x => x.Key).ToList();
+
+                List<Guid> listaEstadosFinales = flujosCN.ObtenerEstadosFinalesPorFlujoID(pFlujoID);
+
+                if (tiposContenidosAfectados.Contains(TiposContenidos.RecursoSemantico))
+                {
+                    tiposContenidosAfectados.Remove(TiposContenidos.RecursoSemantico);
+
+                    DataWrapperDocumentacion dwDocumentacion = new DataWrapperDocumentacion();
+                    DocumentacionCN docCN = new DocumentacionCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<DocumentacionCN>(), mLoggerFactory);
+                    docCN.ObtenerOntologiasProyecto(ProyectoSeleccionado.Clave, dwDocumentacion, true, false, false);
+                    Dictionary<Guid, string> ontologiasFlujo = flujosCN.ObtenerOntologiasFlujo(pFlujoID, dwDocumentacion.ListaDocumento.ToDictionary(k => k.DocumentoID, k => k.Enlace.Replace(".owl", "")));
+                    sbError.Append(flujosCN.ComprobarSiRecursosSemNoEstanEstadoFinal(listaEstadosFinales, ProyectoSeleccionado.Clave, ontologiasFlujo));
+                }
+
+                if (sbError.Length == 0 && tiposContenidosAfectados.Contains(TiposContenidos.PaginaCMS))
+                {
+                    tiposContenidosAfectados.Remove(TiposContenidos.PaginaCMS);
+                    sbError.Append(flujosCN.ComprobarSiPaginasCMSNoEstanEnEstadoFinal(listaEstadosFinales, ProyectoSeleccionado.Clave));
+                }
+
+                if (sbError.Length == 0 && tiposContenidosAfectados.Contains(TiposContenidos.ComponenteCMS))
+                {
+                    tiposContenidosAfectados.Remove(TiposContenidos.ComponenteCMS);
+                    sbError.Append(flujosCN.ComprobarSiComponenteCMSNoEstanEnEstadoFinal(listaEstadosFinales, ProyectoSeleccionado.Clave));
+                }
+
+                if (sbError.Length == 0 && tiposContenidosAfectados.Count > 0)
+                {
+                    List<short> tiposRecursos = tiposContenidosAfectados.Select(x => (short)x).ToList();
+                    sbError.Append(flujosCN.ComprobarSiRecursosNoEstanEstadoFinal(listaEstadosFinales, ProyectoSeleccionado.Clave, tiposRecursos));
+                }
+
+                if (sbError.Length == 0)
+                {
+                    CalcularRecursosConMejoraActiva(pFlujoID, sbError, flujosCN);
+                }
+            }
+
+            return sbError.ToString();
         }
 
         public void GuardarFlujo(FlujoViewModel pModelo)
@@ -615,44 +668,45 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
             StringBuilder sbError = new StringBuilder();
             using (FlujosCN flujosCN = new FlujosCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<FlujosCN>(), mLoggerFactory))
             {
-                foreach (EstadoViewModel estado in pModelo.Estados.Where(e => e.TipoEstado == TipoEstado.Final).ToList())
+                if (pModelo.Estados.Any(e => e.TipoEstado == TipoEstado.Final && ComprobarPermiteMejoraSeHaDesactivado(e.EstadoID, e.PermiteMejora, flujosCN)))
                 {
-                    if (ComprobarPermiteMejoraSeHaDesactivado(estado.EstadoID, estado.PermiteMejora, flujosCN))
-                    {
-                        DocumentacionCN docCN = new DocumentacionCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<DocumentacionCN>(), mLoggerFactory);
-
-                        List<int> listaTiposAfectados = flujosCN.ObtenerTiposContenidosPorFlujoID(pModelo.FlujoID).Where(dicc => dicc.Value && dicc.Key != TiposContenidos.ComponenteCMS && dicc.Key != TiposContenidos.PaginaCMS).Select(dicc => (int)dicc.Key).ToList();
-
-                        // El flujo no afecta a recursos 
-                        if (listaTiposAfectados.Count == 0)
-                        {
-                            return sbError.ToString();
-                        }
-
-                        List<string> listaOntologiasNombre = flujosCN.ObtenerOntologiasNombreFlujo(pModelo.FlujoID);
-                        List<Guid?> listaOntologiasID = ObtenerListaOntologiasIDPorNombre(listaOntologiasNombre, docCN);
-                        listaOntologiasID.Add(null); // Recursos no semánticos
-
-                        List<Guid> documentosIDAfectados = docCN.ObtenerRecursosConMejorasActivas(ProyectoSeleccionado.Clave, listaTiposAfectados, listaOntologiasID);
-
-                        if (documentosIDAfectados.Count > 0)
-                        {
-                            sbError.Append("ERRORHAYMEJORASACTIVAS|||");
-                            foreach (Guid documentoID in documentosIDAfectados)
-                            {
-                                string nombreDocumento = docCN.ObtenerTituloDocumentoPorID(documentoID);
-                                GnossUrlsSemanticas gnossUrlsSemanticas = new GnossUrlsSemanticas(mLoggingService, mEntityContext, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<GnossUrlsSemanticas>(), mLoggerFactory);
-                                DataWrapperDocumentacion dwDocumentacion = docCN.ObtenerDocumentoPorID(documentoID);
-                                DocumentoWeb documentoWeb = new DocumentoWeb(dwDocumentacion.ListaDocumento.FirstOrDefault(), new GestorDocumental(dwDocumentacion, mLoggingService, mEntityContext, mLoggerFactory.CreateLogger<GestorDocumental>(), mLoggerFactory));
-                                string url = gnossUrlsSemanticas.GetURLBaseRecursosFicha(BaseURLIdioma, UtilIdiomas, ProyectoSeleccionado.NombreCorto, UrlPerfil, documentoWeb, false).Replace(documentoID.ToString(), $"{docCN.ObtenerDocumentoOriginalIDPorID(documentoID).ToString()}/{documentoID}");
-                                sbError.Append($"<li><a target='_blank' href='{url}'>{UtilCadenas.ObtenerTextoDeIdioma(nombreDocumento, IdiomaUsuario, IdiomaPorDefecto)}</a></li>");
-                            }
-                        }
-                        break;
-                    }
+                    CalcularRecursosConMejoraActiva(pModelo.FlujoID, sbError, flujosCN);
                 }
             }
             return sbError.ToString();
+        }
+
+        private void CalcularRecursosConMejoraActiva(Guid pFlujoID, StringBuilder pSbError, FlujosCN pFlujosCN)
+        {
+            DocumentacionCN docCN = new DocumentacionCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<DocumentacionCN>(), mLoggerFactory);
+
+            List<int> listaTiposAfectados = pFlujosCN.ObtenerTiposContenidosPorFlujoID(pFlujoID).Where(dicc => dicc.Value && dicc.Key != TiposContenidos.ComponenteCMS && dicc.Key != TiposContenidos.PaginaCMS).Select(dicc => (int)dicc.Key).ToList();
+
+            // El flujo no afecta a recursos 
+            if (listaTiposAfectados.Count == 0)
+            {
+                return;
+            }
+
+            List<string> listaOntologiasNombre = pFlujosCN.ObtenerOntologiasNombreFlujo(pFlujoID);
+            List<Guid?> listaOntologiasID = ObtenerListaOntologiasIDPorNombre(listaOntologiasNombre, docCN);
+            listaOntologiasID.Add(null); // Recursos no semánticos
+
+            List<Guid> documentosIDAfectados = docCN.ObtenerRecursosConMejorasActivas(ProyectoSeleccionado.Clave, listaTiposAfectados, listaOntologiasID);
+
+            if (documentosIDAfectados.Count > 0)
+            {
+                pSbError.Append("ERRORHAYMEJORASACTIVAS|||");
+                foreach (Guid documentoID in documentosIDAfectados)
+                {
+                    string nombreDocumento = docCN.ObtenerTituloDocumentoPorID(documentoID);
+                    GnossUrlsSemanticas gnossUrlsSemanticas = new GnossUrlsSemanticas(mLoggingService, mEntityContext, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<GnossUrlsSemanticas>(), mLoggerFactory);
+                    DataWrapperDocumentacion dwDocumentacion = docCN.ObtenerDocumentoPorID(documentoID);
+                    DocumentoWeb documentoWeb = new DocumentoWeb(dwDocumentacion.ListaDocumento.FirstOrDefault(), new GestorDocumental(dwDocumentacion, mLoggingService, mEntityContext, mLoggerFactory.CreateLogger<GestorDocumental>(), mLoggerFactory));
+                    string url = gnossUrlsSemanticas.GetURLBaseRecursosFicha(BaseURLIdioma, UtilIdiomas, ProyectoSeleccionado.NombreCorto, UrlPerfil, documentoWeb, false).Replace(documentoID.ToString(), $"{docCN.ObtenerDocumentoOriginalIDPorID(documentoID).ToString()}/{documentoID}");
+                    pSbError.Append($"<li><a target='_blank' href='{url}'>{UtilCadenas.ObtenerTextoDeIdioma(nombreDocumento, IdiomaUsuario, IdiomaPorDefecto)}</a></li>");
+                }
+            }
         }
 
         private bool ComprobarPermiteMejoraSeHaDesactivado(Guid pEstadoID, bool pPermiteMejoraPeticion, FlujosCN pFlujosCN)

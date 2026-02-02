@@ -59,21 +59,20 @@ namespace Es.Riam.Gnoss.AD.EntityModelBASE
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             string tipoBD = mConfigService.ObtenerTipoBD();
-            string acid = mConfigService.ObtenerSqlConnectionString();
 
             optionsBuilder.LogTo(mLoggingService.AgregarEntradaTrazaEntity);
             switch (tipoBD)
             {
                 case "0":
-                    optionsBuilder.UseSqlServer(mConfigService.ObtenerSqlConnectionString(), o => o.UseCompatibilityLevel(110));
+                    optionsBuilder.UseSqlServer(mConfigService.ObtenerBaseConnectionString(), o => o.UseCompatibilityLevel(110));
                     break;
 
                 case "1":
-                    optionsBuilder.UseOracle(mConfigService.ObtenerSqlConnectionString(), o => o.UseOracleSQLCompatibility(ObtenerNivelCompatibilidadOracle()));
+                    optionsBuilder.UseOracle(mConfigService.ObtenerBaseConnectionString(), o => o.UseOracleSQLCompatibility(ObtenerNivelCompatibilidadOracle()));
                     break;
 
                 case "2":
-                    optionsBuilder.UseNpgsql(mConfigService.ObtenerSqlConnectionString(), o => o.SetPostgresVersion(new Version(9, 6)));
+                    optionsBuilder.UseNpgsql(mConfigService.ObtenerBaseConnectionString(), o => o.SetPostgresVersion(new Version(9, 6)));
                     break;
             }
 

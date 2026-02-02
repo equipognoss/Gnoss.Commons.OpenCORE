@@ -13,21 +13,21 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextOracleMigrations
                 table: "PresentacionMosaicoSemantico",
                 type: "NUMBER(1)",
                 nullable: false,
-                defaultValue: 0);
+                defaultValue: false);
 
             migrationBuilder.AddColumn<bool>(
                 name: "MostrarEnAutocompletar",
                 table: "PresentacionMapaSemantico",
                 type: "NUMBER(1)",
                 nullable: false,
-                defaultValue: 0);
+                defaultValue: false);
 
             migrationBuilder.AddColumn<bool>(
                 name: "MostrarEnAutocompletar",
                 table: "PresentacionListadoSemantico",
                 type: "NUMBER(1)",
                 nullable: false,
-                defaultValue: 0);
+                defaultValue: false);
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)

@@ -1118,7 +1118,7 @@ namespace OntologiaAClase
                     {
                         Clase.AppendLine($"{UtilCadenasOntology.Tabs(5)}foreach (LanguageEnum idioma in {nombreVariableActual}.Keys)");
                         Clase.AppendLine($"{UtilCadenasOntology.Tabs(5)}{{");
-                        Clase.AppendLine($"{UtilCadenasOntology.Tabs(6)}search += \"{{idioma}} \"");
+                        Clase.AppendLine($"{UtilCadenasOntology.Tabs(6)}search += \"{{idioma.ToString().Replace('_','-')}} \"");
                         Clase.AppendLine($"{UtilCadenasOntology.Tabs(5)}}}");
                     }
                     else
@@ -1186,7 +1186,7 @@ namespace OntologiaAClase
                         if (propiedad.ValorUnico)
                         {
 
-                            Clase.AppendLine($"{UtilCadenasOntology.Tabs(4)}multiTitleList.Add(new Multilanguage({nombrePropTitulo}[idioma], idioma.ToString()));");
+                            Clase.AppendLine($"{UtilCadenasOntology.Tabs(4)}multiTitleList.Add(new Multilanguage({nombrePropTitulo}[idioma], idioma.ToString().Replace('_','-')));");
                         }
                         else
                         {
@@ -1227,7 +1227,7 @@ namespace OntologiaAClase
                         Clase.AppendLine($"{UtilCadenasOntology.Tabs(3)}{{");
                         if (propiedad.ValorUnico)
                         {
-                            Clase.AppendLine($"{UtilCadenasOntology.Tabs(4)}listMultilanguageDescription.Add(new Multilanguage({nombrePropDescripcion}[idioma], idioma.ToString()));");
+                            Clase.AppendLine($"{UtilCadenasOntology.Tabs(4)}listMultilanguageDescription.Add(new Multilanguage({nombrePropDescripcion}[idioma], idioma.ToString().Replace('_','-')));");
                         }
                         else
                         {
@@ -1331,7 +1331,7 @@ namespace OntologiaAClase
                             Clase.AppendLine($"{UtilCadenasOntology.Tabs(3)}{{");
                             Clase.AppendLine($"{UtilCadenasOntology.Tabs(4)}foreach (LanguageEnum idioma in {thi}{id}{prefijoPropiedad}_{nombrePropiedad}{aux}.Keys)");
                             Clase.AppendLine($"{UtilCadenasOntology.Tabs(4)}{{");
-                            Clase.AppendLine($"{UtilCadenasOntology.Tabs(5)}propList.Add(new {tipoPropiedad}(\"{ObtenerPrefijoYPropiedad(dicPref, propiedad.Key)}\", {thi}{id}{prefijoPropiedad}_{nombrePropiedad}{aux}[idioma], idioma.ToString()));");
+                            Clase.AppendLine($"{UtilCadenasOntology.Tabs(5)}propList.Add(new {tipoPropiedad}(\"{ObtenerPrefijoYPropiedad(dicPref, propiedad.Key)}\", {thi}{id}{prefijoPropiedad}_{nombrePropiedad}{aux}[idioma], idioma.ToString().Replace('_','-')));");
                             Clase.AppendLine($"{UtilCadenasOntology.Tabs(4)}}}");
                             Clase.AppendLine($"{UtilCadenasOntology.Tabs(3)}}}");
                             Propiedad propiedadCompleta = pEntidad.Propiedades.Find(item => item.Nombre.Equals(propiedad.Key));

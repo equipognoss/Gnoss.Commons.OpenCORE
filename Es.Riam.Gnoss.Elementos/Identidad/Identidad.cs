@@ -1021,7 +1021,7 @@ namespace Es.Riam.Gnoss.Elementos.Identidad
         }
 
         /// <summary>
-        /// Devuelve la lista de amigos de la identidad actuales que son visibles por la identidad pasada por par�metro
+        /// Devuelve la lista de amigos de la identidad actuales que son visibles por la identidad pasada por parámetro
         /// </summary>
         /// <param name="pIdentidad"></param>
         /// <param name="pProyectoID"></param>
@@ -1058,12 +1058,15 @@ namespace Es.Riam.Gnoss.Elementos.Identidad
                     PersonaCN perCN = new PersonaCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, null, null);
                     AD.EntityModel.Models.PersonaDS.ConfiguracionGnossPersona filaConf = perCN.ObtenerConfiguracionPersonaPorID(perCN.ObtenerPersonaPorIdentidadCargaLigera(Clave).PersonaID);
                     perCN.Dispose();
-                    if (filaConf != null && filaConf.VerAmigos)
+                    if (filaConf != null)
                     {
-                        visibilidad = TipoVisibilidadContactosOrganizacion.Contactos;
-                        if (filaConf.VerAmigosExterno)
+                        if (filaConf.VerAmigos)
                         {
-                            visibilidad = TipoVisibilidadContactosOrganizacion.ContactosDeContactos;
+                            visibilidad = TipoVisibilidadContactosOrganizacion.Contactos;
+                            if (filaConf.VerAmigosExterno)
+                            {
+                                visibilidad = TipoVisibilidadContactosOrganizacion.ContactosDeContactos;
+                            }
                         }
                     }
                 }
@@ -1075,18 +1078,22 @@ namespace Es.Riam.Gnoss.Elementos.Identidad
                     foreach (Guid idIdentidadContacto in ListaContactos.Keys)
                     {
                         Identidad IdentidadContacto = ListaContactos[idIdentidadContacto];
-                        //Si el usuario tiene la visibilidad para contactos y si el usuario es contacto
-                        if (visibilidad == TipoVisibilidadContactosOrganizacion.Contactos && ListaContactos.ContainsKey(identidadMyGnossDeIdentiad.Clave))
+                        //Si el usuario tiene la visibilidad para contactos
+                        if (visibilidad == TipoVisibilidadContactosOrganizacion.Contactos)
                         {
-                            //Comprobamos la visibilidad del contacto
-                            bool visibleMyGnoss = false;
-                            if (IdentidadContacto.Tipo == TiposIdentidad.Organizacion)
+                            //si el usuario es contacto
+                            if (ListaContactos.ContainsKey(identidadMyGnossDeIdentiad.Clave))
                             {
-                                OrganizacionCN orgContactoCN = new OrganizacionCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, null, null);
-                                DataWrapperOrganizacion orgContactoDW = orgContactoCN.ObtenerOrganizacionDeIdentidad(IdentidadContacto.Clave);
-                                if (orgContactoDW.ListaOrganizacion.Count > 0)
+                                //Comprobamos la visibilidad del contacto
+                                bool visibleMyGnoss = false;
+                                if (IdentidadContacto.Tipo == TiposIdentidad.Organizacion)
                                 {
-                                    visibleMyGnoss = orgContactoDW.ListaOrganizacion.FirstOrDefault().EsBuscable || orgContactoDW.ListaOrganizacion.FirstOrDefault().EsBuscableExternos;                                    
+                                    OrganizacionCN orgContactoCN = new OrganizacionCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, null, null);
+                                    DataWrapperOrganizacion orgContactoDW = orgContactoCN.ObtenerOrganizacionDeIdentidad(IdentidadContacto.Clave);
+                                    if (orgContactoDW.ListaOrganizacion.Count > 0)
+                                    {
+                                        visibleMyGnoss = orgContactoDW.ListaOrganizacion.FirstOrDefault().EsBuscable || orgContactoDW.ListaOrganizacion.FirstOrDefault().EsBuscableExternos;
+                                    }
                                 }
                                 else
                                 {
@@ -1099,12 +1106,12 @@ namespace Es.Riam.Gnoss.Elementos.Identidad
                                         visibleMyGnoss = true;
                                     }
                                 }
-                            }
 
-                            //si el contacto tiene el perfil p�blico
-                            if (visibleMyGnoss)
-                            {
-                                ListaIdentidades.Add(idIdentidadContacto, IdentidadContacto);
+                                //si el contacto tiene el perfil público
+                                if (visibleMyGnoss)
+                                {
+                                    ListaIdentidades.Add(idIdentidadContacto, IdentidadContacto);
+                                }
                             }
                         }
 
@@ -1141,7 +1148,7 @@ namespace Es.Riam.Gnoss.Elementos.Identidad
 
                                 }
 
-                                //si el contacto tiene el perfil p�blico
+                                //si el contacto tiene el perfil público
                                 if (visibleMyGnoss)
                                 {
                                     ListaIdentidades.Add(idIdentidadContacto, IdentidadContacto);

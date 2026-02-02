@@ -37,6 +37,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Models.Administracion
             Estados = new List<EstadoViewModel>();
             Transiciones = new List<TransicionViewModel>();
             TiposRecursos = new Dictionary<TiposContenidos, bool> { { TiposContenidos.Nota, false }, { TiposContenidos.Adjunto, false }, { TiposContenidos.Video, false }, { TiposContenidos.Link, false }, { TiposContenidos.Encuesta, false }, { TiposContenidos.Debate, false }, { TiposContenidos.PaginaCMS, false }, { TiposContenidos.ComponenteCMS, false }, { TiposContenidos.RecursoSemantico, false }, };
+            TiposRecursosProyecto = new Dictionary<TiposContenidos, bool> { { TiposContenidos.Nota, false }, { TiposContenidos.Adjunto, false }, { TiposContenidos.Video, false }, { TiposContenidos.Link, false }, { TiposContenidos.Encuesta, false }, { TiposContenidos.Debate, false }, { TiposContenidos.PaginaCMS, false }, { TiposContenidos.ComponenteCMS, false }, { TiposContenidos.RecursoSemantico, false }, };
             OntologiasProyecto = new Dictionary<Guid, string>();
             OntologiasProyectoNombre = new List<string>();
         }
@@ -49,6 +50,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Models.Administracion
         public List<EstadoViewModel> Estados { get; set; }
         public List<TransicionViewModel> Transiciones { get; set; }
         public Dictionary<TiposContenidos, bool> TiposRecursos { get; set; }
+        public Dictionary<TiposContenidos, bool> TiposRecursosProyecto { get; set; }
         public List<string> OntologiasProyectoNombre { get; set; }
         public Dictionary<Guid, string> OntologiasProyecto { get; set; }
         public bool Nuevo {  get; set; } = false;

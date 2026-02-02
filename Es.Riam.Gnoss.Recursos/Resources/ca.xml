@@ -5815,6 +5815,8 @@
     <Resource tag="REPLICACIONBIDIRECCIONALNOCONFIGURADA">Replicacion bidireccional no configurada.</Resource>
     <Resource tag="IDENTITYSERVERNOFUNCIONA">Identity Server no funciona.</Resource>
     <Resource tag="SIMODIFICASLARUTARELATIVAELCAMBIONOSURTIRAEFECTOHASTAQUESERE">Si modificas la ruta relativa el cambio no surtirá efecto hasta que se reinicie la plataforma. Ponte en contacto con el administrador de sistemas para ello.</Resource>
+	<Resource tag="HISTORIALCONFIGURACION">Historial de configuració</Resource>
+	<Resource tag="HISTORIALESTRUCTURA">Historial d'estructura</Resource>
 
 	  <Resource tag="ADQUIRIRVERSIONENTERPRISE">Per accedir a la funcionalitat de [SERVICIO] cal adquirir la versió enterprise de GNOSS</Resource>
 	  <Resource tag="SERVICIOADMINISTRARPESOS">l'administració dels pesos de l'autocompleció de Lucene</Resource>
@@ -5899,5 +5901,7 @@
 		<Resource tag="AVISOESTASENMEJORA">Aquest recurs es troba en un procés de millora. {a href="@1@"}Veure recurs original{/a}.</Resource>
 		<Resource tag="ERRORINICIARMEJORA">S'ha produït un error en iniciar la millora</Resource>
 		<Resource tag="ERRORPERMISOINICIARMEJORA">No teniu permisos per iniciar una millora</Resource>
+		<Resource tag="ERRORRECURSOSSINFINALIZAR">No es pot eliminar el flux perquè encara queden continguts de tipus @1@ que no estan en l'estat final.</Resource>
+		<Resource tag="ERRORHAYMEJORASACTIVAS">No es pot eliminar el flux perquè encara queden recursos amb una millora activa.</Resource>
 	</page>
 </Resources>

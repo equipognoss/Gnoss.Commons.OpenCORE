@@ -9246,31 +9246,37 @@ namespace Es.Riam.Gnoss.AD.Documentacion
         /// </summary>
         /// <param name="resourceID"></param>
         /// <param name="targetLanguages"></param>
-        /// <exception cref="NotImplementedException"></exception>
-        public void GuardarTraduccionAutomatica(Guid resourceID, List<string> targetLanguages)
+        public void GuardarTraduccionAutomatica(Guid pDocumentoID, List<string> pTargetLanguages)
         {
-            List<IdiomaTraduccionAutomaticaDocumento> listaTraduccionesAutomaticas = mEntityContext.IdiomaTraduccionAutomaticaDocumento.Where(item => item.DocumentoID.Equals(resourceID)).ToList();
-            foreach(IdiomaTraduccionAutomaticaDocumento idiomaTraduccionAutomaticaDocumento in listaTraduccionesAutomaticas)
-            {
-                mEntityContext.EliminarElemento(idiomaTraduccionAutomaticaDocumento);
-            }
-            mEntityContext.SaveChanges();
+            EliminarTraduccionesAutomaticasDocumento(pDocumentoID);
 
-            foreach (string idioma in targetLanguages)
+            foreach (string idioma in pTargetLanguages)
             {
                 IdiomaTraduccionAutomaticaDocumento idiomaTraduccionAutomaticaDocumento = new IdiomaTraduccionAutomaticaDocumento()
                 {
-                    DocumentoID = resourceID,
+                    DocumentoID = pDocumentoID,
                     Idioma = idioma
                 };
                 mEntityContext.IdiomaTraduccionAutomaticaDocumento.Add(idiomaTraduccionAutomaticaDocumento);
             }
+
             mEntityContext.SaveChanges();
         }
         public Guid? ObtenerEstadoIDDeDocumento(Guid pDocumentoID)
         {
             return mEntityContext.Documento.Where(x => x.DocumentoID.Equals(pDocumentoID)).Select(x => x.EstadoID).FirstOrDefault();
         }        
+
+        public void EliminarTraduccionesAutomaticasDocumento(Guid pDocumentoID)
+        {
+			List<IdiomaTraduccionAutomaticaDocumento> listaTraduccionesAutomaticas = mEntityContext.IdiomaTraduccionAutomaticaDocumento.Where(item => item.DocumentoID.Equals(pDocumentoID)).ToList();
+			foreach (IdiomaTraduccionAutomaticaDocumento idiomaTraduccionAutomaticaDocumento in listaTraduccionesAutomaticas)
+			{
+				mEntityContext.EliminarElemento(idiomaTraduccionAutomaticaDocumento);
+			}
+
+			mEntityContext.SaveChanges();
+		}
 
 		public bool ComprobarSiDocumentoEstaTraducidoConIAEnIdioma(Guid pDocumentoID, string pLanguageCode)
 		{

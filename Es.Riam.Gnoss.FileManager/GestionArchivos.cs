@@ -386,7 +386,7 @@ namespace Es.Riam.Gnoss.FileManager
             if (string.IsNullOrEmpty(AzureStorageConnectionString))
             {
                 pRuta = Path.Combine(RutaFicheros, pRuta);
-                _loggingService.GuardarLogError($"Comprobamos si existe la ruta {pRuta}", mlogger);
+                _loggingService.AgregarEntrada($"Comprobamos si existe la ruta {pRuta}");
                 return Directory.Exists(pRuta);
             }
             else
@@ -401,7 +401,7 @@ namespace Es.Riam.Gnoss.FileManager
             if (string.IsNullOrEmpty(AzureStorageConnectionString))
             {
                 pRuta = Path.Combine(RutaFicheros, pRuta);
-                _loggingService.GuardarLogError($"Comprobamos si existe el directorio {pRuta}", mlogger);
+                _loggingService.AgregarEntrada($"Comprobamos si existe el directorio {pRuta}");
                 if (Directory.Exists(pRuta))
                 {
                     _loggingService.GuardarLogError($"Eliminamos el directorio {pRuta}", mlogger);
@@ -797,14 +797,18 @@ namespace Es.Riam.Gnoss.FileManager
             {
                 pRuta = Path.Combine(RutaFicheros, pRuta);
                 DirectoryInfo dirInfoRaiz = new DirectoryInfo(pRuta);
-                DirectoryInfo[] directorios = dirInfoRaiz.GetDirectories();
-                foreach (DirectoryInfo dir in directorios)
+                
+                if (dirInfoRaiz.Exists)
                 {
-                    if (dir.Exists)
-                    {
-                        dir.Delete(true);
-                    }
-                }
+					DirectoryInfo[] directorios = dirInfoRaiz.GetDirectories();
+					foreach (DirectoryInfo dir in directorios)
+					{
+						if (dir.Exists)
+						{
+							dir.Delete(true);
+						}
+					}
+				}                
             }
             else
             {

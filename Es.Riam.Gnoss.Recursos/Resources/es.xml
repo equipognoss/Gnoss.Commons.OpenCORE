@@ -6302,6 +6302,7 @@
 		<Resource tag="OAUTH">Oauth</Resource>
 		<Resource tag="CLAUSULASDEREGISTRO">Cláusulas de registro</Resource>
 		<Resource tag="CONFIGURACIONINICIAL">Configuración inicial</Resource>
+		<Resource tag="CARACTERESMINIMOSMAXIMOSNOMBRECORTOUSUARIO">El nombre del usuario administrador debe contener entre 3 y 12 caracteres.</Resource>
 		<Resource tag="DATOSDEACCESOYURLS">Datos de acceso y Urls</Resource>
 		<Resource tag="INFORMACIONCONTEXTUAL">Información contextual</Resource>
 		<Resource tag="DOCUMENTACION">Documentación</Resource>
@@ -6644,6 +6645,7 @@
 		<Resource tag="SIMODIFICASLARUTARELATIVAELCAMBIONOSURTIRAEFECTOHASTAQUESERE">Si modificas la ruta relativa el cambio no surtirá efecto hasta que se reinicie la plataforma. Ponte en contacto con el administrador de sistemas para ello.</Resource>
 		<Resource tag="VER">Ver</Resource>
 		<Resource tag="HISTORIALCONFIGURACION">Historial configuración</Resource>
+		<Resource tag="HISTORIALESTRUCTURA">Historial estructura</Resource>
 		<Resource tag="SELECCIONDESEARCHPERSONALIZADO">Selección de Search Personalizado</Resource>
 		<Resource tag="VISUALIZACIONDELOSRESULTADOSDELABUSQUEDAENMODOLISTADO">Visualización de los resultados de la búsqueda en modo listado.</Resource>
 		<Resource tag="VISUALIZACIONDELOSRESULTADOSDELABUSQUEDAENMODOMOSAICO">Visualización de los resultados de la búsqueda en modo mosaico.</Resource>
@@ -7076,5 +7078,7 @@
 		<Resource tag="ERRORESTADOINVALIDOPERMITEMEJORA">No se puede habilitar las mejoras en estados que no sean de tipo final</Resource>
 		<Resource tag="ERRORINICIARMEJORA">Ha ocurrido un error al iniciar la mejora</Resource>
 		<Resource tag="ERRORPERMISOINICIARMEJORA">No tiene permisos para iniciar una mejora</Resource>
+		<Resource tag="ERRORRECURSOSSINFINALIZAR">No se puede eliminar el flujo porque aún quedan contenidos de tipo @1@ que no están en el estado final.</Resource>
+		<Resource tag="ERRORHAYMEJORASACTIVAS">No se puede eliminar el flujo porque aún quedan recursos con una mejora activa.</Resource>
 	</page>
 </Resources>

@@ -5851,6 +5851,8 @@
     <Resource tag="REPLICACIONBIDIRECCIONALNOCONFIGURADA">Replicacion bidireccional no configurada.</Resource>
     <Resource tag="IDENTITYSERVERNOFUNCIONA">Identity Server no funciona.</Resource>
     <Resource tag="SIMODIFICASLARUTARELATIVAELCAMBIONOSURTIRAEFECTOHASTAQUESERE">Si modificas la ruta relativa el cambio no surtirá efecto hasta que se reinicie la plataforma. Ponte en contacto con el administrador de sistemas para ello.</Resource>
+	<Resource tag="HISTORIALCONFIGURACION">Konfigurazio historiala</Resource>
+	<Resource tag="HISTORIALESTRUCTURA">Egituraren historiala</Resource>
   </page>
 	<page name="FLUJOS">
 		<Resource tag="NUEVOFLUJO">Lan-fluxo berria</Resource>
@@ -5918,5 +5920,7 @@
 		<Resource tag="AVISOESTASENMEJORA">Baliabide hau hobekuntza prozesu batean dago. {a href="@1@"}Ikusi jatorrizko baliabidea{/a}.</Resource>
 		<Resource tag="ERRORINICIARMEJORA">Errore bat gertatu da hobekuntza hastean</Resource>
 		<Resource tag="ERRORPERMISOINICIARMEJORA">Ez duzu baimenik hobekuntza bat hasteko</Resource>
+		<Resource tag="ERRORRECURSOSSINFINALIZAR">Fluxua ezin da ezabatu oraindik @1@ motako edukiak daudelako azken egoeran ez daudenak.</Resource>
+		<Resource tag="ERRORHAYMEJORASACTIVAS">Fluxua ezin da ezabatu oraindik hobekuntza aktiboa duten baliabideak daudelako.</Resource>
 	</page>
 </Resources>

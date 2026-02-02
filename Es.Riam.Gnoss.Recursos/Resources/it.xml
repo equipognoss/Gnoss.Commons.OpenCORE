@@ -5850,6 +5850,8 @@
     <Resource tag="REPLICACIONBIDIRECCIONALNOCONFIGURADA">Replicacion bidireccional no configurada.</Resource>
     <Resource tag="IDENTITYSERVERNOFUNCIONA">Identity Server no funciona.</Resource>
     <Resource tag="SIMODIFICASLARUTARELATIVAELCAMBIONOSURTIRAEFECTOHASTAQUESERE">Si modificas la ruta relativa el cambio no surtirá efecto hasta que se reinicie la plataforma. Ponte en contacto con el administrador de sistemas para ello.</Resource>
+	<Resource tag="HISTORIALCONFIGURACION">Storico configurazione</Resource>
+	<Resource tag="HISTORIALESTRUCTURA">Storico struttura</Resource>
   </page>
 	<page name="FLUJOS">
 		<Resource tag="NUEVOFLUJO">Nuovo flusso di lavoro</Resource>
@@ -5917,5 +5919,7 @@
 		<Resource tag="AVISOESTASENMEJORA">Questa risorsa si trova in un processo di miglioramento. {a href="@1@"}Visualizza risorsa originale{/a}.</Resource>
 		<Resource tag="ERRORINICIARMEJORA">Si è verificato un errore durante l'avvio del miglioramento</Resource>
 		<Resource tag="ERRORPERMISOINICIARMEJORA">Non si dispone dei permessi per avviare un miglioramento</Resource>
+		<Resource tag="ERRORRECURSOSSINFINALIZAR">Il flusso non può essere eliminato perché ci sono ancora contenuti di tipo @1@ che non sono nello stato finale.</Resource>
+		<Resource tag="ERRORHAYMEJORASACTIVAS">Il flusso non può essere eliminato perché ci sono ancora risorse con un miglioramento attivo.</Resource>
 	</page>
 </Resources>

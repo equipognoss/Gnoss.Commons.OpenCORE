@@ -6019,6 +6019,7 @@
 		<Resource tag="SIMODIFICASLARUTARELATIVAELCAMBIONOSURTIRAEFECTOHASTAQUESERE">If you modify the relative route, the change will not take effect until the platform is restarted. Get in touch with the Systems Administrator for it.</Resource>
 		<Resource tag="VER">Show</Resource>
 		<Resource tag="HISTORIALCONFIGURACION">Configuration history</Resource>
+		<Resource tag="HISTORIALESTRUCTURA">Structure history</Resource>
 		<Resource tag="SELECCIONDESEARCHPERSONALIZADO">Personalized Search Selection</Resource>
 		<Resource tag="VISUALIZACIONDELOSRESULTADOSDELABUSQUEDAENMODOLISTADO">Visualization of the search results in listing mode.</Resource>
 		<Resource tag="VISUALIZACIONDELOSRESULTADOSDELABUSQUEDAENMODOLISTADO">Visualization of the search results in listing mode.</Resource>
@@ -6448,5 +6449,7 @@
 		<Resource tag="AVISOESTASENMEJORA">This resource is in an improvement process. {a href="@1@"}View original resource{/a}.</Resource>
 		<Resource tag="ERRORINICIARMEJORA">An error occurred while starting the improvement</Resource>
 		<Resource tag="ERRORPERMISOINICIARMEJORA">You do not have permission to start an improvement</Resource>
+		<Resource tag="ERRORRECURSOSSINFINALIZAR">The flow cannot be deleted because there are still @1@ type contents that are not in the final state.</Resource>
+		<Resource tag="ERRORHAYMEJORASACTIVAS">The flow cannot be deleted because there are still resources with an active improvement.</Resource>
 	</page>
 </Resources>

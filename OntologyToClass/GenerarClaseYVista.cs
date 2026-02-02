@@ -221,7 +221,7 @@ ENTRYPOINT [""dotnet"", ""Gnoss.Web.dll""]";
                             objetoPropiedad.Rango = ObtenerRangoDePropiedad(prop, doc);
                         }
 
-                        objetoPropiedad.Multiidioma = ObtenerMultiidioma(doc, prop);
+                        objetoPropiedad.Multiidioma = UtilSemantica.ComprobarSiPropiedadEsMultiidioma(doc, prop);
                         if (prop.FunctionalProperty || prop.CardinalidadMinima > 1)
                         {
                             objetoPropiedad.EsNullable = false;
@@ -466,64 +466,7 @@ ENTRYPOINT [""dotnet"", ""Gnoss.Web.dll""]";
                 }
             }
             return tipo;
-        }
-
-        public bool ObtenerMultiidioma(XmlDocument doc, Propiedad prop)
-        {
-            if (prop.Rango.Equals("http://www.w3.org/2001/XMLSchema#string"))
-            {
-                XmlNode multiidioma = doc.SelectSingleNode("config/ConfiguracionGeneral/MultiIdioma");
-                if (multiidioma != null)
-                {
-                    if (multiidioma.InnerText.Equals("true") || multiidioma.InnerText.Equals(""))
-                    {
-                        XmlNode multiidiomaPropiedad = doc.SelectSingleNode($"config/EspefPropiedad/Propiedad[@ID =\"{prop.Nombre}\" and @EntidadID=\"{prop.ElementoOntologia.TipoEntidad}\"]/MultiIdioma");
-                        XmlNode tipoObjeto = doc.SelectSingleNode($"config/EspefPropiedad/Propiedad[@ID =\"{prop.Nombre}\" and @EntidadID=\"{prop.ElementoOntologia.TipoEntidad}\"]/TipoCampo");
-                        if (multiidiomaPropiedad == null)
-                        {
-                            if (tipoObjeto != null)
-                            {
-                                if (!tipoObjeto.InnerText.Equals("Link") && !tipoObjeto.InnerText.Equals("Imagen"))
-                                {
-                                    return true;
-                                }
-                                else
-                                {
-                                    return false;
-                                }
-                            }
-                            else
-                            {
-                                return true;
-                            }
-                        }
-                        else
-                        {
-                            if (multiidiomaPropiedad.InnerText.Equals("true") || multiidiomaPropiedad.InnerText.Equals(""))
-                            {
-                                return true;
-                            }
-                            else
-                            {
-                                return false;
-                            }
-                        }
-                    }
-                    else
-                    {
-                        return false;
-                    }
-                }
-                else
-                {
-                    return false;
-                }
-            }
-            else
-            {
-                return false;
-            }
-        }
+        }        
 
         /// <summary>
         /// Obtenemos las clases del xml
