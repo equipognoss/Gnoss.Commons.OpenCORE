@@ -144,11 +144,12 @@ namespace Es.Riam.Gnoss.AD.RDF
                     if (mCaracteresDoc != "")
                     {
                         bool esOracle = (ConexionMaster is OracleConnection);
+                        bool esPostgre = EsPostgres();
 
                         DbCommand DeleteRdfHistoricoCommand = ObtenerComando(sqlRdfHistoricoDelete);
                         AgregarParametro(DeleteRdfHistoricoCommand, IBD.ToParam("Original_DocumentoID"), IBD.TipoGuidToObject(DbType.Guid), "DocumentoID", DataRowVersion.Original);
 
-                        ActualizarBaseDeDatos(deletedDataSet, "RdfHistorico", null, null, DeleteRdfHistoricoCommand, Microsoft.Practices.EnterpriseLibrary.Data.UpdateBehavior.Transactional, esOracle);
+                        ActualizarBaseDeDatos(deletedDataSet, "RdfHistorico", null, null, DeleteRdfHistoricoCommand, Microsoft.Practices.EnterpriseLibrary.Data.UpdateBehavior.Transactional, esOracle, esPostgre);
                     }
 
                     #endregion
@@ -177,9 +178,11 @@ namespace Es.Riam.Gnoss.AD.RDF
 
                 bool esOracle = (ConexionMaster is OracleConnection);
                 bool esPostgre = EsPostgres();
+
                 if (addedAndModifiedDataSet != null)
                 {
                     #region AddedAndModified
+
                     #region Actualizar tabla RdfHistorico
 
                     if (mCaracteresDoc != "")
@@ -508,8 +511,7 @@ namespace Es.Riam.Gnoss.AD.RDF
         /// </summary>
         /// <param name="pNombreTabla">Nombre de la tabla</param>
         /// <param name="pCrearTablaSiNoExiste">TRUE si se debe crear la tabla en caso de que no exista</param>
-        /// <returns>TRUE si la tabla existe (o ha sido recién creada).</returns>
-        private bool VerificarExisteTabla(string pNombreTabla, bool pCrearTablaSiNoExiste)
+        private void VerificarExisteTabla(string pNombreTabla, bool pCrearTablaSiNoExiste)
         {
             bool existeTabla = VerificarExisteTabla(pNombreTabla);
 
@@ -527,9 +529,7 @@ namespace Es.Riam.Gnoss.AD.RDF
                 {
                     CrearTablaSQL(pNombreTabla);
                 }
-                existeTabla = true;
             }
-            return existeTabla;
         }
 
         /// <summary>

@@ -462,17 +462,17 @@ namespace Es.Riam.Gnoss.AD
                 type = pEntityContextBASE.Database.GetDbConnection();
             }
             
-            if (type is SqlConnection)
+            if (type is SqlConnection sqlType)
             {
-                return new SqlCommand(pSentenciaSQL, (SqlConnection)type);
+                return new SqlCommand(pSentenciaSQL, sqlType);
             }
-            else if (type is OracleConnection)
+            else if (type is OracleConnection oracleType)
             {
-                return new OracleCommand(pSentenciaSQL, (OracleConnection)type);
+                return new OracleCommand(pSentenciaSQL, oracleType);
             }
-            else if (type is NpgsqlConnection)
+            else if (type is NpgsqlConnection postgressType)
             {
-                return new NpgsqlCommand(pSentenciaSQL, (NpgsqlConnection)type);
+                return new NpgsqlCommand(pSentenciaSQL, postgressType);
             }
             return null;
 
@@ -1135,8 +1135,7 @@ namespace Es.Riam.Gnoss.AD
                 dataAdapter = new NpgsqlDataAdapter();
             }
             else
-            {
-                
+            {                
                 dataAdapter = new SqlDataAdapter();
             }
             dataAdapter.InsertCommand = pComandoInsert;
