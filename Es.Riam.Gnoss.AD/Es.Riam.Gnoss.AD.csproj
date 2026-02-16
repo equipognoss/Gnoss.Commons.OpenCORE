@@ -63,7 +63,7 @@
 
   <ItemGroup>
 	  <PackageReference Include="Aspose.Zip" Version="24.10.0" />
-	  <PackageReference Include="Azure.Identity" Version="1.13.1" />
+	  <PackageReference Include="Azure.Identity" Version="1.17.1" />
 	  <PackageReference Include="EnterpriseLibrary.Data.NetCore" Version="6.3.2" />
 	  <PackageReference Include="LumenWorksCsvReader" Version="4.0.0" />
 	  <PackageReference Include="Microsoft.ApplicationInsights" Version="2.23.0" />

@@ -11,6 +11,7 @@
 		<PackageReference Include="Semiodesk.Trinity.Virtuoso" Version="1.0.3.77" />
 		<PackageReference Include="System.Drawing.Common" Version="8.0.10" />
 		<PackageReference Include="System.Net.Http" Version="4.3.4" />
+		<PackageReference Include="System.Text.Json" Version="8.0.5" />
 	</ItemGroup>
 
   <ItemGroup>
