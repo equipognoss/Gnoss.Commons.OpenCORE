@@ -3,6 +3,7 @@ using System;
 using Es.Riam.Gnoss.AD.EntityModel;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,13 +12,14 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
 {
     [DbContext(typeof(EntityContextPostgres))]
-    partial class EntityContextPostgresModelSnapshot : ModelSnapshot
+    [Migration("20260211154849_GrupoIdentidades_RemoveRestriction")]
+    partial class GrupoIdentidades_RemoveRestriction
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "8.0.10")
+                .HasAnnotation("ProductVersion", "6.0.20")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
@@ -374,6 +376,88 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
                     b.ToTable("EntradaBlog");
                 });
 
+            modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Carga.Carga", b =>
+                {
+                    b.Property<Guid>("CargaID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<short>("Estado")
+                        .HasColumnType("smallint");
+
+                    b.Property<DateTime>("FechaAlta")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<Guid?>("IdentidadID")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Nombre")
+                        .HasMaxLength(1200)
+                        .HasColumnType("character varying(1200)");
+
+                    b.Property<string>("Ontologia")
+                        .IsRequired()
+                        .HasMaxLength(2000)
+                        .HasColumnType("character varying(2000)");
+
+                    b.Property<Guid?>("OrganizacionID")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid?>("ProyectoID")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("CargaID");
+
+                    b.ToTable("Carga");
+                });
+
+            modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Carga.CargaPaquete", b =>
+                {
+                    b.Property<Guid>("PaqueteID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("CargaID")
+                        .HasColumnType("uuid");
+
+                    b.Property<bool>("Comprimido")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("Error")
+                        .HasMaxLength(4000)
+                        .HasColumnType("character varying(4000)");
+
+                    b.Property<short>("Estado")
+                        .HasColumnType("smallint");
+
+                    b.Property<DateTime?>("FechaAlta")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<DateTime?>("FechaProcesado")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<string>("RutaBusqueda")
+                        .IsRequired()
+                        .HasMaxLength(2000)
+                        .HasColumnType("character varying(2000)");
+
+                    b.Property<string>("RutaOnto")
+                        .IsRequired()
+                        .HasMaxLength(2000)
+                        .HasColumnType("character varying(2000)");
+
+                    b.Property<string>("RutaSQL")
+                        .IsRequired()
+                        .HasMaxLength(2000)
+                        .HasColumnType("character varying(2000)");
+
+                    b.HasKey("PaqueteID");
+
+                    b.HasIndex("CargaID");
+
+                    b.ToTable("CargaPaquete");
+                });
+
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.CMS.CMSBloque", b =>
                 {
                     b.Property<Guid>("BloqueID")
@@ -475,9 +559,6 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
                     b.Property<bool>("Activo")
                         .HasColumnType("boolean");
 
-                    b.Property<Guid?>("EstadoID")
-                        .HasColumnType("uuid");
-
                     b.Property<string>("Estilos")
                         .HasColumnType("text");
 
@@ -511,8 +592,6 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
                         .HasColumnType("smallint");
 
                     b.HasKey("ComponenteID");
-
-                    b.HasIndex("EstadoID");
 
                     b.ToTable("CMSComponente");
                 });
@@ -564,37 +643,6 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
                     b.HasKey("ComponenteID", "PerfilID");
 
                     b.ToTable("CMSComponenteRolIdentidad");
-                });
-
-            modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.CMS.CMSComponenteVersion", b =>
-                {
-                    b.Property<Guid>("VersionID")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<string>("Comentario")
-                        .HasColumnType("text");
-
-                    b.Property<Guid>("ComponenteID")
-                        .HasColumnType("uuid");
-
-                    b.Property<DateTime>("Fecha")
-                        .HasColumnType("timestamp without time zone");
-
-                    b.Property<Guid>("IdentidadID")
-                        .HasColumnType("uuid");
-
-                    b.Property<string>("ModeloJSON")
-                        .HasColumnType("text");
-
-                    b.Property<Guid>("VersionAnterior")
-                        .HasColumnType("uuid");
-
-                    b.HasKey("VersionID");
-
-                    b.HasIndex("ComponenteID");
-
-                    b.ToTable("CMSComponenteVersion");
                 });
 
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.CMS.CMSPagina", b =>
@@ -691,119 +739,6 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
                     b.HasKey("OrganizacionID", "ProyectoID", "Ubicacion", "PerfilID");
 
                     b.ToTable("CMSRolIdentidad");
-                });
-
-            modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Cache.ConfiguracionCachesCostosas", b =>
-                {
-                    b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid>("ProyectoID")
-                        .HasColumnType("uuid");
-
-                    b.Property<bool>("CachesAnonimas")
-                        .HasColumnType("boolean");
-
-                    b.Property<bool>("CachesDeBusquedasActivas")
-                        .HasColumnType("boolean");
-
-                    b.Property<long>("DuracionConsulta")
-                        .HasColumnType("bigint");
-
-                    b.Property<long>("TiempoExpiracion")
-                        .HasColumnType("bigint");
-
-                    b.Property<long>("TiempoExpiracionCachesDeUsuario")
-                        .HasColumnType("bigint");
-
-                    b.Property<long>("TiempoRecalcularCaches")
-                        .HasColumnType("bigint");
-
-                    b.HasKey("OrganizacionID", "ProyectoID");
-
-                    b.ToTable("ConfiguracionCachesCostosas");
-                });
-
-            modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Carga.Carga", b =>
-                {
-                    b.Property<Guid>("CargaID")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<short>("Estado")
-                        .HasColumnType("smallint");
-
-                    b.Property<DateTime>("FechaAlta")
-                        .HasColumnType("timestamp without time zone");
-
-                    b.Property<Guid?>("IdentidadID")
-                        .HasColumnType("uuid");
-
-                    b.Property<string>("Nombre")
-                        .HasMaxLength(1200)
-                        .HasColumnType("character varying(1200)");
-
-                    b.Property<string>("Ontologia")
-                        .IsRequired()
-                        .HasMaxLength(2000)
-                        .HasColumnType("character varying(2000)");
-
-                    b.Property<Guid?>("OrganizacionID")
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid?>("ProyectoID")
-                        .HasColumnType("uuid");
-
-                    b.HasKey("CargaID");
-
-                    b.ToTable("Carga");
-                });
-
-            modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Carga.CargaPaquete", b =>
-                {
-                    b.Property<Guid>("PaqueteID")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid>("CargaID")
-                        .HasColumnType("uuid");
-
-                    b.Property<bool>("Comprimido")
-                        .HasColumnType("boolean");
-
-                    b.Property<string>("Error")
-                        .HasMaxLength(4000)
-                        .HasColumnType("character varying(4000)");
-
-                    b.Property<short>("Estado")
-                        .HasColumnType("smallint");
-
-                    b.Property<DateTime?>("FechaAlta")
-                        .HasColumnType("timestamp without time zone");
-
-                    b.Property<DateTime?>("FechaProcesado")
-                        .HasColumnType("timestamp without time zone");
-
-                    b.Property<string>("RutaBusqueda")
-                        .IsRequired()
-                        .HasMaxLength(2000)
-                        .HasColumnType("character varying(2000)");
-
-                    b.Property<string>("RutaOnto")
-                        .IsRequired()
-                        .HasMaxLength(2000)
-                        .HasColumnType("character varying(2000)");
-
-                    b.Property<string>("RutaSQL")
-                        .IsRequired()
-                        .HasMaxLength(2000)
-                        .HasColumnType("character varying(2000)");
-
-                    b.HasKey("PaqueteID");
-
-                    b.HasIndex("CargaID");
-
-                    b.ToTable("CargaPaquete");
                 });
 
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Comentario.Comentario", b =>
@@ -1282,45 +1217,6 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
                     b.ToTable("ColaDocumento");
                 });
 
-            modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Documentacion.DetallesDocumentacion", b =>
-                {
-                    b.Property<Guid>("ProyectoID")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid")
-                        .HasColumnOrder(0);
-
-                    b.Property<string>("Autores")
-                        .HasColumnType("text");
-
-                    b.Property<string>("Descripcion")
-                        .HasColumnType("text");
-
-                    b.Property<string>("EnlaceOWL")
-                        .HasColumnType("text");
-
-                    b.Property<string>("Licencia")
-                        .HasColumnType("text");
-
-                    b.Property<string>("OntologiasImportadas")
-                        .HasColumnType("text");
-
-                    b.Property<string>("PathImagen")
-                        .HasColumnType("text");
-
-                    b.Property<bool>("Privado")
-                        .HasColumnType("boolean");
-
-                    b.Property<string>("Titulo")
-                        .HasColumnType("text");
-
-                    b.Property<string>("UrlLicencia")
-                        .HasColumnType("text");
-
-                    b.HasKey("ProyectoID");
-
-                    b.ToTable("DetallesDocumentacion");
-                });
-
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Documentacion.Documento", b =>
                 {
                     b.Property<Guid>("DocumentoID")
@@ -1354,9 +1250,6 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
                     b.Property<string>("Enlace")
                         .HasMaxLength(1200)
                         .HasColumnType("character varying(1200)");
-
-                    b.Property<Guid?>("EstadoID")
-                        .HasColumnType("uuid");
 
                     b.Property<DateTime?>("FechaCreacion")
                         .HasColumnType("timestamp without time zone");
@@ -1446,8 +1339,6 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
                     b.HasKey("DocumentoID");
 
                     b.HasIndex("CreadorID");
-
-                    b.HasIndex("EstadoID");
 
                     b.HasIndex("Tipo", "Eliminado", "Visibilidad");
 
@@ -1567,8 +1458,8 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
 
                     b.Property<string>("Idioma")
                         .IsRequired()
-                        .HasMaxLength(20)
-                        .HasColumnType("character varying(20)");
+                        .HasMaxLength(5)
+                        .HasColumnType("character varying(5)");
 
                     b.HasKey("DocumentoID", "IdentidadID", "Fecha");
 
@@ -2063,19 +1954,6 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
                     b.ToTable("HistorialDocumento");
                 });
 
-            modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Documentacion.IdiomaTraduccionAutomaticaDocumento", b =>
-                {
-                    b.Property<Guid>("DocumentoID")
-                        .HasColumnType("uuid");
-
-                    b.Property<string>("Idioma")
-                        .HasColumnType("text");
-
-                    b.HasKey("DocumentoID", "Idioma");
-
-                    b.ToTable("IdiomaTraduccionAutomaticaDocumento");
-                });
-
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Documentacion.ResultadoSuscripcion", b =>
                 {
                     b.Property<Guid>("SuscripcionID")
@@ -2181,29 +2059,13 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
                     b.Property<Guid>("DocumentoOriginalID")
                         .HasColumnType("uuid");
 
-                    b.Property<bool>("EsMejora")
-                        .HasColumnType("boolean");
-
-                    b.Property<Guid?>("EstadoID")
-                        .HasColumnType("uuid");
-
-                    b.Property<short>("EstadoVersion")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("smallint")
-                        .HasDefaultValue((short)2);
-
                     b.Property<Guid>("IdentidadID")
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid?>("MejoraID")
                         .HasColumnType("uuid");
 
                     b.Property<int>("Version")
                         .HasColumnType("integer");
 
                     b.HasKey("DocumentoID");
-
-                    b.HasIndex("EstadoID");
 
                     b.ToTable("VersionDocumento");
                 });
@@ -2306,6 +2168,7 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
                         .HasColumnType("text");
 
                     b.Property<string>("PropLongitud")
+                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<string>("PropRuta")
@@ -2670,11 +2533,6 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
                     b.Property<short>("Mayusculas")
                         .HasColumnType("smallint");
 
-                    b.Property<bool>("MostrarContador")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("boolean")
-                        .HasDefaultValue(true);
-
                     b.Property<bool?>("MostrarSoloCaja")
                         .HasColumnType("boolean");
 
@@ -2742,10 +2600,6 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
                         .HasColumnType("uuid")
                         .HasColumnOrder(4);
 
-                    b.Property<bool>("AutocompletarEnriquecido")
-                        .HasColumnType("boolean")
-                        .HasColumnOrder(5);
-
                     b.HasKey("OrganizacionID", "ProyectoID", "ObjetoConocimiento", "Faceta", "PestanyaID");
 
                     b.HasIndex("PestanyaID");
@@ -2811,305 +2665,6 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
                     b.HasKey("OrganizacionID", "ProyectoID", "OntologiaProyecto1");
 
                     b.ToTable("OntologiaProyecto");
-                });
-
-            modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Flujos.Estado", b =>
-                {
-                    b.Property<Guid>("EstadoID")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<string>("Color")
-                        .HasColumnType("text");
-
-                    b.Property<Guid>("FlujoID")
-                        .HasColumnType("uuid");
-
-                    b.Property<string>("Nombre")
-                        .HasColumnType("text");
-
-                    b.Property<bool>("PermiteMejora")
-                        .HasColumnType("boolean");
-
-                    b.Property<bool>("Publico")
-                        .HasColumnType("boolean");
-
-                    b.Property<short>("Tipo")
-                        .HasColumnType("smallint");
-
-                    b.HasKey("EstadoID");
-
-                    b.HasIndex("FlujoID");
-
-                    b.ToTable("Estado");
-                });
-
-            modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Flujos.EstadoGrupo", b =>
-                {
-                    b.Property<Guid>("EstadoID")
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid>("GrupoID")
-                        .HasColumnType("uuid");
-
-                    b.Property<bool>("Editor")
-                        .HasColumnType("boolean");
-
-                    b.HasKey("EstadoID", "GrupoID");
-
-                    b.HasIndex("GrupoID");
-
-                    b.ToTable("EstadoGrupo");
-                });
-
-            modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Flujos.EstadoIdentidad", b =>
-                {
-                    b.Property<Guid>("EstadoID")
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid>("IdentidadID")
-                        .HasColumnType("uuid");
-
-                    b.Property<bool>("Editor")
-                        .HasColumnType("boolean");
-
-                    b.HasKey("EstadoID", "IdentidadID");
-
-                    b.HasIndex("IdentidadID");
-
-                    b.ToTable("EstadoIdentidad");
-                });
-
-            modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Flujos.Flujo", b =>
-                {
-                    b.Property<Guid>("FlujoID")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<bool>("Adjunto")
-                        .HasColumnType("boolean");
-
-                    b.Property<bool>("ComponenteCMS")
-                        .HasColumnType("boolean");
-
-                    b.Property<bool>("Debate")
-                        .HasColumnType("boolean");
-
-                    b.Property<string>("Descripcion")
-                        .HasColumnType("text");
-
-                    b.Property<bool>("Encuesta")
-                        .HasColumnType("boolean");
-
-                    b.Property<DateTime>("Fecha")
-                        .HasColumnType("timestamp without time zone");
-
-                    b.Property<bool>("Link")
-                        .HasColumnType("boolean");
-
-                    b.Property<string>("Nombre")
-                        .HasColumnType("text");
-
-                    b.Property<bool>("Nota")
-                        .HasColumnType("boolean");
-
-                    b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("uuid");
-
-                    b.Property<bool>("PaginaCMS")
-                        .HasColumnType("boolean");
-
-                    b.Property<Guid>("ProyectoID")
-                        .HasColumnType("uuid");
-
-                    b.Property<bool>("RecursoSemantico")
-                        .HasColumnType("boolean");
-
-                    b.Property<bool>("Video")
-                        .HasColumnType("boolean");
-
-                    b.HasKey("FlujoID");
-
-                    b.HasIndex("OrganizacionID", "ProyectoID");
-
-                    b.ToTable("Flujo");
-                });
-
-            modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Flujos.FlujoObjetoConocimientoProyecto", b =>
-                {
-                    b.Property<Guid>("FlujoID")
-                        .HasColumnType("uuid");
-
-                    b.Property<string>("Ontologia")
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)");
-
-                    b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid>("ProyectoID")
-                        .HasColumnType("uuid");
-
-                    b.HasKey("FlujoID", "Ontologia", "OrganizacionID", "ProyectoID");
-
-                    b.HasIndex("OrganizacionID", "ProyectoID", "Ontologia")
-                        .IsUnique();
-
-                    b.ToTable("FlujoObjetoConocimientoProyecto");
-                });
-
-            modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Flujos.HistorialTransicionCMSComponente", b =>
-                {
-                    b.Property<Guid>("HistorialTransicionID")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<string>("Comentario")
-                        .HasColumnType("text");
-
-                    b.Property<Guid>("ComponenteID")
-                        .HasColumnType("uuid");
-
-                    b.Property<DateTime>("Fecha")
-                        .HasColumnType("timestamp without time zone");
-
-                    b.Property<Guid>("IdentidadID")
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid>("TransicionID")
-                        .HasColumnType("uuid");
-
-                    b.HasKey("HistorialTransicionID");
-
-                    b.HasIndex("ComponenteID");
-
-                    b.HasIndex("IdentidadID");
-
-                    b.HasIndex("TransicionID");
-
-                    b.ToTable("HistorialTransicionCMSComponente");
-                });
-
-            modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Flujos.HistorialTransicionDocumento", b =>
-                {
-                    b.Property<Guid>("HistorialTransicionID")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<string>("Comentario")
-                        .HasColumnType("text");
-
-                    b.Property<Guid>("DocumentoID")
-                        .HasColumnType("uuid");
-
-                    b.Property<DateTime>("Fecha")
-                        .HasColumnType("timestamp without time zone");
-
-                    b.Property<Guid>("IdentidadID")
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid>("TransicionID")
-                        .HasColumnType("uuid");
-
-                    b.HasKey("HistorialTransicionID");
-
-                    b.HasIndex("DocumentoID");
-
-                    b.HasIndex("IdentidadID");
-
-                    b.HasIndex("TransicionID");
-
-                    b.ToTable("HistorialTransicionDocumento");
-                });
-
-            modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Flujos.HistorialTransicionPestanyaCMS", b =>
-                {
-                    b.Property<Guid>("HistorialTransicionID")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<string>("Comentario")
-                        .HasColumnType("text");
-
-                    b.Property<DateTime>("Fecha")
-                        .HasColumnType("timestamp without time zone");
-
-                    b.Property<Guid>("IdentidadID")
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid>("PestanyaID")
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid>("TransicionID")
-                        .HasColumnType("uuid");
-
-                    b.Property<short>("Ubicacion")
-                        .HasColumnType("smallint");
-
-                    b.HasKey("HistorialTransicionID");
-
-                    b.HasIndex("IdentidadID");
-
-                    b.HasIndex("TransicionID");
-
-                    b.HasIndex("PestanyaID", "Ubicacion");
-
-                    b.ToTable("HistorialTransicionPestanyaCMS");
-                });
-
-            modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Flujos.Transicion", b =>
-                {
-                    b.Property<Guid>("TransicionID")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid>("EstadoDestinoID")
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid>("EstadoOrigenID")
-                        .HasColumnType("uuid");
-
-                    b.Property<string>("Nombre")
-                        .HasColumnType("text");
-
-                    b.HasKey("TransicionID");
-
-                    b.HasIndex("EstadoDestinoID");
-
-                    b.HasIndex("EstadoOrigenID", "EstadoDestinoID")
-                        .IsUnique();
-
-                    b.ToTable("Transicion");
-                });
-
-            modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Flujos.TransicionGrupo", b =>
-                {
-                    b.Property<Guid>("TransicionID")
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid>("GrupoID")
-                        .HasColumnType("uuid");
-
-                    b.HasKey("TransicionID", "GrupoID");
-
-                    b.HasIndex("GrupoID");
-
-                    b.ToTable("TransicionGrupo");
-                });
-
-            modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Flujos.TransicionIdentidad", b =>
-                {
-                    b.Property<Guid>("TransicionID")
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid>("IdentidadID")
-                        .HasColumnType("uuid");
-
-                    b.HasKey("TransicionID", "IdentidadID");
-
-                    b.HasIndex("IdentidadID");
-
-                    b.ToTable("TransicionIdentidad");
                 });
 
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.GrupoOrgParticipaProy", b =>
@@ -4033,8 +3588,8 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
                         .HasColumnType("timestamp without time zone");
 
                     b.Property<string>("Idioma")
-                        .HasMaxLength(20)
-                        .HasColumnType("character varying(20)");
+                        .HasMaxLength(5)
+                        .HasColumnType("character varying(5)");
 
                     b.Property<short>("MensajeID")
                         .HasColumnType("smallint");
@@ -5074,29 +4629,6 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
                     b.ToTable("ParametroProyecto");
                 });
 
-            modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.ParametroGeneralDS.ProyectoElementoHTMLRol", b =>
-                {
-                    b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("uuid")
-                        .HasColumnOrder(0);
-
-                    b.Property<Guid>("ProyectoID")
-                        .HasColumnType("uuid")
-                        .HasColumnOrder(1);
-
-                    b.Property<int>("ElementoHeadID")
-                        .HasColumnType("integer")
-                        .HasColumnOrder(2);
-
-                    b.Property<Guid>("GrupoID")
-                        .HasColumnType("uuid")
-                        .HasColumnOrder(3);
-
-                    b.HasKey("OrganizacionID", "ProyectoID", "ElementoHeadID", "GrupoID");
-
-                    b.ToTable("ProyectoElementoHTMLRol");
-                });
-
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.ParametroGeneralDS.ProyectoElementoHtml", b =>
                 {
                     b.Property<Guid>("OrganizacionID")
@@ -5135,6 +4667,29 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
                     b.HasKey("OrganizacionID", "ProyectoID", "ElementoHeadID");
 
                     b.ToTable("ProyectoElementoHtml");
+                });
+
+            modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.ParametroGeneralDS.ProyectoElementoHTMLRol", b =>
+                {
+                    b.Property<Guid>("OrganizacionID")
+                        .HasColumnType("uuid")
+                        .HasColumnOrder(0);
+
+                    b.Property<Guid>("ProyectoID")
+                        .HasColumnType("uuid")
+                        .HasColumnOrder(1);
+
+                    b.Property<int>("ElementoHeadID")
+                        .HasColumnType("integer")
+                        .HasColumnOrder(2);
+
+                    b.Property<Guid>("GrupoID")
+                        .HasColumnType("uuid")
+                        .HasColumnOrder(3);
+
+                    b.HasKey("OrganizacionID", "ProyectoID", "ElementoHeadID", "GrupoID");
+
+                    b.ToTable("ProyectoElementoHTMLRol");
                 });
 
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.ParametroGeneralDS.ProyectoMetaRobots", b =>
@@ -5450,8 +5005,8 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
 
                     b.Property<string>("Idioma")
                         .IsRequired()
-                        .HasMaxLength(20)
-                        .HasColumnType("character varying(20)");
+                        .HasMaxLength(5)
+                        .HasColumnType("character varying(5)");
 
                     b.Property<string>("LocalidadPersonal")
                         .HasMaxLength(255)
@@ -5531,19 +5086,6 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
                     b.ToTable("Peticion");
                 });
 
-            modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Peticion.PeticionInvitaContacto", b =>
-                {
-                    b.Property<Guid>("PeticionID")
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid>("IdentidadID")
-                        .HasColumnType("uuid");
-
-                    b.HasKey("PeticionID");
-
-                    b.ToTable("PeticionInvitaContacto");
-                });
-
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Peticion.PeticionInvitacionComunidad", b =>
                 {
                     b.Property<Guid>("PeticionID")
@@ -5584,6 +5126,19 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
                     b.ToTable("PeticionInvitacionGrupo");
                 });
 
+            modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Peticion.PeticionInvitaContacto", b =>
+                {
+                    b.Property<Guid>("PeticionID")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("IdentidadID")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("PeticionID");
+
+                    b.ToTable("PeticionInvitaContacto");
+                });
+
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Peticion.PeticionNuevoProyecto", b =>
                 {
                     b.Property<Guid>("PeticionID")
@@ -5594,10 +5149,6 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
 
                     b.Property<string>("Descripcion")
                         .HasColumnType("text");
-
-                    b.Property<string>("IdiomaDefecto")
-                        .HasMaxLength(50)
-                        .HasColumnType("character varying(50)");
 
                     b.Property<string>("Nombre")
                         .IsRequired()
@@ -6432,24 +5983,6 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
                     b.ToTable("PresentacionPestanyaMosaicoSemantico");
                 });
 
-            modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.ProyectoDS.ProyTipoRecNoActivReciente", b =>
-                {
-                    b.Property<Guid>("ProyectoID")
-                        .HasColumnType("uuid")
-                        .HasColumnOrder(0);
-
-                    b.Property<short>("TipoRecurso")
-                        .HasColumnType("smallint")
-                        .HasColumnOrder(1);
-
-                    b.Property<string>("OntologiasID")
-                        .HasColumnType("text");
-
-                    b.HasKey("ProyectoID", "TipoRecurso");
-
-                    b.ToTable("ProyTipoRecNoActivReciente");
-                });
-
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.ProyectoDS.Proyecto", b =>
                 {
                     b.Property<Guid>("OrganizacionID")
@@ -7042,8 +6575,8 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
                         .HasColumnType("text");
 
                     b.Property<string>("Idioma")
-                        .HasMaxLength(20)
-                        .HasColumnType("character varying(20)");
+                        .HasMaxLength(5)
+                        .HasColumnType("character varying(5)");
 
                     b.HasKey("ProyectoID", "Nombre");
 
@@ -7250,9 +6783,6 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
                     b.Property<string>("RelacionMandatory")
                         .HasColumnType("text");
 
-                    b.Property<string>("SearchPersonalizado")
-                        .HasColumnType("text");
-
                     b.Property<string>("TextoBusquedaSinResultados")
                         .HasColumnType("text");
 
@@ -7393,12 +6923,7 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
                         .HasColumnType("smallint")
                         .HasColumnOrder(1);
 
-                    b.Property<Guid?>("EstadoID")
-                        .HasColumnType("uuid");
-
                     b.HasKey("PestanyaID", "Ubicacion");
-
-                    b.HasIndex("EstadoID");
 
                     b.ToTable("ProyectoPestanyaCMS");
                 });
@@ -7644,39 +7169,6 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
                     b.ToTable("ProyectoPestanyaMenuRolIdentidad");
                 });
 
-            modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.ProyectoDS.ProyectoPestanyaMenuVersionPagina", b =>
-                {
-                    b.Property<Guid>("VersionID")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<string>("Comentario")
-                        .HasColumnType("text");
-
-                    b.Property<DateTime>("Fecha")
-                        .HasColumnType("timestamp without time zone");
-
-                    b.Property<Guid>("IdentidadID")
-                        .HasColumnType("uuid");
-
-                    b.Property<string>("ModeloJSON")
-                        .HasColumnType("text");
-
-                    b.Property<Guid>("PestanyaID")
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid?>("VersionAnterior")
-                        .HasColumnType("uuid");
-
-                    b.HasKey("VersionID");
-
-                    b.HasIndex("PestanyaID");
-
-                    b.HasIndex("VersionAnterior");
-
-                    b.ToTable("ProyectoPestanyaMenuVersionPagina");
-                });
-
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.ProyectoDS.ProyectoPestanyaRolGrupoIdentidades", b =>
                 {
                     b.Property<Guid>("ProyectoID")
@@ -7715,37 +7207,6 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
                     b.HasKey("ProyectoID", "Nombre", "PerfilID");
 
                     b.ToTable("ProyectoPestanyaRolIdentidad");
-                });
-
-            modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.ProyectoDS.ProyectoPestanyaVersionCMS", b =>
-                {
-                    b.Property<Guid>("VersionID")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<string>("Comentario")
-                        .HasColumnType("text");
-
-                    b.Property<DateTime>("Fecha")
-                        .HasColumnType("timestamp without time zone");
-
-                    b.Property<Guid>("IdentidadID")
-                        .HasColumnType("uuid");
-
-                    b.Property<string>("ModeloJSON")
-                        .HasColumnType("text");
-
-                    b.Property<Guid>("PestanyaID")
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid>("VersionAnterior")
-                        .HasColumnType("uuid");
-
-                    b.HasKey("VersionID");
-
-                    b.HasIndex("PestanyaID");
-
-                    b.ToTable("ProyectoPestanyaVersionCMS");
                 });
 
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.ProyectoDS.ProyectoRelacionado", b =>
@@ -7864,6 +7325,24 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
                     b.HasKey("OrganizacionID", "ProyectoID");
 
                     b.ToTable("ProyectosMasActivos");
+                });
+
+            modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.ProyectoDS.ProyTipoRecNoActivReciente", b =>
+                {
+                    b.Property<Guid>("ProyectoID")
+                        .HasColumnType("uuid")
+                        .HasColumnOrder(0);
+
+                    b.Property<short>("TipoRecurso")
+                        .HasColumnType("smallint")
+                        .HasColumnOrder(1);
+
+                    b.Property<string>("OntologiasID")
+                        .HasColumnType("text");
+
+                    b.HasKey("ProyectoID", "TipoRecurso");
+
+                    b.ToTable("ProyTipoRecNoActivReciente");
                 });
 
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.ProyectoDS.RecursosRelacionadosPresentacion", b =>
@@ -8076,135 +7555,6 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
                     b.ToTable("RedireccionValorParametro");
                 });
 
-            modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Roles.Rol", b =>
-                {
-                    b.Property<Guid>("RolID")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<string>("Descripcion")
-                        .HasColumnType("text");
-
-                    b.Property<bool>("EsRolUsuario")
-                        .HasColumnType("boolean");
-
-                    b.Property<DateTime>("FechaModificacion")
-                        .HasColumnType("timestamp without time zone");
-
-                    b.Property<string>("Nombre")
-                        .HasColumnType("text");
-
-                    b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("uuid");
-
-                    b.Property<decimal>("PermisosAdministracion")
-                        .HasColumnType("numeric(20,0)");
-
-                    b.Property<decimal>("PermisosContenidos")
-                        .HasColumnType("numeric(20,0)");
-
-                    b.Property<decimal>("PermisosRecursos")
-                        .HasColumnType("numeric(20,0)");
-
-                    b.Property<Guid>("ProyectoID")
-                        .HasColumnType("uuid");
-
-                    b.Property<short>("Tipo")
-                        .HasColumnType("smallint");
-
-                    b.HasKey("RolID");
-
-                    b.HasIndex("OrganizacionID", "ProyectoID");
-
-                    b.ToTable("Rol");
-                });
-
-            modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Roles.RolEcosistema", b =>
-                {
-                    b.Property<Guid>("RolID")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<string>("Descripcion")
-                        .HasColumnType("text");
-
-                    b.Property<DateTime>("FechaModificacion")
-                        .HasColumnType("timestamp without time zone");
-
-                    b.Property<string>("Nombre")
-                        .HasColumnType("text");
-
-                    b.Property<decimal>("Permisos")
-                        .HasColumnType("numeric(20,0)");
-
-                    b.HasKey("RolID");
-
-                    b.ToTable("RolEcosistema");
-                });
-
-            modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Roles.RolEcosistemaUsuario", b =>
-                {
-                    b.Property<Guid>("RolID")
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid>("UsuarioID")
-                        .HasColumnType("uuid");
-
-                    b.HasKey("RolID", "UsuarioID");
-
-                    b.HasIndex("UsuarioID");
-
-                    b.ToTable("RolEcosistemaUsuario");
-                });
-
-            modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Roles.RolGrupoIdentidades", b =>
-                {
-                    b.Property<Guid>("RolID")
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid>("GrupoID")
-                        .HasColumnType("uuid");
-
-                    b.HasKey("RolID", "GrupoID");
-
-                    b.HasIndex("GrupoID");
-
-                    b.ToTable("RolGrupoIdentidades");
-                });
-
-            modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Roles.RolIdentidad", b =>
-                {
-                    b.Property<Guid>("RolID")
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid>("IdentidadID")
-                        .HasColumnType("uuid");
-
-                    b.HasKey("RolID", "IdentidadID");
-
-                    b.HasIndex("IdentidadID");
-
-                    b.ToTable("RolIdentidad");
-                });
-
-            modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Roles.RolOntologiaPermiso", b =>
-                {
-                    b.Property<Guid>("DocumentoID")
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid>("RolID")
-                        .HasColumnType("uuid");
-
-                    b.Property<decimal>("Permisos")
-                        .HasColumnType("numeric(20,0)");
-
-                    b.HasKey("DocumentoID", "RolID");
-
-                    b.HasIndex("RolID");
-
-                    b.ToTable("RolOntologiaPermiso");
-                });
-
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Sitemaps.Sitemaps", b =>
                 {
                     b.Property<string>("Dominio")
@@ -8389,37 +7739,6 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
                     b.ToTable("SolicitudGrupo");
                 });
 
-            modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Solicitud.SolicitudNuevaOrgEmp", b =>
-                {
-                    b.Property<Guid>("SolicitudID")
-                        .HasColumnType("uuid")
-                        .HasColumnOrder(0);
-
-                    b.Property<Guid>("UsuarioAdminID")
-                        .HasColumnType("uuid")
-                        .HasColumnOrder(1);
-
-                    b.Property<string>("CIF")
-                        .HasMaxLength(9)
-                        .HasColumnType("character varying(9)");
-
-                    b.Property<int>("Empleados")
-                        .HasColumnType("integer");
-
-                    b.Property<DateTime?>("FechaFundacion")
-                        .HasColumnType("timestamp without time zone");
-
-                    b.Property<short>("Sector")
-                        .HasColumnType("smallint");
-
-                    b.Property<short>("Tipo")
-                        .HasColumnType("smallint");
-
-                    b.HasKey("SolicitudID", "UsuarioAdminID");
-
-                    b.ToTable("SolicitudNuevaOrgEmp");
-                });
-
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Solicitud.SolicitudNuevaOrganizacion", b =>
                 {
                     b.Property<Guid>("SolicitudID")
@@ -8496,6 +7815,37 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
                     b.HasKey("SolicitudID", "UsuarioAdminID");
 
                     b.ToTable("SolicitudNuevaOrganizacion");
+                });
+
+            modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Solicitud.SolicitudNuevaOrgEmp", b =>
+                {
+                    b.Property<Guid>("SolicitudID")
+                        .HasColumnType("uuid")
+                        .HasColumnOrder(0);
+
+                    b.Property<Guid>("UsuarioAdminID")
+                        .HasColumnType("uuid")
+                        .HasColumnOrder(1);
+
+                    b.Property<string>("CIF")
+                        .HasMaxLength(9)
+                        .HasColumnType("character varying(9)");
+
+                    b.Property<int>("Empleados")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime?>("FechaFundacion")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<short>("Sector")
+                        .HasColumnType("smallint");
+
+                    b.Property<short>("Tipo")
+                        .HasColumnType("smallint");
+
+                    b.HasKey("SolicitudID", "UsuarioAdminID");
+
+                    b.ToTable("SolicitudNuevaOrgEmp");
                 });
 
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Solicitud.SolicitudNuevoProfesor", b =>
@@ -8582,8 +7932,8 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
 
                     b.Property<string>("Idioma")
                         .IsRequired()
-                        .HasMaxLength(20)
-                        .HasColumnType("character varying(20)");
+                        .HasMaxLength(5)
+                        .HasColumnType("character varying(5)");
 
                     b.Property<string>("Nombre")
                         .IsRequired()
@@ -8812,79 +8162,6 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
                     b.ToTable("SuscripcionTesauroUsuario");
                 });
 
-            modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Tesauro.CatTesauroAgCatTesauro", b =>
-                {
-                    b.Property<Guid>("TesauroID")
-                        .HasColumnType("uuid")
-                        .HasColumnOrder(0);
-
-                    b.Property<Guid>("CategoriaSuperiorID")
-                        .HasColumnType("uuid")
-                        .HasColumnOrder(1);
-
-                    b.Property<Guid>("CategoriaInferiorID")
-                        .HasColumnType("uuid")
-                        .HasColumnOrder(2);
-
-                    b.Property<short>("Orden")
-                        .HasColumnType("smallint");
-
-                    b.HasKey("TesauroID", "CategoriaSuperiorID", "CategoriaInferiorID");
-
-                    b.HasIndex("TesauroID", "CategoriaInferiorID");
-
-                    b.ToTable("CatTesauroAgCatTesauro");
-                });
-
-            modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Tesauro.CatTesauroCompartida", b =>
-                {
-                    b.Property<Guid>("TesauroOrigenID")
-                        .HasColumnType("uuid")
-                        .HasColumnOrder(0);
-
-                    b.Property<Guid>("CategoriaOrigenID")
-                        .HasColumnType("uuid")
-                        .HasColumnOrder(1);
-
-                    b.Property<Guid>("TesauroDestinoID")
-                        .HasColumnType("uuid")
-                        .HasColumnOrder(2);
-
-                    b.Property<Guid?>("CategoriaSupDestinoID")
-                        .HasColumnType("uuid");
-
-                    b.Property<short>("Orden")
-                        .HasColumnType("smallint");
-
-                    b.HasKey("TesauroOrigenID", "CategoriaOrigenID", "TesauroDestinoID");
-
-                    b.HasIndex("TesauroDestinoID", "CategoriaSupDestinoID");
-
-                    b.ToTable("CatTesauroCompartida");
-                });
-
-            modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Tesauro.CatTesauroPermiteTipoRec", b =>
-                {
-                    b.Property<Guid>("TesauroID")
-                        .HasColumnType("uuid")
-                        .HasColumnOrder(0);
-
-                    b.Property<Guid>("CategoriaTesauroID")
-                        .HasColumnType("uuid")
-                        .HasColumnOrder(1);
-
-                    b.Property<short>("TipoRecurso")
-                        .HasColumnType("smallint")
-                        .HasColumnOrder(2);
-
-                    b.Property<string>("OntologiasID")
-                        .HasColumnType("text");
-
-                    b.HasKey("TesauroID", "CategoriaTesauroID", "TipoRecurso");
-
-                    b.ToTable("CatTesauroPermiteTipoRec");
-                });
-
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Tesauro.CategoriaTesauro", b =>
                 {
                     b.Property<Guid>("TesauroID")
@@ -8983,6 +8260,79 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
                     b.HasIndex("TesauroCatPadreID", "CategoriaTesauroPadreID");
 
                     b.ToTable("CategoriaTesauroSugerencia");
+                });
+
+            modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Tesauro.CatTesauroAgCatTesauro", b =>
+                {
+                    b.Property<Guid>("TesauroID")
+                        .HasColumnType("uuid")
+                        .HasColumnOrder(0);
+
+                    b.Property<Guid>("CategoriaSuperiorID")
+                        .HasColumnType("uuid")
+                        .HasColumnOrder(1);
+
+                    b.Property<Guid>("CategoriaInferiorID")
+                        .HasColumnType("uuid")
+                        .HasColumnOrder(2);
+
+                    b.Property<short>("Orden")
+                        .HasColumnType("smallint");
+
+                    b.HasKey("TesauroID", "CategoriaSuperiorID", "CategoriaInferiorID");
+
+                    b.HasIndex("TesauroID", "CategoriaInferiorID");
+
+                    b.ToTable("CatTesauroAgCatTesauro");
+                });
+
+            modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Tesauro.CatTesauroCompartida", b =>
+                {
+                    b.Property<Guid>("TesauroOrigenID")
+                        .HasColumnType("uuid")
+                        .HasColumnOrder(0);
+
+                    b.Property<Guid>("CategoriaOrigenID")
+                        .HasColumnType("uuid")
+                        .HasColumnOrder(1);
+
+                    b.Property<Guid>("TesauroDestinoID")
+                        .HasColumnType("uuid")
+                        .HasColumnOrder(2);
+
+                    b.Property<Guid?>("CategoriaSupDestinoID")
+                        .HasColumnType("uuid");
+
+                    b.Property<short>("Orden")
+                        .HasColumnType("smallint");
+
+                    b.HasKey("TesauroOrigenID", "CategoriaOrigenID", "TesauroDestinoID");
+
+                    b.HasIndex("TesauroDestinoID", "CategoriaSupDestinoID");
+
+                    b.ToTable("CatTesauroCompartida");
+                });
+
+            modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Tesauro.CatTesauroPermiteTipoRec", b =>
+                {
+                    b.Property<Guid>("TesauroID")
+                        .HasColumnType("uuid")
+                        .HasColumnOrder(0);
+
+                    b.Property<Guid>("CategoriaTesauroID")
+                        .HasColumnType("uuid")
+                        .HasColumnOrder(1);
+
+                    b.Property<short>("TipoRecurso")
+                        .HasColumnType("smallint")
+                        .HasColumnOrder(2);
+
+                    b.Property<string>("OntologiasID")
+                        .HasColumnType("text");
+
+                    b.HasKey("TesauroID", "CategoriaTesauroID", "TipoRecurso");
+
+                    b.ToTable("CatTesauroPermiteTipoRec");
                 });
 
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Tesauro.Tesauro", b =>
@@ -9314,40 +8664,6 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
                     b.ToTable("OrganizacionRolUsuario");
                 });
 
-            modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.UsuarioDS.ProyRolUsuClausulaReg", b =>
-                {
-                    b.Property<Guid>("ClausulaID")
-                        .HasColumnType("uuid")
-                        .HasColumnOrder(0);
-
-                    b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("uuid")
-                        .HasColumnOrder(1);
-
-                    b.Property<Guid>("OrganizacionGnossID")
-                        .HasColumnType("uuid")
-                        .HasColumnOrder(2);
-
-                    b.Property<Guid>("ProyectoID")
-                        .HasColumnType("uuid")
-                        .HasColumnOrder(3);
-
-                    b.Property<Guid>("UsuarioID")
-                        .HasColumnType("uuid")
-                        .HasColumnOrder(4);
-
-                    b.Property<bool>("Valor")
-                        .HasColumnType("boolean");
-
-                    b.HasKey("ClausulaID", "OrganizacionID", "OrganizacionGnossID", "ProyectoID", "UsuarioID");
-
-                    b.HasIndex("ClausulaID", "OrganizacionID", "ProyectoID");
-
-                    b.HasIndex("OrganizacionGnossID", "ProyectoID", "UsuarioID");
-
-                    b.ToTable("ProyRolUsuClausulaReg");
-                });
-
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.UsuarioDS.ProyectoRolGrupoUsuario", b =>
                 {
                     b.Property<Guid>("OrganizacionGnossID")
@@ -9448,6 +8764,40 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
                     b.HasIndex("OrganizacionGnossID", "ProyectoID");
 
                     b.ToTable("ProyectoUsuarioIdentidad");
+                });
+
+            modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.UsuarioDS.ProyRolUsuClausulaReg", b =>
+                {
+                    b.Property<Guid>("ClausulaID")
+                        .HasColumnType("uuid")
+                        .HasColumnOrder(0);
+
+                    b.Property<Guid>("OrganizacionID")
+                        .HasColumnType("uuid")
+                        .HasColumnOrder(1);
+
+                    b.Property<Guid>("OrganizacionGnossID")
+                        .HasColumnType("uuid")
+                        .HasColumnOrder(2);
+
+                    b.Property<Guid>("ProyectoID")
+                        .HasColumnType("uuid")
+                        .HasColumnOrder(3);
+
+                    b.Property<Guid>("UsuarioID")
+                        .HasColumnType("uuid")
+                        .HasColumnOrder(4);
+
+                    b.Property<bool>("Valor")
+                        .HasColumnType("boolean");
+
+                    b.HasKey("ClausulaID", "OrganizacionID", "OrganizacionGnossID", "ProyectoID", "UsuarioID");
+
+                    b.HasIndex("ClausulaID", "OrganizacionID", "ProyectoID");
+
+                    b.HasIndex("OrganizacionGnossID", "ProyectoID", "UsuarioID");
+
+                    b.ToTable("ProyRolUsuClausulaReg");
                 });
 
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.UsuarioDS.Usuario", b =>
@@ -9990,6 +9340,17 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
                     b.Navigation("Blog");
                 });
 
+            modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Carga.CargaPaquete", b =>
+                {
+                    b.HasOne("Es.Riam.Gnoss.AD.EntityModel.Models.Carga.Carga", "Carga")
+                        .WithMany("CargaPaquete")
+                        .HasForeignKey("CargaID")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Carga");
+                });
+
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.CMS.CMSBloque", b =>
                 {
                     b.HasOne("Es.Riam.Gnoss.AD.EntityModel.Models.CMS.CMSPagina", "CMSPagina")
@@ -10031,16 +9392,6 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
                     b.Navigation("CMSBloqueComponente");
                 });
 
-            modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.CMS.CMSComponente", b =>
-                {
-                    b.HasOne("Es.Riam.Gnoss.AD.EntityModel.Models.Flujos.Estado", "Estado")
-                        .WithMany("CMSComponente")
-                        .HasForeignKey("EstadoID")
-                        .OnDelete(DeleteBehavior.Cascade);
-
-                    b.Navigation("Estado");
-                });
-
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.CMS.CMSComponenteRolGrupoIdentidades", b =>
                 {
                     b.HasOne("Es.Riam.Gnoss.AD.EntityModel.Models.CMS.CMSComponente", "CMSComponente")
@@ -10063,17 +9414,6 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
                     b.Navigation("CMSComponente");
                 });
 
-            modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.CMS.CMSComponenteVersion", b =>
-                {
-                    b.HasOne("Es.Riam.Gnoss.AD.EntityModel.Models.CMS.CMSComponente", "CMSComponente")
-                        .WithMany("CMSComponenteVersion")
-                        .HasForeignKey("ComponenteID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("CMSComponente");
-                });
-
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.CMS.CMSPropiedadComponente", b =>
                 {
                     b.HasOne("Es.Riam.Gnoss.AD.EntityModel.Models.CMS.CMSComponente", "CMSComponente")
@@ -10083,28 +9423,6 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
                         .IsRequired();
 
                     b.Navigation("CMSComponente");
-                });
-
-            modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Cache.ConfiguracionCachesCostosas", b =>
-                {
-                    b.HasOne("Es.Riam.Gnoss.AD.EntityModel.Models.ProyectoDS.Proyecto", "Proyecto")
-                        .WithOne("ConfiguracionCachesCostosas")
-                        .HasForeignKey("Es.Riam.Gnoss.AD.EntityModel.Models.Cache.ConfiguracionCachesCostosas", "OrganizacionID", "ProyectoID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Proyecto");
-                });
-
-            modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Carga.CargaPaquete", b =>
-                {
-                    b.HasOne("Es.Riam.Gnoss.AD.EntityModel.Models.Carga.Carga", "Carga")
-                        .WithMany("CargaPaquete")
-                        .HasForeignKey("CargaID")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.Navigation("Carga");
                 });
 
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Comentario.Comentario", b =>
@@ -10277,14 +9595,7 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("Es.Riam.Gnoss.AD.EntityModel.Models.Flujos.Estado", "Estado")
-                        .WithMany("Documento")
-                        .HasForeignKey("EstadoID")
-                        .OnDelete(DeleteBehavior.Cascade);
-
                     b.Navigation("Creador");
-
-                    b.Navigation("Estado");
                 });
 
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Documentacion.DocumentoAtributoBiblio", b =>
@@ -10460,17 +9771,6 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
                     b.Navigation("Documento");
                 });
 
-            modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Documentacion.IdiomaTraduccionAutomaticaDocumento", b =>
-                {
-                    b.HasOne("Es.Riam.Gnoss.AD.EntityModel.Models.Documentacion.Documento", "Documento")
-                        .WithMany("IdiomaTraduccionAutomaticaDocumento")
-                        .HasForeignKey("DocumentoID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Documento");
-                });
-
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Documentacion.VersionDocumento", b =>
                 {
                     b.HasOne("Es.Riam.Gnoss.AD.EntityModel.Models.Documentacion.Documento", "Documento")
@@ -10479,14 +9779,7 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Es.Riam.Gnoss.AD.EntityModel.Models.Flujos.Estado", "Estado")
-                        .WithMany("VersionesDocumentos")
-                        .HasForeignKey("EstadoID")
-                        .OnDelete(DeleteBehavior.Restrict);
-
                     b.Navigation("Documento");
-
-                    b.Navigation("Estado");
                 });
 
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Documentacion.VotoDocumento", b =>
@@ -10564,223 +9857,6 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
                     b.Navigation("Proyecto");
 
                     b.Navigation("ProyectoPestanyaMenu");
-                });
-
-            modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Flujos.Estado", b =>
-                {
-                    b.HasOne("Es.Riam.Gnoss.AD.EntityModel.Models.Flujos.Flujo", "Flujo")
-                        .WithMany("Estado")
-                        .HasForeignKey("FlujoID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Flujo");
-                });
-
-            modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Flujos.EstadoGrupo", b =>
-                {
-                    b.HasOne("Es.Riam.Gnoss.AD.EntityModel.Models.Flujos.Estado", "Estado")
-                        .WithMany("EstadoGrupo")
-                        .HasForeignKey("EstadoID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Es.Riam.Gnoss.AD.EntityModel.Models.IdentidadDS.GrupoIdentidades", "GrupoIdentidades")
-                        .WithMany("EstadoGrupo")
-                        .HasForeignKey("GrupoID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Estado");
-
-                    b.Navigation("GrupoIdentidades");
-                });
-
-            modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Flujos.EstadoIdentidad", b =>
-                {
-                    b.HasOne("Es.Riam.Gnoss.AD.EntityModel.Models.Flujos.Estado", "Estado")
-                        .WithMany("EstadoIdentidad")
-                        .HasForeignKey("EstadoID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Es.Riam.Gnoss.AD.EntityModel.Models.IdentidadDS.Identidad", "Identidad")
-                        .WithMany("EstadoIdentidad")
-                        .HasForeignKey("IdentidadID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Estado");
-
-                    b.Navigation("Identidad");
-                });
-
-            modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Flujos.Flujo", b =>
-                {
-                    b.HasOne("Es.Riam.Gnoss.AD.EntityModel.Models.ProyectoDS.Proyecto", "Proyecto")
-                        .WithMany("Flujo")
-                        .HasForeignKey("OrganizacionID", "ProyectoID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Proyecto");
-                });
-
-            modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Flujos.FlujoObjetoConocimientoProyecto", b =>
-                {
-                    b.HasOne("Es.Riam.Gnoss.AD.EntityModel.Models.Flujos.Flujo", "Flujo")
-                        .WithMany("FlujoObjetoConocimientoProyecto")
-                        .HasForeignKey("FlujoID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Es.Riam.Gnoss.AD.EntityModel.Models.Faceta.OntologiaProyecto", "OntologiaProyecto")
-                        .WithOne("FlujoObjetoConocimientoProyecto")
-                        .HasForeignKey("Es.Riam.Gnoss.AD.EntityModel.Models.Flujos.FlujoObjetoConocimientoProyecto", "OrganizacionID", "ProyectoID", "Ontologia")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Flujo");
-
-                    b.Navigation("OntologiaProyecto");
-                });
-
-            modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Flujos.HistorialTransicionCMSComponente", b =>
-                {
-                    b.HasOne("Es.Riam.Gnoss.AD.EntityModel.Models.CMS.CMSComponente", "CMSComponente")
-                        .WithMany("HistorialTransicionCMSComponente")
-                        .HasForeignKey("ComponenteID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Es.Riam.Gnoss.AD.EntityModel.Models.IdentidadDS.Identidad", "Identidad")
-                        .WithMany("HistorialTransicionCMSComponente")
-                        .HasForeignKey("IdentidadID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Es.Riam.Gnoss.AD.EntityModel.Models.Flujos.Transicion", "Transicion")
-                        .WithMany("HistorialTransicionCMSComponente")
-                        .HasForeignKey("TransicionID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("CMSComponente");
-
-                    b.Navigation("Identidad");
-
-                    b.Navigation("Transicion");
-                });
-
-            modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Flujos.HistorialTransicionDocumento", b =>
-                {
-                    b.HasOne("Es.Riam.Gnoss.AD.EntityModel.Models.Documentacion.Documento", "Documento")
-                        .WithMany("HistorialTransicionDocumento")
-                        .HasForeignKey("DocumentoID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Es.Riam.Gnoss.AD.EntityModel.Models.IdentidadDS.Identidad", "Identidad")
-                        .WithMany("HistorialTransicionDocumento")
-                        .HasForeignKey("IdentidadID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Es.Riam.Gnoss.AD.EntityModel.Models.Flujos.Transicion", "Transicion")
-                        .WithMany("HistorialTransicionDocumento")
-                        .HasForeignKey("TransicionID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Documento");
-
-                    b.Navigation("Identidad");
-
-                    b.Navigation("Transicion");
-                });
-
-            modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Flujos.HistorialTransicionPestanyaCMS", b =>
-                {
-                    b.HasOne("Es.Riam.Gnoss.AD.EntityModel.Models.IdentidadDS.Identidad", "Identidad")
-                        .WithMany("HistorialTransicionPestanyaCMS")
-                        .HasForeignKey("IdentidadID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Es.Riam.Gnoss.AD.EntityModel.Models.Flujos.Transicion", "Transicion")
-                        .WithMany("HistorialTransicionPestanyaCMS")
-                        .HasForeignKey("TransicionID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Es.Riam.Gnoss.AD.EntityModel.Models.ProyectoDS.ProyectoPestanyaCMS", "ProyectoPestanyaCMS")
-                        .WithMany("HistorialTransicionPestanyaCMS")
-                        .HasForeignKey("PestanyaID", "Ubicacion")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Identidad");
-
-                    b.Navigation("ProyectoPestanyaCMS");
-
-                    b.Navigation("Transicion");
-                });
-
-            modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Flujos.Transicion", b =>
-                {
-                    b.HasOne("Es.Riam.Gnoss.AD.EntityModel.Models.Flujos.Estado", "EstadoDestino")
-                        .WithMany("TransicionesDestino")
-                        .HasForeignKey("EstadoDestinoID")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("Es.Riam.Gnoss.AD.EntityModel.Models.Flujos.Estado", "EstadoOrigen")
-                        .WithMany("TransicionesOrigen")
-                        .HasForeignKey("EstadoOrigenID")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.Navigation("EstadoDestino");
-
-                    b.Navigation("EstadoOrigen");
-                });
-
-            modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Flujos.TransicionGrupo", b =>
-                {
-                    b.HasOne("Es.Riam.Gnoss.AD.EntityModel.Models.IdentidadDS.GrupoIdentidades", "GrupoIdentidades")
-                        .WithMany("TransicionGrupo")
-                        .HasForeignKey("GrupoID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Es.Riam.Gnoss.AD.EntityModel.Models.Flujos.Transicion", "Transicion")
-                        .WithMany("TransicionGrupo")
-                        .HasForeignKey("TransicionID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("GrupoIdentidades");
-
-                    b.Navigation("Transicion");
-                });
-
-            modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Flujos.TransicionIdentidad", b =>
-                {
-                    b.HasOne("Es.Riam.Gnoss.AD.EntityModel.Models.IdentidadDS.Identidad", "Identidad")
-                        .WithMany("TransicionIdentidad")
-                        .HasForeignKey("IdentidadID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Es.Riam.Gnoss.AD.EntityModel.Models.Flujos.Transicion", "Transicion")
-                        .WithMany("TransicionIdentidad")
-                        .HasForeignKey("TransicionID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Identidad");
-
-                    b.Navigation("Transicion");
                 });
 
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.IdentidadDS.AmigoAgGrupo", b =>
@@ -11148,17 +10224,6 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
                     b.Navigation("Usuario");
                 });
 
-            modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Peticion.PeticionInvitaContacto", b =>
-                {
-                    b.HasOne("Es.Riam.Gnoss.AD.EntityModel.Models.Peticion.Peticion", "Peticion")
-                        .WithOne("PeticionInvitaContacto")
-                        .HasForeignKey("Es.Riam.Gnoss.AD.EntityModel.Models.Peticion.PeticionInvitaContacto", "PeticionID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Peticion");
-                });
-
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Peticion.PeticionInvitacionComunidad", b =>
                 {
                     b.HasOne("Es.Riam.Gnoss.AD.EntityModel.Models.Peticion.Peticion", "Peticion")
@@ -11175,6 +10240,17 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
                     b.HasOne("Es.Riam.Gnoss.AD.EntityModel.Models.Peticion.Peticion", "Peticion")
                         .WithOne("PeticionInvitacionGrupo")
                         .HasForeignKey("Es.Riam.Gnoss.AD.EntityModel.Models.Peticion.PeticionInvitacionGrupo", "PeticionID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Peticion");
+                });
+
+            modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Peticion.PeticionInvitaContacto", b =>
+                {
+                    b.HasOne("Es.Riam.Gnoss.AD.EntityModel.Models.Peticion.Peticion", "Peticion")
+                        .WithOne("PeticionInvitaContacto")
+                        .HasForeignKey("Es.Riam.Gnoss.AD.EntityModel.Models.Peticion.PeticionInvitaContacto", "PeticionID")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -11563,18 +10639,11 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
 
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.ProyectoDS.ProyectoPestanyaCMS", b =>
                 {
-                    b.HasOne("Es.Riam.Gnoss.AD.EntityModel.Models.Flujos.Estado", "Estado")
-                        .WithMany("ProyectoPestanyaCMS")
-                        .HasForeignKey("EstadoID")
-                        .OnDelete(DeleteBehavior.Cascade);
-
                     b.HasOne("Es.Riam.Gnoss.AD.EntityModel.Models.ProyectoDS.ProyectoPestanyaMenu", "ProyectoPestanyaMenu")
                         .WithMany("ProyectoPestanyaCMS")
                         .HasForeignKey("PestanyaID")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
-
-                    b.Navigation("Estado");
 
                     b.Navigation("ProyectoPestanyaMenu");
                 });
@@ -11651,23 +10720,6 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
                     b.Navigation("ProyectoPestanyaMenu");
                 });
 
-            modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.ProyectoDS.ProyectoPestanyaMenuVersionPagina", b =>
-                {
-                    b.HasOne("Es.Riam.Gnoss.AD.EntityModel.Models.ProyectoDS.ProyectoPestanyaMenu", "ProyectoPestanyaMenu")
-                        .WithMany("ProyectoPestanyaMenuVersionPagina")
-                        .HasForeignKey("PestanyaID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Es.Riam.Gnoss.AD.EntityModel.Models.ProyectoDS.ProyectoPestanyaMenuVersionPagina", "ProyectoPestanyaMenuVersionPagina2")
-                        .WithMany("ProyectoPestanyaMenuVersionPagina1")
-                        .HasForeignKey("VersionAnterior");
-
-                    b.Navigation("ProyectoPestanyaMenu");
-
-                    b.Navigation("ProyectoPestanyaMenuVersionPagina2");
-                });
-
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.ProyectoDS.ProyectoPestanyaRolGrupoIdentidades", b =>
                 {
                     b.HasOne("Es.Riam.Gnoss.AD.EntityModel.Models.ProyectoDS.ProyectoPestanya", "ProyectoPestanya")
@@ -11688,17 +10740,6 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
                         .IsRequired();
 
                     b.Navigation("ProyectoPestanya");
-                });
-
-            modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.ProyectoDS.ProyectoPestanyaVersionCMS", b =>
-                {
-                    b.HasOne("Es.Riam.Gnoss.AD.EntityModel.Models.ProyectoDS.ProyectoPestanyaMenu", "ProyectoPestanyaMenu")
-                        .WithMany("ProyectoPestanyaVersionCMS")
-                        .HasForeignKey("PestanyaID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("ProyectoPestanyaMenu");
                 });
 
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.ProyectoDS.ProyectoRelacionado", b =>
@@ -11762,93 +10803,6 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
                         .IsRequired();
 
                     b.Navigation("RedireccionRegistroRuta");
-                });
-
-            modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Roles.Rol", b =>
-                {
-                    b.HasOne("Es.Riam.Gnoss.AD.EntityModel.Models.ProyectoDS.Proyecto", "Proyecto")
-                        .WithMany("Rol")
-                        .HasForeignKey("OrganizacionID", "ProyectoID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Proyecto");
-                });
-
-            modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Roles.RolEcosistemaUsuario", b =>
-                {
-                    b.HasOne("Es.Riam.Gnoss.AD.EntityModel.Models.Roles.RolEcosistema", "RolEcosistema")
-                        .WithMany("RolEcosistemaUsuario")
-                        .HasForeignKey("RolID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Es.Riam.Gnoss.AD.EntityModel.Models.UsuarioDS.Usuario", "Usuario")
-                        .WithMany("RolEcosistemaUsuario")
-                        .HasForeignKey("UsuarioID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("RolEcosistema");
-
-                    b.Navigation("Usuario");
-                });
-
-            modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Roles.RolGrupoIdentidades", b =>
-                {
-                    b.HasOne("Es.Riam.Gnoss.AD.EntityModel.Models.IdentidadDS.GrupoIdentidades", "GrupoIdentidades")
-                        .WithMany("RolGrupoIdentidades")
-                        .HasForeignKey("GrupoID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Es.Riam.Gnoss.AD.EntityModel.Models.Roles.Rol", "Rol")
-                        .WithMany("RolGrupoIdentidades")
-                        .HasForeignKey("RolID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("GrupoIdentidades");
-
-                    b.Navigation("Rol");
-                });
-
-            modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Roles.RolIdentidad", b =>
-                {
-                    b.HasOne("Es.Riam.Gnoss.AD.EntityModel.Models.IdentidadDS.Identidad", "Identidad")
-                        .WithMany("RolIdentidad")
-                        .HasForeignKey("IdentidadID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Es.Riam.Gnoss.AD.EntityModel.Models.Roles.Rol", "Rol")
-                        .WithMany("RolIdentidad")
-                        .HasForeignKey("RolID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Identidad");
-
-                    b.Navigation("Rol");
-                });
-
-            modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Roles.RolOntologiaPermiso", b =>
-                {
-                    b.HasOne("Es.Riam.Gnoss.AD.EntityModel.Models.Documentacion.Documento", "Documento")
-                        .WithMany("RolOntologiaPermiso")
-                        .HasForeignKey("DocumentoID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Es.Riam.Gnoss.AD.EntityModel.Models.Roles.Rol", "Rol")
-                        .WithMany("RolOntologiaPermiso")
-                        .HasForeignKey("RolID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Documento");
-
-                    b.Navigation("Rol");
                 });
 
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Sitemaps.Sitemaps", b =>
@@ -11917,17 +10871,6 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
                     b.Navigation("Solicitud");
                 });
 
-            modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Solicitud.SolicitudNuevaOrgEmp", b =>
-                {
-                    b.HasOne("Es.Riam.Gnoss.AD.EntityModel.Models.Solicitud.SolicitudNuevaOrganizacion", "SolicitudNuevaOrganizacion")
-                        .WithOne("SolicitudNuevaOrgEmp")
-                        .HasForeignKey("Es.Riam.Gnoss.AD.EntityModel.Models.Solicitud.SolicitudNuevaOrgEmp", "SolicitudID", "UsuarioAdminID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("SolicitudNuevaOrganizacion");
-                });
-
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Solicitud.SolicitudNuevaOrganizacion", b =>
                 {
                     b.HasOne("Es.Riam.Gnoss.AD.EntityModel.Models.Solicitud.Solicitud", "Solicitud")
@@ -11937,6 +10880,17 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
                         .IsRequired();
 
                     b.Navigation("Solicitud");
+                });
+
+            modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Solicitud.SolicitudNuevaOrgEmp", b =>
+                {
+                    b.HasOne("Es.Riam.Gnoss.AD.EntityModel.Models.Solicitud.SolicitudNuevaOrganizacion", "SolicitudNuevaOrganizacion")
+                        .WithOne("SolicitudNuevaOrgEmp")
+                        .HasForeignKey("Es.Riam.Gnoss.AD.EntityModel.Models.Solicitud.SolicitudNuevaOrgEmp", "SolicitudID", "UsuarioAdminID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("SolicitudNuevaOrganizacion");
                 });
 
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Solicitud.SolicitudNuevoProfesor", b =>
@@ -12049,6 +11003,34 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
                     b.Navigation("Suscripcion");
                 });
 
+            modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Tesauro.CategoriaTesauro", b =>
+                {
+                    b.HasOne("Es.Riam.Gnoss.AD.EntityModel.Models.Tesauro.Tesauro", "Tesauro")
+                        .WithMany("CategoriaTesauro")
+                        .HasForeignKey("TesauroID")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Tesauro");
+                });
+
+            modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Tesauro.CategoriaTesauroSugerencia", b =>
+                {
+                    b.HasOne("Es.Riam.Gnoss.AD.EntityModel.Models.Tesauro.Tesauro", "Tesauro")
+                        .WithMany("CategoriaTesauroSugerencia")
+                        .HasForeignKey("TesauroSugerenciaID")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Es.Riam.Gnoss.AD.EntityModel.Models.Tesauro.CategoriaTesauro", "CategoriaTesauro")
+                        .WithMany("CategoriaTesauroSugerencia")
+                        .HasForeignKey("TesauroCatPadreID", "CategoriaTesauroPadreID");
+
+                    b.Navigation("CategoriaTesauro");
+
+                    b.Navigation("Tesauro");
+                });
+
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Tesauro.CatTesauroAgCatTesauro", b =>
                 {
                     b.HasOne("Es.Riam.Gnoss.AD.EntityModel.Models.Tesauro.CategoriaTesauro", "CategoriaTesauro")
@@ -12084,34 +11066,6 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
                     b.Navigation("CategoriaTesauro");
 
                     b.Navigation("CategoriaTesauro1");
-                });
-
-            modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Tesauro.CategoriaTesauro", b =>
-                {
-                    b.HasOne("Es.Riam.Gnoss.AD.EntityModel.Models.Tesauro.Tesauro", "Tesauro")
-                        .WithMany("CategoriaTesauro")
-                        .HasForeignKey("TesauroID")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.Navigation("Tesauro");
-                });
-
-            modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Tesauro.CategoriaTesauroSugerencia", b =>
-                {
-                    b.HasOne("Es.Riam.Gnoss.AD.EntityModel.Models.Tesauro.Tesauro", "Tesauro")
-                        .WithMany("CategoriaTesauroSugerencia")
-                        .HasForeignKey("TesauroSugerenciaID")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("Es.Riam.Gnoss.AD.EntityModel.Models.Tesauro.CategoriaTesauro", "CategoriaTesauro")
-                        .WithMany("CategoriaTesauroSugerencia")
-                        .HasForeignKey("TesauroCatPadreID", "CategoriaTesauroPadreID");
-
-                    b.Navigation("CategoriaTesauro");
-
-                    b.Navigation("Tesauro");
                 });
 
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Tesauro.TesauroOrganizacion", b =>
@@ -12229,25 +11183,6 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
                     b.Navigation("Usuario");
                 });
 
-            modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.UsuarioDS.ProyRolUsuClausulaReg", b =>
-                {
-                    b.HasOne("Es.Riam.Gnoss.AD.EntityModel.Models.UsuarioDS.ClausulaRegistro", "ClausulaRegistro")
-                        .WithMany("ProyRolUsuClausulaReg")
-                        .HasForeignKey("ClausulaID", "OrganizacionID", "ProyectoID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Es.Riam.Gnoss.AD.EntityModel.Models.UsuarioDS.ProyectoRolUsuario", "ProyectoRolUsuario")
-                        .WithMany("ProyRolUsuClausulaReg")
-                        .HasForeignKey("OrganizacionGnossID", "ProyectoID", "UsuarioID")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.Navigation("ClausulaRegistro");
-
-                    b.Navigation("ProyectoRolUsuario");
-                });
-
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.UsuarioDS.ProyectoRolUsuario", b =>
                 {
                     b.HasOne("Es.Riam.Gnoss.AD.EntityModel.Models.UsuarioDS.Usuario", null)
@@ -12282,6 +11217,25 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
                     b.Navigation("Proyecto");
 
                     b.Navigation("Usuario");
+                });
+
+            modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.UsuarioDS.ProyRolUsuClausulaReg", b =>
+                {
+                    b.HasOne("Es.Riam.Gnoss.AD.EntityModel.Models.UsuarioDS.ClausulaRegistro", "ClausulaRegistro")
+                        .WithMany("ProyRolUsuClausulaReg")
+                        .HasForeignKey("ClausulaID", "OrganizacionID", "ProyectoID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Es.Riam.Gnoss.AD.EntityModel.Models.UsuarioDS.ProyectoRolUsuario", "ProyectoRolUsuario")
+                        .WithMany("ProyRolUsuClausulaReg")
+                        .HasForeignKey("OrganizacionGnossID", "ProyectoID", "UsuarioID")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("ClausulaRegistro");
+
+                    b.Navigation("ProyectoRolUsuario");
                 });
 
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.UsuarioDS.UsuarioContadores", b =>
@@ -12434,6 +11388,11 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
                     b.Navigation("BlogComunidad");
                 });
 
+            modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Carga.Carga", b =>
+                {
+                    b.Navigation("CargaPaquete");
+                });
+
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.CMS.CMSBloque", b =>
                 {
                     b.Navigation("CMSBloqueComponente");
@@ -12452,21 +11411,12 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
 
                     b.Navigation("CMSComponenteRolIdentidad");
 
-                    b.Navigation("CMSComponenteVersion");
-
                     b.Navigation("CMSPropiedadComponente");
-
-                    b.Navigation("HistorialTransicionCMSComponente");
                 });
 
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.CMS.CMSPagina", b =>
                 {
                     b.Navigation("CMSBloque");
-                });
-
-            modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Carga.Carga", b =>
-                {
-                    b.Navigation("CargaPaquete");
                 });
 
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Comentario.Comentario", b =>
@@ -12530,12 +11480,6 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
 
                     b.Navigation("HistorialDocumento");
 
-                    b.Navigation("HistorialTransicionDocumento");
-
-                    b.Navigation("RolOntologiaPermiso");
-
-                    b.Navigation("IdiomaTraduccionAutomaticaDocumento");
-
                     b.Navigation("VersionDocumento");
 
                     b.Navigation("VotoDocumento");
@@ -12575,48 +11519,7 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
 
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Faceta.OntologiaProyecto", b =>
                 {
-                    b.Navigation("FlujoObjetoConocimientoProyecto");
-
                     b.Navigation("ProyectoPestanyaBusquedaPesoOC");
-                });
-
-            modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Flujos.Estado", b =>
-                {
-                    b.Navigation("CMSComponente");
-
-                    b.Navigation("Documento");
-
-                    b.Navigation("EstadoGrupo");
-
-                    b.Navigation("EstadoIdentidad");
-
-                    b.Navigation("ProyectoPestanyaCMS");
-
-                    b.Navigation("TransicionesDestino");
-
-                    b.Navigation("TransicionesOrigen");
-
-                    b.Navigation("VersionesDocumentos");
-                });
-
-            modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Flujos.Flujo", b =>
-                {
-                    b.Navigation("Estado");
-
-                    b.Navigation("FlujoObjetoConocimientoProyecto");
-                });
-
-            modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Flujos.Transicion", b =>
-                {
-                    b.Navigation("HistorialTransicionCMSComponente");
-
-                    b.Navigation("HistorialTransicionDocumento");
-
-                    b.Navigation("HistorialTransicionPestanyaCMS");
-
-                    b.Navigation("TransicionGrupo");
-
-                    b.Navigation("TransicionIdentidad");
                 });
 
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.IdentidadDS.GrupoAmigos", b =>
@@ -12626,17 +11529,11 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
 
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.IdentidadDS.GrupoIdentidades", b =>
                 {
-                    b.Navigation("EstadoGrupo");
-
                     b.Navigation("GrupoIdentidadesOrganizacion");
 
                     b.Navigation("GrupoIdentidadesParticipacion");
 
                     b.Navigation("GrupoIdentidadesProyecto");
-
-                    b.Navigation("RolGrupoIdentidades");
-
-                    b.Navigation("TransicionGrupo");
                 });
 
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.IdentidadDS.Identidad", b =>
@@ -12647,25 +11544,13 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
 
                     b.Navigation("Documentos");
 
-                    b.Navigation("EstadoIdentidad");
-
                     b.Navigation("GrupoIdentidadesParticipacion");
-
-                    b.Navigation("HistorialTransicionCMSComponente");
-
-                    b.Navigation("HistorialTransicionDocumento");
-
-                    b.Navigation("HistorialTransicionPestanyaCMS");
 
                     b.Navigation("IdentidadContadores");
 
                     b.Navigation("OrganizacionParticipaProyecto");
 
                     b.Navigation("ProyectoUsuarioIdentidad");
-
-                    b.Navigation("RolIdentidad");
-
-                    b.Navigation("TransicionIdentidad");
                 });
 
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.IdentidadDS.Perfil", b =>
@@ -12781,11 +11666,7 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
 
                     b.Navigation("CategoriaProyectoCookie");
 
-                    b.Navigation("ConfiguracionCachesCostosas");
-
                     b.Navigation("FacetaObjetoConocimientoProyectoPestanya");
-
-                    b.Navigation("Flujo");
 
                     b.Navigation("NivelCertificacion");
 
@@ -12835,8 +11716,6 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
 
                     b.Navigation("ProyectosMasActivos");
 
-                    b.Navigation("Rol");
-
                     b.Navigation("TareasSegundoPlano");
                 });
 
@@ -12873,11 +11752,6 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
                     b.Navigation("ProyectoPestanyaBusquedaExportacionPropiedad");
                 });
 
-            modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.ProyectoDS.ProyectoPestanyaCMS", b =>
-                {
-                    b.Navigation("HistorialTransicionPestanyaCMS");
-                });
-
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.ProyectoDS.ProyectoPestanyaDashboardAsistente", b =>
                 {
                     b.Navigation("ProyectoPestanyaDashboardAsistenteDataset");
@@ -12908,34 +11782,11 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
                     b.Navigation("ProyectoPestanyaMenuRolGrupoIdentidades");
 
                     b.Navigation("ProyectoPestanyaMenuRolIdentidad");
-
-                    b.Navigation("ProyectoPestanyaMenuVersionPagina");
-
-                    b.Navigation("ProyectoPestanyaVersionCMS");
-                });
-
-            modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.ProyectoDS.ProyectoPestanyaMenuVersionPagina", b =>
-                {
-                    b.Navigation("ProyectoPestanyaMenuVersionPagina1");
                 });
 
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.RedireccionRegistroRuta", b =>
                 {
                     b.Navigation("RedireccionValorParametro");
-                });
-
-            modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Roles.Rol", b =>
-                {
-                    b.Navigation("RolGrupoIdentidades");
-
-                    b.Navigation("RolIdentidad");
-
-                    b.Navigation("RolOntologiaPermiso");
-                });
-
-            modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Roles.RolEcosistema", b =>
-                {
-                    b.Navigation("RolEcosistemaUsuario");
                 });
 
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Sitemaps.SitemapsIndex", b =>
@@ -13043,8 +11894,6 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
                     b.Navigation("ProyectoRolUsuario");
 
                     b.Navigation("ProyectoUsuarioIdentidad");
-
-                    b.Navigation("RolEcosistemaUsuario");
 
                     b.Navigation("TesauroUsuario");
 

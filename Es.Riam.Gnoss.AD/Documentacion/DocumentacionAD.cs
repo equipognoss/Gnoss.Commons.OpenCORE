@@ -7749,9 +7749,9 @@ namespace Es.Riam.Gnoss.AD.Documentacion
         }
 
         /// <summary>
-        /// Le añade al tiempo de bloqueo de un recurso otros 60 segundos
+        /// Le añade al tiempo de bloqueo de un recurso otros 30 segundos
         /// </summary>
-        /// <param name="pDocumentoID">Identificador del documento a bloquear durante otros 60 segundos</param>
+        /// <param name="pDocumentoID">Identificador del documento a bloquear durante otros 30 segundos</param>
         public DateTime? ActualizarFechaRecursoEnEdicion(Guid pDocumentoID, DateTime pFechaEdicion)
         {
             // Sólo una petición podrá bloquear el recurso con cada token
@@ -7759,7 +7759,7 @@ namespace Es.Riam.Gnoss.AD.Documentacion
             DocumentoEnEdicion documentoEnEdicion = mEntityContext.DocumentoEnEdicion.Where(item => item.DocumentoID.Equals(pDocumentoID) && item.FechaEdicion.Equals(pFechaEdicion)).FirstOrDefault();
             if (documentoEnEdicion != null)
             {
-                documentoEnEdicion.FechaEdicion = DateTime.UtcNow.AddSeconds(60);
+                documentoEnEdicion.FechaEdicion = DateTime.UtcNow.AddSeconds(30);
                 int numFilasEditadas = mEntityContext.SaveChanges();
 
                 if (numFilasEditadas > 0)
@@ -7776,7 +7776,7 @@ namespace Es.Riam.Gnoss.AD.Documentacion
         /// <param name="pDocumentoID">Identificador del documento a comprobar</param>
         /// <param name="pIdentidadID">Identificador de la identidad del editor</param>
         /// <returns>La fila del documento en edición, null si nadie lo está editando</return s>
-        public DocumentoEnEdicion ComprobarDocumentoEnEdicion(Guid pDocumentoID, Guid pIdentidadID, int pSegundosDuracionBloqueo = 60)
+        public DocumentoEnEdicion ComprobarDocumentoEnEdicion(Guid pDocumentoID, Guid pIdentidadID, int pSegundosDuracionBloqueo = 30)
         {
             return ComprobarDocumentoEnEdicion(pDocumentoID, pIdentidadID, 3, pSegundosDuracionBloqueo);
         }
@@ -7809,19 +7809,13 @@ namespace Es.Riam.Gnoss.AD.Documentacion
         /// <returns>La fila del documento en edición, null si nadie lo está editando</return s>
         public DocumentoEnEdicion ComprobarDocumentoEnEdicion(Guid pDocumentoID, Guid pIdentidadID, int pNumeroIntentos, int pSegundosDuracionBloqueo)
         {
-            //Compruebo si alguien ya esta editando el recurso
-            DataWrapperDocumentacion docDW = new DataWrapperDocumentacion();
+            DocumentoEnEdicion filaEnEdicion = mEntityContext.DocumentoEnEdicion.FirstOrDefault(item => item.DocumentoID.Equals(pDocumentoID));
 
-            docDW.ListaDocumentoEnEdicion = mEntityContext.DocumentoEnEdicion.Where(item => item.DocumentoID.Equals(pDocumentoID)).ToList();
-
-            if (docDW.ListaDocumentoEnEdicion.Count > 0)
+            if (filaEnEdicion != null)
             {
-                DocumentoEnEdicion filaEnEdicion = docDW.ListaDocumentoEnEdicion.FirstOrDefault();
-
                 if (DateTime.UtcNow > filaEnEdicion.FechaEdicion)
                 {
-                    //Si hace más de 1 minuto que el recurso estaba en edición y aún sigue marcado como en edición, quiere decir que algo fué mal, elimino la fila de edición. (FechaEdicion se crea con 60 segundos añadidos)
-                    docDW.ListaDocumentoEnEdicion.Remove(filaEnEdicion);
+                    //Si hace más de 30 segundos que el recurso estaba en edición y aún sigue marcado como en edición, quiere decir que algo fué mal, elimino la fila de edición. (FechaEdicion se crea con 30 segundos añadidos)                    
                     mEntityContext.EliminarElemento(filaEnEdicion);
 
                     try
@@ -7844,7 +7838,7 @@ namespace Es.Riam.Gnoss.AD.Documentacion
                     }
                     else
                     {
-                        throw new Exception($"Imposible eliminar la fila de DocumentoEnEdicion para el recurso {pDocumentoID} para la identidad {pIdentidadID} tras 3 intentos");
+                        throw new ExcepcionGeneral($"Imposible eliminar la fila de DocumentoEnEdicion para el recurso {pDocumentoID} para la identidad {pIdentidadID} tras 3 intentos");
                     }
                 }
                 else
@@ -7866,12 +7860,10 @@ namespace Es.Riam.Gnoss.AD.Documentacion
             {
                 //No hay nadie editándolo, lo marco en edición
                 DocumentoEnEdicion documentoEnEdicion = new DocumentoEnEdicion();
-
                 documentoEnEdicion.DocumentoID = pDocumentoID;
                 documentoEnEdicion.IdentidadID = pIdentidadID;
                 documentoEnEdicion.FechaEdicion = DateTime.UtcNow.AddSeconds(pSegundosDuracionBloqueo);
 
-                docDW.ListaDocumentoEnEdicion.Add(documentoEnEdicion);
                 mEntityContext.DocumentoEnEdicion.Add(documentoEnEdicion);
                 try
                 {
@@ -7893,12 +7885,12 @@ namespace Es.Riam.Gnoss.AD.Documentacion
                         }
                         else
                         {
-                            throw new Exception($"No ha sido posible bloquear la edición del recurso {pDocumentoID} para la identidad {pIdentidadID} tras 3 intentos");
+                            throw new ExcepcionGeneral($"No ha sido posible bloquear la edición del recurso {pDocumentoID} para la identidad {pIdentidadID} tras 3 intentos");
                         }
                     }
                     else
                     {
-                        throw new Exception($"El documentoID {pDocumentoID} no existe en la base de datos");
+                        throw new ExcepcionGeneral($"El documentoID {pDocumentoID} no existe en la base de datos");
                     }
                 }
             }

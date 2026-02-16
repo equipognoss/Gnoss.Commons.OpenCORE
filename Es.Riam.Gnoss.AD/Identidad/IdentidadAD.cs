@@ -10271,23 +10271,20 @@ namespace Es.Riam.Gnoss.AD.Identidad
         {
             Dictionary<Guid, Tuple<string, string, Guid?, Guid?>> listaPerfiles = new Dictionary<Guid, Tuple<string, string, Guid?, Guid?>>();
 
-            var consultaSQL = mEntityContext.Perfil.JoinIdentidad().Where(item => item.Identidad.ProyectoID.Equals(pProyectoID) && !item.Identidad.FechaBaja.HasValue && !item.Identidad.FechaExpulsion.HasValue && !item.Identidad.Tipo.Equals((short)TiposIdentidad.ProfesionalCorporativo) && item.Perfil.PersonaID.HasValue && (item.Perfil.NombrePerfil.ToLower().Contains(pBusqueda.ToLower()) || item.Perfil.NombrePerfil.ToLower().StartsWith(pBusqueda.ToLower()))).Select(item => new { item.Perfil.PerfilID, item.Perfil.NombrePerfil, item.Perfil.NombreOrganizacion, item.Perfil.PersonaID, item.Perfil.OrganizacionID }).Take(pNumero).OrderByDescending(item => item.NombrePerfil);
+            var consultaSQL = mEntityContext.Perfil.JoinIdentidad().Where(item => item.Identidad.ProyectoID.Equals(pProyectoID) && !item.Identidad.FechaBaja.HasValue && !item.Identidad.FechaExpulsion.HasValue && !item.Identidad.Tipo.Equals((short)TiposIdentidad.ProfesionalCorporativo) && item.Perfil.PersonaID.HasValue && (item.Perfil.NombrePerfil.ToLower().Contains(pBusqueda.ToLower()))).Select(item => new { item.Perfil.PerfilID, item.Perfil.NombrePerfil, item.Perfil.NombreOrganizacion, item.Perfil.PersonaID, item.Perfil.OrganizacionID }).Take(pNumero).OrderByDescending(item => item.NombrePerfil);
             var resultado = consultaSQL.ToList();
             if (pOmitirMiPerfil)
             {
-                resultado = mEntityContext.Perfil.JoinIdentidad().Where(item => item.Identidad.ProyectoID.Equals(pProyectoID) && !item.Identidad.FechaBaja.HasValue && !item.Identidad.FechaExpulsion.HasValue && !item.Identidad.Tipo.Equals((short)TiposIdentidad.ProfesionalCorporativo) && item.Perfil.PersonaID.HasValue && (item.Perfil.NombrePerfil.ToLower().Contains(pBusqueda) || item.Perfil.NombrePerfil.ToLower().StartsWith(pBusqueda)) && !item.Identidad.ProyectoID.Equals(pIdentidadID)).Select(item => new { item.Perfil.PerfilID, item.Perfil.NombrePerfil, item.Perfil.NombreOrganizacion, item.Perfil.PersonaID, item.Perfil.OrganizacionID }).Take(pNumero).OrderByDescending(item => item.NombrePerfil).ToList();
+                resultado = mEntityContext.Perfil.JoinIdentidad().Where(item => item.Identidad.ProyectoID.Equals(pProyectoID) && !item.Identidad.FechaBaja.HasValue && !item.Identidad.FechaExpulsion.HasValue && !item.Identidad.Tipo.Equals((short)TiposIdentidad.ProfesionalCorporativo) && item.Perfil.PersonaID.HasValue && item.Perfil.NombrePerfil.ToLower().Contains(pBusqueda.ToLower()) && !item.Identidad.ProyectoID.Equals(pIdentidadID)).Select(item => new { item.Perfil.PerfilID, item.Perfil.NombrePerfil, item.Perfil.NombreOrganizacion, item.Perfil.PersonaID, item.Perfil.OrganizacionID }).Take(pNumero).OrderByDescending(item => item.NombrePerfil).ToList();
             }
             if (pListaIdentidadesID != null && pListaIdentidadesID.Count > 0)
             {
-                resultado = mEntityContext.Perfil.JoinIdentidad().Where(item => item.Identidad.ProyectoID.Equals(pProyectoID) && !item.Identidad.FechaBaja.HasValue && !item.Identidad.FechaExpulsion.HasValue && !item.Identidad.Tipo.Equals((short)TiposIdentidad.ProfesionalCorporativo) && item.Perfil.PersonaID.HasValue && (item.Perfil.NombrePerfil.ToLower().Contains(pBusqueda) || item.Perfil.NombrePerfil.ToLower().StartsWith(pBusqueda)) && pListaIdentidadesID.Contains(item.Identidad.IdentidadID)).Select(item => new { item.Perfil.PerfilID, item.Perfil.NombrePerfil, item.Perfil.NombreOrganizacion, item.Perfil.PersonaID, item.Perfil.OrganizacionID }).Take(pNumero).OrderByDescending(item => item.NombrePerfil).ToList();
+                resultado = mEntityContext.Perfil.JoinIdentidad().Where(item => item.Identidad.ProyectoID.Equals(pProyectoID) && !item.Identidad.FechaBaja.HasValue && !item.Identidad.FechaExpulsion.HasValue && !item.Identidad.Tipo.Equals((short)TiposIdentidad.ProfesionalCorporativo) && item.Perfil.PersonaID.HasValue && item.Perfil.NombrePerfil.ToLower().Contains(pBusqueda.ToLower()) && pListaIdentidadesID.Contains(item.Identidad.IdentidadID)).Select(item => new { item.Perfil.PerfilID, item.Perfil.NombrePerfil, item.Perfil.NombreOrganizacion, item.Perfil.PersonaID, item.Perfil.OrganizacionID }).Take(pNumero).OrderByDescending(item => item.NombrePerfil).ToList();
             }
 
-            foreach (var item in resultado)
+            foreach (var item in resultado.Where(item => !listaPerfiles.ContainsKey(item.PerfilID)))
             {
-                if (!listaPerfiles.ContainsKey(item.PerfilID))
-                {
-                    listaPerfiles.Add(item.PerfilID, new Tuple<string, string, Guid?, Guid?>(item.NombrePerfil, item.NombreOrganizacion, item.PersonaID, item.OrganizacionID));
-                }
+                listaPerfiles.Add(item.PerfilID, new Tuple<string, string, Guid?, Guid?>(item.NombrePerfil, item.NombreOrganizacion, item.PersonaID, item.OrganizacionID));             
             }
 
             return listaPerfiles;
@@ -10329,15 +10326,12 @@ namespace Es.Riam.Gnoss.AD.Identidad
 
             if (!pEsSupervisor)
             {
-                resultado = mEntityContext.GrupoIdentidades.JoinGrupoIdentidadesProyecto().JoinGrupoIdentidadesParticipacion().Where(item => item.GrupoIdentidadesProyecto.ProyectoID.Equals(pProyectoID) && !item.GrupoIdentidades.FechaBaja.HasValue && (item.GrupoIdentidades.Nombre.Contains(pBusqueda) || item.GrupoIdentidades.Nombre.StartsWith(pBusqueda)) && ((item.GrupoIdentidadesParticipacion.IdentidadID.Equals(pIdentidadID) && !item.GrupoIdentidadesParticipacion.FechaBaja.HasValue) || item.GrupoIdentidades.Publico.Equals(true))).Select(item => new { item.GrupoIdentidades.GrupoID, item.GrupoIdentidades.Nombre }).Take(pNumero).OrderByDescending(item => item.Nombre).ToList();
+                resultado = mEntityContext.GrupoIdentidades.JoinGrupoIdentidadesProyecto().JoinGrupoIdentidadesParticipacion().Where(item => item.GrupoIdentidadesProyecto.ProyectoID.Equals(pProyectoID) && !item.GrupoIdentidades.FechaBaja.HasValue && item.GrupoIdentidades.Nombre.ToLower().Contains(pBusqueda.ToLower()) && ((item.GrupoIdentidadesParticipacion.IdentidadID.Equals(pIdentidadID) && !item.GrupoIdentidadesParticipacion.FechaBaja.HasValue) || item.GrupoIdentidades.Publico.Equals(true))).Select(item => new { item.GrupoIdentidades.GrupoID, item.GrupoIdentidades.Nombre }).Take(pNumero).OrderByDescending(item => item.Nombre).ToList();
             }
 
-            foreach (var item in resultado)
+            foreach (var item in resultado.Where(item => !listaGrupos.ContainsKey(item.GrupoID)))
             {
-                if (!listaGrupos.ContainsKey(item.GrupoID))
-                {
-                    listaGrupos.Add(item.GrupoID, item.Nombre);
-                }
+                listaGrupos.Add(item.GrupoID, item.Nombre);
             }
 
             return listaGrupos;

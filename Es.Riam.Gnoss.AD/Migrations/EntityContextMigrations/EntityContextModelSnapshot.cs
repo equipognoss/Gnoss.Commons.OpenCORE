@@ -3,8 +3,8 @@ using System;
 using Es.Riam.Gnoss.AD.EntityModel;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
-using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
+using Oracle.EntityFrameworkCore.Metadata;
 
 #nullable disable
 
@@ -26,14 +26,14 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
                 {
                     b.Property<short>("TipoAccion")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("smallint")
+                        .HasColumnType("NUMBER(5)")
                         .HasColumnOrder(0);
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<short>("TipoAccion"));
 
                     b.Property<string>("URL")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)")
+                        .HasColumnType("NVARCHAR2(2000)")
                         .HasColumnOrder(1);
 
                     b.HasKey("TipoAccion");
@@ -45,19 +45,19 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
                 {
                     b.Property<string>("Dominio")
                         .HasMaxLength(250)
-                        .HasColumnType("nvarchar(250)")
+                        .HasColumnType("NVARCHAR2(250)")
                         .HasColumnOrder(0);
 
                     b.Property<Guid>("ImplementationKey")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(1);
 
                     b.Property<int>("UbicacionLogs")
-                        .HasColumnType("int")
+                        .HasColumnType("NUMBER(10)")
                         .HasColumnOrder(2);
 
                     b.Property<int>("UbicacionTrazas")
-                        .HasColumnType("int")
+                        .HasColumnType("NUMBER(10)")
                         .HasColumnOrder(3);
 
                     b.HasKey("Dominio");
@@ -69,42 +69,42 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
                 {
                     b.Property<short>("NumConexion")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("smallint")
+                        .HasColumnType("NUMBER(5)")
                         .HasColumnOrder(0);
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<short>("NumConexion"));
 
                     b.Property<int?>("ConectionTimeout")
-                        .HasColumnType("int")
+                        .HasColumnType("NUMBER(10)")
                         .HasColumnOrder(7);
 
                     b.Property<string>("Conexion")
                         .IsRequired()
                         .HasMaxLength(1000)
-                        .HasColumnType("nvarchar(1000)")
+                        .HasColumnType("NVARCHAR2(1000)")
                         .HasColumnOrder(3);
 
                     b.Property<string>("DatosExtra")
                         .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)")
+                        .HasColumnType("NVARCHAR2(100)")
                         .HasColumnOrder(4);
 
                     b.Property<bool>("EsMaster")
-                        .HasColumnType("bit")
+                        .HasColumnType("NUMBER(1)")
                         .HasColumnOrder(5);
 
                     b.Property<bool>("LecturaPermitida")
-                        .HasColumnType("bit")
+                        .HasColumnType("NUMBER(1)")
                         .HasColumnOrder(6);
 
                     b.Property<string>("NombreConexion")
                         .IsRequired()
                         .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)")
+                        .HasColumnType("NVARCHAR2(100)")
                         .HasColumnOrder(1);
 
                     b.Property<short>("TipoConexion")
-                        .HasColumnType("smallint")
+                        .HasColumnType("NUMBER(5)")
                         .HasColumnOrder(2);
 
                     b.HasKey("NumConexion");
@@ -116,7 +116,7 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
                 {
                     b.Property<short>("NumServicio")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("smallint")
+                        .HasColumnType("NUMBER(5)")
                         .HasColumnOrder(0);
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<short>("NumServicio"));
@@ -124,13 +124,13 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
                     b.Property<string>("Nombre")
                         .IsRequired()
                         .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)")
+                        .HasColumnType("NVARCHAR2(100)")
                         .HasColumnOrder(2);
 
                     b.Property<string>("Url")
                         .IsRequired()
                         .HasMaxLength(1000)
-                        .HasColumnType("nvarchar(1000)")
+                        .HasColumnType("NVARCHAR2(1000)")
                         .HasColumnOrder(3);
 
                     b.HasKey("NumServicio");
@@ -142,7 +142,7 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
                 {
                     b.Property<short>("NumServicio")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("smallint")
+                        .HasColumnType("NUMBER(5)")
                         .HasColumnOrder(0);
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<short>("NumServicio"));
@@ -150,19 +150,19 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
                     b.Property<string>("Dominio")
                         .IsRequired()
                         .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)")
+                        .HasColumnType("NVARCHAR2(100)")
                         .HasColumnOrder(1);
 
                     b.Property<string>("Nombre")
                         .IsRequired()
                         .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)")
+                        .HasColumnType("NVARCHAR2(100)")
                         .HasColumnOrder(2);
 
                     b.Property<string>("Url")
                         .IsRequired()
                         .HasMaxLength(1000)
-                        .HasColumnType("nvarchar(1000)")
+                        .HasColumnType("NVARCHAR2(1000)")
                         .HasColumnOrder(3);
 
                     b.HasKey("NumServicio");
@@ -174,7 +174,7 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
                 {
                     b.Property<short>("NumServicio")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("smallint")
+                        .HasColumnType("NUMBER(5)")
                         .HasColumnOrder(0);
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<short>("NumServicio"));
@@ -182,17 +182,17 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
                     b.Property<string>("Nombre")
                         .IsRequired()
                         .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)")
+                        .HasColumnType("NVARCHAR2(100)")
                         .HasColumnOrder(2);
 
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(1);
 
                     b.Property<string>("Url")
                         .IsRequired()
                         .HasMaxLength(1000)
-                        .HasColumnType("nvarchar(1000)")
+                        .HasColumnType("NVARCHAR2(1000)")
                         .HasColumnOrder(3);
 
                     b.HasKey("NumServicio");
@@ -204,74 +204,74 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
                 {
                     b.Property<Guid>("BlogID")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<short>("ArticulosPorPagina")
-                        .HasColumnType("smallint");
+                        .HasColumnType("NUMBER(5)");
 
                     b.Property<int?>("ArticulosTotales")
-                        .HasColumnType("int");
+                        .HasColumnType("NUMBER(10)");
 
                     b.Property<Guid>("AutorID")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<int?>("ComentariosTotales")
-                        .HasColumnType("int");
+                        .HasColumnType("NUMBER(10)");
 
                     b.Property<bool>("CrearFuentesWeb")
-                        .HasColumnType("bit");
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<string>("Descripcion")
                         .HasMaxLength(2000)
-                        .HasColumnType("nvarchar(2000)");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<bool>("Eliminado")
-                        .HasColumnType("bit");
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<DateTime>("Fecha")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("TIMESTAMP(7)");
 
                     b.Property<string>("Licencia")
                         .HasMaxLength(10)
-                        .HasColumnType("nvarchar(10)");
+                        .HasColumnType("NVARCHAR2(10)");
 
                     b.Property<string>("NombreCorto")
                         .IsRequired()
                         .HasMaxLength(30)
-                        .HasColumnType("nvarchar(30)");
+                        .HasColumnType("NVARCHAR2(30)");
 
                     b.Property<bool>("PermiteActualizarTwitter")
-                        .HasColumnType("bit");
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<bool>("PermitirComentarios")
-                        .HasColumnType("bit");
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<bool>("PermitirTrackbacks")
-                        .HasColumnType("bit");
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<int>("Seguidores")
-                        .HasColumnType("int");
+                        .HasColumnType("NUMBER(10)");
 
                     b.Property<string>("Subtitulo")
                         .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)");
+                        .HasColumnType("NVARCHAR2(255)");
 
                     b.Property<string>("Tags")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<string>("Titulo")
                         .IsRequired()
                         .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
+                        .HasColumnType("NVARCHAR2(50)");
 
                     b.Property<short>("Visibilidad")
-                        .HasColumnType("smallint");
+                        .HasColumnType("NUMBER(5)");
 
                     b.Property<bool>("VisibilidadBuscadoresWeb")
-                        .HasColumnType("bit");
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<bool>("VisibilidadListadosBusquedas")
-                        .HasColumnType("bit");
+                        .HasColumnType("NUMBER(1)");
 
                     b.HasKey("BlogID");
 
@@ -281,19 +281,19 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Blog.BlogAgCatTesauro", b =>
                 {
                     b.Property<Guid>("TesauroID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<Guid>("CategoriaTesauroID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(1);
 
                     b.Property<Guid>("BlogID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(2);
 
                     b.Property<DateTime>("Fecha")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("TIMESTAMP(7)");
 
                     b.HasKey("TesauroID", "CategoriaTesauroID", "BlogID");
 
@@ -305,19 +305,19 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Blog.BlogComunidad", b =>
                 {
                     b.Property<Guid>("BlogID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(1);
 
                     b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(2);
 
                     b.Property<bool>("Compartido")
-                        .HasColumnType("bit");
+                        .HasColumnType("NUMBER(1)");
 
                     b.HasKey("BlogID", "ProyectoID", "OrganizacionID");
 
@@ -327,47 +327,47 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Blog.EntradaBlog", b =>
                 {
                     b.Property<Guid>("BlogID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<Guid>("EntradaBlogID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(1);
 
                     b.Property<Guid>("AutorID")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<bool>("Borrador")
-                        .HasColumnType("bit");
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<bool>("Eliminado")
-                        .HasColumnType("bit");
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<short>("Estado")
-                        .HasColumnType("smallint");
+                        .HasColumnType("NUMBER(5)");
 
                     b.Property<DateTime>("FechaCreacion")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("TIMESTAMP(7)");
 
                     b.Property<DateTime>("FechaModificacion")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("TIMESTAMP(7)");
 
                     b.Property<string>("Tags")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<string>("Texto")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<string>("Titulo")
                         .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)");
+                        .HasColumnType("NVARCHAR2(255)");
 
                     b.Property<short>("Visibilidad")
-                        .HasColumnType("smallint");
+                        .HasColumnType("NUMBER(5)");
 
                     b.Property<int>("Visitas")
-                        .HasColumnType("int");
+                        .HasColumnType("NUMBER(10)");
 
                     b.HasKey("BlogID", "EntradaBlogID");
 
@@ -378,28 +378,28 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
                 {
                     b.Property<Guid>("BloqueID")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<Guid?>("BloquePadreID")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<bool>("Borrador")
-                        .HasColumnType("bit");
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<string>("Estilos")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<short>("Orden")
-                        .HasColumnType("smallint");
+                        .HasColumnType("NUMBER(5)");
 
                     b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<short>("Ubicacion")
-                        .HasColumnType("smallint");
+                        .HasColumnType("NUMBER(5)");
 
                     b.HasKey("BloqueID");
 
@@ -411,21 +411,21 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.CMS.CMSBloqueComponente", b =>
                 {
                     b.Property<Guid>("BloqueID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<Guid>("ComponenteID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(1);
 
                     b.Property<short>("Orden")
-                        .HasColumnType("smallint");
+                        .HasColumnType("NUMBER(5)");
 
                     b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("RAW(16)");
 
                     b.HasKey("BloqueID", "ComponenteID");
 
@@ -437,26 +437,26 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.CMS.CMSBloqueComponentePropiedadComponente", b =>
                 {
                     b.Property<Guid>("BloqueID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<Guid>("ComponenteID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(1);
 
                     b.Property<short>("TipoPropiedadComponente")
-                        .HasColumnType("smallint")
+                        .HasColumnType("NUMBER(5)")
                         .HasColumnOrder(2);
 
                     b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<string>("ValorPropiedad")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.HasKey("BloqueID", "ComponenteID", "TipoPropiedadComponente");
 
@@ -467,48 +467,48 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
                 {
                     b.Property<Guid>("ComponenteID")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<bool>("AccesoPublico")
-                        .HasColumnType("bit");
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<bool>("Activo")
-                        .HasColumnType("bit");
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<Guid?>("EstadoID")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Estilos")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<DateTime?>("FechaUltimaActualizacion")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("TIMESTAMP(7)");
 
                     b.Property<string>("IdiomasDisponibles")
                         .IsUnicode(false)
-                        .HasColumnType("varchar(max)");
+                        .HasColumnType("VARCHAR2(4000)");
 
                     b.Property<string>("Nombre")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<string>("NombreCortoComponente")
                         .IsRequired()
                         .HasMaxLength(100)
                         .IsUnicode(false)
-                        .HasColumnType("varchar(100)");
+                        .HasColumnType("VARCHAR2(100)");
 
                     b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<short>("TipoCaducidadComponente")
-                        .HasColumnType("smallint");
+                        .HasColumnType("NUMBER(5)");
 
                     b.Property<short>("TipoComponente")
-                        .HasColumnType("smallint");
+                        .HasColumnType("NUMBER(5)");
 
                     b.HasKey("ComponenteID");
 
@@ -520,15 +520,15 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.CMS.CMSComponentePrivadoProyecto", b =>
                 {
                     b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(1);
 
                     b.Property<short>("TipoComponente")
-                        .HasColumnType("smallint")
+                        .HasColumnType("NUMBER(5)")
                         .HasColumnOrder(2);
 
                     b.HasKey("OrganizacionID", "ProyectoID", "TipoComponente");
@@ -539,11 +539,11 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.CMS.CMSComponenteRolGrupoIdentidades", b =>
                 {
                     b.Property<Guid>("ComponenteID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<Guid>("GrupoID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(1);
 
                     b.HasKey("ComponenteID", "GrupoID");
@@ -554,11 +554,11 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.CMS.CMSComponenteRolIdentidad", b =>
                 {
                     b.Property<Guid>("ComponenteID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<Guid>("PerfilID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(1);
 
                     b.HasKey("ComponenteID", "PerfilID");
@@ -600,28 +600,28 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.CMS.CMSPagina", b =>
                 {
                     b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(1);
 
                     b.Property<short>("Ubicacion")
-                        .HasColumnType("smallint")
+                        .HasColumnType("NUMBER(5)")
                         .HasColumnOrder(2);
 
                     b.Property<bool>("Activa")
-                        .HasColumnType("bit");
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<string>("HTMLAlternativo")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<bool>("MostrarSoloCuerpo")
-                        .HasColumnType("bit");
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<short>("Privacidad")
-                        .HasColumnType("smallint");
+                        .HasColumnType("NUMBER(5)");
 
                     b.HasKey("OrganizacionID", "ProyectoID", "Ubicacion");
 
@@ -631,16 +631,16 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.CMS.CMSPropiedadComponente", b =>
                 {
                     b.Property<Guid>("ComponenteID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<short>("TipoPropiedadComponente")
-                        .HasColumnType("smallint")
+                        .HasColumnType("NUMBER(5)")
                         .HasColumnOrder(1);
 
                     b.Property<string>("ValorPropiedad")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.HasKey("ComponenteID", "TipoPropiedadComponente");
 
@@ -650,19 +650,19 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.CMS.CMSRolGrupoIdentidades", b =>
                 {
                     b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(1);
 
                     b.Property<short>("Ubicacion")
-                        .HasColumnType("smallint")
+                        .HasColumnType("NUMBER(5)")
                         .HasColumnOrder(2);
 
                     b.Property<Guid>("GrupoID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(3);
 
                     b.HasKey("OrganizacionID", "ProyectoID", "Ubicacion", "GrupoID");
@@ -673,19 +673,19 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.CMS.CMSRolIdentidad", b =>
                 {
                     b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(1);
 
                     b.Property<short>("Ubicacion")
-                        .HasColumnType("smallint")
+                        .HasColumnType("NUMBER(5)")
                         .HasColumnOrder(2);
 
                     b.Property<Guid>("PerfilID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(3);
 
                     b.HasKey("OrganizacionID", "ProyectoID", "Ubicacion", "PerfilID");
@@ -810,23 +810,23 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
                 {
                     b.Property<Guid>("ComentarioID")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<Guid?>("ComentarioSuperiorID")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<string>("Descripcion")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<bool>("Eliminado")
-                        .HasColumnType("bit");
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<DateTime>("Fecha")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("TIMESTAMP(7)");
 
                     b.Property<Guid>("IdentidadID")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("RAW(16)");
 
                     b.HasKey("ComentarioID");
 
@@ -838,15 +838,15 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Comentario.ComentarioBlog", b =>
                 {
                     b.Property<Guid>("ComentarioID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<Guid>("BlogID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(1);
 
                     b.Property<Guid>("EntradaBlogID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(2);
 
                     b.HasKey("ComentarioID", "BlogID", "EntradaBlogID");
@@ -857,11 +857,11 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Comentario.ComentarioCuestion", b =>
                 {
                     b.Property<Guid>("ComentarioID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<Guid>("CuestionID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(1);
 
                     b.HasKey("ComentarioID", "CuestionID");
@@ -872,11 +872,11 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Comentario.VotoComentario", b =>
                 {
                     b.Property<Guid>("VotoID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<Guid>("ComentarioID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(1);
 
                     b.HasKey("VotoID", "ComentarioID");
@@ -890,33 +890,33 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
                 {
                     b.Property<Guid>("ComparticionID")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<bool>("ActualizarHome")
-                        .HasColumnType("bit");
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<bool>("Eliminada")
-                        .HasColumnType("bit");
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<Guid>("IdentidadPublicadoraID")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<string>("Nombre")
                         .IsRequired()
                         .HasMaxLength(200)
-                        .HasColumnType("nvarchar(200)");
+                        .HasColumnType("NVARCHAR2(200)");
 
                     b.Property<Guid>("OrganizacionDestinoID")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<Guid>("OrganizacionOrigenID")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<Guid>("ProyectoDestinoID")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<Guid>("ProyectoOrigenID")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("RAW(16)");
 
                     b.HasKey("ComparticionID");
 
@@ -926,24 +926,24 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.ComparticionAutomatica.ComparticionAutomaticaMapping", b =>
                 {
                     b.Property<Guid>("ComparticionID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<string>("ReglaMapping")
                         .HasMaxLength(200)
-                        .HasColumnType("nvarchar(200)")
+                        .HasColumnType("NVARCHAR2(200)")
                         .HasColumnOrder(1);
 
                     b.Property<Guid>("TesauroID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(2);
 
                     b.Property<Guid>("CategoriaTesauroID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(3);
 
                     b.Property<int>("GrupoMapping")
-                        .HasColumnType("int");
+                        .HasColumnType("NUMBER(10)");
 
                     b.HasKey("ComparticionID", "ReglaMapping", "TesauroID", "CategoriaTesauroID");
 
@@ -953,19 +953,19 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.ComparticionAutomatica.ComparticionAutomaticaReglas", b =>
                 {
                     b.Property<Guid>("ComparticionID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<string>("Regla")
                         .HasMaxLength(200)
-                        .HasColumnType("nvarchar(200)")
+                        .HasColumnType("NVARCHAR2(200)")
                         .HasColumnOrder(1);
 
                     b.Property<string>("Navegacion")
                         .IsRequired()
                         .HasMaxLength(10)
                         .IsUnicode(false)
-                        .HasColumnType("varchar(10)");
+                        .HasColumnType("VARCHAR2(10)");
 
                     b.HasKey("ComparticionID", "Regla");
 
@@ -976,44 +976,44 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
                 {
                     b.Property<Guid>("ProyectoID")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<bool?>("SSL")
-                        .HasColumnType("bit");
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<string>("clave")
                         .IsRequired()
                         .HasMaxLength(1000)
-                        .HasColumnType("nvarchar(1000)");
+                        .HasColumnType("NVARCHAR2(1000)");
 
                     b.Property<string>("email")
                         .IsRequired()
                         .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
+                        .HasColumnType("NVARCHAR2(100)");
 
                     b.Property<string>("emailsugerencias")
                         .IsRequired()
                         .HasMaxLength(1000)
-                        .HasColumnType("nvarchar(1000)");
+                        .HasColumnType("NVARCHAR2(1000)");
 
                     b.Property<short>("puerto")
-                        .HasColumnType("smallint");
+                        .HasColumnType("NUMBER(5)");
 
                     b.Property<string>("smtp")
                         .IsRequired()
                         .HasMaxLength(1000)
-                        .HasColumnType("nvarchar(1000)");
+                        .HasColumnType("NVARCHAR2(1000)");
 
                     b.Property<string>("tipo")
                         .IsRequired()
                         .HasMaxLength(10)
                         .IsUnicode(false)
-                        .HasColumnType("varchar(10)");
+                        .HasColumnType("VARCHAR2(10)");
 
                     b.Property<string>("usuario")
                         .IsRequired()
                         .HasMaxLength(1000)
-                        .HasColumnType("nvarchar(1000)");
+                        .HasColumnType("NVARCHAR2(1000)");
 
                     b.HasKey("ProyectoID");
 
@@ -1024,27 +1024,27 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
                 {
                     b.Property<Guid>("CategoriaID")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<string>("Descripcion")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<bool>("EsCategoriaTecnica")
-                        .HasColumnType("bit");
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<string>("Nombre")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<string>("NombreCorto")
                         .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
+                        .HasColumnType("NVARCHAR2(50)");
 
                     b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("RAW(16)");
 
                     b.HasKey("CategoriaID");
 
@@ -1057,40 +1057,40 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
                 {
                     b.Property<Guid>("CookieID")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<Guid>("CategoriaID")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<string>("Descripcion")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<bool>("EsEditable")
-                        .HasColumnType("bit");
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<DateTime>("FechaActualizacion")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("TIMESTAMP(7)");
 
                     b.Property<DateTime>("FechaCreacion")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("TIMESTAMP(7)");
 
                     b.Property<string>("Nombre")
                         .HasMaxLength(1000)
-                        .HasColumnType("nvarchar(1000)");
+                        .HasColumnType("NVARCHAR2(1000)");
 
                     b.Property<string>("NombreCorto")
                         .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
+                        .HasColumnType("NVARCHAR2(50)");
 
                     b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<short>("Tipo")
-                        .HasColumnType("smallint");
+                        .HasColumnType("NUMBER(5)");
 
                     b.HasKey("CookieID");
 
@@ -1104,30 +1104,30 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Documentacion.AtributoFichaBibliografica", b =>
                 {
                     b.Property<Guid>("AtributoID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<Guid>("FichaBibliograficaID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(1);
 
                     b.Property<string>("Descripcion")
                         .HasMaxLength(1000)
-                        .HasColumnType("nvarchar(1000)");
+                        .HasColumnType("NVARCHAR2(1000)");
 
                     b.Property<int>("Longitud")
-                        .HasColumnType("int");
+                        .HasColumnType("NUMBER(10)");
 
                     b.Property<string>("Nombre")
                         .IsRequired()
                         .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
+                        .HasColumnType("NVARCHAR2(100)");
 
                     b.Property<int>("Orden")
-                        .HasColumnType("int");
+                        .HasColumnType("NUMBER(10)");
 
                     b.Property<int>("Tipo")
-                        .HasColumnType("int");
+                        .HasColumnType("NUMBER(10)");
 
                     b.HasKey("AtributoID", "FichaBibliograficaID");
 
@@ -1140,7 +1140,7 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
                 {
                     b.Property<Guid>("BaseRecursosID")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("RAW(16)");
 
                     b.HasKey("BaseRecursosID");
 
@@ -1150,18 +1150,18 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Documentacion.BaseRecursosOrganizacion", b =>
                 {
                     b.Property<Guid>("BaseRecursosID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(1);
 
                     b.Property<double?>("EspacioActualMyGnossMB")
-                        .HasColumnType("float");
+                        .HasColumnType("BINARY_DOUBLE");
 
                     b.Property<double?>("EspacioMaxMyGnossMB")
-                        .HasColumnType("float");
+                        .HasColumnType("BINARY_DOUBLE");
 
                     b.HasKey("BaseRecursosID", "OrganizacionID");
 
@@ -1173,15 +1173,15 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Documentacion.BaseRecursosProyecto", b =>
                 {
                     b.Property<Guid>("BaseRecursosID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(1);
 
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(2);
 
                     b.HasKey("BaseRecursosID", "OrganizacionID", "ProyectoID");
@@ -1192,18 +1192,18 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Documentacion.BaseRecursosUsuario", b =>
                 {
                     b.Property<Guid>("BaseRecursosID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<Guid>("UsuarioID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(1);
 
                     b.Property<double?>("EspacioActualMyGnossMB")
-                        .HasColumnType("float");
+                        .HasColumnType("BINARY_DOUBLE");
 
                     b.Property<double?>("EspacioMaxMyGnossMB")
-                        .HasColumnType("float");
+                        .HasColumnType("BINARY_DOUBLE");
 
                     b.HasKey("BaseRecursosID", "UsuarioID");
 
@@ -1216,29 +1216,29 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
                 {
                     b.Property<int>("ColaID")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                        .HasColumnType("NUMBER(10)");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ColaID"));
 
                     b.Property<short>("Estado")
-                        .HasColumnType("smallint");
+                        .HasColumnType("NUMBER(5)");
 
                     b.Property<DateTime>("Fecha")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("TIMESTAMP(7)");
 
                     b.Property<Guid>("ID")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<string>("NombreFichImport")
                         .IsRequired()
                         .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
+                        .HasColumnType("NVARCHAR2(100)");
 
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<Guid>("UsuarioID")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("RAW(16)");
 
                     b.HasKey("ColaID");
 
@@ -1249,33 +1249,33 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
                 {
                     b.Property<int>("ID")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                        .HasColumnType("NUMBER(10)");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ID"));
 
                     b.Property<short>("AccionRealizada")
-                        .HasColumnType("smallint");
+                        .HasColumnType("NUMBER(5)");
 
                     b.Property<Guid>("DocumentoID")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<short>("Estado")
-                        .HasColumnType("smallint");
+                        .HasColumnType("NUMBER(5)");
 
                     b.Property<long?>("EstadoCargaID")
-                        .HasColumnType("bigint");
+                        .HasColumnType("NUMBER(19)");
 
                     b.Property<DateTime>("FechaEncolado")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("TIMESTAMP(7)");
 
                     b.Property<DateTime?>("FechaProcesado")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("TIMESTAMP(7)");
 
                     b.Property<string>("InfoExtra")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<short>("Prioridad")
-                        .HasColumnType("smallint");
+                        .HasColumnType("NUMBER(5)");
 
                     b.HasKey("ID");
 
@@ -1325,123 +1325,123 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
                 {
                     b.Property<Guid>("DocumentoID")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<string>("Autor")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<bool>("Borrador")
-                        .HasColumnType("bit");
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<bool>("CompartirPermitido")
-                        .HasColumnType("bit");
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<bool>("CreadorEsAutor")
-                        .HasColumnType("bit");
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<Guid>("CreadorID")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<string>("Descripcion")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<Guid?>("ElementoVinculadoID")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<bool>("Eliminado")
-                        .HasColumnType("bit");
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<string>("Enlace")
                         .HasMaxLength(1200)
-                        .HasColumnType("nvarchar(1200)");
+                        .HasColumnType("NVARCHAR2(1200)");
 
                     b.Property<Guid?>("EstadoID")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTime?>("FechaCreacion")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("TIMESTAMP(7)");
 
                     b.Property<DateTime?>("FechaModificacion")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("TIMESTAMP(7)");
 
                     b.Property<DateTime?>("FechaProteccion")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("TIMESTAMP(7)");
 
                     b.Property<Guid?>("FichaBibliograficaID")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<Guid?>("IdentidadProteccionID")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<string>("Licencia")
                         .HasMaxLength(10)
-                        .HasColumnType("nvarchar(10)");
+                        .HasColumnType("NVARCHAR2(10)");
 
                     b.Property<string>("NombreCategoriaDoc")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<string>("NombreElementoVinculado")
                         .HasMaxLength(1000)
-                        .HasColumnType("nvarchar(1000)");
+                        .HasColumnType("NVARCHAR2(1000)");
 
                     b.Property<int>("NumeroComentariosPublicos")
-                        .HasColumnType("int");
+                        .HasColumnType("NUMBER(10)");
 
                     b.Property<int>("NumeroTotalConsultas")
-                        .HasColumnType("int");
+                        .HasColumnType("NUMBER(10)");
 
                     b.Property<int>("NumeroTotalDescargas")
-                        .HasColumnType("int");
+                        .HasColumnType("NUMBER(10)");
 
                     b.Property<int>("NumeroTotalVotos")
-                        .HasColumnType("int");
+                        .HasColumnType("NUMBER(10)");
 
                     b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<bool>("PrivadoEditores")
-                        .HasColumnType("bit");
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<bool>("Protegido")
-                        .HasColumnType("bit");
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<Guid?>("ProyectoID")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<bool>("Publico")
-                        .HasColumnType("bit");
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<int?>("Rank")
-                        .HasColumnType("int");
+                        .HasColumnType("NUMBER(10)");
 
                     b.Property<double?>("Rank_Tiempo")
-                        .HasColumnType("float");
+                        .HasColumnType("BINARY_DOUBLE");
 
                     b.Property<string>("Tags")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<short>("Tipo")
-                        .HasColumnType("smallint");
+                        .HasColumnType("NUMBER(5)");
 
                     b.Property<short>("TipoEntidad")
-                        .HasColumnType("smallint");
+                        .HasColumnType("NUMBER(5)");
 
                     b.Property<string>("Titulo")
                         .IsRequired()
                         .HasMaxLength(1000)
-                        .HasColumnType("nvarchar(1000)");
+                        .HasColumnType("NVARCHAR2(1000)");
 
                     b.Property<bool>("UltimaVersion")
-                        .HasColumnType("bit");
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<double?>("Valoracion")
-                        .HasColumnType("float");
+                        .HasColumnType("BINARY_DOUBLE");
 
                     b.Property<int?>("VersionFotoDocumento")
-                        .HasColumnType("int");
+                        .HasColumnType("NUMBER(10)");
 
                     b.Property<short>("Visibilidad")
-                        .HasColumnType("smallint");
+                        .HasColumnType("NUMBER(5)");
 
                     b.HasKey("DocumentoID");
 
@@ -1459,19 +1459,19 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Documentacion.DocumentoAtributoBiblio", b =>
                 {
                     b.Property<Guid>("DocumentoID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<Guid>("AtributoID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(1);
 
                     b.Property<Guid>("FichaBibliograficaID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(2);
 
                     b.Property<string>("Valor")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.HasKey("DocumentoID", "AtributoID", "FichaBibliograficaID");
 
@@ -1483,15 +1483,15 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Documentacion.DocumentoComentario", b =>
                 {
                     b.Property<Guid>("ComentarioID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<Guid>("DocumentoID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(1);
 
                     b.Property<Guid?>("ProyectoID")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("RAW(16)");
 
                     b.HasKey("ComentarioID", "DocumentoID");
 
@@ -1502,13 +1502,13 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
                 {
                     b.Property<Guid>("DocumentoID")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<DateTime>("FechaEdicion")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("TIMESTAMP(7)");
 
                     b.Property<Guid>("IdentidadID")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("RAW(16)");
 
                     b.HasKey("DocumentoID");
 
@@ -1518,23 +1518,23 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Documentacion.DocumentoEntidadGnoss", b =>
                 {
                     b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(1);
 
                     b.Property<Guid>("EntidadGnossID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(2);
 
                     b.Property<Guid>("DocumentoID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(3);
 
                     b.Property<Guid>("CategoriaDocumentacionID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(4);
 
                     b.HasKey("OrganizacionID", "ProyectoID", "EntidadGnossID", "DocumentoID", "CategoriaDocumentacionID");
@@ -1545,25 +1545,25 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Documentacion.DocumentoEnvioNewsLetter", b =>
                 {
                     b.Property<Guid>("DocumentoID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<Guid>("IdentidadID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(1);
 
                     b.Property<DateTime>("Fecha")
-                        .HasColumnType("datetime2")
+                        .HasColumnType("TIMESTAMP(7)")
                         .HasColumnOrder(2);
 
                     b.Property<bool>("EnvioRealizado")
-                        .HasColumnType("bit");
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<bool>("EnvioSolicitado")
-                        .HasColumnType("bit");
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<string>("Grupos")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<string>("Idioma")
                         .IsRequired()
@@ -1578,15 +1578,15 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Documentacion.DocumentoGrupoUsuario", b =>
                 {
                     b.Property<Guid>("DocumentoID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<Guid>("GrupoUsuarioID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(1);
 
                     b.Property<bool>("Editor")
-                        .HasColumnType("bit");
+                        .HasColumnType("NUMBER(1)");
 
                     b.HasKey("DocumentoID", "GrupoUsuarioID");
 
@@ -1596,23 +1596,23 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Documentacion.DocumentoLecturaAumentada", b =>
                 {
                     b.Property<Guid>("DocumentoID")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<string>("DescripcionAumentada")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<string>("EntitiesInfo")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<string>("TituloAumentado")
                         .IsUnicode(false)
-                        .HasColumnType("varchar(max)");
+                        .HasColumnType("VARCHAR2(4000)");
 
                     b.Property<string>("TopicsInfo")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<bool>("Validada")
-                        .HasColumnType("bit");
+                        .HasColumnType("NUMBER(1)");
 
                     b.HasKey("DocumentoID");
 
@@ -1622,15 +1622,15 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Documentacion.DocumentoMetaDatos", b =>
                 {
                     b.Property<Guid>("DocumentoID")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<string>("MetaDescripcion")
                         .HasMaxLength(1000)
-                        .HasColumnType("nvarchar(1000)");
+                        .HasColumnType("NVARCHAR2(1000)");
 
                     b.Property<string>("MetaTitulo")
                         .HasMaxLength(1000)
-                        .HasColumnType("nvarchar(1000)");
+                        .HasColumnType("NVARCHAR2(1000)");
 
                     b.HasKey("DocumentoID");
 
@@ -1641,13 +1641,13 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
                 {
                     b.Property<Guid>("DocumentoID")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<string>("Newsletter")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<string>("NewsletterTemporal")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.HasKey("DocumentoID");
 
@@ -1658,20 +1658,20 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
                 {
                     b.Property<Guid>("RespuestaID")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<string>("Descripcion")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<Guid>("DocumentoID")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<int>("NumVotos")
-                        .HasColumnType("int");
+                        .HasColumnType("NUMBER(10)");
 
                     b.Property<short>("Orden")
-                        .HasColumnType("smallint");
+                        .HasColumnType("NUMBER(5)");
 
                     b.HasKey("RespuestaID");
 
@@ -1681,15 +1681,15 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Documentacion.DocumentoRespuestaVoto", b =>
                 {
                     b.Property<Guid>("DocumentoID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<Guid>("IdentidadID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(1);
 
                     b.Property<Guid>("RespuestaID")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("RAW(16)");
 
                     b.HasKey("DocumentoID", "IdentidadID");
 
@@ -1701,15 +1701,15 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Documentacion.DocumentoRolGrupoIdentidades", b =>
                 {
                     b.Property<Guid>("DocumentoID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<Guid>("GrupoID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(1);
 
                     b.Property<bool>("Editor")
-                        .HasColumnType("bit");
+                        .HasColumnType("NUMBER(1)");
 
                     b.HasKey("DocumentoID", "GrupoID");
 
@@ -1719,15 +1719,15 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Documentacion.DocumentoRolIdentidad", b =>
                 {
                     b.Property<Guid>("DocumentoID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<Guid>("PerfilID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(1);
 
                     b.Property<bool>("Editor")
-                        .HasColumnType("bit");
+                        .HasColumnType("NUMBER(1)");
 
                     b.HasKey("DocumentoID", "PerfilID");
 
@@ -1737,19 +1737,19 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Documentacion.DocumentoTipologia", b =>
                 {
                     b.Property<Guid>("DocumentoID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<Guid>("TipologiaID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(1);
 
                     b.Property<Guid>("AtributoID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(2);
 
                     b.Property<string>("Valor")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.HasKey("DocumentoID", "TipologiaID", "AtributoID");
 
@@ -1762,28 +1762,28 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
                 {
                     b.Property<Guid>("TokenID")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<Guid>("DocumentoID")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<short>("Estado")
-                        .HasColumnType("smallint");
+                        .HasColumnType("NUMBER(5)");
 
                     b.Property<DateTime>("FechaCreacion")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("TIMESTAMP(7)");
 
                     b.Property<string>("NombreArchivo")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<Guid>("UsuarioID")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("RAW(16)");
 
                     b.HasKey("TokenID");
 
@@ -1794,28 +1794,28 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
                 {
                     b.Property<Guid>("TokenID")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<Guid>("DocumentoID")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<short>("Estado")
-                        .HasColumnType("smallint");
+                        .HasColumnType("NUMBER(5)");
 
                     b.Property<DateTime>("FechaCreacion")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("TIMESTAMP(7)");
 
                     b.Property<string>("NombreArchivo")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<Guid>("UsuarioID")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("RAW(16)");
 
                     b.HasKey("TokenID");
 
@@ -1826,12 +1826,12 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
                 {
                     b.Property<Guid>("DocumentoID")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<string>("UrlCanonica")
                         .IsRequired()
                         .HasMaxLength(250)
-                        .HasColumnType("nvarchar(250)");
+                        .HasColumnType("NVARCHAR2(250)");
 
                     b.HasKey("DocumentoID");
 
@@ -1841,18 +1841,18 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Documentacion.DocumentoVincDoc", b =>
                 {
                     b.Property<Guid>("DocumentoID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<Guid>("DocumentoVincID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(1);
 
                     b.Property<DateTime>("Fecha")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("TIMESTAMP(7)");
 
                     b.Property<Guid>("IdentidadID")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("RAW(16)");
 
                     b.HasKey("DocumentoID", "DocumentoVincID");
 
@@ -1864,23 +1864,23 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Documentacion.DocumentoWebAgCatTesauro", b =>
                 {
                     b.Property<Guid>("TesauroID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<Guid>("CategoriaTesauroID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(1);
 
                     b.Property<Guid>("BaseRecursosID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(2);
 
                     b.Property<Guid>("DocumentoID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(3);
 
                     b.Property<DateTime?>("Fecha")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("TIMESTAMP(7)");
 
                     b.HasKey("TesauroID", "CategoriaTesauroID", "BaseRecursosID", "DocumentoID");
 
@@ -1890,91 +1890,91 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Documentacion.DocumentoWebVinBaseRecursos", b =>
                 {
                     b.Property<Guid>("DocumentoID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<Guid>("BaseRecursosID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(1);
 
                     b.Property<bool?>("Compartido")
-                        .HasColumnType("bit");
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<bool>("Eliminado")
-                        .HasColumnType("bit");
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<DateTime?>("FechaCertificacion")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("TIMESTAMP(7)");
 
                     b.Property<DateTime?>("FechaPublicacion")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("TIMESTAMP(7)");
 
                     b.Property<DateTime?>("FechaUltimaVisita")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("TIMESTAMP(7)");
 
                     b.Property<bool?>("IdentPubVisibleExt")
-                        .HasColumnType("bit");
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<Guid?>("IdentidadPublicacionID")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<bool>("IndexarRecurso")
-                        .HasColumnType("bit");
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<bool>("LinkAComunidadOrigen")
-                        .HasColumnType("bit");
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<Guid?>("NivelCertificacionID")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<string>("NombreCortoOrgPublicador")
                         .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
+                        .HasColumnType("NVARCHAR2(50)");
 
                     b.Property<string>("NombreCortoPublicador")
                         .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
+                        .HasColumnType("NVARCHAR2(50)");
 
                     b.Property<string>("NombreOrgPublicador")
                         .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)");
+                        .HasColumnType("NVARCHAR2(255)");
 
                     b.Property<string>("NombrePublicador")
                         .HasMaxLength(300)
-                        .HasColumnType("nvarchar(300)");
+                        .HasColumnType("NVARCHAR2(300)");
 
                     b.Property<int>("NumeroComentarios")
-                        .HasColumnType("int");
+                        .HasColumnType("NUMBER(10)");
 
                     b.Property<int>("NumeroConsultas")
-                        .HasColumnType("int");
+                        .HasColumnType("NUMBER(10)");
 
                     b.Property<int>("NumeroDescargas")
-                        .HasColumnType("int");
+                        .HasColumnType("NUMBER(10)");
 
                     b.Property<int>("NumeroVotos")
-                        .HasColumnType("int");
+                        .HasColumnType("NUMBER(10)");
 
                     b.Property<bool>("PermiteComentarios")
-                        .HasColumnType("bit");
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<bool>("PrivadoEditores")
-                        .HasColumnType("bit");
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<Guid?>("PublicadorOrgID")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<int?>("Rank")
-                        .HasColumnType("int");
+                        .HasColumnType("NUMBER(10)");
 
                     b.Property<double?>("Rank_Tiempo")
-                        .HasColumnType("float");
+                        .HasColumnType("BINARY_DOUBLE");
 
                     b.Property<short?>("TipoIdentidadPublicador")
-                        .HasColumnType("smallint");
+                        .HasColumnType("NUMBER(5)");
 
                     b.Property<short>("TipoPublicacion")
-                        .HasColumnType("smallint");
+                        .HasColumnType("NUMBER(5)");
 
                     b.HasKey("DocumentoID", "BaseRecursosID");
 
@@ -1988,21 +1988,21 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Documentacion.DocumentoWebVinBaseRecursosExtra", b =>
                 {
                     b.Property<Guid>("DocumentoID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<Guid>("BaseRecursosID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(1);
 
                     b.Property<DateTime?>("FechaUltimaVisita")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("TIMESTAMP(7)");
 
                     b.Property<int>("NumeroConsultas")
-                        .HasColumnType("int");
+                        .HasColumnType("NUMBER(10)");
 
                     b.Property<int>("NumeroDescargas")
-                        .HasColumnType("int");
+                        .HasColumnType("NUMBER(10)");
 
                     b.HasKey("DocumentoID", "BaseRecursosID");
 
@@ -2013,16 +2013,16 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
                 {
                     b.Property<Guid>("FichaBibliograficaID")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<string>("Descripcion")
                         .HasMaxLength(1000)
-                        .HasColumnType("nvarchar(1000)");
+                        .HasColumnType("NVARCHAR2(1000)");
 
                     b.Property<string>("Nombre")
                         .IsRequired()
                         .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
+                        .HasColumnType("NVARCHAR2(100)");
 
                     b.HasKey("FichaBibliograficaID");
 
@@ -2033,28 +2033,28 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
                 {
                     b.Property<Guid>("HistorialDocumentoID")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<int>("Accion")
-                        .HasColumnType("int");
+                        .HasColumnType("NUMBER(10)");
 
                     b.Property<Guid?>("CategoriaTesauroID")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<Guid>("DocumentoID")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<DateTime>("Fecha")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("TIMESTAMP(7)");
 
                     b.Property<Guid>("IdentidadID")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<string>("TagNombre")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.HasKey("HistorialDocumentoID");
 
@@ -2079,58 +2079,58 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Documentacion.ResultadoSuscripcion", b =>
                 {
                     b.Property<Guid>("SuscripcionID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<Guid>("RecursoID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(1);
 
                     b.Property<Guid?>("AutorID")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<string>("Descripcion")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<string>("Enlace")
                         .HasMaxLength(1000)
-                        .HasColumnType("nvarchar(1000)");
+                        .HasColumnType("NVARCHAR2(1000)");
 
                     b.Property<DateTime>("FechaModificacion")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("TIMESTAMP(7)");
 
                     b.Property<DateTime?>("FechaProcesado")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("TIMESTAMP(7)");
 
                     b.Property<bool>("Leido")
-                        .HasColumnType("bit");
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<Guid>("OrigenID")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<string>("OrigenNombre")
                         .IsRequired()
                         .HasMaxLength(1000)
-                        .HasColumnType("nvarchar(1000)");
+                        .HasColumnType("NVARCHAR2(1000)");
 
                     b.Property<string>("OrigenNombreCorto")
                         .IsRequired()
                         .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
+                        .HasColumnType("NVARCHAR2(50)");
 
                     b.Property<bool>("Sincaducidad")
-                        .HasColumnType("bit");
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<short?>("TipoDocumento")
-                        .HasColumnType("smallint");
+                        .HasColumnType("NUMBER(5)");
 
                     b.Property<short>("TipoResultado")
-                        .HasColumnType("smallint");
+                        .HasColumnType("NUMBER(5)");
 
                     b.Property<string>("Titulo")
                         .IsRequired()
                         .HasMaxLength(1000)
-                        .HasColumnType("nvarchar(1000)");
+                        .HasColumnType("NVARCHAR2(1000)");
 
                     b.HasKey("SuscripcionID", "RecursoID");
 
@@ -2140,33 +2140,33 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Documentacion.Tipologia", b =>
                 {
                     b.Property<Guid>("TipologiaID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<Guid>("AtributoID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(1);
 
                     b.Property<string>("Descripcion")
                         .HasMaxLength(1000)
-                        .HasColumnType("nvarchar(1000)");
+                        .HasColumnType("NVARCHAR2(1000)");
 
                     b.Property<string>("Nombre")
                         .IsRequired()
                         .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
+                        .HasColumnType("NVARCHAR2(100)");
 
                     b.Property<int>("Orden")
-                        .HasColumnType("int");
+                        .HasColumnType("NUMBER(10)");
 
                     b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<int>("Tipo")
-                        .HasColumnType("int");
+                        .HasColumnType("NUMBER(10)");
 
                     b.HasKey("TipologiaID", "AtributoID");
 
@@ -2176,10 +2176,10 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Documentacion.VersionDocumento", b =>
                 {
                     b.Property<Guid>("DocumentoID")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<Guid>("DocumentoOriginalID")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<bool>("EsMejora")
                         .HasColumnType("bit");
@@ -2193,13 +2193,13 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
                         .HasDefaultValue((short)2);
 
                     b.Property<Guid>("IdentidadID")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<Guid?>("MejoraID")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<int>("Version")
-                        .HasColumnType("int");
+                        .HasColumnType("NUMBER(10)");
 
                     b.HasKey("DocumentoID");
 
@@ -2211,15 +2211,15 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Documentacion.VotoDocumento", b =>
                 {
                     b.Property<Guid>("DocumentoID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<Guid>("VotoID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(1);
 
                     b.Property<Guid?>("ProyectoID")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("RAW(16)");
 
                     b.HasKey("DocumentoID", "VotoID");
 
@@ -2232,12 +2232,12 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
                 {
                     b.Property<string>("Grafo")
                         .HasMaxLength(36)
-                        .HasColumnType("nvarchar(36)");
+                        .HasColumnType("NVARCHAR2(36)");
 
                     b.Property<string>("CadenaConexion")
                         .IsRequired()
                         .HasMaxLength(200)
-                        .HasColumnType("nvarchar(200)");
+                        .HasColumnType("NVARCHAR2(200)");
 
                     b.HasKey("Grafo");
 
@@ -2247,42 +2247,42 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Faceta.FacetaConfigProyChart", b =>
                 {
                     b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(1);
 
                     b.Property<Guid>("ChartID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(2);
 
                     b.Property<string>("FiltrosConsultaVirtuoso")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<string>("JSBase")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<string>("JSBusqueda")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<string>("Nombre")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<string>("Ontologias")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<short>("Orden")
-                        .HasColumnType("smallint");
+                        .HasColumnType("NUMBER(5)");
 
                     b.Property<string>("SelectConsultaVirtuoso")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.HasKey("OrganizacionID", "ProyectoID", "ChartID");
 
@@ -2292,24 +2292,24 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Faceta.FacetaConfigProyMapa", b =>
                 {
                     b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(1);
 
                     b.Property<string>("ColorRuta")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<string>("PropLatitud")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<string>("PropLongitud")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("PropRuta")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.HasKey("OrganizacionID", "ProyectoID");
 
@@ -2319,23 +2319,23 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Faceta.FacetaConfigProyRangoFecha", b =>
                 {
                     b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(1);
 
                     b.Property<string>("PropiedadNueva")
-                        .HasColumnType("nvarchar(450)")
+                        .HasColumnType("NVARCHAR2(450)")
                         .HasColumnOrder(2);
 
                     b.Property<string>("PropiedadInicio")
-                        .HasColumnType("nvarchar(450)")
+                        .HasColumnType("NVARCHAR2(450)")
                         .HasColumnOrder(3);
 
                     b.Property<string>("PropiedadFin")
-                        .HasColumnType("nvarchar(450)")
+                        .HasColumnType("NVARCHAR2(450)")
                         .HasColumnOrder(4);
 
                     b.HasKey("OrganizacionID", "ProyectoID", "PropiedadNueva", "PropiedadInicio", "PropiedadFin");
@@ -2346,28 +2346,28 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Faceta.FacetaEntidadesExternas", b =>
                 {
                     b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(1);
 
                     b.Property<string>("EntidadID")
                         .HasMaxLength(300)
-                        .HasColumnType("nvarchar(300)")
+                        .HasColumnType("NVARCHAR2(300)")
                         .HasColumnOrder(2);
 
                     b.Property<bool>("BuscarConRecursividad")
-                        .HasColumnType("bit");
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<bool>("EsEntidadSecundaria")
-                        .HasColumnType("bit");
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<string>("Grafo")
                         .IsRequired()
                         .HasMaxLength(300)
-                        .HasColumnType("nvarchar(300)");
+                        .HasColumnType("NVARCHAR2(300)");
 
                     b.HasKey("OrganizacionID", "ProyectoID", "EntidadID");
 
@@ -2377,16 +2377,16 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Faceta.FacetaExcluida", b =>
                 {
                     b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(1);
 
                     b.Property<string>("Faceta")
                         .HasMaxLength(300)
-                        .HasColumnType("nvarchar(300)")
+                        .HasColumnType("NVARCHAR2(300)")
                         .HasColumnOrder(2);
 
                     b.HasKey("OrganizacionID", "ProyectoID", "Faceta");
@@ -2397,31 +2397,31 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Faceta.FacetaFiltroHome", b =>
                 {
                     b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(1);
 
                     b.Property<string>("ObjetoConocimiento")
                         .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)")
+                        .HasColumnType("NVARCHAR2(50)")
                         .HasColumnOrder(2);
 
                     b.Property<string>("Faceta")
                         .HasMaxLength(300)
-                        .HasColumnType("nvarchar(300)")
+                        .HasColumnType("NVARCHAR2(300)")
                         .HasColumnOrder(3);
 
                     b.Property<short>("Orden")
-                        .HasColumnType("smallint")
+                        .HasColumnType("NUMBER(5)")
                         .HasColumnOrder(4);
 
                     b.Property<string>("Filtro")
                         .IsRequired()
                         .HasMaxLength(280)
-                        .HasColumnType("nvarchar(280)");
+                        .HasColumnType("NVARCHAR2(280)");
 
                     b.HasKey("OrganizacionID", "ProyectoID", "ObjetoConocimiento", "Faceta", "Orden");
 
@@ -2431,33 +2431,33 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Faceta.FacetaFiltroProyecto", b =>
                 {
                     b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(1);
 
                     b.Property<string>("ObjetoConocimiento")
                         .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)")
+                        .HasColumnType("NVARCHAR2(50)")
                         .HasColumnOrder(2);
 
                     b.Property<string>("Faceta")
                         .HasMaxLength(300)
-                        .HasColumnType("nvarchar(300)")
+                        .HasColumnType("NVARCHAR2(300)")
                         .HasColumnOrder(3);
 
                     b.Property<short>("Orden")
-                        .HasColumnType("smallint")
+                        .HasColumnType("NUMBER(5)")
                         .HasColumnOrder(4);
 
                     b.Property<string>("Condicion")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<string>("Filtro")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.HasKey("OrganizacionID", "ProyectoID", "ObjetoConocimiento", "Faceta", "Orden");
 
@@ -2467,45 +2467,45 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Faceta.FacetaHome", b =>
                 {
                     b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(1);
 
                     b.Property<string>("ObjetoConocimiento")
                         .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)")
+                        .HasColumnType("NVARCHAR2(50)")
                         .HasColumnOrder(2);
 
                     b.Property<string>("Faceta")
                         .HasMaxLength(300)
-                        .HasColumnType("nvarchar(300)")
+                        .HasColumnType("NVARCHAR2(300)")
                         .HasColumnOrder(3);
 
                     b.Property<string>("FacetaObjetoConocimientoProyectoFaceta")
-                        .HasColumnType("nvarchar(300)");
+                        .HasColumnType("NVARCHAR2(300)");
 
                     b.Property<string>("FacetaObjetoConocimientoProyectoObjetoConocimiento")
-                        .HasColumnType("nvarchar(50)");
+                        .HasColumnType("NVARCHAR2(50)");
 
                     b.Property<Guid?>("FacetaObjetoConocimientoProyectoOrganizacionID")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<Guid?>("FacetaObjetoConocimientoProyectoProyectoID")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<bool>("MostrarVerMas")
-                        .HasColumnType("bit");
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<short>("Orden")
-                        .HasColumnType("smallint");
+                        .HasColumnType("NUMBER(5)");
 
                     b.Property<string>("PestanyaFaceta")
                         .IsRequired()
                         .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
+                        .HasColumnType("NVARCHAR2(100)");
 
                     b.HasKey("OrganizacionID", "ProyectoID", "ObjetoConocimiento", "Faceta");
 
@@ -2517,36 +2517,36 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Faceta.FacetaMultiple", b =>
                 {
                     b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(1);
 
                     b.Property<string>("ObjetoConocimiento")
                         .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)")
+                        .HasColumnType("NVARCHAR2(50)")
                         .HasColumnOrder(2);
 
                     b.Property<string>("Faceta")
                         .HasMaxLength(300)
-                        .HasColumnType("nvarchar(300)")
+                        .HasColumnType("NVARCHAR2(300)")
                         .HasColumnOrder(3);
 
                     b.Property<string>("Consulta")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<string>("Filtro")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<short>("NumeroFacetasDesplegar")
-                        .HasColumnType("smallint");
+                        .HasColumnType("NUMBER(5)");
 
                     b.Property<short>("NumeroFacetasObtener")
-                        .HasColumnType("smallint");
+                        .HasColumnType("NUMBER(5)");
 
                     b.HasKey("OrganizacionID", "ProyectoID", "ObjetoConocimiento", "Faceta");
 
@@ -2557,51 +2557,51 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
                 {
                     b.Property<string>("ObjetoConocimiento")
                         .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)")
+                        .HasColumnType("NVARCHAR2(50)")
                         .HasColumnOrder(0);
 
                     b.Property<string>("Faceta")
                         .HasMaxLength(300)
-                        .HasColumnType("nvarchar(300)")
+                        .HasColumnType("NVARCHAR2(300)")
                         .HasColumnOrder(1);
 
                     b.Property<short>("AlgoritmoTransformacion")
-                        .HasColumnType("smallint");
+                        .HasColumnType("NUMBER(5)");
 
                     b.Property<bool>("Autocompletar")
-                        .HasColumnType("bit");
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<bool>("ComportamientoOr")
-                        .HasColumnType("bit");
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<short>("ElementosVisibles")
-                        .HasColumnType("smallint");
+                        .HasColumnType("NUMBER(5)");
 
                     b.Property<bool>("EsPorDefecto")
-                        .HasColumnType("bit");
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<bool>("EsSemantica")
-                        .HasColumnType("bit");
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<short>("Mayusculas")
-                        .HasColumnType("smallint");
+                        .HasColumnType("NUMBER(5)");
 
                     b.Property<string>("Nombre")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<string>("NombreFaceta")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<short>("Orden")
-                        .HasColumnType("smallint");
+                        .HasColumnType("NUMBER(5)");
 
                     b.Property<short>("TipoDisenio")
-                        .HasColumnType("smallint");
+                        .HasColumnType("NUMBER(5)");
 
                     b.Property<short?>("TipoPropiedad")
-                        .HasColumnType("smallint");
+                        .HasColumnType("NUMBER(5)");
 
                     b.HasKey("ObjetoConocimiento", "Faceta");
 
@@ -2611,64 +2611,64 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Faceta.FacetaObjetoConocimientoProyecto", b =>
                 {
                     b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(1);
 
                     b.Property<string>("ObjetoConocimiento")
                         .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)")
+                        .HasColumnType("NVARCHAR2(50)")
                         .HasColumnOrder(2);
 
                     b.Property<string>("Faceta")
                         .HasMaxLength(300)
-                        .HasColumnType("nvarchar(300)")
+                        .HasColumnType("NVARCHAR2(300)")
                         .HasColumnOrder(3);
 
                     b.Property<Guid?>("AgrupacionID")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<short>("AlgoritmoTransformacion")
-                        .HasColumnType("smallint");
+                        .HasColumnType("NUMBER(5)");
 
                     b.Property<bool>("Autocompletar")
-                        .HasColumnType("bit");
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<short>("Comportamiento")
-                        .HasColumnType("smallint");
+                        .HasColumnType("NUMBER(5)");
 
                     b.Property<bool>("ComportamientoOr")
-                        .HasColumnType("bit");
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<string>("Condicion")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<short>("ElementosVisibles")
-                        .HasColumnType("smallint");
+                        .HasColumnType("NUMBER(5)");
 
                     b.Property<bool>("EsSemantica")
-                        .HasColumnType("bit");
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<short?>("Excluida")
-                        .HasColumnType("smallint");
+                        .HasColumnType("NUMBER(5)");
 
                     b.Property<bool>("Excluyente")
-                        .HasColumnType("bit");
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<string>("FacetaPrivadaParaGrupoEditores")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<DateTime>("FechaCreacion")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("TIMESTAMP(7)");
 
                     b.Property<bool>("Inmutable")
-                        .HasColumnType("bit");
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<short>("Mayusculas")
-                        .HasColumnType("smallint");
+                        .HasColumnType("NUMBER(5)");
 
                     b.Property<bool>("MostrarContador")
                         .ValueGeneratedOnAdd()
@@ -2676,42 +2676,42 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
                         .HasDefaultValue(true);
 
                     b.Property<bool?>("MostrarSoloCaja")
-                        .HasColumnType("bit");
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<string>("NivelSemantico")
                         .HasMaxLength(5)
-                        .HasColumnType("nvarchar(5)");
+                        .HasColumnType("NVARCHAR2(5)");
 
                     b.Property<string>("NombreFaceta")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<bool?>("Oculta")
-                        .HasColumnType("bit");
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<bool>("OcultaEnFacetas")
-                        .HasColumnType("bit");
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<bool>("OcultaEnFiltros")
-                        .HasColumnType("bit");
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<short>("Orden")
-                        .HasColumnType("smallint");
+                        .HasColumnType("NUMBER(5)");
 
                     b.Property<bool>("PriorizarOrdenResultados")
-                        .HasColumnType("bit");
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<short>("Reciproca")
-                        .HasColumnType("smallint");
+                        .HasColumnType("NUMBER(5)");
 
                     b.Property<string>("SubTipo")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<short>("TipoDisenio")
-                        .HasColumnType("smallint");
+                        .HasColumnType("NUMBER(5)");
 
                     b.Property<short?>("TipoPropiedad")
-                        .HasColumnType("smallint");
+                        .HasColumnType("NUMBER(5)");
 
                     b.HasKey("OrganizacionID", "ProyectoID", "ObjetoConocimiento", "Faceta");
 
@@ -2721,25 +2721,25 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Faceta.FacetaObjetoConocimientoProyectoPestanya", b =>
                 {
                     b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(1);
 
                     b.Property<string>("ObjetoConocimiento")
                         .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)")
+                        .HasColumnType("NVARCHAR2(50)")
                         .HasColumnOrder(2);
 
                     b.Property<string>("Faceta")
                         .HasMaxLength(300)
-                        .HasColumnType("nvarchar(300)")
+                        .HasColumnType("NVARCHAR2(300)")
                         .HasColumnOrder(3);
 
                     b.Property<Guid>("PestanyaID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(4);
 
                     b.Property<bool>("AutocompletarEnriquecido")
@@ -2757,12 +2757,12 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
                 {
                     b.Property<string>("Faceta")
                         .HasMaxLength(300)
-                        .HasColumnType("nvarchar(300)");
+                        .HasColumnType("NVARCHAR2(300)");
 
                     b.Property<string>("Nombre")
                         .IsRequired()
                         .HasMaxLength(200)
-                        .HasColumnType("nvarchar(200)");
+                        .HasColumnType("NVARCHAR2(200)");
 
                     b.HasKey("Faceta");
 
@@ -2772,41 +2772,41 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Faceta.OntologiaProyecto", b =>
                 {
                     b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(1);
 
                     b.Property<string>("OntologiaProyecto1")
                         .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)")
+                        .HasColumnType("NVARCHAR2(100)")
                         .HasColumnName("OntologiaProyecto")
                         .HasColumnOrder(2);
 
                     b.Property<bool>("CachearDatosSemanticos")
-                        .HasColumnType("bit");
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<bool>("EsBuscable")
-                        .HasColumnType("bit");
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<string>("Namespace")
                         .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
+                        .HasColumnType("NVARCHAR2(100)");
 
                     b.Property<string>("NamespacesExtra")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("NombreCortoOnt")
                         .IsUnicode(false)
-                        .HasColumnType("varchar(max)");
+                        .HasColumnType("VARCHAR2(4000)");
 
                     b.Property<string>("NombreOnt")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<string>("SubTipos")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.HasKey("OrganizacionID", "ProyectoID", "OntologiaProyecto1");
 
@@ -3115,22 +3115,22 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.GrupoOrgParticipaProy", b =>
                 {
                     b.Property<Guid>("GrupoID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(1);
 
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(2);
 
                     b.Property<DateTime>("FechaAlta")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("TIMESTAMP(7)");
 
                     b.Property<short>("TipoPerfil")
-                        .HasColumnType("smallint");
+                        .HasColumnType("NUMBER(5)");
 
                     b.HasKey("GrupoID", "OrganizacionID", "ProyectoID");
 
@@ -3140,18 +3140,18 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.IdentidadDS.Amigo", b =>
                 {
                     b.Property<Guid>("IdentidadAmigoID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<Guid>("IdentidadID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(1);
 
                     b.Property<bool>("EsFanMutuo")
-                        .HasColumnType("bit");
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<DateTime>("Fecha")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("TIMESTAMP(7)");
 
                     b.HasKey("IdentidadAmigoID", "IdentidadID");
 
@@ -3161,22 +3161,22 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.IdentidadDS.AmigoAgGrupo", b =>
                 {
                     b.Property<Guid>("GrupoID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<Guid>("IdentidadID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(1);
 
                     b.Property<Guid>("IdentidadAmigoID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(2);
 
                     b.Property<DateTime>("Fecha")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("TIMESTAMP(7)");
 
                     b.Property<Guid?>("GrupoAmigosGrupoID")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("RAW(16)");
 
                     b.HasKey("GrupoID", "IdentidadID", "IdentidadAmigoID");
 
@@ -3189,49 +3189,49 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
                 {
                     b.Property<Guid>("PerfilID")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<DateTime?>("FechaVisitaComentarios")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("TIMESTAMP(7)");
 
                     b.Property<DateTime?>("FechaVisitaSuscripciones")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("TIMESTAMP(7)");
 
                     b.Property<int>("NuevasInvitaciones")
-                        .HasColumnType("int");
+                        .HasColumnType("NUMBER(10)");
 
                     b.Property<int>("NuevasSuscripciones")
-                        .HasColumnType("int");
+                        .HasColumnType("NUMBER(10)");
 
                     b.Property<int>("NuevosComentarios")
-                        .HasColumnType("int");
+                        .HasColumnType("NUMBER(10)");
 
                     b.Property<int>("NumComentBlog")
-                        .HasColumnType("int");
+                        .HasColumnType("NUMBER(10)");
 
                     b.Property<int>("NumComentContribuciones")
-                        .HasColumnType("int");
+                        .HasColumnType("NUMBER(10)");
 
                     b.Property<int>("NumComentMisRec")
-                        .HasColumnType("int");
+                        .HasColumnType("NUMBER(10)");
 
                     b.Property<int>("NumComentarios")
-                        .HasColumnType("int");
+                        .HasColumnType("NUMBER(10)");
 
                     b.Property<int>("NumComentariosSinLeer")
-                        .HasColumnType("int");
+                        .HasColumnType("NUMBER(10)");
 
                     b.Property<int>("NumInvitacionesSinLeer")
-                        .HasColumnType("int");
+                        .HasColumnType("NUMBER(10)");
 
                     b.Property<int>("NumMensajesSinLeer")
-                        .HasColumnType("int");
+                        .HasColumnType("NUMBER(10)");
 
                     b.Property<int>("NumNuevosMensajes")
-                        .HasColumnType("int");
+                        .HasColumnType("NUMBER(10)");
 
                     b.Property<int>("NumSuscripcionesSinLeer")
-                        .HasColumnType("int");
+                        .HasColumnType("NUMBER(10)");
 
                     b.HasKey("PerfilID");
 
@@ -3241,15 +3241,15 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.IdentidadDS.DatoExtraEcosistemaOpcionPerfil", b =>
                 {
                     b.Property<Guid>("DatoExtraID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<Guid>("OpcionID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(1);
 
                     b.Property<Guid>("PerfilID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(2);
 
                     b.HasKey("DatoExtraID", "OpcionID", "PerfilID");
@@ -3262,17 +3262,17 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.IdentidadDS.DatoExtraEcosistemaVirtuosoPerfil", b =>
                 {
                     b.Property<Guid>("DatoExtraID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<Guid>("PerfilID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(1);
 
                     b.Property<string>("Opcion")
                         .IsRequired()
                         .HasMaxLength(500)
-                        .HasColumnType("nvarchar(500)");
+                        .HasColumnType("NVARCHAR2(500)");
 
                     b.HasKey("DatoExtraID", "PerfilID");
 
@@ -3282,25 +3282,25 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.IdentidadDS.DatoExtraProyectoVirtuosoIdentidad", b =>
                 {
                     b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(1);
 
                     b.Property<Guid>("DatoExtraID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(2);
 
                     b.Property<Guid>("IdentidadID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(3);
 
                     b.Property<string>("Opcion")
                         .IsRequired()
                         .HasMaxLength(500)
-                        .HasColumnType("nvarchar(500)");
+                        .HasColumnType("NVARCHAR2(500)");
 
                     b.HasKey("OrganizacionID", "ProyectoID", "DatoExtraID", "IdentidadID");
 
@@ -3313,24 +3313,24 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
                 {
                     b.Property<Guid>("GrupoID")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<bool>("Automatico")
-                        .HasColumnType("bit");
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<DateTime>("Fecha")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("TIMESTAMP(7)");
 
                     b.Property<Guid>("IdentidadID")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<string>("Nombre")
                         .IsRequired()
                         .HasMaxLength(250)
-                        .HasColumnType("nvarchar(250)");
+                        .HasColumnType("NVARCHAR2(250)");
 
                     b.Property<int>("Tipo")
-                        .HasColumnType("int");
+                        .HasColumnType("NUMBER(10)");
 
                     b.HasKey("GrupoID");
 
@@ -3341,36 +3341,35 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
                 {
                     b.Property<Guid>("GrupoID")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<string>("Descripcion")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<DateTime>("FechaAlta")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("TIMESTAMP(7)");
 
                     b.Property<DateTime?>("FechaBaja")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("TIMESTAMP(7)");
 
                     b.Property<string>("Nombre")
                         .IsRequired()
                         .HasMaxLength(300)
-                        .HasColumnType("nvarchar(300)");
+                        .HasColumnType("NVARCHAR2(300)");
 
                     b.Property<string>("NombreCorto")
                         .IsRequired()
                         .HasMaxLength(300)
-                        .HasColumnType("nvarchar(300)");
+                        .HasColumnType("NVARCHAR2(300)");
 
                     b.Property<bool>("PermitirEnviarMensajes")
-                        .HasColumnType("bit");
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<bool>("Publico")
-                        .HasColumnType("bit");
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<string>("Tags")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.HasKey("GrupoID");
 
@@ -3380,11 +3379,11 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.IdentidadDS.GrupoIdentidadesOrganizacion", b =>
                 {
                     b.Property<Guid>("GrupoID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(1);
 
                     b.HasKey("GrupoID", "OrganizacionID");
@@ -3395,18 +3394,18 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.IdentidadDS.GrupoIdentidadesParticipacion", b =>
                 {
                     b.Property<Guid>("GrupoID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<Guid>("IdentidadID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(1);
 
                     b.Property<DateTime>("FechaAlta")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("TIMESTAMP(7)");
 
                     b.Property<DateTime?>("FechaBaja")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("TIMESTAMP(7)");
 
                     b.HasKey("GrupoID", "IdentidadID");
 
@@ -3418,15 +3417,15 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.IdentidadDS.GrupoIdentidadesProyecto", b =>
                 {
                     b.Property<Guid>("GrupoID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(1);
 
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(2);
 
                     b.HasKey("GrupoID", "OrganizacionID", "ProyectoID");
@@ -3438,64 +3437,64 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
                 {
                     b.Property<Guid>("IdentidadID")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<bool>("ActivoEnComunidad")
-                        .HasColumnType("bit");
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<bool>("ActualizaHome")
-                        .HasColumnType("bit");
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<Guid?>("CurriculumID")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<int>("DiasUltActualizacion")
-                        .HasColumnType("int");
+                        .HasColumnType("NUMBER(10)");
 
                     b.Property<DateTime>("FechaAlta")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("TIMESTAMP(7)");
 
                     b.Property<DateTime?>("FechaBaja")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("TIMESTAMP(7)");
 
                     b.Property<DateTime?>("FechaExpulsion")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("TIMESTAMP(7)");
 
                     b.Property<string>("Foto")
                         .HasMaxLength(200)
-                        .HasColumnType("nvarchar(200)");
+                        .HasColumnType("NVARCHAR2(200)");
 
                     b.Property<bool>("MostrarBienvenida")
-                        .HasColumnType("bit");
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<string>("NombreCortoIdentidad")
                         .IsRequired()
                         .HasMaxLength(300)
-                        .HasColumnType("nvarchar(300)");
+                        .HasColumnType("NVARCHAR2(300)");
 
                     b.Property<int>("NumConnexiones")
-                        .HasColumnType("int");
+                        .HasColumnType("NUMBER(10)");
 
                     b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<Guid>("PerfilID")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<double?>("Rank")
-                        .HasColumnType("float");
+                        .HasColumnType("BINARY_DOUBLE");
 
                     b.Property<bool>("RecibirNewsLetter")
-                        .HasColumnType("bit");
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<short>("Tipo")
-                        .HasColumnType("smallint");
+                        .HasColumnType("NUMBER(5)");
 
                     b.Property<double>("ValorAbsoluto")
-                        .HasColumnType("float");
+                        .HasColumnType("BINARY_DOUBLE");
 
                     b.HasKey("IdentidadID");
 
@@ -3507,13 +3506,13 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.IdentidadDS.IdentidadContadores", b =>
                 {
                     b.Property<Guid>("IdentidadID")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<int>("NumeroDescargas")
-                        .HasColumnType("int");
+                        .HasColumnType("NUMBER(10)");
 
                     b.Property<int>("NumeroVisitas")
-                        .HasColumnType("int");
+                        .HasColumnType("NUMBER(10)");
 
                     b.HasKey("IdentidadID");
 
@@ -3523,26 +3522,26 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.IdentidadDS.IdentidadContadoresRecursos", b =>
                 {
                     b.Property<Guid>("IdentidadID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<short>("Tipo")
-                        .HasColumnType("smallint")
+                        .HasColumnType("NUMBER(5)")
                         .HasColumnOrder(1);
 
                     b.Property<string>("NombreSem")
                         .HasMaxLength(200)
-                        .HasColumnType("nvarchar(200)")
+                        .HasColumnType("NVARCHAR2(200)")
                         .HasColumnOrder(2);
 
                     b.Property<int>("Comentarios")
-                        .HasColumnType("int");
+                        .HasColumnType("NUMBER(10)");
 
                     b.Property<int>("Compartidos")
-                        .HasColumnType("int");
+                        .HasColumnType("NUMBER(10)");
 
                     b.Property<int>("Publicados")
-                        .HasColumnType("int");
+                        .HasColumnType("NUMBER(10)");
 
                     b.HasKey("IdentidadID", "Tipo", "NombreSem");
 
@@ -3553,44 +3552,44 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
                 {
                     b.Property<Guid>("OrganizacionID")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<string>("Asignatura")
                         .IsRequired()
                         .HasMaxLength(250)
-                        .HasColumnType("nvarchar(250)");
+                        .HasColumnType("NVARCHAR2(250)");
 
                     b.Property<string>("Centro")
                         .IsRequired()
                         .HasMaxLength(250)
-                        .HasColumnType("nvarchar(250)");
+                        .HasColumnType("NVARCHAR2(250)");
 
                     b.Property<string>("Curso")
                         .IsRequired()
                         .HasMaxLength(10)
-                        .HasColumnType("nvarchar(10)");
+                        .HasColumnType("NVARCHAR2(10)");
 
                     b.Property<string>("CursoAcademico")
                         .IsRequired()
                         .HasMaxLength(10)
-                        .HasColumnType("nvarchar(10)");
+                        .HasColumnType("NVARCHAR2(10)");
 
                     b.Property<string>("Grupo")
                         .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
+                        .HasColumnType("NVARCHAR2(50)");
 
                     b.Property<string>("NombreCortoAsig")
                         .IsRequired()
                         .HasMaxLength(10)
-                        .HasColumnType("nvarchar(10)");
+                        .HasColumnType("NVARCHAR2(10)");
 
                     b.Property<string>("NombreCortoCentro")
                         .IsRequired()
                         .HasMaxLength(10)
-                        .HasColumnType("nvarchar(10)");
+                        .HasColumnType("NVARCHAR2(10)");
 
                     b.Property<short>("TipoClase")
-                        .HasColumnType("smallint");
+                        .HasColumnType("NUMBER(5)");
 
                     b.HasKey("OrganizacionID");
 
@@ -3601,57 +3600,57 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
                 {
                     b.Property<Guid>("PerfilID")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<int>("CaducidadResSusc")
-                        .HasColumnType("int");
+                        .HasColumnType("NUMBER(10)");
 
                     b.Property<Guid?>("CurriculumID")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<Guid?>("CurriculumPerfilID")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<bool>("Eliminado")
-                        .HasColumnType("bit");
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<string>("NombreCortoOrg")
                         .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
+                        .HasColumnType("NVARCHAR2(50)");
 
                     b.Property<string>("NombreCortoUsu")
                         .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
+                        .HasColumnType("NVARCHAR2(50)");
 
                     b.Property<string>("NombreOrganizacion")
                         .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)");
+                        .HasColumnType("NVARCHAR2(255)");
 
                     b.Property<string>("NombrePerfil")
                         .IsRequired()
                         .HasMaxLength(300)
-                        .HasColumnType("nvarchar(300)");
+                        .HasColumnType("NVARCHAR2(300)");
 
                     b.Property<Guid?>("OrganizacionID")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<Guid?>("PersonaID")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<bool>("TieneTwitter")
-                        .HasColumnType("bit");
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<string>("TokenSecretoTwitter")
                         .HasMaxLength(1000)
-                        .HasColumnType("nvarchar(1000)");
+                        .HasColumnType("NVARCHAR2(1000)");
 
                     b.Property<string>("TokenTwitter")
                         .HasMaxLength(1000)
-                        .HasColumnType("nvarchar(1000)");
+                        .HasColumnType("NVARCHAR2(1000)");
 
                     b.Property<string>("UsuarioTwitter")
                         .HasMaxLength(15)
-                        .HasColumnType("nvarchar(15)");
+                        .HasColumnType("NVARCHAR2(15)");
 
                     b.HasKey("PerfilID");
 
@@ -3663,24 +3662,24 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.IdentidadDS.PerfilGadget", b =>
                 {
                     b.Property<Guid>("PerfilID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<Guid>("GadgetID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(1);
 
                     b.Property<string>("Contenido")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<short>("Orden")
-                        .HasColumnType("smallint");
+                        .HasColumnType("NUMBER(5)");
 
                     b.Property<string>("Titulo")
                         .IsRequired()
                         .HasMaxLength(200)
-                        .HasColumnType("nvarchar(200)");
+                        .HasColumnType("NVARCHAR2(200)");
 
                     b.HasKey("PerfilID", "GadgetID");
 
@@ -3690,11 +3689,11 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.IdentidadDS.PerfilOrganizacion", b =>
                 {
                     b.Property<Guid>("PerfilID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(1);
 
                     b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.HasKey("PerfilID", "OrganizacionID");
@@ -3705,10 +3704,10 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.IdentidadDS.PerfilPersona", b =>
                 {
                     b.Property<Guid>("PerfilID")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<Guid>("PersonaID")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("RAW(16)");
 
                     b.HasKey("PerfilID");
 
@@ -3718,15 +3717,15 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.IdentidadDS.PerfilPersonaOrg", b =>
                 {
                     b.Property<Guid>("PersonaID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(1);
 
                     b.Property<Guid>("PerfilID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(2);
 
                     b.HasKey("PersonaID", "OrganizacionID", "PerfilID");
@@ -3739,24 +3738,24 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.IdentidadDS.PerfilRedesSociales", b =>
                 {
                     b.Property<Guid>("PerfilID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<string>("NombreRedSocial")
-                        .HasColumnType("nvarchar(450)")
+                        .HasColumnType("NVARCHAR2(450)")
                         .HasColumnOrder(1);
 
                     b.Property<string>("Token")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<string>("TokenSecreto")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<string>("Usuario")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<string>("urlUsuario")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.HasKey("PerfilID", "NombreRedSocial");
 
@@ -3766,15 +3765,15 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.IdentidadDS.PermisoAmigoOrg", b =>
                 {
                     b.Property<Guid>("IdentidadOrganizacionID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<Guid>("IdentidadUsuarioID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(1);
 
                     b.Property<Guid>("IdentidadAmigoID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(2);
 
                     b.HasKey("IdentidadOrganizacionID", "IdentidadUsuarioID", "IdentidadAmigoID");
@@ -3785,19 +3784,19 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.IdentidadDS.PermisoGrupoAmigoOrg", b =>
                 {
                     b.Property<Guid>("IdentidadOrganizacionID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<Guid>("IdentidadUsuarioID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(1);
 
                     b.Property<Guid>("GrupoID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(2);
 
                     b.Property<bool>("PermisoEdicion")
-                        .HasColumnType("bit");
+                        .HasColumnType("NUMBER(1)");
 
                     b.HasKey("IdentidadOrganizacionID", "IdentidadUsuarioID", "GrupoID");
 
@@ -3807,15 +3806,15 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.IdentidadDS.PersonaVisibleEnOrg", b =>
                 {
                     b.Property<Guid>("PersonaID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(1);
 
                     b.Property<int>("Orden")
-                        .HasColumnType("int");
+                        .HasColumnType("NUMBER(10)");
 
                     b.HasKey("PersonaID", "OrganizacionID");
 
@@ -3825,26 +3824,26 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.IdentidadDS.Profesor", b =>
                 {
                     b.Property<Guid>("ProfesorID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<Guid>("PerfilID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(1);
 
                     b.Property<string>("AreaEstudios")
                         .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)");
+                        .HasColumnType("NVARCHAR2(255)");
 
                     b.Property<string>("CentroEstudios")
                         .IsRequired()
                         .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)");
+                        .HasColumnType("NVARCHAR2(255)");
 
                     b.Property<string>("Email")
                         .IsRequired()
                         .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)");
+                        .HasColumnType("NVARCHAR2(255)");
 
                     b.HasKey("ProfesorID", "PerfilID");
 
@@ -3856,37 +3855,37 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.IntegracionContinuaPropiedad", b =>
                 {
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<short>("TipoObjeto")
-                        .HasColumnType("smallint")
+                        .HasColumnType("NUMBER(5)")
                         .HasColumnOrder(1);
 
                     b.Property<string>("ObjetoPropiedad")
                         .HasMaxLength(250)
-                        .HasColumnType("nvarchar(250)")
+                        .HasColumnType("NVARCHAR2(250)")
                         .HasColumnOrder(2);
 
                     b.Property<short>("TipoPropiedad")
-                        .HasColumnType("smallint")
+                        .HasColumnType("NUMBER(5)")
                         .HasColumnOrder(3);
 
                     b.Property<bool>("MismoValor")
-                        .HasColumnType("bit")
+                        .HasColumnType("NUMBER(1)")
                         .HasColumnOrder(6);
 
                     b.Property<bool>("Revisada")
-                        .HasColumnType("bit")
+                        .HasColumnType("NUMBER(1)")
                         .HasColumnOrder(7);
 
                     b.Property<string>("ValorPropiedad")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)")
+                        .HasColumnType("NVARCHAR2(2000)")
                         .HasColumnOrder(4);
 
                     b.Property<string>("ValorPropiedadDestino")
-                        .HasColumnType("nvarchar(max)")
+                        .HasColumnType("NVARCHAR2(2000)")
                         .HasColumnOrder(5);
 
                     b.HasKey("ProyectoID", "TipoObjeto", "ObjetoPropiedad", "TipoPropiedad");
@@ -3898,30 +3897,30 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
                 {
                     b.Property<Guid>("CorreoID")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<string>("Asunto")
                         .IsRequired()
                         .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)");
+                        .HasColumnType("NVARCHAR2(255)");
 
                     b.Property<Guid>("Autor")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<Guid?>("ConversacionID")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<string>("Cuerpo")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<bool>("Eliminado")
-                        .HasColumnType("bit");
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<bool>("EnPapelera")
-                        .HasColumnType("bit");
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<DateTime>("Fecha")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("TIMESTAMP(7)");
 
                     b.HasKey("CorreoID");
 
@@ -3932,41 +3931,41 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
                 {
                     b.Property<int>("ColaID")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                        .HasColumnType("NUMBER(10)");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ColaID"));
 
                     b.Property<string>("ConsumerKey")
                         .HasMaxLength(1000)
-                        .HasColumnType("nvarchar(1000)");
+                        .HasColumnType("NVARCHAR2(1000)");
 
                     b.Property<string>("ConsumerSecret")
                         .HasMaxLength(1000)
-                        .HasColumnType("nvarchar(1000)");
+                        .HasColumnType("NVARCHAR2(1000)");
 
                     b.Property<string>("Enlace")
                         .IsRequired()
                         .HasMaxLength(1000)
-                        .HasColumnType("nvarchar(1000)");
+                        .HasColumnType("NVARCHAR2(1000)");
 
                     b.Property<string>("Mensaje")
                         .IsRequired()
                         .HasMaxLength(1000)
-                        .HasColumnType("nvarchar(1000)");
+                        .HasColumnType("NVARCHAR2(1000)");
 
                     b.Property<short>("NumIntentos")
-                        .HasColumnType("smallint");
+                        .HasColumnType("NUMBER(5)");
 
                     b.Property<Guid>("PerfilID")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<string>("TokenSecretoTwitter")
                         .HasMaxLength(1000)
-                        .HasColumnType("nvarchar(1000)");
+                        .HasColumnType("NVARCHAR2(1000)");
 
                     b.Property<string>("TokenTwitter")
                         .HasMaxLength(1000)
-                        .HasColumnType("nvarchar(1000)");
+                        .HasColumnType("NVARCHAR2(1000)");
 
                     b.HasKey("ColaID");
 
@@ -3977,7 +3976,7 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
                 {
                     b.Property<string>("Email")
                         .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
+                        .HasColumnType("NVARCHAR2(100)");
 
                     b.HasKey("Email");
 
@@ -3988,31 +3987,31 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
                 {
                     b.Property<Guid>("InvitacionID")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<Guid?>("ElementoVinculadoID")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<int>("Estado")
-                        .HasColumnType("int");
+                        .HasColumnType("NUMBER(10)");
 
                     b.Property<DateTime>("FechaInvitacion")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("TIMESTAMP(7)");
 
                     b.Property<DateTime?>("FechaProcesado")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("TIMESTAMP(7)");
 
                     b.Property<Guid>("IdentidadDestinoID")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<Guid>("IdentidadOrigenID")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<Guid>("NotificacionID")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<short>("TipoInvitacion")
-                        .HasColumnType("smallint");
+                        .HasColumnType("NUMBER(5)");
 
                     b.HasKey("InvitacionID");
 
@@ -4025,26 +4024,26 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
                 {
                     b.Property<Guid>("NotificacionID")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<DateTime?>("FechaFin")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("TIMESTAMP(7)");
 
                     b.Property<DateTime>("FechaNotificacion")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("TIMESTAMP(7)");
 
                     b.Property<string>("Idioma")
                         .HasMaxLength(20)
                         .HasColumnType("nvarchar(20)");
 
                     b.Property<short>("MensajeID")
-                        .HasColumnType("smallint");
+                        .HasColumnType("NUMBER(5)");
 
                     b.Property<Guid?>("OrganizacionID")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<Guid?>("ProyectoID")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("RAW(16)");
 
                     b.HasKey("NotificacionID");
 
@@ -4054,15 +4053,15 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Notificacion.NotificacionAlertaPersona", b =>
                 {
                     b.Property<Guid>("NotificacionID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<Guid>("PersonaID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(1);
 
                     b.Property<DateTime?>("FechaLectura")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("TIMESTAMP(7)");
 
                     b.HasKey("NotificacionID", "PersonaID");
 
@@ -4072,28 +4071,28 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Notificacion.NotificacionCorreoPersona", b =>
                 {
                     b.Property<Guid>("NotificacionID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<string>("EmailEnvio")
                         .HasMaxLength(400)
-                        .HasColumnType("nvarchar(400)")
+                        .HasColumnType("NVARCHAR2(400)")
                         .HasColumnOrder(1);
 
                     b.Property<bool>("EnviadoRabbit")
-                        .HasColumnType("bit");
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<short?>("EstadoEnvio")
-                        .HasColumnType("smallint");
+                        .HasColumnType("NUMBER(5)");
 
                     b.Property<DateTime?>("FechaEnvio")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("TIMESTAMP(7)");
 
                     b.Property<Guid?>("OrganizacionPersonaID")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<Guid?>("PersonaID")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("RAW(16)");
 
                     b.HasKey("NotificacionID", "EmailEnvio");
 
@@ -4103,20 +4102,20 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Notificacion.NotificacionEnvioMasivo", b =>
                 {
                     b.Property<Guid>("NotificacionID")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<string>("Destinatarios")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<short>("EstadoEnvio")
-                        .HasColumnType("smallint");
+                        .HasColumnType("NUMBER(5)");
 
                     b.Property<DateTime?>("FechaEnvio")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("TIMESTAMP(7)");
 
                     b.Property<short>("Prioridad")
-                        .HasColumnType("smallint");
+                        .HasColumnType("NUMBER(5)");
 
                     b.HasKey("NotificacionID");
 
@@ -4126,15 +4125,15 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Notificacion.NotificacionParametro", b =>
                 {
                     b.Property<Guid>("NotificacionID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<short>("ParametroID")
-                        .HasColumnType("smallint")
+                        .HasColumnType("NUMBER(5)")
                         .HasColumnOrder(1);
 
                     b.Property<string>("Valor")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.HasKey("NotificacionID", "ParametroID");
 
@@ -4144,20 +4143,20 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Notificacion.NotificacionParametroPersona", b =>
                 {
                     b.Property<Guid>("NotificacionID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<short>("ParametroID")
-                        .HasColumnType("smallint")
+                        .HasColumnType("NUMBER(5)")
                         .HasColumnOrder(1);
 
                     b.Property<Guid>("PersonaID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(2);
 
                     b.Property<string>("Valor")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.HasKey("NotificacionID", "ParametroID", "PersonaID");
 
@@ -4167,19 +4166,19 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Notificacion.NotificacionSolicitud", b =>
                 {
                     b.Property<Guid>("NotificacionID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<Guid>("SolicitudID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(1);
 
                     b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(2);
 
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(3);
 
                     b.HasKey("NotificacionID", "SolicitudID", "OrganizacionID", "ProyectoID");
@@ -4192,11 +4191,11 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Notificacion.NotificacionSuscripcion", b =>
                 {
                     b.Property<Guid>("NotificacionID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<Guid>("SuscripcionID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(1);
 
                     b.HasKey("NotificacionID", "SuscripcionID");
@@ -4207,16 +4206,16 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.OrganizacionDS.ConfiguracionGnossOrg", b =>
                 {
                     b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<bool>("VerRecursos")
-                        .HasColumnType("bit");
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<bool>("VerRecursosExterno")
-                        .HasColumnType("bit");
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<short>("VisibilidadContactos")
-                        .HasColumnType("smallint");
+                        .HasColumnType("NUMBER(5)");
 
                     b.HasKey("OrganizacionID");
 
@@ -4227,89 +4226,89 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
                 {
                     b.Property<Guid>("OrganizacionID")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<string>("Alias")
                         .HasMaxLength(80)
-                        .HasColumnType("nvarchar(80)");
+                        .HasColumnType("NVARCHAR2(80)");
 
                     b.Property<string>("CP")
                         .HasMaxLength(15)
-                        .HasColumnType("nvarchar(15)");
+                        .HasColumnType("NVARCHAR2(15)");
 
                     b.Property<string>("CoordenadasLogo")
                         .HasMaxLength(30)
-                        .HasColumnType("nvarchar(30)");
+                        .HasColumnType("NVARCHAR2(30)");
 
                     b.Property<string>("Direccion")
                         .HasMaxLength(1000)
-                        .HasColumnType("nvarchar(1000)");
+                        .HasColumnType("NVARCHAR2(1000)");
 
                     b.Property<bool>("Eliminada")
-                        .HasColumnType("bit");
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<string>("Email")
                         .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)");
+                        .HasColumnType("NVARCHAR2(255)");
 
                     b.Property<bool>("EsBuscable")
-                        .HasColumnType("bit");
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<bool>("EsBuscableExternos")
-                        .HasColumnType("bit");
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<string>("Fax")
                         .HasMaxLength(13)
-                        .HasColumnType("nvarchar(13)");
+                        .HasColumnType("NVARCHAR2(13)");
 
                     b.Property<string>("Localidad")
                         .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)");
+                        .HasColumnType("NVARCHAR2(255)");
 
                     b.Property<byte[]>("Logotipo")
-                        .HasColumnType("varbinary(max)");
+                        .HasColumnType("RAW(2000)");
 
                     b.Property<bool>("ModoPersonal")
-                        .HasColumnType("bit");
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<string>("Nombre")
                         .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)");
+                        .HasColumnType("NVARCHAR2(255)");
 
                     b.Property<string>("NombreCorto")
                         .IsRequired()
                         .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
+                        .HasColumnType("NVARCHAR2(50)");
 
                     b.Property<Guid?>("OrganizacionPadreID")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<Guid?>("PaisID")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<string>("Provincia")
                         .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)");
+                        .HasColumnType("NVARCHAR2(255)");
 
                     b.Property<Guid?>("ProvinciaID")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<int>("TablaBaseOrganizacionID")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                        .HasColumnType("NUMBER(10)");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("TablaBaseOrganizacionID"));
 
                     b.Property<string>("Telefono")
                         .HasMaxLength(13)
-                        .HasColumnType("nvarchar(13)");
+                        .HasColumnType("NVARCHAR2(13)");
 
                     b.Property<int?>("VersionLogo")
-                        .HasColumnType("int");
+                        .HasColumnType("NUMBER(10)");
 
                     b.Property<string>("Web")
                         .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)");
+                        .HasColumnType("NVARCHAR2(255)");
 
                     b.HasKey("OrganizacionID");
 
@@ -4321,23 +4320,23 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.OrganizacionDS.OrganizacionEmpresa", b =>
                 {
                     b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<string>("CIF")
                         .HasMaxLength(9)
-                        .HasColumnType("nvarchar(9)");
+                        .HasColumnType("NVARCHAR2(9)");
 
                     b.Property<int?>("Empleados")
-                        .HasColumnType("int");
+                        .HasColumnType("NUMBER(10)");
 
                     b.Property<DateTime?>("FechaCreacion")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("TIMESTAMP(7)");
 
                     b.Property<short>("SectorOrganizacion")
-                        .HasColumnType("smallint");
+                        .HasColumnType("NUMBER(5)");
 
                     b.Property<short>("TipoOrganizacion")
-                        .HasColumnType("smallint");
+                        .HasColumnType("NUMBER(5)");
 
                     b.HasKey("OrganizacionID");
 
@@ -4347,7 +4346,7 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.OrganizacionDS.OrganizacionGnoss", b =>
                 {
                     b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("RAW(16)");
 
                     b.HasKey("OrganizacionID");
 
@@ -4357,28 +4356,28 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.OrganizacionDS.OrganizacionParticipaProy", b =>
                 {
                     b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<Guid>("OrganizacionProyectoID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(1);
 
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(2);
 
                     b.Property<bool>("EstaBloqueada")
-                        .HasColumnType("bit");
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<DateTime>("FechaInicio")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("TIMESTAMP(7)");
 
                     b.Property<Guid>("IdentidadID")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<short>("RegistroAutomatico")
-                        .HasColumnType("smallint");
+                        .HasColumnType("NUMBER(5)");
 
                     b.HasKey("OrganizacionID", "OrganizacionProyectoID", "ProyectoID");
 
@@ -4390,36 +4389,36 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.OrganizacionDS.PersonaOcupacionFigura", b =>
                 {
                     b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(1);
 
                     b.Property<Guid>("EstructuraID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(2);
 
                     b.Property<Guid>("ElementoEstructuraID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(3);
 
                     b.Property<Guid>("PersonaID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(4);
 
                     b.Property<int>("Dedicacion")
-                        .HasColumnType("int");
+                        .HasColumnType("NUMBER(10)");
 
                     b.Property<bool>("EsPropietarioFigura")
-                        .HasColumnType("bit");
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<short>("Orden")
-                        .HasColumnType("smallint");
+                        .HasColumnType("NUMBER(5)");
 
                     b.Property<Guid?>("OrganizacionPersonalID")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("RAW(16)");
 
                     b.HasKey("OrganizacionID", "ProyectoID", "EstructuraID", "ElementoEstructuraID", "PersonaID");
 
@@ -4429,33 +4428,33 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.OrganizacionDS.PersonaOcupacionFormaSec", b =>
                 {
                     b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(1);
 
                     b.Property<Guid>("EstructuraID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(2);
 
                     b.Property<Guid>("ElementoEstructuraID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(3);
 
                     b.Property<Guid>("PersonaID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(4);
 
                     b.Property<int>("Dedicacion")
-                        .HasColumnType("int");
+                        .HasColumnType("NUMBER(10)");
 
                     b.Property<short>("Orden")
-                        .HasColumnType("smallint");
+                        .HasColumnType("NUMBER(5)");
 
                     b.Property<Guid?>("OrganizacionPersonalID")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("RAW(16)");
 
                     b.HasKey("OrganizacionID", "ProyectoID", "EstructuraID", "ElementoEstructuraID", "PersonaID");
 
@@ -4465,79 +4464,79 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.OrganizacionDS.PersonaVinculoOrganizacion", b =>
                 {
                     b.Property<Guid>("PersonaID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(1);
 
                     b.Property<string>("CPTrabajo")
                         .HasMaxLength(15)
-                        .HasColumnType("nvarchar(15)");
+                        .HasColumnType("NVARCHAR2(15)");
 
                     b.Property<string>("Cargo")
                         .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)");
+                        .HasColumnType("NVARCHAR2(255)");
 
                     b.Property<Guid?>("CategoriaProfesionalID")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<string>("CoordenadasFoto")
                         .HasMaxLength(30)
-                        .HasColumnType("nvarchar(30)");
+                        .HasColumnType("NVARCHAR2(30)");
 
                     b.Property<string>("DireccionTrabajo")
                         .HasMaxLength(1000)
-                        .HasColumnType("nvarchar(1000)");
+                        .HasColumnType("NVARCHAR2(1000)");
 
                     b.Property<string>("EmailTrabajo")
                         .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)");
+                        .HasColumnType("NVARCHAR2(255)");
 
                     b.Property<string>("Extension")
                         .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
+                        .HasColumnType("NVARCHAR2(100)");
 
                     b.Property<DateTime?>("FechaAnadidaFoto")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("TIMESTAMP(7)");
 
                     b.Property<DateTime>("FechaVinculacion")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("TIMESTAMP(7)");
 
                     b.Property<byte[]>("Foto")
-                        .HasColumnType("varbinary(max)");
+                        .HasColumnType("RAW(2000)");
 
                     b.Property<string>("LocalidadTrabajo")
                         .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)");
+                        .HasColumnType("NVARCHAR2(255)");
 
                     b.Property<Guid?>("PaisTrabajoID")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<string>("ProvinciaTrabajo")
                         .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)");
+                        .HasColumnType("NVARCHAR2(255)");
 
                     b.Property<Guid?>("ProvinciaTrabajoID")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<string>("TelefonoMovilTrabajo")
                         .HasMaxLength(13)
-                        .HasColumnType("nvarchar(13)");
+                        .HasColumnType("NVARCHAR2(13)");
 
                     b.Property<string>("TelefonoTrabajo")
                         .HasMaxLength(13)
-                        .HasColumnType("nvarchar(13)");
+                        .HasColumnType("NVARCHAR2(13)");
 
                     b.Property<Guid?>("TipoContratoID")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<bool>("UsarFotoPersonal")
-                        .HasColumnType("bit");
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<int?>("VersionFoto")
-                        .HasColumnType("int");
+                        .HasColumnType("NUMBER(10)");
 
                     b.HasKey("PersonaID", "OrganizacionID");
 
@@ -4550,12 +4549,12 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
                 {
                     b.Property<Guid>("PaisID")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<string>("Nombre")
                         .IsRequired()
                         .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)");
+                        .HasColumnType("NVARCHAR2(255)");
 
                     b.HasKey("PaisID");
 
@@ -4566,19 +4565,19 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
                 {
                     b.Property<Guid>("ProvinciaID")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<string>("CP")
                         .HasMaxLength(5)
-                        .HasColumnType("nvarchar(5)");
+                        .HasColumnType("NVARCHAR2(5)");
 
                     b.Property<string>("Nombre")
                         .IsRequired()
                         .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)");
+                        .HasColumnType("NVARCHAR2(255)");
 
                     b.Property<Guid>("PaisID")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("RAW(16)");
 
                     b.HasKey("ProvinciaID");
 
@@ -4590,28 +4589,28 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.ParametroGeneralDS.ConfiguracionAmbitoBusqueda", b =>
                 {
                     b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(1);
 
                     b.Property<string>("DefectoHome")
                         .IsRequired()
                         .HasMaxLength(150)
-                        .HasColumnType("nvarchar(150)");
+                        .HasColumnType("NVARCHAR2(150)");
 
                     b.Property<bool>("Metabusqueda")
-                        .HasColumnType("bit");
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<string>("NombreAmbitoTodaComunidad")
                         .IsRequired()
                         .HasMaxLength(150)
-                        .HasColumnType("nvarchar(150)");
+                        .HasColumnType("NVARCHAR2(150)");
 
                     b.Property<bool>("TodoGnoss")
-                        .HasColumnType("bit");
+                        .HasColumnType("NUMBER(1)");
 
                     b.HasKey("OrganizacionID", "ProyectoID");
 
@@ -4621,431 +4620,431 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.ParametroGeneralDS.ParametroGeneral", b =>
                 {
                     b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(1);
 
                     b.Property<string>("AlgoritmoPersonasRecomendadas")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<bool>("AvisoCookie")
-                        .HasColumnType("bit");
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<string>("AvisoLegal")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<bool>("BaseRecursosDisponible")
-                        .HasColumnType("bit");
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<bool>("BiosCortas")
-                        .HasColumnType("bit");
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<bool>("BlogsDisponibles")
-                        .HasColumnType("bit");
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<bool>("BrightcoveDisponible")
-                        .HasColumnType("bit");
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<string>("BrightcoveFTP")
                         .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
+                        .HasColumnType("NVARCHAR2(100)");
 
                     b.Property<string>("BrightcoveFTPPass")
                         .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
+                        .HasColumnType("NVARCHAR2(100)");
 
                     b.Property<string>("BrightcoveFTPUser")
                         .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
+                        .HasColumnType("NVARCHAR2(100)");
 
                     b.Property<string>("BrightcovePublisherID")
                         .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
+                        .HasColumnType("NVARCHAR2(100)");
 
                     b.Property<string>("BrightcoveReproductorID")
                         .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
+                        .HasColumnType("NVARCHAR2(100)");
 
                     b.Property<string>("BrightcoveTokenRead")
                         .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
+                        .HasColumnType("NVARCHAR2(100)");
 
                     b.Property<string>("BrightcoveTokenWrite")
                         .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
+                        .HasColumnType("NVARCHAR2(100)");
 
                     b.Property<bool>("CMSDisponible")
-                        .HasColumnType("bit");
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<bool>("CargasMasivasDisponibles")
-                        .HasColumnType("bit");
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<bool>("ChatDisponible")
-                        .HasColumnType("bit");
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<bool>("ClausulasRegistro")
-                        .HasColumnType("bit");
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<string>("CodigoGoogleAnalytics")
                         .HasMaxLength(15)
-                        .HasColumnType("nvarchar(15)");
+                        .HasColumnType("NVARCHAR2(15)");
 
                     b.Property<bool>("ComentariosDisponibles")
-                        .HasColumnType("bit");
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<bool>("CompartirRecursosPermitido")
-                        .HasColumnType("bit");
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<bool>("ComunidadGNOSS")
-                        .HasColumnType("bit");
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<string>("CoordenadasHome")
                         .HasMaxLength(30)
-                        .HasColumnType("nchar(30)")
+                        .HasColumnType("NCHAR(30)")
                         .IsFixedLength();
 
                     b.Property<string>("CoordenadasMosaico")
                         .HasMaxLength(30)
-                        .HasColumnType("nchar(30)")
+                        .HasColumnType("NCHAR(30)")
                         .IsFixedLength();
 
                     b.Property<string>("CoordenadasSup")
                         .HasMaxLength(30)
-                        .HasColumnType("nchar(30)")
+                        .HasColumnType("NCHAR(30)")
                         .IsFixedLength();
 
                     b.Property<string>("Copyright")
                         .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
+                        .HasColumnType("NVARCHAR2(100)");
 
                     b.Property<bool>("DafoDisponible")
-                        .HasColumnType("bit");
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<bool>("DebatesDisponibles")
-                        .HasColumnType("bit");
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<float?>("DesviacionAdmitidaEnEvalua")
-                        .HasColumnType("real");
+                        .HasColumnType("BINARY_FLOAT");
 
                     b.Property<bool>("EncuestasDisponibles")
-                        .HasColumnType("bit");
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<string>("EnlaceContactoPiePagina")
                         .HasMaxLength(45)
                         .IsUnicode(false)
-                        .HasColumnType("varchar(45)");
+                        .HasColumnType("VARCHAR2(45)");
 
                     b.Property<bool>("EntidadRevisadaObligatoria")
-                        .HasColumnType("bit");
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<bool>("EnvioMensajesPermitido")
-                        .HasColumnType("bit");
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<bool>("EsBeta")
-                        .HasColumnType("bit");
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<bool>("EventosDisponibles")
-                        .HasColumnType("bit");
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<bool>("FechaNacimientoObligatoria")
-                        .HasColumnType("bit");
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<bool>("ForosDisponibles")
-                        .HasColumnType("bit");
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<bool>("GadgetsCabeceraDisponibles")
-                        .HasColumnType("bit");
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<bool>("GadgetsPieDisponibles")
-                        .HasColumnType("bit");
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<bool>("HomeVisible")
-                        .HasColumnType("bit");
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<string>("IdiomaDefecto")
                         .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
+                        .HasColumnType("NVARCHAR2(50)");
 
                     b.Property<bool>("IdiomasDisponibles")
-                        .HasColumnType("bit");
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<byte[]>("ImagenHome")
-                        .HasColumnType("varbinary(max)");
+                        .HasColumnType("RAW(2000)");
 
                     b.Property<byte[]>("ImagenHomeGrande")
-                        .HasColumnType("varbinary(max)");
+                        .HasColumnType("RAW(2000)");
 
                     b.Property<byte[]>("ImagenPersonalizadaPeque")
-                        .HasColumnType("varbinary(max)");
+                        .HasColumnType("RAW(2000)");
 
                     b.Property<bool>("ImagenRelacionadosMini")
-                        .HasColumnType("bit");
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<bool>("InvitacionesDisponibles")
-                        .HasColumnType("bit");
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<bool>("InvitacionesPorContactoDisponibles")
-                        .HasColumnType("bit");
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<string>("LicenciaPorDefecto")
                         .HasMaxLength(10)
-                        .HasColumnType("nvarchar(10)");
+                        .HasColumnType("NVARCHAR2(10)");
 
                     b.Property<byte[]>("LogoProyecto")
-                        .HasColumnType("varbinary(max)");
+                        .HasColumnType("RAW(2000)");
 
                     b.Property<string>("MensajeBienvenida")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<string>("MensajeLicenciaPorDefecto")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<short?>("MetaAutomatPropietarioPro")
-                        .HasColumnType("smallint");
+                        .HasColumnType("NUMBER(5)");
 
                     b.Property<bool>("MostrarAccionesEnListados")
-                        .HasColumnType("bit");
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<bool>("MostrarPersonasEnCatalogo")
-                        .HasColumnType("bit");
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<string>("NombreAmenazaDafoGF")
                         .IsRequired()
                         .HasMaxLength(1000)
-                        .HasColumnType("nvarchar(1000)");
+                        .HasColumnType("NVARCHAR2(1000)");
 
                     b.Property<string>("NombreAmenazaDafoObj")
                         .IsRequired()
                         .HasMaxLength(1000)
-                        .HasColumnType("nvarchar(1000)");
+                        .HasColumnType("NVARCHAR2(1000)");
 
                     b.Property<string>("NombreAmenazaDafoProc")
                         .IsRequired()
                         .HasMaxLength(1000)
-                        .HasColumnType("nvarchar(1000)");
+                        .HasColumnType("NVARCHAR2(1000)");
 
                     b.Property<string>("NombreDebilidadDafoGF")
                         .IsRequired()
                         .HasMaxLength(1000)
-                        .HasColumnType("nvarchar(1000)");
+                        .HasColumnType("NVARCHAR2(1000)");
 
                     b.Property<string>("NombreDebilidadDafoObj")
                         .IsRequired()
                         .HasMaxLength(1000)
-                        .HasColumnType("nvarchar(1000)");
+                        .HasColumnType("NVARCHAR2(1000)");
 
                     b.Property<string>("NombreDebilidadDafoProc")
                         .IsRequired()
                         .HasMaxLength(1000)
-                        .HasColumnType("nvarchar(1000)");
+                        .HasColumnType("NVARCHAR2(1000)");
 
                     b.Property<string>("NombreFortalezaDafoGF")
                         .IsRequired()
                         .HasMaxLength(1000)
-                        .HasColumnType("nvarchar(1000)");
+                        .HasColumnType("NVARCHAR2(1000)");
 
                     b.Property<string>("NombreFortalezaDafoObj")
                         .IsRequired()
                         .HasMaxLength(1000)
-                        .HasColumnType("nvarchar(1000)");
+                        .HasColumnType("NVARCHAR2(1000)");
 
                     b.Property<string>("NombreFortalezaDafoProc")
                         .IsRequired()
                         .HasMaxLength(1000)
-                        .HasColumnType("nvarchar(1000)");
+                        .HasColumnType("NVARCHAR2(1000)");
 
                     b.Property<string>("NombreImagenPeque")
                         .IsRequired()
                         .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)");
+                        .HasColumnType("NVARCHAR2(255)");
 
                     b.Property<string>("NombreOportunidadDafoGF")
                         .IsRequired()
                         .HasMaxLength(1000)
-                        .HasColumnType("nvarchar(1000)");
+                        .HasColumnType("NVARCHAR2(1000)");
 
                     b.Property<string>("NombreOportunidadDafoObj")
                         .IsRequired()
                         .HasMaxLength(1000)
-                        .HasColumnType("nvarchar(1000)");
+                        .HasColumnType("NVARCHAR2(1000)");
 
                     b.Property<string>("NombreOportunidadDafoProc")
                         .IsRequired()
                         .HasMaxLength(1000)
-                        .HasColumnType("nvarchar(1000)");
+                        .HasColumnType("NVARCHAR2(1000)");
 
                     b.Property<short>("NumeroRecursosRelacionados")
-                        .HasColumnType("smallint");
+                        .HasColumnType("NUMBER(5)");
 
                     b.Property<bool>("OcultarPersonalizacion")
-                        .HasColumnType("bit");
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<bool>("PalcoActivado")
-                        .HasColumnType("bit");
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<bool>("PermitirCertificacionRec")
-                        .HasColumnType("bit");
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<bool>("PermitirRecursosPrivados")
-                        .HasColumnType("bit");
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<bool>("PermitirRevisionManualComp")
-                        .HasColumnType("bit");
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<bool>("PermitirRevisionManualGF")
-                        .HasColumnType("bit");
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<bool>("PermitirRevisionManualObj")
-                        .HasColumnType("bit");
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<bool>("PermitirRevisionManualPro")
-                        .HasColumnType("bit");
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<bool>("PermitirUsuNoLoginDescargDoc")
-                        .HasColumnType("bit");
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<bool>("PermitirVotacionesNegativas")
-                        .HasColumnType("bit");
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<bool>("PestanyaRecursosVisible")
-                        .HasColumnType("bit");
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<string>("PestanyasDocSemanticos")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<bool>("PlantillaDisponible")
-                        .HasColumnType("bit");
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<short>("PlataformaVideoDisponible")
-                        .HasColumnType("smallint");
+                        .HasColumnType("NUMBER(5)");
 
                     b.Property<string>("PoliticaCertificacion")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<bool>("PreguntasDisponibles")
-                        .HasColumnType("bit");
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<bool>("PrivacidadObligatoria")
-                        .HasColumnType("bit");
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<string>("PropsMapaPerYOrg")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<bool>("RdfDisponibles")
-                        .HasColumnType("bit");
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<bool>("RegDidactalia")
-                        .HasColumnType("bit");
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<bool>("RssDisponibles")
-                        .HasColumnType("bit");
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<string>("RutaImagenesTema")
                         .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
+                        .HasColumnType("NVARCHAR2(100)");
 
                     b.Property<string>("RutaTema")
                         .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
+                        .HasColumnType("NVARCHAR2(100)");
 
                     b.Property<string>("ScriptBusqueda")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<string>("ScriptGoogleAnalytics")
                         .HasMaxLength(1000)
-                        .HasColumnType("nvarchar(1000)");
+                        .HasColumnType("NVARCHAR2(1000)");
 
                     b.Property<bool>("ServicioSuscripcionDisp")
-                        .HasColumnType("bit");
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<bool>("SolicitarCoockieLogin")
-                        .HasColumnType("bit");
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<bool>("SupervisoresAdminGrupos")
-                        .HasColumnType("bit");
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<string>("TOPFTPPass")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<string>("TOPFTPUser")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<string>("TOPIDCuenta")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<string>("TOPIDPlayer")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<string>("TOPPublisherID")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<bool>("TieneSitemapComunidad")
-                        .HasColumnType("bit");
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<short?>("TipoCabecera")
-                        .HasColumnType("smallint");
+                        .HasColumnType("NUMBER(5)");
 
                     b.Property<short?>("TipoFichaRecurso")
-                        .HasColumnType("smallint");
+                        .HasColumnType("NUMBER(5)");
 
                     b.Property<float?>("UmbralDetPropietariosGF")
-                        .HasColumnType("real");
+                        .HasColumnType("BINARY_FLOAT");
 
                     b.Property<float?>("UmbralDetPropietariosObj")
-                        .HasColumnType("real");
+                        .HasColumnType("BINARY_FLOAT");
 
                     b.Property<float?>("UmbralDetPropietariosProc")
-                        .HasColumnType("real");
+                        .HasColumnType("BINARY_FLOAT");
 
                     b.Property<float?>("UmbralSuficienciaEnMejora")
-                        .HasColumnType("real");
+                        .HasColumnType("BINARY_FLOAT");
 
                     b.Property<string>("UrlMappingCategorias")
                         .HasMaxLength(200)
-                        .HasColumnType("nvarchar(200)");
+                        .HasColumnType("NVARCHAR2(200)");
 
                     b.Property<string>("UrlServicioFichas")
                         .HasMaxLength(200)
-                        .HasColumnType("nvarchar(200)");
+                        .HasColumnType("NVARCHAR2(200)");
 
                     b.Property<bool>("VerVotaciones")
-                        .HasColumnType("bit");
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<int?>("VersionCSS")
-                        .HasColumnType("int");
+                        .HasColumnType("NUMBER(10)");
 
                     b.Property<short?>("VersionCSSAdmin")
-                        .HasColumnType("smallint");
+                        .HasColumnType("NUMBER(5)");
 
                     b.Property<int?>("VersionCSSWidget")
-                        .HasColumnType("int");
+                        .HasColumnType("NUMBER(10)");
 
                     b.Property<int?>("VersionFotoImagenFondo")
-                        .HasColumnType("int");
+                        .HasColumnType("NUMBER(10)");
 
                     b.Property<int?>("VersionFotoImagenHomeGrande")
-                        .HasColumnType("int");
+                        .HasColumnType("NUMBER(10)");
 
                     b.Property<int?>("VersionFotoImagenMosaicoGrande")
-                        .HasColumnType("int");
+                        .HasColumnType("NUMBER(10)");
 
                     b.Property<int?>("VersionFotoImagenSupGrande")
-                        .HasColumnType("int");
+                        .HasColumnType("NUMBER(10)");
 
                     b.Property<int?>("VersionJS")
-                        .HasColumnType("int");
+                        .HasColumnType("NUMBER(10)");
 
                     b.Property<short?>("VersionJSAdmin")
-                        .HasColumnType("smallint");
+                        .HasColumnType("NUMBER(5)");
 
                     b.Property<bool>("VotacionesDisponibles")
-                        .HasColumnType("bit");
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<bool>("WikiDisponible")
-                        .HasColumnType("bit");
+                        .HasColumnType("NUMBER(1)");
 
                     b.HasKey("OrganizacionID", "ProyectoID");
 
@@ -5055,20 +5054,20 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.ParametroGeneralDS.ParametroProyecto", b =>
                 {
                     b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(1);
 
                     b.Property<string>("Parametro")
                         .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)")
+                        .HasColumnType("NVARCHAR2(100)")
                         .HasColumnOrder(2);
 
                     b.Property<string>("Valor")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.HasKey("OrganizacionID", "ProyectoID", "Parametro");
 
@@ -5101,37 +5100,37 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.ParametroGeneralDS.ProyectoElementoHtml", b =>
                 {
                     b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(1);
 
                     b.Property<int>("ElementoHeadID")
-                        .HasColumnType("int")
+                        .HasColumnType("NUMBER(10)")
                         .HasColumnOrder(2);
 
                     b.Property<string>("Atributos")
                         .HasMaxLength(1000)
-                        .HasColumnType("nvarchar(1000)");
+                        .HasColumnType("NVARCHAR2(1000)");
 
                     b.Property<bool>("CargarSinAceptarCookies")
-                        .HasColumnType("bit");
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<string>("Contenido")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<string>("Etiqueta")
                         .IsRequired()
                         .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
+                        .HasColumnType("NVARCHAR2(50)");
 
                     b.Property<bool>("Privado")
-                        .HasColumnType("bit");
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<short>("Ubicacion")
-                        .HasColumnType("smallint");
+                        .HasColumnType("NUMBER(5)");
 
                     b.HasKey("OrganizacionID", "ProyectoID", "ElementoHeadID");
 
@@ -5141,20 +5140,20 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.ParametroGeneralDS.ProyectoMetaRobots", b =>
                 {
                     b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(1);
 
                     b.Property<short>("Tipo")
-                        .HasColumnType("smallint")
+                        .HasColumnType("NUMBER(5)")
                         .HasColumnOrder(2);
 
                     b.Property<string>("Content")
                         .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
+                        .HasColumnType("NVARCHAR2(50)");
 
                     b.HasKey("OrganizacionID", "ProyectoID", "Tipo");
 
@@ -5164,20 +5163,20 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.ParametroGeneralDS.ProyectoRDFType", b =>
                 {
                     b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(1);
 
                     b.Property<short>("TipoDocumento")
-                        .HasColumnType("smallint")
+                        .HasColumnType("NUMBER(5)")
                         .HasColumnOrder(2);
 
                     b.Property<string>("RdfType")
                         .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
+                        .HasColumnType("NVARCHAR2(50)");
 
                     b.HasKey("OrganizacionID", "ProyectoID", "TipoDocumento");
 
@@ -5187,27 +5186,27 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.ParametroGeneralDS.TextosPersonalizadosPersonalizacion", b =>
                 {
                     b.Property<Guid>("PersonalizacionID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<string>("TextoID")
                         .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)")
+                        .HasColumnType("NVARCHAR2(100)")
                         .HasColumnOrder(1);
 
                     b.Property<string>("Language")
                         .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)")
+                        .HasColumnType("NVARCHAR2(100)")
                         .HasColumnOrder(2);
 
                     b.Property<DateTime>("FechaActualizacion")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("TIMESTAMP(7)");
 
                     b.Property<DateTime>("FechaCreacion")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("TIMESTAMP(7)");
 
                     b.Property<string>("Texto")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.HasKey("PersonalizacionID", "TextoID", "Language");
 
@@ -5217,25 +5216,25 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.ParametroGeneralDS.TextosPersonalizadosProyecto", b =>
                 {
                     b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(1);
 
                     b.Property<string>("TextoID")
                         .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)")
+                        .HasColumnType("NVARCHAR2(100)")
                         .HasColumnOrder(2);
 
                     b.Property<string>("Language")
                         .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)")
+                        .HasColumnType("NVARCHAR2(100)")
                         .HasColumnOrder(3);
 
                     b.Property<string>("Texto")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.HasKey("OrganizacionID", "ProyectoID", "TextoID", "Language");
 
@@ -5245,19 +5244,19 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.PermisosPaginasUsuarios", b =>
                 {
                     b.Property<Guid>("UsuarioID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(1);
 
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(2);
 
                     b.Property<short>("Pagina")
-                        .HasColumnType("smallint")
+                        .HasColumnType("NUMBER(5)")
                         .HasColumnOrder(3);
 
                     b.HasKey("UsuarioID", "OrganizacionID", "ProyectoID", "Pagina");
@@ -5268,40 +5267,40 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.PersonaDS.ConfiguracionGnossPersona", b =>
                 {
                     b.Property<Guid>("PersonaID")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<short>("BoletinSuscripcion")
-                        .HasColumnType("smallint");
+                        .HasColumnType("NUMBER(5)");
 
                     b.Property<bool>("ComentariosRecursos")
-                        .HasColumnType("bit");
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<bool>("EnviarEnlaces")
-                        .HasColumnType("bit");
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<bool>("InvitacionComunidad")
-                        .HasColumnType("bit");
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<bool>("InvitacionOrganizacion")
-                        .HasColumnType("bit");
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<bool>("MensajesGnoss")
-                        .HasColumnType("bit");
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<bool>("SolicitudesContacto")
-                        .HasColumnType("bit");
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<bool>("VerAmigos")
-                        .HasColumnType("bit");
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<bool>("VerAmigosExterno")
-                        .HasColumnType("bit");
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<bool>("VerRecursos")
-                        .HasColumnType("bit");
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<bool>("VerRecursosExterno")
-                        .HasColumnType("bit");
+                        .HasColumnType("NUMBER(1)");
 
                     b.HasKey("PersonaID");
 
@@ -5312,29 +5311,29 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
                 {
                     b.Property<Guid>("CurriculumID")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<string>("Description")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<DateTime?>("FechaPublicacion")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("TIMESTAMP(7)");
 
                     b.Property<bool>("Publicado")
-                        .HasColumnType("bit");
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<string>("Tags")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<int>("TipoVisibilidad")
-                        .HasColumnType("int");
+                        .HasColumnType("NUMBER(10)");
 
                     b.Property<string>("Titulo")
                         .HasMaxLength(250)
-                        .HasColumnType("nvarchar(250)");
+                        .HasColumnType("NVARCHAR2(250)");
 
                     b.Property<bool>("UsaDatosPersonalesPerfil")
-                        .HasColumnType("bit");
+                        .HasColumnType("NUMBER(1)");
 
                     b.HasKey("CurriculumID");
 
@@ -5344,45 +5343,45 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.PersonaDS.DatosTrabajoPersonaLibre", b =>
                 {
                     b.Property<Guid>("PersonaID")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<string>("CPTrabajo")
                         .HasMaxLength(15)
-                        .HasColumnType("nvarchar(15)");
+                        .HasColumnType("NVARCHAR2(15)");
 
                     b.Property<string>("DireccionTrabajo")
                         .HasMaxLength(1000)
-                        .HasColumnType("nvarchar(1000)");
+                        .HasColumnType("NVARCHAR2(1000)");
 
                     b.Property<string>("EmailTrabajo")
                         .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)");
+                        .HasColumnType("NVARCHAR2(255)");
 
                     b.Property<string>("LocalidadTrabajo")
                         .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)");
+                        .HasColumnType("NVARCHAR2(255)");
 
                     b.Property<Guid?>("PaisTrabajoID")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<string>("Profesion")
                         .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)");
+                        .HasColumnType("NVARCHAR2(255)");
 
                     b.Property<string>("ProvinciaTrabajo")
                         .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)");
+                        .HasColumnType("NVARCHAR2(255)");
 
                     b.Property<Guid?>("ProvinciaTrabajoID")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<string>("TelefonoMovilTrabajo")
                         .HasMaxLength(13)
-                        .HasColumnType("nvarchar(13)");
+                        .HasColumnType("NVARCHAR2(13)");
 
                     b.Property<string>("TelefonoTrabajo")
                         .HasMaxLength(13)
-                        .HasColumnType("nvarchar(13)");
+                        .HasColumnType("NVARCHAR2(13)");
 
                     b.HasKey("PersonaID");
 
@@ -5393,61 +5392,61 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
                 {
                     b.Property<Guid>("PersonaID")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<string>("Apellidos")
                         .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)");
+                        .HasColumnType("NVARCHAR2(255)");
 
                     b.Property<string>("CPPersonal")
                         .HasMaxLength(15)
-                        .HasColumnType("nvarchar(15)");
+                        .HasColumnType("NVARCHAR2(15)");
 
                     b.Property<string>("CoordenadasFoto")
                         .HasMaxLength(30)
-                        .HasColumnType("nvarchar(30)");
+                        .HasColumnType("NVARCHAR2(30)");
 
                     b.Property<string>("DireccionPersonal")
                         .HasMaxLength(1000)
-                        .HasColumnType("nvarchar(1000)");
+                        .HasColumnType("NVARCHAR2(1000)");
 
                     b.Property<bool>("Eliminado")
-                        .HasColumnType("bit");
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<string>("Email")
                         .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)");
+                        .HasColumnType("NVARCHAR2(255)");
 
                     b.Property<string>("EmailTutor")
                         .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)");
+                        .HasColumnType("NVARCHAR2(255)");
 
                     b.Property<bool>("EsBuscable")
-                        .HasColumnType("bit");
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<bool>("EsBuscableExternos")
-                        .HasColumnType("bit");
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<Guid?>("EstadoCivilID")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<short>("EstadoCorreccion")
-                        .HasColumnType("smallint");
+                        .HasColumnType("NUMBER(5)");
 
                     b.Property<DateTime?>("FechaAnadidaFoto")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("TIMESTAMP(7)");
 
                     b.Property<DateTime?>("FechaNacimiento")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("TIMESTAMP(7)");
 
                     b.Property<DateTime?>("FechaNotificacionCorreccion")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("TIMESTAMP(7)");
 
                     b.Property<byte[]>("Foto")
-                        .HasColumnType("varbinary(max)");
+                        .HasColumnType("RAW(2000)");
 
                     b.Property<short?>("Hijos")
-                        .HasColumnType("smallint");
+                        .HasColumnType("NUMBER(5)");
 
                     b.Property<string>("Idioma")
                         .IsRequired()
@@ -5456,48 +5455,48 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
 
                     b.Property<string>("LocalidadPersonal")
                         .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)");
+                        .HasColumnType("NVARCHAR2(255)");
 
                     b.Property<string>("Nombre")
                         .IsRequired()
                         .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
+                        .HasColumnType("NVARCHAR2(50)");
 
                     b.Property<Guid?>("PaisPersonalID")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<string>("ProvinciaPersonal")
                         .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)");
+                        .HasColumnType("NVARCHAR2(255)");
 
                     b.Property<Guid?>("ProvinciaPersonalID")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<string>("Sexo")
                         .HasMaxLength(1)
                         .IsUnicode(false)
-                        .HasColumnType("char(1)")
+                        .HasColumnType("CHAR(1)")
                         .IsFixedLength();
 
                     b.Property<string>("TelefonoPersonal")
                         .HasMaxLength(13)
-                        .HasColumnType("nvarchar(13)");
+                        .HasColumnType("NVARCHAR2(13)");
 
                     b.Property<short?>("TipoDocumentoAcreditativo")
-                        .HasColumnType("smallint");
+                        .HasColumnType("NUMBER(5)");
 
                     b.Property<Guid?>("TitulacionID")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<Guid?>("UsuarioID")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<string>("ValorDocumentoAcreditativo")
                         .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
+                        .HasColumnType("NVARCHAR2(100)");
 
                     b.Property<int?>("VersionFoto")
-                        .HasColumnType("int");
+                        .HasColumnType("NUMBER(10)");
 
                     b.HasKey("PersonaID");
 
@@ -5510,22 +5509,22 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
                 {
                     b.Property<Guid>("PeticionID")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<short>("Estado")
-                        .HasColumnType("smallint");
+                        .HasColumnType("NUMBER(5)");
 
                     b.Property<DateTime>("FechaPeticion")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("TIMESTAMP(7)");
 
                     b.Property<DateTime?>("FechaProcesado")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("TIMESTAMP(7)");
 
                     b.Property<short>("Tipo")
-                        .HasColumnType("smallint");
+                        .HasColumnType("NUMBER(5)");
 
                     b.Property<Guid?>("UsuarioID")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("RAW(16)");
 
                     b.HasKey("PeticionID");
 
@@ -5548,17 +5547,17 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Peticion.PeticionInvitacionComunidad", b =>
                 {
                     b.Property<Guid>("PeticionID")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<string>("NingID")
                         .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
+                        .HasColumnType("NVARCHAR2(50)");
 
                     b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("RAW(16)");
 
                     b.HasKey("PeticionID");
 
@@ -5568,17 +5567,17 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Peticion.PeticionInvitacionGrupo", b =>
                 {
                     b.Property<Guid>("PeticionID")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<string>("GruposID")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("RAW(16)");
 
                     b.HasKey("PeticionID");
 
@@ -5588,13 +5587,13 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Peticion.PeticionNuevoProyecto", b =>
                 {
                     b.Property<Guid>("PeticionID")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<Guid?>("ComunidadPrivadaPadreID")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<string>("Descripcion")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<string>("IdiomaDefecto")
                         .HasMaxLength(50)
@@ -5603,17 +5602,17 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
                     b.Property<string>("Nombre")
                         .IsRequired()
                         .HasMaxLength(1000)
-                        .HasColumnType("nvarchar(1000)");
+                        .HasColumnType("NVARCHAR2(1000)");
 
                     b.Property<string>("NombreCorto")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<Guid>("PerfilCreadorID")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<short>("Tipo")
-                        .HasColumnType("smallint");
+                        .HasColumnType("NUMBER(5)");
 
                     b.HasKey("PeticionID");
 
@@ -5623,18 +5622,18 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Peticion.PeticionOrgInvitaPers", b =>
                 {
                     b.Property<Guid>("PeticionID")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<string>("Cargo")
                         .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)");
+                        .HasColumnType("NVARCHAR2(255)");
 
                     b.Property<string>("Email")
                         .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)");
+                        .HasColumnType("NVARCHAR2(255)");
 
                     b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("RAW(16)");
 
                     b.HasKey("PeticionID");
 
@@ -5644,20 +5643,20 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.ProyectoDS.AccionesExternasProyecto", b =>
                 {
                     b.Property<short>("TipoAccion")
-                        .HasColumnType("smallint")
+                        .HasColumnType("NUMBER(5)")
                         .HasColumnOrder(0);
 
                     b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(1);
 
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(2);
 
                     b.Property<string>("URL")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.HasKey("TipoAccion", "OrganizacionID", "ProyectoID");
 
@@ -5667,15 +5666,15 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.ProyectoDS.AdministradorGrupoProyecto", b =>
                 {
                     b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(1);
 
                     b.Property<Guid>("GrupoID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(2);
 
                     b.HasKey("OrganizacionID", "ProyectoID", "GrupoID");
@@ -5686,19 +5685,19 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.ProyectoDS.AdministradorProyecto", b =>
                 {
                     b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(1);
 
                     b.Property<Guid>("UsuarioID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(2);
 
                     b.Property<short>("Tipo")
-                        .HasColumnType("smallint")
+                        .HasColumnType("NUMBER(5)")
                         .HasColumnOrder(3);
 
                     b.HasKey("OrganizacionID", "ProyectoID", "UsuarioID", "Tipo");
@@ -5709,19 +5708,19 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.ProyectoDS.CamposRegistroProyectoGenericos", b =>
                 {
                     b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(1);
 
                     b.Property<short>("Orden")
-                        .HasColumnType("smallint")
+                        .HasColumnType("NUMBER(5)")
                         .HasColumnOrder(2);
 
                     b.Property<short>("Tipo")
-                        .HasColumnType("smallint");
+                        .HasColumnType("NUMBER(5)");
 
                     b.HasKey("OrganizacionID", "ProyectoID", "Orden");
 
@@ -5731,24 +5730,24 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.ProyectoDS.ConfigAutocompletarProy", b =>
                 {
                     b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(1);
 
                     b.Property<string>("Clave")
                         .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)")
+                        .HasColumnType("NVARCHAR2(100)")
                         .HasColumnOrder(2);
 
                     b.Property<Guid?>("PestanyaID")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<string>("Valor")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.HasKey("OrganizacionID", "ProyectoID", "Clave");
 
@@ -5760,21 +5759,21 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.ProyectoDS.ConfigSearchProy", b =>
                 {
                     b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(1);
 
                     b.Property<string>("Clave")
                         .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)")
+                        .HasColumnType("NVARCHAR2(100)")
                         .HasColumnOrder(2);
 
                     b.Property<string>("Valor")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.HasKey("OrganizacionID", "ProyectoID", "Clave");
 
@@ -5785,26 +5784,26 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
                 {
                     b.Property<Guid>("DatoExtraID")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<bool>("Obligatorio")
-                        .HasColumnType("bit");
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<int>("Orden")
-                        .HasColumnType("int");
+                        .HasColumnType("NUMBER(10)");
 
                     b.Property<bool>("Paso1Registro")
-                        .HasColumnType("bit");
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<string>("PredicadoRDF")
                         .IsRequired()
                         .HasMaxLength(500)
-                        .HasColumnType("nvarchar(500)");
+                        .HasColumnType("NVARCHAR2(500)");
 
                     b.Property<string>("Titulo")
                         .IsRequired()
                         .HasMaxLength(500)
-                        .HasColumnType("nvarchar(500)");
+                        .HasColumnType("NVARCHAR2(500)");
 
                     b.HasKey("DatoExtraID");
 
@@ -5814,20 +5813,20 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.ProyectoDS.DatoExtraEcosistemaOpcion", b =>
                 {
                     b.Property<Guid>("DatoExtraID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<Guid>("OpcionID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(1);
 
                     b.Property<string>("Opcion")
                         .IsRequired()
                         .HasMaxLength(500)
-                        .HasColumnType("nvarchar(500)");
+                        .HasColumnType("NVARCHAR2(500)");
 
                     b.Property<int>("Orden")
-                        .HasColumnType("int");
+                        .HasColumnType("NUMBER(10)");
 
                     b.HasKey("DatoExtraID", "OpcionID");
 
@@ -5838,58 +5837,58 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
                 {
                     b.Property<Guid>("DatoExtraID")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<string>("ConexionBD")
                         .IsRequired()
                         .HasMaxLength(500)
-                        .HasColumnType("nvarchar(500)");
+                        .HasColumnType("NVARCHAR2(500)");
 
                     b.Property<string>("EstructuraHTMLFicha")
                         .HasMaxLength(500)
-                        .HasColumnType("nvarchar(500)");
+                        .HasColumnType("NVARCHAR2(500)");
 
                     b.Property<string>("InputID")
                         .IsRequired()
                         .HasMaxLength(500)
-                        .HasColumnType("nvarchar(500)");
+                        .HasColumnType("NVARCHAR2(500)");
 
                     b.Property<string>("InputsSuperiores")
                         .IsRequired()
                         .HasMaxLength(500)
-                        .HasColumnType("nvarchar(500)");
+                        .HasColumnType("NVARCHAR2(500)");
 
                     b.Property<string>("NombreCampo")
                         .IsRequired()
                         .HasMaxLength(500)
-                        .HasColumnType("nvarchar(500)");
+                        .HasColumnType("NVARCHAR2(500)");
 
                     b.Property<bool>("Obligatorio")
-                        .HasColumnType("bit");
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<int>("Orden")
-                        .HasColumnType("int");
+                        .HasColumnType("NUMBER(10)");
 
                     b.Property<bool>("Paso1Registro")
-                        .HasColumnType("bit");
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<string>("PredicadoRDF")
                         .IsRequired()
                         .HasMaxLength(500)
-                        .HasColumnType("nvarchar(500)");
+                        .HasColumnType("NVARCHAR2(500)");
 
                     b.Property<string>("QueryVirtuoso")
                         .IsRequired()
                         .HasMaxLength(500)
-                        .HasColumnType("nvarchar(500)");
+                        .HasColumnType("NVARCHAR2(500)");
 
                     b.Property<string>("Titulo")
                         .IsRequired()
                         .HasMaxLength(500)
-                        .HasColumnType("nvarchar(500)");
+                        .HasColumnType("NVARCHAR2(500)");
 
                     b.Property<bool>("VisibilidadFichaPerfil")
-                        .HasColumnType("bit");
+                        .HasColumnType("NUMBER(1)");
 
                     b.HasKey("DatoExtraID");
 
@@ -5899,41 +5898,41 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.ProyectoDS.DatoExtraProyecto", b =>
                 {
                     b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(1);
 
                     b.Property<Guid>("DatoExtraID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(2);
 
                     b.Property<string>("NombreCorto")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<bool>("Obligatorio")
-                        .HasColumnType("bit");
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<int>("Orden")
-                        .HasColumnType("int");
+                        .HasColumnType("NUMBER(10)");
 
                     b.Property<bool>("Paso1Registro")
-                        .HasColumnType("bit");
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<string>("PredicadoRDF")
                         .IsRequired()
                         .HasMaxLength(500)
-                        .HasColumnType("nvarchar(500)");
+                        .HasColumnType("NVARCHAR2(500)");
 
                     b.Property<string>("Titulo")
                         .IsRequired()
                         .HasMaxLength(500)
-                        .HasColumnType("nvarchar(500)");
+                        .HasColumnType("NVARCHAR2(500)");
 
                     b.Property<bool>("VisiblePerfil")
-                        .HasColumnType("bit");
+                        .HasColumnType("NUMBER(1)");
 
                     b.HasKey("OrganizacionID", "ProyectoID", "DatoExtraID");
 
@@ -5943,28 +5942,28 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.ProyectoDS.DatoExtraProyectoOpcion", b =>
                 {
                     b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(1);
 
                     b.Property<Guid>("DatoExtraID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(2);
 
                     b.Property<Guid>("OpcionID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(3);
 
                     b.Property<string>("Opcion")
                         .IsRequired()
                         .HasMaxLength(500)
-                        .HasColumnType("nvarchar(500)");
+                        .HasColumnType("NVARCHAR2(500)");
 
                     b.Property<int>("Orden")
-                        .HasColumnType("int");
+                        .HasColumnType("NUMBER(10)");
 
                     b.HasKey("OrganizacionID", "ProyectoID", "DatoExtraID", "OpcionID");
 
@@ -5974,23 +5973,23 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.ProyectoDS.DatoExtraProyectoOpcionIdentidad", b =>
                 {
                     b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(1);
 
                     b.Property<Guid>("DatoExtraID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(2);
 
                     b.Property<Guid>("OpcionID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(3);
 
                     b.Property<Guid>("IdentidadID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(4);
 
                     b.HasKey("OrganizacionID", "ProyectoID", "DatoExtraID", "OpcionID", "IdentidadID");
@@ -6003,67 +6002,67 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.ProyectoDS.DatoExtraProyectoVirtuoso", b =>
                 {
                     b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(1);
 
                     b.Property<Guid>("DatoExtraID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(2);
 
                     b.Property<string>("ConexionBD")
                         .IsRequired()
                         .HasMaxLength(500)
-                        .HasColumnType("nvarchar(500)");
+                        .HasColumnType("NVARCHAR2(500)");
 
                     b.Property<string>("EstructuraHTMLFicha")
                         .HasMaxLength(500)
-                        .HasColumnType("nvarchar(500)");
+                        .HasColumnType("NVARCHAR2(500)");
 
                     b.Property<string>("InputID")
                         .IsRequired()
                         .HasMaxLength(500)
-                        .HasColumnType("nvarchar(500)");
+                        .HasColumnType("NVARCHAR2(500)");
 
                     b.Property<string>("InputsSuperiores")
                         .IsRequired()
                         .HasMaxLength(500)
-                        .HasColumnType("nvarchar(500)");
+                        .HasColumnType("NVARCHAR2(500)");
 
                     b.Property<string>("NombreCampo")
                         .IsRequired()
                         .HasMaxLength(500)
-                        .HasColumnType("nvarchar(500)");
+                        .HasColumnType("NVARCHAR2(500)");
 
                     b.Property<bool>("Obligatorio")
-                        .HasColumnType("bit");
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<int>("Orden")
-                        .HasColumnType("int");
+                        .HasColumnType("NUMBER(10)");
 
                     b.Property<bool>("Paso1Registro")
-                        .HasColumnType("bit");
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<string>("PredicadoRDF")
                         .IsRequired()
                         .HasMaxLength(500)
-                        .HasColumnType("nvarchar(500)");
+                        .HasColumnType("NVARCHAR2(500)");
 
                     b.Property<string>("QueryVirtuoso")
                         .IsRequired()
                         .HasMaxLength(500)
-                        .HasColumnType("nvarchar(500)");
+                        .HasColumnType("NVARCHAR2(500)");
 
                     b.Property<string>("Titulo")
                         .IsRequired()
                         .HasMaxLength(500)
-                        .HasColumnType("nvarchar(500)");
+                        .HasColumnType("NVARCHAR2(500)");
 
                     b.Property<bool>("VisibilidadFichaPerfil")
-                        .HasColumnType("bit");
+                        .HasColumnType("NUMBER(1)");
 
                     b.HasKey("OrganizacionID", "ProyectoID", "DatoExtraID");
 
@@ -6075,18 +6074,18 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
                     b.Property<string>("NombreServicio")
                         .HasMaxLength(150)
                         .IsUnicode(false)
-                        .HasColumnType("varchar(150)");
+                        .HasColumnType("VARCHAR2(150)");
 
                     b.Property<DateTime>("FechaCreacion")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("TIMESTAMP(7)");
 
                     b.Property<DateTime>("FechaModificacion")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("TIMESTAMP(7)");
 
                     b.Property<string>("UrlServicio")
                         .IsRequired()
                         .IsUnicode(false)
-                        .HasColumnType("varchar(max)");
+                        .HasColumnType("VARCHAR2(4000)");
 
                     b.HasKey("NombreServicio");
 
@@ -6097,20 +6096,20 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
                 {
                     b.Property<Guid>("NivelCertificacionID")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<string>("Descripcion")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<short>("Orden")
-                        .HasColumnType("smallint");
+                        .HasColumnType("NUMBER(5)");
 
                     b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("RAW(16)");
 
                     b.HasKey("NivelCertificacionID");
 
@@ -6122,23 +6121,23 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.ProyectoDS.PreferenciaProyecto", b =>
                 {
                     b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(1);
 
                     b.Property<Guid>("TesauroID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(2);
 
                     b.Property<Guid>("CategoriaTesauroID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(3);
 
                     b.Property<int>("Orden")
-                        .HasColumnType("int");
+                        .HasColumnType("NUMBER(10)");
 
                     b.HasKey("OrganizacionID", "ProyectoID", "TesauroID", "CategoriaTesauroID");
 
@@ -6148,36 +6147,36 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.ProyectoDS.PresentacionListadoSemantico", b =>
                 {
                     b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(1);
 
                     b.Property<Guid>("OntologiaID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(2);
 
                     b.Property<short>("Orden")
-                        .HasColumnType("smallint")
+                        .HasColumnType("NUMBER(5)")
                         .HasColumnOrder(3);
 
                     b.Property<bool>("MostrarEnAutocompletar")
-                        .HasColumnType("bit");
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<string>("Nombre")
                         .HasMaxLength(1000)
-                        .HasColumnType("nvarchar(1000)");
+                        .HasColumnType("NVARCHAR2(1000)");
 
                     b.Property<string>("Ontologia")
                         .HasMaxLength(1000)
-                        .HasColumnType("nvarchar(1000)");
+                        .HasColumnType("NVARCHAR2(1000)");
 
                     b.Property<string>("Propiedad")
                         .IsRequired()
                         .HasMaxLength(2000)
-                        .HasColumnType("nvarchar(2000)");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.HasKey("OrganizacionID", "ProyectoID", "OntologiaID", "Orden");
 
@@ -6187,36 +6186,36 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.ProyectoDS.PresentacionMapaSemantico", b =>
                 {
                     b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(1);
 
                     b.Property<Guid>("OntologiaID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(2);
 
                     b.Property<short>("Orden")
-                        .HasColumnType("smallint")
+                        .HasColumnType("NUMBER(5)")
                         .HasColumnOrder(3);
 
                     b.Property<bool>("MostrarEnAutocompletar")
-                        .HasColumnType("bit");
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<string>("Nombre")
                         .HasMaxLength(1000)
-                        .HasColumnType("nvarchar(1000)");
+                        .HasColumnType("NVARCHAR2(1000)");
 
                     b.Property<string>("Ontologia")
                         .HasMaxLength(1000)
-                        .HasColumnType("nvarchar(1000)");
+                        .HasColumnType("NVARCHAR2(1000)");
 
                     b.Property<string>("Propiedad")
                         .IsRequired()
                         .HasMaxLength(2000)
-                        .HasColumnType("nvarchar(2000)");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.HasKey("OrganizacionID", "ProyectoID", "OntologiaID", "Orden");
 
@@ -6226,36 +6225,36 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.ProyectoDS.PresentacionMosaicoSemantico", b =>
                 {
                     b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(1);
 
                     b.Property<Guid>("OntologiaID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(2);
 
                     b.Property<short>("Orden")
-                        .HasColumnType("smallint")
+                        .HasColumnType("NUMBER(5)")
                         .HasColumnOrder(3);
 
                     b.Property<bool>("MostrarEnAutocompletar")
-                        .HasColumnType("bit");
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<string>("Nombre")
                         .HasMaxLength(1000)
-                        .HasColumnType("nvarchar(1000)");
+                        .HasColumnType("NVARCHAR2(1000)");
 
                     b.Property<string>("Ontologia")
                         .HasMaxLength(1000)
-                        .HasColumnType("nvarchar(1000)");
+                        .HasColumnType("NVARCHAR2(1000)");
 
                     b.Property<string>("Propiedad")
                         .IsRequired()
                         .HasMaxLength(2000)
-                        .HasColumnType("nvarchar(2000)");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.HasKey("OrganizacionID", "ProyectoID", "OntologiaID", "Orden");
 
@@ -6265,36 +6264,36 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.ProyectoDS.PresentacionPersonalizadoSemantico", b =>
                 {
                     b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(1);
 
                     b.Property<Guid>("OntologiaID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(2);
 
                     b.Property<short>("Orden")
-                        .HasColumnType("smallint")
+                        .HasColumnType("NUMBER(5)")
                         .HasColumnOrder(3);
 
                     b.Property<string>("ID")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<string>("Ontologia")
                         .IsRequired()
                         .HasMaxLength(1000)
-                        .HasColumnType("nvarchar(1000)");
+                        .HasColumnType("NVARCHAR2(1000)");
 
                     b.Property<string>("Select")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<string>("Where")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.HasKey("OrganizacionID", "ProyectoID", "OntologiaID", "Orden");
 
@@ -6304,39 +6303,39 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.ProyectoDS.PresentacionPestanyaListadoSemantico", b =>
                 {
                     b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(1);
 
                     b.Property<Guid>("PestanyaID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(2);
 
                     b.Property<Guid>("OntologiaID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(3);
 
                     b.Property<short>("Orden")
-                        .HasColumnType("smallint")
+                        .HasColumnType("NUMBER(5)")
                         .HasColumnOrder(4);
 
                     b.Property<string>("Nombre")
                         .IsRequired()
                         .HasMaxLength(1000)
-                        .HasColumnType("nvarchar(1000)");
+                        .HasColumnType("NVARCHAR2(1000)");
 
                     b.Property<string>("Ontologia")
                         .IsRequired()
                         .HasMaxLength(1000)
-                        .HasColumnType("nvarchar(1000)");
+                        .HasColumnType("NVARCHAR2(1000)");
 
                     b.Property<string>("Propiedad")
                         .IsRequired()
                         .HasMaxLength(2000)
-                        .HasColumnType("nvarchar(2000)");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.HasKey("OrganizacionID", "ProyectoID", "PestanyaID", "OntologiaID", "Orden");
 
@@ -6348,39 +6347,39 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.ProyectoDS.PresentacionPestanyaMapaSemantico", b =>
                 {
                     b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(1);
 
                     b.Property<Guid>("PestanyaID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(2);
 
                     b.Property<Guid>("OntologiaID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(3);
 
                     b.Property<short>("Orden")
-                        .HasColumnType("smallint")
+                        .HasColumnType("NUMBER(5)")
                         .HasColumnOrder(4);
 
                     b.Property<string>("Nombre")
                         .IsRequired()
                         .HasMaxLength(1000)
-                        .HasColumnType("nvarchar(1000)");
+                        .HasColumnType("NVARCHAR2(1000)");
 
                     b.Property<string>("Ontologia")
                         .IsRequired()
                         .HasMaxLength(1000)
-                        .HasColumnType("nvarchar(1000)");
+                        .HasColumnType("NVARCHAR2(1000)");
 
                     b.Property<string>("Propiedad")
                         .IsRequired()
                         .HasMaxLength(2000)
-                        .HasColumnType("nvarchar(2000)");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.HasKey("OrganizacionID", "ProyectoID", "PestanyaID", "OntologiaID", "Orden");
 
@@ -6392,39 +6391,39 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.ProyectoDS.PresentacionPestanyaMosaicoSemantico", b =>
                 {
                     b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(1);
 
                     b.Property<Guid>("PestanyaID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(2);
 
                     b.Property<Guid>("OntologiaID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(3);
 
                     b.Property<short>("Orden")
-                        .HasColumnType("smallint")
+                        .HasColumnType("NUMBER(5)")
                         .HasColumnOrder(4);
 
                     b.Property<string>("Nombre")
                         .IsRequired()
                         .HasMaxLength(1000)
-                        .HasColumnType("nvarchar(1000)");
+                        .HasColumnType("NVARCHAR2(1000)");
 
                     b.Property<string>("Ontologia")
                         .IsRequired()
                         .HasMaxLength(1000)
-                        .HasColumnType("nvarchar(1000)");
+                        .HasColumnType("NVARCHAR2(1000)");
 
                     b.Property<string>("Propiedad")
                         .IsRequired()
                         .HasMaxLength(2000)
-                        .HasColumnType("nvarchar(2000)");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.HasKey("OrganizacionID", "ProyectoID", "PestanyaID", "OntologiaID", "Orden");
 
@@ -6454,127 +6453,127 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.ProyectoDS.Proyecto", b =>
                 {
                     b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(1);
 
                     b.Property<string>("Descripcion")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<bool>("EnviarTwitterComentario")
-                        .HasColumnType("bit");
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<bool>("EnviarTwitterNuevaCat")
-                        .HasColumnType("bit");
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<bool>("EnviarTwitterNuevaPolitCert")
-                        .HasColumnType("bit");
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<bool>("EnviarTwitterNuevoAdmin")
-                        .HasColumnType("bit");
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<bool>("EnviarTwitterNuevoTipoDoc")
-                        .HasColumnType("bit");
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<bool>("EsProyectoDestacado")
-                        .HasColumnType("bit");
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<short>("Estado")
-                        .HasColumnType("smallint");
+                        .HasColumnType("NUMBER(5)");
 
                     b.Property<DateTime?>("FechaFin")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("TIMESTAMP(7)");
 
                     b.Property<DateTime?>("FechaInicio")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("TIMESTAMP(7)");
 
                     b.Property<string>("Nombre")
                         .IsRequired()
                         .HasMaxLength(1000)
-                        .HasColumnType("nvarchar(1000)");
+                        .HasColumnType("NVARCHAR2(1000)");
 
                     b.Property<string>("NombreCorto")
                         .IsRequired()
                         .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
+                        .HasColumnType("NVARCHAR2(50)");
 
                     b.Property<string>("NombrePresentacion")
                         .HasMaxLength(1000)
-                        .HasColumnType("nvarchar(1000)");
+                        .HasColumnType("NVARCHAR2(1000)");
 
                     b.Property<int?>("NumeroArticulos")
-                        .HasColumnType("int");
+                        .HasColumnType("NUMBER(10)");
 
                     b.Property<int?>("NumeroDafos")
-                        .HasColumnType("int");
+                        .HasColumnType("NUMBER(10)");
 
                     b.Property<int?>("NumeroDebates")
-                        .HasColumnType("int");
+                        .HasColumnType("NUMBER(10)");
 
                     b.Property<int?>("NumeroForos")
-                        .HasColumnType("int");
+                        .HasColumnType("NUMBER(10)");
 
                     b.Property<int?>("NumeroMiembros")
-                        .HasColumnType("int");
+                        .HasColumnType("NUMBER(10)");
 
                     b.Property<int?>("NumeroOrgRegistradas")
-                        .HasColumnType("int");
+                        .HasColumnType("NUMBER(10)");
 
                     b.Property<int?>("NumeroPreguntas")
-                        .HasColumnType("int");
+                        .HasColumnType("NUMBER(10)");
 
                     b.Property<int?>("NumeroRecursos")
-                        .HasColumnType("int");
+                        .HasColumnType("NUMBER(10)");
 
                     b.Property<Guid?>("ProcesoVinculadoID")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<Guid?>("ProyectoSuperiorID")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<int>("TablaBaseProyectoID")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                        .HasColumnType("NUMBER(10)");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("TablaBaseProyectoID"));
 
                     b.Property<string>("TagTwitter")
                         .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
+                        .HasColumnType("NVARCHAR2(50)");
 
                     b.Property<bool>("TagTwitterGnoss")
-                        .HasColumnType("bit");
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<string>("Tags")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<bool>("TieneTwitter")
-                        .HasColumnType("bit");
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<short>("TipoAcceso")
-                        .HasColumnType("smallint");
+                        .HasColumnType("NUMBER(5)");
 
                     b.Property<short>("TipoProyecto")
-                        .HasColumnType("smallint");
+                        .HasColumnType("NUMBER(5)");
 
                     b.Property<string>("TokenSecretoTwitter")
                         .HasMaxLength(1000)
-                        .HasColumnType("nvarchar(1000)");
+                        .HasColumnType("NVARCHAR2(1000)");
 
                     b.Property<string>("TokenTwitter")
                         .HasMaxLength(1000)
-                        .HasColumnType("nvarchar(1000)");
+                        .HasColumnType("NVARCHAR2(1000)");
 
                     b.Property<string>("URLPropia")
                         .HasMaxLength(250)
-                        .HasColumnType("nvarchar(250)");
+                        .HasColumnType("NVARCHAR2(250)");
 
                     b.Property<string>("UsuarioTwitter")
                         .HasMaxLength(15)
-                        .HasColumnType("nvarchar(15)");
+                        .HasColumnType("NVARCHAR2(15)");
 
                     b.HasKey("OrganizacionID", "ProyectoID");
 
@@ -6586,19 +6585,19 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.ProyectoDS.ProyectoAgCatTesauro", b =>
                 {
                     b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(1);
 
                     b.Property<Guid>("TesauroID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(2);
 
                     b.Property<Guid>("CategoriaTesauroID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(3);
 
                     b.HasKey("OrganizacionID", "ProyectoID", "TesauroID", "CategoriaTesauroID");
@@ -6609,23 +6608,23 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.ProyectoDS.ProyectoCerradoTmp", b =>
                 {
                     b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(1);
 
                     b.Property<DateTime>("FechaCierre")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("TIMESTAMP(7)");
 
                     b.Property<DateTime>("FechaReapertura")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("TIMESTAMP(7)");
 
                     b.Property<string>("Motivo")
                         .IsRequired()
                         .HasMaxLength(2000)
-                        .HasColumnType("nvarchar(2000)");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.HasKey("OrganizacionID", "ProyectoID");
 
@@ -6635,18 +6634,18 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.ProyectoDS.ProyectoCerrandose", b =>
                 {
                     b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(1);
 
                     b.Property<DateTime>("FechaCierre")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("TIMESTAMP(7)");
 
                     b.Property<int>("PeriodoDeGracia")
-                        .HasColumnType("int");
+                        .HasColumnType("NUMBER(10)");
 
                     b.HasKey("OrganizacionID", "ProyectoID");
 
@@ -6656,38 +6655,38 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.ProyectoDS.ProyectoConfigExtraSem", b =>
                 {
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<string>("UrlOntologia")
                         .HasMaxLength(200)
-                        .HasColumnType("nvarchar(200)")
+                        .HasColumnType("NVARCHAR2(200)")
                         .HasColumnOrder(1);
 
                     b.Property<string>("SourceTesSem")
                         .HasMaxLength(200)
-                        .HasColumnType("nvarchar(200)")
+                        .HasColumnType("NVARCHAR2(200)")
                         .HasColumnOrder(2);
 
                     b.Property<bool>("Editable")
-                        .HasColumnType("bit");
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<DateTime>("FechaCreacion")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("TIMESTAMP(7)");
 
                     b.Property<string>("Idiomas")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<string>("Nombre")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<string>("PrefijoTesSem")
                         .HasMaxLength(400)
-                        .HasColumnType("nvarchar(400)");
+                        .HasColumnType("NVARCHAR2(400)");
 
                     b.Property<short>("Tipo")
-                        .HasColumnType("smallint");
+                        .HasColumnType("NUMBER(5)");
 
                     b.HasKey("ProyectoID", "UrlOntologia", "SourceTesSem");
 
@@ -6698,43 +6697,43 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
                 {
                     b.Property<Guid>("EventoID")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<bool>("Activo")
-                        .HasColumnType("bit");
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<Guid?>("ComponenteID")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<string>("Descripcion")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<string>("Grupo")
                         .HasMaxLength(200)
-                        .HasColumnType("nvarchar(200)");
+                        .HasColumnType("NVARCHAR2(200)");
 
                     b.Property<string>("InfoExtra")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<bool>("Interno")
-                        .HasColumnType("bit");
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<string>("Nombre")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<short>("TipoEvento")
-                        .HasColumnType("smallint");
+                        .HasColumnType("NUMBER(5)");
 
                     b.Property<string>("UrlRedirect")
                         .HasMaxLength(200)
-                        .HasColumnType("nvarchar(200)");
+                        .HasColumnType("NVARCHAR2(200)");
 
                     b.HasKey("EventoID");
 
@@ -6744,20 +6743,20 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.ProyectoDS.ProyectoEventoAccion", b =>
                 {
                     b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(1);
 
                     b.Property<short>("Evento")
-                        .HasColumnType("smallint")
+                        .HasColumnType("NUMBER(5)")
                         .HasColumnOrder(2);
 
                     b.Property<string>("AccionJS")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.HasKey("OrganizacionID", "ProyectoID", "Evento");
 
@@ -6767,15 +6766,15 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.ProyectoDS.ProyectoEventoParticipante", b =>
                 {
                     b.Property<Guid>("EventoID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<Guid>("IdentidadID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(1);
 
                     b.Property<DateTime>("Fecha")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("TIMESTAMP(7)");
 
                     b.HasKey("EventoID", "IdentidadID");
 
@@ -6785,66 +6784,66 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.ProyectoDS.ProyectoGadget", b =>
                 {
                     b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(1);
 
                     b.Property<Guid>("GadgetID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(2);
 
                     b.Property<bool>("CargarPorAjax")
-                        .HasColumnType("bit");
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<string>("Clases")
                         .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
+                        .HasColumnType("NVARCHAR2(100)");
 
                     b.Property<string>("ComunidadDestinoFiltros")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<string>("Contenido")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<DateTime>("FechaActualizacion")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("TIMESTAMP(7)");
 
                     b.Property<DateTime>("FechaCreacion")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("TIMESTAMP(7)");
 
                     b.Property<bool>("MultiIdioma")
-                        .HasColumnType("bit");
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<string>("NombreCorto")
                         .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
+                        .HasColumnType("NVARCHAR2(50)");
 
                     b.Property<int>("Orden")
-                        .HasColumnType("int");
+                        .HasColumnType("NUMBER(10)");
 
                     b.Property<Guid?>("PersonalizacionComponenteID")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<short>("Tipo")
-                        .HasColumnType("smallint");
+                        .HasColumnType("NUMBER(5)");
 
                     b.Property<short>("TipoUbicacion")
-                        .HasColumnType("smallint");
+                        .HasColumnType("NUMBER(5)");
 
                     b.Property<string>("Titulo")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<string>("Ubicacion")
                         .HasMaxLength(10)
-                        .HasColumnType("nvarchar(10)");
+                        .HasColumnType("NVARCHAR2(10)");
 
                     b.Property<bool>("Visible")
-                        .HasColumnType("bit");
+                        .HasColumnType("NUMBER(1)");
 
                     b.HasKey("OrganizacionID", "ProyectoID", "GadgetID");
 
@@ -6854,70 +6853,70 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.ProyectoDS.ProyectoGadgetContexto", b =>
                 {
                     b.Property<Guid>("GadgetID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(1);
 
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(2);
 
                     b.Property<string>("ComunidadDestinoFiltros")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<string>("ComunidadOrigen")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<string>("ComunidadOrigenFiltros")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<string>("FiltrosOrigenDestino")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<short>("Imagen")
-                        .HasColumnType("smallint");
+                        .HasColumnType("NUMBER(5)");
 
                     b.Property<string>("ItemsBusqueda")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<bool>("MostrarEnlaceOriginal")
-                        .HasColumnType("bit");
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<string>("NamespacesExtra")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<string>("NombreCorto")
                         .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
+                        .HasColumnType("NVARCHAR2(50)");
 
                     b.Property<bool>("NuevaPestanya")
-                        .HasColumnType("bit");
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<short>("NumRecursos")
-                        .HasColumnType("smallint");
+                        .HasColumnType("NUMBER(5)");
 
                     b.Property<bool>("ObtenerPrivados")
-                        .HasColumnType("bit");
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<bool>("OcultarVerMas")
-                        .HasColumnType("bit");
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<string>("OrdenContexto")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<Guid>("ProyectoOrigenID")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<string>("ResultadosEliminar")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<string>("ServicioResultados")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.HasKey("GadgetID", "OrganizacionID", "ProyectoID");
 
@@ -6927,20 +6926,20 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.ProyectoDS.ProyectoGadgetContextoHTMLplano", b =>
                 {
                     b.Property<Guid>("GadgetID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(1);
 
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(2);
 
                     b.Property<string>("ComunidadDestinoFiltros")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.HasKey("GadgetID", "OrganizacionID", "ProyectoID");
 
@@ -6953,25 +6952,25 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.ProyectoDS.ProyectoGadgetIdioma", b =>
                 {
                     b.Property<Guid>("GadgetID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(1);
 
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(2);
 
                     b.Property<string>("Idioma")
                         .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)")
+                        .HasColumnType("NVARCHAR2(50)")
                         .HasColumnOrder(3);
 
                     b.Property<string>("Contenido")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.HasKey("GadgetID", "OrganizacionID", "ProyectoID", "Idioma");
 
@@ -6981,27 +6980,27 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.ProyectoDS.ProyectoGrafoFichaRec", b =>
                 {
                     b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(1);
 
                     b.Property<Guid>("GrafoID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(2);
 
                     b.Property<string>("Extra")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<int?>("NodosLimiteNivel")
-                        .HasColumnType("int");
+                        .HasColumnType("NUMBER(10)");
 
                     b.Property<string>("PropEnlace")
                         .IsRequired()
                         .HasMaxLength(300)
-                        .HasColumnType("nvarchar(300)");
+                        .HasColumnType("NVARCHAR2(300)");
 
                     b.HasKey("OrganizacionID", "ProyectoID", "GrafoID");
 
@@ -7011,16 +7010,16 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.ProyectoDS.ProyectoLoginConfiguracion", b =>
                 {
                     b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(1);
 
                     b.Property<string>("Mensaje")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.HasKey("OrganizacionID", "ProyectoID");
 
@@ -7030,17 +7029,17 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.ProyectoDS.ProyectoPaginaHtml", b =>
                 {
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<string>("Nombre")
                         .HasMaxLength(150)
-                        .HasColumnType("nvarchar(150)")
+                        .HasColumnType("NVARCHAR2(150)")
                         .HasColumnOrder(1);
 
                     b.Property<string>("Html")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<string>("Idioma")
                         .HasMaxLength(20)
@@ -7054,20 +7053,20 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.ProyectoDS.ProyectoPalabrasInapropiadas", b =>
                 {
                     b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(1);
 
                     b.Property<string>("Tag")
                         .HasMaxLength(200)
-                        .HasColumnType("nvarchar(200)")
+                        .HasColumnType("NVARCHAR2(200)")
                         .HasColumnOrder(2);
 
                     b.Property<short>("Rombos")
-                        .HasColumnType("smallint");
+                        .HasColumnType("NUMBER(5)");
 
                     b.HasKey("OrganizacionID", "ProyectoID", "Tag");
 
@@ -7077,23 +7076,23 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.ProyectoDS.ProyectoPasoRegistro", b =>
                 {
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(1);
 
                     b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<short>("Orden")
-                        .HasColumnType("smallint")
+                        .HasColumnType("NUMBER(5)")
                         .HasColumnOrder(2);
 
                     b.Property<bool>("Obligatorio")
-                        .HasColumnType("bit");
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<string>("PasoRegistro")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.HasKey("ProyectoID", "OrganizacionID", "Orden");
 
@@ -7105,15 +7104,15 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.ProyectoDS.ProyectoPerfilNumElem", b =>
                 {
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<Guid>("PerfilID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(1);
 
                     b.Property<int>("NumRecursos")
-                        .HasColumnType("int");
+                        .HasColumnType("NUMBER(10)");
 
                     b.HasKey("ProyectoID", "PerfilID");
 
@@ -7123,83 +7122,83 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.ProyectoDS.ProyectoPestanya", b =>
                 {
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<string>("Nombre")
                         .HasMaxLength(400)
-                        .HasColumnType("nvarchar(400)")
+                        .HasColumnType("NVARCHAR2(400)")
                         .HasColumnOrder(1);
 
                     b.Property<bool>("CMS")
-                        .HasColumnType("bit");
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<string>("CampoFiltro")
                         .HasMaxLength(500)
-                        .HasColumnType("nvarchar(500)");
+                        .HasColumnType("NVARCHAR2(500)");
 
                     b.Property<bool>("EsRutaInterna")
-                        .HasColumnType("bit");
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<bool>("EsSemantica")
-                        .HasColumnType("bit");
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<string>("GruposConfiguracion")
                         .HasMaxLength(1000)
-                        .HasColumnType("nvarchar(1000)");
+                        .HasColumnType("NVARCHAR2(1000)");
 
                     b.Property<bool>("GruposPorTipo")
-                        .HasColumnType("bit");
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<string>("HTMLAlternativo")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<bool>("MostrarCajaBusqueda")
-                        .HasColumnType("bit");
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<bool>("MostrarFacetas")
-                        .HasColumnType("bit");
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<string>("NombrePestanyaPadre")
                         .HasMaxLength(400)
-                        .HasColumnType("nvarchar(400)");
+                        .HasColumnType("NVARCHAR2(400)");
 
                     b.Property<bool>("NuevaPestanya")
-                        .HasColumnType("bit");
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<short?>("NumeroRecursos")
-                        .HasColumnType("smallint");
+                        .HasColumnType("NUMBER(5)");
 
                     b.Property<bool>("OcultarResultadosSinFiltros")
-                        .HasColumnType("bit");
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<short>("Orden")
-                        .HasColumnType("smallint");
+                        .HasColumnType("NUMBER(5)");
 
                     b.Property<short>("Privacidad")
-                        .HasColumnType("smallint");
+                        .HasColumnType("NUMBER(5)");
 
                     b.Property<Guid?>("ProyectoOrigenID")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<string>("Ruta")
                         .IsRequired()
                         .HasMaxLength(400)
-                        .HasColumnType("nvarchar(400)");
+                        .HasColumnType("NVARCHAR2(400)");
 
                     b.Property<string>("TextoBusquedaSinResultado")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<bool>("Visible")
-                        .HasColumnType("bit");
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<string>("VistaDisponible")
                         .HasMaxLength(10)
                         .IsUnicode(false)
-                        .HasColumnType("varchar(10)");
+                        .HasColumnType("VARCHAR2(10)");
 
                     b.Property<string>("posicionCentralMapa")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.HasKey("ProyectoID", "Nombre");
 
@@ -7209,64 +7208,64 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.ProyectoDS.ProyectoPestanyaBusqueda", b =>
                 {
                     b.Property<Guid>("PestanyaID")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<string>("CampoFiltro")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<string>("GruposConfiguracion")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<bool>("GruposPorTipo")
-                        .HasColumnType("bit");
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<bool>("IgnorarPrivacidadEnBusqueda")
-                        .HasColumnType("bit");
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<bool>("MostrarCajaBusqueda")
-                        .HasColumnType("bit");
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<bool>("MostrarEnComboBusqueda")
-                        .HasColumnType("bit");
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<bool>("MostrarFacetas")
-                        .HasColumnType("bit");
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<short>("NumeroRecursos")
-                        .HasColumnType("smallint");
+                        .HasColumnType("NUMBER(5)");
 
                     b.Property<bool>("OcultarResultadosSinFiltros")
-                        .HasColumnType("bit");
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<bool>("OmitirCargaInicialFacetasResultados")
-                        .HasColumnType("bit");
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<string>("PosicionCentralMapa")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<Guid?>("ProyectoOrigenID")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<string>("RelacionMandatory")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<string>("SearchPersonalizado")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("TextoBusquedaSinResultados")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<string>("TextoDefectoBuscador")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<int>("TipoAutocompletar")
-                        .HasColumnType("int");
+                        .HasColumnType("NUMBER(10)");
 
                     b.Property<string>("VistaDisponible")
                         .IsRequired()
                         .HasMaxLength(10)
-                        .HasColumnType("nvarchar(10)");
+                        .HasColumnType("NVARCHAR2(10)");
 
                     b.HasKey("PestanyaID");
 
@@ -7277,25 +7276,25 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
                 {
                     b.Property<Guid>("ExportacionID")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<string>("FormatosExportacion")
                         .IsRequired()
                         .HasMaxLength(10)
-                        .HasColumnType("nvarchar(10)");
+                        .HasColumnType("NVARCHAR2(10)");
 
                     b.Property<string>("GruposExportadores")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<string>("NombreExportacion")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<short>("Orden")
-                        .HasColumnType("smallint");
+                        .HasColumnType("NUMBER(5)");
 
                     b.Property<Guid>("PestanyaID")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("RAW(16)");
 
                     b.HasKey("ExportacionID");
 
@@ -7307,14 +7306,14 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.ProyectoDS.ProyectoPestanyaBusquedaExportacionExterna", b =>
                 {
                     b.Property<Guid>("ExportacionID")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<Guid>("PestanyaID")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<string>("UrlServicioExterno")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.HasKey("ExportacionID");
 
@@ -7324,30 +7323,30 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.ProyectoDS.ProyectoPestanyaBusquedaExportacionPropiedad", b =>
                 {
                     b.Property<Guid>("ExportacionID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<short>("Orden")
-                        .HasColumnType("smallint")
+                        .HasColumnType("NUMBER(5)")
                         .HasColumnOrder(1);
 
                     b.Property<string>("DatosExtraPropiedad")
                         .IsUnicode(false)
-                        .HasColumnType("varchar(max)");
+                        .HasColumnType("VARCHAR2(4000)");
 
                     b.Property<string>("NombrePropiedad")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<string>("Ontologia")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<Guid?>("OntologiaID")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<string>("Propiedad")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.HasKey("ExportacionID", "Orden");
 
@@ -7357,25 +7356,25 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.ProyectoDS.ProyectoPestanyaBusquedaPesoOC", b =>
                 {
                     b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<string>("OntologiaProyecto1")
                         .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)")
+                        .HasColumnType("NVARCHAR2(100)")
                         .HasColumnName("OntologiaProyecto");
 
                     b.Property<Guid>("PestanyaID")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<string>("Tipo")
                         .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
+                        .HasColumnType("NVARCHAR2(100)");
 
                     b.Property<short>("Peso")
-                        .HasColumnType("smallint");
+                        .HasColumnType("NUMBER(5)");
 
                     b.HasKey("OrganizacionID", "ProyectoID", "OntologiaProyecto1", "PestanyaID", "Tipo");
 
@@ -7387,11 +7386,11 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.ProyectoDS.ProyectoPestanyaCMS", b =>
                 {
                     b.Property<Guid>("PestanyaID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<short>("Ubicacion")
-                        .HasColumnType("smallint")
+                        .HasColumnType("NUMBER(5)")
                         .HasColumnOrder(1);
 
                     b.Property<Guid?>("EstadoID")
@@ -7408,38 +7407,38 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
                 {
                     b.Property<Guid>("AsisID")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<string>("Labels")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<string>("Nombre")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<int>("Orden")
-                        .HasColumnType("int");
+                        .HasColumnType("NUMBER(10)");
 
                     b.Property<Guid>("PestanyaID")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<bool>("PropExtra")
-                        .HasColumnType("bit");
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<string>("Select")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<string>("Tamanyo")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<int>("Tipo")
-                        .HasColumnType("int");
+                        .HasColumnType("NUMBER(10)");
 
                     b.Property<bool>("Titulo")
-                        .HasColumnType("bit");
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<string>("Where")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.HasKey("AsisID");
 
@@ -7452,23 +7451,23 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
                 {
                     b.Property<Guid>("DatasetID")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<Guid>("AsisID")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<string>("Color")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<string>("Datos")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<string>("Nombre")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<int>("Orden")
-                        .HasColumnType("int");
+                        .HasColumnType("NUMBER(10)");
 
                     b.HasKey("DatasetID");
 
@@ -7481,23 +7480,23 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
                 {
                     b.Property<Guid>("ExportacionID")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<string>("NombreExportacion")
                         .IsRequired()
                         .HasMaxLength(400)
-                        .HasColumnType("nvarchar(400)");
+                        .HasColumnType("NVARCHAR2(400)");
 
                     b.Property<string>("NombrePestanya")
                         .IsRequired()
                         .HasMaxLength(400)
-                        .HasColumnType("nvarchar(400)");
+                        .HasColumnType("NVARCHAR2(400)");
 
                     b.Property<short>("Orden")
-                        .HasColumnType("smallint");
+                        .HasColumnType("NUMBER(5)");
 
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("RAW(16)");
 
                     b.HasKey("ExportacionID");
 
@@ -7507,26 +7506,26 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.ProyectoDS.ProyectoPestanyaFiltroOrdenRecursos", b =>
                 {
                     b.Property<Guid>("PestanyaID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<short>("Orden")
-                        .HasColumnType("smallint")
+                        .HasColumnType("NUMBER(5)")
                         .HasColumnOrder(1);
 
                     b.Property<string>("Consulta")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<string>("FiltroOrden")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<string>("NombreFiltro")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<string>("OrderBy")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.HasKey("PestanyaID", "Orden");
 
@@ -7537,74 +7536,74 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
                 {
                     b.Property<Guid>("PestanyaID")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<bool>("Activa")
-                        .HasColumnType("bit");
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<string>("CSSBodyClass")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<DateTime>("FechaCreacion")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("TIMESTAMP(7)");
 
                     b.Property<DateTime>("FechaModificacion")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("TIMESTAMP(7)");
 
                     b.Property<string>("HtmlAlternativo")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<string>("IdiomasDisponibles")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<string>("MetaDescription")
                         .HasMaxLength(1000)
-                        .HasColumnType("nvarchar(1000)");
+                        .HasColumnType("NVARCHAR2(1000)");
 
                     b.Property<string>("Nombre")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<string>("NombreCortoPestanya")
                         .IsRequired()
                         .HasMaxLength(100)
                         .IsUnicode(false)
-                        .HasColumnType("varchar(100)");
+                        .HasColumnType("VARCHAR2(100)");
 
                     b.Property<bool>("NuevaPestanya")
-                        .HasColumnType("bit");
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<short>("Orden")
-                        .HasColumnType("smallint");
+                        .HasColumnType("NUMBER(5)");
 
                     b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<Guid?>("PestanyaPadreID")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<short>("Privacidad")
-                        .HasColumnType("smallint");
+                        .HasColumnType("NUMBER(5)");
 
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<string>("Ruta")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<short>("TipoPestanya")
-                        .HasColumnType("smallint");
+                        .HasColumnType("NUMBER(5)");
 
                     b.Property<string>("Titulo")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<string>("UltimoEditor")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<bool>("Visible")
-                        .HasColumnType("bit");
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<bool>("VisibleSinAcceso")
-                        .HasColumnType("bit");
+                        .HasColumnType("NUMBER(1)");
 
                     b.HasKey("PestanyaID");
 
@@ -7618,11 +7617,11 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.ProyectoDS.ProyectoPestanyaMenuRolGrupoIdentidades", b =>
                 {
                     b.Property<Guid>("PestanyaID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<Guid>("GrupoID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(1);
 
                     b.HasKey("PestanyaID", "GrupoID");
@@ -7633,11 +7632,11 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.ProyectoDS.ProyectoPestanyaMenuRolIdentidad", b =>
                 {
                     b.Property<Guid>("PestanyaID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<Guid>("PerfilID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(1);
 
                     b.HasKey("PestanyaID", "PerfilID");
@@ -7681,16 +7680,16 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.ProyectoDS.ProyectoPestanyaRolGrupoIdentidades", b =>
                 {
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<string>("Nombre")
                         .HasMaxLength(400)
-                        .HasColumnType("nvarchar(400)")
+                        .HasColumnType("NVARCHAR2(400)")
                         .HasColumnOrder(1);
 
                     b.Property<Guid>("GrupoID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(2);
 
                     b.HasKey("ProyectoID", "Nombre", "GrupoID");
@@ -7701,16 +7700,16 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.ProyectoDS.ProyectoPestanyaRolIdentidad", b =>
                 {
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<string>("Nombre")
                         .HasMaxLength(400)
-                        .HasColumnType("nvarchar(400)")
+                        .HasColumnType("NVARCHAR2(400)")
                         .HasColumnOrder(1);
 
                     b.Property<Guid>("PerfilID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(2);
 
                     b.HasKey("ProyectoID", "Nombre", "PerfilID");
@@ -7752,23 +7751,23 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.ProyectoDS.ProyectoRelacionado", b =>
                 {
                     b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(1);
 
                     b.Property<Guid>("OrganizacionRelacionadaID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(2);
 
                     b.Property<Guid>("ProyectoRelacionadoID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(3);
 
                     b.Property<short>("Orden")
-                        .HasColumnType("smallint");
+                        .HasColumnType("NUMBER(5)");
 
                     b.HasKey("OrganizacionID", "ProyectoID", "OrganizacionRelacionadaID", "ProyectoRelacionadoID");
 
@@ -7780,29 +7779,29 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.ProyectoDS.ProyectoSearchPersonalizado", b =>
                 {
                     b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(1);
 
                     b.Property<string>("NombreFiltro")
                         .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)")
+                        .HasColumnType("NVARCHAR2(100)")
                         .HasColumnOrder(2);
 
                     b.Property<bool>("OmitirRdfType")
-                        .HasColumnType("bit");
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<string>("OrderBySPARQL")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<string>("WhereFacetasSPARQL")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<string>("WhereSPARQL")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.HasKey("OrganizacionID", "ProyectoID", "NombreFiltro");
 
@@ -7812,29 +7811,29 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.ProyectoDS.ProyectoServicioExterno", b =>
                 {
                     b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(1);
 
                     b.Property<string>("NombreServicio")
                         .HasMaxLength(150)
                         .IsUnicode(false)
-                        .HasColumnType("varchar(150)")
+                        .HasColumnType("VARCHAR2(150)")
                         .HasColumnOrder(2);
 
                     b.Property<DateTime>("FechaCreacion")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("TIMESTAMP(7)");
 
                     b.Property<DateTime>("FechaModificacion")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("TIMESTAMP(7)");
 
                     b.Property<string>("UrlServicio")
                         .IsRequired()
                         .IsUnicode(false)
-                        .HasColumnType("varchar(max)");
+                        .HasColumnType("VARCHAR2(4000)");
 
                     b.HasKey("OrganizacionID", "ProyectoID", "NombreServicio");
 
@@ -7844,23 +7843,23 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.ProyectoDS.ProyectosMasActivos", b =>
                 {
                     b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(1);
 
                     b.Property<string>("Nombre")
                         .IsRequired()
                         .HasMaxLength(1000)
-                        .HasColumnType("nvarchar(1000)");
+                        .HasColumnType("NVARCHAR2(1000)");
 
                     b.Property<int>("NumeroConsultas")
-                        .HasColumnType("int");
+                        .HasColumnType("NUMBER(10)");
 
                     b.Property<int>("Peso")
-                        .HasColumnType("int");
+                        .HasColumnType("NUMBER(10)");
 
                     b.HasKey("OrganizacionID", "ProyectoID");
 
@@ -7870,37 +7869,37 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.ProyectoDS.RecursosRelacionadosPresentacion", b =>
                 {
                     b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(1);
 
                     b.Property<short>("Orden")
-                        .HasColumnType("smallint")
+                        .HasColumnType("NUMBER(5)")
                         .HasColumnOrder(2);
 
                     b.Property<Guid>("OntologiaID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(3);
 
                     b.Property<short>("Imagen")
-                        .HasColumnType("smallint");
+                        .HasColumnType("NUMBER(5)");
 
                     b.Property<string>("Nombre")
                         .HasMaxLength(1000)
-                        .HasColumnType("nvarchar(1000)");
+                        .HasColumnType("NVARCHAR2(1000)");
 
                     b.Property<string>("Ontologia")
                         .IsRequired()
                         .HasMaxLength(1000)
-                        .HasColumnType("nvarchar(1000)");
+                        .HasColumnType("NVARCHAR2(1000)");
 
                     b.Property<string>("Propiedad")
                         .IsRequired()
                         .HasMaxLength(2000)
-                        .HasColumnType("nvarchar(2000)");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.HasKey("OrganizacionID", "ProyectoID", "Orden", "OntologiaID");
 
@@ -7910,44 +7909,44 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.ProyectoDS.SeccionProyCatalogo", b =>
                 {
                     b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(1);
 
                     b.Property<Guid>("OrganizacionBusquedaID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(2);
 
                     b.Property<Guid>("ProyectoBusquedaID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(3);
 
                     b.Property<short>("Orden")
-                        .HasColumnType("smallint")
+                        .HasColumnType("NUMBER(5)")
                         .HasColumnOrder(4);
 
                     b.Property<string>("Faceta")
                         .IsRequired()
                         .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
+                        .HasColumnType("NVARCHAR2(100)");
 
                     b.Property<string>("Filtro")
                         .HasMaxLength(200)
-                        .HasColumnType("nvarchar(200)");
+                        .HasColumnType("NVARCHAR2(200)");
 
                     b.Property<string>("Nombre")
                         .IsRequired()
                         .HasMaxLength(550)
-                        .HasColumnType("nvarchar(550)");
+                        .HasColumnType("NVARCHAR2(550)");
 
                     b.Property<short>("NumeroResultados")
-                        .HasColumnType("smallint");
+                        .HasColumnType("NUMBER(5)");
 
                     b.Property<short>("Tipo")
-                        .HasColumnType("smallint");
+                        .HasColumnType("NUMBER(5)");
 
                     b.HasKey("OrganizacionID", "ProyectoID", "OrganizacionBusquedaID", "ProyectoBusquedaID", "Orden");
 
@@ -7957,19 +7956,19 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.ProyectoDS.TipoDocDispRolUsuarioProy", b =>
                 {
                     b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(1);
 
                     b.Property<short>("TipoDocumento")
-                        .HasColumnType("smallint")
+                        .HasColumnType("NUMBER(5)")
                         .HasColumnOrder(2);
 
                     b.Property<short>("RolUsuario")
-                        .HasColumnType("smallint")
+                        .HasColumnType("NUMBER(5)")
                         .HasColumnOrder(3);
 
                     b.HasKey("OrganizacionID", "ProyectoID", "TipoDocumento", "RolUsuario");
@@ -7980,21 +7979,21 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.ProyectoDS.TipoDocImagenPorDefecto", b =>
                 {
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<short>("TipoRecurso")
-                        .HasColumnType("smallint")
+                        .HasColumnType("NUMBER(5)")
                         .HasColumnOrder(1);
 
                     b.Property<Guid>("OntologiaID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(2);
 
                     b.Property<string>("UrlImagen")
                         .IsRequired()
                         .HasMaxLength(300)
-                        .HasColumnType("nvarchar(300)");
+                        .HasColumnType("NVARCHAR2(300)");
 
                     b.HasKey("ProyectoID", "TipoRecurso", "OntologiaID");
 
@@ -8004,19 +8003,19 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.ProyectoDS.TipoOntoDispRolUsuarioProy", b =>
                 {
                     b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(1);
 
                     b.Property<Guid>("OntologiaID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(2);
 
                     b.Property<short>("RolUsuario")
-                        .HasColumnType("smallint")
+                        .HasColumnType("NUMBER(5)")
                         .HasColumnOrder(3);
 
                     b.HasKey("OrganizacionID", "ProyectoID", "OntologiaID", "RolUsuario");
@@ -8028,23 +8027,23 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
                 {
                     b.Property<Guid>("RedireccionID")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<string>("Dominio")
                         .IsRequired()
                         .HasMaxLength(250)
-                        .HasColumnType("nvarchar(250)");
+                        .HasColumnType("NVARCHAR2(250)");
 
                     b.Property<DateTime>("FechaCreacion")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("TIMESTAMP(7)");
 
                     b.Property<string>("NombreParametro")
                         .HasMaxLength(250)
-                        .HasColumnType("nvarchar(250)");
+                        .HasColumnType("NVARCHAR2(250)");
 
                     b.Property<string>("UrlOrigen")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.HasKey("RedireccionID");
 
@@ -8054,23 +8053,23 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.RedireccionValorParametro", b =>
                 {
                     b.Property<Guid>("RedireccionID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<string>("ValorParametro")
                         .HasMaxLength(250)
-                        .HasColumnType("nvarchar(250)")
+                        .HasColumnType("NVARCHAR2(250)")
                         .HasColumnOrder(1);
 
                     b.Property<bool>("MantenerFiltros")
-                        .HasColumnType("bit");
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<short>("OrdenPresentacion")
-                        .HasColumnType("smallint");
+                        .HasColumnType("NUMBER(5)");
 
                     b.Property<string>("UrlRedireccion")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.HasKey("RedireccionID", "ValorParametro");
 
@@ -8210,15 +8209,15 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
                 {
                     b.Property<string>("Dominio")
                         .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)")
+                        .HasColumnType("NVARCHAR2(255)")
                         .HasColumnOrder(0);
 
                     b.Property<string>("SitemapIndexName")
-                        .HasColumnType("nvarchar(450)")
+                        .HasColumnType("NVARCHAR2(450)")
                         .HasColumnOrder(1);
 
                     b.Property<string>("SitemapContent")
-                        .HasColumnType("nvarchar(max)")
+                        .HasColumnType("NVARCHAR2(2000)")
                         .HasColumnOrder(2);
 
                     b.HasKey("Dominio", "SitemapIndexName");
@@ -8230,15 +8229,15 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
                 {
                     b.Property<string>("Dominio")
                         .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)")
+                        .HasColumnType("NVARCHAR2(255)")
                         .HasColumnOrder(0);
 
                     b.Property<string>("Robots")
-                        .HasColumnType("nvarchar(max)")
+                        .HasColumnType("NVARCHAR2(2000)")
                         .HasColumnOrder(2);
 
                     b.Property<string>("Sitemap")
-                        .HasColumnType("nvarchar(max)")
+                        .HasColumnType("NVARCHAR2(2000)")
                         .HasColumnOrder(1);
 
                     b.HasKey("Dominio");
@@ -8249,15 +8248,15 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Solicitud.DatoExtraEcosistemaOpcionSolicitud", b =>
                 {
                     b.Property<Guid>("DatoExtraID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<Guid>("OpcionID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(1);
 
                     b.Property<Guid>("SolicitudID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(2);
 
                     b.HasKey("DatoExtraID", "OpcionID", "SolicitudID");
@@ -8270,15 +8269,15 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Solicitud.DatoExtraEcosistemaVirtuosoSolicitud", b =>
                 {
                     b.Property<Guid>("DatoExtraID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<string>("Opcion")
                         .HasMaxLength(500)
-                        .HasColumnType("nvarchar(500)");
+                        .HasColumnType("NVARCHAR2(500)");
 
                     b.Property<Guid>("SolicitudID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(1);
 
                     b.HasKey("DatoExtraID", "Opcion", "SolicitudID");
@@ -8291,23 +8290,23 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Solicitud.DatoExtraProyectoOpcionSolicitud", b =>
                 {
                     b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(1);
 
                     b.Property<Guid>("DatoExtraID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(2);
 
                     b.Property<Guid>("OpcionID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(3);
 
                     b.Property<Guid>("SolicitudID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(4);
 
                     b.HasKey("OrganizacionID", "ProyectoID", "DatoExtraID", "OpcionID", "SolicitudID");
@@ -8320,25 +8319,25 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Solicitud.DatoExtraProyectoVirtuosoSolicitud", b =>
                 {
                     b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(1);
 
                     b.Property<Guid>("DatoExtraID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(2);
 
                     b.Property<Guid>("SolicitudID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(3);
 
                     b.Property<string>("Opcion")
                         .IsRequired()
                         .HasMaxLength(500)
-                        .HasColumnType("nvarchar(500)");
+                        .HasColumnType("NVARCHAR2(500)");
 
                     b.HasKey("OrganizacionID", "ProyectoID", "DatoExtraID", "SolicitudID");
 
@@ -8349,22 +8348,22 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
                 {
                     b.Property<Guid>("SolicitudID")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<short>("Estado")
-                        .HasColumnType("smallint");
+                        .HasColumnType("NUMBER(5)");
 
                     b.Property<DateTime?>("FechaProcesado")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("TIMESTAMP(7)");
 
                     b.Property<DateTime>("FechaSolicitud")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("TIMESTAMP(7)");
 
                     b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("RAW(16)");
 
                     b.HasKey("SolicitudID");
 
@@ -8374,15 +8373,15 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Solicitud.SolicitudGrupo", b =>
                 {
                     b.Property<Guid>("SolicitudID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<Guid>("GrupoID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(1);
 
                     b.Property<Guid>("IdentidadID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(2);
 
                     b.HasKey("SolicitudID", "GrupoID", "IdentidadID");
@@ -8424,75 +8423,75 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Solicitud.SolicitudNuevaOrganizacion", b =>
                 {
                     b.Property<Guid>("SolicitudID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<Guid>("UsuarioAdminID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(1);
 
                     b.Property<string>("Alias")
                         .HasMaxLength(80)
-                        .HasColumnType("nvarchar(80)");
+                        .HasColumnType("NVARCHAR2(80)");
 
                     b.Property<string>("CP")
                         .HasMaxLength(15)
-                        .HasColumnType("nvarchar(15)");
+                        .HasColumnType("NVARCHAR2(15)");
 
                     b.Property<string>("CargoContactoPrincipal")
                         .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)");
+                        .HasColumnType("NVARCHAR2(255)");
 
                     b.Property<string>("Direccion")
                         .IsRequired()
                         .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)");
+                        .HasColumnType("NVARCHAR2(255)");
 
                     b.Property<string>("EmailContactoPrincipal")
                         .IsRequired()
                         .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)");
+                        .HasColumnType("NVARCHAR2(255)");
 
                     b.Property<bool?>("EsBuscable")
-                        .HasColumnType("bit");
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<bool?>("EsBuscableExternos")
-                        .HasColumnType("bit");
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<bool>("ModoPersonal")
-                        .HasColumnType("bit");
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<string>("Nombre")
                         .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)");
+                        .HasColumnType("NVARCHAR2(255)");
 
                     b.Property<string>("NombreCorto")
                         .IsRequired()
                         .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
+                        .HasColumnType("NVARCHAR2(50)");
 
                     b.Property<string>("PaginaWeb")
                         .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)");
+                        .HasColumnType("NVARCHAR2(255)");
 
                     b.Property<Guid>("PaisID")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<string>("Poblacion")
                         .IsRequired()
                         .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)");
+                        .HasColumnType("NVARCHAR2(255)");
 
                     b.Property<string>("Provincia")
                         .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)");
+                        .HasColumnType("NVARCHAR2(255)");
 
                     b.Property<Guid?>("ProvinciaID")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<string>("URLFoto")
                         .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)");
+                        .HasColumnType("NVARCHAR2(255)");
 
                     b.HasKey("SolicitudID", "UsuarioAdminID");
 
@@ -8502,26 +8501,26 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Solicitud.SolicitudNuevoProfesor", b =>
                 {
                     b.Property<Guid>("SolicitudID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<Guid>("UsuarioID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(1);
 
                     b.Property<string>("AreaEstudios")
                         .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)");
+                        .HasColumnType("NVARCHAR2(255)");
 
                     b.Property<string>("CentroEstudios")
                         .IsRequired()
                         .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)");
+                        .HasColumnType("NVARCHAR2(255)");
 
                     b.Property<string>("Email")
                         .IsRequired()
                         .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)");
+                        .HasColumnType("NVARCHAR2(255)");
 
                     b.HasKey("SolicitudID", "UsuarioID");
 
@@ -8531,55 +8530,55 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Solicitud.SolicitudNuevoUsuario", b =>
                 {
                     b.Property<Guid>("UsuarioID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(1);
 
                     b.Property<Guid>("SolicitudID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<string>("Apellidos")
                         .IsRequired()
                         .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)");
+                        .HasColumnType("NVARCHAR2(255)");
 
                     b.Property<string>("CP")
                         .HasMaxLength(15)
-                        .HasColumnType("nvarchar(15)");
+                        .HasColumnType("NVARCHAR2(15)");
 
                     b.Property<bool>("CambioPassword")
-                        .HasColumnType("bit");
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<string>("ClausulasAdicionales")
                         .HasMaxLength(1000)
-                        .HasColumnType("nvarchar(1000)");
+                        .HasColumnType("NVARCHAR2(1000)");
 
                     b.Property<bool?>("CrearClase")
-                        .HasColumnType("bit");
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<string>("Direccion")
                         .HasMaxLength(1000)
-                        .HasColumnType("nvarchar(1000)");
+                        .HasColumnType("NVARCHAR2(1000)");
 
                     b.Property<string>("Email")
                         .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)");
+                        .HasColumnType("NVARCHAR2(255)");
 
                     b.Property<string>("EmailTutor")
                         .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)");
+                        .HasColumnType("NVARCHAR2(255)");
 
                     b.Property<bool>("EsBuscable")
-                        .HasColumnType("bit");
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<bool>("EsBuscableExterno")
-                        .HasColumnType("bit");
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<bool>("FaltanDatos")
-                        .HasColumnType("bit");
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<DateTime?>("FechaNacimiento")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("TIMESTAMP(7)");
 
                     b.Property<string>("Idioma")
                         .IsRequired()
@@ -8589,42 +8588,42 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
                     b.Property<string>("Nombre")
                         .IsRequired()
                         .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)");
+                        .HasColumnType("NVARCHAR2(255)");
 
                     b.Property<string>("NombreCorto")
                         .IsRequired()
                         .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
+                        .HasColumnType("NVARCHAR2(50)");
 
                     b.Property<Guid?>("PaisID")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<string>("Poblacion")
                         .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)");
+                        .HasColumnType("NVARCHAR2(255)");
 
                     b.Property<string>("Provincia")
                         .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)");
+                        .HasColumnType("NVARCHAR2(255)");
 
                     b.Property<Guid?>("ProvinciaID")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<string>("ProyectosAutoAcceso")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<string>("Sexo")
                         .HasMaxLength(1)
                         .IsUnicode(false)
-                        .HasColumnType("char(1)")
+                        .HasColumnType("CHAR(1)")
                         .IsFixedLength();
 
                     b.Property<short>("TipoRegistro")
-                        .HasColumnType("smallint");
+                        .HasColumnType("NUMBER(5)");
 
                     b.Property<string>("URLFoto")
                         .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)");
+                        .HasColumnType("NVARCHAR2(255)");
 
                     b.HasKey("UsuarioID", "SolicitudID");
 
@@ -8636,11 +8635,11 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Solicitud.SolicitudOrganizacion", b =>
                 {
                     b.Property<Guid>("SolicitudID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(1);
 
                     b.HasKey("SolicitudID", "OrganizacionID");
@@ -8651,23 +8650,23 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Solicitud.SolicitudUsuario", b =>
                 {
                     b.Property<Guid>("SolicitudID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<Guid>("UsuarioID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(1);
 
                     b.Property<Guid>("PersonaID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(2);
 
                     b.Property<string>("ClausulasAdicionales")
                         .HasMaxLength(1000)
-                        .HasColumnType("nvarchar(1000)");
+                        .HasColumnType("NVARCHAR2(1000)");
 
                     b.Property<Guid>("PerfilID")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("RAW(16)");
 
                     b.HasKey("SolicitudID", "UsuarioID", "PersonaID");
 
@@ -8677,15 +8676,15 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Suscripcion.CategoriaTesVinSuscrip", b =>
                 {
                     b.Property<Guid>("SuscripcionID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<Guid>("TesauroID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(1);
 
                     b.Property<Guid>("CategoriaTesauroID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(2);
 
                     b.HasKey("SuscripcionID", "TesauroID", "CategoriaTesauroID");
@@ -8697,25 +8696,25 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
                 {
                     b.Property<Guid>("SuscripcionID")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<bool>("Bloqueada")
-                        .HasColumnType("bit");
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<DateTime?>("FechaSuscripcion")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("TIMESTAMP(7)");
 
                     b.Property<Guid>("IdentidadID")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<int>("Periodicidad")
-                        .HasColumnType("int");
+                        .HasColumnType("NUMBER(10)");
 
                     b.Property<int?>("ScoreUltimoEnvio")
-                        .HasColumnType("int");
+                        .HasColumnType("NUMBER(10)");
 
                     b.Property<DateTime>("UltimoEnvio")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("TIMESTAMP(7)");
 
                     b.HasKey("SuscripcionID");
 
@@ -8725,11 +8724,11 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Suscripcion.SuscripcionBlog", b =>
                 {
                     b.Property<Guid>("BlogID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(1);
 
                     b.Property<Guid>("SuscripcionID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.HasKey("BlogID", "SuscripcionID");
@@ -8742,18 +8741,18 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Suscripcion.SuscripcionIdentidadProyecto", b =>
                 {
                     b.Property<Guid>("IdentidadID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(1);
 
                     b.Property<Guid>("SuscripcionID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("RAW(16)");
 
                     b.HasKey("IdentidadID", "SuscripcionID");
 
@@ -8765,13 +8764,13 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Suscripcion.SuscripcionTesauroOrganizacion", b =>
                 {
                     b.Property<Guid>("SuscripcionID")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<Guid>("TesauroID")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("RAW(16)");
 
                     b.HasKey("SuscripcionID");
 
@@ -8781,16 +8780,16 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Suscripcion.SuscripcionTesauroProyecto", b =>
                 {
                     b.Property<Guid>("SuscripcionID")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<Guid>("TesauroID")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("RAW(16)");
 
                     b.HasKey("SuscripcionID");
 
@@ -8800,13 +8799,13 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Suscripcion.SuscripcionTesauroUsuario", b =>
                 {
                     b.Property<Guid>("SuscripcionID")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<Guid>("TesauroID")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<Guid>("UsuarioID")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("RAW(16)");
 
                     b.HasKey("SuscripcionID");
 
@@ -8889,41 +8888,41 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Tesauro.CategoriaTesauro", b =>
                 {
                     b.Property<Guid>("TesauroID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<Guid>("CategoriaTesauroID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(1);
 
                     b.Property<short>("Estructurante")
-                        .HasColumnType("smallint");
+                        .HasColumnType("NUMBER(5)");
 
                     b.Property<string>("Nombre")
                         .IsRequired()
                         .HasMaxLength(1000)
-                        .HasColumnType("nvarchar(1000)");
+                        .HasColumnType("NVARCHAR2(1000)");
 
                     b.Property<int>("NumeroDafos")
-                        .HasColumnType("int");
+                        .HasColumnType("NUMBER(10)");
 
                     b.Property<int>("NumeroDebates")
-                        .HasColumnType("int");
+                        .HasColumnType("NUMBER(10)");
 
                     b.Property<int>("NumeroPreguntas")
-                        .HasColumnType("int");
+                        .HasColumnType("NUMBER(10)");
 
                     b.Property<int>("NumeroRecursos")
-                        .HasColumnType("int");
+                        .HasColumnType("NUMBER(10)");
 
                     b.Property<short>("Orden")
-                        .HasColumnType("smallint");
+                        .HasColumnType("NUMBER(5)");
 
                     b.Property<bool>("TieneFoto")
-                        .HasColumnType("bit");
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<short>("VersionFoto")
-                        .HasColumnType("smallint");
+                        .HasColumnType("NUMBER(5)");
 
                     b.HasKey("TesauroID", "CategoriaTesauroID");
 
@@ -8933,15 +8932,15 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Tesauro.CategoriaTesauroPropiedades", b =>
                 {
                     b.Property<Guid>("TesauroID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<Guid>("CategoriaTesauroID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(1);
 
                     b.Property<short>("Obligatoria")
-                        .HasColumnType("smallint");
+                        .HasColumnType("NUMBER(5)");
 
                     b.HasKey("TesauroID", "CategoriaTesauroID");
 
@@ -8952,30 +8951,30 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
                 {
                     b.Property<Guid>("SugerenciaID")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<Guid?>("CategoriaTesauroAceptadaID")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<Guid?>("CategoriaTesauroPadreID")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<short>("Estado")
-                        .HasColumnType("smallint");
+                        .HasColumnType("NUMBER(5)");
 
                     b.Property<Guid>("IdentidadID")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<string>("Nombre")
                         .IsRequired()
                         .HasMaxLength(1000)
-                        .HasColumnType("nvarchar(1000)");
+                        .HasColumnType("NVARCHAR2(1000)");
 
                     b.Property<Guid?>("TesauroCatPadreID")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<Guid>("TesauroSugerenciaID")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("RAW(16)");
 
                     b.HasKey("SugerenciaID");
 
@@ -8990,7 +8989,7 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
                 {
                     b.Property<Guid>("TesauroID")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("RAW(16)");
 
                     b.HasKey("TesauroID");
 
@@ -9000,21 +8999,21 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Tesauro.TesauroOrganizacion", b =>
                 {
                     b.Property<Guid>("TesauroID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(1);
 
                     b.Property<Guid?>("CategoriaTesauroFavoritosID")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<Guid?>("CategoriaTesauroPrivadoID")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<Guid?>("CategoriaTesauroPublicoID")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("RAW(16)");
 
                     b.HasKey("TesauroID", "OrganizacionID");
 
@@ -9024,20 +9023,20 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Tesauro.TesauroProyecto", b =>
                 {
                     b.Property<Guid>("TesauroID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(1);
 
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(2);
 
                     b.Property<string>("IdiomaDefecto")
                         .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
+                        .HasColumnType("NVARCHAR2(50)");
 
                     b.HasKey("TesauroID", "OrganizacionID", "ProyectoID");
 
@@ -9047,24 +9046,24 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Tesauro.TesauroUsuario", b =>
                 {
                     b.Property<Guid>("TesauroID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<Guid>("UsuarioID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(1);
 
                     b.Property<Guid?>("CategoriaTesauroMisImagenesID")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<Guid?>("CategoriaTesauroMisVideosID")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<Guid?>("CategoriaTesauroPrivadoID")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<Guid?>("CategoriaTesauroPublicoID")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("RAW(16)");
 
                     b.HasKey("TesauroID", "UsuarioID");
 
@@ -9077,13 +9076,13 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
                 {
                     b.Property<Guid>("ProyectoID")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<string>("Documentos")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<DateTime>("FechaActualizacion")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("TIMESTAMP(7)");
 
                     b.HasKey("ProyectoID");
 
@@ -9093,7 +9092,7 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.UsuarioDS.AdministradorGeneral", b =>
                 {
                     b.Property<Guid>("UsuarioID")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("RAW(16)");
 
                     b.HasKey("UsuarioID");
 
@@ -9103,15 +9102,15 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.UsuarioDS.AdministradorOrganizacion", b =>
                 {
                     b.Property<Guid>("UsuarioID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(1);
 
                     b.Property<short>("Tipo")
-                        .HasColumnType("smallint")
+                        .HasColumnType("NUMBER(5)")
                         .HasColumnOrder(2);
 
                     b.HasKey("UsuarioID", "OrganizacionID", "Tipo");
@@ -9124,32 +9123,32 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.UsuarioDS.ClausulaRegistro", b =>
                 {
                     b.Property<Guid>("ClausulaID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(1);
 
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(2);
 
                     b.Property<DateTime>("FechaActualizacion")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("TIMESTAMP(7)");
 
                     b.Property<DateTime>("FechaCreacion")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("TIMESTAMP(7)");
 
                     b.Property<int>("Orden")
-                        .HasColumnType("int");
+                        .HasColumnType("NUMBER(10)");
 
                     b.Property<string>("Texto")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<short>("Tipo")
-                        .HasColumnType("smallint");
+                        .HasColumnType("NUMBER(5)");
 
                     b.HasKey("ClausulaID", "OrganizacionID", "ProyectoID");
 
@@ -9160,19 +9159,19 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
                 {
                     b.Property<Guid>("GrupoUsuarioID")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<string>("RolDenegado")
                         .HasMaxLength(16)
                         .IsUnicode(false)
-                        .HasColumnType("char(16)")
+                        .HasColumnType("CHAR(16)")
                         .IsFixedLength();
 
                     b.Property<string>("RolPermitido")
                         .IsRequired()
                         .HasMaxLength(16)
                         .IsUnicode(false)
-                        .HasColumnType("char(16)")
+                        .HasColumnType("CHAR(16)")
                         .IsFixedLength();
 
                     b.HasKey("GrupoUsuarioID");
@@ -9183,19 +9182,19 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.UsuarioDS.GeneralRolUsuario", b =>
                 {
                     b.Property<Guid>("UsuarioID")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<string>("RolDenegado")
                         .HasMaxLength(16)
                         .IsUnicode(false)
-                        .HasColumnType("char(16)")
+                        .HasColumnType("CHAR(16)")
                         .IsFixedLength();
 
                     b.Property<string>("RolPermitido")
                         .IsRequired()
                         .HasMaxLength(16)
                         .IsUnicode(false)
-                        .HasColumnType("char(16)")
+                        .HasColumnType("CHAR(16)")
                         .IsFixedLength();
 
                     b.HasKey("UsuarioID");
@@ -9207,16 +9206,16 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
                 {
                     b.Property<Guid>("GrupoUsuarioID")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<string>("Descripcion")
                         .HasMaxLength(1000)
-                        .HasColumnType("nvarchar(1000)");
+                        .HasColumnType("NVARCHAR2(1000)");
 
                     b.Property<string>("Nombre")
                         .IsRequired()
                         .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)");
+                        .HasColumnType("NVARCHAR2(255)");
 
                     b.HasKey("GrupoUsuarioID");
 
@@ -9226,11 +9225,11 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.UsuarioDS.GrupoUsuarioUsuario", b =>
                 {
                     b.Property<Guid>("UsuarioID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<Guid>("GrupoUsuarioID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(1);
 
                     b.HasKey("UsuarioID", "GrupoUsuarioID");
@@ -9241,27 +9240,27 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.UsuarioDS.HistoricoProyectoUsuario", b =>
                 {
                     b.Property<Guid>("UsuarioID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<Guid>("OrganizacionGnossID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(1);
 
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(2);
 
                     b.Property<Guid>("IdentidadID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(3);
 
                     b.Property<DateTime>("FechaEntrada")
-                        .HasColumnType("datetime2")
+                        .HasColumnType("TIMESTAMP(7)")
                         .HasColumnOrder(4);
 
                     b.Property<DateTime?>("FechaSalida")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("TIMESTAMP(7)");
 
                     b.HasKey("UsuarioID", "OrganizacionGnossID", "ProyectoID", "IdentidadID", "FechaEntrada");
 
@@ -9271,16 +9270,16 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.UsuarioDS.InicioSesion", b =>
                 {
                     b.Property<Guid>("UsuarioID")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<Guid?>("OrganizacionGnossID")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<Guid?>("PersonaID")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<Guid?>("ProyectoID")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("RAW(16)");
 
                     b.HasKey("UsuarioID");
 
@@ -9290,24 +9289,24 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.UsuarioDS.OrganizacionRolUsuario", b =>
                 {
                     b.Property<Guid>("UsuarioID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(1);
 
                     b.Property<string>("RolDenegado")
                         .HasMaxLength(16)
                         .IsUnicode(false)
-                        .HasColumnType("char(16)")
+                        .HasColumnType("CHAR(16)")
                         .IsFixedLength();
 
                     b.Property<string>("RolPermitido")
                         .IsRequired()
                         .HasMaxLength(16)
                         .IsUnicode(false)
-                        .HasColumnType("char(16)")
+                        .HasColumnType("CHAR(16)")
                         .IsFixedLength();
 
                     b.HasKey("UsuarioID", "OrganizacionID");
@@ -9352,28 +9351,28 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.UsuarioDS.ProyectoRolGrupoUsuario", b =>
                 {
                     b.Property<Guid>("OrganizacionGnossID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(1);
 
                     b.Property<Guid>("GrupoUsuarioID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(2);
 
                     b.Property<string>("RolDenegado")
                         .HasMaxLength(16)
                         .IsUnicode(false)
-                        .HasColumnType("char(16)")
+                        .HasColumnType("CHAR(16)")
                         .IsFixedLength();
 
                     b.Property<string>("RolPermitido")
                         .IsRequired()
                         .HasMaxLength(16)
                         .IsUnicode(false)
-                        .HasColumnType("char(16)")
+                        .HasColumnType("CHAR(16)")
                         .IsFixedLength();
 
                     b.HasKey("OrganizacionGnossID", "ProyectoID", "GrupoUsuarioID");
@@ -9384,31 +9383,31 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.UsuarioDS.ProyectoRolUsuario", b =>
                 {
                     b.Property<Guid>("OrganizacionGnossID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(1);
 
                     b.Property<Guid>("UsuarioID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(2);
 
                     b.Property<bool>("EstaBloqueado")
-                        .HasColumnType("bit");
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<string>("RolDenegado")
                         .HasMaxLength(16)
                         .IsUnicode(false)
-                        .HasColumnType("char(16)")
+                        .HasColumnType("CHAR(16)")
                         .IsFixedLength();
 
                     b.Property<string>("RolPermitido")
                         .IsRequired()
                         .HasMaxLength(16)
                         .IsUnicode(false)
-                        .HasColumnType("char(16)")
+                        .HasColumnType("CHAR(16)")
                         .IsFixedLength();
 
                     b.HasKey("OrganizacionGnossID", "ProyectoID", "UsuarioID");
@@ -9421,26 +9420,26 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.UsuarioDS.ProyectoUsuarioIdentidad", b =>
                 {
                     b.Property<Guid>("IdentidadID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<Guid>("UsuarioID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(1);
 
                     b.Property<Guid>("OrganizacionGnossID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(2);
 
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(3);
 
                     b.Property<DateTime?>("FechaEntrada")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("TIMESTAMP(7)");
 
                     b.Property<int?>("Reputacion")
-                        .HasColumnType("int");
+                        .HasColumnType("NUMBER(10)");
 
                     b.HasKey("IdentidadID", "UsuarioID", "OrganizacionGnossID", "ProyectoID");
 
@@ -9455,36 +9454,36 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
                 {
                     b.Property<Guid>("UsuarioID")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<bool?>("EstaBloqueado")
-                        .HasColumnType("bit");
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<DateTime?>("FechaCambioPassword")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("TIMESTAMP(7)");
 
                     b.Property<string>("Login")
                         .IsRequired()
                         .HasMaxLength(12)
-                        .HasColumnType("nvarchar(12)");
+                        .HasColumnType("NVARCHAR2(12)");
 
                     b.Property<string>("NombreCorto")
                         .IsRequired()
                         .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
+                        .HasColumnType("NVARCHAR2(50)");
 
                     b.Property<string>("Password")
                         .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
+                        .HasColumnType("NVARCHAR2(50)");
 
                     b.Property<bool>("TwoFactorAuthentication")
-                        .HasColumnType("bit");
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<short>("Validado")
-                        .HasColumnType("smallint");
+                        .HasColumnType("NUMBER(5)");
 
                     b.Property<short?>("Version")
-                        .HasColumnType("smallint");
+                        .HasColumnType("NUMBER(5)");
 
                     b.HasKey("UsuarioID");
 
@@ -9494,13 +9493,13 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.UsuarioDS.UsuarioContadores", b =>
                 {
                     b.Property<Guid>("UsuarioID")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<DateTime?>("FechaUltimaVisita")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("TIMESTAMP(7)");
 
                     b.Property<int>("NumeroAccesos")
-                        .HasColumnType("int");
+                        .HasColumnType("NUMBER(10)");
 
                     b.HasKey("UsuarioID");
 
@@ -9510,12 +9509,12 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.UsuarioDS.UsuarioRedirect", b =>
                 {
                     b.Property<Guid>("UsuarioID")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<string>("UrlRedirect")
                         .IsRequired()
                         .HasMaxLength(200)
-                        .HasColumnType("nvarchar(200)");
+                        .HasColumnType("NVARCHAR2(200)");
 
                     b.HasKey("UsuarioID");
 
@@ -9525,16 +9524,16 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.UsuarioDS.UsuarioVinculadoLoginRedesSociales", b =>
                 {
                     b.Property<Guid>("UsuarioID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<short>("TipoRedSocial")
-                        .HasColumnType("smallint")
+                        .HasColumnType("NUMBER(5)")
                         .HasColumnOrder(1);
 
                     b.Property<string>("IDenRedSocial")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.HasKey("UsuarioID", "TipoRedSocial");
 
@@ -9544,19 +9543,19 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.VistaVirtualDS.VistaVirtual", b =>
                 {
                     b.Property<Guid>("PersonalizacionID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<string>("TipoPagina")
                         .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)")
+                        .HasColumnType("NVARCHAR2(100)")
                         .HasColumnOrder(1);
 
                     b.Property<DateTime>("FechaCreacion")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("TIMESTAMP(7)");
 
                     b.Property<DateTime>("FechaModificacion")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("TIMESTAMP(7)");
 
                     b.Property<string>("HTML")
                         .IsRequired()
@@ -9570,27 +9569,27 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.VistaVirtualDS.VistaVirtualCMS", b =>
                 {
                     b.Property<Guid>("PersonalizacionID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<string>("TipoComponente")
                         .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)")
+                        .HasColumnType("NVARCHAR2(100)")
                         .HasColumnOrder(1);
 
                     b.Property<Guid>("PersonalizacionComponenteID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(2);
 
                     b.Property<string>("DatosExtra")
                         .IsUnicode(false)
-                        .HasColumnType("varchar(max)");
+                        .HasColumnType("VARCHAR2(4000)");
 
                     b.Property<DateTime>("FechaCreacion")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("TIMESTAMP(7)");
 
                     b.Property<DateTime>("FechaModificacion")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("TIMESTAMP(7)");
 
                     b.Property<string>("HTML")
                         .IsRequired()
@@ -9599,7 +9598,7 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
                     b.Property<string>("Nombre")
                         .IsRequired()
                         .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
+                        .HasColumnType("NVARCHAR2(50)");
 
                     b.HasKey("PersonalizacionID", "TipoComponente", "PersonalizacionComponenteID");
 
@@ -9609,10 +9608,10 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.VistaVirtualDS.VistaVirtualDominio", b =>
                 {
                     b.Property<Guid>("PersonalizacionID")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<string>("Dominio")
-                        .HasColumnType("nvarchar(450)");
+                        .HasColumnType("NVARCHAR2(450)");
 
                     b.HasKey("PersonalizacionID", "Dominio");
 
@@ -9622,11 +9621,11 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.VistaVirtualDS.VistaVirtualGadgetRecursos", b =>
                 {
                     b.Property<Guid>("PersonalizacionID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<Guid>("PersonalizacionComponenteID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(1);
 
                     b.Property<string>("HTML")
@@ -9636,7 +9635,7 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
                     b.Property<string>("Nombre")
                         .IsRequired()
                         .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
+                        .HasColumnType("NVARCHAR2(50)");
 
                     b.HasKey("PersonalizacionID", "PersonalizacionComponenteID");
 
@@ -9647,7 +9646,7 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
                 {
                     b.Property<Guid>("PersonalizacionID")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("RAW(16)");
 
                     b.HasKey("PersonalizacionID");
 
@@ -9657,15 +9656,15 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.VistaVirtualDS.VistaVirtualProyecto", b =>
                 {
                     b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(1);
 
                     b.Property<Guid>("PersonalizacionID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(2);
 
                     b.HasKey("OrganizacionID", "ProyectoID", "PersonalizacionID");
@@ -9678,19 +9677,19 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.VistaVirtualDS.VistaVirtualRecursos", b =>
                 {
                     b.Property<Guid>("PersonalizacionID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<string>("RdfType")
                         .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)")
+                        .HasColumnType("NVARCHAR2(50)")
                         .HasColumnOrder(1);
 
                     b.Property<DateTime>("FechaCreacion")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("TIMESTAMP(7)");
 
                     b.Property<DateTime>("FechaModificacion")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("TIMESTAMP(7)");
 
                     b.Property<string>("HTML")
                         .IsRequired()
@@ -9705,25 +9704,25 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
                 {
                     b.Property<Guid>("VotoID")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<Guid>("ElementoID")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<DateTime?>("FechaVotacion")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("TIMESTAMP(7)");
 
                     b.Property<Guid>("IdentidadID")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<Guid>("IdentidadVotadaID")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<short>("Tipo")
-                        .HasColumnType("smallint");
+                        .HasColumnType("NUMBER(5)");
 
                     b.Property<double>("Voto1")
-                        .HasColumnType("float")
+                        .HasColumnType("BINARY_DOUBLE")
                         .HasColumnName("Voto");
 
                     b.HasKey("VotoID");
@@ -9734,15 +9733,15 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Voto.VotoEntradaBlog", b =>
                 {
                     b.Property<Guid>("BlogID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<Guid>("EntradaBlogID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(1);
 
                     b.Property<Guid>("VotoID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(2);
 
                     b.HasKey("BlogID", "EntradaBlogID", "VotoID");
@@ -9755,23 +9754,23 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Voto.VotoMensajeForo", b =>
                 {
                     b.Property<Guid>("VotoID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<Guid>("ForoID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(1);
 
                     b.Property<Guid>("CategoriaForoID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(2);
 
                     b.Property<Guid>("TemaID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(3);
 
                     b.Property<Guid>("MensajeForoID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(4);
 
                     b.HasKey("VotoID", "ForoID", "CategoriaForoID", "TemaID", "MensajeForoID");
@@ -9783,12 +9782,12 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
                 {
                     b.Property<string>("Parametro")
                         .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)")
+                        .HasColumnType("NVARCHAR2(100)")
                         .HasColumnOrder(0);
 
                     b.Property<string>("Valor")
                         .HasMaxLength(1000)
-                        .HasColumnType("nvarchar(1000)")
+                        .HasColumnType("NVARCHAR2(1000)")
                         .HasColumnOrder(1);
 
                     b.HasKey("Parametro");
@@ -9799,15 +9798,15 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.ProyectoRegistroObligatorio", b =>
                 {
                     b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(1);
 
                     b.Property<short>("VisibilidadUsuariosActivos")
-                        .HasColumnType("smallint")
+                        .HasColumnType("NUMBER(5)")
                         .HasColumnOrder(2);
 
                     b.HasKey("OrganizacionID", "ProyectoID");
@@ -9818,19 +9817,19 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.ProyectoSinRegistroObligatorio", b =>
                 {
                     b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(1);
 
                     b.Property<Guid>("OrganizacionSinRegistroID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(2);
 
                     b.Property<Guid>("ProyectoSinRegistroID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(3);
 
                     b.HasKey("OrganizacionID", "ProyectoID", "OrganizacionSinRegistroID", "ProyectoSinRegistroID");
@@ -9843,25 +9842,25 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.TextosPersonalizadosPlataforma", b =>
                 {
                     b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(1);
 
                     b.Property<string>("TextoID")
                         .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)")
+                        .HasColumnType("NVARCHAR2(100)")
                         .HasColumnOrder(2);
 
                     b.Property<string>("Language")
                         .HasMaxLength(10)
-                        .HasColumnType("nvarchar(10)")
+                        .HasColumnType("NVARCHAR2(10)")
                         .HasColumnOrder(3);
 
                     b.Property<string>("Texto")
-                        .HasColumnType("nvarchar(max)")
+                        .HasColumnType("NVARCHAR2(2000)")
                         .HasColumnOrder(4);
 
                     b.HasKey("OrganizacionID", "ProyectoID", "TextoID", "Language");
@@ -9873,15 +9872,15 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
                 {
                     b.Property<Guid>("Token")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<DateTime>("Fecha")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("TIMESTAMP(7)");
 
                     b.Property<string>("Login")
                         .IsRequired()
                         .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)");
+                        .HasColumnType("NVARCHAR2(255)");
 
                     b.HasKey("Token");
 
@@ -9892,28 +9891,28 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<int>("Estado")
-                        .HasColumnType("int");
+                        .HasColumnType("NUMBER(10)");
 
                     b.Property<int>("EventosTotales")
-                        .HasColumnType("int");
+                        .HasColumnType("NUMBER(10)");
 
                     b.Property<DateTime>("FechaInicio")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("TIMESTAMP(7)");
 
                     b.Property<string>("Nombre")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<string>("Tipo")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.HasKey("Id");
 
@@ -9925,21 +9924,21 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.Elementos.ParametroGeneralDSName.ConfiguracionAmbitoBusquedaProyecto", b =>
                 {
                     b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(1);
 
                     b.Property<bool>("Metabusqueda")
-                        .HasColumnType("bit");
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<Guid?>("PestanyaDefectoID")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<bool>("TodoGnoss")
-                        .HasColumnType("bit");
+                        .HasColumnType("NUMBER(1)");
 
                     b.HasKey("OrganizacionID", "ProyectoID");
 
@@ -9949,19 +9948,19 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.Web.MVC.Models.ProyectoServicioWeb", b =>
                 {
                     b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(1);
 
                     b.Property<string>("AplicacionWeb")
-                        .HasColumnType("nvarchar(450)")
+                        .HasColumnType("NVARCHAR2(450)")
                         .HasColumnOrder(2);
 
                     b.Property<string>("Nombre")
-                        .HasColumnType("nvarchar(max)")
+                        .HasColumnType("NVARCHAR2(2000)")
                         .HasColumnOrder(3);
 
                     b.HasKey("OrganizacionID", "ProyectoID", "AplicacionWeb");

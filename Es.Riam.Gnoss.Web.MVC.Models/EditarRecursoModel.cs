@@ -634,6 +634,11 @@ namespace Es.Riam.Gnoss.Web.MVC.Models
         /// </summary>
         public bool AllowsLicense { get; set; }
 
+        /// <summary>
+        /// El identificador de la nueva versión del documento que se va a crear en caso de que se esté creando.
+        /// </summary>
+        public Guid DocumentoVersionId { get; set; }
+
         #endregion
 
         #region Propiedades para la acción guardar recurso

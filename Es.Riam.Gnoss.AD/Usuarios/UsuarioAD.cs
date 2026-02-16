@@ -1524,11 +1524,7 @@ namespace Es.Riam.Gnoss.AD.Usuarios
 
         public List<Guid> ObtenerOrganizacionesAdministradasPorUsuario(Guid pUsuario)
         {
-            List<Guid> organizaciones = new List<Guid>();
-
-            organizaciones = mEntityContext.AdministradorOrganizacion.Where(item => item.UsuarioID.Equals(pUsuario)).Select(x => x.OrganizacionID).Distinct().ToList();
-
-            return organizaciones;
+            return mEntityContext.AdministradorOrganizacion.Where(item => item.UsuarioID.Equals(pUsuario)).Select(x => x.OrganizacionID).Distinct().ToList();
         }
 
         /// <summary>

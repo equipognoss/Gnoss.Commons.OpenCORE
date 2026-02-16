@@ -29,7 +29,6 @@ namespace Es.Riam.Gnoss.AD.EntityModel.Models.IdentidadDS
         [StringLength(300)]
         public string NombreCorto { get; set; }
 
-        [Required (AllowEmptyStrings = true)]
         public string Descripcion { get; set; }
 
         public DateTime FechaAlta { get; set; }

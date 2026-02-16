@@ -63,14 +63,14 @@ namespace OntologyToClass.Properties {
         /// <summary>
         ///   Busca una cadena traducida similar a &lt;Project Sdk=&quot;Microsoft.NET.Sdk&quot;&gt;
         ///  &lt;PropertyGroup&gt;
-        ///    &lt;TargetFramework&gt;net6.0&lt;/TargetFramework&gt;
+        ///    &lt;TargetFramework&gt;net5.0&lt;/TargetFramework&gt;
         ///  &lt;/PropertyGroup&gt;
         ///  &lt;ItemGroup&gt;
         ///	  &lt;PackageReference Include=&quot;EnterpriseLibrary.Data.NetCore&quot; Version=&quot;6.3.2&quot; /&gt;
-        ///	  &lt;PackageReference Include=&quot;GnossApiWrapper.NetCore&quot; Version=&quot;6.0.55&quot; /&gt;
-        ///	  &lt;PackageReference Include=&quot;Newtonsoft.Json&quot; Version=&quot;13.0.3&quot; /&gt;
+        ///	  &lt;PackageReference Include=&quot;GnossApiWrapper.NetCore&quot; Version=&quot;1.0.4&quot; /&gt;
+        ///	  &lt;PackageReference Include=&quot;Newtonsoft.Json&quot; Version=&quot;13.0.1&quot; /&gt;
         ///	&lt;Reference Include=&quot;Es.Riam.Gnoss.Web.MVC.Models, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL&quot;&gt;
-        ///      &lt;SpecificVersion&gt;False&lt;/Speci [resto de la cadena truncado]&quot;;.
+        ///      &lt;SpecificVersion&gt;False&lt;/Specif [resto de la cadena truncado]&quot;;.
         /// </summary>
         internal static string testlibrary {
             get {
