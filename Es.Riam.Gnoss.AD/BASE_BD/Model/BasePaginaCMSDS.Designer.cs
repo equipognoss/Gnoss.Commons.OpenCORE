@@ -840,9 +840,6 @@ namespace Es.Riam.Gnoss.AD.BASE_BD.Model.BasePaginaCMSDSTableAdapters {
         [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
         internal global::System.Data.SqlClient.SqlConnection Connection {
             get {
-                if ((this._connection == null)) {
-                    this.InitConnection();
-                }
                 return this._connection;
             }
             set {
@@ -975,12 +972,6 @@ SELECT OrdenEjecucion, TablaBaseProyectoID, Tags, Tipo, Estado, FechaPuestaEnCol
             this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@OrdenEjecucion", global::System.Data.SqlDbType.Int, 4, global::System.Data.ParameterDirection.Input, 0, 0, "OrdenEjecucion", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
         }
         
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-        private void InitConnection() {
-            this._connection = new global::System.Data.SqlClient.SqlConnection();
-            this._connection.ConnectionString = global::Es.Riam.Gnoss.AD.Properties.Settings.Default.inevery001_BASEConnectionString;
-        }
         
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]

@@ -2682,9 +2682,6 @@ namespace Es.Riam.Gnoss.AD.AutoCompetarEtiquetas.Model.TagsAutoDSTableAdapters {
         [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
         internal global::System.Data.SqlClient.SqlConnection Connection {
             get {
-                if ((this._connection == null)) {
-                    this.InitConnection();
-                }
                 return this._connection;
             }
             set {
@@ -2777,12 +2774,6 @@ SELECT OrganizacionID, ProyectoID, Clave, Valor, PestanyaID FROM ConfigAutocompl
             this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Original_PestanyaID", global::System.Data.SqlDbType.UniqueIdentifier, 0, global::System.Data.ParameterDirection.Input, 0, 0, "PestanyaID", global::System.Data.DataRowVersion.Original, false, null, "", "", ""));
         }
         
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-        private void InitConnection() {
-            this._connection = new global::System.Data.SqlClient.SqlConnection();
-            this._connection.ConnectionString = global::Es.Riam.Gnoss.AD.Properties.Settings.Default.GNOSS001_preConnectionString;
-        }
         
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
@@ -3032,9 +3023,6 @@ SELECT OrganizacionID, ProyectoID, Clave, Valor, PestanyaID FROM ConfigAutocompl
         [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
         internal global::System.Data.SqlClient.SqlConnection Connection {
             get {
-                if ((this._connection == null)) {
-                    this.InitConnection();
-                }
                 return this._connection;
             }
             set {
@@ -3121,12 +3109,6 @@ SELECT OrganizacionID, ProyectoID, Clave, Valor FROM ConfigSearchProy WHERE (Cla
             this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Original_Clave", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "Clave", global::System.Data.DataRowVersion.Original, false, null, "", "", ""));
         }
         
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-        private void InitConnection() {
-            this._connection = new global::System.Data.SqlClient.SqlConnection();
-            this._connection.ConnectionString = global::Es.Riam.Gnoss.AD.Properties.Settings.Default.GNOSS001_preConnectionString;
-        }
         
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
@@ -3347,9 +3329,6 @@ SELECT OrganizacionID, ProyectoID, Clave, Valor FROM ConfigSearchProy WHERE (Cla
         [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
         internal global::System.Data.SqlClient.SqlConnection Connection {
             get {
-                if ((this._connection == null)) {
-                    this.InitConnection();
-                }
                 return this._connection;
             }
             set {
@@ -3427,13 +3406,6 @@ SELECT GrupoID, IdentidadID FROM GrupoIdentidades WHERE (GrupoID = @GrupoID) AND
             this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@IdentidadID", global::System.Data.SqlDbType.UniqueIdentifier, 0, global::System.Data.ParameterDirection.Input, 0, 0, "IdentidadID", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
             this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Original_GrupoID", global::System.Data.SqlDbType.UniqueIdentifier, 0, global::System.Data.ParameterDirection.Input, 0, 0, "GrupoID", global::System.Data.DataRowVersion.Original, false, null, "", "", ""));
             this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Original_IdentidadID", global::System.Data.SqlDbType.UniqueIdentifier, 0, global::System.Data.ParameterDirection.Input, 0, 0, "IdentidadID", global::System.Data.DataRowVersion.Original, false, null, "", "", ""));
-        }
-        
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-        private void InitConnection() {
-            this._connection = new global::System.Data.SqlClient.SqlConnection();
-            this._connection.ConnectionString = global::Es.Riam.Gnoss.AD.Properties.Settings.Default.CRFP001_TAGS_preConnectionString;
         }
         
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]

@@ -6958,9 +6958,6 @@ namespace Es.Riam.Gnoss.AD.BASE_BD.Model.BaseRecursosComunidadDSTableAdapters {
         [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
         internal global::System.Data.SqlClient.SqlConnection Connection {
             get {
-                if ((this._connection == null)) {
-                    this.InitConnection();
-                }
                 return this._connection;
             }
             set {
@@ -7030,12 +7027,6 @@ namespace Es.Riam.Gnoss.AD.BASE_BD.Model.BaseRecursosComunidadDSTableAdapters {
             this._adapter.InsertCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@CercaniaIndirecta", global::System.Data.SqlDbType.Int, 0, global::System.Data.ParameterDirection.Input, 0, 0, "CercaniaIndirecta", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
         }
         
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-        private void InitConnection() {
-            this._connection = new global::System.Data.SqlClient.SqlConnection();
-            this._connection.ConnectionString = global::Es.Riam.Gnoss.AD.Properties.Settings.Default.GNOSS_PRUEBAS_BASEConnectionString;
-        }
         
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
@@ -7178,9 +7169,6 @@ namespace Es.Riam.Gnoss.AD.BASE_BD.Model.BaseRecursosComunidadDSTableAdapters {
         [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
         internal global::System.Data.SqlClient.SqlConnection Connection {
             get {
-                if ((this._connection == null)) {
-                    this.InitConnection();
-                }
                 return this._connection;
             }
             set {
@@ -7252,12 +7240,6 @@ namespace Es.Riam.Gnoss.AD.BASE_BD.Model.BaseRecursosComunidadDSTableAdapters {
             this._adapter.InsertCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@UsuarioID", global::System.Data.SqlDbType.UniqueIdentifier, 0, global::System.Data.ParameterDirection.Input, 0, 0, "UsuarioID", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
         }
         
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-        private void InitConnection() {
-            this._connection = new global::System.Data.SqlClient.SqlConnection();
-            this._connection.ConnectionString = global::Es.Riam.Gnoss.AD.Properties.Settings.Default.GNOSS_PRUEBAS_BASEConnectionString;
-        }
         
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
@@ -7401,9 +7383,6 @@ namespace Es.Riam.Gnoss.AD.BASE_BD.Model.BaseRecursosComunidadDSTableAdapters {
         [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
         internal global::System.Data.SqlClient.SqlConnection Connection {
             get {
-                if ((this._connection == null)) {
-                    this.InitConnection();
-                }
                 return this._connection;
             }
             set {
@@ -7473,12 +7452,6 @@ namespace Es.Riam.Gnoss.AD.BASE_BD.Model.BaseRecursosComunidadDSTableAdapters {
             this._adapter.InsertCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@CercaniaIndirecta", global::System.Data.SqlDbType.Int, 0, global::System.Data.ParameterDirection.Input, 0, 0, "CercaniaIndirecta", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
         }
         
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-        private void InitConnection() {
-            this._connection = new global::System.Data.SqlClient.SqlConnection();
-            this._connection.ConnectionString = global::Es.Riam.Gnoss.AD.Properties.Settings.Default.GNOSS_PRUEBAS_BASEConnectionString;
-        }
         
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
@@ -7621,9 +7594,6 @@ namespace Es.Riam.Gnoss.AD.BASE_BD.Model.BaseRecursosComunidadDSTableAdapters {
         [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
         internal global::System.Data.SqlClient.SqlConnection Connection {
             get {
-                if ((this._connection == null)) {
-                    this.InitConnection();
-                }
                 return this._connection;
             }
             set {
@@ -7742,12 +7712,6 @@ SELECT OrdenEjecucion, TablaBaseProyectoID, UsuarioID, Tags, Tipo, TipoEnMyGnoss
             this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@OrdenEjecucion", global::System.Data.SqlDbType.Int, 4, global::System.Data.ParameterDirection.Input, 0, 0, "OrdenEjecucion", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
         }
         
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-        private void InitConnection() {
-            this._connection = new global::System.Data.SqlClient.SqlConnection();
-            this._connection.ConnectionString = global::Es.Riam.Gnoss.AD.Properties.Settings.Default.GNOSS_PRUEBAS_BASEConnectionString;
-        }
         
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
@@ -8057,9 +8021,6 @@ SELECT OrdenEjecucion, TablaBaseProyectoID, UsuarioID, Tags, Tipo, TipoEnMyGnoss
         [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
         internal global::System.Data.SqlClient.SqlConnection Connection {
             get {
-                if ((this._connection == null)) {
-                    this.InitConnection();
-                }
                 return this._connection;
             }
             set {
@@ -8162,12 +8123,6 @@ SELECT OrdenEjecucion, Consulta, Estado, Prioridad, FechaPuestaEnCola, FechaProc
             this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@OrdenEjecucion", global::System.Data.SqlDbType.Int, 4, global::System.Data.ParameterDirection.Input, 0, 0, "OrdenEjecucion", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
         }
         
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-        private void InitConnection() {
-            this._connection = new global::System.Data.SqlClient.SqlConnection();
-            this._connection.ConnectionString = global::Es.Riam.Gnoss.AD.Properties.Settings.Default.GNOSS_PRUEBAS_BASEConnectionString;
-        }
         
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
@@ -8472,9 +8427,6 @@ SELECT OrdenEjecucion, Consulta, Estado, Prioridad, FechaPuestaEnCola, FechaProc
         [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
         internal global::System.Data.SqlClient.SqlConnection Connection {
             get {
-                if ((this._connection == null)) {
-                    this.InitConnection();
-                }
                 return this._connection;
             }
             set {
@@ -8600,12 +8552,6 @@ SELECT OrdenEjecucion, TablaBaseProyectoID, Tags, Tipo, Estado, FechaPuestaEnCol
             this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@OrdenEjecucion", global::System.Data.SqlDbType.Int, 4, global::System.Data.ParameterDirection.Input, 0, 0, "OrdenEjecucion", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
         }
         
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-        private void InitConnection() {
-            this._connection = new global::System.Data.SqlClient.SqlConnection();
-            this._connection.ConnectionString = global::Es.Riam.Gnoss.AD.Properties.Settings.Default.GNOSS_PRUEBAS_BASEConnectionString;
-        }
         
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]

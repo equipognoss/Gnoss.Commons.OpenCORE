@@ -149,6 +149,11 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>BaseVisitasDS.xsd</DependentUpon>
     </Compile>
+    <Compile Update="Facetado\Model\FacetaDS.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>FacetaDS.xsd</DependentUpon>
+    </Compile>
   </ItemGroup>
 
   <ItemGroup>

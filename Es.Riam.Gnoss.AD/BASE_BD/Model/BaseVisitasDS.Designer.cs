@@ -1151,9 +1151,6 @@ namespace Es.Riam.Gnoss.AD.BASE_BD.Model.BaseVisitasDSTableAdapters {
         [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
         internal global::System.Data.SqlClient.SqlConnection Connection {
             get {
-                if ((this._connection == null)) {
-                    this.InitConnection();
-                }
                 return this._connection;
             }
             set {
@@ -1269,12 +1266,6 @@ SELECT ProyectoId, DocumentoId, Fecha, NumVisitas FROM VisitasDiarias WHERE (Doc
             this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Original_NumVisitas", global::System.Data.SqlDbType.Int, 0, global::System.Data.ParameterDirection.Input, 0, 0, "NumVisitas", global::System.Data.DataRowVersion.Original, false, null, "", "", ""));
         }
         
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-        private void InitConnection() {
-            this._connection = new global::System.Data.SqlClient.SqlConnection();
-            this._connection.ConnectionString = global::Es.Riam.Gnoss.AD.Properties.Settings.Default.GNOSS_PRUEBAS_BASEConnectionString;
-        }
         
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
@@ -1469,9 +1460,6 @@ SELECT ProyectoId, DocumentoId, Fecha, NumVisitas FROM VisitasDiarias WHERE (Doc
         [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
         internal global::System.Data.SqlClient.SqlConnection Connection {
             get {
-                if ((this._connection == null)) {
-                    this.InitConnection();
-                }
                 return this._connection;
             }
             set {
@@ -1587,12 +1575,6 @@ SELECT ProyectoId, DocumentoId, Mes, NumVisitas FROM VisitasMensuales WHERE (Doc
             this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Original_NumVisitas", global::System.Data.SqlDbType.Int, 0, global::System.Data.ParameterDirection.Input, 0, 0, "NumVisitas", global::System.Data.DataRowVersion.Original, false, null, "", "", ""));
         }
         
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-        private void InitConnection() {
-            this._connection = new global::System.Data.SqlClient.SqlConnection();
-            this._connection.ConnectionString = global::Es.Riam.Gnoss.AD.Properties.Settings.Default.GNOSS_PRUEBAS_BASEConnectionString;
-        }
         
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
