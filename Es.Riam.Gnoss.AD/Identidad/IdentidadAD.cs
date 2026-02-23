@@ -65,7 +65,7 @@ namespace Es.Riam.Gnoss.AD.Identidad
     public enum TipoMiembros
     {
         /// <summary>
-        /// Muestra todo tipo de miembros, incluyendo miembros bloqueados, o que han sido expulsados
+        /// Muestra todos los tipos de miembros, incluyendo miembros bloqueados, o que han sido expulsados
         /// </summary>
         Todos,
         /// <summary>
@@ -2760,7 +2760,8 @@ namespace Es.Riam.Gnoss.AD.Identidad
         {
             EntityContext entityContext = (EntityContext)QueryContextAccess.GetDbContext(pQuery);
             return pQuery.Join(entityContext.Usuario, item => item.Perfil.NombreCortoUsu, usuario =>
-            usuario.NombreCorto, (item,usuario) => new JoinSstpCtvsIdentidadPerfilUsuario {
+            usuario.NombreCorto, (item, usuario) => new JoinSstpCtvsIdentidadPerfilUsuario
+            {
                 SuscripcionTesauroProyecto = item.SuscripcionTesauroProyecto,
                 Suscripcion = item.Suscripcion,
                 CategoriaTesVinSuscrip = item.CategoriaTesVinSuscrip,
@@ -3323,7 +3324,7 @@ namespace Es.Riam.Gnoss.AD.Identidad
         public static IQueryable<JoinPersonaPerfilIdentidadGrupoIdentidadesParticipacion> JoinGrupoIdentidadesParticipacion(this IQueryable<JoinPersonaPerfilIdentidad> pQuery)
         {
             EntityContext entityContext = (EntityContext)QueryContextAccess.GetDbContext(pQuery);
-            return pQuery.Join(entityContext.GrupoIdentidadesParticipacion, item => item.Identidad.IdentidadID, item => item.IdentidadID, (item, grupoIdentidadesParticipacion) => new JoinPersonaPerfilIdentidadGrupoIdentidadesParticipacion 
+            return pQuery.Join(entityContext.GrupoIdentidadesParticipacion, item => item.Identidad.IdentidadID, item => item.IdentidadID, (item, grupoIdentidadesParticipacion) => new JoinPersonaPerfilIdentidadGrupoIdentidadesParticipacion
             {
                 Identidad = item.Identidad,
                 Perfil = item.Perfil,
@@ -4988,16 +4989,6 @@ namespace Es.Riam.Gnoss.AD.Identidad
             });
         }
 
-        /*public static IQueryable<JoinSuscripcionIdentidadProyectoSuscripcionIdentidad> JoinSuscripcionIdentidadProyecto(this IQueryable<EntityModel.Models.IdentidadDS.JoinSuscripcionIdentidadProyectoSuscripcion> pIQuery)
-        {
-            return pIQuery.Join(entityContext.Identidad, suscr => suscr.PerfilID, identidad => identidad.PerfilID, (suscr, identidad) =>
-            new JoinSuscripcionIdentidadProyectoSuscripcionIdentidad
-            {
-                Suscripcion = suscr.Suscripcion,
-                SuscripcionIdentidadProyecto = suscr.SuscripcionIdentidadProyecto,
-                Identidad = identidad
-            });
-        }*/
         public static IQueryable<JoinSuscripcionIdentidadProyectoSuscripcion> JoinSuscripcionIdentidadProyecto(this IQueryable<EntityModel.Models.Suscripcion.Suscripcion> pIQuery)
         {
             EntityContext entityContext = (EntityContext)QueryContextAccess.GetDbContext(pIQuery);
@@ -5535,13 +5526,12 @@ namespace Es.Riam.Gnoss.AD.Identidad
         /// Constructor por defecto, sin parámetros, utilizado cuando se requiere el GnossConfig.xml por defecto
         /// </summary>
         public IdentidadAD(LoggingService loggingService, EntityContext entityContext, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication, ILogger<IdentidadAD> logger, ILoggerFactory loggerFactory)
-            : base(loggingService, entityContext, configService, servicesUtilVirtuosoAndReplication,logger,loggerFactory)
+            : base(loggingService, entityContext, configService, servicesUtilVirtuosoAndReplication, logger, loggerFactory)
         {
             mEntityContext = entityContext;
             mLoggingService = loggingService;
             mlogger = logger;
             mloggerFactory = loggerFactory;
-            this.CargarConsultasYDataAdapters();
         }
 
         /// <summary>
@@ -5551,296 +5541,13 @@ namespace Es.Riam.Gnoss.AD.Identidad
         /// <param name="pUsarVariableEstatica">Si se están usando hilos con diferentes conexiones: FALSE. En caso contrario TRUE</param>
         [Obsolete("El constructor con parametros desaparecera en futras versiones. Usar el constructor sin parametros en su lugar")]
         public IdentidadAD(string pFicheroConfiguracionBD, LoggingService loggingService, EntityContext entityContext, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication, ILogger<IdentidadAD> logger, ILoggerFactory loggerFactory)
-            : base(loggingService, entityContext, configService, servicesUtilVirtuosoAndReplication,logger,loggerFactory)
+            : base(loggingService, entityContext, configService, servicesUtilVirtuosoAndReplication, logger, loggerFactory)
         {
             mEntityContext = entityContext;
             mLoggingService = loggingService;
             mlogger = logger;
             mloggerFactory = loggerFactory;
-            this.CargarConsultasYDataAdapters();
         }
-
-        #endregion
-
-        #region Consultas
-
-        private string sqlSelectPerfilDeOrganizacion;
-        private string sqlSelectPerfilOrganizacionDeOrganizacion;
-        private string sqlSelectPerfilOrganizacionDeOrganizacionNoActivosTambien;
-        private string sqlSelectIdentidadesSoloDeOrganizacion;
-
-        private string sqlSelectIdentidadesDeOrganizacion;
-        private string sqlSelectIdentidadesDeOrganizacionNoActivosTambien;
-        private string sqlSelectPerfilesDeOrganizacion;
-        private string sqlSelectPerfilesDeOrganizacionNoActivosTambien;
-        private string sqlSelectPerfilPersonaOrgDeOrganizacion;
-        private string sqlSelectPerfilPersonaOrgDeOrganizacionNoActivosTambien;
-
-        private string sqlSelectPerfilPersonaPorID;
-        private string sqlSelectPerfilPersonaOrgPorID;
-        private string sqlSelectPerfilOrganizacionPorID;
-        private string sqlSelectProfesorPorID;
-
-        private string sqlSelectPerfilesDePersona;
-        private string sqlSelectPerfilRedesSocDePersona;
-
-        private string sqlSelectIdentidadesDePersona;
-        private string sqlSelectPerfilPersonaDePersona;
-        private string sqlSelectPerfilPersonaOrgDePersona;
-        private string sqlSelectPerfilOrganizacionDePersona;
-        private string sqlSelectProfesorDePersona;
-
-        private string sqlSelectIdentidadesDeProyecto;
-        private string sqlSelectIdentidadesDePersonaEnProyecto;
-        private string sqlSelectPerfilesDeProyecto;
-        private string sqlSelectPerfilPerfilRedesSocDeProyecto;
-        private string sqlSelectIdentidadDeProyectoYUsuario;
-        private string sqlSelectIdentidadPorID;
-        private string sqlSelectIdentidadPorIDConMyGNOSS;
-        private string sqlSelectPerfilPorIdentidadID;
-        private string sqlSelectPerfilRedesSocPorIdentidadID;
-
-        private string sqlSelectCVIdentidadPersonaDeUsuario;
-
-        private string sqlSelectIdentidadDePersonaDeMyGNOSS;
-        private string sqlSelectPerfilDePersona;
-
-        private string sqlSelectPerfil;
-        private string sqlSelectPerfilRedesSociales;
-        private string sqlSelectPerfilGadget;
-        private string sqlSelectPerfilPersonaOrg;
-        private string sqlSelectPerfilOrganizacion;
-        private string sqlSelectPerfilPersona;
-        private string sqlSelectIdentidad;
-        private string sqlSelectPerfilPersonaOrgDeProyecto;
-        private string sqlSelectPerfilPersonaDeProyecto;
-        private string sqlSelectPerfilOrganizacionDeProyecto;
-        private string sqlSelectPerfilesDeUsuario;
-        private string sqlSelectProfesor;
-
-        private string sqlSelectIdentidadesDeUsuario;
-
-        private string sqlSelectExistePerfilPersonal;
-        private string sqlSelectExistePerfilPersonaOrg;
-
-        private string sqlSelectPerfilPorPerfilID;
-
-        private string sqlSelectDatoExtraProyectoOpcionIdentidadPorIdentidadesID;
-        private string sqlSelectDatoExtraProyectoVirtuosoIdentidadPorIdentidadesID;
-        private string sqlSelectDatoExtraEcosistemaOpcionPerfilPorIdentidadesID;
-        private string sqlSelectDatoExtraEcosistemaVirtuosoPerfilPorIdentidadesID;
-
-        private string sqlSelectIdentidadesPorPerfilID;
-
-        private string sqlSelectPerfilDeUsuarioActivos;
-        private string sqlSelectPerfilRedesSocDeUsuarioActivos;
-        private string sqlSelectIdentidadesDePersonaActivas;
-        private string sqlSelectPerfilPersonaDePersonaActivos;
-        private string sqlSelectPerfilPersonaOrgDePersonaActivos;
-        private string sqlSelectPerfilOrganizacionDePersonaActivos;
-        private string sqlSelectProfesorDePersonaActivos;
-
-        private string sqlSelectIdentidadPorIDActiva;
-        private string sqlSelectPerfilPorIdentidadIDActivo;
-        private string sqlSelectPerfilRedesSocPorIdentidadIDActivo;
-        private string sqlSelectPerfilPersonaPorIDActiva;
-        private string sqlSelectPerfilPersonaOrgPorIDActiva;
-        private string sqlSelectPerfilOrganizacionPorIDActiva;
-        private string sqlSelectProfesorPorIDActiva;
-
-        private string sqlSelectIdentidadesDepersonasConOrgDeProy;
-        private string sqlSelectPerfilDepersonasConOrgDeProy;
-        private string sqlSelectPerfilPersonaOrgDepersonasConOrgDeProy;
-
-        private string sqlSelectPerfilPersonaDeUsuario;
-        private string sqlSelectPerfilPersonaOrgDeUsuario;
-
-        private string sqlSelectIdentidadesDeOrganizacionesEnProyecto;
-        private string sqlSelectPerfilesDeOrganizacionesDeProyecto;
-        private string sqlSelectPerfilOrganizacionDeOrganizacionesDeProyecto;
-
-        private string sqlSelectPerfilPersonaOrgDePersonasNoCorporativasDeProyecto;
-        private string sqlSelectIdentidadesDePersonasNoCorporativasDeProyecto;
-        private string sqlSelectPerfilesDePersonasNoCorporativasDeProyecto;
-
-        private string sqlSelectIdentidadesDeOrganizacionAdmin;
-        private string sqlSelectPerfilesDeOrganizacionAdmin;
-        private string sqlSelectPerfilPersonaOrgDeOrganizacionAdmin;
-
-        private string sqlSelectIdentidadContadoresRecursos;
-
-        private string sqlUpdateNumeroConexionesProyecto;
-
-        private string sqlSelectHaParticipadoConPerfilEnComunidad;
-        private string sqlSelectEstaIdentidadExpulsadaDeproyecto;
-        private string sqlSelectParticipaPerfilEnComunidad;
-        private string sqlSelectParticipaIdentidadEnComunidad;
-
-        private string sqlSelectIdentidadesDePersonasNoCorporativasDeProyectoConNombreYApellidos;
-        private string sqlSelectIdentidadesDepersonasConOrgDeProyConNombreYApellidos;
-        private string selectIdentidad;
-        private string selectPerfil;
-        private string selectIdentidadContadoresRecursos;
-
-        private string selectGrupoIdentidades;
-        private string selectGrupoIdentidadesProyecto;
-        private string selectGrupoIdentidadesOrganizacion;
-        private string selectGrupoIdentidadesParticipacion;
-
-        #endregion
-
-        #region Updates
-
-        private string sqlUpdatePerfilCambioNombrePersona;
-        private string sqlUpdateIdentidadCambioNombrePersona;
-
-        private string sqlUpdatePerfilCambioNombreOrganizacion;
-        private string sqlUpdatePerfilPersOrgCambioNombreOrganizacion;
-        private string sqlUpdateIdentidadCambioNombreOrganizacion;
-
-        #endregion
-
-        #region DataAdapter
-
-        #region Perfil
-
-        private string sqlPerfilInsert;
-        private string sqlPerfilDelete;
-        private string sqlPerfilModify;
-
-        #endregion
-
-        #region PerfilRedesSociales
-
-        private string sqlPerfilRedesSocialesInsert;
-        private string sqlPerfilRedesSocialesDelete;
-        private string sqlPerfilRedesSocialesModify;
-
-        #endregion
-
-        #region PerfilGadget
-
-        private string sqlPerfilGadgetInsert;
-        private string sqlPerfilGadgetDelete;
-        private string sqlPerfilGadgetModify;
-
-        #endregion
-
-        #region PerfilPersonaOrg
-
-        private string sqlPerfilPersonaOrgInsert;
-        private string sqlPerfilPersonaOrgDelete;
-        private string sqlPerfilPersonaOrgModify;
-
-        #endregion
-
-        #region PerfilOrganizacion
-
-        private string sqlPerfilOrganizacionInsert;
-        private string sqlPerfilOrganizacionDelete;
-        private string sqlPerfilOrganizacionModify;
-
-        #endregion
-
-        #region PerfilPersona
-
-        private string sqlPerfilPersonaInsert;
-        private string sqlPerfilPersonaDelete;
-        private string sqlPerfilPersonaModify;
-
-        #endregion
-
-        #region Identidad
-
-        private string sqlIdentidadInsert;
-        private string sqlIdentidadDelete;
-        private string sqlIdentidadModify;
-
-        #endregion
-
-        #region Profesor
-
-        private string sqlProfesorInsert;
-        private string sqlProfesorDelete;
-        private string sqlProfesorModify;
-
-        #endregion
-
-        #region GrupoIdentidades
-
-        private string sqlGrupoIdentidadesInsert;
-        private string sqlGrupoIdentidadesDelete;
-        private string sqlGrupoIdentidadesModify;
-
-        #endregion
-
-        #region GrupoIdentidadesProyecto
-
-        private string sqlGrupoIdentidadesProyectoInsert;
-        private string sqlGrupoIdentidadesProyectoDelete;
-        private string sqlGrupoIdentidadesProyectoModify;
-
-        #endregion
-
-        #region GrupoIdentidadesOrganizacion
-
-        private string sqlGrupoIdentidadesOrganizacionInsert;
-        private string sqlGrupoIdentidadesOrganizacionDelete;
-        private string sqlGrupoIdentidadesOrganizacionModify;
-
-        #endregion
-
-        #region GrupoIdentidadesParticipacion
-
-        private string sqlGrupoIdentidadesParticipacionInsert;
-        private string sqlGrupoIdentidadesParticipacionDelete;
-        private string sqlGrupoIdentidadesParticipacionModify;
-
-        #endregion
-
-        #region DatoExtraProyectoOpcionIdentidad
-
-        private string sqlDatoExtraProyectoOpcionIdentidadInsert;
-        private string sqlDatoExtraProyectoOpcionIdentidadDelete;
-        private string sqlDatoExtraProyectoOpcionIdentidadModify;
-
-        #endregion
-
-        #region DatoExtraProyectoVirtuosoIdentidad
-
-        private string sqlDatoExtraProyectoVirtuosoIdentidadInsert;
-        private string sqlDatoExtraProyectoVirtuosoIdentidadDelete;
-        private string sqlDatoExtraProyectoVirtuosoIdentidadModify;
-
-        #endregion
-
-        #region DatoExtraEcosistemaOpcionPerfil
-
-        private string sqlDatoExtraEcosistemaOpcionPerfilInsert;
-        private string sqlDatoExtraEcosistemaOpcionPerfilDelete;
-        private string sqlDatoExtraEcosistemaOpcionPerfilModify;
-
-        #endregion
-
-        #region DatoExtraEcosistemaVirtuosoPerfil
-
-        private string sqlDatoExtraEcosistemaVirtuosoPerfilInsert;
-        private string sqlDatoExtraEcosistemaVirtuosoPerfilDelete;
-        private string sqlDatoExtraEcosistemaVirtuosoPerfilModify;
-
-        #endregion
-
-        #region IdentidadContadores
-        string sqlIdentidadContadoresInsert;
-        string sqlIdentidadContadoresDelete;
-        string sqlIdentidadContadoresModify;
-        #endregion
-
-        #region IdentidadContadoresRecursos
-        string sqlIdentidadContadoresRecursosInsert;
-        string sqlIdentidadContadoresRecursosDelete;
-        string sqlIdentidadContadoresRecursosModify;
-        #endregion
 
         #endregion
 
@@ -5848,25 +5555,10 @@ namespace Es.Riam.Gnoss.AD.Identidad
 
         #region Públicos
 
-        //public List<EntityModel.Models.IdentidadDS.Identidad> TestJoin()
-        //{
-        //    return Joins.ObtenerJoinPerfilIdentidad().JoinPerfilIdentidadPersona().ObtenerJoinPerfilIdentidadPersonaUsuario().Where(item => item.Usuario.Login.Equals("juan")).Select(item => item.Identidad).ToList();
-        //}
-
         public EntityModel.Models.IdentidadDS.Identidad DameUnaIdentidad()
         {
             return mEntityContext.Identidad.First();
         }
-
-        //public IQueryable<JoinIdentidadPerfil> ObtenerJoinPerfilIdentidad()
-        //{
-        //    return mEntityContext.Perfil.Join(mEntityContext.Identidad, perf => perf.PerfilID, ident => ident.PerfilID, (perf, ident) =>
-        //        new JoinIdentidadPerfil
-        //        {
-        //            Perfil = perf,
-        //            Identidad = ident
-        //        });
-        //}
 
         public List<Guid> ObtenerComunidadesPrivadas(Guid pIdentidadID)
         {
@@ -5908,7 +5600,6 @@ namespace Es.Riam.Gnoss.AD.Identidad
         /// <param name="pIdentidadID">Identificador de la identidad</param>
         public void ActualizarNumeroConexionesProyecto(Guid pIdentidadID)
         {
-            //TODO: revisar
             var resultado = mEntityContext.Identidad.FirstOrDefault(item => item.IdentidadID.Equals(pIdentidadID));
             if (resultado != null)
             {
@@ -5916,12 +5607,6 @@ namespace Es.Riam.Gnoss.AD.Identidad
 
                 mEntityContext.SaveChanges();
             }
-
-            //DbCommand commandsqlUpdateNumeroConexionesProyecto = ObtenerComando(this.sqlUpdateNumeroConexionesProyecto = "UPDATE Identidad Set NumConnexiones = NumConnexiones + 1 WHERE IdentidadID = " + IBD.ToParam("IdentidadID"));
-
-            //AgregarParametro(commandsqlUpdateNumeroConexionesProyecto, IBD.ToParam("IdentidadID"), IBD.TipoGuidToString(DbType.Guid), IBD.ValorDeGuid(pIdentidadID));
-
-            //ActualizarBaseDeDatos(commandsqlUpdateNumeroConexionesProyecto);
         }
 
         /// <summary>
@@ -5931,8 +5616,6 @@ namespace Es.Riam.Gnoss.AD.Identidad
         /// <param name="pNombreNuevo">Nombre nuevo de la organización</param>
         public void ActualizarCambioNombreOrganizacion(Guid pOrganizacionID, string pNombreNuevo, string pAliasNuevo)
         {
-            //TODO: revisar 
-
             List<Guid> listaPerfilID = mEntityContext.Perfil.Join(mEntityContext.Identidad, perfil => perfil.PerfilID, identidad => identidad.PerfilID, (perfil, identidad) =>
             new
             {
@@ -5948,24 +5631,11 @@ namespace Es.Riam.Gnoss.AD.Identidad
                 mEntityContext.SaveChanges();
             }
 
-            //    //Perfil Org
-            //DbCommand commandsqlUpdatePerfilCambioNombre = ObtenerComando(sqlUpdatePerfilCambioNombreOrganizacion = "UPDATE Perfil SET NombrePerfil=" + IBD.ToParam("nombrePerfil") + ", NombreOrganizacion = " + IBD.ToParam("nombreOrganizacion") + " WHERE Perfil.PerfilID IN (Select Perfil.PerfilID FROM Perfil INNER JOIN Identidad ON (Perfil.PerfilID=Identidad.PerfilID) WHERE Perfil.OrganizacionID = " + IBD.GuidParamValor("organizacionID") + " AND Identidad.Tipo = " + (short)TiposIdentidad.Organizacion + ")";);
-            //AgregarParametro(commandsqlUpdatePerfilCambioNombre, IBD.ToParam("organizacionID"), IBD.TipoGuidToString(DbType.Guid), IBD.ValorDeGuid(pOrganizacionID));
-            //AgregarParametro(commandsqlUpdatePerfilCambioNombre, IBD.ToParam("nombreOrganizacion"), DbType.String, pAliasNuevo);
-            //AgregarParametro(commandsqlUpdatePerfilCambioNombre, IBD.ToParam("nombrePerfil"), DbType.String, pNombreNuevo);
-            //ActualizarBaseDeDatos(commandsqlUpdatePerfilCambioNombre);
-
             var resultado2 = mEntityContext.Perfil.FirstOrDefault(perfil => perfil.OrganizacionID.Equals(pOrganizacionID));
             if (resultado2 != null)
             {
                 resultado2.NombreOrganizacion = pAliasNuevo;
             }
-
-            //    //Perfil de las personas de la Org
-            //    DbCommand commandsqlUpdatePerfilPersOrgCambioNombre = ObtenerComando(sqlUpdatePerfilPersOrgCambioNombreOrganizacion = "UPDATE Perfil SET NombreOrganizacion = " + IBD.ToParam("nombreOrganizacion") + " WHERE Perfil.OrganizacionID = " + IBD.GuidParamValor("organizacionID"));
-            //AgregarParametro(commandsqlUpdatePerfilPersOrgCambioNombre, IBD.ToParam("organizacionID"), IBD.TipoGuidToString(DbType.Guid), IBD.ValorDeGuid(pOrganizacionID));
-            //AgregarParametro(commandsqlUpdatePerfilPersOrgCambioNombre, IBD.ToParam("nombreOrganizacion"), DbType.String, pAliasNuevo);
-            //ActualizarBaseDeDatos(commandsqlUpdatePerfilPersOrgCambioNombre);
 
             List<Guid> listaPerfil = mEntityContext.Perfil.Where(item => item.OrganizacionID.Equals(pOrganizacionID)).Select(item => item.PerfilID).ToList();
 
@@ -5976,14 +5646,7 @@ namespace Es.Riam.Gnoss.AD.Identidad
                 resultado3.NombreCortoIdentidad = pAliasNuevo;
                 mEntityContext.SaveChanges();
             }
-
-            //  //Identidades
-            //DbCommand commandsqlUpdateIdentidadCambioNombre = ObtenerComando(sqlUpdateIdentidadCambioNombreOrganizacion = "UPDATE Identidad SET NombreCortoIdentidad = " + IBD.ToParam("nombreOrganizacion") + " WHERE Identidad.PerfilID IN (SELECT Perfil.PerfilID FROM Perfil WHERE Perfil.OrganizacionID = " + IBD.GuidParamValor("organizacionID") + ") AND Identidad.Tipo >= " + (short)TiposIdentidad.ProfesionalCorporativo + " AND Identidad.Tipo < 4");
-            //AgregarParametro(commandsqlUpdateIdentidadCambioNombre, IBD.ToParam("organizacionID"), IBD.TipoGuidToString(DbType.Guid), IBD.ValorDeGuid(pOrganizacionID));
-            //AgregarParametro(commandsqlUpdateIdentidadCambioNombre, IBD.ToParam("nombreOrganizacion"), DbType.String, pAliasNuevo);
-            //ActualizarBaseDeDatos(commandsqlUpdateIdentidadCambioNombre);
         }
-
 
         /// <summary>
         /// Obtiene los tags de varios grupos en un proyecto
@@ -6016,10 +5679,10 @@ namespace Es.Riam.Gnoss.AD.Identidad
 
                 foreach (var fila in resultado.Distinct())
                 {
-                    if (!(fila.Tags == null))
+                    if (fila.Tags != null)
                     {
-                        Guid idDoc = (Guid)fila.GrupoID;
-                        string tagss = (string)fila.Tags;
+                        Guid idDoc = fila.GrupoID;
+                        string tagss = fila.Tags;
                         tags[idDoc] = tagss;
                     }
                 }
@@ -6360,9 +6023,9 @@ namespace Es.Riam.Gnoss.AD.Identidad
                         NombrePerfil = item.Perfil.NombrePerfil
                     });
 
-                    var querySelectNombresIdentidadesAmigosPorPrefijo = querySelectNombresIdentidadesAmigosPorPrefijoPrimeraParte/*.Union(querySelectNombresIdentidadesAmigosPorPrefijoSegundaParte)*/.Union(querySelectNombresIdentidadesAmigosPorPrefijoSextaParte).Union(querySelectNombresIdentidadesAmigosPorPrefijoSeptimaParte);
+                    var querySelectNombresIdentidadesAmigosPorPrefijo = querySelectNombresIdentidadesAmigosPorPrefijoPrimeraParte.Union(querySelectNombresIdentidadesAmigosPorPrefijoSextaParte).Union(querySelectNombresIdentidadesAmigosPorPrefijoSeptimaParte);
 
-                    listaPerfiles = querySelectNombresIdentidadesAmigosPorPrefijo.ToList().Select(item => new Perfil
+                    listaPerfiles = querySelectNombresIdentidadesAmigosPorPrefijo.Select(item => new Perfil
                     {
                         OrganizacionID = item.OrganizacionID,
                         PersonaID = item.PersonaID,
@@ -6372,7 +6035,7 @@ namespace Es.Riam.Gnoss.AD.Identidad
 
                     if (pListaAnteriores.Count > 0)
                     {
-                        listaPerfiles = querySelectNombresIdentidadesAmigosPorPrefijo.Where(item => !pListaAnteriores.Contains((item.NombreOrganizacion == null ? item.NombrePerfil : !item.PersonaID.HasValue ? item.NombreOrganizacion : item.NombrePerfil + " . " + item.NombreOrganizacion))).ToList().Select(item => new Perfil
+                        listaPerfiles = querySelectNombresIdentidadesAmigosPorPrefijo.Where(item => !pListaAnteriores.Contains((item.NombreOrganizacion == null ? item.NombrePerfil : !item.PersonaID.HasValue ? item.NombreOrganizacion : item.NombrePerfil + " . " + item.NombreOrganizacion))).Select(item => new Perfil
                         {
                             OrganizacionID = item.OrganizacionID,
                             PersonaID = item.PersonaID,
@@ -6618,7 +6281,7 @@ namespace Es.Riam.Gnoss.AD.Identidad
 
             if (dataWrapper.ListaPerfilOrganizacion.Any())
             {
-                PerfilOrganizacion perfilOrg = dataWrapper.ListaPerfilOrganizacion.First();
+                PerfilOrganizacion perfilOrg = dataWrapper.ListaPerfilOrganizacion[0];
                 dataWrapper.ListaPerfilRedesSocialesOrganizacion = mEntityContext.PerfilRedesSociales.Where(item => item.PerfilID.Equals(perfilOrg.PerfilID)).ToList();
             }
 
@@ -6635,7 +6298,7 @@ namespace Es.Riam.Gnoss.AD.Identidad
         {
             DataWrapperIdentidad dataWrapper = new DataWrapperIdentidad();
 
-            var listaPerfil = mEntityContext.Perfil.Where(item => item.PersonaID.HasValue && item.PersonaID.Value.Equals(pPersonaID)).Union(mEntityContext.Perfil.JoinPerfilPersonaOrgConOrganizacionID().Where(item => !item.Perfil.PersonaID.HasValue && item.PerfilPersonaOrg.PersonaID.Equals(pPersonaID)).Select(item => item.Perfil)); //JOIN PERFIL PERSONA ORG??
+            var listaPerfil = mEntityContext.Perfil.Where(item => item.PersonaID.HasValue && item.PersonaID.Value.Equals(pPersonaID)).Union(mEntityContext.Perfil.JoinPerfilPersonaOrgConOrganizacionID().Where(item => !item.Perfil.PersonaID.HasValue && item.PerfilPersonaOrg.PersonaID.Equals(pPersonaID)).Select(item => item.Perfil));
             var listaPerfilPersonaOrg = mEntityContext.PerfilPersonaOrg.Where(item => item.PersonaID.Equals(pPersonaID));
             var listaPerfilRedesSociales = mEntityContext.PerfilRedesSociales.JoinIdentidad().JoinPerfil().Where(item => item.Perfil.PersonaID.HasValue && item.Perfil.PersonaID.Value.Equals(pPersonaID));
             var listaIdentidad = mEntityContext.Identidad.Where(item => item.IdentidadID.Equals(pIdentidadID)).Union(mEntityContext.Identidad.JoinPerfil().JoinPersona().Where(item => item.Persona.PersonaID.Equals(pPersonaID) && item.Identidad.ProyectoID.Equals(ProyectoAD.MetaProyecto)).Select(item => item.Identidad).Union(mEntityContext.Identidad.JoinPerfilOrganizacion().JoinPerfilPersonaOrganizacion().Where(item => item.PerfilPersonaOrg.PersonaID.Equals(pPersonaID) && item.Identidad.ProyectoID.Equals(ProyectoAD.MetaProyecto)).Select(item => item.Identidad)));
@@ -6661,7 +6324,7 @@ namespace Es.Riam.Gnoss.AD.Identidad
 
             if (dataWrapper.ListaPerfilOrganizacion.Any())
             {
-                PerfilOrganizacion perfilOrg = dataWrapper.ListaPerfilOrganizacion.First();
+                PerfilOrganizacion perfilOrg = dataWrapper.ListaPerfilOrganizacion[0];
                 dataWrapper.ListaPerfilRedesSocialesOrganizacion = mEntityContext.PerfilRedesSociales.Where(item => item.PerfilID.Equals(perfilOrg.PerfilID)).ToList();
             }
 
@@ -6678,7 +6341,7 @@ namespace Es.Riam.Gnoss.AD.Identidad
         {
             DataWrapperIdentidad dataWrapper = new DataWrapperIdentidad();
 
-            var listaPerfil = mEntityContext.Perfil.Where(item => item.PersonaID.HasValue && item.PersonaID.Value.Equals(pPersonaID)).Union(mEntityContext.Perfil.JoinPerfilPersonaOrgConOrganizacionID().Where(item => !item.Perfil.PersonaID.HasValue && item.PerfilPersonaOrg.PersonaID.Equals(pPersonaID)).Select(item => item.Perfil)); //JOIN PERFIL PERSONA ORG??
+            var listaPerfil = mEntityContext.Perfil.Where(item => item.PersonaID.HasValue && item.PersonaID.Value.Equals(pPersonaID)).Union(mEntityContext.Perfil.JoinPerfilPersonaOrgConOrganizacionID().Where(item => !item.Perfil.PersonaID.HasValue && item.PerfilPersonaOrg.PersonaID.Equals(pPersonaID)).Select(item => item.Perfil));
             var listaPerfilPersonaOrg = mEntityContext.PerfilPersonaOrg.Where(item => item.PersonaID.Equals(pPersonaID));
             var listaPerfilRedesSociales = mEntityContext.PerfilRedesSociales.JoinIdentidad().JoinPerfil().Where(item => item.Perfil.PersonaID.HasValue && item.Perfil.PersonaID.Value.Equals(pPersonaID));
             var listaIdentidad = mEntityContext.Identidad.JoinPerfil().JoinPersona().Where(item => item.Persona.PersonaID.Equals(pPersonaID)).Select(item => item.Identidad).Union(mEntityContext.Identidad.JoinPerfil().JoinPersona().Where(item => item.Persona.PersonaID.Equals(pPersonaID) && item.Identidad.ProyectoID.Equals(ProyectoAD.MetaProyecto)).Select(item => item.Identidad).Union(mEntityContext.Identidad.JoinPerfilOrganizacion().JoinPerfilPersonaOrganizacion().Where(item => item.PerfilPersonaOrg.PersonaID.Equals(pPersonaID) && item.Identidad.ProyectoID.Equals(ProyectoAD.MetaProyecto)).Select(item => item.Identidad)));
@@ -6704,7 +6367,7 @@ namespace Es.Riam.Gnoss.AD.Identidad
 
             if (dataWrapper.ListaPerfilOrganizacion.Any())
             {
-                PerfilOrganizacion perfilOrg = dataWrapper.ListaPerfilOrganizacion.First();
+                PerfilOrganizacion perfilOrg = dataWrapper.ListaPerfilOrganizacion[0];
                 dataWrapper.ListaPerfilRedesSocialesOrganizacion = mEntityContext.PerfilRedesSociales.Where(item => item.PerfilID.Equals(perfilOrg.PerfilID)).ToList();
             }
 
@@ -7062,7 +6725,7 @@ namespace Es.Riam.Gnoss.AD.Identidad
 
             if (resultado != null)
             {
-                return (Guid)resultado;
+                return resultado;
             }
             return null;
         }
@@ -7115,7 +6778,7 @@ namespace Es.Riam.Gnoss.AD.Identidad
 
             if (resultado != null)
             {
-                return (Guid)resultado;
+                return resultado;
             }
             else
             {
@@ -7146,7 +6809,7 @@ namespace Es.Riam.Gnoss.AD.Identidad
 
             if (resultado != null)
             {
-                return (Guid)resultado;
+                return resultado;
             }
             else
             {
@@ -7285,7 +6948,7 @@ namespace Es.Riam.Gnoss.AD.Identidad
 
             if (resultado != null)
             {
-                return (string)resultado;
+                return resultado;
             }
             else
             {
@@ -7387,7 +7050,7 @@ namespace Es.Riam.Gnoss.AD.Identidad
         }
 
 
-        private string getNombreBusqueda(Perfil perfil)
+        private static string GetNombreBusqueda(Perfil perfil)
         {
             if (perfil.NombreOrganizacion == null)
             {
@@ -7418,12 +7081,12 @@ namespace Es.Riam.Gnoss.AD.Identidad
             IEnumerable<JoinPerfilIdentidad> selectNombresIdentidadesPorPrefijo;
             if (pListaAnteriores.Count > 0)
             {
-                selectNombresIdentidadesPorPrefijo = mEntityContext.Perfil.JoinIdentidad().Where(item => subconsulta.Contains(item.Identidad.ProyectoID) && !item.Identidad.FechaExpulsion.HasValue && !item.Identidad.FechaBaja.HasValue && !(mEntityContext.Identidad.Where(ident => ident.IdentidadID.Equals(pIdentidadID)).Select(ident => ident.PerfilID).Distinct()).Contains(item.Perfil.PerfilID)).ToList().Where(item => getNombreBusqueda(item.Perfil).Contains(UtilCadenas.RemoveAccentsWithRegEx(pPrefijo.ToLower())) && !pListaAnteriores.Contains(getNombreBusqueda(item.Perfil)));
+                selectNombresIdentidadesPorPrefijo = mEntityContext.Perfil.JoinIdentidad().Where(item => subconsulta.Contains(item.Identidad.ProyectoID) && !item.Identidad.FechaExpulsion.HasValue && !item.Identidad.FechaBaja.HasValue && !(mEntityContext.Identidad.Where(ident => ident.IdentidadID.Equals(pIdentidadID)).Select(ident => ident.PerfilID).Distinct()).Contains(item.Perfil.PerfilID)).Where(item => GetNombreBusqueda(item.Perfil).Contains(UtilCadenas.RemoveAccentsWithRegEx(pPrefijo.ToLower())) && !pListaAnteriores.Contains(GetNombreBusqueda(item.Perfil)));
 
             }
             else
             {
-                selectNombresIdentidadesPorPrefijo = mEntityContext.Perfil.JoinIdentidad().Where(item => subconsulta.Contains(item.Identidad.ProyectoID) && !item.Identidad.FechaExpulsion.HasValue && !item.Identidad.FechaBaja.HasValue && !(mEntityContext.Identidad.Where(ident => ident.IdentidadID.Equals(pIdentidadID)).Select(ident => ident.PerfilID).Distinct()).Contains(item.Perfil.PerfilID)).ToList().Where(item => getNombreBusqueda(item.Perfil).Contains(UtilCadenas.RemoveAccentsWithRegEx(pPrefijo.ToLower())));
+                selectNombresIdentidadesPorPrefijo = mEntityContext.Perfil.JoinIdentidad().Where(item => subconsulta.Contains(item.Identidad.ProyectoID) && !item.Identidad.FechaExpulsion.HasValue && !item.Identidad.FechaBaja.HasValue && !(mEntityContext.Identidad.Where(ident => ident.IdentidadID.Equals(pIdentidadID)).Select(ident => ident.PerfilID).Distinct()).Contains(item.Perfil.PerfilID)).Where(item => GetNombreBusqueda(item.Perfil).Contains(UtilCadenas.RemoveAccentsWithRegEx(pPrefijo.ToLower())));
             }
 
             dataWrapperIdentidad.ListaPerfil = selectNombresIdentidadesPorPrefijo.OrderBy(item => item.Perfil.NombrePerfil).Select(item => item.Perfil).Distinct().Take(pNumeroResultados).ToList();
@@ -7840,13 +7503,11 @@ namespace Es.Riam.Gnoss.AD.Identidad
                 case TipoListadoUsuariosCMS.MasActivos:
                     var subconsulta = mEntityContext.Identidad.JoinDocumentoWebVinBaseRecursos().Where(item => item.Identidad.ProyectoID.Equals(pProyectoID) && !item.Identidad.FechaBaja.HasValue && !item.Identidad.FechaExpulsion.HasValue && !item.Identidad.Tipo.Equals((short)TiposIdentidad.ProfesionalCorporativo) && !item.Identidad.Tipo.Equals((short)TiposIdentidad.Organizacion)).GroupBy(item => item.Identidad.IdentidadID).Select(item => new
                     {
-                        //Top = item.Select(item2 => item2.Identidad.IdentidadID).ToList(),
                         IdentidadID = item.Key,
                         NumRecursos = item.Count()
                     }).OrderByDescending(item => item.NumRecursos);
                     var unionSubconsulta = mEntityContext.Identidad.JoinPerfil().JoinPerfilesMiembro().JoinIdentidadesMiembro().JoinDocumentoWebVinBaseRecursos().Where(item => !item.Identidad.FechaBaja.HasValue && !item.Identidad.FechaExpulsion.HasValue && item.Identidad.Tipo.Equals((short)TiposIdentidad.Organizacion) && item.IdentidadesMiembro.Tipo.Equals((short)TiposIdentidad.ProfesionalCorporativo)).GroupBy(item => item.Identidad.IdentidadID).Select(item => new
                     {
-                        //Top = item.Select(item2 => item2.Identidad.IdentidadID).ToList(),
                         IdentidadID = item.Key,
                         NumRecursos = item.Count()
                     }).OrderByDescending(item => item.NumRecursos);
@@ -8210,7 +7871,6 @@ namespace Es.Riam.Gnoss.AD.Identidad
         /// <returns>Dataset de identidades</returns>
         public DataWrapperIdentidad ObtenerIdentidadesAmigosPuedoInvitarOrganizacion(Guid pOrganizacionID, Guid pIdentidadUsuarioMyGnoss, string pNombre)
         {
-            //TODO: revisar
             List<Guid> listaPersonaID = mEntityContext.PersonaVinculoOrganizacion.JoinPersona().Where(item => item.PersonaVinculoOrganizacion.OrganizacionID.Equals(pOrganizacionID)).Select(item => item.Persona.PersonaID).Distinct().ToList();
 
             List<Guid> listaTablaTemp = mEntityContext.Perfil.JoinIdentidad().Where(item => item.Perfil.PersonaID.HasValue && listaPersonaID.Contains(item.Perfil.PersonaID.Value) && !item.Perfil.OrganizacionID.HasValue && item.Identidad.ProyectoID.Equals(ProyectoAD.MetaProyecto) && !item.Perfil.Eliminado && !item.Identidad.FechaBaja.HasValue).Select(item => item.Identidad.IdentidadID).ToList();
@@ -8414,12 +8074,9 @@ namespace Es.Riam.Gnoss.AD.Identidad
             }
 
             List<Guid> listaPerfiles = new List<Guid>();
-            foreach (var filaPerfil in dataWrapper.ListaPerfil)
+            foreach (var filaPerfil in dataWrapper.ListaPerfil.Where(item => !listaPerfiles.Contains(item.PerfilID)))
             {
-                if (!listaPerfiles.Contains(filaPerfil.PerfilID))
-                {
-                    listaPerfiles.Add(filaPerfil.PerfilID);
-                }
+                listaPerfiles.Add(filaPerfil.PerfilID);
             }
 
             if (dataWrapper.ListaPerfil.Count > 0)
@@ -8450,7 +8107,7 @@ namespace Es.Riam.Gnoss.AD.Identidad
         /// <returns>Dataset de identidades</returns>
         public DataWrapperIdentidad ObtenerIdentidadesSusucritasPorPerfil(Guid pPerfilID, bool pCargarIdentidadesPrivadas)
         {
-            List<Guid> listaIdentidades = new List<Guid>();
+            List<Guid> listaIdentidades;
 
             var consultaListaUsuarioID = mEntityContext.Suscripcion.JoinIdentidad().JoinSuscripcionTesauroUsuario().JoinPerfil().Where(item => item.Perfil.PerfilID.Equals(pPerfilID) && item.Identidad.ProyectoID.Equals(ProyectoAD.MetaProyecto) && !item.Suscripcion.Bloqueada).Select(item => item.SuscripcionTesauroUsuario.UsuarioID).Distinct();
 
@@ -8531,12 +8188,9 @@ namespace Es.Riam.Gnoss.AD.Identidad
 
             List<Guid> listaPerfiles = new List<Guid>();
 
-            foreach (var filaIdentidad in dataWrapper.ListaIdentidad)
+            foreach (var filaIdentidad in dataWrapper.ListaIdentidad.Where(item => !listaPerfiles.Contains(item.PerfilID)))
             {
-                if (!listaPerfiles.Contains(filaIdentidad.PerfilID))
-                {
-                    listaPerfiles.Add(filaIdentidad.PerfilID);
-                }
+                listaPerfiles.Add(filaIdentidad.PerfilID);
             }
             if (listaPerfiles.Count > 0)
             {
@@ -8687,8 +8341,6 @@ namespace Es.Riam.Gnoss.AD.Identidad
                     {
                         dataWrapper.ListaIdentidad = mEntityContext.Identidad.Where(item => listaPerfiles.Contains(item.PerfilID) && item.ProyectoID.Equals(pProyectoID)).Distinct().ToList();
                     }
-                    //dataWrapper.ListaProfesor = mEntityContext.Profesor.JoinIdentidad().JoinPerfil().Where(item => pListaNombres.Contains(item.Perfil.NombrePerfil) && item.Identidad.ProyectoID.Equals(pProyectoID)).Select(item => item.Profesor).Distinct().ToList();
-
                 }
                 else
                 {
@@ -8843,12 +8495,9 @@ namespace Es.Riam.Gnoss.AD.Identidad
 
             var resultado = mEntityContext.Perfil.JoinIdentidad().JoinPersona().Where(item => item.Persona.UsuarioID.HasValue && pListaUsuariosID.Contains(item.Persona.UsuarioID.Value) && !item.Perfil.OrganizacionID.HasValue).Select(item => new { item.Perfil.PerfilID, item.Persona.UsuarioID }).ToList();
 
-            foreach (var item in resultado)
+            foreach (var item in resultado.Where(item => !ListaPerfiles.Keys.Contains(item.PerfilID)))
             {
-                if (!ListaPerfiles.Keys.Contains(item.PerfilID))
-                {
-                    ListaPerfiles.Add(item.PerfilID, item.UsuarioID.Value);
-                }
+                ListaPerfiles.Add(item.PerfilID, item.UsuarioID.Value);
             }
 
             return ListaPerfiles;
@@ -8942,16 +8591,13 @@ namespace Es.Riam.Gnoss.AD.Identidad
 
             var resultado = mEntityContext.Perfil.JoinIdentidad().Where(item => item.Perfil.PersonaID.Value.Equals(pPersonaID) && !item.Perfil.Eliminado && item.Identidad.ProyectoID.Equals(ProyectoAD.MetaProyecto) && !item.Identidad.FechaBaja.HasValue && !item.Identidad.FechaExpulsion.HasValue && item.Perfil.NombreOrganizacion != null).Select(item => new { item.Perfil.NombreOrganizacion, item.Perfil.NombreCortoOrg, item.Perfil.PerfilID, item.Perfil.OrganizacionID });
 
-            foreach (var item in resultado)
+            foreach (var item in resultado.Where(item => !listaPerfiles.ContainsKey(item.NombreOrganizacion)))
             {
-                if (!listaPerfiles.ContainsKey(item.NombreOrganizacion))
-                {
-                    listaPerfiles.Add(item.NombreOrganizacion, item.NombreCortoOrg);
+                listaPerfiles.Add(item.NombreOrganizacion, item.NombreCortoOrg);
 
-                    if (pNombreOrgPerfilID != null)
-                    {
-                        pNombreOrgPerfilID.Add(item.NombreOrganizacion, new KeyValuePair<Guid, Guid>(item.PerfilID, item.OrganizacionID.Value));
-                    }
+                if (pNombreOrgPerfilID != null)
+                {
+                    pNombreOrgPerfilID.Add(item.NombreOrganizacion, new KeyValuePair<Guid, Guid>(item.PerfilID, item.OrganizacionID.Value));
                 }
             }
             return listaPerfiles;
@@ -9055,8 +8701,6 @@ namespace Es.Riam.Gnoss.AD.Identidad
         /// <returns></returns>
         public Dictionary<Guid, bool> ObtenerSiListaIdentidadesSonVisibles(IList<Guid> pListaIdentidades, bool pEsIdentidadInvitada)
         {
-            //TODO Probar => No se puede acceder a Usuario.UsuarioActual.EsIdentidadInvitada
-
             Dictionary<Guid, bool> listaIdentidades = new Dictionary<Guid, bool>();
 
             if (pListaIdentidades.Count > 0)
@@ -9172,12 +8816,9 @@ namespace Es.Riam.Gnoss.AD.Identidad
 
             Dictionary<Guid, string> listaPerfiles = new Dictionary<Guid, string>();
 
-            foreach (var item in resultado)
+            foreach (var item in resultado.Where(item => !listaPerfiles.ContainsKey(item.PerfilID)))
             {
-                if (!listaPerfiles.ContainsKey(item.PerfilID))
-                {
-                    listaPerfiles.Add(item.PerfilID, item.NombrePerfil);
-                }
+                listaPerfiles.Add(item.PerfilID, item.NombrePerfil);
             }
 
             return listaPerfiles;
@@ -9194,18 +8835,15 @@ namespace Es.Riam.Gnoss.AD.Identidad
 
             Dictionary<Guid, string> listaPerfiles = new Dictionary<Guid, string>();
 
-            foreach (var item in resultado)
+            foreach (var item in resultado.Where(item => !listaPerfiles.ContainsKey(item.PerfilID)))
             {
-                if (!listaPerfiles.ContainsKey(item.PerfilID))
+                if (item.NombreOrganizacion != null)
                 {
-                    if (item.NombreOrganizacion != null)
-                    {
-                        listaPerfiles.Add(item.PerfilID, item.NombreOrganizacion);
-                    }
-                    else
-                    {
-                        listaPerfiles.Add(item.PerfilID, item.NombrePerfil);
-                    }
+                    listaPerfiles.Add(item.PerfilID, item.NombreOrganizacion);
+                }
+                else
+                {
+                    listaPerfiles.Add(item.PerfilID, item.NombrePerfil);
                 }
             }
 
@@ -9246,18 +8884,16 @@ namespace Es.Riam.Gnoss.AD.Identidad
             }).Where(item => pListaGrupos.Contains(item.GrupoIdentidades.GrupoID))
             .Select(item => new { item.GrupoIdentidades.GrupoID, NombreGrupoIdent = item.GrupoIdentidades.Nombre, NombreOrg = item.Organizacion.Nombre }).ToList();
 
-            foreach (var item in resultado)
+            foreach (var item in resultado.Where(item => !listaGrupos.ContainsKey(item.GrupoID)))
             {
-                if (!listaGrupos.ContainsKey(item.GrupoID))
+                string nombreGrupo = item.NombreGrupoIdent;
+                if (!string.IsNullOrEmpty(item.NombreOrg))
                 {
-                    string nombreGrupo = item.NombreGrupoIdent;
-                    if (!string.IsNullOrEmpty(item.NombreOrg))
-                    {
-                        nombreGrupo += " " + ConstantesDeSeparacion.SEPARACION_CONCATENADOR + " " + item.NombreOrg;
-                    }
-                    listaGrupos.Add(item.GrupoID, nombreGrupo);
+                    nombreGrupo += " " + ConstantesDeSeparacion.SEPARACION_CONCATENADOR + " " + item.NombreOrg;
                 }
+                listaGrupos.Add(item.GrupoID, nombreGrupo);
             }
+
             return listaGrupos;
         }
 
@@ -9308,7 +8944,7 @@ namespace Es.Riam.Gnoss.AD.Identidad
         {
             Dictionary<Guid, string> listaIdent = new Dictionary<Guid, string>();
 
-            List<IdentidadIDFotoTipoFechaBaja> resultadoConsulta = new List<IdentidadIDFotoTipoFechaBaja>();
+            List<IdentidadIDFotoTipoFechaBaja> resultadoConsulta;
 
             if (pListaIdentidades.Count > 0)
             {
@@ -9390,12 +9026,9 @@ namespace Es.Riam.Gnoss.AD.Identidad
             }
 
             //Si da error al hacer la consulta, devolvera la foto de anonimo
-            if (listaIdentidadFoto != null)
+            if (listaIdentidadFoto != null && listaIdentidadFoto.Select(item => item.IdentidadID.Equals(pIdentidadID)).Any())
             {
-                if (listaIdentidadFoto.Select(item => item.IdentidadID.Equals(pIdentidadID)).Any())
-                {
-                    urlFoto = listaIdentidadFoto.Where(item => item.IdentidadID.Equals(pIdentidadID)).Select(item => item.Url).FirstOrDefault();
-                }
+                urlFoto = listaIdentidadFoto.Where(item => item.IdentidadID.Equals(pIdentidadID)).Select(item => item.Url).FirstOrDefault();
             }
 
             if (urlFoto != null)
@@ -9745,7 +9378,7 @@ namespace Es.Riam.Gnoss.AD.Identidad
             List<Guid> listaIdentID = new List<Guid>();
             foreach (var item in resultado)
             {
-                listaIdentID.Add((Guid)item);
+                listaIdentID.Add(item);
             }
 
             return listaIdentID;
@@ -9966,12 +9599,6 @@ namespace Es.Riam.Gnoss.AD.Identidad
         {
             DataWrapperIdentidad dataWrapper = new DataWrapperIdentidad();
 
-            List<Perfil> listaPerfiles = mEntityContext.PerfilPersona.JoinPerfil().JoinPersona().Where(item => item.Persona.UsuarioID.Value.Equals(pUsuarioID) && !item.Perfil.Eliminado)
-                .Select(item => item.Perfil).ToList();
-
-            Perfil perfil = mEntityContext.Perfil.JoinPersona().Where(item => item.Persona.UsuarioID.Value.Equals(pUsuarioID)).Select(item => item.Perfil).FirstOrDefault();
-
-
             dataWrapper.ListaPerfil = mEntityContext.Perfil.JoinPersona().Where(item => item.Persona.UsuarioID.Value.Equals(pUsuarioID) && !item.Perfil.Eliminado)
                 .Select(item => item.Perfil).ToList();
 
@@ -10036,8 +9663,8 @@ namespace Es.Riam.Gnoss.AD.Identidad
 
             foreach (var fila in resultado)
             {
-                Guid usuarioID = (Guid)fila.UsuarioID.Value;
-                Guid identidadID = (Guid)fila.IdentidadID;
+                Guid usuarioID = fila.UsuarioID.Value;
+                Guid identidadID = fila.IdentidadID;
 
                 if (!dicUsuarioIDPerfilID.ContainsKey(usuarioID))
                 {
@@ -10065,8 +9692,8 @@ namespace Es.Riam.Gnoss.AD.Identidad
 
             foreach (var fila in resultado)
             {
-                Guid usuarioID = (Guid)fila.UsuarioID.Value;
-                Guid perfilID = (Guid)fila.PerfilID;
+                Guid usuarioID = fila.UsuarioID.Value;
+                Guid perfilID = fila.PerfilID;
 
                 if (!dicUsuarioIDPerfilID.ContainsKey(usuarioID))
                 {
@@ -10284,7 +9911,7 @@ namespace Es.Riam.Gnoss.AD.Identidad
 
             foreach (var item in resultado.Where(item => !listaPerfiles.ContainsKey(item.PerfilID)))
             {
-                listaPerfiles.Add(item.PerfilID, new Tuple<string, string, Guid?, Guid?>(item.NombrePerfil, item.NombreOrganizacion, item.PersonaID, item.OrganizacionID));             
+                listaPerfiles.Add(item.PerfilID, new Tuple<string, string, Guid?, Guid?>(item.NombrePerfil, item.NombreOrganizacion, item.PersonaID, item.OrganizacionID));
             }
 
             return listaPerfiles;
@@ -10427,7 +10054,7 @@ namespace Es.Riam.Gnoss.AD.Identidad
             var subconsulta2QueryGrupoIdentidades = mEntityContext.Identidad.Where(item => item.IdentidadID.Equals(pIdentidadID)).Select(item => item.PerfilID);
             var query2GrupoIdentidadesSinSelect = mEntityContext.GrupoIdentidades.JoinGrupoIdentidadesProyecto().JoinIdentidad().JoinProyecto().Where(item => item.GrupoIdentidades.Publico.Equals(true) && subconsulta2QueryGrupoIdentidades.Contains(item.Identidad.PerfilID) && (item.Proyecto.TipoAcceso.Equals((short)TipoAcceso.Privado) || item.Proyecto.TipoAcceso.Equals((short)TipoAcceso.Reservado)) && item.GrupoIdentidades.PermitirEnviarMensajes.Equals(true)).ToList();
             var query2GrupoIdentidades = query2GrupoIdentidadesSinSelect.Select(item => item.GrupoIdentidades).ToList();
-            var query2GrupoIdentidadesEnvio = query2GrupoIdentidadesSinSelect.ToList().Select(item => new GrupoIdentidadesEnvio
+            var query2GrupoIdentidadesEnvio = query2GrupoIdentidadesSinSelect.Select(item => new GrupoIdentidadesEnvio
             {
                 GrupoID = item.GrupoIdentidades.GrupoID,
                 Descripcion = item.GrupoIdentidades.Descripcion,
@@ -10445,7 +10072,7 @@ namespace Es.Riam.Gnoss.AD.Identidad
             var subconsulta3QueryGrupoIdentidades = mEntityContext.Identidad.Where(item => item.IdentidadID.Equals(pIdentidadID)).Select(item => item.PerfilID);
             var query3GrupoIdentidadesSinSelect = mEntityContext.GrupoIdentidades.JoinGrupoIdentidadesProyecto().JoinIdentidad().JoinPerfil().JoinPersona().JoinUsuario().JoinAdministradorProyecto().JoinProyecto().Where(item => subconsulta3QueryGrupoIdentidades.Contains(item.Identidad.PerfilID) && item.AdministradorProyecto.Tipo.Equals(0) && item.GrupoIdentidades.PermitirEnviarMensajes.Equals(true));
             var query3GrupoIdentidades = query3GrupoIdentidadesSinSelect.Select(item => item.GrupoIdentidades).ToList();
-            var query3GrupoIdentidadesEnvio = query3GrupoIdentidadesSinSelect.ToList().Select(item => new GrupoIdentidadesEnvio
+            var query3GrupoIdentidadesEnvio = query3GrupoIdentidadesSinSelect.Select(item => new GrupoIdentidadesEnvio
             {
                 GrupoID = item.GrupoIdentidades.GrupoID,
                 Descripcion = item.GrupoIdentidades.Descripcion,
@@ -10463,7 +10090,7 @@ namespace Es.Riam.Gnoss.AD.Identidad
             var subconsulta4QueryGrupoIdentidades = mEntityContext.Identidad.Where(item => item.IdentidadID.Equals(pIdentidadID)).Select(item => item.PerfilID);
             var query4GrupoIdentidadesSinSelect = mEntityContext.GrupoIdentidades.JoinGrupoIdentidadesProyecto().JoinIdentidad().JoinPerfil().JoinPersona().JoinUsuario().JoinAdministradorProyecto().JoinProyecto().JoinParametroGeneral().Where(item => subconsulta4QueryGrupoIdentidades.Contains(item.Identidad.PerfilID) && item.AdministradorProyecto.Tipo.Equals(1) && item.ParametroGeneral.SupervisoresAdminGrupos.Equals(true) && item.GrupoIdentidades.PermitirEnviarMensajes.Equals(true));
             var query4GrupoIdentidades = query4GrupoIdentidadesSinSelect.Select(item => item.GrupoIdentidades).ToList();
-            var query4GrupoIdentidadesEnvio = query4GrupoIdentidadesSinSelect.ToList().Select(item => new GrupoIdentidadesEnvio
+            var query4GrupoIdentidadesEnvio = query4GrupoIdentidadesSinSelect.Select(item => new GrupoIdentidadesEnvio
             {
                 GrupoID = item.GrupoIdentidades.GrupoID,
                 Descripcion = item.GrupoIdentidades.Descripcion,
@@ -10552,7 +10179,7 @@ namespace Es.Riam.Gnoss.AD.Identidad
 
             foreach (var filaParticipante in resultado)
             {
-                listaIdentidades.Add((Guid)filaParticipante.IdentidadID);
+                listaIdentidades.Add(filaParticipante.IdentidadID);
             }
             return listaIdentidades;
         }
@@ -10570,7 +10197,7 @@ namespace Es.Riam.Gnoss.AD.Identidad
 
             foreach (var filaParticipante in resultado)
             {
-                listaPerfiles.Add((Guid)filaParticipante.PerfilID);
+                listaPerfiles.Add(filaParticipante.PerfilID);
             }
             return listaPerfiles;
         }
@@ -10623,12 +10250,9 @@ namespace Es.Riam.Gnoss.AD.Identidad
 
             var resultado = mEntityContext.GrupoIdentidades.JoinGrupoIdentidadesParticipacion().Where(item => item.GrupoIdentidadesParticipacion.IdentidadID.Equals(pIdentidadID) || item.GrupoIdentidadesParticipacion.IdentidadID.Equals(pIdentidadMyGnossID)).Select(item => new { item.GrupoIdentidadesParticipacion.GrupoID, item.GrupoIdentidades.NombreCorto }).ToList();
 
-            foreach (var item in resultado)
+            foreach (var item in resultado.Where(item => !grupos.ContainsKey(item.GrupoID)))
             {
-                if (!grupos.ContainsKey(item.GrupoID))
-                {
-                    grupos.Add(item.GrupoID, item.NombreCorto);
-                }
+                grupos.Add(item.GrupoID, item.NombreCorto);
             }
             return grupos;
         }
@@ -10663,7 +10287,7 @@ namespace Es.Riam.Gnoss.AD.Identidad
         /// <returns></returns>
         public bool TieneIdentidadGruposConRecursosPrivados(Guid pProyectoID, Guid pPerfilID)
         {
-            var consulta = mEntityContext.GrupoIdentidadesParticipacion.JoinIdentidad().JoinDocumentoRolGrupoIdentidades().JoinDocumentoWebVinBaseRecursos().JoinBaseRecursosProyecto().JoinDocumento().Where(item => item.Identidad.PerfilID.Equals(pPerfilID) && (item.Identidad.ProyectoID.Equals(pProyectoID) || item.Identidad.ProyectoID.Equals(ProyectoAD.MetaProyecto)) && item.DocumentoWebVinBaseRecursos.PrivadoEditores && item.Documento.Eliminado == false && item.DocumentoWebVinBaseRecursos.Eliminado == false && item.Documento.UltimaVersion && item.Documento.Borrador == false && item.BaseRecursosProyecto.ProyectoID.Equals(pProyectoID));
+            var consulta = mEntityContext.GrupoIdentidadesParticipacion.JoinIdentidad().JoinDocumentoRolGrupoIdentidades().JoinDocumentoWebVinBaseRecursos().JoinBaseRecursosProyecto().JoinDocumento().Where(item => item.Identidad.PerfilID.Equals(pPerfilID) && (item.Identidad.ProyectoID.Equals(pProyectoID) || item.Identidad.ProyectoID.Equals(ProyectoAD.MetaProyecto)) && item.DocumentoWebVinBaseRecursos.PrivadoEditores && !item.Documento.Eliminado && !item.DocumentoWebVinBaseRecursos.Eliminado && item.Documento.UltimaVersion && !item.Documento.Borrador && item.BaseRecursosProyecto.ProyectoID.Equals(pProyectoID));
             return consulta.Any();
         }
 
@@ -10786,12 +10410,12 @@ namespace Es.Riam.Gnoss.AD.Identidad
 
             var perfiles = mEntityContext.GrupoIdentidadesParticipacion.JoinIdentidad().Where(item => item.Identidad.ProyectoID.Equals(pProyectoID)).Select(item => item.Identidad);
 
-            foreach (var fila in perfiles)
+            foreach (var perfilID in perfiles.Select(item => item.PerfilID))
             {
-                Guid perfilID;
-                if (Guid.TryParse(fila.PerfilID.ToString(), out perfilID) && !listaPerfiles.Contains(fila.PerfilID))
+                Guid aux;
+                if (Guid.TryParse(perfilID.ToString(), out aux) && !listaPerfiles.Contains(perfilID))
                 {
-                    listaPerfiles.Add(fila.PerfilID);
+                    listaPerfiles.Add(perfilID);
                 }
             }
 
@@ -10843,12 +10467,9 @@ namespace Es.Riam.Gnoss.AD.Identidad
                 if (dataWrapper.ListaGrupoIdentidadesParticipacion.Count > 0 && pCargarIdentidades)
                 {
                     List<Guid> listaParticipantes = new List<Guid>();
-                    foreach (var fila in dataWrapper.ListaGrupoIdentidadesParticipacion)
+                    foreach (var fila in dataWrapper.ListaGrupoIdentidadesParticipacion.Where(item => !listaParticipantes.Contains(item.IdentidadID)))
                     {
-                        if (!listaParticipantes.Contains(fila.IdentidadID))
-                        {
-                            listaParticipantes.Add(fila.IdentidadID);
-                        }
+                        listaParticipantes.Add(fila.IdentidadID);
                     }
                     dataWrapper.Merge(ObtenerIdentidadesPorID(listaParticipantes, false));
                 }
@@ -10872,12 +10493,9 @@ namespace Es.Riam.Gnoss.AD.Identidad
                 if (dataWrapper.ListaGrupoIdentidadesParticipacion.Count > 0 && pCargarIdentidades)
                 {
                     List<Guid> listaParticipantes = new List<Guid>();
-                    foreach (var fila in dataWrapper.ListaGrupoIdentidadesParticipacion)
+                    foreach (var fila in dataWrapper.ListaGrupoIdentidadesParticipacion.Where(item => !listaParticipantes.Contains(item.IdentidadID)))
                     {
-                        if (!listaParticipantes.Contains(fila.IdentidadID))
-                        {
-                            listaParticipantes.Add(fila.IdentidadID);
-                        }
+                        listaParticipantes.Add(fila.IdentidadID);
                     }
 
                     dataWrapper.Merge(ObtenerIdentidadesPorID(listaParticipantes, false));
@@ -10976,7 +10594,7 @@ namespace Es.Riam.Gnoss.AD.Identidad
                 if (dataWrapper.ListaGrupoIdentidadesParticipacion.Count > 0 && pCargarIdentidades)
                 {
                     List<Guid> listaParticipantes = new List<Guid>();
-                    foreach (var fila in dataWrapper.ListaGrupoIdentidadesParticipacion)
+                    foreach (var fila in dataWrapper.ListaGrupoIdentidadesParticipacion.Where(item => !listaParticipantes.Contains(item.IdentidadID)))
                     {
                         if (!listaParticipantes.Contains(fila.IdentidadID))
                         {
@@ -11016,7 +10634,7 @@ namespace Es.Riam.Gnoss.AD.Identidad
 
                 foreach (var fila in resultado)
                 {
-                    lista.Add((Guid)fila.GrupoID);
+                    lista.Add(fila.GrupoID);
                 }
             }
 
@@ -11038,7 +10656,6 @@ namespace Es.Riam.Gnoss.AD.Identidad
                 bool selectPorIds = false;
                 bool selectPorNombresCortos = false;
 
-                var query = mEntityContext.Identidad.Select(item => item.PerfilID);
                 List<Guid> listaUsuarioID = new List<Guid>();
                 List<string> listaNombresCortos = new List<string>();
                 foreach (string nombre in pNombresCortos)
@@ -11095,7 +10712,7 @@ namespace Es.Riam.Gnoss.AD.Identidad
 
                 foreach (var fila in resultado)
                 {
-                    lista.Add((Guid)fila.GrupoID);
+                    lista.Add(fila.GrupoID);
                 }
             }
             return lista;
@@ -11116,13 +10733,12 @@ namespace Es.Riam.Gnoss.AD.Identidad
                 var resultado = mEntityContext.GrupoIdentidades.JoinGrupoIdentidadesProyecto().Where(item => item.GrupoIdentidadesProyecto.ProyectoID.Equals(pProyectoID) && pNombresCortos.Contains(item.GrupoIdentidades.NombreCorto))
                     .Select(item => item.GrupoIdentidades)
                     .Concat(mEntityContext.GrupoIdentidades.JoinGrupoIdentidadesOrganizacion().Where(item => pNombresCortos.Contains(item.GrupoIdentidades.NombreCorto))
-                    .Select(item => item.GrupoIdentidades)).ToList().Distinct().ToList();
+                    .Select(item => item.GrupoIdentidades)).Distinct().ToList();
 
                 foreach (var fila in resultado)
                 {
-                    lista.Add((Guid)fila.GrupoID);
+                    lista.Add(fila.GrupoID);
                 }
-
             }
 
             return lista;
@@ -11259,12 +10875,9 @@ namespace Es.Riam.Gnoss.AD.Identidad
                     if (dataWrapper.ListaGrupoIdentidadesParticipacion.Count > 0)
                     {
                         List<Guid> listaParticipantes = new List<Guid>();
-                        foreach (var fila in dataWrapper.ListaGrupoIdentidadesParticipacion)
+                        foreach (var fila in dataWrapper.ListaGrupoIdentidadesParticipacion.Where(item => !listaParticipantes.Contains(item.IdentidadID)))
                         {
-                            if (!listaParticipantes.Contains(fila.IdentidadID))
-                            {
-                                listaParticipantes.Add(fila.IdentidadID);
-                            }
+                            listaParticipantes.Add(fila.IdentidadID);
                         }
                         dataWrapper.Merge(ObtenerIdentidadesPorID(listaParticipantes, false));
                     }
@@ -11293,12 +10906,9 @@ namespace Es.Riam.Gnoss.AD.Identidad
 
                 var resultado = mEntityContext.GrupoIdentidadesParticipacion.JoinIdentidad().JoinIdentidad2().Where(item => listaGrupos.Contains(item.GrupoIdentidadesParticipacion.GrupoID) && item.Identidad2.ProyectoID.Equals(ProyectoAD.MyGnoss)).Select(item => item.Identidad2).Distinct();
 
-                foreach (var fila in resultado)
+                foreach (var fila in resultado.Where(item => !listaIdentidades.Contains(item.IdentidadID)))
                 {
-                    if (!listaIdentidades.Contains((Guid)fila.IdentidadID))
-                    {
-                        listaIdentidades.Add((Guid)fila.IdentidadID);
-                    }
+                    listaIdentidades.Add(fila.IdentidadID);
                 }
             }
 
@@ -11476,12 +11086,9 @@ namespace Es.Riam.Gnoss.AD.Identidad
                     resultado = resultado.Where(item => !item.FechaBaja.HasValue && item.ProyectoID.Equals(pProyectoID)).ToList();
                 }
 
-                foreach (var fila in resultado)
+                foreach (var fila in resultado.Where(item => !identidadesID.Contains(item.IdentidadID)))
                 {
-                    if (!identidadesID.Contains((Guid)fila.IdentidadID))
-                    {
-                        identidadesID.Add((Guid)fila.IdentidadID);
-                    }
+                    identidadesID.Add(fila.IdentidadID);
                 }
             }
             return identidadesID;
@@ -11702,13 +11309,6 @@ namespace Es.Riam.Gnoss.AD.Identidad
             return resultado;
         }
 
-        private class PerfilIDIdentidadID
-        {
-            public Guid IdentidadID { get; set; }
-            public Guid PerfilID { get; set; }
-
-        }
-
         /// <summary>
         /// Obtiene si el perfil esta o no eliminado
         /// </summary>
@@ -11718,7 +11318,6 @@ namespace Es.Riam.Gnoss.AD.Identidad
         {
             return mEntityContext.Perfil.Where(item => item.PerfilID.Equals(pPerfil)).Select(item => item.Eliminado).FirstOrDefault();
         }
-
 
         /// <summary>
         /// Obtiene un array cuyo primer elemento es el identificador de la identidad del usuario y el segundo es el identificador del perfil de la identidad (en un proyecto)
@@ -11739,7 +11338,6 @@ namespace Es.Riam.Gnoss.AD.Identidad
 
             if (!pObtenerEliminadas)
             {
-
                 if (string.IsNullOrEmpty(pOrganizacion))
                 {
                     resultadoConsulta = mEntityContext.Perfil.JoinIdentidad().JoinPersona().JoinPerfilPersona().Where(item => item.Identidad.ProyectoID.Equals(pProyectoID) && item.Perfil.NombreCortoUsu.Equals(pUsuario) && (item.Identidad.Tipo.Equals((short)TiposIdentidad.Personal) || item.Identidad.Tipo.Equals((short)TiposIdentidad.Profesor)) && !item.Identidad.FechaBaja.HasValue).Select(item => new { IdentidadID = item.Identidad.IdentidadID, PerfilID = item.Identidad.PerfilID }).FirstOrDefault();
@@ -11816,7 +11414,7 @@ namespace Es.Riam.Gnoss.AD.Identidad
 
             if (perfilObtenerNombreCorto.Count > 0)
             {
-                var filaPerfil = perfilObtenerNombreCorto.First();
+                var filaPerfil = perfilObtenerNombreCorto[0];
 
                 listaResultados.Add("PerfilID", filaPerfil.PerfilID);
 
@@ -12157,7 +11755,6 @@ namespace Es.Riam.Gnoss.AD.Identidad
 
             #endregion
 
-
             #region numero de recursos vinculados
 
             var queryNumeroRecursosVinculados = mEntityContext.DocumentoVincDoc.JoinDocumento().JoinIdentidad().Where(item => item.DocumentoVincDoc.Fecha > DateTime.Now.AddDays(-numDias)).GroupBy(item => item.Identidad.IdentidadID, item2 => item2, (item, item2) => new
@@ -12243,8 +11840,6 @@ namespace Es.Riam.Gnoss.AD.Identidad
 
         public void ActualizarRankingIdentidadesDesdeValorAbsoluto(int pNumDias)
         {
-            //Juan
-
             List<EntityModel.Models.IdentidadDS.Identidad> listaIdentidades = mEntityContext.Identidad.ToList();
 
             foreach (EntityModel.Models.IdentidadDS.Identidad identidad in listaIdentidades)
@@ -12724,18 +12319,15 @@ namespace Es.Riam.Gnoss.AD.Identidad
 
             List<EntityModel.Models.IdentidadDS.Identidad> listaIdentidades = mEntityContext.Identidad.Where(item => item.ProyectoID.Equals(pProyecto)).Distinct().ToList();
 
-            foreach (EntityModel.Models.IdentidadDS.Identidad identidad in listaIdentidades)
+            foreach (EntityModel.Models.IdentidadDS.Identidad identidad in listaIdentidades.Where(item => !listaRankingIdentidades.ContainsKey(item.IdentidadID)))
             {
-                if (!listaRankingIdentidades.ContainsKey(identidad.IdentidadID))
+                try
                 {
-                    try
-                    {
-                        listaRankingIdentidades.Add(identidad.IdentidadID, (double)identidad.Rank);
-                    }
-                    catch (Exception e)
-                    {
-                        mLoggingService.GuardarLogError(e,mlogger);
-                    }
+                    listaRankingIdentidades.Add(identidad.IdentidadID, (double)identidad.Rank);
+                }
+                catch (Exception e)
+                {
+                    mLoggingService.GuardarLogError(e, mlogger);
                 }
             }
             return listaRankingIdentidades;
@@ -12826,12 +12418,9 @@ namespace Es.Riam.Gnoss.AD.Identidad
             {
                 var resultado = mEntityContext.Identidad.Where(item => pIdentidadesID.Contains(item.IdentidadID)).ToList();
 
-                foreach (var item in resultado)
+                foreach (var item in resultado.Where(item => !listaPerfiles.Contains(item.PerfilID)))
                 {
-                    if (!listaPerfiles.Contains((Guid)item.PerfilID))
-                    {
-                        listaPerfiles.Add((Guid)item.PerfilID);
-                    }
+                    listaPerfiles.Add(item.PerfilID);
                 }
             }
 
@@ -12848,9 +12437,9 @@ namespace Es.Riam.Gnoss.AD.Identidad
         {
             object resultado = mEntityContext.DocumentoWebVinBaseRecursos.JoinIdentidad().JoinBaseRecursosProyecto().Where(item => item.DocumentoWebVinBaseRecursos.DocumentoID.Equals(pDocumentoID) && item.BaseRecursosProyecto.ProyectoID.Equals(pProyectoID)).Select(item => item.Identidad.PerfilID).FirstOrDefault();
 
-            if (resultado != null && resultado is Guid)
+            if (resultado is Guid perfilID)
             {
-                return (Guid)resultado;
+                return perfilID;
             }
 
             return null;
@@ -12865,9 +12454,9 @@ namespace Es.Riam.Gnoss.AD.Identidad
         {
             object resultado = mEntityContext.Comentario.JoinIdentidad().Where(item => item.Comentario.ComentarioID.Equals(pComentarioID)).Select(item => item.Identidad.PerfilID).FirstOrDefault();
 
-            if (resultado != null && resultado is Guid)
+            if (resultado is Guid perfilID)
             {
-                return (Guid)resultado;
+                return perfilID;
             }
 
             return null;
@@ -12882,9 +12471,9 @@ namespace Es.Riam.Gnoss.AD.Identidad
         {
             object resultado = mEntityContext.Perfil.JoinIdentidad().JoinPersona().Where(item => item.Identidad.IdentidadID.Equals(pIdentidadID)).Select(item => item.Persona.UsuarioID).FirstOrDefault();
 
-            if (resultado != null && resultado is Guid)
+            if (resultado is Guid usuarioID)
             {
-                return (Guid)resultado;
+                return usuarioID;
             }
 
             return Guid.Empty;
@@ -12948,9 +12537,9 @@ namespace Es.Riam.Gnoss.AD.Identidad
         {
             object resultado = mEntityContext.Perfil.JoinIdentidad().Where(item => item.Identidad.IdentidadID.Equals(pIdentidadID)).Select(item => item.Perfil.OrganizacionID).FirstOrDefault();
 
-            if (resultado != null && resultado is Guid)
+            if (resultado is Guid orgainzacionID)
             {
-                return (Guid)resultado;
+                return orgainzacionID;
             }
 
             return null;
@@ -12965,9 +12554,9 @@ namespace Es.Riam.Gnoss.AD.Identidad
         {
             object resultado = mEntityContext.Perfil.Where(item => item.PerfilID.Equals(pPerfilID)).Select(item => item.OrganizacionID).FirstOrDefault();
 
-            if (resultado != null && resultado is Guid)
+            if (resultado is Guid organizacionID)
             {
-                return (Guid)resultado;
+                return organizacionID;
             }
 
             return null;
@@ -12982,7 +12571,7 @@ namespace Es.Riam.Gnoss.AD.Identidad
         {
             var resultado = mEntityContext.Perfil.JoinIdentidad().JoinPerfil2().Where(item => item.Identidad.Tipo.Equals((short)TiposIdentidad.Personal) && item.Identidad.ProyectoID.Equals(ProyectoAD.MetaProyecto) && item.Perfil2.PerfilID.Equals(pPerfilID)).Select(item => item.Identidad.PerfilID).FirstOrDefault();
 
-            Guid perfilID = (Guid)resultado;
+            Guid perfilID = resultado;
             return perfilID;
         }
 
@@ -13127,14 +12716,14 @@ namespace Es.Riam.Gnoss.AD.Identidad
             return dataWrapperDatoExtra;
         }
 
-		public List<Rol> ObtenerRolesDeIdentidad(Guid pIdentidadID)
-		{
-			return mEntityContext.Rol.Join(mEntityContext.RolIdentidad, rol => rol.RolID, rolIdentidad => rolIdentidad.RolID, (rol, rolIdentidad) => new
-			{
-				Rol = rol,
-				RolIdentidad = rolIdentidad
-			}).Where(objeto => objeto.RolIdentidad.IdentidadID.Equals(pIdentidadID)).Select(objeto => objeto.Rol).ToList();
-		}
+        public List<Rol> ObtenerRolesDeIdentidad(Guid pIdentidadID)
+        {
+            return mEntityContext.Rol.Join(mEntityContext.RolIdentidad, rol => rol.RolID, rolIdentidad => rolIdentidad.RolID, (rol, rolIdentidad) => new
+            {
+                Rol = rol,
+                RolIdentidad = rolIdentidad
+            }).Where(objeto => objeto.RolIdentidad.IdentidadID.Equals(pIdentidadID)).Select(objeto => objeto.Rol).ToList();
+        }
 
         /// <summary>
         /// Asigna un nuevo rol con id pRolId a la identidad pIdentidadID
@@ -13178,415 +12767,6 @@ namespace Es.Riam.Gnoss.AD.Identidad
                 ActualizarBaseDeDatosEntityContext();
             }
         }
-
-
-
-        #endregion
-
-
-        #region Privados
-
-        /// <summary>
-        /// En caso de que se utilice un GnossConfig.xml que no es el de por defecto se pasa un objeto IBaseDatos creado con respecto
-        /// al fichero de configuracion que se ha pasado como parámetro
-        /// </summary>
-        /// <param name="IBD">Objecto IBaseDatos para el archivo pasado al constructor del AD</param>
-        private void CargarConsultasYDataAdapters()
-        {
-            #region Consultas
-
-            #region Selects simples sin FROM
-
-            this.selectIdentidad = "SELECT " + IBD.CargarGuid("Identidad.IdentidadID") + ", " + IBD.CargarGuid("Identidad.PerfilID") + ", " + IBD.CargarGuid("Identidad.OrganizacionID") + ", " + IBD.CargarGuid("Identidad.ProyectoID") + ", " + IBD.CargarGuid("Identidad.CurriculumID") + ", Identidad.FechaAlta, Identidad.FechaBaja, Identidad.NumConnexiones, Identidad.Tipo, Identidad.NombreCortoIdentidad, Identidad.FechaExpulsion, Identidad.RecibirNewsLetter, Identidad.Rank, Identidad.MostrarBienvenida, Identidad.DiasUltActualizacion, Identidad.ValorAbsoluto, Identidad.ActivoEnComunidad, Identidad.ActualizaHome, Identidad.Foto ";
-
-            this.selectPerfil = "SELECT " + IBD.CargarGuid("Perfil.PerfilID") + ", Perfil.NombrePerfil, Perfil.NombreOrganizacion, Perfil.Eliminado, Perfil.NombreCortoOrg, Perfil.NombreCortoUsu, " + IBD.CargarGuid("Perfil.OrganizacionID") + ", " + IBD.CargarGuid("Perfil.PersonaID") + ",  Perfil.TieneTwitter,  Perfil.UsuarioTwitter,  Perfil.TokenTwitter,  Perfil.TokenSecretoTwitter,  Perfil.CaducidadResSusc,  Perfil.CurriculumID ";
-
-            this.selectGrupoIdentidades = "SELECT " + IBD.CargarGuid("GrupoIdentidades.GrupoID") + ", GrupoIdentidades.Nombre, GrupoIdentidades.NombreCorto, GrupoIdentidades.Descripcion, GrupoIdentidades.FechaAlta, GrupoIdentidades.FechaBaja, GrupoIdentidades.Tags, GrupoIdentidades.Publico, GrupoIdentidades.PermitirEnviarMensajes ";
-
-            this.selectGrupoIdentidadesParticipacion = "SELECT " + IBD.CargarGuid("GrupoIdentidadesParticipacion.GrupoID") + ", " + IBD.CargarGuid("GrupoIdentidadesParticipacion.IdentidadID") + ", GrupoIdentidadesParticipacion.FechaAlta, GrupoIdentidadesParticipacion.FechaBaja ";
-
-            this.selectGrupoIdentidadesProyecto = "SELECT " + IBD.CargarGuid("GrupoIdentidadesProyecto.GrupoID") + "," + IBD.CargarGuid("GrupoIdentidadesProyecto.OrganizacionID") + "," + IBD.CargarGuid("GrupoIdentidadesProyecto.ProyectoID") + " ";
-
-            this.selectGrupoIdentidadesOrganizacion = "SELECT " + IBD.CargarGuid("GrupoIdentidadesOrganizacion.GrupoID") + "," + IBD.CargarGuid("GrupoIdentidadesOrganizacion.OrganizacionID") + " ";
-
-            this.selectIdentidadContadoresRecursos = "SELECT " + IBD.CargarGuid("IdentidadContadoresRecursos.IdentidadID") + ", " + IBD.CargarGuid("IdentidadContadoresRecursos.Tipo") + ",IdentidadContadoresRecursos.NombreSem,IdentidadContadoresRecursos.Publicados,IdentidadContadoresRecursos.Compartidos, IdentidadContadoresRecursos.Comentarios ";
-
-            #endregion
-
-            this.sqlSelectIdentidad = selectIdentidad + "FROM Identidad";
-
-            this.sqlSelectPerfil = selectPerfil + " FROM Perfil";
-
-            this.sqlSelectPerfilRedesSociales = "SELECT " + IBD.CargarGuid("PerfilRedesSociales.PerfilID") + ", PerfilRedesSociales.NombreRedSocial, PerfilRedesSociales.urlUsuario, PerfilRedesSociales.Usuario, PerfilRedesSociales.Token, PerfilRedesSociales.TokenSecreto FROM PerfilRedesSociales";
-
-            this.sqlSelectPerfilGadget = "SELECT " + IBD.CargarGuid("PerfilGadget.PerfilID") + ", " + IBD.CargarGuid("PerfilGadget.GadgetID") + ", PerfilGadget.Titulo, PerfilGadget.Contenido, PerfilGadget.Orden FROM PerfilGadget";
-
-            this.sqlSelectPerfilPersonaOrg = "SELECT " + IBD.CargarGuid("PerfilPersonaOrg.PersonaID") + ", " + IBD.CargarGuid("PerfilPersonaOrg.OrganizacionID") + ", " + IBD.CargarGuid("PerfilPersonaOrg.PerfilID") + " FROM PerfilPersonaOrg";
-
-            this.sqlSelectPerfilOrganizacion = "SELECT " + IBD.CargarGuid("PerfilOrganizacion.OrganizacionID") + ", " + IBD.CargarGuid("PerfilOrganizacion.PerfilID") + " FROM PerfilOrganizacion";
-
-            this.sqlSelectPerfilPersona = "SELECT " + IBD.CargarGuid("PerfilPersona.PersonaID") + ", " + IBD.CargarGuid("PerfilPersona.PerfilID") + " FROM PerfilPersona";
-
-            this.sqlSelectProfesor = "SELECT " + IBD.CargarGuid("Profesor.ProfesorID") + ", " + IBD.CargarGuid("Profesor.PerfilID") + ", Profesor.Email, Profesor.CentroEstudios, Profesor.AreaEstudios FROM Profesor";
-
-            sqlSelectPerfilDeOrganizacion = sqlSelectPerfil + " INNER JOIN PerfilOrganizacion ON Perfil.PerfilID = PerfilOrganizacion.PerfilID WHERE PerfilOrganizacion.OrganizacionID = " + IBD.GuidParamValor("organizacionID");
-
-            sqlSelectPerfilOrganizacionDeOrganizacion = sqlSelectPerfilOrganizacion + " INNER JOIN Perfil ON PerfilOrganizacion.PerfilID = Perfil.PerfilID WHERE PerfilOrganizacion.OrganizacionID = " + IBD.GuidParamValor("organizacionID") + " AND Perfil.Eliminado = 0";
-
-            sqlSelectPerfilOrganizacionDeOrganizacionNoActivosTambien = sqlSelectPerfilOrganizacion + " INNER JOIN Perfil ON PerfilOrganizacion.PerfilID = Perfil.PerfilID WHERE PerfilOrganizacion.OrganizacionID = " + IBD.GuidParamValor("organizacionID") + " ";
-
-            sqlSelectIdentidadesSoloDeOrganizacion = sqlSelectIdentidad + " INNER JOIN Perfil ON Perfil.PerfilID = Identidad.PerfilID INNER JOIN PerfilOrganizacion ON Perfil.PerfilID = PerfilOrganizacion.PerfilID WHERE PerfilOrganizacion.OrganizacionID = " + IBD.GuidParamValor("organizacionID");
-
-            sqlSelectPerfilesDePersona = this.selectPerfil + ", Identidad.NumConnexiones FROM Perfil INNER JOIN Identidad ON Identidad.PerfilID = Perfil.PerfilID WHERE Perfil.PersonaID = " + IBD.GuidParamValor("personaID") + " AND Identidad.ProyectoID = '11111111-1111-1111-1111-111111111111' UNION " + this.selectPerfil + ", Identidad.NumConnexiones FROM Perfil INNER JOIN Identidad ON Identidad.PerfilID = Perfil.PerfilID INNER JOIN PerfilPersonaOrg on Perfil.OrganizacionID = PerfilPersonaOrg.OrganizacionID WHERE Perfil.PersonaID IS NULL AND perfilPersonaOrg.PersonaID = " + IBD.GuidParamValor("personaID") + " AND Identidad.ProyectoID = '11111111-1111-1111-1111-111111111111' ";
-
-            sqlSelectPerfilRedesSocDePersona = this.sqlSelectPerfilRedesSociales + " INNER JOIN Perfil ON Perfil.PerfilID = PerfilRedesSociales.PerfilID WHERE Perfil.PersonaID = " + IBD.GuidParamValor("personaID");
-
-            sqlSelectIdentidadesDeOrganizacion = this.sqlSelectIdentidad + " INNER JOIN Perfil ON Identidad.PerfilID = Perfil.PerfilID WHERE Perfil.OrganizacionID = " + IBD.GuidParamValor("OrganizacionID") + " AND Identidad.FechaBaja IS NULL UNION " + this.sqlSelectIdentidad + " INNER JOIN Perfil ON Identidad.PerfilID = Perfil.PerfilID INNER JOIN PerfilPersonaOrg ON Perfil.OrganizacionID = PerfilPersonaOrg.OrganizacionID WHERE Perfil.PersonaID IS NULL AND PerfilPersonaOrg.OrganizacionID = " + IBD.GuidParamValor("OrganizacionID") + " AND Identidad.FechaBaja IS NULL";
-
-            sqlSelectIdentidadesDeOrganizacionNoActivosTambien = this.sqlSelectIdentidad + " INNER JOIN Perfil ON Identidad.PerfilID = Perfil.PerfilID INNER JOIN PerfilPersonaOrg ON Identidad.PerfilID = PerfilPersonaOrg.PerfilID WHERE PerfilPersonaOrg.OrganizacionID = " + IBD.GuidParamValor("organizacionID") + " UNION " + this.sqlSelectIdentidad + " INNER JOIN Perfil ON Identidad.PerfilID = Perfil.PerfilID INNER JOIN PerfilOrganizacion ON Identidad.PerfilID = PerfilOrganizacion.PerfilID WHERE PerfilOrganizacion.OrganizacionID = " + IBD.GuidParamValor("organizacionID") + " ";
-
-            sqlSelectPerfilesDeOrganizacion = this.sqlSelectPerfil + " INNER JOIN PerfilPersonaOrg ON Perfil.PerfilID = PerfilPersonaOrg.PerfilID WHERE PerfilPersonaOrg.OrganizacionID = " + IBD.GuidParamValor("organizacionID") + " AND Perfil.Eliminado = 0 UNION ALL " + this.sqlSelectPerfil + " INNER JOIN PerfilOrganizacion ON Perfil.PerfilID = PerfilOrganizacion.PerfilID WHERE PerfilOrganizacion.OrganizacionID = " + IBD.GuidParamValor("organizacionID") + " AND Perfil.Eliminado = 0";
-
-            sqlSelectPerfilesDeOrganizacionNoActivosTambien = this.sqlSelectPerfil + " INNER JOIN PerfilPersonaOrg ON Perfil.PerfilID = PerfilPersonaOrg.PerfilID WHERE PerfilPersonaOrg.OrganizacionID = " + IBD.GuidParamValor("organizacionID") + " UNION ALL " + this.sqlSelectPerfil + " INNER JOIN PerfilOrganizacion ON Perfil.PerfilID = PerfilOrganizacion.PerfilID WHERE PerfilOrganizacion.OrganizacionID = " + IBD.GuidParamValor("organizacionID") + " ";
-
-            sqlSelectPerfilPersonaOrgDeOrganizacion = sqlSelectPerfilPersonaOrg.Replace("SELECT", "SELECT DISTINCT ") + " INNER JOIN Perfil ON PerfilPersonaOrg.PerfilID = Perfil.PerfilID INNER JOIN Identidad ON Perfil.PerfilID = Identidad.PerfilID WHERE (PerfilPersonaOrg.OrganizacionID = " + IBD.GuidParamValor("organizacionID") + ") AND Identidad.FechaBaja IS NULL AND Perfil.Eliminado = 0";
-
-            sqlSelectPerfilPersonaOrgDeOrganizacionNoActivosTambien = sqlSelectPerfilPersonaOrg.Replace("SELECT", "SELECT DISTINCT ") + " INNER JOIN Perfil ON PerfilPersonaOrg.PerfilID = Perfil.PerfilID INNER JOIN Identidad ON Perfil.PerfilID = Identidad.PerfilID WHERE (PerfilPersonaOrg.OrganizacionID = " + IBD.GuidParamValor("organizacionID") + ") ";
-
-            sqlSelectPerfilPersonaOrgDePersona = this.sqlSelectPerfilPersonaOrg + " WHERE PersonaID = " + IBD.GuidParamValor("personaID");
-
-            sqlSelectPerfilOrganizacionDePersona = this.sqlSelectPerfilOrganizacion.Replace("SELECT", "SELECT DISTINCT") + " INNER JOIN PerfilPersonaOrg ON PerfilPersonaOrg.OrganizacionID = PerfilOrganizacion.OrganizacionID WHERE PerfilPersonaOrg.PersonaID = " + IBD.GuidParamValor("personaID");
-
-            sqlSelectProfesorDePersona = this.sqlSelectProfesor + " INNER JOIN Perfil ON Perfil.PerfilID = Profesor.PerfilID WHERE Perfil.PersonaID = " + IBD.GuidParamValor("personaID");
-
-            sqlSelectPerfilPersonaDePersona = this.sqlSelectPerfilPersona + " WHERE PersonaID = " + IBD.GuidParamValor("personaID");
-
-            sqlSelectIdentidadesDePersona = this.sqlSelectIdentidad + " INNER JOIN Perfil ON Identidad.PerfilID = Perfil.PerfilID INNER JOIN PerfilPersona ON Identidad.PerfilID = PerfilPersona.PerfilID WHERE PerfilPersona.PersonaID = " + IBD.GuidParamValor("personaID") + " UNION " + this.sqlSelectIdentidad + " INNER JOIN Perfil ON Identidad.PerfilID = Perfil.PerfilID INNER JOIN PerfilPersonaOrg ON Identidad.PerfilID = PerfilPersonaOrg.PerfilID WHERE PerfilPersonaOrg.PersonaID = " + IBD.GuidParamValor("personaID") + " UNION " + this.sqlSelectIdentidad + " INNER JOIN PerfilOrganizacion ON Identidad.PerfilID = PerfilOrganizacion.PerfilID INNER JOIN PerfilPersonaOrg ON PerfilOrganizacion.OrganizacionID = PerfilPersonaOrg.OrganizacionID WHERE PerfilPersonaOrg.PersonaID = " + IBD.GuidParamValor("personaID");
-
-            this.sqlSelectCVIdentidadPersonaDeUsuario = "SELECT " + IBD.CargarGuid("CVIdentidadPersona.IdentidadID") + ", " + IBD.CargarGuid("CVIdentidadPersona.PersonaID") + ", " + IBD.CargarGuid("CVIdentidadPersona.CurriculumID") + " FROM CVIdentidadPersona INNER JOIN ProyectoUsuarioIdentidad ON CVIdentidadPersona.IdentidadID = ProyectoUsuarioIdentidad.IdentidadID WHERE (ProyectoUsuarioIdentidad.UsuarioID = " + IBD.GuidParamValor("UsuarioID") + ")";
-
-            this.sqlSelectIdentidadDePersonaDeMyGNOSS = this.sqlSelectIdentidad.Replace("SELECT", "SELECT DISTINCT") + " INNER JOIN Perfil ON Identidad.PerfilID = Perfil.PerfilID  WHERE (Perfil.PersonaID = " + IBD.GuidParamValor("PersonaID") + ") AND Perfil.OrganizacionID IS NULL and Perfil.PersonaID IS NOT NULL AND Identidad.ProyectoID = '" + IBD.ValorDeGuid(ProyectoAD.MetaProyecto) + "' ";
-
-            this.sqlSelectPerfilDePersona = this.sqlSelectPerfil + " INNER JOIN PerfilPersona ON Perfil.PerfilID = PerfilPersona.PerfilID WHERE PerfilPersona.PersonaID = " + IBD.GuidParamValor("PersonaID");
-
-            this.sqlSelectIdentidadPorID = this.sqlSelectIdentidad + " WHERE (Identidad.IdentidadID = " + IBD.GuidParamValor("IdentidadID") + ")";
-
-            this.sqlSelectIdentidadPorIDConMyGNOSS = this.sqlSelectIdentidad + " WHERE (Identidad.IdentidadID = " + IBD.GuidParamValor("IdentidadID") + ") UNION " + this.sqlSelectIdentidad + " WHERE Identidad.ProyectoID = " + IBD.GuidValor(ProyectoAD.MetaProyecto).ToString() + " AND Identidad.PerfilID in (SELECT PerfilID FROM Identidad WHERE IdentidadID = " + IBD.GuidParamValor("IdentidadID") + ")";
-
-            this.sqlSelectPerfilPorIdentidadID = this.sqlSelectPerfil + " INNER JOIN Identidad ON Perfil.PerfilID = Identidad.PerfilID WHERE (Identidad.IdentidadID = " + IBD.GuidParamValor("IdentidadID") + ")";
-
-            this.sqlSelectPerfilRedesSocPorIdentidadID = this.sqlSelectPerfilRedesSociales + " INNER JOIN Perfil ON Perfil.PerfilID = PerfilRedesSociales.PerfilID INNER JOIN Identidad ON Perfil.PerfilID = Identidad.PerfilID WHERE (Identidad.IdentidadID = " + IBD.GuidParamValor("IdentidadID") + ")";
-
-            this.sqlSelectPerfilPersonaOrgPorID = this.sqlSelectPerfilPersonaOrg + " INNER JOIN Identidad ON PerfilPersonaOrg.PerfilID = Identidad.PerfilID WHERE (Identidad.IdentidadID = " + IBD.GuidParamValor("IdentidadID") + ")";
-
-            this.sqlSelectPerfilOrganizacionPorID = this.sqlSelectPerfilOrganizacion + " INNER JOIN Identidad ON PerfilOrganizacion.PerfilID = Identidad.PerfilID WHERE (Identidad.IdentidadID = " + IBD.GuidParamValor("IdentidadID") + ")";
-
-            this.sqlSelectPerfilPersonaPorID = this.sqlSelectPerfilPersona + " INNER JOIN Identidad ON PerfilPersona.PerfilID = Identidad.PerfilID WHERE (Identidad.IdentidadID = " + IBD.GuidParamValor("IdentidadID") + ")";
-
-            this.sqlSelectProfesorPorID = this.sqlSelectProfesor + " INNER JOIN Identidad ON Profesor.PerfilID = Identidad.PerfilID WHERE (Identidad.IdentidadID = " + IBD.GuidParamValor("IdentidadID") + ")";
-
-            this.sqlSelectIdentidadesDePersonaEnProyecto = this.sqlSelectIdentidad + " INNER JOIN ProyectoUsuarioIdentidad ON Identidad.IdentidadID = ProyectoUsuarioIdentidad.IdentidadID INNER JOIN Perfil ON Perfil.PerfilID = Identidad.PerfilID WHERE (ProyectoUsuarioIdentidad.ProyectoID = " + IBD.GuidParamValor("proyectoID") + " AND Perfil.PersonaID = " + IBD.GuidParamValor("personaID") + " )";
-
-
-            this.sqlSelectIdentidadesDeProyecto = this.sqlSelectIdentidad + " WHERE Identidad.ProyectoID = " + IBD.GuidParamValor("proyectoID");
-
-            this.sqlSelectIdentidadesDePersonasNoCorporativasDeProyecto = this.sqlSelectIdentidad + " INNER JOIN ProyectoUsuarioIdentidad ON Identidad.IdentidadID = ProyectoUsuarioIdentidad.IdentidadID WHERE (ProyectoUsuarioIdentidad.ProyectoID = " + IBD.GuidParamValor("proyectoID") + ") AND (Identidad.Tipo < 2 OR Identidad.Tipo = 4) AND Identidad.FechaBaja IS NULL";
-
-            this.sqlSelectIdentidadesDePersonasNoCorporativasDeProyectoConNombreYApellidos = this.selectIdentidad + ", Persona.Nombre, Persona.Apellidos FROM Identidad INNER JOIN ProyectoUsuarioIdentidad ON Identidad.IdentidadID = ProyectoUsuarioIdentidad.IdentidadID INNER JOIN Perfil ON (Identidad.PerfilID=Perfil.PerfilID) INNER JOIN Persona ON (Perfil.PersonaID=Persona.PersonaID) WHERE (ProyectoUsuarioIdentidad.ProyectoID = " + IBD.GuidParamValor("proyectoID") + ") AND (Identidad.Tipo < 2 OR Identidad.Tipo = 4) AND Identidad.FechaBaja IS NULL";
-
-            sqlSelectPerfilesDeProyecto = this.sqlSelectPerfil.Replace("SELECT", "SELECT DISTINCT ") + " INNER JOIN Identidad ON Perfil.PerfilID = Identidad.PerfilID INNER JOIN ProyectoUsuarioIdentidad ON Identidad.IdentidadID = ProyectoUsuarioIdentidad.IdentidadID WHERE (ProyectoUsuarioIdentidad.ProyectoID = " + IBD.GuidParamValor("proyectoID") + ")";
-
-            sqlSelectPerfilesDePersonasNoCorporativasDeProyecto = this.sqlSelectPerfil + " INNER JOIN Identidad ON Perfil.PerfilID = Identidad.PerfilID INNER JOIN ProyectoUsuarioIdentidad ON Identidad.IdentidadID = ProyectoUsuarioIdentidad.IdentidadID WHERE (ProyectoUsuarioIdentidad.ProyectoID = " + IBD.GuidParamValor("proyectoID") + ") AND (Identidad.Tipo < 2 OR Identidad.Tipo = 4) AND Identidad.FechaBaja IS NULL";
-
-            sqlSelectPerfilPerfilRedesSocDeProyecto = this.sqlSelectPerfilRedesSociales.Replace("SELECT", "SELECT DISTINCT ") + " INNER JOIN Identidad ON PerfilRedesSociales.PerfilID = Identidad.PerfilID INNER JOIN ProyectoUsuarioIdentidad ON Identidad.IdentidadID = ProyectoUsuarioIdentidad.IdentidadID WHERE (ProyectoUsuarioIdentidad.ProyectoID = " + IBD.GuidParamValor("proyectoID") + ")";
-
-            this.sqlSelectIdentidadDeProyectoYUsuario = this.sqlSelectIdentidad + " INNER JOIN Identidad ON Identidad.IdentidadID = ProyectoUsuarioIdentidad.IdentidadID WHERE (ProyectoUsuarioIdentidad.ProyectoID = " + IBD.GuidParamValor("proyectoID") + ") AND (ProyectoUsuarioIdentidad.UsuarioID = " + IBD.GuidParamValor("usuarioID") + ")";
-
-            this.sqlSelectPerfilPersonaOrgDeProyecto = sqlSelectPerfilPersonaOrg.Replace("SELECT", "SELECT DISTINCT ") + " INNER JOIN Identidad ON PerfilPersonaOrg.PerfilID = Identidad.PerfilID WHERE (Identidad.ProyectoID = " + IBD.GuidParamValor("proyectoID") + ")";
-
-            this.sqlSelectPerfilPersonaOrgDePersonasNoCorporativasDeProyecto = sqlSelectPerfilPersonaOrg.Replace("SELECT", "SELECT DISTINCT ") + " INNER JOIN Identidad ON PerfilPersonaOrg.PerfilID = Identidad.PerfilID INNER JOIN Perfil ON Perfil.PerfilID = Identidad.PerfilID WHERE (Identidad.ProyectoID = " + IBD.GuidParamValor("proyectoID") + ") AND (Identidad.Tipo < 2 OR Identidad.Tipo = 4)";
-
-            this.sqlSelectPerfilPersonaDeProyecto = "SELECT DISTINCT " + IBD.CargarGuid("PerfilPersona.PersonaID") + ", " + IBD.CargarGuid("PerfilPersona.PerfilID") + " FROM PerfilPersona INNER JOIN Identidad ON PerfilPersona.PerfilID = Identidad.PerfilID WHERE (Identidad.ProyectoID = " + IBD.GuidParamValor("proyectoID") + ")  AND Identidad.FechaBaja is null";
-
-            sqlSelectPerfilOrganizacionDeProyecto = "SELECT DISTINCT " + IBD.CargarGuid("PerfilOrganizacion.OrganizacionID") + ", " + IBD.CargarGuid("PerfilOrganizacion.PerfilID") + " FROM PerfilOrganizacion INNER JOIN Identidad ON PerfilOrganizacion.PerfilID = Identidad.PerfilID WHERE (Identidad.ProyectoID = " + IBD.GuidParamValor("proyectoID") + ")  AND Identidad.FechaBaja IS NULL";
-
-            sqlSelectPerfilesDeUsuario = sqlSelectPerfil + " INNER JOIN PerfilPersona ON Perfil.PerfilID = PerfilPersona.PerfilID INNER JOIN Persona ON PerfilPersona.PersonaID = Persona.PersonaID WHERE Persona.UsuarioID = " + IBD.GuidParamValor("usuarioID") + " AND Perfil.Eliminado = 0 UNION " + this.sqlSelectPerfil + " INNER JOIN PerfilPersonaOrg ON Perfil.PerfilID = PerfilPersonaOrg.PerfilID INNER JOIN Persona ON PerfilPersonaOrg.PersonaID = Persona.PersonaID WHERE Persona.UsuarioID = " + IBD.GuidParamValor("usuarioID") + " AND Perfil.Eliminado = 0";
-
-            sqlSelectPerfilPersonaDeUsuario = sqlSelectPerfilPersona + " INNER JOIN Persona ON PerfilPersona.PersonaID = Persona.PersonaID WHERE Persona.UsuarioID = " + IBD.GuidParamValor("usuarioID");
-
-            sqlSelectPerfilPersonaOrgDeUsuario = sqlSelectPerfilPersonaOrg + " INNER JOIN Persona ON PerfilPersonaOrg.PersonaID = Persona.PersonaID WHERE Persona.UsuarioID = " + IBD.GuidParamValor("usuarioID");
-
-            sqlSelectIdentidadesDeUsuario = sqlSelectIdentidad + " INNER JOIN Perfil ON Perfil.PerfilID = Identidad.PerfilID INNER JOIN PerfilPersona ON Perfilpersona.PerfilID = Perfil.PerfilID INNER JOIN Persona ON PerfilPersona.PersonaID = Persona.PersonaID WHERE Persona.UsuarioID = " + IBD.GuidParamValor("usuarioID") + " UNION " + sqlSelectIdentidad + " INNER JOIN Perfil ON Perfil.PerfilID = Identidad.PerfilID INNER JOIN PerfilPersonaOrg ON PerfilPersonaOrg.PerfilID = Perfil.PerfilID INNER JOIN Persona ON PerfilPersonaOrg.PersonaID = Persona.PersonaID WHERE Persona.UsuarioID = " + IBD.GuidParamValor("usuarioID");
-
-            this.sqlSelectExistePerfilPersonal = sqlSelectPerfilPersona + " WHERE PerfilPersona.PersonaID = " + IBD.GuidParamValor("personaID");
-
-            this.sqlSelectExistePerfilPersonaOrg = sqlSelectPerfilPersonaOrg + " WHERE PerfilPersonaOrg.PersonaID = " + IBD.GuidParamValor("personaID") + " AND PerfilPersonaOrg.OrganizacionID = " + IBD.GuidParamValor("organizacionID");
-
-            this.sqlSelectPerfilPorPerfilID = sqlSelectPerfil + " WHERE Perfil.PerfilID = " + IBD.GuidParamValor("perfilID");
-
-            this.sqlSelectDatoExtraProyectoOpcionIdentidadPorIdentidadesID = "SELECT " + IBD.CargarGuid("DatoExtraProyectoOpcionIdentidad.OrganizacionID") + "," + IBD.CargarGuid("DatoExtraProyectoOpcionIdentidad.ProyectoID") + "," + IBD.CargarGuid("DatoExtraProyectoOpcionIdentidad.DatoExtraID") + "," + IBD.CargarGuid("DatoExtraProyectoOpcionIdentidad.OpcionID") + "," + IBD.CargarGuid("DatoExtraProyectoOpcionIdentidad.IdentidadID") + " FROM DatoExtraProyectoOpcionIdentidad ";
-
-            this.sqlSelectDatoExtraProyectoVirtuosoIdentidadPorIdentidadesID = "SELECT " + IBD.CargarGuid("DatoExtraProyectoVirtuosoIdentidad.OrganizacionID") + "," + IBD.CargarGuid("DatoExtraProyectoVirtuosoIdentidad.ProyectoID") + "," + IBD.CargarGuid("DatoExtraProyectoVirtuosoIdentidad.DatoExtraID") + ", DatoExtraProyectoVirtuosoIdentidad.Opcion," + IBD.CargarGuid("DatoExtraProyectoVirtuosoIdentidad.IdentidadID") + " FROM DatoExtraProyectoVirtuosoIdentidad ";
-
-            this.sqlSelectDatoExtraEcosistemaOpcionPerfilPorIdentidadesID = "SELECT " + IBD.CargarGuid("DatoExtraEcosistemaOpcionPerfil.DatoExtraID") + "," + IBD.CargarGuid("DatoExtraEcosistemaOpcionPerfil.OpcionID") + "," + IBD.CargarGuid("DatoExtraEcosistemaOpcionPerfil.PerfilID") + " FROM DatoExtraEcosistemaOpcionPerfil INNER JOIN Identidad on DatoExtraEcosistemaOpcionPerfil.PerfilID=Identidad.PerfilID ";
-
-            this.sqlSelectDatoExtraEcosistemaVirtuosoPerfilPorIdentidadesID = "SELECT " + IBD.CargarGuid("DatoExtraEcosistemaVirtuosoPerfil.DatoExtraID") + ", DatoExtraEcosistemaVirtuosoPerfil.Opcion," + IBD.CargarGuid("DatoExtraEcosistemaVirtuosoPerfil.PerfilID") + " FROM DatoExtraEcosistemaVirtuosoPerfil INNER JOIN Identidad on DatoExtraEcosistemaVirtuosoPerfil.PerfilID=Identidad.PerfilID ";
-
-            this.sqlSelectIdentidadesPorPerfilID = sqlSelectIdentidad + " WHERE Identidad.PerfilID = " + IBD.GuidParamValor("perfilID");
-
-            this.sqlSelectPerfilDeUsuarioActivos = this.sqlSelectPerfil + " WHERE Perfil.PersonaID = " + IBD.GuidParamValor("personaID") + " AND Perfil.Eliminado = 0 UNION " + this.sqlSelectPerfil + " INNER JOIN PerfilPersonaOrg on Perfil.OrganizacionID = PerfilPersonaOrg.OrganizacionID WHERE Perfil.PersonaID IS NULL AND perfilPersonaOrg.PersonaID = " + IBD.GuidParamValor("personaID") + " AND Eliminado=0";
-
-            this.sqlSelectPerfilRedesSocDeUsuarioActivos = this.sqlSelectPerfilRedesSociales + " INNER JOIN Perfil ON Perfil.PerfilID = PerfilRedesSociales.PerfilID WHERE Perfil.PersonaID = " + IBD.GuidParamValor("personaID") + " AND Perfil.Eliminado = 0";
-
-            this.sqlSelectIdentidadesDePersonaActivas = this.sqlSelectIdentidad + " INNER JOIN Perfil ON Identidad.PerfilID = Perfil.PerfilID WHERE Perfil.PersonaID = " + IBD.GuidParamValor("personaID") + " AND Perfil.Eliminado = 0 AND Identidad.FechaBaja IS NULL UNION " + this.sqlSelectIdentidad + " INNER JOIN Perfil ON Identidad.PerfilID = Perfil.PerfilID INNER JOIN PerfilPersonaOrg ON Perfil.OrganizacionID = PerfilPersonaOrg.OrganizacionID WHERE Perfil.PersonaID IS NULL AND PerfilPersonaOrg.PersonaID = " + IBD.GuidParamValor("personaID") + " AND Perfil.Eliminado = 0 AND Identidad.FechaBaja IS NULL";
-
-            this.sqlSelectPerfilPersonaDePersonaActivos = this.sqlSelectPerfilPersona + " INNER JOIN Perfil ON Perfil.PerfilID = PerfilPersona.PerfilID WHERE Perfil.PersonaID = " + IBD.GuidParamValor("personaID") + " AND Perfil.Eliminado = 0";
-
-            this.sqlSelectPerfilPersonaOrgDePersonaActivos = this.sqlSelectPerfilPersonaOrg + " INNER JOIN Perfil ON Perfil.PerfilID = PerfilPersonaOrg.PerfilID WHERE Perfil.PersonaID = " + IBD.GuidParamValor("personaID") + " AND Perfil.Eliminado = 0";
-
-            this.sqlSelectPerfilOrganizacionDePersonaActivos = this.sqlSelectPerfilOrganizacion.Replace("SELECT", "SELECT DISTINCT") + " INNER JOIN PerfilPersonaOrg ON PerfilPersonaOrg.OrganizacionID = PerfilOrganizacion.OrganizacionID INNER JOIN Perfil ON Perfil.PerfilID = PerfilOrganizacion.PerfilID WHERE PerfilPersonaOrg.PersonaID = " + IBD.GuidParamValor("personaID") + " AND Perfil.Eliminado = 0";
-
-            sqlSelectProfesorDePersonaActivos = this.sqlSelectProfesor + " INNER JOIN Perfil ON Perfil.PerfilID = Profesor.PerfilID WHERE Perfil.PersonaID = " + IBD.GuidParamValor("personaID") + " AND Perfil.Eliminado = 0";
-
-            this.sqlSelectIdentidadPorIDActiva = this.sqlSelectIdentidad + " INNER JOIN Identidad identClave on Identidad.PerfilID = identClave.PerfilID INNER JOIN Identidad identidadMyGnoss on identClave.PerfilID = identidadMyGnoss.PerfilID WHERE Identidad.FechaBaja IS NULL AND identidadMyGnoss.ProyectoID = " + IBD.GuidValor(ProyectoAD.MetaProyecto).ToString() + " AND identClave.IdentidadID = " + IBD.GuidParamValor("IdentidadID") + " AND (Identidad.IdentidadID = identClave.IdentidadID OR Identidad.IdentidadID = identidadMyGnoss.IdentidadID)";
-
-            this.sqlSelectPerfilPorIdentidadIDActivo = this.sqlSelectPerfil + " INNER JOIN Identidad ON Perfil.PerfilID = Identidad.PerfilID WHERE (Identidad.IdentidadID = " + IBD.GuidParamValor("IdentidadID") + ") AND Identidad.FechaBaja IS NULL AND Perfil.Eliminado = 0";
-
-            this.sqlSelectPerfilRedesSocPorIdentidadIDActivo = this.sqlSelectPerfilRedesSociales + " INNER JOIN Perfil ON Perfil.PerfilID = PerfilRedesSociales.PerfilID INNER JOIN Identidad ON Perfil.PerfilID = Identidad.PerfilID WHERE (Identidad.IdentidadID = " + IBD.GuidParamValor("IdentidadID") + ") AND Identidad.FechaBaja IS NULL AND Perfil.Eliminado = 0";
-
-            this.sqlSelectPerfilPersonaPorIDActiva = this.sqlSelectPerfilPersona + " INNER JOIN Identidad ON PerfilPersona.PerfilID = Identidad.PerfilID INNER JOIN Perfil ON Perfil.PerfilID = PerfilPersona.PerfilID WHERE (Identidad.IdentidadID = " + IBD.GuidParamValor("IdentidadID") + ") AND Perfil.Eliminado = 0 AND Identidad.FechaBaja IS NULL";
-
-            this.sqlSelectPerfilPersonaOrgPorIDActiva = this.sqlSelectPerfilPersonaOrg + " INNER JOIN Identidad ON PerfilPersonaOrg.PerfilID = Identidad.PerfilID INNER JOIN Perfil ON Perfil.PerfilID = PerfilPersonaOrg.PerfilID WHERE (Identidad.IdentidadID = " + IBD.GuidParamValor("IdentidadID") + ") AND Perfil.Eliminado = 0 AND Identidad.FechaBaja IS NULL";
-
-            this.sqlSelectPerfilOrganizacionPorIDActiva = this.sqlSelectPerfilOrganizacion + " INNER JOIN Identidad ON PerfilOrganizacion.PerfilID = Identidad.PerfilID INNER JOIN Perfil ON Perfil.PerfilID = PerfilOrganizacion.PerfilID WHERE (Identidad.IdentidadID = " + IBD.GuidParamValor("IdentidadID") + ") AND Perfil.Eliminado = 0 AND Identidad.FechaBaja IS NULL";
-
-            this.sqlSelectProfesorPorIDActiva = this.sqlSelectProfesor + " INNER JOIN Identidad ON Profesor.PerfilID = Identidad.PerfilID INNER JOIN Perfil ON Perfil.PerfilID = Profesor.PerfilID WHERE (Identidad.IdentidadID = " + IBD.GuidParamValor("IdentidadID") + ") AND Perfil.Eliminado = 0 AND Identidad.FechaBaja IS NULL";
-
-            this.sqlSelectIdentidadesDepersonasConOrgDeProy = this.sqlSelectIdentidad + " INNER JOIN PerfilPersonaOrg ON PerfilPersonaOrg.PerfilID = Identidad.PerfilID WHERE PerfilPersonaOrg.OrganizacionID = " + IBD.GuidParamValor("OrganizacionID") + " AND Identidad.OrganizacionID = " + IBD.GuidParamValor("OrganizacionProyectoID") + " AND Identidad.ProyectoID = " + IBD.GuidParamValor("ProyectoID") + " AND Identidad.FechaBaja IS NULL AND Identidad.FechaBaja IS NULL ";
-
-            this.sqlSelectIdentidadesDepersonasConOrgDeProyConNombreYApellidos = this.selectIdentidad + ", Persona.Nombre, Persona.Apellidos FROM Identidad INNER JOIN PerfilPersonaOrg ON PerfilPersonaOrg.PerfilID = Identidad.PerfilID INNER JOIN Persona ON (PerfilPersonaOrg.PersonaID=Persona.PersonaID) WHERE PerfilPersonaOrg.OrganizacionID = " + IBD.GuidParamValor("OrganizacionID") + " AND Identidad.OrganizacionID = " + IBD.GuidParamValor("OrganizacionProyectoID") + " AND Identidad.ProyectoID = " + IBD.GuidParamValor("ProyectoID") + " AND Identidad.FechaBaja IS NULL AND Identidad.FechaBaja IS NULL ";
-
-            this.sqlSelectPerfilDepersonasConOrgDeProy = this.sqlSelectPerfil + " INNER JOIN Identidad ON Perfil.PerfilID = Identidad.PerfilID WHERE Perfil.OrganizacionID = " + IBD.GuidParamValor("OrganizacionID") + " AND Identidad.OrganizacionID = " + IBD.GuidParamValor("OrganizacionProyectoID") + " AND Identidad.ProyectoID = " + IBD.GuidParamValor("ProyectoID") + " AND Identidad.Tipo != 3 AND Identidad.FechaBaja IS NULL AND Identidad.FechaBaja IS NULL ";
-
-            this.sqlSelectPerfilPersonaOrgDepersonasConOrgDeProy = this.sqlSelectPerfilPersonaOrg + " INNER JOIN Identidad ON PerfilPersonaOrg.PerfilID = Identidad.PerfilID WHERE PerfilPersonaOrg.OrganizacionID = " + IBD.GuidParamValor("OrganizacionID") + " AND Identidad.OrganizacionID = " + IBD.GuidParamValor("OrganizacionProyectoID") + " AND Identidad.ProyectoID = " + IBD.GuidParamValor("ProyectoID") + " AND Identidad.FechaBaja IS NULL AND Identidad.FechaBaja IS NULL ";
-
-            this.sqlSelectIdentidadesDeOrganizacionesEnProyecto = this.sqlSelectIdentidad + " INNER JOIN PerfilOrganizacion ON PerfilOrganizacion.PerfilID = Identidad.PerfilID INNER JOIN OrganizacionParticipaProy ON OrganizacionParticipaProy.OrganizacionID = PerfilOrganizacion.OrganizacionID WHERE OrganizacionParticipaProy.ProyectoID = " + IBD.GuidParamValor("proyectoID");
-
-            this.sqlSelectPerfilesDeOrganizacionesDeProyecto = this.sqlSelectPerfil + " INNER JOIN PerfilOrganizacion ON PerfilOrganizacion.PerfilID = Perfil.PerfilID WHERE PerfilOrganizacion.OrganizacionID = " + IBD.GuidParamValor("organizacionID");
-
-            this.sqlSelectPerfilOrganizacionDeOrganizacionesDeProyecto = this.sqlSelectPerfilOrganizacion + " WHERE PerfilOrganizacion.OrganizacionID = " + IBD.GuidParamValor("organizacionID");
-
-            this.sqlSelectIdentidadesDeOrganizacionAdmin = this.sqlSelectIdentidad.Replace("SELECT", "SELECT DISTINCT ") + " INNER JOIN Perfil ON Identidad.PerfilID = Perfil.PerfilID INNER JOIN PerfilPersonaOrg ON Perfil.PerfilID = PerfilPersonaOrg.PerfilID INNER JOIN Persona ON PerfilPersonaOrg.PersonaID = Persona.PersonaID  WHERE PerfilPersonaOrg.OrganizacionID = " + IBD.GuidParamValor("organizacionID") + " AND Identidad.FechaBaja IS NULL AND Perfil.Eliminado = 0 AND Identidad.ProyectoID = " + IBD.GuidValor(ProyectoAD.MetaProyecto).ToString() + " AND Persona.UsuarioID IN (Select Distinct usuarioID from AdministradorOrganizacion where OrganizacionID = " + IBD.GuidParamValor("organizacionID") + " AND Tipo =" + (short)TipoAdministradoresOrganizacion.Administrador + ")";
-
-            this.sqlSelectPerfilesDeOrganizacionAdmin = this.sqlSelectPerfil.Replace("SELECT", "SELECT DISTINCT ") + " INNER JOIN PerfilPersonaOrg ON Perfil.PerfilID = PerfilPersonaOrg.PerfilID INNER JOIN Persona ON PerfilPersonaOrg.PersonaID = Persona.PersonaID WHERE PerfilPersonaOrg.OrganizacionID = " + IBD.GuidParamValor("organizacionID") + " AND Perfil.Eliminado = 0 AND Persona.UsuarioID IN (Select Distinct usuarioID from AdministradorOrganizacion where OrganizacionID = " + IBD.GuidParamValor("organizacionID") + " AND Tipo =" + (short)TipoAdministradoresOrganizacion.Administrador + ")";
-
-            this.sqlSelectPerfilPersonaOrgDeOrganizacionAdmin = this.sqlSelectPerfilPersonaOrg.Replace("SELECT", "SELECT DISTINCT ") + " INNER JOIN Perfil ON Perfil.PerfilID = PerfilPersonaOrg.PerfilID INNER JOIN Persona ON PerfilPersonaOrg.PersonaID = Persona.PersonaID WHERE PerfilPersonaOrg.OrganizacionID = " + IBD.GuidParamValor("organizacionID") + " AND Perfil.Eliminado = 0 AND Persona.UsuarioID IN (Select Distinct usuarioID from AdministradorOrganizacion where OrganizacionID = " + IBD.GuidParamValor("organizacionID") + " AND Tipo =" + (short)TipoAdministradoresOrganizacion.Administrador + ")";
-
-            this.sqlUpdateNumeroConexionesProyecto = "UPDATE Identidad Set NumConnexiones = NumConnexiones + 1 WHERE IdentidadID = " + IBD.ToParam("IdentidadID");
-
-            this.sqlSelectHaParticipadoConPerfilEnComunidad = "SELECT " + IBD.CargarGuid("Identidad.IdentidadID") + " FROM Identidad WHERE Identidad.PerfilID = " + IBD.GuidParamValor("perfilID") + " AND Identidad.ProyectoID = " + IBD.GuidParamValor("proyectoID") + " AND Identidad.FechaBaja IS NOT NULL";
-
-            this.sqlSelectEstaIdentidadExpulsadaDeproyecto = "SELECT " + IBD.CargarGuid("Identidad.IdentidadID") + " FROM Identidad WHERE Identidad.PerfilID = " + IBD.GuidParamValor("perfilID") + " AND Identidad.ProyectoID = " + IBD.GuidParamValor("proyectoID") + " AND Identidad.FechaBaja IS NOT NULL AND FechaExpulsion IS NOT NULL";
-
-            this.sqlSelectParticipaPerfilEnComunidad = "SELECT " + IBD.CargarGuid("Identidad.IdentidadID") + " FROM Identidad WHERE Identidad.PerfilID = " + IBD.GuidParamValor("perfilID") + " AND Identidad.ProyectoID = " + IBD.GuidParamValor("proyectoID") + " AND Identidad.FechaBaja IS NULL";
-
-            this.sqlSelectIdentidadContadoresRecursos = selectIdentidadContadoresRecursos + " FROM IdentidadContadoresRecursos";
-
-            this.sqlSelectParticipaIdentidadEnComunidad = "SELECT " + IBD.CargarGuid("IdentidadProyecto.IdentidadID") + " FROM Identidad IdentidadProyecto INNER JOIN Identidad IdentidadPerfil ON IdentidadPerfil.PerfilID = IdentidadProyecto.PerfilID WHERE IdentidadPerfil.IdentidadID = " + IBD.GuidParamValor("identidadID") + " AND IdentidadProyecto.ProyectoID = " + IBD.GuidParamValor("proyectoID") + " AND IdentidadProyecto.FechaBaja IS NULL";
-
-            #endregion
-
-            #region Updates
-
-            sqlUpdatePerfilCambioNombrePersona = "UPDATE Perfil SET NombrePerfil = (SELECT CASE WHEN (Persona.Idioma = 'es' AND Persona.Sexo = 'H') THEN 'Profesor · ' WHEN (Persona.Idioma = 'es' AND Persona.Sexo = 'M') THEN 'Profesora · ' ELSE 'Teacher . ' END + " + IBD.ToParam("nombreCompletoPersona") + " FROM Persona WHERE Persona.PersonaID = Perfil.PersonaID AND Perfil.PerfilID IN (Select PerfilID FROM Profesor) UNION ALL SELECT " + IBD.ToParam("nombreCompletoPersona") + " WHERE Perfil.PerfilID NOT IN (Select PerfilID FROM Profesor)) WHERE Perfil.PersonaID = " + IBD.GuidParamValor("personaID");
-
-            sqlUpdateIdentidadCambioNombrePersona = "UPDATE Identidad SET NombreCortoIdentidad = (SELECT CASE WHEN (Persona.Idioma = 'es' AND Persona.Sexo = 'H') THEN 'Profesor · ' WHEN (Persona.Idioma = 'es' AND Persona.Sexo = 'M') THEN 'Profesora · ' ELSE 'Teacher · ' END + " + IBD.ToParam("nombrePersona") + " FROM Persona INNER JOIN Perfil ON Perfil.PersonaID = Persona.PersonaID WHERE Perfil.PerfilID = Identidad.PerfilID AND Perfil.PerfilID IN (Select PerfilID FROM Profesor) UNION ALL SELECT " + IBD.ToParam("nombrePersona") + " WHERE Identidad.PerfilID NOT IN (Select PerfilID FROM Profesor)) WHERE Identidad.PerfilID IN (SELECT Perfil.PerfilID FROM Perfil WHERE Perfil.PersonaID = " + IBD.GuidParamValor("personaID") + ") AND (Identidad.Tipo < 2 OR Identidad.Tipo = 4)";
-
-            sqlUpdatePerfilCambioNombreOrganizacion = "UPDATE Perfil SET NombrePerfil=" + IBD.ToParam("nombrePerfil") + ", NombreOrganizacion = " + IBD.ToParam("nombreOrganizacion") + " WHERE Perfil.PerfilID IN (Select Perfil.PerfilID FROM Perfil INNER JOIN Identidad ON (Perfil.PerfilID=Identidad.PerfilID) WHERE Perfil.OrganizacionID = " + IBD.GuidParamValor("organizacionID") + " AND Identidad.Tipo = " + (short)TiposIdentidad.Organizacion + ")";
-
-            sqlUpdatePerfilPersOrgCambioNombreOrganizacion = "UPDATE Perfil SET NombreOrganizacion = " + IBD.ToParam("nombreOrganizacion") + " WHERE Perfil.OrganizacionID = " + IBD.GuidParamValor("organizacionID");
-
-            sqlUpdateIdentidadCambioNombreOrganizacion = "UPDATE Identidad SET NombreCortoIdentidad = " + IBD.ToParam("nombreOrganizacion") + " WHERE Identidad.PerfilID IN (SELECT Perfil.PerfilID FROM Perfil WHERE Perfil.OrganizacionID = " + IBD.GuidParamValor("organizacionID") + ") AND Identidad.Tipo >= " + (short)TiposIdentidad.ProfesionalCorporativo + " AND Identidad.Tipo < 4";
-
-            #endregion
-
-            #region DataAdapter
-
-            #region Perfil
-
-            this.sqlPerfilInsert = IBD.ReplaceParam("INSERT INTO Perfil (PerfilID, NombrePerfil, NombreOrganizacion, Eliminado, NombreCortoOrg, NombreCortoUsu, OrganizacionID, PersonaID, TieneTwitter, UsuarioTwitter, TokenTwitter, TokenSecretoTwitter, CaducidadResSusc, CurriculumID) VALUES (" + IBD.GuidParamColumnaTabla("PerfilID") + ", @NombrePerfil, @NombreOrganizacion, @Eliminado, @NombreCortoOrg, @NombreCortoUsu, " + IBD.GuidParamColumnaTabla("OrganizacionID") + ", " + IBD.GuidParamColumnaTabla("PersonaID") + ", @TieneTwitter, @UsuarioTwitter, @TokenTwitter, @TokenSecretoTwitter, @CaducidadResSusc, @CurriculumID)");
-
-            this.sqlPerfilDelete = IBD.ReplaceParam("DELETE FROM Perfil WHERE (PerfilID = " + IBD.GuidParamColumnaTabla("O_PerfilID") + ")  AND (OrganizacionID = " + IBD.GuidParamColumnaTabla("O_OrganizacionID") + " OR " + IBD.GuidParamColumnaTabla("O_OrganizacionID") + " IS NULL AND OrganizacionID IS NULL) AND (PersonaID = " + IBD.GuidParamColumnaTabla("O_PersonaID") + " OR " + IBD.GuidParamColumnaTabla("O_PersonaID") + " IS NULL AND PersonaID IS NULL)");
-
-            this.sqlPerfilModify = IBD.ReplaceParam("UPDATE Perfil SET PerfilID = " + IBD.GuidParamColumnaTabla("PerfilID") + ", NombrePerfil = @NombrePerfil, NombreOrganizacion = @NombreOrganizacion, Eliminado = @Eliminado, NombreCortoOrg = @NombreCortoOrg, NombreCortoUsu = @NombreCortoUsu, OrganizacionID = " + IBD.GuidParamColumnaTabla("OrganizacionID") + ", PersonaID = " + IBD.GuidParamColumnaTabla("PersonaID") + ", TieneTwitter = @TieneTwitter, UsuarioTwitter = @UsuarioTwitter, TokenTwitter = @TokenTwitter, TokenSecretoTwitter = @TokenSecretoTwitter, CaducidadResSusc = @CaducidadResSusc, CurriculumID = @CurriculumID WHERE (PerfilID = " + IBD.GuidParamColumnaTabla("O_PerfilID") + ") AND (OrganizacionID = " + IBD.GuidParamColumnaTabla("O_OrganizacionID") + " OR " + IBD.GuidParamColumnaTabla("O_OrganizacionID") + " IS NULL AND OrganizacionID IS NULL) AND (PersonaID = " + IBD.GuidParamColumnaTabla("O_PersonaID") + " OR " + IBD.GuidParamColumnaTabla("O_PersonaID") + " IS NULL AND PersonaID IS NULL)");
-
-            #endregion
-
-            #region PerfilRedesSociales
-
-            this.sqlPerfilRedesSocialesInsert = IBD.ReplaceParam("INSERT INTO PerfilRedesSociales (PerfilID, NombreRedSocial, urlUsuario, Usuario, Token, TokenSecreto) VALUES (" + IBD.GuidParamColumnaTabla("PerfilID") + ", @NombreRedSocial, @urlUsuario, @Usuario, @Token, @TokenSecreto)");
-
-            this.sqlPerfilRedesSocialesDelete = IBD.ReplaceParam("DELETE FROM PerfilRedesSociales WHERE (PerfilID = " + IBD.GuidParamColumnaTabla("O_PerfilID") + ") AND (NombreRedSocial = @O_NombreRedSocial)");
-
-            this.sqlPerfilRedesSocialesModify = IBD.ReplaceParam("UPDATE PerfilRedesSociales SET PerfilID = " + IBD.GuidParamColumnaTabla("PerfilID") + ", NombreRedSocial = @NombreRedSocial, urlUsuario = @urlUsuario, Usuario = @Usuario, Token = @Token, TokenSecreto = @TokenSecreto WHERE (PerfilID = " + IBD.GuidParamColumnaTabla("O_PerfilID") + ") AND (NombreRedSocial = @O_NombreRedSocial)");
-
-            #endregion
-
-            #region PerfilGadget
-
-            this.sqlPerfilGadgetInsert = IBD.ReplaceParam("INSERT INTO PerfilGadget (PerfilID, GadgetID, Titulo, Contenido, Orden) VALUES (" + IBD.GuidParamColumnaTabla("PerfilID") + ", " + IBD.GuidParamColumnaTabla("GadgetID") + ", @Titulo, @Contenido, @Orden)");
-
-            this.sqlPerfilGadgetDelete = IBD.ReplaceParam("DELETE FROM PerfilGadget WHERE (PerfilID = " + IBD.GuidParamColumnaTabla("O_PerfilID") + ") AND (GadgetID = " + IBD.GuidParamColumnaTabla("O_GadgetID") + ")");
-
-            this.sqlPerfilGadgetModify = IBD.ReplaceParam("UPDATE PerfilGadget SET PerfilID = " + IBD.GuidParamColumnaTabla("PerfilID") + ", GadgetID = " + IBD.GuidParamColumnaTabla("GadgetID") + ", Titulo = @Titulo, Contenido = @Contenido, Orden = @Orden WHERE (PerfilID = " + IBD.GuidParamColumnaTabla("O_PerfilID") + ") AND (GadgetID = " + IBD.GuidParamColumnaTabla("O_GadgetID") + ")");
-
-            #endregion
-
-            #region PerfilPersonaOrg
-
-            this.sqlPerfilPersonaOrgInsert = IBD.ReplaceParam("INSERT INTO PerfilPersonaOrg (PersonaID, OrganizacionID, PerfilID) VALUES (" + IBD.GuidParamColumnaTabla("PersonaID") + ", " + IBD.GuidParamColumnaTabla("OrganizacionID") + ", " + IBD.GuidParamColumnaTabla("PerfilID") + ")");
-
-            this.sqlPerfilPersonaOrgDelete = IBD.ReplaceParam("DELETE FROM PerfilPersonaOrg WHERE (PersonaID = " + IBD.GuidParamColumnaTabla("O_PersonaID") + ") AND (OrganizacionID = " + IBD.GuidParamColumnaTabla("O_OrganizacionID") + ") AND (PerfilID = " + IBD.GuidParamColumnaTabla("O_PerfilID") + ")");
-
-            this.sqlPerfilPersonaOrgModify = IBD.ReplaceParam("UPDATE PerfilPersonaOrg SET PersonaID = " + IBD.GuidParamColumnaTabla("PersonaID") + ", OrganizacionID = " + IBD.GuidParamColumnaTabla("OrganizacionID") + ", PerfilID = " + IBD.GuidParamColumnaTabla("PerfilID") + " WHERE (PersonaID = " + IBD.GuidParamColumnaTabla("O_PersonaID") + ") AND (OrganizacionID = " + IBD.GuidParamColumnaTabla("O_OrganizacionID") + ") AND (PerfilID = " + IBD.GuidParamColumnaTabla("O_PerfilID") + ")");
-
-            #endregion
-
-            #region PerfilOrganizacion
-
-            this.sqlPerfilOrganizacionInsert = IBD.ReplaceParam("INSERT INTO PerfilOrganizacion (OrganizacionID, PerfilID) VALUES (" + IBD.GuidParamColumnaTabla("OrganizacionID") + ", " + IBD.GuidParamColumnaTabla("PerfilID") + ")");
-
-            this.sqlPerfilOrganizacionDelete = IBD.ReplaceParam("DELETE FROM PerfilOrganizacion WHERE (OrganizacionID = " + IBD.GuidParamColumnaTabla("O_OrganizacionID") + ") AND (PerfilID = " + IBD.GuidParamColumnaTabla("O_PerfilID") + ")");
-
-            this.sqlPerfilOrganizacionModify = IBD.ReplaceParam("UPDATE PerfilOrganizacion SET OrganizacionID = " + IBD.GuidParamColumnaTabla("OrganizacionID") + ", PerfilID = " + IBD.GuidParamColumnaTabla("PerfilID") + " WHERE (OrganizacionID = " + IBD.GuidParamColumnaTabla("O_OrganizacionID") + ") AND (PerfilID = " + IBD.GuidParamColumnaTabla("O_PerfilID") + ")");
-
-            #endregion
-
-            #region PerfilPersona
-
-            this.sqlPerfilPersonaInsert = IBD.ReplaceParam("INSERT INTO PerfilPersona (PersonaID, PerfilID) VALUES (" + IBD.GuidParamColumnaTabla("PersonaID") + ", " + IBD.GuidParamColumnaTabla("PerfilID") + ")");
-
-            this.sqlPerfilPersonaDelete = IBD.ReplaceParam("DELETE FROM PerfilPersona WHERE (PersonaID = " + IBD.GuidParamColumnaTabla("O_PersonaID") + ") AND (PerfilID = " + IBD.GuidParamColumnaTabla("O_PerfilID") + ")");
-
-            this.sqlPerfilPersonaModify = IBD.ReplaceParam("UPDATE PerfilPersona SET PersonaID = " + IBD.GuidParamColumnaTabla("PersonaID") + ", PerfilID = " + IBD.GuidParamColumnaTabla("PerfilID") + " WHERE (PersonaID = " + IBD.GuidParamColumnaTabla("O_PersonaID") + ") AND (PerfilID = " + IBD.GuidParamColumnaTabla("O_PerfilID") + ")");
-
-            #endregion
-
-            #region Identidad
-
-            this.sqlIdentidadInsert = IBD.ReplaceParam("INSERT INTO Identidad (IdentidadID, PerfilID, OrganizacionID, ProyectoID, CurriculumID, FechaAlta, FechaBaja, NumConnexiones, Tipo, NombreCortoIdentidad, FechaExpulsion, RecibirNewsLetter,Rank,MostrarBienvenida,DiasUltActualizacion,ValorAbsoluto,ActivoEnComunidad, ActualizaHome, Foto) VALUES (" + IBD.GuidParamColumnaTabla("IdentidadID") + ", " + IBD.GuidParamColumnaTabla("PerfilID") + ", " + IBD.GuidParamColumnaTabla("OrganizacionID") + ", " + IBD.GuidParamColumnaTabla("ProyectoID") + ", " + IBD.GuidParamColumnaTabla("CurriculumID") + ", @FechaAlta, @FechaBaja, @NumConnexiones, @Tipo, @NombreCortoIdentidad, @FechaExpulsion, @RecibirNewsLetter,@Rank,@MostrarBienvenida,@DiasUltActualizacion,@ValorAbsoluto,@ActivoEnComunidad, @ActualizaHome, @Foto)");
-
-            this.sqlIdentidadDelete = IBD.ReplaceParam("DELETE FROM Identidad WHERE (IdentidadID = " + IBD.GuidParamColumnaTabla("O_IdentidadID") + ")");
-
-            this.sqlIdentidadModify = IBD.ReplaceParam("UPDATE Identidad SET IdentidadID = " + IBD.GuidParamColumnaTabla("IdentidadID") + ", PerfilID = " + IBD.GuidParamColumnaTabla("PerfilID") + ", OrganizacionID = " + IBD.GuidParamColumnaTabla("OrganizacionID") + ", ProyectoID = " + IBD.GuidParamColumnaTabla("ProyectoID") + ", CurriculumID = " + IBD.GuidParamColumnaTabla("CurriculumID") + ", FechaAlta = @FechaAlta, FechaBaja = @FechaBaja, NumConnexiones = @NumConnexiones, Tipo = @Tipo, NombreCortoIdentidad = @NombreCortoIdentidad, FechaExpulsion = @FechaExpulsion, RecibirNewsLetter = @RecibirNewsLetter, Rank = @Rank, MostrarBienvenida = @MostrarBienvenida,DiasUltActualizacion=@DiasUltActualizacion,ValorAbsoluto=@ValorAbsoluto,ActivoEnComunidad=@ActivoEnComunidad, ActualizaHome = @ActualizaHome, Foto = @Foto WHERE (IdentidadID = " + IBD.GuidParamColumnaTabla("O_IdentidadID") + ")");
-
-            #endregion
-
-            #region Profesor
-
-            this.sqlProfesorInsert = IBD.ReplaceParam("INSERT INTO Profesor (ProfesorID, PerfilID, Email, CentroEstudios, AreaEstudios) VALUES (" + IBD.GuidParamColumnaTabla("ProfesorID") + ", " + IBD.GuidParamColumnaTabla("PerfilID") + ", @Email, @CentroEstudios, @AreaEstudios)");
-
-            this.sqlProfesorDelete = IBD.ReplaceParam("DELETE FROM Profesor WHERE (ProfesorID = " + IBD.GuidParamColumnaTabla("O_ProfesorID") + ") AND (PerfilID = " + IBD.GuidParamColumnaTabla("O_PerfilID") + ")");
-
-            this.sqlProfesorModify = IBD.ReplaceParam("UPDATE Profesor SET ProfesorID = " + IBD.GuidParamColumnaTabla("ProfesorID") + ", PerfilID = " + IBD.GuidParamColumnaTabla("PerfilID") + ", Email = @Email, CentroEstudios = @CentroEstudios, AreaEstudios = @AreaEstudios WHERE (ProfesorID = " + IBD.GuidParamColumnaTabla("O_ProfesorID") + ") AND (PerfilID = " + IBD.GuidParamColumnaTabla("O_PerfilID") + ")");
-
-            #endregion
-
-            #region GrupoIdentidades
-
-            this.sqlGrupoIdentidadesInsert = IBD.ReplaceParam("INSERT INTO GrupoIdentidades (GrupoID, Nombre, NombreCorto, Descripcion, FechaAlta,FechaBaja,Tags,Publico, PermitirEnviarMensajes) VALUES (" + IBD.GuidParamColumnaTabla("GrupoID") + ", @Nombre, @NombreCorto, @Descripcion, @FechaAlta, @FechaBaja, @Tags, @Publico, @PermitirEnviarMensajes)");
-
-            this.sqlGrupoIdentidadesDelete = IBD.ReplaceParam("DELETE FROM GrupoIdentidades WHERE (GrupoID = " + IBD.GuidParamColumnaTabla("O_GrupoID") + ")");
-
-            this.sqlGrupoIdentidadesModify = IBD.ReplaceParam("UPDATE GrupoIdentidades SET GrupoID = " + IBD.GuidParamColumnaTabla("GrupoID") + ", Nombre = @Nombre, NombreCorto = @NombreCorto, Descripcion = @Descripcion, FechaAlta = @FechaAlta, FechaBaja = @FechaBaja, Tags = @Tags, Publico = @Publico, PermitirEnviarMensajes = @PermitirEnviarMensajes WHERE (GrupoID = " + IBD.GuidParamColumnaTabla("O_GrupoID") + ")");
-            #endregion
-
-            #region GrupoIdentidadesOrganizacion
-
-            this.sqlGrupoIdentidadesOrganizacionInsert = IBD.ReplaceParam("INSERT INTO GrupoIdentidadesOrganizacion (GrupoID, OrganizacionID) VALUES (" + IBD.GuidParamColumnaTabla("GrupoID") + "," + IBD.GuidParamColumnaTabla("OrganizacionID") + ")");
-
-            this.sqlGrupoIdentidadesOrganizacionDelete = IBD.ReplaceParam("DELETE FROM GrupoIdentidadesOrganizacion WHERE (GrupoID = " + IBD.GuidParamColumnaTabla("O_GrupoID") + ") AND (OrganizacionID = " + IBD.GuidParamColumnaTabla("O_OrganizacionID") + ")");
-
-            this.sqlGrupoIdentidadesOrganizacionModify = IBD.ReplaceParam("UPDATE GrupoIdentidadesOrganizacion SET GrupoID = " + IBD.GuidParamColumnaTabla("GrupoID") + ", OrganizacionID = " + IBD.GuidParamColumnaTabla("OrganizacionID") + " WHERE (GrupoID = " + IBD.GuidParamColumnaTabla("O_GrupoID") + ") AND (OrganizacionID = " + IBD.GuidParamColumnaTabla("O_OrganizacionID") + ") ");
-
-            #endregion
-
-            #region GrupoIdentidadesProyecto
-
-            this.sqlGrupoIdentidadesProyectoInsert = IBD.ReplaceParam("INSERT INTO GrupoIdentidadesProyecto (GrupoID, OrganizacionID,ProyectoID) VALUES (" + IBD.GuidParamColumnaTabla("GrupoID") + "," + IBD.GuidParamColumnaTabla("OrganizacionID") + ", " + IBD.GuidParamColumnaTabla("ProyectoID") + ")");
-
-            this.sqlGrupoIdentidadesProyectoDelete = IBD.ReplaceParam("DELETE FROM GrupoIdentidadesProyecto WHERE (GrupoID = " + IBD.GuidParamColumnaTabla("O_GrupoID") + ") AND (OrganizacionID = " + IBD.GuidParamColumnaTabla("O_OrganizacionID") + ") AND " + " (ProyectoID = " + IBD.GuidParamColumnaTabla("O_ProyectoID") + ")");
-
-            this.sqlGrupoIdentidadesProyectoModify = IBD.ReplaceParam("UPDATE GrupoIdentidadesProyecto SET GrupoID = " + IBD.GuidParamColumnaTabla("GrupoID") + ", OrganizacionID = " + IBD.GuidParamColumnaTabla("OrganizacionID") + ", ProyectoID = " + IBD.GuidParamColumnaTabla("ProyectoID") + " WHERE (GrupoID = " + IBD.GuidParamColumnaTabla("O_GrupoID") + ") AND (OrganizacionID = " + IBD.GuidParamColumnaTabla("O_OrganizacionID") + ") AND " + " (ProyectoID = " + IBD.GuidParamColumnaTabla("O_ProyectoID") + ") ");
-
-            #endregion
-
-            #region GrupoIdentidadesParticipacion
-
-            this.sqlGrupoIdentidadesParticipacionInsert = IBD.ReplaceParam("INSERT INTO GrupoIdentidadesParticipacion (GrupoID, IdentidadID,  FechaAlta, FechaBaja) VALUES (" + IBD.GuidParamColumnaTabla("GrupoID") + ", " + IBD.GuidParamColumnaTabla("IdentidadID") + ", @FechaAlta, @FechaBaja)");
-
-            this.sqlGrupoIdentidadesParticipacionDelete = IBD.ReplaceParam("DELETE FROM GrupoIdentidadesParticipacion WHERE (GrupoID = " + IBD.GuidParamColumnaTabla("O_GrupoID") + ") AND (IdentidadID = " + IBD.GuidParamColumnaTabla("O_IdentidadID") + ")");
-
-            this.sqlGrupoIdentidadesParticipacionModify = IBD.ReplaceParam("UPDATE GrupoIdentidadesParticipacion SET GrupoID = " + IBD.GuidParamColumnaTabla("GrupoID") + ", IdentidadID = " + IBD.GuidParamColumnaTabla("IdentidadID") + ", FechaAlta = @FechaAlta, FechaBaja = @FechaBaja WHERE (GrupoID = " + IBD.GuidParamColumnaTabla("O_GrupoID") + ") AND (IdentidadID = " + IBD.GuidParamColumnaTabla("O_IdentidadID") + ")");
-
-            #endregion
-
-            #region DatoExtraProyectoOpcionIdentidad
-
-            this.sqlDatoExtraProyectoOpcionIdentidadInsert = IBD.ReplaceParam("INSERT INTO DatoExtraProyectoOpcionIdentidad (OrganizacionID, ProyectoID, DatoExtraID, OpcionID, IdentidadID) VALUES (" + IBD.GuidParamColumnaTabla("OrganizacionID") + "," + IBD.GuidParamColumnaTabla("ProyectoID") + "," + IBD.GuidParamColumnaTabla("DatoExtraID") + "," + IBD.GuidParamColumnaTabla("OpcionID") + "," + IBD.GuidParamColumnaTabla("IdentidadID") + ")");
-
-            this.sqlDatoExtraProyectoOpcionIdentidadDelete = IBD.ReplaceParam("DELETE FROM DatoExtraProyectoOpcionIdentidad WHERE (OrganizacionID = " + IBD.GuidParamColumnaTabla("O_OrganizacionID") + ") AND (ProyectoID = " + IBD.GuidParamColumnaTabla("O_ProyectoID") + ") AND (DatoExtraID = " + IBD.GuidParamColumnaTabla("O_DatoExtraID") + ") AND (OpcionID = " + IBD.GuidParamColumnaTabla("O_OpcionID") + ") AND (IdentidadID = " + IBD.GuidParamColumnaTabla("O_IdentidadID") + ")");
-
-            this.sqlDatoExtraProyectoOpcionIdentidadModify = IBD.ReplaceParam("UPDATE DatoExtraProyectoOpcionIdentidad SET OrganizacionID = " + IBD.GuidParamColumnaTabla("OrganizacionID") + ", ProyectoID = " + IBD.GuidParamColumnaTabla("ProyectoID") + ", DatoExtraID = " + IBD.GuidParamColumnaTabla("DatoExtraID") + ", OpcionID = " + IBD.GuidParamColumnaTabla("OpcionID") + ", IdentidadID = " + IBD.GuidParamColumnaTabla("IdentidadID") + " WHERE (OrganizacionID = " + IBD.GuidParamColumnaTabla("O_OrganizacionID") + ") AND (ProyectoID = " + IBD.GuidParamColumnaTabla("O_ProyectoID") + ") AND (DatoExtraID = " + IBD.GuidParamColumnaTabla("O_DatoExtraID") + ") AND (OpcionID = " + IBD.GuidParamColumnaTabla("O_OpcionID") + ") AND (IdentidadID = " + IBD.GuidParamColumnaTabla("O_IdentidadID") + ")");
-
-            #endregion
-
-            #region DatoExtraProyectoVirtuosoIdentidad
-
-            this.sqlDatoExtraProyectoVirtuosoIdentidadInsert = IBD.ReplaceParam("INSERT INTO DatoExtraProyectoVirtuosoIdentidad (OrganizacionID, ProyectoID, DatoExtraID, Opcion, IdentidadID) VALUES (" + IBD.GuidParamColumnaTabla("OrganizacionID") + "," + IBD.GuidParamColumnaTabla("ProyectoID") + "," + IBD.GuidParamColumnaTabla("DatoExtraID") + "," + IBD.ToParam("Opcion") + "," + IBD.GuidParamColumnaTabla("IdentidadID") + ")");
-
-            this.sqlDatoExtraProyectoVirtuosoIdentidadDelete = IBD.ReplaceParam("DELETE FROM DatoExtraProyectoVirtuosoIdentidad WHERE (OrganizacionID = " + IBD.GuidParamColumnaTabla("O_OrganizacionID") + ") AND (ProyectoID = " + IBD.GuidParamColumnaTabla("O_ProyectoID") + ") AND (DatoExtraID = " + IBD.GuidParamColumnaTabla("O_DatoExtraID") + ") AND (IdentidadID = " + IBD.GuidParamColumnaTabla("O_IdentidadID") + ")");
-
-            this.sqlDatoExtraProyectoVirtuosoIdentidadModify = IBD.ReplaceParam("UPDATE DatoExtraProyectoVirtuosoIdentidad SET OrganizacionID = " + IBD.GuidParamColumnaTabla("OrganizacionID") + ", ProyectoID = " + IBD.GuidParamColumnaTabla("ProyectoID") + ", DatoExtraID = " + IBD.GuidParamColumnaTabla("DatoExtraID") + ", Opcion = " + IBD.ToParam("Opcion") + ", IdentidadID = " + IBD.GuidParamColumnaTabla("IdentidadID") + " WHERE (OrganizacionID = " + IBD.GuidParamColumnaTabla("O_OrganizacionID") + ") AND (ProyectoID = " + IBD.GuidParamColumnaTabla("O_ProyectoID") + ") AND (DatoExtraID = " + IBD.GuidParamColumnaTabla("O_DatoExtraID") + ") AND (IdentidadID = " + IBD.GuidParamColumnaTabla("O_IdentidadID") + ")");
-
-            #endregion
-
-            #region DatoExtraEcosistemaOpcionPerfil
-
-            this.sqlDatoExtraEcosistemaOpcionPerfilInsert = IBD.ReplaceParam("INSERT INTO DatoExtraEcosistemaOpcionPerfil (DatoExtraID, OpcionID, PerfilID) VALUES (" + IBD.GuidParamColumnaTabla("DatoExtraID") + "," + IBD.GuidParamColumnaTabla("OpcionID") + "," + IBD.GuidParamColumnaTabla("PerfilID") + ")");
-
-            this.sqlDatoExtraEcosistemaOpcionPerfilDelete = IBD.ReplaceParam("DELETE FROM DatoExtraEcosistemaOpcionPerfil WHERE (DatoExtraID = " + IBD.GuidParamColumnaTabla("O_DatoExtraID") + ") AND (OpcionID = " + IBD.GuidParamColumnaTabla("O_OpcionID") + ") AND (PerfilID = " + IBD.GuidParamColumnaTabla("O_PerfilID") + ")");
-
-            this.sqlDatoExtraEcosistemaOpcionPerfilModify = IBD.ReplaceParam("UPDATE DatoExtraEcosistemaOpcionPerfil SET DatoExtraID = " + IBD.GuidParamColumnaTabla("DatoExtraID") + ", OpcionID = " + IBD.GuidParamColumnaTabla("OpcionID") + ", PerfilID = " + IBD.GuidParamColumnaTabla("PerfilID") + " WHERE (DatoExtraID = " + IBD.GuidParamColumnaTabla("O_DatoExtraID") + ") AND (OpcionID = " + IBD.GuidParamColumnaTabla("O_OpcionID") + ") AND (PerfilID = " + IBD.GuidParamColumnaTabla("O_PerfilID") + ")");
-
-            #endregion
-
-            #region DatoExtraEcosistemaVirtuosoPerfil
-
-            this.sqlDatoExtraEcosistemaVirtuosoPerfilInsert = IBD.ReplaceParam("INSERT INTO DatoExtraEcosistemaVirtuosoPerfil (DatoExtraID, Opcion, PerfilID) VALUES (" + IBD.GuidParamColumnaTabla("DatoExtraID") + "," + IBD.ToParam("Opcion") + "," + IBD.GuidParamColumnaTabla("PerfilID") + ")");
-
-            this.sqlDatoExtraEcosistemaVirtuosoPerfilDelete = IBD.ReplaceParam("DELETE FROM DatoExtraEcosistemaVirtuosoPerfil WHERE (DatoExtraID = " + IBD.GuidParamColumnaTabla("O_DatoExtraID") + ") AND (PerfilID = " + IBD.GuidParamColumnaTabla("O_PerfilID") + ")");
-
-            this.sqlDatoExtraEcosistemaVirtuosoPerfilModify = IBD.ReplaceParam("UPDATE DatoExtraEcosistemaVirtuosoPerfil SET DatoExtraID = " + IBD.GuidParamColumnaTabla("DatoExtraID") + ", Opcion = " + IBD.ToParam("Opcion") + ", PerfilID = " + IBD.GuidParamColumnaTabla("PerfilID") + " WHERE (DatoExtraID = " + IBD.GuidParamColumnaTabla("O_DatoExtraID") + ") AND (PerfilID = " + IBD.GuidParamColumnaTabla("O_PerfilID") + ")");
-
-            #endregion
-
-            #region IdentidadContadores
-            sqlIdentidadContadoresInsert = IBD.ReplaceParam("INSERT INTO IdentidadContadores (IdentidadID, NumeroVisitas, NumeroDescargas) VALUES (" + IBD.GuidParamColumnaTabla("IdentidadID") + ", @NumeroVisitas, @NumeroDescargas)");
-            sqlIdentidadContadoresDelete = IBD.ReplaceParam("DELETE FROM IdentidadContadores WHERE (IdentidadID = " + IBD.GuidParamColumnaTabla("O_IdentidadID") + ")");
-            sqlIdentidadContadoresModify = IBD.ReplaceParam("UPDATE IdentidadContadores SET IdentidadID = " + IBD.GuidParamColumnaTabla("IdentidadID") + ", NumeroVisitas = @NumeroVisitas, NumeroDescargas = @NumeroDescargas WHERE (IdentidadID = " + IBD.GuidParamColumnaTabla("O_IdentidadID") + ")");
-            #endregion
-
-            #region IdentidadContadoresRecursos
-            sqlIdentidadContadoresRecursosInsert = IBD.ReplaceParam("INSERT INTO IdentidadContadoresRecursos (IdentidadID, Tipo, NombreSem,Publicados,Compartidos,Comentarios) VALUES (" + IBD.GuidParamColumnaTabla("IdentidadID") + ", @Tipo, @NombreSem, @Publicados, @Compartidos, @Comentarios)");
-            sqlIdentidadContadoresRecursosDelete = IBD.ReplaceParam("DELETE FROM IdentidadContadoresRecursos WHERE (IdentidadID = " + IBD.GuidParamColumnaTabla("O_IdentidadID") + ") AND (Tipo = @O_Tipo) AND (NombreSem = @O_NombreSem) ");
-            sqlIdentidadContadoresRecursosModify = IBD.ReplaceParam("UPDATE IdentidadContadoresRecursos SET IdentidadID = " + IBD.GuidParamColumnaTabla("IdentidadID") + ", Tipo = @Tipo, NombreSem = @NombreSem, Publicados = @Publicados, Compartidos = @Compartidos, Comentarios = @Comentarios WHERE (IdentidadID = " + IBD.GuidParamColumnaTabla("O_IdentidadID") + ") AND (Tipo = @O_Tipo) AND (NombreSem = @O_NombreSem)");
-            #endregion
-
-            #endregion
-        }
-
-
 
         #endregion
 

@@ -61,7 +61,9 @@ namespace Es.Riam.Gnoss.FirstDataLoad.Properties {
         }
         
         /// <summary>
-        ///   Busca una cadena traducida similar a INSERT [dbo].[FacetaObjetoConocimiento] ([ObjetoConocimiento], [Faceta], [Nombre], [Orden], [Autocompletar], [TipoPropiedad], [TipoDisenio], [ElementosVisibles], [AlgoritmoTransformacion], [EsSemantica], [Mayusculas], [EsPorDefecto], [NombreFaceta], [ComportamientoOr]) VALUES (N&apos;Comentario&apos;, N&apos;dce:type&apos;, N&apos;Espacio@es|||Space@en|||Espaço@pt|||Espai@ca|||Espazioa@eu|||Espazo@gl|||Espace@fr|||Raum@de|||Spazio@it&apos;, 2, 1, 0, 1, 5, 8, 0, 2, 1, N&apos;Espacio@es|||Space@en|||Espaço@pt|||Espai@ca|||Espazioa@eu|||Espazo@ [resto de la cadena truncado]&quot;;.
+        ///   Busca una cadena traducida similar a INSERT [dbo].[FacetaObjetoConocimiento] ([ObjetoConocimiento], [Faceta], [Nombre], [Orden], [Autocompletar], [TipoPropiedad], [TipoDisenio], [ElementosVisibles], [AlgoritmoTransformacion], [EsSemantica], [Mayusculas], [EsPorDefecto], [NombreFaceta], [ComportamientoOr]) VALUES (N&apos;Comentario&apos;, N&apos;dce:type&apos;, N&apos;Espacio@es|||Space@en&apos;, 2, 1, 0, 1, 5, 8, 0, 2, 1, N&apos;Espacio@es|||Space@en&apos;, 0)
+        ///
+        ///INSERT [dbo].[FacetaObjetoConocimiento] ([ObjetoConocimiento], [Faceta], [Nombre], [Orden], [Autocompletar], [TipoPropied [resto de la cadena truncado]&quot;;.
         /// </summary>
         internal static string carga_bd_acid_facetaobjetoconocimiento {
             get {

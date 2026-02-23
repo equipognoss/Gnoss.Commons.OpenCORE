@@ -62,7 +62,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
         private List<IntegracionContinuaPropiedad> propiedadesIntegracionContinua = null;
 
         private LoggingService mLoggingService;
-        private VirtuosoAD mVirtuosoAD;
+        private readonly VirtuosoAD mVirtuosoAD;
         private EntityContext mEntityContext;
         private ConfigService mConfigService;
         private RedisCacheWrapper mRedisCacheWrapper;
@@ -98,7 +98,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
         #endregion
 
         #region Métodos de carga
-        public CMSAdminComponenteEditarViewModel CargarComponente(Guid pComponenteKey)
+        public CMSAdminComponenteEditarViewModel CargarComponente(Guid pComponenteKey, DataWrapperVistaVirtual pVistaVirtualDW)
         {
             CMSAdminComponenteEditarViewModel resultado = null;
             using (CMSCN cmsCN = new CMSCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<CMSCN>(), mLoggerFactory))
@@ -107,12 +107,13 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
                 if (gestorCMS.CMSDW.ListaCMSComponente.Count != 0)
                 {
                     TipoComponenteCMS tipoComponente = (TipoComponenteCMS)gestorCMS.CMSDW.ListaCMSComponente.FirstOrDefault().TipoComponente;
-                    resultado = CargarComponente(tipoComponente, gestorCMS.ListaComponentes[pComponenteKey]);
+                    resultado = CargarComponente(tipoComponente, gestorCMS.ListaComponentes[pComponenteKey], pVistaVirtualDW);
                 }
             }
             return resultado;
         }
-        public CMSAdminComponenteEditarViewModel CargarComponente(TipoComponenteCMS pTipoComponenteCMSActual, CMSComponente pCMSComponente)
+
+        public CMSAdminComponenteEditarViewModel CargarComponente(TipoComponenteCMS pTipoComponenteCMSActual, CMSComponente pCMSComponente, DataWrapperVistaVirtual pVistaVirtualDW)
         {
             FlujosCN flujosCN = new FlujosCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<FlujosCN>(), mLoggerFactory);
             Guid? PersonalizacionID = null;
@@ -177,12 +178,10 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
                 ParametroAplicacionCL paramCL = new ParametroAplicacionCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<ParametroAplicacionCL>(), mLoggerFactory);
                 List<string> listaIdiomasDisponibles = new List<string>();
                 List<string> listaIdiomas = paramCL.ObtenerListaIdiomas();
-                foreach (string idioma in listaIdiomas)
+
+                foreach (string idioma in listaIdiomas.Where(item => !string.IsNullOrEmpty(CMSComponente.FilaComponente.IdiomasDisponibles) && UtilCadenas.ObtenerTextoDeIdioma(CMSComponente.FilaComponente.IdiomasDisponibles, item, null, true) == "true"))
                 {
-                    if (!string.IsNullOrEmpty(CMSComponente.FilaComponente.IdiomasDisponibles) && UtilCadenas.ObtenerTextoDeIdioma(CMSComponente.FilaComponente.IdiomasDisponibles, idioma, null, true) == "true")
-                    {
-                        listaIdiomasDisponibles.Add(idioma);
-                    }
+                    listaIdiomasDisponibles.Add(idioma);
                 }
                 paginaModel.ListaIdiomasDisponibles = listaIdiomasDisponibles;
 
@@ -225,9 +224,10 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
             propiedadesIntegracionContinua = new List<IntegracionContinuaPropiedad>();
 
             Dictionary<TipoPropiedadCMS, bool> propiedadesComponente = UtilComponentes.PropiedadesDisponiblesPorTipoComponente[TipoComponenteCMSActual];
+
             foreach (TipoPropiedadCMS tipoPropiedad in propiedadesComponente.Keys)
             {
-                CMSAdminComponenteEditarViewModel.PropiedadComponente propiedad = ObtenerPropiedad(tipoPropiedad, propiedadesComponente);
+                CMSAdminComponenteEditarViewModel.PropiedadComponente propiedad = ObtenerPropiedad(tipoPropiedad, propiedadesComponente, pVistaVirtualDW);
 
                 paginaModel.Properties.Add(propiedad);
 
@@ -488,21 +488,19 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
             }
         }
 
-        private CMSAdminComponenteEditarViewModel.PropiedadComponente ObtenerPropiedad(TipoPropiedadCMS tipoPropiedad, Dictionary<TipoPropiedadCMS, bool> propiedadesComponente)
+
+        private CMSAdminComponenteEditarViewModel.PropiedadComponente ObtenerPropiedad(TipoPropiedadCMS tipoPropiedad, Dictionary<TipoPropiedadCMS, bool> propiedadesComponente, DataWrapperVistaVirtual pVistaVirtualDW)
         {
             CMSAdminComponenteEditarViewModel.PropiedadComponente propiedad = new CMSAdminComponenteEditarViewModel.PropiedadComponente();
             propiedad.TipoPropiedadCMS = tipoPropiedad;
             propiedad.Required = propiedadesComponente[tipoPropiedad];
             propiedad.Options = new Dictionary<string, string>();
 
-            VistaVirtualCL vistaVirtualCL = new VistaVirtualCL(mEntityContext, mLoggingService, mGnossCache, mRedisCacheWrapper, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<VistaVirtualCL>(), mLoggerFactory);
-            DataWrapperVistaVirtual vistaVirtualDW = vistaVirtualCL.ObtenerVistasVirtualPorProyectoID(ProyectoSeleccionado.Clave, PersonalizacionEcosistemaID, ComunidadExcluidaPersonalizacionEcosistema);
-            vistaVirtualCL.Dispose();
             switch (propiedad.TipoPropiedadCMS)
             {
                 case TipoPropiedadCMS.TipoPresentacionRecurso:
                     string vistasRecursos = "/Views/CMSPagina/ListadoRecursos/Vistas/";
-                    List<VistaVirtualCMS> filasRecursos = vistaVirtualDW.ListaVistaVirtualCMS.Where(item => item.TipoComponente.StartsWith(vistasRecursos)).ToList();
+                    List<VistaVirtualCMS> filasRecursos = pVistaVirtualDW.ListaVistaVirtualCMS.Where(item => item.TipoComponente.StartsWith(vistasRecursos)).ToList();
 
                     Dictionary<TipoPresentacionRecursoCMS, string> diccionarioNombresGenericos = new Dictionary<TipoPresentacionRecursoCMS, string>();
                     Dictionary<Guid, string> diccionarioNombresPersonalizaciones = new Dictionary<Guid, string>();
@@ -552,7 +550,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
                 case TipoPropiedadCMS.TipoPresentacionGrupoComponentes:
                     string vistasGruposComponmentes = "/Views/CMSPagina/GrupoComponentes/";
 
-                    List<VistaVirtualCMS> filasGruposComponmentes = vistaVirtualDW.ListaVistaVirtualCMS.Where(item => item.TipoComponente.StartsWith(vistasGruposComponmentes)).ToList();
+                    List<VistaVirtualCMS> filasGruposComponmentes = pVistaVirtualDW.ListaVistaVirtualCMS.Where(item => item.TipoComponente.StartsWith(vistasGruposComponmentes)).ToList();
 
                     Dictionary<TipoPresentacionGrupoComponentesCMS, string> diccionarioNombresGenericosVistaGrupos = new Dictionary<TipoPresentacionGrupoComponentesCMS, string>();
                     Dictionary<Guid, string> diccionarioNombresPersonalizacionesVistaGrupos = new Dictionary<Guid, string>();
@@ -621,7 +619,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
                 case TipoPropiedadCMS.TipoPresentacionListadoRecursos:
                     string vistasListadoRecursos = "/Views/CMSPagina/ListadoRecursos/";
 
-                    List<VistaVirtualCMS> filasListadoRecursos = vistaVirtualDW.ListaVistaVirtualCMS.Where(item => item.TipoComponente.StartsWith(vistasListadoRecursos)).ToList();
+                    List<VistaVirtualCMS> filasListadoRecursos = pVistaVirtualDW.ListaVistaVirtualCMS.Where(item => item.TipoComponente.StartsWith(vistasListadoRecursos)).ToList();
 
                     Dictionary<TipoPresentacionListadoRecursosCMS, string> diccionarioNombresListadoGenericos = new Dictionary<TipoPresentacionListadoRecursosCMS, string>();
                     Dictionary<Guid, string> diccionarioNombresListadoPersonalizaciones = new Dictionary<Guid, string>();

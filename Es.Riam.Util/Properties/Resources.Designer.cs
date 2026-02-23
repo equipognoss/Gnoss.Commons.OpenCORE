@@ -19,7 +19,7 @@ namespace Es.Riam.Util.Properties {
     // a través de una herramienta como ResGen o Visual Studio.
     // Para agregar o quitar un miembro, edite el archivo .ResX y, a continuación, vuelva a ejecutar ResGen
     // con la opción /str o recompile su proyecto de VS.
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "17.0.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "16.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     internal class Resources {
@@ -110,7 +110,6 @@ namespace Es.Riam.Util.Properties {
         ///z
         ///be
         ///$
-        ///&amp;
         ///because
         ///been
         ///before
@@ -165,7 +164,7 @@ namespace Es.Riam.Util.Properties {
         ///much
         ///must
         ///my
-        /// [resto de la cadena truncado]&quot;;.
+        ///nev [resto de la cadena truncado]&quot;;.
         /// </summary>
         internal static string noiseENG {
             get {
@@ -214,7 +213,6 @@ namespace Es.Riam.Util.Properties {
         ///x
         ///y
         ///z
-        ///&amp;
         ///Ud.
         ///0
         ///Uds.
@@ -277,7 +275,8 @@ namespace Es.Riam.Util.Properties {
         ///al
         ///albricias
         ///ale
-        ///aleluya        /// [resto de la cadena truncado]&quot;;.
+        ///aleluya
+        ///al [resto de la cadena truncado]&quot;;.
         /// </summary>
         internal static string noiseESN {
             get {
@@ -312,7 +311,6 @@ namespace Es.Riam.Util.Properties {
         ///x
         ///y
         ///z
-        ///&amp;
         ///zenbat
         ///batzuk
         ///zenbait
@@ -357,7 +355,8 @@ namespace Es.Riam.Util.Properties {
         ///ai ama
         ///ai
         ///aitaren eta semearen…
-        ///ala [resto de la cadena truncado]&quot;;.
+        ///ala
+        ///a [resto de la cadena truncado]&quot;;.
         /// </summary>
         internal static string noiseEUSK {
             get {
@@ -392,7 +391,6 @@ namespace Es.Riam.Util.Properties {
         ///x
         ///y
         ///z
-        ///&amp;
         ///abaixo
         ///perto
         ///avançar
@@ -447,7 +445,7 @@ namespace Es.Riam.Util.Properties {
         ///cada
         ///caramba
         ///puxa
-        ///ca [resto de la cadena truncado]&quot;;.
+        ///catap [resto de la cadena truncado]&quot;;.
         /// </summary>
         internal static string noisePOR {
             get {

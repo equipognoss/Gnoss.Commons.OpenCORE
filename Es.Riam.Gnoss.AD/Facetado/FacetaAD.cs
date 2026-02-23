@@ -609,11 +609,10 @@ namespace Es.Riam.Gnoss.AD.Facetado
             DataWrapperFacetas dataWrapperFacetas = new DataWrapperFacetas();
 
             dataWrapperFacetas.ListaFacetaObjetoConocimiento = mEntityContext.FacetaObjetoConocimiento.Where(item => item.ObjetoConocimiento.Equals("recurso") || item.ObjetoConocimiento.Equals("debate") || item.ObjetoConocimiento.Equals("pregunta") || item.ObjetoConocimiento.Equals("encuensta") || item.ObjetoConocimiento.Equals("clase") || item.ObjetoConocimiento.Equals("Organizacion") || item.ObjetoConocimiento.Equals("Persona") || item.ObjetoConocimiento.Equals("grupo")).ToList();
-
             dataWrapperFacetas.ListaFacetaObjetoConocimientoProyecto = mEntityContext.FacetaObjetoConocimientoProyecto.Where(item => item.ProyectoID.Equals(pProyectoID)).ToList();
-
             dataWrapperFacetas.ListaFacetaFiltroProyecto = mEntityContext.FacetaFiltroProyecto.Where(item => item.ProyectoID.Equals(pProyectoID)).ToList();
             dataWrapperFacetas.ListaFacetaExcluida = mEntityContext.FacetaExcluida.Where(item => item.ProyectoID.Equals(pProyectoID)).ToList();
+            dataWrapperFacetas.ListaFacetaObjetoConocimientoProyectoPenstanya = mEntityContext.FacetaObjetoConocimientoProyectoPestanya.Where(item => item.ProyectoID.Equals(pProyectoID)).ToList();
             return dataWrapperFacetas;
         }
 

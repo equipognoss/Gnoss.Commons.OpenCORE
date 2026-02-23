@@ -555,8 +555,7 @@ namespace Es.Riam.Gnoss.CL.ServiciosGenerales
                 dataWrapperProyecto = ProyectoCN.ObtenerProyectoPorID(pProyectoID);
                 if (TieneComunidadPadreConfigurada(pProyectoID))
                 {
-                    DataWrapperProyecto dataWrapperProyectoPadre = new DataWrapperProyecto();
-                    dataWrapperProyectoPadre = ProyectoCN.ObtenerProyectoPorID(ProyectoIDPadreEcosistema.Value);
+                    DataWrapperProyecto dataWrapperProyectoPadre = ProyectoCN.ObtenerProyectoPorID(ProyectoIDPadreEcosistema.Value);
                     ModificarDataWrapperProyectoHijaDW(dataWrapperProyecto, dataWrapperProyectoPadre, pProyectoID);
                 }
 

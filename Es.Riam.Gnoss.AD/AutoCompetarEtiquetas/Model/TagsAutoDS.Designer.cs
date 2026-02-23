@@ -10,9 +10,10 @@
 
 #pragma warning disable 1591
 
-namespace Es.Riam.Gnoss.AD.AutoCompetarEtiquetas.Model {
-    
-    
+namespace Es.Riam.Gnoss.AD.AutoCompetarEtiquetas.Model
+{
+
+
     /// <summary>
     ///Represents a strongly typed in-memory cache of data.
     ///</summary>
@@ -22,23 +23,25 @@ namespace Es.Riam.Gnoss.AD.AutoCompetarEtiquetas.Model {
     [global::System.Xml.Serialization.XmlSchemaProviderAttribute("GetTypedDataSetSchema")]
     [global::System.Xml.Serialization.XmlRootAttribute("TagsAutoDS")]
     [global::System.ComponentModel.Design.HelpKeywordAttribute("vs.data.DataSet")]
-    public partial class TagsAutoDS : global::System.Data.DataSet {
-        
+    public partial class TagsAutoDS : global::System.Data.DataSet
+    {
+
         private ConfigAutocompletarProyDataTable tableConfigAutocompletarProy;
-        
+
         private ConfigSearchProyDataTable tableConfigSearchProy;
-        
+
         private GrupoIdentidadesDataTable tableGrupoIdentidades;
-        
+
         private TagsVariarDataTable tableTagsVariar;
-        
+
         private EtiquetasElementoDataTable tableEtiquetasElemento;
-        
+
         private global::System.Data.SchemaSerializationMode _schemaSerializationMode = global::System.Data.SchemaSerializationMode.IncludeSchema;
-        
+
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-        public TagsAutoDS() {
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+        public TagsAutoDS()
+        {
             this.BeginInit();
             this.InitClass();
             global::System.ComponentModel.CollectionChangeEventHandler schemaChangedHandler = new global::System.ComponentModel.CollectionChangeEventHandler(this.SchemaChanged);
@@ -46,12 +49,14 @@ namespace Es.Riam.Gnoss.AD.AutoCompetarEtiquetas.Model {
             base.Relations.CollectionChanged += schemaChangedHandler;
             this.EndInit();
         }
-        
+
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-        protected TagsAutoDS(global::System.Runtime.Serialization.SerializationInfo info, global::System.Runtime.Serialization.StreamingContext context) : 
-                base(info, context, false) {
-            if ((this.IsBinarySerialized(info, context) == true)) {
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+        protected TagsAutoDS(global::System.Runtime.Serialization.SerializationInfo info, global::System.Runtime.Serialization.StreamingContext context) :
+                base(info, context, false)
+        {
+            if ((this.IsBinarySerialized(info, context) == true))
+            {
                 this.InitVars(false);
                 global::System.ComponentModel.CollectionChangeEventHandler schemaChangedHandler1 = new global::System.ComponentModel.CollectionChangeEventHandler(this.SchemaChanged);
                 this.Tables.CollectionChanged += schemaChangedHandler1;
@@ -59,22 +64,28 @@ namespace Es.Riam.Gnoss.AD.AutoCompetarEtiquetas.Model {
                 return;
             }
             string strSchema = ((string)(info.GetValue("XmlSchema", typeof(string))));
-            if ((this.DetermineSchemaSerializationMode(info, context) == global::System.Data.SchemaSerializationMode.IncludeSchema)) {
+            if ((this.DetermineSchemaSerializationMode(info, context) == global::System.Data.SchemaSerializationMode.IncludeSchema))
+            {
                 global::System.Data.DataSet ds = new global::System.Data.DataSet();
                 ds.ReadXmlSchema(new global::System.Xml.XmlTextReader(new global::System.IO.StringReader(strSchema)));
-                if ((ds.Tables["ConfigAutocompletarProy"] != null)) {
+                if ((ds.Tables["ConfigAutocompletarProy"] != null))
+                {
                     base.Tables.Add(new ConfigAutocompletarProyDataTable(ds.Tables["ConfigAutocompletarProy"]));
                 }
-                if ((ds.Tables["ConfigSearchProy"] != null)) {
+                if ((ds.Tables["ConfigSearchProy"] != null))
+                {
                     base.Tables.Add(new ConfigSearchProyDataTable(ds.Tables["ConfigSearchProy"]));
                 }
-                if ((ds.Tables["GrupoIdentidades"] != null)) {
+                if ((ds.Tables["GrupoIdentidades"] != null))
+                {
                     base.Tables.Add(new GrupoIdentidadesDataTable(ds.Tables["GrupoIdentidades"]));
                 }
-                if ((ds.Tables["TagsVariar"] != null)) {
+                if ((ds.Tables["TagsVariar"] != null))
+                {
                     base.Tables.Add(new TagsVariarDataTable(ds.Tables["TagsVariar"]));
                 }
-                if ((ds.Tables["EtiquetasElemento"] != null)) {
+                if ((ds.Tables["EtiquetasElemento"] != null))
+                {
                     base.Tables.Add(new EtiquetasElementoDataTable(ds.Tables["EtiquetasElemento"]));
                 }
                 this.DataSetName = ds.DataSetName;
@@ -86,7 +97,8 @@ namespace Es.Riam.Gnoss.AD.AutoCompetarEtiquetas.Model {
                 this.Merge(ds, false, global::System.Data.MissingSchemaAction.Add);
                 this.InitVars();
             }
-            else {
+            else
+            {
                 this.ReadXmlSchema(new global::System.Xml.XmlTextReader(new global::System.IO.StringReader(strSchema)));
             }
             this.GetSerializationData(info, context);
@@ -94,137 +106,165 @@ namespace Es.Riam.Gnoss.AD.AutoCompetarEtiquetas.Model {
             base.Tables.CollectionChanged += schemaChangedHandler;
             this.Relations.CollectionChanged += schemaChangedHandler;
         }
-        
+
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
         [global::System.ComponentModel.Browsable(false)]
         [global::System.ComponentModel.DesignerSerializationVisibility(global::System.ComponentModel.DesignerSerializationVisibility.Content)]
-        public ConfigAutocompletarProyDataTable ConfigAutocompletarProy {
-            get {
+        public ConfigAutocompletarProyDataTable ConfigAutocompletarProy
+        {
+            get
+            {
                 return this.tableConfigAutocompletarProy;
             }
         }
-        
+
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
         [global::System.ComponentModel.Browsable(false)]
         [global::System.ComponentModel.DesignerSerializationVisibility(global::System.ComponentModel.DesignerSerializationVisibility.Content)]
-        public ConfigSearchProyDataTable ConfigSearchProy {
-            get {
+        public ConfigSearchProyDataTable ConfigSearchProy
+        {
+            get
+            {
                 return this.tableConfigSearchProy;
             }
         }
-        
+
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
         [global::System.ComponentModel.Browsable(false)]
         [global::System.ComponentModel.DesignerSerializationVisibility(global::System.ComponentModel.DesignerSerializationVisibility.Content)]
-        public GrupoIdentidadesDataTable GrupoIdentidades {
-            get {
+        public GrupoIdentidadesDataTable GrupoIdentidades
+        {
+            get
+            {
                 return this.tableGrupoIdentidades;
             }
         }
-        
+
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
         [global::System.ComponentModel.Browsable(false)]
         [global::System.ComponentModel.DesignerSerializationVisibility(global::System.ComponentModel.DesignerSerializationVisibility.Content)]
-        public TagsVariarDataTable TagsVariar {
-            get {
+        public TagsVariarDataTable TagsVariar
+        {
+            get
+            {
                 return this.tableTagsVariar;
             }
         }
-        
+
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
         [global::System.ComponentModel.Browsable(false)]
         [global::System.ComponentModel.DesignerSerializationVisibility(global::System.ComponentModel.DesignerSerializationVisibility.Content)]
-        public EtiquetasElementoDataTable EtiquetasElemento {
-            get {
+        public EtiquetasElementoDataTable EtiquetasElemento
+        {
+            get
+            {
                 return this.tableEtiquetasElemento;
             }
         }
-        
+
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
         [global::System.ComponentModel.BrowsableAttribute(true)]
         [global::System.ComponentModel.DesignerSerializationVisibilityAttribute(global::System.ComponentModel.DesignerSerializationVisibility.Visible)]
-        public override global::System.Data.SchemaSerializationMode SchemaSerializationMode {
-            get {
+        public override global::System.Data.SchemaSerializationMode SchemaSerializationMode
+        {
+            get
+            {
                 return this._schemaSerializationMode;
             }
-            set {
+            set
+            {
                 this._schemaSerializationMode = value;
             }
         }
-        
+
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
         [global::System.ComponentModel.DesignerSerializationVisibilityAttribute(global::System.ComponentModel.DesignerSerializationVisibility.Hidden)]
-        public new global::System.Data.DataTableCollection Tables {
-            get {
+        public new global::System.Data.DataTableCollection Tables
+        {
+            get
+            {
                 return base.Tables;
             }
         }
-        
+
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
         [global::System.ComponentModel.DesignerSerializationVisibilityAttribute(global::System.ComponentModel.DesignerSerializationVisibility.Hidden)]
-        public new global::System.Data.DataRelationCollection Relations {
-            get {
+        public new global::System.Data.DataRelationCollection Relations
+        {
+            get
+            {
                 return base.Relations;
             }
         }
-        
+
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-        protected override void InitializeDerivedDataSet() {
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+        protected override void InitializeDerivedDataSet()
+        {
             this.BeginInit();
             this.InitClass();
             this.EndInit();
         }
-        
+
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-        public override global::System.Data.DataSet Clone() {
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+        public override global::System.Data.DataSet Clone()
+        {
             TagsAutoDS cln = ((TagsAutoDS)(base.Clone()));
             cln.InitVars();
             cln.SchemaSerializationMode = this.SchemaSerializationMode;
             return cln;
         }
-        
+
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-        protected override bool ShouldSerializeTables() {
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+        protected override bool ShouldSerializeTables()
+        {
             return false;
         }
-        
+
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-        protected override bool ShouldSerializeRelations() {
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+        protected override bool ShouldSerializeRelations()
+        {
             return false;
         }
-        
+
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-        protected override void ReadXmlSerializable(global::System.Xml.XmlReader reader) {
-            if ((this.DetermineSchemaSerializationMode(reader) == global::System.Data.SchemaSerializationMode.IncludeSchema)) {
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+        protected override void ReadXmlSerializable(global::System.Xml.XmlReader reader)
+        {
+            if ((this.DetermineSchemaSerializationMode(reader) == global::System.Data.SchemaSerializationMode.IncludeSchema))
+            {
                 this.Reset();
                 global::System.Data.DataSet ds = new global::System.Data.DataSet();
                 ds.ReadXml(reader);
-                if ((ds.Tables["ConfigAutocompletarProy"] != null)) {
+                if ((ds.Tables["ConfigAutocompletarProy"] != null))
+                {
                     base.Tables.Add(new ConfigAutocompletarProyDataTable(ds.Tables["ConfigAutocompletarProy"]));
                 }
-                if ((ds.Tables["ConfigSearchProy"] != null)) {
+                if ((ds.Tables["ConfigSearchProy"] != null))
+                {
                     base.Tables.Add(new ConfigSearchProyDataTable(ds.Tables["ConfigSearchProy"]));
                 }
-                if ((ds.Tables["GrupoIdentidades"] != null)) {
+                if ((ds.Tables["GrupoIdentidades"] != null))
+                {
                     base.Tables.Add(new GrupoIdentidadesDataTable(ds.Tables["GrupoIdentidades"]));
                 }
-                if ((ds.Tables["TagsVariar"] != null)) {
+                if ((ds.Tables["TagsVariar"] != null))
+                {
                     base.Tables.Add(new TagsVariarDataTable(ds.Tables["TagsVariar"]));
                 }
-                if ((ds.Tables["EtiquetasElemento"] != null)) {
+                if ((ds.Tables["EtiquetasElemento"] != null))
+                {
                     base.Tables.Add(new EtiquetasElementoDataTable(ds.Tables["EtiquetasElemento"]));
                 }
                 this.DataSetName = ds.DataSetName;
@@ -236,65 +276,80 @@ namespace Es.Riam.Gnoss.AD.AutoCompetarEtiquetas.Model {
                 this.Merge(ds, false, global::System.Data.MissingSchemaAction.Add);
                 this.InitVars();
             }
-            else {
+            else
+            {
                 this.ReadXml(reader);
                 this.InitVars();
             }
         }
-        
+
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-        protected override global::System.Xml.Schema.XmlSchema GetSchemaSerializable() {
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+        protected override global::System.Xml.Schema.XmlSchema GetSchemaSerializable()
+        {
             global::System.IO.MemoryStream stream = new global::System.IO.MemoryStream();
             this.WriteXmlSchema(new global::System.Xml.XmlTextWriter(stream, null));
             stream.Position = 0;
             return global::System.Xml.Schema.XmlSchema.Read(new global::System.Xml.XmlTextReader(stream), null);
         }
-        
+
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-        internal void InitVars() {
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+        internal void InitVars()
+        {
             this.InitVars(true);
         }
-        
+
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-        internal void InitVars(bool initTable) {
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+        internal void InitVars(bool initTable)
+        {
             this.tableConfigAutocompletarProy = ((ConfigAutocompletarProyDataTable)(base.Tables["ConfigAutocompletarProy"]));
-            if ((initTable == true)) {
-                if ((this.tableConfigAutocompletarProy != null)) {
+            if ((initTable == true))
+            {
+                if ((this.tableConfigAutocompletarProy != null))
+                {
                     this.tableConfigAutocompletarProy.InitVars();
                 }
             }
             this.tableConfigSearchProy = ((ConfigSearchProyDataTable)(base.Tables["ConfigSearchProy"]));
-            if ((initTable == true)) {
-                if ((this.tableConfigSearchProy != null)) {
+            if ((initTable == true))
+            {
+                if ((this.tableConfigSearchProy != null))
+                {
                     this.tableConfigSearchProy.InitVars();
                 }
             }
             this.tableGrupoIdentidades = ((GrupoIdentidadesDataTable)(base.Tables["GrupoIdentidades"]));
-            if ((initTable == true)) {
-                if ((this.tableGrupoIdentidades != null)) {
+            if ((initTable == true))
+            {
+                if ((this.tableGrupoIdentidades != null))
+                {
                     this.tableGrupoIdentidades.InitVars();
                 }
             }
             this.tableTagsVariar = ((TagsVariarDataTable)(base.Tables["TagsVariar"]));
-            if ((initTable == true)) {
-                if ((this.tableTagsVariar != null)) {
+            if ((initTable == true))
+            {
+                if ((this.tableTagsVariar != null))
+                {
                     this.tableTagsVariar.InitVars();
                 }
             }
             this.tableEtiquetasElemento = ((EtiquetasElementoDataTable)(base.Tables["EtiquetasElemento"]));
-            if ((initTable == true)) {
-                if ((this.tableEtiquetasElemento != null)) {
+            if ((initTable == true))
+            {
+                if ((this.tableEtiquetasElemento != null))
+                {
                     this.tableEtiquetasElemento.InitVars();
                 }
             }
         }
-        
+
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-        private void InitClass() {
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+        private void InitClass()
+        {
             this.DataSetName = "TagsAutoDS";
             this.Prefix = "";
             this.Namespace = "http://tempuri.org/TagsAutoDS.xsd";
@@ -311,48 +366,56 @@ namespace Es.Riam.Gnoss.AD.AutoCompetarEtiquetas.Model {
             this.tableEtiquetasElemento = new EtiquetasElementoDataTable();
             base.Tables.Add(this.tableEtiquetasElemento);
         }
-        
+
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-        private bool ShouldSerializeConfigAutocompletarProy() {
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+        private bool ShouldSerializeConfigAutocompletarProy()
+        {
             return false;
         }
-        
+
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-        private bool ShouldSerializeConfigSearchProy() {
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+        private bool ShouldSerializeConfigSearchProy()
+        {
             return false;
         }
-        
+
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-        private bool ShouldSerializeGrupoIdentidades() {
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+        private bool ShouldSerializeGrupoIdentidades()
+        {
             return false;
         }
-        
+
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-        private bool ShouldSerializeTagsVariar() {
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+        private bool ShouldSerializeTagsVariar()
+        {
             return false;
         }
-        
+
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-        private bool ShouldSerializeEtiquetasElemento() {
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+        private bool ShouldSerializeEtiquetasElemento()
+        {
             return false;
         }
-        
+
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-        private void SchemaChanged(object sender, global::System.ComponentModel.CollectionChangeEventArgs e) {
-            if ((e.Action == global::System.ComponentModel.CollectionChangeAction.Remove)) {
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+        private void SchemaChanged(object sender, global::System.ComponentModel.CollectionChangeEventArgs e)
+        {
+            if ((e.Action == global::System.ComponentModel.CollectionChangeAction.Remove))
+            {
                 this.InitVars();
             }
         }
-        
+
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-        public static global::System.Xml.Schema.XmlSchemaComplexType GetTypedDataSetSchema(global::System.Xml.Schema.XmlSchemaSet xs) {
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+        public static global::System.Xml.Schema.XmlSchemaComplexType GetTypedDataSetSchema(global::System.Xml.Schema.XmlSchemaSet xs)
+        {
             TagsAutoDS ds = new TagsAutoDS();
             global::System.Xml.Schema.XmlSchemaComplexType type = new global::System.Xml.Schema.XmlSchemaComplexType();
             global::System.Xml.Schema.XmlSchemaSequence sequence = new global::System.Xml.Schema.XmlSchemaSequence();
@@ -361,34 +424,43 @@ namespace Es.Riam.Gnoss.AD.AutoCompetarEtiquetas.Model {
             sequence.Items.Add(any);
             type.Particle = sequence;
             global::System.Xml.Schema.XmlSchema dsSchema = ds.GetSchemaSerializable();
-            if (xs.Contains(dsSchema.TargetNamespace)) {
+            if (xs.Contains(dsSchema.TargetNamespace))
+            {
                 global::System.IO.MemoryStream s1 = new global::System.IO.MemoryStream();
                 global::System.IO.MemoryStream s2 = new global::System.IO.MemoryStream();
-                try {
+                try
+                {
                     global::System.Xml.Schema.XmlSchema schema = null;
                     dsSchema.Write(s1);
-                    for (global::System.Collections.IEnumerator schemas = xs.Schemas(dsSchema.TargetNamespace).GetEnumerator(); schemas.MoveNext(); ) {
+                    for (global::System.Collections.IEnumerator schemas = xs.Schemas(dsSchema.TargetNamespace).GetEnumerator(); schemas.MoveNext();)
+                    {
                         schema = ((global::System.Xml.Schema.XmlSchema)(schemas.Current));
                         s2.SetLength(0);
                         schema.Write(s2);
-                        if ((s1.Length == s2.Length)) {
+                        if ((s1.Length == s2.Length))
+                        {
                             s1.Position = 0;
                             s2.Position = 0;
-                            for (; ((s1.Position != s1.Length) 
-                                        && (s1.ReadByte() == s2.ReadByte())); ) {
+                            for (; ((s1.Position != s1.Length)
+                                        && (s1.ReadByte() == s2.ReadByte()));)
+                            {
                                 ;
                             }
-                            if ((s1.Position == s1.Length)) {
+                            if ((s1.Position == s1.Length))
+                            {
                                 return type;
                             }
                         }
                     }
                 }
-                finally {
-                    if ((s1 != null)) {
+                finally
+                {
+                    if ((s1 != null))
+                    {
                         s1.Close();
                     }
-                    if ((s2 != null)) {
+                    if ((s2 != null))
+                    {
                         s2.Close();
                     }
                 }
@@ -396,150 +468,173 @@ namespace Es.Riam.Gnoss.AD.AutoCompetarEtiquetas.Model {
             xs.Add(dsSchema);
             return type;
         }
-        
-        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
+
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
         public delegate void ConfigAutocompletarProyRowChangeEventHandler(object sender, ConfigAutocompletarProyRowChangeEvent e);
-        
-        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
+
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
         public delegate void ConfigSearchProyRowChangeEventHandler(object sender, ConfigSearchProyRowChangeEvent e);
-        
-        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
+
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
         public delegate void GrupoIdentidadesRowChangeEventHandler(object sender, GrupoIdentidadesRowChangeEvent e);
-        
-        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
+
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
         public delegate void TagsVariarRowChangeEventHandler(object sender, TagsVariarRowChangeEvent e);
-        
-        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
+
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
         public delegate void EtiquetasElementoRowChangeEventHandler(object sender, EtiquetasElementoRowChangeEvent e);
-        
+
         /// <summary>
         ///Represents the strongly named DataTable class.
         ///</summary>
         [global::System.Serializable()]
         [global::System.Xml.Serialization.XmlSchemaProviderAttribute("GetTypedTableSchema")]
-        public partial class ConfigAutocompletarProyDataTable : global::System.Data.TypedTableBase<ConfigAutocompletarProyRow> {
-            
+        public partial class ConfigAutocompletarProyDataTable : global::System.Data.TypedTableBase<ConfigAutocompletarProyRow>
+        {
+
             private global::System.Data.DataColumn columnOrganizacionID;
-            
+
             private global::System.Data.DataColumn columnProyectoID;
-            
+
             private global::System.Data.DataColumn columnClave;
-            
+
             private global::System.Data.DataColumn columnValor;
-            
+
             private global::System.Data.DataColumn columnPestanyaID;
-            
+
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-            public ConfigAutocompletarProyDataTable() {
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public ConfigAutocompletarProyDataTable()
+            {
                 this.TableName = "ConfigAutocompletarProy";
                 this.BeginInit();
                 this.InitClass();
                 this.EndInit();
             }
-            
+
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-            internal ConfigAutocompletarProyDataTable(global::System.Data.DataTable table) {
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            internal ConfigAutocompletarProyDataTable(global::System.Data.DataTable table)
+            {
                 this.TableName = table.TableName;
-                if ((table.CaseSensitive != table.DataSet.CaseSensitive)) {
+                if ((table.CaseSensitive != table.DataSet.CaseSensitive))
+                {
                     this.CaseSensitive = table.CaseSensitive;
                 }
-                if ((table.Locale.ToString() != table.DataSet.Locale.ToString())) {
+                if ((table.Locale.ToString() != table.DataSet.Locale.ToString()))
+                {
                     this.Locale = table.Locale;
                 }
-                if ((table.Namespace != table.DataSet.Namespace)) {
+                if ((table.Namespace != table.DataSet.Namespace))
+                {
                     this.Namespace = table.Namespace;
                 }
                 this.Prefix = table.Prefix;
                 this.MinimumCapacity = table.MinimumCapacity;
             }
-            
+
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-            protected ConfigAutocompletarProyDataTable(global::System.Runtime.Serialization.SerializationInfo info, global::System.Runtime.Serialization.StreamingContext context) : 
-                    base(info, context) {
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            protected ConfigAutocompletarProyDataTable(global::System.Runtime.Serialization.SerializationInfo info, global::System.Runtime.Serialization.StreamingContext context) :
+                    base(info, context)
+            {
                 this.InitVars();
             }
-            
+
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-            public global::System.Data.DataColumn OrganizacionIDColumn {
-                get {
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public global::System.Data.DataColumn OrganizacionIDColumn
+            {
+                get
+                {
                     return this.columnOrganizacionID;
                 }
             }
-            
+
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-            public global::System.Data.DataColumn ProyectoIDColumn {
-                get {
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public global::System.Data.DataColumn ProyectoIDColumn
+            {
+                get
+                {
                     return this.columnProyectoID;
                 }
             }
-            
+
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-            public global::System.Data.DataColumn ClaveColumn {
-                get {
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public global::System.Data.DataColumn ClaveColumn
+            {
+                get
+                {
                     return this.columnClave;
                 }
             }
-            
+
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-            public global::System.Data.DataColumn ValorColumn {
-                get {
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public global::System.Data.DataColumn ValorColumn
+            {
+                get
+                {
                     return this.columnValor;
                 }
             }
-            
+
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-            public global::System.Data.DataColumn PestanyaIDColumn {
-                get {
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public global::System.Data.DataColumn PestanyaIDColumn
+            {
+                get
+                {
                     return this.columnPestanyaID;
                 }
             }
-            
+
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
             [global::System.ComponentModel.Browsable(false)]
-            public int Count {
-                get {
+            public int Count
+            {
+                get
+                {
                     return this.Rows.Count;
                 }
             }
-            
+
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-            public ConfigAutocompletarProyRow this[int index] {
-                get {
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public ConfigAutocompletarProyRow this[int index]
+            {
+                get
+                {
                     return ((ConfigAutocompletarProyRow)(this.Rows[index]));
                 }
             }
-            
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
+
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
             public event ConfigAutocompletarProyRowChangeEventHandler ConfigAutocompletarProyRowChanging;
-            
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
+
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
             public event ConfigAutocompletarProyRowChangeEventHandler ConfigAutocompletarProyRowChanged;
-            
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
+
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
             public event ConfigAutocompletarProyRowChangeEventHandler ConfigAutocompletarProyRowDeleting;
-            
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
+
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
             public event ConfigAutocompletarProyRowChangeEventHandler ConfigAutocompletarProyRowDeleted;
-            
+
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-            public void AddConfigAutocompletarProyRow(ConfigAutocompletarProyRow row) {
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public void AddConfigAutocompletarProyRow(ConfigAutocompletarProyRow row)
+            {
                 this.Rows.Add(row);
             }
-            
+
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-            public ConfigAutocompletarProyRow AddConfigAutocompletarProyRow(System.Guid OrganizacionID, System.Guid ProyectoID, string Clave, string Valor, System.Guid PestanyaID) {
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public ConfigAutocompletarProyRow AddConfigAutocompletarProyRow(System.Guid OrganizacionID, System.Guid ProyectoID, string Clave, string Valor, System.Guid PestanyaID)
+            {
                 ConfigAutocompletarProyRow rowConfigAutocompletarProyRow = ((ConfigAutocompletarProyRow)(this.NewRow()));
                 object[] columnValuesArray = new object[] {
                         OrganizacionID,
@@ -551,43 +646,48 @@ namespace Es.Riam.Gnoss.AD.AutoCompetarEtiquetas.Model {
                 this.Rows.Add(rowConfigAutocompletarProyRow);
                 return rowConfigAutocompletarProyRow;
             }
-            
+
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-            public ConfigAutocompletarProyRow FindByOrganizacionIDProyectoIDClave(System.Guid OrganizacionID, System.Guid ProyectoID, string Clave) {
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public ConfigAutocompletarProyRow FindByOrganizacionIDProyectoIDClave(System.Guid OrganizacionID, System.Guid ProyectoID, string Clave)
+            {
                 return ((ConfigAutocompletarProyRow)(this.Rows.Find(new object[] {
                             OrganizacionID,
                             ProyectoID,
                             Clave})));
             }
-            
+
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-            public override global::System.Data.DataTable Clone() {
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public override global::System.Data.DataTable Clone()
+            {
                 ConfigAutocompletarProyDataTable cln = ((ConfigAutocompletarProyDataTable)(base.Clone()));
                 cln.InitVars();
                 return cln;
             }
-            
+
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-            protected override global::System.Data.DataTable CreateInstance() {
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            protected override global::System.Data.DataTable CreateInstance()
+            {
                 return new ConfigAutocompletarProyDataTable();
             }
-            
+
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-            internal void InitVars() {
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            internal void InitVars()
+            {
                 this.columnOrganizacionID = base.Columns["OrganizacionID"];
                 this.columnProyectoID = base.Columns["ProyectoID"];
                 this.columnClave = base.Columns["Clave"];
                 this.columnValor = base.Columns["Valor"];
                 this.columnPestanyaID = base.Columns["PestanyaID"];
             }
-            
+
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-            private void InitClass() {
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            private void InitClass()
+            {
                 this.columnOrganizacionID = new global::System.Data.DataColumn("OrganizacionID", typeof(global::System.Guid), null, global::System.Data.MappingType.Element);
                 base.Columns.Add(this.columnOrganizacionID);
                 this.columnProyectoID = new global::System.Data.DataColumn("ProyectoID", typeof(global::System.Guid), null, global::System.Data.MappingType.Element);
@@ -609,70 +709,83 @@ namespace Es.Riam.Gnoss.AD.AutoCompetarEtiquetas.Model {
                 this.columnValor.AllowDBNull = false;
                 this.columnValor.MaxLength = 2147483647;
             }
-            
+
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-            public ConfigAutocompletarProyRow NewConfigAutocompletarProyRow() {
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public ConfigAutocompletarProyRow NewConfigAutocompletarProyRow()
+            {
                 return ((ConfigAutocompletarProyRow)(this.NewRow()));
             }
-            
+
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-            protected override global::System.Data.DataRow NewRowFromBuilder(global::System.Data.DataRowBuilder builder) {
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            protected override global::System.Data.DataRow NewRowFromBuilder(global::System.Data.DataRowBuilder builder)
+            {
                 return new ConfigAutocompletarProyRow(builder);
             }
-            
+
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-            protected override global::System.Type GetRowType() {
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            protected override global::System.Type GetRowType()
+            {
                 return typeof(ConfigAutocompletarProyRow);
             }
-            
+
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-            protected override void OnRowChanged(global::System.Data.DataRowChangeEventArgs e) {
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            protected override void OnRowChanged(global::System.Data.DataRowChangeEventArgs e)
+            {
                 base.OnRowChanged(e);
-                if ((this.ConfigAutocompletarProyRowChanged != null)) {
+                if ((this.ConfigAutocompletarProyRowChanged != null))
+                {
                     this.ConfigAutocompletarProyRowChanged(this, new ConfigAutocompletarProyRowChangeEvent(((ConfigAutocompletarProyRow)(e.Row)), e.Action));
                 }
             }
-            
+
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-            protected override void OnRowChanging(global::System.Data.DataRowChangeEventArgs e) {
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            protected override void OnRowChanging(global::System.Data.DataRowChangeEventArgs e)
+            {
                 base.OnRowChanging(e);
-                if ((this.ConfigAutocompletarProyRowChanging != null)) {
+                if ((this.ConfigAutocompletarProyRowChanging != null))
+                {
                     this.ConfigAutocompletarProyRowChanging(this, new ConfigAutocompletarProyRowChangeEvent(((ConfigAutocompletarProyRow)(e.Row)), e.Action));
                 }
             }
-            
+
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-            protected override void OnRowDeleted(global::System.Data.DataRowChangeEventArgs e) {
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            protected override void OnRowDeleted(global::System.Data.DataRowChangeEventArgs e)
+            {
                 base.OnRowDeleted(e);
-                if ((this.ConfigAutocompletarProyRowDeleted != null)) {
+                if ((this.ConfigAutocompletarProyRowDeleted != null))
+                {
                     this.ConfigAutocompletarProyRowDeleted(this, new ConfigAutocompletarProyRowChangeEvent(((ConfigAutocompletarProyRow)(e.Row)), e.Action));
                 }
             }
-            
+
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-            protected override void OnRowDeleting(global::System.Data.DataRowChangeEventArgs e) {
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            protected override void OnRowDeleting(global::System.Data.DataRowChangeEventArgs e)
+            {
                 base.OnRowDeleting(e);
-                if ((this.ConfigAutocompletarProyRowDeleting != null)) {
+                if ((this.ConfigAutocompletarProyRowDeleting != null))
+                {
                     this.ConfigAutocompletarProyRowDeleting(this, new ConfigAutocompletarProyRowChangeEvent(((ConfigAutocompletarProyRow)(e.Row)), e.Action));
                 }
             }
-            
+
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-            public void RemoveConfigAutocompletarProyRow(ConfigAutocompletarProyRow row) {
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public void RemoveConfigAutocompletarProyRow(ConfigAutocompletarProyRow row)
+            {
                 this.Rows.Remove(row);
             }
-            
+
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-            public static global::System.Xml.Schema.XmlSchemaComplexType GetTypedTableSchema(global::System.Xml.Schema.XmlSchemaSet xs) {
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public static global::System.Xml.Schema.XmlSchemaComplexType GetTypedTableSchema(global::System.Xml.Schema.XmlSchemaSet xs)
+            {
                 global::System.Xml.Schema.XmlSchemaComplexType type = new global::System.Xml.Schema.XmlSchemaComplexType();
                 global::System.Xml.Schema.XmlSchemaSequence sequence = new global::System.Xml.Schema.XmlSchemaSequence();
                 TagsAutoDS ds = new TagsAutoDS();
@@ -697,34 +810,43 @@ namespace Es.Riam.Gnoss.AD.AutoCompetarEtiquetas.Model {
                 type.Attributes.Add(attribute2);
                 type.Particle = sequence;
                 global::System.Xml.Schema.XmlSchema dsSchema = ds.GetSchemaSerializable();
-                if (xs.Contains(dsSchema.TargetNamespace)) {
+                if (xs.Contains(dsSchema.TargetNamespace))
+                {
                     global::System.IO.MemoryStream s1 = new global::System.IO.MemoryStream();
                     global::System.IO.MemoryStream s2 = new global::System.IO.MemoryStream();
-                    try {
+                    try
+                    {
                         global::System.Xml.Schema.XmlSchema schema = null;
                         dsSchema.Write(s1);
-                        for (global::System.Collections.IEnumerator schemas = xs.Schemas(dsSchema.TargetNamespace).GetEnumerator(); schemas.MoveNext(); ) {
+                        for (global::System.Collections.IEnumerator schemas = xs.Schemas(dsSchema.TargetNamespace).GetEnumerator(); schemas.MoveNext();)
+                        {
                             schema = ((global::System.Xml.Schema.XmlSchema)(schemas.Current));
                             s2.SetLength(0);
                             schema.Write(s2);
-                            if ((s1.Length == s2.Length)) {
+                            if ((s1.Length == s2.Length))
+                            {
                                 s1.Position = 0;
                                 s2.Position = 0;
-                                for (; ((s1.Position != s1.Length) 
-                                            && (s1.ReadByte() == s2.ReadByte())); ) {
+                                for (; ((s1.Position != s1.Length)
+                                            && (s1.ReadByte() == s2.ReadByte()));)
+                                {
                                     ;
                                 }
-                                if ((s1.Position == s1.Length)) {
+                                if ((s1.Position == s1.Length))
+                                {
                                     return type;
                                 }
                             }
                         }
                     }
-                    finally {
-                        if ((s1 != null)) {
+                    finally
+                    {
+                        if ((s1 != null))
+                        {
                             s1.Close();
                         }
-                        if ((s2 != null)) {
+                        if ((s2 != null))
+                        {
                             s2.Close();
                         }
                     }
@@ -733,125 +855,146 @@ namespace Es.Riam.Gnoss.AD.AutoCompetarEtiquetas.Model {
                 return type;
             }
         }
-        
+
         /// <summary>
         ///Represents the strongly named DataTable class.
         ///</summary>
         [global::System.Serializable()]
         [global::System.Xml.Serialization.XmlSchemaProviderAttribute("GetTypedTableSchema")]
-        public partial class ConfigSearchProyDataTable : global::System.Data.TypedTableBase<ConfigSearchProyRow> {
-            
+        public partial class ConfigSearchProyDataTable : global::System.Data.TypedTableBase<ConfigSearchProyRow>
+        {
+
             private global::System.Data.DataColumn columnOrganizacionID;
-            
+
             private global::System.Data.DataColumn columnProyectoID;
-            
+
             private global::System.Data.DataColumn columnClave;
-            
+
             private global::System.Data.DataColumn columnValor;
-            
+
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-            public ConfigSearchProyDataTable() {
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public ConfigSearchProyDataTable()
+            {
                 this.TableName = "ConfigSearchProy";
                 this.BeginInit();
                 this.InitClass();
                 this.EndInit();
             }
-            
+
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-            internal ConfigSearchProyDataTable(global::System.Data.DataTable table) {
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            internal ConfigSearchProyDataTable(global::System.Data.DataTable table)
+            {
                 this.TableName = table.TableName;
-                if ((table.CaseSensitive != table.DataSet.CaseSensitive)) {
+                if ((table.CaseSensitive != table.DataSet.CaseSensitive))
+                {
                     this.CaseSensitive = table.CaseSensitive;
                 }
-                if ((table.Locale.ToString() != table.DataSet.Locale.ToString())) {
+                if ((table.Locale.ToString() != table.DataSet.Locale.ToString()))
+                {
                     this.Locale = table.Locale;
                 }
-                if ((table.Namespace != table.DataSet.Namespace)) {
+                if ((table.Namespace != table.DataSet.Namespace))
+                {
                     this.Namespace = table.Namespace;
                 }
                 this.Prefix = table.Prefix;
                 this.MinimumCapacity = table.MinimumCapacity;
             }
-            
+
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-            protected ConfigSearchProyDataTable(global::System.Runtime.Serialization.SerializationInfo info, global::System.Runtime.Serialization.StreamingContext context) : 
-                    base(info, context) {
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            protected ConfigSearchProyDataTable(global::System.Runtime.Serialization.SerializationInfo info, global::System.Runtime.Serialization.StreamingContext context) :
+                    base(info, context)
+            {
                 this.InitVars();
             }
-            
+
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-            public global::System.Data.DataColumn OrganizacionIDColumn {
-                get {
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public global::System.Data.DataColumn OrganizacionIDColumn
+            {
+                get
+                {
                     return this.columnOrganizacionID;
                 }
             }
-            
+
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-            public global::System.Data.DataColumn ProyectoIDColumn {
-                get {
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public global::System.Data.DataColumn ProyectoIDColumn
+            {
+                get
+                {
                     return this.columnProyectoID;
                 }
             }
-            
+
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-            public global::System.Data.DataColumn ClaveColumn {
-                get {
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public global::System.Data.DataColumn ClaveColumn
+            {
+                get
+                {
                     return this.columnClave;
                 }
             }
-            
+
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-            public global::System.Data.DataColumn ValorColumn {
-                get {
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public global::System.Data.DataColumn ValorColumn
+            {
+                get
+                {
                     return this.columnValor;
                 }
             }
-            
+
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
             [global::System.ComponentModel.Browsable(false)]
-            public int Count {
-                get {
+            public int Count
+            {
+                get
+                {
                     return this.Rows.Count;
                 }
             }
-            
+
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-            public ConfigSearchProyRow this[int index] {
-                get {
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public ConfigSearchProyRow this[int index]
+            {
+                get
+                {
                     return ((ConfigSearchProyRow)(this.Rows[index]));
                 }
             }
-            
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
+
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
             public event ConfigSearchProyRowChangeEventHandler ConfigSearchProyRowChanging;
-            
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
+
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
             public event ConfigSearchProyRowChangeEventHandler ConfigSearchProyRowChanged;
-            
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
+
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
             public event ConfigSearchProyRowChangeEventHandler ConfigSearchProyRowDeleting;
-            
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
+
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
             public event ConfigSearchProyRowChangeEventHandler ConfigSearchProyRowDeleted;
-            
+
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-            public void AddConfigSearchProyRow(ConfigSearchProyRow row) {
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public void AddConfigSearchProyRow(ConfigSearchProyRow row)
+            {
                 this.Rows.Add(row);
             }
-            
+
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-            public ConfigSearchProyRow AddConfigSearchProyRow(System.Guid OrganizacionID, System.Guid ProyectoID, string Clave, string Valor) {
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public ConfigSearchProyRow AddConfigSearchProyRow(System.Guid OrganizacionID, System.Guid ProyectoID, string Clave, string Valor)
+            {
                 ConfigSearchProyRow rowConfigSearchProyRow = ((ConfigSearchProyRow)(this.NewRow()));
                 object[] columnValuesArray = new object[] {
                         OrganizacionID,
@@ -862,42 +1005,47 @@ namespace Es.Riam.Gnoss.AD.AutoCompetarEtiquetas.Model {
                 this.Rows.Add(rowConfigSearchProyRow);
                 return rowConfigSearchProyRow;
             }
-            
+
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-            public ConfigSearchProyRow FindByOrganizacionIDProyectoIDClave(System.Guid OrganizacionID, System.Guid ProyectoID, string Clave) {
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public ConfigSearchProyRow FindByOrganizacionIDProyectoIDClave(System.Guid OrganizacionID, System.Guid ProyectoID, string Clave)
+            {
                 return ((ConfigSearchProyRow)(this.Rows.Find(new object[] {
                             OrganizacionID,
                             ProyectoID,
                             Clave})));
             }
-            
+
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-            public override global::System.Data.DataTable Clone() {
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public override global::System.Data.DataTable Clone()
+            {
                 ConfigSearchProyDataTable cln = ((ConfigSearchProyDataTable)(base.Clone()));
                 cln.InitVars();
                 return cln;
             }
-            
+
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-            protected override global::System.Data.DataTable CreateInstance() {
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            protected override global::System.Data.DataTable CreateInstance()
+            {
                 return new ConfigSearchProyDataTable();
             }
-            
+
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-            internal void InitVars() {
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            internal void InitVars()
+            {
                 this.columnOrganizacionID = base.Columns["OrganizacionID"];
                 this.columnProyectoID = base.Columns["ProyectoID"];
                 this.columnClave = base.Columns["Clave"];
                 this.columnValor = base.Columns["Valor"];
             }
-            
+
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-            private void InitClass() {
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            private void InitClass()
+            {
                 this.columnOrganizacionID = new global::System.Data.DataColumn("OrganizacionID", typeof(global::System.Guid), null, global::System.Data.MappingType.Element);
                 base.Columns.Add(this.columnOrganizacionID);
                 this.columnProyectoID = new global::System.Data.DataColumn("ProyectoID", typeof(global::System.Guid), null, global::System.Data.MappingType.Element);
@@ -917,70 +1065,83 @@ namespace Es.Riam.Gnoss.AD.AutoCompetarEtiquetas.Model {
                 this.columnValor.AllowDBNull = false;
                 this.columnValor.MaxLength = 2147483647;
             }
-            
+
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-            public ConfigSearchProyRow NewConfigSearchProyRow() {
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public ConfigSearchProyRow NewConfigSearchProyRow()
+            {
                 return ((ConfigSearchProyRow)(this.NewRow()));
             }
-            
+
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-            protected override global::System.Data.DataRow NewRowFromBuilder(global::System.Data.DataRowBuilder builder) {
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            protected override global::System.Data.DataRow NewRowFromBuilder(global::System.Data.DataRowBuilder builder)
+            {
                 return new ConfigSearchProyRow(builder);
             }
-            
+
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-            protected override global::System.Type GetRowType() {
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            protected override global::System.Type GetRowType()
+            {
                 return typeof(ConfigSearchProyRow);
             }
-            
+
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-            protected override void OnRowChanged(global::System.Data.DataRowChangeEventArgs e) {
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            protected override void OnRowChanged(global::System.Data.DataRowChangeEventArgs e)
+            {
                 base.OnRowChanged(e);
-                if ((this.ConfigSearchProyRowChanged != null)) {
+                if ((this.ConfigSearchProyRowChanged != null))
+                {
                     this.ConfigSearchProyRowChanged(this, new ConfigSearchProyRowChangeEvent(((ConfigSearchProyRow)(e.Row)), e.Action));
                 }
             }
-            
+
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-            protected override void OnRowChanging(global::System.Data.DataRowChangeEventArgs e) {
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            protected override void OnRowChanging(global::System.Data.DataRowChangeEventArgs e)
+            {
                 base.OnRowChanging(e);
-                if ((this.ConfigSearchProyRowChanging != null)) {
+                if ((this.ConfigSearchProyRowChanging != null))
+                {
                     this.ConfigSearchProyRowChanging(this, new ConfigSearchProyRowChangeEvent(((ConfigSearchProyRow)(e.Row)), e.Action));
                 }
             }
-            
+
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-            protected override void OnRowDeleted(global::System.Data.DataRowChangeEventArgs e) {
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            protected override void OnRowDeleted(global::System.Data.DataRowChangeEventArgs e)
+            {
                 base.OnRowDeleted(e);
-                if ((this.ConfigSearchProyRowDeleted != null)) {
+                if ((this.ConfigSearchProyRowDeleted != null))
+                {
                     this.ConfigSearchProyRowDeleted(this, new ConfigSearchProyRowChangeEvent(((ConfigSearchProyRow)(e.Row)), e.Action));
                 }
             }
-            
+
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-            protected override void OnRowDeleting(global::System.Data.DataRowChangeEventArgs e) {
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            protected override void OnRowDeleting(global::System.Data.DataRowChangeEventArgs e)
+            {
                 base.OnRowDeleting(e);
-                if ((this.ConfigSearchProyRowDeleting != null)) {
+                if ((this.ConfigSearchProyRowDeleting != null))
+                {
                     this.ConfigSearchProyRowDeleting(this, new ConfigSearchProyRowChangeEvent(((ConfigSearchProyRow)(e.Row)), e.Action));
                 }
             }
-            
+
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-            public void RemoveConfigSearchProyRow(ConfigSearchProyRow row) {
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public void RemoveConfigSearchProyRow(ConfigSearchProyRow row)
+            {
                 this.Rows.Remove(row);
             }
-            
+
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-            public static global::System.Xml.Schema.XmlSchemaComplexType GetTypedTableSchema(global::System.Xml.Schema.XmlSchemaSet xs) {
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public static global::System.Xml.Schema.XmlSchemaComplexType GetTypedTableSchema(global::System.Xml.Schema.XmlSchemaSet xs)
+            {
                 global::System.Xml.Schema.XmlSchemaComplexType type = new global::System.Xml.Schema.XmlSchemaComplexType();
                 global::System.Xml.Schema.XmlSchemaSequence sequence = new global::System.Xml.Schema.XmlSchemaSequence();
                 TagsAutoDS ds = new TagsAutoDS();
@@ -1005,34 +1166,43 @@ namespace Es.Riam.Gnoss.AD.AutoCompetarEtiquetas.Model {
                 type.Attributes.Add(attribute2);
                 type.Particle = sequence;
                 global::System.Xml.Schema.XmlSchema dsSchema = ds.GetSchemaSerializable();
-                if (xs.Contains(dsSchema.TargetNamespace)) {
+                if (xs.Contains(dsSchema.TargetNamespace))
+                {
                     global::System.IO.MemoryStream s1 = new global::System.IO.MemoryStream();
                     global::System.IO.MemoryStream s2 = new global::System.IO.MemoryStream();
-                    try {
+                    try
+                    {
                         global::System.Xml.Schema.XmlSchema schema = null;
                         dsSchema.Write(s1);
-                        for (global::System.Collections.IEnumerator schemas = xs.Schemas(dsSchema.TargetNamespace).GetEnumerator(); schemas.MoveNext(); ) {
+                        for (global::System.Collections.IEnumerator schemas = xs.Schemas(dsSchema.TargetNamespace).GetEnumerator(); schemas.MoveNext();)
+                        {
                             schema = ((global::System.Xml.Schema.XmlSchema)(schemas.Current));
                             s2.SetLength(0);
                             schema.Write(s2);
-                            if ((s1.Length == s2.Length)) {
+                            if ((s1.Length == s2.Length))
+                            {
                                 s1.Position = 0;
                                 s2.Position = 0;
-                                for (; ((s1.Position != s1.Length) 
-                                            && (s1.ReadByte() == s2.ReadByte())); ) {
+                                for (; ((s1.Position != s1.Length)
+                                            && (s1.ReadByte() == s2.ReadByte()));)
+                                {
                                     ;
                                 }
-                                if ((s1.Position == s1.Length)) {
+                                if ((s1.Position == s1.Length))
+                                {
                                     return type;
                                 }
                             }
                         }
                     }
-                    finally {
-                        if ((s1 != null)) {
+                    finally
+                    {
+                        if ((s1 != null))
+                        {
                             s1.Close();
                         }
-                        if ((s2 != null)) {
+                        if ((s2 != null))
+                        {
                             s2.Close();
                         }
                     }
@@ -1041,105 +1211,122 @@ namespace Es.Riam.Gnoss.AD.AutoCompetarEtiquetas.Model {
                 return type;
             }
         }
-        
+
         /// <summary>
         ///Represents the strongly named DataTable class.
         ///</summary>
         [global::System.Serializable()]
         [global::System.Xml.Serialization.XmlSchemaProviderAttribute("GetTypedTableSchema")]
-        public partial class GrupoIdentidadesDataTable : global::System.Data.TypedTableBase<GrupoIdentidadesRow> {
-            
+        public partial class GrupoIdentidadesDataTable : global::System.Data.TypedTableBase<GrupoIdentidadesRow>
+        {
+
             private global::System.Data.DataColumn columnGrupoID;
-            
+
             private global::System.Data.DataColumn columnIdentidadID;
-            
+
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-            public GrupoIdentidadesDataTable() {
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public GrupoIdentidadesDataTable()
+            {
                 this.TableName = "GrupoIdentidades";
                 this.BeginInit();
                 this.InitClass();
                 this.EndInit();
             }
-            
+
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-            internal GrupoIdentidadesDataTable(global::System.Data.DataTable table) {
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            internal GrupoIdentidadesDataTable(global::System.Data.DataTable table)
+            {
                 this.TableName = table.TableName;
-                if ((table.CaseSensitive != table.DataSet.CaseSensitive)) {
+                if ((table.CaseSensitive != table.DataSet.CaseSensitive))
+                {
                     this.CaseSensitive = table.CaseSensitive;
                 }
-                if ((table.Locale.ToString() != table.DataSet.Locale.ToString())) {
+                if ((table.Locale.ToString() != table.DataSet.Locale.ToString()))
+                {
                     this.Locale = table.Locale;
                 }
-                if ((table.Namespace != table.DataSet.Namespace)) {
+                if ((table.Namespace != table.DataSet.Namespace))
+                {
                     this.Namespace = table.Namespace;
                 }
                 this.Prefix = table.Prefix;
                 this.MinimumCapacity = table.MinimumCapacity;
             }
-            
+
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-            protected GrupoIdentidadesDataTable(global::System.Runtime.Serialization.SerializationInfo info, global::System.Runtime.Serialization.StreamingContext context) : 
-                    base(info, context) {
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            protected GrupoIdentidadesDataTable(global::System.Runtime.Serialization.SerializationInfo info, global::System.Runtime.Serialization.StreamingContext context) :
+                    base(info, context)
+            {
                 this.InitVars();
             }
-            
+
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-            public global::System.Data.DataColumn GrupoIDColumn {
-                get {
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public global::System.Data.DataColumn GrupoIDColumn
+            {
+                get
+                {
                     return this.columnGrupoID;
                 }
             }
-            
+
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-            public global::System.Data.DataColumn IdentidadIDColumn {
-                get {
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public global::System.Data.DataColumn IdentidadIDColumn
+            {
+                get
+                {
                     return this.columnIdentidadID;
                 }
             }
-            
+
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
             [global::System.ComponentModel.Browsable(false)]
-            public int Count {
-                get {
+            public int Count
+            {
+                get
+                {
                     return this.Rows.Count;
                 }
             }
-            
+
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-            public GrupoIdentidadesRow this[int index] {
-                get {
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public GrupoIdentidadesRow this[int index]
+            {
+                get
+                {
                     return ((GrupoIdentidadesRow)(this.Rows[index]));
                 }
             }
-            
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
+
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
             public event GrupoIdentidadesRowChangeEventHandler GrupoIdentidadesRowChanging;
-            
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
+
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
             public event GrupoIdentidadesRowChangeEventHandler GrupoIdentidadesRowChanged;
-            
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
+
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
             public event GrupoIdentidadesRowChangeEventHandler GrupoIdentidadesRowDeleting;
-            
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
+
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
             public event GrupoIdentidadesRowChangeEventHandler GrupoIdentidadesRowDeleted;
-            
+
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-            public void AddGrupoIdentidadesRow(GrupoIdentidadesRow row) {
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public void AddGrupoIdentidadesRow(GrupoIdentidadesRow row)
+            {
                 this.Rows.Add(row);
             }
-            
+
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-            public GrupoIdentidadesRow AddGrupoIdentidadesRow(System.Guid GrupoID, System.Guid IdentidadID) {
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public GrupoIdentidadesRow AddGrupoIdentidadesRow(System.Guid GrupoID, System.Guid IdentidadID)
+            {
                 GrupoIdentidadesRow rowGrupoIdentidadesRow = ((GrupoIdentidadesRow)(this.NewRow()));
                 object[] columnValuesArray = new object[] {
                         GrupoID,
@@ -1148,39 +1335,44 @@ namespace Es.Riam.Gnoss.AD.AutoCompetarEtiquetas.Model {
                 this.Rows.Add(rowGrupoIdentidadesRow);
                 return rowGrupoIdentidadesRow;
             }
-            
+
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-            public GrupoIdentidadesRow FindByGrupoIDIdentidadID(System.Guid GrupoID, System.Guid IdentidadID) {
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public GrupoIdentidadesRow FindByGrupoIDIdentidadID(System.Guid GrupoID, System.Guid IdentidadID)
+            {
                 return ((GrupoIdentidadesRow)(this.Rows.Find(new object[] {
                             GrupoID,
                             IdentidadID})));
             }
-            
+
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-            public override global::System.Data.DataTable Clone() {
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public override global::System.Data.DataTable Clone()
+            {
                 GrupoIdentidadesDataTable cln = ((GrupoIdentidadesDataTable)(base.Clone()));
                 cln.InitVars();
                 return cln;
             }
-            
+
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-            protected override global::System.Data.DataTable CreateInstance() {
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            protected override global::System.Data.DataTable CreateInstance()
+            {
                 return new GrupoIdentidadesDataTable();
             }
-            
+
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-            internal void InitVars() {
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            internal void InitVars()
+            {
                 this.columnGrupoID = base.Columns["GrupoID"];
                 this.columnIdentidadID = base.Columns["IdentidadID"];
             }
-            
+
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-            private void InitClass() {
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            private void InitClass()
+            {
                 this.columnGrupoID = new global::System.Data.DataColumn("GrupoID", typeof(global::System.Guid), null, global::System.Data.MappingType.Element);
                 base.Columns.Add(this.columnGrupoID);
                 this.columnIdentidadID = new global::System.Data.DataColumn("IdentidadID", typeof(global::System.Guid), null, global::System.Data.MappingType.Element);
@@ -1191,70 +1383,83 @@ namespace Es.Riam.Gnoss.AD.AutoCompetarEtiquetas.Model {
                 this.columnGrupoID.AllowDBNull = false;
                 this.columnIdentidadID.AllowDBNull = false;
             }
-            
+
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-            public GrupoIdentidadesRow NewGrupoIdentidadesRow() {
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public GrupoIdentidadesRow NewGrupoIdentidadesRow()
+            {
                 return ((GrupoIdentidadesRow)(this.NewRow()));
             }
-            
+
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-            protected override global::System.Data.DataRow NewRowFromBuilder(global::System.Data.DataRowBuilder builder) {
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            protected override global::System.Data.DataRow NewRowFromBuilder(global::System.Data.DataRowBuilder builder)
+            {
                 return new GrupoIdentidadesRow(builder);
             }
-            
+
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-            protected override global::System.Type GetRowType() {
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            protected override global::System.Type GetRowType()
+            {
                 return typeof(GrupoIdentidadesRow);
             }
-            
+
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-            protected override void OnRowChanged(global::System.Data.DataRowChangeEventArgs e) {
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            protected override void OnRowChanged(global::System.Data.DataRowChangeEventArgs e)
+            {
                 base.OnRowChanged(e);
-                if ((this.GrupoIdentidadesRowChanged != null)) {
+                if ((this.GrupoIdentidadesRowChanged != null))
+                {
                     this.GrupoIdentidadesRowChanged(this, new GrupoIdentidadesRowChangeEvent(((GrupoIdentidadesRow)(e.Row)), e.Action));
                 }
             }
-            
+
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-            protected override void OnRowChanging(global::System.Data.DataRowChangeEventArgs e) {
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            protected override void OnRowChanging(global::System.Data.DataRowChangeEventArgs e)
+            {
                 base.OnRowChanging(e);
-                if ((this.GrupoIdentidadesRowChanging != null)) {
+                if ((this.GrupoIdentidadesRowChanging != null))
+                {
                     this.GrupoIdentidadesRowChanging(this, new GrupoIdentidadesRowChangeEvent(((GrupoIdentidadesRow)(e.Row)), e.Action));
                 }
             }
-            
+
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-            protected override void OnRowDeleted(global::System.Data.DataRowChangeEventArgs e) {
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            protected override void OnRowDeleted(global::System.Data.DataRowChangeEventArgs e)
+            {
                 base.OnRowDeleted(e);
-                if ((this.GrupoIdentidadesRowDeleted != null)) {
+                if ((this.GrupoIdentidadesRowDeleted != null))
+                {
                     this.GrupoIdentidadesRowDeleted(this, new GrupoIdentidadesRowChangeEvent(((GrupoIdentidadesRow)(e.Row)), e.Action));
                 }
             }
-            
+
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-            protected override void OnRowDeleting(global::System.Data.DataRowChangeEventArgs e) {
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            protected override void OnRowDeleting(global::System.Data.DataRowChangeEventArgs e)
+            {
                 base.OnRowDeleting(e);
-                if ((this.GrupoIdentidadesRowDeleting != null)) {
+                if ((this.GrupoIdentidadesRowDeleting != null))
+                {
                     this.GrupoIdentidadesRowDeleting(this, new GrupoIdentidadesRowChangeEvent(((GrupoIdentidadesRow)(e.Row)), e.Action));
                 }
             }
-            
+
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-            public void RemoveGrupoIdentidadesRow(GrupoIdentidadesRow row) {
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public void RemoveGrupoIdentidadesRow(GrupoIdentidadesRow row)
+            {
                 this.Rows.Remove(row);
             }
-            
+
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-            public static global::System.Xml.Schema.XmlSchemaComplexType GetTypedTableSchema(global::System.Xml.Schema.XmlSchemaSet xs) {
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public static global::System.Xml.Schema.XmlSchemaComplexType GetTypedTableSchema(global::System.Xml.Schema.XmlSchemaSet xs)
+            {
                 global::System.Xml.Schema.XmlSchemaComplexType type = new global::System.Xml.Schema.XmlSchemaComplexType();
                 global::System.Xml.Schema.XmlSchemaSequence sequence = new global::System.Xml.Schema.XmlSchemaSequence();
                 TagsAutoDS ds = new TagsAutoDS();
@@ -1279,34 +1484,43 @@ namespace Es.Riam.Gnoss.AD.AutoCompetarEtiquetas.Model {
                 type.Attributes.Add(attribute2);
                 type.Particle = sequence;
                 global::System.Xml.Schema.XmlSchema dsSchema = ds.GetSchemaSerializable();
-                if (xs.Contains(dsSchema.TargetNamespace)) {
+                if (xs.Contains(dsSchema.TargetNamespace))
+                {
                     global::System.IO.MemoryStream s1 = new global::System.IO.MemoryStream();
                     global::System.IO.MemoryStream s2 = new global::System.IO.MemoryStream();
-                    try {
+                    try
+                    {
                         global::System.Xml.Schema.XmlSchema schema = null;
                         dsSchema.Write(s1);
-                        for (global::System.Collections.IEnumerator schemas = xs.Schemas(dsSchema.TargetNamespace).GetEnumerator(); schemas.MoveNext(); ) {
+                        for (global::System.Collections.IEnumerator schemas = xs.Schemas(dsSchema.TargetNamespace).GetEnumerator(); schemas.MoveNext();)
+                        {
                             schema = ((global::System.Xml.Schema.XmlSchema)(schemas.Current));
                             s2.SetLength(0);
                             schema.Write(s2);
-                            if ((s1.Length == s2.Length)) {
+                            if ((s1.Length == s2.Length))
+                            {
                                 s1.Position = 0;
                                 s2.Position = 0;
-                                for (; ((s1.Position != s1.Length) 
-                                            && (s1.ReadByte() == s2.ReadByte())); ) {
+                                for (; ((s1.Position != s1.Length)
+                                            && (s1.ReadByte() == s2.ReadByte()));)
+                                {
                                     ;
                                 }
-                                if ((s1.Position == s1.Length)) {
+                                if ((s1.Position == s1.Length))
+                                {
                                     return type;
                                 }
                             }
                         }
                     }
-                    finally {
-                        if ((s1 != null)) {
+                    finally
+                    {
+                        if ((s1 != null))
+                        {
                             s1.Close();
                         }
-                        if ((s2 != null)) {
+                        if ((s2 != null))
+                        {
                             s2.Close();
                         }
                     }
@@ -1315,195 +1529,313 @@ namespace Es.Riam.Gnoss.AD.AutoCompetarEtiquetas.Model {
                 return type;
             }
         }
-        
+
         /// <summary>
         ///Represents the strongly named DataTable class.
         ///</summary>
         [global::System.Serializable()]
         [global::System.Xml.Serialization.XmlSchemaProviderAttribute("GetTypedTableSchema")]
-        public partial class TagsVariarDataTable : global::System.Data.TypedTableBase<TagsVariarRow> {
-            
+        public partial class TagsVariarDataTable : global::System.Data.TypedTableBase<TagsVariarRow>
+        {
+
             private global::System.Data.DataColumn columnElementoID;
-            
+
             private global::System.Data.DataColumn columnProyectoID;
-            
+
             private global::System.Data.DataColumn columnTipo;
-            
+
             private global::System.Data.DataColumn columnFaceta;
-            
+
             private global::System.Data.DataColumn columnEtiqueta;
-            
+
             private global::System.Data.DataColumn columnCantidad;
-            
+
             private global::System.Data.DataColumn columnIdentidadID;
-            
-            private global::System.Data.DataColumn columnExtra;
-            
-            private global::System.Data.DataColumn columnMetaBusqueda;
-            
+
+            private global::System.Data.DataColumn columnExtra;            
+
             private global::System.Data.DataColumn columnIdioma;
-            
+
             private global::System.Data.DataColumn columnGrupoID;
-            
+
+            private global::System.Data.DataColumn urlImagen;
+
+            private global::System.Data.DataColumn tipoDato;
+
+            private global::System.Data.DataColumn subtipo;
+
+            private global::System.Data.DataColumn urlRecurso;
+
+            private global::System.Data.DataColumn peso;
+
+            private global::System.Data.DataColumn propiedadesExtra;
+
+            private global::System.Data.DataColumn ordenAutocompletar;
+
+            private global::System.Data.DataColumn isOrderAsc;
+
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-            public TagsVariarDataTable() {
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public TagsVariarDataTable()
+            {
                 this.TableName = "TagsVariar";
                 this.BeginInit();
                 this.InitClass();
                 this.EndInit();
             }
-            
+
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-            internal TagsVariarDataTable(global::System.Data.DataTable table) {
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            internal TagsVariarDataTable(global::System.Data.DataTable table)
+            {
                 this.TableName = table.TableName;
-                if ((table.CaseSensitive != table.DataSet.CaseSensitive)) {
+                if ((table.CaseSensitive != table.DataSet.CaseSensitive))
+                {
                     this.CaseSensitive = table.CaseSensitive;
                 }
-                if ((table.Locale.ToString() != table.DataSet.Locale.ToString())) {
+                if ((table.Locale.ToString() != table.DataSet.Locale.ToString()))
+                {
                     this.Locale = table.Locale;
                 }
-                if ((table.Namespace != table.DataSet.Namespace)) {
+                if ((table.Namespace != table.DataSet.Namespace))
+                {
                     this.Namespace = table.Namespace;
                 }
                 this.Prefix = table.Prefix;
                 this.MinimumCapacity = table.MinimumCapacity;
             }
-            
+
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-            protected TagsVariarDataTable(global::System.Runtime.Serialization.SerializationInfo info, global::System.Runtime.Serialization.StreamingContext context) : 
-                    base(info, context) {
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            protected TagsVariarDataTable(global::System.Runtime.Serialization.SerializationInfo info, global::System.Runtime.Serialization.StreamingContext context) :
+                    base(info, context)
+            {
                 this.InitVars();
             }
-            
+
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-            public global::System.Data.DataColumn ElementoIDColumn {
-                get {
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public global::System.Data.DataColumn ElementoIDColumn
+            {
+                get
+                {
                     return this.columnElementoID;
                 }
             }
-            
+
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-            public global::System.Data.DataColumn ProyectoIDColumn {
-                get {
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public global::System.Data.DataColumn ProyectoIDColumn
+            {
+                get
+                {
                     return this.columnProyectoID;
                 }
             }
-            
+
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-            public global::System.Data.DataColumn TipoColumn {
-                get {
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public global::System.Data.DataColumn TipoColumn
+            {
+                get
+                {
                     return this.columnTipo;
                 }
             }
-            
+
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-            public global::System.Data.DataColumn FacetaColumn {
-                get {
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public global::System.Data.DataColumn FacetaColumn
+            {
+                get
+                {
                     return this.columnFaceta;
                 }
             }
-            
+
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-            public global::System.Data.DataColumn EtiquetaColumn {
-                get {
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public global::System.Data.DataColumn EtiquetaColumn
+            {
+                get
+                {
                     return this.columnEtiqueta;
                 }
             }
-            
+
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-            public global::System.Data.DataColumn CantidadColumn {
-                get {
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public global::System.Data.DataColumn CantidadColumn
+            {
+                get
+                {
                     return this.columnCantidad;
                 }
             }
-            
+
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-            public global::System.Data.DataColumn IdentidadIDColumn {
-                get {
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public global::System.Data.DataColumn IdentidadIDColumn
+            {
+                get
+                {
                     return this.columnIdentidadID;
                 }
             }
-            
+
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-            public global::System.Data.DataColumn ExtraColumn {
-                get {
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public global::System.Data.DataColumn ExtraColumn
+            {
+                get
+                {
                     return this.columnExtra;
                 }
             }
-            
+
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-            public global::System.Data.DataColumn MetaBusquedaColumn {
-                get {
-                    return this.columnMetaBusqueda;
-                }
-            }
-            
-            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-            public global::System.Data.DataColumn IdiomaColumn {
-                get {
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public global::System.Data.DataColumn IdiomaColumn
+            {
+                get
+                {
                     return this.columnIdioma;
                 }
             }
-            
+
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-            public global::System.Data.DataColumn GrupoIDColumn {
-                get {
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public global::System.Data.DataColumn GrupoIDColumn
+            {
+                get
+                {
                     return this.columnGrupoID;
                 }
             }
-            
+
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
             [global::System.ComponentModel.Browsable(false)]
-            public int Count {
-                get {
+            public int Count
+            {
+                get
+                {
                     return this.Rows.Count;
                 }
             }
-            
+
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-            public TagsVariarRow this[int index] {
-                get {
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public global::System.Data.DataColumn UrlImagen
+            {
+                get
+                {
+                    return this.urlImagen;
+                }
+            }
+
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public global::System.Data.DataColumn TipoDato
+            {
+                get
+                {
+                    return this.tipoDato;
+                }
+            }
+
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public global::System.Data.DataColumn Subtipo
+            {
+                get
+                {
+                    return this.subtipo;
+                }
+            }
+
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public global::System.Data.DataColumn UrlRecurso
+            {
+                get
+                {
+                    return this.urlRecurso;
+                }
+            }
+
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public global::System.Data.DataColumn Peso
+            {
+                get
+                {
+                    return this.peso;
+                }
+            }
+
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public global::System.Data.DataColumn PropiedadesExtra
+            {
+                get
+                {
+                    return this.propiedadesExtra;
+                }
+            }
+
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public global::System.Data.DataColumn OrdenAutocompletar
+            {
+                get
+                {
+                    return this.ordenAutocompletar;
+                }
+            }
+
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public global::System.Data.DataColumn IsOrderAsc
+            {
+                get
+                {
+                    return this.isOrderAsc;
+                }
+            }
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public TagsVariarRow this[int index]
+            {
+                get
+                {
                     return ((TagsVariarRow)(this.Rows[index]));
                 }
             }
-            
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
+
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
             public event TagsVariarRowChangeEventHandler TagsVariarRowChanging;
-            
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
+
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
             public event TagsVariarRowChangeEventHandler TagsVariarRowChanged;
-            
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
+
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
             public event TagsVariarRowChangeEventHandler TagsVariarRowDeleting;
-            
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
+
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
             public event TagsVariarRowChangeEventHandler TagsVariarRowDeleted;
-            
+
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-            public void AddTagsVariarRow(TagsVariarRow row) {
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public void AddTagsVariarRow(TagsVariarRow row)
+            {
                 this.Rows.Add(row);
             }
-            
+
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-            public TagsVariarRow AddTagsVariarRow(System.Guid ElementoID, System.Guid ProyectoID, string Tipo, string Faceta, string Etiqueta, int Cantidad, System.Guid IdentidadID, string Extra, bool MetaBusqueda, string Idioma, System.Guid GrupoID) {
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public TagsVariarRow AddTagsVariarRow(System.Guid ElementoID, System.Guid ProyectoID, string Tipo, string Faceta, string Etiqueta, int Cantidad, System.Guid IdentidadID, string Extra, string Idioma, System.Guid GrupoID)
+            {
                 TagsVariarRow rowTagsVariarRow = ((TagsVariarRow)(this.NewRow()));
                 object[] columnValuesArray = new object[] {
                         ElementoID,
@@ -1514,31 +1846,33 @@ namespace Es.Riam.Gnoss.AD.AutoCompetarEtiquetas.Model {
                         Cantidad,
                         IdentidadID,
                         Extra,
-                        MetaBusqueda,
                         Idioma,
                         GrupoID};
                 rowTagsVariarRow.ItemArray = columnValuesArray;
                 this.Rows.Add(rowTagsVariarRow);
                 return rowTagsVariarRow;
             }
-            
+
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-            public override global::System.Data.DataTable Clone() {
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public override global::System.Data.DataTable Clone()
+            {
                 TagsVariarDataTable cln = ((TagsVariarDataTable)(base.Clone()));
                 cln.InitVars();
                 return cln;
             }
-            
+
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-            protected override global::System.Data.DataTable CreateInstance() {
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            protected override global::System.Data.DataTable CreateInstance()
+            {
                 return new TagsVariarDataTable();
             }
-            
+
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-            internal void InitVars() {
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            internal void InitVars()
+            {
                 this.columnElementoID = base.Columns["ElementoID"];
                 this.columnProyectoID = base.Columns["ProyectoID"];
                 this.columnTipo = base.Columns["Tipo"];
@@ -1547,14 +1881,23 @@ namespace Es.Riam.Gnoss.AD.AutoCompetarEtiquetas.Model {
                 this.columnCantidad = base.Columns["Cantidad"];
                 this.columnIdentidadID = base.Columns["IdentidadID"];
                 this.columnExtra = base.Columns["Extra"];
-                this.columnMetaBusqueda = base.Columns["MetaBusqueda"];
                 this.columnIdioma = base.Columns["Idioma"];
                 this.columnGrupoID = base.Columns["GrupoID"];
+
+                this.urlImagen = base.Columns["UrlImagen"];
+                this.tipoDato = base.Columns["TipoDato"];
+                this.subtipo = base.Columns["Subtipo"];
+                this.urlRecurso = base.Columns["UrlRecurso"];
+                this.peso = base.Columns["Peso"];
+                this.propiedadesExtra = base.Columns["PropiedadesExtra"];
+                this.ordenAutocompletar = base.Columns["ordenAutocompletar"];
+                this.isOrderAsc = base.Columns["IsOrderAsc"];
             }
-            
+
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-            private void InitClass() {
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            private void InitClass()
+            {
                 this.columnElementoID = new global::System.Data.DataColumn("ElementoID", typeof(global::System.Guid), null, global::System.Data.MappingType.Element);
                 base.Columns.Add(this.columnElementoID);
                 this.columnProyectoID = new global::System.Data.DataColumn("ProyectoID", typeof(global::System.Guid), null, global::System.Data.MappingType.Element);
@@ -1571,8 +1914,6 @@ namespace Es.Riam.Gnoss.AD.AutoCompetarEtiquetas.Model {
                 base.Columns.Add(this.columnIdentidadID);
                 this.columnExtra = new global::System.Data.DataColumn("Extra", typeof(string), null, global::System.Data.MappingType.Element);
                 base.Columns.Add(this.columnExtra);
-                this.columnMetaBusqueda = new global::System.Data.DataColumn("MetaBusqueda", typeof(bool), null, global::System.Data.MappingType.Element);
-                base.Columns.Add(this.columnMetaBusqueda);
                 this.columnIdioma = new global::System.Data.DataColumn("Idioma", typeof(string), null, global::System.Data.MappingType.Element);
                 base.Columns.Add(this.columnIdioma);
                 this.columnGrupoID = new global::System.Data.DataColumn("GrupoID", typeof(global::System.Guid), null, global::System.Data.MappingType.Element);
@@ -1586,73 +1927,101 @@ namespace Es.Riam.Gnoss.AD.AutoCompetarEtiquetas.Model {
                 this.columnEtiqueta.AllowDBNull = false;
                 this.columnEtiqueta.MaxLength = 1000;
                 this.columnCantidad.AllowDBNull = false;
-                this.columnMetaBusqueda.AllowDBNull = false;
                 this.columnIdioma.MaxLength = 4;
+                this.urlImagen = new global::System.Data.DataColumn("UrlImagen", typeof(string), null, global::System.Data.MappingType.Element);
+                base.Columns.Add(this.urlImagen);
+                this.tipoDato = new global::System.Data.DataColumn("TipoDato", typeof(short), null, global::System.Data.MappingType.Element);
+                base.Columns.Add(this.tipoDato);
+                this.subtipo = new global::System.Data.DataColumn("Subtipo", typeof(string), null, global::System.Data.MappingType.Element);
+                base.Columns.Add(this.subtipo);
+                this.urlRecurso = new global::System.Data.DataColumn("UrlRecurso", typeof(string), null, global::System.Data.MappingType.Element);
+                base.Columns.Add(this.urlRecurso);
+                this.peso = new global::System.Data.DataColumn("Peso", typeof(int), null, global::System.Data.MappingType.Element);
+                base.Columns.Add(this.peso);
+                this.propiedadesExtra = new global::System.Data.DataColumn("PropiedadesExtra", typeof(string), null, global::System.Data.MappingType.Element);
+                base.Columns.Add(this.propiedadesExtra);
+                this.ordenAutocompletar = new global::System.Data.DataColumn("OrdenAutocompletar", typeof(string), null, global::System.Data.MappingType.Element);
+                base.Columns.Add(this.ordenAutocompletar);
+                this.isOrderAsc = new global::System.Data.DataColumn("IsOrderAsc", typeof(bool), null, global::System.Data.MappingType.Element);
+                base.Columns.Add(this.isOrderAsc);
             }
-            
+
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-            public TagsVariarRow NewTagsVariarRow() {
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public TagsVariarRow NewTagsVariarRow()
+            {
                 return ((TagsVariarRow)(this.NewRow()));
             }
-            
+
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-            protected override global::System.Data.DataRow NewRowFromBuilder(global::System.Data.DataRowBuilder builder) {
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            protected override global::System.Data.DataRow NewRowFromBuilder(global::System.Data.DataRowBuilder builder)
+            {
                 return new TagsVariarRow(builder);
             }
-            
+
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-            protected override global::System.Type GetRowType() {
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            protected override global::System.Type GetRowType()
+            {
                 return typeof(TagsVariarRow);
             }
-            
+
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-            protected override void OnRowChanged(global::System.Data.DataRowChangeEventArgs e) {
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            protected override void OnRowChanged(global::System.Data.DataRowChangeEventArgs e)
+            {
                 base.OnRowChanged(e);
-                if ((this.TagsVariarRowChanged != null)) {
+                if ((this.TagsVariarRowChanged != null))
+                {
                     this.TagsVariarRowChanged(this, new TagsVariarRowChangeEvent(((TagsVariarRow)(e.Row)), e.Action));
                 }
             }
-            
+
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-            protected override void OnRowChanging(global::System.Data.DataRowChangeEventArgs e) {
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            protected override void OnRowChanging(global::System.Data.DataRowChangeEventArgs e)
+            {
                 base.OnRowChanging(e);
-                if ((this.TagsVariarRowChanging != null)) {
+                if ((this.TagsVariarRowChanging != null))
+                {
                     this.TagsVariarRowChanging(this, new TagsVariarRowChangeEvent(((TagsVariarRow)(e.Row)), e.Action));
                 }
             }
-            
+
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-            protected override void OnRowDeleted(global::System.Data.DataRowChangeEventArgs e) {
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            protected override void OnRowDeleted(global::System.Data.DataRowChangeEventArgs e)
+            {
                 base.OnRowDeleted(e);
-                if ((this.TagsVariarRowDeleted != null)) {
+                if ((this.TagsVariarRowDeleted != null))
+                {
                     this.TagsVariarRowDeleted(this, new TagsVariarRowChangeEvent(((TagsVariarRow)(e.Row)), e.Action));
                 }
             }
-            
+
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-            protected override void OnRowDeleting(global::System.Data.DataRowChangeEventArgs e) {
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            protected override void OnRowDeleting(global::System.Data.DataRowChangeEventArgs e)
+            {
                 base.OnRowDeleting(e);
-                if ((this.TagsVariarRowDeleting != null)) {
+                if ((this.TagsVariarRowDeleting != null))
+                {
                     this.TagsVariarRowDeleting(this, new TagsVariarRowChangeEvent(((TagsVariarRow)(e.Row)), e.Action));
                 }
             }
-            
+
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-            public void RemoveTagsVariarRow(TagsVariarRow row) {
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public void RemoveTagsVariarRow(TagsVariarRow row)
+            {
                 this.Rows.Remove(row);
             }
-            
+
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-            public static global::System.Xml.Schema.XmlSchemaComplexType GetTypedTableSchema(global::System.Xml.Schema.XmlSchemaSet xs) {
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public static global::System.Xml.Schema.XmlSchemaComplexType GetTypedTableSchema(global::System.Xml.Schema.XmlSchemaSet xs)
+            {
                 global::System.Xml.Schema.XmlSchemaComplexType type = new global::System.Xml.Schema.XmlSchemaComplexType();
                 global::System.Xml.Schema.XmlSchemaSequence sequence = new global::System.Xml.Schema.XmlSchemaSequence();
                 TagsAutoDS ds = new TagsAutoDS();
@@ -1677,34 +2046,43 @@ namespace Es.Riam.Gnoss.AD.AutoCompetarEtiquetas.Model {
                 type.Attributes.Add(attribute2);
                 type.Particle = sequence;
                 global::System.Xml.Schema.XmlSchema dsSchema = ds.GetSchemaSerializable();
-                if (xs.Contains(dsSchema.TargetNamespace)) {
+                if (xs.Contains(dsSchema.TargetNamespace))
+                {
                     global::System.IO.MemoryStream s1 = new global::System.IO.MemoryStream();
                     global::System.IO.MemoryStream s2 = new global::System.IO.MemoryStream();
-                    try {
+                    try
+                    {
                         global::System.Xml.Schema.XmlSchema schema = null;
                         dsSchema.Write(s1);
-                        for (global::System.Collections.IEnumerator schemas = xs.Schemas(dsSchema.TargetNamespace).GetEnumerator(); schemas.MoveNext(); ) {
+                        for (global::System.Collections.IEnumerator schemas = xs.Schemas(dsSchema.TargetNamespace).GetEnumerator(); schemas.MoveNext();)
+                        {
                             schema = ((global::System.Xml.Schema.XmlSchema)(schemas.Current));
                             s2.SetLength(0);
                             schema.Write(s2);
-                            if ((s1.Length == s2.Length)) {
+                            if ((s1.Length == s2.Length))
+                            {
                                 s1.Position = 0;
                                 s2.Position = 0;
-                                for (; ((s1.Position != s1.Length) 
-                                            && (s1.ReadByte() == s2.ReadByte())); ) {
+                                for (; ((s1.Position != s1.Length)
+                                            && (s1.ReadByte() == s2.ReadByte()));)
+                                {
                                     ;
                                 }
-                                if ((s1.Position == s1.Length)) {
+                                if ((s1.Position == s1.Length))
+                                {
                                     return type;
                                 }
                             }
                         }
                     }
-                    finally {
-                        if ((s1 != null)) {
+                    finally
+                    {
+                        if ((s1 != null))
+                        {
                             s1.Close();
                         }
-                        if ((s2 != null)) {
+                        if ((s2 != null))
+                        {
                             s2.Close();
                         }
                     }
@@ -1713,125 +2091,146 @@ namespace Es.Riam.Gnoss.AD.AutoCompetarEtiquetas.Model {
                 return type;
             }
         }
-        
+
         /// <summary>
         ///Represents the strongly named DataTable class.
         ///</summary>
         [global::System.Serializable()]
         [global::System.Xml.Serialization.XmlSchemaProviderAttribute("GetTypedTableSchema")]
-        public partial class EtiquetasElementoDataTable : global::System.Data.TypedTableBase<EtiquetasElementoRow> {
-            
+        public partial class EtiquetasElementoDataTable : global::System.Data.TypedTableBase<EtiquetasElementoRow>
+        {
+
             private global::System.Data.DataColumn columnElementoID;
-            
+
             private global::System.Data.DataColumn columnTipo;
-            
+
             private global::System.Data.DataColumn columnProyectoID;
-            
+
             private global::System.Data.DataColumn columnEtiquetas;
-            
+
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-            public EtiquetasElementoDataTable() {
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public EtiquetasElementoDataTable()
+            {
                 this.TableName = "EtiquetasElemento";
                 this.BeginInit();
                 this.InitClass();
                 this.EndInit();
             }
-            
+
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-            internal EtiquetasElementoDataTable(global::System.Data.DataTable table) {
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            internal EtiquetasElementoDataTable(global::System.Data.DataTable table)
+            {
                 this.TableName = table.TableName;
-                if ((table.CaseSensitive != table.DataSet.CaseSensitive)) {
+                if ((table.CaseSensitive != table.DataSet.CaseSensitive))
+                {
                     this.CaseSensitive = table.CaseSensitive;
                 }
-                if ((table.Locale.ToString() != table.DataSet.Locale.ToString())) {
+                if ((table.Locale.ToString() != table.DataSet.Locale.ToString()))
+                {
                     this.Locale = table.Locale;
                 }
-                if ((table.Namespace != table.DataSet.Namespace)) {
+                if ((table.Namespace != table.DataSet.Namespace))
+                {
                     this.Namespace = table.Namespace;
                 }
                 this.Prefix = table.Prefix;
                 this.MinimumCapacity = table.MinimumCapacity;
             }
-            
+
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-            protected EtiquetasElementoDataTable(global::System.Runtime.Serialization.SerializationInfo info, global::System.Runtime.Serialization.StreamingContext context) : 
-                    base(info, context) {
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            protected EtiquetasElementoDataTable(global::System.Runtime.Serialization.SerializationInfo info, global::System.Runtime.Serialization.StreamingContext context) :
+                    base(info, context)
+            {
                 this.InitVars();
             }
-            
+
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-            public global::System.Data.DataColumn ElementoIDColumn {
-                get {
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public global::System.Data.DataColumn ElementoIDColumn
+            {
+                get
+                {
                     return this.columnElementoID;
                 }
             }
-            
+
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-            public global::System.Data.DataColumn TipoColumn {
-                get {
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public global::System.Data.DataColumn TipoColumn
+            {
+                get
+                {
                     return this.columnTipo;
                 }
             }
-            
+
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-            public global::System.Data.DataColumn ProyectoIDColumn {
-                get {
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public global::System.Data.DataColumn ProyectoIDColumn
+            {
+                get
+                {
                     return this.columnProyectoID;
                 }
             }
-            
+
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-            public global::System.Data.DataColumn EtiquetasColumn {
-                get {
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public global::System.Data.DataColumn EtiquetasColumn
+            {
+                get
+                {
                     return this.columnEtiquetas;
                 }
             }
-            
+
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
             [global::System.ComponentModel.Browsable(false)]
-            public int Count {
-                get {
+            public int Count
+            {
+                get
+                {
                     return this.Rows.Count;
                 }
             }
-            
+
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-            public EtiquetasElementoRow this[int index] {
-                get {
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public EtiquetasElementoRow this[int index]
+            {
+                get
+                {
                     return ((EtiquetasElementoRow)(this.Rows[index]));
                 }
             }
-            
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
+
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
             public event EtiquetasElementoRowChangeEventHandler EtiquetasElementoRowChanging;
-            
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
+
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
             public event EtiquetasElementoRowChangeEventHandler EtiquetasElementoRowChanged;
-            
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
+
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
             public event EtiquetasElementoRowChangeEventHandler EtiquetasElementoRowDeleting;
-            
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
+
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
             public event EtiquetasElementoRowChangeEventHandler EtiquetasElementoRowDeleted;
-            
+
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-            public void AddEtiquetasElementoRow(EtiquetasElementoRow row) {
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public void AddEtiquetasElementoRow(EtiquetasElementoRow row)
+            {
                 this.Rows.Add(row);
             }
-            
+
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-            public EtiquetasElementoRow AddEtiquetasElementoRow(System.Guid ElementoID, string Tipo, System.Guid ProyectoID, string Etiquetas) {
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public EtiquetasElementoRow AddEtiquetasElementoRow(System.Guid ElementoID, string Tipo, System.Guid ProyectoID, string Etiquetas)
+            {
                 EtiquetasElementoRow rowEtiquetasElementoRow = ((EtiquetasElementoRow)(this.NewRow()));
                 object[] columnValuesArray = new object[] {
                         ElementoID,
@@ -1842,42 +2241,47 @@ namespace Es.Riam.Gnoss.AD.AutoCompetarEtiquetas.Model {
                 this.Rows.Add(rowEtiquetasElementoRow);
                 return rowEtiquetasElementoRow;
             }
-            
+
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-            public EtiquetasElementoRow FindByElementoIDTipoProyectoID(System.Guid ElementoID, string Tipo, System.Guid ProyectoID) {
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public EtiquetasElementoRow FindByElementoIDTipoProyectoID(System.Guid ElementoID, string Tipo, System.Guid ProyectoID)
+            {
                 return ((EtiquetasElementoRow)(this.Rows.Find(new object[] {
                             ElementoID,
                             Tipo,
                             ProyectoID})));
             }
-            
+
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-            public override global::System.Data.DataTable Clone() {
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public override global::System.Data.DataTable Clone()
+            {
                 EtiquetasElementoDataTable cln = ((EtiquetasElementoDataTable)(base.Clone()));
                 cln.InitVars();
                 return cln;
             }
-            
+
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-            protected override global::System.Data.DataTable CreateInstance() {
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            protected override global::System.Data.DataTable CreateInstance()
+            {
                 return new EtiquetasElementoDataTable();
             }
-            
+
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-            internal void InitVars() {
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            internal void InitVars()
+            {
                 this.columnElementoID = base.Columns["ElementoID"];
                 this.columnTipo = base.Columns["Tipo"];
                 this.columnProyectoID = base.Columns["ProyectoID"];
                 this.columnEtiquetas = base.Columns["Etiquetas"];
             }
-            
+
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-            private void InitClass() {
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            private void InitClass()
+            {
                 this.columnElementoID = new global::System.Data.DataColumn("ElementoID", typeof(global::System.Guid), null, global::System.Data.MappingType.Element);
                 base.Columns.Add(this.columnElementoID);
                 this.columnTipo = new global::System.Data.DataColumn("Tipo", typeof(string), null, global::System.Data.MappingType.Element);
@@ -1896,70 +2300,83 @@ namespace Es.Riam.Gnoss.AD.AutoCompetarEtiquetas.Model {
                 this.columnProyectoID.AllowDBNull = false;
                 this.columnEtiquetas.AllowDBNull = false;
             }
-            
+
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-            public EtiquetasElementoRow NewEtiquetasElementoRow() {
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public EtiquetasElementoRow NewEtiquetasElementoRow()
+            {
                 return ((EtiquetasElementoRow)(this.NewRow()));
             }
-            
+
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-            protected override global::System.Data.DataRow NewRowFromBuilder(global::System.Data.DataRowBuilder builder) {
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            protected override global::System.Data.DataRow NewRowFromBuilder(global::System.Data.DataRowBuilder builder)
+            {
                 return new EtiquetasElementoRow(builder);
             }
-            
+
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-            protected override global::System.Type GetRowType() {
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            protected override global::System.Type GetRowType()
+            {
                 return typeof(EtiquetasElementoRow);
             }
-            
+
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-            protected override void OnRowChanged(global::System.Data.DataRowChangeEventArgs e) {
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            protected override void OnRowChanged(global::System.Data.DataRowChangeEventArgs e)
+            {
                 base.OnRowChanged(e);
-                if ((this.EtiquetasElementoRowChanged != null)) {
+                if ((this.EtiquetasElementoRowChanged != null))
+                {
                     this.EtiquetasElementoRowChanged(this, new EtiquetasElementoRowChangeEvent(((EtiquetasElementoRow)(e.Row)), e.Action));
                 }
             }
-            
+
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-            protected override void OnRowChanging(global::System.Data.DataRowChangeEventArgs e) {
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            protected override void OnRowChanging(global::System.Data.DataRowChangeEventArgs e)
+            {
                 base.OnRowChanging(e);
-                if ((this.EtiquetasElementoRowChanging != null)) {
+                if ((this.EtiquetasElementoRowChanging != null))
+                {
                     this.EtiquetasElementoRowChanging(this, new EtiquetasElementoRowChangeEvent(((EtiquetasElementoRow)(e.Row)), e.Action));
                 }
             }
-            
+
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-            protected override void OnRowDeleted(global::System.Data.DataRowChangeEventArgs e) {
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            protected override void OnRowDeleted(global::System.Data.DataRowChangeEventArgs e)
+            {
                 base.OnRowDeleted(e);
-                if ((this.EtiquetasElementoRowDeleted != null)) {
+                if ((this.EtiquetasElementoRowDeleted != null))
+                {
                     this.EtiquetasElementoRowDeleted(this, new EtiquetasElementoRowChangeEvent(((EtiquetasElementoRow)(e.Row)), e.Action));
                 }
             }
-            
+
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-            protected override void OnRowDeleting(global::System.Data.DataRowChangeEventArgs e) {
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            protected override void OnRowDeleting(global::System.Data.DataRowChangeEventArgs e)
+            {
                 base.OnRowDeleting(e);
-                if ((this.EtiquetasElementoRowDeleting != null)) {
+                if ((this.EtiquetasElementoRowDeleting != null))
+                {
                     this.EtiquetasElementoRowDeleting(this, new EtiquetasElementoRowChangeEvent(((EtiquetasElementoRow)(e.Row)), e.Action));
                 }
             }
-            
+
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-            public void RemoveEtiquetasElementoRow(EtiquetasElementoRow row) {
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public void RemoveEtiquetasElementoRow(EtiquetasElementoRow row)
+            {
                 this.Rows.Remove(row);
             }
-            
+
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-            public static global::System.Xml.Schema.XmlSchemaComplexType GetTypedTableSchema(global::System.Xml.Schema.XmlSchemaSet xs) {
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public static global::System.Xml.Schema.XmlSchemaComplexType GetTypedTableSchema(global::System.Xml.Schema.XmlSchemaSet xs)
+            {
                 global::System.Xml.Schema.XmlSchemaComplexType type = new global::System.Xml.Schema.XmlSchemaComplexType();
                 global::System.Xml.Schema.XmlSchemaSequence sequence = new global::System.Xml.Schema.XmlSchemaSequence();
                 TagsAutoDS ds = new TagsAutoDS();
@@ -1984,34 +2401,43 @@ namespace Es.Riam.Gnoss.AD.AutoCompetarEtiquetas.Model {
                 type.Attributes.Add(attribute2);
                 type.Particle = sequence;
                 global::System.Xml.Schema.XmlSchema dsSchema = ds.GetSchemaSerializable();
-                if (xs.Contains(dsSchema.TargetNamespace)) {
+                if (xs.Contains(dsSchema.TargetNamespace))
+                {
                     global::System.IO.MemoryStream s1 = new global::System.IO.MemoryStream();
                     global::System.IO.MemoryStream s2 = new global::System.IO.MemoryStream();
-                    try {
+                    try
+                    {
                         global::System.Xml.Schema.XmlSchema schema = null;
                         dsSchema.Write(s1);
-                        for (global::System.Collections.IEnumerator schemas = xs.Schemas(dsSchema.TargetNamespace).GetEnumerator(); schemas.MoveNext(); ) {
+                        for (global::System.Collections.IEnumerator schemas = xs.Schemas(dsSchema.TargetNamespace).GetEnumerator(); schemas.MoveNext();)
+                        {
                             schema = ((global::System.Xml.Schema.XmlSchema)(schemas.Current));
                             s2.SetLength(0);
                             schema.Write(s2);
-                            if ((s1.Length == s2.Length)) {
+                            if ((s1.Length == s2.Length))
+                            {
                                 s1.Position = 0;
                                 s2.Position = 0;
-                                for (; ((s1.Position != s1.Length) 
-                                            && (s1.ReadByte() == s2.ReadByte())); ) {
+                                for (; ((s1.Position != s1.Length)
+                                            && (s1.ReadByte() == s2.ReadByte()));)
+                                {
                                     ;
                                 }
-                                if ((s1.Position == s1.Length)) {
+                                if ((s1.Position == s1.Length))
+                                {
                                     return type;
                                 }
                             }
                         }
                     }
-                    finally {
-                        if ((s1 != null)) {
+                    finally
+                    {
+                        if ((s1 != null))
+                        {
                             s1.Close();
                         }
-                        if ((s2 != null)) {
+                        if ((s2 != null))
+                        {
                             s2.Close();
                         }
                     }
@@ -2020,628 +2446,907 @@ namespace Es.Riam.Gnoss.AD.AutoCompetarEtiquetas.Model {
                 return type;
             }
         }
-        
+
         /// <summary>
         ///Represents strongly named DataRow class.
         ///</summary>
-        public partial class ConfigAutocompletarProyRow : global::System.Data.DataRow {
-            
+        public partial class ConfigAutocompletarProyRow : global::System.Data.DataRow
+        {
+
             private ConfigAutocompletarProyDataTable tableConfigAutocompletarProy;
-            
+
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-            internal ConfigAutocompletarProyRow(global::System.Data.DataRowBuilder rb) : 
-                    base(rb) {
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            internal ConfigAutocompletarProyRow(global::System.Data.DataRowBuilder rb) :
+                    base(rb)
+            {
                 this.tableConfigAutocompletarProy = ((ConfigAutocompletarProyDataTable)(this.Table));
             }
-            
+
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-            public System.Guid OrganizacionID {
-                get {
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public System.Guid OrganizacionID
+            {
+                get
+                {
                     return ((global::System.Guid)(this[this.tableConfigAutocompletarProy.OrganizacionIDColumn]));
                 }
-                set {
+                set
+                {
                     this[this.tableConfigAutocompletarProy.OrganizacionIDColumn] = value;
                 }
             }
-            
+
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-            public System.Guid ProyectoID {
-                get {
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public System.Guid ProyectoID
+            {
+                get
+                {
                     return ((global::System.Guid)(this[this.tableConfigAutocompletarProy.ProyectoIDColumn]));
                 }
-                set {
+                set
+                {
                     this[this.tableConfigAutocompletarProy.ProyectoIDColumn] = value;
                 }
             }
-            
+
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-            public string Clave {
-                get {
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public string Clave
+            {
+                get
+                {
                     return ((string)(this[this.tableConfigAutocompletarProy.ClaveColumn]));
                 }
-                set {
+                set
+                {
                     this[this.tableConfigAutocompletarProy.ClaveColumn] = value;
                 }
             }
-            
+
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-            public string Valor {
-                get {
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public string Valor
+            {
+                get
+                {
                     return ((string)(this[this.tableConfigAutocompletarProy.ValorColumn]));
                 }
-                set {
+                set
+                {
                     this[this.tableConfigAutocompletarProy.ValorColumn] = value;
                 }
             }
-            
+
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-            public System.Guid PestanyaID {
-                get {
-                    try {
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public System.Guid PestanyaID
+            {
+                get
+                {
+                    try
+                    {
                         return ((global::System.Guid)(this[this.tableConfigAutocompletarProy.PestanyaIDColumn]));
                     }
-                    catch (global::System.InvalidCastException e) {
+                    catch (global::System.InvalidCastException e)
+                    {
                         throw new global::System.Data.StrongTypingException("El valor de la columna \'PestanyaID\' de la tabla \'ConfigAutocompletarProy\' es DBNu" +
                                 "ll.", e);
                     }
                 }
-                set {
+                set
+                {
                     this[this.tableConfigAutocompletarProy.PestanyaIDColumn] = value;
                 }
             }
-            
+
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-            public bool IsPestanyaIDNull() {
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public bool IsPestanyaIDNull()
+            {
                 return this.IsNull(this.tableConfigAutocompletarProy.PestanyaIDColumn);
             }
-            
+
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-            public void SetPestanyaIDNull() {
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public void SetPestanyaIDNull()
+            {
                 this[this.tableConfigAutocompletarProy.PestanyaIDColumn] = global::System.Convert.DBNull;
             }
         }
-        
+
         /// <summary>
         ///Represents strongly named DataRow class.
         ///</summary>
-        public partial class ConfigSearchProyRow : global::System.Data.DataRow {
-            
+        public partial class ConfigSearchProyRow : global::System.Data.DataRow
+        {
+
             private ConfigSearchProyDataTable tableConfigSearchProy;
-            
+
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-            internal ConfigSearchProyRow(global::System.Data.DataRowBuilder rb) : 
-                    base(rb) {
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            internal ConfigSearchProyRow(global::System.Data.DataRowBuilder rb) :
+                    base(rb)
+            {
                 this.tableConfigSearchProy = ((ConfigSearchProyDataTable)(this.Table));
             }
-            
+
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-            public System.Guid OrganizacionID {
-                get {
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public System.Guid OrganizacionID
+            {
+                get
+                {
                     return ((global::System.Guid)(this[this.tableConfigSearchProy.OrganizacionIDColumn]));
                 }
-                set {
+                set
+                {
                     this[this.tableConfigSearchProy.OrganizacionIDColumn] = value;
                 }
             }
-            
+
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-            public System.Guid ProyectoID {
-                get {
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public System.Guid ProyectoID
+            {
+                get
+                {
                     return ((global::System.Guid)(this[this.tableConfigSearchProy.ProyectoIDColumn]));
                 }
-                set {
+                set
+                {
                     this[this.tableConfigSearchProy.ProyectoIDColumn] = value;
                 }
             }
-            
+
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-            public string Clave {
-                get {
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public string Clave
+            {
+                get
+                {
                     return ((string)(this[this.tableConfigSearchProy.ClaveColumn]));
                 }
-                set {
+                set
+                {
                     this[this.tableConfigSearchProy.ClaveColumn] = value;
                 }
             }
-            
+
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-            public string Valor {
-                get {
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public string Valor
+            {
+                get
+                {
                     return ((string)(this[this.tableConfigSearchProy.ValorColumn]));
                 }
-                set {
+                set
+                {
                     this[this.tableConfigSearchProy.ValorColumn] = value;
                 }
             }
         }
-        
+
         /// <summary>
         ///Represents strongly named DataRow class.
         ///</summary>
-        public partial class GrupoIdentidadesRow : global::System.Data.DataRow {
-            
+        public partial class GrupoIdentidadesRow : global::System.Data.DataRow
+        {
+
             private GrupoIdentidadesDataTable tableGrupoIdentidades;
-            
+
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-            internal GrupoIdentidadesRow(global::System.Data.DataRowBuilder rb) : 
-                    base(rb) {
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            internal GrupoIdentidadesRow(global::System.Data.DataRowBuilder rb) :
+                    base(rb)
+            {
                 this.tableGrupoIdentidades = ((GrupoIdentidadesDataTable)(this.Table));
             }
-            
+
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-            public System.Guid GrupoID {
-                get {
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public System.Guid GrupoID
+            {
+                get
+                {
                     return ((global::System.Guid)(this[this.tableGrupoIdentidades.GrupoIDColumn]));
                 }
-                set {
+                set
+                {
                     this[this.tableGrupoIdentidades.GrupoIDColumn] = value;
                 }
             }
-            
+
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-            public System.Guid IdentidadID {
-                get {
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public System.Guid IdentidadID
+            {
+                get
+                {
                     return ((global::System.Guid)(this[this.tableGrupoIdentidades.IdentidadIDColumn]));
                 }
-                set {
+                set
+                {
                     this[this.tableGrupoIdentidades.IdentidadIDColumn] = value;
                 }
             }
         }
-        
+
         /// <summary>
         ///Represents strongly named DataRow class.
         ///</summary>
-        public partial class TagsVariarRow : global::System.Data.DataRow {
-            
+        public partial class TagsVariarRow : global::System.Data.DataRow
+        {
+
             private TagsVariarDataTable tableTagsVariar;
-            
+
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-            internal TagsVariarRow(global::System.Data.DataRowBuilder rb) : 
-                    base(rb) {
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            internal TagsVariarRow(global::System.Data.DataRowBuilder rb) :
+                    base(rb)
+            {
                 this.tableTagsVariar = ((TagsVariarDataTable)(this.Table));
             }
-            
+
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-            public System.Guid ElementoID {
-                get {
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public System.Guid ElementoID
+            {
+                get
+                {
                     return ((global::System.Guid)(this[this.tableTagsVariar.ElementoIDColumn]));
                 }
-                set {
+                set
+                {
                     this[this.tableTagsVariar.ElementoIDColumn] = value;
                 }
             }
-            
+
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-            public System.Guid ProyectoID {
-                get {
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public System.Guid ProyectoID
+            {
+                get
+                {
                     return ((global::System.Guid)(this[this.tableTagsVariar.ProyectoIDColumn]));
                 }
-                set {
+                set
+                {
                     this[this.tableTagsVariar.ProyectoIDColumn] = value;
                 }
             }
-            
+
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-            public string Tipo {
-                get {
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public string Tipo
+            {
+                get
+                {
                     return ((string)(this[this.tableTagsVariar.TipoColumn]));
                 }
-                set {
+                set
+                {
                     this[this.tableTagsVariar.TipoColumn] = value;
                 }
             }
-            
+
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-            public string Faceta {
-                get {
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public string Faceta
+            {
+                get
+                {
                     return ((string)(this[this.tableTagsVariar.FacetaColumn]));
                 }
-                set {
+                set
+                {
                     this[this.tableTagsVariar.FacetaColumn] = value;
                 }
             }
-            
+
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-            public string Etiqueta {
-                get {
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public string Etiqueta
+            {
+                get
+                {
                     return ((string)(this[this.tableTagsVariar.EtiquetaColumn]));
                 }
-                set {
+                set
+                {
                     this[this.tableTagsVariar.EtiquetaColumn] = value;
                 }
             }
-            
+
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-            public int Cantidad {
-                get {
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public int Cantidad
+            {
+                get
+                {
                     return ((int)(this[this.tableTagsVariar.CantidadColumn]));
                 }
-                set {
+                set
+                {
                     this[this.tableTagsVariar.CantidadColumn] = value;
                 }
             }
-            
+
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-            public System.Guid IdentidadID {
-                get {
-                    try {
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public System.Guid IdentidadID
+            {
+                get
+                {
+                    try
+                    {
                         return ((global::System.Guid)(this[this.tableTagsVariar.IdentidadIDColumn]));
                     }
-                    catch (global::System.InvalidCastException e) {
+                    catch (global::System.InvalidCastException e)
+                    {
                         throw new global::System.Data.StrongTypingException("El valor de la columna \'IdentidadID\' de la tabla \'TagsVariar\' es DBNull.", e);
                     }
                 }
-                set {
+                set
+                {
                     this[this.tableTagsVariar.IdentidadIDColumn] = value;
                 }
             }
-            
+
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-            public string Extra {
-                get {
-                    if (this.IsExtraNull()) {
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public string Extra
+            {
+                get
+                {
+                    if (this.IsExtraNull())
+                    {
                         return string.Empty;
                     }
-                    else {
+                    else
+                    {
                         return ((string)(this[this.tableTagsVariar.ExtraColumn]));
                     }
                 }
-                set {
+                set
+                {
                     this[this.tableTagsVariar.ExtraColumn] = value;
                 }
             }
-            
+
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-            public bool MetaBusqueda {
-                get {
-                    return ((bool)(this[this.tableTagsVariar.MetaBusquedaColumn]));
-                }
-                set {
-                    this[this.tableTagsVariar.MetaBusquedaColumn] = value;
-                }
-            }
-            
-            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-            public string Idioma {
-                get {
-                    if (this.IsIdiomaNull()) {
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public string Idioma
+            {
+                get
+                {
+                    if (this.IsIdiomaNull())
+                    {
                         return string.Empty;
                     }
-                    else {
+                    else
+                    {
                         return ((string)(this[this.tableTagsVariar.IdiomaColumn]));
                     }
                 }
-                set {
+                set
+                {
                     this[this.tableTagsVariar.IdiomaColumn] = value;
                 }
             }
-            
+
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-            public System.Guid GrupoID {
-                get {
-                    try {
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public System.Guid GrupoID
+            {
+                get
+                {
+                    try
+                    {
                         return ((global::System.Guid)(this[this.tableTagsVariar.GrupoIDColumn]));
                     }
-                    catch (global::System.InvalidCastException e) {
+                    catch (global::System.InvalidCastException e)
+                    {
                         throw new global::System.Data.StrongTypingException("El valor de la columna \'GrupoID\' de la tabla \'TagsVariar\' es DBNull.", e);
                     }
                 }
-                set {
+                set
+                {
                     this[this.tableTagsVariar.GrupoIDColumn] = value;
                 }
             }
-            
+
+            public string UrlImagen
+            {
+                get
+                {
+                    if (this.IsNull(this.tableTagsVariar.UrlImagen))
+                    {
+                        return string.Empty;
+                    }
+                    else
+                    {
+                        return ((string)(this[this.tableTagsVariar.UrlImagen]));
+                    }
+                }
+                set
+                {
+                    this[this.tableTagsVariar.UrlImagen] = value;
+                }
+            }
+
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-            public bool IsIdentidadIDNull() {
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public short EsTitulo
+            {
+                get
+                {
+                    if (this.IsNull(this.tableTagsVariar.TipoDato))
+                    {
+                        return 0;
+                    }
+                    else
+                    {
+                        return ((short)(this[this.tableTagsVariar.TipoDato]));
+                    }
+                }
+                set
+                {
+                    this[this.tableTagsVariar.TipoDato] = value;
+                }
+            }
+
+            public string Subtipo
+            {
+                get
+                {
+                    if (this.IsNull(this.tableTagsVariar.Subtipo))
+                    {
+                        return string.Empty;
+                    }
+                    else
+                    {
+                        return ((string)(this[this.tableTagsVariar.Subtipo]));
+                    }
+                }
+                set
+                {
+                    this[this.tableTagsVariar.Subtipo] = value;
+                }
+            }
+
+            public string UrlRecurso
+            {
+                get
+                {
+                    if (this.IsNull(this.tableTagsVariar.UrlRecurso))
+                    {
+                        return string.Empty;
+                    }
+                    else
+                    {
+                        return ((string)(this[this.tableTagsVariar.UrlRecurso]));
+                    }
+                }
+                set
+                {
+                    this[this.tableTagsVariar.UrlRecurso] = value;
+                }
+            }
+
+            public int Peso
+            {
+                get
+                {
+                    if (this.IsNull(this.tableTagsVariar.Peso))
+                    {
+                        return 0;
+                    }
+                    else
+                    {
+                        return ((int)(this[this.tableTagsVariar.Peso]));
+                    }
+                }
+                set
+                {
+                    this[this.tableTagsVariar.Peso] = value;
+                }
+            }
+
+            public string PropiedadesExtra
+            {
+                get
+                {
+                    if (this.IsNull(this.tableTagsVariar.PropiedadesExtra))
+                    {
+                        return string.Empty;
+                    }
+                    else
+                    {
+                        return ((string)(this[this.tableTagsVariar.PropiedadesExtra]));
+                    }
+                }
+                set
+                {
+                    this[this.tableTagsVariar.PropiedadesExtra] = value;
+                }
+            }
+
+            public string OrdenAutocompletar
+            {
+                get
+                {
+                    if (this.IsNull(this.tableTagsVariar.OrdenAutocompletar))
+                    {
+                        return string.Empty;
+                    }
+                    else
+                    {
+                        return ((string)(this[this.tableTagsVariar.OrdenAutocompletar]));
+                    }
+                }
+                set
+                {
+                    this[this.tableTagsVariar.OrdenAutocompletar] = value;
+                }
+            }
+
+            public bool IsOrderAsc
+            {
+                get
+                {
+                    if (this.IsNull(this.tableTagsVariar.IsOrderAsc))
+                    {
+                        return false;
+                    }
+                    else
+                    {
+                        return ((bool)(this[this.tableTagsVariar.IsOrderAsc]));
+                    }
+                }
+                set
+                {
+                    this[this.tableTagsVariar.IsOrderAsc] = value;
+                }
+            }
+
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public bool IsIdentidadIDNull()
+            {
                 return this.IsNull(this.tableTagsVariar.IdentidadIDColumn);
             }
-            
+
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-            public void SetIdentidadIDNull() {
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public void SetIdentidadIDNull()
+            {
                 this[this.tableTagsVariar.IdentidadIDColumn] = global::System.Convert.DBNull;
             }
-            
+
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-            public bool IsExtraNull() {
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public bool IsExtraNull()
+            {
                 return this.IsNull(this.tableTagsVariar.ExtraColumn);
             }
-            
+
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-            public void SetExtraNull() {
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public void SetExtraNull()
+            {
                 this[this.tableTagsVariar.ExtraColumn] = global::System.Convert.DBNull;
             }
-            
+
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-            public bool IsIdiomaNull() {
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public bool IsIdiomaNull()
+            {
                 return this.IsNull(this.tableTagsVariar.IdiomaColumn);
             }
-            
+
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-            public void SetIdiomaNull() {
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public void SetIdiomaNull()
+            {
                 this[this.tableTagsVariar.IdiomaColumn] = global::System.Convert.DBNull;
             }
-            
+
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-            public bool IsGrupoIDNull() {
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public bool IsGrupoIDNull()
+            {
                 return this.IsNull(this.tableTagsVariar.GrupoIDColumn);
             }
-            
+
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-            public void SetGrupoIDNull() {
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public void SetGrupoIDNull()
+            {
                 this[this.tableTagsVariar.GrupoIDColumn] = global::System.Convert.DBNull;
             }
         }
-        
+
         /// <summary>
         ///Represents strongly named DataRow class.
         ///</summary>
-        public partial class EtiquetasElementoRow : global::System.Data.DataRow {
-            
+        public partial class EtiquetasElementoRow : global::System.Data.DataRow
+        {
+
             private EtiquetasElementoDataTable tableEtiquetasElemento;
-            
+
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-            internal EtiquetasElementoRow(global::System.Data.DataRowBuilder rb) : 
-                    base(rb) {
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            internal EtiquetasElementoRow(global::System.Data.DataRowBuilder rb) :
+                    base(rb)
+            {
                 this.tableEtiquetasElemento = ((EtiquetasElementoDataTable)(this.Table));
             }
-            
+
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-            public System.Guid ElementoID {
-                get {
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public System.Guid ElementoID
+            {
+                get
+                {
                     return ((global::System.Guid)(this[this.tableEtiquetasElemento.ElementoIDColumn]));
                 }
-                set {
+                set
+                {
                     this[this.tableEtiquetasElemento.ElementoIDColumn] = value;
                 }
             }
-            
+
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-            public string Tipo {
-                get {
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public string Tipo
+            {
+                get
+                {
                     return ((string)(this[this.tableEtiquetasElemento.TipoColumn]));
                 }
-                set {
+                set
+                {
                     this[this.tableEtiquetasElemento.TipoColumn] = value;
                 }
             }
-            
+
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-            public System.Guid ProyectoID {
-                get {
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public System.Guid ProyectoID
+            {
+                get
+                {
                     return ((global::System.Guid)(this[this.tableEtiquetasElemento.ProyectoIDColumn]));
                 }
-                set {
+                set
+                {
                     this[this.tableEtiquetasElemento.ProyectoIDColumn] = value;
                 }
             }
-            
+
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-            public string Etiquetas {
-                get {
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public string Etiquetas
+            {
+                get
+                {
                     return ((string)(this[this.tableEtiquetasElemento.EtiquetasColumn]));
                 }
-                set {
+                set
+                {
                     this[this.tableEtiquetasElemento.EtiquetasColumn] = value;
                 }
             }
         }
-        
+
         /// <summary>
         ///Row event argument class
         ///</summary>
-        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-        public class ConfigAutocompletarProyRowChangeEvent : global::System.EventArgs {
-            
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+        public class ConfigAutocompletarProyRowChangeEvent : global::System.EventArgs
+        {
+
             private ConfigAutocompletarProyRow eventRow;
-            
+
             private global::System.Data.DataRowAction eventAction;
-            
+
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-            public ConfigAutocompletarProyRowChangeEvent(ConfigAutocompletarProyRow row, global::System.Data.DataRowAction action) {
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public ConfigAutocompletarProyRowChangeEvent(ConfigAutocompletarProyRow row, global::System.Data.DataRowAction action)
+            {
                 this.eventRow = row;
                 this.eventAction = action;
             }
-            
+
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-            public ConfigAutocompletarProyRow Row {
-                get {
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public ConfigAutocompletarProyRow Row
+            {
+                get
+                {
                     return this.eventRow;
                 }
             }
-            
+
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-            public global::System.Data.DataRowAction Action {
-                get {
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public global::System.Data.DataRowAction Action
+            {
+                get
+                {
                     return this.eventAction;
                 }
             }
         }
-        
+
         /// <summary>
         ///Row event argument class
         ///</summary>
-        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-        public class ConfigSearchProyRowChangeEvent : global::System.EventArgs {
-            
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+        public class ConfigSearchProyRowChangeEvent : global::System.EventArgs
+        {
+
             private ConfigSearchProyRow eventRow;
-            
+
             private global::System.Data.DataRowAction eventAction;
-            
+
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-            public ConfigSearchProyRowChangeEvent(ConfigSearchProyRow row, global::System.Data.DataRowAction action) {
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public ConfigSearchProyRowChangeEvent(ConfigSearchProyRow row, global::System.Data.DataRowAction action)
+            {
                 this.eventRow = row;
                 this.eventAction = action;
             }
-            
+
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-            public ConfigSearchProyRow Row {
-                get {
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public ConfigSearchProyRow Row
+            {
+                get
+                {
                     return this.eventRow;
                 }
             }
-            
+
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-            public global::System.Data.DataRowAction Action {
-                get {
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public global::System.Data.DataRowAction Action
+            {
+                get
+                {
                     return this.eventAction;
                 }
             }
         }
-        
+
         /// <summary>
         ///Row event argument class
         ///</summary>
-        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-        public class GrupoIdentidadesRowChangeEvent : global::System.EventArgs {
-            
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+        public class GrupoIdentidadesRowChangeEvent : global::System.EventArgs
+        {
+
             private GrupoIdentidadesRow eventRow;
-            
+
             private global::System.Data.DataRowAction eventAction;
-            
+
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-            public GrupoIdentidadesRowChangeEvent(GrupoIdentidadesRow row, global::System.Data.DataRowAction action) {
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public GrupoIdentidadesRowChangeEvent(GrupoIdentidadesRow row, global::System.Data.DataRowAction action)
+            {
                 this.eventRow = row;
                 this.eventAction = action;
             }
-            
+
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-            public GrupoIdentidadesRow Row {
-                get {
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public GrupoIdentidadesRow Row
+            {
+                get
+                {
                     return this.eventRow;
                 }
             }
-            
+
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-            public global::System.Data.DataRowAction Action {
-                get {
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public global::System.Data.DataRowAction Action
+            {
+                get
+                {
                     return this.eventAction;
                 }
             }
         }
-        
+
         /// <summary>
         ///Row event argument class
         ///</summary>
-        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-        public class TagsVariarRowChangeEvent : global::System.EventArgs {
-            
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+        public class TagsVariarRowChangeEvent : global::System.EventArgs
+        {
+
             private TagsVariarRow eventRow;
-            
+
             private global::System.Data.DataRowAction eventAction;
-            
+
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-            public TagsVariarRowChangeEvent(TagsVariarRow row, global::System.Data.DataRowAction action) {
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public TagsVariarRowChangeEvent(TagsVariarRow row, global::System.Data.DataRowAction action)
+            {
                 this.eventRow = row;
                 this.eventAction = action;
             }
-            
+
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-            public TagsVariarRow Row {
-                get {
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public TagsVariarRow Row
+            {
+                get
+                {
                     return this.eventRow;
                 }
             }
-            
+
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-            public global::System.Data.DataRowAction Action {
-                get {
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public global::System.Data.DataRowAction Action
+            {
+                get
+                {
                     return this.eventAction;
                 }
             }
         }
-        
+
         /// <summary>
         ///Row event argument class
         ///</summary>
-        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-        public class EtiquetasElementoRowChangeEvent : global::System.EventArgs {
-            
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+        public class EtiquetasElementoRowChangeEvent : global::System.EventArgs
+        {
+
             private EtiquetasElementoRow eventRow;
-            
+
             private global::System.Data.DataRowAction eventAction;
-            
+
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-            public EtiquetasElementoRowChangeEvent(EtiquetasElementoRow row, global::System.Data.DataRowAction action) {
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public EtiquetasElementoRowChangeEvent(EtiquetasElementoRow row, global::System.Data.DataRowAction action)
+            {
                 this.eventRow = row;
                 this.eventAction = action;
             }
-            
+
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-            public EtiquetasElementoRow Row {
-                get {
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public EtiquetasElementoRow Row
+            {
+                get
+                {
                     return this.eventRow;
                 }
             }
-            
+
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-            public global::System.Data.DataRowAction Action {
-                get {
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public global::System.Data.DataRowAction Action
+            {
+                get
+                {
                     return this.eventAction;
                 }
             }
         }
     }
 }
-namespace Es.Riam.Gnoss.AD.AutoCompetarEtiquetas.Model.TagsAutoDSTableAdapters {
-    
-    
+namespace Es.Riam.Gnoss.AD.AutoCompetarEtiquetas.Model.TagsAutoDSTableAdapters
+{
+
+
     /// <summary>
     ///Represents the connection and commands used to retrieve and save data.
     ///</summary>
@@ -2651,83 +3356,107 @@ namespace Es.Riam.Gnoss.AD.AutoCompetarEtiquetas.Model.TagsAutoDSTableAdapters {
     [global::System.ComponentModel.DesignerAttribute("Microsoft.VSDesigner.DataSource.Design.TableAdapterDesigner, Microsoft.VSDesigner" +
         ", Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a")]
     [global::System.ComponentModel.Design.HelpKeywordAttribute("vs.data.TableAdapter")]
-    public partial class ConfigAutocompletarProyTableAdapter : global::System.ComponentModel.Component {
-        
+    public partial class ConfigAutocompletarProyTableAdapter : global::System.ComponentModel.Component
+    {
+
         private global::System.Data.SqlClient.SqlDataAdapter _adapter;
-        
+
         private global::System.Data.SqlClient.SqlConnection _connection;
-        
+
         private global::System.Data.SqlClient.SqlCommand[] _commandCollection;
-        
+
         private bool _clearBeforeFill;
-        
+
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-        public ConfigAutocompletarProyTableAdapter() {
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+        public ConfigAutocompletarProyTableAdapter()
+        {
             this.ClearBeforeFill = true;
         }
-        
+
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-        private global::System.Data.SqlClient.SqlDataAdapter Adapter {
-            get {
-                if ((this._adapter == null)) {
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+        private global::System.Data.SqlClient.SqlDataAdapter Adapter
+        {
+            get
+            {
+                if ((this._adapter == null))
+                {
                     this.InitAdapter();
                 }
                 return this._adapter;
             }
         }
-        
+
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-        internal global::System.Data.SqlClient.SqlConnection Connection {
-            get {
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+        internal global::System.Data.SqlClient.SqlConnection Connection
+        {
+            get
+            {
+                if ((this._connection == null))
+                {
+                    this.InitConnection();
+                }
                 return this._connection;
             }
-            set {
+            set
+            {
                 this._connection = value;
-                if ((this.Adapter.InsertCommand != null)) {
+                if ((this.Adapter.InsertCommand != null))
+                {
                     this.Adapter.InsertCommand.Connection = value;
                 }
-                if ((this.Adapter.DeleteCommand != null)) {
+                if ((this.Adapter.DeleteCommand != null))
+                {
                     this.Adapter.DeleteCommand.Connection = value;
                 }
-                if ((this.Adapter.UpdateCommand != null)) {
+                if ((this.Adapter.UpdateCommand != null))
+                {
                     this.Adapter.UpdateCommand.Connection = value;
                 }
-                for (int i = 0; (i < this.CommandCollection.Length); i = (i + 1)) {
-                    if ((this.CommandCollection[i] != null)) {
+                for (int i = 0; (i < this.CommandCollection.Length); i = (i + 1))
+                {
+                    if ((this.CommandCollection[i] != null))
+                    {
                         ((global::System.Data.SqlClient.SqlCommand)(this.CommandCollection[i])).Connection = value;
                     }
                 }
             }
         }
-        
+
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-        protected global::System.Data.SqlClient.SqlCommand[] CommandCollection {
-            get {
-                if ((this._commandCollection == null)) {
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+        protected global::System.Data.SqlClient.SqlCommand[] CommandCollection
+        {
+            get
+            {
+                if ((this._commandCollection == null))
+                {
                     this.InitCommandCollection();
                 }
                 return this._commandCollection;
             }
         }
-        
+
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-        public bool ClearBeforeFill {
-            get {
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+        public bool ClearBeforeFill
+        {
+            get
+            {
                 return this._clearBeforeFill;
             }
-            set {
+            set
+            {
                 this._clearBeforeFill = value;
             }
         }
-        
+
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-        private void InitAdapter() {
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+        private void InitAdapter()
+        {
             this._adapter = new global::System.Data.SqlClient.SqlDataAdapter();
             global::System.Data.Common.DataTableMapping tableMapping = new global::System.Data.Common.DataTableMapping();
             tableMapping.SourceTable = "Table";
@@ -2773,11 +3502,19 @@ SELECT OrganizacionID, ProyectoID, Clave, Valor, PestanyaID FROM ConfigAutocompl
             this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@IsNull_PestanyaID", global::System.Data.SqlDbType.Int, 0, global::System.Data.ParameterDirection.Input, 0, 0, "PestanyaID", global::System.Data.DataRowVersion.Original, true, null, "", "", ""));
             this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Original_PestanyaID", global::System.Data.SqlDbType.UniqueIdentifier, 0, global::System.Data.ParameterDirection.Input, 0, 0, "PestanyaID", global::System.Data.DataRowVersion.Original, false, null, "", "", ""));
         }
-        
-        
+
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-        private void InitCommandCollection() {
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+        private void InitConnection()
+        {
+            this._connection = new global::System.Data.SqlClient.SqlConnection();
+            this._connection.ConnectionString = "";
+        }
+
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+        private void InitCommandCollection()
+        {
             this._commandCollection = new global::System.Data.SqlClient.SqlCommand[1];
             this._commandCollection[0] = new global::System.Data.SqlClient.SqlCommand();
             this._commandCollection[0].Connection = this.Connection;
@@ -2785,204 +3522,247 @@ SELECT OrganizacionID, ProyectoID, Clave, Valor, PestanyaID FROM ConfigAutocompl
                 "mpletarProy";
             this._commandCollection[0].CommandType = global::System.Data.CommandType.Text;
         }
-        
+
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
         [global::System.ComponentModel.Design.HelpKeywordAttribute("vs.data.TableAdapter")]
         [global::System.ComponentModel.DataObjectMethodAttribute(global::System.ComponentModel.DataObjectMethodType.Fill, true)]
-        public virtual int Fill(TagsAutoDS.ConfigAutocompletarProyDataTable dataTable) {
+        public virtual int Fill(TagsAutoDS.ConfigAutocompletarProyDataTable dataTable)
+        {
             this.Adapter.SelectCommand = this.CommandCollection[0];
-            if ((this.ClearBeforeFill == true)) {
+            if ((this.ClearBeforeFill == true))
+            {
                 dataTable.Clear();
             }
             int returnValue = this.Adapter.Fill(dataTable);
             return returnValue;
         }
-        
+
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
         [global::System.ComponentModel.Design.HelpKeywordAttribute("vs.data.TableAdapter")]
         [global::System.ComponentModel.DataObjectMethodAttribute(global::System.ComponentModel.DataObjectMethodType.Select, true)]
-        public virtual TagsAutoDS.ConfigAutocompletarProyDataTable GetData() {
+        public virtual TagsAutoDS.ConfigAutocompletarProyDataTable GetData()
+        {
             this.Adapter.SelectCommand = this.CommandCollection[0];
             TagsAutoDS.ConfigAutocompletarProyDataTable dataTable = new TagsAutoDS.ConfigAutocompletarProyDataTable();
             this.Adapter.Fill(dataTable);
             return dataTable;
         }
-        
+
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
         [global::System.ComponentModel.Design.HelpKeywordAttribute("vs.data.TableAdapter")]
-        public virtual int Update(TagsAutoDS.ConfigAutocompletarProyDataTable dataTable) {
+        public virtual int Update(TagsAutoDS.ConfigAutocompletarProyDataTable dataTable)
+        {
             return this.Adapter.Update(dataTable);
         }
-        
+
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
         [global::System.ComponentModel.Design.HelpKeywordAttribute("vs.data.TableAdapter")]
-        public virtual int Update(TagsAutoDS dataSet) {
+        public virtual int Update(TagsAutoDS dataSet)
+        {
             return this.Adapter.Update(dataSet, "ConfigAutocompletarProy");
         }
-        
+
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
         [global::System.ComponentModel.Design.HelpKeywordAttribute("vs.data.TableAdapter")]
-        public virtual int Update(global::System.Data.DataRow dataRow) {
+        public virtual int Update(global::System.Data.DataRow dataRow)
+        {
             return this.Adapter.Update(new global::System.Data.DataRow[] {
                         dataRow});
         }
-        
+
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
         [global::System.ComponentModel.Design.HelpKeywordAttribute("vs.data.TableAdapter")]
-        public virtual int Update(global::System.Data.DataRow[] dataRows) {
+        public virtual int Update(global::System.Data.DataRow[] dataRows)
+        {
             return this.Adapter.Update(dataRows);
         }
-        
+
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
         [global::System.ComponentModel.Design.HelpKeywordAttribute("vs.data.TableAdapter")]
         [global::System.ComponentModel.DataObjectMethodAttribute(global::System.ComponentModel.DataObjectMethodType.Delete, true)]
-        public virtual int Delete(System.Guid Original_OrganizacionID, System.Guid Original_ProyectoID, string Original_Clave, global::System.Nullable<global::System.Guid> Original_PestanyaID) {
+        public virtual int Delete(System.Guid Original_OrganizacionID, System.Guid Original_ProyectoID, string Original_Clave, global::System.Nullable<global::System.Guid> Original_PestanyaID)
+        {
             this.Adapter.DeleteCommand.Parameters[0].Value = ((System.Guid)(Original_OrganizacionID));
             this.Adapter.DeleteCommand.Parameters[1].Value = ((System.Guid)(Original_ProyectoID));
-            if ((Original_Clave == null)) {
+            if ((Original_Clave == null))
+            {
                 throw new global::System.ArgumentNullException("Original_Clave");
             }
-            else {
+            else
+            {
                 this.Adapter.DeleteCommand.Parameters[2].Value = ((string)(Original_Clave));
             }
-            if ((Original_PestanyaID.HasValue == true)) {
+            if ((Original_PestanyaID.HasValue == true))
+            {
                 this.Adapter.DeleteCommand.Parameters[3].Value = ((object)(0));
                 this.Adapter.DeleteCommand.Parameters[4].Value = ((System.Guid)(Original_PestanyaID.Value));
             }
-            else {
+            else
+            {
                 this.Adapter.DeleteCommand.Parameters[3].Value = ((object)(1));
                 this.Adapter.DeleteCommand.Parameters[4].Value = global::System.DBNull.Value;
             }
             global::System.Data.ConnectionState previousConnectionState = this.Adapter.DeleteCommand.Connection.State;
-            if (((this.Adapter.DeleteCommand.Connection.State & global::System.Data.ConnectionState.Open) 
-                        != global::System.Data.ConnectionState.Open)) {
+            if (((this.Adapter.DeleteCommand.Connection.State & global::System.Data.ConnectionState.Open)
+                        != global::System.Data.ConnectionState.Open))
+            {
                 this.Adapter.DeleteCommand.Connection.Open();
             }
-            try {
+            try
+            {
                 int returnValue = this.Adapter.DeleteCommand.ExecuteNonQuery();
                 return returnValue;
             }
-            finally {
-                if ((previousConnectionState == global::System.Data.ConnectionState.Closed)) {
+            finally
+            {
+                if ((previousConnectionState == global::System.Data.ConnectionState.Closed))
+                {
                     this.Adapter.DeleteCommand.Connection.Close();
                 }
             }
         }
-        
+
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
         [global::System.ComponentModel.Design.HelpKeywordAttribute("vs.data.TableAdapter")]
         [global::System.ComponentModel.DataObjectMethodAttribute(global::System.ComponentModel.DataObjectMethodType.Insert, true)]
-        public virtual int Insert(System.Guid OrganizacionID, System.Guid ProyectoID, string Clave, string Valor, global::System.Nullable<global::System.Guid> PestanyaID) {
+        public virtual int Insert(System.Guid OrganizacionID, System.Guid ProyectoID, string Clave, string Valor, global::System.Nullable<global::System.Guid> PestanyaID)
+        {
             this.Adapter.InsertCommand.Parameters[0].Value = ((System.Guid)(OrganizacionID));
             this.Adapter.InsertCommand.Parameters[1].Value = ((System.Guid)(ProyectoID));
-            if ((Clave == null)) {
+            if ((Clave == null))
+            {
                 throw new global::System.ArgumentNullException("Clave");
             }
-            else {
+            else
+            {
                 this.Adapter.InsertCommand.Parameters[2].Value = ((string)(Clave));
             }
-            if ((Valor == null)) {
+            if ((Valor == null))
+            {
                 throw new global::System.ArgumentNullException("Valor");
             }
-            else {
+            else
+            {
                 this.Adapter.InsertCommand.Parameters[3].Value = ((string)(Valor));
             }
-            if ((PestanyaID.HasValue == true)) {
+            if ((PestanyaID.HasValue == true))
+            {
                 this.Adapter.InsertCommand.Parameters[4].Value = ((System.Guid)(PestanyaID.Value));
             }
-            else {
+            else
+            {
                 this.Adapter.InsertCommand.Parameters[4].Value = global::System.DBNull.Value;
             }
             global::System.Data.ConnectionState previousConnectionState = this.Adapter.InsertCommand.Connection.State;
-            if (((this.Adapter.InsertCommand.Connection.State & global::System.Data.ConnectionState.Open) 
-                        != global::System.Data.ConnectionState.Open)) {
+            if (((this.Adapter.InsertCommand.Connection.State & global::System.Data.ConnectionState.Open)
+                        != global::System.Data.ConnectionState.Open))
+            {
                 this.Adapter.InsertCommand.Connection.Open();
             }
-            try {
+            try
+            {
                 int returnValue = this.Adapter.InsertCommand.ExecuteNonQuery();
                 return returnValue;
             }
-            finally {
-                if ((previousConnectionState == global::System.Data.ConnectionState.Closed)) {
+            finally
+            {
+                if ((previousConnectionState == global::System.Data.ConnectionState.Closed))
+                {
                     this.Adapter.InsertCommand.Connection.Close();
                 }
             }
         }
-        
+
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
         [global::System.ComponentModel.Design.HelpKeywordAttribute("vs.data.TableAdapter")]
         [global::System.ComponentModel.DataObjectMethodAttribute(global::System.ComponentModel.DataObjectMethodType.Update, true)]
-        public virtual int Update(System.Guid OrganizacionID, System.Guid ProyectoID, string Clave, string Valor, global::System.Nullable<global::System.Guid> PestanyaID, System.Guid Original_OrganizacionID, System.Guid Original_ProyectoID, string Original_Clave, global::System.Nullable<global::System.Guid> Original_PestanyaID) {
+        public virtual int Update(System.Guid OrganizacionID, System.Guid ProyectoID, string Clave, string Valor, global::System.Nullable<global::System.Guid> PestanyaID, System.Guid Original_OrganizacionID, System.Guid Original_ProyectoID, string Original_Clave, global::System.Nullable<global::System.Guid> Original_PestanyaID)
+        {
             this.Adapter.UpdateCommand.Parameters[0].Value = ((System.Guid)(OrganizacionID));
             this.Adapter.UpdateCommand.Parameters[1].Value = ((System.Guid)(ProyectoID));
-            if ((Clave == null)) {
+            if ((Clave == null))
+            {
                 throw new global::System.ArgumentNullException("Clave");
             }
-            else {
+            else
+            {
                 this.Adapter.UpdateCommand.Parameters[2].Value = ((string)(Clave));
             }
-            if ((Valor == null)) {
+            if ((Valor == null))
+            {
                 throw new global::System.ArgumentNullException("Valor");
             }
-            else {
+            else
+            {
                 this.Adapter.UpdateCommand.Parameters[3].Value = ((string)(Valor));
             }
-            if ((PestanyaID.HasValue == true)) {
+            if ((PestanyaID.HasValue == true))
+            {
                 this.Adapter.UpdateCommand.Parameters[4].Value = ((System.Guid)(PestanyaID.Value));
             }
-            else {
+            else
+            {
                 this.Adapter.UpdateCommand.Parameters[4].Value = global::System.DBNull.Value;
             }
             this.Adapter.UpdateCommand.Parameters[5].Value = ((System.Guid)(Original_OrganizacionID));
             this.Adapter.UpdateCommand.Parameters[6].Value = ((System.Guid)(Original_ProyectoID));
-            if ((Original_Clave == null)) {
+            if ((Original_Clave == null))
+            {
                 throw new global::System.ArgumentNullException("Original_Clave");
             }
-            else {
+            else
+            {
                 this.Adapter.UpdateCommand.Parameters[7].Value = ((string)(Original_Clave));
             }
-            if ((Original_PestanyaID.HasValue == true)) {
+            if ((Original_PestanyaID.HasValue == true))
+            {
                 this.Adapter.UpdateCommand.Parameters[8].Value = ((object)(0));
                 this.Adapter.UpdateCommand.Parameters[9].Value = ((System.Guid)(Original_PestanyaID.Value));
             }
-            else {
+            else
+            {
                 this.Adapter.UpdateCommand.Parameters[8].Value = ((object)(1));
                 this.Adapter.UpdateCommand.Parameters[9].Value = global::System.DBNull.Value;
             }
             global::System.Data.ConnectionState previousConnectionState = this.Adapter.UpdateCommand.Connection.State;
-            if (((this.Adapter.UpdateCommand.Connection.State & global::System.Data.ConnectionState.Open) 
-                        != global::System.Data.ConnectionState.Open)) {
+            if (((this.Adapter.UpdateCommand.Connection.State & global::System.Data.ConnectionState.Open)
+                        != global::System.Data.ConnectionState.Open))
+            {
                 this.Adapter.UpdateCommand.Connection.Open();
             }
-            try {
+            try
+            {
                 int returnValue = this.Adapter.UpdateCommand.ExecuteNonQuery();
                 return returnValue;
             }
-            finally {
-                if ((previousConnectionState == global::System.Data.ConnectionState.Closed)) {
+            finally
+            {
+                if ((previousConnectionState == global::System.Data.ConnectionState.Closed))
+                {
                     this.Adapter.UpdateCommand.Connection.Close();
                 }
             }
         }
-        
+
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
         [global::System.ComponentModel.Design.HelpKeywordAttribute("vs.data.TableAdapter")]
         [global::System.ComponentModel.DataObjectMethodAttribute(global::System.ComponentModel.DataObjectMethodType.Update, true)]
-        public virtual int Update(string Valor, global::System.Nullable<global::System.Guid> PestanyaID, System.Guid Original_OrganizacionID, System.Guid Original_ProyectoID, string Original_Clave, global::System.Nullable<global::System.Guid> Original_PestanyaID) {
+        public virtual int Update(string Valor, global::System.Nullable<global::System.Guid> PestanyaID, System.Guid Original_OrganizacionID, System.Guid Original_ProyectoID, string Original_Clave, global::System.Nullable<global::System.Guid> Original_PestanyaID)
+        {
             return this.Update(Original_OrganizacionID, Original_ProyectoID, Original_Clave, Valor, PestanyaID, Original_OrganizacionID, Original_ProyectoID, Original_Clave, Original_PestanyaID);
         }
     }
-    
+
     /// <summary>
     ///Represents the connection and commands used to retrieve and save data.
     ///</summary>
@@ -2992,83 +3772,107 @@ SELECT OrganizacionID, ProyectoID, Clave, Valor, PestanyaID FROM ConfigAutocompl
     [global::System.ComponentModel.DesignerAttribute("Microsoft.VSDesigner.DataSource.Design.TableAdapterDesigner, Microsoft.VSDesigner" +
         ", Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a")]
     [global::System.ComponentModel.Design.HelpKeywordAttribute("vs.data.TableAdapter")]
-    public partial class ConfigSearchProyTableAdapter : global::System.ComponentModel.Component {
-        
+    public partial class ConfigSearchProyTableAdapter : global::System.ComponentModel.Component
+    {
+
         private global::System.Data.SqlClient.SqlDataAdapter _adapter;
-        
+
         private global::System.Data.SqlClient.SqlConnection _connection;
-        
+
         private global::System.Data.SqlClient.SqlCommand[] _commandCollection;
-        
+
         private bool _clearBeforeFill;
-        
+
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-        public ConfigSearchProyTableAdapter() {
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+        public ConfigSearchProyTableAdapter()
+        {
             this.ClearBeforeFill = true;
         }
-        
+
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-        private global::System.Data.SqlClient.SqlDataAdapter Adapter {
-            get {
-                if ((this._adapter == null)) {
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+        private global::System.Data.SqlClient.SqlDataAdapter Adapter
+        {
+            get
+            {
+                if ((this._adapter == null))
+                {
                     this.InitAdapter();
                 }
                 return this._adapter;
             }
         }
-        
+
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-        internal global::System.Data.SqlClient.SqlConnection Connection {
-            get {
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+        internal global::System.Data.SqlClient.SqlConnection Connection
+        {
+            get
+            {
+                if ((this._connection == null))
+                {
+                    this.InitConnection();
+                }
                 return this._connection;
             }
-            set {
+            set
+            {
                 this._connection = value;
-                if ((this.Adapter.InsertCommand != null)) {
+                if ((this.Adapter.InsertCommand != null))
+                {
                     this.Adapter.InsertCommand.Connection = value;
                 }
-                if ((this.Adapter.DeleteCommand != null)) {
+                if ((this.Adapter.DeleteCommand != null))
+                {
                     this.Adapter.DeleteCommand.Connection = value;
                 }
-                if ((this.Adapter.UpdateCommand != null)) {
+                if ((this.Adapter.UpdateCommand != null))
+                {
                     this.Adapter.UpdateCommand.Connection = value;
                 }
-                for (int i = 0; (i < this.CommandCollection.Length); i = (i + 1)) {
-                    if ((this.CommandCollection[i] != null)) {
+                for (int i = 0; (i < this.CommandCollection.Length); i = (i + 1))
+                {
+                    if ((this.CommandCollection[i] != null))
+                    {
                         ((global::System.Data.SqlClient.SqlCommand)(this.CommandCollection[i])).Connection = value;
                     }
                 }
             }
         }
-        
+
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-        protected global::System.Data.SqlClient.SqlCommand[] CommandCollection {
-            get {
-                if ((this._commandCollection == null)) {
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+        protected global::System.Data.SqlClient.SqlCommand[] CommandCollection
+        {
+            get
+            {
+                if ((this._commandCollection == null))
+                {
                     this.InitCommandCollection();
                 }
                 return this._commandCollection;
             }
         }
-        
+
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-        public bool ClearBeforeFill {
-            get {
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+        public bool ClearBeforeFill
+        {
+            get
+            {
                 return this._clearBeforeFill;
             }
-            set {
+            set
+            {
                 this._clearBeforeFill = value;
             }
         }
-        
+
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-        private void InitAdapter() {
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+        private void InitAdapter()
+        {
             this._adapter = new global::System.Data.SqlClient.SqlDataAdapter();
             global::System.Data.Common.DataTableMapping tableMapping = new global::System.Data.Common.DataTableMapping();
             tableMapping.SourceTable = "Table";
@@ -3108,187 +3912,230 @@ SELECT OrganizacionID, ProyectoID, Clave, Valor FROM ConfigSearchProy WHERE (Cla
             this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Original_ProyectoID", global::System.Data.SqlDbType.UniqueIdentifier, 0, global::System.Data.ParameterDirection.Input, 0, 0, "ProyectoID", global::System.Data.DataRowVersion.Original, false, null, "", "", ""));
             this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Original_Clave", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "Clave", global::System.Data.DataRowVersion.Original, false, null, "", "", ""));
         }
-        
-        
+
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-        private void InitCommandCollection() {
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+        private void InitConnection()
+        {
+            this._connection = new global::System.Data.SqlClient.SqlConnection();
+            this._connection.ConnectionString = "";
+        }
+
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+        private void InitCommandCollection()
+        {
             this._commandCollection = new global::System.Data.SqlClient.SqlCommand[1];
             this._commandCollection[0] = new global::System.Data.SqlClient.SqlCommand();
             this._commandCollection[0].Connection = this.Connection;
             this._commandCollection[0].CommandText = "SELECT OrganizacionID, ProyectoID, Clave, Valor FROM ConfigSearchProy";
             this._commandCollection[0].CommandType = global::System.Data.CommandType.Text;
         }
-        
+
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
         [global::System.ComponentModel.Design.HelpKeywordAttribute("vs.data.TableAdapter")]
         [global::System.ComponentModel.DataObjectMethodAttribute(global::System.ComponentModel.DataObjectMethodType.Fill, true)]
-        public virtual int Fill(TagsAutoDS.ConfigSearchProyDataTable dataTable) {
+        public virtual int Fill(TagsAutoDS.ConfigSearchProyDataTable dataTable)
+        {
             this.Adapter.SelectCommand = this.CommandCollection[0];
-            if ((this.ClearBeforeFill == true)) {
+            if ((this.ClearBeforeFill == true))
+            {
                 dataTable.Clear();
             }
             int returnValue = this.Adapter.Fill(dataTable);
             return returnValue;
         }
-        
+
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
         [global::System.ComponentModel.Design.HelpKeywordAttribute("vs.data.TableAdapter")]
         [global::System.ComponentModel.DataObjectMethodAttribute(global::System.ComponentModel.DataObjectMethodType.Select, true)]
-        public virtual TagsAutoDS.ConfigSearchProyDataTable GetData() {
+        public virtual TagsAutoDS.ConfigSearchProyDataTable GetData()
+        {
             this.Adapter.SelectCommand = this.CommandCollection[0];
             TagsAutoDS.ConfigSearchProyDataTable dataTable = new TagsAutoDS.ConfigSearchProyDataTable();
             this.Adapter.Fill(dataTable);
             return dataTable;
         }
-        
+
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
         [global::System.ComponentModel.Design.HelpKeywordAttribute("vs.data.TableAdapter")]
-        public virtual int Update(TagsAutoDS.ConfigSearchProyDataTable dataTable) {
+        public virtual int Update(TagsAutoDS.ConfigSearchProyDataTable dataTable)
+        {
             return this.Adapter.Update(dataTable);
         }
-        
+
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
         [global::System.ComponentModel.Design.HelpKeywordAttribute("vs.data.TableAdapter")]
-        public virtual int Update(TagsAutoDS dataSet) {
+        public virtual int Update(TagsAutoDS dataSet)
+        {
             return this.Adapter.Update(dataSet, "ConfigSearchProy");
         }
-        
+
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
         [global::System.ComponentModel.Design.HelpKeywordAttribute("vs.data.TableAdapter")]
-        public virtual int Update(global::System.Data.DataRow dataRow) {
+        public virtual int Update(global::System.Data.DataRow dataRow)
+        {
             return this.Adapter.Update(new global::System.Data.DataRow[] {
                         dataRow});
         }
-        
+
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
         [global::System.ComponentModel.Design.HelpKeywordAttribute("vs.data.TableAdapter")]
-        public virtual int Update(global::System.Data.DataRow[] dataRows) {
+        public virtual int Update(global::System.Data.DataRow[] dataRows)
+        {
             return this.Adapter.Update(dataRows);
         }
-        
+
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
         [global::System.ComponentModel.Design.HelpKeywordAttribute("vs.data.TableAdapter")]
         [global::System.ComponentModel.DataObjectMethodAttribute(global::System.ComponentModel.DataObjectMethodType.Delete, true)]
-        public virtual int Delete(System.Guid Original_OrganizacionID, System.Guid Original_ProyectoID, string Original_Clave) {
+        public virtual int Delete(System.Guid Original_OrganizacionID, System.Guid Original_ProyectoID, string Original_Clave)
+        {
             this.Adapter.DeleteCommand.Parameters[0].Value = ((System.Guid)(Original_OrganizacionID));
             this.Adapter.DeleteCommand.Parameters[1].Value = ((System.Guid)(Original_ProyectoID));
-            if ((Original_Clave == null)) {
+            if ((Original_Clave == null))
+            {
                 throw new global::System.ArgumentNullException("Original_Clave");
             }
-            else {
+            else
+            {
                 this.Adapter.DeleteCommand.Parameters[2].Value = ((string)(Original_Clave));
             }
             global::System.Data.ConnectionState previousConnectionState = this.Adapter.DeleteCommand.Connection.State;
-            if (((this.Adapter.DeleteCommand.Connection.State & global::System.Data.ConnectionState.Open) 
-                        != global::System.Data.ConnectionState.Open)) {
+            if (((this.Adapter.DeleteCommand.Connection.State & global::System.Data.ConnectionState.Open)
+                        != global::System.Data.ConnectionState.Open))
+            {
                 this.Adapter.DeleteCommand.Connection.Open();
             }
-            try {
+            try
+            {
                 int returnValue = this.Adapter.DeleteCommand.ExecuteNonQuery();
                 return returnValue;
             }
-            finally {
-                if ((previousConnectionState == global::System.Data.ConnectionState.Closed)) {
+            finally
+            {
+                if ((previousConnectionState == global::System.Data.ConnectionState.Closed))
+                {
                     this.Adapter.DeleteCommand.Connection.Close();
                 }
             }
         }
-        
+
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
         [global::System.ComponentModel.Design.HelpKeywordAttribute("vs.data.TableAdapter")]
         [global::System.ComponentModel.DataObjectMethodAttribute(global::System.ComponentModel.DataObjectMethodType.Insert, true)]
-        public virtual int Insert(System.Guid OrganizacionID, System.Guid ProyectoID, string Clave, string Valor) {
+        public virtual int Insert(System.Guid OrganizacionID, System.Guid ProyectoID, string Clave, string Valor)
+        {
             this.Adapter.InsertCommand.Parameters[0].Value = ((System.Guid)(OrganizacionID));
             this.Adapter.InsertCommand.Parameters[1].Value = ((System.Guid)(ProyectoID));
-            if ((Clave == null)) {
+            if ((Clave == null))
+            {
                 throw new global::System.ArgumentNullException("Clave");
             }
-            else {
+            else
+            {
                 this.Adapter.InsertCommand.Parameters[2].Value = ((string)(Clave));
             }
-            if ((Valor == null)) {
+            if ((Valor == null))
+            {
                 throw new global::System.ArgumentNullException("Valor");
             }
-            else {
+            else
+            {
                 this.Adapter.InsertCommand.Parameters[3].Value = ((string)(Valor));
             }
             global::System.Data.ConnectionState previousConnectionState = this.Adapter.InsertCommand.Connection.State;
-            if (((this.Adapter.InsertCommand.Connection.State & global::System.Data.ConnectionState.Open) 
-                        != global::System.Data.ConnectionState.Open)) {
+            if (((this.Adapter.InsertCommand.Connection.State & global::System.Data.ConnectionState.Open)
+                        != global::System.Data.ConnectionState.Open))
+            {
                 this.Adapter.InsertCommand.Connection.Open();
             }
-            try {
+            try
+            {
                 int returnValue = this.Adapter.InsertCommand.ExecuteNonQuery();
                 return returnValue;
             }
-            finally {
-                if ((previousConnectionState == global::System.Data.ConnectionState.Closed)) {
+            finally
+            {
+                if ((previousConnectionState == global::System.Data.ConnectionState.Closed))
+                {
                     this.Adapter.InsertCommand.Connection.Close();
                 }
             }
         }
-        
+
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
         [global::System.ComponentModel.Design.HelpKeywordAttribute("vs.data.TableAdapter")]
         [global::System.ComponentModel.DataObjectMethodAttribute(global::System.ComponentModel.DataObjectMethodType.Update, true)]
-        public virtual int Update(System.Guid OrganizacionID, System.Guid ProyectoID, string Clave, string Valor, System.Guid Original_OrganizacionID, System.Guid Original_ProyectoID, string Original_Clave) {
+        public virtual int Update(System.Guid OrganizacionID, System.Guid ProyectoID, string Clave, string Valor, System.Guid Original_OrganizacionID, System.Guid Original_ProyectoID, string Original_Clave)
+        {
             this.Adapter.UpdateCommand.Parameters[0].Value = ((System.Guid)(OrganizacionID));
             this.Adapter.UpdateCommand.Parameters[1].Value = ((System.Guid)(ProyectoID));
-            if ((Clave == null)) {
+            if ((Clave == null))
+            {
                 throw new global::System.ArgumentNullException("Clave");
             }
-            else {
+            else
+            {
                 this.Adapter.UpdateCommand.Parameters[2].Value = ((string)(Clave));
             }
-            if ((Valor == null)) {
+            if ((Valor == null))
+            {
                 throw new global::System.ArgumentNullException("Valor");
             }
-            else {
+            else
+            {
                 this.Adapter.UpdateCommand.Parameters[3].Value = ((string)(Valor));
             }
             this.Adapter.UpdateCommand.Parameters[4].Value = ((System.Guid)(Original_OrganizacionID));
             this.Adapter.UpdateCommand.Parameters[5].Value = ((System.Guid)(Original_ProyectoID));
-            if ((Original_Clave == null)) {
+            if ((Original_Clave == null))
+            {
                 throw new global::System.ArgumentNullException("Original_Clave");
             }
-            else {
+            else
+            {
                 this.Adapter.UpdateCommand.Parameters[6].Value = ((string)(Original_Clave));
             }
             global::System.Data.ConnectionState previousConnectionState = this.Adapter.UpdateCommand.Connection.State;
-            if (((this.Adapter.UpdateCommand.Connection.State & global::System.Data.ConnectionState.Open) 
-                        != global::System.Data.ConnectionState.Open)) {
+            if (((this.Adapter.UpdateCommand.Connection.State & global::System.Data.ConnectionState.Open)
+                        != global::System.Data.ConnectionState.Open))
+            {
                 this.Adapter.UpdateCommand.Connection.Open();
             }
-            try {
+            try
+            {
                 int returnValue = this.Adapter.UpdateCommand.ExecuteNonQuery();
                 return returnValue;
             }
-            finally {
-                if ((previousConnectionState == global::System.Data.ConnectionState.Closed)) {
+            finally
+            {
+                if ((previousConnectionState == global::System.Data.ConnectionState.Closed))
+                {
                     this.Adapter.UpdateCommand.Connection.Close();
                 }
             }
         }
-        
+
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
         [global::System.ComponentModel.Design.HelpKeywordAttribute("vs.data.TableAdapter")]
         [global::System.ComponentModel.DataObjectMethodAttribute(global::System.ComponentModel.DataObjectMethodType.Update, true)]
-        public virtual int Update(string Valor, System.Guid Original_OrganizacionID, System.Guid Original_ProyectoID, string Original_Clave) {
+        public virtual int Update(string Valor, System.Guid Original_OrganizacionID, System.Guid Original_ProyectoID, string Original_Clave)
+        {
             return this.Update(Original_OrganizacionID, Original_ProyectoID, Original_Clave, Valor, Original_OrganizacionID, Original_ProyectoID, Original_Clave);
         }
     }
-    
+
     /// <summary>
     ///Represents the connection and commands used to retrieve and save data.
     ///</summary>
@@ -3298,83 +4145,107 @@ SELECT OrganizacionID, ProyectoID, Clave, Valor FROM ConfigSearchProy WHERE (Cla
     [global::System.ComponentModel.DesignerAttribute("Microsoft.VSDesigner.DataSource.Design.TableAdapterDesigner, Microsoft.VSDesigner" +
         ", Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a")]
     [global::System.ComponentModel.Design.HelpKeywordAttribute("vs.data.TableAdapter")]
-    public partial class GrupoIdentidadesTableAdapter : global::System.ComponentModel.Component {
-        
+    public partial class GrupoIdentidadesTableAdapter : global::System.ComponentModel.Component
+    {
+
         private global::System.Data.SqlClient.SqlDataAdapter _adapter;
-        
+
         private global::System.Data.SqlClient.SqlConnection _connection;
-        
+
         private global::System.Data.SqlClient.SqlCommand[] _commandCollection;
-        
+
         private bool _clearBeforeFill;
-        
+
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-        public GrupoIdentidadesTableAdapter() {
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+        public GrupoIdentidadesTableAdapter()
+        {
             this.ClearBeforeFill = true;
         }
-        
+
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-        private global::System.Data.SqlClient.SqlDataAdapter Adapter {
-            get {
-                if ((this._adapter == null)) {
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+        private global::System.Data.SqlClient.SqlDataAdapter Adapter
+        {
+            get
+            {
+                if ((this._adapter == null))
+                {
                     this.InitAdapter();
                 }
                 return this._adapter;
             }
         }
-        
+
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-        internal global::System.Data.SqlClient.SqlConnection Connection {
-            get {
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+        internal global::System.Data.SqlClient.SqlConnection Connection
+        {
+            get
+            {
+                if ((this._connection == null))
+                {
+                    this.InitConnection();
+                }
                 return this._connection;
             }
-            set {
+            set
+            {
                 this._connection = value;
-                if ((this.Adapter.InsertCommand != null)) {
+                if ((this.Adapter.InsertCommand != null))
+                {
                     this.Adapter.InsertCommand.Connection = value;
                 }
-                if ((this.Adapter.DeleteCommand != null)) {
+                if ((this.Adapter.DeleteCommand != null))
+                {
                     this.Adapter.DeleteCommand.Connection = value;
                 }
-                if ((this.Adapter.UpdateCommand != null)) {
+                if ((this.Adapter.UpdateCommand != null))
+                {
                     this.Adapter.UpdateCommand.Connection = value;
                 }
-                for (int i = 0; (i < this.CommandCollection.Length); i = (i + 1)) {
-                    if ((this.CommandCollection[i] != null)) {
+                for (int i = 0; (i < this.CommandCollection.Length); i = (i + 1))
+                {
+                    if ((this.CommandCollection[i] != null))
+                    {
                         ((global::System.Data.SqlClient.SqlCommand)(this.CommandCollection[i])).Connection = value;
                     }
                 }
             }
         }
-        
+
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-        protected global::System.Data.SqlClient.SqlCommand[] CommandCollection {
-            get {
-                if ((this._commandCollection == null)) {
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+        protected global::System.Data.SqlClient.SqlCommand[] CommandCollection
+        {
+            get
+            {
+                if ((this._commandCollection == null))
+                {
                     this.InitCommandCollection();
                 }
                 return this._commandCollection;
             }
         }
-        
+
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-        public bool ClearBeforeFill {
-            get {
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+        public bool ClearBeforeFill
+        {
+            get
+            {
                 return this._clearBeforeFill;
             }
-            set {
+            set
+            {
                 this._clearBeforeFill = value;
             }
         }
-        
+
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-        private void InitAdapter() {
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+        private void InitAdapter()
+        {
             this._adapter = new global::System.Data.SqlClient.SqlDataAdapter();
             global::System.Data.Common.DataTableMapping tableMapping = new global::System.Data.Common.DataTableMapping();
             tableMapping.SourceTable = "Table";
@@ -3407,146 +4278,178 @@ SELECT GrupoID, IdentidadID FROM GrupoIdentidades WHERE (GrupoID = @GrupoID) AND
             this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Original_GrupoID", global::System.Data.SqlDbType.UniqueIdentifier, 0, global::System.Data.ParameterDirection.Input, 0, 0, "GrupoID", global::System.Data.DataRowVersion.Original, false, null, "", "", ""));
             this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Original_IdentidadID", global::System.Data.SqlDbType.UniqueIdentifier, 0, global::System.Data.ParameterDirection.Input, 0, 0, "IdentidadID", global::System.Data.DataRowVersion.Original, false, null, "", "", ""));
         }
-        
+
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-        private void InitCommandCollection() {
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+        private void InitConnection()
+        {
+            this._connection = new global::System.Data.SqlClient.SqlConnection();
+            this._connection.ConnectionString = "";
+        }
+
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+        private void InitCommandCollection()
+        {
             this._commandCollection = new global::System.Data.SqlClient.SqlCommand[1];
             this._commandCollection[0] = new global::System.Data.SqlClient.SqlCommand();
             this._commandCollection[0].Connection = this.Connection;
             this._commandCollection[0].CommandText = "SELECT GrupoID, IdentidadID FROM dbo.GrupoIdentidades";
             this._commandCollection[0].CommandType = global::System.Data.CommandType.Text;
         }
-        
+
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
         [global::System.ComponentModel.Design.HelpKeywordAttribute("vs.data.TableAdapter")]
         [global::System.ComponentModel.DataObjectMethodAttribute(global::System.ComponentModel.DataObjectMethodType.Fill, true)]
-        public virtual int Fill(TagsAutoDS.GrupoIdentidadesDataTable dataTable) {
+        public virtual int Fill(TagsAutoDS.GrupoIdentidadesDataTable dataTable)
+        {
             this.Adapter.SelectCommand = this.CommandCollection[0];
-            if ((this.ClearBeforeFill == true)) {
+            if ((this.ClearBeforeFill == true))
+            {
                 dataTable.Clear();
             }
             int returnValue = this.Adapter.Fill(dataTable);
             return returnValue;
         }
-        
+
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
         [global::System.ComponentModel.Design.HelpKeywordAttribute("vs.data.TableAdapter")]
         [global::System.ComponentModel.DataObjectMethodAttribute(global::System.ComponentModel.DataObjectMethodType.Select, true)]
-        public virtual TagsAutoDS.GrupoIdentidadesDataTable GetData() {
+        public virtual TagsAutoDS.GrupoIdentidadesDataTable GetData()
+        {
             this.Adapter.SelectCommand = this.CommandCollection[0];
             TagsAutoDS.GrupoIdentidadesDataTable dataTable = new TagsAutoDS.GrupoIdentidadesDataTable();
             this.Adapter.Fill(dataTable);
             return dataTable;
         }
-        
+
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
         [global::System.ComponentModel.Design.HelpKeywordAttribute("vs.data.TableAdapter")]
-        public virtual int Update(TagsAutoDS.GrupoIdentidadesDataTable dataTable) {
+        public virtual int Update(TagsAutoDS.GrupoIdentidadesDataTable dataTable)
+        {
             return this.Adapter.Update(dataTable);
         }
-        
+
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
         [global::System.ComponentModel.Design.HelpKeywordAttribute("vs.data.TableAdapter")]
-        public virtual int Update(TagsAutoDS dataSet) {
+        public virtual int Update(TagsAutoDS dataSet)
+        {
             return this.Adapter.Update(dataSet, "GrupoIdentidades");
         }
-        
+
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
         [global::System.ComponentModel.Design.HelpKeywordAttribute("vs.data.TableAdapter")]
-        public virtual int Update(global::System.Data.DataRow dataRow) {
+        public virtual int Update(global::System.Data.DataRow dataRow)
+        {
             return this.Adapter.Update(new global::System.Data.DataRow[] {
                         dataRow});
         }
-        
+
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
         [global::System.ComponentModel.Design.HelpKeywordAttribute("vs.data.TableAdapter")]
-        public virtual int Update(global::System.Data.DataRow[] dataRows) {
+        public virtual int Update(global::System.Data.DataRow[] dataRows)
+        {
             return this.Adapter.Update(dataRows);
         }
-        
+
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
         [global::System.ComponentModel.Design.HelpKeywordAttribute("vs.data.TableAdapter")]
         [global::System.ComponentModel.DataObjectMethodAttribute(global::System.ComponentModel.DataObjectMethodType.Delete, true)]
-        public virtual int Delete(System.Guid Original_GrupoID, System.Guid Original_IdentidadID) {
+        public virtual int Delete(System.Guid Original_GrupoID, System.Guid Original_IdentidadID)
+        {
             this.Adapter.DeleteCommand.Parameters[0].Value = ((System.Guid)(Original_GrupoID));
             this.Adapter.DeleteCommand.Parameters[1].Value = ((System.Guid)(Original_IdentidadID));
             global::System.Data.ConnectionState previousConnectionState = this.Adapter.DeleteCommand.Connection.State;
-            if (((this.Adapter.DeleteCommand.Connection.State & global::System.Data.ConnectionState.Open) 
-                        != global::System.Data.ConnectionState.Open)) {
+            if (((this.Adapter.DeleteCommand.Connection.State & global::System.Data.ConnectionState.Open)
+                        != global::System.Data.ConnectionState.Open))
+            {
                 this.Adapter.DeleteCommand.Connection.Open();
             }
-            try {
+            try
+            {
                 int returnValue = this.Adapter.DeleteCommand.ExecuteNonQuery();
                 return returnValue;
             }
-            finally {
-                if ((previousConnectionState == global::System.Data.ConnectionState.Closed)) {
+            finally
+            {
+                if ((previousConnectionState == global::System.Data.ConnectionState.Closed))
+                {
                     this.Adapter.DeleteCommand.Connection.Close();
                 }
             }
         }
-        
+
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
         [global::System.ComponentModel.Design.HelpKeywordAttribute("vs.data.TableAdapter")]
         [global::System.ComponentModel.DataObjectMethodAttribute(global::System.ComponentModel.DataObjectMethodType.Insert, true)]
-        public virtual int Insert(System.Guid GrupoID, System.Guid IdentidadID) {
+        public virtual int Insert(System.Guid GrupoID, System.Guid IdentidadID)
+        {
             this.Adapter.InsertCommand.Parameters[0].Value = ((System.Guid)(GrupoID));
             this.Adapter.InsertCommand.Parameters[1].Value = ((System.Guid)(IdentidadID));
             global::System.Data.ConnectionState previousConnectionState = this.Adapter.InsertCommand.Connection.State;
-            if (((this.Adapter.InsertCommand.Connection.State & global::System.Data.ConnectionState.Open) 
-                        != global::System.Data.ConnectionState.Open)) {
+            if (((this.Adapter.InsertCommand.Connection.State & global::System.Data.ConnectionState.Open)
+                        != global::System.Data.ConnectionState.Open))
+            {
                 this.Adapter.InsertCommand.Connection.Open();
             }
-            try {
+            try
+            {
                 int returnValue = this.Adapter.InsertCommand.ExecuteNonQuery();
                 return returnValue;
             }
-            finally {
-                if ((previousConnectionState == global::System.Data.ConnectionState.Closed)) {
+            finally
+            {
+                if ((previousConnectionState == global::System.Data.ConnectionState.Closed))
+                {
                     this.Adapter.InsertCommand.Connection.Close();
                 }
             }
         }
-        
+
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
         [global::System.ComponentModel.Design.HelpKeywordAttribute("vs.data.TableAdapter")]
         [global::System.ComponentModel.DataObjectMethodAttribute(global::System.ComponentModel.DataObjectMethodType.Update, true)]
-        public virtual int Update(System.Guid GrupoID, System.Guid IdentidadID, System.Guid Original_GrupoID, System.Guid Original_IdentidadID) {
+        public virtual int Update(System.Guid GrupoID, System.Guid IdentidadID, System.Guid Original_GrupoID, System.Guid Original_IdentidadID)
+        {
             this.Adapter.UpdateCommand.Parameters[0].Value = ((System.Guid)(GrupoID));
             this.Adapter.UpdateCommand.Parameters[1].Value = ((System.Guid)(IdentidadID));
             this.Adapter.UpdateCommand.Parameters[2].Value = ((System.Guid)(Original_GrupoID));
             this.Adapter.UpdateCommand.Parameters[3].Value = ((System.Guid)(Original_IdentidadID));
             global::System.Data.ConnectionState previousConnectionState = this.Adapter.UpdateCommand.Connection.State;
-            if (((this.Adapter.UpdateCommand.Connection.State & global::System.Data.ConnectionState.Open) 
-                        != global::System.Data.ConnectionState.Open)) {
+            if (((this.Adapter.UpdateCommand.Connection.State & global::System.Data.ConnectionState.Open)
+                        != global::System.Data.ConnectionState.Open))
+            {
                 this.Adapter.UpdateCommand.Connection.Open();
             }
-            try {
+            try
+            {
                 int returnValue = this.Adapter.UpdateCommand.ExecuteNonQuery();
                 return returnValue;
             }
-            finally {
-                if ((previousConnectionState == global::System.Data.ConnectionState.Closed)) {
+            finally
+            {
+                if ((previousConnectionState == global::System.Data.ConnectionState.Closed))
+                {
                     this.Adapter.UpdateCommand.Connection.Close();
                 }
             }
         }
-        
+
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
         [global::System.ComponentModel.Design.HelpKeywordAttribute("vs.data.TableAdapter")]
         [global::System.ComponentModel.DataObjectMethodAttribute(global::System.ComponentModel.DataObjectMethodType.Update, true)]
-        public virtual int Update(System.Guid Original_GrupoID, System.Guid Original_IdentidadID) {
+        public virtual int Update(System.Guid Original_GrupoID, System.Guid Original_IdentidadID)
+        {
             return this.Update(Original_GrupoID, Original_IdentidadID, Original_GrupoID, Original_IdentidadID);
         }
     }

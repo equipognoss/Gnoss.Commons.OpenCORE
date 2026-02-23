@@ -2498,6 +2498,7 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
             dataWrapperProyecto.ListaDatoExtraProyectoOpcion = mEntityContext.DatoExtraProyectoOpcion.Where(datoExtra => datoExtra.ProyectoID.Equals(pProyectoID)).ToList();
             dataWrapperProyecto.ListaDatoExtraProyectoVirtuoso = mEntityContext.DatoExtraProyectoVirtuoso.Where(datoExtra => datoExtra.ProyectoID.Equals(pProyectoID)).ToList();
             dataWrapperProyecto.ListaProyectoPasoRegistro = mEntityContext.ProyectoPasoRegistro.Where(proyectoPasoRegistro => proyectoPasoRegistro.ProyectoID.Equals(pProyectoID)).ToList();
+            dataWrapperProyecto.ListaFacetaObjetoConocimientoProyectoPestanya = mEntityContext.FacetaObjetoConocimientoProyectoPestanya.Where(item => item.ProyectoID.Equals(pProyectoID)).ToList();
             dataWrapperProyecto.ListaCamposRegistroProyectoGenericos = mEntityContext.CamposRegistroProyectoGenericos.Where(campos => campos.ProyectoID.Equals(pProyectoID)).ToList();
             dataWrapperProyecto.ListaProyectoPestanyaMenu = mEntityContext.ProyectoPestanyaMenu.Where(proyectoPestanyaMenu => proyectoPestanyaMenu.ProyectoID.Equals(pProyectoID)).OrderBy(proyecto => proyecto.Orden).ToList();
             dataWrapperProyecto.ListaProyectoPestanyaCMS = mEntityContext.ProyectoPestanyaCMS.Join(mEntityContext.ProyectoPestanyaMenu, proyPestanyaCMS => proyPestanyaCMS.PestanyaID, proyPestanyaMenu => proyPestanyaMenu.PestanyaID, (proyPestanyaCMS, proyPestanyaMenu) => new
@@ -2511,6 +2512,8 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
                 ProyectPestanyaBusqueda = proyPestBusqueda,
                 ProyectoID = proyPestMenu.ProyectoID
             }).Where(proyecto => proyecto.ProyectoID.Equals(pProyectoID)).Select(proyecto => proyecto.ProyectPestanyaBusqueda).ToList();
+
+            dataWrapperProyecto.ListaProyectoPestanyaBusquedaPesoOC = mEntityContext.ProyectoPestanyaBusquedaPesoOC.Where(proyPestBusquedaPesoOC => proyPestBusquedaPesoOC.ProyectoID.Equals(pProyectoID)).ToList();
 
             dataWrapperProyecto.ListaProyectoPestanyaMenuRolGrupoIdentidades = mEntityContext.ProyectoPestanyaMenuRolGrupoIdentidades.Join(mEntityContext.ProyectoPestanyaMenu, proyPestMenuRogrupolId => proyPestMenuRogrupolId.PestanyaID, proyPestMenu => proyPestMenu.PestanyaID, (proyPestMenuRogrupolId, proyPestMenu) => new
             {
