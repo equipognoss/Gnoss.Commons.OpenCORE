@@ -8816,9 +8816,12 @@ namespace Es.Riam.Gnoss.AD.Identidad
 
             Dictionary<Guid, string> listaPerfiles = new Dictionary<Guid, string>();
 
-            foreach (var item in resultado.Where(item => !listaPerfiles.ContainsKey(item.PerfilID)))
+            foreach (var item in resultado)
             {
-                listaPerfiles.Add(item.PerfilID, item.NombrePerfil);
+                if (!listaPerfiles.ContainsKey(item.PerfilID))
+                {
+                    listaPerfiles.Add(item.PerfilID, item.NombrePerfil);
+                }
             }
 
             return listaPerfiles;
@@ -8835,15 +8838,18 @@ namespace Es.Riam.Gnoss.AD.Identidad
 
             Dictionary<Guid, string> listaPerfiles = new Dictionary<Guid, string>();
 
-            foreach (var item in resultado.Where(item => !listaPerfiles.ContainsKey(item.PerfilID)))
+            foreach (var item in resultado)
             {
-                if (item.NombreOrganizacion != null)
+                if (!listaPerfiles.ContainsKey(item.PerfilID))
                 {
-                    listaPerfiles.Add(item.PerfilID, item.NombreOrganizacion);
-                }
-                else
-                {
-                    listaPerfiles.Add(item.PerfilID, item.NombrePerfil);
+                    if (item.NombreOrganizacion != null)
+                    {
+                        listaPerfiles.Add(item.PerfilID, item.NombreOrganizacion);
+                    }
+                    else
+                    {
+                        listaPerfiles.Add(item.PerfilID, item.NombrePerfil);
+                    }
                 }
             }
 
@@ -9909,9 +9915,12 @@ namespace Es.Riam.Gnoss.AD.Identidad
                 resultado = mEntityContext.Perfil.JoinIdentidad().Where(item => item.Identidad.ProyectoID.Equals(pProyectoID) && !item.Identidad.FechaBaja.HasValue && !item.Identidad.FechaExpulsion.HasValue && !item.Identidad.Tipo.Equals((short)TiposIdentidad.ProfesionalCorporativo) && item.Perfil.PersonaID.HasValue && item.Perfil.NombrePerfil.ToLower().Contains(pBusqueda.ToLower()) && pListaIdentidadesID.Contains(item.Identidad.IdentidadID)).Select(item => new { item.Perfil.PerfilID, item.Perfil.NombrePerfil, item.Perfil.NombreOrganizacion, item.Perfil.PersonaID, item.Perfil.OrganizacionID }).Take(pNumero).OrderByDescending(item => item.NombrePerfil).ToList();
             }
 
-            foreach (var item in resultado.Where(item => !listaPerfiles.ContainsKey(item.PerfilID)))
+            foreach (var item in resultado)
             {
-                listaPerfiles.Add(item.PerfilID, new Tuple<string, string, Guid?, Guid?>(item.NombrePerfil, item.NombreOrganizacion, item.PersonaID, item.OrganizacionID));
+                if (!listaPerfiles.ContainsKey(item.PerfilID))
+                {
+                    listaPerfiles.Add(item.PerfilID, new Tuple<string, string, Guid?, Guid?>(item.NombrePerfil, item.NombreOrganizacion, item.PersonaID, item.OrganizacionID));
+                }
             }
 
             return listaPerfiles;

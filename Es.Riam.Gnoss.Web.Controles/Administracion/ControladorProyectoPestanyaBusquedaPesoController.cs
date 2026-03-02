@@ -89,8 +89,8 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
                         if (!string.IsNullOrEmpty(ontologiaProyecto.SubTipos))
                         {
                             List<PesoSubtiposOntoModel> ListaPesoSubtiposOntoModel = ObtenerPesosSubtiposPorPestanya(dataWrapperProyecto, ontologiaProyecto, proyectoPestanyaBusqueda.PestanyaID, ontologia, subtipoConfigurado).OrderByDescending(item => item.Peso).ToList();
-
-                            proyectoPestanyaBusquedaOCModel.PesosSubtiposOntos.AddRange(ListaPesoSubtiposOntoModel);
+                            
+                            proyectoPestanyaBusquedaOCModel.PesosSubtiposOntos.AddRange(ListaPesoSubtiposOntoModel.Except(proyectoPestanyaBusquedaOCModel.PesosSubtiposOntos));
                         }
                         if (proyectoPestanyaBusquedaOCModel.PesosSubtiposOntos.Count == 0)
                         {

@@ -879,6 +879,7 @@ namespace Es.Riam.Gnoss.FileManager
 
                     if (string.IsNullOrEmpty(Path.GetExtension(pNombreArchivoOrigen)))
                     {
+                        string[] directoriesNames = Directory.GetDirectories(pRutaOrigen).Where(item => item.Contains(pNombreArchivoOrigen)).ToArray();
                         string[] filesNames = Directory.GetFiles(pRutaOrigen).Where(item => Path.GetFileName(item).StartsWith(pNombreArchivoOrigen)).ToArray();
 
                         foreach(string fileName in filesNames)
@@ -887,6 +888,14 @@ namespace Es.Riam.Gnoss.FileManager
                             string rutaDestino = Path.Combine(pRutaDestino, Path.GetFileName(fileName));
 
                             CopiarMoverArchivo(rutaOrigen, rutaDestino, pCopiar, pSobreEscribir);
+                        }
+
+                        foreach(string directoryName in directoriesNames)
+                        {
+                            string rutaOrigen = Path.Combine(pRutaOrigen, Path.GetFileName(directoryName));
+                            string rutaDestino = Path.Combine(pRutaDestino, Path.GetFileName(directoryName));
+
+                            CopyDirectory(rutaOrigen, rutaDestino);
                         }
                     }
                     else
@@ -914,6 +923,31 @@ namespace Es.Riam.Gnoss.FileManager
             else
             {//Cortar:
                 fichOrigen.MoveTo(pRutaArchivoDestino, pSobreEscribir);
+            }
+        }
+
+        /// <summary>
+        /// Copia el directorio ubicado en la ruta de origen a la ruta de destino de forma recursiva
+        /// </summary>
+        /// <param name="pRutaOrigen">Ruta donde se encuentra el directorio a copiar</param>
+        /// <param name="pRutaDestino">Ruta donde queremos ubicar la copia</param>
+        private void CopyDirectory(string pRutaOrigen, string pRutaDestino)
+        {
+            if (!Directory.Exists(pRutaDestino))
+            {
+                Directory.CreateDirectory(pRutaDestino);
+            }
+
+            foreach (string file in Directory.GetFiles(pRutaOrigen))
+            {             
+                string destFile = Path.Combine(pRutaDestino, Path.GetFileName(file));
+                File.Copy(file, destFile, overwrite: true);
+            }
+
+            foreach (string directory in Directory.GetDirectories(pRutaOrigen))
+            {                
+                string destDir = Path.Combine(pRutaDestino, Path.GetFileName(directory));
+                CopyDirectory(directory, destDir);
             }
         }
 
