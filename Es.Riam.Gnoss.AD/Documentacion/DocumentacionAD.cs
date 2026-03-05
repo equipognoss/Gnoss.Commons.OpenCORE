@@ -7702,6 +7702,21 @@ namespace Es.Riam.Gnoss.AD.Documentacion
                 VersionDocumento = version
             }).Where(item => item.Documento.UltimaVersion && item.VersionDocumento.DocumentoOriginalID.Equals(pDocumentoID)).Select(item => item.Documento).FirstOrDefault();      
         }
+
+        /// <summary>
+        /// Obtiene la última versión de todos los documentos pasados por parámetro
+        /// </summary>
+        /// <param name="pDocumentosIds">Lista de documentos para de los cuales quiero obtener la última versión</param>
+        /// <returns>Devuelvo la lista de documentos ultima versión de los pasados por parámetro</returns>
+        public List<Documento> ObtenerUltimasVersionesDocumentos(List<Guid> pDocumentosIds)
+        {
+            return mEntityContext.Documento.Join(mEntityContext.VersionDocumento, doc => doc.DocumentoID, version => version.DocumentoID, (doc, version) => new
+            {
+                Documento = doc,
+                VersionDocumento = version
+            }).Where(item => item.Documento.UltimaVersion && pDocumentosIds.Contains(item.VersionDocumento.DocumentoOriginalID)).Select(item => item.Documento).ToList();
+        }
+
         /// <summary>
         /// Devuelve la version mas alta de una mejora activa dado un documento id original
         /// </summary>

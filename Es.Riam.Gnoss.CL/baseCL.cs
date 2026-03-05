@@ -1551,6 +1551,7 @@ namespace Es.Riam.Gnoss.CL
                     {
                         PreserveReferencesHandling = PreserveReferencesHandling.Objects,
                         TypeNameHandling = TypeNameHandling.All,
+                        MaxDepth = 512
                     };
                     obj = JsonConvert.DeserializeObject(json, pType, options);
                 }

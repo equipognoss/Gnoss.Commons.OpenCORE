@@ -1832,6 +1832,17 @@ namespace Es.Riam.Gnoss.Logica.Documentacion
         {
             return DocumentacionAD.ObtenerUltimaVersionDocumento(pDocumentoID);
         }
+
+        /// <summary>
+        /// Obtiene la última versión de todos los documentos pasados por parámetro
+        /// </summary>
+        /// <param name="pDocumentosIds">Lista de documentos para de los cuales quiero obtener la última versión</param>
+        /// <returns>Devuelvo la lista de documentos ultima versión de los pasados por parámetro</returns>
+        public List<Documento> ObtenerUltimasVersionesDocumentos(List<Guid> pDocumentosIds)
+        {
+            return DocumentacionAD.ObtenerUltimasVersionesDocumentos(pDocumentosIds);
+        }
+
         /// <summary>
         /// Obtiene la version pendiente de un documento id dado una mejora
         /// </summary>

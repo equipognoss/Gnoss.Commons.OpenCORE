@@ -2087,7 +2087,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Documentacion
         /// <param name="pDocumentoID">ID del documento</param>
         /// <param name="pNamespaceOnto">Namespace de la ontolog?a</param>
         /// <returns>DataSet para RDF</returns>
-        public string ObtenerTextoRDFDeBDRdfHistorico(Guid pDocumentoID, string pNamespaceOnto)
+        public string ObtenerTextoRDFDeBDRdfHistorico(Guid pDocumentoID, string pNamespaceOnto = "")
         {
             string rdfText = "";
             RdfHistoricoDS rdfHistoricoDS = ObtenerRDFDeBDRdfHistorico(pDocumentoID);
