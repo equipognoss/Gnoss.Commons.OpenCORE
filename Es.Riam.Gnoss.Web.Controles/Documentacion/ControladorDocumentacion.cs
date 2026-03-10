@@ -1,4 +1,4 @@
-using Es.Riam.AbstractsOpen;
+﻿using Es.Riam.AbstractsOpen;
 using Es.Riam.Gnoss.AD.BASE_BD;
 using Es.Riam.Gnoss.AD.BASE_BD.Model;
 using Es.Riam.Gnoss.AD.Documentacion;
@@ -593,7 +593,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Documentacion
 
 					string nuevaRuta = ReemplazarRutaAdjuntoSemantico(triple, pDocumentoOriginal.Clave, pDocumentoNuevo.Clave);
 
-					rutasAdjuntos.Add(Path.GetDirectoryName(triple));
+					rutasAdjuntos.Add(triple);
 
 					rdf = rdf.Replace(triple, nuevaRuta);
 				}

@@ -5698,7 +5698,7 @@ namespace Es.Riam.Gnoss.AD.Documentacion
                 pNombre = pNombre.Substring(0, pNombre.Length - 1);
             }
 
-            var resOnto = mEntityContext.Documento.JoinDocumentoWebVinBaseRecursosDocumento().JoinBaseRecursosProyecto().Where(objeto => (objeto.Documento.Tipo.Equals((short)TiposDocumentacion.Ontologia) || objeto.Documento.Tipo.Equals((short)TiposDocumentacion.OntologiaSecundaria)) && objeto.Documento.Enlace.ToLower().Equals(pNombre.ToLower()));
+            var resOnto = mEntityContext.Documento.JoinDocumentoWebVinBaseRecursosDocumento().JoinBaseRecursosProyecto().Where(objeto => (objeto.Documento.Tipo.Equals((short)TiposDocumentacion.Ontologia) || objeto.Documento.Tipo.Equals((short)TiposDocumentacion.OntologiaSecundaria)) && objeto.Documento.Enlace.ToLower().Equals(pNombre.ToLower()) && !objeto.Documento.Eliminado && !objeto.DocumentoWebVinBaseRecursos.Eliminado);
             if (!ptraerSecundarias)
             {
                 resOnto = mEntityContext.Documento.JoinDocumentoWebVinBaseRecursosDocumento().JoinBaseRecursosProyecto().Where(objeto => objeto.Documento.Tipo.Equals((short)TiposDocumentacion.Ontologia) && objeto.Documento.Enlace.ToLower().Equals(pNombre.ToLower()));

@@ -1052,9 +1052,19 @@ namespace Es.Riam.Gnoss.AD.Flujos
 			return mEntityContext.Transicion.Where(x => x.TransicionID.Equals(pTransicionID)).Select(x => x.EstadoOrigenID).FirstOrDefault();
 		}
 
-		public Guid ObtenerEstadoDestinoTransicion(Guid pTransicionID)
+        public string ObtenerNombreEstadoOrigenTransicion(Guid pTransicionID)
+        {
+            return mEntityContext.Transicion.Where(x => x.TransicionID.Equals(pTransicionID)).Select(x => x.EstadoOrigen.Nombre).FirstOrDefault();
+        }
+
+        public Guid ObtenerEstadoDestinoTransicion(Guid pTransicionID)
         {
             return mEntityContext.Transicion.Where(x => x.TransicionID.Equals(pTransicionID)).Select(x => x.EstadoDestinoID).FirstOrDefault();
+        }
+
+        public string ObtenerNombreEstadoDestinoTransicion(Guid pTransicionID)
+        {
+            return mEntityContext.Transicion.Where(x => x.TransicionID.Equals(pTransicionID)).Select(x => x.EstadoDestino.Nombre).FirstOrDefault();
         }
 
         #endregion

@@ -1,9 +1,12 @@
-﻿using Es.Riam.AbstractsOpen;
+﻿using BeetleX.Redis;
+using Es.Riam.AbstractsOpen;
 using Es.Riam.Gnoss.AD.EntityModel;
 using Es.Riam.Gnoss.AD.ParametroAplicacion;
+using Es.Riam.Gnoss.AD.Usuarios;
 using Es.Riam.Gnoss.Util.Configuracion;
 using Es.Riam.Gnoss.Util.General;
 using Microsoft.Extensions.Logging;
+using StackExchange.Redis;
 using System;
 
 namespace Es.Riam.Gnoss.CL.Seguridad
@@ -16,18 +19,26 @@ namespace Es.Riam.Gnoss.CL.Seguridad
         /// Clave MAESTRA de la caché
         /// </summary>
         private readonly string[] mMasterCacheKeyArray = { "Seguridad" };
-
+        private const string CLAVE_CACHE_BLOQUEO_IP = "Lokut_TooManyRequest_";
+        private const string CLAVE_CACHE_PETICION = "Lokut_Request_";
         private LoggingService mLoggingService;
         private ILogger mlogger;
         private ILoggerFactory mLoggerFactory;
+        private ConfigService mConfigService;
+        private string mRedisIP;
+        private int mRedisDB;
+
         #endregion
 
         public SeguridadCL( EntityContext entityContext, LoggingService loggingService, RedisCacheWrapper redisCacheWrapper, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication, ILogger<SeguridadCL> logger, ILoggerFactory loggerFactory)
             :base( entityContext, loggingService, redisCacheWrapper, configService, servicesUtilVirtuosoAndReplication,logger,loggerFactory)
         {
+            mConfigService = configService;
             mLoggingService = loggingService;
             mlogger = logger;
             mLoggerFactory = loggerFactory;
+            mRedisIP = mConfigService.ObtenerConexionRedisIPMaster("liveUsuarios");
+            mRedisDB = mConfigService.ObtenerConexionRedisBD("liveUsuarios");
         }
 
         #region Métodos
@@ -134,6 +145,62 @@ namespace Es.Riam.Gnoss.CL.Seguridad
 
             //    UtilPeticion.AgregarObjetoAPeticionActual("afinidadVirtuoso"AfinidadVirtuoso);
             //}
+        }
+
+        public bool ComprobarSiSeSuperaLimiteDePeticiones(int pMaxPeticiones, int pVentanaTiempo, int pTiempoBloqueado, string pIP, Guid pAsistenteID)
+        {
+            try
+            {
+                bool puedeHacerPeticion = false;
+                ConnectionMultiplexer conexion = ConnectionMultiplexer.Connect($"{mRedisIP},defaultDatabase={mRedisDB}");
+                IDatabase db = conexion.GetDatabase();
+                string claveBloqueo = GenerarClaveParaLimitadorDePeticiones(CLAVE_CACHE_BLOQUEO_IP, pAsistenteID, pIP);
+                
+                if (ComprobarSiYaSuperoElLimiteDePeticiones(db, claveBloqueo))
+                {
+                    puedeHacerPeticion = false;
+                }
+                else
+                {
+                    string clavePeticion = GenerarClaveParaLimitadorDePeticiones(CLAVE_CACHE_PETICION, pAsistenteID, pIP);
+                    bool estaLimitado = ((int)db.ScriptEvaluate(SlidingRateLimiterScript, new { key = clavePeticion, window = pVentanaTiempo, max_requests = pMaxPeticiones })) == 1;
+                    if (estaLimitado)
+                    {
+                        db.StringSet($"{claveBloqueo}", "Bloqueado", TimeSpan.FromMinutes(pTiempoBloqueado));
+                        puedeHacerPeticion = false;
+                    }
+                    else
+                    {
+                        puedeHacerPeticion = true;
+                    }
+                }
+
+                conexion.Close();   
+
+                return puedeHacerPeticion;
+            }
+            catch (Exception ex)
+            {
+                mLoggingService.GuardarLogError(ex, $"Error al comprobar el limite de peticiones de la IP '{pIP}' y el asistente '{pAsistenteID}'. Los límites configurados son: Ventana de tiempo -> {pVentanaTiempo}, Número máximo de peticiones -> {pMaxPeticiones}, Tiempo de bloqueo -> {pTiempoBloqueado}", mlogger);
+                return false;
+            }   
+        }
+
+        public string GenerarClaveParaLimitadorDePeticiones(string pClavePrincipal, Guid pAsistenteID, string pIP)
+        {
+            string clave = $"{pClavePrincipal}{pIP}_{pAsistenteID.ToString().ToLower()}";
+            return clave;
+        }
+
+        public bool ComprobarSiYaSuperoElLimiteDePeticiones(IDatabase pDB, string pClave)
+        {
+            string existeClave = pDB.StringGet(pClave);
+            if (!string.IsNullOrEmpty(existeClave))
+            {
+                return true;
+            }
+
+            return false;
         }
 
         #endregion

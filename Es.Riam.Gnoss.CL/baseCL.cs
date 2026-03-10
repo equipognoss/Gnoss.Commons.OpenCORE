@@ -1,6 +1,8 @@
+using BeetleX.Clients;
 using BeetleX.Redis;
 using Es.Riam.AbstractsOpen;
 using Es.Riam.Gnoss.AD.EntityModel;
+using Es.Riam.Gnoss.AD.Facetado;
 using Es.Riam.Gnoss.AD.Parametro;
 using Es.Riam.Gnoss.Logica.ParametroAplicacion;
 using Es.Riam.Gnoss.Logica.ServiciosGenerales;
@@ -11,6 +13,11 @@ using MessagePack;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.FileProviders.Physical;
+using Microsoft.Extensions.Logging;
+using MongoDB.Bson;
+using MongoDB.Bson.Serialization;
+using Newtonsoft.Json;
+using StackExchange.Redis;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -21,12 +28,6 @@ using System.IO.Compression;
 using System.Linq;
 using System.Text;
 using System.Threading;
-using MongoDB.Bson;
-using MongoDB.Bson.Serialization;
-using Newtonsoft.Json;
-using BeetleX.Clients;
-using Es.Riam.Gnoss.AD.Facetado;
-using Microsoft.Extensions.Logging;
 
 namespace Es.Riam.Gnoss.CL
 {
@@ -641,6 +642,21 @@ namespace Es.Riam.Gnoss.CL
         public static string CLAVE_PROYECTO_DOMINIO_MULTIPLE_CACHE_LOCAL = "ProyectoDominioMultiple_";
         public static UsoCacheLocal UsarCacheLocal = UsoCacheLocal.Nunca;
 
+        public static readonly string SlidingRateLimiter = @$"
+            local current_time = redis.call('TIME')
+            local trim_time = tonumber(current_time[1]) - @window
+            redis.call('ZREMRANGEBYSCORE', @key, 0, trim_time)
+            local request_count = redis.call('ZCARD',@key)
+
+            if request_count < tonumber(@max_requests) then
+                redis.call('ZADD', @key, current_time[1], current_time[1] .. current_time[2])
+                redis.call('EXPIRE', @key, @window)
+                return 0
+            end
+            return 1
+            ";
+        public static LuaScript SlidingRateLimiterScript => LuaScript.Prepare(SlidingRateLimiter);
+
         #endregion
 
         #region Miembros
@@ -1041,7 +1057,7 @@ namespace Es.Riam.Gnoss.CL
             Result result = await ClienteRedisLectura.Execute(cmd, typeof(string));
             if (result.IsError)
             {
-                throw new RedisException(result.Messge);
+                throw new BeetleX.Redis.RedisException(result.Messge);
             }
         }
 
@@ -1743,7 +1759,7 @@ namespace Es.Riam.Gnoss.CL
             }
             else if (mLanzarExcepciones)
             {
-                throw new RedisException("No se ha podido establecer una conexi�n a Redis.");
+                throw new BeetleX.Redis.RedisException("No se ha podido establecer una conexi�n a Redis.");
             }
 
             return resultado;
@@ -2096,7 +2112,7 @@ namespace Es.Riam.Gnoss.CL
             {
                 bytesCache = ClienteRedisLectura.Get<byte[]>(pRawKey).Result;
             }
-            catch (RedisException redisException)
+            catch (BeetleX.Redis.RedisException redisException)
             {
                 _loggingService.GuardarLogError($"Error al obtener la clave {pRawKey} de cache. \nError: {redisException}", mlogger);
             }

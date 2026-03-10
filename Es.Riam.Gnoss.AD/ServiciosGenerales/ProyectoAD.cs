@@ -313,7 +313,10 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
 		GestionarAplicacionesEspecificas = 34359738368,
 		[Description("DESCPERMISOROLES")]
 		[Section("COMUNIDAD")]
-		GestionarRolesYPermisos = 68719476736
+		GestionarRolesYPermisos = 68719476736,
+        [Description("DESCPERMISOASISTENTES")]
+        [Section("COMUNIDAD")]
+        GestionarAsistentes = 137438953472
     }
 
 	public enum PermisoContenidos : ulong

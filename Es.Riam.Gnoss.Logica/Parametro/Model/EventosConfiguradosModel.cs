@@ -12,12 +12,18 @@ namespace Es.Riam.Gnoss.Logica.Parametro.Model
         public bool ResourcesActive { get; set; }
         public bool CommentsActive { get; set; }
         public bool UsersActive { get; set; }
+        public bool TranslationsActive { get; set; }
+        public bool PagesCmsActive { get; set; }
+        public bool ComponentsCmsActive { get; set; }
     }
 
     public enum TipoEventoExterno
     {
         Resource,
         Comment,
-        User
+        User,
+        Translation,
+        PageCms,
+        ComponentCms
     }
 }

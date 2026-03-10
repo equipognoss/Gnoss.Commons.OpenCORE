@@ -60,7 +60,7 @@ namespace Es.Riam.Open
         /// </summary>
         /// <param name="pModelo"></param>
         /// <param name="tipo">Modelo encargador de guardar los datos de los Recursos</param>
-        public void PublishResource(PublicarModificarEliminarRecurso pModelo, string pTipo)
+        public void PublishResource(PublicarModificarEliminarRecurso pModelo, ActionTypeExternalEvent pTipo)
         {
 
         }
@@ -81,6 +81,16 @@ namespace Es.Riam.Open
         public void PublishTranslation(TranslationError pModelo)
         {
 
+        }
+
+        public void PublishPageCms(CmsPageEvent pModelo)
+        {
+            
+        }
+
+        public void PublishComponentCms(CmsComponentEvent pModelo)
+        {
+            
         }
         #endregion
     }

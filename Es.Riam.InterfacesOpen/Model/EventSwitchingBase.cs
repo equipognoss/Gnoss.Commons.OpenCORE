@@ -1,6 +1,19 @@
 ﻿
 namespace Es.Riam.InterfacesOpen.Model
 {
+    public enum ActionTypeExternalEvent
+    {
+        Create,
+        Update,
+        Delete,
+        ChangeState,
+        StartImprovement,
+        CancelImprovement,
+        ApplyImporvement,
+        Publish,
+        SaveDraft
+    }
+    
     public abstract class EventSwitchingBase
     {
         /// <summary>

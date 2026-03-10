@@ -10,6 +10,10 @@ namespace Es.Riam.Gnoss.Web.MVC.Models.EventosExternos
         public bool PublicarRecursos { get; set; } = false;
         public bool PublicarComentarios { get; set; } = false;
         public bool PublicarUsuarios { get; set; } = false;
+        public bool PublicarTraducciones { get; set; } = false;
+        public bool PublicarPaginasCms {  get; set; } = false;
+        public bool PublicarComponentesCms { get; set; } = false;
+
         public string ConnectionString
         {
             get

@@ -4050,6 +4050,7 @@
 		<Resource tag="SUBIRRECURSOCREADO">completar-recurso-creado</Resource>
 		<Resource tag="SUBIRRECURSO2">completar-recurso-subido</Resource>
 		<Resource tag="SUBIRRECURSO2GNOSS">completar-recurso-subido-gnoss</Resource>
+		<Resource tag="ASSISTANTPROXY">proxy-asistentes</Resource>
 		<Resource tag="SUBIRPREGUNTA">hacer-pregunta</Resource>
 		<Resource tag="SUBIRENCUESTA">hacer-encuesta</Resource>
 		<Resource tag="SUBIRDEBATE">iniciar-debate</Resource>
@@ -4799,6 +4800,9 @@
 		<Resource tag="EVENTOEXTERNOCOMENTARIOS">Eventos de comentarios</Resource>
 		<Resource tag="EVENTOEXTERNORECURSOS">Eventos de recursos</Resource>
 		<Resource tag="EVENTOEXTERNOUSUARIOS">Eventos de usuario</Resource>
+		<Resource tag="EVENTOEXTERNOTRADUCCIONES">Eventos de traducciones</Resource>
+		<Resource tag="EVENTOEXTERNOPAGINACMS">Eventos de paginas CMS</Resource>
+		<Resource tag="EVENTOEXTERNOCOMPONENTECMS">Eventos de componentes CMS</Resource>
 		<Resource tag="EVENTOSEXTERNOSMENSAJE">Las credenciales no están configuradas correctamente. Contacte con el equipo de sistemas.</Resource>
 		<Resource tag="EVENTOSEXTERNOSHABILITARCONFIGPROY">Habilitar configuración de proyecto</Resource>
 		<Resource tag="EVENTOSEXTERNOSDESHABILITARCONFIGPROY">Deshabilitar configuración de proyecto</Resource>
@@ -6874,6 +6878,7 @@
 		<Resource tag="DESCPERMISOREPROCESAR">Permite reprocesar recursos que tengan errores</Resource>
 		<Resource tag="DESCPERMISOAPLICACIONES"></Resource>
 		<Resource tag="DESCPERMISOROLES">Gestionar los diferentes roles y permisos para realizar acciones en la administración de la comunidad o sobre recursos</Resource>
+		<Resource tag="DESCPERMISOASISTENTES">Crear, eliminar y modificar los diferentes asistentes conversacionales de la comunidad</Resource>
 		<Resource tag="DESCPERMISOFLUJOS">Administrar los flujos de trabajo de una comunidad</Resource>
 		<Resource tag="DESCPERMISOVERCATEGORIA">Acceder a la administración de categorías y ver la ficha de una categoría en particular</Resource>
 		<Resource tag="DESCPERMISOANYADIRCATEGORIA">Crear una nueva categoría</Resource>

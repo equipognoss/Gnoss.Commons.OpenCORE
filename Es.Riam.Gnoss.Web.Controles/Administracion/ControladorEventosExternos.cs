@@ -78,6 +78,15 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
                 case "usuario":
                     config.EventsConfiguration.UsersActive = !config.EventsConfiguration.UsersActive;
                     break;
+                case "traducciones":
+                    config.EventsConfiguration.TranslationsActive = !config.EventsConfiguration.TranslationsActive;
+                    break;
+                case "paginasCms":
+                    config.EventsConfiguration.PagesCmsActive = !config.EventsConfiguration.PagesCmsActive;
+                    break;
+                case "componentesCms":
+                    config.EventsConfiguration.ComponentsCmsActive = !config.EventsConfiguration.ComponentsCmsActive;
+                    break;
             }
 
             GuardarEventosExternos(config, pEcosistema);
@@ -104,6 +113,9 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
                         CommentsActive = true,
                         ResourcesActive = true,
                         UsersActive = true,
+                        TranslationsActive = true,
+                        PagesCmsActive = true,
+                        ComponentsCmsActive = true
                     }
                 };
                 config = newConfig;

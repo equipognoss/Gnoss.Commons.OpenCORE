@@ -422,9 +422,19 @@ namespace Es.Riam.Gnoss.Logica.Flujos
 			return FlujosAD.ObtenerEstadoOrigenTransicion(pTransicionID);
 		}
 
+        public string ObtenerNombreEstadoOrigenTransicion(Guid pTransicionID)
+        {
+            return FlujosAD.ObtenerNombreEstadoOrigenTransicion(pTransicionID);
+        }
+
 		public Guid ObtenerEstadoDestinoTransicion(Guid pTransicionID)
         {
             return FlujosAD.ObtenerEstadoDestinoTransicion(pTransicionID);
+        }
+
+        public string ObtenerNombreEstadoDestinoTransicion(Guid pTransicionID)
+        {
+            return FlujosAD.ObtenerNombreEstadoDestinoTransicion(pTransicionID);
         }
 
         public void CambiarEstadoContenido(Guid pContenidoID, Guid pEstadoDestinoID, TipoContenidoFlujo pTipo)

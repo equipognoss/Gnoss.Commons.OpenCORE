@@ -216,7 +216,9 @@ namespace Es.Riam.Gnoss.Util.Configuracion
         private string colaTraducciones;
         private string urlServicioTraduccion;
         private string tokenServicioTraduccion;
+        private string hostSCIA;
         private string modeloTraduccion;
+        private string tokenAsistente;
         private string instruccionesAdicionalesTraduccion;
         private string colaPrincipalTraducciones;
         private string colaReintentosTraducciones;
@@ -4469,23 +4471,24 @@ namespace Es.Riam.Gnoss.Util.Configuracion
             return colaTraducciones;
         }
 
-        public string ObtenerUrlServicioTraducciones()
+        public string ObtenerHostSCIA()
         {
-			string cadena = "";
-			if (EnvironmentVariables.Contains($"Servicios__traducciones__urlTraducciones"))
-			{
-				cadena = EnvironmentVariables[$"Servicios__traducciones__urlTraducciones"] as string;
-			}
-			else
-			{
-				cadena = Configuration.GetSection("Servicios").GetSection("traducciones")["urlTraducciones"];
-			}
-            if (!string.IsNullOrEmpty(cadena) && cadena.EndsWith('/'))
+            if (string.IsNullOrEmpty(hostSCIA))
             {
-                cadena = cadena.TrimEnd('/');
+                if (EnvironmentVariables.Contains($"Servicios__urlSCIA"))
+                {
+                    hostSCIA = EnvironmentVariables[$"Servicios__urlSCIA"] as string;
+                }
+                else
+                {
+                    hostSCIA = Configuration.GetSection("Servicios")["urlSCIA"];
+                }
+                if (!string.IsNullOrEmpty(hostSCIA) && hostSCIA.EndsWith('/'))
+                {
+                    hostSCIA = hostSCIA.TrimEnd('/');
+                }
             }
-
-			return cadena;
+			return hostSCIA;
 		}
 
         public string ObtenerTokenUrlServicioTraducciones()
@@ -4502,6 +4505,27 @@ namespace Es.Riam.Gnoss.Util.Configuracion
 
 			return cadena;
 		}
+
+        public string ObtenerTokenAsistente()
+        {
+            if (string.IsNullOrEmpty(tokenAsistente))
+            {
+                if (EnvironmentVariables.Contains("tokenAsistente"))
+                {
+                    tokenAsistente = EnvironmentVariables["tokenAsistente"] as string;
+                }
+                else if (Configuration["tokenAsistente"] != null)
+                {
+                    tokenAsistente = Configuration["tokenAsistente"];
+                }
+                else
+                {
+                    tokenAsistente = "";
+                }
+            }
+
+            return tokenAsistente;
+        }
 
         public string ObtenerModeloTraduccion()
         {

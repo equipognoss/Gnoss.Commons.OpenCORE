@@ -14,7 +14,7 @@ namespace Es.Riam.Gnoss.Traducciones.TraduccionTextos
 		public static TranslationConfig CrearTranslationConfig(ConfigService pConfigService)
 		{
 			TranslationConfig config = new TranslationConfig();
-			config.EndPoint = pConfigService.ObtenerUrlServicioTraducciones();
+			config.EndPoint = pConfigService.ObtenerHostSCIA();
 			config.ApiKey = pConfigService.ObtenerTokenUrlServicioTraducciones();
 
 			return config;
