@@ -8112,7 +8112,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Documentacion
             try
             {
                 gestionDoc.Url = pUrlServicioDocs;
-                bool copiado = gestionDoc.CopiarDocumentoDeDirectorio(Path.Combine(UtilArchivos.ContentDocumentosSem, UtilArchivos.DirectorioDocumento(pDocumentoOriginalID)), $"{UtilArchivos.ContentDocumentosSem}\\{UtilArchivos.DirectorioDocumento(pDocumentoNuevoID)}", pNombreArchivo);
+                bool copiado = gestionDoc.CopiarDocumentoDeDirectorio(Path.Combine(UtilArchivos.ContentDocumentosSem, UtilArchivos.DirectorioDocumento(pDocumentoOriginalID)), Path.Combine(UtilArchivos.ContentDocumentosSem, UtilArchivos.DirectorioDocumento(pDocumentoNuevoID)), pNombreArchivo);
                 mLoggingService.AgregarEntradaDependencia("Copiar archivo desde servicio docs", false, "CopiarImagenDocumentoSemantico", sw, true);
                 return copiado;
             }
