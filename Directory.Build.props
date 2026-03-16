@@ -1,0 +1,10 @@
+<Project>
+  <PropertyGroup>
+    <IsPackable>true</IsPackable>
+    <PackageVersion>1.0.0-ci-$(CI_PIPELINE_ID)</PackageVersion>
+    <Authors>Gnoss</Authors>
+    <Company>Gnoss</Company>
+    <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+    <PackageId>$(AssemblyName)</PackageId>
+  </PropertyGroup>
+</Project>

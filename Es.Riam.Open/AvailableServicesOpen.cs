@@ -117,7 +117,7 @@ namespace Es.Riam.Open
 				{ BackgroundService.EventSwitcher, 4194304 },
 				{ BackgroundService.SocialCacheRefresh, 8388608 },
                 { BackgroundService.Workflows, 16777216 },
-				{ BackgroundService.TranslateService, 16777216 }
+				{ BackgroundService.TranslateService, 33554432 }
 			};
 
 			return backServices[pBackService];

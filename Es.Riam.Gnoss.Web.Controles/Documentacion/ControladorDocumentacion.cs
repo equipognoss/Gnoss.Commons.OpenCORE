@@ -51,7 +51,6 @@ using Es.Riam.Gnoss.Web.Controles.GeneradorPlantillasOWL;
 using Es.Riam.Gnoss.Web.Controles.Organizador.Correo;
 using Es.Riam.Gnoss.Web.Controles.ServicioImagenesWrapper;
 using Es.Riam.Gnoss.Web.MVC.Models;
-using Es.Riam.Gnoss.Web.MVC.Models.Administracion;
 using Es.Riam.Gnoss.Web.MVC.Models.FicherosRecursos;
 using Es.Riam.Interfaces.InterfacesOpen;
 using Es.Riam.Semantica.OWL;
@@ -554,85 +553,198 @@ namespace Es.Riam.Gnoss.Web.Controles.Documentacion
         {
             try
             {
-				if (pDocumentoOriginal.TipoDocumentacion.Equals(TiposDocumentacion.Semantico))
-				{
-					GenerarNuevoRdfYFicheros(pDocumentoOriginal, pDocumentoNuevo);
-				}
-				else
-				{
-					DuplicarDocumentoFisicamente(pDocumentoOriginal, pDocumentoNuevo, pIdentidadOrg, pMasterComunidad, pUsuario);
-				}
-			}
+                if (pDocumentoOriginal.TipoDocumentacion.Equals(TiposDocumentacion.Semantico))
+                {
+                    GenerarNuevoRdfYFicheros(pDocumentoOriginal, pDocumentoNuevo);
+                }
+                else
+                {
+                    DuplicarDocumentoFisicamente(pDocumentoOriginal, pDocumentoNuevo, pIdentidadOrg, pMasterComunidad, pUsuario);
+                }
+            }
             catch (Exception ex)
             {
                 mLoggingService.GuardarLogError(ex, mlogger);
-            }            
+            }
         }
 
         public string GenerarNuevoRdfYFicheros(Documento pDocumentoOriginal, Documento pDocumentoNuevo)
         {
-			try
-			{
-				string rdf = ObtenerTextoRDFDeBDRdfHistorico(pDocumentoOriginal.Clave, GestionOWL.NAMESPACE_ONTO_GNOSS);
-				if (!pDocumentoOriginal.GestorDocumental.ListaDocumentos.ContainsKey(pDocumentoOriginal.ElementoVinculadoID))
-				{
-					DocumentacionCN docCN = new DocumentacionCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<DocumentacionCN>(), mLoggerFactory);
-					pDocumentoOriginal.GestorDocumental.DataWrapperDocumentacion.Merge(docCN.ObtenerDocumentoPorID(pDocumentoOriginal.ElementoVinculadoID));
+            try
+            {
+                string rdf = ObtenerTextoRDFDeBDRdfHistorico(pDocumentoOriginal.Clave, GestionOWL.NAMESPACE_ONTO_GNOSS);
+                if (!pDocumentoOriginal.GestorDocumental.ListaDocumentos.ContainsKey(pDocumentoOriginal.ElementoVinculadoID))
+                {
+                    DocumentacionCN docCN = new DocumentacionCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<DocumentacionCN>(), mLoggerFactory);
+                    pDocumentoOriginal.GestorDocumental.DataWrapperDocumentacion.Merge(docCN.ObtenerDocumentoPorID(pDocumentoOriginal.ElementoVinculadoID));
 
-					pDocumentoOriginal.GestorDocumental.CargarDocumentos(false);
-				}
+                    pDocumentoOriginal.GestorDocumental.CargarDocumentos(false);
+                }
 
-				bool correcto = false;
-				Regex regex = new Regex($@"<!\[CDATA\[([^]]*({UtilArchivos.ContentImagenesSemanticas}|{UtilArchivos.ContentDocumentosSem}|{UtilArchivos.ContentDocLinks}|{UtilArchivos.ContentVideosSemanticos})[^]]*)\]\]>");
-				MatchCollection resultados = regex.Matches(rdf);
-				HashSet<string> rutasAdjuntos = new HashSet<string>();
+                bool correcto = false;
+                Regex regex = new Regex($@"<!\[CDATA\[([^]]*({UtilArchivos.ContentImagenesSemanticas}|{UtilArchivos.ContentDocumentosSem}|{UtilArchivos.ContentDocLinks}|{UtilArchivos.ContentVideosSemanticos})[^]]*)\]\]>");
+                MatchCollection resultados = regex.Matches(rdf);
 
-				foreach (Match resultado in resultados)
-				{
-					string triple = resultado.Groups[1].Value;
+                foreach (Match resultado in resultados)
+                {
+                    string triple = resultado.Groups[1].Value;
 
-					string nuevaRuta = ReemplazarRutaAdjuntoSemantico(triple, pDocumentoOriginal.Clave, pDocumentoNuevo.Clave);
+                    string nuevaRuta = ReemplazarRutaAdjuntoSemantico(triple, pDocumentoOriginal.Clave, pDocumentoNuevo.Clave);
 
-					rutasAdjuntos.Add(triple);
+                    rdf = rdf.Replace(triple, nuevaRuta);
+                }
 
-					rdf = rdf.Replace(triple, nuevaRuta);
-				}
-				foreach (string rutaAdjunto in rutasAdjuntos)
-				{
-					correcto = CopiarAdjuntoDocumentoSemantico(rutaAdjunto, pDocumentoOriginal.Clave, pDocumentoNuevo.Clave);
+                Dictionary<string, TipoCampoOntologia> nombresArchivosYTipos = ObtenerNombresArchivosDeRdf(rdf);
 
-					if (!correcto)
-					{
-						throw new Exception("No se han podido duplicar los archivos para el nuevo documento");
-					}
-				}
+                foreach (string nombreArchivo in nombresArchivosYTipos.Keys)
+                {
+                    correcto = CopiarAdjuntoDocumentoSemantico(nombreArchivo, nombresArchivosYTipos[nombreArchivo], pDocumentoOriginal.Clave, pDocumentoNuevo.Clave);
 
-				//Actualizo la foto desnormalizada para los listados de recursos:
-				if (!string.IsNullOrEmpty(pDocumentoNuevo.FilaDocumento.NombreCategoriaDoc))
-				{
-					if (pDocumentoNuevo.FilaDocumento.NombreCategoriaDoc.Contains(UtilArchivos.DirectorioDocumento(pDocumentoOriginal.Clave)))
-					{
-						pDocumentoNuevo.FilaDocumento.NombreCategoriaDoc = pDocumentoNuevo.FilaDocumento.NombreCategoriaDoc.Replace(UtilArchivos.DirectorioDocumento(pDocumentoOriginal.Clave), UtilArchivos.DirectorioDocumento(pDocumentoNuevo.Clave));
-					}
-					else if (pDocumentoNuevo.FilaDocumento.NombreCategoriaDoc.Contains(pDocumentoOriginal.Clave.ToString().ToLower()))
-					{
-						pDocumentoNuevo.FilaDocumento.NombreCategoriaDoc = pDocumentoNuevo.FilaDocumento.NombreCategoriaDoc.Replace(pDocumentoOriginal.Clave.ToString().ToLower(), pDocumentoNuevo.Clave.ToString().ToLower());
-					}
-				}
+                    if (!correcto)
+                    {
+                        throw new ExcepcionWeb("No se han podido duplicar los archivos para el nuevo documento");
+                    }
+                }
 
-				// Guardamos en base de datos el rdf del documento que queremos restaurar
-				// Lo hacemos tanto en la cache como en el historico
-				GuardarRDFEnBDRDF(rdf, pDocumentoNuevo.Clave, pDocumentoNuevo.FilaDocumento.ProyectoID.Value);
-				GuardarRDFEnBDRdfHistorico(rdf, pDocumentoNuevo.Clave, IdentidadActual.Clave);
+                //Actualizo la foto desnormalizada para los listados de recursos:
+                if (!string.IsNullOrEmpty(pDocumentoNuevo.FilaDocumento.NombreCategoriaDoc))
+                {
+                    if (pDocumentoNuevo.FilaDocumento.NombreCategoriaDoc.Contains(UtilArchivos.DirectorioDocumento(pDocumentoOriginal.Clave)))
+                    {
+                        pDocumentoNuevo.FilaDocumento.NombreCategoriaDoc = pDocumentoNuevo.FilaDocumento.NombreCategoriaDoc.Replace(UtilArchivos.DirectorioDocumento(pDocumentoOriginal.Clave), UtilArchivos.DirectorioDocumento(pDocumentoNuevo.Clave));
+                    }
+                    else if (pDocumentoNuevo.FilaDocumento.NombreCategoriaDoc.Contains(pDocumentoOriginal.Clave.ToString().ToLower()))
+                    {
+                        pDocumentoNuevo.FilaDocumento.NombreCategoriaDoc = pDocumentoNuevo.FilaDocumento.NombreCategoriaDoc.Replace(pDocumentoOriginal.Clave.ToString().ToLower(), pDocumentoNuevo.Clave.ToString().ToLower());
+                    }
+                }
 
-				return rdf;
-			}
-			catch (Exception ex)
-			{
-				mLoggingService.GuardarLogError(ex, mlogger);
-				throw;
-			}            
-		}
+                // Guardamos en base de datos el rdf del documento que queremos restaurar
+                // Lo hacemos tanto en la cache como en el historico
+                GuardarRDFEnBDRDF(rdf, pDocumentoNuevo.Clave, pDocumentoNuevo.FilaDocumento.ProyectoID.Value);
+                GuardarRDFEnBDRdfHistorico(rdf, pDocumentoNuevo.Clave, IdentidadActual.Clave);
+
+                return rdf;
+            }
+            catch (Exception ex)
+            {
+                mLoggingService.GuardarLogError(ex, mlogger);
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// Devuelve el nombre de los archivos adjuntos en el rdf de un recurso semántico. 
+        /// </summary>
+        /// <param name="pRdf"> Rdf del recuro del cual queremos obtener los nombres de los archivos</param>
+        /// <returns> Lista con los nombres de los archivos </returns>
+        public static Dictionary<string, TipoCampoOntologia> ObtenerNombresArchivosDeRdf(string pRdf, Ontologia pOntologia = null)
+        {
+            Dictionary<string, TipoCampoOntologia> nombreArchivos = new Dictionary<string, TipoCampoOntologia>();
+
+            if (pOntologia != null)
+            {
+                nombreArchivos = nombreArchivos.Union(ObtenerNombreArchivosEnRdf(pRdf, pOntologia)).ToDictionary(item => item.Key, item => item.Value);
+            }
+
+            string expresionRegular = $@"<([^<]*({UtilArchivos.ContentImagenesSemanticas}|{UtilArchivos.ContentDocumentosSem}|{UtilArchivos.ContentDocLinks}|{UtilArchivos.ContentVideosSemanticos})[^<]*)>";
+            Regex regex = new Regex(expresionRegular);
+
+            MatchCollection nombresEncontrados = regex.Matches(pRdf);
+
+            foreach (Match nombreArchivoEncontrado in nombresEncontrados)
+            {
+                string rutaArchivo = nombreArchivoEncontrado.Groups[1].Value.TrimEnd(']');
+
+                TipoCampoOntologia tipo = ObtenerTipoCampoOntologiaDeRuta(rutaArchivo);
+                
+                nombreArchivos.Add(rutaArchivo.Substring(rutaArchivo.LastIndexOf("/") + 1), tipo);
+            }
+
+            return nombreArchivos;
+        }
+
+        /// <summary>
+        /// A partir de la ruta de almacenamiento de un archivo, se obtiene su 
+        /// tipo (Imagen, Video, ArchivoLink, Archivo
+        /// </summary> 
+        /// <param name="pRutaArchivo">Ruta del archivo</param>
+        /// <returns>Tipo del archivo</returns>
+        private static TipoCampoOntologia ObtenerTipoCampoOntologiaDeRuta(string pRutaArchivo)
+        {
+            TipoCampoOntologia tipo;
+
+            if (pRutaArchivo.Contains(UtilArchivos.ContentImagenesSemanticas))
+            {
+                tipo = TipoCampoOntologia.Imagen;
+            }
+            else if (pRutaArchivo.Contains(UtilArchivos.ContentVideosSemanticos))
+            {
+                tipo = TipoCampoOntologia.Video;
+            }
+            else if (pRutaArchivo.Contains(UtilArchivos.ContentDocLinks))
+            {
+                tipo = TipoCampoOntologia.ArchivoLink;
+            }
+            else
+            {
+                tipo = TipoCampoOntologia.Archivo;
+            }
+
+            return tipo;
+        }
+
+        /// <summary>
+        /// A partir de las propiedades de tipo archivo de la ontología, busca en el rdf los valores de esas propiedades para obtener los nombres de los archivos. 
+        /// </summary>
+        /// <param name="pRdf">Rdf en el que queremos buscar los nombres de los archivos</param>
+        /// <param name="pOntologia">Ontología del rdf pasado por parámetro</param>
+        /// <returns>Devuelve una lista que contiene el nombre de todos los archivos del rdf.</returns>
+        /// <exception cref="ArgumentException"> Si no se puede extraer el nombre de la propiedad a partir de la URI </exception>
+        private static Dictionary<string, TipoCampoOntologia> ObtenerNombreArchivosEnRdf(string pRdf, Ontologia pOntologia)
+        {
+            Dictionary<string, TipoCampoOntologia> nombreArchivosTipo = new Dictionary<string, TipoCampoOntologia>();
+            
+            // Buscamos las propiedades de la ontología de tipo archivo
+            List<string> propiedadesTipoArchivo = pOntologia.EstilosPlantilla.Where(item => item.Value.OfType<EstiloPlantillaEspecifProp>().Any(item2 => item2.TipoCampo == TipoCampoOntologia.Archivo)).Select(item => item.Key).ToList();
+
+            var doc = new XmlDocument();
+            doc.LoadXml(pRdf);
+
+            foreach (var propiedad in propiedadesTipoArchivo)
+            {
+                string nombrePropiedad;
+                string namespacePropiedad;
+                string prefijoPropiedad;
+                
+                if (Uri.TryCreate(propiedad, UriKind.Absolute, out Uri uri))
+                {
+                    // Si la propiedad está definida como una Uri, extraemos el namespace y el localName. Ej: http://schema.org/file
+                    nombrePropiedad = !string.IsNullOrEmpty(uri.Fragment) ? uri.Fragment.TrimStart('#') : uri.Segments.LastOrDefault()?.TrimEnd('/') ?? throw new ArgumentException($"No se puede extraer el nombre de la propiedad a partir de la URI: {propiedad}");
+                    namespacePropiedad = propiedad.Substring(0, propiedad.Length - nombrePropiedad.Length);
+                    prefijoPropiedad = doc.DocumentElement.GetPrefixOfNamespace(namespacePropiedad);
+                }
+                else
+                {
+                    // Si la propiedad está definida usando el prefijo. Ej: schema:file
+                    int indiceDosPuntos = propiedad.IndexOf(':');
+                    prefijoPropiedad = propiedad.Substring(0, indiceDosPuntos);
+                    nombrePropiedad = propiedad.Substring(indiceDosPuntos + 1);
+                    namespacePropiedad = doc.DocumentElement.GetNamespaceOfPrefix(prefijoPropiedad);
+                }
+
+                var namespaceManager = new XmlNamespaceManager(doc.NameTable);
+                namespaceManager.AddNamespace(prefijoPropiedad, namespacePropiedad);
+
+                string nombreArchivo = doc.SelectSingleNode($"//{prefijoPropiedad}:{nombrePropiedad}", namespaceManager)?.InnerText;
+                if (!string.IsNullOrEmpty(nombreArchivo))
+                {
+                    nombreArchivosTipo.Add(nombreArchivo, TipoCampoOntologia.Archivo);
+                }
+            }
+
+            return nombreArchivosTipo;
+        }
 
         /// <summary>
         /// Crea una nueva versión del documento rdf.
@@ -649,7 +761,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Documentacion
                     ActualizarDatosVirtuoso(pDocumentoOriginal, pDocumentoNuevo, rdf, pAvailableServices);
                 }
                 return true;
-            }   
+            }
             catch (Exception ex)
             {
                 mLoggingService.GuardarLogError(ex, mlogger);
@@ -685,9 +797,9 @@ namespace Es.Riam.Gnoss.Web.Controles.Documentacion
         {
             Guid ontologiaID = pDocumentoOriginal.ElementoVinculadoID;
 
-			//Agrego namespaces y urls:
-			DocumentacionCN docCN = new DocumentacionCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<DocumentacionCN>(), mLoggerFactory);            
-			string nombreGrafo = docCN.ObtenerEnlaceDocumentoPorDocumentoID(ontologiaID);
+            //Agrego namespaces y urls:
+            DocumentacionCN docCN = new DocumentacionCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<DocumentacionCN>(), mLoggerFactory);
+            string nombreGrafo = docCN.ObtenerEnlaceDocumentoPorDocumentoID(ontologiaID);
             docCN.Dispose();
             string urlOntologia = BaseURLFormulariosSem + "/Ontologia/" + nombreGrafo + "#";
 
@@ -7877,47 +7989,46 @@ namespace Es.Riam.Gnoss.Web.Controles.Documentacion
         /// <summary>
         /// Copia el archivo adjunto (Imagen, Documento, DocLink o Vídeo) de un documento semántico a su nueva versión.
         /// </summary>
-        /// <param name="pTriple">Objeto del triple con la ruta del archivo adjunto a copiar</param>
+        /// <param name="nombreArchivo">Nombre del archivo a copiar</param>
+        /// <param name="pTipo">Tipo del campo de ontología al que pertenece el archivo (Imagen, Documento, DocLink o Vídeo)</param>
         /// <param name="pDocIDOriginal">Identificador del documento semántico original</param>
         /// <param name="pDocIDVersion">Identificador de la versión nueva del documento semántico</param>
         /// <returns></returns>
-        public bool CopiarAdjuntoDocumentoSemantico(string pTriple, Guid pDocIDOriginal, Guid pDocIDVersion)
+        public bool CopiarAdjuntoDocumentoSemantico(string nombreArchivo, TipoCampoOntologia pTipo, Guid pDocIDOriginal, Guid pDocIDVersion)
         {
             bool correcto = false;
 
-            string nombreElemento = pTriple.Substring(pTriple.LastIndexOf("/") + 1);
-
-            if (pTriple.Contains(UtilArchivos.ContentImagenesSemanticas))
+            if (pTipo == TipoCampoOntologia.Imagen)
             {
-                correcto = CopiarImagenDocumentoSemantico(pDocIDOriginal, pDocIDVersion, nombreElemento, UrlIntragnossServicios);
+                correcto = CopiarImagenDocumentoSemantico(pDocIDOriginal, pDocIDVersion, nombreArchivo, UrlIntragnossServicios);
                 if (!correcto)
                 {
-                    mLoggingService.GuardarLogError($"No se ha podido copiar la imagen del recurso semantico {pDocIDOriginal} con ruta {pTriple}");
+                    mLoggingService.GuardarLogError($"No se ha podido copiar la imagen del recurso semantico {pDocIDOriginal} con ruta {nombreArchivo}");
                 }
             }
-            else if (pTriple.Contains(UtilArchivos.ContentDocumentosSem))
+            else if (pTipo == TipoCampoOntologia.Archivo)
             {
-                correcto = CopiarArchivoDocumentoSemantico(pDocIDOriginal, pDocIDVersion, nombreElemento, UrlServicioWebDocumentacion);
+                correcto = CopiarArchivoDocumentoSemantico(pDocIDOriginal, pDocIDVersion, nombreArchivo, UrlServicioWebDocumentacion);
                 if (!correcto)
                 {
-                    mLoggingService.GuardarLogError($"No se ha podido copiar el documento del recurso semantico {pDocIDOriginal} con ruta {pTriple}");
+                    mLoggingService.GuardarLogError($"No se ha podido copiar el documento del recurso semantico {pDocIDOriginal} con ruta {nombreArchivo}");
                 }
             }
-            else if (pTriple.Contains(UtilArchivos.ContentDocLinks))
+            else if (pTipo == TipoCampoOntologia.ArchivoLink)
             {
-                correcto = CopiarArchivoLinkDocumentoSemantico(pDocIDOriginal, pDocIDVersion, nombreElemento);
+                correcto = CopiarArchivoLinkDocumentoSemantico(pDocIDOriginal, pDocIDVersion, nombreArchivo);
                 if (!correcto)
                 {
-                    mLoggingService.GuardarLogError($"No se ha podido copiar el doclink del recurso semantico {pDocIDOriginal} con ruta {pTriple}");
+                    mLoggingService.GuardarLogError($"No se ha podido copiar el doclink del recurso semantico {pDocIDOriginal} con ruta {nombreArchivo}");
                 }
             }
-            else if (pTriple.Contains(UtilArchivos.ContentVideosSemanticos))
+            else if (pTipo == TipoCampoOntologia.Video)
             {
-                string extension = Path.GetExtension(pTriple).ToLower();
+                string extension = Path.GetExtension(nombreArchivo).ToLower();
                 CopiarVideosDocumentoSemantico(pDocIDOriginal, pDocIDVersion, IdentidadActual, ProyectoSeleccionado.Clave != ProyectoAD.MyGnoss, extension);
                 if (!correcto)
                 {
-                    mLoggingService.GuardarLogError($"No se ha podido copiar el video del recurso semantico {pDocIDOriginal} con ruta {pTriple}");
+                    mLoggingService.GuardarLogError($"No se ha podido copiar el video del recurso semantico {pDocIDOriginal} con ruta {nombreArchivo}");
                 }
             }
             return correcto;

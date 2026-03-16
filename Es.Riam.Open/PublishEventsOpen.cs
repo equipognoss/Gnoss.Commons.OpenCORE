@@ -50,7 +50,7 @@ namespace Es.Riam.Open
         /// Metodo encargado de añadir un Json con los datos del comentario a la cola
         /// </summary>
         /// <param name="pModelo">Modelo encargador de guardar los datos de los Comentarios</param>
-        public void PublishComments(ModificarComentarios pModelo)
+        public void PublishComments(CommentModifyEvent pModelo)
         {
 
         }
@@ -60,7 +60,7 @@ namespace Es.Riam.Open
         /// </summary>
         /// <param name="pModelo"></param>
         /// <param name="tipo">Modelo encargador de guardar los datos de los Recursos</param>
-        public void PublishResource(PublicarModificarEliminarRecurso pModelo, ActionTypeExternalEvent pTipo)
+        public void PublishResource(ResourceEvent pModelo, ActionTypeExternalEvent pTipo)
         {
 
         }
@@ -69,7 +69,7 @@ namespace Es.Riam.Open
         /// Metodo encargado de añadir un Json con los datos de los usuarios a la cola
         /// </summary>
         /// <param name="pModelo">Modelo encargador de guardar los datos de los Usuarios</param>
-        public void PublishUser(ModificarUsuarios pModelo)
+        public void PublishUser(UserModifyEvent pModelo)
         {
 
         }

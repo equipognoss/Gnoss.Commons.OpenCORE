@@ -208,19 +208,24 @@ namespace Es.Riam.Gnoss.AD.Flujos
 
                }
             ).FirstOrDefault();
-            
-            Dictionary<TiposContenidos, bool> diccionarioTiposPorProyecto = new Dictionary<TiposContenidos, bool>
+
+            Dictionary<TiposContenidos, bool> diccionarioTiposPorProyecto = new Dictionary<TiposContenidos, bool> { };
+            if (resultadoConsulta != null)
             {
-                    { TiposContenidos.Nota, resultadoConsulta.Nota },
-                    { TiposContenidos.Adjunto, resultadoConsulta.Adjunto },
-                    { TiposContenidos.Link, resultadoConsulta.Link },
-                    { TiposContenidos.Encuesta, resultadoConsulta.Encuesta },
-                    { TiposContenidos.Debate, resultadoConsulta.Debate },
-                    { TiposContenidos.PaginaCMS, resultadoConsulta.PaginaCMS },
-                    { TiposContenidos.ComponenteCMS, resultadoConsulta.ComponenteCMS },
-                    { TiposContenidos.Video, resultadoConsulta.Video },
-                    { TiposContenidos.RecursoSemantico, resultadoConsulta.RecursoSemantico }
-            };
+                diccionarioTiposPorProyecto = new Dictionary<TiposContenidos, bool>
+        {
+            { TiposContenidos.Nota, resultadoConsulta.Nota },
+            { TiposContenidos.Adjunto, resultadoConsulta.Adjunto },
+            { TiposContenidos.Link, resultadoConsulta.Link },
+            { TiposContenidos.Encuesta, resultadoConsulta.Encuesta },
+            { TiposContenidos.Debate, resultadoConsulta.Debate },
+            { TiposContenidos.PaginaCMS, resultadoConsulta.PaginaCMS },
+            { TiposContenidos.ComponenteCMS, resultadoConsulta.ComponenteCMS },
+            { TiposContenidos.Video, resultadoConsulta.Video },
+            { TiposContenidos.RecursoSemantico, resultadoConsulta.RecursoSemantico }
+        };
+            }
+
             return diccionarioTiposPorProyecto;
         }
 

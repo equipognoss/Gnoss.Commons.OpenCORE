@@ -4,31 +4,25 @@ namespace Es.Riam.InterfacesOpen.Model
 {
     public class CmsComponentEvent : EventSwitchingBase
     {
-        public Guid ComponentID { get; set; }
-        public Guid ProjectID { get; set; }
-        public Guid UserID { get; set; }
-        public DateTime Date { get; set; }
+        public Guid ComponentId { get; set; }
         public string Transition { get; set; }
         public string SourceState { get; set; }
         public string TargetState { get; set; }
         public ActionTypeExternalEvent ActionType { get; set; }
 
-        public CmsComponentEvent() : base("componenteCms") { }
+        public CmsComponentEvent(Guid pProjectId, Guid pUserId, DateTime pDate) : base(pProjectId, pUserId, pDate, "componenteCms") { }
 
-        public CmsComponentEvent(Guid pComponentID, Guid pProjectID, Guid pUserID, DateTime pDate, string transitionName, string sourceState, string targetState, ActionTypeExternalEvent pActionType) : this(pComponentID, pProjectID, pUserID, pDate, pActionType)
+        public CmsComponentEvent(Guid pComponentId, Guid pProjectId, Guid pUserId, DateTime pDate, string transitionName, string sourceState, string targetState, ActionTypeExternalEvent pActionType) : this(pComponentId, pProjectId, pUserId, pDate, pActionType)
         {
             SourceState = sourceState;
             TargetState = targetState;
-            Transition = transitionName;
+            Transition = transitionName; 
         }
 
-        public CmsComponentEvent(Guid componentID, Guid projectID, Guid userID, DateTime date, ActionTypeExternalEvent actionType) : this()
+        public CmsComponentEvent(Guid pComponentId, Guid pProjectId, Guid pUserId, DateTime pDate, ActionTypeExternalEvent pActionType) : this(pProjectId, pUserId, pDate)
         {
-            ComponentID = componentID;
-            ProjectID = projectID;
-            UserID = userID;
-            Date = date;
-            ActionType = actionType;
+            ComponentId = pComponentId;
+            ActionType = pActionType;
         }
     }
 }

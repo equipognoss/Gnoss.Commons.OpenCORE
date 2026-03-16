@@ -1,4 +1,5 @@
-﻿
+﻿using System;
+
 namespace Es.Riam.InterfacesOpen.Model
 {
     public enum ActionTypeExternalEvent
@@ -13,7 +14,7 @@ namespace Es.Riam.InterfacesOpen.Model
         Publish,
         SaveDraft
     }
-    
+
     public abstract class EventSwitchingBase
     {
         /// <summary>
@@ -21,9 +22,31 @@ namespace Es.Riam.InterfacesOpen.Model
         /// para enviarlo a la cola correspondiente
         /// </summary>
         public string Type { get; }
-        protected EventSwitchingBase(string eventType)
+
+        /// <summary>
+        /// Indica el proyecto donde se ha generado el eventoo
+        /// </summary>
+        public Guid ProjectId { get; set; }
+
+        /// <summary>
+        /// Indica el identificador del usuario que ha generado el evento
+        /// </summary>
+        public Guid UserId { get; set; }
+
+        /// <summary>
+        /// Indica la fecha en la que se ha generado el evento
+        /// </summary>
+        public DateTime Date { get; set; }
+
+        protected EventSwitchingBase(string pEventType)
         {
-            Type = eventType;
+            Type = pEventType;
+        }
+        protected EventSwitchingBase(Guid pProjectId, Guid pUserId, DateTime pDate, string pEventType) : this(pEventType)
+        {
+            ProjectId = pProjectId;
+            UserId = pUserId;
+            Date = pDate;
         }
     }
 }
