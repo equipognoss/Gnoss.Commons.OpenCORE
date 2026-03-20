@@ -1779,11 +1779,11 @@ namespace OntologiaAClase
             Clase.AppendLine($"{UtilCadenasOntology.Tabs(4)}string name{nombre.Substring(nombre.LastIndexOf(".") + 1)} = {nombre.Substring(nombre.LastIndexOf(".") + 1)}{idioma};");
             if (objeto.Tipo.Equals(ObjetoPropiedad.TipoObjeto.ArchivoLink))
             {
-                Clase.AppendLine($"{UtilCadenasOntology.Tabs(4)}pResource.AttachDownloadableFile(data{nombre.Substring(nombre.LastIndexOf(".") + 1)}, \"{UtilCadenasOntology.ObtenerPrefijo(dicPref, objeto.NombrePropiedad)}:{UtilCadenasOntology.ObtenerNombreProp(objeto.NombrePropiedad)}\", name{nombre.Substring(nombre.LastIndexOf(".") + 1)});");
+                Clase.AppendLine($"{UtilCadenasOntology.Tabs(4)}pResource.AttachDownloadableFile(data{nombre.Substring(nombre.LastIndexOf(".") + 1)}, \"{UtilCadenasOntology.ObtenerPrefijo(dicPref, objeto.NombrePropiedad)}:{UtilCadenasOntology.ObtenerNombreProp(objeto.NombrePropiedad)}\", name{nombre.Substring(nombre.LastIndexOf(".") + 1)}, Entity);");
             }
             else
             {
-                Clase.AppendLine($"{UtilCadenasOntology.Tabs(4)}pResource.AttachFile(data{nombre.Substring(nombre.LastIndexOf(".") + 1)}, \"{UtilCadenasOntology.ObtenerPrefijo(dicPref, objeto.NombrePropiedad)}:{UtilCadenasOntology.ObtenerNombreProp(objeto.NombrePropiedad)}\", name{nombre.Substring(nombre.LastIndexOf(".") + 1)});");
+                Clase.AppendLine($"{UtilCadenasOntology.Tabs(4)}pResource.AttachFile(data{nombre.Substring(nombre.LastIndexOf(".") + 1)}, \"{UtilCadenasOntology.ObtenerPrefijo(dicPref, objeto.NombrePropiedad)}:{UtilCadenasOntology.ObtenerNombreProp(objeto.NombrePropiedad)}\", name{nombre.Substring(nombre.LastIndexOf(".") + 1)}, Entity);");
             }
             Clase.AppendLine($"{UtilCadenasOntology.Tabs(3)}}}");
 

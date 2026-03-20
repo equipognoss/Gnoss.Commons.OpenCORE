@@ -549,13 +549,13 @@ namespace Es.Riam.Gnoss.Web.Controles.Documentacion
             return correcto;
         }
 
-        public void IniciarMejoraSobreDocumento(Documento pDocumentoOriginal, Documento pDocumentoNuevo, GnossIdentity pUsuario, Identidad pIdentidadOrg, bool pMasterComunidad)
+        public void IniciarMejoraSobreDocumento(Documento pDocumentoOriginal, Documento pDocumentoNuevo, GnossIdentity pUsuario, Identidad pIdentidadOrg, bool pMasterComunidad, Ontologia pOntologia)
         {
             try
             {
                 if (pDocumentoOriginal.TipoDocumentacion.Equals(TiposDocumentacion.Semantico))
                 {
-                    GenerarNuevoRdfYFicheros(pDocumentoOriginal, pDocumentoNuevo);
+                    GenerarNuevoRdfYFicheros(pDocumentoOriginal, pDocumentoNuevo, pOntologia);
                 }
                 else
                 {
@@ -568,7 +568,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Documentacion
             }
         }
 
-        public string GenerarNuevoRdfYFicheros(Documento pDocumentoOriginal, Documento pDocumentoNuevo)
+        public string GenerarNuevoRdfYFicheros(Documento pDocumentoOriginal, Documento pDocumentoNuevo, Ontologia pOntologia)
         {
             try
             {
@@ -594,7 +594,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Documentacion
                     rdf = rdf.Replace(triple, nuevaRuta);
                 }
 
-                Dictionary<string, TipoCampoOntologia> nombresArchivosYTipos = ObtenerNombresArchivosDeRdf(rdf);
+                Dictionary<string, TipoCampoOntologia> nombresArchivosYTipos = ObtenerNombresArchivosDeRdf(rdf, pOntologia);
 
                 foreach (string nombreArchivo in nombresArchivosYTipos.Keys)
                 {
@@ -751,11 +751,11 @@ namespace Es.Riam.Gnoss.Web.Controles.Documentacion
         /// </summary>
         /// <param name="pDocumentoOriginal">Documento semántico original</param>
         /// <param name="pDocumentoNuevo">Documento semántico nuevo</param>
-        public bool CrearNuevaVersionDocumentoRDF(Documento pDocumentoOriginal, Documento pDocumentoNuevo, IAvailableServices pAvailableServices, bool pEsMejora = false)
+        public bool CrearNuevaVersionDocumentoRDF(Documento pDocumentoOriginal, Documento pDocumentoNuevo, IAvailableServices pAvailableServices, Ontologia pOntologia, bool pEsMejora = false)
         {
             try
             {
-                string rdf = GenerarNuevoRdfYFicheros(pDocumentoOriginal, pDocumentoNuevo);
+                string rdf = GenerarNuevoRdfYFicheros(pDocumentoOriginal, pDocumentoNuevo, pOntologia);
                 if (!pEsMejora)
                 {
                     ActualizarDatosVirtuoso(pDocumentoOriginal, pDocumentoNuevo, rdf, pAvailableServices);

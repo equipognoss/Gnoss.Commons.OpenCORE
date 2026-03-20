@@ -2635,7 +2635,7 @@ namespace OntologiaAClase
             Clase.AppendLine($"{UtilCadenasOntology.Tabs(3)}reader.read(data{pNombre.Substring(pNombre.LastIndexOf(".") + 1)}, 0, (int) length{pNombre.Substring(pNombre.LastIndexOf(".") + 1)}());");
             Clase.AppendLine($"{UtilCadenasOntology.Tabs(3)}String name{pNombre.Substring(pNombre.LastIndexOf(".") + 1)} = {pNombre.Substring(pNombre.LastIndexOf(".") + 1)}{idioma};");
 
-            Clase.AppendLine($"{UtilCadenasOntology.Tabs(3)}pResource.AttachFile(data{pNombre.Substring(pNombre.LastIndexOf(".") + 1)}, \"{pObjeto.NombrePropiedad}\", name{pNombre.Substring(pNombre.LastIndexOf(".") + 1)});");
+            Clase.AppendLine($"{UtilCadenasOntology.Tabs(3)}pResource.AttachFile(data{pNombre.Substring(pNombre.LastIndexOf(".") + 1)}, \"{pObjeto.NombrePropiedad}\", name{pNombre.Substring(pNombre.LastIndexOf(".") + 1)}, Entity);");
             if (pObjeto.Multiidioma)
             {
                 Clase.AppendLine($"{UtilCadenasOntology.Tabs(3)}}}");
