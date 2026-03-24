@@ -643,7 +643,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
                 List<Guid> listaRecursosSem = new List<Guid>();
                 foreach (ResourceModel fichaRecurso in FichasRecursoSemanticas)
                 {
-                    listaRecursosSem.Add(fichaRecurso.Key);
+                    listaRecursosSem.Add(fichaRecurso.OriginalKey);
                 }
 
                 if (listaRecursosSem.Count > 0)

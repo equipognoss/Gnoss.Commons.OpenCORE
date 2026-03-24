@@ -381,13 +381,16 @@ namespace Es.Riam.Semantica.Plantillas
 
             if (pEstiloRef.TieneValor_TipoCampo)
             {
-                mTipoCampo = pEstiloRef.TipoCampo;
+                if (!pEstiloRef.TipoCampo.Equals(TipoCampoOntologia.Texto))
+                {
+                    mTipoCampo = pEstiloRef.TipoCampo;
+                }
                 if (mTipoCampo.HasValue)
                 {
                     mTipoCampoINT = (int)mTipoCampo.Value;
                 }
             }
-            //Propiedad;
+
             EsPropiedadConValoresCheck = pEstiloRef.EsPropiedadConValoresCheck;
             ListaValoresPermitidos = pEstiloRef.ListaValoresPermitidos;
             ValorDefectoNoSeleccionable = pEstiloRef.ValorDefectoNoSeleccionable;
@@ -404,8 +407,6 @@ namespace Es.Riam.Semantica.Plantillas
             TagNameTituloLectura = pEstiloRef.TagNameTituloLectura;
             AtrNombre = pEstiloRef.AtrNombre;
             AtrNombreLectura = pEstiloRef.AtrNombreLectura;
-            //Nombre;
-            //NombreLectura;
             mValoresSepComas = pEstiloRef.ValoresSepComasAlmacenado;
             FechaMesAnio = pEstiloRef.FechaMesAnio;
             FechaLibre = pEstiloRef.FechaLibre;
@@ -503,7 +504,7 @@ namespace Es.Riam.Semantica.Plantillas
             mTextoCancelarElem = (string)info.GetValue("TextoCancelarElem", typeof(string));
             mTextoEdicionEntSel = (string)info.GetValue("TextoEdicionEntSel", typeof(string));
             mTextoEliminarElemSel = (string)info.GetValue("TextoEliminarElemSel", typeof(string));
-            TipoCampoOntologia mTipoCampo = TipoCampoOntologia.Texto;
+
             int? TipoCampo = null;
             try
             {
